@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<project name="jwplayer" basedir="../" default="release-js">
+	<!-- Define variables/paths used in this build script -->
+	<property file="./build/build.properties" />
+
+	<target name="build-js">
+		<concat destfile="${outputpath}">
+			<fileset dir="${basedir}/src/js" includes="jwplayer.sourcestart.js" />
+			<fileset dir="${basedir}/src/js" includes="jwplayer.js" />
+			<fileset dir="${basedir}/src/js/utils" includes="jwplayer.utils.js" excludes="" />
+			<fileset dir="${basedir}/src/js/utils" includes="jwplayer.utils.*.js" excludes="" />
+			<fileset dir="${basedir}/src/js/html5" includes="jwplayer.html5.js" excludes="" />
+			<fileset dir="${basedir}/src/js/html5" includes="jwplayer.html5.*.js" excludes="" />
+			<fileset dir="${basedir}/src/js/html5/utils" includes="jwplayer.html5.utils.js" />
+			<fileset dir="${basedir}/src/js/html5/utils" includes="jwplayer.html5.utils.*.js" excludes="" />
+			<fileset dir="${basedir}/src/js" includes="jwplayer.sourceend.js" />
+		</concat>
+	</target>
+
+	<target name="debug-js">
+		<antcall target="build-js">
+			<param name="outputpath" value="${debug.dir}/jwplayer.js"/>
+		</antcall>
+	</target>
+	
+	<target name="release-js">
+		<antcall target="debug-js"></antcall>
+		<!--replace file="${basedir}/jwplayer.min.js" token=", logoConfig);" value=");"/-->
+		<java jar="${basedir}/build/yuicompressor-2.4.2.jar" fork="true">
+			<arg line="'${debug.dir}/jwplayer.js'"/>
+			<arg line="-o '${basedir}/jwplayer.min.js'"/>
+		</java>
+	</target>
+	
+</project>
