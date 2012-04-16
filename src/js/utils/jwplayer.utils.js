@@ -1,0 +1,207 @@
+/**
+ * Utility methods for the JW Player.
+ * 
+ * @author pablo
+ * @version 6.0
+ */
+(function(jwplayer) {
+	//Declare namespace
+	var utils = jwplayer.utils = function() {
+	};
+
+	/**
+	 * Returns true if the value of the object is null, undefined or the empty
+	 * string
+	 * 
+	 * @param a The variable to inspect
+	 */
+	utils.exists = function(item) {
+		switch (typeof (item)) {
+		case "string":
+			return (item.length > 0);
+			break;
+		case "object":
+			return (item !== null);
+		case "undefined":
+			return false;
+		}
+		return true;
+	}
+
+	var _styleSheet;
+	var _rules = {}
+	
+	/**
+	 * @param {Object} or {String} domelement If domelement is a string, create a document-wide CSS rule for that string 
+	 * @param {Object} styles
+	 */
+	utils.css = function(domelement, styles) {
+		var selector; 
+		
+		if (!_styleSheet) {
+			_styleSheet = document.createElement("style");
+			_styleSheet.type = "text/css";
+			document.getElementsByTagName('head')[0].appendChild(_styleSheet);
+		}
+		
+		if (utils.exists(domelement)) {
+			if (typeof domelement == "string") {
+				// Selector text -- normalized
+				selector = domelement.replace(/\s+/g,' ').replace(/^\s|\s$/g,'');
+				// Create an empty element - we'll apply its style declaration to the new rule.
+				domelement = document.createElement("span");
+				if (_rules[selector]) {
+					for (var s in styles) {
+						_rules[selector][s] = styles[s];
+					}
+					styles = _rules[selector];
+				}
+			}
+			
+			for (var style in styles) {
+				try {
+					if (typeof styles[style] === "undefined") {
+						continue;
+					} else if (typeof styles[style] == "number" && !(style == "zIndex" || style == "opacity")) {
+						if (isNaN(styles[style])) {
+							continue;
+						}
+						if (style.match(/color/i)) {
+							styles[style] = "#" + utils.strings.pad(styles[style].toString(16), 6);
+						} else {
+							styles[style] = Math.ceil(styles[style]) + "px";
+						}
+					}
+					if (styles[style]) {
+						domelement.style[style] = styles[style];
+					}
+				} catch (err) {
+				}
+			}
+			if (selector) {
+				_rules[selector] = domelement.style;
+				_updateStylesheet();
+			}
+		}
+	};
+	
+	utils.cssStyle = function(selector, styles) {
+		if (!_styleSheet) {
+			_styleSheet = document.createElement("style");
+			_styleSheet.type = "text/css";
+			document.getElementsByTagName('head')[0].appendChild(_styleSheet);
+		}
+
+		if (_rules[selector]) {
+			for (var s in styles) {
+				_rules[selector][s] = styles[s];
+			}
+			styles = _rules[selector];
+		}
+		
+		_rules[selector] = styles;
+	}
+	
+	function _updateStylesheet() {
+		if (_styleSheet) {
+			var ruleText = "";
+			for (var rule in _rules) {
+				var styles = _rules[rule];
+				ruleText += rule + "{";
+				for (var style in styles) {
+					ruleText += style + ": " + styles[style] + ";\n";
+				}
+				ruleText += "}\n";
+			}
+			_styleSheet.innerHTML = ruleText;
+		}
+	}
+	
+	
+	/**
+	 * Removes all css elements which match a particular style
+	 */
+	utils.clearCss = function(filter) {
+		for (var rule in _rules) {
+			if (rule.indexOf(filter) >= 0) {
+				delete _rules[rule];
+			}
+		}
+		_updateStylesheet();
+	}
+	
+	/** Gets an absolute file path based on a relative filepath * */
+	utils.getAbsolutePath = function(path, base) {
+		if (!utils.exists(base)) {
+			base = document.location.href;
+		}
+		if (!utils.exists(path)) {
+			return undefined;
+		}
+		if (isAbsolutePath(path)) {
+			return path;
+		}
+		var protocol = base.substring(0, base.indexOf("://") + 3);
+		var domain = base.substring(protocol.length, base.indexOf('/', protocol.length + 1));
+		var patharray;
+		if (path.indexOf("/") === 0) {
+			patharray = path.split("/");
+		} else {
+			var basepath = base.split("?")[0];
+			basepath = basepath.substring(protocol.length + domain.length + 1, basepath.lastIndexOf('/'));
+			patharray = basepath.split("/").concat(path.split("/"));
+		}
+		var result = [];
+		for ( var i = 0; i < patharray.length; i++) {
+			if (!patharray[i] || !utils.exists(patharray[i]) || patharray[i] == ".") {
+				continue;
+			} else if (patharray[i] == "..") {
+				result.pop();
+			} else {
+				result.push(patharray[i]);
+			}
+		}
+		return protocol + domain + "/" + result.join("/");
+	};
+
+	function isAbsolutePath(path) {
+		if (!utils.exists(path)) {
+			return;
+		}
+		var protocol = path.indexOf("://");
+		var queryparams = path.indexOf("?");
+		return (protocol > 0 && (queryparams < 0 || (queryparams > protocol)));
+	}
+
+	/** Merges a list of objects * */
+	utils.extend = function() {
+		var args = utils.extend['arguments'];
+		if (args.length > 1) {
+			for ( var i = 1; i < args.length; i++) {
+				for ( var element in args[i]) {
+					args[0][element] = args[i][element];
+				}
+			}
+			return args[0];
+		}
+		return null;
+	};
+
+	/**
+	 * Cleans up a css dimension (e.g. '420px') and returns an integer.
+	 */
+	utils.parseDimension = function(dimension) {
+		if (typeof dimension == "string") {
+			if (dimension === "") {
+				return 0;
+			} else if (dimension.lastIndexOf("%") > -1) {
+				return dimension;
+			} else {
+				return parseInt(dimension.replace("px", ""), 10);
+			}
+		}
+		return dimension;
+	}
+
+
+})(jwplayer);

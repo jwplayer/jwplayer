@@ -110,11 +110,33 @@ jwplayer.source = document.createElement("source");/**
 		}
 	};
 	
+	utils.cssStyle = function(selector, styles) {
+		if (!_styleSheet) {
+			_styleSheet = document.createElement("style");
+			_styleSheet.type = "text/css";
+			document.getElementsByTagName('head')[0].appendChild(_styleSheet);
+		}
+
+		if (_rules[selector]) {
+			for (var s in styles) {
+				_rules[selector][s] = styles[s];
+			}
+			styles = _rules[selector];
+		}
+		
+		_rules[selector] = styles;
+	}
+	
 	function _updateStylesheet() {
 		if (_styleSheet) {
 			var ruleText = "";
 			for (var rule in _rules) {
-				ruleText += rule + "{" + _rules[rule].cssText + "}\n";
+				var styles = _rules[rule];
+				ruleText += rule + "{";
+				for (var style in styles) {
+					ruleText += style + ": " + styles[style] + ";\n";
+				}
+				ruleText += "}\n";
 			}
 			_styleSheet.innerHTML = ruleText;
 		}
@@ -959,6 +981,7 @@ jwplayer.source = document.createElement("source");/**
 		};
 		
 		var _setBuffer = this.setBuffer = function(pct) {
+			pct = Math.min(Math.max(0, pct), 1);
 			_elements['timeSliderBuffer'].style.width = 100 * pct + "%";
 		}
 
@@ -1078,7 +1101,7 @@ jwplayer.source = document.createElement("source");/**
   	    	MozTransition: 'left .5s linear 0s, opacity .5s ease .5s'
   	    	//OTransition: 'left .5s linear 0s, opacity .5s ease .5s' -- this produces console errors in Opera
   	    });	  	    
-  	    _css(CB_CLASS + ' .timeSliderProgress', {
+  	    _css(CB_CLASS + ' .timeSliderProgress,' + CB_CLASS + ' .timeSliderBuffer', {
   	    	webkitTransition: 'width .5s linear',
   	    	MozTransition: 'width .5s linear',
   	    	OTransition: 'width .5s linear'

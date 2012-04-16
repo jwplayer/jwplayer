@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+	<head>
+	  <title>Animtaions Test</title>
+	  <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+	  
+	  <script type="text/javascript">
+	  	function update(form) {
+			var dir = form.direction.options[form.direction.selectedIndex].value;
+			var dur = form.duration.value;
+			var anim;
+
+			switch(dir) {
+			case "forwards": 
+				anim = new jwplayer.html5.utils.animations(document.getElementById("player"), form.property.value, form.from.value, form.to.value, form.duration.value);
+				anim.start();
+				break;
+			case "backwards":
+				anim = new jwplayer.html5.utils.animations(document.getElementById("player"), form.property.value, form.to.value, form.from.value, form.duration.value);
+				anim.start();
+			}
+
+			form.direction.selectedIndex = form.direction.selectedIndex ? 0 : 1; 
+	  	}
+	  </script>
+	  
+	  <style type="text/css">
+	    #player {
+	     width: 720px;
+	     height: 406px;
+	     position: absolute;
+	     background-image: url('/testing/files/bunny_preview.png');
+	     background-size: 100% 100%;
+	    }
+	  </style>
+
+	</head>
+	
+	<body>
+    <form id="form" onsubmit="update(this); return false;">
+      property: <input name="property" value="opacity" style="width: 50px">
+      from: <input name="from" value="1" style="width: 50px">
+      to: <input name="to" value="0" style="width: 50px">
+      duration: <input name="duration" value="500" style="width: 50px">
+      direction: <select name="direction">
+      	<option value="forwards">forwards</option>
+      	<option value="backwards">backwards</option>
+      </select>
+      <input type="submit"/>
+    </form>
+    
+
+    <div id="player">
+    </div>
+
+	</body>
+</html>
