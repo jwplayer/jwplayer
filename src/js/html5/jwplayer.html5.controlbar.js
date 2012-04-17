@@ -7,8 +7,7 @@
 (function(html5) {
 	
 	var _utils = jwplayer.utils, 
-		_css = _utils.css,
-		_css2 = _utils.cssStyle,
+		_style = _utils.appendStylesheet,
 
 		/** Controlbar element types **/
 		CB_BUTTON = "button",
@@ -144,14 +143,14 @@
 		function _createStyles() {
 			_utils.clearCss('#'+_id);
 			
-			_css2('#'+_id, {
+			_style('#'+_id, {
 		  		height: _getSkinElement("background").height,
 	  			bottom: _settings.position == "OVER" ? _settings.margin : 0,
 	  			left: _settings.position == "OVER" ? _settings.margin : 0,
 	  			right: _settings.position == "OVER" ? _settings.margin : 0
 			});
 			
-			_css2(_internalSelector(".text"), {
+			_style(_internalSelector(".text"), {
 				font: _settings.fontsize + "px/" + _getSkinElement("background").height + "px " + _settings.font,
 				color: _settings.fontcolor,
 				'font-weight': _settings.fontweight,
@@ -241,7 +240,7 @@
 				};
 			}
 			
-			_css2(_internalSelector('.'+name), _utils.extend(newStyle, style));
+			_style(_internalSelector('.'+name), _utils.extend(newStyle, style));
 			_elements[name] = element;
 			return element;
 		}
@@ -259,13 +258,13 @@
 				return element;
 			}
 			
-			_css2(_internalSelector('.'+name), { 
+			_style(_internalSelector('.'+name), { 
 				width: outSkin.width,
 				background: 'url('+ outSkin.src +') center no-repeat'
 			});
 			
 			if (overSkin.src) {
-				_css2(_internalSelector('.'+name) + ':hover', { 
+				_style(_internalSelector('.'+name) + ':hover', { 
 					background: 'url('+ overSkin.src +') center no-repeat'
 				});
 			}
@@ -293,7 +292,7 @@
 				css['background-size'] = "100% " + _getSkinElement("background").height + "px";
 			}
 
-			_css2(_internalSelector('.'+name), css);
+			_style(_internalSelector('.'+name), css);
 			element.innerHTML = "00:00";
 			_elements[name] = element;
 			return element;
@@ -303,7 +302,7 @@
 			if (divider.width) {
 				var element = _createSpan();
 				element.className = "blankDivider";
-				_css2(element, {
+				_style(element, {
 					width: parseInt(divider.width)
 				});
 				return element;
@@ -346,7 +345,7 @@
 			slider.appendChild(rail);
 			if (capLeft) slider.appendChild(capRight);
 
-			_css2(_internalSelector("." + name + " .rail"), {
+			_style(_internalSelector("." + name + " .rail"), {
 				left: _getSkinElement(name+"SliderCapLeft").width,
 				right: _getSkinElement(name+"SliderCapRight").width,
 			});
@@ -366,7 +365,7 @@
 	
 		function _styleTimeSlider(slider) {
 			if (_elements['timeSliderThumb']) {
-				_css2(_internalSelector(".timeSliderThumb"), {
+				_style(_internalSelector(".timeSliderThumb"), {
 					'margin-left': (_getSkinElement("timeSliderThumb").width/-2)
 				});
 			}
@@ -381,7 +380,7 @@
 				capRightWidth = _getSkinElement("volumeSliderCapRight").width,
 				railWidth = _getSkinElement("volumeSliderRail").width;
 			
-			_css2(_internalSelector(".volume"), {
+			_style(_internalSelector(".volume"), {
 				width: (capLeftWidth + railWidth + capRightWidth),
 				margin: (capLeftWidth * capRightWidth == 0) ? "0 5px" : 0 
 			});
@@ -397,7 +396,7 @@
 			_controlbar.appendChild(_groups.center);
 			_controlbar.appendChild(_groups.right);
 			
-			_css2(_internalSelector(".right"), {
+			_style(_internalSelector(".right"), {
 				right: _getSkinElement("capRight").width
 			});
 		}
@@ -424,7 +423,7 @@
 		}
 
 		var _resize = this.resize = function(width, height) {
-			_css2(_internalSelector('.group.center'), {
+			_style(_internalSelector('.group.center'), {
 				left: _utils.parseDimension(_groups.left.offsetWidth) + _getSkinElement("capLeft").width,
 				right: _utils.parseDimension(_groups.right.offsetWidth) + _getSkinElement("capRight").width
 			});
@@ -488,33 +487,33 @@
 	 * General JW Player controlbar styles -- should only be executed once
 	 **/
 	function _generalStyles() {
-		_css2(CB_CLASS, {
+		_style(CB_CLASS, {
   			position: JW_CSS_ABSOLUTE,
   			overflow: 'hidden'
 		})
-  		_css2(CB_CLASS+' span',{
+  		_style(CB_CLASS+' span',{
   			height: JW_CSS_100PCT,
   			'-webkit-user-select': JW_CSS_NONE,
   			'-webkit-user-drag': JW_CSS_NONE,
   			'user-select': JW_CSS_NONE,
   			'user-drag': JW_CSS_NONE
   		});
-  	    _css2(CB_CLASS+' .group', {
+  	    _style(CB_CLASS+' .group', {
   	    	display: JW_CSS_INLINE
   	    });
-  	    _css2(CB_CLASS+' span, '+CB_CLASS+' .group button,'+CB_CLASS+' .left', {
+  	    _style(CB_CLASS+' span, '+CB_CLASS+' .group button,'+CB_CLASS+' .left', {
   	    	position: JW_CSS_RELATIVE,
   			'float': JW_CSS_LEFT
   	    });
-		_css2(CB_CLASS+' .right', {
+		_style(CB_CLASS+' .right', {
 			position: JW_CSS_RELATIVE,
 			'float': JW_CSS_RIGHT
 		});
-  	    _css2(CB_CLASS+' .center', {
+  	    _style(CB_CLASS+' .center', {
   	    	position: JW_CSS_ABSOLUTE,
   			'float': JW_CSS_LEFT
  	    });
-  	    _css2(CB_CLASS+' button', {
+  	    _style(CB_CLASS+' button', {
   	    	display: JW_CSS_INLINE_BLOCK,
   	    	height: JW_CSS_100PCT,
   	    	border: JW_CSS_NONE,
@@ -523,37 +522,37 @@
   	    	'-moz-transition': 'background .5s',
   	    	'-o-transition': 'background 1s'
   	    });
-  	    _css2(CB_CLASS+' .capRight', { 
+  	    _style(CB_CLASS+' .capRight', { 
 			right: 0,
 			position: JW_CSS_ABSOLUTE
 		});
-  	    _css2(CB_CLASS+' .time,' + CB_CLASS + ' .group span.stretch', {
+  	    _style(CB_CLASS+' .time,' + CB_CLASS + ' .group span.stretch', {
   	    	position: JW_CSS_ABSOLUTE,
   	    	height: JW_CSS_100PCT,
   	    	width: JW_CSS_100PCT,
   	    	left: 0
   	    });
-  	    _css2(CB_CLASS+' .rail,' + CB_CLASS + ' .thumb', {
+  	    _style(CB_CLASS+' .rail,' + CB_CLASS + ' .thumb', {
   	    	position: JW_CSS_ABSOLUTE,
   	    	height: JW_CSS_100PCT
   	    });
-  	    _css2(CB_CLASS + ' .timeSliderThumb', {
+  	    _style(CB_CLASS + ' .timeSliderThumb', {
   	    	'-webkit-transition': 'left .5s linear 0s, opacity .5s ease .5s',
   	    	'-moz-transition': 'left .5s linear 0s, opacity .5s ease .5s'
   	    	//OTransition: 'left .5s linear 0s, opacity .5s ease .5s' -- this produces console errors in Opera
   	    });	  	    
-  	    _css2(CB_CLASS + ' .timeSliderProgress,' + CB_CLASS + ' .timeSliderBuffer', {
+  	    _style(CB_CLASS + ' .timeSliderProgress,' + CB_CLASS + ' .timeSliderBuffer', {
   	    	'-webkit-transition': 'width .5s linear',
   	    	'-moz-transition': 'width .5s linear',
   	    	'-o-transition': 'width .5s linear'
   	    });
-  	    _css2(CB_CLASS + ' .volume', {
+  	    _style(CB_CLASS + ' .volume', {
   	    	display: JW_CSS_INLINE_BLOCK
   	    });
-  	    _css2(CB_CLASS + ' .divider+.divider', {
+  	    _style(CB_CLASS + ' .divider+.divider', {
   	    	display: JW_CSS_NONE
   	    });
-  	    _css2(CB_CLASS + ' .text', {
+  	    _style(CB_CLASS + ' .text', {
 			padding: '0 5px',
 			textAlign: 'center'
 		});

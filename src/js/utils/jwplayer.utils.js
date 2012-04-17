@@ -36,28 +36,7 @@
 	 * @param {Object} styles
 	 */
 	utils.css = function(domelement, styles) {
-		var selector; 
-		
-		if (!_styleSheet) {
-			_styleSheet = document.createElement("style");
-			_styleSheet.type = "text/css";
-			document.getElementsByTagName('head')[0].appendChild(_styleSheet);
-		}
-		
 		if (utils.exists(domelement)) {
-			if (typeof domelement == "string") {
-				// Selector text -- normalized
-				selector = domelement.replace(/\s+/g,' ').replace(/^\s|\s$/g,'');
-				// Create an empty element - we'll apply its style declaration to the new rule.
-				domelement = document.createElement("span");
-				if (_rules[selector]) {
-					for (var s in styles) {
-						_rules[selector][s] = styles[s];
-					}
-					styles = _rules[selector];
-				}
-			}
-			
 			for (var style in styles) {
 				try {
 					if (typeof styles[style] === "undefined") {
@@ -78,14 +57,10 @@
 				} catch (err) {
 				}
 			}
-			if (selector) {
-//				_rules[selector] = domelement.style;
-//				_updateStylesheet();
-			}
 		}
 	};
 	
-	utils.cssStyle = function(selector, styles) {
+	utils.appendStylesheet = function(selector, styles) {
 		if (!_styleSheet) {
 			_styleSheet = document.createElement("style");
 			_styleSheet.type = "text/css";
