@@ -79,8 +79,8 @@
 				}
 			}
 			if (selector) {
-				_rules[selector] = domelement.style;
-				_updateStylesheet();
+//				_rules[selector] = domelement.style;
+//				_updateStylesheet();
 			}
 		}
 	};
@@ -92,14 +92,47 @@
 			document.getElementsByTagName('head')[0].appendChild(_styleSheet);
 		}
 
-		if (_rules[selector]) {
-			for (var s in styles) {
-				_rules[selector][s] = styles[s];
-			}
-			styles = _rules[selector];
+		if (!_rules[selector]) {
+			_rules[selector] = {};
 		}
-		
-		_rules[selector] = styles;
+
+		for (var style in styles) {
+			var val = _styleValue(style, styles[style]);
+			if (utils.exists(_rules[selector][style]) && !utils.exists(val)) {
+				delete _rules[selector][style];
+			} else {
+				_rules[selector][style] = val;
+			}
+		}
+
+		_updateStylesheet();
+	}
+	
+	function _styleValue(style, value) {
+		if (typeof value === "undefined") {
+			return undefined;
+		} 
+
+		if (typeof value == "number") {
+			if (isNaN(value)) {
+				return undefined;
+			}
+			switch (style) {
+			case "z-index":
+			case "opacity":
+				return value;
+				break;
+			default:
+				if (style.match(/color/i)) {
+					return "#" + utils.strings.pad(value.toString(16), 6);
+				} else {
+					return Math.ceil(value) + "px";
+				}
+				break;
+			}
+		} else {
+			return value;
+		}
 	}
 	
 	function _updateStylesheet() {
@@ -107,9 +140,9 @@
 			var ruleText = "";
 			for (var rule in _rules) {
 				var styles = _rules[rule];
-				ruleText += rule + "{";
+				ruleText += rule + "{\n";
 				for (var style in styles) {
-					ruleText += style + ": " + styles[style] + ";\n";
+					ruleText += "  "+style + ": " + styles[style] + ";\n";
 				}
 				ruleText += "}\n";
 			}
@@ -173,7 +206,7 @@
 		return (protocol > 0 && (queryparams < 0 || (queryparams > protocol)));
 	}
 
-	/** Merges a list of objects * */
+	/** Merges a list of objects **/
 	utils.extend = function() {
 		var args = utils.extend['arguments'];
 		if (args.length > 1) {

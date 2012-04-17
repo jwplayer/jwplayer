@@ -8,6 +8,7 @@
 	
 	var _utils = jwplayer.utils, 
 		_css = _utils.css,
+		_css2 = _utils.cssStyle,
 
 		/** Controlbar element types **/
 		CB_BUTTON = "button",
@@ -143,26 +144,26 @@
 		function _createStyles() {
 			_utils.clearCss('#'+_id);
 			
-			_css('#'+_id, {
+			_css2('#'+_id, {
 		  		height: _getSkinElement("background").height,
 	  			bottom: _settings.position == "OVER" ? _settings.margin : 0,
 	  			left: _settings.position == "OVER" ? _settings.margin : 0,
 	  			right: _settings.position == "OVER" ? _settings.margin : 0
 			});
 			
-			_css(_className("text"), {
+			_css2(_internalSelector(".text"), {
 				font: _settings.fontsize + "px/" + _getSkinElement("background").height + "px " + _settings.font,
 				color: _settings.fontcolor,
-				fontWeight: _settings.fontweight,
-				fontStyle: _settings.fontstyle,
-				padding: '0 5px',
-				textAlign: 'center'
+				'font-weight': _settings.fontweight,
+				'font-style': _settings.fontstyle,
+				'text-align': 'center',
+				padding: '0 5px'
 			});
 		}
 
 		
-		function _className(name) {
-			return '#' + _id + ' .' + name;
+		function _internalSelector(name) {
+			return '#' + _id + " " + name;
 		}
 
 		function _createSpan() {
@@ -240,7 +241,7 @@
 				};
 			}
 			
-			_css(_className(name), _utils.extend(newStyle, style));
+			_css2(_internalSelector('.'+name), _utils.extend(newStyle, style));
 			_elements[name] = element;
 			return element;
 		}
@@ -258,13 +259,13 @@
 				return element;
 			}
 			
-			_css(_className(name), { 
+			_css2(_internalSelector('.'+name), { 
 				width: outSkin.width,
 				background: 'url('+ outSkin.src +') center no-repeat'
 			});
 			
 			if (overSkin.src) {
-				_css(_className(name) + ':hover', { 
+				_css2(_internalSelector('.'+name) + ':hover', { 
 					background: 'url('+ overSkin.src +') center no-repeat'
 				});
 			}
@@ -289,10 +290,10 @@
 			var skinElement = _getSkinElement(name+"Background");
 			if (skinElement.src) {
 				css.background = "url(" + skinElement.src + ") no-repeat center";
-				css.backgroundSize = "100% " + _getSkinElement("background").height + "px";
+				css['background-size'] = "100% " + _getSkinElement("background").height + "px";
 			}
 
-			_css(_className(name), css);
+			_css2(_internalSelector('.'+name), css);
 			element.innerHTML = "00:00";
 			_elements[name] = element;
 			return element;
@@ -302,7 +303,7 @@
 			if (divider.width) {
 				var element = _createSpan();
 				element.className = "blankDivider";
-				_css(element, {
+				_css2(element, {
 					width: parseInt(divider.width)
 				});
 				return element;
@@ -345,7 +346,7 @@
 			slider.appendChild(rail);
 			if (capLeft) slider.appendChild(capRight);
 
-			_css(_className(name + " .rail"), {
+			_css2(_internalSelector("." + name + " .rail"), {
 				left: _getSkinElement(name+"SliderCapLeft").width,
 				right: _getSkinElement(name+"SliderCapRight").width,
 			});
@@ -365,8 +366,8 @@
 	
 		function _styleTimeSlider(slider) {
 			if (_elements['timeSliderThumb']) {
-				_css(_className("timeSliderThumb"), {
-					marginLeft: (_getSkinElement("timeSliderThumb").width/-2)
+				_css2(_internalSelector(".timeSliderThumb"), {
+					'margin-left': (_getSkinElement("timeSliderThumb").width/-2)
 				});
 			}
 
@@ -380,7 +381,7 @@
 				capRightWidth = _getSkinElement("volumeSliderCapRight").width,
 				railWidth = _getSkinElement("volumeSliderRail").width;
 			
-			_css(_className("volume"), {
+			_css2(_internalSelector(".volume"), {
 				width: (capLeftWidth + railWidth + capRightWidth),
 				margin: (capLeftWidth * capRightWidth == 0) ? "0 5px" : 0 
 			});
@@ -396,7 +397,7 @@
 			_controlbar.appendChild(_groups.center);
 			_controlbar.appendChild(_groups.right);
 			
-			_css(_className("right"), {
+			_css2(_internalSelector(".right"), {
 				right: _getSkinElement("capRight").width
 			});
 		}
@@ -423,7 +424,7 @@
 		}
 
 		var _resize = this.resize = function(width, height) {
-			_css(_groups.center, {
+			_css2(_internalSelector('.group.center'), {
 				left: _utils.parseDimension(_groups.left.offsetWidth) + _getSkinElement("capLeft").width,
 				right: _utils.parseDimension(_groups.right.offsetWidth) + _getSkinElement("capRight").width
 			});
@@ -487,85 +488,72 @@
 	 * General JW Player controlbar styles -- should only be executed once
 	 **/
 	function _generalStyles() {
-		_css(CB_CLASS, {
-  			position:JW_CSS_ABSOLUTE,
+		_css2(CB_CLASS, {
+  			position: JW_CSS_ABSOLUTE,
   			overflow: 'hidden'
 		})
-  		_css(CB_CLASS+' span',{
+  		_css2(CB_CLASS+' span',{
   			height: JW_CSS_100PCT,
-  			userSelect: JW_CSS_NONE,
-  			webkitUserSelect: JW_CSS_NONE,
-  			webkitUserDrag: JW_CSS_NONE,
-  			userSelect: JW_CSS_NONE,
-  			userDrag: JW_CSS_NONE
+  			'-webkit-user-select': JW_CSS_NONE,
+  			'-webkit-user-drag': JW_CSS_NONE,
+  			'user-select': JW_CSS_NONE,
+  			'user-drag': JW_CSS_NONE
   		});
-  	    _css(CB_CLASS+' .group', {
+  	    _css2(CB_CLASS+' .group', {
   	    	display: JW_CSS_INLINE
   	    });
-  	    _css(CB_CLASS+' span, '+CB_CLASS+' .group button', {
+  	    _css2(CB_CLASS+' span, '+CB_CLASS+' .group button,'+CB_CLASS+' .left', {
   	    	position: JW_CSS_RELATIVE,
-  			'float': JW_CSS_LEFT,
-  			cssFloat: JW_CSS_LEFT,
-  			styleFloat: JW_CSS_LEFT
+  			'float': JW_CSS_LEFT
   	    });
-  	    _css(CB_CLASS+' .left', {
+		_css2(CB_CLASS+' .right', {
 			position: JW_CSS_RELATIVE,
-  			'float': JW_CSS_LEFT,
-  			cssFloat: JW_CSS_LEFT,
-  			styleFloat: JW_CSS_LEFT
- 	    });
-		_css(CB_CLASS+' .right', {
-			position: JW_CSS_RELATIVE,
-			'float': JW_CSS_RIGHT,
-			cssFloat: JW_CSS_RIGHT,
-			styleFloat: JW_CSS_RIGHT
+			'float': JW_CSS_RIGHT
 		});
-  	    _css(CB_CLASS+' .center', {
+  	    _css2(CB_CLASS+' .center', {
   	    	position: JW_CSS_ABSOLUTE,
-  			'float': JW_CSS_LEFT,
-  			cssFloat: JW_CSS_LEFT,
-  			styleFloat: JW_CSS_LEFT
+  			'float': JW_CSS_LEFT
  	    });
-  	    _css(CB_CLASS+' button', {
+  	    _css2(CB_CLASS+' button', {
   	    	display: JW_CSS_INLINE_BLOCK,
   	    	height: JW_CSS_100PCT,
   	    	border: JW_CSS_NONE,
   	    	cursor: 'pointer',
-  	    	webkitTransition: 'background .5s',
-  	    	MozTransition: 'background .5s',
-  	    	OTransition: 'background 1s'
+  	    	'-webkit-transition': 'background .5s',
+  	    	'-moz-transition': 'background .5s',
+  	    	'-o-transition': 'background 1s'
   	    });
-  	    _css(CB_CLASS+' .capRight', { 
+  	    _css2(CB_CLASS+' .capRight', { 
 			right: 0,
 			position: JW_CSS_ABSOLUTE
 		});
-  	    _css(CB_CLASS+' .time,' + CB_CLASS + ' .group span.stretch', {
+  	    _css2(CB_CLASS+' .time,' + CB_CLASS + ' .group span.stretch', {
   	    	position: JW_CSS_ABSOLUTE,
   	    	height: JW_CSS_100PCT,
   	    	width: JW_CSS_100PCT,
   	    	left: 0
   	    });
-  	    _css(CB_CLASS+' .rail,' + CB_CLASS + ' .thumb', {
+  	    _css2(CB_CLASS+' .rail,' + CB_CLASS + ' .thumb', {
   	    	position: JW_CSS_ABSOLUTE,
   	    	height: JW_CSS_100PCT
   	    });
-  	    _css(CB_CLASS + ' .timeSliderThumb', {
-  	    	webkitTransition: 'left .5s linear 0s, opacity .5s ease .5s',
-  	    	MozTransition: 'left .5s linear 0s, opacity .5s ease .5s'
+  	    _css2(CB_CLASS + ' .timeSliderThumb', {
+  	    	'-webkit-transition': 'left .5s linear 0s, opacity .5s ease .5s',
+  	    	'-moz-transition': 'left .5s linear 0s, opacity .5s ease .5s'
   	    	//OTransition: 'left .5s linear 0s, opacity .5s ease .5s' -- this produces console errors in Opera
   	    });	  	    
-  	    _css(CB_CLASS + ' .timeSliderProgress,' + CB_CLASS + ' .timeSliderBuffer', {
-  	    	webkitTransition: 'width .5s linear',
-  	    	MozTransition: 'width .5s linear',
-  	    	OTransition: 'width .5s linear'
+  	    _css2(CB_CLASS + ' .timeSliderProgress,' + CB_CLASS + ' .timeSliderBuffer', {
+  	    	'-webkit-transition': 'width .5s linear',
+  	    	'-moz-transition': 'width .5s linear',
+  	    	'-o-transition': 'width .5s linear'
   	    });
-  	    _css(CB_CLASS + ' .volume', {
+  	    _css2(CB_CLASS + ' .volume', {
   	    	display: JW_CSS_INLINE_BLOCK
   	    });
-  	    _css(CB_CLASS + ' .divider+.divider', {
+  	    _css2(CB_CLASS + ' .divider+.divider', {
   	    	display: JW_CSS_NONE
   	    });
-  	    _css(CB_CLASS + ' .text', {
+  	    _css2(CB_CLASS + ' .text', {
 			padding: '0 5px',
 			textAlign: 'center'
 		});
