@@ -9,8 +9,8 @@
 			<fileset dir="${basedir}/src/js" includes="jwplayer.js" />
 			<fileset dir="${basedir}/src/js/utils" includes="jwplayer.utils.js" excludes="" />
 			<fileset dir="${basedir}/src/js/utils" includes="jwplayer.utils.*.js" excludes="" />
-			<fileset dir="${basedir}/src/js/html5" includes="jwplayer.html5.js" excludes="" />
-			<fileset dir="${basedir}/src/js/html5" includes="jwplayer.html5.*.js" excludes="" />
+			<fileset dir="${basedir}/src/js/html5" includes="jwplayer.html5.js" />
+			<fileset dir="${basedir}/src/js/html5" includes="jwplayer.html5*.js" excludes="jwplayer.html5.js" />
 			<fileset dir="${basedir}/src/js/html5/utils" includes="jwplayer.html5.utils.js" />
 			<fileset dir="${basedir}/src/js/html5/utils" includes="jwplayer.html5.utils.*.js" excludes="" />
 			<fileset dir="${basedir}/src/js" includes="jwplayer.sourceend.js" />

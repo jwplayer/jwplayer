@@ -110,22 +110,37 @@
 		var _settings, _layout, _elements;
 		
 		var _controlbar, _id;
+		
+		var _toggles = {
+			play: "pause",
+			mute: "unmute",
+			fullscreen: "normalscreen"
+		}
+		
+		var _toggleStates = {
+			play: false,
+			mute: false,
+			fullscreen: false
+		}
+		
+		var _buttonMapping = {
+			play: _play,
+			mute: _mute,
+			fullscreen: _fullscreen
+		};
 
 		function _init() {
 			_elements = {};
 			
-			_api = {
-				settings: {
-					controlbar: {
-						position: "OVER"
-					}
-				},
-				id: "player"
-			};
+			_api = api;
 			
 			config = _utils.extend({}, config);
 			_id = _api.id + "_controlbar";
-			
+
+			_controlbar = _createSpan();
+			_controlbar.id = _id;
+			_controlbar.className = "jwcontrolbar";
+
 			(new html5.skinloader(config.skin, function(skin) {
 				_api.skin = skin;
 				_settings = _utils.extend({}, _defaults, _api.skin.controlbar.settings, _api.settings.controlbar);
@@ -170,10 +185,6 @@
 		}
 		
 		function _buildControlbar() {
-			_controlbar = _createSpan();
-			_controlbar.id = _id;
-			_controlbar.className = "jwcontrolbar";
-
 			var capLeft = _buildImage("capLeft");
 			var capRight = _buildImage("capRight");
 			var bg = _buildImage("background", {
@@ -249,31 +260,73 @@
 			var element = document.createElement("button");
 			//element.id = _createElementId(name);
 			element.className = name;
+			element.addEventListener("click", (function(name) { return function() { _buttonClickHandler(name) } })(name));
 
 			var outSkin = _getSkinElement(name + "Button");
 			var overSkin = _getSkinElement(name + "ButtonOver");
 			
 			element.innerHTML = "&nbsp;";
-			if (!outSkin.src) {
+			if (!_getSkinElement(name + "Button").src) {
 				return element;
 			}
 			
-			_style(_internalSelector('.'+name), { 
-				width: outSkin.width,
-				background: 'url('+ outSkin.src +') center no-repeat'
-			});
-			
-			if (overSkin.src) {
-				_style(_internalSelector('.'+name) + ':hover', { 
-					background: 'url('+ overSkin.src +') center no-repeat'
-				});
+			_buttonStyle(_internalSelector('.'+name), outSkin, overSkin);
+			var toggle = _toggles[name];
+			if (toggle) {
+				_buttonStyle(_internalSelector('.'+name+'.toggle'), _getSkinElement(toggle+"Button"), _getSkinElement(toggle+"ButtonOver"));
 			}
 
 			_elements[name] = element;
 			
 			return element;
 		}
+		
+		function _buttonStyle(selector, out, over) {
+			if (!out.src) {
+				return;
+			}
+			
+			_style(selector, { 
+				width: out.width,
+				background: 'url('+ out.src +') center no-repeat'
+			});
+			
+			if (over.src) {
+				_style(selector + ':hover', { 
+					background: 'url('+ over.src +') center no-repeat'
+				});
+			}
+		}
+		
+		function _buttonClickHandler(name) {
+			if (_buttonMapping[name]) {
+				_buttonMapping[name]();
+			}
+		}
+		
 
+		function _play() {
+			if (_toggleStates.play) {
+				_api.jwPause();
+			} else {
+				_api.jwPlay();
+			}
+			_toggleButton("play");
+		}
+		
+		function _mute() {
+			_toggleButton("mute");
+		}
+		
+		function _fullscreen() {
+			_toggleButton("fullscreen");
+		}
+		
+		function _toggleButton(name) {
+			_elements[name].className = name + (_toggleStates[name] ? "" : " toggle");
+			_toggleStates[name] ^= true;
+		}
+		
 		function _createElementId(name) {
 			//return (_id + "_" + name + Math.round(Math.random()*10000000));
 			return _id + "_" + name;
@@ -381,8 +434,7 @@
 				railWidth = _getSkinElement("volumeSliderRail").width;
 			
 			_style(_internalSelector(".volume"), {
-				width: (capLeftWidth + railWidth + capRightWidth),
-				margin: (capLeftWidth * capRightWidth == 0) ? "0 5px" : 0 
+				width: (capLeftWidth + railWidth + capRightWidth)
 			});
 		}
 		
@@ -477,7 +529,6 @@
 			}
 		}
 		
-		
 		// Call constructor
 		_init();
 
@@ -522,6 +573,11 @@
   	    	'-moz-transition': 'background .5s',
   	    	'-o-transition': 'background 1s'
   	    });
+  	    _style(CB_CLASS+' button:hover', {
+  	    	'-webkit-transition': 'background 0s',
+  	    	'-moz-transition': 'background 0s',
+  	    	'-o-transition': 'background 0s'
+  	    });
   	    _style(CB_CLASS+' .capRight', { 
 			right: 0,
 			position: JW_CSS_ABSOLUTE
@@ -534,12 +590,13 @@
   	    });
   	    _style(CB_CLASS+' .rail,' + CB_CLASS + ' .thumb', {
   	    	position: JW_CSS_ABSOLUTE,
-  	    	height: JW_CSS_100PCT
+  	    	height: JW_CSS_100PCT,
+  	    	cursor: 'pointer'
   	    });
   	    _style(CB_CLASS + ' .timeSliderThumb', {
   	    	'-webkit-transition': 'left .5s linear 0s, opacity .5s ease .5s',
   	    	'-moz-transition': 'left .5s linear 0s, opacity .5s ease .5s'
-  	    	//OTransition: 'left .5s linear 0s, opacity .5s ease .5s' -- this produces console errors in Opera
+  	    	//-o-transition: 'left .5s linear 0s, opacity .5s ease .5s' -- this produces console errors in Opera
   	    });	  	    
   	    _style(CB_CLASS + ' .timeSliderProgress,' + CB_CLASS + ' .timeSliderBuffer', {
   	    	'-webkit-transition': 'width .5s linear',

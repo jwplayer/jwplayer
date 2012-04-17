@@ -550,7 +550,7 @@ jwplayer.source = document.createElement("source");/**
  * @version 6.0
  */
 (function(jwplayer) {
-	jwplayer.html5 = {};
+	jwplayer.html5 = {}
 })(jwplayer);
 
 /**
@@ -665,22 +665,37 @@ jwplayer.source = document.createElement("source");/**
 		var _settings, _layout, _elements;
 		
 		var _controlbar, _id;
+		
+		var _toggles = {
+			play: "pause",
+			mute: "unmute",
+			fullscreen: "normalscreen"
+		}
+		
+		var _toggleStates = {
+			play: false,
+			mute: false,
+			fullscreen: false
+		}
+		
+		var _buttonMapping = {
+			play: _play,
+			mute: _mute,
+			fullscreen: _fullscreen
+		};
 
 		function _init() {
 			_elements = {};
 			
-			_api = {
-				settings: {
-					controlbar: {
-						position: "OVER"
-					}
-				},
-				id: "player"
-			};
+			_api = api;
 			
 			config = _utils.extend({}, config);
 			_id = _api.id + "_controlbar";
-			
+
+			_controlbar = _createSpan();
+			_controlbar.id = _id;
+			_controlbar.className = "jwcontrolbar";
+
 			(new html5.skinloader(config.skin, function(skin) {
 				_api.skin = skin;
 				_settings = _utils.extend({}, _defaults, _api.skin.controlbar.settings, _api.settings.controlbar);
@@ -725,10 +740,6 @@ jwplayer.source = document.createElement("source");/**
 		}
 		
 		function _buildControlbar() {
-			_controlbar = _createSpan();
-			_controlbar.id = _id;
-			_controlbar.className = "jwcontrolbar";
-
 			var capLeft = _buildImage("capLeft");
 			var capRight = _buildImage("capRight");
 			var bg = _buildImage("background", {
@@ -804,31 +815,73 @@ jwplayer.source = document.createElement("source");/**
 			var element = document.createElement("button");
 			//element.id = _createElementId(name);
 			element.className = name;
+			element.addEventListener("click", (function(name) { return function() { _buttonClickHandler(name) } })(name));
 
 			var outSkin = _getSkinElement(name + "Button");
 			var overSkin = _getSkinElement(name + "ButtonOver");
 			
 			element.innerHTML = "&nbsp;";
-			if (!outSkin.src) {
+			if (!_getSkinElement(name + "Button").src) {
 				return element;
 			}
 			
-			_style(_internalSelector('.'+name), { 
-				width: outSkin.width,
-				background: 'url('+ outSkin.src +') center no-repeat'
-			});
-			
-			if (overSkin.src) {
-				_style(_internalSelector('.'+name) + ':hover', { 
-					background: 'url('+ overSkin.src +') center no-repeat'
-				});
+			_buttonStyle(_internalSelector('.'+name), outSkin, overSkin);
+			var toggle = _toggles[name];
+			if (toggle) {
+				_buttonStyle(_internalSelector('.'+name+'.toggle'), _getSkinElement(toggle+"Button"), _getSkinElement(toggle+"ButtonOver"));
 			}
 
 			_elements[name] = element;
 			
 			return element;
 		}
+		
+		function _buttonStyle(selector, out, over) {
+			if (!out.src) {
+				return;
+			}
+			
+			_style(selector, { 
+				width: out.width,
+				background: 'url('+ out.src +') center no-repeat'
+			});
+			
+			if (over.src) {
+				_style(selector + ':hover', { 
+					background: 'url('+ over.src +') center no-repeat'
+				});
+			}
+		}
+		
+		function _buttonClickHandler(name) {
+			if (_buttonMapping[name]) {
+				_buttonMapping[name]();
+			}
+		}
+		
 
+		function _play() {
+			if (_toggleStates.play) {
+				_api.jwPause();
+			} else {
+				_api.jwPlay();
+			}
+			_toggleButton("play");
+		}
+		
+		function _mute() {
+			_toggleButton("mute");
+		}
+		
+		function _fullscreen() {
+			_toggleButton("fullscreen");
+		}
+		
+		function _toggleButton(name) {
+			_elements[name].className = name + (_toggleStates[name] ? "" : " toggle");
+			_toggleStates[name] ^= true;
+		}
+		
 		function _createElementId(name) {
 			//return (_id + "_" + name + Math.round(Math.random()*10000000));
 			return _id + "_" + name;
@@ -936,8 +989,7 @@ jwplayer.source = document.createElement("source");/**
 				railWidth = _getSkinElement("volumeSliderRail").width;
 			
 			_style(_internalSelector(".volume"), {
-				width: (capLeftWidth + railWidth + capRightWidth),
-				margin: (capLeftWidth * capRightWidth == 0) ? "0 5px" : 0 
+				width: (capLeftWidth + railWidth + capRightWidth)
 			});
 		}
 		
@@ -1032,7 +1084,6 @@ jwplayer.source = document.createElement("source");/**
 			}
 		}
 		
-		
 		// Call constructor
 		_init();
 
@@ -1077,6 +1128,11 @@ jwplayer.source = document.createElement("source");/**
   	    	'-moz-transition': 'background .5s',
   	    	'-o-transition': 'background 1s'
   	    });
+  	    _style(CB_CLASS+' button:hover', {
+  	    	'-webkit-transition': 'background 0s',
+  	    	'-moz-transition': 'background 0s',
+  	    	'-o-transition': 'background 0s'
+  	    });
   	    _style(CB_CLASS+' .capRight', { 
 			right: 0,
 			position: JW_CSS_ABSOLUTE
@@ -1089,12 +1145,13 @@ jwplayer.source = document.createElement("source");/**
   	    });
   	    _style(CB_CLASS+' .rail,' + CB_CLASS + ' .thumb', {
   	    	position: JW_CSS_ABSOLUTE,
-  	    	height: JW_CSS_100PCT
+  	    	height: JW_CSS_100PCT,
+  	    	cursor: 'pointer'
   	    });
   	    _style(CB_CLASS + ' .timeSliderThumb', {
   	    	'-webkit-transition': 'left .5s linear 0s, opacity .5s ease .5s',
   	    	'-moz-transition': 'left .5s linear 0s, opacity .5s ease .5s'
-  	    	//OTransition: 'left .5s linear 0s, opacity .5s ease .5s' -- this produces console errors in Opera
+  	    	//-o-transition: 'left .5s linear 0s, opacity .5s ease .5s' -- this produces console errors in Opera
   	    });	  	    
   	    _style(CB_CLASS + ' .timeSliderProgress,' + CB_CLASS + ' .timeSliderBuffer', {
   	    	'-webkit-transition': 'width .5s linear',
@@ -1116,6 +1173,46 @@ jwplayer.source = document.createElement("source");/**
 	
 	_generalStyles();
 })(jwplayer.html5);/**
+ * jwplayer.html5 API
+ *
+ * @author pablo
+ * @version 6.0
+ */
+(function(html5) {
+	html5.controller = function(model, view) {
+		var _model, 
+			_view = view,
+			_video, _controlbar;
+		
+		function _init() {
+			_model = model;
+			_view = view;
+			_video = model.video;
+			_controlbar = view.controlbar;
+		}
+		
+		this.play = function() {
+			if (_video.getTag().canPlayType("video/mp4")) {
+				_video.load("http://content.bitsontherun.com/videos/nPripu9l-1ahmry41.mp4");		
+			} else {
+				_video.load("http://content.bitsontherun.com/videos/nPripu9l-1Lq5Mnwq.webm");		
+			}
+			_video.play();
+		}
+
+		this.stop = function() {
+			_video.stop();
+		}
+
+		this.pause = function() {
+			_video.pause();
+		}
+
+		_init();
+	}
+})(jwplayer.html5);
+
+/**
  * JW Player Default skin
  *
  * @author zach
@@ -1140,6 +1237,53 @@ jwplayer.source = document.createElement("source");/**
 	};
 	
 })(jwplayer);
+/**
+ * Main HTMl5 player class
+ *
+ * @author pablo
+ * @version 6.0
+ */
+(function(html5) {
+	html5.player = function(config) {
+		var _model, _view, _controller,
+			_api = this;
+		
+		function _init() {
+			_model = {
+				video: new html5.video(document.createElement("video")),
+				settings: config
+			};
+		
+			_api.id = "player";
+			_api.settings = _model.settings;
+
+			_view = {
+				container: document.getElementById(_api.id),
+				controlbar: new html5.controlbar(_api, _model.settings)
+			};
+			
+			_controller = new html5.controller(_model, _view);
+		
+			jwplayer.utils.appendStylesheet("#"+_api.id+" video", {
+				width: "100%",
+				height: "100%",
+				background: "#000",
+				display: "none"
+			});
+			
+			_view.container.appendChild(_model.video.getTag());
+			_view.container.appendChild(_view.controlbar.getDisplayElement());
+			
+		}
+		
+		this.jwPlay = function(){ _controller.play() };
+		this.jwPause = function(){ _controller.pause() };
+		this.jwStop = function(){ _controller.stop() };
+		
+		_init();
+	}
+})(jwplayer.html5);
+
 /**
  * JW Player component that loads PNG skins.
  *
@@ -1498,7 +1642,11 @@ jwplayer.source = document.createElement("source");/**
 		  _video.style.display = "block";
 		  _video.play();
 	  }
-  
+
+	  this.pause = function() {
+		  _video.pause();
+	  }
+
 	  var _seek = this.seek = function(pos) {
 		  if (_canSeek) {
 			  _delayedSeek = 0;
@@ -1507,6 +1655,12 @@ jwplayer.source = document.createElement("source");/**
 		  } else {
 			  _delayedSeek = pos;
 		  }
+	  }
+
+	  // Provide access to video tag
+	  // TODO: remove
+	  this.getTag = function() {
+		  return videotag;
 	  }
 	  
 	  // Call constructor

@@ -107,7 +107,11 @@
 		  _video.style.display = "block";
 		  _video.play();
 	  }
-  
+
+	  this.pause = function() {
+		  _video.pause();
+	  }
+
 	  var _seek = this.seek = function(pos) {
 		  if (_canSeek) {
 			  _delayedSeek = 0;
@@ -116,6 +120,12 @@
 		  } else {
 			  _delayedSeek = pos;
 		  }
+	  }
+
+	  // Provide access to video tag
+	  // TODO: remove
+	  this.getTag = function() {
+		  return videotag;
 	  }
 	  
 	  // Call constructor
