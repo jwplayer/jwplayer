@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+	<head>
+	  <title>Controller test</title>
+	  <script src="../bin-debug/jwplayer.js"></script>
+	  
+
+	  <style type="text/css">
+	    #player {
+	     width: 720px;
+	     height: 426px;
+	     position: relative;
+	     background-image: url('http://content.bitsontherun.com/thumbs/gSzpo2wh-480.jpg');
+	     background-size: 100% 100%;
+	    }
+	    
+	  </style>
+	  
+	  <script type="text/javascript">
+	   var player;
+	   var form;
+
+	   function update(form) {
+	     document.getElementById("player").style.width = form.size.value + "px";
+	     cb.resize(100, 100);
+	     cb.setBuffer(form.buf.value / 100);
+	     cb.setProgress(form.pct.value / 100);
+	   }
+	   
+	   function init() {
+		 form = document.getElementById("form");
+		 document.getElementById("player").innerHTML = "";
+	     player = new jwplayer.html5.player({id: "player", skin: form.skin.options[form.skin.selectedIndex].value});
+	   }
+	  </script>
+	</head>
+	
+	<body onload="init()">
+    <form id="form" onsubmit="update(this); return false;">
+      skin: <select name="skin" onchange="init()">
+      	<option value="">default</option>
+      	<option value="../../../skins/beelden/beelden.xml">beelden</option>
+      	<option value="../../../skins/stormtrooper/stormtrooper.xml">stormtrooper</option>
+      	<option value="../../../skins/glow/src/glow.xml">glow</option>
+      	<option value="../../../skins/five/five.xml">five</option>
+      	<option value="../../../tags/skins/snel/snel.xml">snel</option>
+      	<option value="../../../skins/stijl/stijl.xml">stijl</option>
+      	<option value="../../../skins/bekle/bekle.xml" selected>bekle</option>
+      </select>
+      <input type="submit" style="opacity:0; left: -10000px"/>
+    </form>
+    
+
+    <div id="player">
+    </div>
+
+	</body>
+</html>

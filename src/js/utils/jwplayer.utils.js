@@ -211,5 +211,40 @@
 		return dimension;
 	}
 
+	/** Format the elapsed / remaining text. **/
+	utils.timeFormat = function(sec) {
+		if (sec > 0) {
+			str = Math.floor(sec / 60) < 10 ? "0" + Math.floor(sec / 60) + ":" : Math.floor(sec / 60) + ":";
+			str += Math.floor(sec % 60) < 10 ? "0" + Math.floor(sec % 60) : Math.floor(sec % 60);
+			return str;
+		} else {
+			return "00:00";
+		}
+	}
 
+	/** Logger * */
+	jwplayer.utils.log = function(msg, obj) {
+		if (typeof console != "undefined" && typeof console.log != "undefined") {
+			if (obj) {
+				console.log(msg, obj);
+			} else {
+				console.log(msg);
+			}
+		}
+	};
+
+	/** Replacement for getBoundingClientRect, which isn't supported in iOS 3.1.2 **/
+	jwplayer.utils.getBoundingClientRect = function(element) {
+		if (typeof element.getBoundingClientRect == "function") {
+			return element.getBoundingClientRect();
+		} else {
+			return { 
+				left: element.offsetLeft + document.body.scrollLeft, 
+				top: element.offsetTop + document.body.scrollTop, 
+				width: element.offsetWidth, 
+				height: element.offsetHeight
+			};
+		}
+	}
+	
 })(jwplayer);

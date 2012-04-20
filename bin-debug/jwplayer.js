@@ -236,7 +236,42 @@ jwplayer.source = document.createElement("source");/**
 		return dimension;
 	}
 
+	/** Format the elapsed / remaining text. **/
+	utils.timeFormat = function(sec) {
+		if (sec > 0) {
+			str = Math.floor(sec / 60) < 10 ? "0" + Math.floor(sec / 60) + ":" : Math.floor(sec / 60) + ":";
+			str += Math.floor(sec % 60) < 10 ? "0" + Math.floor(sec % 60) : Math.floor(sec % 60);
+			return str;
+		} else {
+			return "00:00";
+		}
+	}
 
+	/** Logger * */
+	jwplayer.utils.log = function(msg, obj) {
+		if (typeof console != "undefined" && typeof console.log != "undefined") {
+			if (obj) {
+				console.log(msg, obj);
+			} else {
+				console.log(msg);
+			}
+		}
+	};
+
+	/** Replacement for getBoundingClientRect, which isn't supported in iOS 3.1.2 **/
+	jwplayer.utils.getBoundingClientRect = function(element) {
+		if (typeof element.getBoundingClientRect == "function") {
+			return element.getBoundingClientRect();
+		} else {
+			return { 
+				left: element.offsetLeft + document.body.scrollLeft, 
+				top: element.offsetTop + document.body.scrollTop, 
+				width: element.offsetWidth, 
+				height: element.offsetHeight
+			};
+		}
+	}
+	
 })(jwplayer);
 /**
  * AJAX File loading capabilities
@@ -544,6 +579,202 @@ jwplayer.source = document.createElement("source");/**
 	
 })(jwplayer.utils);
 /**
+ * Event namespace defintion for the JW Player
+ * 
+ * @author pablo
+ * @version 6.0
+ */
+(function(jwplayer) {
+	jwplayer.events = {
+		// General Events
+		COMPLETE : 'COMPLETE',
+		ERROR : 'ERROR',
+
+		// API Events
+		API_READY : 'jwplayerAPIReady',
+		JWPLAYER_READY : 'jwplayerReady',
+		JWPLAYER_FULLSCREEN : 'jwplayerFullscreen',
+		JWPLAYER_RESIZE : 'jwplayerResize',
+		JWPLAYER_ERROR : 'jwplayerError',
+
+		// Media Events
+		JWPLAYER_MEDIA_BEFOREPLAY : 'jwplayerMediaBeforePlay',
+		JWPLAYER_MEDIA_BEFORECOMPLETE : 'jwplayerMediaBeforeComplete',
+		JWPLAYER_COMPONENT_SHOW : 'jwplayerComponentShow',
+		JWPLAYER_COMPONENT_HIDE : 'jwplayerComponentHide',
+		JWPLAYER_MEDIA_BUFFER : 'jwplayerMediaBuffer',
+		JWPLAYER_MEDIA_BUFFER_FULL : 'jwplayerMediaBufferFull',
+		JWPLAYER_MEDIA_ERROR : 'jwplayerMediaError',
+		JWPLAYER_MEDIA_LOADED : 'jwplayerMediaLoaded',
+		JWPLAYER_MEDIA_COMPLETE : 'jwplayerMediaComplete',
+		JWPLAYER_MEDIA_SEEK : 'jwplayerMediaSeek',
+		JWPLAYER_MEDIA_TIME : 'jwplayerMediaTime',
+		JWPLAYER_MEDIA_VOLUME : 'jwplayerMediaVolume',
+		JWPLAYER_MEDIA_META : 'jwplayerMediaMeta',
+		JWPLAYER_MEDIA_MUTE : 'jwplayerMediaMute',
+
+		// State events
+		JWPLAYER_PLAYER_STATE : 'jwplayerPlayerState',
+		state : {
+			BUFFERING : 'BUFFERING',
+			IDLE : 'IDLE',
+			PAUSED : 'PAUSED',
+			PLAYING : 'PLAYING',
+			COMPLETED : 'COMPLETED'
+		},
+
+		// Playlist Events
+		JWPLAYER_PLAYLIST_LOADED : 'jwplayerPlaylistLoaded',
+		JWPLAYER_PLAYLIST_ITEM : 'jwplayerPlaylistItem',
+
+		// Instream events
+		JWPLAYER_INSTREAM_CLICK : 'jwplayerInstreamClicked',
+		JWPLAYER_INSTREAM_DESTROYED : 'jwplayerInstreamDestroyed'
+	};
+
+})(jwplayer);
+/**
+ * Event dispatcher for the JW Player
+ *
+ * @author zach
+ * @modified pablo
+ * @version 6.0
+ */
+(function(jwplayer) {
+	jwplayer.events.eventdispatcher = function(id, debug) {
+		var _id = id,
+			_debug = debug,
+			_listeners, _globallisteners;
+		
+		/** Clears all event listeners **/
+		this.resetEventListeners = function() {
+			_listeners = {};
+			_globallisteners = [];
+		};
+		
+		this.resetEventListeners();
+		
+		/** Add an event listener for a specific type of event. **/
+		this.addEventListener = function(type, listener, count) {
+			try {
+				if (!jwplayer.utils.exists(_listeners[type])) {
+					_listeners[type] = [];
+				}
+				
+				if (typeof(listener) == "string") {
+					eval("listener = " + listener);
+				}
+				_listeners[type].push({
+					listener: listener,
+					count: count
+				});
+			} catch (err) {
+				jwplayer.utils.log("error", err);
+			}
+			return false;
+		};
+		
+		
+		/** Remove an event listener for a specific type of event. **/
+		this.removeEventListener = function(type, listener) {
+			if (!_listeners[type]) {
+				return;
+			}
+			try {
+				for (var listenerIndex = 0; listenerIndex < _listeners[type].length; listenerIndex++) {
+					if (_listeners[type][listenerIndex].listener.toString() == listener.toString()) {
+						_listeners[type].splice(listenerIndex, 1);
+						break;
+					}
+				}
+			} catch (err) {
+				jwplayer.utils.log("error", err);
+			}
+			return false;
+		};
+		
+		/** Add an event listener for all events. **/
+		this.addGlobalListener = function(listener, count) {
+			try {
+				if (typeof(listener) == "string") {
+					eval("listener = " + listener);
+				}
+				_globallisteners.push({
+					listener: listener,
+					count: count
+				});
+			} catch (err) {
+				jwplayer.utils.log("error", err);
+			}
+			return false;
+		};
+		
+		/** Add an event listener for all events. **/
+		this.removeGlobalListener = function(listener) {
+			if (!listener) {
+				return;
+			}
+			try {
+				for (var globalListenerIndex = 0; globalListenerIndex < _globallisteners.length; globalListenerIndex++) {
+					if (_globallisteners[globalListenerIndex].listener.toString() == listener.toString()) {
+						_globallisteners.splice(globalListenerIndex, 1);
+						break;
+					}
+				}
+			} catch (err) {
+				jwplayer.utils.log("error", err);
+			}
+			return false;
+		};
+		
+		
+		/** Send an event **/
+		this.sendEvent = function(type, data) {
+			if (!jwplayer.utils.exists(data)) {
+				data = {};
+			}
+			jwplayer.utils.extend(data, {
+				id: _id,
+				version: jwplayer.version,
+				type: type
+			});
+			if (_debug) {
+				jwplayer.utils.log(type, data);
+			}
+			if (typeof _listeners[type] != "undefined") {
+				for (var listenerIndex = 0; listenerIndex < _listeners[type].length; listenerIndex++) {
+					try {
+						_listeners[type][listenerIndex].listener(data);
+					} catch (err) {
+						jwplayer.utils.log("There was an error while handling a listener: " + err.toString(), _listeners[type][listenerIndex].listener);
+					}
+					if (_listeners[type][listenerIndex]) {
+						if (_listeners[type][listenerIndex].count === 1) {
+							delete _listeners[type][listenerIndex];
+						} else if (_listeners[type][listenerIndex].count > 0) {
+							_listeners[type][listenerIndex].count = _listeners[type][listenerIndex].count - 1;
+						}
+					}
+				}
+			}
+			for (var globalListenerIndex = 0; globalListenerIndex < _globallisteners.length; globalListenerIndex++) {
+				try {
+					_globallisteners[globalListenerIndex].listener(data);
+				} catch (err) {
+					jwplayer.utils.log("There was an error while handling a listener: " + err.toString(), _globallisteners[globalListenerIndex].listener);
+				}
+				if (_globallisteners[globalListenerIndex]) {
+					if (_globallisteners[globalListenerIndex].count === 1) {
+						delete _globallisteners[globalListenerIndex];
+					} else if (_globallisteners[globalListenerIndex].count > 0) {
+						_globallisteners[globalListenerIndex].count = _globallisteners[globalListenerIndex].count - 1;
+					}
+				}
+			}
+		};
+	};
+})(jwplayer);
+/**
  * jwplayer.html5 namespace
  *
  * @author pablo
@@ -580,121 +811,140 @@ jwplayer.source = document.createElement("source");/**
 		JW_CSS_LEFT = "left",
 		JW_CSS_RIGHT = "right",
 		JW_CSS_100PCT = "100%",
+		JW_CSS_SMOOTH_EASE = "width .25s linear 0s, left .25s linear 0s, opacity .25s ease 0s"
 		
 		CB_CLASS = '.jwcontrolbar';
 	
 	/** HTML5 Controlbar class **/
 	html5.controlbar = function(api, config) {
-		var _api;
+		var _api,
 
-		var _defaults = {
-			backgroundcolor : "",
-			margin : 10,
-			font : "Arial,sans-serif",
-			fontsize : 10,
-			fontcolor : parseInt("000000", 16),
-			fontstyle : "normal",
-			fontweight : "bold",
-			buttoncolor : parseInt("ffffff", 16),
-			// position : html5.view.positions.BOTTOM,
-			position: "OVER",
-			idlehide : false,
-			hideplaylistcontrols : false,
-			forcenextprev : false,
-			layout : {
-				"left" : {
-					"position" : "left",
-					"elements" : [ {
-						"name" : "play",
-						"type" : CB_BUTTON
-					}, {
-						"name" : "divider",
-						"type" : CB_DIVIDER
-					}, {
-						"name" : "prev",
-						"type" : CB_BUTTON
-					}, {
-						"name" : "divider",
-						"type" : CB_DIVIDER
-					}, {
-						"name" : "next",
-						"type" : CB_BUTTON
-					}, {
-						"name" : "divider",
-						"type" : CB_DIVIDER
-					}, {
-						"name" : "elapsed",
-						"type" : CB_TEXT
-					} ]
-				},
-				"center" : {
-					"position" : "center",
-					"elements" : [ {
-						"name" : "time",
-						"type" : CB_SLIDER
-					} ]
-				},
-				"right" : {
-					"position" : "right",
-					"elements" : [ {
-						"name" : "duration",
-						"type" : CB_TEXT
-					}, {
-						"name" : "blank",
-						"type" : CB_BUTTON
-					}, {
-						"name" : "divider",
-						"type" : CB_DIVIDER
-					}, {
-						"name" : "mute",
-						"type" : CB_BUTTON
-					}, {
-						"name" : "volume",
-						"type" : CB_SLIDER
-					}, {
-						"name" : "divider",
-						"type" : CB_DIVIDER
-					}, {
-						"name" : "fullscreen",
-						"type" : CB_BUTTON
-					} ]
+			_defaults = {
+				backgroundcolor : "",
+				margin : 10,
+				font : "Arial,sans-serif",
+				fontsize : 10,
+				fontcolor : parseInt("000000", 16),
+				fontstyle : "normal",
+				fontweight : "bold",
+				buttoncolor : parseInt("ffffff", 16),
+				// position : html5.view.positions.BOTTOM,
+				position: "OVER",
+				idlehide : false,
+				hideplaylistcontrols : false,
+				forcenextprev : false,
+				layout : {
+					left: {
+						position: "left",
+						elements: [ {
+							name: "play",
+							type: CB_BUTTON
+						}, {
+							name: "divider",
+							type: CB_DIVIDER
+						}, {
+							name: "prev",
+							type: CB_BUTTON
+						}, {
+							name: "divider",
+							type: CB_DIVIDER
+						}, {
+							name: "next",
+							type: CB_BUTTON
+						}, {
+							name: "divider",
+							type: CB_DIVIDER
+						}, {
+							name: "elapsed",
+							type: CB_TEXT
+						} ]
+					},
+					center: {
+						position: "center",
+						elements: [ {
+							name: "time",
+							type: CB_SLIDER
+						} ]
+					},
+					right: {
+						position: "right",
+						elements: [ {
+							name: "duration",
+							type: CB_TEXT
+						}, {
+							name: "blank",
+							type: CB_BUTTON
+						}, {
+							name: "divider",
+							type: CB_DIVIDER
+						}, {
+							name: "mute",
+							type: CB_BUTTON
+						}, {
+							name: "volume",
+							type: CB_SLIDER
+						}, {
+							name: "divider",
+							type: CB_DIVIDER
+						}, {
+							name: "fullscreen",
+							type: CB_BUTTON
+						} ]
+					}
 				}
+			},
+		
+			_settings, 
+			_layout, 
+			_elements, 
+			_controlbar, 
+			_id,
+			_duration,
+			
+			_toggles = {
+				play: "pause",
+				mute: "unmute",
+				fullscreen: "normalscreen"
+			},
+			
+			_toggleStates = {
+				play: false,
+				mute: false,
+				fullscreen: false
+			},
+			
+			_buttonMapping = {
+				play: _play,
+				mute: _mute,
+				fullscreen: _fullscreen,
+				next: _next,
+				prev: _prev
+			},
+			
+			_sliderMapping = {
+				time: _seek,
+				volume: _volume
 			}
-		};
 		
-		var _settings, _layout, _elements;
 		
-		var _controlbar, _id;
-		
-		var _toggles = {
-			play: "pause",
-			mute: "unmute",
-			fullscreen: "normalscreen"
-		}
-		
-		var _toggleStates = {
-			play: false,
-			mute: false,
-			fullscreen: false
-		}
-		
-		var _buttonMapping = {
-			play: _play,
-			mute: _mute,
-			fullscreen: _fullscreen
-		};
 
 		function _init() {
 			_elements = {};
 			
 			_api = api;
 			
+
 			config = _utils.extend({}, config);
 			_id = _api.id + "_controlbar";
+			_duration = 0;
 
 			_controlbar = _createSpan();
 			_controlbar.id = _id;
 			_controlbar.className = "jwcontrolbar";
+
+			// Slider listeners
+			window.addEventListener('mousemove', _sliderMouseEvent, false);
+			window.addEventListener('mouseup', _sliderMouseEvent, false);
 
 			(new html5.skinloader(config.skin, function(skin) {
 				_api.skin = skin;
@@ -702,10 +952,78 @@ jwplayer.source = document.createElement("source");/**
 				_layout = (skin.controlbar.layout.left || skin.controlbar.layout.right || skin.controlbar.layout.center) ? skin.controlbar.layout : _defaults.layout;
 				_createStyles();
 				_buildControlbar();
-			}, function(err) { console.log(err); }));
-			
-			
+				_addEventListeners();
+			}, function(err) { _utils.log(err); }));
 		}
+		
+		function _addEventListeners() {
+			_api.addEventListener(jwplayer.events.JWPLAYER_MEDIA_TIME, _timeUpdated);
+			_api.addEventListener(jwplayer.events.JWPLAYER_PLAYER_STATE, _stateHandler);
+			_api.addEventListener(jwplayer.events.JWPLAYER_MEDIA_MUTE, _muteHandler);
+			_api.addEventListener(jwplayer.events.JWPLAYER_MEDIA_VOLUME, _volumeHandler);
+			_api.addEventListener(jwplayer.events.JWPLAYER_MEDIA_BUFFER, _bufferHandler);
+		}
+		
+		function _timeUpdated(evt) {
+			_duration = evt.duration;
+			
+			if (_elements.elapsed) {
+				_elements.elapsed.innerHTML = _utils.timeFormat(evt.position);
+			}
+			if (_elements.duration) {
+				_elements.duration.innerHTML = _utils.timeFormat(evt.duration);
+			}
+			if (evt.duration > 0) {
+				_setProgress(evt.position / evt.duration);
+			} else {
+				_setProgress(0);
+			}
+		}
+		
+		function _stateHandler(evt) {
+			switch (evt.newstate) {
+			case jwplayer.events.state.PLAYING:
+			case jwplayer.events.state.BUFFERING:
+				if (_elements['timeSliderThumb']) {
+					_elements['timeSliderThumb'].style.opacity = 1;
+				}
+				if (_elements["timeRail"]) {
+					_elements["timeRail"].className = "jwrail jwsmooth";
+				}
+				_toggleButton("play", true);
+				break;
+			case jwplayer.events.state.PAUSED:
+				if (!_dragging) {
+					_toggleButton("play", false);
+				}
+				break;
+			case jwplayer.events.state.IDLE:
+			case jwplayer.events.state.COMPLETED:
+				_toggleButton("play", false);
+				if (_elements['timeSliderThumb']) {
+					_elements['timeSliderThumb'].style.opacity = 0;
+				}
+				_setBuffer(0);
+				_timeUpdated({ position: 0, duration: 0});
+				if (_elements["timeRail"]) {
+					_elements["timeRail"].className = "jwrail";
+				}
+				break;
+			}
+		}
+		
+		function _muteHandler(evt) {
+			_toggleButton("mute", evt.mute);
+		}
+
+		function _volumeHandler(evt) {
+			_setVolume(evt.volume / 100);
+		}
+
+		function _bufferHandler(evt) {
+			_setBuffer(evt.bufferPercent / 100);
+		}
+
 
 		/**
 		 * Styles specific to this controlbar/skin
@@ -720,7 +1038,7 @@ jwplayer.source = document.createElement("source");/**
 	  			right: _settings.position == "OVER" ? _settings.margin : 0
 			});
 			
-			_style(_internalSelector(".text"), {
+			_style(_internalSelector(".jwtext"), {
 				font: _settings.fontsize + "px/" + _getSkinElement("background").height + "px " + _settings.font,
 				color: _settings.fontcolor,
 				'font-weight': _settings.fontweight,
@@ -746,7 +1064,7 @@ jwplayer.source = document.createElement("source");/**
 				position: JW_CSS_ABSOLUTE,
 				left: _getSkinElement('capLeft').width,
 				right: _getSkinElement('capRight').width,
-				'backgroundRepeat': "repeat-x"
+				'background-repeat': "repeat-x"
 			}, true);
 
 			_controlbar.style.opacity = 0;
@@ -783,9 +1101,9 @@ jwplayer.source = document.createElement("source");/**
 		function _buildImage(name, style, stretch, nocenter) {
 			var element = _createSpan();
 			//element.id = _createElementId(name);
-			element.className = name;
+			element.className = 'jw'+name;
 			
-			var center = nocenter ? "" : "center";
+			var center = nocenter ? " left center" : " center";
 
 			var skinElem = _getSkinElement(name);
 			element.innerHTML = "&nbsp;";
@@ -797,38 +1115,39 @@ jwplayer.source = document.createElement("source");/**
 			
 			if (stretch) {
 				newStyle = {
-					background: "url('" + skinElem.src + "') "+center+" repeat-x"
+					background: "url('" + skinElem.src + "') repeat-x " + center
 				};
 			} else {
 				newStyle = {
-					background: "url('" + skinElem.src + "') "+center+" no-repeat",
+					background: "url('" + skinElem.src + "') no-repeat" + center,
 					width: skinElem.width
 				};
 			}
 			
-			_style(_internalSelector('.'+name), _utils.extend(newStyle, style));
+			_style(_internalSelector('.jw'+name), _utils.extend(newStyle, style));
 			_elements[name] = element;
 			return element;
 		}
 
 		function _buildButton(name) {
+			if (!_getSkinElement(name + "Button").src) {
+				return null;
+			}
+			
 			var element = document.createElement("button");
 			//element.id = _createElementId(name);
-			element.className = name;
-			element.addEventListener("click", (function(name) { return function() { _buttonClickHandler(name) } })(name));
+			element.className = 'jw'+name;
+			element.addEventListener("click", _buttonClickHandler(name), false);
 
 			var outSkin = _getSkinElement(name + "Button");
 			var overSkin = _getSkinElement(name + "ButtonOver");
 			
 			element.innerHTML = "&nbsp;";
-			if (!_getSkinElement(name + "Button").src) {
-				return element;
-			}
 			
-			_buttonStyle(_internalSelector('.'+name), outSkin, overSkin);
+			_buttonStyle(_internalSelector('.jw'+name), outSkin, overSkin);
 			var toggle = _toggles[name];
 			if (toggle) {
-				_buttonStyle(_internalSelector('.'+name+'.toggle'), _getSkinElement(toggle+"Button"), _getSkinElement(toggle+"ButtonOver"));
+				_buttonStyle(_internalSelector('.jw'+name+'.jwtoggle'), _getSkinElement(toggle+"Button"), _getSkinElement(toggle+"ButtonOver"));
 			}
 
 			_elements[name] = element;
@@ -854,8 +1173,10 @@ jwplayer.source = document.createElement("source");/**
 		}
 		
 		function _buttonClickHandler(name) {
-			if (_buttonMapping[name]) {
-				_buttonMapping[name]();
+			return function() {
+				if (_buttonMapping[name]) {
+					_buttonMapping[name]();
+				}
 			}
 		}
 		
@@ -866,31 +1187,55 @@ jwplayer.source = document.createElement("source");/**
 			} else {
 				_api.jwPlay();
 			}
-			_toggleButton("play");
 		}
 		
 		function _mute() {
-			_toggleButton("mute");
+			_api.jwSetMute();
+		}
+		
+		function _volume(pct) {
+			if (pct < 0.1) pct = 0;
+			if (pct > 0.9) pct = 1;
+			_api.jwSetVolume(pct * 100)
+		}
+		
+		function _seek(pct) {
+			if (!_dragging) {
+				_api.jwPlay();
+			}
+			_api.jwSeek(pct * _duration);
 		}
 		
 		function _fullscreen() {
 			_toggleButton("fullscreen");
 		}
-		
-		function _toggleButton(name) {
-			_elements[name].className = name + (_toggleStates[name] ? "" : " toggle");
-			_toggleStates[name] ^= true;
+
+		function _next() {
+			_api.jwPlaylistNext();
+		}
+
+		function _prev() {
+			_api.jwPlaylistNext();
+		}
+
+		function _toggleButton(name, state) {
+			if (!_utils.exists(state)) {
+				state = !_toggleStates[name];
+			}
+			if (_elements[name]) {
+				_elements[name].className = 'jw' + name + (state ? " jwtoggle" : "");
+			}
+			_toggleStates[name] = state;
 		}
 		
 		function _createElementId(name) {
-			//return (_id + "_" + name + Math.round(Math.random()*10000000));
 			return _id + "_" + name;
 		}
 		
 		function _buildText(name, style) {
 			var element = _createSpan();
 			element.id = _createElementId(name); 
-			element.className = "text " + name;
+			element.className = "jwtext jw" + name;
 			
 			var css = {};
 			
@@ -900,7 +1245,7 @@ jwplayer.source = document.createElement("source");/**
 				css['background-size'] = "100% " + _getSkinElement("background").height + "px";
 			}
 
-			_style(_internalSelector('.'+name), css);
+			_style(_internalSelector('.jw'+name), css);
 			element.innerHTML = "00:00";
 			_elements[name] = element;
 			return element;
@@ -909,7 +1254,7 @@ jwplayer.source = document.createElement("source");/**
 		function _buildDivider(divider) {
 			if (divider.width) {
 				var element = _createSpan();
-				element.className = "blankDivider";
+				element.className = "jwblankDivider";
 				_style(element, {
 					width: parseInt(divider.width)
 				});
@@ -923,40 +1268,25 @@ jwplayer.source = document.createElement("source");/**
 		
 		function _buildSlider(name) {
 			var slider = _createSpan();
-			//slider.id = _createElementId(name);
-			slider.className = "slider " + name;
+			slider.className = "jwslider jw" + name;
 
-			var rail = _createSpan();
-			rail.className = "rail";
-
-			var railElements = ['Rail', 'Buffer', 'Progress'];
-
-			for (var i=0; i<railElements.length; i++) {
-				var element = _buildImage(name + "Slider" + railElements[i], null, true, (name=="volume"));
-				if (element) {
-					element.className += " stretch";
-					rail.appendChild(element);
-				}
-			}
-			
-			var thumb = _buildImage(name + "SliderThumb");
-			if (thumb) {
-				thumb.className += " thumb";
-				rail.appendChild(thumb);
-			}
 
 			var capLeft = _buildImage(name + "SliderCapLeft");
 			var capRight = _buildImage(name + "SliderCapRight");
-			if (capRight) capRight.className += " capRight";
+			if (capRight) capRight.className += " jwcapRight";
 
+			var rail = _buildSliderRail(name);
+			
 			if (capLeft) slider.appendChild(capLeft);
 			slider.appendChild(rail);
 			if (capLeft) slider.appendChild(capRight);
 
-			_style(_internalSelector("." + name + " .rail"), {
+			_style(_internalSelector(".jw" + name + " .jwrail"), {
 				left: _getSkinElement(name+"SliderCapLeft").width,
 				right: _getSkinElement(name+"SliderCapRight").width,
 			});
+
+			_elements[name] = slider;
 
 			if (name == "time") {
 				_styleTimeSlider(slider);
@@ -966,14 +1296,92 @@ jwplayer.source = document.createElement("source");/**
 				_styleVolumeSlider(slider);
 			}
 
-			_elements[name] = slider;
 			
-		return slider;
+			return slider;
 		}
+		
+		function _buildSliderRail(name) {
+			var rail = _createSpan();
+			rail.className = "jwrail jwsmooth";
+
+			var railElements = ['Rail', 'Buffer', 'Progress'];
+
+			for (var i=0; i<railElements.length; i++) {
+				var element = _buildImage(name + "Slider" + railElements[i], null, true, (name=="volume"));
+				if (element) {
+					element.className += " jwstretch";
+					rail.appendChild(element);
+				}
+			}
+			
+			var thumb = _buildImage(name + "SliderThumb");
+			if (thumb) {
+				thumb.className += " jwthumb";
+				thumb.style.opacity = 0;
+				rail.appendChild(thumb);
+			}
+			
+			rail.addEventListener('mousedown', _sliderMouseDown(name), false);
+			
+			_elements[name+'Rail'] = rail;
+			
+			return rail;
+		}
+		
+		var _dragging;
+		
+		function _sliderMouseDown(name) {
+			return (function(evt) {
+				if (evt.button != 0)
+					return;
+				
+				_elements[name+'Rail'].className = "jwrail";
+				
+				if (name == "time") {
+					if (_api.jwGetState() != jwplayer.events.state.IDLE) {
+						_api.jwPause();
+						_dragging = name;
+					}
+				} else {
+					_dragging = name;
+				}
+			});
+		}
+		
+		var _lastSeekTime = 0;
+		
+		function _sliderMouseEvent(evt) {
+			if (!_dragging || evt.button != 0) {
+				return;
+			}
+			
+			var rail = _elements[_dragging].getElementsByClassName('jwrail')[0],
+				railRect = _utils.getBoundingClientRect(rail),
+				pct = (evt.clientX - railRect.left) / railRect.width;
+			
+			if (evt.type == 'mouseup') {
+				var name = _dragging;
+				_elements[name+'Rail'].className = "jwrail jwsmooth";
+				_dragging = null;
+				_sliderMapping[name](pct);
+			} else {
+				if (_dragging == "time") {
+					_setProgress(pct);
+				} else {
+					_setVolume(pct);
+				}
+				var currentTime = (new Date()).getTime();
+				if (currentTime - _lastSeekTime > 500) {
+					_lastSeekTime = currentTime;
+					_sliderMapping[_dragging](pct);
+				}
+			}
+		}
+
 	
 		function _styleTimeSlider(slider) {
 			if (_elements['timeSliderThumb']) {
-				_style(_internalSelector(".timeSliderThumb"), {
+				_style(_internalSelector(".jwtimeSliderThumb"), {
 					'margin-left': (_getSkinElement("timeSliderThumb").width/-2)
 				});
 			}
@@ -988,7 +1396,7 @@ jwplayer.source = document.createElement("source");/**
 				capRightWidth = _getSkinElement("volumeSliderCapRight").width,
 				railWidth = _getSkinElement("volumeSliderRail").width;
 			
-			_style(_internalSelector(".volume"), {
+			_style(_internalSelector(".jwvolume"), {
 				width: (capLeftWidth + railWidth + capRightWidth)
 			});
 		}
@@ -1003,7 +1411,7 @@ jwplayer.source = document.createElement("source");/**
 			_controlbar.appendChild(_groups.center);
 			_controlbar.appendChild(_groups.right);
 			
-			_style(_internalSelector(".right"), {
+			_style(_internalSelector(".jwright"), {
 				right: _getSkinElement("capRight").width
 			});
 		}
@@ -1011,7 +1419,7 @@ jwplayer.source = document.createElement("source");/**
 		
 		function _buildGroup(pos) {
 			var elem = _createSpan();
-			elem.className = "group " + pos;
+			elem.className = "jwgroup jw" + pos;
 			_groups[pos] = elem;
 			if (_layout[pos]) {
 				_buildElements(_layout[pos], _groups[pos]);
@@ -1030,9 +1438,9 @@ jwplayer.source = document.createElement("source");/**
 		}
 
 		var _resize = this.resize = function(width, height) {
-			_style(_internalSelector('.group.center'), {
-				left: _utils.parseDimension(_groups.left.offsetWidth) + _getSkinElement("capLeft").width,
-				right: _utils.parseDimension(_groups.right.offsetWidth) + _getSkinElement("capRight").width
+			_style(_internalSelector('.jwgroup.jwcenter'), {
+				left: Math.round(_utils.parseDimension(_groups.left.offsetWidth) + _getSkinElement("capLeft").width),
+				right: Math.round(_utils.parseDimension(_groups.right.offsetWidth) + _getSkinElement("capRight").width)
 			});
 		}
 		
@@ -1042,29 +1450,31 @@ jwplayer.source = document.createElement("source");/**
 		
 		var _setBuffer = this.setBuffer = function(pct) {
 			pct = Math.min(Math.max(0, pct), 1);
-			_elements['timeSliderBuffer'].style.width = 100 * pct + "%";
+			_elements['timeSliderBuffer'].style.width = pct * _utils.getBoundingClientRect(_elements['timeSliderRail']).width + "px";
 		}
 
 		function _sliderPercent(name, pct, fixedWidth) {
+			if (!_elements[name]) return;
+
 			pct = Math.min(Math.max(0, pct), 1);
 			
 			var progress = _elements[name+'SliderProgress'];
 			var thumb = _elements[name+'SliderThumb'];
-			
+			var width = pct * _utils.getBoundingClientRect(_elements[name+'SliderRail']).width + "px";
+		
 			if (progress) {
-				progress.style.width = 100 * pct + "%";
+				progress.style.width = width; 
 			}
 			if (thumb) {
-				thumb.style.left = pct * _utils.parseDimension(_elements[name+'SliderRail'].clientWidth) + "px";
-				//thumb.style.opacity = 0.5; //(pct <= 0 || pct >= 1) ? 0 : 1;
+				thumb.style.left = width;
 			}
 		}
 		
-		var _setVolume = this.setVolume = function(pct) {
+		function _setVolume (pct) {
 			_sliderPercent('volume', pct, true);
 		}
 
-		var _setProgress = this.setProgress = function(pct) {
+		function _setProgress(pct) {
 			_sliderPercent('time', pct);
 		}
 
@@ -1104,74 +1514,60 @@ jwplayer.source = document.createElement("source");/**
   			'user-select': JW_CSS_NONE,
   			'user-drag': JW_CSS_NONE
   		});
-  	    _style(CB_CLASS+' .group', {
+  	    _style(CB_CLASS+' .jwgroup', {
   	    	display: JW_CSS_INLINE
   	    });
-  	    _style(CB_CLASS+' span, '+CB_CLASS+' .group button,'+CB_CLASS+' .left', {
+  	    _style(CB_CLASS+' span, '+CB_CLASS+' .jwgroup button,'+CB_CLASS+' .jwleft', {
   	    	position: JW_CSS_RELATIVE,
   			'float': JW_CSS_LEFT
   	    });
-		_style(CB_CLASS+' .right', {
-			position: JW_CSS_RELATIVE,
-			'float': JW_CSS_RIGHT
+		_style(CB_CLASS+' .jwright', {
+			position: JW_CSS_ABSOLUTE
 		});
-  	    _style(CB_CLASS+' .center', {
-  	    	position: JW_CSS_ABSOLUTE,
-  			'float': JW_CSS_LEFT
+  	    _style(CB_CLASS+' .jwcenter', {
+  	    	position: JW_CSS_ABSOLUTE
  	    });
   	    _style(CB_CLASS+' button', {
   	    	display: JW_CSS_INLINE_BLOCK,
   	    	height: JW_CSS_100PCT,
   	    	border: JW_CSS_NONE,
   	    	cursor: 'pointer',
-  	    	'-webkit-transition': 'background .5s',
-  	    	'-moz-transition': 'background .5s',
-  	    	'-o-transition': 'background 1s'
+  	    	'-webkit-transition': 'background-image .25s',
+  	    	'-moz-transition': 'background-image .25s',
+  	    	'-o-transition': 'background-image .25s'
   	    });
-  	    _style(CB_CLASS+' button:hover', {
-  	    	'-webkit-transition': 'background 0s',
-  	    	'-moz-transition': 'background 0s',
-  	    	'-o-transition': 'background 0s'
-  	    });
-  	    _style(CB_CLASS+' .capRight', { 
+  	    _style(CB_CLASS+' .jwcapRight', { 
 			right: 0,
 			position: JW_CSS_ABSOLUTE
 		});
-  	    _style(CB_CLASS+' .time,' + CB_CLASS + ' .group span.stretch', {
+  	    _style(CB_CLASS+' .jwtime,' + CB_CLASS + ' .jwgroup span.jwstretch', {
   	    	position: JW_CSS_ABSOLUTE,
   	    	height: JW_CSS_100PCT,
   	    	width: JW_CSS_100PCT,
   	    	left: 0
   	    });
-  	    _style(CB_CLASS+' .rail,' + CB_CLASS + ' .thumb', {
+  	    _style(CB_CLASS+' .jwrail,' + CB_CLASS + ' .jwthumb', {
   	    	position: JW_CSS_ABSOLUTE,
   	    	height: JW_CSS_100PCT,
   	    	cursor: 'pointer'
   	    });
-  	    _style(CB_CLASS + ' .timeSliderThumb', {
-  	    	'-webkit-transition': 'left .5s linear 0s, opacity .5s ease .5s',
-  	    	'-moz-transition': 'left .5s linear 0s, opacity .5s ease .5s'
-  	    	//-o-transition: 'left .5s linear 0s, opacity .5s ease .5s' -- this produces console errors in Opera
-  	    });	  	    
-  	    _style(CB_CLASS + ' .timeSliderProgress,' + CB_CLASS + ' .timeSliderBuffer', {
-  	    	'-webkit-transition': 'width .5s linear',
-  	    	'-moz-transition': 'width .5s linear',
-  	    	'-o-transition': 'width .5s linear'
+  	    _style(CB_CLASS + ' .jwtime .jwsmooth span', {
+  	    	'-webkit-transition': JW_CSS_SMOOTH_EASE,
+  	    	'-moz-transition': JW_CSS_SMOOTH_EASE,
+  	    	'-o-transition': JW_CSS_SMOOTH_EASE
   	    });
-  	    _style(CB_CLASS + ' .volume', {
-  	    	display: JW_CSS_INLINE_BLOCK
-  	    });
-  	    _style(CB_CLASS + ' .divider+.divider', {
+  	    _style(CB_CLASS + ' .jwdivider+.jwdivider', {
   	    	display: JW_CSS_NONE
   	    });
-  	    _style(CB_CLASS + ' .text', {
+  	    _style(CB_CLASS + ' .jwtext', {
 			padding: '0 5px',
-			textAlign: 'center'
+			'text-align': 'center'
 		});
 
 	}
 	
 	_generalStyles();
+	
 })(jwplayer.html5);/**
  * jwplayer.html5 API
  *
@@ -1179,23 +1575,40 @@ jwplayer.source = document.createElement("source");/**
  * @version 6.0
  */
 (function(html5) {
+	var _utils = jwplayer.utils;
+	
 	html5.controller = function(model, view) {
-		var _model, 
+		var _model = model, 
 			_view = view,
-			_video, _controlbar;
+			_video = model.video,
+			_debug = 'console',
+			_eventDispatcher = new jwplayer.events.eventdispatcher(_model.id, _debug);
 		
+		_utils.extend(this, _eventDispatcher);
+
 		function _init() {
-			_model = model;
-			_view = view;
-			_video = model.video;
-			_controlbar = view.controlbar;
+			_model.addGlobalListener(_forward);
+		}
+		
+		function _forward(evt) {
+			_eventDispatcher.sendEvent(evt.type, evt);
+		}
+
+		var file;
+		
+		this.load = function(item) {
+			if (_video.getTag().canPlayType("video/mp4")) {
+				file = "http://playertest.longtailvideo.com/bunny.mp4";		
+			} else if (_video.getTag().canPlayType("video/webm")) {
+				file = "http://playertest.longtailvideo.com/bunny.webm";		
+			} else {
+				file = "http://playertest.longtailvideo.com/bunny.ogv";		
+			}
 		}
 		
 		this.play = function() {
-			if (_video.getTag().canPlayType("video/mp4")) {
-				_video.load("http://content.bitsontherun.com/videos/nPripu9l-1ahmry41.mp4");		
-			} else {
-				_video.load("http://content.bitsontherun.com/videos/nPripu9l-1Lq5Mnwq.webm");		
+			if (_model.state == jwplayer.events.state.IDLE) {
+				_video.load(file);
 			}
 			_video.play();
 		}
@@ -1205,8 +1618,33 @@ jwplayer.source = document.createElement("source");/**
 		}
 
 		this.pause = function() {
-			_video.pause();
+			if (_model.state == jwplayer.events.state.PLAYING || _model.state == jwplayer.events.state.BUFFERING) {
+				_video.pause();
+			}
 		}
+
+		this.seek = function(pos) {
+			_video.seek(pos);
+		}
+		
+		this.volume = function(vol) {
+			_video.volume(vol);
+		}
+		
+		this.mute = function(state) {
+			if (!_utils.exists(state)) state = !_model.mute;
+			_video.mute(state);
+		}
+
+		this.prev = function() {
+		}
+
+		this.next = function() {
+		}
+		
+		this.item = function(item) {}
+		
+		this.fullscreen = function(state) {}
 
 		_init();
 	}
@@ -1250,35 +1688,78 @@ jwplayer.source = document.createElement("source");/**
 		
 		function _init() {
 			_model = {
+				id: "player",
 				video: new html5.video(document.createElement("video")),
-				settings: config
-			};
-		
-			_api.id = "player";
-			_api.settings = _model.settings;
-
-			_view = {
-				container: document.getElementById(_api.id),
-				controlbar: new html5.controlbar(_api, _model.settings)
+				settings: config,
+				volume: 0,
+				state: jwplayer.events.state.IDLE,
+				mute: false
 			};
 			
+			jwplayer.utils.extend(_model, new jwplayer.events.eventdispatcher());
+			_model.video.addGlobalListener(function(evt) {
+				switch (evt.type) {
+				case jwplayer.events.JWPLAYER_MEDIA_MUTE:
+					if (_model.mute == evt.mute) return;
+					_model.mute = evt.mute;
+					break;
+				case jwplayer.events.JWPLAYER_MEDIA_VOLUME:
+					if (_model.volume == evt.volume) return;
+					_model.volume = evt.volume;
+					break;
+				case jwplayer.events.JWPLAYER_PLAYER_STATE:
+					if (_model.state == evt.newstate) return;
+					_model.state = evt.newstate;
+				}
+				_model.sendEvent(evt.type, evt);
+			});
+		
+			_api.id = _model.id;
+			_api.settings = _model.settings;
+			
+			_view = {};
+			
 			_controller = new html5.controller(_model, _view);
+			_api.addEventListener = _controller.addEventListener;
+			_api.removeEventListener = _controller.removeEventListener;
+			
+			_view.container = document.getElementById(_api.id),
+			_view.controlbar = new html5.controlbar(_api, _model.settings)
+
 		
 			jwplayer.utils.appendStylesheet("#"+_api.id+" video", {
 				width: "100%",
 				height: "100%",
 				background: "#000",
-				display: "none"
+				opacity: 0,
+				'-webkit-transition': 'opacity .15s ease'
 			});
 			
 			_view.container.appendChild(_model.video.getTag());
 			_view.container.appendChild(_view.controlbar.getDisplayElement());
 			
+			_controller.load();
 		}
 		
 		this.jwPlay = function(){ _controller.play() };
 		this.jwPause = function(){ _controller.pause() };
 		this.jwStop = function(){ _controller.stop() };
+		this.jwSeek = function(pos){ _controller.seek(pos) };
+		this.jwSetVolume = function(vol){ _controller.volume(vol) };
+		this.jwSetMute = function(state){ _controller.mute(state) };
+		this.jwLoad = function(item) { _controller.load(item); }
+		this.jwPlaylistNext = function() { _controller.next(); }
+		this.jwPlaylistPrev = function() { _controller.prev(); }
+		this.jwPlaylistItem = function(item) { _controller.item(item); }
+		this.jwFullscreen = function(state) { _controller.fullscreen(state); }
+		
+		this.jwGetState = function(){ return _model.state };
+		this.jwGetVolume = function(){ return _model.volume };
+		this.jwGetMute = function(){ return _model.mute };
+		this.jwGetFullscreen = function(){ return false };
+
+
+		
 		
 		_init();
 	}
@@ -1540,134 +2021,235 @@ jwplayer.source = document.createElement("source");/**
  * @version 6.0
  */
 (function(jwplayerhtml5) {
-	
-  /** HTML5 video class * */
-  jwplayerhtml5.video = function(videotag) {
-	  
-	  var _mediaEvents = {
-		  "abort": _videoEventHandler,
-		  "canplay": _canPlayHandler,
-		  "canplaythrough": _videoEventHandler,
-		  "durationchange": _videoEventHandler,
-		  "emptied": _videoEventHandler,
-		  "ended": _videoEventHandler,
-		  "error": _errorHandler,
-		  "loadeddata": _videoEventHandler,
-		  "loadedmetadata": _videoEventHandler,
-		  "loadstart": _videoEventHandler,
-		  "pause": _videoEventHandler,
-		  "play": _videoEventHandler,
-		  "playing": _videoEventHandler,
-		  "progress": _videoEventHandler,
-		  "ratechange": _videoEventHandler,
-		  "readystatechange": _videoEventHandler,
-		  "seeked": _videoEventHandler,
-		  "seeking": _videoEventHandler,
-		  "stalled": _videoEventHandler,
-		  "suspend": _videoEventHandler,
-		  "timeupdate": _videoEventHandler,
-		  "volumechange": _videoEventHandler,
-		  "waiting": _videoEventHandler
-	  };
-	  
-	  // Reference to the video tag
-	  var _video;
-	  // Whether seeking is ready yet
-	  var _canSeek;
-	  // If we should seek on canplay
-	  var _delayedSeek;
-	  
-	  // Constructor
-	  function _init(videotag) {
-		_video = videotag;
-		_setupListeners();
-	  }
-	  
-	  function _setupListeners() {
-		  for (var evt in _mediaEvents) {
-			  _video.addEventListener(evt, _mediaEvents[evt]);
-		  }
-	  }
-	  
-	  function _videoEventHandler(evt) {
-		  console.log("%s %o (%s,%s)", evt.type, evt, _bufferedStart(), _bufferedEnd());
-	  }
 
-	  function _canPlayHandler(evt) {
-		  _canSeek = true;
-		  _videoEventHandler(evt);
-		  if (_delayedSeek > 0) {
-			  _seek(_delayedSeek);
-		  }
-	  }
-	  
-	  function _errorHandler(evt) {
-		  console.log("Error: %o", _video.error);
-		  _videoEventHandler(evt);
-	  }
+	var _utils = jwplayer.utils;
 
-	  function _bufferedStart() {
-		 if (_video.buffered.length > 0)
-			 return _video.buffered.start(0);
-		 else
-			 return 0;
-	  }
-	  
-	  function _bufferedEnd() {
-		  if (_video.buffered.length > 0)
-			 return Math.ceil(_video.buffered.end(_video.buffered.length-1));
-		  else
-			 return 0;
-	  }
+	/** HTML5 video class * */
+	jwplayerhtml5.video = function(videotag) {
 
-	  var _file;
-	  
-	  this.load = function(videoURL) {
-		  _canSeek = false;
-		  _delayedSeek = 0;
-		  _file = videoURL;
- 		  _video.src = _file;
-		  _video.load();
-		  //_video.pause();
-	  }
-	  
-	  this.stop = function() {
-		  //_video.src = "";
-		  _video.removeAttribute("src");
-		  _video.load();
-		  _video.style.display = "none";
-	  }
-	  
-	  this.play = function() {
-		  _video.style.display = "block";
-		  _video.play();
-	  }
+		var _mediaEvents = {
+			"abort" : _generalHandler,
+			"canplay" : _canPlayHandler,
+			"canplaythrough" : _generalHandler,
+			"durationchange" : _durationUpdateHandler,
+			"emptied" : _generalHandler,
+			"ended" : _generalHandler,
+			"error" : _errorHandler,
+			"loadeddata" : _generalHandler,
+			"loadedmetadata" : _generalHandler,
+			"loadstart" : _generalHandler,
+			"pause" : _playHandler,
+			"play" : _playHandler,
+			"playing" : _generalHandler,
+			"progress" : _generalHandler,
+			"ratechange" : _generalHandler,
+			"readystatechange" : _generalHandler,
+			"seeked" : _generalHandler,
+			"seeking" : _generalHandler,
+			"stalled" : _generalHandler,
+			"suspend" : _generalHandler,
+			"timeupdate" : _timeUpdateHandler,
+			"volumechange" : _volumeHandler,
+			"waiting" : _generalHandler
+		},
 
-	  this.pause = function() {
-		  _video.pause();
-	  }
+		// Reference to the video tag
+		_video,
+		// Whether seeking is ready yet
+		_canSeek,
+		// If we should seek on canplay
+		_delayedSeek,
+		// Current media state
+		_state = jwplayer.events.state.IDLE,
+		// Save the volume state before muting
+		_lastVolume = 0,
+		// Using setInterval to check buffered ranges
+		_bufferInterval = -1,
+		// Last sent buffer amount
+		_bufferPercent = -1,
+		// Event dispatcher
+		_eventDispatcher = new jwplayer.events.eventdispatcher();
 
-	  var _seek = this.seek = function(pos) {
-		  if (_canSeek) {
-			  _delayedSeek = 0;
-			  _video.play();
-			  _video.currentTime = pos;
-		  } else {
-			  _delayedSeek = pos;
-		  }
-	  }
+		_utils.extend(this, _eventDispatcher);
 
-	  // Provide access to video tag
-	  // TODO: remove
-	  this.getTag = function() {
-		  return videotag;
-	  }
-	  
-	  // Call constructor
-	  _init(videotag);
-	  
-  }
-  
+		// Constructor
+		function _init(videotag) {
+			_video = videotag;
+			_setupListeners();
+		}
+
+		function _setupListeners() {
+			for (var evt in _mediaEvents) {
+				_video.addEventListener(evt, _mediaEvents[evt], false);
+			}
+		}
+
+		function _sendEvent(type, data) {
+			_eventDispatcher.sendEvent(type, data);
+		}
+
+		
+		function _generalHandler(evt) {
+			//console.log("%s %o (%s,%s)", evt.type, evt);
+		}
+
+		function _durationUpdateHandler(evt) {
+			_duration = _video.duration;
+			_timeUpdateHandler();
+		}
+
+		function _timeUpdateHandler(evt) {
+			if (_state == jwplayer.events.state.PLAYING) {
+				_sendEvent(jwplayer.events.JWPLAYER_MEDIA_TIME, {
+					position : _video.currentTime,
+					duration : _duration
+				});
+				if (_video.currentTime >= _duration) {
+					_complete();
+				}
+			}
+		}
+
+		function _canPlayHandler(evt) {
+			_canSeek = true;
+			_generalHandler(evt);
+			if (_delayedSeek > 0) {
+				_seek(_delayedSeek);
+			}
+		}
+
+		function _playHandler(evt) {
+			if (_video.paused) {
+				_setState(jwplayer.events.state.PAUSED);
+			} else {
+				_setState(jwplayer.events.state.PLAYING);
+			}
+		}
+
+		function _errorHandler(evt) {
+			console.log("Error: %o", _video.error);
+			_generalHandler(evt);
+		}
+
+		this.load = function(videoURL) {
+			_canSeek = false;
+			_delayedSeek = 0;
+			_duration = 0;
+			_video.src = videoURL;
+			_video.load();
+			
+			_bufferInterval = setInterval(_sendBufferUpdate, 100);
+			// _video.pause();
+		}
+
+		var _stop = this.stop = function() {
+			// _video.src = "";
+			_video.removeAttribute("src");
+			_video.load();
+			_video.style.opacity = 0;
+			clearInterval(_bufferInterval);
+			_setState(jwplayer.events.state.IDLE);
+		}
+
+		this.play = function() {
+			_video.style.opacity = 1;
+			_video.play();
+		}
+
+		this.pause = function() {
+			_video.pause();
+		}
+
+		var _seek = this.seek = function(pos) {
+			if (_canSeek) {
+				_delayedSeek = 0;
+				// _video.play();
+				_video.currentTime = pos;
+			} else {
+				_delayedSeek = pos;
+			}
+		}
+
+		var _volume = this.volume = function(vol) {
+			if (_video.muted) _video.muted = false;
+			_video.volume = vol / 100;
+
+		}
+		
+		function _volumeHandler(evt) {
+			_sendEvent(jwplayer.events.JWPLAYER_MEDIA_VOLUME, {
+				volume: Math.round(_video.volume * 100)
+			});
+			_sendEvent(jwplayer.events.JWPLAYER_MEDIA_MUTE, {
+				mute: _video.muted
+			});
+		}
+		
+		this.mute = function(state) {
+			if (!_utils.exists(state)) state = !_video.mute;
+			if (state) {
+				_lastVolume = _video.volume * 100;
+				_volume(0);
+				_video.muted = true;
+			} else {
+				_volume(_lastVolume);
+			}
+		}
+
+		/** Set the current player state * */
+		function _setState(newstate) {
+			// Handles a FF 3.5 issue
+			if (newstate == jwplayer.events.state.PAUSED && _state == jwplayer.events.state.IDLE) {
+				return;
+			}
+
+			if (_state != newstate) {
+				var oldstate = _state;
+				_state = newstate;
+				_sendEvent(jwplayer.events.JWPLAYER_PLAYER_STATE, {
+					oldstate : oldstate,
+					newstate : newstate
+				});
+			}
+		}
+		
+		function _sendBufferUpdate() {
+			var newBuffer = _getBuffer();
+			if (newBuffer != _bufferPercent) {
+				_bufferPercent = newBuffer;
+				_sendEvent(jwplayer.events.JWPLAYER_MEDIA_BUFFER, {
+					bufferPercent: Math.round(_bufferPercent * 100)
+				});
+			}
+			if (newBuffer >= 1) {
+				clearInterval(_bufferInterval);
+			}
+		}
+		
+		function _getBuffer() {
+			if (_video.buffered.length == 0 || _video.duration == 0)
+				return 0;
+			else
+				return _video.buffered.end(_video.buffered.length-1) / _video.duration;
+		}
+		
+
+		function _complete() {
+			_stop();
+			_sendEvent(jwplayer.events.JWPLAYER_MEDIA_COMPLETE);
+		}
+		
+		// Provide access to video tag
+		// TODO: remove
+		this.getTag = function() {
+			return videotag;
+		}
+
+		// Call constructor
+		_init(videotag);
+
+	}
+
 })(jwplayer.html5);/**
  * jwplayer.html5 namespace
  *
