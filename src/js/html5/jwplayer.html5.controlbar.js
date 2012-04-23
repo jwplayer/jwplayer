@@ -32,7 +32,7 @@
 	/** HTML5 Controlbar class **/
 	html5.controlbar = function(api, config) {
 		var _api,
-
+			_skin,
 			_defaults = {
 				backgroundcolor : "",
 				margin : 10,
@@ -114,6 +114,7 @@
 			_controlbar, 
 			_id,
 			_duration,
+			_currentVolume,
 			
 			_toggles = {
 				play: "pause",
@@ -146,7 +147,6 @@
 			_elements = {};
 			
 			_api = api;
-			
 
 			config = _utils.extend({}, config);
 			_id = _api.id + "_controlbar";
@@ -160,22 +160,21 @@
 			window.addEventListener('mousemove', _sliderMouseEvent, false);
 			window.addEventListener('mouseup', _sliderMouseEvent, false);
 
-			(new html5.skinloader(config.skin, function(skin) {
-				_api.skin = skin;
-				_settings = _utils.extend({}, _defaults, _api.skin.controlbar.settings, _api.settings.controlbar);
-				_layout = (skin.controlbar.layout.left || skin.controlbar.layout.right || skin.controlbar.layout.center) ? skin.controlbar.layout : _defaults.layout;
-				_createStyles();
-				_buildControlbar();
-				_addEventListeners();
-			}, function(err) { _utils.log(err); }));
+			_skin = _api.skin;
+			
+			_settings = _utils.extend({}, _defaults, _skin.controlbar.settings, _api.settings.controlbar);
+			_layout = (_skin.controlbar.layout.left || _skin.controlbar.layout.right || _skin.controlbar.layout.center) ? _skin.controlbar.layout : _defaults.layout;
+			_createStyles();
+			_buildControlbar();
+			_addEventListeners();
 		}
 		
 		function _addEventListeners() {
-			_api.addEventListener(jwplayer.events.JWPLAYER_MEDIA_TIME, _timeUpdated);
-			_api.addEventListener(jwplayer.events.JWPLAYER_PLAYER_STATE, _stateHandler);
-			_api.addEventListener(jwplayer.events.JWPLAYER_MEDIA_MUTE, _muteHandler);
-			_api.addEventListener(jwplayer.events.JWPLAYER_MEDIA_VOLUME, _volumeHandler);
-			_api.addEventListener(jwplayer.events.JWPLAYER_MEDIA_BUFFER, _bufferHandler);
+			_api.jwAddEventListener(jwplayer.events.JWPLAYER_MEDIA_TIME, _timeUpdated);
+			_api.jwAddEventListener(jwplayer.events.JWPLAYER_PLAYER_STATE, _stateHandler);
+			_api.jwAddEventListener(jwplayer.events.JWPLAYER_MEDIA_MUTE, _muteHandler);
+			_api.jwAddEventListener(jwplayer.events.JWPLAYER_MEDIA_VOLUME, _volumeHandler);
+			_api.jwAddEventListener(jwplayer.events.JWPLAYER_MEDIA_BUFFER, _bufferHandler);
 		}
 		
 		function _timeUpdated(evt) {
@@ -228,10 +227,12 @@
 		
 		function _muteHandler(evt) {
 			_toggleButton("mute", evt.mute);
-		}
+			_setVolume(evt.mute ? 0 : _currentVolume)
+ 		}
 
 		function _volumeHandler(evt) {
-			_setVolume(evt.volume / 100);
+			_currentVolume = evt.volume / 100;
+			_setVolume(_currentVolume);
 		}
 
 		function _bufferHandler(evt) {
@@ -405,12 +406,14 @@
 		
 		function _mute() {
 			_api.jwSetMute();
+			_muteHandler({mute:_toggleStates.mute});
 		}
 		
 		function _volume(pct) {
 			if (pct < 0.1) pct = 0;
 			if (pct > 0.9) pct = 1;
-			_api.jwSetVolume(pct * 100)
+			_api.jwSetVolume(pct * 100);
+			_setVolume(pct);
 		}
 		
 		function _seek(pct) {
@@ -692,11 +695,9 @@
 			_sliderPercent('time', pct);
 		}
 
-		this.getSkin = function() { return _api.skin; }
-		
 		function _getSkinElement(name) {
-			if (_api.skin.controlbar.elements[name]) {
-				return _api.skin.controlbar.elements[name];
+			if (_skin.controlbar.elements[name]) {
+				return _skin.controlbar.elements[name];
 			} else {
 				return {
 					width: 0,

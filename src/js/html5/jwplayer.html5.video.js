@@ -6,7 +6,7 @@
  */
 (function(jwplayerhtml5) {
 
-	var _utils = jwplayer.utils;
+	var _jw = jwplayer, _utils = _jw.utils, _events = _jw.events, _states = _events.state;
 
 	/** HTML5 video class * */
 	jwplayerhtml5.video = function(videotag) {
@@ -44,7 +44,7 @@
 		// If we should seek on canplay
 		_delayedSeek,
 		// Current media state
-		_state = jwplayer.events.state.IDLE,
+		_state = _states.IDLE,
 		// Save the volume state before muting
 		_lastVolume = 0,
 		// Using setInterval to check buffered ranges
@@ -52,7 +52,7 @@
 		// Last sent buffer amount
 		_bufferPercent = -1,
 		// Event dispatcher
-		_eventDispatcher = new jwplayer.events.eventdispatcher();
+		_eventDispatcher = new _events.eventdispatcher();
 
 		_utils.extend(this, _eventDispatcher);
 
@@ -83,8 +83,8 @@
 		}
 
 		function _timeUpdateHandler(evt) {
-			if (_state == jwplayer.events.state.PLAYING) {
-				_sendEvent(jwplayer.events.JWPLAYER_MEDIA_TIME, {
+			if (_state == _states.PLAYING) {
+				_sendEvent(_events.JWPLAYER_MEDIA_TIME, {
 					position : _video.currentTime,
 					duration : _duration
 				});
@@ -96,7 +96,7 @@
 
 		function _canPlayHandler(evt) {
 			_canSeek = true;
-			_generalHandler(evt);
+			_sendEvent(_events.JWPLAYER_MEDIA_BUFFER_FULL);
 			if (_delayedSeek > 0) {
 				_seek(_delayedSeek);
 			}
@@ -104,9 +104,9 @@
 
 		function _playHandler(evt) {
 			if (_video.paused) {
-				_setState(jwplayer.events.state.PAUSED);
+				_setState(_states.PAUSED);
 			} else {
-				_setState(jwplayer.events.state.PLAYING);
+				_setState(_states.PLAYING);
 			}
 		}
 
@@ -132,7 +132,7 @@
 			_video.load();
 			_video.style.opacity = 0;
 			clearInterval(_bufferInterval);
-			_setState(jwplayer.events.state.IDLE);
+			_setState(_states.IDLE);
 		}
 
 		this.play = function() {
@@ -161,10 +161,10 @@
 		}
 		
 		function _volumeHandler(evt) {
-			_sendEvent(jwplayer.events.JWPLAYER_MEDIA_VOLUME, {
+			_sendEvent(_events.JWPLAYER_MEDIA_VOLUME, {
 				volume: Math.round(_video.volume * 100)
 			});
-			_sendEvent(jwplayer.events.JWPLAYER_MEDIA_MUTE, {
+			_sendEvent(_events.JWPLAYER_MEDIA_MUTE, {
 				mute: _video.muted
 			});
 		}
@@ -183,14 +183,14 @@
 		/** Set the current player state * */
 		function _setState(newstate) {
 			// Handles a FF 3.5 issue
-			if (newstate == jwplayer.events.state.PAUSED && _state == jwplayer.events.state.IDLE) {
+			if (newstate == _states.PAUSED && _state == _states.IDLE) {
 				return;
 			}
 
 			if (_state != newstate) {
 				var oldstate = _state;
 				_state = newstate;
-				_sendEvent(jwplayer.events.JWPLAYER_PLAYER_STATE, {
+				_sendEvent(_events.JWPLAYER_PLAYER_STATE, {
 					oldstate : oldstate,
 					newstate : newstate
 				});
@@ -201,7 +201,7 @@
 			var newBuffer = _getBuffer();
 			if (newBuffer != _bufferPercent) {
 				_bufferPercent = newBuffer;
-				_sendEvent(jwplayer.events.JWPLAYER_MEDIA_BUFFER, {
+				_sendEvent(_events.JWPLAYER_MEDIA_BUFFER, {
 					bufferPercent: Math.round(_bufferPercent * 100)
 				});
 			}
@@ -220,7 +220,7 @@
 
 		function _complete() {
 			_stop();
-			_sendEvent(jwplayer.events.JWPLAYER_MEDIA_COMPLETE);
+			_sendEvent(_events.JWPLAYER_MEDIA_COMPLETE);
 		}
 		
 		// Provide access to video tag

@@ -5,23 +5,30 @@
  * @version 6.0
  */
 (function(html5) {
-	var _utils = jwplayer.utils;
+	var _jw = jwplayer, 
+		_utils = _jw.utils, 
+		_events = _jw.events, 
+		_states = _events.state;
 	
-	html5.controller = function(model, view) {
+	html5.controller = function(model) {
 		var _model = model, 
-			_view = view,
-			_video = model.video,
+			_video = model.getVideo(),
 			_debug = 'console',
-			_eventDispatcher = new jwplayer.events.eventdispatcher(_model.id, _debug);
+			_eventDispatcher = new _events.eventdispatcher(_model.id, _debug);
 		
 		_utils.extend(this, _eventDispatcher);
 
 		function _init() {
 			_model.addGlobalListener(_forward);
+			_model.addEventListener(_events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
 		}
 		
 		function _forward(evt) {
 			_eventDispatcher.sendEvent(evt.type, evt);
+		}
+		
+		function _bufferFullHandler(evt) {
+			_video.play();
 		}
 
 		var file;
@@ -37,10 +44,11 @@
 		}
 		
 		this.play = function() {
-			if (_model.state == jwplayer.events.state.IDLE) {
+			if (_model.state == _states.IDLE) {
 				_video.load(file);
+			} else if (_model.state == _states.PAUSED) {
+				_video.play();
 			}
-			_video.play();
 		}
 
 		this.stop = function() {
@@ -48,7 +56,7 @@
 		}
 
 		this.pause = function() {
-			if (_model.state == jwplayer.events.state.PLAYING || _model.state == jwplayer.events.state.BUFFERING) {
+			if (_model.state == _states.PLAYING || _model.state == _states.BUFFERING) {
 				_video.pause();
 			}
 		}
