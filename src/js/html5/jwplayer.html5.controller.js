@@ -13,8 +13,8 @@
 	html5.controller = function(model) {
 		var _model = model, 
 			_video = model.getVideo(),
-			_debug = 'console',
-			_eventDispatcher = new _events.eventdispatcher(_model.id, _debug);
+//			_debug = 'console',
+			_eventDispatcher = new _events.eventdispatcher(_model.id);
 		
 		_utils.extend(this, _eventDispatcher);
 
@@ -40,6 +40,9 @@
 				file = "http://playertest.longtailvideo.com/bunny.webm";		
 			} else {
 				file = "http://playertest.longtailvideo.com/bunny.ogv";		
+			}
+			if (_utils.isMobile()) {
+				_video.load(file);
 			}
 		}
 		
@@ -82,8 +85,6 @@
 		
 		this.item = function(item) {}
 		
-		this.fullscreen = function(state) {}
-
 		_init();
 	}
 })(jwplayer.html5);

@@ -4,9 +4,12 @@
  * @author pablo
  * @version 6.0
  */
-(function(html5) {
+(function(jwplayer) {
 	
-	var _utils = jwplayer.utils, 
+	var _html5 = jwplayer.html5,
+		_utils = jwplayer.utils,
+		_events = jwplayer.events,
+		_states = jwplayer.events.state,
 		_style = _utils.appendStylesheet,
 
 		/** Controlbar element types **/
@@ -25,12 +28,12 @@
 		JW_CSS_LEFT = "left",
 		JW_CSS_RIGHT = "right",
 		JW_CSS_100PCT = "100%",
-		JW_CSS_SMOOTH_EASE = "width .25s linear 0s, left .25s linear 0s, opacity .25s ease 0s"
+		JW_CSS_SMOOTH_EASE = "width .25s linear, left .25s linear, opacity .25s, background .25s"
 		
 		CB_CLASS = '.jwcontrolbar';
 	
 	/** HTML5 Controlbar class **/
-	html5.controlbar = function(api, config) {
+	_html5.controlbar = function(api, config) {
 		var _api,
 			_skin,
 			_defaults = {
@@ -103,7 +106,7 @@
 						}, {
 							name: "fullscreen",
 							type: CB_BUTTON
-						} ]
+						}]
 					}
 				}
 			},
@@ -139,7 +142,7 @@
 			_sliderMapping = {
 				time: _seek,
 				volume: _volume
-			}
+			};
 		
 		
 
@@ -175,6 +178,7 @@
 			_api.jwAddEventListener(jwplayer.events.JWPLAYER_MEDIA_MUTE, _muteHandler);
 			_api.jwAddEventListener(jwplayer.events.JWPLAYER_MEDIA_VOLUME, _volumeHandler);
 			_api.jwAddEventListener(jwplayer.events.JWPLAYER_MEDIA_BUFFER, _bufferHandler);
+			_api.jwAddEventListener(jwplayer.events.JWPLAYER_FULLSCREEN, _fullscreenHandler);
 		}
 		
 		function _timeUpdated(evt) {
@@ -238,7 +242,10 @@
 		function _bufferHandler(evt) {
 			_setBuffer(evt.bufferPercent / 100);
 		}
-
+		
+		function _fullscreenHandler(evt) {
+			_toggleButton("fullscreen", evt.fullscreen);
+		}
 
 		/**
 		 * Styles specific to this controlbar/skin
@@ -290,7 +297,7 @@
 
 			setTimeout(function() {
 				_resize();
-				html5.utils.animations.fadeIn(_controlbar, 250);
+				_controlbar.style.opacity = 1 
 			},1000);
 		}
 		
@@ -424,7 +431,7 @@
 		}
 		
 		function _fullscreen() {
-			_toggleButton("fullscreen");
+			_api.jwSetFullscreen();
 		}
 
 		function _next() {
@@ -556,7 +563,6 @@
 				
 				if (name == "time") {
 					if (_api.jwGetState() != jwplayer.events.state.IDLE) {
-						_api.jwPause();
 						_dragging = name;
 					}
 				} else {
@@ -589,6 +595,7 @@
 				}
 				var currentTime = (new Date()).getTime();
 				if (currentTime - _lastSeekTime > 500) {
+					_api.jwPause();
 					_lastSeekTime = currentTime;
 					_sliderMapping[_dragging](pct);
 				}
@@ -665,9 +672,9 @@
 			return _controlbar;
 		};
 		
-		var _setBuffer = this.setBuffer = function(pct) {
+		function _setBuffer(pct) {
 			pct = Math.min(Math.max(0, pct), 1);
-			_elements['timeSliderBuffer'].style.width = pct * _utils.getBoundingClientRect(_elements['timeSliderRail']).width + "px";
+			_elements['timeSliderBuffer'].style.width = pct * 100 + "%";
 		}
 
 		function _sliderPercent(name, pct, fixedWidth) {
@@ -677,7 +684,7 @@
 			
 			var progress = _elements[name+'SliderProgress'];
 			var thumb = _elements[name+'SliderThumb'];
-			var width = pct * _utils.getBoundingClientRect(_elements[name+'SliderRail']).width + "px";
+			var width = 100 * pct + "%";
 		
 			if (progress) {
 				progress.style.width = width; 
@@ -720,7 +727,10 @@
 	function _generalStyles() {
 		_style(CB_CLASS, {
   			position: JW_CSS_ABSOLUTE,
-  			overflow: 'hidden'
+  			overflow: 'hidden',
+  	    	'-webkit-transition': JW_CSS_SMOOTH_EASE,
+  	    	'-moz-transition': JW_CSS_SMOOTH_EASE,
+  	    	'-o-transition': JW_CSS_SMOOTH_EASE
 		})
   		_style(CB_CLASS+' span',{
   			height: JW_CSS_100PCT,
@@ -747,9 +757,9 @@
   	    	height: JW_CSS_100PCT,
   	    	border: JW_CSS_NONE,
   	    	cursor: 'pointer',
-  	    	'-webkit-transition': 'background-image .25s',
-  	    	'-moz-transition': 'background-image .25s',
-  	    	'-o-transition': 'background-image .25s'
+  	    	'-webkit-transition': JW_CSS_SMOOTH_EASE,
+  	    	'-moz-transition': JW_CSS_SMOOTH_EASE,
+  	    	'-o-transition': JW_CSS_SMOOTH_EASE
   	    });
   	    _style(CB_CLASS+' .jwcapRight', { 
 			right: 0,
@@ -783,4 +793,4 @@
 	
 	_generalStyles();
 	
-})(jwplayer.html5);
+})(jwplayer);

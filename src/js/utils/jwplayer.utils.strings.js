@@ -5,11 +5,11 @@
  */
 (function(utils) {
 
-	jwplayer.utils.strings = function() {
+	var strings = utils.strings = function() {
 	};
 	
 	/** Removes whitespace from the beginning and end of a string **/
-	jwplayer.utils.strings.trim = function(inputString) {
+	strings.trim = function(inputString) {
 		return inputString.replace(/^\s*/, "").replace(/\s*$/, "");
 	};
 	
@@ -19,7 +19,7 @@
 	 * @param {Number} length
 	 * @param {String} padder
 	 */
-	jwplayer.utils.strings.pad = function (string, length, padder) {
+	strings.pad = function (string, length, padder) {
 		if (!padder){
 			padder = "0";
 		}
@@ -36,7 +36,7 @@
 	 * @param {String} val	String value to serialize.
 	 * @return {Object}		The original value in the correct primitive type.
 	 */
-	jwplayer.utils.strings.serialize = function(val) {
+	strings.serialize = function(val) {
 		if (val == null) {
 			return null;
 		} else if (val == 'true') {
@@ -57,7 +57,7 @@
 	 * @param {String}	The input string. Supported are 00:03:00.1 / 03:00.1 / 180.1s / 3.2m / 3.2h
 	 * @return {Number}	The number of seconds.
 	 */
-	jwplayer.utils.strings.seconds = function(str) {
+	strings.seconds = function(str) {
 		str = str.replace(',', '.');
 		var arr = str.split(':');
 		var sec = 0;
@@ -86,7 +86,7 @@
 	 * @param {String} attribute
 	 * @return {String} Value
 	 */
-	jwplayer.utils.strings.xmlAttribute = function(xml, attribute) {
+	strings.xmlAttribute = function(xml, attribute) {
 		for (var attrib = 0; attrib < xml.attributes.length; attrib++) {
 			if (xml.attributes[attrib].name && xml.attributes[attrib].name.toLowerCase() == attribute.toLowerCase()) 
 				return xml.attributes[attrib].value.toString();
@@ -99,7 +99,7 @@
 	 * @param obj {Object} String, Number, Array or nested Object to serialize
 	 * Serialization code borrowed from 
 	 */
-	jwplayer.utils.strings.jsonToString = function(obj) {
+	strings.jsonToString = function(obj) {
 		// Use browser's native JSON implementation if it exists.
 		var JSON = JSON || {}
 		if (JSON && JSON.stringify) {
@@ -128,8 +128,8 @@
 						value = '"' + value.replace(/"/g, '\\"') + '"';
 						break;
 					case "object":
-						if (jwplayer.utils.exists(value)) {
-							value = jwplayer.utils.strings.jsonToString(value);
+						if (utils.exists(value)) {
+							value = strings.jsonToString(value);
 						}
 						break;
 				}

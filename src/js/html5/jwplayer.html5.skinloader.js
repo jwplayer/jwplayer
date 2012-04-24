@@ -2,11 +2,14 @@
  * JW Player component that loads PNG skins.
  *
  * @author zach
- * @version 5.7
+ * @modified pablo
+ * @version 6.0
  */
-(function(jwplayer) {
+(function(jwplayerhtml5) {
+	var _utils = jwplayer.utils;
+	
 	/** Constructor **/
-	jwplayer.html5.skinloader = function(skinPath, completeHandler, errorHandler) {
+	jwplayerhtml5.skinloader = function(skinPath, completeHandler, errorHandler) {
 		var _skin = {};
 		var _completeHandler = completeHandler;
 		var _errorHandler = errorHandler;
@@ -18,11 +21,11 @@
 		/** Load the skin **/
 		function _load() {
 			if (typeof _skinPath != "string" || _skinPath === "") {
-				_loadSkin(jwplayer.html5.defaultskin().xml);
+				_loadSkin(jwplayerhtml5.defaultskin().xml);
 			} else {
-				jwplayer.utils.ajax(jwplayer.utils.getAbsolutePath(_skinPath), function(xmlrequest) {
+				_utils.ajax(_utils.getAbsolutePath(_skinPath), function(xmlrequest) {
 					try {
-						if (jwplayer.utils.exists(xmlrequest.responseXML)){
+						if (_utils.exists(xmlrequest.responseXML)){
 							_loadSkin(xmlrequest.responseXML);
 							return;	
 						}
@@ -62,7 +65,7 @@
 						var name = settings[settingIndex].getAttribute("name");
 						var value = settings[settingIndex].getAttribute("value");
 						var type = /color$/.test(name) ? "color" : null;
-						_skin[componentName].settings[name] = jwplayer.utils.typechecker(value, type);
+						_skin[componentName].settings[name] = _utils.typechecker(value, type);
 					}
 				}
 				var layout = components[componentIndex].getElementsByTagName('layout')[0];
@@ -87,7 +90,7 @@
 								var elementAttribute = element.attributes[elementAttributeIndex];
 								_skin[componentName].layout[group.getAttribute("position")].elements[groupElementIndex][elementAttribute.name] = elementAttribute.value;
 							}
-							if (!jwplayer.utils.exists(_skin[componentName].layout[group.getAttribute("position")].elements[groupElementIndex].name)) {
+							if (!_utils.exists(_skin[componentName].layout[group.getAttribute("position")].elements[groupElementIndex].name)) {
 								_skin[componentName].layout[group.getAttribute("position")].elements[groupElementIndex].name = element.tagName;
 							}
 						}
@@ -120,7 +123,7 @@
 			if (elementSource.indexOf('data:image/png;base64,') === 0) {
 				imgUrl = elementSource;
 			} else {
-				var skinUrl = jwplayer.utils.getAbsolutePath(_skinPath);
+				var skinUrl = _utils.getAbsolutePath(_skinPath);
 				var skinRoot = skinUrl.substr(0, skinUrl.lastIndexOf('/'));
 				imgUrl = [skinRoot, component, elementSource].join('/');
 			}
@@ -185,10 +188,10 @@
 				_skin[component].elements[element].ready = true;
 				_resetCompleteIntervalTest();
 			} else {
-				jwplayer.utils.log("Loaded an image for a missing element: " + component + "." + element);
+				_utils.log("Loaded an image for a missing element: " + component + "." + element);
 			}
 		}
 		
 		_load();
 	};
-})(jwplayer);
+})(jwplayer.html5);

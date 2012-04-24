@@ -248,7 +248,7 @@ jwplayer.source = document.createElement("source");/**
 	}
 
 	/** Logger * */
-	jwplayer.utils.log = function(msg, obj) {
+	utils.log = function(msg, obj) {
 		if (typeof console != "undefined" && typeof console.log != "undefined") {
 			if (obj) {
 				console.log(msg, obj);
@@ -259,7 +259,7 @@ jwplayer.source = document.createElement("source");/**
 	};
 
 	/** Replacement for getBoundingClientRect, which isn't supported in iOS 3.1.2 **/
-	jwplayer.utils.getBoundingClientRect = function(element) {
+	utils.getBoundingClientRect = function(element) {
 		if (typeof element.getBoundingClientRect == "function") {
 			return element.getBoundingClientRect();
 		} else {
@@ -271,6 +271,16 @@ jwplayer.source = document.createElement("source");/**
 			};
 		}
 	}
+	
+	utils.userAgentMatch = function(regex) {
+		var agent = navigator.userAgent.toLowerCase();
+		return (agent.match(regex) !== null);
+	};
+	
+	/** Matches iOS and Android devices **/	
+	utils.isMobile = function() {
+		return utils.userAgentMatch(/(iP(hone|ad|od))|android/i);
+	}	
 	
 })(jwplayer);
 /**
@@ -296,19 +306,19 @@ jwplayer.source = document.createElement("source");/**
 				if (xmlhttp.status === 200) {
 					if (completecallback) {
 						// Handle the case where an XML document was returned with an incorrect MIME type.
-						if (!jwplayer.utils.exists(xmlhttp.responseXML)) {
+						if (!utils.exists(xmlhttp.responseXML)) {
 							try {
 								if (window.DOMParser) {
 									var parsedXML = (new DOMParser()).parseFromString(xmlhttp.responseText,"text/xml");
 									if (parsedXML) {
-										xmlhttp = jwplayer.utils.extend({}, xmlhttp, {responseXML:parsedXML});
+										xmlhttp = utils.extend({}, xmlhttp, {responseXML:parsedXML});
 									}
 								} else { 
 									// Internet Explorer
 									parsedXML = new ActiveXObject("Microsoft.XMLDOM");
 									parsedXML.async="false";
 									parsedXML.loadXML(xmlhttp.responseText);
-									xmlhttp = jwplayer.utils.extend({}, xmlhttp, {responseXML:parsedXML});									
+									xmlhttp = utils.extend({}, xmlhttp, {responseXML:parsedXML});									
 								}
 							} catch(e) {
 								if (errorcallback) {
@@ -344,11 +354,11 @@ jwplayer.source = document.createElement("source");/**
  */
 (function(utils) {
 
-	jwplayer.utils.strings = function() {
+	var strings = utils.strings = function() {
 	};
 	
 	/** Removes whitespace from the beginning and end of a string **/
-	jwplayer.utils.strings.trim = function(inputString) {
+	strings.trim = function(inputString) {
 		return inputString.replace(/^\s*/, "").replace(/\s*$/, "");
 	};
 	
@@ -358,7 +368,7 @@ jwplayer.source = document.createElement("source");/**
 	 * @param {Number} length
 	 * @param {String} padder
 	 */
-	jwplayer.utils.strings.pad = function (string, length, padder) {
+	strings.pad = function (string, length, padder) {
 		if (!padder){
 			padder = "0";
 		}
@@ -375,7 +385,7 @@ jwplayer.source = document.createElement("source");/**
 	 * @param {String} val	String value to serialize.
 	 * @return {Object}		The original value in the correct primitive type.
 	 */
-	jwplayer.utils.strings.serialize = function(val) {
+	strings.serialize = function(val) {
 		if (val == null) {
 			return null;
 		} else if (val == 'true') {
@@ -396,7 +406,7 @@ jwplayer.source = document.createElement("source");/**
 	 * @param {String}	The input string. Supported are 00:03:00.1 / 03:00.1 / 180.1s / 3.2m / 3.2h
 	 * @return {Number}	The number of seconds.
 	 */
-	jwplayer.utils.strings.seconds = function(str) {
+	strings.seconds = function(str) {
 		str = str.replace(',', '.');
 		var arr = str.split(':');
 		var sec = 0;
@@ -425,7 +435,7 @@ jwplayer.source = document.createElement("source");/**
 	 * @param {String} attribute
 	 * @return {String} Value
 	 */
-	jwplayer.utils.strings.xmlAttribute = function(xml, attribute) {
+	strings.xmlAttribute = function(xml, attribute) {
 		for (var attrib = 0; attrib < xml.attributes.length; attrib++) {
 			if (xml.attributes[attrib].name && xml.attributes[attrib].name.toLowerCase() == attribute.toLowerCase()) 
 				return xml.attributes[attrib].value.toString();
@@ -438,7 +448,7 @@ jwplayer.source = document.createElement("source");/**
 	 * @param obj {Object} String, Number, Array or nested Object to serialize
 	 * Serialization code borrowed from 
 	 */
-	jwplayer.utils.strings.jsonToString = function(obj) {
+	strings.jsonToString = function(obj) {
 		// Use browser's native JSON implementation if it exists.
 		var JSON = JSON || {}
 		if (JSON && JSON.stringify) {
@@ -467,8 +477,8 @@ jwplayer.source = document.createElement("source");/**
 						value = '"' + value.replace(/"/g, '\\"') + '"';
 						break;
 					case "object":
-						if (jwplayer.utils.exists(value)) {
-							value = jwplayer.utils.strings.jsonToString(value);
+						if (utils.exists(value)) {
+							value = strings.jsonToString(value);
 						}
 						break;
 				}
@@ -498,13 +508,14 @@ jwplayer.source = document.createElement("source");/**
  * Utility methods for the JW Player.
  *
  * @author zach
- * @version 5.4
+ * @modified pablo
+ * @version 6.0
  */
 (function(utils) {
 	var _colorPattern = new RegExp(/^(#|0x)[0-9a-fA-F]{3,6}/);
 	
-	jwplayer.utils.typechecker = function(value, type) {
-		type = !jwplayer.utils.exists(type) ? _guessType(value) : type;
+	utils.typechecker = function(value, type) {
+		type = !utils.exists(type) ? _guessType(value) : type;
 		return _typeData(value, type);
 	};
 	
@@ -523,7 +534,7 @@ jwplayer.source = document.createElement("source");/**
 	}
 	
 	function _typeData(value, type) {
-		if (!jwplayer.utils.exists(type)) {
+		if (!utils.exists(type)) {
 			return value;
 		}
 		
@@ -549,32 +560,11 @@ jwplayer.source = document.createElement("source");/**
 	}
 	
 	function _stringToColor(value) {
-		switch (value.toLowerCase()) {
-			case "blue":
-				return parseInt("0000FF", 16);
-			case "green":
-				return parseInt("00FF00", 16);
-			case "red":
-				return parseInt("FF0000", 16);
-			case "cyan":
-				return parseInt("00FFFF", 16);
-			case "magenta":
-				return parseInt("FF00FF", 16);
-			case "yellow":
-				return parseInt("FFFF00", 16);
-			case "black":
-				return parseInt("000000", 16);
-			case "white":
-				return parseInt("FFFFFF", 16);
-			default:
-				value = value.replace(/(#|0x)?([0-9A-F]{3,6})$/gi, "$2");
-				if (value.length == 3) {
-					value = value.charAt(0) + value.charAt(0) + value.charAt(1) + value.charAt(1) + value.charAt(2) + value.charAt(2);
-				}
-				return parseInt(value, 16);
+		value = value.replace(/(#|0x)?([0-9A-F]{3,6})$/gi, "$2");
+		if (value.length == 3) {
+			value = value.charAt(0) + value.charAt(0) + value.charAt(1) + value.charAt(1) + value.charAt(2) + value.charAt(2);
 		}
-		
-		return parseInt("000000", 16);
+		return parseInt(value, 16);
 	}
 	
 })(jwplayer.utils);
@@ -640,8 +630,10 @@ jwplayer.source = document.createElement("source");/**
  * @modified pablo
  * @version 6.0
  */
-(function(jwplayer) {
-	jwplayer.events.eventdispatcher = function(id, debug) {
+(function(events) {
+	var _utils = jwplayer.utils; 
+	
+	events.eventdispatcher = function(id, debug) {
 		var _id = id,
 			_debug = debug,
 			_listeners, _globallisteners;
@@ -657,7 +649,7 @@ jwplayer.source = document.createElement("source");/**
 		/** Add an event listener for a specific type of event. **/
 		this.addEventListener = function(type, listener, count) {
 			try {
-				if (!jwplayer.utils.exists(_listeners[type])) {
+				if (!_utils.exists(_listeners[type])) {
 					_listeners[type] = [];
 				}
 				
@@ -669,7 +661,7 @@ jwplayer.source = document.createElement("source");/**
 					count: count
 				});
 			} catch (err) {
-				jwplayer.utils.log("error", err);
+				_utils.log("error", err);
 			}
 			return false;
 		};
@@ -688,7 +680,7 @@ jwplayer.source = document.createElement("source");/**
 					}
 				}
 			} catch (err) {
-				jwplayer.utils.log("error", err);
+				_utils.log("error", err);
 			}
 			return false;
 		};
@@ -704,7 +696,7 @@ jwplayer.source = document.createElement("source");/**
 					count: count
 				});
 			} catch (err) {
-				jwplayer.utils.log("error", err);
+				_utils.log("error", err);
 			}
 			return false;
 		};
@@ -722,7 +714,7 @@ jwplayer.source = document.createElement("source");/**
 					}
 				}
 			} catch (err) {
-				jwplayer.utils.log("error", err);
+				_utils.log("error", err);
 			}
 			return false;
 		};
@@ -730,23 +722,23 @@ jwplayer.source = document.createElement("source");/**
 		
 		/** Send an event **/
 		this.sendEvent = function(type, data) {
-			if (!jwplayer.utils.exists(data)) {
+			if (!_utils.exists(data)) {
 				data = {};
 			}
-			jwplayer.utils.extend(data, {
+			_utils.extend(data, {
 				id: _id,
 				version: jwplayer.version,
 				type: type
 			});
 			if (_debug) {
-				jwplayer.utils.log(type, data);
+				_utils.log(type, data);
 			}
 			if (typeof _listeners[type] != "undefined") {
 				for (var listenerIndex = 0; listenerIndex < _listeners[type].length; listenerIndex++) {
 					try {
 						_listeners[type][listenerIndex].listener(data);
 					} catch (err) {
-						jwplayer.utils.log("There was an error while handling a listener: " + err.toString(), _listeners[type][listenerIndex].listener);
+						_utils.log("There was an error while handling a listener: " + err.toString(), _listeners[type][listenerIndex].listener);
 					}
 					if (_listeners[type][listenerIndex]) {
 						if (_listeners[type][listenerIndex].count === 1) {
@@ -762,7 +754,7 @@ jwplayer.source = document.createElement("source");/**
 				try {
 					_globallisteners[globalListenerIndex].listener(data);
 				} catch (err) {
-					jwplayer.utils.log("There was an error while handling a listener: " + err.toString(), _globallisteners[globalListenerIndex].listener);
+					_utils.log("There was an error while handling a listener: " + err.toString(), _globallisteners[globalListenerIndex].listener);
 				}
 				if (_globallisteners[globalListenerIndex]) {
 					if (_globallisteners[globalListenerIndex].count === 1) {
@@ -774,7 +766,7 @@ jwplayer.source = document.createElement("source");/**
 			}
 		};
 	};
-})(jwplayer);
+})(jwplayer.events);
 /**
  * jwplayer.html5 namespace
  *
@@ -791,9 +783,12 @@ jwplayer.source = document.createElement("source");/**
  * @author pablo
  * @version 6.0
  */
-(function(html5) {
+(function(jwplayer) {
 	
-	var _utils = jwplayer.utils, 
+	var _html5 = jwplayer.html5,
+		_utils = jwplayer.utils,
+		_events = jwplayer.events,
+		_states = jwplayer.events.state,
 		_style = _utils.appendStylesheet,
 
 		/** Controlbar element types **/
@@ -812,12 +807,12 @@ jwplayer.source = document.createElement("source");/**
 		JW_CSS_LEFT = "left",
 		JW_CSS_RIGHT = "right",
 		JW_CSS_100PCT = "100%",
-		JW_CSS_SMOOTH_EASE = "width .25s linear 0s, left .25s linear 0s, opacity .25s ease 0s"
+		JW_CSS_SMOOTH_EASE = "width .25s linear, left .25s linear, opacity .25s, background .25s"
 		
 		CB_CLASS = '.jwcontrolbar';
 	
 	/** HTML5 Controlbar class **/
-	html5.controlbar = function(api, config) {
+	_html5.controlbar = function(api, config) {
 		var _api,
 			_skin,
 			_defaults = {
@@ -890,7 +885,7 @@ jwplayer.source = document.createElement("source");/**
 						}, {
 							name: "fullscreen",
 							type: CB_BUTTON
-						} ]
+						}]
 					}
 				}
 			},
@@ -926,7 +921,7 @@ jwplayer.source = document.createElement("source");/**
 			_sliderMapping = {
 				time: _seek,
 				volume: _volume
-			}
+			};
 		
 		
 
@@ -962,6 +957,7 @@ jwplayer.source = document.createElement("source");/**
 			_api.jwAddEventListener(jwplayer.events.JWPLAYER_MEDIA_MUTE, _muteHandler);
 			_api.jwAddEventListener(jwplayer.events.JWPLAYER_MEDIA_VOLUME, _volumeHandler);
 			_api.jwAddEventListener(jwplayer.events.JWPLAYER_MEDIA_BUFFER, _bufferHandler);
+			_api.jwAddEventListener(jwplayer.events.JWPLAYER_FULLSCREEN, _fullscreenHandler);
 		}
 		
 		function _timeUpdated(evt) {
@@ -1025,7 +1021,10 @@ jwplayer.source = document.createElement("source");/**
 		function _bufferHandler(evt) {
 			_setBuffer(evt.bufferPercent / 100);
 		}
-
+		
+		function _fullscreenHandler(evt) {
+			_toggleButton("fullscreen", evt.fullscreen);
+		}
 
 		/**
 		 * Styles specific to this controlbar/skin
@@ -1077,7 +1076,7 @@ jwplayer.source = document.createElement("source");/**
 
 			setTimeout(function() {
 				_resize();
-				html5.utils.animations.fadeIn(_controlbar, 250);
+				_controlbar.style.opacity = 1 
 			},1000);
 		}
 		
@@ -1211,7 +1210,7 @@ jwplayer.source = document.createElement("source");/**
 		}
 		
 		function _fullscreen() {
-			_toggleButton("fullscreen");
+			_api.jwSetFullscreen();
 		}
 
 		function _next() {
@@ -1343,7 +1342,6 @@ jwplayer.source = document.createElement("source");/**
 				
 				if (name == "time") {
 					if (_api.jwGetState() != jwplayer.events.state.IDLE) {
-						_api.jwPause();
 						_dragging = name;
 					}
 				} else {
@@ -1376,6 +1374,7 @@ jwplayer.source = document.createElement("source");/**
 				}
 				var currentTime = (new Date()).getTime();
 				if (currentTime - _lastSeekTime > 500) {
+					_api.jwPause();
 					_lastSeekTime = currentTime;
 					_sliderMapping[_dragging](pct);
 				}
@@ -1452,9 +1451,9 @@ jwplayer.source = document.createElement("source");/**
 			return _controlbar;
 		};
 		
-		var _setBuffer = this.setBuffer = function(pct) {
+		function _setBuffer(pct) {
 			pct = Math.min(Math.max(0, pct), 1);
-			_elements['timeSliderBuffer'].style.width = pct * _utils.getBoundingClientRect(_elements['timeSliderRail']).width + "px";
+			_elements['timeSliderBuffer'].style.width = pct * 100 + "%";
 		}
 
 		function _sliderPercent(name, pct, fixedWidth) {
@@ -1464,7 +1463,7 @@ jwplayer.source = document.createElement("source");/**
 			
 			var progress = _elements[name+'SliderProgress'];
 			var thumb = _elements[name+'SliderThumb'];
-			var width = pct * _utils.getBoundingClientRect(_elements[name+'SliderRail']).width + "px";
+			var width = 100 * pct + "%";
 		
 			if (progress) {
 				progress.style.width = width; 
@@ -1507,7 +1506,10 @@ jwplayer.source = document.createElement("source");/**
 	function _generalStyles() {
 		_style(CB_CLASS, {
   			position: JW_CSS_ABSOLUTE,
-  			overflow: 'hidden'
+  			overflow: 'hidden',
+  	    	'-webkit-transition': JW_CSS_SMOOTH_EASE,
+  	    	'-moz-transition': JW_CSS_SMOOTH_EASE,
+  	    	'-o-transition': JW_CSS_SMOOTH_EASE
 		})
   		_style(CB_CLASS+' span',{
   			height: JW_CSS_100PCT,
@@ -1534,9 +1536,9 @@ jwplayer.source = document.createElement("source");/**
   	    	height: JW_CSS_100PCT,
   	    	border: JW_CSS_NONE,
   	    	cursor: 'pointer',
-  	    	'-webkit-transition': 'background-image .25s',
-  	    	'-moz-transition': 'background-image .25s',
-  	    	'-o-transition': 'background-image .25s'
+  	    	'-webkit-transition': JW_CSS_SMOOTH_EASE,
+  	    	'-moz-transition': JW_CSS_SMOOTH_EASE,
+  	    	'-o-transition': JW_CSS_SMOOTH_EASE
   	    });
   	    _style(CB_CLASS+' .jwcapRight', { 
 			right: 0,
@@ -1570,7 +1572,7 @@ jwplayer.source = document.createElement("source");/**
 	
 	_generalStyles();
 	
-})(jwplayer.html5);/**
+})(jwplayer);/**
  * jwplayer.html5 API
  *
  * @author pablo
@@ -1585,8 +1587,8 @@ jwplayer.source = document.createElement("source");/**
 	html5.controller = function(model) {
 		var _model = model, 
 			_video = model.getVideo(),
-			_debug = 'console',
-			_eventDispatcher = new _events.eventdispatcher(_model.id, _debug);
+//			_debug = 'console',
+			_eventDispatcher = new _events.eventdispatcher(_model.id);
 		
 		_utils.extend(this, _eventDispatcher);
 
@@ -1612,6 +1614,9 @@ jwplayer.source = document.createElement("source");/**
 				file = "http://playertest.longtailvideo.com/bunny.webm";		
 			} else {
 				file = "http://playertest.longtailvideo.com/bunny.ogv";		
+			}
+			if (_utils.isMobile()) {
+				_video.load(file);
 			}
 		}
 		
@@ -1654,8 +1659,6 @@ jwplayer.source = document.createElement("source");/**
 		
 		this.item = function(item) {}
 		
-		this.fullscreen = function(state) {}
-
 		_init();
 	}
 })(jwplayer.html5);
@@ -1701,7 +1704,7 @@ jwplayer.source = document.createElement("source");/**
 			// HTML5 <video> tag
 			_videoTag;
 
-		jwplayer.utils.extend(_model, new jwplayer.events.eventdispatcher());
+		_utils.extend(_model, new jwplayer.events.eventdispatcher());
 
 		function _parseConfig(config) {
 			return config;
@@ -1745,6 +1748,13 @@ jwplayer.source = document.createElement("source");/**
 			return _video;
 		}
 		
+		this.setFullscreen = function(state) {
+			if (state != _model.fullscreen) {
+				_model.fullscreen = state;
+				_model.sendEvent(jwplayer.events.JWPLAYER_FULLSCREEN, { fullscreen: state } );
+			}
+		}
+		
 		_init();
 	}
 })(jwplayer.html5);
@@ -1785,12 +1795,12 @@ jwplayer.source = document.createElement("source");/**
 		this.jwPlaylistNext = function() { _controller.next(); }
 		this.jwPlaylistPrev = function() { _controller.prev(); }
 		this.jwPlaylistItem = function(item) { _controller.item(item); }
-		this.jwFullscreen = function(state) { _controller.fullscreen(state); }
+		this.jwSetFullscreen = function(state) { _view.fullscreen(state); }
 		
 		this.jwGetState = function(){ return _model.state };
 		this.jwGetVolume = function(){ return _model.volume };
 		this.jwGetMute = function(){ return _model.mute };
-		this.jwGetFullscreen = function(){ return false };
+		this.jwGetFullscreen = function(){ return _model.fullscreen };
 
 		this.jwAddEventListener = function(type, handler) { _controller.addEventListener(type, handler); };
 		this.jwRemoveEventListener = function(type, handler) { _controller.removeEventListener(type, handler); };
@@ -1805,18 +1815,18 @@ jwplayer.source = document.createElement("source");/**
  * @author zach
  * @version 5.4
  */
-(function(jwplayer) {
-	jwplayer.html5.skin = function() {
+(function(jwplayerhtml5) {
+	jwplayerhtml5.skin = function() {
 		var _components = {};
 		var _loaded = false;
 		
 		this.load = function(path, callback) {
-			new jwplayer.html5.skinloader(path, function(skin) {
+			new jwplayerhtml5.skinloader(path, function(skin) {
 				_loaded = true;
 				_components = skin;
 				callback();
 			}, function() {
-				new jwplayer.html5.skinloader("", function(skin) {
+				new jwplayerhtml5.skinloader("", function(skin) {
 					_loaded = true;
 					_components = skin;
 					callback();
@@ -1853,16 +1863,19 @@ jwplayer.source = document.createElement("source");/**
 		};
 		
 	};
-})(jwplayer);
+})(jwplayer.html5);
 /**
  * JW Player component that loads PNG skins.
  *
  * @author zach
- * @version 5.7
+ * @modified pablo
+ * @version 6.0
  */
-(function(jwplayer) {
+(function(jwplayerhtml5) {
+	var _utils = jwplayer.utils;
+	
 	/** Constructor **/
-	jwplayer.html5.skinloader = function(skinPath, completeHandler, errorHandler) {
+	jwplayerhtml5.skinloader = function(skinPath, completeHandler, errorHandler) {
 		var _skin = {};
 		var _completeHandler = completeHandler;
 		var _errorHandler = errorHandler;
@@ -1874,11 +1887,11 @@ jwplayer.source = document.createElement("source");/**
 		/** Load the skin **/
 		function _load() {
 			if (typeof _skinPath != "string" || _skinPath === "") {
-				_loadSkin(jwplayer.html5.defaultskin().xml);
+				_loadSkin(jwplayerhtml5.defaultskin().xml);
 			} else {
-				jwplayer.utils.ajax(jwplayer.utils.getAbsolutePath(_skinPath), function(xmlrequest) {
+				_utils.ajax(_utils.getAbsolutePath(_skinPath), function(xmlrequest) {
 					try {
-						if (jwplayer.utils.exists(xmlrequest.responseXML)){
+						if (_utils.exists(xmlrequest.responseXML)){
 							_loadSkin(xmlrequest.responseXML);
 							return;	
 						}
@@ -1918,7 +1931,7 @@ jwplayer.source = document.createElement("source");/**
 						var name = settings[settingIndex].getAttribute("name");
 						var value = settings[settingIndex].getAttribute("value");
 						var type = /color$/.test(name) ? "color" : null;
-						_skin[componentName].settings[name] = jwplayer.utils.typechecker(value, type);
+						_skin[componentName].settings[name] = _utils.typechecker(value, type);
 					}
 				}
 				var layout = components[componentIndex].getElementsByTagName('layout')[0];
@@ -1943,7 +1956,7 @@ jwplayer.source = document.createElement("source");/**
 								var elementAttribute = element.attributes[elementAttributeIndex];
 								_skin[componentName].layout[group.getAttribute("position")].elements[groupElementIndex][elementAttribute.name] = elementAttribute.value;
 							}
-							if (!jwplayer.utils.exists(_skin[componentName].layout[group.getAttribute("position")].elements[groupElementIndex].name)) {
+							if (!_utils.exists(_skin[componentName].layout[group.getAttribute("position")].elements[groupElementIndex].name)) {
 								_skin[componentName].layout[group.getAttribute("position")].elements[groupElementIndex].name = element.tagName;
 							}
 						}
@@ -1976,7 +1989,7 @@ jwplayer.source = document.createElement("source");/**
 			if (elementSource.indexOf('data:image/png;base64,') === 0) {
 				imgUrl = elementSource;
 			} else {
-				var skinUrl = jwplayer.utils.getAbsolutePath(_skinPath);
+				var skinUrl = _utils.getAbsolutePath(_skinPath);
 				var skinRoot = skinUrl.substr(0, skinUrl.lastIndexOf('/'));
 				imgUrl = [skinRoot, component, elementSource].join('/');
 			}
@@ -2041,13 +2054,13 @@ jwplayer.source = document.createElement("source");/**
 				_skin[component].elements[element].ready = true;
 				_resetCompleteIntervalTest();
 			} else {
-				jwplayer.utils.log("Loaded an image for a missing element: " + component + "." + element);
+				_utils.log("Loaded an image for a missing element: " + component + "." + element);
 			}
 		}
 		
 		_load();
 	};
-})(jwplayer);
+})(jwplayer.html5);
 /**
  * Video tag stuff
  * 
@@ -2056,7 +2069,12 @@ jwplayer.source = document.createElement("source");/**
  */
 (function(jwplayerhtml5) {
 
-	var _jw = jwplayer, _utils = _jw.utils, _events = _jw.events, _states = _events.state;
+	var _jw = jwplayer, 
+		_utils = _jw.utils, 
+		_events = _jw.events, 
+		_states = _events.state,
+		_isMobile = _utils.isMobile();
+	
 
 	/** HTML5 video class * */
 	jwplayerhtml5.video = function(videotag) {
@@ -2070,11 +2088,11 @@ jwplayer.source = document.createElement("source");/**
 			"ended" : _generalHandler,
 			"error" : _errorHandler,
 			"loadeddata" : _generalHandler,
-			"loadedmetadata" : _generalHandler,
+			"loadedmetadata" : _canPlayHandler,
 			"loadstart" : _generalHandler,
 			"pause" : _playHandler,
 			"play" : _playHandler,
-			"playing" : _generalHandler,
+			"playing" : _playHandler,
 			"progress" : _generalHandler,
 			"ratechange" : _generalHandler,
 			"readystatechange" : _generalHandler,
@@ -2084,11 +2102,17 @@ jwplayer.source = document.createElement("source");/**
 			"suspend" : _generalHandler,
 			"timeupdate" : _timeUpdateHandler,
 			"volumechange" : _volumeHandler,
-			"waiting" : _generalHandler
+			"waiting" : _bufferStateHandler
 		},
 
 		// Reference to the video tag
 		_video,
+		// Current duration
+		_duration,
+		// Current position
+		_position,
+		// Requested seek position
+		_seekOffset,
 		// Whether seeking is ready yet
 		_canSeek,
 		// If we should seek on canplay
@@ -2110,6 +2134,10 @@ jwplayer.source = document.createElement("source");/**
 		function _init(videotag) {
 			_video = videotag;
 			_setupListeners();
+
+			// Workaround for a Safari bug where video disappears on switch to fullscreen
+			_video.controls = true;
+			_video.controls = false;
 		}
 
 		function _setupListeners() {
@@ -2134,21 +2162,24 @@ jwplayer.source = document.createElement("source");/**
 
 		function _timeUpdateHandler(evt) {
 			if (_state == _states.PLAYING) {
+				_position = _video.currentTime;
 				_sendEvent(_events.JWPLAYER_MEDIA_TIME, {
-					position : _video.currentTime,
+					position : _position,
 					duration : _duration
 				});
-				if (_video.currentTime >= _duration) {
+				if (_position >= _duration && _duration > 0) {
 					_complete();
 				}
 			}
 		}
 
 		function _canPlayHandler(evt) {
-			_canSeek = true;
-			_sendEvent(_events.JWPLAYER_MEDIA_BUFFER_FULL);
-			if (_delayedSeek > 0) {
-				_seek(_delayedSeek);
+			if (!_canSeek) {
+				_canSeek = true;
+				_sendEvent(_events.JWPLAYER_MEDIA_BUFFER_FULL);
+				if (_delayedSeek > 0) {
+					_seek(_delayedSeek);
+				}
 			}
 		}
 
@@ -2159,9 +2190,13 @@ jwplayer.source = document.createElement("source");/**
 				_setState(_states.PLAYING);
 			}
 		}
+		
+		function _bufferStateHandler(evt) {
+			_setState(_states.BUFFERING);
+		}
 
 		function _errorHandler(evt) {
-			console.log("Error: %o", _video.error);
+			_utils.log("Error: %o", _video.error);
 			_generalHandler(evt);
 		}
 
@@ -2169,11 +2204,18 @@ jwplayer.source = document.createElement("source");/**
 			_canSeek = false;
 			_delayedSeek = 0;
 			_duration = 0;
+			_position = 0;
+			_setState(_states.BUFFERING); 
 			_video.src = videoURL;
+			
 			_video.load();
 			
 			_bufferInterval = setInterval(_sendBufferUpdate, 100);
-			// _video.pause();
+
+			if (_isMobile) {
+				_video.controls = true;
+				_video.style.opacity = 1;
+			}
 		}
 
 		var _stop = this.stop = function() {
@@ -2197,7 +2239,10 @@ jwplayer.source = document.createElement("source");/**
 		var _seek = this.seek = function(pos) {
 			if (_canSeek) {
 				_delayedSeek = 0;
-				// _video.play();
+				_sendEvent(_events.JWPLAYER_MEDIA_SEEK, {
+					position: _position,
+					offset: pos
+				});
 				_video.currentTime = pos;
 			} else {
 				_delayedSeek = pos;
@@ -2286,216 +2331,144 @@ jwplayer.source = document.createElement("source");/**
 
 })(jwplayer.html5);/**
  * jwplayer.html5 namespace
- *
+ * 
  * @author pablo
  * @version 6.0
  */
 (function(html5) {
 	var _jw = jwplayer, _utils = _jw.utils,
 
-		VIEW_VIDEO_CONTAINER_CLASS = "jwvideocontainer",
-		VIEW_CONTROLS_CONTAINER_CLASS = "jwcontrolscontainer";
-	
+	DOCUMENT = document, 
+	VIEW_CONTAINER_CLASS = "jwcontainer", 
+	VIEW_VIDEO_CONTAINER_CLASS = "jwvideocontainer", 
+	VIEW_CONTROLS_CONTAINER_CLASS = "jwcontrolscontainer";
+
 	html5.view = function(api, model) {
-		var _api = api,
-			_model = model,
-			_controls = {},
-			_container,
+		var _api = api, 
+			_model = model, 
+			_controls = {}, 
+			_container, 
 			_videoLayer;
+
 		
 		function _init() {
-			_container = document.getElementById(_api.id);
-			_controls.controlbar = new html5.controlbar(_api);
-			
-			_videoLayer = document.createElement("span");
-			_videoLayer.className = VIEW_VIDEO_CONTAINER_CLASS;
-			
-			_controlsLayer = document.createElement("span");
-			_controlsLayer.className = VIEW_CONTROLS_CONTAINER_CLASS;
+			_container = DOCUMENT.getElementById(_api.id);
+			_container.className = VIEW_CONTAINER_CLASS;
 
+			_videoLayer = DOCUMENT.createElement("span");
+			_videoLayer.className = VIEW_VIDEO_CONTAINER_CLASS;
 			_videoLayer.appendChild(_model.getVideo().getTag());
-			_controlsLayer.appendChild(_controls.controlbar.getDisplayElement());
-			
+
+			_controlsLayer = DOCUMENT.createElement("span");
+			_controlsLayer.className = VIEW_CONTROLS_CONTAINER_CLASS;
+			if (!_utils.isMobile()) {
+				_controls.controlbar = new html5.controlbar(_api);
+				_controlsLayer.appendChild(_controls.controlbar.getDisplayElement());
+			}
+
 			_container.appendChild(_videoLayer);
 			_container.appendChild(_controlsLayer);
+			
+			DOCUMENT.addEventListener('webkitfullscreenchange', _fullscreenChangeHandler, false);
+			DOCUMENT.addEventListener('mozfullscreenchange', _fullscreenChangeHandler, false);
+			DOCUMENT.addEventListener('keydown', _keyHandler, false);
+		}
+
+		var _fullscreen = this.fullscreen = function(state) {
+			if (!_utils.exists(state)) {
+				state = !_model.fullscreen;
+			}
+
+			if (state) {
+				if (!_model.fullscreen) {
+					if (_container.requestFullScreen) {
+						_container.requestFullScreen();
+					} else if (_container.mozRequestFullScreen) {
+						_container.mozRequestFullScreen();
+					} else if (_container.webkitRequestFullScreenWithKeys) {
+						_container.webkitRequestFullScreenWithKeys();
+					} else if (_container.webkitRequestFullScreen) {
+						_container.webkitRequestFullScreen();
+					} else {
+						_fakeFullscreen(true);
+					}
+				}
+				_model.setFullscreen(true);
+			} else {
+			    if (DOCUMENT.cancelFullScreen) {  
+			    	DOCUMENT.cancelFullScreen();  
+			    } else if (DOCUMENT.mozCancelFullScreen) {  
+			    	DOCUMENT.mozCancelFullScreen();  
+			    } else if (DOCUMENT.webkitCancelFullScreen) {  
+			    	DOCUMENT.webkitCancelFullScreen();  
+			    } else {
+			    	_fakeFullscreen(false);
+			    }
+				
+				_model.setFullscreen(false);
+			}
+		}
+
+		function _keyHandler(evt) {
+			switch (evt.keyCode) {
+			// ESC key
+			case 27:
+				if (_model.fullscreen) {
+					_fullscreen(false);
+				}
+				break;
+			}
 		}
 		
+		function _fakeFullscreen(state) {
+			if (state) {
+				_container.className += " jwfullscreen";
+			} else {
+				_container.className = _container.className.replace(/\s+jwfullscreen/, "");
+			}
+		}
+		
+		function _fullscreenChangeHandler(evt) {
+			_model.setFullscreen(DOCUMENT.mozFullScreenElement == _container || 
+					DOCUMENT.webkitCurrentFullScreenElement == _container);
+		}
+
 		_init();
 	}
-	
-	_utils.appendStylesheet('.'+VIEW_VIDEO_CONTAINER_CLASS + ' ,.'+VIEW_CONTROLS_CONTAINER_CLASS, {
-		width: "100%",
-		height: "100%",
-		display: "inline-block",
-		position: "absolute"
+
+	_utils.appendStylesheet('.' + VIEW_CONTAINER_CLASS+':-webkit-full-screen', {
+		width: "100% !important",
+		height: "100% !important"
 	});
-	_utils.appendStylesheet('.'+VIEW_VIDEO_CONTAINER_CLASS + " video", {
-		width: "100%",
-		height: "100%",
-		background: "#000",
-		opacity: 0,
-		'-webkit-transition': 'opacity .15s ease'
+	_utils.appendStylesheet('.' + VIEW_CONTAINER_CLASS+':-moz-full-screen', {
+		width: "100% !important",
+		height: "100% !important"
+	});
+	_utils.appendStylesheet('.' + VIEW_CONTAINER_CLASS+'.jwfullscreen', {
+		left: 0,
+		right: 0,
+		top: 0,
+		bottom: 0,
+		position: "fixed !important"
+	});
+	
+	
+	_utils.appendStylesheet('.' + VIEW_VIDEO_CONTAINER_CLASS + ' ,.'+ VIEW_CONTROLS_CONTAINER_CLASS, {
+		width : "100%",
+		height : "100%",
+		display : "inline-block",
+		position : "absolute"
+	});
+	
+	_utils.appendStylesheet('.' + VIEW_VIDEO_CONTAINER_CLASS + " video", {
+		width : "100%",
+		height : "100%",
+		background : "#000",
+		opacity : 0,
+		'-webkit-transition' : 'opacity .15s ease'
 	});
 
 })(jwplayer.html5);/**
- * jwplayer.html5 namespace
- *
- * @author pablo
- * @version 6.0
- */
-(function(html5) {
-	html5.utils = {};
-})(jwplayer.html5);
-
-/**
- * jwplayer.html5.utils.animations
- * Class for creating and managing visual transitions and effects
- *
- * @author pablo
- * @version 6.0
- */
-(function(utils) {
-	utils.animations = function(element, property, from, to, duration, easing) {
-		var _element, 
-			_property,
-			_from,
-			_to,
-			_duration,
-			_ease,
-			_units,
-			_self;
-		
-		var _startMS, _currentMS, _lastMS, _currentMS, _interval;
-		
-		function _init() {
-			_ease = easing ? easing : utils.animations.easing.quint.easeOut;
-			_element = element;
-			_property = property;
-			
-			if (_element.id && !utils.animations.active[_element.id]) {
-				utils.animations.active[_element.id] = {};
-			}
-			
-			if (isNaN(from)) {
-				if (from.indexOf("%") > 0) {
-					_units = "%";
-				} else if (from.indexOf("px")) {
-					_units = "px";
-				}
-				_from = parseFloat(from.replace(_units, ""));
-				_to = parseFloat(to.replace(_units, ""));
-			} else {
-				_units = "";
-				_from = parseFloat(from);
-				_to = parseFloat(to);
-			}
-			
-			_duration = parseFloat(duration);
-			this.id = Math.random();
-		}
-
-		
-		
-		this.start = function() {
-			if (_element.id) {
-				if (utils.animations.active[_element.id][_property] && utils.animations.active[_element.id][_property] != _self) {
-					utils.animations.active[_element.id][_property].stop();
-					newFrom = parseFloat(_element.style[_property].toString().replace(_units, ""));
-					_currentMS = _duration * (_from / newFrom);
-				}
-				utils.animations.active[_element.id][_property] = _self;
-			}
-			
-			if (_interval) {
-				clearInterval(_interval);
-			}
-			_lastMS = (new Date()).valueOf();
-			_tick();
-			_interval = setInterval(_tick, utils.animations.INTERVAL_SPEED);
-		};
-		
-		this.stop = function() {
-			clearInterval(_interval);
-			if (_element.id) {
-				utils.animations.active[_element.id][_property] = null;
-			}
-		}
-
-		function _tick() {
-			_currentMS = (new Date()).valueOf();
-			if (_currentMS - _lastMS >= _duration) {
-				_complete();
-				return;
-			}
-			value = _ease((_currentMS - _lastMS) , 0, 1, _duration);
-			_execute(value);
-		}
-		
-		function _complete() {
-			_execute(1);
-			_self.stop();
-		}
-		
-		function _execute(value) {
-			var val = (_from + (_to - _from) * value);
-			_element.style[_property] = val + _units;
-		}
-		
-		_self = this;
-		_init();
-	};
-
-	utils.animations.INTERVAL_SPEED = 10;
-	
-	utils.animations.easing = {};
-	
-	utils.animations.easing.quint = {
-		easeIn: function(t, b, c, d) {
-			return c*(t/=d)*t*t*t*t + b;
-		},
-		easeOut: function(t, b, c, d) {
-			return c*((t=t/d-1)*t*t*t*t + 1) + b;
-		},
-		easeInOut: function(t, b, c, d) {
-			if ((t/=d/2) < 1) return c/2*t*t*t*t*t + b;
-			return c/2*((t-=2)*t*t*t*t + 2) + b;
-		}
-	};
-
-	utils.animations.easing.linear = {
-		easeIn: function(t, b, c, d) {
-			return c*t/d + b;
-		},
-		easeOut: function(t, b, c, d) {
-			return c*t/d + b;
-		},
-		easeInOut: function(t, b, c, d) {
-			return c*t/d + b;
-		}
-	};
-	
-	utils.animations.active = {};
-
-	utils.animations.fadeIn = function(element, duration, easing) {
-		var anim = new utils.animations(element, "opacity", 0, 1, duration, easing);
-		anim.start();
-	}
-
-	utils.animations.fadeOut = function(element, duration, easing) {
-		var anim = new utils.animations(element, "opacity", 1, 0, duration, easing);
-		anim.start();
-	}
-
-	utils.animations.transform = function(element, fromX, fromY, toX, toY, duration, easing) {
-		var horiz = new utils.animations(element, "left", fromX, toX, duration, easing);
-		var vert = new utils.animations(element, "top", fromY, toY, duration, easing);
-		horiz.start();
-		vert.start();
-	}
-	
-})(jwplayer.html5.utils);
-
-/**
  * JW Player Source Endcap
  * 
  * This will appear at the end of the JW Player source

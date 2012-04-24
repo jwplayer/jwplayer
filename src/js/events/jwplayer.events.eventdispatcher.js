@@ -5,8 +5,10 @@
  * @modified pablo
  * @version 6.0
  */
-(function(jwplayer) {
-	jwplayer.events.eventdispatcher = function(id, debug) {
+(function(events) {
+	var _utils = jwplayer.utils; 
+	
+	events.eventdispatcher = function(id, debug) {
 		var _id = id,
 			_debug = debug,
 			_listeners, _globallisteners;
@@ -22,7 +24,7 @@
 		/** Add an event listener for a specific type of event. **/
 		this.addEventListener = function(type, listener, count) {
 			try {
-				if (!jwplayer.utils.exists(_listeners[type])) {
+				if (!_utils.exists(_listeners[type])) {
 					_listeners[type] = [];
 				}
 				
@@ -34,7 +36,7 @@
 					count: count
 				});
 			} catch (err) {
-				jwplayer.utils.log("error", err);
+				_utils.log("error", err);
 			}
 			return false;
 		};
@@ -53,7 +55,7 @@
 					}
 				}
 			} catch (err) {
-				jwplayer.utils.log("error", err);
+				_utils.log("error", err);
 			}
 			return false;
 		};
@@ -69,7 +71,7 @@
 					count: count
 				});
 			} catch (err) {
-				jwplayer.utils.log("error", err);
+				_utils.log("error", err);
 			}
 			return false;
 		};
@@ -87,7 +89,7 @@
 					}
 				}
 			} catch (err) {
-				jwplayer.utils.log("error", err);
+				_utils.log("error", err);
 			}
 			return false;
 		};
@@ -95,23 +97,23 @@
 		
 		/** Send an event **/
 		this.sendEvent = function(type, data) {
-			if (!jwplayer.utils.exists(data)) {
+			if (!_utils.exists(data)) {
 				data = {};
 			}
-			jwplayer.utils.extend(data, {
+			_utils.extend(data, {
 				id: _id,
 				version: jwplayer.version,
 				type: type
 			});
 			if (_debug) {
-				jwplayer.utils.log(type, data);
+				_utils.log(type, data);
 			}
 			if (typeof _listeners[type] != "undefined") {
 				for (var listenerIndex = 0; listenerIndex < _listeners[type].length; listenerIndex++) {
 					try {
 						_listeners[type][listenerIndex].listener(data);
 					} catch (err) {
-						jwplayer.utils.log("There was an error while handling a listener: " + err.toString(), _listeners[type][listenerIndex].listener);
+						_utils.log("There was an error while handling a listener: " + err.toString(), _listeners[type][listenerIndex].listener);
 					}
 					if (_listeners[type][listenerIndex]) {
 						if (_listeners[type][listenerIndex].count === 1) {
@@ -127,7 +129,7 @@
 				try {
 					_globallisteners[globalListenerIndex].listener(data);
 				} catch (err) {
-					jwplayer.utils.log("There was an error while handling a listener: " + err.toString(), _globallisteners[globalListenerIndex].listener);
+					_utils.log("There was an error while handling a listener: " + err.toString(), _globallisteners[globalListenerIndex].listener);
 				}
 				if (_globallisteners[globalListenerIndex]) {
 					if (_globallisteners[globalListenerIndex].count === 1) {
@@ -139,4 +141,4 @@
 			}
 		};
 	};
-})(jwplayer);
+})(jwplayer.events);

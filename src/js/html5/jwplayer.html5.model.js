@@ -14,7 +14,7 @@
 			// HTML5 <video> tag
 			_videoTag;
 
-		jwplayer.utils.extend(_model, new jwplayer.events.eventdispatcher());
+		_utils.extend(_model, new jwplayer.events.eventdispatcher());
 
 		function _parseConfig(config) {
 			return config;
@@ -56,6 +56,13 @@
 		
 		this.getVideo = function() {
 			return _video;
+		}
+		
+		this.setFullscreen = function(state) {
+			if (state != _model.fullscreen) {
+				_model.fullscreen = state;
+				_model.sendEvent(jwplayer.events.JWPLAYER_FULLSCREEN, { fullscreen: state } );
+			}
 		}
 		
 		_init();

@@ -4,18 +4,18 @@
  * @author zach
  * @version 5.4
  */
-(function(jwplayer) {
-	jwplayer.html5.skin = function() {
+(function(jwplayerhtml5) {
+	jwplayerhtml5.skin = function() {
 		var _components = {};
 		var _loaded = false;
 		
 		this.load = function(path, callback) {
-			new jwplayer.html5.skinloader(path, function(skin) {
+			new jwplayerhtml5.skinloader(path, function(skin) {
 				_loaded = true;
 				_components = skin;
 				callback();
 			}, function() {
-				new jwplayer.html5.skinloader("", function(skin) {
+				new jwplayerhtml5.skinloader("", function(skin) {
 					_loaded = true;
 					_components = skin;
 					callback();
@@ -52,4 +52,4 @@
 		};
 		
 	};
-})(jwplayer);
+})(jwplayer.html5);

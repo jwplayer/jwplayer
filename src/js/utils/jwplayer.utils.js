@@ -223,7 +223,7 @@
 	}
 
 	/** Logger * */
-	jwplayer.utils.log = function(msg, obj) {
+	utils.log = function(msg, obj) {
 		if (typeof console != "undefined" && typeof console.log != "undefined") {
 			if (obj) {
 				console.log(msg, obj);
@@ -234,7 +234,7 @@
 	};
 
 	/** Replacement for getBoundingClientRect, which isn't supported in iOS 3.1.2 **/
-	jwplayer.utils.getBoundingClientRect = function(element) {
+	utils.getBoundingClientRect = function(element) {
 		if (typeof element.getBoundingClientRect == "function") {
 			return element.getBoundingClientRect();
 		} else {
@@ -246,5 +246,15 @@
 			};
 		}
 	}
+	
+	utils.userAgentMatch = function(regex) {
+		var agent = navigator.userAgent.toLowerCase();
+		return (agent.match(regex) !== null);
+	};
+	
+	/** Matches iOS and Android devices **/	
+	utils.isMobile = function() {
+		return utils.userAgentMatch(/(iP(hone|ad|od))|android/i);
+	}	
 	
 })(jwplayer);

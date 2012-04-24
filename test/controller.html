@@ -3,13 +3,17 @@
 	<head>
 	  <title>Controller test</title>
 	  <script src="../bin-debug/jwplayer.js"></script>
-	  
 
 	  <style type="text/css">
-	    #player {
+	  	#wrapper {
 	     width: 720px;
 	     height: 426px;
-	     position: relative;
+	  	}
+	  
+	    #player {
+	     width: 100%;
+	     height: 100%;
+    	 position: relative;
 	     background-image: url('http://content.bitsontherun.com/thumbs/gSzpo2wh-480.jpg');
 	     background-size: 100% 100%;
 	    }
@@ -50,9 +54,10 @@
       <input type="submit" style="opacity:0; left: -10000px"/>
     </form>
     
-
-    <div id="player">
-    </div>
+	<div id="wrapper">
+	    <div id="player">
+	    </div>
+	</div>
 
 	</body>
 </html>

@@ -3,7 +3,7 @@ from xml.dom import minidom
 import re
 
 basePath = '../../../skins'
-skinName = 'five'
+skinName = 'stormtrooper'
 skinPath = basePath + '/' + skinName + '/' + skinName + '.xml'
 skinFile = open(skinPath,'r')
 skin = minidom.parse(skinFile)

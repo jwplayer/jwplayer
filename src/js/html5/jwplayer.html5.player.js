@@ -35,12 +35,12 @@
 		this.jwPlaylistNext = function() { _controller.next(); }
 		this.jwPlaylistPrev = function() { _controller.prev(); }
 		this.jwPlaylistItem = function(item) { _controller.item(item); }
-		this.jwFullscreen = function(state) { _controller.fullscreen(state); }
+		this.jwSetFullscreen = function(state) { _view.fullscreen(state); }
 		
 		this.jwGetState = function(){ return _model.state };
 		this.jwGetVolume = function(){ return _model.volume };
 		this.jwGetMute = function(){ return _model.mute };
-		this.jwGetFullscreen = function(){ return false };
+		this.jwGetFullscreen = function(){ return _model.fullscreen };
 
 		this.jwAddEventListener = function(type, handler) { _controller.addEventListener(type, handler); };
 		this.jwRemoveEventListener = function(type, handler) { _controller.removeEventListener(type, handler); };

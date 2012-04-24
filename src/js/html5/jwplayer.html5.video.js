@@ -6,7 +6,12 @@
  */
 (function(jwplayerhtml5) {
 
-	var _jw = jwplayer, _utils = _jw.utils, _events = _jw.events, _states = _events.state;
+	var _jw = jwplayer, 
+		_utils = _jw.utils, 
+		_events = _jw.events, 
+		_states = _events.state,
+		_isMobile = _utils.isMobile();
+	
 
 	/** HTML5 video class * */
 	jwplayerhtml5.video = function(videotag) {
@@ -20,11 +25,11 @@
 			"ended" : _generalHandler,
 			"error" : _errorHandler,
 			"loadeddata" : _generalHandler,
-			"loadedmetadata" : _generalHandler,
+			"loadedmetadata" : _canPlayHandler,
 			"loadstart" : _generalHandler,
 			"pause" : _playHandler,
 			"play" : _playHandler,
-			"playing" : _generalHandler,
+			"playing" : _playHandler,
 			"progress" : _generalHandler,
 			"ratechange" : _generalHandler,
 			"readystatechange" : _generalHandler,
@@ -34,11 +39,17 @@
 			"suspend" : _generalHandler,
 			"timeupdate" : _timeUpdateHandler,
 			"volumechange" : _volumeHandler,
-			"waiting" : _generalHandler
+			"waiting" : _bufferStateHandler
 		},
 
 		// Reference to the video tag
 		_video,
+		// Current duration
+		_duration,
+		// Current position
+		_position,
+		// Requested seek position
+		_seekOffset,
 		// Whether seeking is ready yet
 		_canSeek,
 		// If we should seek on canplay
@@ -60,6 +71,10 @@
 		function _init(videotag) {
 			_video = videotag;
 			_setupListeners();
+
+			// Workaround for a Safari bug where video disappears on switch to fullscreen
+			_video.controls = true;
+			_video.controls = false;
 		}
 
 		function _setupListeners() {
@@ -84,21 +99,24 @@
 
 		function _timeUpdateHandler(evt) {
 			if (_state == _states.PLAYING) {
+				_position = _video.currentTime;
 				_sendEvent(_events.JWPLAYER_MEDIA_TIME, {
-					position : _video.currentTime,
+					position : _position,
 					duration : _duration
 				});
-				if (_video.currentTime >= _duration) {
+				if (_position >= _duration && _duration > 0) {
 					_complete();
 				}
 			}
 		}
 
 		function _canPlayHandler(evt) {
-			_canSeek = true;
-			_sendEvent(_events.JWPLAYER_MEDIA_BUFFER_FULL);
-			if (_delayedSeek > 0) {
-				_seek(_delayedSeek);
+			if (!_canSeek) {
+				_canSeek = true;
+				_sendEvent(_events.JWPLAYER_MEDIA_BUFFER_FULL);
+				if (_delayedSeek > 0) {
+					_seek(_delayedSeek);
+				}
 			}
 		}
 
@@ -109,9 +127,13 @@
 				_setState(_states.PLAYING);
 			}
 		}
+		
+		function _bufferStateHandler(evt) {
+			_setState(_states.BUFFERING);
+		}
 
 		function _errorHandler(evt) {
-			console.log("Error: %o", _video.error);
+			_utils.log("Error: %o", _video.error);
 			_generalHandler(evt);
 		}
 
@@ -119,11 +141,18 @@
 			_canSeek = false;
 			_delayedSeek = 0;
 			_duration = 0;
+			_position = 0;
+			_setState(_states.BUFFERING); 
 			_video.src = videoURL;
+			
 			_video.load();
 			
 			_bufferInterval = setInterval(_sendBufferUpdate, 100);
-			// _video.pause();
+
+			if (_isMobile) {
+				_video.controls = true;
+				_video.style.opacity = 1;
+			}
 		}
 
 		var _stop = this.stop = function() {
@@ -147,7 +176,10 @@
 		var _seek = this.seek = function(pos) {
 			if (_canSeek) {
 				_delayedSeek = 0;
-				// _video.play();
+				_sendEvent(_events.JWPLAYER_MEDIA_SEEK, {
+					position: _position,
+					offset: pos
+				});
 				_video.currentTime = pos;
 			} else {
 				_delayedSeek = pos;
