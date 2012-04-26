@@ -5,11 +5,11 @@
  * @modified pablo
  * @version 6.0
  */
-(function(jwplayerhtml5) {
+(function(html5) {
 	var _utils = jwplayer.utils;
 	
 	/** Constructor **/
-	jwplayerhtml5.skinloader = function(skinPath, completeHandler, errorHandler) {
+	html5.skinloader = function(skinPath, completeHandler, errorHandler) {
 		var _skin = {};
 		var _completeHandler = completeHandler;
 		var _errorHandler = errorHandler;
@@ -21,7 +21,7 @@
 		/** Load the skin **/
 		function _load() {
 			if (typeof _skinPath != "string" || _skinPath === "") {
-				_loadSkin(jwplayerhtml5.defaultskin().xml);
+				_loadSkin(html5.defaultskin().xml);
 			} else {
 				_utils.ajax(_utils.getAbsolutePath(_skinPath), function(xmlrequest) {
 					try {
@@ -32,9 +32,9 @@
 					} catch (err){
 						_clearSkin();
 					}
-					_loadSkin(jwplayer.html5.defaultskin().xml);
+					_loadSkin(html5.defaultskin().xml);
 				}, function(path) {
-					_loadSkin(jwplayer.html5.defaultskin().xml);
+					_loadSkin(html5.defaultskin().xml);
 				});
 			}
 			

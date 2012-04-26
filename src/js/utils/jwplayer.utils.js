@@ -5,6 +5,8 @@
  * @version 6.0
  */
 (function(jwplayer) {
+	var DOCUMENT = document;
+	
 	//Declare namespace
 	var utils = jwplayer.utils = function() {
 	};
@@ -62,9 +64,9 @@
 	
 	utils.appendStylesheet = function(selector, styles) {
 		if (!_styleSheet) {
-			_styleSheet = document.createElement("style");
+			_styleSheet = DOCUMENT.createElement("style");
 			_styleSheet.type = "text/css";
-			document.getElementsByTagName('head')[0].appendChild(_styleSheet);
+			DOCUMENT.getElementsByTagName('head')[0].appendChild(_styleSheet);
 		}
 
 		if (!_rules[selector]) {
@@ -141,7 +143,7 @@
 	/** Gets an absolute file path based on a relative filepath * */
 	utils.getAbsolutePath = function(path, base) {
 		if (!utils.exists(base)) {
-			base = document.location.href;
+			base = DOCUMENT.location.href;
 		}
 		if (!utils.exists(path)) {
 			return undefined;
@@ -239,8 +241,8 @@
 			return element.getBoundingClientRect();
 		} else {
 			return { 
-				left: element.offsetLeft + document.body.scrollLeft, 
-				top: element.offsetTop + document.body.scrollTop, 
+				left: element.offsetLeft + DOCUMENT.body.scrollLeft, 
+				top: element.offsetTop + DOCUMENT.body.scrollTop, 
 				width: element.offsetWidth, 
 				height: element.offsetHeight
 			};
@@ -255,6 +257,96 @@
 	/** Matches iOS and Android devices **/	
 	utils.isMobile = function() {
 		return utils.userAgentMatch(/(iP(hone|ad|od))|android/i);
-	}	
+	}
+
+	/** Save a setting **/
+	utils.saveCookie = function(name, value) {
+		DOCUMENT.cookie = "jwplayer." + name + "=" + value + "; path=/";
+	}
+
+	/** Retrieve saved  player settings **/
+	utils.getCookies = function() {
+		var jwCookies = {};
+		var cookies = DOCUMENT.cookie.split('; ');
+		for (var i=0; i<cookies.length; i++) {
+			var split = cookies[i].split('=');
+			if (split[0].indexOf("jwplayer.") == 0) {
+				jwCookies[split[0].substring(9, split[0].length)] = split[1];
+			}
+		}
+		return jwCookies;
+	}
+	
+	
+	
+	/** Loads an XML file into a DOM object * */
+	utils.ajax = function(xmldocpath, completecallback, errorcallback) {
+		var xmlhttp;
+		if (utils.exists(window.XDomainRequest)) {
+			// IE9
+			xmlhttp = new XDomainRequest()
+		} else if (window.XMLHttpRequest) {
+			// Firefox, Chrome, Opera, Safari
+			xmlhttp = new XMLHttpRequest();
+		} else {
+			errorcallback();
+		}
+		xmlhttp.onreadystatechange = function() {
+			if (xmlhttp.readyState === 4) {
+				if (xmlhttp.status === 200) {
+					if (completecallback) {
+						// Handle the case where an XML document was returned with an incorrect MIME type.
+						if (!jwplayer.utils.exists(xmlhttp.responseXML)) {
+							try {
+								if (window.DOMParser) {
+									var parsedXML = (new DOMParser()).parseFromString(xmlhttp.responseText,"text/xml");
+									if (parsedXML) {
+										xmlhttp = jwplayer.utils.extend({}, xmlhttp, {responseXML:parsedXML});
+									}
+								} else { 
+									// Internet Explorer
+									parsedXML = new ActiveXObject("Microsoft.XMLDOM");
+									parsedXML.async="false";
+									parsedXML.loadXML(xmlhttp.responseText);
+									xmlhttp = jwplayer.utils.extend({}, xmlhttp, {responseXML:parsedXML});									
+								}
+							} catch(e) {
+								if (errorcallback) {
+									errorcallback(xmldocpath);
+								}
+							}
+						}
+						completecallback(xmlhttp);
+					}
+				} else {
+					if (errorcallback) {
+						errorcallback(xmldocpath);
+					}
+				}
+			}
+		};
+		try {
+			xmlhttp.open("GET", xmldocpath, true);
+			xmlhttp.send(null);
+		} catch (error) {
+			if (errorcallback) {
+				errorcallback(xmldocpath);
+			}
+		}
+		return xmlhttp;
+	};
+	
+	
+	/** Returns the true type of an object * */
+	utils.typeOf = function(value) {
+		var typeofString = typeof value;
+		if (typeofString === 'object') {
+			if (!value) return "null";
+			return (value instanceof Array) ? 'array' : typeofString;
+		} else {
+			return typeofString;
+		}
+	};
+
 	
 })(jwplayer);

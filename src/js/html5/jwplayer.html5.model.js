@@ -5,53 +5,73 @@
  * @version 6.0
  */
 (function(html5) {
-	var _utils = jwplayer.utils;
+	var _utils = jwplayer.utils,
+		_events = jwplayer.events;
 
 	html5.model = function(config) {
 		var _model = this, 
 			// Video provider
 			_video, 
 			// HTML5 <video> tag
-			_videoTag;
-
-		_utils.extend(_model, new jwplayer.events.eventdispatcher());
+			_videoTag,
+			// Saved settings
+			_cookies = _utils.getCookies(),
+			// Defaults
+			_defaults = {
+				width: 480,
+				height: 320,
+				item: 0,
+				playlist: undefined,
+				skin: undefined,
+				volume: 90,
+				mute: false,
+	//			repeat: "",
+	//			stretching: jwplayer.utils.stretching.UNIFORM,
+				autostart: false,
+				debug: undefined
+			};
 
 		function _parseConfig(config) {
 			return config;
 		}
 
 		function _init() {
+			_utils.extend(_model, new _events.eventdispatcher());
 			_utils.extend(_model, {
-				id : config.id,
-				settings : _parseConfig(config),
-				volume : 0,
-				state : jwplayer.events.state.IDLE,
-				mute : false
+				id: config.id,
+				state : _events.state.IDLE,
+				position: 0,
+				buffer: 0,
+				playlist: [],
+				config: _utils.extend({}, _defaults, _cookies, _parseConfig(config)) 
 			});
-
+			_model.setItem(_model.config.item);
+			
 			_videoTag = document.createElement("video");
 			_video = new html5.video(_videoTag);
 			_video.addGlobalListener(_videoEventHandler);
 		}
 
+		var _eventMap = {};
+		_eventMap[_events.JWPLAYER_MEDIA_MUTE] = "mute";
+		_eventMap[_events.JWPLAYER_MEDIA_VOLUME] = "volume";
+		_eventMap[_events.JWPLAYER_PLAYER_STATE] = "newstate->state";
+		_eventMap[_events.JWPLAYER_MEDIA_BUFFER] = "bufferPercent->buffer";
+		_eventMap[_events.JWPLAYER_MEDIA_TIME] = "position";
+			
 		function _videoEventHandler(evt) {
-			switch (evt.type) {
-			case jwplayer.events.JWPLAYER_MEDIA_MUTE:
-				if (_model.mute == evt.mute)
-					return;
-				_model.mute = evt.mute;
-				break;
-			case jwplayer.events.JWPLAYER_MEDIA_VOLUME:
-				if (_model.volume == evt.volume)
-					return;
-				_model.volume = evt.volume;
-				break;
-			case jwplayer.events.JWPLAYER_PLAYER_STATE:
-				if (_model.state == evt.newstate)
-					return;
-				_model.state = evt.newstate;
+			var mapping = _eventMap[evt.type];
+			if (mapping) {
+				var split = mapping.split("->"),
+					eventProp = split[0],
+					stateProp = split[1] ? split[1] : eventProp;
+				if (_model[stateProp] != evt[eventProp]) {
+					_model[stateProp] = evt[eventProp];
+					_model.sendEvent(evt.type, evt);
+				}
+			} else {
+				_model.sendEvent(evt.type, evt);
 			}
-			_model.sendEvent(evt.type, evt);
 		}
 		
 		this.getVideo = function() {
@@ -61,7 +81,24 @@
 		this.setFullscreen = function(state) {
 			if (state != _model.fullscreen) {
 				_model.fullscreen = state;
-				_model.sendEvent(jwplayer.events.JWPLAYER_FULLSCREEN, { fullscreen: state } );
+				_model.sendEvent(_events.JWPLAYER_FULLSCREEN, { fullscreen: state } );
+			}
+		}
+		
+		this.setItem = function(index) {
+			var newItem;
+			if (index == _model.playlist.length || index < -1)
+				newItem = 0;
+			else if (index == -1 || index > _model.playlist.length)
+				newItem = _model.playlist.length - 1;
+			else
+				newItem = index;
+			
+			if (newItem != _model.item) {
+				_model.item = newItem;
+				_model.sendEvent(_events.JWPLAYER_PLAYLIST_ITEM, {
+					"index": _model.item
+				});
 			}
 		}
 		

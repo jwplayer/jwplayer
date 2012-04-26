@@ -151,7 +151,6 @@
 			
 			_api = api;
 
-			config = _utils.extend({}, config);
 			_id = _api.id + "_controlbar";
 			_duration = 0;
 
@@ -165,7 +164,7 @@
 
 			_skin = _api.skin;
 			
-			_settings = _utils.extend({}, _defaults, _skin.controlbar.settings, _api.settings.controlbar);
+			_settings = _utils.extend({}, _defaults, _skin.controlbar.settings, config);
 			_layout = (_skin.controlbar.layout.left || _skin.controlbar.layout.right || _skin.controlbar.layout.center) ? _skin.controlbar.layout : _defaults.layout;
 			_createStyles();
 			_buildControlbar();
@@ -199,13 +198,10 @@
 		
 		function _stateHandler(evt) {
 			switch (evt.newstate) {
-			case jwplayer.events.state.PLAYING:
 			case jwplayer.events.state.BUFFERING:
+			case jwplayer.events.state.PLAYING:
 				if (_elements['timeSliderThumb']) {
 					_elements['timeSliderThumb'].style.opacity = 1;
-				}
-				if (_elements["timeRail"]) {
-					_elements["timeRail"].className = "jwrail jwsmooth";
 				}
 				_toggleButton("play", true);
 				break;
@@ -220,11 +216,15 @@
 				if (_elements['timeSliderThumb']) {
 					_elements['timeSliderThumb'].style.opacity = 0;
 				}
-				_setBuffer(0);
-				_timeUpdated({ position: 0, duration: 0});
 				if (_elements["timeRail"]) {
 					_elements["timeRail"].className = "jwrail";
+					setTimeout(function() {
+						// Temporarily disable the buffer animation
+						_elements["timeRail"].className += " jwsmooth";
+					}, 100);
 				}
+				_setBuffer(0);
+				_timeUpdated({ position: 0, duration: 0});
 				break;
 			}
 		}
@@ -322,7 +322,6 @@
 		
 		function _buildImage(name, style, stretch, nocenter) {
 			var element = _createSpan();
-			//element.id = _createElementId(name);
 			element.className = 'jw'+name;
 			
 			var center = nocenter ? " left center" : " center";
@@ -357,7 +356,6 @@
 			}
 			
 			var element = document.createElement("button");
-			//element.id = _createElementId(name);
 			element.className = 'jw'+name;
 			element.addEventListener("click", _buttonClickHandler(name), false);
 
@@ -447,7 +445,11 @@
 				state = !_toggleStates[name];
 			}
 			if (_elements[name]) {
-				_elements[name].className = 'jw' + name + (state ? " jwtoggle" : "");
+				_elements[name].className = 'jw' + name + (state ? " jwtoggle jwtoggling" : " jwtoggling");
+				// Use the jwtoggling class to temporarily disable the animation;
+				setTimeout(function() {
+					_elements[name].className = _elements[name].className.replace(" jwtoggling", ""); 
+				}, 100);
 			}
 			_toggleStates[name] = state;
 		}
@@ -721,76 +723,93 @@
 
 	}
 
-	/**
-	 * General JW Player controlbar styles -- should only be executed once
-	 **/
-	function _generalStyles() {
-		_style(CB_CLASS, {
-  			position: JW_CSS_ABSOLUTE,
-  			overflow: 'hidden',
-  	    	'-webkit-transition': JW_CSS_SMOOTH_EASE,
-  	    	'-moz-transition': JW_CSS_SMOOTH_EASE,
-  	    	'-o-transition': JW_CSS_SMOOTH_EASE
-		})
-  		_style(CB_CLASS+' span',{
-  			height: JW_CSS_100PCT,
-  			'-webkit-user-select': JW_CSS_NONE,
-  			'-webkit-user-drag': JW_CSS_NONE,
-  			'user-select': JW_CSS_NONE,
-  			'user-drag': JW_CSS_NONE
-  		});
-  	    _style(CB_CLASS+' .jwgroup', {
-  	    	display: JW_CSS_INLINE
-  	    });
-  	    _style(CB_CLASS+' span, '+CB_CLASS+' .jwgroup button,'+CB_CLASS+' .jwleft', {
-  	    	position: JW_CSS_RELATIVE,
-  			'float': JW_CSS_LEFT
-  	    });
-		_style(CB_CLASS+' .jwright', {
-			position: JW_CSS_ABSOLUTE
-		});
-  	    _style(CB_CLASS+' .jwcenter', {
-  	    	position: JW_CSS_ABSOLUTE
- 	    });
-  	    _style(CB_CLASS+' button', {
-  	    	display: JW_CSS_INLINE_BLOCK,
-  	    	height: JW_CSS_100PCT,
-  	    	border: JW_CSS_NONE,
-  	    	cursor: 'pointer',
-  	    	'-webkit-transition': JW_CSS_SMOOTH_EASE,
-  	    	'-moz-transition': JW_CSS_SMOOTH_EASE,
-  	    	'-o-transition': JW_CSS_SMOOTH_EASE
-  	    });
-  	    _style(CB_CLASS+' .jwcapRight', { 
-			right: 0,
-			position: JW_CSS_ABSOLUTE
-		});
-  	    _style(CB_CLASS+' .jwtime,' + CB_CLASS + ' .jwgroup span.jwstretch', {
-  	    	position: JW_CSS_ABSOLUTE,
-  	    	height: JW_CSS_100PCT,
-  	    	width: JW_CSS_100PCT,
-  	    	left: 0
-  	    });
-  	    _style(CB_CLASS+' .jwrail,' + CB_CLASS + ' .jwthumb', {
-  	    	position: JW_CSS_ABSOLUTE,
-  	    	height: JW_CSS_100PCT,
-  	    	cursor: 'pointer'
-  	    });
-  	    _style(CB_CLASS + ' .jwtime .jwsmooth span', {
-  	    	'-webkit-transition': JW_CSS_SMOOTH_EASE,
-  	    	'-moz-transition': JW_CSS_SMOOTH_EASE,
-  	    	'-o-transition': JW_CSS_SMOOTH_EASE
-  	    });
-  	    _style(CB_CLASS + ' .jwdivider+.jwdivider', {
-  	    	display: JW_CSS_NONE
-  	    });
-  	    _style(CB_CLASS + ' .jwtext', {
-			padding: '0 5px',
-			'text-align': 'center'
-		});
+	/*************************************************************
+	 * Player stylesheets - done once on script initialization;  *
+	 * These CSS rules are used for all JW Player instances      *
+	 *************************************************************/
 
-	}
+	_style(CB_CLASS, {
+		position: JW_CSS_ABSOLUTE,
+		overflow: 'hidden',
+    	'-webkit-transition': JW_CSS_SMOOTH_EASE,
+    	'-moz-transition': JW_CSS_SMOOTH_EASE,
+    	'-o-transition': JW_CSS_SMOOTH_EASE
+	})
 	
-	_generalStyles();
+	_style(CB_CLASS+' span',{
+		height: JW_CSS_100PCT,
+		'-webkit-user-select': JW_CSS_NONE,
+		'-webkit-user-drag': JW_CSS_NONE,
+		'user-select': JW_CSS_NONE,
+		'user-drag': JW_CSS_NONE
+	});
+	
+    _style(CB_CLASS+' .jwgroup', {
+    	display: JW_CSS_INLINE
+    });
+    
+    _style(CB_CLASS+' span, '+CB_CLASS+' .jwgroup button,'+CB_CLASS+' .jwleft', {
+    	position: JW_CSS_RELATIVE,
+		'float': JW_CSS_LEFT
+    });
+    
+	_style(CB_CLASS+' .jwright', {
+		position: JW_CSS_ABSOLUTE
+	});
+	
+    _style(CB_CLASS+' .jwcenter', {
+    	position: JW_CSS_ABSOLUTE
+    });
+    
+    _style(CB_CLASS+' button', {
+    	display: JW_CSS_INLINE_BLOCK,
+    	height: JW_CSS_100PCT,
+    	border: JW_CSS_NONE,
+    	cursor: 'pointer',
+    	'-webkit-transition': JW_CSS_SMOOTH_EASE,
+    	'-moz-transition': JW_CSS_SMOOTH_EASE,
+    	'-o-transition': JW_CSS_SMOOTH_EASE
+    });
+    
+    _style(CB_CLASS+' .jwcapRight', { 
+		right: 0,
+		position: JW_CSS_ABSOLUTE
+	});
+    
+    _style(CB_CLASS+' .jwtime,' + CB_CLASS + ' .jwgroup span.jwstretch', {
+    	position: JW_CSS_ABSOLUTE,
+    	height: JW_CSS_100PCT,
+    	width: JW_CSS_100PCT,
+    	left: 0
+    });
+    
+   
+    
+    _style(CB_CLASS+' .jwrail,' + CB_CLASS + ' .jwthumb', {
+    	position: JW_CSS_ABSOLUTE,
+    	height: JW_CSS_100PCT,
+    	cursor: 'pointer'
+    });
+    
+    _style(CB_CLASS + ' .jwtime .jwsmooth span', {
+    	'-webkit-transition': JW_CSS_SMOOTH_EASE,
+    	'-moz-transition': JW_CSS_SMOOTH_EASE,
+    	'-o-transition': JW_CSS_SMOOTH_EASE
+    });
+    
+    _style(CB_CLASS + ' .jwdivider+.jwdivider', {
+    	display: JW_CSS_NONE
+    });
+    
+    _style(CB_CLASS + ' .jwtext', {
+		padding: '0 5px',
+		'text-align': 'center'
+	});
+    
+    _style(CB_CLASS + ' .jwtoggling', {
+    	'-webkit-transition': JW_CSS_NONE,
+    	'-moz-transition': JW_CSS_NONE,
+    	'-o-transition': JW_CSS_NONE
+    });
 	
 })(jwplayer);

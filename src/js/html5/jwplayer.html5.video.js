@@ -134,7 +134,7 @@
 
 		function _errorHandler(evt) {
 			_utils.log("Error: %o", _video.error);
-			_generalHandler(evt);
+			_setState(_states.IDLE);
 		}
 
 		this.load = function(videoURL) {

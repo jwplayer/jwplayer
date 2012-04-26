@@ -5,17 +5,17 @@
 	  <script src="../bin-debug/jwplayer.js"></script>
 
 	  <style type="text/css">
-	  	#wrapper {
+	  	.wrapper {
 	     width: 720px;
 	     height: 426px;
+	     position: relative;
 	  	}
 	  
 	    #player {
 	     width: 100%;
 	     height: 100%;
     	 position: relative;
-	     background-image: url('http://content.bitsontherun.com/thumbs/gSzpo2wh-480.jpg');
-	     background-size: 100% 100%;
+    	 background: #000;
 	    }
 	    
 	  </style>
@@ -34,18 +34,26 @@
 	   function init() {
 		 form = document.getElementById("form");
 		 document.getElementById("player").innerHTML = "";
-	     player = new jwplayer.html5.player({id: "player", skin: form.skin.options[form.skin.selectedIndex].value});
+	     player = new jwplayer.html5.player({
+		     id: "player", 
+		     skin: form.skin.options[form.skin.selectedIndex].value,
+		     playlist: "http://content.bitsontherun.com/feeds/Hilgq9Ju.rss",
+		     debug: undefined
+		 });
 	   }
 	  </script>
 	</head>
 	
 	<body onload="init()">
+	
+	<a href="http://sitetophone.com/316502-1120">site</a>
+	
     <form id="form" onsubmit="update(this); return false;">
       skin: <select name="skin" onchange="init()">
       	<option value="">default</option>
       	<option value="../../../skins/beelden/beelden.xml">beelden</option>
-      	<option value="../../../skins/stormtrooper/stormtrooper.xml" selected>stormtrooper</option>
-      	<option value="../../../skins/glow/src/glow.xml">glow</option>
+      	<option value="../../../skins/stormtrooper/stormtrooper.xml">stormtrooper</option>
+      	<option value="../../../skins/glow/src/glow.xml" selected>glow</option>
       	<option value="../../../skins/five/five.xml">five</option>
       	<option value="../../../tags/skins/snel/snel.xml">snel</option>
       	<option value="../../../skins/stijl/stijl.xml">stijl</option>
@@ -54,9 +62,8 @@
       <input type="submit" style="opacity:0; left: -10000px"/>
     </form>
     
-	<div id="wrapper">
-	    <div id="player">
-	    </div>
+	<div class="wrapper">
+	    <div id="player"></div>
 	</div>
 
 	</body>
