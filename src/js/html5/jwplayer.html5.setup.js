@@ -42,7 +42,7 @@
 			_addTask(LOAD_PLAYLIST, _loadPlaylist, PARSE_CONFIG);
 			_addTask(LOAD_PREVIEW, _loadPreview, LOAD_PLAYLIST);
 			_addTask(SETUP_COMPONENTS, _setupComponents, LOAD_SKIN);
-			_addTask(INIT_PLUGINS, _initPlugins, SETUP_COMPONENTS);
+			_addTask(INIT_PLUGINS, _initPlugins, SETUP_COMPONENTS + "," + LOAD_PLAYLIST);
 			_addTask(SEND_READY, _sendReady, INIT_PLUGINS);
 		}
 		
@@ -53,7 +53,7 @@
 		function _nextTask() {
 			for (var i=0; i < _queue.length; i++) {
 				var task = _queue[i];
-				if (!task.depends || _completed[task.depends]) {
+				if (_allComplete(task.depends)) {
 					_queue.splice(i, 1);
 					try {
 						task.method();
@@ -69,6 +69,16 @@
 				setTimeout(_nextTask, 500);
 			}
 		}
+		
+		function _allComplete(dependencies) {
+			if (!dependencies) return true;
+			var split = dependencies.split(",");
+			for (var i=0; i<split.length; i++) {
+				if (!_completed[split[i]])
+					return false;
+			}
+			return true;
+		}
 
 		function _taskComplete(name) {
 			_completed[name] = true;
@@ -79,18 +89,14 @@
 		}
 		
 		function _loadSkin() {
-			new html5.skinloader(_model.config.skin, _skinLoaded, _skinError);
+			_skin = new html5.skin();
+			_skin.load(_model.config.skin, _skinLoaded);
 		}
 		
 		function _skinLoaded(skin) {
-			_skin = skin;
 			_taskComplete(LOAD_SKIN);
 		}
 		
-		function _skinError(evt) {
-			_error(evt.message);
-		}
-
 		function _loadPlaylist() {
 			switch(_utils.typeOf(_model.config.playlist)) {
 			case "string":
@@ -154,5 +160,6 @@
 		
 		_initQueue();
 	}
+
 })(jwplayer.html5);
 

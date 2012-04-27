@@ -29,7 +29,10 @@
 		
 		function _readyHandler(evt) {
 			_controller.sendEvent(evt.type, evt);
+			_controller.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_LOADED, {playlist: _model.playlist});
+			_controller.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_ITEM, {index: _model.item});
 			_controller.load();
+			setTimeout(_view.resize, 0);
 		}
 
 		function _errorHandler(evt) {
@@ -51,6 +54,7 @@
 		this.jwPlaylistPrev = _controller.prev;
 		this.jwPlaylistItem = _controller.item;
 		this.jwSetFullscreen = _controller.setFullscreen;
+		this.jwResize = _view.resize;
 		
 
 		/** Getters **/

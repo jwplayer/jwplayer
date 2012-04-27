@@ -6,6 +6,7 @@
  */
 (function(jwplayer) {
 	var DOCUMENT = document;
+	var WINDOW = window;
 	
 	//Declare namespace
 	var utils = jwplayer.utils = function() {
@@ -61,6 +62,8 @@
 			}
 		}
 	};
+	
+	var foo =false;
 	
 	utils.appendStylesheet = function(selector, styles) {
 		if (!_styleSheet) {
@@ -258,6 +261,10 @@
 	utils.isMobile = function() {
 		return utils.userAgentMatch(/(iP(hone|ad|od))|android/i);
 	}
+	
+	utils.isIPod = function() {
+		return jwplayer.utils.userAgentMatch(/iP(hone|od)/i);
+	};
 
 	/** Save a setting **/
 	utils.saveCookie = function(name, value) {
@@ -277,66 +284,85 @@
 		return jwCookies;
 	}
 	
-	
-	
 	/** Loads an XML file into a DOM object * */
 	utils.ajax = function(xmldocpath, completecallback, errorcallback) {
 		var xmlhttp;
-		if (utils.exists(window.XDomainRequest)) {
+		if (_isCrossdomain(xmldocpath) && utils.exists(WINDOW.XDomainRequest)) {
 			// IE9
-			xmlhttp = new XDomainRequest()
-		} else if (window.XMLHttpRequest) {
+			xmlhttp = new XDomainRequest();
+			xmlhttp.onload = _ajaxComplete(xmlhttp, xmldocpath, completecallback, errorcallback);
+			xmlhttp.onerror = _ajaxError(errorcallback, xmldocpath, xmlhttp);
+		} else if (utils.exists(WINDOW.XMLHttpRequest)) {
 			// Firefox, Chrome, Opera, Safari
 			xmlhttp = new XMLHttpRequest();
+			xmlhttp.onreadystatechange = _readyStateChangeHandler(xmlhttp, xmldocpath, completecallback, errorcallback);
+			xmlhttp.onerror = _ajaxError(errorcallback, xmldocpath);
 		} else {
-			errorcallback();
+			if (errorcallback) errorcallback();
 		}
-		xmlhttp.onreadystatechange = function() {
-			if (xmlhttp.readyState === 4) {
-				if (xmlhttp.status === 200) {
-					if (completecallback) {
-						// Handle the case where an XML document was returned with an incorrect MIME type.
-						if (!jwplayer.utils.exists(xmlhttp.responseXML)) {
-							try {
-								if (window.DOMParser) {
-									var parsedXML = (new DOMParser()).parseFromString(xmlhttp.responseText,"text/xml");
-									if (parsedXML) {
-										xmlhttp = jwplayer.utils.extend({}, xmlhttp, {responseXML:parsedXML});
-									}
-								} else { 
-									// Internet Explorer
-									parsedXML = new ActiveXObject("Microsoft.XMLDOM");
-									parsedXML.async="false";
-									parsedXML.loadXML(xmlhttp.responseText);
-									xmlhttp = jwplayer.utils.extend({}, xmlhttp, {responseXML:parsedXML});									
-								}
-							} catch(e) {
-								if (errorcallback) {
-									errorcallback(xmldocpath);
-								}
-							}
-						}
-						completecallback(xmlhttp);
-					}
-				} else {
-					if (errorcallback) {
-						errorcallback(xmldocpath);
-					}
-				}
-			}
-		};
+		 
 		try {
 			xmlhttp.open("GET", xmldocpath, true);
 			xmlhttp.send(null);
 		} catch (error) {
-			if (errorcallback) {
-				errorcallback(xmldocpath);
-			}
+			if (errorcallback) errorcallback(xmldocpath);
 		}
 		return xmlhttp;
 	};
 	
+	function _isCrossdomain(path) {
+		if (path && path.indexOf("://") >= 0) {
+			if (path.split("/")[2] != window.location.href.split("/")[2])
+				return true
+		} 
+		return false;	
+	}
 	
+	function _ajaxError(errorcallback, xmldocpath, xmlhttp) {
+		return function() {
+			errorcallback(xmldocpath);
+		}
+ 	}
+	
+	function _readyStateChangeHandler(xmlhttp, xmldocpath, completecallback, errorcallback) {
+		return function() {
+			if (xmlhttp.readyState === 4) {
+				if (xmlhttp.status == 200) {
+					_ajaxComplete(xmlhttp, xmldocpath, completecallback, errorcallback)();
+				} else if (errorcallback) {
+					errorcallback(xmldocpath);
+				}
+			}
+		}
+	}
+	
+	function _ajaxComplete(xmlhttp, xmldocpath, completecallback, errorcallback) {
+		return function() {
+			// Handle the case where an XML document was returned with an incorrect MIME type.
+			if (!utils.exists(xmlhttp.responseXML)) {
+				try {
+					var parsedXML;
+					// Parse XML in FF/Chrome/Safari/Opera
+					if (WINDOW.DOMParser) {
+						parsedXML = (new DOMParser()).parseFromString(xmlhttp.responseText,"text/xml");
+					} else { 
+						// Internet Explorer
+						parsedXML = new ActiveXObject("Microsoft.XMLDOM");
+						parsedXML.async="false";
+						parsedXML.loadXML(xmlhttp.responseText);
+					}
+					if (parsedXML) {
+						xmlhttp = jwplayer.utils.extend({}, xmlhttp, {responseXML:parsedXML});
+					}
+				} catch(e) {
+					if (errorcallback) errorcallback(xmldocpath);
+					return;
+				}
+			}
+			completecallback(xmlhttp);
+		}
+	}
+
 	/** Returns the true type of an object * */
 	utils.typeOf = function(value) {
 		var typeofString = typeof value;
@@ -348,5 +374,66 @@
 		}
 	};
 
+	/**
+	 * Stretches domelement based on stretching. parentWidth, parentHeight,
+	 * elementWidth, and elementHeight are required as the elements dimensions
+	 * change as a result of the stretching. Hence, the original dimensions must
+	 * always be supplied.
+	 * 
+	 * @param {String}
+	 *            stretching
+	 * @param {DOMElement}
+	 *            domelement
+	 * @param {Number}
+	 *            parentWidth
+	 * @param {Number}
+	 *            parentHeight
+	 * @param {Number}
+	 *            elementWidth
+	 * @param {Number}
+	 *            elementHeight
+	 */
+	utils.stretch = function(stretching, domelement, parentWidth,
+			parentHeight, elementWidth, elementHeight, transform) {
+
+		var xscale = (utils.exists(parentWidth) && utils.exists(elementWidth)) ? parentWidth / elementWidth : 0,
+			yscale = (utils.exists(parentHeight) && utils.exists(elementHeight)) ? parentHeight / elementHeight : 0,
+			x = 0, y = 0,
+			style = {},
+			stretchClass;
+		
+		switch (stretching.toLowerCase()) {
+		case _stretching.NONE:
+		case _stretching.FILL:
+		case _stretching.EXACTFIT:
+			stretchClass = "jw" + stretching.toLowerCase();
+			break;
+		case _stretching.UNIFORM:
+			stretchClass = "jw" + stretching.toLowerCase();
+			if (xscale > yscale) {
+				if ( (elementWidth * yscale) / parentWidth > 0.95) {
+					stretchClass = "jwexactfit";
+				}
+			} else {
+				if ( (elementHeight * xscale) / parentHeight > 0.95) {
+					stretchClass = "jwexactfit";
+				}
+			}
+			break;
+		default:
+			break;
+		}
+
+		domelement.className = domelement.className.replace(/jw(none|exactfit|uniform|fill)/g, "");
+		domelement.className += " " + stretchClass;
+	};
 	
+	/** Stretching options **/
+	var _stretching = utils.stretching = {
+		NONE : "none",
+		FILL : "fill",
+		UNIFORM : "uniform",
+		EXACTFIT : "exactfit"
+	};
+
 })(jwplayer);

@@ -30,26 +30,28 @@
 		JW_CSS_100PCT = "100%",
 		JW_CSS_SMOOTH_EASE = "width .25s linear, left .25s linear, opacity .25s, background .25s"
 		
-		CB_CLASS = '.jwcontrolbar';
+		CB_CLASS = '.jwcontrolbar',
+		
+		DOCUMENT = document;
 	
 	/** HTML5 Controlbar class **/
 	_html5.controlbar = function(api, config) {
 		var _api,
 			_skin,
 			_defaults = {
-				backgroundcolor : "",
+				// backgroundcolor : "",
 				margin : 10,
 				font : "Arial,sans-serif",
 				fontsize : 10,
 				fontcolor : parseInt("000000", 16),
 				fontstyle : "normal",
 				fontweight : "bold",
-				buttoncolor : parseInt("ffffff", 16),
+				// buttoncolor : parseInt("ffffff", 16),
 				// position : html5.view.positions.BOTTOM,
-				position: "OVER",
-				idlehide : false,
-				hideplaylistcontrols : false,
-				forcenextprev : false,
+				// position: "OVER",
+				// idlehide : false,
+				// hideplaylistcontrols : false,
+				// forcenextprev : false,
 				layout : {
 					left: {
 						position: "left",
@@ -164,8 +166,9 @@
 
 			_skin = _api.skin;
 			
-			_settings = _utils.extend({}, _defaults, _skin.controlbar.settings, config);
-			_layout = (_skin.controlbar.layout.left || _skin.controlbar.layout.right || _skin.controlbar.layout.center) ? _skin.controlbar.layout : _defaults.layout;
+			_settings = _utils.extend({}, _defaults, config);
+			_layout = _skin.getComponentLayout('controlbar');
+			if (!_layout) _layout = _defaults.layout;
 			_createStyles();
 			_buildControlbar();
 			_addEventListeners();
@@ -198,20 +201,19 @@
 		
 		function _stateHandler(evt) {
 			switch (evt.newstate) {
-			case jwplayer.events.state.BUFFERING:
-			case jwplayer.events.state.PLAYING:
+			case _states.BUFFERING:
+			case _states.PLAYING:
 				if (_elements['timeSliderThumb']) {
 					_elements['timeSliderThumb'].style.opacity = 1;
 				}
 				_toggleButton("play", true);
 				break;
-			case jwplayer.events.state.PAUSED:
+			case _states.PAUSED:
 				if (!_dragging) {
 					_toggleButton("play", false);
 				}
 				break;
-			case jwplayer.events.state.IDLE:
-			case jwplayer.events.state.COMPLETED:
+			case _states.IDLE:
 				_toggleButton("play", false);
 				if (_elements['timeSliderThumb']) {
 					_elements['timeSliderThumb'].style.opacity = 0;
@@ -225,6 +227,9 @@
 				}
 				_setBuffer(0);
 				_timeUpdated({ position: 0, duration: 0});
+				break;
+			case _states.COMPLETED:
+				_controlbar.style.opacity = 0;
 				break;
 			}
 		}
@@ -276,7 +281,7 @@
 		}
 
 		function _createSpan() {
-			return document.createElement("span");
+			return DOCUMENT.createElement("span");
 		}
 		
 		function _buildControlbar() {
@@ -289,16 +294,10 @@
 				'background-repeat': "repeat-x"
 			}, true);
 
-			_controlbar.style.opacity = 0;
 			if (bg) _controlbar.appendChild(bg);
 			if (capLeft) _controlbar.appendChild(capLeft);
 			_buildLayout();
 			if (capRight) _controlbar.appendChild(capRight);
-
-			setTimeout(function() {
-				_resize();
-				_controlbar.style.opacity = 1 
-			},1000);
 		}
 		
 		function _buildElement(element) {
@@ -355,7 +354,7 @@
 				return null;
 			}
 			
-			var element = document.createElement("button");
+			var element = DOCUMENT.createElement("button");
 			element.className = 'jw'+name;
 			element.addEventListener("click", _buttonClickHandler(name), false);
 
@@ -564,13 +563,18 @@
 				_elements[name+'Rail'].className = "jwrail";
 				
 				if (name == "time") {
-					if (_api.jwGetState() != jwplayer.events.state.IDLE) {
+					if (!_idle()) {
 						_dragging = name;
 					}
 				} else {
 					_dragging = name;
 				}
 			});
+		}
+		
+		function _idle() {
+			var currentState = _api.jwGetState();
+			return (currentState == _states.IDLE || currentState == _states.COMPLETED); 
 		}
 		
 		var _lastSeekTime = 0;
@@ -705,8 +709,9 @@
 		}
 
 		function _getSkinElement(name) {
-			if (_skin.controlbar.elements[name]) {
-				return _skin.controlbar.elements[name];
+			var elem = _skin.getSkinElement('controlbar', name); 
+			if (elem) {
+				return elem;
 			} else {
 				return {
 					width: 0,

@@ -7,4 +7,3 @@
 (function(jwplayer) {
 	jwplayer.html5 = {}
 })(jwplayer);
-

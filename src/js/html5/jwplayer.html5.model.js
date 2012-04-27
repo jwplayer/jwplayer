@@ -21,12 +21,12 @@
 				width: 480,
 				height: 320,
 				item: 0,
-				playlist: undefined,
+				playlist: [],
 				skin: undefined,
 				volume: 90,
 				mute: false,
-	//			repeat: "",
-	//			stretching: jwplayer.utils.stretching.UNIFORM,
+				repeat: "",
+				stretching: _utils.stretching.UNIFORM,
 				autostart: false,
 				debug: undefined
 			};
@@ -37,14 +37,13 @@
 
 		function _init() {
 			_utils.extend(_model, new _events.eventdispatcher());
+			_model.config = _utils.extend({}, _defaults, _cookies, _parseConfig(config));
 			_utils.extend(_model, {
 				id: config.id,
 				state : _events.state.IDLE,
 				position: 0,
 				buffer: 0,
-				playlist: [],
-				config: _utils.extend({}, _defaults, _cookies, _parseConfig(config)) 
-			});
+			}, _model.config);
 			_model.setItem(_model.config.item);
 			
 			_videoTag = document.createElement("video");

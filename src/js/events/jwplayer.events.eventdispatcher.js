@@ -28,8 +28,8 @@
 					_listeners[type] = [];
 				}
 				
-				if (typeof(listener) == "string") {
-					eval("listener = " + listener);
+				if (_utils.typeOf(listener) == "string") {
+					listener = ( new Function( 'return ' + listener ) )();
 				}
 				_listeners[type].push({
 					listener: listener,
@@ -40,7 +40,6 @@
 			}
 			return false;
 		};
-		
 		
 		/** Remove an event listener for a specific type of event. **/
 		this.removeEventListener = function(type, listener) {
@@ -63,8 +62,8 @@
 		/** Add an event listener for all events. **/
 		this.addGlobalListener = function(listener, count) {
 			try {
-				if (typeof(listener) == "string") {
-					eval("listener = " + listener);
+				if (_utils.typeOf(listener) == "string") {
+					listener = ( new Function( 'return ' + listener ) )();
 				}
 				_globallisteners.push({
 					listener: listener,
@@ -108,7 +107,7 @@
 			if (_debug) {
 				_utils.log(type, data);
 			}
-			if (typeof _listeners[type] != "undefined") {
+			if (_utils.typeOf(_listeners[type]) != "undefined") {
 				for (var listenerIndex = 0; listenerIndex < _listeners[type].length; listenerIndex++) {
 					try {
 						_listeners[type][listenerIndex].listener(data);

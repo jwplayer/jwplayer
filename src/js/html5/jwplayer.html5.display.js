@@ -1,0 +1,259 @@
+/**
+ * JW Player display component
+ *
+ * @author pablo
+ * @version 6.0
+ */
+(function(html5) {
+	var _utils = jwplayer.utils,
+		_css = _utils.css,
+		_style = _utils.appendStylesheet,
+		_events = jwplayer.events,
+		_states = _events.state,
+		_rotate = html5.utils.animations.rotate,
+
+		D_CLASS = ".jwdisplay",
+
+		/** Some CSS constants we should use for minimization **/
+		//JW_CSS_RELATIVE = "relative",
+		JW_CSS_ABSOLUTE = "absolute",
+		JW_CSS_NONE = "none",
+		//JW_CSS_BLOCK = "block",
+		//JW_CSS_INLINE = "inline",
+		//JW_CSS_INLINE_BLOCK = "inline-block",
+		//JW_CSS_LEFT = "left",
+		//JW_CSS_RIGHT = "right",
+		JW_CSS_100PCT = "100%",
+		JW_CSS_SMOOTH_EASE = "opacity .5s, background .5s";
+
+	
+	html5.display = function(api, config) {
+		var _api = api,
+			_skin = api.skin,
+			_display,
+			_config = config ? config : {},
+			_image, _imageWidth, _imageHeight,
+			_icons = {},
+			_hiding,
+			_button,		
+			_degreesRotated, 
+			_rotationInterval, 
+			_bufferRotation = !_utils.exists(config.bufferrotation) ? 15 : parseInt(config.bufferrotation, 10), 
+			_bufferInterval = !_utils.exists(config.bufferinterval) ? 100 : parseInt(config.bufferinterval, 10);
+			
+		function _init() {
+			_display = DOCUMENT.createElement("div");
+			_display.id = _api.id + "_display";
+			_display.className = "jwdisplay";
+			
+			_api.jwAddEventListener(_events.JWPLAYER_PLAYER_STATE, _stateHandler);
+			_api.jwAddEventListener(_events.JWPLAYER_PLAYLIST_ITEM, _itemHandler);
+			
+			_display.addEventListener('click', _clickHandler, false);
+			
+			_createIcons();
+			
+			_stateHandler({newstate:_states.IDLE});
+			
+		}
+		
+		function _clickHandler(evt) {
+			switch (_api.jwGetState()) {
+			case _states.PLAYING:
+			case _states.BUFFERING:
+				_api.jwPause();
+				break;
+			default:
+				_api.jwPlay();
+				break;
+			}
+		}
+		
+		// Create the icons which will be displayed inside of the display button
+		function _createIcons() {
+			var iconNames = ['play', 'buffer'];
+			for (var i=0; i<iconNames.length; i++) {
+				var iconName = iconNames[i],
+					iconOut = _getSkinElement(iconName+"Icon"),
+					iconOver = _getSkinElement(iconName+"IconOver"),
+					icon = DOCUMENT.createElement("div"),
+					bg = _getSkinElement("background"),
+					bgOver = _getSkinElement("backgroundOver");
+					button = DOCUMENT.createElement("button");
+			
+				if (iconOut) {
+					button.className = "jw" + iconName;
+					icon.className = "jwicon";
+					button.appendChild(icon);
+					
+					_buttonStyle('#'+_display.id+' .'+button.className, bg, bgOver);
+					_buttonStyle('#'+_display.id+' .'+button.className+' div', iconOut, iconOver);
+					
+					if (bgOver || iconOver) {
+						button.addEventListener('mouseover', _hoverButton(button), false);
+						button.addEventListener('mouseout', _hoverOutButton(button), false);
+					}
+					
+					_icons[iconName] = button;
+				}
+			}
+		}
+		
+		function _hoverButton(button) {
+			return function(evt) {
+				if (button.className.indexOf("jwhover") < 0) 
+					button.className += " jwhover";
+				if (button.childNodes[0].className.indexOf("jwhover") < 0)
+					button.childNodes[0].className += " jwhover";
+			}
+		}
+		
+		function _hoverOutButton(button) {
+			return function(evt) {
+				button.className = button.className.replace(" jwhover", ""); 
+				button.childNodes[0].className = button.childNodes[0].className.replace(" jwhover", "");
+			}
+		}
+		
+		function _buttonStyle(selector, out, over) {
+			if (!(out && out.src)) {
+				return;
+			}
+			
+			_style(selector, { 
+				width: out.width,
+				height: out.height,
+				'margin-left': out.width / -2,
+				'margin-top': out.height / -2,
+				background: 'url('+ out.src +') center no-repeat'
+			});
+
+			if (over && over.src) {
+				_style(selector + ".jwhover", {
+					background: 'url('+ over.src +') center no-repeat'
+				});
+			}
+		}
+		
+		function _setIcon(name) {
+			if (_button) {
+				_display.removeChild(_button);
+			}
+			_button = _icons[name];
+			if (_button) {
+				_display.appendChild(_button);
+			}
+		}
+
+		function _itemHandler(evt) {
+			var item = _api.jwGetPlaylist()[_api.jwGetPlaylistIndex()];
+			_image = item ? item.image : "";
+			_getImageDimensions();
+			_style('#' + _display.id, {
+				'background': 'url('+_image+') no-repeat center' 
+			});
+		}
+		
+		function _stateHandler(evt) {
+			clearInterval(_rotationInterval);
+			
+			switch(evt.newstate) {
+			case _states.COMPLETED:
+			case _states.IDLE:
+				_setIcon('play');
+				if (_image) {
+					_style('#' + _display.id, {
+						'background': 'url('+_image+') no-repeat center' 
+					});
+				}
+				break;
+			case _states.BUFFERING:
+				_setIcon('buffer');
+				_degreesRotated = 0;
+				_rotationInterval = setInterval(function() {
+					_degreesRotated += _bufferRotation;
+					_rotate(_button.childNodes[0], _degreesRotated % 360);
+				}, _bufferInterval);
+				break;
+			case _states.PLAYING:
+				_setIcon();
+				_style('#' + _display.id, {
+					'background': 'transparent'
+				});
+				break;
+			case _states.PAUSED:
+				_setIcon('play');
+				break;
+			}
+		}
+
+		this.getDisplayElement = function() {
+			return _display;
+		}
+		
+		function _getImageDimensions() {
+			if (_image) {
+				// Find image size and stretch exactfit if close enough
+				var img = DOCUMENT.createElement("img");
+				img.addEventListener('load', function() {
+					_imageWidth = img.width;
+					_imageHeight = img.height;
+					_resize();
+				}, false);
+				img.src = _image;
+			} else {
+				_imageWidth = _imageHeight = 0;
+			}
+		}
+
+		function _getSkinElement(name) {
+			var elem = _skin.getSkinElement('display', name); 
+			if (elem) {
+				return elem;
+			}
+			return null;
+		}
+
+		
+		function _resize() {
+			_utils.stretch(_api.jwGetStretching(), _display, _display.clientWidth, _display.clientHeight, _imageWidth, _imageHeight);
+		}
+
+		this.resize = _resize;
+
+		_init();
+	};
+	
+	_style(D_CLASS, {
+		position: JW_CSS_ABSOLUTE,
+		cursor: "pointer",
+		width: JW_CSS_100PCT,
+		height: JW_CSS_100PCT,
+		overflow: 'hidden'
+	});
+	
+	_style(D_CLASS + ' *', {
+    	'-webkit-transition': JW_CSS_SMOOTH_EASE,
+    	'-moz-transition': JW_CSS_SMOOTH_EASE,
+    	'-o-transition': JW_CSS_SMOOTH_EASE
+	});
+	
+    _style(D_CLASS+' button, ' + D_CLASS+' .jwicon', {
+    	border: JW_CSS_NONE,
+    	position: JW_CSS_ABSOLUTE,
+    	left: "50%",
+    	top: "50%",
+    	padding: 0,
+    	cursor: 'pointer'
+    });
+
+    _style( {
+    	position: JW_CSS_ABSOLUTE,
+    	left: "50%",
+    	top: "50%",
+    	padding: 0,
+    	cursor: 'pointer'
+    });
+
+	
+})(jwplayer.html5);

@@ -17,7 +17,11 @@
 		
 		function _playlistLoaded(loadedEvent) {
 			try {
-				var playlistObj = html5.parsers.rssparser.parse(loadedEvent.responseXML.firstChild);
+				var rss = loadedEvent.responseXML.firstChild;
+				if (html5.parsers.localName(rss) == "xml") {
+					rss = rss.nextSibling;
+				}
+				var playlistObj = html5.parsers.rssparser.parse(rss);
 				_eventDispatcher.sendEvent(_events.JWPLAYER_PLAYLIST_LOADED, {
 					"playlist": new html5.playlist(playlistObj)
 				});
