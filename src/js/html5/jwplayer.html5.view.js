@@ -14,7 +14,8 @@
 		DOCUMENT = document, 
 		VIEW_CONTAINER_CLASS = "jwplayer", 
 		VIEW_VIDEO_CONTAINER_CLASS = "jwvideocontainer", 
-		VIEW_CONTROLS_CONTAINER_CLASS = "jwcontrolscontainer";
+		VIEW_CONTROLS_CONTAINER_CLASS = "jwcontrolscontainer",
+		VIEW_PLAYLIST_CONTAINER_CLASS = "jwplaylistcontainer";
 
 	html5.view = function(api, model) {
 		var _api = api, 
@@ -22,6 +23,7 @@
 			_controls = {},
 			_container,
 			_controlsLayer,
+			_playlistLayer,
 			_controlsTimeout=0,
 			_timeoutDuration = 2000,
 			_videoLayer;
@@ -43,10 +45,14 @@
 			_controlsLayer = DOCUMENT.createElement("span");
 			_controlsLayer.className = VIEW_CONTROLS_CONTAINER_CLASS;
 
+			_playlistLayer = DOCUMENT.createElement("span");
+			_playlistLayer.className = VIEW_PLAYLIST_CONTAINER_CLASS;
+
 			_setupControls();
 			
 			_container.appendChild(_videoLayer);
 			_container.appendChild(_controlsLayer);
+			_container.appendChild(_playlistLayer);
 			
 			DOCUMENT.addEventListener('webkitfullscreenchange', _fullscreenChangeHandler, false);
 			DOCUMENT.addEventListener('mozfullscreenchange', _fullscreenChangeHandler, false);
@@ -85,6 +91,11 @@
 			} else {
 				displaySettings.backgroundcolor = 'transparent';
 				cbSettings.margin = 0;
+			}
+			
+			if (_model.playlistsize > 0) {
+				_controls.playlist = new html5.playlistcomponent(_api, {});
+				_playlistLayer.appendChild(_controls.playlist.getDisplayElement());
 			}
 
 			_resize(width, height);
@@ -152,6 +163,16 @@
 			}
 			if (_controls.controlbar) {
 				_controls.controlbar.resize(width, height);
+			}
+			if (_controls.playlist && _model.playlistsize > 0) {
+				_controls.playlist.resize(width, height);
+				_css('#'+_container.id+' .' + VIEW_PLAYLIST_CONTAINER_CLASS, {
+					right: 0,
+					width: _model.playlistsize 
+				});
+				_css('#'+_container.id + ' .' + VIEW_VIDEO_CONTAINER_CLASS + ',#'+_container.id+' .'+ VIEW_CONTROLS_CONTAINER_CLASS, {
+					right: _model.playlistsize
+				});
 			}
 
 			return;
@@ -273,7 +294,8 @@
 
 	_css('.' + VIEW_VIDEO_CONTAINER_CLASS + ' ,.'+ VIEW_CONTROLS_CONTAINER_CLASS, {
 		position : "absolute",
-		width : "100%",
+		left: 0,
+		right: 0,
 		height : "100%",
     	'-webkit-transition': JW_CSS_SMOOTH_EASE,
     	'-moz-transition': JW_CSS_SMOOTH_EASE,
@@ -286,6 +308,10 @@
 		height : "100%"
 	});
 
+	_css('.' + VIEW_PLAYLIST_CONTAINER_CLASS, {
+		position: "absolute",
+		height : "100%"
+	});
 
 	
 	// Fullscreen styles

@@ -32,14 +32,23 @@
 	}
 
 	var _styleSheets={},
+		_styleSheet,
 		_rules = {};
+
+	function _createStylesheet() {
+		var styleSheet = DOCUMENT.createElement("style");
+		styleSheet.type = "text/css";
+		DOCUMENT.getElementsByTagName('head')[0].appendChild(styleSheet);
+		return styleSheet;
+	}
 	
 	utils.css = function(selector, styles) {
-		if (!_styleSheets[selector]) {
-			var styleSheet = DOCUMENT.createElement("style");
-			styleSheet.type = "text/css";
-			DOCUMENT.getElementsByTagName('head')[0].appendChild(styleSheet);
-			_styleSheets[selector] = styleSheet;
+		if (utils.isIE()) {
+			if (!_styleSheet) {
+				_styleSheet = _createStylesheet();
+			}
+		} else if (!_styleSheets[selector]) {
+			_styleSheets[selector] = _createStylesheet();
 		}
 
 		if (!_rules[selector]) {
@@ -55,7 +64,12 @@
 			}
 		}
 
-		_updateStylesheet(selector);
+		// IE9 limits the number of style tags in the head, so we need to update the entire stylesheet each time
+		if (utils.isIE()) {
+			_updateAllStyles();
+		} else {
+			_updateStylesheet(selector, _styleSheets[selector]);
+		}
 	}
 	
 	function _styleValue(style, value) {
@@ -84,17 +98,29 @@
 			return value;
 		}
 	}
-	
-	function _updateStylesheet(selector) {
-		if (_styleSheets[selector]) {
-			var ruleText = selector + "{\n";
-			var styles = _rules[selector];
-			for (var style in styles) {
-				ruleText += "  "+style + ": " + styles[style] + ";\n";
-			}
-			ruleText += "}\n";
-			_styleSheets[selector].innerHTML = ruleText;
+
+	function _updateAllStyles() {
+		var ruleText = "\n";
+		for (var rule in _rules) {
+			ruleText += _getRuleText(rule);
 		}
+		_styleSheet.innerHTML = ruleText;
+	}
+	
+	function _updateStylesheet(selector, sheet) {
+		if (sheet) {
+			sheet.innerHTML = _getRuleText(selector);
+		}
+	}
+	
+	function _getRuleText(selector) {
+		var ruleText = selector + "{\n";
+		var styles = _rules[selector];
+		for (var style in styles) {
+			ruleText += "  "+style + ": " + styles[style] + ";\n";
+		}
+		ruleText += "}\n";
+		return ruleText;
 	}
 	
 	
@@ -223,18 +249,29 @@
 		}
 	}
 	
-	utils.userAgentMatch = function(regex) {
+	var _userAgentMatch = utils.userAgentMatch = function(regex) {
 		var agent = navigator.userAgent.toLowerCase();
 		return (agent.match(regex) !== null);
+	};
+
+	utils.isIE = function() {
+		return _userAgentMatch(/msie/i);
 	};
 	
 	/** Matches iOS and Android devices **/	
 	utils.isMobile = function() {
-		return utils.userAgentMatch(/(iP(hone|ad|od))|android/i);
+		return _userAgentMatch(/(iP(hone|ad|od))|android/i);
 	}
+
+	/**
+	 * Detects whether the current browser is mobile Safari.
+	 */
+	jwplayer.utils.isIOS = function() {
+		return _userAgentMatch(/iP(hone|ad|od)/i);
+	};
 	
 	utils.isIPod = function() {
-		return jwplayer.utils.userAgentMatch(/iP(hone|od)/i);
+		return _userAgentMatch(/iP(hone|od)/i);
 	};
 
 	/** Save a setting **/

@@ -26,6 +26,7 @@
 				volume: 90,
 				mute: false,
 				repeat: "",
+				playlistsize: 0,
 				stretching: _utils.stretching.UNIFORM,
 				autostart: false,
 				debug: undefined
