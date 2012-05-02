@@ -31,45 +31,15 @@
 		return true;
 	}
 
-	var _styleSheet;
-	var _rules = {}
+	var _styleSheets={},
+		_rules = {};
 	
-	/**
-	 * @param {Object} or {String} domelement If domelement is a string, create a document-wide CSS rule for that string 
-	 * @param {Object} styles
-	 */
-	utils.css = function(domelement, styles) {
-		if (utils.exists(domelement)) {
-			for (var style in styles) {
-				try {
-					if (typeof styles[style] === "undefined") {
-						continue;
-					} else if (typeof styles[style] == "number" && !(style == "zIndex" || style == "opacity")) {
-						if (isNaN(styles[style])) {
-							continue;
-						}
-						if (style.match(/color/i)) {
-							styles[style] = "#" + utils.strings.pad(styles[style].toString(16), 6);
-						} else {
-							styles[style] = Math.ceil(styles[style]) + "px";
-						}
-					}
-					if (styles[style]) {
-						domelement.style[style] = styles[style];
-					}
-				} catch (err) {
-				}
-			}
-		}
-	};
-	
-	var foo =false;
-	
-	utils.appendStylesheet = function(selector, styles) {
-		if (!_styleSheet) {
-			_styleSheet = DOCUMENT.createElement("style");
-			_styleSheet.type = "text/css";
-			DOCUMENT.getElementsByTagName('head')[0].appendChild(_styleSheet);
+	utils.css = function(selector, styles) {
+		if (!_styleSheets[selector]) {
+			var styleSheet = DOCUMENT.createElement("style");
+			styleSheet.type = "text/css";
+			DOCUMENT.getElementsByTagName('head')[0].appendChild(styleSheet);
+			_styleSheets[selector] = styleSheet;
 		}
 
 		if (!_rules[selector]) {
@@ -85,7 +55,7 @@
 			}
 		}
 
-		_updateStylesheet();
+		_updateStylesheet(selector);
 	}
 	
 	function _styleValue(style, value) {
@@ -115,18 +85,15 @@
 		}
 	}
 	
-	function _updateStylesheet() {
-		if (_styleSheet) {
-			var ruleText = "";
-			for (var rule in _rules) {
-				var styles = _rules[rule];
-				ruleText += rule + "{\n";
-				for (var style in styles) {
-					ruleText += "  "+style + ": " + styles[style] + ";\n";
-				}
-				ruleText += "}\n";
+	function _updateStylesheet(selector) {
+		if (_styleSheets[selector]) {
+			var ruleText = selector + "{\n";
+			var styles = _rules[selector];
+			for (var style in styles) {
+				ruleText += "  "+style + ": " + styles[style] + ";\n";
 			}
-			_styleSheet.innerHTML = ruleText;
+			ruleText += "}\n";
+			_styleSheets[selector].innerHTML = ruleText;
 		}
 	}
 	
@@ -140,7 +107,11 @@
 				delete _rules[rule];
 			}
 		}
-		_updateStylesheet();
+		for (var selector in _styleSheets) {
+			if (selector.indexOf(filter) >= 0) {
+				_styleSheets[selector].innerHTML = '';
+			}
+		}
 	}
 	
 	/** Gets an absolute file path based on a relative filepath * */

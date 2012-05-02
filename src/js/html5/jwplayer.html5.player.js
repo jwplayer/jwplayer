@@ -14,13 +14,6 @@
 		function _init() {
 			_api.id = _model.id;
 			
-//			_controller.load();
-/*			
-			(new html5.skinloader(config.skin, function(skin) {
-				_api.skin = skin;
-				_view.setup();
-			}, function(err) { _utils.log(err); }));
-*/
 			var setup = new html5.setup(_model, _view, _controller);
 			setup.addEventListener(jwplayer.events.JWPLAYER_READY, _readyHandler);
 			setup.addEventListener(jwplayer.events.JWPLAYER_ERROR, _errorHandler);
@@ -28,6 +21,7 @@
 		}
 		
 		function _readyHandler(evt) {
+			_view.completeSetup();
 			_controller.sendEvent(evt.type, evt);
 			_controller.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_LOADED, {playlist: _model.playlist});
 			_controller.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_ITEM, {index: _model.item});
@@ -54,7 +48,10 @@
 		this.jwPlaylistPrev = _controller.prev;
 		this.jwPlaylistItem = _controller.item;
 		this.jwSetFullscreen = _controller.setFullscreen;
-		this.jwResize = _view.resize;
+		this.jwResize = _view.resize;		
+		this.jwSeekDrag = _model.seekDrag;
+		this.jwSetStretching = _controller.setStretching;
+
 		
 
 		/** Getters **/

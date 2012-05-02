@@ -5,12 +5,16 @@
  * @version 6.0
  */
 (function(html5) {
-	var _jw = jwplayer, _utils = _jw.utils, _style = _utils.appendStylesheet, _events = jwplayer.events, _states = _events.state;
+	var _jw = jwplayer, 
+		_utils = _jw.utils, 
+		_css = _utils.css, 
+		_events = jwplayer.events, 
+		_states = _events.state,
 
-	DOCUMENT = document, 
-	VIEW_CONTAINER_CLASS = "jwplayer", 
-	VIEW_VIDEO_CONTAINER_CLASS = "jwvideocontainer", 
-	VIEW_CONTROLS_CONTAINER_CLASS = "jwcontrolscontainer";
+		DOCUMENT = document, 
+		VIEW_CONTAINER_CLASS = "jwplayer", 
+		VIEW_VIDEO_CONTAINER_CLASS = "jwvideocontainer", 
+		VIEW_CONTROLS_CONTAINER_CLASS = "jwcontrolscontainer";
 
 	html5.view = function(api, model) {
 		var _api = api, 
@@ -49,9 +53,10 @@
 			DOCUMENT.addEventListener('keydown', _keyHandler, false);
 			
 			_api.jwAddEventListener(_events.JWPLAYER_PLAYER_STATE, _stateHandler);
+
+			_stateHandler({newstate:_states.IDLE});
 			
 			_container.addEventListener('mouseout', _fadeControls, false);
-			
 			_container.addEventListener('mousemove', function(evt) {
 				_showControls();
 				clearTimeout(_controlsTimeout);
@@ -69,8 +74,8 @@
 		}
 		
 		function _setupControls() {
-			var width = _api.jwGetWidth(),
-				height = _api.jwGetHeight(),
+			var width = _model.width,
+				height = _model.height,
 				cbSettings = _api.skin.getComponentSettings('controlbar'),
 				displaySettings = _api.skin.getComponentSettings('display')
 		
@@ -82,10 +87,10 @@
 				cbSettings.margin = 0;
 			}
 
-			_style('#'+_container.id, {
-				'background-color': displaySettings.backgroundcolor ? displaySettings.backgroundcolor : 0,
-				width: width,
-				height: height
+			_resize(width, height);
+			
+			_css('#'+_container.id, {
+				'background-color': displaySettings.backgroundcolor ? displaySettings.backgroundcolor : 0
 			});
 
 			if (!_utils.isMobile()) {
@@ -105,16 +110,14 @@
 
 			if (state) {
 				if (!_model.fullscreen) {
-					_fakeFullscreen(true);
-					
 					if (_container.requestFullScreen) {
 						_container.requestFullScreen();
 					} else if (_container.mozRequestFullScreen) {
 						_container.mozRequestFullScreen();
-					} else if (_container.webkitRequestFullScreenWithKeys) {
-						_container.webkitRequestFullScreenWithKeys();
 					} else if (_container.webkitRequestFullScreen) {
 						_container.webkitRequestFullScreen();
+					} else {
+						_fakeFullscreen(true);
 					}
 				}
 				_model.setFullscreen(true);
@@ -135,20 +138,30 @@
 		 * Resize the player
 		 */
 		function _resize(width, height) {
+			if (_utils.exists(width) && _utils.exists(height)) {
+				_css('#'+_container.id, {
+					width: width,
+					height: height
+				});
+				_model.width = width;
+				_model.height = height;
+			}
+
 			if (_controls.display) {
 				_controls.display.resize(width, height);
 			}
 			if (_controls.controlbar) {
 				_controls.controlbar.resize(width, height);
 			}
-			if (_container.style.opacity == 0) {
-				_container.style.opacity = 1;
-			}
+
 			return;
 		}
 		
 		this.resize = _resize;
-		
+
+		this.completeSetup = function() {
+			_css('#'+_container.id, {opacity: 1});
+		}
 		
 		/**
 		 * Listen for keystrokes.  Currently only ESC is recognized, to switch out of fullscreen mode.
@@ -184,8 +197,9 @@
 		 * Return whether or not we're in native fullscreen
 		 */
 		function _isNativeFullscreen() {
-			return (DOCUMENT.mozFullScreenElement == _container || 
-					DOCUMENT.webkitCurrentFullScreenElement == _container);
+			if (DOCUMENT.mozFullScreenElement) return DOCUMENT.mozFullScreenElement.id == _container.id; 
+			else if (DOCUMENT.webkitCurrentFullScreenElement) return DOCUMENT.webkitCurrentFullScreenElement.id == _container.id; 
+			else return false;
 		}
 		
 		/**
@@ -197,31 +211,46 @@
 		}
 
 		function _hideControls() {
-			_controlsLayer.style.opacity = 0;
+			if (_controls.controlbar) _controls.controlbar.hide();
+			if (_controls.display) _controls.display.hide();
 		}
 
 		function _showControls() {
-			_controlsLayer.style.opacity = 1;
+			if (_controls.controlbar) _controls.controlbar.show();
+			if (_controls.display) _controls.display.show();
 		}
 
 		/**
 		 * Player state handler
 		 */
 		function _stateHandler(evt) {
+			var vidstyle = {};
 			switch(evt.newstate) {
 			case _states.PLAYING:
+				if (_utils.isIPod) {
+					vidstyle.display = "block";
+				}
+				vidstyle.opacity = 1;
+				_css('#'+_container.id+' .'+VIEW_VIDEO_CONTAINER_CLASS, vidstyle);
 				_hideControls();
 				break;
 			case _states.COMPLETED:
 			case _states.IDLE:
+				if (_utils.isIPod) {
+					vidstyle.display = "none";
+				}
+				vidstyle.opacity = 0;
+				_css('#'+_container.id+' .'+VIEW_VIDEO_CONTAINER_CLASS, vidstyle);
+				_showControls();
+				break;
 			case _states.BUFFERING:
 			case _states.PAUSED:
-				_showControls();
+				if (!_utils.isMobile()) {
+					_showControls();
+				}
 				break;
 			}
 		}
-
-
 	}
 
 	/*************************************************************
@@ -229,11 +258,11 @@
 	 * These CSS rules are used for all JW Player instances      *
 	 *************************************************************/
 
-	var JW_CSS_SMOOTH_EASE = "opacity .25s ease";
+	var JW_CSS_SMOOTH_EASE = "opacity .5s ease";
 
 	
 	// Container styles
-	_style('.' + VIEW_CONTAINER_CLASS, {
+	_css('.' + VIEW_CONTAINER_CLASS, {
 		position : "relative",
 		overflow: "hidden",
 		opacity: 0,
@@ -242,7 +271,7 @@
     	'-o-transition': JW_CSS_SMOOTH_EASE
 	});
 
-	_style('.' + VIEW_VIDEO_CONTAINER_CLASS + ' ,.'+ VIEW_CONTROLS_CONTAINER_CLASS, {
+	_css('.' + VIEW_VIDEO_CONTAINER_CLASS + ' ,.'+ VIEW_CONTROLS_CONTAINER_CLASS, {
 		position : "absolute",
 		width : "100%",
 		height : "100%",
@@ -251,29 +280,27 @@
     	'-o-transition': JW_CSS_SMOOTH_EASE
 	});
 
-	_style('.' + VIEW_VIDEO_CONTAINER_CLASS + " video", {
+	_css('.' + VIEW_VIDEO_CONTAINER_CLASS + " video", {
 		background : "transparent",
 		width : "100%",
-		height : "100%",
-		opacity : 0,
-		'-webkit-transition' : 'opacity .15s ease'
+		height : "100%"
 	});
 
 
 	
 	// Fullscreen styles
 	
-	_style('.' + VIEW_CONTAINER_CLASS+':-webkit-full-screen', {
+	_css('.' + VIEW_CONTAINER_CLASS+':-webkit-full-screen', {
 		width: "100% !important",
 		height: "100% !important"
 	});
 	
-	_style('.' + VIEW_CONTAINER_CLASS+':-moz-full-screen', {
+	_css('.' + VIEW_CONTAINER_CLASS+':-moz-full-screen', {
 		width: "100% !important",
 		height: "100% !important"
 	});
 	
-	_style('.' + VIEW_CONTAINER_CLASS+'.jwfullscreen', {
+	_css('.' + VIEW_CONTAINER_CLASS+'.jwfullscreen', {
 		left: 0,
 		right: 0,
 		top: 0,
@@ -282,19 +309,19 @@
 		position: "fixed !important"
 	});
 
-	_style('.' + VIEW_CONTAINER_CLASS+' .jwuniform', {
+	_css('.' + VIEW_CONTAINER_CLASS+' .jwuniform', {
 		'background-size': 'contain !important'
 	});
 
-	_style('.' + VIEW_CONTAINER_CLASS+' .jwfill', {
+	_css('.' + VIEW_CONTAINER_CLASS+' .jwfill', {
 		'background-size': 'cover !important'
 	});
 
-	_style('.' + VIEW_CONTAINER_CLASS+' .jwexactfit', {
+	_css('.' + VIEW_CONTAINER_CLASS+' .jwexactfit', {
 		'background-size': '100% 100% !important'
 	});
 
-	_style('.' + VIEW_CONTAINER_CLASS+' .jwnone', {
+	_css('.' + VIEW_CONTAINER_CLASS+' .jwnone', {
 		'background-size': null
 	});
 

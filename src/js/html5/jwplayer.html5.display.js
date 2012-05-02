@@ -7,12 +7,14 @@
 (function(html5) {
 	var _utils = jwplayer.utils,
 		_css = _utils.css,
-		_style = _utils.appendStylesheet,
 		_events = jwplayer.events,
 		_states = _events.state,
 		_rotate = html5.utils.animations.rotate,
+		
 
+		DOCUMENT = document,
 		D_CLASS = ".jwdisplay",
+		D_PREVIEW_CLASS = ".jwpreview",
 
 		/** Some CSS constants we should use for minimization **/
 		//JW_CSS_RELATIVE = "relative",
@@ -24,27 +26,33 @@
 		//JW_CSS_LEFT = "left",
 		//JW_CSS_RIGHT = "right",
 		JW_CSS_100PCT = "100%",
-		JW_CSS_SMOOTH_EASE = "opacity .5s, background .5s";
+		JW_CSS_SMOOTH_EASE = "opacity .25s";
 
 	
 	html5.display = function(api, config) {
 		var _api = api,
 			_skin = api.skin,
-			_display,
-			_config = config ? config : {},
-			_image, _imageWidth, _imageHeight,
+			_display, _preview,
+			_image, _imageWidth, _imageHeight, _imageURL,
 			_icons = {},
 			_hiding,
 			_button,		
 			_degreesRotated, 
 			_rotationInterval, 
-			_bufferRotation = !_utils.exists(config.bufferrotation) ? 15 : parseInt(config.bufferrotation, 10), 
-			_bufferInterval = !_utils.exists(config.bufferinterval) ? 100 : parseInt(config.bufferinterval, 10);
+			_config = _utils.extend({
+				backgroundcolor: '#000'
+			}, config);
+			_bufferRotation = !_utils.exists(_config.bufferrotation) ? 15 : parseInt(_config.bufferrotation, 10), 
+			_bufferInterval = !_utils.exists(_config.bufferinterval) ? 100 : parseInt(_config.bufferinterval, 10);
 			
 		function _init() {
 			_display = DOCUMENT.createElement("div");
 			_display.id = _api.id + "_display";
 			_display.className = "jwdisplay";
+			
+			_preview = DOCUMENT.createElement("div");
+			_preview.className = "jwpreview";
+			_display.appendChild(_preview);
 			
 			_api.jwAddEventListener(_events.JWPLAYER_PLAYER_STATE, _stateHandler);
 			_api.jwAddEventListener(_events.JWPLAYER_PLAYLIST_ITEM, _itemHandler);
@@ -54,7 +62,6 @@
 			_createIcons();
 			
 			_stateHandler({newstate:_states.IDLE});
-			
 		}
 		
 		function _clickHandler(evt) {
@@ -120,7 +127,7 @@
 				return;
 			}
 			
-			_style(selector, { 
+			_css(selector, { 
 				width: out.width,
 				height: out.height,
 				'margin-left': out.width / -2,
@@ -129,7 +136,7 @@
 			});
 
 			if (over && over.src) {
-				_style(selector + ".jwhover", {
+				_css(selector + ".jwhover", {
 					background: 'url('+ over.src +') center no-repeat'
 				});
 			}
@@ -145,13 +152,14 @@
 			}
 		}
 
-		function _itemHandler(evt) {
+		function _itemHandler() {
 			var item = _api.jwGetPlaylist()[_api.jwGetPlaylistIndex()];
-			_image = item ? item.image : "";
-			_getImageDimensions();
-			_style('#' + _display.id, {
-				'background': 'url('+_image+') no-repeat center' 
-			});
+			var newImage = item ? item.image : "";
+			if (_image != newImage) {
+				_image = newImage;
+				_setVisibility(D_PREVIEW_CLASS, false);
+				_getImage();
+			}
 		}
 		
 		function _stateHandler(evt) {
@@ -161,11 +169,7 @@
 			case _states.COMPLETED:
 			case _states.IDLE:
 				_setIcon('play');
-				if (_image) {
-					_style('#' + _display.id, {
-						'background': 'url('+_image+') no-repeat center' 
-					});
-				}
+				_setVisibility(D_PREVIEW_CLASS, true);
 				break;
 			case _states.BUFFERING:
 				_setIcon('buffer');
@@ -177,9 +181,7 @@
 				break;
 			case _states.PLAYING:
 				_setIcon();
-				_style('#' + _display.id, {
-					'background': 'transparent'
-				});
+				_setVisibility(D_PREVIEW_CLASS, false);
 				break;
 			case _states.PAUSED:
 				_setIcon('play');
@@ -191,17 +193,26 @@
 			return _display;
 		}
 		
-		function _getImageDimensions() {
+		function _internalSelector(selector) {
+			return '#' + _display.id + ' ' + selector;
+		}
+		
+		function _getImage() {
 			if (_image) {
 				// Find image size and stretch exactfit if close enough
-				var img = DOCUMENT.createElement("img");
+				var img = new Image();
 				img.addEventListener('load', function() {
 					_imageWidth = img.width;
 					_imageHeight = img.height;
 					_resize();
+					_css(_internalSelector(D_PREVIEW_CLASS), {
+						'background-image': _image ? ('url('+_image+')') : '',
+					});
+					_setVisibility(D_PREVIEW_CLASS, true);
 				}, false);
 				img.src = _image;
 			} else {
+				_setVisibility(D_PREVIEW_CLASS, false);
 				_imageWidth = _imageHeight = 0;
 			}
 		}
@@ -213,32 +224,54 @@
 			}
 			return null;
 		}
-
 		
 		function _resize() {
-			_utils.stretch(_api.jwGetStretching(), _display, _display.clientWidth, _display.clientHeight, _imageWidth, _imageHeight);
+			_utils.stretch(_api.jwGetStretching(), _preview, _display.clientWidth, _display.clientHeight, _imageWidth, _imageHeight);
 		}
 
 		this.resize = _resize;
+		
+		function _setVisibility(selector, state) {
+			_css(_internalSelector(selector), {
+				opacity: state ? 1 : 0
+			});
+		}
+		
+		this.show = function() {
+			_setVisibility('', true);
+		}
+		
+		this.hide = function() {
+			_setVisibility('', false);
+		}
 
 		_init();
 	};
 	
-	_style(D_CLASS, {
+	_css(D_CLASS, {
 		position: JW_CSS_ABSOLUTE,
 		cursor: "pointer",
 		width: JW_CSS_100PCT,
 		height: JW_CSS_100PCT,
 		overflow: 'hidden'
 	});
-	
-	_style(D_CLASS + ' *', {
+
+	_css(D_CLASS + ' .jwpreview', {
+		position: JW_CSS_ABSOLUTE,
+		width: JW_CSS_100PCT,
+		height: JW_CSS_100PCT,
+		'background-repeat': 'no-repeat',
+		'background-position': 'center',
+		overflow: 'hidden'
+	});
+
+	_css(D_CLASS +', '+D_CLASS + ' *', {
     	'-webkit-transition': JW_CSS_SMOOTH_EASE,
     	'-moz-transition': JW_CSS_SMOOTH_EASE,
     	'-o-transition': JW_CSS_SMOOTH_EASE
 	});
 	
-    _style(D_CLASS+' button, ' + D_CLASS+' .jwicon', {
+    _css(D_CLASS+' button, ' + D_CLASS+' .jwicon', {
     	border: JW_CSS_NONE,
     	position: JW_CSS_ABSOLUTE,
     	left: "50%",
@@ -247,13 +280,4 @@
     	cursor: 'pointer'
     });
 
-    _style( {
-    	position: JW_CSS_ABSOLUTE,
-    	left: "50%",
-    	top: "50%",
-    	padding: 0,
-    	cursor: 'pointer'
-    });
-
-	
 })(jwplayer.html5);

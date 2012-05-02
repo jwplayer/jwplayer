@@ -56,45 +56,15 @@ jwplayer.source = document.createElement("source");/**
 		return true;
 	}
 
-	var _styleSheet;
-	var _rules = {}
+	var _styleSheets={},
+		_rules = {};
 	
-	/**
-	 * @param {Object} or {String} domelement If domelement is a string, create a document-wide CSS rule for that string 
-	 * @param {Object} styles
-	 */
-	utils.css = function(domelement, styles) {
-		if (utils.exists(domelement)) {
-			for (var style in styles) {
-				try {
-					if (typeof styles[style] === "undefined") {
-						continue;
-					} else if (typeof styles[style] == "number" && !(style == "zIndex" || style == "opacity")) {
-						if (isNaN(styles[style])) {
-							continue;
-						}
-						if (style.match(/color/i)) {
-							styles[style] = "#" + utils.strings.pad(styles[style].toString(16), 6);
-						} else {
-							styles[style] = Math.ceil(styles[style]) + "px";
-						}
-					}
-					if (styles[style]) {
-						domelement.style[style] = styles[style];
-					}
-				} catch (err) {
-				}
-			}
-		}
-	};
-	
-	var foo =false;
-	
-	utils.appendStylesheet = function(selector, styles) {
-		if (!_styleSheet) {
-			_styleSheet = DOCUMENT.createElement("style");
-			_styleSheet.type = "text/css";
-			DOCUMENT.getElementsByTagName('head')[0].appendChild(_styleSheet);
+	utils.css = function(selector, styles) {
+		if (!_styleSheets[selector]) {
+			var styleSheet = DOCUMENT.createElement("style");
+			styleSheet.type = "text/css";
+			DOCUMENT.getElementsByTagName('head')[0].appendChild(styleSheet);
+			_styleSheets[selector] = styleSheet;
 		}
 
 		if (!_rules[selector]) {
@@ -110,7 +80,7 @@ jwplayer.source = document.createElement("source");/**
 			}
 		}
 
-		_updateStylesheet();
+		_updateStylesheet(selector);
 	}
 	
 	function _styleValue(style, value) {
@@ -140,18 +110,15 @@ jwplayer.source = document.createElement("source");/**
 		}
 	}
 	
-	function _updateStylesheet() {
-		if (_styleSheet) {
-			var ruleText = "";
-			for (var rule in _rules) {
-				var styles = _rules[rule];
-				ruleText += rule + "{\n";
-				for (var style in styles) {
-					ruleText += "  "+style + ": " + styles[style] + ";\n";
-				}
-				ruleText += "}\n";
+	function _updateStylesheet(selector) {
+		if (_styleSheets[selector]) {
+			var ruleText = selector + "{\n";
+			var styles = _rules[selector];
+			for (var style in styles) {
+				ruleText += "  "+style + ": " + styles[style] + ";\n";
 			}
-			_styleSheet.innerHTML = ruleText;
+			ruleText += "}\n";
+			_styleSheets[selector].innerHTML = ruleText;
 		}
 	}
 	
@@ -165,7 +132,11 @@ jwplayer.source = document.createElement("source");/**
 				delete _rules[rule];
 			}
 		}
-		_updateStylesheet();
+		for (var selector in _styleSheets) {
+			if (selector.indexOf(filter) >= 0) {
+				_styleSheets[selector].innerHTML = '';
+			}
+		}
 	}
 	
 	/** Gets an absolute file path based on a relative filepath * */
@@ -616,8 +587,17 @@ jwplayer.source = document.createElement("source");/**
 				return "{" + String(toReturn) + "}";
 			}
 		}
-	}
+	};
 	
+	/** Returns the extension of a file name * */
+	strings.extension = function(path) {
+		if (!path) { return ""; }
+		path = path.substring(path.lastIndexOf("/") + 1, path.length).split("?")[0];
+		if (path.lastIndexOf('.') > -1) {
+			return path.substr(path.lastIndexOf('.') + 1, path.length).toLowerCase();
+		}
+	};
+
 })(jwplayer.utils);
 /**
  * Utility methods for the JW Player.
@@ -1200,7 +1180,7 @@ jwplayer.source = document.createElement("source");/**
 		_utils = jwplayer.utils,
 		_events = jwplayer.events,
 		_states = jwplayer.events.state,
-		_style = _utils.appendStylesheet,
+		_css = _utils.css,
 
 		/** Controlbar element types **/
 		CB_BUTTON = "button",
@@ -1218,7 +1198,7 @@ jwplayer.source = document.createElement("source");/**
 		JW_CSS_LEFT = "left",
 		JW_CSS_RIGHT = "right",
 		JW_CSS_100PCT = "100%",
-		JW_CSS_SMOOTH_EASE = "width .25s linear, left .25s linear, opacity .25s, background .25s"
+		JW_CSS_SMOOTH_EASE = "width .25s linear, left .25s linear, opacity .25s, background .25s",
 		
 		CB_CLASS = '.jwcontrolbar',
 		
@@ -1238,7 +1218,6 @@ jwplayer.source = document.createElement("source");/**
 				fontweight : "bold",
 				// buttoncolor : parseInt("ffffff", 16),
 				// position : html5.view.positions.BOTTOM,
-				// position: "OVER",
 				// idlehide : false,
 				// hideplaylistcontrols : false,
 				// forcenextprev : false,
@@ -1310,6 +1289,8 @@ jwplayer.source = document.createElement("source");/**
 			_id,
 			_duration,
 			_currentVolume,
+			_dragging = false,
+			_lastSeekTime = 0,
 			
 			_toggles = {
 				play: "pause",
@@ -1335,8 +1316,6 @@ jwplayer.source = document.createElement("source");/**
 				time: _seek,
 				volume: _volume
 			};
-		
-		
 
 		function _init() {
 			_elements = {};
@@ -1393,9 +1372,7 @@ jwplayer.source = document.createElement("source");/**
 			switch (evt.newstate) {
 			case _states.BUFFERING:
 			case _states.PLAYING:
-				if (_elements['timeSliderThumb']) {
-					_elements['timeSliderThumb'].style.opacity = 1;
-				}
+				_css(_internalSelector('.jwtimeSliderThumb'), { opacity: 1 });
 				_toggleButton("play", true);
 				break;
 			case _states.PAUSED:
@@ -1405,9 +1382,7 @@ jwplayer.source = document.createElement("source");/**
 				break;
 			case _states.IDLE:
 				_toggleButton("play", false);
-				if (_elements['timeSliderThumb']) {
-					_elements['timeSliderThumb'].style.opacity = 0;
-				}
+				_css(_internalSelector('.jwtimeSliderThumb'), { opacity: 0 });
 				if (_elements["timeRail"]) {
 					_elements["timeRail"].className = "jwrail";
 					setTimeout(function() {
@@ -1419,7 +1394,7 @@ jwplayer.source = document.createElement("source");/**
 				_timeUpdated({ position: 0, duration: 0});
 				break;
 			case _states.COMPLETED:
-				_controlbar.style.opacity = 0;
+				_css(_internalSelector(), { opacity: 0 });
 				break;
 			}
 		}
@@ -1447,15 +1422,15 @@ jwplayer.source = document.createElement("source");/**
 		 */
 		function _createStyles() {
 			_utils.clearCss('#'+_id);
-			
-			_style('#'+_id, {
+
+			_css('#'+_id, {
 		  		height: _getSkinElement("background").height,
-	  			bottom: _settings.position == "OVER" ? _settings.margin : 0,
-	  			left: _settings.position == "OVER" ? _settings.margin : 0,
-	  			right: _settings.position == "OVER" ? _settings.margin : 0
+	  			bottom: _settings.margin ? _settings.margin : 0,
+	  			left: _settings.margin ? _settings.margin : 0,
+	  			right: _settings.margin ? _settings.margin : 0
 			});
 			
-			_style(_internalSelector(".jwtext"), {
+			_css(_internalSelector(".jwtext"), {
 				font: _settings.fontsize + "px/" + _getSkinElement("background").height + "px " + _settings.font,
 				color: _settings.fontcolor,
 				'font-weight': _settings.fontweight,
@@ -1534,7 +1509,7 @@ jwplayer.source = document.createElement("source");/**
 				};
 			}
 			
-			_style(_internalSelector('.jw'+name), _utils.extend(newStyle, style));
+			_css(_internalSelector('.jw'+name), _utils.extend(newStyle, style));
 			_elements[name] = element;
 			return element;
 		}
@@ -1569,13 +1544,13 @@ jwplayer.source = document.createElement("source");/**
 				return;
 			}
 			
-			_style(selector, { 
+			_css(selector, { 
 				width: out.width,
 				background: 'url('+ out.src +') center no-repeat'
 			});
 			
 			if (over.src) {
-				_style(selector + ':hover', { 
+				_css(selector + ':hover', { 
 					background: 'url('+ over.src +') center no-repeat'
 				});
 			}
@@ -1611,9 +1586,6 @@ jwplayer.source = document.createElement("source");/**
 		}
 		
 		function _seek(pct) {
-			if (!_dragging) {
-				_api.jwPlay();
-			}
 			_api.jwSeek(pct * _duration);
 		}
 		
@@ -1660,7 +1632,7 @@ jwplayer.source = document.createElement("source");/**
 				css['background-size'] = "100% " + _getSkinElement("background").height + "px";
 			}
 
-			_style(_internalSelector('.jw'+name), css);
+			_css(_internalSelector('.jw'+name), css);
 			element.innerHTML = "00:00";
 			_elements[name] = element;
 			return element;
@@ -1670,7 +1642,7 @@ jwplayer.source = document.createElement("source");/**
 			if (divider.width) {
 				var element = _createSpan();
 				element.className = "jwblankDivider";
-				_style(element, {
+				_css(element, {
 					width: parseInt(divider.width)
 				});
 				return element;
@@ -1696,7 +1668,7 @@ jwplayer.source = document.createElement("source");/**
 			slider.appendChild(rail);
 			if (capLeft) slider.appendChild(capRight);
 
-			_style(_internalSelector(".jw" + name + " .jwrail"), {
+			_css(_internalSelector(".jw" + name + " .jwrail"), {
 				left: _getSkinElement(name+"SliderCapLeft").width,
 				right: _getSkinElement(name+"SliderCapRight").width,
 			});
@@ -1731,8 +1703,8 @@ jwplayer.source = document.createElement("source");/**
 			
 			var thumb = _buildImage(name + "SliderThumb");
 			if (thumb) {
+				_css(_internalSelector('.'+thumb.className), { opacity: 0 });
 				thumb.className += " jwthumb";
-				thumb.style.opacity = 0;
 				rail.appendChild(thumb);
 			}
 			
@@ -1743,8 +1715,11 @@ jwplayer.source = document.createElement("source");/**
 			return rail;
 		}
 		
-		var _dragging;
-		
+		function _idle() {
+			var currentState = _api.jwGetState();
+			return (currentState == _states.IDLE || currentState == _states.COMPLETED); 
+		}
+
 		function _sliderMouseDown(name) {
 			return (function(evt) {
 				if (evt.button != 0)
@@ -1754,6 +1729,7 @@ jwplayer.source = document.createElement("source");/**
 				
 				if (name == "time") {
 					if (!_idle()) {
+						_api.jwSeekDrag(true);
 						_dragging = name;
 					}
 				} else {
@@ -1761,13 +1737,6 @@ jwplayer.source = document.createElement("source");/**
 				}
 			});
 		}
-		
-		function _idle() {
-			var currentState = _api.jwGetState();
-			return (currentState == _states.IDLE || currentState == _states.COMPLETED); 
-		}
-		
-		var _lastSeekTime = 0;
 		
 		function _sliderMouseEvent(evt) {
 			if (!_dragging || evt.button != 0) {
@@ -1780,6 +1749,11 @@ jwplayer.source = document.createElement("source");/**
 			
 			if (evt.type == 'mouseup') {
 				var name = _dragging;
+				
+				if (name == "time") {
+					_api.jwSeekDrag(false);
+				}
+
 				_elements[name+'Rail'].className = "jwrail jwsmooth";
 				_dragging = null;
 				_sliderMapping[name](pct);
@@ -1791,7 +1765,6 @@ jwplayer.source = document.createElement("source");/**
 				}
 				var currentTime = (new Date()).getTime();
 				if (currentTime - _lastSeekTime > 500) {
-					_api.jwPause();
 					_lastSeekTime = currentTime;
 					_sliderMapping[_dragging](pct);
 				}
@@ -1801,7 +1774,7 @@ jwplayer.source = document.createElement("source");/**
 	
 		function _styleTimeSlider(slider) {
 			if (_elements['timeSliderThumb']) {
-				_style(_internalSelector(".jwtimeSliderThumb"), {
+				_css(_internalSelector(".jwtimeSliderThumb"), {
 					'margin-left': (_getSkinElement("timeSliderThumb").width/-2)
 				});
 			}
@@ -1816,7 +1789,7 @@ jwplayer.source = document.createElement("source");/**
 				capRightWidth = _getSkinElement("volumeSliderCapRight").width,
 				railWidth = _getSkinElement("volumeSliderRail").width;
 			
-			_style(_internalSelector(".jwvolume"), {
+			_css(_internalSelector(".jwvolume"), {
 				width: (capLeftWidth + railWidth + capRightWidth)
 			});
 		}
@@ -1831,7 +1804,7 @@ jwplayer.source = document.createElement("source");/**
 			_controlbar.appendChild(_groups.center);
 			_controlbar.appendChild(_groups.right);
 			
-			_style(_internalSelector(".jwright"), {
+			_css(_internalSelector(".jwright"), {
 				right: _getSkinElement("capRight").width
 			});
 		}
@@ -1858,7 +1831,7 @@ jwplayer.source = document.createElement("source");/**
 		}
 
 		var _resize = this.resize = function(width, height) {
-			_style(_internalSelector('.jwgroup.jwcenter'), {
+			_css(_internalSelector('.jwgroup.jwcenter'), {
 				left: Math.round(_utils.parseDimension(_groups.left.offsetWidth) + _getSkinElement("capLeft").width),
 				right: Math.round(_utils.parseDimension(_groups.right.offsetWidth) + _getSkinElement("capRight").width)
 			});
@@ -1870,32 +1843,21 @@ jwplayer.source = document.createElement("source");/**
 		
 		function _setBuffer(pct) {
 			pct = Math.min(Math.max(0, pct), 1);
-			_elements['timeSliderBuffer'].style.width = pct * 100 + "%";
+			_css(_internalSelector('.jwtimeSliderBuffer'), { width: pct * 100 + "%" });
 		}
 
-		function _sliderPercent(name, pct, fixedWidth) {
-			if (!_elements[name]) return;
-
-			pct = Math.min(Math.max(0, pct), 1);
-			
-			var progress = _elements[name+'SliderProgress'];
-			var thumb = _elements[name+'SliderThumb'];
-			var width = 100 * pct + "%";
-		
-			if (progress) {
-				progress.style.width = width; 
-			}
-			if (thumb) {
-				thumb.style.left = width;
-			}
+		function _sliderPercent(prefix, pct, fixedWidth) {
+			var width = 100 * Math.min(Math.max(0, pct), 1) + "%";
+			_css(_internalSelector(prefix+'Progress'), { width: width });
+			_css(_internalSelector(prefix+'Thumb'), { left: width });
 		}
 		
 		function _setVolume (pct) {
-			_sliderPercent('volume', pct, true);
+			_sliderPercent('.jwvolumeSlider', pct, true);
 		}
 
 		function _setProgress(pct) {
-			_sliderPercent('time', pct);
+			_sliderPercent('.jwtimeSlider', pct);
 		}
 
 		function _getSkinElement(name) {
@@ -1913,6 +1875,14 @@ jwplayer.source = document.createElement("source");/**
 			}
 		}
 		
+		this.show = function() {
+			_css(_internalSelector(), { opacity: 1 });
+		}
+		
+		this.hide = function() {
+			_css(_internalSelector(), { opacity: 0 });
+		}
+		
 		// Call constructor
 		_init();
 
@@ -1923,7 +1893,7 @@ jwplayer.source = document.createElement("source");/**
 	 * These CSS rules are used for all JW Player instances      *
 	 *************************************************************/
 
-	_style(CB_CLASS, {
+	_css(CB_CLASS, {
 		position: JW_CSS_ABSOLUTE,
 		overflow: 'hidden',
     	'-webkit-transition': JW_CSS_SMOOTH_EASE,
@@ -1931,7 +1901,7 @@ jwplayer.source = document.createElement("source");/**
     	'-o-transition': JW_CSS_SMOOTH_EASE
 	})
 	
-	_style(CB_CLASS+' span',{
+	_css(CB_CLASS+' span',{
 		height: JW_CSS_100PCT,
 		'-webkit-user-select': JW_CSS_NONE,
 		'-webkit-user-drag': JW_CSS_NONE,
@@ -1939,24 +1909,24 @@ jwplayer.source = document.createElement("source");/**
 		'user-drag': JW_CSS_NONE
 	});
 	
-    _style(CB_CLASS+' .jwgroup', {
+    _css(CB_CLASS+' .jwgroup', {
     	display: JW_CSS_INLINE
     });
     
-    _style(CB_CLASS+' span, '+CB_CLASS+' .jwgroup button,'+CB_CLASS+' .jwleft', {
+    _css(CB_CLASS+' span, '+CB_CLASS+' .jwgroup button,'+CB_CLASS+' .jwleft', {
     	position: JW_CSS_RELATIVE,
 		'float': JW_CSS_LEFT
     });
     
-	_style(CB_CLASS+' .jwright', {
+	_css(CB_CLASS+' .jwright', {
 		position: JW_CSS_ABSOLUTE
 	});
 	
-    _style(CB_CLASS+' .jwcenter', {
+    _css(CB_CLASS+' .jwcenter', {
     	position: JW_CSS_ABSOLUTE
     });
     
-    _style(CB_CLASS+' button', {
+    _css(CB_CLASS+' button', {
     	display: JW_CSS_INLINE_BLOCK,
     	height: JW_CSS_100PCT,
     	border: JW_CSS_NONE,
@@ -1966,12 +1936,12 @@ jwplayer.source = document.createElement("source");/**
     	'-o-transition': JW_CSS_SMOOTH_EASE
     });
     
-    _style(CB_CLASS+' .jwcapRight', { 
+    _css(CB_CLASS+' .jwcapRight', { 
 		right: 0,
 		position: JW_CSS_ABSOLUTE
 	});
     
-    _style(CB_CLASS+' .jwtime,' + CB_CLASS + ' .jwgroup span.jwstretch', {
+    _css(CB_CLASS+' .jwtime,' + CB_CLASS + ' .jwgroup span.jwstretch', {
     	position: JW_CSS_ABSOLUTE,
     	height: JW_CSS_100PCT,
     	width: JW_CSS_100PCT,
@@ -1980,28 +1950,28 @@ jwplayer.source = document.createElement("source");/**
     
    
     
-    _style(CB_CLASS+' .jwrail,' + CB_CLASS + ' .jwthumb', {
+    _css(CB_CLASS+' .jwrail,' + CB_CLASS + ' .jwthumb', {
     	position: JW_CSS_ABSOLUTE,
     	height: JW_CSS_100PCT,
     	cursor: 'pointer'
     });
     
-    _style(CB_CLASS + ' .jwtime .jwsmooth span', {
+    _css(CB_CLASS + ' .jwtime .jwsmooth span', {
     	'-webkit-transition': JW_CSS_SMOOTH_EASE,
     	'-moz-transition': JW_CSS_SMOOTH_EASE,
     	'-o-transition': JW_CSS_SMOOTH_EASE
     });
     
-    _style(CB_CLASS + ' .jwdivider+.jwdivider', {
+    _css(CB_CLASS + ' .jwdivider+.jwdivider', {
     	display: JW_CSS_NONE
     });
     
-    _style(CB_CLASS + ' .jwtext', {
+    _css(CB_CLASS + ' .jwtext', {
 		padding: '0 5px',
 		'text-align': 'center'
 	});
     
-    _style(CB_CLASS + ' .jwtoggling', {
+    _css(CB_CLASS + ' .jwtoggling', {
     	'-webkit-transition': JW_CSS_NONE,
     	'-moz-transition': JW_CSS_NONE,
     	'-o-transition': JW_CSS_NONE
@@ -2040,42 +2010,29 @@ jwplayer.source = document.createElement("source");/**
 			_video.play();
 		}
 
-		var file;
-		
 		function _load(item) {
-			if (_model.state == _states.PLAYING || _model.state == _states.BUFFERING) {
-				_video.stop();
-			}
+			_stop();
 			
 			switch (_utils.typeOf(item)) {
 			case "string":
-				file = item;
+				_model.setPlaylist(new html5.playlist({file:item}));
+				_model.setItem(0);
 				break;
 			case "object":
-				file = item.file;
+			case "array":
+				_model.setPlaylist(new html5.playlist(item));
+				_model.setItem(0);
 				break;
 			case "number":
-				file = _model.playlist[item].file;
+				_model.setItem(item);
 				break;
-			default:
-				file = _model.playlist[_model.item].file;
 			}
 				
-//			if (_video.getTag().canPlayType("video/mp4")) {
-//				file = "http://playertest.longtailvideo.com/bunny.mp4";		
-//			} else if (_video.getTag().canPlayType("video/webm")) {
-//				file = "http://playertest.longtailvideo.com/bunny.webm";		
-//			} else {
-//				file = "http://playertest.longtailvideo.com/bunny.ogv";		
-//			}
-//			if (_utils.isMobile()) {
-//				_video.load(file);
-//			}
 		}
 		
 		function _play() {
 			if (_model.state == _states.IDLE) {
-				_video.load(file);
+				_video.load(_model.playlist[_model.item]);
 			} else if (_model.state == _states.PAUSED) {
 				_video.play();
 			}
@@ -2108,10 +2065,12 @@ jwplayer.source = document.createElement("source");/**
 			_view.fullscreen(state);
 		}
 
-		
-		function _item(item) {
-			_stop();
-			_model.setItem(item);
+		function _setStretching(stretching) {
+			_model.stretching = stretching;
+			_view.resize();
+		}
+
+		function _item(index) {
 			_load(_model.item);
 			_play();
 		}
@@ -2143,6 +2102,7 @@ jwplayer.source = document.createElement("source");/**
 		this.setVolume = _waitForReady(_setVolume);
 		this.setMute = _waitForReady(_setMute);
 		this.setFullscreen = _waitForReady(_setFullscreen);
+		this.setStretching = _waitForReady(_setStretching);
 		
 /*		this.playerReady = _playerReady;
 		this.detachMedia = _detachMedia; 
@@ -2190,12 +2150,14 @@ jwplayer.source = document.createElement("source");/**
 (function(html5) {
 	var _utils = jwplayer.utils,
 		_css = _utils.css,
-		_style = _utils.appendStylesheet,
 		_events = jwplayer.events,
 		_states = _events.state,
 		_rotate = html5.utils.animations.rotate,
+		
 
+		DOCUMENT = document,
 		D_CLASS = ".jwdisplay",
+		D_PREVIEW_CLASS = ".jwpreview",
 
 		/** Some CSS constants we should use for minimization **/
 		//JW_CSS_RELATIVE = "relative",
@@ -2207,27 +2169,33 @@ jwplayer.source = document.createElement("source");/**
 		//JW_CSS_LEFT = "left",
 		//JW_CSS_RIGHT = "right",
 		JW_CSS_100PCT = "100%",
-		JW_CSS_SMOOTH_EASE = "opacity .5s, background .5s";
+		JW_CSS_SMOOTH_EASE = "opacity .25s";
 
 	
 	html5.display = function(api, config) {
 		var _api = api,
 			_skin = api.skin,
-			_display,
-			_config = config ? config : {},
-			_image, _imageWidth, _imageHeight,
+			_display, _preview,
+			_image, _imageWidth, _imageHeight, _imageURL,
 			_icons = {},
 			_hiding,
 			_button,		
 			_degreesRotated, 
 			_rotationInterval, 
-			_bufferRotation = !_utils.exists(config.bufferrotation) ? 15 : parseInt(config.bufferrotation, 10), 
-			_bufferInterval = !_utils.exists(config.bufferinterval) ? 100 : parseInt(config.bufferinterval, 10);
+			_config = _utils.extend({
+				backgroundcolor: '#000'
+			}, config);
+			_bufferRotation = !_utils.exists(_config.bufferrotation) ? 15 : parseInt(_config.bufferrotation, 10), 
+			_bufferInterval = !_utils.exists(_config.bufferinterval) ? 100 : parseInt(_config.bufferinterval, 10);
 			
 		function _init() {
 			_display = DOCUMENT.createElement("div");
 			_display.id = _api.id + "_display";
 			_display.className = "jwdisplay";
+			
+			_preview = DOCUMENT.createElement("div");
+			_preview.className = "jwpreview";
+			_display.appendChild(_preview);
 			
 			_api.jwAddEventListener(_events.JWPLAYER_PLAYER_STATE, _stateHandler);
 			_api.jwAddEventListener(_events.JWPLAYER_PLAYLIST_ITEM, _itemHandler);
@@ -2237,7 +2205,6 @@ jwplayer.source = document.createElement("source");/**
 			_createIcons();
 			
 			_stateHandler({newstate:_states.IDLE});
-			
 		}
 		
 		function _clickHandler(evt) {
@@ -2303,7 +2270,7 @@ jwplayer.source = document.createElement("source");/**
 				return;
 			}
 			
-			_style(selector, { 
+			_css(selector, { 
 				width: out.width,
 				height: out.height,
 				'margin-left': out.width / -2,
@@ -2312,7 +2279,7 @@ jwplayer.source = document.createElement("source");/**
 			});
 
 			if (over && over.src) {
-				_style(selector + ".jwhover", {
+				_css(selector + ".jwhover", {
 					background: 'url('+ over.src +') center no-repeat'
 				});
 			}
@@ -2328,13 +2295,14 @@ jwplayer.source = document.createElement("source");/**
 			}
 		}
 
-		function _itemHandler(evt) {
+		function _itemHandler() {
 			var item = _api.jwGetPlaylist()[_api.jwGetPlaylistIndex()];
-			_image = item ? item.image : "";
-			_getImageDimensions();
-			_style('#' + _display.id, {
-				'background': 'url('+_image+') no-repeat center' 
-			});
+			var newImage = item ? item.image : "";
+			if (_image != newImage) {
+				_image = newImage;
+				_setVisibility(D_PREVIEW_CLASS, false);
+				_getImage();
+			}
 		}
 		
 		function _stateHandler(evt) {
@@ -2344,11 +2312,7 @@ jwplayer.source = document.createElement("source");/**
 			case _states.COMPLETED:
 			case _states.IDLE:
 				_setIcon('play');
-				if (_image) {
-					_style('#' + _display.id, {
-						'background': 'url('+_image+') no-repeat center' 
-					});
-				}
+				_setVisibility(D_PREVIEW_CLASS, true);
 				break;
 			case _states.BUFFERING:
 				_setIcon('buffer');
@@ -2360,9 +2324,7 @@ jwplayer.source = document.createElement("source");/**
 				break;
 			case _states.PLAYING:
 				_setIcon();
-				_style('#' + _display.id, {
-					'background': 'transparent'
-				});
+				_setVisibility(D_PREVIEW_CLASS, false);
 				break;
 			case _states.PAUSED:
 				_setIcon('play');
@@ -2374,17 +2336,26 @@ jwplayer.source = document.createElement("source");/**
 			return _display;
 		}
 		
-		function _getImageDimensions() {
+		function _internalSelector(selector) {
+			return '#' + _display.id + ' ' + selector;
+		}
+		
+		function _getImage() {
 			if (_image) {
 				// Find image size and stretch exactfit if close enough
-				var img = DOCUMENT.createElement("img");
+				var img = new Image();
 				img.addEventListener('load', function() {
 					_imageWidth = img.width;
 					_imageHeight = img.height;
 					_resize();
+					_css(_internalSelector(D_PREVIEW_CLASS), {
+						'background-image': _image ? ('url('+_image+')') : '',
+					});
+					_setVisibility(D_PREVIEW_CLASS, true);
 				}, false);
 				img.src = _image;
 			} else {
+				_setVisibility(D_PREVIEW_CLASS, false);
 				_imageWidth = _imageHeight = 0;
 			}
 		}
@@ -2396,32 +2367,54 @@ jwplayer.source = document.createElement("source");/**
 			}
 			return null;
 		}
-
 		
 		function _resize() {
-			_utils.stretch(_api.jwGetStretching(), _display, _display.clientWidth, _display.clientHeight, _imageWidth, _imageHeight);
+			_utils.stretch(_api.jwGetStretching(), _preview, _display.clientWidth, _display.clientHeight, _imageWidth, _imageHeight);
 		}
 
 		this.resize = _resize;
+		
+		function _setVisibility(selector, state) {
+			_css(_internalSelector(selector), {
+				opacity: state ? 1 : 0
+			});
+		}
+		
+		this.show = function() {
+			_setVisibility('', true);
+		}
+		
+		this.hide = function() {
+			_setVisibility('', false);
+		}
 
 		_init();
 	};
 	
-	_style(D_CLASS, {
+	_css(D_CLASS, {
 		position: JW_CSS_ABSOLUTE,
 		cursor: "pointer",
 		width: JW_CSS_100PCT,
 		height: JW_CSS_100PCT,
 		overflow: 'hidden'
 	});
-	
-	_style(D_CLASS + ' *', {
+
+	_css(D_CLASS + ' .jwpreview', {
+		position: JW_CSS_ABSOLUTE,
+		width: JW_CSS_100PCT,
+		height: JW_CSS_100PCT,
+		'background-repeat': 'no-repeat',
+		'background-position': 'center',
+		overflow: 'hidden'
+	});
+
+	_css(D_CLASS +', '+D_CLASS + ' *', {
     	'-webkit-transition': JW_CSS_SMOOTH_EASE,
     	'-moz-transition': JW_CSS_SMOOTH_EASE,
     	'-o-transition': JW_CSS_SMOOTH_EASE
 	});
 	
-    _style(D_CLASS+' button, ' + D_CLASS+' .jwicon', {
+    _css(D_CLASS+' button, ' + D_CLASS+' .jwicon', {
     	border: JW_CSS_NONE,
     	position: JW_CSS_ABSOLUTE,
     	left: "50%",
@@ -2430,15 +2423,6 @@ jwplayer.source = document.createElement("source");/**
     	cursor: 'pointer'
     });
 
-    _style( {
-    	position: JW_CSS_ABSOLUTE,
-    	left: "50%",
-    	top: "50%",
-    	padding: 0,
-    	cursor: 'pointer'
-    });
-
-	
 })(jwplayer.html5);/**
  * jwplayer.html5 model
  * 
@@ -2518,11 +2502,23 @@ jwplayer.source = document.createElement("source");/**
 			return _video;
 		}
 		
+		this.seekDrag = function(state) {
+			_video.seekDrag(state);
+		}
+		
 		this.setFullscreen = function(state) {
 			if (state != _model.fullscreen) {
 				_model.fullscreen = state;
 				_model.sendEvent(_events.JWPLAYER_FULLSCREEN, { fullscreen: state } );
 			}
+		}
+		
+		this.setPlaylist = function(playlist) {
+			_model.item = -1;
+			_model.playlist = playlist;
+			_model.sendEvent(_events.JWPLAYER_PLAYLIST_LOADED, {
+				playlist: playlist
+			});
 		}
 		
 		this.setItem = function(index) {
@@ -2561,13 +2557,6 @@ jwplayer.source = document.createElement("source");/**
 		function _init() {
 			_api.id = _model.id;
 			
-//			_controller.load();
-/*			
-			(new html5.skinloader(config.skin, function(skin) {
-				_api.skin = skin;
-				_view.setup();
-			}, function(err) { _utils.log(err); }));
-*/
 			var setup = new html5.setup(_model, _view, _controller);
 			setup.addEventListener(jwplayer.events.JWPLAYER_READY, _readyHandler);
 			setup.addEventListener(jwplayer.events.JWPLAYER_ERROR, _errorHandler);
@@ -2575,6 +2564,7 @@ jwplayer.source = document.createElement("source");/**
 		}
 		
 		function _readyHandler(evt) {
+			_view.completeSetup();
 			_controller.sendEvent(evt.type, evt);
 			_controller.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_LOADED, {playlist: _model.playlist});
 			_controller.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_ITEM, {index: _model.item});
@@ -2601,7 +2591,10 @@ jwplayer.source = document.createElement("source");/**
 		this.jwPlaylistPrev = _controller.prev;
 		this.jwPlaylistItem = _controller.item;
 		this.jwSetFullscreen = _controller.setFullscreen;
-		this.jwResize = _view.resize;
+		this.jwResize = _view.resize;		
+		this.jwSeekDrag = _model.seekDrag;
+		this.jwSetStretching = _controller.setStretching;
+
 		
 
 		/** Getters **/
@@ -2785,13 +2778,13 @@ jwplayer.source = document.createElement("source");/**
 (function(html5) {
 	var _jw = jwplayer, _utils = _jw.utils, _events = _jw.events,
 	
-		PARSE_CONFIG = "config",
-		LOAD_SKIN = "skin",
-		LOAD_PLAYLIST = "playlist",
-		LOAD_PREVIEW = "preview",
-		SETUP_COMPONENTS = "components",
-		INIT_PLUGINS = "plugins",
-		SEND_READY = "ready";
+		PARSE_CONFIG = 1,
+		LOAD_SKIN = 2,
+		LOAD_PLAYLIST = 3,
+		LOAD_PREVIEW = 4,
+		SETUP_COMPONENTS = 5,
+		INIT_PLUGINS = 6,
+		SEND_READY = 7;
 
 	html5.setup = function(model, view, controller) {
 		var _model = model, 
@@ -2809,7 +2802,7 @@ jwplayer.source = document.createElement("source");/**
 			_addTask(LOAD_SKIN, _loadSkin, PARSE_CONFIG);
 			_addTask(LOAD_PLAYLIST, _loadPlaylist, PARSE_CONFIG);
 			_addTask(LOAD_PREVIEW, _loadPreview, LOAD_PLAYLIST);
-			_addTask(SETUP_COMPONENTS, _setupComponents, LOAD_SKIN);
+			_addTask(SETUP_COMPONENTS, _setupComponents, LOAD_PREVIEW + "," + LOAD_SKIN);
 			_addTask(INIT_PLUGINS, _initPlugins, SETUP_COMPONENTS + "," + LOAD_PLAYLIST);
 			_addTask(SEND_READY, _sendReady, INIT_PLUGINS);
 		}
@@ -2840,7 +2833,7 @@ jwplayer.source = document.createElement("source");/**
 		
 		function _allComplete(dependencies) {
 			if (!dependencies) return true;
-			var split = dependencies.split(",");
+			var split = dependencies.toString().split(",");
 			for (var i=0; i<split.length; i++) {
 				if (!_completed[split[i]])
 					return false;
@@ -2880,7 +2873,7 @@ jwplayer.source = document.createElement("source");/**
 		}
 		
 		function _playlistLoaded(evt) {
-			_model.playlist = evt.playlist;
+			_model.setPlaylist(evt.playlist);
 			_taskComplete(LOAD_PLAYLIST);
 		}
 
@@ -2896,6 +2889,8 @@ jwplayer.source = document.createElement("source");/**
 				// If there was an error, continue anyway
 				img.addEventListener('error', _previewLoaded, false);
 				img.src = preview; 
+			} else {
+				_taskComplete(LOAD_PREVIEW);	
 			}
 		}
 		
@@ -2907,7 +2902,7 @@ jwplayer.source = document.createElement("source");/**
 			_view.setup(_skin);
 			_taskComplete(SETUP_COMPONENTS);
 		}
-
+		
 		function _initPlugins() {
 			_taskComplete(INIT_PLUGINS);
 		}
@@ -3194,8 +3189,7 @@ jwplayer.source = document.createElement("source");/**
 	var _jw = jwplayer, 
 		_utils = _jw.utils, 
 		_events = _jw.events, 
-		_states = _events.state,
-		_isMobile = _utils.isMobile();
+		_states = _events.state;
 	
 
 	/** HTML5 video class * */
@@ -3226,7 +3220,18 @@ jwplayer.source = document.createElement("source");/**
 			"volumechange" : _volumeHandler,
 			"waiting" : _bufferStateHandler
 		},
+		
+		_extensions = {
+			"mp4": "video/mp4",
+			"webm": "video/webm",
+			"m3u8": "audio/x-mpegurl"
+		},
+		
 
+		// Current playlist item
+		_item,
+		// Currently playing file
+		_file,
 		// Reference to the video tag
 		_video,
 		// Current duration
@@ -3237,8 +3242,12 @@ jwplayer.source = document.createElement("source");/**
 		_seekOffset,
 		// Whether seeking is ready yet
 		_canSeek,
+		// Whether we have sent out the BUFFER_FULL event
+		_bufferFull,
 		// If we should seek on canplay
 		_delayedSeek,
+		// If we're currently dragging the seek bar
+		_dragging,
 		// Current media state
 		_state = _states.IDLE,
 		// Save the volume state before muting
@@ -3283,7 +3292,7 @@ jwplayer.source = document.createElement("source");/**
 		}
 
 		function _timeUpdateHandler(evt) {
-			if (_state == _states.PLAYING) {
+			if (_state == _states.PLAYING && !_dragging) {
 				_position = _video.currentTime;
 				_sendEvent(_events.JWPLAYER_MEDIA_TIME, {
 					position : _position,
@@ -3298,14 +3307,23 @@ jwplayer.source = document.createElement("source");/**
 		function _canPlayHandler(evt) {
 			if (!_canSeek) {
 				_canSeek = true;
-				_sendEvent(_events.JWPLAYER_MEDIA_BUFFER_FULL);
+				_sendBufferFull();
 				if (_delayedSeek > 0) {
 					_seek(_delayedSeek);
 				}
 			}
 		}
+		
+		function _sendBufferFull() {
+			if (!_bufferFull) {
+				_bufferFull = true;
+				_sendEvent(_events.JWPLAYER_MEDIA_BUFFER_FULL);
+			}
+		}
 
 		function _playHandler(evt) {
+			if (_dragging) return;
+			
 			if (_video.paused) {
 				_setState(_states.PAUSED);
 			} else {
@@ -3322,35 +3340,63 @@ jwplayer.source = document.createElement("source");/**
 			_setState(_states.IDLE);
 		}
 
-		this.load = function(videoURL) {
+		function _canPlay(file) {
+			var type = _extensions[_utils.strings.extension(file)];
+			return (!!type && _video.canPlayType(type));
+		}
+		
+		/** Selects the appropriate file out of all available options **/
+		function _selectFile(item) {
+			if (item.levels && item.levels.length > 0) {
+				for (var i=0; i<item.levels.length; i++) {
+					if (_canPlay(item.levels[i].file))
+						return item.levels[i].file;
+				}
+			} else if (item.file && _canPlay(item.file)) {
+				return item.file;
+			}
+			return null;
+		}
+		
+		this.load = function(item) {
+			_item = item;
 			_canSeek = false;
+			_bufferFull = false;
 			_delayedSeek = 0;
 			_duration = 0;
 			_position = 0;
-			_setState(_states.BUFFERING); 
-			_video.src = videoURL;
 			
+			_file = _selectFile(_item);
+			
+			if (!_file) {
+				_utils.log("Could not find a file to play.");
+				return;
+			}
+			
+			_setState(_states.BUFFERING); 
+			_video.src = _file;
 			_video.load();
 			
 			_bufferInterval = setInterval(_sendBufferUpdate, 100);
 
-			if (_isMobile) {
+			// Use native browser controls on mobile
+			if (_utils.isMobile()) {
 				_video.controls = true;
-				_video.style.opacity = 1;
+			}
+			
+			if (_utils.isIPod()) {
+				_sendBufferFull();
 			}
 		}
 
 		var _stop = this.stop = function() {
-			// _video.src = "";
 			_video.removeAttribute("src");
 			_video.load();
-			_video.style.opacity = 0;
 			clearInterval(_bufferInterval);
 			_setState(_states.IDLE);
 		}
 
 		this.play = function() {
-			_video.style.opacity = 1;
 			_video.play();
 		}
 
@@ -3358,13 +3404,21 @@ jwplayer.source = document.createElement("source");/**
 			_video.pause();
 		}
 
+		this.seekDrag = function(state) {
+			_dragging = state;
+			if (state) _video.pause();
+			else _video.play();
+		}
+		
 		var _seek = this.seek = function(pos) {
 			if (_canSeek) {
 				_delayedSeek = 0;
-				_sendEvent(_events.JWPLAYER_MEDIA_SEEK, {
-					position: _position,
-					offset: pos
-				});
+				if (!_dragging) {
+					_sendEvent(_events.JWPLAYER_MEDIA_SEEK, {
+						position: _position,
+						offset: pos
+					});
+				}
 				_video.currentTime = pos;
 			} else {
 				_delayedSeek = pos;
@@ -3403,6 +3457,9 @@ jwplayer.source = document.createElement("source");/**
 			if (newstate == _states.PAUSED && _state == _states.IDLE) {
 				return;
 			}
+			
+			// Ignore state changes while dragging the seekbar
+			if (_dragging) return
 
 			if (_state != newstate) {
 				var oldstate = _state;
@@ -3458,12 +3515,16 @@ jwplayer.source = document.createElement("source");/**
  * @version 6.0
  */
 (function(html5) {
-	var _jw = jwplayer, _utils = _jw.utils, _style = _utils.appendStylesheet, _events = jwplayer.events, _states = _events.state;
+	var _jw = jwplayer, 
+		_utils = _jw.utils, 
+		_css = _utils.css, 
+		_events = jwplayer.events, 
+		_states = _events.state,
 
-	DOCUMENT = document, 
-	VIEW_CONTAINER_CLASS = "jwplayer", 
-	VIEW_VIDEO_CONTAINER_CLASS = "jwvideocontainer", 
-	VIEW_CONTROLS_CONTAINER_CLASS = "jwcontrolscontainer";
+		DOCUMENT = document, 
+		VIEW_CONTAINER_CLASS = "jwplayer", 
+		VIEW_VIDEO_CONTAINER_CLASS = "jwvideocontainer", 
+		VIEW_CONTROLS_CONTAINER_CLASS = "jwcontrolscontainer";
 
 	html5.view = function(api, model) {
 		var _api = api, 
@@ -3502,9 +3563,10 @@ jwplayer.source = document.createElement("source");/**
 			DOCUMENT.addEventListener('keydown', _keyHandler, false);
 			
 			_api.jwAddEventListener(_events.JWPLAYER_PLAYER_STATE, _stateHandler);
+
+			_stateHandler({newstate:_states.IDLE});
 			
 			_container.addEventListener('mouseout', _fadeControls, false);
-			
 			_container.addEventListener('mousemove', function(evt) {
 				_showControls();
 				clearTimeout(_controlsTimeout);
@@ -3522,8 +3584,8 @@ jwplayer.source = document.createElement("source");/**
 		}
 		
 		function _setupControls() {
-			var width = _api.jwGetWidth(),
-				height = _api.jwGetHeight(),
+			var width = _model.width,
+				height = _model.height,
 				cbSettings = _api.skin.getComponentSettings('controlbar'),
 				displaySettings = _api.skin.getComponentSettings('display')
 		
@@ -3535,10 +3597,10 @@ jwplayer.source = document.createElement("source");/**
 				cbSettings.margin = 0;
 			}
 
-			_style('#'+_container.id, {
-				'background-color': displaySettings.backgroundcolor ? displaySettings.backgroundcolor : 0,
-				width: width,
-				height: height
+			_resize(width, height);
+			
+			_css('#'+_container.id, {
+				'background-color': displaySettings.backgroundcolor ? displaySettings.backgroundcolor : 0
 			});
 
 			if (!_utils.isMobile()) {
@@ -3558,16 +3620,14 @@ jwplayer.source = document.createElement("source");/**
 
 			if (state) {
 				if (!_model.fullscreen) {
-					_fakeFullscreen(true);
-					
 					if (_container.requestFullScreen) {
 						_container.requestFullScreen();
 					} else if (_container.mozRequestFullScreen) {
 						_container.mozRequestFullScreen();
-					} else if (_container.webkitRequestFullScreenWithKeys) {
-						_container.webkitRequestFullScreenWithKeys();
 					} else if (_container.webkitRequestFullScreen) {
 						_container.webkitRequestFullScreen();
+					} else {
+						_fakeFullscreen(true);
 					}
 				}
 				_model.setFullscreen(true);
@@ -3588,20 +3648,30 @@ jwplayer.source = document.createElement("source");/**
 		 * Resize the player
 		 */
 		function _resize(width, height) {
+			if (_utils.exists(width) && _utils.exists(height)) {
+				_css('#'+_container.id, {
+					width: width,
+					height: height
+				});
+				_model.width = width;
+				_model.height = height;
+			}
+
 			if (_controls.display) {
 				_controls.display.resize(width, height);
 			}
 			if (_controls.controlbar) {
 				_controls.controlbar.resize(width, height);
 			}
-			if (_container.style.opacity == 0) {
-				_container.style.opacity = 1;
-			}
+
 			return;
 		}
 		
 		this.resize = _resize;
-		
+
+		this.completeSetup = function() {
+			_css('#'+_container.id, {opacity: 1});
+		}
 		
 		/**
 		 * Listen for keystrokes.  Currently only ESC is recognized, to switch out of fullscreen mode.
@@ -3637,8 +3707,9 @@ jwplayer.source = document.createElement("source");/**
 		 * Return whether or not we're in native fullscreen
 		 */
 		function _isNativeFullscreen() {
-			return (DOCUMENT.mozFullScreenElement == _container || 
-					DOCUMENT.webkitCurrentFullScreenElement == _container);
+			if (DOCUMENT.mozFullScreenElement) return DOCUMENT.mozFullScreenElement.id == _container.id; 
+			else if (DOCUMENT.webkitCurrentFullScreenElement) return DOCUMENT.webkitCurrentFullScreenElement.id == _container.id; 
+			else return false;
 		}
 		
 		/**
@@ -3650,31 +3721,46 @@ jwplayer.source = document.createElement("source");/**
 		}
 
 		function _hideControls() {
-			_controlsLayer.style.opacity = 0;
+			if (_controls.controlbar) _controls.controlbar.hide();
+			if (_controls.display) _controls.display.hide();
 		}
 
 		function _showControls() {
-			_controlsLayer.style.opacity = 1;
+			if (_controls.controlbar) _controls.controlbar.show();
+			if (_controls.display) _controls.display.show();
 		}
 
 		/**
 		 * Player state handler
 		 */
 		function _stateHandler(evt) {
+			var vidstyle = {};
 			switch(evt.newstate) {
 			case _states.PLAYING:
+				if (_utils.isIPod) {
+					vidstyle.display = "block";
+				}
+				vidstyle.opacity = 1;
+				_css('#'+_container.id+' .'+VIEW_VIDEO_CONTAINER_CLASS, vidstyle);
 				_hideControls();
 				break;
 			case _states.COMPLETED:
 			case _states.IDLE:
+				if (_utils.isIPod) {
+					vidstyle.display = "none";
+				}
+				vidstyle.opacity = 0;
+				_css('#'+_container.id+' .'+VIEW_VIDEO_CONTAINER_CLASS, vidstyle);
+				_showControls();
+				break;
 			case _states.BUFFERING:
 			case _states.PAUSED:
-				_showControls();
+				if (!_utils.isMobile()) {
+					_showControls();
+				}
 				break;
 			}
 		}
-
-
 	}
 
 	/*************************************************************
@@ -3682,11 +3768,11 @@ jwplayer.source = document.createElement("source");/**
 	 * These CSS rules are used for all JW Player instances      *
 	 *************************************************************/
 
-	var JW_CSS_SMOOTH_EASE = "opacity .25s ease";
+	var JW_CSS_SMOOTH_EASE = "opacity .5s ease";
 
 	
 	// Container styles
-	_style('.' + VIEW_CONTAINER_CLASS, {
+	_css('.' + VIEW_CONTAINER_CLASS, {
 		position : "relative",
 		overflow: "hidden",
 		opacity: 0,
@@ -3695,7 +3781,7 @@ jwplayer.source = document.createElement("source");/**
     	'-o-transition': JW_CSS_SMOOTH_EASE
 	});
 
-	_style('.' + VIEW_VIDEO_CONTAINER_CLASS + ' ,.'+ VIEW_CONTROLS_CONTAINER_CLASS, {
+	_css('.' + VIEW_VIDEO_CONTAINER_CLASS + ' ,.'+ VIEW_CONTROLS_CONTAINER_CLASS, {
 		position : "absolute",
 		width : "100%",
 		height : "100%",
@@ -3704,29 +3790,27 @@ jwplayer.source = document.createElement("source");/**
     	'-o-transition': JW_CSS_SMOOTH_EASE
 	});
 
-	_style('.' + VIEW_VIDEO_CONTAINER_CLASS + " video", {
+	_css('.' + VIEW_VIDEO_CONTAINER_CLASS + " video", {
 		background : "transparent",
 		width : "100%",
-		height : "100%",
-		opacity : 0,
-		'-webkit-transition' : 'opacity .15s ease'
+		height : "100%"
 	});
 
 
 	
 	// Fullscreen styles
 	
-	_style('.' + VIEW_CONTAINER_CLASS+':-webkit-full-screen', {
+	_css('.' + VIEW_CONTAINER_CLASS+':-webkit-full-screen', {
 		width: "100% !important",
 		height: "100% !important"
 	});
 	
-	_style('.' + VIEW_CONTAINER_CLASS+':-moz-full-screen', {
+	_css('.' + VIEW_CONTAINER_CLASS+':-moz-full-screen', {
 		width: "100% !important",
 		height: "100% !important"
 	});
 	
-	_style('.' + VIEW_CONTAINER_CLASS+'.jwfullscreen', {
+	_css('.' + VIEW_CONTAINER_CLASS+'.jwfullscreen', {
 		left: 0,
 		right: 0,
 		top: 0,
@@ -3735,19 +3819,19 @@ jwplayer.source = document.createElement("source");/**
 		position: "fixed !important"
 	});
 
-	_style('.' + VIEW_CONTAINER_CLASS+' .jwuniform', {
+	_css('.' + VIEW_CONTAINER_CLASS+' .jwuniform', {
 		'background-size': 'contain !important'
 	});
 
-	_style('.' + VIEW_CONTAINER_CLASS+' .jwfill', {
+	_css('.' + VIEW_CONTAINER_CLASS+' .jwfill', {
 		'background-size': 'cover !important'
 	});
 
-	_style('.' + VIEW_CONTAINER_CLASS+' .jwexactfit', {
+	_css('.' + VIEW_CONTAINER_CLASS+' .jwexactfit', {
 		'background-size': '100% 100% !important'
 	});
 
-	_style('.' + VIEW_CONTAINER_CLASS+' .jwnone', {
+	_css('.' + VIEW_CONTAINER_CLASS+' .jwnone', {
 		'background-size': null
 	});
 

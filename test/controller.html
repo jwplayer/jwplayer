@@ -14,34 +14,38 @@
 	  </style>
 	  
 	  <script type="text/javascript">
-	   var player;
-	   var form;
+		  var player;
+		  var form;
+	
+		  function update(form) {
+		    document.getElementById("player").style.width = form.size.value + "px";
+		    cb.resize(100, 100);
+		    cb.setBuffer(form.buf.value / 100);
+		    cb.setProgress(form.pct.value / 100);
+		  }
 
-	   function update(form) {
-	     document.getElementById("player").style.width = form.size.value + "px";
-	     cb.resize(100, 100);
-	     cb.setBuffer(form.buf.value / 100);
-	     cb.setProgress(form.pct.value / 100);
-	   }
-	   
-	   function init() {
-		 form = document.getElementById("form");
-		 document.getElementById("player").innerHTML = "";
-	     player = new jwplayer.html5.player({
-		     id: "player", 
-		     skin: form.skin.options[form.skin.selectedIndex].value,
-		     playlist: "http://content.bitsontherun.com/feeds/Hilgq9Ju.rss",
-		     debug: 'console',
-		     width: "100%",
-		     height: "100%"
-		 });
-	   }
+		  function init() {
+		    form = document.getElementById("form");
+		    document.getElementById("player").innerHTML = "";
+		    player = new jwplayer.html5.player({
+		      id: "player", 
+		      skin: form.skin.options[form.skin.selectedIndex].value,
+		      playlist: [{
+			      levels:[
+		             { file: 'http://content.bitsontherun.com/videos/nPripu9l-1ahmry41.mp4' },	   		 
+		             { file: 'http://content.bitsontherun.com/videos/nPripu9l-1Lq5Mnwq.webm' } 		 
+		          ],
+		          image: 'http://content.bitsontherun.com/thumbs/gSzpo2wh-480.jpg' 
+		      }],
+		      debug: 'console',
+		      width: "100%",
+		      height: "100%"
+		    });
+		  }
 	  </script>
 	</head>
 	
 	<body onload="init()">
-	
-	<a href="http://sitetophone.com/316502-1120">site</a>
 	
     <form id="form" onsubmit="update(this); return false;">
       skin: <select name="skin" onchange="init()">

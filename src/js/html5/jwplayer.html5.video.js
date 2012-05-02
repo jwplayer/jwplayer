@@ -9,8 +9,7 @@
 	var _jw = jwplayer, 
 		_utils = _jw.utils, 
 		_events = _jw.events, 
-		_states = _events.state,
-		_isMobile = _utils.isMobile();
+		_states = _events.state;
 	
 
 	/** HTML5 video class * */
@@ -41,7 +40,18 @@
 			"volumechange" : _volumeHandler,
 			"waiting" : _bufferStateHandler
 		},
+		
+		_extensions = {
+			"mp4": "video/mp4",
+			"webm": "video/webm",
+			"m3u8": "audio/x-mpegurl"
+		},
+		
 
+		// Current playlist item
+		_item,
+		// Currently playing file
+		_file,
 		// Reference to the video tag
 		_video,
 		// Current duration
@@ -52,8 +62,12 @@
 		_seekOffset,
 		// Whether seeking is ready yet
 		_canSeek,
+		// Whether we have sent out the BUFFER_FULL event
+		_bufferFull,
 		// If we should seek on canplay
 		_delayedSeek,
+		// If we're currently dragging the seek bar
+		_dragging,
 		// Current media state
 		_state = _states.IDLE,
 		// Save the volume state before muting
@@ -98,7 +112,7 @@
 		}
 
 		function _timeUpdateHandler(evt) {
-			if (_state == _states.PLAYING) {
+			if (_state == _states.PLAYING && !_dragging) {
 				_position = _video.currentTime;
 				_sendEvent(_events.JWPLAYER_MEDIA_TIME, {
 					position : _position,
@@ -113,14 +127,23 @@
 		function _canPlayHandler(evt) {
 			if (!_canSeek) {
 				_canSeek = true;
-				_sendEvent(_events.JWPLAYER_MEDIA_BUFFER_FULL);
+				_sendBufferFull();
 				if (_delayedSeek > 0) {
 					_seek(_delayedSeek);
 				}
 			}
 		}
+		
+		function _sendBufferFull() {
+			if (!_bufferFull) {
+				_bufferFull = true;
+				_sendEvent(_events.JWPLAYER_MEDIA_BUFFER_FULL);
+			}
+		}
 
 		function _playHandler(evt) {
+			if (_dragging) return;
+			
 			if (_video.paused) {
 				_setState(_states.PAUSED);
 			} else {
@@ -137,35 +160,63 @@
 			_setState(_states.IDLE);
 		}
 
-		this.load = function(videoURL) {
+		function _canPlay(file) {
+			var type = _extensions[_utils.strings.extension(file)];
+			return (!!type && _video.canPlayType(type));
+		}
+		
+		/** Selects the appropriate file out of all available options **/
+		function _selectFile(item) {
+			if (item.levels && item.levels.length > 0) {
+				for (var i=0; i<item.levels.length; i++) {
+					if (_canPlay(item.levels[i].file))
+						return item.levels[i].file;
+				}
+			} else if (item.file && _canPlay(item.file)) {
+				return item.file;
+			}
+			return null;
+		}
+		
+		this.load = function(item) {
+			_item = item;
 			_canSeek = false;
+			_bufferFull = false;
 			_delayedSeek = 0;
 			_duration = 0;
 			_position = 0;
-			_setState(_states.BUFFERING); 
-			_video.src = videoURL;
 			
+			_file = _selectFile(_item);
+			
+			if (!_file) {
+				_utils.log("Could not find a file to play.");
+				return;
+			}
+			
+			_setState(_states.BUFFERING); 
+			_video.src = _file;
 			_video.load();
 			
 			_bufferInterval = setInterval(_sendBufferUpdate, 100);
 
-			if (_isMobile) {
+			// Use native browser controls on mobile
+			if (_utils.isMobile()) {
 				_video.controls = true;
-				_video.style.opacity = 1;
+			}
+			
+			if (_utils.isIPod()) {
+				_sendBufferFull();
 			}
 		}
 
 		var _stop = this.stop = function() {
-			// _video.src = "";
 			_video.removeAttribute("src");
 			_video.load();
-			_video.style.opacity = 0;
 			clearInterval(_bufferInterval);
 			_setState(_states.IDLE);
 		}
 
 		this.play = function() {
-			_video.style.opacity = 1;
 			_video.play();
 		}
 
@@ -173,13 +224,21 @@
 			_video.pause();
 		}
 
+		this.seekDrag = function(state) {
+			_dragging = state;
+			if (state) _video.pause();
+			else _video.play();
+		}
+		
 		var _seek = this.seek = function(pos) {
 			if (_canSeek) {
 				_delayedSeek = 0;
-				_sendEvent(_events.JWPLAYER_MEDIA_SEEK, {
-					position: _position,
-					offset: pos
-				});
+				if (!_dragging) {
+					_sendEvent(_events.JWPLAYER_MEDIA_SEEK, {
+						position: _position,
+						offset: pos
+					});
+				}
 				_video.currentTime = pos;
 			} else {
 				_delayedSeek = pos;
@@ -218,6 +277,9 @@
 			if (newstate == _states.PAUSED && _state == _states.IDLE) {
 				return;
 			}
+			
+			// Ignore state changes while dragging the seekbar
+			if (_dragging) return
 
 			if (_state != newstate) {
 				var oldstate = _state;

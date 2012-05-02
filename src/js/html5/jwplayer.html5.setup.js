@@ -17,13 +17,13 @@
 (function(html5) {
 	var _jw = jwplayer, _utils = _jw.utils, _events = _jw.events,
 	
-		PARSE_CONFIG = "config",
-		LOAD_SKIN = "skin",
-		LOAD_PLAYLIST = "playlist",
-		LOAD_PREVIEW = "preview",
-		SETUP_COMPONENTS = "components",
-		INIT_PLUGINS = "plugins",
-		SEND_READY = "ready";
+		PARSE_CONFIG = 1,
+		LOAD_SKIN = 2,
+		LOAD_PLAYLIST = 3,
+		LOAD_PREVIEW = 4,
+		SETUP_COMPONENTS = 5,
+		INIT_PLUGINS = 6,
+		SEND_READY = 7;
 
 	html5.setup = function(model, view, controller) {
 		var _model = model, 
@@ -41,7 +41,7 @@
 			_addTask(LOAD_SKIN, _loadSkin, PARSE_CONFIG);
 			_addTask(LOAD_PLAYLIST, _loadPlaylist, PARSE_CONFIG);
 			_addTask(LOAD_PREVIEW, _loadPreview, LOAD_PLAYLIST);
-			_addTask(SETUP_COMPONENTS, _setupComponents, LOAD_SKIN);
+			_addTask(SETUP_COMPONENTS, _setupComponents, LOAD_PREVIEW + "," + LOAD_SKIN);
 			_addTask(INIT_PLUGINS, _initPlugins, SETUP_COMPONENTS + "," + LOAD_PLAYLIST);
 			_addTask(SEND_READY, _sendReady, INIT_PLUGINS);
 		}
@@ -72,7 +72,7 @@
 		
 		function _allComplete(dependencies) {
 			if (!dependencies) return true;
-			var split = dependencies.split(",");
+			var split = dependencies.toString().split(",");
 			for (var i=0; i<split.length; i++) {
 				if (!_completed[split[i]])
 					return false;
@@ -112,7 +112,7 @@
 		}
 		
 		function _playlistLoaded(evt) {
-			_model.playlist = evt.playlist;
+			_model.setPlaylist(evt.playlist);
 			_taskComplete(LOAD_PLAYLIST);
 		}
 
@@ -128,6 +128,8 @@
 				// If there was an error, continue anyway
 				img.addEventListener('error', _previewLoaded, false);
 				img.src = preview; 
+			} else {
+				_taskComplete(LOAD_PREVIEW);	
 			}
 		}
 		
@@ -139,7 +141,7 @@
 			_view.setup(_skin);
 			_taskComplete(SETUP_COMPONENTS);
 		}
-
+		
 		function _initPlugins() {
 			_taskComplete(INIT_PLUGINS);
 		}

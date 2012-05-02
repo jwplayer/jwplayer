@@ -77,11 +77,23 @@
 			return _video;
 		}
 		
+		this.seekDrag = function(state) {
+			_video.seekDrag(state);
+		}
+		
 		this.setFullscreen = function(state) {
 			if (state != _model.fullscreen) {
 				_model.fullscreen = state;
 				_model.sendEvent(_events.JWPLAYER_FULLSCREEN, { fullscreen: state } );
 			}
+		}
+		
+		this.setPlaylist = function(playlist) {
+			_model.item = -1;
+			_model.playlist = playlist;
+			_model.sendEvent(_events.JWPLAYER_PLAYLIST_LOADED, {
+				playlist: playlist
+			});
 		}
 		
 		this.setItem = function(index) {

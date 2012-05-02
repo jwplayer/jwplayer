@@ -31,42 +31,29 @@
 			_video.play();
 		}
 
-		var file;
-		
 		function _load(item) {
-			if (_model.state == _states.PLAYING || _model.state == _states.BUFFERING) {
-				_video.stop();
-			}
+			_stop();
 			
 			switch (_utils.typeOf(item)) {
 			case "string":
-				file = item;
+				_model.setPlaylist(new html5.playlist({file:item}));
+				_model.setItem(0);
 				break;
 			case "object":
-				file = item.file;
+			case "array":
+				_model.setPlaylist(new html5.playlist(item));
+				_model.setItem(0);
 				break;
 			case "number":
-				file = _model.playlist[item].file;
+				_model.setItem(item);
 				break;
-			default:
-				file = _model.playlist[_model.item].file;
 			}
 				
-//			if (_video.getTag().canPlayType("video/mp4")) {
-//				file = "http://playertest.longtailvideo.com/bunny.mp4";		
-//			} else if (_video.getTag().canPlayType("video/webm")) {
-//				file = "http://playertest.longtailvideo.com/bunny.webm";		
-//			} else {
-//				file = "http://playertest.longtailvideo.com/bunny.ogv";		
-//			}
-//			if (_utils.isMobile()) {
-//				_video.load(file);
-//			}
 		}
 		
 		function _play() {
 			if (_model.state == _states.IDLE) {
-				_video.load(file);
+				_video.load(_model.playlist[_model.item]);
 			} else if (_model.state == _states.PAUSED) {
 				_video.play();
 			}
@@ -99,10 +86,12 @@
 			_view.fullscreen(state);
 		}
 
-		
-		function _item(item) {
-			_stop();
-			_model.setItem(item);
+		function _setStretching(stretching) {
+			_model.stretching = stretching;
+			_view.resize();
+		}
+
+		function _item(index) {
 			_load(_model.item);
 			_play();
 		}
@@ -134,6 +123,7 @@
 		this.setVolume = _waitForReady(_setVolume);
 		this.setMute = _waitForReady(_setMute);
 		this.setFullscreen = _waitForReady(_setFullscreen);
+		this.setStretching = _waitForReady(_setStretching);
 		
 /*		this.playerReady = _playerReady;
 		this.detachMedia = _detachMedia; 
