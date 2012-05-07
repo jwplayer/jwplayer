@@ -1,0 +1,158 @@
+<html>
+<head>
+<title>Embedding the Player</title>
+<style>
+    body { padding: 50px 100px; width: 700px; font: 13px/20px Arial; background: #FFF; }
+    a, h1, h2 { color: #369; }
+    h1 { font-size: 32px; }
+    h2 { margin-top: 50px; }
+    h3 { margin-top: 25px; }
+    img { display: block; box-shadow: 0 0 5px #999; margin: 0 10px; }
+    pre { font-size: 12px; background: #E5F3C8; padding:5px 10px; border: 1px solid #D3EAA4; }
+    dt { margin-left: 20px; font-weight: bold; } 
+    dd { color: #333; font-style: italic; }
+</style>
+</head><body>
+
+<h1>Embedding the Player</h1>
+
+<p>This guide explains how to embed JW Player into your site, load the media file(s) you want to play and tweak the player's layout and playback behavior.</p>
+
+
+
+<h2>Player Setup</h2>
+
+<p>Since JW Player is CDN hosted, there is no need to install and upload the player to your site. Therefore, embedding the JW Player is a simple, 3-step process. Open your web page in an HTML editor and:</p>
+
+<ol>
+<li>Insert the JW Player script from our CDN into the head of your page:
+<pre>&lt;script type="text/javascript" src="http://jwpcdn.com/player.js" &gt;&lt;/script&gt;</pre>
+</li>
+<li>Insert a &lt;div&gt; element with a unique <em>id</em> at the location you want the player to appear:
+<pre>&lt;div id="container"&gt;Loading the player ...&lt;/div&gt;</pre>
+</li>
+<li>Insert a script that invokes the JW Player <em>setup()</em> call on your &lt;div&gt;:</li>
+<pre>&lt;script type="text/javascript"&gt;
+    jwplayer("container").setup({
+        file: "/uploads/example.mp4",
+        height: 360,
+        image: "/uploads/example.jpg",
+        width: 640
+    });
+&lt;/script&gt;</pre></li>
+</ol>
+
+<p>The last code block is where the heavy lifting happens. The script in it tells the JW Player library to setup a player instance over the DOM element with ID <em>container</em>. Inside the setup call, the script provides a list of options for configuring the player. In this setup, only the <em>file</em>, <em>height</em>, <em>image</em> and <em>width</em> options are set, but many more are available. They are listed below.</p>
+
+
+
+<h2>Configuration Options</h2>
+
+<p>There are three options for configuring which media file(s) to load in the player:</p>
+
+<dl>
+<dt>file (undefined)</dt>
+<dd>URL to a single audio/video file, HLS/RTMP manifest or YouTube video to play. See the <a href="support.html">Supported Media</a> guide for an overview.</dd>
+<dt>image (undefined)</dt>
+<dd>URL to a JPG/PNG poster image to display before playback is started (and during playback for audio). If not set, the image of the first item in the <strong>playlist</strong> is used.</dd>
+<dt>playlist (undefined)</dt>
+<dd>Array with links to multiple files to load. Enables all sophisticated media playback options, like multiple formats, multiple quality levels or multiple items. See <a href="playlists.html">Working with Playlists</a> for more info.</dd>
+</dl>
+
+<p>Overall, the <strong>file</strong> option can be used only for basic setups, like playing a single MP4 video or MP3 song. Use the <strong>playlist</strong> option for all else, like an MP4+WebM source, SD+HD quality or a list with multiple items. See <a href="playlists.html">Working with Playlists</a> for more info.</p>
+
+
+<h3>Layout</h3>
+
+<p>These are the options for configuring the layout of the player:</p>
+
+<dl>
+<dt>controls (true)</dt>
+<dd>Whether to display the video controls at the bottom of the screen. Can be <strong>false</strong> or <strong>true</strong>.</dd>
+<dt>height (360)</dt>
+<dd>Height of the player in pixels. We recommend setting this to at least <strong>180</strong>, so all UI elements will fit. However, it can be set to a small size (e.g. <strong>40</strong>) for audio-only playback.</dd>
+<dt>icons (true)</dt>
+<dd>Whether to display the Play and Buffer icons in the center of the screen. Can be <strong>false</strong> or <strong>true</strong>.</dd>
+<dt>skin (undefined)</dt>
+<dd>Which skin to use for styling the player. Can be the identifier of a CDN hosted skin or the URL to a self-hosted skin. See the Player Skinning guide for more info.</dd>
+<dt>stretching (uniform)</dt>
+<dd>How to resize the poster and video to fit the display. Can be <strong>none</strong> (keep original dimensions), <strong>exactfit</strong> (stretch disproportionally), <strong>uniform</strong> (stretch proportionally;  black borders) or <strong>fill</strong> (stretch proportionally; parts cut off).</dd>
+<dt>width (640)</dt>
+<dd>Width of the player in pixels. We recommend setting this to at least <strong>320</strong>. On smaller players, certain UI elements may not fit.</dd>
+</dl>
+
+
+<h3>Behavior</h3>
+
+<p>And these are the options for configuring the setup and playback behavior:</p>
+
+<dl>
+<dt>autostart (false)</dt>
+<dd>Automatically start playing the video on page load. Can be <strong>true</strong> or <strong>false</strong>. Autostart does not work on mobile devices like iOS or Android.</dd>
+<dt>fallback (true)</dt>
+<dd>Whether to render a nice download link for the video if HTML5 and/or Flash are not supported. Can be <strong>true</strong> (a download link is rendered) or <strong>false</strong> (the original HTML is not touched).</dd>
+<dt>mute (false)</dt>
+<dd>Whether to have the sound muted on startup or not. Can be <strong>false</strong> (sound) or <strong>true</strong> (no sound).</dd>
+<dt>primary (html5)</dt>
+<dd>Which rendering mode to try first for rendering the player. Can be <strong>html5</strong> or <strong>flash</strong>.</dd>
+<dt>repeat (list)</dt>
+<dd>What to do when an item finished playback. Can be <strong>list</strong> (play the full playlist once), <strong>none</strong> (stop playback after every item), <strong>always</strong> (repeat the playlist forever) or <strong>single</strong> (repeat the active item forever).</dd>
+<dt>shuffle (false)</dt>
+<dd>Whether to play items from the playlist in random order (if there's more than 1). Can be <strong>true</strong> or <strong>false</strong></dd>
+</dl>
+
+
+<h2>Advanced Options Blocks</h2>
+
+<p>In addition to above configuration options, a list of configuration blocks is available to enable the more advanced functionalities of JW Player. For example, the <em>sidebar</em> block can be used to display the playlist in a sidebar next to the video display:</p>
+
+<pre>&lt;script type="text/javascript"&gt;
+    jwplayer("container").setup({
+        playlist: "http://example.com/playlist.rss",
+        height: 360,
+        sidebar: {
+            position: 'right',
+            size: 320
+        },
+        width: 960
+    });
+&lt;/script&gt;</pre>
+
+<p>As you can see, the <em>sidebar</em> is an object that itself contains a set of configuration options. In this case, the sidebar is setup to the right of the display and set 320 pixels wide. See the <a href="playlists.html">Working with Playlists</a> guide for more info on setting up the sidebar.</p>
+
+
+<p>In addition to the <em>sidebar</em>, the following advanced option blocks are available:</p>
+
+<dl>
+<dt>rtmp</dt>
+<dd>Config block for streaming video with the <a href="#">Adobe RTMP protocol</a>.</dd>
+<dt>captions</dt>
+<dd>Config block for displaying <a href="#">closed captions or subtitles</a>.</dd>
+<dt>logo</dt>
+<dd>Config block for displaying an <a href="#">on-screen watermark</a> (<em>licensed players only</em>).</dd>
+<dt>gapro</dt>
+<dd>Config block for pinging events to <a href="#">Google Analytics</a>.</dd>
+<dt>related</dt>
+<dd>Config block for displaying an overlay with <a href="#">Related Videos</a>.</dd>
+<dt>sharing</dt>
+<dd>Config block for displaying an overlay with <a href="#">Social Sharing links</a>.</dd>
+<dt>ova</dt>
+<dd>Config block for loading ads using the <a href="#">VAST/VPaid standards</a>  (<em>licensed players only</em>).</dd>
+<dt>googima</dt>
+<dd>Config block for loading ads using the <a href="#">Google IMA component</a>  (<em>licensed players only</em>).</dd>
+</dl>
+
+
+
+<h2>Player Removal</h2>
+
+<p>In addition to setting up a player, the JW Player embed script contains a function to unload a player. It's very simple:</p>
+
+<pre>jwplayer("container").remove();</pre>
+
+<p>This formal <em>remove()</em> function will make sure the player stops its streams, the DOM is re-set to its original state and all event listeners are cleaned up.</p>
+
+
+
+</body>
+</html>

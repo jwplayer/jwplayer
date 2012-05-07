@@ -1,0 +1,82 @@
+<html>
+<head>
+<title>Getting Started</title>
+<style>
+    body { padding: 50px 100px; width: 700px; font: 13px/20px Arial; background: #FFF; }
+    a, h1, h2 { color: #369; }
+    h1 { font-size: 32px; }
+    h2 { margin-top: 50px; }
+    h3 { margin-top: 25px; }
+    img { display: block; box-shadow: 0 0 5px #999; margin: 0 10px; }
+    pre { font-size: 12px; background: #E5F3C8; padding:5px 10px; border: 1px solid #D3EAA4; }
+    dd { color: #333; font-style: italic; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+    tr { border-bottom: 1px solid #CCC; } 
+    tr:nth-child(even) { background: #EEE; }
+    td,th { padding: 5px; font-size: 12px; text-align: left; }
+
+</style>
+</head><body>
+
+<h1>Getting Started</h1>
+
+<p>Getting JW Player up and running is now easier than ever. Only a few lines of HTML code is needed to embed a video that works on any desktop, tablet and phone. Since the player is now CDN hosted, you don't even have to upload the player to your server anymore.</p>
+
+
+
+<h2>Uploading the Video</h2>
+
+<p>In order to embed the player, you first need a video file uploaded to your server. Ensure it is in the MP4 format, since that can be played on any browser and device (including iPad, iPhone and Android).</p>
+
+<ul>
+<li>If your video is not in the MP4 format, you can convert it using a free tool like Handbrake. See our <a href="">Video Encoding guide</a> for more info.</li>
+<li>If you have no video at hand, feel free to use <a href="http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4">this short clip</a> for your testing.</li>
+<li>If you have no web server for uploading videos, check out <a href="http://www.longtailvideo.com/bits-on-the-run/">our video platform</a>. It offers you a free GB of storage, plus it automatically converts your video to MP4.</li>
+</ul>
+
+<p>Additionally, upload a poster image to your server. This image (in JPG format) is displayed before the video starts. An interesting frame from the video usually works well to draw attention and have users click <em>play</em>. <a href="http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg">Here is an image </a> for our short test clip.</p>
+
+
+
+<h2>Embedding the Player</h2>
+
+<p>Since JW Player is CDN hosted, there is no need to install and upload the player to your site. Therefore, embedding the JW Player is a simple, 3-step process. Open your web page in an HTML editor and:</p>
+
+<ol>
+<li>Insert the JW Player script from our CDN into the head of your page:
+<pre>&lt;script type="text/javascript" src="http://jwpcdn.com/player.js" &gt;&lt;/script&gt;</pre>
+</li>
+<li>Insert a &lt;div&gt; element with a unique <em>id</em> at the location you want the player to appear:
+<pre>&lt;div id="container"&gt;Loading the player ...&lt;/div&gt;</pre>
+</li>
+<li>Insert a script that invokes the JW Player <em>setup()</em> call on your &lt;div&gt;:</li>
+<pre>&lt;script type="text/javascript"&gt;
+    jwplayer("container").setup({
+        file: "/uploads/example.mp4",
+        height: 270,
+        image: "/uploads/example.jpg",
+        width: 480
+    });
+&lt;/script&gt;</pre></li>
+</ol>
+
+<p>In the setup() block, <em>file</em> and <em>image</em> should be the URLs to your video file and poster images. Their paths should be relative to the HTML page (just like when embedding an image using &lt;img&gt;). The <em>height</em> and <em>width</em> are used to set the dimensions of the player. Feel free to change these to values that make the player nicely fit your page.</p>
+
+
+
+<h2>Next Steps</h2>
+
+<p>That's it! With a few lines of code, you embedded a video that can be watched on any desktop, tablet or mobile phone. <a href="">Here's a live example</a>. We also have basic examples for <a href="">embedding an MP3 file</a> and <a href="">embedding a YouTube stream</a>.</p>
+
+<p>JW Player supports many options for enhancing and tuning your audio or video embeds. Here are a few interesting guides to look into next:</p>
+
+<ul>
+<li><a href="">Supported Browsers &amp; Media</a> lists all supported (mobile) browsers and media formats.</li>
+<li><a href="">Embedding JW Player</a> lists all options for tuning the player's layout and behavior.</li>
+<li><a href="">Skinning JW Player</a> explains how to completely change the player UI design.</li>
+<li><a href="">Scripting API Overview</a> explains how to use the JavaScript API for rich player-page interaction.</li>
+</ul>
+
+
+</body>
+</html>

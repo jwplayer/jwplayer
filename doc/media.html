@@ -1,0 +1,181 @@
+<html>
+<head>
+<title>Supported Media Formats</title>
+<style>
+    body { padding: 50px 100px; width: 700px; font: 13px/20px Arial; background: #FFF; }
+    a, h1, h2 { color: #369; }
+    h1 { font-size: 32px; }
+    h2 { margin-top: 50px; }
+    h3 { margin-top: 25px; }
+    img { display: block; box-shadow: 0 0 5px #999; margin: 0 10px; }
+    pre { font-size: 12px; background: #E5F3C8; padding:5px 10px; border: 1px solid #D3EAA4; }
+    dd { color: #333; font-style: italic; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+    tr { border-bottom: 1px solid #CCC; } 
+    tr:nth-child(even) { background: #EEE; }
+    td,th { padding: 5px; font-size: 12px; text-align: left; }
+
+</style>
+</head><body>
+
+<h1>Supported Media Formats</h1>
+
+<p>This guide lists all media formats JW Player officially supports.</p>
+
+<h2>Introduction</h2>
+
+<p>JW Player supports 9 distinct media formats: 3 video filetypes (<em>MP4</em>, <em>WebM</em>, <em>FLV</em>), 3 audio filetypes (<em>AAC</em>, <em>MP3</em>, <em>Vorbis</em>), 2 streaming protocols (<em>HLS</em>, <em>RTMP</em>) and <em>YouTube</em> (through their Chromeless Player API). Under certain circumstances, JW Player may play additional formats (like <em>Ogg</em> videos or <em>ShoutCast</em> streams), but only these 9 are cross-browser tested and officially supported.</p>
+
+<p>JW Player does not decode audio or video itself, but instead relies upon two underlying browser technologies: the HTML5 &lt;video&gt; element and the Adobe Flash plugin. Whether a format can play in HTML5 and/or Flash varies by browser. Therefore, we list below in which browsers each format is supported. See <a href="browsers.html">Supported Browsers &amp; Devices</a> for more details.</p>
+
+<p>JW Player tries to recognize a file format by its extension (e.g. <em>.mp4</em> for MP4 videos). If the extension of your files is not recognized, the player will display an error. However, if you know your file is in a supported format, you can use the <em>type</em> playlist option to force that format. See <a href="playlists.html">Working with Playlists</a> for more info.</p>
+
+<h2>Video Files</h2>
+
+<p>JW Player supports three types of video files:</p>
+
+<ul>
+<li><a href="http://en.wikipedia.org/wiki/MP4">MP4</a> videos using the <a href="http://en.wikipedia.org/wiki/H.264">H.264</a> video codec and the <a href="http://en.wikipedia.org/wiki/Advanced_Audio_Coding">AAC</a> audio codec. MP4 is of high quality and is supported by all browsers and devices. It is today's video format of choice.</li>
+<li><a href="http://en.wikipedia.org/wiki/FLV">FLV</a> videos using the <a href="http://en.wikipedia.org/wiki/H.263">H.263</a> video codec and the <a href="http://en.wikipedia.org/wiki/MP3">MP3</a> audio codec. FLV is of lower quality than MP4 and only supported in browsers that run Flash. Many existing video libraries are encoded in FLV.</li>
+<li><a href="http://en.wikipedia.org/wiki/WebM">WebM</a> videos using the <a href="http://en.wikipedia.org/wiki/VP8">VP8</a> video codec and the <a href="http://en.wikipedia.org/wiki/Vorbis">Vorbis</a> audio codec. WebM is royalty free and of comparable quality to MP4. It has limited browser and device support.</li>
+</ul>
+
+<p>Here is an overview of the recognized file extensions for these formats, plus their browser playback support:</p>
+
+<table><tr>
+    <th></th><th>mp4</th><th>flv</th><th>webm</th>
+</tr><tr>
+    <th>Extension(s)</th><td>.mp4, .m4v, .f4v</td><td>.flv</td><td>.webm</td>
+</tr><tr>
+    <th></th><td></td><td></td><td></td>
+</tr><tr>
+    <th>Internet Explorer</th><td>html5, flash <sup>1</sup></td><td>flash</td><td>-</td>
+</tr><tr>
+    <th>Chrome</th><td>html5, flash</td><td>flash</td><td>html5</td>
+</tr><tr>
+    <th>Firefox</th><td>flash</td><td>flash</td><td>html5</td>
+</tr><tr>
+    <th>Safari</th><td>html5, flash</td><td>flash</td><td>-</td>
+</tr><tr>
+    <th>iOS</th><td>html5</td><td>-</td><td>-</td>
+</tr><tr>
+    <th>Android</th><td>html5, flash <sup>2</sup></td><td>flash <sup>2</sup></td><td>html5 <sup>3</sup></td>
+</tr><tr>
+    <th>Opera</th><td>flash</td><td>flash</td><td>html5</td>
+</tr></table>
+
+<ol>
+    <li>HTML5 playback as of Internet Explorer 9.</li>
+    <li>Not all Android devices have Flash installed.</li>
+    <li>WebM support as of Android 4.</li>
+</ol>
+
+<p>Note the H.264 video codec supports different <em>profiles</em>; different levels of encoding sophistication. The <strong>Baseline</strong> profile is supported by all devices (older Androids and iPhone 2G/3G), while the <strong>Main</strong> profile is only supported by recent devices. The <strong>High</strong> profile has even less support and only adds efficiency for 1080p quality or higher.</p>
+
+
+<h2>Audio Files</h2>
+
+<p>JW Player supports three types of audio files:</p>
+
+<ul>
+<li><a href="http://en.wikipedia.org/wiki/Advanced_Audio_Coding">AAC</a> audio files, either as raw data or inside an MP4 container. AAC is of high quality and supported by all browsers and devices.</li>
+<li><a href="http://en.wikipedia.org/wiki/MP3">MP3</a> audio files, as raw data. Though not as good in quality as AAC, MP3 is very widely used. Many existing audio libraries are encoded in MP3.</li>
+<li><a href="http://en.wikipedia.org/wiki/Vorbis">Vorbis</a> audio files inside an Ogg container. Vorbis is royalty-free, but has limited browser and device support.</li>
+</ul>
+
+<p>Here is an overview of the recognized file extensions for these formats, plus their browser playback support:</p>
+
+<table><tr>
+    <th></th><th>aac</th><th>mp3</th><th>vorbis</th>
+</tr><tr>
+    <th>Extension(s)</th><td>.aac, .m4a, .f4a</td><td>.mp3</td><td>.ogg, .oga</td>
+</tr><tr>
+    <th></th><td></td><td></td><td></td>
+</tr><tr>
+    <th>Internet Explorer</th><td>html5, flash <sup>1</sup></td><td>html5, flash <sup>1</sup></td><td>-</td>
+</tr><tr>
+    <th>Chrome</th><td>html5, flash</td><td>html5, flash</td><td>html5</td>
+</tr><tr>
+    <th>Firefox</th><td>flash</td><td>flash</td><td>html5</td>
+</tr><tr>
+    <th>Safari</th><td>html5, flash</td><td>html5, flash</td><td>-</td>
+</tr><tr>
+    <th>iOS</th><td>html5</td><td>html5</td><td>-</td>
+</tr><tr>
+    <th>Android</th><td>html5, flash <sup>2</sup></td><td>html5, flash <sup>2</sup></td><td>html5 <sup>3</sup></td>
+</tr><tr>
+    <th>Opera</th><td>flash</td><td>flash</td><td>html5</td>
+</tr></table>
+
+<ol>
+    <li>HTML5 playback as of Internet Explorer 9.</li>
+    <li>Not all Android devices have Flash installed.</li>
+    <li>Ogg Vorbis support as of Android 4.</li>
+</ol>
+
+
+<h2>Streaming Protocols</h2>
+
+<p>JW Player supports two types of streaming protocols:</p>
+
+<ul>
+<li>Apple's <a href="http://en.wikipedia.org/wiki/HTTP_Live_Streaming">HLS</a> protocol, using M3U8 manifest files and TS media files. HLS builds upon standard HTTP, making it easy to deploy and firewall resilient. It is still under development, plus CDN and encoder support is still limited. See <a href="#">Using HLS Streaming</a> for more info.</li>
+<li>Adobe's <a href="http://en.wikipedia.org/wiki/Real_Time_Messaging_Protocol">RTMP</a> protocol, using SMIL manifest files and MP4, FLV, AAC or MP3 media files. RTMP requires dedicated server software and is sometimes blocked by firewalls. It is mature and has broad CDN and encoder support. See <a href="#">Using RTMP Streaming</a> for more info.</li>
+</ul>
+
+<p>Here is an overview of the recognized file extensions for these protocols, plus their browser playback support:</p>
+
+<table><tr>
+    <th></th><th>hls</th><th>rtmp</th>
+</tr><tr>
+    <th>Extension(s)</th><td>.m3u8</td><td>.smil</td>
+</tr><tr>
+    <th></th><td></td><td></td>
+</tr><tr>
+    <th>Internet Explorer</th><td>flash <sup>1</sup></td><td>flash</td>
+</tr><tr>
+    <th>Chrome</th><td>flash <sup>1</sup></td><td>flash</td>
+</tr><tr>
+    <th>Firefox</th><td>flash <sup>1</sup></td><td>flash</td>
+</tr><tr>
+    <th>Safari</th><td>html5, flash <sup>1</sup></td><td>flash</td>
+</tr><tr>
+    <th>iOS</th><td>html5</td><td>-</td>
+</tr><tr>
+    <th>Android</th><td>html5 <sup>2</sup></td><td>flash <sup>3</sup></td>
+</tr><tr>
+    <th>Opera</th><td>flash <sup>1</sup></td><td>flash</td>
+</tr></table>
+
+<ol>
+    <li>HLS playback requires Flash Player 10.1, which <a href="http://riastats.com/">is not yet ubiquitous</a>.</li>
+    <li>HLS support as of Android 4.</li>
+    <li>Not all Android devices have Flash installed.</li>
+</ol>
+
+
+<h2>YouTube API</h2>
+
+<p>In addition to self-hosted audio, video and streaming formats, JW Player includes native support for playing 
+YouTube videos. This possible through built-in support for the <a href="https://developers.google.com/youtube/flash_api_reference">Chromeless Player API</a>. YouTube videos are embedded by linking to their page, using one of the following schemes:</p>
+
+<ul>
+    <li><a href="http://www.youtube.com/watch?v=ylLzyHk54Z0">http://www.youtube.com/watch?v=ylLzyHk54Z0</a></li>
+    <li><a href="http://www.youtube.com/watch#!v=ylLzyHk54Z0">http://www.youtube.com/watch#!v=ylLzyHk54Z0</a></li>
+    <li><a href="http://www.youtube.com/v/ylLzyHk54Z0">http://www.youtube.com/v/ylLzyHk54Z0</a></li>
+    <li><a href="http://youtu.be/ylLzyHk54Z0">http://youtu.be/ylLzyHk54Z0</a></li>
+</ul>
+
+<p>The YouTube API requires the Flash plugin at present. Therefore, it is supported only on desktop browsers and Android devices running Flash. On iOS, limited playback support is available as part of the <a href="browsers.html">Download Fallback</a>. YouTube's experimental <a href="https://developers.google.com/youtube/iframe_api_reference">iFrame API</a> will likely introduce full iOS support in the future.</p>
+
+<p>Some additional notes on YouTube support:</p>
+
+<ul>
+<li>YouTube may place ads over the video during playback. These ads can not be disabled. Neither can the YouTube logo in the bottom right corner be removed.</li>
+<li>If the owner of a YouTube video has disabled it for embedding on 3rd party sites, JW Player cannot play the video. An error message is then displayed.</li>
+<li>YouTube videos are always available in multiple qualities, which means the JW Player's quality selector is automatically displayed in the controlbar.</li>
+</ul>
+
+
+</body>
+</html>
