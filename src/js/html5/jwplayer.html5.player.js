@@ -76,8 +76,31 @@
 		this.jwGetPlaylist = _statevarFactory('playlist');
 
 		
+		/** InStream API **/
+		this.jwDetachMedia = _controller.detachMedia;
+		this.jwAttachMedia = _controller.attachMedia;
+		
+		var _instreamPlayer;
+		
+		this.jwLoadInstream = function(item, options) {
+			if (!_instreamPlayer) {
+				_instreamPlayer = new html5.instream(_api, _model, _view, _controller);
+			}
+			setTimeout(function() {
+				_instreamPlayer.load(item, options);
+			}, 10);
+		}
+		
+		this.jwInstreamDestroy = function() {
+			if (_instreamPlayer) {
+				_instreamPlayer.jwInstreamDestroy();
+			}
+		}
+		
+		/** Events **/
 		this.jwAddEventListener = _controller.addEventListener;
 		this.jwRemoveEventListener = _controller.removeEventListener;
+		
 		
 		_init();
 	}

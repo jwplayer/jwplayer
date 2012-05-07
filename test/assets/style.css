@@ -1,0 +1,65 @@
+body { 
+  padding: 50px; 
+  font: 13px/20px Arial; 
+  background: #EEE; 
+}
+
+.jwplayer { 
+  -webkit-box-shadow: 0 0 8px #333; 
+  -moz-box-shadow: 0 0 8px #333; 
+  -ms-box-shadow: 0 0 8px #333; 
+  box-shadow: 0 0 8px #333; 
+}
+
+.test {
+  display: inline-block;
+}
+
+.sidebyside>div {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.label {
+  font: 18px/20px Arial; 
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+}
+
+.browsers>ul {
+  position: relative;
+  display: inline-block;
+  height: 100px;
+  background-repeat: no-repeat;
+  background-size: 50px 50px;
+  background-position-x: 50%;
+  padding: 0;
+  margin: 0 0 0 40px;
+}
+
+ul.win { background-image: url('logos/win7-logo.png') }
+ul.mac { background-image: url('logos/mac-logo.png') }
+ul.phone { background-image: url('logos/phone-logo.png') }
+ul.tablet { background-image: url('logos/tablet-logo.png') }
+
+.browsers>ul li {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  list-style: none;
+  display: inline-block;
+  top: 60px;
+  background-size: 100%;
+}
+
+li.chrome { background-image: url('logos/chrome-logo.png'); }
+li.firefox { background-image: url('logos/firefox-logo.png'); }
+li.firefox36 { background-image: url('logos/firefox-3.6-logo.png'); }
+li.ie9 { background-image: url('logos/ie9-logo.png'); }
+li.ie8 { background-image: url('logos/ie8-logo.png'); }
+li.safari { background-image: url('logos/safari-logo.png'); }
+li.ios4 { background-image: url('logos/ios-4-logo.png'); }
+li.ios5 { background-image: url('logos/ios-5-logo.png'); }
+li.android23 { background-image: url('logos/android-23-logo.png'); }
+li.android4 { background-image: url('logos/android-4-logo.png'); }

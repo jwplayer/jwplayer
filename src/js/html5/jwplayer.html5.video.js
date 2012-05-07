@@ -77,8 +77,10 @@
 		// Last sent buffer amount
 		_bufferPercent = -1,
 		// Event dispatcher
-		_eventDispatcher = new _events.eventdispatcher();
-
+		_eventDispatcher = new _events.eventdispatcher(),
+		// Whether or not we're listening to video tag events
+		_attached = false;
+		
 		_utils.extend(this, _eventDispatcher);
 
 		// Constructor
@@ -89,6 +91,8 @@
 			// Workaround for a Safari bug where video disappears on switch to fullscreen
 			_video.controls = true;
 			_video.controls = false;
+			
+			_attached = true;
 		}
 
 		function _setupListeners() {
@@ -98,7 +102,9 @@
 		}
 
 		function _sendEvent(type, data) {
-			_eventDispatcher.sendEvent(type, data);
+			if (_attached) {
+				_eventDispatcher.sendEvent(type, data);
+			}
 		}
 
 		
@@ -107,11 +113,13 @@
 		}
 
 		function _durationUpdateHandler(evt) {
-			_duration = _video.duration;
+			if (!_attached) return;
+			if (_duration < 0) _duration = _video.duration;
 			_timeUpdateHandler();
 		}
 
 		function _timeUpdateHandler(evt) {
+			if (!_attached) return;
 			if (_state == _states.PLAYING && !_dragging) {
 				_position = _video.currentTime;
 				_sendEvent(_events.JWPLAYER_MEDIA_TIME, {
@@ -125,6 +133,7 @@
 		}
 
 		function _canPlayHandler(evt) {
+			if (!_attached) return;
 			if (!_canSeek) {
 				_canSeek = true;
 				_sendBufferFull();
@@ -142,7 +151,7 @@
 		}
 
 		function _playHandler(evt) {
-			if (_dragging) return;
+			if (!_attached || _dragging) return;
 			
 			if (_video.paused) {
 				_setState(_states.PAUSED);
@@ -152,10 +161,12 @@
 		}
 		
 		function _bufferStateHandler(evt) {
+			if (!_attached) return;
 			_setState(_states.BUFFERING);
 		}
 
 		function _errorHandler(evt) {
+			if (!_attached) return;
 			_utils.log("Error: %o", _video.error);
 			_setState(_states.IDLE);
 		}
@@ -179,11 +190,13 @@
 		}
 		
 		this.load = function(item) {
+			if (!_attached) return;
+
 			_item = item;
 			_canSeek = false;
 			_bufferFull = false;
 			_delayedSeek = 0;
-			_duration = 0;
+			_duration = item.duration ? item.duration : -1;
 			_position = 0;
 			
 			_file = _selectFile(_item);
@@ -210,6 +223,7 @@
 		}
 
 		var _stop = this.stop = function() {
+			if (!_attached) return;
 			_video.removeAttribute("src");
 			_video.load();
 			clearInterval(_bufferInterval);
@@ -217,21 +231,23 @@
 		}
 
 		this.play = function() {
-			_video.play();
+			if (_attached) _video.play();
 		}
 
 		this.pause = function() {
-			_video.pause();
+			if (_attached) _video.pause();
 		}
 
 		this.seekDrag = function(state) {
+			if (!_attached) return; 
 			_dragging = state;
 			if (state) _video.pause();
 			else _video.play();
 		}
 		
 		var _seek = this.seek = function(pos) {
-			if (_canSeek) {
+			if (!_attached) return; 
+			if (_video.readyState >= _video.HAVE_FUTURE_DATA) {
 				_delayedSeek = 0;
 				if (!_dragging) {
 					_sendEvent(_events.JWPLAYER_MEDIA_SEEK, {
@@ -292,6 +308,7 @@
 		}
 		
 		function _sendBufferUpdate() {
+			if (!_attached) return; 
 			var newBuffer = _getBuffer();
 			if (newBuffer != _bufferPercent) {
 				_bufferPercent = newBuffer;
@@ -317,10 +334,26 @@
 			_sendEvent(_events.JWPLAYER_MEDIA_COMPLETE);
 		}
 		
+
+		/**
+		 * Return the video tag and stop listening to events  
+		 */
+		this.detachMedia = function() {
+			_attached = false;
+			return _video;
+		}
+		
+		/**
+		 * Begin listening to events again  
+		 */
+		this.attachMedia = function() {
+			_attached = true;
+		}
+		
 		// Provide access to video tag
-		// TODO: remove
+		// TODO: remove; used by InStream
 		this.getTag = function() {
-			return videotag;
+			return _video;
 		}
 
 		// Call constructor

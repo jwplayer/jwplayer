@@ -51,19 +51,70 @@
 				
 		}
 		
+		var _preplay, _actionOnAttach, _interruptPlay;
+		
 		function _play() {
-			if (_model.state == _states.IDLE) {
-				_video.load(_model.playlist[_model.item]);
-			} else if (_model.state == _states.PAUSED) {
-				_video.play();
+			try {
+				_actionOnAttach = _play;
+				if (!_preplay) {
+					_preplay = true;
+					_eventDispatcher.sendEvent(_events.JWPLAYER_MEDIA_BEFOREPLAY);
+					_preplay = false;
+					if (_interruptPlay) {
+						_interruptPlay = false;
+						_actionOnAttach = null;
+						return;
+					}
+				}
+				
+				if (_model.state == _states.IDLE) {
+					_video.load(_model.playlist[_model.item]);
+				} else if (_model.state == _states.PAUSED) {
+					_video.play();
+				}
+				
+				return true;
+			} catch (err) {
+				_eventDispatcher.sendEvent(_events.JWPLAYER_ERROR, err);
+				_actionOnAttach = null;
 			}
+			return false;
 		}
 
 		function _stop() {
-			_video.stop();
+			_actionOnAttach = null;
+			try {
+				_video.stop();
+				if (_preplay) {
+					_interruptPlay = true;
+				}
+				return true;
+			} catch (err) {
+				_eventDispatcher.sendEvent(_events.JWPLAYER_ERROR, err);
+			}
+			return false;
+
 		}
 
 		function _pause() {
+			try {
+				switch (_model.state) {
+					case _states.PLAYING:
+					case _states.BUFFERING:
+						_video.pause();
+						break;
+					default:
+						if (_preplay) {
+							_interruptPlay = true;
+						}
+				}
+				return true;
+			} catch (err) {
+				_eventDispatcher.sendEvent(_events.JWPLAYER_ERROR, err);
+			}
+			return false;
+
+			
 			if (_model.state == _states.PLAYING || _model.state == _states.BUFFERING) {
 				_video.pause();
 			}
@@ -112,6 +163,27 @@
 			}
 		}
 		
+		/** Used for the InStream API **/
+		function _detachMedia() {
+			try {
+				return _model.getVideo().detachMedia();
+			} catch (err) {
+				return null;
+			}
+		}
+
+		function _attachMedia() {
+			try {
+				var ret = _model.getVideo().attachMedia();
+				if (typeof _actionOnAttach == "function") {
+					_actionOnAttach();
+				}
+			} catch (err) {
+				return null;
+			}
+		}
+		
+		/** Controller API / public methods **/
 		this.play = _waitForReady(_play);
 		this.pause = _waitForReady(_pause);
 		this.seek = _waitForReady(_seek);
@@ -124,15 +196,14 @@
 		this.setMute = _waitForReady(_setMute);
 		this.setFullscreen = _waitForReady(_setFullscreen);
 		this.setStretching = _waitForReady(_setStretching);
-		
-/*		this.playerReady = _playerReady;
 		this.detachMedia = _detachMedia; 
 		this.attachMedia = _attachMedia;
-		this.beforePlay = function() { 
-			return _preplay; 
-		}
-*/		
 		
+//		this.playerReady = _playerReady;
+//		this.beforePlay = function() { 
+//			return _preplay; 
+//		}
+
 		_init();
 	}
 })(jwplayer.html5);

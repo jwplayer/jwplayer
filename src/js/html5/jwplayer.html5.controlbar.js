@@ -118,6 +118,7 @@
 			_controlbar, 
 			_id,
 			_duration,
+			_position,
 			_currentVolume,
 			_dragging = false,
 			_lastSeekTime = 0,
@@ -153,7 +154,7 @@
 			_api = api;
 
 			_id = _api.id + "_controlbar";
-			_duration = 0;
+			_duration = _position = 0;
 
 			_controlbar = _createSpan();
 			_controlbar.id = _id;
@@ -165,12 +166,13 @@
 
 			_skin = _api.skin;
 			
-			_settings = _utils.extend({}, _defaults, config);
+			_settings = _utils.extend({}, _defaults, _skin.getComponentSettings('controlbar'), config);
 			_layout = _skin.getComponentLayout('controlbar');
 			if (!_layout) _layout = _defaults.layout;
 			_createStyles();
 			_buildControlbar();
 			_addEventListeners();
+			_playlistHandler();
 		}
 		
 		function _addEventListeners() {
@@ -180,22 +182,32 @@
 			_api.jwAddEventListener(jwplayer.events.JWPLAYER_MEDIA_VOLUME, _volumeHandler);
 			_api.jwAddEventListener(jwplayer.events.JWPLAYER_MEDIA_BUFFER, _bufferHandler);
 			_api.jwAddEventListener(jwplayer.events.JWPLAYER_FULLSCREEN, _fullscreenHandler);
+			_api.jwAddEventListener(jwplayer.events.JWPLAYER_PLAYLIST_LOADED, _playlistHandler);
 		}
 		
 		function _timeUpdated(evt) {
-			_duration = evt.duration;
+			var refreshRequired = false,
+				timeString;
 			
 			if (_elements.elapsed) {
-				_elements.elapsed.innerHTML = _utils.timeFormat(evt.position);
+				timeString = _utils.timeFormat(evt.position);
+				_elements.elapsed.innerHTML = timeString;
+				refreshRequired = (timeString.length != _utils.timeFormat(_position).length);
 			}
 			if (_elements.duration) {
-				_elements.duration.innerHTML = _utils.timeFormat(evt.duration);
+				timeString = _utils.timeFormat(evt.duration);
+				_elements.duration.innerHTML = timeString;
+				refreshRequired = (refreshRequired || (timeString.length != _utils.timeFormat(_duration).length));
 			}
 			if (evt.duration > 0) {
 				_setProgress(evt.position / evt.duration);
 			} else {
 				_setProgress(0);
 			}
+			_duration = evt.duration;
+			_position = evt.position;
+			
+			if (refreshRequired) _resize();
 		}
 		
 		function _stateHandler(evt) {
@@ -246,6 +258,17 @@
 		function _fullscreenHandler(evt) {
 			_toggleButton("fullscreen", evt.fullscreen);
 		}
+		
+		function _playlistHandler(evt) {
+			if (_api.jwGetPlaylist().length < 2) {
+				_css(_internalSelector(".jwnext"), { display: "none" });
+				_css(_internalSelector(".jwprev"), { display: "none" });
+			} else {
+				_css(_internalSelector(".jwnext"), { display: undefined });
+				_css(_internalSelector(".jwprev"), { display: undefined });
+			}
+			_resize();
+		}
 
 		/**
 		 * Styles specific to this controlbar/skin
@@ -272,7 +295,7 @@
 
 		
 		function _internalSelector(name) {
-			return '#' + _id + " " + name;
+			return '#' + _id + (name ? " " + name : "");
 		}
 
 		function _createSpan() {
@@ -673,21 +696,33 @@
 		
 		function _setBuffer(pct) {
 			pct = Math.min(Math.max(0, pct), 1);
-			_css(_internalSelector('.jwtimeSliderBuffer'), { width: pct * 100 + "%" });
+			//_css(_internalSelector('.jwtimeSliderBuffer'), { width: pct * 100 + "%" });
+			if (_elements.timeSliderBuffer) {
+				_elements.timeSliderBuffer.style.width = pct * 100 + "%";
+			}
 		}
 
-		function _sliderPercent(prefix, pct, fixedWidth) {
+		function _sliderPercent(name, pct, fixedWidth) {
 			var width = 100 * Math.min(Math.max(0, pct), 1) + "%";
-			_css(_internalSelector(prefix+'Progress'), { width: width });
-			_css(_internalSelector(prefix+'Thumb'), { left: width });
+			
+			//_css(_internalSelector(prefix+'Progress'), { width: width });
+			//_css(_internalSelector(prefix+'Thumb'), { left: width });
+			
+			// Set style directly on the elements; Using the stylesheets results in some flickering in Chrome.
+			if (_elements[name+'SliderProgress']) {
+				_elements[name+'SliderProgress'].style.width = width;
+			}
+			if (_elements[name+'SliderThumb']) {
+				_elements[name+'SliderThumb'].style.left = width;
+			}
 		}
 		
 		function _setVolume (pct) {
-			_sliderPercent('.jwvolumeSlider', pct, true);
+			_sliderPercent('volume', pct, true);
 		}
 
 		function _setProgress(pct) {
-			_sliderPercent('.jwtimeSlider', pct);
+			_sliderPercent('time', pct);
 		}
 
 		function _getSkinElement(name) {

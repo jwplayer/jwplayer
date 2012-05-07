@@ -42,7 +42,9 @@
 		return styleSheet;
 	}
 	
-	utils.css = function(selector, styles) {
+	utils.css = function(selector, styles, important) {
+		if (!utils.exists(important)) important = false;
+		
 		if (utils.isIE()) {
 			if (!_styleSheet) {
 				_styleSheet = _createStylesheet();
@@ -56,7 +58,7 @@
 		}
 
 		for (var style in styles) {
-			var val = _styleValue(style, styles[style]);
+			var val = _styleValue(style, styles[style], important);
 			if (utils.exists(_rules[selector][style]) && !utils.exists(val)) {
 				delete _rules[selector][style];
 			} else {
@@ -72,10 +74,12 @@
 		}
 	}
 	
-	function _styleValue(style, value) {
+	function _styleValue(style, value, important) {
 		if (typeof value === "undefined") {
 			return undefined;
 		} 
+		
+		var importantString = important ? " !important" : "";
 
 		if (typeof value == "number") {
 			if (isNaN(value)) {
@@ -84,18 +88,18 @@
 			switch (style) {
 			case "z-index":
 			case "opacity":
-				return value;
+				return value + importantString;
 				break;
 			default:
 				if (style.match(/color/i)) {
 					return "#" + utils.strings.pad(value.toString(16), 6);
 				} else {
-					return Math.ceil(value) + "px";
+					return Math.ceil(value) + "px" + importantString;
 				}
 				break;
 			}
 		} else {
-			return value;
+			return value + importantString;
 		}
 	}
 
@@ -432,7 +436,7 @@
 			break;
 		}
 
-		domelement.className = domelement.className.replace(/jw(none|exactfit|uniform|fill)/g, "");
+		domelement.className = domelement.className.replace(/\s*jw(none|exactfit|uniform|fill)/g, "");
 		domelement.className += " " + stretchClass;
 	};
 	

@@ -41,7 +41,7 @@
 			_rotationInterval, 
 			_config = _utils.extend({
 				backgroundcolor: '#000'
-			}, config);
+			}, _skin.getComponentSettings('display'), config);
 			_bufferRotation = !_utils.exists(_config.bufferrotation) ? 15 : parseInt(_config.bufferrotation, 10), 
 			_bufferInterval = !_utils.exists(_config.bufferinterval) ? 100 : parseInt(_config.bufferinterval, 10);
 			
@@ -243,6 +243,18 @@
 		
 		this.hide = function() {
 			_setVisibility('', false);
+		}
+
+		this.getBGColor = function() {
+			return _config.backgroundcolor;
+		}
+		
+		/** NOT SUPPORTED : Using this for now to hack around instream API **/
+		this.setAlternateClickHandler = function(handler) {
+			_alternateClickHandler = handler;
+		}
+		this.revertAlternateClickHandler = function() {
+			_alternateClickHandler = undefined;
 		}
 
 		_init();
