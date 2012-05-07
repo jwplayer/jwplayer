@@ -1,3 +1,4 @@
+<!doctype html>
 <html>
 <head>
 <title>Supported Media Formats</title>
@@ -24,18 +25,18 @@
 
 <h2>Introduction</h2>
 
-<p>JW Player supports 9 distinct media formats: 3 video filetypes (<em>MP4</em>, <em>WebM</em>, <em>FLV</em>), 3 audio filetypes (<em>AAC</em>, <em>MP3</em>, <em>Vorbis</em>), 2 streaming protocols (<em>HLS</em>, <em>RTMP</em>) and <em>YouTube</em> (through their Chromeless Player API). Under certain circumstances, JW Player may play additional formats (like <em>Ogg</em> videos or <em>ShoutCast</em> streams), but only these 9 are cross-browser tested and officially supported.</p>
+<p>JW Player supports 9 distinct media formats: 3 video file types (<em>MP4</em>, <em>WebM</em>, <em>FLV</em>), 3 audio file types (<em>AAC</em>, <em>MP3</em>, <em>Vorbis</em>), 2 streaming protocols (<em>HLS</em>, <em>RTMP</em>) and <em>YouTube</em> (through their Chromeless Player API). Under certain circumstances, JW Player may play additional formats (like <em>Ogg</em> videos or <em>ShoutCast</em> streams), but only these 9 are cross-browser tested and officially supported.</p>
 
 <p>JW Player does not decode audio or video itself, but instead relies upon two underlying browser technologies: the HTML5 &lt;video&gt; element and the Adobe Flash plugin. Whether a format can play in HTML5 and/or Flash varies by browser. Therefore, we list below in which browsers each format is supported. See <a href="browsers.html">Supported Browsers &amp; Devices</a> for more details.</p>
 
-<p>JW Player tries to recognize a file format by its extension (e.g. <em>.mp4</em> for MP4 videos). If the extension of your files is not recognized, the player will display an error. However, if you know your file is in a supported format, you can use the <em>type</em> playlist option to force that format. See <a href="playlists.html">Working with Playlists</a> for more info.</p>
+<p>JW Player tries to recognize a file format by its extension (e.g. <em>.mp4</em> for MP4 videos). If the extension of your files is not recognized, the player will display an error. However, if you know your file is in a supported format, you can use the <em>type</em> playlist option to force the player to recognize the file as being of that format. See <a href="playlists.html">Working with Playlists</a> for more info.</p>
 
 <h2>Video Files</h2>
 
 <p>JW Player supports three types of video files:</p>
 
 <ul>
-<li><a href="http://en.wikipedia.org/wiki/MP4">MP4</a> videos using the <a href="http://en.wikipedia.org/wiki/H.264">H.264</a> video codec and the <a href="http://en.wikipedia.org/wiki/Advanced_Audio_Coding">AAC</a> audio codec. MP4 is of high quality and is supported by all browsers and devices. It is today's video format of choice.</li>
+<li><a href="http://en.wikipedia.org/wiki/MP4">MP4</a> videos using the <a href="http://en.wikipedia.org/wiki/H.264">H.264</a> video codec and the <a href="http://en.wikipedia.org/wiki/Advanced_Audio_Coding">AAC</a> audio codec. MP4 is of high quality and is can be played in all browsers and devices. It is today's video format of choice.</li>
 <li><a href="http://en.wikipedia.org/wiki/FLV">FLV</a> videos using the <a href="http://en.wikipedia.org/wiki/H.263">H.263</a> video codec and the <a href="http://en.wikipedia.org/wiki/MP3">MP3</a> audio codec. FLV is of lower quality than MP4 and only supported in browsers that run Flash. Many existing video libraries are encoded in FLV.</li>
 <li><a href="http://en.wikipedia.org/wiki/WebM">WebM</a> videos using the <a href="http://en.wikipedia.org/wiki/VP8">VP8</a> video codec and the <a href="http://en.wikipedia.org/wiki/Vorbis">Vorbis</a> audio codec. WebM is royalty free and of comparable quality to MP4. It has limited browser and device support.</li>
 </ul>
