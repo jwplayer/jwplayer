@@ -13,7 +13,7 @@
 
 		DOCUMENT = document, 
 		PLAYER_CLASS = "jwplayer", 
-		FULLSCREEN_SELECTOR = PLAYER_CLASS+".jwfullscreen",
+		FULLSCREEN_SELECTOR = "."+PLAYER_CLASS+".jwfullscreen",
 		VIEW_MAIN_CONTAINER_CLASS = "jwmain",
 		VIEW_INSTREAM_CONTAINER_CLASS = "jwinstream",
 		VIEW_VIDEO_CONTAINER_CLASS = "jwvideo", 
