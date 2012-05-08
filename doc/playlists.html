@@ -9,7 +9,8 @@
     h2 { margin-top: 50px; }
     h3 { margin-top: 25px; }
     img { display: block; box-shadow: 0 0 5px #999; margin: 0 10px; }
-    pre { font-size: 12px; background: #E5F3C8; padding:5px 10px; border: 1px solid #D3EAA4; }
+    pre { font-size: 12px; background: #E5F3C8; padding:5px 10px; border: 1px solid #D3EAA4; line-height: 15px;}
+    dt { margin-left: 20px; font-weight: bold; } 
     dd { color: #333; font-style: italic; }
     table { width: 100%; border-collapse: collapse; margin: 20px 0; }
     tr { border-bottom: 1px solid #CCC; } 
@@ -21,26 +22,163 @@
 
 <h1>Working with Playlists</h1>
 
+<p>The <strong>playlist</strong> is a powerful concept in JW Player that can be used to load multiple pieces of content into a single player. It can also be used to load multiple media formats and/or multiple quality levels for each piece of content. The playlist can be displayed as a sidebar to the video window.</p>
 
-<h2>The Playlist Syntax</h2>
-
-
-<h2>Playlist Use Cases</h2>
-
-<h3>Multiple Items</h3>
+<p>The playlist is defined as part of the <em>jwplayer().setup()</em> call. See <a href="embedding.html">Embedding JW Player</a> for more info on embedding the player. Instead of an inline, the playlist can also be defined in an external RSS feed. See <a href="feeds.html">Loading RSS Feeds</a> for more info.</p>
 
 
-<h3>Multiple Formats</h3>
+
+<h2>Playlist Structure</h2>
+
+<p>The playlist consists of two layers: <strong>item</strong> and <strong>source</strong>. An item contains all data for a distinct piece of content (e.g. its <em>title</em>) and a source contains all data for a distinct media resource (e.g. its <em>file</em>). The playlist contains one or more items, and each item contains one or more sources.</p>
+
+<h3>Item</h3>
+
+<p>The following item properties are recognized and used by JW Player:</p>
+
+<dl>
+<dt>title</dt>
+<dd>Title of the item. It is displayed inside the <em>play</em> icon before playback starts, plus in the <a href="#sidebar">sidebar</a>.</dd>
+<dt>description</dt>
+<dd>Short description of the item. It is displayed in the <a href="#sidebar">sidebar</a>.</dd>
+<dt>mediaid</dt>
+<dd>Unique identifier of this item. Used by advertising, analytics and discovery services.</dd>
+<dt>image</dt>
+<dd>Poster image representing the item. Displayed below the <em>play</em> icon before playback starts, plus in the <a href="#sidebar">sidebar</a>.</dd>
+<dt>duration</dt>
+<dd>Duration of the item in seconds. It is displayed in the <a href="#sidebar">sidebar</a>. It cannot be used to restrict the duration of the item.</dd>
+<dt>sources</dt>
+<dd>Array with one or more media sources for this item. Is required. See below.</dd>
+</dl>
+
+<p>For certain advanced features, like <a href="#">Closed Captioning</a>, <a href="#">RTMP Streaming</a> or <a href="#">Related Videos</a>, additional properties can be set per playlist item. See the respective guides for more info.</p>
+
+<h3>Source</h3>
+
+<p>The following source properties are recognized and used by JW Player:</p>
+
+<dl>
+<dt>file</dt>
+<dd>URL of the source. Is absolutely required.</dd>
+<dt>width</dt>
+<dd>Width of the source in pixels. Used for quality selection heuristics. Used when setting multiple qualities of the same format.</dd>
+<dt>label</dt>
+<dd>Human-readable description of the source. Displayed in the quality selection popup. Used when setting multiple qualities of the same format.</dd>
+<dt>type</dt>
+<dd>Media type of the source. Can be <strong>mp4</strong>, <strong>flv</strong>, <strong>webm</strong>, <strong>aac</strong>, <strong>mp3</strong>, <strong>vorbis</strong>, <strong>hls</strong>, <strong>rtmp</strong> or <strong>youtube</strong>. Is only needed when the file property does not contain a recognized file extensions (like .mp4 or .m4v for <strong>mp4</strong>). See <a href="media.html">Supported Media Formats</a> for more info</a>.</dd>
+</dl>
 
 
-<h3>Multiple Qualities</h3>
+
+<h2>Playlist Examples</h2>
+
+<p>Let's take a look at a few examples of playlists. These examples only show the contents of the <em>setup()</em> code block. See <a href="embedding.html">Embedding JW Player</a> on how to set the script library and container element.</p>
+
+<h3>Setting Multiple Formats</h3>
+
+<p>This setup has one item in the playlist with two sources: MP4 and WebM. JW Player will automatically display the MP4 source on Chrome/IE/Safari and the WebM source on Firefox:</p>
+
+<pre>
+&lt;script type="text/javascript"&gt;
+    jwplayer("container").setup({
+        playlist: [{
+            image: "/assets/sintel.jpg",
+            sources: [{
+                file: "/assets/sintel.mp4",
+            },{
+                file: "/assets/sintel.webm"
+            }],
+            title: "Sintel Movie Trailer"
+        }
+    });
+&lt;/script&gt;
+</pre>
+
+<p>See <a href="browsers.html">Browser &amp; Device Support</a> for more info on browser support and mode/source selection.</p>
+
+<h3>Setting Multiple Qualities</h3>
+
+<p>This setup has one item in the playlist with two sources. Both are MP4, but one is 640x360 pixels (SD) and the other is 1280x720 pixels (HD):</p>
+
+<pre>
+&lt;script type="text/javascript"&gt;
+    jwplayer("container").setup({
+        playlist: [{
+            image: "/assets/sintel.jpg",
+            sources: [{
+                file: "/assets/sintel.mp4",
+                label: "360p",
+                width: 640
+            },{
+                file: "/assets/sintel-hd.mp4",
+                label: "720p",
+                width: 1280
+            }],
+            title: "Sintel Movie Trailer"
+        }
+    });
+&lt;/script&gt;
+</pre>
+
+<p>On desktop browsers, JW Player will now display a quality selection menu in the controlbar, allowing viewers to toggle between "360p" and "720p" quality.</p>
+
+<p>On mobile devices, JW Player will select the 360p version for devices whose screen is closer to 640 pixels wide and the 720p version for devices whose screen is closer to 1280 pixels wide. This is a poor man's automated quality selection; see <a href="#">Using HLS Streaming</a> for a better setup that also take bandwidth into account.</p>
 
 
-<h2>Using RSS Feeds</h2>
+<h3>Setting Multiple Items</h3>
+
+<p>Finally, this setup contains two playlist items, each with a title, image and single media source (mp4):</p>
+
+<pre>
+&lt;script type="text/javascript"&gt;
+    jwplayer("container").setup({
+        playlist: [{
+            image: "/assets/sintel.jpg",
+            sources: [{
+                file: "/assets/sintel.mp4"
+            }],
+            title: "Sintel Movie Trailer"
+        },{
+            image: "/assets/bunny.jpg",
+            sources: [{
+                file: "/assets/bunny.mp4"
+            }],
+            title: "Big Buck Bunny Movie Trailer"
+        }]
+    });
+&lt;/script&gt;
+</pre>
+
+<p>Combining multiple media formats, multiple quality levels and multiple playlist items is no problem. For example, one could setup a playlist with 5 items that each contain an RTMP manifest, an HLS manifest, an SD/HD MP4 file and an SD/HD WebM file...</p>
 
 
-<h2>Rendering the Playlist</h2>
+<h2><a name="sidebar"></a>Displaying the Sidebar</h2>
 
+<p>The playlist can be displayed as a sidebar to the video window, using the <strong>sidebar</strong> configuration block. This allows users to scroll through it and play specific items. The configuration block has the following properties:</p>
+
+<dl>
+<dt>layout (basic)</dt>
+<dd>Layout of the playlist items in the sidebar. Can be <strong>basic</strong> (title and duration) or <strong>extended</strong> (image, title, duration and 3 lines of description).</dd>
+<dt>position (none)</dt>
+<dd>Position of the sidebar relative to the video display. Can be <strong>bottom</strong> (below the display), <strong>none</strong> (no sidebar) or <strong>right</strong> (to the right of the display).</dd>
+<dt>size (180)</dt>
+<dd>Width (if position is right) or height (if position is bottom) of the sidebar. This is basically the amount of pixels the sidebar "steals" from the video window.</dd>
+</dl>
+
+<p>Here is an example setup with a sidebar that's positioned to the right of the video with an extended layout:</p>
+
+<pre>&lt;script type="text/javascript"&gt;
+    jwplayer("container").setup({
+        playlist: "http://example.com/playlist.rss",
+        height: 360,
+        sidebar: {
+            layout: 'extended',
+            position: 'right',
+            size: 320
+        },
+        width: 960
+    });
+&lt;/script&gt;</pre>
 
 
 </body>
