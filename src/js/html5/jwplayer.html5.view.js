@@ -114,6 +114,7 @@
 			_resize(width, height);
 
 			if (!_utils.isMobile()) {
+				// TODO: allow override for showing HTML controlbar on iPads
 				_controls.controlbar = new html5.controlbar(_api, cbSettings);
 				_controlsLayer.appendChild(_controls.controlbar.getDisplayElement());
 			}
@@ -266,9 +267,18 @@
 		/**
 		 * Player state handler
 		 */
+		var _stateTimeout;
+		
 		function _stateHandler(evt) {
+			clearTimeout(_stateTimeout);
+			_stateTimeout = setTimeout(function() {
+				_updateState(evt.newstate);
+			}, 100);
+		}
+		
+		function _updateState(state) {
 			var vidstyle = {};
-			switch(evt.newstate) {
+			switch(state) {
 			case _states.PLAYING:
 				if (_utils.isIPod()) {
 					vidstyle.display = "block";

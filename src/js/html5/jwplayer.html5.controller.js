@@ -9,11 +9,12 @@
 		_utils = _jw.utils, 
 		_events = _jw.events, 
 		_states = _events.state;
-	
+		
 	html5.controller = function(model, view) {
 		var _model = model,
 			_view = view,
 			_video = model.getVideo(),
+			_controller = this,
 			_eventDispatcher = new _events.eventdispatcher(_model.id, _model.config.debug);
 		
 		_utils.extend(this, _eventDispatcher);
@@ -21,6 +22,15 @@
 		function _init() {
 			_model.addGlobalListener(_forward);
 			_model.addEventListener(_events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
+			_model.addEventListener(_events.JWPLAYER_MEDIA_COMPLETE, _completeHandler);
+		}
+		
+		function _playerReady(evt) {
+			_view.completeSetup();
+			_controller.sendEvent(evt.type, evt);
+			_controller.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_LOADED, {playlist: _model.playlist});
+			_controller.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_ITEM, {index: _model.item});
+			_controller.load();
 		}
 		
 		function _forward(evt) {
@@ -84,7 +94,9 @@
 		function _stop() {
 			_actionOnAttach = null;
 			try {
-				_video.stop();
+				if (_model.state != _states.IDLE && _model.state != _states.COMPLETE) {
+					_video.stop();
+				}
 				if (_preplay) {
 					_interruptPlay = true;
 				}
@@ -143,7 +155,7 @@
 		}
 
 		function _item(index) {
-			_load(_model.item);
+			_load(index);
 			_play();
 		}
 		
@@ -153,6 +165,32 @@
 		
 		function _next() {
 			_item(_model.item + 1);
+		}
+		
+		function _completeHandler() {
+			if (_model.state != _states.IDLE) {
+				// Something has made an API call before the complete handler has fired.
+				return;
+			}
+			_actionOnAttach = _completeHandler;
+			switch (_model.repeat.toLowerCase()) {
+				case "single":
+					_play();
+					break;
+				case "always":
+					_next();
+					break;
+				case "list":
+					if (_model.item == _model.playlist.length - 1) {
+						_load(0);
+					} else {
+						_next();
+					}
+					break;
+				default:
+//					_stop();
+					break;
+			}
 		}
 		
 		
@@ -199,12 +237,13 @@
 		this.detachMedia = _detachMedia; 
 		this.attachMedia = _attachMedia;
 		
-//		this.playerReady = _playerReady;
+		this.playerReady = _playerReady;
 //		this.beforePlay = function() { 
 //			return _preplay; 
 //		}
 
 		_init();
 	}
+	
 })(jwplayer.html5);
 

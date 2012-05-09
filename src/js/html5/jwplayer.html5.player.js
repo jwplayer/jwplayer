@@ -21,17 +21,11 @@
 		}
 		
 		function _readyHandler(evt) {
-			_view.completeSetup();
-			_controller.sendEvent(evt.type, evt);
-			_controller.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_LOADED, {playlist: _model.playlist});
-			_controller.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_ITEM, {index: _model.item});
-			_controller.load();
-			setTimeout(_view.resize, 0);
+			_controller.playerReady(evt);
 		}
 
 		function _errorHandler(evt) {
-			console.log(evt);
-			alert("Can't set up: " + evt.message);
+			jwplayer.utils.log('There was a problem setting up the player: ' + evt.message);
 		}
 
 		

@@ -162,10 +162,19 @@
 			}
 		}
 		
+		var _stateTimeout;
+		
 		function _stateHandler(evt) {
+			clearTimeout(_stateTimeout);
+			_stateTimeout = setTimeout(function() {
+				_updateDisplay(evt.newstate);
+			}, 100);
+		}
+		
+		function _updateDisplay(state) {
 			clearInterval(_rotationInterval);
 			
-			switch(evt.newstate) {
+			switch(state) {
 			case _states.COMPLETED:
 			case _states.IDLE:
 				_setIcon('play');

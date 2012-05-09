@@ -1,130 +1,25 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-	<head>
-	  <title></title>
-	  <script src="../bin-debug/jwplayer.js"></script>
-	  
+<head>
 
-	  <style type="text/css">
-	  	a {
-	  		text-decoration: none;
-	  		color: #333;
-	  	}
-	  	
-	  	a:HOVER {
-	  		color: #666;
-		}
-	  </style>
-	</head>
-	
-	<body>
-		<div id="container" style="width:400px; height:250px; position:relative; background-color:#000; float:left; margin-right: 10px">
-			<video id="mediaplayer" style="width:100%; height:100%"
-				preload="none">
-			</video>	
-		</div>
-			
-		<div style="float:left;  ">
-			<ol>
-				<li><a href="#" onclick="runTest('load1'); return false;">Load 1</a></li>
-				<li><a href="#" onclick="runTest('load2'); return false;">Load 2</a></li>
-				<li><a href="#" onclick="runTest('stop'); return false;">Stop()</a></li>
-				<li><a href="#" onclick="runTest('play'); return false;">Play()</a></li>
-				<li><a href="#" onclick="runTest('load1play'); return false;">Load 1 &amp; Play()</a></li>
-				<li><a href="#" onclick="runTest('load2play'); return false;">Load 2 &amp; Play()</a></li>
-				<li><a href="#" onclick="runTest('seek'); return false;">Seek(20)</a></li>
-				<li><a href="#" onclick="runTest('loadseek'); return false;">New src, seek immediately ( JS API bitrate switching, hd, etc )</a></li>
-				
-			</ol>
-		</div>
-		
-		<div style="clear: left; margin-top: 10px">
-			<hr>
-			
-			<ul>
-				<li><a href="#" onclick="document.getElementById('mediaplayer').load()">video.load()</a></li>
-				<li><a href="#" onclick="document.getElementById('mediaplayer').play()">video.play()</a></li>
-				<li><a href="#" onclick="document.getElementById('mediaplayer').pause()">video.pause()</a></li>
-			</ul>
-			
-		</div>
-		
-		<script type="text/javascript">
-			var player = new jwplayer.html5.video(document.getElementById("mediaplayer"));
-		</script>
+    <title>Test page template</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
 
-	  <script type="text/javascript">
-	  	var tag = document.getElementById("mediaplayer");
-	  	
-		function setSrc() {
-			if (tag.canPlayType("video/mp4")) {
-				player.load("http://content.bitsontherun.com/videos/nPripu9l-1ahmry41.mp4");		
-			} else {
-				player.load("http://content.bitsontherun.com/videos/nPripu9l-1Lq5Mnwq.webm");		
-			}
-		}
-		function setSrc2() {
-			if (tag.canPlayType("video/mp4")) {
-				player.load("http://content.bitsontherun.com/videos/yj1shGJB-1ahmry41.mp4");		
-			} else {
-				player.load("http://content.bitsontherun.com/videos/yj1shGJB-1Lq5Mnwq.webm");		
-			}
-		}
+</head>
 
-		function clearSrc() {
-			tag.setAttribute('src', '');
-		}
-		function removeSrc() {
-			tag.removeAttribute('src');
-		}
+<body>
 
-		function clearPoster() {
-			tag.setAttribute('poster', '');
-		}
-		function removePoster() {
-			tag.removeAttribute('poster');
-		}
-		
-		function load() {
-			tag.load();
-		}
-		
-	  
-	  	function runTest(testName) {
-		  	
-			switch(testName) {
-			case 'load1':
-				setSrc();
-				break;
-			case 'load2':
-				setSrc2();
-				break;
-			case 'stop':
-				player.stop();
-				break;								
-			case 'play':
-				player.play();
-				break;
-			case 'load1play':
-				setSrc();
-				player.play();
-				break;
-			case 'load2play':
-				setSrc2();
-				player.play();
-				break;
-			case 'seek':
-				player.seek(20);
-				break;
-			case 'loadseek':
-				setSrc();
-				player.play();
-				player.seek(20);
-				break;
-			}
-	  	}
-	  </script>
-	  
-		
-	</body>
+  <h1>JW Player Test Cases</h1>
+
+  <h2>Placeholders</h2>
+
+  <ul>
+	<li><a href="controller.html">HTML5 Player Integration</a>
+  </ul>
+  
+  
+  
+  </body>
+  
 </html>

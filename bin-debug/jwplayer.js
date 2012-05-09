@@ -2064,11 +2064,12 @@ jwplayer.source = document.createElement("source");/**
 		_utils = _jw.utils, 
 		_events = _jw.events, 
 		_states = _events.state;
-	
+		
 	html5.controller = function(model, view) {
 		var _model = model,
 			_view = view,
 			_video = model.getVideo(),
+			_controller = this,
 			_eventDispatcher = new _events.eventdispatcher(_model.id, _model.config.debug);
 		
 		_utils.extend(this, _eventDispatcher);
@@ -2076,6 +2077,15 @@ jwplayer.source = document.createElement("source");/**
 		function _init() {
 			_model.addGlobalListener(_forward);
 			_model.addEventListener(_events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
+			_model.addEventListener(_events.JWPLAYER_MEDIA_COMPLETE, _completeHandler);
+		}
+		
+		function _playerReady(evt) {
+			_view.completeSetup();
+			_controller.sendEvent(evt.type, evt);
+			_controller.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_LOADED, {playlist: _model.playlist});
+			_controller.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_ITEM, {index: _model.item});
+			_controller.load();
 		}
 		
 		function _forward(evt) {
@@ -2139,7 +2149,9 @@ jwplayer.source = document.createElement("source");/**
 		function _stop() {
 			_actionOnAttach = null;
 			try {
-				_video.stop();
+				if (_model.state != _states.IDLE && _model.state != _states.COMPLETE) {
+					_video.stop();
+				}
 				if (_preplay) {
 					_interruptPlay = true;
 				}
@@ -2198,7 +2210,7 @@ jwplayer.source = document.createElement("source");/**
 		}
 
 		function _item(index) {
-			_load(_model.item);
+			_load(index);
 			_play();
 		}
 		
@@ -2208,6 +2220,32 @@ jwplayer.source = document.createElement("source");/**
 		
 		function _next() {
 			_item(_model.item + 1);
+		}
+		
+		function _completeHandler() {
+			if (_model.state != _states.IDLE) {
+				// Something has made an API call before the complete handler has fired.
+				return;
+			}
+			_actionOnAttach = _completeHandler;
+			switch (_model.repeat.toLowerCase()) {
+				case "single":
+					_play();
+					break;
+				case "always":
+					_next();
+					break;
+				case "list":
+					if (_model.item == _model.playlist.length - 1) {
+						_load(0);
+					} else {
+						_next();
+					}
+					break;
+				default:
+//					_stop();
+					break;
+			}
 		}
 		
 		
@@ -2254,13 +2292,14 @@ jwplayer.source = document.createElement("source");/**
 		this.detachMedia = _detachMedia; 
 		this.attachMedia = _attachMedia;
 		
-//		this.playerReady = _playerReady;
+		this.playerReady = _playerReady;
 //		this.beforePlay = function() { 
 //			return _preplay; 
 //		}
 
 		_init();
 	}
+	
 })(jwplayer.html5);
 
 /**
@@ -2452,10 +2491,19 @@ jwplayer.source = document.createElement("source");/**
 			}
 		}
 		
+		var _stateTimeout;
+		
 		function _stateHandler(evt) {
+			clearTimeout(_stateTimeout);
+			_stateTimeout = setTimeout(function() {
+				_updateDisplay(evt.newstate);
+			}, 100);
+		}
+		
+		function _updateDisplay(state) {
 			clearInterval(_rotationInterval);
 			
-			switch(evt.newstate) {
+			switch(state) {
 			case _states.COMPLETED:
 			case _states.IDLE:
 				_setIcon('play');
@@ -3069,17 +3117,11 @@ jwplayer.source = document.createElement("source");/**
 		}
 		
 		function _readyHandler(evt) {
-			_view.completeSetup();
-			_controller.sendEvent(evt.type, evt);
-			_controller.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_LOADED, {playlist: _model.playlist});
-			_controller.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_ITEM, {index: _model.item});
-			_controller.load();
-			setTimeout(_view.resize, 0);
+			_controller.playerReady(evt);
 		}
 
 		function _errorHandler(evt) {
-			console.log(evt);
-			alert("Can't set up: " + evt.message);
+			jwplayer.utils.log('There was a problem setting up the player: ' + evt.message);
 		}
 
 		
@@ -4102,7 +4144,7 @@ jwplayer.source = document.createElement("source");/**
 		// Currently playing file
 		_file,
 		// Reference to the video tag
-		_video,
+		_videotag,
 		// Current duration
 		_duration,
 		// Current position
@@ -4134,19 +4176,19 @@ jwplayer.source = document.createElement("source");/**
 
 		// Constructor
 		function _init(videotag) {
-			_video = videotag;
+			_videotag = videotag;
 			_setupListeners();
 
 			// Workaround for a Safari bug where video disappears on switch to fullscreen
-			_video.controls = true;
-			_video.controls = false;
+			_videotag.controls = true;
+			_videotag.controls = false;
 			
 			_attached = true;
 		}
 
 		function _setupListeners() {
 			for (var evt in _mediaEvents) {
-				_video.addEventListener(evt, _mediaEvents[evt], false);
+				_videotag.addEventListener(evt, _mediaEvents[evt], false);
 			}
 		}
 
@@ -4163,14 +4205,14 @@ jwplayer.source = document.createElement("source");/**
 
 		function _durationUpdateHandler(evt) {
 			if (!_attached) return;
-			if (_duration < 0) _duration = _video.duration;
+			if (_duration < 0) _duration = _videotag.duration;
 			_timeUpdateHandler();
 		}
 
 		function _timeUpdateHandler(evt) {
 			if (!_attached) return;
 			if (_state == _states.PLAYING && !_dragging) {
-				_position = _video.currentTime;
+				_position = _videotag.currentTime;
 				_sendEvent(_events.JWPLAYER_MEDIA_TIME, {
 					position : _position,
 					duration : _duration
@@ -4202,13 +4244,13 @@ jwplayer.source = document.createElement("source");/**
 		function _playHandler(evt) {
 			if (!_attached || _dragging) return;
 			
-			if (_video.paused) {
-				_setState(_states.PAUSED);
+			if (_videotag.paused) {
+				//_setState(_states.PAUSED);
 			} else {
 				_setState(_states.PLAYING);
 			}
 		}
-		
+
 		function _bufferStateHandler(evt) {
 			if (!_attached) return;
 			_setState(_states.BUFFERING);
@@ -4216,13 +4258,13 @@ jwplayer.source = document.createElement("source");/**
 
 		function _errorHandler(evt) {
 			if (!_attached) return;
-			_utils.log("Error: %o", _video.error);
+			_utils.log("Error: %o", _videotag.error);
 			_setState(_states.IDLE);
 		}
 
 		function _canPlay(file) {
 			var type = _extensions[_utils.strings.extension(file)];
-			return (!!type && _video.canPlayType(type));
+			return (!!type && _videotag.canPlayType(type));
 		}
 		
 		/** Selects the appropriate file out of all available options **/
@@ -4256,14 +4298,14 @@ jwplayer.source = document.createElement("source");/**
 			}
 			
 			_setState(_states.BUFFERING); 
-			_video.src = _file;
-			_video.load();
+			_videotag.src = _file;
+			_videotag.load();
 			
 			_bufferInterval = setInterval(_sendBufferUpdate, 100);
 
 			// Use native browser controls on mobile
 			if (_utils.isMobile()) {
-				_video.controls = true;
+				_videotag.controls = true;
 			}
 			
 			if (_utils.isIPod()) {
@@ -4273,30 +4315,33 @@ jwplayer.source = document.createElement("source");/**
 
 		var _stop = this.stop = function() {
 			if (!_attached) return;
-			_video.removeAttribute("src");
-			_video.load();
+			_videotag.removeAttribute("src");
+			_videotag.load();
 			clearInterval(_bufferInterval);
 			_setState(_states.IDLE);
 		}
 
 		this.play = function() {
-			if (_attached) _video.play();
+			if (_attached) _videotag.play();
 		}
 
 		this.pause = function() {
-			if (_attached) _video.pause();
+			if (_attached) {
+				_videotag.pause();
+				_setState(_states.PAUSED);
+			}
 		}
 
 		this.seekDrag = function(state) {
 			if (!_attached) return; 
 			_dragging = state;
-			if (state) _video.pause();
-			else _video.play();
+			if (state) _videotag.pause();
+			else _videotag.play();
 		}
 		
 		var _seek = this.seek = function(pos) {
 			if (!_attached) return; 
-			if (_video.readyState >= _video.HAVE_FUTURE_DATA) {
+			if (_videotag.readyState >= _videotag.HAVE_FUTURE_DATA) {
 				_delayedSeek = 0;
 				if (!_dragging) {
 					_sendEvent(_events.JWPLAYER_MEDIA_SEEK, {
@@ -4304,33 +4349,33 @@ jwplayer.source = document.createElement("source");/**
 						offset: pos
 					});
 				}
-				_video.currentTime = pos;
+				_videotag.currentTime = pos;
 			} else {
 				_delayedSeek = pos;
 			}
 		}
 
 		var _volume = this.volume = function(vol) {
-			if (_video.muted) _video.muted = false;
-			_video.volume = vol / 100;
+			if (_videotag.muted) _videotag.muted = false;
+			_videotag.volume = vol / 100;
 
 		}
 		
 		function _volumeHandler(evt) {
 			_sendEvent(_events.JWPLAYER_MEDIA_VOLUME, {
-				volume: Math.round(_video.volume * 100)
+				volume: Math.round(_videotag.volume * 100)
 			});
 			_sendEvent(_events.JWPLAYER_MEDIA_MUTE, {
-				mute: _video.muted
+				mute: _videotag.muted
 			});
 		}
 		
 		this.mute = function(state) {
-			if (!_utils.exists(state)) state = !_video.mute;
+			if (!_utils.exists(state)) state = !_videotag.mute;
 			if (state) {
-				_lastVolume = _video.volume * 100;
+				_lastVolume = _videotag.volume * 100;
 				_volume(0);
-				_video.muted = true;
+				_videotag.muted = true;
 			} else {
 				_volume(_lastVolume);
 			}
@@ -4371,15 +4416,16 @@ jwplayer.source = document.createElement("source");/**
 		}
 		
 		function _getBuffer() {
-			if (_video.buffered.length == 0 || _video.duration == 0)
+			if (_videotag.buffered.length == 0 || _videotag.duration == 0)
 				return 0;
 			else
-				return _video.buffered.end(_video.buffered.length-1) / _video.duration;
+				return _videotag.buffered.end(_videotag.buffered.length-1) / _videotag.duration;
 		}
 		
 
 		function _complete() {
-			_stop();
+			//_stop();
+			_setState(_states.IDLE);
 			_sendEvent(_events.JWPLAYER_MEDIA_COMPLETE);
 		}
 		
@@ -4389,7 +4435,7 @@ jwplayer.source = document.createElement("source");/**
 		 */
 		this.detachMedia = function() {
 			_attached = false;
-			return _video;
+			return _videotag;
 		}
 		
 		/**
@@ -4402,7 +4448,7 @@ jwplayer.source = document.createElement("source");/**
 		// Provide access to video tag
 		// TODO: remove; used by InStream
 		this.getTag = function() {
-			return _video;
+			return _videotag;
 		}
 
 		// Call constructor
@@ -4526,6 +4572,7 @@ jwplayer.source = document.createElement("source");/**
 			_resize(width, height);
 
 			if (!_utils.isMobile()) {
+				// TODO: allow override for showing HTML controlbar on iPads
 				_controls.controlbar = new html5.controlbar(_api, cbSettings);
 				_controlsLayer.appendChild(_controls.controlbar.getDisplayElement());
 			}
@@ -4678,9 +4725,18 @@ jwplayer.source = document.createElement("source");/**
 		/**
 		 * Player state handler
 		 */
+		var _stateTimeout;
+		
 		function _stateHandler(evt) {
+			clearTimeout(_stateTimeout);
+			_stateTimeout = setTimeout(function() {
+				_updateState(evt.newstate);
+			}, 100);
+		}
+		
+		function _updateState(state) {
 			var vidstyle = {};
-			switch(evt.newstate) {
+			switch(state) {
 			case _states.PLAYING:
 				if (_utils.isIPod()) {
 					vidstyle.display = "block";
