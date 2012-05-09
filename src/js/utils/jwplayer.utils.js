@@ -290,7 +290,7 @@
 		for (var i=0; i<cookies.length; i++) {
 			var split = cookies[i].split('=');
 			if (split[0].indexOf("jwplayer.") == 0) {
-				jwCookies[split[0].substring(9, split[0].length)] = split[1];
+				jwCookies[split[0].substring(9, split[0].length)] = utils.strings.serialize(split[1]);
 			}
 		}
 		return jwCookies;
@@ -386,6 +386,27 @@
 		}
 	};
 
+	utils.transform = function(domelement, xscale, yscale, xoffset, yoffset) {
+		// Set defaults
+		if (!jwplayer.utils.exists(xscale)) xscale = 1;
+		if (!jwplayer.utils.exists(yscale)) yscale = 1;
+		if (!jwplayer.utils.exists(xoffset)) xoffset = 0;
+		if (!jwplayer.utils.exists(yoffset)) yoffset = 0;
+		
+		if (xscale == 1 && yscale == 1 && xoffset == 0 && yoffset == 0) {
+			domelement.style.webkitTransform = "";
+			domelement.style.MozTransform = "";
+			domelement.style.msTransform = "";
+			domelement.style.OTransform = "";
+		} else {
+			var value = "scale("+xscale+","+yscale+") translate("+xoffset+"px,"+yoffset+"px)";
+			domelement.style.webkitTransform = value;
+			domelement.style.MozTransform = value;
+			domelement.style.msTransform = value;
+			domelement.style.OTransform = value;
+		}
+	};
+	
 	/**
 	 * Stretches domelement based on stretching. parentWidth, parentHeight,
 	 * elementWidth, and elementHeight are required as the elements dimensions
@@ -405,39 +426,79 @@
 	 * @param {Number}
 	 *            elementHeight
 	 */
-	utils.stretch = function(stretching, domelement, parentWidth,
-			parentHeight, elementWidth, elementHeight, transform) {
-
-		var xscale = (utils.exists(parentWidth) && utils.exists(elementWidth)) ? parentWidth / elementWidth : 0,
-			yscale = (utils.exists(parentHeight) && utils.exists(elementHeight)) ? parentHeight / elementHeight : 0,
-			x = 0, y = 0,
+	utils.stretch = function(stretching, domelement, parentWidth, parentHeight, elementWidth, elementHeight) {
+		if (!domelement) return;
+		if (!parentWidth || !parentHeight || !elementWidth || !elementHeight) return;
+		
+		var xscale = parentWidth / elementWidth,
+			yscale = parentHeight / elementHeight,
+			xoff = 0, yoff = 0,
 			style = {},
+			video = (domelement.tagName.toLowerCase() == "video"),
+			transform = false,
 			stretchClass;
 		
+		if (video) {
+			utils.transform(domelement);
+		}
+
+		stretchClass = "jw" + stretching.toLowerCase();
+		
 		switch (stretching.toLowerCase()) {
-		case _stretching.NONE:
 		case _stretching.FILL:
+			if (xscale > yscale) {
+				elementWidth = elementWidth * xscale;
+				elementHeight = elementHeight * xscale;
+			} else {
+				elementWidth = elementWidth * yscale;
+				elementHeight = elementHeight * yscale;
+			}
+		case _stretching.NONE:
+			xscale = yscale = 1;
 		case _stretching.EXACTFIT:
-			stretchClass = "jw" + stretching.toLowerCase();
+	        transform = true;
 			break;
 		case _stretching.UNIFORM:
-			stretchClass = "jw" + stretching.toLowerCase();
 			if (xscale > yscale) {
-				if ( (elementWidth * yscale) / parentWidth > 0.95) {
+				elementWidth = elementWidth * yscale;
+				elementHeight = elementHeight * yscale;
+				if (elementWidth / parentWidth > 0.95) {
+					transform = true;
 					stretchClass = "jwexactfit";
+					xscale = Math.ceil(100 * parentWidth / elementWidth) / 100;
+					yscale = 1;
 				}
 			} else {
-				if ( (elementHeight * xscale) / parentHeight > 0.95) {
+				elementWidth = elementWidth * xscale;
+				elementHeight = elementHeight * xscale;
+				if (elementHeight / parentHeight > 0.95) {
+					transform = true;
 					stretchClass = "jwexactfit";
+					yscale = Math.ceil(100 * parentHeight / elementHeight) / 100;
+					xscale = 1;
 				}
 			}
 			break;
 		default:
+			return;
 			break;
 		}
 
-		domelement.className = domelement.className.replace(/\s*jw(none|exactfit|uniform|fill)/g, "");
-		domelement.className += " " + stretchClass;
+		if (video) {
+			if (transform) {
+				domelement.style.width = elementWidth + "px";
+				domelement.style.height = elementHeight + "px"; 
+				xoff = ((parentWidth - elementWidth) / 2) / xscale;
+				yoff = ((parentHeight - elementHeight) / 2) / yscale;
+				utils.transform(domelement, xscale, yscale, xoff, yoff);
+			} else {
+				domelement.style.width = "";
+				domelement.style.height = "";
+			}
+		} else {
+			domelement.className = domelement.className.replace(/\s*jw(none|exactfit|uniform|fill)/g, "");
+			domelement.className += " " + stretchClass;
+		}
 	};
 	
 	/** Stretching options **/

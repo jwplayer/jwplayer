@@ -173,6 +173,8 @@
 			_buildControlbar();
 			_addEventListeners();
 			_playlistHandler();
+			_volumeHandler();
+			_muteHandler();
 		}
 		
 		function _addEventListeners() {
@@ -241,13 +243,14 @@
 			}
 		}
 		
-		function _muteHandler(evt) {
-			_toggleButton("mute", evt.mute);
-			_setVolume(evt.mute ? 0 : _currentVolume)
+		function _muteHandler() {
+			var state = _api.jwGetMute();
+			_toggleButton("mute", state);
+			_setVolume(state ? 0 : _currentVolume)
  		}
 
-		function _volumeHandler(evt) {
-			_currentVolume = evt.volume / 100;
+		function _volumeHandler() {
+			_currentVolume = _api.jwGetVolume() / 100;
 			_setVolume(_currentVolume);
 		}
 
@@ -761,6 +764,7 @@
 	_css(CB_CLASS, {
 		position: JW_CSS_ABSOLUTE,
 		overflow: 'hidden',
+		opacity: 0,
     	'-webkit-transition': JW_CSS_SMOOTH_EASE,
     	'-moz-transition': JW_CSS_SMOOTH_EASE,
     	'-o-transition': JW_CSS_SMOOTH_EASE

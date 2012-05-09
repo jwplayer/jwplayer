@@ -40,7 +40,8 @@
 			_degreesRotated, 
 			_rotationInterval, 
 			_config = _utils.extend({
-				backgroundcolor: '#000'
+				backgroundcolor: '#000',
+				showicons: true
 			}, _skin.getComponentSettings('display'), config);
 			_bufferRotation = !_utils.exists(_config.bufferrotation) ? 15 : parseInt(_config.bufferrotation, 10), 
 			_bufferInterval = !_utils.exists(_config.bufferinterval) ? 100 : parseInt(_config.bufferinterval, 10);
@@ -143,12 +144,22 @@
 		}
 		
 		function _setIcon(name) {
+			if (!_config.showicons) return;
+			
 			if (_button) {
 				_display.removeChild(_button);
 			}
 			_button = _icons[name];
 			if (_button) {
 				_display.appendChild(_button);
+			}
+			
+			if (name == "buffer") {
+				_degreesRotated = 0;
+				_rotationInterval = setInterval(function() {
+					_degreesRotated += _bufferRotation;
+					_rotate(_button.childNodes[0], _degreesRotated % 360);
+				}, _bufferInterval);
 			}
 		}
 
@@ -182,11 +193,6 @@
 				break;
 			case _states.BUFFERING:
 				_setIcon('buffer');
-				_degreesRotated = 0;
-				_rotationInterval = setInterval(function() {
-					_degreesRotated += _bufferRotation;
-					_rotate(_button.childNodes[0], _degreesRotated % 360);
-				}, _bufferInterval);
 				break;
 			case _states.PLAYING:
 				_setIcon();
@@ -245,7 +251,7 @@
 				opacity: state ? 1 : 0
 			});
 		}
-		
+
 		this.show = function() {
 			_setVisibility('', true);
 		}
@@ -274,7 +280,8 @@
 		cursor: "pointer",
 		width: JW_CSS_100PCT,
 		height: JW_CSS_100PCT,
-		overflow: 'hidden'
+		overflow: 'hidden',
+		opacity: 0
 	});
 
 	_css(D_CLASS + ' .jwpreview', {

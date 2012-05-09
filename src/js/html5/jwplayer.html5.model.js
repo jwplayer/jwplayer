@@ -6,7 +6,8 @@
  */
 (function(html5) {
 	var _utils = jwplayer.utils,
-		_events = jwplayer.events;
+		_events = jwplayer.events,
+		UNDEF = undefined;
 
 	html5.model = function(config) {
 		var _model = this, 
@@ -16,24 +17,31 @@
 			_videoTag,
 			// Saved settings
 			_cookies = _utils.getCookies(),
+			// Sub-component configurations
+			_componentConfigs = {};
 			// Defaults
 			_defaults = {
-				width: 480,
-				height: 320,
-				item: 0,
-				playlist: [],
-				skin: undefined,
-				volume: 90,
-				mute: false,
-				repeat: "",
-				playlistsize: 0,
-				playlistposition: "right",
-				stretching: _utils.stretching.UNIFORM,
 				autostart: false,
-				debug: undefined
+				controls: true,
+				debug: UNDEF,
+				height: 320,
+				icons: true,
+				item: 0,
+				mute: false,
+				playlist: [],
+				playlistposition: "right",
+				playlistsize: 0,
+				repeat: UNDEF,
+				skin: UNDEF,
+				stretching: _utils.stretching.UNIFORM,
+				volume: 90,
+				width: 480
 			};
 
 		function _parseConfig(config) {
+			for (var i in config) {
+				config[i] = _utils.strings.serialize(config[i]);
+			}
 			return config;
 		}
 
@@ -46,11 +54,19 @@
 				position: 0,
 				buffer: 0,
 			}, _model.config);
+			_setComponentConfigs();
 			_model.setItem(_model.config.item);
 			
 			_videoTag = document.createElement("video");
 			_video = new html5.video(_videoTag);
+			_video.volume(_model.volume);
+			_video.mute(_model.mute);
 			_video.addGlobalListener(_videoEventHandler);
+		}
+		
+		function _setComponentConfigs() {
+			_componentConfigs.display = { showicons: _model.icons };
+			_componentConfigs.controlbar = {};
 		}
 
 		var _eventMap = {};
@@ -75,22 +91,22 @@
 			}
 		}
 		
-		this.getVideo = function() {
+		_model.getVideo = function() {
 			return _video;
 		}
 		
-		this.seekDrag = function(state) {
+		_model.seekDrag = function(state) {
 			_video.seekDrag(state);
 		}
 		
-		this.setFullscreen = function(state) {
+		_model.setFullscreen = function(state) {
 			if (state != _model.fullscreen) {
 				_model.fullscreen = state;
 				_model.sendEvent(_events.JWPLAYER_FULLSCREEN, { fullscreen: state } );
 			}
 		}
 		
-		this.setPlaylist = function(playlist) {
+		_model.setPlaylist = function(playlist) {
 			_model.item = -1;
 			_model.playlist = playlist;
 			_model.sendEvent(_events.JWPLAYER_PLAYLIST_LOADED, {
@@ -98,7 +114,7 @@
 			});
 		}
 		
-		this.setItem = function(index) {
+		_model.setItem = function(index) {
 			var newItem;
 			if (index == _model.playlist.length || index < -1)
 				newItem = 0;
@@ -115,8 +131,21 @@
 			}
 		}
 		
-		this.componentConfig = function(name) {
-			return {};
+		_model.setVolume = function(newVol) {
+			if (_model.mute && newVol > 0) _model.setMute(false);
+			newVol = Math.round(newVol);
+			_utils.saveCookie("volume", newVol);
+			_video.volume(newVol);
+		}
+
+		_model.setMute = function(state) {
+			if (!_utils.exists(state)) state = !_model.mute;
+			_utils.saveCookie("mute", state);
+			_video.mute(state);
+		}
+
+		_model.componentConfig = function(name) {
+			return _componentConfigs[name];
 		}
 		
 		_init();

@@ -23,15 +23,19 @@
 	html5.view = function(api, model) {
 		var _api = api, 
 			_model = model, 
-			_controls = {},
 			_playerElement,
 			_container,
 			_controlsLayer,
 			_playlistLayer,
 			_controlsTimeout=0,
 			_timeoutDuration = 2000,
+			_videoTag,
 			_videoLayer,
-			_instreamLayer;
+			_instreamLayer,
+			
+			_controlbar,
+			_display,
+			_playlist;
 
 		this.setup = function(skin) {
 			_api.skin = skin;
@@ -44,7 +48,9 @@
 			
 			_container = _createElement("span", VIEW_MAIN_CONTAINER_CLASS);
 			_videoLayer = _createElement("span", VIEW_VIDEO_CONTAINER_CLASS);
-			_videoLayer.appendChild(_model.getVideo().getTag());
+			
+			_videoTag = _model.getVideo().getTag();
+			_videoLayer.appendChild(_videoTag);
 			_controlsLayer = _createElement("span", VIEW_CONTROLS_CONTAINER_CLASS);
 			_instreamLayer = _createElement("span", VIEW_INSTREAM_CONTAINER_CLASS);
 			_playlistLayer = _createElement("span", VIEW_PLAYLIST_CONTAINER_CLASS);
@@ -65,12 +71,13 @@
 
 			_stateHandler({newstate:_states.IDLE});
 			
-			_playerElement.addEventListener('mouseout', _fadeControls, false);
-			_playerElement.addEventListener('mousemove', function(evt) {
-				_showControls();
-				clearTimeout(_controlsTimeout);
-				_controlsTimeout = setTimeout(_fadeControls, _timeoutDuration);
-			}, false);
+			_controlsLayer.addEventListener('mouseout', _fadeControls, false);
+			_controlsLayer.addEventListener('mousemove', _startFade, false);
+			if (_controlbar) {
+				_controlbar.getDisplayElement().addEventListener('mousemove', _cancelFade, false);
+				_controlbar.getDisplayElement().addEventListener('mouseout', _resumeFade, false);
+			}
+
 			
 		}
 	
@@ -80,9 +87,30 @@
 			return newElement;
 		}
 		
+		function _startFade() {
+			clearTimeout(_controlsTimeout);
+			if (_api.jwGetState() == _states.PLAYING || _api.jwGetState() == _states.PAUSED) {
+				_showControlbar();
+				if (!_inCB) {
+					_controlsTimeout = setTimeout(_fadeControls, _timeoutDuration);
+				}
+			}
+		}
+		
+		var _inCB = false;
+		
+		function _cancelFade() {
+			clearTimeout(_controlsTimeout);
+			_inCB = true;
+		}
+		
+		function _resumeFade() {
+			_inCB = false;
+		}
+		
 		function _fadeControls() {
-			if (_api.jwGetState() == _states.PLAYING) {
-				_hideControls();
+			if (_api.jwGetState() == _states.PLAYING || _api.jwGetState() == _states.PAUSED) {
+				_hideControlbar();
 			}
 			clearTimeout(_controlsTimeout);
 			_controlsTimeout = 0;
@@ -95,9 +123,9 @@
 				displaySettings = _model.componentConfig('display');
 		
 			if (height > 40 || height.indexOf("%")) {
-				_controls.display = new html5.display(_api, displaySettings);
-				_controlsLayer.appendChild(_controls.display.getDisplayElement());
-				displaySettings.backgroundcolor = _controls.display.getBGColor();
+				_display = new html5.display(_api, displaySettings);
+				_controlsLayer.appendChild(_display.getDisplayElement());
+				displaySettings.backgroundcolor = _display.getBGColor();
 			} else {
 				displaySettings.backgroundcolor = 'transparent';
 				cbSettings.margin = 0;
@@ -107,16 +135,16 @@
 			});
 			
 			if (_model.playlistsize > 0 && _model.playlistposition && _model.playlistposition != "none") {
-				_controls.playlist = new html5.playlistcomponent(_api, {});
-				_playlistLayer.appendChild(_controls.playlist.getDisplayElement());
+				_playlist = new html5.playlistcomponent(_api, {});
+				_playlistLayer.appendChild(_playlist.getDisplayElement());
 			}
 
 			_resize(width, height);
 
 			if (!_utils.isMobile()) {
 				// TODO: allow override for showing HTML controlbar on iPads
-				_controls.controlbar = new html5.controlbar(_api, cbSettings);
-				_controlsLayer.appendChild(_controls.controlbar.getDisplayElement());
+				_controlbar = new html5.controlbar(_api, cbSettings);
+				_controlsLayer.appendChild(_controlbar.getDisplayElement());
 			}
 		}
 
@@ -169,17 +197,17 @@
 				_model.height = height;
 			}
 
-			if (_controls.display) {
-				_controls.display.resize(width, height);
+			if (_display) {
+				_display.resize(width, height);
 			}
-			if (_controls.controlbar) {
-				_controls.controlbar.resize(width, height);
+			if (_controlbar) {
+				_controlbar.resize(width, height);
 			}
 			var playlistSize = _model.playlistsize,
 				playlistPos = _model.playlistposition
 			
-			if (_controls.playlist && playlistSize > 0 && playlistPos) {
-				_controls.playlist.resize(width, height);
+			if (_playlist && playlistSize > 0 && playlistPos) {
+				_playlist.resize(width, height);
 				
 				var playlistStyle = { display: "block" }, containerStyle = {};
 				playlistStyle[playlistPos] = 0;
@@ -194,11 +222,20 @@
 				_css(_internalSelector(VIEW_PLAYLIST_CONTAINER_CLASS), playlistStyle);
 				_css(_internalSelector(VIEW_MAIN_CONTAINER_CLASS), containerStyle);
 			}
+			
+			_resizeMedia();
 
 			return;
 		}
 		
+		function _resizeMedia() {
+			_utils.stretch(_model.stretching, _videoTag, 
+					_videoLayer.clientWidth, _videoLayer.clientHeight, 
+					_videoTag.videoWidth, _videoTag.videoHeight);
+		}
+		
 		this.resize = _resize;
+		this.resizeMedia = _resizeMedia;
 
 		this.completeSetup = function() {
 			_css(_internalSelector(), {opacity: 1});
@@ -253,15 +290,28 @@
 			_model.setFullscreen(_isNativeFullscreen());
 			_fullscreen(_model.fullscreen);
 		}
+		
+		function _showControlbar() {
+			if (_controlbar && _model.controls) _controlbar.show();
+		}
+		function _hideControlbar() {
+			if (_controlbar) _controlbar.hide();
+		}
+		function _showDisplay() {
+			if (_display) _display.show();
+		}
+		function _hideDisplay() {
+			if (_display) _display.hide();
+		}
 
 		function _hideControls() {
-			if (_controls.controlbar) _controls.controlbar.hide();
-			if (_controls.display) _controls.display.hide();
+			_hideControlbar();
+			_hideDisplay();
 		}
 
 		function _showControls() {
-			if (_controls.controlbar) _controls.controlbar.show();
-			if (_controls.display) _controls.display.show();
+			_showControlbar();
+			_showDisplay();
 		}
 
 		/**
@@ -280,21 +330,19 @@
 			var vidstyle = {};
 			switch(state) {
 			case _states.PLAYING:
-				if (_utils.isIPod()) {
-					vidstyle.display = "block";
-				}
+				if (_utils.isIPod()) vidstyle.display = "block";
 				vidstyle.opacity = 1;
 				_css(_internalSelector(VIEW_VIDEO_CONTAINER_CLASS), vidstyle);
-				_hideControls();
+				_resizeMedia();
+				_startFade();
 				break;
 			case _states.COMPLETED:
 			case _states.IDLE:
-				if (_utils.isIPod()) {
-					vidstyle.display = "none";
-				}
+				if (_utils.isIPod()) vidstyle.display = "none";
 				vidstyle.opacity = 0;
 				_css(_internalSelector(VIEW_VIDEO_CONTAINER_CLASS), vidstyle);
-				_showControls();
+				_hideControlbar();
+				_showDisplay();
 				break;
 			case _states.BUFFERING:
 			case _states.PAUSED:
@@ -406,6 +454,10 @@
 	_css(FULLSCREEN_SELECTOR, {
 		width: JW_CSS_100PCT,
 		height: JW_CSS_100PCT,
+		left: 0, 
+		right: 0,
+		top: 0,
+		bottom: 0,
 		'z-index': 1000,
 		position: "fixed"
 	}, true);
@@ -430,7 +482,7 @@
 	});
 
 	_css('.' + PLAYER_CLASS+' .jwexactfit', {
-		'background-size': JW_CSS_100PCT + JW_CSS_IMPORTANT
+		'background-size': JW_CSS_100PCT + " " + JW_CSS_100PCT + JW_CSS_IMPORTANT
 	});
 
 	_css('.' + PLAYER_CLASS+' .jwnone', {

@@ -71,7 +71,7 @@
 		// Current media state
 		_state = _states.IDLE,
 		// Save the volume state before muting
-		_lastVolume = 0,
+		_lastVolume,
 		// Using setInterval to check buffered ranges
 		_bufferInterval = -1,
 		// Last sent buffer amount
@@ -265,9 +265,7 @@
 		}
 
 		var _volume = this.volume = function(vol) {
-			if (_videotag.muted) _videotag.muted = false;
 			_videotag.volume = vol / 100;
-
 		}
 		
 		function _volumeHandler(evt) {
@@ -282,11 +280,16 @@
 		this.mute = function(state) {
 			if (!_utils.exists(state)) state = !_videotag.mute;
 			if (state) {
-				_lastVolume = _videotag.volume * 100;
-				_volume(0);
-				_videotag.muted = true;
+				if (!_videotag.muted) {
+					_lastVolume = _videotag.volume * 100;
+					_videotag.muted = true;
+					_volume(0);
+				}
 			} else {
-				_volume(_lastVolume);
+				if (_videotag.muted) {
+					_volume(_lastVolume);
+					_videotag.muted = false;
+				}
 			}
 		}
 

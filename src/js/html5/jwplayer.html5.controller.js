@@ -20,17 +20,20 @@
 		_utils.extend(this, _eventDispatcher);
 
 		function _init() {
-			_model.addGlobalListener(_forward);
 			_model.addEventListener(_events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
 			_model.addEventListener(_events.JWPLAYER_MEDIA_COMPLETE, _completeHandler);
 		}
 		
 		function _playerReady(evt) {
 			_view.completeSetup();
-			_controller.sendEvent(evt.type, evt);
-			_controller.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_LOADED, {playlist: _model.playlist});
-			_controller.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_ITEM, {index: _model.item});
-			_controller.load();
+			_eventDispatcher.sendEvent(evt.type, evt);
+			_eventDispatcher.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_LOADED, {playlist: _model.playlist});
+			_eventDispatcher.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_ITEM, {index: _model.item});
+			_model.addGlobalListener(_forward);
+			_load();
+			if (_model.autostart && !_utils.isMobile()) {
+				_play();
+			}
 		}
 		
 		function _forward(evt) {
@@ -58,7 +61,6 @@
 				_model.setItem(item);
 				break;
 			}
-				
 		}
 		
 		var _preplay, _actionOnAttach, _interruptPlay;
@@ -134,15 +136,6 @@
 
 		function _seek(pos) {
 			_video.seek(pos);
-		}
-		
-		function _setVolume(vol) {
-			_video.volume(vol);
-		}
-		
-		function _setMute(state) {
-			if (!_utils.exists(state)) state = !_model.mute;
-			_video.mute(state);
 		}
 		
 		function _setFullscreen(state) {
@@ -230,8 +223,8 @@
 		this.next = _waitForReady(_next);
 		this.prev = _waitForReady(_prev);
 		this.item = _waitForReady(_item);
-		this.setVolume = _waitForReady(_setVolume);
-		this.setMute = _waitForReady(_setMute);
+		this.setVolume = _waitForReady(_model.setVolume);
+		this.setMute = _waitForReady(_model.setMute);
 		this.setFullscreen = _waitForReady(_setFullscreen);
 		this.setStretching = _waitForReady(_setStretching);
 		this.detachMedia = _detachMedia; 

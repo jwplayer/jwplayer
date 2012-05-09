@@ -315,7 +315,7 @@ jwplayer.source = document.createElement("source");/**
 		for (var i=0; i<cookies.length; i++) {
 			var split = cookies[i].split('=');
 			if (split[0].indexOf("jwplayer.") == 0) {
-				jwCookies[split[0].substring(9, split[0].length)] = split[1];
+				jwCookies[split[0].substring(9, split[0].length)] = utils.strings.serialize(split[1]);
 			}
 		}
 		return jwCookies;
@@ -411,6 +411,27 @@ jwplayer.source = document.createElement("source");/**
 		}
 	};
 
+	utils.transform = function(domelement, xscale, yscale, xoffset, yoffset) {
+		// Set defaults
+		if (!jwplayer.utils.exists(xscale)) xscale = 1;
+		if (!jwplayer.utils.exists(yscale)) yscale = 1;
+		if (!jwplayer.utils.exists(xoffset)) xoffset = 0;
+		if (!jwplayer.utils.exists(yoffset)) yoffset = 0;
+		
+		if (xscale == 1 && yscale == 1 && xoffset == 0 && yoffset == 0) {
+			domelement.style.webkitTransform = "";
+			domelement.style.MozTransform = "";
+			domelement.style.msTransform = "";
+			domelement.style.OTransform = "";
+		} else {
+			var value = "scale("+xscale+","+yscale+") translate("+xoffset+"px,"+yoffset+"px)";
+			domelement.style.webkitTransform = value;
+			domelement.style.MozTransform = value;
+			domelement.style.msTransform = value;
+			domelement.style.OTransform = value;
+		}
+	};
+	
 	/**
 	 * Stretches domelement based on stretching. parentWidth, parentHeight,
 	 * elementWidth, and elementHeight are required as the elements dimensions
@@ -430,39 +451,79 @@ jwplayer.source = document.createElement("source");/**
 	 * @param {Number}
 	 *            elementHeight
 	 */
-	utils.stretch = function(stretching, domelement, parentWidth,
-			parentHeight, elementWidth, elementHeight, transform) {
-
-		var xscale = (utils.exists(parentWidth) && utils.exists(elementWidth)) ? parentWidth / elementWidth : 0,
-			yscale = (utils.exists(parentHeight) && utils.exists(elementHeight)) ? parentHeight / elementHeight : 0,
-			x = 0, y = 0,
+	utils.stretch = function(stretching, domelement, parentWidth, parentHeight, elementWidth, elementHeight) {
+		if (!domelement) return;
+		if (!parentWidth || !parentHeight || !elementWidth || !elementHeight) return;
+		
+		var xscale = parentWidth / elementWidth,
+			yscale = parentHeight / elementHeight,
+			xoff = 0, yoff = 0,
 			style = {},
+			video = (domelement.tagName.toLowerCase() == "video"),
+			transform = false,
 			stretchClass;
 		
+		if (video) {
+			utils.transform(domelement);
+		}
+
+		stretchClass = "jw" + stretching.toLowerCase();
+		
 		switch (stretching.toLowerCase()) {
-		case _stretching.NONE:
 		case _stretching.FILL:
+			if (xscale > yscale) {
+				elementWidth = elementWidth * xscale;
+				elementHeight = elementHeight * xscale;
+			} else {
+				elementWidth = elementWidth * yscale;
+				elementHeight = elementHeight * yscale;
+			}
+		case _stretching.NONE:
+			xscale = yscale = 1;
 		case _stretching.EXACTFIT:
-			stretchClass = "jw" + stretching.toLowerCase();
+	        transform = true;
 			break;
 		case _stretching.UNIFORM:
-			stretchClass = "jw" + stretching.toLowerCase();
 			if (xscale > yscale) {
-				if ( (elementWidth * yscale) / parentWidth > 0.95) {
+				elementWidth = elementWidth * yscale;
+				elementHeight = elementHeight * yscale;
+				if (elementWidth / parentWidth > 0.95) {
+					transform = true;
 					stretchClass = "jwexactfit";
+					xscale = Math.ceil(100 * parentWidth / elementWidth) / 100;
+					yscale = 1;
 				}
 			} else {
-				if ( (elementHeight * xscale) / parentHeight > 0.95) {
+				elementWidth = elementWidth * xscale;
+				elementHeight = elementHeight * xscale;
+				if (elementHeight / parentHeight > 0.95) {
+					transform = true;
 					stretchClass = "jwexactfit";
+					yscale = Math.ceil(100 * parentHeight / elementHeight) / 100;
+					xscale = 1;
 				}
 			}
 			break;
 		default:
+			return;
 			break;
 		}
 
-		domelement.className = domelement.className.replace(/\s*jw(none|exactfit|uniform|fill)/g, "");
-		domelement.className += " " + stretchClass;
+		if (video) {
+			if (transform) {
+				domelement.style.width = elementWidth + "px";
+				domelement.style.height = elementHeight + "px"; 
+				xoff = ((parentWidth - elementWidth) / 2) / xscale;
+				yoff = ((parentHeight - elementHeight) / 2) / yscale;
+				utils.transform(domelement, xscale, yscale, xoff, yoff);
+			} else {
+				domelement.style.width = "";
+				domelement.style.height = "";
+			}
+		} else {
+			domelement.className = domelement.className.replace(/\s*jw(none|exactfit|uniform|fill)/g, "");
+			domelement.className += " " + stretchClass;
+		}
 	};
 	
 	/** Stretching options **/
@@ -1384,6 +1445,8 @@ jwplayer.source = document.createElement("source");/**
 			_buildControlbar();
 			_addEventListeners();
 			_playlistHandler();
+			_volumeHandler();
+			_muteHandler();
 		}
 		
 		function _addEventListeners() {
@@ -1452,13 +1515,14 @@ jwplayer.source = document.createElement("source");/**
 			}
 		}
 		
-		function _muteHandler(evt) {
-			_toggleButton("mute", evt.mute);
-			_setVolume(evt.mute ? 0 : _currentVolume)
+		function _muteHandler() {
+			var state = _api.jwGetMute();
+			_toggleButton("mute", state);
+			_setVolume(state ? 0 : _currentVolume)
  		}
 
-		function _volumeHandler(evt) {
-			_currentVolume = evt.volume / 100;
+		function _volumeHandler() {
+			_currentVolume = _api.jwGetVolume() / 100;
 			_setVolume(_currentVolume);
 		}
 
@@ -1972,6 +2036,7 @@ jwplayer.source = document.createElement("source");/**
 	_css(CB_CLASS, {
 		position: JW_CSS_ABSOLUTE,
 		overflow: 'hidden',
+		opacity: 0,
     	'-webkit-transition': JW_CSS_SMOOTH_EASE,
     	'-moz-transition': JW_CSS_SMOOTH_EASE,
     	'-o-transition': JW_CSS_SMOOTH_EASE
@@ -2075,17 +2140,20 @@ jwplayer.source = document.createElement("source");/**
 		_utils.extend(this, _eventDispatcher);
 
 		function _init() {
-			_model.addGlobalListener(_forward);
 			_model.addEventListener(_events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
 			_model.addEventListener(_events.JWPLAYER_MEDIA_COMPLETE, _completeHandler);
 		}
 		
 		function _playerReady(evt) {
 			_view.completeSetup();
-			_controller.sendEvent(evt.type, evt);
-			_controller.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_LOADED, {playlist: _model.playlist});
-			_controller.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_ITEM, {index: _model.item});
-			_controller.load();
+			_eventDispatcher.sendEvent(evt.type, evt);
+			_eventDispatcher.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_LOADED, {playlist: _model.playlist});
+			_eventDispatcher.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_ITEM, {index: _model.item});
+			_model.addGlobalListener(_forward);
+			_load();
+			if (_model.autostart && !_utils.isMobile()) {
+				_play();
+			}
 		}
 		
 		function _forward(evt) {
@@ -2113,7 +2181,6 @@ jwplayer.source = document.createElement("source");/**
 				_model.setItem(item);
 				break;
 			}
-				
 		}
 		
 		var _preplay, _actionOnAttach, _interruptPlay;
@@ -2189,15 +2256,6 @@ jwplayer.source = document.createElement("source");/**
 
 		function _seek(pos) {
 			_video.seek(pos);
-		}
-		
-		function _setVolume(vol) {
-			_video.volume(vol);
-		}
-		
-		function _setMute(state) {
-			if (!_utils.exists(state)) state = !_model.mute;
-			_video.mute(state);
 		}
 		
 		function _setFullscreen(state) {
@@ -2285,8 +2343,8 @@ jwplayer.source = document.createElement("source");/**
 		this.next = _waitForReady(_next);
 		this.prev = _waitForReady(_prev);
 		this.item = _waitForReady(_item);
-		this.setVolume = _waitForReady(_setVolume);
-		this.setMute = _waitForReady(_setMute);
+		this.setVolume = _waitForReady(_model.setVolume);
+		this.setMute = _waitForReady(_model.setMute);
 		this.setFullscreen = _waitForReady(_setFullscreen);
 		this.setStretching = _waitForReady(_setStretching);
 		this.detachMedia = _detachMedia; 
@@ -2369,7 +2427,8 @@ jwplayer.source = document.createElement("source");/**
 			_degreesRotated, 
 			_rotationInterval, 
 			_config = _utils.extend({
-				backgroundcolor: '#000'
+				backgroundcolor: '#000',
+				showicons: true
 			}, _skin.getComponentSettings('display'), config);
 			_bufferRotation = !_utils.exists(_config.bufferrotation) ? 15 : parseInt(_config.bufferrotation, 10), 
 			_bufferInterval = !_utils.exists(_config.bufferinterval) ? 100 : parseInt(_config.bufferinterval, 10);
@@ -2472,12 +2531,22 @@ jwplayer.source = document.createElement("source");/**
 		}
 		
 		function _setIcon(name) {
+			if (!_config.showicons) return;
+			
 			if (_button) {
 				_display.removeChild(_button);
 			}
 			_button = _icons[name];
 			if (_button) {
 				_display.appendChild(_button);
+			}
+			
+			if (name == "buffer") {
+				_degreesRotated = 0;
+				_rotationInterval = setInterval(function() {
+					_degreesRotated += _bufferRotation;
+					_rotate(_button.childNodes[0], _degreesRotated % 360);
+				}, _bufferInterval);
 			}
 		}
 
@@ -2511,11 +2580,6 @@ jwplayer.source = document.createElement("source");/**
 				break;
 			case _states.BUFFERING:
 				_setIcon('buffer');
-				_degreesRotated = 0;
-				_rotationInterval = setInterval(function() {
-					_degreesRotated += _bufferRotation;
-					_rotate(_button.childNodes[0], _degreesRotated % 360);
-				}, _bufferInterval);
 				break;
 			case _states.PLAYING:
 				_setIcon();
@@ -2574,7 +2638,7 @@ jwplayer.source = document.createElement("source");/**
 				opacity: state ? 1 : 0
 			});
 		}
-		
+
 		this.show = function() {
 			_setVisibility('', true);
 		}
@@ -2603,7 +2667,8 @@ jwplayer.source = document.createElement("source");/**
 		cursor: "pointer",
 		width: JW_CSS_100PCT,
 		height: JW_CSS_100PCT,
-		overflow: 'hidden'
+		overflow: 'hidden',
+		opacity: 0
 	});
 
 	_css(D_CLASS + ' .jwpreview', {
@@ -2978,7 +3043,8 @@ jwplayer.source = document.createElement("source");/**
  */
 (function(html5) {
 	var _utils = jwplayer.utils,
-		_events = jwplayer.events;
+		_events = jwplayer.events,
+		UNDEF = undefined;
 
 	html5.model = function(config) {
 		var _model = this, 
@@ -2988,24 +3054,31 @@ jwplayer.source = document.createElement("source");/**
 			_videoTag,
 			// Saved settings
 			_cookies = _utils.getCookies(),
+			// Sub-component configurations
+			_componentConfigs = {};
 			// Defaults
 			_defaults = {
-				width: 480,
-				height: 320,
-				item: 0,
-				playlist: [],
-				skin: undefined,
-				volume: 90,
-				mute: false,
-				repeat: "",
-				playlistsize: 0,
-				playlistposition: "right",
-				stretching: _utils.stretching.UNIFORM,
 				autostart: false,
-				debug: undefined
+				controls: true,
+				debug: UNDEF,
+				height: 320,
+				icons: true,
+				item: 0,
+				mute: false,
+				playlist: [],
+				playlistposition: "right",
+				playlistsize: 0,
+				repeat: UNDEF,
+				skin: UNDEF,
+				stretching: _utils.stretching.UNIFORM,
+				volume: 90,
+				width: 480
 			};
 
 		function _parseConfig(config) {
+			for (var i in config) {
+				config[i] = _utils.strings.serialize(config[i]);
+			}
 			return config;
 		}
 
@@ -3018,11 +3091,19 @@ jwplayer.source = document.createElement("source");/**
 				position: 0,
 				buffer: 0,
 			}, _model.config);
+			_setComponentConfigs();
 			_model.setItem(_model.config.item);
 			
 			_videoTag = document.createElement("video");
 			_video = new html5.video(_videoTag);
+			_video.volume(_model.volume);
+			_video.mute(_model.mute);
 			_video.addGlobalListener(_videoEventHandler);
+		}
+		
+		function _setComponentConfigs() {
+			_componentConfigs.display = { showicons: _model.icons };
+			_componentConfigs.controlbar = {};
 		}
 
 		var _eventMap = {};
@@ -3047,22 +3128,22 @@ jwplayer.source = document.createElement("source");/**
 			}
 		}
 		
-		this.getVideo = function() {
+		_model.getVideo = function() {
 			return _video;
 		}
 		
-		this.seekDrag = function(state) {
+		_model.seekDrag = function(state) {
 			_video.seekDrag(state);
 		}
 		
-		this.setFullscreen = function(state) {
+		_model.setFullscreen = function(state) {
 			if (state != _model.fullscreen) {
 				_model.fullscreen = state;
 				_model.sendEvent(_events.JWPLAYER_FULLSCREEN, { fullscreen: state } );
 			}
 		}
 		
-		this.setPlaylist = function(playlist) {
+		_model.setPlaylist = function(playlist) {
 			_model.item = -1;
 			_model.playlist = playlist;
 			_model.sendEvent(_events.JWPLAYER_PLAYLIST_LOADED, {
@@ -3070,7 +3151,7 @@ jwplayer.source = document.createElement("source");/**
 			});
 		}
 		
-		this.setItem = function(index) {
+		_model.setItem = function(index) {
 			var newItem;
 			if (index == _model.playlist.length || index < -1)
 				newItem = 0;
@@ -3087,8 +3168,21 @@ jwplayer.source = document.createElement("source");/**
 			}
 		}
 		
-		this.componentConfig = function(name) {
-			return {};
+		_model.setVolume = function(newVol) {
+			if (_model.mute && newVol > 0) _model.setMute(false);
+			newVol = Math.round(newVol);
+			_utils.saveCookie("volume", newVol);
+			_video.volume(newVol);
+		}
+
+		_model.setMute = function(state) {
+			if (!_utils.exists(state)) state = !_model.mute;
+			_utils.saveCookie("mute", state);
+			_video.mute(state);
+		}
+
+		_model.componentConfig = function(name) {
+			return _componentConfigs[name];
 		}
 		
 		_init();
@@ -4162,7 +4256,7 @@ jwplayer.source = document.createElement("source");/**
 		// Current media state
 		_state = _states.IDLE,
 		// Save the volume state before muting
-		_lastVolume = 0,
+		_lastVolume,
 		// Using setInterval to check buffered ranges
 		_bufferInterval = -1,
 		// Last sent buffer amount
@@ -4356,9 +4450,7 @@ jwplayer.source = document.createElement("source");/**
 		}
 
 		var _volume = this.volume = function(vol) {
-			if (_videotag.muted) _videotag.muted = false;
 			_videotag.volume = vol / 100;
-
 		}
 		
 		function _volumeHandler(evt) {
@@ -4373,11 +4465,16 @@ jwplayer.source = document.createElement("source");/**
 		this.mute = function(state) {
 			if (!_utils.exists(state)) state = !_videotag.mute;
 			if (state) {
-				_lastVolume = _videotag.volume * 100;
-				_volume(0);
-				_videotag.muted = true;
+				if (!_videotag.muted) {
+					_lastVolume = _videotag.volume * 100;
+					_videotag.muted = true;
+					_volume(0);
+				}
 			} else {
-				_volume(_lastVolume);
+				if (_videotag.muted) {
+					_volume(_lastVolume);
+					_videotag.muted = false;
+				}
 			}
 		}
 
@@ -4481,15 +4578,19 @@ jwplayer.source = document.createElement("source");/**
 	html5.view = function(api, model) {
 		var _api = api, 
 			_model = model, 
-			_controls = {},
 			_playerElement,
 			_container,
 			_controlsLayer,
 			_playlistLayer,
 			_controlsTimeout=0,
 			_timeoutDuration = 2000,
+			_videoTag,
 			_videoLayer,
-			_instreamLayer;
+			_instreamLayer,
+			
+			_controlbar,
+			_display,
+			_playlist;
 
 		this.setup = function(skin) {
 			_api.skin = skin;
@@ -4502,7 +4603,9 @@ jwplayer.source = document.createElement("source");/**
 			
 			_container = _createElement("span", VIEW_MAIN_CONTAINER_CLASS);
 			_videoLayer = _createElement("span", VIEW_VIDEO_CONTAINER_CLASS);
-			_videoLayer.appendChild(_model.getVideo().getTag());
+			
+			_videoTag = _model.getVideo().getTag();
+			_videoLayer.appendChild(_videoTag);
 			_controlsLayer = _createElement("span", VIEW_CONTROLS_CONTAINER_CLASS);
 			_instreamLayer = _createElement("span", VIEW_INSTREAM_CONTAINER_CLASS);
 			_playlistLayer = _createElement("span", VIEW_PLAYLIST_CONTAINER_CLASS);
@@ -4523,12 +4626,13 @@ jwplayer.source = document.createElement("source");/**
 
 			_stateHandler({newstate:_states.IDLE});
 			
-			_playerElement.addEventListener('mouseout', _fadeControls, false);
-			_playerElement.addEventListener('mousemove', function(evt) {
-				_showControls();
-				clearTimeout(_controlsTimeout);
-				_controlsTimeout = setTimeout(_fadeControls, _timeoutDuration);
-			}, false);
+			_controlsLayer.addEventListener('mouseout', _fadeControls, false);
+			_controlsLayer.addEventListener('mousemove', _startFade, false);
+			if (_controlbar) {
+				_controlbar.getDisplayElement().addEventListener('mousemove', _cancelFade, false);
+				_controlbar.getDisplayElement().addEventListener('mouseout', _resumeFade, false);
+			}
+
 			
 		}
 	
@@ -4538,9 +4642,30 @@ jwplayer.source = document.createElement("source");/**
 			return newElement;
 		}
 		
+		function _startFade() {
+			clearTimeout(_controlsTimeout);
+			if (_api.jwGetState() == _states.PLAYING || _api.jwGetState() == _states.PAUSED) {
+				_showControlbar();
+				if (!_inCB) {
+					_controlsTimeout = setTimeout(_fadeControls, _timeoutDuration);
+				}
+			}
+		}
+		
+		var _inCB = false;
+		
+		function _cancelFade() {
+			clearTimeout(_controlsTimeout);
+			_inCB = true;
+		}
+		
+		function _resumeFade() {
+			_inCB = false;
+		}
+		
 		function _fadeControls() {
-			if (_api.jwGetState() == _states.PLAYING) {
-				_hideControls();
+			if (_api.jwGetState() == _states.PLAYING || _api.jwGetState() == _states.PAUSED) {
+				_hideControlbar();
 			}
 			clearTimeout(_controlsTimeout);
 			_controlsTimeout = 0;
@@ -4553,9 +4678,9 @@ jwplayer.source = document.createElement("source");/**
 				displaySettings = _model.componentConfig('display');
 		
 			if (height > 40 || height.indexOf("%")) {
-				_controls.display = new html5.display(_api, displaySettings);
-				_controlsLayer.appendChild(_controls.display.getDisplayElement());
-				displaySettings.backgroundcolor = _controls.display.getBGColor();
+				_display = new html5.display(_api, displaySettings);
+				_controlsLayer.appendChild(_display.getDisplayElement());
+				displaySettings.backgroundcolor = _display.getBGColor();
 			} else {
 				displaySettings.backgroundcolor = 'transparent';
 				cbSettings.margin = 0;
@@ -4565,16 +4690,16 @@ jwplayer.source = document.createElement("source");/**
 			});
 			
 			if (_model.playlistsize > 0 && _model.playlistposition && _model.playlistposition != "none") {
-				_controls.playlist = new html5.playlistcomponent(_api, {});
-				_playlistLayer.appendChild(_controls.playlist.getDisplayElement());
+				_playlist = new html5.playlistcomponent(_api, {});
+				_playlistLayer.appendChild(_playlist.getDisplayElement());
 			}
 
 			_resize(width, height);
 
 			if (!_utils.isMobile()) {
 				// TODO: allow override for showing HTML controlbar on iPads
-				_controls.controlbar = new html5.controlbar(_api, cbSettings);
-				_controlsLayer.appendChild(_controls.controlbar.getDisplayElement());
+				_controlbar = new html5.controlbar(_api, cbSettings);
+				_controlsLayer.appendChild(_controlbar.getDisplayElement());
 			}
 		}
 
@@ -4627,17 +4752,17 @@ jwplayer.source = document.createElement("source");/**
 				_model.height = height;
 			}
 
-			if (_controls.display) {
-				_controls.display.resize(width, height);
+			if (_display) {
+				_display.resize(width, height);
 			}
-			if (_controls.controlbar) {
-				_controls.controlbar.resize(width, height);
+			if (_controlbar) {
+				_controlbar.resize(width, height);
 			}
 			var playlistSize = _model.playlistsize,
 				playlistPos = _model.playlistposition
 			
-			if (_controls.playlist && playlistSize > 0 && playlistPos) {
-				_controls.playlist.resize(width, height);
+			if (_playlist && playlistSize > 0 && playlistPos) {
+				_playlist.resize(width, height);
 				
 				var playlistStyle = { display: "block" }, containerStyle = {};
 				playlistStyle[playlistPos] = 0;
@@ -4652,11 +4777,20 @@ jwplayer.source = document.createElement("source");/**
 				_css(_internalSelector(VIEW_PLAYLIST_CONTAINER_CLASS), playlistStyle);
 				_css(_internalSelector(VIEW_MAIN_CONTAINER_CLASS), containerStyle);
 			}
+			
+			_resizeMedia();
 
 			return;
 		}
 		
+		function _resizeMedia() {
+			_utils.stretch(_model.stretching, _videoTag, 
+					_videoLayer.clientWidth, _videoLayer.clientHeight, 
+					_videoTag.videoWidth, _videoTag.videoHeight);
+		}
+		
 		this.resize = _resize;
+		this.resizeMedia = _resizeMedia;
 
 		this.completeSetup = function() {
 			_css(_internalSelector(), {opacity: 1});
@@ -4711,15 +4845,28 @@ jwplayer.source = document.createElement("source");/**
 			_model.setFullscreen(_isNativeFullscreen());
 			_fullscreen(_model.fullscreen);
 		}
+		
+		function _showControlbar() {
+			if (_controlbar && _model.controls) _controlbar.show();
+		}
+		function _hideControlbar() {
+			if (_controlbar) _controlbar.hide();
+		}
+		function _showDisplay() {
+			if (_display) _display.show();
+		}
+		function _hideDisplay() {
+			if (_display) _display.hide();
+		}
 
 		function _hideControls() {
-			if (_controls.controlbar) _controls.controlbar.hide();
-			if (_controls.display) _controls.display.hide();
+			_hideControlbar();
+			_hideDisplay();
 		}
 
 		function _showControls() {
-			if (_controls.controlbar) _controls.controlbar.show();
-			if (_controls.display) _controls.display.show();
+			_showControlbar();
+			_showDisplay();
 		}
 
 		/**
@@ -4738,21 +4885,19 @@ jwplayer.source = document.createElement("source");/**
 			var vidstyle = {};
 			switch(state) {
 			case _states.PLAYING:
-				if (_utils.isIPod()) {
-					vidstyle.display = "block";
-				}
+				if (_utils.isIPod()) vidstyle.display = "block";
 				vidstyle.opacity = 1;
 				_css(_internalSelector(VIEW_VIDEO_CONTAINER_CLASS), vidstyle);
-				_hideControls();
+				_resizeMedia();
+				_startFade();
 				break;
 			case _states.COMPLETED:
 			case _states.IDLE:
-				if (_utils.isIPod()) {
-					vidstyle.display = "none";
-				}
+				if (_utils.isIPod()) vidstyle.display = "none";
 				vidstyle.opacity = 0;
 				_css(_internalSelector(VIEW_VIDEO_CONTAINER_CLASS), vidstyle);
-				_showControls();
+				_hideControlbar();
+				_showDisplay();
 				break;
 			case _states.BUFFERING:
 			case _states.PAUSED:
@@ -4864,6 +5009,10 @@ jwplayer.source = document.createElement("source");/**
 	_css(FULLSCREEN_SELECTOR, {
 		width: JW_CSS_100PCT,
 		height: JW_CSS_100PCT,
+		left: 0, 
+		right: 0,
+		top: 0,
+		bottom: 0,
 		'z-index': 1000,
 		position: "fixed"
 	}, true);
@@ -4888,7 +5037,7 @@ jwplayer.source = document.createElement("source");/**
 	});
 
 	_css('.' + PLAYER_CLASS+' .jwexactfit', {
-		'background-size': JW_CSS_100PCT + JW_CSS_IMPORTANT
+		'background-size': JW_CSS_100PCT + " " + JW_CSS_100PCT + JW_CSS_IMPORTANT
 	});
 
 	_css('.' + PLAYER_CLASS+' .jwnone', {
