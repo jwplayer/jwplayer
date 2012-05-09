@@ -346,9 +346,9 @@
 				break;
 			case _states.BUFFERING:
 			case _states.PAUSED:
-				if (!_utils.isMobile()) {
+				//if (!_utils.isMobile()) {
 					_showControls();
-				}
+				//}
 				break;
 			}
 		}

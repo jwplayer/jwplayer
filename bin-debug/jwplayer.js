@@ -245,7 +245,7 @@ jwplayer.source = document.createElement("source");/**
 	/** Format the elapsed / remaining text. **/
 	utils.timeFormat = function(sec) {
 		if (sec > 0) {
-			str = Math.floor(sec / 60) < 10 ? "0" + Math.floor(sec / 60) + ":" : Math.floor(sec / 60) + ":";
+			var str = Math.floor(sec / 60) < 10 ? "0" + Math.floor(sec / 60) + ":" : Math.floor(sec / 60) + ":";
 			str += Math.floor(sec % 60) < 10 ? "0" + Math.floor(sec % 60) : Math.floor(sec % 60);
 			return str;
 		} else {
@@ -301,6 +301,10 @@ jwplayer.source = document.createElement("source");/**
 	
 	utils.isIPod = function() {
 		return _userAgentMatch(/iP(hone|od)/i);
+	};
+
+	utils.isIPad = function() {
+		return _userAgentMatch(/iPad/i);
 	};
 
 	/** Save a setting **/
@@ -2141,7 +2145,10 @@ jwplayer.source = document.createElement("source");/**
 
 		function _init() {
 			_model.addEventListener(_events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
-			_model.addEventListener(_events.JWPLAYER_MEDIA_COMPLETE, _completeHandler);
+			_model.addEventListener(_events.JWPLAYER_MEDIA_COMPLETE, function(evt) {
+				// Insert a small delay here so that other complete handlers can execute
+				setTimeout(_completeHandler, 25);
+			});
 		}
 		
 		function _playerReady(evt) {
@@ -2199,7 +2206,7 @@ jwplayer.source = document.createElement("source");/**
 					}
 				}
 				
-				if (_model.state == _states.IDLE) {
+				if (_isIdle()) {
 					_video.load(_model.playlist[_model.item]);
 				} else if (_model.state == _states.PAUSED) {
 					_video.play();
@@ -2216,7 +2223,7 @@ jwplayer.source = document.createElement("source");/**
 		function _stop() {
 			_actionOnAttach = null;
 			try {
-				if (_model.state != _states.IDLE && _model.state != _states.COMPLETE) {
+				if (!_isIdle()) {
 					_video.stop();
 				}
 				if (_preplay) {
@@ -2254,6 +2261,10 @@ jwplayer.source = document.createElement("source");/**
 			}
 		}
 
+		function _isIdle() {
+			return (_model.state == _states.IDLE || _model.state == _states.COMPLETED);
+		}
+		
 		function _seek(pos) {
 			_video.seek(pos);
 		}
@@ -2281,7 +2292,7 @@ jwplayer.source = document.createElement("source");/**
 		}
 		
 		function _completeHandler() {
-			if (_model.state != _states.IDLE) {
+			if (!_isIdle()) {
 				// Something has made an API call before the complete handler has fired.
 				return;
 			}
@@ -2296,11 +2307,13 @@ jwplayer.source = document.createElement("source");/**
 				case "list":
 					if (_model.item == _model.playlist.length - 1) {
 						_load(0);
+						_model.setState(_states.COMPLETED);
 					} else {
 						_next();
 					}
 					break;
 				default:
+					_model.setState(_states.COMPLETED);
 //					_stop();
 					break;
 			}
@@ -2351,9 +2364,6 @@ jwplayer.source = document.createElement("source");/**
 		this.attachMedia = _attachMedia;
 		
 		this.playerReady = _playerReady;
-//		this.beforePlay = function() { 
-//			return _preplay; 
-//		}
 
 		_init();
 	}
@@ -3068,7 +3078,7 @@ jwplayer.source = document.createElement("source");/**
 				playlist: [],
 				playlistposition: "right",
 				playlistsize: 0,
-				repeat: UNDEF,
+				repeat: "list",
 				skin: UNDEF,
 				stretching: _utils.stretching.UNIFORM,
 				volume: 90,
@@ -3125,6 +3135,14 @@ jwplayer.source = document.createElement("source");/**
 				}
 			} else {
 				_model.sendEvent(evt.type, evt);
+			}
+		}
+		
+		_model.setState = function(newstate) {
+			var oldstate = _model.state;
+			_model.state = newstate;
+			if (newstate != oldstate) {
+				_model.sendEvent(_events.JWPLAYER_PLAYER_STATE, { newstate: _model.state, oldstate: oldstate });
 			}
 		}
 		
@@ -3393,9 +3411,8 @@ jwplayer.source = document.createElement("source");/**
 
 
 		function _setup() {
-			_wrapper = DOCUMENT.createElement("div");
+			_wrapper = _createElement("div", "jwplaylist"); 
 			_wrapper.id = _api.id + "_jwplayer_playlistcomponent";
-			_wrapper.className = "jwplaylist";
 			_populateSkinElements();
 			if (_elements.item) {
 				_settings.itemheight = _elements.item.height;
@@ -3407,14 +3424,18 @@ jwplayer.source = document.createElement("source");/**
 			_api.jwAddEventListener(jwplayer.events.JWPLAYER_PLAYLIST_ITEM, _itemHandler);
 		}
 		
+		function _internalSelector(className) {
+			return '#' + _wrapper.id + (className ? ' .' + className : "");
+		}
+		
 		function _setupStyles() {
 			var imgPos = 0, imgWidth = 0, imgHeight = 0, 
 				itemheight = _settings.itemheight,
 				fontsize = _settings.fontsize
 
-			_utils.clearCss('#'+_wrapper.id);
+			_utils.clearCss(_internalSelector());
 				
-			_css('#'+_wrapper.id+' .jwlist', {
+			_css(_internalSelector("jwlist"), {
 		    	'background-color': _settings.backgroundcolor,
 		    	'background-image': _elements.background ? "url("+_elements.background.src+")" : "",
 		    	color: _settings.fontcolor,
@@ -3433,13 +3454,13 @@ jwplayer.source = document.createElement("source");/**
         		imgHeight = itemheight
         	}
 			
-        	_css('#'+_wrapper.id+' .jwplaylistimg', {
+        	_css(_internalSelector("jwplaylistimg"), {
 			    height: imgHeight,
 			    width: imgWidth,
 				margin: imgPos
         	});
 			
-			_css('#'+_wrapper.id+' .jwlist li', {
+			_css(_internalSelector("jwlist li"), {
 				'background-image': _elements.item ? "url("+_elements.item.src+")" : "",
 				height: itemheight,
 				'background-size': JW_CSS_100PCT + " " + itemheight + "px"
@@ -3448,28 +3469,31 @@ jwplayer.source = document.createElement("source");/**
 			var activeStyle = { overflow: 'hidden' };
 			if (_settings.activecolor !== "") activeStyle.color = _settings.activecolor;
 			if (_elements.itemActive) activeStyle['background-image'] = "url("+_elements.itemActive.src+")";
-			_css('#'+_wrapper.id+' .jwlist li.active', activeStyle);
+			_css(_internalSelector("jwlist li.active"), activeStyle);
 
 			var overStyle = { overflow: 'hidden' };
 			if (_settings.overcolor !== "") overStyle.color = _settings.overcolor;
 			if (_elements.itemOver) overStyle['background-image'] = "url("+_elements.itemOver.src+")";
-			_css('#'+_wrapper.id+' .jwlist li:hover', overStyle);
+			_css(_internalSelector("jwlist li:hover"), overStyle);
 
 
-			_css('#'+_wrapper.id+" .jwtextwrapper", {
+			_css(_internalSelector("jwtextwrapper"), {
 				padding: "5px 5px 0 " + (imgPos ? 0 : "5px"),
-				height: itemheight - 5
+				height: itemheight - 5,
+				position: "relative"
 			});
 			
-			_css('#'+_wrapper.id+" .jwtitle", {
+			_css(_internalSelector("jwtitle"), {
 	    		height: fontsize ? fontsize + 10 : 20,
 	    		'line-height': fontsize ? fontsize + 10 : 20,
 	        	overflow: 'hidden',
+	        	display: "inline-block",
+	        	width: JW_CSS_100PCT,
 		    	'font-size': fontsize ? fontsize : 13,
 	        	'font-weight': _settings.fontweight ? _settings.fontweight : "bold"
 	    	});
 			
-			_css('#'+_wrapper.id+" .jwdescription", {
+			_css(_internalSelector("jwdescription"), {
 	    	    display: 'block',
 	        	'line-height': fontsize ? fontsize + 4 : 16,
 	        	overflow: 'hidden',
@@ -3477,11 +3501,14 @@ jwplayer.source = document.createElement("source");/**
 	        	position: "relative"
 	    	});
 
+			_css(_internalSelector("jwduration"), {
+				position: "absolute",
+				right: 5
+			});
 		}
 
 		function _createList() {
-			var ul = DOCUMENT.createElement("ul");
-			ul.className = 'jwlist';
+			var ul = _createElement("ul", "jwlist");
 			ul.id = _wrapper.id + "_ul" + Math.round(Math.random()*10000000);
 			return ul;
 		}
@@ -3489,9 +3516,8 @@ jwplayer.source = document.createElement("source");/**
 
 		function _createItem(index) {
 			var item = _playlist[index],
-				li = DOCUMENT.createElement("li");
+				li = _createElement("li", "jwitem");
 			
-			li.className = "jwitem";
 			li.id = _ul.id + '_item_' + index;
 			
 			_css(li,{
@@ -3502,9 +3528,7 @@ jwplayer.source = document.createElement("source");/**
 			    backgroundSize: "100% " + _settings.itemheight + "px"
 		    });
 
-			var imageWrapper = DOCUMENT.createElement("div")
-			
-			imageWrapper.className = 'jwplaylistimg jwfill';
+			var imageWrapper = _createElement("div", "jwplaylistimg jwfill");
         	
 			if (_showThumbs() && (item.image || item['playlist.image'] || _elements.itemImage) ) {
 				var imageSrc; 
@@ -3520,26 +3544,40 @@ jwplayer.source = document.createElement("source");/**
 					'background-image': imageSrc ? 'url('+imageSrc+')': null
 	        	});
 	        	
-				li.appendChild(imageWrapper);
+				_appendChild(li, imageWrapper);
 	        }
 			
-			var textWrapper = DOCUMENT.createElement("div");
-	        textWrapper.className = 'jwtextwrapper';
-        	var title = DOCUMENT.createElement("span");
-        	title.className = 'jwtitle';
+			var textWrapper = _createElement("div", "jwtextwrapper");
+        	var title = _createElement("span", "jwtitle");
         	title.innerHTML = item ? item.title : "";
-        	textWrapper.appendChild(title);
+        	_appendChild(textWrapper, title);
 
 	        if (item.description) {
-	        	var desc = DOCUMENT.createElement("span");
-	        	desc.className = 'jwdescription';
+	        	var desc = _createElement("span", "jwdescription");
 	        	desc.innerHTML = item.description;
-	        	textWrapper.appendChild(desc);
+	        	_appendChild(textWrapper, desc);
 	        }
-	        li.appendChild(textWrapper);
+	        
+	        if (item.duration > 0) {
+	        	var dur = _createElement("span", "jwduration");
+	        	dur.innerHTML = _utils.timeFormat(item.duration);
+	        	_appendChild(title, dur);
+	        }
+	        
+	        _appendChild(li, textWrapper);
 			return li;
 		}
 		
+		function _createElement(type, className) {
+			var elem = DOCUMENT.createElement(type);
+			if (className) elem.className = className;
+			return elem;
+		}
+		
+		function _appendChild(parent, child) {
+			parent.appendChild(child);
+		}
+			
 		function _rebuildPlaylist(evt) {
 			_wrapper.innerHTML = "";
 			
@@ -3553,13 +3591,13 @@ jwplayer.source = document.createElement("source");/**
 			for (var i=0; i<_playlist.length; i++) {
 				var li = _createItem(i);
 				li.onclick = _clickHandler(i);
-				_ul.appendChild(li);
+				_appendChild(_ul, li);
 				items.push(li);
 			}
 			
 			_lastCurrent = _api.jwGetPlaylistIndex();
 			
-			_wrapper.appendChild(_ul);
+			_appendChild(_wrapper, _ul);
 
 			if (_utils.isIOS() && window.iScroll) {
 				_ul.style.height = _settings.itemheight * _playlist.length + "px";
@@ -4339,7 +4377,7 @@ jwplayer.source = document.createElement("source");/**
 			if (!_attached || _dragging) return;
 			
 			if (_videotag.paused) {
-				//_setState(_states.PAUSED);
+				_pause();
 			} else {
 				_setState(_states.PLAYING);
 			}
@@ -4416,16 +4454,22 @@ jwplayer.source = document.createElement("source");/**
 		}
 
 		this.play = function() {
+			if (_utils.isIPad()) {
+				_videotag.controls = true;
+			}
 			if (_attached) _videotag.play();
 		}
 
-		this.pause = function() {
+		var _pause = this.pause = function() {
 			if (_attached) {
+				if (_utils.isIPad()) {
+					_videotag.controls = false;
+				}
 				_videotag.pause();
 				_setState(_states.PAUSED);
 			}
 		}
-
+			
 		this.seekDrag = function(state) {
 			if (!_attached) return; 
 			_dragging = state;
@@ -4523,6 +4567,7 @@ jwplayer.source = document.createElement("source");/**
 		function _complete() {
 			//_stop();
 			_setState(_states.IDLE);
+			_sendEvent(_events.JWPLAYER_MEDIA_BEFORECOMPLETE);
 			_sendEvent(_events.JWPLAYER_MEDIA_COMPLETE);
 		}
 		
@@ -4901,9 +4946,9 @@ jwplayer.source = document.createElement("source");/**
 				break;
 			case _states.BUFFERING:
 			case _states.PAUSED:
-				if (!_utils.isMobile()) {
+				//if (!_utils.isMobile()) {
 					_showControls();
-				}
+				//}
 				break;
 			}
 		}

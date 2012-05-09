@@ -31,7 +31,7 @@
 				playlist: [],
 				playlistposition: "right",
 				playlistsize: 0,
-				repeat: UNDEF,
+				repeat: "list",
 				skin: UNDEF,
 				stretching: _utils.stretching.UNIFORM,
 				volume: 90,
@@ -88,6 +88,14 @@
 				}
 			} else {
 				_model.sendEvent(evt.type, evt);
+			}
+		}
+		
+		_model.setState = function(newstate) {
+			var oldstate = _model.state;
+			_model.state = newstate;
+			if (newstate != oldstate) {
+				_model.sendEvent(_events.JWPLAYER_PLAYER_STATE, { newstate: _model.state, oldstate: oldstate });
 			}
 		}
 		

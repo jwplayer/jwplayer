@@ -77,9 +77,8 @@
 
 
 		function _setup() {
-			_wrapper = DOCUMENT.createElement("div");
+			_wrapper = _createElement("div", "jwplaylist"); 
 			_wrapper.id = _api.id + "_jwplayer_playlistcomponent";
-			_wrapper.className = "jwplaylist";
 			_populateSkinElements();
 			if (_elements.item) {
 				_settings.itemheight = _elements.item.height;
@@ -91,14 +90,18 @@
 			_api.jwAddEventListener(jwplayer.events.JWPLAYER_PLAYLIST_ITEM, _itemHandler);
 		}
 		
+		function _internalSelector(className) {
+			return '#' + _wrapper.id + (className ? ' .' + className : "");
+		}
+		
 		function _setupStyles() {
 			var imgPos = 0, imgWidth = 0, imgHeight = 0, 
 				itemheight = _settings.itemheight,
 				fontsize = _settings.fontsize
 
-			_utils.clearCss('#'+_wrapper.id);
+			_utils.clearCss(_internalSelector());
 				
-			_css('#'+_wrapper.id+' .jwlist', {
+			_css(_internalSelector("jwlist"), {
 		    	'background-color': _settings.backgroundcolor,
 		    	'background-image': _elements.background ? "url("+_elements.background.src+")" : "",
 		    	color: _settings.fontcolor,
@@ -117,13 +120,13 @@
         		imgHeight = itemheight
         	}
 			
-        	_css('#'+_wrapper.id+' .jwplaylistimg', {
+        	_css(_internalSelector("jwplaylistimg"), {
 			    height: imgHeight,
 			    width: imgWidth,
 				margin: imgPos
         	});
 			
-			_css('#'+_wrapper.id+' .jwlist li', {
+			_css(_internalSelector("jwlist li"), {
 				'background-image': _elements.item ? "url("+_elements.item.src+")" : "",
 				height: itemheight,
 				'background-size': JW_CSS_100PCT + " " + itemheight + "px"
@@ -132,28 +135,31 @@
 			var activeStyle = { overflow: 'hidden' };
 			if (_settings.activecolor !== "") activeStyle.color = _settings.activecolor;
 			if (_elements.itemActive) activeStyle['background-image'] = "url("+_elements.itemActive.src+")";
-			_css('#'+_wrapper.id+' .jwlist li.active', activeStyle);
+			_css(_internalSelector("jwlist li.active"), activeStyle);
 
 			var overStyle = { overflow: 'hidden' };
 			if (_settings.overcolor !== "") overStyle.color = _settings.overcolor;
 			if (_elements.itemOver) overStyle['background-image'] = "url("+_elements.itemOver.src+")";
-			_css('#'+_wrapper.id+' .jwlist li:hover', overStyle);
+			_css(_internalSelector("jwlist li:hover"), overStyle);
 
 
-			_css('#'+_wrapper.id+" .jwtextwrapper", {
+			_css(_internalSelector("jwtextwrapper"), {
 				padding: "5px 5px 0 " + (imgPos ? 0 : "5px"),
-				height: itemheight - 5
+				height: itemheight - 5,
+				position: "relative"
 			});
 			
-			_css('#'+_wrapper.id+" .jwtitle", {
+			_css(_internalSelector("jwtitle"), {
 	    		height: fontsize ? fontsize + 10 : 20,
 	    		'line-height': fontsize ? fontsize + 10 : 20,
 	        	overflow: 'hidden',
+	        	display: "inline-block",
+	        	width: JW_CSS_100PCT,
 		    	'font-size': fontsize ? fontsize : 13,
 	        	'font-weight': _settings.fontweight ? _settings.fontweight : "bold"
 	    	});
 			
-			_css('#'+_wrapper.id+" .jwdescription", {
+			_css(_internalSelector("jwdescription"), {
 	    	    display: 'block',
 	        	'line-height': fontsize ? fontsize + 4 : 16,
 	        	overflow: 'hidden',
@@ -161,11 +167,14 @@
 	        	position: "relative"
 	    	});
 
+			_css(_internalSelector("jwduration"), {
+				position: "absolute",
+				right: 5
+			});
 		}
 
 		function _createList() {
-			var ul = DOCUMENT.createElement("ul");
-			ul.className = 'jwlist';
+			var ul = _createElement("ul", "jwlist");
 			ul.id = _wrapper.id + "_ul" + Math.round(Math.random()*10000000);
 			return ul;
 		}
@@ -173,9 +182,8 @@
 
 		function _createItem(index) {
 			var item = _playlist[index],
-				li = DOCUMENT.createElement("li");
+				li = _createElement("li", "jwitem");
 			
-			li.className = "jwitem";
 			li.id = _ul.id + '_item_' + index;
 			
 			_css(li,{
@@ -186,9 +194,7 @@
 			    backgroundSize: "100% " + _settings.itemheight + "px"
 		    });
 
-			var imageWrapper = DOCUMENT.createElement("div")
-			
-			imageWrapper.className = 'jwplaylistimg jwfill';
+			var imageWrapper = _createElement("div", "jwplaylistimg jwfill");
         	
 			if (_showThumbs() && (item.image || item['playlist.image'] || _elements.itemImage) ) {
 				var imageSrc; 
@@ -204,26 +210,40 @@
 					'background-image': imageSrc ? 'url('+imageSrc+')': null
 	        	});
 	        	
-				li.appendChild(imageWrapper);
+				_appendChild(li, imageWrapper);
 	        }
 			
-			var textWrapper = DOCUMENT.createElement("div");
-	        textWrapper.className = 'jwtextwrapper';
-        	var title = DOCUMENT.createElement("span");
-        	title.className = 'jwtitle';
+			var textWrapper = _createElement("div", "jwtextwrapper");
+        	var title = _createElement("span", "jwtitle");
         	title.innerHTML = item ? item.title : "";
-        	textWrapper.appendChild(title);
+        	_appendChild(textWrapper, title);
 
 	        if (item.description) {
-	        	var desc = DOCUMENT.createElement("span");
-	        	desc.className = 'jwdescription';
+	        	var desc = _createElement("span", "jwdescription");
 	        	desc.innerHTML = item.description;
-	        	textWrapper.appendChild(desc);
+	        	_appendChild(textWrapper, desc);
 	        }
-	        li.appendChild(textWrapper);
+	        
+	        if (item.duration > 0) {
+	        	var dur = _createElement("span", "jwduration");
+	        	dur.innerHTML = _utils.timeFormat(item.duration);
+	        	_appendChild(title, dur);
+	        }
+	        
+	        _appendChild(li, textWrapper);
 			return li;
 		}
 		
+		function _createElement(type, className) {
+			var elem = DOCUMENT.createElement(type);
+			if (className) elem.className = className;
+			return elem;
+		}
+		
+		function _appendChild(parent, child) {
+			parent.appendChild(child);
+		}
+			
 		function _rebuildPlaylist(evt) {
 			_wrapper.innerHTML = "";
 			
@@ -237,13 +257,13 @@
 			for (var i=0; i<_playlist.length; i++) {
 				var li = _createItem(i);
 				li.onclick = _clickHandler(i);
-				_ul.appendChild(li);
+				_appendChild(_ul, li);
 				items.push(li);
 			}
 			
 			_lastCurrent = _api.jwGetPlaylistIndex();
 			
-			_wrapper.appendChild(_ul);
+			_appendChild(_wrapper, _ul);
 
 			if (_utils.isIOS() && window.iScroll) {
 				_ul.style.height = _settings.itemheight * _playlist.length + "px";

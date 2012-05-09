@@ -21,7 +21,10 @@
 
 		function _init() {
 			_model.addEventListener(_events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
-			_model.addEventListener(_events.JWPLAYER_MEDIA_COMPLETE, _completeHandler);
+			_model.addEventListener(_events.JWPLAYER_MEDIA_COMPLETE, function(evt) {
+				// Insert a small delay here so that other complete handlers can execute
+				setTimeout(_completeHandler, 25);
+			});
 		}
 		
 		function _playerReady(evt) {
@@ -79,7 +82,7 @@
 					}
 				}
 				
-				if (_model.state == _states.IDLE) {
+				if (_isIdle()) {
 					_video.load(_model.playlist[_model.item]);
 				} else if (_model.state == _states.PAUSED) {
 					_video.play();
@@ -96,7 +99,7 @@
 		function _stop() {
 			_actionOnAttach = null;
 			try {
-				if (_model.state != _states.IDLE && _model.state != _states.COMPLETE) {
+				if (!_isIdle()) {
 					_video.stop();
 				}
 				if (_preplay) {
@@ -134,6 +137,10 @@
 			}
 		}
 
+		function _isIdle() {
+			return (_model.state == _states.IDLE || _model.state == _states.COMPLETED);
+		}
+		
 		function _seek(pos) {
 			_video.seek(pos);
 		}
@@ -161,7 +168,7 @@
 		}
 		
 		function _completeHandler() {
-			if (_model.state != _states.IDLE) {
+			if (!_isIdle()) {
 				// Something has made an API call before the complete handler has fired.
 				return;
 			}
@@ -176,11 +183,13 @@
 				case "list":
 					if (_model.item == _model.playlist.length - 1) {
 						_load(0);
+						_model.setState(_states.COMPLETED);
 					} else {
 						_next();
 					}
 					break;
 				default:
+					_model.setState(_states.COMPLETED);
 //					_stop();
 					break;
 			}
@@ -231,9 +240,6 @@
 		this.attachMedia = _attachMedia;
 		
 		this.playerReady = _playerReady;
-//		this.beforePlay = function() { 
-//			return _preplay; 
-//		}
 
 		_init();
 	}

@@ -220,7 +220,7 @@
 	/** Format the elapsed / remaining text. **/
 	utils.timeFormat = function(sec) {
 		if (sec > 0) {
-			str = Math.floor(sec / 60) < 10 ? "0" + Math.floor(sec / 60) + ":" : Math.floor(sec / 60) + ":";
+			var str = Math.floor(sec / 60) < 10 ? "0" + Math.floor(sec / 60) + ":" : Math.floor(sec / 60) + ":";
 			str += Math.floor(sec % 60) < 10 ? "0" + Math.floor(sec % 60) : Math.floor(sec % 60);
 			return str;
 		} else {
@@ -276,6 +276,10 @@
 	
 	utils.isIPod = function() {
 		return _userAgentMatch(/iP(hone|od)/i);
+	};
+
+	utils.isIPad = function() {
+		return _userAgentMatch(/iPad/i);
 	};
 
 	/** Save a setting **/

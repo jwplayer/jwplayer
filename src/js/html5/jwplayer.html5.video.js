@@ -154,7 +154,7 @@
 			if (!_attached || _dragging) return;
 			
 			if (_videotag.paused) {
-				//_setState(_states.PAUSED);
+				_pause();
 			} else {
 				_setState(_states.PLAYING);
 			}
@@ -231,16 +231,22 @@
 		}
 
 		this.play = function() {
+			if (_utils.isIPad()) {
+				_videotag.controls = true;
+			}
 			if (_attached) _videotag.play();
 		}
 
-		this.pause = function() {
+		var _pause = this.pause = function() {
 			if (_attached) {
+				if (_utils.isIPad()) {
+					_videotag.controls = false;
+				}
 				_videotag.pause();
 				_setState(_states.PAUSED);
 			}
 		}
-
+			
 		this.seekDrag = function(state) {
 			if (!_attached) return; 
 			_dragging = state;
@@ -338,6 +344,7 @@
 		function _complete() {
 			//_stop();
 			_setState(_states.IDLE);
+			_sendEvent(_events.JWPLAYER_MEDIA_BEFORECOMPLETE);
 			_sendEvent(_events.JWPLAYER_MEDIA_COMPLETE);
 		}
 		
