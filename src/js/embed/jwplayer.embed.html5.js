@@ -39,7 +39,9 @@
 				_api.container = document.getElementById(_api.id);
 				_api.setPlayer(html5player, "html5");
 			} else {
-				return null;
+				var scriptLoader = new utils.scriptloader(_player.src);
+				scriptLoader.addEventListener(jwplayer.events.COMPLETE, this.embed);
+				scriptLoader.load();
 			}
 		}
 		

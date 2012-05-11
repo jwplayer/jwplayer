@@ -478,116 +478,113 @@ jwplayer.source = document.createElement("source");/**
 		return "";
 	}
 
-})(jwplayer);
-/**
+	/**
+	 * Recursively traverses nested object, replacing key names containing a
+	 * search string with a replacement string.
+	 * 
+	 * @param searchString
+	 *            The string to search for in the object's key names
+	 * @param replaceString
+	 *            The string to replace in the object's key names
+	 * @returns The modified object.
+	 */
+	jwplayer.utils.deepReplaceKeyName = function(obj, searchString, replaceString) {
+		switch (jwplayer.utils.typeOf(obj)) {
+		case "array":
+			for ( var i = 0; i < obj.length; i++) {
+				obj[i] = jwplayer.utils.deepReplaceKeyName(obj[i],
+						searchString, replaceString);
+			}
+			break;
+		case "object":
+			for ( var key in obj) {
+				var searches, replacements;
+				if (searchString instanceof Array && replaceString instanceof Array) {
+					if (searchString.length != replaceString.length)
+						continue;
+					else {
+						searches = searchString;
+						replacements = replaceString;
+					}
+				} else {
+					searches = [searchString];
+					replacements = [replaceString];
+				}
+				var newkey = key;
+				for (var i=0; i < searches.length; i++) {
+					newkey = newkey.replace(new RegExp(searchString[i], "g"), replaceString[i]);
+				}
+				obj[newkey] = jwplayer.utils.deepReplaceKeyName(obj[key], searchString, replaceString);
+				if (key != newkey) {
+					delete obj[key];
+				}
+			}
+			break;
+		}
+		return obj;
+	}
+
+})(jwplayer);/**
  * JW Player Media Extension to Mime Type mapping
  *
  * @author zach
- * @version 5.4
+ * @modified pablo
+ * @version 6.0
  */
 (function(utils) {
-	utils.extensionmap = {
-		"3gp": {
-			html5: "video/3gpp",
-			flash: "video"
-		},
-		"3gpp": {
-			html5: "video/3gpp"
-		},
-		"3g2": {
-			html5: "video/3gpp2",
-			flash: "video"
-		},
-		"3gpp2": {
-			html5: "video/3gpp2"
-		},
-		"flv": {
-			flash: "video"
-		},
-		"f4a": {
-			html5: "audio/mp4"
-		},
-		"f4b": {
-			html5: "audio/mp4",
-			flash: "video"
-		},
-		"f4v": {
-			html5: "video/mp4",
-			flash: "video"
-		},
-		"mov": {
-			html5: "video/quicktime",
-			flash: "video"
-		},
-		"m4a": {
-			html5: "audio/mp4",
-			flash: "video"
-		},
-		"m4b": {
-			html5: "audio/mp4"
-		},
-		"m4p": {
-			html5: "audio/mp4"
-		},
-		"m4v": {
-			html5: "video/mp4",
-			flash: "video"
-		},
-		"mp4": {
-			html5: "video/mp4",
-			flash: "video"
-		},
-		"rbs":{
-			flash: "sound"
-		},
-		"aac": {
-			html5: "audio/aac",
-			flash: "video"
-		},
-		"mp3": {
-			html5: "audio/mp3",
-			flash: "sound"
-		},
-		"ogg": {
-			html5: "audio/ogg"
-		},
-		"oga": {
-			html5: "audio/ogg"
-		},
-		"ogv": {
-			html5: "video/ogg"
-		},
-		"webm": {
-			html5: "video/webm"
-		},
-		"m3u8": {
-			html5: "audio/x-mpegurl"
-		},
-		"gif": {
-			flash: "image"
-		},
-		"jpeg": {
-			flash: "image"
-		},
-		"jpg": {
-			flash: "image"
-		},
-		"swf":{
-			flash: "image"
-		},
-		"png":{
-			flash: "image"
-		},
-		"wav":{
-			html5: "audio/x-wav"
+	var video = "video/", 
+		audio = "audio/",
+		image = "image",
+		mp4 = "mp4",
+		
+		html5Extensions = {
+			"f4a": audio+mp4,
+			"f4b": audio+mp4,
+			"f4v": video+mp4,
+			"mov": video+"quicktime",
+			"m4a": audio+mp4,
+			"m4b": audio+mp4,
+			"m4p": audio+mp4,
+			"m4v": video+mp4,
+			"mp4": video+mp4,
+			"aac": audio+"aac",
+			"mp3": audio+"mp3",
+			"ogg": audio+"ogg",
+			"oga": audio+"ogg",
+			"ogv": video+"ogg",
+			"webm": video+"webm",
+			"m3u8": audio+"x-mpegurl",
+			"wav": audio+"x-wav"
 		}, 
-		"rtmp":{
-			flash: "rtmp"
-		},
-		"hls":{
-			flash: "hls"
-		}
-	};
+		video = "video", 
+		flashExtensions = {
+			"flv": video,
+			"f4b": video,
+			"f4v": video,
+			"mov": video,
+			"m4a": video,
+			"m4v": video,
+			"mp4": video,
+			"aac": video,
+			"mp3": "sound",
+			"gif": image,
+			"jpeg": image,
+			"jpg": image,
+			"swf": image,
+			"png": image,
+			"rtmp": "rtmp",
+			"hls": "hls"
+		};
+	
+	var _extensionmap = utils.extensionmap = {};
+	for (var ext in html5Extensions) {
+		_extensionmap[ext] = { html5: html5Extensions[ext] };
+	}
+	for (ext in flashExtensions) {
+		if (!_extensionmap[ext]) _extensionmap[ext] = {};
+		_extensionmap[ext].flash = flashExtensions[ext];
+	}
+
 })(jwplayer.utils);
 /**
  * Loads a <script> tag
@@ -603,13 +600,14 @@ jwplayer.source = document.createElement("source");/**
 			ERROR: 2,
 			COMPLETE: 3
 		},
-		_events = jwplayer.events,
 		DOCUMENT = document;
 	
 	
 	utils.scriptloader = function(url) {
-		var _status = _loaderstatus.NEW;
-		var _eventDispatcher = new _events.eventdispatcher();
+		var _status = _loaderstatus.NEW,
+			_events = jwplayer.events,
+			_eventDispatcher = new _events.eventdispatcher();
+		
 		utils.extend(this, _eventDispatcher);
 		
 		this.load = function() {
@@ -650,437 +648,35 @@ jwplayer.source = document.createElement("source");/**
  * @author pablo
  * @version 6.0
  */
-(function(jwplayer) {
-	var DOCUMENT = document;
-	var WINDOW = window;
+(function(utils) {
+	var exists = utils.exists;
 	
-	//Declare namespace
-	var utils = jwplayer.utils = function() {
-	};
-
-	/**
-	 * Returns true if the value of the object is null, undefined or the empty
-	 * string
-	 * 
-	 * @param a The variable to inspect
-	 */
-	utils.exists = function(item) {
-		switch (typeof (item)) {
-		case "string":
-			return (item.length > 0);
-			break;
-		case "object":
-			return (item !== null);
-		case "undefined":
-			return false;
-		}
-		return true;
-	}
-
-	var _styleSheets={},
-		_styleSheet,
-		_rules = {};
-
-	function _createStylesheet() {
-		var styleSheet = DOCUMENT.createElement("style");
-		styleSheet.type = "text/css";
-		DOCUMENT.getElementsByTagName('head')[0].appendChild(styleSheet);
-		return styleSheet;
-	}
-	
-	utils.css = function(selector, styles, important) {
-		if (!utils.exists(important)) important = false;
+	utils.scale = function(domelement, xscale, yscale, xoffset, yoffset) {
+		var value;
 		
-		if (utils.isIE()) {
-			if (!_styleSheet) {
-				_styleSheet = _createStylesheet();
-			}
-		} else if (!_styleSheets[selector]) {
-			_styleSheets[selector] = _createStylesheet();
-		}
-
-		if (!_rules[selector]) {
-			_rules[selector] = {};
-		}
-
-		for (var style in styles) {
-			var val = _styleValue(style, styles[style], important);
-			if (utils.exists(_rules[selector][style]) && !utils.exists(val)) {
-				delete _rules[selector][style];
-			} else {
-				_rules[selector][style] = val;
-			}
-		}
-
-		// IE9 limits the number of style tags in the head, so we need to update the entire stylesheet each time
-		if (utils.isIE()) {
-			_updateAllStyles();
-		} else {
-			_updateStylesheet(selector, _styleSheets[selector]);
-		}
-	}
-	
-	function _styleValue(style, value, important) {
-		if (typeof value === "undefined") {
-			return undefined;
-		} 
-		
-		var importantString = important ? " !important" : "";
-
-		if (typeof value == "number") {
-			if (isNaN(value)) {
-				return undefined;
-			}
-			switch (style) {
-			case "z-index":
-			case "opacity":
-				return value + importantString;
-				break;
-			default:
-				if (style.match(/color/i)) {
-					return "#" + utils.pad(value.toString(16), 6);
-				} else {
-					return Math.ceil(value) + "px" + importantString;
-				}
-				break;
-			}
-		} else {
-			return value + importantString;
-		}
-	}
-
-	function _updateAllStyles() {
-		var ruleText = "\n";
-		for (var rule in _rules) {
-			ruleText += _getRuleText(rule);
-		}
-		_styleSheet.innerHTML = ruleText;
-	}
-	
-	function _updateStylesheet(selector, sheet) {
-		if (sheet) {
-			sheet.innerHTML = _getRuleText(selector);
-		}
-	}
-	
-	function _getRuleText(selector) {
-		var ruleText = selector + "{\n";
-		var styles = _rules[selector];
-		for (var style in styles) {
-			ruleText += "  "+style + ": " + styles[style] + ";\n";
-		}
-		ruleText += "}\n";
-		return ruleText;
-	}
-	
-	
-	/**
-	 * Removes all css elements which match a particular style
-	 */
-	utils.clearCss = function(filter) {
-		for (var rule in _rules) {
-			if (rule.indexOf(filter) >= 0) {
-				delete _rules[rule];
-			}
-		}
-		for (var selector in _styleSheets) {
-			if (selector.indexOf(filter) >= 0) {
-				_styleSheets[selector].innerHTML = '';
-			}
-		}
-	}
-	
-	/** Gets an absolute file path based on a relative filepath * */
-	utils.getAbsolutePath = function(path, base) {
-		if (!utils.exists(base)) {
-			base = DOCUMENT.location.href;
-		}
-		if (!utils.exists(path)) {
-			return undefined;
-		}
-		if (isAbsolutePath(path)) {
-			return path;
-		}
-		var protocol = base.substring(0, base.indexOf("://") + 3);
-		var domain = base.substring(protocol.length, base.indexOf('/', protocol.length + 1));
-		var patharray;
-		if (path.indexOf("/") === 0) {
-			patharray = path.split("/");
-		} else {
-			var basepath = base.split("?")[0];
-			basepath = basepath.substring(protocol.length + domain.length + 1, basepath.lastIndexOf('/'));
-			patharray = basepath.split("/").concat(path.split("/"));
-		}
-		var result = [];
-		for ( var i = 0; i < patharray.length; i++) {
-			if (!patharray[i] || !utils.exists(patharray[i]) || patharray[i] == ".") {
-				continue;
-			} else if (patharray[i] == "..") {
-				result.pop();
-			} else {
-				result.push(patharray[i]);
-			}
-		}
-		return protocol + domain + "/" + result.join("/");
-	};
-
-	function isAbsolutePath(path) {
-		if (!utils.exists(path)) {
-			return;
-		}
-		var protocol = path.indexOf("://");
-		var queryparams = path.indexOf("?");
-		return (protocol > 0 && (queryparams < 0 || (queryparams > protocol)));
-	}
-
-	/** Merges a list of objects **/
-	utils.extend = function() {
-		var args = utils.extend['arguments'];
-		if (args.length > 1) {
-			for ( var i = 1; i < args.length; i++) {
-				for ( var element in args[i]) {
-					args[0][element] = args[i][element];
-				}
-			}
-			return args[0];
-		}
-		return null;
-	};
-
-	/**
-	 * Cleans up a css dimension (e.g. '420px') and returns an integer.
-	 */
-	utils.parseDimension = function(dimension) {
-		if (typeof dimension == "string") {
-			if (dimension === "") {
-				return 0;
-			} else if (dimension.lastIndexOf("%") > -1) {
-				return dimension;
-			} else {
-				return parseInt(dimension.replace("px", ""), 10);
-			}
-		}
-		return dimension;
-	}
-
-	/** Format the elapsed / remaining text. **/
-	utils.timeFormat = function(sec) {
-		if (sec > 0) {
-			var str = Math.floor(sec / 60) < 10 ? "0" + Math.floor(sec / 60) + ":" : Math.floor(sec / 60) + ":";
-			str += Math.floor(sec % 60) < 10 ? "0" + Math.floor(sec % 60) : Math.floor(sec % 60);
-			return str;
-		} else {
-			return "00:00";
-		}
-	}
-
-	/** Logger * */
-	utils.log = function(msg, obj) {
-		if (typeof console != "undefined" && typeof console.log != "undefined") {
-			if (obj) {
-				console.log(msg, obj);
-			} else {
-				console.log(msg);
-			}
-		}
-	};
-
-	/** Replacement for getBoundingClientRect, which isn't supported in iOS 3.1.2 **/
-	utils.getBoundingClientRect = function(element) {
-		if (typeof element.getBoundingClientRect == "function") {
-			return element.getBoundingClientRect();
-		} else {
-			return { 
-				left: element.offsetLeft + DOCUMENT.body.scrollLeft, 
-				top: element.offsetTop + DOCUMENT.body.scrollTop, 
-				width: element.offsetWidth, 
-				height: element.offsetHeight
-			};
-		}
-	}
-	
-	var _userAgentMatch = utils.userAgentMatch = function(regex) {
-		var agent = navigator.userAgent.toLowerCase();
-		return (agent.match(regex) !== null);
-	};
-
-	utils.isIE = function() {
-		return _userAgentMatch(/msie/i);
-	};
-	
-	/** Matches iOS and Android devices **/	
-	utils.isMobile = function() {
-		return _userAgentMatch(/(iP(hone|ad|od))|android/i);
-	}
-
-	/**
-	 * Detects whether the current browser is mobile Safari.
-	 */
-	jwplayer.utils.isIOS = function() {
-		return _userAgentMatch(/iP(hone|ad|od)/i);
-	};
-	
-	utils.isIPod = function() {
-		return _userAgentMatch(/iP(hone|od)/i);
-	};
-
-	utils.isIPad = function() {
-		return _userAgentMatch(/iPad/i);
-	};
-
-	/** Save a setting **/
-	utils.saveCookie = function(name, value) {
-		DOCUMENT.cookie = "jwplayer." + name + "=" + value + "; path=/";
-	}
-
-	/** Retrieve saved  player settings **/
-	utils.getCookies = function() {
-		var jwCookies = {};
-		var cookies = DOCUMENT.cookie.split('; ');
-		for (var i=0; i<cookies.length; i++) {
-			var split = cookies[i].split('=');
-			if (split[0].indexOf("jwplayer.") == 0) {
-				jwCookies[split[0].substring(9, split[0].length)] = utils.serialize(split[1]);
-			}
-		}
-		return jwCookies;
-	}
-	
-	/** Loads an XML file into a DOM object * */
-	utils.ajax = function(xmldocpath, completecallback, errorcallback) {
-		var xmlhttp;
-		if (_isCrossdomain(xmldocpath) && utils.exists(WINDOW.XDomainRequest)) {
-			// IE9
-			xmlhttp = new XDomainRequest();
-			xmlhttp.onload = _ajaxComplete(xmlhttp, xmldocpath, completecallback, errorcallback);
-			xmlhttp.onerror = _ajaxError(errorcallback, xmldocpath, xmlhttp);
-		} else if (utils.exists(WINDOW.XMLHttpRequest)) {
-			// Firefox, Chrome, Opera, Safari
-			xmlhttp = new XMLHttpRequest();
-			xmlhttp.onreadystatechange = _readyStateChangeHandler(xmlhttp, xmldocpath, completecallback, errorcallback);
-			xmlhttp.onerror = _ajaxError(errorcallback, xmldocpath);
-		} else {
-			if (errorcallback) errorcallback();
-		}
-		 
-		try {
-			xmlhttp.open("GET", xmldocpath, true);
-			xmlhttp.send(null);
-		} catch (error) {
-			if (errorcallback) errorcallback(xmldocpath);
-		}
-		return xmlhttp;
-	};
-	
-	function _isCrossdomain(path) {
-		if (path && path.indexOf("://") >= 0) {
-			if (path.split("/")[2] != window.location.href.split("/")[2])
-				return true
-		} 
-		return false;	
-	}
-	
-	function _ajaxError(errorcallback, xmldocpath, xmlhttp) {
-		return function() {
-			errorcallback(xmldocpath);
-		}
- 	}
-	
-	function _readyStateChangeHandler(xmlhttp, xmldocpath, completecallback, errorcallback) {
-		return function() {
-			if (xmlhttp.readyState === 4) {
-				if (xmlhttp.status == 200) {
-					_ajaxComplete(xmlhttp, xmldocpath, completecallback, errorcallback)();
-				} else if (errorcallback) {
-					errorcallback(xmldocpath);
-				}
-			}
-		}
-	}
-	
-	function _ajaxComplete(xmlhttp, xmldocpath, completecallback, errorcallback) {
-		return function() {
-			// Handle the case where an XML document was returned with an incorrect MIME type.
-			if (!utils.exists(xmlhttp.responseXML)) {
-				try {
-					var parsedXML;
-					// Parse XML in FF/Chrome/Safari/Opera
-					if (WINDOW.DOMParser) {
-						parsedXML = (new DOMParser()).parseFromString(xmlhttp.responseText,"text/xml");
-					} else { 
-						// Internet Explorer
-						parsedXML = new ActiveXObject("Microsoft.XMLDOM");
-						parsedXML.async="false";
-						parsedXML.loadXML(xmlhttp.responseText);
-					}
-					if (parsedXML) {
-						xmlhttp = utils.extend({}, xmlhttp, {responseXML:parsedXML});
-					}
-				} catch(e) {
-					if (errorcallback) errorcallback(xmldocpath);
-					return;
-				}
-			}
-			completecallback(xmlhttp);
-		}
-	}
-
-	/** Returns the true type of an object * */
-	utils.typeOf = function(value) {
-		var typeofString = typeof value;
-		if (typeofString === 'object') {
-			if (!value) return "null";
-			return (value instanceof Array) ? 'array' : typeofString;
-		} else {
-			return typeofString;
-		}
-	};
-
-	/* Normalizes differences between Flash and HTML5 internal players' event responses. */
-	utils.translateEventResponse = function(type, eventProperties) {
-		var translated = jwplayer.utils.extend({}, eventProperties);
-		if (type == jwplayer.api.events.JWPLAYER_FULLSCREEN && !translated.fullscreen) {
-			translated.fullscreen = translated.message == "true" ? true : false;
-			delete translated.message;
-		} else if (typeof translated.data == "object") {
-			// Takes ViewEvent "data" block and moves it up a level
-			translated = jwplayer.utils.extend(translated, translated.data);
-			delete translated.data;
-		} else if (typeof translated.metadata == "object") {
-			jwplayer.utils.deepReplaceKeyName(translated.metadata, ["__dot__","__spc__","__dsh__"], ["."," ","-"]);
-		}
-		
-		var rounders = ["position", "duration", "offset"];
-		for (var rounder in rounders) {
-			if (translated[rounders[rounder]]) {
-				translated[rounders[rounder]] = Math.round(translated[rounders[rounder]] * 1000) / 1000;
-			}
-		}
-		
-		return translated;
-	}
-
-
-	utils.transform = function(domelement, xscale, yscale, xoffset, yoffset) {
 		// Set defaults
-		if (!jwplayer.utils.exists(xscale)) xscale = 1;
-		if (!jwplayer.utils.exists(yscale)) yscale = 1;
-		if (!jwplayer.utils.exists(xoffset)) xoffset = 0;
-		if (!jwplayer.utils.exists(yoffset)) yoffset = 0;
+		if (!exists(xscale)) xscale = 1;
+		if (!exists(yscale)) yscale = 1;
+		if (!exists(xoffset)) xoffset = 0;
+		if (!exists(yoffset)) yoffset = 0;
 		
 		if (xscale == 1 && yscale == 1 && xoffset == 0 && yoffset == 0) {
-			domelement.style.webkitTransform = "";
-			domelement.style.MozTransform = "";
-			domelement.style.msTransform = "";
-			domelement.style.OTransform = "";
+			value = "";
 		} else {
-			var value = "scale("+xscale+","+yscale+") translate("+xoffset+"px,"+yoffset+"px)";
-			domelement.style.webkitTransform = value;
-			domelement.style.MozTransform = value;
-			domelement.style.msTransform = value;
-			domelement.style.OTransform = value;
+			value = "scale("+xscale+","+yscale+") translate("+xoffset+"px,"+yoffset+"px)";
 		}
+		
 	};
+	
+	utils.transform = function(element, value) {
+		var style = element.style;
+		if (exists(value)) {
+			style.webkitTransform = value;
+			style.MozTransform = value;
+			style.msTransform = value;
+			style.OTransform = value;
+		}
+	}
 	
 	/**
 	 * Stretches domelement based on stretching. parentWidth, parentHeight,
@@ -1110,7 +706,7 @@ jwplayer.source = document.createElement("source");/**
 			xoff = 0, yoff = 0,
 			style = {},
 			video = (domelement.tagName.toLowerCase() == "video"),
-			transform = false,
+			scale = false,
 			stretchClass;
 		
 		if (video) {
@@ -1131,14 +727,14 @@ jwplayer.source = document.createElement("source");/**
 		case _stretching.NONE:
 			xscale = yscale = 1;
 		case _stretching.EXACTFIT:
-	        transform = true;
+			scale = true;
 			break;
 		case _stretching.UNIFORM:
 			if (xscale > yscale) {
 				elementWidth = elementWidth * yscale;
 				elementHeight = elementHeight * yscale;
 				if (elementWidth / parentWidth > 0.95) {
-					transform = true;
+					scale = true;
 					stretchClass = "jwexactfit";
 					xscale = Math.ceil(100 * parentWidth / elementWidth) / 100;
 					yscale = 1;
@@ -1147,7 +743,7 @@ jwplayer.source = document.createElement("source");/**
 				elementWidth = elementWidth * xscale;
 				elementHeight = elementHeight * xscale;
 				if (elementHeight / parentHeight > 0.95) {
-					transform = true;
+					scale = true;
 					stretchClass = "jwexactfit";
 					yscale = Math.ceil(100 * parentHeight / elementHeight) / 100;
 					xscale = 1;
@@ -1160,12 +756,12 @@ jwplayer.source = document.createElement("source");/**
 		}
 
 		if (video) {
-			if (transform) {
+			if (scale) {
 				domelement.style.width = elementWidth + "px";
 				domelement.style.height = elementHeight + "px"; 
 				xoff = ((parentWidth - elementWidth) / 2) / xscale;
 				yoff = ((parentHeight - elementHeight) / 2) / yscale;
-				utils.transform(domelement, xscale, yscale, xoff, yoff);
+				utils.scale(domelement, xscale, yscale, xoff, yoff);
 			} else {
 				domelement.style.width = "";
 				domelement.style.height = "";
@@ -1184,7 +780,7 @@ jwplayer.source = document.createElement("source");/**
 		EXACTFIT : "exactfit"
 	};
 
-})(jwplayer);
+})(jwplayer.utils);
 /**
  * String utilities for the JW Player.
  *
@@ -2118,7 +1714,7 @@ jwplayer.source = document.createElement("source");/**
 		var _defaults = {
 				fallback: true,
 				height: 300,
-				primary: "flash",
+				primary: "html5",
 				width: 400,
 				base: undefined
 			},
@@ -2130,7 +1726,7 @@ jwplayer.source = document.createElement("source");/**
 		
 		if (!parsedConfig.modes) {
 			parsedConfig.modes = _playerDefaults(
-					parsedConfig.primarh,
+					parsedConfig.primary,
 					parsedConfig.base, 
 					parsedConfig.html5player, 
 					parsedConfig.flashplayer);
@@ -2355,7 +1951,8 @@ jwplayer.source = document.createElement("source");/**
 /**
  * Flash mode embedder the JW Player
  * @author Zach
- * @version 5.5
+ * @modified Pablo
+ * @version 6.0
  */
 (function(jwplayer) {
 	var utils = jwplayer.utils;
@@ -2520,13 +2117,9 @@ jwplayer.source = document.createElement("source");/**
 				}
 			}
 			
-			var bgcolor = "#000000";
-			
-			var flashPlayer;
-			
-			console.log(params);
-			var flashvars = jsonToFlashvars(params);
-			console.log(flashvars);
+			var bgcolor = "#000000",
+				flashPlayer,
+				flashvars = jsonToFlashvars(params);
 			
 			if (utils.isIE()) {
 				var html = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" ' +
@@ -2673,7 +2266,9 @@ jwplayer.source = document.createElement("source");/**
 				_api.container = document.getElementById(_api.id);
 				_api.setPlayer(html5player, "html5");
 			} else {
-				return null;
+				var scriptLoader = new utils.scriptloader(_player.src);
+				scriptLoader.addEventListener(jwplayer.events.COMPLETE, this.embed);
+				scriptLoader.load();
 			}
 		}
 		

@@ -27,7 +27,7 @@ package com.longtailvideo.jwplayer.view {
 	public class Logo extends MovieClip {
 		/** Configuration defaults **/
 		protected var defaults:Object = {
-			prefix: "http://l.longtailvideo.com/", 
+			prefix: "http://l.longtailvideo.com/flash/", 
 			file: "logo.png", 
 			link: "http://www.longtailvideo.com/players/jw-flv-player/",
 			linktarget: "_top",

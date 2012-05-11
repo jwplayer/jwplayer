@@ -9,7 +9,7 @@
 		_css = _utils.css,
 		_events = jwplayer.events,
 		_states = _events.state,
-		_rotate = html5.utils.animations.rotate,
+		_rotate = _utils.animations.rotate,
 		
 
 		DOCUMENT = document,

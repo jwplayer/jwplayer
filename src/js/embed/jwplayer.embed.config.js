@@ -29,7 +29,7 @@
 		var _defaults = {
 				fallback: true,
 				height: 300,
-				primary: "flash",
+				primary: "html5",
 				width: 400,
 				base: undefined
 			},
@@ -41,7 +41,7 @@
 		
 		if (!parsedConfig.modes) {
 			parsedConfig.modes = _playerDefaults(
-					parsedConfig.primarh,
+					parsedConfig.primary,
 					parsedConfig.base, 
 					parsedConfig.html5player, 
 					parsedConfig.flashplayer);

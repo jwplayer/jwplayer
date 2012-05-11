@@ -683,7 +683,7 @@ package com.longtailvideo.jwplayer.view.components {
 					try {
 						Draw.smooth(ldr.content as Bitmap);
 					} catch (e:Error) {
-						Logger.log('Could not smooth thumbnail image: ' + e.message);
+						//Could not smooth thumbnail image
 					}
 					Stretcher.stretch(ldr, image[0], image[1], Stretcher.FILL);
 				}

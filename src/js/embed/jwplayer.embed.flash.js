@@ -1,7 +1,8 @@
 /**
  * Flash mode embedder the JW Player
  * @author Zach
- * @version 5.5
+ * @modified Pablo
+ * @version 6.0
  */
 (function(jwplayer) {
 	var utils = jwplayer.utils;
@@ -166,13 +167,9 @@
 				}
 			}
 			
-			var bgcolor = "#000000";
-			
-			var flashPlayer;
-			
-			console.log(params);
-			var flashvars = jsonToFlashvars(params);
-			console.log(flashvars);
+			var bgcolor = "#000000",
+				flashPlayer,
+				flashvars = jsonToFlashvars(params);
 			
 			if (utils.isIE()) {
 				var html = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" ' +

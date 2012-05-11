@@ -596,7 +596,7 @@ package com.longtailvideo.jwplayer.view {
 				try {
 					Draw.smooth(_image.content as Bitmap);
 				} catch (e:Error) {
-					Logger.log('Could not smooth preview image: ' + e.message);
+					//Could not smooth preview image
 				}
 				if (_model.state != PlayerState.PLAYING && _model.state != PlayerState.PAUSED) { 
 					showImage();

@@ -12,13 +12,14 @@
 			ERROR: 2,
 			COMPLETE: 3
 		},
-		_events = jwplayer.events,
 		DOCUMENT = document;
 	
 	
 	utils.scriptloader = function(url) {
-		var _status = _loaderstatus.NEW;
-		var _eventDispatcher = new _events.eventdispatcher();
+		var _status = _loaderstatus.NEW,
+			_events = jwplayer.events,
+			_eventDispatcher = new _events.eventdispatcher();
+		
 		utils.extend(this, _eventDispatcher);
 		
 		this.load = function() {

@@ -28,6 +28,11 @@ package com.longtailvideo.jwplayer.model {
 		
 		
 		public function PlaylistItem(obj:Object = null) {
+			if (obj && obj.sources is Array) {
+				obj.levels = obj.sources;
+				delete obj.sources;
+			}
+			
 			for (var itm:String in obj) {
 				if (itm == "levels") {
 					if (!(obj[itm] is Array)) {
