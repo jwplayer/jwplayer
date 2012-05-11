@@ -4,12 +4,8 @@
  * @version 6.0
  */
 (function(utils) {
-
-	var strings = utils.strings = function() {
-	};
-	
 	/** Removes whitespace from the beginning and end of a string **/
-	strings.trim = function(inputString) {
+	utils.trim = function(inputString) {
 		return inputString.replace(/^\s*/, "").replace(/\s*$/, "");
 	};
 	
@@ -19,7 +15,7 @@
 	 * @param {Number} length
 	 * @param {String} padder
 	 */
-	strings.pad = function (string, length, padder) {
+	utils.pad = function (string, length, padder) {
 		if (!padder){
 			padder = "0";
 		}
@@ -36,7 +32,7 @@
 	 * @param {String} val	String value to serialize.
 	 * @return {Object}		The original value in the correct primitive type.
 	 */
-	strings.serialize = function(val) {
+	utils.serialize = function(val) {
 		if (val == null) {
 			return null;
 		} else if (val == 'true') {
@@ -57,7 +53,7 @@
 	 * @param {String}	The input string. Supported are 00:03:00.1 / 03:00.1 / 180.1s / 3.2m / 3.2h
 	 * @return {Number}	The number of seconds.
 	 */
-	strings.seconds = function(str) {
+	utils.seconds = function(str) {
 		str = str.replace(',', '.');
 		var arr = str.split(':');
 		var sec = 0;
@@ -86,7 +82,7 @@
 	 * @param {String} attribute
 	 * @return {String} Value
 	 */
-	strings.xmlAttribute = function(xml, attribute) {
+	utils.xmlAttribute = function(xml, attribute) {
 		for (var attrib = 0; attrib < xml.attributes.length; attrib++) {
 			if (xml.attributes[attrib].name && xml.attributes[attrib].name.toLowerCase() == attribute.toLowerCase()) 
 				return xml.attributes[attrib].value.toString();
@@ -99,7 +95,7 @@
 	 * @param obj {Object} String, Number, Array or nested Object to serialize
 	 * Serialization code borrowed from 
 	 */
-	strings.jsonToString = function(obj) {
+	utils.jsonToString = function(obj) {
 		// Use browser's native JSON implementation if it exists.
 		var JSON = JSON || {}
 		if (JSON && JSON.stringify) {
@@ -129,7 +125,7 @@
 						break;
 					case "object":
 						if (utils.exists(value)) {
-							value = strings.jsonToString(value);
+							value = utils.jsonToString(value);
 						}
 						break;
 				}
@@ -155,7 +151,7 @@
 	};
 	
 	/** Returns the extension of a file name * */
-	strings.extension = function(path) {
+	utils.extension = function(path) {
 		if (!path) { return ""; }
 		path = path.substring(path.lastIndexOf("/") + 1, path.length).split("?")[0];
 		if (path.lastIndexOf('.') > -1) {

@@ -6,7 +6,7 @@
  * @version 6.0
  */
 (function(parsers) {
-	var _utils = jwplayer.utils,
+	var utils = jwplayer.utils,
 		_textContent = parsers.textContent,
 		_getChildNode = parsers.getChildNode,
 		_numChildren = parsers.numChildren,
@@ -55,7 +55,7 @@
 			}
 			switch (localName.toLowerCase()) {
 				case 'enclosure':
-					itm['file'] = _utils.strings.xmlAttribute(node, 'url');
+					itm['file'] = utils.xmlAttribute(node, 'url');
 					break;
 				case 'title':
 					itm['title'] = _textContent(node);
@@ -81,7 +81,7 @@
 		itm = parsers.mediaparser.parseGroup(obj, itm);
 		itm = parsers.jwparser.parseEntry(obj, itm);
 
-		return new jwplayer.html5.playlistitem(itm);
+		return new jwplayer.playlist.item(itm);
 	}
 
 

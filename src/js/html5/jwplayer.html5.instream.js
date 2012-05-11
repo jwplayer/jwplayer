@@ -8,7 +8,8 @@
 	var _jw = jwplayer, 
 		_utils = _jw.utils, 
 		_events = _jw.events, 
-		_states = _events.state;
+		_states = _events.state,
+		_playlist = _jw.playlist;
 	
 	html5.instream = function(api, model, view, controller) {
 		var _defaultOptions = {
@@ -40,7 +41,7 @@
 			// Instream playback options
 			_options = _utils.extend(_defaultOptions, options);
 			// Copy the playlist item passed in and make sure it's formatted as a proper playlist item
-			_item = html5.playlistitem(item);
+			_item = new _playlist.item(item);
 			// Create (or reuse) video media provider.  No checks right now to make sure it's a valid playlist item (i.e. provider="video").
 			_setupProvider();
 			// Create the container in which the controls will be placed

@@ -129,7 +129,8 @@
 			_css(_internalSelector("jwlist li"), {
 				'background-image': _elements.item ? "url("+_elements.item.src+")" : "",
 				height: itemheight,
-				'background-size': JW_CSS_100PCT + " " + itemheight + "px"
+				'background-size': JW_CSS_100PCT + " " + itemheight + "px",
+		    	cursor: 'pointer'
 			});
 
 			var activeStyle = { overflow: 'hidden' };
@@ -171,6 +172,7 @@
 				position: "absolute",
 				right: 5
 			});
+			
 		}
 
 		function _createList() {
@@ -186,14 +188,6 @@
 			
 			li.id = _ul.id + '_item_' + index;
 			
-			_css(li,{
-			    height: _settings.itemheight,
-		    	display: 'block',
-		    	cursor: 'pointer',
-			    backgroundImage: _elements.item ? "url("+_elements.item.src+")" : "",
-			    backgroundSize: "100% " + _settings.itemheight + "px"
-		    });
-
 			var imageWrapper = _createElement("div", "jwplaylistimg jwfill");
         	
 			if (_showThumbs() && (item.image || item['playlist.image'] || _elements.itemImage) ) {

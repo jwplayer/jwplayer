@@ -4,40 +4,61 @@
  * @author pablo
  * @version 6.0
  */
-(function(html5) {
-	var _jw = jwplayer, 
-		_utils = _jw.utils, 
-		_events = _jw.events, 
-		_states = _events.state;
+(function(jwplayer) {
+	var html5 = jwplayer.html5,
+		utils = jwplayer.utils, 
+		events = jwplayer.events, 
+		states = events.state;
 		
 	html5.controller = function(model, view) {
 		var _model = model,
 			_view = view,
 			_video = model.getVideo(),
 			_controller = this,
-			_eventDispatcher = new _events.eventdispatcher(_model.id, _model.config.debug);
+			_eventDispatcher = new events.eventdispatcher(_model.id, _model.config.debug),
+			_ready = false,
+			_queuedCalls = [];
 		
-		_utils.extend(this, _eventDispatcher);
+		utils.extend(this, _eventDispatcher);
 
 		function _init() {
-			_model.addEventListener(_events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
-			_model.addEventListener(_events.JWPLAYER_MEDIA_COMPLETE, function(evt) {
+			_model.addEventListener(events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
+			_model.addEventListener(events.JWPLAYER_MEDIA_COMPLETE, function(evt) {
 				// Insert a small delay here so that other complete handlers can execute
 				setTimeout(_completeHandler, 25);
 			});
 		}
 		
 		function _playerReady(evt) {
-			_view.completeSetup();
-			_eventDispatcher.sendEvent(evt.type, evt);
-			_eventDispatcher.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_LOADED, {playlist: _model.playlist});
-			_eventDispatcher.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_ITEM, {index: _model.item});
-			_model.addGlobalListener(_forward);
-			_load();
-			if (_model.autostart && !_utils.isMobile()) {
-				_play();
+			if (!_ready) {
+				_ready = true;
+				
+				_view.completeSetup();
+				_eventDispatcher.sendEvent(evt.type, evt);
+
+				if (jwplayer.utils.exists(window.playerReady)) {
+					playerReady(evt);
+				}
+
+				_eventDispatcher.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_LOADED, {playlist: _model.playlist});
+				_eventDispatcher.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_ITEM, {index: _model.item});
+				
+				_model.addGlobalListener(_forward);
+				
+				_load();
+				
+				if (_model.autostart && !utils.isIOS()) {
+					_play();
+				}
+				
+				while (_queuedCalls.length > 0) {
+					var queuedCall = _queuedCalls.shift();
+					_callMethod(queuedCall.method, queuedCall.arguments);
+				}
+
 			}
 		}
+
 		
 		function _forward(evt) {
 			_eventDispatcher.sendEvent(evt.type, evt);
@@ -50,14 +71,14 @@
 		function _load(item) {
 			_stop();
 			
-			switch (_utils.typeOf(item)) {
+			switch (utils.typeOf(item)) {
 			case "string":
-				_model.setPlaylist(new html5.playlist({file:item}));
+				_model.setPlaylist(new jwplayer.playlist({file:item}));
 				_model.setItem(0);
 				break;
 			case "object":
 			case "array":
-				_model.setPlaylist(new html5.playlist(item));
+				_model.setPlaylist(new jwplayer.playlist(item));
 				_model.setItem(0);
 				break;
 			case "number":
@@ -73,7 +94,7 @@
 				_actionOnAttach = _play;
 				if (!_preplay) {
 					_preplay = true;
-					_eventDispatcher.sendEvent(_events.JWPLAYER_MEDIA_BEFOREPLAY);
+					_eventDispatcher.sendEvent(events.JWPLAYER_MEDIA_BEFOREPLAY);
 					_preplay = false;
 					if (_interruptPlay) {
 						_interruptPlay = false;
@@ -84,13 +105,13 @@
 				
 				if (_isIdle()) {
 					_video.load(_model.playlist[_model.item]);
-				} else if (_model.state == _states.PAUSED) {
+				} else if (_model.state == states.PAUSED) {
 					_video.play();
 				}
 				
 				return true;
 			} catch (err) {
-				_eventDispatcher.sendEvent(_events.JWPLAYER_ERROR, err);
+				_eventDispatcher.sendEvent(events.JWPLAYER_ERROR, err);
 				_actionOnAttach = null;
 			}
 			return false;
@@ -107,7 +128,7 @@
 				}
 				return true;
 			} catch (err) {
-				_eventDispatcher.sendEvent(_events.JWPLAYER_ERROR, err);
+				_eventDispatcher.sendEvent(events.JWPLAYER_ERROR, err);
 			}
 			return false;
 
@@ -116,8 +137,8 @@
 		function _pause() {
 			try {
 				switch (_model.state) {
-					case _states.PLAYING:
-					case _states.BUFFERING:
+					case states.PLAYING:
+					case states.BUFFERING:
 						_video.pause();
 						break;
 					default:
@@ -127,18 +148,18 @@
 				}
 				return true;
 			} catch (err) {
-				_eventDispatcher.sendEvent(_events.JWPLAYER_ERROR, err);
+				_eventDispatcher.sendEvent(events.JWPLAYER_ERROR, err);
 			}
 			return false;
 
 			
-			if (_model.state == _states.PLAYING || _model.state == _states.BUFFERING) {
+			if (_model.state == states.PLAYING || _model.state == states.BUFFERING) {
 				_video.pause();
 			}
 		}
 
 		function _isIdle() {
-			return (_model.state == _states.IDLE || _model.state == _states.COMPLETED);
+			return (_model.state == states.IDLE || _model.state == states.COMPLETED);
 		}
 		
 		function _seek(pos) {
@@ -183,25 +204,19 @@
 				case "list":
 					if (_model.item == _model.playlist.length - 1) {
 						_load(0);
-						_model.setState(_states.COMPLETED);
+						_model.setState(states.COMPLETED);
 					} else {
 						_next();
 					}
 					break;
 				default:
-					_model.setState(_states.COMPLETED);
+					_model.setState(states.COMPLETED);
 //					_stop();
 					break;
 			}
 		}
 		
 		
-		// TODO: implement waitForReady; either in Controller or in API
-		function _waitForReady(func) {
-			return function() {
-				func.apply(this, arguments);
-			}
-		}
 		
 		/** Used for the InStream API **/
 		function _detachMedia() {
@@ -222,6 +237,25 @@
 				return null;
 			}
 		}
+		
+		function _waitForReady(func) {
+			return function() {
+				if (_ready) {
+					_callMethod(func, arguments);
+				} else {
+					_queuedCalls.push({ method: func, arguments: arguments});
+				}
+			}
+		}
+		
+		function _callMethod(func, args) {
+			var _args = [];
+			for (i=0; i < args.length; i++) {
+				_args.push(args[i]);
+			}
+			func.apply(this, _args);
+		}
+
 		
 		/** Controller API / public methods **/
 		this.play = _waitForReady(_play);
@@ -244,5 +278,5 @@
 		_init();
 	}
 	
-})(jwplayer.html5);
+})(jwplayer);
 

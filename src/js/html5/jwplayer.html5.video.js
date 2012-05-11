@@ -4,16 +4,15 @@
  * @author pablo
  * @version 6.0
  */
-(function(jwplayerhtml5) {
+(function(jwplayer) {
 
-	var _jw = jwplayer, 
-		_utils = _jw.utils, 
-		_events = _jw.events, 
-		_states = _events.state;
+	var utils = jwplayer.utils, 
+		events = jwplayer.events, 
+		states = events.state;
 	
 
 	/** HTML5 video class * */
-	jwplayerhtml5.video = function(videotag) {
+	jwplayer.html5.video = function(videotag) {
 
 		var _mediaEvents = {
 			"abort" : _generalHandler,
@@ -41,12 +40,7 @@
 			"waiting" : _bufferStateHandler
 		},
 		
-		_extensions = {
-			"mp4": "video/mp4",
-			"webm": "video/webm",
-			"m3u8": "audio/x-mpegurl"
-		},
-		
+		_extensions = utils.extensionmap,
 
 		// Current playlist item
 		_item,
@@ -69,7 +63,7 @@
 		// If we're currently dragging the seek bar
 		_dragging,
 		// Current media state
-		_state = _states.IDLE,
+		_state = states.IDLE,
 		// Save the volume state before muting
 		_lastVolume,
 		// Using setInterval to check buffered ranges
@@ -77,11 +71,11 @@
 		// Last sent buffer amount
 		_bufferPercent = -1,
 		// Event dispatcher
-		_eventDispatcher = new _events.eventdispatcher(),
+		_eventDispatcher = new events.eventdispatcher(),
 		// Whether or not we're listening to video tag events
 		_attached = false;
 		
-		_utils.extend(this, _eventDispatcher);
+		utils.extend(this, _eventDispatcher);
 
 		// Constructor
 		function _init(videotag) {
@@ -120,9 +114,9 @@
 
 		function _timeUpdateHandler(evt) {
 			if (!_attached) return;
-			if (_state == _states.PLAYING && !_dragging) {
+			if (_state == states.PLAYING && !_dragging) {
 				_position = _videotag.currentTime;
-				_sendEvent(_events.JWPLAYER_MEDIA_TIME, {
+				_sendEvent(events.JWPLAYER_MEDIA_TIME, {
 					position : _position,
 					duration : _duration
 				});
@@ -146,7 +140,7 @@
 		function _sendBufferFull() {
 			if (!_bufferFull) {
 				_bufferFull = true;
-				_sendEvent(_events.JWPLAYER_MEDIA_BUFFER_FULL);
+				_sendEvent(events.JWPLAYER_MEDIA_BUFFER_FULL);
 			}
 		}
 
@@ -156,32 +150,33 @@
 			if (_videotag.paused) {
 				_pause();
 			} else {
-				_setState(_states.PLAYING);
+				_setState(states.PLAYING);
 			}
 		}
 
 		function _bufferStateHandler(evt) {
 			if (!_attached) return;
-			_setState(_states.BUFFERING);
+			_setState(states.BUFFERING);
 		}
 
 		function _errorHandler(evt) {
 			if (!_attached) return;
-			_utils.log("Error: %o", _videotag.error);
-			_setState(_states.IDLE);
+			utils.log("Error: %o", _videotag.error);
+			_setState(states.IDLE);
 		}
 
 		function _canPlay(file) {
-			var type = _extensions[_utils.strings.extension(file)];
-			return (!!type && _videotag.canPlayType(type));
+			var type = _extensions[utils.extension(file)];
+			return (!!type && !!type.html5 && _videotag.canPlayType(type.html5));
 		}
 		
 		/** Selects the appropriate file out of all available options **/
 		function _selectFile(item) {
-			if (item.levels && item.levels.length > 0) {
-				for (var i=0; i<item.levels.length; i++) {
-					if (_canPlay(item.levels[i].file))
-						return item.levels[i].file;
+			var sources = item.sources;
+			if (sources && sources.length > 0) {
+				for (var i=0; i<sources.length; i++) {
+					if (_canPlay(sources[i].file))
+						return sources[i].file;
 				}
 			} else if (item.file && _canPlay(item.file)) {
 				return item.file;
@@ -202,22 +197,22 @@
 			_file = _selectFile(_item);
 			
 			if (!_file) {
-				_utils.log("Could not find a file to play.");
+				utils.log("Could not find a file to play.");
 				return;
 			}
 			
-			_setState(_states.BUFFERING); 
+			_setState(states.BUFFERING); 
 			_videotag.src = _file;
 			_videotag.load();
 			
 			_bufferInterval = setInterval(_sendBufferUpdate, 100);
 
 			// Use native browser controls on mobile
-			if (_utils.isMobile()) {
+			if (utils.isMobile()) {
 				_videotag.controls = true;
 			}
 			
-			if (_utils.isIPod()) {
+			if (utils.isIPod()) {
 				_sendBufferFull();
 			}
 		}
@@ -227,11 +222,11 @@
 			_videotag.removeAttribute("src");
 			_videotag.load();
 			clearInterval(_bufferInterval);
-			_setState(_states.IDLE);
+			_setState(states.IDLE);
 		}
 
 		this.play = function() {
-			if (_utils.isIPad()) {
+			if (utils.isIPad()) {
 				_videotag.controls = true;
 			}
 			if (_attached) _videotag.play();
@@ -239,11 +234,11 @@
 
 		var _pause = this.pause = function() {
 			if (_attached) {
-				if (_utils.isIPad()) {
+				if (utils.isIPad()) {
 					_videotag.controls = false;
 				}
 				_videotag.pause();
-				_setState(_states.PAUSED);
+				_setState(states.PAUSED);
 			}
 		}
 			
@@ -259,7 +254,7 @@
 			if (_videotag.readyState >= _videotag.HAVE_FUTURE_DATA) {
 				_delayedSeek = 0;
 				if (!_dragging) {
-					_sendEvent(_events.JWPLAYER_MEDIA_SEEK, {
+					_sendEvent(events.JWPLAYER_MEDIA_SEEK, {
 						position: _position,
 						offset: pos
 					});
@@ -275,16 +270,16 @@
 		}
 		
 		function _volumeHandler(evt) {
-			_sendEvent(_events.JWPLAYER_MEDIA_VOLUME, {
+			_sendEvent(events.JWPLAYER_MEDIA_VOLUME, {
 				volume: Math.round(_videotag.volume * 100)
 			});
-			_sendEvent(_events.JWPLAYER_MEDIA_MUTE, {
+			_sendEvent(events.JWPLAYER_MEDIA_MUTE, {
 				mute: _videotag.muted
 			});
 		}
 		
 		this.mute = function(state) {
-			if (!_utils.exists(state)) state = !_videotag.mute;
+			if (!utils.exists(state)) state = !_videotag.mute;
 			if (state) {
 				if (!_videotag.muted) {
 					_lastVolume = _videotag.volume * 100;
@@ -302,7 +297,7 @@
 		/** Set the current player state * */
 		function _setState(newstate) {
 			// Handles a FF 3.5 issue
-			if (newstate == _states.PAUSED && _state == _states.IDLE) {
+			if (newstate == states.PAUSED && _state == states.IDLE) {
 				return;
 			}
 			
@@ -312,7 +307,7 @@
 			if (_state != newstate) {
 				var oldstate = _state;
 				_state = newstate;
-				_sendEvent(_events.JWPLAYER_PLAYER_STATE, {
+				_sendEvent(events.JWPLAYER_PLAYER_STATE, {
 					oldstate : oldstate,
 					newstate : newstate
 				});
@@ -324,7 +319,7 @@
 			var newBuffer = _getBuffer();
 			if (newBuffer != _bufferPercent) {
 				_bufferPercent = newBuffer;
-				_sendEvent(_events.JWPLAYER_MEDIA_BUFFER, {
+				_sendEvent(events.JWPLAYER_MEDIA_BUFFER, {
 					bufferPercent: Math.round(_bufferPercent * 100)
 				});
 			}
@@ -343,9 +338,9 @@
 
 		function _complete() {
 			//_stop();
-			_setState(_states.IDLE);
-			_sendEvent(_events.JWPLAYER_MEDIA_BEFORECOMPLETE);
-			_sendEvent(_events.JWPLAYER_MEDIA_COMPLETE);
+			_setState(states.IDLE);
+			_sendEvent(events.JWPLAYER_MEDIA_BEFORECOMPLETE);
+			_sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
 		}
 		
 
@@ -375,4 +370,4 @@
 
 	}
 
-})(jwplayer.html5);
+})(jwplayer);

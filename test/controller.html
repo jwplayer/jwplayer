@@ -3,6 +3,7 @@
 	<head>
 	  <title>Controller test</title>
 	  <script src="../bin-debug/jwplayer.js"></script>
+	  <script src="../bin-debug/jwplayer.html5.js"></script>
 
 	  <style type="text/css">
 	  	.wrapper {
@@ -30,8 +31,9 @@
 		    player = new jwplayer.html5.player({
 		      id: "player", 
 		      skin: form.skin.options[form.skin.selectedIndex].value,
+		      /*
 		      playlist: [{
-			      levels:[
+			      sources:[
 				             { file: 'http://content.bitsontherun.com/videos/nPripu9l-1ahmry41.mp4' },	   		 
 				             { file: 'http://content.bitsontherun.com/videos/nPripu9l-1Lq5Mnwq.webm' } 		 
 				          ],
@@ -39,13 +41,15 @@
 				          description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse ipsum leo, facilisis non laoreet sed, laoreet id tortor. Sed in lectus id enim scelerisque dictum nec sit amet odio. Pellentesque eget nisl arcu, quis tristique nibh. Nunc quis est eget erat posuere congue. Maecenas et turpis id ipsum eleifend adipiscing id et purus. Curabitur pulvinar ultricies leo, a semper tellus tempus eu. Praesent mattis ipsum eu eros placerat sodales. Maecenas laoreet libero quis lorem lacinia sit amet consequat nunc accumsan. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nunc venenatis, mi suscipit accumsan venenatis, ligula lacus malesuada nisl, vel congue est nibh ut dolor. Sed ut tellus ut diam consequat scelerisque at sit amet lacus. Nulla egestas vehicula neque, et commodo metus sollicitudin ut. Sed sit amet nunc vitae arcu tincidunt ornare.",
 				          title: "Big Buck Bunny" 
 				      },{
-					      levels:[
+				    	  sources:[
 						             { file: 'http://content.bitsontherun.com/videos/yj1shGJB-1ahmry41.mp4' },	   		 
 						             { file: 'http://content.bitsontherun.com/videos/yj1shGJB-1Lq5Mnwq.webm' }	 
 						          ],
 						          duration: 52,
 						          title: "Sintel Trailer" 							          
 						      }],
+						      */
+			  playlist: "/testing/files/trailers.xml",
 		      playlistsize: 300,
 		      width: "100%",
 		      height: "100%"

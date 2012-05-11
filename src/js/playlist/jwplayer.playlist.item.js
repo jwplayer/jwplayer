@@ -5,22 +5,17 @@
  * @modified pablo
  * @version 6.0
  */
-(function(html5) {
-	html5.playlistitem = function(config) {
+(function(playlist) {
+	playlist.item = function(config) {
 		var _defaults = {
 			description: "",
 			image: "",
-			link: "",
 			mediaid: "",
 			title: "",
-			provider: "",
 			
-			file: "",
 			duration: -1,
-			start: 0,
 			
-			currentLevel: -1,
-			levels: []
+			sources: []
 		};
 		
 		
@@ -32,8 +27,8 @@
 			delete _playlistitem.type;
 		}
 */		
-		if (_playlistitem.levels.length === 0) {
-			_playlistitem.levels[0] = new html5.playlistitemlevel(_playlistitem);
+		if (_playlistitem.sources.length == 0) {
+			_playlistitem.sources[0] = new playlist.source(_playlistitem);
 		}
 /*		
 		if (!_playlistitem.provider) {
@@ -45,4 +40,4 @@
 		
 		return _playlistitem;
 	};
-})(jwplayer.html5);
+})(jwplayer.playlist);

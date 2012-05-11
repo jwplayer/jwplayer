@@ -216,20 +216,21 @@
 			if (_image) {
 				// Find image size and stretch exactfit if close enough
 				var img = new Image();
-				img.addEventListener('load', function() {
-					_imageWidth = img.width;
-					_imageHeight = img.height;
-					_resize();
-					_css(_internalSelector(D_PREVIEW_CLASS), {
-						'background-image': _image ? ('url('+_image+')') : '',
-					});
-					_setVisibility(D_PREVIEW_CLASS, true);
-				}, false);
+				img.addEventListener('load', _imageLoaded, false);
 				img.src = _image;
 			} else {
 				_setVisibility(D_PREVIEW_CLASS, false);
 				_imageWidth = _imageHeight = 0;
 			}
+		}
+		
+		function _imageLoaded() {
+			_imageWidth = this.width;
+			_imageHeight = this.height;
+			_resize();
+			_css(_internalSelector(D_PREVIEW_CLASS), {
+				'background-image': _image ? ('url('+_image+')') : '',
+			});
 		}
 
 		function _getSkinElement(name) {

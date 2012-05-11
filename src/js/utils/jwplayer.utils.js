@@ -92,7 +92,7 @@
 				break;
 			default:
 				if (style.match(/color/i)) {
-					return "#" + utils.strings.pad(value.toString(16), 6);
+					return "#" + utils.pad(value.toString(16), 6);
 				} else {
 					return Math.ceil(value) + "px" + importantString;
 				}
@@ -270,7 +270,7 @@
 	/**
 	 * Detects whether the current browser is mobile Safari.
 	 */
-	jwplayer.utils.isIOS = function() {
+	utils.isIOS = function() {
 		return _userAgentMatch(/iP(hone|ad|od)/i);
 	};
 	
@@ -294,7 +294,7 @@
 		for (var i=0; i<cookies.length; i++) {
 			var split = cookies[i].split('=');
 			if (split[0].indexOf("jwplayer.") == 0) {
-				jwCookies[split[0].substring(9, split[0].length)] = utils.strings.serialize(split[1]);
+				jwCookies[split[0].substring(9, split[0].length)] = utils.serialize(split[1]);
 			}
 		}
 		return jwCookies;
@@ -328,7 +328,7 @@
 	
 	function _isCrossdomain(path) {
 		if (path && path.indexOf("://") >= 0) {
-			if (path.split("/")[2] != window.location.href.split("/")[2])
+			if (path.split("/")[2] != WINDOW.location.href.split("/")[2])
 				return true
 		} 
 		return false;	
@@ -368,7 +368,7 @@
 						parsedXML.loadXML(xmlhttp.responseText);
 					}
 					if (parsedXML) {
-						xmlhttp = jwplayer.utils.extend({}, xmlhttp, {responseXML:parsedXML});
+						xmlhttp = utils.extend({}, xmlhttp, {responseXML:parsedXML});
 					}
 				} catch(e) {
 					if (errorcallback) errorcallback(xmldocpath);
@@ -390,127 +390,67 @@
 		}
 	};
 
-	utils.transform = function(domelement, xscale, yscale, xoffset, yoffset) {
-		// Set defaults
-		if (!jwplayer.utils.exists(xscale)) xscale = 1;
-		if (!jwplayer.utils.exists(yscale)) yscale = 1;
-		if (!jwplayer.utils.exists(xoffset)) xoffset = 0;
-		if (!jwplayer.utils.exists(yoffset)) yoffset = 0;
-		
-		if (xscale == 1 && yscale == 1 && xoffset == 0 && yoffset == 0) {
-			domelement.style.webkitTransform = "";
-			domelement.style.MozTransform = "";
-			domelement.style.msTransform = "";
-			domelement.style.OTransform = "";
-		} else {
-			var value = "scale("+xscale+","+yscale+") translate("+xoffset+"px,"+yoffset+"px)";
-			domelement.style.webkitTransform = value;
-			domelement.style.MozTransform = value;
-			domelement.style.msTransform = value;
-			domelement.style.OTransform = value;
+	/* Normalizes differences between Flash and HTML5 internal players' event responses. */
+	utils.translateEventResponse = function(type, eventProperties) {
+		var translated = utils.extend({}, eventProperties);
+		if (type == jwplayer.events.JWPLAYER_FULLSCREEN && !translated.fullscreen) {
+			translated.fullscreen = translated.message == "true" ? true : false;
+			delete translated.message;
+		} else if (typeof translated.data == "object") {
+			// Takes ViewEvent "data" block and moves it up a level
+			translated = utils.extend(translated, translated.data);
+			delete translated.data;
+		} else if (typeof translated.metadata == "object") {
+			utils.deepReplaceKeyName(translated.metadata, ["__dot__","__spc__","__dsh__"], ["."," ","-"]);
 		}
-	};
-	
+		
+		var rounders = ["position", "duration", "offset"];
+		for (var rounder in rounders) {
+			if (translated[rounders[rounder]]) {
+				translated[rounders[rounder]] = Math.round(translated[rounders[rounder]] * 1000) / 1000;
+			}
+		}
+		
+		return translated;
+	}
+
 	/**
-	 * Stretches domelement based on stretching. parentWidth, parentHeight,
-	 * elementWidth, and elementHeight are required as the elements dimensions
-	 * change as a result of the stretching. Hence, the original dimensions must
-	 * always be supplied.
-	 * 
-	 * @param {String}
-	 *            stretching
-	 * @param {DOMElement}
-	 *            domelement
-	 * @param {Number}
-	 *            parentWidth
-	 * @param {Number}
-	 *            parentHeight
-	 * @param {Number}
-	 *            elementWidth
-	 * @param {Number}
-	 *            elementHeight
+	 * Detects whether or not the current player has flash capabilities 
+	 * TODO: Add minimum flash version constraint: 9.0.115
 	 */
-	utils.stretch = function(stretching, domelement, parentWidth, parentHeight, elementWidth, elementHeight) {
-		if (!domelement) return;
-		if (!parentWidth || !parentHeight || !elementWidth || !elementHeight) return;
-		
-		var xscale = parentWidth / elementWidth,
-			yscale = parentHeight / elementHeight,
-			xoff = 0, yoff = 0,
-			style = {},
-			video = (domelement.tagName.toLowerCase() == "video"),
-			transform = false,
-			stretchClass;
-		
-		if (video) {
-			utils.transform(domelement);
+	utils.hasFlash = function() {
+		if (typeof navigator.plugins != "undefined" && typeof navigator.plugins['Shockwave Flash'] != "undefined") {
+			return true;
 		}
+		if (typeof WINDOW.ActiveXObject != "undefined") {
+			try {
+				new ActiveXObject("ShockwaveFlash.ShockwaveFlash");
+				return true
+			} catch (err) {
+			}
+		}
+		return false;
+	};
 
-		stretchClass = "jw" + stretching.toLowerCase();
-		
-		switch (stretching.toLowerCase()) {
-		case _stretching.FILL:
-			if (xscale > yscale) {
-				elementWidth = elementWidth * xscale;
-				elementHeight = elementHeight * xscale;
-			} else {
-				elementWidth = elementWidth * yscale;
-				elementHeight = elementHeight * yscale;
-			}
-		case _stretching.NONE:
-			xscale = yscale = 1;
-		case _stretching.EXACTFIT:
-	        transform = true;
-			break;
-		case _stretching.UNIFORM:
-			if (xscale > yscale) {
-				elementWidth = elementWidth * yscale;
-				elementHeight = elementHeight * yscale;
-				if (elementWidth / parentWidth > 0.95) {
-					transform = true;
-					stretchClass = "jwexactfit";
-					xscale = Math.ceil(100 * parentWidth / elementWidth) / 100;
-					yscale = 1;
-				}
-			} else {
-				elementWidth = elementWidth * xscale;
-				elementHeight = elementHeight * xscale;
-				if (elementHeight / parentHeight > 0.95) {
-					transform = true;
-					stretchClass = "jwexactfit";
-					yscale = Math.ceil(100 * parentHeight / elementHeight) / 100;
-					xscale = 1;
-				}
-			}
-			break;
-		default:
-			return;
-			break;
-		}
 
-		if (video) {
-			if (transform) {
-				domelement.style.width = elementWidth + "px";
-				domelement.style.height = elementHeight + "px"; 
-				xoff = ((parentWidth - elementWidth) / 2) / xscale;
-				yoff = ((parentHeight - elementHeight) / 2) / yscale;
-				utils.transform(domelement, xscale, yscale, xoff, yoff);
-			} else {
-				domelement.style.width = "";
-				domelement.style.height = "";
-			}
-		} else {
-			domelement.className = domelement.className.replace(/\s*jw(none|exactfit|uniform|fill)/g, "");
-			domelement.className += " " + stretchClass;
+	/** Wraps an HTML element with another element * */
+	utils.wrap = function(originalElement, appendedElement) {
+		if (originalElement.parentNode) {
+			originalElement.parentNode.replaceChild(appendedElement, originalElement);
 		}
+		appendedElement.appendChild(originalElement);
 	};
 	
-	/** Stretching options **/
-	var _stretching = utils.stretching = {
-		NONE : "none",
-		FILL : "fill",
-		UNIFORM : "uniform",
-		EXACTFIT : "exactfit"
-	};
+	/** Finds the location of jwplayer.js and returns the path **/
+	utils.getScriptPath = function(scriptName) {
+		var scripts = DOCUMENT.getElementsByTagName("script");
+		for (var i=0; i<scripts.length; i++) {
+			var src = scripts[i].src;
+			if (src && src.indexOf(scriptName) >= 0) {
+				return src.substr(0, src.indexOf(scriptName));
+			}
+		}
+		return "";
+	}
 
 })(jwplayer);

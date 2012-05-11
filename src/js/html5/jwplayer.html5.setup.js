@@ -15,7 +15,7 @@
  * @version 6.0
  */
 (function(html5) {
-	var _jw = jwplayer, _utils = _jw.utils, _events = _jw.events,
+	var _jw = jwplayer, utils = _jw.utils, events = _jw.events, playlist = _jw.playlist,
 	
 		PARSE_CONFIG = 1,
 		LOAD_SKIN = 2,
@@ -32,7 +32,7 @@
 			_completed = {},
 			_depends = {},
 			_skin,
-			_eventDispatcher = new _events.eventdispatcher(),
+			_eventDispatcher = new events.eventdispatcher(),
 			_errorState = false,
 			_queue = [];
 			
@@ -98,15 +98,15 @@
 		}
 		
 		function _loadPlaylist() {
-			switch(_utils.typeOf(_model.config.playlist)) {
+			switch(utils.typeOf(_model.config.playlist)) {
 			case "string":
 				var loader = new html5.playlistloader();
-				loader.addEventListener(_events.JWPLAYER_PLAYLIST_LOADED, _playlistLoaded);
-				loader.addEventListener(_events.JWPLAYER_ERROR, _playlistError);
+				loader.addEventListener(events.JWPLAYER_PLAYLIST_LOADED, _playlistLoaded);
+				loader.addEventListener(events.JWPLAYER_ERROR, _playlistError);
 				loader.load(_model.config.playlist);
 				break;
 			case "array":
-				_model.playlist = new html5.playlist(_model.config.playlist);
+				_model.playlist = new playlist(_model.config.playlist);
 				_taskComplete(LOAD_PLAYLIST);
 			}
 		}
@@ -147,16 +147,16 @@
 		}
 
 		function _sendReady() {
-			_eventDispatcher.sendEvent(_events.JWPLAYER_READY);
+			_eventDispatcher.sendEvent(events.JWPLAYER_READY);
 			_taskComplete(SEND_READY);
 		}
 		
 		function _error(message) {
 			_errorState = true;
-			_eventDispatcher.sendEvent(_events.JWPLAYER_ERROR, {message: message});		
+			_eventDispatcher.sendEvent(events.JWPLAYER_ERROR, {message: message});		
 		}
 		
-		_utils.extend(this, _eventDispatcher);
+		utils.extend(this, _eventDispatcher);
 		
 		this.start = _nextTask;
 		

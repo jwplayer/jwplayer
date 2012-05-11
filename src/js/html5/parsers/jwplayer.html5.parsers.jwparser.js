@@ -27,11 +27,11 @@
 			var node = obj.childNodes[i];
 			if (node.prefix == PREFIX) {
 				var _localName = _parsers.localName(node);
-				itm[_localName] = jwplayer.utils.strings.serialize(_parsers.textContent(node));
-				if (_localName == "file" && itm.levels) {
-					// jwplayer namespace file should override existing level
+				itm[_localName] = jwplayer.utils.serialize(_parsers.textContent(node));
+				if (_localName == "file" && itm.sources) {
+					// jwplayer namespace file should override existing source
 					// (probably set in MediaParser)
-					delete itm.levels;
+					delete itm.sources;
 				}
 			}
 			if (!itm['file']) {

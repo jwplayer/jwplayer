@@ -6,8 +6,8 @@
  * version 6.0
  */
 (function(parsers) {
-	var _strings = jwplayer.utils.strings,
-		_xmlAttribute = _strings.xmlAttribute,
+	var utils = jwplayer.utils,
+		_xmlAttribute = utils.xmlAttribute,
 		_localName = parsers.localName,
 		_textContent = parsers.textContent,
 		_numChildren = parsers.numChildren;
@@ -36,24 +36,20 @@
 					case 'content':
 						itm['file'] = _xmlAttribute(node, 'url');
 						if (_xmlAttribute(node, 'duration')) {
-							itm['duration'] = _strings.seconds(_xmlAttribute(node, 'duration'));
-						}
-						if (_xmlAttribute(node, 'start')) {
-							itm['start'] = _strings.seconds(_xmlAttribute(node, 'start'));
+							itm['duration'] = utils.seconds(_xmlAttribute(node, 'duration'));
 						}
 						if (_numChildren(node) > 0) {
 							itm = mediaparser.parseGroup(node, itm);
 						}
-						if (_xmlAttribute(node, 'width')
-								|| _xmlAttribute(node, 'bitrate')
-								|| _xmlAttribute(node, 'url')) {
-							if (!itm.levels) {
-								itm.levels = [];
+						if (_xmlAttribute(node, 'url')) {
+							if (!itm.sources) {
+								itm.sources = [];
 							}
-							itm.levels.push({
+							itm.sources.push({
+								file: _xmlAttribute(node, 'url'),
+								type: _xmlAttribute(node, 'type'),
 								width: _xmlAttribute(node, 'width'),
-								bitrate: _xmlAttribute(node, 'bitrate'),
-								file: _xmlAttribute(node, 'url')
+								label: _xmlAttribute(node, 'height') ? _xmlAttribute(node, 'height') + "p" : undefined
 							});
 						}
 						break;
@@ -63,14 +59,11 @@
 					case 'description':
 						itm['description'] = _textContent(node);
 						break;
-					case 'keywords':
-						itm['tags'] = _textContent(node);
+					case 'guid':
+						itm['mediaid'] = _textContent(node);
 						break;
 					case 'thumbnail':
 						itm['image'] = _xmlAttribute(node, 'url');
-						break;
-					case 'credit':
-						itm['author'] = _textContent(node);
 						break;
 					case 'player':
 						var url = node.url;
