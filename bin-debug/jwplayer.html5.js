@@ -312,10 +312,11 @@
 		JW_CSS_BLOCK = "block",
 		JW_CSS_INLINE = "inline",
 		JW_CSS_INLINE_BLOCK = "inline-block",
+		JW_CSS_HIDDEN = "hidden",
 		JW_CSS_LEFT = "left",
 		JW_CSS_RIGHT = "right",
 		JW_CSS_100PCT = "100%",
-		JW_CSS_SMOOTH_EASE = "width .25s linear, left .25s linear, opacity .25s, background .25s",
+		JW_CSS_SMOOTH_EASE = "width .25s linear, left .25s linear, opacity .25s, background .25s, visibility .25s",
 		
 		CB_CLASS = '.jwcontrolbar',
 		
@@ -453,9 +454,9 @@
 
 			_skin = _api.skin;
 			
-			_settings = _utils.extend({}, _defaults, _skin.getComponentSettings('controlbar'), config);
 			_layout = _skin.getComponentLayout('controlbar');
 			if (!_layout) _layout = _defaults.layout;
+			_utils.clearCss('#'+_id);
 			_createStyles();
 			_buildControlbar();
 			_addEventListeners();
@@ -564,7 +565,7 @@
 		 * Styles specific to this controlbar/skin
 		 */
 		function _createStyles() {
-			_utils.clearCss('#'+_id);
+			_settings = _utils.extend({}, _defaults, _skin.getComponentSettings('controlbar'), config);
 
 			_css('#'+_id, {
 		  		height: _getSkinElement("background").height,
@@ -803,7 +804,7 @@
 
 			var capLeft = _buildImage(name + "SliderCapLeft");
 			var capRight = _buildImage(name + "SliderCapRight");
-			if (capRight) capRight.className += " jwcapRight";
+			//if (capRight) capRight.className += " jwcapRight";
 
 			var rail = _buildSliderRail(name);
 			
@@ -974,6 +975,7 @@
 		}
 
 		var _resize = this.resize = function(width, height) {
+			_createStyles();
 			_css(_internalSelector('.jwgroup.jwcenter'), {
 				left: Math.round(_utils.parseDimension(_groups.left.offsetWidth) + _getSkinElement("capLeft").width),
 				right: Math.round(_utils.parseDimension(_groups.right.offsetWidth) + _getSkinElement("capRight").width)
@@ -1031,11 +1033,13 @@
 		}
 		
 		this.show = function() {
-			_css(_internalSelector(), { opacity: 1 });
+//			_css(_internalSelector(), { opacity: 1 });
+			_css(_internalSelector(), { opacity: 1, visibility: "visible" });
 		}
 		
 		this.hide = function() {
-			_css(_internalSelector(), { opacity: 0 });
+//			_css(_internalSelector(), { opacity: 0 });
+			_css(_internalSelector(), { opacity: 0, visibility: JW_CSS_HIDDEN });
 		}
 		
 		// Call constructor
@@ -1050,8 +1054,8 @@
 
 	_css(CB_CLASS, {
 		position: JW_CSS_ABSOLUTE,
-		overflow: 'hidden',
-		opacity: 0,
+		overflow: JW_CSS_HIDDEN,
+		visibility: JW_CSS_HIDDEN,
     	'-webkit-transition': JW_CSS_SMOOTH_EASE,
     	'-moz-transition': JW_CSS_SMOOTH_EASE,
     	'-o-transition': JW_CSS_SMOOTH_EASE
@@ -1092,7 +1096,7 @@
     	'-o-transition': JW_CSS_SMOOTH_EASE
     });
     
-    _css(CB_CLASS+' .jwcapRight', { 
+    _css(CB_CLASS+' .jwcapRight,'+CB_CLASS+' .jwtimeSliderCapRight,'+CB_CLASS+' .jwvolumeSliderCapRight', { 
 		right: 0,
 		position: JW_CSS_ABSOLUTE
 	});
@@ -1103,8 +1107,6 @@
     	width: JW_CSS_100PCT,
     	left: 0
     });
-    
-   
     
     _css(CB_CLASS+' .jwrail,' + CB_CLASS + ' .jwthumb', {
     	position: JW_CSS_ABSOLUTE,
@@ -1459,14 +1461,8 @@
 		D_PREVIEW_CLASS = ".jwpreview",
 
 		/** Some CSS constants we should use for minimization **/
-		//JW_CSS_RELATIVE = "relative",
 		JW_CSS_ABSOLUTE = "absolute",
 		JW_CSS_NONE = "none",
-		//JW_CSS_BLOCK = "block",
-		//JW_CSS_INLINE = "inline",
-		//JW_CSS_INLINE_BLOCK = "inline-block",
-		//JW_CSS_LEFT = "left",
-		//JW_CSS_RIGHT = "right",
 		JW_CSS_100PCT = "100%",
 		JW_CSS_SMOOTH_EASE = "opacity .25s";
 
@@ -1670,9 +1666,11 @@
 			_imageWidth = this.width;
 			_imageHeight = this.height;
 			_resize();
-			_css(_internalSelector(D_PREVIEW_CLASS), {
-				'background-image': _image ? ('url('+_image+')') : '',
-			});
+			if (_image) {
+				_css(_internalSelector(D_PREVIEW_CLASS), {
+					'background-image': 'url('+_image+')' 
+				});
+			}
 		}
 
 		function _getSkinElement(name) {
@@ -1731,8 +1729,7 @@
 		position: JW_CSS_ABSOLUTE,
 		width: JW_CSS_100PCT,
 		height: JW_CSS_100PCT,
-		'background-repeat': 'no-repeat',
-		'background-position': 'center',
+		background: 'no-repeat center',
 		overflow: 'hidden'
 	});
 
@@ -2116,7 +2113,7 @@
 			// Defaults
 			_defaults = {
 				autostart: false,
-				controls: true,
+				controlbar: true,
 				debug: UNDEF,
 				height: 320,
 				icons: true,
@@ -2392,7 +2389,8 @@
 	
 	/** Some CSS constants we should use for minimization **/
 	JW_CSS_ABSOLUTE = "absolute",
-	JW_CSS_NONE = "none",
+	JW_CSS_RELATIVE = "relative",
+	JW_CSS_HIDDEN = "hidden",
 	JW_CSS_100PCT = "100%";
 	
 	html5.playlistcomponent = function(api, config) {
@@ -2413,7 +2411,7 @@
 				'itemImage': undefined,
 				'itemActive': undefined
 			};
-		
+
 		this.getDisplayElement = function() {
 			return _wrapper;
 		};
@@ -2456,15 +2454,13 @@
 				fontsize = _settings.fontsize
 
 			_utils.clearCss(_internalSelector());
-				
+
+			
 			_css(_internalSelector("jwlist"), {
-		    	'background-color': _settings.backgroundcolor,
-		    	'background-image': _elements.background ? "url("+_elements.background.src+")" : "",
+				'background-image': _elements.background ? " url("+_elements.background.src+")" : "",
+				'background-color':	_settings.backgroundcolor, 
 		    	color: _settings.fontcolor,
-		    	'font-family': _fonts[_settings.font] ? _fonts[_settings.font] : _fonts['_sans'],
-		    	'font-size': (fontsize ? fontsize : 11) + "px",
-		    	'font-style': _settings.fontstyle,
-		    	'font-weight': _settings.fontweight
+		    	font: _settings.fontweight + " " + _settings.fontstyle + " " + (fontsize ? fontsize : 11) + "px " + (_fonts[_settings.font] ? _fonts[_settings.font] : _fonts['_sans'])  
 			});
 			
         	if (_elements.itemImage) {
@@ -2503,7 +2499,7 @@
 			_css(_internalSelector("jwtextwrapper"), {
 				padding: "5px 5px 0 " + (imgPos ? 0 : "5px"),
 				height: itemheight - 5,
-				position: "relative"
+				position: JW_CSS_RELATIVE
 			});
 			
 			_css(_internalSelector("jwtitle"), {
@@ -2521,7 +2517,7 @@
 	        	'line-height': fontsize ? fontsize + 4 : 16,
 	        	overflow: 'hidden',
 	        	height: itemheight,
-	        	position: "relative"
+	        	position: JW_CSS_RELATIVE
 	    	});
 
 			_css(_internalSelector("jwduration"), {
@@ -2675,19 +2671,19 @@
 	/** Global playlist styles **/
 
 	_css(PL_CLASS, {
-		overflow: 'hidden',
-		position: 'absolute',
+		overflow: JW_CSS_HIDDEN,
+		position: JW_CSS_ABSOLUTE,
 	    width: JW_CSS_100PCT,
 		height: JW_CSS_100PCT
 	});
 
 	_css(PL_CLASS + ' .jwplaylistimg', {
-		position: "relative",
+		position: JW_CSS_RELATIVE,
 	    width: JW_CSS_100PCT,
 	    'float': 'left',
 	    margin: '0 5px 0 0',
-		background: 'black',
-		overflow: 'hidden'
+		background: "#000",
+		overflow: JW_CSS_HIDDEN
 	});
 
 	_css(PL_CLASS+' .jwlist', {
@@ -2704,7 +2700,7 @@
 	});
 
 	_css(PL_CLASS+' .jwtextwrapper', {
-		overflow: "hidden"
+		overflow: JW_CSS_HIDDEN
 	});
 
 
@@ -3575,7 +3571,9 @@
 			
 			_controlbar,
 			_display,
-			_playlist;
+			_playlist,
+			
+			_audioMode;
 
 		this.setup = function(skin) {
 			_api.skin = skin;
@@ -3662,30 +3660,21 @@
 				cbSettings = _model.componentConfig('controlbar');
 				displaySettings = _model.componentConfig('display');
 		
-			if (height > 40 || height.indexOf("%")) {
-				_display = new html5.display(_api, displaySettings);
-				_controlsLayer.appendChild(_display.getDisplayElement());
-				displaySettings.backgroundcolor = _display.getBGColor();
-			} else {
-				displaySettings.backgroundcolor = 'transparent';
-				cbSettings.margin = 0;
-			}
-			_css(_internalSelector(), {
-				'background-color': displaySettings.backgroundcolor
-			});
+			_display = new html5.display(_api, displaySettings);
+			_controlsLayer.appendChild(_display.getDisplayElement());
 			
 			if (_model.playlistsize > 0 && _model.playlistposition && _model.playlistposition != "none") {
 				_playlist = new html5.playlistcomponent(_api, {});
 				_playlistLayer.appendChild(_playlist.getDisplayElement());
 			}
 
-			_resize(width, height);
-
 			if (!_utils.isMobile()) {
 				// TODO: allow override for showing HTML controlbar on iPads
 				_controlbar = new html5.controlbar(_api, cbSettings);
 				_controlsLayer.appendChild(_controlbar.getDisplayElement());
 			}
+			
+			_resize(width, height);
 		}
 
 		/** 
@@ -3763,9 +3752,29 @@
 				_css(_internalSelector(VIEW_MAIN_CONTAINER_CLASS), containerStyle);
 			}
 			
+			_checkAudioMode(height);
 			_resizeMedia();
 
 			return;
+		}
+		
+		function _checkAudioMode(height) {
+			if (!_controlbar) return;
+			_audioMode = (height <= 40 && height.toString().indexOf("%") < 0); 
+			if (_audioMode) {
+				_model.componentConfig('controlbar').margin = 0;
+				_controlbar.resize();
+				_showControlbar();
+				_hideDisplay();
+				_showVideo(false);
+			} else {
+				_showControlbar();
+				_showDisplay();
+				_showVideo(true);
+			}
+			_css(_internalSelector(), {
+				'background-color': _audioMode ? 'transparent' : _display.getBGColor()
+			});
 		}
 		
 		function _resizeMedia() {
@@ -3832,13 +3841,16 @@
 		}
 		
 		function _showControlbar() {
-			if (_controlbar && _model.controls) _controlbar.show();
+			if (_controlbar && _model.controlbar) _controlbar.show();
 		}
 		function _hideControlbar() {
-			if (_controlbar) _controlbar.hide();
+			if (_controlbar && !_audioMode) {
+				_controlbar.hide();
+//				_setTimeout(function() { _controlbar.style.display="none")
+			}
 		}
 		function _showDisplay() {
-			if (_display) _display.show();
+			if (_display && !_audioMode) _display.show();
 		}
 		function _hideDisplay() {
 			if (_display) _display.hide();
@@ -3853,7 +3865,15 @@
 			_showControlbar();
 			_showDisplay();
 		}
-
+		
+		function _showVideo(state) {
+			state = state && !_audioMode;
+			_css(_internalSelector(VIEW_VIDEO_CONTAINER_CLASS), {
+				visibility: state ? "visible" : "hidden",
+				opacity: state ? 1 : 0
+			});
+		}
+		
 		/**
 		 * Player state handler
 		 */
@@ -3867,20 +3887,15 @@
 		}
 		
 		function _updateState(state) {
-			var vidstyle = {};
 			switch(state) {
 			case _states.PLAYING:
-				if (_utils.isIPod()) vidstyle.display = "block";
-				vidstyle.opacity = 1;
-				_css(_internalSelector(VIEW_VIDEO_CONTAINER_CLASS), vidstyle);
+				_showVideo(true);
 				_resizeMedia();
 				_startFade();
 				break;
 			case _states.COMPLETED:
 			case _states.IDLE:
-				if (_utils.isIPod()) vidstyle.display = "none";
-				vidstyle.opacity = 0;
-				_css(_internalSelector(VIEW_VIDEO_CONTAINER_CLASS), vidstyle);
+				_showVideo(false);
 				_hideControlbar();
 				_showDisplay();
 				break;
@@ -3929,7 +3944,6 @@
 
 	var JW_CSS_SMOOTH_EASE = "opacity .5s ease",
 		JW_CSS_100PCT = "100%",
-		//JW_CSS_RELATIVE = "relative",
 		JW_CSS_ABSOLUTE = "absolute",
 		JW_CSS_IMPORTANT = " !important";
 

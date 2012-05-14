@@ -35,7 +35,9 @@
 			
 			_controlbar,
 			_display,
-			_playlist;
+			_playlist,
+			
+			_audioMode;
 
 		this.setup = function(skin) {
 			_api.skin = skin;
@@ -122,30 +124,21 @@
 				cbSettings = _model.componentConfig('controlbar');
 				displaySettings = _model.componentConfig('display');
 		
-			if (height > 40 || height.indexOf("%")) {
-				_display = new html5.display(_api, displaySettings);
-				_controlsLayer.appendChild(_display.getDisplayElement());
-				displaySettings.backgroundcolor = _display.getBGColor();
-			} else {
-				displaySettings.backgroundcolor = 'transparent';
-				cbSettings.margin = 0;
-			}
-			_css(_internalSelector(), {
-				'background-color': displaySettings.backgroundcolor
-			});
+			_display = new html5.display(_api, displaySettings);
+			_controlsLayer.appendChild(_display.getDisplayElement());
 			
 			if (_model.playlistsize > 0 && _model.playlistposition && _model.playlistposition != "none") {
 				_playlist = new html5.playlistcomponent(_api, {});
 				_playlistLayer.appendChild(_playlist.getDisplayElement());
 			}
 
-			_resize(width, height);
-
 			if (!_utils.isMobile()) {
 				// TODO: allow override for showing HTML controlbar on iPads
 				_controlbar = new html5.controlbar(_api, cbSettings);
 				_controlsLayer.appendChild(_controlbar.getDisplayElement());
 			}
+			
+			_resize(width, height);
 		}
 
 		/** 
@@ -223,9 +216,29 @@
 				_css(_internalSelector(VIEW_MAIN_CONTAINER_CLASS), containerStyle);
 			}
 			
+			_checkAudioMode(height);
 			_resizeMedia();
 
 			return;
+		}
+		
+		function _checkAudioMode(height) {
+			if (!_controlbar) return;
+			_audioMode = (height <= 40 && height.toString().indexOf("%") < 0); 
+			if (_audioMode) {
+				_model.componentConfig('controlbar').margin = 0;
+				_controlbar.resize();
+				_showControlbar();
+				_hideDisplay();
+				_showVideo(false);
+			} else {
+				_showControlbar();
+				_showDisplay();
+				_showVideo(true);
+			}
+			_css(_internalSelector(), {
+				'background-color': _audioMode ? 'transparent' : _display.getBGColor()
+			});
 		}
 		
 		function _resizeMedia() {
@@ -292,13 +305,16 @@
 		}
 		
 		function _showControlbar() {
-			if (_controlbar && _model.controls) _controlbar.show();
+			if (_controlbar && _model.controlbar) _controlbar.show();
 		}
 		function _hideControlbar() {
-			if (_controlbar) _controlbar.hide();
+			if (_controlbar && !_audioMode) {
+				_controlbar.hide();
+//				_setTimeout(function() { _controlbar.style.display="none")
+			}
 		}
 		function _showDisplay() {
-			if (_display) _display.show();
+			if (_display && !_audioMode) _display.show();
 		}
 		function _hideDisplay() {
 			if (_display) _display.hide();
@@ -313,7 +329,15 @@
 			_showControlbar();
 			_showDisplay();
 		}
-
+		
+		function _showVideo(state) {
+			state = state && !_audioMode;
+			_css(_internalSelector(VIEW_VIDEO_CONTAINER_CLASS), {
+				visibility: state ? "visible" : "hidden",
+				opacity: state ? 1 : 0
+			});
+		}
+		
 		/**
 		 * Player state handler
 		 */
@@ -327,20 +351,15 @@
 		}
 		
 		function _updateState(state) {
-			var vidstyle = {};
 			switch(state) {
 			case _states.PLAYING:
-				if (_utils.isIPod()) vidstyle.display = "block";
-				vidstyle.opacity = 1;
-				_css(_internalSelector(VIEW_VIDEO_CONTAINER_CLASS), vidstyle);
+				_showVideo(true);
 				_resizeMedia();
 				_startFade();
 				break;
 			case _states.COMPLETED:
 			case _states.IDLE:
-				if (_utils.isIPod()) vidstyle.display = "none";
-				vidstyle.opacity = 0;
-				_css(_internalSelector(VIEW_VIDEO_CONTAINER_CLASS), vidstyle);
+				_showVideo(false);
 				_hideControlbar();
 				_showDisplay();
 				break;
@@ -389,7 +408,6 @@
 
 	var JW_CSS_SMOOTH_EASE = "opacity .5s ease",
 		JW_CSS_100PCT = "100%",
-		//JW_CSS_RELATIVE = "relative",
 		JW_CSS_ABSOLUTE = "absolute",
 		JW_CSS_IMPORTANT = " !important";
 

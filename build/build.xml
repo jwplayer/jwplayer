@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="jwplayer" basedir="../" default="release-js">
+<project name="jwplayer" basedir="../" default="build-all">
 	<!-- Define variables/paths used in this build script -->
 	<property file="./build/build.properties" />
 
@@ -116,10 +116,6 @@
 			<arg line="-compiler.library-path '${lib.dir}'" />
 
 			<arg line="-default-background-color=0x000000" />
-
-			<!-- Include locale-specific items in the path -->
-			<arg line="-locale ${flexsdk.locale}" />
-			<arg line="-compiler.library-path '${flexsdk.locale.dir}'" />
 
 			<!-- Enable incremental compilation -->
 			<arg line="${incrementLine}" />

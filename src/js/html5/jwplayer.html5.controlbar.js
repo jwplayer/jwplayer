@@ -25,10 +25,11 @@
 		JW_CSS_BLOCK = "block",
 		JW_CSS_INLINE = "inline",
 		JW_CSS_INLINE_BLOCK = "inline-block",
+		JW_CSS_HIDDEN = "hidden",
 		JW_CSS_LEFT = "left",
 		JW_CSS_RIGHT = "right",
 		JW_CSS_100PCT = "100%",
-		JW_CSS_SMOOTH_EASE = "width .25s linear, left .25s linear, opacity .25s, background .25s",
+		JW_CSS_SMOOTH_EASE = "width .25s linear, left .25s linear, opacity .25s, background .25s, visibility .25s",
 		
 		CB_CLASS = '.jwcontrolbar',
 		
@@ -166,9 +167,9 @@
 
 			_skin = _api.skin;
 			
-			_settings = _utils.extend({}, _defaults, _skin.getComponentSettings('controlbar'), config);
 			_layout = _skin.getComponentLayout('controlbar');
 			if (!_layout) _layout = _defaults.layout;
+			_utils.clearCss('#'+_id);
 			_createStyles();
 			_buildControlbar();
 			_addEventListeners();
@@ -277,7 +278,7 @@
 		 * Styles specific to this controlbar/skin
 		 */
 		function _createStyles() {
-			_utils.clearCss('#'+_id);
+			_settings = _utils.extend({}, _defaults, _skin.getComponentSettings('controlbar'), config);
 
 			_css('#'+_id, {
 		  		height: _getSkinElement("background").height,
@@ -516,7 +517,7 @@
 
 			var capLeft = _buildImage(name + "SliderCapLeft");
 			var capRight = _buildImage(name + "SliderCapRight");
-			if (capRight) capRight.className += " jwcapRight";
+			//if (capRight) capRight.className += " jwcapRight";
 
 			var rail = _buildSliderRail(name);
 			
@@ -687,6 +688,7 @@
 		}
 
 		var _resize = this.resize = function(width, height) {
+			_createStyles();
 			_css(_internalSelector('.jwgroup.jwcenter'), {
 				left: Math.round(_utils.parseDimension(_groups.left.offsetWidth) + _getSkinElement("capLeft").width),
 				right: Math.round(_utils.parseDimension(_groups.right.offsetWidth) + _getSkinElement("capRight").width)
@@ -744,11 +746,13 @@
 		}
 		
 		this.show = function() {
-			_css(_internalSelector(), { opacity: 1 });
+//			_css(_internalSelector(), { opacity: 1 });
+			_css(_internalSelector(), { opacity: 1, visibility: "visible" });
 		}
 		
 		this.hide = function() {
-			_css(_internalSelector(), { opacity: 0 });
+//			_css(_internalSelector(), { opacity: 0 });
+			_css(_internalSelector(), { opacity: 0, visibility: JW_CSS_HIDDEN });
 		}
 		
 		// Call constructor
@@ -763,8 +767,8 @@
 
 	_css(CB_CLASS, {
 		position: JW_CSS_ABSOLUTE,
-		overflow: 'hidden',
-		opacity: 0,
+		overflow: JW_CSS_HIDDEN,
+		visibility: JW_CSS_HIDDEN,
     	'-webkit-transition': JW_CSS_SMOOTH_EASE,
     	'-moz-transition': JW_CSS_SMOOTH_EASE,
     	'-o-transition': JW_CSS_SMOOTH_EASE
@@ -805,7 +809,7 @@
     	'-o-transition': JW_CSS_SMOOTH_EASE
     });
     
-    _css(CB_CLASS+' .jwcapRight', { 
+    _css(CB_CLASS+' .jwcapRight,'+CB_CLASS+' .jwtimeSliderCapRight,'+CB_CLASS+' .jwvolumeSliderCapRight', { 
 		right: 0,
 		position: JW_CSS_ABSOLUTE
 	});
@@ -816,8 +820,6 @@
     	width: JW_CSS_100PCT,
     	left: 0
     });
-    
-   
     
     _css(CB_CLASS+' .jwrail,' + CB_CLASS + ' .jwthumb', {
     	position: JW_CSS_ABSOLUTE,

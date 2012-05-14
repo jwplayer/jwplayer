@@ -36,7 +36,8 @@
 	
 	/** Some CSS constants we should use for minimization **/
 	JW_CSS_ABSOLUTE = "absolute",
-	JW_CSS_NONE = "none",
+	JW_CSS_RELATIVE = "relative",
+	JW_CSS_HIDDEN = "hidden",
 	JW_CSS_100PCT = "100%";
 	
 	html5.playlistcomponent = function(api, config) {
@@ -57,7 +58,7 @@
 				'itemImage': undefined,
 				'itemActive': undefined
 			};
-		
+
 		this.getDisplayElement = function() {
 			return _wrapper;
 		};
@@ -100,15 +101,13 @@
 				fontsize = _settings.fontsize
 
 			_utils.clearCss(_internalSelector());
-				
+
+			
 			_css(_internalSelector("jwlist"), {
-		    	'background-color': _settings.backgroundcolor,
-		    	'background-image': _elements.background ? "url("+_elements.background.src+")" : "",
+				'background-image': _elements.background ? " url("+_elements.background.src+")" : "",
+				'background-color':	_settings.backgroundcolor, 
 		    	color: _settings.fontcolor,
-		    	'font-family': _fonts[_settings.font] ? _fonts[_settings.font] : _fonts['_sans'],
-		    	'font-size': (fontsize ? fontsize : 11) + "px",
-		    	'font-style': _settings.fontstyle,
-		    	'font-weight': _settings.fontweight
+		    	font: _settings.fontweight + " " + _settings.fontstyle + " " + (fontsize ? fontsize : 11) + "px " + (_fonts[_settings.font] ? _fonts[_settings.font] : _fonts['_sans'])  
 			});
 			
         	if (_elements.itemImage) {
@@ -147,7 +146,7 @@
 			_css(_internalSelector("jwtextwrapper"), {
 				padding: "5px 5px 0 " + (imgPos ? 0 : "5px"),
 				height: itemheight - 5,
-				position: "relative"
+				position: JW_CSS_RELATIVE
 			});
 			
 			_css(_internalSelector("jwtitle"), {
@@ -165,7 +164,7 @@
 	        	'line-height': fontsize ? fontsize + 4 : 16,
 	        	overflow: 'hidden',
 	        	height: itemheight,
-	        	position: "relative"
+	        	position: JW_CSS_RELATIVE
 	    	});
 
 			_css(_internalSelector("jwduration"), {
@@ -319,19 +318,19 @@
 	/** Global playlist styles **/
 
 	_css(PL_CLASS, {
-		overflow: 'hidden',
-		position: 'absolute',
+		overflow: JW_CSS_HIDDEN,
+		position: JW_CSS_ABSOLUTE,
 	    width: JW_CSS_100PCT,
 		height: JW_CSS_100PCT
 	});
 
 	_css(PL_CLASS + ' .jwplaylistimg', {
-		position: "relative",
+		position: JW_CSS_RELATIVE,
 	    width: JW_CSS_100PCT,
 	    'float': 'left',
 	    margin: '0 5px 0 0',
-		background: 'black',
-		overflow: 'hidden'
+		background: "#000",
+		overflow: JW_CSS_HIDDEN
 	});
 
 	_css(PL_CLASS+' .jwlist', {
@@ -348,7 +347,7 @@
 	});
 
 	_css(PL_CLASS+' .jwtextwrapper', {
-		overflow: "hidden"
+		overflow: JW_CSS_HIDDEN
 	});
 
 

@@ -17,14 +17,8 @@
 		D_PREVIEW_CLASS = ".jwpreview",
 
 		/** Some CSS constants we should use for minimization **/
-		//JW_CSS_RELATIVE = "relative",
 		JW_CSS_ABSOLUTE = "absolute",
 		JW_CSS_NONE = "none",
-		//JW_CSS_BLOCK = "block",
-		//JW_CSS_INLINE = "inline",
-		//JW_CSS_INLINE_BLOCK = "inline-block",
-		//JW_CSS_LEFT = "left",
-		//JW_CSS_RIGHT = "right",
 		JW_CSS_100PCT = "100%",
 		JW_CSS_SMOOTH_EASE = "opacity .25s";
 
@@ -228,9 +222,11 @@
 			_imageWidth = this.width;
 			_imageHeight = this.height;
 			_resize();
-			_css(_internalSelector(D_PREVIEW_CLASS), {
-				'background-image': _image ? ('url('+_image+')') : '',
-			});
+			if (_image) {
+				_css(_internalSelector(D_PREVIEW_CLASS), {
+					'background-image': 'url('+_image+')' 
+				});
+			}
 		}
 
 		function _getSkinElement(name) {
@@ -289,8 +285,7 @@
 		position: JW_CSS_ABSOLUTE,
 		width: JW_CSS_100PCT,
 		height: JW_CSS_100PCT,
-		'background-repeat': 'no-repeat',
-		'background-position': 'center',
+		background: 'no-repeat center',
 		overflow: 'hidden'
 	});
 
