@@ -769,6 +769,7 @@
 		position: JW_CSS_ABSOLUTE,
 		overflow: JW_CSS_HIDDEN,
 		visibility: JW_CSS_HIDDEN,
+		opacity: 0,
     	'-webkit-transition': JW_CSS_SMOOTH_EASE,
     	'-moz-transition': JW_CSS_SMOOTH_EASE,
     	'-o-transition': JW_CSS_SMOOTH_EASE

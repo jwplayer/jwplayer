@@ -35,9 +35,11 @@
 						          duration: 52,
 						          title: "Sintel Trailer" 							          
 						      }],
-		      playlistsize: 300,
 		      width: "100%",
-		      height: "100%"
+		      height: "100%",
+		      playlistsize: "375",
+		      playlistposition: "right",
+		      primary: form.mode.options[form.mode.selectedIndex].value
 		    });
 		  }
 	  </script>
@@ -47,14 +49,18 @@
 	
     <form id="form">
       skin: <select name="skin" onchange="init()">
-      	<option value="">default</option>
-      	<option value="../../../skins/beelden/beelden.xml">beelden</option>
-      	<option value="../../../skins/stormtrooper/stormtrooper.xml">stormtrooper</option>
-      	<option value="../../../skins/glow/src/glow.xml" selected>glow</option>
-      	<option value="../../../skins/five/five.xml">five</option>
-      	<option value="../../../tags/skins/snel/snel.xml">snel</option>
-      	<option value="../../../skins/stijl/stijl.xml">stijl</option>
-      	<option value="../../../skins/bekle/bekle.xml" >bekle</option>
+      	<option value="" selected>default</option>
+      	<option value="../../../skins/beelden/beelden.zip">beelden</option>
+      	<option value="../../../skins/stormtrooper/stormtrooper.zip">stormtrooper</option>
+      	<option value="../../../skins/glow/glow.zip">glow</option>
+      	<option value="../../../skins/five/five.zip">five</option>
+      	<option value="../../../tags/skins/snel/snel.zip">snel</option>
+      	<option value="../../../skins/stijl/stijl.zip">stijl</option>
+      	<option value="../../../skins/bekle/bekle.zip" >bekle</option>
+      </select>
+	  mode: <select name="mode" onchange="init()">
+      	<option value="" selected>html5</option>
+      	<option value="flash">flash</option>
       </select>
       <input type="submit" style="opacity:0; left: -10000px"/>
     </form>

@@ -42,7 +42,7 @@ package com.longtailvideo.jwplayer.model {
 		protected var _screencolor:Color	= null;
 
 		//TODO: Move to ENUM class
-		protected var _controlbar:String 	= "bottom";
+		protected var _controlbar:String 	= "over";
 		protected var _dock:Boolean 		= true;
 		protected var _height:Number 		= 400;
 		protected var _icons:Boolean 		= true;
@@ -61,7 +61,8 @@ package com.longtailvideo.jwplayer.model {
 		
 		public function PlayerConfig():void {
 			controlbar = _controlbar;
-			playlist = _playlistpos;
+			setPluginProperty('controlbar.idlehide', true); 
+			playlistposition = _playlistpos;
 			playlistsize = _playlistsize;
 			logo = _logo;
 		}
@@ -261,12 +262,12 @@ package com.longtailvideo.jwplayer.model {
 		}
 
 		/** Position of the playlist. Can be set to bottom, over, right or none. @default none **/
-		public function get playlist():String { 
+		public function get playlistposition():String { 
 			if (_pluginConfig['playlist'] && _pluginConfig['playlist'].hasOwnProperty('position'))
-				return _pluginConfig['playlist'] && _pluginConfig['playlist']['position'];
+				return _pluginConfig['playlist']['position'];
 			else return _playlistpos;
 		}
-		public function set playlist(x:String):void { 
+		public function set playlistposition(x:String):void { 
 			setPluginProperty('playlist.position', x.toLowerCase()); 
 		}
 

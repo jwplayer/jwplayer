@@ -18,7 +18,7 @@ jwplayer = function(container) {
 
 var $jw = jwplayer;
 
-jwplayer.version = '6.0.2192';
+jwplayer.version = '6.0.2196';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -1703,10 +1703,10 @@ jwplayer.source = document.createElement("source");/**
 				src: flashplayer ? flashplayer : base + "jwplayer.flash.swf" 
 			}
 		}
-		if (primary == "html5") {
-			return [modes.html5, modes.flash];
-		} else {
+		if (primary == "flash") {
 			return [modes.flash, modes.html5];
+		} else {
+			return [modes.html5, modes.flash];
 		}
 	}
 
@@ -2697,9 +2697,8 @@ jwplayer.source = document.createElement("source");/**
 		this.setup = function(options) {
 			if (jwplayer.embed) {
 				// Destroy original API on setup() to remove existing listeners
-				var newId = this.id;
 				_remove(this);
-				var newApi = jwplayer(newId);
+				var newApi = jwplayer(this.id);
 				newApi.config = options;
 				return new jwplayer.embed(newApi);
 			}
@@ -2954,17 +2953,16 @@ jwplayer.source = document.createElement("source");/**
 			}
 		}
 		if (index >= 0) {
-			var toDestroy = document.getElementById(_players[index].id);
-			if (document.getElementById(_players[index].id + "_wrapper")) {
-				toDestroy = document.getElementById(_players[index].id + "_wrapper");
+			var id = _players[index].id,
+				toDestroy = document.getElementById(id + "_wrapper");
+			
+			if (!toDestroy) {
+				toDestroy = document.getElementById(id);	
 			}
+			
 			if (toDestroy) {
 				var replacement = document.createElement('div');
-				var newId = toDestroy.id;
-				if (toDestroy.id.indexOf("_wrapper") == toDestroy.id.length - 8) {
-					newID = toDestroy.id.substring(0, toDestroy.id.length - 8);
-				}
-				replacement.setAttribute('id', newId);
+				replacement.id = id;
 				toDestroy.parentNode.replaceChild(replacement, toDestroy);
 			}
 			_players.splice(index, 1);

@@ -3,7 +3,6 @@ package com.longtailvideo.jwplayer.view {
 	import com.longtailvideo.jwplayer.player.IPlayer;
 	import com.longtailvideo.jwplayer.plugins.PluginConfig;
 	import com.longtailvideo.jwplayer.view.components.ControlbarComponent;
-	import com.longtailvideo.jwplayer.view.components.ControlbarComponentV4;
 	import com.longtailvideo.jwplayer.view.components.DisplayComponent;
 	import com.longtailvideo.jwplayer.view.components.DockComponent;
 	import com.longtailvideo.jwplayer.view.components.PlaylistComponent;
@@ -13,8 +12,6 @@ package com.longtailvideo.jwplayer.view {
 	import com.longtailvideo.jwplayer.view.interfaces.IPlayerComponent;
 	import com.longtailvideo.jwplayer.view.interfaces.IPlaylistComponent;
 	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
-	import com.longtailvideo.jwplayer.view.skins.SWFSkin;
-	
 	
 	public class PlayerComponents implements IPlayerComponents {
 		private var _controlbar:IControlbarComponent;
@@ -25,7 +22,6 @@ package com.longtailvideo.jwplayer.view {
 		private var _skin:ISkin;
 		private var _player:IPlayer;
 		
-		
 		/**
 		 * @inheritDoc
 		 */
@@ -33,11 +29,7 @@ package com.longtailvideo.jwplayer.view {
 			_player = player;
 			_skin = player.skin;
 			_config = player.config;
-			if (_skin is SWFSkin) {
-				_controlbar = new ControlbarComponentV4(_player);
-			} else {
-				_controlbar = new ControlbarComponent(_player);
-			}
+			_controlbar = new ControlbarComponent(_player);
 			_display = new DisplayComponent(_player);
 			_playlist = new PlaylistComponent(_player);
 			_dock = new DockComponent(_player);

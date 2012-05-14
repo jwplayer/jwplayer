@@ -218,8 +218,8 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		/** Show above controlbar on mousemove or keyboard press and restart the countdown. **/
 		private function moveHandler(evt:Event=null):void {
-			stopFader();
-			if (_player.state == PlayerState.BUFFERING || _player.state == PlayerState.PLAYING || hideOnIdle) {
+			if (_player.state != PlayerState.IDLE) {
+				stopFader();
 				startFader();
 			}
 		}
@@ -240,7 +240,7 @@ package com.longtailvideo.jwplayer.view.components {
 		/** If the mouse leaves the stage, hide the controlbar if position is 'over' **/
 		private function mouseLeftStage(evt:Event=null):void {
 			if (fadeOnTimeout && !hidden) {
-				if (_player.state == PlayerState.BUFFERING || _player.state == PlayerState.PLAYING || hideOnIdle) {
+				if (_player.state != PlayerState.IDLE) {
 					if (evt) { sendHide(); }
 					animations.fade(0);
 				}
@@ -251,9 +251,9 @@ package com.longtailvideo.jwplayer.view.components {
 			switch(_player.state) {
 				case PlayerState.BUFFERING:
 				case PlayerState.PLAYING:
+				case PlayerState.PAUSED:
 					startFader();
 					break;
-				case PlayerState.PAUSED:
 				case PlayerState.IDLE:
 					if (hideOnIdle) {
 						mouseLeftStage();
@@ -332,7 +332,7 @@ package com.longtailvideo.jwplayer.view.components {
 			} else {
 				hideButton('pause');
 			}
-			if (!getConfigParam('forcenextprev') && (player.playlist.length <= 1 || player.config.playlist.toLowerCase() != "none")) {
+			if (!getConfigParam('forcenextprev') && (player.playlist.length <= 1 || player.config.playlistposition.toLowerCase() != "none")) {
 //				newLayout = newLayout.replace("|prev|next", "");
 				newLayout = newLayout.replace(/\|?(prev|next)/g, "");
 				hideButton('prev');

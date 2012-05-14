@@ -4,7 +4,6 @@ package com.longtailvideo.jwplayer.model {
 	import com.longtailvideo.jwplayer.events.PlayerEvent;
 	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
 	import com.longtailvideo.jwplayer.media.HTTPMediaProvider;
-	import com.longtailvideo.jwplayer.media.ImageMediaProvider;
 	import com.longtailvideo.jwplayer.media.MediaProvider;
 	import com.longtailvideo.jwplayer.media.RTMPMediaProvider;
 	import com.longtailvideo.jwplayer.media.SoundMediaProvider;
@@ -157,7 +156,6 @@ package com.longtailvideo.jwplayer.model {
 			setMediaProvider('http', new HTTPMediaProvider());
 			setMediaProvider('rtmp', new RTMPMediaProvider());
 			setMediaProvider('sound', new SoundMediaProvider());
-			setMediaProvider('image', new ImageMediaProvider());
 			setMediaProvider('youtube', new YouTubeMediaProvider());
 
 			setActiveMediaProvider('default');

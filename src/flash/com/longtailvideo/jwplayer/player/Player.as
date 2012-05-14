@@ -82,7 +82,7 @@
 			controller.removeEventListener(PlayerEvent.JWPLAYER_READY, playerReady);
 			
 			// Initialize Javascript interface
-			var jsAPI:JavascriptAPI = new JavascriptCompatibilityAPI(this);
+			var jsAPI:JavascriptAPI = new JavascriptAPI(this);
 			
 			// Forward all MVC events
 			model.addGlobalListener(forward);

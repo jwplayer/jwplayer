@@ -8,7 +8,6 @@ package com.longtailvideo.jwplayer.view.components {
 	import com.longtailvideo.jwplayer.utils.Logger;
 	import com.longtailvideo.jwplayer.utils.RootReference;
 	import com.longtailvideo.jwplayer.view.interfaces.IDockComponent;
-	import com.longtailvideo.jwplayer.view.skins.SWFSkin;
 	
 	import flash.accessibility.AccessibilityProperties;
 	import flash.display.DisplayObject;
@@ -73,9 +72,6 @@ package com.longtailvideo.jwplayer.view.components {
 			var button:DockButton = new DockButton();
 			if (name) {
 				button.name = name;
-			}
-			if (_player.skin is SWFSkin) {
-				button.colorize = true;
 			}
 			var acs:AccessibilityProperties = new AccessibilityProperties();
 			acs.name = (name ? name : icon.name);

@@ -160,12 +160,49 @@
 		<condition property="jsmatch" value="jwplayer\.version = '(.*)'\;" else="@%%@">
 			<equals arg1="${execresult}" arg2="0" />
 		</condition>
+		<condition property="html5match" value="jwplayer\.html5\.version = '(.*)'\;" else="@%%@">
+			<equals arg1="${execresult}" arg2="0" />
+		</condition>
 		<condition property="flashmatch" value="protected static var _version\:String \= '(.*)';" else="@%%@">
 			<equals arg1="${execresult}" arg2="0" />
 		</condition>
 		<replaceregexp file="${basedir}/src/js/jwplayer.js" match="${jsmatch}" replace="jwplayer\.version \= '${application.majorversion}.${application.minorversion}.${versionnumber}';" byline="true"/>
+		<replaceregexp file="${basedir}/src/js/html5/jwplayer.html5.js" match="${html5match}" replace="jwplayer\.html5\.version \= '${application.majorversion}.${application.minorversion}.${versionnumber}';" byline="true"/>
 		<replaceregexp file="${basedir}/src/flash/com/longtailvideo/jwplayer/player/PlayerVersion.as" match="${flashmatch}" replace="protected static var _version\:String \= '${application.majorversion}.${application.minorversion}.${versionnumber}';" byline="true"/>
 		<!--replace file="${basedir}/jwplayer.js" token=", logoConfig);" value=");" /-->
 	</target>
 	
+	
+	<!-- Clean out a directory -->
+	<target name="clean-dir">
+		<delete dir="${clean-directory}" />
+		<mkdir dir="${clean-directory}" />
+	</target>
+	
+	<!--
+		 Builds the player code library used by plugins
+	-->
+	<target name="build-lib">
+		<!-- Clean the SDK directory -->
+		<antcall target="clean-dir">
+			<param name="clean-directory" value="${sdk.dir}"/>
+		</antcall>
+
+		<!-- Build the library SWC -->
+		<exec executable="${compc.exe}" dir="${src.dir}">
+			<arg line="-source-path ." />
+			<arg line="-output '${sdk.dir}/lib/jwplayer-5-lib.swc'" />
+			<!-- Include the necessary framework libraries in the class path -->
+			<arg line="-compiler.library-path '${flexsdk.lib.dir}'" />
+			<arg line="-compiler.library-path '${lib.dir}'" />
+			<!-- Target Flash Player -->
+			<arg line="-target-player=${flexsdk.target}" />
+			<arg line="-include-classes com.longtailvideo.jwplayer.player.Player" />
+			<arg line="-compiler.external-library-path+='${lib.dir}'" />
+			<arg line="-link-report='${sdk.dir}/jwplayer-5-classes.xml'" />
+		</exec>
+		
+		<move file="${sdk.dir}/jwplayer-5-classes.xml" todir="${sdk.dir}/lib/" />
+	</target>
+
 </project>

@@ -18,7 +18,7 @@
 		VIEW_INSTREAM_CONTAINER_CLASS = "jwinstream",
 		VIEW_VIDEO_CONTAINER_CLASS = "jwvideo", 
 		VIEW_CONTROLS_CONTAINER_CLASS = "jwcontrols",
-		VIEW_PLAYLIST_CONTAINER_CLASS = "jwplaylist";
+		VIEW_PLAYLIST_CONTAINER_CLASS = "jwplaylistcontainer";
 		
 	html5.view = function(api, model) {
 		var _api = api, 
@@ -127,7 +127,7 @@
 			_display = new html5.display(_api, displaySettings);
 			_controlsLayer.appendChild(_display.getDisplayElement());
 			
-			if (_model.playlistsize > 0 && _model.playlistposition && _model.playlistposition != "none") {
+			if (_model.playlistsize && _model.playlistposition && _model.playlistposition != "none") {
 				_playlist = new html5.playlistcomponent(_api, {});
 				_playlistLayer.appendChild(_playlist.getDisplayElement());
 			}
@@ -199,7 +199,7 @@
 			var playlistSize = _model.playlistsize,
 				playlistPos = _model.playlistposition
 			
-			if (_playlist && playlistSize > 0 && playlistPos) {
+			if (_playlist && playlistSize && playlistPos) {
 				_playlist.resize(width, height);
 				
 				var playlistStyle = { display: "block" }, containerStyle = {};
@@ -232,9 +232,7 @@
 				_hideDisplay();
 				_showVideo(false);
 			} else {
-				_showControlbar();
-				_showDisplay();
-				_showVideo(true);
+				_updateState(_api.jwGetState());
 			}
 			_css(_internalSelector(), {
 				'background-color': _audioMode ? 'transparent' : _display.getBGColor()
@@ -496,7 +494,8 @@
 	});
 
 	_css('.' + PLAYER_CLASS+' .jwfill', {
-		'background-size': 'cover' + JW_CSS_IMPORTANT
+		'background-size': 'cover' + JW_CSS_IMPORTANT,
+		'background-position': 'center'
 	});
 
 	_css('.' + PLAYER_CLASS+' .jwexactfit', {

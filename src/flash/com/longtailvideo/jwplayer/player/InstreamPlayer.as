@@ -31,8 +31,6 @@ package com.longtailvideo.jwplayer.player
 	import com.longtailvideo.jwplayer.view.interfaces.IPlayerComponent;
 	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
 	import com.longtailvideo.jwplayer.view.skins.DefaultSkin;
-	import com.longtailvideo.jwplayer.view.skins.SWFSkin;
-	
 	import flash.display.DisplayObject;
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
@@ -96,14 +94,7 @@ package com.longtailvideo.jwplayer.player
 		
 			if (_view.skin && _view.skin.getSkinProperties()) {
 				_isConfig.setConfig(_view.skin.getSkinProperties());
-				if (_view.skin is SWFSkin) {
-					_skin = new DefaultSkin();
-					_skin.addEventListener(Event.COMPLETE, completeInit);
-					_skin.load();
-					return;
-				} else {
-					_skin = _view.skin;
-				}
+				_skin = _view.skin;
 			}
 			
 			completeInit();

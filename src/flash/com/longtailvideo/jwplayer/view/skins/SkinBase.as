@@ -94,10 +94,6 @@ package com.longtailvideo.jwplayer.view.skins {
 			dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, message));
 		}
 		
-		public function getSWFSkin():Sprite {
-			return null;
-		}
-	
 	}
 }
 

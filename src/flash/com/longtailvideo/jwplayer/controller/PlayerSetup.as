@@ -1,12 +1,10 @@
 package com.longtailvideo.jwplayer.controller {
-	import com.jeroenwijering.events.PluginInterface;
 	import com.longtailvideo.jwplayer.events.PlayerEvent;
 	import com.longtailvideo.jwplayer.events.PlaylistEvent;
 	import com.longtailvideo.jwplayer.model.Model;
 	import com.longtailvideo.jwplayer.player.IPlayer;
 	import com.longtailvideo.jwplayer.plugins.IPlugin;
 	import com.longtailvideo.jwplayer.plugins.PluginConfig;
-	import com.longtailvideo.jwplayer.plugins.V4Plugin;
 	import com.longtailvideo.jwplayer.utils.Configger;
 	import com.longtailvideo.jwplayer.utils.Logger;
 	import com.longtailvideo.jwplayer.utils.Strings;
@@ -14,7 +12,6 @@ package com.longtailvideo.jwplayer.controller {
 	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
 	import com.longtailvideo.jwplayer.view.skins.DefaultSkin;
 	import com.longtailvideo.jwplayer.view.skins.PNGSkin;
-	import com.longtailvideo.jwplayer.view.skins.SWFSkin;
 	import com.longtailvideo.jwplayer.view.skins.SkinProperties;
 	import com.longtailvideo.jwplayer.view.skins.ZIPSkin;
 	
@@ -129,9 +126,7 @@ package com.longtailvideo.jwplayer.controller {
 		protected function loadSkin(evt:ErrorEvent=null):void {
 			var skin:ISkin;
 			if (confHash && confHash['skin'] && evt == null) {
-				if (Strings.extension(confHash['skin']) == "swf") {
-					skin = new SWFSkin();
-				} else if (Strings.extension(confHash['skin']) == "zip") {
+				if (Strings.extension(confHash['skin']) == "zip") {
 					skin = new ZIPSkin();
 				} else if (Strings.extension(confHash['skin']) == "xml") {
 					skin = new PNGSkin();
@@ -204,18 +199,6 @@ package com.longtailvideo.jwplayer.controller {
 					var plugin:DisplayObject = loader.plugins[pluginId] as DisplayObject;
 					if (plugin is IPlugin) {
 						_view.addPlugin(pluginId, plugin as IPlugin);
-					} else if (plugin is PluginInterface) {
-						if ( (plugin as Object).hasOwnProperty('config') ) {
-							var loadedConf:Object = (plugin as Object).config;
-							var pluginConf:PluginConfig = _model.config.pluginConfig(pluginId);
-							for (var i:String in loadedConf) {
-								if (!pluginConf.hasOwnProperty(i)) pluginConf[i] = loadedConf[i];
-							}
-							pluginConf['width'] = _player.controls.display.width;
-							pluginConf['height'] = _player.controls.display.height;
-							pluginConf['visible'] = true;
-						}
-						_view.addPlugin(pluginId, new V4Plugin(plugin as PluginInterface, pluginId));
 					}
 				}
 			}

@@ -18,10 +18,10 @@
 				src: flashplayer ? flashplayer : base + "jwplayer.flash.swf" 
 			}
 		}
-		if (primary == "html5") {
-			return [modes.html5, modes.flash];
-		} else {
+		if (primary == "flash") {
 			return [modes.flash, modes.html5];
+		} else {
+			return [modes.html5, modes.flash];
 		}
 	}
 

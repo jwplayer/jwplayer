@@ -104,33 +104,6 @@ package com.longtailvideo.jwplayer.utils {
 				_tgt.y = _yps - (_yps - _tgt.y) / _spd;
 			}
 		}
-		
-		
-		/**
-		 * Typewrite text into a textfield.
-		 *
-		 * @param txt	The textstring to write.
-		 * @param spd	The speed of typing (1 - 2).
-		 **/
-		public function write(str:String, spd:Number = 1.5):void {
-			_str = str;
-			_spd = spd;
-			_tgt.tf.text = '';
-			frameHandler = writeHandler;
-			_tgt.addEventListener(Event.ENTER_FRAME, frameHandler);
-		}
-		
-		
-		/** The write enterframe function. **/
-		private function writeHandler(evt:Event):void {
-			var dif:Number = Math.floor((_str.length - _tgt.tf.text.length) / _spd);
-			_tgt.tf.text = _str.substr(0, _str.length - dif);
-			if (_tgt.tf.text == _str) {
-				_tgt.tf.htmlText = _str;
-				_tgt.removeEventListener(Event.ENTER_FRAME, frameHandler);
-				dispatchEvent(new Event(Event.COMPLETE));
-			}
-		}
 
 		/** Stop executing the current animation **/
 		public function cancelAnimation():void {

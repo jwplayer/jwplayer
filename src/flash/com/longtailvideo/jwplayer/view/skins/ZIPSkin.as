@@ -15,13 +15,12 @@ package com.longtailvideo.jwplayer.view.skins {
 
 
 	public class ZIPSkin extends PNGSkin {
-		private var _zipFile:ZipFile;
+		protected var _zipFile:ZipFile;
 
 
 		public function ZIPSkin() {
 			super();
 		}
-
 
 		public override function load(url:String=null):void {
 			if (Strings.extension(url) == "zip") {
@@ -42,6 +41,14 @@ package com.longtailvideo.jwplayer.view.skins {
 		protected override function loadComplete(evt:Event):void {
 			try {
 				var data:ByteArray = (evt.target as URLLoader).data as ByteArray;
+				buildSkin(data);
+			} catch (e:Error) {
+				sendError(e.message);
+			}
+		}
+		
+		protected function buildSkin(data:ByteArray):void {
+			try {
 				_zipFile = new ZipFile(data);
 				var zipEntry:ZipEntry = getXMLEntry(_zipFile, _urlPrefix);
 				if (!zipEntry) {

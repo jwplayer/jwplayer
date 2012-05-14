@@ -10,7 +10,6 @@ package com.longtailvideo.jwplayer.view {
 	import com.longtailvideo.jwplayer.model.Model;
 	import com.longtailvideo.jwplayer.player.IPlayer;
 	import com.longtailvideo.jwplayer.player.PlayerState;
-	import com.longtailvideo.jwplayer.player.PlayerV4Emulation;
 	import com.longtailvideo.jwplayer.player.PlayerVersion;
 	import com.longtailvideo.jwplayer.plugins.IPlugin;
 	import com.longtailvideo.jwplayer.plugins.PluginConfig;
@@ -81,7 +80,7 @@ package com.longtailvideo.jwplayer.view {
 
 		protected var layoutManager:PlayerLayoutManager;
 
-		[Embed(source="../../../../../../assets/flash/loader/loader.swf")]
+/*		[Embed(source="../../../../../../assets/flash/loader/loader.swf")]
 		protected var LoadingScreen:Class;
 
 		[Embed(source="../../../../../../assets/flash/loader/error.swf")]
@@ -89,7 +88,7 @@ package com.longtailvideo.jwplayer.view {
 
 		protected var loaderScreen:Sprite;
 		protected var loaderAnim:DisplayObject;
-		protected var currentLayer:Number = 0;
+*/		protected var currentLayer:Number = 0;
 		
 		// Keep track of the first tabIndex
 		protected var firstIndex:Number = -1;
@@ -112,7 +111,7 @@ package com.longtailvideo.jwplayer.view {
 			RootReference.stage.scaleMode = StageScaleMode.NO_SCALE;
 			RootReference.stage.stage.align = StageAlign.TOP_LEFT;
 
-			loaderScreen = new Sprite();
+/*			loaderScreen = new Sprite();
 			loaderScreen.name = 'loaderScreen';
 			loaderAnim = new LoadingScreen() as DisplayObject;
             loaderAnim.alpha = 0.8;
@@ -120,7 +119,7 @@ package com.longtailvideo.jwplayer.view {
 			loaderScreen.addChild(loaderAnim); 
 
 			RootReference.stage.addChildAt(loaderScreen, 0);
-
+*/
 			if (RootReference.stage.stageWidth > 0) {
 				resizeStage();
 			} else {
@@ -141,13 +140,13 @@ package com.longtailvideo.jwplayer.view {
 				Logger.log("Can't add stage resize handlers: " + err.message);
 			}
 
-			loaderScreen.graphics.clear();
+/*			loaderScreen.graphics.clear();
 			loaderScreen.graphics.beginFill(0, 0);
 			loaderScreen.graphics.drawRect(0, 0, RootReference.stage.stageWidth, RootReference.stage.stageHeight);
 			loaderScreen.graphics.endFill();
 			loaderAnim.x = (RootReference.stage.stageWidth - loaderAnim.width) / 2;
 			loaderAnim.y = (RootReference.stage.stageHeight - loaderAnim.height) / 2;
-		}
+*/		}
 
 
 		public function get skin():ISkin {
@@ -239,7 +238,7 @@ package com.longtailvideo.jwplayer.view {
 		public function completeView(isError:Boolean=false, errorMsg:String=""):void {
 			if (!isError) {
 				_root.visible = true;
-				loaderScreen.parent.removeChild(loaderScreen);
+/*				loaderScreen.parent.removeChild(loaderScreen);
 			} else {
 				loaderScreen.removeChild(loaderAnim);
 				var errorScreen:DisplayObject = new ErrorScreen() as DisplayObject;
@@ -256,7 +255,7 @@ package com.longtailvideo.jwplayer.view {
 				errorMessage.y = errorScreen.y + errorScreen.height + 10;
 				loaderScreen.addChild(errorScreen);
 				loaderScreen.addChild(errorMessage);
-			}
+*/			}
 		}
 
 
@@ -431,8 +430,6 @@ package com.longtailvideo.jwplayer.view {
 					}
 				}
 			}
-
-			PlayerV4Emulation.getInstance(_player).resize(_player.config.width, _player.config.height);
 		}
 
 		protected function resizeMedia(width:Number, height:Number):void {
