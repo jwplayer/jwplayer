@@ -197,12 +197,10 @@
 			if (this.renderingMode == "html5") {
 				_player.jwResize(width, height);
 			} else {
-				this.container.width = width;
-				this.container.height = height;
 				var wrapper = document.getElementById(this.id + "_wrapper");
 				if (wrapper) {
-					wrapper.style.width = width + "px";
-					wrapper.style.height = height + "px";
+					wrapper.style.width = utils.styleDimension(width);
+					wrapper.style.height = utils.styleDimension(height);
 				}
 			}
 			return this;

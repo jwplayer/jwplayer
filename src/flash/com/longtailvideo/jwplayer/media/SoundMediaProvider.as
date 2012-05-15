@@ -2,8 +2,7 @@
  * Wrapper for playback of mp3 sounds.
  **/
 package com.longtailvideo.jwplayer.media {
-	import com.jeroenwijering.events.*;
-	import com.longtailvideo.jwplayer.events.MediaEvent;
+	import com.longtailvideo.jwplayer.events.*;
 	import com.longtailvideo.jwplayer.model.PlayerConfig;
 	import com.longtailvideo.jwplayer.model.PlaylistItem;
 	import com.longtailvideo.jwplayer.player.PlayerState;

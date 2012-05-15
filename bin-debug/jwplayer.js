@@ -18,7 +18,7 @@ jwplayer = function(container) {
 
 var $jw = jwplayer;
 
-jwplayer.version = '6.0.2196';
+jwplayer.version = '6.0.2197';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -30,8 +30,7 @@ jwplayer.source = document.createElement("source");/**
  * @version 6.0
  */
 (function(jwplayer) {
-	var DOCUMENT = document;
-	var WINDOW = window;
+	var DOCUMENT = document, WINDOW = window;
 	
 	//Declare namespace
 	var utils = jwplayer.utils = function() {
@@ -56,118 +55,11 @@ jwplayer.source = document.createElement("source");/**
 		return true;
 	}
 
-	var _styleSheets={},
-		_styleSheet,
-		_rules = {};
-
-	function _createStylesheet() {
-		var styleSheet = DOCUMENT.createElement("style");
-		styleSheet.type = "text/css";
-		DOCUMENT.getElementsByTagName('head')[0].appendChild(styleSheet);
-		return styleSheet;
-	}
-	
-	utils.css = function(selector, styles, important) {
-		if (!utils.exists(important)) important = false;
-		
-		if (utils.isIE()) {
-			if (!_styleSheet) {
-				_styleSheet = _createStylesheet();
-			}
-		} else if (!_styleSheets[selector]) {
-			_styleSheets[selector] = _createStylesheet();
-		}
-
-		if (!_rules[selector]) {
-			_rules[selector] = {};
-		}
-
-		for (var style in styles) {
-			var val = _styleValue(style, styles[style], important);
-			if (utils.exists(_rules[selector][style]) && !utils.exists(val)) {
-				delete _rules[selector][style];
-			} else {
-				_rules[selector][style] = val;
-			}
-		}
-
-		// IE9 limits the number of style tags in the head, so we need to update the entire stylesheet each time
-		if (utils.isIE()) {
-			_updateAllStyles();
-		} else {
-			_updateStylesheet(selector, _styleSheets[selector]);
-		}
-	}
-	
-	function _styleValue(style, value, important) {
-		if (typeof value === "undefined") {
-			return undefined;
-		} 
-		
-		var importantString = important ? " !important" : "";
-
-		if (typeof value == "number") {
-			if (isNaN(value)) {
-				return undefined;
-			}
-			switch (style) {
-			case "z-index":
-			case "opacity":
-				return value + importantString;
-				break;
-			default:
-				if (style.match(/color/i)) {
-					return "#" + utils.pad(value.toString(16), 6);
-				} else {
-					return Math.ceil(value) + "px" + importantString;
-				}
-				break;
-			}
-		} else {
-			return value + importantString;
-		}
+	/** Used for styling dimensions in CSS -- return the string unchanged if it's a percentage width; add 'px' otherwise **/ 
+	utils.styleDimension = function(dimension) {
+		return dimension + (dimension.toString().indexOf("%") > 0 ? "" : "px");
 	}
 
-	function _updateAllStyles() {
-		var ruleText = "\n";
-		for (var rule in _rules) {
-			ruleText += _getRuleText(rule);
-		}
-		_styleSheet.innerHTML = ruleText;
-	}
-	
-	function _updateStylesheet(selector, sheet) {
-		if (sheet) {
-			sheet.innerHTML = _getRuleText(selector);
-		}
-	}
-	
-	function _getRuleText(selector) {
-		var ruleText = selector + "{\n";
-		var styles = _rules[selector];
-		for (var style in styles) {
-			ruleText += "  "+style + ": " + styles[style] + ";\n";
-		}
-		ruleText += "}\n";
-		return ruleText;
-	}
-	
-	
-	/**
-	 * Removes all css elements which match a particular style
-	 */
-	utils.clearCss = function(filter) {
-		for (var rule in _rules) {
-			if (rule.indexOf(filter) >= 0) {
-				delete _rules[rule];
-			}
-		}
-		for (var selector in _styleSheets) {
-			if (selector.indexOf(filter) >= 0) {
-				_styleSheets[selector].innerHTML = '';
-			}
-		}
-	}
 	
 	/** Gets an absolute file path based on a relative filepath * */
 	utils.getAbsolutePath = function(path, base) {
@@ -319,7 +211,7 @@ jwplayer.source = document.createElement("source");/**
 		for (var i=0; i<cookies.length; i++) {
 			var split = cookies[i].split('=');
 			if (split[0].indexOf("jwplayer.") == 0) {
-				jwCookies[split[0].substring(9, split[0].length)] = utils.serialize(split[1]);
+				jwCookies[split[0].substring(9, split[0].length)] = split[1];
 			}
 		}
 		return jwCookies;
@@ -643,145 +535,6 @@ jwplayer.source = document.createElement("source");/**
 	}
 })(jwplayer.utils);
 /**
- * Utility methods for the JW Player.
- * 
- * @author pablo
- * @version 6.0
- */
-(function(utils) {
-	var exists = utils.exists;
-	
-	utils.scale = function(domelement, xscale, yscale, xoffset, yoffset) {
-		var value;
-		
-		// Set defaults
-		if (!exists(xscale)) xscale = 1;
-		if (!exists(yscale)) yscale = 1;
-		if (!exists(xoffset)) xoffset = 0;
-		if (!exists(yoffset)) yoffset = 0;
-		
-		if (xscale == 1 && yscale == 1 && xoffset == 0 && yoffset == 0) {
-			value = "";
-		} else {
-			value = "scale("+xscale+","+yscale+") translate("+xoffset+"px,"+yoffset+"px)";
-		}
-		
-	};
-	
-	utils.transform = function(element, value) {
-		var style = element.style;
-		if (exists(value)) {
-			style.webkitTransform = value;
-			style.MozTransform = value;
-			style.msTransform = value;
-			style.OTransform = value;
-		}
-	}
-	
-	/**
-	 * Stretches domelement based on stretching. parentWidth, parentHeight,
-	 * elementWidth, and elementHeight are required as the elements dimensions
-	 * change as a result of the stretching. Hence, the original dimensions must
-	 * always be supplied.
-	 * 
-	 * @param {String}
-	 *            stretching
-	 * @param {DOMElement}
-	 *            domelement
-	 * @param {Number}
-	 *            parentWidth
-	 * @param {Number}
-	 *            parentHeight
-	 * @param {Number}
-	 *            elementWidth
-	 * @param {Number}
-	 *            elementHeight
-	 */
-	utils.stretch = function(stretching, domelement, parentWidth, parentHeight, elementWidth, elementHeight) {
-		if (!domelement) return;
-		if (!parentWidth || !parentHeight || !elementWidth || !elementHeight) return;
-		
-		var xscale = parentWidth / elementWidth,
-			yscale = parentHeight / elementHeight,
-			xoff = 0, yoff = 0,
-			style = {},
-			video = (domelement.tagName.toLowerCase() == "video"),
-			scale = false,
-			stretchClass;
-		
-		if (video) {
-			utils.transform(domelement);
-		}
-
-		stretchClass = "jw" + stretching.toLowerCase();
-		
-		switch (stretching.toLowerCase()) {
-		case _stretching.FILL:
-			if (xscale > yscale) {
-				elementWidth = elementWidth * xscale;
-				elementHeight = elementHeight * xscale;
-			} else {
-				elementWidth = elementWidth * yscale;
-				elementHeight = elementHeight * yscale;
-			}
-		case _stretching.NONE:
-			xscale = yscale = 1;
-		case _stretching.EXACTFIT:
-			scale = true;
-			break;
-		case _stretching.UNIFORM:
-			if (xscale > yscale) {
-				elementWidth = elementWidth * yscale;
-				elementHeight = elementHeight * yscale;
-				if (elementWidth / parentWidth > 0.95) {
-					scale = true;
-					stretchClass = "jwexactfit";
-					xscale = Math.ceil(100 * parentWidth / elementWidth) / 100;
-					yscale = 1;
-				}
-			} else {
-				elementWidth = elementWidth * xscale;
-				elementHeight = elementHeight * xscale;
-				if (elementHeight / parentHeight > 0.95) {
-					scale = true;
-					stretchClass = "jwexactfit";
-					yscale = Math.ceil(100 * parentHeight / elementHeight) / 100;
-					xscale = 1;
-				}
-			}
-			break;
-		default:
-			return;
-			break;
-		}
-
-		if (video) {
-			if (scale) {
-				domelement.style.width = elementWidth + "px";
-				domelement.style.height = elementHeight + "px"; 
-				xoff = ((parentWidth - elementWidth) / 2) / xscale;
-				yoff = ((parentHeight - elementHeight) / 2) / yscale;
-				utils.scale(domelement, xscale, yscale, xoff, yoff);
-			} else {
-				domelement.style.width = "";
-				domelement.style.height = "";
-			}
-		} else {
-			domelement.className = domelement.className.replace(/\s*jw(none|exactfit|uniform|fill)/g, "");
-			domelement.className += " " + stretchClass;
-		}
-	};
-	
-	/** Stretching options **/
-	var _stretching = utils.stretching = {
-		NONE : "none",
-		FILL : "fill",
-		UNIFORM : "uniform",
-		EXACTFIT : "exactfit"
-	};
-
-})(jwplayer.utils);
-/**
  * String utilities for the JW Player.
  *
  * @version 6.0
@@ -807,28 +560,6 @@ jwplayer.source = document.createElement("source");/**
 		}
 		return string;
 	}
-	
-		/**
-	 * Basic serialization: string representations of booleans and numbers are returned typed;
-	 * strings are returned urldecoded.
-	 *
-	 * @param {String} val	String value to serialize.
-	 * @return {Object}		The original value in the correct primitive type.
-	 */
-	utils.serialize = function(val) {
-		if (val == null) {
-			return null;
-		} else if (val == 'true') {
-			return true;
-		} else if (val == 'false') {
-			return false;
-		} else if (isNaN(Number(val)) || val.length > 5 || val.length == 0) {
-			return val;
-		} else {
-			return Number(val);
-		}
-	}
-	
 	
 	/**
 	 * Convert a time-representing string to a number.
@@ -882,7 +613,7 @@ jwplayer.source = document.createElement("source");/**
 		// Use browser's native JSON implementation if it exists.
 		var JSON = JSON || {}
 		if (JSON && JSON.stringify) {
-				return JSON.stringify(obj);
+			return JSON.stringify(obj);
 		}
 
 		var type = typeof (obj);
@@ -941,71 +672,17 @@ jwplayer.source = document.createElement("source");/**
 			return path.substr(path.lastIndexOf('.') + 1, path.length).toLowerCase();
 		}
 	};
-
-})(jwplayer.utils);
-/**
- * Utility methods for the JW Player.
- *
- * @author zach
- * @modified pablo
- * @version 6.0
- */
-(function(utils) {
-	var _colorPattern = new RegExp(/^(#|0x)[0-9a-fA-F]{3,6}/);
 	
-	utils.typechecker = function(value, type) {
-		type = !utils.exists(type) ? _guessType(value) : type;
-		return _typeData(value, type);
-	};
-	
-	function _guessType(value) {
-		var bools = ["true", "false", "t", "f"];
-		if (bools.toString().indexOf(value.toLowerCase().replace(" ", "")) >= 0) {
-			return "boolean";
-		} else if (_colorPattern.test(value)) {
-			return "color";
-		} else if (!isNaN(parseInt(value, 10)) && parseInt(value, 10).toString().length == value.length) {
-			return "integer";
-		} else if (!isNaN(parseFloat(value)) && parseFloat(value).toString().length == value.length) {
-			return "float";
-		}
-		return "string";
-	}
-	
-	function _typeData(value, type) {
-		if (!utils.exists(type)) {
-			return value;
-		}
-		
-		switch (type) {
-			case "color":
-				if (value.length > 0) {
-					return _stringToColor(value);
-				}
-				return null;
-			case "integer":
-				return parseInt(value, 10);
-			case "float":
-				return parseFloat(value);
-			case "boolean":
-				if (value.toLowerCase() == "true") {
-					return true;
-				} else if (value == "1") {
-					return true;
-				}
-				return false;
-		}
-		return value;
-	}
-	
-	function _stringToColor(value) {
+	/** Convert a string representation of a string to an integer **/
+	utils.stringToColor = function(value) {
 		value = value.replace(/(#|0x)?([0-9A-F]{3,6})$/gi, "$2");
 		if (value.length == 3) {
 			value = value.charAt(0) + value.charAt(0) + value.charAt(1) + value.charAt(1) + value.charAt(2) + value.charAt(2);
 		}
 		return parseInt(value, 16);
 	}
-	
+
+
 })(jwplayer.utils);
 /**
  * Event namespace defintion for the JW Player
@@ -1631,26 +1308,7 @@ jwplayer.source = document.createElement("source");/**
 				for (var mode = 0; mode < _config.modes.length; mode++) {
 					if (_config.modes[mode].type && embed[_config.modes[mode].type]) {
 						var modeconfig = _config.modes[mode].config;
-						var configClone = _config;
-						if (modeconfig) {
-							configClone = _utils.extend(_utils.clone(_config), modeconfig);
-
-							/** Remove fields from top-level config which are overridden in mode config **/ 
-							var overrides = ["file", "levels", "playlist"];
-							for (var i=0; i < overrides.length; i++) {
-								var field = overrides[i];
-								if (_utils.exists(modeconfig[field])) {
-									for (var j=0; j < overrides.length; j++) {
-										if (j != i) {
-											var other = overrides[j];
-											if (_utils.exists(configClone[other]) && !_utils.exists(modeconfig[other])) {
-												delete configClone[other];
-											}
-										}
-									}
-								}
-							}
-						}
+						var configClone = _utils.extend({}, modeconfig ? embed.config.addConfig(_config, modeconfig) : _config);
 						var embedder = new embed[_config.modes[mode].type](container, _config.modes[mode], configClone, _pluginloader, playerApi);
 						if (embedder.supportsConfig()) {
 							embedder.embed();
@@ -1690,52 +1348,82 @@ jwplayer.source = document.createElement("source");/**
  * @version 6.0
  */
 (function(jwplayer) {
-	var utils = jwplayer.utils;
+	var utils = jwplayer.utils,
+		embed = jwplayer.embed,
+		UNDEFINED = undefined;
 
-	function _playerDefaults(primary, base, html5player, flashplayer) {
-		var modes = {
-			html5: {
-				type: "html5",
-				src: html5player ? html5player: base + "jwplayer.html5.js"
-			}, 
-			flash: {
-				type: "flash",
-				src: flashplayer ? flashplayer : base + "jwplayer.flash.swf" 
+	var config = embed.config = function(config) {
+		
+		function _setSources(modes, base, players) {
+			for (var i=0; i<modes.length; i++) {
+				var mode = modes[i].type;
+				modes[i].src = players[mode] ? players[mode] : base + "jwplayer." + mode + (mode == "flash" ? ".swf" : ".js");
 			}
 		}
-		if (primary == "flash") {
-			return [modes.flash, modes.html5];
-		} else {
-			return [modes.html5, modes.flash];
-		}
-	}
-
-	jwplayer.embed.config = function(config) {
+		
 		var _defaults = {
 				fallback: true,
 				height: 300,
 				primary: "html5",
 				width: 400,
-				base: undefined
+				base: UNDEFINED
 			},
-			parsedConfig = utils.extend(_defaults, config);
+			_modes = {
+			    html5: { type: "html5" },
+				flash: { type: "flash" }
+			},
+			_config = utils.extend(_defaults, config);
 
-		if (!parsedConfig.base) {
-			parsedConfig.base = utils.getScriptPath("jwplayer.js");
+		if (!_config.base) {
+			_config.base = utils.getScriptPath("jwplayer.js");
 		}
 		
-		if (!parsedConfig.modes) {
-			parsedConfig.modes = _playerDefaults(
-					parsedConfig.primary,
-					parsedConfig.base, 
-					parsedConfig.html5player, 
-					parsedConfig.flashplayer);
+		if (!_config.modes) {
+			_config.modes = (_config.primary == "flash") ? [_modes.flash, _modes.html5] : [_modes.html5, _modes.flash]; 
 		}
 		
-		return parsedConfig;
+		_setSources(_config.modes, _config.base, { html5: _config.html5player, flash: _config.flashplayer })
+		
+		_normalizePlaylist(_config);
+		
+		return _config;
 	};
-	
 
+	/** Appends a new configuration onto an old one; used for mode configuration **/
+	config.addConfig = function(oldConfig, newConfig) {
+		_normalizePlaylist(newConfig);
+		return utils.extend(oldConfig, newConfig);
+	}
+	
+	/** Construct a playlist from base-level config elements **/
+	function _normalizePlaylist(config) {
+		if (!config.playlist) {
+			var singleItem = {};
+			_moveProperty(config, singleItem, "sources");
+			_moveProperty(config, singleItem, "image");
+
+			if (!config.sources) {
+				if (config.levels) {
+					singleItem.sources = config.levels;
+					delete config.levels;
+				} else {
+					var singleSource = {};
+					_moveProperty(config, singleSource, "file");
+					_moveProperty(config, singleSource, "type");
+					singleItem.sources = [singleSource];
+				}
+			}
+				
+			config.playlist = [singleItem];
+		}
+	}
+	
+	function _moveProperty(sourceObj, destObj, property) {
+		if (utils.exists(sourceObj[property])) {
+			destObj[property] = sourceObj[property];
+			delete sourceObj[property];
+		}
+	}
 	
 	
 //	function _isPosition(string) {
@@ -1843,7 +1531,6 @@ jwplayer.source = document.createElement("source");/**
 (function(jwplayer) {
 	var embed = jwplayer.embed,
 		_utils = jwplayer.utils,
-		_css = _utils.css,
 		
 		JW_CSS_CURSOR = "pointer",
 		JW_CSS_NONE = "none",
@@ -1881,8 +1568,8 @@ jwplayer.source = document.createElement("source");/**
 				_logo.prefix += jwplayer.version.split(/\W/).splice(0, 2).join("/") + "/";
 			}
 			
-			_styleElements();
 			_buildElements();
+			_styleElements();
 		}
 		
 		function _buildElements() {
@@ -1897,15 +1584,23 @@ jwplayer.source = document.createElement("source");/**
 			}
 		}
 		
+		function _css(selector, style) {
+			var elements = document.querySelectorAll(selector);
+			for (var i=0; i<elements.length; i++) {
+				for (var prop in style) {
+					elements[i].style[prop] = style[prop];
+				}
+			}
+		}
+		
 		function _styleElements() {
-			
 			var _prefix = "#" + _container.id + " .jwdownload";
 
 			_css(_prefix+"display", {
-				width: _width,
-				height: _height,
+				width: utils.styleDimension(_width),
+				height: utils.styleDimension(_height),
 				background: "black center no-repeat " + (_image ? 'url('+_image+')' : ""),
-				'background-size': "contain",
+				backgroundSize: "contain",
 				position: JW_CSS_ABSOLUTE,
 				border: JW_CSS_NONE,
 				display: JW_CSS_BLOCK
@@ -1918,8 +1613,8 @@ jwplayer.source = document.createElement("source");/**
 			});
 
 			_css(_prefix+"logo", {
-				bottom: _logo.margin,
-				left: _logo.margin,
+				bottom: _logo.margin + "px",
+				left: _logo.margin + "px",
 				background: "bottom left no-repeat url(" + _logo.prefix + _logo.file + ")"
 			});
 			
@@ -1972,11 +1667,8 @@ jwplayer.source = document.createElement("source");/**
 				}
 				var display = document.getElementById(_api.id).getPluginConfig("display");
 				plugin.resize(display.width, display.height);
-				var style = {
-					left: display.x,
-					top: display.y
-				}
-				utils.css(div, style);
+				div.style.left = display.x;
+				div.style.top = display.h;
 			}
 		}
 		
@@ -2061,21 +1753,16 @@ jwplayer.source = document.createElement("source");/**
 			
 			var params = utils.extend({}, _options);
 			
-			var width = params.width;	
-			var height = params.height;
-			
 			// Hack for when adding / removing happens too quickly
 			if (_container.id + "_wrapper" == _container.parentNode.id) {
 				_wrapper = document.getElementById(_container.id + "_wrapper");
 			} else {
 				_wrapper = document.createElement("div");
 				_wrapper.id = _container.id + "_wrapper";
+				_wrapper.style.position = "relative";
+				_wrapper.style.width = utils.styleDimension(params.width);
+				_wrapper.style.height= utils.styleDimension(params.height);
 				utils.wrap(_container, _wrapper);
-				utils.css('#'+_wrapper.id, {
-					position: "relative",
-					width: width,
-					height: height
-				});
 			}
 			
 			var flashPlugins = _loader.setupPlugins(_api, params, _resizePlugin);
@@ -2215,14 +1902,14 @@ jwplayer.source = document.createElement("source");/**
 				return true;
 			}
 			
-			// Extension is in the extension map, but not supported by Flash - fail
-			if (utils.exists(utils.extensionmap[extension]) &&
-					!utils.exists(utils.extensionmap[extension].flash)) {
-				return false;
+			// Extension is in the extension map
+			if (utils.exists(utils.extensionmap[extension])) {
+				// Return true if the extension has a flash mapping
+				return utils.exists(utils.extensionmap[extension].flash);
 			}
-			return true;
-		};
-	};
+			return false;
+		}
+	}
 	
 })(jwplayer);
 /**
@@ -2331,10 +2018,11 @@ jwplayer.source = document.createElement("source");/**
 			
 			type = type ? type : extension;
 			
-			// If no type or unrecognized type, allow to play
+			// If no type or unrecognized type, don't allow to play
 			if ((!type) || !extensionmap[type]) {
-				return true;
+				return false;
 			}
+			
 						
 			// Last, but not least, we ask the browser 
 			// (But only if it's a video with an extension known to work in HTML5)
@@ -2567,12 +2255,10 @@ jwplayer.source = document.createElement("source");/**
 			if (this.renderingMode == "html5") {
 				_player.jwResize(width, height);
 			} else {
-				this.container.width = width;
-				this.container.height = height;
 				var wrapper = document.getElementById(this.id + "_wrapper");
 				if (wrapper) {
-					wrapper.style.width = width + "px";
-					wrapper.style.height = height + "px";
+					wrapper.style.width = utils.styleDimension(width);
+					wrapper.style.height = utils.styleDimension(height);
 				}
 			}
 			return this;

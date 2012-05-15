@@ -25,28 +25,6 @@
 		return string;
 	}
 	
-		/**
-	 * Basic serialization: string representations of booleans and numbers are returned typed;
-	 * strings are returned urldecoded.
-	 *
-	 * @param {String} val	String value to serialize.
-	 * @return {Object}		The original value in the correct primitive type.
-	 */
-	utils.serialize = function(val) {
-		if (val == null) {
-			return null;
-		} else if (val == 'true') {
-			return true;
-		} else if (val == 'false') {
-			return false;
-		} else if (isNaN(Number(val)) || val.length > 5 || val.length == 0) {
-			return val;
-		} else {
-			return Number(val);
-		}
-	}
-	
-	
 	/**
 	 * Convert a time-representing string to a number.
 	 *
@@ -99,7 +77,7 @@
 		// Use browser's native JSON implementation if it exists.
 		var JSON = JSON || {}
 		if (JSON && JSON.stringify) {
-				return JSON.stringify(obj);
+			return JSON.stringify(obj);
 		}
 
 		var type = typeof (obj);
@@ -158,5 +136,15 @@
 			return path.substr(path.lastIndexOf('.') + 1, path.length).toLowerCase();
 		}
 	};
+	
+	/** Convert a string representation of a string to an integer **/
+	utils.stringToColor = function(value) {
+		value = value.replace(/(#|0x)?([0-9A-F]{3,6})$/gi, "$2");
+		if (value.length == 3) {
+			value = value.charAt(0) + value.charAt(0) + value.charAt(1) + value.charAt(1) + value.charAt(2) + value.charAt(2);
+		}
+		return parseInt(value, 16);
+	}
+
 
 })(jwplayer.utils);

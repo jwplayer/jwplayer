@@ -132,7 +132,7 @@
 				_playlistLayer.appendChild(_playlist.getDisplayElement());
 			}
 
-			if (!_utils.isMobile()) {
+			if (!_utils.isMobile() || (_model.mobilecontrols && _utils.isMobile())) {
 				// TODO: allow override for showing HTML controlbar on iPads
 				_controlbar = new html5.controlbar(_api, cbSettings);
 				_controlsLayer.appendChild(_controlbar.getDisplayElement());
@@ -191,16 +191,16 @@
 			}
 
 			if (_display) {
-				_display.resize(width, height);
+				_display.redraw();
 			}
 			if (_controlbar) {
-				_controlbar.resize(width, height);
+				_controlbar.redraw();
 			}
 			var playlistSize = _model.playlistsize,
 				playlistPos = _model.playlistposition
 			
 			if (_playlist && playlistSize && playlistPos) {
-				_playlist.resize(width, height);
+				_playlist.redraw();
 				
 				var playlistStyle = { display: "block" }, containerStyle = {};
 				playlistStyle[playlistPos] = 0;
@@ -227,7 +227,7 @@
 			_audioMode = (height <= 40 && height.toString().indexOf("%") < 0); 
 			if (_audioMode) {
 				_model.componentConfig('controlbar').margin = 0;
-				_controlbar.resize();
+				_controlbar.redraw();
 				_showControlbar();
 				_hideDisplay();
 				_showVideo(false);

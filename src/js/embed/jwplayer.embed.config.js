@@ -5,52 +5,82 @@
  * @version 6.0
  */
 (function(jwplayer) {
-	var utils = jwplayer.utils;
+	var utils = jwplayer.utils,
+		embed = jwplayer.embed,
+		UNDEFINED = undefined;
 
-	function _playerDefaults(primary, base, html5player, flashplayer) {
-		var modes = {
-			html5: {
-				type: "html5",
-				src: html5player ? html5player: base + "jwplayer.html5.js"
-			}, 
-			flash: {
-				type: "flash",
-				src: flashplayer ? flashplayer : base + "jwplayer.flash.swf" 
+	var config = embed.config = function(config) {
+		
+		function _setSources(modes, base, players) {
+			for (var i=0; i<modes.length; i++) {
+				var mode = modes[i].type;
+				modes[i].src = players[mode] ? players[mode] : base + "jwplayer." + mode + (mode == "flash" ? ".swf" : ".js");
 			}
 		}
-		if (primary == "flash") {
-			return [modes.flash, modes.html5];
-		} else {
-			return [modes.html5, modes.flash];
-		}
-	}
-
-	jwplayer.embed.config = function(config) {
+		
 		var _defaults = {
 				fallback: true,
 				height: 300,
 				primary: "html5",
 				width: 400,
-				base: undefined
+				base: UNDEFINED
 			},
-			parsedConfig = utils.extend(_defaults, config);
+			_modes = {
+			    html5: { type: "html5" },
+				flash: { type: "flash" }
+			},
+			_config = utils.extend(_defaults, config);
 
-		if (!parsedConfig.base) {
-			parsedConfig.base = utils.getScriptPath("jwplayer.js");
+		if (!_config.base) {
+			_config.base = utils.getScriptPath("jwplayer.js");
 		}
 		
-		if (!parsedConfig.modes) {
-			parsedConfig.modes = _playerDefaults(
-					parsedConfig.primary,
-					parsedConfig.base, 
-					parsedConfig.html5player, 
-					parsedConfig.flashplayer);
+		if (!_config.modes) {
+			_config.modes = (_config.primary == "flash") ? [_modes.flash, _modes.html5] : [_modes.html5, _modes.flash]; 
 		}
 		
-		return parsedConfig;
+		_setSources(_config.modes, _config.base, { html5: _config.html5player, flash: _config.flashplayer })
+		
+		_normalizePlaylist(_config);
+		
+		return _config;
 	};
-	
 
+	/** Appends a new configuration onto an old one; used for mode configuration **/
+	config.addConfig = function(oldConfig, newConfig) {
+		_normalizePlaylist(newConfig);
+		return utils.extend(oldConfig, newConfig);
+	}
+	
+	/** Construct a playlist from base-level config elements **/
+	function _normalizePlaylist(config) {
+		if (!config.playlist) {
+			var singleItem = {};
+			_moveProperty(config, singleItem, "sources");
+			_moveProperty(config, singleItem, "image");
+
+			if (!config.sources) {
+				if (config.levels) {
+					singleItem.sources = config.levels;
+					delete config.levels;
+				} else {
+					var singleSource = {};
+					_moveProperty(config, singleSource, "file");
+					_moveProperty(config, singleSource, "type");
+					singleItem.sources = [singleSource];
+				}
+			}
+				
+			config.playlist = [singleItem];
+		}
+	}
+	
+	function _moveProperty(sourceObj, destObj, property) {
+		if (utils.exists(sourceObj[property])) {
+			destObj[property] = sourceObj[property];
+			delete sourceObj[property];
+		}
+	}
 	
 	
 //	function _isPosition(string) {

@@ -104,10 +104,11 @@
 			
 			type = type ? type : extension;
 			
-			// If no type or unrecognized type, allow to play
+			// If no type or unrecognized type, don't allow to play
 			if ((!type) || !extensionmap[type]) {
-				return true;
+				return false;
 			}
+			
 						
 			// Last, but not least, we ask the browser 
 			// (But only if it's a video with an extension known to work in HTML5)

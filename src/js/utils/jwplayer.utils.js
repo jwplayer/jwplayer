@@ -5,8 +5,7 @@
  * @version 6.0
  */
 (function(jwplayer) {
-	var DOCUMENT = document;
-	var WINDOW = window;
+	var DOCUMENT = document, WINDOW = window;
 	
 	//Declare namespace
 	var utils = jwplayer.utils = function() {
@@ -31,118 +30,11 @@
 		return true;
 	}
 
-	var _styleSheets={},
-		_styleSheet,
-		_rules = {};
-
-	function _createStylesheet() {
-		var styleSheet = DOCUMENT.createElement("style");
-		styleSheet.type = "text/css";
-		DOCUMENT.getElementsByTagName('head')[0].appendChild(styleSheet);
-		return styleSheet;
-	}
-	
-	utils.css = function(selector, styles, important) {
-		if (!utils.exists(important)) important = false;
-		
-		if (utils.isIE()) {
-			if (!_styleSheet) {
-				_styleSheet = _createStylesheet();
-			}
-		} else if (!_styleSheets[selector]) {
-			_styleSheets[selector] = _createStylesheet();
-		}
-
-		if (!_rules[selector]) {
-			_rules[selector] = {};
-		}
-
-		for (var style in styles) {
-			var val = _styleValue(style, styles[style], important);
-			if (utils.exists(_rules[selector][style]) && !utils.exists(val)) {
-				delete _rules[selector][style];
-			} else {
-				_rules[selector][style] = val;
-			}
-		}
-
-		// IE9 limits the number of style tags in the head, so we need to update the entire stylesheet each time
-		if (utils.isIE()) {
-			_updateAllStyles();
-		} else {
-			_updateStylesheet(selector, _styleSheets[selector]);
-		}
-	}
-	
-	function _styleValue(style, value, important) {
-		if (typeof value === "undefined") {
-			return undefined;
-		} 
-		
-		var importantString = important ? " !important" : "";
-
-		if (typeof value == "number") {
-			if (isNaN(value)) {
-				return undefined;
-			}
-			switch (style) {
-			case "z-index":
-			case "opacity":
-				return value + importantString;
-				break;
-			default:
-				if (style.match(/color/i)) {
-					return "#" + utils.pad(value.toString(16), 6);
-				} else {
-					return Math.ceil(value) + "px" + importantString;
-				}
-				break;
-			}
-		} else {
-			return value + importantString;
-		}
+	/** Used for styling dimensions in CSS -- return the string unchanged if it's a percentage width; add 'px' otherwise **/ 
+	utils.styleDimension = function(dimension) {
+		return dimension + (dimension.toString().indexOf("%") > 0 ? "" : "px");
 	}
 
-	function _updateAllStyles() {
-		var ruleText = "\n";
-		for (var rule in _rules) {
-			ruleText += _getRuleText(rule);
-		}
-		_styleSheet.innerHTML = ruleText;
-	}
-	
-	function _updateStylesheet(selector, sheet) {
-		if (sheet) {
-			sheet.innerHTML = _getRuleText(selector);
-		}
-	}
-	
-	function _getRuleText(selector) {
-		var ruleText = selector + "{\n";
-		var styles = _rules[selector];
-		for (var style in styles) {
-			ruleText += "  "+style + ": " + styles[style] + ";\n";
-		}
-		ruleText += "}\n";
-		return ruleText;
-	}
-	
-	
-	/**
-	 * Removes all css elements which match a particular style
-	 */
-	utils.clearCss = function(filter) {
-		for (var rule in _rules) {
-			if (rule.indexOf(filter) >= 0) {
-				delete _rules[rule];
-			}
-		}
-		for (var selector in _styleSheets) {
-			if (selector.indexOf(filter) >= 0) {
-				_styleSheets[selector].innerHTML = '';
-			}
-		}
-	}
 	
 	/** Gets an absolute file path based on a relative filepath * */
 	utils.getAbsolutePath = function(path, base) {
@@ -294,7 +186,7 @@
 		for (var i=0; i<cookies.length; i++) {
 			var split = cookies[i].split('=');
 			if (split[0].indexOf("jwplayer.") == 0) {
-				jwCookies[split[0].substring(9, split[0].length)] = utils.serialize(split[1]);
+				jwCookies[split[0].substring(9, split[0].length)] = split[1];
 			}
 		}
 		return jwCookies;

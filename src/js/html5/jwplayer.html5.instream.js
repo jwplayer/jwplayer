@@ -256,14 +256,14 @@
 //			
 			if (_cbar) {
 //				var originalBar = _model.plugins.object.controlbar.getDisplayElement().style;
-				_cbar.resize();
+				_cbar.redraw();
 				//_cbar.resize(_utils.parseDimension(originalDisp.width), _utils.parseDimension(originalDisp.height));
 //				_css(_cbar.getDisplayElement(), _utils.extend({}, originalBar, { zIndex: 1001, opacity: 1 }));
 			}
 			if (_disp) {
 //				
 //				_disp.resize(_utils.parseDimension(originalDisp.width), _utils.parseDimension(originalDisp.height));
-				_disp.resize();
+				_disp.redraw();
 //				_css(_disp.getDisplayElement(), _utils.extend({}, originalDisp, { zIndex: 1000 }));
 			}
 //			if (_view) {

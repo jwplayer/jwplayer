@@ -64,8 +64,8 @@
 					for (var settingIndex = 0; settingIndex < settings.length; settingIndex++) {
 						var name = settings[settingIndex].getAttribute("name");
 						var value = settings[settingIndex].getAttribute("value");
-						var type = /color$/.test(name) ? "color" : null;
-						_skin[componentName].settings[name] = _utils.typechecker(value, type);
+						if(/color$/.test(name)) { value = _utils.stringToColor(value); }
+						_skin[componentName].settings[name] = value;
 					}
 				}
 				var layout = components[componentIndex].getElementsByTagName('layout')[0];

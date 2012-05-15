@@ -6,16 +6,38 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2196';
+	jwplayer.html5.version = '6.0.2197';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  *
  * @author pablo
  * @version 6.0
  */
-(function(html5) {
-	html5.utils = {};
-})(jwplayer.html5);/**
+(function(utils) {
+
+	/**
+	 * Basic serialization: string representations of booleans and numbers are returned typed
+	 *
+	 * @param {String} val	String value to serialize.
+	 * @return {Object}		The original value in the correct primitive type.
+	 */
+	utils.serialize = function(val) {
+		if (val == null) {
+			return null;
+		} else if (val == 'true') {
+			return true;
+		} else if (val == 'false') {
+			return false;
+		} else if (isNaN(Number(val)) || val.length > 5 || val.length == 0) {
+			return val;
+		} else {
+			return Number(val);
+		}
+	}
+	
+
+	
+})(jwplayer.utils);/**
  * Utility methods for the JW Player.
  *
  * @author pablo
@@ -30,6 +52,263 @@
 		utils.transform(domelement, "rotate(" + deg + "deg)");
 	};
 	
+})(jwplayer.utils);
+/**
+ * CSS utility methods for the JW Player.
+ *
+ * @author pablo
+ * @version 6.0
+ */
+(function(utils) {
+	var _styleSheets={},
+		_styleSheet,
+		_rules = {};
+
+	function _createStylesheet() {
+		var styleSheet = document.createElement("style");
+		styleSheet.type = "text/css";
+		document.getElementsByTagName('head')[0].appendChild(styleSheet);
+		return styleSheet;
+	}
+	
+	utils.css = function(selector, styles, important) {
+		if (!utils.exists(important)) important = false;
+		
+		if (utils.isIE()) {
+			if (!_styleSheet) {
+				_styleSheet = _createStylesheet();
+			}
+		} else if (!_styleSheets[selector]) {
+			_styleSheets[selector] = _createStylesheet();
+		}
+
+		if (!_rules[selector]) {
+			_rules[selector] = {};
+		}
+
+		for (var style in styles) {
+			var val = _styleValue(style, styles[style], important);
+			if (utils.exists(_rules[selector][style]) && !utils.exists(val)) {
+				delete _rules[selector][style];
+			} else {
+				_rules[selector][style] = val;
+			}
+		}
+
+		// IE9 limits the number of style tags in the head, so we need to update the entire stylesheet each time
+		if (utils.isIE()) {
+			_updateAllStyles();
+		} else {
+			_updateStylesheet(selector, _styleSheets[selector]);
+		}
+	}
+	
+	function _styleValue(style, value, important) {
+		if (typeof value === "undefined") {
+			return undefined;
+		} 
+		
+		var importantString = important ? " !important" : "";
+
+		if (!isNaN(value)) {
+			switch (style) {
+			case "z-index":
+			case "opacity":
+				return value + importantString;
+				break;
+			default:
+				if (style.match(/color/i)) {
+					return "#" + utils.pad(value.toString(16), 6) + importantString;
+				} else if (value == 0) {
+					return 0 + importantString;
+				} else {
+					return Math.ceil(value) + "px" + importantString;
+				}
+				break;
+			}
+		} else {
+			return value + importantString;
+		}
+	}
+
+	function _updateAllStyles() {
+		var ruleText = "\n";
+		for (var rule in _rules) {
+			ruleText += _getRuleText(rule);
+		}
+		_styleSheet.innerHTML = ruleText;
+	}
+	
+	function _updateStylesheet(selector, sheet) {
+		if (sheet) {
+			sheet.innerHTML = _getRuleText(selector);
+		}
+	}
+	
+	function _getRuleText(selector) {
+		var ruleText = selector + "{\n";
+		var styles = _rules[selector];
+		for (var style in styles) {
+			ruleText += "  "+style + ": " + styles[style] + ";\n";
+		}
+		ruleText += "}\n";
+		return ruleText;
+	}
+	
+	
+	/**
+	 * Removes all css elements which match a particular style
+	 */
+	utils.clearCss = function(filter) {
+		for (var rule in _rules) {
+			if (rule.indexOf(filter) >= 0) {
+				delete _rules[rule];
+			}
+		}
+		for (var selector in _styleSheets) {
+			if (selector.indexOf(filter) >= 0) {
+				_styleSheets[selector].innerHTML = '';
+			}
+		}
+	}
+})(jwplayer.utils);/**
+ * Utility methods for the JW Player.
+ * 
+ * @author pablo
+ * @version 6.0
+ */
+(function(utils) {
+	var exists = utils.exists;
+	
+	utils.scale = function(domelement, xscale, yscale, xoffset, yoffset) {
+		var value;
+		
+		// Set defaults
+		if (!exists(xscale)) xscale = 1;
+		if (!exists(yscale)) yscale = 1;
+		if (!exists(xoffset)) xoffset = 0;
+		if (!exists(yoffset)) yoffset = 0;
+		
+		if (xscale == 1 && yscale == 1 && xoffset == 0 && yoffset == 0) {
+			value = "";
+		} else {
+			value = "scale("+xscale+","+yscale+") translate("+xoffset+"px,"+yoffset+"px)";
+		}
+		
+	};
+	
+	utils.transform = function(element, value) {
+		var style = element.style;
+		if (exists(value)) {
+			style.webkitTransform = value;
+			style.MozTransform = value;
+			style.msTransform = value;
+			style.OTransform = value;
+		}
+	}
+	
+	/**
+	 * Stretches domelement based on stretching. parentWidth, parentHeight,
+	 * elementWidth, and elementHeight are required as the elements dimensions
+	 * change as a result of the stretching. Hence, the original dimensions must
+	 * always be supplied.
+	 * 
+	 * @param {String}
+	 *            stretching
+	 * @param {DOMElement}
+	 *            domelement
+	 * @param {Number}
+	 *            parentWidth
+	 * @param {Number}
+	 *            parentHeight
+	 * @param {Number}
+	 *            elementWidth
+	 * @param {Number}
+	 *            elementHeight
+	 */
+	utils.stretch = function(stretching, domelement, parentWidth, parentHeight, elementWidth, elementHeight) {
+		if (!domelement) return;
+		if (!parentWidth || !parentHeight || !elementWidth || !elementHeight) return;
+		
+		var xscale = parentWidth / elementWidth,
+			yscale = parentHeight / elementHeight,
+			xoff = 0, yoff = 0,
+			style = {},
+			video = (domelement.tagName.toLowerCase() == "video"),
+			scale = false,
+			stretchClass;
+		
+		if (video) {
+			utils.transform(domelement);
+		}
+
+		stretchClass = "jw" + stretching.toLowerCase();
+		
+		switch (stretching.toLowerCase()) {
+		case _stretching.FILL:
+			if (xscale > yscale) {
+				elementWidth = elementWidth * xscale;
+				elementHeight = elementHeight * xscale;
+			} else {
+				elementWidth = elementWidth * yscale;
+				elementHeight = elementHeight * yscale;
+			}
+		case _stretching.NONE:
+			xscale = yscale = 1;
+		case _stretching.EXACTFIT:
+			scale = true;
+			break;
+		case _stretching.UNIFORM:
+			if (xscale > yscale) {
+				elementWidth = elementWidth * yscale;
+				elementHeight = elementHeight * yscale;
+				if (elementWidth / parentWidth > 0.95) {
+					scale = true;
+					stretchClass = "jwexactfit";
+					xscale = Math.ceil(100 * parentWidth / elementWidth) / 100;
+					yscale = 1;
+				}
+			} else {
+				elementWidth = elementWidth * xscale;
+				elementHeight = elementHeight * xscale;
+				if (elementHeight / parentHeight > 0.95) {
+					scale = true;
+					stretchClass = "jwexactfit";
+					yscale = Math.ceil(100 * parentHeight / elementHeight) / 100;
+					xscale = 1;
+				}
+			}
+			break;
+		default:
+			return;
+			break;
+		}
+
+		if (video) {
+			if (scale) {
+				domelement.style.width = elementWidth + "px";
+				domelement.style.height = elementHeight + "px"; 
+				xoff = ((parentWidth - elementWidth) / 2) / xscale;
+				yoff = ((parentHeight - elementHeight) / 2) / yscale;
+				utils.scale(domelement, xscale, yscale, xoff, yoff);
+			} else {
+				domelement.style.width = "";
+				domelement.style.height = "";
+			}
+		} else {
+			domelement.className = domelement.className.replace(/\s*jw(none|exactfit|uniform|fill)/g, "");
+			domelement.className += " " + stretchClass;
+		}
+	};
+	
+	/** Stretching options **/
+	var _stretching = utils.stretching = {
+		NONE : "none",
+		FILL : "fill",
+		UNIFORM : "uniform",
+		EXACTFIT : "exactfit"
+	};
+
 })(jwplayer.utils);
 /**
  * Parsers namespace declaration
@@ -498,7 +777,7 @@
 			_duration = evt.duration;
 			_position = evt.position;
 			
-			if (refreshRequired) _resize();
+			if (refreshRequired) _redraw();
 		}
 		
 		function _stateHandler(evt) {
@@ -559,7 +838,7 @@
 				_css(_internalSelector(".jwnext"), { display: undefined });
 				_css(_internalSelector(".jwprev"), { display: undefined });
 			}
-			_resize();
+			_redraw();
 		}
 
 		/**
@@ -975,7 +1254,7 @@
 			}
 		}
 
-		var _resize = this.resize = function(width, height) {
+		var _redraw = this.redraw = function() {
 			_createStyles();
 			_css(_internalSelector('.jwgroup.jwcenter'), {
 				left: Math.round(_utils.parseDimension(_groups.left.offsetWidth) + _getSkinElement("capLeft").width),
@@ -1667,7 +1946,7 @@
 		function _imageLoaded() {
 			_imageWidth = this.width;
 			_imageHeight = this.height;
-			_resize();
+			_redraw();
 			if (_image) {
 				_css(_internalSelector(D_PREVIEW_CLASS), {
 					'background-image': 'url('+_image+')' 
@@ -1683,11 +1962,11 @@
 			return null;
 		}
 		
-		function _resize() {
+		function _redraw() {
 			_utils.stretch(_api.jwGetStretching(), _preview, _display.clientWidth, _display.clientHeight, _imageWidth, _imageHeight);
 		}
 
-		this.resize = _resize;
+		this.redraw = _redraw;
 		
 		function _setVisibility(selector, state) {
 			_css(_internalSelector(selector), {
@@ -2008,14 +2287,14 @@
 //			
 			if (_cbar) {
 //				var originalBar = _model.plugins.object.controlbar.getDisplayElement().style;
-				_cbar.resize();
+				_cbar.redraw();
 				//_cbar.resize(_utils.parseDimension(originalDisp.width), _utils.parseDimension(originalDisp.height));
 //				_css(_cbar.getDisplayElement(), _utils.extend({}, originalBar, { zIndex: 1001, opacity: 1 }));
 			}
 			if (_disp) {
 //				
 //				_disp.resize(_utils.parseDimension(originalDisp.width), _utils.parseDimension(originalDisp.height));
-				_disp.resize();
+				_disp.redraw();
 //				_css(_disp.getDisplayElement(), _utils.extend({}, originalDisp, { zIndex: 1000 }));
 			}
 //			if (_view) {
@@ -2120,6 +2399,7 @@
 				height: 320,
 				icons: true,
 				item: 0,
+				mobilecontrols: false,
 				mute: false,
 				playlist: [],
 				playlistposition: "right",
@@ -2140,7 +2420,7 @@
 
 		function _init() {
 			utils.extend(_model, new events.eventdispatcher());
-			_model.config = utils.extend({}, _defaults, _cookies, _parseConfig(config));
+			_model.config = _parseConfig(utils.extend({}, _defaults, _cookies, config));
 			utils.extend(_model, {
 				id: config.id,
 				state : events.state.IDLE,
@@ -2400,8 +2680,6 @@
 			_skin = _api.skin,
 			_settings = _utils.extend({}, _defaults, _api.skin.getComponentSettings("playlist"), config),
 			_wrapper,
-			_width,
-			_height,
 			_playlist,
 			_items,
 			_ul,
@@ -2418,9 +2696,8 @@
 			return _wrapper;
 		};
 		
-		this.resize = function(width, height) {
-			_width = width;
-			_height = height;
+		this.redraw = function() {
+			// not needed
 		};
 		
 		this.show = function() {
@@ -3033,8 +3310,8 @@
 					for (var settingIndex = 0; settingIndex < settings.length; settingIndex++) {
 						var name = settings[settingIndex].getAttribute("name");
 						var value = settings[settingIndex].getAttribute("value");
-						var type = /color$/.test(name) ? "color" : null;
-						_skin[componentName].settings[name] = _utils.typechecker(value, type);
+						if(/color$/.test(name)) { value = _utils.stringToColor(value); }
+						_skin[componentName].settings[name] = value;
 					}
 				}
 				var layout = components[componentIndex].getElementsByTagName('layout')[0];
@@ -3670,7 +3947,7 @@
 				_playlistLayer.appendChild(_playlist.getDisplayElement());
 			}
 
-			if (!_utils.isMobile()) {
+			if (!_utils.isMobile() || (_model.mobilecontrols && _utils.isMobile())) {
 				// TODO: allow override for showing HTML controlbar on iPads
 				_controlbar = new html5.controlbar(_api, cbSettings);
 				_controlsLayer.appendChild(_controlbar.getDisplayElement());
@@ -3729,16 +4006,16 @@
 			}
 
 			if (_display) {
-				_display.resize(width, height);
+				_display.redraw();
 			}
 			if (_controlbar) {
-				_controlbar.resize(width, height);
+				_controlbar.redraw();
 			}
 			var playlistSize = _model.playlistsize,
 				playlistPos = _model.playlistposition
 			
 			if (_playlist && playlistSize && playlistPos) {
-				_playlist.resize(width, height);
+				_playlist.redraw();
 				
 				var playlistStyle = { display: "block" }, containerStyle = {};
 				playlistStyle[playlistPos] = 0;
@@ -3765,7 +4042,7 @@
 			_audioMode = (height <= 40 && height.toString().indexOf("%") < 0); 
 			if (_audioMode) {
 				_model.componentConfig('controlbar').margin = 0;
-				_controlbar.resize();
+				_controlbar.redraw();
 				_showControlbar();
 				_hideDisplay();
 				_showVideo(false);

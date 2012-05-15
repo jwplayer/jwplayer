@@ -45,8 +45,6 @@
 			_skin = _api.skin,
 			_settings = _utils.extend({}, _defaults, _api.skin.getComponentSettings("playlist"), config),
 			_wrapper,
-			_width,
-			_height,
 			_playlist,
 			_items,
 			_ul,
@@ -63,9 +61,8 @@
 			return _wrapper;
 		};
 		
-		this.resize = function(width, height) {
-			_width = width;
-			_height = height;
+		this.redraw = function() {
+			// not needed
 		};
 		
 		this.show = function() {

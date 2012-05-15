@@ -6,7 +6,6 @@
 (function(jwplayer) {
 	var embed = jwplayer.embed,
 		_utils = jwplayer.utils,
-		_css = _utils.css,
 		
 		JW_CSS_CURSOR = "pointer",
 		JW_CSS_NONE = "none",
@@ -44,8 +43,8 @@
 				_logo.prefix += jwplayer.version.split(/\W/).splice(0, 2).join("/") + "/";
 			}
 			
-			_styleElements();
 			_buildElements();
+			_styleElements();
 		}
 		
 		function _buildElements() {
@@ -60,15 +59,23 @@
 			}
 		}
 		
+		function _css(selector, style) {
+			var elements = document.querySelectorAll(selector);
+			for (var i=0; i<elements.length; i++) {
+				for (var prop in style) {
+					elements[i].style[prop] = style[prop];
+				}
+			}
+		}
+		
 		function _styleElements() {
-			
 			var _prefix = "#" + _container.id + " .jwdownload";
 
 			_css(_prefix+"display", {
-				width: _width,
-				height: _height,
+				width: utils.styleDimension(_width),
+				height: utils.styleDimension(_height),
 				background: "black center no-repeat " + (_image ? 'url('+_image+')' : ""),
-				'background-size': "contain",
+				backgroundSize: "contain",
 				position: JW_CSS_ABSOLUTE,
 				border: JW_CSS_NONE,
 				display: JW_CSS_BLOCK
@@ -81,8 +88,8 @@
 			});
 
 			_css(_prefix+"logo", {
-				bottom: _logo.margin,
-				left: _logo.margin,
+				bottom: _logo.margin + "px",
+				left: _logo.margin + "px",
 				background: "bottom left no-repeat url(" + _logo.prefix + _logo.file + ")"
 			});
 			

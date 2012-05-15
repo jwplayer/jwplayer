@@ -27,6 +27,7 @@
 				height: 320,
 				icons: true,
 				item: 0,
+				mobilecontrols: false,
 				mute: false,
 				playlist: [],
 				playlistposition: "right",
@@ -47,7 +48,7 @@
 
 		function _init() {
 			utils.extend(_model, new events.eventdispatcher());
-			_model.config = utils.extend({}, _defaults, _cookies, _parseConfig(config));
+			_model.config = _parseConfig(utils.extend({}, _defaults, _cookies, config));
 			utils.extend(_model, {
 				id: config.id,
 				state : events.state.IDLE,

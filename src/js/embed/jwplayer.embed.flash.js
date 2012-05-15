@@ -22,11 +22,8 @@
 				}
 				var display = document.getElementById(_api.id).getPluginConfig("display");
 				plugin.resize(display.width, display.height);
-				var style = {
-					left: display.x,
-					top: display.y
-				}
-				utils.css(div, style);
+				div.style.left = display.x;
+				div.style.top = display.h;
 			}
 		}
 		
@@ -111,21 +108,16 @@
 			
 			var params = utils.extend({}, _options);
 			
-			var width = params.width;	
-			var height = params.height;
-			
 			// Hack for when adding / removing happens too quickly
 			if (_container.id + "_wrapper" == _container.parentNode.id) {
 				_wrapper = document.getElementById(_container.id + "_wrapper");
 			} else {
 				_wrapper = document.createElement("div");
 				_wrapper.id = _container.id + "_wrapper";
+				_wrapper.style.position = "relative";
+				_wrapper.style.width = utils.styleDimension(params.width);
+				_wrapper.style.height= utils.styleDimension(params.height);
 				utils.wrap(_container, _wrapper);
-				utils.css('#'+_wrapper.id, {
-					position: "relative",
-					width: width,
-					height: height
-				});
 			}
 			
 			var flashPlugins = _loader.setupPlugins(_api, params, _resizePlugin);
@@ -265,13 +257,13 @@
 				return true;
 			}
 			
-			// Extension is in the extension map, but not supported by Flash - fail
-			if (utils.exists(utils.extensionmap[extension]) &&
-					!utils.exists(utils.extensionmap[extension].flash)) {
-				return false;
+			// Extension is in the extension map
+			if (utils.exists(utils.extensionmap[extension])) {
+				// Return true if the extension has a flash mapping
+				return utils.exists(utils.extensionmap[extension].flash);
 			}
-			return true;
-		};
-	};
+			return false;
+		}
+	}
 	
 })(jwplayer);

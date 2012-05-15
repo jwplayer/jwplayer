@@ -30,26 +30,7 @@
 				for (var mode = 0; mode < _config.modes.length; mode++) {
 					if (_config.modes[mode].type && embed[_config.modes[mode].type]) {
 						var modeconfig = _config.modes[mode].config;
-						var configClone = _config;
-						if (modeconfig) {
-							configClone = _utils.extend(_utils.clone(_config), modeconfig);
-
-							/** Remove fields from top-level config which are overridden in mode config **/ 
-							var overrides = ["file", "levels", "playlist"];
-							for (var i=0; i < overrides.length; i++) {
-								var field = overrides[i];
-								if (_utils.exists(modeconfig[field])) {
-									for (var j=0; j < overrides.length; j++) {
-										if (j != i) {
-											var other = overrides[j];
-											if (_utils.exists(configClone[other]) && !_utils.exists(modeconfig[other])) {
-												delete configClone[other];
-											}
-										}
-									}
-								}
-							}
-						}
+						var configClone = _utils.extend({}, modeconfig ? embed.config.addConfig(_config, modeconfig) : _config);
 						var embedder = new embed[_config.modes[mode].type](container, _config.modes[mode], configClone, _pluginloader, playerApi);
 						if (embedder.supportsConfig()) {
 							embedder.embed();

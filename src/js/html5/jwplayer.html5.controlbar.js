@@ -210,7 +210,7 @@
 			_duration = evt.duration;
 			_position = evt.position;
 			
-			if (refreshRequired) _resize();
+			if (refreshRequired) _redraw();
 		}
 		
 		function _stateHandler(evt) {
@@ -271,7 +271,7 @@
 				_css(_internalSelector(".jwnext"), { display: undefined });
 				_css(_internalSelector(".jwprev"), { display: undefined });
 			}
-			_resize();
+			_redraw();
 		}
 
 		/**
@@ -687,7 +687,7 @@
 			}
 		}
 
-		var _resize = this.resize = function(width, height) {
+		var _redraw = this.redraw = function() {
 			_createStyles();
 			_css(_internalSelector('.jwgroup.jwcenter'), {
 				left: Math.round(_utils.parseDimension(_groups.left.offsetWidth) + _getSkinElement("capLeft").width),

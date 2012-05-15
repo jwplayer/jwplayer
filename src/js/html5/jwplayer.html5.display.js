@@ -221,7 +221,7 @@
 		function _imageLoaded() {
 			_imageWidth = this.width;
 			_imageHeight = this.height;
-			_resize();
+			_redraw();
 			if (_image) {
 				_css(_internalSelector(D_PREVIEW_CLASS), {
 					'background-image': 'url('+_image+')' 
@@ -237,11 +237,11 @@
 			return null;
 		}
 		
-		function _resize() {
+		function _redraw() {
 			_utils.stretch(_api.jwGetStretching(), _preview, _display.clientWidth, _display.clientHeight, _imageWidth, _imageHeight);
 		}
 
-		this.resize = _resize;
+		this.redraw = _redraw;
 		
 		function _setVisibility(selector, state) {
 			_css(_internalSelector(selector), {
