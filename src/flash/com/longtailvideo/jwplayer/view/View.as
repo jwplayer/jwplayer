@@ -42,6 +42,7 @@ package com.longtailvideo.jwplayer.view {
 	import flash.net.URLRequest;
 	import flash.system.LoaderContext;
 	import flash.text.TextField;
+	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	import flash.ui.Keyboard;
 	import flash.utils.Timer;
@@ -238,24 +239,20 @@ package com.longtailvideo.jwplayer.view {
 		public function completeView(isError:Boolean=false, errorMsg:String=""):void {
 			if (!isError) {
 				_root.visible = true;
-/*				loaderScreen.parent.removeChild(loaderScreen);
 			} else {
-				loaderScreen.removeChild(loaderAnim);
-				var errorScreen:DisplayObject = new ErrorScreen() as DisplayObject;
 				var errorMessage:TextField = new TextField();
 				errorMessage.defaultTextFormat = new TextFormat("_sans", 12, 0xffffff);
 				errorMessage.text = errorMsg;
-				errorMessage.width = loaderScreen.width - 60;
+				errorMessage.width = RootReference.stage.stageWidth - 300;
 				errorMessage.wordWrap = true;
 				errorMessage.height = errorMessage.textHeight + 10;
+				errorMessage.autoSize = TextFieldAutoSize.LEFT;
+				errorMessage.wordWrap = true;
 
-				errorScreen.x = (loaderScreen.width - errorScreen.width) / 2;
-				errorScreen.y = (loaderScreen.height - errorScreen.height - errorMessage.height - 10) / 2;
-				errorMessage.x = (loaderScreen.width - errorMessage.width) / 2;
-				errorMessage.y = errorScreen.y + errorScreen.height + 10;
-				loaderScreen.addChild(errorScreen);
-				loaderScreen.addChild(errorMessage);
-*/			}
+				errorMessage.x = (RootReference.stage.stageWidth - errorMessage.textWidth) / 2;
+				errorMessage.y = (RootReference.stage.stageHeight - errorMessage.textHeight) / 2;
+				RootReference.stage.addChild(errorMessage);
+			}
 		}
 
 

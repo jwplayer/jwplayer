@@ -1,16 +1,18 @@
 /**
  * HTML5-only utilities for the JW Player.
- *
+ * 
  * @author pablo
  * @version 6.0
  */
 (function(utils) {
 
 	/**
-	 * Basic serialization: string representations of booleans and numbers are returned typed
-	 *
-	 * @param {String} val	String value to serialize.
-	 * @return {Object}		The original value in the correct primitive type.
+	 * Basic serialization: string representations of booleans and numbers are
+	 * returned typed
+	 * 
+	 * @param {String}
+	 *            val String value to serialize.
+	 * @return {Object} The original value in the correct primitive type.
 	 */
 	utils.serialize = function(val) {
 		if (val == null) {
@@ -25,7 +27,5 @@
 			return Number(val);
 		}
 	}
-	
 
-	
 })(jwplayer.utils);

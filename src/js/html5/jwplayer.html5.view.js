@@ -506,8 +506,4 @@
 		'background-size': JW_CSS_100PCT + " " + JW_CSS_100PCT + JW_CSS_IMPORTANT
 	});
 
-	_css('.' + PLAYER_CLASS+' .jwnone', {
-		'background-size': null
-	});
-
 })(jwplayer.html5);

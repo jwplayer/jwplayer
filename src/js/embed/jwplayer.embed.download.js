@@ -5,7 +5,7 @@
  */
 (function(jwplayer) {
 	var embed = jwplayer.embed,
-		_utils = jwplayer.utils,
+		utils = jwplayer.utils,
 		
 		JW_CSS_CURSOR = "pointer",
 		JW_CSS_NONE = "none",
@@ -14,7 +14,7 @@
 		JW_CSS_ABSOLUTE = "absolute";
 	
 	embed.download = function(_container, _options) {
-		var params = _utils.extend({}, _options),
+		var params = utils.extend({}, _options),
 			_display,
 			_width = params.width ? params.width : 480,
 			_height = params.height ? params.height : 320,
@@ -54,7 +54,7 @@
 				_createElement("div", "icon", _display);
 				_createElement("div", "logo", _display);
 				if (_file) {
-					_display.setAttribute("href", _utils.getAbsolutePath(_file));
+					_display.setAttribute("href", utils.getAbsolutePath(_file));
 				}
 			}
 		}

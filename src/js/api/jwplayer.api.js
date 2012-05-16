@@ -108,6 +108,9 @@
 		_this.getFullscreen = function() {
 			return _callInternal('jwGetFullscreen');
 		};
+		_this.getStretching = function() {
+			return _callInternal('jwGetStretching');
+		};
 		_this.getHeight = function() {
 			return _callInternal('jwGetHeight');
 		};
@@ -160,6 +163,10 @@
 			} else {
 				_callInternal("jwSetFullscreen", fullscreen);
 			}
+			return _this;
+		};
+		_this.setStretching = function(stretching) {
+			_callInternal("jwSetStretching", stretching);
 			return _this;
 		};
 		_this.setMute = function(mute) {

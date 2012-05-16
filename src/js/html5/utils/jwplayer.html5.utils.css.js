@@ -64,7 +64,7 @@
 			default:
 				if (style.match(/color/i)) {
 					return "#" + utils.pad(value.toString(16), 6) + importantString;
-				} else if (value == 0) {
+				} else if (value === 0) {
 					return 0 + importantString;
 				} else {
 					return Math.ceil(value) + "px" + importantString;

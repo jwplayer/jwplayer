@@ -62,24 +62,14 @@ package com.longtailvideo.jwplayer.player {
 			
 			timer.addEventListener(TimerEvent.TIMER_COMPLETE, function(timerEvent:TimerEvent):void {
 				_player.removeGlobalListener(queueEvents);
-				var callbacks:String = _player.config.playerready ? _player.config.playerready + "," + "playerReady" : "playerReady";  
 				if (ExternalInterface.available) {
-					for each (var callback:String in callbacks.replace(/\s/,"").split(",")) {
-						try {
-							if (callback.toLowerCase().search(/[\{\}\(\)]/) < 0) {
-								callJS(callback,{
-									id:evt.id,
-									client:evt.client,
-									version:evt.version
-								});
-							}
-						} catch (e:Error) {}
-					}
-					
+					callJS("playerReady",{
+						id:evt.id,
+						client:evt.client,
+						version:evt.version
+					});
 					clearQueuedEvents();
 				}
-				
-
 			});
 			timer.start();
 		}
@@ -143,6 +133,7 @@ package com.longtailvideo.jwplayer.player {
 				ExternalInterface.addCallback("jwGetWidth", js_getWidth);
 				ExternalInterface.addCallback("jwGetVersion", js_getVersion);
 				ExternalInterface.addCallback("jwGetVolume", js_getVolume);
+				ExternalInterface.addCallback("jwGetStretching", js_getStretching);
 
 				// Player API Calls
 				ExternalInterface.addCallback("jwPlay", js_play);
@@ -156,6 +147,7 @@ package com.longtailvideo.jwplayer.player {
 				ExternalInterface.addCallback("jwSetMute", js_mute);
 				ExternalInterface.addCallback("jwSetVolume", js_volume);
 				ExternalInterface.addCallback("jwSetFullscreen", js_fullscreen);
+				ExternalInterface.addCallback("jwSetStretching", js_setStretching);
 				
 				// Player Controls APIs
 				ExternalInterface.addCallback("jwControlbarShow", js_showControlbar);
@@ -396,6 +388,10 @@ package com.longtailvideo.jwplayer.player {
 			return _player.config.volume;
 		}
 
+		protected function js_getStretching():String {
+			return _player.config.stretching;
+		}
+
 		/***********************************************
 		 **                 PLAYBACK                  **
 		 ***********************************************/
@@ -490,6 +486,12 @@ package com.longtailvideo.jwplayer.player {
 				_player.fullscreen(false);
 			}
 		}
+		
+		protected function js_setStretching(stretching:String):void {
+			_player.config.stretching = stretching;
+			_player.redraw();
+		}
+
 		
 		protected function js_loadInstream(item:Object, config:Object):void {
 			_isItem = new PlaylistItem(item);

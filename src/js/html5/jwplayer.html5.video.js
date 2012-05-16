@@ -165,9 +165,9 @@
 			_setState(states.IDLE);
 		}
 
-		function _canPlay(file) {
-			var type = _extensions[utils.extension(file)];
-			return (!!type && !!type.html5 && _videotag.canPlayType(type.html5));
+		function _canPlay(file, type) {
+			var mappedType = _extensions[type ? type : utils.extension(file)];
+			return (!!mappedType && !!mappedType.html5 && _videotag.canPlayType(mappedType.html5));
 		}
 		
 		/** Selects the appropriate file out of all available options **/
@@ -175,7 +175,7 @@
 			var sources = item.sources;
 			if (sources && sources.length > 0) {
 				for (var i=0; i<sources.length; i++) {
-					if (_canPlay(sources[i].file))
+					if (_canPlay(sources[i].file), sources[i].type)
 						return sources[i].file;
 				}
 			} else if (item.file && _canPlay(item.file)) {

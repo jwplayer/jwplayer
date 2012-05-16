@@ -55,6 +55,7 @@
 	 */
 	utils.stretch = function(stretching, domelement, parentWidth, parentHeight, elementWidth, elementHeight) {
 		if (!domelement) return;
+		if (!stretching) stretching = _stretching.UNIFORM;
 		if (!parentWidth || !parentHeight || !elementWidth || !elementHeight) return;
 		
 		var xscale = parentWidth / elementWidth,
@@ -86,6 +87,7 @@
 			scale = true;
 			break;
 		case _stretching.UNIFORM:
+		default:
 			if (xscale > yscale) {
 				elementWidth = elementWidth * yscale;
 				elementHeight = elementHeight * yscale;
@@ -105,9 +107,6 @@
 					xscale = 1;
 				}
 			}
-			break;
-		default:
-			return;
 			break;
 		}
 

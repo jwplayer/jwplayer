@@ -18,7 +18,7 @@ jwplayer = function(container) {
 
 var $jw = jwplayer;
 
-jwplayer.version = '6.0.2198';
+jwplayer.version = '6.0.2199';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -431,12 +431,9 @@ jwplayer.source = document.createElement("source");/**
 		
 		html5Extensions = {
 			"f4a": audio+mp4,
-			"f4b": audio+mp4,
 			"f4v": video+mp4,
-			"mov": video+"quicktime",
+			"mov": video+mp4,
 			"m4a": audio+mp4,
-			"m4b": audio+mp4,
-			"m4p": audio+mp4,
 			"m4v": video+mp4,
 			"mp4": video+mp4,
 			"aac": audio+"aac",
@@ -445,13 +442,11 @@ jwplayer.source = document.createElement("source");/**
 			"oga": audio+"ogg",
 			"ogv": video+"ogg",
 			"webm": video+"webm",
-			"m3u8": audio+"x-mpegurl",
-			"wav": audio+"x-wav"
+			"m3u8": "application/vnd.apple.mpegurl"
 		}, 
 		video = "video", 
 		flashExtensions = {
 			"flv": video,
-			"f4b": video,
 			"f4v": video,
 			"mov": video,
 			"m4a": video,
@@ -459,13 +454,8 @@ jwplayer.source = document.createElement("source");/**
 			"mp4": video,
 			"aac": video,
 			"mp3": "sound",
-			"gif": image,
-			"jpeg": image,
-			"jpg": image,
-			"swf": image,
-			"png": image,
-			"rtmp": "rtmp",
-			"hls": "hls"
+			"smil": "rtmp",
+			"m3u8": "hls"
 		};
 	
 	var _extensionmap = utils.extensionmap = {};
@@ -1533,7 +1523,7 @@ jwplayer.source = document.createElement("source");/**
  */
 (function(jwplayer) {
 	var embed = jwplayer.embed,
-		_utils = jwplayer.utils,
+		utils = jwplayer.utils,
 		
 		JW_CSS_CURSOR = "pointer",
 		JW_CSS_NONE = "none",
@@ -1542,7 +1532,7 @@ jwplayer.source = document.createElement("source");/**
 		JW_CSS_ABSOLUTE = "absolute";
 	
 	embed.download = function(_container, _options) {
-		var params = _utils.extend({}, _options),
+		var params = utils.extend({}, _options),
 			_display,
 			_width = params.width ? params.width : 480,
 			_height = params.height ? params.height : 320,
@@ -1582,7 +1572,7 @@ jwplayer.source = document.createElement("source");/**
 				_createElement("div", "icon", _display);
 				_createElement("div", "logo", _display);
 				if (_file) {
-					_display.setAttribute("href", _utils.getAbsolutePath(_file));
+					_display.setAttribute("href", utils.getAbsolutePath(_file));
 				}
 			}
 		}
@@ -2169,6 +2159,9 @@ jwplayer.source = document.createElement("source");/**
 		_this.getFullscreen = function() {
 			return _callInternal('jwGetFullscreen');
 		};
+		_this.getStretching = function() {
+			return _callInternal('jwGetStretching');
+		};
 		_this.getHeight = function() {
 			return _callInternal('jwGetHeight');
 		};
@@ -2221,6 +2214,10 @@ jwplayer.source = document.createElement("source");/**
 			} else {
 				_callInternal("jwSetFullscreen", fullscreen);
 			}
+			return _this;
+		};
+		_this.setStretching = function(stretching) {
+			_callInternal("jwSetStretching", stretching);
 			return _this;
 		};
 		_this.setMute = function(mute) {

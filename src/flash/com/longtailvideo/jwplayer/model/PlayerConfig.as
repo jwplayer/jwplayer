@@ -21,16 +21,12 @@ package com.longtailvideo.jwplayer.model {
 
 		protected var _autostart:Boolean 	= false; 
 		protected var _bandwidth:Number		= 1500;
-		protected var _bufferlength:Number 	= 3; 
-		protected var _displaytitle:Boolean = true; 
 		protected var _fullscreen:Boolean 	= false;
 		protected var _item:Number			= 0;
 		protected var _linktarget:String 	= "_blank";
 		protected var _levels:Array			= null;
 		protected var _mute:Boolean 		= false;
 		protected var _repeat:String 		= RepeatOptions.NONE; 
-		protected var _shuffle:Boolean 		= false; 
-		protected var _smoothing:Boolean 	= true;
 		
 		//TODO: Move to ENUM class
 		protected var _stretching:String 	= "uniform"; 
@@ -56,7 +52,6 @@ package com.longtailvideo.jwplayer.model {
 		protected var _pluginConfig:Object 	= {};
 		
 		protected var _id:String			= "";
-		protected var _playerready:String	= "";
 		protected var _debug:String			= Logger.NONE;
 		
 		public function PlayerConfig():void {
@@ -142,10 +137,13 @@ package com.longtailvideo.jwplayer.model {
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		/** Location of xml playlist file to load **/
-		public function get playlistfile():String { return _playlistfile; }
-		public function set playlistfile(x:String):void { 
+		public function get playlist():String { return _playlistfile; }
+		public function set playlist(x:String):void { 
 			_playlistfile = x; 
 		}
+		public function set playlistfile(x:String):void {
+			_playlistfile = x;
+		} 
 
 
 		/** Author of the video, shown in the display or playlist. **/
@@ -301,18 +299,6 @@ package com.longtailvideo.jwplayer.model {
 		public function get bandwidth():Number { return _bandwidth; }
 		public function set bandwidth(x:Number):void { _bandwidth = x; }
 
-		/** 
-		 * Number of seconds of the file that has to be loaded before starting. Set this to a low value to enable instant-start and to a 
-		 * high value to get less mid-stream buffering. 
-		 * @default 1
-		 **/
-		public function get bufferlength():Number { return _bufferlength; }
-		public function set bufferlength(x:Number):void { _bufferlength = x; }
-
-		/** Set this to true to print the title of a video in the display. @default true **/
-		public function get displaytitle():Boolean { return _displaytitle; }
-		public function set displaytitle(x:Boolean):void { _displaytitle = x; }
-
 		/** Current fullscreen state **/		
 		public function get fullscreen():Boolean { return _fullscreen; }
 		public function set fullscreen(x:Boolean):void { _fullscreen = x; }		
@@ -331,19 +317,11 @@ package com.longtailvideo.jwplayer.model {
 
 		/** Set to list to play the entire playlist once, to always to continously play the song/video/playlist and to single to continue repeating the selected file in a playlist. @default none **/
 		public function get repeat():String { return _repeat; }
-		public function set repeat(x:String):void { _repeat = x.toLowerCase(); }
-
-		/** Shuffle playback of playlist items. @default false **/
-		public function get shuffle():Boolean { return _shuffle; }
-		public function set shuffle(x:Boolean):void { _shuffle = x; }
-
-		/** this sets the smoothing of videos, so you won't see blocks when a video is upscaled. Set this to false to get performance improvements with old computers / big files. Available since 4.4. @default false **/
-		public function get smoothing():Boolean { return _smoothing; }
-		public function set smoothing(x:Boolean):void { _smoothing = x; }
+		public function set repeat(x:String):void { _repeat = x ? x.toLowerCase() : ""; }
 
 		/** Defines how to resize images in the display. Can be none (no stretching), exactfit (disproportionate), uniform (stretch with black borders) or fill (uniform, but completely fill the display). @default uniform **/
 		public function get stretching():String{ return _stretching; }
-		public function set stretching(x:String):void { _stretching = x.toLowerCase(); }
+		public function set stretching(x:String):void { _stretching = x ? x.toLowerCase() : ""; }
 
 		/** Startup volume of the player. Can be 0 to 100. Is saved in a cookie. @default 90 **/
 		public function get volume():Number { return _volume; }
@@ -419,11 +397,6 @@ package com.longtailvideo.jwplayer.model {
 		/** The player's Javascript objectID. Auto-detected, but should be set manually for Linux Javascript support. **/
 		public function get id():String { return _id; }
 		public function set id(x:String):void { PlayerVersion.id = _id = x; }
-		
-		/** Javascript player ready callback handlers **/		
-		public function get playerready():String { return _playerready; }
-		public function set playerready(x:String):void { _playerready = x; }
-		
 		
 	}
 }

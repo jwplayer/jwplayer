@@ -63,7 +63,6 @@
 		}
 		
 		function _clickHandler(evt) {
-			_eventDispatcher.sendEvent(events.JWPLAYER_DISPLAY_CLICK);
 			switch (_api.jwGetState()) {
 			case states.PLAYING:
 			case states.BUFFERING:
@@ -73,6 +72,7 @@
 				_api.jwPlay();
 				break;
 			}
+			_eventDispatcher.sendEvent(events.JWPLAYER_DISPLAY_CLICK);
 		}
 		
 		// Create the icons which will be displayed inside of the display button

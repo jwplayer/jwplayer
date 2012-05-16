@@ -213,8 +213,8 @@ package com.longtailvideo.jwplayer.controller {
 
 			if (confPlaylist && confPlaylist.length > 0) {
 				_model.playlist.load(confPlaylist);
-			} else if (_model.config.playlistfile) {
-				_model.playlist.load(_model.config.playlistfile);
+			} else if (_model.config.playlist) {
+				_model.playlist.load(_model.config.playlist);
 			} else if (_model.config.singleItem.file) {
 				_model.playlist.load(_model.config.singleItem);
 			} else {

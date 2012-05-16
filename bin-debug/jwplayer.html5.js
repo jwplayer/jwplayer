@@ -6,20 +6,22 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2198';
+	jwplayer.html5.version = '6.0.2199';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
- *
+ * 
  * @author pablo
  * @version 6.0
  */
 (function(utils) {
 
 	/**
-	 * Basic serialization: string representations of booleans and numbers are returned typed
-	 *
-	 * @param {String} val	String value to serialize.
-	 * @return {Object}		The original value in the correct primitive type.
+	 * Basic serialization: string representations of booleans and numbers are
+	 * returned typed
+	 * 
+	 * @param {String}
+	 *            val String value to serialize.
+	 * @return {Object} The original value in the correct primitive type.
 	 */
 	utils.serialize = function(val) {
 		if (val == null) {
@@ -34,9 +36,7 @@
 			return Number(val);
 		}
 	}
-	
 
-	
 })(jwplayer.utils);/**
  * Utility methods for the JW Player.
  *
@@ -119,7 +119,7 @@
 			default:
 				if (style.match(/color/i)) {
 					return "#" + utils.pad(value.toString(16), 6) + importantString;
-				} else if (value == 0) {
+				} else if (value === 0) {
 					return 0 + importantString;
 				} else {
 					return Math.ceil(value) + "px" + importantString;
@@ -228,6 +228,7 @@
 	 */
 	utils.stretch = function(stretching, domelement, parentWidth, parentHeight, elementWidth, elementHeight) {
 		if (!domelement) return;
+		if (!stretching) stretching = _stretching.UNIFORM;
 		if (!parentWidth || !parentHeight || !elementWidth || !elementHeight) return;
 		
 		var xscale = parentWidth / elementWidth,
@@ -259,6 +260,7 @@
 			scale = true;
 			break;
 		case _stretching.UNIFORM:
+		default:
 			if (xscale > yscale) {
 				elementWidth = elementWidth * yscale;
 				elementHeight = elementHeight * yscale;
@@ -278,9 +280,6 @@
 					xscale = 1;
 				}
 			}
-			break;
-		default:
-			return;
 			break;
 		}
 
@@ -1789,7 +1788,6 @@
 		}
 		
 		function _clickHandler(evt) {
-			_eventDispatcher.sendEvent(events.JWPLAYER_DISPLAY_CLICK);
 			switch (_api.jwGetState()) {
 			case states.PLAYING:
 			case states.BUFFERING:
@@ -1799,6 +1797,7 @@
 				_api.jwPlay();
 				break;
 			}
+			_eventDispatcher.sendEvent(events.JWPLAYER_DISPLAY_CLICK);
 		}
 		
 		// Create the icons which will be displayed inside of the display button
@@ -3612,9 +3611,9 @@
 			_setState(states.IDLE);
 		}
 
-		function _canPlay(file) {
-			var type = _extensions[utils.extension(file)];
-			return (!!type && !!type.html5 && _videotag.canPlayType(type.html5));
+		function _canPlay(file, type) {
+			var mappedType = _extensions[type ? type : utils.extension(file)];
+			return (!!mappedType && !!mappedType.html5 && _videotag.canPlayType(mappedType.html5));
 		}
 		
 		/** Selects the appropriate file out of all available options **/
@@ -3622,7 +3621,7 @@
 			var sources = item.sources;
 			if (sources && sources.length > 0) {
 				for (var i=0; i<sources.length; i++) {
-					if (_canPlay(sources[i].file))
+					if (_canPlay(sources[i].file), sources[i].type)
 						return sources[i].file;
 				}
 			} else if (item.file && _canPlay(item.file)) {
@@ -4323,10 +4322,6 @@
 
 	_css('.' + PLAYER_CLASS+' .jwexactfit', {
 		'background-size': JW_CSS_100PCT + " " + JW_CSS_100PCT + JW_CSS_IMPORTANT
-	});
-
-	_css('.' + PLAYER_CLASS+' .jwnone', {
-		'background-size': null
 	});
 
 })(jwplayer.html5);

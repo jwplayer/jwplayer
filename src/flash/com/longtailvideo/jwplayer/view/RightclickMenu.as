@@ -78,7 +78,7 @@ package com.longtailvideo.jwplayer.view {
 
 		/** change the debug system. **/
 		protected function debugHandler(evt:ContextMenuEvent):void {
-			var arr:Array = new Array(Logger.NONE, Logger.ARTHROPOD, Logger.CONSOLE, Logger.TRACE);
+			var arr:Array = new Array(Logger.NONE, Logger.CONSOLE, Logger.TRACE);
 			var idx:Number = arr.indexOf(_player.config.debug);
 			idx = (idx == arr.length - 1) ? 0 : idx + 1;
 			debug.caption = 'Logging to ' + arr[idx] + '...';

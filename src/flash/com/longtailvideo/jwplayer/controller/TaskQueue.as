@@ -76,14 +76,11 @@ package com.longtailvideo.jwplayer.controller {
 			}
 			
 			if (event is ErrorEvent) {
-				dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, 
-					"Task Queue failed at step " + taskIndex + ": " +  ErrorEvent(event).text));
+				dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, ErrorEvent(event).text));
 			} else if (event is PlayerEvent && (event as PlayerEvent).message) {
-				dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, 
-					"Task Queue failed at step " + taskIndex + ": " +  PlayerEvent(event).message));
+				dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, PlayerEvent(event).message));
 			} else {
-				dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, 
-								"Task Queue failed at step " + taskIndex + ": " +  event.toString()));
+				dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, event.toString()));
 			}
 			
 			if (continueOnFailure) {
