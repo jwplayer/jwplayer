@@ -27,24 +27,23 @@
 		function _errorHandler(evt) {
 			jwplayer.utils.log('There was a problem setting up the player: ' + evt.message);
 		}
-
 		
 		/** Methods **/
 		
-		this.jwPlay = _controller.play;
-		this.jwPause = _controller.pause;
-		this.jwStop = _controller.stop;
-		this.jwSeek = _controller.seek;
-		this.jwSetVolume = _controller.setVolume;
-		this.jwSetMute = _controller.setMute;
-		this.jwLoad = _controller.load;
-		this.jwPlaylistNext = _controller.next;
-		this.jwPlaylistPrev = _controller.prev;
-		this.jwPlaylistItem = _controller.item;
-		this.jwSetFullscreen = _controller.setFullscreen;
-		this.jwResize = _view.resize;		
-		this.jwSeekDrag = _model.seekDrag;
-		this.jwSetStretching = _controller.setStretching;
+		_api.jwPlay = _controller.play;
+		_api.jwPause = _controller.pause;
+		_api.jwStop = _controller.stop;
+		_api.jwSeek = _controller.seek;
+		_api.jwSetVolume = _controller.setVolume;
+		_api.jwSetMute = _controller.setMute;
+		_api.jwLoad = _controller.load;
+		_api.jwPlaylistNext = _controller.next;
+		_api.jwPlaylistPrev = _controller.prev;
+		_api.jwPlaylistItem = _controller.item;
+		_api.jwSetFullscreen = _controller.setFullscreen;
+		_api.jwResize = _view.resize;		
+		_api.jwSeekDrag = _model.seekDrag;
+		_api.jwSetStretching = _controller.setStretching;
 
 		
 
@@ -56,27 +55,27 @@
 			};
 		}
 		
-		this.jwGetPlaylistIndex = _statevarFactory('item');
-		this.jwGetPosition = _statevarFactory('position');
-		this.jwGetDuration = _statevarFactory('duration');
-		this.jwGetBuffer = _statevarFactory('buffer');
-		this.jwGetWidth = _statevarFactory('width');
-		this.jwGetHeight = _statevarFactory('height');
-		this.jwGetFullscreen = _statevarFactory('fullscreen');
-		this.jwGetVolume = _statevarFactory('volume');
-		this.jwGetMute = _statevarFactory('mute');
-		this.jwGetState = _statevarFactory('state');
-		this.jwGetStretching = _statevarFactory('stretching');
-		this.jwGetPlaylist = _statevarFactory('playlist');
+		_api.jwGetPlaylistIndex = _statevarFactory('item');
+		_api.jwGetPosition = _statevarFactory('position');
+		_api.jwGetDuration = _statevarFactory('duration');
+		_api.jwGetBuffer = _statevarFactory('buffer');
+		_api.jwGetWidth = _statevarFactory('width');
+		_api.jwGetHeight = _statevarFactory('height');
+		_api.jwGetFullscreen = _statevarFactory('fullscreen');
+		_api.jwGetVolume = _statevarFactory('volume');
+		_api.jwGetMute = _statevarFactory('mute');
+		_api.jwGetState = _statevarFactory('state');
+		_api.jwGetStretching = _statevarFactory('stretching');
+		_api.jwGetPlaylist = _statevarFactory('playlist');
 
 		
 		/** InStream API **/
-		this.jwDetachMedia = _controller.detachMedia;
-		this.jwAttachMedia = _controller.attachMedia;
+		_api.jwDetachMedia = _controller.detachMedia;
+		_api.jwAttachMedia = _controller.attachMedia;
 		
 		var _instreamPlayer;
 		
-		this.jwLoadInstream = function(item, options) {
+		_api.jwLoadInstream = function(item, options) {
 			if (!_instreamPlayer) {
 				_instreamPlayer = new html5.instream(_api, _model, _view, _controller);
 			}
@@ -85,15 +84,15 @@
 			}, 10);
 		}
 		
-		this.jwInstreamDestroy = function() {
+		_api.jwInstreamDestroy = function() {
 			if (_instreamPlayer) {
 				_instreamPlayer.jwInstreamDestroy();
 			}
 		}
 		
 		/** Events **/
-		this.jwAddEventListener = _controller.addEventListener;
-		this.jwRemoveEventListener = _controller.removeEventListener;
+		_api.jwAddEventListener = _controller.addEventListener;
+		_api.jwRemoveEventListener = _controller.removeEventListener;
 		
 		
 		_init();

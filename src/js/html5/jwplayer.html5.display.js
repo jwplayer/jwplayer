@@ -5,11 +5,11 @@
  * @version 6.0
  */
 (function(html5) {
-	var _utils = jwplayer.utils,
-		_css = _utils.css,
-		_events = jwplayer.events,
-		_states = _events.state,
-		_rotate = _utils.animations.rotate,
+	var utils = jwplayer.utils,
+		events = jwplayer.events,
+		states = events.state,
+		_rotate = utils.animations.rotate,
+		_css = utils.css,
 		
 
 		DOCUMENT = document,
@@ -33,12 +33,15 @@
 			_button,		
 			_degreesRotated, 
 			_rotationInterval, 
-			_config = _utils.extend({
+			_config = utils.extend({
 				backgroundcolor: '#000',
 				showicons: true
 			}, _skin.getComponentSettings('display'), config);
-			_bufferRotation = !_utils.exists(_config.bufferrotation) ? 15 : parseInt(_config.bufferrotation, 10), 
-			_bufferInterval = !_utils.exists(_config.bufferinterval) ? 100 : parseInt(_config.bufferinterval, 10);
+			_bufferRotation = !utils.exists(_config.bufferrotation) ? 15 : parseInt(_config.bufferrotation, 10), 
+			_bufferInterval = !utils.exists(_config.bufferinterval) ? 100 : parseInt(_config.bufferinterval, 10),
+			_eventDispatcher = new events.eventdispatcher();
+			
+		utils.extend(this, _eventDispatcher);
 			
 		function _init() {
 			_display = DOCUMENT.createElement("div");
@@ -49,20 +52,21 @@
 			_preview.className = "jwpreview";
 			_display.appendChild(_preview);
 			
-			_api.jwAddEventListener(_events.JWPLAYER_PLAYER_STATE, _stateHandler);
-			_api.jwAddEventListener(_events.JWPLAYER_PLAYLIST_ITEM, _itemHandler);
+			_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
+			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_ITEM, _itemHandler);
 			
 			_display.addEventListener('click', _clickHandler, false);
 			
 			_createIcons();
 			
-			_stateHandler({newstate:_states.IDLE});
+			_stateHandler({newstate:states.IDLE});
 		}
 		
 		function _clickHandler(evt) {
+			_eventDispatcher.sendEvent(events.JWPLAYER_DISPLAY_CLICK);
 			switch (_api.jwGetState()) {
-			case _states.PLAYING:
-			case _states.BUFFERING:
+			case states.PLAYING:
+			case states.BUFFERING:
 				_api.jwPause();
 				break;
 			default:
@@ -180,19 +184,19 @@
 			clearInterval(_rotationInterval);
 			
 			switch(state) {
-			case _states.COMPLETED:
-			case _states.IDLE:
+			case states.COMPLETED:
+			case states.IDLE:
 				_setIcon('play');
 				_setVisibility(D_PREVIEW_CLASS, true);
 				break;
-			case _states.BUFFERING:
+			case states.BUFFERING:
 				_setIcon('buffer');
 				break;
-			case _states.PLAYING:
+			case states.PLAYING:
 				_setIcon();
 				_setVisibility(D_PREVIEW_CLASS, false);
 				break;
-			case _states.PAUSED:
+			case states.PAUSED:
 				_setIcon('play');
 				break;
 			}
@@ -238,7 +242,7 @@
 		}
 		
 		function _redraw() {
-			_utils.stretch(_api.jwGetStretching(), _preview, _display.clientWidth, _display.clientHeight, _imageWidth, _imageHeight);
+			utils.stretch(_api.jwGetStretching(), _preview, _display.clientWidth, _display.clientHeight, _imageWidth, _imageHeight);
 		}
 
 		this.redraw = _redraw;

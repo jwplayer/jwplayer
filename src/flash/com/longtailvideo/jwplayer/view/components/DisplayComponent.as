@@ -419,12 +419,7 @@
 		
 		protected function clickHandler(event:MouseEvent):void {
 			dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_CLICK));
-			if(_player.config.displayclick == 'link') {
-				var link:String = _player.playlist.currentItem.link;
-				if(link) {
-					navigateToURL(new URLRequest(Strings.cleanLink(link)),_player.config.linktarget);
-				}
-			} else if (currentState == PlayerState.PLAYING || currentState == PlayerState.BUFFERING) {
+			if (currentState == PlayerState.PLAYING || currentState == PlayerState.BUFFERING) {
 				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_PAUSE));
 			} else {
 				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_PLAY));

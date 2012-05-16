@@ -47,6 +47,9 @@
 		JWPLAYER_PLAYLIST_LOADED : 'jwplayerPlaylistLoaded',
 		JWPLAYER_PLAYLIST_ITEM : 'jwplayerPlaylistItem',
 
+		// Display CLick
+		JWPLAYER_DISPLAY_CLICK : 'jwplayerViewClick',
+
 		// Instream events
 		JWPLAYER_INSTREAM_CLICK : 'jwplayerInstreamClicked',
 		JWPLAYER_INSTREAM_DESTROYED : 'jwplayerInstreamDestroyed'

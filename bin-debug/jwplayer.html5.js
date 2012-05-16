@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2197';
+	jwplayer.html5.version = '6.0.2198';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  *
@@ -1462,6 +1462,7 @@
 				_eventDispatcher.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_ITEM, {index: _model.item});
 				
 				_model.addGlobalListener(_forward);
+				_view.addGlobalListener(_forward);
 				
 				_load();
 				
@@ -1575,7 +1576,7 @@
 				_video.pause();
 			}
 		}
-
+		
 		function _isIdle() {
 			return (_model.state == states.IDLE || _model.state == states.COMPLETED);
 		}
@@ -1730,11 +1731,11 @@
  * @version 6.0
  */
 (function(html5) {
-	var _utils = jwplayer.utils,
-		_css = _utils.css,
-		_events = jwplayer.events,
-		_states = _events.state,
-		_rotate = _utils.animations.rotate,
+	var utils = jwplayer.utils,
+		events = jwplayer.events,
+		states = events.state,
+		_rotate = utils.animations.rotate,
+		_css = utils.css,
 		
 
 		DOCUMENT = document,
@@ -1758,12 +1759,15 @@
 			_button,		
 			_degreesRotated, 
 			_rotationInterval, 
-			_config = _utils.extend({
+			_config = utils.extend({
 				backgroundcolor: '#000',
 				showicons: true
 			}, _skin.getComponentSettings('display'), config);
-			_bufferRotation = !_utils.exists(_config.bufferrotation) ? 15 : parseInt(_config.bufferrotation, 10), 
-			_bufferInterval = !_utils.exists(_config.bufferinterval) ? 100 : parseInt(_config.bufferinterval, 10);
+			_bufferRotation = !utils.exists(_config.bufferrotation) ? 15 : parseInt(_config.bufferrotation, 10), 
+			_bufferInterval = !utils.exists(_config.bufferinterval) ? 100 : parseInt(_config.bufferinterval, 10),
+			_eventDispatcher = new events.eventdispatcher();
+			
+		utils.extend(this, _eventDispatcher);
 			
 		function _init() {
 			_display = DOCUMENT.createElement("div");
@@ -1774,20 +1778,21 @@
 			_preview.className = "jwpreview";
 			_display.appendChild(_preview);
 			
-			_api.jwAddEventListener(_events.JWPLAYER_PLAYER_STATE, _stateHandler);
-			_api.jwAddEventListener(_events.JWPLAYER_PLAYLIST_ITEM, _itemHandler);
+			_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
+			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_ITEM, _itemHandler);
 			
 			_display.addEventListener('click', _clickHandler, false);
 			
 			_createIcons();
 			
-			_stateHandler({newstate:_states.IDLE});
+			_stateHandler({newstate:states.IDLE});
 		}
 		
 		function _clickHandler(evt) {
+			_eventDispatcher.sendEvent(events.JWPLAYER_DISPLAY_CLICK);
 			switch (_api.jwGetState()) {
-			case _states.PLAYING:
-			case _states.BUFFERING:
+			case states.PLAYING:
+			case states.BUFFERING:
 				_api.jwPause();
 				break;
 			default:
@@ -1905,19 +1910,19 @@
 			clearInterval(_rotationInterval);
 			
 			switch(state) {
-			case _states.COMPLETED:
-			case _states.IDLE:
+			case states.COMPLETED:
+			case states.IDLE:
 				_setIcon('play');
 				_setVisibility(D_PREVIEW_CLASS, true);
 				break;
-			case _states.BUFFERING:
+			case states.BUFFERING:
 				_setIcon('buffer');
 				break;
-			case _states.PLAYING:
+			case states.PLAYING:
 				_setIcon();
 				_setVisibility(D_PREVIEW_CLASS, false);
 				break;
-			case _states.PAUSED:
+			case states.PAUSED:
 				_setIcon('play');
 				break;
 			}
@@ -1963,7 +1968,7 @@
 		}
 		
 		function _redraw() {
-			_utils.stretch(_api.jwGetStretching(), _preview, _display.clientWidth, _display.clientHeight, _imageWidth, _imageHeight);
+			utils.stretch(_api.jwGetStretching(), _preview, _display.clientWidth, _display.clientHeight, _imageWidth, _imageHeight);
 		}
 
 		this.redraw = _redraw;
@@ -2560,24 +2565,23 @@
 		function _errorHandler(evt) {
 			jwplayer.utils.log('There was a problem setting up the player: ' + evt.message);
 		}
-
 		
 		/** Methods **/
 		
-		this.jwPlay = _controller.play;
-		this.jwPause = _controller.pause;
-		this.jwStop = _controller.stop;
-		this.jwSeek = _controller.seek;
-		this.jwSetVolume = _controller.setVolume;
-		this.jwSetMute = _controller.setMute;
-		this.jwLoad = _controller.load;
-		this.jwPlaylistNext = _controller.next;
-		this.jwPlaylistPrev = _controller.prev;
-		this.jwPlaylistItem = _controller.item;
-		this.jwSetFullscreen = _controller.setFullscreen;
-		this.jwResize = _view.resize;		
-		this.jwSeekDrag = _model.seekDrag;
-		this.jwSetStretching = _controller.setStretching;
+		_api.jwPlay = _controller.play;
+		_api.jwPause = _controller.pause;
+		_api.jwStop = _controller.stop;
+		_api.jwSeek = _controller.seek;
+		_api.jwSetVolume = _controller.setVolume;
+		_api.jwSetMute = _controller.setMute;
+		_api.jwLoad = _controller.load;
+		_api.jwPlaylistNext = _controller.next;
+		_api.jwPlaylistPrev = _controller.prev;
+		_api.jwPlaylistItem = _controller.item;
+		_api.jwSetFullscreen = _controller.setFullscreen;
+		_api.jwResize = _view.resize;		
+		_api.jwSeekDrag = _model.seekDrag;
+		_api.jwSetStretching = _controller.setStretching;
 
 		
 
@@ -2589,27 +2593,27 @@
 			};
 		}
 		
-		this.jwGetPlaylistIndex = _statevarFactory('item');
-		this.jwGetPosition = _statevarFactory('position');
-		this.jwGetDuration = _statevarFactory('duration');
-		this.jwGetBuffer = _statevarFactory('buffer');
-		this.jwGetWidth = _statevarFactory('width');
-		this.jwGetHeight = _statevarFactory('height');
-		this.jwGetFullscreen = _statevarFactory('fullscreen');
-		this.jwGetVolume = _statevarFactory('volume');
-		this.jwGetMute = _statevarFactory('mute');
-		this.jwGetState = _statevarFactory('state');
-		this.jwGetStretching = _statevarFactory('stretching');
-		this.jwGetPlaylist = _statevarFactory('playlist');
+		_api.jwGetPlaylistIndex = _statevarFactory('item');
+		_api.jwGetPosition = _statevarFactory('position');
+		_api.jwGetDuration = _statevarFactory('duration');
+		_api.jwGetBuffer = _statevarFactory('buffer');
+		_api.jwGetWidth = _statevarFactory('width');
+		_api.jwGetHeight = _statevarFactory('height');
+		_api.jwGetFullscreen = _statevarFactory('fullscreen');
+		_api.jwGetVolume = _statevarFactory('volume');
+		_api.jwGetMute = _statevarFactory('mute');
+		_api.jwGetState = _statevarFactory('state');
+		_api.jwGetStretching = _statevarFactory('stretching');
+		_api.jwGetPlaylist = _statevarFactory('playlist');
 
 		
 		/** InStream API **/
-		this.jwDetachMedia = _controller.detachMedia;
-		this.jwAttachMedia = _controller.attachMedia;
+		_api.jwDetachMedia = _controller.detachMedia;
+		_api.jwAttachMedia = _controller.attachMedia;
 		
 		var _instreamPlayer;
 		
-		this.jwLoadInstream = function(item, options) {
+		_api.jwLoadInstream = function(item, options) {
 			if (!_instreamPlayer) {
 				_instreamPlayer = new html5.instream(_api, _model, _view, _controller);
 			}
@@ -2618,15 +2622,15 @@
 			}, 10);
 		}
 		
-		this.jwInstreamDestroy = function() {
+		_api.jwInstreamDestroy = function() {
 			if (_instreamPlayer) {
 				_instreamPlayer.jwInstreamDestroy();
 			}
 		}
 		
 		/** Events **/
-		this.jwAddEventListener = _controller.addEventListener;
-		this.jwRemoveEventListener = _controller.removeEventListener;
+		_api.jwAddEventListener = _controller.addEventListener;
+		_api.jwRemoveEventListener = _controller.removeEventListener;
 		
 		
 		_init();
@@ -3820,11 +3824,11 @@
  * @version 6.0
  */
 (function(html5) {
-	var _jw = jwplayer, 
-		_utils = _jw.utils, 
-		_css = _utils.css, 
-		_events = jwplayer.events, 
-		_states = _events.state,
+	var jw = jwplayer, 
+		utils = jw.utils, 
+		events = jwplayer.events, 
+		states = events.state,
+		_css = utils.css, 
 
 		DOCUMENT = document, 
 		PLAYER_CLASS = "jwplayer", 
@@ -3847,12 +3851,13 @@
 			_videoTag,
 			_videoLayer,
 			_instreamLayer,
-			
 			_controlbar,
 			_display,
 			_playlist,
-			
-			_audioMode;
+			_audioMode,
+			_eventDispatcher = new events.eventdispatcher();
+		
+		utils.extend(this, _eventDispatcher);
 
 		this.setup = function(skin) {
 			_api.skin = skin;
@@ -3884,9 +3889,9 @@
 			DOCUMENT.addEventListener('mozfullscreenchange', _fullscreenChangeHandler, false);
 			DOCUMENT.addEventListener('keydown', _keyHandler, false);
 			
-			_api.jwAddEventListener(_events.JWPLAYER_PLAYER_STATE, _stateHandler);
+			_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
 
-			_stateHandler({newstate:_states.IDLE});
+			_stateHandler({newstate:states.IDLE});
 			
 			_controlsLayer.addEventListener('mouseout', _fadeControls, false);
 			_controlsLayer.addEventListener('mousemove', _startFade, false);
@@ -3894,7 +3899,6 @@
 				_controlbar.getDisplayElement().addEventListener('mousemove', _cancelFade, false);
 				_controlbar.getDisplayElement().addEventListener('mouseout', _resumeFade, false);
 			}
-
 			
 		}
 	
@@ -3906,7 +3910,7 @@
 		
 		function _startFade() {
 			clearTimeout(_controlsTimeout);
-			if (_api.jwGetState() == _states.PLAYING || _api.jwGetState() == _states.PAUSED) {
+			if (_api.jwGetState() == states.PLAYING || _api.jwGetState() == states.PAUSED) {
 				_showControlbar();
 				if (!_inCB) {
 					_controlsTimeout = setTimeout(_fadeControls, _timeoutDuration);
@@ -3926,7 +3930,7 @@
 		}
 		
 		function _fadeControls() {
-			if (_api.jwGetState() == _states.PLAYING || _api.jwGetState() == _states.PAUSED) {
+			if (_api.jwGetState() == states.PLAYING || _api.jwGetState() == states.PAUSED) {
 				_hideControlbar();
 			}
 			clearTimeout(_controlsTimeout);
@@ -3940,6 +3944,10 @@
 				displaySettings = _model.componentConfig('display');
 		
 			_display = new html5.display(_api, displaySettings);
+			_display.addEventListener(events.JWPLAYER_DISPLAY_CLICK, function(evt) {
+				// Forward Display Clicks
+				_eventDispatcher.sendEvent(evt.type, evt);
+			});
 			_controlsLayer.appendChild(_display.getDisplayElement());
 			
 			if (_model.playlistsize && _model.playlistposition && _model.playlistposition != "none") {
@@ -3947,7 +3955,7 @@
 				_playlistLayer.appendChild(_playlist.getDisplayElement());
 			}
 
-			if (!_utils.isMobile() || (_model.mobilecontrols && _utils.isMobile())) {
+			if (!utils.isMobile() || (_model.mobilecontrols && utils.isMobile())) {
 				// TODO: allow override for showing HTML controlbar on iPads
 				_controlbar = new html5.controlbar(_api, cbSettings);
 				_controlsLayer.appendChild(_controlbar.getDisplayElement());
@@ -3961,7 +3969,7 @@
 		 * Otherwise, use the false fullscreen method using CSS. 
 		 **/
 		var _fullscreen = this.fullscreen = function(state) {
-			if (!_utils.exists(state)) {
+			if (!utils.exists(state)) {
 				state = !_model.fullscreen;
 			}
 
@@ -3996,7 +4004,7 @@
 		 * Resize the player
 		 */
 		function _resize(width, height) {
-			if (_utils.exists(width) && _utils.exists(height)) {
+			if (utils.exists(width) && utils.exists(height)) {
 				_css(_internalSelector(), {
 					width: width,
 					height: height
@@ -4055,7 +4063,7 @@
 		}
 		
 		function _resizeMedia() {
-			_utils.stretch(_model.stretching, _videoTag, 
+			utils.stretch(_model.stretching, _videoTag, 
 					_videoLayer.clientWidth, _videoLayer.clientHeight, 
 					_videoTag.videoWidth, _videoTag.videoHeight);
 		}
@@ -4165,20 +4173,20 @@
 		
 		function _updateState(state) {
 			switch(state) {
-			case _states.PLAYING:
+			case states.PLAYING:
 				_showVideo(true);
 				_resizeMedia();
 				_startFade();
 				break;
-			case _states.COMPLETED:
-			case _states.IDLE:
+			case states.COMPLETED:
+			case states.IDLE:
 				_showVideo(false);
 				_hideControlbar();
 				_showDisplay();
 				break;
-			case _states.BUFFERING:
-			case _states.PAUSED:
-				//if (!_utils.isMobile()) {
+			case states.BUFFERING:
+			case states.PAUSED:
+				//if (!utils.isMobile()) {
 					_showControls();
 				//}
 				break;
@@ -4194,7 +4202,7 @@
 			_setVisibility(_internalSelector(VIEW_CONTROLS_CONTAINER_CLASS), false);
 			_instreamLayer.appendChild(instreamDisplay);
 			_instreamVideo = instreamVideo;
-			_stateHandler({newstate:_states.PLAYING});
+			_stateHandler({newstate:states.PLAYING});
 			_instreamMode = true;
 		}
 		

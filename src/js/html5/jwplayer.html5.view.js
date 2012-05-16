@@ -5,11 +5,11 @@
  * @version 6.0
  */
 (function(html5) {
-	var _jw = jwplayer, 
-		_utils = _jw.utils, 
-		_css = _utils.css, 
-		_events = jwplayer.events, 
-		_states = _events.state,
+	var jw = jwplayer, 
+		utils = jw.utils, 
+		events = jwplayer.events, 
+		states = events.state,
+		_css = utils.css, 
 
 		DOCUMENT = document, 
 		PLAYER_CLASS = "jwplayer", 
@@ -32,12 +32,13 @@
 			_videoTag,
 			_videoLayer,
 			_instreamLayer,
-			
 			_controlbar,
 			_display,
 			_playlist,
-			
-			_audioMode;
+			_audioMode,
+			_eventDispatcher = new events.eventdispatcher();
+		
+		utils.extend(this, _eventDispatcher);
 
 		this.setup = function(skin) {
 			_api.skin = skin;
@@ -69,9 +70,9 @@
 			DOCUMENT.addEventListener('mozfullscreenchange', _fullscreenChangeHandler, false);
 			DOCUMENT.addEventListener('keydown', _keyHandler, false);
 			
-			_api.jwAddEventListener(_events.JWPLAYER_PLAYER_STATE, _stateHandler);
+			_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
 
-			_stateHandler({newstate:_states.IDLE});
+			_stateHandler({newstate:states.IDLE});
 			
 			_controlsLayer.addEventListener('mouseout', _fadeControls, false);
 			_controlsLayer.addEventListener('mousemove', _startFade, false);
@@ -79,7 +80,6 @@
 				_controlbar.getDisplayElement().addEventListener('mousemove', _cancelFade, false);
 				_controlbar.getDisplayElement().addEventListener('mouseout', _resumeFade, false);
 			}
-
 			
 		}
 	
@@ -91,7 +91,7 @@
 		
 		function _startFade() {
 			clearTimeout(_controlsTimeout);
-			if (_api.jwGetState() == _states.PLAYING || _api.jwGetState() == _states.PAUSED) {
+			if (_api.jwGetState() == states.PLAYING || _api.jwGetState() == states.PAUSED) {
 				_showControlbar();
 				if (!_inCB) {
 					_controlsTimeout = setTimeout(_fadeControls, _timeoutDuration);
@@ -111,7 +111,7 @@
 		}
 		
 		function _fadeControls() {
-			if (_api.jwGetState() == _states.PLAYING || _api.jwGetState() == _states.PAUSED) {
+			if (_api.jwGetState() == states.PLAYING || _api.jwGetState() == states.PAUSED) {
 				_hideControlbar();
 			}
 			clearTimeout(_controlsTimeout);
@@ -125,6 +125,10 @@
 				displaySettings = _model.componentConfig('display');
 		
 			_display = new html5.display(_api, displaySettings);
+			_display.addEventListener(events.JWPLAYER_DISPLAY_CLICK, function(evt) {
+				// Forward Display Clicks
+				_eventDispatcher.sendEvent(evt.type, evt);
+			});
 			_controlsLayer.appendChild(_display.getDisplayElement());
 			
 			if (_model.playlistsize && _model.playlistposition && _model.playlistposition != "none") {
@@ -132,7 +136,7 @@
 				_playlistLayer.appendChild(_playlist.getDisplayElement());
 			}
 
-			if (!_utils.isMobile() || (_model.mobilecontrols && _utils.isMobile())) {
+			if (!utils.isMobile() || (_model.mobilecontrols && utils.isMobile())) {
 				// TODO: allow override for showing HTML controlbar on iPads
 				_controlbar = new html5.controlbar(_api, cbSettings);
 				_controlsLayer.appendChild(_controlbar.getDisplayElement());
@@ -146,7 +150,7 @@
 		 * Otherwise, use the false fullscreen method using CSS. 
 		 **/
 		var _fullscreen = this.fullscreen = function(state) {
-			if (!_utils.exists(state)) {
+			if (!utils.exists(state)) {
 				state = !_model.fullscreen;
 			}
 
@@ -181,7 +185,7 @@
 		 * Resize the player
 		 */
 		function _resize(width, height) {
-			if (_utils.exists(width) && _utils.exists(height)) {
+			if (utils.exists(width) && utils.exists(height)) {
 				_css(_internalSelector(), {
 					width: width,
 					height: height
@@ -240,7 +244,7 @@
 		}
 		
 		function _resizeMedia() {
-			_utils.stretch(_model.stretching, _videoTag, 
+			utils.stretch(_model.stretching, _videoTag, 
 					_videoLayer.clientWidth, _videoLayer.clientHeight, 
 					_videoTag.videoWidth, _videoTag.videoHeight);
 		}
@@ -350,20 +354,20 @@
 		
 		function _updateState(state) {
 			switch(state) {
-			case _states.PLAYING:
+			case states.PLAYING:
 				_showVideo(true);
 				_resizeMedia();
 				_startFade();
 				break;
-			case _states.COMPLETED:
-			case _states.IDLE:
+			case states.COMPLETED:
+			case states.IDLE:
 				_showVideo(false);
 				_hideControlbar();
 				_showDisplay();
 				break;
-			case _states.BUFFERING:
-			case _states.PAUSED:
-				//if (!_utils.isMobile()) {
+			case states.BUFFERING:
+			case states.PAUSED:
+				//if (!utils.isMobile()) {
 					_showControls();
 				//}
 				break;
@@ -379,7 +383,7 @@
 			_setVisibility(_internalSelector(VIEW_CONTROLS_CONTAINER_CLASS), false);
 			_instreamLayer.appendChild(instreamDisplay);
 			_instreamVideo = instreamVideo;
-			_stateHandler({newstate:_states.PLAYING});
+			_stateHandler({newstate:states.PLAYING});
 			_instreamMode = true;
 		}
 		

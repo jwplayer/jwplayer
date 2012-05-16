@@ -44,6 +44,7 @@
 				_eventDispatcher.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_ITEM, {index: _model.item});
 				
 				_model.addGlobalListener(_forward);
+				_view.addGlobalListener(_forward);
 				
 				_load();
 				
@@ -157,7 +158,7 @@
 				_video.pause();
 			}
 		}
-
+		
 		function _isIdle() {
 			return (_model.state == states.IDLE || _model.state == states.COMPLETED);
 		}
