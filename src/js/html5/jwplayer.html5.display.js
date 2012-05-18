@@ -186,20 +186,23 @@
 			switch(state) {
 			case states.COMPLETED:
 			case states.IDLE:
-				_setIcon('play');
 				_setVisibility(D_PREVIEW_CLASS, true);
+				_setIcon('play');
 				break;
 			case states.BUFFERING:
 				_setIcon('buffer');
 				break;
 			case states.PLAYING:
 				_setIcon();
-				_setVisibility(D_PREVIEW_CLASS, false);
 				break;
 			case states.PAUSED:
 				_setIcon('play');
 				break;
 			}
+		}
+		
+		this.hidePreview = function(state) {
+			_setVisibility(D_PREVIEW_CLASS, !state);
 		}
 
 		this.getDisplayElement = function() {

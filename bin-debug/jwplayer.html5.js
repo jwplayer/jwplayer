@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2199';
+	jwplayer.html5.version = '6.0.2200';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -1911,20 +1911,23 @@
 			switch(state) {
 			case states.COMPLETED:
 			case states.IDLE:
-				_setIcon('play');
 				_setVisibility(D_PREVIEW_CLASS, true);
+				_setIcon('play');
 				break;
 			case states.BUFFERING:
 				_setIcon('buffer');
 				break;
 			case states.PLAYING:
 				_setIcon();
-				_setVisibility(D_PREVIEW_CLASS, false);
 				break;
 			case states.PAUSED:
 				_setIcon('play');
 				break;
 			}
+		}
+		
+		this.hidePreview = function(state) {
+			_setVisibility(D_PREVIEW_CLASS, !state);
 		}
 
 		this.getDisplayElement = function() {
@@ -3490,9 +3493,13 @@
 
 		// Current playlist item
 		_item,
-		// Currently playing file
-		_file,
+		// Currently playing source
+		_source,
+		// Current type - used to filter the sources
+		_type,
 		// Reference to the video tag
+		_sourcesByType,
+		// All sources organized by type
 		_videotag,
 		// Current duration
 		_duration,
@@ -3611,23 +3618,36 @@
 			_setState(states.IDLE);
 		}
 
-		function _canPlay(file, type) {
-			var mappedType = _extensions[type ? type : utils.extension(file)];
+		function _canPlay(type) {
+			var mappedType = _extensions[type];
 			return (!!mappedType && !!mappedType.html5 && _videotag.canPlayType(mappedType.html5));
 		}
 		
-		/** Selects the appropriate file out of all available options **/
-		function _selectFile(item) {
-			var sources = item.sources;
-			if (sources && sources.length > 0) {
-				for (var i=0; i<sources.length; i++) {
-					if (_canPlay(sources[i].file), sources[i].type)
-						return sources[i].file;
+		/** Selects the appropriate type out of all available sources, and picks the first source of that type **/
+		function _selectType() {
+			for (var type in _sourcesByType) {
+				if (_canPlay(type)) {
+					return type;
 				}
-			} else if (item.file && _canPlay(item.file)) {
-				return item.file;
 			}
 			return null;
+		}
+		
+		function _sortSources(sources) {
+			var sorted = {};
+			if (sources) {
+				for (var i=0; i<sources.length; i++) {
+					var type = sources[i].type,
+						file = sources[i].file;
+					if (!type) {
+						type = utils.extension(file);
+						sources[i].type = type;
+					}
+					if (!sorted[type]) sorted[type] = [];
+					sorted[type].push(sources[i]);
+				}
+			}
+			return sorted;
 		}
 		
 		this.load = function(item) {
@@ -3640,15 +3660,18 @@
 			_duration = item.duration ? item.duration : -1;
 			_position = 0;
 			
-			_file = _selectFile(_item);
-			
-			if (!_file) {
+			_sourcesByType = _sortSources(_item.sources);
+			_type = _selectType();
+
+			if (!_type) {
 				utils.log("Could not find a file to play.");
 				return;
 			}
 			
+			_source = _sourcesByType[_type][0];
+			
 			_setState(states.BUFFERING); 
-			_videotag.src = _file;
+			_videotag.src = _source.file;
 			_videotag.load();
 			
 			_bufferInterval = setInterval(_sendBufferUpdate, 100);
@@ -3809,6 +3832,10 @@
 		// TODO: remove; used by InStream
 		this.getTag = function() {
 			return _videotag;
+		}
+		
+		this.audioMode = function() {
+			return (_type && _extensions[_type].html5 && _extensions[_type].html5.indexOf("audio") == 0);
 		}
 
 		// Call constructor
@@ -4173,14 +4200,18 @@
 		function _updateState(state) {
 			switch(state) {
 			case states.PLAYING:
-				_showVideo(true);
-				_resizeMedia();
+				if (!_model.getVideo().audioMode()) {
+					_showVideo(true);
+					_resizeMedia();
+					_display.hidePreview(true);
+				}
 				_startFade();
 				break;
 			case states.COMPLETED:
 			case states.IDLE:
 				_showVideo(false);
 				_hideControlbar();
+				_display.hidePreview(false);
 				_showDisplay();
 				break;
 			case states.BUFFERING:

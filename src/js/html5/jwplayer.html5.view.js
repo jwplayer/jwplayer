@@ -355,14 +355,18 @@
 		function _updateState(state) {
 			switch(state) {
 			case states.PLAYING:
-				_showVideo(true);
-				_resizeMedia();
+				if (!_model.getVideo().audioMode()) {
+					_showVideo(true);
+					_resizeMedia();
+					_display.hidePreview(true);
+				}
 				_startFade();
 				break;
 			case states.COMPLETED:
 			case states.IDLE:
 				_showVideo(false);
 				_hideControlbar();
+				_display.hidePreview(false);
 				_showDisplay();
 				break;
 			case states.BUFFERING:
