@@ -119,6 +119,7 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _height:Number;
 		protected var _timeSlider:Slider;
 		protected var _volSlider:Slider;
+		protected var _forcing:Boolean = false;
 
 		protected var _bgColorSheet:Sprite;
 
@@ -226,7 +227,7 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		/** Hide above controlbar again when move has timed out. **/
 		private function moveTimeout(evt:Event=null):void {
-			if (!hidden) {
+			if (!hidden && !_forcing) {
 				if (alpha > 0) {
 					sendHide();
 					animations.fade(0, 0.5);
@@ -239,7 +240,7 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		/** If the mouse leaves the stage, hide the controlbar if position is 'over' **/
 		private function mouseLeftStage(evt:Event=null):void {
-			if (fadeOnTimeout && !hidden) {
+			if (fadeOnTimeout && !hidden && !_forcing) {
 				if (_player.state != PlayerState.IDLE) {
 					if (evt) { sendHide(); }
 					animations.fade(0);
@@ -252,6 +253,7 @@ package com.longtailvideo.jwplayer.view.components {
 				case PlayerState.BUFFERING:
 				case PlayerState.PLAYING:
 				case PlayerState.PAUSED:
+					stopFader();
 					startFader();
 					break;
 				case PlayerState.IDLE:
@@ -758,6 +760,9 @@ package com.longtailvideo.jwplayer.view.components {
 			clearDividers();
 			alignTextFields();
 			_layoutManager.resize(_width, _height);
+			if (_forcing) {
+				stopFader();
+			}
 		}
 
 
@@ -801,6 +806,11 @@ package com.longtailvideo.jwplayer.view.components {
 				this.visible = true;
 				sendShow();
 			}
+		}
+		
+		public function force(state:Boolean):void {
+			_forcing = state;
+			redraw();
 		}
 		
 		override public function hide():void {

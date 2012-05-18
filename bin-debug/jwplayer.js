@@ -18,7 +18,7 @@ jwplayer = function(container) {
 
 var $jw = jwplayer;
 
-jwplayer.version = '6.0.2202';
+jwplayer.version = '6.0.2203';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -2360,7 +2360,11 @@ jwplayer.source = document.createElement("source");/**
 		_this.setup = function(options) {
 			if (jwplayer.embed) {
 				// Destroy original API on setup() to remove existing listeners
-				_remove(this);
+				_remove(_this);
+				if (utils.clearCss) {
+					// Clear HTML5 rules
+					utils.clearCss("#"+_this.id);
+				}
 				var newApi = jwplayer(_this.id);
 				newApi.config = options;
 				return new jwplayer.embed(newApi);

@@ -311,7 +311,11 @@
 		_this.setup = function(options) {
 			if (jwplayer.embed) {
 				// Destroy original API on setup() to remove existing listeners
-				_remove(this);
+				_remove(_this);
+				if (utils.clearCss) {
+					// Clear HTML5 rules
+					utils.clearCss("#"+_this.id);
+				}
 				var newApi = jwplayer(_this.id);
 				newApi.config = options;
 				return new jwplayer.embed(newApi);

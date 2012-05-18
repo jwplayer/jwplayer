@@ -377,6 +377,15 @@ package com.longtailvideo.jwplayer.view {
 		public function redraw():void {
 			layoutManager.resize(RootReference.stage.stageWidth, RootReference.stage.stageHeight);
 
+			if (audioMode) {
+				_components.controlbar.force(true);
+				_components.controlbar.resize(_player.config.width, _player.config.height);
+				_components.display.hide();
+				_components.dock.hide();
+				_components.playlist.hide();
+				return;
+			}
+			
 			_components.resize(_player.config.width, _player.config.height);
 			if (!_fullscreen) {
 				_normalScreen.width = _player.config.width;
@@ -678,6 +687,10 @@ package com.longtailvideo.jwplayer.view {
 				}
 				_instreamPlugin = null;
 			}
+		}
+		
+		protected function get audioMode():Boolean {
+			return RootReference.stage.stageHeight <= 40;
 		}
 		
 	}

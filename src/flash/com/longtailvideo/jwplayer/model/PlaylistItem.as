@@ -251,9 +251,12 @@ package com.longtailvideo.jwplayer.model {
 			_provider = (p == "audio") ? "sound" : p;
 		}
 		
-		// For backwards compatibility
-		public function get type():String { return _provider; }
-		public function set type(t:String):void { provider = t; }
+		public function get type():String {
+			if (_levels.length > 0) {
+				var level:Object = _levels[_currentLevel]; 
+				return level.type ? level.type : Strings.extension(level.file);
+			} else return null;
+		}
 		
 	}
 }
