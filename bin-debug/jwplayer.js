@@ -18,7 +18,7 @@ jwplayer = function(container) {
 
 var $jw = jwplayer;
 
-jwplayer.version = '6.0.2201';
+jwplayer.version = '6.0.2202';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -1861,7 +1861,7 @@ jwplayer.source = document.createElement("source");/**
 							return true;
 						} else {
 							for (var i = 0; i < sources.length; i++) {
-								if (sources[i].file && _flashCanPlay(sources[i].file, item.type)) {
+								if (sources[i].file && _flashCanPlay(sources[i].file, sources[i].type)) {
 									return true;
 								}
 							}
@@ -1890,15 +1890,15 @@ jwplayer.source = document.createElement("source");/**
 			
 			if (!type) type = extension;
 			
-			// If there is no extension, use Flash
-			if (!extension) {
+			// If there is no extension, use Flash (assume playlist)
+			if (!type) {
 				return true;
 			}
 			
 			// Extension is in the extension map
-			if (utils.exists(utils.extensionmap[extension])) {
+			if (utils.exists(utils.extensionmap[type])) {
 				// Return true if the extension has a flash mapping
-				return utils.exists(utils.extensionmap[extension].flash);
+				return utils.exists(utils.extensionmap[type].flash);
 			}
 			return false;
 		}
@@ -1908,7 +1908,8 @@ jwplayer.source = document.createElement("source");/**
 /**
  * HTML5 mode embedder for the JW Player
  * @author Zach
- * @version 5.8
+ * @modified Pablo
+ * @version 6.0
  */
 (function(jwplayer) {
 	var utils = jwplayer.utils, extensionmap = utils.extensionmap;
@@ -2006,20 +2007,17 @@ jwplayer.source = document.createElement("source");/**
 		function _html5CanPlay(file, type) {
 			// HTML5 playback is not sufficiently supported on Blackberry devices; should fail over automatically.
 			if(navigator.userAgent.match(/BlackBerry/i) !== null) { return false; }
-			
-			var extension = utils.extension(file);
-			
-			type = type ? type : extension;
+
+			var mappedType = extensionmap[type ? type : utils.extension(file)];
 			
 			// If no type or unrecognized type, don't allow to play
-			if ((!type) || !extensionmap[type]) {
+			if (!mappedType) {
 				return false;
 			}
 			
-						
 			// Last, but not least, we ask the browser 
 			// (But only if it's a video with an extension known to work in HTML5)
-			return _browserCanPlay(extensionmap[type].html5);
+			return _browserCanPlay(mappedType.html5);
 		};
 		
 		/**

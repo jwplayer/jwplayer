@@ -223,7 +223,7 @@
 							return true;
 						} else {
 							for (var i = 0; i < sources.length; i++) {
-								if (sources[i].file && _flashCanPlay(sources[i].file, item.type)) {
+								if (sources[i].file && _flashCanPlay(sources[i].file, sources[i].type)) {
 									return true;
 								}
 							}
@@ -252,15 +252,15 @@
 			
 			if (!type) type = extension;
 			
-			// If there is no extension, use Flash
-			if (!extension) {
+			// If there is no extension, use Flash (assume playlist)
+			if (!type) {
 				return true;
 			}
 			
 			// Extension is in the extension map
-			if (utils.exists(utils.extensionmap[extension])) {
+			if (utils.exists(utils.extensionmap[type])) {
 				// Return true if the extension has a flash mapping
-				return utils.exists(utils.extensionmap[extension].flash);
+				return utils.exists(utils.extensionmap[type].flash);
 			}
 			return false;
 		}

@@ -28,9 +28,25 @@ package com.longtailvideo.jwplayer.model {
 		
 		
 		public function PlaylistItem(obj:Object = null) {
-			if (obj && obj.sources is Array) {
+			if (!obj) obj = {};
+			
+			if (obj.sources is Array) {
 				obj.levels = obj.sources;
 				delete obj.sources;
+			}
+			
+			if (!obj.levels && obj.file) {
+				var singleLevel:Object = {
+					file: obj.file,
+					type: obj.type,
+					width: obj.width,
+					label: obj.label
+				};
+				delete obj.file;
+				delete obj.type;
+				delete obj.width;
+				delete obj.label;
+				obj.levels = [singleLevel];
 			}
 			
 			for (var itm:String in obj) {
@@ -70,7 +86,6 @@ package com.longtailvideo.jwplayer.model {
 			}
 		}
 		
-
 		/** File property is now a getter, to take levels into account **/
 		public function get file():String {
 			if (_levels.length > 0 && _currentLevel > -1 && _currentLevel < _levels.length) {
@@ -108,7 +123,7 @@ package com.longtailvideo.jwplayer.model {
 		
 		/** Insert an additional bitrate level, keeping the array sorted from highest to lowest. **/
 		public function addLevel(newLevel:PlaylistItemLevel):void {
-			if (validExtension(newLevel.file)) {
+			if (validExtension(newLevel)) {
 				if (_currentLevel < 0) _currentLevel = 0;
 				for (var i:Number = 0; i < _levels.length; i++) {
 					var level:PlaylistItemLevel = _levels[i] as PlaylistItemLevel;
@@ -143,15 +158,8 @@ package com.longtailvideo.jwplayer.model {
 		 * Determines whether this file extension can be played in the Flash player.  If not, ignore the level.
 		 * This is useful for unified HTML5 / Flash failover setups.
 		 **/
-		protected function validExtension(filename:String):Boolean {
-			switch(Strings.extension(filename)) {
-				case "ogv":
-				case "ogg":
-				case "webm":
-					return false;
-				default:
-					return true;
-			}
+		protected function validExtension(level:Object):Boolean {
+			return levelType(level);
 		}
 
 		public function get currentLevel():Number {
@@ -204,7 +212,41 @@ package com.longtailvideo.jwplayer.model {
 			}
 		}
 
-		public function get provider():String { return _provider; }
+		private function levelType(level:Object):String {
+			if (level) {
+				var type:String = level.type ? level.type : Strings.extension(level.file);
+				switch (type) {
+					case "flv": 
+					case "f4v": 
+					case "mov": 
+					case "m4a": 
+					case "m4v": 
+					case "mp4": 
+					case "aac": 
+						return "video";
+						break;
+					case "mp3": 
+						return "sound";
+						break;
+					case  "smil":
+						return "rtmp";
+						break;
+					case "m3u8": 
+						return "hls";
+						break;
+				}
+			}
+			return null;
+		}
+		
+		public function get provider():String {
+			if (_provider) {
+				return _provider;
+			} else if (_levels.length > 0) {
+				return levelType(_levels[_currentLevel]); 
+			}
+			return null;
+		}
 		public function set provider(p:*):void {
 			_provider = (p == "audio") ? "sound" : p;
 		}
