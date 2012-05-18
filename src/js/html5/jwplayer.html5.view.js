@@ -18,8 +18,19 @@
 		VIEW_INSTREAM_CONTAINER_CLASS = "jwinstream",
 		VIEW_VIDEO_CONTAINER_CLASS = "jwvideo", 
 		VIEW_CONTROLS_CONTAINER_CLASS = "jwcontrols",
-		VIEW_PLAYLIST_CONTAINER_CLASS = "jwplaylistcontainer";
+		VIEW_PLAYLIST_CONTAINER_CLASS = "jwplaylistcontainer",
 		
+		/*************************************************************
+		 * Player stylesheets - done once on script initialization;  *
+		 * These CSS rules are used for all JW Player instances      *
+		 *************************************************************/
+
+		JW_CSS_SMOOTH_EASE = "opacity .5s ease",
+		JW_CSS_100PCT = "100%",
+		JW_CSS_ABSOLUTE = "absolute",
+		JW_CSS_IMPORTANT = " !important",
+		JW_CSS_HIDDEN = "hidden";
+
 	html5.view = function(api, model) {
 		var _api = api, 
 			_model = model, 
@@ -36,6 +47,9 @@
 			_display,
 			_playlist,
 			_audioMode,
+			_isMobile = utils.isMobile(),
+			_isIPad = utils.isIPad(),
+			_forcedControls = (_isIPad && _model.mobilecontrols),
 			_eventDispatcher = new events.eventdispatcher();
 		
 		utils.extend(this, _eventDispatcher);
@@ -135,13 +149,18 @@
 				_playlist = new html5.playlistcomponent(_api, {});
 				_playlistLayer.appendChild(_playlist.getDisplayElement());
 			}
-
-			if (!utils.isMobile() || (_model.mobilecontrols && utils.isMobile())) {
+			
+			if (!_isMobile || _forcedControls) {
 				// TODO: allow override for showing HTML controlbar on iPads
 				_controlbar = new html5.controlbar(_api, cbSettings);
 				_controlsLayer.appendChild(_controlbar.getDisplayElement());
+				if (_forcedControls) {
+					_showControlbar();
+				}
+			} else {
+				_videoTag.controls = true;
 			}
-			
+				
 			_resize(width, height);
 		}
 
@@ -227,8 +246,7 @@
 		}
 		
 		function _checkAudioMode(height) {
-			if (!_controlbar) return;
-			_audioMode = (height <= 40 && height.toString().indexOf("%") < 0); 
+			_audioMode = (!!_controlbar && height <= 40 && height.toString().indexOf("%") < 0);
 			if (_audioMode) {
 				_model.componentConfig('controlbar').margin = 0;
 				_controlbar.redraw();
@@ -310,7 +328,7 @@
 			if (_controlbar && _model.controlbar) _controlbar.show();
 		}
 		function _hideControlbar() {
-			if (_controlbar && !_audioMode) {
+			if (_controlbar && !_audioMode && !_forcedControls) {
 				_controlbar.hide();
 //				_setTimeout(function() { _controlbar.style.display="none")
 			}
@@ -355,25 +373,37 @@
 		function _updateState(state) {
 			switch(state) {
 			case states.PLAYING:
-				if (!_model.getVideo().audioMode()) {
+				if (!_model.getVideo().audioMode() || _isMobile) {
 					_showVideo(true);
 					_resizeMedia();
 					_display.hidePreview(true);
+					if (_isMobile) {
+						if (_isIPad && !_forcedControls) _videoTag.controls = true;
+						else _hideDisplay();
+					}
 				}
 				_startFade();
 				break;
 			case states.COMPLETED:
 			case states.IDLE:
-				_showVideo(false);
+				if (!_isMobile) {
+					_showVideo(false);
+				}
 				_hideControlbar();
 				_display.hidePreview(false);
 				_showDisplay();
+				if (_isIPad) _videoTag.controls = false;
 				break;
 			case states.BUFFERING:
+				if (_isMobile) _showVideo(true);
+				else _showControls();
+				break;
 			case states.PAUSED:
-				//if (!utils.isMobile()) {
+				if (!_isMobile || _forcedControls) {
 					_showControls();
-				//}
+				} else if (_isIPad) {
+					_videoTag.controls = false;
+				}
 				break;
 			}
 		}
@@ -407,17 +437,6 @@
 		
 	}
 
-	/*************************************************************
-	 * Player stylesheets - done once on script initialization;  *
-	 * These CSS rules are used for all JW Player instances      *
-	 *************************************************************/
-
-	var JW_CSS_SMOOTH_EASE = "opacity .5s ease",
-		JW_CSS_100PCT = "100%",
-		JW_CSS_ABSOLUTE = "absolute",
-		JW_CSS_IMPORTANT = " !important";
-
-	
 	// Container styles
 	_css('.' + PLAYER_CLASS, {
 		position: "relative",
@@ -446,6 +465,10 @@
     	'-webkit-transition': JW_CSS_SMOOTH_EASE,
     	'-moz-transition': JW_CSS_SMOOTH_EASE,
     	'-o-transition': JW_CSS_SMOOTH_EASE
+	});
+
+	_css('.' + VIEW_VIDEO_CONTAINER_CLASS, {
+		visibility: "hidden"
 	});
 
 	_css('.' + VIEW_VIDEO_CONTAINER_CLASS + " video", {

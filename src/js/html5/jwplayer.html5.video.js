@@ -227,11 +227,6 @@
 			
 			_bufferInterval = setInterval(_sendBufferUpdate, 100);
 
-			// Use native browser controls on mobile
-			if (utils.isMobile()) {
-				_videotag.controls = true;
-			}
-			
 			if (utils.isIPod()) {
 				_sendBufferFull();
 			}
@@ -246,17 +241,11 @@
 		}
 
 		this.play = function() {
-			if (utils.isIPad()) {
-				_videotag.controls = true;
-			}
 			if (_attached) _videotag.play();
 		}
 
 		var _pause = this.pause = function() {
 			if (_attached) {
-				if (utils.isIPad()) {
-					_videotag.controls = false;
-				}
 				_videotag.pause();
 				_setState(states.PAUSED);
 			}
