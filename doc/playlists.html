@@ -32,6 +32,23 @@
 
 <p>The playlist consists of two layers: <strong>item</strong> and <strong>source</strong>. An item contains all data for a distinct piece of content (e.g. its <em>title</em>) and a source contains all data for a distinct media resource (e.g. its <em>file</em>). The playlist contains one or more items, and each item contains one or more sources.</p>
 
+<p>Here's  a quick example setup with a playlist containing one item, containing one source. More examples can be found further below.</p>
+
+<pre>
+&lt;script type="text/javascript"&gt;
+    jwplayer("container").setup({
+        playlist: [{
+            image: "/assets/sintel.jpg",
+            sources: [{
+                file: "/assets/sintel.mp4",
+            }],
+            title: "Sintel Movie Trailer"
+        }
+    });
+&lt;/script&gt;
+</pre>
+
+
 <h3>Item</h3>
 
 <p>The following item properties are recognized and used by JW Player:</p>
@@ -46,12 +63,12 @@
 <dt>image</dt>
 <dd>Poster image representing the item. Displayed below the <em>play</em> icon before playback starts, plus in the <a href="#sidebar">sidebar</a>.</dd>
 <dt>duration</dt>
-<dd>Duration of the item in seconds. It is displayed in the <a href="#sidebar">sidebar</a>. It cannot be used to restrict the duration of the item.</dd>
+<dd>Duration of the item in seconds. It is displayed in the <a href="#sidebar">sidebar</a> and the controlbar.</dd>
 <dt>sources</dt>
-<dd>Array with one or more media sources for this item. Is required. See below.</dd>
+<dd>Array with one or more media sources for this item. <strong>Is required.</strong> See below.</dd>
 </dl>
 
-<p>For certain advanced features, like <a href="#">Closed Captioning</a>, <a href="#">RTMP Streaming</a> or <a href="#">Related Videos</a>, additional properties can be set per playlist item. See the respective guides for more info.</p>
+<p>For certain advanced features, like <a href="#">Closed Captioning</a>, additional properties can be set per playlist item. The guides of these features will contain more info.</p>
 
 <h3>Source</h3>
 
@@ -59,13 +76,13 @@
 
 <dl>
 <dt>file</dt>
-<dd>URL of the source. Is absolutely required.</dd>
-<dt>width</dt>
-<dd>Width of the source in pixels. Used for quality selection heuristics. Used when setting multiple qualities of the same format.</dd>
-<dt>label</dt>
-<dd>Human-readable description of the source. Displayed in the quality selection popup. Used when setting multiple qualities of the same format.</dd>
+<dd>URL of the source. <strong>Is required.</strong></dd>
+<dt>height</dt>
+<dd>Height of the source in pixels. Displayed in the quality selection popup (e.g. <em>720</em>p). Used when setting multiple qualities of the same format.</dd>
 <dt>type</dt>
 <dd>Media type of the source. Can be <strong>mp4</strong>, <strong>flv</strong>, <strong>webm</strong>, <strong>aac</strong>, <strong>mp3</strong>, <strong>vorbis</strong>, <strong>hls</strong>, <strong>rtmp</strong> or <strong>youtube</strong>. Is only needed when the file property does not contain a recognized file extensions (like .mp4 or .m4v for <strong>mp4</strong>). See <a href="media.html">Supported Media Formats</a> for more info</a>.</dd>
+<dt>width</dt>
+<dd>Width of the source in pixels. Used for quality selection heuristics when setting multiple qualities of the same format.</dd>
 </dl>
 
 
@@ -107,11 +124,11 @@
             image: "/assets/sintel.jpg",
             sources: [{
                 file: "/assets/sintel.mp4",
-                label: "360p",
+                height: 360,
                 width: 640
             },{
                 file: "/assets/sintel-hd.mp4",
-                label: "720p",
+                height: 720,
                 width: 1280
             }],
             title: "Sintel Movie Trailer"
@@ -120,9 +137,7 @@
 &lt;/script&gt;
 </pre>
 
-<p>On desktop browsers, JW Player will now display a quality selection menu in the controlbar, allowing viewers to toggle between "360p" and "720p" quality.</p>
-
-<p>On mobile devices, JW Player will select the 360p version for devices whose screen is closer to 640 pixels wide and the 720p version for devices whose screen is closer to 1280 pixels wide. This is a poor man's automated quality selection; see <a href="#">Using HLS Streaming</a> for a better setup that also take bandwidth into account.</p>
+<p>On desktop browsers, JW Player will now display a quality selection menu in the controlbar, allowing viewers to toggle between "360p" and "720p" quality. On mobile devices, JW Player will not display this menu. Instead, the player chooses the quality that fits best with the device screen dimensions.</p>
 
 
 <h3>Setting Multiple Items</h3>
@@ -149,7 +164,7 @@
 &lt;/script&gt;
 </pre>
 
-<p>Combining multiple media formats, multiple quality levels and multiple playlist items is no problem. For example, one could setup a playlist with 5 items that each contain an RTMP manifest, an HLS manifest, an SD/HD MP4 file and an SD/HD WebM file...</p>
+<p>Combining multiple media formats, multiple quality levels and multiple playlist items is no problem. For example, one could setup a playlist with 5 items that each contain a 180p/360p/720p MP4 file and a 180p/360p/720p WebM file.</p>
 
 
 <h2><a name="sidebar"></a>Displaying the Sidebar</h2>
@@ -157,12 +172,12 @@
 <p>The playlist can be displayed as a sidebar to the video window, using the <strong>sidebar</strong> configuration block. This allows users to scroll through it and play specific items. The configuration block has the following properties:</p>
 
 <dl>
-<dt>layout (basic)</dt>
-<dd>Layout of the playlist items in the sidebar. Can be <strong>basic</strong> (title and duration) or <strong>extended</strong> (image, title, duration and 3 lines of description).</dd>
-<dt>position (none)</dt>
-<dd>Position of the sidebar relative to the video display. Can be <strong>bottom</strong> (below the display), <strong>none</strong> (no sidebar) or <strong>right</strong> (to the right of the display).</dd>
-<dt>size (180)</dt>
-<dd>Width (if position is right) or height (if position is bottom) of the sidebar. This is basically the amount of pixels the sidebar "steals" from the video window.</dd>
+<dt>layout</dt>
+<dd>Layout of the playlist items in the sidebar. Can be <strong>basic</strong> (title and duration) or <strong>extended</strong> (image, title, duration and 3 lines of description). The default is <strong>extended</strong>.</dd>
+<dt>position</dt>
+<dd>Position of the sidebar relative to the video display. Can be <strong>bottom</strong> (below the display), <strong>none</strong> (no sidebar; the default) or <strong>right</strong> (to the right of the display).</dd>
+<dt>size</dt>
+<dd>Width (if position is right) or height (if position is bottom) of the sidebar. This is basically the amount of pixels the sidebar "steals" from the video window. Is <strong>180</strong> by default.</dd>
 </dl>
 
 <p>Here is an example setup with a sidebar that's positioned to the right of the video with an extended layout:</p>

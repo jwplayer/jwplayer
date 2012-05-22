@@ -73,13 +73,13 @@
     <td>Android 4</td><td>yes</td><td>-</td>
 </tr></table>
 
-<p>For many devices not on this list (e.g. Android 2.2 or BlackBerry), JW Player will still provide users with an option to play the embedded audio or video file. Instead of a full-fledged player, a nicely formatted link to the file is then displayed. See <a href="#fallback">Download Fallback</a> for more info.</p>
+<p>For many devices not on this list (e.g. <em>Android 2.2</em> or <em>BlackBerry</em>), JW Player will still provide users with an option to play the embedded audio or video file. Instead of a full-fledged player, a nicely formatted link to the file is then displayed. See <a href="#fallback">Download Fallback</a> for more info.</p>
 
-<p>There's a few key limitations applying to mobile devices compared to desktop browsers:</p>
+<p>There's a few key differences in JW Player's approach to mobile devices compared to desktop browsers:</p>
 
 <ul>
 <li>JW Player does not officially support Flash on mobile. Although Android devices may have Flash installed, the <a href="http://www.longtailvideo.com/blog/25057/html5-takes-the-lead-on-android-devices">user experience is suboptimal</a>. Therefore, we focus completely on HTML5.</il>
-<li>JW Player has to use the video controls provided by the device. There are no mechanisms around this. This means that <a href="skinning.html">Player Skinning</a> has no effect, and the <em>Quality</em> and <em>Captions</em> selectors are unavailable.</li>
+<li>JW Player uses the video controlbar provided by the device. That way, the buttons work well using Touch (the default skin is optimized for Mouse). Device-specific enhancements will also remain available (e.g. <em>Airplay</em> and <em>pinch-to-fullscreen</em> on iPad).</li>
 <li>On all phones (except in Android 4.0), video can only be played in <em>fullscreen</em> mode. On tablets, video can be played either windowed or in fullscreen.</li>
 <li>Changing the <em>mute</em> state and <em>volume</em> is not possible. All mobile devices ignore these API calls, favoring the hardware buttons on the side of each device.</li>
 <li>Auto-starting a video on page load is not possible. Neither is playing more than 1 video at the same time.</li>
@@ -107,7 +107,7 @@
 </ul>
 
 
-<p>At large, the market moves away from Flash in the direction of HTML5. Therefore, JW Player prefers to use HTML5 over Flash if a piece of content can be played in both modes on a certain browser. This behavior can be changed though, by setting the configuration option <strong>primary</strong> to <em>html5</em>. See <a href="embedding.html">Embedding the Player</a> for more info.</p>
+<p>At large, the market moves away from Flash in the direction of HTML5. Therefore, JW Player prefers to use HTML5 over Flash if a piece of content can be played in both modes on a certain browser. This behavior can be changed though, by setting the configuration option <strong>primary</strong> to <em>flash</em>. See <a href="embedding.html">Embedding the Player</a> for more info.</p>
 
 <h3>Multiple Sources</h3>
 

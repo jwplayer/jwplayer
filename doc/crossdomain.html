@@ -1,0 +1,116 @@
+<!doctype html>
+<html>
+<head>
+<title>Crossdomain File Loading</title>
+<style>
+    body { padding: 50px 100px; width: 700px; font: 13px/20px Arial; background: #FFF; }
+    a, h1, h2 { color: #369; }
+    h1 { font-size: 32px; }
+    h2 { margin-top: 50px; }
+    h3 { margin-top: 25px; }
+    img { display: block; box-shadow: 0 0 5px #999; margin: 0 10px; }
+    pre { font-size: 12px; background: #E5F3C8; padding:5px 10px; border: 1px solid #D3EAA4; }
+    dd { color: #333; font-style: italic; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+    tr { border-bottom: 1px solid #CCC; } 
+    tr:nth-child(even) { background: #EEE; }
+    td,th { padding: 5px; font-size: 12px; text-align: left; }
+
+</style>
+</head><body>
+
+<h1>Crossdomain File Loading</h1>
+
+<p>This guide describes the cross-domain file loading (security) restrictions associated with the Adobe Flash plugin and JavaScript in HTML5 browsers/devices.</p>
+
+<h2><a name="flash"></a>Crossdomain in Flash</h2>
+
+<p>The Adobe Flash Player contains a <a href="http://www.adobe.com/devnet/flashplayer/security.html">crossdomain security mechanism</a>, similar to JavaScript&rsquo;s <a  href="#javascript">Cross-Site Scripting</a> restrictions. It impacts publishers using JW Player on Flash capable browsers and devices, denying to load the following files across from another domain:</p>
+
+<ul>
+<li><a href="feeds.html">RSS feeds</a></li>
+<li><a href="skins.html">ZIP skins</a></li>
+<li><a href="captions.html">SRT captions</a></li>
+<li><a href="hls.html">M3U8 manifests</a></li>
+<li><a href="rtmp.html">SMIL manifests</a></li>
+<li><a href="adtonomy.html">XML advertisements</a></li>
+</ul>
+
+<h3>Crossdomain XML</h3>
+
+<p>Crossdomain security restrictions can be lifted by hosting a <a href="http://www.adobe.com/devnet/articles/crossdomain_policy_file_spec.html">crossdomain.xml file</a> on the server that contains the files. This crossdomain file must be placed in the root of your (sub)domain, for example:</p>
+
+<pre>
+http://www.myserver.com/crossdomain.xml
+http://videos.myserver.com/crossdomain.xml
+</pre>
+
+<p>Before the Flash Player attempts to load XML files, SWF files or raw data from any domain other than the one hosting your player, it checks the remote site for the existence of such a <em>crossdomain.xml</em> file. If Flash finds it, and if the configuration permits external access of its data, then the data is loaded. If not, the operation will not be allowed.</p>
+
+<h3>Allow All Example</h3>
+
+<p>Here&rsquo;s an example of a <em>crossdomain.xml</em> that allows access to the domain&rsquo;s data from SWF files on any site:</p>
+
+<pre>
+&lt;?xml version=&quot;1.0&quot;?&gt;
+&lt;!DOCTYPE cross-domain-policy SYSTEM &quot;http://www.adobe.com/xml/dtds/cross-domain-policy.dtd&quot;&gt;
+&lt;cross-domain-policy&gt;
+   &lt;allow-access-from domain=&quot;*&quot; /&gt;
+&lt;/cross-domain-policy&gt;
+</pre>
+
+<p>Note that this example sets your server wide open. Any SWF file can load any data from your site, which might lead to security issues.</p>
+
+<h3>Restrict Access Example</h3>
+
+<p>Here is another example <em>crossdomain.xml</em>, this time permitting Flash file access from only a number of domains:</p>
+
+<pre>
+&lt;?xml version=&quot;1.0&quot;?&gt;</span>
+&lt;!DOCTYPE cross-domain-policy SYSTEM &quot;http://www.adobe.com/xml/dtds/cross-domain-policy.dtd&quot;&gt;
+&lt;cross-domain-policy&gt;
+   &lt;allow-access-from domain=&quot;*.domain1.com&quot;/&gt;
+   &lt;allow-access-from domain=&quot;www.domain2.com&quot;/&gt;
+&lt;/cross-domain-policy&gt;
+</pre>
+
+<p>Note the use of the wildcard symbol: any subdomain from domain1 can load data, whereas domain2 is restricted to only the www subdomain.</p>
+
+<p>Crossdomain policy files can even further finegrain access, e.g. to certain ports or HTTP headers. For a detailed overview, see <a href="http://kb2.adobe.com/cps/142/tn_14213.html">Adobe&rsquo;s Crossdomain documentation</a>.</p>
+
+<h2><a name="javascript"></a>Crossdomain in JavaScript</h2>
+
+<p>In JavaScript, a <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">Cross-Site Scripting</a> mechanism similar to <a href="#flash">that in Flash</a> exists. It impacts publishers using JW Player on HTML5 capable browsers and devices, denying to load the following files from another domain:</p>
+
+<ul>
+<li><a href="feeds.html">RSS feeds</a></li>
+<li><a href="skins.html">XML skins</a></li>
+<li><a href="captions.html">SRT captions</a></li>
+</ul>
+
+<p>Generally, these file loads will fail if there&rsquo;s no crossdomain access. Most browsers will display an error in their debug console.</p>
+
+<h3>Cross-Origin Resource Sharing</h3>
+
+<p>Crossdomain access can be enabled in JavaScript with a mechanism similar to that in Flash. Instead of hosting a <em>crossdomain.xml</em> file, crossdomain access is enabled per file, through an additional HTTP response header (the <a href="http://www.w3.org/TR/cors/">CORS</a> header). Here's what the header looks like:</p>
+
+<pre>
+Access-Control-Allow-Origin: *
+</pre>
+
+<p>Note that this example sets your file wide open. Any script from any site can load the file and do whatever it wants.</p>
+
+<h3>Restrict Access Example</h3>
+
+<p>Here is another example <em>CORS header</em>, this time permitting JavaScript file from only a number of domains:</p>
+
+<pre>
+Access-Control-Allow-Origin: *.domain1.com www.domain2.com
+</pre>
+
+<p>Note the use of the wildcard symbol: any subdomain from domain1 can load data, whereas domain2 is restricted to only the www subdomain.</p>
+
+<p>Options to limit protocols and ports can be added. <a href="http://enable-cors.org/">See the enabled-cors.org site</a> for more info. The site lists how to enable CORS headers for various popular webservers, frameworks and serverside languages.</p>
+
+</body>
+</html>

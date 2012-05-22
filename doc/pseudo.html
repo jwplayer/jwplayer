@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+<head>
+<title>Pseudo-streaming in Flash</title>
+<style>
+    body { padding: 50px 100px; width: 700px; font: 13px/20px Arial; background: #FFF; }
+    a, h1, h2 { color: #369; }
+    h1 { font-size: 32px; }
+    h2 { margin-top: 50px; }
+    h3 { margin-top: 25px; }
+    img { display: block; box-shadow: 0 0 5px #999; margin: 0 10px; }
+    pre { font-size: 12px; background: #E5F3C8; padding:5px 10px; border: 1px solid #D3EAA4; }
+    dd { color: #333; font-style: italic; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+    tr { border-bottom: 1px solid #CCC; } 
+    tr:nth-child(even) { background: #EEE; }
+    td,th { padding: 5px; font-size: 12px; text-align: left; }
+
+</style>
+</head><body>
+
+<h1>Pseudo-streaming in Flash</h1>
+
+<p>Every HTML5 browser supports the ability for players to seek to not-yet-downloaded portions of a video. This functionality, often referred to as <em>pseudo-streaming</em>, is great for any video longer than a few minutes.</p>
+
+<p>Unfortunately, this functionality is not available by default when playing videos in Flash. A workaround is possible though, by installing a web server module and adding the <strong>startparam</strong> option to <a href="embedding.html">your player setup</a>.</p>
+
+
+
+<h2>How It Works</h2>
+
+<p>Pseudo-streaming works as follows: When the video is initially loaded, the player reads and stores a list of <strong>seekpoints</strong> as part of the video's metadata. These seekpoints are offsets in the video (both in seconds and in bytes) at which a new keyframe starts.</p>
+
+<p>When a user seeks to a not-yet-downloaded part of the video, the player maps this seek to the nearest seekpoint. Next, the player does a request to the server, adding the seekpoint as a querystring parameter:</p>
+
+<pre>http://example.com/videos/bbb.mp4?start=30.4</pre>
+
+<p>A special module in the webserver handles this request. It reads the video in memory and checks the <em>seekpoints</em> metadata. It finds and skips to the offset requested by the querystring parameter. It then returns the video to the browser, starting from that offset.</p>
+
+<p>Because the first frame in each return is a keyframe, the player is able to correctly load and play it. Should the server have returned the video from an arbitrary offset, the player would not be able to pick up the stream and the display would only show garbage.</p>
+
+
+
+<h2>Server Modules</h2>
+
+<p>As said, Flash pseudo-streaming does not work by default on any web server. A server side module is needed to enable it. Here are the most widely used (and open source) modules for this:</p>
+
+<ul>
+<li>The <a href="http://h264.code-shop.com/trac/wiki">H264 streaming module</a> for Apache, IIS and NginX. It supports MP4 videos.</li>
+<li>The <a href="https://github.com/osantana/mod_flvx">FLV streaming module</a> for Apache or <a href="http://wiki.nginx.org/HttpFlvModule">HTTP FLV module</a> for NginX. They support FLV videos.</li>
+</ul>
+
+<p>Please refer to the project pages and documentation of these modules to learn how to build and install them. This falls outside the scope of JW Player documentation.</p>
+
+<p>Several CDNs (Content Delivery Networks) support Flash Pseudostreaming as well. We have done successful tests with Bitgravity (MP4 + FLV), Edgecast (MP4 + FLV) and Limelight (only FLV).</p>
+
+
+
+<h2>Startparam</h2>
+
+<p>The querystring parameter that must be used to load video from an offset differs per module and CDN. Therefore, it can be set in JW Player using the <strong>startparam</strong> configuration parameter. By setting this <a href="embedding.html">configuration option</a>, you enable pseudo-streaming in Flash, using the parameter name you inserted.</p>
+
+<p>Here is an example setup block, using the <em>starttime</em> value the <a href="http://h264.code-shop.com/trac/wiki">H264 streaming module</a> defaults to:</p>
+
+<pre>
+&lt;script type="text/javascript"&gt;
+    jwplayer("container").setup({
+        file: "/uploads/example.mp4",
+        height: 360,
+        image: "/uploads/example.jpg",
+        startparam: "starttime",
+        width: 640
+    });
+&lt;/script&gt;
+</pre>
+
+<p>And here is an overview of the <em>startparam</em> values for the modules and CDNs we listed above:</p>
+
+<table><tr>
+    <th>Module/CDN</th><th>startparam (MP4)</th><th>startparam (FLV)</th>
+</tr><tr>
+    <td><a href="http://h264.code-shop.com/trac/wiki">mod_h264</a></td><td>starttime</td><td>-</td>
+</tr><tr>
+    <td><a href="https://github.com/osantana/mod_flvx">mod_flvx</a></td><td>-</td><td>start</td>
+</tr><tr>
+    <td><a href="http://wiki.nginx.org/HttpFlvModule">HttpFlvModule</a></td><td>-</td><td>start</td>
+</tr><tr>
+    <td><a href="http://bitgravity.com/">Bitgravity</a></td><td>starttime</td><td>apstart</td>
+</tr><tr>
+    <td><a href="http://edgecast.com/">Edgecast</a></td><td>ec_seek</td><td>ec_seek</td>
+</tr><tr>
+    <td><a href="http://limelight.com/">Limelight</a></td><td>-</td><td>fs</td>
+</tr></table>
+
+<p>Our <a href="#">pseudo-streaming example</a> is using Edgecast's <em>ec_seek</em> startparam to enable pseudo-streaming in Flash.</p>
+
+</body>
+</html>

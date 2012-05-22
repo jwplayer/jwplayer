@@ -25,11 +25,11 @@
 
 <h2>Introduction</h2>
 
-<p>JW Player supports 9 distinct media formats: 3 video file types (<em>MP4</em>, <em>WebM</em>, <em>FLV</em>), 3 audio file types (<em>AAC</em>, <em>MP3</em>, <em>Vorbis</em>), 2 streaming protocols (<em>HLS</em>, <em>RTMP</em>) and <em>YouTube</em> (through their Chromeless Player API). Under certain circumstances, JW Player may play additional formats (like <em>Ogg</em> videos or <em>ShoutCast</em> streams), but only these 9 are cross-browser tested and officially supported.</p>
+<p>JW Player supports 9 distinct media formats: 3 video file types (<em>MP4</em>, <em>WebM</em>, <em>FLV</em>), 3 audio file types (<em>AAC</em>, <em>MP3</em>, <em>Vorbis</em>), <em>YouTube</em> videos (through their Chromeless Player API) and 2 streaming protocols (<em>HLS</em>, <em>RTMP</em>). Under certain circumstances, JW Player may play additional formats (like <em>Ogg</em> videos or <em>ShoutCast</em> streams), but only these 9 are cross-browser tested and officially supported.</p>
 
 <p>JW Player does not decode audio or video itself, but instead relies upon two underlying browser technologies: the HTML5 &lt;video&gt; element and the Adobe Flash plugin. Whether a format can play in HTML5 and/or Flash varies by browser. Therefore, we list below in which browsers each format is supported. See <a href="browsers.html">Supported Browsers &amp; Devices</a> for more details.</p>
 
-<p>JW Player tries to recognize a file format by its extension (e.g. <em>.mp4</em> for MP4 videos). If the extension of your files is not recognized, the player will display an error. However, if you know your file is in a supported format, you can use the <em>type</em> playlist option to force the player to recognize the file as being of that format. See <a href="playlists.html">Working with Playlists</a> for more info.</p>
+<p>JW Player tries to recognize a file format by its extension (e.g. <em>.mp4</em> for MP4 videos). If the extension of your files is not recognized, the player will display an error. However, if you know your file is in a supported format, you can use the <strong>type</strong> playlist option to force the player to recognize the file as being of that format. See <a href="playlists.html">Working with Playlists</a> for more info.</p>
 
 <h2>Video Files</h2>
 
@@ -109,6 +109,29 @@
 </ol>
 
 
+<h2>YouTube API</h2>
+
+<p>In addition to self-hosted audio and video files, JW Player includes native support for playing 
+YouTube videos. This possible through built-in support for the <a href="https://developers.google.com/youtube/flash_api_reference">Chromeless Player API</a>. YouTube videos are embedded by linking to their page, using one of the following schemes:</p>
+
+<ul>
+    <li><a href="http://www.youtube.com/watch?v=ylLzyHk54Z0">http://www.youtube.com/watch?v=ylLzyHk54Z0</a></li>
+    <li><a href="http://www.youtube.com/watch#!v=ylLzyHk54Z0">http://www.youtube.com/watch#!v=ylLzyHk54Z0</a></li>
+    <li><a href="http://www.youtube.com/v/ylLzyHk54Z0">http://www.youtube.com/v/ylLzyHk54Z0</a></li>
+    <li><a href="http://youtu.be/ylLzyHk54Z0">http://youtu.be/ylLzyHk54Z0</a></li>
+</ul>
+
+<p>The YouTube API requires the Flash plugin at present. Therefore, it is supported only on desktop browsers and Android devices running Flash. On iOS, limited playback support is available as part of the <a href="browsers.html">Download Fallback</a>. YouTube's experimental <a href="https://developers.google.com/youtube/iframe_api_reference">iFrame API</a> will likely introduce full HTML5 support in the future.</p>
+
+<p>Some additional notes on YouTube support:</p>
+
+<ul>
+<li>YouTube may place ads over the video during playback. These ads can not be disabled. Neither can the YouTube logo in the bottom right corner be removed.</li>
+<li>If the owner of a YouTube video has disabled it for embedding on 3rd party sites, JW Player cannot play the video. An error message is then displayed.</li>
+<li>YouTube videos are mostly available in multiple qualities, which means the JW Player's quality selector is automatically displayed in the controlbar.</li>
+</ul>
+
+
 <h2>Streaming Protocols</h2>
 
 <p>JW Player supports two types of streaming protocols:</p>
@@ -145,28 +168,6 @@
     <li>HLS support as of Android 4.</li>
 </ol>
 
-
-<h2>YouTube API</h2>
-
-<p>In addition to self-hosted audio, video and streaming formats, JW Player includes native support for playing 
-YouTube videos. This possible through built-in support for the <a href="https://developers.google.com/youtube/flash_api_reference">Chromeless Player API</a>. YouTube videos are embedded by linking to their page, using one of the following schemes:</p>
-
-<ul>
-    <li><a href="http://www.youtube.com/watch?v=ylLzyHk54Z0">http://www.youtube.com/watch?v=ylLzyHk54Z0</a></li>
-    <li><a href="http://www.youtube.com/watch#!v=ylLzyHk54Z0">http://www.youtube.com/watch#!v=ylLzyHk54Z0</a></li>
-    <li><a href="http://www.youtube.com/v/ylLzyHk54Z0">http://www.youtube.com/v/ylLzyHk54Z0</a></li>
-    <li><a href="http://youtu.be/ylLzyHk54Z0">http://youtu.be/ylLzyHk54Z0</a></li>
-</ul>
-
-<p>The YouTube API requires the Flash plugin at present. Therefore, it is supported only on desktop browsers and Android devices running Flash. On iOS, limited playback support is available as part of the <a href="browsers.html">Download Fallback</a>. YouTube's experimental <a href="https://developers.google.com/youtube/iframe_api_reference">iFrame API</a> will likely introduce full HTML5 support in the future.</p>
-
-<p>Some additional notes on YouTube support:</p>
-
-<ul>
-<li>YouTube may place ads over the video during playback. These ads can not be disabled. Neither can the YouTube logo in the bottom right corner be removed.</li>
-<li>If the owner of a YouTube video has disabled it for embedding on 3rd party sites, JW Player cannot play the video. An error message is then displayed.</li>
-<li>YouTube videos are mostly available in multiple qualities, which means the JW Player's quality selector is automatically displayed in the controlbar.</li>
-</ul>
 
 
 </body>

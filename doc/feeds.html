@@ -23,7 +23,7 @@
 
 <p>RSS feeds can be used to load playlists with multiple pieces of content into JW Player, but also to load multiple media formats and/or multiple quality levels for each piece of content.</p>
 
-<p>JW Player requires the RSS feed to be valid and using the <a href="http://video.search.yahoo.com/mrss">Media RSS extension</a> to define content and thumbnail. Any playlist attributes not supported by RSS and Media RSS can be added using the JWPlayer namespace (see below).</p>
+<p>JW Player requires the RSS feed to be valid and using the <a href="http://video.search.yahoo.com/mrss">Media RSS extension</a> to define content and thumbnail. All item and source attributes are supported.</p>
 
 
 
@@ -40,7 +40,7 @@
 
 <p>If you have the choice, inline configurations are preferred. They allow JW Player to load content faster (no extra file to load), plus they avoid any crossdomain loading issues.</p>
 
-<p>A crossdomain loading issue appears if your player is embedded at <em>http://somesite.com</em> and your RSS feed is loaded from <em>http://othersite.com</em>. By default, this is not allowed by any browser, in both Flash and HTML5 mode. See <a href="http://www.longtailvideo.com/support/jw-player/jw-player-for-flash-v5/12541/crossdomain-file-loading-restrictions">Crossdomain File Loading</a> for more info and workarounds.</p>
+<p>A crossdomain loading issue appears if your player is embedded at <em>www.example.com</em> and your RSS feed is loaded from <em>www.othersite.com</em> (or <em>subdomain.example.com</em>). By default, this is not allowed by any browser, in both Flash and HTML5 mode. See <a href="crossdomain.html">Crossdomain File Loading</a> for more info and workarounds.</p>
 
 
 
@@ -100,7 +100,7 @@
     <td>duration</td><td>media:content@duration</td><td>Needs to be a number</td>
 </tr></table>
 
-<p>All <strong>source</strong> properties are actually mapped to atributes of the <em>media:content</em> RSS element:</p>
+<p>All <strong>source</strong> properties are actually mapped to attributes of the <em>media:content</em> RSS element:</p>
 
 <table><tr>
     <th>JW Player</th><th>RSS Feed</th><th>Comments</th>
@@ -111,7 +111,7 @@
 </tr><tr>
     <td>width</td><td>media:content@width</td><td></td>
 </tr><tr>
-    <td>label</td><td>media:content@height</td><td>amended with a <strong>p</strong></td>
+    <td>height</td><td>media:content@height</td><td>Amended with a <strong>p</strong> in the quality selector</td>
 </tr></table>
 
 <p>Having multiple <em>media:content</em> elements per RSS item is allowed, so the multi-format and multi-quality options of JW Player can be achieved with RSS as well. Here's an example feed with one item that has an SD + HD quality video:</p>
@@ -130,36 +130,10 @@
       &lt;media:content url="http://example.com/videos/sintel-hd.mp4" 
          duration="50" height="720" type="video/mp4" width="1280" /&gt; 
     &lt;/item&gt;
-  &lt;/channel&gt; 
+  &lt;/channel&gt;
 &lt;/rss&gt;
 </pre>
 
-
-
-<h2>JWPlayer Namespace</h2>
-
-<p>For certain advanced features, like <a href="#">Closed Captioning</a> or <a href="#">Related Videos</a>, additional properties can be set per playlist item. RSS does not support these out of the box, but you can add these properties by using the JW Player namespace. It works exactly like the Media namespace, with an <em>xmlns</em> declaration at the top and a <em>jwplayer:</em> prefix on the elements.</p>
-
-<p>Here's an example setting the <em>streamer</em> option that's needed to play a single <a href="#">RTMP stream</a>:</p>
-
-<pre>
-&lt;rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/" 
-  xmlns:jwplayer="http://developer.longtailvideo.com/"&gt; 
-  &lt;channel&gt; 
-    &lt;title&gt;Example RSS Playlist&lt;/title&gt; 
-    &lt;item&gt; 
-      &lt;title&gt;Sintel&lt;/title&gt;
-      &lt;description&gt;Sintel is a fantasy computer generated short movie. It's the third 
-         release from the Blender Open Movie Project.&lt;/description&gt;
-      &lt;media:thumbnail url="http://example.com/thumbs/sintel.jpg" /&gt;
-      &lt;media:content url="sintel.mp4" /&gt;
-      &lt;jwplayer:streamer&gt;rtmp://example.com/vod&lt;/jwplayer:streamer&gt;
-    &lt;/item&gt;
-  &lt;/channel&gt; 
-&lt;/rss&gt;
-</pre>
-
-<p>Again, don't forget the top-level <strong>xmlns</strong> tags. Without them, JW Player will not be able to parse these feeds.</p>
 
 
 </body>
