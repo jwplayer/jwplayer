@@ -35,17 +35,15 @@
 <p>Here's  a quick example setup with a playlist containing one item, containing one source. More examples can be found further below.</p>
 
 <pre>
-&lt;script type="text/javascript"&gt;
-    jwplayer("container").setup({
-        playlist: [{
-            image: "/assets/sintel.jpg",
-            sources: [{
-                file: "/assets/sintel.mp4",
-            }],
-            title: "Sintel Movie Trailer"
-        }
-    });
-&lt;/script&gt;
+jwplayer("myElement").setup({
+    playlist: [{
+        image: "/assets/sintel.jpg",
+        sources: [
+            { file: "/assets/sintel.mp4" }
+        ],
+        title: "Sintel Movie Trailer"
+    }
+});
 </pre>
 
 
@@ -68,7 +66,7 @@
 <dd>Array with one or more media sources for this item. <strong>Is required.</strong> See below.</dd>
 </dl>
 
-<p>For certain advanced features, like <a href="#">Closed Captioning</a>, additional properties can be set per playlist item. The guides of these features will contain more info.</p>
+<p>For certain advanced features, like <a href="#">Closed Captioning</a> or <a href="rtmp.html">RTMP Streaming</a>, additional properties can be set per playlist item. The guides of these features will contain more info.</p>
 
 <h3>Source</h3>
 
@@ -96,19 +94,16 @@
 <p>This setup has one item in the playlist with two sources: MP4 and WebM. JW Player will automatically display the MP4 source on Chrome/IE/Safari and the WebM source on Firefox:</p>
 
 <pre>
-&lt;script type="text/javascript"&gt;
-    jwplayer("container").setup({
-        playlist: [{
-            image: "/assets/sintel.jpg",
-            sources: [{
-                file: "/assets/sintel.mp4",
-            },{
-                file: "/assets/sintel.webm"
-            }],
-            title: "Sintel Movie Trailer"
-        }
-    });
-&lt;/script&gt;
+jwplayer("myElement").setup({
+    playlist: [{
+        image: "/assets/sintel.jpg",
+        sources: [
+            { file: "/assets/sintel.mp4" },
+            { file: "/assets/sintel.webm" }
+        ],
+        title: "Sintel Movie Trailer"
+    }
+});
 </pre>
 
 <p>See <a href="browsers.html">Browser &amp; Device Support</a> for more info on browser support and mode/source selection.</p>
@@ -118,23 +113,16 @@
 <p>This setup has one item in the playlist with two sources. Both are MP4, but one is 640x360 pixels (SD) and the other is 1280x720 pixels (HD):</p>
 
 <pre>
-&lt;script type="text/javascript"&gt;
-    jwplayer("container").setup({
-        playlist: [{
-            image: "/assets/sintel.jpg",
-            sources: [{
-                file: "/assets/sintel.mp4",
-                height: 360,
-                width: 640
-            },{
-                file: "/assets/sintel-hd.mp4",
-                height: 720,
-                width: 1280
-            }],
-            title: "Sintel Movie Trailer"
-        }
-    });
-&lt;/script&gt;
+jwplayer("myElement").setup({
+    playlist: [{
+        image: "/assets/sintel.jpg",
+        sources: [
+            { file: "/assets/sintel.mp4", height: 360, width: 640 },
+            { file: "/assets/sintel-hd.mp4", height: 720, width: 1280 }
+        ],
+        title: "Sintel Movie Trailer"
+    }
+});
 </pre>
 
 <p>On desktop browsers, JW Player will now display a quality selection menu in the controlbar, allowing viewers to toggle between "360p" and "720p" quality. On mobile devices, JW Player will not display this menu. Instead, the player chooses the quality that fits best with the device screen dimensions.</p>
@@ -145,23 +133,21 @@
 <p>Finally, this setup contains two playlist items, each with a title, image and single media source (mp4):</p>
 
 <pre>
-&lt;script type="text/javascript"&gt;
-    jwplayer("container").setup({
-        playlist: [{
-            image: "/assets/sintel.jpg",
-            sources: [{
-                file: "/assets/sintel.mp4"
-            }],
-            title: "Sintel Movie Trailer"
-        },{
-            image: "/assets/bunny.jpg",
-            sources: [{
-                file: "/assets/bunny.mp4"
-            }],
-            title: "Big Buck Bunny Movie Trailer"
-        }]
-    });
-&lt;/script&gt;
+jwplayer("myElement").setup({
+    playlist: [{
+        image: "/assets/sintel.jpg",
+        sources: [
+            { file: "/assets/sintel.mp4" }
+        ],
+        title: "Sintel Movie Trailer"
+    },{
+        image: "/assets/bunny.jpg",
+        sources: [
+            { file: "/assets/bunny.mp4" }
+        ],
+        title: "Big Buck Bunny Movie Trailer"
+    }]
+});
 </pre>
 
 <p>Combining multiple media formats, multiple quality levels and multiple playlist items is no problem. For example, one could setup a playlist with 5 items that each contain a 180p/360p/720p MP4 file and a 180p/360p/720p WebM file.</p>
@@ -182,18 +168,18 @@
 
 <p>Here is an example setup with a sidebar that's positioned to the right of the video with an extended layout:</p>
 
-<pre>&lt;script type="text/javascript"&gt;
-    jwplayer("container").setup({
-        playlist: "http://example.com/playlist.rss",
-        height: 360,
-        sidebar: {
-            layout: 'extended',
-            position: 'right',
-            size: 320
-        },
-        width: 960
-    });
-&lt;/script&gt;</pre>
+<pre>
+jwplayer("myElement").setup({
+    playlist: "http://example.com/playlist.rss",
+    height: 360,
+    sidebar: {
+        layout: 'extended',
+        position: 'right',
+        size: 320
+    },
+    width: 960
+});
+</pre>
 
 
 </body>

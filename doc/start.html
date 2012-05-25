@@ -48,11 +48,11 @@
 <pre>&lt;script type="text/javascript" src="http://jwpcdn.com/player.js" &gt;&lt;/script&gt;</pre>
 </li>
 <li>Insert a &lt;div&gt; element with a unique <em>id</em> at the location you want the player to appear:
-<pre>&lt;div id="container"&gt;Loading the player ...&lt;/div&gt;</pre>
+<pre>&lt;div id="myElement"&gt;Loading the player ...&lt;/div&gt;</pre>
 </li>
 <li>Insert a script that invokes the JW Player <em>setup()</em> call on your &lt;div&gt;:</li>
 <pre>&lt;script type="text/javascript"&gt;
-    jwplayer("container").setup({
+    jwplayer("myElement").setup({
         file: "/uploads/example.mp4",
         height: 270,
         image: "/uploads/example.jpg",

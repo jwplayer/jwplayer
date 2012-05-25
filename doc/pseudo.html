@@ -63,15 +63,13 @@
 <p>Here is an example setup block, using the <em>starttime</em> value the <a href="http://h264.code-shop.com/trac/wiki">H264 streaming module</a> defaults to:</p>
 
 <pre>
-&lt;script type="text/javascript"&gt;
-    jwplayer("container").setup({
-        file: "/uploads/example.mp4",
-        height: 360,
-        image: "/uploads/example.jpg",
-        startparam: "starttime",
-        width: 640
-    });
-&lt;/script&gt;
+jwplayer("myElement").setup({
+    file: "/uploads/example.mp4",
+    height: 360,
+    image: "/uploads/example.jpg",
+    startparam: "starttime",
+    width: 640
+});
 </pre>
 
 <p>And here is an overview of the <em>startparam</em> values for the modules and CDNs we listed above:</p>

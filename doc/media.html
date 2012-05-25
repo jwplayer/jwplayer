@@ -31,6 +31,8 @@
 
 <p>JW Player tries to recognize a file format by its extension (e.g. <em>.mp4</em> for MP4 videos). If the extension of your files is not recognized, the player will display an error. However, if you know your file is in a supported format, you can use the <strong>type</strong> playlist option to force the player to recognize the file as being of that format. See <a href="playlists.html">Working with Playlists</a> for more info.</p>
 
+<p>When using RSS feeds to load media, the <em>type</em> option must always be set to the <strong>mimetype</strong> of the format. These mimetypes are listed below. See <a href="feeds.html">Loading RSS Feeds</a> for more info.</p>
+
 <h2>Video Files</h2>
 
 <p>JW Player supports three types of video files:</p>
@@ -41,14 +43,14 @@
 <li><a href="http://en.wikipedia.org/wiki/WebM">WebM</a> videos using the <a href="http://en.wikipedia.org/wiki/VP8">VP8</a> video codec and the <a href="http://en.wikipedia.org/wiki/Vorbis">Vorbis</a> audio codec. WebM is royalty free and of comparable quality to MP4. It has limited browser and device support.</li>
 </ul>
 
-<p>Here is an overview of the recognized file extensions for these formats, plus their browser playback support:</p>
+<p>Here is an overview of the recognized file extensions and mimetype for these formats, plus their browser playback support:</p>
 
 <table><tr>
     <th></th><th>mp4</th><th>flv</th><th>webm</th>
 </tr><tr>
     <th>Extension(s)</th><td>.mp4, .m4v, .f4v</td><td>.flv</td><td>.webm</td>
 </tr><tr>
-    <th></th><td></td><td></td><td></td>
+    <th>Mimetype</th><td>video/mp4</td><td>video/flv</td><td>video/webm</td>
 </tr><tr>
     <th>Internet Explorer</th><td>html5, flash <sup>1</sup></td><td>flash</td><td>-</td>
 </tr><tr>
@@ -81,14 +83,14 @@
 <li>Ogg <a href="http://en.wikipedia.org/wiki/Vorbis">Vorbis</a> audio files. Vorbis is royalty-free, but has limited browser and device support.</li>
 </ul>
 
-<p>Here is an overview of the recognized file extensions for these formats, plus their browser playback support:</p>
+<p>Here is an overview of the recognized file extensions and mimetypes for these formats, plus their browser playback support:</p>
 
 <table><tr>
     <th></th><th>aac</th><th>mp3</th><th>vorbis</th>
 </tr><tr>
     <th>Extension(s)</th><td>.aac, .m4a, .f4a</td><td>.mp3</td><td>.ogg, .oga</td>
 </tr><tr>
-    <th></th><td></td><td></td><td></td>
+    <th>Mimetype</th><td>audio/mp4</td><td>audio/mpeg</td><td>audio/ogg</td>
 </tr><tr>
     <th>Internet Explorer</th><td>html5, flash <sup>1</sup></td><td>html5, flash <sup>1</sup></td><td>-</td>
 </tr><tr>
@@ -141,14 +143,14 @@ YouTube videos. This possible through built-in support for the <a href="https://
 <li>Adobe's <a href="http://en.wikipedia.org/wiki/Real_Time_Messaging_Protocol">RTMP</a> protocol, using SMIL manifest files and MP4, FLV, AAC or MP3 media files. RTMP requires dedicated server software and is sometimes blocked by firewalls. It is mature and has broad CDN and encoder support. See <a href="#">Using RTMP Streaming</a> for more info.</li>
 </ul>
 
-<p>Here is an overview of the recognized file extensions for these protocols, plus their browser playback support:</p>
+<p>Here is an overview of the recognized file extensions and mimetypes for these protocols, plus their browser playback support:</p>
 
 <table><tr>
     <th></th><th>hls</th><th>rtmp</th>
 </tr><tr>
     <th>Extension(s)</th><td>.m3u8</td><td>.smil</td>
 </tr><tr>
-    <th></th><td></td><td></td>
+    <th>Mimetype</th><td>application/vnd.apple.mpegurl</td><td>application/smil</td>
 </tr><tr>
     <th>Internet Explorer</th><td>flash <sup>1</sup></td><td>flash</td>
 </tr><tr>

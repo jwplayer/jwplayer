@@ -30,11 +30,11 @@
 <pre>&lt;script type="text/javascript" src="http://jwpcdn.com/player.js" &gt;&lt;/script&gt;</pre>
 </li>
 <li>Insert a &lt;div&gt; element with a unique <em>id</em> at the location you want the player to appear:
-<pre>&lt;div id="container"&gt;Loading the player ...&lt;/div&gt;</pre>
+<pre>&lt;div id="myElement"&gt;Loading the player ...&lt;/div&gt;</pre>
 </li>
 <li>Insert a script that invokes the JW Player <em>setup()</em> call on your &lt;div&gt;:</li>
 <pre>&lt;script type="text/javascript"&gt;
-    jwplayer("container").setup({
+    jwplayer("myElement").setup({
         file: "/uploads/example.mp4",
         height: 360,
         image: "/uploads/example.jpg",
@@ -107,17 +107,17 @@
 
 <p>In addition to above configuration options, a list of configuration blocks is available to enable the more advanced functionalities of JW Player. For example, the <em>sidebar</em> block can be used to display the playlist in a sidebar next to the video display:</p>
 
-<pre>&lt;script type="text/javascript"&gt;
-    jwplayer("container").setup({
-        playlist: "http://example.com/playlist.rss",
-        height: 360,
-        sidebar: {
-            position: 'right',
-            size: 320
-        },
-        width: 960
-    });
-&lt;/script&gt;</pre>
+<pre>
+jwplayer("myElement").setup({
+    playlist: "http://example.com/playlist.rss",
+    height: 360,
+    sidebar: {
+        position: 'right',
+        size: 320
+    },
+    width: 960
+});
+</pre>
 
 <p>As you can see, the <em>sidebar</em> is an object that itself contains a set of configuration options. In this case, the sidebar is setup to the right of the display and set 320 pixels wide. See the <a href="playlists.html">Working with Playlists</a> guide for more info on setting up the sidebar.</p>
 
@@ -126,11 +126,13 @@
 
 <dl>
 <dt>sidebar</dt>
-<dd>Config block for displaying a sidebar with the <a href="playlists.html#sidebar">Playlist</a>.</dd>
+<dd>Config block for displaying a sidebar with the <a href="playlists.html#sidebar">Playlist contents</a>.</dd>
 <dt>captions</dt>
-<dd>Config block for displaying <a href="#">closed captions or subtitles</a>.</dd>
+<dd>Config block for displaying <a href="captions.html">captions or subtitles</a>.</dd>
 <dt>logo</dt>
-<dd>Config block for displaying an <a href="#">on-screen watermark</a> (<em>licensed players only</em>).</dd>
+<dd>Config block for displaying an <a href="logo.html">on-screen watermark</a>.</dd>
+<dt>rtmp</dt>
+<dd>Config block for tweaking the playback of <a href="rtmp.html">RTMP streams</a>.</dd>
 <dt>gapro</dt>
 <dd>Config block for pinging events to <a href="#">Google Analytics</a>.</dd>
 <dt>related</dt>
@@ -138,7 +140,9 @@
 <dt>sharing</dt>
 <dd>Config block for displaying an overlay with <a href="#">Social Sharing links</a>.</dd>
 <dt>ova</dt>
-<dd>Config block for loading ads using the <a href="#">VAST/VPaid standards</a>  (<em>licensed players only</em>).</dd>
+<dd>Config block for loading ads using the <a href="#">VAST/VPaid standards</a>.</dd>
+<dt>adtonomy</dt>
+<dd>Config block for loading ads using <a href="#">self-hosted assets</a>.</dd>
 </dl>
 
 
