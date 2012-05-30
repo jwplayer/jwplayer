@@ -1,5 +1,5 @@
 package com.longtailvideo.jwplayer.controller {
-	import com.longtailvideo.jwplayer.media.MediaProvider;
+	import com.longtailvideo.jwplayer.media.IMediaProvider;
 	import com.longtailvideo.jwplayer.utils.AssetLoader;
 	
 	import flash.events.ErrorEvent;
@@ -27,10 +27,10 @@ package com.longtailvideo.jwplayer.controller {
 		
 		private var repository:String = "http://providers.longtailvideo.com/5/";
 
-		public var loadedSource:MediaProvider;
+		public var loadedSource:IMediaProvider;
 
 		/**
-		 * Loads a SWF file whose document class extends MediaProvider.
+		 * Loads a SWF file whose document class implements MediaProvider.
 		 */
 		public function loadSource(url:String):void {
 			var newLoader:AssetLoader = new AssetLoader();
@@ -46,7 +46,7 @@ package com.longtailvideo.jwplayer.controller {
 		private function loadHandler(evt:Event):void {
 			var loader:AssetLoader = evt.target as AssetLoader;
 			try {
-				loadedSource = loader.loadedObject as MediaProvider;
+				loadedSource = loader.loadedObject as IMediaProvider;
 				if (loadedSource) {
 					dispatchEvent(new Event(Event.COMPLETE));
 				} else {

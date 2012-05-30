@@ -503,7 +503,21 @@ package com.longtailvideo.jwplayer.player
 		public function loadInstream(target:IPlugin, item:PlaylistItem, options:IInstreamOptions=null):IInstreamPlayer {
 			throw new Error("Unsupported IPlayer method in InstreamPlayer");
 			return null;
-		}		
+		}
+		
+		public function getQualityLevels():Array {
+			throw new Error("Unsupported IPlayer method in InstreamPlayer");
+			return null;
+		}
+		
+		public function getCurrentQuality():Number {
+			throw new Error("Unsupported IPlayer method in InstreamPlayer");
+			return null;
+		}
+		
+		public function setCurrentQuality(index:Number):void {
+			throw new Error("Unsupported IPlayer method in InstreamPlayer");
+		}
 		
 	}
 }

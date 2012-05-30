@@ -15,11 +15,13 @@
 		DOCUMENT = document,
 		D_CLASS = ".jwdisplay",
 		D_PREVIEW_CLASS = ".jwpreview",
+		D_ERROR_CLASS = ".jwerror",
 
 		/** Some CSS constants we should use for minimization **/
 		JW_CSS_ABSOLUTE = "absolute",
 		JW_CSS_NONE = "none",
 		JW_CSS_100PCT = "100%",
+		JW_CSS_HIDDEN = "hidden",
 		JW_CSS_SMOOTH_EASE = "opacity .25s";
 
 	
@@ -29,6 +31,8 @@
 			_display, _preview,
 			_image, _imageWidth, _imageHeight, _imageURL,
 			_icons = {},
+			_errorState = false,
+			_errorText,
 			_hiding,
 			_button,		
 			_degreesRotated, 
@@ -54,10 +58,12 @@
 			
 			_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
 			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_ITEM, _itemHandler);
-			
+			_api.jwAddEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
+
 			_display.addEventListener('click', _clickHandler, false);
 			
 			_createIcons();
+			_createTextFields();
 			
 			_stateHandler({newstate:states.IDLE});
 		}
@@ -141,6 +147,13 @@
 			}
 		}
 		
+		
+		function _createTextFields() {
+			_errorText = DOCUMENT.createElement("div");
+			_errorText.className = "jwerror";
+			_display.appendChild(_errorText);
+		}
+		
 		function _setIcon(name) {
 			if (!_config.showicons) return;
 			
@@ -186,10 +199,13 @@
 			switch(state) {
 			case states.COMPLETED:
 			case states.IDLE:
-				_setVisibility(D_PREVIEW_CLASS, true);
-				_setIcon('play');
+				if (!_errorState) {
+					_setVisibility(D_PREVIEW_CLASS, true);
+					_setIcon('play');
+				}
 				break;
 			case states.BUFFERING:
+				_clearError();
 				_setIcon('buffer');
 				break;
 			case states.PLAYING:
@@ -244,6 +260,24 @@
 			return null;
 		}
 		
+		function _errorHandler(evt) {
+			_errorState = true;
+			_setIcon();
+			_css(_internalSelector(D_ERROR_CLASS), {
+				display: "table"
+			});
+			_errorText.innerHTML = "<p>" + evt.message + "</p>";
+		}
+		
+		function _clearError() {
+			_errorState = false;
+			_css(_internalSelector(D_ERROR_CLASS), {
+				display: "none"
+			});
+			_errorText.innerHTML = "";
+		}
+
+		
 		function _redraw() {
 			utils.stretch(_api.jwGetStretching(), _preview, _display.clientWidth, _display.clientHeight, _imageWidth, _imageHeight);
 		}
@@ -284,7 +318,7 @@
 		cursor: "pointer",
 		width: JW_CSS_100PCT,
 		height: JW_CSS_100PCT,
-		overflow: 'hidden',
+		overflow: JW_CSS_HIDDEN,
 		opacity: 0
 	});
 
@@ -293,7 +327,22 @@
 		width: JW_CSS_100PCT,
 		height: JW_CSS_100PCT,
 		background: 'no-repeat center',
-		overflow: 'hidden'
+		overflow: JW_CSS_HIDDEN
+	});
+
+	_css(D_CLASS + ' ' + D_ERROR_CLASS, {
+		display: "none",
+		position: JW_CSS_ABSOLUTE,
+		width: JW_CSS_100PCT,
+		height: JW_CSS_100PCT
+	});
+
+	_css(D_CLASS + ' ' + D_ERROR_CLASS + ' p', {
+		display: "table-cell",
+		'vertical-align': "middle",
+		'text-align': "center",
+		background: 'rgba(0, 0, 0, 0.5)',
+		color: '#fff'
 	});
 
 	_css(D_CLASS +', '+D_CLASS + ' *', {

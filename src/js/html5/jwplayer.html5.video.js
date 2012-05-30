@@ -49,8 +49,6 @@
 		// Current type - used to filter the sources
 		_type,
 		// Reference to the video tag
-		_sourcesByType,
-		// All sources organized by type
 		_videotag,
 		// Current duration
 		_duration,
@@ -77,9 +75,17 @@
 		// Event dispatcher
 		_eventDispatcher = new events.eventdispatcher(),
 		// Whether or not we're listening to video tag events
-		_attached = false;
+		_attached = false,
+		// Sources, sorted by type
+		_sourcesByType = {},
+		// Quality levels
+		_levels,
+		// Current quality level index
+		_currentQuality = -1,
+		// Reference to self
+		_this = this;
 		
-		utils.extend(this, _eventDispatcher);
+		utils.extend(_this, _eventDispatcher);
 
 		// Constructor
 		function _init(videotag) {
@@ -165,7 +171,8 @@
 
 		function _errorHandler(evt) {
 			if (!_attached) return;
-			utils.log("Error: %o", _videotag.error);
+			utils.log("Error playing media: %o", _videotag.error);
+			_eventDispatcher.sendEvent(events.JWPLAYER_MEDIA_ERROR, {message: "Error loading media: File could not be played"});
 			_setState(states.IDLE);
 		}
 
@@ -184,24 +191,30 @@
 			return null;
 		}
 		
-		function _sortSources(sources) {
-			var sorted = {};
-			if (sources) {
-				for (var i=0; i<sources.length; i++) {
-					var type = sources[i].type,
-						file = sources[i].file;
-					if (!type) {
-						type = utils.extension(file);
-						sources[i].type = type;
-					}
-					if (!sorted[type]) sorted[type] = [];
-					sorted[type].push(sources[i]);
+		function _sendLevels(levels) {
+			if (utils.typeOf(levels)=="array" && levels.length > 0) {
+				var publicLevels = [];
+				for (var i=0; i<levels.length; i++) {
+					var level = levels[i], publicLevel = {};
+					publicLevel.label = _levelLabel(level) ? _levelLabel(level) : i;
+					if (level.width) publicLevel.width = level.width;
+					if (level.height) publicLevel.height = level.height;
+					if (level.bitrate) publicLevel.bitrate = level.bitrate;
+					publicLevels[i] = publicLevel;
 				}
+				_eventDispatcher.sendEvent(events.JWPLAYER_MEDIA_LEVELS, { levels: publicLevels, currentQuality: _currentQuality });
 			}
-			return sorted;
 		}
 		
-		this.load = function(item) {
+		function _levelLabel(level) {
+			if (level.label) return level.label;
+			else if (level.height) return level.height + "p";
+			else if (level.width) return (level.width * 9 / 16) + "p";
+			else if (level.bitrate) return level.bitrate + "kbps";
+			else return 0;
+		}
+		
+		_this.load = function(item) {
 			if (!_attached) return;
 
 			_item = item;
@@ -211,7 +224,7 @@
 			_duration = item.duration ? item.duration : -1;
 			_position = 0;
 			
-			_sourcesByType = _sortSources(_item.sources);
+			_sourcesByType = utils.sortSources(_item.sources);
 			_type = _selectType();
 
 			if (!_type) {
@@ -219,7 +232,11 @@
 				return;
 			}
 			
-			_source = _sourcesByType[_type][0];
+			if (_currentQuality < 0) _currentQuality = 0;
+			_levels = _sourcesByType[_type];
+			_sendLevels(_levels);
+			
+			_source = _levels[_currentQuality];
 			
 			_setState(states.BUFFERING); 
 			_videotag.src = _source.file;
@@ -232,33 +249,34 @@
 			}
 		}
 
-		var _stop = this.stop = function() {
+		var _stop = _this.stop = function() {
 			if (!_attached) return;
 			_videotag.removeAttribute("src");
 			_videotag.load();
+			_currentQuality = -1;
 			clearInterval(_bufferInterval);
 			_setState(states.IDLE);
 		}
 
-		this.play = function() {
+		_this.play = function() {
 			if (_attached) _videotag.play();
 		}
 
-		var _pause = this.pause = function() {
+		var _pause = _this.pause = function() {
 			if (_attached) {
 				_videotag.pause();
 				_setState(states.PAUSED);
 			}
 		}
 			
-		this.seekDrag = function(state) {
+		_this.seekDrag = function(state) {
 			if (!_attached) return; 
 			_dragging = state;
 			if (state) _videotag.pause();
 			else _videotag.play();
 		}
 		
-		var _seek = this.seek = function(pos) {
+		var _seek = _this.seek = function(pos) {
 			if (!_attached) return; 
 			if (_videotag.readyState >= _videotag.HAVE_FUTURE_DATA) {
 				_delayedSeek = 0;
@@ -274,7 +292,7 @@
 			}
 		}
 
-		var _volume = this.volume = function(vol) {
+		var _volume = _this.volume = function(vol) {
 			_videotag.volume = vol / 100;
 		}
 		
@@ -287,7 +305,7 @@
 			});
 		}
 		
-		this.mute = function(state) {
+		_this.mute = function(state) {
 			if (!utils.exists(state)) state = !_videotag.mute;
 			if (state) {
 				if (!_videotag.muted) {
@@ -347,6 +365,7 @@
 
 		function _complete() {
 			//_stop();
+			_currentQuality = -1;
 			_setState(states.IDLE);
 			_sendEvent(events.JWPLAYER_MEDIA_BEFORECOMPLETE);
 			_sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
@@ -356,7 +375,7 @@
 		/**
 		 * Return the video tag and stop listening to events  
 		 */
-		this.detachMedia = function() {
+		_this.detachMedia = function() {
 			_attached = false;
 			return _videotag;
 		}
@@ -364,20 +383,42 @@
 		/**
 		 * Begin listening to events again  
 		 */
-		this.attachMedia = function() {
+		_this.attachMedia = function() {
 			_attached = true;
 		}
 		
 		// Provide access to video tag
 		// TODO: remove; used by InStream
-		this.getTag = function() {
+		_this.getTag = function() {
 			return _videotag;
 		}
 		
-		this.audioMode = function() {
+		_this.audioMode = function() {
 			return (_type && _extensions[_type].html5 && _extensions[_type].html5.indexOf("audio") == 0);
 		}
 
+		_this.setCurrentQuality = function(quality) {
+			if (_currentQuality == quality) return;
+			
+			if (quality >=0) {
+				if (_levels && _levels.length > quality) {
+					_currentQuality = quality;
+					_sendEvent(events.JWPLAYER_MEDIA_QUALITY_CHANGED, { currentQuality: quality, levels: _levels} );
+					var currentTime = _videotag.currentTime;
+					_this.load(_item);
+					_this.seek(currentTime);
+				}
+			}
+		}
+		
+		_this.getCurrentQuality = function() {
+			return _currentQuality;
+		}
+		
+		_this.getQualityLevels = function() {
+			return _levels;
+		}
+		
 		// Call constructor
 		_init(videotag);
 

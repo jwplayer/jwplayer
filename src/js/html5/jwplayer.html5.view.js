@@ -54,14 +54,16 @@
 		
 		utils.extend(this, _eventDispatcher);
 
-		this.setup = function(skin) {
-			_api.skin = skin;
-			
+		function _init() {
 			_playerElement = _createElement("div", PLAYER_CLASS);
 			_playerElement.id = _api.id;
 			
 			var replace = document.getElementById(_api.id);
 			replace.parentNode.replaceChild(_playerElement, replace);
+		}
+		
+		this.setup = function(skin) {
+			_api.skin = skin;
 			
 			_container = _createElement("span", VIEW_MAIN_CONTAINER_CLASS);
 			_videoLayer = _createElement("span", VIEW_VIDEO_CONTAINER_CLASS);
@@ -270,25 +272,28 @@
 		this.resize = _resize;
 		this.resizeMedia = _resizeMedia;
 
-		this.completeSetup = function() {
+		var _completeSetup = this.completeSetup = function() {
 			_css(_internalSelector(), {opacity: 1});
 		}
 		
 		/**
-		 * Listen for keystrokes.  Currently only ESC is recognized, to switch out of fullscreen mode.
+		 * Listen for keystrokes while in fullscreen mode.  
+		 * ESC returns from fullscreen
+		 * SPACE toggles playback
 		 **/
 		function _keyHandler(evt) {
-			switch (evt.keyCode) {
-			// ESC
-			case 27:
-				if (_model.fullscreen) {
+			if (_model.fullscreen) {
+				switch (evt.keyCode) {
+				// ESC
+				case 27:
 					_fullscreen(false);
+					break;
+				// SPACE
+//				case 32:
+//					if (_model.state == states.PLAYING || _model.state = states.BUFFERING)
+//						_api.jwPause();
+//					break;
 				}
-				break;
-			// SPACE
-			case 32:
-				_api.jwPlay()
-				break;
 			}
 		}
 		
@@ -430,9 +435,16 @@
 			_resize(_model.width, _model.height);
 		}
 		
+		this.setupError = function(message) {
+			jwplayer.embed.errorScreen(_playerElement, message);
+			_completeSetup();
+		}
+		
 		function _setVisibility(selector, state) {
 			_css(selector, { display: state ? "block" : "none" });
 		}
+		
+		_init();
 
 		
 	}

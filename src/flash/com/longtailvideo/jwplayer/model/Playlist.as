@@ -130,10 +130,10 @@ package com.longtailvideo.jwplayer.model {
 				if (playlistItems.length > 0) {
 					load(playlistItems);
 				} else {
-					playlistError("XML could not be parsed or playlist was empty");
+					playlistError("Loaded playlist is empty");
 				}
 			} else {
-				playlistError("Playlist file did not contain a valid playlist");
+				playlistError("Playlist is not a valid RSS feed");
 			}
 		}
 		

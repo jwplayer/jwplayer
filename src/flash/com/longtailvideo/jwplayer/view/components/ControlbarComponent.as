@@ -810,7 +810,8 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		public function force(state:Boolean):void {
 			_forcing = state;
-			redraw();
+			stateHandler();
+			moveTimeout();
 		}
 		
 		override public function hide():void {

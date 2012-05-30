@@ -14,7 +14,9 @@
 		function _setSources(modes, base, players) {
 			for (var i=0; i<modes.length; i++) {
 				var mode = modes[i].type;
-				modes[i].src = players[mode] ? players[mode] : base + "jwplayer." + mode + (mode == "flash" ? ".swf" : ".js");
+				if (!modes[i].src) {
+					modes[i].src = players[mode] ? players[mode] : base + "jwplayer." + mode + (mode == "flash" ? ".swf" : ".js");
+				}
 			}
 		}
 		
@@ -67,11 +69,16 @@
 					var singleSource = {};
 					_moveProperty(config, singleSource, "file");
 					_moveProperty(config, singleSource, "type");
-					singleItem.sources = [singleSource];
+					singleItem.sources = singleSource.file ? [singleSource] : [];
 				}
 			}
 				
 			config.playlist = [singleItem];
+		} else {
+			// Use JW Player playlist items to normalize sources of existing playlist items
+			for (var i=0; i<config.playlist.length; i++) {
+				config.playlist[i] = new jwplayer.playlist.item(config.playlist[i]);
+			}
 		}
 	}
 	

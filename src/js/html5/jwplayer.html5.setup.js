@@ -90,13 +90,17 @@
 		
 		function _loadSkin() {
 			_skin = new html5.skin();
-			_skin.load(_model.config.skin, _skinLoaded);
+			_skin.load(_model.config.skin, _skinLoaded, _skinError);
 		}
 		
 		function _skinLoaded(skin) {
 			_taskComplete(LOAD_SKIN);
 		}
-		
+
+		function _skinError(message) {
+			_error("Error loading skin: " + message);
+		}
+
 		function _loadPlaylist() {
 			switch(utils.typeOf(_model.config.playlist)) {
 			case "string":
@@ -117,7 +121,7 @@
 		}
 
 		function _playlistError(evt) {
-			_error(evt.message);
+			_error("Error loading playlist: " + evt.message);
 		}
 		
 		function _loadPreview() {
@@ -153,7 +157,8 @@
 		
 		function _error(message) {
 			_errorState = true;
-			_eventDispatcher.sendEvent(events.JWPLAYER_ERROR, {message: message});		
+			_eventDispatcher.sendEvent(events.JWPLAYER_ERROR, {message: message});
+			_view.setupError(message);
 		}
 		
 		utils.extend(this, _eventDispatcher);

@@ -8,6 +8,8 @@ package com.longtailvideo.jwplayer.controller {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.utils.Dictionary;
+	
+	import mx.core.IFlexDisplayObject;
 
 	/**
 	 * Sent when the plugin loader has loaded all valid plugins.
@@ -34,6 +36,9 @@ package com.longtailvideo.jwplayer.controller {
 		public var plugins:Object;
 
 		private var loaders:Dictionary;
+		
+		// So plugins can embed assets
+		private var flexDisplay:IFlexDisplayObject;
 		
 		protected function get pluginRepository():String {
 			try {
@@ -66,7 +71,7 @@ package com.longtailvideo.jwplayer.controller {
 			if (plugin.indexOf("/") >= 0) {
 				var loader:AssetLoader = new AssetLoader();
 				loader.addEventListener(Event.COMPLETE, loadSuccess);
-				loader.addEventListener(ErrorEvent.ERROR, loadLocalFailed);
+				loader.addEventListener(ErrorEvent.ERROR, pluginLoadFailed);
 				loaders[loader] = plugin;
 				loader.load(plugin);
 			} else {
@@ -74,18 +79,10 @@ package com.longtailvideo.jwplayer.controller {
 			}
 		}
 		
-		private function loadLocalFailed(evt:ErrorEvent):void {
-			var loader:AssetLoader = evt.target as AssetLoader;
-			var plugin:String = loaders[loader];
-			loader.removeEventListener(ErrorEvent.ERROR, loadLocalFailed);
-			delete loaders[loader];
-			checkComplete();
-		}
-
 		private function loadV5Plugin(plugin:String):void {
 			var loader:AssetLoader = new AssetLoader();
 			loader.addEventListener(Event.COMPLETE, loadSuccess);
-			loader.addEventListener(ErrorEvent.ERROR, loadV5Failed);			
+			loader.addEventListener(ErrorEvent.ERROR, pluginLoadFailed);			
 			
 			var split:Array = plugin.substr(plugin.lastIndexOf("/")+1).replace(/(.*)\.swf$/i, "$1").split("-");
 			var name:String = split[0];
@@ -96,30 +93,10 @@ package com.longtailvideo.jwplayer.controller {
 			loader.load(url);
 		}
 		
-		private function loadV5Failed(evt:ErrorEvent):void {
-			var loader:AssetLoader = evt.target as AssetLoader;
-			var url:String = loaders[loader] as String;
-			loader.removeEventListener(ErrorEvent.ERROR, loadV5Failed);
-			delete loaders[loader];
-			loadV4Plugin(url);
+		private function pluginLoadFailed(evt:ErrorEvent):void {
+			dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, "Error loading plugin: Plugin file not found"));
 		}
 		
-		private function loadV4Plugin(plugin:String):void {
-			var loader:AssetLoader = new AssetLoader();
-			loader.addEventListener(Event.COMPLETE, loadSuccess);
-			loader.addEventListener(ErrorEvent.ERROR, loadV4Failed);
-			loaders[loader] = plugin;
-			
-			if (Strings.extension(plugin) == "swf") { plugin = plugin.substring(0, plugin.length-4); }
-			loader.load(pluginRepository + '4/' + plugin + ".swf");
-		}
-
-		private function loadV4Failed(evt:ErrorEvent):void {
-			var loader:AssetLoader = evt.target as AssetLoader;
-			delete loaders[loader];
-			checkComplete();
-		}
-
 		private function loadSuccess(evt:Event):void {
 			var loader:AssetLoader = evt.target as AssetLoader;
 			var url:String = loaders[loader] as String;

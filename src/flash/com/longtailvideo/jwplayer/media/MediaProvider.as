@@ -5,6 +5,7 @@ package com.longtailvideo.jwplayer.media {
 	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
 	import com.longtailvideo.jwplayer.model.PlayerConfig;
 	import com.longtailvideo.jwplayer.model.PlaylistItem;
+	import com.longtailvideo.jwplayer.model.PlaylistItemLevel;
 	import com.longtailvideo.jwplayer.player.PlayerState;
 	import com.longtailvideo.jwplayer.utils.Stretcher;
 	
@@ -57,13 +58,25 @@ package com.longtailvideo.jwplayer.media {
 	 */
 	[Event(name="jwplayerMediaComplete", type="com.longtailvideo.jwplayer.events.MediaEvent")]
 	/**
+	 * Fired when the currently playing media exposes different quality levels
+	 * 
+	 * @eventType com.longtailvideo.jwplayer.events.MediaEvent.JWPLAYER_MEDIA_LEVELS
+	 */
+	[Event(name="jwplayerMediaLevels", type="com.longtailvideo.jwplayer.events.MediaEvent")]
+	/**
+	 * Fired when the currently quality level has changed
+	 * 
+	 * @eventType com.longtailvideo.jwplayer.events.MediaEvent.JWPLAYER_MEDIA_LEVEL_CHANGED
+	 */
+	[Event(name="jwplayerMediaLevelChanged", type="com.longtailvideo.jwplayer.events.MediaEvent")]
+	/**
 	 * Sent when the playback state has changed.
 	 * 
 	 * @eventType com.longtailvideo.jwplayer.events.PlayerStateEvent.JWPLAYER_PLAYER_STATE
 	 */
 	[Event(name="jwplayerPlayerState", type="com.longtailvideo.jwplayer.events.PlayerStateEvent")]
 	
-	public class MediaProvider extends Sprite implements IGlobalEventDispatcher {
+	public class MediaProvider extends Sprite implements IMediaProvider {
 		/** Reference to the player configuration. **/
 		private var _config:PlayerConfig;
 		/** Name of the MediaProvider **/
@@ -86,7 +99,8 @@ package com.longtailvideo.jwplayer.media {
 		private var _stretch:Boolean;
 		/** Queue buffer full event if it occurs while the player is paused. **/
 		private var _queuedBufferFull:Boolean;
-		
+		/** Current quality level **/
+		protected var _currentQuality:Number = -1;
 		
 		protected var _width:Number;
 		protected var _height:Number;
@@ -363,6 +377,63 @@ package com.longtailvideo.jwplayer.media {
 			return _stretch;
 		}
 
+		
+		/**
+		 * Current quality level getter
+		 **/
+		public function get currentQuality():Number {
+			return _currentQuality;			
+		}
+		
+		/**
+		 * Current quality level setter
+		 **/
+		public function set currentQuality(quality:Number):void {
+			_currentQuality = quality;			
+		}
+		
+		/** Quality levels (must be overridden by inheritors **/
+		public function get qualityLevels():Array {
+			return null;			
+		}
+		
+		private function qualityLabel(level:PlaylistItemLevel):String {
+			if (level.label) return level.label;
+			else if (level.height) return level.height + "p";
+			else if (level.width) return (level.width * 9 / 16) + "p";
+			else if (level.bitrate) return level.bitrate + "kbps";
+			else return "";
+		}
+		
+		protected function sendQualityEvent(type, levels:Array, quality:Number):void {
+			var qualityEvent:MediaEvent = new MediaEvent(type);
+			qualityEvent.levels = [];
+			for (var i:Number=0; i<levels.length; i++) {
+				var translatedLevel:Object = {
+					label: qualityLabel(levels[i]) ? qualityLabel(levels[i]) : i
+				};
+				if (levels[i].width) translatedLevel.width = levels[i].width;
+				if (levels[i].height) translatedLevel.height = levels[i].height;
+				if (levels[i].bitrate) translatedLevel.bitrate = levels[i].bitrate;
+				qualityEvent.levels.push(translatedLevel);
+			}
+			qualityEvent.currentQuality = quality;
+			dispatchEvent(qualityEvent);
+		}
+		
+		protected function getLevel(item:PlaylistItem, bitrate:Number, width:Number):Number {
+			for (var i:Number=0; i < item.levels.length; i++) {
+				var level:PlaylistItemLevel = item.levels[i] as PlaylistItemLevel;
+				if ((isNaN(level.bitrate) || bitrate >= level.bitrate * 1.5) && (isNaN(level.width) || width >= level.width * 0.67) && !level.blacklisted) {
+					return i;
+				}
+			}
+			return item.levels.length - 1;
+		}
+		
+		
+
+		
 		///////////////////////////////////////////		
 		/// IGlobalEventDispatcher implementation
 		///////////////////////////////////////////		

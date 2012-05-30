@@ -26,6 +26,12 @@ package com.longtailvideo.jwplayer.view.skins {
 			if (Strings.extension(url) == "zip") {
 				_urlPrefix = url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('.'));
 
+				var assetLoader:AssetLoader = new AssetLoader();
+				assetLoader.addEventListener(ErrorEvent.ERROR, loadError);
+				assetLoader.addEventListener(Event.COMPLETE, loadComplete);
+				assetLoader.load(url);
+				return;
+				
 				var urlStream:URLLoader = new URLLoader();
 				urlStream.dataFormat = URLLoaderDataFormat.BINARY;
 				urlStream.addEventListener(Event.COMPLETE, loadComplete);
@@ -40,7 +46,7 @@ package com.longtailvideo.jwplayer.view.skins {
 
 		protected override function loadComplete(evt:Event):void {
 			try {
-				var data:ByteArray = (evt.target as URLLoader).data as ByteArray;
+				var data:ByteArray = (evt.target as AssetLoader).loadedObject as ByteArray;
 				buildSkin(data);
 			} catch (e:Error) {
 				sendError(e.message);

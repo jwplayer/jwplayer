@@ -22,19 +22,19 @@ package com.longtailvideo.jwplayer.utils
 		public static function playlistItemToObject(item:PlaylistItem):Object {
 			var obj:Object = {
 				'author':		item.author,
-					'date':			item.date,
-					'description':	item.description,
-					'duration':		item.duration,
-					'file':			item.file,
-					'image':		item.image,
-					'link':			item.link,
-					'mediaid':		item.mediaid,
-					'provider':		item.provider,
-					'start':		item.start,
-					'streamer':		item.streamer,
-					'tags':			item.tags,
-					'title':		item.title,
-					'type':			item.provider
+				'date':			item.date,
+				'description':	item.description,
+				'duration':		item.duration,
+				'file':			item.file,
+				'image':		item.image,
+				'link':			item.link,
+				'mediaid':		item.mediaid,
+				'provider':		item.provider,
+				'start':		item.start,
+				'streamer':		item.streamer,
+				'tags':			item.tags,
+				'title':		item.title,
+				'type':			item.provider
 			};
 			
 			for (var i:String in item) {

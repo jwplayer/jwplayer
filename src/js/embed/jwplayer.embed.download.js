@@ -13,7 +13,7 @@
 		JW_CSS_100PCT = "100%",
 		JW_CSS_ABSOLUTE = "absolute";
 	
-	embed.download = function(_container, _options) {
+	embed.download = function(_container, _options, _errorCallback) {
 		var params = utils.extend({}, _options),
 			_display,
 			_width = params.width ? params.width : 480,
@@ -29,22 +29,39 @@
 
 		function _embed() {
 			if (params.playlist && params.playlist.length) {
-				try {
-					_file = params.playlist[0].sources[0].file;
-					_image = params.playlist[0].image;
-				} catch(e) {
-					return;
+				// TODO: make sure source can be downloaded (mp4, flv, webm, aac, mp3 or vorbis)
+				// If no downlaodable files, and youtube, display youtube
+				// If nothing, show error message
+				var file, image, youtube;
+				for (var i=0; i<params.playlist[0].sources.length; i++) {
+					var source = params.playlist[0].sources[i];
+					if (source.file) {
+						if (("mp4,mp4,flv,webm,aac,mp3,vorbis").split().indexOf(source.type) > -1) {
+							file = source.file;
+							image = source.image;
+							continue;
+						} else if (utils.isYouTube(source.file)){
+							youtube = source.file;
+						}
+					}
 				}
 			} else {
 				return;
 			}
 			
-			if (_logo.prefix) {
-				_logo.prefix += jwplayer.version.split(/\W/).splice(0, 2).join("/") + "/";
+			if (file) {
+				_file = file;
+				_image = image;
+				if (_logo.prefix) {
+					_logo.prefix += jwplayer.version.split(/\W/).splice(0, 2).join("/") + "/";
+				}
+				_buildElements();
+				_styleElements();
+			} else if (youtube) {
+				alert("Youtube goes here: " + youtube);
+			} else {
+				_errorCallback();
 			}
-			
-			_buildElements();
-			_styleElements();
 		}
 		
 		function _buildElements() {

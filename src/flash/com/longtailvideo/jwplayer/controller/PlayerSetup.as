@@ -123,28 +123,20 @@ package com.longtailvideo.jwplayer.controller {
 			}
 		}
 
-		protected function loadSkin(evt:ErrorEvent=null):void {
+		protected function loadSkin():void {
 			var skin:ISkin;
-			if (confHash && confHash['skin'] && evt == null) {
+			if (confHash && confHash['skin']) {
 				if (Strings.extension(confHash['skin']) == "zip") {
 					skin = new ZIPSkin();
 				} else if (Strings.extension(confHash['skin']) == "xml") {
 					skin = new PNGSkin();
 				} else {
-					Logger.log("Could not load skin " + confHash['skin']);
+					tasker.failure(new ErrorEvent(ErrorEvent.ERROR, false, false, "Skin could not be loaded: Invalid file type"));	
 				}
-			}
-			if (skin) {
-				// If this step fails, load the default skin instead
-				skin.addEventListener(ErrorEvent.ERROR, loadSkin);
 			} else {
-				if (evt) { 
-					Logger.log("Error loading skin: " + evt.text);
-					(evt.target as EventDispatcher).removeEventListener(ErrorEvent.ERROR, loadSkin);
-				}
 				skin = new DefaultSkin();
-				skin.addEventListener(ErrorEvent.ERROR, tasker.failure);
 			}
+			skin.addEventListener(ErrorEvent.ERROR, tasker.failure);
 			skin.addEventListener(Event.COMPLETE, tasker.success);
 			skin.load(confHash['skin']);
 		}

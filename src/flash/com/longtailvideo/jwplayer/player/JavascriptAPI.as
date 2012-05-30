@@ -166,6 +166,11 @@ package com.longtailvideo.jwplayer.player {
 				// The player shouldn't send any events if it's been destroyed
 				ExternalInterface.addCallback("jwDestroyAPI", js_destroyAPI);
 
+				// Quality API
+				ExternalInterface.addCallback("jwGetQualityLevels", js_getQualityLevels);
+				ExternalInterface.addCallback("jwGetCurrentQuality", js_getCurrentQuality);
+				ExternalInterface.addCallback("jwSetCurrentQuality", js_setCurrentQuality);
+				
 				// UNIMPLEMENTED
 				//ExternalInterface.addCallback("jwGetBandwidth", js_getBandwidth); 
 				//ExternalInterface.addCallback("jwGetLevel", js_getLevel);
@@ -270,6 +275,8 @@ package com.longtailvideo.jwplayer.player {
 			if (evt.metadata != null)	 		returnObj.metadata = JavascriptSerialization.stripDots(evt.metadata);
 			if (evt.offset > 0)					returnObj.offset = evt.offset;
 			if (evt.position >= 0)				returnObj.position = evt.position;
+			if (evt.currentQuality >= 0)		returnObj.currentQuality = evt.currentQuality;
+			if (evt.levels)						returnObj.levels = JavascriptSerialization.stripDots(evt.levels);
 
 			if (evt.type == MediaEvent.JWPLAYER_MEDIA_MUTE)
 				returnObj.mute = evt.mute;
@@ -548,7 +555,19 @@ package com.longtailvideo.jwplayer.player {
 		protected function js_destroyAPI():void {
 			_destroyed = true;
 		}
-
+		
+		protected function js_getQualityLevels():Array {
+			return _player.getQualityLevels();
+		}
+		
+		protected function js_getCurrentQuality():Number {
+			return _player.getCurrentQuality();
+		}
+		
+		protected function js_setCurrentQuality(index:Number):void {
+			_player.setCurrentQuality(index);	
+		}
+		
 		protected function callJS(functionName:String, args:*):void {
 			if (!_destroyed) {
 				ExternalInterface.call(functionName, args);

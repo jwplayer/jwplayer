@@ -123,7 +123,7 @@ package com.longtailvideo.jwplayer.media {
 				if (_bandwidthSwitch) {
 					_bandwidthSwitch = false;
 					_bandwidthChecked = false;
-					if (item.currentLevel != item.getLevel(config.bandwidth, config.width)) {
+					if (item.currentLevel != getLevel(item, config.bandwidth, config.width)) {
 						load(item);
 						return;
 					}
@@ -226,7 +226,7 @@ package com.longtailvideo.jwplayer.media {
 			_bufferFull = false;
 			_bufferingComplete = false;
 			
-			if (item.levels.length > 0) { item.setLevel(item.getLevel(config.bandwidth, config.width)); }
+			if (item.levels.length > 0) { item.setLevel(getLevel(item, config.bandwidth, config.width)); }
 			
 			_stream.play(getURL());
 			
@@ -358,7 +358,7 @@ package com.longtailvideo.jwplayer.media {
 		/** Handle a resize event **/
 		override public function resize(width:Number, height:Number):void {
 			super.resize(width, height);
-			if (state != PlayerState.IDLE && item.levels.length > 0 && item.getLevel(config.bandwidth, config.width) != item.currentLevel) {
+			if (state != PlayerState.IDLE && item.levels.length > 0 && getLevel(item, config.bandwidth, config.width) != item.currentLevel) {
 				_byteoffset = getOffset(position);
 				_timeoffset = _position = getOffset(position,true);
 				load(item);

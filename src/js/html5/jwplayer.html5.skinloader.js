@@ -23,6 +23,10 @@
 			if (typeof _skinPath != "string" || _skinPath === "") {
 				_loadSkin(html5.defaultskin().xml);
 			} else {
+				if (_utils.extension(_skinPath) != "xml") {
+					_errorHandler("Skin not a valid file type");
+					return;
+				}
 				_utils.ajax(_utils.getAbsolutePath(_skinPath), function(xmlrequest) {
 					try {
 						if (_utils.exists(xmlrequest.responseXML)){
@@ -33,8 +37,8 @@
 						_clearSkin();
 					}
 					_loadSkin(html5.defaultskin().xml);
-				}, function(path) {
-					_loadSkin(html5.defaultskin().xml);
+				}, function(message) {
+					_errorHandler(message);
 				});
 			}
 			
@@ -142,7 +146,7 @@
 			img.onerror = function(evt) {
 				_error = true;
 				_resetCompleteIntervalTest();
-				_errorHandler();
+				_errorHandler("Skin image not found: " + this.src);
 			};
 			
 			img.src = imgUrl;

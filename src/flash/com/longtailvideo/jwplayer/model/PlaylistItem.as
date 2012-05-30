@@ -23,7 +23,8 @@ package com.longtailvideo.jwplayer.model {
 		protected var _start:Number			= 0;
 		protected var _streamer:String		= "";
 		
-		protected var _currentLevel:Number 	= -1;
+		protected var _type:String			= null;
+		protected var _currentLevel:Number 	= 0;
 		protected var _levels:Array			= [];
 		
 		
@@ -57,13 +58,15 @@ package com.longtailvideo.jwplayer.model {
 					var levels:Array = obj[itm] as Array;
 					for each (var level:Object in levels) {
 						if (level['file']) {
-							var newLevel:PlaylistItemLevel = new PlaylistItemLevel(level['file'], 
+							var newLevel:PlaylistItemLevel = new PlaylistItemLevel(level['file'],
+								level['type'],
 								Number(level['bitrate']), 
 								Number(level['width']), 
 								level['streamer']);
 							for (var otherProp:String in level) {
 								switch(otherProp) {
 									case "file":
+									case "type":
 									case "bitrate":
 									case "width":
 									case "streamer":
@@ -124,7 +127,8 @@ package com.longtailvideo.jwplayer.model {
 		/** Insert an additional bitrate level, keeping the array sorted from highest to lowest. **/
 		public function addLevel(newLevel:PlaylistItemLevel):void {
 			if (validExtension(newLevel)) {
-				if (_currentLevel < 0) _currentLevel = 0;
+				// Removing playlist level sorting
+/*				if (_currentLevel < 0) _currentLevel = 0;
 				for (var i:Number = 0; i < _levels.length; i++) {
 					var level:PlaylistItemLevel = _levels[i] as PlaylistItemLevel;
 					if (newLevel.bitrate > level.bitrate) {
@@ -135,6 +139,7 @@ package com.longtailvideo.jwplayer.model {
 						return;
 					}
 				}
+*/
 				_levels.push(newLevel);
 			}
 		}
@@ -159,21 +164,25 @@ package com.longtailvideo.jwplayer.model {
 		 * This is useful for unified HTML5 / Flash failover setups.
 		 **/
 		protected function validExtension(level:Object):Boolean {
-			return levelType(level);
+			if (_type) {
+				return (typeMap(levelType(level)) == typeMap(_type));
+			} else {
+				var lType = levelType(level);
+				if (lType) {
+					if (typeMap(lType)) {
+						_type = lType;
+						return true;
+					}
+				} else {
+					// No valid extension, but if provider is set manually, try to play using that provider.
+					if (_provider) return true;
+				}
+			}
+			return false;
 		}
 
 		public function get currentLevel():Number {
 			return _currentLevel;
-		}
-		
-		public function getLevel(bitrate:Number, width:Number):Number {
-			for (var i:Number=0; i < _levels.length; i++) {
-				var level:PlaylistItemLevel = _levels[i] as PlaylistItemLevel;
-				if ((isNaN(level.bitrate) || bitrate >= level.bitrate * 1.5) && (isNaN(level.width) || width >= level.width * 0.67) && !level.blacklisted) {
-					return i;
-				}
-			}
-			return _levels.length - 1;
 		}
 		
 		/** Set this PlaylistItem's level to match the given bitrate and height. **/
@@ -214,27 +223,71 @@ package com.longtailvideo.jwplayer.model {
 
 		private function levelType(level:Object):String {
 			if (level) {
-				var type:String = level.type ? level.type : Strings.extension(level.file);
-				switch (type) {
-					case "flv": 
-					case "f4v": 
-					case "mov": 
-					case "m4a": 
-					case "m4v": 
-					case "mp4": 
-					case "aac": 
-						return "video";
-						break;
-					case "mp3": 
-						return "sound";
-						break;
-					case  "smil":
-						return "rtmp";
-						break;
-					case "m3u8": 
-						return "hls";
-						break;
+				if (level.type) return level.type;
+				else {
+					if (level.streamer) return "rtmp";
+					else if (level.file) {
+						if (Strings.isYouTube(level.file)) return "youtube";
+						else {
+							return extensionMap(Strings.extension(level.file));
+						}
+					}
 				}
+			}
+			return null;
+		}
+		
+		private function extensionMap(extension:String):String {
+			switch (extension) {
+				case "flv": 
+					return "flv";
+				case "f4v":
+				case "m4v": 
+				case "mp4":
+					return "mp4";
+				case "m4a": 
+				case "aac":
+				case "f4a":
+					return "aac";
+					break;
+				case "mp3":
+					return "mp3";
+					break;
+				case "smil":
+					return "rtmp";
+					break;
+				case "m3u8": 
+					return "hls";
+					break;
+				case "webm":
+					return "webm";
+					break;
+				case "ogg":
+				case "oga":
+					return "vorbis";
+					break;
+			}
+			return null;
+		}
+		
+		private function typeMap(type:String):String {
+			switch (type) {
+				case "flv":
+				case "mp4":
+				case "aac":
+				case "video": 
+					return "video";
+					break;
+				case "mp3": 
+				case "sound": 
+					return "sound";
+					break;
+				case "rtmp":
+					return "rtmp";
+					break;
+				case "hls": 
+					return "hls";
+					break;
 			}
 			return null;
 		}
@@ -243,7 +296,7 @@ package com.longtailvideo.jwplayer.model {
 			if (_provider) {
 				return _provider;
 			} else if (_levels.length > 0) {
-				return levelType(_levels[_currentLevel]); 
+				return typeMap(levelType(_levels[_currentLevel])); 
 			}
 			return null;
 		}
@@ -252,10 +305,7 @@ package com.longtailvideo.jwplayer.model {
 		}
 		
 		public function get type():String {
-			if (_levels.length > 0) {
-				var level:Object = _levels[_currentLevel]; 
-				return level.type ? level.type : Strings.extension(level.file);
-			} else return null;
+			return _type;
 		}
 		
 	}

@@ -4,14 +4,18 @@
  * @version 5.6
  */
 (function(jwplayer) {
+	var utils = jwplayer.utils, events = jwplayer.events;
 
 	jwplayer.plugins.pluginloader = function(model, config) {
-		var _plugins = {};
-		var _status = jwplayer.utils.loaderstatus.NEW;
-		var _loading = false;
-		var _iscomplete = false;
-		var _eventDispatcher = new jwplayer.events.eventdispatcher();
-		jwplayer.utils.extend(this, _eventDispatcher);
+		var _plugins = {},
+			_status = utils.loaderstatus.NEW,
+			_loading = false,
+			_iscomplete = false,
+			_errorState = false,
+			_eventDispatcher = new events.eventdispatcher();
+		
+		
+		utils.extend(this, _eventDispatcher);
 		
 		/*
 		 * Plugins can be loaded by multiple players on the page, but all of them use
@@ -27,10 +31,12 @@
 		 * to fire, if necessary.
 		 */
 		function _complete() {
-			if (!_iscomplete) {
+			if (_errorState) {
+				_eventDispatcher.sendEvent(events.ERROR);
+			} else if (!_iscomplete) {
 				_iscomplete = true;
-				_status = jwplayer.utils.loaderstatus.COMPLETE;
-				_eventDispatcher.sendEvent(jwplayer.events.COMPLETE);
+				_status = utils.loaderstatus.COMPLETE;
+				_eventDispatcher.sendEvent(events.COMPLETE);
 			}
 		}
 		
@@ -40,8 +46,7 @@
 				var incomplete = 0;
 				for (plugin in _plugins) {
 					var status = _plugins[plugin].getStatus(); 
-					if (status == jwplayer.utils.loaderstatus.LOADING 
-							|| status == jwplayer.utils.loaderstatus.NEW) {
+					if (status == utils.loaderstatus.LOADING || status == utils.loaderstatus.NEW) {
 						incomplete++;
 					}
 				}
@@ -75,10 +80,8 @@
 					div.style.zIndex = jsplugins.length + 10;
 					jsplugins.plugins[pluginName] = _plugins[plugin].getNewInstance(api, config.plugins[plugin], div);
 					jsplugins.length++;
-					if (typeof jsplugins.plugins[pluginName].resize != "undefined") {
-						api.onReady(resizer(jsplugins.plugins[pluginName], div, true));
-						api.onResize(resizer(jsplugins.plugins[pluginName], div));
-					}
+					api.onReady(resizer(jsplugins.plugins[pluginName], div, true));
+					api.onResize(resizer(jsplugins.plugins[pluginName], div));
 				}
 			}
 			
@@ -88,15 +91,21 @@
 		};
 		
 		this.load = function() {
-			_status = jwplayer.utils.loaderstatus.LOADING;
+			// Must be a hash map
+			if (utils.typeOf(config) != "object") {
+				_checkComplete();
+				return;
+			}
+			
+			_status = utils.loaderstatus.LOADING;
 			_loading = true;
 			
 			/** First pass to create the plugins and add listeners **/
 			for (var plugin in config) {
-				if (jwplayer.utils.exists(plugin)) {
+				if (utils.exists(plugin)) {
 					_plugins[plugin] = model.addPlugin(plugin);
-					_plugins[plugin].addEventListener(jwplayer.events.COMPLETE, _checkComplete);
-					_plugins[plugin].addEventListener(jwplayer.events.ERROR, _checkComplete);
+					_plugins[plugin].addEventListener(events.COMPLETE, _checkComplete);
+					_plugins[plugin].addEventListener(events.ERROR, _pluginError);
 				}
 			}
 			
@@ -112,8 +121,11 @@
 			_checkComplete();
 		}
 		
-		this.pluginFailed = function() {
-			_complete();
+		var _pluginError = this.pluginFailed = function() {
+			if (!_errorState) {
+				_errorState = true;
+				_complete();
+			}
 		}
 		
 		this.getStatus = function() {

@@ -75,5 +75,9 @@ package com.longtailvideo.jwplayer.player {
 		function get controls():IPlayerComponents;
 		function overrideComponent(plugin:IPlayerComponent):void;
 		function loadInstream(target:IPlugin, item:PlaylistItem, options:IInstreamOptions=null):IInstreamPlayer;
+		function getQualityLevels():Array;
+		function getCurrentQuality():Number;
+		function setCurrentQuality(index:Number):void;
+
 	}
 }

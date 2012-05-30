@@ -227,11 +227,27 @@ package com.longtailvideo.jwplayer.utils {
 
 		/** Removes potentially harmful string headers from a link **/
 		public static function cleanLink(link:String):String {
-			return link.replace(/(javascript|asfunction|vbscript)\:/gi, "");
+			// Can't use a regex variable; matching tests will incorrectly return false
+			while(/(javascript|asfunction|vbscript):/gi.test(link)) {
+				link = link.replace(/(javascript|asfunction|vbscript):/gi, "");
+			}
+			return link;
+		}
+		
+		public static function isYouTube(file:String):Boolean {
+			if (!file) 
+				return false;
+			else if (file.indexOf('youtube.com/w') > -1)
+				return true;
+			else if (file.indexOf('youtube.com/v') > -1)
+				return true;
+			else if (file.indexOf('youtu.be') > -1)
+				return true;
+			else
+				return false;
 		}
 		
 
-		
 		
 	}
 	

@@ -191,21 +191,55 @@ package com.longtailvideo.jwplayer.events {
 		 */
 		public static var JWPLAYER_MEDIA_BEFORECOMPLETE:String = "jwplayerMediaBeforeComplete";
 		/**
-	     *  The <code>MediaEvent.JWPLAYER_MEDIA_MUTE</code> constant defines the value of the 
-     	 *  <code>type</code> property of the event object for a <code>jwplayerMediaMute</code> event.
-     	 * 
+		 *  The <code>MediaEvent.JWPLAYER_MEDIA_MUTE</code> constant defines the value of the 
+		 *  <code>type</code> property of the event object for a <code>jwplayerMediaMute</code> event.
+		 * 
 		 * <p>The properties of the event object have the following values:</p>
-	     * <table class="innertable">
-     	 *		<tr><th>Property</th><th>Value</th></tr>
-	     *		<tr><td><code>id</code></td><td>ID of the player in the HTML DOM. Used by javascript to reference the player.</td></tr>
-	     *		<tr><td><code>client</code></td><td>A string representing the client the player runs in (e.g. FLASH WIN 9,0,115,0).</td></tr>
-  	     * 		<tr><td><code>version</code></td><td>A string representing the major version, minor version and revision number of the player (e.g. 5.0.395).</td></tr>
-  	     * 		<tr><td><code>duration</code></td><td>The current playback volume, between 0 and 100.</td></tr>
-  	     *  </table>
-	     *
-	     *  @eventType jwplayerMediaMute
+		 * <table class="innertable">
+		 *		<tr><th>Property</th><th>Value</th></tr>
+		 *		<tr><td><code>id</code></td><td>ID of the player in the HTML DOM. Used by javascript to reference the player.</td></tr>
+		 *		<tr><td><code>client</code></td><td>A string representing the client the player runs in (e.g. FLASH WIN 9,0,115,0).</td></tr>
+		 * 		<tr><td><code>version</code></td><td>A string representing the major version, minor version and revision number of the player (e.g. 5.0.395).</td></tr>
+		 * 		<tr><td><code>duration</code></td><td>The current playback volume, between 0 and 100.</td></tr>
+		 *  </table>
+		 *
+		 *  @eventType jwplayerMediaMute
 		 */
 		public static var JWPLAYER_MEDIA_MUTE:String = "jwplayerMediaMute";
+		/**
+		 *  The <code>MediaEvent.JWPLAYER_MEDIA_LEVELS</code> constant defines the value of the 
+		 *  <code>type</code> property of the event object for a <code>jwplayerMediaLevels</code> event.
+		 * 
+		 * <p>The properties of the event object have the following values:</p>
+		 * <table class="innertable">
+		 *		<tr><th>Property</th><th>Value</th></tr>
+		 *		<tr><td><code>id</code></td><td>ID of the player in the HTML DOM. Used by javascript to reference the player.</td></tr>
+		 *		<tr><td><code>client</code></td><td>A string representing the client the player runs in (e.g. FLASH WIN 9,0,115,0).</td></tr>
+		 * 		<tr><td><code>version</code></td><td>A string representing the major version, minor version and revision number of the player (e.g. 5.0.395).</td></tr>
+		 * 		<tr><td><code>levels</code></td><td>An array of quality levels</td></tr>
+		 * 		<tr><td><code>currentQuality</code></td><td>The current level; A value of -1 means the level is automatically selected</td></tr>
+		 *  </table>
+		 *
+		 *  @eventType jwplayerMediaMute
+		 */
+		public static var JWPLAYER_MEDIA_LEVELS:String = "jwplayerMediaLevels";
+		/**
+		 *  The <code>MediaEvent.JWPLAYER_MEDIA_LEVEL_CHANGED</code> constant defines the value of the 
+		 *  <code>type</code> property of the event object for a <code>jwplayerMediaLevelChanged</code> event.
+		 * 
+		 * <p>The properties of the event object have the following values:</p>
+		 * <table class="innertable">
+		 *		<tr><th>Property</th><th>Value</th></tr>
+		 *		<tr><td><code>id</code></td><td>ID of the player in the HTML DOM. Used by javascript to reference the player.</td></tr>
+		 *		<tr><td><code>client</code></td><td>A string representing the client the player runs in (e.g. FLASH WIN 9,0,115,0).</td></tr>
+		 * 		<tr><td><code>version</code></td><td>A string representing the major version, minor version and revision number of the player (e.g. 5.0.395).</td></tr>
+		 * 		<tr><td><code>levels</code></td><td>An array of quality levels</td></tr>
+		 * 		<tr><td><code>currentQuality</code></td><td>The current level; A value of -1 means the level is automatically selected</td></tr>
+		 *  </table>
+		 *
+		 *  @eventType jwplayerMediaMute
+		 */
+		public static var JWPLAYER_MEDIA_LEVEL_CHANGED:String = "jwplayerMediaLevelChanged";
 
 		public var bufferPercent:Number 	= -1;
 		public var duration:Number 			= -1;
@@ -214,6 +248,8 @@ package com.longtailvideo.jwplayer.events {
 		public var offset:Number			= 0;
 		public var volume:Number 			= -1;
 		public var mute:Boolean				= false;
+		public var levels:Array				= null;
+		public var currentQuality:Number		= -1;
 	
 		public function MediaEvent(type:String) {
 			super(type);
@@ -228,6 +264,8 @@ package com.longtailvideo.jwplayer.events {
 			evt.offset = this.offset;
 			evt.volume = this.volume;
 			evt.mute = this.mute;
+			evt.levels = this.levels;
+			evt.currentQuality = this.currentQuality;
 			return evt;
 		}
 		
@@ -245,6 +283,8 @@ package com.longtailvideo.jwplayer.events {
 			if (offset != defaults.offset) retString += ' offset="' + offset + '"';
 			if (volume != defaults.volume) retString += ' volume="' + volume + '"';
 			if (mute != defaults.mute) retString += ' mute="' + mute + '"';
+			if (levels != defaults.levels) retString += ' levels="' + levels + '"';
+			if (currentQuality != defaults.currentQuality) retString += ' currentQuality="' + currentQuality + '"';
 			if (message != defaults.message) retString += ' message="' + message + '"';
 			
 			retString += ' id="' + id + '"'

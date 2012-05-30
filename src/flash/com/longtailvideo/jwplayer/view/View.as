@@ -384,6 +384,8 @@ package com.longtailvideo.jwplayer.view {
 				_components.dock.hide();
 				_components.playlist.hide();
 				return;
+			} else {
+				_components.controlbar.force(false);
 			}
 			
 			_components.resize(_player.config.width, _player.config.height);

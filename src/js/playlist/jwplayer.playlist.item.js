@@ -12,14 +12,11 @@
 			image: "",
 			mediaid: "",
 			title: "",
-			
 			duration: -1,
-			
 			sources: []
-		};
-		
-		
-		var _playlistitem = jwplayer.utils.extend({}, _defaults, config);
+		},
+
+		_playlistitem = jwplayer.utils.extend({}, _defaults, config);
 		
 /*
 		if (_playlistitem.type) {
@@ -37,7 +34,7 @@
 			_playlistitem.provider = _playlistitem.provider.toLowerCase();
 		}
 */
-		
+
 		return _playlistitem;
 	};
 })(jwplayer.playlist);

@@ -21,10 +21,21 @@
 				if (html5.parsers.localName(rss) == "xml") {
 					rss = rss.nextSibling;
 				}
-				var playlistObj = html5.parsers.rssparser.parse(rss);
-				_eventDispatcher.sendEvent(events.JWPLAYER_PLAYLIST_LOADED, {
-					playlist: new _jw.playlist(playlistObj)
-				});
+				
+				if (html5.parsers.localName(rss) != "rss") {
+					_playlistError("Playlist is not a valid RSS feed.");
+					return;
+				}
+				
+				var playlist = new _jw.playlist(html5.parsers.rssparser.parse(rss));
+				// TODO: full source inspection here - need to detect if there are playable sources in the list
+				if (playlist && playlist.length && playlist[0].sources && playlist[0].sources.length && playlist[0].sources[0].file) {
+					_eventDispatcher.sendEvent(events.JWPLAYER_PLAYLIST_LOADED, {
+						playlist: playlist
+					});
+				} else {
+					_playlistError("No playable sources found");
+				}
 			} catch (e) {
 				_playlistError('Could not load the playlist.');
 			}

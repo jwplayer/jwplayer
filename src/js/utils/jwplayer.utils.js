@@ -5,7 +5,8 @@
  * @version 6.0
  */
 (function(jwplayer) {
-	var DOCUMENT = document, WINDOW = window;
+	var DOCUMENT = document, WINDOW = window, NAVIGATOR = navigator, 
+		UNDEFINED = "undefined", STRING = "string", OBJECT = "object";
 	
 	//Declare namespace
 	var utils = jwplayer.utils = function() {
@@ -19,12 +20,12 @@
 	 */
 	utils.exists = function(item) {
 		switch (typeof (item)) {
-		case "string":
+		case STRING:
 			return (item.length > 0);
 			break;
-		case "object":
+		case OBJECT:
 			return (item !== null);
-		case "undefined":
+		case UNDEFINED:
 			return false;
 		}
 		return true;
@@ -85,7 +86,9 @@
 		if (args.length > 1) {
 			for ( var i = 1; i < args.length; i++) {
 				for ( var element in args[i]) {
-					args[0][element] = args[i][element];
+					if (utils.exists(args[i][element])) {
+						args[0][element] = args[i][element];
+					}
 				}
 			}
 			return args[0];
@@ -93,36 +96,9 @@
 		return null;
 	};
 
-	/**
-	 * Cleans up a css dimension (e.g. '420px') and returns an integer.
-	 */
-	utils.parseDimension = function(dimension) {
-		if (typeof dimension == "string") {
-			if (dimension === "") {
-				return 0;
-			} else if (dimension.lastIndexOf("%") > -1) {
-				return dimension;
-			} else {
-				return parseInt(dimension.replace("px", ""), 10);
-			}
-		}
-		return dimension;
-	}
-
-	/** Format the elapsed / remaining text. **/
-	utils.timeFormat = function(sec) {
-		if (sec > 0) {
-			var str = Math.floor(sec / 60) < 10 ? "0" + Math.floor(sec / 60) + ":" : Math.floor(sec / 60) + ":";
-			str += Math.floor(sec % 60) < 10 ? "0" + Math.floor(sec % 60) : Math.floor(sec % 60);
-			return str;
-		} else {
-			return "00:00";
-		}
-	}
-
 	/** Logger * */
 	utils.log = function(msg, obj) {
-		if (typeof console != "undefined" && typeof console.log != "undefined") {
+		if (typeof console != UNDEFINED && typeof console.log != UNDEFINED) {
 			if (obj) {
 				console.log(msg, obj);
 			} else {
@@ -131,22 +107,8 @@
 		}
 	};
 
-	/** Replacement for getBoundingClientRect, which isn't supported in iOS 3.1.2 **/
-	utils.getBoundingClientRect = function(element) {
-		if (typeof element.getBoundingClientRect == "function") {
-			return element.getBoundingClientRect();
-		} else {
-			return { 
-				left: element.offsetLeft + DOCUMENT.body.scrollLeft, 
-				top: element.offsetTop + DOCUMENT.body.scrollTop, 
-				width: element.offsetWidth, 
-				height: element.offsetHeight
-			};
-		}
-	}
-	
 	var _userAgentMatch = utils.userAgentMatch = function(regex) {
-		var agent = navigator.userAgent.toLowerCase();
+		var agent = NAVIGATOR.userAgent.toLowerCase();
 		return (agent.match(regex) !== null);
 	};
 
@@ -192,84 +154,6 @@
 		return jwCookies;
 	}
 	
-	/** Loads an XML file into a DOM object * */
-	utils.ajax = function(xmldocpath, completecallback, errorcallback) {
-		var xmlhttp;
-		if (_isCrossdomain(xmldocpath) && utils.exists(WINDOW.XDomainRequest)) {
-			// IE9
-			xmlhttp = new XDomainRequest();
-			xmlhttp.onload = _ajaxComplete(xmlhttp, xmldocpath, completecallback, errorcallback);
-			xmlhttp.onerror = _ajaxError(errorcallback, xmldocpath, xmlhttp);
-		} else if (utils.exists(WINDOW.XMLHttpRequest)) {
-			// Firefox, Chrome, Opera, Safari
-			xmlhttp = new XMLHttpRequest();
-			xmlhttp.onreadystatechange = _readyStateChangeHandler(xmlhttp, xmldocpath, completecallback, errorcallback);
-			xmlhttp.onerror = _ajaxError(errorcallback, xmldocpath);
-		} else {
-			if (errorcallback) errorcallback();
-		}
-		 
-		try {
-			xmlhttp.open("GET", xmldocpath, true);
-			xmlhttp.send(null);
-		} catch (error) {
-			if (errorcallback) errorcallback(xmldocpath);
-		}
-		return xmlhttp;
-	};
-	
-	function _isCrossdomain(path) {
-		if (path && path.indexOf("://") >= 0) {
-			if (path.split("/")[2] != WINDOW.location.href.split("/")[2])
-				return true
-		} 
-		return false;	
-	}
-	
-	function _ajaxError(errorcallback, xmldocpath, xmlhttp) {
-		return function() {
-			errorcallback(xmldocpath);
-		}
- 	}
-	
-	function _readyStateChangeHandler(xmlhttp, xmldocpath, completecallback, errorcallback) {
-		return function() {
-			if (xmlhttp.readyState === 4) {
-				if (xmlhttp.status == 200) {
-					_ajaxComplete(xmlhttp, xmldocpath, completecallback, errorcallback)();
-				} else if (errorcallback) {
-					errorcallback(xmldocpath);
-				}
-			}
-		}
-	}
-	
-	function _ajaxComplete(xmlhttp, xmldocpath, completecallback, errorcallback) {
-		return function() {
-			// Handle the case where an XML document was returned with an incorrect MIME type.
-			if (!utils.exists(xmlhttp.responseXML)) {
-				try {
-					var parsedXML;
-					// Parse XML in FF/Chrome/Safari/Opera
-					if (WINDOW.DOMParser) {
-						parsedXML = (new DOMParser()).parseFromString(xmlhttp.responseText,"text/xml");
-					} else { 
-						// Internet Explorer
-						parsedXML = new ActiveXObject("Microsoft.XMLDOM");
-						parsedXML.async="false";
-						parsedXML.loadXML(xmlhttp.responseText);
-					}
-					if (parsedXML) {
-						xmlhttp = utils.extend({}, xmlhttp, {responseXML:parsedXML});
-					}
-				} catch(e) {
-					if (errorcallback) errorcallback(xmldocpath);
-					return;
-				}
-			}
-			completecallback(xmlhttp);
-		}
-	}
 
 	/** Returns the true type of an object * */
 	utils.typeOf = function(value) {
@@ -288,11 +172,11 @@
 		if (type == jwplayer.events.JWPLAYER_FULLSCREEN && !translated.fullscreen) {
 			translated.fullscreen = translated.message == "true" ? true : false;
 			delete translated.message;
-		} else if (typeof translated.data == "object") {
+		} else if (typeof translated.data == OBJECT) {
 			// Takes ViewEvent "data" block and moves it up a level
 			translated = utils.extend(translated, translated.data);
 			delete translated.data;
-		} else if (typeof translated.metadata == "object") {
+		} else if (typeof translated.metadata == OBJECT) {
 			utils.deepReplaceKeyName(translated.metadata, ["__dot__","__spc__","__dsh__"], ["."," ","-"]);
 		}
 		
@@ -307,32 +191,29 @@
 	}
 
 	/**
-	 * Detects whether or not the current player has flash capabilities 
-	 * TODO: Add minimum flash version constraint: 9.0.115
+	 * If the browser has flash capabilities, return the flash version 
 	 */
-	utils.hasFlash = function() {
-		if (typeof navigator.plugins != "undefined" && typeof navigator.plugins['Shockwave Flash'] != "undefined") {
-			return true;
+	utils.flashVersion = function() {
+		var plugins = NAVIGATOR.plugins, flash;
+		if (plugins != UNDEFINED) {
+			flash = plugins['Shockwave Flash'];
+			if (flash) {
+				return parseInt(flash.description.replace(/\D+(\d+)\..*/, "$1"));
+			}
 		}
-		if (typeof WINDOW.ActiveXObject != "undefined") {
+		if (typeof WINDOW.ActiveXObject != UNDEFINED) {
 			try {
-				new ActiveXObject("ShockwaveFlash.ShockwaveFlash");
-				return true
+				flash = new ActiveXObject("ShockwaveFlash.ShockwaveFlash");
+				if (flash) {
+					return parseInt(flash.GetVariable("$version").split(" ")[1].split(",")[0]);
+				}
 			} catch (err) {
 			}
 		}
-		return false;
+		return 0;
 	};
 
 
-	/** Wraps an HTML element with another element * */
-	utils.wrap = function(originalElement, appendedElement) {
-		if (originalElement.parentNode) {
-			originalElement.parentNode.replaceChild(appendedElement, originalElement);
-		}
-		appendedElement.appendChild(originalElement);
-	};
-	
 	/** Finds the location of jwplayer.js and returns the path **/
 	utils.getScriptPath = function(scriptName) {
 		var scripts = DOCUMENT.getElementsByTagName("script");
@@ -355,7 +236,7 @@
 	 *            The string to replace in the object's key names
 	 * @returns The modified object.
 	 */
-	jwplayer.utils.deepReplaceKeyName = function(obj, searchString, replaceString) {
+	utils.deepReplaceKeyName = function(obj, searchString, replaceString) {
 		switch (jwplayer.utils.typeOf(obj)) {
 		case "array":
 			for ( var i = 0; i < obj.length; i++) {
@@ -363,7 +244,7 @@
 						searchString, replaceString);
 			}
 			break;
-		case "object":
+		case OBJECT:
 			for ( var key in obj) {
 				var searches, replacements;
 				if (searchString instanceof Array && replaceString instanceof Array) {
@@ -389,6 +270,66 @@
 			break;
 		}
 		return obj;
+	};
+	
+	
+	/**
+	 * Types of plugin paths
+	 */
+	var _pluginPathType = utils.pluginPathType = {
+		ABSOLUTE : 0,
+		RELATIVE : 1,
+		CDN : 2
 	}
 
+	/*
+	 * Test cases getPathType('hd') getPathType('hd-1') getPathType('hd-1.4')
+	 * 
+	 * getPathType('http://plugins.longtailvideo.com/5/hd/hd.swf')
+	 * getPathType('http://plugins.longtailvideo.com/5/hd/hd-1.swf')
+	 * getPathType('http://plugins.longtailvideo.com/5/hd/hd-1.4.swf')
+	 * 
+	 * getPathType('./hd.swf') getPathType('./hd-1.swf')
+	 * getPathType('./hd-1.4.swf')
+	 */
+	utils.getPluginPathType = function(path) {
+		if (typeof path != STRING) {
+			return;
+		}
+		path = path.split("?")[0];
+		var protocol = path.indexOf("://");
+		if (protocol > 0) {
+			return _pluginPathType.ABSOLUTE;
+		}
+		var folder = path.indexOf("/");
+		var extension = utils.extension(path);
+		if (protocol < 0 && folder < 0 && (!extension || !isNaN(extension))) {
+			return _pluginPathType.CDN;
+		}
+		return _pluginPathType.RELATIVE;
+	};
+
+	
+	/**
+	 * Extracts a plugin name from a string
+	 */
+	utils.getPluginName = function(pluginName) {
+		/** Regex locates the characters after the last slash, until it encounters a dash. **/
+		return pluginName.replace(/^.*\/([^-]*)-?.*\.(swf|js)$/, "$1")
+	};
+
+	/**
+	 * Extracts a plugin version from a string
+	 */
+	utils.getPluginVersion = function(pluginName) {
+		return pluginName.replace(/[^-]*-?([^\.]*).*$/, "$1");
+	};
+
+	/**
+	 * Determines if a URL is a YouTube link
+	 */
+	utils.isYouTube = function(path) {
+		return (path.indexOf("youtube.com") > -1 || path.indexOf("youtu.be") > -1);
+	};
+	
 })(jwplayer);

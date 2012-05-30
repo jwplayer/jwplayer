@@ -53,7 +53,7 @@ package com.longtailvideo.jwplayer.view.skins {
 		}
 
 		protected function loadError(evt:ErrorEvent):void {
-			sendError(evt.text);
+			sendError("Error loading skin: " + evt.text);
 		}
 
 		protected function loadComplete(evt:Event):void {

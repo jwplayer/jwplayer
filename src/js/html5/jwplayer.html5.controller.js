@@ -173,6 +173,7 @@
 
 		function _setStretching(stretching) {
 			_model.stretching = stretching;
+			// TODO: Send stretching event
 			_view.resize();
 		}
 
@@ -217,8 +218,20 @@
 			}
 		}
 		
-		
-		
+		function _setCurrentQuality(quality) {
+			_video.setCurrentQuality(quality);
+		}
+
+		function _getCurrentQuality() {
+			if (_video) return _video.getCurrentQuality();
+			else return -1;
+		}
+
+		function _getQualityLevels() {
+			if (_video) return _video.getQualityLevels();
+			else return null;
+		}
+
 		/** Used for the InStream API **/
 		function _detachMedia() {
 			try {
@@ -257,7 +270,6 @@
 			func.apply(this, _args);
 		}
 
-		
 		/** Controller API / public methods **/
 		this.play = _waitForReady(_play);
 		this.pause = _waitForReady(_pause);
@@ -273,6 +285,9 @@
 		this.setStretching = _waitForReady(_setStretching);
 		this.detachMedia = _detachMedia; 
 		this.attachMedia = _attachMedia;
+		this.setCurrentQuality = _waitForReady(_setCurrentQuality);
+		this.getCurrentQuality = _getCurrentQuality;
+		this.getQualityLevels = _getQualityLevels;
 		
 		this.playerReady = _playerReady;
 

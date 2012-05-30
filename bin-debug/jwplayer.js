@@ -18,7 +18,7 @@ jwplayer = function(container) {
 
 var $jw = jwplayer;
 
-jwplayer.version = '6.0.2203';
+jwplayer.version = '6.0.2217';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -30,7 +30,8 @@ jwplayer.source = document.createElement("source");/**
  * @version 6.0
  */
 (function(jwplayer) {
-	var DOCUMENT = document, WINDOW = window;
+	var DOCUMENT = document, WINDOW = window, NAVIGATOR = navigator, 
+		UNDEFINED = "undefined", STRING = "string", OBJECT = "object";
 	
 	//Declare namespace
 	var utils = jwplayer.utils = function() {
@@ -44,12 +45,12 @@ jwplayer.source = document.createElement("source");/**
 	 */
 	utils.exists = function(item) {
 		switch (typeof (item)) {
-		case "string":
+		case STRING:
 			return (item.length > 0);
 			break;
-		case "object":
+		case OBJECT:
 			return (item !== null);
-		case "undefined":
+		case UNDEFINED:
 			return false;
 		}
 		return true;
@@ -110,7 +111,9 @@ jwplayer.source = document.createElement("source");/**
 		if (args.length > 1) {
 			for ( var i = 1; i < args.length; i++) {
 				for ( var element in args[i]) {
-					args[0][element] = args[i][element];
+					if (utils.exists(args[i][element])) {
+						args[0][element] = args[i][element];
+					}
 				}
 			}
 			return args[0];
@@ -118,36 +121,9 @@ jwplayer.source = document.createElement("source");/**
 		return null;
 	};
 
-	/**
-	 * Cleans up a css dimension (e.g. '420px') and returns an integer.
-	 */
-	utils.parseDimension = function(dimension) {
-		if (typeof dimension == "string") {
-			if (dimension === "") {
-				return 0;
-			} else if (dimension.lastIndexOf("%") > -1) {
-				return dimension;
-			} else {
-				return parseInt(dimension.replace("px", ""), 10);
-			}
-		}
-		return dimension;
-	}
-
-	/** Format the elapsed / remaining text. **/
-	utils.timeFormat = function(sec) {
-		if (sec > 0) {
-			var str = Math.floor(sec / 60) < 10 ? "0" + Math.floor(sec / 60) + ":" : Math.floor(sec / 60) + ":";
-			str += Math.floor(sec % 60) < 10 ? "0" + Math.floor(sec % 60) : Math.floor(sec % 60);
-			return str;
-		} else {
-			return "00:00";
-		}
-	}
-
 	/** Logger * */
 	utils.log = function(msg, obj) {
-		if (typeof console != "undefined" && typeof console.log != "undefined") {
+		if (typeof console != UNDEFINED && typeof console.log != UNDEFINED) {
 			if (obj) {
 				console.log(msg, obj);
 			} else {
@@ -156,22 +132,8 @@ jwplayer.source = document.createElement("source");/**
 		}
 	};
 
-	/** Replacement for getBoundingClientRect, which isn't supported in iOS 3.1.2 **/
-	utils.getBoundingClientRect = function(element) {
-		if (typeof element.getBoundingClientRect == "function") {
-			return element.getBoundingClientRect();
-		} else {
-			return { 
-				left: element.offsetLeft + DOCUMENT.body.scrollLeft, 
-				top: element.offsetTop + DOCUMENT.body.scrollTop, 
-				width: element.offsetWidth, 
-				height: element.offsetHeight
-			};
-		}
-	}
-	
 	var _userAgentMatch = utils.userAgentMatch = function(regex) {
-		var agent = navigator.userAgent.toLowerCase();
+		var agent = NAVIGATOR.userAgent.toLowerCase();
 		return (agent.match(regex) !== null);
 	};
 
@@ -217,84 +179,6 @@ jwplayer.source = document.createElement("source");/**
 		return jwCookies;
 	}
 	
-	/** Loads an XML file into a DOM object * */
-	utils.ajax = function(xmldocpath, completecallback, errorcallback) {
-		var xmlhttp;
-		if (_isCrossdomain(xmldocpath) && utils.exists(WINDOW.XDomainRequest)) {
-			// IE9
-			xmlhttp = new XDomainRequest();
-			xmlhttp.onload = _ajaxComplete(xmlhttp, xmldocpath, completecallback, errorcallback);
-			xmlhttp.onerror = _ajaxError(errorcallback, xmldocpath, xmlhttp);
-		} else if (utils.exists(WINDOW.XMLHttpRequest)) {
-			// Firefox, Chrome, Opera, Safari
-			xmlhttp = new XMLHttpRequest();
-			xmlhttp.onreadystatechange = _readyStateChangeHandler(xmlhttp, xmldocpath, completecallback, errorcallback);
-			xmlhttp.onerror = _ajaxError(errorcallback, xmldocpath);
-		} else {
-			if (errorcallback) errorcallback();
-		}
-		 
-		try {
-			xmlhttp.open("GET", xmldocpath, true);
-			xmlhttp.send(null);
-		} catch (error) {
-			if (errorcallback) errorcallback(xmldocpath);
-		}
-		return xmlhttp;
-	};
-	
-	function _isCrossdomain(path) {
-		if (path && path.indexOf("://") >= 0) {
-			if (path.split("/")[2] != WINDOW.location.href.split("/")[2])
-				return true
-		} 
-		return false;	
-	}
-	
-	function _ajaxError(errorcallback, xmldocpath, xmlhttp) {
-		return function() {
-			errorcallback(xmldocpath);
-		}
- 	}
-	
-	function _readyStateChangeHandler(xmlhttp, xmldocpath, completecallback, errorcallback) {
-		return function() {
-			if (xmlhttp.readyState === 4) {
-				if (xmlhttp.status == 200) {
-					_ajaxComplete(xmlhttp, xmldocpath, completecallback, errorcallback)();
-				} else if (errorcallback) {
-					errorcallback(xmldocpath);
-				}
-			}
-		}
-	}
-	
-	function _ajaxComplete(xmlhttp, xmldocpath, completecallback, errorcallback) {
-		return function() {
-			// Handle the case where an XML document was returned with an incorrect MIME type.
-			if (!utils.exists(xmlhttp.responseXML)) {
-				try {
-					var parsedXML;
-					// Parse XML in FF/Chrome/Safari/Opera
-					if (WINDOW.DOMParser) {
-						parsedXML = (new DOMParser()).parseFromString(xmlhttp.responseText,"text/xml");
-					} else { 
-						// Internet Explorer
-						parsedXML = new ActiveXObject("Microsoft.XMLDOM");
-						parsedXML.async="false";
-						parsedXML.loadXML(xmlhttp.responseText);
-					}
-					if (parsedXML) {
-						xmlhttp = utils.extend({}, xmlhttp, {responseXML:parsedXML});
-					}
-				} catch(e) {
-					if (errorcallback) errorcallback(xmldocpath);
-					return;
-				}
-			}
-			completecallback(xmlhttp);
-		}
-	}
 
 	/** Returns the true type of an object * */
 	utils.typeOf = function(value) {
@@ -313,11 +197,11 @@ jwplayer.source = document.createElement("source");/**
 		if (type == jwplayer.events.JWPLAYER_FULLSCREEN && !translated.fullscreen) {
 			translated.fullscreen = translated.message == "true" ? true : false;
 			delete translated.message;
-		} else if (typeof translated.data == "object") {
+		} else if (typeof translated.data == OBJECT) {
 			// Takes ViewEvent "data" block and moves it up a level
 			translated = utils.extend(translated, translated.data);
 			delete translated.data;
-		} else if (typeof translated.metadata == "object") {
+		} else if (typeof translated.metadata == OBJECT) {
 			utils.deepReplaceKeyName(translated.metadata, ["__dot__","__spc__","__dsh__"], ["."," ","-"]);
 		}
 		
@@ -332,32 +216,29 @@ jwplayer.source = document.createElement("source");/**
 	}
 
 	/**
-	 * Detects whether or not the current player has flash capabilities 
-	 * TODO: Add minimum flash version constraint: 9.0.115
+	 * If the browser has flash capabilities, return the flash version 
 	 */
-	utils.hasFlash = function() {
-		if (typeof navigator.plugins != "undefined" && typeof navigator.plugins['Shockwave Flash'] != "undefined") {
-			return true;
+	utils.flashVersion = function() {
+		var plugins = NAVIGATOR.plugins, flash;
+		if (plugins != UNDEFINED) {
+			flash = plugins['Shockwave Flash'];
+			if (flash) {
+				return parseInt(flash.description.replace(/\D+(\d+)\..*/, "$1"));
+			}
 		}
-		if (typeof WINDOW.ActiveXObject != "undefined") {
+		if (typeof WINDOW.ActiveXObject != UNDEFINED) {
 			try {
-				new ActiveXObject("ShockwaveFlash.ShockwaveFlash");
-				return true
+				flash = new ActiveXObject("ShockwaveFlash.ShockwaveFlash");
+				if (flash) {
+					return parseInt(flash.GetVariable("$version").split(" ")[1].split(",")[0]);
+				}
 			} catch (err) {
 			}
 		}
-		return false;
+		return 0;
 	};
 
 
-	/** Wraps an HTML element with another element * */
-	utils.wrap = function(originalElement, appendedElement) {
-		if (originalElement.parentNode) {
-			originalElement.parentNode.replaceChild(appendedElement, originalElement);
-		}
-		appendedElement.appendChild(originalElement);
-	};
-	
 	/** Finds the location of jwplayer.js and returns the path **/
 	utils.getScriptPath = function(scriptName) {
 		var scripts = DOCUMENT.getElementsByTagName("script");
@@ -380,7 +261,7 @@ jwplayer.source = document.createElement("source");/**
 	 *            The string to replace in the object's key names
 	 * @returns The modified object.
 	 */
-	jwplayer.utils.deepReplaceKeyName = function(obj, searchString, replaceString) {
+	utils.deepReplaceKeyName = function(obj, searchString, replaceString) {
 		switch (jwplayer.utils.typeOf(obj)) {
 		case "array":
 			for ( var i = 0; i < obj.length; i++) {
@@ -388,7 +269,7 @@ jwplayer.source = document.createElement("source");/**
 						searchString, replaceString);
 			}
 			break;
-		case "object":
+		case OBJECT:
 			for ( var key in obj) {
 				var searches, replacements;
 				if (searchString instanceof Array && replaceString instanceof Array) {
@@ -414,8 +295,68 @@ jwplayer.source = document.createElement("source");/**
 			break;
 		}
 		return obj;
+	};
+	
+	
+	/**
+	 * Types of plugin paths
+	 */
+	var _pluginPathType = utils.pluginPathType = {
+		ABSOLUTE : 0,
+		RELATIVE : 1,
+		CDN : 2
 	}
 
+	/*
+	 * Test cases getPathType('hd') getPathType('hd-1') getPathType('hd-1.4')
+	 * 
+	 * getPathType('http://plugins.longtailvideo.com/5/hd/hd.swf')
+	 * getPathType('http://plugins.longtailvideo.com/5/hd/hd-1.swf')
+	 * getPathType('http://plugins.longtailvideo.com/5/hd/hd-1.4.swf')
+	 * 
+	 * getPathType('./hd.swf') getPathType('./hd-1.swf')
+	 * getPathType('./hd-1.4.swf')
+	 */
+	utils.getPluginPathType = function(path) {
+		if (typeof path != STRING) {
+			return;
+		}
+		path = path.split("?")[0];
+		var protocol = path.indexOf("://");
+		if (protocol > 0) {
+			return _pluginPathType.ABSOLUTE;
+		}
+		var folder = path.indexOf("/");
+		var extension = utils.extension(path);
+		if (protocol < 0 && folder < 0 && (!extension || !isNaN(extension))) {
+			return _pluginPathType.CDN;
+		}
+		return _pluginPathType.RELATIVE;
+	};
+
+	
+	/**
+	 * Extracts a plugin name from a string
+	 */
+	utils.getPluginName = function(pluginName) {
+		/** Regex locates the characters after the last slash, until it encounters a dash. **/
+		return pluginName.replace(/^.*\/([^-]*)-?.*\.(swf|js)$/, "$1")
+	};
+
+	/**
+	 * Extracts a plugin version from a string
+	 */
+	utils.getPluginVersion = function(pluginName) {
+		return pluginName.replace(/[^-]*-?([^\.]*).*$/, "$1");
+	};
+
+	/**
+	 * Determines if a URL is a YouTube link
+	 */
+	utils.isYouTube = function(path) {
+		return (path.indexOf("youtube.com") > -1 || path.indexOf("youtu.be") > -1);
+	};
+	
 })(jwplayer);/**
  * JW Player Media Extension to Mime Type mapping
  *
@@ -708,6 +649,8 @@ jwplayer.source = document.createElement("source");/**
 		JWPLAYER_MEDIA_VOLUME : 'jwplayerMediaVolume',
 		JWPLAYER_MEDIA_META : 'jwplayerMediaMeta',
 		JWPLAYER_MEDIA_MUTE : 'jwplayerMediaMute',
+		JWPLAYER_MEDIA_LEVELS: 'jwplayerMediaLevels',
+		JWPLAYER_MEDIA_LEVEL_CHANGED: 'jwplayerMediaLevelChanged',
 
 		// State events
 		JWPLAYER_PLAYER_STATE : 'jwplayerPlayerState',
@@ -925,32 +868,34 @@ jwplayer.source = document.createElement("source");/**
  * @author zach
  * @version 5.8
  */
-(function(jwplayer) {
-	jwplayer.plugins.pluginmodes = {
-		FLASH: "FLASH",
-		JAVASCRIPT: "JAVASCRIPT",
-		HYBRID: "HYBRID"
+(function(plugins) {
+	var utils = jwplayer.utils, events = jwplayer.events, UNDEFINED = "undefined";
+	
+	plugins.pluginmodes = {
+		FLASH: 0,
+		JAVASCRIPT: 1,
+		HYBRID: 2
 	}
 	
-	jwplayer.plugins.plugin = function(url) {
-		var _repo = "http://plugins.longtailvideo.com"
-		var _status = jwplayer.utils.loaderstatus.NEW;
-		var _flashPath;
-		var _js;
-		var _completeTimeout;
+	plugins.plugin = function(url) {
+		var _repo = "http://plugins.longtailvideo.com",
+			_status = utils.loaderstatus.NEW,
+			_flashPath,
+			_js,
+			_completeTimeout;
 		
-		var _eventDispatcher = new jwplayer.events.eventdispatcher();
-		jwplayer.utils.extend(this, _eventDispatcher);
+		var _eventDispatcher = new events.eventdispatcher();
+		utils.extend(this, _eventDispatcher);
 		
 		function getJSPath() {
-			switch (jwplayer.utils.getPluginPathType(url)) {
-				case jwplayer.utils.pluginPathType.ABSOLUTE:
+			switch (utils.getPluginPathType(url)) {
+				case utils.pluginPathType.ABSOLUTE:
 					return url;
-				case jwplayer.utils.pluginPathType.RELATIVE:
-					return jwplayer.utils.getAbsolutePath(url, window.location.href);
-				case jwplayer.utils.pluginPathType.CDN:
-					var pluginName = jwplayer.utils.getPluginName(url);
-					var pluginVersion = jwplayer.utils.getPluginVersion(url);
+				case utils.pluginPathType.RELATIVE:
+					return utils.getAbsolutePath(url, window.location.href);
+				case utils.pluginPathType.CDN:
+					var pluginName = utils.getPluginName(url);
+					var pluginVersion = utils.getPluginVersion(url);
 					var repo = (window.location.href.indexOf("https://") == 0) ? _repo.replace("http://", "https://secure") : _repo;
 					return repo + "/" + jwplayer.version.split(".")[0] + "/" + pluginName + "/" 
 							+ pluginName + (pluginVersion !== "" ? ("-" + pluginVersion) : "") + ".js";
@@ -959,29 +904,29 @@ jwplayer.source = document.createElement("source");/**
 		
 		function completeHandler(evt) {
 			_completeTimeout = setTimeout(function(){
-				_status = jwplayer.utils.loaderstatus.COMPLETE;
-				_eventDispatcher.sendEvent(jwplayer.events.COMPLETE);		
+				_status = utils.loaderstatus.COMPLETE;
+				_eventDispatcher.sendEvent(events.COMPLETE);		
 			}, 1000);
 		}
 		
 		function errorHandler(evt) {
-			_status = jwplayer.utils.loaderstatus.ERROR;
-			_eventDispatcher.sendEvent(jwplayer.events.ERROR);
+			_status = utils.loaderstatus.ERROR;
+			_eventDispatcher.sendEvent(events.ERROR);
 		}
 		
 		this.load = function() {
-			if (_status == jwplayer.utils.loaderstatus.NEW) {
+			if (_status == utils.loaderstatus.NEW) {
 				if (url.lastIndexOf(".swf") > 0) {
 					_flashPath = url;
-					_status = jwplayer.utils.loaderstatus.COMPLETE;
-					_eventDispatcher.sendEvent(jwplayer.events.COMPLETE);
+					_status = utils.loaderstatus.COMPLETE;
+					_eventDispatcher.sendEvent(events.COMPLETE);
 					return;
 				}
-				_status = jwplayer.utils.loaderstatus.LOADING;
-				var _loader = new jwplayer.utils.scriptloader(getJSPath());
+				_status = utils.loaderstatus.LOADING;
+				var _loader = new utils.scriptloader(getJSPath());
 				// Complete doesn't matter - we're waiting for registerPlugin 
-				_loader.addEventListener(jwplayer.events.COMPLETE, completeHandler);
-				_loader.addEventListener(jwplayer.events.ERROR, errorHandler);
+				_loader.addEventListener(events.COMPLETE, completeHandler);
+				_loader.addEventListener(events.ERROR, errorHandler);
 				_loader.load();
 			}
 		}
@@ -1001,8 +946,8 @@ jwplayer.source = document.createElement("source");/**
 			} else if (!arg1 && !arg2) {
 				_flashPath = id;
 			}
-			_status = jwplayer.utils.loaderstatus.COMPLETE;
-			_eventDispatcher.sendEvent(jwplayer.events.COMPLETE);
+			_status = utils.loaderstatus.COMPLETE;
+			_eventDispatcher.sendEvent(events.COMPLETE);
 		}
 		
 		this.getStatus = function() {
@@ -1010,20 +955,20 @@ jwplayer.source = document.createElement("source");/**
 		}
 		
 		this.getPluginName = function() {
-			return jwplayer.utils.getPluginName(url);
+			return utils.getPluginName(url);
 		}
 		
 		this.getFlashPath = function() {
 			if (_flashPath) {
-				switch (jwplayer.utils.getPluginPathType(_flashPath)) {
-					case jwplayer.utils.pluginPathType.ABSOLUTE:
+				switch (utils.getPluginPathType(_flashPath)) {
+					case utils.pluginPathType.ABSOLUTE:
 						return _flashPath;
-					case jwplayer.utils.pluginPathType.RELATIVE:
+					case utils.pluginPathType.RELATIVE:
 						if (url.lastIndexOf(".swf") > 0) {
-							return jwplayer.utils.getAbsolutePath(_flashPath, window.location.href);
+							return utils.getAbsolutePath(_flashPath, window.location.href);
 						}
-						return jwplayer.utils.getAbsolutePath(_flashPath, getJSPath());
-					case jwplayer.utils.pluginPathType.CDN:
+						return utils.getAbsolutePath(_flashPath, getJSPath());
+					case utils.pluginPathType.CDN:
 						if (_flashPath.indexOf("-") > -1){
 							return _flashPath+"h";
 						}
@@ -1038,13 +983,13 @@ jwplayer.source = document.createElement("source");/**
 		}
 
 		this.getPluginmode = function() {
-			if (typeof _flashPath != "undefined"
-			 && typeof _js != "undefined") {
-			 	return jwplayer.plugins.pluginmodes.HYBRID;
-			 } else if (typeof _flashPath != "undefined") {
-			 	return jwplayer.plugins.pluginmodes.FLASH;
-			 } else if (typeof _js != "undefined") {
-			 	return jwplayer.plugins.pluginmodes.JAVASCRIPT;
+			if (typeof _flashPath != UNDEFINED
+			 && typeof _js != UNDEFINED) {
+			 	return plugins.pluginmodes.HYBRID;
+			 } else if (typeof _flashPath != UNDEFINED) {
+			 	return plugins.pluginmodes.FLASH;
+			 } else if (typeof _js != UNDEFINED) {
+			 	return plugins.pluginmodes.JAVASCRIPT;
 			 }
 		}
 		
@@ -1057,21 +1002,25 @@ jwplayer.source = document.createElement("source");/**
 		}
 	}
 	
-})(jwplayer);
+})(jwplayer.plugins);
 /**
  * Loads plugins for a player
  * @author zach
  * @version 5.6
  */
 (function(jwplayer) {
+	var utils = jwplayer.utils, events = jwplayer.events;
 
 	jwplayer.plugins.pluginloader = function(model, config) {
-		var _plugins = {};
-		var _status = jwplayer.utils.loaderstatus.NEW;
-		var _loading = false;
-		var _iscomplete = false;
-		var _eventDispatcher = new jwplayer.events.eventdispatcher();
-		jwplayer.utils.extend(this, _eventDispatcher);
+		var _plugins = {},
+			_status = utils.loaderstatus.NEW,
+			_loading = false,
+			_iscomplete = false,
+			_errorState = false,
+			_eventDispatcher = new events.eventdispatcher();
+		
+		
+		utils.extend(this, _eventDispatcher);
 		
 		/*
 		 * Plugins can be loaded by multiple players on the page, but all of them use
@@ -1087,10 +1036,12 @@ jwplayer.source = document.createElement("source");/**
 		 * to fire, if necessary.
 		 */
 		function _complete() {
-			if (!_iscomplete) {
+			if (_errorState) {
+				_eventDispatcher.sendEvent(events.ERROR);
+			} else if (!_iscomplete) {
 				_iscomplete = true;
-				_status = jwplayer.utils.loaderstatus.COMPLETE;
-				_eventDispatcher.sendEvent(jwplayer.events.COMPLETE);
+				_status = utils.loaderstatus.COMPLETE;
+				_eventDispatcher.sendEvent(events.COMPLETE);
 			}
 		}
 		
@@ -1100,8 +1051,7 @@ jwplayer.source = document.createElement("source");/**
 				var incomplete = 0;
 				for (plugin in _plugins) {
 					var status = _plugins[plugin].getStatus(); 
-					if (status == jwplayer.utils.loaderstatus.LOADING 
-							|| status == jwplayer.utils.loaderstatus.NEW) {
+					if (status == utils.loaderstatus.LOADING || status == utils.loaderstatus.NEW) {
 						incomplete++;
 					}
 				}
@@ -1135,10 +1085,8 @@ jwplayer.source = document.createElement("source");/**
 					div.style.zIndex = jsplugins.length + 10;
 					jsplugins.plugins[pluginName] = _plugins[plugin].getNewInstance(api, config.plugins[plugin], div);
 					jsplugins.length++;
-					if (typeof jsplugins.plugins[pluginName].resize != "undefined") {
-						api.onReady(resizer(jsplugins.plugins[pluginName], div, true));
-						api.onResize(resizer(jsplugins.plugins[pluginName], div));
-					}
+					api.onReady(resizer(jsplugins.plugins[pluginName], div, true));
+					api.onResize(resizer(jsplugins.plugins[pluginName], div));
 				}
 			}
 			
@@ -1148,15 +1096,21 @@ jwplayer.source = document.createElement("source");/**
 		};
 		
 		this.load = function() {
-			_status = jwplayer.utils.loaderstatus.LOADING;
+			// Must be a hash map
+			if (utils.typeOf(config) != "object") {
+				_checkComplete();
+				return;
+			}
+			
+			_status = utils.loaderstatus.LOADING;
 			_loading = true;
 			
 			/** First pass to create the plugins and add listeners **/
 			for (var plugin in config) {
-				if (jwplayer.utils.exists(plugin)) {
+				if (utils.exists(plugin)) {
 					_plugins[plugin] = model.addPlugin(plugin);
-					_plugins[plugin].addEventListener(jwplayer.events.COMPLETE, _checkComplete);
-					_plugins[plugin].addEventListener(jwplayer.events.ERROR, _checkComplete);
+					_plugins[plugin].addEventListener(events.COMPLETE, _checkComplete);
+					_plugins[plugin].addEventListener(events.ERROR, _pluginError);
 				}
 			}
 			
@@ -1172,8 +1126,11 @@ jwplayer.source = document.createElement("source");/**
 			_checkComplete();
 		}
 		
-		this.pluginFailed = function() {
-			_complete();
+		var _pluginError = this.pluginFailed = function() {
+			if (!_errorState) {
+				_errorState = true;
+				_complete();
+			}
 		}
 		
 		this.getStatus = function() {
@@ -1217,14 +1174,11 @@ jwplayer.source = document.createElement("source");/**
 			image: "",
 			mediaid: "",
 			title: "",
-			
 			duration: -1,
-			
 			sources: []
-		};
-		
-		
-		var _playlistitem = jwplayer.utils.extend({}, _defaults, config);
+		},
+
+		_playlistitem = jwplayer.utils.extend({}, _defaults, config);
 		
 /*
 		if (_playlistitem.type) {
@@ -1242,7 +1196,7 @@ jwplayer.source = document.createElement("source");/**
 			_playlistitem.provider = _playlistitem.provider.toLowerCase();
 		}
 */
-		
+
 		return _playlistitem;
 	};
 })(jwplayer.playlist);/**
@@ -1252,17 +1206,24 @@ jwplayer.source = document.createElement("source");/**
  * @version 6.0
  */
 (function(playlist) {
-	playlist.source = function(config) {
-		var _source = {
-			file: "",
-			width: 0,
-			label: undefined,
-			type: undefined
+	var UNDEF = undefined,
+		utils = jwplayer.utils,
+		defaults = {
+			file: UNDEF,
+			width: UNDEF,
+			label: UNDEF,
+			bitrate: UNDEF,
+			type: UNDEF
 		};
+	
+	playlist.source = function(config) {
+		var _source = utils.extend({}, defaults);
 		
-		for (var property in _source) {
-			if (jwplayer.utils.exists(config[property])) {
+		for (var property in defaults) {
+			if (utils.exists(config[property])) {
 				_source[property] = config[property];
+				// Actively move from config to source
+				delete config[property];
 			}
 		}
 		return _source;
@@ -1276,15 +1237,18 @@ jwplayer.source = document.createElement("source");/**
  * @version 6.0
  */
 (function(jwplayer) {
-	var _utils = jwplayer.utils,
-		_events = jwplayer.events;
+	var utils = jwplayer.utils,
+		events = jwplayer.events;
 	
 	var embed = jwplayer.embed = function(playerApi) {
-//		var mediaConfig = _utils.mediaparser.parseMedia(playerApi.container);
-		var _config = new embed.config(playerApi.config);
-			_config.id = playerApi.id; 
-				
-		var _pluginloader = jwplayer.plugins.loadPlugins(playerApi.id, _config.plugins);
+//		var mediaConfig = utils.mediaparser.parseMedia(playerApi.container);
+		var _config = new embed.config(playerApi.config),
+			_container,
+			_errorText = "Error loading player: ",
+			_pluginloader = jwplayer.plugins.loadPlugins(playerApi.id, _config.plugins);
+
+		_config.id = playerApi.id;
+		_container = document.getElementById(playerApi.id);
 		
 		function _setupEvents(api, events) {
 			for (var evt in events) {
@@ -1295,39 +1259,80 @@ jwplayer.source = document.createElement("source");/**
 		}
 		
 		function _embedPlayer() {
-			var container = document.getElementById(playerApi.id);
+			if (utils.typeOf(_config.playlist) == "array" && _config.playlist.length < 2) {
+				if (_config.playlist.length == 0 || !_config.playlist[0].sources || _config.playlist[0].sources.length == 0) {
+					_sourceError();
+					return;
+				}
+			}
 			
-			if (_pluginloader.getStatus() == _utils.loaderstatus.COMPLETE) {
+			if (_pluginloader.getStatus() == utils.loaderstatus.COMPLETE) {
 				for (var mode = 0; mode < _config.modes.length; mode++) {
 					if (_config.modes[mode].type && embed[_config.modes[mode].type]) {
 						var modeconfig = _config.modes[mode].config;
-						var configClone = _utils.extend({}, modeconfig ? embed.config.addConfig(_config, modeconfig) : _config);
-						var embedder = new embed[_config.modes[mode].type](container, _config.modes[mode], configClone, _pluginloader, playerApi);
+						var configClone = utils.extend({}, modeconfig ? embed.config.addConfig(_config, modeconfig) : _config);
+						
+						var embedder = new embed[_config.modes[mode].type](_container, _config.modes[mode], configClone, _pluginloader, playerApi);
 						if (embedder.supportsConfig()) {
+							embedder.addEventListener(events.ERROR, _embedError);
 							embedder.embed();
-							
-							_setupEvents(playerApi, _config.events);
-							
+							_setupEvents(playerApi, configClone.events);
 							return playerApi;
 						}
 					}
 				}
 				
+				
+				
 				if (_config.fallback) {
-					_utils.log("No suitable players found and fallback enabled");
-					new embed.download(container, _config);
+					utils.log("No suitable players found and fallback enabled");
+					new embed.download(_container, _config, _sourceError);
 				} else {
-					_utils.log("No suitable players found and fallback disabled");
+					utils.log("No suitable players found and fallback disabled");
 				}
 				
-//				new embed.logo(_utils.extend({
+//				new embed.logo(utils.extend({
 //					hide: true
 //				}, _config.components.logo), "none", playerApi.id);
 			}
 		};
 		
-		_pluginloader.addEventListener(_events.COMPLETE, _embedPlayer);
-		_pluginloader.addEventListener(_events.ERROR, _embedPlayer);
+		function _embedError(evt) {
+			_errorScreen(_container, _errorText + evt.message);
+		}
+		
+		function _pluginError(evt) {
+			_errorScreen(_container, _errorText + "Could not load plugins");
+		}
+		
+		function _sourceError() {
+			_errorScreen(_container, _errorText  + "No media sources found");
+		}
+		
+		function _errorScreen(container, message) {
+			var style = container.style;
+			style.backgroundColor = "#000";
+			style.color = "#FFF";
+			style.width = utils.styleDimension(_config.width);
+			style.height = utils.styleDimension(_config.height);
+			style.display = "table";
+			style.padding = "50px";
+			
+			var text = document.createElement("p");
+			text.style.verticalAlign = "middle";
+			text.style.textAlign = "center";
+			text.style.display = "table-cell";
+			text.innerHTML = message;
+
+			container.innerHTML = "";
+			container.appendChild(text);
+		}
+
+		// Make this publicly accessible so the HTML5 player can error out on setup using the same code
+		jwplayer.embed.errorScreen = _errorScreen;
+		
+		_pluginloader.addEventListener(events.COMPLETE, _embedPlayer);
+		_pluginloader.addEventListener(events.ERROR, _pluginError);
 		_pluginloader.load();
 		
 		return playerApi;
@@ -1350,7 +1355,9 @@ jwplayer.source = document.createElement("source");/**
 		function _setSources(modes, base, players) {
 			for (var i=0; i<modes.length; i++) {
 				var mode = modes[i].type;
-				modes[i].src = players[mode] ? players[mode] : base + "jwplayer." + mode + (mode == "flash" ? ".swf" : ".js");
+				if (!modes[i].src) {
+					modes[i].src = players[mode] ? players[mode] : base + "jwplayer." + mode + (mode == "flash" ? ".swf" : ".js");
+				}
 			}
 		}
 		
@@ -1403,11 +1410,16 @@ jwplayer.source = document.createElement("source");/**
 					var singleSource = {};
 					_moveProperty(config, singleSource, "file");
 					_moveProperty(config, singleSource, "type");
-					singleItem.sources = [singleSource];
+					singleItem.sources = singleSource.file ? [singleSource] : [];
 				}
 			}
 				
 			config.playlist = [singleItem];
+		} else {
+			// Use JW Player playlist items to normalize sources of existing playlist items
+			for (var i=0; i<config.playlist.length; i++) {
+				config.playlist[i] = new jwplayer.playlist.item(config.playlist[i]);
+			}
 		}
 	}
 	
@@ -1531,7 +1543,7 @@ jwplayer.source = document.createElement("source");/**
 		JW_CSS_100PCT = "100%",
 		JW_CSS_ABSOLUTE = "absolute";
 	
-	embed.download = function(_container, _options) {
+	embed.download = function(_container, _options, _errorCallback) {
 		var params = utils.extend({}, _options),
 			_display,
 			_width = params.width ? params.width : 480,
@@ -1547,22 +1559,39 @@ jwplayer.source = document.createElement("source");/**
 
 		function _embed() {
 			if (params.playlist && params.playlist.length) {
-				try {
-					_file = params.playlist[0].sources[0].file;
-					_image = params.playlist[0].image;
-				} catch(e) {
-					return;
+				// TODO: make sure source can be downloaded (mp4, flv, webm, aac, mp3 or vorbis)
+				// If no downlaodable files, and youtube, display youtube
+				// If nothing, show error message
+				var file, image, youtube;
+				for (var i=0; i<params.playlist[0].sources.length; i++) {
+					var source = params.playlist[0].sources[i];
+					if (source.file) {
+						if (("mp4,mp4,flv,webm,aac,mp3,vorbis").split().indexOf(source.type) > -1) {
+							file = source.file;
+							image = source.image;
+							continue;
+						} else if (utils.isYouTube(source.file)){
+							youtube = source.file;
+						}
+					}
 				}
 			} else {
 				return;
 			}
 			
-			if (_logo.prefix) {
-				_logo.prefix += jwplayer.version.split(/\W/).splice(0, 2).join("/") + "/";
+			if (file) {
+				_file = file;
+				_image = image;
+				if (_logo.prefix) {
+					_logo.prefix += jwplayer.version.split(/\W/).splice(0, 2).join("/") + "/";
+				}
+				_buildElements();
+				_styleElements();
+			} else if (youtube) {
+				alert("Youtube goes here: " + youtube);
+			} else {
+				_errorCallback();
 			}
-			
-			_buildElements();
-			_styleElements();
 		}
 		
 		function _buildElements() {
@@ -1643,9 +1672,14 @@ jwplayer.source = document.createElement("source");/**
  * @version 6.0
  */
 (function(jwplayer) {
-	var utils = jwplayer.utils;
+	var utils = jwplayer.utils, events = jwplayer.events;
 
 	jwplayer.embed.flash = function(_container, _player, _options, _loader, _api) {
+		var _eventDispatcher = new jwplayer.events.eventdispatcher(),
+			_flashVersion = utils.flashVersion();
+		utils.extend(this, _eventDispatcher);
+		
+		
 		function appendAttribute(object, name, value) {
 			var param = document.createElement('param');
 			param.setAttribute('name', name);
@@ -1659,7 +1693,9 @@ jwplayer.source = document.createElement("source");/**
 					document.getElementById(_api.id+"_wrapper").appendChild(div);
 				}
 				var display = document.getElementById(_api.id).getPluginConfig("display");
-				plugin.resize(display.width, display.height);
+				if (typeof plugin.resize == "function") {
+					plugin.resize(display.width, display.height);
+				}
 				div.style.left = display.x;
 				div.style.top = display.h;
 			}
@@ -1742,6 +1778,12 @@ jwplayer.source = document.createElement("source");/**
 			// Make sure we're passing the correct ID into Flash for Linux API support
 			_options.id = _api.id;
 			
+			// If Flash is installed, but the version is too low, display an error.
+			if (_flashVersion < 10) {
+				_eventDispatcher.sendEvent(events.ERROR, {message:"Flash version must be 10.0 or greater"});
+				return false;
+			}
+			
 			var _wrapper;
 			
 			var params = utils.extend({}, _options);
@@ -1755,7 +1797,8 @@ jwplayer.source = document.createElement("source");/**
 				_wrapper.style.position = "relative";
 				_wrapper.style.width = utils.styleDimension(params.width);
 				_wrapper.style.height= utils.styleDimension(params.height);
-				utils.wrap(_container, _wrapper);
+				_container.parentNode.replaceChild(_wrapper, _container);
+				_wrapper.appendChild(_container);
 			}
 			
 			var flashPlugins = _loader.setupPlugins(_api, params, _resizePlugin);
@@ -1822,7 +1865,7 @@ jwplayer.source = document.createElement("source");/**
 				'">';
 				html += '</object>';
 
-				utils.setOuterHTML(_container, html);
+				_container.outerHTML = html;
 								
 				flashPlayer = document.getElementById(_container.id);
 			} else {
@@ -1840,6 +1883,11 @@ jwplayer.source = document.createElement("source");/**
 				appendAttribute(obj, 'seamlesstabbing', 'true');
 				appendAttribute(obj, 'wmode', wmode);
 				appendAttribute(obj, 'flashvars', flashvars);
+				
+				obj.onerror = function() {
+					alert("does this work?");
+				}
+				
 				_container.parentNode.replaceChild(obj, _container);
 				flashPlayer = obj;
 			}
@@ -1851,7 +1899,7 @@ jwplayer.source = document.createElement("source");/**
 		 * Detects whether Flash supports this configuration
 		 */
 		this.supportsConfig = function() {
-			if (utils.hasFlash()) {
+			if (_flashVersion) {
 				if (_options) {
 					try {
 						var item = _options.playlist[0],
@@ -1912,22 +1960,30 @@ jwplayer.source = document.createElement("source");/**
  * @version 6.0
  */
 (function(jwplayer) {
-	var utils = jwplayer.utils, extensionmap = utils.extensionmap;
+	var utils = jwplayer.utils, extensionmap = utils.extensionmap, events = jwplayer.events;
 
 	jwplayer.embed.html5 = function(_container, _player, _options, _loader, _api) {
+		var _this = this,
+			_eventdispatcher = new events.eventdispatcher();
+		
+		utils.extend(_this, _eventdispatcher);
+		
+		
 		function _resizePlugin (plugin, div, onready) {
 			return function(evt) {
 				var displayarea = document.getElementById(_container.id + "_displayarea");
 				if (onready) {
 					displayarea.appendChild(div);
 				}
-				plugin.resize(displayarea.clientWidth, displayarea.clientHeight);
+				if (typeof plugin.resize == "function") {
+					plugin.resize(displayarea.clientWidth, displayarea.clientHeight);
+				}
 				div.left = displayarea.style.left;
 				div.top = displayarea.style.top;
 			}
 		}
 		
-		this.embed = function() {
+		_this.embed = function() {
 			if (jwplayer.html5) {
 				_loader.setupPlugins(_api, _options, _resizePlugin);
 				_container.innerHTML = "";
@@ -1948,9 +2004,14 @@ jwplayer.source = document.createElement("source");/**
 				_api.setPlayer(html5player, "html5");
 			} else {
 				var scriptLoader = new utils.scriptloader(_player.src);
-				scriptLoader.addEventListener(jwplayer.events.COMPLETE, this.embed);
+				scriptLoader.addEventListener(events.ERROR, _loadError);
+				scriptLoader.addEventListener(events.COMPLETE, _this.embed);
 				scriptLoader.load();
 			}
+		}
+		
+		function _loadError(evt) {
+			_this.sendEvent(evt.type, {message: "HTML5 player not found"});
 		}
 		
 		/**
@@ -1958,7 +2019,7 @@ jwplayer.source = document.createElement("source");/**
 		 *
 		 * @return {Boolean}
 		 */
-		this.supportsConfig = function() {
+		_this.supportsConfig = function() {
 			if (!!jwplayer.vid.canPlayType) {
 				try {
 					if (utils.typeOf(_options.playlist) == "string") {
@@ -2302,6 +2363,15 @@ jwplayer.source = document.createElement("source");/**
 			_instream = new api.instream(this, _player, item, instreamOptions);
 			return _instream;
 		};
+		_this.getQualityLevels = function() {
+			return _callInternal("jwGetQualityLevels");
+		};
+		_this.getCurrentQuality = function() {
+			return _callInternal("jwGetCurrentQuality");
+		};
+		_this.setCurrentQuality = function(level) {
+			_callInternal("jwSetCurrentQuality", level);
+		};
 		
 		var _eventMapping = {
 			onBufferChange: events.JWPLAYER_MEDIA_BUFFER,
@@ -2320,7 +2390,9 @@ jwplayer.source = document.createElement("source");/**
 			onVolume: events.JWPLAYER_MEDIA_VOLUME,
 			onBeforePlay: events.JWPLAYER_MEDIA_BEFOREPLAY,
 			onBeforeComplete: events.JWPLAYER_MEDIA_BEFORECOMPLETE,
-			onDisplayClick: events.JWPLAYER_DISPLAY_CLICK
+			onDisplayClick: events.JWPLAYER_DISPLAY_CLICK,
+			onQualityLevels: events.JWPLAYER_MEDIA_LEVELS,
+			onQualityChange: events.JWPLAYER_MEDIA_LEVEL_CHANGED
 		};
 		
 		for (var event in _eventMapping) {

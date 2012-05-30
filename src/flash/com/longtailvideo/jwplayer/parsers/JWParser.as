@@ -67,7 +67,7 @@ package com.longtailvideo.jwplayer.parsers {
 		public static function getProvider(item:Object):String {
 			if (item['type']) {
 				return item['type'];
-			} else if (isYouTube(item['file'])) {
+			} else if (Strings.isYouTube(item['file'])) {
 				return "youtube";
 			} else if (item['streamer'] && item['streamer'].indexOf('rtmp') == 0) {
 				return "rtmp";
@@ -82,19 +82,6 @@ package com.longtailvideo.jwplayer.parsers {
 			return "";
 		}
 		
-		private static function isYouTube(file:String):Boolean {
-			if (!file) 
-				return false;
-			else if (file.indexOf('youtube.com/w') > -1)
-				return true;
-			else if (file.indexOf('youtube.com/v') > -1)
-				return true;
-			else if (file.indexOf('youtu.be') > -1)
-				return true;
-			else
-				return false;
-		}
-
 	}
 
 }

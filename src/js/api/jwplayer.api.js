@@ -253,6 +253,15 @@
 			_instream = new api.instream(this, _player, item, instreamOptions);
 			return _instream;
 		};
+		_this.getQualityLevels = function() {
+			return _callInternal("jwGetQualityLevels");
+		};
+		_this.getCurrentQuality = function() {
+			return _callInternal("jwGetCurrentQuality");
+		};
+		_this.setCurrentQuality = function(level) {
+			_callInternal("jwSetCurrentQuality", level);
+		};
 		
 		var _eventMapping = {
 			onBufferChange: events.JWPLAYER_MEDIA_BUFFER,
@@ -271,7 +280,9 @@
 			onVolume: events.JWPLAYER_MEDIA_VOLUME,
 			onBeforePlay: events.JWPLAYER_MEDIA_BEFOREPLAY,
 			onBeforeComplete: events.JWPLAYER_MEDIA_BEFORECOMPLETE,
-			onDisplayClick: events.JWPLAYER_DISPLAY_CLICK
+			onDisplayClick: events.JWPLAYER_DISPLAY_CLICK,
+			onQualityLevels: events.JWPLAYER_MEDIA_LEVELS,
+			onQualityChange: events.JWPLAYER_MEDIA_LEVEL_CHANGED
 		};
 		
 		for (var event in _eventMapping) {

@@ -32,6 +32,8 @@
 		JWPLAYER_MEDIA_VOLUME : 'jwplayerMediaVolume',
 		JWPLAYER_MEDIA_META : 'jwplayerMediaMeta',
 		JWPLAYER_MEDIA_MUTE : 'jwplayerMediaMute',
+		JWPLAYER_MEDIA_LEVELS: 'jwplayerMediaLevels',
+		JWPLAYER_MEDIA_LEVEL_CHANGED: 'jwplayerMediaLevelChanged',
 
 		// State events
 		JWPLAYER_PLAYER_STATE : 'jwplayerPlayerState',

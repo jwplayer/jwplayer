@@ -2,6 +2,7 @@ package com.longtailvideo.jwplayer.media {
 	import com.longtailvideo.jwplayer.events.MediaEvent;
 	import com.longtailvideo.jwplayer.model.PlayerConfig;
 	import com.longtailvideo.jwplayer.model.PlaylistItem;
+	import com.longtailvideo.jwplayer.model.PlaylistItemLevel;
 	import com.longtailvideo.jwplayer.player.PlayerState;
 	import com.longtailvideo.jwplayer.utils.Configger;
 	import com.longtailvideo.jwplayer.utils.NetClient;
@@ -39,6 +40,8 @@ package com.longtailvideo.jwplayer.media {
 		private var _bandwidthSwitch:Boolean = true;
 		/** Bandwidth check interval **/
 		private var _bandwidthTimeout:Number = 2000;
+		/** Whether the quality levels have been sent out **/
+		private var _qualitySent:Boolean = false;
 		
 		/** Constructor; sets up the connection and display. **/
 		public function VideoMediaProvider() {
@@ -75,10 +78,18 @@ package com.longtailvideo.jwplayer.media {
 			_bufferFull = false;
 			_bufferingComplete = false;
 			if (itm.levels.length > 0) {
-				itm.setLevel(itm.getLevel(config.bandwidth, config.width));
-				_bandwidthChecked = false;
+				if (currentQuality < 0) {
+					itm.setLevel(getLevel(itm, config.bandwidth, config.width));
+					_bandwidthChecked = false;
+				}
 			} else {
 				_bandwidthChecked = true;
+			}
+			if (itm.levels.length > 0) {
+				if (!_qualitySent) {
+					_qualitySent = true;
+					sendQualityEvent(MediaEvent.JWPLAYER_MEDIA_LEVELS, itm.levels, _currentQuality);
+				}
 			}
 			
 			if (!item 
@@ -221,7 +232,7 @@ package com.longtailvideo.jwplayer.media {
 				}
 				if (_bandwidthSwitch) {
 					_bandwidthSwitch = false;
-					if (item.currentLevel != item.getLevel(config.bandwidth, config.width)) {
+					if (item.currentLevel != getLevel(item, config.bandwidth, config.width)) {
 						load(item);
 						return;
 					}
@@ -256,7 +267,7 @@ package com.longtailvideo.jwplayer.media {
 					complete();
 					break;
 				case "NetStream.Play.StreamNotFound":
-					error('Video not found or access denied: ' + item.file);
+					error('Error loading media: File not found');
 					break;
 			}
 			sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_META, {metadata: {status: evt.info.code}});
@@ -273,6 +284,7 @@ package com.longtailvideo.jwplayer.media {
 			}
 			clearInterval(_positionInterval);
 			_positionInterval = undefined;
+			_qualitySent = false;
 			super.stop();
 		}
 		
@@ -290,5 +302,34 @@ package com.longtailvideo.jwplayer.media {
 				_stream.soundTransform = _transformer;
 			}
 		}
+		
+		
+		
+		override public function set currentQuality(quality:Number):void {
+			if (quality == _currentQuality) return;
+			if (!_item) return;
+			
+			if (quality >= 0) {
+				if (_item.levels.length > quality && _item.currentLevel != quality) {
+					_item.setLevel(quality);
+					_currentQuality = quality;
+					sendQualityEvent(MediaEvent.JWPLAYER_MEDIA_LEVEL_CHANGED, _item.levels, _currentQuality);
+					load(_item);
+				}
+			} else {
+				var autoLevel:Number = getLevel(_item, config.bandwidth, config.width);
+				if (autoLevel != _item.currentLevel) {
+					_item.setLevel(autoLevel);
+					load(_item);	
+				}
+			}
+		}
+		
+		override public function get qualityLevels():Array {
+			if (_item) {
+				return _item.levels;
+			} else return null;
+		}
+
 	}
 }

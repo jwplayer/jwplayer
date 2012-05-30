@@ -18,6 +18,7 @@ package com.longtailvideo.jwplayer.parsers {
 				for each (var i:XML in switchOrVideo.children()) {
 					var level:PlaylistItemLevel = new PlaylistItemLevel(
 						Strings.xmlAttribute(i, 'src'),
+						'',
 						Number(Strings.xmlAttribute(i,'system-bitrate'))/1000,
 						Number(Strings.xmlAttribute(i,'width')),
 						streamer

@@ -5,9 +5,14 @@
  * @version 6.0
  */
 (function(jwplayer) {
-	var utils = jwplayer.utils;
+	var utils = jwplayer.utils, events = jwplayer.events;
 
 	jwplayer.embed.flash = function(_container, _player, _options, _loader, _api) {
+		var _eventDispatcher = new jwplayer.events.eventdispatcher(),
+			_flashVersion = utils.flashVersion();
+		utils.extend(this, _eventDispatcher);
+		
+		
 		function appendAttribute(object, name, value) {
 			var param = document.createElement('param');
 			param.setAttribute('name', name);
@@ -21,7 +26,9 @@
 					document.getElementById(_api.id+"_wrapper").appendChild(div);
 				}
 				var display = document.getElementById(_api.id).getPluginConfig("display");
-				plugin.resize(display.width, display.height);
+				if (typeof plugin.resize == "function") {
+					plugin.resize(display.width, display.height);
+				}
 				div.style.left = display.x;
 				div.style.top = display.h;
 			}
@@ -104,6 +111,12 @@
 			// Make sure we're passing the correct ID into Flash for Linux API support
 			_options.id = _api.id;
 			
+			// If Flash is installed, but the version is too low, display an error.
+			if (_flashVersion < 10) {
+				_eventDispatcher.sendEvent(events.ERROR, {message:"Flash version must be 10.0 or greater"});
+				return false;
+			}
+			
 			var _wrapper;
 			
 			var params = utils.extend({}, _options);
@@ -117,7 +130,8 @@
 				_wrapper.style.position = "relative";
 				_wrapper.style.width = utils.styleDimension(params.width);
 				_wrapper.style.height= utils.styleDimension(params.height);
-				utils.wrap(_container, _wrapper);
+				_container.parentNode.replaceChild(_wrapper, _container);
+				_wrapper.appendChild(_container);
 			}
 			
 			var flashPlugins = _loader.setupPlugins(_api, params, _resizePlugin);
@@ -184,7 +198,7 @@
 				'">';
 				html += '</object>';
 
-				utils.setOuterHTML(_container, html);
+				_container.outerHTML = html;
 								
 				flashPlayer = document.getElementById(_container.id);
 			} else {
@@ -202,6 +216,11 @@
 				appendAttribute(obj, 'seamlesstabbing', 'true');
 				appendAttribute(obj, 'wmode', wmode);
 				appendAttribute(obj, 'flashvars', flashvars);
+				
+				obj.onerror = function() {
+					alert("does this work?");
+				}
+				
 				_container.parentNode.replaceChild(obj, _container);
 				flashPlayer = obj;
 			}
@@ -213,7 +232,7 @@
 		 * Detects whether Flash supports this configuration
 		 */
 		this.supportsConfig = function() {
-			if (utils.hasFlash()) {
+			if (_flashVersion) {
 				if (_options) {
 					try {
 						var item = _options.playlist[0],

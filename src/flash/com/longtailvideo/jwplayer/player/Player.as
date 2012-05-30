@@ -3,6 +3,9 @@
 	import com.longtailvideo.jwplayer.events.GlobalEventDispatcher;
 	import com.longtailvideo.jwplayer.events.IGlobalEventDispatcher;
 	import com.longtailvideo.jwplayer.events.PlayerEvent;
+	import com.longtailvideo.jwplayer.media.IMediaProvider;
+	import com.longtailvideo.jwplayer.media.MediaProvider;
+	import com.longtailvideo.jwplayer.media.VideoMediaProvider;
 	import com.longtailvideo.jwplayer.model.IInstreamOptions;
 	import com.longtailvideo.jwplayer.model.IPlaylist;
 	import com.longtailvideo.jwplayer.model.InstreamOptions;
@@ -291,6 +294,25 @@
 			return instream;
 		}
 
+
+		public function getQualityLevels():Array {
+			return model.media ? model.media.qualityLevels : null;
+		}
+		
+		public function getCurrentQuality():Number {
+			return model.media ? model.media.currentQuality : NaN;
+		}
+		
+		public function setCurrentQuality(index:Number):void {
+			if (model.media) model.media.currentQuality = index;
+		}
+		
+
+		
+		///////////////////////////////////////////		
+		///      Disallowed Sprite methods       //
+		///////////////////////////////////////////		
+		
 		/** The player should not accept any calls referencing its display stack **/
 		public override function addChild(child:DisplayObject):DisplayObject {
 			return null;

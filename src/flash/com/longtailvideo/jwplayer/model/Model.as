@@ -4,6 +4,7 @@ package com.longtailvideo.jwplayer.model {
 	import com.longtailvideo.jwplayer.events.PlayerEvent;
 	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
 	import com.longtailvideo.jwplayer.media.HTTPMediaProvider;
+	import com.longtailvideo.jwplayer.media.IMediaProvider;
 	import com.longtailvideo.jwplayer.media.MediaProvider;
 	import com.longtailvideo.jwplayer.media.RTMPMediaProvider;
 	import com.longtailvideo.jwplayer.media.SoundMediaProvider;
@@ -89,7 +90,7 @@ package com.longtailvideo.jwplayer.model {
 
 		protected var _fullscreen:Boolean = false;
 
-		protected var _currentMedia:MediaProvider;
+		protected var _currentMedia:IMediaProvider;
 
 		protected var _mediaSources:Object;
 		
@@ -112,7 +113,7 @@ package com.longtailvideo.jwplayer.model {
 		}
 
 		/** The currently loaded MediaProvider **/
-		public function get media():MediaProvider {
+		public function get media():IMediaProvider {
 			return _currentMedia;
 		}
 
@@ -175,13 +176,13 @@ package com.longtailvideo.jwplayer.model {
 		 * Whether the Model has a MediaProvider handler for a given type.
 		 */
 		public function hasMediaProvider(type:String):Boolean {
-			return (_mediaSources[url2type(type)] is MediaProvider);
+			return (_mediaSources[url2type(type)] is IMediaProvider);
 		}
 
 		/**
 		 * Add a MediaProvider to the list of available sources.
 		 */
-		public function setMediaProvider(type:String, provider:MediaProvider):void {
+		public function setMediaProvider(type:String, provider:IMediaProvider):void {
 			if (!hasMediaProvider(type)) {
 				_mediaSources[url2type(type)] = provider;
 				provider.initializeMediaProvider(config);
@@ -192,7 +193,7 @@ package com.longtailvideo.jwplayer.model {
 			if (!hasMediaProvider(type))
 				type = "video";
 
-			var newMedia:MediaProvider = _mediaSources[url2type(type)] as MediaProvider;
+			var newMedia:IMediaProvider = _mediaSources[url2type(type)] as IMediaProvider;
 
 			if (_currentMedia != newMedia) {
 				if (_currentMedia) {

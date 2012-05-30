@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2203';
+	jwplayer.html5.version = '6.0.2217';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -14,7 +14,8 @@
  * @version 6.0
  */
 (function(utils) {
-
+	var DOCUMENT = document, WINDOW = window;
+	
 	/**
 	 * Basic serialization: string representations of booleans and numbers are
 	 * returned typed
@@ -36,7 +37,151 @@
 			return Number(val);
 		}
 	}
+	
+	
+	utils.sortSources = function(sources) {
+		var sorted = {};
+		if (sources) {
+			for (var i=0; i<sources.length; i++) {
+				var type = sources[i].type,
+					file = sources[i].file;
+				if (!type) {
+					type = utils.extension(file);
+					sources[i].type = type;
+				}
+				if (!sorted[type]) sorted[type] = [];
+				sorted[type].push(sources[i]);
+			}
+		}
+		return sorted;
+	}
+	
+	/** Loads an XML file into a DOM object * */
+	utils.ajax = function(xmldocpath, completecallback, errorcallback) {
+		var xmlhttp;
+		if (_isCrossdomain(xmldocpath) && utils.exists(WINDOW.XDomainRequest)) {
+			// IE9
+			xmlhttp = new XDomainRequest();
+			xmlhttp.onload = _ajaxComplete(xmlhttp, xmldocpath, completecallback, errorcallback);
+			xmlhttp.onerror = _ajaxError(errorcallback, xmldocpath, xmlhttp);
+		} else if (utils.exists(WINDOW.XMLHttpRequest)) {
+			// Firefox, Chrome, Opera, Safari
+			xmlhttp = new XMLHttpRequest();
+			xmlhttp.onreadystatechange = _readyStateChangeHandler(xmlhttp, xmldocpath, completecallback, errorcallback);
+			xmlhttp.onerror = _ajaxError(errorcallback, xmldocpath);
+		} else {
+			if (errorcallback) errorcallback();
+		}
+		 
+		try {
+			xmlhttp.open("GET", xmldocpath, true);
+			xmlhttp.send(null);
+		} catch (error) {
+			if (errorcallback) errorcallback(xmldocpath);
+		}
+		return xmlhttp;
+	};
+	
+	function _isCrossdomain(path) {
+		if (path && path.indexOf("://") >= 0) {
+			if (path.split("/")[2] != WINDOW.location.href.split("/")[2])
+				return true
+		} 
+		return false;	
+	}
+	
+	function _ajaxError(errorcallback, xmldocpath, xmlhttp) {
+		return function() {
+			errorcallback("Error loading file");
+		}
+ 	}
+	
+	function _readyStateChangeHandler(xmlhttp, xmldocpath, completecallback, errorcallback) {
+		return function() {
+			if (xmlhttp.readyState === 4) {
+				switch (xmlhttp.status) {
+				case 200:
+					_ajaxComplete(xmlhttp, xmldocpath, completecallback, errorcallback)();
+					break;
+				case 404:
+					errorcallback("File not found");
+				}
+			}
+		}
+	}
+	
+	function _ajaxComplete(xmlhttp, xmldocpath, completecallback, errorcallback) {
+		return function() {
+			// Handle the case where an XML document was returned with an incorrect MIME type.
+			if (!utils.exists(xmlhttp.responseXML)) {
+				try {
+					var parsedXML;
+					// Parse XML in FF/Chrome/Safari/Opera
+					if (WINDOW.DOMParser) {
+						parsedXML = (new DOMParser()).parseFromString(xmlhttp.responseText,"text/xml");
+					} else { 
+						// Internet Explorer
+						parsedXML = new ActiveXObject("Microsoft.XMLDOM");
+						parsedXML.async="false";
+						parsedXML.loadXML(xmlhttp.responseText);
+					}
+					if (parsedXML) {
+						xmlhttp = utils.extend({}, xmlhttp, {responseXML:parsedXML});
+					}
+				} catch(e) {
+					if (errorcallback) errorcallback(xmldocpath);
+					return;
+				}
+			}
+			completecallback(xmlhttp);
+		}
+	}
 
+	/**
+	 * Cleans up a css dimension (e.g. '420px') and returns an integer.
+	 */
+	utils.parseDimension = function(dimension) {
+		if (typeof dimension == "string") {
+			if (dimension === "") {
+				return 0;
+			} else if (dimension.lastIndexOf("%") > -1) {
+				return dimension;
+			} else {
+				return parseInt(dimension.replace("px", ""), 10);
+			}
+		}
+		return dimension;
+	}
+
+
+
+	/** Format the elapsed / remaining text. **/
+	utils.timeFormat = function(sec) {
+		if (sec > 0) {
+			var str = Math.floor(sec / 60) < 10 ? "0" + Math.floor(sec / 60) + ":" : Math.floor(sec / 60) + ":";
+			str += Math.floor(sec % 60) < 10 ? "0" + Math.floor(sec % 60) : Math.floor(sec % 60);
+			return str;
+		} else {
+			return "00:00";
+		}
+	}
+
+	/** Replacement for getBoundingClientRect, which isn't supported in iOS 3.1.2 **/
+	utils.getBoundingClientRect = function(element) {
+		if (typeof element.getBoundingClientRect == "function") {
+			return element.getBoundingClientRect();
+		} else {
+			return { 
+				left: element.offsetLeft + DOCUMENT.body.scrollLeft, 
+				top: element.offsetTop + DOCUMENT.body.scrollTop, 
+				width: element.offsetWidth, 
+				height: element.offsetHeight
+			};
+		}
+	}
+	
+
+	
 })(jwplayer.utils);/**
  * Utility methods for the JW Player.
  *
@@ -1590,6 +1735,7 @@
 
 		function _setStretching(stretching) {
 			_model.stretching = stretching;
+			// TODO: Send stretching event
 			_view.resize();
 		}
 
@@ -1634,8 +1780,20 @@
 			}
 		}
 		
-		
-		
+		function _setCurrentQuality(quality) {
+			_video.setCurrentQuality(quality);
+		}
+
+		function _getCurrentQuality() {
+			if (_video) return _video.getCurrentQuality();
+			else return -1;
+		}
+
+		function _getQualityLevels() {
+			if (_video) return _video.getQualityLevels();
+			else return null;
+		}
+
 		/** Used for the InStream API **/
 		function _detachMedia() {
 			try {
@@ -1674,7 +1832,6 @@
 			func.apply(this, _args);
 		}
 
-		
 		/** Controller API / public methods **/
 		this.play = _waitForReady(_play);
 		this.pause = _waitForReady(_pause);
@@ -1690,6 +1847,9 @@
 		this.setStretching = _waitForReady(_setStretching);
 		this.detachMedia = _detachMedia; 
 		this.attachMedia = _attachMedia;
+		this.setCurrentQuality = _waitForReady(_setCurrentQuality);
+		this.getCurrentQuality = _getCurrentQuality;
+		this.getQualityLevels = _getQualityLevels;
 		
 		this.playerReady = _playerReady;
 
@@ -1740,11 +1900,13 @@
 		DOCUMENT = document,
 		D_CLASS = ".jwdisplay",
 		D_PREVIEW_CLASS = ".jwpreview",
+		D_ERROR_CLASS = ".jwerror",
 
 		/** Some CSS constants we should use for minimization **/
 		JW_CSS_ABSOLUTE = "absolute",
 		JW_CSS_NONE = "none",
 		JW_CSS_100PCT = "100%",
+		JW_CSS_HIDDEN = "hidden",
 		JW_CSS_SMOOTH_EASE = "opacity .25s";
 
 	
@@ -1754,6 +1916,8 @@
 			_display, _preview,
 			_image, _imageWidth, _imageHeight, _imageURL,
 			_icons = {},
+			_errorState = false,
+			_errorText,
 			_hiding,
 			_button,		
 			_degreesRotated, 
@@ -1779,10 +1943,12 @@
 			
 			_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
 			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_ITEM, _itemHandler);
-			
+			_api.jwAddEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
+
 			_display.addEventListener('click', _clickHandler, false);
 			
 			_createIcons();
+			_createTextFields();
 			
 			_stateHandler({newstate:states.IDLE});
 		}
@@ -1866,6 +2032,13 @@
 			}
 		}
 		
+		
+		function _createTextFields() {
+			_errorText = DOCUMENT.createElement("div");
+			_errorText.className = "jwerror";
+			_display.appendChild(_errorText);
+		}
+		
 		function _setIcon(name) {
 			if (!_config.showicons) return;
 			
@@ -1911,10 +2084,13 @@
 			switch(state) {
 			case states.COMPLETED:
 			case states.IDLE:
-				_setVisibility(D_PREVIEW_CLASS, true);
-				_setIcon('play');
+				if (!_errorState) {
+					_setVisibility(D_PREVIEW_CLASS, true);
+					_setIcon('play');
+				}
 				break;
 			case states.BUFFERING:
+				_clearError();
 				_setIcon('buffer');
 				break;
 			case states.PLAYING:
@@ -1969,6 +2145,24 @@
 			return null;
 		}
 		
+		function _errorHandler(evt) {
+			_errorState = true;
+			_setIcon();
+			_css(_internalSelector(D_ERROR_CLASS), {
+				display: "table"
+			});
+			_errorText.innerHTML = "<p>" + evt.message + "</p>";
+		}
+		
+		function _clearError() {
+			_errorState = false;
+			_css(_internalSelector(D_ERROR_CLASS), {
+				display: "none"
+			});
+			_errorText.innerHTML = "";
+		}
+
+		
 		function _redraw() {
 			utils.stretch(_api.jwGetStretching(), _preview, _display.clientWidth, _display.clientHeight, _imageWidth, _imageHeight);
 		}
@@ -2009,7 +2203,7 @@
 		cursor: "pointer",
 		width: JW_CSS_100PCT,
 		height: JW_CSS_100PCT,
-		overflow: 'hidden',
+		overflow: JW_CSS_HIDDEN,
 		opacity: 0
 	});
 
@@ -2018,7 +2212,22 @@
 		width: JW_CSS_100PCT,
 		height: JW_CSS_100PCT,
 		background: 'no-repeat center',
-		overflow: 'hidden'
+		overflow: JW_CSS_HIDDEN
+	});
+
+	_css(D_CLASS + ' ' + D_ERROR_CLASS, {
+		display: "none",
+		position: JW_CSS_ABSOLUTE,
+		width: JW_CSS_100PCT,
+		height: JW_CSS_100PCT
+	});
+
+	_css(D_CLASS + ' ' + D_ERROR_CLASS + ' p', {
+		display: "table-cell",
+		'vertical-align': "middle",
+		'text-align': "center",
+		background: 'rgba(0, 0, 0, 0.5)',
+		color: '#fff'
 	});
 
 	_css(D_CLASS +', '+D_CLASS + ' *', {
@@ -2546,13 +2755,19 @@
  */
 (function(html5) {
 	html5.player = function(config) {
-		var _api = this,
-			_model = new html5.model(config), 
-			_view = new html5.view(this, _model), 
-			_controller = new html5.controller(_model, _view);
+		var _api = this, 
+			_model, 
+			_view, 
+			_controller,
+			_instreamPlayer;
 
 		function _init() {
+			_model = new html5.model(config); 
 			_api.id = _model.id;
+			_view = new html5.view(_api, _model); 
+			_controller = new html5.controller(_model, _view);
+			
+			_initializeAPI();
 			
 			var setup = new html5.setup(_model, _view, _controller);
 			setup.addEventListener(jwplayer.events.JWPLAYER_READY, _readyHandler);
@@ -2565,27 +2780,69 @@
 		}
 
 		function _errorHandler(evt) {
-			jwplayer.utils.log('There was a problem setting up the player: ' + evt.message);
+			jwplayer.utils.log('There was a problem setting up the player: ', evt);
 		}
 		
-		/** Methods **/
-		
-		_api.jwPlay = _controller.play;
-		_api.jwPause = _controller.pause;
-		_api.jwStop = _controller.stop;
-		_api.jwSeek = _controller.seek;
-		_api.jwSetVolume = _controller.setVolume;
-		_api.jwSetMute = _controller.setMute;
-		_api.jwLoad = _controller.load;
-		_api.jwPlaylistNext = _controller.next;
-		_api.jwPlaylistPrev = _controller.prev;
-		_api.jwPlaylistItem = _controller.item;
-		_api.jwSetFullscreen = _controller.setFullscreen;
-		_api.jwResize = _view.resize;		
-		_api.jwSeekDrag = _model.seekDrag;
-		_api.jwSetStretching = _controller.setStretching;
+		function _initializeAPI() {
+			
+			/** Methods **/
+			_api.jwPlay = _controller.play;
+			_api.jwPause = _controller.pause;
+			_api.jwStop = _controller.stop;
+			_api.jwSeek = _controller.seek;
+			_api.jwSetVolume = _controller.setVolume;
+			_api.jwSetMute = _controller.setMute;
+			_api.jwLoad = _controller.load;
+			_api.jwPlaylistNext = _controller.next;
+			_api.jwPlaylistPrev = _controller.prev;
+			_api.jwPlaylistItem = _controller.item;
+			_api.jwSetFullscreen = _controller.setFullscreen;
+			_api.jwResize = _view.resize;		
+			_api.jwSeekDrag = _model.seekDrag;
+			_api.jwSetStretching = _controller.setStretching;
+			_api.jwGetQualityLevels = _controller.getQualityLevels;
+			_api.jwGetCurrentQuality = _controller.getCurrentQuality;
+			_api.jwSetCurrentQuality = _controller.setCurrentQuality;
+			
 
-		
+			_api.jwGetPlaylistIndex = _statevarFactory('item');
+			_api.jwGetPosition = _statevarFactory('position');
+			_api.jwGetDuration = _statevarFactory('duration');
+			_api.jwGetBuffer = _statevarFactory('buffer');
+			_api.jwGetWidth = _statevarFactory('width');
+			_api.jwGetHeight = _statevarFactory('height');
+			_api.jwGetFullscreen = _statevarFactory('fullscreen');
+			_api.jwGetVolume = _statevarFactory('volume');
+			_api.jwGetMute = _statevarFactory('mute');
+			_api.jwGetState = _statevarFactory('state');
+			_api.jwGetStretching = _statevarFactory('stretching');
+			_api.jwGetPlaylist = _statevarFactory('playlist');
+
+			/** InStream API **/
+			_api.jwDetachMedia = _controller.detachMedia;
+			_api.jwAttachMedia = _controller.attachMedia;
+			
+			_api.jwLoadInstream = function(item, options) {
+				if (!_instreamPlayer) {
+					_instreamPlayer = new html5.instream(_api, _model, _view, _controller);
+				}
+				setTimeout(function() {
+					_instreamPlayer.load(item, options);
+				}, 10);
+			}
+			
+			_api.jwInstreamDestroy = function() {
+				if (_instreamPlayer) {
+					_instreamPlayer.jwInstreamDestroy();
+				}
+			}
+			
+			/** Events **/
+			_api.jwAddEventListener = _controller.addEventListener;
+			_api.jwRemoveEventListener = _controller.removeEventListener;
+			
+						
+		}
 
 		/** Getters **/
 		
@@ -2595,46 +2852,8 @@
 			};
 		}
 		
-		_api.jwGetPlaylistIndex = _statevarFactory('item');
-		_api.jwGetPosition = _statevarFactory('position');
-		_api.jwGetDuration = _statevarFactory('duration');
-		_api.jwGetBuffer = _statevarFactory('buffer');
-		_api.jwGetWidth = _statevarFactory('width');
-		_api.jwGetHeight = _statevarFactory('height');
-		_api.jwGetFullscreen = _statevarFactory('fullscreen');
-		_api.jwGetVolume = _statevarFactory('volume');
-		_api.jwGetMute = _statevarFactory('mute');
-		_api.jwGetState = _statevarFactory('state');
-		_api.jwGetStretching = _statevarFactory('stretching');
-		_api.jwGetPlaylist = _statevarFactory('playlist');
 
-		
-		/** InStream API **/
-		_api.jwDetachMedia = _controller.detachMedia;
-		_api.jwAttachMedia = _controller.attachMedia;
-		
-		var _instreamPlayer;
-		
-		_api.jwLoadInstream = function(item, options) {
-			if (!_instreamPlayer) {
-				_instreamPlayer = new html5.instream(_api, _model, _view, _controller);
-			}
-			setTimeout(function() {
-				_instreamPlayer.load(item, options);
-			}, 10);
-		}
-		
-		_api.jwInstreamDestroy = function() {
-			if (_instreamPlayer) {
-				_instreamPlayer.jwInstreamDestroy();
-			}
-		}
-		
-		/** Events **/
-		_api.jwAddEventListener = _controller.addEventListener;
-		_api.jwRemoveEventListener = _controller.removeEventListener;
-		
-		
+
 		_init();
 	}
 })(jwplayer.html5);
@@ -3013,10 +3232,21 @@
 				if (html5.parsers.localName(rss) == "xml") {
 					rss = rss.nextSibling;
 				}
-				var playlistObj = html5.parsers.rssparser.parse(rss);
-				_eventDispatcher.sendEvent(events.JWPLAYER_PLAYLIST_LOADED, {
-					playlist: new _jw.playlist(playlistObj)
-				});
+				
+				if (html5.parsers.localName(rss) != "rss") {
+					_playlistError("Playlist is not a valid RSS feed.");
+					return;
+				}
+				
+				var playlist = new _jw.playlist(html5.parsers.rssparser.parse(rss));
+				// TODO: full source inspection here - need to detect if there are playable sources in the list
+				if (playlist && playlist.length && playlist[0].sources && playlist[0].sources.length && playlist[0].sources[0].file) {
+					_eventDispatcher.sendEvent(events.JWPLAYER_PLAYLIST_LOADED, {
+						playlist: playlist
+					});
+				} else {
+					_playlistError("No playable sources found");
+				}
 			} catch (e) {
 				_playlistError('Could not load the playlist.');
 			}
@@ -3120,13 +3350,17 @@
 		
 		function _loadSkin() {
 			_skin = new html5.skin();
-			_skin.load(_model.config.skin, _skinLoaded);
+			_skin.load(_model.config.skin, _skinLoaded, _skinError);
 		}
 		
 		function _skinLoaded(skin) {
 			_taskComplete(LOAD_SKIN);
 		}
-		
+
+		function _skinError(message) {
+			_error("Error loading skin: " + message);
+		}
+
 		function _loadPlaylist() {
 			switch(utils.typeOf(_model.config.playlist)) {
 			case "string":
@@ -3147,7 +3381,7 @@
 		}
 
 		function _playlistError(evt) {
-			_error(evt.message);
+			_error("Error loading playlist: " + evt.message);
 		}
 		
 		function _loadPreview() {
@@ -3183,7 +3417,8 @@
 		
 		function _error(message) {
 			_errorState = true;
-			_eventDispatcher.sendEvent(events.JWPLAYER_ERROR, {message: message});		
+			_eventDispatcher.sendEvent(events.JWPLAYER_ERROR, {message: message});
+			_view.setupError(message);
 		}
 		
 		utils.extend(this, _eventDispatcher);
@@ -3206,17 +3441,13 @@
 		var _components = {};
 		var _loaded = false;
 		
-		this.load = function(path, callback) {
+		this.load = function(path, completeCallback, errorCallback) {
 			new html5.skinloader(path, function(skin) {
 				_loaded = true;
 				_components = skin;
-				callback();
-			}, function() {
-				new html5.skinloader("", function(skin) {
-					_loaded = true;
-					_components = skin;
-					callback();
-				});
+				if (typeof completeCallback == "function") completeCallback();
+			}, function(message) {
+				if (typeof errorCallback == "function") errorCallback(message);
 			});
 			
 		};
@@ -3275,6 +3506,10 @@
 			if (typeof _skinPath != "string" || _skinPath === "") {
 				_loadSkin(html5.defaultskin().xml);
 			} else {
+				if (_utils.extension(_skinPath) != "xml") {
+					_errorHandler("Skin not a valid file type");
+					return;
+				}
 				_utils.ajax(_utils.getAbsolutePath(_skinPath), function(xmlrequest) {
 					try {
 						if (_utils.exists(xmlrequest.responseXML)){
@@ -3285,8 +3520,8 @@
 						_clearSkin();
 					}
 					_loadSkin(html5.defaultskin().xml);
-				}, function(path) {
-					_loadSkin(html5.defaultskin().xml);
+				}, function(message) {
+					_errorHandler(message);
 				});
 			}
 			
@@ -3394,7 +3629,7 @@
 			img.onerror = function(evt) {
 				_error = true;
 				_resetCompleteIntervalTest();
-				_errorHandler();
+				_errorHandler("Skin image not found: " + this.src);
 			};
 			
 			img.src = imgUrl;
@@ -3498,8 +3733,6 @@
 		// Current type - used to filter the sources
 		_type,
 		// Reference to the video tag
-		_sourcesByType,
-		// All sources organized by type
 		_videotag,
 		// Current duration
 		_duration,
@@ -3526,9 +3759,17 @@
 		// Event dispatcher
 		_eventDispatcher = new events.eventdispatcher(),
 		// Whether or not we're listening to video tag events
-		_attached = false;
+		_attached = false,
+		// Sources, sorted by type
+		_sourcesByType = {},
+		// Quality levels
+		_levels,
+		// Current quality level index
+		_currentQuality = -1,
+		// Reference to self
+		_this = this;
 		
-		utils.extend(this, _eventDispatcher);
+		utils.extend(_this, _eventDispatcher);
 
 		// Constructor
 		function _init(videotag) {
@@ -3614,7 +3855,8 @@
 
 		function _errorHandler(evt) {
 			if (!_attached) return;
-			utils.log("Error: %o", _videotag.error);
+			utils.log("Error playing media: %o", _videotag.error);
+			_eventDispatcher.sendEvent(events.JWPLAYER_MEDIA_ERROR, {message: "Error loading media: File could not be played"});
 			_setState(states.IDLE);
 		}
 
@@ -3633,24 +3875,30 @@
 			return null;
 		}
 		
-		function _sortSources(sources) {
-			var sorted = {};
-			if (sources) {
-				for (var i=0; i<sources.length; i++) {
-					var type = sources[i].type,
-						file = sources[i].file;
-					if (!type) {
-						type = utils.extension(file);
-						sources[i].type = type;
-					}
-					if (!sorted[type]) sorted[type] = [];
-					sorted[type].push(sources[i]);
+		function _sendLevels(levels) {
+			if (utils.typeOf(levels)=="array" && levels.length > 0) {
+				var publicLevels = [];
+				for (var i=0; i<levels.length; i++) {
+					var level = levels[i], publicLevel = {};
+					publicLevel.label = _levelLabel(level) ? _levelLabel(level) : i;
+					if (level.width) publicLevel.width = level.width;
+					if (level.height) publicLevel.height = level.height;
+					if (level.bitrate) publicLevel.bitrate = level.bitrate;
+					publicLevels[i] = publicLevel;
 				}
+				_eventDispatcher.sendEvent(events.JWPLAYER_MEDIA_LEVELS, { levels: publicLevels, currentQuality: _currentQuality });
 			}
-			return sorted;
 		}
 		
-		this.load = function(item) {
+		function _levelLabel(level) {
+			if (level.label) return level.label;
+			else if (level.height) return level.height + "p";
+			else if (level.width) return (level.width * 9 / 16) + "p";
+			else if (level.bitrate) return level.bitrate + "kbps";
+			else return 0;
+		}
+		
+		_this.load = function(item) {
 			if (!_attached) return;
 
 			_item = item;
@@ -3660,7 +3908,7 @@
 			_duration = item.duration ? item.duration : -1;
 			_position = 0;
 			
-			_sourcesByType = _sortSources(_item.sources);
+			_sourcesByType = utils.sortSources(_item.sources);
 			_type = _selectType();
 
 			if (!_type) {
@@ -3668,7 +3916,11 @@
 				return;
 			}
 			
-			_source = _sourcesByType[_type][0];
+			if (_currentQuality < 0) _currentQuality = 0;
+			_levels = _sourcesByType[_type];
+			_sendLevels(_levels);
+			
+			_source = _levels[_currentQuality];
 			
 			_setState(states.BUFFERING); 
 			_videotag.src = _source.file;
@@ -3681,33 +3933,34 @@
 			}
 		}
 
-		var _stop = this.stop = function() {
+		var _stop = _this.stop = function() {
 			if (!_attached) return;
 			_videotag.removeAttribute("src");
 			_videotag.load();
+			_currentQuality = -1;
 			clearInterval(_bufferInterval);
 			_setState(states.IDLE);
 		}
 
-		this.play = function() {
+		_this.play = function() {
 			if (_attached) _videotag.play();
 		}
 
-		var _pause = this.pause = function() {
+		var _pause = _this.pause = function() {
 			if (_attached) {
 				_videotag.pause();
 				_setState(states.PAUSED);
 			}
 		}
 			
-		this.seekDrag = function(state) {
+		_this.seekDrag = function(state) {
 			if (!_attached) return; 
 			_dragging = state;
 			if (state) _videotag.pause();
 			else _videotag.play();
 		}
 		
-		var _seek = this.seek = function(pos) {
+		var _seek = _this.seek = function(pos) {
 			if (!_attached) return; 
 			if (_videotag.readyState >= _videotag.HAVE_FUTURE_DATA) {
 				_delayedSeek = 0;
@@ -3723,7 +3976,7 @@
 			}
 		}
 
-		var _volume = this.volume = function(vol) {
+		var _volume = _this.volume = function(vol) {
 			_videotag.volume = vol / 100;
 		}
 		
@@ -3736,7 +3989,7 @@
 			});
 		}
 		
-		this.mute = function(state) {
+		_this.mute = function(state) {
 			if (!utils.exists(state)) state = !_videotag.mute;
 			if (state) {
 				if (!_videotag.muted) {
@@ -3796,6 +4049,7 @@
 
 		function _complete() {
 			//_stop();
+			_currentQuality = -1;
 			_setState(states.IDLE);
 			_sendEvent(events.JWPLAYER_MEDIA_BEFORECOMPLETE);
 			_sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
@@ -3805,7 +4059,7 @@
 		/**
 		 * Return the video tag and stop listening to events  
 		 */
-		this.detachMedia = function() {
+		_this.detachMedia = function() {
 			_attached = false;
 			return _videotag;
 		}
@@ -3813,20 +4067,42 @@
 		/**
 		 * Begin listening to events again  
 		 */
-		this.attachMedia = function() {
+		_this.attachMedia = function() {
 			_attached = true;
 		}
 		
 		// Provide access to video tag
 		// TODO: remove; used by InStream
-		this.getTag = function() {
+		_this.getTag = function() {
 			return _videotag;
 		}
 		
-		this.audioMode = function() {
+		_this.audioMode = function() {
 			return (_type && _extensions[_type].html5 && _extensions[_type].html5.indexOf("audio") == 0);
 		}
 
+		_this.setCurrentQuality = function(quality) {
+			if (_currentQuality == quality) return;
+			
+			if (quality >=0) {
+				if (_levels && _levels.length > quality) {
+					_currentQuality = quality;
+					_sendEvent(events.JWPLAYER_MEDIA_QUALITY_CHANGED, { currentQuality: quality, levels: _levels} );
+					var currentTime = _videotag.currentTime;
+					_this.load(_item);
+					_this.seek(currentTime);
+				}
+			}
+		}
+		
+		_this.getCurrentQuality = function() {
+			return _currentQuality;
+		}
+		
+		_this.getQualityLevels = function() {
+			return _levels;
+		}
+		
 		// Call constructor
 		_init(videotag);
 
@@ -3888,14 +4164,16 @@
 		
 		utils.extend(this, _eventDispatcher);
 
-		this.setup = function(skin) {
-			_api.skin = skin;
-			
+		function _init() {
 			_playerElement = _createElement("div", PLAYER_CLASS);
 			_playerElement.id = _api.id;
 			
 			var replace = document.getElementById(_api.id);
 			replace.parentNode.replaceChild(_playerElement, replace);
+		}
+		
+		this.setup = function(skin) {
+			_api.skin = skin;
 			
 			_container = _createElement("span", VIEW_MAIN_CONTAINER_CLASS);
 			_videoLayer = _createElement("span", VIEW_VIDEO_CONTAINER_CLASS);
@@ -4104,25 +4382,28 @@
 		this.resize = _resize;
 		this.resizeMedia = _resizeMedia;
 
-		this.completeSetup = function() {
+		var _completeSetup = this.completeSetup = function() {
 			_css(_internalSelector(), {opacity: 1});
 		}
 		
 		/**
-		 * Listen for keystrokes.  Currently only ESC is recognized, to switch out of fullscreen mode.
+		 * Listen for keystrokes while in fullscreen mode.  
+		 * ESC returns from fullscreen
+		 * SPACE toggles playback
 		 **/
 		function _keyHandler(evt) {
-			switch (evt.keyCode) {
-			// ESC
-			case 27:
-				if (_model.fullscreen) {
+			if (_model.fullscreen) {
+				switch (evt.keyCode) {
+				// ESC
+				case 27:
 					_fullscreen(false);
+					break;
+				// SPACE
+//				case 32:
+//					if (_model.state == states.PLAYING || _model.state = states.BUFFERING)
+//						_api.jwPause();
+//					break;
 				}
-				break;
-			// SPACE
-			case 32:
-				_api.jwPlay()
-				break;
 			}
 		}
 		
@@ -4264,9 +4545,16 @@
 			_resize(_model.width, _model.height);
 		}
 		
+		this.setupError = function(message) {
+			jwplayer.embed.errorScreen(_playerElement, message);
+			_completeSetup();
+		}
+		
 		function _setVisibility(selector, state) {
 			_css(selector, { display: state ? "block" : "none" });
 		}
+		
+		_init();
 
 		
 	}

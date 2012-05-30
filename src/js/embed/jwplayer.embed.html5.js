@@ -5,22 +5,30 @@
  * @version 6.0
  */
 (function(jwplayer) {
-	var utils = jwplayer.utils, extensionmap = utils.extensionmap;
+	var utils = jwplayer.utils, extensionmap = utils.extensionmap, events = jwplayer.events;
 
 	jwplayer.embed.html5 = function(_container, _player, _options, _loader, _api) {
+		var _this = this,
+			_eventdispatcher = new events.eventdispatcher();
+		
+		utils.extend(_this, _eventdispatcher);
+		
+		
 		function _resizePlugin (plugin, div, onready) {
 			return function(evt) {
 				var displayarea = document.getElementById(_container.id + "_displayarea");
 				if (onready) {
 					displayarea.appendChild(div);
 				}
-				plugin.resize(displayarea.clientWidth, displayarea.clientHeight);
+				if (typeof plugin.resize == "function") {
+					plugin.resize(displayarea.clientWidth, displayarea.clientHeight);
+				}
 				div.left = displayarea.style.left;
 				div.top = displayarea.style.top;
 			}
 		}
 		
-		this.embed = function() {
+		_this.embed = function() {
 			if (jwplayer.html5) {
 				_loader.setupPlugins(_api, _options, _resizePlugin);
 				_container.innerHTML = "";
@@ -41,9 +49,14 @@
 				_api.setPlayer(html5player, "html5");
 			} else {
 				var scriptLoader = new utils.scriptloader(_player.src);
-				scriptLoader.addEventListener(jwplayer.events.COMPLETE, this.embed);
+				scriptLoader.addEventListener(events.ERROR, _loadError);
+				scriptLoader.addEventListener(events.COMPLETE, _this.embed);
 				scriptLoader.load();
 			}
+		}
+		
+		function _loadError(evt) {
+			_this.sendEvent(evt.type, {message: "HTML5 player not found"});
 		}
 		
 		/**
@@ -51,7 +64,7 @@
 		 *
 		 * @return {Boolean}
 		 */
-		this.supportsConfig = function() {
+		_this.supportsConfig = function() {
 			if (!!jwplayer.vid.canPlayType) {
 				try {
 					if (utils.typeOf(_options.playlist) == "string") {

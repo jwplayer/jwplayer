@@ -92,16 +92,6 @@ package com.longtailvideo.jwplayer.controller {
 		protected var _preplay:Boolean = false;
 		
 
-		/** A list with legacy CDN classes that are now redirected to buit-in ones. **/
-		protected var cdns:Object = {
-				bitgravity:{'http.startparam':'starttime', provider:'http'},
-				edgecast:{'http.startparam':'ec_seek', provider:'http'},
-				flvseek:{'http.startparam':'fs', provider:'http'},
-				highwinds:{'rtmp.loadbalance':true, provider:'rtmp'},
-				lighttpd:{'http.startparam':'start', provider:'http'},
-				vdox:{'rtmp.loadbalance':true, provider:'rtmp'}
-		};
-		
 		/** Reference to a PlaylistItem which has triggered an external MediaProvider load **/
 		protected var _delayedItem:PlaylistItem;
 		/** Loader for external MediaProviders **/
@@ -198,14 +188,10 @@ package com.longtailvideo.jwplayer.controller {
 		protected function playlistLoadHandler(evt:PlaylistEvent=null):void {
 			_playlistReady = true;
 			
-			if (_model.config.shuffle) {
-				shuffleItem();
-			} else {
-				if (_model.config.item >= _model.playlist.length) {
-					_model.config.item = _model.playlist.length - 1;
-				}
-				_model.playlist.currentIndex = _model.config.item;
+			if (_model.config.item >= _model.playlist.length) {
+				_model.config.item = _model.playlist.length - 1;
 			}
+			_model.playlist.currentIndex = _model.config.item;
 
 			if(_model.config.autostart) {
 				if (locking) {
@@ -214,11 +200,6 @@ package com.longtailvideo.jwplayer.controller {
 					play();
 				}
 			}
-		}
-
-
-		protected function shuffleItem():void {
-			_model.playlist.currentIndex = Math.floor(Math.random() * _model.playlist.length);
 		}
 
 
@@ -252,7 +233,7 @@ package com.longtailvideo.jwplayer.controller {
 					play();
 					break;
 				case RepeatOptions.ALWAYS:
-					if (_model.playlist.currentIndex == _model.playlist.length - 1 && !_model.config.shuffle) {
+					if (_model.playlist.currentIndex == _model.playlist.length - 1) {
 						_model.playlist.currentIndex = 0;
 						play();
 					} else {
@@ -260,7 +241,7 @@ package com.longtailvideo.jwplayer.controller {
 					}
 					break;
 				case RepeatOptions.LIST:
-					if (_model.playlist.currentIndex == _model.playlist.length - 1 && !_model.config.shuffle) {
+					if (_model.playlist.currentIndex == _model.playlist.length - 1) {
 						_lockingResume = false;
 						_model.playlist.currentIndex = 0;
 					} else {
@@ -478,9 +459,7 @@ package com.longtailvideo.jwplayer.controller {
 
 			_lockingResume = true;
 			stop();
-			if (_model.config.shuffle) {
-				shuffleItem();
-			} else if (_model.playlist.currentIndex == _model.playlist.length - 1) {
+			if (_model.playlist.currentIndex == _model.playlist.length - 1) {
 				_player.playlist.currentIndex = 0;
 			} else {
 				_player.playlist.currentIndex = _player.playlist.currentIndex + 1;
@@ -499,9 +478,7 @@ package com.longtailvideo.jwplayer.controller {
 
 			_lockingResume = true;
 			stop();
-			if (_model.config.shuffle) {
-				shuffleItem();
-			} else if (_model.playlist.currentIndex <= 0) {
+			if (_model.playlist.currentIndex <= 0) {
 				_model.playlist.currentIndex = _model.playlist.length - 1;
 			} else {
 				_player.playlist.currentIndex = _player.playlist.currentIndex - 1;
@@ -650,12 +627,6 @@ package com.longtailvideo.jwplayer.controller {
 			var provider:String = item.provider;
 
 			if (provider) {
-
-				// Backwards compatibility for CDNs in the 'type' flashvar.
-				if (cdns.hasOwnProperty(provider)) {
-					_model.config.setConfig(cdns[provider]);
-					provider = cdns[provider]['provider'];
-				}
 
 				// If the model doesn't have an instance of the provider, load & instantiate it
 				if (!_model.hasMediaProvider(provider)) {

@@ -227,9 +227,9 @@ package com.longtailvideo.jwplayer.media {
 					} else {
 						drf = Math.round((_streamInfo[len-1].drf - _streamInfo[len-3].drf)*5)/10;
 					}
-					if(item.levels.length > 0 && item.getLevel(bwd,config.width) != item.currentLevel) {
+					if(item.levels.length > 0 && getLevel(item, bwd,config.width) != item.currentLevel) {
 						Logger.log("swapping to another level b/c of bandwidth",bwd.toString());
-						swap(item.getLevel(bwd, config.width));
+						swap(getLevel(item, bwd, config.width));
 					}
 					if(item.levels.length > 0 && drf > 10 && item.currentLevel < item.levels.length-1) {
 						var lvl:Number = item.currentLevel;
@@ -237,7 +237,7 @@ package com.longtailvideo.jwplayer.media {
 						setTimeout(unBlacklist,30000,lvl);
 						sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_META, {metadata: {type:'blacklist',level:lvl,state:true}});
 						Logger.log("swapping to another level b/c of framedrops",drf.toString());
-						swap(item.getLevel(bwd, config.width));
+						swap(getLevel(item, bwd, config.width));
 					}
 					sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_META, {metadata: {bandwidth:bwd,droppedFrames:drf}});
 				}
@@ -284,7 +284,7 @@ package com.longtailvideo.jwplayer.media {
             	_timeoffset = item.start;
 			}
 			
-			if (item.levels.length > 0) { item.setLevel(item.getLevel(config.bandwidth, config.width)); }
+			if (item.levels.length > 0) { item.setLevel(getLevel(item, config.bandwidth, config.width)); }
 			
 			clearInterval(_positionInterval);
 			
@@ -349,7 +349,7 @@ package com.longtailvideo.jwplayer.media {
 			if(arr.length > 1) {
 				item.clearLevels()
 				for(var i:Number=0; i<arr.length; i++) { item.addLevel(arr[i]); }
-				item.setLevel(item.getLevel(config.bandwidth, config.width));
+				item.setLevel(getLevel(item, config.bandwidth, config.width));
 			} else if (item.levels.length > 0) {
 				var level:PlaylistItemLevel = item.levels[(item.smil as Array).indexOf(smilLocation)] as PlaylistItemLevel;
 				level.streamer = arr[0].streamer;
@@ -472,10 +472,10 @@ package com.longtailvideo.jwplayer.media {
         override public function resize(width:Number, height:Number):void {
             super.resize(width, height);
 			if (state == PlayerState.PLAYING) {
-            	if (item.levels.length > 0 && item.currentLevel != item.getLevel(config.bandwidth, config.width)) {
+            	if (item.levels.length > 0 && item.currentLevel != getLevel(item, config.bandwidth, config.width)) {
                 	if (_dynamic) {
 						Logger.log("swapping to another level b/c of size: "+config.width);
-	                    swap(item.getLevel(config.bandwidth, config.width));
+	                    swap(getLevel(item, config.bandwidth, config.width));
                 	} else {
 	                    seek(position);
                 	}
@@ -492,8 +492,8 @@ package com.longtailvideo.jwplayer.media {
 			}
 			_timeoffset = pos;
             clearInterval(_positionInterval);
-			if (item.levels.length > 0 && item.getLevel(config.bandwidth, config.width) != item.currentLevel) {
-                item.setLevel(item.getLevel(config.bandwidth, config.width));
+			if (item.levels.length > 0 && getLevel(item, config.bandwidth, config.width) != item.currentLevel) {
+                item.setLevel(getLevel(item, config.bandwidth, config.width));
                 if (_loadbalanceOnSwitch) {
                     load(item);
                     return;

@@ -8,6 +8,7 @@ package com.longtailvideo.jwplayer.utils {
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
 	import flash.net.URLLoader;
+	import flash.net.URLLoaderDataFormat;
 	import flash.net.URLRequest;
 	import flash.system.ApplicationDomain;
 	import flash.system.LoaderContext;
@@ -89,28 +90,32 @@ package com.longtailvideo.jwplayer.utils {
 		protected function loadStatus(evt:HTTPStatusEvent):void {
 			switch (evt.status) {
 				case 400:
-					loadError(new ErrorEvent(ErrorEvent.ERROR, false, false, "HTTP Status 400; Bad request."));
+					loadError(new ErrorEvent(ErrorEvent.ERROR, false, false, "Bad request."));
 					break;
 				case 401:
-					loadError(new ErrorEvent(ErrorEvent.ERROR, false, false, "HTTP Status 401; Unauthorized."));
+					loadError(new ErrorEvent(ErrorEvent.ERROR, false, false, "Request not authorize."));
 					break;
 				case 403:
-					loadError(new ErrorEvent(ErrorEvent.ERROR, false, false, "HTTP Status 403; Forbidden."));
+					loadError(new ErrorEvent(ErrorEvent.ERROR, false, false, "File could not be loaded due to server permissions."));
 					break;
 				case 404:
-					loadError(new ErrorEvent(ErrorEvent.ERROR, false, false, "HTTP Status 404; Not Found."));
+					loadError(new ErrorEvent(ErrorEvent.ERROR, false, false, "File not found."));
 					break;
 				case 500:
-					loadError(new ErrorEvent(ErrorEvent.ERROR, false, false, "HTTP Status 500; Internal Server Error."));
+					loadError(new ErrorEvent(ErrorEvent.ERROR, false, false, "Internal server error."));
 					break;
 				case 503:
-					loadError(new ErrorEvent(ErrorEvent.ERROR, false, false, "HTTP Status 503; Service Unavailable."));
+					loadError(new ErrorEvent(ErrorEvent.ERROR, false, false, "Service unavailable."));
 					break;
 			}
 		}
 
 		protected function loadError(evt:ErrorEvent):void {
-			dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, evt.text));
+			if (evt is SecurityErrorEvent) {
+				dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, "Crossdomain loading denied."));
+			} else {
+				dispatchEvent(evt.clone());
+			}
 			_errorState = true;
 		}
 
@@ -148,6 +153,7 @@ package com.longtailvideo.jwplayer.utils {
 		protected function get urlLoader():URLLoader {
 			if (!_urlLoader) {
 				_urlLoader = new URLLoader();
+				_urlLoader.dataFormat = URLLoaderDataFormat.BINARY;
 				_urlLoader.addEventListener(Event.COMPLETE, urlLoadComplete);
 				_urlLoader.addEventListener(IOErrorEvent.IO_ERROR, loadError);
 				_urlLoader.addEventListener(HTTPStatusEvent.HTTP_STATUS, loadStatus);

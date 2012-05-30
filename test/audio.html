@@ -39,6 +39,17 @@
 		      primary: form.mode.options[form.mode.selectedIndex].value
 		    });
 		  }
+
+		  var sizeToggle = false;
+		  
+		  function toggleSize() {
+			if (sizeToggle) {
+				jwplayer('player').resize("100%", "100%");
+			} else {
+				jwplayer('player').resize("100%", "30");
+			}
+			sizeToggle = !sizeToggle;
+		  }
 	  </script>
 	</head>
 	
@@ -55,6 +66,8 @@
 	<div class="wrapper">
 	    <div id="player"></div>
 	</div>
+
+	<button onclick="toggleSize();">Toggle size</button>
 
 	</body>
 </html>

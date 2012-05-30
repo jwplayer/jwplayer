@@ -3,32 +3,34 @@
  * @author zach
  * @version 5.8
  */
-(function(jwplayer) {
-	jwplayer.plugins.pluginmodes = {
-		FLASH: "FLASH",
-		JAVASCRIPT: "JAVASCRIPT",
-		HYBRID: "HYBRID"
+(function(plugins) {
+	var utils = jwplayer.utils, events = jwplayer.events, UNDEFINED = "undefined";
+	
+	plugins.pluginmodes = {
+		FLASH: 0,
+		JAVASCRIPT: 1,
+		HYBRID: 2
 	}
 	
-	jwplayer.plugins.plugin = function(url) {
-		var _repo = "http://plugins.longtailvideo.com"
-		var _status = jwplayer.utils.loaderstatus.NEW;
-		var _flashPath;
-		var _js;
-		var _completeTimeout;
+	plugins.plugin = function(url) {
+		var _repo = "http://plugins.longtailvideo.com",
+			_status = utils.loaderstatus.NEW,
+			_flashPath,
+			_js,
+			_completeTimeout;
 		
-		var _eventDispatcher = new jwplayer.events.eventdispatcher();
-		jwplayer.utils.extend(this, _eventDispatcher);
+		var _eventDispatcher = new events.eventdispatcher();
+		utils.extend(this, _eventDispatcher);
 		
 		function getJSPath() {
-			switch (jwplayer.utils.getPluginPathType(url)) {
-				case jwplayer.utils.pluginPathType.ABSOLUTE:
+			switch (utils.getPluginPathType(url)) {
+				case utils.pluginPathType.ABSOLUTE:
 					return url;
-				case jwplayer.utils.pluginPathType.RELATIVE:
-					return jwplayer.utils.getAbsolutePath(url, window.location.href);
-				case jwplayer.utils.pluginPathType.CDN:
-					var pluginName = jwplayer.utils.getPluginName(url);
-					var pluginVersion = jwplayer.utils.getPluginVersion(url);
+				case utils.pluginPathType.RELATIVE:
+					return utils.getAbsolutePath(url, window.location.href);
+				case utils.pluginPathType.CDN:
+					var pluginName = utils.getPluginName(url);
+					var pluginVersion = utils.getPluginVersion(url);
 					var repo = (window.location.href.indexOf("https://") == 0) ? _repo.replace("http://", "https://secure") : _repo;
 					return repo + "/" + jwplayer.version.split(".")[0] + "/" + pluginName + "/" 
 							+ pluginName + (pluginVersion !== "" ? ("-" + pluginVersion) : "") + ".js";
@@ -37,29 +39,29 @@
 		
 		function completeHandler(evt) {
 			_completeTimeout = setTimeout(function(){
-				_status = jwplayer.utils.loaderstatus.COMPLETE;
-				_eventDispatcher.sendEvent(jwplayer.events.COMPLETE);		
+				_status = utils.loaderstatus.COMPLETE;
+				_eventDispatcher.sendEvent(events.COMPLETE);		
 			}, 1000);
 		}
 		
 		function errorHandler(evt) {
-			_status = jwplayer.utils.loaderstatus.ERROR;
-			_eventDispatcher.sendEvent(jwplayer.events.ERROR);
+			_status = utils.loaderstatus.ERROR;
+			_eventDispatcher.sendEvent(events.ERROR);
 		}
 		
 		this.load = function() {
-			if (_status == jwplayer.utils.loaderstatus.NEW) {
+			if (_status == utils.loaderstatus.NEW) {
 				if (url.lastIndexOf(".swf") > 0) {
 					_flashPath = url;
-					_status = jwplayer.utils.loaderstatus.COMPLETE;
-					_eventDispatcher.sendEvent(jwplayer.events.COMPLETE);
+					_status = utils.loaderstatus.COMPLETE;
+					_eventDispatcher.sendEvent(events.COMPLETE);
 					return;
 				}
-				_status = jwplayer.utils.loaderstatus.LOADING;
-				var _loader = new jwplayer.utils.scriptloader(getJSPath());
+				_status = utils.loaderstatus.LOADING;
+				var _loader = new utils.scriptloader(getJSPath());
 				// Complete doesn't matter - we're waiting for registerPlugin 
-				_loader.addEventListener(jwplayer.events.COMPLETE, completeHandler);
-				_loader.addEventListener(jwplayer.events.ERROR, errorHandler);
+				_loader.addEventListener(events.COMPLETE, completeHandler);
+				_loader.addEventListener(events.ERROR, errorHandler);
 				_loader.load();
 			}
 		}
@@ -79,8 +81,8 @@
 			} else if (!arg1 && !arg2) {
 				_flashPath = id;
 			}
-			_status = jwplayer.utils.loaderstatus.COMPLETE;
-			_eventDispatcher.sendEvent(jwplayer.events.COMPLETE);
+			_status = utils.loaderstatus.COMPLETE;
+			_eventDispatcher.sendEvent(events.COMPLETE);
 		}
 		
 		this.getStatus = function() {
@@ -88,20 +90,20 @@
 		}
 		
 		this.getPluginName = function() {
-			return jwplayer.utils.getPluginName(url);
+			return utils.getPluginName(url);
 		}
 		
 		this.getFlashPath = function() {
 			if (_flashPath) {
-				switch (jwplayer.utils.getPluginPathType(_flashPath)) {
-					case jwplayer.utils.pluginPathType.ABSOLUTE:
+				switch (utils.getPluginPathType(_flashPath)) {
+					case utils.pluginPathType.ABSOLUTE:
 						return _flashPath;
-					case jwplayer.utils.pluginPathType.RELATIVE:
+					case utils.pluginPathType.RELATIVE:
 						if (url.lastIndexOf(".swf") > 0) {
-							return jwplayer.utils.getAbsolutePath(_flashPath, window.location.href);
+							return utils.getAbsolutePath(_flashPath, window.location.href);
 						}
-						return jwplayer.utils.getAbsolutePath(_flashPath, getJSPath());
-					case jwplayer.utils.pluginPathType.CDN:
+						return utils.getAbsolutePath(_flashPath, getJSPath());
+					case utils.pluginPathType.CDN:
 						if (_flashPath.indexOf("-") > -1){
 							return _flashPath+"h";
 						}
@@ -116,13 +118,13 @@
 		}
 
 		this.getPluginmode = function() {
-			if (typeof _flashPath != "undefined"
-			 && typeof _js != "undefined") {
-			 	return jwplayer.plugins.pluginmodes.HYBRID;
-			 } else if (typeof _flashPath != "undefined") {
-			 	return jwplayer.plugins.pluginmodes.FLASH;
-			 } else if (typeof _js != "undefined") {
-			 	return jwplayer.plugins.pluginmodes.JAVASCRIPT;
+			if (typeof _flashPath != UNDEFINED
+			 && typeof _js != UNDEFINED) {
+			 	return plugins.pluginmodes.HYBRID;
+			 } else if (typeof _flashPath != UNDEFINED) {
+			 	return plugins.pluginmodes.FLASH;
+			 } else if (typeof _js != UNDEFINED) {
+			 	return plugins.pluginmodes.JAVASCRIPT;
 			 }
 		}
 		
@@ -135,4 +137,4 @@
 		}
 	}
 	
-})(jwplayer);
+})(jwplayer.plugins);

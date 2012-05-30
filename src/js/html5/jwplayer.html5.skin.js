@@ -9,17 +9,13 @@
 		var _components = {};
 		var _loaded = false;
 		
-		this.load = function(path, callback) {
+		this.load = function(path, completeCallback, errorCallback) {
 			new html5.skinloader(path, function(skin) {
 				_loaded = true;
 				_components = skin;
-				callback();
-			}, function() {
-				new html5.skinloader("", function(skin) {
-					_loaded = true;
-					_components = skin;
-					callback();
-				});
+				if (typeof completeCallback == "function") completeCallback();
+			}, function(message) {
+				if (typeof errorCallback == "function") errorCallback(message);
 			});
 			
 		};

@@ -5,17 +5,24 @@
  * @version 6.0
  */
 (function(playlist) {
-	playlist.source = function(config) {
-		var _source = {
-			file: "",
-			width: 0,
-			label: undefined,
-			type: undefined
+	var UNDEF = undefined,
+		utils = jwplayer.utils,
+		defaults = {
+			file: UNDEF,
+			width: UNDEF,
+			label: UNDEF,
+			bitrate: UNDEF,
+			type: UNDEF
 		};
+	
+	playlist.source = function(config) {
+		var _source = utils.extend({}, defaults);
 		
-		for (var property in _source) {
-			if (jwplayer.utils.exists(config[property])) {
+		for (var property in defaults) {
+			if (utils.exists(config[property])) {
 				_source[property] = config[property];
+				// Actively move from config to source
+				delete config[property];
 			}
 		}
 		return _source;
