@@ -288,6 +288,9 @@ package com.longtailvideo.jwplayer.model {
 				case "hls": 
 					return "hls";
 					break;
+				case "youtube":
+					return "youtube";
+					break;
 			}
 			return null;
 		}

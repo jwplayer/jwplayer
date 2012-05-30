@@ -37,12 +37,15 @@ package com.longtailvideo.jwplayer.media {
 		private var _videoId:String = "";
 		/** Array of YouTube quality levels **/
 		private var _qualityLevels:Array;
+		/** User-selected quality level **/
+		private var _userQuality:String;
 		/** Bytes loaded for currently loading segment **/
 		private var bytesLodaed:Number;
 		/** Bytes total for currently loading segment **/
 		private var bytesTotal:Number;
 		/** Current bytes offset from beginning of stream **/
 		private var bytesOffset:Number;
+		
 
 		
 		
@@ -112,6 +115,7 @@ package com.longtailvideo.jwplayer.media {
 			bytesLodaed = bytesTotal = bytesOffset = _offset = 0;
 			_item = itm;
 			_qualityLevels = null;
+			_currentQuality = 0;
 			_videoId = getID(_item.file);
 			_position = _offset = 0;
 			setState(PlayerState.BUFFERING);
@@ -132,6 +136,7 @@ package com.longtailvideo.jwplayer.media {
 			_ytAPI.addEventListener("onReady", apiReady);
 			_ytAPI.addEventListener("onError", onPlayerError);
 			_ytAPI.addEventListener("onStateChange", onStateChange);
+			_ytAPI.addEventListener("onPlaybackQualityChange", onPlaybackQualityChange);
 
 		}
 				
@@ -171,9 +176,9 @@ package com.longtailvideo.jwplayer.media {
 
 		/** Everything loaded - play the video **/
 		private function completeLoad(itm:PlaylistItem):void {
-			var quality:String = getConfigProperty("quality");
+			_userQuality = getConfigProperty("quality");
 			
-			_ytAPI.cueVideoById(_videoId, _item.start, quality ? quality : "default");
+			_ytAPI.cueVideoById(_videoId, _item.start, _userQuality ? _userQuality : "default");
 			
 			media = _loader;
 			sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_LOADED);
@@ -239,9 +244,22 @@ package com.longtailvideo.jwplayer.media {
 			}
 			
 			if (!_qualityLevels || _qualityLevels.length == 0) {
-				_qualityLevels = _ytAPI.getAvailableQualityLevels();
-				if (_qualityLevels && _qualityLevels.length > 0) {
-					sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_META, { metadata: { youtubequalitylevels: _qualityLevels } });
+				var levels:Array = _ytAPI.getAvailableQualityLevels();
+				if (levels && levels.length > 0) {
+					_qualityLevels = [{label: "auto"}];
+					for each (var level:String in levels) {
+						_qualityLevels.push({label:level});
+						if (_userQuality == level) {
+							_currentQuality = _qualityLevels.length - 1;
+						}
+					}
+					if (_qualityLevels.length > 1) {
+						sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_META, { metadata: { youtubequalitylevels: _qualityLevels } });
+						sendQualityEvent(MediaEvent.JWPLAYER_MEDIA_LEVELS, _qualityLevels, _currentQuality);
+						if (_currentQuality > 0) {
+							currentQuality = _currentQuality;
+						}
+					}
 				}
 			}
 			
@@ -313,6 +331,36 @@ package com.longtailvideo.jwplayer.media {
 				_ytAPI.setVolume(Math.min(Math.max(0, pct), 100));
 			}
 			super.setVolume(pct);
+		}
+		
+		/*** QUALITY API ***/
+		
+		override public function get qualityLevels():Array {
+			return _qualityLevels;
+		}
+		
+		override public function set currentQuality(quality:Number):void {
+			if (quality > 0) {
+				_currentQuality = quality;
+				if (_qualityLevels && quality < _qualityLevels.length) {
+					_ytAPI.setPlaybackQuality(_qualityLevels[quality].label);
+				}
+			} else {
+				_currentQuality = 0;
+				_ytAPI.setPlaybackQuality("default");
+			}
+		}
+		
+		private function onPlaybackQualityChange(event:Event):void {
+			if (_currentQuality > 0) {
+				for (var i:Number = 0; i < _qualityLevels.length; i++) {
+					if (_qualityLevels[i].label == Object(event).data) {
+						_currentQuality = i;
+						sendQualityEvent(MediaEvent.JWPLAYER_MEDIA_LEVEL_CHANGED, _qualityLevels, _currentQuality);
+						return;
+					}
+				}
+			}
 		}
 	}
 }

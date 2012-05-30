@@ -397,7 +397,7 @@ package com.longtailvideo.jwplayer.media {
 			return null;			
 		}
 		
-		private function qualityLabel(level:PlaylistItemLevel):String {
+		protected function qualityLabel(level:Object):String {
 			if (level.label) return level.label;
 			else if (level.height) return level.height + "p";
 			else if (level.width) return (level.width * 9 / 16) + "p";

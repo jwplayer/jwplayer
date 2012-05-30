@@ -7,6 +7,7 @@
 (function(jwplayer) {
 	var utils = jwplayer.utils,
 		embed = jwplayer.embed,
+		playlistitem = jwplayer.playlist.item,
 		UNDEFINED = undefined;
 
 	var config = embed.config = function(config) {
@@ -58,8 +59,10 @@
 	function _normalizePlaylist(config) {
 		if (!config.playlist) {
 			var singleItem = {};
-			_moveProperty(config, singleItem, "sources");
-			_moveProperty(config, singleItem, "image");
+			
+			for (var itemProp in playlistitem.defaults) {
+				_moveProperty(config, singleItem, itemProp);
+			}
 
 			if (!config.sources) {
 				if (config.levels) {
@@ -77,7 +80,7 @@
 		} else {
 			// Use JW Player playlist items to normalize sources of existing playlist items
 			for (var i=0; i<config.playlist.length; i++) {
-				config.playlist[i] = new jwplayer.playlist.item(config.playlist[i]);
+				config.playlist[i] = new playlistitem(config.playlist[i]);
 			}
 		}
 	}

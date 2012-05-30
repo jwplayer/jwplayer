@@ -18,7 +18,7 @@ jwplayer = function(container) {
 
 var $jw = jwplayer;
 
-jwplayer.version = '6.0.2217';
+jwplayer.version = '6.0.2218';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -1168,17 +1168,8 @@ jwplayer.source = document.createElement("source");/**
  * @version 6.0
  */
 (function(playlist) {
-	playlist.item = function(config) {
-		var _defaults = {
-			description: "",
-			image: "",
-			mediaid: "",
-			title: "",
-			duration: -1,
-			sources: []
-		},
-
-		_playlistitem = jwplayer.utils.extend({}, _defaults, config);
+	var _item = playlist.item = function(config) {
+		_playlistitem = jwplayer.utils.extend({}, _item.defaults, config);
 		
 /*
 		if (_playlistitem.type) {
@@ -1199,6 +1190,16 @@ jwplayer.source = document.createElement("source");/**
 
 		return _playlistitem;
 	};
+	
+	_item.defaults = {
+		description: "",
+		image: "",
+		mediaid: "",
+		title: "",
+		duration: -1,
+		sources: []
+	};
+	
 })(jwplayer.playlist);/**
  * JW Player playlist item source
  *
@@ -1348,6 +1349,7 @@ jwplayer.source = document.createElement("source");/**
 (function(jwplayer) {
 	var utils = jwplayer.utils,
 		embed = jwplayer.embed,
+		playlistitem = jwplayer.playlist.item,
 		UNDEFINED = undefined;
 
 	var config = embed.config = function(config) {
@@ -1399,8 +1401,10 @@ jwplayer.source = document.createElement("source");/**
 	function _normalizePlaylist(config) {
 		if (!config.playlist) {
 			var singleItem = {};
-			_moveProperty(config, singleItem, "sources");
-			_moveProperty(config, singleItem, "image");
+			
+			for (var itemProp in playlistitem.defaults) {
+				_moveProperty(config, singleItem, itemProp);
+			}
 
 			if (!config.sources) {
 				if (config.levels) {
@@ -1418,7 +1422,7 @@ jwplayer.source = document.createElement("source");/**
 		} else {
 			// Use JW Player playlist items to normalize sources of existing playlist items
 			for (var i=0; i<config.playlist.length; i++) {
-				config.playlist[i] = new jwplayer.playlist.item(config.playlist[i]);
+				config.playlist[i] = new playlistitem(config.playlist[i]);
 			}
 		}
 	}

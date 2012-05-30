@@ -6,17 +6,8 @@
  * @version 6.0
  */
 (function(playlist) {
-	playlist.item = function(config) {
-		var _defaults = {
-			description: "",
-			image: "",
-			mediaid: "",
-			title: "",
-			duration: -1,
-			sources: []
-		},
-
-		_playlistitem = jwplayer.utils.extend({}, _defaults, config);
+	var _item = playlist.item = function(config) {
+		_playlistitem = jwplayer.utils.extend({}, _item.defaults, config);
 		
 /*
 		if (_playlistitem.type) {
@@ -37,4 +28,14 @@
 
 		return _playlistitem;
 	};
+	
+	_item.defaults = {
+		description: "",
+		image: "",
+		mediaid: "",
+		title: "",
+		duration: -1,
+		sources: []
+	};
+	
 })(jwplayer.playlist);
