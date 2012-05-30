@@ -18,7 +18,7 @@ jwplayer = function(container) {
 
 var $jw = jwplayer;
 
-jwplayer.version = '6.0.2218';
+jwplayer.version = '6.0.2219';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -369,21 +369,34 @@ jwplayer.source = document.createElement("source");/**
 		audio = "audio/",
 		image = "image",
 		mp4 = "mp4",
+		webm = "webm",
+		aac = "aac",
+		mp3 = "mp3",
+		ogg = "ogg",
+		
+		mimeMap = {
+			mp4: video+mp4,
+			vorbis: audio+ogg,
+			webm: video+webm,
+			aac: audio+aac,
+			mp3: audio+mp3,
+			hls: "application/vnd.apple.mpegurl"
+		},
 		
 		html5Extensions = {
-			"f4a": audio+mp4,
-			"f4v": video+mp4,
-			"mov": video+mp4,
-			"m4a": audio+mp4,
-			"m4v": video+mp4,
-			"mp4": video+mp4,
-			"aac": audio+"aac",
-			"mp3": audio+"mp3",
-			"ogg": audio+"ogg",
-			"oga": audio+"ogg",
-			"ogv": video+"ogg",
-			"webm": video+"webm",
-			"m3u8": "application/vnd.apple.mpegurl"
+			"mp4": mimeMap[mp4],
+			"f4v": mimeMap[mp4],
+			"m4v": mimeMap[mp4],
+			"mov": mimeMap[mp4],
+			"m4a": mimeMap[aac],
+			"f4a": mimeMap[aac],
+			"aac": mimeMap[aac],
+			"mp3": mimeMap[mp3],
+			"ogg": mimeMap[ogg],
+			"oga": mimeMap[ogg],
+			"ogv": mimeMap[ogg],
+			"webm": mimeMap[webm],
+			"m3u8": mimeMap.hls,
 		}, 
 		video = "video", 
 		flashExtensions = {
@@ -406,6 +419,12 @@ jwplayer.source = document.createElement("source");/**
 	for (ext in flashExtensions) {
 		if (!_extensionmap[ext]) _extensionmap[ext] = {};
 		_extensionmap[ext].flash = flashExtensions[ext];
+	}
+	
+	_extensionmap.mimeType = function(mime) {
+		for (var type in mimeMap) {
+			if (mimeMap[type] == mime) return type;
+		}
 	}
 
 })(jwplayer.utils);
@@ -1169,7 +1188,7 @@ jwplayer.source = document.createElement("source");/**
  */
 (function(playlist) {
 	var _item = playlist.item = function(config) {
-		_playlistitem = jwplayer.utils.extend({}, _item.defaults, config);
+		var _playlistitem = jwplayer.utils.extend({}, _item.defaults, config);
 		
 /*
 		if (_playlistitem.type) {
@@ -1178,9 +1197,15 @@ jwplayer.source = document.createElement("source");/**
 		}
 */		
 		if (_playlistitem.sources.length == 0) {
-			_playlistitem.sources[0] = new playlist.source(_playlistitem);
+			_playlistitem.sources = [new playlist.source(_playlistitem)];
+		}
+		
+		/** Each source should be a named object **/
+		for (var i=0; i < _playlistitem.sources.length; i++) {
+			_playlistitem.sources[i] = new playlist.source(_playlistitem.sources[i]);
 		}
 /*		
+ * 
 		if (!_playlistitem.provider) {
 			_playlistitem.provider = _getProvider(_playlistitem.levels[0]);
 		} else {
@@ -1226,6 +1251,9 @@ jwplayer.source = document.createElement("source");/**
 				// Actively move from config to source
 				delete config[property];
 			}
+		}
+		if (_source.type && _source.type.indexOf("/") > 0) {
+			_source.type = utils.extensionmap.mimeType(_source.type);
 		}
 		return _source;
 	};

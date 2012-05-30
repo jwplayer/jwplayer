@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2218';
+	jwplayer.html5.version = '6.0.2219';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -38,10 +38,12 @@
 		}
 	}
 	
-	
-	utils.sortSources = function(sources) {
-		var sorted = {};
+
+	/** Filters the sources by taking the first playable type and eliminating sources of a different type **/
+	utils.filterSources = function(sources) {
+		var selectedType, newSources;
 		if (sources) {
+			newSources = [];
 			for (var i=0; i<sources.length; i++) {
 				var type = sources[i].type,
 					file = sources[i].file;
@@ -49,11 +51,24 @@
 					type = utils.extension(file);
 					sources[i].type = type;
 				}
-				if (!sorted[type]) sorted[type] = [];
-				sorted[type].push(sources[i]);
+
+				if (_canPlayHTML5(type)) {
+					if (!selectedType) {
+						selectedType = type;
+					}
+					if (type == selectedType) {
+						newSources.push(sources[i]);
+					}
+				}
 			}
 		}
-		return sorted;
+		return newSources;
+	}
+	
+	/** Returns true if the type is playable in HTML5 **/
+	function _canPlayHTML5(type) {
+		var mappedType = utils.extensionmap[type];
+		return (!!mappedType && !!mappedType.html5 && jwplayer.vid.canPlayType(mappedType.html5));
 	}
 	
 	/** Loads an XML file into a DOM object * */
@@ -2705,9 +2720,17 @@
 		
 		_model.setPlaylist = function(playlist) {
 			_model.playlist = playlist;
+			_filterPlaylist(playlist);
 			_model.sendEvent(events.JWPLAYER_PLAYLIST_LOADED, {
 				playlist: playlist
 			});
+		}
+
+		/** Go through the playlist and choose a single playable type to play; remove sources of a different type **/
+		function _filterPlaylist(playlist) {
+			for (var i=0; i < playlist.length; i++) {
+				playlist[i].sources = utils.filterSources(playlist[i].sources);
+			}
 		}
 		
 		_model.setItem = function(index) {
@@ -3370,14 +3393,21 @@
 				loader.load(_model.config.playlist);
 				break;
 			case "array":
-				_model.playlist = new playlist(_model.config.playlist);
-				_taskComplete(LOAD_PLAYLIST);
+				_completePlaylist(new playlist(_model.config.playlist));
 			}
 		}
 		
 		function _playlistLoaded(evt) {
-			_model.setPlaylist(evt.playlist);
-			_taskComplete(LOAD_PLAYLIST);
+			_completePlaylist(evt.playlist);
+		}
+		
+		function _completePlaylist(playlist) {
+			_model.setPlaylist(playlist);
+			if (_model.playlist[0].sources.length == 0) {
+				_error("Error loading playlist: No playable sources found");
+			} else {
+				_taskComplete(LOAD_PLAYLIST);
+			}
 		}
 
 		function _playlistError(evt) {
@@ -3760,8 +3790,6 @@
 		_eventDispatcher = new events.eventdispatcher(),
 		// Whether or not we're listening to video tag events
 		_attached = false,
-		// Sources, sorted by type
-		_sourcesByType = {},
 		// Quality levels
 		_levels,
 		// Current quality level index
@@ -3860,21 +3888,6 @@
 			_setState(states.IDLE);
 		}
 
-		function _canPlay(type) {
-			var mappedType = _extensions[type];
-			return (!!mappedType && !!mappedType.html5 && _videotag.canPlayType(mappedType.html5));
-		}
-		
-		/** Selects the appropriate type out of all available sources, and picks the first source of that type **/
-		function _selectType() {
-			for (var type in _sourcesByType) {
-				if (_canPlay(type)) {
-					return type;
-				}
-			}
-			return null;
-		}
-		
 		function _sendLevels(levels) {
 			if (utils.typeOf(levels)=="array" && levels.length > 0) {
 				var publicLevels = [];
@@ -3908,16 +3921,8 @@
 			_duration = item.duration ? item.duration : -1;
 			_position = 0;
 			
-			_sourcesByType = utils.sortSources(_item.sources);
-			_type = _selectType();
-
-			if (!_type) {
-				utils.log("Could not find a file to play.");
-				return;
-			}
-			
 			if (_currentQuality < 0) _currentQuality = 0;
-			_levels = _sourcesByType[_type];
+			_levels = _item.sources;
 			_sendLevels(_levels);
 			
 			_source = _levels[_currentQuality];
@@ -4078,7 +4083,9 @@
 		}
 		
 		_this.audioMode = function() {
-			return (_type && _extensions[_type].html5 && _extensions[_type].html5.indexOf("audio") == 0);
+			if (!_levels) { return false; }
+			var type = _levels[0].type;
+			return (type == "aac" || type == "mp3" || type == "vorbis");
 		}
 
 		_this.setCurrentQuality = function(quality) {

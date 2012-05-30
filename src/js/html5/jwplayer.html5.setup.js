@@ -110,14 +110,21 @@
 				loader.load(_model.config.playlist);
 				break;
 			case "array":
-				_model.playlist = new playlist(_model.config.playlist);
-				_taskComplete(LOAD_PLAYLIST);
+				_completePlaylist(new playlist(_model.config.playlist));
 			}
 		}
 		
 		function _playlistLoaded(evt) {
-			_model.setPlaylist(evt.playlist);
-			_taskComplete(LOAD_PLAYLIST);
+			_completePlaylist(evt.playlist);
+		}
+		
+		function _completePlaylist(playlist) {
+			_model.setPlaylist(playlist);
+			if (_model.playlist[0].sources.length == 0) {
+				_error("Error loading playlist: No playable sources found");
+			} else {
+				_taskComplete(LOAD_PLAYLIST);
+			}
 		}
 
 		function _playlistError(evt) {

@@ -117,9 +117,17 @@
 		
 		_model.setPlaylist = function(playlist) {
 			_model.playlist = playlist;
+			_filterPlaylist(playlist);
 			_model.sendEvent(events.JWPLAYER_PLAYLIST_LOADED, {
 				playlist: playlist
 			});
+		}
+
+		/** Go through the playlist and choose a single playable type to play; remove sources of a different type **/
+		function _filterPlaylist(playlist) {
+			for (var i=0; i < playlist.length; i++) {
+				playlist[i].sources = utils.filterSources(playlist[i].sources);
+			}
 		}
 		
 		_model.setItem = function(index) {

@@ -25,6 +25,9 @@
 				delete config[property];
 			}
 		}
+		if (_source.type && _source.type.indexOf("/") > 0) {
+			_source.type = utils.extensionmap.mimeType(_source.type);
+		}
 		return _source;
 	};
 	

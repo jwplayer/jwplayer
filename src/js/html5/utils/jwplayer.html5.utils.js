@@ -29,10 +29,12 @@
 		}
 	}
 	
-	
-	utils.sortSources = function(sources) {
-		var sorted = {};
+
+	/** Filters the sources by taking the first playable type and eliminating sources of a different type **/
+	utils.filterSources = function(sources) {
+		var selectedType, newSources;
 		if (sources) {
+			newSources = [];
 			for (var i=0; i<sources.length; i++) {
 				var type = sources[i].type,
 					file = sources[i].file;
@@ -40,11 +42,24 @@
 					type = utils.extension(file);
 					sources[i].type = type;
 				}
-				if (!sorted[type]) sorted[type] = [];
-				sorted[type].push(sources[i]);
+
+				if (_canPlayHTML5(type)) {
+					if (!selectedType) {
+						selectedType = type;
+					}
+					if (type == selectedType) {
+						newSources.push(sources[i]);
+					}
+				}
 			}
 		}
-		return sorted;
+		return newSources;
+	}
+	
+	/** Returns true if the type is playable in HTML5 **/
+	function _canPlayHTML5(type) {
+		var mappedType = utils.extensionmap[type];
+		return (!!mappedType && !!mappedType.html5 && jwplayer.vid.canPlayType(mappedType.html5));
 	}
 	
 	/** Loads an XML file into a DOM object * */

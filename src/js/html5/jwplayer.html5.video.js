@@ -76,8 +76,6 @@
 		_eventDispatcher = new events.eventdispatcher(),
 		// Whether or not we're listening to video tag events
 		_attached = false,
-		// Sources, sorted by type
-		_sourcesByType = {},
 		// Quality levels
 		_levels,
 		// Current quality level index
@@ -176,21 +174,6 @@
 			_setState(states.IDLE);
 		}
 
-		function _canPlay(type) {
-			var mappedType = _extensions[type];
-			return (!!mappedType && !!mappedType.html5 && _videotag.canPlayType(mappedType.html5));
-		}
-		
-		/** Selects the appropriate type out of all available sources, and picks the first source of that type **/
-		function _selectType() {
-			for (var type in _sourcesByType) {
-				if (_canPlay(type)) {
-					return type;
-				}
-			}
-			return null;
-		}
-		
 		function _sendLevels(levels) {
 			if (utils.typeOf(levels)=="array" && levels.length > 0) {
 				var publicLevels = [];
@@ -224,16 +207,8 @@
 			_duration = item.duration ? item.duration : -1;
 			_position = 0;
 			
-			_sourcesByType = utils.sortSources(_item.sources);
-			_type = _selectType();
-
-			if (!_type) {
-				utils.log("Could not find a file to play.");
-				return;
-			}
-			
 			if (_currentQuality < 0) _currentQuality = 0;
-			_levels = _sourcesByType[_type];
+			_levels = _item.sources;
 			_sendLevels(_levels);
 			
 			_source = _levels[_currentQuality];
@@ -394,7 +369,9 @@
 		}
 		
 		_this.audioMode = function() {
-			return (_type && _extensions[_type].html5 && _extensions[_type].html5.indexOf("audio") == 0);
+			if (!_levels) { return false; }
+			var type = _levels[0].type;
+			return (type == "aac" || type == "mp3" || type == "vorbis");
 		}
 
 		_this.setCurrentQuality = function(quality) {
