@@ -7,6 +7,8 @@
 	var embed = jwplayer.embed,
 		utils = jwplayer.utils,
 		
+		DOCUMENT = document,
+		
 		JW_CSS_CURSOR = "pointer",
 		JW_CSS_NONE = "none",
 		JW_CSS_BLOCK = "block",
@@ -58,7 +60,7 @@
 				_buildElements();
 				_styleElements();
 			} else if (youtube) {
-				alert("Youtube goes here: " + youtube);
+				_embedYouTube(youtube);
 			} else {
 				_errorCallback();
 			}
@@ -77,7 +79,7 @@
 		}
 		
 		function _css(selector, style) {
-			var elements = document.querySelectorAll(selector);
+			var elements = DOCUMENT.querySelectorAll(selector);
 			for (var i=0; i<elements.length; i++) {
 				for (var prop in style) {
 					elements[i].style[prop] = style[prop];
@@ -121,13 +123,29 @@
 		}
 		
 		function _createElement(tag, className, parent) {
-			var _element = document.createElement(tag);
-			_element.className = "jwdownload"+className;
+			var _element = DOCUMENT.createElement(tag);
+			if (className) _element.className = "jwdownload"+className;
 			if (parent) {
 				parent.appendChild(_element);
 			}
 			return _element;
 		};
+		
+		function _embedYouTube(path) {
+			var embed = _createElement("embed", "", _container);
+
+			/** Left as a dense regular expression for brevity.  Matches the following YouTube URL types:
+			 * http://www.youtube.com/watch?v=ylLzyHk54Z0
+			 * http://www.youtube.com/watch#!v=ylLzyHk54Z0
+			 * http://www.youtube.com/v/ylLzyHk54Z0
+			 * http://youtu.be/ylLzyHk54Z0
+			 * ylLzyHk54Z0
+			 **/
+			embed.src = "http://www.youtube.com/v/" + (/v[=\/](\w*)|\/(\w+)$|^(\w+)$/i).exec(path).slice(1).join('');
+			embed.type = "application/x-shockwave-flash";
+			embed.width = _width;
+			embed.height = _height;
+		}
 		
 		_embed();
 	};
