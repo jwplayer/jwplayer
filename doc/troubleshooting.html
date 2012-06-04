@@ -1,0 +1,169 @@
+<!doctype html>
+<html>
+<head>
+<title>Troubleshooting Your Setup</title>
+<style>
+    body { padding: 50px 100px; width: 700px; font: 13px/20px Arial; background: #FFF; }
+    a, h1, h2 { color: #369; }
+    h1 { font-size: 32px; }
+    h2 { margin-top: 50px; }
+    h3 { margin-top: 25px; }
+    img { display: block; margin: auto 10px; }
+    pre { font-size: 12px; background: #E5F3C8; padding:5px 10px; border: 1px solid #D3EAA4; }
+    dt { padding-left: 20px; font-weight: bold; }
+    dd { color: #333; font-style: italic; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+    tr { border-bottom: 1px solid #CCC; } 
+    tr:nth-child(even) { background: #EEE; }
+    td,th { padding: 5px; font-size: 12px; text-align: left; }
+
+</style>
+</head><body>
+
+<h1>Troubleshooting Your Setup</h1>
+
+<p>This troubleshooting guide is designed to help you resolve problems that we frequently see. Read through this document to find your issue and then follow the proposed solution.</p>
+
+<p>If, after reading through this document, you're still unable to solve your issue, please <a href="http://www.longtailvideo.com/support/forums">visit our support forum</a>. Include an example URL with your forum post, so we can immediately take a look at the issue.</p>
+
+
+<h2>Before You Start...</h2>
+
+<p>Before looking into specific errors, we recommend you try the following simple steps, which may instantly fix your issue:</p>
+
+<ol>
+<li>Reload the web page. If this doesn't resolve your issue, move on to step 2.</li>
+<li>Clear your browser's <em>cache</em>, then reload the web page. Didn't work? Proceed to step 3.</li>
+<li>Clear your browser's <em>cache</em> and <em>cookies</em>, restart your browser (or reboot your device), then navigate back to the page you were on.</li>
+</ol>
+
+<p>If none of these actions fix your problem, identify the type of issue and read through the appropriate section below. We have sections on:<p>
+
+<ol>
+<li>The player not showing on the page at all.</li>
+<li>The player displaying a (bare bone) setup error on page load.</li>
+<li>The player loading, but displaying a media error when starting playback.</li>
+<li>The media playing incorrectly. For example, the audio may sound weird, the video may look stretched or seeking may not work.</li>
+</ol>
+
+<p>More advanced developers should also take a look at their browser console. The browser may display error messages (e.g. around files not found or CORS errors) that are helpful in tracking down the cause.</p>
+
+<h2>1: Player Not Showing At All</h2>
+
+<p>If your player does not appear at all, please check if you:</p>
+
+<ul>
+<li>Included the &lt;script&gt; tag for loading <strong>jwplayer.js</strong> in the head of your page.</li>
+<li>Included a container &lt;div&gt; with an <strong>id</strong> attribute to load the player into.</li>
+<li>Referred to the correct &lt;div&gt; <strong>id</strong> in the <em>jwplayer(id).setup()</em> call.</li>
+</ul>
+
+<p>See <a href="embedding.html">Embedding the Player</a> for an explanation of the correct embed syntax. Note this is also the <strong>only</strong> embed syntax JW Player supports. Setups using a &lt;video&gt;, an &lt;embed&gt; tag or SWFObject will not work with JW Player 6.</p>
+
+<p>Also ensure your webpage itself is correctly formatted and encoded. If there are errors in your page HTML, CSS or JavaScript code, rendering of the page may have broken off before JW Player has had the chance to setup itself. You can rule out page errors by first testing out your player setup in a very simple HTML page that only contains the player setup snippets.</p>
+
+<h2>2: Player Setup Error</h2>
+
+<p>The player may be showing on your page, but only display a setup error like this one:</p>
+
+<p><img src="assets/troubleshooting-setup-error.jpg" alt="JW Player Setup Error Screenshot" /></p>
+
+<p>Luckily, the setup error already pinpoints the area in which the issue is present. Here is a list of all possible setup errors:</p>
+
+<dl>
+<dt>Error loading player: Flash version must be 10 or greater</dt>
+<dd>This means the version of the Flash plugin on your computer is too outdated for JW Player to use. Please visit <a href="http://get.adobe.com/flashplayer/">the Adobe site</a> to update your Flash player. Note this error will not occur if you do not have Flash at all (e.g. on an iPad).</dd>
+<dt>Error loading player: No media sources found</dt>
+<dd>This means you either did not specify a media source to play, or your setup block is incorrect. Please see <a href="embedding.html">Embedding the Player</a> for info on the <strong>file</strong> and <strong>playlist</strong> configuration options. You may also have provided a file that's not supported by JW Player (like <strong>.wmv</strong> video). See <a href="media.html">Supported Media Formats</a> for the list of formats the player does support.</dd>
+</dl>
+
+<dl>
+<dt>Error loading skin: File not found</dt>
+<dd>This means you have setup a <strong>skin</strong> with your player, but either the XML file (in HTML5) or the ZIP file (in Flash) of your skin is not present at the URL you set. See <a href="skins.html">Using Skins</a> for more info.</dd>
+<dt>Error loading skin: Crossdomain loading denied</dt>
+<dd>This means the Flash player fails loading your skin from another domain than the one you embedded the player on. It must be explicitly allowed for Flash by setting a <strong>crossdomain XML</strong>. See <a href="crossdomain.xml">Crossdomain File Loading</a> for more info.</dd>
+<dt>Error loading skin: Error loading file</dt>
+<dd>This likely means the HTML5 player fails loading your skin from another domain than the one you embedded the player on. It must be explicitly allowed for HTML5 by setting a <strong>CORS header</strong>. See <a href="crossdomain.xml">Crossdomain File Loading</a> for more info.</dd>
+<dt>Error loading skin: Invalid file type</dt>
+<dd>JW Player 6 only supports loading PNG/XML skins. In HTML5, we expect a skin with <strong>.xml</strong> extension, in Flash we expect a skin with <strong>.zip</strong> extension. SWF skins (supported in JW4, JW5) are not supported anymore. See <a href="skins.html">Using Skins</a> for more info.</dd>
+<dt>Error loading skin: Skin formatting error</dt>
+<dd>This means your skin is broken, likely due to an error in the XML file or due to an error in how the skin was zipped in the ZIP file. See <a href="skinning.html">Building Skins</a> for more info.</dd>
+</dl>
+
+<dl>
+<dt>Error loading playlist: File not found</dt>
+<dd>This means you have setup an RSS feed using the <strong>playlist</strong> option of the player, but the RSS feed was not found at the URL you set. See <a href="feeds.html">Loading RSS Feeds</a> for more info.</dd>
+<dt>Error loading playlist: Crossdomain loading denied</dt>
+<dd>This means the Flash player fails loading your RSS feed from another domain than the one you embedded the player on. It must be explicitly allowed for Flash by setting a <strong>crossdomain XML</strong>. See <a href="crossdomain.xml">Crossdomain File Loading</a> for more info.</dd>
+<dt>Error loading playlist: Error loading file</dt>
+<dd>This likely means the HTML5 player fails loading your RSS feed from another domain than the one you embedded the player on. It must be explicitly allowed for HTML5 by setting a <strong>CORS header</strong>. See <a href="crossdomain.xml">Crossdomain File Loading</a> for more info.</dd>
+<dt>Error loading playlist: Not a valid RSS feed</dt>
+<dd>JW Player 6 only supports feeds in the <a href="feeds.html">Media RSS format</a>. This error means you either load a feed in another format (e.g. XSPF), or there are XML formatting errors in your RSS feed (e.g. the <em>xmlns:media</em> declaration is forgotten).</dd>
+<dt>Error loading playlist: No playable sources found</dt>
+<dd>Your playlist was loaded and parsed correctly, but the player could not find any acceptable media sources in your feed. This probably means your playlist did not contain media in one of the 9 <a href="media.html">Supported Media Formats</a>.</dd>
+</dl>
+
+<dl>
+<dt>Error drawing fallback: No downloadable media found<dt>
+<dd>This means the player was unable to play your media in Flash or HTML5, but on top of that also unable to offer your media as a simple download to the user. This happens e.g. when you setup solely an RTMP stream and then browse to your page on an iPad. See <a href="browsers.html">Browser &amp; Device Support</a> for more info.</dd>
+</dl>
+
+
+<h2>3: Media Loading Error</h2>
+
+<p>A media error appears after the player is successfully setup, but then fails to play your media. Here is an example:</p>
+
+
+<p><img src="assets/troubleshooting-media-error.jpg" alt="JW Player Media Error Screenshot" /></p>
+
+<p>And here are descriptions of all possible media errors:</p>
+
+<dl>
+<dt>Error loading media: File not found</dt>
+<dd>This means the URL to your audio/video file or RTMP/HLS manifest could not be found. Please make sure the file is available at the location you provided (did you set relative paths correctly?) and available for loading in the player (are the access rights and mimetype header set correctly?).</dd>
+<dt>Error loading media: File could not be played</dt>
+<dd>This usually means you are trying to load a file in a nonsupported format in JW Player. A common case is the loading of a <strong>.wmv</strong> video, or a <strong>.mov</strong> video that doesn't use H264 video and AAC audio. See <a href="media.html">Supported Media Formats</a> for the list of formats the player supports.</dd>
+</dl>
+
+<dl>
+<dt>Error loading YouTube: Video not found</dt>
+<dd>This means the player did not find the YouTube video you provided. It occurs when a video has been removed (for any reason), or it has been marked as private. You may also have provided an incorrect YouTube URL. See <a href="media.html">Supported Media Formats</a> for the list of YouTube URLs we support.</dd>
+<dt>Error loading YouTube: Embedding not allowed</dt>
+<dd>This means the original owner of this video has marked the video to not allow playback in embedded players. This is usually for reasons of branding or advertising.</dd>
+<dt>Error loading YouTube: API connection error</dt>
+<dd>This error occurs when the player, for some reason, is unable to connect to the YouTube API. It sometimes happens when YouTube is doing maintenance on its API, or the connection is interrupted.</dd>
+</dl>
+
+<dl>
+<dt>Error loading stream: File is not a valid manifest</dt>
+<dd>This means that your SMIL manifest (for RTMP streaming) or M3U8 manifest (for HLS streaming) is not correctly formatted. See <a href="rtmp.html">Using RTMP Streaming</a> or <a href="hls.html">Using HLS Streaming</a> for examples of correctly formatted manifest files.</dd>
+<dt>Error loading stream: Could not connect to RTMP server</dt>
+<dd>This means that your RTMP server cannot be reached by the player (anymore). Ensure you have setup the correct <strong>streamer</strong> in your configuration options or <strong>base</strong> in your SMIL manifest. Next, ensure your server is actually up and running, and accessible from your computer. The latter is not always the case, since many proxies and firewalls block RTMP traffic. See <a href="rtmp.html">Using RTMP Streaming</a> for more info.</dd>
+<dt>Error loading stream: Flash Player 10.1 is required</dt>
+<dd>In order to play Apple HLS streams (.m3u8), your Flash Player version must be at least 10.1. Please visit <a href="http://get.adobe.com/flashplayer/">the Adobe site</a> to update your Flash player. Note that <a href="http://riastats.com/">a small percentage</a> of desktop browsers still run Flash 10.0 or lower.</dd>
+</dl>
+
+
+
+<h2>4: Media Not Playing Correctly</h2>
+
+<p>Both the player and the media may load fine, but a playback issue may be present. Unfortunately, JW Player cannot detect such issues automatically. Here are the most common issues we encounter:</p>
+
+<dl>
+<dt>Video stutters frequently</dt>
+<dd>It looks like the bitrate of your video is too high for your connection. If your connection is not terrible (i.e. anything above some 500kbps), you should consider re-encoding your videos into a format that is more web friendly. See <a href="encoding.html">MP4 Video Encoding</a> for a complete overview.</dd>
+<dt>Video is stretched or has black bars</dt>
+<dd>Your video dimensions may not match your player dimensions, or the video may contain incorrect metadata. The first one is easily solved by setting the <strong>width</strong> and <strong>height</strong> of your player to match your video aspect ratio. The second one can be fixed by setting the <strong>stretching</strong> option to correct for the wrong metadata. See <a href="embedding.html">Embedding the Player</a> for more info on the <strong>stretching</strong> option.</dd>
+<dt>MP3 playback is too fast or too slow</dt>
+<dd>Your MP3 file likely contains variable bitrate encoding or unsupported sample frequencies (e.g. 48Khz). Please stick to constant bitrate encoding and 11, 22, 33 or 44 kHz. If you need to convert your MP3, check out our free <a href="http://www.longtailvideo.com/bits-on-the-run/">Bits on the Run</a> service.</dd>
+<dt>FLV video seeking is not working</dt>
+<dd>Most likely, this occurs when your file doesn't have metadata or the Flash Player doesn't understand your metadata. You can fix this by running your FLV files through the <a href="http://www.buraks.com/flvmdi/">FLV MetaData Injector</a>.</dd>
+<dt>MP4 video seeking is not working</dt>
+<dd>If your MP4 files cannot be seeked before they are completely downloaded, you will have to move your MP4 metadata from the end to the beginning of your MP4 file. Use <a href="http://renaun.com/blog/2010/06/qtindexswapper-2/">this little application</a> to do that.</dd>
+<dt>Apple HLS streams show garbage or black video for a few seconds</dt>
+<dd>The issue here is that JW Player tries to switch from one quality to another, but TS segments do not start with a keyframe. Eventually, the stream will play smooth again, but in order to not have this issue at all your segments should always start with a keyframe. See <a href="">Encoding HLS Streams</a> for more info.</dd>
+</dl>
+
+
+</body>
+</html>

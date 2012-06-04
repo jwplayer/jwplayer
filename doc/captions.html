@@ -1,0 +1,223 @@
+<!doctype html>
+<html>
+<head>
+<title>Adding Closed Captions</title>
+<style>
+    body { padding: 50px 100px; width: 700px; font: 13px/20px Arial; background: #FFF; }
+    a, h1, h2 { color: #369; }
+    h1 { font-size: 32px; }
+    h2 { margin-top: 50px; }
+    h3 { margin-top: 25px; }
+    img { display: block; margin: 0 10px; }
+    pre { font-size: 12px; background: #E5F3C8; padding:5px 10px; border: 1px solid #D3EAA4; }
+    dt { padding-left: 20px; font-weight: bold; }
+    dd { color: #333; font-style: italic; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+    tr { border-bottom: 1px solid #CCC; } 
+    tr:nth-child(even) { background: #EEE; }
+    td,th { padding: 5px; font-size: 12px; text-align: left; }
+
+</style>
+</head><body>
+
+<h1>Adding Closed Captions</h1>
+
+<p>JW Player supports the display of closed captions or subtitles at the bottom of a video. Captions can be shown or hidden with a toggle or, when presenting multiple languages, a popup menu. This guide explains how to add captions to your player embeds.</p>
+
+
+
+<h2>Supported Formats</h2>
+
+<p>JW Player supports three captioning formats:</p>
+
+<ul>
+<li>External <strong>SRT</strong> (<a href="http://en.wikipedia.org/wiki/SubRip">SubRip</a>) text files. It is a widely used and easy to understand plain-text captioning format. It is also the foundation for the future <a href="http://dev.w3.org/html5/webvtt/">WebVTT</a> HTML5 text track format.</li>
+<li>External <strong>DFXP</strong> (<a href="http://www.w3.org/TR/ttaf1-dfxp/">Distribution Format Exchange Profile</a>) XML files. It is a more elaborate XML format that has gained traction for media playback in Flash or Silverlight.</li>
+<li>Embedded <strong>TX3G</strong> (<a href="http://en.wikipedia.org/wiki/MPEG-4_Part_17">3GPP Timed Text</a>) text tracks in MP4 files. It is a format in which the captions are stored inside MP4 video files, instead of in external SRT or XML files.</li>
+</ul>
+
+<p>Unfortunately, no captioning format is supported on all desktop browsers and mobile devices. Here is the current breakdown:</p>
+
+<table><tr>
+    <th></th><th>SRT</th><th>DFXP</th><th>TX3G</th>
+</tr><tr>
+    <th>Desktops, HTML5</th><td>yes</td><td>-</td><td>-</td>
+</tr><tr>
+    <th>Desktops, Flash</th><td>yes</td><td>yes</td><td>yes</td>
+</tr><tr>
+    <th>iOS</th><td>-</td><td>-</td><td>yes</td>
+</tr><tr>
+    <th>Android</th><td>-</td><td>-</td><td>-</td>
+</tr></table>
+
+<p>SRT and DFXP do not work on mobile devices, since it is not possible for JW Player to render the captions on top of the video during (full-screen) playback. Support for <a href="http://www.longtailvideo.com/html5/#accessibility">HTML5 Text Tracks</a> on iOS and Android will fix this in the (hopefully near-term) future.</p>
+
+<p>TX3G tracks do render on iOS (still not on Android), but on desktops they only display in the Flash rendering mode. TX3G tracks are also hard to edit, since they require tools (like <a href="http://handbrake.fr">Handbrake</a>) to <em>mux</em> your MP4 files. SRT and DFXP files can be authored with any text editor.</p>
+
+<h3>Recommending SRT</h3>
+
+<p>Given the choice, we recommend using the SRT format. It is easy to author and easy to convert to WebVTT / HTML5 text tracks in the future. Here is a short example file with three entries:</p>
+
+<pre>
+1
+00:00:08,000 --&gt; 00:00:10,000
+Nothing is going on.
+
+2
+00:00:10,500 --&gt; 00:00:12,500
+Violet, please!
+- I am not your babe!
+
+3
+00:00:17,000 --&gt; 00:00:20,000
+You stupid cow,
+look what you gone and done now, ay.
+</pre>
+
+<p>Note your files should be saved using <strong>UTF8</strong> encoding in order to correctly display special characters (accents, but also e.g. Arab, Chinese, Russian). If these files are not stored and served using UTF8 encoding, rendering issues will almost certainly occur.</p>
+
+
+
+<h2>Embedding Captions</h2>
+
+<p>TX3G captions are automatically picked up by the player and therefore don't need any embed configuration. SRT and DFXP captions can be embedded in a player by adding a <strong>captions</strong> object inside the <strong>playlist</strong> object. Every captions entry must contain two properties:</p>
+
+<dl>
+<dt>file</dt>
+<dd>URL to the SRT or DFXP file to display (e.g. <strong>/assets/myCaptions.srt</strong>). Note these captions are subject to <a href="crossdomain.html">Crossdomain Security Restrictions</a>, in both Flash and HTML5 mode.</dd>
+<dt>label</dt>
+<dd>Human-readable name of the captions track (e.g. <strong>Closed Captions</strong>). Is displayed in the captions selection menu if more than one track is provided.</dd>
+</dl>
+
+<p>Here is a basic example setup, using one video and three SRT files:</p>
+
+<pre>
+jwplayer("myElement").setup({
+    height: 360,
+    playlist: [{
+        captions: [
+            { file: "/assets/captions-en.srt", label: "English" },
+            { file: "/assets/captions-fr.srt", label: "French" },
+            { file: "/assets/captions-es.srt", label: "Spanish" }
+        ],
+        file: "/assets/sintel.mp4",
+        image: "/assets/sintel.jpg"
+    }],
+    width: 640
+});
+</pre>
+
+<p>See <a href="playlists.html">Working with Playlist</a> for more info on embedding playlists.</p>
+
+<h3>Captions in Feeds</h3>
+
+<p>When <a href="feeds.html">loading RSS Feeds</a> into a player, captions can be included using the <strong>&lt;media:subtitle&gt;</strong> element of the <a href="http://video.search.yahoo.com/mrss">Media RSS specification</a>. Here is an example feed, containing the same video and three captions tracks as above:</p>
+
+<pre>
+&lt;rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/" &gt; 
+  &lt;channel&gt; 
+    &lt;title&gt;Example RSS Playlist&lt;/title&gt; 
+    &lt;item&gt; 
+      &lt;title&gt;Sintel&lt;/title&gt;
+      &lt;description&gt;Sintel is a fantasy computer generated short movie. It's the third 
+         release from the Blender Open Movie Project.&lt;/description&gt;
+      &lt;media:content url="http://example.com/assets/sintel.mp4" /&gt;
+      &lt;media:subtitle url="http://example.com/assets/sintel-en.srt" lang="en" /&gt;
+      &lt;media:subtitle url="http://example.com/assets/sintel-fr.srt" lang="fr" /&gt;
+      &lt;media:subtitle url="http://example.com/assets/sintel-es.srt" lang="es" /&gt;
+      &lt;media:thumbnail url="http://example.com/assets/sintel.jpg" /&gt;
+    &lt;/item&gt;
+  &lt;/channel&gt;
+&lt;/rss&gt;
+</pre>
+
+<p>Note the <strong>lang</strong> option is used to provide an <a href="http://www.i18nguy.com/unicode/language-identifiers.html">RFC 3066 language identifier</a>. JW Player will automatically convert this into a label for <a href="#codes">a few languages</a>.</p>
+
+
+
+<h2>Styling the Captions</h2>
+
+<p>It is possible to change the styling of the captions using the <strong>captions</strong> options block of player setups. The following style properties can be set:</p>
+
+<dl>
+<dt>background</dt>
+<dd>Set this option <strong>true</strong> to draw a black box around the captions. It makes the captions more readable, but also sets them more apart from the video.</dd>
+<dt>color</dt>
+<dd>Can be any hexadecimal color value, the default is <strong>FFFFFF</strong>.</dd>
+<dt>fontFamily</dt>
+<dd>Can be any font installed <a href="http://www.fonttester.com/web_safe_fonts.html">on a user's computer</a>. The default is <strong>sans-serif</strong>.</dd>
+<dt>fontSize</dt>
+<dd>Can be any size in pixels, the default being <strong>15</strong>. Note the captions are still scaled to cover the video, with the actual pixel size achieved at a video width of 400px.</dd>
+<dt>fontStyle</dt>
+<dd>Can be set to <strong>italic</strong> for making the text italic.</dd>
+<dt>fontWeight</dt>
+<dd>Can be set to <strong>bold</strong> for boldening the text.</dd>
+</dl>
+
+<p>Here is an example setup where the captions are set in 20px red with a background:</p>
+
+<pre>
+jwplayer("myElement").setup({
+    captions: {
+        background: true,
+        color: 'cc0000',
+        fontSize: '20'
+    },
+    height: 360,
+    playlist: [{
+        captions: [
+            { file: "/assets/captions.srt", label: "Closed Captions" },
+        ],
+        file: "/assets/sintel.mp4",
+        image: "/assets/sintel.jpg"
+    }],
+    width: 640
+});
+</pre>
+
+<p>Note these styling options do <strong>not</strong> work for TX3G captions on the iPad/iPhone, since these devices offer no control over rendering of the captions.</p>
+
+
+
+<h2>Language Codes<a name="codes"></a></h2>
+
+<p>JW Player supports automatic conversion of ISO 639 language codes to a human-readable label for a number of popular languages. Here is an overview, listing both two-character codes (as used in RSS) and three-character codes (as used in TX3G):</p>
+
+<table><tr>
+    <th>Language (label)</th><th>ISO 639 (mRSS)</th><th>ISO 639-2 (TX3G)</th>
+</tr><tr>
+    <td>Arabic</td><td>ar</td><td>ara</td>
+</tr><tr>
+    <td>Chinese</td><td>zh</td><td>chi, zho</td>
+</tr><tr>
+    <td>Dutch</td><td>nl</td><td>dut, nld</td>
+</tr><tr>
+    <td>English</td><td>en</td><td>eng</td>
+</tr><tr>
+    <td>French</td><td>fr</td><td>fra, fre</td>
+</tr><tr>
+    <td>German</td><td>de</td><td>deu, ger</td>
+</tr><tr>
+    <td>Hebrew</td><td>he</td><td>heb</td>
+</tr><tr>
+    <td>Hindi</td><td>hi</td><td>hin</td>
+</tr><tr>
+    <td>Italian</td><td>it</td><td>ita</td>
+</tr><tr>
+    <td>Japanese</td><td>ja</td><td>jpn</td>
+</tr><tr>
+    <td>Korean</td><td>ko</td><td>kor</td>
+</tr><tr>
+    <td>Persian</td><td>fa</td><td>per, fas</td>
+</tr><tr>
+    <td>Portuguese</td><td>pt</td><td>por</td>
+</tr><tr>
+    <td>Russian</td><td>ru</td><td>rus</td>
+</tr><tr>
+    <td>Spanish</td><td>es</td><td>spa</td>
+</tr></table>
+
+<p>If a language code is not recognized by the player, the unmodified code is used as a label.</p>
+
+</body>
+</html>

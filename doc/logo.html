@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+<head>
+<title>Displaying a Logo</title>
+<style>
+    body { padding: 50px 100px; width: 700px; font: 13px/20px Arial; background: #FFF; }
+    a, h1, h2 { color: #369; }
+    h1 { font-size: 32px; }
+    h2 { margin-top: 50px; }
+    h3 { margin-top: 25px; }
+    img { display: block; margin: 0 10px; }
+    pre { font-size: 12px; background: #E5F3C8; padding:5px 10px; border: 1px solid #D3EAA4; }
+    dt { padding-left: 20px; font-weight: bold; }
+    dd { color: #333; font-style: italic; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+    tr { border-bottom: 1px solid #CCC; } 
+    tr:nth-child(even) { background: #EEE; }
+    td,th { padding: 5px; font-size: 12px; text-align: left; }
+
+</style>
+</head><body>
+
+<h1>Displaying a Logo</h1>
+
+<p>The Free version of JW Player contains a small logo in the top right corner of the display. In the Pro version, this logo is gone. Instead, publishers are able to set their own logo, e.g. to add some branding or to implement a Call-to-Action. This guide explains how to do so.</p>
+
+
+<h2>Configuration Options</h2>
+
+<p>A dedicated options block, called <strong>logo</strong>, is available for configuring the logo. It has the following properties:</p>
+
+<dl>
+<dt>file</dt>
+<dd>Location of an external JPG, PNG or GIF image to be used as watermark (e.g. <strong>/assets/logo.png</strong>). We recommend using 24 bit PNG images with transparency, since they blend nicely with the video.<dd>
+<dt>hide</dt>
+<dd>By default (<strong>true</strong>), the logo will automatically show and hide along with the other player controls. When this option is set <strong>false</strong>, the logo will stay visible all the time.</dd>
+<dt>link</dt>
+<dd>HTTP URL to jump to when the watermark image is clicked (e.g. <strong>http://example.com/</strong>). If it is not set, a click on the watermark does nothing in particular.</dd>
+<dt>margin</dt>
+<dd>The distance of the logo from the edges of the display. The default is <strong>8</strong> pixels.</dd>
+<dt>position</dt>
+<dd>This sets the corner in which to display the watermark. It can be <strong>top-right</strong> (the default), <strong>top-left</strong>, <strong>bottom-right</strong> or <strong>bottom-left</strong>. Note the default position is preferred, since the logo won't interfere with the controlbar, captions, overlay ads and sharing/related buttons.</dd>
+</dl>
+
+<h2>Example Embeds</h2>
+
+<p>Here is an example configuration that sets a channel logo that's always visible on top of the video:</p>
+
+<pre>
+jwplayer("myElement").setup({
+    file: "/assets/myVideo.mp4",
+    height: 360,
+    image: "/assets/myVideo.jpg",
+    logo: {
+        file: '/assets/myLogo.png',
+        hide: false
+    },
+    width: 640
+});
+</pre>
+
+<p>Here is another example configuration, this time implementing a call-to-action that asks viewers to register for a service:</p>
+
+<pre>
+jwplayer("myElement").setup({
+    file: "/assets/myVideo.mp4",
+    height: 360,
+    image: "/assets/myVideo.jpg",
+    logo: {
+        file: '/assets/buy.png',
+        link: '/registration/'
+    },
+    width: 640
+});
+</pre>
+
+<p>See <a href="embedding.html">Embedding the Player</a> for more info on configuring player embeds.</p>
+
+
+
+<h2>Pro Only</h2>
+
+<p>Again, note the logo options are only available to Pro players! Please <a href="http://www.longtailvideo.com/order/">purchase the Pro player</a> if you are still on the Free version but want to set your own logo.</p>
+
+</body>
+</html>

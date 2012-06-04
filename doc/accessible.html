@@ -1,0 +1,143 @@
+<!doctype html>
+<html>
+<head>
+<title>Making Videos Accessible</title>
+<style>
+    body { padding: 50px 100px; width: 700px; font: 13px/20px Arial; background: #FFF; }
+    a, h1, h2 { color: #369; }
+    h1 { font-size: 32px; }
+    h2 { margin-top: 50px; }
+    h3 { margin-top: 25px; }
+    img { display: block; margin: 0 10px; }
+    pre { font-size: 12px; background: #E5F3C8; padding:5px 10px; border: 1px solid #D3EAA4; }
+    dt { padding-left: 20px; font-weight: bold; }
+    dd { color: #333; font-style: italic; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+    tr { border-bottom: 1px solid #CCC; } 
+    tr:nth-child(even) { background: #EEE; }
+    td,th { padding: 5px; font-size: 12px; text-align: left; }
+
+</style>
+</head><body>
+
+<h1>Making Videos Accessible</h1>
+
+<p>Accessibility refers to the practice of making websites usable for all people, including those with disabilities, ensuring that everyone has equal access to content. In this guide, we focus on how to achieve this for embedded videos.</p>
+
+
+
+<h2><a name="Accessibility_Why"></a>Why Make Videos Accessible</h2>
+
+<p>Why make your videos accessible? Before jumping into the details of video accessibility, let's first address the question of <em>why</em>. To some, it may seem like additional work with a minimal payoff (i.e. targeting only a small audience). However, making a video accessible is less time-consuming or expensive than you may think. Additional benefits also exist. For example, tagging your video clip with appropriate metadata is useful for SEO as well as for captioning.</p>
+
+<p>Your audience is larger than you may think. Video accessibility benefits many different groups of users:</p>
+<ul>
+<li>Users with disabilities (hearing or visually impaired).</li>
+<li>Users with partial disabilities (moderate to severe visual and hearing limitations).</li>
+<li>Users who are watching video in a foreign language (international viewers).</li>
+<li>Circumstances when video playback itself is impaired (audio playback is forbidden or broken)</li>
+<li> Moments when users are unable to watch the screen (watching video while driving)</li>
+</ul>
+
+<p>Google, your main SEO-driver, requires this same meta-data to better index your content in it search engines.  Thus, making your videos accessible will absolutely help Google find and index them. Your small effort then has big payoff: more and better targeted visitors to your site.</p>
+
+<p>The last piece in deciding whether or not to make your videos accessible are government-based requirements. In many countries, providing accessible video is required for federal agencies and companies working with/for them. In the United States, this is covered by the <a href="http://en.wikipedia.org/wiki/Section_508" title="Section 508 Amendment explanation">Section 508 Amendment</a> to the Rehabilitation Act. In many other countries (like <a href="http://www.webrichtlijnen.nl/" title="Webrichtlijnen.nl, the dutch set of guides for online accessibility">the Netherlands</a>), the W3C <a href="http://www.w3.org/WAI/intro/wcag" title="W3C Web Content Accessibility Guidelines">Web Content Accessibility Guidelines</a> are used for similar legislation.</p>
+
+
+
+<h2><a name="Accessibility_Guidelines"></a>Accessibility Guidelines</h2>
+
+<p>So what does it take to make a video accessible? The raw guidelines (WCAG/508) are <a href="http://www.alistapart.com/articles/tohellwithwcag2" title="Critic on WCAG from Joe Clark">quite elaborate and can be technical</a>), but here's what you generally need:</p>
+
+<dl>
+<dt>Progressive Enhancement</dt>
+<dd>You should not assume that all of your visitors have certain plugins (Flash) or browser features (HTML5) available. Instead, start out with a basic HTML setup (video download link with text description) and then enhance this with scripting and plugins as these features are detected.</dd>
+<dt>No Autostart</dt>
+<dd>Videos should <strong>not</strong> automatically start upon page load. This is frustrating to every visitor, but especially challenging to those who don't see or hear the video. These users have to use the keyboard to navigate through the page, find the videoplayer and then find the pause button.</dd>
+<dt>Keyboard Controls</dt>
+<dd>Videos should also be controllable by the keyboard (play/pause, seeking, volume, etc.). Essentially, you should guarantee that a user can "tab" through the controlbar. Hooking up custom keyboard controls less useful, since these are non-standardized and may break existing accessibility/access-key integrations.</dd>
+<dt>Closed Captions</dt>
+<dd>Captions are very similar to subtitles, but instead of just speech, all relevant audio is described (e.g. "the phone is ringing"). Captions are "closed" when they can be toggled on/off during playback. The alternative, captions burned into the video, is called "open". Making captions closed is important, because it allows you to serve everybody with the same setup (inclusiveness).</dd>
+<dt>Audio Description</dt>
+<dd>An audio description is a second audio track with a voiceover that can be turned on/off. Just like captions describe the audio, an audio description describes all relevant visual information. Voiceovers are placed into "natural silences", so they don't interfere with the original audio. Audio descriptions are not trivial to produce and  not always needed (e.g. not with interviews).</dd>
+</dl>
+
+<p>The full list of guidelines only applies to on-demand video under the WCAG regulations. Other regulations, like Section 508 or the <a href="http://www.nytimes.com/2010/06/21/business/media/21captions.html">FCC Regulations</a>, do not require audio descriptions. For live video, audio descriptions are also never needed.</p>
+
+<p>For audio (podcasts), captions are also not required. Instead, a separate transcript (text version) of the audio file will suffice. In practice (workflow wise), it is often easier to use captions for audio clips too.</p>
+
+
+
+<h2><a name="Accessibilty_Example"></a>An Example Setup</h2>
+
+<p>Let's now look at an example setup of an accessible video. Click the image to see the example in action:</p>
+
+<p><a href=""><img src="assets/accessibility-example.jpg" alt="Example of accessible video" /></a></p>
+
+<p>Here is the embed code of this example:</p>
+
+<pre>
+&lt;p id="container"&gt;
+    &lt;a href="/upload/corrie.mp4">The video clip from ITV's Coronation Street&lt;/a&gt; (MP4, 00:45)
+&lt;/p&gt;
+
+&lt;script type="text/javascript"&gt;
+    jwplayer("container").setup({
+        autostart: false,
+        height: 360,
+        playlist: [{
+            captions: [{
+                '/assets/corrie.srt'
+            }],
+            image: '/assets/corrie.jpg',
+            sources: [{
+                file: '/assets/corrie.mp4'
+            }]
+        }],
+        width: 640
+    });
+&lt;/script&gt;
+</pre>
+
+<p>This embed code has the following accessibility features:</p>
+
+<ul>
+<li>Per the guideline on <em>Progressive Enhancement</em>, the clip is first presented as a basic download link. This download is <a href="encoding.html">in MP4 format</a>, using H264 video and AAC audio. MP4 is the preferred option, supported by nearly every browser, device and media player today.</li>
+<li>Next, JavaScript is used to <a href="embedding.html">embed JW Player</a> over the download link. This happens when JavaScript is enabled and HTML5 or Flash is detected:</li>
+<li>Autostarting is disabled, so the second guideline is met. Instead, a preview image is displayed to trigger users to start the video.</li>
+<li>It is possible for users to <em>tab through</em> buttons in JW Player to control them by keyboard. This is a built-in feature of JW Player that works in both Flash and HTML5.</li>
+<li>Finally, Closed Captions are loaded as an SRT file into the player, using the <a href="captions.html">captions config block</a>. You can use any text editor to author the captions; cool dedicated tools <a href="http://www.urusoft.net/products.php">Subtitle Workshop</a> (desktop) or <a href="http://subtitle-horse.com/">Subtitle Horse</a> (online).</li>
+</ul>
+
+<p>Note the example does not contain an audio description. JW Player 6 does not yet support audio descriptions (see below). This should not be a problem, since audio descriptions are not needed in the far majority of cases.</p>
+
+
+
+<h2><a name="Accessibilty_Considerations"></a>Some Considerations</h2>
+
+<p>As with any real-world implementation, the above example is a simple suggestion for an accessible video. Here are some other things to keep in mind:</p>
+
+<ul>
+<li>The JW Player provides keyboard access to all of its buttons (pause, mute, fullscreen, captions, audiodescription), but not to its sliders yet. We still have to incorporate slider control, following <a href="http://dev.opera.com/articles/view/more-accessible-html5-video-player/">the ARIA guidelines</a>.</li>
+<li>When Flash is used for rendering, it is not possible to <em>tab in</em> or <em>tab out</em> of the player using your keyboard. This is a major issue, since it essentially breaks keyboard access. Luckily, screen readers like JAWS do provide the option to enter/exit Flash elements. In HTML5, this problem does not exist.</li>
+<li>On mobile devices, captions cannot yet be rendered by JW Player. This because there's no way to display anything on top of (full-screen) video on these devices. There is a workaround for iOS, using embedded <a href="captions.html">TX3G text tracks</a>.</li>
+<li>For HTML5 in general, getting audio descriptions to work properly has proven very hard. On mobile devices, this is not possible at all, while on desktops sync issues are present.</li>
+</ul>
+
+<p><a href="http://blog.gingertech.net/2010/08/07/websrt-and-html5-media-accessibility/">Work is in progress</a> to build both captions and audio descriptions into HTML5. This is done through a new element: &lt;track&gt;. Though not built into any real-world browser yet, the <a href="http://www.w3.org/TR/html5/video.html">spec is mostly done</a>. This is how it will look:</p>
+
+<pre>
+&lt;video controls height="360" src="/assets/corrie.mp4" width="640"&gt;
+    &lt;track label="Closed Captions" kind="captions" src="/assets/corrie-cc.vtt" /&gt;
+    &lt;track label="Audio Description" kind="descriptions" src="/assets/bunny-ad.vtt" /&gt;
+&lt;/video&gt;
+</pre>
+
+<p>Browsers and devices will see the tracks, pick up the VTT files and render controls to toggle them on/off. VTT files are basically fancy SRT files, so if you provide your captions in SRT today, you can easily switch to VTT in the future.</p>
+
+<p>Important to note is that the audio description is also a VTT text file. The browser (or screen reader) is supposed to load this file and provide text-to-speech synthesis. If this actually gets supported, the creation of audio descriptions will suddenly become much easier. Adding in the easy keyboard access, it's clear that HTML5 holds much promise for a broader implementation of accessible video.</p>
+
+
+
+</body>
+</html>
