@@ -1,34 +1,17 @@
 ﻿package com.longtailvideo.jwplayer.view.components {
-	import com.longtailvideo.jwplayer.events.ComponentEvent;
-	import com.longtailvideo.jwplayer.events.MediaEvent;
-	import com.longtailvideo.jwplayer.events.PlayerEvent;
-	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
-	import com.longtailvideo.jwplayer.events.PlaylistEvent;
-	import com.longtailvideo.jwplayer.events.ViewEvent;
-	import com.longtailvideo.jwplayer.player.IPlayer;
-	import com.longtailvideo.jwplayer.player.PlayerState;
-	import com.longtailvideo.jwplayer.utils.Draw;
-	import com.longtailvideo.jwplayer.utils.Strings;
-	import com.longtailvideo.jwplayer.view.interfaces.IDisplayComponent;
-	import com.longtailvideo.jwplayer.view.skins.PNGSkin;
+	import com.longtailvideo.jwplayer.events.*;
+	import com.longtailvideo.jwplayer.model.*;
+	import com.longtailvideo.jwplayer.player.*;
+	import com.longtailvideo.jwplayer.utils.*;
+	import com.longtailvideo.jwplayer.view.interfaces.*;
 	
-	import flash.display.Bitmap;
-	import flash.display.DisplayObject;
-	import flash.display.MovieClip;
-	import flash.display.Sprite;
-	import flash.events.MouseEvent;
-	import flash.events.TimerEvent;
-	import flash.geom.ColorTransform;
-	import flash.geom.Rectangle;
-	import flash.net.URLRequest;
-	import flash.net.navigateToURL;
-	import flash.text.GridFitType;
-	import flash.text.TextField;
-	import flash.text.TextFormat;
-	import flash.text.TextFormatAlign;
-	import flash.utils.Timer;
-	import flash.utils.clearInterval;
-	import flash.utils.setInterval;
+	import flash.display.*;
+	import flash.events.*;
+	import flash.external.ExternalInterface;
+	import flash.geom.*;
+	import flash.net.*;
+	import flash.text.*;
+	import flash.utils.*;
 
 	/**
 	 * Sent when the display icon begins to become visible
@@ -44,25 +27,25 @@
 	[Event(name="jwPlayerComponentHide", type="com.longtailvideo.jwplayer.events.ComponentEvent")]
 	
 	public class DisplayComponent extends CoreComponent implements IDisplayComponent {
-		protected var _icon:DisplayObject;
+		protected var _icon:DisplayIcon;
 		protected var _iconArea:Rectangle;
 		protected var _background:MovieClip;
 		protected var _overlay:Sprite;
-		protected var _text:TextField;
-		protected var _textBack:Sprite;
 		protected var _icons:Object;
-		protected var _rotateInterval:Number;
-		protected var _bufferIcon:Sprite;
-		protected var _rotate:Boolean = true;
 		protected var _youtubeMask:MovieClip;
-		
-		protected var _bufferRotationTime:Number = 100;
-		protected var _bufferRotationAngle:Number = 15;
 		
 		protected var _bufferStateTimer:Timer;
 		protected var _playStateTimer:Timer;
 		protected var _previousState:String;
+		protected var _textFormat:TextFormat;
+		protected var _textOverFormat:TextFormat;
+
+		protected var _errorState:Boolean = false;
 		
+		/** Setting defaults **/
+		protected var _bufferRotationTime:Number = 100;
+		protected var _bufferRotationAngle:Number = 15;
+
 		protected var _forced:String = "";
 		
 		public function DisplayComponent(player:IPlayer) {
@@ -70,14 +53,17 @@
 			addListeners();
 			setupDisplayObjects();
 			setupIcons();
-			if (!isNaN(getConfigParam('bufferrotation'))) _bufferRotationAngle = Number(getConfigParam('bufferrotation'));
-			if (!isNaN(getConfigParam('bufferinterval'))) _bufferRotationTime = Number(getConfigParam('bufferinterval'));
+			
+			// Override defaults
+			if (!isNaN(getConfigParam('bufferRotation'))) _bufferRotationAngle = Number(getConfigParam('bufferrotation'));
+			if (!isNaN(getConfigParam('bufferInterval'))) _bufferRotationTime = Number(getConfigParam('bufferinterval'));
 			
 			_bufferStateTimer = new Timer(50, 1);
 			_bufferStateTimer.addEventListener(TimerEvent.TIMER_COMPLETE, showBufferIcon);
 			
 			_playStateTimer = new Timer(50, 1);
 			_playStateTimer.addEventListener(TimerEvent.TIMER_COMPLETE, showPlayIcon);
+			
 		}
 		
 		
@@ -95,7 +81,6 @@
 		
 
 		private function addListeners():void {
-			player.addEventListener(MediaEvent.JWPLAYER_MEDIA_MUTE, stateHandler);
 			player.addEventListener(PlayerStateEvent.JWPLAYER_PLAYER_STATE, stateHandler);
 			player.addEventListener(PlayerEvent.JWPLAYER_ERROR, errorHandler);
 			player.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_ITEM, itemHandler);
@@ -116,17 +101,8 @@
 			_overlay.name = "overlay";
 			addChildAt(_overlay, 1);
 			
-			_textBack = new Sprite();
-			_textBack.name = "textBackground";
-			_textBack.graphics.beginFill(0, 0.8);
-			_textBack.graphics.drawRect(0, 0, 1, 1);
-			_textBack.visible = false;
-			_overlay.addChild(_textBack);
-
-			_text = new TextField();
-			text.gridFitType = GridFitType.NONE;
-			text.defaultTextFormat = new TextFormat("_sans", null, 0xFFFFFF);
-			_overlay.addChild(text);
+			_textFormat = new TextFormat("_sans", fontSize ? fontSize : 15, fontColor ? fontColor.toString() : 0, (fontWeight == "bold"));
+			_textOverFormat = new TextFormat("_sans", fontSize ? fontSize : 15, fontOverColor ? fontOverColor.toString() : 0, (fontWeight == "bold"));
 			
 			_youtubeMask = new MovieClip();
 		}
@@ -136,109 +112,43 @@
 			_icons = {};
 			setupIcon('buffer');
 			setupIcon('play');
-			setupIcon('mute');
-		}
-		
-		
-		/**
-		 * Takes in an icon from a PNG skin and rearranges its children so that it's centered around 0, 0 
-		 */
-		protected function centerIcon(icon:Sprite):void {
-			if (icon) {
-				for (var i:Number=0; i < icon.numChildren; i++) {
-					icon.getChildAt(i).x = -Math.round(icon.getChildAt(i).width)/2;
-					icon.getChildAt(i).y = -Math.round(icon.getChildAt(i).height)/2;
-				}
+			setupIcon('error');
+			setupIcon('replay');
+			if (!_icons.replay) {
+				_icons.replay = _icons.play;
+			}
+			if (!_icons.error) {
+				_icons.error = setupIcon();
 			}
 		}
 		
-		protected function setupIcon(name:String):void {
-			var iconElement:Sprite = getSkinElement(name + 'Icon') as Sprite;
-			var iconOver:Sprite = getSkinElement(name + 'IconOver') as Sprite;
-
-			if (!iconElement) { return; }
-			
-			if (_player.skin is PNGSkin) {
-				if (iconElement.getChildByName("bitmap")) {
-					centerIcon(iconElement);
-					iconElement.name = 'out';
-				}
-				if (iconOver && iconOver.getChildByName("bitmap")) {
-					centerIcon(iconOver);
-					iconOver.name = 'over';
-				}
-			}
-			
-			if (name == "buffer") {
-				if (player.skin is PNGSkin) {
-					if (iconElement is MovieClip && (iconElement as MovieClip).totalFrames > 1) {
-						// Buffer is already animated; no need to rotate.
-						_rotate = false;
-					} else {
-						try {
-							_bufferIcon = iconElement;
-							var bufferBitmap:Bitmap = _bufferIcon.getChildByName('bitmap') as Bitmap;
-							if (bufferBitmap) {
-								Draw.smooth(bufferBitmap);
-							} else {
-								centerIcon(iconElement);
-							}
-						} catch (e:Error) {
-							_rotate = false;
-						}
-					}
-				} else {
-					_rotate = false;
-				}
-			}
-			
-			var back:Sprite = getSkinElement('background') as Sprite;
-			if (back) {
-				if (_player.skin is PNGSkin) centerIcon(back);
+		
+		protected function setupIcon(name:String=null):DisplayIcon {
+			if (!name) {
+				return new DisplayIcon({
+					background: getSkinElement("background"), 
+					backgroundOver: getSkinElement("backgroundOver"), 
+					capLeft: getSkinElement("capLeft"), 
+					capLeftOver: getSkinElement("capLeftOver"), 
+					capRight: getSkinElement("capRight"),
+					capRightOver: getSkinElement("capRightOver")
+				}, _textFormat, _textOverFormat);
 			} else {
-				back = new Sprite();
-			}
-
-			if (iconOver && player.skin is PNGSkin && name != "buffer") {
-				iconOver.visible = false;
-				back.addChild(iconOver);
-				back.addEventListener(MouseEvent.MOUSE_OVER, overHandler);
-				back.addEventListener(MouseEvent.MOUSE_OUT, outHandler);
-			}
-			back.addChild(iconElement);
-			if (player.skin is PNGSkin && !iconElement.getChildByName("bitmap")) {
-				if (name != "buffer" || !_rotate) {
-					centerIcon(back);
-				}
-			} else {
-				back.x = back.y = iconElement.x = iconElement.y = 0;
-			}
-			_icons[name] = back;
-
-		}
-		
-		protected function overHandler(evt:MouseEvent):void {
-			var button:Sprite = _icon as Sprite;
-			if (button) {
-				setIconHover(button, true);
-			}
-		}
-
-		protected function outHandler(evt:MouseEvent):void {
-			var button:Sprite = _icon as Sprite;
-			if (button) {
-				setIconHover(button, false);
-			}
-		}
-		
-		protected function setIconHover(icon:Sprite, state:Boolean):void {
-			var over:DisplayObject = icon.getChildByName('over'); 
-			var out:DisplayObject = icon.getChildByName('out'); 
+				if (!getSkinElement(name+"Icon")) { return null; }
 			
-			if (over && out) {
-				over.visible = state;
-				out.visible = !state;
-			}		
+				var newIcon:DisplayIcon = new DisplayIcon({
+					icon: getSkinElement(name+"Icon"),
+					iconOver: getSkinElement(name+"IconOver"),
+					background: getSkinElement("background"),
+					backgroundOver: getSkinElement("backgroundOver"),
+					capLeft: getSkinElement("capLeft"),
+					capLeftOver: getSkinElement("capLeftOver"),
+					capRight: getSkinElement("capRight"),
+					capRightOver: getSkinElement("capRightOver")
+				}, _textFormat, _textOverFormat);
+			}
+			_icons[name] = newIcon;
+			return newIcon;
 		}
 		
 		override public function resize(width:Number, height:Number):void {
@@ -251,12 +161,11 @@
 			_youtubeMask.graphics.endFill();
 
 			positionIcon();
-			positionText();
 			stateHandler();
 		}
 		
 		
-		public function setIcon(displayIcon:DisplayObject):void {
+		protected function setIcon(displayIcon:DisplayIcon):void {
 			var sendShowEvent:Boolean = false;
 			var sendHideEvent:Boolean = false;
 			try {
@@ -274,9 +183,6 @@
 				sendShowEvent = true;
 			}
 			if (displayIcon && _player.config.icons && (getConfigParam("icons") === true || typeof(getConfigParam("icons")) == "undefined")) {
-				if (displayIcon is Sprite) {
-					setIconHover(displayIcon as Sprite, false);
-				}
 				_icon = displayIcon;
 				_overlay.addChild(_icon);
 				positionIcon();
@@ -296,52 +202,14 @@
 		
 		private function positionIcon():void {
 			if (_icon) {
-				_icon.x = background.scaleX / 2;
-				_icon.y = background.scaleY / 2;
+				_icon.x = Math.round((background.width - _icon.width) / 2);
+				_icon.y = Math.round((background.height - _icon.height) / 2);
 			}
 		}
 		
-		
-		public function setText(displayText:String):void {
-			if (_icon is Sprite && (_icon as Sprite).getChildByName('txt') is TextField) {
-				((_icon as Sprite).getChildByName('txt') as TextField).text = displayText ? displayText : '';
-				text.text = '';
-			} else {
-				text.text = displayText ? displayText : '';
-			}
-			positionText();
-		}
-		
-		
-		private function positionText():void {
-			if (text.text) {
-				text.visible = true;
-				_textBack.visible = true;
-				if (text.width > background.scaleX * .75) {
-					text.width = background.scaleX * .75;
-					text.wordWrap = true;
-				} else {
-					text.autoSize = TextFormatAlign.CENTER;
-				}
-				text.x = (background.scaleX - text.textWidth) / 2;
-				if (_icon && contains(_icon)) {
-					text.y = _icon.y + (_icon.height/2) + 10;
-				} else {
-					text.y = (background.scaleY - text.textHeight) / 2;
-				}
-				_textBack.y = text.y - 2;
-				_textBack.width = getConfigParam('width');
-				_textBack.height = text.height + 4;
-			} else {
-				text.visible = false;
-				_textBack.visible = false;
-			}
-		}
-		
-		
-		protected function setDisplay(displayIcon:DisplayObject, displayText:String = null):void {
+		protected function setDisplay(displayIcon:DisplayIcon, displayText:String = null):void {
+			if (displayIcon) displayIcon.text = displayText;
 			setIcon(displayIcon);
-			setText(displayText != null ? displayText : text.text);
 		}
 		
 		
@@ -356,7 +224,6 @@
 		protected function stateHandler(event:PlayerEvent = null):void {
 			if (_previousState != currentState || !(event is PlayerStateEvent)) {
 				_previousState = currentState;
-				//TODO: Handle mute button in error state
 				clearRotation();
 				_bufferStateTimer.reset();
 				_playStateTimer.reset();
@@ -364,56 +231,48 @@
 				_playStateTimer.delay = (_icon ? 10 : 10);
 				switch (currentState) {
 					case PlayerState.BUFFERING:
+						_errorState = false;
 						_bufferStateTimer.start();
 						break;
 					case PlayerState.PAUSED:
 					case PlayerState.IDLE:
 						_playStateTimer.start();
 						break;
+					case PlayerState.COMPLETED:
+						setDisplay(getIcon('replay'));
+						break;
 					default:
-						if ( player.config.mute && getConfigParam("showmute") ) {
-							setDisplay(_icons['mute']);
-						} else {
-							clearDisplay();
-						}
+						clearDisplay();
 				}
 			}
 		}
 		
 		protected function showBufferIcon(evt:TimerEvent):void {
-			setDisplay(_icons['buffer'], '');
-			if (_rotate){
-				startRotation();
-			}
+			var icon:DisplayIcon = getIcon('buffer');
+			setDisplay(icon, '');
+			icon.setRotation(_bufferRotationAngle, _bufferRotationTime);
+			
 		}
 
 		protected function showPlayIcon(evt:TimerEvent):void {
-			setDisplay(_icons['play']);
+			if (_errorState) return;
+			
+			var icon:DisplayIcon = getIcon('play');
+			if (_player.state == PlayerState.IDLE) {
+				setDisplay(icon, _player.playlist.currentItem ? _player.playlist.currentItem.title : "");
+			} else {
+				setDisplay(icon);
+			}
 		}
 
-		protected function startRotation():void {
-			if (!_rotateInterval && (_bufferRotationAngle % 360) != 0) {
-				_rotateInterval = setInterval(updateRotation, _bufferRotationTime);
-			}
-		}
-		
-		
-		protected function updateRotation():void {
-			if (_bufferIcon) _bufferIcon.rotation += _bufferRotationAngle;
-		}
-		
-		
 		protected function clearRotation():void {
-			if (_bufferIcon) _bufferIcon.rotation = 0;
-			if (_rotateInterval) {
-				clearInterval(_rotateInterval);
-				_rotateInterval = undefined;
-			}
+			getIcon('buffer').setRotation(0);
 		}
 		
 		
 		protected function errorHandler(event:PlayerEvent):void {
-			setDisplay(null, event.message);
+			setDisplay(getIcon('error'), event.message);
+			_errorState = true;
 		}
 		
 		
@@ -424,11 +283,6 @@
 			} else {
 				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_PLAY));
 			}
-		}
-		
-		
-		protected function get text():TextField {
-			return _text;
 		}
 		
 		
@@ -485,6 +339,10 @@
 		
 		protected override function get displayRect():Rectangle {
 			return _iconArea ? _iconArea : super.displayRect;
+		}
+		
+		protected function getIcon(name:String):DisplayIcon {
+			return _icons[name];
 		}
 		
 	}

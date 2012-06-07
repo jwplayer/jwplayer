@@ -131,6 +131,10 @@
 			return _element;
 		};
 		
+		/** 
+		 * Although this function creates a flash embed, the target is iOS, which interprets the embed code as a YouTube video, 
+		 * and plays it using the browser
+		 */
 		function _embedYouTube(path) {
 			var embed = _createElement("embed", "", _container);
 

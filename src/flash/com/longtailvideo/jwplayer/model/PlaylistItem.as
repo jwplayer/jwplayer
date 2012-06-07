@@ -167,7 +167,7 @@ package com.longtailvideo.jwplayer.model {
 			if (_type) {
 				return (typeMap(levelType(level)) == typeMap(_type));
 			} else {
-				var lType = levelType(level);
+				var lType:String = levelType(level);
 				if (lType) {
 					if (typeMap(lType)) {
 						_type = lType;

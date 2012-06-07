@@ -405,7 +405,7 @@ package com.longtailvideo.jwplayer.media {
 			else return "";
 		}
 		
-		protected function sendQualityEvent(type, levels:Array, quality:Number):void {
+		protected function sendQualityEvent(type:String, levels:Array, quality:Number):void {
 			var qualityEvent:MediaEvent = new MediaEvent(type);
 			qualityEvent.levels = [];
 			for (var i:Number=0; i<levels.length; i++) {

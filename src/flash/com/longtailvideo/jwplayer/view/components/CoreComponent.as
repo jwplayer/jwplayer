@@ -89,11 +89,11 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 		
 		protected function getConfigParam(param:String):* {
-			return player.config.pluginConfig(_name)[param];
+			return player.config.pluginConfig(_name)[param.toLowerCase()];
 		}
 		
 		protected function setConfigParam(param:String, value:*):void {
-			player.config.pluginConfig(_name)[param] = value;
+			player.config.pluginConfig(_name)[param.toLowerCase()] = value;
 		}
 		
 		///////////////////////////////////////////		
@@ -107,7 +107,11 @@ package com.longtailvideo.jwplayer.view.components {
 		protected function get fontColor():Color {
 			return getConfigParam("fontcolor") ? new Color(String(getConfigParam("fontcolor"))) : null;
 		}
-		
+
+		protected function get fontOverColor():Color {
+			return getConfigParam("fontovercolor") ? new Color(String(getConfigParam("fontovercolor"))) : null;
+		}
+
 		protected function get fontSize():Number {
 			return getConfigParam("fontsize") ? Number(getConfigParam("fontsize")) : 0;
 		}

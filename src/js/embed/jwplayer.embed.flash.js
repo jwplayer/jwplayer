@@ -217,10 +217,6 @@
 				appendAttribute(obj, 'wmode', wmode);
 				appendAttribute(obj, 'flashvars', flashvars);
 				
-				obj.onerror = function() {
-					alert("does this work?");
-				}
-				
 				_container.parentNode.replaceChild(obj, _container);
 				flashPlayer = obj;
 			}

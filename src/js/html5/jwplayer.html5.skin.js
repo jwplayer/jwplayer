@@ -21,6 +21,8 @@
 		};
 		
 		this.getSkinElement = function(component, element) {
+			component = _lowerCase(component);
+			element = _lowerCase(element);
 			if (_loaded) {
 				try {
 					return _components[component].elements[element];
@@ -32,6 +34,7 @@
 		};
 		
 		this.getComponentSettings = function(component) {
+			component = _lowerCase(component);
 			if (_loaded && _components && _components[component]) {
 				return _components[component].settings;
 			}
@@ -39,6 +42,7 @@
 		};
 		
 		this.getComponentLayout = function(component) {
+			component = _lowerCase(component);
 			if (_loaded) {
 				var lo = _components[component].layout;
 				if (lo && (lo.left || lo.right || lo.center))
@@ -46,6 +50,10 @@
 			}
 			return null;
 		};
+		
+		function _lowerCase(string) {
+			return string.toLowerCase();
+		}
 		
 	};
 })(jwplayer.html5);

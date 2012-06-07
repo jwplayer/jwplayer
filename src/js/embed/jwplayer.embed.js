@@ -78,6 +78,8 @@
 		}
 		
 		function _errorScreen(container, message) {
+			if (!_config.fallback) return;
+				
 			var style = container.style;
 			style.backgroundColor = "#000";
 			style.color = "#FFF";
@@ -86,11 +88,13 @@
 			style.display = "table";
 			style.padding = "50px";
 			
-			var text = document.createElement("p");
-			text.style.verticalAlign = "middle";
-			text.style.textAlign = "center";
-			text.style.display = "table-cell";
-			text.innerHTML = message;
+			var text = document.createElement("p"),
+				textStyle = text.style;	
+			textStyle.verticalAlign = "middle";
+			textStyle.textAlign = "center";
+			textStyle.display = "table-cell";
+			textStyle.font = "15px/20px Arial, Helvetica, sans-serif";
+			text.innerHTML = message.replace(":", ":<br>");
 
 			container.innerHTML = "";
 			container.appendChild(text);

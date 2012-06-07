@@ -18,7 +18,7 @@ jwplayer = function(container) {
 
 var $jw = jwplayer;
 
-jwplayer.version = '6.0.2220';
+jwplayer.version = '6.0.2234';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -394,7 +394,6 @@ jwplayer.source = document.createElement("source");/**
 			"mp3": mimeMap[mp3],
 			"ogg": mimeMap[ogg],
 			"oga": mimeMap[ogg],
-			"ogv": mimeMap[ogg],
 			"webm": mimeMap[webm],
 			"m3u8": mimeMap.hls,
 		}, 
@@ -1339,6 +1338,8 @@ jwplayer.source = document.createElement("source");/**
 		}
 		
 		function _errorScreen(container, message) {
+			if (!_config.fallback) return;
+				
 			var style = container.style;
 			style.backgroundColor = "#000";
 			style.color = "#FFF";
@@ -1347,11 +1348,13 @@ jwplayer.source = document.createElement("source");/**
 			style.display = "table";
 			style.padding = "50px";
 			
-			var text = document.createElement("p");
-			text.style.verticalAlign = "middle";
-			text.style.textAlign = "center";
-			text.style.display = "table-cell";
-			text.innerHTML = message;
+			var text = document.createElement("p"),
+				textStyle = text.style;	
+			textStyle.verticalAlign = "middle";
+			textStyle.textAlign = "center";
+			textStyle.display = "table-cell";
+			textStyle.font = "15px/20px Arial, Helvetica, sans-serif";
+			text.innerHTML = message.replace(":", ":<br>");
 
 			container.innerHTML = "";
 			container.appendChild(text);
@@ -1693,6 +1696,10 @@ jwplayer.source = document.createElement("source");/**
 			return _element;
 		};
 		
+		/** 
+		 * Although this function creates a flash embed, the target is iOS, which interprets the embed code as a YouTube video, 
+		 * and plays it using the browser
+		 */
 		function _embedYouTube(path) {
 			var embed = _createElement("embed", "", _container);
 
@@ -1933,10 +1940,6 @@ jwplayer.source = document.createElement("source");/**
 				appendAttribute(obj, 'seamlesstabbing', 'true');
 				appendAttribute(obj, 'wmode', wmode);
 				appendAttribute(obj, 'flashvars', flashvars);
-				
-				obj.onerror = function() {
-					alert("does this work?");
-				}
 				
 				_container.parentNode.replaceChild(obj, _container);
 				flashPlayer = obj;

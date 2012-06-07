@@ -1,3 +1,6 @@
+// TODO: replace background element with backgroundcolor
+// TODO: remove font, fontStyle
+
 package com.longtailvideo.jwplayer.view.components {
 	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
 	import com.longtailvideo.jwplayer.events.PlaylistEvent;

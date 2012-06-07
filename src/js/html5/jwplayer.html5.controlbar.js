@@ -1,3 +1,7 @@
+// TODO: remove backgroundcolor
+// TODO: remove buttonColor, blankButton
+
+
 /**
  * JW Player HTML5 Controlbar component
  * 

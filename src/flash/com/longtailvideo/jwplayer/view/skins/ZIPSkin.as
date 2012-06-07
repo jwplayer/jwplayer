@@ -38,7 +38,7 @@ package com.longtailvideo.jwplayer.view.skins {
 				urlStream.addEventListener(IOErrorEvent.IO_ERROR, loadError);
 				urlStream.addEventListener(SecurityErrorEvent.SECURITY_ERROR, loadError);
 				urlStream.load(new URLRequest(url));
-			} else if (_skin.numChildren == 0) {
+			} else {
 				sendError("ZIP skin descriptor file must have a .zip extension");
 			}
 		}

@@ -10,13 +10,14 @@
 	
 	/** Constructor **/
 	html5.skinloader = function(skinPath, completeHandler, errorHandler) {
-		var _skin = {};
-		var _completeHandler = completeHandler;
-		var _errorHandler = errorHandler;
-		var _loading = true;
-		var _completeInterval;
-		var _skinPath = skinPath;
-		var _error = false;
+		var _skin = {},
+			_completeHandler = completeHandler,
+			_errorHandler = errorHandler,
+			_loading = true,
+			_completeInterval,
+			_skinPath = skinPath,
+			_error = false,
+			_defaultSkin;
 		
 		/** Load the skin **/
 		function _load() {
@@ -27,31 +28,36 @@
 					_errorHandler("Skin not a valid file type");
 					return;
 				}
-				_utils.ajax(_utils.getAbsolutePath(_skinPath), function(xmlrequest) {
-					try {
-						if (_utils.exists(xmlrequest.responseXML)){
-							_loadSkin(xmlrequest.responseXML);
-							return;	
-						}
-					} catch (err){
-						_clearSkin();
-					}
-					_loadSkin(html5.defaultskin().xml);
-				}, function(message) {
-					_errorHandler(message);
-				});
+				// Load the default skin first; if any components are defined in the loaded skin, they will overwrite the default
+				var defaultLoader = new html5.skinloader("", _defaultLoaded, errorHandler);
 			}
 			
 		}
 		
 		
+		function _defaultLoaded(defaultSkin) {
+			_skin = defaultSkin;
+			_utils.ajax(_utils.getAbsolutePath(_skinPath), function(xmlrequest) {
+				try {
+					if (_utils.exists(xmlrequest.responseXML)){
+						_loadSkin(xmlrequest.responseXML);
+						return;	
+					}
+				} catch (err){
+					_clearSkin();
+				}
+			}, function(message) {
+				_errorHandler(message);
+			});
+		}
+		
 		function _loadSkin(xml) {
 			var components = xml.getElementsByTagName('component');
 			if (components.length === 0) {
-				return;
+				errorHandler("Skin formatting error")
 			}
 			for (var componentIndex = 0; componentIndex < components.length; componentIndex++) {
-				var componentName = components[componentIndex].getAttribute("name");
+				var componentName = _lowerCase(components[componentIndex].getAttribute("name"));
 				var component = {
 					settings: {},
 					elements: {},
@@ -69,33 +75,34 @@
 						var name = settings[settingIndex].getAttribute("name");
 						var value = settings[settingIndex].getAttribute("value");
 						if(/color$/.test(name)) { value = _utils.stringToColor(value); }
-						_skin[componentName].settings[name] = value;
+						component.settings[_lowerCase(name)] = value;
 					}
 				}
 				var layout = components[componentIndex].getElementsByTagName('layout')[0];
 				if (layout && layout.childNodes.length > 0) {
 					var groups = layout.getElementsByTagName('group');
 					for (var groupIndex = 0; groupIndex < groups.length; groupIndex++) {
-						var group = groups[groupIndex];
-						_skin[componentName].layout[group.getAttribute("position")] = {
-							elements: []
-						};
+						var group = groups[groupIndex],
+							_layout = {
+								elements: []
+							};
+						component.layout[_lowerCase(group.getAttribute("position"))] = _layout;
 						for (var attributeIndex = 0; attributeIndex < group.attributes.length; attributeIndex++) {
 							var attribute = group.attributes[attributeIndex];
-							_skin[componentName].layout[group.getAttribute("position")][attribute.name] = attribute.value;
+							_layout[attribute.name] = attribute.value;
 						}
 						var groupElements = group.getElementsByTagName('*');
 						for (var groupElementIndex = 0; groupElementIndex < groupElements.length; groupElementIndex++) {
 							var element = groupElements[groupElementIndex];
-							_skin[componentName].layout[group.getAttribute("position")].elements.push({
+							_layout.elements.push({
 								type: element.tagName
 							});
 							for (var elementAttributeIndex = 0; elementAttributeIndex < element.attributes.length; elementAttributeIndex++) {
 								var elementAttribute = element.attributes[elementAttributeIndex];
-								_skin[componentName].layout[group.getAttribute("position")].elements[groupElementIndex][elementAttribute.name] = elementAttribute.value;
+								_layout.elements[groupElementIndex][_lowerCase(elementAttribute.name)] = elementAttribute.value;
 							}
-							if (!_utils.exists(_skin[componentName].layout[group.getAttribute("position")].elements[groupElementIndex].name)) {
-								_skin[componentName].layout[group.getAttribute("position")].elements[groupElementIndex].name = element.tagName;
+							if (!_utils.exists(_layout.elements[groupElementIndex].name)) {
+								_layout.elements[groupElementIndex].name = element.tagName;
 							}
 						}
 					}
@@ -120,10 +127,12 @@
 		
 		/** Load the data for a single element. **/
 		function _loadImage(element, component) {
-			var img = new Image();
-			var elementName = element.getAttribute("name");
-			var elementSource = element.getAttribute("src");
-			var imgUrl;
+			component = _lowerCase(component);
+			var img = new Image(),
+				elementName = _lowerCase(element.getAttribute("name")),
+				elementSource = element.getAttribute("src"),
+				imgUrl;
+			
 			if (elementSource.indexOf('data:image/png;base64,') === 0) {
 				imgUrl = elementSource;
 			} else {
@@ -171,7 +180,7 @@
 			for (var component in _skin) {
 				if (component != 'properties') {
 					for (var element in _skin[component].elements) {
-						if (!_skin[component].elements[element].ready) {
+						if (!_getElement(component, element).ready) {
 							return;
 						}
 					}
@@ -183,19 +192,27 @@
 			}
 		}
 		
-		
 		function _completeImageLoad(img, element, component) {
-			if(_skin[component] && _skin[component].elements[element]) {
-				_skin[component].elements[element].height = img.height;
-				_skin[component].elements[element].width = img.width;
-				_skin[component].elements[element].src = img.src;
-				_skin[component].elements[element].ready = true;
+			var elementObj = _getElement(component, element);
+			if(elementObj) {
+				elementObj.height = img.height;
+				elementObj.width = img.width;
+				elementObj.src = img.src;
+				elementObj.ready = true;
 				_resetCompleteIntervalTest();
 			} else {
 				_utils.log("Loaded an image for a missing element: " + component + "." + element);
 			}
 		}
 		
+
+		function _getElement(component, element) {
+			return _skin[_lowerCase(component)] ? _skin[_lowerCase(component)].elements[_lowerCase(element)] : null;
+		}
+		
+		function _lowerCase(string) {
+			return string ? string.toLowerCase() : '';
+		}
 		_load();
 	};
 })(jwplayer.html5);

@@ -18,6 +18,7 @@ package com.longtailvideo.jwplayer.controller {
 	
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
+	import flash.utils.setTimeout;
 
 	/**
 	 * Sent when the player has been initialized and skins and plugins have been successfully loaded.
@@ -244,9 +245,13 @@ package com.longtailvideo.jwplayer.controller {
 					if (_model.playlist.currentIndex == _model.playlist.length - 1) {
 						_lockingResume = false;
 						_model.playlist.currentIndex = 0;
+						setTimeout(_model.playlistComplete, 10);
 					} else {
 						next();
 					}
+					break;
+				case RepeatOptions.NONE:
+					setTimeout(_model.playlistComplete, 10);
 					break;
 			}
 		}

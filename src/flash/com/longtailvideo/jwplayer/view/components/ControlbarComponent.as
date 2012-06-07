@@ -1,3 +1,6 @@
+// TODO: remove backgroundcolor
+// TODO: remove buttonColor, blankButton
+
 package com.longtailvideo.jwplayer.view.components {
 	import com.longtailvideo.jwplayer.events.ComponentEvent;
 	import com.longtailvideo.jwplayer.events.MediaEvent;

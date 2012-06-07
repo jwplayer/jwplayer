@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+	<head>
+	  <title>Error test</title>
+	  <script src="../bin-debug/jwplayer.js"></script>
+
+	  <style type="text/css">
+	  	.wrapper {
+	     width: 720px;
+	     height: 370px;
+	     position: relative;
+	  	}
+	  
+	  </style>
+	  
+	  <script type="text/javascript">
+		  function init() {
+	 		var form = document.getElementById("form");
+		    var player = jwplayer("player").setup({
+		      id: "player", 
+		      width: "100%",
+		      height: "100%"
+		    });
+		  }
+	  </script>
+	</head>
+	
+	<body onload="init()">
+
+  <h2>Error Test</h2>
+  
+  <p>This page forces a player setup error</p>
+	
+	<div class="wrapper">
+	    <div id="player"></div>
+	</div>
+
+	</body>
+</html>

@@ -72,7 +72,7 @@ package com.longtailvideo.jwplayer.controller {
 			tasker.addEventListener(ErrorEvent.ERROR, setupTasksFailed);
 			
 			tasker.queueTask(loadConfig, loadConfigComplete);
-			tasker.queueTask(loadSkin, loadSkinComplete);
+			tasker.queueTask(loadSkin);
 			tasker.queueTask(setupMediaProviders);
 			tasker.queueTask(setupView);
 			tasker.queueTask(loadPlugins, loadPluginsComplete);
@@ -131,31 +131,45 @@ package com.longtailvideo.jwplayer.controller {
 				} else if (Strings.extension(confHash['skin']) == "xml") {
 					skin = new PNGSkin();
 				} else {
-					tasker.failure(new ErrorEvent(ErrorEvent.ERROR, false, false, "Skin could not be loaded: Invalid file type"));	
+					tasker.failure(new ErrorEvent(ErrorEvent.ERROR, false, false, "Skin could not be loaded: Skin not a valid file type"));	
 				}
 			} else {
 				skin = new DefaultSkin();
 			}
 			skin.addEventListener(ErrorEvent.ERROR, tasker.failure);
-			skin.addEventListener(Event.COMPLETE, tasker.success);
+			skin.addEventListener(Event.COMPLETE, skinLoaded);
 			skin.load(confHash['skin']);
 		}
 		
-		protected function loadSkinComplete(event:Event=null):void {
-			if (event) {
-				var skin:ISkin = event.target as ISkin;
-				skin.removeEventListener(Event.COMPLETE, tasker.success);
-				skin.removeEventListener(ErrorEvent.ERROR, tasker.failure);
-				skin.removeEventListener(ErrorEvent.ERROR, loadSkin);
+		protected function skinLoaded(event:Event=null):void {
+			var skin:ISkin = event.target as ISkin;
+			skin.removeEventListener(Event.COMPLETE, skinLoaded);
+			skin.removeEventListener(ErrorEvent.ERROR, tasker.failure);
+			skin.removeEventListener(ErrorEvent.ERROR, loadSkin);
 
-				var props:SkinProperties = skin.getSkinProperties();
-				_model.config.setConfig(props);
-				_model.config.setConfig(confHash);
-				_view.skin = skin;
+			if (!(skin is DefaultSkin)) {
+				var defaultSkin:ISkin = new DefaultSkin();
+				defaultSkin.addEventListener(Event.COMPLETE, function(evt:Event):void {
+					for each (var component:String in defaultSkin.components) {
+						if (skin.components.indexOf(component) < 0) {
+							skin.overwriteComponent(component, defaultSkin.getSkinComponent(component));						
+						}
+					}
+					loadSkinComplete(skin);
+				});
+				defaultSkin.load();
 			} else {
-				_model.config.setConfig(confHash);
+				loadSkinComplete(skin);
 			}
+		}
+		
+		protected function loadSkinComplete(skin:ISkin):void {
+			var props:SkinProperties = skin.getSkinProperties();
+			_model.config.setConfig(props);
+			_view.skin = skin;
+			_model.config.setConfig(confHash);
 			Logger.setConfig(_model.config);
+			tasker.success();
 		}
 
 		protected function setupMediaProviders():void {

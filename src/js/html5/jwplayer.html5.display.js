@@ -83,14 +83,18 @@
 		
 		// Create the icons which will be displayed inside of the display button
 		function _createIcons() {
-			var iconNames = ['play', 'buffer'];
+			var iconNames = ['play', 'buffer', 'error', 'repeat'];
 			for (var i=0; i<iconNames.length; i++) {
 				var iconName = iconNames[i],
 					iconOut = _getSkinElement(iconName+"Icon"),
 					iconOver = _getSkinElement(iconName+"IconOver"),
 					icon = DOCUMENT.createElement("div"),
 					bg = _getSkinElement("background"),
-					bgOver = _getSkinElement("backgroundOver");
+					bgOver = _getSkinElement("backgroundOver"),
+					capLeft = _getSkinElement("capLeft"),
+					capLeftOver = _getSkinElement("capLeftOver"),
+					capRight = _getSkinElement("capRight"),
+					capRightOver = _getSkinElement("capRightOver"),
 					button = DOCUMENT.createElement("button");
 			
 				if (iconOut) {
@@ -99,7 +103,7 @@
 					button.appendChild(icon);
 					
 					_buttonStyle('#'+_display.id+' .'+button.className, bg, bgOver);
-					_buttonStyle('#'+_display.id+' .'+button.className+' div', iconOut, iconOver);
+					_buttonStyle('#'+_display.id+' .'+button.className+' .'+icon.className, iconOut, iconOver);
 					
 					if (bgOver || iconOver) {
 						button.addEventListener('mouseover', _hoverButton(button), false);

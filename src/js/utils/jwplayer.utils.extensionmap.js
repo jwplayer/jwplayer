@@ -35,7 +35,6 @@
 			"mp3": mimeMap[mp3],
 			"ogg": mimeMap[ogg],
 			"oga": mimeMap[ogg],
-			"ogv": mimeMap[ogg],
 			"webm": mimeMap[webm],
 			"m3u8": mimeMap.hls,
 		}, 

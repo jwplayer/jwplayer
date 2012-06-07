@@ -36,8 +36,8 @@ package com.longtailvideo.jwplayer.view.interfaces {
 	[Event(name="jwPlayerComponentHide", type="com.longtailvideo.jwplayer.events.ComponentEvent")]
 
 	public interface IDisplayComponent extends IPlayerComponent {
-		function setIcon(displayIcon:DisplayObject):void;
-		function setText(displayText:String):void;
+		//function setIcon(displayIcon:DisplayObject):void;
+		//function setText(displayText:String):void;
 		function forceState(forcedState:String):void;
 		function releaseState():void;
 	}

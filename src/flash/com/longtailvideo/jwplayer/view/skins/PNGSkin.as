@@ -10,6 +10,7 @@ package com.longtailvideo.jwplayer.view.skins {
 	import flash.display.Sprite;
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
+	import flash.events.EventDispatcher;
 	import flash.utils.Dictionary;
 
 	/**
@@ -26,7 +27,7 @@ package com.longtailvideo.jwplayer.view.skins {
 	 */
 	[Event(name="error", type = "flash.events.ErrorEvent")]
 
-	public class PNGSkin extends SkinBase implements ISkin {
+	public class PNGSkin extends EventDispatcher implements ISkin {
 		
 		protected var _urlPrefix:String;
 		protected var _skinXML:XML;
@@ -39,7 +40,7 @@ package com.longtailvideo.jwplayer.view.skins {
 		public namespace skinNS = "http://developer.longtailvideo.com/trac/wiki/Skinning";
 		use namespace skinNS;
 
-		public override function load(url:String=null):void {
+		public function load(url:String=null):void {
 			if (Strings.extension(url) == "xml" ) {
 				_urlPrefix = url.substring(0, url.lastIndexOf('/')+1);
 
@@ -47,8 +48,8 @@ package com.longtailvideo.jwplayer.view.skins {
 				loader.addEventListener(Event.COMPLETE, loadComplete);
 				loader.addEventListener(ErrorEvent.ERROR, loadError);
 				loader.load(url);
-			} else if (_skin.numChildren == 0) {
-				sendError("PNG skin descriptor file must have a .xml extension");
+			} else {
+				sendError("Error loading skin: Invalid skin format");
 			}
 		}
 
@@ -68,7 +69,7 @@ package com.longtailvideo.jwplayer.view.skins {
 
 		protected function parseSkin():void {
 			if (_skinXML.localName() != "skin") {
-				sendError("PNG skin descriptor file not correctly formatted");
+				sendError("Error loading skin: Skin formatting error");
 				return;
 			}
 			
@@ -112,7 +113,7 @@ package com.longtailvideo.jwplayer.view.skins {
 					_props[component + "." + setting.@name.toString()] = setting.@value.toString();
 				} else {
 					if (_props.hasOwnProperty(setting.@name.toString())) {
-						_props[setting.@name.toString()] = setting.@value.toString();
+						_props[setting.@name.toString().toLowerCase()] = setting.@value.toString();
 					}
 				}
 			}
@@ -183,11 +184,13 @@ package com.longtailvideo.jwplayer.view.skins {
 		
 		
 		
-		public override function getSkinProperties():SkinProperties {
+		public function getSkinProperties():SkinProperties {
 			return _props; 
 		}
 		
-		public override function getSkinElement(component:String, element:String):DisplayObject {
+		public function getSkinElement(component:String, element:String):DisplayObject {
+			component = component.toLowerCase();
+			element = element.toLowerCase();
 			if (_components[component] && _components[component][element]){
 				var sprite:Sprite = _components[component][element] as Sprite;
 				if (sprite.getChildAt(0) is Bitmap) {
@@ -203,7 +206,9 @@ package com.longtailvideo.jwplayer.view.skins {
 			return null;
 		}
 		
-		public override function addSkinElement(component:String, name:String, element:DisplayObject):void {	
+		public function addSkinElement(component:String, name:String, element:DisplayObject):void {	
+			component = component.toLowerCase();
+			name = name.toLowerCase();
 			if (!_components[component]) {
 				_components[component] = {};
 			}
@@ -216,8 +221,35 @@ package com.longtailvideo.jwplayer.view.skins {
 			}
 		}
 		
-		public override function hasComponent(component:String):Boolean {
-			return _components.hasOwnProperty(component);
+		public function hasComponent(component:String):Boolean {
+			return _components.hasOwnProperty(component.toLowerCase());
 		}
+		
+		/**
+		 * Dispatch an ErrorEvent.ERROR with a message
+		 * @param message The message to dispatch
+		 */
+		protected function sendError(message:String):void {
+			dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, message));
+		}
+		
+		public function get components():Vector.<String> {
+			var strings:Vector.<String> = new Vector.<String>;
+			for(var component:String in _components) {
+				strings.push(component);
+			}
+			return strings;
+		}
+		
+		public function getSkinComponent(component:String):Object {
+			if (hasComponent(component)) {
+				return _components[component.toLowerCase()];
+			} else return null;
+		}
+		
+		public function overwriteComponent(componentName:String, component:Object):void {
+			_components[componentName.toLowerCase()] = component;
+		}
+
 	}
 }

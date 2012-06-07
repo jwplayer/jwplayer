@@ -44,6 +44,7 @@ package com.longtailvideo.jwplayer.view {
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
+	import flash.text.TextFormatAlign;
 	import flash.ui.Keyboard;
 	import flash.utils.Timer;
 
@@ -241,13 +242,11 @@ package com.longtailvideo.jwplayer.view {
 				_root.visible = true;
 			} else {
 				var errorMessage:TextField = new TextField();
-				errorMessage.defaultTextFormat = new TextFormat("_sans", 12, 0xffffff);
-				errorMessage.text = errorMsg;
+				errorMessage.defaultTextFormat = new TextFormat("_sans", 15, 0xffffff, false, false, false, null, null, TextFormatAlign.CENTER);
+				errorMessage.text = errorMsg.replace(":", ":\n");
 				errorMessage.width = RootReference.stage.stageWidth - 300;
-				errorMessage.wordWrap = true;
 				errorMessage.height = errorMessage.textHeight + 10;
-				errorMessage.autoSize = TextFieldAutoSize.LEFT;
-				errorMessage.wordWrap = true;
+				errorMessage.autoSize = TextFieldAutoSize.CENTER;
 
 				errorMessage.x = (RootReference.stage.stageWidth - errorMessage.textWidth) / 2;
 				errorMessage.y = (RootReference.stage.stageHeight - errorMessage.textHeight) / 2;
@@ -586,11 +585,14 @@ package com.longtailvideo.jwplayer.view {
 					_lastImage = _model.playlist.currentItem.image;
 					loadImage(_lastImage);
 				}
+			} else {
+				_image.visible = false;
 			}
 		}
 
 
 		protected function loadImage(url:String):void {
+			_image.visible = true;
 			_image.load(new URLRequest(url), new LoaderContext(true));
 		}
 
@@ -642,6 +644,7 @@ package com.longtailvideo.jwplayer.view {
 			mediaDelay.reset();
 			switch (_model.state) {
 				case PlayerState.IDLE:
+				case PlayerState.COMPLETED:
 					imageDelay.start();
 					break;
 				case PlayerState.PLAYING:

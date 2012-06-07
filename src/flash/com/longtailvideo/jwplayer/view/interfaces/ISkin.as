@@ -27,6 +27,13 @@ package com.longtailvideo.jwplayer.view.interfaces {
 		 */
 		function load(url:String=null):void;
 		
+		
+		/**
+		 * Lists the components available in the skin
+		 **/
+		
+		function get components():Vector.<String>;
+		
 		/**
 		 * Returns the availability of skin elements for a given component.
 		 * 
@@ -38,6 +45,16 @@ package com.longtailvideo.jwplayer.view.interfaces {
 		 */		
 		function hasComponent(component:String):Boolean;
 
+		/**
+		 * Returns an entire componentBlock
+		 **/
+		function getSkinComponent(component:String):Object;
+
+		/**
+		 * Overwrite a component definition
+		 **/
+		function overwriteComponent(componentName:String, component:Object):void;
+		
 		/**
 		 * 
 		 * @param component
