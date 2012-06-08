@@ -92,14 +92,6 @@
 			}
 		}
 		
-		_model.setState = function(newstate) {
-			var oldstate = _model.state;
-			_model.state = newstate;
-			if (newstate != oldstate) {
-				_model.sendEvent(events.JWPLAYER_PLAYER_STATE, { newstate: _model.state, oldstate: oldstate });
-			}
-		}
-		
 		_model.getVideo = function() {
 			return _video;
 		}

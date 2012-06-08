@@ -186,6 +186,4 @@
 		}
 	}
 	
-
-	
 })(jwplayer.utils);

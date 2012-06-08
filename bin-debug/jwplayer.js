@@ -18,7 +18,7 @@ jwplayer = function(container) {
 
 var $jw = jwplayer;
 
-jwplayer.version = '6.0.2234';
+jwplayer.version = '6.0.2241';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -356,6 +356,17 @@ jwplayer.source = document.createElement("source");/**
 	utils.isYouTube = function(path) {
 		return (path.indexOf("youtube.com") > -1 || path.indexOf("youtu.be") > -1);
 	};
+
+	/**
+	 * Iterates over an object and executes a callback function for each property (if it exists)
+	 * This is a safe way to iterate over objects if another script has modified the object prototype
+	 */
+	utils.foreach = function(obj, each) {
+		for (var i in obj) {
+			if (obj.hasOwnProperty(i)) each(i);
+		}
+	}
+
 	
 })(jwplayer);/**
  * JW Player Media Extension to Mime Type mapping
@@ -676,13 +687,13 @@ jwplayer.source = document.createElement("source");/**
 			BUFFERING : 'BUFFERING',
 			IDLE : 'IDLE',
 			PAUSED : 'PAUSED',
-			PLAYING : 'PLAYING',
-			COMPLETED : 'COMPLETED'
+			PLAYING : 'PLAYING'
 		},
 
 		// Playlist Events
 		JWPLAYER_PLAYLIST_LOADED : 'jwplayerPlaylistLoaded',
 		JWPLAYER_PLAYLIST_ITEM : 'jwplayerPlaylistItem',
+		JWPLAYER_PLAYLIST_COMPLETE : 'jwplayerPlaylistComplete',
 
 		// Display CLick
 		JWPLAYER_DISPLAY_CLICK : 'jwplayerViewClick',
@@ -2448,9 +2459,9 @@ jwplayer.source = document.createElement("source");/**
 			onQualityChange: events.JWPLAYER_MEDIA_LEVEL_CHANGED
 		};
 		
-		for (var event in _eventMapping) {
+		utils.foreach(_eventMapping, function(event) {
 			_this[event] = _eventCallback(_eventMapping[event], _eventListener); 
-		}
+		});
 
 		var _stateMapping = {
 			onBuffer: states.BUFFERING,
@@ -2459,9 +2470,9 @@ jwplayer.source = document.createElement("source");/**
 			onIdle: states.IDLE 
 		};
 
-		for (var state in _stateMapping) {
+		utils.foreach(_stateMapping, function(state) {
 			_this[state] = _eventCallback(_stateMapping[state], _stateListener); 
-		}
+		});
 		
 		function _eventCallback(event, listener) {
 			return function(callback) {
@@ -2641,9 +2652,9 @@ jwplayer.source = document.createElement("source");/**
 			}
 			_this.container = document.getElementById(_this.id);
 			
-			for (var eventType in _listeners) {
+			utils.foreach(_listeners, function(eventType) {
 				_addInternalListener(_player, eventType);
-			}
+			});
 			
 			_eventListener(events.JWPLAYER_PLAYLIST_ITEM, function(data) {
 				_itemMeta = {};

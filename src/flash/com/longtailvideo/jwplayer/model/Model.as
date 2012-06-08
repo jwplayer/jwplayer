@@ -90,7 +90,6 @@ package com.longtailvideo.jwplayer.model {
 		protected var _fullscreen:Boolean = false;
 		protected var _currentMedia:IMediaProvider;
 		protected var _mediaSources:Object;
-		protected var _playlistComplete:Boolean = false; 
 		
 		/** Constructor **/
 		public function Model() {
@@ -119,7 +118,6 @@ package com.longtailvideo.jwplayer.model {
 		 * The current player state
 		 */
 		public function get state():String {
-			if (_playlistComplete) return PlayerState.COMPLETED;
 			return _currentMedia ? _currentMedia.state : PlayerState.IDLE;
 		}
 
@@ -214,21 +212,11 @@ package com.longtailvideo.jwplayer.model {
 				} else if (evt.type == MediaEvent.JWPLAYER_MEDIA_ERROR) {
 					// Translate media error into player error.
 					dispatchEvent(new PlayerEvent(PlayerEvent.JWPLAYER_ERROR, (evt as MediaEvent).message));
-				} else if (evt is PlayerStateEvent && PlayerStateEvent(evt).newstate != PlayerState.COMPLETED) {
-					_playlistComplete = false;
 				} 
 				dispatchEvent(evt);
 			}
 		}
 		
-		public function playlistComplete():void {
-			_playlistComplete = true;
-			dispatchEvent(new PlayerStateEvent(PlayerStateEvent.JWPLAYER_PLAYER_STATE, 
-				PlayerState.COMPLETED,
-				PlayerState.IDLE
-			));
-		}
-
 		/** e.g. http://providers.longtailvideo.com/5/myProvider.swf --> myprovider **/
 		protected function url2type(type:String):String {
 			if (type.toLowerCase() == "audio")

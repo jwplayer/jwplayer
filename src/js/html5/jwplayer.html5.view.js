@@ -389,7 +389,6 @@
 				}
 				_startFade();
 				break;
-			case states.COMPLETED:
 			case states.IDLE:
 				if (!_isMobile) {
 					_showVideo(false);

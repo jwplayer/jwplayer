@@ -160,7 +160,7 @@
 		}
 		
 		function _isIdle() {
-			return (_model.state == states.IDLE || _model.state == states.COMPLETED);
+			return (_model.state == states.IDLE);
 		}
 		
 		function _seek(pos) {
@@ -206,13 +206,13 @@
 				case "list":
 					if (_model.item == _model.playlist.length - 1) {
 						_load(0);
-						_model.setState(states.COMPLETED);
+						setTimeout(function() { _eventDispatcher.sendEvent(events.JWPLAYER_PLAYLIST_COMPLETE)}, 0);
 					} else {
 						_next();
 					}
 					break;
 				default:
-					_model.setState(states.COMPLETED);
+					setTimeout(function() { _eventDispatcher.sendEvent(events.JWPLAYER_PLAYLIST_COMPLETE)}, 0);
 //					_stop();
 					break;
 			}

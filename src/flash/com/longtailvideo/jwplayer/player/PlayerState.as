@@ -15,7 +15,5 @@ package com.longtailvideo.jwplayer.player {
 		public static var PLAYING:String = "PLAYING";
 		/** Playback is paused. **/
 		public static var PAUSED:String = "PAUSED";
-		/** Playlist has completed playing. **/
-		public static var COMPLETED:String = "COMPLETED";
 	}
 }

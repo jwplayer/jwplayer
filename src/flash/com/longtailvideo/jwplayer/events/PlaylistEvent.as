@@ -42,7 +42,17 @@ package com.longtailvideo.jwplayer.events {
 		 * @eventType jwplayerPlaylistItem
 		 */
 		public static var JWPLAYER_PLAYLIST_ITEM:String = "jwplayerPlaylistItem";
-
+		
+		/**
+		 * The PlaylistEvent.JWPLAYER_PLAYLIST_COMPLETE constant defines the value of the
+		 * <code>type</code> property of the event object
+		 * for a <code>jwplayerPlaylistComplete</code> event.
+		 *
+		 * @see com.longtailvideo.jwplayer.player.Player
+		 * @eventType jwplayerPlaylistComplete
+		 */
+		public static var JWPLAYER_PLAYLIST_COMPLETE:String = "jwplayerPlaylistComplete";
+		
 		private var _playlist:IPlaylist;
 		
 		public function PlaylistEvent(type:String, playlist:IPlaylist) {

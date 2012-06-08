@@ -5,35 +5,23 @@
  * @version 6.0
  */
 (function(utils) {
-	var exists = utils.exists;
-	
-	utils.scale = function(domelement, xscale, yscale, xoffset, yoffset) {
-		var value;
-		
-		// Set defaults
-		if (!exists(xscale)) xscale = 1;
-		if (!exists(yscale)) yscale = 1;
-		if (!exists(xoffset)) xoffset = 0;
-		if (!exists(yoffset)) yoffset = 0;
-		
-		if (xscale == 1 && yscale == 1 && xoffset == 0 && yoffset == 0) {
-			value = "";
-		} else {
-			value = "scale("+xscale+","+yscale+") translate("+xoffset+"px,"+yoffset+"px)";
-		}
-		
-	};
-	
-	utils.transform = function(element, value) {
-		var style = element.style;
-		if (exists(value)) {
-			style.webkitTransform = value;
-			style.MozTransform = value;
-			style.msTransform = value;
-			style.OTransform = value;
-		}
-	}
-	
+//	utils.scale = function(domelement, xscale, yscale, xoffset, yoffset) {
+//		var value;
+//		
+//		// Set defaults
+//		if (!exists(xscale)) xscale = 1;
+//		if (!exists(yscale)) yscale = 1;
+//		if (!exists(xoffset)) xoffset = 0;
+//		if (!exists(yoffset)) yoffset = 0;
+//		
+//		if (xscale == 1 && yscale == 1 && xoffset == 0 && yoffset == 0) {
+//			value = "";
+//		} else {
+//			value = "scale("+xscale+","+yscale+") translate("+xoffset+"px,"+yoffset+"px)";
+//		}
+//		
+//	};
+//	
 	/**
 	 * Stretches domelement based on stretching. parentWidth, parentHeight,
 	 * elementWidth, and elementHeight are required as the elements dimensions
@@ -116,7 +104,7 @@
 				domelement.style.height = elementHeight + "px"; 
 				xoff = ((parentWidth - elementWidth) / 2) / xscale;
 				yoff = ((parentHeight - elementHeight) / 2) / yscale;
-				utils.scale(domelement, xscale, yscale, xoff, yoff);
+				//utils.scale(domelement, xscale, yscale, xoff, yoff);
 			} else {
 				domelement.style.width = "";
 				domelement.style.height = "";

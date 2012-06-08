@@ -109,7 +109,7 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 
 		protected function get fontOverColor():Color {
-			return getConfigParam("fontovercolor") ? new Color(String(getConfigParam("fontovercolor"))) : null;
+			return getConfigParam("overcolor") ? new Color(String(getConfigParam("overcolor"))) : null;
 		}
 
 		protected function get fontSize():Number {

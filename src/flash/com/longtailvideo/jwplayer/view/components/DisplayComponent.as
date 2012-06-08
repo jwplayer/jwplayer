@@ -41,6 +41,7 @@
 		protected var _textOverFormat:TextFormat;
 
 		protected var _errorState:Boolean = false;
+		protected var _completedState:Boolean = false;
 		
 		/** Setting defaults **/
 		protected var _bufferRotationTime:Number = 100;
@@ -79,11 +80,17 @@
 			}
 		}
 		
+		private function playlistComplete(evt:PlaylistEvent):void {
+			_completedState = true;
+			stateHandler();
+		}
+		
 
 		private function addListeners():void {
 			player.addEventListener(PlayerStateEvent.JWPLAYER_PLAYER_STATE, stateHandler);
 			player.addEventListener(PlayerEvent.JWPLAYER_ERROR, errorHandler);
 			player.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_ITEM, itemHandler);
+			player.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_COMPLETE, playlistComplete);
 			addEventListener(MouseEvent.CLICK, clickHandler);
 			this.buttonMode = true;
 		}
@@ -168,26 +175,30 @@
 		protected function setIcon(displayIcon:DisplayIcon):void {
 			var sendShowEvent:Boolean = false;
 			var sendHideEvent:Boolean = false;
-			try {
-				if (_icon && _icon.parent == _overlay) { 
-					_overlay.removeChild(_icon);
-					_icon = null;
-					sendHideEvent = !_hiding;
-				} else {
-					sendShowEvent = !_hiding;
-				}
-			} catch (err:Error) {
-			}
+
+			sendHideEvent = !_hiding;
+
 			if (_fullscreen != _player.config.fullscreen) {
 				_fullscreen = _player.config.fullscreen;
 				sendShowEvent = true;
 			}
+			
 			if (displayIcon && _player.config.icons && (getConfigParam("icons") === true || typeof(getConfigParam("icons")) == "undefined")) {
+				var oldIcon:DisplayObject = _icon;
 				_icon = displayIcon;
+				if (oldIcon && oldIcon.parent == _overlay) {
+					_overlay.removeChild(oldIcon);
+				} 
+				
 				_overlay.addChild(_icon);
+				if (!oldIcon) {
+					_icon.alpha = 0;
+					(new Animations(_icon).fade(1));
+				}
+
 				positionIcon();
 				_iconArea = _icon.getRect(_overlay);
-
+				
 				if (sendShowEvent) {
 					sendShow();
 				}
@@ -195,6 +206,10 @@
 				if (sendHideEvent) {
 					sendHide();
 				}
+				if (_icon && _icon.alpha > 0) {
+					(new Animations(_icon).fade(0));
+				}
+				_icon = null;
 				_iconArea = null;
 			}
 		}
@@ -232,14 +247,16 @@
 				switch (currentState) {
 					case PlayerState.BUFFERING:
 						_errorState = false;
+						_completedState = false;
 						_bufferStateTimer.start();
 						break;
 					case PlayerState.PAUSED:
 					case PlayerState.IDLE:
-						_playStateTimer.start();
-						break;
-					case PlayerState.COMPLETED:
-						setDisplay(getIcon('replay'));
+						if (_completedState) {
+							setDisplay(getIcon('replay'));
+						} else {
+							_playStateTimer.start();
+						}
 						break;
 					default:
 						clearDisplay();

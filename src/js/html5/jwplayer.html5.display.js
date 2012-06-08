@@ -8,7 +8,6 @@
 	var utils = jwplayer.utils,
 		events = jwplayer.events,
 		states = events.state,
-		_rotate = utils.animations.rotate,
 		_css = utils.css,
 		
 
@@ -22,27 +21,31 @@
 		JW_CSS_NONE = "none",
 		JW_CSS_100PCT = "100%",
 		JW_CSS_HIDDEN = "hidden",
-		JW_CSS_SMOOTH_EASE = "opacity .25s";
+		JW_CSS_SMOOTH_EASE = "opacity .25s, background .25s, color .25s";
 
 	
 	html5.display = function(api, config) {
 		var _api = api,
 			_skin = api.skin,
 			_display, _preview,
+			_item,
 			_image, _imageWidth, _imageHeight, _imageURL,
 			_icons = {},
 			_errorState = false,
-			_errorText,
+			_completedState = false,
 			_hiding,
 			_button,		
-			_degreesRotated, 
-			_rotationInterval, 
 			_config = utils.extend({
 				backgroundcolor: '#000',
-				showicons: true
+				showicons: true,
+				bufferrotation: 15,
+				bufferinterval: 100,
+				fontcase: "",
+				fontcolor: '#fff',
+				overcolor: '#fff',
+				fontsize: 15,
+				fontweight: ""
 			}, _skin.getComponentSettings('display'), config);
-			_bufferRotation = !utils.exists(_config.bufferrotation) ? 15 : parseInt(_config.bufferrotation, 10), 
-			_bufferInterval = !utils.exists(_config.bufferinterval) ? 100 : parseInt(_config.bufferinterval, 10),
 			_eventDispatcher = new events.eventdispatcher();
 			
 		utils.extend(this, _eventDispatcher);
@@ -58,12 +61,13 @@
 			
 			_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
 			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_ITEM, _itemHandler);
+			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_COMPLETE, _playlistCompleteHandler);
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
 
 			_display.addEventListener('click', _clickHandler, false);
 			
 			_createIcons();
-			_createTextFields();
+			//_createTextFields();
 			
 			_stateHandler({newstate:states.IDLE});
 		}
@@ -81,111 +85,44 @@
 			_eventDispatcher.sendEvent(events.JWPLAYER_DISPLAY_CLICK);
 		}
 		
-		// Create the icons which will be displayed inside of the display button
 		function _createIcons() {
-			var iconNames = ['play', 'buffer', 'error', 'repeat'];
-			for (var i=0; i<iconNames.length; i++) {
-				var iconName = iconNames[i],
-					iconOut = _getSkinElement(iconName+"Icon"),
-					iconOver = _getSkinElement(iconName+"IconOver"),
-					icon = DOCUMENT.createElement("div"),
-					bg = _getSkinElement("background"),
-					bgOver = _getSkinElement("backgroundOver"),
-					capLeft = _getSkinElement("capLeft"),
-					capLeftOver = _getSkinElement("capLeftOver"),
-					capRight = _getSkinElement("capRight"),
-					capRightOver = _getSkinElement("capRightOver"),
-					button = DOCUMENT.createElement("button");
-			
-				if (iconOut) {
-					button.className = "jw" + iconName;
-					icon.className = "jwicon";
-					button.appendChild(icon);
-					
-					_buttonStyle('#'+_display.id+' .'+button.className, bg, bgOver);
-					_buttonStyle('#'+_display.id+' .'+button.className+' .'+icon.className, iconOut, iconOver);
-					
-					if (bgOver || iconOver) {
-						button.addEventListener('mouseover', _hoverButton(button), false);
-						button.addEventListener('mouseout', _hoverOutButton(button), false);
-					}
-					
-					_icons[iconName] = button;
-				}
-			}
+			var	outStyle = {
+					font: _config.fontweight + " " + _config.fontsize + "px/"+(parseInt(_config.fontsize)+3)+"px Arial,Helvetica,sans-serif",
+					color: _config.fontcolor
+				},
+				overStyle = {color:_config.overcolor};
+			_button = new html5.displayicon(_display.id+"_button", _skin, outStyle, overStyle);
+			_display.appendChild(_button.getDisplayElement());
 		}
 		
-		function _hoverButton(button) {
-			return function(evt) {
-				if (button.className.indexOf("jwhover") < 0) 
-					button.className += " jwhover";
-				if (button.childNodes[0].className.indexOf("jwhover") < 0)
-					button.childNodes[0].className += " jwhover";
-			}
-		}
-		
-		function _hoverOutButton(button) {
-			return function(evt) {
-				button.className = button.className.replace(" jwhover", ""); 
-				button.childNodes[0].className = button.childNodes[0].className.replace(" jwhover", "");
-			}
-		}
-		
-		function _buttonStyle(selector, out, over) {
-			if (!(out && out.src)) {
-				return;
-			}
-			
-			_css(selector, { 
-				width: out.width,
-				height: out.height,
-				'margin-left': out.width / -2,
-				'margin-top': out.height / -2,
-				background: 'url('+ out.src +') center no-repeat'
-			});
 
-			if (over && over.src) {
-				_css(selector + ".jwhover", {
-					background: 'url('+ over.src +') center no-repeat'
-				});
-			}
-		}
-		
-		
-		function _createTextFields() {
-			_errorText = DOCUMENT.createElement("div");
-			_errorText.className = "jwerror";
-			_display.appendChild(_errorText);
-		}
-		
-		function _setIcon(name) {
+		function _setIcon(name, text) {
 			if (!_config.showicons) return;
 			
-			if (_button) {
-				_display.removeChild(_button);
-			}
-			_button = _icons[name];
-			if (_button) {
-				_display.appendChild(_button);
+			if (name || text) {
+				_button.setRotation(name == "buffer" ? parseInt(_config.bufferrotation) : 0, parseInt(_config.bufferinterval));
+				_button.setIcon(name);
+				_button.setText(text);
+			} else {
+				_button.hide();
 			}
 			
-			if (name == "buffer") {
-				_degreesRotated = 0;
-				_rotationInterval = setInterval(function() {
-					_degreesRotated += _bufferRotation;
-					_rotate(_button.childNodes[0], _degreesRotated % 360);
-				}, _bufferInterval);
-			}
+			
 		}
 
 		function _itemHandler() {
-			var item = _api.jwGetPlaylist()[_api.jwGetPlaylistIndex()];
-			var newImage = item ? item.image : "";
+			_item = _api.jwGetPlaylist()[_api.jwGetPlaylistIndex()];
+			var newImage = _item ? _item.image : "";
 			if (_image != newImage) {
 				_image = newImage;
 				_setVisibility(D_PREVIEW_CLASS, false);
 				_getImage();
 			}
+		}
+		
+		function _playlistCompleteHandler() {
+			_completedState = true;
+			_setIcon("replay");
 		}
 		
 		var _stateTimeout;
@@ -198,18 +135,17 @@
 		}
 		
 		function _updateDisplay(state) {
-			clearInterval(_rotationInterval);
-			
+			if (_button) _button.setRotation(0);
 			switch(state) {
-			case states.COMPLETED:
 			case states.IDLE:
-				if (!_errorState) {
-					_setVisibility(D_PREVIEW_CLASS, true);
-					_setIcon('play');
+				if (!_errorState && !_completedState) {
+					if (_image) _setVisibility(D_PREVIEW_CLASS, true);
+					_setIcon('play', _item ? _item.title : "");
 				}
 				break;
 			case states.BUFFERING:
 				_clearError();
+				_completedState = false;
 				_setIcon('buffer');
 				break;
 			case states.PLAYING:
@@ -220,6 +156,8 @@
 				break;
 			}
 		}
+		
+		window.forceState = _updateDisplay;
 		
 		this.hidePreview = function(state) {
 			_setVisibility(D_PREVIEW_CLASS, !state);
@@ -256,29 +194,14 @@
 			}
 		}
 
-		function _getSkinElement(name) {
-			var elem = _skin.getSkinElement('display', name); 
-			if (elem) {
-				return elem;
-			}
-			return null;
-		}
-		
 		function _errorHandler(evt) {
 			_errorState = true;
-			_setIcon();
-			_css(_internalSelector(D_ERROR_CLASS), {
-				display: "table"
-			});
-			_errorText.innerHTML = "<p>" + evt.message + "</p>";
+			_setIcon('error', evt.message);
 		}
 		
 		function _clearError() {
 			_errorState = false;
-			_css(_internalSelector(D_ERROR_CLASS), {
-				display: "none"
-			});
-			_errorText.innerHTML = "";
+			if (_icons.error) _icons.error.setText();
 		}
 
 		
@@ -334,34 +257,10 @@
 		overflow: JW_CSS_HIDDEN
 	});
 
-	_css(D_CLASS + ' ' + D_ERROR_CLASS, {
-		display: "none",
-		position: JW_CSS_ABSOLUTE,
-		width: JW_CSS_100PCT,
-		height: JW_CSS_100PCT
-	});
-
-	_css(D_CLASS + ' ' + D_ERROR_CLASS + ' p', {
-		display: "table-cell",
-		'vertical-align': "middle",
-		'text-align': "center",
-		background: 'rgba(0, 0, 0, 0.5)',
-		color: '#fff'
-	});
-
 	_css(D_CLASS +', '+D_CLASS + ' *', {
     	'-webkit-transition': JW_CSS_SMOOTH_EASE,
     	'-moz-transition': JW_CSS_SMOOTH_EASE,
     	'-o-transition': JW_CSS_SMOOTH_EASE
 	});
-	
-    _css(D_CLASS+' button, ' + D_CLASS+' .jwicon', {
-    	border: JW_CSS_NONE,
-    	position: JW_CSS_ABSOLUTE,
-    	left: "50%",
-    	top: "50%",
-    	padding: 0,
-    	cursor: 'pointer'
-    });
 
 })(jwplayer.html5);

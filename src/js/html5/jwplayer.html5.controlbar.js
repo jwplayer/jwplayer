@@ -242,9 +242,6 @@
 				_setBuffer(0);
 				_timeUpdated({ position: 0, duration: 0});
 				break;
-			case _states.COMPLETED:
-				_css(_internalSelector(), { opacity: 0 });
-				break;
 			}
 		}
 		
@@ -578,7 +575,7 @@
 		
 		function _idle() {
 			var currentState = _api.jwGetState();
-			return (currentState == _states.IDLE || currentState == _states.COMPLETED); 
+			return (currentState == _states.IDLE); 
 		}
 
 		function _sliderMouseDown(name) {

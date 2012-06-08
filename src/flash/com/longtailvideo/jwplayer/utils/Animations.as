@@ -1,4 +1,5 @@
 package com.longtailvideo.jwplayer.utils {
+	import flash.display.DisplayObject;
 	import flash.display.MovieClip;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -13,7 +14,7 @@ package com.longtailvideo.jwplayer.utils {
 	
 	public class Animations extends EventDispatcher {
 		/** Target MovieClip **/
-		private var _tgt:MovieClip;
+		private var _tgt:DisplayObject;
 		/** Transition speed **/
 		private var _spd:Number;
 		/** Final Alpha **/
@@ -30,7 +31,7 @@ package com.longtailvideo.jwplayer.utils {
 		/** Constructor 
 		 * @param tgt	The Movielip to animate.
 		 **/
-		public function Animations(tgt:MovieClip) {
+		public function Animations(tgt:DisplayObject) {
 			_tgt = tgt;
 		}
 		

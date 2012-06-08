@@ -100,8 +100,6 @@ package com.longtailvideo.jwplayer.view.components {
 			hover(false);
 		}
 		
-		private static var n:Number = 0;
-		
 		private function redraw():void {
 			positionText();
 			_background.x = _capLeft.width;
@@ -147,7 +145,7 @@ package com.longtailvideo.jwplayer.view.components {
 			_textField.visible = true;
 			_textField.wordWrap = true;
 			_textField.width = 300;
-			_textField.text = _text.substr(0, 500);
+			_textField.text = _text.substr(0, 500).replace(":",":\n");
 
 			var elipses:Boolean = false;
 			if (_textField.numLines > 2) {
@@ -232,7 +230,7 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 		
 		private function rotationInterval(evt:TimerEvent):void {
-			_iconContainer.rotation += _rotationAngle;
+			_iconContainer.rotation = (_iconContainer.rotation + _rotationAngle) % 360;
 		}
 		
 	}

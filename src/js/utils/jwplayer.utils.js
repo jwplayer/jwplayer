@@ -331,5 +331,16 @@
 	utils.isYouTube = function(path) {
 		return (path.indexOf("youtube.com") > -1 || path.indexOf("youtu.be") > -1);
 	};
+
+	/**
+	 * Iterates over an object and executes a callback function for each property (if it exists)
+	 * This is a safe way to iterate over objects if another script has modified the object prototype
+	 */
+	utils.foreach = function(obj, each) {
+		for (var i in obj) {
+			if (obj.hasOwnProperty(i)) each(i);
+		}
+	}
+
 	
 })(jwplayer);

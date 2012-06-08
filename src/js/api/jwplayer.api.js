@@ -285,9 +285,9 @@
 			onQualityChange: events.JWPLAYER_MEDIA_LEVEL_CHANGED
 		};
 		
-		for (var event in _eventMapping) {
+		utils.foreach(_eventMapping, function(event) {
 			_this[event] = _eventCallback(_eventMapping[event], _eventListener); 
-		}
+		});
 
 		var _stateMapping = {
 			onBuffer: states.BUFFERING,
@@ -296,9 +296,9 @@
 			onIdle: states.IDLE 
 		};
 
-		for (var state in _stateMapping) {
+		utils.foreach(_stateMapping, function(state) {
 			_this[state] = _eventCallback(_stateMapping[state], _stateListener); 
-		}
+		});
 		
 		function _eventCallback(event, listener) {
 			return function(callback) {
@@ -478,9 +478,9 @@
 			}
 			_this.container = document.getElementById(_this.id);
 			
-			for (var eventType in _listeners) {
+			utils.foreach(_listeners, function(eventType) {
 				_addInternalListener(_player, eventType);
-			}
+			});
 			
 			_eventListener(events.JWPLAYER_PLAYLIST_ITEM, function(data) {
 				_itemMeta = {};

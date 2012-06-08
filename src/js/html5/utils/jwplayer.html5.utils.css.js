@@ -7,7 +7,8 @@
 (function(utils) {
 	var _styleSheets={},
 		_styleSheet,
-		_rules = {};
+		_rules = {},
+		exists = utils.exists;
 
 	function _createStylesheet() {
 		var styleSheet = document.createElement("style");
@@ -17,7 +18,7 @@
 	}
 	
 	utils.css = function(selector, styles, important) {
-		if (!utils.exists(important)) important = false;
+		if (!exists(important)) important = false;
 		
 		if (utils.isIE()) {
 			if (!_styleSheet) {
@@ -33,9 +34,9 @@
 
 		for (var style in styles) {
 			var val = _styleValue(style, styles[style], important);
-			if (utils.exists(_rules[selector][style]) && !utils.exists(val)) {
+			if (exists(_rules[selector][style]) && !exists(val)) {
 				delete _rules[selector][style];
-			} else {
+			} else if (exists(val)) {
 				_rules[selector][style] = val;
 			}
 		}
@@ -116,4 +117,19 @@
 			}
 		}
 	}
+	
+	utils.transform = function(element, value) {
+		var style = element.style;
+		if (exists(value)) {
+			style.webkitTransform = value;
+			style.MozTransform = value;
+			style.msTransform = value;
+			style.OTransform = value;
+		}
+	}
+	
+	utils.rotate = function(domelement, deg) {
+		utils.transform(domelement, "rotate(" + deg + "deg)");
+	};
+
 })(jwplayer.utils);

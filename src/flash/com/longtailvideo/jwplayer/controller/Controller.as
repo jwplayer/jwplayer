@@ -245,13 +245,15 @@ package com.longtailvideo.jwplayer.controller {
 					if (_model.playlist.currentIndex == _model.playlist.length - 1) {
 						_lockingResume = false;
 						_model.playlist.currentIndex = 0;
-						setTimeout(_model.playlistComplete, 10);
+//						setTimeout(_model.playlistComplete, 10);
+						setTimeout(function():void { dispatchEvent(new PlaylistEvent(PlaylistEvent.JWPLAYER_PLAYLIST_COMPLETE, _model.playlist))}, 10);
 					} else {
 						next();
 					}
 					break;
 				case RepeatOptions.NONE:
-					setTimeout(_model.playlistComplete, 10);
+//					setTimeout(_model.playlistComplete, 10);
+					setTimeout(function():void { dispatchEvent(new PlaylistEvent(PlaylistEvent.JWPLAYER_PLAYLIST_COMPLETE, _model.playlist))}, 10);
 					break;
 			}
 		}

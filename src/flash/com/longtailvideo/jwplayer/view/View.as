@@ -644,7 +644,6 @@ package com.longtailvideo.jwplayer.view {
 			mediaDelay.reset();
 			switch (_model.state) {
 				case PlayerState.IDLE:
-				case PlayerState.COMPLETED:
 					imageDelay.start();
 					break;
 				case PlayerState.PLAYING:

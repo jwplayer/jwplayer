@@ -41,13 +41,13 @@
 			BUFFERING : 'BUFFERING',
 			IDLE : 'IDLE',
 			PAUSED : 'PAUSED',
-			PLAYING : 'PLAYING',
-			COMPLETED : 'COMPLETED'
+			PLAYING : 'PLAYING'
 		},
 
 		// Playlist Events
 		JWPLAYER_PLAYLIST_LOADED : 'jwplayerPlaylistLoaded',
 		JWPLAYER_PLAYLIST_ITEM : 'jwplayerPlaylistItem',
+		JWPLAYER_PLAYLIST_COMPLETE : 'jwplayerPlaylistComplete',
 
 		// Display CLick
 		JWPLAYER_DISPLAY_CLICK : 'jwplayerViewClick',
