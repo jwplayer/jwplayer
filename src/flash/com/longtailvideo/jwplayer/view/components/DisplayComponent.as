@@ -209,7 +209,6 @@
 				if (_icon && _icon.alpha > 0) {
 					(new Animations(_icon).fade(0));
 				}
-				_icon = null;
 				_iconArea = null;
 			}
 		}

@@ -31,7 +31,7 @@
 			"progress" : _generalHandler,
 			"ratechange" : _generalHandler,
 			"readystatechange" : _generalHandler,
-			"seeked" : _generalHandler,
+			"seeked" : _sendSeekEvent,
 			"seeking" : _generalHandler,
 			"stalled" : _generalHandler,
 			"suspend" : _generalHandler,
@@ -255,15 +255,18 @@
 			if (!_attached) return; 
 			if (_videotag.readyState >= _videotag.HAVE_FUTURE_DATA) {
 				_delayedSeek = 0;
-				if (!_dragging) {
-					_sendEvent(events.JWPLAYER_MEDIA_SEEK, {
-						position: _position,
-						offset: pos
-					});
-				}
 				_videotag.currentTime = pos;
 			} else {
 				_delayedSeek = pos;
+			}
+		}
+		
+		function _sendSeekEvent() {
+			if (!_dragging) {
+				_sendEvent(events.JWPLAYER_MEDIA_SEEK, {
+					position: _position,
+					offset: _videotag.currentTime
+				});
 			}
 		}
 

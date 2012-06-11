@@ -10,11 +10,12 @@
  */
 (function(jwplayer) {
 	
-	var _html5 = jwplayer.html5,
-		_utils = jwplayer.utils,
-		_events = jwplayer.events,
-		_states = jwplayer.events.state,
-		_css = _utils.css,
+	var html5 = jwplayer.html5,
+		utils = jwplayer.utils,
+		events = jwplayer.events,
+		states = events.state,
+		_css = utils.css,
+		_setTransition = utils.transitionStyle,
 
 		/** Controlbar element types **/
 		CB_BUTTON = "button",
@@ -40,9 +41,10 @@
 		DOCUMENT = document;
 	
 	/** HTML5 Controlbar class **/
-	_html5.controlbar = function(api, config) {
+	html5.controlbar = function(api, config) {
 		var _api,
 			_skin,
+			_dividerElement = _layoutElement("divider", CB_DIVIDER),
 			_defaults = {
 				// backgroundcolor : "",
 				margin : 10,
@@ -59,60 +61,30 @@
 				layout : {
 					left: {
 						position: "left",
-						elements: [ {
-							name: "play",
-							type: CB_BUTTON
-						}, {
-							name: "divider",
-							type: CB_DIVIDER
-						}, {
-							name: "prev",
-							type: CB_BUTTON
-						}, {
-							name: "divider",
-							type: CB_DIVIDER
-						}, {
-							name: "next",
-							type: CB_BUTTON
-						}, {
-							name: "divider",
-							type: CB_DIVIDER
-						}, {
-							name: "elapsed",
-							type: CB_TEXT
-						} ]
+						elements: [ 
+						   _layoutElement("play", CB_BUTTON), 
+						   _dividerElement, 
+						   _layoutElement("prev", CB_BUTTON), 
+						   _layoutElement("next", CB_BUTTON), 
+						   _dividerElement, 
+						   _layoutElement("elapsed", CB_TEXT)
+						]
 					},
 					center: {
 						position: "center",
-						elements: [ {
-							name: "time",
-							type: CB_SLIDER
-						} ]
+						elements: [ _layoutElement("time", CB_SLIDER) ]
 					},
 					right: {
 						position: "right",
-						elements: [ {
-							name: "duration",
-							type: CB_TEXT
-						}, {
-							name: "blank",
-							type: CB_BUTTON
-						}, {
-							name: "divider",
-							type: CB_DIVIDER
-						}, {
-							name: "mute",
-							type: CB_BUTTON
-						}, {
-							name: "volume",
-							type: CB_SLIDER
-						}, {
-							name: "divider",
-							type: CB_DIVIDER
-						}, {
-							name: "fullscreen",
-							type: CB_BUTTON
-						}]
+						elements: [ 
+						    _layoutElement("duration", CB_TEXT), 
+						    _layoutElement("blank", CB_BUTTON),
+						    _dividerElement,
+						    _layoutElement("mute", CB_BUTTON), 
+						    _layoutElement("volume", CB_SLIDER), 
+						    _dividerElement,
+						    _layoutElement("fullscreen", CB_BUTTON)
+					    ]
 					}
 				}
 			},
@@ -153,6 +125,10 @@
 				volume: _volume
 			};
 
+		function _layoutElement(name, type) {
+			return { name: name, type: type };
+		}
+		
 		function _init() {
 			_elements = {};
 			
@@ -173,23 +149,22 @@
 			
 			_layout = _skin.getComponentLayout('controlbar');
 			if (!_layout) _layout = _defaults.layout;
-			_utils.clearCss('#'+_id);
+			utils.clearCss('#'+_id);
 			_createStyles();
 			_buildControlbar();
 			_addEventListeners();
-			_playlistHandler();
 			_volumeHandler();
 			_muteHandler();
 		}
 		
 		function _addEventListeners() {
-			_api.jwAddEventListener(jwplayer.events.JWPLAYER_MEDIA_TIME, _timeUpdated);
-			_api.jwAddEventListener(jwplayer.events.JWPLAYER_PLAYER_STATE, _stateHandler);
-			_api.jwAddEventListener(jwplayer.events.JWPLAYER_MEDIA_MUTE, _muteHandler);
-			_api.jwAddEventListener(jwplayer.events.JWPLAYER_MEDIA_VOLUME, _volumeHandler);
-			_api.jwAddEventListener(jwplayer.events.JWPLAYER_MEDIA_BUFFER, _bufferHandler);
-			_api.jwAddEventListener(jwplayer.events.JWPLAYER_FULLSCREEN, _fullscreenHandler);
-			_api.jwAddEventListener(jwplayer.events.JWPLAYER_PLAYLIST_LOADED, _playlistHandler);
+			_api.jwAddEventListener(events.JWPLAYER_MEDIA_TIME, _timeUpdated);
+			_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
+			_api.jwAddEventListener(events.JWPLAYER_MEDIA_MUTE, _muteHandler);
+			_api.jwAddEventListener(events.JWPLAYER_MEDIA_VOLUME, _volumeHandler);
+			_api.jwAddEventListener(events.JWPLAYER_MEDIA_BUFFER, _bufferHandler);
+			_api.jwAddEventListener(events.JWPLAYER_FULLSCREEN, _fullscreenHandler);
+			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_LOADED, _playlistHandler);
 		}
 		
 		function _timeUpdated(evt) {
@@ -197,14 +172,14 @@
 				timeString;
 			
 			if (_elements.elapsed) {
-				timeString = _utils.timeFormat(evt.position);
+				timeString = utils.timeFormat(evt.position);
 				_elements.elapsed.innerHTML = timeString;
-				refreshRequired = (timeString.length != _utils.timeFormat(_position).length);
+				refreshRequired = (timeString.length != utils.timeFormat(_position).length);
 			}
 			if (_elements.duration) {
-				timeString = _utils.timeFormat(evt.duration);
+				timeString = utils.timeFormat(evt.duration);
 				_elements.duration.innerHTML = timeString;
-				refreshRequired = (refreshRequired || (timeString.length != _utils.timeFormat(_duration).length));
+				refreshRequired = (refreshRequired || (timeString.length != utils.timeFormat(_duration).length));
 			}
 			if (evt.duration > 0) {
 				_setProgress(evt.position / evt.duration);
@@ -219,17 +194,17 @@
 		
 		function _stateHandler(evt) {
 			switch (evt.newstate) {
-			case _states.BUFFERING:
-			case _states.PLAYING:
+			case states.BUFFERING:
+			case states.PLAYING:
 				_css(_internalSelector('.jwtimeSliderThumb'), { opacity: 1 });
 				_toggleButton("play", true);
 				break;
-			case _states.PAUSED:
+			case states.PAUSED:
 				if (!_dragging) {
 					_toggleButton("play", false);
 				}
 				break;
-			case _states.IDLE:
+			case states.IDLE:
 				_toggleButton("play", false);
 				_css(_internalSelector('.jwtimeSliderThumb'), { opacity: 0 });
 				if (_elements["timeRail"]) {
@@ -265,7 +240,7 @@
 		}
 		
 		function _playlistHandler(evt) {
-			if (_api.jwGetPlaylist().length < 2) {
+			if (_api.jwGetPlaylist().length < 2 || _sidebarShowing()) {
 				_css(_internalSelector(".jwnext"), { display: "none" });
 				_css(_internalSelector(".jwprev"), { display: "none" });
 			} else {
@@ -274,12 +249,17 @@
 			}
 			_redraw();
 		}
+		
+		// Bit of a hacky way to determine if the playlist is available 
+		function _sidebarShowing() {
+			return (!!DOCUMENT.querySelector("#"+_api.id+" .jwplaylist"));
+		}
 
 		/**
 		 * Styles specific to this controlbar/skin
 		 */
 		function _createStyles() {
-			_settings = _utils.extend({}, _defaults, _skin.getComponentSettings('controlbar'), config);
+			_settings = utils.extend({}, _defaults, _skin.getComponentSettings('controlbar'), config);
 
 			_css('#'+_id, {
 		  		height: _getSkinElement("background").height,
@@ -367,7 +347,7 @@
 				};
 			}
 			
-			_css(_internalSelector('.jw'+name), _utils.extend(newStyle, style));
+			_css(_internalSelector('.jw'+name), utils.extend(newStyle, style));
 			_elements[name] = element;
 			return element;
 		}
@@ -460,7 +440,7 @@
 		}
 
 		function _toggleButton(name, state) {
-			if (!_utils.exists(state)) {
+			if (!utils.exists(state)) {
 				state = !_toggleStates[name];
 			}
 			if (_elements[name]) {
@@ -575,7 +555,7 @@
 		
 		function _idle() {
 			var currentState = _api.jwGetState();
-			return (currentState == _states.IDLE); 
+			return (currentState == states.IDLE); 
 		}
 
 		function _sliderMouseDown(name) {
@@ -602,7 +582,7 @@
 			}
 			
 			var rail = _elements[_dragging].getElementsByClassName('jwrail')[0],
-				railRect = _utils.getBoundingClientRect(rail),
+				railRect = utils.getBoundingClientRect(rail),
 				pct = (evt.clientX - railRect.left) / railRect.width;
 			
 			if (evt.type == 'mouseup') {
@@ -691,8 +671,8 @@
 		var _redraw = this.redraw = function() {
 			_createStyles();
 			_css(_internalSelector('.jwgroup.jwcenter'), {
-				left: Math.round(_utils.parseDimension(_groups.left.offsetWidth) + _getSkinElement("capLeft").width),
-				right: Math.round(_utils.parseDimension(_groups.right.offsetWidth) + _getSkinElement("capRight").width)
+				left: Math.round(utils.parseDimension(_groups.left.offsetWidth) + _getSkinElement("capLeft").width),
+				right: Math.round(utils.parseDimension(_groups.right.offsetWidth) + _getSkinElement("capRight").width)
 			});
 		}
 		
@@ -770,19 +750,13 @@
 		position: JW_CSS_ABSOLUTE,
 		overflow: JW_CSS_HIDDEN,
 		visibility: JW_CSS_HIDDEN,
-		opacity: 0,
-    	'-webkit-transition': JW_CSS_SMOOTH_EASE,
-    	'-moz-transition': JW_CSS_SMOOTH_EASE,
-    	'-o-transition': JW_CSS_SMOOTH_EASE
-	})
-	
-	_css(CB_CLASS+' span',{
-		height: JW_CSS_100PCT,
-		'-webkit-user-select': JW_CSS_NONE,
-		'-webkit-user-drag': JW_CSS_NONE,
-		'user-select': JW_CSS_NONE,
-		'user-drag': JW_CSS_NONE
+		opacity: 0
 	});
+	
+	_css(CB_CLASS+' span', {
+		height: JW_CSS_100PCT
+	});
+	utils.dragStyle(CB_CLASS+' span', JW_CSS_NONE);
 	
     _css(CB_CLASS+' .jwgroup', {
     	display: JW_CSS_INLINE
@@ -805,12 +779,9 @@
     	display: JW_CSS_INLINE_BLOCK,
     	height: JW_CSS_100PCT,
     	border: JW_CSS_NONE,
-    	cursor: 'pointer',
-    	'-webkit-transition': JW_CSS_SMOOTH_EASE,
-    	'-moz-transition': JW_CSS_SMOOTH_EASE,
-    	'-o-transition': JW_CSS_SMOOTH_EASE
+    	cursor: 'pointer'
     });
-    
+
     _css(CB_CLASS+' .jwcapRight,'+CB_CLASS+' .jwtimeSliderCapRight,'+CB_CLASS+' .jwvolumeSliderCapRight', { 
 		right: 0,
 		position: JW_CSS_ABSOLUTE
@@ -829,12 +800,7 @@
     	cursor: 'pointer'
     });
     
-    _css(CB_CLASS + ' .jwtime .jwsmooth span', {
-    	'-webkit-transition': JW_CSS_SMOOTH_EASE,
-    	'-moz-transition': JW_CSS_SMOOTH_EASE,
-    	'-o-transition': JW_CSS_SMOOTH_EASE
-    });
-    
+
     _css(CB_CLASS + ' .jwdivider+.jwdivider', {
     	display: JW_CSS_NONE
     });
@@ -844,10 +810,10 @@
 		'text-align': 'center'
 	});
     
-    _css(CB_CLASS + ' .jwtoggling', {
-    	'-webkit-transition': JW_CSS_NONE,
-    	'-moz-transition': JW_CSS_NONE,
-    	'-o-transition': JW_CSS_NONE
-    });
-	
+
+	_setTransition(CB_CLASS, JW_CSS_SMOOTH_EASE);
+	_setTransition(CB_CLASS + ' button', JW_CSS_SMOOTH_EASE);
+	_setTransition(CB_CLASS + ' .jwtime .jwsmooth span', JW_CSS_SMOOTH_EASE);
+	_setTransition(CB_CLASS + ' .jwtoggling', JW_CSS_NONE);
+
 })(jwplayer);

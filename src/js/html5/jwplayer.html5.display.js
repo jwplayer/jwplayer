@@ -157,8 +157,6 @@
 			}
 		}
 		
-		window.forceState = _updateDisplay;
-		
 		this.hidePreview = function(state) {
 			_setVisibility(D_PREVIEW_CLASS, !state);
 		}
@@ -178,6 +176,7 @@
 				img.addEventListener('load', _imageLoaded, false);
 				img.src = _image;
 			} else {
+				_css(_internalSelector(D_PREVIEW_CLASS), { 'background-image': undefined });
 				_setVisibility(D_PREVIEW_CLASS, false);
 				_imageWidth = _imageHeight = 0;
 			}

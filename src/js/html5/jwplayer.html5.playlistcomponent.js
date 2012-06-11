@@ -15,21 +15,12 @@
 		overcolor: "",
 		activecolor: "",
 		backgroundcolor: "#f8f8f8",
-		font: "_sans",
-		fontsize: "",
-		fontstyle: "",
-		fontweight: ""
+		fontweight: "normal"
 	},
 
-	_fonts = {
-		'_sans': "Arial, Helvetica, sans-serif",
-		'_serif': "Times, Times New Roman, serif",
-		'_typewriter': "Courier New, Courier, monospace"
-	},
-	
-	_utils = jwplayer.utils, 
-	_css = _utils.css,
-	_events = jwplayer.events,
+	events = jwplayer.events,
+	utils = jwplayer.utils, 
+	_css = utils.css,
 	
 	PL_CLASS = '.jwplaylist',
 	DOCUMENT = document,
@@ -43,7 +34,7 @@
 	html5.playlistcomponent = function(api, config) {
 		var _api = api,
 			_skin = _api.skin,
-			_settings = _utils.extend({}, _defaults, _api.skin.getComponentSettings("playlist"), config),
+			_settings = utils.extend({}, _defaults, _api.skin.getComponentSettings("playlist"), config),
 			_wrapper,
 			_playlist,
 			_items,
@@ -84,8 +75,8 @@
 			
 			_setupStyles();
 			
-			_api.jwAddEventListener(jwplayer.events.JWPLAYER_PLAYLIST_LOADED, _rebuildPlaylist);
-			_api.jwAddEventListener(jwplayer.events.JWPLAYER_PLAYLIST_ITEM, _itemHandler);
+			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_LOADED, _rebuildPlaylist);
+			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_ITEM, _itemHandler);
 		}
 		
 		function _internalSelector(className) {
@@ -94,17 +85,16 @@
 		
 		function _setupStyles() {
 			var imgPos = 0, imgWidth = 0, imgHeight = 0, 
-				itemheight = _settings.itemheight,
-				fontsize = _settings.fontsize
+				itemheight = _settings.itemheight;
 
-			_utils.clearCss(_internalSelector());
+			utils.clearCss(_internalSelector());
 
 			
 			_css(_internalSelector("jwlist"), {
 				'background-image': _elements.background ? " url("+_elements.background.src+")" : "",
 				'background-color':	_settings.backgroundcolor, 
 		    	color: _settings.fontcolor,
-		    	font: _settings.fontweight + " " + _settings.fontstyle + " " + (fontsize ? fontsize : 11) + "px " + (_fonts[_settings.font] ? _fonts[_settings.font] : _fonts['_sans'])  
+		    	font: _settings.fontweight + " 11px Arial, Helvetica, sans-serif"  
 			});
 			
         	if (_elements.itemImage) {
@@ -147,18 +137,19 @@
 			});
 			
 			_css(_internalSelector("jwtitle"), {
-	    		height: fontsize ? fontsize + 10 : 20,
-	    		'line-height': fontsize ? fontsize + 10 : 20,
+	    		height: 23,
 	        	overflow: 'hidden',
 	        	display: "inline-block",
 	        	width: JW_CSS_100PCT,
-		    	'font-size': fontsize ? fontsize : 13,
+	        	'line-height': 23,
+		    	'font-size': 13,
 	        	'font-weight': _settings.fontweight ? _settings.fontweight : "bold"
 	    	});
 			
 			_css(_internalSelector("jwdescription"), {
 	    	    display: 'block',
-	        	'line-height': fontsize ? fontsize + 4 : 16,
+	    	    'font-size': 11,
+	    	    'line-height': 16,
 	        	overflow: 'hidden',
 	        	height: itemheight,
 	        	position: JW_CSS_RELATIVE
@@ -166,6 +157,7 @@
 
 			_css(_internalSelector("jwduration"), {
 				position: "absolute",
+	    	    'font-size': 11,
 				right: 5
 			});
 			
@@ -216,7 +208,7 @@
 	        
 	        if (item.duration > 0) {
 	        	var dur = _createElement("span", "jwduration");
-	        	dur.innerHTML = _utils.timeFormat(item.duration);
+	        	dur.innerHTML = utils.timeFormat(item.duration);
 	        	_appendChild(title, dur);
 	        }
 	        
@@ -255,7 +247,7 @@
 			
 			_appendChild(_wrapper, _ul);
 
-			if (_utils.isIOS() && window.iScroll) {
+			if (utils.isIOS() && window.iScroll) {
 				_ul.style.height = _settings.itemheight * _playlist.length + "px";
 				var myscroll = new iScroll(_wrapper.id);
 			}
@@ -320,6 +312,8 @@
 	    width: JW_CSS_100PCT,
 		height: JW_CSS_100PCT
 	});
+	
+	utils.dragStyle(PL_CLASS, 'none');
 
 	_css(PL_CLASS + ' .jwplaylistimg', {
 		position: JW_CSS_RELATIVE,
@@ -346,6 +340,6 @@
 	_css(PL_CLASS+' .jwtextwrapper', {
 		overflow: JW_CSS_HIDDEN
 	});
-
+	
 
 })(jwplayer.html5);

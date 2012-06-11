@@ -128,6 +128,26 @@
 		}
 	}
 	
+	utils.dragStyle = function(selector, style) {
+		utils.css(selector, {
+			'-webkit-user-select': style,
+			'-moz-user-select': style,
+			'-ms-user-select': style,
+			'-webkit-user-drag': style,
+			'user-select': style,
+			'user-drag': style
+		});
+	}
+	
+	utils.transitionStyle = function(selector, style) {
+		utils.css(selector, {
+			'-webkit-transition': style,
+			'-moz-transition': style,
+			'-o-transition': style
+		});
+	}
+
+	
 	utils.rotate = function(domelement, deg) {
 		utils.transform(domelement, "rotate(" + deg + "deg)");
 	};

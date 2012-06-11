@@ -86,7 +86,7 @@ package com.longtailvideo.jwplayer.view.components {
 			if (_iconOver) _iconContainer.addChild(_iconOver);
 			
 			_textField = new TextField();
-			_textFormat.align = TextFormatAlign.LEFT;
+			_textFormat.align = TextFormatAlign.CENTER;
 			_textField.selectable = false;
 			_textField.defaultTextFormat = _textFormat;
 			_container.addChild(_textField);
@@ -169,20 +169,22 @@ package com.longtailvideo.jwplayer.view.components {
 		private function positionText():void {
 			if (!_textField.text) return;
 			
-			var maxY:Number = -1;
 			var maxX:Number = -1;
+			var maxY:Number = -1;
+			var minX:Number = Number.MAX_VALUE;
 			var minY:Number = Number.MAX_VALUE;
 			for (var i:Number = 0; i < _textField.text.length; i++) {
 				var charDims:Rectangle = _textField.getCharBoundaries(i);
-				if (charDims.width * charDims.height > 0) {
+				if (charDims && charDims.width * charDims.height > 0) {
 					maxX = Math.max(maxX, (charDims.x + charDims.width));
 					maxY = Math.max(maxY, (charDims.y + charDims.height));
+					minX = Math.min(minX, charDims.x);
 					minY = Math.min(minY, charDims.y);
 				}
 			}
 			
 			if (maxX > 0 && maxY > 0) {
-				_textField.width = Math.round(maxX + 5);
+				_textField.width = Math.round(maxX - minX + 5);
 				_textField.height = Math.round(maxY + 5);
 				_textField.y = Math.round((_background.height - maxY) / 2 - minY);
 			} else {

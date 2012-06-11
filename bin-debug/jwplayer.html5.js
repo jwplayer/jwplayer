@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2241';
+	jwplayer.html5.version = '6.0.2243';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -324,6 +324,26 @@
 			style.OTransform = value;
 		}
 	}
+	
+	utils.dragStyle = function(selector, style) {
+		utils.css(selector, {
+			'-webkit-user-select': style,
+			'-moz-user-select': style,
+			'-ms-user-select': style,
+			'-webkit-user-drag': style,
+			'user-select': style,
+			'user-drag': style
+		});
+	}
+	
+	utils.transitionStyle = function(selector, style) {
+		utils.css(selector, {
+			'-webkit-transition': style,
+			'-moz-transition': style,
+			'-o-transition': style
+		});
+	}
+
 	
 	utils.rotate = function(domelement, deg) {
 		utils.transform(domelement, "rotate(" + deg + "deg)");
@@ -722,11 +742,12 @@
  */
 (function(jwplayer) {
 	
-	var _html5 = jwplayer.html5,
-		_utils = jwplayer.utils,
-		_events = jwplayer.events,
-		_states = jwplayer.events.state,
-		_css = _utils.css,
+	var html5 = jwplayer.html5,
+		utils = jwplayer.utils,
+		events = jwplayer.events,
+		states = events.state,
+		_css = utils.css,
+		_setTransition = utils.transitionStyle,
 
 		/** Controlbar element types **/
 		CB_BUTTON = "button",
@@ -752,9 +773,10 @@
 		DOCUMENT = document;
 	
 	/** HTML5 Controlbar class **/
-	_html5.controlbar = function(api, config) {
+	html5.controlbar = function(api, config) {
 		var _api,
 			_skin,
+			_dividerElement = _layoutElement("divider", CB_DIVIDER),
 			_defaults = {
 				// backgroundcolor : "",
 				margin : 10,
@@ -771,60 +793,30 @@
 				layout : {
 					left: {
 						position: "left",
-						elements: [ {
-							name: "play",
-							type: CB_BUTTON
-						}, {
-							name: "divider",
-							type: CB_DIVIDER
-						}, {
-							name: "prev",
-							type: CB_BUTTON
-						}, {
-							name: "divider",
-							type: CB_DIVIDER
-						}, {
-							name: "next",
-							type: CB_BUTTON
-						}, {
-							name: "divider",
-							type: CB_DIVIDER
-						}, {
-							name: "elapsed",
-							type: CB_TEXT
-						} ]
+						elements: [ 
+						   _layoutElement("play", CB_BUTTON), 
+						   _dividerElement, 
+						   _layoutElement("prev", CB_BUTTON), 
+						   _layoutElement("next", CB_BUTTON), 
+						   _dividerElement, 
+						   _layoutElement("elapsed", CB_TEXT)
+						]
 					},
 					center: {
 						position: "center",
-						elements: [ {
-							name: "time",
-							type: CB_SLIDER
-						} ]
+						elements: [ _layoutElement("time", CB_SLIDER) ]
 					},
 					right: {
 						position: "right",
-						elements: [ {
-							name: "duration",
-							type: CB_TEXT
-						}, {
-							name: "blank",
-							type: CB_BUTTON
-						}, {
-							name: "divider",
-							type: CB_DIVIDER
-						}, {
-							name: "mute",
-							type: CB_BUTTON
-						}, {
-							name: "volume",
-							type: CB_SLIDER
-						}, {
-							name: "divider",
-							type: CB_DIVIDER
-						}, {
-							name: "fullscreen",
-							type: CB_BUTTON
-						}]
+						elements: [ 
+						    _layoutElement("duration", CB_TEXT), 
+						    _layoutElement("blank", CB_BUTTON),
+						    _dividerElement,
+						    _layoutElement("mute", CB_BUTTON), 
+						    _layoutElement("volume", CB_SLIDER), 
+						    _dividerElement,
+						    _layoutElement("fullscreen", CB_BUTTON)
+					    ]
 					}
 				}
 			},
@@ -865,6 +857,10 @@
 				volume: _volume
 			};
 
+		function _layoutElement(name, type) {
+			return { name: name, type: type };
+		}
+		
 		function _init() {
 			_elements = {};
 			
@@ -885,23 +881,22 @@
 			
 			_layout = _skin.getComponentLayout('controlbar');
 			if (!_layout) _layout = _defaults.layout;
-			_utils.clearCss('#'+_id);
+			utils.clearCss('#'+_id);
 			_createStyles();
 			_buildControlbar();
 			_addEventListeners();
-			_playlistHandler();
 			_volumeHandler();
 			_muteHandler();
 		}
 		
 		function _addEventListeners() {
-			_api.jwAddEventListener(jwplayer.events.JWPLAYER_MEDIA_TIME, _timeUpdated);
-			_api.jwAddEventListener(jwplayer.events.JWPLAYER_PLAYER_STATE, _stateHandler);
-			_api.jwAddEventListener(jwplayer.events.JWPLAYER_MEDIA_MUTE, _muteHandler);
-			_api.jwAddEventListener(jwplayer.events.JWPLAYER_MEDIA_VOLUME, _volumeHandler);
-			_api.jwAddEventListener(jwplayer.events.JWPLAYER_MEDIA_BUFFER, _bufferHandler);
-			_api.jwAddEventListener(jwplayer.events.JWPLAYER_FULLSCREEN, _fullscreenHandler);
-			_api.jwAddEventListener(jwplayer.events.JWPLAYER_PLAYLIST_LOADED, _playlistHandler);
+			_api.jwAddEventListener(events.JWPLAYER_MEDIA_TIME, _timeUpdated);
+			_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
+			_api.jwAddEventListener(events.JWPLAYER_MEDIA_MUTE, _muteHandler);
+			_api.jwAddEventListener(events.JWPLAYER_MEDIA_VOLUME, _volumeHandler);
+			_api.jwAddEventListener(events.JWPLAYER_MEDIA_BUFFER, _bufferHandler);
+			_api.jwAddEventListener(events.JWPLAYER_FULLSCREEN, _fullscreenHandler);
+			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_LOADED, _playlistHandler);
 		}
 		
 		function _timeUpdated(evt) {
@@ -909,14 +904,14 @@
 				timeString;
 			
 			if (_elements.elapsed) {
-				timeString = _utils.timeFormat(evt.position);
+				timeString = utils.timeFormat(evt.position);
 				_elements.elapsed.innerHTML = timeString;
-				refreshRequired = (timeString.length != _utils.timeFormat(_position).length);
+				refreshRequired = (timeString.length != utils.timeFormat(_position).length);
 			}
 			if (_elements.duration) {
-				timeString = _utils.timeFormat(evt.duration);
+				timeString = utils.timeFormat(evt.duration);
 				_elements.duration.innerHTML = timeString;
-				refreshRequired = (refreshRequired || (timeString.length != _utils.timeFormat(_duration).length));
+				refreshRequired = (refreshRequired || (timeString.length != utils.timeFormat(_duration).length));
 			}
 			if (evt.duration > 0) {
 				_setProgress(evt.position / evt.duration);
@@ -931,17 +926,17 @@
 		
 		function _stateHandler(evt) {
 			switch (evt.newstate) {
-			case _states.BUFFERING:
-			case _states.PLAYING:
+			case states.BUFFERING:
+			case states.PLAYING:
 				_css(_internalSelector('.jwtimeSliderThumb'), { opacity: 1 });
 				_toggleButton("play", true);
 				break;
-			case _states.PAUSED:
+			case states.PAUSED:
 				if (!_dragging) {
 					_toggleButton("play", false);
 				}
 				break;
-			case _states.IDLE:
+			case states.IDLE:
 				_toggleButton("play", false);
 				_css(_internalSelector('.jwtimeSliderThumb'), { opacity: 0 });
 				if (_elements["timeRail"]) {
@@ -977,7 +972,7 @@
 		}
 		
 		function _playlistHandler(evt) {
-			if (_api.jwGetPlaylist().length < 2) {
+			if (_api.jwGetPlaylist().length < 2 || _sidebarShowing()) {
 				_css(_internalSelector(".jwnext"), { display: "none" });
 				_css(_internalSelector(".jwprev"), { display: "none" });
 			} else {
@@ -986,12 +981,17 @@
 			}
 			_redraw();
 		}
+		
+		// Bit of a hacky way to determine if the playlist is available 
+		function _sidebarShowing() {
+			return (!!DOCUMENT.querySelector("#"+_api.id+" .jwplaylist"));
+		}
 
 		/**
 		 * Styles specific to this controlbar/skin
 		 */
 		function _createStyles() {
-			_settings = _utils.extend({}, _defaults, _skin.getComponentSettings('controlbar'), config);
+			_settings = utils.extend({}, _defaults, _skin.getComponentSettings('controlbar'), config);
 
 			_css('#'+_id, {
 		  		height: _getSkinElement("background").height,
@@ -1079,7 +1079,7 @@
 				};
 			}
 			
-			_css(_internalSelector('.jw'+name), _utils.extend(newStyle, style));
+			_css(_internalSelector('.jw'+name), utils.extend(newStyle, style));
 			_elements[name] = element;
 			return element;
 		}
@@ -1172,7 +1172,7 @@
 		}
 
 		function _toggleButton(name, state) {
-			if (!_utils.exists(state)) {
+			if (!utils.exists(state)) {
 				state = !_toggleStates[name];
 			}
 			if (_elements[name]) {
@@ -1287,7 +1287,7 @@
 		
 		function _idle() {
 			var currentState = _api.jwGetState();
-			return (currentState == _states.IDLE); 
+			return (currentState == states.IDLE); 
 		}
 
 		function _sliderMouseDown(name) {
@@ -1314,7 +1314,7 @@
 			}
 			
 			var rail = _elements[_dragging].getElementsByClassName('jwrail')[0],
-				railRect = _utils.getBoundingClientRect(rail),
+				railRect = utils.getBoundingClientRect(rail),
 				pct = (evt.clientX - railRect.left) / railRect.width;
 			
 			if (evt.type == 'mouseup') {
@@ -1403,8 +1403,8 @@
 		var _redraw = this.redraw = function() {
 			_createStyles();
 			_css(_internalSelector('.jwgroup.jwcenter'), {
-				left: Math.round(_utils.parseDimension(_groups.left.offsetWidth) + _getSkinElement("capLeft").width),
-				right: Math.round(_utils.parseDimension(_groups.right.offsetWidth) + _getSkinElement("capRight").width)
+				left: Math.round(utils.parseDimension(_groups.left.offsetWidth) + _getSkinElement("capLeft").width),
+				right: Math.round(utils.parseDimension(_groups.right.offsetWidth) + _getSkinElement("capRight").width)
 			});
 		}
 		
@@ -1482,19 +1482,13 @@
 		position: JW_CSS_ABSOLUTE,
 		overflow: JW_CSS_HIDDEN,
 		visibility: JW_CSS_HIDDEN,
-		opacity: 0,
-    	'-webkit-transition': JW_CSS_SMOOTH_EASE,
-    	'-moz-transition': JW_CSS_SMOOTH_EASE,
-    	'-o-transition': JW_CSS_SMOOTH_EASE
-	})
-	
-	_css(CB_CLASS+' span',{
-		height: JW_CSS_100PCT,
-		'-webkit-user-select': JW_CSS_NONE,
-		'-webkit-user-drag': JW_CSS_NONE,
-		'user-select': JW_CSS_NONE,
-		'user-drag': JW_CSS_NONE
+		opacity: 0
 	});
+	
+	_css(CB_CLASS+' span', {
+		height: JW_CSS_100PCT
+	});
+	utils.dragStyle(CB_CLASS+' span', JW_CSS_NONE);
 	
     _css(CB_CLASS+' .jwgroup', {
     	display: JW_CSS_INLINE
@@ -1517,12 +1511,9 @@
     	display: JW_CSS_INLINE_BLOCK,
     	height: JW_CSS_100PCT,
     	border: JW_CSS_NONE,
-    	cursor: 'pointer',
-    	'-webkit-transition': JW_CSS_SMOOTH_EASE,
-    	'-moz-transition': JW_CSS_SMOOTH_EASE,
-    	'-o-transition': JW_CSS_SMOOTH_EASE
+    	cursor: 'pointer'
     });
-    
+
     _css(CB_CLASS+' .jwcapRight,'+CB_CLASS+' .jwtimeSliderCapRight,'+CB_CLASS+' .jwvolumeSliderCapRight', { 
 		right: 0,
 		position: JW_CSS_ABSOLUTE
@@ -1541,12 +1532,7 @@
     	cursor: 'pointer'
     });
     
-    _css(CB_CLASS + ' .jwtime .jwsmooth span', {
-    	'-webkit-transition': JW_CSS_SMOOTH_EASE,
-    	'-moz-transition': JW_CSS_SMOOTH_EASE,
-    	'-o-transition': JW_CSS_SMOOTH_EASE
-    });
-    
+
     _css(CB_CLASS + ' .jwdivider+.jwdivider', {
     	display: JW_CSS_NONE
     });
@@ -1556,12 +1542,12 @@
 		'text-align': 'center'
 	});
     
-    _css(CB_CLASS + ' .jwtoggling', {
-    	'-webkit-transition': JW_CSS_NONE,
-    	'-moz-transition': JW_CSS_NONE,
-    	'-o-transition': JW_CSS_NONE
-    });
-	
+
+	_setTransition(CB_CLASS, JW_CSS_SMOOTH_EASE);
+	_setTransition(CB_CLASS + ' button', JW_CSS_SMOOTH_EASE);
+	_setTransition(CB_CLASS + ' .jwtime .jwsmooth span', JW_CSS_SMOOTH_EASE);
+	_setTransition(CB_CLASS + ' .jwtoggling', JW_CSS_NONE);
+
 })(jwplayer);/**
  * jwplayer.html5 API
  *
@@ -2044,8 +2030,6 @@
 			}
 		}
 		
-		window.forceState = _updateDisplay;
-		
 		this.hidePreview = function(state) {
 			_setVisibility(D_PREVIEW_CLASS, !state);
 		}
@@ -2065,6 +2049,7 @@
 				img.addEventListener('load', _imageLoaded, false);
 				img.src = _image;
 			} else {
+				_css(_internalSelector(D_PREVIEW_CLASS), { 'background-image': undefined });
 				_setVisibility(D_PREVIEW_CLASS, false);
 				_imageWidth = _imageHeight = 0;
 			}
@@ -2994,21 +2979,12 @@
 		overcolor: "",
 		activecolor: "",
 		backgroundcolor: "#f8f8f8",
-		font: "_sans",
-		fontsize: "",
-		fontstyle: "",
-		fontweight: ""
+		fontweight: "normal"
 	},
 
-	_fonts = {
-		'_sans': "Arial, Helvetica, sans-serif",
-		'_serif': "Times, Times New Roman, serif",
-		'_typewriter': "Courier New, Courier, monospace"
-	},
-	
-	_utils = jwplayer.utils, 
-	_css = _utils.css,
-	_events = jwplayer.events,
+	events = jwplayer.events,
+	utils = jwplayer.utils, 
+	_css = utils.css,
 	
 	PL_CLASS = '.jwplaylist',
 	DOCUMENT = document,
@@ -3022,7 +2998,7 @@
 	html5.playlistcomponent = function(api, config) {
 		var _api = api,
 			_skin = _api.skin,
-			_settings = _utils.extend({}, _defaults, _api.skin.getComponentSettings("playlist"), config),
+			_settings = utils.extend({}, _defaults, _api.skin.getComponentSettings("playlist"), config),
 			_wrapper,
 			_playlist,
 			_items,
@@ -3063,8 +3039,8 @@
 			
 			_setupStyles();
 			
-			_api.jwAddEventListener(jwplayer.events.JWPLAYER_PLAYLIST_LOADED, _rebuildPlaylist);
-			_api.jwAddEventListener(jwplayer.events.JWPLAYER_PLAYLIST_ITEM, _itemHandler);
+			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_LOADED, _rebuildPlaylist);
+			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_ITEM, _itemHandler);
 		}
 		
 		function _internalSelector(className) {
@@ -3073,17 +3049,16 @@
 		
 		function _setupStyles() {
 			var imgPos = 0, imgWidth = 0, imgHeight = 0, 
-				itemheight = _settings.itemheight,
-				fontsize = _settings.fontsize
+				itemheight = _settings.itemheight;
 
-			_utils.clearCss(_internalSelector());
+			utils.clearCss(_internalSelector());
 
 			
 			_css(_internalSelector("jwlist"), {
 				'background-image': _elements.background ? " url("+_elements.background.src+")" : "",
 				'background-color':	_settings.backgroundcolor, 
 		    	color: _settings.fontcolor,
-		    	font: _settings.fontweight + " " + _settings.fontstyle + " " + (fontsize ? fontsize : 11) + "px " + (_fonts[_settings.font] ? _fonts[_settings.font] : _fonts['_sans'])  
+		    	font: _settings.fontweight + " 11px Arial, Helvetica, sans-serif"  
 			});
 			
         	if (_elements.itemImage) {
@@ -3126,18 +3101,19 @@
 			});
 			
 			_css(_internalSelector("jwtitle"), {
-	    		height: fontsize ? fontsize + 10 : 20,
-	    		'line-height': fontsize ? fontsize + 10 : 20,
+	    		height: 23,
 	        	overflow: 'hidden',
 	        	display: "inline-block",
 	        	width: JW_CSS_100PCT,
-		    	'font-size': fontsize ? fontsize : 13,
+	        	'line-height': 23,
+		    	'font-size': 13,
 	        	'font-weight': _settings.fontweight ? _settings.fontweight : "bold"
 	    	});
 			
 			_css(_internalSelector("jwdescription"), {
 	    	    display: 'block',
-	        	'line-height': fontsize ? fontsize + 4 : 16,
+	    	    'font-size': 11,
+	    	    'line-height': 16,
 	        	overflow: 'hidden',
 	        	height: itemheight,
 	        	position: JW_CSS_RELATIVE
@@ -3145,6 +3121,7 @@
 
 			_css(_internalSelector("jwduration"), {
 				position: "absolute",
+	    	    'font-size': 11,
 				right: 5
 			});
 			
@@ -3195,7 +3172,7 @@
 	        
 	        if (item.duration > 0) {
 	        	var dur = _createElement("span", "jwduration");
-	        	dur.innerHTML = _utils.timeFormat(item.duration);
+	        	dur.innerHTML = utils.timeFormat(item.duration);
 	        	_appendChild(title, dur);
 	        }
 	        
@@ -3234,7 +3211,7 @@
 			
 			_appendChild(_wrapper, _ul);
 
-			if (_utils.isIOS() && window.iScroll) {
+			if (utils.isIOS() && window.iScroll) {
 				_ul.style.height = _settings.itemheight * _playlist.length + "px";
 				var myscroll = new iScroll(_wrapper.id);
 			}
@@ -3299,6 +3276,8 @@
 	    width: JW_CSS_100PCT,
 		height: JW_CSS_100PCT
 	});
+	
+	utils.dragStyle(PL_CLASS, 'none');
 
 	_css(PL_CLASS + ' .jwplaylistimg', {
 		position: JW_CSS_RELATIVE,
@@ -3325,7 +3304,7 @@
 	_css(PL_CLASS+' .jwtextwrapper', {
 		overflow: JW_CSS_HIDDEN
 	});
-
+	
 
 })(jwplayer.html5);
 /**
@@ -3866,7 +3845,7 @@
 			"progress" : _generalHandler,
 			"ratechange" : _generalHandler,
 			"readystatechange" : _generalHandler,
-			"seeked" : _generalHandler,
+			"seeked" : _sendSeekEvent,
 			"seeking" : _generalHandler,
 			"stalled" : _generalHandler,
 			"suspend" : _generalHandler,
@@ -4090,15 +4069,18 @@
 			if (!_attached) return; 
 			if (_videotag.readyState >= _videotag.HAVE_FUTURE_DATA) {
 				_delayedSeek = 0;
-				if (!_dragging) {
-					_sendEvent(events.JWPLAYER_MEDIA_SEEK, {
-						position: _position,
-						offset: pos
-					});
-				}
 				_videotag.currentTime = pos;
 			} else {
 				_delayedSeek = pos;
+			}
+		}
+		
+		function _sendSeekEvent() {
+			if (!_dragging) {
+				_sendEvent(events.JWPLAYER_MEDIA_SEEK, {
+					position: _position,
+					offset: _videotag.currentTime
+				});
 			}
 		}
 
