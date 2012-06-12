@@ -1,8 +1,9 @@
 package com.longtailvideo.jwplayer.plugins
 {
 	import com.longtailvideo.jwplayer.player.IPlayer;
+	import flash.display.Sprite;
 	
-	public class AbstractPlugin implements IPlugin	{
+	public class AbstractPlugin extends Sprite implements IPlugin	{
 		public function initPlugin(player:IPlayer, config:PluginConfig):void
 		{
 		}

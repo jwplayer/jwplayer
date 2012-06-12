@@ -210,7 +210,7 @@ package com.longtailvideo.jwplayer.controller {
 			}
 			
 			// Compiled in plugins go here.  Example:
-			// _view.addPlugin("test", new TestPlugin());
+			//_view.addPlugin("test", new TestPlugin());
 		}
 
 		protected function loadPlaylist():void {

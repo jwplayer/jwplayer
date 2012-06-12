@@ -18,7 +18,7 @@ jwplayer = function(container) {
 
 var $jw = jwplayer;
 
-jwplayer.version = '6.0.2250';
+jwplayer.version = '6.0.2253';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -2159,12 +2159,16 @@ jwplayer.source = document.createElement("source");/**
 				return true;
 			}
 			
-			if (video.canPlayType(mimetype)) {
-				return true;
-			} else if (mimetype == "audio/mp3" && navigator.userAgent.match(/safari/i)) {
-				// Work around Mac Safari bug
-				return video.canPlayType("audio/mpeg");
-			} else {
+			try {
+				if (video.canPlayType(mimetype)) {
+					return true;
+				} else if (mimetype == "audio/mp3" && navigator.userAgent.match(/safari/i)) {
+					// Work around Mac Safari bug
+					return video.canPlayType("audio/mpeg");
+				} else {
+					return false;
+				}
+			} catch(e) {
 				return false;
 			}
 			

@@ -1,5 +1,4 @@
 package com.longtailvideo.jwplayer.view.components {
-	import com.longtailvideo.jwplayer.model.Color;
 	import com.longtailvideo.jwplayer.utils.Animations;
 	import com.longtailvideo.jwplayer.utils.AssetLoader;
 	import com.longtailvideo.jwplayer.utils.Logger;
@@ -10,6 +9,7 @@ package com.longtailvideo.jwplayer.view.components {
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.events.IOErrorEvent;
 	import flash.events.MouseEvent;
 	import flash.external.ExternalInterface;
 	import flash.net.URLRequest;
@@ -19,9 +19,7 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _background:DisplayObject;
 		protected var _clickFunction:*;
 		protected var _imageLayer:Sprite;
-		protected var _outColor:Color;
 		protected var _outIcon:DisplayObject;
-		protected var _overColor:Color;
 		protected var _overIcon:DisplayObject;
 		protected var _enabled:Boolean = true;
 
@@ -57,7 +55,7 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 		
 		
-		protected function outHandler(event:MouseEvent):void {
+		protected function outHandler(event:MouseEvent=null):void {
 			if (_overIcon) {
 				if (_imageLayer.contains(_overIcon)) {
 					_imageLayer.removeChild(_overIcon);
@@ -129,6 +127,7 @@ package com.longtailvideo.jwplayer.view.components {
 				_outIcon = outIcon as DisplayObject;
 			} else if (outIcon is String) {
 				var loader:Loader = new Loader();
+				loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, function(evt:Event):void {});
 				loader.contentLoaderInfo.addEventListener(Event.COMPLETE, function(evt:Event):void { centerIcon(loader); });
 				loader.load(new URLRequest(outIcon));
 				_outIcon = loader;
@@ -158,17 +157,6 @@ package com.longtailvideo.jwplayer.view.components {
 				
 			}
 		}
-
-
-		public function set outColor(outColor:Color):void {
-			_outColor = outColor;
-		}
-		
-		
-		public function set overColor(overColor:Color):void {
-			_overColor = overColor;
-		}
-
 
 		public function set clickFunction(clickFunction:*):void {
 			_clickFunction = clickFunction;

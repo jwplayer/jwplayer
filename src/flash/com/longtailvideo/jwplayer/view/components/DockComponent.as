@@ -25,15 +25,8 @@ package com.longtailvideo.jwplayer.view.components {
 	[Event(name="jwPlayerComponentHide", type="com.longtailvideo.jwplayer.events.ComponentEvent")]
 	
 	public class DockComponent extends CoreComponent implements IDockComponent {
-
-
 		/** Default configuration vars for this component. **/
-		public var defaults:Object = { 
-			iconalpha: 0.8,
-			iconalphaactive: 0.5,
-			iconalphaover: 1,
-			margin: 8
-		};
+		private var settings:Object;
 		/** Object with all the buttons in the dock. **/
 		private var buttons:Vector.<DockButton>;
 		/** Object with all the buttons in the dock. **/
@@ -51,9 +44,10 @@ package com.longtailvideo.jwplayer.view.components {
 		/** Endcaps **/
 		private var capLeft:DisplayObject;
 		private var capRight:DisplayObject;
+		/** Current dimensions **/
+		private var _width:Number;
+		private var _height:Number;
 		
-
-
 		public function DockComponent(player:IPlayer) {
 			super(player, "dock");
 			animations = new Animations(this);
@@ -68,6 +62,12 @@ package com.longtailvideo.jwplayer.view.components {
 				RootReference.stage.addEventListener(KeyboardEvent.KEY_DOWN, moveHandler);
 				alpha = 0;
 			}
+			settings = {
+				iconalpha: !isNaN(getConfigParam("iconalpha")) ? getConfigParam("iconalpha") : 0.8,
+				iconalphaactive: !isNaN(getConfigParam("iconalphaactive")) ? getConfigParam("iconalphaactive") : 0.5,
+				iconalphaover: !isNaN(getConfigParam("iconalphaover")) ? getConfigParam("iconalphaover") : 1,
+				margin: !isNaN(getConfigParam("margin")) ? getConfigParam("margin") : 8
+			};
 			buildCaps();
 			resize(0, 0);
 			visible = false;
@@ -94,7 +94,7 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 		 
 		
-		public function addButton(icon:*, label:String, clickHandler:*, name:String = null):MovieClip {
+		public function addButton(icon:*, label:String, clickHandler:*, name:String = null):IDockButton {
 			if (namedButton(name)) {
 				return namedButton(name);
 			}
@@ -109,11 +109,13 @@ package com.longtailvideo.jwplayer.view.components {
 			button.tabChildren = false;
 			button.tabIndex = currentTab++;
 			button.setOutIcon(icon);
+			button.setAlphas(Number(settings.iconalpha), Number(settings.iconalphaover), Number(settings.iconalphaactive));
 			button.outBackground = getSkinElement('button');
 			button.overBackground = getSkinElement('buttonOver');
-			button.clickFunction = clickHandler; 
-			button.init();
+			button.activeBackground = getSkinElement('buttonActive');
+			button.clickFunction = clickHandler;
 			button.label = label;
+			button.init();
 			addChild(button);
 			buttons.push(button);
 			resize(getConfigParam('width'), getConfigParam('height'));
@@ -122,17 +124,18 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		
 		public function removeButton(name:String):void {
-            for(var i:Number=0; i < buttons.length; i++) { 
-                if(buttons[i].name == name) {
-                    buttons.splice(i,1);
-                    removeChild(getChildAt(i));
-                    break;
-                }
-            }
+			var found:DockButton = namedButton(name) 
+			if (found) {
+				removeChild(found);
+				buttons.splice(buttons.indexOf(found), 1);
+			}
+			resize(_width, _height);
+			
 		}
 		
-		
 		override public function resize(width:Number, height:Number):void {
+			_width = width;
+			_height = height;
 			var topleft:Rectangle;
 			var bottomright:Rectangle;
 			
@@ -141,7 +144,7 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 			
 			if (buttons.length > 0) {
-				var margin:Number = defaults.margin;
+				var margin:Number = settings.margin;
 				var xStart:Number = margin + (capLeft ? capLeft.width : 0);
 				var direction:Number = 1;
 				var dividerWidth:Number = getSkinElement('divider') ? getSkinElement('divider').width : 0;

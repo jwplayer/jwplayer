@@ -3,6 +3,7 @@
  **/
 package com.longtailvideo.jwplayer.view.components {
 	import com.longtailvideo.jwplayer.model.Color;
+	import com.longtailvideo.jwplayer.view.interfaces.IDockButton;
 	
 	import flash.display.*;
 	import flash.events.*;
@@ -11,19 +12,23 @@ package com.longtailvideo.jwplayer.view.components {
 	import flash.text.TextFormat;
 	import flash.text.TextFormatAlign;
 	
-	public class DockButton extends ComponentButton {
-		/** Asset color **/
-		//protected var _assetColor:Color;
-		/** Reference to the text field **/
-		//protected var _text:TextField;
-		/** Background colorization **/
-		//private var _colorize:Boolean;
+	public class DockButton extends ComponentButton implements IDockButton {
 		/** Background over state **/
 		private var _outBackground:DisplayObject;
 		/** Background over state **/
 		private var _overBackground:DisplayObject;
+		/** Background active state **/
+		private var _activeBackground:DisplayObject;
 		/** Mouse-over label text **/
 		private var _label:String;
+		/** Active state **/
+		private var _active:Boolean = false;
+		/** Icon alpha for out state **/
+		private var _outAlpha:Number = 1;
+		/** Icon alpha for out state **/
+		private var _overAlpha:Number = 1;
+		/** Icon alpha for out state **/
+		private var _activeAlpha:Number = 1;
 		
 		/** Constructor **/
 		public function DockButton():void {
@@ -61,40 +66,72 @@ package com.longtailvideo.jwplayer.view.components {
 			
 			_outBackground = defaultBG;
 			_overBackground = defaultBG;
+			_activeBackground = defaultBG;
 		}
 		
+		public function setAlphas(out:Number, over:Number, active:Number):void {
+			if (!isNaN(out)) _outAlpha = out;
+			if (!isNaN(over)) _overAlpha = over;
+			if (!isNaN(active)) _activeAlpha = active;
+			_outIcon.alpha = _outAlpha;
+			
+		}
 		
-		/** When rolling over, the background is color changed. **/
-		override protected function outHandler (evt:MouseEvent):void {
+		/** When mousing out, update the button state **/
+		override protected function outHandler(evt:MouseEvent=null):void {
+			if (_active) return;
+			
+			_outIcon.alpha = _outAlpha;
 			setBackground(_outBackground);
 		}
 		
 		
-		/** When rolling over, the background is color changed. **/
-		override protected function overHandler (evt:MouseEvent):void {
+		/** When rolling over, update the button state **/
+		override protected function overHandler(evt:MouseEvent):void {
+			if (_active) return;
+
+			_outIcon.alpha = _overAlpha;
 			setBackground(_overBackground);
 		}
 		
 		
-		override protected function clickHandler (evt:MouseEvent):void {
+		override protected function clickHandler(evt:MouseEvent):void {
 			super.clickHandler(evt);
 		}
 			
 		
-		public function set outBackground (outBackground:DisplayObject):void {
+		public function set outBackground(outBackground:DisplayObject):void {
 			_outBackground = outBackground;
 		}
 		
 		
-		public function set overBackground (overBackground:DisplayObject):void {
+		public function set overBackground(overBackground:DisplayObject):void {
 			_overBackground = overBackground;
 		}
 		
+		public function set activeBackground(activeBackground:DisplayObject):void {
+			_activeBackground = activeBackground;
+		}
 		
-		public function set label (text:String):void {
+		
+		public function set label(text:String):void {
 			_label = text;
 		}
 		
+		public function set active(state:Boolean):void {
+			_active = state;
+			buttonMode = !state;
+			if (state) {
+				_outIcon.alpha = _activeAlpha;
+				setBackground(_activeBackground);
+			} else {
+				outHandler();
+			}
+		}
+		
+		public function get active():Boolean {
+			return _active;
+		}
 	}
 }
 

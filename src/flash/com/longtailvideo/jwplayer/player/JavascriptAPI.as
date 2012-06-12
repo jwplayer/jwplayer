@@ -158,6 +158,7 @@ package com.longtailvideo.jwplayer.player {
 				
 				ExternalInterface.addCallback("jwDockHide", js_hideDock);
 				ExternalInterface.addCallback("jwDockAddButton", js_dockAddButton);
+				ExternalInterface.addCallback("jwDockRemoveButton", js_dockRemoveButton);
 				ExternalInterface.addCallback("jwDockShow", js_showDock);
 				
 				// Instream API
@@ -404,7 +405,10 @@ package com.longtailvideo.jwplayer.player {
 		 ***********************************************/
 
 		protected function js_dockAddButton(icon:String, label:String, click:String, id:String):void {
-		    _player.controls.dock.addButton(icon, label, click, id);
+			_player.controls.dock.addButton(icon, label, click, id);
+		};
+		protected function js_dockRemoveButton(id:String):void {
+			_player.controls.dock.removeButton(id);
 		};
 	
 		protected function js_play(playstate:*=null):void {

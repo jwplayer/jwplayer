@@ -140,12 +140,16 @@
 				return true;
 			}
 			
-			if (video.canPlayType(mimetype)) {
-				return true;
-			} else if (mimetype == "audio/mp3" && navigator.userAgent.match(/safari/i)) {
-				// Work around Mac Safari bug
-				return video.canPlayType("audio/mpeg");
-			} else {
+			try {
+				if (video.canPlayType(mimetype)) {
+					return true;
+				} else if (mimetype == "audio/mp3" && navigator.userAgent.match(/safari/i)) {
+					// Work around Mac Safari bug
+					return video.canPlayType("audio/mpeg");
+				} else {
+					return false;
+				}
+			} catch(e) {
 				return false;
 			}
 			
