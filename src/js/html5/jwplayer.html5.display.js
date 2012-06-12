@@ -91,7 +91,7 @@
 					color: _config.fontcolor
 				},
 				overStyle = {color:_config.overcolor};
-			_button = new html5.displayicon(_display.id+"_button", _skin, outStyle, overStyle);
+			_button = new html5.displayicon(_display.id+"_button", _api, outStyle, overStyle);
 			_display.appendChild(_button.getDisplayElement());
 		}
 		

@@ -17,6 +17,7 @@ package com.longtailvideo.jwplayer.utils {
 		 * @return		The clone; not yet added to the displaystack.
 		 **/
 		public static function clone(tgt:DisplayObject, adc:Boolean = false):DisplayObject {
+			if (!tgt) return null;
 			var nam:String = getQualifiedClassName(tgt);
 			if (nam == "flash.display::MovieClip") return tgt;
 			if (tgt.hasOwnProperty("bitmapData") && tgt['bitmapData'] is BitmapData){

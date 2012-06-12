@@ -92,6 +92,9 @@
 			_api.jwAddEventListener = _controller.addEventListener;
 			_api.jwRemoveEventListener = _controller.removeEventListener;
 			
+			/** Dock **/
+			_api.jwDockAddButton = _view.addButton;
+			_api.jwDockRemoveButton = _view.removeButton;
 						
 		}
 

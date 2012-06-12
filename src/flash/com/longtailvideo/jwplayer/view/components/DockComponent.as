@@ -1,24 +1,15 @@
 package com.longtailvideo.jwplayer.view.components {
-	import com.longtailvideo.jwplayer.events.ComponentEvent;
-	import com.longtailvideo.jwplayer.events.PlayerEvent;
-	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
-	import com.longtailvideo.jwplayer.player.IPlayer;
-	import com.longtailvideo.jwplayer.player.PlayerState;
-	import com.longtailvideo.jwplayer.utils.Animations;
-	import com.longtailvideo.jwplayer.utils.Logger;
-	import com.longtailvideo.jwplayer.utils.RootReference;
-	import com.longtailvideo.jwplayer.view.interfaces.IDockComponent;
+	import com.longtailvideo.jwplayer.events.*;
+	import com.longtailvideo.jwplayer.player.*;
+	import com.longtailvideo.jwplayer.utils.*;
+	import com.longtailvideo.jwplayer.view.interfaces.*;
 	
-	import flash.accessibility.AccessibilityProperties;
-	import flash.display.DisplayObject;
-	import flash.display.MovieClip;
-	import flash.display.Sprite;
-	import flash.events.Event;
-	import flash.events.KeyboardEvent;
-	import flash.events.MouseEvent;
-	import flash.geom.Rectangle;
-	import flash.utils.clearTimeout;
-	import flash.utils.setTimeout;
+	import flash.accessibility.*;
+	import flash.display.*;
+	import flash.events.*;
+	import flash.external.ExternalInterface;
+	import flash.geom.*;
+	import flash.utils.*;
 	
 	/**
 	 * Sent when the dock begins to become visible
@@ -36,10 +27,17 @@ package com.longtailvideo.jwplayer.view.components {
 	public class DockComponent extends CoreComponent implements IDockComponent {
 
 
-		/** Default configuration vars for this plugin. **/
-		public var defaults:Object = { align: 'right' };
+		/** Default configuration vars for this component. **/
+		public var defaults:Object = { 
+			iconalpha: 0.8,
+			iconalphaactive: 0.5,
+			iconalphaover: 1,
+			margin: 8
+		};
 		/** Object with all the buttons in the dock. **/
-		private var buttons:Array;
+		private var buttons:Vector.<DockButton>;
+		/** Object with all the buttons in the dock. **/
+		private var dividers:Vector.<DisplayObject>;
 		/** Timeout for hiding the buttons when the video plays. **/
 		private var timeout:Number;
 		/** Reference to the animations handler **/
@@ -48,27 +46,58 @@ package com.longtailvideo.jwplayer.view.components {
 		private var currentTab:Number = 400;
 		/** Keep track of dock icon dimensions **/
 		private var dimensions:Rectangle;
+		/** If the player is showing the replay icon **/
+		private var replayState:Boolean = false;
+		/** Endcaps **/
+		private var capLeft:DisplayObject;
+		private var capRight:DisplayObject;
+		
 
 
 		public function DockComponent(player:IPlayer) {
 			super(player, "dock");
 			animations = new Animations(this);
-			buttons = new Array();
+			animations.addEventListener(Event.COMPLETE, fadeComplete);
+			buttons = new Vector.<DockButton>;
+			dividers = new Vector.<DisplayObject>;
 			if (player.config.dock) {
 				player.addEventListener(PlayerStateEvent.JWPLAYER_PLAYER_STATE, stateHandler);
+				player.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_COMPLETE, playlistComplete);
 				RootReference.stage.addEventListener(Event.MOUSE_LEAVE, mouseLeftStage);
 				RootReference.stage.addEventListener(MouseEvent.MOUSE_MOVE, moveHandler);
 				RootReference.stage.addEventListener(KeyboardEvent.KEY_DOWN, moveHandler);
-				if (hideOnIdle) {
-					alpha = 0;
-				}
-			} else {
-				visible = false;
+				alpha = 0;
 			}
+			buildCaps();
+			resize(0, 0);
+			visible = false;
 		}
 		
+		private function buildCaps():void {
+			capLeft = getSkinElement('capLeft');
+			capRight = getSkinElement('capRight');
+			
+			if (capLeft) addChild(capLeft);
+			if (capRight) addChild(capRight);
+				
+		}
 		
-		public function addButton(icon:DisplayObject, text:String, clickHandler:Function, name:String = null):MovieClip {
+		private function namedButton(name:String):DockButton {
+			if (name && buttons) {
+				var found:Vector.<DockButton> = buttons.filter(
+					function(itm:DockButton, index:int, vector:Vector.<DockButton>):Boolean { 
+						return itm.name == name 
+					});
+				if (found.length > 0) return found[0];
+			}
+			return null;
+		}
+		 
+		
+		public function addButton(icon:*, label:String, clickHandler:*, name:String = null):MovieClip {
+			if (namedButton(name)) {
+				return namedButton(name);
+			}
 			var button:DockButton = new DockButton();
 			if (name) {
 				button.name = name;
@@ -80,14 +109,11 @@ package com.longtailvideo.jwplayer.view.components {
 			button.tabChildren = false;
 			button.tabIndex = currentTab++;
 			button.setOutIcon(icon);
-			button.outBackground = getSkinElement("button") as Sprite;
-			button.overBackground = getSkinElement("buttonOver") as Sprite;
-			button.assetColor = fontColor ? fontColor : player.config.backcolor;
-			button.outColor = player.config.frontcolor;
-			button.overColor = player.config.lightcolor;
-			button.clickFunction = clickHandler;
+			button.outBackground = getSkinElement('button');
+			button.overBackground = getSkinElement('buttonOver');
+			button.clickFunction = clickHandler; 
 			button.init();
-			button.text = text;
+			button.label = label;
 			addChild(button);
 			buttons.push(button);
 			resize(getConfigParam('width'), getConfigParam('height'));
@@ -109,35 +135,53 @@ package com.longtailvideo.jwplayer.view.components {
 		override public function resize(width:Number, height:Number):void {
 			var topleft:Rectangle;
 			var bottomright:Rectangle;
+			
+			while(dividers.length) {
+				removeChild(dividers.pop());
+			}
+			
 			if (buttons.length > 0) {
-				var margin:Number = 10;
-				var xStart:Number = width - buttons[0].width - margin;
-				var usedHeight:Number = margin;
-				var direction:Number = -1;
-				if (getConfigParam('position') == 'left') {
-					direction = 1;
-					xStart = margin;
-				}
+				var margin:Number = defaults.margin;
+				var xStart:Number = margin + (capLeft ? capLeft.width : 0);
+				var direction:Number = 1;
+				var dividerWidth:Number = getSkinElement('divider') ? getSkinElement('divider').width : 0;
+
 				for (var i:Number = 0; i < buttons.length; i++) {
-					var row:Number = Math.floor(usedHeight / height);
 					var button:DisplayObject = buttons[i] as DisplayObject;
-					if ((usedHeight + button.height + margin) > ((row + 1) * height)){
-						usedHeight = ((row + 1) * height) + margin;
-						row = Math.floor(usedHeight / height);
+
+					button.y = margin;
+					button.x = xStart + (button.width + dividerWidth) * i;
+
+					if (i < buttons.length-1) {
+						var div:DisplayObject = getSkinElement('divider');
+						if (div) {
+							div.y = margin;
+							div.x = button.x + button.width;
+							addChild(div);
+							dividers.push(div);
+						}
 					}
-					button.y = usedHeight % height;
-					button.x = xStart + (button.width + margin) * row * direction;
 					
+
 					if (!topleft || (button.x <= topleft.x && button.y <= topleft.y))
 						topleft = new Rectangle(button.x, button.y, button.width, button.height);
 					if (!bottomright || (button.x >= bottomright.x && button.y >= bottomright.y))
 						bottomright = new Rectangle(button.x, button.y, button.width, button.height);
 					
-					usedHeight += button.height + margin;
-					if(button is DockButton) {
-					    (button as DockButton).centerText();
-					}
 				}
+				if (capLeft) {
+					capLeft.x = margin;
+					capLeft.y = margin;
+					capLeft.visible = true;
+				}				
+				if (capRight) {
+					capRight.x = buttons[buttons.length-1].x + buttons[buttons.length-1].width;
+					capRight.y = margin;
+					capRight.visible = true;
+				}				
+			} else {
+				if (capLeft) capLeft.visible = false;				
+				if (capRight) capRight.visible = false;				
 			}
 			if (topleft && bottomright) {
 				dimensions = new Rectangle(topleft.x, topleft.y, bottomright.x - topleft.x + bottomright.width, bottomright.y - topleft.y + bottomright.height);
@@ -153,7 +197,8 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		/** Hide the dock if the controlbar is set to be hidden on idle **/
 		private function get hideOnIdle():Boolean {
-			return String(_player.config.pluginConfig("controlbar")['idlehide']) == "true";
+			return true;
+			//return String(_player.config.pluginConfig("controlbar")['idlehide']) == "true";
 		}
 		
 		/** Start the fade timer **/
@@ -174,12 +219,14 @@ package com.longtailvideo.jwplayer.view.components {
 			clearTimeout(timeout);
 			if (hidden) { return; }
 			
-			if (player.state == PlayerState.BUFFERING || player.state == PlayerState.PLAYING || hideOnIdle) {
-				startFader();
-				if (alpha < 1) {
+			if (player.state != PlayerState.IDLE || replayState) {
+				if (!visible) {
+					alpha = 0;
+					visible = true;
 					sendShow();
 					animations.fade(1);
 				}
+				if (!replayState) startFader();
 			}
 		}
 		
@@ -188,65 +235,39 @@ package com.longtailvideo.jwplayer.view.components {
 		private function moveTimeout():void {
 			if (hidden) return;
 			
-			if (player.state == PlayerState.BUFFERING || player.state == PlayerState.PLAYING || hideOnIdle) {
-				sendHide();
-				animations.fade(0);
+			sendHide();
+			animations.fade(0);
+			
+		}
+
+		private function fadeComplete(evt:Event):void {
+			if (alpha == 0) {
+				visible = false;
 			}
 		}
 
-
-        /** Button handler for JS API. **/
-        public function setButton(name:String, click:String=null, out:String=null, over:String=null):void { 
-            // check if the button already exists
-            var index:Number = -1;
-            for(var i:Number=0; i < buttons.length; i++) {
-                if(buttons[i].name == name) {
-                    index = i;
-                    break;
-                }
-            }
-            // new button
-            if(index == -1) {
-                if(!out) { return; }
-                var back:DisplayObject = getSkinElement("button") as DisplayObject;
-                currentTab++;
-                var button:DockJSButton = new DockJSButton(name, back, currentTab);
-                button.setClickFunction(click);
-                button.loadOutIcon(out);
-                if (over) { button.loadOverIcon(over); }
-                addChild(button);
-                buttons.push(button);
-                resize(getConfigParam('width'), getConfigParam('height'));
-            // update button
-            } else if(click) {
-                buttons[index].setClickFunction(click);
-                if(out) { buttons[index].loadOutIcon(out); }
-                if (over) { buttons[index].loadOverIcon(over); }
-            // remove button
-            } else {
-                removeChild(getChildAt(index));
-                buttons.splice(index,1);
-            }
-        };
-
+		
+		private function playlistComplete(evt:PlaylistEvent):void {
+			replayState = true;
+			stateHandler();
+		}
 
 		/** Process state changes **/
 		private function stateHandler(evt:PlayerStateEvent = undefined):void {
 			switch (player.state) {
-				case PlayerState.PLAYING:
-				case PlayerState.BUFFERING:
-					startFader();
-					break;
-				default:
+				case PlayerState.IDLE:
 					clearTimeout(timeout);
 					if (!hidden) {
-						if (hideOnIdle) {
-							moveTimeout();
-						} else {
-							sendShow();
-							animations.fade(1);
+						if (replayState) {
+							moveHandler();
 						}
 					}
+					break;
+				default:
+					replayState = false;
+					moveHandler();
+					startFader();
+					break;
 			}
 		}
 		

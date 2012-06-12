@@ -1,15 +1,23 @@
 package com.longtailvideo.jwplayer.view.components {
 	import com.longtailvideo.jwplayer.model.Color;
+	import com.longtailvideo.jwplayer.utils.Animations;
+	import com.longtailvideo.jwplayer.utils.AssetLoader;
 	import com.longtailvideo.jwplayer.utils.Logger;
+	import com.longtailvideo.jwplayer.utils.Stretcher;
 	
 	import flash.display.DisplayObject;
+	import flash.display.Loader;
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
+	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.external.ExternalInterface;
+	import flash.net.URLRequest;
+	import flash.utils.setTimeout;
 	
 	public class ComponentButton extends MovieClip {
 		protected var _background:DisplayObject;
-		protected var _clickFunction:Function;
+		protected var _clickFunction:*;
 		protected var _imageLayer:Sprite;
 		protected var _outColor:Color;
 		protected var _outIcon:DisplayObject;
@@ -17,7 +25,6 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _overIcon:DisplayObject;
 		protected var _enabled:Boolean = true;
 
-				
 		protected static var currentTabIndex:Number = 100;
 		
 		public function ComponentButton () {
@@ -74,7 +81,11 @@ package com.longtailvideo.jwplayer.view.components {
 		protected function clickHandler(event:MouseEvent):void {
 			if (_enabled) {
 				try {
-					_clickFunction(event);
+					if (_clickFunction is Function) {
+						_clickFunction(event);
+					} else if (_clickFunction is String) {
+						ExternalInterface.call("function() { " + _clickFunction + " }");
+					}
 				} catch (error:Error) {
 					Logger.log(error.message);
 				}
@@ -100,7 +111,7 @@ package com.longtailvideo.jwplayer.view.components {
 
 		public function setBackground(background:DisplayObject = null):void {
 			if (_background){
-				removeChild(_background);				
+				removeChild(_background);
 			}
 			if (background) {
 				_background = background;
@@ -113,9 +124,14 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 
 		
-		public function setOutIcon(outIcon:DisplayObject = null):void {
-			if (outIcon) {
-				_outIcon = outIcon;
+		public function setOutIcon(outIcon:* = null):void {
+			if (outIcon is DisplayObject) {
+				_outIcon = outIcon as DisplayObject;
+			} else if (outIcon is String) {
+				var loader:Loader = new Loader();
+				loader.contentLoaderInfo.addEventListener(Event.COMPLETE, function(evt:Event):void { centerIcon(loader); });
+				loader.load(new URLRequest(outIcon));
+				_outIcon = loader;
 			}
 		}
 		
@@ -133,12 +149,13 @@ package com.longtailvideo.jwplayer.view.components {
 		protected function centerIcon(icon:DisplayObject):void {
 			if (icon) {
 				if (_background) {
-					icon.x = (_background.width - icon.width) / 2;
-					icon.y = (_background.height - icon.height) / 2;
+					Stretcher.stretch(icon, _background.width, _background.height, Stretcher.NONE);
 				} else {
 					icon.x = 0;
 					icon.y = 0;
 				}
+			
+				
 			}
 		}
 
@@ -153,8 +170,8 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 
 
-		public function set clickFunction(clickFunction:Function):void {
-			_clickFunction = clickFunction
+		public function set clickFunction(clickFunction:*):void {
+			_clickFunction = clickFunction;
 		}
 		
 		/** Enable / disable button **/

@@ -45,11 +45,13 @@
 			_instreamLayer,
 			_controlbar,
 			_display,
+			_dock,
 			_playlist,
 			_audioMode,
 			_isMobile = utils.isMobile(),
 			_isIPad = utils.isIPad(),
 			_forcedControls = (_isIPad && _model.mobilecontrols),
+			_replayState,
 			_eventDispatcher = new events.eventdispatcher();
 		
 		utils.extend(this, _eventDispatcher);
@@ -87,6 +89,7 @@
 			DOCUMENT.addEventListener('keydown', _keyHandler, false);
 			
 			_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
+			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_COMPLETE, _playlistCompleteHandler);
 
 			_stateHandler({newstate:states.IDLE});
 			
@@ -109,9 +112,12 @@
 			clearTimeout(_controlsTimeout);
 			if (_api.jwGetState() == states.PLAYING || _api.jwGetState() == states.PAUSED) {
 				_showControlbar();
+				_showDock();
 				if (!_inCB) {
 					_controlsTimeout = setTimeout(_fadeControls, _timeoutDuration);
 				}
+			} else if (_replayState) {
+				_showDock();
 			}
 		}
 		
@@ -129,6 +135,9 @@
 		function _fadeControls() {
 			if (_api.jwGetState() == states.PLAYING || _api.jwGetState() == states.PAUSED) {
 				_hideControlbar();
+				_hideDock();
+			} else if (_replayState) {
+				_hideDock();
 			}
 			clearTimeout(_controlsTimeout);
 			_controlsTimeout = 0;
@@ -146,6 +155,9 @@
 				_eventDispatcher.sendEvent(evt.type, evt);
 			});
 			_controlsLayer.appendChild(_display.getDisplayElement());
+			
+			_dock = new html5.dock(_api, _model.componentConfig('dock'));
+			_controlsLayer.appendChild(_dock.getDisplayElement());
 			
 			if (_model.playlistsize && _model.playlistposition && _model.playlistposition != "none") {
 				_playlist = new html5.playlistcomponent(_api, {});
@@ -338,6 +350,14 @@
 //				_setTimeout(function() { _controlbar.style.display="none")
 			}
 		}
+		
+		function _showDock() {
+			if (_dock && !_audioMode) _dock.show();
+		}
+		function _hideDock() {
+			if (_dock) _dock.hide();
+		}
+
 		function _showDisplay() {
 			if (_display && !_audioMode) _display.show();
 		}
@@ -348,11 +368,13 @@
 		function _hideControls() {
 			_hideControlbar();
 			_hideDisplay();
+			_hideDock();
 		}
 
 		function _showControls() {
 			_showControlbar();
 			_showDisplay();
+			_showDock();
 		}
 		
 		function _showVideo(state) {
@@ -362,6 +384,10 @@
 				opacity: state ? 1 : 0
 			});
 		}
+
+		function _playlistCompleteHandler() {
+			_replayState = true;
+		}
 		
 		/**
 		 * Player state handler
@@ -369,6 +395,7 @@
 		var _stateTimeout;
 		
 		function _stateHandler(evt) {
+			_replayState = false;
 			clearTimeout(_stateTimeout);
 			_stateTimeout = setTimeout(function() {
 				_updateState(evt.newstate);
@@ -394,6 +421,7 @@
 					_showVideo(false);
 				}
 				_hideControlbar();
+				_hideDock();
 				_display.hidePreview(false);
 				_showDisplay();
 				if (_isIPad) _videoTag.controls = false;
@@ -443,6 +471,14 @@
 			_css(selector, { display: state ? "block" : "none" });
 		}
 		
+		this.addButton = function(icon, label, handler, id) {
+			if (_dock) _dock.addButton(icon, label, handler, id);
+		}
+
+		this.removeButton = function(id) {
+			if (_dock) _dock.removeButton(id);
+		}
+
 		_init();
 
 		
@@ -504,8 +540,6 @@
 		right: 0,
 		display: 'none'
 	});
-
-	
 
 	// Fullscreen styles
 	

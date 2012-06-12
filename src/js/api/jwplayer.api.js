@@ -35,7 +35,7 @@
 		};
 		
 		function _setButton(ref, plugin) {
-			return function(id, handler, outGraphic, overGraphic) {
+			return function(outGraphic, label, handler, id) {
 				if (ref.renderingMode == "flash" || ref.renderingMode == "html5") {
 					var handlerString;
 					if (handler) {
@@ -44,7 +44,7 @@
 					} else if (!handler && _callbacks[id]) {
 						delete _callbacks[id];
 					}
-					_player.jwDockSetButton(id, handlerString, outGraphic, overGraphic);
+					_player.jwDockAddButton(outGraphic, label, handlerString, id);
 				}
 				return plugin;
 			};
@@ -54,7 +54,8 @@
 			var _plugin = {};
 			if (pluginName == "dock") {
 				return utils.extend(_plugin, {
-					setButton: _setButton(_this, _plugin),
+					addButton: _setButton(_this, _plugin),
+					removeButton: function(id) { _callInternal('jwDockRemoveButton', id); return _plugin; },
 					show: function() { _callInternal('jwDockShow'); return _plugin; },
 					hide: function() { _callInternal('jwDockHide'); return _plugin; },
 					onShow: function(callback) { 
@@ -68,8 +69,8 @@
 				});
 			} else if (pluginName == "controlbar") {
 				return utils.extend(_plugin, {
-					show: function() { __callInternal('jwControlbarShow'); return _plugin; },
-					hide: function() { __callInternal('jwControlbarHide'); return _plugin; },
+					show: function() { _callInternal('jwControlbarShow'); return _plugin; },
+					hide: function() { _callInternal('jwControlbarHide'); return _plugin; },
 					onShow: function(callback) { 
 						_componentListener("controlbar", events.JWPLAYER_COMPONENT_SHOW, callback); 
 						return _plugin; 
@@ -81,8 +82,8 @@
 				});
 			} else if (pluginName == "display") {
 				return utils.extend(_plugin, {
-					show: function() { __callInternal('jwDisplayShow'); return _plugin; },
-					hide: function() { __callInternal('jwDisplayHide'); return _plugin; },
+					show: function() { _callInternal('jwDisplayShow'); return _plugin; },
+					hide: function() { _callInternal('jwDisplayHide'); return _plugin; },
 					onShow: function(callback) { 
 						_componentListener("display", events.JWPLAYER_COMPONENT_SHOW, callback); 
 						return _plugin; 
@@ -99,7 +100,7 @@
 		
 		_this.callback = function(id) {
 			if (_callbacks[id]) {
-				return _callbacks[id]();
+				_callbacks[id]();
 			}
 		};
 		_this.getDuration = function() {

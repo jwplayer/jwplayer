@@ -73,6 +73,9 @@
 				break;
 			}
 		} else {
+			if (!!value.match(/png|gif|jpe?g/i) && value.indexOf('url') != 0) {
+				return "url(" + value + ")";
+			}
 			return value + importantString;
 		}
 	}

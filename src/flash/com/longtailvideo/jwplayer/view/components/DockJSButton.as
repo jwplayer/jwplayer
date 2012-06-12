@@ -11,8 +11,6 @@ package com.longtailvideo.jwplayer.view.components {
 
     /** A button from within the dock added from javascript. **/
     public class DockJSButton extends ComponentButton {
-
-
         /** Javascript click handler. **/
         private var _click:String;
         private var _overLoader:Loader;
@@ -23,7 +21,7 @@ package com.longtailvideo.jwplayer.view.components {
 		private var _lastOut:String;
 
         /** Constructor **/
-        public function DockJSButton(name:String, back:DisplayObject, tab:Number):void {
+        public function DockJSButton(name:String, back:DisplayObject, backOver:DisplayObject, tab:Number):void {
             this.name = name;
             setBackground(back);
 			this.tabEnabled = true;

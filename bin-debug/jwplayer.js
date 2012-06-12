@@ -18,7 +18,7 @@ jwplayer = function(container) {
 
 var $jw = jwplayer;
 
-jwplayer.version = '6.0.2243';
+jwplayer.version = '6.0.2250';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -2209,7 +2209,7 @@ jwplayer.source = document.createElement("source");/**
 		};
 		
 		function _setButton(ref, plugin) {
-			return function(id, handler, outGraphic, overGraphic) {
+			return function(outGraphic, label, handler, id) {
 				if (ref.renderingMode == "flash" || ref.renderingMode == "html5") {
 					var handlerString;
 					if (handler) {
@@ -2218,7 +2218,7 @@ jwplayer.source = document.createElement("source");/**
 					} else if (!handler && _callbacks[id]) {
 						delete _callbacks[id];
 					}
-					_player.jwDockSetButton(id, handlerString, outGraphic, overGraphic);
+					_player.jwDockAddButton(outGraphic, label, handlerString, id);
 				}
 				return plugin;
 			};
@@ -2228,7 +2228,8 @@ jwplayer.source = document.createElement("source");/**
 			var _plugin = {};
 			if (pluginName == "dock") {
 				return utils.extend(_plugin, {
-					setButton: _setButton(_this, _plugin),
+					addButton: _setButton(_this, _plugin),
+					removeButton: function(id) { _callInternal('jwDockRemoveButton', id); return _plugin; },
 					show: function() { _callInternal('jwDockShow'); return _plugin; },
 					hide: function() { _callInternal('jwDockHide'); return _plugin; },
 					onShow: function(callback) { 
@@ -2242,8 +2243,8 @@ jwplayer.source = document.createElement("source");/**
 				});
 			} else if (pluginName == "controlbar") {
 				return utils.extend(_plugin, {
-					show: function() { __callInternal('jwControlbarShow'); return _plugin; },
-					hide: function() { __callInternal('jwControlbarHide'); return _plugin; },
+					show: function() { _callInternal('jwControlbarShow'); return _plugin; },
+					hide: function() { _callInternal('jwControlbarHide'); return _plugin; },
 					onShow: function(callback) { 
 						_componentListener("controlbar", events.JWPLAYER_COMPONENT_SHOW, callback); 
 						return _plugin; 
@@ -2255,8 +2256,8 @@ jwplayer.source = document.createElement("source");/**
 				});
 			} else if (pluginName == "display") {
 				return utils.extend(_plugin, {
-					show: function() { __callInternal('jwDisplayShow'); return _plugin; },
-					hide: function() { __callInternal('jwDisplayHide'); return _plugin; },
+					show: function() { _callInternal('jwDisplayShow'); return _plugin; },
+					hide: function() { _callInternal('jwDisplayHide'); return _plugin; },
 					onShow: function(callback) { 
 						_componentListener("display", events.JWPLAYER_COMPONENT_SHOW, callback); 
 						return _plugin; 
@@ -2273,7 +2274,7 @@ jwplayer.source = document.createElement("source");/**
 		
 		_this.callback = function(id) {
 			if (_callbacks[id]) {
-				return _callbacks[id]();
+				_callbacks[id]();
 			}
 		};
 		_this.getDuration = function() {

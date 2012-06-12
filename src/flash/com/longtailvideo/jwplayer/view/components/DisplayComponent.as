@@ -193,8 +193,8 @@
 				_overlay.addChild(_icon);
 				if (!oldIcon) {
 					_icon.alpha = 0;
-					(new Animations(_icon).fade(1));
 				}
+				(new Animations(_icon).fade(1));
 
 				positionIcon();
 				_iconArea = _icon.getRect(_overlay);

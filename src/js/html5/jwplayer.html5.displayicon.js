@@ -20,8 +20,9 @@
 		JW_CSS_CENTER = "center",
 		JW_CSS_ABSOLUTE = "absolute";
 
-	html5.displayicon = function(id, skin, textStyle, textStyleOver) {
-		var _skin = skin, 
+	html5.displayicon = function(id, api, textStyle, textStyleOver) {
+		var _api = api,
+			_skin = _api.skin,
 			_id = id,
 			_container, 
 			_bg,
@@ -78,7 +79,7 @@
 			if (overElem.src) {
 				overstyle['background-image'] = 'url(' + overElem.src + ')';
 			}
-			_css(_internalSelector(selector, true), overstyle);
+			_css("#"+_api.id+" .jwdisplay:hover " + selector, overstyle);
 		}
 
 		function _getSkinElement(name) {

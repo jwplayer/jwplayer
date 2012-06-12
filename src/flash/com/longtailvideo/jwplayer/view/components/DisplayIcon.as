@@ -1,5 +1,7 @@
 package com.longtailvideo.jwplayer.view.components {
+	import com.longtailvideo.jwplayer.utils.Animations;
 	import com.longtailvideo.jwplayer.utils.Draw;
+	import com.longtailvideo.jwplayer.utils.RootReference;
 	
 	import flash.display.*;
 	import flash.events.*;
@@ -18,6 +20,15 @@ package com.longtailvideo.jwplayer.view.components {
 		private var _capRightOver:DisplayObject;
 		private var _capLeft:DisplayObject;
 		private var _capLeftOver:DisplayObject;
+
+		private var _iconFade:Animations;
+		private var _iconOverFade:Animations;
+		private var _bgFade:Animations;
+		private var _bgOverFade:Animations;
+		private var _capLeftFade:Animations;
+		private var _capLeftOverFade:Animations;
+		private var _capRightFade:Animations;
+		private var _capRightOverFade:Animations;
 	
 		private var _text:String;
 		private var _textFormat:TextFormat;
@@ -61,10 +72,19 @@ package com.longtailvideo.jwplayer.view.components {
 			this.mouseEnabled = false;
 			this.mouseChildren = true;
 
+			_iconFade = new Animations(_icon);
+			_iconOverFade = new Animations(_iconOver);
+			_bgFade = new Animations(_background);
+			_bgOverFade = new Animations(_backgroundOver);
+			_capLeftFade = new Animations(_capLeft);
+			_capLeftOverFade = new Animations(_capLeftOver);
+			_capRightFade = new Animations(_capRight);
+			_capRightOverFade = new Animations(_capRightOver);
+			
 			buildIcon();
 
-			_container.addEventListener(MouseEvent.MOUSE_OVER, _overHandler);
-			_container.addEventListener(MouseEvent.MOUSE_OUT, _outHandler);
+			RootReference.stage.addEventListener(MouseEvent.MOUSE_MOVE, _overHandler);
+			RootReference.stage.addEventListener(Event.MOUSE_LEAVE, _outHandler);
 		}
 		
 		private function buildIcon():void {
@@ -92,7 +112,9 @@ package com.longtailvideo.jwplayer.view.components {
 			_container.addChild(_textField);
 			
 			_container.addChild(_iconContainer);
+			_container.cacheAsBitmap = true;
 			addChild(_container);
+			
 			
 			_rotationTimer = new Timer(100);
 			_rotationTimer.addEventListener(TimerEvent.TIMER, rotationInterval);
@@ -196,26 +218,34 @@ package com.longtailvideo.jwplayer.view.components {
 			hover(true);
 		}
 
-		private function _outHandler(evt:MouseEvent):void {
+		private function _outHandler(evt:Event):void {
 			hover(false);
 		}
 
 		private function hover(state:Boolean):void {
 			if (_iconOver) {
-				_icon.visible = !state;
-				_iconOver.visible = state;
+				_iconFade.cancelAnimation();
+				_iconOverFade.cancelAnimation();
+				_iconFade.fade(state ? 0 : 1);
+				_iconOverFade.fade(state ? 1 : 0);
 			}
 			if (_backgroundOver) { 
-				_background.visible = !state;
-				_backgroundOver.visible = state; 
+				_bgFade.cancelAnimation();
+				_bgOverFade.cancelAnimation();
+				_bgFade.fade(state ? 0 : 1);
+				_bgOverFade.fade(state ? 1 : 0);
 			}
 			if (_capLeftOver) { 
-				_capLeft.visible = !state;
-				_capLeftOver.visible = state; 
+				_capLeftFade.cancelAnimation();
+				_capLeftOverFade.cancelAnimation();
+				_capLeftFade.fade(state ? 0 : 1);
+				_capLeftOverFade.fade(state ? 1 : 0);
 			}
 			if (_capRightOver) { 
-				_capRight.visible = !state;
-				_capRightOver.visible = state; 
+				_capRightFade.cancelAnimation();
+				_capRightOverFade.cancelAnimation();
+				_capRightFade.fade(state ? 0 : 1);
+				_capRightOverFade.fade(state ? 1 : 0);
 			}
 			_textField.textColor = Number(state ? _textFormatOver.color : _textFormat.color);
 		}

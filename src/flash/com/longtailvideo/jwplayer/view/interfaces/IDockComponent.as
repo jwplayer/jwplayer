@@ -16,8 +16,8 @@ package com.longtailvideo.jwplayer.view.interfaces {
 	[Event(name="jwPlayerComponentHide", type="com.longtailvideo.jwplayer.events.ComponentEvent")]
 	
 	public interface IDockComponent extends IPlayerComponent {
-		function addButton(icon:DisplayObject, text:String, clickHandler:Function, name:String = null):MovieClip;
+		function addButton(icon:*, text:String, clickHandler:*, name:String = null):MovieClip;
 		function removeButton(name:String):void;
-		function setButton(name:String, click:String=null, over:String=null, out:String=null):void;
-	}
+/*		function setButton(name:String, click:String=null, over:String=null, out:String=null):void;
+*/	}
 }
