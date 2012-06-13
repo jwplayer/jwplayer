@@ -2,47 +2,22 @@
 // TODO: remove font, fontStyle
 
 package com.longtailvideo.jwplayer.view.components {
-	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
-	import com.longtailvideo.jwplayer.events.PlaylistEvent;
-	import com.longtailvideo.jwplayer.events.ViewEvent;
-	import com.longtailvideo.jwplayer.model.Color;
-	import com.longtailvideo.jwplayer.model.PlaylistItem;
-	import com.longtailvideo.jwplayer.player.IPlayer;
-	import com.longtailvideo.jwplayer.player.PlayerState;
-	import com.longtailvideo.jwplayer.utils.Draw;
-	import com.longtailvideo.jwplayer.utils.Logger;
-	import com.longtailvideo.jwplayer.utils.RootReference;
-	import com.longtailvideo.jwplayer.utils.Stacker;
-	import com.longtailvideo.jwplayer.utils.Stretcher;
-	import com.longtailvideo.jwplayer.utils.Strings;
-	import com.longtailvideo.jwplayer.view.PlayerLayoutManager;
-	import com.longtailvideo.jwplayer.view.interfaces.IPlaylistComponent;
-	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
-	import com.longtailvideo.jwplayer.view.skins.DefaultSkin;
-	import com.longtailvideo.jwplayer.view.skins.PNGSkin;
+	import com.longtailvideo.jwplayer.events.*;
+	import com.longtailvideo.jwplayer.model.*;
+	import com.longtailvideo.jwplayer.player.*;
+	import com.longtailvideo.jwplayer.utils.*;
+	import com.longtailvideo.jwplayer.view.*;
+	import com.longtailvideo.jwplayer.view.interfaces.*;
+	import com.longtailvideo.jwplayer.view.skins.*;
 	
 	import flash.accessibility.AccessibilityProperties;
-	import flash.display.Bitmap;
-	import flash.display.DisplayObject;
-	import flash.display.DisplayObjectContainer;
-	import flash.display.Loader;
-	import flash.display.LoaderInfo;
-	import flash.display.MovieClip;
-	import flash.display.Sprite;
-	import flash.events.Event;
-	import flash.events.IOErrorEvent;
-	import flash.events.MouseEvent;
-	import flash.geom.ColorTransform;
-	import flash.geom.Rectangle;
-	import flash.net.URLRequest;
-	import flash.system.LoaderContext;
-	import flash.text.TextField;
-	import flash.text.TextFormat;
-	import flash.text.TextFormatAlign;
-	import flash.utils.Dictionary;
-	import flash.utils.clearInterval;
-	import flash.utils.setInterval;
-	
+	import flash.display.*;
+	import flash.events.*;
+	import flash.geom.*;
+	import flash.net.*;
+	import flash.system.*;
+	import flash.text.*;
+	import flash.utils.*;
 	
 	public class PlaylistComponent extends CoreComponent implements IPlaylistComponent {
 		/** Array with all button instances **/
@@ -172,45 +147,35 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 		
 		private function buildSlider():Sprite {
-			var newSlider:Sprite = getSkinElement("slider") as Sprite;
-
-			if (!newSlider) {
-				newSlider = new Sprite();
-				var sliderBack:Sprite = buildSliderElement('back', 'sliderBackground');
-				addElement(sliderBack, newSlider);
-				
-				var sliderRail:Sprite = buildSliderElement('rail', 'sliderRail', 7, 22);
-				addElement(sliderRail, newSlider);
-				
-				var sliderThumb:Sprite = buildSliderElement('icon', 'sliderThumb', 5, 54);
-				addElement(sliderThumb, newSlider, (sliderRail.width - sliderThumb.width) / 2);
-			}
-
-			/* These elements were never included in the swf skins, so add them even if the slider was in a SWF skin */
+			var newSlider:Sprite = new Sprite();
 			
-			var sliderCapTop:Sprite = buildSliderElement('captop', 'sliderCapTop');
-			addElement(sliderCapTop, newSlider);
+			var sliderRail:Sprite = buildSliderElement('rail', '', newSlider);
+			var sliderRailTop:Sprite = buildSliderElement('railtop', 'sliderRailCapTop', sliderRail);
+			var sliderRailMiddle:Sprite = buildSliderElement('railmiddle', 'sliderRail', sliderRail);
+			var sliderRailBottom:Sprite = buildSliderElement('railbottom', 'sliderRailCapBottom', sliderRail);
+			sliderRailMiddle.y = sliderRailTop.height;
+			
+			var sliderThumb:Sprite = buildSliderElement('icon', '', newSlider);
+			var sliderThumbCapTop:Sprite = buildSliderElement('thumbTop', 'sliderThumbCapTop', sliderThumb);
+			var sliderThumbCapMiddle:Sprite = buildSliderElement('thumbMiddle', 'sliderThumb', sliderThumb);
+			var sliderThumbCapBottom:Sprite = buildSliderElement('thumbBottom', 'sliderThumbCapBottom', sliderThumb);
+			sliderThumbCapMiddle.y = sliderThumbCapTop.height;
 
-			var sliderCapBottom:Sprite = buildSliderElement('capbottom', 'sliderCapBottom');
-			addElement(sliderCapBottom, newSlider);
+			var sliderCapTop:Sprite = buildSliderElement('captop', 'sliderCapTop', newSlider);
+			var sliderCapBottom:Sprite = buildSliderElement('capbottom', 'sliderCapBottom', newSlider);
 			
 			return newSlider;
 		}
 		
-		private function buildSliderElement(name:String, skinElementName:String, width:Number=0, height:Number=0):Sprite {
+		private function buildSliderElement(name:String, skinElementName:String, parent:Sprite):Sprite {
 			var newElement:Sprite = getSkinElement(skinElementName) as Sprite;
 			if (!newElement) {
 				newElement = new Sprite();
-				if (width * height > 0) {
-					newElement.graphics.beginFill(0, 1);
-					newElement.graphics.drawRect(0, 0, width, height);
-					newElement.graphics.endFill();
-				}
 			}
-			try {
-				newElement.name = name;
-			} catch(e:Error) {} //This is not possible if the element was created and named from an FLA
-			
+			newElement.name = name;
+			if (parent) {
+				parent.addChild(newElement);
+			}
 			return newElement;
 		}
 		
@@ -483,36 +448,47 @@ package com.longtailvideo.jwplayer.view.components {
 		private function layoutSlider():void {
 			slider.visible = true;
 			slider.x = getConfigParam("width") - slider.width;
-			if (player.skin is PNGSkin) {
-				var capTop:DisplayObject = slider.getChildByName("captop");
-				var capBottom:DisplayObject = slider.getChildByName("capbottom");
-				slider.getChildByName("back").y = capTop.height;
-				slider.getChildByName("rail").y = capTop.height;
-				slider.getChildByName("icon").y = capTop.height;
-				slider.getChildByName("back").height = getConfigParam('height') - capBottom.height - capTop.height;
-				slider.getChildByName("rail").height = getConfigParam('height') - capBottom.height - capTop.height;
-				slider.getChildByName("icon").height = Math.round(slider.getChildByName("rail").height / proportion);
-				capBottom.y = getConfigParam('height') - capBottom.height; 
-			} else {
-				var dif:Number = getConfigParam("height") - slider.height - slider.y;
-				slider.getChildByName("back").height += dif;
-				slider.getChildByName("rail").height += dif;
-				slider.getChildByName("icon").height = Math.round(slider.getChildByName("rail").height / proportion);
-			}
+
+			var capTop:DisplayObject = slider.getChildByName("captop");
+			var capBottom:DisplayObject = slider.getChildByName("capbottom");
+			var thumb:Sprite = slider.getChildByName("icon") as Sprite;
+			var rail:Sprite = slider.getChildByName("rail") as Sprite;
+			var height:Number = Number(getConfigParam("height"))
+			
+			var thumbTop:DisplayObject = thumb.getChildByName('thumbTop');
+			var thumbMiddle:DisplayObject = thumb.getChildByName('thumbMiddle');
+			var thumbBottom:DisplayObject = thumb.getChildByName('thumbBottom');
+		
+			var railTop:DisplayObject = rail.getChildByName('railtop');
+			var railMiddle:DisplayObject = rail.getChildByName('railmiddle');
+			var railBottom:DisplayObject = rail.getChildByName('railbottom');
+			
+			rail.y = capTop.height;
+			thumb.y = capTop.height;
+			
+			railMiddle.height = height - capBottom.height - capTop.height - railTop.height - railBottom.height;
+			railBottom.y = railMiddle.y + railMiddle.height;
+			
+			thumbMiddle.height = Math.round(rail.height / proportion) - thumbTop.height - thumbBottom.height;
+			thumbBottom.y = thumbMiddle.y + thumbMiddle.height;
+			
+			capBottom.y = height - capBottom.height; 
 		}
 		
 		
 		/** Make sure the playlist is not out of range. **/
 		private function scrollEase(ips:Number = -1, cps:Number = -1):void {
+			var thumb:DisplayObject = slider.getChildByName("icon");
+			var rail:DisplayObject = slider.getChildByName("rail");
 			if (ips != -1) {
-				slider.getChildByName("icon").y = Math.round(ips - (ips - slider.getChildByName("icon").y) / 1.5);
+				thumb.y = Math.round(ips - (ips - thumb.y) / 1.5);
 				list.y = Math.round((cps - (cps - list.y) / 1.5));
 			}
-			if (list.y > 0 || slider.getChildByName("icon").y < slider.getChildByName("rail").y) {
+			if (list.y > 0 || thumb.y < rail.y) {
 				list.y = listmask.y;
-				slider.getChildByName("icon").y = slider.getChildByName("rail").y;
-			} else if (list.y < listmask.height - list.height || slider.getChildByName("icon").y > slider.getChildByName("rail").y + slider.getChildByName("rail").height - slider.getChildByName("icon").height) {
-				slider.getChildByName("icon").y = slider.getChildByName("rail").y + slider.getChildByName("rail").height - slider.getChildByName("icon").height;
+				thumb.y = rail.y;
+			} else if (list.y < listmask.height - list.height || thumb.y > rail.y + rail.height - thumb.height) {
+				thumb.y = rail.y + rail.height - thumb.height;
 				list.y = listmask.y + listmask.height - list.height;
 			}
 		}
