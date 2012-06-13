@@ -40,6 +40,8 @@
 			_items,
 			_ul,
 			_lastCurrent = -1,
+			_clickedIndex,
+			_slider,
 			_elements = {
 				'background': undefined,
 				'item': undefined,
@@ -53,7 +55,7 @@
 		};
 		
 		this.redraw = function() {
-			// not needed
+			if (_slider) _slider.redraw();
 		};
 		
 		this.show = function() {
@@ -68,6 +70,7 @@
 		function _setup() {
 			_wrapper = _createElement("div", "jwplaylist"); 
 			_wrapper.id = _api.id + "_jwplayer_playlistcomponent";
+			
 			_populateSkinElements();
 			if (_elements.item) {
 				_settings.itemheight = _elements.item.height;
@@ -250,6 +253,8 @@
 			if (utils.isIOS() && window.iScroll) {
 				_ul.style.height = _settings.itemheight * _playlist.length + "px";
 				var myscroll = new iScroll(_wrapper.id);
+			} else {
+				_slider = new html5.playlistslider(_wrapper.id + "_slider", _api.skin, _wrapper, _ul);
 			}
 			
 		}
@@ -267,13 +272,23 @@
 		
 		function _clickHandler(index) {
 			return function() {
+				_clickedIndex = index;
 				_api.jwPlaylistItem(index);
 				_api.jwPlay(true);
 			}
 		}
 		
 		function _scrollToItem() {
-			_ul.scrollTop = _api.jwGetPlaylistIndex() * _settings.itemheight;
+			var idx = _api.jwGetPlaylistIndex();
+			// No need to scroll if the user clicked the current item
+			if (idx == _clickedIndex) return;
+			_clickedIndex = -1;
+				
+			if (utils.isIOS() && window.iScroll) {
+				_ul.scrollTop = idx * _settings.itemheight;
+			} else if (_slider) {
+				_slider.thumbPosition(idx / (_api.jwGetPlaylist().length-1)) ;
+			}
 		}
 
 		function _showThumbs() {
@@ -307,7 +322,6 @@
 	/** Global playlist styles **/
 
 	_css(PL_CLASS, {
-		overflow: JW_CSS_HIDDEN,
 		position: JW_CSS_ABSOLUTE,
 	    width: JW_CSS_100PCT,
 		height: JW_CSS_100PCT
@@ -325,12 +339,11 @@
 	});
 
 	_css(PL_CLASS+' .jwlist', {
-	    width: JW_CSS_100PCT,
-		height: JW_CSS_100PCT,
+		position: JW_CSS_ABSOLUTE,
+		width: JW_CSS_100PCT,
     	'list-style': 'none',
     	margin: 0,
-    	padding: 0,
-    	'overflow-y': 'auto'
+    	padding: 0
 	});
 
 	_css(PL_CLASS+' .jwlist li', {
