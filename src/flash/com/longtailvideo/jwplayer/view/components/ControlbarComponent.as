@@ -115,7 +115,7 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _removedButtons:Array = [];
 		protected var _dividers:Array;
 		protected var _dividerElements:Object;
-		protected var _defaultLayout:String = "[play|stop|prev|next|elapsed][time][duration|blank|fullscreen|mute volume]";
+		protected var _defaultLayout:String = "[play|stop|prev|next|elapsed][time][duration|blank|hdOn|ccOn|fullscreen|mute volume]";
 		protected var _currentLayout:String;
 		protected var _layoutManager:ControlbarLayoutManager;
 		protected var _width:Number;
@@ -515,14 +515,7 @@ package com.longtailvideo.jwplayer.view.components {
 
 		private function addSlider(name:String, event:String, callback:Function, margin:Number=0):void {
 			try {
-				var slider:Slider = new Slider(
-					getSkinElement(name + "SliderRail"), 
-					getSkinElement(name + "SliderBuffer"), 
-					getSkinElement(name + "SliderProgress"), 
-					getSkinElement(name + "SliderThumb"),
-					getSkinElement(name + "SliderCapLeft"),
-					getSkinElement(name + "SliderCapRight")
-				);
+				var slider:Slider = new Slider(name, _player.skin);
 				slider.addEventListener(event, callback);
 				slider.name = name;
 				slider.tabEnabled = false;
@@ -670,12 +663,11 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 
 
-		private function hideButton(name:String):void {
+		private function hideButton(name:String, state:Boolean = true):void {
 			if (_buttons[name]) {
-				_buttons[name].visible = false;
+				_buttons[name].visible = !state;
 			}
 		}
-
 
 		public function getButton(buttonName:String):DisplayObject {
 			if (_dividerElements[buttonName]) {
@@ -759,6 +751,9 @@ package com.longtailvideo.jwplayer.view.components {
 		private function redraw():void {
 			if (!_player.config.fullscreen && _player.config.height <= 40) {
 				_currentLayout = _currentLayout.replace("fullscreen", "");
+				hideButton('fullscreen', true);
+			} else {
+				hideButton('fullscreen', false);
 			}
 			clearDividers();
 			alignTextFields();

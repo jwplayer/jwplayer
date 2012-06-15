@@ -38,6 +38,7 @@
 		
 		CB_CLASS = '.jwcontrolbar',
 		
+		UNDEFINED = undefined,
 		DOCUMENT = document;
 	
 	/** HTML5 Controlbar class **/
@@ -78,8 +79,9 @@
 						position: "right",
 						elements: [ 
 						    _layoutElement("duration", CB_TEXT), 
-						    _layoutElement("blank", CB_BUTTON),
 						    _dividerElement,
+						    _layoutElement("hdOn", CB_BUTTON), 
+						    _layoutElement("ccOn", CB_BUTTON), 
 						    _layoutElement("mute", CB_BUTTON), 
 						    _layoutElement("volume", CB_SLIDER), 
 						    _dividerElement,
@@ -96,6 +98,8 @@
 			_id,
 			_duration,
 			_position,
+			_levels,
+			_currentQuality,
 			_currentVolume,
 			_dragging = false,
 			_lastSeekTime = 0,
@@ -103,13 +107,17 @@
 			_toggles = {
 				play: "pause",
 				mute: "unmute",
-				fullscreen: "normalscreen"
+				fullscreen: "normalscreen",
+				hdOn: "hdOff",
+				ccOn: "ccOff"
 			},
 			
 			_toggleStates = {
 				play: false,
 				mute: false,
-				fullscreen: false
+				fullscreen: false,
+				hdOn: false,
+				ccOn: false
 			},
 			
 			_buttonMapping = {
@@ -117,7 +125,9 @@
 				mute: _mute,
 				fullscreen: _fullscreen,
 				next: _next,
-				prev: _prev
+				prev: _prev,
+				hdOn: _hd,
+				ccOn: _cc
 			},
 			
 			_sliderMapping = {
@@ -165,6 +175,8 @@
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_BUFFER, _bufferHandler);
 			_api.jwAddEventListener(events.JWPLAYER_FULLSCREEN, _fullscreenHandler);
 			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_LOADED, _playlistHandler);
+//			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_ITEM, _qualityHandler);
+			_api.jwAddEventListener(events.JWPLAYER_MEDIA_LEVELS, _qualityHandler);
 		}
 		
 		function _timeUpdated(evt) {
@@ -241,11 +253,25 @@
 		
 		function _playlistHandler(evt) {
 			if (_api.jwGetPlaylist().length < 2 || _sidebarShowing()) {
-				_css(_internalSelector(".jwnext"), { display: "none" });
-				_css(_internalSelector(".jwprev"), { display: "none" });
+				_css(_internalSelector(".jwnext"), { display: JW_CSS_NONE });
+				_css(_internalSelector(".jwprev"), { display: JW_CSS_NONE });
 			} else {
-				_css(_internalSelector(".jwnext"), { display: undefined });
-				_css(_internalSelector(".jwprev"), { display: undefined });
+				_css(_internalSelector(".jwnext"), { display: UNDEFINED });
+				_css(_internalSelector(".jwprev"), { display: UNDEFINED });
+			}
+			_redraw();
+		}
+		
+		function _qualityHandler(evt) {
+			_levels = evt.levels;
+			_currentQuality = evt.currentQuality;
+			if (_levels && _levels.length > 1) {
+				_css(_internalSelector(".jwhdOn"), { display: UNDEFINED });
+				if (_levels.length == 2) {
+					_toggleButton("hdOn", _currentQuality == 0);
+				}
+			} else {
+				_css(_internalSelector(".jwhdOn"), { display: "none" });
 			}
 			_redraw();
 		}
@@ -491,14 +517,25 @@
 			}
 		}
 		
+		function _hd() {
+			if (_levels) {
+				if (_levels.length == 2) {
+					_api.jwSetCurrentQuality(_currentQuality ? 0 : 1);
+					_toggleButton("hdOn");
+				}
+			}
+		}
+		
+		function _cc() {
+			_toggleButton("ccOn");
+		}
+		
 		function _buildSlider(name) {
 			var slider = _createSpan();
 			slider.className = "jwslider jw" + name;
 
-
 			var capLeft = _buildImage(name + "SliderCapLeft");
 			var capRight = _buildImage(name + "SliderCapRight");
-			//if (capRight) capRight.className += " jwcapRight";
 
 			var rail = _buildSliderRail(name);
 			
@@ -532,10 +569,33 @@
 			var railElements = ['Rail', 'Buffer', 'Progress'];
 
 			for (var i=0; i<railElements.length; i++) {
-				var element = _buildImage(name + "Slider" + railElements[i], null, true, (name=="volume"));
+				var prefix = name + "Slider" + railElements[i],
+					element = _buildImage(prefix, null, true, (name=="volume")),
+					capLeft = _buildImage(prefix + "CapLeft"),
+					capRight = _buildImage(prefix + "CapRight"),
+					capLeftSkin = _getSkinElement(prefix + "CapLeft"),
+					capRightSkin = _getSkinElement(prefix + "CapRight");
 				if (element) {
-					element.className += " jwstretch";
-					rail.appendChild(element);
+					var railElement = _createSpan();
+					railElement.className = "jwrailgroup " + railElements[i];
+					if (capLeft) railElement.appendChild(capLeft);
+					railElement.appendChild(element);
+					if (capRight) { 
+						railElement.appendChild(capRight);
+						capRight.className += " jwcapRight";
+					}
+					
+					_css(_internalSelector(".jwrailgroup." + railElements[i]), {
+						'min-width': capLeftSkin.width + capRightSkin.width
+					});
+					
+					_css(_internalSelector("." + element.className), {
+						left: capLeftSkin.width,
+						right: capRightSkin.width
+					});
+
+					_elements[prefix] = railElement;
+					rail.appendChild(railElement);
 				}
 			}
 			
@@ -676,35 +736,41 @@
 			});
 		}
 		
+		this.audioMode = function(mode) {
+			_css(_internalSelector(".jwfullscreen"), { display: mode ? JW_CSS_NONE : UNDEFINED });
+			_css(_internalSelector(".jwhdOn"), { display: mode ? JW_CSS_NONE : UNDEFINED });
+			_css(_internalSelector(".jwccOn"), { display: mode ? JW_CSS_NONE : UNDEFINED });
+			_redraw();
+		}
+		
 		this.getDisplayElement = function() {
 			return _controlbar;
 		};
 		
 		function _setBuffer(pct) {
 			pct = Math.min(Math.max(0, pct), 1);
-			//_css(_internalSelector('.jwtimeSliderBuffer'), { width: pct * 100 + "%" });
 			if (_elements.timeSliderBuffer) {
 				_elements.timeSliderBuffer.style.width = pct * 100 + "%";
+				_elements.timeSliderBuffer.style.opacity = pct > 0 ? 1 : 0;
 			}
 		}
 
 		function _sliderPercent(name, pct, fixedWidth) {
 			var width = 100 * Math.min(Math.max(0, pct), 1) + "%";
 			
-			//_css(_internalSelector(prefix+'Progress'), { width: width });
-			//_css(_internalSelector(prefix+'Thumb'), { left: width });
-			
 			// Set style directly on the elements; Using the stylesheets results in some flickering in Chrome.
 			if (_elements[name+'SliderProgress']) {
 				_elements[name+'SliderProgress'].style.width = width;
+				_elements[name+'SliderProgress'].style.opacity = pct > 0 ? 1 : 0;
 			}
+			
 			if (_elements[name+'SliderThumb']) {
 				_elements[name+'SliderThumb'].style.left = width;
 			}
 		}
 		
 		function _setVolume (pct) {
-			_sliderPercent('volume', pct, true);
+			_sliderPercent('volume', pct, true);	
 		}
 
 		function _setProgress(pct) {
@@ -720,19 +786,17 @@
 					width: 0,
 					height: 0,
 					src: "",
-					image: undefined,
+					image: UNDEFINED,
 					ready: false
 				}
 			}
 		}
 		
 		this.show = function() {
-//			_css(_internalSelector(), { opacity: 1 });
 			_css(_internalSelector(), { opacity: 1, visibility: "visible" });
 		}
 		
 		this.hide = function() {
-//			_css(_internalSelector(), { opacity: 0 });
 			_css(_internalSelector(), { opacity: 0, visibility: JW_CSS_HIDDEN });
 		}
 		
@@ -787,19 +851,32 @@
 		position: JW_CSS_ABSOLUTE
 	});
     
-    _css(CB_CLASS+' .jwtime,' + CB_CLASS + ' .jwgroup span.jwstretch', {
+    _css(CB_CLASS+' .jwtime', {
     	position: JW_CSS_ABSOLUTE,
     	height: JW_CSS_100PCT,
     	width: JW_CSS_100PCT,
     	left: 0
     });
     
-    _css(CB_CLASS+' .jwrail,' + CB_CLASS + ' .jwthumb', {
+    _css(CB_CLASS + ' .jwthumb', {
     	position: JW_CSS_ABSOLUTE,
     	height: JW_CSS_100PCT,
     	cursor: 'pointer'
     });
     
+    _css(CB_CLASS + ' .jwrail', {
+    	position: JW_CSS_ABSOLUTE,
+    	cursor: 'pointer'
+    });
+
+    _css(CB_CLASS + ' .jwrailgroup', {
+    	position: JW_CSS_ABSOLUTE,
+    	width: JW_CSS_100PCT
+    });
+
+    _css(CB_CLASS + ' .jwrailgroup span', {
+    	position: JW_CSS_ABSOLUTE
+    });
 
     _css(CB_CLASS + ' .jwdivider+.jwdivider', {
     	display: JW_CSS_NONE

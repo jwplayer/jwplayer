@@ -64,7 +64,7 @@
 				_moveProperty(config, singleItem, itemProp);
 			}
 
-			if (!config.sources) {
+			if (!singleItem.sources) {
 				if (config.levels) {
 					singleItem.sources = config.levels;
 					delete config.levels;

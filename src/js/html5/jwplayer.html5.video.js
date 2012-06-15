@@ -383,7 +383,7 @@
 			if (quality >=0) {
 				if (_levels && _levels.length > quality) {
 					_currentQuality = quality;
-					_sendEvent(events.JWPLAYER_MEDIA_QUALITY_CHANGED, { currentQuality: quality, levels: _levels} );
+					_sendEvent(events.JWPLAYER_MEDIA_LEVEL_CHANGED, { currentQuality: quality, levels: _levels} );
 					var currentTime = _videotag.currentTime;
 					_this.load(_item);
 					_this.seek(currentTime);

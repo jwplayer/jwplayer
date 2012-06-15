@@ -18,7 +18,7 @@ jwplayer = function(container) {
 
 var $jw = jwplayer;
 
-jwplayer.version = '6.0.2258';
+jwplayer.version = '6.0.2263';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -1448,7 +1448,7 @@ jwplayer.source = document.createElement("source");/**
 				_moveProperty(config, singleItem, itemProp);
 			}
 
-			if (!config.sources) {
+			if (!singleItem.sources) {
 				if (config.levels) {
 					singleItem.sources = config.levels;
 					delete config.levels;
@@ -1878,17 +1878,7 @@ jwplayer.source = document.createElement("source");/**
 			}
 			
 			
-			var toDelete = ["height", "width", "modes", "events", "primary", "base", "fallback"];
-				
-			for (var i = 0; i < toDelete.length; i++) {
-				delete params[toDelete[i]];
-			}
-			
-			var wmode = "opaque";
-			if (params.wmode) {
-				wmode = params.wmode;
-			}
-			
+
 			parseConfigBlock(params, 'components');
 			parseConfigBlock(params, 'providers');
 			
@@ -1909,9 +1899,17 @@ jwplayer.source = document.createElement("source");/**
 			}
 			
 			var bgcolor = "#000000",
-				flashPlayer,
-				flashvars = jsonToFlashvars(params);
+				flashPlayer, flashvars,
+				wmode = params.wmode ? params.wmode : (params.height && params.height <= 40 ? "transparent" : "opaque"),
+				toDelete = ["height", "width", "modes", "events", "primary", "base", "fallback"];
 			
+			for (var i = 0; i < toDelete.length; i++) {
+				delete params[toDelete[i]];
+			}
+			
+			
+			flashvars = jsonToFlashvars(params)
+
 			if (utils.isIE()) {
 				var html = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" ' +
 				'bgcolor="' +
@@ -1992,27 +1990,14 @@ jwplayer.source = document.createElement("source");/**
 		 * Determines if a Flash can play a particular file, based on its extension
 		 */
 		function _flashCanPlay(file, type) {
-			var types = ["mp4", "flv", "aac", "mp3", "hls", "rtmp", "youtube"];
-			// Type is set, and is not one of the above types; assume a loaded provider and play in flash
-			if (type && (types.toString().indexOf(type) < 0) ) {
-				return true;
+			var mappedType = utils.extensionmap[type ? type : utils.extension(file)];
+			
+			// If no type or unrecognized type, don't allow to play
+			if (!mappedType) {
+				return false;
 			}
-			
-			var extension = utils.extension(file);
-			
-			if (!type) type = extension;
-			
-			// If there is no extension, use Flash (assume playlist)
-			if (!type) {
-				return true;
-			}
-			
-			// Extension is in the extension map
-			if (utils.exists(utils.extensionmap[type])) {
-				// Return true if the extension has a flash mapping
-				return utils.exists(utils.extensionmap[type].flash);
-			}
-			return false;
+
+			return !!(mappedType.flash);
 		}
 	}
 	

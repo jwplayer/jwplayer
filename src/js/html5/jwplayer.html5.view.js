@@ -50,7 +50,7 @@
 			_audioMode,
 			_isMobile = utils.isMobile(),
 			_isIPad = utils.isIPad(),
-			_forcedControls = (_isIPad && _model.mobilecontrols),
+			_forcedControls = (_model.mobilecontrols),
 			_replayState,
 			_eventDispatcher = new events.eventdispatcher();
 		
@@ -81,8 +81,14 @@
 			_container.appendChild(_videoLayer);
 			_container.appendChild(_controlsLayer);
 			_container.appendChild(_instreamLayer);
-			_playerElement.appendChild(_container);
-			_playerElement.appendChild(_playlistLayer);
+			
+			var newContainer = _createElement("div");
+			newContainer.style.position="absolute";
+			newContainer.style.width="100%";
+			newContainer.style.height="100%";
+			newContainer.appendChild(_container);
+			newContainer.appendChild(_playlistLayer);
+			_playerElement.appendChild(newContainer);
 			
 			DOCUMENT.addEventListener('webkitfullscreenchange', _fullscreenChangeHandler, false);
 			DOCUMENT.addEventListener('mozfullscreenchange', _fullscreenChangeHandler, false);
@@ -170,6 +176,7 @@
 				_controlsLayer.appendChild(_controlbar.getDisplayElement());
 				if (_forcedControls) {
 					_showControlbar();
+					_showDock();
 				}
 			} else {
 				_videoTag.controls = true;
@@ -263,11 +270,12 @@
 			_audioMode = (!!_controlbar && height <= 40 && height.toString().indexOf("%") < 0);
 			if (_audioMode) {
 				_model.componentConfig('controlbar').margin = 0;
-				_controlbar.redraw();
+				_controlbar.audioMode(true);
 				_showControlbar();
 				_hideDisplay();
 				_showVideo(false);
 			} else {
+				_controlbar.audioMode(false);
 				_updateState(_api.jwGetState());
 			}
 			_css(_internalSelector(), {
@@ -355,7 +363,7 @@
 			if (_dock && !_audioMode) _dock.show();
 		}
 		function _hideDock() {
-			if (_dock) _dock.hide();
+			if (_dock && !_forcedControls) _dock.hide();
 		}
 
 		function _showDisplay() {
@@ -487,7 +495,6 @@
 	// Container styles
 	_css('.' + PLAYER_CLASS, {
 		position: "relative",
-		overflow: "hidden",
 		opacity: 0,
     	'-webkit-transition': JW_CSS_SMOOTH_EASE,
     	'-moz-transition': JW_CSS_SMOOTH_EASE,
@@ -532,7 +539,6 @@
 	});
 	
 	_css('.' + VIEW_INSTREAM_CONTAINER_CLASS, {
-		overflow: "hidden",
 		position: JW_CSS_ABSOLUTE,
 		top: 0,
 		left: 0,

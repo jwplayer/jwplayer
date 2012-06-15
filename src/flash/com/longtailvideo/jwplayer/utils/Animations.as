@@ -63,7 +63,9 @@ package com.longtailvideo.jwplayer.utils {
 				}
 				dispatchEvent(new Event(Event.COMPLETE));
 			} else {
-				_tgt.visible = true;
+				if (_end > 0) {
+					_tgt.visible = true;
+				}
 				_tgt.alpha += _spd;
 			}
 		}

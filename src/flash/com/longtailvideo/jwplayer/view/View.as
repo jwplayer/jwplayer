@@ -310,7 +310,7 @@ package com.longtailvideo.jwplayer.view {
 			background.name = "background";
 			_backgroundLayer.addChild(background);
 			
-			var screenColor:Color;
+/*			var screenColor:Color;
 			if (_model.config.screencolor) {
 				screenColor = _model.config.screencolor;
 			} else if (_model.config.pluginConfig('display').hasOwnProperty('backgroundcolor')) {
@@ -320,6 +320,7 @@ package com.longtailvideo.jwplayer.view {
 			background.graphics.beginFill(screenColor ? screenColor.color : 0x000000, screenColor ? 1 : 0);
 			background.graphics.drawRect(0, 0, 1, 1);
 			background.graphics.endFill();
+*/
 		}
 
 
@@ -371,20 +372,30 @@ package com.longtailvideo.jwplayer.view {
 			}
 		}
 
+		private var _controlbarMargin:Number = -1;
 
 		/** Redraws the plugins and player components **/
 		public function redraw():void {
 			layoutManager.resize(RootReference.stage.stageWidth, RootReference.stage.stageHeight);
-
+			
 			if (audioMode) {
+				if (_controlbarMargin < 0) _controlbarMargin = _model.config.pluginConfig('controlbar').margin;
+				_model.config.pluginConfig('controlbar').margin = 0;
 				_components.controlbar.force(true);
 				_components.controlbar.resize(_player.config.width, _player.config.height);
 				_components.display.hide();
 				_components.dock.hide();
 				_components.playlist.hide();
+				hideImage();
+				_mediaFade.fade(0);
 				return;
 			} else {
+				if (_controlbarMargin > 0) {
+					_model.config.pluginConfig('controlbar').margin = _controlbarMargin;
+					_controlbarMargin = -1;
+				}
 				_components.controlbar.force(false);
+				showMedia();
 			}
 			
 			_components.resize(_player.config.width, _player.config.height);
@@ -618,24 +629,25 @@ package com.longtailvideo.jwplayer.view {
 
 		
 		protected function showImage(evt:TimerEvent=null):void {
-			_imageLayer.alpha = 0;
-			_imageFade.fade(1);
-			_mediaFade.cancelAnimation();
-			_mediaLayer.alpha = 0;
+			if (!audioMode) {
+//				_imageLayer.alpha = 0;
+				_imageFade.fade(1);
+				_mediaFade.cancelAnimation();
+				_mediaFade.fade(0);
+			}
 		}
 		
 		protected function hideImage():void {
 			_imageFade.fade(0);
 		}
 
-		protected function showMedia(evt:TimerEvent):void {
-			if (_model.media.display) {
+		protected function showMedia(evt:TimerEvent = null):void {
+			if (_model.media.display && !audioMode) {
 				_mediaFade.fade(1);
 				_imageFade.cancelAnimation();
 				_imageLayer.alpha = 0;
 			} else {
-				_mediaFade.fade(0);
-				_imageFade.fade(1);
+				showImage();
 			} 
 		}
 		

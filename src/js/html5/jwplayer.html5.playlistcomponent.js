@@ -92,10 +92,12 @@
 
 			utils.clearCss(_internalSelector());
 
+			_css(_internalSelector(), {
+				'background-color':	_settings.backgroundcolor 
+			});
 			
 			_css(_internalSelector("jwlist"), {
 				'background-image': _elements.background ? " url("+_elements.background.src+")" : "",
-				'background-color':	_settings.backgroundcolor, 
 		    	color: _settings.fontcolor,
 		    	font: _settings.fontweight + " 11px Arial, Helvetica, sans-serif"  
 			});

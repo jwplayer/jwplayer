@@ -138,13 +138,14 @@
 				img.addEventListener('load', _previewLoaded, false);
 				// If there was an error, continue anyway
 				img.addEventListener('error', _previewLoaded, false);
-				img.src = preview; 
+				img.src = preview;
+				setTimeout(_previewLoaded, 500);
 			} else {
 				_taskComplete(LOAD_PREVIEW);	
 			}
 		}
 		
-		function _previewLoaded(evt) {
+		function _previewLoaded() {
 			_taskComplete(LOAD_PREVIEW);
 		}
 

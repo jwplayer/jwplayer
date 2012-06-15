@@ -100,9 +100,7 @@ package com.longtailvideo.jwplayer.view.components {
 			slider.buttonMode = true;
 			slider.mouseChildren = false;
 			slider.addEventListener(MouseEvent.MOUSE_DOWN, sdownHandler);
-/*			slider.addEventListener(MouseEvent.MOUSE_OVER, soverHandler);
-			slider.addEventListener(MouseEvent.MOUSE_OUT, soutHandler);
-*/			slider.visible = false;
+			slider.visible = false;
 			addElement(slider);
 			
 			listmask = getSkinElement("masker") as Sprite;
@@ -669,27 +667,6 @@ package com.longtailvideo.jwplayer.view.components {
 			scrollHandler();
 			scrollInterval = setInterval(scrollHandler, 50);
 		}
-		
-		
-		/** Revert the highlight on mouseout. **/
-/*		private function soutHandler(evt:MouseEvent):void {
-			if (front && swfSkinned) {
-				slider.getChildByName("icon").transform.colorTransform = front;
-			} else {
-				//slider.getChildByName("icon").gotoAndStop('out');
-			}
-		}
-*/		
-		
-		/** Highlight the icon on rollover. **/
-/*		private function soverHandler(evt:MouseEvent):void {
-			if (front && swfSkinned) {
-				slider.getChildByName("icon").transform.colorTransform = light;
-			} else {
-				//slider.getChildByName("icon").gotoAndStop('over');
-			}
-		}
-*/		
 		
 		/** Stop scrolling the playlist on mouseout. **/
 		private function supHandler(evt:MouseEvent):void {
