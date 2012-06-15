@@ -130,6 +130,7 @@
 				icon = _createElement("div", null, newButton);
 		
 			icon.id = _id + "_" + id;
+			icon.innerHTML = "&nbsp;"
 			_css("#"+icon.id, {
 				'background-image': url
 			});
@@ -172,7 +173,12 @@
 	  	overflow: "hidden"
 	});
 	
-	_css(D_CLASS + " *", {
+	
+	_css(D_CLASS + " button", {
+		position: "relative"
+	});
+	
+	_css(D_CLASS + " > *", {
 		height: "100%",
 	  	'float': "left"
 	});
@@ -194,8 +200,12 @@
 	});
 	
 	_css(D_CLASS + " button div", {
-		width: "100%",
-		height: "100%",
+		left: 0,
+		right: 0,
+		top: 0,
+		bottom: 0,
+		margin: 5,
+		position: "absolute",
 		'background-size': "contain",
 		'background-position': "center",
 		'background-repeat': "no-repeat"

@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2263';
+	jwplayer.html5.version = '6.0.2264';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -784,6 +784,7 @@
 			_defaults = {
 				// backgroundcolor : "",
 				margin : 10,
+				maxwidth: 0,
 				font : "Arial,sans-serif",
 				fontsize : 10,
 				fontcolor : parseInt("000000", 16),
@@ -816,7 +817,7 @@
 						    _layoutElement("duration", CB_TEXT), 
 						    _dividerElement,
 						    _layoutElement("hdOn", CB_BUTTON), 
-						    _layoutElement("ccOn", CB_BUTTON), 
+						    //_layoutElement("ccOn", CB_BUTTON), 
 						    _layoutElement("mute", CB_BUTTON), 
 						    _layoutElement("volume", CB_SLIDER), 
 						    _dividerElement,
@@ -836,6 +837,7 @@
 			_levels,
 			_currentQuality,
 			_currentVolume,
+			_audioMode = false,
 			_dragging = false,
 			_lastSeekTime = 0,
 			
@@ -1024,9 +1026,7 @@
 
 			_css('#'+_id, {
 		  		height: _getSkinElement("background").height,
-	  			bottom: _settings.margin ? _settings.margin : 0,
-	  			left: _settings.margin ? _settings.margin : 0,
-	  			right: _settings.margin ? _settings.margin : 0
+		  		bottom: _audioMode ? 0 : _settings.margin
 			});
 			
 			_css(_internalSelector(".jwtext"), {
@@ -1037,6 +1037,12 @@
 				'text-align': 'center',
 				padding: '0 5px'
 			});
+			
+			if (_settings.maxwidth > 0) {
+				_css(_internalSelector(), {
+					'max-width': _settings.maxwidth
+				});
+			}
 		}
 
 		
@@ -1465,17 +1471,31 @@
 
 		var _redraw = this.redraw = function() {
 			_createStyles();
+			var capLeft = _getSkinElement("capLeft"), capRight = _getSkinElement("capRight")
 			_css(_internalSelector('.jwgroup.jwcenter'), {
-				left: Math.round(utils.parseDimension(_groups.left.offsetWidth) + _getSkinElement("capLeft").width),
-				right: Math.round(utils.parseDimension(_groups.right.offsetWidth) + _getSkinElement("capRight").width)
+				left: Math.round(utils.parseDimension(_groups.left.offsetWidth) + capLeft.width),
+				right: Math.round(utils.parseDimension(_groups.right.offsetWidth) + capRight.width)
 			});
+			
+			var max = (_controlbar.parentNode.clientWidth > _settings.maxwidth), 
+				margin = _audioMode ? 0 : _settings.margin;
+			
+			_css(_internalSelector(), {
+				left:  max ? "50%" : margin,
+				right:  max ? UNDEFINED : margin,
+				'margin-left': max ? _controlbar.clientWidth / -2 : UNDEFINED,
+				width: max ? JW_CSS_100PCT : UNDEFINED
+			}); 
 		}
 		
 		this.audioMode = function(mode) {
-			_css(_internalSelector(".jwfullscreen"), { display: mode ? JW_CSS_NONE : UNDEFINED });
-			_css(_internalSelector(".jwhdOn"), { display: mode ? JW_CSS_NONE : UNDEFINED });
-			_css(_internalSelector(".jwccOn"), { display: mode ? JW_CSS_NONE : UNDEFINED });
-			_redraw();
+			if (mode != _audioMode) {
+				_audioMode = mode;
+				_css(_internalSelector(".jwfullscreen"), { display: mode ? JW_CSS_NONE : UNDEFINED });
+				_css(_internalSelector(".jwhdOn"), { display: mode ? JW_CSS_NONE : UNDEFINED });
+				_css(_internalSelector(".jwccOn"), { display: mode ? JW_CSS_NONE : UNDEFINED });
+				_redraw();
+			}
 		}
 		
 		this.getDisplayElement = function() {
@@ -1547,7 +1567,6 @@
 
 	_css(CB_CLASS, {
 		position: JW_CSS_ABSOLUTE,
-		overflow: JW_CSS_HIDDEN,
 		visibility: JW_CSS_HIDDEN,
 		opacity: 0
 	});
@@ -2562,6 +2581,7 @@
 				icon = _createElement("div", null, newButton);
 		
 			icon.id = _id + "_" + id;
+			icon.innerHTML = "&nbsp;"
 			_css("#"+icon.id, {
 				'background-image': url
 			});
@@ -2604,7 +2624,12 @@
 	  	overflow: "hidden"
 	});
 	
-	_css(D_CLASS + " *", {
+	
+	_css(D_CLASS + " button", {
+		position: "relative"
+	});
+	
+	_css(D_CLASS + " > *", {
 		height: "100%",
 	  	'float': "left"
 	});
@@ -2626,8 +2651,12 @@
 	});
 	
 	_css(D_CLASS + " button div", {
-		width: "100%",
-		height: "100%",
+		left: 0,
+		right: 0,
+		top: 0,
+		bottom: 0,
+		margin: 5,
+		position: "absolute",
 		'background-size': "contain",
 		'background-position': "center",
 		'background-repeat': "no-repeat"
@@ -3814,7 +3843,7 @@
 		}
 		
 		var _redraw = this.redraw = function() {
-			if (_pane) {
+			if (_pane && _pane.clientHeight) {
 				_setThumbPercent(_pane.parentNode.clientHeight / _pane.clientHeight);
 			}
 		}
@@ -5011,12 +5040,15 @@
 					_model.setFullscreen(false);
 				}
 			}
+			_controlbar.redraw();
 		}
 
 		/**
 		 * Resize the player
 		 */
 		function _resize(width, height) {
+			if (_model.fullscreen) return;
+			
 			if (utils.exists(width) && utils.exists(height)) {
 				_css(_internalSelector(), {
 					width: width,
@@ -5061,7 +5093,6 @@
 		function _checkAudioMode(height) {
 			_audioMode = (!!_controlbar && height <= 40 && height.toString().indexOf("%") < 0);
 			if (_audioMode) {
-				_model.componentConfig('controlbar').margin = 0;
 				_controlbar.audioMode(true);
 				_showControlbar();
 				_hideDisplay();

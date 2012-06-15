@@ -219,12 +219,15 @@
 					_model.setFullscreen(false);
 				}
 			}
+			_controlbar.redraw();
 		}
 
 		/**
 		 * Resize the player
 		 */
 		function _resize(width, height) {
+			if (_model.fullscreen) return;
+			
 			if (utils.exists(width) && utils.exists(height)) {
 				_css(_internalSelector(), {
 					width: width,
@@ -269,7 +272,6 @@
 		function _checkAudioMode(height) {
 			_audioMode = (!!_controlbar && height <= 40 && height.toString().indexOf("%") < 0);
 			if (_audioMode) {
-				_model.componentConfig('controlbar').margin = 0;
 				_controlbar.audioMode(true);
 				_showControlbar();
 				_hideDisplay();

@@ -198,6 +198,10 @@ package com.longtailvideo.jwplayer.view.components {
 			return String(getConfigParam('idlehide')) == "true";
 		}
 		
+		private function get maxWidth():Number {
+			return getConfigParam('maxwidth') ? Number(getConfigParam('maxwidth')) : 0;			
+		}
+		
 		private function startFader():void {
 			if (fadeOnTimeout && !hidden) {
 				if (!isNaN(_fadingOut)) {
@@ -702,15 +706,15 @@ package com.longtailvideo.jwplayer.view.components {
 				return;
 			}
 			
-			_width = width;
-			
 			if (getConfigParam('position') == 'over' || _player.config.fullscreen == true) {
-				var margin:Number = getConfigParam('margin') == null ? 0 : getConfigParam('margin'); 
-				x = margin + player.config.pluginConfig('display')['x'];
+				var margin:Number = getConfigParam('margin') == null ? 0 : getConfigParam('margin');
+				var maxMargin:Number = (maxWidth && width > maxWidth) ? (width - maxWidth) / 2 : 0;
+				x = (maxMargin ? maxMargin : margin) + player.config.pluginConfig('display')['x'];
 				y = height - background.height - margin + player.config.pluginConfig('display')['y'];
-				_width = width - 2 * margin;
+				_width = width - 2 * (maxMargin ? maxMargin : margin);
 				_bgColorSheet.visible = false;
 			} else {
+				_width = width;
 				_bgColorSheet.visible = true;
 			}
 
@@ -749,7 +753,7 @@ package com.longtailvideo.jwplayer.view.components {
 
 
 		private function redraw():void {
-			if (!_player.config.fullscreen && _player.config.height <= 40) {
+			if (_player.config.height <= 40 || _player.config.fullscreen) {
 				_currentLayout = _currentLayout.replace("fullscreen", "");
 				hideButton('fullscreen', true);
 			} else {
