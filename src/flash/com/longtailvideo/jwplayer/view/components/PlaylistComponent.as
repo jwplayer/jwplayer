@@ -128,7 +128,8 @@ package com.longtailvideo.jwplayer.view.components {
 			list.addEventListener(MouseEvent.MOUSE_OUT, outHandler);
 			addElement(list);
 			
-			this.addEventListener(MouseEvent.MOUSE_WHEEL, wheelHandler);
+			list.addEventListener(MouseEvent.MOUSE_WHEEL, wheelHandler);
+			slider.addEventListener(MouseEvent.MOUSE_WHEEL, wheelHandler);
 			try {
 				image = new Array(button.getChildByName("image").width, button.getChildByName("image").height);
 			} catch (err:Error) {
@@ -476,18 +477,14 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		/** Make sure the playlist is not out of range. **/
 		private function scrollEase(ips:Number = -1, cps:Number = -1):void {
+			if (ips == 0 && cps == 0) {
+				clearInterval(scrollInterval);				
+			}
 			var thumb:DisplayObject = slider.getChildByName("icon");
 			var rail:DisplayObject = slider.getChildByName("rail");
 			if (ips != -1) {
-				thumb.y = Math.round(ips - (ips - thumb.y) / 1.5);
-				list.y = Math.round((cps - (cps - list.y) / 1.5));
-			}
-			if (list.y > 0 || thumb.y < rail.y) {
-				list.y = listmask.y;
-				thumb.y = rail.y;
-			} else if (list.y < listmask.height - list.height || thumb.y > rail.y + rail.height - thumb.height) {
-				thumb.y = rail.y + rail.height - thumb.height;
-				list.y = listmask.y + listmask.height - list.height;
+				thumb.y = Math.min(Math.max(rail.y, Math.round(ips - (ips - thumb.y) / 1.5)), rail.y + rail.height - thumb.height);
+				list.y = Math.max(Math.min(-listmask.y, Math.round((cps - (cps - list.y) / 1.5))), listmask.y + listmask.height - list.height);
 			}
 		}
 		
@@ -656,7 +653,12 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		
 		private function wheelHandler(evt:MouseEvent):void {
-			//scrollEase(evt.delta * -1, getConfigParam("height"));
+			clearInterval(scrollInterval);
+			var rail:DisplayObject = slider.getChildByName("rail");
+			var thumb:DisplayObject = slider.getChildByName("icon");
+			var ips:Number = Math.max(0, thumb.y + evt.delta * -1.5) - 4;
+			var cps:Number = ips / (rail.height - thumb.height) * (listmask.height - list.height);
+			scrollEase(ips, cps);
 		}
 		
 		

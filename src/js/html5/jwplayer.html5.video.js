@@ -199,7 +199,6 @@
 		
 		_this.load = function(item) {
 			if (!_attached) return;
-
 			_item = item;
 			_canSeek = false;
 			_bufferFull = false;

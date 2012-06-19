@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2264';
+	jwplayer.html5.version = '6.0.2271';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -3168,6 +3168,103 @@
 	}
 })(jwplayer.html5);
 /**
+ * JW Player HTML5 overlay component
+ * 
+ * @author pablo
+ * @version 6.0
+ */
+(function(jwplayer) {
+	
+	var html5 = jwplayer.html5,
+		utils = jwplayer.utils,
+		_css = utils.css,
+		_setTransition = utils.transitionStyle,
+
+		/** Some CSS constants we should use for minimization **/
+		//JW_CSS_RELATIVE = "relative",
+		JW_CSS_ABSOLUTE = "absolute",
+		//JW_CSS_NONE = "none",
+		//JW_CSS_BLOCK = "block",
+		//JW_CSS_INLINE = "inline",
+		//JW_CSS_INLINE_BLOCK = "inline-block",
+		JW_CSS_HIDDEN = "hidden",
+		//JW_CSS_LEFT = "left",
+		//JW_CSS_RIGHT = "right",
+		//JW_CSS_100PCT = "100%",
+		JW_CSS_SMOOTH_EASE = "opacity .25s, visibility .25s",
+		
+		OVERLAY_CLASS = '.jwoverlay',
+		
+		DOCUMENT = document;
+	
+	/** HTML5 Overlay class **/
+	html5.overlay = function(id, skin, component, name) {
+		var _skin = skin,
+			_component = component,
+			_id = id,
+			_container;
+		
+		function _init() {
+			_container = _createElement("div", OVERLAY_CLASS.replace(".",""));
+			_container.id = _id;
+		}
+		
+		function _internalSelector(name) {
+			return '#' + _id + (name ? " ." + name : "");
+		}
+		
+		function _createElement(type, className) {
+			var elem = DOCUMENT.createElement(type);
+			if (className) elem.className = className;
+			return elem;
+		}
+
+
+		this.element = function() {
+			return _container;
+		};
+
+		function _getSkinElement(name) {
+			var elem = _skin.getSkinElement(_component, name); 
+			if (elem) {
+				return elem;
+			} else {
+				return {
+					width: 0,
+					height: 0,
+					src: "",
+					image: UNDEFINED,
+					ready: false
+				}
+			}
+		}
+		
+		this.show = function() {
+			_css(_internalSelector(), { opacity: 1, visibility: "visible" });
+		}
+		
+		this.hide = function() {
+			_css(_internalSelector(), { opacity: 0, visibility: JW_CSS_HIDDEN });
+		}
+		
+		// Call constructor
+		_init();
+
+	}
+
+	/*************************************************************
+	 * Player stylesheets - done once on script initialization;  *
+	 * These CSS rules are used for all JW Player instances      *
+	 *************************************************************/
+
+	_css(OVERLAY_CLASS, {
+		position: JW_CSS_ABSOLUTE,
+		visibility: JW_CSS_HIDDEN,
+		opacity: 0
+	});
+	
+	_setTransition(OVERLAY_CLASS, JW_CSS_SMOOTH_EASE);
+})(jwplayer);/**
  * Main HTML5 player class
  *
  * @author pablo
@@ -3319,6 +3416,7 @@
 			_skin = _api.skin,
 			_settings = utils.extend({}, _defaults, _api.skin.getComponentSettings("playlist"), config),
 			_wrapper,
+			_container,
 			_playlist,
 			_items,
 			_ul,
@@ -3353,6 +3451,9 @@
 		function _setup() {
 			_wrapper = _createElement("div", "jwplaylist"); 
 			_wrapper.id = _api.id + "_jwplayer_playlistcomponent";
+			
+			_container = _createElement("div", "jwlistcontainer");
+			_appendChild(_wrapper, _container);
 			
 			_populateSkinElements();
 			if (_elements.item) {
@@ -3515,7 +3616,7 @@
 		}
 			
 		function _rebuildPlaylist(evt) {
-			_wrapper.innerHTML = "";
+			_container.innerHTML = "";
 			
 			_playlist = _getPlaylist();
 			if (!_playlist) {
@@ -3533,12 +3634,13 @@
 			
 			_lastCurrent = _api.jwGetPlaylistIndex();
 			
-			_appendChild(_wrapper, _ul);
-
 			if (utils.isIOS() && window.iScroll) {
+				_wrapper.innerHTML = "";
+				_appendChild(_wrapper, _ul);
 				_ul.style.height = _settings.itemheight * _playlist.length + "px";
 				var myscroll = new iScroll(_wrapper.id);
 			} else {
+				_appendChild(_container, _ul);
 				_slider = new html5.playlistslider(_wrapper.id + "_slider", _api.skin, _wrapper, _ul);
 			}
 			
@@ -3629,6 +3731,13 @@
     	'list-style': 'none',
     	margin: 0,
     	padding: 0
+	});
+	
+	_css(PL_CLASS+' .jwlistcontainer', {
+		position: JW_CSS_ABSOLUTE,
+		overflow: JW_CSS_HIDDEN,
+		width: JW_CSS_100PCT,
+		height: JW_CSS_100PCT
 	});
 
 	_css(PL_CLASS+' .jwlist li', {
@@ -4614,7 +4723,6 @@
 		
 		_this.load = function(item) {
 			if (!_attached) return;
-
 			_item = item;
 			_canSeek = false;
 			_bufferFull = false;
@@ -5040,7 +5148,7 @@
 					_model.setFullscreen(false);
 				}
 			}
-			_controlbar.redraw();
+			if (_controlbar) _controlbar.redraw();
 		}
 
 		/**
@@ -5092,14 +5200,16 @@
 		
 		function _checkAudioMode(height) {
 			_audioMode = (!!_controlbar && height <= 40 && height.toString().indexOf("%") < 0);
-			if (_audioMode) {
-				_controlbar.audioMode(true);
-				_showControlbar();
-				_hideDisplay();
-				_showVideo(false);
-			} else {
-				_controlbar.audioMode(false);
-				_updateState(_api.jwGetState());
+			if (_controlbar) {
+				if (_audioMode) {
+					_controlbar.audioMode(true);
+					_showControlbar();
+					_hideDisplay();
+					_showVideo(false);
+				} else {
+					_controlbar.audioMode(false);
+					_updateState(_api.jwGetState());
+				}
 			}
 			_css(_internalSelector(), {
 				'background-color': _audioMode ? 'transparent' : _display.getBGColor()

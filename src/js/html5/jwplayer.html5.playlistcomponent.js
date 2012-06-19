@@ -36,6 +36,7 @@
 			_skin = _api.skin,
 			_settings = utils.extend({}, _defaults, _api.skin.getComponentSettings("playlist"), config),
 			_wrapper,
+			_container,
 			_playlist,
 			_items,
 			_ul,
@@ -70,6 +71,9 @@
 		function _setup() {
 			_wrapper = _createElement("div", "jwplaylist"); 
 			_wrapper.id = _api.id + "_jwplayer_playlistcomponent";
+			
+			_container = _createElement("div", "jwlistcontainer");
+			_appendChild(_wrapper, _container);
 			
 			_populateSkinElements();
 			if (_elements.item) {
@@ -232,7 +236,7 @@
 		}
 			
 		function _rebuildPlaylist(evt) {
-			_wrapper.innerHTML = "";
+			_container.innerHTML = "";
 			
 			_playlist = _getPlaylist();
 			if (!_playlist) {
@@ -250,12 +254,13 @@
 			
 			_lastCurrent = _api.jwGetPlaylistIndex();
 			
-			_appendChild(_wrapper, _ul);
-
 			if (utils.isIOS() && window.iScroll) {
+				_wrapper.innerHTML = "";
+				_appendChild(_wrapper, _ul);
 				_ul.style.height = _settings.itemheight * _playlist.length + "px";
 				var myscroll = new iScroll(_wrapper.id);
 			} else {
+				_appendChild(_container, _ul);
 				_slider = new html5.playlistslider(_wrapper.id + "_slider", _api.skin, _wrapper, _ul);
 			}
 			
@@ -346,6 +351,13 @@
     	'list-style': 'none',
     	margin: 0,
     	padding: 0
+	});
+	
+	_css(PL_CLASS+' .jwlistcontainer', {
+		position: JW_CSS_ABSOLUTE,
+		overflow: JW_CSS_HIDDEN,
+		width: JW_CSS_100PCT,
+		height: JW_CSS_100PCT
 	});
 
 	_css(PL_CLASS+' .jwlist li', {

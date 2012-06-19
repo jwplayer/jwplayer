@@ -219,7 +219,7 @@
 					_model.setFullscreen(false);
 				}
 			}
-			_controlbar.redraw();
+			if (_controlbar) _controlbar.redraw();
 		}
 
 		/**
@@ -271,14 +271,16 @@
 		
 		function _checkAudioMode(height) {
 			_audioMode = (!!_controlbar && height <= 40 && height.toString().indexOf("%") < 0);
-			if (_audioMode) {
-				_controlbar.audioMode(true);
-				_showControlbar();
-				_hideDisplay();
-				_showVideo(false);
-			} else {
-				_controlbar.audioMode(false);
-				_updateState(_api.jwGetState());
+			if (_controlbar) {
+				if (_audioMode) {
+					_controlbar.audioMode(true);
+					_showControlbar();
+					_hideDisplay();
+					_showVideo(false);
+				} else {
+					_controlbar.audioMode(false);
+					_updateState(_api.jwGetState());
+				}
 			}
 			_css(_internalSelector(), {
 				'background-color': _audioMode ? 'transparent' : _display.getBGColor()
