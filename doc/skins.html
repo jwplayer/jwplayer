@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+<head>
+<title>Using JW Player Skins</title>
+<style>
+    body { padding: 50px 100px; width: 700px; font: 13px/20px Arial; background: #FFF; }
+    a, h1, h2 { color: #369; }
+    h1 { font-size: 32px; }
+    h2 { margin-top: 50px; }
+    h3 { margin-top: 25px; }
+    img { display: block; margin: 0 10px; }
+    pre { font-size: 12px; background: #E5F3C8; padding:5px 10px; border: 1px solid #D3EAA4; }
+    dt { padding-left: 20px; font-weight: bold; }
+    dd { color: #333; font-style: italic; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+    tr { border-bottom: 1px solid #CCC; } 
+    tr:nth-child(even) { background: #EEE; }
+    td,th { padding: 5px; font-size: 12px; text-align: left; }
+
+</style>
+</head><body>
+
+<h1>Using JW Player Skins</h1>
+
+<p>This guide explains how to get and configure existing skins for JW Player. If you're looking for information on how to design and package a skin yourself, see <a href="skinning.html">Building JW Player Skins</a>.</p>
+
+
+
+<h2>Introduction</h2>
+
+<p>JW Player skins change the appearance of the player, making it possible to match your embed to your site's aesthetic. All visual components of the player (like the controlbar, display and playlist) can be skinned. Here are a few examples of a skinned player:</p>
+
+<p><img src="assets/skins-examples.jpg" alt="screenshots of a few example JW Player skins" /></p>
+
+<p>Technically, a JW Player skin consists of an XML file that contains a number of settings (e.g. the color of the tooltip texts) and a number of links to PNG images (e.g. for the <em>play</em> button). The XML + PNG files are packed into a single file to speed up loading:</p>
+
+<ul>
+<li>For Flash, the XML file and PNG images are compressed into a single <strong>ZIP</strong> file.</li>
+<li>For HTML5, the PNG images are embedded into the <strong>XML</strong> file as base64 encoded strings.</li>
+</ul>
+
+
+
+<h2>Getting a Skin</h2>
+
+<p>There are three ways to get a skin for your player:</p>
+
+<ul>
+<li>We ourselves include a selection of skins with the <a href="http://www.longtailvideo.com/order/">JW Player Premium</a> offering. These skins are all professional looking and tested to work well with many advanced scenarios (like playlists, live streaming and advertising). The same skins are included with our <a href="http://www.longtailvideo.com/bits-on-the-run/">Video Platform</a>.</li>
+<li>Several third-party designers have shared their JW Player skins with us. These are included in our JW Player <a href="http://www.longtailvideo.com/addons/skins">add-ons library</a>. A much greater variety of designs is available here, but not all skins work well in more advanced scenarios (e.g. playlists or small player dimensions).</li>
+<li>If you are proficient with an image editor (like Photoshop), designing and packaging your own JW Player skin is straightforward. See <a href="skinning.html">Building JW Player Skins</a> for more info.</li>
+</ul>
+
+<p>After downloading (or packaging) the skin of your choice, you are left with its PNG and XML files (e.g. <em>bekle.xml</em> and <em>bekle.zip</em>). Upload these two files to your webserver, so the skin can be configured for your player.</p>
+
+
+
+<h2>Configuring a Skin</h2>
+
+<p>Once you've uploaded your skin, simply set the <strong>skin</strong> configuration option to the path where you uploaded the <em>ZIP</em> file. This can be:</p>
+
+<ul>
+<li>An absolute path (e.g. <em>http://example.com/skins/bekle.zip</em>)</li>
+<li>A domain-absolute path ((e.g. <em>/skins/bekle.zip</em>)</li>
+<li>A path relative to the HTML file (e.g. <em>../skins/bekle.zip</em>)</li>
+</ul>
+
+<p>In HTML5 mode, the player automatically presumes an <em>XML</em> file with the same name as the ZIP is available. So if you link to your ZIP file as <em>/skins/bekle.zip</em>, the player will load <em>/skins/bekle.xml</em> in HTML5 mode.</p>
+
+<h3>Example setup</h3>
+
+<p>Here is an example <a href="embedding.html">player setup block</a>, using a domain-absolute path to the skin files:</p>
+
+<pre>
+jwplayer("myElement").setup({
+    file: "/uploads/example.mp4",
+    height: 360,
+    image: "/uploads/example.jpg",
+    skin: "/skins/bekle.zip",
+    width: 640
+});
+</pre>
+
+<p>Note that both the XML and ZIP file of a skin are subject to <a href="crossdomain.html">Crossdomain Security Restrictions</a>, which causes issues when loading the skins from another domain than your website's.</p>
+
+
+</body>
+</html>
