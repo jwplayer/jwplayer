@@ -1,0 +1,285 @@
+<!doctype html>
+<html>
+<head>
+<title>Skin XML Reference</title>
+<style>
+    body { padding: 50px 100px; width: 700px; font: 13px/20px Arial; background: #FFF; }
+    a, h1, h2 { color: #369; }
+    h1 { font-size: 32px; }
+    h2 { margin-top: 50px; }
+    h3 { margin-top: 25px; }
+    img { display: block; margin: 0 10px; }
+    pre { font-size: 12px; background: #E5F3C8; padding:5px 10px; border: 1px solid #D3EAA4; }
+    dt { padding-left: 20px; font-weight: bold; }
+    dd { color: #333; font-style: italic; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+    tr { border-bottom: 1px solid #CCC; } 
+    tr:nth-child(even) { background: #EEE; }
+    td,th { padding: 5px; font-size: 12px; text-align: left; }
+</style>
+</head><body>
+
+<h1>Skin XML Reference</h1>
+
+<p>This guide provides a reference of all components, settings and elements supported in the JW Player skin XML. If you're looking for information on how to get and install existing skins, see <a href="skins.html">Using JW Player Skins</a>. If you're looking for an overview on building skins, see <a href="skinning.html">Building JW Player Skins</a>.</p>
+
+
+
+<h2>Introduction</h2>
+
+<p>As explained in <a href="skinning.html">Building JW Player Skins</a>, a JW Player skin is essentially an XML file containing settings and links to image elements. These settings and elements are grouped into 5 components:</p>
+
+<p><img src="assets/skinning-components.jpg" alt="A diagram of all JW Player skinning components" /></p>
+
+<p>This guide provides an elaborate overview of all settings and elements these five components support. For all settings, default values are listed between braces.</p>
+
+
+<h2>Controlbar</h2>
+
+<p>The controlbar component contains all settings and elements for the video controls at the bottom of the screen. It is built using two layers: the background (with endcaps) and the buttons. This diagram presents an overview:</p>
+
+<p><img src="assets/skinning-controlbar.jpg" alt="A diagram of JW Player controlbar elements" /></p>
+
+<p>The controlbar is the most extensive component, partly due to the large amount of controls and partly due to all controls having active and inactive, rollover and rollout states.</p>
+
+
+<h3>Controlbar Settings</h3>
+
+<dl>
+<dt>margin (6)</dt>
+<dd>This is the margin from the controlbar to the edges of the display. Can be any number.</dd>
+<dt>fontcase (normal)</dt>
+<dd>The font casing for the elapsed time, livestream title and media duration. Can be <strong>normal</strong> or <strong>upper</strong>.</dd>
+<dt>fontcolor (ffffff)</dt>
+<dd>The color for the elapsed time, livestream title and media duration. Can be any hexadecimal color value.</dd>
+<dt>fontsize (11)</dt>
+<dd>The font size of the elapsed time, livestream title and media duration. Can be a number between <strong>8</strong> and <strong>16</strong>.</dd>
+<dt>fontweight (bold)</dt>
+<dd>The font weight for the elapsed time, livestream title and media duration. Can be <strong>normal</strong> or <strong>bold</strong>.</dd>
+<dt>maxwidth (800)</dt>
+<dd>The maximum width of the controlbar. For large displays (e.g. fullscreen), the bar is then horizontally centered instead of extended to the edges. Can be any number.</dd>
+</dl>
+
+
+
+<h3>Controlbar Elements</h3>
+
+<dl><dt>background</dt><dd>
+Background graphic that stretches horizontally to fit the entire bar.
+</dd><dt>capLeft</dt><dd>
+The left cap graphic to your controlbar. Used to create round edges.
+</dd><dt>capRight</dt><dd>
+The right cap graphic to your controlbar. Used to create round edges.
+</dd><dt>divider</dt><dd>
+A separator element that logically divides the controlbar features. Appears to the left of the prevButton, elapsedText, qualityButton, muteButton and fullscreenButton. 
+</dd></dl>
+
+<dl><dt>playButton</dt><dd>
+Button that starts playback of the media. Toggles with pauseButton. 
+</dd><dt>playButtonOver</dt><dd>
+Rollover state of the playButton.
+</dd><dt>pauseButton</dt><dd>
+Button that pauses playback of the media. Toggles with playButton. 
+</dd><dt>pauseButtonOver</dt><dd>
+Rollover state of the pauseButton.
+</dd></dl>
+
+<dl><dt>prevButton</dt><dd>
+Button that starts playback of the previous item in the playlist. Only displayed when a playlist of more than one item is present.
+</dd><dt>prevButtonOver</dt><dd>
+Rollover state of the prevButton.
+</dd><dt>nextButton</dt><dd>
+Button that starts playback of the previous item in the playlist. Only displayed when a playlist of more than one item is present.
+</dd><dt>nextButtonOver</dt><dd>
+Rollover state of the nextButton.
+</dd></dl>
+<dl><dt>elapsedBackground</dt><dd>
+Background element of the elapsed time. The element is not stretched, but the elapsed text is right-aligned on top of this. When not available, the elapsed time is hidden.
+</dd><dt>durationBackground</dt><dd>
+Background element of the video duration. The element is not stretched, but the duration text is left-aligned on top of this. When not available, the elapsed time is hidden. 
+</dd></dl>
+
+<dl>
+<dt>hdOffButton</dt><dd>
+Displayed when multiple qualities are available and the current one is HD. Upon click, it toggles to low quality (2 levels) or displays a popup (&gt;2 levels).
+</dd><dt>hdOffButton</dt><dd>
+Rollover state of the hdOffButton.
+</dd><dt>hdOnButton</dt><dd>
+Displayed when multiple qualities are available and the current one is not HD. Upon click, it toggles to high quality (2 levels) or displays a popup (&gt;2 levels).
+</dd><dt>hdOnButton</dt><dd>
+Rollover state of the hdOnButton.
+</dd></dl>
+
+<dl><dt>ccOffButton</dt><dd>
+Displayed when captions are available but disabled. Upon click, it toggles the captions (1 track) or displays a popup (&gt;1 tracks).
+</dd><dt>ccOffButton</dt><dd>
+Rollover state of the ccOffButton.
+</dd><dt>ccOnButton</dt><dd>
+Displayed when captions are available and enabled. Upon click, it toggles the captions (1 track) or displays a popup (&gt;1 tracks).
+</dd><dt>ccOnButton</dt><dd>
+Rollover state of the ccOnButton.
+</dd></dl>
+
+<dl><dt>muteButton</dt><dd>
+Button that is displayed when the media is not muted. It either pops up a volume tooltip (if available) or mutes the audio.
+</dd><dt>muteButtonOver</dt><dd>
+Rollover state of the muteButton.
+</dd><dt>unmuteButton</dt><dd>
+Button that is displayed when the media is muted. It either pops up a volume tooltip (if available) or unmutes the audio.
+</dd><dt>unmuteButtonOver</dt><dd>
+Rollover state of the unmuteButton
+</dd></dl>
+
+<dl><dt>fullscreenButton</dt><dd>
+Button that switches to fullscreen playback of the media. Toggles with normalscreenButton. Only displayed when fullscreen is available and the media contains video.
+</dd><dt>fullscreenButtonOver</dt><dd>
+Rollover state of the fullscreenButton
+</dd><dt>normalscreenButton</dt><dd>
+Button that exits fullscreen playback of the media. Toggles with fullscreenButton. Only displayed when fullscreen is available and the media contains video.
+</dd><dt>normalscreenButtonOver</dt><dd>
+Rollover state of the normalscreenButton
+</dd></dl>
+
+<p>Note that omitting a button's elements (e.g. the <em>elapsedBackground</em> or the <em>muteButton</em>) from the XML will hide that button from the controlbar. It is also possible to e.g. omit all rollOver buttons to keep the skin small.</p>
+
+<h3>Controlbar timeSlider</h3>
+
+<p>The timeSlider is a special case. It is stretched horizontally to fill the controlbar, and it consists of multiple layers of elements. Here's an overview, with the entire list following below:</p>
+
+<p><img src="assets/skinning-timeslider.jpg" alt="A diagram of JW Player controlbar timeslider elements" /></p>
+
+<dl><dt>timeSliderCapLeft</dt><dd>
+Left-hand end cap, placed to the left of the other timeSlider elements. Is never overlaid.
+</dd><dt>timeSliderCapRight</dt><dd>
+Right-hand end cap, placed to the right of the other timeSlider elements. Is never overlaid.
+</dd><dt>timeSliderRail</dt><dd>
+The background graphic which serves as the frame for the timeSlider. Is stretched horizontally.
+</dd><dt>timeSliderRailCapLeft</dt><dd>
+Left-hand rail end cap, used to create round or fading edges. Overlaid by buffer and progress elements.
+</dd><dt>timeSliderRailCapRight</dt><dd>
+Right-hand rail end cap, used to create round or fading edges. Overlaid by buffer and progress elements.
+</dd><dt>timeSliderBuffer</dt><dd>
+Element that displays how much of the media is buffered. Is stretched horizontally.
+</dd><dt>timeSliderBufferCapLeft</dt><dd>
+Left-hand buffer end cap, used to create round or fading edges. Overlaid by progress elements.
+</dd><dt>timeSliderBufferCapRight</dt><dd>
+Right-hand buffer end cap, used to create round or fading edges. Overlaid by progress elements.
+</dd><dt>timeSliderProgress</dt><dd>
+Element that displays the current playback position in the media. Is stretched horizontally.
+</dd><dt>timeSliderProgressCapLeft</dt><dd>
+Left-hand progress end cap, used to create round or fading edges.
+</dd><dt>timeSliderProgressCapRight</dt><dd>
+Right-hand progress end cap, used to create round or fading edges.
+</dd><dt>timeSliderThumb</dt><dd>
+Serves as a handle which can be dragged across the progress bar to allow the user to specify a seek position.
+</dd></dl>
+
+<p>Note the multitude of end caps is not needed in many skin designs. Only when working with round corners or other edge effects, these end caps need added.</p>
+
+
+<h2>Display</h2>
+
+<p>The display component contains all settings and elements for the (re)play, buffer and error icons in the middle of the screen. Like the controlbar, it is built up using a background and button layer:</p>
+
+<p><img src="assets/skinning-display.jpg" alt="A diagram of JW Player display elements" /></p>
+
+<p>Note a 10px padding is placed to the left and to the right of the video title or error message in the display, to prevent these texts from looking too crammed.</p>
+
+<h3>Display Settings</h3>
+
+<dl><dt>bufferrotation (30)</dt><dd>
+The number of degrees the buffer icon is rotated per rotation. A negative value will result in the buffer rotating counter-clockwise.
+</dd><dt>bufferinterval (100)</dt><dd>
+The amount of time, in milliseconds between each buffer icon rotation.
+</dd><dt>fontcase (normal)</dt><dd>
+Casing of the video title or error message. Can be <strong>normal</strong> or <strong>upper</strong>.
+</dd><dt>fontcolor (ffffff)</dt><dd>
+Color of the video title or error message displayed in the center icon.
+</dd><dt>overcolor (ffffff)</dt><dd>
+Color of the video title or error message when the user moves his mouse over the display.
+</dd><dt>fontsize (15)</dt>
+<dd>Size of the video title or error message displayed in the center icon.</dd>
+<dt>fontweight (normal)</dt>
+<dd>Weight of the video title or error message displayed in the center icon. Can be <strong>normal</strong> or <strong>bold</strong>.</dd>
+</dl>
+
+<h3>Display Elements</h3>
+
+<dl><dt>background</dt><dd>
+The background is a graphic which is placed behind the display icons, and is centered inside the Display.
+</dd><dt>backgroundOver</dt><dd>
+Rollover graphic for the display background.
+</dd><dt>capLeft</dt><dd>
+When a title or error is displayed, the background image is stretched horizontally to fit the message. This cap is not stretched.
+</dd><dt>capLeftOver</dt><dd>
+Rollover graphic for the left display cap.
+</dd><dt>capRight</dt><dd>
+When a title or error is displayed, the background image is stretched horizontally to fit the message. This cap is not stretched.
+</dd><dt>capRightOver</dt><dd>
+Rollover graphic for the right display cap.
+</dd></dl>
+<dl><dt>bufferIcon</dt><dd>
+This element is displayed when the player is in a buffering state. It will be rotated around its center.
+</dd><dt>errorIcon</dt><dd>
+This element is displayed when the player encountered a playback error (e.g. <em>video not found</em>).
+</dd><dt>playIcon</dt><dd>
+This element is displayed when the player is paused or idle.
+</dd><dt>playIconOver</dt><dd>
+This element replaces the playIcon element when the user hovers the mouse over it.
+</dd><dt>replayIcon</dt><dd>
+This element is displayed when the player is completed.
+</dd><dt>replayIconOver</dt><dd>
+This element replaces the replayIcon element when the user hovers the mouse over it.
+</dd></dl>
+
+<p>Note all rollOver graphics can be omitted to keep the skin filesize low.</p>
+
+
+<h2>Dock</h2>
+
+<p>The Dock is placed in the top left side of the player and provides links to more advanced functionalities like social sharing, related videos and 3d playlists. It consists of a single layer of graphics:</p>
+
+<p><img src="assets/skinning-dock.jpg" alt="A diagram of JW Player dock elements" /></p>
+
+<p>Note the actual icons inside the dock buttons are not part of the skin. These icons are provided by the plugin or javascript that has added the feature to the player. We strongly recommend plugin developers to use white icons of roughly 20x20 pixels, so a uniform look can be achieved across skins.</p>
+
+<h3>Dock Settings</h3>
+
+<dl><dt>iconalpha (0.8)</dt><dd>
+The alpha value of a dock button icon. These icons are usually white, so alpha can be used to change the colors a little.
+</dd><dt>iconalphaactive (0.5)</dt><dd>
+The alpha value of a dock button icon in the <em>active</em> state. An icon is <em>active</em> when it is associated with an overlay and that overlay is visible.
+</dd><dt>iconalphaover (1)</dt><dd>
+The alpha value of a dock button icon in the <em>over</em> state.
+</dd><dt>margin (8)</dt><dd>
+Margin in pixels from the dock to the left and top edges of the display.
+</dd></dl>
+
+<h3>Dock Elements</h3>
+
+<dl><dt>capLeft</dt><dd>
+Left-hand end cap for the dock. Use it to render (round) edge effects when portraying the dock as a bar.
+</dd><dt>capRight</dt><dd>
+Right-hand end cap for the dock. Use it to render (round) edge effects when portraying the dock as a bar.
+</dd><dt>divider</dt><dd>
+Divider element displayed between dock buttons. Use it for spacing between buttons or other divider effects.
+</dd><dt>button</dt><dd>
+Background element for a dock button.
+</dd><dt>buttonOver</dt><dd>
+Background element for a dock button in the <em>over</em> state (mouse hovering).
+</dd><dt>buttonActive</dt><dd>
+Background element for a dock button in the <em>active</em> state (its overlay is visible).
+</dd></dl>
+
+
+
+<h2>Playlist</h2>
+
+
+
+<h2>Tooltip</h2>
+
+
+
+</body>
+</html>

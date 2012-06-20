@@ -75,7 +75,7 @@
 <dt>icons</dt>
 <dd>Whether to display the Play and Buffer icons in the center of the screen. Can be <strong>false</strong> or <strong>true</strong> (default).</dd>
 <dt>skin</dt>
-<dd>Which skin to use for styling the player. Can be the identifier of a CDN hosted skin or the URL to a self-hosted skin. See <a href="#">Using JW Player Skins</a> for more info.</dd>
+<dd>Which skin to use for styling the player. Can be the identifier of a CDN hosted skin or the URL to a self-hosted skin. See <a href="skins.html">Using JW Player Skins</a> for more info.</dd>
 <dt>stretching</dt>
 <dd>How to resize the poster and video to fit the display. Can be <strong>none</strong> (keep original dimensions), <strong>exactfit</strong> (stretch disproportionally), <strong>uniform</strong> (stretch proportionally;  black borders) or <strong>fill</strong> (stretch proportionally; parts cut off). Defaults to <strong>uniform</strong>.</dd>
 <dt>width</dt>
@@ -112,6 +112,7 @@ jwplayer("myElement").setup({
     playlist: "http://example.com/playlist.rss",
     height: 360,
     sidebar: {
+        layout: 'extended',
         position: 'right',
         size: 320
     },
@@ -128,11 +129,12 @@ jwplayer("myElement").setup({
 <dt>sidebar</dt>
 <dd>Config block for displaying a sidebar with the <a href="playlists.html#sidebar">Playlist contents</a>.</dd>
 <dt>captions</dt>
-<dd>Config block for displaying <a href="captions.html">captions or subtitles</a>.</dd>
+<dd>Config block for tweaking the display of <a href="captions.html">captions or subtitles</a>.</dd>
 <dt>logo</dt>
 <dd>Config block for displaying an <a href="logo.html">on-screen watermark</a>.</dd>
 <dt>rtmp</dt>
 <dd>Config block for tweaking the playback of <a href="rtmp.html">RTMP streams</a>.</dd>
+<!--
 <dt>gapro</dt>
 <dd>Config block for pinging events to <a href="#">Google Analytics</a>.</dd>
 <dt>related</dt>
@@ -143,6 +145,7 @@ jwplayer("myElement").setup({
 <dd>Config block for loading ads using the <a href="#">VAST/VPaid standards</a>.</dd>
 <dt>adtonomy</dt>
 <dd>Config block for loading ads using <a href="#">self-hosted assets</a>.</dd>
+-->
 </dl>
 
 

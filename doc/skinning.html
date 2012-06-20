@@ -27,35 +27,130 @@
 
 <h2>Introduction</h2>
 
+<p>JW Player skins change the appearance of the player, making it possible to match your embed to your site's aesthetic. No coding skills are required to build a skin, but proficiency with a graphics editor is (e.g. Photoshop or Illustrator).</p>
+
+<p>Technically, a JW Player skin consists of an XML file that contains a number of settings (e.g. the <em>fontColor</em>) and a number of links to GIF, JPG or PNG images (e.g. for the <em>playButton</em>). These settings and elements are grouped into 5 components: Controlbar, Display, Dock, Playlist and Tooltip.</p>
+
+<p>When a skin design is completed, it can be packaged into a single file for faster loading. For Flash, the XML file and PNG images are compressed into a single <strong>ZIP</strong> file. For HTML5, the PNG images are embedded into the <strong>XML</strong> file as base64 encoded strings.</p>
+
+<h3>JW6 versus JW5</h3>
+
+<p>The skinning model for JW Player was already available in version 5 of JW Player. Any skin you have built for JW5 will work great in JW6 as well. We have made some enhancements to the skinning model though. Here's the main ones:</p>
+
+<ul>
+<li>The <strong>controlbar</strong> now contains HD and CC buttons, which replace the <em>blankButton</em> from JW5.</li>
+<li>New <strong>display</strong> settings and elements are available for styling on-screen video titles and error messages.</li>
+<li>The <strong>dock</strong> can now contain dividers and end caps. The button texts are moved to the tooltip.</li>
+<li>The <strong>playlist</strong> now contains options for separating items and setting a distinct title text style.</li>
+<li>The new <strong>tooltip</strong> component renders both basic tooltips, HD/CC menus and a volumeSlider.</li>
+</ul>
+
+<p>The controlbar <strong>layout</strong> block and <strong>volumeSlider</strong> will both still work in JW6, but are considered deprecated. We suggest you update your skins to use the tooltip volumeSlider, and to simply remove controlbar buttons by omitting their elements.</p>
+
+<h3>Build versus Modify</h3>
+
+<p>This guide contains all information you need to design and package a JW Player skin from scratch. However, an existing skin may already satisfy 90% of your requirements. In that case, we recommend you simply modify an existing skin instead of building one from scratch:</p>
+
+<ul>
+<li>The JW Player <a href="http://www.longtailvideo.com/addons/skins">addons library</a> contains downloads of many skins, including their source files.</li>
+<li>The JW Player <a href="http://developer.longtailvideo.com/trac/browser/skins">developer site</a> contains the source files of all skins within our <em>Premium</em> offering.</li>
+</ul>
+
+<p>Editing an existing skin also allows you to become proficient with the JW Player skinning model while avoiding beginner mistakes that may be hard to find.</p>
 
 
-<h2>Overall Skin Structure</h2>
+
+<h2>The Skin XML</h2>
+
+<p>The skin XML document contains all the settings and all the (links to) images for your skin. The XML file is easy to create and edit with any text or HTML editor. Here's its overall structure:</p>
+
+<pre>
+&lt;skin version='2' name='SkinName' author='skinAuthor'&gt;
+  &lt;components&gt;
+    &lt;component name='controlbar'&gt;
+      &lt;settings&gt;
+        &lt;setting name='...' value='...' /&gt;
+        ...
+      &lt;/settings&gt;
+      &lt;elements&gt;
+        &lt;element name='...' src='...' /&gt;
+        ...
+      &lt;/elements&gt;
+    &lt;/component&gt;
+    ...
+  &lt;/components&gt;
+&lt;/skin&gt;
+</pre>
+
+<p>The main element, <strong>&lt;skin&gt;</strong>, declares that this XML is a JW Player skin. Version 2 skins contain the JW6 options (like the tooltip) version 1 skins (JW5) did not have. The additional <em>name</em> and <em>author</em> attributes are optional but useful metadata.</p>
+
+<p>Inside the <em>&lt;skin&gt;</em> element, 5 <strong>&lt;component&gt;</strong> elements are placed, named <em>controlbar</em>, <em>display</em>, <em>dock</em>, <em>playlist</em> and <em>tooltip</em>. They correspond to the following visuals:</p>
+
+<p><img src="assets/skinning-components.jpg" alt="A diagram of all JW Player skinning components" /></p>
+
+<p>Each <em>&lt;component&gt;</em> contains two lists: one with settings and one with elements:</p>
+
+<ul>
+<li>A <strong>&lt;setting&gt;</strong> refers to a non-image skinning option. Each setting contains a <em>name</em> (e.g. "fontsize") and a <em>value</em> (e.g. "12"). If a setting is omitted, the player reverts to the default value for that setting (all listed below).</li>
+<li>An <strong>&lt;element&gt;</strong> contains the url to a PNG, JPG or GIF image. Each element contains a <em>name</em> (e.g. "playIcon") and a <em>src</em> (e.g. "playIcon.png"). If an element is omitted, it is simply not displayed. This enables you to omit e.g. certain buttons from the controlbar.</li>
+</ul>
+
+<p>Image elements must be stored in sub-directories that are named after the components. If, for example, inside the <strong>display</strong> component, you have set an element's <em>src</em> to "playIcon.png", the player presumes this image is at the following location:</p>
+
+<pre>display/playIcon.png</pre>
+
+<p>A full list of all supported settings and elements for each component can be found in the separate <a href="skin-reference.html">Skin XML Reference</a> guide.</p>
 
 
 
-<h2>The Controlbar Component</h2>
+<h2>Testing a Skin</h2>
+
+<p>Your XML document can simply be loaded into a JW Player using the <strong>skin</strong> configuration option. <a href="embedding.html">Embedding the Player</a> contains more info, but here's a basic setup block:</p>
+
+<pre>
+jwplayer("myElement").setup({
+    file: "video.mp4",
+    height: 360,
+    skin: "myCoolSkin/myCoolSkin.xml",
+    width: 640
+});
+</pre>
+
+<p>Inside the <em>myCoolSkin</em> directory, you will have sub-directory containing all image assets. Make sure they all have the right name and read-all permissions:</p>
+
+<pre>
+myCoolSkin/controlbar/
+myCoolSkin/display/
+myCoolSkin/dock/
+myCoolSkin/playlist/
+myCoolSkin/tooltip/
+</pre>
+
+<p>Here's some additional hints for troubleshooting your skin-in-progress:</p>
+
+<ul>
+<li>If your XML file is malformed or not at the correct location, JW Player will display an error message.</li>
+<li>XML and the JW Player are both case sensitive. Be sure your elements and file names are spelled correctly.</li>
+<li>If you aren't sure which component or element is breaking your skin, you can add them in one-by-one until you discover what's wrong.</li>
+<li>A good rule of thumb is to name the element filenames after the elements themselves (e.g.: the <em>playButton</em> element is mapped to <em>playButton.png</em>)</li>
+</ul>
 
 
 
-<h2>The Display Component</h2>
+<h2>Packaging a Skin</h2>
 
+<p>When your skin is completed, it is possible to package it into a single file, so distributing and loading the skin is much faster. This is as easy as zipping the skin XML file along with the subfolders containing the component graphics.</p>
 
+<p>The XML file should be named the same as the skin itself. For example, a skin called <strong>myCoolSkin</strong> would contain an XML file called <em>myCoolSkin.xml</em>, and would be zipped into <em>myCoolSkin.zip</em>.</p>
 
-<h2>The Dock Component</h2>
+<p>Once you have zipped everything up, using a skin is a matter of:</p>
 
+<ul>
+<li>Uploading the skin to your server</li>
+<li>Setting the <em>skin</em> option in your player embed code to the URL of the ZIP file.</li>
+</ul>
 
-
-<h2>The Playlist Component</h2>
-
-
-
-<h2>The Tooltip Component</h2>
-
-
-
-<h2>Packaging Your Skin</h2>
-
-
+<p>If you are very happy with your resulting skin and have no problem with others using your skin too, please consider <a href="http://www.longtailvideo.com/support/contact-us/?reason=3">submitting the skin</a> to our addons library. </p>
 
 </body>
 </html>
