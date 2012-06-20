@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>Tooltip test page</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <script type="text/javascript" src="../bin-debug/jwplayer.html5.js"></script>
+
+	  <style type="text/css">
+	  	.wrapper {
+	     width: 576px;
+	     height: 324px;
+	     position: relative;
+	  	}
+	  
+	  </style>
+
+</head>
+
+<body>
+
+
+  <h1>Tooltip component</h1>
+  
+  <form id="form" onsubmit="init();return false;">
+      skin: <select name="skin" onchange="init()">
+      	<option value="">default</option>
+      	<option value="../../../skins/beelden/src/beelden.xml">beelden</option>
+      	<option value="../../../skins/stormtrooper/stormtrooper.zip">stormtrooper</option>
+      	<option value="../../../skins/glow/glow.zip">glow</option>
+      	<option value="../../../skins/five/five.zip">five</option>
+      	<option value="../../../tags/skins/snel/snel.zip">snel</option>
+      	<option value="../../../tags/skins/stijl/stijl.zip">stijl</option>
+      	<option value="../../../skins/bekle/src/bekle.xml" >bekle</option>
+      	<option value="../../../skins/six/src/six.xml" selected>six</option>
+      </select>
+	  mode: <select name="mode" onchange="init()">
+      	<option selected value="">html5</option>
+      	<option value="flash">flash</option>
+      </select>
+      <input type="submit" value="go"/>
+  </form>
+  
+  
+   	<div class="wrapper">
+	  <div id="player2"></div>
+	</div>
+
+
+    <script type="text/javascript">
+    var form = document.getElementById("form");
+	    function init() {
+	    	var pl = jwplayer("player2").setup({
+		      skin: form.skin.options[form.skin.selectedIndex].value,
+		      playlist: [
+		   	    {
+			      sources:[
+				    { file: 'http://content.bitsontherun.com/videos/nPripu9l-1ahmry41.mp4', width: 480 },
+				    { file: 'http://content.bitsontherun.com/videos/nPripu9l-eiRqX07Q.mp4', width: 720 },
+				    { file: 'http://content.bitsontherun.com/videos/nPripu9l-twSo9iFz.mp4', width: 1080 },
+				    { file: 'http://content.bitsontherun.com/videos/nPripu9l-1Lq5Mnwq.webm', label: 'hd'},
+				    { file: 'http://content.bitsontherun.com/videos/nPripu9l-1Lq5Mnwq.webm', label: 'sd'},		 
+				    { file: 'http://content.bitsontherun.com/videos/nPripu9l-1Lq5Mnwq.webm', label: 'ld'}
+				  ],
+				  image: 'http://content.bitsontherun.com/thumbs/gSzpo2wh-480.jpg',
+			  }],
+			  width: "100%",
+			  height: "100%",
+			  mobilecontrols: true,
+		      primary: form.mode.options[form.mode.selectedIndex].value
+	    	});
+	    	
+	    	
+/*	    	var skin = new jwplayer.html5.skin();
+	    	skin.load(form.skin.options[form.skin.selectedIndex].value, function() {
+	    		var tooltip = new jwplayer.html5.menu('hd', 'hd_overlay', skin);
+	    		tooltip.addOption('foo', 1);
+	    		tooltip.addOption('bar', 2);
+	    		tooltip.addOption('baz', 3);
+	    		tooltip.addOption('ban', 4);
+	    		//contents.innerHTML = "<div style='width: 200px; height: 150px; color:#fff'>Hello world</div>";
+	    		document.body.appendChild(tooltip.element());
+	    	});
+*/	
+	    }
+	    
+	    function getAbsPos( oId, tl ) {
+			var o = ( typeof oId == 'String' ) ? document.getElementById( oId ) : oId;
+			var val = 0;
+			while ( o && o.className.indexOf("jwplayer") < 0 ) {
+				val += parseInt( ( tl == 'top' ) ? o.offsetTop : o.offsetLeft );
+				o = o.parentNode;
+			}
+			return val;
+		}
+
+	
+	    init();
+    </script>
+    
+  
+</body>
+  
+</html>

@@ -6,8 +6,8 @@
 
 	  <style type="text/css">
 	  	.wrapper {
-	     width: 720px;
-	     height: 370px;
+	     width: 920px;
+	     height: 400px;
 	     position: relative;
 	  	}
 	  
@@ -22,8 +22,9 @@
 		      playlist: [
 		   	    {
 			      sources:[
-				    { file: 'http://content.bitsontherun.com/videos/gSzpo2wh-1ahmry41.xyz', type: "mp4"},
-				    { file: 'http://content.bitsontherun.com/videos/gSzpo2wh-1Lq5Mnwq.xyz', type: "webm" } 		 
+				    { file: 'http://content.bitsontherun.com/videos/nPripu9l-1ahmry41.mp4', type: "mp4"},
+				    { file: 'http://content.bitsontherun.com/videos/nPripu9l-twSo9iFz.mp4', type: "mp4"},
+				    { file: 'http://content.bitsontherun.com/videos/nPripu9l-1Lq5Mnwq.webm', type: "webm" } 		 
 				  ],
 				  image: 'http://content.bitsontherun.com/thumbs/gSzpo2wh-480.jpg',
 				  description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse ipsum leo, facilisis non laoreet sed, laoreet id tortor. Sed in lectus id enim scelerisque dictum nec sit amet odio. Pellentesque eget nisl arcu, quis tristique nibh. Nunc quis est eget erat posuere congue. Maecenas et turpis id ipsum eleifend adipiscing id et purus. Curabitur pulvinar ultricies leo, a semper tellus tempus eu. Praesent mattis ipsum eu eros placerat sodales. Maecenas laoreet libero quis lorem lacinia sit amet consequat nunc accumsan. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nunc venenatis, mi suscipit accumsan venenatis, ligula lacus malesuada nisl, vel congue est nibh ut dolor. Sed ut tellus ut diam consequat scelerisque at sit amet lacus. Nulla egestas vehicula neque, et commodo metus sollicitudin ut. Sed sit amet nunc vitae arcu tincidunt ornare.",
@@ -44,12 +45,15 @@
 				  title: "Error test", 
                   description: "This item will cause a player error"
 			  }],
-		      playlistsize: 300,
-		      playlistposition: "right",
 		      width: "100%",
 		      height: "100%",
-		      primary: form.mode.options[form.mode.selectedIndex].value
+		      playlistsize: 300,
+		      playlistposition: "right",
+		      primary: form.mode.options[form.mode.selectedIndex].value,
+		      repeat: "none",
+		      mobilecontrols:true
 		    });
+
 		  }
 	  </script>
 	</head>

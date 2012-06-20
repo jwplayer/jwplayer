@@ -20,8 +20,8 @@
 		      id: "player", 
 		      playlist: [{
 			      sources:[
-				             { file: 'http://content.bitsontherun.com/videos/nPripu9l-Q2YqwWcp.xxx', type: "m4a" }, 		 
-				             { file: 'http://content.bitsontherun.com/videos/nPripu9l-ywAKK1m8.xxx', type: "mp3" }
+				             { file: 'http://content.bitsontherun.com/videos/nPripu9l-Q2YqwWcp.m4a', type: "aac" }, 		 
+				             { file: 'http://content.bitsontherun.com/videos/nPripu9l-ywAKK1m8.mp4', type: "mp3" }
 				          ],
 				          image: 'http://content.bitsontherun.com/thumbs/gSzpo2wh-480.jpg',
 				          description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse ipsum leo, facilisis non laoreet sed, laoreet id tortor. Sed in lectus id enim scelerisque dictum nec sit amet odio. Pellentesque eget nisl arcu, quis tristique nibh. Nunc quis est eget erat posuere congue. Maecenas et turpis id ipsum eleifend adipiscing id et purus. Curabitur pulvinar ultricies leo, a semper tellus tempus eu. Praesent mattis ipsum eu eros placerat sodales. Maecenas laoreet libero quis lorem lacinia sit amet consequat nunc accumsan. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nunc venenatis, mi suscipit accumsan venenatis, ligula lacus malesuada nisl, vel congue est nibh ut dolor. Sed ut tellus ut diam consequat scelerisque at sit amet lacus. Nulla egestas vehicula neque, et commodo metus sollicitudin ut. Sed sit amet nunc vitae arcu tincidunt ornare.",
@@ -35,12 +35,12 @@
 						          title: "Sintel Trailer" 							          
 						      }],
 		      width: "100%",
-		      height: "100%",
+		      height: "30",
 		      primary: form.mode.options[form.mode.selectedIndex].value
 		    });
 		  }
 
-		  var sizeToggle = false;
+		  var sizeToggle = true;
 		  
 		  function toggleSize() {
 			if (sizeToggle) {
@@ -57,8 +57,8 @@
 	
     <form id="form">
 	  mode: <select name="mode" onchange="init()">
-      	<option value="" selected>html5</option>
-      	<option value="flash">flash</option>
+      	<option value="">html5</option>
+      	<option value="flash" selected>flash</option>
       </select>
       <input type="submit" style="opacity:0; left: -10000px"/>
     </form>

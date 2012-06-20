@@ -220,6 +220,7 @@
 				}
 			}
 			if (_controlbar) _controlbar.redraw();
+			_resizeMedia();
 		}
 
 		/**
@@ -288,7 +289,8 @@
 		}
 		
 		function _resizeMedia() {
-			utils.stretch(_model.stretching, _videoTag, 
+			utils.stretch(_model.fullscreen ? utils.stretching.UNIFORM : _model.stretching, 
+					_videoTag, 
 					_videoLayer.clientWidth, _videoLayer.clientHeight, 
 					_videoTag.videoWidth, _videoTag.videoHeight);
 		}

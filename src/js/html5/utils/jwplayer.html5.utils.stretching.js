@@ -5,23 +5,25 @@
  * @version 6.0
  */
 (function(utils) {
-//	utils.scale = function(domelement, xscale, yscale, xoffset, yoffset) {
-//		var value;
-//		
-//		// Set defaults
-//		if (!exists(xscale)) xscale = 1;
-//		if (!exists(yscale)) yscale = 1;
-//		if (!exists(xoffset)) xoffset = 0;
-//		if (!exists(yoffset)) yoffset = 0;
-//		
-//		if (xscale == 1 && yscale == 1 && xoffset == 0 && yoffset == 0) {
-//			value = "";
-//		} else {
-//			value = "scale("+xscale+","+yscale+") translate("+xoffset+"px,"+yoffset+"px)";
-//		}
-//		
-//	};
-//	
+	utils.scale = function(domelement, xscale, yscale, xoffset, yoffset) {
+		var value, exists = utils.exists;
+		
+		// Set defaults
+		if (!exists(xscale)) xscale = 1;
+		if (!exists(yscale)) yscale = 1;
+		if (!exists(xoffset)) xoffset = 0;
+		if (!exists(yoffset)) yoffset = 0;
+		
+		if (xscale == 1 && yscale == 1 && xoffset == 0 && yoffset == 0) {
+			value = "";
+		} else {
+			value = "scale("+xscale+","+yscale+") translate("+xoffset+"px,"+yoffset+"px)";
+		}
+		
+		utils.transform(domelement, value);
+		
+	};
+	
 	/**
 	 * Stretches domelement based on stretching. parentWidth, parentHeight,
 	 * elementWidth, and elementHeight are required as the elements dimensions
@@ -77,34 +79,36 @@
 		case _stretching.UNIFORM:
 		default:
 			if (xscale > yscale) {
-				elementWidth = elementWidth * yscale;
-				elementHeight = elementHeight * yscale;
-				if (elementWidth / parentWidth > 0.95) {
+				if (elementWidth * yscale / parentWidth > 0.95) {
 					scale = true;
 					stretchClass = "jwexactfit";
-					xscale = Math.ceil(100 * parentWidth / elementWidth) / 100;
-					yscale = 1;
+				} else {
+					elementWidth = elementWidth * yscale;
+					elementHeight = elementHeight * yscale;
 				}
 			} else {
-				elementWidth = elementWidth * xscale;
-				elementHeight = elementHeight * xscale;
-				if (elementHeight / parentHeight > 0.95) {
+				if (elementHeight * xscale / parentHeight > 0.95) {
 					scale = true;
 					stretchClass = "jwexactfit";
-					yscale = Math.ceil(100 * parentHeight / elementHeight) / 100;
-					xscale = 1;
+				} else {
+					elementWidth = elementWidth * xscale;
+					elementHeight = elementHeight * xscale;
 				}
+			}
+			if (scale) {
+				yscale = Math.ceil(100 * parentHeight / elementHeight) / 100;
+				xscale = Math.ceil(100 * parentWidth / elementWidth) / 100;
 			}
 			break;
 		}
 
 		if (video) {
-			if (scale) {
+			if (scale && !utils.isMobile()) {
 				domelement.style.width = elementWidth + "px";
 				domelement.style.height = elementHeight + "px"; 
 				xoff = ((parentWidth - elementWidth) / 2) / xscale;
 				yoff = ((parentHeight - elementHeight) / 2) / yscale;
-				//utils.scale(domelement, xscale, yscale, xoff, yoff);
+				utils.scale(domelement, xscale, yscale, xoff, yoff);
 			} else {
 				domelement.style.width = "";
 				domelement.style.height = "";

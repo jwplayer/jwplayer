@@ -192,7 +192,7 @@
 		function _levelLabel(level) {
 			if (level.label) return level.label;
 			else if (level.height) return level.height + "p";
-			else if (level.width) return (level.width * 9 / 16) + "p";
+			else if (level.width) return Math.round(level.width * 9 / 16) + "p";
 			else if (level.bitrate) return level.bitrate + "kbps";
 			else return 0;
 		}
@@ -200,8 +200,6 @@
 		_this.load = function(item) {
 			if (!_attached) return;
 			_item = item;
-			_canSeek = false;
-			_bufferFull = false;
 			_delayedSeek = 0;
 			_duration = item.duration ? item.duration : -1;
 			_position = 0;
@@ -210,6 +208,12 @@
 			_levels = _item.sources;
 			_sendLevels(_levels);
 			
+			_completeLoad();
+		}
+		
+		function _completeLoad() {
+			_canSeek = false;
+			_bufferFull = false;
 			_source = _levels[_currentQuality];
 			
 			_setState(states.BUFFERING); 
@@ -384,7 +388,7 @@
 					_currentQuality = quality;
 					_sendEvent(events.JWPLAYER_MEDIA_LEVEL_CHANGED, { currentQuality: quality, levels: _levels} );
 					var currentTime = _videotag.currentTime;
-					_this.load(_item);
+					_completeLoad();
 					_this.seek(currentTime);
 				}
 			}

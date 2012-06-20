@@ -123,12 +123,11 @@
 	
 	utils.transform = function(element, value) {
 		var style = element.style;
-		if (exists(value)) {
-			style.webkitTransform = value;
-			style.MozTransform = value;
-			style.msTransform = value;
-			style.OTransform = value;
-		}
+		value = value ? value : "";
+		style.webkitTransform = value;
+		style.MozTransform = value;
+		style.msTransform = value;
+		style.OTransform = value;
 	}
 	
 	utils.dragStyle = function(selector, style) {

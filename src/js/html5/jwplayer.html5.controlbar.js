@@ -34,7 +34,7 @@
 		JW_CSS_LEFT = "left",
 		JW_CSS_RIGHT = "right",
 		JW_CSS_100PCT = "100%",
-		JW_CSS_SMOOTH_EASE = "width .25s linear, left .25s linear, opacity .25s, background .25s, visibility .25s",
+		JW_CSS_SMOOTH_EASE = "opacity .25s, background .25s, visibility .25s",
 		
 		CB_CLASS = '.jwcontrolbar',
 		
@@ -94,7 +94,8 @@
 		
 			_settings, 
 			_layout, 
-			_elements, 
+			_elements,
+			_bgHeight,
 			_controlbar, 
 			_id,
 			_duration,
@@ -102,6 +103,9 @@
 			_levels,
 			_currentQuality,
 			_currentVolume,
+			_volumeOverlay,
+			_hdOverlay,
+			_ccOverlay,
 			_audioMode = false,
 			_dragging = false,
 			_lastSeekTime = 0,
@@ -272,6 +276,13 @@
 				if (_levels.length == 2) {
 					_toggleButton("hdOn", _currentQuality == 0);
 				}
+				_hdOverlay.clearOptions();
+				for (var i=0; i<_levels.length; i++) {
+					_hdOverlay.addOption(_levels[i].label, i);
+				}
+				if (evt.currentQuality >= 0) {
+					_hdOverlay.setActive(evt.currentQuality);
+				}
 			} else {
 				_css(_internalSelector(".jwhdOn"), { display: "none" });
 			}
@@ -289,8 +300,10 @@
 		function _createStyles() {
 			_settings = utils.extend({}, _defaults, _skin.getComponentSettings('controlbar'), config);
 
+			_bgHeight = _getSkinElement("background").height;
+			
 			_css('#'+_id, {
-		  		height: _getSkinElement("background").height,
+		  		height: _bgHeight,
 		  		bottom: _audioMode ? 0 : _settings.margin
 			});
 			
@@ -329,10 +342,10 @@
 				'background-repeat': "repeat-x"
 			}, true);
 
-			if (bg) _controlbar.appendChild(bg);
-			if (capLeft) _controlbar.appendChild(capLeft);
+			if (bg) _appendChild(_controlbar, bg);
+			if (capLeft) _appendChild(_controlbar, capLeft);
 			_buildLayout();
-			if (capRight) _controlbar.appendChild(capRight);
+			if (capRight) _appendChild(_controlbar, capRight);
 		}
 		
 		function _buildElement(element) {
@@ -389,21 +402,33 @@
 				return null;
 			}
 			
-			var element = DOCUMENT.createElement("button");
-			element.className = 'jw'+name;
-			element.addEventListener("click", _buttonClickHandler(name), false);
+			var element = DOCUMENT.createElement("span");
+			element.className = 'jw'+name + ' jwbuttoncontainer';
+			var button = DOCUMENT.createElement("button");
+			button.addEventListener("click", _buttonClickHandler(name), false);
+			button.innerHTML = "&nbsp;";
+			_appendChild(element, button);
 
 			var outSkin = _getSkinElement(name + "Button");
 			var overSkin = _getSkinElement(name + "ButtonOver");
 			
-			element.innerHTML = "&nbsp;";
 			
-			_buttonStyle(_internalSelector('.jw'+name), outSkin, overSkin);
+			_buttonStyle(_internalSelector('.jw'+name+" button"), outSkin, overSkin);
 			var toggle = _toggles[name];
 			if (toggle) {
-				_buttonStyle(_internalSelector('.jw'+name+'.jwtoggle'), _getSkinElement(toggle+"Button"), _getSkinElement(toggle+"ButtonOver"));
+				_buttonStyle(_internalSelector('.jw'+name+'.jwtoggle button'), _getSkinElement(toggle+"Button"), _getSkinElement(toggle+"ButtonOver"));
 			}
 
+			if (name == "hdOn") {
+				_hdOverlay = new html5.menu('hd', _id+"_hd", _skin, _switchLevel);
+				var hdElement = _hdOverlay.element()
+				_appendChild(element, hdElement);
+				_css('#'+hdElement.id, {
+					left: "50%",
+					bottom: _bgHeight
+				});
+			}
+			
 			_elements[name] = element;
 			
 			return element;
@@ -523,12 +548,26 @@
 			}
 		}
 		
+		var _hdShowing = false;
+		
 		function _hd() {
 			if (_levels) {
 				if (_levels.length == 2) {
 					_api.jwSetCurrentQuality(_currentQuality ? 0 : 1);
 					_toggleButton("hdOn");
+				} else if (_levels.length > 2) {
+					if (_hdShowing) _hdOverlay.hide();
+					else _hdOverlay.show();
+					_hdShowing = !_hdShowing;
 				}
+			}
+		}
+		
+		function _switchLevel(newlevel) {
+			if (newlevel >= 0 && newlevel < _levels.length) {
+				_api.jwSetCurrentQuality(newlevel);
+				_hdOverlay.hide();
+				_hdShowing = false;
 			}
 		}
 		
@@ -545,9 +584,9 @@
 
 			var rail = _buildSliderRail(name);
 			
-			if (capLeft) slider.appendChild(capLeft);
-			slider.appendChild(rail);
-			if (capLeft) slider.appendChild(capRight);
+			if (capLeft) _appendChild(slider, capLeft);
+			_appendChild(slider, rail);
+			if (capLeft) _appendChild(slider, capRight);
 
 			_css(_internalSelector(".jw" + name + " .jwrail"), {
 				left: _getSkinElement(name+"SliderCapLeft").width,
@@ -584,10 +623,10 @@
 				if (element) {
 					var railElement = _createSpan();
 					railElement.className = "jwrailgroup " + railElements[i];
-					if (capLeft) railElement.appendChild(capLeft);
-					railElement.appendChild(element);
+					if (capLeft) _appendChild(railElement, capLeft);
+					_appendChild(railElement, element);
 					if (capRight) { 
-						railElement.appendChild(capRight);
+						_appendChild(railElement, capRight);
 						capRight.className += " jwcapRight";
 					}
 					
@@ -601,7 +640,7 @@
 					});
 
 					_elements[prefix] = railElement;
-					rail.appendChild(railElement);
+					_appendChild(rail, railElement);
 				}
 			}
 			
@@ -609,7 +648,7 @@
 			if (thumb) {
 				_css(_internalSelector('.'+thumb.className), { opacity: 0 });
 				thumb.className += " jwthumb";
-				rail.appendChild(thumb);
+				_appendChild(rail, thumb);
 			}
 			
 			rail.addEventListener('mousedown', _sliderMouseDown(name), false);
@@ -704,9 +743,9 @@
 			_buildGroup("left");
 			_buildGroup("center");
 			_buildGroup("right");
-			_controlbar.appendChild(_groups.left);
-			_controlbar.appendChild(_groups.center);
-			_controlbar.appendChild(_groups.right);
+			_appendChild(_controlbar, _groups.left);
+			_appendChild(_controlbar, _groups.center);
+			_appendChild(_controlbar, _groups.right);
 			
 			_css(_internalSelector(".jwright"), {
 				right: _getSkinElement("capRight").width
@@ -728,7 +767,7 @@
 				for (var i=0; i<group.elements.length; i++) {
 					var element = _buildElement(group.elements[i]);
 					if (element) {
-						container.appendChild(element);
+						_appendChild(container, element);
 					}
 				}
 			}
@@ -812,6 +851,10 @@
 			}
 		}
 		
+		function _appendChild(parent, child) {
+			parent.appendChild(child);
+		}
+		
 		this.show = function() {
 			_css(_internalSelector(), { opacity: 1, visibility: "visible" });
 		}
@@ -858,7 +901,7 @@
     	position: JW_CSS_ABSOLUTE
     });
     
-    _css(CB_CLASS+' button', {
+    _css(CB_CLASS+' buttoncontainer,'+CB_CLASS+' button', {
     	display: JW_CSS_INLINE_BLOCK,
     	height: JW_CSS_100PCT,
     	border: JW_CSS_NONE,
@@ -909,7 +952,7 @@
 
 	_setTransition(CB_CLASS, JW_CSS_SMOOTH_EASE);
 	_setTransition(CB_CLASS + ' button', JW_CSS_SMOOTH_EASE);
-	_setTransition(CB_CLASS + ' .jwtime .jwsmooth span', JW_CSS_SMOOTH_EASE);
+	_setTransition(CB_CLASS + ' .jwtime .jwsmooth span', JW_CSS_SMOOTH_EASE + ", width .25s linear, left .25s linear");
 	_setTransition(CB_CLASS + ' .jwtoggling', JW_CSS_NONE);
 
 })(jwplayer);

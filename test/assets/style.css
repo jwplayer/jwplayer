@@ -1,7 +1,10 @@
 body { 
   padding: 50px; 
-  font: 13px/20px Arial; 
   background: #EEE; 
+}
+
+h1 {
+  font-family: Arial,Helvetica,sans-serif; 
 }
 
 .jwplayer { 

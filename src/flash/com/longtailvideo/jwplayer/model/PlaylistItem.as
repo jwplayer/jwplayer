@@ -91,12 +91,14 @@ package com.longtailvideo.jwplayer.model {
 		
 		/** File property is now a getter, to take levels into account **/
 		public function get file():String {
+			var getFile:String;
 			if (_levels.length > 0 && _currentLevel > -1 && _currentLevel < _levels.length) {
 				var level:PlaylistItemLevel = _levels[_currentLevel] as PlaylistItemLevel;
-				return level.file ? level.file : _file;
+				getFile = level.file ? level.file : _file;
 			} else {
-				return _file;
+				getFile = _file;
 			}
+			return getFile.replace(/feed:/g, "");
 		}
 		
 		/** File setter.  Note, if levels are defined, this will be ignored. **/

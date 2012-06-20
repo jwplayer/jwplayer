@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2271';
+	jwplayer.html5.version = '6.0.2277';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -320,12 +320,11 @@
 	
 	utils.transform = function(element, value) {
 		var style = element.style;
-		if (exists(value)) {
-			style.webkitTransform = value;
-			style.MozTransform = value;
-			style.msTransform = value;
-			style.OTransform = value;
-		}
+		value = value ? value : "";
+		style.webkitTransform = value;
+		style.MozTransform = value;
+		style.msTransform = value;
+		style.OTransform = value;
 	}
 	
 	utils.dragStyle = function(selector, style) {
@@ -359,23 +358,25 @@
  * @version 6.0
  */
 (function(utils) {
-//	utils.scale = function(domelement, xscale, yscale, xoffset, yoffset) {
-//		var value;
-//		
-//		// Set defaults
-//		if (!exists(xscale)) xscale = 1;
-//		if (!exists(yscale)) yscale = 1;
-//		if (!exists(xoffset)) xoffset = 0;
-//		if (!exists(yoffset)) yoffset = 0;
-//		
-//		if (xscale == 1 && yscale == 1 && xoffset == 0 && yoffset == 0) {
-//			value = "";
-//		} else {
-//			value = "scale("+xscale+","+yscale+") translate("+xoffset+"px,"+yoffset+"px)";
-//		}
-//		
-//	};
-//	
+	utils.scale = function(domelement, xscale, yscale, xoffset, yoffset) {
+		var value, exists = utils.exists;
+		
+		// Set defaults
+		if (!exists(xscale)) xscale = 1;
+		if (!exists(yscale)) yscale = 1;
+		if (!exists(xoffset)) xoffset = 0;
+		if (!exists(yoffset)) yoffset = 0;
+		
+		if (xscale == 1 && yscale == 1 && xoffset == 0 && yoffset == 0) {
+			value = "";
+		} else {
+			value = "scale("+xscale+","+yscale+") translate("+xoffset+"px,"+yoffset+"px)";
+		}
+		
+		utils.transform(domelement, value);
+		
+	};
+	
 	/**
 	 * Stretches domelement based on stretching. parentWidth, parentHeight,
 	 * elementWidth, and elementHeight are required as the elements dimensions
@@ -431,34 +432,36 @@
 		case _stretching.UNIFORM:
 		default:
 			if (xscale > yscale) {
-				elementWidth = elementWidth * yscale;
-				elementHeight = elementHeight * yscale;
-				if (elementWidth / parentWidth > 0.95) {
+				if (elementWidth * yscale / parentWidth > 0.95) {
 					scale = true;
 					stretchClass = "jwexactfit";
-					xscale = Math.ceil(100 * parentWidth / elementWidth) / 100;
-					yscale = 1;
+				} else {
+					elementWidth = elementWidth * yscale;
+					elementHeight = elementHeight * yscale;
 				}
 			} else {
-				elementWidth = elementWidth * xscale;
-				elementHeight = elementHeight * xscale;
-				if (elementHeight / parentHeight > 0.95) {
+				if (elementHeight * xscale / parentHeight > 0.95) {
 					scale = true;
 					stretchClass = "jwexactfit";
-					yscale = Math.ceil(100 * parentHeight / elementHeight) / 100;
-					xscale = 1;
+				} else {
+					elementWidth = elementWidth * xscale;
+					elementHeight = elementHeight * xscale;
 				}
+			}
+			if (scale) {
+				yscale = Math.ceil(100 * parentHeight / elementHeight) / 100;
+				xscale = Math.ceil(100 * parentWidth / elementWidth) / 100;
 			}
 			break;
 		}
 
 		if (video) {
-			if (scale) {
+			if (scale && !utils.isMobile()) {
 				domelement.style.width = elementWidth + "px";
 				domelement.style.height = elementHeight + "px"; 
 				xoff = ((parentWidth - elementWidth) / 2) / xscale;
 				yoff = ((parentHeight - elementHeight) / 2) / yscale;
-				//utils.scale(domelement, xscale, yscale, xoff, yoff);
+				utils.scale(domelement, xscale, yscale, xoff, yoff);
 			} else {
 				domelement.style.width = "";
 				domelement.style.height = "";
@@ -769,7 +772,7 @@
 		JW_CSS_LEFT = "left",
 		JW_CSS_RIGHT = "right",
 		JW_CSS_100PCT = "100%",
-		JW_CSS_SMOOTH_EASE = "width .25s linear, left .25s linear, opacity .25s, background .25s, visibility .25s",
+		JW_CSS_SMOOTH_EASE = "opacity .25s, background .25s, visibility .25s",
 		
 		CB_CLASS = '.jwcontrolbar',
 		
@@ -829,7 +832,8 @@
 		
 			_settings, 
 			_layout, 
-			_elements, 
+			_elements,
+			_bgHeight,
 			_controlbar, 
 			_id,
 			_duration,
@@ -837,6 +841,9 @@
 			_levels,
 			_currentQuality,
 			_currentVolume,
+			_volumeOverlay,
+			_hdOverlay,
+			_ccOverlay,
 			_audioMode = false,
 			_dragging = false,
 			_lastSeekTime = 0,
@@ -1007,6 +1014,13 @@
 				if (_levels.length == 2) {
 					_toggleButton("hdOn", _currentQuality == 0);
 				}
+				_hdOverlay.clearOptions();
+				for (var i=0; i<_levels.length; i++) {
+					_hdOverlay.addOption(_levels[i].label, i);
+				}
+				if (evt.currentQuality >= 0) {
+					_hdOverlay.setActive(evt.currentQuality);
+				}
 			} else {
 				_css(_internalSelector(".jwhdOn"), { display: "none" });
 			}
@@ -1024,8 +1038,10 @@
 		function _createStyles() {
 			_settings = utils.extend({}, _defaults, _skin.getComponentSettings('controlbar'), config);
 
+			_bgHeight = _getSkinElement("background").height;
+			
 			_css('#'+_id, {
-		  		height: _getSkinElement("background").height,
+		  		height: _bgHeight,
 		  		bottom: _audioMode ? 0 : _settings.margin
 			});
 			
@@ -1064,10 +1080,10 @@
 				'background-repeat': "repeat-x"
 			}, true);
 
-			if (bg) _controlbar.appendChild(bg);
-			if (capLeft) _controlbar.appendChild(capLeft);
+			if (bg) _appendChild(_controlbar, bg);
+			if (capLeft) _appendChild(_controlbar, capLeft);
 			_buildLayout();
-			if (capRight) _controlbar.appendChild(capRight);
+			if (capRight) _appendChild(_controlbar, capRight);
 		}
 		
 		function _buildElement(element) {
@@ -1124,21 +1140,33 @@
 				return null;
 			}
 			
-			var element = DOCUMENT.createElement("button");
-			element.className = 'jw'+name;
-			element.addEventListener("click", _buttonClickHandler(name), false);
+			var element = DOCUMENT.createElement("span");
+			element.className = 'jw'+name + ' jwbuttoncontainer';
+			var button = DOCUMENT.createElement("button");
+			button.addEventListener("click", _buttonClickHandler(name), false);
+			button.innerHTML = "&nbsp;";
+			_appendChild(element, button);
 
 			var outSkin = _getSkinElement(name + "Button");
 			var overSkin = _getSkinElement(name + "ButtonOver");
 			
-			element.innerHTML = "&nbsp;";
 			
-			_buttonStyle(_internalSelector('.jw'+name), outSkin, overSkin);
+			_buttonStyle(_internalSelector('.jw'+name+" button"), outSkin, overSkin);
 			var toggle = _toggles[name];
 			if (toggle) {
-				_buttonStyle(_internalSelector('.jw'+name+'.jwtoggle'), _getSkinElement(toggle+"Button"), _getSkinElement(toggle+"ButtonOver"));
+				_buttonStyle(_internalSelector('.jw'+name+'.jwtoggle button'), _getSkinElement(toggle+"Button"), _getSkinElement(toggle+"ButtonOver"));
 			}
 
+			if (name == "hdOn") {
+				_hdOverlay = new html5.menu('hd', _id+"_hd", _skin, _switchLevel);
+				var hdElement = _hdOverlay.element()
+				_appendChild(element, hdElement);
+				_css('#'+hdElement.id, {
+					left: "50%",
+					bottom: _bgHeight
+				});
+			}
+			
 			_elements[name] = element;
 			
 			return element;
@@ -1258,12 +1286,26 @@
 			}
 		}
 		
+		var _hdShowing = false;
+		
 		function _hd() {
 			if (_levels) {
 				if (_levels.length == 2) {
 					_api.jwSetCurrentQuality(_currentQuality ? 0 : 1);
 					_toggleButton("hdOn");
+				} else if (_levels.length > 2) {
+					if (_hdShowing) _hdOverlay.hide();
+					else _hdOverlay.show();
+					_hdShowing = !_hdShowing;
 				}
+			}
+		}
+		
+		function _switchLevel(newlevel) {
+			if (newlevel >= 0 && newlevel < _levels.length) {
+				_api.jwSetCurrentQuality(newlevel);
+				_hdOverlay.hide();
+				_hdShowing = false;
 			}
 		}
 		
@@ -1280,9 +1322,9 @@
 
 			var rail = _buildSliderRail(name);
 			
-			if (capLeft) slider.appendChild(capLeft);
-			slider.appendChild(rail);
-			if (capLeft) slider.appendChild(capRight);
+			if (capLeft) _appendChild(slider, capLeft);
+			_appendChild(slider, rail);
+			if (capLeft) _appendChild(slider, capRight);
 
 			_css(_internalSelector(".jw" + name + " .jwrail"), {
 				left: _getSkinElement(name+"SliderCapLeft").width,
@@ -1319,10 +1361,10 @@
 				if (element) {
 					var railElement = _createSpan();
 					railElement.className = "jwrailgroup " + railElements[i];
-					if (capLeft) railElement.appendChild(capLeft);
-					railElement.appendChild(element);
+					if (capLeft) _appendChild(railElement, capLeft);
+					_appendChild(railElement, element);
 					if (capRight) { 
-						railElement.appendChild(capRight);
+						_appendChild(railElement, capRight);
 						capRight.className += " jwcapRight";
 					}
 					
@@ -1336,7 +1378,7 @@
 					});
 
 					_elements[prefix] = railElement;
-					rail.appendChild(railElement);
+					_appendChild(rail, railElement);
 				}
 			}
 			
@@ -1344,7 +1386,7 @@
 			if (thumb) {
 				_css(_internalSelector('.'+thumb.className), { opacity: 0 });
 				thumb.className += " jwthumb";
-				rail.appendChild(thumb);
+				_appendChild(rail, thumb);
 			}
 			
 			rail.addEventListener('mousedown', _sliderMouseDown(name), false);
@@ -1439,9 +1481,9 @@
 			_buildGroup("left");
 			_buildGroup("center");
 			_buildGroup("right");
-			_controlbar.appendChild(_groups.left);
-			_controlbar.appendChild(_groups.center);
-			_controlbar.appendChild(_groups.right);
+			_appendChild(_controlbar, _groups.left);
+			_appendChild(_controlbar, _groups.center);
+			_appendChild(_controlbar, _groups.right);
 			
 			_css(_internalSelector(".jwright"), {
 				right: _getSkinElement("capRight").width
@@ -1463,7 +1505,7 @@
 				for (var i=0; i<group.elements.length; i++) {
 					var element = _buildElement(group.elements[i]);
 					if (element) {
-						container.appendChild(element);
+						_appendChild(container, element);
 					}
 				}
 			}
@@ -1547,6 +1589,10 @@
 			}
 		}
 		
+		function _appendChild(parent, child) {
+			parent.appendChild(child);
+		}
+		
 		this.show = function() {
 			_css(_internalSelector(), { opacity: 1, visibility: "visible" });
 		}
@@ -1593,7 +1639,7 @@
     	position: JW_CSS_ABSOLUTE
     });
     
-    _css(CB_CLASS+' button', {
+    _css(CB_CLASS+' buttoncontainer,'+CB_CLASS+' button', {
     	display: JW_CSS_INLINE_BLOCK,
     	height: JW_CSS_100PCT,
     	border: JW_CSS_NONE,
@@ -1644,7 +1690,7 @@
 
 	_setTransition(CB_CLASS, JW_CSS_SMOOTH_EASE);
 	_setTransition(CB_CLASS + ' button', JW_CSS_SMOOTH_EASE);
-	_setTransition(CB_CLASS + ' .jwtime .jwsmooth span', JW_CSS_SMOOTH_EASE);
+	_setTransition(CB_CLASS + ' .jwtime .jwsmooth span', JW_CSS_SMOOTH_EASE + ", width .25s linear, left .25s linear");
 	_setTransition(CB_CLASS + ' .jwtoggling', JW_CSS_NONE);
 
 })(jwplayer);/**
@@ -3007,6 +3053,142 @@
 })(jwplayer.html5);
 
 /**
+ * JW Player HTML5 overlay component
+ * 
+ * @author pablo
+ * @version 6.0
+ */
+(function(jwplayer) {
+	
+	var html5 = jwplayer.html5,
+		utils = jwplayer.utils,
+		_css = utils.css,
+		
+		MENU_CLASS = 'jwmenu',
+		OPTION_CLASS = 'jwoption',
+		UNDEFINED = undefined,
+		WHITE = '#ffffff';
+	
+	/** HTML5 Overlay class **/
+	html5.menu = function(name, id, skin, changeHandler) {
+		var _skin = skin,
+			_name = name,
+			_id = id,
+			_changeHandler = changeHandler,
+			_overlay = new html5.overlay(_id+"_overlay", skin),
+			_settings = utils.extend({
+				fontcase: UNDEFINED,
+				fontcolor: WHITE,
+				fontsize: 12,
+				fontweight: UNDEFINED,
+				activecolor: WHITE,
+				overcolor: WHITE
+			}, skin.getComponentSettings('tooltip')),
+			_container,
+			_options = [];
+
+		function _init() {
+			_container = _createElement(MENU_CLASS);
+			_container.id = _id;
+			
+			var top = _getSkinElement('menuTop'+name),
+				menuOption = _getSkinElement('menuOption'),
+				menuOptionOver = _getSkinElement('menuOptionOver'),
+				menuOptionActive = _getSkinElement('menuOptionOver');
+
+			if (top) {
+				_container.appendChild(top.image);
+				_css("#"+_id+"_overlay", {
+					'margin-left': (top.width / -2) - _overlay.borderWidth() 
+				});
+			}
+			
+			if (menuOption) {
+				var selector = '#'+id+' .'+OPTION_CLASS;
+				_css(selector, {
+					'background-image': menuOption.src,
+					height: menuOption.height,
+					color: _settings.fontcolor,
+					'padding-left': menuOption.width,
+					font: _settings.fontweight + " 13px Arial,Helvetica,sans-serif",
+					'text-transform': (_settings.fontcase == "upper") ? "uppercase" : UNDEFINED 
+				});
+				_css(selector+":hover", {
+					'background-image': menuOptionOver.src ? menuOptionOver.src : UNDEFINED,
+					color: _settings.overcolor
+				});
+				_css(selector+".active", {
+					'background-image': menuOptionActive.src ? menuOptionActive.src : UNDEFINED,
+					color: _settings.activecolor
+				});
+			}
+			_overlay.setContents(_container);
+		}
+		
+		this.element = function() {
+			return _overlay.element();
+		};
+		
+		this.addOption = function(label, value) {
+			var option = _createElement(OPTION_CLASS, _container);
+			option.id = _id+"_option_"+value;
+			option.innerHTML = label;
+			option.addEventListener('click', _clickHandler(_options.length, value));
+			_options.push(option);
+		}
+		
+		function _clickHandler(index, value) {
+			return function() {
+				_setActive(index);
+				if (_changeHandler) _changeHandler(value);
+			}
+		}
+		
+		this.clearOptions = function() {
+			while(_options.length > 0) {
+				_container.removeChild(_options.pop());
+			}
+		}
+
+		var _setActive = this.setActive = function(index) {
+			for (var i = 0; i < _options.length; i++) {
+				var option = _options[i];
+				option.className = option.className.replace(" active", "");
+				if (i == index) option.className += " active";
+			}
+		}
+		
+
+		function _createElement(className, parent) {
+			var elem = document.createElement("div");
+			if (className) elem.className = className;
+			if (parent) parent.appendChild(elem);
+			return elem;
+		}
+		
+		function _getSkinElement(name) {
+			var elem = skin.getSkinElement('tooltip', name);
+			return elem;
+		}
+
+		this.show = _overlay.show;
+		this.hide = _overlay.hide;
+		
+		_init();
+	}
+	
+	function _class(className) {
+		return "." + className.replace(/ /g, " .");
+	}
+	
+	_css(_class(MENU_CLASS + ' ' + OPTION_CLASS), {
+		'background-repeat': "no-repeat",
+		cursor: "pointer",
+		position: "relative"
+	});
+	
+
+})(jwplayer);/**
  * jwplayer.html5 model
  * 
  * @author pablo
@@ -3181,7 +3363,7 @@
 		_setTransition = utils.transitionStyle,
 
 		/** Some CSS constants we should use for minimization **/
-		//JW_CSS_RELATIVE = "relative",
+		JW_CSS_RELATIVE = "relative",
 		JW_CSS_ABSOLUTE = "absolute",
 		//JW_CSS_NONE = "none",
 		//JW_CSS_BLOCK = "block",
@@ -3190,42 +3372,142 @@
 		JW_CSS_HIDDEN = "hidden",
 		//JW_CSS_LEFT = "left",
 		//JW_CSS_RIGHT = "right",
-		//JW_CSS_100PCT = "100%",
+		JW_CSS_100PCT = "100%",
 		JW_CSS_SMOOTH_EASE = "opacity .25s, visibility .25s",
 		
 		OVERLAY_CLASS = '.jwoverlay',
 		
+		TOP = "top",
+		BOTTOM = "bottom",
+		RIGHT = "right",
+		LEFT = "left",
+		
+		UNDEFINED = undefined,
 		DOCUMENT = document;
 	
 	/** HTML5 Overlay class **/
-	html5.overlay = function(id, skin, component, name) {
+	html5.overlay = function(id, skin) {
 		var _skin = skin,
-			_component = component,
 			_id = id,
-			_container;
+			_container,
+			_contents,
+			_borderSizes = {};
+//			_width = width,
+//			_height = height;
 		
 		function _init() {
-			_container = _createElement("div", OVERLAY_CLASS.replace(".",""));
+			_container = _createElement(OVERLAY_CLASS.replace(".",""));
 			_container.id = _id;
+
+			_contents = _createElement("jwcontents", _container);
+			
+			_createBorderElement(TOP, LEFT);
+			_createBorderElement(BOTTOM, LEFT);
+			_createBorderElement(TOP, RIGHT);
+			_createBorderElement(BOTTOM, RIGHT);
+			_createBorderElement(LEFT);
+			_createBorderElement(RIGHT);
+			_createBorderElement(TOP);
+			_createBorderElement(BOTTOM);
+			
+			_createSkinElement("background", "jwback");
+			_css(_internalSelector("jwback"), {
+				left: _borderSizes.left,
+				right: _borderSizes.right,
+				top: _borderSizes.top,
+				bottom: _borderSizes.bottom
+			});
+			
+			var arrow = _createSkinElement("arrow", "jwarrow")[1];
+			_css(_internalSelector("jwarrow"), {
+				position: JW_CSS_ABSOLUTE,
+				bottom: -1 * arrow.height,
+				width: arrow.width,
+				height: arrow.height,
+				left: "50%",
+				'margin-left': arrow.width / -2
+			});
+
+			_css(_internalSelector(), {
+//				width: _width,
+//				height: _height,
+				'padding-top': _borderSizes.top,
+				'padding-bottom': _borderSizes.bottom,
+				'padding-left': _borderSizes.left,
+				'padding-right': _borderSizes.right
+			});
+			
+
 		}
 		
 		function _internalSelector(name) {
 			return '#' + _id + (name ? " ." + name : "");
 		}
 		
-		function _createElement(type, className) {
-			var elem = DOCUMENT.createElement(type);
+		function _createElement(className, parent) {
+			var elem = DOCUMENT.createElement("div");
 			if (className) elem.className = className;
+			if (parent) parent.appendChild(elem);
 			return elem;
 		}
 
 
+		function _createSkinElement(name, className) {
+			var skinElem = _getSkinElement(name),
+				elem = _createElement(className, _container);
+			
+			_css(_internalSelector(className.replace(" ", ".")), {
+				'background-image': skinElem.src
+			});
+			
+			return [elem, skinElem];
+			
+		}
+		
+		function _createBorderElement(dim1, dim2) {
+			if (!dim2) dim2 = "";
+			var created = _createSkinElement('cap' + dim1 + dim2, "jwborder jw" + dim1 + (dim2 ? dim2 : "")); 
+				elem = created[0],
+				skinElem = created[1],
+				elemStyle = {
+					'background-image': skinElem.src,
+					width: (dim1 == LEFT || dim2 == LEFT || dim1 == RIGHT || dim2 == RIGHT) ? skinElem.width: UNDEFINED,
+					height: (dim1 == TOP || dim2 == TOP || dim1 == BOTTOM || dim2 == BOTTOM) ? skinElem.height: UNDEFINED
+				};
+			
+			elemStyle[dim1] = 0;
+			if (dim2) elemStyle[dim2] = 0;
+			
+			_css(_internalSelector(elem.className.replace(/ /g, ".")), elemStyle);
+			
+			var dim1style = {}, dim2style = {}, dims = { left: skinElem.width, right: skinElem.width, top: skinElem.height, bottom: skinElem.height};
+			if (dim1 && dim2) {
+				dim1style[dim2] = dims[dim2];
+				dim1style[dim1] = 0;
+				dim2style[dim1] = dims[dim1];
+				dim2style[dim2] = 0;
+				_css(_internalSelector("jw"+dim1), dim1style);
+				_css(_internalSelector("jw"+dim2), dim2style);
+				_borderSizes[dim1] = dims[dim1];
+				_borderSizes[dim2] = dims[dim2];
+			}
+		}
+
 		this.element = function() {
 			return _container;
 		};
+		
+		this.setContents = function(contents) {
+			_contents.innerHTML = "";
+			_contents.appendChild(contents);
+		}
+		
+		this.borderWidth = function() {
+			return _borderSizes.left
+		}
 
 		function _getSkinElement(name) {
-			var elem = _skin.getSkinElement(_component, name); 
+			var elem = _skin.getSkinElement('tooltip', name); 
 			if (elem) {
 				return elem;
 			} else {
@@ -3260,9 +3542,25 @@
 	_css(OVERLAY_CLASS, {
 		position: JW_CSS_ABSOLUTE,
 		visibility: JW_CSS_HIDDEN,
-		opacity: 0
+		opacity: 0,
+//		'z-index': 1 // required for IE9
 	});
-	
+
+	_css(OVERLAY_CLASS + " .jwcontents", {
+		position: JW_CSS_RELATIVE,
+		'z-index': 1
+	});
+
+	_css(OVERLAY_CLASS + " .jwborder", {
+		position: JW_CSS_ABSOLUTE,
+		'background-size': JW_CSS_100PCT + " " + JW_CSS_100PCT
+	});
+
+	_css(OVERLAY_CLASS + " .jwback", {
+		position: JW_CSS_ABSOLUTE,
+		'background-size': JW_CSS_100PCT + " " + JW_CSS_100PCT
+	});
+
 	_setTransition(OVERLAY_CLASS, JW_CSS_SMOOTH_EASE);
 })(jwplayer);/**
  * Main HTML5 player class
@@ -3806,29 +4104,28 @@
  * @version 6.0
  */
 (function(html5) {
-	events = jwplayer.events,
-	utils = jwplayer.utils, 
-	_css = utils.css,
+	var events = jwplayer.events,
+		utils = jwplayer.utils, 
+		_css = utils.css,
 	
-	SLIDER_CLASS = 'jwslider',
-	SLIDER_TOPCAP_CLASS = 'jwslidertop',
-	SLIDER_BOTTOMCAP_CLASS = 'jwsliderbottom',
-	SLIDER_RAIL_CLASS = 'jwrail',
-	SLIDER_RAILTOP_CLASS = 'jwrailtop',
-	SLIDER_RAILBACK_CLASS = 'jwrailback',
-	SLIDER_RAILBOTTOM_CLASS = 'jwrailbottom',
-	SLIDER_THUMB_CLASS = 'jwthumb',
-	SLIDER_THUMBTOP_CLASS = 'jwthumbtop',
-	SLIDER_THUMBBACK_CLASS = 'jwthumbback',
-	SLIDER_THUMBBOTTOM_CLASS = 'jwthumbbottom',
-
+		SLIDER_CLASS = 'jwslider',
+		SLIDER_TOPCAP_CLASS = 'jwslidertop',
+		SLIDER_BOTTOMCAP_CLASS = 'jwsliderbottom',
+		SLIDER_RAIL_CLASS = 'jwrail',
+		SLIDER_RAILTOP_CLASS = 'jwrailtop',
+		SLIDER_RAILBACK_CLASS = 'jwrailback',
+		SLIDER_RAILBOTTOM_CLASS = 'jwrailbottom',
+		SLIDER_THUMB_CLASS = 'jwthumb',
+		SLIDER_THUMBTOP_CLASS = 'jwthumbtop',
+		SLIDER_THUMBBACK_CLASS = 'jwthumbback',
+		SLIDER_THUMBBOTTOM_CLASS = 'jwthumbbottom',
 	
-	DOCUMENT = document,
-	UNDEFINED = undefined,
+		DOCUMENT = document,
+		UNDEFINED = undefined,
 	
-	/** Some CSS constants we should use for minimization **/
-	JW_CSS_ABSOLUTE = "absolute",
-	JW_CSS_100PCT = "100%";
+		/** Some CSS constants we should use for minimization **/
+		JW_CSS_ABSOLUTE = "absolute",
+		JW_CSS_100PCT = "100%";
 	
 	html5.playlistslider = function(id, skin, parent, pane) {
 		var _skin = skin,
@@ -4716,7 +5013,7 @@
 		function _levelLabel(level) {
 			if (level.label) return level.label;
 			else if (level.height) return level.height + "p";
-			else if (level.width) return (level.width * 9 / 16) + "p";
+			else if (level.width) return Math.round(level.width * 9 / 16) + "p";
 			else if (level.bitrate) return level.bitrate + "kbps";
 			else return 0;
 		}
@@ -4724,8 +5021,6 @@
 		_this.load = function(item) {
 			if (!_attached) return;
 			_item = item;
-			_canSeek = false;
-			_bufferFull = false;
 			_delayedSeek = 0;
 			_duration = item.duration ? item.duration : -1;
 			_position = 0;
@@ -4734,6 +5029,12 @@
 			_levels = _item.sources;
 			_sendLevels(_levels);
 			
+			_completeLoad();
+		}
+		
+		function _completeLoad() {
+			_canSeek = false;
+			_bufferFull = false;
 			_source = _levels[_currentQuality];
 			
 			_setState(states.BUFFERING); 
@@ -4908,7 +5209,7 @@
 					_currentQuality = quality;
 					_sendEvent(events.JWPLAYER_MEDIA_LEVEL_CHANGED, { currentQuality: quality, levels: _levels} );
 					var currentTime = _videotag.currentTime;
-					_this.load(_item);
+					_completeLoad();
 					_this.seek(currentTime);
 				}
 			}
@@ -5149,6 +5450,7 @@
 				}
 			}
 			if (_controlbar) _controlbar.redraw();
+			_resizeMedia();
 		}
 
 		/**
@@ -5217,7 +5519,8 @@
 		}
 		
 		function _resizeMedia() {
-			utils.stretch(_model.stretching, _videoTag, 
+			utils.stretch(_model.fullscreen ? utils.stretching.UNIFORM : _model.stretching, 
+					_videoTag, 
 					_videoLayer.clientWidth, _videoLayer.clientHeight, 
 					_videoTag.videoWidth, _videoTag.videoHeight);
 		}
