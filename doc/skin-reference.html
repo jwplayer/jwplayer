@@ -144,7 +144,7 @@ Rollover state of the normalscreenButton
 
 <h3>Controlbar timeSlider</h3>
 
-<p>The timeSlider is a special case. It is stretched horizontally to fill the controlbar, and it consists of multiple layers of elements. Here's an overview, with the entire list following below:</p>
+<p>The timeSlider is a special case. It is stretched horizontally to fill the controlbar, and it consists of multiple layers of elements. Here's a diagram, followed by the list of elements:</p>
 
 <p><img src="assets/skinning-timeslider.jpg" alt="A diagram of JW Player controlbar timeslider elements" /></p>
 
@@ -275,9 +275,158 @@ Background element for a dock button in the <em>active</em> state (its overlay i
 
 <h2>Playlist</h2>
 
+<p>The playlist sidebar is displayed below or to the right of the display area. It consists of a list of items and dividers. A scrollbar slider is displayed if the entire playlist does not fit the sidebar:</p>
+
+<p><img src="assets/skinning-playlist.jpg" alt="A diagram of JW Player playlist elements" /></p>
+
+<p>The height of a sidebar item is determined by the height of the <em>item</em> element. It contains an <em>itemImage</em> element and <em>title</em>, <em>description</em> and <em>duration</em> texts. The <em>itemImage</em>  element is placed at the left, with equal top, left and bottom margins. Next, the texts are placed to the right of the image, with 10px horizontal padding.</p>
+
+<p><img src="assets/skinning-item.jpg" alt="A diagram of JW Player playlist item elements" /></p>
+
+<p>When the <a href="playlists.html">Sidebar layout option </a> is set to <em>basic</em>, the itemImage and description are hidden and the sidebar items are narrowed to a fixed height of 30px.</p>
+
+<h3>Playlist Settings</h3>
+
+<dl><dt>activecolor (999999)</dt><dd>
+The color for the item texts when that item is the currently active item.
+</dd><dt>backgroundcolor (000000)</dt><dd>
+The playlist background color. Displayed below any transparante item / slider elements.
+</dd><dt>fontcolor (cccccc)</dt><dd>
+The standard color for the item texts.
+</dd><dt>overcolor (ffffff)</dt><dd>
+The color for the (active or inactive) item texts when the mouse is hovering over that item.
+</dd><dt>fontsize (11)</dt><dd>
+Font size of the item texts.
+</dd><dt>fontweight (normal)</dt><dd>
+Font weight of the item texts (normal, bold).
+</dd></dl>
+
+<dl><dt>titlecolor (cccccc)</dt><dd>
+Override the title fontcolor with this option, for a more visually interesting playlist.
+</dd><dt>titleactivecolor (ffffff)</dt><dd>
+Override the title activecolor with this option, for a more visually interesting playlist.
+</dd><dt>titleovercolor (ffffff)</dt><dd>
+Override the title overcolor with this option, for a more visually interesting playlist.
+</dd><dt>titlesize (13)</dt><dd>
+Override the title fontsize with this option, for a more visually interesting playlist.
+</dd><dt>titleweight (normal)</dt><dd>
+Override the title fontweight with this option, for a more visually interesting playlist.
+</dd></dl>
+
+<h3>Playlist Elements</h3>
+
+<dl><dt>divider</dt><dd>
+Element that's displayed in between (but not above/below) the playlist items.
+</dd><dt>item</dt><dd>
+Background graphic for each playlist item. Stretches to the width of the playlist, minus the slider width (if visible).
+</dd><dt>itemActive</dt><dd>
+Active state for item. Replaces item whenever the corresponding playlist item is the currently playing/loaded playlist item.
+</dd><dt>itemImage</dt><dd>
+Image placeholder. This element is visible when the playlist is set to <strong>extended</strong> and the item does not have an image associated with it. If the item does have an image, this element is used as a mask for the video thumb.
+</dd><dt>itemOver</dt><dd>
+Over state for item. Replaces item (active or inactive)  whenever the user mouses over.
+</dd></dl>
+
+<dl><dt>sliderCapTop</dt><dd>
+Top end cap for the playlist slider. Placed above sliderRail. Set this for playlist padding or edge effects.
+</dd><dt>sliderCapBottom</dt><dd>
+Bottom end cap for the playlist slider. Placed below sliderRail. Set this for playlist padding or edge effects.
+</dd><dt>sliderRail</dt><dd>
+Background of the vertical slider. When the playlist's slider is visible, sliderRail is stretched to the height of the playlist, minus the height of the end caps.
+</dd><dt>sliderRailCapTop</dt><dd>
+Top end cap for the playlist slider rail. Add this to enable round borders, small arrows or other effects.
+</dd><dt>sliderRailCapBottom</dt><dd>
+Bottom end cap for the playlist slider rail. Add this to enable round borders, small arrows or other effects.
+</dd><dt>sliderThumb</dt><dd>
+Draggable thumb for the vertical slider. This element is stretched vertically, proportional to the visible area of the playlist versus its total size.
+</dd><dt>sliderThumbCapTop</dt><dd>
+Top end cap for the playlist slider thumb. Add this to enable round borders, small arrows or other effects.
+</dd><dt>sliderThumbCapBottom</dt><dd>
+Bottom end cap for the playlist slider thumb. Add this to enable round borders, small arrows or other effects.
+</dd></dl>
+
 
 
 <h2>Tooltip</h2>
+
+<p>The tooltip is an element that's displayed when interacting with certain buttons of the controlbar or dock. There are three types of tooltips: basic labels, the HD and CC menus and the Volume slider. The labels and volumeSlider show and show on rollover, the hdMenu and ccMenu menus show and hide on click.</p>
+
+<p>The basic layout of tooltip elements is that of a 9-slide grid, with a stretched background and elements for all edges. An arrow is displayed on top of either the capTop or capBottom:</p>
+
+<p><img src="assets/skinning-tooltip.jpg" alt="A diagram of JW Player tooltip elements" /></p>
+
+<p>In addition to this grid, the volumeSlider, ccMenu and hdMenu each have an additional top and bottom cap, which are displayed on top of the <em>background</em>. Next, the volume has a rail, progress, thumb set of elements (like other sliders) and the hdMenu and ccMenu share <em>menuOption</em> elements:</p>
+
+<p><img src="assets/skinning-menus.jpg" alt="A diagram of JW Player tooltip menu elements" /></p>
+
+<p>Like with other elements, the font of the tooltip texts can be controlled with several settings.</p>
+
+<h3>Tooltip Settings</h3>
+
+<dl><dt>fontcase (normal)</dt><dd>
+Casing of the tooltip texts. Can be normal or upper.
+</dd><dt>fontcolor (ffffff)</dt><dd>
+Color of the tooltip texts.
+</dd><dt>fontsize (12)</dt><dd>
+Font size of the tooltip texts.
+</dd><dt>fontweight (normal)</dt><dd>
+Font weight of the tooltip texts. Can be bold or normal.
+</dd><dt>activecolor (ffffff)</dt><dd>
+Color of the tooltip menu texts when that option is the currently active one.
+</dd><dt>overcolor (ffffff)</dt><dd>
+Color of the tooltip option texts when rolling over that option with the mouse.
+</dd></dl>
+
+<h3>Tooltip Elements</h3>
+
+<dl><dt>arrow</dt><dd>
+Small arrow that points from the tooltip area to the source element. Half of the arrow is displayed on top of the element, half of the arrow is displayed outside of it.
+</dd><dt>background</dt><dd>
+Background element of the tooltip. Is stretched both horizontally and vertically to fit the tooltip contents.
+</dd><dt>capLeft</dt><dd>
+Element that's displayed to the left of the background element. Is stretched vertically, but not horizontally. Used to draw borders.
+</dd><dt>capRight</dt><dd>
+Element that's displayed to the right of the background element. Is stretched vertically, but not horizontally. Used to draw borders.
+</dd><dt>capTop</dt><dd>
+Element that's displayed above the background element. Is stretched horizontally, but not vertically. Used to draw borders.
+</dd><dt>capBottom</dt><dd>
+Element that's displayed below the background element. Is stretched horizontally, but not vertically. Used to draw borders.
+</dd><dt>capTopLeft</dt><dd>
+Element that's displayed to the top left of the background. Is not stretched at all. Used to draw round edges.
+</dd><dt>capTopRight</dt><dd>
+Element that's displayed to the top right of the background. Is not stretched at all. Used to draw round edges.
+</dd><dt>capBottomLeft</dt><dd>
+Element that's displayed to the bottom left of the background. Is not stretched at all. Used to draw round edges.
+</dd><dt>capBottomRight</dt><dd>
+Element that's displayed to the bottom right of the background. Is not stretched at all. Used to draw round edges.
+</dd></dl>
+
+<dl><dt>hdMenuTop</dt><dd>
+Element that's displayed above the quality selection menu. The width of this header is the width of the menu.
+<dt>hdMenuBottom</dt><dd>
+Element that's displayed below the quality selection menu.
+</dd><dt>ccMenuTop</dt><dd>
+Element that's displayed above the captions selection menu. The width of this header is the width of the menu.
+</dd><dt>ccMenuBottom</dt><dd>
+Element that's displayed below the captions selection menu.
+</dd><dt>menuOption</dt><dd>
+Checkbox element for menu options, displayed to the left of the option labels. 
+</dd><dt>menuOptionOver</dt><dd>
+Checkbox element for menu options, displayed when an option is active.
+</dd><dt>menuOptionActive</dt><dd>
+Checkbox element for menu options, displayed when rolling over the option.
+</dd></dl>
+<dl><dt>volumeCapTop</dt><dd>
+Element that's displayed above the rail. Used for drawing borders or emboss effects.
+</dd><dt>volumeCapBottom</dt><dd>
+Element that's displayed below the rail. Used for drawing borders or emboss effects.  
+</dd><dt>volumeRail</dt><dd>
+Background element for the vertical volume slider. The height of this rail is used as the range for the volume.
+</dd><dt>volumeProgress</dt><dd>
+Element that visualizes the current volume percentage. Is masked for the current volume percentage.
+</dd><dt>volumeThumb</dt><dd>
+Draggable thumb that indicates the current volume setting. Is not stretched.
+</dd></dl>
 
 
 
