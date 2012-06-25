@@ -573,7 +573,7 @@ package com.longtailvideo.jwplayer.player {
 		}
 		
 		protected function callJS(functionName:String, args:*):void {
-			if (!_destroyed) {
+			if (!_destroyed && ExternalInterface.available) {
 				ExternalInterface.call(functionName, args);
 			}
 		}

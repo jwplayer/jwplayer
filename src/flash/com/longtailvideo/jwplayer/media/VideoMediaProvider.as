@@ -35,17 +35,18 @@ package com.longtailvideo.jwplayer.media {
 		/** Whether the enitre video has been buffered **/
 		private var _bufferingComplete:Boolean;
 		/** Whether we have checked the bandwidth. **/
-		private var _bandwidthChecked:Boolean;
+		//private var _bandwidthChecked:Boolean;
 		/** Whether to switch on bandwidth detection **/
-		private var _bandwidthSwitch:Boolean = true;
+		//private var _bandwidthSwitch:Boolean = true;
 		/** Bandwidth check interval **/
-		private var _bandwidthTimeout:Number = 2000;
+		//private var _bandwidthTimeout:Number = 2000;
 		/** Whether the quality levels have been sent out **/
 		private var _qualitySent:Boolean = false;
 		
 		/** Constructor; sets up the connection and display. **/
 		public function VideoMediaProvider() {
 			super('video');
+			_currentQuality = 0;
 		}
 		
 		
@@ -77,7 +78,7 @@ package com.longtailvideo.jwplayer.media {
 			var replay:Boolean;
 			_bufferFull = false;
 			_bufferingComplete = false;
-			if (itm.levels.length > 0) {
+/*			if (itm.levels.length > 0) {
 				if (currentQuality < 0) {
 					itm.setLevel(getLevel(itm, config.bandwidth, config.width));
 					_bandwidthChecked = false;
@@ -85,10 +86,11 @@ package com.longtailvideo.jwplayer.media {
 			} else {
 				_bandwidthChecked = true;
 			}
+*/			
 			if (itm.levels.length > 0) {
 				if (!_qualitySent) {
 					_qualitySent = true;
-					sendQualityEvent(MediaEvent.JWPLAYER_MEDIA_LEVELS, itm.levels, _currentQuality);
+					sendQualityEvent(MediaEvent.JWPLAYER_MEDIA_LEVELS, itm.levels, currentQuality);
 				}
 			}
 			
@@ -164,11 +166,11 @@ package com.longtailvideo.jwplayer.media {
 		
 		/** Interval for the position progress **/
 		protected function positionHandler():void {
-			if (!_bandwidthChecked && _stream.bytesLoaded > 0) {
+/*			if (!_bandwidthChecked && _stream.bytesLoaded > 0) {
 				_bandwidthChecked = true;
 				setTimeout(checkBandwidth, _bandwidthTimeout, _stream.bytesLoaded);
 			}
-			
+*/			
 			var pos:Number = Math.round(Math.min(_stream.time, Math.max(item.duration, 0)) * 100) / 100;
 			var timeRemaining:Number = item.duration > 0 ? (item.duration - _stream.time) : _stream.time;
 			var bufferTime:Number;
@@ -217,7 +219,7 @@ package com.longtailvideo.jwplayer.media {
 			}
 		}
 		
-		private function checkBandwidth(lastLoaded:Number):void {
+/*		private function checkBandwidth(lastLoaded:Number):void {
 			var currentLoaded:Number = _stream.bytesLoaded;
 			var bandwidth:Number = Math.ceil((currentLoaded - lastLoaded) / 1024) * 8 / (_bandwidthTimeout / 1000);
 			if (currentLoaded < _stream.bytesTotal) {
@@ -240,7 +242,7 @@ package com.longtailvideo.jwplayer.media {
 			}
 			setTimeout(checkBandwidth, _bandwidthTimeout, currentLoaded);
 		}
-		
+*/		
 		/** Seek to a new position. **/
 		override public function seek(pos:Number):void {
 			seekStream(pos);
@@ -278,6 +280,7 @@ package com.longtailvideo.jwplayer.media {
 		override public function stop():void {
 			if (_stream.bytesLoaded < _stream.bytesTotal) {
 				_stream.close();
+				_currentQuality = 0;
 			} else {
 				_stream.pause();
 				_stream.seek(0);
@@ -308,22 +311,23 @@ package com.longtailvideo.jwplayer.media {
 		override public function set currentQuality(quality:Number):void {
 			if (quality == _currentQuality) return;
 			if (!_item) return;
-			
-			if (quality >= 0) {
+
+			if (quality < 0) quality = 0;
+//			if (quality >= 0) {
 				if (_item.levels.length > quality && _item.currentLevel != quality) {
 					_item.setLevel(quality);
 					_currentQuality = quality;
 					sendQualityEvent(MediaEvent.JWPLAYER_MEDIA_LEVEL_CHANGED, _item.levels, _currentQuality);
 					load(_item);
 				}
-			} else {
+/*			} else {
 				var autoLevel:Number = getLevel(_item, config.bandwidth, config.width);
 				if (autoLevel != _item.currentLevel) {
 					_item.setLevel(autoLevel);
 					load(_item);	
 				}
 			}
-		}
+*/		}
 		
 		override public function get qualityLevels():Array {
 			if (_item) {

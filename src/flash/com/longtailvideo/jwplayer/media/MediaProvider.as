@@ -196,7 +196,13 @@ package com.longtailvideo.jwplayer.media {
 			if (_stretch) {
 				_width = width;
 				_height = height;
+				
 				if (_media) {
+					// Fix some rounding errors by resetting the media container size before stretching
+					if (_media.numChildren > 0) {
+						_media.width = _media.getChildAt(0).width;					
+						_media.height = _media.getChildAt(0).height;					
+					}
 					Stretcher.stretch(_media, width, height, _config.stretching);
 				}
 			}
@@ -400,7 +406,7 @@ package com.longtailvideo.jwplayer.media {
 		protected function qualityLabel(level:Object):String {
 			if (level.label) return level.label;
 			else if (level.height) return level.height + "p";
-			else if (level.width) return (level.width * 9 / 16) + "p";
+			else if (level.width) return Math.round(level.width * 9 / 16) + "p";
 			else if (level.bitrate) return level.bitrate + "kbps";
 			else return "";
 		}

@@ -9,8 +9,10 @@ package com.longtailvideo.jwplayer.model {
 				_color = TypeChecker.stringToColor(color);
 			} else if (color is uint || color is Number) {
 				_color = color;
+			} else if (color is Color) {
+				_color = (color as Color).color;
 			} else {
-				throw(new Error("Color must be a String, Number or uint"));
+				throw(new Error("Color must be a String, Number or uint or another Color"));
 			}
 		}
 		

@@ -210,15 +210,9 @@ package com.longtailvideo.jwplayer.view.components {
 				var rct:Rectangle = new Rectangle(_capLeft.width, _thumb.y, _rail.width - _thumb.width, 0);
 				_thumb.startDrag(true, rct);
 				_dragging = true;
-				RootReference.stage.addEventListener(MouseEvent.MOUSE_OVER, mouseMove);
 				RootReference.stage.addEventListener(MouseEvent.MOUSE_UP, upHandler);
 			}
 		}
-		
-		private function mouseMove(evt:MouseEvent):void {
-			trace(_thumb.x);
-		}
-		
 		
 		/** Handle mouse releases. **/
 		private function upHandler(evt:MouseEvent):void {

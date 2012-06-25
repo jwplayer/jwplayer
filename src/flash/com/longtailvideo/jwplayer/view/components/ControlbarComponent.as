@@ -1,6 +1,3 @@
-// TODO: remove backgroundcolor
-// TODO: remove buttonColor, blankButton
-
 package com.longtailvideo.jwplayer.view.components {
 	import com.longtailvideo.jwplayer.events.ComponentEvent;
 	import com.longtailvideo.jwplayer.events.MediaEvent;
@@ -123,6 +120,9 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _timeSlider:Slider;
 		protected var _volSlider:Slider;
 		protected var _forcing:Boolean = false;
+		protected var _levels:Array;
+		protected var _hdState:Boolean = false;
+		
 
 		protected var _bgColorSheet:Sprite;
 
@@ -143,6 +143,7 @@ package com.longtailvideo.jwplayer.view.components {
 			};
 			setupBackground();
 			setupDefaultButtons();
+			setupOverlays();
 			addEventListeners();
 			updateControlbarState();
 			setTime(0, 0);
@@ -165,6 +166,8 @@ package com.longtailvideo.jwplayer.view.components {
 			player.addEventListener(MediaEvent.JWPLAYER_MEDIA_VOLUME, updateVolumeSlider);
 			player.addEventListener(MediaEvent.JWPLAYER_MEDIA_BUFFER, mediaHandler);
 			player.addEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, mediaHandler);
+			player.addEventListener(MediaEvent.JWPLAYER_MEDIA_LEVELS, levelsHandler);
+			player.addEventListener(MediaEvent.JWPLAYER_MEDIA_LEVEL_CHANGED, levelChanged);
 			player.addEventListener(PlayerEvent.JWPLAYER_LOCKED, lockHandler);
 			player.addEventListener(PlayerEvent.JWPLAYER_UNLOCKED, lockHandler);
 			RootReference.stage.addEventListener(Event.MOUSE_LEAVE, mouseLeftStage);
@@ -342,7 +345,6 @@ package com.longtailvideo.jwplayer.view.components {
 				hideButton('pause');
 			}
 			if (!getConfigParam('forcenextprev') && (player.playlist.length <= 1 || player.config.playlistposition.toLowerCase() != "none")) {
-//				newLayout = newLayout.replace("|prev|next", "");
 				newLayout = newLayout.replace(/\|?(prev|next)/g, "");
 				hideButton('prev');
 				hideButton('next');
@@ -358,6 +360,18 @@ package com.longtailvideo.jwplayer.view.components {
 				hideButton("fullscreen");
 			} else {
 				hideButton("normalscreen");
+			}
+			
+			if (!_levels || _levels.length == 0) {
+				hideButton('hdOon');
+				hideButton('hdOff');
+			} else {
+				if (!_hdState) {
+					hideButton('hdOff');
+				} else {
+					newLayout = newLayout.replace("hdOn", "hdOff");
+					hideButton('hfOn');
+				}
 			}
 			_currentLayout = removeInactive(newLayout);
 		}
@@ -488,6 +502,8 @@ package com.longtailvideo.jwplayer.view.components {
 			addComponentButton('prev', ViewEvent.JWPLAYER_VIEW_PREV);
 			addComponentButton('next', ViewEvent.JWPLAYER_VIEW_NEXT);
 			addComponentButton('stop', ViewEvent.JWPLAYER_VIEW_STOP);
+			addComponentButton('hdOn', null);
+			addComponentButton('hdOff', null);
 			addComponentButton('fullscreen', ViewEvent.JWPLAYER_VIEW_FULLSCREEN, true);
 			addComponentButton('normalscreen', ViewEvent.JWPLAYER_VIEW_FULLSCREEN, false);
 			addComponentButton('unmute', ViewEvent.JWPLAYER_VIEW_MUTE, false);
@@ -498,8 +514,54 @@ package com.longtailvideo.jwplayer.view.components {
 			_timeSlider = getSlider('time');
 			addSlider('volume', ViewEvent.JWPLAYER_VIEW_CLICK, volumeHandler);
 			_volSlider = getSlider('volume');
+			if (_buttons.hdOn) {
+				_buttons.hdOn.addEventListener(MouseEvent.CLICK, hdHandler);
+				if (_buttons.hdOff) _buttons.hdOff.addEventListener(MouseEvent.CLICK, hdHandler);
+				else _buttons.hdOff = _buttons.hdOn;
+				hideButton('hdOn');
+				hideButton('hdOff');
+			}
+		}
+		
+		private var hdOverlay:TooltipMenu;
+		
+		private function setupOverlays():void {
+			hdOverlay = new TooltipMenu('HD', _player.skin, hdOption);
+			hdOverlay.alpha = 0;
+			addChild(hdOverlay);
+		}
+		
+		private function hdOption(level:Number):void {
+			if (_levels && level >=0 && _levels.length > level) {
+				_player.setCurrentQuality(level);
+			}
+			hdOverlay.hide();
 		}
 
+ 		private function hdHandler(evt:Event=null):void {
+			if (!_levels || _levels.length == 1) return;
+			if (_levels.length > 2) {
+				(hdOverlay.alpha == 0 ? hdOverlay.show() : hdOverlay.hide());
+			} else {
+				_hdState = !_hdState;
+				updateControlbarState();
+				redraw();
+			}
+		}
+
+		private function levelsHandler(evt:MediaEvent):void {
+			_levels = evt.levels;
+			hdOverlay.clearOptions();
+			for (var i:Number=0; i < _levels.length; i++) {
+				hdOverlay.addOption(_levels[i].label, i);
+			}
+			levelChanged(evt);
+			redraw();
+		}
+
+		private function levelChanged(evt:MediaEvent):void {
+			hdOverlay.setActive(evt.currentQuality);
+		}
 
 		private function addComponentButton(name:String, event:String, eventData:*=null):void {
 			var button:ComponentButton = new ComponentButton();
@@ -508,7 +570,9 @@ package com.longtailvideo.jwplayer.view.components {
 			button.setOverIcon(getSkinElement(name + "ButtonOver"));
 			button.setBackground(getSkinElement(name + "ButtonBack"));
 			button.clickFunction = function():void {
-				forward(new ViewEvent(event, eventData));
+				if (event) {
+					forward(new ViewEvent(event, eventData));
+				}
 			}
 			if (getSkinElement(name + "Button") || getSkinElement(name + "ButtonOver") || getSkinElement(name + "ButtonBack")) {
 				button.init();
@@ -535,8 +599,6 @@ package com.longtailvideo.jwplayer.view.components {
 			
 			if (fontColor) {
 				textFormat.color = fontColor.color;
-			} else if (_player.config.frontcolor) { 
-				textFormat.color = _player.config.frontcolor.color; 
 			}
 			
 			textFormat.size = fontSize ? fontSize : 10;
@@ -593,32 +655,18 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 
 
-		private function addButtonDisplayObject(icon:DisplayObject, name:String, handler:Function=null):MovieClip {
+		private function addButtonDisplayObject(icon:ComponentButton, name:String, handler:Function=null):MovieClip {
 			var acs:AccessibilityProperties = new AccessibilityProperties();
 			acs.name = name;
-			if (icon is ComponentButton) {
+			if (icon) {
 				icon.name = name;
 				_buttons[name] = icon;
 				icon.accessibilityProperties = acs;
 				return icon as ComponentButton;
-			} else if (icon) {
-				var clipMC:MovieClip = new MovieClip();
-				if (handler != null) {
-					clipMC.addEventListener(MouseEvent.CLICK, handler);
-				}
-				clipMC.name = name;
-				clipMC.accessibilityProperties = acs;
-				clipMC.addChild(icon);
-				_buttons[name] = clipMC;
-				return clipMC;
 			}
 			return null;
 		}
 
-		protected function get buttonColor():Color {
-			return getConfigParam("buttoncolor") ? new Color(String(getConfigParam("buttoncolor"))) : null;
-		}
-		
 		public function addButton(icon:DisplayObject, name:String, handler:Function=null):MovieClip {
 			if (_customButtons.indexOf(name) < 0) {
 				_customButtons.push(name);
@@ -634,11 +682,6 @@ package com.longtailvideo.jwplayer.view.components {
 			if (outBackground) {
 				var outImage:Sprite = new Sprite();
 				var outIcon:DisplayObject = icon;
-				if (buttonColor || _player.config.frontcolor){
-					var outTransform:ColorTransform = new ColorTransform();
-					outTransform.color = buttonColor ? buttonColor.color : _player.config.frontcolor.color;
-					outIcon.transform.colorTransform = outTransform;
-				}
 				var outOffset:Number = Math.round((outBackground.height - outIcon.height) / 2);
 				outBackground.width = outIcon.width + 2 * outOffset;
 				outImage.addChild(outBackground);
@@ -747,6 +790,7 @@ package com.longtailvideo.jwplayer.view.components {
 			if (visible && alpha > 0) {
 				sendShow();
 			}
+			
 			stateHandler();
 			redraw();
 		}
@@ -762,6 +806,13 @@ package com.longtailvideo.jwplayer.view.components {
 			clearDividers();
 			alignTextFields();
 			_layoutManager.resize(_width, _height);
+
+			setChildIndex(hdOverlay, numChildren-1);
+			if (_buttons.hdOn) {
+				hdOverlay.x = Math.round(DisplayObject(_buttons.hdOn).x + DisplayObject(_buttons.hdOn).width / 2);
+				hdOverlay.y = Math.round(DisplayObject(_buttons.hdOn).y);
+			}
+			
 			if (_forcing) {
 				stopFader();
 			}

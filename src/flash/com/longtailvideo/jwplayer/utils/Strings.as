@@ -228,8 +228,8 @@ package com.longtailvideo.jwplayer.utils {
 		/** Removes potentially harmful string headers from a link **/
 		public static function cleanLink(link:String):String {
 			// Can't use a regex variable; matching tests will incorrectly return false
-			while(/(javascript|asfunction|vbscript):/gi.test(link)) {
-				link = link.replace(/(javascript|asfunction|vbscript):/gi, "");
+			while(/(javascript|asfunction|vbscript|feed):/gi.test(link)) {
+				link = link.replace(/(javascript|asfunction|vbscript|feed):/gi, "");
 			}
 			return link;
 		}

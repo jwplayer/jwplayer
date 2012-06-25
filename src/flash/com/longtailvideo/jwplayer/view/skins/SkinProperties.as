@@ -11,10 +11,6 @@ package com.longtailvideo.jwplayer.view.skins {
 		public var author:String = "";
 			
 		public function SkinProperties() {
-			this['backcolor']	= undefined;
-			this['frontcolor']	= undefined;
-			this['screencolor']	= undefined;
-			this['lightcolor']	= undefined;
 		}
 	}
 }
