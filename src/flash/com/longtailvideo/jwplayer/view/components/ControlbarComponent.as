@@ -23,6 +23,7 @@ package com.longtailvideo.jwplayer.view.components {
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
 	import flash.geom.ColorTransform;
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.text.StyleSheet;
 	import flash.text.TextField;
@@ -122,6 +123,7 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _forcing:Boolean = false;
 		protected var _levels:Array;
 		protected var _hdState:Boolean = false;
+		protected var _hdOverlay:TooltipMenu;
 		
 
 		protected var _bgColorSheet:Sprite;
@@ -448,6 +450,8 @@ package com.longtailvideo.jwplayer.view.components {
 			if (elapsedText) elapsedText.text = Strings.digits(position);
 			var durationField:TextField = getTextField('duration');
 			if (durationField) durationField.text = Strings.digits(duration);
+			var timeSlider:TimeSlider = getSlider('time') as TimeSlider;
+			if (timeSlider) timeSlider.duration = duration;
 		}
 
 
@@ -523,25 +527,23 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 		}
 		
-		private var hdOverlay:TooltipMenu;
-		
 		private function setupOverlays():void {
-			hdOverlay = new TooltipMenu('HD', _player.skin, hdOption);
-			hdOverlay.alpha = 0;
-			addChild(hdOverlay);
+			_hdOverlay = new TooltipMenu('HD', _player.skin, hdOption);
+			_hdOverlay.alpha = 0;
+			RootReference.stage.addChild(_hdOverlay);
 		}
 		
 		private function hdOption(level:Number):void {
 			if (_levels && level >=0 && _levels.length > level) {
 				_player.setCurrentQuality(level);
 			}
-			hdOverlay.hide();
+			_hdOverlay.hide();
 		}
 
  		private function hdHandler(evt:Event=null):void {
 			if (!_levels || _levels.length == 1) return;
 			if (_levels.length > 2) {
-				(hdOverlay.alpha == 0 ? hdOverlay.show() : hdOverlay.hide());
+				(_hdOverlay.alpha == 0 ? _hdOverlay.show() : _hdOverlay.hide());
 			} else {
 				_hdState = !_hdState;
 				updateControlbarState();
@@ -551,16 +553,16 @@ package com.longtailvideo.jwplayer.view.components {
 
 		private function levelsHandler(evt:MediaEvent):void {
 			_levels = evt.levels;
-			hdOverlay.clearOptions();
+			_hdOverlay.clearOptions();
 			for (var i:Number=0; i < _levels.length; i++) {
-				hdOverlay.addOption(_levels[i].label, i);
+				_hdOverlay.addOption(_levels[i].label, i);
 			}
 			levelChanged(evt);
 			redraw();
 		}
 
 		private function levelChanged(evt:MediaEvent):void {
-			hdOverlay.setActive(evt.currentQuality);
+			_hdOverlay.setActive(evt.currentQuality);
 		}
 
 		private function addComponentButton(name:String, event:String, eventData:*=null):void {
@@ -583,7 +585,7 @@ package com.longtailvideo.jwplayer.view.components {
 
 		private function addSlider(name:String, event:String, callback:Function, margin:Number=0):void {
 			try {
-				var slider:Slider = new Slider(name, _player.skin);
+				var slider:Slider = (name == "time") ? new TimeSlider(name, _player.skin) : new Slider(name, _player.skin);
 				slider.addEventListener(event, callback);
 				slider.name = name;
 				slider.tabEnabled = false;
@@ -807,10 +809,12 @@ package com.longtailvideo.jwplayer.view.components {
 			alignTextFields();
 			_layoutManager.resize(_width, _height);
 
-			setChildIndex(hdOverlay, numChildren-1);
-			if (_buttons.hdOn) {
-				hdOverlay.x = Math.round(DisplayObject(_buttons.hdOn).x + DisplayObject(_buttons.hdOn).width / 2);
-				hdOverlay.y = Math.round(DisplayObject(_buttons.hdOn).y);
+			var hdOn:DisplayObject = getButton('hdOn');
+			if (hdOn) {
+				RootReference.stage.setChildIndex(_hdOverlay, RootReference.stage.numChildren-1);
+				var hdPosition:Point = hdOn.localToGlobal(new Point(hdOn.width / 2, 0)); 
+				_hdOverlay.x = hdPosition.x;
+				_hdOverlay.y = hdPosition.y;
 			}
 			
 			if (_forcing) {

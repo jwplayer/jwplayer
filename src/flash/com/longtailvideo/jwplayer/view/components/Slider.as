@@ -45,6 +45,9 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _name:String;
 		/** Skin **/
 		protected var _skin:ISkin;
+		/** Last set dimensions **/
+		protected var _lastWidth:Number = 0;
+		protected var _lastHeight:Number = 0;
 		
 		public function Slider(name:String, skin:ISkin) {
 			_name = name;
@@ -73,8 +76,6 @@ package com.longtailvideo.jwplayer.view.components {
 			_clickArea = addElement("clickarea", true);
 			
 			_clickArea.addEventListener(MouseEvent.MOUSE_DOWN, downHandler);
-			_clickArea.addEventListener(MouseEvent.MOUSE_OVER, overHandler);
-			_clickArea.addEventListener(MouseEvent.MOUSE_OUT, outHandler);
 		}
 		
 		
@@ -104,7 +105,7 @@ package com.longtailvideo.jwplayer.view.components {
 				_progress.visible = true;
 			}
 			setThumb(progress);
-			resize(this.width, this.height);
+			resize(_lastWidth, _lastHeight);
 		}
 		
 		/**
@@ -121,10 +122,13 @@ package com.longtailvideo.jwplayer.view.components {
 			if (_buffer) {
 				_buffer.visible = (_currentBuffer > 0);
 			}
-			resize(this.width, this.height);
+			resize(_lastWidth, _lastHeight);
 		}
 		
 		public function resize(width:Number, height:Number):void {
+			if (width * height == 0) return;
+			_lastWidth = width;
+			_lastHeight = height;
 			var scale:Number = this.scaleX;
 			this.scaleX = 1;
 			_width = width * scale - _capLeft.width - _capRight.width;
@@ -224,17 +228,6 @@ package com.longtailvideo.jwplayer.view.components {
 			setThumb(percent * 100);
 		}
 		
-		
-		/** Handle mouseouts. **/
-		private function outHandler(evt:MouseEvent):void {
-			//slider.transform.colorTransform = front;
-		}
-		
-		
-		/** Handle mouseovers. **/
-		private function overHandler(evt:MouseEvent):void {
-			//slider.transform.colorTransform = light;
-		}
 		
 		/** Reset the slider to its original state**/
 		public function reset():void {
