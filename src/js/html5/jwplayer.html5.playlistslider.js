@@ -203,7 +203,7 @@
 		
 		function _moveThumb(evt) {
 			if (_dragging || evt.type == "click") {
-				var railRect = utils.getBoundingClientRect(_rail),
+				var railRect = utils.bounds(_rail),
 					rangeTop = _thumb.clientHeight / 2,
 					rangeBottom = railRect.height - rangeTop,
 					y = evt.clientY - railRect.top,

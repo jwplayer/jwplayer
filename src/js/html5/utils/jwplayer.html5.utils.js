@@ -159,8 +159,6 @@
 		return dimension;
 	}
 
-
-
 	/** Format the elapsed / remaining text. **/
 	utils.timeFormat = function(sec) {
 		if (sec > 0) {
@@ -173,10 +171,10 @@
 	}
 
 	/** Replacement for getBoundingClientRect, which isn't supported in iOS 3.1.2 **/
-	utils.getBoundingClientRect = function(element) {
-		if (typeof element.getBoundingClientRect == "function") {
+	utils.bounds = function(element) {
+		try {
 			return element.getBoundingClientRect();
-		} else {
+		} catch (e) {
 			return { 
 				left: element.offsetLeft + DOCUMENT.body.scrollLeft, 
 				top: element.offsetTop + DOCUMENT.body.scrollTop, 
@@ -186,4 +184,11 @@
 		}
 	}
 	
+	utils.empty = function(element) {
+		if (!element) return;
+		while (element.childElementCount > 0) {
+			element.removeChild(element.children[0]);
+		}
+	}
+
 })(jwplayer.utils);

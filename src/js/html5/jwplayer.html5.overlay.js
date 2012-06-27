@@ -25,14 +25,25 @@
 		JW_CSS_SMOOTH_EASE = "opacity .25s, visibility .25s",
 		
 		OVERLAY_CLASS = '.jwoverlay',
+		CONTENTS_CLASS = 'jwcontents',
 		
 		TOP = "top",
 		BOTTOM = "bottom",
 		RIGHT = "right",
 		LEFT = "left",
+		WHITE = "#ffffff",
 		
 		UNDEFINED = undefined,
-		DOCUMENT = document;
+		DOCUMENT = document,
+		
+		_defaults = {
+			fontcase: UNDEFINED,
+			fontcolor: WHITE,
+			fontsize: 12,
+			fontweight: UNDEFINED,
+			activecolor: WHITE,
+			overcolor: WHITE
+		};
 	
 	/** HTML5 Overlay class **/
 	html5.overlay = function(id, skin) {
@@ -40,15 +51,21 @@
 			_id = id,
 			_container,
 			_contents,
+			_settings = utils.extend({}, _defaults, _skin.getComponentSettings('tooltip'));
 			_borderSizes = {};
-//			_width = width,
-//			_height = height;
 		
 		function _init() {
 			_container = _createElement(OVERLAY_CLASS.replace(".",""));
 			_container.id = _id;
 
-			_contents = _createElement("jwcontents", _container);
+			
+			_contents = _createElement(CONTENTS_CLASS, _container);
+			
+			_css(_internalSelector(CONTENTS_CLASS), {
+				color: _settings.fontcolor,
+				font: _settings.fontweight + " " + (_settings.fontsize) + "px Arial,Helvetica,sans-serif",
+				'text-transform': (_settings.fontcase == "upper") ? "uppercase" : UNDEFINED 
+			});
 			
 			_createBorderElement(TOP, LEFT);
 			_createBorderElement(BOTTOM, LEFT);
@@ -147,8 +164,13 @@
 		};
 		
 		this.setContents = function(contents) {
-			_contents.innerHTML = "";
+			utils.empty(_contents);
 			_contents.appendChild(contents);
+			setTimeout(function() {
+				_css('#'+_id, {
+					'margin-left': _container.clientWidth / -2
+				});
+			}, 0);
 		}
 		
 		this.borderWidth = function() {

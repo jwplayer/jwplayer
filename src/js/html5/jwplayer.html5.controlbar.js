@@ -39,6 +39,7 @@
 		CB_CLASS = '.jwcontrolbar',
 		
 		UNDEFINED = undefined,
+		WINDOW = window,
 		DOCUMENT = document;
 	
 	/** HTML5 Controlbar class **/
@@ -104,6 +105,8 @@
 			_currentQuality,
 			_currentVolume,
 			_volumeOverlay,
+			_timeOverlay,
+			_timeOverlayText,
 			_hdOverlay,
 			_ccOverlay,
 			_audioMode = false,
@@ -158,8 +161,8 @@
 			_controlbar.className = "jwcontrolbar";
 
 			// Slider listeners
-			window.addEventListener('mousemove', _sliderMouseEvent, false);
-			window.addEventListener('mouseup', _sliderMouseEvent, false);
+			WINDOW.addEventListener('mousemove', _sliderMouseEvent, false);
+			WINDOW.addEventListener('mouseup', _sliderMouseEvent, false);
 
 			_skin = _api.skin;
 			
@@ -315,6 +318,11 @@
 				'text-align': 'center',
 				padding: '0 5px'
 			});
+
+			_css(_internalSelector(".jwoverlay"), {
+				bottom: _bgHeight
+			});
+
 			
 			if (_settings.maxwidth > 0) {
 				_css(_internalSelector(), {
@@ -329,7 +337,11 @@
 		}
 
 		function _createSpan() {
-			return DOCUMENT.createElement("span");
+			return _createElement("span");
+		}
+		
+		function _createElement(tagname) {
+			return DOCUMENT.createElement(tagname);
 		}
 		
 		function _buildControlbar() {
@@ -402,9 +414,9 @@
 				return null;
 			}
 			
-			var element = DOCUMENT.createElement("span");
+			var element = _createSpan();
 			element.className = 'jw'+name + ' jwbuttoncontainer';
-			var button = DOCUMENT.createElement("button");
+			var button = _createElement("button");
 			button.addEventListener("click", _buttonClickHandler(name), false);
 			button.innerHTML = "&nbsp;";
 			_appendChild(element, button);
@@ -424,8 +436,7 @@
 				var hdElement = _hdOverlay.element()
 				_appendChild(element, hdElement);
 				_css('#'+hdElement.id, {
-					left: "50%",
-					bottom: _bgHeight
+					left: "50%"
 				});
 			}
 			
@@ -596,6 +607,10 @@
 			_elements[name] = slider;
 
 			if (name == "time") {
+				_timeOverlay = new html5.overlay(_id+"_timetooltip", _skin);
+				_timeOverlayText = _createElement("div");
+				_setTimeOverlay(0);
+				_appendChild(rail, _timeOverlay.element());
 				_styleTimeSlider(slider);
 				_setProgress(0);
 				_setBuffer(0);
@@ -603,7 +618,6 @@
 				_styleVolumeSlider(slider);
 			}
 
-			
 			return slider;
 		}
 		
@@ -653,6 +667,11 @@
 			
 			rail.addEventListener('mousedown', _sliderMouseDown(name), false);
 			
+			if (name == "time") {
+				rail.addEventListener('mousemove', _showTimeTooltip, false);
+				rail.addEventListener('mouseout', _hideTimeTooltip, false);
+			}
+			
 			_elements[name+'Rail'] = rail;
 			
 			return rail;
@@ -682,12 +701,14 @@
 		}
 		
 		function _sliderMouseEvent(evt) {
+			_positionTimeTooltip(evt);
+			
 			if (!_dragging || evt.button != 0) {
 				return;
 			}
 			
 			var rail = _elements[_dragging].getElementsByClassName('jwrail')[0],
-				railRect = utils.getBoundingClientRect(rail),
+				railRect = utils.bounds(rail),
 				pct = (evt.clientX - railRect.left) / railRect.width;
 			
 			if (evt.type == 'mouseup') {
@@ -714,7 +735,31 @@
 			}
 		}
 
-	
+		function _showTimeTooltip(evt) {
+			if (_timeOverlay && _duration) {
+				_timeOverlay.show();
+			}
+		}
+		
+		function _hideTimeTooltip(evt) {
+			if (_timeOverlay) {
+				_timeOverlay.hide();
+			}
+		}
+		
+		function _positionTimeTooltip(evt) {
+			var element = _timeOverlay.element(), 
+				railBox = utils.bounds(element.parentNode),
+				position = Math.min(railBox.width, Math.max(0, evt.pageX - railBox.left)) - WINDOW.pageXOffset;
+			element.style.left = position + "px";
+			_setTimeOverlay(_duration * position / railBox.width);
+		}
+		
+		function _setTimeOverlay(sec) {
+			_timeOverlayText.innerHTML = utils.timeFormat(sec);
+			_timeOverlay.setContents(_timeOverlayText);
+		}
+		
 		function _styleTimeSlider(slider) {
 			if (_elements['timeSliderThumb']) {
 				_css(_internalSelector(".jwtimeSliderThumb"), {

@@ -32,7 +32,7 @@
 			}, skin.getComponentSettings('tooltip')),
 			_container,
 			_options = [];
-
+		
 		function _init() {
 			_container = _createElement(MENU_CLASS);
 			_container.id = _id;
@@ -44,9 +44,6 @@
 
 			if (top) {
 				_container.appendChild(top.image);
-				_css("#"+_id+"_overlay", {
-					'margin-left': (top.width / -2) - _overlay.borderWidth() 
-				});
 			}
 			
 			if (menuOption) {
@@ -56,7 +53,7 @@
 					height: menuOption.height,
 					color: _settings.fontcolor,
 					'padding-left': menuOption.width,
-					font: _settings.fontweight + " 13px Arial,Helvetica,sans-serif",
+					font: _settings.fontweight + " " + _settings.fontsize + "px Arial,Helvetica,sans-serif",
 					'text-transform': (_settings.fontcase == "upper") ? "uppercase" : UNDEFINED 
 				});
 				_css(selector+":hover", {
