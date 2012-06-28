@@ -3,6 +3,8 @@
  *
  * @author pablo
  * @version 6.0
+ * 
+ * TODO: reuse this code for vertical controlbar volume slider
  */
 (function(html5) {
 	var events = jwplayer.events,

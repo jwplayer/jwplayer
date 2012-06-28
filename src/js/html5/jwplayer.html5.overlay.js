@@ -22,7 +22,7 @@
 		//JW_CSS_LEFT = "left",
 		//JW_CSS_RIGHT = "right",
 		JW_CSS_100PCT = "100%",
-		JW_CSS_SMOOTH_EASE = "opacity .25s, visibility .25s",
+		JW_CSS_SMOOTH_EASE = "opacity .15s, visibility .15s",
 		
 		OVERLAY_CLASS = '.jwoverlay',
 		CONTENTS_CLASS = 'jwcontents',
@@ -103,7 +103,7 @@
 				'padding-right': _borderSizes.right
 			});
 			
-
+			this.showing = false;
 		}
 		
 		function _internalSelector(name) {
@@ -193,10 +193,12 @@
 		}
 		
 		this.show = function() {
+			this.showing = true;
 			_css(_internalSelector(), { opacity: 1, visibility: "visible" });
 		}
 		
 		this.hide = function() {
+			this.showing = false;
 			_css(_internalSelector(), { opacity: 0, visibility: JW_CSS_HIDDEN });
 		}
 		

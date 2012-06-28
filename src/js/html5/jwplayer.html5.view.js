@@ -220,6 +220,7 @@
 				}
 			}
 			if (_controlbar) _controlbar.redraw();
+			if (_display) _display.redraw();
 			_resizeMedia();
 		}
 
@@ -238,12 +239,9 @@
 				_model.height = height;
 			}
 
-			if (_display) {
-				_display.redraw();
-			}
-			if (_controlbar) {
-				_controlbar.redraw();
-			}
+			if (_display) _display.redraw();
+			if (_controlbar) _controlbar.redraw();
+
 			var playlistSize = _model.playlistsize,
 				playlistPos = _model.playlistposition
 			

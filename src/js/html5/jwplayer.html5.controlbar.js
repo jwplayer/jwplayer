@@ -34,11 +34,15 @@
 		JW_CSS_LEFT = "left",
 		JW_CSS_RIGHT = "right",
 		JW_CSS_100PCT = "100%",
-		JW_CSS_SMOOTH_EASE = "opacity .25s, background .25s, visibility .25s",
+		JW_CSS_SMOOTH_EASE = "opacity .15s, background .15s, visibility .15s",
 		
 		CB_CLASS = '.jwcontrolbar',
 		
+		FALSE = false,
+		TRUE = true,
+		NULL = null,
 		UNDEFINED = undefined,
+		
 		WINDOW = window,
 		DOCUMENT = document;
 	
@@ -58,9 +62,9 @@
 				fontweight : "bold",
 				// buttoncolor : parseInt("ffffff", 16),
 				// position : html5.view.positions.BOTTOM,
-				// idlehide : false,
-				// hideplaylistcontrols : false,
-				// forcenextprev : false,
+				// idlehide : FALSE,
+				// hideplaylistcontrols : FALSE,
+				// forcenextprev : FALSE,
 				layout : {
 					left: {
 						position: "left",
@@ -109,8 +113,8 @@
 			_timeOverlayText,
 			_hdOverlay,
 			_ccOverlay,
-			_audioMode = false,
-			_dragging = false,
+			_audioMode = FALSE,
+			_dragging = FALSE,
 			_lastSeekTime = 0,
 			
 			_toggles = {
@@ -122,11 +126,11 @@
 			},
 			
 			_toggleStates = {
-				play: false,
-				mute: false,
-				fullscreen: false,
-				hdOn: false,
-				ccOn: false
+				play: FALSE,
+				mute: FALSE,
+				fullscreen: FALSE,
+				hdOn: FALSE,
+				ccOn: FALSE
 			},
 			
 			_buttonMapping = {
@@ -161,8 +165,8 @@
 			_controlbar.className = "jwcontrolbar";
 
 			// Slider listeners
-			WINDOW.addEventListener('mousemove', _sliderMouseEvent, false);
-			WINDOW.addEventListener('mouseup', _sliderMouseEvent, false);
+			WINDOW.addEventListener('mousemove', _sliderMouseEvent, FALSE);
+			WINDOW.addEventListener('mouseup', _sliderMouseEvent, FALSE);
 
 			_skin = _api.skin;
 			
@@ -172,8 +176,10 @@
 			_createStyles();
 			_buildControlbar();
 			_addEventListeners();
-			_volumeHandler();
-			_muteHandler();
+			setTimeout(function() {
+				_volumeHandler();
+				_muteHandler();
+			}, 0);
 		}
 		
 		function _addEventListeners() {
@@ -184,12 +190,12 @@
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_BUFFER, _bufferHandler);
 			_api.jwAddEventListener(events.JWPLAYER_FULLSCREEN, _fullscreenHandler);
 			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_LOADED, _playlistHandler);
-//			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_ITEM, _qualityHandler);
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_LEVELS, _qualityHandler);
+			_api.jwAddEventListener(events.JWPLAYER_MEDIA_LEVEL_CHANGED, _qualityLevelChanged);
 		}
 		
 		function _timeUpdated(evt) {
-			var refreshRequired = false,
+			var refreshRequired = FALSE,
 				timeString;
 			
 			if (_elements.elapsed) {
@@ -218,15 +224,15 @@
 			case states.BUFFERING:
 			case states.PLAYING:
 				_css(_internalSelector('.jwtimeSliderThumb'), { opacity: 1 });
-				_toggleButton("play", true);
+				_toggleButton("play", TRUE);
 				break;
 			case states.PAUSED:
 				if (!_dragging) {
-					_toggleButton("play", false);
+					_toggleButton("play", FALSE);
 				}
 				break;
 			case states.IDLE:
-				_toggleButton("play", false);
+				_toggleButton("play", FALSE);
 				_css(_internalSelector('.jwtimeSliderThumb'), { opacity: 0 });
 				if (_elements["timeRail"]) {
 					_elements["timeRail"].className = "jwrail";
@@ -273,23 +279,27 @@
 		
 		function _qualityHandler(evt) {
 			_levels = evt.levels;
-			_currentQuality = evt.currentQuality;
-			if (_levels && _levels.length > 1) {
+			_qualityLevelChanged(evt);
+			if (_levels && _levels.length > 1 && _hdOverlay) {
 				_css(_internalSelector(".jwhdOn"), { display: UNDEFINED });
-				if (_levels.length == 2) {
-					_toggleButton("hdOn", _currentQuality == 0);
-				}
 				_hdOverlay.clearOptions();
 				for (var i=0; i<_levels.length; i++) {
 					_hdOverlay.addOption(_levels[i].label, i);
 				}
-				if (evt.currentQuality >= 0) {
+				if (_currentQuality >= 0) {
 					_hdOverlay.setActive(evt.currentQuality);
 				}
 			} else {
 				_css(_internalSelector(".jwhdOn"), { display: "none" });
 			}
 			_redraw();
+		}
+		
+		function _qualityLevelChanged(evt) {
+			_currentQuality = evt.currentQuality;
+			if (_levels.length == 2) {
+				_toggleButton("hdOn", _currentQuality == 0);
+			}
 		}
 		
 		// Bit of a hacky way to determine if the playlist is available 
@@ -352,7 +362,7 @@
 				left: _getSkinElement('capLeft').width,
 				right: _getSkinElement('capRight').width,
 				'background-repeat': "repeat-x"
-			}, true);
+			}, TRUE);
 
 			if (bg) _appendChild(_controlbar, bg);
 			if (capLeft) _appendChild(_controlbar, capLeft);
@@ -379,7 +389,7 @@
 			}
 		}
 		
-		function _buildImage(name, style, stretch, nocenter) {
+		function _buildImage(name, style, stretch, nocenter, vertical) {
 			var element = _createSpan();
 			element.className = 'jw'+name;
 			
@@ -395,15 +405,17 @@
 			
 			if (stretch) {
 				newStyle = {
-					background: "url('" + skinElem.src + "') repeat-x " + center
+					background: "url('" + skinElem.src + "') repeat-x " + center,
+					height: vertical ? skinElem.height : UNDEFINED 
 				};
 			} else {
 				newStyle = {
 					background: "url('" + skinElem.src + "') no-repeat" + center,
-					width: skinElem.width
+					width: skinElem.width,
+					height: vertical ? skinElem.height : UNDEFINED 
 				};
 			}
-			
+			element.skin = skinElem;
 			_css(_internalSelector('.jw'+name), utils.extend(newStyle, style));
 			_elements[name] = element;
 			return element;
@@ -411,13 +423,13 @@
 
 		function _buildButton(name) {
 			if (!_getSkinElement(name + "Button").src) {
-				return null;
+				return NULL;
 			}
 			
 			var element = _createSpan();
 			element.className = 'jw'+name + ' jwbuttoncontainer';
 			var button = _createElement("button");
-			button.addEventListener("click", _buttonClickHandler(name), false);
+			button.addEventListener("click", _buttonClickHandler(name), FALSE);
 			button.innerHTML = "&nbsp;";
 			_appendChild(element, button);
 
@@ -431,15 +443,6 @@
 				_buttonStyle(_internalSelector('.jw'+name+'.jwtoggle button'), _getSkinElement(toggle+"Button"), _getSkinElement(toggle+"ButtonOver"));
 			}
 
-			if (name == "hdOn") {
-				_hdOverlay = new html5.menu('hd', _id+"_hd", _skin, _switchLevel);
-				var hdElement = _hdOverlay.element()
-				_appendChild(element, hdElement);
-				_css('#'+hdElement.id, {
-					left: "50%"
-				});
-			}
-			
 			_elements[name] = element;
 			
 			return element;
@@ -483,12 +486,18 @@
 			_api.jwSetMute();
 			_muteHandler({mute:_toggleStates.mute});
 		}
+
+		function _showVolume() {
+			_volumeOverlay.show();
+			if (_hdOverlay) _hdOverlay.hide();
+			if (_ccOverlay) _ccOverlay.hide();
+		}
 		
 		function _volume(pct) {
+			_setVolume(pct);
 			if (pct < 0.1) pct = 0;
 			if (pct > 0.9) pct = 1;
 			_api.jwSetVolume(pct * 100);
-			_setVolume(pct);
 		}
 		
 		function _seek(pct) {
@@ -559,18 +568,17 @@
 			}
 		}
 		
-		var _hdShowing = false;
+		function _showHd() {
+			if (_levels && _levels.length > 2) {
+				_hdOverlay.show();
+				if (_volumeOverlay) _volumeOverlay.hide();
+				if (_ccOverlay) _ccOverlay.hide();
+			}
+		}
 		
 		function _hd() {
-			if (_levels) {
-				if (_levels.length == 2) {
-					_api.jwSetCurrentQuality(_currentQuality ? 0 : 1);
-					_toggleButton("hdOn");
-				} else if (_levels.length > 2) {
-					if (_hdShowing) _hdOverlay.hide();
-					else _hdOverlay.show();
-					_hdShowing = !_hdShowing;
-				}
+			if (_levels && _levels.length == 2) {
+				_api.jwSetCurrentQuality(_currentQuality ? 0 : 1);
 			}
 		}
 		
@@ -578,7 +586,6 @@
 			if (newlevel >= 0 && newlevel < _levels.length) {
 				_api.jwSetCurrentQuality(newlevel);
 				_hdOverlay.hide();
-				_hdShowing = false;
 			}
 		}
 		
@@ -587,24 +594,38 @@
 		}
 		
 		function _buildSlider(name) {
-			var slider = _createSpan();
+			var slider = _createSpan(),
+				prefix = name + "SliderCap",
+				vertical = !!_getSkinElement(prefix+"Bottom").src,
+				left = vertical ? "Top" : "Left",
+				right = vertical ? "Bottom" : "Right",
+				capLeft = _buildImage(prefix + left, NULL, FALSE, FALSE, vertical),
+				capRight = _buildImage(prefix + right, NULL, FALSE, FALSE, vertical),
+				rail = _buildSliderRail(name, vertical, left, right),
+				capLeftSkin = _getSkinElement(prefix+left),
+				capRightSkin = _getSkinElement(prefix+left),
+				railSkin = _getSkinElement(name+"SliderRail");
+			
 			slider.className = "jwslider jw" + name;
-
-			var capLeft = _buildImage(name + "SliderCapLeft");
-			var capRight = _buildImage(name + "SliderCapRight");
-
-			var rail = _buildSliderRail(name);
 			
 			if (capLeft) _appendChild(slider, capLeft);
 			_appendChild(slider, rail);
-			if (capLeft) _appendChild(slider, capRight);
+			if (capRight) {
+				if (vertical) capRight.className += " jwcapBottom";
+				_appendChild(slider, capRight);
+			}
 
 			_css(_internalSelector(".jw" + name + " .jwrail"), {
-				left: _getSkinElement(name+"SliderCapLeft").width,
-				right: _getSkinElement(name+"SliderCapRight").width,
+				left: vertical ? UNDEFINED : capLeftSkin.width,
+				right: vertical ? UNDEFINED : capRightSkin.width,
+				top: vertical ? capLeftSkin.height : UNDEFINED,
+				bottom: vertical ? capRightSkin.height : UNDEFINED,
+				width: vertical ? JW_CSS_100PCT : UNDEFINED,
+				height: vertical ? "auto" : UNDEFINED
 			});
 
 			_elements[name] = slider;
+			slider.vertical = vertical;
 
 			if (name == "time") {
 				_timeOverlay = new html5.overlay(_id+"_timetooltip", _skin);
@@ -615,25 +636,26 @@
 				_setProgress(0);
 				_setBuffer(0);
 			} else if (name == "volume") {
-				_styleVolumeSlider(slider);
+				_styleVolumeSlider(slider, vertical, left, right);
 			}
-
+			
 			return slider;
 		}
 		
-		function _buildSliderRail(name) {
-			var rail = _createSpan();
+		function _buildSliderRail(name, vertical, left, right) {
+			var rail = _createSpan(), 
+				railElements = ['Rail', 'Buffer', 'Progress'],
+				progressRail;
+			
 			rail.className = "jwrail jwsmooth";
-
-			var railElements = ['Rail', 'Buffer', 'Progress'];
 
 			for (var i=0; i<railElements.length; i++) {
 				var prefix = name + "Slider" + railElements[i],
-					element = _buildImage(prefix, null, true, (name=="volume")),
-					capLeft = _buildImage(prefix + "CapLeft"),
-					capRight = _buildImage(prefix + "CapRight"),
-					capLeftSkin = _getSkinElement(prefix + "CapLeft"),
-					capRightSkin = _getSkinElement(prefix + "CapRight");
+					element = _buildImage(prefix, NULL, !vertical, (name=="volume")),
+					capLeft = _buildImage(prefix + "Cap" + left, NULL, FALSE, FALSE, vertical),
+					capRight = _buildImage(prefix + "Cap" + right, NULL, FALSE, FALSE, vertical),
+					capLeftSkin = _getSkinElement(prefix + "Cap" + left),
+					capRightSkin = _getSkinElement(prefix + "Cap" + right);
 				if (element) {
 					var railElement = _createSpan();
 					railElement.className = "jwrailgroup " + railElements[i];
@@ -641,35 +663,45 @@
 					_appendChild(railElement, element);
 					if (capRight) { 
 						_appendChild(railElement, capRight);
-						capRight.className += " jwcapRight";
+						capRight.className += " jwcap" + (vertical ? "Bottom" : "Right");
 					}
 					
 					_css(_internalSelector(".jwrailgroup." + railElements[i]), {
-						'min-width': capLeftSkin.width + capRightSkin.width
+						'min-width': (vertical ? UNDEFINED : capLeftSkin.width + capRightSkin.width)
 					});
+					railElement.capSize = vertical ? capLeftSkin.height + capRightSkin.height : capLeftSkin.width + capRightSkin.width;
 					
 					_css(_internalSelector("." + element.className), {
-						left: capLeftSkin.width,
-						right: capRightSkin.width
+						left: vertical ? UNDEFINED : capLeftSkin.width,
+						right: vertical ? UNDEFINED : capRightSkin.width,
+						top: vertical ? capLeftSkin.height : UNDEFINED,
+						bottom: vertical ? capRightSkin.height : UNDEFINED,
+						height: vertical ? "auto" : UNDEFINED
 					});
 
+					if (i == 2) progressRail = railElement;
+					
 					_elements[prefix] = railElement;
 					_appendChild(rail, railElement);
 				}
 			}
 			
-			var thumb = _buildImage(name + "SliderThumb");
+			var thumb = _buildImage(name + "SliderThumb", NULL, FALSE, FALSE, vertical);
 			if (thumb) {
-				_css(_internalSelector('.'+thumb.className), { opacity: 0 });
+				_css(_internalSelector('.'+thumb.className), {
+					opacity: name == "time" ? 0 : 1,
+					'margin-top': vertical ? thumb.skin.height / -2 : UNDEFINED
+				});
+				
 				thumb.className += " jwthumb";
-				_appendChild(rail, thumb);
+				_appendChild(vertical && progressRail ? progressRail : rail, thumb);
 			}
 			
-			rail.addEventListener('mousedown', _sliderMouseDown(name), false);
+			rail.addEventListener('mousedown', _sliderMouseDown(name), FALSE);
 			
 			if (name == "time") {
-				rail.addEventListener('mousemove', _showTimeTooltip, false);
-				rail.addEventListener('mouseout', _hideTimeTooltip, false);
+				rail.addEventListener('mousemove', _showTimeTooltip, FALSE);
+				rail.addEventListener('mouseout', _hideTimeTooltip, FALSE);
 			}
 			
 			_elements[name+'Rail'] = rail;
@@ -691,7 +723,7 @@
 				
 				if (name == "time") {
 					if (!_idle()) {
-						_api.jwSeekDrag(true);
+						_api.jwSeekDrag(TRUE);
 						_dragging = name;
 					}
 				} else {
@@ -709,17 +741,16 @@
 			
 			var rail = _elements[_dragging].getElementsByClassName('jwrail')[0],
 				railRect = utils.bounds(rail),
-				pct = (evt.clientX - railRect.left) / railRect.width;
+				name = _dragging,
+				pct = _elements[name].vertical ? (railRect.bottom - evt.clientY) / railRect.height : (evt.clientX - railRect.left) / railRect.width;
 			
 			if (evt.type == 'mouseup') {
-				var name = _dragging;
-				
 				if (name == "time") {
-					_api.jwSeekDrag(false);
+					_api.jwSeekDrag(FALSE);
 				}
 
 				_elements[name+'Rail'].className = "jwrail jwsmooth";
-				_dragging = null;
+				_dragging = NULL;
 				_sliderMapping[name](pct);
 			} else {
 				if (_dragging == "time") {
@@ -772,14 +803,19 @@
 		}
 		
 		
-		function _styleVolumeSlider(slider) {
-			var capLeftWidth = _getSkinElement("volumeSliderCapLeft").width,
-				capRightWidth = _getSkinElement("volumeSliderCapRight").width,
-				railWidth = _getSkinElement("volumeSliderRail").width;
-			
+		function _styleVolumeSlider(slider, vertical, left, right) {
+			var prefix = "volumeSlider";
 			_css(_internalSelector(".jwvolume"), {
-				width: (capLeftWidth + railWidth + capRightWidth)
+				width: _getSkinElement(prefix+"Rail").width + (vertical ? 0 : _getSkinElement(prefix+"Cap"+left).width + _getSkinElement(prefix+"Cap"+right).width),
+				height: vertical ? (
+							_getSkinElement(prefix+"Cap"+left).height + 
+							_getSkinElement(prefix+"Rail").height + 
+							_getSkinElement(prefix+"RailCap"+left).height + 
+							_getSkinElement(prefix+"RailCap"+right).height + 
+							_getSkinElement(prefix+"Cap"+right).height
+						) : UNDEFINED
 			});
+			if (vertical) slider.className += " jwvertical";
 		}
 		
 		var _groups = {};
@@ -791,12 +827,35 @@
 			_appendChild(_controlbar, _groups.left);
 			_appendChild(_controlbar, _groups.center);
 			_appendChild(_controlbar, _groups.right);
+			_buildOverlays();
 			
 			_css(_internalSelector(".jwright"), {
 				right: _getSkinElement("capRight").width
 			});
 		}
-		
+
+		function _buildOverlays() {
+			if (_elements.hdOn) {
+				_hdOverlay = new html5.menu('hd', _id+"_hd", _skin, _switchLevel);
+				var hdElement = _hdOverlay.element();
+				_appendChild(_elements.hdOn, hdElement);
+				_elements.hdOn.addEventListener('mousemove', _showHd, FALSE);
+				_elements.hdOn.addEventListener('mouseout', _hdOverlay.hide, FALSE);
+				_css('#'+hdElement.id, {
+					left: "50%"
+				});
+			}
+			if (_elements.mute && _elements.volume && _elements.volume.vertical) {
+				_volumeOverlay = new html5.overlay(_id+"_volumeoverlay", _skin);
+				_volumeOverlay.setContents(_elements.volume);
+				_appendChild(_elements.mute, _volumeOverlay.element());
+				_elements.mute.addEventListener('mousemove', _showVolume, FALSE);
+				_elements.mute.addEventListener('mouseout', _volumeOverlay.hide, FALSE);
+				_css('#'+_volumeOverlay.element().id, {
+					left: "50%"
+				});
+			}
+		}
 		
 		function _buildGroup(pos) {
 			var elem = _createSpan();
@@ -812,7 +871,12 @@
 				for (var i=0; i<group.elements.length; i++) {
 					var element = _buildElement(group.elements[i]);
 					if (element) {
-						_appendChild(container, element);
+						if (group.elements[i].name == "volume" && element.vertical) {
+							_volumeOverlay = new html5.overlay(_id+"_volumeOverlay", _skin);
+							_volumeOverlay.setContents(element);
+						} else {
+							_appendChild(container, element);
+						}
 					}
 				}
 			}
@@ -859,22 +923,38 @@
 			}
 		}
 
-		function _sliderPercent(name, pct, fixedWidth) {
-			var width = 100 * Math.min(Math.max(0, pct), 1) + "%";
+		function _sliderPercent(name, pct) {
+			var vertical = _elements[name].vertical,
+				size = 100 * Math.min(Math.max(0, pct), 1) + "%",
+				progress = _elements[name+'SliderProgress'],
+				thumb = _elements[name+'SliderThumb'],
+				hide = FALSE;
 			
 			// Set style directly on the elements; Using the stylesheets results in some flickering in Chrome.
-			if (_elements[name+'SliderProgress']) {
-				_elements[name+'SliderProgress'].style.width = width;
-				_elements[name+'SliderProgress'].style.opacity = pct > 0 ? 1 : 0;
+			if (progress) {
+				if (vertical) {
+					progress.style.height = size;
+					progress.style.bottom = 0;
+					if (progress.clientHeight <= progress.capSize) hide = TRUE;
+				} else {
+					progress.style.width = size;
+					if (progress.clientWidth <= progress.capSize) hide = TRUE;
+				}
+				progress.style.opacity = ((!hide && pct > 0) || _dragging) ? 1 : 0;
+				
 			}
 			
-			if (_elements[name+'SliderThumb']) {
-				_elements[name+'SliderThumb'].style.left = width;
+			if (thumb) {
+				if (vertical) {
+					thumb.style.top = 0;
+				} else {
+					thumb.style.left = size;
+				}
 			}
 		}
 		
 		function _setVolume (pct) {
-			_sliderPercent('volume', pct, true);	
+			_sliderPercent('volume', pct);	
 		}
 
 		function _setProgress(pct) {
@@ -891,7 +971,7 @@
 					height: 0,
 					src: "",
 					image: UNDEFINED,
-					ready: false
+					ready: FALSE
 				}
 			}
 		}
@@ -957,7 +1037,12 @@
 		right: 0,
 		position: JW_CSS_ABSOLUTE
 	});
-    
+
+    _css(CB_CLASS+' .jwcapBottom', { 
+		bottom: 0,
+    	position: JW_CSS_ABSOLUTE
+	});
+
     _css(CB_CLASS+' .jwtime', {
     	position: JW_CSS_ABSOLUTE,
     	height: JW_CSS_100PCT,
@@ -994,6 +1079,9 @@
 		'text-align': 'center'
 	});
     
+    _css(CB_CLASS + ' .jwvertical *', {
+    	display: JW_CSS_BLOCK,
+    });
 
 	_setTransition(CB_CLASS, JW_CSS_SMOOTH_EASE);
 	_setTransition(CB_CLASS + ' button', JW_CSS_SMOOTH_EASE);

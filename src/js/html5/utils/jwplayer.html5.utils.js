@@ -120,26 +120,34 @@
 		return function() {
 			// Handle the case where an XML document was returned with an incorrect MIME type.
 			if (!utils.exists(xmlhttp.responseXML)) {
-				try {
-					var parsedXML;
-					// Parse XML in FF/Chrome/Safari/Opera
-					if (WINDOW.DOMParser) {
-						parsedXML = (new DOMParser()).parseFromString(xmlhttp.responseText,"text/xml");
-					} else { 
-						// Internet Explorer
-						parsedXML = new ActiveXObject("Microsoft.XMLDOM");
-						parsedXML.async="false";
-						parsedXML.loadXML(xmlhttp.responseText);
-					}
-					if (parsedXML) {
-						xmlhttp = utils.extend({}, xmlhttp, {responseXML:parsedXML});
-					}
-				} catch(e) {
+				var parsedXML = utils.parseXML(xmlhttp.responseText);
+				if (parsedXML) {
+					xmlhttp = utils.extend({}, xmlhttp, {responseXML:parsedXML});
+				} else {
 					if (errorcallback) errorcallback(xmldocpath);
 					return;
 				}
 			}
 			completecallback(xmlhttp);
+		}
+	}
+	
+	/** Takes an XML string and returns an XML object **/
+	utils.parseXML = function(input) {
+		try {
+			var parsedXML;
+			// Parse XML in FF/Chrome/Safari/Opera
+			if (WINDOW.DOMParser) {
+				parsedXML = (new DOMParser()).parseFromString(input,"text/xml");
+			} else { 
+				// Internet Explorer
+				parsedXML = new ActiveXObject("Microsoft.XMLDOM");
+				parsedXML.async="false";
+				parsedXML.loadXML(input);
+			}
+			return parsedXML;
+		} catch(e) {
+			return;
 		}
 	}
 
