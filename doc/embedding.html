@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-<title>Embedding the Player</title>
+<title>Embedding JW Player</title>
 <style>
     body { padding: 50px 100px; width: 700px; font: 13px/20px Arial; background: #FFF; }
     a, h1, h2 { color: #369; }
@@ -15,7 +15,7 @@
 </style>
 </head><body>
 
-<h1>Embedding the Player</h1>
+<h1>Embedding JW Player</h1>
 
 <p>This guide explains how to embed JW Player into your site, load the media file(s) you want to play and tweak the player's layout and playback behavior.</p>
 
@@ -147,16 +147,6 @@ jwplayer("myElement").setup({
 <dd>Config block for loading ads using <a href="#">self-hosted assets</a>.</dd>
 -->
 </dl>
-
-
-
-<h2>Player Removal</h2>
-
-<p>In addition to setting up a player, the JW Player embed script contains a function to unload a player. It's very simple:</p>
-
-<pre>jwplayer("container").remove();</pre>
-
-<p>This formal <em>remove()</em> function will make sure the player stops its streams, the DOM is re-set to its original state and all event listeners are cleaned up.</p>
 
 
 
