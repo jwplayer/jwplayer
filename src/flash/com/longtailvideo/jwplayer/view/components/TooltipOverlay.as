@@ -19,8 +19,8 @@ package com.longtailvideo.jwplayer.view.components
 		// Skin
 		protected var skin:ISkin;
 		// Dimensions of tooltip contents
-		protected var contentWidth:Number = -1;
-		protected var contentHeight:Number = -1;
+		protected var contentWidth:Number = 0;
+		protected var contentHeight:Number = 0;
 		protected var fade:Animations;
 		protected var _text:TextField;
 		

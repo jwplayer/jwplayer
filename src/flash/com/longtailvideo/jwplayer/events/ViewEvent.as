@@ -85,6 +85,15 @@ package com.longtailvideo.jwplayer.events {
 		public static var JWPLAYER_VIEW_ITEM:String = "jwplayerViewItem";
 		
 		/**
+		 * The ViewEvent.JWPLAYER_VIEW_HD constant defines the value of the
+		 * <code>type</code> property of the event object
+		 * for a <code>jwplayerViewHD</code> event.
+		 *
+		 * @eventType jwplayerViewHD
+		 */
+		public static var JWPLAYER_VIEW_HD:String = "jwplayerViewHD";
+
+		/**
 		 * The ViewEvent.JWPLAYER_VIEW_VOLUME constant defines the value of the
 		 * <code>type</code> property of the event object
 		 * for a <code>jwplayerViewVolume</code> event.
@@ -92,7 +101,7 @@ package com.longtailvideo.jwplayer.events {
 		 * @eventType jwplayerViewVolume
 		 */
 		public static var JWPLAYER_VIEW_VOLUME:String = "jwplayerViewVolume";
-		
+
 		/**
 		 * The ViewEvent.JWPLAYER_VIEW_LOAD constant defines the value of the
 		 * <code>type</code> property of the event object

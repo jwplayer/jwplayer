@@ -22,6 +22,7 @@ package com.longtailvideo.jwplayer.view.components {
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
+	import flash.events.TimerEvent;
 	import flash.geom.ColorTransform;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
@@ -30,6 +31,7 @@ package com.longtailvideo.jwplayer.view.components {
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	import flash.ui.Mouse;
+	import flash.utils.Timer;
 	import flash.utils.clearTimeout;
 	import flash.utils.setTimeout;
 
@@ -77,6 +79,12 @@ package com.longtailvideo.jwplayer.view.components {
 	 */
 	[Event(name="jwPlayerViewMute", type="com.longtailvideo.jwplayer.events.ViewEvent")]
 	/**
+	 * Sent when the user clicks the "mute" or "unmute" controlbar button
+	 *
+	 * @eventType com.longtailvideo.jwplayer.events.ViewEvent.JWPLAYER_VIEW_HD
+	 */
+	[Event(name="jwPlayerViewHD", type="com.longtailvideo.jwplayer.events.ViewEvent")]
+	/**
 	 * Sent when the user clicks the "fullscreen" or "end fullscreen" button
 	 *
 	 * @eventType com.longtailvideo.jwplayer.events.ViewEvent.JWPLAYER_VIEW_FULLSCREEN
@@ -113,7 +121,7 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _removedButtons:Array = [];
 		protected var _dividers:Array;
 		protected var _dividerElements:Object;
-		protected var _defaultLayout:String = "[play|stop|prev|next|elapsed][time][duration|blank|hdOn|ccOn|fullscreen|mute volume]";
+		protected var _defaultLayout:String = "[play|stop|prev|next|elapsed][time][duration|blank|hdOn|ccOn|mute volume|fullscreen]";
 		protected var _currentLayout:String;
 		protected var _layoutManager:ControlbarLayoutManager;
 		protected var _width:Number;
@@ -121,9 +129,13 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _timeSlider:Slider;
 		protected var _volSlider:Slider;
 		protected var _forcing:Boolean = false;
-		protected var _levels:Array;
 		protected var _hdState:Boolean = false;
 		protected var _hdOverlay:TooltipMenu;
+		protected var _volumeOverlay:TooltipOverlay;
+		protected var _levels:Array;
+		protected var _currentQuality:Number = 0;
+		protected var _hdOverlayFade:Timer;
+		protected var _volumeOverlayFade:Timer;
 		
 
 		protected var _bgColorSheet:Sprite;
@@ -207,6 +219,10 @@ package com.longtailvideo.jwplayer.view.components {
 			return getConfigParam('maxwidth') ? Number(getConfigParam('maxwidth')) : 0;			
 		}
 		
+		private function get volumeVertical():Boolean {
+			return (String(getConfigParam('volumeorientation')).toLowerCase() != "horizontal");
+		}
+		
 		private function startFader():void {
 			if (fadeOnTimeout && !hidden) {
 				if (!isNaN(_fadingOut)) {
@@ -243,6 +259,7 @@ package com.longtailvideo.jwplayer.view.components {
 				if (alpha > 0) {
 					sendHide();
 					animations.fade(0, 0.5);
+					hideOverlays();
 				}
 				if (_fullscreen) {
 					Mouse.hide();
@@ -256,6 +273,7 @@ package com.longtailvideo.jwplayer.view.components {
 				if (_player.state != PlayerState.IDLE) {
 					if (evt) { sendHide(); }
 					animations.fade(0);
+					hideOverlays();
 				}
 			}
 		}
@@ -423,16 +441,16 @@ package com.longtailvideo.jwplayer.view.components {
 		private function updateVolumeSlider(evt:MediaEvent=null):void {
 			var volume:Slider = _volSlider;
 			if (volume) {
-				var volumeWidth:Number = getSkinElement("volumeSliderRail").width + volume.capsWidth;
-
 				if (!_player.config.mute) {
 					volume.setBuffer(100);
 					volume.setProgress(_player.config.volume);
 					volume.thumbVisible = true;
-					volume.resize(volumeWidth, volume.height);
 				} else {
 					volume.reset();
 					volume.thumbVisible = false;
+				}
+				if (!volumeVertical) {
+					var volumeWidth:Number = getSkinElement("volumeSliderRail").width + volume.capsWidth;
 					volume.resize(volumeWidth, volume.height);
 				}
 			}
@@ -519,18 +537,45 @@ package com.longtailvideo.jwplayer.view.components {
 			addSlider('volume', ViewEvent.JWPLAYER_VIEW_CLICK, volumeHandler);
 			_volSlider = getSlider('volume');
 			if (_buttons.hdOn) {
-				_buttons.hdOn.addEventListener(MouseEvent.CLICK, hdHandler);
-				if (_buttons.hdOff) _buttons.hdOff.addEventListener(MouseEvent.CLICK, hdHandler);
+				_buttons.hdOn.addEventListener(MouseEvent.MOUSE_OVER, showHdOverlay);
+				_buttons.hdOn.addEventListener(MouseEvent.CLICK, hdHandler)
+					
+				if (_buttons.hdOff) {
+					_buttons.hdOff.addEventListener(MouseEvent.MOUSE_OVER, showHdOverlay);
+					_buttons.hdOff.addEventListener(MouseEvent.CLICK, hdHandler);
+				}
 				else _buttons.hdOff = _buttons.hdOn;
 				hideButton('hdOn');
 				hideButton('hdOff');
+			}
+			if (_buttons.mute && _volSlider && volumeVertical) {
+				_buttons.mute.addEventListener(MouseEvent.MOUSE_OVER, showVolumeOverlay);
+				if (_buttons.unmute) {
+					_buttons.unmute.addEventListener(MouseEvent.MOUSE_OVER, showVolumeOverlay);
+				}
 			}
 		}
 		
 		private function setupOverlays():void {
 			_hdOverlay = new TooltipMenu('HD', _player.skin, hdOption);
-			_hdOverlay.alpha = 0;
-			RootReference.stage.addChild(_hdOverlay);
+			createOverlay(_hdOverlay, _buttons.hdOn, _hdOverlayFade);
+
+			if (_volSlider) {
+				_volumeOverlay = new TooltipOverlay(_player.skin);
+				_volumeOverlay.addChild(_volSlider);
+				createOverlay(_volumeOverlay, _buttons.mute, _volumeOverlayFade);
+			}
+		}
+		
+		private function createOverlay(overlay:TooltipOverlay, button:DisplayObject, fadeTimer:Timer):void {
+			if (button && overlay) {
+				overlay.alpha = 0;
+				overlay.addEventListener(MouseEvent.MOUSE_MOVE, function(evt:Event):void { fadeTimer.reset(); });
+				overlay.addEventListener(MouseEvent.MOUSE_OUT, function(evt:Event):void { fadeTimer.start(); });
+				RootReference.stage.addChild(overlay);
+				fadeTimer = new Timer(500, 1);
+				fadeTimer.addEventListener(TimerEvent.TIMER_COMPLETE, function(evt:Event):void { overlay.hide(); });
+			}
 		}
 		
 		private function hdOption(level:Number):void {
@@ -540,29 +585,44 @@ package com.longtailvideo.jwplayer.view.components {
 			_hdOverlay.hide();
 		}
 
+		private function showHdOverlay(evt:MouseEvent):void {
+			if (_hdOverlay && _levels && _levels.length > 2) _hdOverlay.show();
+			hideVolumeOverlay();
+		}
+		
+		private function hideHdOverlay(evt:MouseEvent=null):void {
+			if (_hdOverlay && !evt) {
+				_hdOverlay.hide();
+			}
+		}
+
  		private function hdHandler(evt:Event=null):void {
-			if (!_levels || _levels.length == 1) return;
-			if (_levels.length > 2) {
-				(_hdOverlay.alpha == 0 ? _hdOverlay.show() : _hdOverlay.hide());
-			} else {
-				_hdState = !_hdState;
-				updateControlbarState();
-				redraw();
+			if (_levels && _levels.length == 2) {
+				_player.setCurrentQuality(_currentQuality == 1 ? 0 : 1);
 			}
 		}
 
 		private function levelsHandler(evt:MediaEvent):void {
 			_levels = evt.levels;
-			_hdOverlay.clearOptions();
-			for (var i:Number=0; i < _levels.length; i++) {
-				_hdOverlay.addOption(_levels[i].label, i);
+			if (_levels.length > 1) {
+				_hdOverlay.clearOptions();
+				for (var i:Number=0; i < _levels.length; i++) {
+					_hdOverlay.addOption(_levels[i].label, i);
+				}
 			}
 			levelChanged(evt);
 			redraw();
 		}
 
 		private function levelChanged(evt:MediaEvent):void {
-			_hdOverlay.setActive(evt.currentQuality);
+			_currentQuality = evt.currentQuality;
+			if (_levels.length == 2) {
+				_hdState = (_currentQuality == 1);
+				updateControlbarState();
+				redraw();
+			} else if (_levels.length > 2) {
+				_hdOverlay.setActive(evt.currentQuality);
+			}
 		}
 
 		private function addComponentButton(name:String, event:String, eventData:*=null):void {
@@ -585,11 +645,14 @@ package com.longtailvideo.jwplayer.view.components {
 
 		private function addSlider(name:String, event:String, callback:Function, margin:Number=0):void {
 			try {
-				var slider:Slider = (name == "time") ? new TimeSlider(name, _player.skin) : new Slider(name, _player.skin);
+				var slider:Slider = (name == "time") ? new TimeSlider(name, _player.skin) : new Slider(name, _player.skin, volumeVertical);
 				slider.addEventListener(event, callback);
 				slider.name = name;
 				slider.tabEnabled = false;
 				_buttons[name] = slider;
+				if (volumeVertical) {
+					_defaultLayout = removeButtonFromLayout("volume", _defaultLayout);
+				}
 			} catch (e:Error) {
 				Logger.log("Could not create " + name + "slider");
 			}
@@ -633,6 +696,18 @@ package com.longtailvideo.jwplayer.view.components {
 			dispatchEvent(evt);
 		}
 
+		private function showVolumeOverlay(evt:MouseEvent):void {
+			if (_volumeOverlay) _volumeOverlay.show();
+			hideHdOverlay();
+		}
+
+		private function hideVolumeOverlay(evt:MouseEvent=null):void {
+			if (_volumeOverlay && !evt) {
+				_volumeOverlay.hide();
+/*				if (evt) _volumeOverlayFade.start();
+				else _volumeOverlay.hide();
+*/			}
+		}
 
 		private function volumeHandler(evt:ViewEvent):void {
 			var volume:Number = Math.round(evt.data * 100);
@@ -809,13 +884,8 @@ package com.longtailvideo.jwplayer.view.components {
 			alignTextFields();
 			_layoutManager.resize(_width, _height);
 
-			var hdOn:DisplayObject = getButton('hdOn');
-			if (hdOn) {
-				RootReference.stage.setChildIndex(_hdOverlay, RootReference.stage.numChildren-1);
-				var hdPosition:Point = hdOn.localToGlobal(new Point(hdOn.width / 2, 0)); 
-				_hdOverlay.x = hdPosition.x;
-				_hdOverlay.y = hdPosition.y;
-			}
+			positionOverlay(_hdOverlay, getButton('hdOn') || getButton('hdOff'));
+			positionOverlay(_volumeOverlay, getButton('mute') || getButton('unmute'));
 			
 			if (_forcing) {
 				stopFader();
@@ -823,6 +893,21 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 
 
+		private function positionOverlay(overlay:TooltipOverlay, button:DisplayObject):void {
+			if (button && overlay) {
+				RootReference.stage.setChildIndex(overlay, RootReference.stage.numChildren-1);
+				var buttonPosition:Point = button.localToGlobal(new Point(button.width / 2, 0)); 
+				overlay.x = buttonPosition.x;
+				overlay.y = buttonPosition.y;
+			}
+			
+		}
+		
+		private function hideOverlays():void {
+			hideVolumeOverlay();
+			hideHdOverlay();
+		}
+		
 		private function clearDividers():void {
 			for each (var dividerInfo:Object in _dividerElements) {
 				dividerInfo.index = 0;
