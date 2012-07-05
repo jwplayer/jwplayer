@@ -212,7 +212,8 @@
 		
 		function _setVisibility(selector, state) {
 			_css(_internalSelector(selector), {
-				opacity: state ? 1 : 0
+				opacity: state ? 1 : 0,
+				visibility: state ? "visible" : "hidden"
 			});
 		}
 

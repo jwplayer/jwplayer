@@ -372,9 +372,17 @@
 
 		function _showDisplay() {
 			if (_display && !_audioMode) _display.show();
+			if (_isMobile && !_forcedControls) {
+				_controlsLayer.style.display = "block";
+			}
 		}
 		function _hideDisplay() {
-			if (_display) _display.hide();
+			if (_display) {
+				if (_isMobile && !_forcedControls) {
+					_controlsLayer.style.display = "none";
+				}
+				_display.hide();
+			}
 		}
 
 		function _hideControls() {
@@ -423,7 +431,9 @@
 					_display.hidePreview(true);
 					if (_isMobile) {
 						if (_isIPad && !_forcedControls) _videoTag.controls = true;
-						else _hideDisplay();
+						else { 
+							_hideDisplay();
+						}
 					}
 				}
 				_startFade();

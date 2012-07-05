@@ -4,10 +4,8 @@ package com.longtailvideo.jwplayer.view.components
 	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
 	
 	import flash.display.*;
+	import flash.text.*;
 	import flash.external.ExternalInterface;
-	import flash.text.TextField;
-	import flash.text.TextFieldAutoSize;
-	import flash.text.TextFormat;
 	
 	public class TooltipOverlay extends Sprite {
 		// Border skin elements
@@ -35,7 +33,7 @@ package com.longtailvideo.jwplayer.view.components
 			fade = new Animations(this);
 			_text = new TextField();
 			_text.autoSize = TextFieldAutoSize.CENTER;
-			_text.defaultTextFormat = new TextFormat("_sans", 12, 0xffffff);
+			_text.defaultTextFormat = new TextFormat("_sans", 12, 0xffffff, null, null, null, null, null, TextFormatAlign.CENTER, 5, 5);
 			_text.visible = false;
 			super.addChild(_text);
 		}
@@ -128,13 +126,19 @@ package com.longtailvideo.jwplayer.view.components
 			if (s) {
 				_text.text = s;
 				_text.x = _text.y = 0;
-				_text.width = _text.textWidth;
+				_text.width = _text.textWidth + 10;
 				_text.height = _text.textHeight;
 				positionChild(_text);
 			}
 		}
 		
+		public function offsetX(offset:Number):void {
+			super.x = super.x + offset;
+			arrow.x -= offset;
+		}
+		
 		public override function set x(value:Number):void {
+			arrow.x = Math.ceil((contentWidth + borders.left.width + borders.right.width - arrow.width) / 2);
 			super.x = Math.ceil(value - arrow.x - (arrow.width / 2));
 		}
 

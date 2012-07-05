@@ -189,7 +189,7 @@
 			return _this;
 		};
 		_this.playlistItem = function(item) {
-			_callInternal("jwPlaylistItem", item);
+			_callInternal("jwPlaylistItem", parseInt(item));
 			return _this;
 		};
 		_this.playlistPrev = function() {

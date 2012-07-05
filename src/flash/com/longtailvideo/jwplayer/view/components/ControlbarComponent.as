@@ -130,12 +130,11 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _volSlider:Slider;
 		protected var _forcing:Boolean = false;
 		protected var _hdState:Boolean = false;
-		protected var _hdOverlay:TooltipMenu;
-		protected var _volumeOverlay:TooltipOverlay;
 		protected var _levels:Array;
 		protected var _currentQuality:Number = 0;
-		protected var _hdOverlayFade:Timer;
-		protected var _volumeOverlayFade:Timer;
+		protected var _hdOverlay:TooltipMenu;
+		protected var _volumeOverlay:TooltipOverlay;
+		protected var _fullscreenOverlay:TooltipOverlay;
 		
 
 		protected var _bgColorSheet:Sprite;
@@ -554,26 +553,36 @@ package com.longtailvideo.jwplayer.view.components {
 					_buttons.unmute.addEventListener(MouseEvent.MOUSE_OVER, showVolumeOverlay);
 				}
 			}
+			if (_buttons.fullscreen) {
+				_buttons.fullscreen.addEventListener(MouseEvent.MOUSE_OVER, showFullscreenOverlay);
+			}
 		}
 		
 		private function setupOverlays():void {
 			_hdOverlay = new TooltipMenu('HD', _player.skin, hdOption);
-			createOverlay(_hdOverlay, _buttons.hdOn, _hdOverlayFade);
+			_hdOverlay.name = "hdOverlay";
+			createOverlay(_hdOverlay, _buttons.hdOn);
 
 			if (_volSlider) {
 				_volumeOverlay = new TooltipOverlay(_player.skin);
+				_volumeOverlay.name = "volumeOverlay";
 				_volumeOverlay.addChild(_volSlider);
-				createOverlay(_volumeOverlay, _buttons.mute, _volumeOverlayFade);
+				createOverlay(_volumeOverlay, _buttons.mute);
 			}
+			
+			_fullscreenOverlay = new TooltipOverlay(_player.skin);
+			_fullscreenOverlay.text = "Fullscreen";
+			_fullscreenOverlay.name = "fullscreenOverlay";
+			createOverlay(_fullscreenOverlay, _buttons.fullscreen);
 		}
 		
-		private function createOverlay(overlay:TooltipOverlay, button:DisplayObject, fadeTimer:Timer):void {
+		private function createOverlay(overlay:TooltipOverlay, button:DisplayObject):void {
 			if (button && overlay) {
+				var fadeTimer:Timer = new Timer(500, 1);
 				overlay.alpha = 0;
 				overlay.addEventListener(MouseEvent.MOUSE_MOVE, function(evt:Event):void { fadeTimer.reset(); });
 				overlay.addEventListener(MouseEvent.MOUSE_OUT, function(evt:Event):void { fadeTimer.start(); });
 				RootReference.stage.addChild(overlay);
-				fadeTimer = new Timer(500, 1);
 				fadeTimer.addEventListener(TimerEvent.TIMER_COMPLETE, function(evt:Event):void { overlay.hide(); });
 			}
 		}
@@ -588,6 +597,7 @@ package com.longtailvideo.jwplayer.view.components {
 		private function showHdOverlay(evt:MouseEvent):void {
 			if (_hdOverlay && _levels && _levels.length > 2) _hdOverlay.show();
 			hideVolumeOverlay();
+			hideFullscreenOverlay();
 		}
 		
 		private function hideHdOverlay(evt:MouseEvent=null):void {
@@ -696,17 +706,28 @@ package com.longtailvideo.jwplayer.view.components {
 			dispatchEvent(evt);
 		}
 
+		private function showFullscreenOverlay(evt:MouseEvent):void {
+			if (_fullscreenOverlay) _fullscreenOverlay.show();
+			hideHdOverlay();
+			hideVolumeOverlay();
+		}
+		
+		private function hideFullscreenOverlay(evt:MouseEvent=null):void {
+			if (_fullscreenOverlay && !evt) {
+				_fullscreenOverlay.hide();
+			}
+		}
+
 		private function showVolumeOverlay(evt:MouseEvent):void {
 			if (_volumeOverlay) _volumeOverlay.show();
 			hideHdOverlay();
+			hideFullscreenOverlay();
 		}
-
+		
 		private function hideVolumeOverlay(evt:MouseEvent=null):void {
 			if (_volumeOverlay && !evt) {
 				_volumeOverlay.hide();
-/*				if (evt) _volumeOverlayFade.start();
-				else _volumeOverlay.hide();
-*/			}
+			}
 		}
 
 		private function volumeHandler(evt:ViewEvent):void {
@@ -886,6 +907,7 @@ package com.longtailvideo.jwplayer.view.components {
 
 			positionOverlay(_hdOverlay, getButton('hdOn') || getButton('hdOff'));
 			positionOverlay(_volumeOverlay, getButton('mute') || getButton('unmute'));
+			positionOverlay(_fullscreenOverlay, getButton('fullscreen') || getButton('normalscreen'));
 			
 			if (_forcing) {
 				stopFader();
@@ -899,6 +921,16 @@ package com.longtailvideo.jwplayer.view.components {
 				var buttonPosition:Point = button.localToGlobal(new Point(button.width / 2, 0)); 
 				overlay.x = buttonPosition.x;
 				overlay.y = buttonPosition.y;
+				var overlayBounds:Rectangle = overlay.getBounds(RootReference.root);
+				var cbBounds:Rectangle = this.getBounds(RootReference.root);
+
+				if (overlayBounds.right > cbBounds.right) {
+					overlay.offsetX(cbBounds.right - overlayBounds.right);
+				} else if (overlayBounds.left < cbBounds.left) {
+					overlay.offsetX(cbBounds.left - overlayBounds.left);
+				}
+				
+
 			}
 			
 		}
@@ -906,6 +938,7 @@ package com.longtailvideo.jwplayer.view.components {
 		private function hideOverlays():void {
 			hideVolumeOverlay();
 			hideHdOverlay();
+			hideFullscreenOverlay();
 		}
 		
 		private function clearDividers():void {

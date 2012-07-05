@@ -51,6 +51,8 @@
 			_id = id,
 			_container,
 			_contents,
+			_offset = 0,
+			_arrow,
 			_settings = utils.extend({}, _defaults, _skin.getComponentSettings('tooltip'));
 			_borderSizes = {};
 		
@@ -84,14 +86,13 @@
 				bottom: _borderSizes.bottom
 			});
 			
-			var arrow = _createSkinElement("arrow", "jwarrow")[1];
+			_arrow = _createSkinElement("arrow", "jwarrow")[1];
 			_css(_internalSelector("jwarrow"), {
 				position: JW_CSS_ABSOLUTE,
-				bottom: -1 * arrow.height,
-				width: arrow.width,
-				height: arrow.height,
-				left: "50%",
-				'margin-left': arrow.width / -2
+				bottom: -1 * _arrow.height,
+				width: _arrow.width,
+				height: _arrow.height,
+				left: "50%"
 			});
 
 			_css(_internalSelector(), {
@@ -166,11 +167,21 @@
 		this.setContents = function(contents) {
 			utils.empty(_contents);
 			_contents.appendChild(contents);
-			setTimeout(function() {
-				_css('#'+_id, {
-					'margin-left': _container.clientWidth / -2
-				});
-			}, 0);
+			setTimeout(_position, 0);
+		}
+		
+		this.offsetX = function(offset) {
+			_offset = offset;
+			_position();
+		}
+		
+		function _position() {
+			_css(_internalSelector(), {
+				'margin-left': _offset - _container.clientWidth / 2
+			});
+			_css(_internalSelector("jwarrow"), {
+				'margin-left': (_arrow.width / -2) - _offset
+			});
 		}
 		
 		this.borderWidth = function() {

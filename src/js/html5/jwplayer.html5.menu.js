@@ -116,6 +116,7 @@
 
 		this.show = _overlay.show;
 		this.hide = _overlay.hide;
+		this.offsetX = _overlay.offsetX;
 		
 		_init();
 	}

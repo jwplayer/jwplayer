@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2309';
+	jwplayer.html5.version = '6.0.2311';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -749,10 +749,7 @@
 	
 	
 })(jwplayer.html5.parsers);
-// TODO: remove backgroundcolor
-// TODO: remove buttonColor, blankButton
-
-
+// TODO: blankButton
 /**
  * JW Player HTML5 Controlbar component
  * 
@@ -803,7 +800,6 @@
 			_skin,
 			_dividerElement = _layoutElement("divider", CB_DIVIDER),
 			_defaults = {
-				// backgroundcolor : "",
 				margin : 10,
 				maxwidth: 0,
 				font : "Arial,sans-serif",
@@ -811,11 +807,6 @@
 				fontcolor : parseInt("000000", 16),
 				fontstyle : "normal",
 				fontweight : "bold",
-				// buttoncolor : parseInt("ffffff", 16),
-				// position : html5.view.positions.BOTTOM,
-				// idlehide : FALSE,
-				// hideplaylistcontrols : FALSE,
-				// forcenextprev : FALSE,
 				layout : {
 					left: {
 						position: "left",
@@ -864,6 +855,7 @@
 			_timeOverlayText,
 			_hdOverlay,
 			_ccOverlay,
+			_fullscreenOverlay,
 			_audioMode = FALSE,
 			_dragging = FALSE,
 			_lastSeekTime = 0,
@@ -898,6 +890,8 @@
 				time: _seek,
 				volume: _volume
 			};
+		
+			_overlays = {};
 
 		function _layoutElement(name, type) {
 			return { name: name, type: type };
@@ -1238,10 +1232,17 @@
 			_muteHandler({mute:_toggleStates.mute});
 		}
 
+		function _hideOverlays(exception) {
+			for (var i in _overlays) {
+				if (i != exception && _overlays.hasOwnProperty(i)) {
+					_overlays[i].hide();
+				}
+			}
+		}
+		
 		function _showVolume() {
 			_volumeOverlay.show();
-			if (_hdOverlay) _hdOverlay.hide();
-			if (_ccOverlay) _ccOverlay.hide();
+			_hideOverlays('volume');
 		}
 		
 		function _volume(pct) {
@@ -1249,6 +1250,11 @@
 			if (pct < 0.1) pct = 0;
 			if (pct > 0.9) pct = 1;
 			_api.jwSetVolume(pct * 100);
+		}
+		
+		function _showFullscreen() {
+			_fullscreenOverlay.show();
+			_hideOverlays('fullscreen');
 		}
 		
 		function _seek(pct) {
@@ -1322,8 +1328,7 @@
 		function _showHd() {
 			if (_levels && _levels.length > 2) {
 				_hdOverlay.show();
-				if (_volumeOverlay) _volumeOverlay.hide();
-				if (_ccOverlay) _ccOverlay.hide();
+				_hideOverlays('hd');
 			}
 		}
 		
@@ -1588,24 +1593,33 @@
 		function _buildOverlays() {
 			if (_elements.hdOn) {
 				_hdOverlay = new html5.menu('hd', _id+"_hd", _skin, _switchLevel);
-				var hdElement = _hdOverlay.element();
-				_appendChild(_elements.hdOn, hdElement);
-				_elements.hdOn.addEventListener('mousemove', _showHd, FALSE);
-				_elements.hdOn.addEventListener('mouseout', _hdOverlay.hide, FALSE);
-				_css('#'+hdElement.id, {
-					left: "50%"
-				});
+				_addOverlay(_hdOverlay, _elements.hdOn, _showHd);
+				_overlays.hd = _hdOverlay;
 			}
 			if (_elements.mute && _elements.volume && _elements.volume.vertical) {
 				_volumeOverlay = new html5.overlay(_id+"_volumeoverlay", _skin);
 				_volumeOverlay.setContents(_elements.volume);
-				_appendChild(_elements.mute, _volumeOverlay.element());
-				_elements.mute.addEventListener('mousemove', _showVolume, FALSE);
-				_elements.mute.addEventListener('mouseout', _volumeOverlay.hide, FALSE);
-				_css('#'+_volumeOverlay.element().id, {
-					left: "50%"
-				});
+				_addOverlay(_volumeOverlay, _elements.mute, _showVolume);
+				_overlays.volume = _volumeOverlay;
 			}
+			if (_elements.fullscreen) {
+				_fullscreenOverlay = new html5.overlay(_id+"_fullscreenoverlay", _skin);
+				var text = _createElement("div");
+				text.innerHTML = "Fullscreen";
+				_fullscreenOverlay.setContents(text);
+				_addOverlay(_fullscreenOverlay, _elements.fullscreen, _showFullscreen);
+				_overlays.fullscreen = _fullscreenOverlay;
+ 			}
+		}
+		
+		function _addOverlay(overlay, button, hoverAction) {
+			var element = overlay.element();
+			_appendChild(button, element);
+			button.addEventListener('mousemove', hoverAction, FALSE);
+			button.addEventListener('mouseout', overlay.hide, FALSE);
+			_css('#'+element.id, {
+				left: "50%"
+			});
 		}
 		
 		function _buildGroup(pos) {
@@ -1649,9 +1663,29 @@
 				right:  max ? UNDEFINED : margin,
 				'margin-left': max ? _controlbar.clientWidth / -2 : UNDEFINED,
 				width: max ? JW_CSS_100PCT : UNDEFINED
-			}); 
+			});
+		
+			_positionOverlays();
+			
 		}
 		
+		function _positionOverlays() {
+			var cbBounds = utils.bounds(_controlbar),
+				overlayBounds, i, overlay;
+			for (i in _overlays) {
+				overlay = _overlays[i];
+				overlay.offsetX(0);
+				overlayBounds = utils.bounds(overlay.element());
+				if (overlayBounds.right > cbBounds.right) {
+					overlay.offsetX(cbBounds.right - overlayBounds.right);
+				} else if (overlayBounds.left < cbBounds.left) {
+					overlay.offsetX(cbBounds.left - overlayBounds.left);
+				}
+			}
+		}
+
+		
+
 		this.audioMode = function(mode) {
 			if (mode != _audioMode) {
 				_audioMode = mode;
@@ -2364,7 +2398,8 @@
 		
 		function _setVisibility(selector, state) {
 			_css(_internalSelector(selector), {
-				opacity: state ? 1 : 0
+				opacity: state ? 1 : 0,
+				visibility: state ? "visible" : "hidden"
 			});
 		}
 
@@ -3304,6 +3339,7 @@
 
 		this.show = _overlay.show;
 		this.hide = _overlay.hide;
+		this.offsetX = _overlay.offsetX;
 		
 		_init();
 	}
@@ -3533,6 +3569,8 @@
 			_id = id,
 			_container,
 			_contents,
+			_offset = 0,
+			_arrow,
 			_settings = utils.extend({}, _defaults, _skin.getComponentSettings('tooltip'));
 			_borderSizes = {};
 		
@@ -3566,14 +3604,13 @@
 				bottom: _borderSizes.bottom
 			});
 			
-			var arrow = _createSkinElement("arrow", "jwarrow")[1];
+			_arrow = _createSkinElement("arrow", "jwarrow")[1];
 			_css(_internalSelector("jwarrow"), {
 				position: JW_CSS_ABSOLUTE,
-				bottom: -1 * arrow.height,
-				width: arrow.width,
-				height: arrow.height,
-				left: "50%",
-				'margin-left': arrow.width / -2
+				bottom: -1 * _arrow.height,
+				width: _arrow.width,
+				height: _arrow.height,
+				left: "50%"
 			});
 
 			_css(_internalSelector(), {
@@ -3648,11 +3685,21 @@
 		this.setContents = function(contents) {
 			utils.empty(_contents);
 			_contents.appendChild(contents);
-			setTimeout(function() {
-				_css('#'+_id, {
-					'margin-left': _container.clientWidth / -2
-				});
-			}, 0);
+			setTimeout(_position, 0);
+		}
+		
+		this.offsetX = function(offset) {
+			_offset = offset;
+			_position();
+		}
+		
+		function _position() {
+			_css(_internalSelector(), {
+				'margin-left': _offset - _container.clientWidth / 2
+			});
+			_css(_internalSelector("jwarrow"), {
+				'margin-left': (_arrow.width / -2) - _offset
+			});
 		}
 		
 		this.borderWidth = function() {
@@ -5759,9 +5806,17 @@
 
 		function _showDisplay() {
 			if (_display && !_audioMode) _display.show();
+			if (_isMobile && !_forcedControls) {
+				_controlsLayer.style.display = "block";
+			}
 		}
 		function _hideDisplay() {
-			if (_display) _display.hide();
+			if (_display) {
+				if (_isMobile && !_forcedControls) {
+					_controlsLayer.style.display = "none";
+				}
+				_display.hide();
+			}
 		}
 
 		function _hideControls() {
@@ -5810,7 +5865,9 @@
 					_display.hidePreview(true);
 					if (_isMobile) {
 						if (_isIPad && !_forcedControls) _videoTag.controls = true;
-						else _hideDisplay();
+						else { 
+							_hideDisplay();
+						}
 					}
 				}
 				_startFade();
