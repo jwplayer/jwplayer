@@ -34,6 +34,7 @@
 			_height,
 			_buttonCount = 0,
 			_buttons = {},
+			_tooltips = {},
 			_container; 
 
 		function _init() {
@@ -66,9 +67,10 @@
 			
 			_css(_internalSelector("button:hover"), { background: buttonOver.src });
 			_css(_internalSelector("button:active"), { background: buttonActive.src });
-			_css(_internalSelector("button div"), { opacity: _config.iconalpha });
-			_css(_internalSelector("button:hover div"), { opacity: _config.iconalphaover });
-			_css(_internalSelector("button:active div"), { opacity: _config.iconalphaactive});
+			_css(_internalSelector("button>div"), { opacity: _config.iconalpha });
+			_css(_internalSelector("button:hover>div"), { opacity: _config.iconalphaover });
+			_css(_internalSelector("button:active>div"), { opacity: _config.iconalphaactive});
+			_css(_internalSelector(".jwoverlay"), { top: button.height });
 			
 			_createImage("capLeft", _container);
 			_createImage("capRight", _container);
@@ -104,6 +106,22 @@
 		var _redraw = this.redraw = function() {
 		}
 		
+		function _positionTooltip(name) {
+			var tooltip = _tooltips[name],
+				tipBounds = utils.bounds(tooltip.element()),
+				button = _buttons[name],
+				buttonBounds = utils.bounds(button.icon);
+			
+			_css('#' + tooltip.element().id, {
+				left: buttonBounds.left
+			});
+			
+			
+//			if (containerBounds.left > tipBounds.left) {
+//				//tooltip.offsetX(containerBounds.left - tipBounds.left);
+//			}
+		}
+	
 		this.getDisplayElement = function() {
 			return _container;
 		}
@@ -140,11 +158,35 @@
 			}
 			newButton.addEventListener("click", clickHandler);
 			
-			_buttons[id] = { element: newButton, label: label, divider: divider };
+			_buttons[id] = { element: newButton, label: label, divider: divider, icon: icon };
+			
+			if (label) {
+				var tooltip = new html5.overlay(icon.id+"_tooltip", _skin, true),
+					tipText = _createElement("div");
+				tipText.innerHTML = label;
+				tooltip.setContents(tipText);
+				
+				var timeout;
+				newButton.addEventListener('mouseover', function() { 
+					clearTimeout(timeout); 
+					_positionTooltip(id); 
+					tooltip.show();
+					for (var i in _tooltips) {
+						if (i != id) {
+							_tooltips[i].hide();
+						}
+					}
+				}, false);
+				newButton.addEventListener('mouseout', function() {
+					timeout = setTimeout(tooltip.hide, 100); 
+				} , false);
+				
+				_container.appendChild(tooltip.element());
+				_tooltips[id] = tooltip;
+			}
 			
 			_buttonCount++;
 			_setCaps();
-
 		}
 		
 		this.removeButton = function(id) {
@@ -169,8 +211,8 @@
 	_css(D_CLASS, {
 	  	position: "absolute",
 	  	visibility: "hidden",
-	  	opacity: 0,
-	  	overflow: "hidden"
+	  	opacity: 0
+//	  	overflow: "hidden"
 	});
 	
 	
@@ -182,7 +224,12 @@
 		height: "100%",
 	  	'float': "left"
 	});
-	
+
+	_css(D_CLASS + " > .jwoverlay", {
+		height: 'auto',
+	  	'float': "none"
+	});
+
 	_css(D_CLASS + " .divider", {
 		display: "none"
 	});
@@ -199,7 +246,7 @@
 		'float': "right"
 	});
 	
-	_css(D_CLASS + " button div", {
+	_css(D_CLASS + " button > div", {
 		left: 0,
 		right: 0,
 		top: 0,
@@ -210,8 +257,20 @@
 		'background-position': "center",
 		'background-repeat': "no-repeat"
 	});
-	
-	utils.transitionStyle(D_CLASS, "background .25s, opacity .25s");
-	utils.transitionStyle(D_CLASS + " button div", "opacity .25s");
+
+//	_css(D_CLASS + " button .jwoverlay", {
+//		opacity: 0,
+//		visibility: "hidden",
+//		left: "50%"
+//	});
+//
+//	_css(D_CLASS + " button:hover .jwoverlay", {
+//		opacity: 1,
+//		visibility: "visible"
+//	});
+
+	utils.transitionStyle(D_CLASS, "background .15s, opacity .15s");
+	utils.transitionStyle(D_CLASS + " button div", "opacity .15s");
+	utils.transitionStyle(D_CLASS + " .jwoverlay", "opacity .15s");
 
 })(jwplayer.html5);

@@ -141,10 +141,6 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 		}
 		
-		public function resize(width:Number, height:Number):void {
-		}
-		
-		
 		protected function centerIcon(icon:DisplayObject):void {
 			if (icon) {
 				if (_background) {

@@ -122,12 +122,23 @@
 	}
 	
 	utils.transform = function(element, value) {
-		var style = element.style;
+		var transform = "-transform", style;
 		value = value ? value : "";
-		style.webkitTransform = value;
-		style.MozTransform = value;
-		style.msTransform = value;
-		style.OTransform = value;
+		if (typeof element == "string") {
+			style = {};
+			style['-webkit'+transform] = value;
+			style['-ms'+transform] = value;
+			style['-moz'+transform] = value;
+			style['-o'+transform] = value;
+			utils.css(element, style);
+		} else {
+			transform = "Transform";
+			style = element.style;
+			style['webkit'+transform] = value;
+			style['Moz'+transform] = value;
+			style['ms'+transform] = value;
+			style['O'+transform] = value;
+		}
 	}
 	
 	utils.dragStyle = function(selector, style) {

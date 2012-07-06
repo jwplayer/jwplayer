@@ -11,7 +11,6 @@ package com.longtailvideo.jwplayer.view.interfaces {
 		function setBackground(background:DisplayObject = null):void;
 		function setOutIcon(outIcon:* = null):void;
 		function setOverIcon(overIcon:DisplayObject = null):void;	
-		function resize(width:Number, height:Number):void;
 		function set clickFunction(clickFunction:*):void;
 		function set outBackground(outBackground:DisplayObject):void;
 		function set overBackground(overBackground:DisplayObject):void;

@@ -555,6 +555,10 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 			if (_buttons.fullscreen) {
 				_buttons.fullscreen.addEventListener(MouseEvent.MOUSE_OVER, showFullscreenOverlay);
+				if (_buttons.normalscreen) {
+					_buttons.normalscreen.addEventListener(MouseEvent.MOUSE_OVER, showFullscreenOverlay);
+				}
+
 			}
 		}
 		
@@ -627,12 +631,20 @@ package com.longtailvideo.jwplayer.view.components {
 		private function levelChanged(evt:MediaEvent):void {
 			_currentQuality = evt.currentQuality;
 			if (_levels.length == 2) {
-				_hdState = (_currentQuality == 1);
 				updateControlbarState();
 				redraw();
 			} else if (_levels.length > 2) {
 				_hdOverlay.setActive(evt.currentQuality);
 			}
+		}
+		
+		private function get hd():Boolean {
+			if (_levels && _levels.length > 1) {
+				if (_levels.length == 2)
+					return (_currentQuality == 1);
+				return true;
+			}
+			return false;
 		}
 
 		private function addComponentButton(name:String, event:String, eventData:*=null):void {
@@ -809,8 +821,10 @@ package com.longtailvideo.jwplayer.view.components {
 
 
 		private function hideButton(name:String, state:Boolean = true):void {
-			if (_buttons[name]) {
+			var button:DisplayObject = _buttons[name];
+			if (button && contains(button)) {
 				_buttons[name].visible = !state;
+				removeChild(button);
 			}
 		}
 
@@ -905,9 +919,9 @@ package com.longtailvideo.jwplayer.view.components {
 			alignTextFields();
 			_layoutManager.resize(_width, _height);
 
-			positionOverlay(_hdOverlay, getButton('hdOn') || getButton('hdOff'));
-			positionOverlay(_volumeOverlay, getButton('mute') || getButton('unmute'));
-			positionOverlay(_fullscreenOverlay, getButton('fullscreen') || getButton('normalscreen'));
+			positionOverlay(_hdOverlay, hd ? getButton('hdOn') : getButton('hdOff'));
+			positionOverlay(_volumeOverlay, player.config.mute ? getButton('unmute') : getButton('mute'));
+			positionOverlay(_fullscreenOverlay, player.config.fullscreen ? getButton('normalscreen') : getButton('fullscreen'));
 			
 			if (_forcing) {
 				stopFader();

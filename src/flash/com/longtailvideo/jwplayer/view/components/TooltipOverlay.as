@@ -4,31 +4,37 @@ package com.longtailvideo.jwplayer.view.components
 	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
 	
 	import flash.display.*;
-	import flash.text.*;
 	import flash.external.ExternalInterface;
+	import flash.text.*;
 	
 	public class TooltipOverlay extends Sprite {
 		// Border skin elements
-		private var borders:Object = {};
+		protected var borders:Object = {};
 		// Background element
-		private var back:DisplayObject;
+		protected var back:DisplayObject;
 		// Arrow
-		private var arrow:DisplayObject;
+		protected var arrow:DisplayObject;
 		// Skin
 		protected var skin:ISkin;
 		// Dimensions of tooltip contents
 		protected var contentWidth:Number = 0;
 		protected var contentHeight:Number = 0;
+		// Fade in/out animation
 		protected var fade:Animations;
+		// Label text field
 		protected var _text:TextField;
+		// Whether the arrow should appear on top or bottom
+		protected var _inverted:Boolean = false;
 		
 		
-		public function TooltipOverlay(skin:ISkin) {
+		public function TooltipOverlay(skin:ISkin, inverted:Boolean=false) {
 			this.skin = skin;
+			_inverted = inverted;
 			createBorders();
 			back = getSkinElement('background');
 			super.addChild(back);
 			arrow = getSkinElement('arrow');
+			if (_inverted) arrow.scaleY = -1;
 			super.addChild(arrow);
 			fade = new Animations(this);
 			_text = new TextField();
@@ -88,7 +94,7 @@ package com.longtailvideo.jwplayer.view.components
 			back.x = borders.top.x;
 			back.y = borders.left.y;
 			arrow.x = Math.ceil((contentWidth + borders.left.width + borders.right.width - arrow.width) / 2);
-			arrow.y = hei;
+			arrow.y = _inverted ? 0 : hei;
 		}
 		
 		public override function set width(value:Number):void {
@@ -124,6 +130,7 @@ package com.longtailvideo.jwplayer.view.components
 		public function set text(s:String):void {
 			_text.visible = Boolean(s);
 			if (s) {
+				if (getSkinSetting("fontcase").toLowerCase() == "upper") s = s.toUpperCase();
 				_text.text = s;
 				_text.x = _text.y = 0;
 				_text.width = _text.textWidth + 10;
@@ -143,7 +150,7 @@ package com.longtailvideo.jwplayer.view.components
 		}
 
 		public override function set y(value:Number):void {
-			super.y = Math.ceil(value - contentHeight - arrow.height);
+			super.y = Math.ceil(value - (_inverted ? 0 : contentHeight) - ( _inverted ? 0 : arrow.height));
 		}
 
 		public function hide():void {

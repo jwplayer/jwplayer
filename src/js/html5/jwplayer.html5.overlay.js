@@ -46,13 +46,14 @@
 		};
 	
 	/** HTML5 Overlay class **/
-	html5.overlay = function(id, skin) {
+	html5.overlay = function(id, skin, inverted) {
 		var _skin = skin,
 			_id = id,
 			_container,
 			_contents,
 			_offset = 0,
 			_arrow,
+			_inverted = inverted,
 			_settings = utils.extend({}, _defaults, _skin.getComponentSettings('tooltip'));
 			_borderSizes = {};
 		
@@ -66,7 +67,7 @@
 			_css(_internalSelector(CONTENTS_CLASS), {
 				color: _settings.fontcolor,
 				font: _settings.fontweight + " " + (_settings.fontsize) + "px Arial,Helvetica,sans-serif",
-				'text-transform': (_settings.fontcase == "upper") ? "uppercase" : UNDEFINED 
+				'text-transform': (_settings.fontcase == "upper") ? "uppercase" : UNDEFINED
 			});
 			
 			_createBorderElement(TOP, LEFT);
@@ -89,19 +90,19 @@
 			_arrow = _createSkinElement("arrow", "jwarrow")[1];
 			_css(_internalSelector("jwarrow"), {
 				position: JW_CSS_ABSOLUTE,
-				bottom: -1 * _arrow.height,
+				bottom: _inverted ? UNDEFINED : -1 * _arrow.height,
+				top: _inverted ? -1 * _arrow.height : UNDEFINED,
 				width: _arrow.width,
 				height: _arrow.height,
 				left: "50%"
 			});
+			
+			if (_inverted) {
+				utils.transform(_internalSelector("jwarrow"), "rotate(180deg)");
+			}
 
 			_css(_internalSelector(), {
-//				width: _width,
-//				height: _height,
-				'padding-top': _borderSizes.top,
-				'padding-bottom': _borderSizes.bottom,
-				'padding-left': _borderSizes.left,
-				'padding-right': _borderSizes.right
+				padding: _borderSizes.top + "px " + _borderSizes.right + "px " + _borderSizes.bottom + "px " + _borderSizes.left + "px"  
 			});
 			
 			this.showing = false;

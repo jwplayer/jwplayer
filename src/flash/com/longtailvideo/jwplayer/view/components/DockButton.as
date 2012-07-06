@@ -3,11 +3,14 @@
  **/
 package com.longtailvideo.jwplayer.view.components {
 	import com.longtailvideo.jwplayer.model.Color;
+	import com.longtailvideo.jwplayer.utils.RootReference;
 	import com.longtailvideo.jwplayer.view.interfaces.IDockButton;
+	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
 	
 	import flash.display.*;
 	import flash.events.*;
 	import flash.geom.ColorTransform;
+	import flash.geom.Rectangle;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
 	import flash.text.TextFormatAlign;
@@ -29,9 +32,22 @@ package com.longtailvideo.jwplayer.view.components {
 		private var _overAlpha:Number = 1;
 		/** Icon alpha for out state **/
 		private var _activeAlpha:Number = 1;
+		/** Player skin **/
+		private var _skin:ISkin;
+		/** Tooltip overlay for label **/
+		private var _tooltip:TooltipOverlay;
+		/** Bounds for tooltip placement **/
+		private var _bounds:Rectangle;
 		
 		/** Constructor **/
-		public function DockButton():void {
+		public function DockButton(skin:ISkin, bounds:Rectangle = null):void {
+			_skin = skin;
+			_tooltip = new TooltipOverlay(_skin, true);
+			_tooltip.alpha = 0;
+			_tooltip.mouseEnabled = false;
+			_tooltip.mouseChildren = false;
+			_bounds = bounds ? bounds : new Rectangle();
+			RootReference.stage.addChild(_tooltip);
 		}
 		
 		
@@ -80,7 +96,8 @@ package com.longtailvideo.jwplayer.view.components {
 		/** When mousing out, update the button state **/
 		override protected function outHandler(evt:MouseEvent=null):void {
 			if (_active) return;
-			
+			_tooltip.hide();
+
 			_outIcon.alpha = _outAlpha;
 			setBackground(_outBackground);
 		}
@@ -89,11 +106,29 @@ package com.longtailvideo.jwplayer.view.components {
 		/** When rolling over, update the button state **/
 		override protected function overHandler(evt:MouseEvent):void {
 			if (_active) return;
-
+			if (_label) {
+				positionTooltip();
+				_tooltip.show();	
+			}
 			_outIcon.alpha = _overAlpha;
 			setBackground(_overBackground);
 		}
 		
+		private function positionTooltip():void {
+			var buttonBounds:Rectangle = getBounds(RootReference.root);
+
+			_tooltip.x = buttonBounds.x + buttonBounds.width / 2;
+			_tooltip.y = buttonBounds.bottom;
+
+			var tooltipBounds:Rectangle = _tooltip.getBounds(RootReference.root);
+			if (tooltipBounds.left < _bounds.left) {
+				_tooltip.offsetX(_bounds.left - tooltipBounds.left);
+			} else if (tooltipBounds.right > _bounds.right) {
+				_tooltip.offsetX(_bounds.right - tooltipBounds.right);
+			}
+				
+			
+		}
 		
 		override protected function clickHandler(evt:MouseEvent):void {
 			super.clickHandler(evt);
@@ -116,6 +151,7 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		public function set label(text:String):void {
 			_label = text;
+			_tooltip.text = _label;
 		}
 		
 		public function set active(state:Boolean):void {

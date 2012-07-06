@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2311';
+	jwplayer.html5.version = '6.0.2312';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -332,12 +332,23 @@
 	}
 	
 	utils.transform = function(element, value) {
-		var style = element.style;
+		var transform = "-transform", style;
 		value = value ? value : "";
-		style.webkitTransform = value;
-		style.MozTransform = value;
-		style.msTransform = value;
-		style.OTransform = value;
+		if (typeof element == "string") {
+			style = {};
+			style['-webkit'+transform] = value;
+			style['-ms'+transform] = value;
+			style['-moz'+transform] = value;
+			style['-o'+transform] = value;
+			utils.css(element, style);
+		} else {
+			transform = "Transform";
+			style = element.style;
+			style['webkit'+transform] = value;
+			style['Moz'+transform] = value;
+			style['ms'+transform] = value;
+			style['O'+transform] = value;
+		}
 	}
 	
 	utils.dragStyle = function(selector, style) {
@@ -1537,9 +1548,11 @@
 		function _positionTimeTooltip(evt) {
 			var element = _timeOverlay.element(), 
 				railBox = utils.bounds(element.parentNode),
-				position = Math.min(railBox.width, Math.max(0, evt.pageX - railBox.left)) - WINDOW.pageXOffset;
-			element.style.left = position + "px";
-			_setTimeOverlay(_duration * position / railBox.width);
+				position = (evt.pageX - railBox.left) - WINDOW.pageXOffset;
+			if (position >= 0 && position <= railBox.width) {
+				element.style.left = position + "px";
+				_setTimeOverlay(_duration * position / railBox.width);
+			}
 		}
 		
 		function _setTimeOverlay(sec) {
@@ -2700,6 +2713,7 @@
 			_height,
 			_buttonCount = 0,
 			_buttons = {},
+			_tooltips = {},
 			_container; 
 
 		function _init() {
@@ -2732,9 +2746,10 @@
 			
 			_css(_internalSelector("button:hover"), { background: buttonOver.src });
 			_css(_internalSelector("button:active"), { background: buttonActive.src });
-			_css(_internalSelector("button div"), { opacity: _config.iconalpha });
-			_css(_internalSelector("button:hover div"), { opacity: _config.iconalphaover });
-			_css(_internalSelector("button:active div"), { opacity: _config.iconalphaactive});
+			_css(_internalSelector("button>div"), { opacity: _config.iconalpha });
+			_css(_internalSelector("button:hover>div"), { opacity: _config.iconalphaover });
+			_css(_internalSelector("button:active>div"), { opacity: _config.iconalphaactive});
+			_css(_internalSelector(".jwoverlay"), { top: button.height });
 			
 			_createImage("capLeft", _container);
 			_createImage("capRight", _container);
@@ -2770,6 +2785,22 @@
 		var _redraw = this.redraw = function() {
 		}
 		
+		function _positionTooltip(name) {
+			var tooltip = _tooltips[name],
+				tipBounds = utils.bounds(tooltip.element()),
+				button = _buttons[name],
+				buttonBounds = utils.bounds(button.icon);
+			
+			_css('#' + tooltip.element().id, {
+				left: buttonBounds.left
+			});
+			
+			
+//			if (containerBounds.left > tipBounds.left) {
+//				//tooltip.offsetX(containerBounds.left - tipBounds.left);
+//			}
+		}
+	
 		this.getDisplayElement = function() {
 			return _container;
 		}
@@ -2806,11 +2837,35 @@
 			}
 			newButton.addEventListener("click", clickHandler);
 			
-			_buttons[id] = { element: newButton, label: label, divider: divider };
+			_buttons[id] = { element: newButton, label: label, divider: divider, icon: icon };
+			
+			if (label) {
+				var tooltip = new html5.overlay(icon.id+"_tooltip", _skin, true),
+					tipText = _createElement("div");
+				tipText.innerHTML = label;
+				tooltip.setContents(tipText);
+				
+				var timeout;
+				newButton.addEventListener('mouseover', function() { 
+					clearTimeout(timeout); 
+					_positionTooltip(id); 
+					tooltip.show();
+					for (var i in _tooltips) {
+						if (i != id) {
+							_tooltips[i].hide();
+						}
+					}
+				}, false);
+				newButton.addEventListener('mouseout', function() {
+					timeout = setTimeout(tooltip.hide, 100); 
+				} , false);
+				
+				_container.appendChild(tooltip.element());
+				_tooltips[id] = tooltip;
+			}
 			
 			_buttonCount++;
 			_setCaps();
-
 		}
 		
 		this.removeButton = function(id) {
@@ -2835,8 +2890,8 @@
 	_css(D_CLASS, {
 	  	position: "absolute",
 	  	visibility: "hidden",
-	  	opacity: 0,
-	  	overflow: "hidden"
+	  	opacity: 0
+//	  	overflow: "hidden"
 	});
 	
 	
@@ -2848,7 +2903,12 @@
 		height: "100%",
 	  	'float': "left"
 	});
-	
+
+	_css(D_CLASS + " > .jwoverlay", {
+		height: 'auto',
+	  	'float': "none"
+	});
+
 	_css(D_CLASS + " .divider", {
 		display: "none"
 	});
@@ -2865,7 +2925,7 @@
 		'float': "right"
 	});
 	
-	_css(D_CLASS + " button div", {
+	_css(D_CLASS + " button > div", {
 		left: 0,
 		right: 0,
 		top: 0,
@@ -2876,9 +2936,21 @@
 		'background-position': "center",
 		'background-repeat': "no-repeat"
 	});
-	
-	utils.transitionStyle(D_CLASS, "background .25s, opacity .25s");
-	utils.transitionStyle(D_CLASS + " button div", "opacity .25s");
+
+//	_css(D_CLASS + " button .jwoverlay", {
+//		opacity: 0,
+//		visibility: "hidden",
+//		left: "50%"
+//	});
+//
+//	_css(D_CLASS + " button:hover .jwoverlay", {
+//		opacity: 1,
+//		visibility: "visible"
+//	});
+
+	utils.transitionStyle(D_CLASS, "background .15s, opacity .15s");
+	utils.transitionStyle(D_CLASS + " button div", "opacity .15s");
+	utils.transitionStyle(D_CLASS + " .jwoverlay", "opacity .15s");
 
 })(jwplayer.html5);/** 
  * API to control instream playback without interrupting currently playing video
@@ -3564,13 +3636,14 @@
 		};
 	
 	/** HTML5 Overlay class **/
-	html5.overlay = function(id, skin) {
+	html5.overlay = function(id, skin, inverted) {
 		var _skin = skin,
 			_id = id,
 			_container,
 			_contents,
 			_offset = 0,
 			_arrow,
+			_inverted = inverted,
 			_settings = utils.extend({}, _defaults, _skin.getComponentSettings('tooltip'));
 			_borderSizes = {};
 		
@@ -3584,7 +3657,7 @@
 			_css(_internalSelector(CONTENTS_CLASS), {
 				color: _settings.fontcolor,
 				font: _settings.fontweight + " " + (_settings.fontsize) + "px Arial,Helvetica,sans-serif",
-				'text-transform': (_settings.fontcase == "upper") ? "uppercase" : UNDEFINED 
+				'text-transform': (_settings.fontcase == "upper") ? "uppercase" : UNDEFINED
 			});
 			
 			_createBorderElement(TOP, LEFT);
@@ -3607,19 +3680,19 @@
 			_arrow = _createSkinElement("arrow", "jwarrow")[1];
 			_css(_internalSelector("jwarrow"), {
 				position: JW_CSS_ABSOLUTE,
-				bottom: -1 * _arrow.height,
+				bottom: _inverted ? UNDEFINED : -1 * _arrow.height,
+				top: _inverted ? -1 * _arrow.height : UNDEFINED,
 				width: _arrow.width,
 				height: _arrow.height,
 				left: "50%"
 			});
+			
+			if (_inverted) {
+				utils.transform(_internalSelector("jwarrow"), "rotate(180deg)");
+			}
 
 			_css(_internalSelector(), {
-//				width: _width,
-//				height: _height,
-				'padding-top': _borderSizes.top,
-				'padding-bottom': _borderSizes.bottom,
-				'padding-left': _borderSizes.left,
-				'padding-right': _borderSizes.right
+				padding: _borderSizes.top + "px " + _borderSizes.right + "px " + _borderSizes.bottom + "px " + _borderSizes.left + "px"  
 			});
 			
 			this.showing = false;

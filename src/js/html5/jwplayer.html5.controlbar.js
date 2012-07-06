@@ -786,9 +786,11 @@
 		function _positionTimeTooltip(evt) {
 			var element = _timeOverlay.element(), 
 				railBox = utils.bounds(element.parentNode),
-				position = Math.min(railBox.width, Math.max(0, evt.pageX - railBox.left)) - WINDOW.pageXOffset;
-			element.style.left = position + "px";
-			_setTimeOverlay(_duration * position / railBox.width);
+				position = (evt.pageX - railBox.left) - WINDOW.pageXOffset;
+			if (position >= 0 && position <= railBox.width) {
+				element.style.left = position + "px";
+				_setTimeOverlay(_duration * position / railBox.width);
+			}
 		}
 		
 		function _setTimeOverlay(sec) {

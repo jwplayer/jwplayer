@@ -23,6 +23,7 @@ package com.longtailvideo.jwplayer.view.components {
 			if (width && height){
 				_height = height;
 				_currentLeft = 0;
+
 				if (_controlbar.getButton('capLeft')){
 					_currentLeft += _controlbar.getButton('capLeft').width;
 				}
@@ -165,9 +166,7 @@ package com.longtailvideo.jwplayer.view.components {
 				for (var j:Number = 0; j < spacers.length; j++) {
 					var element:DisplayObject = _controlbar.getButton(spacers[j]);
 					if (element) {
-						if (element is ComponentButton){
-							(element as ComponentButton).resize(elementWidth, element.height);
-						} else if (element is Slider) {
+						if (element is Slider) {
 							(element as Slider).resize(elementWidth, element.height);
 						}
 						element.visible = true;

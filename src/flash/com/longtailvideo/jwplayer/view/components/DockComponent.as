@@ -98,7 +98,8 @@ package com.longtailvideo.jwplayer.view.components {
 			if (namedButton(name)) {
 				return namedButton(name);
 			}
-			var button:DockButton = new DockButton();
+			var bounds:Rectangle = new Rectangle(localToGlobal(new Point(settings.margin, 0)).x, 0, _width - settings.margin, 0);
+			var button:DockButton = new DockButton(_player.skin, bounds);
 			if (name) {
 				button.name = name;
 			}
