@@ -109,7 +109,7 @@
 <li>Finally, Closed Captions are loaded as an SRT file into the player, using the <a href="captions.html">captions config block</a>. You can use any text editor to author the captions; cool dedicated tools <a href="http://www.urusoft.net/products.php">Subtitle Workshop</a> (desktop) or <a href="http://subtitle-horse.com/">Subtitle Horse</a> (online).</li>
 </ul>
 
-<p>Note the example does not contain an audio description. JW Player 6 does not yet support audio descriptions (see below). This should not be a problem, since audio descriptions are not needed in the far majority of cases.</p>
+<p>Note the example does not contain an audio description. JW Player 6 does not yet support audio descriptions (see below).</p>
 
 
 
@@ -121,8 +121,10 @@
 <li>The JW Player provides keyboard access to all of its buttons (pause, mute, fullscreen, captions, audiodescription), but not to its sliders yet. We still have to incorporate slider control, following <a href="http://dev.opera.com/articles/view/more-accessible-html5-video-player/">the ARIA guidelines</a>.</li>
 <li>When Flash is used for rendering, it is not possible to <em>tab in</em> or <em>tab out</em> of the player using your keyboard. This is a major issue, since it essentially breaks keyboard access. Luckily, screen readers like JAWS do provide the option to enter/exit Flash elements. In HTML5, this problem does not exist.</li>
 <li>On mobile devices, captions cannot yet be rendered by JW Player. This because there's no way to display anything on top of (full-screen) video on these devices. There is a workaround for iOS, using embedded <a href="captions.html">TX3G text tracks</a>.</li>
-<li>For HTML5 in general, getting audio descriptions to work properly has proven very hard. On mobile devices, this is not possible at all, while on desktops sync issues are present.</li>
+<li>Audio descriptions are not yet supported on browsers and devices, but coming as part of the new HTML5 &lt;track&gt; element. For now, it is best to create two versions of your videos: one with and one without descriptions in the audio. Users can then select which one to play.</li>
 </ul>
+
+<h3>About &lt;track&gt;</h3>
 
 <p><a href="http://blog.gingertech.net/2010/08/07/websrt-and-html5-media-accessibility/">Work is in progress</a> to build both captions and audio descriptions into HTML5. This is done through a new element: &lt;track&gt;. Though not built into any real-world browser yet, the <a href="http://www.w3.org/TR/html5/video.html">spec is mostly done</a>. This is how it will look:</p>
 
@@ -133,9 +135,9 @@
 &lt;/video&gt;
 </pre>
 
-<p>Browsers and devices will see the tracks, pick up the VTT files and render controls to toggle them on/off. VTT files are basically fancy SRT files, so if you provide your captions in SRT today, you can easily switch to VTT in the future.</p>
+<p>Browsers and devices will see the tracks, pick up the VTT files and render controls to toggle them on/off. VTT files are basically extended SRT files, so if you provide your captions in SRT today, you can easily switch to VTT in the future.</p>
 
-<p>Important to note is that the audio description is also a VTT text file. The browser (or screen reader) is supposed to load this file and provide text-to-speech synthesis. If this actually gets supported, the creation of audio descriptions will suddenly become much easier. Adding in the easy keyboard access, it's clear that HTML5 holds much promise for a broader implementation of accessible video.</p>
+<p>Important to note is that the audio description is also a VTT text file. The browser (or screen reader) is supposed to load this file and provide text-to-speech synthesis. If this actually gets supported, the creation of audio descriptions will become easy and affordable.</p>
 
 
 

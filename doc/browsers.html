@@ -30,31 +30,29 @@
 
 <h2>Desktop Browsers</h2>
 
-<p>This table lists which desktop browsers are officially supported by JW Player, using HTML5 and/or Flash:</p>
+<p>This table lists which desktop browsers are fully supported by JW Player, using HTML5 and/or Flash:</p>
 
 <table><tr>
     <th>Browser</th><th>HTML5</th><th>Flash</th>
 </tr><tr>
-    <td>Chrome 18 <sup>1</sup></td><td>yes</td><td>yes</td>
+    <td>Chrome <sup>1</sup></td><td>yes</td><td>yes</td>
 </tr><tr>
-    <td>Firefox 3.6</td><td>-</td><td>yes</td>
-</tr><tr>
-    <td>Firefox 12 <sup>1</sup></td><td>yes</td><td>yes</td>
+    <td>Firefox <sup>1</sup></td><td>yes</td><td>yes</td>
 </tr><tr>
     <td>Internet Explorer 8</td><td>-</td><td>yes</td>
 </tr><tr>
     <td>Internet Explorer 9</td><td>yes</td><td>yes</td>
 </tr><tr>
-    <td>Safari 5.1 <sup>1</sup></td><td>yes</td><td>yes</td>
+    <td>Safari <sup>1</sup></td><td>yes</td><td>yes</td>
 </tr></table>
 
 <ol>
     <li>New versions are frequently released. We always test the latest one.</li>
 </ol>
 
-<p>All JW Player features are supported on all browsers, with the exception of media playback. In an nutshell, not all browsers play WebM video and Vorbis audio. See <a href="media.html">Supported Media Formats</a> for more details.</p>
+<p>All JW Player features are supported on these browsers, with the exception of media playback. In a nutshell, not all browsers support WebM video and Vorbis audio. See <a href="media.html">Supported Media Formats</a> for details.</p>
 
-<p>Another limitation is HTML5 Fullscreen support. Both Internet Explorer 9 and Opera 11.6 do not (yet) support true fullscreen in HTML5. Instead, the <em>FullScreen</em> button in JW Player will enable full-browser-screen playback of the video.</p>
+<p>One additional limitation is HTML5 Fullscreen support. Internet Explorer 9 does not (yet) support true fullscreen in HTML5. Instead, the <em>FullScreen</em> button in JW Player will enable full-browser-screen playback of the video.</p>
 
 
 
@@ -79,8 +77,8 @@
 <p>There's a few key differences in JW Player's approach to mobile devices compared to desktop browsers:</p>
 
 <ul>
-<li>JW Player does not officially support Flash on mobile. Although Android devices may have Flash installed, the <a href="http://www.longtailvideo.com/blog/25057/html5-takes-the-lead-on-android-devices">user experience is suboptimal</a>. Therefore, we focus completely on HTML5.</il>
-<li>JW Player uses the video controlbar provided by the device. That way, the buttons work well using Touch (the default skin is optimized for Mouse). Device-specific enhancements will also remain available (e.g. <em>Airplay</em> and <em>pinch-to-fullscreen</em> on iPad).</li>
+<li>JW Player does not officially support Flash on mobile. Although Android devices may have Flash installed, the <a href="http://www.longtailvideo.com/blog/25057/html5-takes-the-lead-on-android-devices">user experience is suboptimal</a>. Therefore, we focus 100% on HTML5.</il>
+<li>JW Player uses the video controls provided by the device. That way, the buttons work well using Touch (the default skin is optimized for Mouse). Device-specific enhancements will also remain available (e.g. <em>Airplay</em> and <em>pinch-to-fullscreen</em> on iPad).</li>
 <li>On all phones (except in Android 4.0), video can only be played in <em>fullscreen</em> mode. On tablets, video can be played either windowed or in fullscreen.</li>
 <li>Changing the <em>mute</em> state and <em>volume</em> is not possible. All mobile devices ignore these API calls, favoring the hardware buttons on the side of each device.</li>
 <li>Auto-starting a video on page load is not possible. Neither is playing more than 1 video at the same time.</li>
@@ -96,19 +94,19 @@
 
 <ul>
 <li>The <strong>HTML5</strong> &lt;video&gt; element. Available on most browsers and most devices.</li>
-<li>The Adobe <strong>Flash</strong> plugin. Available on practically all browsers, but only few devices.</li>
+<li>The Adobe <strong>Flash</strong> plugin. Available on practically all browsers, but not on devices.</li>
 </ul>
 
 <p>All features of JW Player (playlists, skinning, scripting, etc.) are available in both rendering modes. Whether JW Player renders itself in Flash or HTML5 is therefore totally depending upon the media format(s) that is/are embedded. See <a href="media.html">Supported Media Formats</a> for details. Here's a quick overview:</p>
 
 <ul>
-<li>MP4, AAC, MP3 and HLS can be played in both HTML5 and Flash.</li>
-<li>WebM and Vorbis can only be played in HTML5.</li>
+<li>MP4, AAC and MP3 can be played in both HTML5 and Flash.</li>
+<li>WebM, Vorbis and HLS can only be played in HTML5.</li>
 <li>FLV, RTMP and YouTube can only be played in Flash.</li>
 </ul>
 
 
-<p>At large, the market moves away from Flash in the direction of HTML5. Therefore, JW Player prefers to use HTML5 over Flash if a piece of content can be played in both modes on a certain browser. This behavior can be changed though, by setting the configuration option <strong>primary</strong> to <em>flash</em>. See <a href="embedding.html">Embedding the Player</a> for more info.</p>
+<p>At large, the market moves away from Flash towards HTML5. Therefore, JW Player prefers to use HTML5 over Flash if a piece of content can be played in both modes on a certain browser. This behavior can be changed though, by setting the configuration option <strong>primary</strong> to <em>flash</em>. See <a href="embedding.html">Embedding the Player</a> for more info.</p>
 
 <h3>Multiple Sources</h3>
 
@@ -128,11 +126,11 @@
 
 <h2><a name="fallback"></a>Download Fallback</h2>
 
-<p>In certain cases, neither the Flash nor HTML5 mode can be used. For example, a visitor might use a BlackBerry phone, or attempt to watch a WebM-only video in Safari. In those cases, JW Player can render a so-called <strong>fallback</strong>. Which fallback is rendered is defined by the embedded media format:</p>
+<p>In certain cases, neither Flash nor HTML5 mode can be used. For example, a visitor might use a BlackBerry phone, or attempt to watch a WebM-only video in Safari. In those cases, JW Player can render a so-called <strong>fallback</strong>. Which fallback is rendered is defined by the embedded media format:</p>
 
 <ul>
-<li>For MP4, AAC or MP3 files, a nicely formatted download link is rendered. the link consists of the poster image with a <em>play</em> button on top of it. When a visitor clicks the link, the device's built-in mediaplayer will play the file.</li>
-<li>For YouTube streams, the plain YouTube <em>&lt;embed&gt;</em> code is inserted. This triggers a special-case embed of the YouTube player on iOS and Android devices. Videos will simply play inline, but the JW Player interface is not available.</li>
+<li>For MP4, AAC or MP3 files, a nicely formatted download link is rendered. The link consists of the poster image with a <em>play</em> button on top of it. When a visitor clicks the link, the device's built-in mediaplayer will play the file.</li>
+<li>For YouTube streams, the plain YouTube <em>&lt;embed&gt;</em> code is inserted. This triggers a special-case embed of the YouTube player on iOS and Android devices. Videos will simply play inline, but the JW Player interface and API are not available.</li>
 <li>For FLV, WebM and Vorbis files and RTMP or HLS streams, an <em>Unsupported Media Format</em> error message is displayed. This because these formats are likely not supported by built-in mediaplayers.</li>
 <li>When using an <a href="playlists.html#rss">RSS Feed</a> instead of an inline playlist, the <em>Unsupported Media Format</em> message is also displayed. JW Player does not load and parse RSS feeds as part of the download fallback.</li>
 </ul>

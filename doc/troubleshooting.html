@@ -46,16 +46,16 @@
 <li>The media playing incorrectly. For example, the audio may sound weird, the video may look stretched or seeking may not work.</li>
 </ol>
 
-<p>More advanced developers should also take a look at their browser console. The browser may display error messages (e.g. around files not found or CORS errors) that are helpful in tracking down the cause.</p>
+<p>More advanced developers should also take a look at their browser console. The browser may display error messages (e.g. around files not found or CORS errors) that are helpful in tracking down the problem.</p>
 
 <h2>1: Player Not Showing At All</h2>
 
 <p>If your player does not appear at all, please check if you:</p>
 
 <ul>
-<li>Included the &lt;script&gt; tag for loading <strong>jwplayer.js</strong> in the head of your page.</li>
-<li>Included a container &lt;div&gt; with an <strong>id</strong> attribute to load the player into.</li>
-<li>Referred to the correct &lt;div&gt; <strong>id</strong> in the <em>jwplayer(id).setup()</em> call.</li>
+<li>Uploaded <strong>jwplayer.js</strong> and included the &lt;script&gt; tag for loading <strong>jwplayer.js</strong> in the head of your page.</li>
+<li>Included a container &lt;div&gt; with an <strong>id</strong> attribute and referred to that <strong>id</strong> in the <em>jwplayer(id).setup()</em> call.</li>
+<li>Correctly formatted all options in the <em>jwplayer(id).setup()</em> call. We often see issues with commas, brackets or curly braces.</li>
 </ul>
 
 <p>See <a href="embedding.html">Embedding the Player</a> for an explanation of the correct embed syntax. Note this is also the <strong>only</strong> embed syntax JW Player supports. Setups using a &lt;video&gt;, an &lt;embed&gt; tag or SWFObject will not work with JW Player 6.</p>
@@ -122,7 +122,7 @@
 <dt>Error loading media: File not found</dt>
 <dd>This means the URL to your audio/video file or RTMP/HLS manifest could not be found. Please make sure the file is available at the location you provided (did you set relative paths correctly?) and available for loading in the player (are the access rights and mimetype header set correctly?).</dd>
 <dt>Error loading media: File could not be played</dt>
-<dd>This usually means you are trying to load a file in a nonsupported format in JW Player. A common case is the loading of a <strong>.wmv</strong> video, or a <strong>.mov</strong> video that doesn't use H264 video and AAC audio. See <a href="media.html">Supported Media Formats</a> for the list of formats the player supports.</dd>
+<dd>This usually means you are trying to load a file in a nonsupported format in JW Player. A common case is the loading of a <strong>.wmv</strong> video, or a <strong>.mov</strong> video that doesn't use the H264 video codec. See <a href="media.html">Supported Media Formats</a> for the list of formats the player supports.</dd>
 </dl>
 
 <dl>
@@ -136,11 +136,9 @@
 
 <dl>
 <dt>Error loading stream: File is not a valid manifest</dt>
-<dd>This means that your SMIL manifest (for RTMP streaming) or M3U8 manifest (for HLS streaming) is not correctly formatted. See <a href="rtmp.html">Using RTMP Streaming</a> or <a href="hls.html">Using HLS Streaming</a> for examples of correctly formatted manifest files.</dd>
+<dd>This means that your SMIL manifest (for RTMP streaming) is not correctly formatted. See <a href="rtmp.html">Using RTMP Streaming</a> for examples of correctly formatted manifest files.</dd>
 <dt>Error loading stream: Could not connect to RTMP server</dt>
 <dd>This means that your RTMP server cannot be reached by the player (anymore). Ensure you have setup the correct <strong>streamer</strong> in your configuration options or <strong>base</strong> in your SMIL manifest. Next, ensure your server is actually up and running, and accessible from your computer. The latter is not always the case, since many proxies and firewalls block RTMP traffic. See <a href="rtmp.html">Using RTMP Streaming</a> for more info.</dd>
-<dt>Error loading stream: Flash Player 10.1 is required</dt>
-<dd>In order to play Apple HLS streams (.m3u8), your Flash Player version must be at least 10.1. Please visit <a href="http://get.adobe.com/flashplayer/">the Adobe site</a> to update your Flash player. Note that <a href="http://riastats.com/">a small percentage</a> of desktop browsers still run Flash 10.0 or lower.</dd>
 </dl>
 
 
@@ -160,8 +158,6 @@
 <dd>Most likely, this occurs when your file doesn't have metadata or the Flash Player doesn't understand your metadata. You can fix this by running your FLV files through the <a href="http://www.buraks.com/flvmdi/">FLV MetaData Injector</a>.</dd>
 <dt>MP4 video seeking is not working</dt>
 <dd>If your MP4 files cannot be seeked before they are completely downloaded, you will have to move your MP4 metadata from the end to the beginning of your MP4 file. Use <a href="http://renaun.com/blog/2010/06/qtindexswapper-2/">this little application</a> to do that.</dd>
-<dt>Apple HLS streams show garbage or black video for a few seconds</dt>
-<dd>The issue here is that JW Player tries to switch from one quality to another, but TS segments do not start with a keyframe. Eventually, the stream will play smooth again, but in order to not have this issue at all your segments should always start with a keyframe. See <a href="">Encoding HLS Streams</a> for more info.</dd>
 </dl>
 
 

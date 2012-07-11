@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-<title>Adding Closed Captions</title>
+<title>Adding Video Captions</title>
 <style>
     body { padding: 50px 100px; width: 700px; font: 13px/20px Arial; background: #FFF; }
     a, h1, h2 { color: #369; }
@@ -20,9 +20,9 @@
 </style>
 </head><body>
 
-<h1>Adding Closed Captions</h1>
+<h1>Adding Video Captions</h1>
 
-<p>JW Player supports the display of closed captions or subtitles in the video display. Captions can be shown or hidden with a toggle or, when presenting multiple languages, a popup menu. This guide explains how to add captions to your player embeds.</p>
+<p>JW Player supports the rendering of closed captions or subtitles in the video display. Captions can be shown or hidden with a toggle or, when presenting multiple languages, a popup menu. This guide explains how to add captions to your player embeds.</p>
 
 
 
@@ -35,7 +35,9 @@
 <li>Embedded captions should be in <strong>TX3G</strong> (<a href="http://en.wikipedia.org/wiki/MPEG-4_Part_17">3GPP Timed Text</a>) format, which is part of the MP4 standard. The captions are stored inside the MP4 video files, requiring no separate downloads.</li>
 </ul>
 
-<p>Note that WebVTT builds upon the SRT (<a href="http://en.wikipedia.org/wiki/SubRip">SubRip</a>) format, which is also supported. However, neither format is supported on all desktop browsers and mobile devices. Here is the breakdown:</p>
+<p>Note that WebVTT builds upon the SRT (<a href="http://en.wikipedia.org/wiki/SubRip">SubRip</a>) format, which is also supported by JW Player.</p>
+
+<p>Unfortunately, neither external nor embedded captions are supported on all desktop browsers and mobile devices. Here is the breakdown:</p>
 
 <table><tr>
     <th></th><th>Desktop: HTML5</th><th>Desktop: Flash</th><th>Mobile: iOS</th><th>Mobile: Android</th>
@@ -47,7 +49,7 @@
 
 <p>WebVTT does not work on mobile devices, since it is not possible for JW Player to <em>polyfill</em> the captions on top of the video during (full-screen) playback. Support for <a href="http://www.longtailvideo.com/html5/#accessibility">HTML5 Text Tracks</a> on iOS and Android will fix this in the (hopefully near-term) future.</p>
 
-<p>TX3G tracks do render on iOS (still not on Android), but on desktops they only display in Flash. TX3G tracks are also hard to edit, since they require tools (like <a href="http://handbrake.fr">Handbrake</a>) to <em>mux</em> your MP4 files. SRT and DFXP files can be authored with any text editor.</p>
+<p>TX3G tracks do render on iOS (still not on Android), but on desktops they only display in Flash. TX3G tracks are also hard to edit, since they require tools (like <a href="http://handbrake.fr">Handbrake</a>) to <em>mux</em> your MP4 files. WebVTT files can be authored with any text editor.</p>
 
 
 
@@ -58,16 +60,13 @@
 <pre>
 WEBVTT
 
-1
 00:00:08.000 --&gt; 00:00:10.000
 Nothing is going on.
 
-2
 00:00:10.500 --&gt; 00:00:12.500
 Violet, please!
 - I am not your babe!
 
-3
 00:00:17.000 --&gt; 00:00:20.000
 You stupid cow,
 look what you gone and done now, ay.
@@ -188,11 +187,9 @@ jwplayer("myElement").setup({
 <pre>
 WEBVTT
 
-1
 00:00:08.000 --&gt; 00:00:10.000
 &lt;b>Nothing&lt;/b> is going on.
 
-2
 00:00:10.500 --&gt; 00:00:12.500
 &lt;font color="#3333CC"&gt;Violet, &lt;i&gt;please&lt;/i&gt;!&lt;/font&gt;
 - I am &lt;font size="20" color="#FF0000"&gt;&lt;u&gt;not&lt;/u&gt;&lt;/font&gt; your babe!
@@ -226,8 +223,6 @@ WEBVTT
 </tr><tr>
     <td>German</td><td>de</td><td>deu, ger</td>
 </tr><tr>
-    <td>Greek</td><td>el</td><td>gre, ell</td>
-</tr><tr>
     <td>Hindi</td><td>hi</td><td>hin</td>
 </tr><tr>
     <td>Hungarian</td><td>hu</td><td>hun</td>
@@ -254,11 +249,7 @@ WEBVTT
 </tr><tr>
     <td>Swedish</td><td>sv</td><td>swe</td>
 </tr><tr>
-    <td>Thai</td><td>th</td><td>tha</td>
-</tr><tr>
     <td>Turkish</td><td>tr</td><td>tur</td>
-</tr><tr>
-    <td>Vietnamese</td><td>vi</td><td>vie</td>
 </tr></table>
 
 <p>If a language code is not recognized by the player, the unmodified code is used as a label.</p>

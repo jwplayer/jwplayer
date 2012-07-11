@@ -27,9 +27,9 @@
 
 <h2>Introduction</h2>
 
-<p>JW Player skins change the appearance of the player, making it possible to match your embed to your site's aesthetic. No coding skills are required to build a skin, but proficiency with a graphics editor is (e.g. Photoshop or Illustrator).</p>
+<p>JW Player skins change the appearance of the player, making it possible to match your video embeds to your site's aesthetic. No coding skills are required to build a skin, but proficiency with a graphics editor is (e.g. Photoshop or Illustrator).</p>
 
-<p>Technically, a JW Player skin consists of an XML file that contains a number of settings (e.g. the <em>fontColor</em>) and a number of links to GIF, JPG or PNG images (e.g. for the <em>playButton</em>). These settings and elements are grouped into 5 components: Controlbar, Display, Dock, Playlist and Tooltip.</p>
+<p>Technically, a JW Player skin consists of an XML file that contains a number of settings (e.g. the <em>fontColor</em>) and a number of links to JPG or PNG images (e.g. for the <em>playButton</em>). These settings and elements are grouped into 5 components: Controlbar, Display, Dock, Playlist and Tooltip.</p>
 
 <p>When a skin design is completed, it can be packaged into a single file for faster loading. For Flash, the XML file and PNG images are compressed into a single <strong>ZIP</strong> file. For HTML5, the PNG images are embedded into the <strong>XML</strong> file as base64 encoded strings.</p>
 
@@ -45,14 +45,14 @@
 <li>The new <strong>tooltip</strong> component renders both basic tooltips, HD/CC menus and a volumeSlider.</li>
 </ul>
 
-<p>The controlbar <strong>layout</strong> block and <strong>volumeSlider</strong> will both still work in JW6, but are considered deprecated. We suggest you update your skins to use the tooltip volumeSlider, and to simply remove controlbar buttons by omitting their elements.</p>
+<p>The controlbar <strong>volumeSlider</strong> and <strong>layout</strong> block both still work in JW6, but are considered deprecated. We suggest you update your skins to use the tooltip volumeSlider, and to remove unwanted controlbar buttons by simply omitting their elements.</p>
 
 <h3>Build versus Modify</h3>
 
-<p>This guide contains all information you need to design and package a JW Player skin from scratch. However, an existing skin may already satisfy 90% of your requirements. In that case, we recommend you simply modify an existing skin instead of building one from scratch:</p>
+<p>This guide and the accompanying <a href="skin-reference.html">Skin XML Reference</a> contain all info you need to design and package a JW Player skin from scratch. However, an existing skin may already satisfy 90% of your requirements. In that case, we recommend you simply modify an existing skin instead of building one from scratch:</p>
 
 <ul>
-<li>The JW Player <a href="http://www.longtailvideo.com/addons/skins">addons library</a> contains downloads of many skins, including their source files.</li>
+<li>The JW Player <a href="http://www.longtailvideo.com/addons/skins">addons pages</a> contain downloads of several skins, including their source files.</li>
 <li>The JW Player <a href="http://developer.longtailvideo.com/trac/browser/skins">developer site</a> contains the source files of all skins within our <em>Premium</em> offering.</li>
 </ul>
 
@@ -66,19 +66,19 @@
 
 <pre>
 &lt;skin version='2' name='SkinName' author='skinAuthor'&gt;
-  &lt;components&gt;
-    &lt;component name='controlbar'&gt;
-      &lt;settings&gt;
-        &lt;setting name='...' value='...' /&gt;
-        ...
-      &lt;/settings&gt;
-      &lt;elements&gt;
-        &lt;element name='...' src='...' /&gt;
-        ...
-      &lt;/elements&gt;
-    &lt;/component&gt;
-    ...
-  &lt;/components&gt;
+   &lt;components&gt;
+      &lt;component name='controlbar'&gt;
+         &lt;settings&gt;
+            &lt;setting name='...' value='...' /&gt;
+            ...
+         &lt;/settings&gt;
+         &lt;elements&gt;
+            &lt;element name='...' src='...' /&gt;
+            ...
+         &lt;/elements&gt;
+      &lt;/component&gt;
+      ...
+   &lt;/components&gt;
 &lt;/skin&gt;
 </pre>
 

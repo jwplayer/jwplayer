@@ -28,7 +28,7 @@
 
 <h2><a name="60"></a>Version 6.0 | build 2xxx</h2>
 
-<p>Initial release of JW6. Contains no specific <em>bug fixes</em>, but a large number of enhancements. Additionally, several features present in JW5 were deprecated in this release.</p>
+<p>Initial release of JW6. Contains no specific <em>bug fixes</em>, but a large number of enhancements. Additionally, several features present in JW5 were removed to make the player smaller in size and easier to setup.</p>
 
 <h3>Player Enhancements</h3>
 
@@ -43,18 +43,20 @@
 <dd>With <strong>jwplayer.html5.js</strong> as a separate script, the HTML5 playback logic is not loaded anymore when content is played in Flash. This speeds up the player loading when Flash is used for playback.</dd>
 <dt>Improved HTML5/Flash selection</dt>
 <dd>Selection of HTML5 or Flash for rendering the player used to be based upon a single configuration option. In JW6, the player actually detects the supplied media formats and active browser capabilities to select HTML5 or Flash specifically for each visitor.</dd>
-<dt>Apple HLS support</dt>
-<dd>JW6 introduces support for playback of Apple HLS streams, in both Flash and HTML5 rendering mode. This allows publishers to use a single HTTP adaptive streaming format for playback across desktop browsers and mobile devices.</dd>
+<dt>New JavaScript API Calls</dt>
+<dd>JW6 introduces JavaScript API classes for controlling quality levels, controlling captions tracks and setting custom dock buttons. Distinct API calls are added for retrieving the rendering mode (Flash/HTML5), listening to playlist completion and listening to display clicks.</dd>
+<dt>New Skinning Options</dt>
+<dd>The skinning model of JW Player is extended to include a tooltip (for hovering dock buttons or the time slider), error messages and video titles in the display and many more small enhancements.</dd>
 </dl>
 
 
-<h3>Deprecated Functionalities</h3>
+<h3>Removed Functionalities</h3>
 
 <dl>
 <dt>Playback of JPG/PNG/GIF images</dt>
 <dd>JW6 focuses on audio/video playback. We suggest using one of the many free JavaScript image gallery scripts instead.</dd>
 <dt>Embedding with <em>&lt;embed&gt;</em> or <em>SWFObject</em></dt>
-<dd>JW6 focuses on HTML5 and mobile, leveraging its internal <strong>jwplayer.setup()</strong> method. The &lt;embed&gt; and SWFObject methods are Flash-only and therefore not supported anymore. For situations where short, simple codes are required (e.g. social sharing), we recommend using an <strong>&lt;iframe&gt;</strong> tag.</dd>
+<dd>JW6 focuses on HTML5 and mobile, leveraging its internal <strong>jwplayer.setup()</strong> method. The &lt;embed&gt; and SWFObject methods are Flash-only and therefore not supported anymore.</dd>
 <dt>Embedding over a <em>&lt;video&gt;</em> tag</dt>
 <dd>JW6 supports many functionalities not supported by a &lt;video&gt; tag (e.g. Flash rendering, RSS feeds, YouTube videos, RTMP streaming, VAST/VPaid advertising). Additionally, most of the promises of an inline &lt;video&gt; element (progressive enhancement, video SEO, accessibility) are not realized yet. Therefore, JW6 focuses on embedding using JavaScript and <strong>jwplayer.setup()</strong>.</dd>
 <dt>The <em>modes</em> block and <em>flashplayer</em> option</dt>
@@ -62,15 +64,18 @@
 <dt>SWF skinning</dt>
 <dd>The PNG/XML skinning model of JW Player is more flexible, is less error-prone and works in HTML5. Therefore, SWF skinning has been removed altogether in favor of this.</dd>
 <dt>Feeds in XSPF/ASX/ATOM format</dt>
-<dd>Media playback has standardized around Media RSS the last few years. In order to improve clarity and reduce the filesize of the player library, support for other feed formats is removed. Media RSS support is extended to work in both Flash and HTML5.</dd>
+<dd>Media playback has standardized around Media RSS the last few years. In order to improve clarity and reduce the filesize of the player library, support for other feed formats is removed.</dd>
 <dt>Loading of a <em>config</em> XML with player options</dt>
-<dd>The removal of &lt;embed&gt; support also removed the need for external XML configurations. External configurations can now be loaded as part of the player itself using an <strong>&lt;iframe&gt;</strong> tag.</dd>
+<dd>The removal of &lt;embed&gt; support also removed the need for external XML configurations. External configurations can now be loaded as part of the player itself, e.g. using an <strong>&lt;iframe&gt;</strong> tag.</dd>
 <dt>Video trimming with the <em>start</em> and <em>duration</em> options</dt>
 <dd>This functionality was removed because it works inconsistently on desktop browsers and not at all on mobile devices. We strongly urge developers that used this functionality to either trim and re-encode their actual videos (using a tool like <strong>HandBrake</strong>) or install a tool (like <strong>mod_h264</strong> or <strong>Wowza</strong>) to trim videos server side.</dd>
 <dt>The <em>link</em> and <em>displayclick</em> options</dt>
 <dd>These options were removed to tighten up the display UX and reduce the number of possible XSS security issues. Publishers can still implement Call-To-Action features in JW6 using the <strong>logo</strong> options, or respond to display clicks using the <strong>onDisplayClick</strong> API call.</dd>
-<dt>The RTMP tunneling fallback</dt>
+<dt>Captioning with DFXP files</dt>
+<dd>Since WebVTT is becoming the de facto file format for online captions, we added support for it in JW6. We removed DFXP support, leading to a considerable decrease in player filesize. A tool for converting DFXP to VTT are available on our developer site.</dd>
+<dt>RTMP tunneling fallback</dt>
 <dd>Due to the diversity of RTMP setups (ports, firewalls, protocols), the automated RTMP tunneling feature in JW5 tended to create as many issues as it solved. Therefore, this functionality was removed from JW6. Instead, we ensured <strong>onError()</strong> is called when an RTMP server cannot be reached. Publishers can then fallback from RTMP in any way they wish using a few lines of JavaScript code.</dd>
+
 </dl>
 
 </body>

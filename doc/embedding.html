@@ -23,11 +23,11 @@
 
 <h2>Player Setup</h2>
 
-<p>Since JW Player is CDN hosted, there is no need to install and upload the player to your site. Therefore, embedding the JW Player is a simple, 3-step process. Open your web page in an HTML editor and:</p>
+<p>Before a player can be embedded, the 3 JW Player files (and your media files) need to be uploaded to your site. See the <a href="quickstart.html">Quick Start</a> for more info on this. With the files online, embedding the JW Player is a simple, 3-step process. Open your web page in an HTML editor and:</p>
 
 <ol>
-<li>Insert the JW Player script from our CDN into the head of your page:
-<pre>&lt;script type="text/javascript" src="http://jwpcdn.com/player.js" &gt;&lt;/script&gt;</pre>
+<li>Embed the main JW Player script library into the head of your page (note the Flash and HTML5 player area automatically loaded):
+<pre>&lt;script type="text/javascript" src="/scripts/jwplayer.js" &gt;&lt;/script&gt;</pre>
 </li>
 <li>Insert a &lt;div&gt; element with a unique <em>id</em> at the location you want the player to appear:
 <pre>&lt;div id="myElement"&gt;Loading the player ...&lt;/div&gt;</pre>
@@ -60,7 +60,7 @@
 <dd>Array with playlist data or URL to RSS feed. Enables all sophisticated media playback options, like multiple formats, multiple quality levels or multiple items. See <a href="playlists.html">Working with Playlists</a> and <a href="feeds.html">Loading RSS Feeds</a> for more info.</dd>
 </dl>
 
-<p>Overall, the <strong>file</strong> option can be used only for basic setups, like playing a single MP4 video or MP3 song. Use the <strong>playlist</strong> option for everything else, like an MP4+WebM source, SD+HD quality or a list with multiple items. See <a href="playlists.html">Working with Playlists</a> for more info.</p>
+<p>Overall, the <strong>file</strong> option can be used only for basic setups, like playing a single MP4 video or AAC song. Use the <strong>playlist</strong> option for everything else, like an MP4+WebM source, SD+HD quality or a list with multiple items. See <a href="playlists.html">Working with Playlists</a> for more info.</p>
 
 
 <h3>Layout</h3>
@@ -73,11 +73,11 @@
 <dt>height</dt>
 <dd>Height of the player in pixels. We recommend setting this to at least <strong>180</strong>, so all UI elements will fit. However, it can be set to a small size (e.g. <strong>40</strong>) for audio-only playback. Defaults to <strong>360</strong>.</dd>
 <dt>skin</dt>
-<dd>Which skin to use for styling the player. Can be the identifier of a CDN hosted skin or the URL to a self-hosted skin. See <a href="skins.html">Using JW Player Skins</a> for more info.</dd>
+<dd>Which skin to use for styling the player. Is set to the URL of that skin on your site. See <a href="skins.html">Using JW Player Skins</a> for more info. Is not set by default, so the standard skin is used.</dd>
 <dt>stretching</dt>
 <dd>How to resize the poster and video to fit the display. Can be <strong>none</strong> (keep original dimensions), <strong>exactfit</strong> (stretch disproportionally), <strong>uniform</strong> (stretch proportionally;  black borders) or <strong>fill</strong> (stretch proportionally; parts cut off). Defaults to <strong>uniform</strong>.</dd>
 <dt>width</dt>
-<dd>Width of the player in pixels. We recommend setting this to at least <strong>320</strong>. On smaller players, certain UI elements may not fit.  Defaults to <strong>640</strong>.</dd>
+<dd>Width of the player in pixels. We recommend setting this to at least <strong>320</strong>. On smaller players, certain UI elements may not fit. Defaults to <strong>640</strong>.</dd>
 </dl>
 
 
@@ -87,17 +87,17 @@
 
 <dl>
 <dt>autostart</dt>
-<dd>Automatically start playing the video on page load. Can be <strong>true</strong> or <strong>false</strong> (default). Autostart does not work on mobile devices like iOS or Android.</dd>
+<dd>Automatically start playing the video on page load. Can be <strong>true</strong> or <strong>false</strong> (default). Autostart does not work on mobile devices like iOS and Android.</dd>
 <dt>fallback</dt>
-<dd>Whether to render a nice download link for the video if HTML5 and/or Flash are not supported. Can be <strong>true</strong> (a fallback is rendered; the default) or <strong>false</strong> (the original HTML is not touched).</dd>
+<dd>Whether to render a nice download link for the video if HTML5 and/or Flash are not supported. Can be <strong>true</strong> (a fallback is rendered) or <strong>false</strong> (the original HTML is not touched). Defaults to <strong>true</strong>.</dd>
 <dt>mute</dt>
 <dd>Whether to have the sound muted on startup or not. Can be <strong>false</strong> (default) or <strong>true</strong>.</dd>
 <dt>primary</dt>
 <dd>Which rendering mode to try first for rendering the player. Can be <strong>html5</strong> (default) or <strong>flash</strong>.</dd>
 <dt>repeat</dt>
-<dd>What to do when an item finished playback. Can be <strong>list</strong> (play the full playlist once), <strong>none</strong> (stop playback after every item), <strong>always</strong> (repeat the playlist forever) or <strong>single</strong> (repeat the active item forever).  Defaults to <strong>list</strong>.</dd>
+<dd>What to do when an item finished playback. Can be <strong>list</strong> (play the next item until playlist is done), <strong>none</strong> (stop playback after every item), <strong>always</strong> (repeat the playlist forever) or <strong>single</strong> (repeat the current item forever).  Defaults to <strong>list</strong>.</dd>
 <dt>startparam</dt>
-<dd>Querystring parameter for seeking to not-yet-download portions of FLV or MP4 files in Flash mode. Not needed for HTML5 (works by default). See <a href="pseudo.html">Pseudostreaming in Flash</a> for more info.</dd>
+<dd>Querystring parameter for seeking to not-yet-download portions of FLV or MP4 files in Flash mode. Not needed for HTML5 (where this works by default). See <a href="pseudo.html">Pseudostreaming in Flash</a> for more info.</dd>
 </dl>
 
 
@@ -125,25 +125,13 @@ jwplayer("myElement").setup({
 
 <dl>
 <dt>sidebar</dt>
-<dd>Config block for displaying a sidebar with the <a href="playlists.html#sidebar">Playlist contents</a>.</dd>
+<dd>Config block for displaying a sidebar with the <a href="playlists.html#sidebar">playlist contents</a>.</dd>
 <dt>captions</dt>
 <dd>Config block for tweaking the display of <a href="captions.html">captions or subtitles</a>.</dd>
-<dt>logo</dt>
-<dd>Config block for displaying an <a href="logo.html">on-screen watermark</a>.</dd>
 <dt>rtmp</dt>
 <dd>Config block for tweaking the playback of <a href="rtmp.html">RTMP streams</a>.</dd>
-<!--
-<dt>gapro</dt>
-<dd>Config block for pinging events to <a href="#">Google Analytics</a>.</dd>
-<dt>related</dt>
-<dd>Config block for displaying an overlay with <a href="#">Related Videos</a>.</dd>
-<dt>sharing</dt>
-<dd>Config block for displaying an overlay with <a href="#">Social Sharing links</a>.</dd>
-<dt>ova</dt>
-<dd>Config block for loading ads using the <a href="#">VAST/VPaid standards</a>.</dd>
-<dt>adtonomy</dt>
-<dd>Config block for loading ads using <a href="#">self-hosted assets</a>.</dd>
--->
+<dt>logo</dt>
+<dd>Config block for displaying an <a href="logo.html">on-screen watermark</a>.</dd>
 </dl>
 
 
