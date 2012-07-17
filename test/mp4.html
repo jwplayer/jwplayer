@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Single MP4 File</title>
+    <script type="text/javascript" src="../jwplayer.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+</head>
+<body>
+
+<h1>Single MP4 File</h1>
+<div class="all">List of test devices</div>
+<p>This test consists of a basic setup with a single MP4 video file. A small but broad set of cases is tested to check basic video playback functionalities.</p>
+
+
+
+<div id="container"></div>
+
+<script type="text/javascript">
+    jwplayer("container").setup({
+        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
+        height: 204,
+        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+        width: 480
+    });
+</script>
+
+
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Initial page load</td>
+    <td>480x200 poster image should be visible, with play button in the middle.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Click/touch to play</td>
+    <td>Video should first buffer, then play.<br/>Play icon should hide, controlbar should show up.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Click/touch to pause</td>
+    <td>Video should pause, play icon should pop up again.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Click/touch to resume</td>
+    <td>Video should resume playing from paused position.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Video completed</td>
+    <td>Controls should hide.<br/>Poster image should re-appear, with replay icon on top.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Click/touch to resume</td>
+    <td>Video should first buffer, then play.<br/>Play icon should hide, controlbar should show up.</td>
+    <td class="check"></td>
+</tr></table>
+
+
+</body>
+</html>

@@ -1,68 +1,26 @@
-body { 
-  padding: 50px; 
-  background: #EEE; 
-}
+body { padding: 50px 100px; width: 700px; font: 13px/20px Arial; background: #FFF; }
+a, h1, h2 { color: #369; }
+h1 { font-size: 32px; }
+h2 { margin-top: 40px; }
+img { display: block; margin: 0 10px; }
+pre { font-size: 12px; background: #E5F3C8; padding:5px 10px; border: 1px solid #D3EAA4; }
+dt { padding-left: 20px; font-weight: bold; }
+dd { color: #333; font-style: italic; }
+table { width: 100%; border-collapse: collapse; margin-top: 40px; }
+tr { border-bottom: 1px solid #CCC; } 
+tr:nth-child(even) { background: #EEE; }
+td,th { padding: 5px; font-size: 12px; text-align: left; vertical-align: top; }
 
-h1 {
-  font-family: Arial,Helvetica,sans-serif; 
-}
 
-.jwplayer { 
-  -webkit-box-shadow: 0 0 8px #333; 
-  -moz-box-shadow: 0 0 8px #333; 
-  -ms-box-shadow: 0 0 8px #333; 
-  box-shadow: 0 0 8px #333; 
-}
+div.core, div.all, div.flash { height: 15px; width: 100%; text-indent: -9999px; }
+div.core { background: url(core.jpg) no-repeat top left; }
+div.all { background: url(all.jpg) no-repeat top left; }
+div.flash { background: url(flash.jpg) no-repeat top left; }
 
-.test {
-  display: inline-block;
-}
+#container { box-shadow: 0 0 4px #999; }
 
-.sidebyside>div {
-  display: inline-block;
-  margin-right: 10px;
-}
-
-.label {
-  font: 18px/20px Arial; 
-  display: inline-block;
-  width: 100%;
-  text-align: center;
-}
-
-.browsers>ul {
-  position: relative;
-  display: inline-block;
-  height: 100px;
-  background-repeat: no-repeat;
-  background-size: 50px 50px;
-  background-position-x: 50%;
-  padding: 0;
-  margin: 0 0 0 40px;
-}
-
-ul.win { background-image: url('logos/win7-logo.png') }
-ul.mac { background-image: url('logos/mac-logo.png') }
-ul.phone { background-image: url('logos/phone-logo.png') }
-ul.tablet { background-image: url('logos/tablet-logo.png') }
-
-.browsers>ul li {
-  position: relative;
-  width: 40px;
-  height: 40px;
-  list-style: none;
-  display: inline-block;
-  top: 60px;
-  background-size: 100%;
-}
-
-li.chrome { background-image: url('logos/chrome-logo.png'); }
-li.firefox { background-image: url('logos/firefox-logo.png'); }
-li.firefox36 { background-image: url('logos/firefox-3.6-logo.png'); }
-li.ie9 { background-image: url('logos/ie9-logo.png'); }
-li.ie8 { background-image: url('logos/ie8-logo.png'); }
-li.safari { background-image: url('logos/safari-logo.png'); }
-li.ios4 { background-image: url('logos/ios-4-logo.png'); }
-li.ios5 { background-image: url('logos/ios-5-logo.png'); }
-li.android23 { background-image: url('logos/android-23-logo.png'); }
-li.android4 { background-image: url('logos/android-4-logo.png'); }
+td.both, td.desktop, td.mobile { width: 50px; }
+td.both { background: url(both.png) no-repeat 5px 7px; }
+td.desktop { background: url(desktop.png) no-repeat 5px 7px; }
+td.mobile { background: url(mobile.png) no-repeat 5px 7px; }
+td.check { background: url(works.png) no-repeat 5px 10px; }
