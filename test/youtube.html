@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Playing a YouTube video</title>
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+</head>
+<body>
+
+<h1>Playing a YouTube video</h1>
+<div class="all">List of test devices</div>
+<p>This test consists of a basic setup with a single YouTube video. A small but broad set of cases is tested to check basic YouTube playback functionalities.</p>
+
+
+
+<div id="container"></div>
+
+<script type="text/javascript">
+    jwplayer("container").setup({
+        file: 'http://www.youtube.com/watch?v=ac7KhViaVqc',
+        height: 204,
+        width: 480
+    });
+</script>
+
+
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Initial page load</td>
+    <td>480x200 poster image should be visible, with play icon in the middle</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="mobile"></td>
+    <td>Initial page load</td>
+    <td>YouTube player instead of JW Player should be visible on Android/iOS.<br/>Fallback devices should display <em>media not supported</em> error.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Click/touch display to play</td>
+    <td>Video should first buffer, then play.<br/>YouTube logo should popup in the bottom right corner.<br/>HD icon should pop up and get populated with quality options.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Click/touch YouTube icon</td>
+    <td>Browser should get referred to the video on YouTube.</td>
+    <td class="check"></td>
+</tr></table>
+
+
+</body>
+</html>

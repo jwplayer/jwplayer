@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Single AAC File</title>
-    <script type="text/javascript" src="../jwplayer.js"></script>
+    <title>Playing an AAC audio file</title>
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
     <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
 </head>
 <body>
 
-<h1>Single AAC File</h1>
+<h1>Playing an AAC audio file</h1>
 <div class="all">List of test devices</div>
-<p>This test consists of a basic setup with a single AAC audio file. A small but broad set of cases is tested to check basic video playback functionalities.</p>
+<p>This test consists of some basic setups with a single AAC audio file. A small but broad set of cases is tested to check basic audio playback functionalities.</p>
 
 
 <h2>Audio with Poster</h2>
@@ -34,8 +34,8 @@
     <td class="check"></td>
 </tr><tr>
     <td class="both"></td>
-    <td>Click/touch to play</td>
-    <td>Audio should first buffer, then play. Poster should stay visible.<br/>Play icon should hide, controlbar should show up.</td>
+    <td>Click/touch display to play</td>
+    <td>Audio should first buffer, then play. Poster should stay visible.<br/>Play icon should hide, controlbar should show up.<br/>Controlbar should not contain a fullscreen button.</td>
     <td class="check"></td>
 </tr></table>
 
@@ -57,12 +57,17 @@
 </tr><tr>
     <td class="both"></td>
     <td>Initial page load</td>
-    <td>Controlbar should be visible on page background. No poster/display/icon/logo.</td>
+    <td>Only controlbar should be visible. No display/logo.<br/>Controlbar should extend to edges on top of page background.</td>
     <td class="check"></td>
 </tr><tr>
     <td class="both"></td>
-    <td>Click/touch to play</td>
+    <td>Click/touch play button</td>
     <td>Audio should first buffer, then play.<br/>Controlbar should remain visible after mouseout.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Mouse over controls</td>
+    <td>Timeslider and volume tooltips should not appear.</td>
     <td class="check"></td>
 </tr></table>
 

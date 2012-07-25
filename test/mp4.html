@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Single MP4 File</title>
-    <script type="text/javascript" src="../jwplayer.js"></script>
+    <title>Playing an MP4 video file</title>
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
     <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
 </head>
 <body>
 
-<h1>Single MP4 File</h1>
+<h1>Playing an MP4 video file</h1>
 <div class="all">List of test devices</div>
 <p>This test consists of a basic setup with a single MP4 video file. A small but broad set of cases is tested to check basic video playback functionalities.</p>
 
 
+
+<h2>Basic MP4 Embed</h2>
 
 <div id="container"></div>
 
@@ -35,18 +37,23 @@
     <td class="check"></td>
 </tr><tr>
     <td class="both"></td>
-    <td>Click/touch to play</td>
+    <td>Click/touch display to play</td>
     <td>Video should first buffer, then play.<br/>Play icon should hide, controlbar should show up.</td>
     <td class="check"></td>
 </tr><tr>
     <td class="both"></td>
-    <td>Click/touch to pause</td>
+    <td>Click/touch display to pause</td>
     <td>Video should pause, play icon should pop up again.</td>
     <td class="check"></td>
 </tr><tr>
     <td class="both"></td>
-    <td>Click/touch to resume</td>
+    <td>Click/touch display to resume</td>
     <td>Video should resume playing from paused position.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Click/touch seekbar to seek</td>
+    <td>Video should play from to new position.</td>
     <td class="check"></td>
 </tr><tr>
     <td class="both"></td>
@@ -55,7 +62,7 @@
     <td class="check"></td>
 </tr><tr>
     <td class="both"></td>
-    <td>Click/touch to resume</td>
+    <td>Click/touch display to replay</td>
     <td>Video should first buffer, then play.<br/>Play icon should hide, controlbar should show up.</td>
     <td class="check"></td>
 </tr></table>

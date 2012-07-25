@@ -1,4 +1,4 @@
-body { padding: 50px 100px; width: 700px; font: 13px/20px Arial; background: #FFF; }
+body { padding: 50px 100px; width: 720px; font: 13px/20px Arial; background: #FFF; }
 a, h1, h2 { color: #369; }
 h1 { font-size: 32px; }
 h2 { margin-top: 40px; }
@@ -6,7 +6,7 @@ img { display: block; margin: 0 10px; }
 pre { font-size: 12px; background: #E5F3C8; padding:5px 10px; border: 1px solid #D3EAA4; }
 dt { padding-left: 20px; font-weight: bold; }
 dd { color: #333; font-style: italic; }
-table { width: 100%; border-collapse: collapse; margin-top: 40px; }
+table { width: 100%; border-collapse: collapse; margin: 20px 0; }
 tr { border-bottom: 1px solid #CCC; } 
 tr:nth-child(even) { background: #EEE; }
 td,th { padding: 5px; font-size: 12px; text-align: left; vertical-align: top; }
@@ -17,7 +17,6 @@ div.core { background: url(core.jpg) no-repeat top left; }
 div.all { background: url(all.jpg) no-repeat top left; }
 div.flash { background: url(flash.jpg) no-repeat top left; }
 
-#container { box-shadow: 0 0 4px #999; }
 
 td.both, td.desktop, td.mobile { width: 50px; }
 td.both { background: url(both.png) no-repeat 5px 7px; }

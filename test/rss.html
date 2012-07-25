@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Playing an RSS feed</title>
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+</head>
+<body>
+
+<h1>Playing an RSS feed</h1>
+<div class="core">List of test devices</div>
+<p>This test consists of a basic setup with an RSS feed. The feed contains 3 MP4 video files.</p>
+
+
+
+<h2>Without Sidebar &amp; Repeat</h2>
+<div id="container"></div>
+<script type="text/javascript">
+    jwplayer("container").setup({
+        height: 270,
+        playlist: 'files/basic.rss',
+        width: 480
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Initial page load</td>
+    <td>480x200 poster image should be visible, with play button in the middle.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Click/touch display to play</td>
+    <td>Controlbar should pop up, including a next/prev button.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>First video completed</td>
+    <td>Player should proceed to load/play the next video in the playlist.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Third video completed</td>
+    <td>Player should show <em>replay</em> icon over poster of last video.</td>
+    <td class="check"></td>
+</tr></table>
+
+
+
+<h2>With Sidebar &amp; Repeat</h2>
+<div id="container2"></div>
+<script type="text/javascript">
+    jwplayer("container2").setup({
+        height: 270,
+        playlist: 'files/basic.rss',
+        repeat: true,
+        sidebar: {
+            size: 240,
+            position: 'right'
+        },
+        width: 720
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Initial page load</td>
+    <td>Sidebar listing 3 videos should be displayed next to the player.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Third video completed</td>
+    <td>Player should load/play the first video again.</td>
+    <td class="check"></td>
+</tr></table>
+
+
+
+</body>
+</html>
