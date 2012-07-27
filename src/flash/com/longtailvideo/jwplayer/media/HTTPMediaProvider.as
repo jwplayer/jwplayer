@@ -75,7 +75,8 @@ package com.longtailvideo.jwplayer.media {
 			_connection = new NetConnection();
 			_connection.connect(null);
 			_stream = new NetStream(_connection);
-			_stream.checkPolicyFile = true;
+			//This is not needed; only used if accessing video's bitmap data
+			//_stream.checkPolicyFile = true;
 			_stream.addEventListener(NetStatusEvent.NET_STATUS, statusHandler);
 			_stream.addEventListener(IOErrorEvent.IO_ERROR, errorHandler);
 			_stream.addEventListener(AsyncErrorEvent.ASYNC_ERROR, errorHandler);

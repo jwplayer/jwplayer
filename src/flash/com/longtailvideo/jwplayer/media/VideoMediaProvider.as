@@ -105,7 +105,8 @@ package com.longtailvideo.jwplayer.media {
 				} else {
 					media = _video;
 				}
-				_stream.checkPolicyFile = true;
+				//This is not needed; only used if accessing video's bitmap data
+				//_stream.checkPolicyFile = true;
 				var filePath:String = Strings.getAbsolutePath(itm.file, config['netstreambasepath']);
 				_stream.play(filePath);
 				_stream.pause();

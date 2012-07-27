@@ -19,7 +19,7 @@
 			mp4: video+mp4,
 			vorbis: audio+ogg,
 			webm: video+webm,
-			aac: audio+aac,
+			aac: audio+mp4,
 			mp3: audio+mp3,
 			hls: "application/vnd.apple.mpegurl"
 		},

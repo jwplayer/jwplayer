@@ -57,9 +57,6 @@ package com.longtailvideo.jwplayer.view.components {
 			if (player.config.dock) {
 				player.addEventListener(PlayerStateEvent.JWPLAYER_PLAYER_STATE, stateHandler);
 				player.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_COMPLETE, playlistComplete);
-				RootReference.stage.addEventListener(Event.MOUSE_LEAVE, mouseLeftStage);
-				RootReference.stage.addEventListener(MouseEvent.MOUSE_MOVE, moveHandler);
-				RootReference.stage.addEventListener(KeyboardEvent.KEY_DOWN, moveHandler);
 				alpha = 0;
 			}
 			settings = {
@@ -112,8 +109,8 @@ package com.longtailvideo.jwplayer.view.components {
 			button.setOutIcon(icon);
 			button.setAlphas(Number(settings.iconalpha), Number(settings.iconalphaover), Number(settings.iconalphaactive));
 			button.outBackground = getSkinElement('button');
-			button.overBackground = getSkinElement('buttonOver');
-			button.activeBackground = getSkinElement('buttonActive');
+			button.overBackground = getSkinElement('buttonOver') ? getSkinElement('buttonOver') : getSkinElement('button');
+			button.activeBackground = getSkinElement('buttonActive') ? getSkinElement('buttonActive') : getSkinElement('button');
 			button.clickFunction = clickHandler;
 			button.label = label;
 			button.init();
@@ -206,19 +203,19 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 		
 		/** Start the fade timer **/
-		private function startFader():void {
+/*		private function startFader():void {
 			if (!isNaN(timeout)) {
 				clearTimeout(timeout);
 			}
 			timeout = setTimeout(moveTimeout, 2000);
 		}
-		
-		/** If the mouse leaves the stage, hide the dock **/
+*/		
+/*		/** If the mouse leaves the stage, hide the dock 
 		private function mouseLeftStage(evt:Event=null):void {
 			moveTimeout();
 		}
 		
-		/** Show the buttons on mousemove. **/
+		/** Show the buttons on mousemove. 
 		private function moveHandler(evt:Event = null):void {
 			clearTimeout(timeout);
 			if (hidden) { return; }
@@ -235,7 +232,7 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 		
 		
-		/** Hide the buttons again when move has timed out. **/
+		/** Hide the buttons again when move has timed out. 
 		private function moveTimeout():void {
 			if (hidden) return;
 			
@@ -244,6 +241,7 @@ package com.longtailvideo.jwplayer.view.components {
 			
 		}
 
+*/	
 		private function fadeComplete(evt:Event):void {
 			if (alpha == 0) {
 				visible = false;
@@ -258,7 +256,7 @@ package com.longtailvideo.jwplayer.view.components {
 
 		/** Process state changes **/
 		private function stateHandler(evt:PlayerStateEvent = undefined):void {
-			switch (player.state) {
+/*			switch (player.state) {
 				case PlayerState.IDLE:
 					clearTimeout(timeout);
 					if (!hidden) {
@@ -273,20 +271,22 @@ package com.longtailvideo.jwplayer.view.components {
 					startFader();
 					break;
 			}
-		}
+*/		}
 		
 		public override function show():void {
-			if (player.config.dock && hidden) {
-				_hiding = false;
-				this.visible = true;
+			if (player.config.dock) {
+				//_hiding = false;
+				//this.visible = true;
+				animations.fade(1, 0.5);
 				sendShow();
 			}
 		}
 
 		public override function hide():void {
-			if (player.config.dock && !hidden) {
-				_hiding = true;
-				this.visible = false;
+			if (player.config.dock) {
+				//_hiding = true;
+				//this.visible = false;
+				animations.fade(0, 0.5);
 				sendHide();
 			}
 		}

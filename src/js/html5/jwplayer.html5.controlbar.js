@@ -174,6 +174,8 @@
 				_volumeHandler();
 				_muteHandler();
 			}, 0);
+			
+			this.visible = false;
 		}
 		
 		function _addEventListeners() {
@@ -261,13 +263,17 @@
 		}
 		
 		function _playlistHandler(evt) {
+			var hidden = { display: JW_CSS_NONE },
+				not_hidden = { display: UNDEFINED };
 			if (_api.jwGetPlaylist().length < 2 || _sidebarShowing()) {
-				_css(_internalSelector(".jwnext"), { display: JW_CSS_NONE });
-				_css(_internalSelector(".jwprev"), { display: JW_CSS_NONE });
+				_css(_internalSelector(".jwnext"), hidden);
+				_css(_internalSelector(".jwprev"), hidden);
 			} else {
-				_css(_internalSelector(".jwnext"), { display: UNDEFINED });
-				_css(_internalSelector(".jwprev"), { display: UNDEFINED });
+				_css(_internalSelector(".jwnext"), not_hidden);
+				_css(_internalSelector(".jwprev"), not_hidden);
 			}
+			_css(_internalSelector(".jwhdOn"), hidden);
+			_css(_internalSelector(".jwhdOff"), hidden);
 			_redraw();
 		}
 		
@@ -947,10 +953,14 @@
 			}
 		}
 		
-		this.getDisplayElement = function() {
+		this.element = function() {
 			return _controlbar;
 		};
-		
+
+		this.margin = function() {
+			return parseInt(_settings.margin);
+		};
+
 		function _setBuffer(pct) {
 			pct = Math.min(Math.max(0, pct), 1);
 			if (_elements.timeSliderBuffer) {
@@ -1017,10 +1027,12 @@
 		}
 		
 		this.show = function() {
+			this.visible = true;
 			_css(_internalSelector(), { opacity: 1, visibility: "visible" });
 		}
 		
 		this.hide = function() {
+			this.visible = false;
 			_css(_internalSelector(), { opacity: 0, visibility: JW_CSS_HIDDEN });
 		}
 		

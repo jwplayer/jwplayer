@@ -92,7 +92,7 @@
 				},
 				overStyle = {color:_config.overcolor};
 			_button = new html5.displayicon(_display.id+"_button", _api, outStyle, overStyle);
-			_display.appendChild(_button.getDisplayElement());
+			_display.appendChild(_button.element());
 		}
 		
 
@@ -161,7 +161,7 @@
 			_setVisibility(D_PREVIEW_CLASS, !state);
 		}
 
-		this.getDisplayElement = function() {
+		this.element = function() {
 			return _display;
 		}
 		

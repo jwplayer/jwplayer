@@ -9,6 +9,7 @@
 		events = jwplayer.events, 
 		states = events.state, 
 		_css = utils.css,
+		_bounds = utils.bounds,
 
 		D_CLASS = ".jwdock", 
 		UNDEFINED = undefined,
@@ -38,6 +39,8 @@
 			_container; 
 
 		function _init() {
+			this.visible = false;
+			
 			_container = _createElement("div", "jwdock");
 			_container.id = _id;
 
@@ -55,7 +58,7 @@
 			
 			_css(_internalSelector(), {
 				height: button.height,
-				margin: _config.margin
+				padding: _config.margin
 			});
 
 			_css(_internalSelector("button"), {
@@ -65,8 +68,8 @@
 				background: button.src
 			});
 			
-			_css(_internalSelector("button:hover"), { background: buttonOver.src });
-			_css(_internalSelector("button:active"), { background: buttonActive.src });
+			if (buttonOver.src) _css(_internalSelector("button:hover"), { background: buttonOver.src });
+			if (buttonActive.src) _css(_internalSelector("button:active"), { background: buttonActive.src });
 			_css(_internalSelector("button>div"), { opacity: _config.iconalpha });
 			_css(_internalSelector("button:hover>div"), { opacity: _config.iconalphaover });
 			_css(_internalSelector("button:active>div"), { opacity: _config.iconalphaactive});
@@ -108,31 +111,39 @@
 		
 		function _positionTooltip(name) {
 			var tooltip = _tooltips[name],
-				tipBounds = utils.bounds(tooltip.element()),
+				tipBounds,
 				button = _buttons[name],
-				buttonBounds = utils.bounds(button.icon);
-			
+				buttonBounds = _bounds(button.icon),
+				dockBounds = _bounds(_container);
+
+			tooltip.offsetX(0);
 			_css('#' + tooltip.element().id, {
-				left: buttonBounds.left
+				left: buttonBounds.left - dockBounds.left + buttonBounds.width / 2
 			});
-			
-			
-//			if (containerBounds.left > tipBounds.left) {
-//				//tooltip.offsetX(containerBounds.left - tipBounds.left);
-//			}
+			tipBounds = _bounds(tooltip.element());
+			if (dockBounds.left > tipBounds.left) {
+				tooltip.offsetX(dockBounds.left - tipBounds.left);
+			}
+
 		}
 	
-		this.getDisplayElement = function() {
+		this.element = function() {
 			return _container;
+		}
+		
+		this.offset = function(offset) {
+			_css(_internalSelector(), { 'margin-left': offset });
 		}
 
 		this.hide = function() {
+			this.visible = false;
 			_css(_internalSelector(), {
 				opacity: 0
 			});
 		}
 
 		this.show = function() {
+			this.visible = true;
 			_css(_internalSelector(), {
 				visibility: "visible",
 				opacity: 1
@@ -217,7 +228,7 @@
 	
 	
 	_css(D_CLASS + " button", {
-		position: "relative"
+		position: "relative",
 	});
 	
 	_css(D_CLASS + " > *", {
@@ -257,17 +268,6 @@
 		'background-position': "center",
 		'background-repeat': "no-repeat"
 	});
-
-//	_css(D_CLASS + " button .jwoverlay", {
-//		opacity: 0,
-//		visibility: "hidden",
-//		left: "50%"
-//	});
-//
-//	_css(D_CLASS + " button:hover .jwoverlay", {
-//		opacity: 1,
-//		visibility: "visible"
-//	});
 
 	utils.transitionStyle(D_CLASS, "background .15s, opacity .15s");
 	utils.transitionStyle(D_CLASS + " button div", "opacity .15s");

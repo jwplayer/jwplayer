@@ -10,6 +10,7 @@ package com.longtailvideo.jwplayer.view.components {
 	public class TimeSlider extends Slider {
 		private var _duration:Number;
 		private var _tooltip:TooltipOverlay;
+		private var _audioMode:Boolean = false;
 		
 		public function TimeSlider(name:String, skin:ISkin) {
 			super(name, skin);
@@ -37,10 +38,10 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 		
 		private function overHandler(evt:MouseEvent):void {
-			_tooltip.show();
+			if (!_audioMode) _tooltip.show();
 		}
 
-		private function outHandler(evt:MouseEvent):void {
+		private function outHandler(evt:MouseEvent = null):void {
 			_tooltip.hide();
 		}
 		
@@ -49,6 +50,11 @@ package com.longtailvideo.jwplayer.view.components {
 			_tooltip.x = evt.stageX;
 			_tooltip.y = _rail.localToGlobal(new Point(0, 0)).y;
 			_tooltip.text = Strings.digits(_duration * evt.localX / _width);
+		}
+		
+		public function audioMode(state:Boolean):void {
+			_audioMode = state;
+			if (_audioMode) outHandler();
 		}
 	}
 }

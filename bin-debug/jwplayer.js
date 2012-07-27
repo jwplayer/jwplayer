@@ -18,7 +18,7 @@ jwplayer = function(container) {
 
 var $jw = jwplayer;
 
-jwplayer.version = '6.0.2312';
+jwplayer.version = '6.0.2325';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -389,7 +389,7 @@ jwplayer.source = document.createElement("source");/**
 			mp4: video+mp4,
 			vorbis: audio+ogg,
 			webm: video+webm,
-			aac: audio+aac,
+			aac: audio+mp4,
 			mp3: audio+mp3,
 			hls: "application/vnd.apple.mpegurl"
 		},

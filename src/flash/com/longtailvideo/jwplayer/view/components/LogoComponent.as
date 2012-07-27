@@ -1,30 +1,17 @@
-package com.longtailvideo.jwplayer.view {
-	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
-	import com.longtailvideo.jwplayer.player.IPlayer;
-	import com.longtailvideo.jwplayer.player.PlayerState;
-	import com.longtailvideo.jwplayer.utils.Animations;
-	import com.longtailvideo.jwplayer.utils.Draw;
-	import com.longtailvideo.jwplayer.utils.Logger;
-	import com.longtailvideo.jwplayer.utils.RootReference;
-	import com.longtailvideo.jwplayer.utils.Strings;
+package com.longtailvideo.jwplayer.view.components {
+	import com.longtailvideo.jwplayer.events.*;
+	import com.longtailvideo.jwplayer.player.*;
+	import com.longtailvideo.jwplayer.utils.*;
+	import com.longtailvideo.jwplayer.view.interfaces.*;
 	
-	import flash.display.Bitmap;
-	import flash.display.DisplayObject;
-	import flash.display.Loader;
-	import flash.display.MovieClip;
-	import flash.events.ErrorEvent;
-	import flash.events.Event;
-	import flash.events.IOErrorEvent;
-	import flash.events.MouseEvent;
-	import flash.external.ExternalInterface;
-	import flash.net.URLRequest;
-	import flash.net.navigateToURL;
-	import flash.system.LoaderContext;
-	import flash.utils.clearTimeout;
-	import flash.utils.setTimeout;
+	import flash.display.*;
+	import flash.events.*;
+	import flash.external.*;
+	import flash.net.*;
+	import flash.system.*;
+	import flash.utils.*;
 	
-	
-	public class Logo extends MovieClip {
+	public class LogoComponent extends CoreComponent implements IPlayerComponent {
 		/** Configuration defaults **/
 		protected var defaults:Object = {
 			prefix: "http://l.longtailvideo.com/flash/", 
@@ -32,36 +19,43 @@ package com.longtailvideo.jwplayer.view {
 			link: "http://www.longtailvideo.com/players/jw-flv-player/",
 			linktarget: "_top",
 			margin: 8, 
-			out: 0.5, 
+			out: 1, 
 			over: 1, 
-			timeout: 5,
-			hide: "true",
-			position: "bottom-left"
+			//timeout: 5,
+			//hide: "true",
+			position: "top-right"
 		}
-		/** Reference to the player **/
-		protected var _player:IPlayer;
 		/** Reference to the current fade timer **/
-		protected var timeout:uint;
+		protected var timeoutInterval:uint;
+		/** Seconds after fading in to hide logo again **/
+		protected var timeout:Number = 2;
 		/** Reference to the loader **/
 		protected var loader:Loader;
 		/** Animations handler **/
 		protected var animations:Animations;
 		/** Whether the buffer icon has been shown for this item **/
 		protected var _alreadyShown:Boolean = false;
+		/** Whether the logo is currently visible **/
+		protected var _showing:Boolean = false;
 		
 		/** Dimensions **/
 		protected var _width:Number;
 		protected var _height:Number;
 		
+		/** Callback to execute when load is complete **/
+		protected var _loadCallback:Function;
+		
 		/** Constructor **/
-		public function Logo(player:IPlayer) {
-			super();
+		public function LogoComponent(player:IPlayer, loadCallback:Function=null) {
+			super(player, "logo");
 			animations = new Animations(this);
 			_player = player;
-			player.addEventListener(PlayerStateEvent.JWPLAYER_PLAYER_STATE, stateHandler);
+			
 			setupDefaults();
 			setupMouseEvents();
 			loadFile();
+			alpha = 0;
+			_loadCallback = loadCallback;
 		}
 		
 		/**
@@ -75,8 +69,6 @@ package com.longtailvideo.jwplayer.view {
 			this.mouseChildren = false;
 			this.buttonMode = true;
 			if (getConfigParam('link')) {
-				addEventListener(MouseEvent.MOUSE_OVER, overHandler);
-				addEventListener(MouseEvent.MOUSE_OUT, outHandler);
 				addEventListener(MouseEvent.CLICK, clickHandler);
 			} else {
 				this.mouseEnabled = false;
@@ -106,14 +98,14 @@ package com.longtailvideo.jwplayer.view {
 		
 		/** Logo loaded - add to display **/
 		protected function loaderHandler(evt:Event):void {
-			if (getConfigParam('hide').toString() == "true" 
+/*			if (getConfigParam('hide').toString() == "true" 
 					&& !(_player.state == PlayerState.BUFFERING || _player.state == PlayerState.PLAYING) ) {
 				visible = false;
 			}
-			if (loader is DisplayObject) {
+*/			if (loader is DisplayObject) {
 				addChild(loader);
-				resize(_width, _height);
-				outHandler();
+				if (_loadCallback != null) _loadCallback();
+//				resize(_width, _height);
 			} else {
 				Logger.log("Logo was not a display object");
 			}
@@ -149,46 +141,33 @@ package com.longtailvideo.jwplayer.view {
 		}
 		
 
-		/** Handles state changes **/
-		protected function stateHandler(evt:PlayerStateEvent):void {
-			switch(_player.state) {
-				case PlayerState.BUFFERING:
-					if (!_alreadyShown) {
-						clearTimeout(timeout);
-						_alreadyShown = true;
-						show();
-					}
-					break;
-				case PlayerState.IDLE:
-					_alreadyShown = false;
-					break;
-			}
-		}
-		
-		
 		/** Fade in **/
-		protected function show():void {
-			if (getConfigParam('hide').toString() == "true") {
+		override public function show():void {
+//			if (getConfigParam('hide').toString() == "true") {
 				visible = true;
-				alpha = 0;
-				animations.fade(getConfigParam('out'), 0.1);
-				timeout = setTimeout(hide, getConfigParam('timeout') * 1000);
+				_showing = true;
+				//alpha = 0;
+				clearTimeout(timeoutInterval);
+				animations.fade(getConfigParam('out'), 0.5);
+				timeoutInterval = setTimeout(hide, timeout * 1000);
 				mouseEnabled = true;
-			}
+//			}
 		}
 		
 		
 		/** Fade out **/
-		protected function hide():void {
-			if (getConfigParam('hide').toString() == "true") {
+		override public function hide():void {
+//			if (getConfigParam('hide').toString() == "true") {
 				mouseEnabled = false;
-				animations.fade(0, 0.1);
-			}
+				_showing = false;
+				animations.fade(0, 0.5);
+				clearTimeout(timeoutInterval);
+//			}
 		}
 		
 		
 		/** Resizes the logo **/
-		public function resize(width:Number, height:Number):void {
+		override public function resize(width:Number, height:Number):void {
 			_width = width;
 			_height = height;
 			var image:DisplayObject = loader ? loader : null;
@@ -209,10 +188,18 @@ package com.longtailvideo.jwplayer.view {
 			}
 		}
 		
+		public function get position():String {
+			return String(getConfigParam('position')).toLowerCase();
+		}
+		
+		public function get margin():Number {
+			return Number(getConfigParam('margin'));
+		}
 		
 		/** Gets a configuration parameter **/
-		protected function getConfigParam(param:String):* {
+		override protected function getConfigParam(param:String):* {
 			return defaults[param];
 		}
+
 	}
 }

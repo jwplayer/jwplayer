@@ -130,7 +130,8 @@ package com.longtailvideo.jwplayer.view.components
 		public function set text(s:String):void {
 			_text.visible = Boolean(s);
 			if (s) {
-				if (getSkinSetting("fontcase").toLowerCase() == "upper") s = s.toUpperCase();
+				var fontcase:String = getSkinSetting("fontcase");
+				if (fontcase && fontcase.toLowerCase() == "upper") s = s.toUpperCase();
 				_text.text = s;
 				_text.x = _text.y = 0;
 				_text.width = _text.textWidth + 10;

@@ -1,39 +1,17 @@
 package com.longtailvideo.jwplayer.view.components {
-	import com.longtailvideo.jwplayer.events.ComponentEvent;
-	import com.longtailvideo.jwplayer.events.MediaEvent;
-	import com.longtailvideo.jwplayer.events.PlayerEvent;
-	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
-	import com.longtailvideo.jwplayer.events.PlaylistEvent;
-	import com.longtailvideo.jwplayer.events.ViewEvent;
-	import com.longtailvideo.jwplayer.model.Color;
-	import com.longtailvideo.jwplayer.player.IPlayer;
-	import com.longtailvideo.jwplayer.player.PlayerState;
-	import com.longtailvideo.jwplayer.plugins.PluginConfig;
-	import com.longtailvideo.jwplayer.utils.Animations;
-	import com.longtailvideo.jwplayer.utils.Logger;
-	import com.longtailvideo.jwplayer.utils.RootReference;
-	import com.longtailvideo.jwplayer.utils.Strings;
-	import com.longtailvideo.jwplayer.view.interfaces.IControlbarComponent;
+	import com.longtailvideo.jwplayer.events.*;
+	import com.longtailvideo.jwplayer.model.*;
+	import com.longtailvideo.jwplayer.player.*;
+	import com.longtailvideo.jwplayer.plugins.*;
+	import com.longtailvideo.jwplayer.utils.*;
+	import com.longtailvideo.jwplayer.view.interfaces.*;
 	
-	import flash.accessibility.AccessibilityProperties;
-	import flash.display.DisplayObject;
-	import flash.display.MovieClip;
-	import flash.display.Sprite;
-	import flash.events.Event;
-	import flash.events.KeyboardEvent;
-	import flash.events.MouseEvent;
-	import flash.events.TimerEvent;
-	import flash.geom.ColorTransform;
-	import flash.geom.Point;
-	import flash.geom.Rectangle;
-	import flash.text.StyleSheet;
-	import flash.text.TextField;
-	import flash.text.TextFieldAutoSize;
-	import flash.text.TextFormat;
-	import flash.ui.Mouse;
-	import flash.utils.Timer;
-	import flash.utils.clearTimeout;
-	import flash.utils.setTimeout;
+	import flash.accessibility.*;
+	import flash.display.*;
+	import flash.events.*;
+	import flash.geom.*;
+	import flash.text.*;
+	import flash.utils.*;
 
 
 	/**
@@ -128,7 +106,7 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _height:Number;
 		protected var _timeSlider:Slider;
 		protected var _volSlider:Slider;
-		protected var _forcing:Boolean = false;
+		protected var _audioMode:Boolean = false;
 		protected var _hdState:Boolean = false;
 		protected var _levels:Array;
 		protected var _currentQuality:Number = 0;
@@ -183,9 +161,6 @@ package com.longtailvideo.jwplayer.view.components {
 			player.addEventListener(MediaEvent.JWPLAYER_MEDIA_LEVEL_CHANGED, levelChanged);
 			player.addEventListener(PlayerEvent.JWPLAYER_LOCKED, lockHandler);
 			player.addEventListener(PlayerEvent.JWPLAYER_UNLOCKED, lockHandler);
-			RootReference.stage.addEventListener(Event.MOUSE_LEAVE, mouseLeftStage);
-			RootReference.stage.addEventListener(MouseEvent.MOUSE_MOVE, moveHandler);
-			RootReference.stage.addEventListener(KeyboardEvent.KEY_DOWN, moveHandler);
 		}
 
 
@@ -206,10 +181,6 @@ package com.longtailvideo.jwplayer.view.components {
 			redraw();
 		}
 
-		private function get fadeOnTimeout():Boolean {
-			return getConfigParam('position') == 'over' || (_player.config.fullscreen && getConfigParam('position') != 'none');
-		}
-		
 		private function get hideOnIdle():Boolean {
 			return String(getConfigParam('idlehide')) == "true";
 		}
@@ -219,80 +190,10 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 		
 		private function get volumeVertical():Boolean {
-			return (String(getConfigParam('volumeorientation')).toLowerCase() != "horizontal");
-		}
-		
-		private function startFader():void {
-			if (fadeOnTimeout && !hidden) {
-				if (!isNaN(_fadingOut)) {
-					clearTimeout(_fadingOut);
-				}
-				_fadingOut = setTimeout(moveTimeout, 2000);
-			}
-		}
-		
-		private function stopFader():void {
-			if (hidden) return;
-			
-			if (alpha == 0) {
-				sendShow();
-				animations.fade(1, 0.5);
-			}
-			if (!isNaN(_fadingOut)) {
-				clearTimeout(_fadingOut);
-				Mouse.show();
-			}
-		}
-		
-		/** Show above controlbar on mousemove or keyboard press and restart the countdown. **/
-		private function moveHandler(evt:Event=null):void {
-			if (_player.state != PlayerState.IDLE) {
-				stopFader();
-				startFader();
-			}
-		}
-		
-		/** Hide above controlbar again when move has timed out. **/
-		private function moveTimeout(evt:Event=null):void {
-			if (!hidden && !_forcing) {
-				if (alpha > 0) {
-					sendHide();
-					animations.fade(0, 0.5);
-					hideOverlays();
-				}
-				if (_fullscreen) {
-					Mouse.hide();
-				}					
-			}
-		}
-		
-		/** If the mouse leaves the stage, hide the controlbar if position is 'over' **/
-		private function mouseLeftStage(evt:Event=null):void {
-			if (fadeOnTimeout && !hidden && !_forcing) {
-				if (_player.state != PlayerState.IDLE) {
-					if (evt) { sendHide(); }
-					animations.fade(0);
-					hideOverlays();
-				}
-			}
+			return (getSkinElement("volumeSliderCapTop") != null);
 		}
 		
 		private function stateHandler(evt:PlayerEvent=null):void {
-			switch(_player.state) {
-				case PlayerState.BUFFERING:
-				case PlayerState.PLAYING:
-				case PlayerState.PAUSED:
-					stopFader();
-					startFader();
-					break;
-				case PlayerState.IDLE:
-					if (hideOnIdle) {
-						mouseLeftStage();
-					} else {
-						stopFader();
-					}
-					break;
-			}
 			updateControlbarState();
 			redraw();
 		}
@@ -381,8 +282,9 @@ package com.longtailvideo.jwplayer.view.components {
 				hideButton("normalscreen");
 			}
 			
-			if (!_levels || _levels.length == 0) {
-				hideButton('hdOon');
+			if (!_levels || _levels.length < 2) {
+				newLayout = newLayout.replace(/\|?(hdOn|hdOff)/g, "");
+				hideButton('hdOn');
 				hideButton('hdOff');
 			} else {
 				if (!_hdState) {
@@ -599,6 +501,7 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 
 		private function showHdOverlay(evt:MouseEvent):void {
+			if (_audioMode) return;
 			if (_hdOverlay && _levels && _levels.length > 2) _hdOverlay.show();
 			hideVolumeOverlay();
 			hideFullscreenOverlay();
@@ -719,6 +622,7 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 
 		private function showFullscreenOverlay(evt:MouseEvent):void {
+			if (_audioMode) return;
 			if (_fullscreenOverlay) _fullscreenOverlay.show();
 			hideHdOverlay();
 			hideVolumeOverlay();
@@ -731,6 +635,7 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 
 		private function showVolumeOverlay(evt:MouseEvent):void {
+			if (_audioMode) return;
 			if (_volumeOverlay) _volumeOverlay.show();
 			hideHdOverlay();
 			hideFullscreenOverlay();
@@ -894,10 +799,7 @@ package com.longtailvideo.jwplayer.view.components {
 			if (_fullscreen != _player.config.fullscreen) {
 				_fullscreen = _player.config.fullscreen;
 				_sentShow = false;
-				stopFader();
-			}
-			if (!_fullscreen) {
-				Mouse.show();
+				//stopFader();
 			}
 			if (visible && alpha > 0) {
 				sendShow();
@@ -923,8 +825,8 @@ package com.longtailvideo.jwplayer.view.components {
 			positionOverlay(_volumeOverlay, player.config.mute ? getButton('unmute') : getButton('mute'));
 			positionOverlay(_fullscreenOverlay, player.config.fullscreen ? getButton('normalscreen') : getButton('fullscreen'));
 			
-			if (_forcing) {
-				stopFader();
+			if (_audioMode) {
+				//stopFader();
 			}
 		}
 
@@ -990,23 +892,28 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 
 		override public function show():void {
-			if (getConfigParam('position') != "none" && _hiding) {
-				_hiding = false;
-				this.visible = true;
+			if (getConfigParam('position') == "over") {
+//				_hiding = false;
+//				this.visible = true;
+				animations.fade(1, .5);
 				sendShow();
 			}
 		}
 		
-		public function force(state:Boolean):void {
-			_forcing = state;
+		public function audioMode(state:Boolean):void {
+			_audioMode = state;
 			stateHandler();
-			moveTimeout();
+			(_timeSlider as TimeSlider).audioMode(state);
+			if (state) show();
+			//moveTimeout();
 		}
 		
 		override public function hide():void {
-			if (getConfigParam('position') != "none" && !_hiding) {
-				_hiding = true;
-				this.visible = false;
+			if (getConfigParam('position') == "over" && !_audioMode) {
+//				_hiding = true;
+//				this.visible = false;
+				animations.fade(0, .5);
+				hideOverlays();
 				sendHide();
 			}
 		}

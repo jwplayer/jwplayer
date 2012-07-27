@@ -74,14 +74,14 @@
 					_sendEvent(_events.JWPLAYER_INSTREAM_CLICK, evt);
 				}
 			});
-			_instreamContainer.appendChild(_disp.getDisplayElement());
+			_instreamContainer.appendChild(_disp.element());
 
 			// Instream controlbar (if not iOS/Android)
 			if (!_utils.isMobile()) {
 //				_cbar = new html5.controlbar(_self, _utils.extend({},_model.plugins.config.controlbar, {}));
 				_cbar = new html5.controlbar(_self);
 //				if (_model.plugins.config.controlbar.position == html5.view.positions.OVER) {
-					_instreamContainer.appendChild(_cbar.getDisplayElement());
+					_instreamContainer.appendChild(_cbar.element());
 //				} else {
 //					var cbarParent = _model.plugins.object.controlbar.getDisplayElement().parentNode;
 //					cbarParent.appendChild(_cbar.getDisplayElement());
@@ -115,7 +115,7 @@
 			// Return the view to its normal state
 			_view.destroyInstream();
 			// If we added the controlbar anywhere, let's get rid of it
-			if (_cbar) try { _cbar.getDisplayElement().parentNode.removeChild(_cbar.getDisplayElement()); } catch(e) {}
+			if (_cbar) try { _cbar.element().parentNode.removeChild(_cbar.getDisplayElement()); } catch(e) {}
 			// Let listeners know the instream player has been destroyed, and why
 			_sendEvent(_events.JWPLAYER_INSTREAM_DESTROYED, {reason:(complete ? "complete":"destroyed")}, true);
 			// Re-attach the controller

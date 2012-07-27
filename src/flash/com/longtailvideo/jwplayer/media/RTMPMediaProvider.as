@@ -536,7 +536,8 @@ package com.longtailvideo.jwplayer.media {
 		/** Start the netstream object. **/
 		private function setStream():void {
 			_stream = new NetStream(_connection);
-			_stream.checkPolicyFile = true;
+			//This is not needed; it's ignored for RTMP anyway
+			//_stream.checkPolicyFile = true;
 			_stream.addEventListener(NetStatusEvent.NET_STATUS, statusHandler);
 			_stream.addEventListener(IOErrorEvent.IO_ERROR, errorHandler);
 			_stream.addEventListener(AsyncErrorEvent.ASYNC_ERROR, errorHandler);

@@ -57,7 +57,7 @@
 			_bottomHeight;
 
 
-		this.getDisplayElement = function() {
+		this.element = function() {
 			return _wrapper;
 		};
 

@@ -38,6 +38,7 @@ package com.longtailvideo.jwplayer.view {
 			addLayout('controlbar');
 			addLayout('display');			
 			addLayout('dock');	
+			addLayout('logo');	
 			
 			generateLayout();
 		} 
