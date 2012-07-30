@@ -32,14 +32,14 @@
 
 	/** Filters the sources by taking the first playable type and eliminating sources of a different type **/
 	utils.filterSources = function(sources) {
-		var selectedType, newSources;
+		var selectedType, newSources, extensionmap = utils.extensionmap;
 		if (sources) {
 			newSources = [];
 			for (var i=0; i<sources.length; i++) {
 				var type = sources[i].type,
 					file = sources[i].file;
 				if (!type) {
-					type = utils.extension(file);
+					type = extensionmap.extType(utils.extension(file));
 					sources[i].type = type;
 				}
 

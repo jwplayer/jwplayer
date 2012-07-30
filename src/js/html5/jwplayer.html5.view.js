@@ -300,6 +300,9 @@
 					_updateState(_api.jwGetState());
 				}
 			}
+			if (_logo && _audioMode) {
+				_hideLogo();
+			}
 			_css(_internalSelector(), {
 				'background-color': _audioMode ? 'transparent' : _display.getBGColor()
 			});
@@ -386,14 +389,14 @@
 			if (_dock && !_audioMode) _dock.show();
 		}
 		function _hideDock() {
-			if (_dock && !_forcedControls) _dock.hide();
+			if (_dock && (!_forcedControls || _audioMode)) _dock.hide();
 		}
 
 		function _showLogo() {
 			if (_logo && !_audioMode) _logo.show();
 		}
 		function _hideLogo() {
-			if (_logo && !_forcedControls) _logo.hide();
+			if (_logo && (!_forcedControls || _audioMode)) _logo.hide();
 		}
 
 		function _showDisplay() {

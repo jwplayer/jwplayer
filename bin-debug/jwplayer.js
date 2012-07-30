@@ -18,7 +18,7 @@ jwplayer = function(container) {
 
 var $jw = jwplayer;
 
-jwplayer.version = '6.0.2330';
+jwplayer.version = '6.0.2331';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -435,6 +435,10 @@ jwplayer.source = document.createElement("source");/**
 		for (var type in mimeMap) {
 			if (mimeMap[type] == mime) return type;
 		}
+	}
+
+	_extensionmap.extType = function(extension) {
+		return _extensionmap.mimeType(html5Extensions[extension]);
 	}
 
 })(jwplayer.utils);

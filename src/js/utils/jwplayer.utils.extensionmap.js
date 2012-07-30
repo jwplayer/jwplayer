@@ -67,4 +67,8 @@
 		}
 	}
 
+	_extensionmap.extType = function(extension) {
+		return _extensionmap.mimeType(html5Extensions[extension]);
+	}
+
 })(jwplayer.utils);

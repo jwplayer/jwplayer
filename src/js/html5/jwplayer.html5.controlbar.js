@@ -496,6 +496,7 @@
 		}
 		
 		function _showVolume() {
+			if (_audioMode) return;
 			_volumeOverlay.show();
 			_hideOverlays('volume');
 		}
@@ -508,6 +509,7 @@
 		}
 		
 		function _showFullscreen() {
+			if (_audioMode) return;
 			_fullscreenOverlay.show();
 			_hideOverlays('fullscreen');
 		}
@@ -778,7 +780,7 @@
 		}
 
 		function _showTimeTooltip(evt) {
-			if (_timeOverlay && _duration) {
+			if (_timeOverlay && _duration && !_audioMode) {
 				_timeOverlay.show();
 			}
 		}
