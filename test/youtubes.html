@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>YouTube video playback</title>
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+</head>
+<body>
+
+<h1>YouTube video playback</h1>
+<div class="core">List of test devices</div>
+<p>This test consists of several setups that test aspects of the YouTube chromeless player integration.</p>
+
+
+
+<h2>Poster and fallback</h2>
+
+<div id="container"></div>
+
+<script type="text/javascript">
+    jwplayer("container").setup({
+        file: 'http://www.youtube.com/watch?v=ac7KhViaVqc',
+        height: 272,
+        image: "http://content.bitsontherun.com/thumbs/bkaovAYt-640.jpg",
+        width: 640
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop">
+    <td>Initial page load</td>
+    <td>A Big Buck Bunny poster image should be visible.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="mobile">
+    <td>Initial page load</td>
+    <td>A fallback should be visible, displaying poster image and device-specific controls.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="mobile">
+    <td>Touch poster image</td>
+    <td>YouTube video should start playing, using device specific controls.</td>
+    <td class="check"></td>
+</tr></table>
+
+
+
+<h2>URL schemes</h2>
+
+<div id="container2"></div>
+
+<script type="text/javascript">
+    jwplayer("container2").setup({
+        playlist: [{
+            file: 'http://www.youtube.com/watch?v=ac7KhViaVqc',
+            title: 'http://www.youtube.com/watch?v=ac7KhViaVqc'
+        },{
+            file: 'http://www.youtube.com/watch#!v=ac7KhViaVqc',
+            title: 'http://www.youtube.com/watch#!v=ac7KhViaVqc'
+        },{
+            file: 'http://www.youtube.com/v/ac7KhViaVqc',
+            title: 'http://www.youtube.com/v/ac7KhViaVqc'
+        },{
+            file: 'http://youtu.be/ac7KhViaVqc',
+            title: 'http://youtu.be/ac7KhViaVqc'
+        }],
+        height: 204,
+        listbar: {
+            position: 'right',
+            style: 'basic',
+            size: '240'
+        },
+        width: 720
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop">
+    <td>Initial page load</td>
+    <td>Player with listbar should render, displaying 4 entries.<br/>A Sintel poster image (loaded from YT should render in the display.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Click on first playlist item</td>
+    <td>First playlist item should playback</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Click on second playlist item</td>
+    <td>Second playlist item should playback</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Click on third playlist item</td>
+    <td>Third playlist item should playback</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Click on fourth playlist item</td>
+    <td>Fourth playlist item should playback</td>
+    <td class="check"></td>
+</tr></table>
+
+
+
+<h2>Quality levels</h2>
+
+<div id="container3"></div>
+<script type="text/javascript">
+    jwplayer("container3").setup({
+        playlist: [{
+            file: 'http://www.youtube.com/watch?v=XSGBVzeBUbk',
+            title: '1080p YT video'
+        },{
+            file: 'http://www.youtube.com/watch?v=dQw4w9WgXcQ',
+            title: '480p YT video'
+        },{
+            file: 'http://www.youtube.com/watch?v=WiloZd1H4ow',
+            title: '240p YT video'
+        }],
+        height: 270,
+        listbar: {
+            position: 'right',
+            style: 'basic',
+            size: '240'
+        },
+        width: 720
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop">
+    <td>Play first item</td>
+    <td>Controlbar should display HD menu with 6 options.<br/>
+        The <em>auto</em> option should be preselected.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Select <em>small</em> quality in HD menu.</td>
+    <td>Video should toggle to low quality.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Select <em>hd720</em> quality in HD menu.</td>
+    <td>Video should toggle to high quality.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Play second item</td>
+    <td>Controlbar should display HD menu with 4 options.<br/>
+        The <em>auto</em> option should be preselected.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Play third item</td>
+    <td>HD menu should disappear (only 240p)</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Play first item again</td>
+    <td>HD menu should popup again</td>
+    <td class="check"></td>
+</tr></table>
+
+
+
+<h2>Media errors</h2>
+
+<div id="container4"></div>
+<script type="text/javascript">
+    jwplayer("container4").setup({
+        playlist: [{
+            file: 'http://www.youtube.com/watch?v=XSGBVzeBUb',
+            title: 'Incorrect key example'
+        },{
+            file: 'http://www.youtube.com/watch?v=1XSGBVzeBUb',
+            title: 'Video not found example'
+        },{
+            file: 'http://www.youtube.com/watch?v=P_29eUpSYpI',
+            title: 'Embed not allowed example'
+        },{
+            file: 'http://www.youtube.com/watch?v=WiloZd1H4ow',
+            title: 'Video all OK example'
+        }],
+        height: 270,
+        listbar: {
+            position: 'right',
+            style: 'basic',
+            size: '240'
+        },
+        width: 720
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop">
+    <td>Play first item</td>
+    <td>Error message: <em>Error loading YouTube: Video ID is invalid</em></td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Play second item</td>
+    <td>Error message: <em>Error loading YouTube: Video removed or private</em></td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Play third item</td>
+    <td>Error message: <em>Error loading YouTube: Embedding not allowed</em></td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Play fourth item</td>
+    <td>Video should play just fine.</td>
+    <td class="check"></td>
+</tr></table>
+
+
+</body>
+</html>
