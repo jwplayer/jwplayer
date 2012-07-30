@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2331';
+	jwplayer.html5.version = '6.0.2334';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -128,14 +128,16 @@
 	function _ajaxComplete(xmlhttp, xmldocpath, completecallback, errorcallback) {
 		return function() {
 			// Handle the case where an XML document was returned with an incorrect MIME type.
-			if (!utils.exists(xmlhttp.responseXML)) {
-				var parsedXML = utils.parseXML(xmlhttp.responseText);
-				if (parsedXML) {
-					xmlhttp = utils.extend({}, xmlhttp, {responseXML:parsedXML});
-				} else {
-					if (errorcallback) errorcallback(xmldocpath);
-					return;
-				}
+			try {
+				if (xmlhttp.responseXML) return completecallback(xmlhttp);
+			} catch (e) {}
+
+			var parsedXML = utils.parseXML(xmlhttp.responseText);
+			if (parsedXML) {
+				xmlhttp = utils.extend({}, xmlhttp, {responseXML:parsedXML});
+			} else {
+				if (errorcallback) errorcallback(xmldocpath);
+				return;
 			}
 			completecallback(xmlhttp);
 		}
@@ -4535,7 +4537,7 @@
 		utils.extend(this, _eventDispatcher);
 		
 		this.load = function(playlistfile) {
-			utils.ajax(playlistfile, _playlistLoaded, _playlistError)
+			utils.ajax(playlistfile, _playlistLoaded, _playlistError);
 		}
 		
 		function _playlistLoaded(loadedEvent) {

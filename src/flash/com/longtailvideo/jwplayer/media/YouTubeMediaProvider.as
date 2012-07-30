@@ -246,7 +246,7 @@ package com.longtailvideo.jwplayer.media {
 			if (!_qualityLevels || _qualityLevels.length == 0) {
 				var levels:Array = _ytAPI.getAvailableQualityLevels();
 				if (levels && levels.length > 0) {
-					_qualityLevels = [{label: "auto"}];
+					_qualityLevels = [];
 					for each (var level:String in levels) {
 						_qualityLevels.push({label:level});
 						if (_userQuality == level) {
@@ -254,12 +254,13 @@ package com.longtailvideo.jwplayer.media {
 						}
 					}
 					if (_qualityLevels.length > 2) {
+						_qualityLevels.unshift({label: "auto"});
 						sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_META, { metadata: { youtubequalitylevels: _qualityLevels } });
-						sendQualityEvent(MediaEvent.JWPLAYER_MEDIA_LEVELS, _qualityLevels, _currentQuality);
 						if (_currentQuality > 0) {
 							currentQuality = _currentQuality;
 						}
 					}
+					sendQualityEvent(MediaEvent.JWPLAYER_MEDIA_LEVELS, _qualityLevels, _currentQuality);
 				}
 			}
 			

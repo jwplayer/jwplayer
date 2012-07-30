@@ -119,14 +119,16 @@
 	function _ajaxComplete(xmlhttp, xmldocpath, completecallback, errorcallback) {
 		return function() {
 			// Handle the case where an XML document was returned with an incorrect MIME type.
-			if (!utils.exists(xmlhttp.responseXML)) {
-				var parsedXML = utils.parseXML(xmlhttp.responseText);
-				if (parsedXML) {
-					xmlhttp = utils.extend({}, xmlhttp, {responseXML:parsedXML});
-				} else {
-					if (errorcallback) errorcallback(xmldocpath);
-					return;
-				}
+			try {
+				if (xmlhttp.responseXML) return completecallback(xmlhttp);
+			} catch (e) {}
+
+			var parsedXML = utils.parseXML(xmlhttp.responseText);
+			if (parsedXML) {
+				xmlhttp = utils.extend({}, xmlhttp, {responseXML:parsedXML});
+			} else {
+				if (errorcallback) errorcallback(xmldocpath);
+				return;
 			}
 			completecallback(xmlhttp);
 		}

@@ -12,7 +12,7 @@
 		utils.extend(this, _eventDispatcher);
 		
 		this.load = function(playlistfile) {
-			utils.ajax(playlistfile, _playlistLoaded, _playlistError)
+			utils.ajax(playlistfile, _playlistLoaded, _playlistError);
 		}
 		
 		function _playlistLoaded(loadedEvent) {

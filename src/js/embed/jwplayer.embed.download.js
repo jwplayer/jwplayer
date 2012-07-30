@@ -30,17 +30,20 @@
 
 
 		function _embed() {
-			if (params.playlist && params.playlist.length) {
+			var file, image, youtube, i, playlist = params.playlist, item, sources; 
+			if (playlist && playlist.length) {
+				item = playlist[0];
+				sources = item.sources;
 				// TODO: make sure source can be downloaded (mp4, flv, webm, aac, mp3 or vorbis)
 				// If no downlaodable files, and youtube, display youtube
 				// If nothing, show error message
-				var file, image, youtube;
-				for (var i=0; i<params.playlist[0].sources.length; i++) {
-					var source = params.playlist[0].sources[i];
+				for (i=0; i<sources.length; i++) {
+					var source = sources[i], 
+						type = source.type ? source.type : utils.extensionmap.extType(utils.extension(source.file));
 					if (source.file) {
-						if (("mp4,mp4,flv,webm,aac,mp3,vorbis").split().indexOf(source.type) > -1) {
+						if (("mp4,mp4,flv,webm,aac,mp3,vorbis").split(",").indexOf(type) > -1) {
 							file = source.file;
-							image = source.image;
+							image = item.image;
 							continue;
 						} else if (utils.isYouTube(source.file)){
 							youtube = source.file;

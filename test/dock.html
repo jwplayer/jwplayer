@@ -4,7 +4,6 @@
 
     <title>Dock icon test page</title>
     <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
-    <script type="text/javascript" src="../bin-debug/jwplayer.html5.js"></script>
 
 	  <style type="text/css">
 	  	.wrapper {
@@ -32,14 +31,13 @@
       	<option value="../../../tags/skins/snel/snel.zip">snel</option>
       	<option value="../../../tags/skins/stijl/stijl.zip">stijl</option>
       	<option value="../../../skins/bekle/src/bekle.xml" >bekle</option>
-      	<option value="../../../skins/six/src/six.xml" selected>six</option>
+      	<option selected value="../../../skins/six/src/six.xml">six</option>
       </select>
 	  mode: <select name="mode" onchange="init()">
       	<option selected value="">html5</option>
       	<option value="flash">flash</option>
       </select>
-      <input type="submit" value="go"/>
-  	<input type="submit" value="go" />
+	  <input type="submit" value="go" />
   </form>
   
   
@@ -78,7 +76,6 @@
 				  title: "Error test", 
                   description: "This item will cause a player error"
 			  }],
-		      mobilecontrols: true,
 		      primary: form.mode.options[form.mode.selectedIndex].value,
 		      repeat: "none",
 	    	});
@@ -107,13 +104,13 @@
 	    function add(idx) {
 	    	switch (idx) {
 	    	case 0:
-	    		jwplayer().getPlugin("dock").addButton("/plugins/related/assets/icon.png", "Related button", function () { alert("related clicked") }, "related");
+	    		jwplayer().getPlugin("dock").addButton("/plugins/related/assets/icon.png", "Related", function () { alert("related clicked") }, "related");
 	    		break;
 	    	case 1:
-	    		jwplayer().getPlugin("dock").addButton("/plugins/sharing/assets/icon.png", "Sharing button", function () { alert("sharing clicked") }, "sharing");
+	    		jwplayer().getPlugin("dock").addButton("/plugins/sharing/assets/icon.png", "Sharing", function () { alert("sharing clicked") }, "sharing");
 	    		break;
 	    	case 2:
-	    		jwplayer().getPlugin("dock").addButton("/plugins/hd/assets/dock.png", "HD button", function () { alert("hd clicked") }, "hd");
+	    		jwplayer().getPlugin("dock").addButton("/plugins/hd/assets/dock.png", "HD", function () { alert("hd clicked") }, "hd");
 	    		break;
 	    	}
 	    }
