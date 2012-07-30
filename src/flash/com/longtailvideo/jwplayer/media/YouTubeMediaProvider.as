@@ -158,18 +158,18 @@ package com.longtailvideo.jwplayer.media {
 			if (!isNaN(errorCode)) {
 				switch (errorCode) {
 					case 2:
-						error("Invalid video ID: " + _videoId);
+						error("Error loading YouTube: Video ID is invalid");
 						break;
 					case 100:
-						error("The requested video could not be found, or has been marked as private.");
+						error("Error loading YouTube: Video removed or private");
 						break;
 					case 101:
 					case 150:
-						error("The requested video is not allowed to be played in embedded players.");
+						error("Error loading YouTube: Embedding not allowed");
 						break;
 				}
 			} else {
-				error("An unknown error occurred in the YouTube MediaProvider");
+				error("Error loading YouTube: API connection error");
 			}
 			
 		}
@@ -253,7 +253,7 @@ package com.longtailvideo.jwplayer.media {
 							_currentQuality = _qualityLevels.length - 1;
 						}
 					}
-					if (_qualityLevels.length > 1) {
+					if (_qualityLevels.length > 2) {
 						sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_META, { metadata: { youtubequalitylevels: _qualityLevels } });
 						sendQualityEvent(MediaEvent.JWPLAYER_MEDIA_LEVELS, _qualityLevels, _currentQuality);
 						if (_currentQuality > 0) {

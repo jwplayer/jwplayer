@@ -55,16 +55,20 @@
     jwplayer("container2").setup({
         playlist: [{
             file: 'http://www.youtube.com/watch?v=ac7KhViaVqc',
-            title: 'http://www.youtube.com/watch?v=ac7KhViaVqc'
+            title: 'URL using "watch?v="'
         },{
             file: 'http://www.youtube.com/watch#!v=ac7KhViaVqc',
-            title: 'http://www.youtube.com/watch#!v=ac7KhViaVqc'
+            title: 'URL using "watch#!v="'
         },{
             file: 'http://www.youtube.com/v/ac7KhViaVqc',
-            title: 'http://www.youtube.com/v/ac7KhViaVqc'
+            title: 'URL using "/v/"'
         },{
             file: 'http://youtu.be/ac7KhViaVqc',
-            title: 'http://youtu.be/ac7KhViaVqc'
+            title: 'URL using "youtu.be/"'
+        },{
+            file: 'ac7KhViaVqc',
+            title: 'URL using ID and "type"',
+            type: "youtube"
         }],
         height: 204,
         listbar: {
@@ -81,7 +85,7 @@
 </tr><tr>
     <td class="desktop">
     <td>Initial page load</td>
-    <td>Player with listbar should render, displaying 4 entries.<br/>A Sintel poster image (loaded from YT should render in the display.</td>
+    <td>Player with listbar should render, displaying 5 entries.<br/>A Sintel poster image (loaded from YT should render in the display.</td>
     <td class="check"></td>
 </tr><tr>
     <td class="desktop">
@@ -102,6 +106,11 @@
     <td class="desktop">
     <td>Click on fourth playlist item</td>
     <td>Fourth playlist item should playback</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Click on fifth playlist item</td>
+    <td>Fifth playlist item should playback</td>
     <td class="check"></td>
 </tr></table>
 
