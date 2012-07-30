@@ -18,7 +18,7 @@ jwplayer = function(container) {
 
 var $jw = jwplayer;
 
-jwplayer.version = '6.0.2325';
+jwplayer.version = '6.0.2330';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -1426,6 +1426,11 @@ jwplayer.source = document.createElement("source");/**
 			_config.modes = (_config.primary == "flash") ? [_modes.flash, _modes.html5] : [_modes.html5, _modes.flash]; 
 		}
 		
+		if (_config.listbar) {
+			_config.playlistsize = _config.listbar.size;
+			_config.playlistposition = _config.listbar.position;
+		}
+		
 		_setSources(_config.modes, _config.base, { html5: _config.html5player, flash: _config.flashplayer })
 		
 		_normalizePlaylist(_config);
@@ -1990,6 +1995,8 @@ jwplayer.source = document.createElement("source");/**
 		 * Determines if a Flash can play a particular file, based on its extension
 		 */
 		function _flashCanPlay(file, type) {
+			if (utils.isYouTube(file)) return true;
+			
 			var mappedType = utils.extensionmap[type ? type : utils.extension(file)];
 			
 			// If no type or unrecognized type, don't allow to play

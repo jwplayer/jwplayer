@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2325';
+	jwplayer.html5.version = '6.0.2330';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -373,6 +373,19 @@
 	
 	utils.rotate = function(domelement, deg) {
 		utils.transform(domelement, "rotate(" + deg + "deg)");
+	};
+	
+	utils.cssReset = function() {
+		utils.css("div, span, a, img, ul, li, video", {
+			margin: 0,
+			padding: 0,
+			border: 0,
+			'font-size': "100%",
+			font: 'inherit',
+			'vertical-align': 'baseline'
+		});
+		
+		utils.css("ul", { 'list-style': "none" });
 	};
 
 })(jwplayer.utils);/**
@@ -5752,6 +5765,8 @@
 		utils.extend(this, _eventDispatcher);
 
 		function _init() {
+			utils.cssReset();
+			
 			_playerElement = _createElement("div", PLAYER_CLASS);
 			_playerElement.id = _api.id;
 			
@@ -6125,8 +6140,6 @@
 			}
 			if (_dock) {}
 			
-			console.log(height);
-				
 		}
 		
 		// Subtracts rect2 rectangle from rect1 rectangle's area

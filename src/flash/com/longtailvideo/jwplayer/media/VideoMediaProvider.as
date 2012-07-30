@@ -62,7 +62,7 @@ package com.longtailvideo.jwplayer.media {
 			_stream.client = new NetClient(this);
 			_transformer = new SoundTransform();
 			_video = new Video(320, 240);
-			_video.smoothing = config.smoothing;
+			_video.smoothing = true;
 			_video.attachNetStream(_stream);
 		}
 		

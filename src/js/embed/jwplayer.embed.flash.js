@@ -255,6 +255,8 @@
 		 * Determines if a Flash can play a particular file, based on its extension
 		 */
 		function _flashCanPlay(file, type) {
+			if (utils.isYouTube(file)) return true;
+			
 			var mappedType = utils.extensionmap[type ? type : utils.extension(file)];
 			
 			// If no type or unrecognized type, don't allow to play

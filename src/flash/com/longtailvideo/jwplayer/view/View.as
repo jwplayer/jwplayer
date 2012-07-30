@@ -634,6 +634,9 @@ package com.longtailvideo.jwplayer.view {
 				case PlayerState.IDLE:
 					imageDelay.start();
 					break;
+				case PlayerState.BUFFERING:
+					showControls();
+					break;
 				case PlayerState.PLAYING:
 				case PlayerState.PAUSED:
 					mediaDelay.start();

@@ -42,6 +42,11 @@
 			_config.modes = (_config.primary == "flash") ? [_modes.flash, _modes.html5] : [_modes.html5, _modes.flash]; 
 		}
 		
+		if (_config.listbar) {
+			_config.playlistsize = _config.listbar.size;
+			_config.playlistposition = _config.listbar.position;
+		}
+		
 		_setSources(_config.modes, _config.base, { html5: _config.html5player, flash: _config.flashplayer })
 		
 		_normalizePlaylist(_config);

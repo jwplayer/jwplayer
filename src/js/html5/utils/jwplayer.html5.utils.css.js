@@ -164,5 +164,18 @@
 	utils.rotate = function(domelement, deg) {
 		utils.transform(domelement, "rotate(" + deg + "deg)");
 	};
+	
+	utils.cssReset = function() {
+		utils.css("div, span, a, img, ul, li, video", {
+			margin: 0,
+			padding: 0,
+			border: 0,
+			'font-size': "100%",
+			font: 'inherit',
+			'vertical-align': 'baseline'
+		});
+		
+		utils.css("ul", { 'list-style': "none" });
+	};
 
 })(jwplayer.utils);

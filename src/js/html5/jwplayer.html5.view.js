@@ -62,6 +62,8 @@
 		utils.extend(this, _eventDispatcher);
 
 		function _init() {
+			utils.cssReset();
+			
 			_playerElement = _createElement("div", PLAYER_CLASS);
 			_playerElement.id = _api.id;
 			
@@ -435,8 +437,6 @@
 			}
 			if (_dock) {}
 			
-			console.log(height);
-				
 		}
 		
 		// Subtracts rect2 rectangle from rect1 rectangle's area
