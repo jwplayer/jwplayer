@@ -3,6 +3,7 @@ package com.longtailvideo.jwplayer.utils {
 	import flash.display.MovieClip;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
+	import flash.utils.Dictionary;
 	
 	
 	/**
@@ -27,12 +28,21 @@ package com.longtailvideo.jwplayer.utils {
 		private var _str:String;
 		/** The function to execute on enter_frame **/
 		private var frameHandler:Function;
+		/** Static reference mapping all Animation obects to their targets. **/
+		private static var targetMapping:Dictionary;
+		  
 		
 		/** Constructor 
 		 * @param tgt	The Movielip to animate.
 		 **/
 		public function Animations(tgt:DisplayObject) {
 			_tgt = tgt;
+			if (!targetMapping) targetMapping = new Dictionary(true);
+			if (targetMapping[_tgt]) {
+				var anim:Animations = targetMapping[_tgt] as Animations;
+				anim.cancelAnimation();
+			}
+			targetMapping[_tgt] = this; 
 		}
 		
 		/**

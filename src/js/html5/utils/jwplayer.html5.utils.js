@@ -120,9 +120,11 @@
 		return function() {
 			// Handle the case where an XML document was returned with an incorrect MIME type.
 			try {
-				if (xmlhttp.responseXML) return completecallback(xmlhttp);
+				// This will throw an error on Windows Mobile 7.5.  We want to trigger the error so that we can move 
+				// down to the next section
+				var xml = xmlhttp.responseXML;
+				return completecallback(xmlhttp);
 			} catch (e) {}
-
 			var parsedXML = utils.parseXML(xmlhttp.responseText);
 			if (parsedXML) {
 				xmlhttp = utils.extend({}, xmlhttp, {responseXML:parsedXML});

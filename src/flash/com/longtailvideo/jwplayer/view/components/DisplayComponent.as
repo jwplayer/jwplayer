@@ -194,7 +194,7 @@
 				if (!oldIcon) {
 					_icon.alpha = 0;
 				}
-				(new Animations(_icon).fade(1));
+				new Animations(_icon).fade(1);
 
 				positionIcon();
 				_iconArea = _icon.getRect(_overlay);
@@ -206,8 +206,8 @@
 				if (sendHideEvent) {
 					sendHide();
 				}
-				if (_icon && _icon.alpha > 0) {
-					(new Animations(_icon).fade(0));
+				if (_icon && _icon.parent && _icon.parent == _overlay) {
+					new Animations(_icon).fade(0);
 				}
 				_iconArea = null;
 			}
@@ -239,6 +239,7 @@
 			if (_previousState != currentState || !(event is PlayerStateEvent)) {
 				_previousState = currentState;
 				clearRotation();
+				clearDisplay();
 				_bufferStateTimer.reset();
 				_playStateTimer.reset();
 				_bufferStateTimer.delay = (_icon ? 10 : 200);
@@ -257,16 +258,14 @@
 							_playStateTimer.start();
 						}
 						break;
-					default:
-						clearDisplay();
 				}
 			}
 		}
 		
 		protected function showBufferIcon(evt:TimerEvent):void {
 			var icon:DisplayIcon = getIcon('buffer');
-			setDisplay(icon, '');
 			icon.setRotation(_bufferRotationAngle, _bufferRotationTime);
+			setDisplay(icon, '');
 			
 		}
 

@@ -1,7 +1,5 @@
 package com.longtailvideo.jwplayer.view.components {
-	import com.longtailvideo.jwplayer.utils.Animations;
-	import com.longtailvideo.jwplayer.utils.Draw;
-	import com.longtailvideo.jwplayer.utils.RootReference;
+	import com.longtailvideo.jwplayer.utils.*;
 	
 	import flash.display.*;
 	import flash.events.*;

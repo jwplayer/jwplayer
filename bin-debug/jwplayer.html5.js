@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2338';
+	jwplayer.html5.version = '6.0.2339';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -129,9 +129,11 @@
 		return function() {
 			// Handle the case where an XML document was returned with an incorrect MIME type.
 			try {
-				if (xmlhttp.responseXML) return completecallback(xmlhttp);
+				// This will throw an error on Windows Mobile 7.5.  We want to trigger the error so that we can move 
+				// down to the next section
+				var xml = xmlhttp.responseXML;
+				return completecallback(xmlhttp);
 			} catch (e) {}
-
 			var parsedXML = utils.parseXML(xmlhttp.responseText);
 			if (parsedXML) {
 				xmlhttp = utils.extend({}, xmlhttp, {responseXML:parsedXML});
@@ -4541,11 +4543,14 @@
 		}
 		
 		function _playlistLoaded(loadedEvent) {
+			alert("playlist loaded");
 			try {
 				var rss = loadedEvent.responseXML.firstChild;
 				if (html5.parsers.localName(rss) == "xml") {
 					rss = rss.nextSibling;
+					alert(rss);
 				}
+				
 				
 				if (html5.parsers.localName(rss) != "rss") {
 					_playlistError("Playlist is not a valid RSS feed.");
@@ -4567,6 +4572,7 @@
 		}
 		
 		function _playlistError(msg) {
+			alert("playlist error");
 			_eventDispatcher.sendEvent(events.JWPLAYER_ERROR, {
 				message: msg ? msg : 'Could not load playlist an unknown reason.'
 			});
