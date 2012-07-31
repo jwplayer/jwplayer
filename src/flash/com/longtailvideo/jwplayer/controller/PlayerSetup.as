@@ -1,26 +1,17 @@
 package com.longtailvideo.jwplayer.controller {
-	import com.longtailvideo.jwplayer.events.PlayerEvent;
-	import com.longtailvideo.jwplayer.events.PlaylistEvent;
-	import com.longtailvideo.jwplayer.model.Model;
-	import com.longtailvideo.jwplayer.player.IPlayer;
-	import com.longtailvideo.jwplayer.plugins.IPlugin;
-	import com.longtailvideo.jwplayer.plugins.PluginConfig;
-	import com.longtailvideo.jwplayer.utils.Configger;
-	import com.longtailvideo.jwplayer.utils.Logger;
-	import com.longtailvideo.jwplayer.utils.Strings;
-	import com.longtailvideo.jwplayer.view.View;
-	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
-	import com.longtailvideo.jwplayer.view.skins.DefaultSkin;
-	import com.longtailvideo.jwplayer.view.skins.PNGSkin;
-	import com.longtailvideo.jwplayer.view.skins.SkinProperties;
-	import com.longtailvideo.jwplayer.view.skins.ZIPSkin;
+	import com.longtailvideo.jwplayer.events.*;
+	import com.longtailvideo.jwplayer.model.*;
+	import com.longtailvideo.jwplayer.player.*;
+	import com.longtailvideo.jwplayer.plugins.*;
+	import com.longtailvideo.jwplayer.utils.*;
+	import com.longtailvideo.jwplayer.view.*;
+	import com.longtailvideo.jwplayer.view.interfaces.*;
+	import com.longtailvideo.jwplayer.view.skins.*;
 	
-	import flash.display.DisplayObject;
-	import flash.events.ErrorEvent;
-	import flash.events.Event;
-	import flash.events.EventDispatcher;
-	import flash.events.TimerEvent;
-	import flash.utils.Timer;
+	import flash.display.*;
+	import flash.events.*;
+	import flash.net.*;
+	import flash.utils.*;
 
 	/**
 	 * Sent when the all of the setup steps have successfully completed.
@@ -77,6 +68,7 @@ package com.longtailvideo.jwplayer.controller {
 			tasker.queueTask(setupView);
 			tasker.queueTask(loadPlugins, loadPluginsComplete);
 			tasker.queueTask(loadPlaylist, loadPlaylistComplete);
+			tasker.queueTask(loadPreview);
 			tasker.queueTask(initPlugins);
 			
 			tasker.runTasks();
@@ -178,14 +170,14 @@ package com.longtailvideo.jwplayer.controller {
 		}
 
 		protected function setupView():void {
-//			try {
+			try {
 				_view.setupView();
-//			} catch (e:Error) {
-//				tasker.failure(new ErrorEvent(ErrorEvent.ERROR, false, false, "View setup failed: " + e.message));
-//			}
+			} catch (e:Error) {
+				tasker.failure(new ErrorEvent(ErrorEvent.ERROR, false, false, "Error setting up the player: " + e.message));
+			}
 			tasker.success();
 		}
-
+		
 		protected function loadPlugins():void {
 			if (_model.config.plugins) {
 				var loader:PluginLoader = new PluginLoader();
@@ -231,6 +223,17 @@ package com.longtailvideo.jwplayer.controller {
 		protected function loadPlaylistComplete(event:Event=null):void {
 			_model.playlist.removeEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_LOADED, tasker.success);
 			_model.playlist.removeEventListener(PlayerEvent.JWPLAYER_ERROR, tasker.failure);
+		}
+		
+		protected function loadPreview():void {
+			if (_model.playlist.length > 0 && _model.playlist.currentItem.image) {
+				var imageLoader:Loader = new Loader();
+				imageLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, tasker.success);
+				imageLoader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, tasker.failure);
+				imageLoader.load(new URLRequest(_model.playlist.currentItem.image));
+			} else {
+				tasker.success();
+			}
 		}
 
 		protected function initPlugins():void {

@@ -580,18 +580,14 @@ package com.longtailvideo.jwplayer.view {
 
 		protected function loadImage(url:String):void {
 			_image.visible = true;
-			_image.load(new URLRequest(url), new LoaderContext(true));
+			//_image.load(new URLRequest(url), new LoaderContext(true));
+			_image.load(new URLRequest(url));
 		}
 
 
 		protected function imageComplete(evt:Event):void {
 			if (_image) {
 				resizeImage(_player.config.width, _player.config.height);
-				try {
-					Draw.smooth(_image.content as Bitmap);
-				} catch (e:Error) {
-					//Could not smooth preview image
-				}
 				if (_model.state != PlayerState.PLAYING && _model.state != PlayerState.PAUSED) { 
 					showImage();
 				}

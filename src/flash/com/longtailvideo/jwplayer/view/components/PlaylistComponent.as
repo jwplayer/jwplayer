@@ -616,11 +616,6 @@ package com.longtailvideo.jwplayer.view.components {
 					img.addChild(ldr);
 					img.cacheAsBitmap = true;
 					img.mask = msk;
-					try {
-						Draw.smooth(ldr.content as Bitmap);
-					} catch (e:Error) {
-						//Could not smooth thumbnail image
-					}
 					Stretcher.stretch(ldr, image[0], image[1], Stretcher.FILL);
 				}
 			} catch (err:Error) {

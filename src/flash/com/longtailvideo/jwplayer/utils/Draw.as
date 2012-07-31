@@ -8,54 +8,6 @@ package com.longtailvideo.jwplayer.utils {
 	
 	
 	public class Draw {
-		/**
-		 * Clone a sprite / movieclip.
-		 *
-		 * @param tgt	Sprite to clone.
-		 * @param adc	Add as child to the parent displayobject.
-		 *
-		 * @return		The clone; not yet added to the displaystack.
-		 **/
-		public static function clone(tgt:DisplayObject, adc:Boolean = false):DisplayObject {
-			if (!tgt) return null;
-			var nam:String = getQualifiedClassName(tgt);
-			if (nam == "flash.display::MovieClip") return tgt;
-			if (tgt.hasOwnProperty("bitmapData") && tgt['bitmapData'] is BitmapData){
-				return new Bitmap(tgt['bitmapData']);
-			}
-			
-			var cls:Class;
-			try {
-				cls = tgt.loaderInfo.applicationDomain.getDefinition(nam) as Class;
-			} catch (e:Error) {
-				cls = Object(tgt).constructor;
-			}
-			var dup:* = new cls();
-			dup.transform = tgt.transform;
-			dup.filters = tgt.filters;
-			dup.cacheAsBitmap = tgt.cacheAsBitmap;
-			dup.opaqueBackground = tgt.opaqueBackground;
-			dup.name = tgt.name;
-			if (adc == true) {
-				var idx:Number = tgt.parent.getChildIndex(tgt);
-				tgt.parent.addChildAt(dup, idx + 1);
-			}
-			return dup;
-		}
-		
-		
-		/**
-		 * Completely clear the contents of a displayobject.
-		 *
-		 * @param tgt	Displayobject to clear.
-		 **/
-		public static function clear(tgt:DisplayObjectContainer):void {
-			var len:Number = tgt.numChildren;
-			for (var i:Number = 0; i < len; i++) {
-				tgt.removeChildAt(0);
-			}
-			tgt.scaleX = tgt.scaleY = 1;
-		}
 		
 		
 		/**
@@ -80,15 +32,5 @@ package com.longtailvideo.jwplayer.utils {
 			return rct;
 		}
 		
-		/**
-		 * 
-		 * Smooth an image
-		 **/
-		public static function smooth(bitmap:Bitmap):void {
-			try {
-				bitmap.smoothing = true;
-			} catch (err:Error) {
-			}
-		}
 	}
 }
