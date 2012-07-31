@@ -103,13 +103,13 @@
 
 <h2>Advanced Options Blocks</h2>
 
-<p>In addition to above configuration options, a list of configuration blocks is available to enable the more advanced functionalities of JW Player. For example, the <em>sidebar</em> block can be used to display the playlist in a sidebar next to the video display:</p>
+<p>In addition to above configuration options, a list of configuration blocks is available to enable the more advanced functionalities of JW Player. For example, the <em>listbar</em> block can be used to display the playlist in a bar next to the video display:</p>
 
 <pre>
 jwplayer("myElement").setup({
     playlist: "http://example.com/playlist.rss",
     height: 360,
-    sidebar: {
+    listbar: {
         layout: 'extended',
         position: 'right',
         size: 320
@@ -118,14 +118,14 @@ jwplayer("myElement").setup({
 });
 </pre>
 
-<p>As you can see, the <em>sidebar</em> is an object that itself contains a set of configuration options. In this case, the sidebar is setup to the right of the display and set 320 pixels wide. See the <a href="playlists.html">Working with Playlists</a> guide for more info on setting up the sidebar.</p>
+<p>As you can see, the <em>listbar</em> is an object that itself contains a set of configuration options. In this case, the bar is setup to the right of the display and set 320 pixels wide. See the <a href="playlists.html">Working with Playlists</a> guide for more info on setting up the listbar.</p>
 
 
 <p>The following advanced option blocks are available:</p>
 
 <dl>
-<dt>sidebar</dt>
-<dd>Config block for displaying a sidebar with the <a href="playlists.html#sidebar">playlist contents</a>.</dd>
+<dt>listbar</dt>
+<dd>Config block for displaying an area with the <a href="playlists.html#listbar">playlist contents</a>.</dd>
 <dt>captions</dt>
 <dd>Config block for tweaking the display of <a href="captions.html">captions or subtitles</a>.</dd>
 <dt>rtmp</dt>

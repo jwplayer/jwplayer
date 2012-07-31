@@ -22,7 +22,7 @@
 
 <h1>Working with Playlists</h1>
 
-<p>The <strong>playlist</strong> is a powerful concept in JW Player that can be used to load multiple pieces of content into a single player. It can also be used to load multiple media formats and/or multiple quality levels for each piece of content. The playlist can be displayed as a sidebar to the video window.</p>
+<p>The <strong>playlist</strong> is a powerful concept in JW Player that can be used to load multiple pieces of content into a single player. It can also be used to load multiple media formats and/or multiple quality levels for each piece of content. The playlist can be displayed as a listbar to the video window.</p>
 
 <p>The playlist is defined as part of the <em>jwplayer().setup()</em> call. See <a href="embedding.html">Embedding JW Player</a> for more info on embedding the player. Instead of an inline, the playlist can also be defined in an external RSS feed. See <a href="feeds.html">Loading RSS Feeds</a> for more info.</p>
 
@@ -53,15 +53,15 @@ jwplayer("myElement").setup({
 
 <dl>
 <dt>title</dt>
-<dd>Title of the item. It is displayed inside the <em>play</em> icon before playback starts, plus in the <a href="#sidebar">sidebar</a>.</dd>
+<dd>Title of the item. It is displayed inside the <em>play</em> icon before playback starts, plus in the <a href="#listbar">listbar</a>.</dd>
 <dt>description</dt>
-<dd>Short description of the item. It is displayed in the <a href="#sidebar">sidebar</a>.</dd>
+<dd>Short description of the item. It is displayed in the <a href="#listbar">listbar</a>.</dd>
 <dt>mediaid</dt>
 <dd>Unique identifier of this item. Used by advertising, analytics and discovery services.</dd>
 <dt>image</dt>
-<dd>Poster image representing the item. Displayed below the <em>play</em> icon before playback starts, plus in the <a href="#sidebar">sidebar</a>.</dd>
+<dd>Poster image representing the item. Displayed below the <em>play</em> icon before playback starts, plus in the <a href="#listbar">listbar</a>.</dd>
 <dt>duration</dt>
-<dd>Duration of the item in seconds. It is displayed in the <a href="#sidebar">sidebar</a> and the controlbar.</dd>
+<dd>Duration of the item in seconds. It is displayed in the <a href="#listbar">listbar</a> and the controlbar.</dd>
 <dt>sources</dt>
 <dd>Array with one or more media sources for this item. <strong>Is required.</strong> See below.</dd>
 </dl>
@@ -153,26 +153,26 @@ jwplayer("myElement").setup({
 <p>Combining multiple media formats, multiple quality levels and multiple playlist items is no problem. For example, one could setup a playlist with 5 items that each contain a 180p/360p/720p MP4 file and a 180p/360p/720p WebM file.</p>
 
 
-<h2><a name="sidebar"></a>Displaying the Sidebar</h2>
+<h2><a name="listbar"></a>Displaying the Listbar</h2>
 
-<p>The playlist can be displayed as a sidebar to the video window, using the <strong>sidebar</strong> configuration block. This allows users to scroll through it and play specific items. The configuration block has the following properties:</p>
+<p>The playlist can be displayed in a bar on the side of the video window, using the <strong>listbar</strong> configuration block. This allows users to scroll through it and play specific items. The configuration block has the following properties:</p>
 
 <dl>
 <dt>layout</dt>
-<dd>Layout of the playlist items in the sidebar. Can be <strong>basic</strong> (title and duration) or <strong>extended</strong> (image, title, duration and 3 lines of description). The default is <strong>extended</strong>.</dd>
+<dd>Layout of the playlist items in the listbar. Can be <strong>basic</strong> (title and duration) or <strong>extended</strong> (image, title, duration and 3 lines of description). The default is <strong>extended</strong>.</dd>
 <dt>position</dt>
-<dd>Position of the sidebar relative to the video display. Can be <strong>bottom</strong> (below the display), <strong>none</strong> (no sidebar; the default) or <strong>right</strong> (to the right of the display).</dd>
+<dd>Position of the listbar relative to the video display. Can be <strong>bottom</strong> (below the display), <strong>none</strong> (no bar; the default) or <strong>right</strong> (to the right of the display).</dd>
 <dt>size</dt>
-<dd>Width (if position is right) or height (if position is bottom) of the sidebar. This is basically the amount of pixels the sidebar "steals" from the video window. Is <strong>180</strong> by default.</dd>
+<dd>Width (if position is right) or height (if position is bottom) of the listbar. This is basically the amount of pixels the bar "steals" from the video window. Is <strong>180</strong> by default.</dd>
 </dl>
 
-<p>Here is an example setup with a sidebar that's positioned to the right of the video with an extended layout:</p>
+<p>Here is an example setup with a listbar that's positioned to the right of the video with an extended layout:</p>
 
 <pre>
 jwplayer("myElement").setup({
     playlist: "http://example.com/playlist.rss",
     height: 360,
-    sidebar: {
+    listbar: {
         layout: 'extended',
         position: 'right',
         size: 320

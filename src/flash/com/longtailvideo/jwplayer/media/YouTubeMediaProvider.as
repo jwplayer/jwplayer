@@ -253,7 +253,7 @@ package com.longtailvideo.jwplayer.media {
 							_currentQuality = _qualityLevels.length - 1;
 						}
 					}
-					if (_qualityLevels.length > 2) {
+					if (_qualityLevels.length > 1) {
 						_qualityLevels.unshift({label: "auto"});
 						sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_META, { metadata: { youtubequalitylevels: _qualityLevels } });
 						if (_currentQuality > 0) {

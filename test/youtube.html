@@ -73,7 +73,7 @@
         height: 204,
         listbar: {
             position: 'right',
-            style: 'basic',
+            layout: 'basic',
             size: '240'
         },
         width: 720
@@ -134,7 +134,7 @@
         height: 270,
         listbar: {
             position: 'right',
-            style: 'basic',
+            layout: 'basic',
             size: '240'
         },
         width: 720
@@ -177,59 +177,6 @@
     <td class="check"></td>
 </tr></table>
 
-
-
-<h2>Media errors</h2>
-
-<div id="container4"></div>
-<script type="text/javascript">
-    jwplayer("container4").setup({
-        playlist: [{
-            file: 'http://www.youtube.com/watch?v=XSGBVzeBUb',
-            title: 'Incorrect key example'
-        },{
-            file: 'http://www.youtube.com/watch?v=1XSGBVzeBUb',
-            title: 'Video not found example'
-        },{
-            file: 'http://www.youtube.com/watch?v=P_29eUpSYpI',
-            title: 'Embed not allowed example'
-        },{
-            file: 'http://www.youtube.com/watch?v=WiloZd1H4ow',
-            title: 'Video all OK example'
-        }],
-        height: 270,
-        listbar: {
-            position: 'right',
-            style: 'basic',
-            size: '240'
-        },
-        width: 720
-    });
-</script>
-
-<table><tr>
-    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
-</tr><tr>
-    <td class="desktop">
-    <td>Play first item</td>
-    <td>Error message: <em>Error loading YouTube: Video ID is invalid</em></td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="desktop">
-    <td>Play second item</td>
-    <td>Error message: <em>Error loading YouTube: Video removed or private</em></td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="desktop">
-    <td>Play third item</td>
-    <td>Error message: <em>Error loading YouTube: Embedding not allowed</em></td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="desktop">
-    <td>Play fourth item</td>
-    <td>Video should play just fine.</td>
-    <td class="check"></td>
-</tr></table>
 
 
 </body>
