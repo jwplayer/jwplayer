@@ -116,11 +116,11 @@ package com.longtailvideo.jwplayer.view.components
 			var toResize:Boolean = false;
 			child.x += borders.left.width;
 			child.y += borders.top.height;
-			if (child.x + child.width > contentWidth) {
+			if ((child.x + child.width - borders.left.width) > contentWidth) {
 				wid = child.x + child.width + borders.right.width;
 				toResize = true;
 			}
-			if (child.y + child.height > contentHeight) {
+			if ((child.y + child.height - borders.top.height) > contentHeight) {
 				hei = child.y + child.height + borders.bottom.height;
 				toResize = true;
 			}
