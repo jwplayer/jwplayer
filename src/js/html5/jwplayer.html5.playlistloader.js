@@ -16,12 +16,10 @@
 		}
 		
 		function _playlistLoaded(loadedEvent) {
-			alert("playlist loaded");
 			try {
 				var rss = loadedEvent.responseXML.firstChild;
 				if (html5.parsers.localName(rss) == "xml") {
 					rss = rss.nextSibling;
-					alert(rss);
 				}
 				
 				
@@ -45,7 +43,6 @@
 		}
 		
 		function _playlistError(msg) {
-			alert("playlist error");
 			_eventDispatcher.sendEvent(events.JWPLAYER_ERROR, {
 				message: msg ? msg : 'Could not load playlist an unknown reason.'
 			});
