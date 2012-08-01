@@ -12,8 +12,8 @@ tr:nth-child(even) { background: #EEE; }
 td,th { padding: 5px; font-size: 12px; text-align: left; vertical-align: top; }
 
 
-div.core, div.all, div.flash { height: 15px; width: 100%; text-indent: -9999px; }
-div.core { background: url(core.jpg) no-repeat top left; }
+div.core, div.all, div.flash { height: 15px; width: 100%; text-indent: 600px; font-size: 11px; line-height: 12px; color:#fff; }
+div.core { background: url(core.jpg) no-repeat top left;  }
 div.all { background: url(all.jpg) no-repeat top left; }
 div.flash { background: url(flash.jpg) no-repeat top left; }
 

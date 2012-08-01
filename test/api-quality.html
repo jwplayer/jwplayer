@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quality levels</title>
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <script type="text/javascript" src="assets/primaryCookie.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+</head>
+<body>
+
+
+<h1>Quality levels</h1>
+<div class="core">List of test devices</div>
+<p>This test implements all Quality level API calls available to Javascript.</p>
+
+<div id="container"></div>
+
+<script type="text/javascript">
+    jwplayer("container").setup({
+        playlist: [{
+            sources: [{
+                file: 'http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4',
+                height: 270,
+                width: 480
+            },{
+                file: 'http://content.bitsontherun.com/videos/bkaovAYt-DZ7jSYgM.mp4',
+                height: 720,
+                width: 1280
+            }],
+            title: "2 quality levels"
+        },{
+            file: 'http://content.bitsontherun.com/videos/kaUXWqTZ-52qL9xLP.mp4',
+            title: "1 quality level"
+        },{
+            sources: [{
+                file: 'http://content.bitsontherun.com/videos/3XnJSIm4-injeKYZS.mp4',
+                height: 180,
+                width: 320
+            },{
+                file: 'http://content.bitsontherun.com/videos/3XnJSIm4-kNspJqnJ.mp4',
+                height: 360,
+                width: 640
+            },{
+                file: 'http://content.bitsontherun.com/videos/3XnJSIm4-DZ7jSYgM.mp4',
+                height: 720,
+                width: 1280
+            },{
+                file: 'http://content.bitsontherun.com/videos/3XnJSIm4-el5vTWpr.mp4',
+                height: 1080,
+                width: 1920
+            }],
+            title: "4 quality levels"
+        }],
+        height: 240,
+        listbar: {
+            position: 'right',
+            size: 260
+        },
+        primary: primaryCookie,
+        width: 720
+    });
+
+
+    function getCurrentQuality() {
+        appendLog("The current quality level is: "+jwplayer().getCurrentQuality());
+     };
+    function getQualityLevels() {
+        var levels = jwplayer().getQualityLevels();
+        var text = "The list of quality levels is: ";
+        if(levels) { 
+            for (var i=0; i < levels.length; i++) { 
+                text += levels[i].label +", ";
+            }
+        } else { text += "-  "; }
+        appendLog(text.substr(0,text.length-2));
+    };
+    function setCurrentQuality() {
+        var level = prompt("Set the quality level","1");
+        if(level != undefined) {
+            jwplayer().setCurrentQuality(level);
+        }
+    };
+    jwplayer().onQualityLevels(function qualityLevels(event) {
+        var text = "List of quality levels changed to: ";
+        for (var i=0; i < event.levels.length; i++) { 
+            text += event.levels[i].label +", ";
+        }
+        appendLog(text.substr(0,text.length-2));
+    });
+    jwplayer().onQualityChange(function qualityChange(event) {
+        appendLog("Current quality level changed to: "+event.currentQuality);
+    });
+
+    function appendLog(text) {
+        var log = document.getElementById("log");
+        var inner = log.innerHTML;
+        log.innerHTML = inner + text + "<br/>";
+    };
+    function clearLog(text) {
+        var log = document.getElementById("log").innerHTML = "";
+    };
+    function switchPrimary() { 
+        
+    };
+</script>
+
+<ol>
+    <li><a href="javascript:getCurrentQuality();">Get the current quality level</a></li>
+    <li><a href="javascript:getQualityLevels();">Get the list of quality levels</a></li>
+    <li><a href="javascript:setCurrentQuality();">Set the current quality level</a></li>
+    <li><a href="javascript:clearLog();">Clear the message log</a></li>
+</ol>
+
+<pre id="log"></pre>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Click to play first video</td>
+    <td>Quality level list should be logged (2 levels, with labels).</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Click to play second video</td>
+    <td>Quality level list should be logged (1 level, no label).</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Click to play second video</td>
+    <td>Quality level list should be logged (4 levels, with labels).</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Click <em>Get current Quality level</em></td>
+    <td>Quality level 1 (360p) should be logged</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Click <em>Get list of quality levels</em></td>
+    <td>List of 4 quality levels (with labels) should be logged</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Click <em>Set quality level</em> and set 2</td>
+    <td>Quality should change (improved visuals, buffering)<br/>HD menu in controlbar should mirror the change.<br/>Switch to new quality level (2)should be logged</td>
+    <td class="check"></td>
+</tr></table>
+
+</body>
+</html>
