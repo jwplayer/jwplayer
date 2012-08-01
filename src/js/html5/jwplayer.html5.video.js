@@ -156,7 +156,12 @@
 			if (!_attached || _dragging) return;
 			
 			if (_videotag.paused) {
-				_pause();
+				if (_videotag.currentTime == _videotag.duration) {
+					// Needed as of Chrome 20
+					_complete();
+				} else {
+					_pause();
+				}
 			} else {
 				_setState(states.PLAYING);
 			}
@@ -346,10 +351,12 @@
 
 		function _complete() {
 			//_stop();
-			_currentQuality = -1;
-			_setState(states.IDLE);
-			_sendEvent(events.JWPLAYER_MEDIA_BEFORECOMPLETE);
-			_sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
+			if (_state != states.IDLE) {
+				_currentQuality = -1;
+				_setState(states.IDLE);
+				_sendEvent(events.JWPLAYER_MEDIA_BEFORECOMPLETE);
+				_sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
+			}
 		}
 		
 

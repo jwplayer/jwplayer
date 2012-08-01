@@ -5,31 +5,39 @@
  * @version 6.0
  */
 (function(html5) {
-	var _defaults = {
-		size: 180,
-		//position: html5.view.positions.NONE,
-		itemheight: 60,
-		thumbs: true,
-		
-		fontcolor: "#000000",
-		overcolor: "",
-		activecolor: "",
-		backgroundcolor: "#f8f8f8",
-		fontweight: "normal"
-	},
+	var WHITE = "#ffffff",
+		GRAY = "#cccccc",
+		_defaults = {
+			size: 180,
+			//position: html5.view.positions.NONE,
+			itemheight: 60,
+			thumbs: true,
+			
+			fontcolor: GRAY,
+			overcolor: WHITE,
+			activecolor: "#999999",
+			backgroundcolor: "#000000",
+			fontweight: "normal",
+			titlecolor: GRAY,
+			titleovercolor: WHITE,
+			titleactivecolor: WHITE,
+			titleweight: "normal",
+			fontsize: 11,
+			titlesize: 13
+		},
 
-	events = jwplayer.events,
-	utils = jwplayer.utils, 
-	_css = utils.css,
-	
-	PL_CLASS = '.jwplaylist',
-	DOCUMENT = document,
-	
-	/** Some CSS constants we should use for minimization **/
-	JW_CSS_ABSOLUTE = "absolute",
-	JW_CSS_RELATIVE = "relative",
-	JW_CSS_HIDDEN = "hidden",
-	JW_CSS_100PCT = "100%";
+		events = jwplayer.events,
+		utils = jwplayer.utils, 
+		_css = utils.css,
+		
+		PL_CLASS = '.jwplaylist',
+		DOCUMENT = document,
+		
+		/** Some CSS constants we should use for minimization **/
+		JW_CSS_ABSOLUTE = "absolute",
+		JW_CSS_RELATIVE = "relative",
+		JW_CSS_HIDDEN = "hidden",
+		JW_CSS_100PCT = "100%";
 	
 	html5.playlistcomponent = function(api, config) {
 		var _api = api,
@@ -45,6 +53,7 @@
 			_slider,
 			_elements = {
 				'background': undefined,
+				'divider': undefined,
 				'item': undefined,
 				'itemOver': undefined,
 				'itemImage': undefined,
@@ -103,11 +112,11 @@
 			_css(_internalSelector("jwlist"), {
 				'background-image': _elements.background ? " url("+_elements.background.src+")" : "",
 		    	color: _settings.fontcolor,
-		    	font: _settings.fontweight + " 11px Arial, Helvetica, sans-serif"  
+		    	font: _settings.fontweight + " " + _settings.fontsize + "px Arial, Helvetica, sans-serif"  
 			});
 			
         	if (_elements.itemImage) {
-        		imgPos = (itemheight - _elements.itemImage.height) / 2;
+        		imgPos = (itemheight - _elements.itemImage.height) / 2 + "px ";
         		imgWidth = _elements.itemImage.width;
         		imgHeight = _elements.itemImage.height;
         	} else {
@@ -115,10 +124,17 @@
         		imgHeight = itemheight
         	}
 			
+        	_css(_internalSelector("jwplaylistdivider"), {
+				'background-image': _elements.divider ? "url("+_elements.divider.src + ")" : "",
+				'background-size': JW_CSS_100PCT + " " + _elements.divider.height + "px",
+			    width: JW_CSS_100PCT,
+			    height: _elements.divider.height
+        	});
+        	
         	_css(_internalSelector("jwplaylistimg"), {
 			    height: imgHeight,
 			    width: imgWidth,
-				margin: imgPos
+				margin: imgPos + "10px " + imgPos + imgPos
         	});
 			
 			_css(_internalSelector("jwlist li"), {
@@ -132,11 +148,17 @@
 			if (_settings.activecolor !== "") activeStyle.color = _settings.activecolor;
 			if (_elements.itemActive) activeStyle['background-image'] = "url("+_elements.itemActive.src+")";
 			_css(_internalSelector("jwlist li.active"), activeStyle);
+			_css(_internalSelector("jwlist li.active .jwtitle"), {
+				color: _settings.titleactivecolor
+			});
 
 			var overStyle = { overflow: 'hidden' };
 			if (_settings.overcolor !== "") overStyle.color = _settings.overcolor;
 			if (_elements.itemOver) overStyle['background-image'] = "url("+_elements.itemOver.src+")";
 			_css(_internalSelector("jwlist li:hover"), overStyle);
+			_css(_internalSelector("jwlist li:hover .jwtitle"), {
+				color: _settings.titleovercolor
+			});
 
 
 			_css(_internalSelector("jwtextwrapper"), {
@@ -150,14 +172,16 @@
 	        	overflow: 'hidden',
 	        	display: "inline-block",
 	        	width: JW_CSS_100PCT,
+	        	color: _settings.titlecolor,
 	        	'line-height': 23,
-		    	'font-size': 13,
-	        	'font-weight': _settings.fontweight ? _settings.fontweight : "bold"
+		    	'font-size': _settings.titlesize,
+	        	'font-weight': _settings.titleweight
 	    	});
+			
 			
 			_css(_internalSelector("jwdescription"), {
 	    	    display: 'block',
-	    	    'font-size': 11,
+	    	    'font-size': _settings.fontsize,
 	    	    'line-height': 16,
 	        	overflow: 'hidden',
 	        	height: itemheight,
@@ -166,7 +190,7 @@
 
 			_css(_internalSelector("jwduration"), {
 				position: "absolute",
-	    	    'font-size': 11,
+	    	    'font-size': _settings.fontsize,
 				right: 5
 			});
 			
@@ -181,10 +205,16 @@
 
 		function _createItem(index) {
 			var item = _playlist[index],
-				li = _createElement("li", "jwitem");
+				li = _createElement("li", "jwitem"),
+				div;
 			
 			li.id = _ul.id + '_item_' + index;
-			
+
+	        if (index > 0) {
+	        	div = _createElement("div", "jwplaylistdivider");
+	        	_appendChild(li, div);
+	        }
+		        
 			var imageWrapper = _createElement("div", "jwplaylistimg jwfill");
         	
 			if (_showThumbs() && (item.image || item['playlist.image'] || _elements.itemImage) ) {
@@ -209,16 +239,16 @@
         	title.innerHTML = item ? item.title : "";
         	_appendChild(textWrapper, title);
 
+	        if (item.duration > 0) {
+	        	var dur = _createElement("span", "jwduration");
+	        	dur.innerHTML = utils.timeFormat(item.duration);
+	        	_appendChild(textWrapper, dur);
+	        }
+	        
 	        if (item.description) {
 	        	var desc = _createElement("span", "jwdescription");
 	        	desc.innerHTML = item.description;
 	        	_appendChild(textWrapper, desc);
-	        }
-	        
-	        if (item.duration > 0) {
-	        	var dur = _createElement("span", "jwduration");
-	        	dur.innerHTML = utils.timeFormat(item.duration);
-	        	_appendChild(title, dur);
 	        }
 	        
 	        _appendChild(li, textWrapper);
@@ -313,13 +343,9 @@
 
 		
 		function _populateSkinElements() {
-			for (var i in _elements) {
-				_elements[i] = _getElement(i);
+			for (var element in _elements) {
+				_elements[element] = _skin.getSkinElement("playlist", element);
 			}
-		}
-		
-		function _getElement(name) {
-			return _skin.getSkinElement("playlist", name);
 		}
 		
 		_setup();
@@ -367,6 +393,9 @@
 	_css(PL_CLASS+' .jwtextwrapper', {
 		overflow: JW_CSS_HIDDEN
 	});
-	
+
+	_css(PL_CLASS+' .jwplaylistdivider', {
+		position: JW_CSS_ABSOLUTE
+	});
 
 })(jwplayer.html5);

@@ -23,5 +23,19 @@
     <media:thumbnail url="http://content.bitsontherun.com/thumbs/kaUXWqTZ-480.jpg" />
   </item>
 
+  <item>
+    <title>Elephants Dream Trailer</title>
+    <description>Elephants Dream is the world's first open movie, made entirely with open source graphics software such as Blender.</description>
+    <media:content url="http://content.bitsontherun.com/videos/kaUXWqTZ-52qL9xLP.mp4" duration="75" />
+    <media:thumbnail url="http://content.bitsontherun.com/thumbs/kaUXWqTZ-480.jpg" />
+  </item>
+
+  <item>
+    <title>Elephants Dream Trailer</title>
+    <description>Elephants Dream is the world's first open movie, made entirely with open source graphics software such as Blender.</description>
+    <media:content url="http://content.bitsontherun.com/videos/kaUXWqTZ-52qL9xLP.mp4" duration="75" />
+    <media:thumbnail url="http://content.bitsontherun.com/thumbs/kaUXWqTZ-480.jpg" />
+  </item>
+
 </channel>
 </rss>
