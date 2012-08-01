@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2342';
+	jwplayer.html5.version = '6.0.2344';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -2124,7 +2124,8 @@
 					break;
 				case "list":
 					if (_model.item == _model.playlist.length - 1) {
-						_load(0);
+						//_load(0);
+						_stop();
 						setTimeout(function() { _eventDispatcher.sendEvent(events.JWPLAYER_PLAYLIST_COMPLETE)}, 0);
 					} else {
 						_next();
@@ -5796,6 +5797,7 @@
 			_controlbar,
 			_display,
 			_dock,
+			_logo,
 			_playlist,
 			_audioMode,
 			_isMobile = utils.isMobile(),
@@ -5879,7 +5881,6 @@
 				}
 			} else if (_replayState) {
 				_showDock();
-				_showLogo();
 			}
 		}
 		

@@ -10,7 +10,7 @@ jwplayer = function(container) {
 
 var $jw = jwplayer;
 
-jwplayer.version = '6.0.2342';
+jwplayer.version = '6.0.2344';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");

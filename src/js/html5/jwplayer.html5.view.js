@@ -50,6 +50,7 @@
 			_controlbar,
 			_display,
 			_dock,
+			_logo,
 			_playlist,
 			_audioMode,
 			_isMobile = utils.isMobile(),
@@ -133,7 +134,6 @@
 				}
 			} else if (_replayState) {
 				_showDock();
-				_showLogo();
 			}
 		}
 		

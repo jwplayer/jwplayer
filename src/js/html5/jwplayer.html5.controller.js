@@ -205,7 +205,8 @@
 					break;
 				case "list":
 					if (_model.item == _model.playlist.length - 1) {
-						_load(0);
+						//_load(0);
+						_stop();
 						setTimeout(function() { _eventDispatcher.sendEvent(events.JWPLAYER_PLAYLIST_COMPLETE)}, 0);
 					} else {
 						_next();
