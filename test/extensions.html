@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>File Extensions</title>
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+</head>
+<body>
+
+<h1>File Extensions</h1>
+<div class="core">List of test devices</div>
+<p>This test includes examples of all supported file types.  The players will load in Flash mode or HTML5 mode depending on browser capability.</p>
+
+<!--h2>MP4 Extension</h2>
+
+<div id="mp4_container"></div>
+
+<script type="text/javascript">
+    jwplayer("mp4_container").setup({
+        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
+        height: 160,
+        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+        width: 480
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Load the player</td>
+    <td>Chrome, Safari, IE9: Player loads in HTML5; Firefox, IE8: Player loads in Flash.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="mobile"></td>
+    <td>Load the player</td>
+    <td>Android 2.3+, iOS: Player loads in HTML5.</td>
+    <td class="check"></td>
+</tr></table>
+
+<h2>MOV Extension</h2>
+
+<div id="mov_container"></div>
+
+<script type="text/javascript">
+    jwplayer("mov_container").setup({
+        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mov',
+        height: 160,
+        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+        width: 480
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Load the player</td>
+    <td>Chrome, Safari, IE9: Player loads in HTML5; Firefox, IE8: Player loads in Flash.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="mobile"></td>
+    <td>Load the player</td>
+    <td>Android 2.3+, iOS: Player loads in HTML5.</td>
+    <td class="check"></td>
+</tr></table>
+
+<h2>F4V Extension</h2>
+
+<div id="f4v_container"></div>
+
+<script type="text/javascript">
+    jwplayer("f4v_container").setup({
+        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.f4v',
+        height: 160,
+        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+        width: 480
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Load the player</td>
+    <td>Chrome, Safari, IE9: Player loads in HTML5; Firefox, IE8: Player loads in Flash.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="mobile"></td>
+    <td>Load the player</td>
+    <td>Android 2.3+, iOS: Player loads in HTML5.</td>
+    <td class="check"></td>
+</tr></table>
+
+<h2>FLV Extension</h2>
+
+<div id="flv_container"></div>
+
+<script type="text/javascript">
+    jwplayer("flv_container").setup({
+        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-uyjfhY52.flv',
+        height: 160,
+        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+        width: 480
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Load the player</td>
+    <td>Player loads in Flash.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="mobile"></td>
+    <td>Load the player</td>
+    <td>Android 2.3+, iOS: Player fails over to download mode</td>
+    <td class="check"></td>
+</tr></table>
+
+<h2>WebM Extension</h2>
+
+<div id="webm_container"></div>
+
+<script type="text/javascript">
+    jwplayer("webm_container").setup({
+        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm',
+        height: 160,
+        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+        width: 480
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Load the player</td>
+    <td>Chrome, Firefox: Player loads in HTML5; IE8, IE9, Safari: Player fails over to download mode.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="mobile"></td>
+    <td>Load the player</td>
+    <td>Android 4.0+: Player loads in HTML5 mode; Android 2.3+, iOS: Player fails over to download mode.</td>
+    <td class="check"></td>
+</tr></table>
+
+<h2>AAC Extension</h2>
+
+<div id="aac_container"></div>
+
+<script type="text/javascript">
+    jwplayer("aac_container").setup({
+        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-I3ZmuSFT.aac',
+        height: 160,
+        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+        width: 480
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Load the player</td>
+    <td>Chrome, Safari, IE9: Player loads in HTML5; Firefox, IE8: Player loads in Flash.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="mobile"></td>
+    <td>Load the player</td>
+    <td>Android 2.3+, iOS: Player loads in HTML5.</td>
+    <td class="check"></td>
+</tr></table>
+
+<h2>M4A Extension</h2>
+
+<div id="m4a_container"></div>
+
+<script type="text/javascript">
+    jwplayer("m4a_container").setup({
+        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-I3ZmuSFT.m4a',
+        height: 160,
+        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+        width: 480
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Load the player</td>
+    <td>Chrome, Safari, IE9: Player loads in HTML5; Firefox, IE8: Player loads in Flash.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="mobile"></td>
+    <td>Load the player</td>
+    <td>Android 2.3+, iOS: Player loads in HTML5.</td>
+    <td class="check"></td>
+</tr></table>
+
+
+<h2>F4A Extension</h2>
+
+<div id="f4a_container"></div>
+
+<script type="text/javascript">
+    jwplayer("f4a_container").setup({
+        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-I3ZmuSFT.f4a',
+        height: 160,
+        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+        width: 480
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Load the player</td>
+    <td>Chrome, Safari, IE9: Player loads in HTML5; Firefox, IE8: Player loads in Flash.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="mobile"></td>
+    <td>Load the player</td>
+    <td>Android 2.3+, iOS: Player loads in HTML5.</td>
+    <td class="check"></td>
+</tr></table>
+
+<h2>MP3 Extension</h2>
+
+<div id="mp3_container"></div>
+
+<script type="text/javascript">
+    jwplayer("mp3_container").setup({
+        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-zWfluNSa.mp3',
+        height: 160,
+        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+        width: 480
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Load the player</td>
+    <td>Chrome, Safari, IE9: Player loads in HTML5; Firefox, IE8: Player loads in Flash.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="mobile"></td>
+    <td>Load the player</td>
+    <td>Android 2.3+, iOS: Player loads in HTML5.</td>
+    <td class="check"></td>
+</tr></table>
+
+<h2>OGG Extension</h2>
+
+<div id="ogg_container"></div>
+
+<script type="text/javascript">
+    jwplayer("ogg_container").setup({
+        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-rjiewRbX.ogg',
+        height: 160,
+        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+        width: 480
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Load the player</td>
+    <td>Chrome, Firefox: Player loads in HTML5; IE8, IE9, Safari: Player fails over to download mode.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="mobile"></td>
+    <td>Load the player</td>
+    <td>Android 4.0+: Player loads in HTML5 mode; Android 2.3+, iOS: Player fails over to download mode.</td>
+    <td class="check"></td>
+</tr></table-->
+
+
+<h2>OGA Extension</h2>
+
+<div id="oga_container"></div>
+
+<script type="text/javascript">
+    jwplayer("oga_container").setup({
+        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-rjiewRbX.oga',
+        height: 160,
+        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+        width: 480
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Load the player</td>
+    <td>Chrome, Firefox: Player loads in HTML5; IE8, IE9, Safari: Player fails over to download mode.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="mobile"></td>
+    <td>Load the player</td>
+    <td>Android 4.0+: Player loads in HTML5 mode; Android 2.3+, iOS: Player fails over to download mode.</td>
+    <td class="check"></td>
+</tr></table>
+
+
+
+<h2>SMIL Extension</h2>
+
+<div id="smil_container"></div>
+
+<script type="text/javascript">
+    jwplayer("smil_container").setup({
+        file: 'files/dynamic.smil',
+        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+        height: 160,
+        width: 480
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Load the player</td>
+    <td>Player loads in Flash</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="mobile"></td>
+    <td>Load the player</td>
+    <td>Player displays an error message: "No media sources found".</td>
+    <td class="check"></td>
+</tr></table>
+
+<h2>M3U8 Extension</h2>
+
+<div id="m3u8_container"></div>
+
+<script type="text/javascript">
+    jwplayer("m3u8_container").setup({
+        file: 'http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8',
+        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+        height: 160,
+        width: 480
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Load the player</td>
+    <td>Player loads in Flash</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="mobile"></td>
+    <td>Load the player</td>
+    <td>Player displays an error message: "No media sources found".</td>
+    <td class="check"></td>
+</tr></table>
+
+
+
+
+</body>
+</html>

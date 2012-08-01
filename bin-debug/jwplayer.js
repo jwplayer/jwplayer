@@ -18,7 +18,7 @@ jwplayer = function(container) {
 
 var $jw = jwplayer;
 
-jwplayer.version = '6.0.2344';
+jwplayer.version = '6.0.2346';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -383,11 +383,11 @@ jwplayer.source = document.createElement("source");/**
 		webm = "webm",
 		aac = "aac",
 		mp3 = "mp3",
-		ogg = "ogg",
+		vorbis = "vorbis",
 		
 		mimeMap = {
 			mp4: video+mp4,
-			vorbis: audio+ogg,
+			vorbis: audio+"ogg",
 			webm: video+webm,
 			aac: audio+mp4,
 			mp3: audio+mp3,
@@ -403,8 +403,8 @@ jwplayer.source = document.createElement("source");/**
 			"f4a": mimeMap[aac],
 			"aac": mimeMap[aac],
 			"mp3": mimeMap[mp3],
-			"ogg": mimeMap[ogg],
-			"oga": mimeMap[ogg],
+			"ogg": mimeMap[vorbis],
+			"oga": mimeMap[vorbis],
 			"webm": mimeMap[webm],
 			"m3u8": mimeMap.hls,
 		}, 
@@ -431,6 +431,8 @@ jwplayer.source = document.createElement("source");/**
 		_extensionmap[ext].flash = flashExtensions[ext];
 	}
 	
+	_extensionmap.types = mimeMap; 
+
 	_extensionmap.mimeType = function(mime) {
 		for (var type in mimeMap) {
 			if (mimeMap[type] == mime) return type;
@@ -1626,7 +1628,7 @@ jwplayer.source = document.createElement("source");/**
 					var source = sources[i], 
 						type = source.type ? source.type : utils.extensionmap.extType(utils.extension(source.file));
 					if (source.file) {
-						if (("mp4,mp4,flv,webm,aac,mp3,vorbis").split(",").indexOf(type) > -1) {
+						if (("mp4,flv,webm,aac,mp3,vorbis").split(",").indexOf(type) > -1) {
 							file = source.file;
 							image = item.image;
 							continue;
@@ -2136,6 +2138,11 @@ jwplayer.source = document.createElement("source");/**
 			
 			// If no type or unrecognized type, don't allow to play
 			if (!mappedType) {
+				return false;
+			}
+			
+			// Extension is recognized as a format Flash can play, but no HTML5 support is listed  
+			if (mappedType.flash && !mappedType.html5) {
 				return false;
 			}
 			

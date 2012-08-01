@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2344';
+	jwplayer.html5.version = '6.0.2346';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -67,8 +67,8 @@
 	
 	/** Returns true if the type is playable in HTML5 **/
 	function _canPlayHTML5(type) {
-		var mappedType = utils.extensionmap[type];
-		return (!!mappedType && !!mappedType.html5 && jwplayer.vid.canPlayType(mappedType.html5));
+		var mime = utils.extensionmap.types[type];
+		return (!!mime && jwplayer.vid.canPlayType(mime));
 	}
 	
 	/** Loads an XML file into a DOM object * */
@@ -6320,6 +6320,7 @@
 	_css('.' + PLAYER_CLASS, {
 		position: "relative",
 		opacity: 0,
+		'min-height': utils.isMobile() ? 200 : 0,
     	'-webkit-transition': JW_CSS_SMOOTH_EASE,
     	'-moz-transition': JW_CSS_SMOOTH_EASE,
     	'-o-transition': JW_CSS_SMOOTH_EASE

@@ -1,0 +1,13 @@
+<smil>
+	<head>
+		<meta base="rtmp://fms.12E5.edgecastcdn.net/0012E5"/>
+	</head>
+	<body>
+		<switch>
+			<video src="videos/8Juv1MVa-67727.mp4" system-bitrate="1600000"/>
+			<video src="videos/8Juv1MVa-485.mp4" system-bitrate="1200000"/>
+			<video src="videos/8Juv1MVa-484.mp4" system-bitrate="800000"/>
+			<video src="videos/8Juv1MVa-483.mp4" system-bitrate="400000"/>
+		</switch>
+    </body> 
+</smil>

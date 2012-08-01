@@ -13,11 +13,11 @@
 		webm = "webm",
 		aac = "aac",
 		mp3 = "mp3",
-		ogg = "ogg",
+		vorbis = "vorbis",
 		
 		mimeMap = {
 			mp4: video+mp4,
-			vorbis: audio+ogg,
+			vorbis: audio+"ogg",
 			webm: video+webm,
 			aac: audio+mp4,
 			mp3: audio+mp3,
@@ -33,8 +33,8 @@
 			"f4a": mimeMap[aac],
 			"aac": mimeMap[aac],
 			"mp3": mimeMap[mp3],
-			"ogg": mimeMap[ogg],
-			"oga": mimeMap[ogg],
+			"ogg": mimeMap[vorbis],
+			"oga": mimeMap[vorbis],
 			"webm": mimeMap[webm],
 			"m3u8": mimeMap.hls,
 		}, 
@@ -61,6 +61,8 @@
 		_extensionmap[ext].flash = flashExtensions[ext];
 	}
 	
+	_extensionmap.types = mimeMap; 
+
 	_extensionmap.mimeType = function(mime) {
 		for (var type in mimeMap) {
 			if (mimeMap[type] == mime) return type;

@@ -41,7 +41,7 @@
 					var source = sources[i], 
 						type = source.type ? source.type : utils.extensionmap.extType(utils.extension(source.file));
 					if (source.file) {
-						if (("mp4,mp4,flv,webm,aac,mp3,vorbis").split(",").indexOf(type) > -1) {
+						if (("mp4,flv,webm,aac,mp3,vorbis").split(",").indexOf(type) > -1) {
 							file = source.file;
 							image = item.image;
 							continue;

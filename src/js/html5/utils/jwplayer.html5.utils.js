@@ -58,8 +58,8 @@
 	
 	/** Returns true if the type is playable in HTML5 **/
 	function _canPlayHTML5(type) {
-		var mappedType = utils.extensionmap[type];
-		return (!!mappedType && !!mappedType.html5 && jwplayer.vid.canPlayType(mappedType.html5));
+		var mime = utils.extensionmap.types[type];
+		return (!!mime && jwplayer.vid.canPlayType(mime));
 	}
 	
 	/** Loads an XML file into a DOM object * */

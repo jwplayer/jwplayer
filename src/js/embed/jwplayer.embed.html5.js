@@ -121,6 +121,11 @@
 				return false;
 			}
 			
+			// Extension is recognized as a format Flash can play, but no HTML5 support is listed  
+			if (mappedType.flash && !mappedType.html5) {
+				return false;
+			}
+			
 			// Last, but not least, we ask the browser 
 			// (But only if it's a video with an extension known to work in HTML5)
 			return _browserCanPlay(mappedType.html5);
