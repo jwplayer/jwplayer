@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2340';
+	jwplayer.html5.version = '6.0.2341';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -132,7 +132,7 @@
 				// This will throw an error on Windows Mobile 7.5.  We want to trigger the error so that we can move 
 				// down to the next section
 				var xml = xmlhttp.responseXML;
-				return completecallback(xmlhttp);
+				if (xml) return completecallback(xmlhttp);
 			} catch (e) {}
 			var parsedXML = utils.parseXML(xmlhttp.responseText);
 			if (parsedXML) {
