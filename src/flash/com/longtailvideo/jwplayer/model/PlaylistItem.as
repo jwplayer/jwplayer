@@ -8,13 +8,9 @@ package com.longtailvideo.jwplayer.model {
 	 * @author Pablo Schklowsky
 	 */
 	public dynamic class PlaylistItem {
-		public var author:String		= "";
-		public var date:String			= "";
 		public var description:String	= "";
 		public var image:String			= "";
-		public var link:String			= "";
 		public var mediaid:String		= "";
-		public var tags:String			= "";
 		public var title:String			= "";
 		
 		protected var _duration:Number		= -1;
@@ -41,11 +37,13 @@ package com.longtailvideo.jwplayer.model {
 					file: obj.file,
 					type: obj.type,
 					width: obj.width,
+					height: obj.height,
 					label: obj.label
 				};
 				delete obj.file;
 				delete obj.type;
 				delete obj.width;
+				delete obj.height;
 				delete obj.label;
 				obj.levels = [singleLevel];
 			}
@@ -62,6 +60,7 @@ package com.longtailvideo.jwplayer.model {
 								level['type'],
 								Number(level['bitrate']), 
 								Number(level['width']), 
+								Number(level['height']), 
 								level['streamer']);
 							for (var otherProp:String in level) {
 								switch(otherProp) {
@@ -69,6 +68,7 @@ package com.longtailvideo.jwplayer.model {
 									case "type":
 									case "bitrate":
 									case "width":
+									case "height":
 									case "streamer":
 										break;
 									default:

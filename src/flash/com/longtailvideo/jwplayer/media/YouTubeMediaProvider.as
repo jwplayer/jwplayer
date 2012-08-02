@@ -1,8 +1,4 @@
-﻿/**
- * @version 5.6
- * @author Pablo Schklowsky
- **/
-package com.longtailvideo.jwplayer.media {
+﻿package com.longtailvideo.jwplayer.media {
 	import com.longtailvideo.jwplayer.events.MediaEvent;
 	import com.longtailvideo.jwplayer.model.PlayerConfig;
 	import com.longtailvideo.jwplayer.model.PlaylistItem;
@@ -18,6 +14,10 @@ package com.longtailvideo.jwplayer.media {
 	import flash.net.URLRequest;
 	import flash.utils.Timer;
 
+
+	/**
+	 * Wrapper for playback of YouTube videos through the YT Cromeless Player.
+	 **/
 	public class YouTubeMediaProvider extends MediaProvider {
 		/** Loader used to load YouTube chromeless API swf **/
 		private var _loader:Loader;
@@ -37,36 +37,23 @@ package com.longtailvideo.jwplayer.media {
 		private var _videoId:String = "";
 		/** Array of YouTube quality levels **/
 		private var _qualityLevels:Array;
-		/** User-selected quality level **/
-		private var _userQuality:String;
 		/** Bytes loaded for currently loading segment **/
 		private var bytesLodaed:Number;
 		/** Bytes total for currently loading segment **/
 		private var bytesTotal:Number;
 		/** Current bytes offset from beginning of stream **/
 		private var bytesOffset:Number;
-		
 
-		
-		
+
 		/** Setup YouTube connections and load proxy. **/
 		public function YouTubeMediaProvider() {
 			super('youtube');
-
 			this.stretch = false;
-			
 			_statusTimer = new Timer(100);
 			_statusTimer.addEventListener(TimerEvent.TIMER, updatePlaybackStatus);
-			
 			_loader = new Loader();
 			_loader.contentLoaderInfo.addEventListener(Event.COMPLETE, apiLoaded);
 			_loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, loadErrorHandler);
-			
-		}
-
-
-		public override function initializeMediaProvider(cfg:PlayerConfig):void {
-			super.initializeMediaProvider(cfg);
 		}
 
 
@@ -137,22 +124,22 @@ package com.longtailvideo.jwplayer.media {
 			_ytAPI.addEventListener("onError", onPlayerError);
 			_ytAPI.addEventListener("onStateChange", onStateChange);
 			_ytAPI.addEventListener("onPlaybackQualityChange", onPlaybackQualityChange);
-
 		}
-				
+
+
+		/** API initialized; resize it and wrap code. **/
 		private function apiReady(evt:Event):void {
 			_ready = true;
-			
 			var dispConf:PluginConfig = config.pluginConfig("display");
 			resize(dispConf.width, dispConf.height);
-			
 			if (_loading) {
 				_loading = false;
 				completeLoad(_item);
 			}
-
 		}
-		
+
+
+		/** Catch YouTube API errors. **/
 		private function onPlayerError(evt:Event):void {
 			var errorCode:Number = Number(Object(evt).data);
 			if (!isNaN(errorCode)) {
@@ -174,17 +161,15 @@ package com.longtailvideo.jwplayer.media {
 			
 		}
 
+
 		/** Everything loaded - play the video **/
 		private function completeLoad(itm:PlaylistItem):void {
-			_userQuality = getConfigProperty("quality");
-			
-			_ytAPI.cueVideoById(_videoId, _item.start, _userQuality ? _userQuality : "default");
-			
+			_ytAPI.cueVideoById(_videoId, _item.start, "default");
+			_currentQuality = 0;
 			media = _loader;
 			sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_LOADED);
 			sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_BUFFER_FULL);
 			setVolume(config.mute ? 0 : config.volume);
-			
 			_statusTimer.start();
 		}
 
@@ -220,38 +205,25 @@ package com.longtailvideo.jwplayer.media {
 			bytesLodaed = _ytAPI.getVideoBytesLoaded();
 			bytesTotal = _ytAPI.getVideoBytesTotal();
 			bytesOffset = _ytAPI.getVideoStartBytes();
-			
-			if (_item.duration <= 0) {
-				_item.duration = _ytAPI.getDuration();
-			}
-			
+			_item.duration = _ytAPI.getDuration();
 			if (bytesTotal > 0) {
 				if (item.duration > 0) {
 					_offset = (bytesOffset / (bytesOffset + bytesTotal)) * _item.duration;
 				}
 				sendBufferEvent(100 * (bytesLodaed / (bytesOffset + bytesTotal)), _offset, {loaded:bytesLodaed, total:bytesTotal});
 			}
-			
+			// Send out time ticks.
 			if (state == PlayerState.PLAYING) {
-				
 				_position = _ytAPI.getCurrentTime();
-				
 				sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_TIME, {position: _position, duration: _item.duration, offset: _offset});
-				
-				if (_position > item.duration) {
-					complete();
-				}
 			}
-			
+			// Fetch quality levels from YT player.
 			if (!_qualityLevels || _qualityLevels.length == 0) {
 				var levels:Array = _ytAPI.getAvailableQualityLevels();
 				if (levels && levels.length > 0) {
 					_qualityLevels = [];
 					for each (var level:String in levels) {
 						_qualityLevels.push({label:level});
-						if (_userQuality == level) {
-							_currentQuality = _qualityLevels.length - 1;
-						}
 					}
 					if (_qualityLevels.length > 1) {
 						_qualityLevels.unshift({label: "auto"});
@@ -263,7 +235,6 @@ package com.longtailvideo.jwplayer.media {
 					sendQualityEvent(MediaEvent.JWPLAYER_MEDIA_LEVELS, _qualityLevels, _currentQuality);
 				}
 			}
-			
 		}
 
 
@@ -276,8 +247,8 @@ package com.longtailvideo.jwplayer.media {
 				super.pause();
 			}
 		}
-		
-		
+
+
 		/** Play or pause the video. **/
 		public override function play():void {
 			if (_ready) {
@@ -333,13 +304,15 @@ package com.longtailvideo.jwplayer.media {
 			}
 			super.setVolume(pct);
 		}
-		
-		/*** QUALITY API ***/
-		
+
+
+		/** Return the list of quality levels. **/
 		override public function get qualityLevels():Array {
 			return _qualityLevels;
 		}
-		
+
+
+		/** Change the current quality. **/
 		override public function set currentQuality(quality:Number):void {
 			if (quality > 0) {
 				_currentQuality = quality;
@@ -351,7 +324,9 @@ package com.longtailvideo.jwplayer.media {
 				_ytAPI.setPlaybackQuality("default");
 			}
 		}
-		
+
+
+		/** Propagate quality changes from the API. **/
 		private function onPlaybackQualityChange(event:Event):void {
 			if (_currentQuality > 0) {
 				for (var i:Number = 0; i < _qualityLevels.length; i++) {
@@ -363,5 +338,7 @@ package com.longtailvideo.jwplayer.media {
 				}
 			}
 		}
+
+
 	}
 }

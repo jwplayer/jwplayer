@@ -78,7 +78,7 @@ package com.longtailvideo.jwplayer.media {
 	
 	public class MediaProvider extends Sprite implements IMediaProvider {
 		/** Reference to the player configuration. **/
-		private var _config:PlayerConfig;
+		protected var _config:PlayerConfig;
 		/** Name of the MediaProvider **/
 		private var _provider:String;
 		/** Reference to the currently active playlistitem. **/
@@ -200,8 +200,8 @@ package com.longtailvideo.jwplayer.media {
 				if (_media) {
 					// Fix some rounding errors by resetting the media container size before stretching
 					if (_media.numChildren > 0) {
-						_media.width = _media.getChildAt(0).width;					
-						_media.height = _media.getChildAt(0).height;					
+						_media.width = _media.getChildAt(0).width;
+						_media.height = _media.getChildAt(0).height;
 					}
 					Stretcher.stretch(_media, width, height, _config.stretching);
 				}
@@ -383,50 +383,60 @@ package com.longtailvideo.jwplayer.media {
 			return _stretch;
 		}
 
-		
-		/**
-		 * Current quality level getter
-		 **/
+
+		/** Current quality level getter **/
 		public function get currentQuality():Number {
-			return _currentQuality;			
+			return _currentQuality;
 		}
-		
-		/**
-		 * Current quality level setter
-		 **/
+
+
+		/** Current quality level setter **/
 		public function set currentQuality(quality:Number):void {
-			_currentQuality = quality;			
+			_currentQuality = quality;
 		}
-		
+
+
 		/** Quality levels (must be overridden by inheritors **/
 		public function get qualityLevels():Array {
-			return null;			
+			return null;
 		}
-		
-		protected function qualityLabel(level:Object):String {
-			if (level.label) return level.label;
-			else if (level.height) return level.height + "p";
-			else if (level.width) return Math.round(level.width * 9 / 16) + "p";
-			else if (level.bitrate) return level.bitrate + "kbps";
-			else return "";
-		}
-		
-		protected function sendQualityEvent(type:String, levels:Array, quality:Number):void {
-			var qualityEvent:MediaEvent = new MediaEvent(type);
-			qualityEvent.levels = [];
-			for (var i:Number=0; i<levels.length; i++) {
-				var translatedLevel:Object = {
-					label: qualityLabel(levels[i]) ? qualityLabel(levels[i]) : i
-				};
-				if (levels[i].width) translatedLevel.width = levels[i].width;
-				if (levels[i].height) translatedLevel.height = levels[i].height;
-				if (levels[i].bitrate) translatedLevel.bitrate = levels[i].bitrate;
-				qualityEvent.levels.push(translatedLevel);
+
+
+		/** Translate sources into quality levels. **/
+		protected function sources2Levels(sources:Array):Array {
+			var levels:Array = new Array();
+			for (var i:Number=0; i<sources.length; i++) {
+				var level:Object = { label: i+" " };
+				if(sources[i].bitrate) {
+					level.bitrate = sources[i].bitrate;
+					level.label = sources[i].bitrate + "kbps ";
+				}
+				if(sources[i].width) {
+					level.width = sources[i].width;
+					level.label = sources[i].width + "px ";
+				}
+				if(sources[i].height) {
+					level.height = sources[i].height;
+					level.label = sources[i].height + "p ";
+				}
+				if(sources[i].label) {
+					level.label = sources[i].label;
+				}
+				levels.push(level);
 			}
+			return levels;
+		}
+
+
+		/** Broadcast onQualityLevels / onCurrentQuality. **/
+		protected function sendQualityEvent(type:String, sources:Array, quality:Number):void {
+			var qualityEvent:MediaEvent = new MediaEvent(type);
+			qualityEvent.levels = sources2Levels(sources);
 			qualityEvent.currentQuality = quality;
 			dispatchEvent(qualityEvent);
 		}
-		
+
+
 		protected function getLevel(item:PlaylistItem, bitrate:Number, width:Number):Number {
 			for (var i:Number=0; i < item.levels.length; i++) {
 				var level:PlaylistItemLevel = item.levels[i] as PlaylistItemLevel;

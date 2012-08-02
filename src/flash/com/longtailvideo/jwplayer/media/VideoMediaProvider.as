@@ -4,13 +4,11 @@ package com.longtailvideo.jwplayer.media {
 	import com.longtailvideo.jwplayer.events.MediaEvent;
 	import com.longtailvideo.jwplayer.model.PlayerConfig;
 	import com.longtailvideo.jwplayer.model.PlaylistItem;
-	import com.longtailvideo.jwplayer.model.PlaylistItemLevel;
 	import com.longtailvideo.jwplayer.player.PlayerState;
-	import com.longtailvideo.jwplayer.utils.Configger;
 	import com.longtailvideo.jwplayer.utils.NetClient;
-	import com.longtailvideo.jwplayer.utils.Strings;
 	
 	import flash.events.*;
+	import flash.external.ExternalInterface;
 	import flash.media.*;
 	import flash.net.*;
 	import flash.utils.*;
@@ -32,10 +30,6 @@ package com.longtailvideo.jwplayer.media {
 		protected var _positionInterval:Number;
 		/** Currently playing file. **/
 		protected var _currentFile:String;
-		/** Whether the buffer has filled **/
-		private var _bufferFull:Boolean;
-		/** Whether the enitre video has been buffered **/
-		private var _bufferingComplete:Boolean;
 		/** Whether the quality levels have been sent out **/
 		private var _qualitySent:Boolean = false;
 
@@ -43,7 +37,6 @@ package com.longtailvideo.jwplayer.media {
 		/** Constructor; sets up the connection and display. **/
 		public function VideoMediaProvider() {
 			super('video');
-			_currentQuality = 0;
 		}
 
 
@@ -55,7 +48,7 @@ package com.longtailvideo.jwplayer.media {
 			_stream.addEventListener(NetStatusEvent.NET_STATUS, statusHandler);
 			_stream.addEventListener(IOErrorEvent.IO_ERROR, errorHandler);
 			_stream.addEventListener(AsyncErrorEvent.ASYNC_ERROR, errorHandler);
-			_stream.bufferTime = 0.1;
+			_stream.bufferTime = 1;
 			_stream.client = new NetClient(this);
 			_transformer = new SoundTransform();
 			_video = new Video(320, 240);
@@ -72,31 +65,27 @@ package com.longtailvideo.jwplayer.media {
 
 		/** Load content. **/
 		override public function load(itm:PlaylistItem):void {
-			_bufferFull = false;
-			_bufferingComplete = false;
-			if (itm.levels.length > 0) {
-				if (!_qualitySent) {
-					_qualitySent = true;
-					sendQualityEvent(MediaEvent.JWPLAYER_MEDIA_LEVELS, itm.levels, currentQuality);
-				}
-			}
-			
-			if (!item || _currentFile != itm.file || _stream.bytesLoaded == 0 || (_stream.bytesLoaded < _stream.bytesTotal > 0)) {
-				_currentFile = itm.file;
-				if (itm.type == "aac" || itm.type == "m4a") {
-					media = null;
-				} else {
-					media = _video;
-				}
-				var filePath:String = Strings.getAbsolutePath(itm.file, config['netstreambasepath']);
-				_stream.play(filePath);
-				_stream.pause();
-			} else {
-				if (itm.duration <= 0) { itm.duration = item.duration; }
-				seekStream(itm.start, false);
-			}
 			_item = itm;
-			super.load(itm);
+			// Set initial quality and set levels
+			if (!_qualitySent) {
+				_currentQuality = 0;
+				for (var i:Number=1; i < _item.levels.length; i++) {
+					if (_item.levels[i].width && _item.levels[i].width > _config.width * 1.5) {
+						_currentQuality = i - 1;
+						break;
+					}
+				}
+				sendQualityEvent(MediaEvent.JWPLAYER_MEDIA_LEVELS, _item.levels, _currentQuality);
+				_qualitySent = true;
+			}
+			// Do not set a stretchable media for AAC files.
+			if (_item.type == "aac" || _item.type == "m4a") {
+				media = null;
+			} else {
+				media = _video;
+			}
+			_stream.play(_item.levels[_currentQuality].file);
+			super.load(_item);
 			setState(PlayerState.BUFFERING);
 			sendBufferEvent(0);
 			streamVolume(config.mute ? 0 : config.volume);
@@ -132,60 +121,28 @@ package com.longtailvideo.jwplayer.media {
 			if (!_positionInterval) {
 				_positionInterval = setInterval(positionHandler, 100);
 			}
-			if (_bufferFull) {
-				_stream.resume();
-				super.play();
-			} else {
-				setState(PlayerState.BUFFERING);
-			}
+			_stream.resume();
+			super.play();
 		}
 
 
 		/** Interval for the position progress **/
 		protected function positionHandler():void {
 			var pos:Number = Math.round(Math.min(_stream.time, Math.max(item.duration, 0)) * 100) / 100;
-			var timeRemaining:Number = item.duration > 0 ? (item.duration - _stream.time) : _stream.time;
-			var bufferTime:Number;
-			var bufferFill:Number;
-			if (item.duration > 0 && _stream && _stream.bytesTotal > 0) {
-				bufferTime = _stream.bufferTime < timeRemaining ? _stream.bufferTime : Math.ceil(timeRemaining);
-				bufferFill = _stream.bufferTime ? Math.ceil(Math.ceil(_stream.bufferLength) / bufferTime * 100) : 0;
-			} else {
-				bufferFill = _stream.bufferTime ? _stream.bufferLength/_stream.bufferTime * 100 : 0;
-				bufferTime = (_stream.bytesTotal > 0) ? 100 : 0;
-			}
-			if (bufferFill <= 50 && state == PlayerState.PLAYING && item.duration - pos > 5) {
-				_bufferFull = false;
-				_stream.pause();
+			// Toggle state between buffering and playing.
+			if (_stream.bufferLength < 1 && state == PlayerState.PLAYING && item.duration - pos > 3) {
 				setState(PlayerState.BUFFERING);
-			} else if (bufferFill > 95 && !_bufferFull && bufferTime > 0) {
-				_bufferFull = true;
+			} else if (_stream.bufferLength > 1 && state == PlayerState.BUFFERING) {
 				sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_BUFFER_FULL);
+				setState(PlayerState.PLAYING);
 			}
-			
-			if (!_bufferingComplete) {
-				var bufferPercent:Number;
-				if (_stream.bytesTotal > 0) {
-					bufferPercent = 100 * (_stream.bytesLoaded / _stream.bytesTotal);
-				} else {
-					bufferPercent = _stream.bytesLoaded > 0 ? 100 : 0; 
-				}
-				if (bufferPercent == 100 && _bufferingComplete == false) {
-					_bufferingComplete = true;
-				}
-				sendBufferEvent(bufferPercent, 0, {loaded:_stream.bytesLoaded, total:_stream.bytesTotal});
+			// Send out buffer percentage.
+			if (_stream.bytesLoaded < _stream.bytesTotal) {
+				sendBufferEvent(Math.round(100* _stream.bytesLoaded / _stream.bytesTotal));
 			}
-			
-			if (state != PlayerState.PLAYING) {
-				return;
-			}
-			_position = pos;
-			if (position < item.duration) {
-				if (position >= 0) {
-					sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_TIME, {position: position, duration: item.duration});
-				}
-			} else if (item.duration > 0) {
-				complete();
+			if (state == PlayerState.PLAYING) {
+				_position = pos;
+				sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_TIME, {position: _position, duration: item.duration});
 			}
 		}
 
@@ -197,15 +154,13 @@ package com.longtailvideo.jwplayer.media {
 
 
 		private function seekStream(pos:Number, ply:Boolean=true):void {
-			var bufferLength:Number = _stream.bytesTotal > 0 ? (_stream.bytesLoaded / _stream.bytesTotal * item.duration) : 0;
-			if (pos <= bufferLength) {
-				super.seek(pos);
+			var range:Number = _stream.bytesLoaded / _stream.bytesTotal * item.duration;
+			if (pos < range) {
+				_position = pos;
 				clearInterval(_positionInterval);
 				_positionInterval = undefined;
-				_stream.seek(position);
-				if (ply){
-					play();
-				}
+				_stream.seek(_position);
+				if (ply) { play(); }
 			}
 		}
 
@@ -274,8 +229,8 @@ package com.longtailvideo.jwplayer.media {
 		/** Retrieve the list of available quality levels. **/
 		override public function get qualityLevels():Array {
 			if (_item) {
-				return _item.levels;
-			} else return null;
+				return sources2Levels(_item.levels);
+			} else return [];
 		}
 
 

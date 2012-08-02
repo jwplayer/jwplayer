@@ -21,6 +21,7 @@ package com.longtailvideo.jwplayer.parsers {
 						'',
 						Number(Strings.xmlAttribute(i,'system-bitrate'))/1000,
 						Number(Strings.xmlAttribute(i,'width')),
+						Number(Strings.xmlAttribute(i,'height')),
 						streamer
 					);
 					array.push(level);

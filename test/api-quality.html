@@ -29,7 +29,11 @@
             }],
             title: "2 quality levels"
         },{
-            file: 'http://content.bitsontherun.com/videos/kaUXWqTZ-52qL9xLP.mp4',
+            sources: [{
+                file: 'http://content.bitsontherun.com/videos/kaUXWqTZ-52qL9xLP.mp4',
+                height: 270,
+                width: 480
+            }],
             title: "1 quality level"
         },{
             sources: [{
@@ -99,15 +103,13 @@
     function clearLog(text) {
         var log = document.getElementById("log").innerHTML = "";
     };
-    function switchPrimary() { 
-        
-    };
 </script>
 
 <ol>
     <li><a href="javascript:getCurrentQuality();">Get the current quality level</a></li>
     <li><a href="javascript:getQualityLevels();">Get the list of quality levels</a></li>
     <li><a href="javascript:setCurrentQuality();">Set the current quality level</a></li>
+    <li><a href="javascript:console.log(jwplayer().getPlaylist())">Get the playlist</a></li>
     <li><a href="javascript:clearLog();">Clear the message log</a></li>
 </ol>
 

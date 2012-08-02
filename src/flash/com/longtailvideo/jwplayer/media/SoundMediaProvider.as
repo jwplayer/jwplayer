@@ -1,7 +1,4 @@
-﻿/**
- * Wrapper for playback of mp3 sounds.
- **/
-package com.longtailvideo.jwplayer.media {
+﻿package com.longtailvideo.jwplayer.media {
 
 
 	import com.longtailvideo.jwplayer.events.*;
@@ -15,6 +12,9 @@ package com.longtailvideo.jwplayer.media {
 	import flash.utils.*;
 
 
+	/**
+	 * Wrapper for playback of MP3 sounds.
+	 **/
 	public class SoundMediaProvider extends MediaProvider {
 		/** _sound object to be instantiated. **/
 		private var _sound:Sound;
@@ -26,9 +26,6 @@ package com.longtailvideo.jwplayer.media {
 		private var _context:SoundLoaderContext;
 		/** ID for the position interval. **/
 		private var _positionInterval:Number;
-		/** Whether the buffer has filled **/
-		/** Whether the enitre sound file has been buffered **/
-		private var _bufferPercent:Number = 0;
 
 
 		/** Constructor; sets up the connection and display. **/
@@ -52,22 +49,18 @@ package com.longtailvideo.jwplayer.media {
 
 		/** Catch errors. **/
 		private function errorHandler(evt:ErrorEvent):void {
-			stop();
 			error("Error loading media: File not found");
 		}
 
 
 		/** Load the _sound. **/
 		override public function load(itm:PlaylistItem):void {
-			_position = 0;
-			_bufferPercent = 0;
-			if (!_item || _item.file != itm.file) {
-				_sound = new Sound();
-				_sound.addEventListener(IOErrorEvent.IO_ERROR, errorHandler);
-				_sound.addEventListener(ProgressEvent.PROGRESS, positionHandler);
-				_sound.load(new URLRequest(itm.file), _context);
-			}
 			_item = itm;
+			_position = 0;
+			_sound = new Sound();
+			_sound.addEventListener(IOErrorEvent.IO_ERROR, errorHandler);
+			_sound.addEventListener(ProgressEvent.PROGRESS, positionHandler);
+			_sound.load(new URLRequest(itm.file), _context);
 			sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_LOADED);
 			setState(PlayerState.BUFFERING);
 			sendBufferEvent(0);
@@ -114,12 +107,11 @@ package com.longtailvideo.jwplayer.media {
 				_item.duration = _sound.length / 1000 / _sound.bytesLoaded * _sound.bytesTotal;
 			}
 			// Send buffer updates until complete
-			if (_bufferPercent < 100 && _sound.bytesLoaded > 0) {
-			    _bufferPercent = Math.floor(_sound.bytesLoaded*100/_sound.bytesTotal);
-				sendBufferEvent(_bufferPercent);
+			if (_sound.bytesLoaded < _sound.bytesTotal) {
+				sendBufferEvent(Math.round(100 * _sound.bytesLoaded / _sound.bytesTotal));
 			}
 			// Switch between playback and buffering state.
-			if (state == PlayerState.BUFFERING && !_sound.isBuffering && _sound.bytesLoaded > 0) {
+			if (state == PlayerState.BUFFERING && !_sound.isBuffering) {
 				sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_BUFFER_FULL);
 				setState(PlayerState.PLAYING);
 			} else if (state == PlayerState.PLAYING && _sound.isBuffering) {
@@ -151,7 +143,6 @@ package com.longtailvideo.jwplayer.media {
 		override public function stop():void {
 			clearInterval(_positionInterval);
 			_positionInterval = undefined;
-			_bufferPercent = 0;
 			super.stop();
 			if (_channel) {
 				_channel.stop();

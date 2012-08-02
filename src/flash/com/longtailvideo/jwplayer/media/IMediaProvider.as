@@ -69,7 +69,7 @@ package com.longtailvideo.jwplayer.media
 	
 	
 	public interface IMediaProvider extends IGlobalEventDispatcher {
-		function initializeMediaProvider(cfg:PlayerConfig):void;		
+		function initializeMediaProvider(cfg:PlayerConfig):void;
 		function load(itm:PlaylistItem):void;
 		function play():void;
 		function pause():void;
