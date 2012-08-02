@@ -586,9 +586,9 @@
 			var id = _players[index].id,
 				toDestroy = document.getElementById(id + "_wrapper");
 			
-			if (!toDestroy) {
-				toDestroy = document.getElementById(id);	
-			}
+//			if (!toDestroy) {
+//				toDestroy = document.getElementById(id);	
+//			}
 			
 			if (toDestroy) {
 				var replacement = document.createElement('div');

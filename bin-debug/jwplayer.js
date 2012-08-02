@@ -18,7 +18,7 @@ jwplayer = function(container) {
 
 var $jw = jwplayer;
 
-jwplayer.version = '6.0.2346';
+jwplayer.version = '6.0.2349';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -1328,7 +1328,6 @@ jwplayer.source = document.createElement("source");/**
 				}
 				
 				
-				
 				if (_config.fallback) {
 					utils.log("No suitable players found and fallback enabled");
 					new embed.download(_container, _config, _sourceError);
@@ -1621,8 +1620,7 @@ jwplayer.source = document.createElement("source");/**
 			if (playlist && playlist.length) {
 				item = playlist[0];
 				sources = item.sources;
-				// TODO: make sure source can be downloaded (mp4, flv, webm, aac, mp3 or vorbis)
-				// If no downlaodable files, and youtube, display youtube
+				// If no downloadable files, and youtube, display youtube
 				// If nothing, show error message
 				for (i=0; i<sources.length; i++) {
 					var source = sources[i], 
@@ -1844,8 +1842,7 @@ jwplayer.source = document.createElement("source");/**
 		};
 		
 		function jsonToFlashvars(json) {
-//			var flashvars = json.netstreambasepath ? '' : 'netstreambasepath=' + encodeURIComponent(window.location.href.split("#")[0]) + '&';
-			var flashvars = '';// = encodeURIComponent(window.location.href.split("#")[0]) + '&';
+			var flashvars = '';
 			for (var key in json) {
 				if (typeof(json[key]) == "object") {
 					flashvars += key + '=' + encodeURIComponent("[[JSON]]"+utils.jsonToString(json[key])) + '&';
@@ -2005,7 +2002,8 @@ jwplayer.source = document.createElement("source");/**
 		 */
 		function _flashCanPlay(file, type) {
 			if (utils.isYouTube(file)) return true;
-			
+			if (type == "rtmp") return true;
+
 			var mappedType = utils.extensionmap[type ? type : utils.extension(file)];
 			
 			// If no type or unrecognized type, don't allow to play
@@ -2770,9 +2768,9 @@ jwplayer.source = document.createElement("source");/**
 			var id = _players[index].id,
 				toDestroy = document.getElementById(id + "_wrapper");
 			
-			if (!toDestroy) {
-				toDestroy = document.getElementById(id);	
-			}
+//			if (!toDestroy) {
+//				toDestroy = document.getElementById(id);	
+//			}
 			
 			if (toDestroy) {
 				var replacement = document.createElement('div');

@@ -34,8 +34,7 @@
 			if (playlist && playlist.length) {
 				item = playlist[0];
 				sources = item.sources;
-				// TODO: make sure source can be downloaded (mp4, flv, webm, aac, mp3 or vorbis)
-				// If no downlaodable files, and youtube, display youtube
+				// If no downloadable files, and youtube, display youtube
 				// If nothing, show error message
 				for (i=0; i<sources.length; i++) {
 					var source = sources[i], 

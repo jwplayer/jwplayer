@@ -95,8 +95,7 @@
 		};
 		
 		function jsonToFlashvars(json) {
-//			var flashvars = json.netstreambasepath ? '' : 'netstreambasepath=' + encodeURIComponent(window.location.href.split("#")[0]) + '&';
-			var flashvars = '';// = encodeURIComponent(window.location.href.split("#")[0]) + '&';
+			var flashvars = '';
 			for (var key in json) {
 				if (typeof(json[key]) == "object") {
 					flashvars += key + '=' + encodeURIComponent("[[JSON]]"+utils.jsonToString(json[key])) + '&';
@@ -256,7 +255,8 @@
 		 */
 		function _flashCanPlay(file, type) {
 			if (utils.isYouTube(file)) return true;
-			
+			if (type == "rtmp") return true;
+
 			var mappedType = utils.extensionmap[type ? type : utils.extension(file)];
 			
 			// If no type or unrecognized type, don't allow to play

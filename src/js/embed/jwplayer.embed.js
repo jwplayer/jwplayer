@@ -51,7 +51,6 @@
 				}
 				
 				
-				
 				if (_config.fallback) {
 					utils.log("No suitable players found and fallback enabled");
 					new embed.download(_container, _config, _sourceError);

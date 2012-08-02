@@ -29,10 +29,6 @@ package com.longtailvideo.jwplayer.view {
 		protected var about:ContextMenuItem;
 		/** Debug menu item **/
 		protected var debug:ContextMenuItem;
-		/** Fullscreen menu item **/
-		protected var fullscreen:ContextMenuItem;
-		/** Stretching menu item **/
-		protected var stretching:ContextMenuItem;
 	
 		/** Constructor. **/
 		public function RightclickMenu(player:IPlayer, clip:MovieClip) {
@@ -54,13 +50,6 @@ package com.longtailvideo.jwplayer.view {
 		public function initializeMenu():void {
 			setAboutText();
 			addItem(about, aboutHandler);
-			try {
-				fullscreen = new ContextMenuItem('Toggle Fullscreen...');
-				addItem(fullscreen, fullscreenHandler);
-			} catch (err:Error) {
-			}
-			stretching = new ContextMenuItem('Stretching is ' + _player.config.stretching + '...');
-			addItem(stretching, stretchHandler);
 			if (Capabilities.isDebugger == true || _player.config.debug != Logger.NONE) {
 				debug = new ContextMenuItem('Logging to ' + _player.config.debug + '...');
 				addItem(debug, debugHandler);
@@ -86,21 +75,6 @@ package com.longtailvideo.jwplayer.view {
 			_player.config.debug = arr[idx];
 		}
 
-		/** Toggle the fullscreen mode. **/
-		protected function fullscreenHandler(evt:ContextMenuEvent):void {
-			dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_FULLSCREEN, !_player.config.fullscreen));
-		}
-
-		/** Change the stretchmode. **/
-		protected function stretchHandler(evt:ContextMenuEvent):void {
-			var arr:Array = new Array(Stretcher.UNIFORM, Stretcher.FILL, Stretcher.EXACTFIT, Stretcher.NONE);
-			var idx:Number = arr.indexOf(_player.config.stretching);
-			idx == arr.length - 1 ? idx = 0 : idx++;
-			_player.config.stretching = arr[idx];
-			stretching.caption = 'Stretching is ' + arr[idx] + '...';
-			dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_REDRAW));
-		}
-		
 		protected function setCookie(name:String, value:*):void {
 			Configger.saveCookie(name, value);			
 		}
