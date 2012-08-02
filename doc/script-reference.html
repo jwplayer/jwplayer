@@ -230,7 +230,7 @@ Fired when the list of available quality levels is updated. Happens e.g. shortly
 <ul><li><strong>levels</strong> (Array): the full array with new quality levels.
 </li></ul></dd><dt>onQualityChange (<em>callback</em>)</dt><dd>
 Fired when the active quality level is changed. Happens in respons to e.g. a user clicking the controlbar quality menu or a script calling <em>setCurrentQuality</em>. Event attributes:
-<ul><li><strong>index</strong> (Number): index of the new quality level in the <em>getQualityLevels()</em>  array.
+<ul><li><strong>currentQuality</strong> (Number): index of the new quality level in the <em>getQualityLevels()</em>  array.
 </li></ul></dd></dl>
 
 
@@ -253,7 +253,7 @@ Fired when the list of available captions tracks is updated. Happens e.g. shortl
 <ul><li><strong>tracks</strong> (Array): the full array with new captions tracks.
 </li></ul></dd><dt>onCaptionsChange (<em>callback</em>)</dt><dd>
 Fired when the active captions track is changed. Happens in respons to e.g. a user clicking the controlbar captions menu or a script calling <strong>setCurrentCaptions</strong>. Event attributes:
-<ul><li><strong>index</strong> (Number): index of the new captions track in the <strong>getCaptionsTracks()</strong> array.
+<ul><li><strong>currentCaption</strong> (Number): index of the new captions track in the <strong>getCaptionsTracks()</strong> array.
 </li></ul></dd></dl>
 
 

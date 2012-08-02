@@ -120,7 +120,7 @@
 
 <dl>
 <dt>Error loading media: File not found</dt>
-<dd>This means the URL to your audio/video file or RTMP/HLS manifest could not be found. Please make sure the file is available at the location you provided (did you set relative paths correctly?) and available for loading in the player (are the access rights and mimetype header set correctly?).</dd>
+<dd>This means the URL to your audio/video file could not be found. Please make sure the file is available at the location you provided (did you set relative paths correctly?) and available for loading in the player (are the access rights and mimetype header set correctly?).</dd>
 <dt>Error loading media: File could not be played</dt>
 <dd>This usually means you are trying to load a file in a nonsupported format in JW Player. A common case is the loading of a <strong>.wmv</strong> video, or a <strong>.mov</strong> video that doesn't use the H264 video codec. See <a href="media.html">Supported Media Formats</a> for the list of formats the player supports.</dd>
 </dl>
@@ -137,6 +137,8 @@
 </dl>
 
 <dl>
+<dt>Error loading stream: Manifest not found</dt>
+<dd>This means the URL to your RTMP/HLS manifest could not be found. Please make sure it is available at the location you provided (did you set relative paths correctly?) and available for loading in the player (are the access rights and mimetype header set correctly?).</dd>
 <dt>Error loading stream: File is not a valid manifest</dt>
 <dd>This means that your SMIL manifest (for RTMP streaming) is not correctly formatted. See <a href="rtmp.html">Using RTMP Streaming</a> for examples of correctly formatted manifest files.</dd>
 <dt>Error loading stream: Could not connect to RTMP server</dt>

@@ -72,7 +72,6 @@ package com.longtailvideo.jwplayer.media {
 			setState(PlayerState.BUFFERING);
 			sendBufferEvent(0);
 			streamVolume(config.mute ? 0 : config.volume);
-			play();
 		}
 
 
@@ -121,6 +120,7 @@ package com.longtailvideo.jwplayer.media {
 			}
 			// Switch between playback and buffering state.
 			if (state == PlayerState.BUFFERING && !_sound.isBuffering && _sound.bytesLoaded > 0) {
+				sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_BUFFER_FULL);
 				setState(PlayerState.PLAYING);
 			} else if (state == PlayerState.PLAYING && _sound.isBuffering) {
 				setState(PlayerState.BUFFERING);

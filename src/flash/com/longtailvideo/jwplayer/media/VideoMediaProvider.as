@@ -1,4 +1,6 @@
 package com.longtailvideo.jwplayer.media {
+
+
 	import com.longtailvideo.jwplayer.events.MediaEvent;
 	import com.longtailvideo.jwplayer.model.PlayerConfig;
 	import com.longtailvideo.jwplayer.model.PlaylistItem;
@@ -12,10 +14,10 @@ package com.longtailvideo.jwplayer.media {
 	import flash.media.*;
 	import flash.net.*;
 	import flash.utils.*;
-	
-	
+
+
 	/**
-	 * Wrapper for playback of progressively downloaded _video.
+	 * Wrapper for playback of progressively downloaded MP4, FLV and AAC.
 	 **/
 	public class VideoMediaProvider extends MediaProvider {
 		/** Video object to be instantiated. **/
@@ -34,22 +36,17 @@ package com.longtailvideo.jwplayer.media {
 		private var _bufferFull:Boolean;
 		/** Whether the enitre video has been buffered **/
 		private var _bufferingComplete:Boolean;
-		/** Whether we have checked the bandwidth. **/
-		//private var _bandwidthChecked:Boolean;
-		/** Whether to switch on bandwidth detection **/
-		//private var _bandwidthSwitch:Boolean = true;
-		/** Bandwidth check interval **/
-		//private var _bandwidthTimeout:Number = 2000;
 		/** Whether the quality levels have been sent out **/
 		private var _qualitySent:Boolean = false;
-		
+
+
 		/** Constructor; sets up the connection and display. **/
 		public function VideoMediaProvider() {
 			super('video');
 			_currentQuality = 0;
 		}
-		
-		
+
+
 		public override function initializeMediaProvider(cfg:PlayerConfig):void {
 			super.initializeMediaProvider(cfg);
 			_connection = new NetConnection();
@@ -58,35 +55,25 @@ package com.longtailvideo.jwplayer.media {
 			_stream.addEventListener(NetStatusEvent.NET_STATUS, statusHandler);
 			_stream.addEventListener(IOErrorEvent.IO_ERROR, errorHandler);
 			_stream.addEventListener(AsyncErrorEvent.ASYNC_ERROR, errorHandler);
-			_stream.bufferTime = config.bufferlength;
+			_stream.bufferTime = 0.1;
 			_stream.client = new NetClient(this);
 			_transformer = new SoundTransform();
 			_video = new Video(320, 240);
 			_video.smoothing = true;
 			_video.attachNetStream(_stream);
 		}
-		
-		
+
+
 		/** Catch security errors. **/
 		protected function errorHandler(evt:ErrorEvent):void {
 			error(evt.text);
-		}
-		
-		
+		};
+
+
 		/** Load content. **/
 		override public function load(itm:PlaylistItem):void {
-			var replay:Boolean;
 			_bufferFull = false;
 			_bufferingComplete = false;
-/*			if (itm.levels.length > 0) {
-				if (currentQuality < 0) {
-					itm.setLevel(getLevel(itm, config.bandwidth, config.width));
-					_bandwidthChecked = false;
-				}
-			} else {
-				_bandwidthChecked = true;
-			}
-*/			
 			if (itm.levels.length > 0) {
 				if (!_qualitySent) {
 					_qualitySent = true;
@@ -94,19 +81,13 @@ package com.longtailvideo.jwplayer.media {
 				}
 			}
 			
-			if (!item 
-				|| _currentFile != itm.file 
-				|| _stream.bytesLoaded == 0 
-				|| (_stream.bytesLoaded < _stream.bytesTotal > 0)) 
-			{
+			if (!item || _currentFile != itm.file || _stream.bytesLoaded == 0 || (_stream.bytesLoaded < _stream.bytesTotal > 0)) {
 				_currentFile = itm.file;
 				if (itm.type == "aac" || itm.type == "m4a") {
 					media = null;
 				} else {
 					media = _video;
 				}
-				//This is not needed; only used if accessing video's bitmap data
-				//_stream.checkPolicyFile = true;
 				var filePath:String = Strings.getAbsolutePath(itm.file, config['netstreambasepath']);
 				_stream.play(filePath);
 				_stream.pause();
@@ -114,21 +95,16 @@ package com.longtailvideo.jwplayer.media {
 				if (itm.duration <= 0) { itm.duration = item.duration; }
 				seekStream(itm.start, false);
 			}
-			
 			_item = itm;
-			
 			super.load(itm);
-			
 			setState(PlayerState.BUFFERING);
 			sendBufferEvent(0);
-			
 			streamVolume(config.mute ? 0 : config.volume);
-			
 			clearInterval(_positionInterval);
-			_positionInterval = setInterval(positionHandler, 200);
-			
+			_positionInterval = setInterval(positionHandler, 100);
 		}
-		
+
+
 		/** Get metadata information from netstream class. **/
 		public function onClientData(dat:Object):void {
 			if (!dat) return;
@@ -142,15 +118,15 @@ package com.longtailvideo.jwplayer.media {
 			}
 			sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_META, {metadata: dat});
 		}
-		
-		
+
+
 		/** Pause playback. **/
 		override public function pause():void {
 			_stream.pause();
 			super.pause();
 		}
-		
-		
+
+
 		/** Resume playing. **/
 		override public function play():void {
 			if (!_positionInterval) {
@@ -163,15 +139,10 @@ package com.longtailvideo.jwplayer.media {
 				setState(PlayerState.BUFFERING);
 			}
 		}
-		
-		
+
+
 		/** Interval for the position progress **/
 		protected function positionHandler():void {
-/*			if (!_bandwidthChecked && _stream.bytesLoaded > 0) {
-				_bandwidthChecked = true;
-				setTimeout(checkBandwidth, _bandwidthTimeout, _stream.bytesLoaded);
-			}
-*/			
 			var pos:Number = Math.round(Math.min(_stream.time, Math.max(item.duration, 0)) * 100) / 100;
 			var timeRemaining:Number = item.duration > 0 ? (item.duration - _stream.time) : _stream.time;
 			var bufferTime:Number;
@@ -208,9 +179,7 @@ package com.longtailvideo.jwplayer.media {
 			if (state != PlayerState.PLAYING) {
 				return;
 			}
-			
 			_position = pos;
-			
 			if (position < item.duration) {
 				if (position >= 0) {
 					sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_TIME, {position: position, duration: item.duration});
@@ -219,36 +188,14 @@ package com.longtailvideo.jwplayer.media {
 				complete();
 			}
 		}
-		
-/*		private function checkBandwidth(lastLoaded:Number):void {
-			var currentLoaded:Number = _stream.bytesLoaded;
-			var bandwidth:Number = Math.ceil((currentLoaded - lastLoaded) / 1024) * 8 / (_bandwidthTimeout / 1000);
-			if (currentLoaded < _stream.bytesTotal) {
-				if (bandwidth > 0) {
-					config.bandwidth = bandwidth;
-					Configger.saveCookie('bandwidth',bandwidth);
-					var obj:Object = {bandwidth:bandwidth};
-					if (item.duration > 0 && _stream.bytesTotal > 0) {
-						obj.bitrate = Math.ceil(_stream.bytesTotal / 1024 * 8 / item.duration);
-					}
-					sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_META, {metadata: obj});
-				}
-				if (_bandwidthSwitch) {
-					_bandwidthSwitch = false;
-					if (item.currentLevel != getLevel(item, config.bandwidth, config.width)) {
-						load(item);
-						return;
-					}
-				}
-			}
-			setTimeout(checkBandwidth, _bandwidthTimeout, currentLoaded);
-		}
-*/		
+
+
 		/** Seek to a new position. **/
 		override public function seek(pos:Number):void {
 			seekStream(pos);
 		}
-		
+
+
 		private function seekStream(pos:Number, ply:Boolean=true):void {
 			var bufferLength:Number = _stream.bytesTotal > 0 ? (_stream.bytesLoaded / _stream.bytesTotal * item.duration) : 0;
 			if (pos <= bufferLength) {
@@ -261,8 +208,8 @@ package com.longtailvideo.jwplayer.media {
 				}
 			}
 		}
-		
-		
+
+
 		/** Receive NetStream status updates. **/
 		protected function statusHandler(evt:NetStatusEvent):void {
 			switch (evt.info.code) {
@@ -272,16 +219,17 @@ package com.longtailvideo.jwplayer.media {
 				case "NetStream.Play.StreamNotFound":
 					error('Error loading media: File not found');
 					break;
+				case "NetStream.Play.NoSupportedTrackFound":
+					error('Error loading media: File could not be played');
+					break;
 			}
-			sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_META, {metadata: {status: evt.info.code}});
 		}
-		
-		
+
+
 		/** Destroy the video. **/
 		override public function stop():void {
 			if (_stream.bytesLoaded < _stream.bytesTotal) {
 				_stream.close();
-				_currentQuality = 0;
 			} else {
 				_stream.pause();
 				_stream.seek(0);
@@ -291,14 +239,15 @@ package com.longtailvideo.jwplayer.media {
 			_qualitySent = false;
 			super.stop();
 		}
-		
-		
+
+
 		/** Set the volume level. **/
 		override public function setVolume(vol:Number):void {
-			streamVolume(vol);			
+			streamVolume(vol);
 			super.setVolume(vol);
 		}
-		
+
+
 		/** Set the stream's volume, without sending a volume event **/
 		protected function streamVolume(level:Number):void {
 			_transformer.volume = level / 100;
@@ -306,35 +255,29 @@ package com.longtailvideo.jwplayer.media {
 				_stream.soundTransform = _transformer;
 			}
 		}
-		
-		
-		
+
+
+		/** Set the current quality level. **/
 		override public function set currentQuality(quality:Number):void {
 			if (quality == _currentQuality) return;
 			if (!_item) return;
-
 			if (quality < 0) quality = 0;
-//			if (quality >= 0) {
-				if (_item.levels.length > quality && _item.currentLevel != quality) {
-					_item.setLevel(quality);
-					_currentQuality = quality;
-					sendQualityEvent(MediaEvent.JWPLAYER_MEDIA_LEVEL_CHANGED, _item.levels, _currentQuality);
-					load(_item);
-				}
-/*			} else {
-				var autoLevel:Number = getLevel(_item, config.bandwidth, config.width);
-				if (autoLevel != _item.currentLevel) {
-					_item.setLevel(autoLevel);
-					load(_item);	
-				}
+			if (_item.levels.length > quality && _item.currentLevel != quality) {
+				_item.setLevel(quality);
+				_currentQuality = quality;
+				sendQualityEvent(MediaEvent.JWPLAYER_MEDIA_LEVEL_CHANGED, _item.levels, _currentQuality);
+				load(_item);
 			}
-*/		}
-		
+		}
+
+
+		/** Retrieve the list of available quality levels. **/
 		override public function get qualityLevels():Array {
 			if (_item) {
 				return _item.levels;
 			} else return null;
 		}
+
 
 	}
 }

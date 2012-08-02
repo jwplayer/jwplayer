@@ -3,6 +3,7 @@
 <head>
     <title>Media errors</title>
     <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <script type="text/javascript" src="assets/primaryCookie.js"></script>
     <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
 </head>
 <body>
@@ -13,11 +14,58 @@
 
 
 
+<h2>Media</h2>
+
+<div id="container"></div>
+<script type="text/javascript">
+    jwplayer("container").setup({
+        playlist: [{
+            file: 'http://content.bitsontherun.com/videos/bkaovAYt-52qL9xL.mp4',
+            title: 'incorrect URL'
+        },{
+            file: 'http://content.bitsontherun.com/videos/ybnbqtow-eE9soefF.mp4',
+            title: 'MP4 with different codecs'
+        },{
+            file: 'http://content.bitsontherun.com/videos/bkaovAYt-el5vTWpr.mp4',
+            title: '1080p MP4 video'
+        }],
+        height: 270,
+        listbar: {
+            position: 'right',
+            size: '240'
+        },
+        primary: primaryCookie,
+        width: 720
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both">
+    <td>Play first item</td>
+    <td>Error message: <em>Error loading media: File not found</em></td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both">
+    <td>Play second item</td>
+    <td>Error message: <em>Error loading media: File could not be played</em><br/>
+        Note: in Flash this only happens when the file is loaded 100%</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both">
+    <td>Play third item</td>
+    <td>Should work fine on desktops. On mobile, the file is too large:</br>Error message: <em>Error loading media: File could not be played</em></td>
+    <td class="check"></td>
+</tr></table>
+
+
+
 <h2>YouTube</h2>
 
-<div id="container4"></div>
+<div id="container2"></div>
 <script type="text/javascript">
-    jwplayer("container4").setup({
+    jwplayer("container2").setup({
         playlist: [{
             file: 'http://www.youtube.com/watch?v=XSGBVzeBUb',
             title: 'Incorrect key example'
@@ -34,7 +82,6 @@
         height: 270,
         listbar: {
             position: 'right',
-            layout: 'basic',
             size: '240'
         },
         width: 720

@@ -10,7 +10,7 @@ for (i=0; i < cookies.length; i++) {
         primaryCookie = y;
     }
 }
-setTimeout(addSwitch,10);
+setTimeout(addSwitch,100);
 
 
 

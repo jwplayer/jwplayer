@@ -1,182 +1,53 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>YouTube video playback</title>
+    <title>Playing a YouTube video</title>
     <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
     <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
 </head>
 <body>
 
-<h1>YouTube video playback</h1>
-<div class="core">List of test devices</div>
-<p>This test consists of several setups that test aspects of the YouTube chromeless player integration.</p>
+<h1>Playing a YouTube video</h1>
+<div class="all">List of test devices</div>
+<p>This test consists of a basic setup with a single YouTube video. A small but broad set of cases is tested to check basic YouTube playback functionalities.</p>
 
 
-
-<h2>Poster and fallback</h2>
 
 <div id="container"></div>
 
-<!-- script type="text/javascript">
+<script type="text/javascript">
     jwplayer("container").setup({
         file: 'http://www.youtube.com/watch?v=ac7KhViaVqc',
-        height: 272,
-        image: "http://content.bitsontherun.com/thumbs/bkaovAYt-640.jpg",
-        width: 640
-    });
-</script>
-
-<table><tr>
-    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
-</tr><tr>
-    <td class="desktop">
-    <td>Initial page load</td>
-    <td>A Big Buck Bunny poster image should be visible.</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="mobile">
-    <td>Initial page load</td>
-    <td>A fallback should be visible, displaying poster image and device-specific controls.</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="mobile">
-    <td>Touch poster image</td>
-    <td>YouTube video should start playing, using device specific controls.</td>
-    <td class="check"></td>
-</tr></table> -->
-
-
-
-<h2>URL schemes</h2>
-
-<div id="container2"></div>
-
-<script type="text/javascript">
-    jwplayer("container2").setup({
-        playlist: [{
-            file: 'http://www.youtube.com/watch?v=ac7KhViaVqc',
-            title: 'URL using "watch?v="'
-        },{
-            file: 'http://www.youtube.com/watch#!v=ac7KhViaVqc',
-            title: 'URL using "watch#!v="'
-        },{
-            file: 'http://www.youtube.com/v/ac7KhViaVqc',
-            title: 'URL using "/v/"'
-        },{
-            file: 'http://youtu.be/ac7KhViaVqc',
-            title: 'URL using "youtu.be/"'
-        },{
-            file: 'ac7KhViaVqc',
-            title: 'URL using ID and "type"',
-            type: "youtube"
-        }],
         height: 204,
-        listbar: {
-            position: 'right',
-            layout: 'basic',
-            size: '240'
-        },
-        width: 720
+        width: 480
     });
 </script>
+
+
 
 <table><tr>
     <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
 </tr><tr>
-    <td class="desktop">
+    <td class="desktop"></td>
     <td>Initial page load</td>
-    <td>Player with listbar should render, displaying 5 entries.<br/>A Sintel poster image (loaded from YT should render in the display.</td>
+    <td>480x200 poster image should be visible, with play icon in the middle</td>
     <td class="check"></td>
 </tr><tr>
-    <td class="desktop">
-    <td>Click on first playlist item</td>
-    <td>First playlist item should playback</td>
+    <td class="mobile"></td>
+    <td>Initial page load</td>
+    <td>YouTube player instead of JW Player should be visible on Android/iOS.<br/>Fallback devices should display <em>media not supported</em> error.</td>
     <td class="check"></td>
 </tr><tr>
-    <td class="desktop">
-    <td>Click on second playlist item</td>
-    <td>Second playlist item should playback</td>
+    <td class="desktop"></td>
+    <td>Click/touch display to play</td>
+    <td>Video should first buffer, then play.<br/>YouTube logo should popup in the bottom right corner.<br/>HD icon should pop up and get populated with quality options.</td>
     <td class="check"></td>
 </tr><tr>
-    <td class="desktop">
-    <td>Click on third playlist item</td>
-    <td>Third playlist item should playback</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="desktop">
-    <td>Click on fourth playlist item</td>
-    <td>Fourth playlist item should playback</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="desktop">
-    <td>Click on fifth playlist item</td>
-    <td>Fifth playlist item should playback</td>
+    <td class="desktop"></td>
+    <td>Click/touch YouTube icon</td>
+    <td>Browser should get referred to the video on YouTube.</td>
     <td class="check"></td>
 </tr></table>
-
-
-
-<!-- h2>Quality levels</h2>
-
-<div id="container3"></div>
-<script type="text/javascript">
-    jwplayer("container3").setup({
-        playlist: [{
-            file: 'http://www.youtube.com/watch?v=XSGBVzeBUbk',
-            title: '1080p YT video'
-        },{
-            file: 'http://www.youtube.com/watch?v=dQw4w9WgXcQ',
-            title: '480p YT video'
-        },{
-            file: 'http://www.youtube.com/watch?v=WiloZd1H4ow',
-            title: '240p YT video'
-        }],
-        height: 270,
-        listbar: {
-            position: 'right',
-            layout: 'basic',
-            size: '240'
-        },
-        width: 720
-    });
-</script>
-
-<table><tr>
-    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
-</tr><tr>
-    <td class="desktop">
-    <td>Play first item</td>
-    <td>Controlbar should display HD menu with 6 options.<br/>
-        The <em>auto</em> option should be preselected.</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="desktop">
-    <td>Select <em>small</em> quality in HD menu.</td>
-    <td>Video should toggle to low quality.</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="desktop">
-    <td>Select <em>hd720</em> quality in HD menu.</td>
-    <td>Video should toggle to high quality.</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="desktop">
-    <td>Play second item</td>
-    <td>Controlbar should display HD menu with 4 options.<br/>
-        The <em>auto</em> option should be preselected.</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="desktop">
-    <td>Play third item</td>
-    <td>HD menu should disappear (only 240p)</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="desktop">
-    <td>Play first item again</td>
-    <td>HD menu should popup again</td>
-    <td class="check"></td>
-</tr></table-->
-
 
 
 </body>
