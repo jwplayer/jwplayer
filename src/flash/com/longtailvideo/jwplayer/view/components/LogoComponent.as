@@ -119,11 +119,13 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		/** Handles mouse clicks **/
 		protected function clickHandler(evt:MouseEvent):void {
-			_player.pause();
-			_player.fullscreen(false);
-			var link:String = getConfigParam('link');
-			if (link) {
-				navigateToURL(new URLRequest(Strings.cleanLink(link)), getConfigParam('linktarget'));
+			if (_showing) {
+				_player.pause();
+				_player.fullscreen(false);
+				var link:String = getConfigParam('link');
+				if (link) {
+					navigateToURL(new URLRequest(Strings.cleanLink(link)), getConfigParam('linktarget'));
+				}
 			}
 		}
 		

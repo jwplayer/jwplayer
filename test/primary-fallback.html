@@ -9,7 +9,7 @@
 
 <h1>Primary and Fallback</h1>
 <div class="core">List of test devices</div>
-<p>This test includes examples of all supported file types.  The players will load in Flash mode or HTML5 mode depending on browser capability.</p>
+<p>This page tests the player's mode selection and failover ability, including the <em>fallback</em> option.</p>
 
 <h2>MP4 with WebM fallback</h2>
 
@@ -32,7 +32,7 @@
 </tr><tr>
     <td class="both"></td>
     <td>Load the player</td>
-    <td>Player loads in HTML5 mode</td>
+    <td>Player loads in HTML5 mode (IE8 will load in Flash)</td>
     <td class="check"></td>
 </tr><tr>
     <td class="both"></td>
@@ -188,7 +188,6 @@
 </tr><tr>
 </tr></table>
 
-
 <h2>MP4+WebM, Flash Primary</h2>
 
 <div id="mp4_flash">No fallback occurred</div>
@@ -216,7 +215,7 @@
 </tr><tr>
     <td class="desktop"></td>
     <td>Load the player with Flash plugin disabled in browser</td>
-    <td>Player loads in HTML5 mode</td>
+    <td>Player loads in HTML5 mode (IE8 loads in Flash)</td>
     <td class="check"></td>
 </tr><tr>
     <td class="mobile"></td>

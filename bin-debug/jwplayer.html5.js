@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2349';
+	jwplayer.html5.version = '6.0.2350';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -2252,7 +2252,7 @@
 		JW_CSS_NONE = "none",
 		JW_CSS_100PCT = "100%",
 		JW_CSS_HIDDEN = "hidden",
-		JW_CSS_SMOOTH_EASE = "opacity .25s, background .25s, color .25s";
+		JW_CSS_SMOOTH_EASE = "opacity .25s, background-image .25s, color .25s";
 
 	
 	html5.display = function(api, config) {
