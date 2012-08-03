@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Player Controls</title>
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+</head>
+<body>
+
+<h1>Player Controls</h1>
+<div class="core">List of test devices</div>
+<p>This page demonstrates the player's <em>controls</em> option.</p>
+
+<h2>Controls = false</h2>
+
+<div id="minimum"></div>
+
+<script type="text/javascript">
+    jwplayer("minimum").setup({
+        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
+        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+        controls: false,
+        height: 270,
+        width: 480
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Initial page load</td>
+    <td>IE8, Firefox: Player sets up in Flash mode; otherwise HTML5.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Play Video</td>
+    <td>The player controls (controlbar, dock, display icon) should not be visible.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="mobile"></td>
+    <td>Play Video</td>
+    <td>The display icon should not be visible.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Check logo</td>
+    <td>The logo should still be visible on mouse-over (desktop) and buffering.</td>
+    <td class="check"></td>
+</tr></table>
+
+
+</body>
+</html>

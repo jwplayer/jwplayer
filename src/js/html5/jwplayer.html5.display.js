@@ -107,7 +107,6 @@
 				_button.hide();
 			}
 			
-			
 		}
 
 		function _itemHandler() {
@@ -218,11 +217,11 @@
 		}
 
 		this.show = function() {
-			_setVisibility('', true);
+			if (_button) _button.show();
 		}
 		
 		this.hide = function() {
-			_setVisibility('', false);
+			if (_button) _button.hide();
 		}
 
 		this.getBGColor = function() {
@@ -245,8 +244,7 @@
 		cursor: "pointer",
 		width: JW_CSS_100PCT,
 		height: JW_CSS_100PCT,
-		overflow: JW_CSS_HIDDEN,
-		opacity: 0
+		overflow: JW_CSS_HIDDEN
 	});
 
 	_css(D_CLASS + ' .jwpreview', {

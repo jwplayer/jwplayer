@@ -126,9 +126,7 @@
 		function _startFade() {
 			clearTimeout(_controlsTimeout);
 			if (_api.jwGetState() == states.PLAYING || _api.jwGetState() == states.PAUSED) {
-				_showControlbar();
-				_showLogo();
-				_showDock();
+				_showControls();
 				if (!_inCB) {
 					_controlsTimeout = setTimeout(_fadeControls, _timeoutDuration);
 				}
@@ -292,7 +290,7 @@
 			if (_controlbar) {
 				if (_audioMode) {
 					_controlbar.audioMode(TRUE);
-					_showControlbar();
+					_showControls();
 					_hideDisplay();
 					_showVideo(FALSE);
 				} else {
@@ -400,7 +398,7 @@
 		}
 
 		function _showDisplay() {
-			if (_display && !_audioMode) _display.show();
+			if (_display && _model.controls && !_audioMode) _display.show();
 			if (_isMobile && !_forcedControls) {
 				_controlsLayer.style.display = "block";
 			}
@@ -422,11 +420,12 @@
 		}
 
 		function _showControls() {
-			_showControlbar();
-			_showDisplay();
-			_showDock();
+			if (_model.controls || _audioMode) {
+				_showControlbar();
+				_showDock();
+				_sendControlsEvent();
+			}
 			_showLogo();
-			_sendControlsEvent();
 		}
 
 		function _sendControlsEvent() {
@@ -512,10 +511,12 @@
 				if (_isIPad) _videoTag.controls = FALSE;
 				break;
 			case states.BUFFERING:
+				_showDisplay();
 				if (_isMobile) _showVideo(TRUE);
 				else _showControls();
 				break;
 			case states.PAUSED:
+				_showDisplay();
 				if (!_isMobile || _forcedControls) {
 					_showControls();
 				} else if (_isIPad) {

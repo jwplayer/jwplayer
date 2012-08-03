@@ -23,6 +23,7 @@
 			_defaults = {
 				autostart: false,
 				controlbar: true,
+				controls: true,
 				debug: UNDEF,
 				height: 320,
 				icons: true,

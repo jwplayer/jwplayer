@@ -23,25 +23,19 @@ package com.longtailvideo.jwplayer.model {
 		protected var _bandwidth:Number		= 1500;
 		protected var _fullscreen:Boolean 	= false;
 		protected var _item:Number			= 0;
-		protected var _linktarget:String 	= "_blank";
 		protected var _levels:Array			= null;
 		protected var _mute:Boolean 		= false;
 		protected var _repeat:String 		= RepeatOptions.NONE; 
+		protected var _controls:Boolean		= true; 
 		
 		//TODO: Move to ENUM class
 		protected var _stretching:String 	= "uniform"; 
 		protected var _volume:Number 		= 90;
 
-		protected var _backcolor:Color		= null;
-		protected var _frontcolor:Color		= null;
-		protected var _lightcolor:Color		= null;
-		protected var _screencolor:Color	= null;
-
 		//TODO: Move to ENUM class
 		protected var _controlbar:String 	= "over";
 		protected var _dock:Boolean 		= true;
 		protected var _height:Number 		= 400;
-		protected var _icons:Boolean 		= true;
 		protected var _logo:String 			= null;
 		protected var _playlistpos:String	= "none";
 		protected var _playlistsize:String 	= "180";
@@ -146,12 +140,6 @@ package com.longtailvideo.jwplayer.model {
 		} 
 
 
-		/** Author of the video, shown in the display or playlist. **/
-		public function get author():String { return playlistItem('author'); }
-
-		/** Publish date of the media file. **/
-		public function get date():String { return playlistItem('date'); }
-
 		/** Text description of the file. **/
 		public function get description():String { return playlistItem('description'); }
 
@@ -163,9 +151,6 @@ package com.longtailvideo.jwplayer.model {
 
 		/** Location of a preview image; shown in display and playlist. **/
 		public function get image():String { return playlistItem('image'); }
-		
-		/** URL to an external page the display, controlbar and playlist can link to. **/
-		public function get link():String { return playlistItem('link'); }
 
 		/** Unique identifier for media content. **/		
 		public function get mediaid():String { return playlistItem('mediaid'); }		
@@ -176,9 +161,6 @@ package com.longtailvideo.jwplayer.model {
 		/** Location of an rtmp/http server instance to use for streaming. Can be an RTMP application or external PHP/ASP file. **/
 		public function get streamer():String { return playlistItem('streamer'); }
 		
-		/** Keywords associated with the media file. **/
-		public function get tags():String { return playlistItem('tags'); }
-
 		/** Title of the video, shown in the display or playlist. **/
 		public function get title():String { return playlistItem('title'); }
 
@@ -207,22 +189,6 @@ package com.longtailvideo.jwplayer.model {
 		// LAYOUT PROPERTIES
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-		/** Background color of the controlbar and playlist. This is white with the default skin. **/
-		public function get backcolor():Color { return _backcolor; }
-		public function set backcolor(x:Color):void { _backcolor = x; }
-		
-		/** Color of all icons and texts in the controlbar and playlist. **/
-		public function get frontcolor():Color { return _frontcolor; }
-		public function set frontcolor(x:Color):void { _frontcolor = x; }
-
-		/** Color of an icon or text when you rollover it with the mouse. **/
-		public function get lightcolor():Color { return _lightcolor; }
-		public function set lightcolor(x:Color):void { _lightcolor = x; }
-
-		/** Background color of the display. **/
-		public function get screencolor():Color { return _screencolor; }
-		public function set screencolor(x:Color):void { _screencolor = x; }
-
 		/** Position of the controlbar. Can be set to top, bottom, over and none.  @default bottom **/
 		public function get controlbar():String { 
 			if (_pluginConfig['controlbar'] && _pluginConfig['controlbar'].hasOwnProperty('position'))
@@ -242,10 +208,6 @@ package com.longtailvideo.jwplayer.model {
 		/** Height of the display in pixels. @default 280 **/
 		public function get height():Number { return _height; }
 		public function set height(x:Number):void { _height = x; }
-
-		/** Set this to false to hide the play button and buffering icon in the middle of the video. Available since 4.2.  @default true **/
-		public function get icons():Boolean { return _icons; }
-		public function set icons(x:Boolean):void { _icons = x; }
 
 		/** Location of an external jpg, png or gif image to show in a corner of the display. With the default skin, this is top-right, but every skin can freely place the logo. **/
 		public function get logo():String { 
@@ -295,10 +257,6 @@ package com.longtailvideo.jwplayer.model {
 		public function get autostart():Boolean { return _autostart; }
 		public function set autostart(x:Boolean):void { _autostart = x; }
 
-		/** Automatically start the player on load. @default false **/
-		public function get bandwidth():Number { return _bandwidth; }
-		public function set bandwidth(x:Number):void { _bandwidth = x; }
-
 		/** Current fullscreen state **/		
 		public function get fullscreen():Boolean { return _fullscreen; }
 		public function set fullscreen(x:Boolean):void { _fullscreen = x; }		
@@ -307,10 +265,6 @@ package com.longtailvideo.jwplayer.model {
 		public function get item():Number { return _item; }
 		public function set item(x:Number):void { _item = x; }
 
-		/** Browserframe where link from the display are opened in. Some possibilities are '_self' (same frame) or '_blank' (new browserwindow). @default _blank **/
-		public function get linktarget():String { return _linktarget; }
-		public function set linktarget(x:String):void { _linktarget = x; }
-		
 		/** Mute all sounds on startup. This value is set in a user cookie, and is retrieved the next time the player loads. **/
 		public function get mute():Boolean { return _mute; }
 		public function set mute(x:Boolean):void { _mute = x;}
@@ -326,6 +280,10 @@ package com.longtailvideo.jwplayer.model {
 		/** Startup volume of the player. Can be 0 to 100. Is saved in a cookie. @default 90 **/
 		public function get volume():Number { return _volume; }
 		public function set volume(x:Number):void { _volume = x; }
+
+		/** Startup volume of the player. Can be 0 to 100. Is saved in a cookie. @default 90 **/
+		public function get controls():Boolean { return _controls; }
+		public function set controls(x:Boolean):void { _controls =  x; }
 
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		// PLUGINS

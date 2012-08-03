@@ -706,8 +706,10 @@ package com.longtailvideo.jwplayer.view {
 		}
 		
 		private function showControls():void {
-			_components.controlbar.show();
-			_components.dock.show();
+			if (_model.config.controls || audioMode) {
+				_components.controlbar.show();
+				_components.dock.show();
+			}
 			_components.logo.show();
 		}
 		

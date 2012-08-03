@@ -150,7 +150,7 @@ package com.longtailvideo.jwplayer.view.components {
 				_showing = true;
 				//alpha = 0;
 				clearTimeout(timeoutInterval);
-				animations.fade(getConfigParam('out'), 0.5);
+				animations.fade(getConfigParam('out'), 0.25);
 				timeoutInterval = setTimeout(hide, timeout * 1000);
 				mouseEnabled = true;
 //			}

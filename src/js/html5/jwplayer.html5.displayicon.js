@@ -69,7 +69,7 @@
 			style = utils.extend( {}, style);
 			if (name.indexOf("Icon") > 0) _iconWidth = skinElem.width;
 			if (skinElem.src) {
-				_show();
+				//_show();
 				style['background-image'] = 'url(' + skinElem.src + ')';
 				style['width'] = skinElem.width;
 			}
@@ -172,13 +172,14 @@
 
 		
 		this.hide = function() {
-			_container.style.opacity = 0;
+			_css(_internalSelector(), { opacity: 0 });
 			// Needed for IE9 for some reason
 			if (_bg && utils.isIE()) _bg.style.opacity = 0;
 		}
 
 		var _show = this.show = function() {
-			_container.style.opacity = 1;
+			_css(_internalSelector(), { opacity: 1 });
+//			_container.style.opacity = 1;
 			if (_bg && utils.isIE()) _bg.style.opacity = 1;
 		}
 
@@ -191,7 +192,8 @@
     	position: "relative",
     	'margin-left': "auto",
     	'margin-right': "auto",
-    	top: "50%"
+    	top: "50%",
+    	opacity: 0
 	});
 
 	_css(DI_CLASS + " div", {

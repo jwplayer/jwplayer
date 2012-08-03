@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2350';
+	jwplayer.html5.version = '6.0.2351';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -2449,11 +2449,11 @@
 		}
 
 		this.show = function() {
-			_setVisibility('', true);
+			if (_button) _button.show();
 		}
 		
 		this.hide = function() {
-			_setVisibility('', false);
+			if (_button) _button.hide();
 		}
 
 		this.getBGColor = function() {
@@ -2476,8 +2476,7 @@
 		cursor: "pointer",
 		width: JW_CSS_100PCT,
 		height: JW_CSS_100PCT,
-		overflow: JW_CSS_HIDDEN,
-		opacity: 0
+		overflow: JW_CSS_HIDDEN
 	});
 
 	_css(D_CLASS + ' .jwpreview', {
@@ -2565,7 +2564,7 @@
 			style = utils.extend( {}, style);
 			if (name.indexOf("Icon") > 0) _iconWidth = skinElem.width;
 			if (skinElem.src) {
-				_show();
+				//_show();
 				style['background-image'] = 'url(' + skinElem.src + ')';
 				style['width'] = skinElem.width;
 			}
@@ -2668,13 +2667,14 @@
 
 		
 		this.hide = function() {
-			_container.style.opacity = 0;
+			_css(_internalSelector(), { opacity: 0 });
 			// Needed for IE9 for some reason
 			if (_bg && utils.isIE()) _bg.style.opacity = 0;
 		}
 
 		var _show = this.show = function() {
-			_container.style.opacity = 1;
+			_css(_internalSelector(), { opacity: 1 });
+//			_container.style.opacity = 1;
 			if (_bg && utils.isIE()) _bg.style.opacity = 1;
 		}
 
@@ -2687,7 +2687,8 @@
     	position: "relative",
     	'margin-left': "auto",
     	'margin-right': "auto",
-    	top: "50%"
+    	top: "50%",
+    	opacity: 0
 	});
 
 	_css(DI_CLASS + " div", {
@@ -3655,6 +3656,7 @@
 			_defaults = {
 				autostart: false,
 				controlbar: true,
+				controls: true,
 				debug: UNDEF,
 				height: 320,
 				icons: true,
@@ -5873,9 +5875,7 @@
 		function _startFade() {
 			clearTimeout(_controlsTimeout);
 			if (_api.jwGetState() == states.PLAYING || _api.jwGetState() == states.PAUSED) {
-				_showControlbar();
-				_showLogo();
-				_showDock();
+				_showControls();
 				if (!_inCB) {
 					_controlsTimeout = setTimeout(_fadeControls, _timeoutDuration);
 				}
@@ -6039,7 +6039,7 @@
 			if (_controlbar) {
 				if (_audioMode) {
 					_controlbar.audioMode(TRUE);
-					_showControlbar();
+					_showControls();
 					_hideDisplay();
 					_showVideo(FALSE);
 				} else {
@@ -6147,7 +6147,7 @@
 		}
 
 		function _showDisplay() {
-			if (_display && !_audioMode) _display.show();
+			if (_display && _model.controls && !_audioMode) _display.show();
 			if (_isMobile && !_forcedControls) {
 				_controlsLayer.style.display = "block";
 			}
@@ -6169,11 +6169,12 @@
 		}
 
 		function _showControls() {
-			_showControlbar();
-			_showDisplay();
-			_showDock();
+			if (_model.controls || _audioMode) {
+				_showControlbar();
+				_showDock();
+				_sendControlsEvent();
+			}
 			_showLogo();
-			_sendControlsEvent();
 		}
 
 		function _sendControlsEvent() {
@@ -6259,10 +6260,12 @@
 				if (_isIPad) _videoTag.controls = FALSE;
 				break;
 			case states.BUFFERING:
+				_showDisplay();
 				if (_isMobile) _showVideo(TRUE);
 				else _showControls();
 				break;
 			case states.PAUSED:
+				_showDisplay();
 				if (!_isMobile || _forcedControls) {
 					_showControls();
 				} else if (_isIPad) {
