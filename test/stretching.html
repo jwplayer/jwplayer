@@ -1,0 +1,360 @@
+	<!DOCTYPE html>
+<html>
+<head>
+    <title>Stretching</title>
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+</head>
+<body>
+
+<h1>Stretching</h1>
+<div class="core">List of test devices</div>
+<p>This page demonstrates the player's Stretching options.</p>
+
+<h2>Default (uniform)</h2>
+
+<div id="uniform"></div>
+
+<script type="text/javascript">
+    jwplayer("uniform").setup({
+        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
+        height: 240,
+        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+        width: 480
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Load the player</td>
+    <td>Firefox, IE8: Player loads in Flash.  Otherwise, player loads in HTML5 mode</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Poster image position</td>
+    <td>Thin black bars should appear to the top and bottom of the poster image.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Switch to fullscreen mode and back without playing video, then exit fullscreen mode</td>
+    <td>In fullscreen mode, the poster image will scale to the size of the screen.  There may or may not be black bars around the image.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Play video</td>
+    <td>While video is playing, thin black bars should appear to the top and bottom of the video.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="mobile"></td>
+    <td>Play video</td>
+    <td>Video should play in-browser or in fullscreen mode at native resolution</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Fullscreen toggle</td>
+    <td>In fullscreen mode, the video's aspect ratio should remain that of its native resolution.  Depending on screen resolution, black bars may change in size and position.</td>
+    <td class="check"></td>
+</tr></table>
+
+<h2>Default, bars on sides</h2>
+
+<div id="uniform2"></div>
+
+<script type="text/javascript">
+    jwplayer("uniform2").setup({
+        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
+        height: 240,
+        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+        width: 600
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Load the player</td>
+    <td>Firefox, IE8: Player loads in Flash.  Otherwise, player loads in HTML5 mode</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Poster image position</td>
+    <td>Thin black bars should appear to the left and right of the poster image.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Play video</td>
+    <td>While video is playing, bars should remain on the sides of the video.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="mobile"></td>
+    <td>Play video</td>
+    <td>Video should play in-browser or in fullscreen mode at native resolution</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Fullscreen toggle</td>
+    <td>In fullscreen mode, the video's aspect ratio should remain that of its native resolution.  Depending on screen resolution, black bars may change in size and position.</td>
+    <td class="check"></td>
+</tr></table>
+
+<h2>Uniform - snap to sides</h2>
+
+<div id="uniform3"></div>
+
+<script type="text/javascript">
+    jwplayer("uniform3").setup({
+        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
+        height: 210,
+        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+        width: 480
+    });
+</script>
+
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Load the player</td>
+    <td>Firefox, IE8: Player loads in Flash.  Otherwise, player loads in HTML5 mode</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Poster image position</td>
+    <td>Poster should stretch to the dimensions of the player.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Play video</td>
+    <td>While video is playing, video should stretch to the dimensions of the player.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="mobile"></td>
+    <td>Play video</td>
+    <td>Video should play in-browser or in fullscreen mode at native resolution.  There may be black bars.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Fullscreen toggle</td>
+    <td>In fullscreen mode, the video's aspect ratio should remain that of its native resolution.  Depending on screen resolution, black bars may change in size and position, but if the aspect ratio of the screen is close to the video's, the video should stretch to the dimensions of the screen.</td>
+    <td class="check"></td>
+</tr></table>
+
+<h2>Stretching = none</h2>
+
+<div id="none"></div>
+
+<script type="text/javascript">
+    jwplayer("none").setup({
+        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
+        height: 300,
+        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+        width: 500,
+        stretching: "none"
+    });
+</script>
+
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Load the player</td>
+    <td>Firefox, IE8: Player loads in Flash.  Otherwise, player loads in HTML5 mode</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Poster image position</td>
+    <td>Poster should be horizontally and vertically centered inside the player at 480x204px.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Switch to fullscreen mode and back without playing video, then exit fullscreen mode</td>
+    <td>In fullscreen mode, the size of the poster image will not change.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Play video</td>
+    <td>Video should be horizontally and vertically centered inside the player at 480x204px.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="mobile"></td>
+    <td>Play video</td>
+    <td>Should be same as "uniform" (i.e. stretching will not apply to video playback on mobile devices).</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Fullscreen toggle</td>
+    <td>In fullscreen mode, the size of the video file will not change.</td>
+    <td class="check"></td>
+</tr></table>
+
+<h2>Stretching = fill</h2>
+
+<div id="fill"></div>
+
+<script type="text/javascript">
+    jwplayer("fill").setup({
+        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
+        height: 300,
+        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+        width: 500,
+        stretching: "fill"
+    });
+</script>
+
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Load the player</td>
+    <td>Firefox, IE8: Player loads in Flash.  Otherwise, player loads in HTML5 mode</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Poster image position</td>
+    <td>Poster image should zoom to fill the dimensions of the player, either cropping the sides or the top and bottom of the image.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Switch to fullscreen mode and back without playing video, then exit fullscreen mode</td>
+    <td>The image should stretch to fill the dimensions of the screen, either cropping the sides or the top and bottom of the image.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Play video</td>
+    <td>The video should be zoomed and cropped in the same manner as the poster image.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="mobile"></td>
+    <td>Play video</td>
+    <td>Should be same as "uniform" (i.e. stretching will not apply to video playback on mobile devices).</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Fullscreen toggle</td>
+    <td>The video should be zoomed and cropped in the same manner as the poster image in fullscreen mode.</td>
+    <td class="check"></td>
+</tr></table>
+
+
+<h2>Stretching = exactfit</h2>
+
+<div id="exactfit"></div>
+
+<script type="text/javascript">
+    jwplayer("exactfit").setup({
+        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
+        height: 300,
+        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+        width: 500,
+        stretching: "exactfit"
+    });
+</script>
+
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Load the player</td>
+    <td>Firefox, IE8: Player loads in Flash.  Otherwise, player loads in HTML5 mode</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Poster image position</td>
+    <td>Poster image should be distorted to fit the entire player space.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Switch to fullscreen mode and back without playing video, then exit fullscreen mode</td>
+    <td>The aspect ratio should remain the same as in normal screen mode, and fit in the screen as though it had uniform stretching.  There may be black bars visible.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Play video</td>
+    <td>The video should be zoomed and cropped in the same manner as the poster image.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="mobile"></td>
+    <td>Play video</td>
+    <td>Should be same as "uniform" (i.e. stretching will not apply to video playback on mobile devices).</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Fullscreen toggle</td>
+    <td>The video should appear with the same dimensions as the poster image in fullscreen mode.</td>
+    <td class="check"></td>
+</tr></table>
+
+
+
+<h2>Stretching Toggle</h2>
+
+<div id="toggle"></div>
+
+<script type="text/javascript">
+    jwplayer("toggle").setup({
+        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
+        height: 300,
+        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+        width: 500,
+        events: {
+			onReady: function() {
+				var player = this;
+        		player.getPlugin("dock").addButton("assets/desktop.png", "Toggle stretching", function () {
+            		switch(player.getStretching()) {
+            		case "uniform":
+            			player.setStretching("fill");
+            			break;
+            		case "fill":
+            			player.setStretching("exactfit");
+            			break;
+            		case "exactfit":
+            			player.setStretching("none");
+            			break;
+            		default:
+            			player.setStretching("uniform");
+            			break;
+            		} 
+
+            	}, "toggle");
+        	}
+        }
+    });
+
+</script>
+
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Load the player</td>
+    <td>Firefox, IE8: Player loads in Flash.  Otherwise, player loads in HTML5 mode</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Begin playback</td>
+    <td>Dock icon will appear, which will cycle through the stretching options when clicked. Cycle through at least 4 times.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Pause the player</td>
+    <td>Cycle through stretching options with the player paused.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Go to fullscreen mode</td>
+    <td>In fullscreen mode, begin playing.  Then cycle through stretching options.</td>
+    <td class="check"></td>
+</tr></table>
+
+
+
+</body>
+</html>

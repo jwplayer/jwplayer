@@ -89,9 +89,22 @@
 	}
 	
 	function _updateStylesheet(selector, sheet) {
-		if (sheet) {
+		if (sheet && sheet.sheet) {
 			sheet.innerHTML = _getRuleText(selector);
+			return;
+			// This stuff below fixes some performance problems, but causes other issues;
+			var rules = sheet.sheet.cssRules;
+			for (var i=0; i < rules.length; i++) {
+				var rule = rules[i];
+				if (rule.selectorText == selector) {
+					sheet.sheet.deleteRule(i);
+					//rule.disabled = true;
+					break;
+				}
+			}
+			sheet.sheet.insertRule(_getRuleText(selector), rules.length);
 		}
+		
 	}
 	
 	function _getRuleText(selector) {

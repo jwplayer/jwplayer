@@ -237,7 +237,7 @@
 		 * Resize the player
 		 */
 		function _resize(width, height) {
-			if (_model.fullscreen) return;
+			//if (_model.fullscreen) return;
 			
 			if (utils.exists(width) && utils.exists(height)) {
 				_css(_internalSelector(), {
@@ -307,7 +307,7 @@
 		}
 		
 		function _resizeMedia() {
-			utils.stretch(_model.fullscreen ? utils.stretching.UNIFORM : _model.stretching, 
+			utils.stretch(_model.stretching, 
 					_videoTag, 
 					_videoLayer.clientWidth, _videoLayer.clientHeight, 
 					_videoTag.videoWidth, _videoTag.videoHeight);
@@ -601,7 +601,8 @@
 	});
 
 	_css('.' + VIEW_VIDEO_CONTAINER_CLASS, {
-		visibility: "hidden"
+		visibility: "hidden",
+		overflow: "hidden"
 	});
 
 	_css('.' + VIEW_VIDEO_CONTAINER_CLASS + " video", {

@@ -18,7 +18,7 @@ jwplayer = function(container) {
 
 var $jw = jwplayer;
 
-jwplayer.version = '6.0.2351';
+jwplayer.version = '6.0.2355';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -469,23 +469,26 @@ jwplayer.source = document.createElement("source");/**
 		utils.extend(this, _eventDispatcher);
 		
 		this.load = function() {
+			var sameLoader = utils.scriptloader.loaders[url];
+			if (sameLoader && (sameLoader.getStatus() == _loaderstatus.NEW || sameLoader.getStatus() == _loaderstatus.LOADING)) {
+				// If we already have a scriptloader loading the same script, don't create a new one;
+				sameLoader.addEventListener(_events.ERROR, _sendError);
+				sameLoader.addEventListener(_events.COMPLETE, _sendComplete);
+				return;
+			}
+			
+			utils.scriptloader.loaders[url] = this;
+			
 			if (_status == _loaderstatus.NEW) {
 				_status = _loaderstatus.LOADING;
-				var scriptTag = DOCUMENT.createElement("script");
+				scriptTag = DOCUMENT.createElement("script");
 				// Most browsers
-				scriptTag.onload = function(evt) {
-					_status = _loaderstatus.COMPLETE;
-					_eventDispatcher.sendEvent(_events.COMPLETE);
-				}
-				scriptTag.onerror = function(evt) {
-					_status = _loaderstatus.ERROR;
-					_eventDispatcher.sendEvent(_events.ERROR);
-				}
+				scriptTag.onload = _sendComplete;
+				scriptTag.onerror = _sendError;
 				// IE
 				scriptTag.onreadystatechange = function() {
 					if (scriptTag.readyState == 'loaded' || scriptTag.readyState == 'complete') {
-						_status = _loaderstatus.COMPLETE;
-						_eventDispatcher.sendEvent(_events.COMPLETE);
+						_sendComplete();
 					}
 					// Error?
 				}
@@ -495,10 +498,23 @@ jwplayer.source = document.createElement("source");/**
 			
 		};
 		
+		function _sendError(evt) {
+			_status = _loaderstatus.ERROR;
+			_eventDispatcher.sendEvent(_events.ERROR);
+		}
+		
+		function _sendComplete(evt) {
+			_status = _loaderstatus.COMPLETE;
+			_eventDispatcher.sendEvent(_events.COMPLETE);
+		}
+
+		
 		this.getStatus = function() {
 			return _status;
 		}
 	}
+	
+	utils.scriptloader.loaders = {};
 })(jwplayer.utils);
 /**
  * String utilities for the JW Player.
