@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Skin Errors</title>
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+</head>
+<body>
+
+<h1>Skin Errors</h1>
+<div class="core">List of test devices</div>
+<p>This page demonstrates the player's error handling around skins.</p>
+
+<h2>Skin 404</h2>
+
+<div id="skin404"></div>
+
+<script type="text/javascript">
+    jwplayer("skin404").setup({
+        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
+     	image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+        height: 240,
+        width: 480,
+        skin: "assets/skins/notfound.zip"
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Load the player</td>
+    <td>Player should display an error message: "Error loading skin: File not found".</td>
+    <td class="check"></td>
+</tr></table>
+
+
+<h2>Loading SWF Skins</h2>
+
+<div id="swf"></div>
+
+<script type="text/javascript">
+    jwplayer("swf").setup({
+        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
+     	image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+        height: 240,
+        width: 600,
+        skin: "assets/skins/five/five.swf",
+        primary: "flash"
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Load the player</td>
+    <td>Player should display an error message: "Error loading skin: Skin not a valid file type".</td>
+    <td class="check"></td>
+</tr></table>
+
+
+<h2>Malformatted XML</h2>
+
+<div id="badxml"></div>
+
+<script type="text/javascript">
+    jwplayer("badxml").setup({
+        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
+     	image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+        height: 240,
+        width: 600,
+        skin: "http://playertest.longtailvideo.com/mrss.xml"
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Load the player</td>
+    <td>Player should display an error message: "Error loading skin: Skin formatting error".</td>
+    <td class="check"></td>
+</tr></table>
+
+
+</body>
+</html>

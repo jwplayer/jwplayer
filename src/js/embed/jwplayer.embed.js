@@ -85,7 +85,6 @@
 			style.width = utils.styleDimension(_config.width);
 			style.height = utils.styleDimension(_config.height);
 			style.display = "table";
-			style.padding = "50px";
 			
 			var text = document.createElement("p"),
 				textStyle = text.style;	
