@@ -306,7 +306,7 @@
         events: {
 			onReady: function() {
 				var player = this;
-        		player.getPlugin("dock").addButton("assets/desktop.png", "Toggle stretching", function () {
+        		player.addButton("assets/desktop.png", "Toggle stretching", function () {
             		switch(player.getStretching()) {
             		case "uniform":
             			player.setStretching("fill");

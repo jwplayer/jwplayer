@@ -34,69 +34,81 @@
 			return _this.container;
 		};
 		
-		function _setButton(ref, plugin) {
-			return function(outGraphic, label, handler, id) {
-				if (ref.renderingMode == "flash" || ref.renderingMode == "html5") {
-					var handlerString;
-					if (handler) {
-						_callbacks[id] = handler;
-						handlerString = "jwplayer('" + ref.id + "').callback('" + id + "')";
-					} else if (!handler && _callbacks[id]) {
-						delete _callbacks[id];
-					}
-					_player.jwDockAddButton(outGraphic, label, handlerString, id);
-				}
-				return plugin;
-			};
-		}
+//		function _setButton(ref, plugin) {
+//			return function(outGraphic, label, handler, id) {
+//				if (ref.renderingMode == "flash" || ref.renderingMode == "html5") {
+//					var handlerString;
+//					if (handler) {
+//						_callbacks[id] = handler;
+//						handlerString = "jwplayer('" + ref.id + "').callback('" + id + "')";
+//					} else if (!handler && _callbacks[id]) {
+//						delete _callbacks[id];
+//					}
+//					_player.jwDockAddButton(outGraphic, label, handlerString, id);
+//				}
+//				return plugin;
+//			};
+//		}
 		
-		_this.getPlugin = function(pluginName) {
-			var _plugin = {};
-			if (pluginName == "dock") {
-				return utils.extend(_plugin, {
-					addButton: _setButton(_this, _plugin),
-					removeButton: function(id) { _callInternal('jwDockRemoveButton', id); return _plugin; },
-					show: function() { _callInternal('jwDockShow'); return _plugin; },
-					hide: function() { _callInternal('jwDockHide'); return _plugin; },
-					onShow: function(callback) { 
-						_componentListener("dock", events.JWPLAYER_COMPONENT_SHOW, callback); 
-						return _plugin; 
-					},
-					onHide: function(callback) { 
-						_componentListener("dock", events.JWPLAYER_COMPONENT_HIDE, callback); 
-						return _plugin; 
-					}
-				});
-			} else if (pluginName == "controlbar") {
-				return utils.extend(_plugin, {
-					show: function() { _callInternal('jwControlbarShow'); return _plugin; },
-					hide: function() { _callInternal('jwControlbarHide'); return _plugin; },
-					onShow: function(callback) { 
-						_componentListener("controlbar", events.JWPLAYER_COMPONENT_SHOW, callback); 
-						return _plugin; 
-					},
-					onHide: function(callback) { 
-						_componentListener("controlbar", events.JWPLAYER_COMPONENT_HIDE, callback); 
-						return _plugin; 
-					}
-				});
-			} else if (pluginName == "display") {
-				return utils.extend(_plugin, {
-					show: function() { _callInternal('jwDisplayShow'); return _plugin; },
-					hide: function() { _callInternal('jwDisplayHide'); return _plugin; },
-					onShow: function(callback) { 
-						_componentListener("display", events.JWPLAYER_COMPONENT_SHOW, callback); 
-						return _plugin; 
-					},
-					onHide: function(callback) { 
-						_componentListener("display", events.JWPLAYER_COMPONENT_HIDE, callback); 
-						return _plugin; 
-					}
-				});
-			} else {
-				return _this.plugins[pluginName];
+		_this.addButton = function(icon, label, handler, id) {
+			try {
+				_callbacks[id] = handler;
+				var handlerString = "jwplayer('" + _player.id + "').callback('" + id + "')";
+				_player.jwDockAddButton(icon, label, handlerString, id);
+			} catch (e) {
+				utils.log("Could not add dock button" + e.message);
 			}
 		};
+		_this.removeButton = function(id) { _callInternal('jwDockRemoveButton', id); },
+
+		
+//		_this.getPlugin = function(pluginName) {
+//			var _plugin = {};
+//			if (pluginName == "dock") {
+//				return utils.extend(_plugin, {
+//					addButton: _setButton(_this, _plugin),
+//					removeButton: function(id) { _callInternal('jwDockRemoveButton', id); return _plugin; },
+//					show: function() { _callInternal('jwDockShow'); return _plugin; },
+//					hide: function() { _callInternal('jwDockHide'); return _plugin; },
+//					onShow: function(callback) { 
+//						_componentListener("dock", events.JWPLAYER_COMPONENT_SHOW, callback); 
+//						return _plugin; 
+//					},
+//					onHide: function(callback) { 
+//						_componentListener("dock", events.JWPLAYER_COMPONENT_HIDE, callback); 
+//						return _plugin; 
+//					}
+//				});
+//			} else if (pluginName == "controlbar") {
+//				return utils.extend(_plugin, {
+//					show: function() { _callInternal('jwControlbarShow'); return _plugin; },
+//					hide: function() { _callInternal('jwControlbarHide'); return _plugin; },
+//					onShow: function(callback) { 
+//						_componentListener("controlbar", events.JWPLAYER_COMPONENT_SHOW, callback); 
+//						return _plugin; 
+//					},
+//					onHide: function(callback) { 
+//						_componentListener("controlbar", events.JWPLAYER_COMPONENT_HIDE, callback); 
+//						return _plugin; 
+//					}
+//				});
+//			} else if (pluginName == "display") {
+//				return utils.extend(_plugin, {
+//					show: function() { _callInternal('jwDisplayShow'); return _plugin; },
+//					hide: function() { _callInternal('jwDisplayHide'); return _plugin; },
+//					onShow: function(callback) { 
+//						_componentListener("display", events.JWPLAYER_COMPONENT_SHOW, callback); 
+//						return _plugin; 
+//					},
+//					onHide: function(callback) { 
+//						_componentListener("display", events.JWPLAYER_COMPONENT_HIDE, callback); 
+//						return _plugin; 
+//					}
+//				});
+//			} else {
+//				return _this.plugins[pluginName];
+//			}
+//		};
 		
 		_this.callback = function(id) {
 			if (_callbacks[id]) {

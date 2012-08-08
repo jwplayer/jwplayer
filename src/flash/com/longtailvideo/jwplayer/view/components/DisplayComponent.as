@@ -183,7 +183,7 @@
 				sendShowEvent = true;
 			}
 			
-			if (displayIcon && _player.config.icons && (getConfigParam("icons") === true || typeof(getConfigParam("icons")) == "undefined")) {
+			if (displayIcon) {
 				var oldIcon:DisplayObject = _icon;
 				_icon = displayIcon;
 				if (oldIcon && oldIcon.parent == _overlay) {

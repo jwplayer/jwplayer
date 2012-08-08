@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2355';
+	jwplayer.html5.version = '6.0.2360';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -4294,12 +4294,14 @@
         		imgHeight = itemheight
         	}
 			
-        	_css(_internalSelector("jwplaylistdivider"), {
-				'background-image': _elements.divider ? "url("+_elements.divider.src + ")" : "",
-				'background-size': JW_CSS_100PCT + " " + _elements.divider.height + "px",
-			    width: JW_CSS_100PCT,
-			    height: _elements.divider.height
-        	});
+        	if (_elements.divider) {
+        		_css(_internalSelector("jwplaylistdivider"), {
+        			'background-image': "url("+_elements.divider.src + ")",
+        			'background-size': JW_CSS_100PCT + " " + _elements.divider.height + "px",
+        			width: JW_CSS_100PCT,
+        			height: _elements.divider.height
+        		});
+        	}
         	
         	_css(_internalSelector("jwplaylistimg"), {
 			    height: imgHeight,

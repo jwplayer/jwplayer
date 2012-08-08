@@ -111,7 +111,7 @@ package com.longtailvideo.jwplayer.media {
 
 
 		/** Load new quality level; only requested on quality switches. **/
-		private function loadQuality() {
+		private function loadQuality():void {
 			_keyframes = undefined;
 			_offset = { time:0, byte:0 };
 			loadStream();
@@ -119,7 +119,7 @@ package com.longtailvideo.jwplayer.media {
 
 
 		/** Load the actual stream; requested with every HTTP seek. **/
-		private function loadStream() {
+		private function loadStream():void {
 			var url:String = item.levels[_currentQuality].file;
 			var prm:Number = _offset.byte;
 			if(_item.type == 'mp4') { prm = _offset.time; }

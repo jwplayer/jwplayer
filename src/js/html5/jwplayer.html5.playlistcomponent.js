@@ -124,12 +124,14 @@
         		imgHeight = itemheight
         	}
 			
-        	_css(_internalSelector("jwplaylistdivider"), {
-				'background-image': _elements.divider ? "url("+_elements.divider.src + ")" : "",
-				'background-size': JW_CSS_100PCT + " " + _elements.divider.height + "px",
-			    width: JW_CSS_100PCT,
-			    height: _elements.divider.height
-        	});
+        	if (_elements.divider) {
+        		_css(_internalSelector("jwplaylistdivider"), {
+        			'background-image': "url("+_elements.divider.src + ")",
+        			'background-size': JW_CSS_100PCT + " " + _elements.divider.height + "px",
+        			width: JW_CSS_100PCT,
+        			height: _elements.divider.height
+        		});
+        	}
         	
         	_css(_internalSelector("jwplaylistimg"), {
 			    height: imgHeight,
