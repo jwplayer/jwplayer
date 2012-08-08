@@ -1,0 +1,226 @@
+	<!DOCTYPE html>
+<html>
+<head>
+    <title>Autostart and Repeat</title>
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+</head>
+<body>
+
+<h1>Autostart and Repeat</h1>
+<div class="core">List of test devices</div>
+<p>This page tests the player's <em>autostart</em> and <em>repeat</em> options.</p>
+
+<h2>Autostart</h2>
+
+<div id="autostart"></div>
+
+<script type="text/javascript">
+    jwplayer("autostart").setup({
+        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
+        height: 240,
+        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+        width: 480,
+        autostart: true
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Load the player</td>
+    <td>Firefox, IE8: Player loads in Flash.  Otherwise, player loads in HTML5 mode.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Player should play</td>
+    <td>Player starts playback once the page is loaded.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="mobile"></td>
+    <td>Player should not play</td>
+    <td>Poster image / play icon should remain visible.</td>
+    <td class="check"></td>
+</tr></table>
+
+<h2>Repeat: Default (list)</h2>
+
+<div id="list"></div>
+
+<script type="text/javascript">
+    jwplayer("list").setup({
+        playlist: [{
+            file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
+	        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+	        title: 'Sintel Trailer'
+        },{
+			file: 'http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4',
+	        image: 'http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg',
+	        title: 'Big Buck Bunny Trailer'
+        }],
+        height: 240,
+        width: 680,
+        listbar: {
+        	position: "right",
+        	size: 200
+    	}
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Load the player</td>
+    <td>Firefox, IE8: Player loads in Flash.  Otherwise, player loads in HTML5 mode.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Play first video to completion</td>
+    <td>Second video begins to play</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Play second video to completion</td>
+    <td>Playback stops, second video's poster image appears with a replay icon</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Click replay icon</td>
+    <td>First video begins playing again</td>
+    <td class="check"></td>
+</tr></table>
+
+
+<h2>Repeat: Single</h2>
+
+<div id="single"></div>
+
+<script type="text/javascript">
+    jwplayer("single").setup({
+        playlist: [{
+            file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
+	        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+	        title: 'Sintel Trailer'
+        },{
+			file: 'http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4',
+	        image: 'http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg',
+	        title: 'Big Buck Bunny Trailer'
+        }],
+        height: 240,
+        width: 680,
+        repeat: "single",
+        listbar: {
+        	position: "right",
+        	size: 200
+    	}
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Load the player</td>
+    <td>Firefox, IE8: Player loads in Flash.  Otherwise, player loads in HTML5 mode.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Play video to completion</td>
+    <td>First video plays over again</td>
+    <td class="check"></td>
+</tr></table>
+
+<h2>Repeat: None</h2>
+
+<div id="none"></div>
+
+<script type="text/javascript">
+    jwplayer("none").setup({
+        playlist: [{
+            file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
+	        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+	        title: 'Sintel Trailer'
+        },{
+			file: 'http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4',
+	        image: 'http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg',
+	        title: 'Big Buck Bunny Trailer'
+        }],
+        height: 240,
+        width: 680,
+        repeat: "none",
+        listbar: {
+        	position: "right",
+        	size: 200
+    	}
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Load the player</td>
+    <td>Firefox, IE8: Player loads in Flash.  Otherwise, player loads in HTML5 mode.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Play video to completion</td>
+    <td>First video's preview image is displayed, with a replay icon.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Click replay icon</td>
+    <td>First video begins to play again.</td>
+    <td class="check"></td>
+</tr></table>
+
+<h2>Repeat: Always</h2>
+
+<div id="always"></div>
+
+<script type="text/javascript">
+    jwplayer("always").setup({
+        playlist: [{
+            file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
+	        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+	        title: 'Sintel Trailer'
+        },{
+			file: 'http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4',
+	        image: 'http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg',
+	        title: 'Big Buck Bunny Trailer'
+        }],
+        height: 240,
+        width: 680,
+        repeat: "always",
+        listbar: {
+        	position: "right",
+        	size: 200
+    	}
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Load the player</td>
+    <td>Firefox, IE8: Player loads in Flash.  Otherwise, player loads in HTML5 mode.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Play first video to completion</td>
+    <td>Second video begins to play.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Play second video to completion</td>
+    <td>First video begins to play.</td>
+    <td class="check"></td>
+</tr></table>
+
+
+
+</body>
+</html>
