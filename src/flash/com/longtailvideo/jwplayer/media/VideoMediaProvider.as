@@ -6,9 +6,11 @@ package com.longtailvideo.jwplayer.media {
 	import com.longtailvideo.jwplayer.model.PlaylistItem;
 	import com.longtailvideo.jwplayer.player.PlayerState;
 	import com.longtailvideo.jwplayer.utils.NetClient;
+	import com.longtailvideo.jwplayer.utils.RootReference;
 	
 	import flash.events.*;
 	import flash.external.ExternalInterface;
+	import flash.geom.Rectangle;
 	import flash.media.*;
 	import flash.net.*;
 	import flash.utils.*;
@@ -18,20 +20,28 @@ package com.longtailvideo.jwplayer.media {
 	 * Wrapper for playback of progressively downloaded MP4, FLV and AAC.
 	 **/
 	public class VideoMediaProvider extends MediaProvider {
-		/** Video object to be instantiated. **/
-		protected var _video:Video;
+		/** Whether the video is fully buffered. **/
+		private var _buffered:Number;
 		/** NetConnection object for setup of the video _stream. **/
-		protected var _connection:NetConnection;
-		/** NetStream instance that handles the stream IO. **/
-		protected var _stream:NetStream;
-		/** Sound control object. **/
-		protected var _transformer:SoundTransform;
+		private var _connection:NetConnection;
 		/** ID for the position interval. **/
-		protected var _positionInterval:Number;
-		/** Currently playing file. **/
-		protected var _currentFile:String;
-		/** Whether the quality levels have been sent out **/
-		private var _qualitySent:Boolean = false;
+		private var _interval:Number;
+		/** Offset time/byte for http seek. **/
+		private var _offset:Object;
+		/** StegeVideo object to be instantiated. **/
+		private var _stage:Object;
+		/** NetStream instance that handles the stream IO. **/
+		private var _stream:NetStream;
+		/** Sound control object. **/
+		private var _transformer:SoundTransform;
+		/** Start parameter for HTTP pseudostreaming. **/
+		private var _startparam:String;
+		/** Starttime for pre-keyframe seek. **/
+		private var _starttime:Number;
+		/** List of keyframes. **/
+		private var _keyframes:Object;
+		/** Video object to be instantiated. **/
+		private var _video:Video;
 
 
 		/** Constructor; sets up the connection and display. **/
@@ -53,7 +63,18 @@ package com.longtailvideo.jwplayer.media {
 			_transformer = new SoundTransform();
 			_video = new Video(320, 240);
 			_video.smoothing = true;
-			_video.attachNetStream(_stream);
+			// Use stageVideo when available
+			if (RootReference.stage['stageVideos'].length > 0) {
+				_stage = RootReference.stage['stageVideos'][0];
+				_stage.viewPort = new Rectangle(0,0,320,240);
+				_stage.attachNetStream(_stream);
+			} else {
+				_video.attachNetStream(_stream);
+			}
+			// Set startparam when available
+			if(_config.startparam) {
+				_startparam = _config.startparam;
+			}
 		}
 
 
@@ -63,49 +84,92 @@ package com.longtailvideo.jwplayer.media {
 		};
 
 
-		/** Load content. **/
+		/** Load new media file; only requested once per item. **/
 		override public function load(itm:PlaylistItem):void {
-			_item = itm;
+			super.load(itm);
 			// Set initial quality and set levels
-			if (!_qualitySent) {
-				_currentQuality = 0;
-				for (var i:Number=1; i < _item.levels.length; i++) {
-					if (_item.levels[i].width && _item.levels[i].width > _config.width * 1.5) {
-						_currentQuality = i - 1;
-						break;
-					}
+			_currentQuality = 0;
+			for (var i:Number=0; i < _item.levels.length; i++) {
+				if (_item.levels[i].width && _item.levels[i].width < _config.width * 1.5) {
+					_currentQuality = i;
+					break;
 				}
-				sendQualityEvent(MediaEvent.JWPLAYER_MEDIA_LEVELS, _item.levels, _currentQuality);
-				_qualitySent = true;
 			}
+			sendQualityEvent(MediaEvent.JWPLAYER_MEDIA_LEVELS, _item.levels, _currentQuality);
 			// Do not set a stretchable media for AAC files.
-			if (_item.type == "aac" || _item.type == "m4a") {
-				media = null;
-			} else {
-				media = _video;
-			}
-			_stream.play(_item.levels[_currentQuality].file);
-			super.load(_item);
-			setState(PlayerState.BUFFERING);
-			sendBufferEvent(0);
+			_item.type == "aac" ? media = null: media = _video;
+			// Initialize volume
 			streamVolume(config.mute ? 0 : config.volume);
-			clearInterval(_positionInterval);
-			_positionInterval = setInterval(positionHandler, 100);
+			// Get item start (should remove this someday)
+			if(_startparam && _item.start) {
+				_starttime = item.start;
+			} else { 
+				_starttime = 0;
+			}
+			loadQuality();
 		}
 
 
+		/** Load new quality level; only requested on quality switches. **/
+		private function loadQuality() {
+			_keyframes = undefined;
+			_offset = { time:0, byte:0 };
+			loadStream();
+		};
+
+
+		/** Load the actual stream; requested with every HTTP seek. **/
+		private function loadStream() {
+			var url:String = item.levels[_currentQuality].file;
+			var prm:Number = _offset.byte;
+			if(_item.type == 'mp4') { prm = _offset.time; }
+			// Use startparam if needed
+			if(!_startparam || _offset.time == 0) {
+				_stream.play(url);
+			} else  if (url.indexOf('?') > -1) {
+				_stream.play(url+'&'+_startparam+'='+prm);
+			} else {
+				_stream.play(url+'?'+_startparam+'='+prm);
+			}
+			_buffered = 0;
+			setState(PlayerState.BUFFERING);
+			sendBufferEvent(0);
+			clearInterval(_interval);
+			_interval = setInterval(positionHandler, 100);
+		};
+
+
 		/** Get metadata information from netstream class. **/
-		public function onClientData(dat:Object):void {
-			if (!dat) return;
-			if (dat.width) {
-				_video.width = dat.width;
-				_video.height = dat.height;
-				resize(_width, _height);
+		public function onClientData(data:Object):void {
+			if (!data) return;
+			if (data.width) {
+				_video.width = data.width;
+				_video.height = data.height;
+				resize(_config.width,_config.height);
 			}
-			if (dat.duration && item.duration < 0) {
-				item.duration = dat.duration;
+			if (data.duration && item.duration < 1) {
+				item.duration = data.duration;
 			}
-			sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_META, {metadata: dat});
+			if (data.type == 'metadata' && !_keyframes) {
+				if (data.seekpoints) {
+					// Convert seekpoints to keyframes
+					_keyframes = {
+						times: new Array,
+						filepositions: new Array
+					};
+					for (var j:String in data.seekpoints) {
+						_keyframes.times[j] = Number(data.seekpoints[j]['time']);
+						_keyframes.filepositions[j] = Number(data.seekpoints[j]['offset']);
+					}
+				} else {
+					_keyframes = data.keyframes;
+				}
+				// Do a seek, with small delay to prevent misses
+				if(_starttime) {
+					setTimeout(seek,20,_starttime);
+				}
+			}
+			sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_META, {metadata: data});
 		}
 
 
@@ -118,9 +182,8 @@ package com.longtailvideo.jwplayer.media {
 
 		/** Resume playing. **/
 		override public function play():void {
-			if (!_positionInterval) {
-				_positionInterval = setInterval(positionHandler, 100);
-			}
+			clearInterval(_interval);
+			_interval = setInterval(positionHandler, 100);
 			_stream.resume();
 			super.play();
 		}
@@ -130,37 +193,85 @@ package com.longtailvideo.jwplayer.media {
 		protected function positionHandler():void {
 			var pos:Number = Math.round(Math.min(_stream.time, Math.max(item.duration, 0)) * 100) / 100;
 			// Toggle state between buffering and playing.
-			if (_stream.bufferLength < 1 && state == PlayerState.PLAYING && item.duration - pos > 3) {
+			if (_stream.bufferLength < 1 && state == PlayerState.PLAYING && _buffered < 100) {
 				setState(PlayerState.BUFFERING);
 			} else if (_stream.bufferLength > 1 && state == PlayerState.BUFFERING) {
 				sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_BUFFER_FULL);
 				setState(PlayerState.PLAYING);
 			}
 			// Send out buffer percentage.
-			if (_stream.bytesLoaded < _stream.bytesTotal) {
-				sendBufferEvent(Math.round(100* _stream.bytesLoaded / _stream.bytesTotal));
+			if (_buffered < 100) {
+				_buffered = Math.floor(100 * (_stream.bytesLoaded/_stream.bytesTotal + _offset.time/_item.duration));
+				_buffered = Math.min(100, _buffered);
+				sendBufferEvent(_buffered);
 			}
 			if (state == PlayerState.PLAYING) {
 				_position = pos;
+				if(_item.type == 'mp4') {
+					_position += _offset.time;
+				}
 				sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_TIME, {position: _position, duration: item.duration});
+			}
+		}
+
+
+		/** Resize the video or stage.**/
+		override public function resize(width:Number, height:Number):void {
+			super.resize(width,height);
+			if(_stage) {
+				_stage.viewPort = new Rectangle(media.x,media.y,width,height);
 			}
 		}
 
 
 		/** Seek to a new position. **/
 		override public function seek(pos:Number):void {
-			seekStream(pos);
+			var range:Number = _item.duration * _buffered / 100;
+			clearInterval(_interval);
+			// Pseudo: seek on first load in range, request when outside
+			if(_startparam) {
+				if(_offset.time == 0 && pos < range) {
+					_position = pos;
+					if(_item.type == 'flv') {
+						_stream.seek(_position);
+					} else {
+						_stream.seek(_position - _offset.time);
+					}
+				} else {
+					if(_keyframes) {
+						_position = pos;
+						_offset = seekOffset(pos);
+						loadStream();
+					} else {
+						// Delay the seek if no keyframes yet
+						_starttime = pos;
+						return;
+					}
+				}
+			// Progressive: only seek when in range
+			} else {
+				if(pos < range) {
+					_position = pos;
+					_stream.seek(_position);
+				}
+			}
+			_interval = setInterval(positionHandler, 100);
 		}
 
 
-		private function seekStream(pos:Number, ply:Boolean=true):void {
-			var range:Number = _stream.bytesLoaded / _stream.bytesTotal * item.duration;
-			if (pos < range) {
-				_position = pos;
-				clearInterval(_positionInterval);
-				_positionInterval = undefined;
-				_stream.seek(_position);
-				if (ply) { play(); }
+		/** Return the seek offset based upon a position. **/
+		private function seekOffset(position:Number):Object {
+			if (!_keyframes || !_startparam || position==0) {
+				return {byte:0,time:0};
+			}
+			for (var i:Number = 0; i < _keyframes.times.length - 1; i++) {
+				if (_keyframes.times[i] <= position && _keyframes.times[i+1] >= position) {
+					break;
+				}
+			}
+			return {
+				byte: _keyframes.filepositions[i],
+				time: _keyframes.times[i]
 			}
 		}
 
@@ -189,9 +300,11 @@ package com.longtailvideo.jwplayer.media {
 				_stream.pause();
 				_stream.seek(0);
 			}
-			clearInterval(_positionInterval);
-			_positionInterval = undefined;
-			_qualitySent = false;
+			clearInterval(_interval);
+			_keyframes = undefined;
+			_buffered = 0;
+			_starttime = 0;
+			_offset = { time:0, byte:0 };
 			super.stop();
 		}
 
@@ -214,14 +327,13 @@ package com.longtailvideo.jwplayer.media {
 
 		/** Set the current quality level. **/
 		override public function set currentQuality(quality:Number):void {
-			if (quality == _currentQuality) return;
 			if (!_item) return;
-			if (quality < 0) quality = 0;
-			if (_item.levels.length > quality && _item.currentLevel != quality) {
+			if (quality > -1 && _item.levels.length > quality && _currentQuality != quality) {
 				_item.setLevel(quality);
 				_currentQuality = quality;
+				_starttime = _position;
 				sendQualityEvent(MediaEvent.JWPLAYER_MEDIA_LEVEL_CHANGED, _item.levels, _currentQuality);
-				load(_item);
+				loadQuality();
 			}
 		}
 

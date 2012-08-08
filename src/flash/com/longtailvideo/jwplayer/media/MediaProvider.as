@@ -409,15 +409,15 @@ package com.longtailvideo.jwplayer.media {
 				var level:Object = { label: i+" " };
 				if(sources[i].bitrate) {
 					level.bitrate = sources[i].bitrate;
-					level.label = sources[i].bitrate + "kbps ";
+					level.label = sources[i].bitrate + "kbps";
 				}
 				if(sources[i].width) {
 					level.width = sources[i].width;
-					level.label = sources[i].width + "px ";
+					level.label = sources[i].width + "px";
 				}
 				if(sources[i].height) {
 					level.height = sources[i].height;
-					level.label = sources[i].height + "p ";
+					level.label = sources[i].height + "p";
 				}
 				if(sources[i].label) {
 					level.label = sources[i].label;

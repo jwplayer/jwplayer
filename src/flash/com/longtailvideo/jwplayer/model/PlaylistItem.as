@@ -277,7 +277,7 @@ package com.longtailvideo.jwplayer.model {
 				case "flv":
 				case "mp4":
 				case "aac":
-				case "video": 
+				case "video":
 					return "video";
 					break;
 				case "mp3": 

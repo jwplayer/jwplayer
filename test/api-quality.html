@@ -30,9 +30,7 @@
             title: "2 quality levels"
         },{
             sources: [{
-                file: 'http://content.bitsontherun.com/videos/kaUXWqTZ-52qL9xLP.mp4',
-                height: 270,
-                width: 480
+                file: 'http://content.bitsontherun.com/videos/kaUXWqTZ-52qL9xLP.mp4'
             }],
             title: "1 quality level"
         },{
@@ -64,6 +62,9 @@
         width: 720
     });
 
+    jwplayer().onReady(function(event){
+        console.log(event);
+    });
 
     function getCurrentQuality() {
         appendLog("The current quality level is: "+jwplayer().getCurrentQuality());

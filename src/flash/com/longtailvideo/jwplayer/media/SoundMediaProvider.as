@@ -26,6 +26,8 @@
 		private var _context:SoundLoaderContext;
 		/** ID for the position interval. **/
 		private var _positionInterval:Number;
+		/** Whether the sound is fully buffered. **/
+		private var _buffered:Boolean;
 
 
 		/** Constructor; sets up the connection and display. **/
@@ -57,6 +59,7 @@
 		override public function load(itm:PlaylistItem):void {
 			_item = itm;
 			_position = 0;
+			_buffered = false;
 			_sound = new Sound();
 			_sound.addEventListener(IOErrorEvent.IO_ERROR, errorHandler);
 			_sound.addEventListener(ProgressEvent.PROGRESS, positionHandler);
@@ -107,8 +110,11 @@
 				_item.duration = _sound.length / 1000 / _sound.bytesLoaded * _sound.bytesTotal;
 			}
 			// Send buffer updates until complete
-			if (_sound.bytesLoaded < _sound.bytesTotal) {
+			if (!_buffered) {
 				sendBufferEvent(Math.round(100 * _sound.bytesLoaded / _sound.bytesTotal));
+				if(_sound.bytesLoaded == _sound.bytesTotal && _sound.bytesTotal > 0) {
+					_buffered = true;
+				}
 			}
 			// Switch between playback and buffering state.
 			if (state == PlayerState.BUFFERING && !_sound.isBuffering) {
@@ -143,6 +149,7 @@
 		override public function stop():void {
 			clearInterval(_positionInterval);
 			_positionInterval = undefined;
+			_buffered = false;
 			super.stop();
 			if (_channel) {
 				_channel.stop();

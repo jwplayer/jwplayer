@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Multiple sources</title>
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+    <script type="text/javascript" src="assets/primaryCookie.js"></script>
+</head>
+<body>
+
+<h1>Multiple sources</h1>
+<div class="flash">List of test devices</div>
+<p>This test consists of several setups that test the use of multiple sources in an inline playlist.</p>
+
+
+
+<h2>Multiple qualities</h2>
+
+<div id="container"></div>
+
+<script type="text/javascript">
+    jwplayer("container").setup({
+        playlist: [{
+            image: 'http://content.bitsontherun.com/thumbs/bkaovAYt-640.jpg',
+            sources: [{
+                file: 'http://content.bitsontherun.com/videos/bkaovAYt-injeKYZS.mp4',
+                height: 180,
+                width: 320
+            },{
+                file: 'http://content.bitsontherun.com/videos/bkaovAYt-kNspJqnJ.mp4',
+                height: 360,
+                width: 640
+            },{
+                file: 'http://content.bitsontherun.com/videos/bkaovAYt-DZ7jSYgM.mp4',
+                height: 720,
+                width: 1280
+            }] 
+        }],
+        height: 360,
+        primary: primaryCookie,
+        width: 640
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop">
+    <td>Initial page load</td>
+    <td>A Big Buck Bunny poster image should be visible.</td>
+    <td class="check"></td>
+</tr></table>
+
+
+</body>
+</html>

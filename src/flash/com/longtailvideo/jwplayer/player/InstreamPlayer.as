@@ -6,7 +6,6 @@ package com.longtailvideo.jwplayer.player
 	import com.longtailvideo.jwplayer.events.MediaEvent;
 	import com.longtailvideo.jwplayer.events.PlayerEvent;
 	import com.longtailvideo.jwplayer.events.ViewEvent;
-	import com.longtailvideo.jwplayer.media.HTTPMediaProvider;
 	import com.longtailvideo.jwplayer.media.MediaProvider;
 	import com.longtailvideo.jwplayer.media.RTMPMediaProvider;
 	import com.longtailvideo.jwplayer.media.VideoMediaProvider;
@@ -281,11 +280,8 @@ package com.longtailvideo.jwplayer.player
 				case 'video':
 					_provider = new VideoMediaProvider();
 					break;
-				case 'http':
-					_provider = new HTTPMediaProvider();
-					break;
 				default:
-					throw new Error("Unsupported Instream Format; only video, http or rtmp providers are currently supported");
+					throw new Error("Unsupported Instream Format; only video or rtmp are currently supported");
 					break;
 			}
 			

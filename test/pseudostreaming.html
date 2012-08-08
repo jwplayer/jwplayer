@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pseudostreaming</title>
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+</head>
+<body>
+
+<h1>Pseudostreaming</h1>
+<div class="flash">List of test devices</div>
+<p>This page tests the Flash MP4 and FLV pseudostreaming capabilities.</p>
+
+
+
+<h2>Single FLV</h2>
+
+<div id="container"></div>
+
+<script type="text/javascript">
+    jwplayer("container").setup({
+        file: 'http://playertest.longtailvideo.com/sintel.flv',
+        height: 272,
+        image: "http://playertest.longtailvideo.com/sintel.jpg",
+        primary: 'flash',
+        startparam: 'ec_seek',
+        width: 640
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop">
+    <td>Click to play</td>
+    <td>Video should start playing and buffering.<br/> FLV URL should be loaded without start parameter.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Seek forward inside buffer</td>
+    <td>Video should jump to new position without re-buffer.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Seek forward outside buffer</td>
+    <td>Video should jump to new position, buffer should restart.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Seek back to beginning</td>
+    <td>Video should jump to new position, buffer should restart.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Quickly do several seeks,<br/> then wait until complete</td>
+    <td>Buffer and time should not exceed 100%, playback should not stall.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Replay video</td>
+    <td>Video should play and buffer from start again.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Reload page, then <a href="javascript:jwplayer(0).seek(300)">seek to 05:00</a></td>
+    <td>Video should buffer, then start playing from 05:00.</td>
+    <td class="check"></td>
+</tr></table>
+
+
+
+<h2>Single MP4</h2>
+
+<div id="container2"></div>
+
+<script type="text/javascript">
+    jwplayer("container2").setup({
+        file: 'http://playertest.longtailvideo.com/sintel-480.mp4',
+        height: 272,
+        image: "http://playertest.longtailvideo.com/sintel.jpg",
+        primary: 'flash',
+        startparam: 'ec_seek',
+        width: 640
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop">
+    <td>Click to play</td>
+    <td>Video should start playing and buffering.<br/> FLV URL should be loaded without start parameter.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Seek forward inside buffer</td>
+    <td>Video should jump to new position without re-buffer.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Seek forward outside buffer</td>
+    <td>Video should jump to new position, buffer should restart.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Seek back to beginning</td>
+    <td>Video should jump to new position, buffer should restart.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Quickly do several seeks,<br/> then wait until complete</td>
+    <td>Buffer and time should not exceed 100%, playback should not stall.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Replay video</td>
+    <td>Video should play and buffer from start again.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Reload page, then <a href="javascript:jwplayer(1).seek(300)">seek to 05:00</a></td>
+    <td>Video should buffer, then start playing from 05:00.</td>
+    <td class="check"></td>
+</tr></table>
+
+
+<h2>Multi MP4</h2>
+
+<div id="container3"></div>
+
+<script type="text/javascript">
+    jwplayer("container3").setup({
+        height: 272,
+        playlist: [{
+            image: "http://playertest.longtailvideo.com/sintel.jpg",
+            sources: [{
+                file: 'http://playertest.longtailvideo.com/sintel-720.mp4',
+                width: 720,
+            },{
+                file: 'http://playertest.longtailvideo.com/sintel-480.mp4',
+                width: 480,
+            },{
+                file: 'http://playertest.longtailvideo.com/sintel-320.mp4',
+                width: 320,
+            }]
+        }],
+        primary: 'flash',
+        startparam: 'ec_seek',
+        width: 640
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop">
+    <td>Click to play</td>
+    <td>Video should start playing and buffering.<br/> The 720px version should be selected.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Seek halfway</td>
+    <td>Video should jump to new position, buffer should restart.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Switch to lowest quality</td>
+    <td>Video should buffer, then resume in new quality from current position.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Seek towards end</td>
+    <td>Video should jump to new position, buffer should restart.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Switch to medium quality</td>
+    <td>Video should buffer, then resume in new quality from current position.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Wait until complete,<br/> then replay video</td>
+    <td>Video should start in medium quality from the beginning.</td>
+    <td class="check"></td>
+</tr></table>
+
+</body>
+</html>
