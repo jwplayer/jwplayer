@@ -1,0 +1,15 @@
+<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/">
+	<channel>
+		<title>Example media RSS playlist</title>
+
+		<item>
+			<title>Big Buck Bunny</title>
+			<media:group>
+				<media:content url="http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4" />
+				<media:content url="http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm" />
+				<media:thumbnail url="http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg" />
+			</media:group>
+		</item>
+
+	</channel>
+</rss>

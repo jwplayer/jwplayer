@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Skin Omissions</title>
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+</head>
+<body>
+
+<h1>Skin Omissions</h1>
+<div class="core">List of test devices</div>
+<p>Player skins can leave out certain elements.  This page tests skins that omit various elements.</p>
+
+<h2>No Time Slider</h2>
+
+<div id="omit_timeslider"></div>
+
+<script type="text/javascript">
+    jwplayer("omit_timeslider").setup({
+        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
+     	image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+        height: 240,
+        width: 480,
+        skin: "assets/skins/omit/timeslider.xml"
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Load the player</td>
+    <td>Player should display an error message: "Error loading skin: File not found".</td>
+    <td class="check"></td>
+</tr></table>
+
+
+
+</body>
+</html>
