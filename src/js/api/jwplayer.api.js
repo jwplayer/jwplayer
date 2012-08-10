@@ -285,6 +285,7 @@
 			onMute: events.JWPLAYER_MEDIA_MUTE,
 			onPlaylist: events.JWPLAYER_PLAYLIST_LOADED,
 			onPlaylistItem: events.JWPLAYER_PLAYLIST_ITEM,
+			onPlaylistComplete: events.JWPLAYER_PLAYLIST_COMPLETE,
 			onReady: events.API_READY,
 			onResize: events.JWPLAYER_RESIZE,
 			onComplete: events.JWPLAYER_MEDIA_COMPLETE,
