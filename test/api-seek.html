@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Seeking</title>
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+    
+
+</head>
+<body>
+
+<h1>Seeking</h1>
+<div class="core">List of test devices</div>
+<p>This page tests the JavaScript API's seek functionality.</p>
+
+<h2>seek()</h2>
+
+<div id="seek"></div>
+<pre id="seek_output"></pre>
+<span id="time_output"></span>
+
+<script type="text/javascript">
+
+	function log(id, message) {
+		var element = document.getElementById(id);
+		if (!message) element.innerHTML = "";
+		else element.innerHTML += message + "\n";
+	}
+
+    jwplayer("seek").setup({
+        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
+   		image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+        events: {
+			onSeek: seekHandler,
+			onTime: timeHandler
+    	}
+    });
+
+    function seekHandler(evt) {
+		log("seek_output", "Seeking to " + evt.offset);
+	}
+	
+    function timeHandler(evt) {
+		log("time_output", "");
+		log("time_output", "Current position: " + evt.position);
+	}
+
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Load the players</td>
+    <td>Firefox, IE8: Players load in Flash.  Otherwise, players load in HTML5 mode</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>While player is idle, <a href="#" onclick="jwplayer('seek').seek(10); return false;">seek(10)</a></td>
+    <td>Player seeks to 10 seconds and begins playback. onSeek event is fired and logged</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>While player is playing, <a href="#" onclick="jwplayer('seek').seek(30); return false;">seek(30)</a></td>
+    <td>Player seeks to 30 seconds and resumes playback.  onSeek event is fired and logged</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Seek using the controlbar</a></td>
+    <td>Player seeks to the correct position.  onSeek event is fired and logged</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>onTime event fires</a></td>
+    <td>While player is playing, text below the player updates with the current playback position.</td>
+    <td class="check"></td>
+</tr></table>
+
+
+
+</body>
+</html>

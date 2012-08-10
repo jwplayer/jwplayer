@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2366';
+	jwplayer.html5.version = '6.0.2367';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -6045,6 +6045,8 @@
 			_checkAudioMode(height);
 			_resizeMedia();
 
+			_eventDispatcher.sendEvent(events.JWPLAYER_RESIZE);
+			
 			return;
 		}
 		

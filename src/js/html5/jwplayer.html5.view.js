@@ -282,6 +282,8 @@
 			_checkAudioMode(height);
 			_resizeMedia();
 
+			_eventDispatcher.sendEvent(events.JWPLAYER_RESIZE);
+			
 			return;
 		}
 		
