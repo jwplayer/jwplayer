@@ -12,6 +12,7 @@ package com.longtailvideo.jwplayer.model {
 		public var image:String			= "";
 		public var mediaid:String		= "";
 		public var title:String			= "";
+		public var tags:String			= "";
 		
 		protected var _duration:Number		= -1;
 		protected var _file:String			= "";
@@ -51,7 +52,7 @@ package com.longtailvideo.jwplayer.model {
 			for (var itm:String in obj) {
 				if (itm == "levels") {
 					if (!(obj[itm] is Array)) {
-						continue;						
+						continue;
 					}
 					var levels:Array = obj[itm] as Array;
 					for each (var level:Object in levels) {
@@ -153,14 +154,6 @@ package com.longtailvideo.jwplayer.model {
         };
 
 
-		/** Blacklist a level from usage (e.g. if it cannot be played or drops too many frames). **/
-		public function blacklistLevel(level:Number,state:Boolean=true):void {
-			if(levels[level]) {
-				levels[level].blacklisted = state;
-			}
-		};
-
-
 		/**
 		 * Determines whether this file extension can be played in the Flash player.  If not, ignore the level.
 		 * This is useful for unified HTML5 / Flash failover setups.
@@ -227,7 +220,7 @@ package com.longtailvideo.jwplayer.model {
 			if (level) {
 				if (level.type) return level.type;
 				else {
-					if (level.streamer) return "rtmp";
+					if (level.streamer || level.file.substr(0,4) == 'rtmp') return "rtmp";
 					else if (level.file) {
 						if (Strings.isYouTube(level.file)) return "youtube";
 						else {

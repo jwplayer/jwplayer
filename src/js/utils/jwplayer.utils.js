@@ -333,6 +333,13 @@
 	};
 
 	/**
+	 * Determines if a URL is an RTMP link
+	 */
+	utils.isRtmp = function(file,type) {
+		return (file.indexOf("rtmp") == 0 || type == 'rtmp');
+	};
+
+	/**
 	 * Iterates over an object and executes a callback function for each property (if it exists)
 	 * This is a safe way to iterate over objects if another script has modified the object prototype
 	 */

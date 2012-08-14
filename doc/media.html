@@ -49,7 +49,7 @@
 <table><tr>
     <th></th><th>mp4</th><th>flv</th><th>webm</th>
 </tr><tr>
-    <th>Extension(s)</th><td>.mp4, .m4v, .f4v</td><td>.flv</td><td>.webm</td>
+    <th>Extension(s)</th><td>mp4, m4v, f4v</td><td>flv</td><td>webm</td>
 </tr><tr>
     <th>Mimetype</th><td>video/mp4</td><td>video/flv</td><td>video/webm</td>
 </tr><tr>
@@ -89,7 +89,7 @@
 <table><tr>
     <th></th><th>aac</th><th>mp3</th><th>vorbis</th>
 </tr><tr>
-    <th>Extension(s)</th><td>.aac, .m4a, .f4a</td><td>.mp3</td><td>.ogg, .oga</td>
+    <th>Extension(s)</th><td>aac, m4a, f4a</td><td>mp3</td><td>ogg, oga</td>
 </tr><tr>
     <th>Mimetype</th><td>audio/mp4</td><td>audio/mpeg</td><td>audio/ogg</td>
 </tr><tr>
@@ -141,30 +141,30 @@ YouTube videos. This possible through built-in support for the <a href="https://
 <p>JW Player supports two types of streaming protocols:</p>
 
 <ul>
-<li>Adobe's <a href="http://en.wikipedia.org/wiki/Real_Time_Messaging_Protocol">RTMP</a> protocol, using SMIL manifest files and MP4, FLV, AAC or MP3 media files. RTMP is mature and has broad CDN and encoder support. It requires dedicated server software though, and is sometimes blocked by firewalls. See <a href="rtmp.html">Using RTMP Streaming</a> for more info.</li>
+<li>Adobe's <a href="http://en.wikipedia.org/wiki/Real_Time_Messaging_Protocol">RTMP</a> protocol, using either a single MP4, FLV, AAC or MP3 file or a SMIL manifest. RTMP is mature and has broad CDN and encoder support. It requires dedicated server software though, and is sometimes blocked by firewalls. See <a href="rtmp.html">Using RTMP Streaming</a> for more info.</li>
 <li>Apple's <a href="http://en.wikipedia.org/wiki/HTTP_Live_Streaming">HLS</a> protocol, using M3U8 manifest files and TS media files. HLS builds upon standard HTTP, making it easy to deploy and firewall resilient. It is still under development, plus CDN and encoder support is still limited.</li>
 </ul>
 
 <p>Here is an overview of the recognized file extensions and mimetypes for these protocols, plus their browser playback support:</p>
 
 <table><tr>
-    <th></th><th>rtmp</th><th>hls</th>
+    <th></th><th>rtmp (single)</th><th>rtmp (dynamic)</th><th>hls</th>
 </tr><tr>
-    <th>Extension(s)</th><td>.smil</td><td>.m3u8</td>
+    <th>Extension(s)</th><td>mp4, m4v, f4v, flv, aac, m4a, f4a, mp3</td><td>smil</td><td>m3u8</td>
 </tr><tr>
-    <th>Mimetype</th><td>application/smil</td><td>application/vnd.apple.mpegurl</td>
+    <th>Mimetype</th><td>application/x-fcs</td><td>application/smil</td><td>application/vnd.apple.mpegurl</td>
 </tr><tr>
-    <th>Internet Explorer</th><td>flash</td><td>-</td>
+    <th>Internet Explorer</th><td>flash</td><td>flash</td><td>-</td>
 </tr><tr>
-    <th>Chrome</th><td>flash</td><td>-</td>
+    <th>Chrome</th><td>flash</td><td>flash</td><td>-</td>
 </tr><tr>
-    <th>Firefox</th><td>flash</td><td>-</td>
+    <th>Firefox</th><td>flash</td><td>flash</td><td>-</td>
 </tr><tr>
-    <th>Safari</th><td>flash</td><td>html5</td>
+    <th>Safari</th><td>flash</td><td>flash</td><td>html5</td>
 </tr><tr>
-    <th>iOS</th><td>-</td><td>html5</td>
+    <th>iOS</th><td>-</td><td>-</td><td>html5</td>
 </tr><tr>
-    <th>Android</th><td>-</td><td>-</td>
+    <th>Android</th><td>-</td><td>-</td><td>-</td>
 </tr></table>
 
 

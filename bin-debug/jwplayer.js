@@ -358,6 +358,13 @@ jwplayer.source = document.createElement("source");/**
 	};
 
 	/**
+	 * Determines if a URL is an RTMP link
+	 */
+	utils.isRtmp = function(file,type) {
+		return (file.indexOf("rtmp") == 0 || type == 'rtmp');
+	};
+
+	/**
 	 * Iterates over an object and executes a callback function for each property (if it exists)
 	 * This is a safe way to iterate over objects if another script has modified the object prototype
 	 */
@@ -1253,6 +1260,7 @@ jwplayer.source = document.createElement("source");/**
 		image: "",
 		mediaid: "",
 		title: "",
+		tags: "",
 		duration: -1,
 		sources: []
 	};
@@ -2017,7 +2025,7 @@ jwplayer.source = document.createElement("source");/**
 		 */
 		function _flashCanPlay(file, type) {
 			if (utils.isYouTube(file)) return true;
-			if (type == "rtmp") return true;
+			if (utils.isRtmp(file,type)) return true;
 
 			var mappedType = utils.extensionmap[type ? type : utils.extension(file)];
 			
@@ -2146,6 +2154,9 @@ jwplayer.source = document.createElement("source");/**
 		function _html5CanPlay(file, type) {
 			// HTML5 playback is not sufficiently supported on Blackberry devices; should fail over automatically.
 			if(navigator.userAgent.match(/BlackBerry/i) !== null) { return false; }
+
+			// Ensure RTMP files are not seen as videos
+			if (utils.isRtmp(file,type)) return false;
 
 			var mappedType = extensionmap[type ? type : utils.extension(file)];
 			

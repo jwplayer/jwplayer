@@ -40,6 +40,7 @@
 		image: "",
 		mediaid: "",
 		title: "",
+		tags: "",
 		duration: -1,
 		sources: []
 	};

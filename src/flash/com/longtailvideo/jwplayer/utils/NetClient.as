@@ -29,7 +29,7 @@ package com.longtailvideo.jwplayer.utils {
 
 		/** Get connection close from RTMP server. **/
 		public function close(... rest):void {
-			forward({close: true}, 'close');
+			forward({close: true}, 'complete');
 		}
 
 

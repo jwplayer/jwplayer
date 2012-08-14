@@ -86,7 +86,8 @@ package com.longtailvideo.jwplayer.media {
 
 		/** Load new media file; only requested once per item. **/
 		override public function load(itm:PlaylistItem):void {
-			super.load(itm);
+			_item = itm;
+			dispatchEvent(new MediaEvent(MediaEvent.JWPLAYER_MEDIA_LOADED));
 			// Set initial quality and set levels
 			_currentQuality = 0;
 			for (var i:Number=0; i < _item.levels.length; i++) {

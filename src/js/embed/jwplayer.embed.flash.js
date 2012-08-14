@@ -255,7 +255,7 @@
 		 */
 		function _flashCanPlay(file, type) {
 			if (utils.isYouTube(file)) return true;
-			if (type == "rtmp") return true;
+			if (utils.isRtmp(file,type)) return true;
 
 			var mappedType = utils.extensionmap[type ? type : utils.extension(file)];
 			

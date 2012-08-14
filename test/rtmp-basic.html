@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RTMP Basic</title>
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+</head>
+<body>
+
+<h1>RTMP Basic</h1>
+<div class="core">List of test devices</div>
+<p>This test includes playback of single files using RTMP.</p>
+
+
+
+<h2>Wowza Server</h2>
+
+<div id="container"></div>
+<script type="text/javascript">
+    jwplayer("container").setup({
+        playlist: [{
+            file: 'rtmp://23.23.122.78/vod/_definst_/media/sintel_full/sint_320.mp4',
+            image: 'http://content.bitsontherun.com/thumbs/q1fx20VZ-480.jpg',
+            title: 'MP4 Video'
+        },{
+            file: 'rtmp://23.23.122.78/vod/_definst_/media/sintel_full/sint_acc.m4a',
+            image: 'http://content.bitsontherun.com/thumbs/q1fx20VZ-480.jpg',
+            title: 'AAC Audio'
+        },{
+            file: 'rtmp://23.23.122.78/vod/_definst_/media/sintel_full/sint_480_flv.flv',
+            image: 'http://content.bitsontherun.com/thumbs/q1fx20VZ-480.jpg',
+            title: 'FLV Video'
+        },{
+            file: 'rtmp://23.23.122.78/vod/_definst_/media/sintel_full/sint_mp3.mp3',
+            image: 'http://content.bitsontherun.com/thumbs/q1fx20VZ-480.jpg',
+            title: 'MP3 Audio'
+        }],
+        height: 204,
+        listbar: {
+            position: 'right',
+            size: 240
+        },
+        width: 720
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both">
+    <td>Play first item</td>
+    <td>First item should play</td>
+    <td class="check"></td>
+</tr></table>
+
+<h2>Flash Server</h2>
+
+<div id="container2"></div>
+<script type="text/javascript">
+    jwplayer("container2").setup({
+        playlist: [{
+            file: 'rtmp://23.23.175.6/vod/_definst_/media/sintel_full/sint_320.mp4',
+            image: 'http://content.bitsontherun.com/thumbs/q1fx20VZ-480.jpg',
+            title: 'MP4 Video'
+        },{
+            file: 'rtmp://23.23.175.6/vod/_definst_/media/sintel_full/sint_acc.m4a',
+            image: 'http://content.bitsontherun.com/thumbs/q1fx20VZ-480.jpg',
+            type: 'rtmp',
+            title: 'AAC Audio'
+        },{
+            file: 'rtmp://23.23.175.6/vod/_definst_/media/sintel_full/sint_480_flv.flv',
+            image: 'http://content.bitsontherun.com/thumbs/q1fx20VZ-480.jpg',
+            title: 'FLV Video'
+        },{
+            file: 'rtmp://23.23.175.6/vod/_definst_/media/sintel_full/sint_mp3.mp3',
+            image: 'http://content.bitsontherun.com/thumbs/q1fx20VZ-480.jpg',
+            title: 'MP3 Audio'
+        }],
+        height: 204,
+        listbar: {
+            position: 'right',
+            size: 240
+        },
+        width: 720
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both">
+    <td>Play first item</td>
+    <td>First item should play</td>
+    <td class="check"></td>
+</tr></table>
+
+<h2>CloudFront</h2>
+
+<div id="container3"></div>
+<script type="text/javascript">
+    jwplayer("container3").setup({
+        playlist: [{
+            file: 'rtmp://s37pvs8v39ibrr.cloudfront.net/cfx/st/bunny.mp4',
+            image: 'http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg',
+            title: 'MP4 Video'
+        },{
+            file: 'rtmp://s37pvs8v39ibrr.cloudfront.net/cfx/st/bunny.m4a',
+            image: 'http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg',
+            type: 'rtmp',
+            title: 'AAC Audio'
+        },{
+            file: 'rtmp://s37pvs8v39ibrr.cloudfront.net/cfx/st/bunny.flv',
+            image: 'http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg',
+            title: 'FLV Video'
+        },{
+            file: 'rtmp://s37pvs8v39ibrr.cloudfront.net/cfx/st/bunny.mp3',
+            image: 'http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg',
+            title: 'MP3 Audio'
+        }],
+        height: 204,
+        listbar: {
+            position: 'right',
+            size: 240
+        },
+        width: 720
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both">
+    <td>Play first item</td>
+    <td>First item should play</td>
+    <td class="check"></td>
+</tr></table>
+
+
+<h2>EdgeCast</h2>
+
+<div id="container4"></div>
+<script type="text/javascript">
+    jwplayer("container4").setup({
+        playlist: [{
+            file: 'rtmp://fms.12E5.edgecastcdn.net/0012E5/_definst_/videos/Qvxp3Jnv-483.mp4',
+            image: 'http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg',
+            title: 'MP4 Video'
+        },{
+            file: 'rtmp://fms.12E5.edgecastcdn.net/0012E5/_definst_/videos/Qvxp3Jnv-12548.m4a',
+            image: 'http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg',
+            streamer: 'rtmp://23.23.175.6/vod/',
+            type: 'rtmp',
+            title: 'AAC Audio'
+        },{
+            file: 'rtmp://fms.12E5.edgecastcdn.net/0012E5/_definst_/videos/Qvxp3Jnv-68183.flv',
+            image: 'http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg',
+            title: 'FLV Video'
+        },{
+            file: 'rtmp://fms.12E5.edgecastcdn.net/0012E5/_definst_/videos/Qvxp3Jnv-68182.mp3',
+            image: 'http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg',
+            title: 'MP3 Audio'
+        }],
+        height: 204,
+        listbar: {
+            position: 'right',
+            size: 240
+        },
+        width: 720
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both">
+    <td>Play first item</td>
+    <td>First item should play</td>
+    <td class="check"></td>
+</tr></table>
+
+
+</body>
+</html>

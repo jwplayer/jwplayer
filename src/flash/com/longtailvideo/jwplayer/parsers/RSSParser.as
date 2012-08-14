@@ -51,7 +51,7 @@
 						break;
 				}
 			}
-			itm = ItunesParser.parseEntry(obj, itm);
+			// itm = ItunesParser.parseEntry(obj, itm);
 			itm = MediaParser.parseGroup(obj, itm);
 			itm = JWParser.parseEntry(obj, itm);
 			return new PlaylistItem(itm);

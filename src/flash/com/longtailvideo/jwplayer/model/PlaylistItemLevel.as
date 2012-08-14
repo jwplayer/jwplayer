@@ -8,7 +8,6 @@ package com.longtailvideo.jwplayer.model {
 		public var width:Number		= 0;
 		public var height:Number	= 0;
 		public var streamer:String	= "";
-		public var blacklisted:Boolean = false;
 		
 		/**
 		 * @param file - The location of the file to play

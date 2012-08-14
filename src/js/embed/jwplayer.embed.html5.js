@@ -114,6 +114,9 @@
 			// HTML5 playback is not sufficiently supported on Blackberry devices; should fail over automatically.
 			if(navigator.userAgent.match(/BlackBerry/i) !== null) { return false; }
 
+			// Ensure RTMP files are not seen as videos
+			if (utils.isRtmp(file,type)) return false;
+
 			var mappedType = extensionmap[type ? type : utils.extension(file)];
 			
 			// If no type or unrecognized type, don't allow to play

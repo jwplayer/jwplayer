@@ -28,12 +28,12 @@
 
 <h2>Introduction</h2>
 
-<p>RTMP (<a href="http://en.wikipedia.org/wiki/Real_Time_Messaging_Protocol">Real Time Messaging Protocol</a>) is a system for delivering on-demand and live media to Adobe Flash applications (like JW Player). RTMP supports video in MP4 and FLV and audio in MP3 and AAC. RTMP offers several advantages over regular HTTP video downloads:</p>
+<p>RTMP (<a href="http://en.wikipedia.org/wiki/Real_Time_Messaging_Protocol">Real Time Messaging Protocol</a>) is a system for delivering on-demand and live media to Adobe Flash applications (like JW Player). RTMP supports video in MP4 and FLV and audio in AAC and MP3. RTMP offers several advantages over regular HTTP video downloads:</p>
 
 <ul>
 <li>RTMP can do <strong>live</strong> streaming, so people can watch your video while it is being recorded.</li>
 <li>RTMP can do <strong>dynamic</strong> streaming, where the video quality automatically adjusts to changes in bandwidth.</li>
-<li>Players can swiftly <strong>seek</strong> to later parts in a video, which is great for files > 5 minutes.</li>
+<li>Players can swiftly <strong>seek</strong> to later parts in a video, which is great for files > 10 minutes.</li>
 <li>Players maintains a tiny <strong>buffer</strong>, instead of downloading a video during playback, saving bandwidth.</li>
 </ul>
 
@@ -42,11 +42,11 @@
 <p>However, do note that RTMP has its disadvantages too. The most important ones are:</p>
 
 <ul>
-<li>RTMP uses different protocols and ports than HTTP, which makes it vulnerable to getting blocked by (corporate) firewalls. This issue can be prevented by streaming in RTMPT (tunneling over HTTP), but that comes at a server performance cost.</li>
+<li>RTMP uses different protocols and ports than HTTP, which makes it vulnerable to getting blocked by (corporate) firewalls. This issue can be prevented by streaming in RTMPT (tunneling over HTTP), which comes at a server performance cost.</li>
 <li>RTMP data is streamed to the player, which means the bandwidth of the connection must be larger than the data-rate of the video. If the connection drops for a couple of seconds, the stream will stutter. This issue can largely be prevented by using <strong>dynamic</strong> streams that include a low-quality file.</li>
 </ul>
 
-<p>The biggest drawback is that RTMP only works in Flash and not in HTML5. Therefore, the protocol is basically on its way out today. New HTTP streaming protocols, like Apple's HTTP Live Streaming, have wider device support (iOS, Android) and will replace RTMP in the future.</p>
+<p>The biggest drawback is that RTMP only works in Flash and not in HTML5. New HTTP streaming protocols, like Apple's HTTP Live Streaming (HLS), have wider device support (e.g. iOS) and will likely replace RTMP over the coming years.</p>
 
 
 
@@ -77,7 +77,7 @@
 
 <p>With both FMS and Wowza, a live stream is embedded in exactly the same way as an on-demand stream. However, the Akamai, Edgecast and Limelight CDNs require a player to <em>subscribe</em> to a live stream. JW Player <a href="#fcsubscribe">supports this mechanism</a>.</p>
 
-<p>JW Player will embed and play a live stream like an on-demand file, with one exception: instead of displaying a slider to scrub through the timeline, the player will display the <em>title</em> of the event in the display.</p>
+<p>JW Player will embed and play a live stream like an on-demand file, with one exception: instead of displaying a slider to scrub through the timeline, the player will display the <em>title</em> of the event in the controlbar.</p>
 
 
 
