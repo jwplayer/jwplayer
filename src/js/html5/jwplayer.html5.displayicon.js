@@ -204,6 +204,10 @@
 		'background-position' : JW_CSS_CENTER
 	});
 
+	_css(DI_CLASS + " div", {
+		'vertical-align': "middle",
+	}, true);
+
 	_css(DI_CLASS + " .text", {
 		color : "#fff",
 		'max-width' : "300px",

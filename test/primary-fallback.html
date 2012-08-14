@@ -225,5 +225,31 @@
 </tr><tr>
 </tr></table>
 
+
+<h2>MP3+AAC</h2>
+
+<div id="mp3_aac">No fallback occurred</div>
+
+<script type="text/javascript">
+    jwplayer("mp3_aac").setup({
+        sources: [
+            { file: 'http://content.bitsontherun.com/videos/3XnJSIm4-zWfluNSa.mp3' },
+            { file: 'http://content.bitsontherun.com/videos/3XnJSIm4-I3ZmuSFT.m4a' }
+        ],
+        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+        height: 180,
+        width: 320
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Load the player</td>
+    <td>IE8, Firefox: Player loads in Flash; otherwise, player loads in HTML5 mode</td>
+    <td class="check"></td>
+</tr></table>
+
 </body>
 </html>

@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2367';
+	jwplayer.html5.version = '6.0.2380';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -222,7 +222,9 @@
 	var _styleSheets={},
 		_styleSheet,
 		_rules = {},
-		exists = utils.exists;
+		exists = utils.exists,
+		
+		JW_CLASS = '.jwplayer ';
 
 	function _createStylesheet() {
 		var styleSheet = document.createElement("style");
@@ -393,18 +395,19 @@
 	};
 	
 	utils.cssReset = function() {
-		utils.css("div, span, a, img, ul, li, video", {
-			margin: 0,
+		utils.css(JW_CLASS + ["div", "span", "a", "img", "ul", "li", "video"].join(","+JW_CLASS), {
+			margin: "auto",
 			padding: 0,
 			border: 0,
 			'font-size': "100%",
 			font: 'inherit',
-			'vertical-align': 'baseline'
+			'vertical-align': 'baseline',
+			'background-color': 'transparent'
 		});
 		
 		utils.css("ul", { 'list-style': "none" });
 	};
-
+	
 })(jwplayer.utils);/**
  * Utility methods for the JW Player.
  * 
@@ -2710,6 +2713,10 @@
 		'background-repeat' : "no-repeat",
 		'background-position' : JW_CSS_CENTER
 	});
+
+	_css(DI_CLASS + " div", {
+		'vertical-align': "middle",
+	}, true);
 
 	_css(DI_CLASS + " .text", {
 		color : "#fff",
@@ -5826,8 +5833,6 @@
 		utils.extend(this, _eventDispatcher);
 
 		function _init() {
-			utils.cssReset();
-			
 			_playerElement = _createElement("div", PLAYER_CLASS);
 			_playerElement.id = _api.id;
 			
@@ -6428,5 +6433,7 @@
 	_css('.' + PLAYER_CLASS+' .jwexactfit', {
 		'background-size': JW_CSS_100PCT + " " + JW_CSS_100PCT + JW_CSS_IMPORTANT
 	});
+	
+	utils.cssReset();
 
 })(jwplayer.html5);

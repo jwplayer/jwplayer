@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stylesheets</title>
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+    
+    <style type="text/css">
+    	/* Some noticable styles for common elements in the player */
+    	div, li, a, ul, img, span, img, video {
+    		background-color: #300;
+    		color: #ee0;
+    		margin: 30px;
+    		padding: 40px;
+    		font-size: 20px;
+    	}
+    </style>
+
+</head>
+<body>
+
+<h1>Stylesheets</h1>
+<div class="core">List of test devices</div>
+<p>This page tests the player's reliability with some custom CSS set.</p>
+
+<div>All &lt;div&gt; tags are styled like this</div>
+
+<div id="css_resistance"></div>
+
+<script type="text/javascript">
+    jwplayer("css_resistance").setup({
+        sources: [
+ 	        { file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4' },
+   	        { file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm' }
+    	],
+    	title: "Sintel Trailer",
+    	description: "The description goes here",
+    	listbar: {
+    		position: "right",
+    		size: 300
+    	},
+    	width: 600,
+    	height: 220,
+   		image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg'
+    });
+
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Load the players</td>
+    <td>Player loads in HTML5 mode</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Player layout</td>
+    <td>Player in idle state should match its look on any other page</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Begin playback</td>
+    <td>Player should look the same as on other pages</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Switch to fullscreen mode</td>
+    <td>Player should look the same as on other pages</td>
+    <td class="check"></td>
+</tr></table>
+
+
+</body>
+</html>

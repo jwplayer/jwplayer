@@ -63,8 +63,6 @@
 		utils.extend(this, _eventDispatcher);
 
 		function _init() {
-			utils.cssReset();
-			
 			_playerElement = _createElement("div", PLAYER_CLASS);
 			_playerElement.id = _api.id;
 			
@@ -665,5 +663,7 @@
 	_css('.' + PLAYER_CLASS+' .jwexactfit', {
 		'background-size': JW_CSS_100PCT + " " + JW_CSS_100PCT + JW_CSS_IMPORTANT
 	});
+	
+	utils.cssReset();
 
 })(jwplayer.html5);

@@ -1,0 +1,9 @@
+<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/">
+	<channel>
+		<title>Example media RSS playlist with formatting errors</title>
+
+		<item>
+			<title>Big Buck Bunny</title>
+		</item>
+
+	</channel>

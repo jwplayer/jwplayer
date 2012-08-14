@@ -4,20 +4,9 @@
     <title>Listbar</title>
     <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
     <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
-</head>
-<body>
-
-<h1>Listbar</h1>
-<div class="core">List of test devices</div>
-<p>This page demonstrates the <em><a href="../doc/playlists.html#listbar">listbar</a></em> option to show playlists.</p>
-
-<h2>Listbar, positioned right</h2>
-
-<div id="right"></div>
-
-<script type="text/javascript">
-    jwplayer("right").setup({
-		playlist:[{
+    
+    <script type="text/javascript">
+		var playlist  = [{
 			sources: [
 	  			{ file: 'http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4' },
 				{ file: 'http://content.bitsontherun.com/videos/bkaovAYt-27m5HpIu.webm' }
@@ -49,7 +38,22 @@
 			title: "Sintel Trailer",
 			description: "Sintel is a short computer animated film by the Blender Institute",
 			image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg'
-		}],
+		}];
+    </script>
+</head>
+<body>
+
+<h1>Listbar</h1>
+<div class="core">List of test devices</div>
+<p>This page demonstrates the <em><a href="../doc/playlists.html#listbar">listbar</a></em> option to show playlists.</p>
+
+<h2>Listbar, positioned right</h2>
+
+<div id="right"></div>
+
+<script type="text/javascript">
+    jwplayer("right").setup({
+		playlist: playlist,
 		height: 180,
         width: 620,
         listbar: {
@@ -89,39 +93,7 @@
 
 <script type="text/javascript">
     jwplayer("left").setup({
-		playlist:[{
-			sources: [
-	  			{ file: 'http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4' },
-				{ file: 'http://content.bitsontherun.com/videos/bkaovAYt-27m5HpIu.webm' }
-	   		],
-	   		title: "Big Buck Bunny Trailer",
-	   		description: "Big Buck Bunny is a short computer animated film by the Blender Institute",
-	       	image: 'http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg'
-		},{
-			sources: [
-	  			{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4' },
-				{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm' }
-	   		],
-	   		title: "Sintel Trailer",
-	   		description: "Sintel is a short computer animated film by the Blender Institute",
-	       	image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg'
-		},{
-			sources: [
-				{ file: 'http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4' },
-				{ file: 'http://content.bitsontherun.com/videos/bkaovAYt-27m5HpIu.webm' }
-			],
-			title: "Big Buck Bunny Trailer",
-			description: "Big Buck Bunny is a short computer animated film by the Blender Institute",
-			image: 'http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg'
-		},{
-			sources: [
-				{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4' },
-				{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm' }
-			],
-			title: "Sintel Trailer",
-			description: "Sintel is a short computer animated film by the Blender Institute",
-			image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg'
-		}],
+		playlist: playlist,
 		height: 180,
         width: 520,
         listbar: {
@@ -161,44 +133,53 @@
 
 <script type="text/javascript">
     jwplayer("bottom").setup({
-		playlist:[{
-			sources: [
-	  			{ file: 'http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4' },
-				{ file: 'http://content.bitsontherun.com/videos/bkaovAYt-27m5HpIu.webm' }
-	   		],
-	   		title: "Big Buck Bunny Trailer",
-	   		description: "Big Buck Bunny is a short computer animated film by the Blender Institute",
-	       	image: 'http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg'
-		},{
-			sources: [
-	  			{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4' },
-				{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm' }
-	   		],
-	   		title: "Sintel Trailer",
-	   		description: "Sintel is a short computer animated film by the Blender Institute",
-	       	image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg'
-		},{
-			sources: [
-				{ file: 'http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4' },
-				{ file: 'http://content.bitsontherun.com/videos/bkaovAYt-27m5HpIu.webm' }
-			],
-			title: "Big Buck Bunny Trailer",
-			description: "Big Buck Bunny is a short computer animated film by the Blender Institute",
-			image: 'http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg'
-		},{
-			sources: [
-				{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4' },
-				{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm' }
-			],
-			title: "Sintel Trailer",
-			description: "Sintel is a short computer animated film by the Blender Institute",
-			image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg'
-		}],
+		playlist: playlist,
 		height: 380,
         width: 320,
         listbar: {
 	        position: "bottom",
 	        size: 200
+		}
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Load the player</td>
+    <td>IE8: Player loads in Flash mode, otherwise player loads in HTML5 mode</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Listbar Position</td>
+    <td>The listbar should be placed to the right of the player</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Navigate the playlist</td>
+    <td>Hidden playlist items can be navigated to and clicked</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Toggle fullscreen</td>
+    <td>Listbar should not be visible in fullscreen mode; everything else should be sized properly.</td>
+    <td class="check"></td>
+</tr></table>
+
+<h2>Listbar, skinned</h2>
+
+<div id="skinned"></div>
+
+<script type="text/javascript">
+    jwplayer("skinned").setup({
+		playlist: playlist,
+		height: 180,
+        width: 620,
+        skin: "files/skins/bekle/bekle.zip",
+        listbar: {
+	        position: "right",
+	        size: 300
 		}
     });
 </script>

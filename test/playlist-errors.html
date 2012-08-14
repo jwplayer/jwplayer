@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Playlist Errors</title>
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+    <script type="text/javascript" src="assets/primaryCookie.js"></script>
+</head>
+<body>
+
+<h1>Playlist Errors</h1>
+<div class="core">List of test devices</div>
+<p>This page demonstrates various player error messages and setup errors pertaining to playlists.  <strong>Note:</strong> All of these tests must be performed in Flash mode as well as HTML5 mode on desktop browsers.</p>
+
+<h2>No media sources (inline)</h2>
+
+<div id="sources"></div>
+
+<script type="text/javascript">
+    jwplayer("sources").setup({
+		primary: primaryCookie,
+    	sources: [],
+   		image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg'
+    });
+
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Expected error message</td>
+    <td>"Error loading player: No media sources found"</td>
+    <td class="check"></td>
+</tr></table>
+
+<h2>No media sources (RSS)</h2>
+
+<div id="sources_rss"></div>
+
+<script type="text/javascript">
+    jwplayer("sources_rss").setup({
+		primary: primaryCookie,
+		playlist: "files/empty.xml"     
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Expected error message</td>
+    <td>"Error loading playlist: No playable sources found"</td>
+    <td class="check"></td>
+</tr></table>
+
+
+<h2>RSS feed not found (404)</h2>
+
+<div id="rss_404"></div>
+
+<script type="text/javascript">
+    jwplayer("rss_404").setup({
+		primary: primaryCookie,
+		playlist: "files/not_there.xml"     
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Expected error message</td>
+    <td>"Error loading playlist: File not found"</td>
+    <td class="check"></td>
+</tr></table>
+
+<h2>Badly-formatted RSS feed</h2>
+
+<div id="rss_error"></div>
+
+<script type="text/javascript">
+    jwplayer("rss_error").setup({
+		primary: primaryCookie,
+		playlist: "files/error.xml"     
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Expected error message</td>
+    <td>"Error loading playlist: Not a valid RSS feed"</td>
+    <td class="check"></td>
+</tr></table>
+
+<h2>Crossdomain loading errors</h2>
+
+<div id="xdomain"></div>
+
+<script type="text/javascript">
+    jwplayer("xdomain").setup({
+		primary: primaryCookie,
+		playlist: "http://playertest.longtailvideo.com/mrss.rss"     
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Flash mode: Block http://playertest.longtailvideo.com/crossdomain.xml</td>
+    <td>This file is valid, but needs to be blocked by an HTTP proxy (e.g. Charles) for this test to be completed.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Expected error message</td>
+    <td>"Error loading playlist: Error loading file"</td>
+    <td class="check"></td>
+</tr></table>
+
+</body>
+</html>

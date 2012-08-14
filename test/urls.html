@@ -17,8 +17,8 @@
 
 <script type="text/javascript">
     jwplayer("video_relative").setup({
-        file: 'assets/video.mp4',
-     	image: 'assets/preview.jpg',
+        file: 'files/video.mp4',
+     	image: 'files/preview.jpg',
         height: 240,
         width: 480
     });
@@ -54,8 +54,8 @@
 	var absolute_path = server_path.join("/");
 
     jwplayer("video_absolute").setup({
-        file: absolute_path + '/assets/video.mp4',
-     	image: absolute_path + '/assets/preview.jpg',
+        file: absolute_path + '/files/video.mp4',
+     	image: absolute_path + '/files/preview.jpg',
         height: 240,
         width: 480
     });
@@ -151,7 +151,7 @@
 
 <script type="text/javascript">
     jwplayer("rss_relative").setup({
-        playlist: "assets/mrss.xml",
+        playlist: "files/mrss.xml",
         primary: "html5",
         height: 240,
         width: 480
@@ -183,7 +183,7 @@
 
 <script type="text/javascript">
     jwplayer("rss_relative_flash").setup({
-        playlist: "assets/mrss.xml",
+        playlist: "files/mrss.xml",
         primary: "flash",
         height: 240,
         width: 480
@@ -215,7 +215,7 @@
 
 <script type="text/javascript">
     jwplayer("rss_absolute").setup({
-        playlist: absolute_path + "/assets/mrss.xml",
+        playlist: absolute_path + "/files/mrss.xml",
         primary: "html5",
         height: 240,
         width: 480
@@ -247,7 +247,7 @@
 
 <script type="text/javascript">
     jwplayer("rss_absolute_flash").setup({
-        playlist: absolute_path + "/assets/mrss.xml",
+        playlist: absolute_path + "/files/mrss.xml",
         primary: "flash",
         height: 240,
         width: 480
@@ -279,7 +279,7 @@
 
 <script type="text/javascript">
     jwplayer("rss_params").setup({
-        playlist: "assets/mrss.xml?foo=bar.xml",
+        playlist: "files/mrss.xml?foo=bar.xml",
         primary: "html5",
         height: 240,
         width: 480
@@ -311,7 +311,7 @@
 
 <script type="text/javascript">
     jwplayer("rss_params_flash").setup({
-        playlist: "assets/mrss.xml?foo=bar.xml",
+        playlist: "files/mrss.xml?foo=bar.xml",
         primary: "flash",
         height: 240,
         width: 480
@@ -344,7 +344,7 @@
 
 <script type="text/javascript">
     jwplayer("rss_hash").setup({
-        playlist: "assets/mrss.xml#foo",
+        playlist: "files/mrss.xml#foo",
         primary: "html5",
         height: 240,
         width: 480
@@ -376,7 +376,7 @@
 
 <script type="text/javascript">
     jwplayer("rss_hash_flash").setup({
-        playlist: "assets/mrss.xml#foo",
+        playlist: "files/mrss.xml#foo",
         primary: "flash",
         height: 240,
         width: 480

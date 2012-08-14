@@ -1,0 +1,29 @@
+<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/">
+	<channel>
+		<title>Example media RSS playlist</title>
+		<item>
+			<title>Unplayable File</title>
+			<description>This item should not appear</description>
+			<media:group>
+				<media:content url="http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.wmv" />
+				<media:thumbnail url="http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg" />
+			</media:group>
+		</item>
+		<item>
+			<title>1. Sintel Trailer</title>
+			<media:group>
+				<media:content url="http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4" />
+				<media:content url="http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm" />
+				<media:thumbnail url="http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg" />
+			</media:group>
+		</item>
+		<item>
+			<title>2. Big Buck Bunny Trailer</title>
+			<media:group>
+				<media:content url="http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4" />
+				<media:content url="http://content.bitsontherun.com/videos/bkaovAYt-27m5HpIu.webm" />
+				<media:thumbnail url="http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg" />
+			</media:group>
+		</item>
+	</channel>
+</rss>

@@ -8,7 +8,9 @@
 	var _styleSheets={},
 		_styleSheet,
 		_rules = {},
-		exists = utils.exists;
+		exists = utils.exists,
+		
+		JW_CLASS = '.jwplayer ';
 
 	function _createStylesheet() {
 		var styleSheet = document.createElement("style");
@@ -179,16 +181,17 @@
 	};
 	
 	utils.cssReset = function() {
-		utils.css("div, span, a, img, ul, li, video", {
-			margin: 0,
+		utils.css(JW_CLASS + ["div", "span", "a", "img", "ul", "li", "video"].join(","+JW_CLASS), {
+			margin: "auto",
 			padding: 0,
 			border: 0,
 			'font-size': "100%",
 			font: 'inherit',
-			'vertical-align': 'baseline'
+			'vertical-align': 'baseline',
+			'background-color': 'transparent'
 		});
 		
 		utils.css("ul", { 'list-style': "none" });
 	};
-
+	
 })(jwplayer.utils);

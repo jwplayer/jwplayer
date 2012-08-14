@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RSS Parsing</title>
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+</head>
+<body>
+
+<h1>RSS Parsing</h1>
+<div class="core">List of test devices</div>
+<p>This test focuses on the player's RSS parsing functionality.</p>
+
+
+<h2></h2>
+<div id="html5"></div>
+<script type="text/javascript">
+    jwplayer("html5").setup({
+        height: 270,
+        playlist: 'files/parsed.xml',
+        width: 720,
+        listbar: {
+	        size: 240,
+    	    position: 'right'
+    	}
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Initial page load</td>
+    <td>Player loads in HTML5 mode.  Two items are visible in the listbar.</td>
+    <td class="check"></td>
+</tr></table>
+
+<div id="flash"></div>
+<script type="text/javascript">
+    jwplayer("flash").setup({
+        height: 270,
+        playlist: 'files/parsed.xml',
+        width: 720,
+        primary: "flash",
+        listbar: {
+	        size: 240,
+    	    position: 'right'
+    	}
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Initial page load</td>
+    <td>Player loads in Flash mode.  Two items are visible in the listbar.</td>
+    <td class="check"></td>
+</tr></table>
+
+
+
+
+</body>
+</html>

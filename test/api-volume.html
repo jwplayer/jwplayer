@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSS Rendering</title>
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+
+</head>
+<body>
+
+<h1>CSS Rendering</h1>
+<div class="core">List of test devices</div>
+<p>This page tests the player's volume API calls.</p>
+
+<h2>Volume Getter / Setter / Event</h2>
+
+<div style="position: relative">
+	<div id="get_set"></div>
+	<pre id="get_set_output" style="float:right; top:0; right: 0; position:absolute"></pre>
+</div>
+
+<script type="text/javascript">
+	function log(id, message) {
+		var element = document.getElementById(id);
+		if (!message) element.innerHTML = "";
+		else element.innerHTML += message + "\n";
+	}
+
+    jwplayer("get_set").setup({
+        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
+   		image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+   		volume: 50,
+        events: {
+			onVolume: volumeHandler
+    	}
+    });
+
+    function volumeHandler(evt) {
+		log("get_set_output", "Volume event: " + evt.volume);
+	}
+
+	function getVolume() {
+		log("get_set_output", "getVolume(): " + jwplayer("get_set").getVolume());
+	}
+
+	function setVolume(vol) {
+		jwplayer("get_set").setVolume(vol);
+	}
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Load the players</td>
+    <td>Firefox, IE8: Players load in Flash.  Otherwise, players load in HTML5 mode</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Check <a href="#" onclick="getVolume(); return false;">getVolume()</a></td>
+    <td>Volume should be logged at 50 (from setup)</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>While player is idle, <a href="#" onclick="setVolume(10); return false;">setVolume(10)</a></td>
+    <td>Volume event should be logged at 10</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Check <a href="#" onclick="getVolume(); return false;">getVolume()</a></td>
+    <td>Volume should be logged at 10</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>While player is idle, <a href="#" onclick="setVolume(90); return false;">setVolume(90)</a></td>
+    <td>Volume event should be logged at 90</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Check <a href="#" onclick="getVolume(); return false;">getVolume()</a></td>
+    <td>Volume should be logged at 90</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>While player is playing, <a href="#" onclick="setVolume(10); return false;">setVolume(10)</a></td>
+    <td>Player volume should dip to 10%.  Volume event should be logged at 10</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Check <a href="#" onclick="getVolume(); return false;">getVolume()</a></td>
+    <td>Volume should be logged at 10</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>While player is playing, <a href="#" onclick="setVolume(90); return false;">setVolume(90)</a></td>
+    <td>Player volume should rise to 90%.  Volume event should be logged at 90</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Check <a href="#" onclick="getVolume(); return false;">getVolume()</a></td>
+    <td>Volume should be logged at 90</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>While player is playing, set volume using volume slider</td>
+    <td>Player volume should update.  Volume event should be logged at whatever volume was selected by the slider</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="mobile"></td>
+    <td>While player is playing in fullscreen / native mode, set volume using native controls</td>
+    <td>Player volume should update.  Volume event should be logged at whatever volume was selected via volume controls</td>
+    <td class="check"></td>
+</tr></table>
+
+<h2>Mute Getter / Setter / Event</h2>
+
+<div style="position: relative">
+	<div id="mute"></div>
+	<pre id="mute_output" style="float:right; top:0; right: 0; position:absolute"></pre>
+</div>
+
+<script type="text/javascript">
+    jwplayer("mute").setup({
+        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
+   		image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+   		mute: true,
+        events: {
+			onMute: muteHandler
+    	}
+    });
+
+    function muteHandler(evt) {
+		log("mute_output", "Mute event: " + evt.mute);
+	}
+
+	function getMute() {
+		log("mute_output", "getMute(): " + jwplayer("mute").getMute());
+	}
+
+	function setMute(state) {
+		jwplayer("mute").setMute(state);
+	}
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Load the players</td>
+    <td>Firefox, IE8: Players load in Flash.  Otherwise, players load in HTML5 mode</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Check <a href="#" onclick="getMute(); return false;">getMute()</a></td>
+    <td>Value logged should be true (from configuration)</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>While player is idle, <a href="#" onclick="setMute(false); return false;">setMute(false)</a></td>
+    <td>Mute event should be fired, with "false" logged as its value</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Check <a href="#" onclick="getMute(); return false;">getMute()</a></td>
+    <td>Value logged should be false</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>While player is idle, <a href="#" onclick="setMute(true); return false;">setMute(true)</a></td>
+    <td>Mute event should be fired, with "true" logged as its value</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Check <a href="#" onclick="getMute(); return false;">getMute()</a></td>
+    <td>Value logged should be true</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Begin playback</td>
+    <td>Audio should be muted</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>While player is playing, <a href="#" onclick="setMute(false); return false;">setMute(false)</a></td>
+    <td>Audio should begin playing, and mute event should be fired with its value logged as false</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Check <a href="#" onclick="getMute(); return false;">getMute()</a></td>
+    <td>Value logged should be false</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>While player is playing, <a href="#" onclick="setMute(true); return false;">setMute(true)</a></td>
+    <td>Audio should stop playing, and mute event should be fired with its value logged as true</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Check <a href="#" onclick="getMute(); return false;">getMute()</a></td>
+    <td>Value logged should be true</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>While player is playing, toggle <a href="#" onclick="setMute(); return false;">setMute()</a></td>
+    <td>Audio should begin playing, and mute event should be fired with its value logged as false</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Check <a href="#" onclick="getMute(); return false;">getMute()</a></td>
+    <td>Value logged should be false</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>While player is playing, toggle <a href="#" onclick="setMute(); return false;">setMute()</a></td>
+    <td>Audio should stop playing, and mute event should be fired with its value logged as true</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Check <a href="#" onclick="getMute(); return false;">getMute()</a></td>
+    <td>Value logged should be true</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>While player is playing, click on the mute button</td>
+    <td>Audio should stop playing, and mute event should be fired with its value logged as true</td>
+    <td class="check"></td>
+</tr></table>
+
+
+</body>
+</html>
