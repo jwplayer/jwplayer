@@ -1,19 +1,10 @@
 package com.longtailvideo.jwplayer.view.components {
-	import com.longtailvideo.jwplayer.utils.Animations;
-	import com.longtailvideo.jwplayer.utils.AssetLoader;
-	import com.longtailvideo.jwplayer.utils.Logger;
-	import com.longtailvideo.jwplayer.utils.Stretcher;
-	
-	import flash.display.DisplayObject;
-	import flash.display.Loader;
-	import flash.display.MovieClip;
-	import flash.display.Sprite;
-	import flash.events.Event;
-	import flash.events.IOErrorEvent;
-	import flash.events.MouseEvent;
+	import com.longtailvideo.jwplayer.utils.*;
+	import flash.display.*;
+	import flash.events.*;
+	import flash.net.*;
+	import flash.utils.*;
 	import flash.external.ExternalInterface;
-	import flash.net.URLRequest;
-	import flash.utils.setTimeout;
 	
 	public class ComponentButton extends MovieClip {
 		protected var _background:DisplayObject;
@@ -22,6 +13,7 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _outIcon:DisplayObject;
 		protected var _overIcon:DisplayObject;
 		protected var _enabled:Boolean = true;
+		protected var _over:Boolean = false;
 
 		protected static var currentTabIndex:Number = 100;
 		
@@ -48,12 +40,25 @@ package com.longtailvideo.jwplayer.view.components {
 			_imageLayer.x = 0;
 			_imageLayer.y = 0;
 			setImage(_outIcon);
-			addEventListener(MouseEvent.MOUSE_OVER, overHandler);
-			addEventListener(MouseEvent.MOUSE_OUT, outHandler);
+//			addEventListener(MouseEvent.MOUSE_OVER, overHandler);
+//			addEventListener(MouseEvent.MOUSE_OUT, outHandler);
 			addEventListener(MouseEvent.CLICK, clickHandler);
+			RootReference.stage.addEventListener(MouseEvent.MOUSE_MOVE, moveHandler);
+			//RootReference.stage.addEventListener(MouseEvent.CLICK, clickHandler);
 			
 		}
 		
+		protected function moveHandler(event:MouseEvent):void {
+			if (!visible || !parent) return;
+			var contains:Boolean = getBounds(RootReference.stage).contains(event.stageX, event.stageY);
+			if (!_over && contains) {
+				_over = true;
+				overHandler(event);
+			} else if (_over && !contains) {
+				_over = false;
+				outHandler(event);
+			}
+		}
 		
 		protected function outHandler(event:MouseEvent=null):void {
 			if (_overIcon) {

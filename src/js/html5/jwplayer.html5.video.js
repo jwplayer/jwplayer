@@ -389,7 +389,7 @@
 
 		_this.setCurrentQuality = function(quality) {
 			if (_currentQuality == quality) return;
-			
+			quality = parseInt(quality);
 			if (quality >=0) {
 				if (_levels && _levels.length > quality) {
 					_currentQuality = quality;

@@ -13,6 +13,7 @@
 		JW_CSS_NONE = "none",
 		JW_CSS_BLOCK = "block",
 		JW_CSS_100PCT = "100%",
+		JW_CSS_RELATIVE = "relative",
 		JW_CSS_ABSOLUTE = "absolute";
 	
 	embed.download = function(_container, _options, _errorCallback) {
@@ -93,11 +94,11 @@
 			var _prefix = "#" + _container.id + " .jwdownload";
 
 			_css(_prefix+"display", {
-				width: utils.styleDimension(_width),
-				height: utils.styleDimension(_height),
+				width: utils.styleDimension(Math.max(300, _width)),
+				height: utils.styleDimension(Math.max(200, _height)),
 				background: "black center no-repeat " + (_image ? 'url('+_image+')' : ""),
 				backgroundSize: "contain",
-				position: JW_CSS_ABSOLUTE,
+				position: JW_CSS_RELATIVE,
 				border: JW_CSS_NONE,
 				display: JW_CSS_BLOCK
 			});

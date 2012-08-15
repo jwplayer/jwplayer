@@ -291,6 +291,7 @@
 				if (_audioMode) {
 					_controlbar.audioMode(TRUE);
 					_showControls();
+					_display.hidePreview(TRUE);
 					_hideDisplay();
 					_showVideo(FALSE);
 				} else {
@@ -506,8 +507,10 @@
 				}
 				//_hideControls();
 				_fadeControls();
-				_display.hidePreview(FALSE);
-				_showDisplay();
+				if (!_audioMode) {
+					_display.hidePreview(FALSE);
+					_showDisplay();
+				}
 				if (_isIPad) _videoTag.controls = FALSE;
 				break;
 			case states.BUFFERING:

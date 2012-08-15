@@ -287,7 +287,7 @@ package com.longtailvideo.jwplayer.view.components {
 				hideButton('hdOn');
 				hideButton('hdOff');
 			} else {
-				if (!_hdState) {
+				if (_hdState) {
 					hideButton('hdOff');
 				} else {
 					newLayout = newLayout.replace("hdOn", "hdOff");
@@ -534,11 +534,13 @@ package com.longtailvideo.jwplayer.view.components {
 		private function levelChanged(evt:MediaEvent):void {
 			_currentQuality = evt.currentQuality;
 			if (_levels.length == 2) {
-				updateControlbarState();
-				redraw();
+				_hdState = (_currentQuality > 0);
 			} else if (_levels.length > 2) {
+				_hdState = true;
 				_hdOverlay.setActive(evt.currentQuality);
 			}
+			updateControlbarState();
+			redraw();
 		}
 		
 		private function get hd():Boolean {

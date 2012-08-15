@@ -235,6 +235,8 @@ package com.longtailvideo.jwplayer.player {
 					MediaEvent.JWPLAYER_MEDIA_COMPLETE,
 					MediaEvent.JWPLAYER_MEDIA_BEFOREPLAY,
 					MediaEvent.JWPLAYER_MEDIA_BEFORECOMPLETE,
+					PlaylistEvent.JWPLAYER_PLAYLIST_LOADED,
+					PlaylistEvent.JWPLAYER_PLAYLIST_ITEM,
 					PlayerStateEvent.JWPLAYER_PLAYER_STATE
 				];
 				

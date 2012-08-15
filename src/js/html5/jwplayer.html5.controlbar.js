@@ -279,16 +279,13 @@
 		
 		function _qualityHandler(evt) {
 			_levels = evt.levels;
-			_qualityLevelChanged(evt);
 			if (_levels && _levels.length > 1 && _hdOverlay) {
 				_css(_internalSelector(".jwhdOn"), { display: UNDEFINED });
 				_hdOverlay.clearOptions();
 				for (var i=0; i<_levels.length; i++) {
 					_hdOverlay.addOption(_levels[i].label, i);
 				}
-				if (_currentQuality >= 0) {
-					_hdOverlay.setActive(evt.currentQuality);
-				}
+				_qualityLevelChanged(evt);
 			} else {
 				_css(_internalSelector(".jwhdOn"), { display: "none" });
 			}
@@ -299,6 +296,9 @@
 			_currentQuality = evt.currentQuality;
 			if (_levels.length == 2) {
 				_toggleButton("hdOn", _currentQuality == 0);
+			} else if (_hdOverlay && _currentQuality >= 0) {
+				_toggleButton("hdOn", false);
+				_hdOverlay.setActive(evt.currentQuality);
 			}
 		}
 		

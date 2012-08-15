@@ -107,6 +107,7 @@
 			_position = _offset = 0;
 			setState(PlayerState.BUFFERING);
 			sendBufferEvent(0);
+			sendQualityEvent(MediaEvent.JWPLAYER_MEDIA_LEVELS, [], -1);
 			if (_ready) {
 				// Chromeless API has already been loaded
 				completeLoad(itm);

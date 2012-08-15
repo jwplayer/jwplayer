@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2380';
+	jwplayer.html5.version = '6.0.2382';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -1074,16 +1074,13 @@
 		
 		function _qualityHandler(evt) {
 			_levels = evt.levels;
-			_qualityLevelChanged(evt);
 			if (_levels && _levels.length > 1 && _hdOverlay) {
 				_css(_internalSelector(".jwhdOn"), { display: UNDEFINED });
 				_hdOverlay.clearOptions();
 				for (var i=0; i<_levels.length; i++) {
 					_hdOverlay.addOption(_levels[i].label, i);
 				}
-				if (_currentQuality >= 0) {
-					_hdOverlay.setActive(evt.currentQuality);
-				}
+				_qualityLevelChanged(evt);
 			} else {
 				_css(_internalSelector(".jwhdOn"), { display: "none" });
 			}
@@ -1094,6 +1091,9 @@
 			_currentQuality = evt.currentQuality;
 			if (_levels.length == 2) {
 				_toggleButton("hdOn", _currentQuality == 0);
+			} else if (_hdOverlay && _currentQuality >= 0) {
+				_toggleButton("hdOn", false);
+				_hdOverlay.setActive(evt.currentQuality);
 			}
 		}
 		
@@ -2262,6 +2262,8 @@
 		D_CLASS = ".jwdisplay",
 		D_PREVIEW_CLASS = ".jwpreview",
 		D_ERROR_CLASS = ".jwerror",
+		TRUE = true,
+		FALSE = false,
 
 		/** Some CSS constants we should use for minimization **/
 		JW_CSS_ABSOLUTE = "absolute",
@@ -2276,15 +2278,16 @@
 			_skin = api.skin,
 			_display, _preview,
 			_item,
-			_image, _imageWidth, _imageHeight, _imageURL,
+			_image, _imageWidth, _imageHeight, _imageURL, 
+			_imageHidden = FALSE,
 			_icons = {},
-			_errorState = false,
-			_completedState = false,
+			_errorState = FALSE,
+			_completedState = FALSE,
 			_hiding,
 			_button,		
 			_config = utils.extend({
 				backgroundcolor: '#000',
-				showicons: true,
+				showicons: TRUE,
 				bufferrotation: 15,
 				bufferinterval: 100,
 				fontcase: "",
@@ -2311,7 +2314,7 @@
 			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_COMPLETE, _playlistCompleteHandler);
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
 
-			_display.addEventListener('click', _clickHandler, false);
+			_display.addEventListener('click', _clickHandler, FALSE);
 			
 			_createIcons();
 			//_createTextFields();
@@ -2361,13 +2364,13 @@
 			var newImage = _item ? _item.image : "";
 			if (_image != newImage) {
 				_image = newImage;
-				_setVisibility(D_PREVIEW_CLASS, false);
+				_setVisibility(D_PREVIEW_CLASS, FALSE);
 				_getImage();
 			}
 		}
 		
 		function _playlistCompleteHandler() {
-			_completedState = true;
+			_completedState = TRUE;
 			_setIcon("replay");
 		}
 		
@@ -2385,13 +2388,13 @@
 			switch(state) {
 			case states.IDLE:
 				if (!_errorState && !_completedState) {
-					if (_image) _setVisibility(D_PREVIEW_CLASS, true);
+					if (_image && !_imageHidden) _setVisibility(D_PREVIEW_CLASS, TRUE);
 					_setIcon('play', _item ? _item.title : "");
 				}
 				break;
 			case states.BUFFERING:
 				_clearError();
-				_completedState = false;
+				_completedState = FALSE;
 				_setIcon('buffer');
 				break;
 			case states.PLAYING:
@@ -2404,6 +2407,7 @@
 		}
 		
 		this.hidePreview = function(state) {
+			_imageHidden = state;
 			_setVisibility(D_PREVIEW_CLASS, !state);
 		}
 
@@ -2419,11 +2423,11 @@
 			if (_image) {
 				// Find image size and stretch exactfit if close enough
 				var img = new Image();
-				img.addEventListener('load', _imageLoaded, false);
+				img.addEventListener('load', _imageLoaded, FALSE);
 				img.src = _image;
 			} else {
 				_css(_internalSelector(D_PREVIEW_CLASS), { 'background-image': undefined });
-				_setVisibility(D_PREVIEW_CLASS, false);
+				_setVisibility(D_PREVIEW_CLASS, FALSE);
 				_imageWidth = _imageHeight = 0;
 			}
 		}
@@ -2440,12 +2444,12 @@
 		}
 
 		function _errorHandler(evt) {
-			_errorState = true;
+			_errorState = TRUE;
 			_setIcon('error', evt.message);
 		}
 		
 		function _clearError() {
-			_errorState = false;
+			_errorState = FALSE;
 			if (_icons.error) _icons.error.setText();
 		}
 
@@ -5743,7 +5747,7 @@
 
 		_this.setCurrentQuality = function(quality) {
 			if (_currentQuality == quality) return;
-			
+			quality = parseInt(quality);
 			if (quality >=0) {
 				if (_levels && _levels.length > quality) {
 					_currentQuality = quality;
@@ -6061,6 +6065,7 @@
 				if (_audioMode) {
 					_controlbar.audioMode(TRUE);
 					_showControls();
+					_display.hidePreview(TRUE);
 					_hideDisplay();
 					_showVideo(FALSE);
 				} else {
@@ -6276,8 +6281,10 @@
 				}
 				//_hideControls();
 				_fadeControls();
-				_display.hidePreview(FALSE);
-				_showDisplay();
+				if (!_audioMode) {
+					_display.hidePreview(FALSE);
+					_showDisplay();
+				}
 				if (_isIPad) _videoTag.controls = FALSE;
 				break;
 			case states.BUFFERING:
