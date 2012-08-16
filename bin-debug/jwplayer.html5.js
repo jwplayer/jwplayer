@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2382';
+	jwplayer.html5.version = '6.0.2385';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -859,7 +859,7 @@
 						   _dividerElement, 
 						   _layoutElement("prev", CB_BUTTON), 
 						   _layoutElement("next", CB_BUTTON), 
-						   _dividerElement, 
+						   _layoutElement("divider", CB_DIVIDER, 'nextdiv'),
 						   _layoutElement("elapsed", CB_TEXT)
 						]
 					},
@@ -937,8 +937,8 @@
 		
 			_overlays = {};
 
-		function _layoutElement(name, type) {
-			return { name: name, type: type };
+		function _layoutElement(name, type, className) {
+			return { name: name, type: type, className: className };
 		}
 		
 		function _init() {
@@ -1063,9 +1063,11 @@
 			if (_api.jwGetPlaylist().length < 2 || _sidebarShowing()) {
 				_css(_internalSelector(".jwnext"), hidden);
 				_css(_internalSelector(".jwprev"), hidden);
+				_css(_internalSelector(".nextdiv"), hidden);
 			} else {
 				_css(_internalSelector(".jwnext"), not_hidden);
 				_css(_internalSelector(".jwprev"), not_hidden);
+				_css(_internalSelector(".nextdiv"), not_hidden);
 			}
 			_css(_internalSelector(".jwhdOn"), hidden);
 			_css(_internalSelector(".jwhdOff"), hidden);
@@ -1363,18 +1365,20 @@
 		}
 		
 		function _buildDivider(divider) {
+			var element;
 			if (divider.width) {
-				var element = _createSpan();
+				element = _createSpan();
 				element.className = "jwblankDivider";
 				_css(element, {
 					width: parseInt(divider.width)
 				});
-				return element;
 			} else if (divider.element) {
-				return _buildImage(divider.element);
+				element = _buildImage(divider.element);
 			} else {
-				return _buildImage(divider.name);
+				element = _buildImage(divider.name);
 			}
+			if (divider.className) element.className += " " + divider.className;
+			return element;
 		}
 		
 		function _showHd() {
@@ -1952,6 +1956,7 @@
 			_controller = this,
 			_eventDispatcher = new events.eventdispatcher(_model.id, _model.config.debug),
 			_ready = false,
+			_loadOnPlay = -1
 			_queuedCalls = [];
 		
 		utils.extend(this, _eventDispatcher);
@@ -1983,7 +1988,7 @@
 				
 				_load();
 				
-				if (_model.autostart && !utils.isIOS()) {
+				if (_model.autostart && !utils.isMobile()) {
 					_play();
 				}
 				
@@ -2027,6 +2032,10 @@
 		
 		function _play() {
 			try {
+				if (_loadOnPlay >= 0) {
+					_load(_loadOnPlay);
+					_loadOnPlay = -1;
+				}
 				_actionOnAttach = _play;
 				if (!_preplay) {
 					_preplay = true;
@@ -2140,7 +2149,7 @@
 					break;
 				case "list":
 					if (_model.item == _model.playlist.length - 1) {
-						//_load(0);
+						_loadOnPlay = 0;
 						_stop();
 						setTimeout(function() { _eventDispatcher.sendEvent(events.JWPLAYER_PLAYLIST_COMPLETE)}, 0);
 					} else {
@@ -4506,7 +4515,7 @@
 				
 			if (utils.isIOS() && window.iScroll) {
 				_ul.scrollTop = idx * _settings.itemheight;
-			} else if (_slider) {
+			} else if (_slider && _slider.visible()) {
 				_slider.thumbPosition(idx / (_api.jwGetPlaylist().length-1)) ;
 			}
 		}
@@ -4695,6 +4704,10 @@
 			return _wrapper;
 		};
 
+		this.visible = function() {
+			return _visible;
+		};
+
 
 		function _setup() {	
 			var capTop, capBottom;
@@ -4807,7 +4820,7 @@
 			return false;
 		};
 	
-		var _setThumbPercent = this.thumbPercent = function(pct) {
+		var _setThumbPercent = function(pct) {
 			if (pct < 0) pct = 0;
 			if (pct > 1) {
 				_visible = false;
@@ -4893,6 +4906,7 @@
 		position: JW_CSS_ABSOLUTE,
 	    width: JW_CSS_100PCT,
 	    'background-position': "center",
+	    'background-size': JW_CSS_100PCT + " " + JW_CSS_100PCT,
 	});
 
 	_css(_globalSelector(SLIDER_TOPCAP_CLASS, SLIDER_RAILTOP_CLASS, SLIDER_THUMBTOP_CLASS), { top: 0 });
@@ -5828,7 +5842,7 @@
 			_playlist,
 			_audioMode,
 			_isMobile = utils.isMobile(),
-			_isIPad = utils.isIPad(),
+			_isIPad = utils.isIPad() || utils.isAndroid(),
 			_forcedControls = (_model.mobilecontrols),
 			_replayState,
 			_readyState,

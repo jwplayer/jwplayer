@@ -123,6 +123,7 @@ internal class TooltipOption extends Sprite {
 		this.overFormat = overFormat;
 		this.activeFormat = activeFormat;
 		this.allcaps = caps;
+		this.buttonMode = true;
 		
 		addChild(outBack);
 		mouseChildren = false;

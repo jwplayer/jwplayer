@@ -91,7 +91,8 @@ package com.longtailvideo.jwplayer.controller {
 		protected var _interruptPlay:Boolean = false;
 		/** This is set to true while the onBeforePlay event is propagating **/
 		protected var _preplay:Boolean = false;
-		
+		/** Set the playlist index to this on next play (after playlist complete) **/
+		protected var _loadOnPlay:Number = -1;
 
 		/** Reference to a PlaylistItem which has triggered an external MediaProvider load **/
 		protected var _delayedItem:PlaylistItem;
@@ -244,7 +245,7 @@ package com.longtailvideo.jwplayer.controller {
 				case RepeatOptions.LIST:
 					if (_model.playlist.currentIndex == _model.playlist.length - 1) {
 						_lockingResume = false;
-						_model.playlist.currentIndex = 0;
+						_loadOnPlay = 0;
 //						setTimeout(_model.playlistComplete, 10);
 						setTimeout(function():void { dispatchEvent(new PlaylistEvent(PlaylistEvent.JWPLAYER_PLAYLIST_COMPLETE, _model.playlist))}, 10);
 					} else {
@@ -376,11 +377,16 @@ package com.longtailvideo.jwplayer.controller {
 				_delayedItem = _model.playlist.currentItem;
 				return false;
 			}
-
+			
 			if (locking) {
 				return false;
 			}
 
+			if (_loadOnPlay >= 0) {
+				_model.playlist.currentIndex = _loadOnPlay;
+				_loadOnPlay = -1;
+			}
+			
 			if (!_preplay) {
 				_preplay = true;
 				dispatchEvent(new MediaEvent(MediaEvent.JWPLAYER_MEDIA_BEFOREPLAY));

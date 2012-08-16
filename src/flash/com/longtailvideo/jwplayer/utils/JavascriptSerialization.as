@@ -44,7 +44,14 @@ package com.longtailvideo.jwplayer.utils
 			if (item.levels.length > 0) {
 				obj['levels'] = [];
 				for each (var level:PlaylistItemLevel in item.levels) {
-					var levelCopy:Object = {url:level.file, bitrate:level.bitrate, width:level.width};
+					var levelCopy:Object = {
+						file: level.file,
+						type: level.type,
+						streamer: level.streamer,
+						bitrate: level.bitrate,
+						width: level.width,
+						height: level.height
+					};
 					for (var dynamicProperty:String in level) {
 						levelCopy[dynamicProperty] = level[dynamicProperty];
 					}

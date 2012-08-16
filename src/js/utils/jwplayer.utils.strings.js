@@ -131,7 +131,7 @@
 	/** Returns the extension of a file name * */
 	utils.extension = function(path) {
 		if (!path) { return ""; }
-		path = path.substring(path.lastIndexOf("/") + 1, path.length).split("?")[0];
+		path = path.substring(path.lastIndexOf("/") + 1, path.length).split("?")[0].split("#")[0];
 		if (path.lastIndexOf('.') > -1) {
 			return path.substr(path.lastIndexOf('.') + 1, path.length).toLowerCase();
 		}

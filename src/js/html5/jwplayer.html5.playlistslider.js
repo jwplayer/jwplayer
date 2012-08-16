@@ -61,6 +61,10 @@
 			return _wrapper;
 		};
 
+		this.visible = function() {
+			return _visible;
+		};
+
 
 		function _setup() {	
 			var capTop, capBottom;
@@ -173,7 +177,7 @@
 			return false;
 		};
 	
-		var _setThumbPercent = this.thumbPercent = function(pct) {
+		var _setThumbPercent = function(pct) {
 			if (pct < 0) pct = 0;
 			if (pct > 1) {
 				_visible = false;
@@ -259,6 +263,7 @@
 		position: JW_CSS_ABSOLUTE,
 	    width: JW_CSS_100PCT,
 	    'background-position': "center",
+	    'background-size': JW_CSS_100PCT + " " + JW_CSS_100PCT,
 	});
 
 	_css(_globalSelector(SLIDER_TOPCAP_CLASS, SLIDER_RAILTOP_CLASS, SLIDER_THUMBTOP_CLASS), { top: 0 });

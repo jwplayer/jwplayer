@@ -20,9 +20,9 @@ package com.longtailvideo.jwplayer.model {
 			this.file = file;
 			this.type = type;
 			this.streamer = streamer;
-			this.bitrate = bitrate;
-			this.width = width;
-			this.height = height;
+			this.bitrate = isNaN(bitrate) ? 0 : bitrate;
+			this.width = isNaN(width) ? 0 : width;
+			this.height = isNaN(height) ? 0 : height;
 		}
 		
 	}

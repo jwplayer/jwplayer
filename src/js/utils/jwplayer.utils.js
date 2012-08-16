@@ -118,7 +118,12 @@
 	
 	/** Matches iOS and Android devices **/	
 	utils.isMobile = function() {
-		return _userAgentMatch(/(iP(hone|ad|od))|android/i);
+		return utils.isIOS() || utils.isAndroid();
+	}
+
+	/** Matches Android devices **/	
+	utils.isAndroid = function() {
+		return _userAgentMatch(/android/i);
 	}
 
 	/**

@@ -25,7 +25,7 @@ package com.longtailvideo.jwplayer.model {
 		protected var _item:Number			= 0;
 		protected var _levels:Array			= null;
 		protected var _mute:Boolean 		= false;
-		protected var _repeat:String 		= RepeatOptions.NONE; 
+		protected var _repeat:String 		= RepeatOptions.LIST; 
 		protected var _controls:Boolean		= true; 
 		
 		//TODO: Move to ENUM class

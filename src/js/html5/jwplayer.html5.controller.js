@@ -17,6 +17,7 @@
 			_controller = this,
 			_eventDispatcher = new events.eventdispatcher(_model.id, _model.config.debug),
 			_ready = false,
+			_loadOnPlay = -1
 			_queuedCalls = [];
 		
 		utils.extend(this, _eventDispatcher);
@@ -48,7 +49,7 @@
 				
 				_load();
 				
-				if (_model.autostart && !utils.isIOS()) {
+				if (_model.autostart && !utils.isMobile()) {
 					_play();
 				}
 				
@@ -92,6 +93,10 @@
 		
 		function _play() {
 			try {
+				if (_loadOnPlay >= 0) {
+					_load(_loadOnPlay);
+					_loadOnPlay = -1;
+				}
 				_actionOnAttach = _play;
 				if (!_preplay) {
 					_preplay = true;
@@ -205,7 +210,7 @@
 					break;
 				case "list":
 					if (_model.item == _model.playlist.length - 1) {
-						//_load(0);
+						_loadOnPlay = 0;
 						_stop();
 						setTimeout(function() { _eventDispatcher.sendEvent(events.JWPLAYER_PLAYLIST_COMPLETE)}, 0);
 					} else {

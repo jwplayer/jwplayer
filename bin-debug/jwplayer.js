@@ -18,7 +18,7 @@ jwplayer = function(container) {
 
 var $jw = jwplayer;
 
-jwplayer.version = '6.0.2382';
+jwplayer.version = '6.0.2385';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -143,7 +143,12 @@ jwplayer.source = document.createElement("source");/**
 	
 	/** Matches iOS and Android devices **/	
 	utils.isMobile = function() {
-		return _userAgentMatch(/(iP(hone|ad|od))|android/i);
+		return utils.isIOS() || utils.isAndroid();
+	}
+
+	/** Matches Android devices **/	
+	utils.isAndroid = function() {
+		return _userAgentMatch(/android/i);
 	}
 
 	/**
@@ -656,7 +661,7 @@ jwplayer.source = document.createElement("source");/**
 	/** Returns the extension of a file name * */
 	utils.extension = function(path) {
 		if (!path) { return ""; }
-		path = path.substring(path.lastIndexOf("/") + 1, path.length).split("?")[0];
+		path = path.substring(path.lastIndexOf("/") + 1, path.length).split("?")[0].split("#")[0];
 		if (path.lastIndexOf('.') > -1) {
 			return path.substr(path.lastIndexOf('.') + 1, path.length).toLowerCase();
 		}
@@ -1276,9 +1281,10 @@ jwplayer.source = document.createElement("source");/**
 		utils = jwplayer.utils,
 		defaults = {
 			file: UNDEF,
-			width: UNDEF,
 			label: UNDEF,
 			bitrate: UNDEF,
+			width: UNDEF,
+			height: UNDEF,
 			type: UNDEF
 		};
 	

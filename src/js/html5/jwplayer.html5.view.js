@@ -54,7 +54,7 @@
 			_playlist,
 			_audioMode,
 			_isMobile = utils.isMobile(),
-			_isIPad = utils.isIPad(),
+			_isIPad = utils.isIPad() || utils.isAndroid(),
 			_forcedControls = (_model.mobilecontrols),
 			_replayState,
 			_readyState,

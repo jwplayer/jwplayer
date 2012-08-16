@@ -4,9 +4,9 @@
     <title>Autostart and Repeat</title>
     <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
     <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+    <script type="text/javascript" src="assets/primaryCookie.js"></script>
 </head>
 <body>
-
 <h1>Autostart and Repeat</h1>
 <div class="core">List of test devices</div>
 <p>This page tests the player's <em>autostart</em> and <em>repeat</em> options.</p>
@@ -17,20 +17,23 @@
 
 <script type="text/javascript">
     jwplayer("autostart").setup({
-        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
+        primary: primaryCookie,
+		sources: [
+		  			{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4' },
+					{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm' }
+		   		],
         height: 240,
         image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
         width: 480,
         autostart: true
     });
 </script>
-
 <table><tr>
     <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
 </tr><tr>
     <td class="both"></td>
     <td>Load the player</td>
-    <td>Firefox, IE8: Player loads in Flash.  Otherwise, player loads in HTML5 mode.</td>
+    <td>IE8: Player loads in Flash.  Otherwise, player loads in HTML5 mode.</td>
     <td class="check"></td>
 </tr><tr>
     <td class="desktop"></td>
@@ -43,19 +46,26 @@
     <td>Poster image / play icon should remain visible.</td>
     <td class="check"></td>
 </tr></table>
-
+ 
 <h2>Repeat: Default (list)</h2>
 
 <div id="list"></div>
 
 <script type="text/javascript">
     jwplayer("list").setup({
+        primary: primaryCookie,
         playlist: [{
-            file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
+    		sources: [
+  		  			{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4' },
+  					{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm' }
+  		   		],
 	        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
 	        title: 'Sintel Trailer'
         },{
-			file: 'http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4',
+			sources: [
+			  			{ file: 'http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4' },
+						{ file: 'http://content.bitsontherun.com/videos/bkaovAYt-27m5HpIu.webm' }
+			   		],
 	        image: 'http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg',
 	        title: 'Big Buck Bunny Trailer'
         }],
@@ -73,7 +83,7 @@
 </tr><tr>
     <td class="both"></td>
     <td>Load the player</td>
-    <td>Firefox, IE8: Player loads in Flash.  Otherwise, player loads in HTML5 mode.</td>
+    <td>IE8: Player loads in Flash.  Otherwise, player loads in HTML5 mode.</td>
     <td class="check"></td>
 </tr><tr>
     <td class="both"></td>
@@ -92,19 +102,25 @@
     <td class="check"></td>
 </tr></table>
 
-
 <h2>Repeat: Single</h2>
 
 <div id="single"></div>
 
 <script type="text/javascript">
     jwplayer("single").setup({
+        primary: primaryCookie,
         playlist: [{
-            file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
+    		sources: [
+    		  			{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4' },
+    					{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm' }
+    		   		],
 	        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
 	        title: 'Sintel Trailer'
         },{
-			file: 'http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4',
+			sources: [
+			  			{ file: 'http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4' },
+						{ file: 'http://content.bitsontherun.com/videos/bkaovAYt-27m5HpIu.webm' }
+			   		],
 	        image: 'http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg',
 	        title: 'Big Buck Bunny Trailer'
         }],
@@ -123,7 +139,7 @@
 </tr><tr>
     <td class="both"></td>
     <td>Load the player</td>
-    <td>Firefox, IE8: Player loads in Flash.  Otherwise, player loads in HTML5 mode.</td>
+    <td>IE8: Player loads in Flash.  Otherwise, player loads in HTML5 mode.</td>
     <td class="check"></td>
 </tr><tr>
     <td class="both"></td>
@@ -138,12 +154,19 @@
 
 <script type="text/javascript">
     jwplayer("none").setup({
+        primary: primaryCookie,
         playlist: [{
-            file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
+    		sources: [
+    		  			{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4' },
+    					{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm' }
+    		   		],
 	        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
 	        title: 'Sintel Trailer'
         },{
-			file: 'http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4',
+			sources: [
+			  			{ file: 'http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4' },
+						{ file: 'http://content.bitsontherun.com/videos/bkaovAYt-27m5HpIu.webm' }
+			   		],
 	        image: 'http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg',
 	        title: 'Big Buck Bunny Trailer'
         }],
@@ -162,7 +185,7 @@
 </tr><tr>
     <td class="both"></td>
     <td>Load the player</td>
-    <td>Firefox, IE8: Player loads in Flash.  Otherwise, player loads in HTML5 mode.</td>
+    <td>IE8: Player loads in Flash.  Otherwise, player loads in HTML5 mode.</td>
     <td class="check"></td>
 </tr><tr>
     <td class="both"></td>
@@ -182,12 +205,19 @@
 
 <script type="text/javascript">
     jwplayer("always").setup({
+        primary: primaryCookie,
         playlist: [{
-            file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
+    		sources: [
+    		  			{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4' },
+    					{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm' }
+    		   		],
 	        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
 	        title: 'Sintel Trailer'
         },{
-			file: 'http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4',
+			sources: [
+			  			{ file: 'http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4' },
+						{ file: 'http://content.bitsontherun.com/videos/bkaovAYt-27m5HpIu.webm' }
+			   		],
 	        image: 'http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg',
 	        title: 'Big Buck Bunny Trailer'
         }],
@@ -206,7 +236,7 @@
 </tr><tr>
     <td class="both"></td>
     <td>Load the player</td>
-    <td>Firefox, IE8: Player loads in Flash.  Otherwise, player loads in HTML5 mode.</td>
+    <td>IE8: Player loads in Flash.  Otherwise, player loads in HTML5 mode.</td>
     <td class="check"></td>
 </tr><tr>
     <td class="both"></td>
@@ -219,8 +249,6 @@
     <td>First video begins to play.</td>
     <td class="check"></td>
 </tr></table>
-
-
 
 </body>
 </html>

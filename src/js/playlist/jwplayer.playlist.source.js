@@ -9,9 +9,10 @@
 		utils = jwplayer.utils,
 		defaults = {
 			file: UNDEF,
-			width: UNDEF,
 			label: UNDEF,
 			bitrate: UNDEF,
+			width: UNDEF,
+			height: UNDEF,
 			type: UNDEF
 		};
 	

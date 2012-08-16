@@ -325,7 +325,7 @@
 				
 			if (utils.isIOS() && window.iScroll) {
 				_ul.scrollTop = idx * _settings.itemheight;
-			} else if (_slider) {
+			} else if (_slider && _slider.visible()) {
 				_slider.thumbPosition(idx / (_api.jwGetPlaylist().length-1)) ;
 			}
 		}

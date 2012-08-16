@@ -64,7 +64,7 @@
 						   _dividerElement, 
 						   _layoutElement("prev", CB_BUTTON), 
 						   _layoutElement("next", CB_BUTTON), 
-						   _dividerElement, 
+						   _layoutElement("divider", CB_DIVIDER, 'nextdiv'),
 						   _layoutElement("elapsed", CB_TEXT)
 						]
 					},
@@ -142,8 +142,8 @@
 		
 			_overlays = {};
 
-		function _layoutElement(name, type) {
-			return { name: name, type: type };
+		function _layoutElement(name, type, className) {
+			return { name: name, type: type, className: className };
 		}
 		
 		function _init() {
@@ -268,9 +268,11 @@
 			if (_api.jwGetPlaylist().length < 2 || _sidebarShowing()) {
 				_css(_internalSelector(".jwnext"), hidden);
 				_css(_internalSelector(".jwprev"), hidden);
+				_css(_internalSelector(".nextdiv"), hidden);
 			} else {
 				_css(_internalSelector(".jwnext"), not_hidden);
 				_css(_internalSelector(".jwprev"), not_hidden);
+				_css(_internalSelector(".nextdiv"), not_hidden);
 			}
 			_css(_internalSelector(".jwhdOn"), hidden);
 			_css(_internalSelector(".jwhdOff"), hidden);
@@ -568,18 +570,20 @@
 		}
 		
 		function _buildDivider(divider) {
+			var element;
 			if (divider.width) {
-				var element = _createSpan();
+				element = _createSpan();
 				element.className = "jwblankDivider";
 				_css(element, {
 					width: parseInt(divider.width)
 				});
-				return element;
 			} else if (divider.element) {
-				return _buildImage(divider.element);
+				element = _buildImage(divider.element);
 			} else {
-				return _buildImage(divider.name);
+				element = _buildImage(divider.name);
 			}
+			if (divider.className) element.className += " " + divider.className;
+			return element;
 		}
 		
 		function _showHd() {
