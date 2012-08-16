@@ -220,7 +220,7 @@ package com.longtailvideo.jwplayer.media {
 		override public function resize(width:Number, height:Number):void {
 			super.resize(width,height);
 			if(_stage) {
-				_stage.viewPort = new Rectangle(media.x,media.y,width,height);
+				//_stage.viewPort = new Rectangle(media.x,media.y,width,height);
 			}
 		}
 
