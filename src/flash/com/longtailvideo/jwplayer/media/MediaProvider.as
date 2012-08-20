@@ -90,13 +90,13 @@ package com.longtailvideo.jwplayer.media {
 		/** The playback state for the currently loaded media.  @see com.longtailvideo.jwplayer.model.ModelStates **/
 		private var _state:String;
 		/** Clip containing graphical representation of the currently playing media **/
-		private var _media:MovieClip;
+		protected var _media:MovieClip;
 		/** Most recent buffer data **/
 		private var _bufferPercent:Number;
 		/** Handles event dispatching **/
 		private var _dispatcher:GlobalEventDispatcher;
 		/** Whether or not to stretchthe media **/
-		private var _stretch:Boolean;
+		protected var _stretch:Boolean;
 		/** Queue buffer full event if it occurs while the player is paused. **/
 		private var _queuedBufferFull:Boolean;
 		/** Current quality level **/

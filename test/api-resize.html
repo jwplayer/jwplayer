@@ -3,6 +3,7 @@
 <head>
     <title>Resizing</title>
     <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <script type="text/javascript" src="assets/primaryCookie.js"></script>
     <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
     
 
@@ -40,13 +41,11 @@
         }],
         width: 402,
         height: 240,
-        events: {
-			onResize: function(evt) {
-				log("resize_output", "Player was resized. Dimensions: " + this.getWidth() + "x" + this.getHeight());
-    		}
-    	}
+        primary: primaryCookie
     });
-
+    jwplayer().onResize(function(evt) {
+        log("resize_output", "Player was resized. Dimensions: " + this.getWidth() + "x" + this.getHeight());
+    });
     function resize(width, height) {
         jwplayer("resize").resize(width, height);
     }

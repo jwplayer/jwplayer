@@ -5,8 +5,7 @@ package com.longtailvideo.jwplayer.media {
 	import com.longtailvideo.jwplayer.model.PlayerConfig;
 	import com.longtailvideo.jwplayer.model.PlaylistItem;
 	import com.longtailvideo.jwplayer.player.PlayerState;
-	import com.longtailvideo.jwplayer.utils.NetClient;
-	import com.longtailvideo.jwplayer.utils.RootReference;
+	import com.longtailvideo.jwplayer.utils.*;
 	
 	import flash.events.*;
 	import flash.external.ExternalInterface;
@@ -47,6 +46,7 @@ package com.longtailvideo.jwplayer.media {
 		/** Constructor; sets up the connection and display. **/
 		public function VideoMediaProvider() {
 			super('video');
+			_stretch = false;
 		}
 
 
@@ -87,7 +87,6 @@ package com.longtailvideo.jwplayer.media {
 		/** Load new media file; only requested once per item. **/
 		override public function load(itm:PlaylistItem):void {
 			_item = itm;
-			dispatchEvent(new MediaEvent(MediaEvent.JWPLAYER_MEDIA_LOADED));
 			// Set initial quality and set levels
 			_currentQuality = 0;
 			for (var i:Number=0; i < _item.levels.length; i++) {
@@ -99,6 +98,7 @@ package com.longtailvideo.jwplayer.media {
 			sendQualityEvent(MediaEvent.JWPLAYER_MEDIA_LEVELS, _item.levels, _currentQuality);
 			// Do not set a stretchable media for AAC files.
 			_item.type == "aac" ? media = null: media = _video;
+			dispatchEvent(new MediaEvent(MediaEvent.JWPLAYER_MEDIA_LOADED));
 			// Initialize volume
 			streamVolume(config.mute ? 0 : config.volume);
 			// Get item start (should remove this someday)
@@ -218,10 +218,13 @@ package com.longtailvideo.jwplayer.media {
 
 		/** Resize the video or stage.**/
 		override public function resize(width:Number, height:Number):void {
-			super.resize(width,height);
-			if(_stage) {
-				//_stage.viewPort = new Rectangle(media.x,media.y,width,height);
+			if(_media) {
+				Stretcher.stretch(_media, width, height, _config.stretching);
+				if (_stage) {
+					_stage.viewPort = new Rectangle(_media.x,_media.y,_media.width,_media.height);
+				}
 			}
+			ExternalInterface.call("console.log","Resizing to "+width+"x"+height);
 		}
 
 
