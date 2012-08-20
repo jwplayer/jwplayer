@@ -207,6 +207,7 @@
 			bytesTotal = _ytAPI.getVideoBytesTotal();
 			bytesOffset = _ytAPI.getVideoStartBytes();
 			_item.duration = _ytAPI.getDuration();
+			// Send out bytes loaded.
 			if (bytesTotal > 0) {
 				if (item.duration > 0) {
 					_offset = (bytesOffset / (bytesOffset + bytesTotal)) * _item.duration;
@@ -270,12 +271,14 @@
 		/** Seek to _position. **/
 		override public function seek(pos:Number):void {
 			if (_ready) {
+				/*
 				if ( ( pos < _offset ) || 
 					 ( (_offset / item.duration) > ( (bytesLodaed + bytesOffset) / bytesTotal) ) 
 				) { 
 					sendBufferEvent(0, pos);
 					setState(PlayerState.BUFFERING);
 				}
+				*/
 				_ytAPI.seekTo(pos, true);
 				_offset = pos;
 				super.seek(pos);
