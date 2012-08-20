@@ -12,7 +12,7 @@
 <p>This page tests the <a href="http://www.adobe.com/devnet/flashplayer/articles/stage_video.html">Flash Stage Video</a> capabilities and fallbacks across various desktops.</p>
 
 
-<h2>Video provider</h2>
+<h2>HTTP progressive</h2>
 
 <div id="container1"></div>
 <pre id="log1"></pre>
@@ -20,7 +20,7 @@
 <script type="text/javascript">
     jwplayer("container1").setup({
         playlist: [{
-            image: 'http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg',
+            image: 'http://d3el35u4qe4frz.cloudfront.net/bkaovAYt-480.jpg',
             sources: [{
                 file: 'http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4',
                 height: 270,
@@ -52,25 +52,30 @@
 </tr><tr>
     <td class="desktop">
     <td>Click to play</td>
-    <td>StageVideo should get initialized in accellerated mode.<br/>
+    <td>StageVideo should get initialized in accelerated mode.<br/>
         Video should be visible and scaling correctly.</td>
     <td class="check"></td>
 </tr><tr>
     <td class="desktop">
-    <td>Go fullscreen</td>
-    <td>Video should scale correctly again.</td>
+    <td>Go fullscreen and back</td>
+    <td>Video should scale correctly both times.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Switch to HD quality</td>
+    <td>Video should be visible and scale correctly.</td>
     <td class="check"></td>
 </tr></table>
 
 
-<h2>RTMP provider</h2>
+<h2>RTMP streaming</h2>
 
 <div id="container2"></div>
 <pre id="log2"></pre>
 
 <script type="text/javascript">
     jwplayer("container2").setup({
-        image: 'http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg',
+        image: 'http://d3el35u4qe4frz.cloudfront.net/bkaovAYt-480.jpg',
         file: 'rtmp://23.23.175.6/vod/mp4:media/sintel_full/sint_1280.mp4',
         height: 272,
         primary: 'flash',
@@ -93,15 +98,35 @@
 </tr><tr>
     <td class="desktop">
     <td>Click to play</td>
-    <td>StageVideo should get initialized in accellerated mode.<br/>
+    <td>StageVideo should get initialized in accelerated mode.<br/>
         Video should be visible and scaling correctly.</td>
     <td class="check"></td>
 </tr><tr>
     <td class="desktop">
-    <td>Go fullscreen</td>
-    <td>Video should scale correctly again.</td>
+    <td>Go fullscreen and back</td>
+    <td>Video should scale correctly both times.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Switch to HD quality</td>
+    <td>Video should be visible and scale correctly.</td>
     <td class="check"></td>
 </tr></table>
+
+
+<h2>Flash Player 10.0</h2>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop">
+    <td>Visit this page on a computer with FP 10.0<br/>
+        Run through all test cases again.</td>
+    <td>Lack of stagevideo should be handled without errors.<br/>
+        Video should play in all cases.</td>
+    <td class="check"></td>
+</tr></table>
+
 
 </body>
 </html>

@@ -92,7 +92,6 @@ package com.longtailvideo.jwplayer.media {
 			if(!_video) {
 				_video = new Video(320, 240);
 				_video.smoothing = true;
-				_video.addEventListener('renderState', renderHandler);
 				// Use stageVideo when available
 				if (RootReference.stage['stageVideos'].length > 0) {
 					_stage = RootReference.stage['stageVideos'][0];
@@ -100,6 +99,7 @@ package com.longtailvideo.jwplayer.media {
 					_stage.addEventListener('renderState', renderHandler);
 					_stage.attachNetStream(_stream);
 				} else {
+					_video.addEventListener('renderState', renderHandler);
 					_video.attachNetStream(_stream);
 				}
 			}
