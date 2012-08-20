@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stage Video</title>
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+</head>
+<body>
+
+<h1>Stage Video</h1>
+<div class="flash">List of test devices</div>
+<p>This page tests the <a href="http://www.adobe.com/devnet/flashplayer/articles/stage_video.html">Flash Stage Video</a> capabilities and fallbacks across various desktops.</p>
+
+
+<h2>Video provider</h2>
+
+<div id="container1"></div>
+<pre id="log1"></pre>
+
+<script type="text/javascript">
+    jwplayer("container1").setup({
+        playlist: [{
+            image: 'http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg',
+            sources: [{
+                file: 'http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4',
+                height: 270,
+                width: 480
+            },{
+                file: 'http://content.bitsontherun.com/videos/bkaovAYt-DZ7jSYgM.mp4',
+                height: 720,
+                width: 1280
+            }] 
+        }],
+        height: 272,
+        primary: 'flash',
+        width: 640
+    });
+    jwplayer("container1").onMeta(function(event) {
+        if(event.metadata.stagevideo ) {
+            var log = document.getElementById('log1')
+            var txt = log.innerHTML;
+            txt += "StageVideo: "+ event.metadata.stagevideo+" ("+event.metadata.renderstate+")<br/>";
+            log.innerHTML = txt;
+        }
+    });
+</script>
+
+
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop">
+    <td>Click to play</td>
+    <td>StageVideo should get initialized in accellerated mode.<br/>
+        Video should be visible and scaling correctly.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Go fullscreen</td>
+    <td>Video should scale correctly again.</td>
+    <td class="check"></td>
+</tr></table>
+
+
+<h2>RTMP provider</h2>
+
+<div id="container2"></div>
+<pre id="log2"></pre>
+
+<script type="text/javascript">
+    jwplayer("container2").setup({
+        image: 'http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg',
+        file: 'rtmp://23.23.175.6/vod/mp4:media/sintel_full/sint_1280.mp4',
+        height: 272,
+        primary: 'flash',
+        width: 640
+    });
+    jwplayer("container2").onMeta(function(event) {
+        if(event.metadata.stagevideo ) {
+            var log = document.getElementById('log2')
+            var txt = log.innerHTML;
+            txt += "StageVideo: "+ event.metadata.stagevideo+" ("+event.metadata.renderstate+")<br/>";
+            log.innerHTML = txt;
+        }
+    });
+</script>
+
+
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop">
+    <td>Click to play</td>
+    <td>StageVideo should get initialized in accellerated mode.<br/>
+        Video should be visible and scaling correctly.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Go fullscreen</td>
+    <td>Video should scale correctly again.</td>
+    <td class="check"></td>
+</tr></table>
+
+</body>
+</html>

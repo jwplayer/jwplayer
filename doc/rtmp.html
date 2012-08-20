@@ -55,8 +55,8 @@
 <p>In order to use RTMP, your host or CDN needs to have a dedicated RTMP server installed. There are two major offerings, both supported by JW Player:</p>
 
 <ul>
-<li>The <a href="http://www.wowza.com/">Wowza Media Server</a> from Wowza is today's most widely used solution. It includes support for almost any streaming protocol, including RTMP.</li>
-<li>The <a href="http://www.adobe.com/products/flash-media-server-family.html">Flash Media Server</a> from Adobe is another great option. Since Flash is developed by Adobe, new RTMP functionalities find their way in FMS first.</li>
+<li>The <a href="http://www.wowza.com/">Wowza Media Server</a> is today's most widely used solution. It includes support for almost any streaming protocol, including RTMP.</li>
+<li>The <a href="http://www.adobe.com/products/flash-media-server-family.html">Adobe Media Server</a> is another great option. Since Flash is developed by Adobe, new RTMP functionalities find their way in FMS first.</li>
 </ul>
 
 <h3>CDNs</h3>
@@ -81,35 +81,105 @@
 
 
 
-<h2>SMIL Manifests</h2>
+<h2>Embedding a Stream</h2>
 
-<p>JW Player is architectured to support playback on any browser and device with a single setup. It does this by <a href="playlists.html">supporting multiple sources</a> for each piece of content. Each source has canonical URL, a single location from where to access it. For RTMP, JW Player uses <strong>SMIL manifests</strong> as this single access point.</p>
-
-<p>SMIL manifests are simple XML files that contain the location of the RTMP application, plus the path to the (one or more) streams stored on the RTMP server. Here is a basic example, using one AAC stream:</p>
+<p>Embedding an RTMP stream into JW Player is simply a matter of providing the full stream URL. Here is a very basic example, playing a single MP4 video:</p>
 
 <pre>
-&lt;smil&gt;
-    &lt;head&gt;
-        &lt;meta base="rtmp://example.com/ondemand/" /&gt;
-    &lt;/head&gt;
-    &lt;body&gt;
-        &lt;video src="myPodcast.aac" /&gt;
-    &lt;/body&gt;
-&lt;/smil&gt;
+jwplayer("myElement").setup({
+    file: "rtmp://example.com/application/mp4:myVideo.mp4",
+    image: "/assets/myVideo.jpg",
+    height: 360,
+    width: 640
+});
 </pre>
 
-<p>FLV, AAC, MP3 and live streams are loaded in exactly the same way. It's not needed to set any <em>mp4:</em> or <em>mp3:</em> prefixes, as is sometimes described in the documentation of RTMP servers. JW Player takes care of that.</p>
+<p>Above example only works on desktops, since Flash is not available on mobile. Below is another example, using an MP4 loaded over both RTMP and HTTP. The RTMP stream will be played on desktops, the HTTP download will be played on devices:</p>
+
+<pre>
+jwplayer("myElement").setup({
+    playlist: [{
+        image: "/assets/myVideo.jpg",
+        sources: [{ 
+            file: "rtmp://example.com/application/mp4:myVideo.mp4"
+        },{
+            file: "/assets/myVideo.mp4"
+        }]
+    }],
+    height: 360,
+    primary: "flash",
+    width: 640
+});
+</pre>
+
+<p>Since the <strong>primary</strong> rendering mode is set to <em>Flash</em>, the RTMP stream is picked over the MP4. If this option were not set, JW Player would play the HTTP download, since many browsers (e.g. Chrome, Internet Explorer) support that in HTML5 (the default mode in JW6).</p>
+
+<p>See <a href="playlists.html">Working with Playlists</a> for more info on loading multiple sources.</p>
+
+<h3>Application and Stream</h3>
+
+<p>Technically, an RTMP stream consists of two pieces:</p>
+
+<ul>
+<li>The <strong>application</strong> path (e.g. <em>rtmp://example.com/vod/</em>).</li>
+<li>The <strong>stream</strong> identifier (e.g. <em>mp4:video.mp4</em>).</li>
+</ul>
+
+<p>In JW Player, these two pieces are rolled up into a single URL. JW Player determines the split between application and stream based upon the following rules:</p>
+
+<ol>
+<li>If a <em>_definst_</em> is found, the player splits immediately after that. Example: <pre>rtmp://example.com/vod/_definst_/myFolder/myVideo.mp4</pre>.</li>
+<li>If a <em>prefix</em> (e.g. <em>mp4:</em>) is found, the player splits immediately before that. Example: <pre>rtmp://example.com/vod/mp4:myFolder/myVideo.mp4</pre></li>
+<li>If neither a _definst_ nor a prefix are found, the player splits after the last <em>/</em> in the filename. Example: <pre>rtmp://example.com/vod/myVideo.mp4</pre></li>
+</ol>
+
+<p>Note that a <em>_definst_</em> delimiter can always be inserted without resulting into problems for video streaming. Also note that prefixes and file extensions are automatically set correctly by JW Player before the RTMP stream is loaded. See the documentation of your RTMP server for more information on these subjects.</p>
+
+
+
+<h2>Dynamic streaming</h2>
+
+<p>In addition to loading a single RTMP stream, JW Player supports loading <strong>dynamic</strong> streams. A dynamic stream consists of multiple single streams of the same content, all in a different quality. JW Player allows automated or manual switching between the different qualities in such a stream.</p>
+
+<p>Dynamic streams have to be set up using so-called SMIL manifests. These are simple XML files that contain the location of the RTMP application, plus the path to (one or more) streams stored on the RTMP server. The player always presume a file with the extension <em>.smil</em> is an RTMP SMIL manifest:</p>
+
+<pre>
+jwplayer("myElement").setup({
+    file: "/assets/myVideo.smil",
+    image: "/assets/myVideo.jpg",
+    height: 360,
+    width: 640
+});
+</pre>
+
+<p>Here is another example, using both an RTMP dynamic stream (for desktops) and a progressive MP4 download (for mobile):</p>
+
+<pre>
+jwplayer("myElement").setup({
+    playlist: [{
+        image: "/assets/myVideo.jpg",
+        sources: [{ 
+            file: "/assets/myVideo.smil" 
+        },{
+            file: "/assets/myVideo.mp4" 
+        }]
+    }],
+    height: 360,
+    primary: "flash",
+    width: 640
+});
+</pre>
 
 <p>Note that SMIL manifests are subject to <a href="crossdomain.html">Cross-domain Security Restrictions</a>. If your SMIL files are located on a different server than your website or player, you have to setup a <em>crossdomain.xml</em> file.</p>
 
-<h3>Dynamic</h3>
+<h3>SMIL contents</h3>
 
-<p>Here is a more extensive example, using three different streams. This manifest sets up a so-called <strong>dynamic</strong> stream, which enables JW Player to switch between quality levels during playback:</p>
+Here is a basic example, using three different streams:</p>
 
 <pre>
 &lt;smil&gt;
   &lt;head&gt;
-    &lt;meta base="rtmp://example.com/ondemand/" /&gt;
+    &lt;meta base="rtmp://example.com/vod/" /&gt;
   &lt;/head&gt;
   &lt;body&gt;
     &lt;switch&gt;
@@ -121,98 +191,15 @@
 &lt;/smil&gt;
 </pre>
 
-<p>The switching of quality is automatically done by JW Player, who compares the:</p>
+<p>The switching of quality is automatically done by JW Player, who selects the highest quality:</p>
 
 <ul>
-    <li>Connection bandwidth to the <em>system-bitrate</em> of the videos.</li>
-    <li>Player display width to the <em>width</em> of the videos.</li>
+    <li>Whose <em>system-bitrate</em> fits the current bandwidth of the connection.</li>
+    <li>Whose <em>width</em> fits the current width of the player screen.</li>
 </ul>
 
-<p>The highest quality video that fits both the bandwidth and the screen width is displayed. Users are able to override this by selecting a quality from a controlbar popup menu. If the bandwidth and width are omitted, the player will default to the first video in the manifest.</p>
+<p>Users are able to override the automated selection by setting the quality from a popup menu. The <em>height</em> attributes of the streams in the manifest are used to set the labels of this menu (e.g. <em>720p</em>).</p>
 
-
-
-<h2>Embedding a Stream</h2>
-
-<p>The manifest needs to be stored on a web server and then loaded into JW Player using <a href="embedding.html">jwplayer().setup()</a>. If, for example, your manifest is saved as <em>/assets/myVideo.smil</em> on your server, you can load it into JW Player using this setup block:</p>
-
-<pre>
-jwplayer("myElement").setup({
-    file: "/assets/myVideo.smil",
-    height: 360,
-    image: "/assets/myVideo.jpg",
-    width: 640
-});
-</pre>
-
-<h3>Advanced</h3>
-
-<p>Above setup does not leverage the multi-device options of JW Player, since only RTMP is provided. Therefore, let's extend this setup by including a separate MP4 video that can play on mobile devices:</p>
-
-<pre>
-jwplayer("myElement").setup({
-    playlist: [{
-        image: "/assets/myVideo.jpg",
-        sources: [
-            { file: "/assets/myVideo.smil" },
-            { file: "/assets/myVideo.mp4" }
-        ]
-    }],
-    height: 360,
-    primary: "flash",
-    width: 640
-});
-</pre>
-
-<p>This setup will play the RTMP stream on all browsers that have Flash installed (therefore, Flash is set to be the <strong>primary</strong> mode). On all devices that don't have Flash, the MP4 video is played in HTML5. See <a href="playlists.html">Working with Playlists</a> for more info on loading multiple sources per playlist item.</p>
-
-
-
-<h2>The Streamer Option</h2>
-
-<p>SMIL manifests nicely abstract and group the properties of an RTMP stream, allowing JW Player to load multiple media formats and serve many browser and devices with one setup. However, SMIL manifests add complexity in that they need to be authored and hosted in addition to the streams.</p>
-
-<p>Therefore, it is also possible to load RTMP streams without a SMIL manifest in JW Player. This is done by adding the <strong>streamer</strong> property to every item in your playlist. It is set to the URL of your RTMP application. Here's an example:</p>
-
-<pre>
-jwplayer("myElement").setup({
-    playlist: [{
-        image: "/assets/myVideo.jpg",
-        sources: [
-            { file: "myVideo.mp4", type: "rtmp" }
-        ],
-        streamer: "rtmp://example.com/ondemand/"
-    }],
-    height: 360,
-    width: 640
-});
-</pre>
-
-<p>Note the <strong>type</strong> option, which tells JW Player this stream is not a basic MP4 download, but part of the RTMP stream. Without this option, the inline setup won't work.</p>
-
-<h3>Advanced</h3>
-
-<p>Here's a more advanced example, including a dynamic stream and a regular MP4 download for mobile playback:</p>
-
-<pre>
-jwplayer("myElement").setup({
-    height: 360,
-    playlist: [{
-        image: "/assets/myLivestream.jpg",
-        sources: [
-            { file: "myVideo-high.mp4", type: "rtmp" },
-            { file: "myVideo-medium.mp4", type: "rtmp" },
-            { file: "myVideo-low.mp4", type: "rtmp" },
-            { file: "http://example.com/assets/myVideo.mp4", type:"mp4" }
-        ],
-        streamer: "rtmp://example.com/ondemand/"
-    }],
-    primary: "flash",
-    width: 640
-});
-</pre>
-
-<p>Note it is not possible to load RTMP streams in feeds using the <strong>streamer</strong> option, since RSS has no mechanism to distinguish between streaming MP4 files and progressive MP4 files. SMIL manifests must be used in such setups.</p>
 
 
 <h2>Configuration Options</h2>
@@ -247,7 +234,7 @@ jwplayer("myElement").setup({
     height: 360,
     image: "/assets/myLivestream.jpg",
     rtmp: {
-        subscribe: true
+        fcsubscribe: true
     },
     width: 640
 });

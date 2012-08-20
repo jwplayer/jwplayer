@@ -61,16 +61,6 @@ package com.longtailvideo.jwplayer.media {
 			_stream.bufferTime = 1;
 			_stream.client = new NetClient(this);
 			_transformer = new SoundTransform();
-			_video = new Video(320, 240);
-			_video.smoothing = true;
-			// Use stageVideo when available
-			if (RootReference.stage['stageVideos'].length > 0) {
-				_stage = RootReference.stage['stageVideos'][0];
-				_stage.viewPort = new Rectangle(0,0,320,240);
-				_stage.attachNetStream(_stream);
-			} else {
-				_video.attachNetStream(_stream);
-			}
 			// Set startparam when available
 			if(_config.startparam) {
 				_startparam = _config.startparam;
@@ -84,9 +74,35 @@ package com.longtailvideo.jwplayer.media {
 		};
 
 
+		/** Send out renderstates. **/
+		protected function renderHandler(event:Event):void {
+			var stagevideo:String = 'off';
+			if (_stage) { stagevideo = 'on'; }
+			sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_META, {metadata: {
+				stagevideo: stagevideo,
+				renderstate: event['status']
+			}});
+		};
+
+
 		/** Load new media file; only requested once per item. **/
 		override public function load(itm:PlaylistItem):void {
 			_item = itm;
+			// Set Video or StageVideo
+			if(!_video) {
+				_video = new Video(320, 240);
+				_video.smoothing = true;
+				_video.addEventListener('renderState', renderHandler);
+				// Use stageVideo when available
+				if (RootReference.stage['stageVideos'].length > 0) {
+					_stage = RootReference.stage['stageVideos'][0];
+					_stage.viewPort = new Rectangle(0,0,320,240);
+					_stage.addEventListener('renderState', renderHandler);
+					_stage.attachNetStream(_stream);
+				} else {
+					_video.attachNetStream(_stream);
+				}
+			}
 			// Set initial quality and set levels
 			_currentQuality = 0;
 			for (var i:Number=0; i < _item.levels.length; i++) {
@@ -224,7 +240,6 @@ package com.longtailvideo.jwplayer.media {
 					_stage.viewPort = new Rectangle(_media.x,_media.y,_media.width,_media.height);
 				}
 			}
-			ExternalInterface.call("console.log","Resizing to "+width+"x"+height);
 		}
 
 

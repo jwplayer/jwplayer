@@ -11,6 +11,7 @@
     
     import flash.events.*;
 	import flash.external.ExternalInterface;
+	import flash.geom.Rectangle;
     import flash.media.*;
     import flash.net.*;
     import flash.utils.*;
@@ -46,15 +47,14 @@
         private var _transitionLevel:Number = -1;
         /** Video object to be instantiated. **/
         private var _video:Video;
-		/** Number of frames dropped at present. **/
-		private var _streamInfo:Array;
-		/** Interval for bw checking - with dynamic streaming. **/
-		private var _streamInfoInterval:Number;
+		/** StegeVideo object to be instantiated. **/
+		private var _stage:Object;
 
 
 		/** Initialize RTMP provider. **/
 		public function RTMPMediaProvider() {
 			super('rtmp');
+			_stretch = false;
 		}
 
 
@@ -72,8 +72,6 @@
 			_loader.addEventListener(Event.COMPLETE, loaderComplete);
 			_loader.addEventListener(ErrorEvent.ERROR, loaderError);
 			_transformer = new SoundTransform();
-			_video = new Video(320, 240);
-			_video.smoothing = true;
 		}
 
 
@@ -96,28 +94,14 @@
 		}
 
 
-		/** Bandwidth and Framedrop checking for dynamic streaming. **/
-		private function getStreamInfo():void {
-			if (!_stream) {
-				clearInterval(_streamInfoInterval);
-				return;
-			}
-			try {
-				var bwd:Number = Math.round(_stream.info.maxBytesPerSecond * 8 / 1024);
-				_streamInfo.push({bwd:bwd});
-				var len:Number = _streamInfo.length;
-				if(len > 5 && state == PlayerState.PLAYING) {
-					bwd = Math.round((_streamInfo[len-1].bwd + _streamInfo[len-2].bwd + _streamInfo[len-3].bwd + 
-						_streamInfo[len-4].bwd+ + _streamInfo[len-5].bwd)/5);
-					if(item.levels.length > 0 && getLevel(item, bwd,config.width) != item.currentLevel) {
-						Logger.log("swapping to another level b/c of bandwidth",bwd.toString());
-						swap(getLevel(item, bwd, config.width));
-					}
-					sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_META, {metadata: { bandwidth: bwd }});
-				}
-			} catch(e:Error) {
-				Logger.log("There was an error attempting to get stream info: " + e.message);
-			}
+		/** Send out renderstates. **/
+		protected function renderHandler(event:Event):void {
+			var stagevideo:String = 'off';
+			if (_stage) { stagevideo = 'on'; }
+			sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_META, {metadata: {
+				stagevideo: stagevideo,
+				renderstate: event['status']
+			}});
 		};
 
 
@@ -125,6 +109,21 @@
 		override public function load(itm:PlaylistItem):void {
 			_item = itm;
 			_position = 0;
+			// Set Video or StageVideo
+			if(!_video) { 
+				_video = new Video(320, 240);
+				_video.smoothing = true;
+				_video.addEventListener('renderState', renderHandler);
+				// Use stageVideo when available
+				if (RootReference.stage['stageVideos'].length > 0) {
+					_stage = RootReference.stage['stageVideos'][0];
+					_stage.viewPort = new Rectangle(0,0,320,240);
+					_stage.addEventListener('renderState', renderHandler);
+					_stage.attachNetStream(_stream);
+				} else {
+					_video.attachNetStream(_stream);
+				}
+			}
 			// Load either file or manifest
 			if (_item.file.substr(0,4) == 'rtmp') {
 				// Split application and stream
@@ -141,6 +140,10 @@
 					_application = _item.file.substr(0, slash+1);
 					_id = loadID(_item.file.substr(slash+1));
 				}
+				loadWrap();
+			} else if(_item.streamer) {
+				_application = _item.streamer;
+				_id = loadID(_item.file);
 				loadWrap();
 			} else {
 				// if (item.levels.length > 0) { item.setLevel(getLevel(item, config.bandwidth, config.width)); }
@@ -181,10 +184,11 @@
 
 		/** Extract the correct rtmp syntax from the file string. **/
 		private function loadID(url:String):String {
+			if(url.indexOf('flv:') == 0) { url = url.substr(4); }
 			var parts:Array = url.split("?");
 			var ext:String = parts[0].substr(-4);
 			parts[0] = parts[0].substr(0, parts[0].length-4);
-			if (url.indexOf(':') > -1) {
+			if (url.indexOf('mp3:') == 0 || url.indexOf('mp4:') == 0 ) {
 				return url;
 			} else if (ext == '.mp3') {
 				return 'mp3:' + parts.join("?");
@@ -203,7 +207,7 @@
 		private function loadWrap():void {
 			// Only set media object for video streams
 			var ext:String = Strings.extension(_item.file);
-			if (item.file.substr(0,4) == 'mp3:' || ext == 'aac' || ext == 'm4a') {
+			if (_id.substr(0,4) == 'mp3:' || ext == 'aac' || ext == 'm4a') {
 				media = null;
 			} else if (!media) {
 				media = _video;
@@ -236,7 +240,7 @@
 				if (data.width) {
 					_video.width = data.width;
 					_video.height = data.height;
-					super.resize(_width, _height);
+					resize(_config.width, _config.height);
 				}
 			}
 			// Subscription success/failure
@@ -268,18 +272,13 @@
 
 		/** Resume playing. **/
 		override public function play():void {
-			if(_metadata) { 
+			if(_metadata) {
 				_stream.resume();
 			} else {
 				_stream.play(_id);
 			}
-			setState(PlayerState.PLAYING);
-			// _streamInfo = new Array();
-			// clearInterval(_streamInfoInterval);
-			// _streamInfoInterval = setInterval(getStreamInfo, 1000);
 			clearInterval(_positionInterval);
 			_positionInterval = setInterval(positionInterval, 100);
-			ExternalInterface.call("console.log", "play() is called");
 		}
 
 
@@ -291,7 +290,7 @@
 			// Toggle between buffering and playback states
 			if (bfr < 0.5 && pos < _item.duration - 5 && state != PlayerState.BUFFERING) {
 				setState(PlayerState.BUFFERING);
-			} else if (bfr > 0.5 && state != PlayerState.PLAYING) {
+			} else if (bfr > 1 && state != PlayerState.PLAYING) {
 				setState(PlayerState.PLAYING);
 			}
 			// Send time ticks when playing
@@ -304,20 +303,27 @@
 				if(!_bandwidth) { _bandwidth = bwd; }
 				// Add a damper to smooth out crazy bandwidth estimations.
 				_bandwidth = Math.round((bwd + _bandwidth * 2) / 3);
-				ExternalInterface.call("console.log", "bandwidth: "+_bandwidth);
+				// ExternalInterface.call("console.log", "bandwidth: "+_bandwidth);
 			}
 		}
 
 
 		/** Check if the level must be switched on resize. **/
 		override public function resize(width:Number, height:Number):void {
-			super.resize(width, height);
+			if(_media) {
+				Stretcher.stretch(_media, width, height, _config.stretching);
+				if (_stage) {
+					_stage.viewPort = new Rectangle(_media.x,_media.y,_media.width,_media.height);
+				}
+			}
+			/*
 			if (state == PlayerState.PLAYING) {
 				if (item.levels.length > 0 && item.currentLevel != getLevel(item, config.bandwidth, config.width)) {
 					Logger.log("swapping to another level b/c of size: "+config.width);
 					swap(getLevel(item, config.bandwidth, config.width));
 				}
 			}
+			*/
 		}
 
 
@@ -327,7 +333,7 @@
 			if (item.levels.length > 0 && getLevel(item, config.bandwidth, config.width) != item.currentLevel) {
 				item.setLevel(getLevel(item, config.bandwidth, config.width));
 			}
-			if(state == PlayerState.PAUSED) {
+			if(state != PlayerState.PLAYING) {
 				play();
 			}
 			setState(PlayerState.BUFFERING);
@@ -350,7 +356,11 @@
 				_stream.bufferTime = 2;
 			}
 			_stream.client = new NetClient(this);
-			_video.attachNetStream(_stream);
+			if(_stage) {
+				_stage.attachNetStream(_stream);
+			} else {
+				_video.attachNetStream(_stream);
+			}
 			streamVolume(config.mute ? 0 : config.volume);
 			// This will trigger a play() of the video.
 			sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_BUFFER_FULL);
@@ -371,7 +381,7 @@
 						_connection.call("getStreamLength", new Responder(streamlengthHandler), _id);
 					}
 					//	Do live stream subscription, for Edgecast/Limelight.
-					if (getConfigProperty('subscribe')) {
+					if (getConfigProperty('fcsubscribe')) {
 						_subscribeInterval = setInterval(doSubscribe, 2000);
 					} else {
 						// No subscription? Then simply setup the connection.
@@ -399,7 +409,7 @@
 				// Wowza automatically closes connection after a timeout
 				case 'NetConnection.Connect.Closed':
 					if(state == PlayerState.PAUSED) {
-						ExternalInterface.call("console.log", "connection closed");
+						// ExternalInterface.call("console.log", "connection closed");
 						stop();
 					}
 					break;
@@ -422,14 +432,13 @@
 			_connection.close();
 			clearInterval(_positionInterval);
 			_position = _subscribeCount = 0;
-			_streamInfo = new Array();
-			clearInterval(_streamInfoInterval);
 			super.stop();
 		}
 
 
 		/** Get the streamlength returned from the connection. **/
 		private function streamlengthHandler(length:Number):void {
+			_metadata = true;
 			_item.duration = length;
 		}
 
@@ -443,9 +452,6 @@
 				var nso:NetStreamPlayOptions = new NetStreamPlayOptions();
 				nso.streamName = _id;
 				nso.transition = NetStreamPlayTransitions.SWITCH;
-				clearInterval(_streamInfoInterval);
-				_streamInfo = new Array();
-				_streamInfoInterval = setInterval(getStreamInfo, 1000);
 				_stream.play2(nso);
 			}
 		}
