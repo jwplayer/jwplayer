@@ -80,7 +80,7 @@
 			_subscribeCount++;
 			if(_subscribeCount > 3) {
 				clearInterval(_subscribeInterval);
-				error("Error loading stream: Stream not found on server");
+				error("Error loading stream: ID not found on server");
 			} else {
 				_connection.call("FCSubscribe", null, _id);
 			}
@@ -89,8 +89,7 @@
 
 		/** Catch security errors. **/
 		private function errorHandler(evt:ErrorEvent):void {
-			stop();
-			sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_ERROR, {message: evt.text});
+			error(evt.text);
 		}
 
 
@@ -178,7 +177,7 @@
 
 		/** Error handler for manifest loader. **/
 		private function loaderError(evt:ErrorEvent):void {
-			error("Error loading stream: Could not load manifest");
+			error("Error loading stream: Manifest not found or invalid");
 		}
 
 
@@ -248,13 +247,12 @@
 				if (data.code == "NetStream.Play.Start") {
 					setStream();
 				} else {
-					error("Error loading stream: Stream not found on server");
+					error("Error loading stream: ID not found on server");
 				}
 				clearInterval(_subscribeInterval);
 			}
-			// This one shouldn't be needed for RTMP.
-			if (data.type == 'complete') {
-				ExternalInterface.call("console.log", "netstream completion called");
+			// Stream fully loaded (ensure it's not sent after an error)
+			if (data.type == 'complete' && state != PlayerState.IDLE) {
 				stop();
 				sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_COMPLETE);
 			}
@@ -275,7 +273,11 @@
 			if(_metadata) {
 				_stream.resume();
 			} else {
-				_stream.play(_id);
+				if(_id.substr(0,4) == 'mp4:') { 
+					_stream.play(_id,0);
+				} else {
+					_stream.play(_id);
+				}
 			}
 			clearInterval(_positionInterval);
 			_positionInterval = setInterval(positionInterval, 100);
@@ -397,7 +399,7 @@
 				case 'NetStream.Seek.Failed':
 				case 'NetStream.Failed':
 				case 'NetStream.Play.StreamNotFound':
-					error("Error loading stream: Stream not found on server");
+					error("Error loading stream: ID not found on server");
 					break;
 				// Maybe needed for live? Not for VOD...
 				case 'NetStream.Play.Stop':
@@ -409,7 +411,6 @@
 				// Wowza automatically closes connection after a timeout
 				case 'NetConnection.Connect.Closed':
 					if(state == PlayerState.PAUSED) {
-						// ExternalInterface.call("console.log", "connection closed");
 						stop();
 					}
 					break;

@@ -112,6 +112,65 @@
     <td class="check"></td>
 </tr></table>
 
+<h2>RTMP</h2>
+
+<div id="container3"></div>
+<script type="text/javascript">
+    jwplayer("container3").setup({
+        playlist: [{
+            file: 'rtmp://123.456.789.000/vod/_definst_/media/sintel_full/sint_320.mp4',
+            title: 'Nonexisting server'
+        },{
+            file: 'rtmp://23.23.122.78/vod2/_definst_/media/sintel_full/sint_320.mp4',
+            title: 'Nonexisting application (Wowza)'
+        },{
+            file: 'rtmp://23.23.175.6/vod2/mp4:media/sintel_full/sint_320.mp4',
+            title: 'Nonexisting application (Adobe)'
+        },{
+            file: 'rtmp://23.23.122.78/vod/_definst_/media/sintel_full/sint_321.mp4',
+            title: 'Nonexisting stream (Wowza)'
+        },{
+            file: 'rtmp://23.23.175.6/vod/mp4:media/sintel_full/sint_321.mp4',
+            title: 'Nonexisting stream (Adobe)'
+        }],
+        height: 204,
+        listbar: {
+            position: 'right',
+            size: 320
+        },
+        width: 720
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop">
+    <td>Play first item</td>
+    <td>Error message: <em>Error loading stream: Could not connect to server</em></td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Play second item</td>
+    <td>Error message: <em>Error loading stream: Could not connect to server</em></td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Play third item</td>
+    <td>Error message: <em>Error loading stream: Could not connect to server</em></td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Play fourth item</td>
+    <td>Error message: <em>Error loading stream: ID not found on server</em></td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Play fifth item</td>
+    <td>Error message: <em>Error loading stream: ID not found on server</em></td>
+    <td class="check"></td>
+</tr></table>
+
 
 </body>
 </html>

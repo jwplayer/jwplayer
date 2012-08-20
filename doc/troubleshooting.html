@@ -137,12 +137,12 @@
 </dl>
 
 <dl>
-<dt>Error loading stream: Manifest not found</dt>
-<dd>This means the URL to your RTMP/HLS manifest could not be found. Please make sure it is available at the location you provided (did you set relative paths correctly?) and available for loading in the player (are the access rights and mimetype header set correctly?).</dd>
-<dt>Error loading stream: File is not a valid manifest</dt>
-<dd>This means that your SMIL manifest (for RTMP streaming) is not correctly formatted. See <a href="rtmp.html">Using RTMP Streaming</a> for examples of correctly formatted manifest files.</dd>
-<dt>Error loading stream: Could not connect to RTMP server</dt>
-<dd>This means that your RTMP server cannot be reached by the player (anymore). Ensure you have setup the correct <strong>streamer</strong> in your configuration options or <strong>base</strong> in your SMIL manifest. Next, ensure your server is actually up and running, and accessible from your computer. The latter is not always the case, since many proxies and firewalls block RTMP traffic. See <a href="rtmp.html">Using RTMP Streaming</a> for more info.</dd>
+<dt>Error loading stream: Manifest not found or invalid</dt>
+<dd>This means your RTMP/HLS manifest could not be found or not be parsed. Please make sure it is available at the location you provided (did you set relative paths correctly?), available for loading in the player (are there any crossdomain issues?) and correctly formatted (is it correct XML or M3U8 data?)</dd>
+<dt>Error loading stream: Could not connect to server</dt>
+<dd>This means that your RTMP server could not be reached. Ensure you inserted the right domain and the right application path. Also ensure port 1935 and/or RTMP traffic is not blocked by your proxy or firewall.</dd>
+<dt>Error loading stream: ID not found on server</dt>
+<dd>This means the player successfully connected to your RTMP server, but the server failed to return the requested stream. Ensure your stream is indeed available at the correct location and any security mechanism (like Wowza <em>securetoken</em> or Cloudfront signing) is correctly set. If the stream is a live stream, ensure the encoder is connected and streaming video too.</dd>
 </dl>
 
 

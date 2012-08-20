@@ -15,9 +15,9 @@
 
 <h2>Various Servers</h2>
 
-<div id="container"></div>
+<div id="container1"></div>
 <script type="text/javascript">
-    jwplayer("container").setup({
+    jwplayer("container1").setup({
         playlist: [{
             file: 'rtmp://23.23.122.78/vod/_definst_/media/sintel_full/sint_320.mp4',
             image: 'http://d3el35u4qe4frz.cloudfront.net/q1fx20VZ-480.jpg',
@@ -107,10 +107,10 @@
             title: 'Edgecast: MP3',
             description: 'loaded using file/streamer combo'
         }],
-        height: 204,
+        height: 188,
         listbar: {
             position: 'right',
-            size: 240
+            size: 300
         },
         width: 720
     });
@@ -139,6 +139,53 @@
     <td>The stream should resume from the new position.<br/>
         Re-buffering should be swift and visible only once.
     </td>
+    <td class="check"></td>
+</tr></table>
+
+
+
+<h2>Buffer Length</h2>
+
+<div id="container2"></div>
+<script type="text/javascript">
+    var options = {
+        file: 'rtmp://23.23.122.78/vod/_definst_/media/sintel_full/sint_1280.mp4',
+        image: 'http://d3el35u4qe4frz.cloudfront.net/q1fx20VZ-640.jpg',
+        rtmp: {
+            bufferlength: 1
+        },
+        height: 272,
+        width: 640
+    };
+    function setupBuffer(length) {
+        options.rtmp.bufferlength = length;
+        jwplayer("container2").setup(options);
+    };
+    setupBuffer(10);
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop">
+    <td>Start the stream</td>
+    <td>Bufferlength is 10 seconds, so buffering should take long.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Pause and resume</td>
+    <td>There should be no re-buffering, so resuming should be instant.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Seek halfway</td>
+    <td>Re-buffering should take a long time.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Reload using <a href="javascript:setupBuffer(0.1);">0.1 buffer</a><br/>
+        Play, pause/resume and seek again</td>
+    <td>Re-buffering should now be near instant all 3 times.</td>
     <td class="check"></td>
 </tr></table>
 
