@@ -37,18 +37,16 @@
 		private var _metadata:Boolean;
 		/** NetStream instance that handles the stream IO. **/
 		private var _stream:NetStream;
-        /** Number of subcription attempts. **/
-        private var _subscribeCount:Number = 0;
-        /** Interval ID for subscription pings. **/
-        private var _subscribeInterval:Number;
         /** Sound control object. **/
         private var _transformer:SoundTransform;
         /** Level to which we're transitioning. **/
         private var _transitionLevel:Number = -1;
         /** Video object to be instantiated. **/
         private var _video:Video;
-		/** StegeVideo object to be instantiated. **/
+		/** StageVideo object to be instantiated. **/
 		private var _stage:Object;
+		/** Video type that's detected. **/
+		private var _type:String;
 
 
 		/** Initialize RTMP provider. **/
@@ -73,18 +71,6 @@
 			_loader.addEventListener(ErrorEvent.ERROR, loaderError);
 			_transformer = new SoundTransform();
 		}
-
-
-		/** Try subscribing to livestream **/
-		private function doSubscribe():void {
-			_subscribeCount++;
-			if(_subscribeCount > 3) {
-				clearInterval(_subscribeInterval);
-				error("Error loading stream: ID not found on server");
-			} else {
-				_connection.call("FCSubscribe", null, _id);
-			}
-		};
 
 
 		/** Catch security errors. **/
@@ -127,7 +113,8 @@
 			if (_item.file.substr(0,4) == 'rtmp') {
 				// Split application and stream
 				var definst:Number = _item.file.indexOf('_definst_');
-				var prefix:Number = Math.max(_item.file.indexOf('mp4:'),_item.file.indexOf('mp3:'));
+				var prefix:Number = Math.max(_item.file.indexOf('mp4:'),
+					_item.file.indexOf('mp3:'),_item.file.indexOf('flv:'));
 				var slash:Number = _item.file.lastIndexOf('/');
 				if (definst > 0) {
 					_application = _item.file.substr(0, definst + 10);
@@ -183,30 +170,47 @@
 
 		/** Extract the correct rtmp syntax from the file string. **/
 		private function loadID(url:String):String {
-			if(url.indexOf('flv:') == 0) { url = url.substr(4); }
 			var parts:Array = url.split("?");
-			var ext:String = parts[0].substr(-4);
-			parts[0] = parts[0].substr(0, parts[0].length-4);
-			if (url.indexOf('mp3:') == 0 || url.indexOf('mp4:') == 0 ) {
-				return url;
-			} else if (ext == '.mp3') {
-				return 'mp3:' + parts.join("?");
-			} else if (ext == '.mp4' || ext == '.m4v' || ext == '.f4v'
-				|| ext == 'aac' || ext == '.m4a' || ext == '.f4a') {
-				return 'mp4:' + url;
-			} else if (ext == '.flv') {
-				return parts.join("?");
-			} else {
-				return url;
+			var extension:String = parts[0].substr(-4);
+			switch (extension) {
+				case '.flv':
+					_type = 'flv';
+					parts[0] = parts[0].substr(0, parts[0].length-4);
+					parts[0].indexOf('flv:') == 0 ? parts[0] = parts[0].substr(4): null;
+					url = parts.join("?");
+					break;
+				case '.mp3':
+					_type = 'mp3';
+					parts[0] = parts[0].substr(0, parts[0].length-4);
+					parts[0].indexOf('mp3:') == 0 ? null: parts[0] = 'mp3:' + parts[0];
+					url = parts.join("?");
+					break;
+				case '.mp4':
+				case '.m4v':
+				case '.f4v':
+					_type = 'mp4';
+					parts[0].indexOf('mp4:') == 0 ? null: parts[0] = 'mp4:' + parts[0];
+					url = parts.join("?");
+					break;
+				case '.aac':
+				case '.m4a':
+				case '.f4a':
+					_type = 'aac';
+					parts[0].indexOf('mp4:') == 0 ? null: parts[0] = 'mp4:' + parts[0];
+					url = parts.join("?");
+					break;
+				default:
+					break;
+				
 			}
+			return url;
 		}
 
 
 		/** Finalizes the loading process **/
 		private function loadWrap():void {
 			// Only set media object for video streams
-			var ext:String = Strings.extension(_item.file);
-			if (_id.substr(0,4) == 'mp3:' || ext == 'aac' || ext == 'm4a') {
+			if (_type == 'aac' || _type == 'mp3') {
 				media = null;
 			} else if (!media) {
 				media = _video;
@@ -249,7 +253,7 @@
 				} else {
 					error("Error loading stream: ID not found on server");
 				}
-				clearInterval(_subscribeInterval);
+				
 			}
 			// Stream fully loaded (ensure it's not sent after an error)
 			if (data.type == 'complete' && state != PlayerState.IDLE) {
@@ -262,7 +266,12 @@
 
 		/** Pause playback. **/
 		override public function pause():void {
-			_stream.pause();
+			// Pause VOD and close live stream
+			if(_item.duration > 0) {
+				_stream.pause();
+			} else { 
+				_stream.close();
+			}
 			clearInterval(_positionInterval);
 			setState(PlayerState.PAUSED);
 		};
@@ -271,9 +280,16 @@
 		/** Resume playing. **/
 		override public function play():void {
 			if(_metadata) {
-				_stream.resume();
+				// Resume VOD and restart live stream
+				if(_item.duration > 0) {
+					_stream.resume();
+				} else {
+					_stream.play(_id);
+					setState(PlayerState.BUFFERING);
+				}
 			} else {
-				if(_id.substr(0,4) == 'mp4:') { 
+				// Start stream. If _type it is VOD, else live.
+				if(_type) {
 					_stream.play(_id,0);
 				} else {
 					_stream.play(_id);
@@ -301,11 +317,9 @@
 				sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_TIME, {position: pos, duration: _item.duration});
 			}
 			// Send out bandwidth events if the buffer is full and the BW actually changed.
-			if(Math.round(pos) == pos && bfr > 1 && bwd != _bandwidth) {
-				if(!_bandwidth) { _bandwidth = bwd; }
-				// Add a damper to smooth out crazy bandwidth estimations.
-				_bandwidth = Math.round((bwd + _bandwidth * 2) / 3);
-				// ExternalInterface.call("console.log", "bandwidth: "+_bandwidth);
+			if(pos-Math.floor(pos) < 0.05 && bfr > 0.5) {
+				_bandwidth = bwd;
+				// ExternalInterface.call("console.log", "bandwidth: "+bwd+", bufferlength: "+bfr);
 			}
 		}
 
@@ -331,17 +345,19 @@
 
 		/** Seek to a new position. **/
 		override public function seek(pos:Number):void {
-			_transitionLevel = -1;
-			if (item.levels.length > 0 && getLevel(item, config.bandwidth, config.width) != item.currentLevel) {
-				item.setLevel(getLevel(item, config.bandwidth, config.width));
+			if(_item.duration > 0) {
+				_transitionLevel = -1;
+				if (item.levels.length > 0 && getLevel(item, config.bandwidth, config.width) != item.currentLevel) {
+					item.setLevel(getLevel(item, config.bandwidth, config.width));
+				}
+				if(state != PlayerState.PLAYING) {
+					play();
+				}
+				setState(PlayerState.BUFFERING);
+				_stream.seek(pos);
+				clearInterval(_positionInterval);
+				_positionInterval = setInterval(positionInterval, 100);
 			}
-			if(state != PlayerState.PLAYING) {
-				play();
-			}
-			setState(PlayerState.BUFFERING);
-			_stream.seek(pos);
-			clearInterval(_positionInterval);
-			_positionInterval = setInterval(positionInterval, 100);
 		}
 
 
@@ -379,12 +395,12 @@
 						_connection.call("secureTokenResponse", null, hash);
 					}
 					// Get streamlength for MP3, since FMS doesn't send MP3 metadata.
-					if(_id.substr(0,4) == 'mp3:') {
+					if(_type == 'mp3') {
 						_connection.call("getStreamLength", new Responder(streamlengthHandler), _id);
 					}
 					//	Do live stream subscription, for Edgecast/Limelight.
-					if (getConfigProperty('fcsubscribe')) {
-						_subscribeInterval = setInterval(doSubscribe, 2000);
+					if (getConfigProperty('subscribe')) {
+						_connection.call("FCSubscribe", null, _id);
 					} else {
 						// No subscription? Then simply setup the connection.
 						setStream();
@@ -401,12 +417,10 @@
 				case 'NetStream.Play.StreamNotFound':
 					error("Error loading stream: ID not found on server");
 					break;
-				// Maybe needed for live? Not for VOD...
-				case 'NetStream.Play.Stop':
+				// This event gets send when a live encoder is stopped.
 				case 'NetStream.Play.UnpublishNotify':
-					//stop();
-					//sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_COMPLETE);
-					//ExternalInterface.call("console.log", "playback completed");
+					stop();
+					sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_COMPLETE);
 					break;
 				// Wowza automatically closes connection after a timeout
 				case 'NetConnection.Connect.Closed':
@@ -428,11 +442,11 @@
 				_stream.close();
 			}
 			_stream = null;
-			_application = _id = undefined;
+			_application = _id = _type = undefined;
 			_metadata = false;
 			_connection.close();
 			clearInterval(_positionInterval);
-			_position = _subscribeCount = 0;
+			_position = 0;
 			super.stop();
 		}
 
@@ -471,13 +485,6 @@
 			if (_stream) {
 				_stream.soundTransform = _transformer;
 			}
-		}
-
-
-		/** Determines if the stream is a live stream **/
-		protected function get isLivestream():Boolean {
-			// We assume it's a livestream until we hear otherwise.
-			return (!(_item.duration > 0) && _stream);
 		}
 
 

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RTMP Live</title>
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+</head>
+<body>
+
+<h1>RTMP Live</h1>
+<div class="core">List of test devices</div>
+<p>This test includes playback of single live streams using RTMP. It also includes testing the <em>fcsubscribe</em> option.</p>
+
+
+
+<h2>Wowza</h2>
+
+<div id="container1"></div>
+<script type="text/javascript">
+    jwplayer("container1").setup({
+        file: 'rtmp://23.23.122.78/live/longTails',
+        height: 270,
+        width: 480
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop">
+    <td>Start playback</td>
+    <td>Error loading stream: ID not found on server.
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Boot FMLE and connect to Wowza</td>
+    <td>Live stream should be running.
+        </td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Start playback</td>
+    <td>Live stream should start playing.<br/>
+        Video should be scaled to stream aspect ratio.<br/>
+        Elapsed time should increase; duration should stay 0.
+    </td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Pause the stream</td>
+    <td>Stream should pause, screen should go black.<br/>
+        Play button should be visible in screen.
+    </td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Resume the stream</td>
+    <td>Stream should start from current live position.<br/>
+        Elapsed time should re-start from 0.
+    </td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Click on the seek bar</br>
+        and this <a href="javascript:jwplayer('container1').seek(10);">seek(10)</a> call</td>
+    <td>Nothing should happen in both cases.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Stop the FMLE encoder</td>
+    <td>Player should jump to "replay" state</td>
+    <td class="check"></td>
+</tr></table>
+
+
+
+<h2>Flash</h2>
+
+<div id="container2"></div>
+<script type="text/javascript">
+    jwplayer("container2").setup({
+        file: 'rtmp://23.23.175.6/live/longTails',
+        height: 270,
+        width: 480
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop">
+    <td>Start playback</td>
+    <td>Icon should start buffering forever.
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Connect FMLE to Flash instead of Wowza</td>
+    <td>Live stream should be running.
+        </td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Start playback</td>
+    <td>Live stream should start playing.<br/>
+        Video should be scaled to stream aspect ratio.<br/>
+        Elapsed time should increase; duration should stay 0.
+    </td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Pause the stream</td>
+    <td>Stream should pause, screen should go black.<br/>
+        Play button should be visible in screen.
+    </td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Resume the stream</td>
+    <td>Stream should start from current live position.<br/>
+        Elapsed time should re-start from 0.
+    </td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Stop the FMLE encoder</td>
+    <td>Player should jump to "replay" state</td>
+    <td class="check"></td>
+</tr></table>
+
+
+
+<h2>FC Subscribe</h2>
+
+<div id="container3"></div>
+<script type="text/javascript">
+    jwplayer("container3").setup({
+        file: 'rtmp://fml.12E5.edgecastcdn.net/2012E5/longTails',
+        height: 270,
+        rtmp: { subscribe: true },
+        width: 480
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop">
+    <td>Start playback</td>
+    <td>Icon should start buffering forever.
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Connect FMLE to Edgecast instead of Flash</td>
+    <td>Live stream should be running.
+        </td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Start playback</td>
+    <td>Live stream should start playing.<br/>
+        Video should be scaled to stream aspect ratio.<br/>
+        Elapsed time should increase; duration should stay 0.
+    </td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Pause the stream</td>
+    <td>Stream should pause, screen should go black.<br/>
+        Play button should be visible in screen.
+    </td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Resume the stream</td>
+    <td>Stream should start from current live position.<br/>
+        Elapsed time should re-start from 0.
+    </td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Stop the FMLE encoder</td>
+    <td>Elapsed time should stop increasing<br/>
+        Player should not jump to "replay" though.</td>
+    <td class="check"></td>
+</tr></table>
+
+
+</body>
+</html>

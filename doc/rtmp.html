@@ -212,7 +212,7 @@ Here is a basic example, using three different streams:</p>
 
 <pre>
 jwplayer("myElement").setup({
-    file: "/assets/myVideo.smil",
+    file: "rtmp://example.com/vod/mp4:myVideo.mp4",
     height: 360,
     image: "/assets/myVideo.jpg",
     rtmp: {
@@ -230,11 +230,11 @@ jwplayer("myElement").setup({
 
 <pre>
 jwplayer("myElement").setup({
-    file: "/assets/myLivestream.smil",
+    file: "rtmp://example.com/xxxx/myStream",
     height: 360,
     image: "/assets/myLivestream.jpg",
     rtmp: {
-        fcsubscribe: true
+        subscribe: true
     },
     width: 640
 });
@@ -248,7 +248,7 @@ jwplayer("myElement").setup({
 
 <pre>
 jwplayer("myElement").setup({
-    file: "/assets/myVideo.smil",
+    file: "rtmp://example.com/vod/mp4:myVideo.mp4",
     height: 360,
     image: "/assets/myVideo.jpg",
     rtmp: {
