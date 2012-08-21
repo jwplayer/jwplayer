@@ -59,14 +59,12 @@ jwplayer("myElement").setup({
 <dt>mediaid</dt>
 <dd>Unique identifier of this item. Used by advertising, analytics and discovery services.</dd>
 <dt>image</dt>
-<dd>Poster image representing the item. Displayed below the <em>play</em> icon before playback starts, plus in the <a href="#listbar">listbar</a>.</dd>
-<dt>duration</dt>
-<dd>Duration of the item in seconds. It is displayed in the <a href="#listbar">listbar</a>.</dd>
+<dd>Poster image representing the item. Displayed before and after playback, plus in the <a href="#listbar">listbar</a>.</dd>
 <dt>sources</dt>
-<dd>Array with one or more media sources for this item. <strong>Is required.</strong> See below.</dd>
+<dd>Array with one or more media sources for this playlist item. <strong>Is required.</strong> See below.</dd>
 </dl>
 
-<p>For certain advanced features, like <a href="#">Closed Captioning</a> or <a href="rtmp.html">RTMP Streaming</a>, additional properties can be set per playlist item. The guides of these features will contain more info.</p>
+<p>For certain advanced features, like <a href="#">Closed Captioning</a>, additional properties can be set per playlist item. The guides of these features will contain more info.</p>
 
 <h3>Source</h3>
 
@@ -161,7 +159,7 @@ jwplayer("myElement").setup({
 
 <dl>
 <dt>layout</dt>
-<dd>Layout of the playlist items in the listbar. Can be <strong>basic</strong> (title and duration) or <strong>extended</strong> (image, title, duration and 3 lines of description). The default is <strong>extended</strong>.</dd>
+<dd>Layout of the playlist items in the listbar. Can be <strong>basic</strong> (only title) or <strong>extended</strong> (image, title and description). The default is <strong>extended</strong>.</dd>
 <dt>position</dt>
 <dd>Position of the listbar relative to the video display. Can be <strong>bottom</strong> (below the display), <strong>none</strong> (no bar; the default) or <strong>right</strong> (to the right of the display).</dd>
 <dt>size</dt>

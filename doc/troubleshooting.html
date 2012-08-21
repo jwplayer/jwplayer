@@ -137,12 +137,12 @@
 </dl>
 
 <dl>
-<dt>Error loading stream: Manifest not found or invalid</dt>
-<dd>This means your RTMP/HLS manifest could not be found or not be parsed. Please make sure it is available at the location you provided (did you set relative paths correctly?), available for loading in the player (are there any crossdomain issues?) and correctly formatted (is it correct XML or M3U8 data?)</dd>
 <dt>Error loading stream: Could not connect to server</dt>
 <dd>This means that your RTMP server could not be reached. Ensure you inserted the right domain and the right application path. Also ensure port 1935 and/or RTMP traffic is not blocked by your proxy or firewall.</dd>
 <dt>Error loading stream: ID not found on server</dt>
 <dd>This means the player successfully connected to your RTMP server, but the server failed to return the requested stream. Ensure your stream is indeed available at the correct location and any security mechanism (like Wowza <em>securetoken</em> or Cloudfront signing) is correctly set. If the stream is a live stream, ensure the encoder is connected and streaming video too.</dd>
+<dt>Error loading stream: Manifest not found or invalid</dt>
+<dd>This means your RTMP/HLS manifest could not be found or not be parsed. Please make sure it is available at the location you provided (did you set relative paths correctly?), available for loading in the player (are there any crossdomain issues?) and correctly formatted (is it correct SMIL or M3U8 data?)</dd>
 </dl>
 
 

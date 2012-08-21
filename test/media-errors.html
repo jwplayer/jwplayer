@@ -132,6 +132,16 @@
         },{
             file: 'rtmp://23.23.175.6/vod/mp4:media/sintel_full/sint_321.mp4',
             title: 'Nonexisting stream (Adobe)'
+        },{
+            file: 'assets/invalid.smil',
+            title: 'Nonexisting manifest'
+        },{
+            file: 'http://youtube.com/manifest.smil',
+            title: 'Crossdomain loaded manifest.'
+        },{
+            file: 'http://23.23.122.78:1935/vod/smil:sintel_full.smil/jwplayer.rss',
+            type: 'rtmp',
+            title: 'Invalid manifest'
         }],
         height: 204,
         listbar: {
@@ -168,6 +178,21 @@
     <td class="desktop">
     <td>Play fifth item</td>
     <td>Error message: <em>Error loading stream: ID not found on server</em></td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Play sixth item</td>
+    <td>Error message: <em>Error loading stream: Manifest not found or invalid</em></td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Play seventh item</td>
+    <td>Error message: <em>Error loading stream: Manifest not found or invalid</em></td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Play eighth item</td>
+    <td>Error message: <em>Error loading stream: Manifest not found or invalid</em></td>
     <td class="check"></td>
 </tr></table>
 

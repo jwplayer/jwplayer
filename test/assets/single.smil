@@ -1,0 +1,8 @@
+<smil>
+	<head>
+		<meta base="rtmp://23.23.122.78:1935/vod/_definst_/"/>
+	</head>
+	<body>
+		<video src="mp4:media/sintel_full/sint_640.mp4" system-bitrate="541000"/>
+    </body> 
+</smil>

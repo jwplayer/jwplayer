@@ -1,0 +1,10 @@
+<smil>
+	<head>
+		<meta base="rtmp://23.23.122.78:1935/vod/_definst_/"/>
+	</head>
+	<body>
+		<switch>
+			<video src="mp3:media/sintel_full/sint_mp3.mp3" />
+		</switch>
+    </body> 
+</smil>

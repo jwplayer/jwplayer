@@ -226,7 +226,7 @@ jwplayer("myElement").setup({
 
 <h3><a name="fcsubscribe"></a>FC Subscribe</h3>
 
-<p>When streaming live streams using the Akamai, Edgecast or Limelight CDN, players cannot simply connect to the live stream. Instead, they have to subscribe to it, by sending a so-called <strong>FC Subscribe</strong> call to the server. JW Player includes support for this, using the RTMP <strong>subscribe</strong> option:</p>
+<p>When streaming RTMP live streams using the Akamai, Edgecast or Limelight CDN, players cannot simply connect to the live stream. Instead, they have to subscribe to it, by sending a so-called <strong>FC Subscribe</strong> call to the server. JW Player includes support for this, using the RTMP <strong>subscribe</strong> option:</p>
 
 <pre>
 jwplayer("myElement").setup({
@@ -240,7 +240,7 @@ jwplayer("myElement").setup({
 });
 </pre>
 
-<p>This functionality also works in combination with <strong>dynamic</strong> streaming. The player automatically detects the stream levels and subscribes to each.</p>
+<p>Note this functionality only works for single RTMP streams. For multi-bitrate live streaming, the HLS protocol should be used.</p>
 
 <h3><a name="securetoken"></a>Secure Token</h3>
 

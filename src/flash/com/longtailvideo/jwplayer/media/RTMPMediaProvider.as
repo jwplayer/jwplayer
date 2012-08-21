@@ -4,7 +4,7 @@
     import com.longtailvideo.jwplayer.model.PlayerConfig;
     import com.longtailvideo.jwplayer.model.PlaylistItem;
     import com.longtailvideo.jwplayer.model.PlaylistItemLevel;
-    import com.longtailvideo.jwplayer.parsers.LoadbalanceParser;
+    import com.longtailvideo.jwplayer.parsers.SMILParser;
     import com.longtailvideo.jwplayer.player.PlayerState;
     import com.longtailvideo.jwplayer.utils.*;
     import com.wowza.encryptionAS3.TEA;
@@ -30,23 +30,25 @@
 		/** The currently active stream ID. **/
 		private var _id:String;
         /** ID for the position interval. **/
-        private var _positionInterval:Number;
+        private var _interval:Number;
 		/** Loader for loading SMIL files. **/
 		private var _loader:AssetLoader;
 		/** Flag for metadata received. **/
 		private var _metadata:Boolean;
-		/** NetStream instance that handles the stream IO. **/
+		/** NetStream instance that handles playback. **/
 		private var _stream:NetStream;
-        /** Sound control object. **/
-        private var _transformer:SoundTransform;
-        /** Level to which we're transitioning. **/
-        private var _transitionLevel:Number = -1;
-        /** Video object to be instantiated. **/
-        private var _video:Video;
+		/** Sound control object. **/
+		private var _transformer:SoundTransform;
+		/** Level to transition to. **/
+		private var _transitionLevel:Number = -1;
+		/** Video object to be instantiated. **/
+		private var _video:Video;
 		/** StageVideo object to be instantiated. **/
 		private var _stage:Object;
 		/** Video type that's detected. **/
 		private var _type:String;
+		/** Array with quality levels. **/
+		private var _levels:Array;
 
 
 		/** Initialize RTMP provider. **/
@@ -56,7 +58,7 @@
 		}
 
 
-		/** Constructor; sets up the connection and display. **/
+		/** Constructor; sets up the connection and loader. **/
 		public override function initializeMediaProvider(cfg:PlayerConfig):void {
 			super.initializeMediaProvider(cfg);
 			_connection = new NetConnection();
@@ -79,7 +81,7 @@
 		}
 
 
-		/** Send out renderstates. **/
+		/** Send out video render state. **/
 		protected function renderHandler(event:Event):void {
 			var stagevideo:String = 'off';
 			if (_stage) { stagevideo = 'on'; }
@@ -109,7 +111,7 @@
 					_video.attachNetStream(_stream);
 				}
 			}
-			// Load either file or manifest
+			// Load either file, streamer or manifest
 			if (_item.file.substr(0,4) == 'rtmp') {
 				// Split application and stream
 				var definst:Number = _item.file.indexOf('_definst_');
@@ -141,24 +143,23 @@
 
 		/** Get one or more levels from the loadbalancing XML. **/
 		private function loaderComplete(evt:Event):void {
-			var arr:Array = LoadbalanceParser.parse((evt.target as AssetLoader).loadedObject);
-			/*
-			var smilLocation:String = _xmlLoaders[evt.target];
-			delete _xmlLoaders[evt.target];
-			if(arr.length > 1) {
-				item.clearLevels()
-				for(var i:Number=0; i<arr.length; i++) { item.addLevel(arr[i]); }
-				item.setLevel(getLevel(item, config.bandwidth, config.width));
-			} else if (item.levels.length > 0) {
-				var level:PlaylistItemLevel = item.levels[(item.smil as Array).indexOf(smilLocation)] as PlaylistItemLevel;
-				_application = arr[0].streamer;
-				level.file = arr[0].file;
+			var xml:XML = (evt.target as AssetLoader).loadedObject;
+			// Grab the RTMP application from head > meta@base.
+			var app:String = SMILParser.parseApplication(xml);
+			if(app.length > 10) {
+				_application = app;
 			} else {
-				_application = arr[0].streamer;
-				item.file = arr[0].file;
+				error("Error loading stream: Manifest not found or invalid");
 			}
-			*/
-			loadWrap();
+			// Grab the quality levels from body > node.
+			var lvl:Array = SMILParser.parseLevels(xml);
+			if(lvl.length > 0) {
+				_levels = lvl;
+				_id = loadID(lvl[0].id);
+				loadWrap();
+			} else {
+				error("Error loading stream: Manifest not found or invalid");
+			}
 		};
 
 
@@ -199,9 +200,6 @@
 					parts[0].indexOf('mp4:') == 0 ? null: parts[0] = 'mp4:' + parts[0];
 					url = parts.join("?");
 					break;
-				default:
-					break;
-				
 			}
 			return url;
 		}
@@ -209,7 +207,7 @@
 
 		/** Finalizes the loading process **/
 		private function loadWrap():void {
-			// Only set media object for video streams
+			// Do not set media object for audio streams
 			if (_type == 'aac' || _type == 'mp3') {
 				media = null;
 			} else if (!media) {
@@ -246,7 +244,7 @@
 					resize(_config.width, _config.height);
 				}
 			}
-			// Subscription success/failure
+			// Handle FC Subscribe callback for live streaming
 			if (data.type == 'fcsubscribe') {
 				if (data.code == "NetStream.Play.Start") {
 					setStream();
@@ -255,7 +253,7 @@
 				}
 				
 			}
-			// Stream fully loaded (ensure it's not sent after an error)
+			// Stream completed playback (check to not send it after an error)
 			if (data.type == 'complete' && state != PlayerState.IDLE) {
 				stop();
 				sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_COMPLETE);
@@ -266,13 +264,13 @@
 
 		/** Pause playback. **/
 		override public function pause():void {
-			// Pause VOD and close live stream
+			// Pause VOD or close live stream
 			if(_item.duration > 0) {
 				_stream.pause();
 			} else { 
 				_stream.close();
 			}
-			clearInterval(_positionInterval);
+			clearInterval(_interval);
 			setState(PlayerState.PAUSED);
 		};
 
@@ -288,15 +286,15 @@
 					setState(PlayerState.BUFFERING);
 				}
 			} else {
-				// Start stream. If _type it is VOD, else live.
+				// Start stream. If _type it is VOD for sure.
 				if(_type) {
 					_stream.play(_id,0);
 				} else {
 					_stream.play(_id);
 				}
 			}
-			clearInterval(_positionInterval);
-			_positionInterval = setInterval(positionInterval, 100);
+			clearInterval(_interval);
+			_interval = setInterval(positionInterval, 100);
 		}
 
 
@@ -316,7 +314,7 @@
 				_position = pos;
 				sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_TIME, {position: pos, duration: _item.duration});
 			}
-			// Send out bandwidth events if the buffer is full and the BW actually changed.
+			// Check bandwidth events every second if the buffer is filled.
 			if(pos-Math.floor(pos) < 0.05 && bfr > 0.5) {
 				_bandwidth = bwd;
 				// ExternalInterface.call("console.log", "bandwidth: "+bwd+", bufferlength: "+bfr);
@@ -324,7 +322,7 @@
 		}
 
 
-		/** Check if the level must be switched on resize. **/
+		/** Resize the Video and possible StageVideo. **/
 		override public function resize(width:Number, height:Number):void {
 			if(_media) {
 				Stretcher.stretch(_media, width, height, _config.stretching);
@@ -343,7 +341,7 @@
 		}
 
 
-		/** Seek to a new position. **/
+		/** Seek to a new position, only when duration is found. **/
 		override public function seek(pos:Number):void {
 			if(_item.duration > 0) {
 				_transitionLevel = -1;
@@ -355,8 +353,8 @@
 				}
 				setState(PlayerState.BUFFERING);
 				_stream.seek(pos);
-				clearInterval(_positionInterval);
-				_positionInterval = setInterval(positionInterval, 100);
+				clearInterval(_interval);
+				_interval = setInterval(positionInterval, 100);
 			}
 		}
 
@@ -442,10 +440,11 @@
 				_stream.close();
 			}
 			_stream = null;
+			_levels = [];
 			_application = _id = _type = undefined;
 			_metadata = false;
 			_connection.close();
-			clearInterval(_positionInterval);
+			clearInterval(_interval);
 			_position = 0;
 			super.stop();
 		}

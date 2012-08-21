@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RTMP Dynamic</title>
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+</head>
+<body>
+
+<h1>RTMP Dynamic</h1>
+<div class="core">List of test devices</div>
+<p>This test includes playback of dynamic RTMP streams: manifest loading, quality switching, autoswitch heuristics.</p>
+
+
+
+<h2>Various Streams</h2>
+
+<div id="container1"></div>
+<script type="text/javascript">
+    jwplayer("container1").setup({
+        playlist: [{
+            file: 'assets/wowza.smil',
+            image: 'http://d3el35u4qe4frz.cloudfront.net/q1fx20VZ-480.jpg',
+            title: 'Wowza',
+            description: '4 levels, bitrates, widths'
+        },{
+            file: 'assets/adobe.smil',
+            image: 'http://d3el35u4qe4frz.cloudfront.net/q1fx20VZ-480.jpg',
+            title: 'Adobe',
+            description: '4 levels, bitrates'
+        },{
+            file: 'assets/edgecast.smil',
+            image: 'http://d3el35u4qe4frz.cloudfront.net/q1fx20VZ-480.jpg',
+            title: 'Edgecast',
+            description: '4 levels, bitrates, widths, heights'
+        },{
+            file: 'assets/single.smil',
+            image: 'http://d3el35u4qe4frz.cloudfront.net/q1fx20VZ-480.jpg',
+            title: 'Single',
+            description: 'Single level, no switch'
+        },{
+            file: 'assets/audio.smil',
+            image: 'http://d3el35u4qe4frz.cloudfront.net/q1fx20VZ-480.jpg',
+            title: 'Audio',
+            description: 'Single audio level'
+        }],
+        height: 188,
+        listbar: {
+            position: 'right',
+            size: 300
+        },
+        width: 720
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop">
+    <td>Start each item</td>
+    <td>Each item should start playing.<br/>
+        The duration of each item should be displayed in the controlbar<br/>
+        For AAC and MP3, the poster should remain visible.
+        </td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Pause each item and resume</td>
+    <td>Each stream should resume from the current position.<br/>
+        Re-buffering should not occur upon resume.
+    </td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Seek each item halfway</td>
+    <td>The stream should resume from the new position.<br/>
+        Re-buffering should be swift and visible only once.
+    </td>
+    <td class="check"></td>
+</tr></table>
+
+
+
+
+
+</body>
+</html>

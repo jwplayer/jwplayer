@@ -53,14 +53,14 @@
 
 <dl>
 <dt>file</dt>
-<dd>URL to a single MP4/FLV/WebM video, AAC/MP3/Vorbis audio, YouTube page or HLS/RTMP manifest to play. See <a href="media.html">Supported Media Formats</a> for an overview. Use the <strong>playlist</strong> option for more advanced file setups.</dd>
+<dd>URL to a single MP4/FLV/WebM video, AAC/MP3/Vorbis audio, YouTube page or HLS/RTMP stream to play. See <a href="media.html">Supported Media Formats</a> for an overview.</dd>
 <dt>image</dt>
-<dd>URL to a JPG/PNG poster image to display before playback is started (and during playback for audio). If not set, the image of the first item in the <strong>playlist</strong> is used.</dd>
-<dt>playlist</dt>
-<dd>Array with playlist data or URL to RSS feed. Enables all sophisticated media playback options, like multiple formats, multiple quality levels or multiple items. See <a href="playlists.html">Working with Playlists</a> and <a href="feeds.html">Loading RSS Feeds</a> for more info.</dd>
+<dd>URL to a JPG/PNG poster image to display before playback is started. For audio-only media, the poster image stays visible during playback.</dd>
+<dt>title</dt>
+<dd>Title of the media loaded in the player. Is displayed in the middle of the display before playback is started.</dd>
 </dl>
 
-<p>Overall, the <strong>file</strong> option can be used only for basic setups, like playing a single MP4 video or AAC song. Use the <strong>playlist</strong> option for everything else, like an MP4+WebM source, SD+HD quality or a list with multiple items. See <a href="playlists.html">Working with Playlists</a> for more info.</p>
+<p>Note these options are used only for basic setups, like playing a single MP4 video or AAC song. Use the <strong>playlist</strong> option block for everything else, like an MP4+WebM source, SD+HD quality or a list with multiple items. See <a href="playlists.html">Working with Playlists</a> for more info.</p>
 
 
 <h3>Layout</h3>
@@ -124,10 +124,12 @@ jwplayer("myElement").setup({
 <p>The following advanced option blocks are available:</p>
 
 <dl>
+<dt>playlist</dt>
+<dd>Config block with <a href="playlists.html">playlist data or RSS feed link</a>. Enables all sophisticated media playback options, like multiple formats, multiple quality levels or multiple items.</dd>
 <dt>listbar</dt>
-<dd>Config block for displaying an area with the <a href="playlists.html#listbar">playlist contents</a>.</dd>
+<dd>Config block for rendering an area that <a href="playlists.html#listbar">displays the items</a> in the playlist.</dd>
 <dt>captions</dt>
-<dd>Config block for tweaking the display of <a href="captions.html">captions or subtitles</a>.</dd>
+<dd>Config block for tweaking the display of <a href="captions.html">closed captions or video subtitles</a>.</dd>
 <dt>rtmp</dt>
 <dd>Config block for tweaking the playback of <a href="rtmp.html">RTMP streams</a>.</dd>
 <dt>logo</dt>
