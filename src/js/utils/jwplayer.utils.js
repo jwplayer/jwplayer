@@ -86,9 +86,11 @@
 		if (args.length > 1) {
 			for ( var i = 1; i < args.length; i++) {
 				for ( var element in args[i]) {
-					if (utils.exists(args[i][element])) {
-						args[0][element] = args[i][element];
-					}
+					try {
+						if (utils.exists(args[i][element])) {
+							args[0][element] = args[i][element];
+						}
+					} catch(e) {}
 				}
 			}
 			return args[0];

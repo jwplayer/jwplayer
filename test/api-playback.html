@@ -3,6 +3,7 @@
 <head>
     <title>Playback</title>
     <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <script type="text/javascript" src="assets/primaryCookie.js"></script>
     <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
     
 
@@ -27,12 +28,19 @@
 	}
 
     jwplayer("playpause").setup({
+        primary: primaryCookie,
         playlist: [{
-	        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
+    		sources: [
+    		  			{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4' },
+    					{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm' }
+    		   		],
      		image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
      		title: "Sintel Trailer"
         }, {
-	        file: 'http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4',
+    		sources: [
+  		  			{ file: 'http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4' },
+  					{ file: 'http://content.bitsontherun.com/videos/bkaovAYt-27m5HpIu.webm' }
+  		   		],
      		image: 'http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg',
      		title: "Big Buck Bunny Trailer"
         }],
@@ -55,7 +63,7 @@
 </tr><tr>
     <td class="both"></td>
     <td>Load the players</td>
-    <td>Firefox, IE8: Players load in Flash.  Otherwise, players load in HTML5 mode</td>
+    <td>IE8: Players load in Flash.  Otherwise, players load in HTML5 mode</td>
     <td class="check"></td>
 </tr><tr>
     <td class="both"></td>
@@ -84,7 +92,7 @@
     <td class="check"></td>
 </tr><tr>
     <td class="both"></td>
-    <td><a href="#" onclick="jwplayer('playpause').pause(false); return false;">pause(true)</a></td>
+    <td><a href="#" onclick="jwplayer('playpause').pause(true); return false;">pause(true)</a></td>
     <td>Player pauses.  Playback log: PAUSED</td>
     <td class="check"></td>
 </tr><tr>

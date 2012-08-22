@@ -36,10 +36,11 @@
 			_buttonCount = 0,
 			_buttons = {},
 			_tooltips = {},
-			_container; 
+			_container,
+			_this = this;
 
 		function _init() {
-			this.visible = false;
+			_this.visible = false;
 			
 			_container = _createElement("div", "jwdock");
 			_container.id = _id;
@@ -106,7 +107,7 @@
 			return { width: 0, height: 0, src: "" }
 		}
 
-		var _redraw = this.redraw = function() {
+		var _redraw = _this.redraw = function() {
 		}
 		
 		function _positionTooltip(name) {
@@ -127,30 +128,32 @@
 
 		}
 	
-		this.element = function() {
+		_this.element = function() {
 			return _container;
 		}
 		
-		this.offset = function(offset) {
+		_this.offset = function(offset) {
 			_css(_internalSelector(), { 'margin-left': offset });
 		}
 
-		this.hide = function() {
-			this.visible = false;
-			_css(_internalSelector(), {
-				opacity: 0
-			});
+		_this.hide = function() {
+			_this.visible = false;
+//			_css(_internalSelector(), {
+//				opacity: 0
+//			});
+			_container.style.opacity = 0;
 		}
 
-		this.show = function() {
-			this.visible = true;
-			_css(_internalSelector(), {
-				visibility: "visible",
-				opacity: 1
-			});
+		_this.show = function() {
+			_this.visible = true;
+//			_css(_internalSelector(), {
+//				visibility: "visible",
+//				opacity: 1
+//			});
+			_container.style.opacity = 1;
 		}
 		
-		this.addButton = function(url, label, clickHandler, id) {
+		_this.addButton = function(url, label, clickHandler, id) {
 			// Can't duplicate button ids
 			if (_buttons[id]) return;
 			
@@ -200,7 +203,7 @@
 			_setCaps();
 		}
 		
-		this.removeButton = function(id) {
+		_this.removeButton = function(id) {
 			if (_buttons[id]) {
 				_container.removeChild(_buttons[id].element);
 				_container.removeChild(_buttons[id].divider);
@@ -221,7 +224,7 @@
 
 	_css(D_CLASS, {
 	  	position: "absolute",
-	  	visibility: "hidden",
+	  	//visibility: "hidden",
 	  	opacity: 0
 //	  	overflow: "hidden"
 	});

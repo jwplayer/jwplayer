@@ -225,11 +225,9 @@ package com.longtailvideo.jwplayer.utils {
 
 		/** Removes potentially harmful string headers from a link **/
 		public static function cleanLink(link:String):String {
-			// Can't use a regex variable; matching tests will incorrectly return false
-			while(/(javascript|asfunction|vbscript|feed):/gi.test(link)) {
-				link = link.replace(/(javascript|asfunction|vbscript|feed):/gi, "");
-			}
-			return link;
+			// Only match http: and https:
+			if (link.indexOf(":") > 0 && link.indexOf("http") != 0) return "";
+			else return link;
 		}
 		
 		public static function isYouTube(file:String):Boolean {

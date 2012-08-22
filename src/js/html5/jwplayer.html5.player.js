@@ -5,14 +5,18 @@
  * @version 6.0
  */
 (function(html5) {
+	var utils = jwplayer.utils;
+	
 	html5.player = function(config) {
-		var _api = this, 
+		var _api = this,
 			_model, 
 			_view, 
 			_controller,
 			_instreamPlayer;
 
 		function _init() {
+			jwplayer.utils.css.block();
+			
 			_model = new html5.model(config); 
 			_api.id = _model.id;
 			_view = new html5.view(_api, _model); 
@@ -24,14 +28,17 @@
 			setup.addEventListener(jwplayer.events.JWPLAYER_READY, _readyHandler);
 			setup.addEventListener(jwplayer.events.JWPLAYER_ERROR, _errorHandler);
 			setup.start();
+
 		}
 		
 		function _readyHandler(evt) {
 			_controller.playerReady(evt);
+			utils.css.unblock();
 		}
 
 		function _errorHandler(evt) {
-			jwplayer.utils.log('There was a problem setting up the player: ', evt);
+			utils.log('There was a problem setting up the player: ', evt);
+			utils.css.unblock();
 		}
 		
 		function _initializeAPI() {

@@ -36,6 +36,7 @@
 			_icons = {},
 			_errorState = FALSE,
 			_completedState = FALSE,
+			_visibilities = {},
 			_hiding,
 			_button,		
 			_config = utils.extend({
@@ -48,7 +49,7 @@
 				overcolor: '#fff',
 				fontsize: 15,
 				fontweight: ""
-			}, _skin.getComponentSettings('display'), config);
+			}, _skin.getComponentSettings('display'), config),
 			_eventDispatcher = new events.eventdispatcher();
 			
 		utils.extend(this, _eventDispatcher);
@@ -59,13 +60,14 @@
 			_display.className = "jwdisplay";
 			
 			_preview = DOCUMENT.createElement("div");
-			_preview.className = "jwpreview";
+			_preview.className = "jwpreview jw" + _api.jwGetStretching();
 			_display.appendChild(_preview);
 			
 			_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
 			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_ITEM, _itemHandler);
 			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_COMPLETE, _playlistCompleteHandler);
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
+			_api.jwAddEventListener(events.JWPLAYER_ERROR, _errorHandler);
 
 			_display.addEventListener('click', _clickHandler, FALSE);
 			
@@ -113,13 +115,19 @@
 		}
 
 		function _itemHandler() {
+			_clearError();
 			_item = _api.jwGetPlaylist()[_api.jwGetPlaylistIndex()];
 			var newImage = _item ? _item.image : "";
 			if (_image != newImage) {
+				if (_image) {
+					_setVisibility(D_PREVIEW_CLASS, FALSE);
+				}
 				_image = newImage;
-				_setVisibility(D_PREVIEW_CLASS, FALSE);
 				_getImage();
+			} else if (_image) {
+				_setVisibility(D_PREVIEW_CLASS, TRUE);
 			}
+			_updateDisplay(_api.jwGetState());
 		}
 		
 		function _playlistCompleteHandler() {
@@ -141,7 +149,9 @@
 			switch(state) {
 			case states.IDLE:
 				if (!_errorState && !_completedState) {
-					if (_image && !_imageHidden) _setVisibility(D_PREVIEW_CLASS, TRUE);
+					if (_image && !_imageHidden) {
+						_setVisibility(D_PREVIEW_CLASS, TRUE);
+					}
 					_setIcon('play', _item ? _item.title : "");
 				}
 				break;
@@ -188,6 +198,7 @@
 		function _imageLoaded() {
 			_imageWidth = this.width;
 			_imageHeight = this.height;
+			_updateDisplay(_api.jwGetState());
 			_redraw();
 			if (_image) {
 				_css(_internalSelector(D_PREVIEW_CLASS), {
@@ -208,16 +219,23 @@
 
 		
 		function _redraw() {
-			utils.stretch(_api.jwGetStretching(), _preview, _display.clientWidth, _display.clientHeight, _imageWidth, _imageHeight);
+			if (_display.clientWidth * _display.clientHeight > 0) {
+				utils.stretch(_api.jwGetStretching(), _preview, _display.clientWidth, _display.clientHeight, _imageWidth, _imageHeight);
+			}
 		}
 
 		this.redraw = _redraw;
 		
 		function _setVisibility(selector, state) {
-			_css(_internalSelector(selector), {
-				opacity: state ? 1 : 0,
-				visibility: state ? "visible" : "hidden"
-			});
+			if (!utils.exists(_visibilities[selector])) _visibilities[selector] = false;
+			
+			if (_visibilities[selector] != state) {
+				_visibilities[selector] = state;
+				_css(_internalSelector(selector), {
+					opacity: state ? 1 : 0,
+					visibility: state ? "visible" : "hidden"
+				});
+			}
 		}
 
 		this.show = function() {

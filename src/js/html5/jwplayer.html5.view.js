@@ -157,7 +157,7 @@
 		function _setupControls() {
 			var width = _model.width,
 				height = _model.height,
-				cbSettings = _model.componentConfig('controlbar');
+				cbSettings = _model.componentConfig('controlbar'),
 				displaySettings = _model.componentConfig('display');
 		
 			_display = new html5.display(_api, displaySettings);
@@ -189,7 +189,9 @@
 				_videoTag.controls = TRUE;
 			}
 				
-			_resize(width, height);
+			setTimeout(function() {
+				_resize(width, height);
+			}, 0);
 		}
 
 		/** 
@@ -229,6 +231,7 @@
 			if (_controlbar) _controlbar.redraw();
 			if (_display) _display.redraw();
 			_resizeMedia();
+			_eventDispatcher.sendEvent(events.JWPLAYER_RESIZE);
 		}
 
 		/**
@@ -247,9 +250,7 @@
 			}
 
 			if (_display) _display.redraw();
-			if (_controlbar) { 
-				_controlbar.redraw();
-			}
+			if (_controlbar) _controlbar.redraw();
 			if (_logo) {
 				setTimeout(function() {
 					_logo.offset(_controlbar && _logo.position().indexOf("bottom") >= 0 ? _controlbar.element().clientHeight + _controlbar.margin() : 0);
@@ -370,8 +371,12 @@
 		 * If the browser enters or exits fullscreen mode (without the view's knowing about it) update the model.
 		 **/
 		function _fullscreenChangeHandler(evt) {
-			_model.setFullscreen(_isNativeFullscreen());
-			_fullscreen(_model.fullscreen);
+			if (evt.target.id == _api.id) {
+				var fsNow = _isNativeFullscreen();
+				if (_model.fullscreen != fsNow) {
+					_fullscreen(fsNow);
+				}
+			}
 		}
 		
 		function _showControlbar() {
@@ -430,6 +435,7 @@
 		}
 
 		function _sendControlsEvent() {
+			return;
 			var height = _bounds(_container).height,
 				y = 0;
 			if (_controlbar && _controlbar.visible) {

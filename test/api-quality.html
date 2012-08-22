@@ -26,11 +26,21 @@
                 file: 'http://content.bitsontherun.com/videos/bkaovAYt-DZ7jSYgM.mp4',
                 height: 720,
                 width: 1280
+            },{
+                file: 'http://content.bitsontherun.com/videos/bkaovAYt-27m5HpIu.webm',
+                height: 270,
+                width: 480
+            },{
+                file: 'http://content.bitsontherun.com/videos/bkaovAYt-MoSrD9rm.webm',
+                height: 720,
+                width: 1280
             }],
             title: "2 quality levels"
         },{
             sources: [{
                 file: 'http://content.bitsontherun.com/videos/kaUXWqTZ-52qL9xLP.mp4'
+            },{
+                file: 'http://content.bitsontherun.com/videos/kaUXWqTZ-27m5HpIu.webm'
             }],
             title: "1 quality level"
         },{
@@ -50,6 +60,22 @@
                 file: 'http://content.bitsontherun.com/videos/3XnJSIm4-el5vTWpr.mp4',
                 height: 1080,
                 width: 1920
+            },{
+                file: 'http://content.bitsontherun.com/videos/bkaovAYt-E6Fbcq5r.webm',
+                height: 180,
+                width: 320
+            },{
+                file: 'http://content.bitsontherun.com/videos/bkaovAYt-27m5HpIu.webm',
+                height: 270,
+                width: 480
+            },{
+                file: 'http://content.bitsontherun.com/videos/3XnJSIm4-HRoRMLSY.webm',
+                height: 405,
+                width: 720
+            },{
+                file: 'http://content.bitsontherun.com/videos/3XnJSIm4-MoSrD9rm.webm',
+                height: 720,
+                width: 1280
             }],
             title: "4 quality levels"
         }],
@@ -71,6 +97,7 @@
      };
     function getQualityLevels() {
         var levels = jwplayer().getQualityLevels();
+        console.log(levels);
         var text = "The list of quality levels is: ";
         if(levels) { 
             for (var i=0; i < levels.length; i++) { 
@@ -86,6 +113,7 @@
         }
     };
     jwplayer().onQualityLevels(function qualityLevels(event) {
+        console.log(event);
         var text = "List of quality levels changed to: ";
         for (var i=0; i < event.levels.length; i++) { 
             text += event.levels[i].label +", ";

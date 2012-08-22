@@ -106,14 +106,21 @@
 				'background-repeat': 'repeat-x',
 				'background-size': JW_CSS_100PCT + " " + bgSkin.height + "px",
 				position: "absolute",
-				width: hasCaps ? UNDEFINED : showText ? "100%" : bgSkin.width,
-				'margin-left': !showText ? (bgSkin.width - _iconWidth) / -2 : UNDEFINED,
-				left: hasCaps ? capLeftSkin.width : UNDEFINED,
-				right: hasCaps ? capRightSkin.width : UNDEFINED
+//				top: 0,
+				width: UNDEFINED,
+//				width: hasCaps ? UNDEFINED : (showText ? "100%" : bgSkin.width),
+//				'margin-left': !showText ? (bgSkin.width - _iconWidth) / -2 : UNDEFINED,
+				left: hasCaps ? capLeftSkin.width : 0,
+				right: hasCaps ? capRightSkin.width : 0
 			});
-			_css(_internalSelector(".capLeft") + ","+ _internalSelector(".capRight"), {
-				display: hasCaps ? UNDEFINED : JW_CSS_NONE
-			})
+			_css(_internalSelector(".capLeft"), {
+				display: hasCaps ? UNDEFINED : JW_CSS_NONE,
+				'float': "left"
+			});
+			_css(_internalSelector(".capRight"), {
+				display: hasCaps ? UNDEFINED : JW_CSS_NONE,
+				'float': "right"
+			});
 			_css(_internalSelector('.text'), {
 				display: (_text.innerHTML && showText) ? UNDEFINED : JW_CSS_NONE,
 				padding: hasCaps ? 0 : "0 10px"
@@ -131,8 +138,10 @@
 			_redraw();
 			style.height = "0";
 			style.display = "block";
-			while (numLines(_text) > 2) {
-				_text.innerHTML = _text.innerHTML.replace(/(.*) .*$/, "$1...");
+			if (text) {
+				while (numLines(_text) > 2) {
+					_text.innerHTML = _text.innerHTML.replace(/(.*) .*$/, "$1...");
+				}
 			}
 			style.height = "";
 			style.display = "";
@@ -172,13 +181,15 @@
 
 		
 		this.hide = function() {
-			_css(_internalSelector(), { opacity: 0 });
+			_container.style.opacity = 0;
+			//_css(_internalSelector(), { opacity: 0 });
 			// Needed for IE9 for some reason
 			if (_bg && utils.isIE()) _bg.style.opacity = 0;
 		}
 
 		var _show = this.show = function() {
-			_css(_internalSelector(), { opacity: 1 });
+			_container.style.opacity = 1;
+			//_css(_internalSelector(), { opacity: 1 });
 //			_container.style.opacity = 1;
 			if (_bg && utils.isIE()) _bg.style.opacity = 1;
 		}

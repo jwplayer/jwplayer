@@ -18,7 +18,7 @@
 			// Saved settings
 			_cookies = utils.getCookies(),
 			// Sub-component configurations
-			_componentConfigs = {};
+			_componentConfigs = {},
 			// Defaults
 			_defaults = {
 				autostart: false,
@@ -114,6 +114,8 @@
 			_model.sendEvent(events.JWPLAYER_PLAYLIST_LOADED, {
 				playlist: playlist
 			});
+			_model.item = -1;
+			_model.setItem(0);
 		}
 
 		/** Go through the playlist and choose a single playable type to play; remove sources of a different type **/

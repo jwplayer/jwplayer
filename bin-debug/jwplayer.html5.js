@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2385';
+	jwplayer.html5.version = '6.0.2405';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -152,6 +152,10 @@
 			// Parse XML in FF/Chrome/Safari/Opera
 			if (WINDOW.DOMParser) {
 				parsedXML = (new DOMParser()).parseFromString(input,"text/xml");
+				try {
+					if (parsedXML.childNodes[0].firstChild.nodeName == "parsererror")
+						return;
+				} catch(e) {}
 			} else { 
 				// Internet Explorer
 				parsedXML = new ActiveXObject("Microsoft.XMLDOM");
@@ -193,6 +197,8 @@
 
 	/** Replacement for getBoundingClientRect, which isn't supported in iOS 3.1.2 **/
 	utils.bounds = function(element) {
+		if (!element) return {};
+		
 		try {
 			return element.getBoundingClientRect();
 		} catch (e) {
@@ -222,8 +228,10 @@
 	var _styleSheets={},
 		_styleSheet,
 		_rules = {},
+		_block = 0,
 		exists = utils.exists,
-		
+		_ruleIndexes = {},
+				
 		JW_CLASS = '.jwplayer ';
 
 	function _createStylesheet() {
@@ -233,17 +241,17 @@
 		return styleSheet;
 	}
 	
-	utils.css = function(selector, styles, important) {
-		if (!exists(important)) important = false;
-		
-		if (utils.isIE()) {
-			if (!_styleSheet) {
+	var _css = utils.css = function(selector, styles, important) {
+		if (!_styleSheets[selector]) {
+			//_styleSheets[selector] = _createStylesheet();
+			if (!_styleSheet || _styleSheet.sheet.cssRules.length > 50000) {
 				_styleSheet = _createStylesheet();
 			}
-		} else if (!_styleSheets[selector]) {
-			_styleSheets[selector] = _createStylesheet();
+			_styleSheets[selector] = _styleSheet;
 		}
 
+		if (!exists(important)) important = false;
+		
 		if (!_rules[selector]) {
 			_rules[selector] = {};
 		}
@@ -257,18 +265,34 @@
 			}
 		}
 
+		if (_block > 0)
+			return;
+		
+		_updateStylesheet(selector);
+	}
+	
+	_css.block = function() {
+		_block++;
+	}
+	
+	_css.unblock = function() {
+		_block = Math.max(_block-1, 0);
+		if (_block == 0) {
+			_applyStyles();
+		}
+	}
+	
+	var _applyStyles = function() {
 		// IE9 limits the number of style tags in the head, so we need to update the entire stylesheet each time
-		if (utils.isIE()) {
-			_updateAllStyles();
-		} else {
-			_updateStylesheet(selector, _styleSheets[selector]);
+		for (var selector in _styleSheets) {
+			_updateStylesheet(selector);
 		}
 	}
 	
 	function _styleValue(style, value, important) {
 		if (typeof value === "undefined") {
 			return undefined;
-		} 
+		}
 		
 		var importantString = important ? " !important" : "";
 
@@ -296,29 +320,21 @@
 		}
 	}
 
-	function _updateAllStyles() {
-		var ruleText = "\n";
-		for (var rule in _rules) {
-			ruleText += _getRuleText(rule);
-		}
-		_styleSheet.innerHTML = ruleText;
-	}
-	
-	function _updateStylesheet(selector, sheet) {
-		if (sheet && sheet.sheet) {
-			sheet.innerHTML = _getRuleText(selector);
-			return;
-			// This stuff below fixes some performance problems, but causes other issues;
-			var rules = sheet.sheet.cssRules;
-			for (var i=0; i < rules.length; i++) {
-				var rule = rules[i];
-				if (rule.selectorText == selector) {
-					sheet.sheet.deleteRule(i);
-					//rule.disabled = true;
-					break;
-				}
+
+	function _updateStylesheet(selector) {
+//		_styleSheets[selector].innerHTML = _getRuleText(selector); return;
+		
+		var sheet = _styleSheets[selector].sheet,
+			ruleIndex = _ruleIndexes[selector];
+
+		if (sheet) {
+			var rules = sheet.cssRules;
+			if (utils.exists(ruleIndex)) {
+				sheet.deleteRule(_ruleIndexes[selector]);
+			} else {
+				_ruleIndexes[selector] = rules.length;	
 			}
-			sheet.sheet.insertRule(_getRuleText(selector), rules.length);
+			sheet.insertRule(_getRuleText(selector), _ruleIndexes[selector]);
 		}
 		
 	}
@@ -405,7 +421,7 @@
 			'background-color': 'transparent'
 		});
 		
-		utils.css("ul", { 'list-style': "none" });
+		utils.css(JW_CLASS + "ul", { 'list-style': "none" });
 	};
 	
 })(jwplayer.utils);/**
@@ -801,7 +817,6 @@
  * @version 6.0
  */
 (function(jwplayer) {
-	
 	var html5 = jwplayer.html5,
 		utils = jwplayer.utils,
 		events = jwplayer.events,
@@ -895,14 +910,19 @@
 			_currentQuality,
 			_currentVolume,
 			_volumeOverlay,
+			_cbBounds,
+			_timeRail,
+			_railBounds,
 			_timeOverlay,
 			_timeOverlayText,
 			_hdOverlay,
 			_ccOverlay,
 			_fullscreenOverlay,
+			_redrawTimeout,
 			_audioMode = FALSE,
 			_dragging = FALSE,
 			_lastSeekTime = 0,
+			_lastTooltipPositionTime = 0,
 			
 			_toggles = {
 				play: "pause",
@@ -930,12 +950,14 @@
 				ccOn: _cc
 			},
 			
+			
 			_sliderMapping = {
 				time: _seek,
-				volume: _volume
-			};
+				volume: _volume,
+			},
 		
-			_overlays = {};
+			_overlays = {},
+			_this = this;
 
 		function _layoutElement(name, type, className) {
 			return { name: name, type: type, className: className };
@@ -953,10 +975,6 @@
 			_controlbar.id = _id;
 			_controlbar.className = "jwcontrolbar";
 
-			// Slider listeners
-			WINDOW.addEventListener('mousemove', _sliderMouseEvent, FALSE);
-			WINDOW.addEventListener('mouseup', _sliderMouseEvent, FALSE);
-
 			_skin = _api.skin;
 			
 			_layout = _skin.getComponentLayout('controlbar');
@@ -970,7 +988,7 @@
 				_muteHandler();
 			}, 0);
 			
-			this.visible = false;
+			_this.visible = false;
 		}
 		
 		function _addEventListeners() {
@@ -983,6 +1001,16 @@
 			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_LOADED, _playlistHandler);
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_LEVELS, _qualityHandler);
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_LEVEL_CHANGED, _qualityLevelChanged);
+			_controlbar.addEventListener('mouseover', function(){
+				// Slider listeners
+				WINDOW.addEventListener('mousemove', _sliderMouseEvent, FALSE);
+				WINDOW.addEventListener('mouseup', _sliderMouseEvent, FALSE);
+			}, false);
+			_controlbar.addEventListener('mouseout', function(){
+				// Slider listeners
+				WINDOW.removeEventListener('mousemove', _sliderMouseEvent);
+				WINDOW.removeEventListener('mouseup', _sliderMouseEvent);
+			}, false);
 		}
 		
 		function _timeUpdated(evt) {
@@ -1442,6 +1470,8 @@
 			if (name == "time") {
 				_timeOverlay = new html5.overlay(_id+"_timetooltip", _skin);
 				_timeOverlayText = _createElement("div");
+				_timeOverlay.setContents(_timeOverlayText);
+				_timeRail = rail;
 				_setTimeOverlay(0);
 				_appendChild(rail, _timeOverlay.element());
 				_styleTimeSlider(slider);
@@ -1545,7 +1575,12 @@
 		}
 		
 		function _sliderMouseEvent(evt) {
-			_positionTimeTooltip(evt);
+			var currentTime = (new Date()).getTime();
+			
+			if (currentTime - _lastTooltipPositionTime > 50) {
+				_positionTimeTooltip(evt);
+				_lastTooltipPositionTime = currentTime;
+			}
 			
 			if (!_dragging || evt.button != 0) {
 				return;
@@ -1570,7 +1605,6 @@
 				} else {
 					_setVolume(pct);
 				}
-				var currentTime = (new Date()).getTime();
 				if (currentTime - _lastSeekTime > 500) {
 					_lastSeekTime = currentTime;
 					_sliderMapping[_dragging](pct);
@@ -1591,18 +1625,17 @@
 		}
 		
 		function _positionTimeTooltip(evt) {
+			if (!_railBounds || _railBounds.width == 0) return;
 			var element = _timeOverlay.element(), 
-				railBox = utils.bounds(element.parentNode),
-				position = (evt.pageX - railBox.left) - WINDOW.pageXOffset;
-			if (position >= 0 && position <= railBox.width) {
-				element.style.left = position + "px";
-				_setTimeOverlay(_duration * position / railBox.width);
+				position = (evt.pageX - _railBounds.left) - WINDOW.pageXOffset;
+			if (position >= 0 && position <= _railBounds.width) {
+				element.style.left = Math.round(position) + "px";
+				_setTimeOverlay(_duration * position / _railBounds.width);
 			}
 		}
 		
 		function _setTimeOverlay(sec) {
 			_timeOverlayText.innerHTML = utils.timeFormat(sec);
-			_timeOverlay.setContents(_timeOverlayText);
 		}
 		
 		function _styleTimeSlider(slider) {
@@ -1705,46 +1738,55 @@
 			}
 		}
 
-		var _redraw = this.redraw = function() {
-			_createStyles();
-			var capLeft = _getSkinElement("capLeft"), capRight = _getSkinElement("capRight")
-			_css(_internalSelector('.jwgroup.jwcenter'), {
-				left: Math.round(utils.parseDimension(_groups.left.offsetWidth) + capLeft.width),
-				right: Math.round(utils.parseDimension(_groups.right.offsetWidth) + capRight.width)
-			});
+		var _redraw = _this.redraw = function() {
+			clearTimeout(_redrawTimeout);
+			_redrawTimeout = setTimeout(function() {
+				_createStyles();
+				var capLeft = _getSkinElement("capLeft"), capRight = _getSkinElement("capRight")
+				_css(_internalSelector('.jwgroup.jwcenter'), {
+					left: Math.round(utils.parseDimension(_groups.left.offsetWidth) + capLeft.width),
+					right: Math.round(utils.parseDimension(_groups.right.offsetWidth) + capRight.width)
+				});
+				
+				var max = (_controlbar.parentNode.clientWidth > _settings.maxwidth), 
+					margin = _audioMode ? 0 : _settings.margin;
+				
+				_css(_internalSelector(), {
+					left:  max ? "50%" : margin,
+					right:  max ? UNDEFINED : margin,
+					'margin-left': max ? _controlbar.clientWidth / -2 : UNDEFINED,
+					width: max ? JW_CSS_100PCT : UNDEFINED
+				});
 			
-			var max = (_controlbar.parentNode.clientWidth > _settings.maxwidth), 
-				margin = _audioMode ? 0 : _settings.margin;
-			
-			_css(_internalSelector(), {
-				left:  max ? "50%" : margin,
-				right:  max ? UNDEFINED : margin,
-				'margin-left': max ? _controlbar.clientWidth / -2 : UNDEFINED,
-				width: max ? JW_CSS_100PCT : UNDEFINED
-			});
-		
-			_positionOverlays();
-			
+				
+				var newBounds = utils.bounds(_controlbar);
+				if (!_cbBounds || newBounds.width != _cbBounds.width) {
+					_cbBounds = newBounds;
+					if (_cbBounds.width > 0) {
+						_railBounds = utils.bounds(_timeRail);
+						_positionOverlays();
+					}
+				}
+			}, 0);
 		}
 		
 		function _positionOverlays() {
-			var cbBounds = utils.bounds(_controlbar),
-				overlayBounds, i, overlay;
+			var overlayBounds, i, overlay;
 			for (i in _overlays) {
 				overlay = _overlays[i];
-				overlay.offsetX(0);
 				overlayBounds = utils.bounds(overlay.element());
-				if (overlayBounds.right > cbBounds.right) {
-					overlay.offsetX(cbBounds.right - overlayBounds.right);
-				} else if (overlayBounds.left < cbBounds.left) {
-					overlay.offsetX(cbBounds.left - overlayBounds.left);
+				overlay.offsetX(0);
+				if (overlayBounds.right > _cbBounds.right) {
+					overlay.offsetX(_cbBounds.right - overlayBounds.right);
+				} else if (overlayBounds.left < _cbBounds.left) {
+					overlay.offsetX(_cbBounds.left - overlayBounds.left);
 				}
 			}
 		}
 
 		
 
-		this.audioMode = function(mode) {
+		_this.audioMode = function(mode) {
 			if (mode != _audioMode) {
 				_audioMode = mode;
 				_css(_internalSelector(".jwfullscreen"), { display: mode ? JW_CSS_NONE : UNDEFINED });
@@ -1754,11 +1796,11 @@
 			}
 		}
 		
-		this.element = function() {
+		_this.element = function() {
 			return _controlbar;
 		};
 
-		this.margin = function() {
+		_this.margin = function() {
 			return parseInt(_settings.margin);
 		};
 
@@ -1827,14 +1869,16 @@
 			parent.appendChild(child);
 		}
 		
-		this.show = function() {
-			this.visible = true;
-			_css(_internalSelector(), { opacity: 1, visibility: "visible" });
+		_this.show = function() {
+			_this.visible = true;
+			_controlbar.style.opacity = 1;
+			//_css(_internalSelector(), { opacity: 1, visibility: "visible" });
 		}
 		
-		this.hide = function() {
-			this.visible = false;
-			_css(_internalSelector(), { opacity: 0, visibility: JW_CSS_HIDDEN });
+		_this.hide = function() {
+			_this.visible = false;
+			_controlbar.style.opacity = 0;
+			//_css(_internalSelector(), { opacity: 0, visibility: JW_CSS_HIDDEN });
 		}
 		
 		// Call constructor
@@ -1849,7 +1893,7 @@
 
 	_css(CB_CLASS, {
 		position: JW_CSS_ABSOLUTE,
-		visibility: JW_CSS_HIDDEN,
+		//visibility: JW_CSS_HIDDEN,
 		opacity: 0
 	});
 	
@@ -1956,7 +2000,10 @@
 			_controller = this,
 			_eventDispatcher = new events.eventdispatcher(_model.id, _model.config.debug),
 			_ready = false,
-			_loadOnPlay = -1
+			_loadOnPlay = -1,
+			_preplay, 
+			_actionOnAttach, 
+			_interruptPlay,
 			_queuedCalls = [];
 		
 		utils.extend(this, _eventDispatcher);
@@ -1976,8 +2023,8 @@
 				_view.completeSetup();
 				_eventDispatcher.sendEvent(evt.type, evt);
 
-				if (jwplayer.utils.exists(window.playerReady)) {
-					playerReady(evt);
+				if (jwplayer.utils.exists(window.jwplayer.playerReady)) {
+					jwplayer.playerReady(evt);
 				}
 
 				_eventDispatcher.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_LOADED, {playlist: _model.playlist});
@@ -1996,7 +2043,6 @@
 					var queuedCall = _queuedCalls.shift();
 					_callMethod(queuedCall.method, queuedCall.arguments);
 				}
-
 			}
 		}
 
@@ -2014,13 +2060,11 @@
 			
 			switch (utils.typeOf(item)) {
 			case "string":
-				_model.setPlaylist(new jwplayer.playlist({file:item}));
-				_model.setItem(0);
+				_loadPlaylist(item);
 				break;
 			case "object":
 			case "array":
 				_model.setPlaylist(new jwplayer.playlist(item));
-				_model.setItem(0);
 				break;
 			case "number":
 				_model.setItem(item);
@@ -2028,9 +2072,22 @@
 			}
 		}
 		
-		var _preplay, _actionOnAttach, _interruptPlay;
+		function _loadPlaylist(playlist) {
+			var loader = new html5.playlistloader();
+			loader.addEventListener(events.JWPLAYER_PLAYLIST_LOADED, function(evt) {
+				_load(evt.playlist);
+			});
+			loader.addEventListener(events.JWPLAYER_ERROR, function(evt) {
+				_load([]);
+				evt.message = "Could not load playlist: " + evt.message; 
+				_forward(evt);
+			});
+			loader.load(playlist);
+		}
 		
-		function _play() {
+		function _play(state) {
+			if (!utils.exists(state)) state = true;
+			if (!state) return _pause();
 			try {
 				if (_loadOnPlay >= 0) {
 					_load(_loadOnPlay);
@@ -2049,6 +2106,7 @@
 				}
 				
 				if (_isIdle()) {
+					if (_model.playlist.length == 0) return false;
 					_video.load(_model.playlist[_model.item]);
 				} else if (_model.state == states.PAUSED) {
 					_video.play();
@@ -2079,7 +2137,9 @@
 
 		}
 
-		function _pause() {
+		function _pause(state) {
+			if (!utils.exists(state)) state = true;
+			if (!state) return _play();
 			try {
 				switch (_model.state) {
 					case states.PLAYING:
@@ -2292,6 +2352,7 @@
 			_icons = {},
 			_errorState = FALSE,
 			_completedState = FALSE,
+			_visibilities = {},
 			_hiding,
 			_button,		
 			_config = utils.extend({
@@ -2304,7 +2365,7 @@
 				overcolor: '#fff',
 				fontsize: 15,
 				fontweight: ""
-			}, _skin.getComponentSettings('display'), config);
+			}, _skin.getComponentSettings('display'), config),
 			_eventDispatcher = new events.eventdispatcher();
 			
 		utils.extend(this, _eventDispatcher);
@@ -2315,13 +2376,14 @@
 			_display.className = "jwdisplay";
 			
 			_preview = DOCUMENT.createElement("div");
-			_preview.className = "jwpreview";
+			_preview.className = "jwpreview jw" + _api.jwGetStretching();
 			_display.appendChild(_preview);
 			
 			_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
 			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_ITEM, _itemHandler);
 			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_COMPLETE, _playlistCompleteHandler);
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
+			_api.jwAddEventListener(events.JWPLAYER_ERROR, _errorHandler);
 
 			_display.addEventListener('click', _clickHandler, FALSE);
 			
@@ -2369,13 +2431,19 @@
 		}
 
 		function _itemHandler() {
+			_clearError();
 			_item = _api.jwGetPlaylist()[_api.jwGetPlaylistIndex()];
 			var newImage = _item ? _item.image : "";
 			if (_image != newImage) {
+				if (_image) {
+					_setVisibility(D_PREVIEW_CLASS, FALSE);
+				}
 				_image = newImage;
-				_setVisibility(D_PREVIEW_CLASS, FALSE);
 				_getImage();
+			} else if (_image) {
+				_setVisibility(D_PREVIEW_CLASS, TRUE);
 			}
+			_updateDisplay(_api.jwGetState());
 		}
 		
 		function _playlistCompleteHandler() {
@@ -2397,7 +2465,9 @@
 			switch(state) {
 			case states.IDLE:
 				if (!_errorState && !_completedState) {
-					if (_image && !_imageHidden) _setVisibility(D_PREVIEW_CLASS, TRUE);
+					if (_image && !_imageHidden) {
+						_setVisibility(D_PREVIEW_CLASS, TRUE);
+					}
 					_setIcon('play', _item ? _item.title : "");
 				}
 				break;
@@ -2444,6 +2514,7 @@
 		function _imageLoaded() {
 			_imageWidth = this.width;
 			_imageHeight = this.height;
+			_updateDisplay(_api.jwGetState());
 			_redraw();
 			if (_image) {
 				_css(_internalSelector(D_PREVIEW_CLASS), {
@@ -2464,16 +2535,23 @@
 
 		
 		function _redraw() {
-			utils.stretch(_api.jwGetStretching(), _preview, _display.clientWidth, _display.clientHeight, _imageWidth, _imageHeight);
+			if (_display.clientWidth * _display.clientHeight > 0) {
+				utils.stretch(_api.jwGetStretching(), _preview, _display.clientWidth, _display.clientHeight, _imageWidth, _imageHeight);
+			}
 		}
 
 		this.redraw = _redraw;
 		
 		function _setVisibility(selector, state) {
-			_css(_internalSelector(selector), {
-				opacity: state ? 1 : 0,
-				visibility: state ? "visible" : "hidden"
-			});
+			if (!utils.exists(_visibilities[selector])) _visibilities[selector] = false;
+			
+			if (_visibilities[selector] != state) {
+				_visibilities[selector] = state;
+				_css(_internalSelector(selector), {
+					opacity: state ? 1 : 0,
+					visibility: state ? "visible" : "hidden"
+				});
+			}
 		}
 
 		this.show = function() {
@@ -2629,14 +2707,21 @@
 				'background-repeat': 'repeat-x',
 				'background-size': JW_CSS_100PCT + " " + bgSkin.height + "px",
 				position: "absolute",
-				width: hasCaps ? UNDEFINED : showText ? "100%" : bgSkin.width,
-				'margin-left': !showText ? (bgSkin.width - _iconWidth) / -2 : UNDEFINED,
-				left: hasCaps ? capLeftSkin.width : UNDEFINED,
-				right: hasCaps ? capRightSkin.width : UNDEFINED
+//				top: 0,
+				width: UNDEFINED,
+//				width: hasCaps ? UNDEFINED : (showText ? "100%" : bgSkin.width),
+//				'margin-left': !showText ? (bgSkin.width - _iconWidth) / -2 : UNDEFINED,
+				left: hasCaps ? capLeftSkin.width : 0,
+				right: hasCaps ? capRightSkin.width : 0
 			});
-			_css(_internalSelector(".capLeft") + ","+ _internalSelector(".capRight"), {
-				display: hasCaps ? UNDEFINED : JW_CSS_NONE
-			})
+			_css(_internalSelector(".capLeft"), {
+				display: hasCaps ? UNDEFINED : JW_CSS_NONE,
+				'float': "left"
+			});
+			_css(_internalSelector(".capRight"), {
+				display: hasCaps ? UNDEFINED : JW_CSS_NONE,
+				'float': "right"
+			});
 			_css(_internalSelector('.text'), {
 				display: (_text.innerHTML && showText) ? UNDEFINED : JW_CSS_NONE,
 				padding: hasCaps ? 0 : "0 10px"
@@ -2654,8 +2739,10 @@
 			_redraw();
 			style.height = "0";
 			style.display = "block";
-			while (numLines(_text) > 2) {
-				_text.innerHTML = _text.innerHTML.replace(/(.*) .*$/, "$1...");
+			if (text) {
+				while (numLines(_text) > 2) {
+					_text.innerHTML = _text.innerHTML.replace(/(.*) .*$/, "$1...");
+				}
 			}
 			style.height = "";
 			style.display = "";
@@ -2695,13 +2782,15 @@
 
 		
 		this.hide = function() {
-			_css(_internalSelector(), { opacity: 0 });
+			_container.style.opacity = 0;
+			//_css(_internalSelector(), { opacity: 0 });
 			// Needed for IE9 for some reason
 			if (_bg && utils.isIE()) _bg.style.opacity = 0;
 		}
 
 		var _show = this.show = function() {
-			_css(_internalSelector(), { opacity: 1 });
+			_container.style.opacity = 1;
+			//_css(_internalSelector(), { opacity: 1 });
 //			_container.style.opacity = 1;
 			if (_bg && utils.isIE()) _bg.style.opacity = 1;
 		}
@@ -2780,10 +2869,11 @@
 			_buttonCount = 0,
 			_buttons = {},
 			_tooltips = {},
-			_container; 
+			_container,
+			_this = this;
 
 		function _init() {
-			this.visible = false;
+			_this.visible = false;
 			
 			_container = _createElement("div", "jwdock");
 			_container.id = _id;
@@ -2850,7 +2940,7 @@
 			return { width: 0, height: 0, src: "" }
 		}
 
-		var _redraw = this.redraw = function() {
+		var _redraw = _this.redraw = function() {
 		}
 		
 		function _positionTooltip(name) {
@@ -2871,30 +2961,32 @@
 
 		}
 	
-		this.element = function() {
+		_this.element = function() {
 			return _container;
 		}
 		
-		this.offset = function(offset) {
+		_this.offset = function(offset) {
 			_css(_internalSelector(), { 'margin-left': offset });
 		}
 
-		this.hide = function() {
-			this.visible = false;
-			_css(_internalSelector(), {
-				opacity: 0
-			});
+		_this.hide = function() {
+			_this.visible = false;
+//			_css(_internalSelector(), {
+//				opacity: 0
+//			});
+			_container.style.opacity = 0;
 		}
 
-		this.show = function() {
-			this.visible = true;
-			_css(_internalSelector(), {
-				visibility: "visible",
-				opacity: 1
-			});
+		_this.show = function() {
+			_this.visible = true;
+//			_css(_internalSelector(), {
+//				visibility: "visible",
+//				opacity: 1
+//			});
+			_container.style.opacity = 1;
 		}
 		
-		this.addButton = function(url, label, clickHandler, id) {
+		_this.addButton = function(url, label, clickHandler, id) {
 			// Can't duplicate button ids
 			if (_buttons[id]) return;
 			
@@ -2944,7 +3036,7 @@
 			_setCaps();
 		}
 		
-		this.removeButton = function(id) {
+		_this.removeButton = function(id) {
 			if (_buttons[id]) {
 				_container.removeChild(_buttons[id].element);
 				_container.removeChild(_buttons[id].divider);
@@ -2965,7 +3057,7 @@
 
 	_css(D_CLASS, {
 	  	position: "absolute",
-	  	visibility: "hidden",
+	  	//visibility: "hidden",
 	  	opacity: 0
 //	  	overflow: "hidden"
 	});
@@ -3499,19 +3591,21 @@
 		this.hide = function() {
 			if (_settings.hide) {
 				_showing = false;
-				_css(_internalSelector(), {
-					opacity: 0,
-					visibility: JW_CSS_HIDDEN,
-				});
+//				_css(_internalSelector(), {
+//					opacity: 0,
+//					visibility: JW_CSS_HIDDEN,
+//				});
+				_logo.style.opacity = 0;
 			}
 		}
 
 		this.show = function() {
 			_showing = true;
-			_css(_internalSelector(), {
-				visibility: JW_CSS_VISIBLE,
-				opacity: 1
-			});
+//			_css(_internalSelector(), {
+//				visibility: JW_CSS_VISIBLE,
+//				opacity: 1
+//			});
+			_logo.style.opacity = 1;
 		}
 		
 		_setup();
@@ -3522,7 +3616,7 @@
 	_css(LOGO_CLASS, {
 		cursor: "pointer",
 	  	position: "absolute",
-	  	visibility: JW_CSS_HIDDEN,
+//	  	visibility: JW_CSS_HIDDEN,
 	  	opacity: 0
 	});
 
@@ -3683,7 +3777,7 @@
 			// Saved settings
 			_cookies = utils.getCookies(),
 			// Sub-component configurations
-			_componentConfigs = {};
+			_componentConfigs = {},
 			// Defaults
 			_defaults = {
 				autostart: false,
@@ -3779,6 +3873,8 @@
 			_model.sendEvent(events.JWPLAYER_PLAYLIST_LOADED, {
 				playlist: playlist
 			});
+			_model.item = -1;
+			_model.setItem(0);
 		}
 
 		/** Go through the playlist and choose a single playable type to play; remove sources of a different type **/
@@ -3832,7 +3928,6 @@
  * @version 6.0
  */
 (function(jwplayer) {
-	
 	var html5 = jwplayer.html5,
 		utils = jwplayer.utils,
 		_css = utils.css,
@@ -3849,7 +3944,7 @@
 		//JW_CSS_LEFT = "left",
 		//JW_CSS_RIGHT = "right",
 		JW_CSS_100PCT = "100%",
-		JW_CSS_SMOOTH_EASE = "opacity .15s, visibility .15s",
+		JW_CSS_SMOOTH_EASE = "opacity .15s, visibility .15s, left .1s linear",
 		
 		OVERLAY_CLASS = '.jwoverlay',
 		CONTENTS_CLASS = 'jwcontents',
@@ -3881,8 +3976,9 @@
 			_offset = 0,
 			_arrow,
 			_inverted = inverted,
-			_settings = utils.extend({}, _defaults, _skin.getComponentSettings('tooltip'));
-			_borderSizes = {};
+			_settings = utils.extend({}, _defaults, _skin.getComponentSettings('tooltip')),
+			_borderSizes = {},
+			_this = this;
 		
 		function _init() {
 			_container = _createElement(OVERLAY_CLASS.replace(".",""));
@@ -3932,7 +4028,7 @@
 				padding: _borderSizes.top + "px " + _borderSizes.right + "px " + _borderSizes.bottom + "px " + _borderSizes.left + "px"  
 			});
 			
-			this.showing = false;
+			_this.showing = false;
 		}
 		
 		function _internalSelector(name) {
@@ -3961,7 +4057,7 @@
 		
 		function _createBorderElement(dim1, dim2) {
 			if (!dim2) dim2 = "";
-			var created = _createSkinElement('cap' + dim1 + dim2, "jwborder jw" + dim1 + (dim2 ? dim2 : "")); 
+			var created = _createSkinElement('cap' + dim1 + dim2, "jwborder jw" + dim1 + (dim2 ? dim2 : "")), 
 				elem = created[0],
 				skinElem = created[1],
 				elemStyle = {
@@ -3988,22 +4084,28 @@
 			}
 		}
 
-		this.element = function() {
+		_this.element = function() {
 			return _container;
 		};
+
+		var contentsTimeout;
 		
-		this.setContents = function(contents) {
+		_this.setContents = function(contents) {
 			utils.empty(_contents);
 			_contents.appendChild(contents);
-			setTimeout(_position, 0);
+			clearTimeout(contentsTimeout);
+			contentsTimeout = setTimeout(_position, 0);
 		}
 		
-		this.offsetX = function(offset) {
+		_this.offsetX = function(offset) {
 			_offset = offset;
+			clearTimeout(contentsTimeout);
 			_position();
 		}
 		
 		function _position() {
+			if (_container.clientWidth == 0) return;
+
 			_css(_internalSelector(), {
 				'margin-left': _offset - _container.clientWidth / 2
 			});
@@ -4012,7 +4114,7 @@
 			});
 		}
 		
-		this.borderWidth = function() {
+		_this.borderWidth = function() {
 			return _borderSizes.left
 		}
 
@@ -4031,14 +4133,18 @@
 			}
 		}
 		
-		this.show = function() {
-			this.showing = true;
-			_css(_internalSelector(), { opacity: 1, visibility: "visible" });
+		_this.show = function() {
+			_this.showing = true;
+			_container.style.opacity = 1;
+			_container.style.visibility = "visible";
+			//_css(_internalSelector(), { opacity: 1, visibility: "visible" });
 		}
 		
-		this.hide = function() {
-			this.showing = false;
-			_css(_internalSelector(), { opacity: 0, visibility: JW_CSS_HIDDEN });
+		_this.hide = function() {
+			_this.showing = false;
+			_container.style.opacity = 0;
+			_container.style.visibility = JW_CSS_HIDDEN;
+			//_css(_internalSelector(), { opacity: 0, visibility: JW_CSS_HIDDEN });
 		}
 		
 		// Call constructor
@@ -4055,7 +4161,6 @@
 		position: JW_CSS_ABSOLUTE,
 		visibility: JW_CSS_HIDDEN,
 		opacity: 0,
-//		'z-index': 1 // required for IE9
 	});
 
 	_css(OVERLAY_CLASS + " .jwcontents", {
@@ -4081,14 +4186,18 @@
  * @version 6.0
  */
 (function(html5) {
+	var utils = jwplayer.utils;
+	
 	html5.player = function(config) {
-		var _api = this, 
+		var _api = this,
 			_model, 
 			_view, 
 			_controller,
 			_instreamPlayer;
 
 		function _init() {
+			jwplayer.utils.css.block();
+			
 			_model = new html5.model(config); 
 			_api.id = _model.id;
 			_view = new html5.view(_api, _model); 
@@ -4100,14 +4209,17 @@
 			setup.addEventListener(jwplayer.events.JWPLAYER_READY, _readyHandler);
 			setup.addEventListener(jwplayer.events.JWPLAYER_ERROR, _errorHandler);
 			setup.start();
+
 		}
 		
 		function _readyHandler(evt) {
 			_controller.playerReady(evt);
+			utils.css.unblock();
 		}
 
 		function _errorHandler(evt) {
-			jwplayer.utils.log('There was a problem setting up the player: ', evt);
+			utils.log('There was a problem setting up the player: ', evt);
+			utils.css.unblock();
 		}
 		
 		function _initializeAPI() {
@@ -4605,7 +4717,7 @@
 		utils.extend(this, _eventDispatcher);
 		
 		this.load = function(playlistfile) {
-			utils.ajax(playlistfile, _playlistLoaded, _playlistError);
+			utils.ajax(playlistfile, _playlistLoaded, _playlistLoadError);
 		}
 		
 		function _playlistLoaded(loadedEvent) {
@@ -4617,7 +4729,7 @@
 				
 				
 				if (html5.parsers.localName(rss) != "rss") {
-					_playlistError("Playlist is not a valid RSS feed.");
+					_playlistError("Playlist is not a valid RSS feed");
 					return;
 				}
 				
@@ -4631,13 +4743,17 @@
 					_playlistError("No playable sources found");
 				}
 			} catch (e) {
-				_playlistError('Could not load the playlist.');
+				_playlistError();
 			}
+		}
+		
+		function _playlistLoadError() {
+			_playlistError();
 		}
 		
 		function _playlistError(msg) {
 			_eventDispatcher.sendEvent(events.JWPLAYER_ERROR, {
-				message: msg ? msg : 'Could not load playlist an unknown reason.'
+				message: msg ? msg : 'Error loading file'
 			});
 		}
 	}
@@ -5551,9 +5667,10 @@
 			_setState(states.IDLE);
 		}
 
-		function _sendLevels(levels) {
+		function _getPublicLevels(levels) {
+			var publicLevels;
 			if (utils.typeOf(levels)=="array" && levels.length > 0) {
-				var publicLevels = [];
+				publicLevels = [];
 				for (var i=0; i<levels.length; i++) {
 					var level = levels[i], publicLevel = {};
 					publicLevel.label = _levelLabel(level) ? _levelLabel(level) : i;
@@ -5562,6 +5679,13 @@
 					if (level.bitrate) publicLevel.bitrate = level.bitrate;
 					publicLevels[i] = publicLevel;
 				}
+			}
+			return publicLevels;
+		}
+		
+		function _sendLevels(levels) {
+			var publicLevels = _getPublicLevels(levels);
+			if (publicLevels) {
 				_eventDispatcher.sendEvent(events.JWPLAYER_MEDIA_LEVELS, { levels: publicLevels, currentQuality: _currentQuality });
 			}
 		}
@@ -5778,7 +5902,7 @@
 		}
 		
 		_this.getQualityLevels = function() {
-			return _levels;
+			return _getPublicLevels(_levels);
 		}
 		
 		// Call constructor
@@ -5945,7 +6069,7 @@
 		function _setupControls() {
 			var width = _model.width,
 				height = _model.height,
-				cbSettings = _model.componentConfig('controlbar');
+				cbSettings = _model.componentConfig('controlbar'),
 				displaySettings = _model.componentConfig('display');
 		
 			_display = new html5.display(_api, displaySettings);
@@ -5977,7 +6101,9 @@
 				_videoTag.controls = TRUE;
 			}
 				
-			_resize(width, height);
+			setTimeout(function() {
+				_resize(width, height);
+			}, 0);
 		}
 
 		/** 
@@ -6017,6 +6143,7 @@
 			if (_controlbar) _controlbar.redraw();
 			if (_display) _display.redraw();
 			_resizeMedia();
+			_eventDispatcher.sendEvent(events.JWPLAYER_RESIZE);
 		}
 
 		/**
@@ -6035,9 +6162,7 @@
 			}
 
 			if (_display) _display.redraw();
-			if (_controlbar) { 
-				_controlbar.redraw();
-			}
+			if (_controlbar) _controlbar.redraw();
 			if (_logo) {
 				setTimeout(function() {
 					_logo.offset(_controlbar && _logo.position().indexOf("bottom") >= 0 ? _controlbar.element().clientHeight + _controlbar.margin() : 0);
@@ -6158,8 +6283,12 @@
 		 * If the browser enters or exits fullscreen mode (without the view's knowing about it) update the model.
 		 **/
 		function _fullscreenChangeHandler(evt) {
-			_model.setFullscreen(_isNativeFullscreen());
-			_fullscreen(_model.fullscreen);
+			if (evt.target.id == _api.id) {
+				var fsNow = _isNativeFullscreen();
+				if (_model.fullscreen != fsNow) {
+					_fullscreen(fsNow);
+				}
+			}
 		}
 		
 		function _showControlbar() {
@@ -6218,6 +6347,7 @@
 		}
 
 		function _sendControlsEvent() {
+			return;
 			var height = _bounds(_container).height,
 				y = 0;
 			if (_controlbar && _controlbar.visible) {

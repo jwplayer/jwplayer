@@ -6,7 +6,6 @@
  * @version 6.0
  */
 (function(jwplayer) {
-	
 	var html5 = jwplayer.html5,
 		utils = jwplayer.utils,
 		events = jwplayer.events,
@@ -100,14 +99,19 @@
 			_currentQuality,
 			_currentVolume,
 			_volumeOverlay,
+			_cbBounds,
+			_timeRail,
+			_railBounds,
 			_timeOverlay,
 			_timeOverlayText,
 			_hdOverlay,
 			_ccOverlay,
 			_fullscreenOverlay,
+			_redrawTimeout,
 			_audioMode = FALSE,
 			_dragging = FALSE,
 			_lastSeekTime = 0,
+			_lastTooltipPositionTime = 0,
 			
 			_toggles = {
 				play: "pause",
@@ -135,12 +139,14 @@
 				ccOn: _cc
 			},
 			
+			
 			_sliderMapping = {
 				time: _seek,
-				volume: _volume
-			};
+				volume: _volume,
+			},
 		
-			_overlays = {};
+			_overlays = {},
+			_this = this;
 
 		function _layoutElement(name, type, className) {
 			return { name: name, type: type, className: className };
@@ -158,10 +164,6 @@
 			_controlbar.id = _id;
 			_controlbar.className = "jwcontrolbar";
 
-			// Slider listeners
-			WINDOW.addEventListener('mousemove', _sliderMouseEvent, FALSE);
-			WINDOW.addEventListener('mouseup', _sliderMouseEvent, FALSE);
-
 			_skin = _api.skin;
 			
 			_layout = _skin.getComponentLayout('controlbar');
@@ -175,7 +177,7 @@
 				_muteHandler();
 			}, 0);
 			
-			this.visible = false;
+			_this.visible = false;
 		}
 		
 		function _addEventListeners() {
@@ -188,6 +190,16 @@
 			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_LOADED, _playlistHandler);
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_LEVELS, _qualityHandler);
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_LEVEL_CHANGED, _qualityLevelChanged);
+			_controlbar.addEventListener('mouseover', function(){
+				// Slider listeners
+				WINDOW.addEventListener('mousemove', _sliderMouseEvent, FALSE);
+				WINDOW.addEventListener('mouseup', _sliderMouseEvent, FALSE);
+			}, false);
+			_controlbar.addEventListener('mouseout', function(){
+				// Slider listeners
+				WINDOW.removeEventListener('mousemove', _sliderMouseEvent);
+				WINDOW.removeEventListener('mouseup', _sliderMouseEvent);
+			}, false);
 		}
 		
 		function _timeUpdated(evt) {
@@ -647,6 +659,8 @@
 			if (name == "time") {
 				_timeOverlay = new html5.overlay(_id+"_timetooltip", _skin);
 				_timeOverlayText = _createElement("div");
+				_timeOverlay.setContents(_timeOverlayText);
+				_timeRail = rail;
 				_setTimeOverlay(0);
 				_appendChild(rail, _timeOverlay.element());
 				_styleTimeSlider(slider);
@@ -750,7 +764,12 @@
 		}
 		
 		function _sliderMouseEvent(evt) {
-			_positionTimeTooltip(evt);
+			var currentTime = (new Date()).getTime();
+			
+			if (currentTime - _lastTooltipPositionTime > 50) {
+				_positionTimeTooltip(evt);
+				_lastTooltipPositionTime = currentTime;
+			}
 			
 			if (!_dragging || evt.button != 0) {
 				return;
@@ -775,7 +794,6 @@
 				} else {
 					_setVolume(pct);
 				}
-				var currentTime = (new Date()).getTime();
 				if (currentTime - _lastSeekTime > 500) {
 					_lastSeekTime = currentTime;
 					_sliderMapping[_dragging](pct);
@@ -796,18 +814,17 @@
 		}
 		
 		function _positionTimeTooltip(evt) {
+			if (!_railBounds || _railBounds.width == 0) return;
 			var element = _timeOverlay.element(), 
-				railBox = utils.bounds(element.parentNode),
-				position = (evt.pageX - railBox.left) - WINDOW.pageXOffset;
-			if (position >= 0 && position <= railBox.width) {
-				element.style.left = position + "px";
-				_setTimeOverlay(_duration * position / railBox.width);
+				position = (evt.pageX - _railBounds.left) - WINDOW.pageXOffset;
+			if (position >= 0 && position <= _railBounds.width) {
+				element.style.left = Math.round(position) + "px";
+				_setTimeOverlay(_duration * position / _railBounds.width);
 			}
 		}
 		
 		function _setTimeOverlay(sec) {
 			_timeOverlayText.innerHTML = utils.timeFormat(sec);
-			_timeOverlay.setContents(_timeOverlayText);
 		}
 		
 		function _styleTimeSlider(slider) {
@@ -910,46 +927,55 @@
 			}
 		}
 
-		var _redraw = this.redraw = function() {
-			_createStyles();
-			var capLeft = _getSkinElement("capLeft"), capRight = _getSkinElement("capRight")
-			_css(_internalSelector('.jwgroup.jwcenter'), {
-				left: Math.round(utils.parseDimension(_groups.left.offsetWidth) + capLeft.width),
-				right: Math.round(utils.parseDimension(_groups.right.offsetWidth) + capRight.width)
-			});
+		var _redraw = _this.redraw = function() {
+			clearTimeout(_redrawTimeout);
+			_redrawTimeout = setTimeout(function() {
+				_createStyles();
+				var capLeft = _getSkinElement("capLeft"), capRight = _getSkinElement("capRight")
+				_css(_internalSelector('.jwgroup.jwcenter'), {
+					left: Math.round(utils.parseDimension(_groups.left.offsetWidth) + capLeft.width),
+					right: Math.round(utils.parseDimension(_groups.right.offsetWidth) + capRight.width)
+				});
+				
+				var max = (_controlbar.parentNode.clientWidth > _settings.maxwidth), 
+					margin = _audioMode ? 0 : _settings.margin;
+				
+				_css(_internalSelector(), {
+					left:  max ? "50%" : margin,
+					right:  max ? UNDEFINED : margin,
+					'margin-left': max ? _controlbar.clientWidth / -2 : UNDEFINED,
+					width: max ? JW_CSS_100PCT : UNDEFINED
+				});
 			
-			var max = (_controlbar.parentNode.clientWidth > _settings.maxwidth), 
-				margin = _audioMode ? 0 : _settings.margin;
-			
-			_css(_internalSelector(), {
-				left:  max ? "50%" : margin,
-				right:  max ? UNDEFINED : margin,
-				'margin-left': max ? _controlbar.clientWidth / -2 : UNDEFINED,
-				width: max ? JW_CSS_100PCT : UNDEFINED
-			});
-		
-			_positionOverlays();
-			
+				
+				var newBounds = utils.bounds(_controlbar);
+				if (!_cbBounds || newBounds.width != _cbBounds.width) {
+					_cbBounds = newBounds;
+					if (_cbBounds.width > 0) {
+						_railBounds = utils.bounds(_timeRail);
+						_positionOverlays();
+					}
+				}
+			}, 0);
 		}
 		
 		function _positionOverlays() {
-			var cbBounds = utils.bounds(_controlbar),
-				overlayBounds, i, overlay;
+			var overlayBounds, i, overlay;
 			for (i in _overlays) {
 				overlay = _overlays[i];
-				overlay.offsetX(0);
 				overlayBounds = utils.bounds(overlay.element());
-				if (overlayBounds.right > cbBounds.right) {
-					overlay.offsetX(cbBounds.right - overlayBounds.right);
-				} else if (overlayBounds.left < cbBounds.left) {
-					overlay.offsetX(cbBounds.left - overlayBounds.left);
+				overlay.offsetX(0);
+				if (overlayBounds.right > _cbBounds.right) {
+					overlay.offsetX(_cbBounds.right - overlayBounds.right);
+				} else if (overlayBounds.left < _cbBounds.left) {
+					overlay.offsetX(_cbBounds.left - overlayBounds.left);
 				}
 			}
 		}
 
 		
 
-		this.audioMode = function(mode) {
+		_this.audioMode = function(mode) {
 			if (mode != _audioMode) {
 				_audioMode = mode;
 				_css(_internalSelector(".jwfullscreen"), { display: mode ? JW_CSS_NONE : UNDEFINED });
@@ -959,11 +985,11 @@
 			}
 		}
 		
-		this.element = function() {
+		_this.element = function() {
 			return _controlbar;
 		};
 
-		this.margin = function() {
+		_this.margin = function() {
 			return parseInt(_settings.margin);
 		};
 
@@ -1032,14 +1058,16 @@
 			parent.appendChild(child);
 		}
 		
-		this.show = function() {
-			this.visible = true;
-			_css(_internalSelector(), { opacity: 1, visibility: "visible" });
+		_this.show = function() {
+			_this.visible = true;
+			_controlbar.style.opacity = 1;
+			//_css(_internalSelector(), { opacity: 1, visibility: "visible" });
 		}
 		
-		this.hide = function() {
-			this.visible = false;
-			_css(_internalSelector(), { opacity: 0, visibility: JW_CSS_HIDDEN });
+		_this.hide = function() {
+			_this.visible = false;
+			_controlbar.style.opacity = 0;
+			//_css(_internalSelector(), { opacity: 0, visibility: JW_CSS_HIDDEN });
 		}
 		
 		// Call constructor
@@ -1054,7 +1082,7 @@
 
 	_css(CB_CLASS, {
 		position: JW_CSS_ABSOLUTE,
-		visibility: JW_CSS_HIDDEN,
+		//visibility: JW_CSS_HIDDEN,
 		opacity: 0
 	});
 	

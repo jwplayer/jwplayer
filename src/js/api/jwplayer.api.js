@@ -613,21 +613,16 @@
 		
 		return null;
 	};
-	
+
+	jwplayer.playerReady = function(obj) {
+		var api = jwplayer.api.playerById(obj.id);
+
+		if (api) {
+			api.playerReady(obj);
+		} else {
+			jwplayer.api.selectPlayer(obj.id).playerReady(obj);
+		}
+		
+	};
 })(jwplayer);
 
-var _userPlayerReady = (typeof playerReady == 'function') ? playerReady : undefined;
-
-playerReady = function(obj) {
-	var api = jwplayer.api.playerById(obj.id);
-
-	if (api) {
-		api.playerReady(obj);
-	} else {
-		jwplayer.api.selectPlayer(obj.id).playerReady(obj);
-	}
-	
-	if (_userPlayerReady) {
-		_userPlayerReady.call(this, obj);
-	}
-};

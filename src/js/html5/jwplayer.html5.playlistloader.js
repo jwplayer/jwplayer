@@ -12,7 +12,7 @@
 		utils.extend(this, _eventDispatcher);
 		
 		this.load = function(playlistfile) {
-			utils.ajax(playlistfile, _playlistLoaded, _playlistError);
+			utils.ajax(playlistfile, _playlistLoaded, _playlistLoadError);
 		}
 		
 		function _playlistLoaded(loadedEvent) {
@@ -24,7 +24,7 @@
 				
 				
 				if (html5.parsers.localName(rss) != "rss") {
-					_playlistError("Playlist is not a valid RSS feed.");
+					_playlistError("Playlist is not a valid RSS feed");
 					return;
 				}
 				
@@ -38,13 +38,17 @@
 					_playlistError("No playable sources found");
 				}
 			} catch (e) {
-				_playlistError('Could not load the playlist.');
+				_playlistError();
 			}
+		}
+		
+		function _playlistLoadError() {
+			_playlistError();
 		}
 		
 		function _playlistError(msg) {
 			_eventDispatcher.sendEvent(events.JWPLAYER_ERROR, {
-				message: msg ? msg : 'Could not load playlist an unknown reason.'
+				message: msg ? msg : 'Error loading file'
 			});
 		}
 	}

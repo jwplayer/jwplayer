@@ -145,7 +145,9 @@ package com.longtailvideo.jwplayer.model {
 		
 		protected function playlistError(message:String):void {
 			if (message.indexOf("Error #2048") >= 0) {
-				dispatchEvent(new PlayerEvent(PlayerEvent.JWPLAYER_ERROR, "Playlist could not be loaded due to crossdomain policy restrictions."));
+				dispatchEvent(new PlayerEvent(PlayerEvent.JWPLAYER_ERROR, "Playlist could not be loaded: Crossdomain loading denied"));
+			} else if (message.indexOf("Error #1085") >= 0) {
+				dispatchEvent(new PlayerEvent(PlayerEvent.JWPLAYER_ERROR, "Playlist could not be loaded: Not a valid RSS feed"));
 			} else {
 				dispatchEvent(new PlayerEvent(PlayerEvent.JWPLAYER_ERROR, "Playlist could not be loaded: " + message));
 			}

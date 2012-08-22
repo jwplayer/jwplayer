@@ -4,6 +4,7 @@
     <title>Scripting the Playlist</title>
     <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
     <script type="text/javascript" src="assets/formatJSON.js"></script>
+    <script type="text/javascript" src="assets/primaryCookie.js"></script>
     <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
     
 
@@ -26,12 +27,19 @@
 	}
 
     jwplayer("onplaylist").setup({
+        primary: primaryCookie,
         playlist: [{
-	        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
+    		sources: [
+  		  			{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4' },
+  					{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm' }
+  		   		],
      		image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
      		title: "Sintel Trailer"
         }, {
-	        file: 'http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4',
+    		sources: [
+    		  			{ file: 'http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4' },
+    					{ file: 'http://content.bitsontherun.com/videos/bkaovAYt-27m5HpIu.webm' }
+    		   		],
      		image: 'http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg',
      		title: "Big Buck Bunny Trailer"
         }],
@@ -51,7 +59,7 @@
 </tr><tr>
     <td class="both"></td>
     <td>Load the players</td>
-    <td>Firefox, IE8: Players load in Flash.  Otherwise, players load in HTML5 mode</td>
+    <td>IE8: Players load in Flash.  Otherwise, players load in HTML5 mode</td>
     <td class="check"></td>
 </tr><tr>
     <td class="both"></td>
@@ -73,13 +81,19 @@
 
 <script type="text/javascript">
     jwplayer("getplaylist").setup({
+        primary: primaryCookie,
         playlist: [{
-	        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
+    		sources: [
+    		  			{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4' },
+    					{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm' }
+    		   		],
      		image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
      		title: "Sintel Trailer"
         }, {
-	        file: 'http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4',
-     		image: 'http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg',
+    		sources: [
+  		  			{ file: 'http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4' },
+  					{ file: 'http://content.bitsontherun.com/videos/bkaovAYt-27m5HpIu.webm' }
+  		   		],     		image: 'http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg',
      		title: "Big Buck Bunny Trailer"
         }]
     });
@@ -99,7 +113,7 @@
 </tr><tr>
     <td class="both"></td>
     <td>Load the players</td>
-    <td>Firefox, IE8: Players load in Flash.  Otherwise, players load in HTML5 mode</td>
+    <td>IE8: Players load in Flash.  Otherwise, players load in HTML5 mode</td>
     <td class="check"></td>
 </tr><tr>
     <td class="both"></td>
@@ -125,7 +139,11 @@
 	}
 
     jwplayer("playlistload").setup({
-        file: "foo.mp4"
+        primary: primaryCookie,
+		sources: [
+		  			{ file: 'foo.mp4' },
+					{ file: 'foo.webm' }
+		   		]
     });
 
     function loadJSON() {
@@ -136,11 +154,16 @@
 		});
 		
         jwplayer("playlistload").load([{
-	        file: 'http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4',
-     		image: 'http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg',
+    		sources: [
+  		  			{ file: 'http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4' },
+  					{ file: 'http://content.bitsontherun.com/videos/bkaovAYt-27m5HpIu.webm' }
+  		   		],     		image: 'http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg',
      		title: "(JSON) Big Buck Bunny Trailer"
         }, {
-	        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
+    		sources: [
+    		  			{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4' },
+    					{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm' }
+    		   		],
      		image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
      		title: "(JSON) Sintel Trailer"
         }]);
@@ -154,7 +177,7 @@
 </tr><tr>
     <td class="both"></td>
     <td>Load the players</td>
-    <td>Firefox, IE8: Players load in Flash.  Otherwise, players load in HTML5 mode</td>
+    <td>IE8: Players load in Flash.  Otherwise, players load in HTML5 mode</td>
     <td class="check"></td>
 </tr><tr>
     <td class="both"></td>
@@ -175,7 +198,11 @@
 	}
 
     jwplayer("rssload").setup({
-        file: "foo.mp4"
+        primary: primaryCookie,
+		sources: [
+		  			{ file: 'foo.mp4' },
+					{ file: 'foo.webm' }
+		   		]
     });
 
     function loadXML() {
@@ -196,7 +223,7 @@
 </tr><tr>
     <td class="both"></td>
     <td>Load the players</td>
-    <td>Firefox, IE8: Players load in Flash.  Otherwise, players load in HTML5 mode</td>
+    <td>IE8: Players load in Flash.  Otherwise, players load in HTML5 mode</td>
     <td class="check"></td>
 </tr><tr>
     <td class="both"></td>

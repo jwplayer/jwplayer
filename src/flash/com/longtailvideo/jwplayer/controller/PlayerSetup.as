@@ -51,6 +51,12 @@ package com.longtailvideo.jwplayer.controller {
 		/** JSON Playlist passed in **/
 		protected var confPlaylist:Array;
 		
+		/** Loader to pre-cache preview image **/		
+		protected var imageLoader:Loader;
+		/** If the preview image doesn't load in time, continue player setup anyway **/
+		protected var imageTimeout:Timer;
+
+		
 		public function PlayerSetup(player:IPlayer, model:Model, view:View) {
 			_player = player;
 			_model = model;
@@ -227,15 +233,34 @@ package com.longtailvideo.jwplayer.controller {
 		
 		protected function loadPreview():void {
 			if (_model.playlist.length > 0 && _model.playlist.currentItem.image) {
-				var imageLoader:Loader = new Loader();
-				imageLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, tasker.success);
-				imageLoader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, tasker.failure);
+				imageLoader = new Loader();
+				imageTimeout = new Timer(1000, 1);
+				imageTimeout.addEventListener(TimerEvent.TIMER_COMPLETE, loadPreviewTimeout);
+				imageLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, loadPreviewComplete);
+				imageLoader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, loadPreviewComplete);
+				
+				imageTimeout.start();
 				imageLoader.load(new URLRequest(_model.playlist.currentItem.image));
 			} else {
 				tasker.success();
 			}
 		}
+		
+		protected function loadPreviewComplete(evt:Event):void {
+			if (imageTimeout.running) {
+				imageTimeout.stop();
+				if (evt is IOErrorEvent) tasker.failure(evt);
+				else tasker.success();
+			}
+		}
 
+		protected function loadPreviewTimeout(evt:TimerEvent):void {
+			imageLoader.contentLoaderInfo.removeEventListener(Event.COMPLETE, loadPreviewComplete);
+			imageLoader.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, loadPreviewComplete);
+			tasker.success();
+		}
+
+		
 		protected function initPlugins():void {
 			for each (var pluginId:String in _view.loadedPlugins()) {
 				try {

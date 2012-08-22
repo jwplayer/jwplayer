@@ -35,7 +35,7 @@
 			
 			if (_status == _loaderstatus.NEW) {
 				_status = _loaderstatus.LOADING;
-				scriptTag = DOCUMENT.createElement("script");
+				var scriptTag = DOCUMENT.createElement("script");
 				// Most browsers
 				scriptTag.onload = _sendComplete;
 				scriptTag.onerror = _sendError;

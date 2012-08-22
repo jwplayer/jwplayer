@@ -8,8 +8,10 @@
 	var _styleSheets={},
 		_styleSheet,
 		_rules = {},
+		_block = 0,
 		exists = utils.exists,
-		
+		_ruleIndexes = {},
+				
 		JW_CLASS = '.jwplayer ';
 
 	function _createStylesheet() {
@@ -19,17 +21,17 @@
 		return styleSheet;
 	}
 	
-	utils.css = function(selector, styles, important) {
-		if (!exists(important)) important = false;
-		
-		if (utils.isIE()) {
-			if (!_styleSheet) {
+	var _css = utils.css = function(selector, styles, important) {
+		if (!_styleSheets[selector]) {
+			//_styleSheets[selector] = _createStylesheet();
+			if (!_styleSheet || _styleSheet.sheet.cssRules.length > 50000) {
 				_styleSheet = _createStylesheet();
 			}
-		} else if (!_styleSheets[selector]) {
-			_styleSheets[selector] = _createStylesheet();
+			_styleSheets[selector] = _styleSheet;
 		}
 
+		if (!exists(important)) important = false;
+		
 		if (!_rules[selector]) {
 			_rules[selector] = {};
 		}
@@ -43,18 +45,34 @@
 			}
 		}
 
+		if (_block > 0)
+			return;
+		
+		_updateStylesheet(selector);
+	}
+	
+	_css.block = function() {
+		_block++;
+	}
+	
+	_css.unblock = function() {
+		_block = Math.max(_block-1, 0);
+		if (_block == 0) {
+			_applyStyles();
+		}
+	}
+	
+	var _applyStyles = function() {
 		// IE9 limits the number of style tags in the head, so we need to update the entire stylesheet each time
-		if (utils.isIE()) {
-			_updateAllStyles();
-		} else {
-			_updateStylesheet(selector, _styleSheets[selector]);
+		for (var selector in _styleSheets) {
+			_updateStylesheet(selector);
 		}
 	}
 	
 	function _styleValue(style, value, important) {
 		if (typeof value === "undefined") {
 			return undefined;
-		} 
+		}
 		
 		var importantString = important ? " !important" : "";
 
@@ -82,29 +100,21 @@
 		}
 	}
 
-	function _updateAllStyles() {
-		var ruleText = "\n";
-		for (var rule in _rules) {
-			ruleText += _getRuleText(rule);
-		}
-		_styleSheet.innerHTML = ruleText;
-	}
-	
-	function _updateStylesheet(selector, sheet) {
-		if (sheet && sheet.sheet) {
-			sheet.innerHTML = _getRuleText(selector);
-			return;
-			// This stuff below fixes some performance problems, but causes other issues;
-			var rules = sheet.sheet.cssRules;
-			for (var i=0; i < rules.length; i++) {
-				var rule = rules[i];
-				if (rule.selectorText == selector) {
-					sheet.sheet.deleteRule(i);
-					//rule.disabled = true;
-					break;
-				}
+
+	function _updateStylesheet(selector) {
+//		_styleSheets[selector].innerHTML = _getRuleText(selector); return;
+		
+		var sheet = _styleSheets[selector].sheet,
+			ruleIndex = _ruleIndexes[selector];
+
+		if (sheet) {
+			var rules = sheet.cssRules;
+			if (utils.exists(ruleIndex)) {
+				sheet.deleteRule(_ruleIndexes[selector]);
+			} else {
+				_ruleIndexes[selector] = rules.length;	
 			}
-			sheet.sheet.insertRule(_getRuleText(selector), rules.length);
+			sheet.insertRule(_getRuleText(selector), _ruleIndexes[selector]);
 		}
 		
 	}
@@ -191,7 +201,7 @@
 			'background-color': 'transparent'
 		});
 		
-		utils.css("ul", { 'list-style': "none" });
+		utils.css(JW_CLASS + "ul", { 'list-style': "none" });
 	};
 	
 })(jwplayer.utils);

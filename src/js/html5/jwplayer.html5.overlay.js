@@ -5,7 +5,6 @@
  * @version 6.0
  */
 (function(jwplayer) {
-	
 	var html5 = jwplayer.html5,
 		utils = jwplayer.utils,
 		_css = utils.css,
@@ -22,7 +21,7 @@
 		//JW_CSS_LEFT = "left",
 		//JW_CSS_RIGHT = "right",
 		JW_CSS_100PCT = "100%",
-		JW_CSS_SMOOTH_EASE = "opacity .15s, visibility .15s",
+		JW_CSS_SMOOTH_EASE = "opacity .15s, visibility .15s, left .1s linear",
 		
 		OVERLAY_CLASS = '.jwoverlay',
 		CONTENTS_CLASS = 'jwcontents',
@@ -54,8 +53,9 @@
 			_offset = 0,
 			_arrow,
 			_inverted = inverted,
-			_settings = utils.extend({}, _defaults, _skin.getComponentSettings('tooltip'));
-			_borderSizes = {};
+			_settings = utils.extend({}, _defaults, _skin.getComponentSettings('tooltip')),
+			_borderSizes = {},
+			_this = this;
 		
 		function _init() {
 			_container = _createElement(OVERLAY_CLASS.replace(".",""));
@@ -105,7 +105,7 @@
 				padding: _borderSizes.top + "px " + _borderSizes.right + "px " + _borderSizes.bottom + "px " + _borderSizes.left + "px"  
 			});
 			
-			this.showing = false;
+			_this.showing = false;
 		}
 		
 		function _internalSelector(name) {
@@ -134,7 +134,7 @@
 		
 		function _createBorderElement(dim1, dim2) {
 			if (!dim2) dim2 = "";
-			var created = _createSkinElement('cap' + dim1 + dim2, "jwborder jw" + dim1 + (dim2 ? dim2 : "")); 
+			var created = _createSkinElement('cap' + dim1 + dim2, "jwborder jw" + dim1 + (dim2 ? dim2 : "")), 
 				elem = created[0],
 				skinElem = created[1],
 				elemStyle = {
@@ -161,22 +161,28 @@
 			}
 		}
 
-		this.element = function() {
+		_this.element = function() {
 			return _container;
 		};
+
+		var contentsTimeout;
 		
-		this.setContents = function(contents) {
+		_this.setContents = function(contents) {
 			utils.empty(_contents);
 			_contents.appendChild(contents);
-			setTimeout(_position, 0);
+			clearTimeout(contentsTimeout);
+			contentsTimeout = setTimeout(_position, 0);
 		}
 		
-		this.offsetX = function(offset) {
+		_this.offsetX = function(offset) {
 			_offset = offset;
+			clearTimeout(contentsTimeout);
 			_position();
 		}
 		
 		function _position() {
+			if (_container.clientWidth == 0) return;
+
 			_css(_internalSelector(), {
 				'margin-left': _offset - _container.clientWidth / 2
 			});
@@ -185,7 +191,7 @@
 			});
 		}
 		
-		this.borderWidth = function() {
+		_this.borderWidth = function() {
 			return _borderSizes.left
 		}
 
@@ -204,14 +210,18 @@
 			}
 		}
 		
-		this.show = function() {
-			this.showing = true;
-			_css(_internalSelector(), { opacity: 1, visibility: "visible" });
+		_this.show = function() {
+			_this.showing = true;
+			_container.style.opacity = 1;
+			_container.style.visibility = "visible";
+			//_css(_internalSelector(), { opacity: 1, visibility: "visible" });
 		}
 		
-		this.hide = function() {
-			this.showing = false;
-			_css(_internalSelector(), { opacity: 0, visibility: JW_CSS_HIDDEN });
+		_this.hide = function() {
+			_this.showing = false;
+			_container.style.opacity = 0;
+			_container.style.visibility = JW_CSS_HIDDEN;
+			//_css(_internalSelector(), { opacity: 0, visibility: JW_CSS_HIDDEN });
 		}
 		
 		// Call constructor
@@ -228,7 +238,6 @@
 		position: JW_CSS_ABSOLUTE,
 		visibility: JW_CSS_HIDDEN,
 		opacity: 0,
-//		'z-index': 1 // required for IE9
 	});
 
 	_css(OVERLAY_CLASS + " .jwcontents", {

@@ -179,9 +179,10 @@
 			_setState(states.IDLE);
 		}
 
-		function _sendLevels(levels) {
+		function _getPublicLevels(levels) {
+			var publicLevels;
 			if (utils.typeOf(levels)=="array" && levels.length > 0) {
-				var publicLevels = [];
+				publicLevels = [];
 				for (var i=0; i<levels.length; i++) {
 					var level = levels[i], publicLevel = {};
 					publicLevel.label = _levelLabel(level) ? _levelLabel(level) : i;
@@ -190,6 +191,13 @@
 					if (level.bitrate) publicLevel.bitrate = level.bitrate;
 					publicLevels[i] = publicLevel;
 				}
+			}
+			return publicLevels;
+		}
+		
+		function _sendLevels(levels) {
+			var publicLevels = _getPublicLevels(levels);
+			if (publicLevels) {
 				_eventDispatcher.sendEvent(events.JWPLAYER_MEDIA_LEVELS, { levels: publicLevels, currentQuality: _currentQuality });
 			}
 		}
@@ -406,7 +414,7 @@
 		}
 		
 		_this.getQualityLevels = function() {
-			return _levels;
+			return _getPublicLevels(_levels);
 		}
 		
 		// Call constructor

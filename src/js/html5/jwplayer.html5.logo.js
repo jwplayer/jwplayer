@@ -139,19 +139,21 @@
 		this.hide = function() {
 			if (_settings.hide) {
 				_showing = false;
-				_css(_internalSelector(), {
-					opacity: 0,
-					visibility: JW_CSS_HIDDEN,
-				});
+//				_css(_internalSelector(), {
+//					opacity: 0,
+//					visibility: JW_CSS_HIDDEN,
+//				});
+				_logo.style.opacity = 0;
 			}
 		}
 
 		this.show = function() {
 			_showing = true;
-			_css(_internalSelector(), {
-				visibility: JW_CSS_VISIBLE,
-				opacity: 1
-			});
+//			_css(_internalSelector(), {
+//				visibility: JW_CSS_VISIBLE,
+//				opacity: 1
+//			});
+			_logo.style.opacity = 1;
 		}
 		
 		_setup();
@@ -162,7 +164,7 @@
 	_css(LOGO_CLASS, {
 		cursor: "pointer",
 	  	position: "absolute",
-	  	visibility: JW_CSS_HIDDEN,
+//	  	visibility: JW_CSS_HIDDEN,
 	  	opacity: 0
 	});
 

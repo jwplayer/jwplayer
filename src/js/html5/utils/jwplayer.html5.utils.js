@@ -143,6 +143,10 @@
 			// Parse XML in FF/Chrome/Safari/Opera
 			if (WINDOW.DOMParser) {
 				parsedXML = (new DOMParser()).parseFromString(input,"text/xml");
+				try {
+					if (parsedXML.childNodes[0].firstChild.nodeName == "parsererror")
+						return;
+				} catch(e) {}
 			} else { 
 				// Internet Explorer
 				parsedXML = new ActiveXObject("Microsoft.XMLDOM");
@@ -184,6 +188,8 @@
 
 	/** Replacement for getBoundingClientRect, which isn't supported in iOS 3.1.2 **/
 	utils.bounds = function(element) {
+		if (!element) return {};
+		
 		try {
 			return element.getBoundingClientRect();
 		} catch (e) {

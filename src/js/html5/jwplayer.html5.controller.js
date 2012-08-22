@@ -17,7 +17,10 @@
 			_controller = this,
 			_eventDispatcher = new events.eventdispatcher(_model.id, _model.config.debug),
 			_ready = false,
-			_loadOnPlay = -1
+			_loadOnPlay = -1,
+			_preplay, 
+			_actionOnAttach, 
+			_interruptPlay,
 			_queuedCalls = [];
 		
 		utils.extend(this, _eventDispatcher);
@@ -37,8 +40,8 @@
 				_view.completeSetup();
 				_eventDispatcher.sendEvent(evt.type, evt);
 
-				if (jwplayer.utils.exists(window.playerReady)) {
-					playerReady(evt);
+				if (jwplayer.utils.exists(window.jwplayer.playerReady)) {
+					jwplayer.playerReady(evt);
 				}
 
 				_eventDispatcher.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_LOADED, {playlist: _model.playlist});
@@ -57,7 +60,6 @@
 					var queuedCall = _queuedCalls.shift();
 					_callMethod(queuedCall.method, queuedCall.arguments);
 				}
-
 			}
 		}
 
@@ -75,13 +77,11 @@
 			
 			switch (utils.typeOf(item)) {
 			case "string":
-				_model.setPlaylist(new jwplayer.playlist({file:item}));
-				_model.setItem(0);
+				_loadPlaylist(item);
 				break;
 			case "object":
 			case "array":
 				_model.setPlaylist(new jwplayer.playlist(item));
-				_model.setItem(0);
 				break;
 			case "number":
 				_model.setItem(item);
@@ -89,9 +89,22 @@
 			}
 		}
 		
-		var _preplay, _actionOnAttach, _interruptPlay;
+		function _loadPlaylist(playlist) {
+			var loader = new html5.playlistloader();
+			loader.addEventListener(events.JWPLAYER_PLAYLIST_LOADED, function(evt) {
+				_load(evt.playlist);
+			});
+			loader.addEventListener(events.JWPLAYER_ERROR, function(evt) {
+				_load([]);
+				evt.message = "Could not load playlist: " + evt.message; 
+				_forward(evt);
+			});
+			loader.load(playlist);
+		}
 		
-		function _play() {
+		function _play(state) {
+			if (!utils.exists(state)) state = true;
+			if (!state) return _pause();
 			try {
 				if (_loadOnPlay >= 0) {
 					_load(_loadOnPlay);
@@ -110,6 +123,7 @@
 				}
 				
 				if (_isIdle()) {
+					if (_model.playlist.length == 0) return false;
 					_video.load(_model.playlist[_model.item]);
 				} else if (_model.state == states.PAUSED) {
 					_video.play();
@@ -140,7 +154,9 @@
 
 		}
 
-		function _pause() {
+		function _pause(state) {
+			if (!utils.exists(state)) state = true;
+			if (!state) return _play();
 			try {
 				switch (_model.state) {
 					case states.PLAYING:

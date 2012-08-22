@@ -604,7 +604,7 @@ package com.longtailvideo.jwplayer.controller {
 
 
 		protected function loadString(item:String):Boolean {
-			_model.playlist.load(new PlaylistItem({file: item}));
+			_model.playlist.load(item);
 			return true;
 		}
 

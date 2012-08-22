@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Scope Leak Check</title>
+    <script type="text/javascript" src="assets/scopeleaks.js"></script>
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+</head>
+<body>
+
+<h1>Scope Leak Check</h1>
+<div class="core">List of test devices</div>
+<p>This page makes sure the player does not inject any unnecessary JavaScript variables into the global scope.</p>
+
+
+<h2>Basic HTML5 Embed</h2>
+
+<div id="container"></div>
+
+<script type="text/javascript">
+    jwplayer("container").setup({
+	 	sources: [{
+	        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4'
+		},{
+	        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm'
+		}],
+        height: 204,
+        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+        width: 480
+    });
+
+	 jwplayer().onReady(function() {
+	 	setTimeout(function() {
+			var leaks = scopeleaks.leaks();
+			document.getElementById("scopeleaks").innerHTML = leaks.join(", ");
+		}, 1000);
+	 });
+</script>
+
+<pre id="scopeleaks"></pre>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Initial page load</td>
+    <td>Player should appear.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Scoped variables</td>
+    <td>After the player loads, the area underneath the player should read "jwplayer". No other globally-scoped variables should be defined.</td>
+    <td class="check"></td>
+</tr></table>
+
+
+</body>
+</html>

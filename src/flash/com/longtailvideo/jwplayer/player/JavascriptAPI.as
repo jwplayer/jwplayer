@@ -63,7 +63,7 @@ package com.longtailvideo.jwplayer.player {
 			timer.addEventListener(TimerEvent.TIMER_COMPLETE, function(timerEvent:TimerEvent):void {
 				_player.removeGlobalListener(queueEvents);
 				if (ExternalInterface.available) {
-					callJS("playerReady",{
+					callJS("jwplayer.playerReady",{
 						id:evt.id,
 						client:evt.client,
 						version:evt.version
