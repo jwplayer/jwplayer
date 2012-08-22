@@ -229,7 +229,7 @@
 					}
 					if (_qualityLevels.length > 1) {
 						_qualityLevels.unshift({label: "auto"});
-						sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_META, { metadata: { youtubequalitylevels: _qualityLevels } });
+						// sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_META, { metadata: { youtubequalitylevels: _qualityLevels } });
 						if (_currentQuality > 0) {
 							currentQuality = _currentQuality;
 						}

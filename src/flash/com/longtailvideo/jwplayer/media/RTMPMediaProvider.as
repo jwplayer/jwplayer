@@ -23,38 +23,41 @@
 	public class RTMPMediaProvider extends MediaProvider {
 		/** The RTMP application URL. **/
 		private var _application:String;
+		/** Is automatic quality switching enabled? **/
+		private var _auto:Boolean;
 		/** The last bandwidth measurement. **/
 		private var _bandwidth:Number;
 		/** The netconnection instance **/
 		private var _connection:NetConnection;
-		/** The currently active stream ID. **/
-		private var _id:String;
         /** ID for the position interval. **/
         private var _interval:Number;
+		/** Current quality level **/
+		private var _level:Number;
+		/** Array with quality levels. **/
+		private var _levels:Array;
 		/** Loader for loading SMIL files. **/
 		private var _loader:AssetLoader;
 		/** Flag for metadata received. **/
 		private var _metadata:Boolean;
+		/** StageVideo object to be instantiated. **/
+		private var _stage:Object;
 		/** NetStream instance that handles playback. **/
 		private var _stream:NetStream;
 		/** Sound control object. **/
 		private var _transformer:SoundTransform;
 		/** Level to transition to. **/
-		private var _transitionLevel:Number = -1;
-		/** Video object to be instantiated. **/
-		private var _video:Video;
-		/** StageVideo object to be instantiated. **/
-		private var _stage:Object;
+		private var _transition:Boolean;
 		/** Video type that's detected. **/
 		private var _type:String;
-		/** Array with quality levels. **/
-		private var _levels:Array;
+		/** Video object to be instantiated. **/
+		private var _video:Video;
 
 
 		/** Initialize RTMP provider. **/
 		public function RTMPMediaProvider() {
 			super('rtmp');
 			_stretch = false;
+			_bandwidth = 0;
 		}
 
 
@@ -118,23 +121,24 @@
 				var prefix:Number = Math.max(_item.file.indexOf('mp4:'),
 					_item.file.indexOf('mp3:'),_item.file.indexOf('flv:'));
 				var slash:Number = _item.file.lastIndexOf('/');
+				var id:String;
 				if (definst > 0) {
 					_application = _item.file.substr(0, definst + 10);
-					_id = loadID(_item.file.substr(definst + 10));
+					id = _item.file.substr(definst + 10);
 				} else if (prefix > -1 ) {
 					_application = _item.file.substr(0, prefix);
-					_id = loadID(_item.file.substr(prefix));
+					id = _item.file.substr(prefix);
 				} else {
 					_application = _item.file.substr(0, slash+1);
-					_id = loadID(_item.file.substr(slash+1));
+					id = _item.file.substr(slash+1);
 				}
+				_levels = [{label:'0',id:loadID(id)}];
 				loadWrap();
 			} else if(_item.streamer) {
 				_application = _item.streamer;
-				_id = loadID(_item.file);
+				_levels = [{label:'0',id:loadID(_item.file)}];
 				loadWrap();
 			} else {
-				// if (item.levels.length > 0) { item.setLevel(getLevel(item, config.bandwidth, config.width)); }
 				_loader.load(_item.file, XML);
 			}
 			setState(PlayerState.BUFFERING);
@@ -142,8 +146,8 @@
 
 
 		/** Get one or more levels from the loadbalancing XML. **/
-		private function loaderComplete(evt:Event):void {
-			var xml:XML = (evt.target as AssetLoader).loadedObject;
+		private function loaderComplete(event:Event):void {
+			var xml:XML = (event.target as AssetLoader).loadedObject;
 			// Grab the RTMP application from head > meta@base.
 			var app:String = SMILParser.parseApplication(xml);
 			if(app.length > 10) {
@@ -152,10 +156,13 @@
 				error("Error loading stream: Manifest not found or invalid");
 			}
 			// Grab the quality levels from body > node.
-			var lvl:Array = SMILParser.parseLevels(xml);
-			if(lvl.length > 0) {
-				_levels = lvl;
-				_id = loadID(lvl[0].id);
+			var parsed:Array = SMILParser.parseLevels(xml);
+			if(parsed.length) {
+				// Translate the stream IDs.
+				for (var i:Number=0; i<parsed.length; i++) {
+					parsed[i].id = loadID(parsed[i].id)
+				}
+				_levels = parsed;
 				loadWrap();
 			} else {
 				error("Error loading stream: Manifest not found or invalid");
@@ -207,12 +214,25 @@
 
 		/** Finalizes the loading process **/
 		private function loadWrap():void {
+			// Set initial level and auto quality flag
+			if(_levels.length > 1) {
+				_auto = true;
+				_level = autoLevel();
+			} else { 
+				_auto = false;
+				_level = 0;
+			}
 			// Do not set media object for audio streams
 			if (_type == 'aac' || _type == 'mp3') {
 				media = null;
 			} else if (!media) {
 				media = _video;
 			}
+			// Dispatch quality levels event
+			var event:MediaEvent = new MediaEvent(MediaEvent.JWPLAYER_MEDIA_LEVELS);
+			event.currentQuality = 0;
+			event.levels = qualityLevels;
+			dispatchEvent(event);
 			// Connect to RTMP server
 			try {
 				_connection.connect(_application);
@@ -225,40 +245,45 @@
 
 		/** Get metadata information from netstream class. **/
 		public function onClientData(data:Object):void {
-			// Reset transition level for next transition.
-			if (data.code == 'NetStream.Play.TransitionComplete') {
-				if (_transitionLevel >= 0) { _transitionLevel = -1; }
-			} 
-			// Store video metadata.
-			if (data.type == "metadata") {
-				if (data.duration && !_metadata) {
-					_item.duration = data.duration;
-					if(_item.start) {
-						seek(_item.start);
+			switch (data.type) {
+				// Stream metadata received
+				case 'metadata':
+					if(!_metadata) {
+						// Only send initial metadata
+						_metadata = true;
+						if (data.duration) {
+							_item.duration = data.duration;
+							// Support old item.start call
+							if(_item.start) { seek(_item.start); }
+						}
+						if (data.width) {
+							_video.width = data.width;
+							_video.height = data.height;
+							resize(_config.width, _config.height);
+						}
+						sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_META, {metadata: data});
 					}
-				}
-				_metadata = true;
-				if (data.width) {
-					_video.width = data.width;
-					_video.height = data.height;
-					resize(_config.width, _config.height);
-				}
-			}
-			// Handle FC Subscribe callback for live streaming
-			if (data.type == 'fcsubscribe') {
-				if (data.code == "NetStream.Play.Start") {
+					break;
+				// FCSubscribe call successfull
+				case 'fcsubscribe':
 					setStream();
-				} else {
-					error("Error loading stream: ID not found on server");
-				}
-				
+					break;
+				// TX3G text data received
+				case 'textdata':
+					sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_META, {metadata: data});
+					break;
+				// Quality level transition completed
+			 	case 'transition':
+					_transition = false;
+					break;
+				// Stream completed playback 
+				case 'complete':
+					if (state != PlayerState.IDLE) {
+						stop();
+						sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_COMPLETE);
+					}
+					break;
 			}
-			// Stream completed playback (check to not send it after an error)
-			if (data.type == 'complete' && state != PlayerState.IDLE) {
-				stop();
-				sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_COMPLETE);
-			}
-			sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_META, {metadata: data});
 		}
 
 
@@ -282,15 +307,15 @@
 				if(_item.duration > 0) {
 					_stream.resume();
 				} else {
-					_stream.play(_id);
+					_stream.play(_levels[_level].id);
 					setState(PlayerState.BUFFERING);
 				}
 			} else {
 				// Start stream. If _type it is VOD for sure.
 				if(_type) {
-					_stream.play(_id,0);
+					_stream.play(_levels[_level].id,0);
 				} else {
-					_stream.play(_id);
+					_stream.play(_levels[_level].id);
 				}
 			}
 			clearInterval(_interval);
@@ -301,12 +326,14 @@
 		/** Interval for the position progress. **/
 		private function positionInterval():void {
 			var pos:Number = Math.round((_stream.time) * 10) / 10;
-			var bfr:Number = _stream.bufferLength / _stream.bufferTime;
-			var bwd:Number = Math.round(_stream.info.maxBytesPerSecond*8/1024);
+			var bfr:Number = Math.round(_stream.bufferLength * 10 / _stream.bufferTime)/10;
 			// Toggle between buffering and playback states
-			if (bfr < 0.5 && pos < _item.duration - 5 && state != PlayerState.BUFFERING) {
+			if (bfr < 0.6 && pos < _item.duration - 5 && state != PlayerState.BUFFERING) {
 				setState(PlayerState.BUFFERING);
-			} else if (bfr > 1 && state != PlayerState.PLAYING) {
+				if(_auto) { 
+					swapLevel(autoLevel());
+				}
+			} else if (bfr > 0.8 && state != PlayerState.PLAYING) {
 				setState(PlayerState.PLAYING);
 			}
 			// Send time ticks when playing
@@ -314,11 +341,18 @@
 				_position = pos;
 				sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_TIME, {position: pos, duration: _item.duration});
 			}
-			// Check bandwidth events every second if the buffer is filled.
-			if(pos-Math.floor(pos) < 0.05 && bfr > 0.5) {
-				_bandwidth = bwd;
-				// ExternalInterface.call("console.log", "bandwidth: "+bwd+", bufferlength: "+bfr);
+			// Track bandwidth if buffer is neither depleted nor filled.
+			if(bfr > 0.2 && bfr < 2) {
+				_bandwidth = Math.round(_stream.info.maxBytesPerSecond*8/1024);
 			}
+			// Send out event to notify swap.
+			sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_META, {metadata:{
+				bandwidth: _bandwidth.toString(),
+				qualitylevel: _level,
+				screenwidth: _config.width,
+				transitioning: _transition.toString(),
+				bufferfill: bfr
+			}});
 		}
 
 
@@ -330,29 +364,21 @@
 					_stage.viewPort = new Rectangle(_media.x,_media.y,_media.width,_media.height);
 				}
 			}
-			/*
-			if (state == PlayerState.PLAYING) {
-				if (item.levels.length > 0 && item.currentLevel != getLevel(item, config.bandwidth, config.width)) {
-					Logger.log("swapping to another level b/c of size: "+config.width);
-					swap(getLevel(item, config.bandwidth, config.width));
-				}
+			if(_auto) { 
+				swapLevel(autoLevel());
 			}
-			*/
 		}
 
 
 		/** Seek to a new position, only when duration is found. **/
 		override public function seek(pos:Number):void {
 			if(_item.duration > 0) {
-				_transitionLevel = -1;
-				if (item.levels.length > 0 && getLevel(item, config.bandwidth, config.width) != item.currentLevel) {
-					item.setLevel(getLevel(item, config.bandwidth, config.width));
-				}
 				if(state != PlayerState.PLAYING) {
 					play();
 				}
 				setState(PlayerState.BUFFERING);
 				_stream.seek(pos);
+				_transition = false;
 				clearInterval(_interval);
 				_interval = setInterval(positionInterval, 100);
 			}
@@ -392,13 +418,13 @@
 						var hash:String = TEA.decrypt(evt.info.secureToken, getConfigProperty('securetoken'));
 						_connection.call("secureTokenResponse", null, hash);
 					}
-					// Get streamlength for MP3, since FMS doesn't send MP3 metadata.
+					// Call streamlength, since FMS doesn't send metadata for MP3.
 					if(_type == 'mp3') {
-						_connection.call("getStreamLength", new Responder(streamlengthHandler), _id);
+						_connection.call("getStreamLength", new Responder(streamlengthHandler), _levels[_level].id);
 					}
 					//	Do live stream subscription, for Edgecast/Limelight.
 					if (getConfigProperty('subscribe')) {
-						_connection.call("FCSubscribe", null, _id);
+						_connection.call("FCSubscribe", null, _levels[_level].id);
 					} else {
 						// No subscription? Then simply setup the connection.
 						setStream();
@@ -426,10 +452,6 @@
 						stop();
 					}
 					break;
-				case 'NetStream.Play.Transition':
-					// We shouldn't need this one
-					// onClientData(evt.info);
-					break;
 			}
 		}
 
@@ -441,11 +463,11 @@
 			}
 			_stream = null;
 			_levels = [];
-			_application = _id = _type = undefined;
-			_metadata = false;
+			_application = _type = undefined;
+			_metadata = _transition = _auto = false;
 			_connection.close();
 			clearInterval(_interval);
-			_position = 0;
+			_position = _level = 0;
 			super.stop();
 		}
 
@@ -454,20 +476,6 @@
 		private function streamlengthHandler(length:Number):void {
 			_metadata = true;
 			_item.duration = length;
-		}
-
-
-		/** Dynamically switch streams **/
-		private function swap(newLevel:Number):void {
-			if (_transitionLevel == -1 && (newLevel < item.currentLevel ||
-				_stream.bufferLength < _stream.bufferTime * 1.5)) {
-				_transitionLevel = newLevel;
-				item.setLevel(newLevel);
-				var nso:NetStreamPlayOptions = new NetStreamPlayOptions();
-				nso.streamName = _id;
-				nso.transition = NetStreamPlayTransitions.SWITCH;
-				_stream.play2(nso);
-			}
 		}
 
 
@@ -484,6 +492,114 @@
 			if (_stream) {
 				_stream.soundTransform = _transformer;
 			}
+		}
+
+
+		/** Return the list of quality levels. **/
+		override public function get qualityLevels():Array {
+			var levels:Array = [];
+			if(_levels) {
+				if(_auto) { 
+					levels.push({label:'Auto'}); 
+				}
+				for (var i:Number=0; i<_levels.length; i++) {
+					levels.push(_levels[i]);
+				}
+			}
+			return levels;
+		}
+
+
+		/** Return the index of the current quality. **/
+		override public function get currentQuality():Number {
+			var level:Number = 0;
+			if(_level) {
+				level = _level;
+				if(_auto) {
+					level++;
+				}
+			}
+			return level;
+		}
+
+
+		/** Change the current quality. **/
+		override public function set currentQuality(quality:Number):void {
+			var level:Number = -1;
+			// Ignore when single level, when transtioning or when out of bounds
+			if(_levels.length > 1 && !_transition && quality > -1 && quality < _levels.length + 1) {
+				// Switch to auto
+				if(quality == 0 && !_auto) {
+					level = 0;
+					_auto = true;
+					swapLevel(autoLevel());
+				// Switch to/within manual
+				} else if(quality > 0 && (_auto || quality != _level+1)) {
+					swapLevel(quality-1);
+					_auto = false;
+					level = quality;
+				}
+			}
+			if(level > -1) {
+				var event:MediaEvent = new MediaEvent(MediaEvent.JWPLAYER_MEDIA_LEVEL_CHANGED);
+				event.levels = qualityLevels;
+				event.currentQuality = level;
+				dispatchEvent(event);
+			}
+		}
+
+
+		private function swapLevel(index:Number,force:Boolean=false):void {
+			// Don't swap if we're already in the level or in a transition.
+			if(_level == index || (!force && _transition)) {
+				return;
+			}
+			_level = index;
+			if(force) { 
+				// Force instant swap (results in re-buffer).
+				clearInterval(_interval);
+				_interval = setInterval(positionInterval, 100);
+				_transition = false;
+				_stream.close();
+				_stream.play(_levels[index].id);
+				_stream.seek(_position);
+				setState(PlayerState.BUFFERING);
+			 } else {
+				// Do a smooth swap (takes some time)
+				_transition = true;
+				var nso:NetStreamPlayOptions = new NetStreamPlayOptions();
+				nso.streamName = _levels[_level].id;
+				nso.transition = NetStreamPlayTransitions.SWITCH;
+				_stream.play2(nso);
+			}
+		}
+
+
+		/** Determine which level to use for autoswitching. **/
+		private function autoLevel():Number {
+			// Grab the highest one first.
+			var level:Number = 0;
+			// Next restrict by screenwidth
+			if(_levels[0].width) {
+				level = _levels.length - 1;
+				for(var j:Number=0; j<_levels.length; j++) {
+					if(_levels[j].width < _config.width * 1.5) {
+						level = j;
+						break;
+					}
+				}
+			}
+			// Next further restrict by bandwidth
+			if(_bandwidth && _levels[0].bitrate) {
+				level = _levels.length - 1;
+				for(var i:Number = j; i < _levels.length; i++) {
+					if(_levels[i].bitrate < _bandwidth / 1.5) {
+						level = i;
+						break;
+					}
+				}
+			}
+			return level;
 		}
 
 

@@ -22,6 +22,7 @@ package com.longtailvideo.jwplayer.parsers {
 		/** Parse an SMIL playlist for feeditems. **/
 		public static function parseLevels(xml:XML):Array {
 			var levels:Array = [];
+			var bitrates:Boolean = true;
 			try {
 				var parent:XML = xml.children()[1].children()[0];
 				// Switch with multiple levels found
@@ -35,10 +36,12 @@ package com.longtailvideo.jwplayer.parsers {
 						// Include the label attribute
 						if(id) {
 							level.id = id;
-							level.label = i;
+							level.label = String(i);
 							if(bitrate) { 
 								level.bitrate = Math.round(bitrate/1024);
 								level.label = level.bitrate + 'kbps';
+							} else { 
+								bitrates = false;
 							}
 							if(width) { 
 								level.width = width;
@@ -50,6 +53,10 @@ package com.longtailvideo.jwplayer.parsers {
 							}
 							levels.push(level);
 						}
+					}
+					// Sort levels by bitrate desc
+					if(levels.length && bitrates) {
+						levels.sortOn('bitrate',Array.NUMERIC | Array.DESCENDING);
 					}
 				// Only a single file found
 				} else if(Strings.xmlAttribute(parent,'src')) {

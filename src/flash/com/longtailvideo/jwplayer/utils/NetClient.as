@@ -53,9 +53,13 @@ package com.longtailvideo.jwplayer.utils {
 		/** Receive NetStream playback codes. **/
 		public function onPlayStatus(... rest):void {
 			for each (var dat:Object in rest) {
-				if (dat && dat.hasOwnProperty('code') && dat.code == "NetStream.Play.Complete") {
-					forward(dat, 'complete');
-				}
+				if (dat && dat.hasOwnProperty('code')) {
+					if (dat.code == "NetStream.Play.Complete") {
+						forward(dat, 'complete');
+					} else if (dat.code == "NetStream.Play.TransitionComplete") {
+						forward(dat, 'transition');
+					}
+				} 
 			}
 		}
 

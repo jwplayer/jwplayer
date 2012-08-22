@@ -44,10 +44,10 @@
             title: 'Audio',
             description: 'Single audio level'
         }],
-        height: 188,
+        height: 270,
         listbar: {
             position: 'right',
-            size: 300
+            size: 240
         },
         width: 720
     });
@@ -59,28 +59,71 @@
     <td class="desktop">
     <td>Start each item</td>
     <td>Each item should start playing.<br/>
-        The duration of each item should be displayed in the controlbar<br/>
-        For AAC and MP3, the poster should remain visible.
-        </td>
+        The first 3 items should have a quality menu.<br/>
+        The "Auto" quality should be checked by default.</td>
     <td class="check"></td>
 </tr><tr>
     <td class="desktop">
-    <td>Pause each item and resume</td>
-    <td>Each stream should resume from the current position.<br/>
-        Re-buffering should not occur upon resume.
-    </td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="desktop">
-    <td>Seek each item halfway</td>
-    <td>The stream should resume from the new position.<br/>
-        Re-buffering should be swift and visible only once.
-    </td>
+    <td>first 3: Select qualities</td>
+    <td>For each item, the quality should switch</td>
     <td class="check"></td>
 </tr></table>
 
 
+<h2>Heuristics</h2>
 
+<div id="container2"></div>
+<pre id="log2"></pre>
+
+<script type="text/javascript">
+    jwplayer("container2").setup({
+        file: 'assets/heuristics.smil',
+        image: 'http://d3el35u4qe4frz.cloudfront.net/q1fx20VZ-480.jpg',
+        width: 600,
+        height: 200
+    });
+    jwplayer("container2").onMeta(function(event){
+        if(event.metadata.bandwidth) {
+            var html = 'bandwidth: '+event.metadata.bandwidth;
+            html += ', screenwidth: '+ event.metadata.screenwidth;
+            html += ', qualitylevel: '+event.metadata.qualitylevel;
+            html += ', transitioning: '+event.metadata.transitioning;
+            html += ', bufferfill: '+event.metadata.bufferfill;
+            document.getElementById('log2').innerHTML = html;
+        }
+    });
+</script>
+
+<p>
+    Resize the player to 
+    <a href="javascript:jwplayer('container2').resize(300,200)">300</a>, 
+    <a href="javascript:jwplayer('container2').resize(600,200)">600</a> or
+    <a href="javascript:jwplayer('container2').resize(900,200)">900</a> wide.
+</p>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop">
+    <td>Start video.</td>
+    <td>Log should confirm quality level 2 is playing.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Resize to 900px wide</td>
+    <td>Stream should transition to quality level 1.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Resize to 300px wide wide</td>
+    <td>Stream should transition to quality level 3.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Go fullscreen</td>
+    <td>Stream should transition to quality level 0 or 1 (depending upon monitor).</td>
+    <td class="check"></td>
+</tr></table>
 
 
 </body>

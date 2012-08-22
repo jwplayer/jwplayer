@@ -4,9 +4,9 @@
 	</head>
 	<body>
 		<switch>
+			<video src="videos/8Juv1MVa-484.mp4" system-bitrate="800000" width="480" height="270" />
 			<video src="videos/8Juv1MVa-67727.mp4" system-bitrate="1600000" width="1280" height="720" />
 			<video src="videos/8Juv1MVa-485.mp4" system-bitrate="1200000" width="720" height="400" />
-			<video src="videos/8Juv1MVa-484.mp4" system-bitrate="800000" width="480" height="270" />
 			<video src="videos/8Juv1MVa-483.mp4" system-bitrate="400000" width="320" height="180" />
 		</switch>
     </body> 

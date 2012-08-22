@@ -437,22 +437,6 @@ package com.longtailvideo.jwplayer.media {
 		}
 
 
-		protected function getLevel(item:PlaylistItem, bitrate:Number, width:Number):Number {
-			for (var i:Number=0; i < item.levels.length; i++) {
-				var level:PlaylistItemLevel = item.levels[i] as PlaylistItemLevel;
-				if ((isNaN(level.bitrate) || bitrate >= level.bitrate * 1.5) && (isNaN(level.width) || width >= level.width * 0.67) && !level.blacklisted) {
-					return i;
-				}
-			}
-			return item.levels.length - 1;
-		}
-		
-		
-
-		
-		///////////////////////////////////////////		
-		/// IGlobalEventDispatcher implementation
-		///////////////////////////////////////////		
 		/**
 		 * @inheritDoc
 		 */
