@@ -73,7 +73,7 @@
 		}
 		
 		function _sourceError() {
-			_errorScreen(_container, _errorText  + "No media sources found");
+			_errorScreen(_container, _errorText  + "No playable sources found");
 		}
 		
 		function _errorScreen(container, message) {

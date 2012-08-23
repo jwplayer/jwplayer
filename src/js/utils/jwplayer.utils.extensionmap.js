@@ -40,16 +40,16 @@
 		}, 
 		video = "video", 
 		flashExtensions = {
-			"flv": video,
-			"f4v": video,
-			"mov": video,
-			"m4a": video,
-			"m4v": video,
 			"mp4": video,
+			"f4v": video,
+			"m4v": video,
+			"mov": video,
+			"flv": video,
+			"m4a": video,
+			"f4a": video,
 			"aac": video,
 			"mp3": "sound",
-			"smil": "rtmp",
-			"m3u8": "hls"
+			"smil": "rtmp"
 		};
 	
 	var _extensionmap = utils.extensionmap = {};

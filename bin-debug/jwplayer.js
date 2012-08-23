@@ -422,16 +422,16 @@ jwplayer.source = document.createElement("source");/**
 		}, 
 		video = "video", 
 		flashExtensions = {
-			"flv": video,
-			"f4v": video,
-			"mov": video,
-			"m4a": video,
-			"m4v": video,
 			"mp4": video,
+			"f4v": video,
+			"m4v": video,
+			"mov": video,
+			"flv": video,
+			"m4a": video,
+			"f4a": video,
 			"aac": video,
 			"mp3": "sound",
-			"smil": "rtmp",
-			"m3u8": "hls"
+			"smil": "rtmp"
 		};
 	
 	var _extensionmap = utils.extensionmap = {};
@@ -660,7 +660,7 @@ jwplayer.source = document.createElement("source");/**
 	
 	/** Returns the extension of a file name * */
 	utils.extension = function(path) {
-		if (!path) { return ""; }
+		if (!path || path.substr(0,4) == 'rtmp') { return ""; }
 		path = path.substring(path.lastIndexOf("/") + 1, path.length).split("?")[0].split("#")[0];
 		if (path.lastIndexOf('.') > -1) {
 			return path.substr(path.lastIndexOf('.') + 1, path.length).toLowerCase();
@@ -1380,7 +1380,7 @@ jwplayer.source = document.createElement("source");/**
 		}
 		
 		function _sourceError() {
-			_errorScreen(_container, _errorText  + "No media sources found");
+			_errorScreen(_container, _errorText  + "No playable sources found");
 		}
 		
 		function _errorScreen(container, message) {
@@ -1441,9 +1441,9 @@ jwplayer.source = document.createElement("source");/**
 		
 		var _defaults = {
 				fallback: true,
-				height: 300,
+				height: 270,
 				primary: "html5",
-				width: 400,
+				width: 480,
 				base: UNDEFINED
 			},
 			_modes = {
@@ -1615,8 +1615,6 @@ jwplayer.source = document.createElement("source");/**
 })(jwplayer);
 /**
  * Download mode embedder for the JW Player
- * @author Zach
- * @version 5.5
  */
 (function(jwplayer) {
 	var embed = jwplayer.embed,
@@ -1668,7 +1666,6 @@ jwplayer.source = document.createElement("source");/**
 			} else {
 				return;
 			}
-			
 			if (file) {
 				_file = file;
 				_image = image;
@@ -1683,7 +1680,8 @@ jwplayer.source = document.createElement("source");/**
 				_errorCallback();
 			}
 		}
-		
+
+
 		function _buildElements() {
 			if (_container) {
 				_display = _createElement("a", "display", _container);

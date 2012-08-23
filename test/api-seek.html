@@ -4,8 +4,7 @@
     <title>Seeking</title>
     <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
     <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
-    
-
+    <script type="text/javascript" src="assets/primaryCookie.js"></script>
 </head>
 <body>
 
@@ -30,6 +29,7 @@
     jwplayer("seek").setup({
         file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
    		image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+   		primary: primaryCookie,
         events: {
 			onSeek: seekHandler,
 			onTime: timeHandler

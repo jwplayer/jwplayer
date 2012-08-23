@@ -11,19 +11,16 @@
 <div class="core">List of test devices</div>
 <p>This page tests the player's mode selection and failover ability, including the <em>fallback</em> option.</p>
 
-<h2>MP4 with WebM fallback</h2>
 
-<div id="mp4_webm"></div>
+
+<h2>MP3 audio</h2>
+
+<div id="mp3_aac">No fallback occurred</div>
 
 <script type="text/javascript">
-    jwplayer("mp4_webm").setup({
-        sources: [
-                  { file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4' },
-                  { file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm' }
-        ],
-        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
-        height: 180,
-        width: 320
+    jwplayer("mp3_aac").setup({
+        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-zWfluNSa.mp3',
+        image: 'http://d3el35u4qe4frz.cloudfront.net/3XnJSIm4-480.jpg'
     });
 </script>
 
@@ -32,27 +29,20 @@
 </tr><tr>
     <td class="both"></td>
     <td>Load the player</td>
-    <td>Player loads in HTML5 mode (IE8 will load in Flash)</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="both"></td>
-    <td>Play the video</td>
-    <td>Video plays</td>
+    <td>IE8, Firefox: Player loads in Flash; otherwise, player loads in HTML5 mode</td>
     <td class="check"></td>
 </tr></table>
 
-<h2>RTMP, no fallback</h2>
+
+
+<h2>RTMP (fallback on)</h2>
 
 <div id="rtmp"></div>
 
 <script type="text/javascript">
     jwplayer("rtmp").setup({
-        file: "videos/Qvxp3Jnv-483.mp4",
-       	type: "rtmp",
-        streamer: "rtmp://fms.12E5.edgecastcdn.net/0012E5",
-        image: 'http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg',
-        height: 180,
-        width: 320
+        file: "rtmp://fms.12E5.edgecastcdn.net/0012E5/mp4:videos/Qvxp3Jnv-483.mp4",
+        image: 'http://d3el35u4qe4frz.cloudfront.net/bkaovAYt-480.jpg'
     });
 </script>
 
@@ -64,106 +54,23 @@
     <td>Player loads in Flash mode</td>
     <td class="check"></td>
 </tr><tr>
-    <td class="desktop"></td>
-    <td>Play the video</td>
-    <td>Video plays</td>
-    <td class="check"></td>
-</tr><tr>
     <td class="mobile"></td>
     <td>Load the player</td>
-    <td>Player displays an error: No media sources found</td>
+    <td>Player displays an error: No playable sources found</td>
     <td class="check"></td>
 </tr><tr>
 </tr></table>
 
-<h2>RTMP, MP4 fallback</h2>
 
-<div id="rtmp_mp4"></div>
 
-<script type="text/javascript">
-    jwplayer("rtmp_mp4").setup({
-        sources: [
-                  { file: "videos/Qvxp3Jnv-483.mp4", type: "rtmp" },
-                  { file: 'http://content.bitsontherun.com/videos/bkaovAYt-injeKYZS.mp4' }
-    	],
-        streamer: "rtmp://fms.12E5.edgecastcdn.net/0012E5",
-        image: 'http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg',
-        height: 180,
-        width: 320
-    });
-</script>
+<h2>RTMP (fallback off)</h2>
 
-<table><tr>
-    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
-</tr><tr>
-    <td class="desktop"></td>
-    <td>Load the player</td>
-    <td>IE8, Firefox: Player loads in Flash mode; All others: Player loads in HTML5 mode</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="desktop"></td>
-    <td>Play the video</td>
-    <td>Video plays</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="mobile"></td>
-    <td>Load the player</td>
-    <td>Player Loads in HTML5 mode</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="mobile"></td>
-    <td>Play the video</td>
-    <td>Video plays</td>
-    <td class="check"></td>
-</tr><tr>
-</tr></table>
-
-<h2>YouTube (fallback enabled)</h2>
-
-<div id="youtube"></div>
+<div id="rtmp_off">No fallback occurred</div>
 
 <script type="text/javascript">
-    jwplayer("youtube").setup({
-		file: "http://www.youtube.com/watch?v=ac7KhViaVqc",
-        height: 180,
-        width: 320
-    });
-</script>
-
-<table><tr>
-    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
-</tr><tr>
-    <td class="desktop"></td>
-    <td>Load the player</td>
-    <td>Player loads in Flash mode</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="desktop"></td>
-    <td>Play the video</td>
-    <td>Video plays</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="mobile"></td>
-    <td>Load the player</td>
-    <td>Player Loads in fallback mode (standard YouTube embed)</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="mobile"></td>
-    <td>Play the video</td>
-    <td>Video plays</td>
-    <td class="check"></td>
-</tr><tr>
-</tr></table>
-
-<h2>YouTube (fallback disabled)</h2>
-
-<div id="youtube_nofail">No fallback occurred</div>
-
-<script type="text/javascript">
-    jwplayer("youtube_nofail").setup({
-		file: "http://www.youtube.com/watch?v=ac7KhViaVqc",
-        height: 180,
-        width: 320,
+    jwplayer("rtmp_off").setup({
+        file: "rtmp://fms.12E5.edgecastcdn.net/0012E5/mp4:videos/Qvxp3Jnv-483.mp4",
+        image: 'http://d3el35u4qe4frz.cloudfront.net/bkaovAYt-480.jpg',
         fallback: false
     });
 </script>
@@ -176,32 +83,112 @@
     <td>Player loads in Flash mode</td>
     <td class="check"></td>
 </tr><tr>
-    <td class="desktop"></td>
-    <td>Play the video</td>
-    <td>Video plays</td>
-    <td class="check"></td>
-</tr><tr>
     <td class="mobile"></td>
     <td>Load the player</td>
-    <td>Player is not set up; no fallback occurs (text should say "no fallback occurred")</td>
+    <td>Text "No fallback occurred" stays visible.</td>
     <td class="check"></td>
 </tr><tr>
 </tr></table>
 
-<h2>MP4+WebM, Flash Primary</h2>
 
-<div id="mp4_flash">No fallback occurred</div>
+
+<h2>MP4 and WebM</h2>
+
+<div id="mp4_webm"></div>
 
 <script type="text/javascript">
-    jwplayer("mp4_flash").setup({
-        sources: [
-            { file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4' },
-            { file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm' }
-        ],
-        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
-        primary: "flash",
-        height: 180,
-        width: 320
+    jwplayer("mp4_webm").setup({
+        sources: [{ 
+            file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4'
+        },{ 
+            file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm'
+        }],
+        image: 'http://d3el35u4qe4frz.cloudfront.net/3XnJSIm4-480.jpg'
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Load the player</td>
+    <td>Player loads in HTML5 mode (IE8 will load in Flash)</td>
+    <td class="check"></td>
+</tr></table>
+
+
+
+<h2>RTMP and MP4</h2>
+
+<div id="rtmp_mp4"></div>
+
+<script type="text/javascript">
+    jwplayer("rtmp_mp4").setup({
+        sources: [{ 
+            file: 'rtmp://fms.12E5.edgecastcdn.net/0012E5/mp4:videos/Qvxp3Jnv-483.mp4'
+        },{
+            file: 'http://content.bitsontherun.com/videos/bkaovAYt-injeKYZS.mp4'
+        }],
+        image: 'http://d3el35u4qe4frz.cloudfront.net/bkaovAYt-480.jpg'
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Load the player</td>
+    <td>Player loads in HTML5 mode. IE8, Firefox: Player loads in Flash mode</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="mobile"></td>
+    <td>Load the player</td>
+    <td>Player Loads in HTML5 mode</td>
+    <td class="check"></td>
+</tr></table>
+
+
+
+<h2>RTMP and MP4 (Flash primary)</h2>
+
+<div id="rtmp_mp4_flash"></div>
+
+<script type="text/javascript">
+    jwplayer("rtmp_mp4_flash").setup({
+        sources: [{ 
+            file: 'rtmp://fms.12E5.edgecastcdn.net/0012E5/mp4:videos/Qvxp3Jnv-483.mp4'
+        },{
+            file: 'http://content.bitsontherun.com/videos/bkaovAYt-injeKYZS.mp4'
+        }],
+        image: 'http://d3el35u4qe4frz.cloudfront.net/bkaovAYt-480.jpg',
+        primary: 'flash'
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Load the player</td>
+    <td>IE8, Firefox: Player loads in Flash mode; All others: Player loads in HTML5 mode</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="mobile"></td>
+    <td>Load the player</td>
+    <td>Player Loads in HTML5 mode</td>
+    <td class="check"></td>
+</tr></table>
+
+
+
+
+<h2>YouTube (fallback on)</h2>
+
+<div id="youtube"></div>
+
+<script type="text/javascript">
+    jwplayer("youtube").setup({
+        file: "http://www.youtube.com/watch?v=ac7KhViaVqc"
     });
 </script>
 
@@ -213,43 +200,40 @@
     <td>Player loads in Flash mode</td>
     <td class="check"></td>
 </tr><tr>
-    <td class="desktop"></td>
-    <td>Load the player with Flash plugin disabled in browser</td>
-    <td>Player loads in HTML5 mode (IE8 loads in Flash)</td>
-    <td class="check"></td>
-</tr><tr>
     <td class="mobile"></td>
     <td>Load the player</td>
-    <td>Player loads in HTML5 mode</td>
+    <td>Player Loads in fallback mode (standard YouTube embed)</td>
     <td class="check"></td>
-</tr><tr>
 </tr></table>
 
 
-<h2>MP3+AAC</h2>
 
-<div id="mp3_aac">No fallback occurred</div>
+<h2>YouTube (fallback off)</h2>
+
+<div id="youtube_nofail">No fallback occurred</div>
 
 <script type="text/javascript">
-    jwplayer("mp3_aac").setup({
-        sources: [
-            { file: 'http://content.bitsontherun.com/videos/3XnJSIm4-zWfluNSa.mp3' },
-            { file: 'http://content.bitsontherun.com/videos/3XnJSIm4-I3ZmuSFT.m4a' }
-        ],
-        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
-        height: 180,
-        width: 320
+    jwplayer("youtube_nofail").setup({
+		file: "http://www.youtube.com/watch?v=ac7KhViaVqc",
+        fallback: false
     });
 </script>
 
 <table><tr>
     <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
 </tr><tr>
-    <td class="both"></td>
+    <td class="desktop"></td>
     <td>Load the player</td>
-    <td>IE8, Firefox: Player loads in Flash; otherwise, player loads in HTML5 mode</td>
+    <td>Player loads in Flash mode</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="mobile"></td>
+    <td>Load the player</td>
+    <td>text should say "no fallback occurred"</td>
     <td class="check"></td>
 </tr></table>
+
+
 
 </body>
 </html>

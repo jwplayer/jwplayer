@@ -23,9 +23,9 @@
 		
 		var _defaults = {
 				fallback: true,
-				height: 300,
+				height: 270,
 				primary: "html5",
-				width: 400,
+				width: 480,
 				base: UNDEFINED
 			},
 			_modes = {
