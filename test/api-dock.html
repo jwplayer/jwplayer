@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Dock Icons</title>
+    <title>Button API</title>
     <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
     <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+    <script type="text/javascript" src="assets/primaryCookie.js"></script>
 </head>
 <body>
 
-<h1>Dock Icons</h1>
+<h1>Button API</h1>
 <div class="core">List of test devices</div>
-<p>This page tests adding and removing dock icons.</p>
+<p>This page tests adding and removing dock buttons.</p>
+
+
 
 <h2>Adding onReady</h2>
 
@@ -19,66 +22,72 @@
     jwplayer("onready").setup({
         file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
      	image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
-        height: 240,
-        width: 480,
-        events: {
-        	onReady: function() {
-        		this.addButton("assets/both.png", "Button sucessfully added", function() { alert("Button clicked"); }, "button");
-        	}
-        }
+        primary: primaryCookie
+    });
+    jwplayer("onready").onReady(function() {
+        this.addButton("assets/both.png", 
+            "Button sucessfully added", 
+            function() { alert("Button clicked"); }, 
+            "firstButton");
+        this.addButton("assets/smiley.png", 
+            "Small smiley button", 
+            function() { alert("Button clicked"); }, 
+            "secondButton");
     });
 </script>
 
 <table><tr>
     <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
 </tr><tr>
-    <td class="both"></td>
-    <td>Load the player</td>
-    <td>Firefox, IE8: Player loads in Flash.  Otherwise, player loads in HTML5 mode</td>
-    <td class="check"></td>
-</tr><tr>
     <td class="desktop"></td>
     <td>Begin playing</td>
-    <td>Player controls become visible, including a dock icon.</td>
+    <td>Dock buttons should become visible.<br/>
+        The smiley icon (12x12px) should not get scaled.</td>
     <td class="check"></td>
 </tr><tr>
     <td class="desktop"></td>
-    <td>Mouse over dock icon</td>
-    <td>Label should appear underneath the dock icon.</td>
+    <td>Mouse over dock icons</td>
+    <td>Label should appear underneath the icons<br/>
+        Label should confine to single line.</td>
     <td class="check"></td>
 </tr><tr>
     <td class="desktop"></td>
-    <td>Click dock icon</td>
+    <td>Click a dock button</td>
     <td>An alert should appear saying "Button clicked".</td>
     <td class="check"></td>
 </tr></table>
 
-<h2>Adding Later</h2>
+
+
+<h2>Adding and Removing</h2>
 
 <div id="later"></div>
-<button onclick="laterClick();">Add a Button</button>
 
 <script type="text/javascript">
     jwplayer("later").setup({
         file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
-     	image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
-        height: 240,
-        width: 480,
+     	image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg'
     });
 
-	function laterClick() {
-		jwplayer("later").addButton("assets/both.png", "Button sucessfully added", function() { alert("Button clicked"); }, "button");
+    var index = 0;
+	function addClick() {
+	    index++;
+		jwplayer("later").addButton("assets/both.png",
+		    "Custom button "+index, 
+		    function() { alert("Button "+index+" clicked"); },
+		    "button"+index
+		);
 	}
-
+	function removeClick() {
+	    if(index > 0) { 
+		    jwplayer("later").removeButton("button"+index);
+		    index--;
+		}
+	}
 </script>
 
 <table><tr>
     <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
-</tr><tr>
-    <td class="both"></td>
-    <td>Load the player</td>
-    <td>Firefox, IE8: Player loads in Flash.  Otherwise, player loads in HTML5 mode</td>
-    <td class="check"></td>
 </tr><tr>
     <td class="desktop"></td>
     <td>Begin playing</td>
@@ -86,51 +95,13 @@
     <td class="check"></td>
 </tr><tr>
     <td class="desktop"></td>
-    <td>Click the "Add a Button" button, then mouse over player</td>
-    <td>Dock icon is now visible.</td>
-    <td class="check"></td>
-</tr></table>
-
-<h2>Removing</h2>
-
-<div id="remove"></div>
-<button onclick="removeClick();">Remove the Button</button>
-
-<script type="text/javascript">
-    jwplayer("remove").setup({
-        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
-     	image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
-        height: 240,
-        width: 480,
-        events: {
-            onReady: function() {
-        		this.addButton("assets/both.png", "Button sucessfully added", function() { alert("Button clicked"); }, "button");            
-        	}
-        }
-    });
-
-	function removeClick() {
-		jwplayer("remove").removeButton("button");
-	}
-
-</script>
-
-<table><tr>
-    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
-</tr><tr>
-    <td class="both"></td>
-    <td>Load the player</td>
-    <td>Firefox, IE8: Player loads in Flash.  Otherwise, player loads in HTML5 mode</td>
+    <td><a href="javascript:addClick()">Add a Button</a>, then mouse over player</td>
+    <td>Dock button is now visible.</td>
     <td class="check"></td>
 </tr><tr>
     <td class="desktop"></td>
-    <td>Begin playing</td>
-    <td>Player controls become visible, including a dock icon.</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="desktop"></td>
-    <td>Click "Remove the Button" button, then mouse over the player</td>
-    <td>The dock icon is no longer visible.</td>
+    <td><a href="javascript:removeClick()">Remove a Button</a>, then mouse over player</td>
+    <td>Dock button is now gone again.</td>
     <td class="check"></td>
 </tr></table>
 
