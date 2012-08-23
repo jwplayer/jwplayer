@@ -96,14 +96,16 @@
 
 <script type="text/javascript">
     jwplayer("onready").setup({
-        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
-     	image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
-     	events: {
-         	onReady: function() {
-	     		document.getElementById("onReadyResponse").innerHTML = "onReady event called\nRendering mode: "+this.getRenderingMode();
-        	}
-        } 
+        file: 'rtmp://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
+     	image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg' 
     });
+    jwplayer("onready").onReady(function() {
+	     		document.getElementById("onReadyResponse").innerHTML = "onReady event called\nRendering mode: "+this.getRenderingMode();
+    });
+    setTimeout(printMode,2000);
+    function printMode() { 
+        document.getElementById("onReadyResponse").innerHTML = jwplayer("onready").getRenderingMode();
+    }
 </script>
 
 <table><tr>

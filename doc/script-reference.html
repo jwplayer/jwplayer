@@ -72,7 +72,7 @@ Fired every time when a playlist item completes playback. It has no event attrib
 </dd><dt>onPlaylistComplete(<em>callback</em>)</dt><dd>
 Fired when the player is done playing all items in the playlist. However, if the <strong>repeat</strong> option is set <em>true</em>, this is never fired.</dd></dl>
 
-
+<!--
 <h2><a name="buffering"></a>Buffering</h2>
 
 <p>These API calls are used to update clients with the percentage of a file that's buffered into the player. This only applies to progressive downloads of media; streaming media do not expose this behavior.</p>
@@ -85,7 +85,7 @@ Returns the current PlaylistItem's filled buffer, as a percentage (0 to 100) of 
 Fired when the currently playing item loads additional data into its buffer. Event attributes:
 <ul><li><strong>buffer</strong> (Number): Percentage between 0 and 100 of the current media that is buffered.
 </li></ul></dd></dl>
-
+-->
 
 
 <h2><a name="playback"></a>Playback</h2>
@@ -268,7 +268,7 @@ Removes a button from the dock. Attributes:
 </li></ul></dd></dl>
 
 
-
+<!--
 <h2><a name="display"></a>Display</h2>
 
 <p>This API call allows developers to listen for and react to clicks on the video display.</p>
@@ -276,20 +276,20 @@ Removes a button from the dock. Attributes:
 <dl><dt>onDisplayClick(<em>callback</em>)</dt><dd>
 Fired when a user clicks the video display (not the controls). There are no event attributes.
 </li></ul></dd></dl>
-
+-->
 
 
 
 <h2><a name="error"></a>Error</h2>
 
-<p>This API call allows developers to listen for and react to media playback errors (e.g. when a video URL is not found or a streaming server disconnects).</p>
+<p>This API call allows developers to listen for and react to <em>media loading errors</em> (e.g. when a video URL is not found or a streaming server disconnects).</p>
 
 <dl><dt>onError(<em>callback</em>)</dt><dd>
-Fired when a media playback error has occurred in the player. An error event is not fired when player setup errors occur (since these generally occur before the API is ready). Event attributes:
-<ul><li><strong>message</strong> (String): The reason for the error. See <a href="troubleshooting.html">Troubleshooting your Setup</a> for a list of all possible media errors.
+Fired when a media loading error has occurred in the player. Event attributes:
+<ul><li><strong>message</strong> (String): The reason for the error. See <a href="troubleshooting.html">Troubleshooting your Setup</a> for a list of all possible media loading errors.
 </li></ul></dd></dl>
 
-
+<p>Note an error event is <strong>not</strong> fired when a <em>player setup error</em> occurs, since this generally happens before the API is ready.
 
 <h2><a name="metadata"></a>Metadata</h2>
 

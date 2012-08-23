@@ -2,7 +2,7 @@ package com.longtailvideo.jwplayer.view.skins {
 	import flash.utils.ByteArray;
 
 	public class DefaultSkin extends ZIPSkin {
-		[Embed(source="../../../../../../../assets/flash/skin/six.zip", mimeType="application/octet-stream")]
+		[Embed(source="../../../../../../../assets/six.zip", mimeType="application/octet-stream")]
 		private var EmbeddedSkin:Class;
 
 		public override function load(notUsed:String=""):void {

@@ -49,15 +49,7 @@ package com.longtailvideo.jwplayer.view {
 
 		protected var layoutManager:PlayerLayoutManager;
 
-/*		[Embed(source="../../../../../../assets/flash/loader/loader.swf")]
-		protected var LoadingScreen:Class;
-
-		[Embed(source="../../../../../../assets/flash/loader/error.swf")]
-		protected var ErrorScreen:Class;
-
-		protected var loaderScreen:Sprite;
-		protected var loaderAnim:DisplayObject;
-*/		protected var currentLayer:Number = 0;
+		protected var currentLayer:Number = 0;
 		
 		// Keep track of the first tabIndex
 		protected var firstIndex:Number = -1;
