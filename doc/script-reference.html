@@ -70,12 +70,7 @@ Fired when the playlist index changes to a new playlist item. This event occurs 
 </li></ul></dd><dt>onComplete(<em>callback</em>)</dt><dd>
 Fired every time when a playlist item completes playback. It has no event attributes.
 </dd><dt>onPlaylistComplete(<em>callback</em>)</dt><dd>
-Fired when the player is done playing all items in the playlist, taking the <strong>repeat</strong> option into account. This means it fires:
-<ul><li>After the last item is played when <strong>repeat</strong> is set to <em>list</em> (the default)
-</li><li>After every item when <strong>repeat</strong> is set to <em>none</em>.
-</li><li>Never when <strong>repeat</strong> is set to <em>single</em> or <em>always</em>.
-</li></ul>There are no event attributes.
-</dd></dl>
+Fired when the player is done playing all items in the playlist. However, if the <strong>repeat</strong> option is set <em>true</em>, this is never fired.</dd></dl>
 
 
 <h2><a name="buffering"></a>Buffering</h2>

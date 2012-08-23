@@ -231,10 +231,7 @@ package com.longtailvideo.jwplayer.controller {
 			}
 			
 			switch (_model.config.repeat) {
-				case RepeatOptions.SINGLE:
-					play();
-					break;
-				case RepeatOptions.ALWAYS:
+				case true:
 					if (_model.playlist.currentIndex == _model.playlist.length - 1) {
 						_model.playlist.currentIndex = 0;
 						play();
@@ -242,19 +239,14 @@ package com.longtailvideo.jwplayer.controller {
 						next();
 					}
 					break;
-				case RepeatOptions.LIST:
+				default:
 					if (_model.playlist.currentIndex == _model.playlist.length - 1) {
 						_lockingResume = false;
 						_loadOnPlay = 0;
-//						setTimeout(_model.playlistComplete, 10);
 						setTimeout(function():void { dispatchEvent(new PlaylistEvent(PlaylistEvent.JWPLAYER_PLAYLIST_COMPLETE, _model.playlist))}, 10);
 					} else {
 						next();
 					}
-					break;
-				case RepeatOptions.NONE:
-//					setTimeout(_model.playlistComplete, 10);
-					setTimeout(function():void { dispatchEvent(new PlaylistEvent(PlaylistEvent.JWPLAYER_PLAYLIST_COMPLETE, _model.playlist))}, 10);
 					break;
 			}
 		}

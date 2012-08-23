@@ -2200,26 +2200,20 @@
 				return;
 			}
 			_actionOnAttach = _completeHandler;
-			switch (_model.repeat.toLowerCase()) {
-				case "single":
-					_play();
-					break;
-				case "always":
-					_next();
-					break;
-				case "list":
-					if (_model.item == _model.playlist.length - 1) {
-						_loadOnPlay = 0;
-						_stop();
-						setTimeout(function() { _eventDispatcher.sendEvent(events.JWPLAYER_PLAYLIST_COMPLETE)}, 0);
-					} else {
-						_next();
-					}
-					break;
-				default:
+			if(_model.repeat) {
+				if (_model.item == _model.playlist.length - 1) {
+				    _item(0);
+		        } else {
+				    _next();
+	            }
+			} else { 
+				if (_model.item == _model.playlist.length - 1) {
+					_loadOnPlay = 0;
+					_stop();
 					setTimeout(function() { _eventDispatcher.sendEvent(events.JWPLAYER_PLAYLIST_COMPLETE)}, 0);
-//					_stop();
-					break;
+				} else {
+					_next();
+				}
 			}
 		}
 		
@@ -3792,7 +3786,7 @@
 				playlist: [],
 				playlistposition: "right",
 				playlistsize: 0,
-				repeat: "list",
+				repeat: false,
 				skin: UNDEF,
 				stretching: utils.stretching.UNIFORM,
 				volume: 90,

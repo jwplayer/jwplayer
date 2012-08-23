@@ -1,5 +1,4 @@
 package com.longtailvideo.jwplayer.model {
-	import com.longtailvideo.jwplayer.controller.RepeatOptions;
 	import com.longtailvideo.jwplayer.player.PlayerVersion;
 	import com.longtailvideo.jwplayer.plugins.PluginConfig;
 	import com.longtailvideo.jwplayer.utils.Logger;
@@ -25,7 +24,7 @@ package com.longtailvideo.jwplayer.model {
 		protected var _item:Number			= 0;
 		protected var _levels:Array			= null;
 		protected var _mute:Boolean 		= false;
-		protected var _repeat:String 		= RepeatOptions.LIST; 
+		protected var _repeat:Boolean 		= false; 
 		protected var _controls:Boolean		= true; 
 		
 		//TODO: Move to ENUM class
@@ -270,8 +269,8 @@ package com.longtailvideo.jwplayer.model {
 		public function set mute(x:Boolean):void { _mute = x;}
 
 		/** Set to list to play the entire playlist once, to always to continously play the song/video/playlist and to single to continue repeating the selected file in a playlist. @default none **/
-		public function get repeat():String { return _repeat; }
-		public function set repeat(x:String):void { _repeat = x ? x.toLowerCase() : ""; }
+		public function get repeat():Boolean { return _repeat; }
+		public function set repeat(x:Boolean):void { _repeat = x; }
 
 		/** Defines how to resize images in the display. Can be none (no stretching), exactfit (disproportionate), uniform (stretch with black borders) or fill (uniform, but completely fill the display). @default uniform **/
 		public function get stretching():String{ return _stretching; }
