@@ -268,17 +268,6 @@ Removes a button from the dock. Attributes:
 </li></ul></dd></dl>
 
 
-<!--
-<h2><a name="display"></a>Display</h2>
-
-<p>This API call allows developers to listen for and react to clicks on the video display.</p>
-
-<dl><dt>onDisplayClick(<em>callback</em>)</dt><dd>
-Fired when a user clicks the video display (not the controls). There are no event attributes.
-</li></ul></dd></dl>
--->
-
-
 
 <h2><a name="error"></a>Error</h2>
 
@@ -291,6 +280,8 @@ Fired when a media loading error has occurred in the player. Event attributes:
 
 <p>Note an error event is <strong>not</strong> fired when a <em>player setup error</em> occurs, since this generally happens before the API is ready.
 
+
+<!--
 <h2><a name="metadata"></a>Metadata</h2>
 
 <p>This API call allows developers to listen for metadata embedded in the media file (e.g. dimensions of MP4 files or ID3 data of MP3 files).</p>
@@ -299,6 +290,17 @@ Fired when a media loading error has occurred in the player. Event attributes:
 Fired when new metadata has been broadcasted by the player. Event attributes:
 <ul><li><em>metadata</em> (Object): Object containing the new metadata. This can be metadata hidden in the media (XMP, ID3, keyframes) or metadata broadcasted by the playback provider (bandwidth, quality switches).
 </li></ul></dd></dl>
+
+
+
+<h2><a name="display"></a>Display</h2>
+
+<p>This API call allows developers to listen for and react to clicks on the video display.</p>
+
+<dl><dt>onDisplayClick(<em>callback</em>)</dt><dd>
+Fired when a user clicks the video display (not the controls). There are no event attributes.
+</li></ul></dd></dl>
+-->
 
 
 

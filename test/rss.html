@@ -3,6 +3,7 @@
 <head>
     <title>RSS feed</title>
     <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <script type="text/javascript" src="assets/primaryCookie.js"></script>
     <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
 </head>
 <body>
@@ -17,9 +18,8 @@
 <div id="container"></div>
 <script type="text/javascript">
     jwplayer("container").setup({
-        height: 270,
         playlist: 'files/basic.rss',
-        width: 480
+        primary: primaryCookie
     });
 </script>
 
@@ -43,7 +43,12 @@
 </tr><tr>
     <td class="both"></td>
     <td>Third video completed</td>
-    <td>Player should show <em>replay</em> icon over poster of last video.</td>
+    <td>Player should show <em>replay</em> icon over poster of first video.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Click "replay" button</td>
+    <td>Player should start first video again.</td>
     <td class="check"></td>
 </tr></table>
 
@@ -53,13 +58,13 @@
 <div id="container2"></div>
 <script type="text/javascript">
     jwplayer("container2").setup({
-        height: 270,
         playlist: 'files/basic.rss',
         repeat: true,
         listbar: {
             size: 240,
             position: 'right'
         },
+        primary: primaryCookie,
         width: 720
     });
 </script>
