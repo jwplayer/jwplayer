@@ -128,7 +128,7 @@
 				if (!_inCB) {
 					_controlsTimeout = setTimeout(_fadeControls, _timeoutDuration);
 				}
-			} else if (_replayState) {
+			} else if (_replayState && _model.controls) {
 				_showDock();
 			}
 		}

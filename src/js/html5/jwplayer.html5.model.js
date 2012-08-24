@@ -7,7 +7,9 @@
 (function(html5) {
 	var utils = jwplayer.utils,
 		events = jwplayer.events,
-		UNDEF = undefined;
+		UNDEF = undefined,
+		TRUE = true,
+		FALSE = false;
 
 	html5.model = function(config) {
 		var _model = this, 
@@ -21,19 +23,19 @@
 			_componentConfigs = {},
 			// Defaults
 			_defaults = {
-				autostart: false,
-				controlbar: true,
-				controls: true,
+				autostart: FALSE,
+				controlbar: TRUE,
+				controls: TRUE,
 				debug: UNDEF,
 				height: 320,
-				icons: true,
+				icons: TRUE,
 				item: 0,
-				mobilecontrols: false,
-				mute: false,
+				mobilecontrols: FALSE,
+				mute: FALSE,
 				playlist: [],
 				playlistposition: "right",
 				playlistsize: 0,
-				repeat: "list",
+				repeat: FALSE,
 				skin: UNDEF,
 				stretching: utils.stretching.UNIFORM,
 				volume: 90,
@@ -155,7 +157,7 @@
 		}
 		
 		_model.setVolume = function(newVol) {
-			if (_model.mute && newVol > 0) _model.setMute(false);
+			if (_model.mute && newVol > 0) _model.setMute(FALSE);
 			newVol = Math.round(newVol);
 			utils.saveCookie("volume", newVol);
 			_video.volume(newVol);

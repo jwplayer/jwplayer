@@ -204,12 +204,13 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 			
 			if (maxX > 0 && maxY > 0) {
-				_textField.width = Math.round(maxX - minX + 5);
+				_textField.width = Math.round(maxX - minX + 10);
 				_textField.height = Math.round(maxY + 5);
 				_textField.y = Math.round((_background.height - maxY) / 2 - minY);
 			} else {
 				_textField.height = _textField.textHeight;
 			}
+			
 		}
 		
 		private function _moveHandler(evt:MouseEvent):void {

@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2418';
+	jwplayer.html5.version = '6.0.2421';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -420,10 +420,11 @@
 	};
 	
 	utils.cssReset = function() {
-		utils.css(JW_CLASS + ["div", "span", "a", "img", "ul", "li", "video"].join(","+JW_CLASS), {
+		utils.css(JW_CLASS + ["", "div", "span", "a", "img", "ul", "li", "video"].join(","+JW_CLASS), {
 			margin: "auto",
 			padding: 0,
 			border: 0,
+			color: '#000000',
 			'font-size': "100%",
 			font: 'inherit',
 			'vertical-align': 'baseline',
@@ -2209,26 +2210,16 @@
 				return;
 			}
 			_actionOnAttach = _completeHandler;
-			switch (_model.repeat.toLowerCase()) {
-				case "single":
-					_play();
-					break;
-				case "always":
-					_next();
-					break;
-				case "list":
-					if (_model.item == _model.playlist.length - 1) {
-						_loadOnPlay = 0;
-						_stop();
-						setTimeout(function() { _eventDispatcher.sendEvent(events.JWPLAYER_PLAYLIST_COMPLETE)}, 0);
-					} else {
-						_next();
-					}
-					break;
-				default:
+			if (_model.repeat) {
+				_next();
+			} else {
+				if (_model.item == _model.playlist.length - 1) {
+					_loadOnPlay = 0;
+					_stop();
 					setTimeout(function() { _eventDispatcher.sendEvent(events.JWPLAYER_PLAYLIST_COMPLETE)}, 0);
-//					_stop();
-					break;
+				} else {
+					_next();
+				}
 			}
 		}
 		
@@ -3105,7 +3096,8 @@
 	_css(D_CLASS, {
 	  	position: "absolute",
 	  	//visibility: "hidden",
-	  	opacity: 0
+	  	opacity: 0,
+	  	width: JW_CSS_100PCT
 //	  	overflow: "hidden"
 	});
 	
@@ -3115,13 +3107,14 @@
 	});
 	
 	_css(D_CLASS + " > *", {
-		height: "100%",
+		height: JW_CSS_100PCT,
 	  	'float': "left"
 	});
 
 	_css(D_CLASS + " > .jwoverlay", {
 		height: 'auto',
-	  	'float': "none"
+	  	'float': "none",
+	  	'z-index': 99
 	});
 
 	_css(D_CLASS + " .divider", {
@@ -3147,7 +3140,6 @@
 		bottom: 0,
 		margin: 5,
 		position: "absolute",
-		'background-size': "contain",
 		'background-position': "center",
 		'background-repeat': "no-repeat"
 	});
@@ -3813,7 +3805,9 @@
 (function(html5) {
 	var utils = jwplayer.utils,
 		events = jwplayer.events,
-		UNDEF = undefined;
+		UNDEF = undefined,
+		TRUE = true,
+		FALSE = false;
 
 	html5.model = function(config) {
 		var _model = this, 
@@ -3827,19 +3821,19 @@
 			_componentConfigs = {},
 			// Defaults
 			_defaults = {
-				autostart: false,
-				controlbar: true,
-				controls: true,
+				autostart: FALSE,
+				controlbar: TRUE,
+				controls: TRUE,
 				debug: UNDEF,
 				height: 320,
-				icons: true,
+				icons: TRUE,
 				item: 0,
-				mobilecontrols: false,
-				mute: false,
+				mobilecontrols: FALSE,
+				mute: FALSE,
 				playlist: [],
 				playlistposition: "right",
 				playlistsize: 0,
-				repeat: "list",
+				repeat: FALSE,
 				skin: UNDEF,
 				stretching: utils.stretching.UNIFORM,
 				volume: 90,
@@ -3961,7 +3955,7 @@
 		}
 		
 		_model.setVolume = function(newVol) {
-			if (_model.mute && newVol > 0) _model.setMute(false);
+			if (_model.mute && newVol > 0) _model.setMute(FALSE);
 			newVol = Math.round(newVol);
 			utils.saveCookie("volume", newVol);
 			_video.volume(newVol);
@@ -4046,7 +4040,7 @@
 			
 			_contents = _createElement(CONTENTS_CLASS, _container);
 			
-			_css(_internalSelector(CONTENTS_CLASS), {
+			_css(_internalSelector(CONTENTS_CLASS) + " *", {
 				color: _settings.fontcolor,
 				font: _settings.fontweight + " " + (_settings.fontsize) + "px Arial,Helvetica,sans-serif",
 				'text-transform': (_settings.fontcase == "upper") ? "uppercase" : UNDEFINED
@@ -4471,9 +4465,13 @@
 			
 			_css(_internalSelector("jwlist"), {
 				'background-image': _elements.background ? " url("+_elements.background.src+")" : "",
-		    	color: _settings.fontcolor,
-		    	font: _settings.fontweight + " " + _settings.fontsize + "px Arial, Helvetica, sans-serif"  
 			});
+			
+			_css(_internalSelector("jwlist" + " *"), {
+				color: _settings.fontcolor,
+				font: _settings.fontweight + " " + _settings.fontsize + "px Arial, Helvetica, sans-serif"
+			});
+
 			
         	if (_elements.itemImage) {
         		imgPos = (itemheight - _elements.itemImage.height) / 2 + "px ";
@@ -6093,7 +6091,7 @@
 				if (!_inCB) {
 					_controlsTimeout = setTimeout(_fadeControls, _timeoutDuration);
 				}
-			} else if (_replayState) {
+			} else if (_replayState && _model.controls) {
 				_showDock();
 			}
 		}

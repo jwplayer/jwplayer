@@ -370,6 +370,11 @@ package com.longtailvideo.jwplayer.view {
 					_model.config.pluginConfig('controlbar').margin = _controlbarMargin;
 					_controlbarMargin = -1;
 				}
+				if (!_model.config.controls) {
+					_components.display.hide();
+					_components.controlbar.hide();
+					_components.dock.hide();
+				}
 				_components.controlbar.audioMode(false);
 				showMedia();
 			}
@@ -630,6 +635,7 @@ package com.longtailvideo.jwplayer.view {
 			mediaDelay.reset();
 			switch (_model.state) {
 				case PlayerState.IDLE:
+					hideControls();
 					imageDelay.start();
 					break;
 				case PlayerState.BUFFERING:
@@ -707,11 +713,9 @@ package com.longtailvideo.jwplayer.view {
 		}
 		
 		private function hideControls():void {
-			if (_player.state != PlayerState.IDLE) {
-				_components.controlbar.hide();
-				_components.dock.hide();
-				_components.logo.hide();
-			}
+			_components.controlbar.hide();
+			_components.dock.hide();
+			_components.logo.hide();
 		}
 		
 		private function showControls():void {

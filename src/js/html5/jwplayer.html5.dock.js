@@ -263,7 +263,8 @@
 	_css(D_CLASS, {
 	  	position: "absolute",
 	  	//visibility: "hidden",
-	  	opacity: 0
+	  	opacity: 0,
+	  	width: JW_CSS_100PCT
 //	  	overflow: "hidden"
 	});
 	
@@ -273,13 +274,14 @@
 	});
 	
 	_css(D_CLASS + " > *", {
-		height: "100%",
+		height: JW_CSS_100PCT,
 	  	'float': "left"
 	});
 
 	_css(D_CLASS + " > .jwoverlay", {
 		height: 'auto',
-	  	'float': "none"
+	  	'float': "none",
+	  	'z-index': 99
 	});
 
 	_css(D_CLASS + " .divider", {
@@ -305,7 +307,6 @@
 		bottom: 0,
 		margin: 5,
 		position: "absolute",
-		'background-size': "contain",
 		'background-position': "center",
 		'background-repeat': "no-repeat"
 	});

@@ -191,10 +191,11 @@
 	};
 	
 	utils.cssReset = function() {
-		utils.css(JW_CLASS + ["div", "span", "a", "img", "ul", "li", "video"].join(","+JW_CLASS), {
+		utils.css(JW_CLASS + ["", "div", "span", "a", "img", "ul", "li", "video"].join(","+JW_CLASS), {
 			margin: "auto",
 			padding: 0,
 			border: 0,
+			color: '#000000',
 			'font-size': "100%",
 			font: 'inherit',
 			'vertical-align': 'baseline',

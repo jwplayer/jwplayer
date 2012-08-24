@@ -64,7 +64,7 @@
 			
 			_contents = _createElement(CONTENTS_CLASS, _container);
 			
-			_css(_internalSelector(CONTENTS_CLASS), {
+			_css(_internalSelector(CONTENTS_CLASS) + " *", {
 				color: _settings.fontcolor,
 				font: _settings.fontweight + " " + (_settings.fontsize) + "px Arial,Helvetica,sans-serif",
 				'text-transform': (_settings.fontcase == "upper") ? "uppercase" : UNDEFINED

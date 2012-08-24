@@ -230,32 +230,21 @@ package com.longtailvideo.jwplayer.controller {
 				return;
 			}
 			
-			switch (_model.config.repeat) {
-				case RepeatOptions.SINGLE:
+			if (_model.config.repeat) {
+				if (_model.playlist.currentIndex == _model.playlist.length - 1) {
+					_model.playlist.currentIndex = 0;
 					play();
-					break;
-				case RepeatOptions.ALWAYS:
-					if (_model.playlist.currentIndex == _model.playlist.length - 1) {
-						_model.playlist.currentIndex = 0;
-						play();
-					} else {
-						next();
-					}
-					break;
-				case RepeatOptions.LIST:
-					if (_model.playlist.currentIndex == _model.playlist.length - 1) {
-						_lockingResume = false;
-						_loadOnPlay = 0;
-//						setTimeout(_model.playlistComplete, 10);
-						setTimeout(function():void { dispatchEvent(new PlaylistEvent(PlaylistEvent.JWPLAYER_PLAYLIST_COMPLETE, _model.playlist))}, 10);
-					} else {
-						next();
-					}
-					break;
-				case RepeatOptions.NONE:
-//					setTimeout(_model.playlistComplete, 10);
+				} else {
+					next();
+				}
+			} else {
+				if (_model.playlist.currentIndex == _model.playlist.length - 1) {
+					_lockingResume = false;
+					_loadOnPlay = 0;
 					setTimeout(function():void { dispatchEvent(new PlaylistEvent(PlaylistEvent.JWPLAYER_PLAYLIST_COMPLETE, _model.playlist))}, 10);
-					break;
+				} else {
+					next();
+				}
 			}
 		}
 
@@ -529,8 +518,9 @@ package com.longtailvideo.jwplayer.controller {
 			}
 
 			switch (_model.media.state) {
-				case PlayerState.PLAYING:
 				case PlayerState.PAUSED:
+					play();
+				case PlayerState.PLAYING:
 					_model.seek(pos);
 					return true;
 				case PlayerState.IDLE:

@@ -111,9 +111,13 @@
 			
 			_css(_internalSelector("jwlist"), {
 				'background-image': _elements.background ? " url("+_elements.background.src+")" : "",
-		    	color: _settings.fontcolor,
-		    	font: _settings.fontweight + " " + _settings.fontsize + "px Arial, Helvetica, sans-serif"  
 			});
+			
+			_css(_internalSelector("jwlist" + " *"), {
+				color: _settings.fontcolor,
+				font: _settings.fontweight + " " + _settings.fontsize + "px Arial, Helvetica, sans-serif"
+			});
+
 			
         	if (_elements.itemImage) {
         		imgPos = (itemheight - _elements.itemImage.height) / 2 + "px ";

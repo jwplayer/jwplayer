@@ -16,7 +16,7 @@ jwplayer = function(container) {
 	}
 };
 
-jwplayer.version = '6.0.2418';
+jwplayer.version = '6.0.2421';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -1441,9 +1441,9 @@ jwplayer.source = document.createElement("source");/**
 		
 		var _defaults = {
 				fallback: true,
-				height: 300,
+				height: 270,
 				primary: "html5",
-				width: 400,
+				width: 480,
 				base: UNDEFINED
 			},
 			_modes = {
@@ -1687,7 +1687,6 @@ jwplayer.source = document.createElement("source");/**
 		function _buildElements() {
 			if (_container) {
 				_display = _createElement("a", "display", _container);
-				_createElement("div", "iconbackground", _display);
 				_createElement("div", "icon", _display);
 				_createElement("div", "logo", _display);
 				if (_file) {
@@ -1725,19 +1724,15 @@ jwplayer.source = document.createElement("source");/**
 			});
 
 			_css(_prefix+"logo", {
-				bottom: _logo.margin + "px",
-				left: _logo.margin + "px",
-				background: "bottom left no-repeat url(" + _logo.prefix + _logo.file + ")"
+				top: _logo.margin + "px",
+				right: _logo.margin + "px",
+				background: "top right no-repeat url(" + _logo.prefix + _logo.file + ")"
 			});
 			
 			_css(_prefix+"icon", {
-				background: "center no-repeat url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAALdJREFUeNrs18ENgjAYhmFouDOCcQJGcARHgE10BDcgTOIosAGwQOuPwaQeuFRi2p/3Sb6EC5L3QCxZBgAAAOCorLW1zMn65TrlkH4NcV7QNcUQt7Gn7KIhxA+qNIR81spOGkL8oFJDyLJRdosqKDDkK+iX5+d7huzwM40xptMQMkjIOeRGo+VkEVvIPfTGIpKASfYIfT9iCHkHrBEzf4gcUQ56aEzuGK/mw0rHpy4AAACAf3kJMACBxjAQNRckhwAAAABJRU5ErkJggg==)"
+				background: "center no-repeat url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAA6/NlyAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAgNJREFUeNrs28lqwkAYB/CZqNVDDj2r6FN41QeIy8Fe+gj6BL275Q08u9FbT8ZdwVfotSBYEPUkxFOoks4EKiJdaDuTjMn3wWBO0V/+sySR8SNSqVRKIR8qaXHkzlqS9jCfzzWcTCYp9hF5o+59sVjsiRzcegSckFzcjT+ruN80TeSlAjCAAXzdJSGPFXRpAAMYwACGZQkSdhG4WCzehMNhqV6vG6vVSrirKVEw66YoSqDb7cqlUilE8JjHd/y1MQefVzqdDmiaJpfLZWHgXMHn8F6vJ1cqlVAkEsGuAn83J4gAd2RZymQygX6/L1erVQt+9ZPWb+CDwcCC2zXGJaewl/DhcHhK3DVj+KfKZrMWvFarcYNLomAv4aPRSFZVlTlcSPA5fDweW/BoNIqFnKV53JvncjkLns/n/cLdS+92O7RYLLgsKfv9/t8XlDn4eDyiw+HA9Jyz2eyt0+kY2+3WFC5hluej0Ha7zQQq9PPwdDq1Et1sNsx/nFBgCqWJ8oAK1aUptNVqcYWewE4nahfU0YQnk4ntUEfGMIU2m01HoLaCKbTRaDgKtaVLk9tBYaBcE/6Artdr4RZ5TB6/dC+9iIe/WgAMYADDpAUJAxjAAAYwgGFZgoS/AtNNTF7Z2bL0BYPBV3Jw5xFwwWcYxgtBP5OkE8i9G7aWGOOCruvauwADALMLMEbKf4SdAAAAAElFTkSuQmCC)"
 			});
 	
-			_css(_prefix+"iconbackground", {
-				background: "center no-repeat url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAEpJREFUeNrszwENADAIA7DhX8ENoBMZ5KR10EryckCJiIiIiIiIiIiIiIiIiIiIiIh8GmkRERERERERERERERERERERERGRHSPAAPlXH1phYpYaAAAAAElFTkSuQmCC)"
-			});
-			
 		}
 		
 		function _createElement(tag, className, parent) {
@@ -2248,83 +2243,19 @@ jwplayer.source = document.createElement("source");/**
 		_this.getContainer = function() {
 			return _this.container;
 		};
-		
-//		function _setButton(ref, plugin) {
-//			return function(outGraphic, label, handler, id) {
-//				if (ref.renderingMode == "flash" || ref.renderingMode == "html5") {
-//					var handlerString;
-//					if (handler) {
-//						_callbacks[id] = handler;
-//						handlerString = "jwplayer('" + ref.id + "').callback('" + id + "')";
-//					} else if (!handler && _callbacks[id]) {
-//						delete _callbacks[id];
-//					}
-//					_player.jwDockAddButton(outGraphic, label, handlerString, id);
-//				}
-//				return plugin;
-//			};
-//		}
-		
+				
 		_this.addButton = function(icon, label, handler, id) {
 			try {
 				_callbacks[id] = handler;
-				var handlerString = "jwplayer('" + _player.id + "').callback('" + id + "')";
-				_player.jwDockAddButton(icon, label, handlerString, id);
+				var handlerString = "jwplayer('" + _this.id + "').callback('" + id + "')";
+				//_player.jwDockAddButton(icon, label, handlerString, id);
+				_callInternal("jwDockAddButton", icon, label, handlerString, id);
 			} catch (e) {
 				utils.log("Could not add dock button" + e.message);
 			}
 		};
 		_this.removeButton = function(id) { _callInternal('jwDockRemoveButton', id); },
 
-		
-//		_this.getPlugin = function(pluginName) {
-//			var _plugin = {};
-//			if (pluginName == "dock") {
-//				return utils.extend(_plugin, {
-//					addButton: _setButton(_this, _plugin),
-//					removeButton: function(id) { _callInternal('jwDockRemoveButton', id); return _plugin; },
-//					show: function() { _callInternal('jwDockShow'); return _plugin; },
-//					hide: function() { _callInternal('jwDockHide'); return _plugin; },
-//					onShow: function(callback) { 
-//						_componentListener("dock", events.JWPLAYER_COMPONENT_SHOW, callback); 
-//						return _plugin; 
-//					},
-//					onHide: function(callback) { 
-//						_componentListener("dock", events.JWPLAYER_COMPONENT_HIDE, callback); 
-//						return _plugin; 
-//					}
-//				});
-//			} else if (pluginName == "controlbar") {
-//				return utils.extend(_plugin, {
-//					show: function() { _callInternal('jwControlbarShow'); return _plugin; },
-//					hide: function() { _callInternal('jwControlbarHide'); return _plugin; },
-//					onShow: function(callback) { 
-//						_componentListener("controlbar", events.JWPLAYER_COMPONENT_SHOW, callback); 
-//						return _plugin; 
-//					},
-//					onHide: function(callback) { 
-//						_componentListener("controlbar", events.JWPLAYER_COMPONENT_HIDE, callback); 
-//						return _plugin; 
-//					}
-//				});
-//			} else if (pluginName == "display") {
-//				return utils.extend(_plugin, {
-//					show: function() { _callInternal('jwDisplayShow'); return _plugin; },
-//					hide: function() { _callInternal('jwDisplayHide'); return _plugin; },
-//					onShow: function(callback) { 
-//						_componentListener("display", events.JWPLAYER_COMPONENT_SHOW, callback); 
-//						return _plugin; 
-//					},
-//					onHide: function(callback) { 
-//						_componentListener("display", events.JWPLAYER_COMPONENT_HIDE, callback); 
-//						return _plugin; 
-//					}
-//				});
-//			} else {
-//				return _this.plugins[pluginName];
-//			}
-//		};
-		
 		_this.callback = function(id) {
 			if (_callbacks[id]) {
 				_callbacks[id]();
@@ -2685,12 +2616,13 @@ jwplayer.source = document.createElement("source");/**
 				}
 				
 				if (typeof _player != "undefined" && typeof _player[funcName] == "function") {
-					if (args.length == 2) { 
-						return (_player[funcName])(args[0], args[1]);
-					} else if (args.length == 1) {
-						return (_player[funcName])(args[0]);
-					} else {
-						return (_player[funcName])();
+					// Can't use apply here -- Flash's externalinterface doesn't like it.
+					switch(args.length) {
+						case 4:  return (_player[funcName])(args[0], args[1], args[2], args[3]);
+						case 3:  return (_player[funcName])(args[0], args[1], args[2]);
+						case 2:  return (_player[funcName])(args[0], args[1]);
+						case 1:  return (_player[funcName])(args[0]);
+						default: return (_player[funcName])();
 					}
 				}
 				return null;

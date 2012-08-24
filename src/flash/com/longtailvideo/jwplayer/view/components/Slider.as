@@ -109,6 +109,7 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		
 		public function setProgress(progress:Number):void {
+			if (_dragging) return;
 			if (isNaN(progress)) {
 				progress = 0;
 			}
@@ -281,7 +282,7 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 		
 		private function moveHandler(evt:MouseEvent):void {
-			if (_name != "time") {
+			if (_name != "time" || _dragging) {
 				resizeSlider(thumbPercent(), 0, _capLeft[dim], _progress, _progressCapLeft, _progressCapRight);
 			}
 		}
@@ -298,9 +299,10 @@ package com.longtailvideo.jwplayer.view.components {
 		private function upHandler(evt:MouseEvent):void {
 			RootReference.stage.removeEventListener(MouseEvent.MOUSE_UP, upHandler);
 			RootReference.stage.removeEventListener(MouseEvent.MOUSE_MOVE, moveHandler);
-			_thumb.stopDrag();
-			_dragging = false;
 			dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_CLICK, thumbPercent()));
+			_thumb.stopDrag();
+			moveHandler(evt);
+			_dragging = false;
 		}
 		
 		
