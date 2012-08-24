@@ -10,11 +10,11 @@
 
 <h1>Button API</h1>
 <div class="core">List of test devices</div>
-<p>This page tests adding and removing dock buttons.</p>
+<p>This page tests behavior and adding/removing of dock buttons.</p>
 
 
 
-<h2>Adding onReady</h2>
+<h2>Button Behavior</h2>
 
 <div id="onready"></div>
 
@@ -45,6 +45,11 @@
         The smiley icon (12x12px) should not get scaled.</td>
     <td class="check"></td>
 </tr><tr>
+    <td class="mobile"></td>
+    <td>Begin playing</td>
+    <td>Dock buttons should not appear</td>
+    <td class="check"></td>
+</tr><tr>
     <td class="desktop"></td>
     <td>Mouse over dock icons</td>
     <td>Label should appear underneath the icons<br/>
@@ -54,6 +59,26 @@
     <td class="desktop"></td>
     <td>Click a dock button</td>
     <td>An alert should appear saying "Button clicked".</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Go fullscreen, then move mouse</td>
+    <td>Dock buttons should appear</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Click button in fullscreen</td>
+    <td>Player should jump to normalscreen</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Play video to completion</td>
+    <td>Dock buttons should be visible</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="mobile"></td>
+    <td>Play video to completion</td>
+    <td>Dock buttons should become</td>
     <td class="check"></td>
 </tr></table>
 
