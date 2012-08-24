@@ -74,17 +74,17 @@
     <td class="check"></td>
 </tr><tr>
     <td class="both"></td>
-    <td>Click <a href="#" onclick="selectDefault();">here</a></td>
+    <td>Click <a href="javascript:selectDefault();">here</a></td>
     <td>JavaScript alert should say "player1".</td>
     <td class="check"></td>
 </tr><tr>
     <td class="both"></td>
-    <td>Click <a href="#" onclick="selectNamed();">here</a></td>
+    <td>Click <a href="javascript:selectNamed();">here</a></td>
     <td>JavaScript alert should say "player2".</td>
     <td class="check"></td>
 </tr><tr>
     <td class="both"></td>
-    <td>Click <a href="#" onclick="selectByIndex();">here</a></td>
+    <td>Click <a href="javascript:selectByIndex();">here</a></td>
     <td>JavaScript alert should say "player3".</td>
     <td class="check"></td>
 </tr></table>
@@ -96,34 +96,23 @@
 
 <script type="text/javascript">
     jwplayer("onready").setup({
-        file: 'rtmp://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
+        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
      	image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg' 
     });
     jwplayer("onready").onReady(function() {
-	     		document.getElementById("onReadyResponse").innerHTML = "onReady event called\nRendering mode: "+this.getRenderingMode();
+	     document.getElementById("onReadyResponse").innerHTML = 
+	     	"onReady event called\nRendering mode: "+this.getRenderingMode();
     });
-    setTimeout(printMode,2000);
-    function printMode() { 
-        document.getElementById("onReadyResponse").innerHTML = jwplayer("onready").getRenderingMode();
-    }
 </script>
 
 <table><tr>
     <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
 </tr><tr>
     <td class="both"></td>
-    <td>Load the players</td>
-    <td>Firefox, IE8: Players load in Flash.  Otherwise, players load in HTML5 mode</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="both"></td>
-    <td>Did onReady fire?</a></td>
-    <td>Box below the player should read: "onReady event called"</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="both"></td>
-    <td>getRenderingMode()</a></td>
-    <td>Box below the player should contain text: "Rendering mode", and the correct rendering mode of the player.</td>
+    <td>Page load</a></td>
+    <td>Box below the player should display two lines:<br/>
+        1: "onReady event called"<br/>
+        2: "Rendering mode: flash" (or html5)</td>
     <td class="check"></td>
 </tr></table>
 
