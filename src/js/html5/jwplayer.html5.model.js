@@ -33,7 +33,7 @@
 				playlist: [],
 				playlistposition: "right",
 				playlistsize: 0,
-				repeat: false,
+				repeat: "list",
 				skin: UNDEF,
 				stretching: utils.stretching.UNIFORM,
 				volume: 90,

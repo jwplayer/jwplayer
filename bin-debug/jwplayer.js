@@ -422,16 +422,16 @@ jwplayer.source = document.createElement("source");/**
 		}, 
 		video = "video", 
 		flashExtensions = {
-			"mp4": video,
-			"f4v": video,
-			"m4v": video,
-			"mov": video,
 			"flv": video,
+			"f4v": video,
+			"mov": video,
 			"m4a": video,
-			"f4a": video,
+			"m4v": video,
+			"mp4": video,
 			"aac": video,
 			"mp3": "sound",
-			"smil": "rtmp"
+			"smil": "rtmp",
+			"m3u8": "hls"
 		};
 	
 	var _extensionmap = utils.extensionmap = {};
@@ -1380,7 +1380,7 @@ jwplayer.source = document.createElement("source");/**
 		}
 		
 		function _sourceError() {
-			_errorScreen(_container, _errorText  + "No playable sources found");
+			_errorScreen(_container, _errorText  + "No media sources found");
 		}
 		
 		function _errorScreen(container, message) {
@@ -1441,9 +1441,9 @@ jwplayer.source = document.createElement("source");/**
 		
 		var _defaults = {
 				fallback: true,
-				height: 270,
+				height: 300,
 				primary: "html5",
-				width: 480,
+				width: 400,
 				base: UNDEFINED
 			},
 			_modes = {
@@ -1615,6 +1615,8 @@ jwplayer.source = document.createElement("source");/**
 })(jwplayer);
 /**
  * Download mode embedder for the JW Player
+ * @author Zach
+ * @version 5.5
  */
 (function(jwplayer) {
 	var embed = jwplayer.embed,
@@ -1666,6 +1668,7 @@ jwplayer.source = document.createElement("source");/**
 			} else {
 				return;
 			}
+			
 			if (file) {
 				_file = file;
 				_image = image;
@@ -1680,8 +1683,7 @@ jwplayer.source = document.createElement("source");/**
 				_errorCallback();
 			}
 		}
-
-
+		
 		function _buildElements() {
 			if (_container) {
 				_display = _createElement("a", "display", _container);

@@ -51,7 +51,7 @@ package com.longtailvideo.jwplayer.controller {
 		/** JSON Playlist passed in **/
 		protected var confPlaylist:Array;
 		
-		/** Loader to pre-cache preview image **/
+		/** Loader to pre-cache preview image **/		
 		protected var imageLoader:Loader;
 		/** If the preview image doesn't load in time, continue player setup anyway **/
 		protected var imageTimeout:Timer;
@@ -240,7 +240,7 @@ package com.longtailvideo.jwplayer.controller {
 				imageLoader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, loadPreviewComplete);
 				
 				imageTimeout.start();
-				// imageLoader.load(new URLRequest(_model.playlist.currentItem.image));
+				imageLoader.load(new URLRequest(_model.playlist.currentItem.image));
 			} else {
 				tasker.success();
 			}

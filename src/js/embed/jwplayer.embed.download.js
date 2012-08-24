@@ -1,5 +1,7 @@
 /**
  * Download mode embedder for the JW Player
+ * @author Zach
+ * @version 5.5
  */
 (function(jwplayer) {
 	var embed = jwplayer.embed,
@@ -51,6 +53,7 @@
 			} else {
 				return;
 			}
+			
 			if (file) {
 				_file = file;
 				_image = image;
@@ -65,8 +68,7 @@
 				_errorCallback();
 			}
 		}
-
-
+		
 		function _buildElements() {
 			if (_container) {
 				_display = _createElement("a", "display", _container);

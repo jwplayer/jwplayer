@@ -4,6 +4,7 @@
     <title>URL Cases</title>
     <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
     <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+    <script type="text/javascript" src="assets/primaryCookie.js"></script>
 </head>
 <body>
 
@@ -11,7 +12,7 @@
 <div class="core">List of test devices</div>
 <p>This page tests loading assets from various URL types (relative, absolute, etc).</p>
 
-<h2>Video + preview: relative path</h2>
+<h2>Relative paths</h2>
 
 <div id="video_relative"></div>
 
@@ -19,8 +20,7 @@
     jwplayer("video_relative").setup({
         file: 'files/video.mp4',
      	image: 'files/preview.jpg',
-        height: 240,
-        width: 480
+     	primary:primaryCookie
     });
 </script>
 
@@ -28,12 +28,7 @@
     <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
 </tr><tr>
     <td class="both"></td>
-    <td>Load the player</td>
-    <td>IE8, Firefox: Player loads in Flash mode.  Otherwise, player loads in HTML5 mode.</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="both"></td>
-    <td>Preview image</td>
+    <td>Page load</td>
     <td>Preview image is visible.</td>
     <td class="check"></td>
 </tr><tr>
@@ -44,7 +39,7 @@
 </tr></table>
 
 
-<h2>Video + preview: server absolute path</h2>
+<h2>Server absolute paths</h2>
 
 <div id="video_absolute"></div>
 
@@ -56,8 +51,7 @@
     jwplayer("video_absolute").setup({
         file: absolute_path + '/files/video.mp4',
      	image: absolute_path + '/files/preview.jpg',
-        height: 240,
-        width: 480
+     	primary:primaryCookie
     });
 </script>
 
@@ -65,12 +59,7 @@
     <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
 </tr><tr>
     <td class="both"></td>
-    <td>Load the player</td>
-    <td>IE8, Firefox: Player loads in Flash mode.  Otherwise, player loads in HTML5 mode.</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="both"></td>
-    <td>Preview image</td>
+    <td>Page load</td>
     <td>Preview image is visible.</td>
     <td class="check"></td>
 </tr><tr>
@@ -80,7 +69,7 @@
     <td class="check"></td>
 </tr></table>
 
-<h2>Video + preview: URL parameters</h2>
+<h2>Full URLs with Querystring</h2>
 
 <div id="video_params"></div>
 
@@ -88,8 +77,7 @@
     jwplayer("video_params").setup({
         file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4?foo=bar.xyz',
         image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg?foo=bar.xyz',
-        height: 240,
-        width: 480
+     	primary:primaryCookie
     });
 </script>
 
@@ -97,12 +85,7 @@
     <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
 </tr><tr>
     <td class="both"></td>
-    <td>Load the player</td>
-    <td>IE8, Firefox: Player loads in Flash mode.  Otherwise, player loads in HTML5 mode.</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="both"></td>
-    <td>Preview image</td>
+    <td>Page load</td>
     <td>Preview image is visible.</td>
     <td class="check"></td>
 </tr><tr>
@@ -112,7 +95,7 @@
     <td class="check"></td>
 </tr></table>
 
-<h2>Video + preview: URL with hash tags</h2>
+<h2>Full URLs with hash tags</h2>
 
 <div id="video_hash"></div>
 
@@ -120,8 +103,7 @@
     jwplayer("video_hash").setup({
         file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4#foo',
         image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg#foo',
-        height: 240,
-        width: 480
+     	primary:primaryCookie
     });
 </script>
 
@@ -129,12 +111,7 @@
     <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
 </tr><tr>
     <td class="both"></td>
-    <td>Load the player</td>
-    <td>IE8, Firefox: Player loads in Flash mode.  Otherwise, player loads in HTML5 mode.</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="both"></td>
-    <td>Preview image</td>
+    <td>Page load</td>
     <td>Preview image is visible.</td>
     <td class="check"></td>
 </tr><tr>
@@ -145,16 +122,14 @@
 </tr></table>
 
 
-<h2>RSS Feed: Relative URL, HTML5</h2>
+<h2>RSS Feed: Relative URL</h2>
 
 <div id="rss_relative"></div>
 
 <script type="text/javascript">
     jwplayer("rss_relative").setup({
         playlist: "files/mrss.xml",
-        primary: "html5",
-        height: 240,
-        width: 480
+     	primary:primaryCookie
     });
 </script>
 
@@ -162,12 +137,7 @@
     <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
 </tr><tr>
     <td class="both"></td>
-    <td>Load the player</td>
-    <td>Player loads in HTML5 mode.</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="both"></td>
-    <td>Preview image</td>
+    <td>Page load</td>
     <td>Preview image is visible.</td>
     <td class="check"></td>
 </tr><tr>
@@ -177,80 +147,14 @@
     <td class="check"></td>
 </tr></table>
 
-<h2>RSS Feed: Relative URL, Flash</h2>
-
-<div id="rss_relative_flash"></div>
-
-<script type="text/javascript">
-    jwplayer("rss_relative_flash").setup({
-        playlist: "files/mrss.xml",
-        primary: "flash",
-        height: 240,
-        width: 480
-    });
-</script>
-
-<table><tr>
-    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
-</tr><tr>
-    <td class="desktop"></td>
-    <td>Load the player</td>
-    <td>Player loads in Flash mode.</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="desktop"></td>
-    <td>Preview image</td>
-    <td>Preview image is visible.</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="desktop"></td>
-    <td>Play video</td>
-    <td>Video plays.</td>
-    <td class="check"></td>
-</tr></table>
-
-<h2>RSS Feed: Server-absolute URL, HTML5</h2>
-
-<div id="rss_absolute"></div>
-
-<script type="text/javascript">
-    jwplayer("rss_absolute").setup({
-        playlist: absolute_path + "/files/mrss.xml",
-        primary: "html5",
-        height: 240,
-        width: 480
-    });
-</script>
-
-<table><tr>
-    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
-</tr><tr>
-    <td class="both"></td>
-    <td>Load the player</td>
-    <td>Player loads in HTML5 mode.</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="both"></td>
-    <td>Preview image</td>
-    <td>Preview image is visible.</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="both"></td>
-    <td>Play video</td>
-    <td>Video plays.</td>
-    <td class="check"></td>
-</tr></table>
-
-<h2>RSS Feed: Server-absolute URL, Flash</h2>
+<h2>RSS Feed: Server-absolute URL</h2>
 
 <div id="rss_absolute_flash"></div>
 
 <script type="text/javascript">
     jwplayer("rss_absolute_flash").setup({
         playlist: absolute_path + "/files/mrss.xml",
-        primary: "flash",
-        height: 240,
-        width: 480
+     	primary:primaryCookie
     });
 </script>
 
@@ -258,12 +162,7 @@
     <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
 </tr><tr>
     <td class="desktop"></td>
-    <td>Load the player</td>
-    <td>Player loads in Flash mode.</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="desktop"></td>
-    <td>Preview image</td>
+    <td>Page load</td>
     <td>Preview image is visible.</td>
     <td class="check"></td>
 </tr><tr>
@@ -273,16 +172,14 @@
     <td class="check"></td>
 </tr></table>
 
-<h2>RSS Feed: URL with parameters, HTML5</h2>
+<h2>RSS Feed: URL with parameters</h2>
 
 <div id="rss_params"></div>
 
 <script type="text/javascript">
     jwplayer("rss_params").setup({
         playlist: "files/mrss.xml?foo=bar.xml",
-        primary: "html5",
-        height: 240,
-        width: 480
+     	primary:primaryCookie
     });
 </script>
 
@@ -290,12 +187,7 @@
     <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
 </tr><tr>
     <td class="both"></td>
-    <td>Load the player</td>
-    <td>Player loads in HTML5 mode.</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="both"></td>
-    <td>Preview image</td>
+    <td>Page load</td>
     <td>Preview image is visible.</td>
     <td class="check"></td>
 </tr><tr>
@@ -305,49 +197,14 @@
     <td class="check"></td>
 </tr></table>
 
-<h2>RSS Feed: Server-absolute URL, Flash</h2>
-
-<div id="rss_params_flash"></div>
-
-<script type="text/javascript">
-    jwplayer("rss_params_flash").setup({
-        playlist: "files/mrss.xml?foo=bar.xml",
-        primary: "flash",
-        height: 240,
-        width: 480
-    });
-</script>
-
-<table><tr>
-    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
-</tr><tr>
-    <td class="desktop"></td>
-    <td>Load the player</td>
-    <td>Player loads in Flash mode.</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="desktop"></td>
-    <td>Preview image</td>
-    <td>Preview image is visible.</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="desktop"></td>
-    <td>Play video</td>
-    <td>Video plays.</td>
-    <td class="check"></td>
-</tr></table>
-
-
-<h2>RSS Feed: URL with hash tag, HTML5</h2>
+<h2>RSS Feed: URL with hash tag</h2>
 
 <div id="rss_hash"></div>
 
 <script type="text/javascript">
     jwplayer("rss_hash").setup({
         playlist: "files/mrss.xml#foo",
-        primary: "html5",
-        height: 240,
-        width: 480
+     	primary:primaryCookie
     });
 </script>
 
@@ -355,12 +212,7 @@
     <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
 </tr><tr>
     <td class="both"></td>
-    <td>Load the player</td>
-    <td>Player loads in HTML5 mode.</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="both"></td>
-    <td>Preview image</td>
+    <td>Page load</td>
     <td>Preview image is visible.</td>
     <td class="check"></td>
 </tr><tr>
@@ -369,39 +221,6 @@
     <td>Video plays.</td>
     <td class="check"></td>
 </tr></table>
-
-<h2>RSS Feed: URL with hash tag, Flash</h2>
-
-<div id="rss_hash_flash"></div>
-
-<script type="text/javascript">
-    jwplayer("rss_hash_flash").setup({
-        playlist: "files/mrss.xml#foo",
-        primary: "flash",
-        height: 240,
-        width: 480
-    });
-</script>
-
-<table><tr>
-    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
-</tr><tr>
-    <td class="desktop"></td>
-    <td>Load the player</td>
-    <td>Player loads in Flash mode.</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="desktop"></td>
-    <td>Preview image</td>
-    <td>Preview image is visible.</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="desktop"></td>
-    <td>Play video</td>
-    <td>Video plays.</td>
-    <td class="check"></td>
-</tr></table>
-
 
 
 </body>
