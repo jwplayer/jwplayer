@@ -15,7 +15,6 @@ package com.longtailvideo.jwplayer.model {
 		public var tags:String			= "";
 		
 		protected var _duration:Number		= -1;
-		protected var _file:String			= "";
 		protected var _provider:String		= "";
 		protected var _start:Number			= 0;
 		protected var _streamer:String		= "";
@@ -92,19 +91,17 @@ package com.longtailvideo.jwplayer.model {
 		
 		/** File property is now a getter, to take levels into account **/
 		public function get file():String {
-			var getFile:String;
+			var getFile:String = "";
 			if (_levels.length > 0 && _currentLevel > -1 && _currentLevel < _levels.length) {
-				var level:PlaylistItemLevel = _levels[_currentLevel] as PlaylistItemLevel;
-				getFile = level.file ? level.file : _file;
-			} else {
-				getFile = _file;
+				getFile = (_levels[_currentLevel] as PlaylistItemLevel).file;
 			}
-			return getFile.replace(/feed:/g, "");
+			return getFile.replace(/(feed|data):/g, "");
 		}
 		
 		/** File setter.  Note, if levels are defined, this will be ignored. **/
 		public function set file(f:String):void {
-			_file = f;
+			_levels = [];
+			addLevel(new PlaylistItemLevel(f))
 		}
 		
 		/** Streamer property is now a getter, to take levels into account **/

@@ -43,6 +43,7 @@ package com.longtailvideo.jwplayer.view.components {
 		private var _rotationAngle:Number = 0;
 		
 		private var _noText:Boolean = false;
+		private var _hovering:Boolean = false;
 		
 		public function DisplayIcon(elements:Object, textFormat:TextFormat, overFormat:TextFormat=null) {
 			_icon = elements.icon ? elements.icon : new Sprite(),
@@ -81,8 +82,7 @@ package com.longtailvideo.jwplayer.view.components {
 			
 			buildIcon();
 
-			RootReference.stage.addEventListener(MouseEvent.MOUSE_MOVE, _overHandler);
-			RootReference.stage.addEventListener(Event.MOUSE_LEAVE, _outHandler);
+			RootReference.stage.addEventListener(MouseEvent.MOUSE_MOVE, _moveHandler);
 		}
 		
 		private function buildIcon():void {
@@ -212,15 +212,20 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 		}
 		
-		private function _overHandler(evt:MouseEvent):void {
-			hover(true);
+		private function _moveHandler(evt:MouseEvent):void {
+			if (parent && parent.parent) {
+				var display:DisplayObject = parent.parent;
+				if (display.getRect(RootReference.stage).containsPoint(new Point(evt.stageX, evt.stageY))) {
+					hover(true);
+				} else if (_hovering) {
+					hover(false);
+				}
+			}
 		}
 
-		private function _outHandler(evt:Event):void {
-			hover(false);
-		}
 
 		private function hover(state:Boolean):void {
+			_hovering = state;
 			if (_iconOver) {
 				_iconFade.cancelAnimation();
 				_iconOverFade.cancelAnimation();

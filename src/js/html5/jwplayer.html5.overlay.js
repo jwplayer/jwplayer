@@ -182,12 +182,11 @@
 		
 		function _position() {
 			if (_container.clientWidth == 0) return;
-
 			_css(_internalSelector(), {
-				'margin-left': _offset - _container.clientWidth / 2
+				'margin-left': Math.round(_offset - _container.clientWidth / 2)
 			});
 			_css(_internalSelector("jwarrow"), {
-				'margin-left': (_arrow.width / -2) - _offset
+				'margin-left': Math.round((_arrow.width / -2) - _offset)
 			});
 		}
 		

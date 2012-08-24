@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2405';
+	jwplayer.html5.version = '6.0.2418';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -57,7 +57,7 @@
 						selectedType = type;
 					}
 					if (type == selectedType) {
-						newSources.push(sources[i]);
+						newSources.push(utils.extend({}, sources[i]));
 					}
 				}
 			}
@@ -199,16 +199,25 @@
 	utils.bounds = function(element) {
 		if (!element) return {};
 		
-		try {
-			return element.getBoundingClientRect();
-		} catch (e) {
-			return { 
-				left: element.offsetLeft + DOCUMENT.body.scrollLeft, 
-				top: element.offsetTop + DOCUMENT.body.scrollTop, 
-				width: element.offsetWidth, 
-				height: element.offsetHeight
-			};
-		}
+		var obj = element,
+			left = 0,
+			top = 0,
+			width = element.offsetWidth,
+			height = element.offsetHeight;
+		
+		do {
+			left += obj.offsetLeft;
+			top += obj.offsetTop;
+		} while (obj = obj.offsetParent);
+		
+		return { 
+			left: left, 
+			top: top,
+			width: width,
+			height: height,
+			right: left + width,
+			bottom: top + height
+		};
 	}
 	
 	utils.empty = function(element) {
@@ -1764,9 +1773,9 @@
 					_cbBounds = newBounds;
 					if (_cbBounds.width > 0) {
 						_railBounds = utils.bounds(_timeRail);
-						_positionOverlays();
 					}
 				}
+				_positionOverlays();
 			}, 0);
 		}
 		
@@ -2870,6 +2879,7 @@
 			_buttons = {},
 			_tooltips = {},
 			_container,
+			_dockBounds,
 			_this = this;
 
 		function _init() {
@@ -2879,8 +2889,13 @@
 			_container.id = _id;
 
 			_setupElements();
-
-			_redraw();
+			
+			setTimeout(function() {
+				_dockBounds = _bounds(_container);
+			});
+			
+			window.addEventListener('mousemove', _moveHandler, false);
+			window.addEventListener('click', _clickHandler, false);
 		}
 		
 		function _setupElements() {
@@ -2902,11 +2917,11 @@
 				background: button.src
 			});
 			
-			if (buttonOver.src) _css(_internalSelector("button:hover"), { background: buttonOver.src });
-			if (buttonActive.src) _css(_internalSelector("button:active"), { background: buttonActive.src });
+			if (buttonOver.src) _css(_internalSelector("button.hover"), { background: buttonOver.src });
+			if (buttonActive.src) _css(_internalSelector("button.active"), { background: buttonActive.src });
 			_css(_internalSelector("button>div"), { opacity: _config.iconalpha });
-			_css(_internalSelector("button:hover>div"), { opacity: _config.iconalphaover });
-			_css(_internalSelector("button:active>div"), { opacity: _config.iconalphaactive});
+			_css(_internalSelector("button.hover>div"), { opacity: _config.iconalphaover });
+			_css(_internalSelector("button.active>div"), { opacity: _config.iconalphaactive});
 			_css(_internalSelector(".jwoverlay"), { top: button.height });
 			
 			_createImage("capLeft", _container);
@@ -2936,27 +2951,24 @@
 		
 		function _getSkinElement(name) {
 			var elem = _skin.getSkinElement('dock', name);
-			if (elem) return elem;
-			return { width: 0, height: 0, src: "" }
+			return elem ? elem : { width: 0, height: 0, src: "" };
 		}
 
-		var _redraw = _this.redraw = function() {
-		}
+		_this.redraw = function() {};
 		
 		function _positionTooltip(name) {
 			var tooltip = _tooltips[name],
 				tipBounds,
 				button = _buttons[name],
-				buttonBounds = _bounds(button.icon),
-				dockBounds = _bounds(_container);
+				buttonBounds = _bounds(button.icon);
 
 			tooltip.offsetX(0);
 			_css('#' + tooltip.element().id, {
-				left: buttonBounds.left - dockBounds.left + buttonBounds.width / 2
+				left: buttonBounds.left - _dockBounds.left + buttonBounds.width / 2
 			});
 			tipBounds = _bounds(tooltip.element());
-			if (dockBounds.left > tipBounds.left) {
-				tooltip.offsetX(dockBounds.left - tipBounds.left);
+			if (_dockBounds.left > tipBounds.left) {
+				tooltip.offsetX(_dockBounds.left - tipBounds.left);
 			}
 
 		}
@@ -2975,6 +2987,7 @@
 //				opacity: 0
 //			});
 			_container.style.opacity = 0;
+			_container.style.visibility = "hidden";
 		}
 
 		_this.show = function() {
@@ -2984,6 +2997,7 @@
 //				opacity: 1
 //			});
 			_container.style.opacity = 1;
+			_container.style.visibility = "visible";
 		}
 		
 		_this.addButton = function(url, label, clickHandler, id) {
@@ -3003,9 +3017,8 @@
 			if (typeof clickHandler == "string") {
 				clickHandler = new Function(clickHandler);
 			}
-			newButton.addEventListener("click", clickHandler);
 			
-			_buttons[id] = { element: newButton, label: label, divider: divider, icon: icon };
+			_buttons[id] = { element: newButton, label: label, divider: divider, icon: icon, click: clickHandler };
 			
 			if (label) {
 				var tooltip = new html5.overlay(icon.id+"_tooltip", _skin, true),
@@ -3013,27 +3026,61 @@
 				tipText.innerHTML = label;
 				tooltip.setContents(tipText);
 				
-				var timeout;
-				newButton.addEventListener('mouseover', function() { 
-					clearTimeout(timeout); 
-					_positionTooltip(id); 
-					tooltip.show();
-					for (var i in _tooltips) {
-						if (i != id) {
-							_tooltips[i].hide();
-						}
-					}
-				}, false);
-				newButton.addEventListener('mouseout', function() {
-					timeout = setTimeout(tooltip.hide, 100); 
-				} , false);
-				
 				_container.appendChild(tooltip.element());
 				_tooltips[id] = tooltip;
 			}
 			
 			_buttonCount++;
 			_setCaps();
+			
+			setTimeout(function() {
+				_buttons[id].bounds = _bounds(_buttons[id].element);
+			}, 100);
+		}
+		
+		
+		
+		function _moveHandler(evt) {
+			if (!_this.visible) return;
+			var button, i, bounds;
+			for (i in _buttons) {
+				button = _buttons[i];
+				bounds = button.bounds;
+				if (bounds) {
+					if (evt.pageX > bounds.left && evt.pageX < bounds.right && evt.pageY > bounds.top && evt.pageY < bounds.bottom) {
+						_buttonOver(i); 
+					} else {
+						_buttonOut(i);
+					}
+				}
+			}
+		}
+		
+		function _clickHandler() {
+			if (hovering && typeof _buttons[hovering].click == "function") {
+				_buttons[hovering].click();
+			}
+				
+				
+		}
+		
+		var hovering;
+		
+		function _buttonOver(name) {
+			if (hovering == name) return;
+			if (hovering) _buttonOut(hovering);
+			hovering = name;
+			_positionTooltip(name); 
+			if (_tooltips[name]) _tooltips[name].show();
+			_buttons[name].element.className += " hover";
+		}
+		
+		function _buttonOut(name) {
+			if (name == hovering) {
+				if (_tooltips[name]) _tooltips[name].hide();
+				_buttons[name].element.className = _buttons[name].element.className.replace(/\s+hover/,"");
+				hovering = null;
+			}
 		}
 		
 		_this.removeButton = function(id) {
@@ -3815,6 +3862,8 @@
 				position: 0,
 				buffer: 0,
 			}, _model.config);
+			// This gets added later
+			_model.playlist = [];
 			_setComponentConfigs();
 			_model.setItem(_model.config.item);
 			
@@ -3868,20 +3917,30 @@
 		}
 		
 		_model.setPlaylist = function(playlist) {
-			_model.playlist = playlist;
-			_filterPlaylist(playlist);
-			_model.sendEvent(events.JWPLAYER_PLAYLIST_LOADED, {
-				playlist: playlist
-			});
-			_model.item = -1;
-			_model.setItem(0);
+			_model.playlist = _filterPlaylist(playlist);
+			
+			if (playlist.length == 0) {
+				_model.sendEvent(events.JWPLAYER_ERROR, { message: "Error loading playlist: No playable sources found" });
+			} else {
+				_model.sendEvent(events.JWPLAYER_PLAYLIST_LOADED, {
+					playlist: playlist
+				});
+				_model.item = -1;
+				_model.setItem(0);
+			}
 		}
 
 		/** Go through the playlist and choose a single playable type to play; remove sources of a different type **/
 		function _filterPlaylist(playlist) {
+			var pl = [];
 			for (var i=0; i < playlist.length; i++) {
-				playlist[i].sources = utils.filterSources(playlist[i].sources);
+				var item = utils.extend({}, playlist[i]);
+				item.sources = utils.filterSources(item.sources);
+				if (item.sources.length > 0) {
+					pl.push(item)
+				}
 			}
+			return pl;
 		}
 		
 		_model.setItem = function(index) {
@@ -4105,12 +4164,11 @@
 		
 		function _position() {
 			if (_container.clientWidth == 0) return;
-
 			_css(_internalSelector(), {
-				'margin-left': _offset - _container.clientWidth / 2
+				'margin-left': Math.round(_offset - _container.clientWidth / 2)
 			});
 			_css(_internalSelector("jwarrow"), {
-				'margin-left': (_arrow.width / -2) - _offset
+				'margin-left': Math.round((_arrow.width / -2) - _offset)
 			});
 		}
 		
@@ -4492,12 +4550,6 @@
 	        	position: JW_CSS_RELATIVE
 	    	});
 
-			_css(_internalSelector("jwduration"), {
-				position: "absolute",
-	    	    'font-size': _settings.fontsize,
-				right: 5
-			});
-			
 		}
 
 		function _createList() {
@@ -4543,12 +4595,6 @@
         	title.innerHTML = item ? item.title : "";
         	_appendChild(textWrapper, title);
 
-	        if (item.duration > 0) {
-	        	var dur = _createElement("span", "jwduration");
-	        	dur.innerHTML = utils.timeFormat(item.duration);
-	        	_appendChild(textWrapper, dur);
-	        }
-	        
 	        if (item.description) {
 	        	var desc = _createElement("span", "jwdescription");
 	        	desc.innerHTML = item.description;
@@ -4813,7 +4859,8 @@
 			_sliderThumbCapBottom,
 			
 			_topHeight,
-			_bottomHeight;
+			_bottomHeight,
+			_redrawTimeout;
 
 
 		this.element = function() {
@@ -4915,9 +4962,14 @@
 		}
 		
 		var _redraw = this.redraw = function() {
-			if (_pane && _pane.clientHeight) {
-				_setThumbPercent(_pane.parentNode.clientHeight / _pane.clientHeight);
-			}
+			clearTimeout(_redrawTimeout);
+			_redrawTimeout = setTimeout(function() {
+				if (_pane && _pane.clientHeight) {
+					_setThumbPercent(_pane.parentNode.clientHeight / _pane.clientHeight);
+				} else {
+					_redrawTimeout = setTimeout(_redraw, 10);
+				}
+			}, 0);
 		}
 		
 
@@ -4936,7 +4988,7 @@
 			return false;
 		};
 	
-		var _setThumbPercent = function(pct) {
+		function _setThumbPercent(pct) {
 			if (pct < 0) pct = 0;
 			if (pct > 1) {
 				_visible = false;
@@ -5012,6 +5064,7 @@
 	_css(_globalSelector(SLIDER_CLASS), {
 		position: JW_CSS_ABSOLUTE,
 		height: JW_CSS_100PCT,
+		visibility: "hidden",
 		right: 0,
 		top: 0,
 		cursor: "pointer",

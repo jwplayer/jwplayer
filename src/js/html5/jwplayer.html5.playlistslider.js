@@ -54,7 +54,8 @@
 			_sliderThumbCapBottom,
 			
 			_topHeight,
-			_bottomHeight;
+			_bottomHeight,
+			_redrawTimeout;
 
 
 		this.element = function() {
@@ -156,9 +157,14 @@
 		}
 		
 		var _redraw = this.redraw = function() {
-			if (_pane && _pane.clientHeight) {
-				_setThumbPercent(_pane.parentNode.clientHeight / _pane.clientHeight);
-			}
+			clearTimeout(_redrawTimeout);
+			_redrawTimeout = setTimeout(function() {
+				if (_pane && _pane.clientHeight) {
+					_setThumbPercent(_pane.parentNode.clientHeight / _pane.clientHeight);
+				} else {
+					_redrawTimeout = setTimeout(_redraw, 10);
+				}
+			}, 0);
 		}
 		
 
@@ -177,7 +183,7 @@
 			return false;
 		};
 	
-		var _setThumbPercent = function(pct) {
+		function _setThumbPercent(pct) {
 			if (pct < 0) pct = 0;
 			if (pct > 1) {
 				_visible = false;
@@ -253,6 +259,7 @@
 	_css(_globalSelector(SLIDER_CLASS), {
 		position: JW_CSS_ABSOLUTE,
 		height: JW_CSS_100PCT,
+		visibility: "hidden",
 		right: 0,
 		top: 0,
 		cursor: "pointer",

@@ -56,6 +56,8 @@
 				position: 0,
 				buffer: 0,
 			}, _model.config);
+			// This gets added later
+			_model.playlist = [];
 			_setComponentConfigs();
 			_model.setItem(_model.config.item);
 			
@@ -109,20 +111,30 @@
 		}
 		
 		_model.setPlaylist = function(playlist) {
-			_model.playlist = playlist;
-			_filterPlaylist(playlist);
-			_model.sendEvent(events.JWPLAYER_PLAYLIST_LOADED, {
-				playlist: playlist
-			});
-			_model.item = -1;
-			_model.setItem(0);
+			_model.playlist = _filterPlaylist(playlist);
+			
+			if (playlist.length == 0) {
+				_model.sendEvent(events.JWPLAYER_ERROR, { message: "Error loading playlist: No playable sources found" });
+			} else {
+				_model.sendEvent(events.JWPLAYER_PLAYLIST_LOADED, {
+					playlist: playlist
+				});
+				_model.item = -1;
+				_model.setItem(0);
+			}
 		}
 
 		/** Go through the playlist and choose a single playable type to play; remove sources of a different type **/
 		function _filterPlaylist(playlist) {
+			var pl = [];
 			for (var i=0; i < playlist.length; i++) {
-				playlist[i].sources = utils.filterSources(playlist[i].sources);
+				var item = utils.extend({}, playlist[i]);
+				item.sources = utils.filterSources(item.sources);
+				if (item.sources.length > 0) {
+					pl.push(item)
+				}
 			}
+			return pl;
 		}
 		
 		_model.setItem = function(index) {

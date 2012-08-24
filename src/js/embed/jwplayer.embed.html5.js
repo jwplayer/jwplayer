@@ -16,7 +16,7 @@
 		
 		function _resizePlugin (plugin, div, onready) {
 			return function(evt) {
-				var displayarea = document.getElementById(_container.id + "_displayarea");
+				var displayarea = document.querySelector("#" + _container.id + " .jwmain");
 				if (onready) {
 					displayarea.appendChild(div);
 				}

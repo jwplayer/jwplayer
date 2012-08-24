@@ -249,8 +249,7 @@ package com.longtailvideo.jwplayer.controller {
 		protected function loadPreviewComplete(evt:Event):void {
 			if (imageTimeout.running) {
 				imageTimeout.stop();
-				if (evt is IOErrorEvent) tasker.failure(evt);
-				else tasker.success();
+				tasker.success();
 			}
 		}
 

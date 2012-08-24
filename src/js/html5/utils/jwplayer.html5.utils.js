@@ -48,7 +48,7 @@
 						selectedType = type;
 					}
 					if (type == selectedType) {
-						newSources.push(sources[i]);
+						newSources.push(utils.extend({}, sources[i]));
 					}
 				}
 			}
@@ -190,16 +190,25 @@
 	utils.bounds = function(element) {
 		if (!element) return {};
 		
-		try {
-			return element.getBoundingClientRect();
-		} catch (e) {
-			return { 
-				left: element.offsetLeft + DOCUMENT.body.scrollLeft, 
-				top: element.offsetTop + DOCUMENT.body.scrollTop, 
-				width: element.offsetWidth, 
-				height: element.offsetHeight
-			};
-		}
+		var obj = element,
+			left = 0,
+			top = 0,
+			width = element.offsetWidth,
+			height = element.offsetHeight;
+		
+		do {
+			left += obj.offsetLeft;
+			top += obj.offsetTop;
+		} while (obj = obj.offsetParent);
+		
+		return { 
+			left: left, 
+			top: top,
+			width: width,
+			height: height,
+			right: left + width,
+			bottom: top + height
+		};
 	}
 	
 	utils.empty = function(element) {

@@ -50,9 +50,7 @@ package com.longtailvideo.jwplayer.view.components {
 		private var pendingBuild:Boolean = false;
 		/** Map of images and loaders **/
 		private var imageLoaderMap:Dictionary;
-		/** Which field element can be colorized **/		
-		//private var colorizableFields:Array = ["title", "duration", "description"];
-		
+
 		public function PlaylistComponent(player:IPlayer) {
 			super(player, "playlist");
 			
@@ -216,7 +214,7 @@ package com.longtailvideo.jwplayer.view.components {
 			title.defaultTextFormat = titleTextFormat;
 			title.wordWrap = true;
 			title.multiline = true;	
-			title.width = 300;
+			title.width = 335;
 			title.height = 20;
 			addElement(title, btn, img.width + imageOffset, 3);
 				
@@ -233,19 +231,10 @@ package com.longtailvideo.jwplayer.view.components {
 			description.width = 335;
 			description.height = back.height - 22;
 			description.defaultTextFormat = descriptionTextFormat;
-			if(back.height > 40) {
-				addElement(description, btn, img.width + imageOffset + 1, 22);
+			if(back.height <= 40) {
+				description.visible = false;
 			}
-			
-			var duration:TextField = new TextField();
-			duration.name = "duration";
-			duration.width = 40;
-			duration.height = 20;
-			titleTextFormat.align = TextFormatAlign.RIGHT;
-			titleTextFormat.size = fontSize ? fontSize - 1 : 11;
-			titleTextFormat.rightMargin = 5;
-			duration.defaultTextFormat = titleTextFormat;
-			addElement(duration, btn, title.x + title.width - 2, 4);
+			addElement(description, btn, img.width + imageOffset + 1, 22);
 			
 			back.width = btn.width;
 			if (backOver) backOver.width = btn.width;
@@ -311,7 +300,6 @@ package com.longtailvideo.jwplayer.view.components {
 			if (!button) return;
 			
 			TextField(button.getChildByName("title")).textColor = titleOverColor.color;
-			TextField(button.getChildByName("duration")).textColor = overColor.color;
 			TextField(button.getChildByName("description")).textColor = overColor.color;
 
 			var overClip:DisplayObject = button.getChildByName("backOver");
@@ -332,7 +320,6 @@ package com.longtailvideo.jwplayer.view.components {
 			if (!button) return;
 			
 			TextField(button.getChildByName("title")).textColor = idx == active ? titleActiveColor.color : titleColor.color;
-			TextField(button.getChildByName("duration")).textColor = idx == active ? activeColor.color : fontColor.color;
 			TextField(button.getChildByName("description")).textColor = idx == active ? activeColor.color : fontColor.color;
 			
 			var overClip:DisplayObject = button.getChildByName("backOver");
@@ -514,7 +501,6 @@ package com.longtailvideo.jwplayer.view.components {
 			var btn:Sprite = getButton(idx); 
 			var title:TextField = btn.getChildByName("title") as TextField;
 			var description:TextField = btn.getChildByName("description") as TextField;
-			var duration:TextField = btn.getChildByName("duration") as TextField;
 			if (playlistItem.image || playlistItem['playlist.image']) {
 				var imageFile:String = playlistItem['playlist.image'] ? playlistItem['playlist.image'] : playlistItem.image;
 				if (getConfigParam('thumbs') != false && _player.config.playlistposition != 'none') {
@@ -527,14 +513,6 @@ package com.longtailvideo.jwplayer.view.components {
 						ldr.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, errorHandler);
 						ldr.load(new URLRequest(imageFile), new LoaderContext(true));
 					}
-				}
-			}
-			if (duration && playlistItem.duration) {
-				if (playlistItem.duration > 0) {
-					duration.htmlText = "<b>" + Strings.digits(playlistItem.duration) + "</b>";
-					duration.textColor = fontColor.color;
-				} else {
-					duration.visible = false;
 				}
 			}
 			try {
@@ -690,13 +668,11 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 			
 			TextField(button.getChildByName("title")).textColor = titleActiveColor.color;
-			TextField(button.getChildByName("duration")).textColor = activeColor.color;
 			TextField(button.getChildByName("description")).textColor = activeColor.color;
 			
 			if (!isNaN(active)) {
 				var activeButton:Sprite = getButton(active);
 				TextField(activeButton.getChildByName("title")).textColor = titleColor.color;
-				TextField(activeButton.getChildByName("duration")).textColor = fontColor.color;
 				TextField(activeButton.getChildByName("description")).textColor = fontColor.color;
 
 				var prevOver:DisplayObject = activeButton.getChildByName("backOver");

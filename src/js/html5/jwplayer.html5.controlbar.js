@@ -953,9 +953,9 @@
 					_cbBounds = newBounds;
 					if (_cbBounds.width > 0) {
 						_railBounds = utils.bounds(_timeRail);
-						_positionOverlays();
 					}
 				}
+				_positionOverlays();
 			}, 0);
 		}
 		

@@ -142,7 +142,7 @@ package com.longtailvideo.jwplayer.view {
 			RootReference.stage.addEventListener(FocusEvent.FOCUS_OUT, keyFocusOutHandler);
 			RootReference.stage.addEventListener(FocusEvent.FOCUS_IN, keyFocusInHandler);
 //			RootReference.stage.addEventListener(FocusEvent.KEY_FOCUS_CHANGE, keyFocusChanged);
-			RootReference.stage.addEventListener(Event.MOUSE_LEAVE, mouseLeftStage);
+//			RootReference.stage.addEventListener(Event.MOUSE_LEAVE, mouseLeftStage);
 			RootReference.stage.addEventListener(MouseEvent.MOUSE_MOVE, moveHandler);
 			RootReference.stage.addEventListener(KeyboardEvent.KEY_DOWN, moveHandler);
 			
@@ -556,12 +556,14 @@ package com.longtailvideo.jwplayer.view {
 
 		protected function mediaLoaded(evt:MediaEvent):void {
 			var disp:DisplayObject = _model.media.display;
-			if (disp && disp.parent != _mediaLayer) {
+			if (!disp || disp.parent != _mediaLayer) {
 				while (_mediaLayer.numChildren) {
 					_mediaLayer.removeChildAt(0);
 				}
-				_mediaLayer.addChild(_model.media.display);
-				resizeMedia(_player.config.width, _player.config.height);
+				if (disp) {
+					_mediaLayer.addChild(disp);
+					resizeMedia(_player.config.width, _player.config.height);					
+				}
 			}
 		}
 
@@ -687,6 +689,13 @@ package com.longtailvideo.jwplayer.view {
 		/** Show controls on mousemove or keyboard press and restart the countdown. **/
 		private function moveHandler(evt:Event=null):void {
 			if (_player.state != PlayerState.IDLE) {
+				if (evt is MouseEvent) {
+					var mouseEvent:MouseEvent = evt as MouseEvent;
+					if (!(_components.display as DisplayObject).getRect(RootReference.stage).containsPoint(new Point(mouseEvent.stageX, mouseEvent.stageY))) {
+						hideControls();
+						return;	
+					}
+				}
 				stopFader();
 				startFader();
 			}
@@ -714,17 +723,17 @@ package com.longtailvideo.jwplayer.view {
 		}
 		
 		/** If the mouse leaves the stage, hide the controlbar if position is 'over' **/
-		private function mouseLeftStage(evt:Event=null):void {
-/*			if (!hidden) {
+/*		private function mouseLeftStage(evt:Event=null):void {
+			if (!hidden) {
 				if (_player.state != PlayerState.IDLE) {
 					if (evt) { sendHide(); }
 					animations.fade(0);
 					hideOverlays();
 				}
-			}*/
+			}
 			hideControls();
 		}
-
+*/
 /*		protected function sendShow():void {
 			if (!_sentShow) {
 				if (_playerReady) {

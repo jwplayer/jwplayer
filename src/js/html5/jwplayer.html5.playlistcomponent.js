@@ -190,12 +190,6 @@
 	        	position: JW_CSS_RELATIVE
 	    	});
 
-			_css(_internalSelector("jwduration"), {
-				position: "absolute",
-	    	    'font-size': _settings.fontsize,
-				right: 5
-			});
-			
 		}
 
 		function _createList() {
@@ -241,12 +235,6 @@
         	title.innerHTML = item ? item.title : "";
         	_appendChild(textWrapper, title);
 
-	        if (item.duration > 0) {
-	        	var dur = _createElement("span", "jwduration");
-	        	dur.innerHTML = utils.timeFormat(item.duration);
-	        	_appendChild(textWrapper, dur);
-	        }
-	        
 	        if (item.description) {
 	        	var desc = _createElement("span", "jwdescription");
 	        	desc.innerHTML = item.description;

@@ -16,7 +16,7 @@ package com.longtailvideo.jwplayer.model {
 		 * @param width - The width of the file
 		 * @param streamer - Item's RTMP stream location
 		 */
-		public function PlaylistItemLevel(file:String, type:String, bitrate:Number, width:Number, height:Number, streamer:String="") {
+		public function PlaylistItemLevel(file:String, type:String="", bitrate:Number=0, width:Number=0, height:Number=0, streamer:String="") {
 			this.file = file;
 			this.type = type;
 			this.streamer = streamer;
