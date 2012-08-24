@@ -57,7 +57,34 @@
     <td class="check"></td>
 </tr></table>
 
+<h2>Adding Inline</h2>
 
+<div id="inline"></div>
+
+<script type="text/javascript">
+    jwplayer("inline").setup({
+        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
+     	image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+        primary: primaryCookie
+    });
+    jwplayer("inline").addButton("assets/both.png", 
+            "Button sucessfully added", 
+            function() { alert("Button clicked"); }, 
+            "firstButton");
+    jwplayer("inline").addButton("assets/smiley.png", 
+            "Small smiley button", 
+            function() { alert("Button clicked"); }, 
+            "secondButton");
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Begin playing</td>
+    <td>Dock buttons should become visible together with controlbar.</td>
+    <td class="check"></td>
+</tr></table>
 
 <h2>Adding and Removing</h2>
 
