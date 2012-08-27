@@ -191,7 +191,7 @@
 		<!-- Build the library SWC -->
 		<exec executable="${compc.exe}" dir="${src.dir}">
 			<arg line="-source-path ." />
-			<arg line="-output '${sdk.dir}/lib/jwplayer-5-lib.swc'" />
+			<arg line="-output '${sdk.dir}/lib/jwplayer-6-lib.swc'" />
 			<!-- Include the necessary framework libraries in the class path -->
 			<arg line="-compiler.library-path '${flexsdk.lib.dir}'" />
 			<arg line="-compiler.library-path '${lib.dir}'" />
@@ -199,10 +199,10 @@
 			<arg line="-target-player=${flexsdk.target}" />
 			<arg line="-include-classes com.longtailvideo.jwplayer.player.Player" />
 			<arg line="-compiler.external-library-path+='${lib.dir}'" />
-			<arg line="-link-report='${sdk.dir}/jwplayer-5-classes.xml'" />
+			<arg line="-link-report='${sdk.dir}/jwplayer-6-classes.xml'" />
 		</exec>
 		
-		<move file="${sdk.dir}/jwplayer-5-classes.xml" todir="${sdk.dir}/lib/" />
+		<move file="${sdk.dir}/jwplayer-6-classes.xml" todir="${sdk.dir}/lib/" />
 	</target>
 
 </project>

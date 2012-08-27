@@ -190,9 +190,9 @@
 		utils.transform(domelement, "rotate(" + deg + "deg)");
 	};
 	
-	utils.cssReset = function() {
-		utils.css(JW_CLASS + ["", "div", "span", "a", "img", "ul", "li", "video"].join(","+JW_CLASS), {
-			margin: "auto",
+	function _cssReset() {
+		_css(JW_CLASS + ["", "div", "span", "a", "img", "ul", "li", "video"].join(","+JW_CLASS), {
+			margin: 0,
 			padding: 0,
 			border: 0,
 			color: '#000000',
@@ -202,7 +202,9 @@
 			'background-color': 'transparent'
 		});
 		
-		utils.css(JW_CLASS + "ul", { 'list-style': "none" });
+		_css(JW_CLASS + "ul", { 'list-style': "none" });
 	};
+	
+	_cssReset();
 	
 })(jwplayer.utils);

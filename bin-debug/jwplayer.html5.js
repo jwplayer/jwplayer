@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2421';
+	jwplayer.html5.version = '6.0.2424';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -419,9 +419,9 @@
 		utils.transform(domelement, "rotate(" + deg + "deg)");
 	};
 	
-	utils.cssReset = function() {
-		utils.css(JW_CLASS + ["", "div", "span", "a", "img", "ul", "li", "video"].join(","+JW_CLASS), {
-			margin: "auto",
+	function _cssReset() {
+		_css(JW_CLASS + ["", "div", "span", "a", "img", "ul", "li", "video"].join(","+JW_CLASS), {
+			margin: 0,
 			padding: 0,
 			border: 0,
 			color: '#000000',
@@ -431,8 +431,10 @@
 			'background-color': 'transparent'
 		});
 		
-		utils.css(JW_CLASS + "ul", { 'list-style': "none" });
+		_css(JW_CLASS + "ul", { 'list-style': "none" });
 	};
+	
+	_cssReset();
 	
 })(jwplayer.utils);/**
  * Utility methods for the JW Player.
@@ -899,6 +901,7 @@
 						    _dividerElement,
 						    _layoutElement("hdOn", CB_BUTTON), 
 						    //_layoutElement("ccOn", CB_BUTTON), 
+						    _dividerElement,
 						    _layoutElement("mute", CB_BUTTON), 
 						    _layoutElement("volume", CB_SLIDER), 
 						    _dividerElement,
@@ -2645,6 +2648,7 @@
 				height : _getSkinElement('background').height
 			});
 
+			_hide();
 			_redraw();
 		}
 
@@ -2781,7 +2785,7 @@
 		}
 
 		
-		this.hide = function() {
+		var _hide = this.hide = function() {
 			_container.style.opacity = 0;
 			//_css(_internalSelector(), { opacity: 0 });
 			// Needed for IE9 for some reason
@@ -2804,9 +2808,8 @@
     	position: "relative",
     	'margin-left': "auto",
     	'margin-right': "auto",
-    	top: "50%",
-    	opacity: 0
-	});
+    	top: "50%"
+	}, true);
 
 	_css(DI_CLASS + " div", {
 		position : "relative",

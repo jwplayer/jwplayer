@@ -30,6 +30,7 @@ package com.longtailvideo.jwplayer.player
 	import com.longtailvideo.jwplayer.view.interfaces.IPlayerComponent;
 	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
 	import com.longtailvideo.jwplayer.view.skins.DefaultSkin;
+	
 	import flash.display.DisplayObject;
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
@@ -160,8 +161,14 @@ package com.longtailvideo.jwplayer.player
 		protected function showMedia():void {
 			if (!_mediaDisplayed) {
 				_mediaDisplayed = true;
-				_mediaLayer.addChild(_provider.display);
+				if (_provider.display) {
+					_mediaLayer.visible = true;
+					_mediaLayer.addChild(_provider.display);
+				} else {
+					_mediaLayer.visible = false;
+				}
 				_controls.display.releaseState();
+					
 			}
 		}
 		
@@ -352,7 +359,7 @@ package com.longtailvideo.jwplayer.player
 			_isConfig.stretching = _model.config.stretching;
 			
 			_instreamDisplay.graphics.clear();
-			_instreamDisplay.graphics.beginFill(screenColor ? screenColor.color : 0, 1);
+			_instreamDisplay.graphics.beginFill(0, 0);
 			_instreamDisplay.graphics.drawRect(viewDisplay.x, viewDisplay.y, viewDisplay.width, viewDisplay.height);
 			_instreamDisplay.graphics.endFill();
 			if(_provider) {
@@ -371,6 +378,7 @@ package com.longtailvideo.jwplayer.player
 			}
 			_controls.controlbar.x = viewControlbar.x;
 			_controls.controlbar.y = viewControlbar.y;
+			_controls.controlbar.show();
 		}
 		
 		protected function removeEventListeners():void {
@@ -421,8 +429,7 @@ package com.longtailvideo.jwplayer.player
 		/**********************************************/
 		
 		public function get version():String {
-			throw new Error("Unsupported IPlayer method in InstreamPlayer");			
-			return null;
+			return PlayerVersion.version;
 		}
 		
 		public function get playlist():IPlaylist {

@@ -7,6 +7,7 @@ package com.longtailvideo.jwplayer.media {
 	import com.longtailvideo.jwplayer.player.PlayerState;
 	import com.longtailvideo.jwplayer.utils.*;
 	
+	import flash.display.MovieClip;
 	import flash.events.*;
 	import flash.external.ExternalInterface;
 	import flash.geom.Rectangle;
@@ -113,7 +114,7 @@ package com.longtailvideo.jwplayer.media {
 			}
 			sendQualityEvent(MediaEvent.JWPLAYER_MEDIA_LEVELS, _item.levels, _currentQuality);
 			// Do not set a stretchable media for AAC files.
-			_item.type == "aac" ? media = null: media = _video;
+			_item.type == "aac" ? media = null: media = (_stage ? null : _video);
 			dispatchEvent(new MediaEvent(MediaEvent.JWPLAYER_MEDIA_LOADED));
 			// Initialize volume
 			streamVolume(config.mute ? 0 : config.volume);

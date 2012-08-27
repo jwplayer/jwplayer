@@ -44,6 +44,7 @@
 				height : _getSkinElement('background').height
 			});
 
+			_hide();
 			_redraw();
 		}
 
@@ -180,7 +181,7 @@
 		}
 
 		
-		this.hide = function() {
+		var _hide = this.hide = function() {
 			_container.style.opacity = 0;
 			//_css(_internalSelector(), { opacity: 0 });
 			// Needed for IE9 for some reason
@@ -203,9 +204,8 @@
     	position: "relative",
     	'margin-left': "auto",
     	'margin-right': "auto",
-    	top: "50%",
-    	opacity: 0
-	});
+    	top: "50%"
+	}, true);
 
 	_css(DI_CLASS + " div", {
 		position : "relative",

@@ -659,6 +659,9 @@ package com.longtailvideo.jwplayer.view {
 			if (instreamDisplay) {
 				_instreamLayer.addChild(instreamDisplay);
 			}
+			_mediaLayer.visible = false;
+			_componentsLayer.visible = false;
+			
 			try {
 				var pluginDO:DisplayObject = plugin as DisplayObject;
 				if (pluginDO) {
@@ -676,6 +679,9 @@ package com.longtailvideo.jwplayer.view {
 			if (_instreamPlugin && _instreamPlugin is DisplayObject) {
 				_pluginsLayer.addChild(_instreamPlugin as DisplayObject);
 			}
+			_mediaLayer.visible = true;
+			_componentsLayer.visible = true;
+
 			_instreamAnim.fade(0);
 		}
 		
@@ -716,6 +722,7 @@ package com.longtailvideo.jwplayer.view {
 			_components.controlbar.hide();
 			_components.dock.hide();
 			_components.logo.hide();
+			(new Animations(_instreamLayer)).fade(0);
 		}
 		
 		private function showControls():void {
@@ -724,6 +731,7 @@ package com.longtailvideo.jwplayer.view {
 				_components.dock.show();
 			}
 			_components.logo.show();
+			(new Animations(_instreamLayer)).fade(1);
 		}
 		
 		/** If the mouse leaves the stage, hide the controlbar if position is 'over' **/

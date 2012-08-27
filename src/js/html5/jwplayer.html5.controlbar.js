@@ -78,6 +78,7 @@
 						    _dividerElement,
 						    _layoutElement("hdOn", CB_BUTTON), 
 						    //_layoutElement("ccOn", CB_BUTTON), 
+						    _dividerElement,
 						    _layoutElement("mute", CB_BUTTON), 
 						    _layoutElement("volume", CB_SLIDER), 
 						    _dividerElement,
