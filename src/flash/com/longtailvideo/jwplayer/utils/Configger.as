@@ -1,5 +1,8 @@
 package com.longtailvideo.jwplayer.utils {
+	import com.longtailvideo.jwplayer.player.PlayerVersion;
+	
 	import flash.events.*;
+	import flash.external.ExternalInterface;
 	import flash.net.SharedObject;
 
 	/**
@@ -30,7 +33,8 @@ package com.longtailvideo.jwplayer.utils {
 		 */
 		public function loadConfig():void {
 			loadCookies();
-			loadFlashvars(RootReference.root.loaderInfo.parameters);
+			//loadFlashvars(RootReference.root.loaderInfo.parameters);
+			loadExternal();
 		}
 
 		/**
@@ -45,6 +49,27 @@ package com.longtailvideo.jwplayer.utils {
 				dispatchEvent(new Event(Event.COMPLETE));
 			} catch (e:Error) {
 				dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, e.message));
+			}
+		
+		}
+
+		/**
+		 * Loads configuration from JW Embedder
+		 **/
+		private function loadExternal():void {
+			if (ExternalInterface.available) {
+				var flashvars:Object = ExternalInterface.call("jwplayer.embed.flash.getVars", ExternalInterface.objectID);
+				if (flashvars !== null) {
+					// TODO: add ability to pass in JSON directly instead of going to/from a string
+					for (var param:String in flashvars) {
+						setConfigParam(param, flashvars[param]);
+					}
+					dispatchEvent(new Event(Event.COMPLETE));
+				} else {
+					dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, "Could not load player configuration"));
+				}
+			} else {
+				dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, "Could not load player configuration"));
 			}
 		}
 

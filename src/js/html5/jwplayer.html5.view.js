@@ -673,6 +673,4 @@
 		'background-size': JW_CSS_100PCT + " " + JW_CSS_100PCT + JW_CSS_IMPORTANT
 	});
 	
-	utils.cssReset();
-
 })(jwplayer.html5);

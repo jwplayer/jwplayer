@@ -204,7 +204,7 @@
 		
 		_css(JW_CLASS + "ul", { 'list-style': "none" });
 	};
-	
+
 	_cssReset();
 	
 })(jwplayer.utils);

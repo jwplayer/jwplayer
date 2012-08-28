@@ -16,7 +16,7 @@ jwplayer = function(container) {
 	}
 };
 
-jwplayer.version = '6.0.2424';
+jwplayer.version = '6.0.2427';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -1777,9 +1777,11 @@ jwplayer.source = document.createElement("source");/**
  * @version 6.0
  */
 (function(jwplayer) {
-	var utils = jwplayer.utils, events = jwplayer.events;
+	var utils = jwplayer.utils, 
+		events = jwplayer.events,
+		storedFlashvars = {};
 
-	jwplayer.embed.flash = function(_container, _player, _options, _loader, _api) {
+	var _flash = jwplayer.embed.flash = function(_container, _player, _options, _loader, _api) {
 		var _eventDispatcher = new jwplayer.events.eventdispatcher(),
 			_flashVersion = utils.flashVersion();
 		utils.extend(this, _eventDispatcher);
@@ -1867,7 +1869,7 @@ jwplayer.source = document.createElement("source");/**
 		};
 		
 		function jsonToFlashvars(json) {
-			var flashvars = '';
+			var flashvars = [];
 			for (var key in json) {
 				if (typeof(json[key]) == "object") {
 					flashvars += key + '=' + encodeURIComponent("[[JSON]]"+utils.jsonToString(json[key])) + '&';
@@ -1876,8 +1878,20 @@ jwplayer.source = document.createElement("source");/**
 				}
 			}
 			return flashvars.substring(0, flashvars.length - 1);
-		};
-		
+		}
+
+		function stringify(json) {
+			var flashvars = {};
+			for (var key in json) {
+				if (typeof(json[key]) == "object") {
+					flashvars[key] = "[[JSON]]"+utils.jsonToString(json[key]);
+				} else {
+					flashvars[key] = json[key];
+				}
+			}
+			return flashvars;
+		}
+
 		this.embed = function() {		
 			// Make sure we're passing the correct ID into Flash for Linux API support
 			_options.id = _api.id;
@@ -1912,8 +1926,6 @@ jwplayer.source = document.createElement("source");/**
 			} else {
 				delete params.plugins;
 			}
-			
-			
 
 			parseConfigBlock(params, 'components');
 			parseConfigBlock(params, 'providers');
@@ -1943,8 +1955,9 @@ jwplayer.source = document.createElement("source");/**
 				delete params[toDelete[i]];
 			}
 			
-			
-			flashvars = jsonToFlashvars(params)
+			flashvars = jsonToFlashvars(params);
+			// TODO: add ability to pass in JSON directly instead of going to/from a string
+			storedFlashvars[_container.id] = stringify(params);
 
 			if (utils.isIE()) {
 				var html = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" ' +
@@ -2038,6 +2051,10 @@ jwplayer.source = document.createElement("source");/**
 
 			return !!(mappedType.flash);
 		}
+	}
+	
+	_flash.getVars = function(id) {
+		return storedFlashvars[id];		
 	}
 	
 })(jwplayer);
