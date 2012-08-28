@@ -19,12 +19,15 @@
 <script type="text/javascript">
     jwplayer("uniform").setup({
         primary: primaryCookie,
-		sources: [
-		  			{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4' },
-					{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm' }
-		   		],
-        height: 240,
-        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+        playlist: [{
+		    sources: [{ 
+		        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4'
+            },{ 
+			    file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm'
+            }],
+            image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg'
+		}],
+        height: 260,
         width: 480
     });
 </script>
@@ -33,23 +36,13 @@
     <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
 </tr><tr>
     <td class="both"></td>
-    <td>Load the player</td>
-    <td>IE8: Player loads in Flash.  Otherwise, player loads in HTML5 mode</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="both"></td>
     <td>Poster image position</td>
-    <td>Thin black bars should appear to the top and bottom of the poster image.</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="desktop"></td>
-    <td>Switch to fullscreen mode and back without playing video, then exit fullscreen mode</td>
-    <td>In fullscreen mode, the poster image will scale to the size of the screen.  There may or may not be black bars around the image.</td>
+    <td>Black bars should appear to the top and bottom of the poster image.</td>
     <td class="check"></td>
 </tr><tr>
     <td class="desktop"></td>
     <td>Play video</td>
-    <td>While video is playing, thin black bars should appear to the top and bottom of the video.</td>
+    <td>While video is playing, black bars should appear to the top and bottom of the video.</td>
     <td class="check"></td>
 </tr><tr>
     <td class="mobile"></td>
@@ -59,7 +52,8 @@
 </tr><tr>
     <td class="desktop"></td>
     <td>Fullscreen toggle</td>
-    <td>In fullscreen mode, the video's aspect ratio should remain that of its native resolution.  Depending on screen resolution, black bars may change in size and position.</td>
+    <td>In fullscreen mode, the video's aspect ratio should remain the same.<br>
+        Depending on screen resolution, black bars may change in size and position.</td>
     <td class="check"></td>
 </tr></table>
 
@@ -70,23 +64,21 @@
 <script type="text/javascript">
     jwplayer("uniform2").setup({
         primary: primaryCookie,
-		sources: [
-		  			{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4' },
-					{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm' }
-		   		],
+        playlist: [{
+		    sources: [{ 
+		        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4'
+            },{ 
+			    file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm'
+            }],
+            image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg'
+		}],
         height: 240,
-        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
         width: 600
     });
 </script>
 
 <table><tr>
     <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
-</tr><tr>
-    <td class="both"></td>
-    <td>Load the player</td>
-    <td>IE8: Player loads in Flash.  Otherwise, player loads in HTML5 mode</td>
-    <td class="check"></td>
 </tr><tr>
     <td class="both"></td>
     <td>Poster image position</td>
@@ -105,7 +97,8 @@
 </tr><tr>
     <td class="desktop"></td>
     <td>Fullscreen toggle</td>
-    <td>In fullscreen mode, the video's aspect ratio should remain that of its native resolution.  Depending on screen resolution, black bars may change in size and position.</td>
+    <td>In fullscreen mode, the video's aspect ratio should remain the same.<br>
+        Depending on screen resolution, black bars may change in size and position.</td>
     <td class="check"></td>
 </tr></table>
 
@@ -116,12 +109,15 @@
 <script type="text/javascript">
     jwplayer("uniform3").setup({
         primary: primaryCookie,
-		sources: [
-		  			{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4' },
-					{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm' }
-		   		],
+        playlist: [{
+		    sources: [{ 
+		        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4'
+            },{ 
+			    file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm'
+            }],
+            image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg'
+		}],
         height: 210,
-        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
         width: 480
     });
 </script>
@@ -129,11 +125,6 @@
 
 <table><tr>
     <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
-</tr><tr>
-    <td class="both"></td>
-    <td>Load the player</td>
-    <td>IE8: Player loads in Flash.  Otherwise, player loads in HTML5 mode</td>
-    <td class="check"></td>
 </tr><tr>
     <td class="both"></td>
     <td>Poster image position</td>
@@ -147,14 +138,18 @@
 </tr><tr>
     <td class="mobile"></td>
     <td>Play video</td>
-    <td>Video should play in-browser or in fullscreen mode at native resolution.  There may be black bars.</td>
+    <td>Video should play in-browser or in fullscreen mode at native resolution.
+        <br>There may be black bars.</td>
     <td class="check"></td>
 </tr><tr>
     <td class="desktop"></td>
     <td>Fullscreen toggle</td>
-    <td>In fullscreen mode, the video's aspect ratio should remain that of its native resolution.  Depending on screen resolution, black bars may change in size and position, but if the aspect ratio of the screen is close to the video's, the video should stretch to the dimensions of the screen.</td>
+    <td>In fullscreen mode, the video's aspect ratio should remain the same.<br>
+        Depending on screen resolution, black bars may change in size and position,<br>
+        if the aspect ratio of the screen is close to the video's, the video should fit the screen.</td>
     <td class="check"></td>
 </tr></table>
+
 
 <h2>Stretching = none</h2>
 
@@ -163,12 +158,15 @@
 <script type="text/javascript">
     jwplayer("none").setup({
         primary: primaryCookie,
-		sources: [
-		  			{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4' },
-					{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm' }
-		   		],
+        playlist: [{
+		    sources: [{ 
+		        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4'
+            },{ 
+			    file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm'
+            }],
+            image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg'
+		}],
         height: 300,
-        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
         width: 500,
         stretching: "none"
     });
@@ -179,18 +177,8 @@
     <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
 </tr><tr>
     <td class="both"></td>
-    <td>Load the player</td>
-    <td>IE8: Player loads in Flash.  Otherwise, player loads in HTML5 mode</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="both"></td>
     <td>Poster image position</td>
-    <td>Poster should be horizontally and vertically centered inside the player at 480x204px.</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="desktop"></td>
-    <td>Switch to fullscreen mode and back without playing video, then exit fullscreen mode</td>
-    <td>In fullscreen mode, the size of the poster image will not change.</td>
+    <td>Poster should be horizontally and vertically centered (480x204px).</td>
     <td class="check"></td>
 </tr><tr>
     <td class="desktop"></td>
@@ -200,7 +188,7 @@
 </tr><tr>
     <td class="mobile"></td>
     <td>Play video</td>
-    <td>Should be same as "uniform" (i.e. stretching will not apply to video playback on mobile devices).</td>
+    <td>Should be same as "uniform".</td>
     <td class="check"></td>
 </tr><tr>
     <td class="desktop"></td>
@@ -209,6 +197,7 @@
     <td class="check"></td>
 </tr></table>
 
+
 <h2>Stretching = fill</h2>
 
 <div id="fill"></div>
@@ -216,12 +205,15 @@
 <script type="text/javascript">
     jwplayer("fill").setup({
         primary: primaryCookie,
-		sources: [
-		  			{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4' },
-					{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm' }
-		   		],
+        playlist: [{
+		    sources: [{ 
+		        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4'
+            },{ 
+			    file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm'
+            }],
+            image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg'
+		}],
         height: 300,
-        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
         width: 500,
         stretching: "fill"
     });
@@ -230,11 +222,6 @@
 
 <table><tr>
     <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
-</tr><tr>
-    <td class="both"></td>
-    <td>Load the player</td>
-    <td>IE8: Player loads in Flash.  Otherwise, player loads in HTML5 mode</td>
-    <td class="check"></td>
 </tr><tr>
     <td class="both"></td>
     <td>Poster image position</td>
@@ -270,12 +257,15 @@
 <script type="text/javascript">
     jwplayer("exactfit").setup({
         primary: primaryCookie,
-		sources: [
-		  			{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4' },
-					{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm' }
-		   		],
+        playlist: [{
+		    sources: [{ 
+		        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4'
+            },{ 
+			    file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm'
+            }],
+            image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg'
+		}],
         height: 300,
-        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
         width: 500,
         stretching: "exactfit"
     });
@@ -284,11 +274,6 @@
 
 <table><tr>
     <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
-</tr><tr>
-    <td class="both"></td>
-    <td>Load the player</td>
-    <td>IE8: Player loads in Flash.  Otherwise, player loads in HTML5 mode</td>
-    <td class="check"></td>
 </tr><tr>
     <td class="both"></td>
     <td>Poster image position</td>
@@ -325,47 +310,42 @@
 <script type="text/javascript">
     jwplayer("toggle").setup({
         primary: primaryCookie,
-		sources: [
-		  			{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4' },
-					{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm' }
-		   		],
+        playlist: [{
+		    sources: [{ 
+		        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4'
+            },{ 
+			    file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm'
+            }],
+            image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg'
+		}],
         height: 300,
-        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
-        width: 500,
-        events: {
-			onReady: function() {
-				var player = this;
-        		player.addButton("assets/desktop.png", "Toggle stretching", function () {
-            		switch(player.getStretching()) {
-            		case "uniform":
-            			player.setStretching("fill");
-            			break;
-            		case "fill":
-            			player.setStretching("exactfit");
-            			break;
-            		case "exactfit":
-            			player.setStretching("none");
-            			break;
-            		default:
-            			player.setStretching("uniform");
-            			break;
-            		} 
-
-            	}, "toggle");
-        	}
-        }
+        width: 500
     });
+	jwplayer("toggle").onReady(function() {
+		var player = this;
+		player.addButton("assets/desktop.png", "Toggle stretching", function () {
+    		switch(player.getStretching()) {
+    		case "uniform":
+    			player.setStretching("fill");
+    			break;
+    		case "fill":
+    			player.setStretching("exactfit");
+    			break;
+    		case "exactfit":
+    			player.setStretching("none");
+    			break;
+    		default:
+    			player.setStretching("uniform");
+    			break;
+    		}
+    	}, "toggle");
+	});
 
 </script>
 
 
 <table><tr>
     <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
-</tr><tr>
-    <td class="desktop"></td>
-    <td>Load the player</td>
-    <td>IE8: Player loads in Flash.  Otherwise, player loads in HTML5 mode</td>
-    <td class="check"></td>
 </tr><tr>
     <td class="desktop"></td>
     <td>Begin playback</td>
