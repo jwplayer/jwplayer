@@ -25,7 +25,14 @@ package com.longtailvideo.jwplayer.view.components
 		protected var _text:TextField;
 		// Whether the arrow should appear on top or bottom
 		protected var _inverted:Boolean = false;
+		// Last set X position
+		private var _x:Number = 0;
+		// Last set Y position
+		private var _y:Number = 0;
+		// X offset
+		private var _offset:Number = 0;
 		
+
 		
 		public function TooltipOverlay(skin:ISkin, inverted:Boolean=false) {
 			this.skin = skin;
@@ -93,8 +100,9 @@ package com.longtailvideo.jwplayer.view.components
 			back.width = contentWidth;
 			back.x = borders.top.x;
 			back.y = borders.left.y;
-			arrow.x = Math.ceil((contentWidth + borders.left.width + borders.right.width - arrow.width) / 2);
 			arrow.y = _inverted ? 0 : hei;
+			positionX();
+			positionY();
 		}
 		
 		public override function set width(value:Number):void {
@@ -140,19 +148,37 @@ package com.longtailvideo.jwplayer.view.components
 			}
 		}
 		
-		public function offsetX(offset:Number):void {
-			super.x = super.x + offset;
-			arrow.x -= offset;
+		public function set offsetX(offset:Number):void {
+			_offset = offset;
+			positionX();
 		}
 		
-		public override function set x(value:Number):void {
-			arrow.x = Math.ceil((contentWidth + borders.left.width + borders.right.width - arrow.width) / 2);
-			super.x = Math.ceil(value - arrow.x - (arrow.width / 2));
+		public function get offsetX():Number {
+			return _offset;
 		}
 
-		public override function set y(value:Number):void {
-			super.y = Math.ceil(value - (_inverted ? 0 : contentHeight) - ( _inverted ? 0 : arrow.height));
+		public override function set x(value:Number):void {
+			_x = value;
+			positionX();
 		}
+		
+		public override function set y(value:Number):void {
+			_y = value;
+			positionY();
+		}
+		
+		protected function positionX():void {
+			var origin:Number = arrow.x;
+			var w:Number = arrow.width / 2;
+			arrow.x = Math.ceil(((contentWidth + borders.left.width + borders.right.width - arrow.width) / 2) + _offset);
+			super.x = Math.ceil(_x - arrow.x - w);
+		}
+		
+		protected function positionY():void {
+			super.y = Math.ceil(_y - (_inverted ? -arrow.height : (contentHeight + borders.top.height + borders.bottom.height + arrow.height)));
+		}
+		
+
 
 		public function hide():void {
 			fade.cancelAnimation();

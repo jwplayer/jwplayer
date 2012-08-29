@@ -837,15 +837,18 @@ package com.longtailvideo.jwplayer.view.components {
 			if (button && overlay) {
 				RootReference.stage.setChildIndex(overlay, RootReference.stage.numChildren-1);
 				var buttonPosition:Point = button.localToGlobal(new Point(button.width / 2, 0)); 
-				overlay.x = buttonPosition.x;
-				overlay.y = buttonPosition.y;
 				var overlayBounds:Rectangle = overlay.getBounds(RootReference.root);
 				var cbBounds:Rectangle = this.getBounds(RootReference.root);
 
-				if (overlayBounds.right > cbBounds.right) {
-					overlay.offsetX(cbBounds.right - overlayBounds.right);
+				overlay.x = buttonPosition.x;
+				overlay.y = cbBounds.y;
+				
+				if (overlayBounds.right >= cbBounds.right) {
+					overlay.offsetX -= cbBounds.right - overlayBounds.right;
 				} else if (overlayBounds.left < cbBounds.left) {
-					overlay.offsetX(cbBounds.left - overlayBounds.left);
+					overlay.offsetX += cbBounds.left + overlayBounds.left;
+				} else {
+					overlay.offsetX = 0;
 				}
 				
 

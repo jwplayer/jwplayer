@@ -11,6 +11,7 @@
 		_block = 0,
 		exists = utils.exists,
 		_ruleIndexes = {},
+		_debug = false,
 				
 		JW_CLASS = '.jwplayer ';
 
@@ -23,13 +24,15 @@
 	
 	var _css = utils.css = function(selector, styles, important) {
 		if (!_styleSheets[selector]) {
-			//_styleSheets[selector] = _createStylesheet();
-			if (!_styleSheet || _styleSheet.sheet.cssRules.length > 50000) {
-				_styleSheet = _createStylesheet();
+			if (_debug) _styleSheets[selector] = _createStylesheet();
+			else {
+				if (!_styleSheet || _styleSheet.sheet.cssRules.length > 50000) {
+					_styleSheet = _createStylesheet();
+				}
+				_styleSheets[selector] = _styleSheet;
 			}
-			_styleSheets[selector] = _styleSheet;
 		}
-
+		
 		if (!exists(important)) important = false;
 		
 		if (!_rules[selector]) {
@@ -102,7 +105,7 @@
 
 
 	function _updateStylesheet(selector) {
-//		_styleSheets[selector].innerHTML = _getRuleText(selector); return;
+		if (_debug) { _styleSheets[selector].innerHTML = _getRuleText(selector); return; }
 		
 		var sheet = _styleSheets[selector].sheet,
 			ruleIndex = _ruleIndexes[selector];

@@ -51,7 +51,7 @@
 			_container,
 			_contents,
 			_offset = 0,
-			_arrow,
+			_arrow, _arrowHeight,
 			_inverted = inverted,
 			_settings = utils.extend({}, _defaults, _skin.getComponentSettings('tooltip')),
 			_borderSizes = {},
@@ -61,15 +61,19 @@
 			_container = _createElement(OVERLAY_CLASS.replace(".",""));
 			_container.id = _id;
 
+			_arrow = _createSkinElement("arrow", "jwarrow")[1];
+			_arrowHeight = _arrow.height;
 			
-			_contents = _createElement(CONTENTS_CLASS, _container);
-			
-			_css(_internalSelector(CONTENTS_CLASS) + " *", {
-				color: _settings.fontcolor,
-				font: _settings.fontweight + " " + (_settings.fontsize) + "px Arial,Helvetica,sans-serif",
-				'text-transform': (_settings.fontcase == "upper") ? "uppercase" : UNDEFINED
+			_css(_internalSelector("jwarrow"), {
+				position: JW_CSS_ABSOLUTE,
+				//bottom: _inverted ? UNDEFINED : -1 * _arrow.height,
+				bottom: _inverted ? UNDEFINED : 0,
+				top: _inverted ? 0 : UNDEFINED,
+				width: _arrow.width,
+				height: _arrowHeight,
+				left: "50%"
 			});
-			
+
 			_createBorderElement(TOP, LEFT);
 			_createBorderElement(BOTTOM, LEFT);
 			_createBorderElement(TOP, RIGHT);
@@ -87,15 +91,13 @@
 				bottom: _borderSizes.bottom
 			});
 			
-			_arrow = _createSkinElement("arrow", "jwarrow")[1];
-			_css(_internalSelector("jwarrow"), {
-				position: JW_CSS_ABSOLUTE,
-				bottom: _inverted ? UNDEFINED : -1 * _arrow.height,
-				top: _inverted ? -1 * _arrow.height : UNDEFINED,
-				width: _arrow.width,
-				height: _arrow.height,
-				left: "50%"
+			_contents = _createElement(CONTENTS_CLASS, _container);
+			_css(_internalSelector(CONTENTS_CLASS) + " *", {
+				color: _settings.fontcolor,
+				font: _settings.fontweight + " " + (_settings.fontsize) + "px Arial,Helvetica,sans-serif",
+				'text-transform': (_settings.fontcase == "upper") ? "uppercase" : UNDEFINED
 			});
+
 			
 			if (_inverted) {
 				utils.transform(_internalSelector("jwarrow"), "rotate(180deg)");
@@ -143,13 +145,21 @@
 					height: (dim1 == TOP || dim2 == TOP || dim1 == BOTTOM || dim2 == BOTTOM) ? skinElem.height: UNDEFINED
 				};
 			
-			elemStyle[dim1] = 0;
+			
+			elemStyle[dim1] = ((dim1 == BOTTOM && !_inverted) || (dim1 == TOP && _inverted)) ? _arrowHeight : 0;
 			if (dim2) elemStyle[dim2] = 0;
 			
 			_css(_internalSelector(elem.className.replace(/ /g, ".")), elemStyle);
 			
-			var dim1style = {}, dim2style = {}, dims = { left: skinElem.width, right: skinElem.width, top: skinElem.height, bottom: skinElem.height};
-			if (dim1 && dim2) {
+			var dim1style = {}, 
+				dim2style = {}, 
+				dims = { 
+					left: skinElem.width, 
+					right: skinElem.width, 
+					top: (_inverted ? _arrowHeight : 0) + skinElem.height, 
+					bottom: (_inverted ? 0 : _arrowHeight) + skinElem.height
+				};
+			if (dim2) {
 				dim1style[dim2] = dims[dim2];
 				dim1style[dim1] = 0;
 				dim2style[dim1] = dims[dim1];
@@ -236,7 +246,7 @@
 	_css(OVERLAY_CLASS, {
 		position: JW_CSS_ABSOLUTE,
 		visibility: JW_CSS_HIDDEN,
-		opacity: 0,
+		opacity: 0
 	});
 
 	_css(OVERLAY_CLASS + " .jwcontents", {

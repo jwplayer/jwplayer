@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2427';
+	jwplayer.html5.version = '6.0.2429';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -240,6 +240,7 @@
 		_block = 0,
 		exists = utils.exists,
 		_ruleIndexes = {},
+		_debug = false,
 				
 		JW_CLASS = '.jwplayer ';
 
@@ -252,13 +253,15 @@
 	
 	var _css = utils.css = function(selector, styles, important) {
 		if (!_styleSheets[selector]) {
-			//_styleSheets[selector] = _createStylesheet();
-			if (!_styleSheet || _styleSheet.sheet.cssRules.length > 50000) {
-				_styleSheet = _createStylesheet();
+			if (_debug) _styleSheets[selector] = _createStylesheet();
+			else {
+				if (!_styleSheet || _styleSheet.sheet.cssRules.length > 50000) {
+					_styleSheet = _createStylesheet();
+				}
+				_styleSheets[selector] = _styleSheet;
 			}
-			_styleSheets[selector] = _styleSheet;
 		}
-
+		
 		if (!exists(important)) important = false;
 		
 		if (!_rules[selector]) {
@@ -331,7 +334,7 @@
 
 
 	function _updateStylesheet(selector) {
-//		_styleSheets[selector].innerHTML = _getRuleText(selector); return;
+		if (_debug) { _styleSheets[selector].innerHTML = _getRuleText(selector); return; }
 		
 		var sheet = _styleSheets[selector].sheet,
 			ruleIndex = _ruleIndexes[selector];
@@ -2863,7 +2866,7 @@
 				iconalpha: 0.8,
 				iconalphaactive: 0.5,
 				iconalphaover: 1,
-				margin: 8
+				margin: 6
 			},
 			_config = utils.extend({}, _defaults, config), 
 			_id = _api.id + "_dock",
@@ -2888,8 +2891,6 @@
 				_dockBounds = _bounds(_container);
 			});
 			
-			window.addEventListener('mousemove', _moveHandler, false);
-			window.addEventListener('click', _clickHandler, false);
 		}
 		
 		function _setupElements() {
@@ -2911,12 +2912,12 @@
 				background: button.src
 			});
 			
-			if (buttonOver.src) _css(_internalSelector("button.hover"), { background: buttonOver.src });
-			if (buttonActive.src) _css(_internalSelector("button.active"), { background: buttonActive.src });
+			if (buttonOver.src) _css(_internalSelector("button:hover"), { background: buttonOver.src });
+			if (buttonActive.src) _css(_internalSelector("button:active"), { background: buttonActive.src });
 			_css(_internalSelector("button>div"), { opacity: _config.iconalpha });
-			_css(_internalSelector("button.hover>div"), { opacity: _config.iconalphaover });
-			_css(_internalSelector("button.active>div"), { opacity: _config.iconalphaactive});
-			_css(_internalSelector(".jwoverlay"), { top: button.height });
+			_css(_internalSelector("button:hover>div"), { opacity: _config.iconalphaover });
+			_css(_internalSelector("button:active>div"), { opacity: _config.iconalphaactive});
+			_css(_internalSelector(".jwoverlay"), { top: _config.margin + button.height });
 			
 			_createImage("capLeft", _container);
 			_createImage("capRight", _container);
@@ -3011,8 +3012,9 @@
 			if (typeof clickHandler == "string") {
 				clickHandler = new Function(clickHandler);
 			}
+			newButton.addEventListener("click", clickHandler);
 			
-			_buttons[id] = { element: newButton, label: label, divider: divider, icon: icon, click: clickHandler };
+			_buttons[id] = { element: newButton, label: label, divider: divider, icon: icon };
 			
 			if (label) {
 				var tooltip = new html5.overlay(icon.id+"_tooltip", _skin, true),
@@ -3020,61 +3022,27 @@
 				tipText.innerHTML = label;
 				tooltip.setContents(tipText);
 				
+				var timeout;
+				newButton.addEventListener('mouseover', function() { 
+					clearTimeout(timeout); 
+					_positionTooltip(id); 
+					tooltip.show();
+					for (var i in _tooltips) {
+						if (i != id) {
+							_tooltips[i].hide();
+						}
+					}
+				}, false);
+				newButton.addEventListener('mouseout', function() {
+					timeout = setTimeout(tooltip.hide, 100); 
+				} , false);
+				
 				_container.appendChild(tooltip.element());
 				_tooltips[id] = tooltip;
 			}
 			
 			_buttonCount++;
 			_setCaps();
-			
-			setTimeout(function() {
-				_buttons[id].bounds = _bounds(_buttons[id].element);
-			}, 100);
-		}
-		
-		
-		
-		function _moveHandler(evt) {
-			if (!_this.visible) return;
-			var button, i, bounds;
-			for (i in _buttons) {
-				button = _buttons[i];
-				bounds = button.bounds;
-				if (bounds) {
-					if (evt.pageX > bounds.left && evt.pageX < bounds.right && evt.pageY > bounds.top && evt.pageY < bounds.bottom) {
-						_buttonOver(i); 
-					} else {
-						_buttonOut(i);
-					}
-				}
-			}
-		}
-		
-		function _clickHandler() {
-			if (hovering && typeof _buttons[hovering].click == "function") {
-				_buttons[hovering].click();
-			}
-				
-				
-		}
-		
-		var hovering;
-		
-		function _buttonOver(name) {
-			if (hovering == name) return;
-			if (hovering) _buttonOut(hovering);
-			hovering = name;
-			_positionTooltip(name); 
-			if (_tooltips[name]) _tooltips[name].show();
-			_buttons[name].element.className += " hover";
-		}
-		
-		function _buttonOut(name) {
-			if (name == hovering) {
-				if (_tooltips[name]) _tooltips[name].hide();
-				_buttons[name].element.className = _buttons[name].element.className.replace(/\s+hover/,"");
-				hovering = null;
-			}
 		}
 		
 		_this.removeButton = function(id) {
@@ -4030,7 +3998,7 @@
 			_container,
 			_contents,
 			_offset = 0,
-			_arrow,
+			_arrow, _arrowHeight,
 			_inverted = inverted,
 			_settings = utils.extend({}, _defaults, _skin.getComponentSettings('tooltip')),
 			_borderSizes = {},
@@ -4040,15 +4008,19 @@
 			_container = _createElement(OVERLAY_CLASS.replace(".",""));
 			_container.id = _id;
 
+			_arrow = _createSkinElement("arrow", "jwarrow")[1];
+			_arrowHeight = _arrow.height;
 			
-			_contents = _createElement(CONTENTS_CLASS, _container);
-			
-			_css(_internalSelector(CONTENTS_CLASS) + " *", {
-				color: _settings.fontcolor,
-				font: _settings.fontweight + " " + (_settings.fontsize) + "px Arial,Helvetica,sans-serif",
-				'text-transform': (_settings.fontcase == "upper") ? "uppercase" : UNDEFINED
+			_css(_internalSelector("jwarrow"), {
+				position: JW_CSS_ABSOLUTE,
+				//bottom: _inverted ? UNDEFINED : -1 * _arrow.height,
+				bottom: _inverted ? UNDEFINED : 0,
+				top: _inverted ? 0 : UNDEFINED,
+				width: _arrow.width,
+				height: _arrowHeight,
+				left: "50%"
 			});
-			
+
 			_createBorderElement(TOP, LEFT);
 			_createBorderElement(BOTTOM, LEFT);
 			_createBorderElement(TOP, RIGHT);
@@ -4066,15 +4038,13 @@
 				bottom: _borderSizes.bottom
 			});
 			
-			_arrow = _createSkinElement("arrow", "jwarrow")[1];
-			_css(_internalSelector("jwarrow"), {
-				position: JW_CSS_ABSOLUTE,
-				bottom: _inverted ? UNDEFINED : -1 * _arrow.height,
-				top: _inverted ? -1 * _arrow.height : UNDEFINED,
-				width: _arrow.width,
-				height: _arrow.height,
-				left: "50%"
+			_contents = _createElement(CONTENTS_CLASS, _container);
+			_css(_internalSelector(CONTENTS_CLASS) + " *", {
+				color: _settings.fontcolor,
+				font: _settings.fontweight + " " + (_settings.fontsize) + "px Arial,Helvetica,sans-serif",
+				'text-transform': (_settings.fontcase == "upper") ? "uppercase" : UNDEFINED
 			});
+
 			
 			if (_inverted) {
 				utils.transform(_internalSelector("jwarrow"), "rotate(180deg)");
@@ -4122,13 +4092,21 @@
 					height: (dim1 == TOP || dim2 == TOP || dim1 == BOTTOM || dim2 == BOTTOM) ? skinElem.height: UNDEFINED
 				};
 			
-			elemStyle[dim1] = 0;
+			
+			elemStyle[dim1] = ((dim1 == BOTTOM && !_inverted) || (dim1 == TOP && _inverted)) ? _arrowHeight : 0;
 			if (dim2) elemStyle[dim2] = 0;
 			
 			_css(_internalSelector(elem.className.replace(/ /g, ".")), elemStyle);
 			
-			var dim1style = {}, dim2style = {}, dims = { left: skinElem.width, right: skinElem.width, top: skinElem.height, bottom: skinElem.height};
-			if (dim1 && dim2) {
+			var dim1style = {}, 
+				dim2style = {}, 
+				dims = { 
+					left: skinElem.width, 
+					right: skinElem.width, 
+					top: (_inverted ? _arrowHeight : 0) + skinElem.height, 
+					bottom: (_inverted ? 0 : _arrowHeight) + skinElem.height
+				};
+			if (dim2) {
 				dim1style[dim2] = dims[dim2];
 				dim1style[dim1] = 0;
 				dim2style[dim1] = dims[dim1];
@@ -4215,7 +4193,7 @@
 	_css(OVERLAY_CLASS, {
 		position: JW_CSS_ABSOLUTE,
 		visibility: JW_CSS_HIDDEN,
-		opacity: 0,
+		opacity: 0
 	});
 
 	_css(OVERLAY_CLASS + " .jwcontents", {

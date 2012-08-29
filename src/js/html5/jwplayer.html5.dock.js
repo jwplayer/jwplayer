@@ -27,7 +27,7 @@
 				iconalpha: 0.8,
 				iconalphaactive: 0.5,
 				iconalphaover: 1,
-				margin: 8
+				margin: 6
 			},
 			_config = utils.extend({}, _defaults, config), 
 			_id = _api.id + "_dock",
@@ -52,8 +52,6 @@
 				_dockBounds = _bounds(_container);
 			});
 			
-			window.addEventListener('mousemove', _moveHandler, false);
-			window.addEventListener('click', _clickHandler, false);
 		}
 		
 		function _setupElements() {
@@ -75,12 +73,12 @@
 				background: button.src
 			});
 			
-			if (buttonOver.src) _css(_internalSelector("button.hover"), { background: buttonOver.src });
-			if (buttonActive.src) _css(_internalSelector("button.active"), { background: buttonActive.src });
+			if (buttonOver.src) _css(_internalSelector("button:hover"), { background: buttonOver.src });
+			if (buttonActive.src) _css(_internalSelector("button:active"), { background: buttonActive.src });
 			_css(_internalSelector("button>div"), { opacity: _config.iconalpha });
-			_css(_internalSelector("button.hover>div"), { opacity: _config.iconalphaover });
-			_css(_internalSelector("button.active>div"), { opacity: _config.iconalphaactive});
-			_css(_internalSelector(".jwoverlay"), { top: button.height });
+			_css(_internalSelector("button:hover>div"), { opacity: _config.iconalphaover });
+			_css(_internalSelector("button:active>div"), { opacity: _config.iconalphaactive});
+			_css(_internalSelector(".jwoverlay"), { top: _config.margin + button.height });
 			
 			_createImage("capLeft", _container);
 			_createImage("capRight", _container);
@@ -175,8 +173,9 @@
 			if (typeof clickHandler == "string") {
 				clickHandler = new Function(clickHandler);
 			}
+			newButton.addEventListener("click", clickHandler);
 			
-			_buttons[id] = { element: newButton, label: label, divider: divider, icon: icon, click: clickHandler };
+			_buttons[id] = { element: newButton, label: label, divider: divider, icon: icon };
 			
 			if (label) {
 				var tooltip = new html5.overlay(icon.id+"_tooltip", _skin, true),
@@ -184,61 +183,27 @@
 				tipText.innerHTML = label;
 				tooltip.setContents(tipText);
 				
+				var timeout;
+				newButton.addEventListener('mouseover', function() { 
+					clearTimeout(timeout); 
+					_positionTooltip(id); 
+					tooltip.show();
+					for (var i in _tooltips) {
+						if (i != id) {
+							_tooltips[i].hide();
+						}
+					}
+				}, false);
+				newButton.addEventListener('mouseout', function() {
+					timeout = setTimeout(tooltip.hide, 100); 
+				} , false);
+				
 				_container.appendChild(tooltip.element());
 				_tooltips[id] = tooltip;
 			}
 			
 			_buttonCount++;
 			_setCaps();
-			
-			setTimeout(function() {
-				_buttons[id].bounds = _bounds(_buttons[id].element);
-			}, 100);
-		}
-		
-		
-		
-		function _moveHandler(evt) {
-			if (!_this.visible) return;
-			var button, i, bounds;
-			for (i in _buttons) {
-				button = _buttons[i];
-				bounds = button.bounds;
-				if (bounds) {
-					if (evt.pageX > bounds.left && evt.pageX < bounds.right && evt.pageY > bounds.top && evt.pageY < bounds.bottom) {
-						_buttonOver(i); 
-					} else {
-						_buttonOut(i);
-					}
-				}
-			}
-		}
-		
-		function _clickHandler() {
-			if (hovering && typeof _buttons[hovering].click == "function") {
-				_buttons[hovering].click();
-			}
-				
-				
-		}
-		
-		var hovering;
-		
-		function _buttonOver(name) {
-			if (hovering == name) return;
-			if (hovering) _buttonOut(hovering);
-			hovering = name;
-			_positionTooltip(name); 
-			if (_tooltips[name]) _tooltips[name].show();
-			_buttons[name].element.className += " hover";
-		}
-		
-		function _buttonOut(name) {
-			if (name == hovering) {
-				if (_tooltips[name]) _tooltips[name].hide();
-				_buttons[name].element.className = _buttons[name].element.className.replace(/\s+hover/,"");
-				hovering = null;
-			}
 		}
 		
 		_this.removeButton = function(id) {

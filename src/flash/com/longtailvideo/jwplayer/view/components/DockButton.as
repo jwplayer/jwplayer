@@ -121,10 +121,10 @@ package com.longtailvideo.jwplayer.view.components {
 			_tooltip.y = buttonBounds.bottom;
 
 			var tooltipBounds:Rectangle = _tooltip.getBounds(RootReference.root);
-			if (tooltipBounds.left < _bounds.left) {
-				_tooltip.offsetX(_bounds.left - tooltipBounds.left);
-			} else if (tooltipBounds.right > _bounds.right) {
-				_tooltip.offsetX(_bounds.right - tooltipBounds.right);
+			if (tooltipBounds.left - _tooltip.offsetX < _bounds.left) {
+				_tooltip.offsetX += tooltipBounds.left - _bounds.left;
+			} else if (tooltipBounds.right + _tooltip.offsetX > _bounds.right) {
+				_tooltip.offsetX -= _bounds.right - tooltipBounds.right;
 			}
 				
 			
