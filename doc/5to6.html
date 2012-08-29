@@ -1,0 +1,184 @@
+<!doctype html>
+<html>
+<head>
+<title>Migrating from JW5 to JW6</title>
+<style>
+    body { padding: 50px 100px; width: 700px; font: 13px/20px Arial; background: #FFF; }
+    a, h1, h2 { color: #369; }
+    h1 { font-size: 32px; }
+    h2 { margin-top: 50px; }
+    h3 { margin-top: 25px; }
+    img { display: block; margin: 0 10px; }
+    pre { font-size: 12px; background: #E5F3C8; padding:5px 10px; border: 1px solid #D3EAA4; }
+    dt { padding-left: 20px; font-weight: bold; }
+    dd { color: #333; font-style: italic; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+    tr { border-bottom: 1px solid #CCC; } 
+    tr:nth-child(even) { background: #EEE; }
+    td,th { padding: 5px; font-size: 12px; text-align: left; }
+
+</style>
+</head><body>
+
+<h1>Migrating from JW5 to JW6</h1>
+
+<p>This guide enumerates the differences in functionality for JW Player 6 (JW6) compared to JW Player 5 (JW5). It is written for existing JW Player users, to assist them in upgrading from JW5 to JW6.</p>
+
+<p>For each topic, both new/enhanced and removed/descoped features are listed. In the latter case, suggestions for alternative setups are provided.</p>
+
+
+
+<h2>Media Support</h2>
+
+<p>Since JW Player relies upon the underlying Flash and HTML5 frameworks for media playback, not a whole lot has changed in terms of media support.</p>
+
+<h3>New or Enhanced</h3>
+
+<dl>
+<dt>Defined list of formats</dt>
+<dd>For JW6, we took an effort to clearly define all <a href="media.html">supported media formats</a>, including their expected extensions and mimetypes. JW6 officially supports MP4/FLV/WebM video, AAC/MP3/Vorbis audio, YouTube streams and RTMP streams.</dd>
+<dt>Setting multiple formats</dt>
+<dd>Setting multiple formats for one clip (RTMP+MP4, MP4+WebM, etc) has become more flexible and easier in JW6. Simply provide a list of sources using <a href="playlists.html">inline playlists</a> or <a href="feeds.html">mRSS feeds</a>. JW Player automatically detects and filters which formats can be played on each device.</dd>
+</dl>
+
+<h3>Removed or Descoped</h3>
+
+<dl>
+<dt>Playback of JPG/PNG/GIF images</dt>
+<dd>JW5 supported playback of JPG/PNG/GIF images in Flash mode (not in HTML5). Since JW Player focuses on audio/video playback, we removed image support in JW6. We suggest using one of the many free (and much better suited) JavaScript image galleries for playing images.</dd>
+<dt>Playback of Ogg videos</dt>
+<dd>Contrary to JW5, JW6 does not officially support the Ogg video format anymore. <a href="http://www.longtailvideo.com/blog/24509/encoding-webm-videos">WebM video</a> is more modern, more widely used,  and supported by roughly the same percentage of the browser market.</dd>
+</dl>
+
+
+
+<h2>Device Support</h2>
+
+<p>One of the major internal changed in JW6 is a full refactor of its HTML5 playback. The HTML5 rendering mode is now leaner, more stable and in support of recent browser features.</p>
+
+<h3>New or Enhanced</h3>
+
+<dl>
+<dt>Defaulting to HTML5</dt>
+<dd>JW6 automatically detects if a device supports Flash and HTML5. It also detects if the embedded media format can be played back in Flash or HTML5. If both are possible, JW6 defaults to HTML5, but you can override this using the <strong>primary</strong> configuration option.</dd>
+<dt>HTML5 Fullscreen Support</dt>
+<dd>JW6 supports true fullscreen playback in HTML5 mode using the <a href="http://www.longtailvideo.com/blog/26517/using-the-browsers-new-html5-fullscreen-capabilities">HTML5 Fullscreen API</a>. This is supported in Firefox, Chrome and Safari today.</dd>
+<dt>Download fallback</dt>
+<dd>If a device supports neither Flash nor HTML5, JW6 can render a so-called download fallback: a nicely formatted download link to the media that is picked up by a built-in media player. This works great on e.g. Blackberry or Android 2.2 or older. We <a href="browsers.html">clearly defined</a> which formats this fallback applies to, plus added an option to disable it.</dd>
+</dl>
+
+<h3>Removed or Descoped</h3>
+
+<dl>
+<dt>Flash mode on Android</dt>
+<dd>Since Flash is performing suboptimal on Android devices, we already <a href="http://www.longtailvideo.com/blog/25057/html5-takes-the-lead-on-android-devices">defaulted to HTML5</a> for media playback on Android. In JW6, Flash on Android support is removed altogether. We encourage you to make your media compatible with HTML5 when targeting Android, also since Android 4+ does not include Flash anymore.</dd>
+</dl>
+
+
+
+<h2>Embedding</h2>
+
+<p>For JW6, we rationalized the various methods used to embed JW Player.</p>
+
+<h3>New or Enhanced</h3>
+
+<dl>
+<dt>Separate embedder</dt>
+<dd>In JW6, the library that manages the player embed (<strong>jwplayer.js</strong>) is separated from the actual HTML5 player (<strong>jwplayer.html5.js</strong>). This means the full HTML5 player is not loaded if the Flash player (<strong>jwplayer.flash.swf</strong>) is selected, saving ~100kb of data transfer.</dd>
+<dt>Setup and media errors</dt>
+<dd>JW6 features a documented list of player setup and media playback errors. All errors are descriptive (no more "Error #2032") and clearly printed in the player space. See <a href="troubleshooting.html">Troubleshooting Your Setup</a> to identify and resolve an error.</dd>
+</dl>
+
+<h3>Removed or Descoped</h3>
+
+<dl>
+<dt>Embedding with <em>&lt;embed&gt;</em> or <em>SWFObject</em></dt>
+<dd>JW6 focuses on HTML5/mobile and on robust player-page interaction using the <a href="javascripting.html">Javascripting API</a>. Embedding only the SWF player is not supported anymore. If you rely heavily on SWF-only embedding, we suggest you continue using JW5 (which we support until JW7 launches).</dd>
+<dt>Embedding over a <em>&lt;video&gt;</em> tag</dt>
+<dd>JW6 supports many functionalities not supported by a &lt;video&gt; tag (e.g. Flash, RSS, YouTube, RTMP, VAST). Additionally, longer term promises of an inline &lt;video&gt; element (progressive enhancement, video SEO, accessibility) are not there yet. Therefore, JW6 does not support the enhancing of a video element yet.</dd>
+</dl>
+
+
+
+<h2>Configuration</h2>
+
+<h3>New or Enhanced</h3>
+
+<dl>
+<dt>The <em>primary</em> option instead of the <em>modes</em> block</dt>
+<dd>The <a href="browsers.html">Flash/HTML5 mode selection</a> in JW6 is greatly enhanced compared to JW5. Therefore, the <strong>modes</strong> configuration block is not needed anymore. Instead, you can simply set your preferred rendering mode with the <strong>primary</strong> option. JW Player will figure out which devices support which modes and formats.</dd>
+<dl>
+
+<h3>Removed or Descoped</h3>
+
+<dl>
+<dt>The <em>flashplayer</em> option</dt>
+<dd>In JW6, it is not possible (not needed) to specifically point to the location of <strong>jwplayer.flash.swf</strong>. Instead, JW6 presumes the file (and <strong>jwplayer.html5.js</strong>) is in the same location as the main <strong>jwplayer.js</strong> library.</dd>
+<dt>The <em>link</em> and <em>displayclick</em> options</dt>
+<dd>These options are removed to tighten up display UX and avoid XSS security issues. Publishers can still implement Call-To-Action features in JW6 using the <strong>logo</strong> block, or respond to display clicks using the <a href="script-reference.html">onDisplayClick</a> API call.</dd>
+<dt>The <em>config</em> XML options</dt>
+<dd>The removal of &lt;embed&gt; support also removed the need for external XML configurations. They can now be loaded as part of the player itself, e.g. using JSONp callbacks or an <strong>&lt;iframe&gt;</strong> tag.</dd>
+</dl>
+
+
+
+<h2>Playlists</h2>
+
+<h3>New or Enhanced</h3>
+
+<h3>Removed or Descoped</h3>
+
+<dl>
+<dt>Feeds in XSPF/ASX/ATOM format</dt>
+<dd>Media playback has standardized around Media RSS in recent years. In order to improve clarity around documentation and reduce the filesize of both Flash and HTML5 player, we removed support for other feed formats. Since mRSS supports any feature supported in another format, <a href="feeds.html">migrating to mRSS</a> is not a technical problem.</dd>
+</dl>
+
+
+
+<h2>Skinning</h2>
+
+<h3>New or Enhanced</h3>
+
+<dl>
+<dt>New default skin</dt>
+<dd>A much slicker and smoother default player skin replaces the (somewhat dated) design of JW5.</dd>
+<dt>Transition animations</dt>
+<dd>The skinning model is enhanced with subtle animations for e.g. button rollovers, controlbar hiding and media transitions. </dd>
+</dl>
+
+<h3>Removed or Descoped</h3>
+
+<dl>
+<dt>SWF skinning</dt>
+<dd>The <a href="skinning.html">PNG/XML skinning model</a> of JW5 is more flexible, less error-prone and working in HTML5 than the SWF skinning model of JW4. Therefore, SWF skinning has been removed altogether from JW6.</dd>
+</dl>
+
+
+<h2>Javascripting</h2>
+
+<h3>New or Enhanced</h3>
+
+<h3>Removed or Descoped</h3>
+
+
+
+<h2>Streaming</h2>
+
+<h3>New or Enhanced</h3>
+
+<dl>
+<dt>Support for multiple qualities</dt>
+<dd>Built-in support eases the setup of closed captions and multiple quality levels. Selecting a language or quality is done through sleek, new overlay menus. JavaScript APIs are available to interact with captions and levels.</dd>
+</dl>
+
+<h3>Removed or Descoped</h3>
+
+<dl>
+<dt>RTMP tunneling fallback</dt>
+<dd>Due to the diversity of RTMP setups (ports, firewalls, protocols), the automated RTMP tunneling feature in JW5 tended to create as many issues as it solved. Therefore, this is removed from JW6. Instead, we ensure <a href="script-reference.html"> the onError() event</a> is called when an RTMP server cannot be reached. Publishers can then fallback from RTMP in any way they wish using a few lines of JavaScript code.</dd>
+</dl>
+
+
+
+</body>
+</html>
