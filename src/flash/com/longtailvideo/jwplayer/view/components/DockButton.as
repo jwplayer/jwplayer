@@ -106,7 +106,9 @@ package com.longtailvideo.jwplayer.view.components {
 		/** When rolling over, update the button state **/
 		override protected function overHandler(evt:MouseEvent):void {
 			if (_active) return;
-			if (_label) {
+			// Using the parent's visibility as a proxy for whether the dock is visible
+			// TODO: Perhaps clean this up
+			if (_label && parent && parent.alpha > 0) {
 				positionTooltip();
 				_tooltip.show();	
 			}

@@ -128,8 +128,6 @@
 				if (!_inCB) {
 					_controlsTimeout = setTimeout(_fadeControls, _timeoutDuration);
 				}
-			} else if (_replayState && _model.controls) {
-				_showDock();
 			}
 		}
 		
@@ -393,7 +391,9 @@
 			if (_dock && !_audioMode) _dock.show();
 		}
 		function _hideDock() {
-			if (_dock && (!_forcedControls || _audioMode)) _dock.hide();
+			if (_dock && !(_replayState || _forcedControls)) {
+				_dock.hide();
+			}
 		}
 
 		function _showLogo() {
@@ -472,6 +472,9 @@
 
 		function _playlistCompleteHandler() {
 			_replayState = TRUE;
+			if (_model.controls) {
+				_showDock();
+			}
 		}
 
 		function _readyHandler(evt) {

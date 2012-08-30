@@ -149,8 +149,8 @@ package com.longtailvideo.jwplayer.view {
 			
 
 			_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_LOADED, mediaLoaded);
-			_model.playlist.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_ITEM, itemHandler);
-			_model.playlist.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_UPDATED, itemHandler);
+			_model.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_ITEM, itemHandler);
+			_model.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_COMPLETE, completeHandler);
 			_model.addEventListener(PlayerStateEvent.JWPLAYER_PLAYER_STATE, stateHandler);
 
 			layoutManager = new PlayerLayoutManager(_player);
@@ -648,7 +648,11 @@ package com.longtailvideo.jwplayer.view {
 			}
 		}
 
-
+		protected function completeHandler(evt:PlaylistEvent):void {
+			Logger.log("Playlist complete");
+			_components.dock.show();
+		}
+		
 		protected function forward(evt:Event):void {
 			if (evt is PlayerEvent)
 				dispatchEvent(evt);
@@ -719,8 +723,8 @@ package com.longtailvideo.jwplayer.view {
 		}
 		
 		private function hideControls():void {
-			_components.controlbar.hide();
 			_components.dock.hide();
+			_components.controlbar.hide();
 			_components.logo.hide();
 			(new Animations(_instreamLayer)).fade(0);
 		}
