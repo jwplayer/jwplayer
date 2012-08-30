@@ -216,7 +216,7 @@ package com.longtailvideo.jwplayer.view.components {
 			title.multiline = true;	
 			title.width = 335;
 			title.height = 20;
-			addElement(title, btn, img.width + imageOffset, 3);
+			addElement(title, btn, img.width + imageOffset, imgBG ? imgBG.x - 5 : 5);
 				
 			var descriptionTextFormat:TextFormat = new TextFormat();
 			descriptionTextFormat.size = fontSize;
@@ -230,11 +230,12 @@ package com.longtailvideo.jwplayer.view.components {
 			description.multiline = true;
 			description.width = 335;
 			description.height = back.height - 22;
+			descriptionTextFormat.leading = 6;
 			description.defaultTextFormat = descriptionTextFormat;
 			if(back.height <= 40) {
 				description.visible = false;
 			}
-			addElement(description, btn, img.width + imageOffset + 1, 22);
+			addElement(description, btn, img.width + imageOffset, 30);
 			
 			back.width = btn.width;
 			if (backOver) backOver.width = btn.width;
