@@ -259,14 +259,14 @@
 			var playlistSize = _model.playlistsize,
 				playlistPos = _model.playlistposition
 			
-			if (_playlist && playlistSize && playlistPos) {
+			if (_playlist && playlistSize && (playlistPos == "right" || playlistPos == "bottom")) {
 				_playlist.redraw();
 				
 				var playlistStyle = { display: "block" }, containerStyle = {};
 				playlistStyle[playlistPos] = 0;
 				containerStyle[playlistPos] = playlistSize;
 				
-				if (playlistPos == "left" || playlistPos == "right") {
+				if (playlistPos == "right") {
 					playlistStyle.width = playlistSize;
 				} else {
 					playlistStyle.height = playlistSize;

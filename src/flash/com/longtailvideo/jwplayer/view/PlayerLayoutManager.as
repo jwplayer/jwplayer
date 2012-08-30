@@ -7,9 +7,7 @@ package com.longtailvideo.jwplayer.view {
 
 	public class PlayerLayoutManager {
 
-		public static var LEFT:String = "left";  
 		public static var RIGHT:String = "right";  
-		public static var TOP:String = "top";  
 		public static var BOTTOM:String = "bottom";  
 		public static var NONE:String = "none";  
 	
@@ -60,7 +58,7 @@ package com.longtailvideo.jwplayer.view {
 				return 0;
 			}
 			
-			if (align == LEFT || align == RIGHT) {
+			if (align == RIGHT) {
 				return remainingSpace.width * Number(confSize) / 100;
 			} else {
 				return remainingSpace.height * Number(confSize) / 100;
@@ -80,37 +78,26 @@ package com.longtailvideo.jwplayer.view {
 		private function fitsLayout(config:PluginConfig):Boolean {
 			switch (testPosition(config['position'])) {
 				case BOTTOM:
-				case TOP:
-					var controlbarConfig:PluginConfig = _player.config.pluginConfig('controlbar');
-					if (config['id'] != "controlbar" && (testPosition(controlbarConfig['position']) == TOP || testPosition(controlbarConfig['position']) == BOTTOM)) {
-						return ((remainingSpace.height - pluginSize(controlbarConfig)) > pluginSize(config) > 0);
-					} else {
-						return (remainingSpace.height > pluginSize(config) > 0);
-					}
+					return (remainingSpace.height > pluginSize(config) > 0);
 					break;
-				case LEFT:
 				case RIGHT:
 					var playlistConfig:PluginConfig = _player.config.pluginConfig('playlist');
-					if (config['id'] != "playlist" && (testPosition(playlistConfig['position']) == LEFT || testPosition(playlistConfig['position']) == RIGHT)) {
+					if (config['id'] != "playlist" && testPosition(playlistConfig['position']) == RIGHT) {
 						return ((remainingSpace.width - pluginSize(playlistConfig)) > pluginSize(config) > 0);
 					} else {
 						return (remainingSpace.width > pluginSize(config) > 0);
 					}
 					break;
 			}
-			
 			return false;
-			
 		}
 
 		public static function testPosition(pos:String):String {
 			if (!pos) { return ""; }
 			
 			switch (pos.toLowerCase()) {
-				case LEFT:
-				case RIGHT:
-				case TOP:
 				case BOTTOM:
+				case RIGHT:
 					return pos.toLowerCase();
 					break;
 				default:
@@ -136,14 +123,14 @@ package com.longtailvideo.jwplayer.view {
 			
 			if (fitsLayout(config)) {
 				switch (testPosition(config['position'])) {
-					case LEFT:
-						pluginSpace.x = remainingSpace.x;
-						pluginSpace.y = remainingSpace.y;
-						pluginSpace.width = size;
-						pluginSpace.height = remainingSpace.height;
-						remainingSpace.width -= size;
-						remainingSpace.x += size;
-						break;
+//					case LEFT:
+//						pluginSpace.x = remainingSpace.x;
+//						pluginSpace.y = remainingSpace.y;
+//						pluginSpace.width = size;
+//						pluginSpace.height = remainingSpace.height;
+//						remainingSpace.width -= size;
+//						remainingSpace.x += size;
+//						break;
 					case RIGHT:
 						pluginSpace.x = remainingSpace.x + remainingSpace.width - size;
 						pluginSpace.y = remainingSpace.y;
@@ -151,14 +138,14 @@ package com.longtailvideo.jwplayer.view {
 						pluginSpace.height = remainingSpace.height;
 						remainingSpace.width -= size;
 						break;
-					case TOP:
-						pluginSpace.x = remainingSpace.x;
-						pluginSpace.y = remainingSpace.y;
-						pluginSpace.width = remainingSpace.width;
-						pluginSpace.height = size;
-						remainingSpace.height -= size;
-						remainingSpace.y += size;
-						break;
+//					case TOP:
+//						pluginSpace.x = remainingSpace.x;
+//						pluginSpace.y = remainingSpace.y;
+//						pluginSpace.width = remainingSpace.width;
+//						pluginSpace.height = size;
+//						remainingSpace.height -= size;
+//						remainingSpace.y += size;
+//						break;
 					case BOTTOM:
 						pluginSpace.x = remainingSpace.x;
 						pluginSpace.y = remainingSpace.y + remainingSpace.height - size;

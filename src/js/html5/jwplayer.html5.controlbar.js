@@ -189,11 +189,13 @@
 				// Slider listeners
 				WINDOW.addEventListener('mousemove', _sliderMouseEvent, FALSE);
 				WINDOW.addEventListener('mouseup', _sliderMouseEvent, FALSE);
+				WINDOW.addEventListener('mousedown', _killSelect, FALSE);
 			}, false);
 			_controlbar.addEventListener('mouseout', function(){
 				// Slider listeners
 				WINDOW.removeEventListener('mousemove', _sliderMouseEvent);
 				WINDOW.removeEventListener('mouseup', _sliderMouseEvent);
+				WINDOW.removeEventListener('mousedown', _killSelect);
 			}, false);
 		}
 		
@@ -730,6 +732,11 @@
 			return (currentState == states.IDLE); 
 		}
 
+		function _killSelect(evt) {
+			evt.preventDefault();
+			DOCUMENT.onselectstart = function () { return FALSE; };
+		}
+
 		function _sliderMouseDown(name) {
 			return (function(evt) {
 				if (evt.button != 0)
@@ -745,10 +752,13 @@
 				} else {
 					_dragging = name;
 				}
+				
 			});
 		}
+
 		
 		function _sliderMouseEvent(evt) {
+			
 			var currentTime = (new Date()).getTime();
 			
 			if (currentTime - _lastTooltipPositionTime > 50) {
@@ -763,7 +773,7 @@
 			var rail = _elements[_dragging].getElementsByClassName('jwrail')[0],
 				railRect = utils.bounds(rail),
 				name = _dragging,
-				pct = _elements[name].vertical ? (railRect.bottom - evt.clientY) / railRect.height : (evt.clientX - railRect.left) / railRect.width;
+				pct = _elements[name].vertical ? (railRect.bottom - evt.pageY) / railRect.height : (evt.pageX - railRect.left) / railRect.width;
 			
 			if (evt.type == 'mouseup') {
 				if (name == "time") {
@@ -773,6 +783,8 @@
 				_elements[name+'Rail'].className = "jwrail jwsmooth";
 				_dragging = NULL;
 				_sliderMapping[name](pct);
+				DOCUMENT.onselectstart = null;
+
 			} else {
 				if (_dragging == "time") {
 					_setProgress(pct);
@@ -784,6 +796,7 @@
 					_sliderMapping[_dragging](pct);
 				}
 			}
+			return false;
 		}
 
 		function _showTimeTooltip(evt) {

@@ -179,7 +179,7 @@
 	        	display: "inline-block",
 	        	width: JW_CSS_100PCT,
 	        	color: _settings.titlecolor,
-	        	'margin-top': imgPos,
+	        	'margin-top': imgPos ? imgPos : 7,
 	        	'line-height': 13,
 		    	'font-size': _settings.titlesize,
 	        	'font-weight': _settings.titleweight
