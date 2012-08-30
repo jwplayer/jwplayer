@@ -99,7 +99,7 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _removedButtons:Array = [];
 		protected var _dividers:Array;
 		protected var _dividerElements:Object;
-		protected var _defaultLayout:String = "[play|prev next|elapsed][time][duration|hdOn ccOn|mute volume|fullscreen]";
+		protected var _defaultLayout:String = "[play|prev next|elapsed][time][duration|hd cc|mute volume|fullscreen]";
 		protected var _currentLayout:String;
 		protected var _layoutManager:ControlbarLayoutManager;
 		protected var _width:Number;
@@ -107,7 +107,6 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _timeSlider:Slider;
 		protected var _volSlider:Slider;
 		protected var _audioMode:Boolean = false;
-		protected var _hdState:Boolean = false;
 		protected var _levels:Array;
 		protected var _currentQuality:Number = 0;
 		protected var _hdOverlay:TooltipMenu;
@@ -283,16 +282,8 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 			
 			if (!_levels || _levels.length < 2) {
-				newLayout = newLayout.replace(/\|?(hdOn|hdOff)/g, "");
-				hideButton('hdOn');
-				hideButton('hdOff');
-			} else {
-				if (_hdState) {
-					hideButton('hdOff');
-				} else {
-					newLayout = newLayout.replace("hdOn", "hdOff");
-					hideButton('hfOn');
-				}
+				newLayout = newLayout.replace(/\|?hd/g, "");
+				hideButton('hd');
 			}
 			_currentLayout = removeInactive(newLayout);
 		}
@@ -425,8 +416,7 @@ package com.longtailvideo.jwplayer.view.components {
 			addComponentButton('prev', ViewEvent.JWPLAYER_VIEW_PREV);
 			addComponentButton('next', ViewEvent.JWPLAYER_VIEW_NEXT);
 			addComponentButton('stop', ViewEvent.JWPLAYER_VIEW_STOP);
-			addComponentButton('hdOn', null);
-			addComponentButton('hdOff', null);
+			addComponentButton('hd', null);
 			addComponentButton('fullscreen', ViewEvent.JWPLAYER_VIEW_FULLSCREEN, true);
 			addComponentButton('normalscreen', ViewEvent.JWPLAYER_VIEW_FULLSCREEN, false);
 			addComponentButton('unmute', ViewEvent.JWPLAYER_VIEW_MUTE, false);
@@ -437,17 +427,8 @@ package com.longtailvideo.jwplayer.view.components {
 			_timeSlider = getSlider('time');
 			addSlider('volume', ViewEvent.JWPLAYER_VIEW_CLICK, volumeHandler);
 			_volSlider = getSlider('volume');
-			if (_buttons.hdOn) {
-				_buttons.hdOn.addEventListener(MouseEvent.MOUSE_OVER, showHdOverlay);
-				_buttons.hdOn.addEventListener(MouseEvent.CLICK, hdHandler)
-					
-				if (_buttons.hdOff) {
-					_buttons.hdOff.addEventListener(MouseEvent.MOUSE_OVER, showHdOverlay);
-					_buttons.hdOff.addEventListener(MouseEvent.CLICK, hdHandler);
-				}
-				else _buttons.hdOff = _buttons.hdOn;
-				hideButton('hdOn');
-				hideButton('hdOff');
+			if (_buttons.hd) {
+				_buttons.hd.addEventListener(MouseEvent.MOUSE_OVER, showHdOverlay);
 			}
 			if (_buttons.mute && _volSlider && volumeVertical) {
 				_buttons.mute.addEventListener(MouseEvent.MOUSE_OVER, showVolumeOverlay);
@@ -457,8 +438,10 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 			if (_buttons.fullscreen) {
 				_buttons.fullscreen.addEventListener(MouseEvent.MOUSE_OVER, showFullscreenOverlay);
+				_buttons.fullscreen.addEventListener(MouseEvent.CLICK, hideFullscreenOverlay);
 				if (_buttons.normalscreen) {
 					_buttons.normalscreen.addEventListener(MouseEvent.MOUSE_OVER, showFullscreenOverlay);
+					_buttons.normalscreen.addEventListener(MouseEvent.CLICK, hideFullscreenOverlay);
 				}
 
 			}
@@ -467,7 +450,7 @@ package com.longtailvideo.jwplayer.view.components {
 		private function setupOverlays():void {
 			_hdOverlay = new TooltipMenu('HD', _player.skin, hdOption);
 			_hdOverlay.name = "hdOverlay";
-			createOverlay(_hdOverlay, _buttons.hdOn);
+			createOverlay(_hdOverlay, _buttons.hd);
 
 			if (_volSlider) {
 				_volumeOverlay = new TooltipOverlay(_player.skin);
@@ -502,7 +485,7 @@ package com.longtailvideo.jwplayer.view.components {
 
 		private function showHdOverlay(evt:MouseEvent):void {
 			if (_audioMode) return;
-			if (_hdOverlay && _levels && _levels.length > 2) _hdOverlay.show();
+			if (_hdOverlay && _levels && _levels.length > 1) _hdOverlay.show();
 			hideVolumeOverlay();
 			hideFullscreenOverlay();
 		}
@@ -510,12 +493,6 @@ package com.longtailvideo.jwplayer.view.components {
 		private function hideHdOverlay(evt:MouseEvent=null):void {
 			if (_hdOverlay && !evt) {
 				_hdOverlay.hide();
-			}
-		}
-
- 		private function hdHandler(evt:Event=null):void {
-			if (_levels && _levels.length == 2) {
-				_player.setCurrentQuality(_currentQuality == 1 ? 0 : 1);
 			}
 		}
 
@@ -528,42 +505,28 @@ package com.longtailvideo.jwplayer.view.components {
 				}
 			}
 			levelChanged(evt);
-			redraw();
 		}
 
 		private function levelChanged(evt:MediaEvent):void {
 			_currentQuality = evt.currentQuality;
-			if (_levels.length == 2) {
-				_hdState = (_currentQuality > 0);
-			} else if (_levels.length > 2) {
-				_hdState = true;
+			if (_levels.length > 1) {
 				_hdOverlay.setActive(evt.currentQuality);
 			}
 			updateControlbarState();
 			redraw();
 		}
 		
-		private function get hd():Boolean {
-			if (_levels && _levels.length > 1) {
-				if (_levels.length == 2)
-					return (_currentQuality == 1);
-				return true;
-			}
-			return false;
-		}
-
 		private function addComponentButton(name:String, event:String, eventData:*=null):void {
 			var button:ComponentButton = new ComponentButton();
 			button.name = name;
 			button.setOutIcon(getSkinElement(name + "Button"));
 			button.setOverIcon(getSkinElement(name + "ButtonOver"));
-			button.setBackground(getSkinElement(name + "ButtonBack"));
 			button.clickFunction = function():void {
 				if (event) {
 					forward(new ViewEvent(event, eventData));
 				}
 			}
-			if (getSkinElement(name + "Button") || getSkinElement(name + "ButtonOver") || getSkinElement(name + "ButtonBack")) {
+			if (getSkinElement(name + "Button") || getSkinElement(name + "ButtonOver")) {
 				button.init();
 				addButtonDisplayObject(button, name);
 			}
@@ -631,7 +594,7 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 		
 		private function hideFullscreenOverlay(evt:MouseEvent=null):void {
-			if (_fullscreenOverlay && !evt) {
+			if (_fullscreenOverlay) {
 				_fullscreenOverlay.hide();
 			}
 		}
@@ -823,13 +786,10 @@ package com.longtailvideo.jwplayer.view.components {
 			alignTextFields();
 			_layoutManager.resize(_width, _height);
 
-			positionOverlay(_hdOverlay, hd ? getButton('hdOn') : getButton('hdOff'));
+			positionOverlay(_hdOverlay, getButton('hd'));
 			positionOverlay(_volumeOverlay, player.config.mute ? getButton('unmute') : getButton('mute'));
 			positionOverlay(_fullscreenOverlay, player.config.fullscreen ? getButton('normalscreen') : getButton('fullscreen'));
 			
-			if (_audioMode) {
-				//stopFader();
-			}
 		}
 
 
@@ -837,11 +797,12 @@ package com.longtailvideo.jwplayer.view.components {
 			if (button && overlay) {
 				RootReference.stage.setChildIndex(overlay, RootReference.stage.numChildren-1);
 				var buttonPosition:Point = button.localToGlobal(new Point(button.width / 2, 0)); 
-				var overlayBounds:Rectangle = overlay.getBounds(RootReference.root);
 				var cbBounds:Rectangle = this.getBounds(RootReference.root);
 
 				overlay.x = buttonPosition.x;
 				overlay.y = cbBounds.y;
+
+				var overlayBounds:Rectangle = overlay.getBounds(RootReference.root);
 				
 				if (overlayBounds.right >= cbBounds.right) {
 					overlay.offsetX -= cbBounds.right - overlayBounds.right;

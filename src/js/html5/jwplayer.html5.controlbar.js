@@ -76,8 +76,8 @@
 						elements: [ 
 						    _layoutElement("duration", CB_TEXT), 
 						    _dividerElement,
-						    _layoutElement("hdOn", CB_BUTTON), 
-						    //_layoutElement("ccOn", CB_BUTTON), 
+						    _layoutElement("hd", CB_BUTTON), 
+						    //_layoutElement("cc", CB_BUTTON), 
 						    _dividerElement,
 						    _layoutElement("mute", CB_BUTTON), 
 						    _layoutElement("volume", CB_SLIDER), 
@@ -117,17 +117,13 @@
 			_toggles = {
 				play: "pause",
 				mute: "unmute",
-				fullscreen: "normalscreen",
-				hdOn: "hdOff",
-				ccOn: "ccOff"
+				fullscreen: "normalscreen"
 			},
 			
 			_toggleStates = {
 				play: FALSE,
 				mute: FALSE,
-				fullscreen: FALSE,
-				hdOn: FALSE,
-				ccOn: FALSE
+				fullscreen: FALSE
 			},
 			
 			_buttonMapping = {
@@ -135,9 +131,7 @@
 				mute: _mute,
 				fullscreen: _fullscreen,
 				next: _next,
-				prev: _prev,
-				hdOn: _hd,
-				ccOn: _cc
+				prev: _prev
 			},
 			
 			
@@ -287,32 +281,28 @@
 				_css(_internalSelector(".jwprev"), not_hidden);
 				_css(_internalSelector(".nextdiv"), not_hidden);
 			}
-			_css(_internalSelector(".jwhdOn"), hidden);
-			_css(_internalSelector(".jwhdOff"), hidden);
+			_css(_internalSelector(".jwhd"), hidden);
 			_redraw();
 		}
 		
 		function _qualityHandler(evt) {
 			_levels = evt.levels;
 			if (_levels && _levels.length > 1 && _hdOverlay) {
-				_css(_internalSelector(".jwhdOn"), { display: UNDEFINED });
+				_css(_internalSelector(".jwhd"), { display: UNDEFINED });
 				_hdOverlay.clearOptions();
 				for (var i=0; i<_levels.length; i++) {
 					_hdOverlay.addOption(_levels[i].label, i);
 				}
 				_qualityLevelChanged(evt);
 			} else {
-				_css(_internalSelector(".jwhdOn"), { display: "none" });
+				_css(_internalSelector(".jwhd"), { display: "none" });
 			}
 			_redraw();
 		}
 		
 		function _qualityLevelChanged(evt) {
 			_currentQuality = evt.currentQuality;
-			if (_levels.length == 2) {
-				_toggleButton("hdOn", _currentQuality == 0);
-			} else if (_hdOverlay && _currentQuality >= 0) {
-				_toggleButton("hdOn", false);
+			if (_hdOverlay && _currentQuality >= 0) {
 				_hdOverlay.setActive(evt.currentQuality);
 			}
 		}
@@ -600,15 +590,9 @@
 		}
 		
 		function _showHd() {
-			if (_levels && _levels.length > 2) {
+			if (_levels && _levels.length > 1) {
 				_hdOverlay.show();
 				_hideOverlays('hd');
-			}
-		}
-		
-		function _hd() {
-			if (_levels && _levels.length == 2) {
-				_api.jwSetCurrentQuality(_currentQuality ? 0 : 1);
 			}
 		}
 		
@@ -620,7 +604,7 @@
 		}
 		
 		function _cc() {
-			_toggleButton("ccOn");
+			_toggleButton("cc");
 		}
 		
 		function _buildSlider(name) {
@@ -872,9 +856,9 @@
 		}
 
 		function _buildOverlays() {
-			if (_elements.hdOn) {
+			if (_elements.hd) {
 				_hdOverlay = new html5.menu('hd', _id+"_hd", _skin, _switchLevel);
-				_addOverlay(_hdOverlay, _elements.hdOn, _showHd);
+				_addOverlay(_hdOverlay, _elements.hd, _showHd);
 				_overlays.hd = _hdOverlay;
 			}
 			if (_elements.mute && _elements.volume && _elements.volume.vertical) {
@@ -948,15 +932,16 @@
 					width: max ? JW_CSS_100PCT : UNDEFINED
 				});
 			
-				
-				var newBounds = utils.bounds(_controlbar);
-				if (!_cbBounds || newBounds.width != _cbBounds.width) {
-					_cbBounds = newBounds;
-					if (_cbBounds.width > 0) {
-						_railBounds = utils.bounds(_timeRail);
+				setTimeout(function() {
+					var newBounds = utils.bounds(_controlbar);
+					if (!_cbBounds || newBounds.width != _cbBounds.width) {
+						_cbBounds = newBounds;
+						if (_cbBounds.width > 0) {
+							_railBounds = utils.bounds(_timeRail);
+						}
 					}
-				}
-				_positionOverlays();
+					_positionOverlays();
+				}, 0);
 			}, 0);
 		}
 		
@@ -980,8 +965,8 @@
 			if (mode != _audioMode) {
 				_audioMode = mode;
 				_css(_internalSelector(".jwfullscreen"), { display: mode ? JW_CSS_NONE : UNDEFINED });
-				_css(_internalSelector(".jwhdOn"), { display: mode ? JW_CSS_NONE : UNDEFINED });
-				_css(_internalSelector(".jwccOn"), { display: mode ? JW_CSS_NONE : UNDEFINED });
+				_css(_internalSelector(".jwhd"), { display: mode ? JW_CSS_NONE : UNDEFINED });
+				_css(_internalSelector(".jwcc"), { display: mode ? JW_CSS_NONE : UNDEFINED });
 				_redraw();
 			}
 		}
