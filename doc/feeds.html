@@ -112,15 +112,15 @@ jwplayer("myElement").setup({
 <p>See <a href="media.html">Supported Media Formats</a> to find out which mimetypes should be used for which media formats.</p>
 
 
-<h2>Multiple Elements</h2>
+<h2>Multiple Sources</h2>
 
-<p>Having multiple <em>media:content</em> elements per RSS item is allowed, so the multi-format and multi-quality options of JW Player can be achieved with RSS as well. Here's an example feed with one item that has an SD + HD quality video:</p>
+<p>Having multiple <em>media:content</em> elements per RSS item is allowed, so the multi-format and multi-quality options of JW Player can be achieved with RSS as well. Here's an example feed with one item that has MP4 and WebM videos in two qualities:</p>
 
 <pre>
 &lt;rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/" &gt; 
-  &lt;channel&gt; 
-    &lt;title&gt;Example RSS Playlist&lt;/title&gt; 
-    &lt;item&gt; 
+  &lt;channel&gt;
+
+    &lt;item&gt;
       &lt;title&gt;Sintel&lt;/title&gt;
       &lt;description&gt;Sintel is a fantasy computer generated short movie. It's the third 
          release from the Blender Open Movie Project.&lt;/description&gt;
@@ -128,8 +128,13 @@ jwplayer("myElement").setup({
       &lt;media:content url="http://example.com/videos/sintel.mp4" 
          height="360" type="video/mp4" width="640" /&gt;
       &lt;media:content url="http://example.com/videos/sintel-hd.mp4" 
-         height="720" type="video/mp4" width="1280" /&gt; 
+         height="720" type="video/mp4" width="1280" /&gt;
+      &lt;media:content url="http://example.com/videos/sintel.webm" 
+         height="360" type="video/webm" width="640" /&gt;
+      &lt;media:content url="http://example.com/videos/sintel-hd.webm" 
+         height="720" type="video/webm" width="1280" /&gt; 
     &lt;/item&gt;
+
   &lt;/channel&gt;
 &lt;/rss&gt;
 </pre>

@@ -72,7 +72,7 @@ Fired every time when a playlist item completes playback. It has no event attrib
 </dd><dt>onPlaylistComplete(<em>callback</em>)</dt><dd>
 Fired when the player is done playing all items in the playlist. However, if the <strong>repeat</strong> option is set <em>true</em>, this is never fired.</dd></dl>
 
-<!--
+
 <h2><a name="buffering"></a>Buffering</h2>
 
 <p>These API calls are used to update clients with the percentage of a file that's buffered into the player. This only applies to progressive downloads of media; streaming media do not expose this behavior.</p>
@@ -85,7 +85,6 @@ Returns the current PlaylistItem's filled buffer, as a percentage (0 to 100) of 
 Fired when the currently playing item loads additional data into its buffer. Event attributes:
 <ul><li><strong>buffer</strong> (Number): Percentage between 0 and 100 of the current media that is buffered.
 </li></ul></dd></dl>
--->
 
 
 <h2><a name="playback"></a>Playback</h2>
@@ -109,7 +108,10 @@ Toggles playback of the player. If the state is set <strong>true</strong> the pl
 Stops the player (returning it to the IDLE state) and unloads the currently playing media file.
 </dd></dl>
 
-<dl><dt>onPlay(<em>callback</em>)</dt><dd>
+
+<dl><dt>onBeforePlay(<em>callback</em>)</dt><dd>
+Fired just before the player begins playing. Unlike the onPlay event, the player will not have begun playing or buffering when triggered. This event can be used to prevent playback by calling <strong>stop()</strong>.
+</dd><dt>onPlay(<em>callback</em>)</dt><dd>
 Fired when the player enters the PLAYING state. Event attributes:
 <ul><li><strong>oldstate</strong> (String): the state the player moved from. Can be BUFFERING or PAUSED.
 </li></ul></dd><dt>onPause(<em>callback</em>)</dt><dd>
@@ -227,7 +229,7 @@ Fired when the active quality level is changed. Happens in respons to e.g. a use
 <ul><li><strong>currentQuality</strong> (Number): index of the new quality level in the <em>getQualityLevels()</em>  array.
 </li></ul></dd></dl>
 
-
+<!--
 <h2><a name="captions"></a>Captions</h2>
 
 <p>These API calls are used to listen to or update the currently active captions track, if captions (subtitles) are provided:</p>
@@ -249,7 +251,7 @@ Fired when the list of available captions tracks is updated. Happens e.g. shortl
 Fired when the active captions track is changed. Happens in respons to e.g. a user clicking the controlbar captions menu or a script calling <strong>setCurrentCaptions</strong>. Event attributes:
 <ul><li><strong>currentCaption</strong> (Number): index of the new captions track in the <strong>getCaptionsTracks()</strong> array.
 </li></ul></dd></dl>
-
+-->
 
 
 <h2><a name="button"></a>Button</h2>
@@ -298,7 +300,7 @@ Fired when new metadata has been broadcasted by the player. Event attributes:
 <p>This API call allows developers to listen for and react to clicks on the video display.</p>
 
 <dl><dt>onDisplayClick(<em>callback</em>)</dt><dd>
-Fired when a user clicks the video display (not the controls). There are no event attributes.
+Fired when a user clicks the video display (not the controls). The default action (play/pause toggle) will still execute. There are no event attributes.
 </li></ul></dd></dl>
 
 
