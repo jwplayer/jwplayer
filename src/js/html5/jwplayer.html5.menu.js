@@ -54,6 +54,7 @@
 					color: _settings.fontcolor,
 					'padding-left': menuOption.width,
 					font: _settings.fontweight + " " + _settings.fontsize + "px Arial,Helvetica,sans-serif",
+					'line-height': menuOption.height,
 					'text-transform': (_settings.fontcase == "upper") ? "uppercase" : UNDEFINED 
 				});
 				_css(selector+":hover", {

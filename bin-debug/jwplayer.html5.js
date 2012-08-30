@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2434';
+	jwplayer.html5.version = '6.0.2435';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -3674,6 +3674,7 @@
 					color: _settings.fontcolor,
 					'padding-left': menuOption.width,
 					font: _settings.fontweight + " " + _settings.fontsize + "px Arial,Helvetica,sans-serif",
+					'line-height': menuOption.height,
 					'text-transform': (_settings.fontcase == "upper") ? "uppercase" : UNDEFINED 
 				});
 				_css(selector+":hover", {
