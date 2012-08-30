@@ -63,8 +63,6 @@
 <dd>For JW6, we took the effort to clearly define all <a href="browsers.html">supported browsers &amp; devices</a>, including their supported rendering modes. JW6 officially supports the Chrome/Firefox/Internet Explorer/Safari browsers and iOS/Android mobile devices.</dd>
 <dt>Defaulting to HTML5</dt>
 <dd>JW6 automatically detects if a device supports Flash and HTML5. It also detects if the embedded media format can be played back in Flash or HTML5. If both are possible, JW6 defaults to HTML5, but you can override this using the <strong>primary</strong> configuration option.</dd>
-<dt>HTML5 Fullscreen Support</dt>
-<dd>JW6 supports true fullscreen playback in HTML5 mode using the <a href="http://www.longtailvideo.com/blog/26517/using-the-browsers-new-html5-fullscreen-capabilities">HTML5 Fullscreen API</a>. This is supported in Firefox, Chrome and Safari today.</dd>
 <dt>Download fallback</dt>
 <dd>If a device supports neither Flash nor HTML5, JW6 can render a so-called download fallback: a nicely formatted download link to the media that is picked up by a built-in media player. This works great on e.g. Blackberry or Android 2.2 or older. We <a href="browsers.html">clearly defined</a> which formats this fallback applies to, plus added an option to disable it.</dd>
 </dl>
@@ -240,7 +238,7 @@
 <dt>Manual quality switching</dt>
 <dd>For every media format, there's now the ability to set multiple quality levels. Viewers can select their preferred quality through a controlbar tooltip menu. For RTMP and YouTube, JW6 includes an <strong>auto</strong> quality level. When enabled, the optimal quality is automatically selected based upon bandwidth and screen size.</dd>
 <dt>HTTP pseudo-streaming</dt>
-<dd>Since HTML5 is the default rendering mode for JW6, the ability to seek to not-yet-downloaded parts of a video now works on most browsers. <a href="pseudostreaming.html">HTTP pseudo-streaming for Flash</a> is now set with a single, global option. It supports the new manual quality switching options, but will not automatically switch anymore.</dd>
+<dd>Since HTML5 is the default rendering mode for JW6, the ability to seek to not-yet-downloaded parts of a video now works on most browsers. <a href="pseudo.html">HTTP pseudo-streaming for Flash</a> is now set with a single, global option. It supports the new manual quality switching options, but will not automatically switch anymore.</dd>
 <dt>Loading single RTMP URLs</dt>
 <dd>JW6 support loading of a <a href="rtmp.html">single RTMP URL</a> in addition to a separate file/streamer setup. This eases RTMP setups and makes RTMP compatible with multi-format loading using both <a href="playlists.html">inline playlists</a> and <a href="feeds.html">RSS feeds</a> (e.g. RTMP+MP4).</dd>
 <dt>RTMP SMIL manifests for dynamic streaming</dt>
