@@ -24,6 +24,7 @@
 		SLIDER_THUMBBOTTOM_CLASS = 'jwthumbbottom',
 	
 		DOCUMENT = document,
+		WINDOW = window,
 		UNDEFINED = undefined,
 	
 		/** Some CSS constants we should use for minimization **/
@@ -75,8 +76,6 @@
 			
 			_wrapper.addEventListener('mousedown', _startDrag, false);
 			_wrapper.addEventListener('click', _moveThumb, false);
-			window.addEventListener('mousemove', _moveThumb, false);
-			window.addEventListener('mouseup', _endDrag, false);
 			
 			_populateSkinElements();
 			
@@ -170,7 +169,7 @@
 
 		function _scrollHandler(evt) {
 			if (!_visible) return;
-			evt = evt ? evt : window.event;
+			evt = evt ? evt : WINDOW.event;
 			var wheelData = evt.detail ? evt.detail * -1 : evt.wheelDelta / 40;
 			_setThumbPosition(_thumbPercent - wheelData / 10);
 			  
@@ -211,6 +210,9 @@
 
 		function _startDrag(evt) {
 			if (evt.button == 0) _dragging = true;
+			DOCUMENT.onselectstart = function() { return false; }; 
+			WINDOW.addEventListener('mousemove', _moveThumb, false);
+			WINDOW.addEventListener('mouseup', _endDrag, false);
 		}
 		
 		function _moveThumb(evt) {
@@ -218,7 +220,7 @@
 				var railRect = utils.bounds(_rail),
 					rangeTop = _thumb.clientHeight / 2,
 					rangeBottom = railRect.height - rangeTop,
-					y = evt.clientY - railRect.top,
+					y = evt.pageY - railRect.top,
 					pct = (y - rangeTop) / (rangeBottom - rangeTop);
 				_setThumbPosition(pct);
 			}
@@ -238,6 +240,9 @@
 		
 		function _endDrag() {
 			_dragging = false;
+			WINDOW.removeEventListener('mousemove', _moveThumb);
+			WINDOW.removeEventListener('mouseup', _endDrag);
+			DOCUMENT.onselectstart = UNDEFINED; 
 			clearTimeout(_dragTimeout);
 			clearInterval(_dragInterval);
 		}

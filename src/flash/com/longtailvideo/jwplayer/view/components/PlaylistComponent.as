@@ -229,7 +229,7 @@ package com.longtailvideo.jwplayer.view.components {
 			description.wordWrap = true;
 			description.multiline = true;
 			description.width = 335;
-			description.height = back.height - 22;
+			description.height = Math.max(0, back.height - 30);
 			descriptionTextFormat.leading = 6;
 			description.defaultTextFormat = descriptionTextFormat;
 			if(back.height <= 40) {
