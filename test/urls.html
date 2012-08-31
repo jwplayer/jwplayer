@@ -18,9 +18,9 @@
 
 <script type="text/javascript">
     jwplayer("video_relative").setup({
-        file: 'files/video.mp4',
-     	image: 'files/preview.jpg',
-     	primary:primaryCookie
+        file: 'assets/barsandtone.mp4',
+     	image: 'assets/barsandtone.jpg',
+     	primary: primaryCookie
     });
 </script>
 
@@ -49,8 +49,8 @@
 	var absolute_path = server_path.join("/");
 
     jwplayer("video_absolute").setup({
-        file: absolute_path + '/files/video.mp4',
-     	image: absolute_path + '/files/preview.jpg',
+        file: absolute_path + '/assets/barsandtone.mp4',
+     	image: absolute_path + '/assets/barsandtone.jpg',
      	primary:primaryCookie
     });
 </script>
@@ -128,7 +128,7 @@
 
 <script type="text/javascript">
     jwplayer("rss_relative").setup({
-        playlist: "files/mrss.xml",
+        playlist: "assets/mrss.xml",
      	primary:primaryCookie
     });
 </script>
@@ -153,7 +153,7 @@
 
 <script type="text/javascript">
     jwplayer("rss_absolute_flash").setup({
-        playlist: absolute_path + "/files/mrss.xml",
+        playlist: absolute_path + "/assets/mrss.xml",
      	primary:primaryCookie
     });
 </script>
@@ -178,7 +178,7 @@
 
 <script type="text/javascript">
     jwplayer("rss_params").setup({
-        playlist: "files/mrss.xml?foo=bar.xml",
+        playlist: "assets/mrss.xml?foo=bar.xml",
      	primary:primaryCookie
     });
 </script>
@@ -203,7 +203,7 @@
 
 <script type="text/javascript">
     jwplayer("rss_hash").setup({
-        playlist: "files/mrss.xml#foo",
+        playlist: "assets/mrss.xml#foo",
      	primary:primaryCookie
     });
 </script>
