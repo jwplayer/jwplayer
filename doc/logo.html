@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-<title>Displaying Your Logo</title>
+<title>Displaying a Logo</title>
 <style>
     body { padding: 50px 100px; width: 700px; font: 13px/20px Arial; background: #FFF; }
     a, h1, h2 { color: #369; }
@@ -20,11 +20,9 @@
 </style>
 </head><body>
 
-<h1>Displaying Your Logo</h1>
+<h1>Displaying a Logo</h1>
 
-<h2 style="color:red">Note: not yet implemented in this beta!</h2>
-
-<p>The Free version of JW Player contains a small logo in the top right corner of the display. In the Pro version, this logo is gone. Instead, publishers are able to set their own logo, e.g. to add some branding or to implement a Call-to-Action. This guide explains how to do so.</p>
+<p>The Free edition of JW Player contains a small logo in the top right corner of the display. In the other editions, this logo is disabled. Instead, publishers are able to set their own logo, e.g. to add some branding or to implement a Call-to-Action. This guide explains how to do so.</p>
 
 
 <h2>Configuration Options</h2>
@@ -41,10 +39,10 @@
 <dt>margin</dt>
 <dd>The distance of the logo from the edges of the display. The default is <strong>8</strong> pixels.</dd>
 <dt>position</dt>
-<dd>This sets the corner in which to display the watermark. It can be <strong>top-right</strong> (the default), <strong>top-left</strong>, <strong>bottom-right</strong> or <strong>bottom-left</strong>. Note the default position is preferred, since the logo won't interfere with the controlbar, captions, overlay ads and sharing/related buttons.</dd>
+<dd>This sets the corner in which to display the watermark. It can be <strong>top-right</strong> (the default), <strong>top-left</strong>, <strong>bottom-right</strong> or <strong>bottom-left</strong>. Note the default position is preferred, since the logo won't interfere with the controlbar, captions, overlay ads and dock buttons.</dd>
 </dl>
 
-<h2>Example Embeds</h2>
+<h2>Example Setups</h2>
 
 <p>Here is an example configuration that sets a channel logo that's always visible on top of the video:</p>
 
@@ -60,6 +58,8 @@ jwplayer("myElement").setup({
     width: 640
 });
 </pre>
+
+<h3>Call-to-action</h3>
 
 <p>Here is another example configuration, this time implementing a call-to-action that asks viewers to register for a service:</p>
 
@@ -78,11 +78,6 @@ jwplayer("myElement").setup({
 
 <p>See <a href="embedding.html">Embedding the Player</a> for more info on configuring player embeds.</p>
 
-
-
-<h2>Pro Only</h2>
-
-<p>Again, note the logo options are only available to Pro players! Please <a href="http://www.longtailvideo.com/order/">purchase the Pro player</a> if you are still on the Free version but want to set your own logo.</p>
 
 </body>
 </html>

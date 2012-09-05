@@ -130,9 +130,8 @@ YouTube videos. This possible through built-in support for the <a href="https://
 
 <ul>
 <li>If no poster image is provided, JW Player will automatically load a poster image from YouTube.</li>
-<li>YouTube videos are mostly available in multiple qualities, which means the JW Player's quality selector is automatically displayed in the controlbar.</li>
-<li>YouTube may place ads over the video during playback. These ads can not be disabled. Neither can the YouTube logo in the bottom right corner be removed.</li>
-<li>If the owner of a YouTube video has disabled it for embedding on 3rd party sites, JW Player cannot play the video. An error message is then displayed.</li>
+<li>YouTube videos are mostly available in multiple qualities, which means a quality selector is automatically displayed in the controlbar.</li>
+<li>YouTube may place ads over the video during playback. These ads can not be disabled. Neither can the YouTube logo in the bottom right corner.</li>
 </ul>
 
 
@@ -142,32 +141,34 @@ YouTube videos. This possible through built-in support for the <a href="https://
 
 <ul>
 <li>Adobe's <a href="http://en.wikipedia.org/wiki/Real_Time_Messaging_Protocol">RTMP</a> protocol, using either a single MP4, FLV, AAC or MP3 file or a SMIL manifest. RTMP is mature and has broad CDN and encoder support. It requires dedicated server software though, and is sometimes blocked by firewalls. See <a href="rtmp.html">Using RTMP Streaming</a> for more info.</li>
-<li>Apple's <a href="http://en.wikipedia.org/wiki/HTTP_Live_Streaming">HLS</a> protocol, using M3U8 manifest files and TS media files. HLS builds upon standard HTTP, making it easy to deploy and firewall resilient. It is still under development, plus CDN and encoder support is still limited.</li>
+<li>Apple's <a href="http://en.wikipedia.org/wiki/HTTP_Live_Streaming">HLS</a> protocol, using M3U8 manifest files and TS media files. HLS builds upon standard HTTP, making it easy to deploy and firewall resilient. Since the format is relatively new, CDN and encoder support is still limited. See <a href="hls.html">Using Apple HLS Streaming</a> for more info.</li>
 </ul>
 
 <p>Here is an overview of the recognized file extensions and mimetypes for these protocols, plus their browser playback support:</p>
 
 <table><tr>
-    <th></th><th>rtmp (single)</th><th>rtmp (dynamic)</th><th>hls</th>
+    <th></th><th>rtmp (direct)</th><th>rtmp (manifest)</th><th>hls (manifest)</th>
 </tr><tr>
-    <th>Extension(s)</th><td><strong>prefix:</strong> rtmp</td><td>smil</td><td>m3u8</td>
+    <th>Extension(s)</th><td>- <sup>1</sup><td>smil</td><td>m3u8</td>
 </tr><tr>
     <th>Mimetype</th><td>application/x-fcs</td><td>application/smil</td><td>application/vnd.apple.mpegurl</td>
 </tr><tr>
-    <th>Internet Explorer</th><td>flash</td><td>flash</td><td>-</td>
+    <th>Internet Explorer</th><td>flash</td><td>flash</td><td>flash</td>
 </tr><tr>
-    <th>Chrome</th><td>flash</td><td>flash</td><td>-</td>
+    <th>Chrome</th><td>flash</td><td>flash</td><td>flash</td>
 </tr><tr>
-    <th>Firefox</th><td>flash</td><td>flash</td><td>-</td>
+    <th>Firefox</th><td>flash</td><td>flash</td><td>flash</td>
 </tr><tr>
-    <th>Safari</th><td>flash</td><td>flash</td><td>html5</td>
+    <th>Safari</th><td>flash</td><td>flash</td><td>html5, flash</td>
 </tr><tr>
     <th>iOS</th><td>-</td><td>-</td><td>html5</td>
 </tr><tr>
     <th>Android</th><td>-</td><td>-</td><td>-</td>
 </tr></table>
 
-
+<ol>
+    <li>A direct RTMP steam is recognized by the URL starting with <strong>rtmp</strong>.</li>
+</ol>
 
 
 </body>

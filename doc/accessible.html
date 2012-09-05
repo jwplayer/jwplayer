@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-<title>Making Videos Accessible</title>
+<title>Creating Accessible Embeds</title>
 <style>
     body { padding: 50px 100px; width: 700px; font: 13px/20px Arial; background: #FFF; }
     a, h1, h2 { color: #369; }
@@ -20,9 +20,7 @@
 </style>
 </head><body>
 
-<h1>Making Videos Accessible</h1>
-
-<h2 style="color:red">Note: not yet implemented in this beta!</h2>
+<h1>Creating Accessible Embeds</h1>
 
 <p>Accessibility refers to the practice of making websites usable for all people, including those with disabilities, ensuring that everyone has equal access to content. In this guide, we focus on how to achieve this for embedded videos.</p>
 
@@ -61,10 +59,10 @@
 <dt>Closed Captions</dt>
 <dd>Captions are very similar to subtitles, but instead of just speech, all relevant audio is described (e.g. "the phone is ringing"). Captions are "closed" when they can be toggled on/off during playback. The alternative, captions burned into the video, is called "open". Making captions closed is important, because it allows you to serve everybody with the same setup (inclusiveness).</dd>
 <dt>Audio Description</dt>
-<dd>An audio description is a second audio track with a voiceover that can be turned on/off. Just like captions describe the audio, an audio description describes all relevant visual information. Voiceovers are placed into "natural silences", so they don't interfere with the original audio. Audio descriptions are not trivial to produce and  not always needed (e.g. not with interviews).</dd>
+<dd>An audio description is a description of the visual elements in a video, either in audio or text (for speech synthesis). Like captions, they are time-aligned with the main content. Descriptions are placed into "natural silences", so they don't interfere with the original audio. Audio descriptions are not trivial to produce and not always needed (e.g. not with interviews).</dd>
 </dl>
 
-<p>The full list of guidelines only applies to on-demand video under the WCAG regulations. Other regulations, like Section 508 or the <a href="http://www.nytimes.com/2010/06/21/business/media/21captions.html">FCC Regulations</a>, do not require audio descriptions. For live video, audio descriptions are also never needed.</p>
+<p>The full list of guidelines only applies to on-demand video under the WCAG regulations. Other regulations, like Section 508 or the <a href="http://www.nytimes.com/2010/06/21/business/media/21captions.html">FCC Regulations</a>, do not require audio descriptions. For live video, audio descriptions are also not needed.</p>
 
 <p>For audio (podcasts), captions are also not required. Instead, a separate transcript (text version) of the audio file will suffice. In practice (workflow wise), it is often easier to use captions for audio clips too.</p>
 
@@ -85,17 +83,12 @@
 
 &lt;script type="text/javascript"&gt;
     jwplayer("container").setup({
-        autostart: false,
         height: 360,
-        playlist: [{
-            captions: [{
-                '/assets/corrie.srt'
-            }],
-            image: '/assets/corrie.jpg',
-            sources: [{
-                file: '/assets/corrie.mp4'
-            }]
+        captions: [{
+             file: '/assets/corrie.vtt'
         }],
+        image: '/assets/corrie.jpg',
+        file: '/assets/corrie.mp4'
         width: 640
     });
 &lt;/script&gt;
@@ -106,9 +99,9 @@
 <ul>
 <li>Per the guideline on <em>Progressive Enhancement</em>, the clip is first presented as a basic download link. This download is <a href="encoding.html">in MP4 format</a>, using H264 video and AAC audio. MP4 is the preferred option, supported by nearly every browser, device and media player today.</li>
 <li>Next, JavaScript is used to <a href="embedding.html">embed JW Player</a> over the download link. This happens when JavaScript is enabled and HTML5 or Flash is detected:</li>
-<li>Autostarting is disabled, so the second guideline is met. Instead, a preview image is displayed to trigger users to start the video.</li>
+<li>Autostarting is disabled by default, so the second guideline is met. Instead, a preview image is displayed to trigger users to start the video.</li>
 <li>It is possible for users to <em>tab through</em> buttons in JW Player to control them by keyboard. This is a built-in feature of JW Player that works in both Flash and HTML5.</li>
-<li>Finally, Closed Captions are loaded as an SRT file into the player, using the <a href="captions.html">captions config block</a>. You can use any text editor to author the captions; cool dedicated tools <a href="http://www.urusoft.net/products.php">Subtitle Workshop</a> (desktop) or <a href="http://subtitle-horse.com/">Subtitle Horse</a> (online).</li>
+<li>Finally, Closed Captions are loaded using a VTT file, using the <a href="captions.html">captions option</a>. You can use any text editor to author the captions; cool dedicated tools <a href="http://www.urusoft.net/products.php">Subtitle Workshop</a> (desktop) or <a href="http://subtitle-horse.com/">Subtitle Horse</a> (online).</li>
 </ul>
 
 <p>Note the example does not contain an audio description. JW Player 6 does not yet support audio descriptions (see below).</p>
