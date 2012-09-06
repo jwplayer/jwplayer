@@ -286,7 +286,7 @@
 		
 		
 		protected function errorHandler(event:PlayerEvent):void {
-			setDisplay(getIcon('error'), event.message);
+			setDisplay(getIcon('error'), event.message.replace(":",":\n"));
 			_errorState = true;
 		}
 		

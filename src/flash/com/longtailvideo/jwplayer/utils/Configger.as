@@ -4,6 +4,7 @@ package com.longtailvideo.jwplayer.utils {
 	import flash.events.*;
 	import flash.external.ExternalInterface;
 	import flash.net.SharedObject;
+	import flash.system.Security;
 
 	/**
 	 * Sent when the configuration block has been successfully retrieved
@@ -58,18 +59,22 @@ package com.longtailvideo.jwplayer.utils {
 		 **/
 		private function loadExternal():void {
 			if (ExternalInterface.available) {
-				var flashvars:Object = ExternalInterface.call("jwplayer.embed.flash.getVars", ExternalInterface.objectID);
-				if (flashvars !== null) {
-					// TODO: add ability to pass in JSON directly instead of going to/from a string
-					for (var param:String in flashvars) {
-						setConfigParam(param, flashvars[param]);
+				try {
+					var flashvars:Object = ExternalInterface.call("jwplayer.embed.flash.getVars", ExternalInterface.objectID);
+					if (flashvars !== null) {
+						// TODO: add ability to pass in JSON directly instead of going to/from a string
+						for (var param:String in flashvars) {
+							setConfigParam(param, flashvars[param]);
+						}
+						dispatchEvent(new Event(Event.COMPLETE));
+						return;
 					}
-					dispatchEvent(new Event(Event.COMPLETE));
-				} else {
-					dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, "Could not load player configuration"));
-				}
+				} catch (e:Error) {}
+			}
+			if (Security.sandboxType == Security.LOCAL_WITH_FILE) {
+				dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, "Error loading player: Offline playback not supported"));
 			} else {
-				dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, "Could not load player configuration"));
+				dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, "Error loading player: Could not load player configuration"));
 			}
 		}
 

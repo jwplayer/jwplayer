@@ -16,7 +16,7 @@ jwplayer = function(container) {
 	}
 };
 
-jwplayer.version = '6.0.2443';
+jwplayer.version = '6.0.2449';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -1975,9 +1975,6 @@ jwplayer.source = document.createElement("source");/**
 				html += '<param name="allowscriptaccess" value="always">';
 				html += '<param name="seamlesstabbing" value="true">';
 				html += '<param name="wmode" value="' + wmode + '">';
-				html += '<param name="flashvars" value="' +
-				flashvars +
-				'">';
 				html += '</object>';
 
 				_container.outerHTML = html;
@@ -1997,7 +1994,6 @@ jwplayer.source = document.createElement("source");/**
 				appendAttribute(obj, 'allowscriptaccess', 'always');
 				appendAttribute(obj, 'seamlesstabbing', 'true');
 				appendAttribute(obj, 'wmode', wmode);
-				appendAttribute(obj, 'flashvars', flashvars);
 				
 				_container.parentNode.replaceChild(obj, _container);
 				flashPlayer = obj;

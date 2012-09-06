@@ -165,8 +165,8 @@ package com.longtailvideo.jwplayer.view.components {
 			_textField.visible = true;
 			_textField.wordWrap = true;
 			_textField.width = 300;
-			_textField.text = _text.substr(0, 500).replace(":",":\n");
-
+			_textField.text = _text.substr(0, 500);
+				
 			var elipses:Boolean = false;
 			if (_textField.numLines > 2) {
 				while(_textField.numLines > 2) {

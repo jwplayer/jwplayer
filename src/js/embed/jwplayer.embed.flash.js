@@ -203,9 +203,6 @@
 				html += '<param name="allowscriptaccess" value="always">';
 				html += '<param name="seamlesstabbing" value="true">';
 				html += '<param name="wmode" value="' + wmode + '">';
-				html += '<param name="flashvars" value="' +
-				flashvars +
-				'">';
 				html += '</object>';
 
 				_container.outerHTML = html;
@@ -225,7 +222,6 @@
 				appendAttribute(obj, 'allowscriptaccess', 'always');
 				appendAttribute(obj, 'seamlesstabbing', 'true');
 				appendAttribute(obj, 'wmode', wmode);
-				appendAttribute(obj, 'flashvars', flashvars);
 				
 				_container.parentNode.replaceChild(obj, _container);
 				flashPlayer = obj;
