@@ -24,7 +24,7 @@
 
 <p>This guide enumerates all differences in functionality for JW Player 6 (JW6) compared to JW Player 5 (JW5). It is written for existing JW Player users, to assist them in upgrading from JW5 to JW6. The differences are grouped by topic.</p>
 
-<p>For each topic, both new/enhanced and removed/descoped features are listed. In the latter case, suggestions for alternative setups are provided.</p>
+<p>For each topic, both added and removed features are listed. In the latter case, suggestions for alternative setups are provided.</p>
 
 
 
@@ -32,24 +32,24 @@
 
 <p>Since JW Player relies upon the underlying Flash and HTML5 frameworks for media playback, not a whole lot has changed in terms of media support.</p>
 
-<h3>New or Enhanced</h3>
+<h3>Added</h3>
 
 <dl>
 <dt>Defined list of formats</dt>
-<dd>For JW6, we took the effort to clearly define all <a href="media.html">supported media formats</a>, including their expected extensions and mimetypes. JW6 officially supports MP4/FLV/WebM video, AAC/MP3/Vorbis audio, YouTube streams and RTMP streams.</dd>
+<dd>The docs for JW6 clearly define all <a href="media.html">supported media formats</a>, including their expected extensions and mimetypes. JW6 officially supports MP4/FLV/WebM video, AAC/MP3/Vorbis audio, YouTube streams and RTMP streams.</dd>
 <dt>Setting multiple formats</dt>
 <dd>Setting multiple formats for one clip (RTMP+MP4, MP4+WebM, etc) has become more flexible and easier in JW6. Simply provide a list of sources using <a href="playlists.html">inline playlists</a> or <a href="feeds.html">mRSS feeds</a>. JW Player automatically detects and filters which formats can be played on each device.</dd>
 <dt>Apple HLS in Flash</dt>
-<dd>JW6 supports HTTP adaptive streaming through the <a href="hls.html">Apple HLS protocol</a>. In addition to iOS, HLS streams can also be played on the desktop (in Flash mode).</dd>
+<dd>JW6 supports HTTP adaptive streaming through the <a href="hls.html">Apple HLS protocol</a>. In addition to iOS, HLS streams can also be played on the desktop (in Flash mode). Both live and on-demand are supported.</dd>
 </dl>
 
-<h3>Removed or Descoped</h3>
+<h3>Removed</h3>
 
 <dl>
 <dt>JPG/PNG/GIF images</dt>
-<dd>JW5 supported playback of JPG/PNG/GIF images in Flash mode (not in HTML5). Since JW Player focuses on audio/video playback, we removed image support in JW6. We suggest using one of the many free (and much better suited) JavaScript image galleries for playing images.</dd>
+<dd>JW6 does not support playback of JPG/PNG/GIF images in Flash mode anymore. We suggest using one of the many free (and much better suited) JavaScript image galleries for playing images.</dd>
 <dt>Ogg videos</dt>
-<dd>Contrary to JW5, JW6 does not officially support the Ogg video format anymore. <a href="http://www.longtailvideo.com/blog/24509/encoding-webm-videos">WebM video</a> is more modern, more widely used,  and supported by roughly the same percentage of the browser market.</dd>
+<dd>JW6 does not officially support the Ogg video format anymore. <a href="http://www.longtailvideo.com/blog/24509/encoding-webm-videos">WebM</a> is more modern, more widely used, and now supported by the same percentage of the browser market.</dd>
 </dl>
 
 
@@ -58,22 +58,22 @@
 
 <p>One of the major internal changed in JW6 is a full refactor of its HTML5 playback. The HTML5 rendering mode is now leaner, more stable and in support of recent browser features.</p>
 
-<h3>New or Enhanced</h3>
+<h3>Added</h3>
 
 <dl>
 <dt>Defined list of devices</dt>
-<dd>For JW6, we took the effort to clearly define all <a href="browsers.html">supported browsers &amp; devices</a>, including their supported rendering modes. JW6 officially supports the Chrome/Firefox/Internet Explorer/Safari browsers and iOS/Android mobile devices.</dd>
+<dd>The docs for JW6 clearly define all <a href="browsers.html">supported browsers &amp; devices</a>, including their supported rendering modes. JW6 officially supports the Chrome/Firefox/Internet Explorer/Opera/Safari browsers and iOS/Android devices.</dd>
 <dt>Defaulting to HTML5</dt>
-<dd>JW6 automatically detects if a device supports Flash and HTML5. It also detects if the embedded media format can be played back in Flash or HTML5. If both are possible, JW6 defaults to HTML5, but you can override this using the <strong>primary</strong> configuration option.</dd>
+<dd>JW6 automatically detects if a device supports Flash and HTML5. It also detects if the embedded media format can be played back in Flash or HTML5. If both are possible, JW6 defaults to HTML5. Override this by using the <strong>primary</strong> configuration option.</dd>
 <dt>Download fallback</dt>
-<dd>If a device supports neither Flash nor HTML5, JW6 can render a so-called download fallback: a nicely formatted download link to the media that is picked up by a built-in media player. This works great on e.g. Blackberry or Android 2.2 or older. We <a href="browsers.html">clearly defined</a> which formats this fallback applies to, plus added an option to disable it.</dd>
+<dd>If a device supports neither Flash nor HTML5, JW6 renders a so-called <a href="browsers.html">download fallback</a>: a nicely formatted download link to the media that is picked up by a built-in media player. This works great on e.g. Blackberry phones. The fallback includes support for YouTube on Android/iOS.</dd>
 </dl>
 
-<h3>Removed or Descoped</h3>
+<h3>Removed</h3>
 
 <dl>
 <dt>Flash mode on Android</dt>
-<dd>Since Flash is performing suboptimal on Android devices, we already <a href="http://www.longtailvideo.com/blog/25057/html5-takes-the-lead-on-android-devices">defaulted to HTML5</a> for media playback on Android. In JW6, Flash on Android support is removed altogether. We encourage you to make your media compatible with HTML5 when targeting Android, also since Android 4+ does not include Flash anymore.</dd>
+<dd>Flash support and availability on Android is lackluster. JW6 therefore does not support Flash on Android. Please make your media compatible with HTML5 when targeting Android devices.</dd>
 </dl>
 
 
@@ -82,7 +82,7 @@
 
 <p>For JW6, we rationalized the various methods used to embed JW Player. The <a href="embedding.html">jwplayer().setup()</a> call is now the only valid method to embed media.</p>
 
-<h3>New or Enhanced</h3>
+<h3>Added</h3>
 
 <dl>
 <dt>Separate embedder</dt>
@@ -91,11 +91,11 @@
 <dd>JW6 features a documented list of player setup and media playback errors. All errors are descriptive (no more "Error #2032") and clearly printed in the player space. See <a href="troubleshooting.html">Troubleshooting Your Setup</a> to identify and resolve an error.</dd>
 </dl>
 
-<h3>Removed or Descoped</h3>
+<h3>Removed</h3>
 
 <dl>
 <dt>Embedding with <em>&lt;embed&gt;</em> or <em>SWFObject</em></dt>
-<dd>JW6 focuses on HTML5/mobile and on robust player-page interaction using the <a href="javascripting.html">Javascripting API</a>. Embedding only the SWF player is not supported anymore. If you rely heavily on SWF-only embedding, we suggest you continue using JW5 (which we support until JW7 launches).</dd>
+<dd>JW6 focuses on HTML5/mobile and on robust player-page interaction using the <a href="javascripting.html">JavaScript API</a>. Embedding only the SWF player is not supported anymore. If you rely heavily on SWF-only embedding, we suggest you continue using JW5 (which we support until JW7 launches).</dd>
 <dt>Embedding over a <em>&lt;video&gt;</em> tag</dt>
 <dd>JW6 supports many functionalities not supported by a &lt;video&gt; tag (e.g. Flash, RSS, YouTube, RTMP, VAST). Additionally, longer term promises of an inline &lt;video&gt; element (progressive enhancement, video SEO, accessibility) are not there yet. Therefore, JW6 does not support the enhancing of a video element yet.</dd>
 </dl>
@@ -107,32 +107,32 @@
 <p>Compared to JW5, JW6 contains a much shorter list of configuration options, while maintaining its flexibility. Many legacy options, or options that do not work cross-platform, are removed.</p>
 
 
-<h3>New or Enhanced</h3>
+<h3>Added</h3>
 
 <dl>
-<dt>New <em>primary</em> toggle replaces the <em>modes</em> block</dt>
-<dd>The <a href="browsers.html">Flash/HTML5 mode selection</a> in JW6 is greatly enhanced compared to JW5. Therefore, the <strong>modes</strong> configuration block (and all the confusion it created) is gone. Instead, set your preferred rendering mode with a simple <a href="embedding.html">primary toggle</a>.</dd>
+<dt>New <em>primary</em> toggle</dt>
+<dd>The <a href="browsers.html">Flash/HTML5 mode selection</a> in JW6 is greatly enhanced compared to JW5. Therefore, the <strong>modes</strong> configuration block (and all the confusion it created) is removed. Instead, set your preferred rendering mode with a simple <a href="embedding.html">primary toggle</a>.</dd>
 <dt>New <em>fallback</em> toggle</dt>
 <dd>The <a href="browsers.html">download fallback</a> introduced in JW5 can now be disabled with a single <a href="embedding.html">fallback toggle</a>. The fallback won't attempt RTMP/HLS downloads and has a special case for Youtube. When disabled, the original HTML of the container &lt;div&gt; is not touched by JW Player.</dd>
 <dt>New <em>listbar</em> replaces <em>playlist.position</em></dt>
-<dd>In order to differentiate the visual playlist options from the inline playlist block, we grouped all settings related to the visual playlist sidebar under a <a href="playlists.html">new block called listbar</a>. There is also a new <strong>layout</strong> option that allows for toggling between a basic and extensive layout.</dd>
+<dd>In order to differentiate the visual playlist options from the inline playlist block, JW6 groups all settings related to the visual playlist under a <a href="playlists.html">new block called listbar</a>. There is also a new <strong>layout</strong> option that allows for toggling between a basic and extensive layout.</dd>
 <dl>
 
-<h3>Removed or Descoped</h3>
+<h3>Removed</h3>
 
 <dl>
-<dt>The <em>flashplayer</em> option</dt>
-<dd>In JW6, it is not possible (not needed) to specifically point to the location of <strong>jwplayer.flash.swf</strong>. Instead, JW6 presumes the file (and <strong>jwplayer.html5.js</strong>) is in the same location as the main <strong>jwplayer.js</strong> library.</dd>
+<dt>The <em>modes</em> block and <em>flashplayer</em> option</dt>
+<dd>In JW6, the flash, html5 and download modes are set with two basic toggles (<strong>primary</strong> and <strong>fallback</strong>) instead of a <strong>modes</strong> block. It is also not needed anymore to specifically point to the location of <strong>jwplayer.flash.swf</strong>. Instead, JW6 presumes the file (and <strong>jwplayer.html5.js</strong>) is in the same location as the main <strong>jwplayer.js</strong> library.</dd>
 <dt>The <em>controlbar</em>, <em>dock</em> and <em>icons</em> options</dt>
-<dd>In the revamped JW6 interface, all video controls work in unison. Their placement and appearance are optimized for and changing with every player state. As a consequence, it is not useful anymore to show or hide individual parts of the controls. Instead, a single <a href="embedding.html">controls option</a> is available to show or hide the controlbar/dock/display together.</dd>
+<dd>In the revamped JW6 interface, all video controls show/hide in unison. Their placement and appearance are optimized for every player state. As a consequence, it is not possible anymore to show or hide individual parts of the controls. Instead, a single <a href="embedding.html">controls option</a> is available to enable or disable all controls together.</dd>
 <dt>The <em>link</em> and <em>displayclick</em> options</dt>
-<dd>These options are removed to tighten up display UX and avoid XSS security issues. Publishers can still implement Call-To-Action features in JW6 using the <strong>logo</strong> block, or respond to display clicks using the <a href="script-reference.html">onDisplayClick</a> API call.</dd>
+<dd>These options are removed to tighten up display UX and avoid XSS security issues. Publishers can still implement Call-To-Action features in JW6 using <a href="logo.html">the logo block</a>, or respond to display clicks using the <a href="script-reference.html">onDisplayClick</a> API call.</dd>
 <dt>The <em>repeat</em> and <em>shuffle</em> options</dt>
-<dd>Repeat is simplified to a basic true/false toggle, which plays the playlist either once or continuos. This ensures subsequent items in playlists play on mobile. The ability to shuffle playlist items is removed. It was barely used and trivial to build with a <a href="scripting.html">few lines of Javascripting</a></dd>
+<dd>Repeat is simplified to a basic <strong>true/false</strong> toggle, which plays the playlist either once or continuos. This ensures subsequent items in playlists play on mobile. The ability to shuffle playlist items is removed, but trivial to build with a <a href="scripting.html">few lines of JavaScript</a></dd>
 <dt>The <em>front/back/light/screencolor</em> options</dt>
-<dd>Due to technical limitations, these options only worked in Flash. Additionally, our new <a href="skins.html">PNG Skinning Model</a> has many more features beyond setting the colors of controls.</dd>
+<dd>Due to technical limitations, these options only worked in Flash. The new <a href="skins.html">PNG Skinning Model</a> has many more features beyond setting the colors of controls.</dd>
 <dt>The <em>bufferlength</em> and <em>smoothing</em> options</dt>
-<dd>These options catered only to the Flash mode. Video is smoothed through StageVideo in Flash and the bufferlength is fixed to 1 second. Note the <a href="rtmp.html">bufferlength or RTMP</a> can still be set, e.g. to enable low-latency live streaming.</dd>
+<dd>These options catered only to the Flash mode. Video is now always smoothed through StageVideo. The <a href="rtmp.html">bufferlength or RTMP</a> can still be set, e.g. to enable low-latency live streaming.</dd>
 <dt>The <em>config</em> option</dt>
 <dd>The removal of &lt;embed&gt; support also removed the need for external XML configurations. They can now be loaded as part of the player itself, e.g. using JSONp callbacks or an <strong>&lt;iframe&gt;</strong> tag.</dd>
 </dl>
@@ -141,37 +141,37 @@
 
 <h2>Playlists</h2>
 
-<p>Playlist support in JW6 is rationalized around inline JSON and RSS feeds. With both mechanism, multiple media sources can now be set per item, for optimal cross-platform support.</p>
+<p>JW6 rationalizes playlist support around inline JSON and RSS feeds. With both mechanism, multiple media sources can now be set per item, for optimal cross-platform support.</p>
 
-<h3>New or Enhanced</h3>
+<h3>Added</h3>
 
 <dl>
 <dt>One <em>playlist</em> block for all setups</dt>
-<dd>The options for loading media have been greatly simplified in JW6. For basic configurations, the <a href="embedding.html">file, image and title options</a> can be set. For more advanced setups, the <strong>playlist</strong> option is always needed. The <strong>playlist</strong> can be an <a href="playlists.html">inline configuration block</a> or the <a href="feeds.html">link to an RSS feed</a>. Loading feeds through <strong>file</strong> or <strong>playlistfile</strong> does no longer work.</dd>
+<dd>JW6 greatly simplifies the options for loading media. For basic configurations, the <a href="embedding.html">file, image and title options</a> can be set. For more advanced setups, the <strong>playlist</strong> option is required. It  can be an <a href="playlists.html">inline configuration block</a> or the <a href="feeds.html">link to an RSS feed</a>. Loading feeds through <strong>file</strong> or <strong>playlistfile</strong> does no longer work.</dd>
 <dt>New <em>sources</em> block instead of <em>levels</em> block</dt>
-<dd>In JW6, the <strong>levels</strong> configuration block is replaced with a more flexible <strong>sources</strong> block that is <a href="playlists.html">part of every playlist item</a>. In addition to providing multiple media formats, the sources block can be used to provide multiple quality levels, or multiple formats in multiple qualities.</dd>
+<dd>JW6 replaces the <strong>levels</strong> configuration block with a more flexible <strong>sources</strong> block. It is <a href="playlists.html">part of every playlist item</a>. Use <strong>sources</strong> to provide multiple media formats, multiple quality levels or multiple formats with multiple qualities.</dd>
 <dt>New <em>type</em> option instead of <em>provider</em> option</dt>
-<dd>JW6 automatically <a href="media.html">recognizes media formats</a> by their file extension, URL syntax (rtmp, youtube) or mimetype (in RSS). If a file cannot be detected, the <strong>type</strong> option can be set to <a href="media.html">force a media type</a>. This replaces the <strong>provider</strong> option, which was tied to Flash-specific APIs and unable to distinct between e.g. MP4 and FLV.</dd>
+<dd>JW6 automatically <a href="media.html">recognizes media formats</a> by their file extension or URL syntax (rtmp, youtube). If a file cannot be detected, set the <strong>type</strong> option to <a href="media.html">force a media type</a>. This replaces the <strong>provider</strong> option, which was tied to Flash-specific APIs.</dd>
 <dt>Multiple formats in RSS feeds</dt>
-<dd>The migration from levels to sources provided the ability to <a href="feeds.html">set multiple media sources</a> for each item in an RSS feeds. For example, an MP4 video and HLS manifest can now be loaded with one feed.</dd>
+<dd>The migration from levels to sources provides the ability to <a href="feeds.html">set multiple media sources</a> for each item in an RSS feeds. For example, an MP4 video plus HLS manifest can now be loaded with one feed.</dd>
 </dl>
 
-<h3>Removed or Descoped</h3>
+<h3>Removed</h3>
 
 <dl>
 <dt>Feeds in XSPF/ASX/ATOM format</dt>
-<dd>Media playback has standardized around Media RSS in recent years. In order to improve clarity around documentation and reduce the filesize of both Flash and HTML5 player, we removed support for other feed formats. Since mRSS supports any feature supported in another format, <a href="feeds.html">migrating to mRSS</a> is not a technical problem.</dd>
+<dd>In order to improve clarity and reduce the filesizes, JW6 only supports mRSS feeds. mRSS supports all features offered by other formats, so <a href="feeds.html">migrating to mRSS</a> is not a technical problem.</dd>
 <dt>The <em>start</em> and <em>duration</em> options</dt>
-<dd>Trimming of videos with these options is removed. It worked inconsistently on desktop browsers and not at all on mobile devices. Instead, trim your videos serverside, using a tool like <a href="http://www.wowza.com/forums/content.php?326">Wowza Media Server</a> or <a href="http://h264.code-shop.com/trac/wiki/Mod-H264-Streaming">Mod H264 Streaming</a>. Also note dedicated <a href="http://www.wowza.com/forums/content.php?326">chaptering support</a> is coming, which reduces the need for this functionality.</dd>
+<dd>JW6 drops support for trimming videos with these options. It worked inconsistently on desktop browsers and not at all on mobile devices. Instead, trim your videos serverside, using a tool like <a href="http://www.wowza.com/forums/content.php?326">Wowza Media Server</a> or <a href="http://h264.code-shop.com/trac/wiki/Mod-H264-Streaming">Mod H264 Streaming</a>. Note that dedicated <a href="http://www.wowza.com/forums/content.php?326">chaptering support</a> is coming, which reduces the need for this functionality.</dd>
 </dl>
 
 
 
 <h2>Skinning</h2>
 
-<p>A lot of time is dedicated to polishing the user experience for JW6. This resulted in a much slicker default skin, as well as many enhancements (like the use of subtle animations). A wide variety of use cases were examined to ensure JW6 looks great using any setup and combination of functionalities.</p>
+<p>JW6 contains a much slicker default skin, as well as many UX enhancements (like the use of subtle animations).</p>
 
-<h3>New or Enhanced</h3>
+<h3>Added</h3>
 
 <dl>
 <dt>Tooltip component</dt>
@@ -186,24 +186,24 @@
 <dd>The titles of items in the <a href="skin-reference.html">playlist component</a> can now be independently styled from the descriptions. Additionally a divider element can be placed in between playlist items.</dd>
 </dl>
 
-<h3>Removed or Descoped</h3>
+<h3>Removed</h3>
 
 <dl>
 <dt>The <em>layout</em> block</dt>
-<dd>The controlbar <strong>layout</strong> allowed for non-default button arrangements or multiple dividers. Since hiding buttons is possible by removing its elements and divider effects can be added to buttons, we removed this block.</dd>
+<dd>The controlbar <strong>layout</strong> allowed for non-default button arrangements or multiple dividers. JW6 does not support this anymore, but hiding buttons is still possible by omitting the button elements.</dd>
 <dt>The horizontal volume slider</dt>
 <dd>The horizontal volume slider of JW5 is replaced with a vertical one (in the tooltip) for JW6. This leaves more space for the timeslider, for increased seeking accuracy.</dd>
 <dt>SWF skinning</dt>
-<dd>The <a href="skinning.html">PNG/XML skinning model</a> of JW5 is more flexible, less error-prone and working in HTML5 than the SWF skinning model of JW4. Therefore, SWF skinning has been removed altogether from JW6.</dd>
+<dd>JW6 does not support SWF skins anymore. The newer <a href="skinning.html">PNG/XML skinning model</a> is more flexible, less error-prone and more compatible than the SWF model.</dd>
 </dl>
 
 
 
-<h2>Javascripting</h2>
+<h2>JavaScript API</h2>
 
-<p>On the javascripting side, JW6 builds upon the API established in JW5 with some clarifications and new API classes.</p>
+<p>On the JavaScript side, JW6 builds upon the API established in JW5 with some clarifications and new API classes.</p>
 
-<h3>New or Enhanced</h3>
+<h3>Added</h3>
 
 <dl>
 <dt>The <em>Quality</em> API</dt>
@@ -219,37 +219,37 @@
 </dl>
 
 
-<h3>Removed or Descoped</h3>
+<h3>Removed</h3>
 
 <dl>
 <dt>The <em>events</em> configuration block</dt>
 <dd>This way of adding event listeners is fully redundant with <a href="scripting.html">adding listeners outside the setup</a>, both in terms of features and amount of code required.</dd>
 <dt>The JW4 <em>playerReady</em> API</dt>
-<dd>Deprecated since JW5, the <strong>playerReady</strong> javascript API is removed in JW6 in favor of the much more extensive JW5 <a href="scripting.html">Javascripting API</a>.</dd>
+<dd>JW6 dropped support for the <strong>playerReady</strong> API, in favor of the much more extensive <a href="scripting.html">JavaScript API</a>.</dd>
 </dl>
 
 
 
 <h2>Streaming</h2>
 
-<p>The new, player-wide Quality API allows for manual quality selection across streaming technologies. Next, several updates to RTMP allows it to work in combination with multi-format setups.</p>
+<p>A new Quality API allows for manual quality selection across streaming technologies. HLS support across Flash and HTML5 allows publishers to leverage HTTP adaptive streaming.</p>
 
-<h3>New or Enhanced</h3>
+<h3>Added</h3>
 
 <dl>
 <dt>Manual quality switching</dt>
 <dd>For every media format, there's now the ability to set multiple quality levels. Viewers can select their preferred quality through a controlbar tooltip menu. For RTMP and YouTube, JW6 includes an <strong>auto</strong> quality level. When enabled, the optimal quality is automatically selected based upon bandwidth and screen size.</dd>
-<dt>HTTP pseudo-streaming</dt>
-<dd>Since HTML5 is the default rendering mode for JW6, the ability to seek to not-yet-downloaded parts of a video now works on most browsers. <a href="pseudo.html">HTTP pseudo-streaming for Flash</a> is now set with a single, global option. It supports the new manual quality switching options, but will not automatically switch anymore.</dd>
+<dt>Apple HLS in Flash</dt>
+<dd>JW6 supports HTTP adaptive streaming through the <a href="hls.html">Apple HLS protocol</a>. In addition to iOS, HLS streams can also be played on the desktop (in Flash mode). Both live and on-demand are supported.</dd>
 <dt>Loading single RTMP URLs</dt>
-<dd>JW6 support loading of a <a href="rtmp.html">single RTMP URL</a> in addition to a separate file/streamer setup. This eases RTMP setups and makes RTMP compatible with multi-format loading using both <a href="playlists.html">inline playlists</a> and <a href="feeds.html">RSS feeds</a> (e.g. RTMP+MP4).</dd>
-<dt>RTMP SMIL manifests for dynamic streaming</dt>
-<dd>Instead of requiring the <strong>rtmp.loadbalance</strong> option, JW6 <a href="media.html">recognizes</a> and loads <a href="rtmp.html">SMIL manifests</a> for dynamic (or single) streams by default. These SMIL manifests can now be added to RSS feeds while supporting multiple media formats per item.</dd>
+<dd>JW6 support loading of a <a href="rtmp.html">single RTMP URL</a> in addition to a separate file/streamer setup. This eases RTMP setups and makes RTMP compatible with multi-format loading using both <a href="playlists.html">inline playlists</a> and <a href="feeds.html">RSS feeds</a> (e.g. RTMP+MP4). For dynamic streams, <a href="rtmp.html">SMIL manifests</a> are required.</dd>
 </dl>
 
-<h3>Removed or Descoped</h3>
+<h3>Removed</h3>
 
 <dl>
+<dt>HTTP bitrate switching</dt>
+<dd>In JW6, <a href="pseudo.html">HTTP pseudo-streaming for Flash</a> is set with a single, global <strong>startparam</strong> option. In HTML5, pseudo-streaming works by default. Both modes support the new manual quality switching options, but will not automatically switch bitrates anymore.</dd>
 <dt>RTMP dynamic streaming using levels</dt>
 <dd>JW6 does not anymore support loading of RTMP dynamic streams by setting quality levels, either with an inline playlist or an RSS feed. Instead, <a href="rtmp.html">SMIL manifests</a> must be used for dynamic streaming at all times. This ensures multiple media formats can be loaded using a single playlist or feed (e.g. RTMP+MP4).</dd>
 <dt>RTMP tunneling fallback</dt>
@@ -259,6 +259,26 @@
 </dl>
 
 
+
+<h2>Discovery</h2>
+
+<p>The former <em>Sharing</em> and <em>Related</em> plugins are now part of JW6. Their functionality is mostly unchanged</p>
+
+<h3>Added</h3>
+
+<dl>
+<dt>The <em>sharing</em> and <em>related</em> blocks.</dt>
+<dd>JW6 can set a <a href="sharing.html">social sharing</a> and <a href="related.html">related videos</a> overlay with built-in configuration blocks. These features do not have to be loaded as 3rd party plugins anymore.</dd>
+</dl>
+
+<h3>Removed</h3>
+
+<dl>
+<dt>The logo <em>over</em>, <em>out</em>, <em>linktarget</em> and <em>timeout</em> options</dt>
+<dd>Instead of <strong>logo.over</strong> and <strong>logo.out</strong>, use a PNG with alpha channel to set transparency. When setting the logo <strong>hide</strong> option, the timeout logo fades is now synchronized with the other controls.</dd>
+<dt>Sharing and related options per playlist item</dt>
+<dd>JW6 does not support the placement of a <strong>sharing.link</strong>, <strong>sharing.code</strong> or <strong>related.file</strong> per playlist item. Instead, use the MEDIAID replacement option for both <a href="sharing.html">social sharing</a> and <a href="related.html">related videos</a>.</dd>
+</dl>
 
 </body>
 </html>
