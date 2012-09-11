@@ -13,13 +13,13 @@
 
 
 
-<h2>MP3 audio</h2>
+<h2>WebM only</h2>
 
-<div id="mp3_aac">No fallback occurred</div>
+<div id="webm">No fallback occurred</div>
 
 <script type="text/javascript">
-    jwplayer("mp3_aac").setup({
-        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-zWfluNSa.mp3',
+    jwplayer("webm").setup({
+        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm',
         image: 'http://d3el35u4qe4frz.cloudfront.net/3XnJSIm4-480.jpg'
     });
 </script>
@@ -28,8 +28,9 @@
     <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
 </tr><tr>
     <td class="both"></td>
-    <td>Load the player</td>
-    <td>IE8, Firefox: Player loads in Flash; otherwise, player loads in HTML5 mode</td>
+    <td>Play the video</td>
+    <td>If WebM is supported in HTML5, the video is played.<br>
+        If not, the video is downloaded.</td>
     <td class="check"></td>
 </tr></table>
 

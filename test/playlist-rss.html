@@ -14,10 +14,10 @@
 
 
 
-<h2>Without Sidebar &amp; Repeat</h2>
-<div id="container"></div>
+<h2>Basic feed</h2>
+<div id="basic"></div>
 <script type="text/javascript">
-    jwplayer("container").setup({
+    jwplayer("basic").setup({
         playlist: 'assets/basic.rss',
         primary: primaryCookie
     });
@@ -54,12 +54,11 @@
 
 
 
-<h2>With Sidebar &amp; Repeat</h2>
-<div id="container2"></div>
+<h2>Mixed Sources</h2>
+<div id="mixed"></div>
 <script type="text/javascript">
-    jwplayer("container2").setup({
-        playlist: 'assets/basic.rss',
-        repeat: true,
+    jwplayer("mixed").setup({
+        playlist: 'assets/mixed.rss',
         listbar: {
             size: 240,
             position: 'right'
@@ -67,6 +66,10 @@
         primary: primaryCookie,
         width: 720
     });
+    function mediaID() {
+        var first = jwplayer('mixed').getPlaylist()[0];
+        alert('The first media ID is: '+first.mediaid);
+    }
 </script>
 
 <table><tr>
@@ -74,12 +77,14 @@
 </tr><tr>
     <td class="both"></td>
     <td>Initial page load</td>
-    <td>Sidebar listing 3 videos should be displayed next to the player.</td>
+    <td>Bunny and Elephants should be visible on MP4/HTML5 browsers and Flash.<br>
+        Sintel and Elephants should be visible on WebM/HTML5 browsers.<br>
+        Bunny, Sintel and Elephants should be visible on MP4+WebM/HTML5 browsers.</td>
     <td class="check"></td>
 </tr><tr>
     <td class="both"></td>
-    <td>Third video completed</td>
-    <td>Player should load/play the first video again.</td>
+    <td><a href="javascript:mediaID()">Get mediaid</a></td>
+    <td>The 8 character mediaid of the first video should pop up.</td>
     <td class="check"></td>
 </tr></table>
 

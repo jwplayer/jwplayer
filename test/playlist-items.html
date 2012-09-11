@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Multiple items</title>
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+    <script type="text/javascript" src="assets/primaryCookie.js"></script>
+</head>
+<body>
+
+<h1>Multiple items</h1>
+<div class="core">List of test devices</div>
+<p>This test consists of several setups that test the use of multiple entries in an inline playlist.</p>
+
+<h2>Multiple items</h2>
+
+<div id="items"></div>
+
+<script type="text/javascript">
+    jwplayer("items").setup({
+        playlist: [{
+            file: 'http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4',
+            image: 'http://d3el35u4qe4frz.cloudfront.net/bkaovAYt-480.jpg'
+        },{
+            file: 'http://content.bitsontherun.com/videos/3XnJSIm4-I3ZmuSFT.m4a',
+            image: 'http://d3el35u4qe4frz.cloudfront.net/3XnJSIm4-480.jpg'
+        },{
+            file: 'http://content.bitsontherun.com/videos/kaUXWqTZ-52qL9xLP.mp4',
+            image: 'http://d3el35u4qe4frz.cloudfront.net/kaUXWqTZ-480.jpg'
+        }],
+        primary: primaryCookie
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both">
+    <td>Page load</td>
+    <td>Image of first video (bunny) should be visible
+    <td class="check"></td>
+</tr><tr>
+    <td class="both">
+    <td>Begin playback</td>
+    <td>First video (bunny) should start playing.<br>
+        On desktops, prev/next buttons should be visible.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both">
+    <td>Wait until 1st completes</td>
+    <td>Second item (Sintel) should automatically start playing<br>
+        Since it is an audio file, the poster should be visible.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both">
+    <td>Wait until 2nd item completes</td>
+    <td>Third item (Elephants Dream) should start playing<br>
+        Since it is video, the video should be visible.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both">
+    <td>Wait until 3rd item completes</td>
+    <td>Playback should stop<br>
+        Replay icon should be visible<br>
+        Poster of 1st video should display.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both">
+    <td>Click to replay</td>
+    <td>1st item should start playing</td>
+    <td class="check"></td>
+</tr></table>
+
+
+
+<h2>Multiple items and sources</h2>
+
+<div id="sources"></div>
+
+<script type="text/javascript">
+    jwplayer("sources").setup({
+        playlist: [{
+            image: 'http://d3el35u4qe4frz.cloudfront.net/bkaovAYt-480.jpg',
+            title: 'WebM and MP4',
+            sources: [{
+                file: 'http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4'
+            },{
+                file: 'http://content.bitsontherun.com/videos/bkaovAYt-27m5HpIu.webm'
+            }]
+        },{
+            image: 'http://d3el35u4qe4frz.cloudfront.net/3XnJSIm4-480.jpg',
+            title: 'only WebM',
+            sources: [{
+                file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm'
+            }]
+        },{
+            image: 'http://d3el35u4qe4frz.cloudfront.net/kaUXWqTZ-480.jpg',
+            title: 'only MP4',
+            sources: [{
+                file: 'http://content.bitsontherun.com/videos/kaUXWqTZ-52qL9xLP.mp4'
+            }]
+        }],
+        primary: primaryCookie
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both">
+    <td>Start playback</td>
+    <td>For WebM/HTML5, browsers only Bunny and Sintel should play.<br>
+        For MP4/HTML5 browsers and Flash fallback, Bunny and Elephants should play.<br>
+        For WebM+MP4/HTML5, all three items should play.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Use the "next" button several times</td>
+    <td>Next video should play.<br>
+        If the end of the list is reached, the 1st video should play.
+    </td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Use the "prev" button several times</td>
+    <td>Previous video should play.<br>
+        If the start of the list is reached, the last video should play.
+    </td>
+    <td class="check"></td>
+</tr></table>
+
+
+</body>
+</html>

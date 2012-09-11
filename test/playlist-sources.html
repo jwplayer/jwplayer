@@ -44,44 +44,19 @@
     <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
 </tr><tr>
     <td class="desktop">
-    <td>Initial page load</td>
-    <td>IE8, Firefox: player loads in Flash mode; otherwise, player loads in HTML5 mode.</td>
-    <td class="check"></td>
-</tr><tr>
-    <td class="desktop">
     <td>Begin playback</td>
-    <td>HD menu appears, showing three options.  <em>270p</em> quality (middle item) should be selected for playback.</td>
+    <td>HD menu appears, showing three options.<br>
+        <em>270p</em> quality (middle item) should be selected for playback.</td>
     <td class="check"></td>
-</tr></table>
-
-<h2>Multiple formats (mp4+webm)</h2>
-
-<div id="formats"></div>
-
-<script type="text/javascript">
-    jwplayer("formats").setup({
-        playlist: [{
-            image: 'http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg',
-            sources: [{
-                file: 'http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4',
-            },{
-                file: 'http://content.bitsontherun.com/videos/bkaovAYt-27m5HpIu.webm'
-            }] 
-        }],
-        height: 270,
-        primary: primaryCookie,
-        width: 480
-    });
-</script>
-
-<table><tr>
-    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
 </tr><tr>
-    <td class="desktop">
-    <td>Initial page load</td>
-    <td>IE8, player loads in Flash mode; otherwise, player loads in HTML5 mode.</td>
+    <td class="mobile">
+    <td>Begin playback</td>
+    <td>Built-in controls are used, so no HD toggle.<br>
+        The <em>270p</em> quality should be playing though.</td>
     <td class="check"></td>
 </tr></table>
+
+
 
 <h2>Multiple formats and qualities</h2>
 
@@ -127,13 +102,22 @@
     <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
 </tr><tr>
     <td class="desktop">
-    <td>Initial page load</td>
-    <td>IE8: player loads in Flash mode; otherwise, player loads in HTML5 mode.</td>
+    <td>Page load</td>
+    <td>Player should render in HTML5 on browsers that support WebM.</td>
     <td class="check"></td>
 </tr><tr>
     <td class="desktop">
     <td>Begin playback</td>
-    <td>HD menu appears, showing three options.  <em>270p</em> quality (middle item) should be selected for playback.</td>
+    <td>HD menu appears, showing three options (not six!).<br>
+        <em>270p</em> quality (middle item) should be selected for playback.<br>
+        If browsers support MP4 + WebM, only MP4 should be used.
+    </td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="mobile">
+    <td>Begin playback</td>
+    <td>Built-in controls are used, so no HD toggle.<br>
+        The <em>270p</em> quality MP4 should be playing.</td>
     <td class="check"></td>
 </tr></table>
 
