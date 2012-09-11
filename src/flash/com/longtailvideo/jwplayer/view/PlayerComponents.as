@@ -15,14 +15,14 @@ package com.longtailvideo.jwplayer.view {
 	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
 	
 	public class PlayerComponents implements IPlayerComponents {
-		private var _controlbar:IControlbarComponent;
-		private var _display:IDisplayComponent;
-		private var _dock:IDockComponent;
-		private var _playlist:IPlaylistComponent;
-		private var _logo:LogoComponent;
-		private var _config:PlayerConfig;
-		private var _skin:ISkin;
-		private var _player:IPlayer;
+		protected var _controlbar:IControlbarComponent;
+		protected var _display:IDisplayComponent;
+		protected var _dock:IDockComponent;
+		protected var _playlist:IPlaylistComponent;
+		protected var _logo:LogoComponent;
+		protected var _config:PlayerConfig;
+		protected var _skin:ISkin;
+		protected var _player:IPlayer;
 		
 		/**
 		 * @inheritDoc
@@ -31,6 +31,10 @@ package com.longtailvideo.jwplayer.view {
 			_player = player;
 			_skin = player.skin;
 			_config = player.config;
+			createComponents();
+		}
+		
+		protected function createComponents():void {
 			_controlbar = new ControlbarComponent(_player);
 			_display = new DisplayComponent(_player);
 			_playlist = new PlaylistComponent(_player);

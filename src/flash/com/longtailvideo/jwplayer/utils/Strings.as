@@ -84,6 +84,7 @@ package com.longtailvideo.jwplayer.utils {
 					return (new JSONDecoder(jsonString, false)).getValue();
 				} catch(e:Error) {
 					Logger.log("Error parsing JSON string: " + e.message + ".  String: " + jsonString);
+					return "";
 				}
 				return jsonString;
 			} else if (isNaN(Number(val)) || val.length > 5 || val.length == 0) {

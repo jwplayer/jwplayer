@@ -23,7 +23,7 @@ package com.longtailvideo.jwplayer.utils {
 		/** Constant defining the Flash tracing output type. **/
 		public static const TRACE:String = "trace";
 		/** Reference to the player config **/
-		private static var _config:PlayerConfig;		 
+		private static var _config:PlayerConfig;
 		
 		
 		/**

@@ -136,6 +136,7 @@ package com.longtailvideo.jwplayer.view {
 			_root.visible = false;
 
 			setupLayers();
+			createComponents();
 			setupComponents();
 
 			RootReference.stage.addEventListener(Event.RESIZE, resizeHandler);
@@ -307,12 +308,13 @@ package com.longtailvideo.jwplayer.view {
 			_maskedLayers.mask = _displayMasker;
 		}
 
+		protected function createComponents():void {
+			_components = new PlayerComponents(_player);
+		}
 
 		protected function setupComponents():void {
 			var n:Number = 0;
 			
-			_components = new PlayerComponents(_player);
-
 			setupComponent(_components.display, n++);
 			setupComponent(_components.playlist, n++);
 			setupComponent(_components.logo, n++);
