@@ -27,7 +27,7 @@
 
 <h2>Introduction</h2>
 
-<p>As explained in <a href="skinning.html">Building JW Player Skins</a>, a JW Player skin is essentially an XML file containing settings and links to image elements. These settings and elements are grouped into 5 components:</p>
+<p>As explained in <a href="skinning.html">Building JW Player Skins</a>, a JW Player skin is essentially an XML file containing settings and image elements. These settings and elements are grouped into 5 components:</p>
 
 <p><img src="assets/skinning-components.jpg" alt="A diagram of all JW Player skinning components" /></p>
 
@@ -48,16 +48,15 @@
 <dl>
 <dt>margin (8)</dt>
 <dd>This is the margin from the controlbar to the edges of the display. Can be any number.</dd>
-<strong>upper</strong>.</dd>
-<dt>fontcolor (eeeeee)</dt>
+<dt>maxwidth (800)</dt>
+<dd>The maximum width of the controlbar. For large displays (e.g. fullscreen), the bar is then horizontally centered instead of extended to the edges. Can be any number.</dd></dl>
+
+<dl><dt>fontcolor (eeeeee)</dt>
 <dd>The color for the elapsed time and media duration. Can be any hexadecimal color value.</dd>
 <dt>fontsize (11)</dt>
 <dd>The font size of the elapsed time and media duration. Can be a number between <strong>8</strong> and <strong>16</strong>.</dd>
 <dt>fontweight (bold)</dt>
-<dd>The font weight for the elapsed time and media duration. Can be <strong>normal</strong> or <strong>bold</strong>.</dd>
-<dt>maxwidth (800)</dt>
-<dd>The maximum width of the controlbar. For large displays (e.g. fullscreen), the bar is then horizontally centered instead of extended to the edges. Can be any number.</dd>
-</dl>
+<dd>The font weight for the elapsed time and media duration. Can be <strong>normal</strong> or <strong>bold</strong>.</dd></dl>
 
 
 
@@ -163,7 +162,7 @@ Right-hand progress end cap, used to create round or fading edges.
 Serves as a handle which can be dragged across the progress bar to allow the user to specify a seek position.
 </dd></dl>
 
-<p>Note the multitude of end caps is not needed in many skin designs. Only when working with round corners or other edge effects, these end caps need added.</p>
+<p>Note the multitude of end caps is not needed in many skin designs. Only when working with round corners or other edge effects, these end caps need added. The rail, buffer and progress elements are always needed though.</p>
 
 
 
@@ -181,15 +180,17 @@ Serves as a handle which can be dragged across the progress bar to allow the use
 The number of degrees the buffer icon is rotated per rotation. A negative value will result in the buffer rotating counter-clockwise.
 </dd><dt>bufferinterval (100)</dt><dd>
 The amount of time, in milliseconds between each buffer icon rotation.
-</dd><dt>fontcolor (cccccc)</dt><dd>
+</dd></dl>
+
+<dl><dt>fontcolor (cccccc)</dt><dd>
 Color of the video title or error message displayed in the center icon.
+</dd><dt>fontsize (15)</dt><dd>
+Size of the video title or error message displayed in the center icon.
+</dd><dt>fontweight (normal)</dt><dd>
+Weight of the video title or error message displayed in the center icon. Can be <strong>normal</strong> or <strong>bold</strong>.
 </dd><dt>overcolor (ffffff)</dt><dd>
 Color of the video title or error message when the user moves his mouse over the display.
-</dd><dt>fontsize (15)</dt>
-<dd>Size of the video title or error message displayed in the center icon.</dd>
-<dt>fontweight (normal)</dt>
-<dd>Weight of the video title or error message displayed in the center icon. Can be <strong>normal</strong> or <strong>bold</strong>.</dd>
-</dl>
+</dd></dl>
 
 <h3>Display Elements</h3>
 
@@ -198,11 +199,11 @@ The background is a graphic which is placed behind the display icons, and is cen
 </dd><dt>backgroundOver</dt><dd>
 Rollover graphic for the display background.
 </dd><dt>capLeft</dt><dd>
-When a title or error is displayed, the background image is stretched horizontally to fit the message. This cap is not stretched.
+When a title or error is displayed, the background image is stretched horizontally to fit the message. This cap is not stretched and placed to the left of the background.
 </dd><dt>capLeftOver</dt><dd>
 Rollover graphic for the left display cap.
 </dd><dt>capRight</dt><dd>
-When a title or error is displayed, the background image is stretched horizontally to fit the message. This cap is not stretched.
+When a title or error is displayed, the background image is stretched horizontally to fit the message. This cap is not stretched and placed to the right of the background.
 </dd><dt>capRightOver</dt><dd>
 Rollover graphic for the right display cap.
 </dd></dl>
@@ -233,14 +234,16 @@ This element replaces the replayIcon element when the user hovers the mouse over
 
 <h3>Dock Settings</h3>
 
+<dl><dt>margin (8)</dt><dd>
+Margin in pixels from the dock to the left and top edges of the display.
+</dd></dl>
+
 <dl><dt>iconalpha (0.75)</dt><dd>
 The alpha value of a dock button icon. These icons are usually white, so alpha can be used to change the colors a little.
 </dd><dt>iconalphaactive (0.5)</dt><dd>
 The alpha value of a dock button icon in the <em>active</em> state. An icon is <em>active</em> when it is associated with an overlay and that overlay is visible.
 </dd><dt>iconalphaover (1)</dt><dd>
 The alpha value of a dock button icon in the <em>over</em> state.
-</dd><dt>margin (8)</dt><dd>
-Margin in pixels from the dock to the left and top edges of the display.
 </dd></dl>
 
 <h3>Dock Elements</h3>
@@ -267,16 +270,16 @@ Background element for a dock button in the <em>active</em> state (its overlay i
 
 <p><img src="assets/skinning-playlist.jpg" alt="A diagram of JW Player playlist elements" /></p>
 
-<p>The height of a listbar item is determined by the height of the <em>item</em> element. It contains an <em>itemImage</em> element and <em>title</em>, <em>description</em> and <em>duration</em> texts. The <em>itemImage</em>  element is placed at the left, with equal top, left and bottom margins. Next, the texts are placed to the right of the image.</p>
+<p>The height of a listbar item is determined by the height of the <em>item</em> element. It contains an <em>itemImage</em> element, plus <em>title</em> and <em>description</em> texts. The <em>itemImage</em>  element is placed at the left, with equal margins around. The texts are placed to the right of the image.</p>
 
 
 <h3>Playlist Settings</h3>
 
-<dl><dt>activecolor (cccccc)</dt><dd>
-The color for the item texts when that item is the currently active item.
-</dd><dt>backgroundcolor (262626)</dt><dd>
+<dl><dt>backgroundcolor (333333)</dt><dd>
 The playlist background color. Displayed below any transparante item / slider elements.
-</dd><dt>fontcolor (999999)</dt><dd>
+</dd></dl>
+
+<dl><dt>fontcolor (999999)</dt><dd>
 The standard color for the item texts.
 </dd><dt>fontsize (11)</dt><dd>
 Font size of the item texts.
@@ -284,18 +287,20 @@ Font size of the item texts.
 Font weight of the item texts (normal, bold).
 </dd><dt>overcolor (cccccc)</dt><dd>
 The color for the (active or inactive) item texts when the mouse is hovering over that item.
+</dd><dt>activecolor (cccccc)</dt><dd>
+The color for the item texts when that item is the currently active item.
 </dd></dl>
 
 <dl><dt>titlecolor (cccccc)</dt><dd>
 Override the title fontcolor with this option, for a more visually interesting playlist.
-</dd><dt>titleactivecolor (ffffff)</dt><dd>
-Override the title activecolor with this option, for a more visually interesting playlist.
-</dd><dt>titleovercolor (ffffff)</dt><dd>
-Override the title overcolor with this option, for a more visually interesting playlist.
 </dd><dt>titlesize (13)</dt><dd>
 Override the title fontsize with this option, for a more visually interesting playlist.
 </dd><dt>titleweight (normal)</dt><dd>
 Override the title fontweight with this option, for a more visually interesting playlist.
+</dd><dt>titleovercolor (ffffff)</dt><dd>
+Override the title overcolor with this option, for a more visually interesting playlist.
+</dd><dt>titleactivecolor (ffffff)</dt><dd>
+Override the title activecolor with this option, for a more visually interesting playlist.
 </dd></dl>
 
 <h3>Playlist Elements</h3>
@@ -303,7 +308,7 @@ Override the title fontweight with this option, for a more visually interesting 
 <dl><dt>divider</dt><dd>
 Element that's displayed in between (but not above/below) the playlist items.
 </dd><dt>item</dt><dd>
-Background graphic for each playlist item. Stretches to the width of the playlist, minus the slider width (if visible).
+Background graphic for each playlist item. Stretches to the width of the playlist, minus the slider width (if visible). Is required for a playlist to look OK.
 </dd><dt>itemActive</dt><dd>
 Active state for item. Replaces item whenever the corresponding playlist item is the currently playing/loaded playlist item.
 </dd><dt>itemImage</dt><dd>
@@ -334,17 +339,15 @@ Bottom end cap for the playlist slider thumb. Add this to enable round borders, 
 
 <h2><a name="tooltip"></a>Tooltip</h2>
 
-<p>The tooltip is an element that's displayed when interacting with certain buttons of the controlbar or dock. There are three types of tooltips: Text labels, the HD and CC menus and the Volume slider.</p>
-
-<p>The background of the tooltip consists of a 9-slide grid, with a stretched center and additional elements for all edges. An arrow is displayed either above or below the grid:</p>
+<p>The tooltip is an element that's displayed when interacting with certain buttons of the controlbar or dock. There are various types of tooltips, some of which can be interactive (like the volume slider or HD menu).</p>
 
 <p><img src="assets/skinning-tooltip.jpg" alt="A diagram of JW Player tooltip elements" /></p>
 
-<p>In addition to this grid, additional elements are available for the volumeSlider, ccMenu and hdMenu. The volume has caps, rail, progress and thumb elements (like other sliders). The hdMenu and ccMenu have a cap and share <em>menuOption</em> elements:</p>
+<p>The background of the tooltip consists of a 9-slide grid, with a stretched center and additional elements for all caps. An arrow is displayed either above or below the grid. The caps are not required, but useful for controlling margins and creating edge effects.</p>
 
 <p><img src="assets/skinning-menus.jpg" alt="A diagram of JW Player tooltip menu elements" /></p>
 
-<p>Like with other elements, the font of the tooltip texts can be controlled with several settings.</p>
+<p>In addition to the, elements are available for the menus and slider. The volume has caps, rail, progress and thumb elements (like other sliders). The hdMenu and ccMenu have a cap and share <em>menuOption</em> elements:</p>
 
 <h3>Tooltip Settings</h3>
 
@@ -387,7 +390,7 @@ Element that's displayed to the bottom right of the background. Is not stretched
 </dd></dl>
 
 <dl><dt>menuBottom</dt><dd>
-Element that's displayed at the bottom o the quality and caption selection menus.
+Element that's displayed at the bottom of the quality and caption selection menus. Used for controlling spacing or adding a ruler.
 <dt>menuOption</dt><dd>
 Checkbox element for menu options, displayed to the left of the option labels. 
 </dd><dt>menuOptionOver</dt><dd>
@@ -395,17 +398,15 @@ Checkbox element for menu options, displayed when an option is active.
 </dd><dt>menuOptionActive</dt><dd>
 Checkbox element for menu options, displayed when rolling over the option.
 </dd><dt>menuTopHD</dt><dd>
-Element that's displayed above the quality selection menu. The width of this header is the width of the menu.
+Element that's displayed above the quality selection menu. Used for controlling spacing or adding a description.
 </dd><dt>menuTopCC</dt><dd>
-Element that's displayed above the captions selection menu. The width of this header is the width of the menu.
+Element that's displayed above the captions selection menu. Used for controlling spacing or adding a description.
 </dd></dl>
-
-<h2 style="color:red">For the beta player, the volume elements still need placed in the controlbar component</h2>
 
 <dl><dt>volumeCapTop</dt><dd>
 Element that's displayed above the rail. Used for drawing borders or emboss effects.
 </dd><dt>volumeCapBottom</dt><dd>
-Element that's displayed below the rail. Used for drawing borders or emboss effects.  
+Element that's displayed below the rail. Used for drawing borders or emboss effects.
 </dd><dt>volumeRail</dt><dd>
 Background element for the vertical volume slider. The height of this rail is used as the range for the volume.
 </dd><dt>volumeProgress</dt><dd>

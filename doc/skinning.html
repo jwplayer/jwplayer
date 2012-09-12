@@ -40,8 +40,8 @@
 <p>This guide and the accompanying <a href="skin-reference.html">Skin XML Reference</a> contain all info you need to design and package a JW Player skin from scratch. However, an existing skin may already satisfy 90% of your requirements. In that case, we recommend you simply modify an existing skin instead of building one from scratch:</p>
 
 <ul>
-<li>The JW Player <a href="http://www.longtailvideo.com/addons/skins">addons pages</a> contain downloads of several skins, including their source files.</li>
-<li>The JW Player <a href="http://developer.longtailvideo.com/trac/browser/skins">developer site</a> contains the source files of all skins within our <em>Premium</em> offering.</li>
+<li>The JW Player <a href="http://developer.longtailvideo.com/trac/">developer site</a> contains a skinning SDK download, with sources for 2 skins.</li>
+<li>The JW Player <a href="http://www.longtailvideo.com/jw-player/">product pages</a> contain links to skins of several key partners.</li>
 </ul>
 
 <p>Editing an existing skin also allows you to become proficient with the JW Player skinning model while avoiding beginner mistakes that may be hard to find.</p>
@@ -80,7 +80,7 @@
 
 <ul>
 <li>A <strong>&lt;setting&gt;</strong> refers to a non-image skinning option. Each setting contains a <em>name</em> (e.g. "fontsize") and a <em>value</em> (e.g. "12"). If a setting is omitted, the player reverts to the default value for that setting.</li>
-<li>An <strong>&lt;element&gt;</strong> contains the url to a PNG, JPG or GIF image. Each element contains a <em>name</em> (e.g. "playIcon") and a <em>src</em> (e.g. "playIcon.png"). If an element is omitted, it is simply not displayed. This enables you to omit e.g. certain buttons from the controlbar. Certain elements are required though.</li>
+<li>An <strong>&lt;element&gt;</strong> contains the url to a PNG, JPG or GIF image. Each element contains a <em>name</em> (e.g. "playIcon") and a <em>src</em> (e.g. "playIcon.png"). If an element is omitted, it is simply not displayed. This enables you to omit e.g. certain buttons from the controlbar.</li>
 </ul>
 
 <p>Image elements must be stored in sub-directories that are named after the components. If, for example, inside the <strong>display</strong> component, you have set an element's <em>src</em> to "playIcon.png", the player presumes this image is at the following location:</p>

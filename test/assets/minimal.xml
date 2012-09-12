@@ -1,0 +1,76 @@
+<?xml version="1.0" ?><skin author="LongTail Video" name="Five" version="2">
+	<components>
+
+
+		<component name="controlbar">
+			<settings>
+				<setting name="margin" value="0"/>
+				<setting name="maxwidth" value="9999"/>
+				<setting name="fontcolor" value="000000"/>
+			</settings>
+			<elements>
+				<element name="background" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAAYCAIAAABfmbuOAAAANUlEQVR42mP5+/cvAwMDy38GEGBhgFL//4MFsVIQJVAeVpUfPn6CGIYqh6KPgVjB/fv2ASkAf9A1OaFSyX8AAAAASUVORK5CYII="/>
+				
+				<element name="playButton" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAYCAYAAAAVibZIAAAANUlEQVR42u2RsQkAAAjD/NTTPaW6dXLrINJA1kBpGPMAjDWmOgp1HFQXx+b1KOefO4oxY57R73YnVYCQUCQAAAAASUVORK5CYII="/>
+				<element name="pauseButton" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAYCAYAAAAVibZIAAAAIUlEQVQ4jWNgGAWjYOiD/0gYG3/U0FFDB4Oho2AUDAYAAEwiL9HrpdMVAAAAAElFTkSuQmCC"/>
+				<element name="muteButton" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAYCAYAAAAVibZIAAAAhklEQVR42u2RywrEIBAEg6hIBBUf6N/nUzvpgyCyF7OnXWwoGAancJjj2Nn5k7TWrgeMvZwzvpKWUkDGnjEGtdY1MQf6UIwRZH6TUlqThhBAWDvnQObVvfdr0vM8QVhba0HG1Xt/SSqlBOmSLhqjtX5/LKUUyHx9IcR76TN8zYJPP9/Z+aXcJKEopXKViR4AAAAASUVORK5CYII="/>
+				<element name="unmuteButton" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAYCAYAAAAVibZIAAAAfklEQVR42u2T4QrAEBRGRSRiIvI291H3qDYry5Yfm9RaOaXvfledXyA0mfyQGGNq7NbW/jEhBPDeXwS533evcc6BtfaU5Lnu3RhjQGt9iHKWufQuqZQyKaWgzvquS8o5T/kIIaDk0BfBGANKaRoqxRivhBDYc6x4Z5m/ePIRG0sNHYZyjgS4AAAAAElFTkSuQmCC"/>
+				
+				<element name="timeSliderRail" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAOElEQVRIDe3BwQkAIRADwAhhw/nU/kWwUK+KPITMABFh19Y+F0acY8CJvX9wYpXgRElwolSIiMf9ZWEDhtwurFsAAAAASUVORK5CYII="/>
+				<element name="timeSliderBuffer" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAN0lEQVRIDe3BwQkAMQwDMBcc55mRe9zi7RR+FCwBEWG39vcfGHFm4MTuhhMlwYlVBSdKhYh43AW/LQMKm1spzwAAAABJRU5ErkJggg=="/>
+				<element name="timeSliderProgress" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAIElEQVRIiWNgGAWjYBTQBfynMR61YCRYMApGwSigMQAAiVWPcbq6UkIAAAAASUVORK5CYII="/>
+			</elements>
+		</component>
+
+		<component name="display">
+			<settings>
+				<setting name="bufferrotation" value="90"/>
+				<setting name="bufferinterval" value="150"/>
+				<setting name="fontcolor" value="ffffff"/>
+			</settings>
+			<elements>
+				<element name="background" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAA8CAYAAABfESsNAAAAKUlEQVR42mMUERG5yUAEYBxVOKpwVOGowkGtEIhHFY4qHFU4qnDoKwQAEzg6Ia2bUM0AAAAASUVORK5CYII="/>
+				<element name="bufferIcon" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAB3klEQVR42u2Xv0tCURSAFU0yXyU8jBShWqRASGjRJSOHGgyagqYaJNqKWhqCXJptdWpqa3JsaQ7c+w/8M75ajnC53dfTl9cf8Q6cwXPw+HnuOeeeG4mEEso/EyANpKcZMAfkJgkQA1JAYlhAIAsUAccm4BywKBodFBBIADuiKzYBI4AjgMkhAAsCtw3EbB+zmsWYH6D8IfvZ0350QQBTAwAWBW5r3M3Sz2JcsWeAjPLZVbLnGOLEgQ3AtQE5bwCMqs0DLAvcmuH7G8AhcATUbGUyCvhlOqHZXGBXwPpamJZBXtLAKqZpMCm4pAJWs1J3fwSMA6tAPtxaJn0Uz8CXhz6PIH4VuPDQ6uwDhmK5Pk+AA2Ap4NW4CZRsgFWAD6Anmg8QIw00Ra+B9VGA5YFXBawHtP4Q71iBbALngR9ZwK0G9gZUDO8Mx+d6czXbOnCpge4FAewf6SfQMPgfgO5vo0FW/DZwZvCVgbv+kQetu4apIWTH64rWFfsVcKXFaIsWPBqnPJJ61AK/CFxHW+07qk3sjwJ4P65Rc6pkb2cAwIKSxX3bcA7wLnBtw+PoB6D4bgSwZXVB1bKXHQLQHUsWpTk6wIXB5wko/rrU42TeH36A03BPp4AndcyEEsqsyzf3i2XjNrTAAgAAAABJRU5ErkJggg=="/>
+				<element name="errorIcon" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAABeklEQVR42u1Y0RGDIAztBo7gCIzACB3BERyBERzBEToCI3QERnADW3sHd6+paIiC9s7c5SfQ8oiPl8DtdtllaTaOo/r4WYG5yV/e3WmATkDqyQcAF/wTq88A0AIg7T0AtkeD05CxFuItxPWRAAPvnjNjz8DHo8AtZimW3VLgKuDZY2HeA/hZlQTYQ3bqlRMe5vUlNS8saiBu0Ek8zFelZaWC+JcORuhgc4O7A4iGjM0C9GMNjN1zHgwXywSpJsNC5l0ugGZFViyM2xXZMTnrbb/CzSjX4PTvW6c5fwyaF9VGzka31lvDpICRUmWLrLgEjhrpYUsFx5YHUptbqVxJ661NpIKWCr5UVlQGgEosO5Ii738TanGdqA6vJNkp1SZx27ZdGk1JBkXXA2mrTq+de10dtu1mnrM/3UziV2s4O7ECPokzyCoI5NgrwQIiDrLXJ2ku/iJAaKJjkwZ4W+noPSOjd0CRgVt7j/KGk+rOk7akd6d4bLrssn+yN5vHmxk7vS27AAAAAElFTkSuQmCC"/>
+				<element name="playIcon" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAkUlEQVR42u2XUQ2AMBQDcYAEpCAFKUhBAhKQgAQk4ODGD48Qvghh0Cy9pP+XLOu6qjLGGFMeQAukPT1QqwlOJ8EErFKiF7mraKcsGFl+Fb0hGJmBVlkwMn0q+kAwMgKNsmBkyCr6guDRoeqCKcttf1lwsWDJR9y7ZkopatmnTnYsyM4tmcEqP/m1P03GGGO+YwMzoYoXcmYFHwAAAABJRU5ErkJggg=="/>
+			</elements>
+		</component>
+
+		<component name="dock">
+			<elements>
+				<element name="button" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADoAAAAkCAYAAADYZynDAAAAQklEQVR42u3PMQEAAAgDoIVY/162MYWXHAQgbeeDiIqKioqKioqKioqKioqKHkaTzBOioqKioqKioqKioqKioqJXFktR3wI/ACjXAAAAAElFTkSuQmCC"/>
+			</elements>
+		</component>
+
+		<component name="playlist">
+			<settings>
+				<setting name="backgroundcolor" value="e6e6e6"/>
+				<setting name="fontcolor" value="333333"/>
+				<setting name="activecolor" value="000000"/>
+				<setting name="overcolor" value="000000"/>
+				<setting name="titlecolor" value="333333"/>
+				<setting name="titleactivecolor" value="000000"/>
+				<setting name="titleovercolor" value="000000"/>
+				<setting name="titleweight" value="bold"/>
+			</settings>
+			<elements>
+				<element name="item" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAYAAACOEfKtAAAAxElEQVR42u3WIQ6AMBQE0RW9/xnLGYqrAINAYSp+Ut4mJOjJ/GbaGOOKfe1MciTpz/f+7w2ftTX6LQKEAMBigG541UAEnTCAMoaBBiCAOlAHmhOWMQwE0ACUMQzUgcZAHchAAE3GMBBAHWgyxgkDKGOMgQACuF/GeAQZWAlwzokCAyvfQE8gAwEE8NcAPYIMBFDGMNAABBBAHWgMlDEMBNAABBBAHWgM1IEMBNAABBBAHWgyxgkDCKABCCCA+2WMjmFg4W6nGC//HI0BYQAAAABJRU5ErkJggg=="/>
+				<element name="sliderRail" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAACCAYAAAC3xJe1AAAAE0lEQVR42mNgIAwcsGCKAcmGAgDRagKBNBupqAAAAABJRU5ErkJggg=="/>
+				<element name="sliderThumb" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAACCAYAAAC3xJe1AAAAF0lEQVR42mNgwAOkpKT+48IM5AJyDQUA+hoSN6eJNqEAAAAASUVORK5CYII="/>
+			</elements>
+		</component>
+
+		<component name="tooltip">
+			<settings>
+				<setting name="fontcase" value="upper"/>
+				<setting name="fontweight" value="bold"/>
+				<setting name="fontsize" value="11"/>
+			</settings>
+			<elements>
+				<element name="arrow" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAANElEQVR42n2MsQkAMAzD9KIP9iH5JksLpSQWeLMEYKCWGUDhIA7e7IuSPVXMgJL9VkxAv91EsRzJzyD3CAAAAABJRU5ErkJggg=="/>
+				<element name="background" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAEElEQVR42mNgYGC4CcUQBgAZgANl7w5roAAAAABJRU5ErkJggg=="/>
+			</elements>
+		</component>
+
+  </components>
+</skin>

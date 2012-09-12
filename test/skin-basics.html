@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Skin Basics</title>
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+    <script type="text/javascript" src="assets/primaryCookie.js"></script>
+</head>
+<body>
+
+<h1>Skin Basics</h1>
+<div class="core">List of test devices</div>
+<p>This page tests the skinning model against a number of basic features.</p>
+
+<h2>Five skin</h2>
+
+<div id="five"></div>
+
+<script type="text/javascript">
+    jwplayer("five").setup({
+        playlist: [{
+            sources: [{
+                file: 'http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4',
+                height: 270,
+            },{
+                file: 'http://content.bitsontherun.com/videos/bkaovAYt-DZ7jSYgM.mp4',
+                height: 720
+            }],
+            title: "Big Buck Bunny",
+            description: "Big Buck Bunny is a short computer animated film by the Blender Institute.",
+            image: 'http://d3el35u4qe4frz.cloudfront.net/bkaovAYt-480.jpg'
+        },{
+            file: 'http://content.bitsontherun.com/videos/3XnJSIm4-I3ZmuSFT.m4a',
+            title: "Sintel (audio)",
+            description: "Sintel is a short computer animated film by the Blender Institute."
+        },{
+            file: 'http://content.bitsontherun.com/videos/kaUXWqTZ-52qL9xLP.mp4',
+            title: "Elephant's Dream",
+            description: "Big Buck Bunny is a short computer animated film by the Blender Institute.",
+            image: 'http://d3el35u4qe4frz.cloudfront.net/kaUXWqTZ-480.jpg'
+        }],
+        primary: primaryCookie,
+        listbar: {
+            position: "bottom",
+            size: 160
+        },
+        height: 430,
+        width: 480,
+        skin: "assets/five.zip"
+    });
+    jwplayer("five").onReady(function() {
+        this.addButton("assets/smiley.png","Smile to the button!", null, "button1");
+        this.addButton("assets/smiley.png","Smile to the button!", null, "button2");
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Load the player</td>
+    <td>The "Five" skin should get loaded<br>
+        It should look <a href="skins/screen-idle.jpg">like this image</a></td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Start playback</td>
+    <td>The player starts buffering / playing<br>
+        It should look <a href="skins/screen-buffer.jpg">like this image</a></td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Pause playback, then hover the controls</td>
+    <td>Tooltips for button, time, HD and volume should appear<br>
+        They should look <a href="skins/screen-tooltip.jpg">like this image</a></td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Go fullscreen</td>
+    <td>The controlbar should extend 100% over the bottom<br>
+        The prev/next buttons should be visible</td>
+    <td class="check"></td>
+</tr></table>
+
+
+
+</body>
+</html>

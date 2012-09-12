@@ -17,7 +17,7 @@ div.core { background: url(core.jpg) no-repeat top left;  }
 div.all { background: url(all.jpg) no-repeat top left; }
 div.flash { background: url(flash.jpg) no-repeat top left; }
 
-
+form { margin: 25px 0; padding: 10px; background: #eee; } 
 td.both, td.desktop, td.mobile { width: 50px; }
 td.both { background: url(both.png) no-repeat 5px 7px; }
 td.desktop { background: url(desktop.png) no-repeat 5px 7px; }

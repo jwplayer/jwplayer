@@ -1,0 +1,38 @@
+<?xml version="1.0" ?><skin author="LongTail Video" name="Five" version="2">
+	<components>
+
+		<component name="controlbar">
+			<settings>
+				<setting name="margin" value="0"/>
+				<setting name="maxwidth" value="9999"/>
+				<setting name="fontcolor" value="000000"/>
+			</settings>
+			<elements>
+				<element name="background" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAAYCAIAAABfmbuOAAAANUlEQVR42mP5+/cvAwMDy38GEGBhgFL//4MFsVIQJVAeVpUfPn6CGIYqh6KPgVjB/fv2ASkAf9A1OaFSyX8AAAAASUVORK5CYII="/>
+				<element name="capLeft" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAYCAIAAAC0rgCNAAAALUlEQVR42gXBsQ0AMBADoeb2HzbfYinQthDaFkK2Rggh9O7aFkKzTIi1iYXGB1zGRzlrTQJgAAAAAElFTkSuQmCC"/>
+				<element name="capRight" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAYCAIAAAC0rgCNAAAALUlEQVR42gXBsQ0AMBADoeb2HzbfYinQthDaFkK2Rggh9O7aFkKzTIi1iYXGB1zGRzlrTQJgAAAAAElFTkSuQmCC"/>
+				<element name="divider" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAYCAIAAAC0rgCNAAAALUlEQVR42gXBsQ0AMBADoeb2HzbfYinQthDaFkK2Rggh9O7aFkKzTIi1iYXGB1zGRzlrTQJgAAAAAElFTkSuQmCC"/>
+				
+				<element name="playButton" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAYCAYAAAAVibZIAAAANUlEQVR42u2RsQkAAAjD/NTTPaW6dXLrINJA1kBpGPMAjDWmOgp1HFQXx+b1KOefO4oxY57R73YnVYCQUCQAAAAASUVORK5CYII="/>
+				<element name="pauseButton" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAYCAYAAAAVibZIAAAAIUlEQVQ4jWNgGAWjYOiD/0gYG3/U0FFDB4Oho2AUDAYAAEwiL9HrpdMVAAAAAElFTkSuQmCC"/>
+				<element name="prevButton" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAYCAYAAAAVibZIAAAAQklEQVQ4y2NgGAWjYOiD/1AMA/JAfB5NjCJD/YH4PRaLyDa0H4lNNUP/DxlD59PCUBCIp3ZEwYA+NZLUKBgFgwEAAN+HLX9sB8u8AAAAAElFTkSuQmCC"/>
+				<element name="nextButton" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAYCAYAAAAVibZIAAAAQElEQVQ4y2NgGAWjYOiD/0B8Hojl0cT+U2ooCL8HYn9qGwrD/bQw9P+QMXQ+tSMqnpoRBUpS+tRMUqNgFAwGAADxZy1/mHvFnAAAAABJRU5ErkJggg=="/>
+				<element name="elapsedBackground" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAYCAYAAAA7zJfaAAAAEElEQVR42mP4//8/AwP9CQD0ZEe52lV1zAAAAABJRU5ErkJggg=="/>
+				<element name="durationBackground" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAYCAYAAAA7zJfaAAAAEElEQVR42mP4//8/AwP9CQD0ZEe52lV1zAAAAABJRU5ErkJggg=="/>
+				
+				<element name="hdButton" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAYCAYAAAAPtVbGAAAAQElEQVR42mNgGAWjYBRQBKSkpP6DMC42shgtLbGn2CJClqCzKbIEPWiGtCX2NLeELnFCKAmDfDqa4UfBKKAMAACtI1eCuGUt4gAAAABJRU5ErkJggg=="/>
+				<element name="ccButton" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAYCAYAAAAPtVbGAAAANUlEQVR42mNgGAWjYBRQBKSkpP6jY3zilFpij8MSe6pZQqz4qCX0tYQY9uBNwqNgFIwCMAAA3OpEv3yhVL8AAAAASUVORK5CYII="/>
+				<element name="muteButton" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAYCAYAAAAVibZIAAAAhklEQVR42u2RywrEIBAEg6hIBBUf6N/nUzvpgyCyF7OnXWwoGAancJjj2Nn5k7TWrgeMvZwzvpKWUkDGnjEGtdY1MQf6UIwRZH6TUlqThhBAWDvnQObVvfdr0vM8QVhba0HG1Xt/SSqlBOmSLhqjtX5/LKUUyHx9IcR76TN8zYJPP9/Z+aXcJKEopXKViR4AAAAASUVORK5CYII="/>
+				<element name="unmuteButton" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAYCAYAAAAVibZIAAAAfklEQVR42u2T4QrAEBRGRSRiIvI291H3qDYry5Yfm9RaOaXvfledXyA0mfyQGGNq7NbW/jEhBPDeXwS533evcc6BtfaU5Lnu3RhjQGt9iHKWufQuqZQyKaWgzvquS8o5T/kIIaDk0BfBGANKaRoqxRivhBDYc6x4Z5m/ePIRG0sNHYZyjgS4AAAAAElFTkSuQmCC"/>
+				<element name="fullscreenButton" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAQklEQVRIiWNgGAWjYMiD/0iYFDmSLbDHImdPLQtgBpEiR7Zl2NijAA5oEkT/0Whi5UiyAJ8BVMsHNMtoo2AUDAIAAGdcIN3IDNXoAAAAAElFTkSuQmCC"/>
+				<element name="normalscreenButton" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAP0lEQVRIx2NgGAWjYMiD/1RSQ5QB/wmIUWzJfzx8qhj+n4DYCAY0DyJ7PBbYU8sHMEvwiZFtODXUjIJRMJgBACpWIN2ZxdPTAAAAAElFTkSuQmCC"/>
+				
+				<element name="timeSliderRail" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAOElEQVRIDe3BwQkAIRADwAhhw/nU/kWwUK+KPITMABFh19Y+F0acY8CJvX9wYpXgRElwolSIiMf9ZWEDhtwurFsAAAAASUVORK5CYII="/>
+				<element name="timeSliderBuffer" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAN0lEQVRIDe3BwQkAMQwDMBcc55mRe9zi7RR+FCwBEWG39vcfGHFm4MTuhhMlwYlVBSdKhYh43AW/LQMKm1spzwAAAABJRU5ErkJggg=="/>
+				<element name="timeSliderProgress" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAIElEQVRIiWNgGAWjYBTQBfynMR61YCRYMApGwSigMQAAiVWPcbq6UkIAAAAASUVORK5CYII="/>
+				<element name="timeSliderThumb" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAYCAYAAAAyJzegAAAAQ0lEQVR42mNgGFpgPhD/h9IMDE3Nrf+hAmAM4jPx8PCgaAHxmdjY2FAEQXwmFlYWFEEQn4mVhRVFEMTHqhK7k4YIAAC30g1QkpZH0AAAAABJRU5ErkJggg=="/>
+			</elements>
+		</component>
+
+  </components>
+</skin>

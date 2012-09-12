@@ -4,6 +4,7 @@
     <title>Skin Errors</title>
     <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
     <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+    <script type="text/javascript" src="assets/primaryCookie.js"></script>
 </head>
 <body>
 
@@ -18,10 +19,8 @@
 <script type="text/javascript">
     jwplayer("skin404").setup({
         file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
-     	image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
-        height: 240,
-        width: 480,
-        skin: "assets/skins/notfound.zip"
+        primary: primaryCookie,
+        skin: "assets/notfound.zip"
     });
 </script>
 
@@ -42,11 +41,8 @@
 <script type="text/javascript">
     jwplayer("swf").setup({
         file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
-     	image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
-        height: 240,
-        width: 600,
-        skin: "assets/skins/five/five.swf",
-        primary: "flash"
+        primary: primaryCookie,
+        skin: "assets/five.swf"
     });
 </script>
 
@@ -67,10 +63,8 @@
 <script type="text/javascript">
     jwplayer("badxml").setup({
         file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
-     	image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
-        height: 240,
-        width: 600,
-        skin: "http://playertest.longtailvideo.com/mrss.xml"
+        primary: primaryCookie,
+        skin: "assets/empty.xml"
     });
 </script>
 
