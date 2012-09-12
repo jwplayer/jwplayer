@@ -33,7 +33,6 @@ package com.longtailvideo.jwplayer.model {
 		protected var _controlbar:String 	= "over";
 		protected var _dock:Boolean 		= true;
 		protected var _height:Number 		= 400;
-		protected var _logo:String 			= null;
 		protected var _playlistpos:String	= "none";
 		protected var _playlistsize:String 	= "180";
 		protected var _skin:String 			= null;
@@ -50,7 +49,6 @@ package com.longtailvideo.jwplayer.model {
 			setPluginProperty('controlbar.idlehide', true); 
 			playlistposition = _playlistpos;
 			playlistsize = _playlistsize;
-			logo = _logo;
 		}
 		
 		public function setConfig(config:Object):void {
@@ -205,18 +203,6 @@ package com.longtailvideo.jwplayer.model {
 		/** Height of the display in pixels. @default 280 **/
 		public function get height():Number { return _height; }
 		public function set height(x:Number):void { _height = x; }
-
-		/** Location of an external jpg, png or gif image to show in a corner of the display. With the default skin, this is top-right, but every skin can freely place the logo. **/
-		public function get logo():String { 
-			if (_pluginConfig['logo'] &&  _pluginConfig['logo'].hasOwnProperty('file'))
-				return _pluginConfig['logo']['file'];
-			else return _logo;
-		}
-		public function set logo(x:String):void {
-			if (x != null) {
-				setPluginProperty('logo.file', x.toLowerCase());
-			}
-		}
 
 		/** Position of the playlist. Can be set to bottom, over, right or none. @default none **/
 		public function get playlistposition():String { 

@@ -54,29 +54,6 @@
 			return flat;
 		};
 		
-		function parseConfigBlock(options, blockName) {
-			if (options[blockName]) {
-				var components = options[blockName];
-				for (var name in components) {
-					var component = components[name];
-					if (typeof component == "string") {
-						// i.e. controlbar="over"
-						if (!options[name]) {
-							options[name] = component;
-						}
-					} else {
-						// i.e. controlbar.position="over"
-						for (var option in component) {
-							if (!options[name + '.' + option]) {
-								options[name + '.' + option] = component[option];
-							}
-						}
-					}
-				}
-				delete options[blockName];
-			}
-		};
-		
 		function parsePlugins(pluginBlock) {
 			if (!pluginBlock) {
 				return {};
@@ -96,7 +73,7 @@
 			return flat;
 		};
 		
-		function jsonToFlashvars(json) {
+		/**function jsonToFlashvars(json) {
 			var flashvars = [];
 			for (var key in json) {
 				if (typeof(json[key]) == "object") {
@@ -106,7 +83,7 @@
 				}
 			}
 			return flashvars.substring(0, flashvars.length - 1);
-		}
+		}**/
 
 		function stringify(json) {
 			var flashvars = {};
@@ -155,9 +132,6 @@
 				delete params.plugins;
 			}
 
-			parseConfigBlock(params, 'components');
-			parseConfigBlock(params, 'providers');
-			
 			// Hack for the dock
 			if (typeof params["dock.position"] != "undefined"){
 				if (params["dock.position"].toString().toLowerCase() == "false") {
@@ -175,7 +149,7 @@
 			}
 			
 			var bgcolor = "#000000",
-				flashPlayer, flashvars,
+				flashPlayer, //flashvars,
 				wmode = params.wmode ? params.wmode : (params.height && params.height <= 40 ? "transparent" : "opaque"),
 				toDelete = ["height", "width", "modes", "events", "primary", "base", "fallback"];
 			
@@ -183,7 +157,7 @@
 				delete params[toDelete[i]];
 			}
 			
-			flashvars = jsonToFlashvars(params);
+			//flashvars = jsonToFlashvars(params);
 			// TODO: add ability to pass in JSON directly instead of going to/from a string
 			storedFlashvars[_container.id] = stringify(params);
 

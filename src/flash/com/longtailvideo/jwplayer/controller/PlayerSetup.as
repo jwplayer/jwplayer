@@ -68,6 +68,12 @@ package com.longtailvideo.jwplayer.controller {
 			tasker.addEventListener(Event.COMPLETE, setupTasksComplete);
 			tasker.addEventListener(ErrorEvent.ERROR, setupTasksFailed);
 			
+			setupTasks();
+			
+			tasker.runTasks();
+		}
+		
+		protected function setupTasks():void {
 			tasker.queueTask(loadConfig, loadConfigComplete);
 			tasker.queueTask(loadSkin);
 			tasker.queueTask(setupMediaProviders);
@@ -76,8 +82,6 @@ package com.longtailvideo.jwplayer.controller {
 			tasker.queueTask(loadPlaylist, loadPlaylistComplete);
 			tasker.queueTask(loadPreview);
 			tasker.queueTask(initPlugins);
-			
-			tasker.runTasks();
 		}
 		
 		protected function setupTasksComplete(evt:Event):void {
@@ -178,10 +182,10 @@ package com.longtailvideo.jwplayer.controller {
 		protected function setupView():void {
 			try {
 				_view.setupView();
+				tasker.success();
 			} catch (e:Error) {
 				tasker.failure(new ErrorEvent(ErrorEvent.ERROR, false, false, "Error setting up the player: " + e.message));
 			}
-			tasker.success();
 		}
 		
 		protected function loadPlugins():void {

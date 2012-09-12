@@ -21,8 +21,6 @@ package com.longtailvideo.jwplayer.view.components {
 			margin: 8, 
 			out: 1, 
 			over: 1, 
-			//timeout: 5,
-			//hide: "true",
 			position: "top-right"
 		}
 		/** Reference to the current fade timer **/
@@ -56,6 +54,9 @@ package com.longtailvideo.jwplayer.view.components {
 			loadFile();
 			alpha = 0;
 			_loadCallback = loadCallback;
+			if (getConfigParam('hide').toString().toLowerCase() == "false") {
+				show();
+			}
 		}
 		
 		/**
@@ -98,14 +99,10 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		/** Logo loaded - add to display **/
 		protected function loaderHandler(evt:Event):void {
-/*			if (getConfigParam('hide').toString() == "true" 
-					&& !(_player.state == PlayerState.BUFFERING || _player.state == PlayerState.PLAYING) ) {
-				visible = false;
-			}
-*/			if (loader is DisplayObject) {
+			if (loader is DisplayObject) {
 				addChild(loader);
 				if (_loadCallback != null) _loadCallback();
-//				resize(_width, _height);
+				resize(_width, _height);
 			} else {
 				Logger.log("Logo was not a display object");
 			}
@@ -145,26 +142,24 @@ package com.longtailvideo.jwplayer.view.components {
 
 		/** Fade in **/
 		override public function show():void {
-//			if (getConfigParam('hide').toString() == "true") {
-				visible = true;
-				_showing = true;
-				//alpha = 0;
-				clearTimeout(timeoutInterval);
-				animations.fade(getConfigParam('out'), 0.25);
-				timeoutInterval = setTimeout(hide, timeout * 1000);
-				mouseEnabled = true;
-//			}
+			visible = true;
+			_showing = true;
+			//alpha = 0;
+			clearTimeout(timeoutInterval);
+			animations.fade(getConfigParam('out'), 0.25);
+			timeoutInterval = setTimeout(hide, timeout * 1000);
+			mouseEnabled = true;
 		}
 		
 		
 		/** Fade out **/
 		override public function hide():void {
-//			if (getConfigParam('hide').toString() == "true") {
+			if (getConfigParam('hide').toString() == "true") {
 				mouseEnabled = false;
 				_showing = false;
 				animations.fade(0, 0.5);
 				clearTimeout(timeoutInterval);
-//			}
+			}
 		}
 		
 		
@@ -172,9 +167,7 @@ package com.longtailvideo.jwplayer.view.components {
 		override public function resize(width:Number, height:Number):void {
 			_width = width;
 			_height = height;
-			var image:DisplayObject = loader ? loader : null;
-			var margin:Number = getConfigParam('margin');
-			var position:String = (getConfigParam('position') as String).toLowerCase(); 
+			var image:DisplayObject = logo;
 			if (image) {
 				if (position.indexOf('right') >= 0) {
 					image.x = _width - image.width - margin;
@@ -196,6 +189,10 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		public function get margin():Number {
 			return Number(getConfigParam('margin'));
+		}
+		
+		protected function get logo():DisplayObject {
+			return loader;
 		}
 		
 		/** Gets a configuration parameter **/
