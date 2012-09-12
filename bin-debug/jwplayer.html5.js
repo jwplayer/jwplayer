@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2478';
+	jwplayer.html5.version = '6.0.2481';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -3470,19 +3470,6 @@
 		html5 = jwplayer.html5,
 		_css = utils.css,
 	
-		_defaults = {
-			prefix: "http://l.longtailvideo.com/html5/",
-			file: "logo.png",
-			link: "http://www.longtailvideo.com/players/jw-flv-player/",
-			linktarget: "_top",
-			margin: 8,
-//			out: 0.5,
-//			over: 1,
-//			timeout: 5,
-			hide: true,
-			position: "top-right"
-		},
-		
 		UNDEFINED = undefined,
 		
 		JW_CSS_VISIBLE = "visible",
@@ -3490,17 +3477,17 @@
 		LOGO_CLASS = ".jwlogo";
 	
 	
-	html5.logo = function(api, logoConfig) {
+	var logo = html5.logo = function(api, logoConfig) {
 		var _api = api,
 			_id = _api.id + "_logo",
 			_settings,
 			_logo,
+			_defaults = logo.defaults,
 			_showing = false;
 		
 		function _setup() {
 			_setupConfig();
 			_setupDisplayElements();
-			//_setupMouseEvents();
 		}
 		
 		function _setupConfig() {
@@ -3561,12 +3548,6 @@
 			return _logo;
 		};
 		
-//		function _setupMouseEvents() {
-//			if (_settings.link) {
-//				
-//			}
-//		}
-//		
 		this.offset = function(offset) {
 			_css(_internalSelector(), { 'margin-bottom': offset }); 
 		}
@@ -3599,20 +3580,12 @@
 		this.hide = function() {
 			if (_settings.hide) {
 				_showing = false;
-//				_css(_internalSelector(), {
-//					opacity: 0,
-//					visibility: JW_CSS_HIDDEN,
-//				});
 				_logo.style.opacity = 0;
 			}
 		}
 
 		this.show = function() {
 			_showing = true;
-//			_css(_internalSelector(), {
-//				visibility: JW_CSS_VISIBLE,
-//				opacity: 1
-//			});
 			_logo.style.opacity = 1;
 		}
 		
@@ -3621,10 +3594,19 @@
 		return this;
 	};
 	
+	logo.defaults = {
+		prefix: "http://l.longtailvideo.com/html5/",
+		file: "logo.png",
+		link: "http://www.longtailvideo.com/players/jw-flv-player/",
+		linktarget: "_top",
+		margin: 8,
+		hide: true,
+		position: "top-right"
+	};
+	
 	_css(LOGO_CLASS, {
 		cursor: "pointer",
 	  	position: "absolute",
-//	  	visibility: JW_CSS_HIDDEN,
 	  	opacity: 0
 	});
 
@@ -4234,6 +4216,8 @@
 			_api.id = _model.id;
 			_view = new html5.view(_api, _model); 
 			_controller = new html5.controller(_model, _view);
+			
+			_api._model = _model;
 			
 			_initializeAPI();
 			
@@ -6006,6 +5990,7 @@
 			_isMobile = utils.isMobile(),
 			_isIPad = utils.isIPad() || utils.isAndroid(),
 			_forcedControls = (_model.mobilecontrols),
+			_errorState = FALSE,
 			_replayState,
 			_readyState,
 			_eventDispatcher = new events.eventdispatcher();
@@ -6021,6 +6006,7 @@
 		}
 		
 		this.setup = function(skin) {
+			if (_errorState) return;
 			_api.skin = skin;
 			
 			_container = _createElement("span", VIEW_MAIN_CONTAINER_CLASS);
@@ -6511,6 +6497,7 @@
 		}
 		
 		this.setupError = function(message) {
+			_errorState = true;
 			jwplayer.embed.errorScreen(_playerElement, message);
 			_completeSetup();
 		}

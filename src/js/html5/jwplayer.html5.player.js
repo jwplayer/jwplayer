@@ -22,6 +22,8 @@
 			_view = new html5.view(_api, _model); 
 			_controller = new html5.controller(_model, _view);
 			
+			_api._model = _model;
+			
 			_initializeAPI();
 			
 			var setup = new html5.setup(_model, _view, _controller);

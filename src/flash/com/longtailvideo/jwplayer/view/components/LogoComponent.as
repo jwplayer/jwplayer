@@ -19,8 +19,7 @@ package com.longtailvideo.jwplayer.view.components {
 			link: "http://www.longtailvideo.com/players/jw-flv-player/",
 			linktarget: "_top",
 			margin: 8, 
-			out: 1, 
-			over: 1, 
+			hide: true, 
 			position: "top-right"
 		}
 		/** Reference to the current fade timer **/
@@ -127,26 +126,26 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 		
 		/** Handles mouse outs **/
-		protected function outHandler(evt:MouseEvent=null):void {
+/*		protected function outHandler(evt:MouseEvent=null):void {
 			alpha = getConfigParam('out');
 		}
 		
-		
+*/		
 		/** Handles mouse overs **/
-		protected function overHandler(evt:MouseEvent):void {
+/*		protected function overHandler(evt:MouseEvent):void {
 			if (getConfigParam('link')) {
 				alpha = getConfigParam('over');
 			}
 		}
 		
-
+*/
 		/** Fade in **/
 		override public function show():void {
 			visible = true;
 			_showing = true;
 			//alpha = 0;
 			clearTimeout(timeoutInterval);
-			animations.fade(getConfigParam('out'), 0.25);
+			animations.fade(1, 0.25);
 			timeoutInterval = setTimeout(hide, timeout * 1000);
 			mouseEnabled = true;
 		}

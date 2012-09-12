@@ -56,6 +56,7 @@
 			_isMobile = utils.isMobile(),
 			_isIPad = utils.isIPad() || utils.isAndroid(),
 			_forcedControls = (_model.mobilecontrols),
+			_errorState = FALSE,
 			_replayState,
 			_readyState,
 			_eventDispatcher = new events.eventdispatcher();
@@ -71,6 +72,7 @@
 		}
 		
 		this.setup = function(skin) {
+			if (_errorState) return;
 			_api.skin = skin;
 			
 			_container = _createElement("span", VIEW_MAIN_CONTAINER_CLASS);
@@ -561,6 +563,7 @@
 		}
 		
 		this.setupError = function(message) {
+			_errorState = true;
 			jwplayer.embed.errorScreen(_playerElement, message);
 			_completeSetup();
 		}
