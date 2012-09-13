@@ -40,15 +40,6 @@ package com.longtailvideo.jwplayer.controller {
 		// So plugins can embed assets
 		private var flexDisplay:IFlexDisplayObject;
 		
-		protected function get pluginRepository():String {
-			try {
-				if (RootReference.root.loaderInfo.url.indexOf("https://") == 0) {
-					return "https://secureplugins.longtailvideo.com/"; 
-				}
-			} catch(e:Error) {}
-			return "http://plugins.longtailvideo.com/"; 
-		}
-		
 		public function PluginLoader() {
 			loaders = new Dictionary();
 			plugins = {};
@@ -59,7 +50,7 @@ package com.longtailvideo.jwplayer.controller {
 				var plugins:Array = pluginList.replace(/\s*/g,"").split(",");
 				for each(var plugin:String in plugins) {
 					if (plugin){
-						loadLocalPlugin(plugin); //Testing	
+						loadLocalPlugin(plugin);	
 					}
 				}
 			} else {
@@ -68,29 +59,13 @@ package com.longtailvideo.jwplayer.controller {
 		}
 		
 		private function loadLocalPlugin(plugin:String):void {
-			if (plugin.indexOf("/") >= 0) {
+			if (plugin.indexOf("/") >= 0 || plugin.indexOf(".swf")) {
 				var loader:AssetLoader = new AssetLoader();
 				loader.addEventListener(Event.COMPLETE, loadSuccess);
 				loader.addEventListener(ErrorEvent.ERROR, pluginLoadFailed);
 				loaders[loader] = plugin;
 				loader.load(plugin);
-			} else {
-				loadV5Plugin(plugin);
 			}
-		}
-		
-		private function loadV5Plugin(plugin:String):void {
-			var loader:AssetLoader = new AssetLoader();
-			loader.addEventListener(Event.COMPLETE, loadSuccess);
-			loader.addEventListener(ErrorEvent.ERROR, pluginLoadFailed);			
-			
-			var split:Array = plugin.substr(plugin.lastIndexOf("/")+1).replace(/(.*)\.swf$/i, "$1").split("-");
-			var name:String = split[0];
-			var version:String = split.length > 1 ? ("-" + split[1]) : "";
-			var url:String = pluginRepository + "6/" + name + "/" + name + version + ".swf";
-			
-			loaders[loader] = plugin;
-			loader.load(url);
 		}
 		
 		private function pluginLoadFailed(evt:ErrorEvent):void {

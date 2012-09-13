@@ -16,7 +16,7 @@ jwplayer = function(container) {
 	}
 };
 
-jwplayer.version = '6.0.2481';
+jwplayer.version = '6.0.2484';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -900,14 +900,16 @@ jwplayer.source = document.createElement("source");/**
 	
 	jwplayer.plugins.registerPlugin = function(id, arg1, arg2) {
 		var pluginId = jwplayer.utils.getPluginName(id);
-		if (_plugins[pluginId]) {
-			_plugins[pluginId].registerPlugin(id, arg1, arg2);
-		} else {
-			jwplayer.utils.log("A plugin ("+id+") was registered with the player that was not loaded. Please check your configuration.");
-			for (var pluginloader in _pluginLoaders){
-				_pluginLoaders[pluginloader].pluginFailed();
-			}
+		if (!_plugins[pluginId]) {
+			_plugins[pluginId] = new jwplayer.plugins.plugin(id);
 		}
+		_plugins[pluginId].registerPlugin(id, arg1, arg2);
+//		} else {
+//			jwplayer.utils.log("A plugin ("+id+") was registered with the player that was not loaded. Please check your configuration.");
+//			for (var pluginloader in _pluginLoaders){
+//				_pluginLoaders[pluginloader].pluginFailed();
+//			}
+//		}
 	}
 })(jwplayer);
 /**
@@ -923,6 +925,9 @@ jwplayer.source = document.createElement("source");/**
 				plugins[pluginName] = new jwplayer.plugins.plugin(url);
 			}
 			return plugins[pluginName];
+		}
+		this.getPlugins = function() {
+			return plugins;
 		}
 	}
 })(jwplayer);
@@ -941,8 +946,7 @@ jwplayer.source = document.createElement("source");/**
 	}
 	
 	plugins.plugin = function(url) {
-		var _repo = "http://plugins.longtailvideo.com",
-			_status = utils.loaderstatus.NEW,
+		var _status = utils.loaderstatus.NEW,
 			_flashPath,
 			_js,
 			_completeTimeout;
@@ -956,12 +960,13 @@ jwplayer.source = document.createElement("source");/**
 					return url;
 				case utils.pluginPathType.RELATIVE:
 					return utils.getAbsolutePath(url, window.location.href);
-				case utils.pluginPathType.CDN:
-					var pluginName = utils.getPluginName(url);
-					var pluginVersion = utils.getPluginVersion(url);
-					var repo = (window.location.href.indexOf("https://") == 0) ? _repo.replace("http://", "https://secure") : _repo;
-					return repo + "/" + jwplayer.version.split(".")[0] + "/" + pluginName + "/" 
-							+ pluginName + (pluginVersion !== "" ? ("-" + pluginVersion) : "") + ".js";
+//				case utils.pluginPathType.CDN:
+//					_status = utils.loaderstatus.COMPLETE;
+//					var pluginName = utils.getPluginName(url);
+//					var pluginVersion = utils.getPluginVersion(url);
+					//var repo = (window.location.href.indexOf("https://") == 0) ? _repo.replace("http://", "https://secure") : _repo;
+//					return repo + "/" + jwplayer.version.split(".")[0] + "/" + pluginName + "/" 
+//							+ pluginName + (pluginVersion !== "" ? ("-" + pluginVersion) : "") + ".js";
 			}
 		}
 		
@@ -981,6 +986,10 @@ jwplayer.source = document.createElement("source");/**
 			if (_status == utils.loaderstatus.NEW) {
 				if (url.lastIndexOf(".swf") > 0) {
 					_flashPath = url;
+					_status = utils.loaderstatus.COMPLETE;
+					_eventDispatcher.sendEvent(events.COMPLETE);
+					return;
+				} else if (utils.getPluginPathType(url) == utils.pluginPathType.CDN) {
 					_status = utils.loaderstatus.COMPLETE;
 					_eventDispatcher.sendEvent(events.COMPLETE);
 					return;
@@ -1031,11 +1040,11 @@ jwplayer.source = document.createElement("source");/**
 							return utils.getAbsolutePath(_flashPath, window.location.href);
 						}
 						return utils.getAbsolutePath(_flashPath, getJSPath());
-					case utils.pluginPathType.CDN:
-						if (_flashPath.indexOf("-") > -1){
-							return _flashPath+"h";
-						}
-						return _flashPath+"-h";
+//					case utils.pluginPathType.CDN:
+//						if (_flashPath.indexOf("-") > -1){
+//							return _flashPath+"h";
+//						}
+//						return _flashPath+"-h";
 				}
 			}
 			return null;
@@ -1075,8 +1084,7 @@ jwplayer.source = document.createElement("source");/**
 	var utils = jwplayer.utils, events = jwplayer.events;
 
 	jwplayer.plugins.pluginloader = function(model, config) {
-		var _plugins = {},
-			_status = utils.loaderstatus.NEW,
+		var _status = utils.loaderstatus.NEW,
 			_loading = false,
 			_iscomplete = false,
 			_errorState = false,
@@ -1111,9 +1119,9 @@ jwplayer.source = document.createElement("source");/**
 		// This is not entirely efficient, but it's simple
 		function _checkComplete() {
 			if (!_iscomplete) {
-				var incomplete = 0;
-				for (plugin in _plugins) {
-					var status = _plugins[plugin].getStatus(); 
+				var incomplete = 0, plugins = model.getPlugins();
+				for (plugin in plugins) {
+					var status = plugins[plugin].getStatus(); 
 					if (status == utils.loaderstatus.LOADING || status == utils.loaderstatus.NEW) {
 						incomplete++;
 					}
@@ -1129,24 +1137,31 @@ jwplayer.source = document.createElement("source");/**
 			var flashPlugins = {
 				length: 0,
 				plugins: {}
-			};
-			var jsplugins = {
+			},
+			jsplugins = {
 				length: 0,
 				plugins: {}
-			};
-			for (var plugin in _plugins) {
-				var pluginName = _plugins[plugin].getPluginName();
-				if (_plugins[plugin].getFlashPath()) {
-					flashPlugins.plugins[_plugins[plugin].getFlashPath()] = config.plugins[plugin];
-					flashPlugins.plugins[_plugins[plugin].getFlashPath()].pluginmode = _plugins[plugin].getPluginmode();
+			},
+			plugins = model.getPlugins();
+			
+			for (var plugin in plugins) {
+				var pluginObj = plugins[plugin],
+					pluginName = pluginObj.getPluginName(),
+					flashPath = pluginObj.getFlashPath(),
+					jsPlugin = pluginObj.getJS();
+				
+
+				if (flashPath) {
+					flashPlugins.plugins[flashPath] = utils.extend({}, config.plugins[plugin]);
+					flashPlugins.plugins[flashPath].pluginmode = pluginObj.getPluginmode();
 					flashPlugins.length++;
 				}
-				if (_plugins[plugin].getJS()) {
+				if (jsPlugin) {
 					var div = document.createElement("div");
 					div.id = api.id + "_" + pluginName;
 					div.style.position = "absolute";
 					div.style.zIndex = jsplugins.length + 10;
-					jsplugins.plugins[pluginName] = _plugins[plugin].getNewInstance(api, config.plugins[plugin], div);
+					jsplugins.plugins[pluginName] = pluginObj.getNewInstance(api, utils.extend({}, config.plugins[plugin]), div);
 					jsplugins.length++;
 					api.onReady(resizer(jsplugins.plugins[pluginName], div, true));
 					api.onResize(resizer(jsplugins.plugins[pluginName], div));
@@ -1160,7 +1175,7 @@ jwplayer.source = document.createElement("source");/**
 		
 		this.load = function() {
 			// Must be a hash map
-			if (utils.typeOf(config) != "object") {
+			if (utils.exists(config) && utils.typeOf(config) != "object") {
 				_checkComplete();
 				return;
 			}
@@ -1171,16 +1186,18 @@ jwplayer.source = document.createElement("source");/**
 			/** First pass to create the plugins and add listeners **/
 			for (var plugin in config) {
 				if (utils.exists(plugin)) {
-					_plugins[plugin] = model.addPlugin(plugin);
-					_plugins[plugin].addEventListener(events.COMPLETE, _checkComplete);
-					_plugins[plugin].addEventListener(events.ERROR, _pluginError);
+					var pluginObj = model.addPlugin(plugin);
+					pluginObj.addEventListener(events.COMPLETE, _checkComplete);
+					pluginObj.addEventListener(events.ERROR, _pluginError);
 				}
 			}
 			
+			var plugins = model.getPlugins();
+			
 			/** Second pass to actually load the plugins **/
-			for (plugin in _plugins) {
+			for (plugin in plugins) {
 				// Plugin object ensures that it's only loaded once
-				_plugins[plugin].load();
+				plugins[plugin].load();
 			}
 			
 			_loading = false;

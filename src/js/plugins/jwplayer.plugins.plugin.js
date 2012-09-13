@@ -13,8 +13,7 @@
 	}
 	
 	plugins.plugin = function(url) {
-		var _repo = "http://plugins.longtailvideo.com",
-			_status = utils.loaderstatus.NEW,
+		var _status = utils.loaderstatus.NEW,
 			_flashPath,
 			_js,
 			_completeTimeout;
@@ -28,12 +27,13 @@
 					return url;
 				case utils.pluginPathType.RELATIVE:
 					return utils.getAbsolutePath(url, window.location.href);
-				case utils.pluginPathType.CDN:
-					var pluginName = utils.getPluginName(url);
-					var pluginVersion = utils.getPluginVersion(url);
-					var repo = (window.location.href.indexOf("https://") == 0) ? _repo.replace("http://", "https://secure") : _repo;
-					return repo + "/" + jwplayer.version.split(".")[0] + "/" + pluginName + "/" 
-							+ pluginName + (pluginVersion !== "" ? ("-" + pluginVersion) : "") + ".js";
+//				case utils.pluginPathType.CDN:
+//					_status = utils.loaderstatus.COMPLETE;
+//					var pluginName = utils.getPluginName(url);
+//					var pluginVersion = utils.getPluginVersion(url);
+					//var repo = (window.location.href.indexOf("https://") == 0) ? _repo.replace("http://", "https://secure") : _repo;
+//					return repo + "/" + jwplayer.version.split(".")[0] + "/" + pluginName + "/" 
+//							+ pluginName + (pluginVersion !== "" ? ("-" + pluginVersion) : "") + ".js";
 			}
 		}
 		
@@ -53,6 +53,10 @@
 			if (_status == utils.loaderstatus.NEW) {
 				if (url.lastIndexOf(".swf") > 0) {
 					_flashPath = url;
+					_status = utils.loaderstatus.COMPLETE;
+					_eventDispatcher.sendEvent(events.COMPLETE);
+					return;
+				} else if (utils.getPluginPathType(url) == utils.pluginPathType.CDN) {
 					_status = utils.loaderstatus.COMPLETE;
 					_eventDispatcher.sendEvent(events.COMPLETE);
 					return;
@@ -103,11 +107,11 @@
 							return utils.getAbsolutePath(_flashPath, window.location.href);
 						}
 						return utils.getAbsolutePath(_flashPath, getJSPath());
-					case utils.pluginPathType.CDN:
-						if (_flashPath.indexOf("-") > -1){
-							return _flashPath+"h";
-						}
-						return _flashPath+"-h";
+//					case utils.pluginPathType.CDN:
+//						if (_flashPath.indexOf("-") > -1){
+//							return _flashPath+"h";
+//						}
+//						return _flashPath+"-h";
 				}
 			}
 			return null;

@@ -12,5 +12,8 @@
 			}
 			return plugins[pluginName];
 		}
+		this.getPlugins = function() {
+			return plugins;
+		}
 	}
 })(jwplayer);

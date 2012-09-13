@@ -17,13 +17,15 @@
 	
 	jwplayer.plugins.registerPlugin = function(id, arg1, arg2) {
 		var pluginId = jwplayer.utils.getPluginName(id);
-		if (_plugins[pluginId]) {
-			_plugins[pluginId].registerPlugin(id, arg1, arg2);
-		} else {
-			jwplayer.utils.log("A plugin ("+id+") was registered with the player that was not loaded. Please check your configuration.");
-			for (var pluginloader in _pluginLoaders){
-				_pluginLoaders[pluginloader].pluginFailed();
-			}
+		if (!_plugins[pluginId]) {
+			_plugins[pluginId] = new jwplayer.plugins.plugin(id);
 		}
+		_plugins[pluginId].registerPlugin(id, arg1, arg2);
+//		} else {
+//			jwplayer.utils.log("A plugin ("+id+") was registered with the player that was not loaded. Please check your configuration.");
+//			for (var pluginloader in _pluginLoaders){
+//				_pluginLoaders[pluginloader].pluginFailed();
+//			}
+//		}
 	}
 })(jwplayer);
