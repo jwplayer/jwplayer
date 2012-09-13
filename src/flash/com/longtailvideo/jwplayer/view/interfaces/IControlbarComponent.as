@@ -62,18 +62,6 @@ package com.longtailvideo.jwplayer.view.interfaces {
 	 * @eventType com.longtailvideo.jwplayer.events.ViewEvent.JWPLAYER_VIEW_SEEK
 	 */
 	[Event(name="jwPlayerViewSeek", type="com.longtailvideo.jwplayer.events.ViewEvent")]
-	/**
-	 * Sent when the controlbar begins to become visible
-	 *
-	 * @eventType com.longtailvideo.jwplayer.events.ComponentEvent.JWPLAYER_COMPONENT_SHOW
-	 */
-	[Event(name="jwPlayerComponentShow", type="com.longtailvideo.jwplayer.events.ComponentEvent")]
-	/**
-	 * Sent when the controlbar begins to hide
-	 *
-	 * @eventType com.longtailvideo.jwplayer.events.ComponentEvent.JWPLAYER_COMPONENT_HIDE
-	 */
-	[Event(name="jwPlayerComponentHide", type="com.longtailvideo.jwplayer.events.ComponentEvent")]
 
 	public interface IControlbarComponent extends IPlayerComponent {
 		function addButton(icon:DisplayObject, name:String, handler:Function = null):MovieClip;

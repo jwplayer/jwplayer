@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Controls API</title>
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <script type="text/javascript" src="assets/primaryCookie.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+
+</head>
+<body>
+
+<h1>Controls API</h1>
+<div class="core">List of test devices</div>
+<p>This page tests the player's controls API calls.</p>
+
+<h2>Getters / Setter</h2>
+
+<div style="position: relative">
+	<div id="get_set"></div>
+	<pre id="get_set_output" style="float:right; top:0; right: 0; position:absolute"></pre>
+</div>
+
+<script type="text/javascript">
+	function log(id, message) {
+		var element = document.getElementById(id);
+		if (!message) element.innerHTML = "";
+		else element.innerHTML += message + "\n";
+	}
+
+    jwplayer("get_set").setup({
+        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
+   		image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+   		primary: primaryCookie,
+        events: {
+			onControls: controlsHandler
+    	}
+    });
+
+    function controlsHandler(evt) {
+		log("get_set_output", "Controls event: " + evt.controls);
+	}
+
+	function getControls() {
+		log("get_set_output", "getControls(): " + jwplayer("get_set").getControls());
+		var margins = jwplayer("get_set").getSafeMargins();
+		log("get_set_output", "getSafeMargins(): " + margins.x + "," + margins.y + " " + margins.width + "x" + margins.height);
+	}
+
+	function setControls(state) {
+		jwplayer("get_set").setControls(state);
+	}
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Check <a href="#" onclick="getControls(); return false;">getControls()</a></td>
+    <td>Log shows getControls(): true, and getSafeMargins() indicates the region between the top control elements and the bottom ones (should be around 0,27 480x208)</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>While player is idle, <a href="#" onclick="setControls(false); return false;">setControls(false)</a></td>
+    <td>Play icon disappears</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Check <a href="#" onclick="getControls(); return false;">getControls()</a></td>
+    <td>Log shows getControls(): false, and getSafeMargins() returns 0,0 0x0)</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Begin playback</a></td>
+    <td>Buffering icon remains invisible.  Mousing over the player shows the logo but nothing else.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>While player is playing, <a href="#" onclick="setControls(true); return false;">setControls(true)</a></td>
+    <td>When mousing over the player, the controls are now displayed</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Check <a href="#" onclick="getControls(); return false;">getControls()</a></td>
+    <td>Log shows getControls(): true, and getSafeMargins() returns the original values</td>
+    <td class="check"></td>
+</tr></table>
+
+
+
+</body>
+</html>

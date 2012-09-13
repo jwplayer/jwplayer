@@ -239,7 +239,7 @@
 		}
 
 		this.show = function() {
-			if (_button) _button.show();
+			if (_button && _api.jwGetState() != states.PLAYING) _button.show();
 		}
 		
 		this.hide = function() {

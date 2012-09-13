@@ -138,6 +138,15 @@ package com.longtailvideo.jwplayer.events {
 		 */
 		public static var JWPLAYER_VIEW_CLICK:String = "jwplayerViewClick";		
 
+		/**
+		 * The ViewEvent.JWPLAYER_CONTROLS constant defines the value of the
+		 * <code>type</code> property of the event object
+		 * for a <code>jwplayerViewControls</code> event.
+		 *
+		 * @eventType jwplayerViewControls
+		 */
+		public static var JWPLAYER_CONTROLS:String = "jwplayerViewControls";
+
 		/** Sent along with REQUEST Event types. **/
 		public var data:*;
 		

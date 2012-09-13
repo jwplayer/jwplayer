@@ -4,6 +4,9 @@ package com.longtailvideo.jwplayer.view {
 	import com.longtailvideo.jwplayer.player.*;
 	import com.longtailvideo.jwplayer.plugins.*;
 	import com.longtailvideo.jwplayer.utils.*;
+	import com.longtailvideo.jwplayer.view.components.ControlbarComponent;
+	import com.longtailvideo.jwplayer.view.components.DockComponent;
+	import com.longtailvideo.jwplayer.view.components.LogoComponent;
 	import com.longtailvideo.jwplayer.view.interfaces.*;
 	
 	import flash.display.*;
@@ -376,6 +379,8 @@ package com.longtailvideo.jwplayer.view {
 					_components.display.hide();
 					_components.controlbar.hide();
 					_components.dock.hide();
+				} else {
+					_components.display.show();
 				}
 				_components.controlbar.audioMode(false);
 				showMedia();
@@ -741,37 +746,6 @@ package com.longtailvideo.jwplayer.view {
 		}
 		
 		/** If the mouse leaves the stage, hide the controlbar if position is 'over' **/
-/*		private function mouseLeftStage(evt:Event=null):void {
-			if (!hidden) {
-				if (_player.state != PlayerState.IDLE) {
-					if (evt) { sendHide(); }
-					animations.fade(0);
-					hideOverlays();
-				}
-			}
-			hideControls();
-		}
-*/
-/*		protected function sendShow():void {
-			if (!_sentShow) {
-				if (_playerReady) {
-					dispatchEvent(new ComponentEvent(ComponentEvent.JWPLAYER_COMPONENT_SHOW, this, displayRect));
-					_sentShow = true;
-					_sentHide = false;
-				} else {
-					_showOnReady = true;
-				}
-			}
-		}
-		
-		protected function sendHide():void {
-			if (!_sentHide) {
-				dispatchEvent(new ComponentEvent(ComponentEvent.JWPLAYER_COMPONENT_HIDE, this, displayRect));
-				_sentShow = false;
-				_sentHide = true;
-			}
-		}		
-*/
 		private function startFader():void {
 			if (!isNaN(_fadingOut)) {
 				clearTimeout(_fadingOut);
@@ -786,7 +760,35 @@ package com.longtailvideo.jwplayer.view {
 				Mouse.show();
 			}
 		}
+		
+		public function setControls(newstate:Boolean):void {
+			var oldstate:Boolean = _model.config.controls;
+			if (newstate != oldstate) {
+				_model.config.controls = newstate;
+				redraw();
+				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_CONTROLS, newstate));
+			}
+		}
+		
+		public function getSafeMargins():Rectangle {
+			var bounds:Rectangle = new Rectangle();
+			var logo:LogoComponent = _components.logo as LogoComponent;
+			var dock:DockComponent = _components.dock as DockComponent;
+			var dockShowing:Boolean = (dock.numButtons > 0);
+			var cb:ControlbarComponent = _components.controlbar as ControlbarComponent;
+			var logoTop:Boolean = (logo.position.indexOf("top") == 0);
+			
+			if (_model.config.controls) {
+				bounds.x = 0;
+				bounds.y = Math.round(Math.max(dockShowing ? dock.getBounds(_componentsLayer).bottom : 0, logoTop ? logo.getBounds(_componentsLayer).bottom : 0));
+				bounds.width = Math.round(_components.display.width);
+				bounds.height = Math.round((logoTop ? cb.getBounds(_componentsLayer).top : logo.getBounds(_componentsLayer).top) - bounds.y);
+			}
+			
+			return bounds;
+		}
 
+		
 		
 	}
 }

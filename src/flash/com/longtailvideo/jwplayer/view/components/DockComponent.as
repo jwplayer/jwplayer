@@ -11,19 +11,6 @@ package com.longtailvideo.jwplayer.view.components {
 	import flash.geom.*;
 	import flash.utils.*;
 	
-	/**
-	 * Sent when the dock begins to become visible
-	 *
-	 * @eventType com.longtailvideo.jwplayer.events.ComponentEvent.JWPLAYER_COMPONENT_SHOW
-	 */
-	[Event(name="jwPlayerComponentShow", type="com.longtailvideo.jwplayer.events.ComponentEvent")]
-	/**
-	 * Sent when the dock begins to hide
-	 *
-	 * @eventType com.longtailvideo.jwplayer.events.ComponentEvent.JWPLAYER_COMPONENT_HIDE
-	 */
-	[Event(name="jwPlayerComponentHide", type="com.longtailvideo.jwplayer.events.ComponentEvent")]
-	
 	public class DockComponent extends CoreComponent implements IDockComponent {
 		/** Default configuration vars for this component. **/
 		private var settings:Object;
@@ -191,7 +178,6 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 			if (_fullscreen != _player.config.fullscreen) {
 				_fullscreen = _player.config.fullscreen;
-				_sentShow = false;
 			}
 			stateHandler();
 		}
@@ -278,7 +264,6 @@ package com.longtailvideo.jwplayer.view.components {
 				//_hiding = false;
 				//this.visible = true;
 				animations.fade(1, 0.5);
-				sendShow();
 			}
 		}
 
@@ -287,7 +272,6 @@ package com.longtailvideo.jwplayer.view.components {
 				//_hiding = true;
 				//this.visible = false;
 				animations.fade(0, 0.5);
-				sendHide();
 			}
 		}
 
@@ -297,6 +281,10 @@ package com.longtailvideo.jwplayer.view.components {
 			} else {
 				return super.displayRect;
 			}
+		}
+		
+		public function get numButtons():Number {
+			return buttons ? buttons.length : 0;
 		}
 		
 	}

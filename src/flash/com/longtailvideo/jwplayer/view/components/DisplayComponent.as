@@ -13,19 +13,6 @@
 	import flash.text.*;
 	import flash.utils.*;
 
-	/**
-	 * Sent when the display icon begins to become visible
-	 *
-	 * @eventType com.longtailvideo.jwplayer.events.ComponentEvent.JWPLAYER_COMPONENT_SHOW
-	 */
-	[Event(name="jwPlayerComponentShow", type="com.longtailvideo.jwplayer.events.ComponentEvent")]
-	/**
-	 * Sent when the display icon begins to hide
-	 *
-	 * @eventType com.longtailvideo.jwplayer.events.ComponentEvent.JWPLAYER_COMPONENT_HIDE
-	 */
-	[Event(name="jwPlayerComponentHide", type="com.longtailvideo.jwplayer.events.ComponentEvent")]
-	
 	public class DisplayComponent extends CoreComponent implements IDisplayComponent {
 		protected var _icon:DisplayIcon;
 		protected var _iconArea:Rectangle;
@@ -173,14 +160,8 @@
 		
 		
 		protected function setIcon(displayIcon:DisplayIcon):void {
-			var sendShowEvent:Boolean = false;
-			var sendHideEvent:Boolean = false;
-
-			sendHideEvent = !_hiding;
-
 			if (_fullscreen != _player.config.fullscreen) {
 				_fullscreen = _player.config.fullscreen;
-				sendShowEvent = true;
 			}
 			
 			if (displayIcon) {
@@ -198,14 +179,7 @@
 
 				positionIcon();
 				_iconArea = _icon.getRect(_overlay);
-				
-				if (sendShowEvent) {
-					sendShow();
-				}
 			} else {
-				if (sendHideEvent) {
-					sendHide();
-				}
 				if (_icon && _icon.parent && _icon.parent == _overlay) {
 					new Animations(_icon).fade(0);
 				}
@@ -312,9 +286,6 @@
 				_overlay.visible = false;
 			}
 			if (!_hiding) {
-				if (_icon) {
-					sendHide();
-				}
 				_hiding = true;
 			}
 		}
@@ -325,9 +296,6 @@
 				_overlay.visible = true;
 			}
 			if (_hiding) {
-				if (_icon) {
-					sendShow();
-				}
 				_hiding = false;
 			}
 		}

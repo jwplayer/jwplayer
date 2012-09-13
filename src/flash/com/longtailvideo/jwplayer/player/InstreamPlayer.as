@@ -36,6 +36,7 @@ package com.longtailvideo.jwplayer.player
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.geom.Rectangle;
 	import flash.utils.setTimeout;
 	
 	public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPlayer, IPlayer {
@@ -519,6 +520,18 @@ package com.longtailvideo.jwplayer.player
 		}
 		
 		public function setCurrentQuality(index:Number):void {
+			throw new Error("Unsupported IPlayer method in InstreamPlayer");
+		}
+		
+		public function getControls():Boolean {
+			throw new Error("Unsupported IPlayer method in InstreamPlayer");
+		}
+		
+		public function setControls(state:Boolean):void {
+			throw new Error("Unsupported IPlayer method in InstreamPlayer");
+		}
+		
+		public function getSafeMargins():Rectangle {
 			throw new Error("Unsupported IPlayer method in InstreamPlayer");
 		}
 		

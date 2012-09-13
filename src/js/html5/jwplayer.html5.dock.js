@@ -216,6 +216,10 @@
 			}
 		}
 		
+		_this.numButtons = function() {
+			return _buttonCount;
+		}
+		
 		function _setCaps() {
 			_css(D_CLASS + " .capLeft, " + D_CLASS + " .capRight", {
 				display: _buttonCount ? "block" : "none"

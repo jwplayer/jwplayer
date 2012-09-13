@@ -16,7 +16,7 @@ jwplayer = function(container) {
 	}
 };
 
-jwplayer.version = '6.0.2484';
+jwplayer.version = '6.0.2487';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -731,7 +731,11 @@ jwplayer.source = document.createElement("source");/**
 
 		// Display CLick
 		JWPLAYER_DISPLAY_CLICK : 'jwplayerViewClick',
+		
+		// Controls show/hide
+		JWPLAYER_CONTROLS : 'jwplayerViewControls',
 
+		
 		// Instream events
 		JWPLAYER_INSTREAM_CLICK : 'jwplayerInstreamClicked',
 		JWPLAYER_INSTREAM_DESTROYED : 'jwplayerInstreamDestroyed'
@@ -2425,6 +2429,15 @@ jwplayer.source = document.createElement("source");/**
 		_this.setCurrentQuality = function(level) {
 			_callInternal("jwSetCurrentQuality", level);
 		};
+		_this.getControls = function() {
+			return _callInternal("jwGetControls");
+		};
+		_this.getSafeMargins = function() {
+			return _callInternal("jwGetSafeMargins");
+		};	
+		_this.setControls = function(state) {
+			_callInternal("jwSetControls", state);
+		};
 		
 		var _eventMapping = {
 			onBufferChange: events.JWPLAYER_MEDIA_BUFFER,
@@ -2445,6 +2458,7 @@ jwplayer.source = document.createElement("source");/**
 			onBeforePlay: events.JWPLAYER_MEDIA_BEFOREPLAY,
 			onBeforeComplete: events.JWPLAYER_MEDIA_BEFORECOMPLETE,
 			onDisplayClick: events.JWPLAYER_DISPLAY_CLICK,
+			onControls: events.JWPLAYER_CONTROLS,
 			onQualityLevels: events.JWPLAYER_MEDIA_LEVELS,
 			onQualityChange: events.JWPLAYER_MEDIA_LEVEL_CHANGED
 		};

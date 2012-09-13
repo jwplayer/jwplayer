@@ -21,7 +21,7 @@
 		//JW_CSS_LEFT = "left",
 		//JW_CSS_RIGHT = "right",
 		JW_CSS_100PCT = "100%",
-		JW_CSS_SMOOTH_EASE = "opacity .15s, visibility .15s, left .1s linear",
+		JW_CSS_SMOOTH_EASE = "opacity .15s, visibility .15s, left .01s linear",
 		
 		OVERLAY_CLASS = '.jwoverlay',
 		CONTENTS_CLASS = 'jwcontents',

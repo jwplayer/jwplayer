@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2484';
+	jwplayer.html5.version = '6.0.2487';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -27,9 +27,9 @@
 	utils.serialize = function(val) {
 		if (val == null) {
 			return null;
-		} else if (val == 'true') {
+		} else if (val.toString().toLowerCase() == 'true') {
 			return true;
-		} else if (val == 'false') {
+		} else if (val.toString().toLowerCase() == 'false') {
 			return false;
 		} else if (isNaN(Number(val)) || val.length > 5 || val.length == 0) {
 			return val;
@@ -197,17 +197,24 @@
 
 	/** Replacement for getBoundingClientRect, which isn't supported in iOS 3.1.2 **/
 	utils.bounds = function(element) {
-		if (!element) return {};
+		if (!element) return {
+			left: 0,
+			right: 0,
+			width: 0,
+			height: 0,
+			right: 0,
+			bottom: 0
+		};
 		
 		var obj = element,
 			left = 0,
 			top = 0,
-			width = element.offsetWidth,
-			height = element.offsetHeight;
+			width = isNaN(element.offsetWidth) ? 0 : element.offsetWidth,
+			height = isNaN(element.offsetHeight) ? 0 : element.offsetHeight;
 		
 		do {
-			left += obj.offsetLeft;
-			top += obj.offsetTop;
+			left += isNaN(obj.offsetLeft) ? 0 : obj.offsetLeft;
+			top += isNaN(obj.offsetTop) ? 0 : obj.offsetTop;
 		} while (obj = obj.offsetParent);
 		
 		return { 
@@ -2559,7 +2566,7 @@
 		}
 
 		this.show = function() {
-			if (_button) _button.show();
+			if (_button && _api.jwGetState() != states.PLAYING) _button.show();
 		}
 		
 		this.hide = function() {
@@ -3051,6 +3058,10 @@
 				_buttonCount--;
 				_setCaps();
 			}
+		}
+		
+		_this.numButtons = function() {
+			return _buttonCount;
 		}
 		
 		function _setCaps() {
@@ -3949,7 +3960,7 @@
 		//JW_CSS_LEFT = "left",
 		//JW_CSS_RIGHT = "right",
 		JW_CSS_100PCT = "100%",
-		JW_CSS_SMOOTH_EASE = "opacity .15s, visibility .15s, left .1s linear",
+		JW_CSS_SMOOTH_EASE = "opacity .15s, visibility .15s, left .01s linear",
 		
 		OVERLAY_CLASS = '.jwoverlay',
 		CONTENTS_CLASS = 'jwcontents',
@@ -4258,8 +4269,9 @@
 			_api.jwGetQualityLevels = _controller.getQualityLevels;
 			_api.jwGetCurrentQuality = _controller.getCurrentQuality;
 			_api.jwSetCurrentQuality = _controller.setCurrentQuality;
+			_api.jwSetControls = _view.setControls;
+			_api.jwGetSafeMargins = _view.getSafeMargins; 
 			
-
 			_api.jwGetPlaylistIndex = _statevarFactory('item');
 			_api.jwGetPosition = _statevarFactory('position');
 			_api.jwGetDuration = _statevarFactory('duration');
@@ -4272,6 +4284,7 @@
 			_api.jwGetState = _statevarFactory('state');
 			_api.jwGetStretching = _statevarFactory('stretching');
 			_api.jwGetPlaylist = _statevarFactory('playlist');
+			_api.jwGetControls = _statevarFactory('controls');
 
 			/** InStream API **/
 			_api.jwDetachMedia = _controller.detachMedia;
@@ -6512,6 +6525,45 @@
 
 		this.removeButton = function(id) {
 			if (_dock) _dock.removeButton(id);
+		}
+		
+		this.setControls = function(state) {
+			var oldstate = _model.controls,
+				newstate = state ? TRUE : FALSE;
+			_model.controls = newstate;
+			if (newstate != oldstate) {
+				if (newstate) {
+					_showDisplay();
+				} else {
+					_hideControls();
+					_hideDisplay();
+				}
+				_eventDispatcher.sendEvent(events.JWPLAYER_CONTROLS, { controls: newstate });
+			}
+		}
+		
+		this.getSafeMargins = function() {
+			var controls = _model.controls,
+				dispBounds = utils.bounds(_container),
+				dispOffset = dispBounds.top,
+				cbBounds = utils.bounds(_controlbar.element()),
+				dockButtons = (_dock.numButtons() > 0),
+				dockBounds = utils.bounds(_dock.element()),
+				logoBounds = utils.bounds(_logo.element()),
+				logoTop = (_logo.position().indexOf("top") == 0), 
+				bounds = {};
+			
+			bounds.x = 0;
+			bounds.y = Math.max(dockButtons ? (dockBounds.top + dockBounds.height - dispOffset) : 0, logoTop ? (logoBounds.top + logoBounds.height - dispOffset) : 0);
+			bounds.width = dispBounds.width;
+			bounds.height = (logoTop ? cbBounds.top : logoBounds.top) - bounds.y - dispOffset;
+			
+			return {
+				x: 0,
+				y: controls ? bounds.y : 0,
+				width: controls ? bounds.width : 0,
+				height: controls ? bounds.height : 0
+			}
 		}
 
 		_init();

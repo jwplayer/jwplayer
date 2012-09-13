@@ -80,18 +80,6 @@ package com.longtailvideo.jwplayer.view.components {
 	 * @eventType com.longtailvideo.jwplayer.events.ViewEvent.JWPLAYER_VIEW_SEEK
 	 */
 	[Event(name="jwPlayerViewSeek", type="com.longtailvideo.jwplayer.events.ViewEvent")]
-	/**
-	 * Sent when the controlbar begins to become visible
-	 *
-	 * @eventType com.longtailvideo.jwplayer.events.ComponentEvent.JWPLAYER_COMPONENT_SHOW
-	 */
-	[Event(name="jwPlayerComponentShow", type="com.longtailvideo.jwplayer.events.ComponentEvent")]
-	/**
-	 * Sent when the controlbar begins to hide
-	 *
-	 * @eventType com.longtailvideo.jwplayer.events.ComponentEvent.JWPLAYER_COMPONENT_HIDE
-	 */
-	[Event(name="jwPlayerComponentHide", type="com.longtailvideo.jwplayer.events.ComponentEvent")]
 	
 	public class ControlbarComponent extends CoreComponent implements IControlbarComponent {
 		protected var _buttons:Object = {};
@@ -762,11 +750,7 @@ package com.longtailvideo.jwplayer.view.components {
 
 			if (_fullscreen != _player.config.fullscreen) {
 				_fullscreen = _player.config.fullscreen;
-				_sentShow = false;
 				//stopFader();
-			}
-			if (visible && alpha > 0) {
-				sendShow();
 			}
 			
 			stateHandler();
@@ -861,7 +845,6 @@ package com.longtailvideo.jwplayer.view.components {
 //				_hiding = false;
 //				this.visible = true;
 				animations.fade(1, .5);
-				sendShow();
 			}
 		}
 		
@@ -879,7 +862,6 @@ package com.longtailvideo.jwplayer.view.components {
 //				this.visible = false;
 				animations.fade(0, .5);
 				hideOverlays();
-				sendHide();
 			}
 		}
 

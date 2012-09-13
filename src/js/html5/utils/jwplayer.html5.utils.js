@@ -18,9 +18,9 @@
 	utils.serialize = function(val) {
 		if (val == null) {
 			return null;
-		} else if (val == 'true') {
+		} else if (val.toString().toLowerCase() == 'true') {
 			return true;
-		} else if (val == 'false') {
+		} else if (val.toString().toLowerCase() == 'false') {
 			return false;
 		} else if (isNaN(Number(val)) || val.length > 5 || val.length == 0) {
 			return val;
@@ -188,17 +188,24 @@
 
 	/** Replacement for getBoundingClientRect, which isn't supported in iOS 3.1.2 **/
 	utils.bounds = function(element) {
-		if (!element) return {};
+		if (!element) return {
+			left: 0,
+			right: 0,
+			width: 0,
+			height: 0,
+			right: 0,
+			bottom: 0
+		};
 		
 		var obj = element,
 			left = 0,
 			top = 0,
-			width = element.offsetWidth,
-			height = element.offsetHeight;
+			width = isNaN(element.offsetWidth) ? 0 : element.offsetWidth,
+			height = isNaN(element.offsetHeight) ? 0 : element.offsetHeight;
 		
 		do {
-			left += obj.offsetLeft;
-			top += obj.offsetTop;
+			left += isNaN(obj.offsetLeft) ? 0 : obj.offsetLeft;
+			top += isNaN(obj.offsetTop) ? 0 : obj.offsetTop;
 		} while (obj = obj.offsetParent);
 		
 		return { 

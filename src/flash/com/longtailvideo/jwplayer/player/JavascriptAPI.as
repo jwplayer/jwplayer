@@ -1,32 +1,13 @@
 package com.longtailvideo.jwplayer.player {
-	import com.longtailvideo.jwplayer.events.ComponentEvent;
-	import com.longtailvideo.jwplayer.events.InstreamEvent;
-	import com.longtailvideo.jwplayer.events.MediaEvent;
-	import com.longtailvideo.jwplayer.events.PlayerEvent;
-	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
-	import com.longtailvideo.jwplayer.events.PlaylistEvent;
-	import com.longtailvideo.jwplayer.events.ViewEvent;
-	import com.longtailvideo.jwplayer.model.IInstreamOptions;
-	import com.longtailvideo.jwplayer.model.InstreamOptions;
-	import com.longtailvideo.jwplayer.model.Playlist;
-	import com.longtailvideo.jwplayer.model.PlaylistItem;
-	import com.longtailvideo.jwplayer.plugins.AbstractPlugin;
-	import com.longtailvideo.jwplayer.plugins.IPlugin;
-	import com.longtailvideo.jwplayer.utils.JavascriptSerialization;
-	import com.longtailvideo.jwplayer.utils.Logger;
-	import com.longtailvideo.jwplayer.utils.RootReference;
-	import com.longtailvideo.jwplayer.utils.Strings;
-	import com.longtailvideo.jwplayer.view.interfaces.IControlbarComponent;
-	import com.longtailvideo.jwplayer.view.interfaces.IDisplayComponent;
-	import com.longtailvideo.jwplayer.view.interfaces.IDockComponent;
-	import com.longtailvideo.jwplayer.view.interfaces.IPlayerComponent;
-	import com.longtailvideo.jwplayer.view.interfaces.IPlaylistComponent;
+	import com.longtailvideo.jwplayer.events.*;
+	import com.longtailvideo.jwplayer.model.*;
+	import com.longtailvideo.jwplayer.plugins.*;
+	import com.longtailvideo.jwplayer.utils.*;
+	import com.longtailvideo.jwplayer.view.interfaces.*;
 	
-	import flash.events.Event;
-	import flash.events.TimerEvent;
-	import flash.external.ExternalInterface;
-	import flash.utils.Timer;
-	import flash.utils.setTimeout;
+	import flash.events.*;
+	import flash.external.*;
+	import flash.utils.*;
 	
 	public class JavascriptAPI {
 		protected var _player:IPlayer;
@@ -134,6 +115,8 @@ package com.longtailvideo.jwplayer.player {
 				ExternalInterface.addCallback("jwGetVersion", js_getVersion);
 				ExternalInterface.addCallback("jwGetVolume", js_getVolume);
 				ExternalInterface.addCallback("jwGetStretching", js_getStretching);
+				ExternalInterface.addCallback("jwGetControls", js_getControls);
+				ExternalInterface.addCallback("jwGetSafeMargins", js_getSafeMargins);
 
 				// Player API Calls
 				ExternalInterface.addCallback("jwPlay", js_play);
@@ -148,6 +131,7 @@ package com.longtailvideo.jwplayer.player {
 				ExternalInterface.addCallback("jwSetVolume", js_volume);
 				ExternalInterface.addCallback("jwSetFullscreen", js_fullscreen);
 				ExternalInterface.addCallback("jwSetStretching", js_setStretching);
+				ExternalInterface.addCallback("jwSetControls", js_setControls);
 				
 				// Player Controls APIs
 				ExternalInterface.addCallback("jwControlbarShow", js_showControlbar);
@@ -217,8 +201,8 @@ package com.longtailvideo.jwplayer.player {
 				args = listenerCallbackState(evt as PlayerStateEvent);
 			else if (evt is PlaylistEvent)
 				args = listenerCallbackPlaylist(evt as PlaylistEvent);
-			else if (evt is ComponentEvent)
-				args = listenerCallbackComponent(evt as ComponentEvent);
+			else if (evt.type == ViewEvent.JWPLAYER_CONTROLS)
+				args = { controls: (evt as ViewEvent).data };
 			else if (evt is ViewEvent && (evt as ViewEvent).data != null)
 				args = { data: JavascriptSerialization.stripDots((evt as ViewEvent).data) };
 			else if (evt is PlayerEvent) {
@@ -307,26 +291,6 @@ package com.longtailvideo.jwplayer.player {
 			} else return {};
 		}
 
-		protected function listenerCallbackComponent(evt:ComponentEvent):Object {
-			var obj:Object = {};
-			if (evt.component is IControlbarComponent)
-				obj.component = "controlbar";
-			else if (evt.component is IPlaylistComponent)
-				obj.component = "playlist";
-			else if (evt.component is IDisplayComponent)
-				obj.component = "display";
-			else if (evt.component is IDockComponent)
-				obj.component = "dock";
-			
-			obj.boundingRect = { 
-				x: evt.boundingRect.x,
-				y: evt.boundingRect.y,
-				width: evt.boundingRect.width,
-				height: evt.boundingRect.height
-			};
-
-			return obj;
-		}
 
 		/***********************************************
 		 **                 GETTERS                   **
@@ -572,6 +536,18 @@ package com.longtailvideo.jwplayer.player {
 		
 		protected function js_setCurrentQuality(index:Number):void {
 			_player.setCurrentQuality(index);	
+		}
+		
+		protected function js_getControls():Boolean {
+			return _player.getControls();
+		}
+
+		protected function js_getSafeMargins():Object {
+			return JavascriptSerialization.rectangleToObject(_player.getSafeMargins());
+		}
+		
+		protected function js_setControls(state:Boolean):void {
+			_player.setControls(state);
 		}
 		
 		protected function callJS(functionName:String, args:*):void {

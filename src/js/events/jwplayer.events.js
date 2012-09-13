@@ -51,7 +51,11 @@
 
 		// Display CLick
 		JWPLAYER_DISPLAY_CLICK : 'jwplayerViewClick',
+		
+		// Controls show/hide
+		JWPLAYER_CONTROLS : 'jwplayerViewControls',
 
+		
 		// Instream events
 		JWPLAYER_INSTREAM_CLICK : 'jwplayerInstreamClicked',
 		JWPLAYER_INSTREAM_DESTROYED : 'jwplayerInstreamDestroyed'

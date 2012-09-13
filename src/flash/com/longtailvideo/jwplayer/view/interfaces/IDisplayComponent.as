@@ -22,18 +22,6 @@ package com.longtailvideo.jwplayer.view.interfaces {
 	 * @eventType com.longtailvideo.jwplayer.events.ViewEvent.JWPLAYER_VIEW_CLICK
 	 */
 	[Event(name="jwPlayerViewClick", type = "com.longtailvideo.jwplayer.events.ViewEvent")]
-	/**
-	 * Sent when the display icon begins to become visible
-	 *
-	 * @eventType com.longtailvideo.jwplayer.events.ComponentEvent.JWPLAYER_COMPONENT_SHOW
-	 */
-	[Event(name="jwPlayerComponentShow", type="com.longtailvideo.jwplayer.events.ComponentEvent")]
-	/**
-	 * Sent when the display icon begins to hide
-	 *
-	 * @eventType com.longtailvideo.jwplayer.events.ComponentEvent.JWPLAYER_COMPONENT_HIDE
-	 */
-	[Event(name="jwPlayerComponentHide", type="com.longtailvideo.jwplayer.events.ComponentEvent")]
 
 	public interface IDisplayComponent extends IPlayerComponent {
 		//function setIcon(displayIcon:DisplayObject):void;

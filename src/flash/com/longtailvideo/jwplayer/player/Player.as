@@ -23,6 +23,7 @@
 	import flash.display.DisplayObject;
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.geom.Rectangle;
 	import flash.utils.setTimeout;
 	
 	
@@ -307,7 +308,17 @@
 			if (model.media) model.media.currentQuality = index;
 		}
 		
+		public function getControls():Boolean {
+			return model.config.controls;
+		}
 
+		public function getSafeMargins():Rectangle {
+			return view.getSafeMargins();
+		}
+
+		public function setControls(state:Boolean):void {
+			view.setControls(state);
+		}
 		
 		///////////////////////////////////////////		
 		///      Disallowed Sprite methods       //

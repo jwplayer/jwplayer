@@ -4,6 +4,7 @@ package com.longtailvideo.jwplayer.utils
 	import com.longtailvideo.jwplayer.model.PlaylistItem;
 	import com.longtailvideo.jwplayer.model.PlaylistItemLevel;
 	
+	import flash.geom.Rectangle;
 	import flash.utils.getQualifiedClassName;
 
 	public class JavascriptSerialization
@@ -91,5 +92,14 @@ package com.longtailvideo.jwplayer.utils
 			}
 			return newObj;
 		}
+		
+		public static function rectangleToObject(rect:Rectangle):Object {
+			return {
+				x: rect.x,
+				y: rect.y,
+				width: rect.width,
+				height: rect.height
+			};			
+		} 
 	}
 }

@@ -1,5 +1,4 @@
 package com.longtailvideo.jwplayer.view.components {
-	import com.longtailvideo.jwplayer.events.ComponentEvent;
 	import com.longtailvideo.jwplayer.events.GlobalEventDispatcher;
 	import com.longtailvideo.jwplayer.events.IGlobalEventDispatcher;
 	import com.longtailvideo.jwplayer.events.PlayerEvent;
@@ -20,10 +19,7 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _hiding:Boolean = false;
 		protected var _fullscreen:Boolean = false;
 		
-		protected var _sentShow:Boolean = false;
-		protected var _sentHide:Boolean = false;
 		protected var _playerReady:Boolean = false;
-		protected var _showOnReady:Boolean =  false;
 
 		public function CoreComponent(player:IPlayer, name:String) {
 			_dispatcher = new GlobalEventDispatcher();
@@ -35,16 +31,12 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		protected function readyHandler(evt:PlayerEvent):void {
 			_playerReady = true;
-			if (_showOnReady) {
-				sendShow();
-			}
 		}
 		
 		public function hide():void {
 			if (!_hiding) {
 				_hiding = true;
 				this.visible = false;
-				sendHide();
 			}
 		}
 		
@@ -52,29 +44,8 @@ package com.longtailvideo.jwplayer.view.components {
 			if (_hiding) { 
 				_hiding = false;
 				this.visible = true;
-				sendShow();
 			}
 		}
-		
-		protected function sendShow():void {
-			if (!_sentShow) {
-				if (_playerReady) {
-					dispatchEvent(new ComponentEvent(ComponentEvent.JWPLAYER_COMPONENT_SHOW, this, displayRect));
-					_sentShow = true;
-					_sentHide = false;
-				} else {
-					_showOnReady = true;
-				}
-			}
-		}
-		
-		protected function sendHide():void {
-			if (!_sentHide) {
-				dispatchEvent(new ComponentEvent(ComponentEvent.JWPLAYER_COMPONENT_HIDE, this, displayRect));
-				_sentShow = false;
-				_sentHide = true;
-			}
-		}		
 		
 		public function resize(width:Number, height:Number):void {
 			_fullscreen = _player.config.fullscreen;

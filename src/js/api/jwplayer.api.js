@@ -211,6 +211,15 @@
 		_this.setCurrentQuality = function(level) {
 			_callInternal("jwSetCurrentQuality", level);
 		};
+		_this.getControls = function() {
+			return _callInternal("jwGetControls");
+		};
+		_this.getSafeMargins = function() {
+			return _callInternal("jwGetSafeMargins");
+		};	
+		_this.setControls = function(state) {
+			_callInternal("jwSetControls", state);
+		};
 		
 		var _eventMapping = {
 			onBufferChange: events.JWPLAYER_MEDIA_BUFFER,
@@ -231,6 +240,7 @@
 			onBeforePlay: events.JWPLAYER_MEDIA_BEFOREPLAY,
 			onBeforeComplete: events.JWPLAYER_MEDIA_BEFORECOMPLETE,
 			onDisplayClick: events.JWPLAYER_DISPLAY_CLICK,
+			onControls: events.JWPLAYER_CONTROLS,
 			onQualityLevels: events.JWPLAYER_MEDIA_LEVELS,
 			onQualityChange: events.JWPLAYER_MEDIA_LEVEL_CHANGED
 		};

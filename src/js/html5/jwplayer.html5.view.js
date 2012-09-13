@@ -579,6 +579,45 @@
 		this.removeButton = function(id) {
 			if (_dock) _dock.removeButton(id);
 		}
+		
+		this.setControls = function(state) {
+			var oldstate = _model.controls,
+				newstate = state ? TRUE : FALSE;
+			_model.controls = newstate;
+			if (newstate != oldstate) {
+				if (newstate) {
+					_showDisplay();
+				} else {
+					_hideControls();
+					_hideDisplay();
+				}
+				_eventDispatcher.sendEvent(events.JWPLAYER_CONTROLS, { controls: newstate });
+			}
+		}
+		
+		this.getSafeMargins = function() {
+			var controls = _model.controls,
+				dispBounds = utils.bounds(_container),
+				dispOffset = dispBounds.top,
+				cbBounds = utils.bounds(_controlbar.element()),
+				dockButtons = (_dock.numButtons() > 0),
+				dockBounds = utils.bounds(_dock.element()),
+				logoBounds = utils.bounds(_logo.element()),
+				logoTop = (_logo.position().indexOf("top") == 0), 
+				bounds = {};
+			
+			bounds.x = 0;
+			bounds.y = Math.max(dockButtons ? (dockBounds.top + dockBounds.height - dispOffset) : 0, logoTop ? (logoBounds.top + logoBounds.height - dispOffset) : 0);
+			bounds.width = dispBounds.width;
+			bounds.height = (logoTop ? cbBounds.top : logoBounds.top) - bounds.y - dispOffset;
+			
+			return {
+				x: 0,
+				y: controls ? bounds.y : 0,
+				width: controls ? bounds.width : 0,
+				height: controls ? bounds.height : 0
+			}
+		}
 
 		_init();
 

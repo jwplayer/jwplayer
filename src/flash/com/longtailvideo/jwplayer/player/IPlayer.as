@@ -10,6 +10,7 @@ package com.longtailvideo.jwplayer.player {
 	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
 	
 	import flash.events.IEventDispatcher;
+	import flash.geom.Rectangle;
 
 
 	/**
@@ -78,6 +79,9 @@ package com.longtailvideo.jwplayer.player {
 		function getQualityLevels():Array;
 		function getCurrentQuality():Number;
 		function setCurrentQuality(index:Number):void;
+		function getControls():Boolean;
+		function getSafeMargins():Rectangle;
+		function setControls(state:Boolean):void;
 
 	}
 }
