@@ -115,7 +115,7 @@
 <dt>New <em>fallback</em> toggle</dt>
 <dd>The <a href="browsers.html">download fallback</a> introduced in JW5 can now be disabled with a single <a href="embedding.html">fallback toggle</a>. The fallback won't attempt RTMP/HLS downloads and has a special case for Youtube. When disabled, the original HTML of the container &lt;div&gt; is not touched by JW Player.</dd>
 <dt>New <em>listbar</em> replaces <em>playlist.position</em></dt>
-<dd>In order to differentiate the visual playlist options from the inline playlist block, JW6 groups all settings related to the visual playlist under a <a href="playlists.html">new block called listbar</a>. There is also a new <strong>layout</strong> option that allows for toggling between a basic and extensive layout.</dd>
+<dd>In order to differentiate the visual playlist options from the inline playlist block, JW6 groups all settings related to the visual playlist under a <a href="playlists.html">new block called listbar</a>.</dd>
 <dl>
 
 <h3>Removed</h3>
@@ -135,6 +135,8 @@
 <dd>These options catered only to the Flash mode. Video is now always smoothed through StageVideo. The <a href="rtmp.html">bufferlength or RTMP</a> can still be set, e.g. to enable low-latency live streaming.</dd>
 <dt>The <em>config</em> option</dt>
 <dd>The removal of &lt;embed&gt; support also removed the need for external XML configurations. They can now be loaded as part of the player itself, e.g. using JSONp callbacks or an <strong>&lt;iframe&gt;</strong> tag.</dd>
+<dt>The logo <em>over</em>, <em>out</em>, <em>linktarget</em> and <em>timeout</em> options</dt>
+<dd>Instead of <strong>logo.over</strong> and <strong>logo.out</strong>, use a PNG with alpha channel to set transparency. When setting the logo <strong>hide</strong> option, the timeout logo fades is now synchronized with the other controls.</dd>
 </dl>
 
 
@@ -210,12 +212,12 @@
 <dd>This new set of API calls allows scripts to listen to or modify which quality level is currently playing in a player. See the <a href="script-reference.html">Javascript API Reference</a> for details.</dd>
 <dt>The <em>Button</em> API</dt>
 <dd>This new set of API calls allows scripts to add and remove custom buttons to/from the player interface. Use this API to easily extend the player functionality or have player and webpage interact with each other. See the <a href="script-reference.html">Javascript API Reference</a> for details.</dd>
+<dt>The <em>Controls</em> API</dt>
+<dd>This new API can be used to enable/disable the built-in controls, to get the display regions they overlay, and to listen to clicks on the display.</dd>
 <dt>The <em>getRenderingMode</em> variable</dt>
 <dd>This new getter returns whether JW Player is rendered in <strong>html5</strong> or <strong>flash</strong> on the current device.</dd>
 <dt>The <em>onPlaylistComplete</em> event</dt>
 <dd>This new event fires when JW6 has completed playing all items in a playlist. If a player is set to <strong>repeat</strong>, the event is never fired. The event is better suited than the existing <strong>onComplete</strong> event for determining when a player is done playing everything.</dd>
-<dt>The <em>onDisplayClick</em> event</dt>
-<dd>This new event can be used to script custom responses to a click on the display.</dd>
 </dl>
 
 
@@ -259,6 +261,27 @@
 </dl>
 
 
+<h2>Analytics</h2>
+
+<p>JW6 introduces the free JW Player Analytics service, available to all JW Player users. The former Google Analytics plugin is now part of JW Player itself.</p>
+
+<h3>Added</h3>
+
+<dl>
+<dt>JW Player Analytics</dt>
+<dd>A free analytics service that enables all JW Player users to see how their video streams are performing.</dd>
+<dt>Google Analytics</dt>
+<dd>This former plugin is now built into JW6 and straightforward to setup.</dd>
+</dl>
+
+<h3>Removed</h3>
+
+<dl>
+<dt>Percentage and time watched for Google Analytics</dt>
+<dd>Since these metrics are difficult to visualize in the GA dashboard, we removed them when building the former GAPro plugin into JW6. Instead, we added a <strong>Video Completes</strong> event. This should give a similar (if not better) understanding of the stickiness of your videos.</dd>
+</dl>
+
+
 
 <h2>Discovery</h2>
 
@@ -274,11 +297,32 @@
 <h3>Removed</h3>
 
 <dl>
-<dt>The logo <em>over</em>, <em>out</em>, <em>linktarget</em> and <em>timeout</em> options</dt>
-<dd>Instead of <strong>logo.over</strong> and <strong>logo.out</strong>, use a PNG with alpha channel to set transparency. When setting the logo <strong>hide</strong> option, the timeout logo fades is now synchronized with the other controls.</dd>
 <dt>Sharing and related options per playlist item</dt>
 <dd>JW6 does not support the placement of a <strong>sharing.link</strong>, <strong>sharing.code</strong> or <strong>related.file</strong> per playlist item. Instead, use the MEDIAID replacement option for both <a href="sharing.html">social sharing</a> and <a href="related.html">related videos</a>.</dd>
 </dl>
+
+
+
+<h2>Plugins</h2>
+
+<p>The former <em>Sharing</em> and <em>Related</em> plugins are now part of JW6. Their functionality is mostly unchanged</p>
+
+<h3>Added</h3>
+
+<dl>
+<dt>The <em>sharing</em> and <em>related</em> blocks.</dt>
+<dd>JW6 can set a <a href="sharing.html">social sharing</a> and <a href="related.html">related videos</a> overlay with built-in configuration blocks. These features do not have to be loaded as 3rd party plugins anymore.</dd>
+</dl>
+
+<h3>Removed</h3>
+
+<dl>
+<dt>Sharing and related options per playlist item</dt>
+<dd>JW6 does not support the placement of a <strong>sharing.link</strong>, <strong>sharing.code</strong> or <strong>related.file</strong> per playlist item. Instead, use the MEDIAID replacement option for both <a href="sharing.html">social sharing</a> and <a href="related.html">related videos</a>.</dd>
+</dl>
+
+
+
 
 </body>
 </html>

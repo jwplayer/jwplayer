@@ -1,0 +1,111 @@
+<!doctype html>
+<html>
+<head>
+<title>About JW Player Plugins</title>
+<style>
+    body { padding: 50px 100px; width: 700px; font: 13px/20px Arial; background: #FFF; }
+    a, h1, h2 { color: #369; }
+    h1 { font-size: 32px; }
+    h2 { margin-top: 50px; }
+    h3 { margin-top: 25px; }
+    img { display: block; margin: 0 10px; }
+    pre { font-size: 12px; background: #E5F3C8; padding:5px 10px; border: 1px solid #D3EAA4; }
+    dt { padding-left: 20px; font-weight: bold; }
+    dd { color: #333; font-style: italic; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+    tr { border-bottom: 1px solid #CCC; } 
+    tr:nth-child(even) { background: #EEE; }
+    td,th { padding: 5px; font-size: 12px; text-align: left; vertical-align: top; }
+</style>
+</head><body>
+
+<h1>About JW Player Plugins</h1>
+
+<p>This page explains what JW Player plugins are and how they can be embedded.</p>
+
+
+
+<h2>Introduction</h2>
+
+<p>JW Player 5.3 introduced HTML5 support and a new <a href='http://www.longtailvideo.com/support/jw-player/jw-player-for-flash-v5/12540/javascript-api-reference'>JavaScript API Reference</a> that runs seamlessly across all modes of the player. However, because Flash plugins can't run in HTML5 mode and because the player had no method for loading pre-packaged JavaScript code, there was no good way to easily distribute code that relied on the new API.</p>
+
+<p>With JW Player 5.5, we are introducing a new *JavaScript* Plugin API. All of the power and flexibility of the 5.3 player's JavaScript API is now available with a simple distribution mechanism similar to that of Flash plugins. This means your plugins will run seamlessly in both Flash and HTML5 mode, with no additional work on your part.</p>
+
+<p>We have added in mechanisms for placing visual assets in the player's display area, adding dock buttons, and allowing JavaScript plugins to expose a public API. All of these together create a strong foundation on which to build powerful plugins.</p>
+
+
+<p>
+The JW Player supports an API which allows developers to build ActionScript plugins to extend player functionality.  Examples of this added functionality include: ad serving, search engine integration and data analytics. This tutorial is aimed at Flash developers with a solid understanding of ActionScript 3 who want to start developing plugins.
+</p>
+<h2 id="Whatisaplugin">What is a plugin?</h2>
+<p>
+A JW Player plugin is a separate SWF file, written in Actionscript 3, which is loaded by the player at runtime. Plugins integrate seamlessly with the player, both in terms of coding (through the <a href="http://developer.longtailvideo.com/trac/wiki/Player5Api">API</a>) and graphics (stacked on top of the player). Plugins are loaded into player by setting the <a href="http://www.longtailvideo.com/support/jw-player/jw-player-for-flash-v5/12536/configuration-options#behavior">plugins option</a>. For example, if you wanted to load two plugins named <strong>analytics.swf</strong> and <strong>sharing.swf</strong>, your embed code would then look something like this:
+</p>
+<pre class="prettyprint lang-html">&lt;script type="text/javascript"&gt;
+jwplayer("mediaplayer").setup({
+  file: "video.mp4",
+  plugins: {
+    "analytics.swf": {},
+    "sharing.swf": {}
+  }
+});
+&lt;/script&gt;
+</pre>
+
+
+
+<h2>Embedding</h2>
+
+<h2>How Plugins are Loaded</h2>
+
+<p>As you could see in the example, a plugin requires two blocks of code: the code used for loading/registering the plugin, and the plugin code itself. Let's first walk through the loading mechanism.</p>
+
+<h3 id="Embedding">Embedding</h3>
+<p>
+A plugin can be embedded into a player through the <em>plugins</em> option block. There are two ways to embed a plugin:
+</p>
+<ol><li>Embedding a local plugin (useful for testing). This is what we did in above example:
+</li></ol><pre>jwplayer('player').setup({
+  flashplayer: '/assets/player.swf',
+  file: '/assets/video.mp4',
+  plugins: {
+    '/assets/helloworld.js': { text: 'Hello world!' }
+  }
+});
+</pre><ol start="2"><li>Embedding a plugin from our CDN (useful for distribution). We place plugins submitted to our <a href="http://www.longtailvideo.com/addons/">Addons Library</a> on our CDN:
+</li></ol><pre>jwplayer('player').setup({
+  flashplayer: '/assets/player.swf',
+  file: '/assets/video.mp4',
+  plugins: {
+    'helloworld': { text: 'Hello world!' }
+  }
+});
+</pre><p>
+The player looks at the file extension (<em>.js</em>) to determine if a plugin is locally loaded or loaded from our CDN. In the latter case, the player constructs the plugin URL through a simple mechanism (<em><a  href="http://plugins.longtailvideo.com"><span class="icon">&nbsp;</span>http://plugins.longtailvideo.com</a></em> + ID + <em>.js</em>).
+</p>
+<p>
+Note there is a third option for embedding a plugin: a local SWF: <strong>"/assets/helloworld.swf": { text: "Hello world!" }</strong>. That option is solely useful for ActionScript-only plugins though.
+</p>
+<p>
+Multiple plugins can be loaded in one player, and hosted + local plugins can be combined. Plugins also can have no options:
+</p>
+<pre>jwplayer('player').setup({
+  flashplayer: '/assets/player.swf',
+  file: '/assets/video.mp4',
+  plugins: {
+    'helloworld': { text: 'Hello world!' },
+    '/assets/localtest.js': { id: 2889, startup: true },
+    'viral': { }
+  }
+});
+</pre><p>
+The plugin javascript is loaded and inserted into the DOM by the first player that has the plugin set in its <em>plugins</em> block. If multiple players use the same plugin, the plugin is still loaded/inserted once.
+</p>
+
+
+<h2>Building</h2>
+
+
+
+</body>
+</html>
