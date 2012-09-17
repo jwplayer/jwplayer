@@ -213,7 +213,7 @@
 <dt>The <em>Button</em> API</dt>
 <dd>This new set of API calls allows scripts to add and remove custom buttons to/from the player interface. Use this API to easily extend the player functionality or have player and webpage interact with each other. See the <a href="script-reference.html">Javascript API Reference</a> for details.</dd>
 <dt>The <em>Controls</em> API</dt>
-<dd>This new API can be used to enable/disable the built-in controls, to get the display regions they overlay, and to listen to clicks on the display.</dd>
+<dd>This new API can be used to enable/disable the built-in controls, to get the display regions they overlay, and to listen to clicks on the display. See the <a href="script-reference.html">Javascript API Reference</a> for details.</dd>
 <dt>The <em>getRenderingMode</em> variable</dt>
 <dd>This new getter returns whether JW Player is rendered in <strong>html5</strong> or <strong>flash</strong> on the current device.</dd>
 <dt>The <em>onPlaylistComplete</em> event</dt>
@@ -305,20 +305,26 @@
 
 <h2>Plugins</h2>
 
-<p>The former <em>Sharing</em> and <em>Related</em> plugins are now part of JW6. Their functionality is mostly unchanged</p>
+<p>JW6 de-emphasizes its plugin model in favor of more built-in features (hd, captions, tooltips, gapro, sharing, related, advertising) and a more extensive <a href="scripting.html">JavaScript API</a>. However, JW6 continues to support building and loading plugins to add 3rd party functionality.</p>
 
 <h3>Added</h3>
 
 <dl>
-<dt>The <em>sharing</em> and <em>related</em> blocks.</dt>
-<dd>JW6 can set a <a href="sharing.html">social sharing</a> and <a href="related.html">related videos</a> overlay with built-in configuration blocks. These features do not have to be loaded as 3rd party plugins anymore.</dd>
+<dt>The <em>quality</em>, <em>button</em> and <em>controls</em> APIs.</dt>
+<dd>JW6 contains new API classes for changing video quality, setting dock buttons and enabling/disabling controls.  See the <a href="script-reference.html">Javascript API Reference</a> for details.</dd>
 </dl>
 
 <h3>Removed</h3>
 
 <dl>
-<dt>Sharing and related options per playlist item</dt>
-<dd>JW6 does not support the placement of a <strong>sharing.link</strong>, <strong>sharing.code</strong> or <strong>related.file</strong> per playlist item. Instead, use the MEDIAID replacement option for both <a href="sharing.html">social sharing</a> and <a href="related.html">related videos</a>.</dd>
+<dt>Centralized plugin hosting</dt>
+<dd>JW6 cannot load plugins from a central CDN repository anymore. Instead, plugins always have to get loaded <a href="plugins.html">from a certain URL</a>.</dd>
+<dt>Deep access to components/plugins</dt>
+<dd>In JW6, plugins cannot access player components or other plugins anymore. Only the general JavaScript API is available to interact with JW Player. This means that e.g. showing and hiding the controlbar must be done with the <a href="script-reference.html#controls">Controls API</a> and adding of dock buttons must be done with the <a href="script-reference.html#button">Button API</a>.</dd>
+<dt>Custom controlbar buttons</dt>
+<dd>In JW6, plugins can only add buttons to the dock, using the <a href="script-reference.html#button">Button API</a>. The controlbar cannot be modified anymore. This restriction is added to provide end users with a clearer UX and to have JW Player behave the same across desktop browsers and devices (where built-in controls are used).</dd>
+<dt>Skinning API for Flash plugins</dt>
+<dd>In JW5, Flash plugins could implement this API to allow publishers to skin their assets with the <a href="skinning.html">XML/PNG skinning model</a>. Since the only plugins that used this model (captions, sharing, hd) are now part of JW6, the API is removed.</dd>
 </dl>
 
 

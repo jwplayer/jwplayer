@@ -54,11 +54,21 @@
     player.onReady(setup); 
     function setup(evt) {
         div.style.color = "red";
-        div.innerHTML = "Hello World!";
+        if(config.text) {
+            div.innerHTML = config.text;
+        } else {
+            div.innerHTML = "Hello World!";
+        }
     };
     
-    // This function is required. It can be used to resize the div.
-    this.resize = function(width, height) {};
+    // This function is required. Let's use it to center the text.
+    this.resize = function(width, height) {
+        div.style.position = 'absolute';
+        div.style.width = '100px';
+        div.style.height = '20px';
+        div.style.left = (width/2 - 50)+'px';
+        div.style.top = (width/2 - 10)+'px';
+    };
 
   };
 
@@ -74,52 +84,47 @@
 
 <h2>Plugin Features</h2>
 
-<p>First and foremost, a JavaScript plugin is a script like any other. It uses the regular <a href="scripting.html">JW Player JavaScript API</a> to interact with JW Player and has no special or additional API calls at its disposal.</p>
+<p>First and foremost, a JavaScript plugin is a script like any other. It uses the regular <a href="scripting.html">JW Player JavaScript API</a> to interact with JW Player. As part of its initialization, the plugin will get a reference to the <em>player</em> containing the plugin, to fire those API calls.</p>
 
-<h3 id="Registering">Registering</h3>
-<p>
-When a JavaScript plugin file is inserted into the DOM, it is executed by the browser. Part of every plugin is the  <em>jwplayer().registerPlugin()</em> call (see our example above). As the name says, it registers the plugin with the JW Player, making its code available to every player on the page:
-</p>
-<pre>jwplayer().registerPlugin(id, jsPlugin);
-</pre><ul><li><strong>id</strong> {String}: The id of the plugin.
-</li><li><strong>jsPlugin</strong> {Function}: The plugin javascript function.
-</li></ul><p>
-The <em>registerPlugin()</em> method has an interesting feature: it can be used to load an ActionScript (SWF) plugin, in addition to the regular plugin JavaScript. With this feature, you can write <em>hybrid</em> plugins. These plugins can leverage the power and performance of Flash, but work in HTML5 mode too:
-</p>
+<p>That said, JW Player does provide a mechanism to ease configuring the plugin, and one to place visual assets on top of the player.</p>
+
+<h3>Configuration Options</h3>
+
+<p>Just like <a href="embedding.html">the player at large</a>, plugins can have themselves tweaked using configuration options. These options are provided by publishers inside the configuration block for the plugin:</p>
+
+<pre>
+jwplayer("myElement").setup({
+    file: "/uploads/example.mp4",
+    image: "/uploads/example.jpg",
+    plugins: {
+        "/scripts/helloworld.js": {
+            text: 'Hello all!'
+        }
+    }
+});
+</pre>
+
+<p>The player passes these configuration options forward to the plugin using with the <strong>config</strong> parameter of the initialization function. The parameter is a JavaScript object containing all options.</p>
+
+<h3>Visual Assets</h3>
+
+<p>Every plugin has the ability to render visual assets on top of the player display. For that purpose, JW Player creates a &lt;div&gt; and passes that to the plugin as a parameter of the initialization function. The plugin can nest whatever HTML it wants into that div.</p>
+
+<p>The -required- <strong>resize()</strong> method of a plugin is automatically called by the player whenever it gets resized. This includes the initial setup (shortly before <em>onReady</em>). Use this call to ensure your visuals are correctly scaled and stretched over the player display. Note the above <em>helloworld</em> example uses the resize() call to re-center itself over the player.</p>
+
+<p>Note the player controls are also displayed on top of JW Player, possibly interfering with the plugin visuals. Plugins are z-indexed on top of the controls though, so they can obscure them if they want. If a plugin needs to be visible together with the controls, it should use the <a href="script-reference.html#controls">player.getSafeMargins()</a> API call to find out which top and bottom margins are used by the player controls.</p>
+
+
+<h3>Hybrid plugins</h3>
+
+<p>The <em>registerPlugin()</em> method has an interesting feature: it can be used to load an ActionScript (SWF) plugin in addition to the regular plugin JavaScript. With this feature, you can write <em>hybrid</em> plugins. These plugins can leverage the features and performance of Flash, but work in HTML5 mode too:</p>
+
 <pre>jwplayer().registerPlugin(id, jsPlugin, swfURL);
 </pre><ul><li><strong>id</strong> {String}: The id of the plugin.
 </li><li><strong>jsPlugin</strong> {Function}: The plugin javascript function.
 </li><li><strong>swfURL</strong> {String}: The URL of the Flash plugin to load.  Please note, the <em>id</em> property set in the Flash plugin must match the file name of the plugin SWF.
 </li></ul><p>
-In Flash mode, both the JavaScript and the ActionScript plugin are instantiated. In HTML5 mode, only the JavaScript plugin is instantiated. In your plugin, you can detect which mode is active by doing a <em>player.getRenderingMode()</em> API call.
-</p>
-
-
-<p>
-As you could see in the example, a plugin needs two blocks of code: the code used for loading/registering the plugin, and the plugin code itself. Let's now take a look at the plugin itself.
-</p>
-<h3 id="TheConstructor">The Constructor</h3>
-<p>
-The constructor (called <em>template</em> in the example) is the entry point for a plugin. It is called by every player on the page that wants to use this plugin.  The constructor accepts three arguments: <strong>player</strong>, <strong>config</strong> and <strong>div</strong>:
-</p>
-<ul><li><strong>player</strong> {Object}: The player API with all actions, getters, and event listeners available. Use this variable to interact with the player. See the <a href='http://www.longtailvideo.com/support/jw-player/jw-player-for-flash-v5/12540/javascript-api-reference'>JavaScript API Reference</a> for a full listing.
-</li><li><strong>config</strong> {Object}: The specified plugin's configuration from jwplayer().setup(…). In the <strong>Hello World</strong> example above, this object contains one entry, named <em>text</em>. Use this mechanism to allow users of your plugin to configure it.
-</li><li><strong>div</strong> {DOMElement}: A &lt;div&gt; in the DOM that sits on top of the player's display area. If a plugin wants to show visual assets (e.g. banners, forms), they should be inserted in this &lt;div&gt;. In its basic form (see example above), you can simply set the <strong>div.innerHTML</strong> attribute.
-</li></ul><h3 id="TheresizeMethod">The resize() Method</h3>
-<p>
-In addition to the arguments that are passed into the JS, there is one required method for all plugins: <em>this.resize()</em>. It is automatically called by the player when it resizes, sending the new width and height of the video display (<strong>not</strong> the display + controlbar!) as values.
-</p>
-<p>
-The <strong>this.resize</strong> method is also called on startup, when the player does an initial resize. Therefore, it's good practice to have the setup of your visuals triggered by this resize() call. For example, here's an example of a plugin's resize method that keeps the plugin centered in the player:
-</p>
-<pre>this.resize = function(width, height) {
-    div.style.position = 'absolute';
-    div.style.height = '60px';
-    div.style.width = '60px';
-    div.style.left = Math.round(width/2-30)+'px';
-    div.style.top = Math.round(height/2-30)+'px';
-};
-</pre>
+In Flash mode, both the JavaScript and the ActionScript plugin are instantiated. In HTML5 mode, only the JavaScript plugin is instantiated. In your plugin, you can detect which mode is active by doing a <a href="script-reference.html#ready">player.getRenderingMode()</a> API call.</p>
 
 
 
