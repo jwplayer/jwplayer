@@ -41,6 +41,8 @@ package com.longtailvideo.jwplayer.view {
 		protected var _componentsLayer:MovieClip;
 		protected var _pluginsLayer:MovieClip;
 		protected var _plugins:Object;
+		protected var _allPlugins:Vector.<IPlugin>;
+		
 		protected var _instreamLayer:MovieClip;
 		protected var _instreamPlugin:IPlugin;
 		protected var _instreamAnim:Animations;
@@ -259,6 +261,7 @@ package com.longtailvideo.jwplayer.view {
 
 			_pluginsLayer = setupLayer("plugins", currentLayer++);
 			_plugins = {};
+			_allPlugins = new Vector.<IPlugin>;
 			
 			_instreamLayer = setupLayer("instream", currentLayer++);
 			_instreamLayer.alpha = 0;
@@ -417,8 +420,9 @@ package com.longtailvideo.jwplayer.view {
 				_logo.resize(_player.config.width, _player.config.height);
 			}
 */
-			for (var i:Number = 0; i < _pluginsLayer.numChildren; i++) {
-				var plug:IPlugin = _pluginsLayer.getChildAt(i) as IPlugin;
+//			for (var i:Number = 0; i < _pluginsLayer.numChildren; i++) {
+			for each (var plug:IPlugin in _allPlugins) {
+//				var plug:IPlugin = _pluginsLayer.getChildAt(i) as IPlugin;
 				var plugDisplay:DisplayObject = plug as DisplayObject;
 				if (plug && plugDisplay) {
 					var cfg:PluginConfig = _player.config.pluginConfig(plug.id);
@@ -521,6 +525,7 @@ package com.longtailvideo.jwplayer.view {
 
 		public function addPlugin(id:String, plugin:IPlugin):void {
 			try {
+				_allPlugins.push(plugin);
 				var plugDO:DisplayObject = plugin as DisplayObject;
 				if (!_plugins[id] && plugDO != null) {
 					_plugins[id] = plugDO;
@@ -666,13 +671,14 @@ package com.longtailvideo.jwplayer.view {
 		}
 		
 		public function setupInstream(instreamDisplay:DisplayObject, plugin:IPlugin):void {
+			_instreamAnim.cancelAnimation();
 			_instreamPlugin = plugin;
 			if (instreamDisplay) {
 				_instreamLayer.addChild(instreamDisplay);
 			}
 			_mediaLayer.visible = false;
 			_componentsLayer.visible = false;
-			
+
 			try {
 				var pluginDO:DisplayObject = plugin as DisplayObject;
 				if (pluginDO) {
@@ -692,6 +698,10 @@ package com.longtailvideo.jwplayer.view {
 			}
 			_mediaLayer.visible = true;
 			_componentsLayer.visible = true;
+			
+			while (_instreamLayer.numChildren > 0) {
+				_instreamLayer.removeChildAt(0);
+			}
 
 			_instreamAnim.fade(0);
 		}
@@ -733,7 +743,7 @@ package com.longtailvideo.jwplayer.view {
 			_components.dock.hide();
 			_components.controlbar.hide();
 			_components.logo.hide();
-			(new Animations(_instreamLayer)).fade(0);
+//			(new Animations(_instreamLayer)).fade(0);
 		}
 		
 		private function showControls():void {
@@ -742,7 +752,7 @@ package com.longtailvideo.jwplayer.view {
 				_components.dock.show();
 			}
 			_components.logo.show();
-			(new Animations(_instreamLayer)).fade(1);
+//			(new Animations(_instreamLayer)).fade(1);
 		}
 		
 		/** If the mouse leaves the stage, hide the controlbar if position is 'over' **/

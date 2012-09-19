@@ -283,10 +283,10 @@ package com.longtailvideo.jwplayer.player
 			/* Only accept video, http or rtmp providers for now */
 			switch (item.provider) {
 				case 'rtmp':
-					_provider = new RTMPMediaProvider();
+					_provider = new RTMPMediaProvider(false);
 					break;
 				case 'video':
-					_provider = new VideoMediaProvider();
+					_provider = new VideoMediaProvider(false);
 					break;
 				default:
 					throw new Error("Unsupported Instream Format; only video or rtmp are currently supported");

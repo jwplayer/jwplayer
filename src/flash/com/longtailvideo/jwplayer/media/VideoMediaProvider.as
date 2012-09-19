@@ -29,6 +29,8 @@ package com.longtailvideo.jwplayer.media {
 		private var _offset:Object;
 		/** StegeVideo object to be instantiated. **/
 		private var _stage:Object;
+		/** Whether or not StageVideo is enabled **/
+		private var _stageEnabled:Boolean;
 		/** NetStream instance that handles the stream IO. **/
 		private var _stream:NetStream;
 		/** Sound control object. **/
@@ -44,7 +46,8 @@ package com.longtailvideo.jwplayer.media {
 
 
 		/** Constructor; sets up the connection and display. **/
-		public function VideoMediaProvider() {
+		public function VideoMediaProvider(stageVideoEnabled:Boolean=true) {
+			_stageEnabled = stageVideoEnabled;
 			super('video');
 			_stretch = false;
 		}
@@ -93,7 +96,7 @@ package com.longtailvideo.jwplayer.media {
 				_video = new Video(320, 240);
 				_video.smoothing = true;
 				// Use stageVideo when available
-				if (RootReference.stage['stageVideos'].length > 0) {
+				if (_stageEnabled && RootReference.stage['stageVideos'].length > 0) {
 					_stage = RootReference.stage['stageVideos'][0];
 					_stage.viewPort = new Rectangle(0,0,320,240);
 					_stage.addEventListener('renderState', renderHandler);

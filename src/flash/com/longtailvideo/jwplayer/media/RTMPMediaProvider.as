@@ -10,8 +10,8 @@
     import com.wowza.encryptionAS3.TEA;
     
     import flash.events.*;
-	import flash.external.ExternalInterface;
-	import flash.geom.Rectangle;
+    import flash.external.ExternalInterface;
+    import flash.geom.Rectangle;
     import flash.media.*;
     import flash.net.*;
     import flash.utils.*;
@@ -41,6 +41,8 @@
 		private var _metadata:Boolean;
 		/** StageVideo object to be instantiated. **/
 		private var _stage:Object;
+		/** Whether or not StageVideo is enabled **/
+		private var _stageEnabled:Boolean;
 		/** NetStream instance that handles playback. **/
 		private var _stream:NetStream;
 		/** Sound control object. **/
@@ -54,7 +56,8 @@
 
 
 		/** Initialize RTMP provider. **/
-		public function RTMPMediaProvider() {
+		public function RTMPMediaProvider(stageVideoEnabled:Boolean=true) {
+			_stageEnabled = stageVideoEnabled;
 			super('rtmp');
 			_stretch = false;
 			_bandwidth = 0;
@@ -105,7 +108,7 @@
 				_video.smoothing = true;
 				_video.addEventListener('renderState', renderHandler);
 				// Use stageVideo when available
-				if (RootReference.stage['stageVideos'].length > 0) {
+				if (_stageEnabled && RootReference.stage['stageVideos'].length > 0) {
 					_stage = RootReference.stage['stageVideos'][0];
 					_stage.viewPort = new Rectangle(0,0,320,240);
 					_stage.addEventListener('renderState', renderHandler);
