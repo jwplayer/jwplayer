@@ -221,7 +221,7 @@ package com.longtailvideo.jwplayer.utils {
 		public static function isAbsolutePath(path:String):Boolean {
 			var protocol:int = path.indexOf("://");
 			var queryparams:int = path.indexOf("?");
-			return (protocol > 0 && (queryparams < 0 || (queryparams > protocol)));
+			return (path.indexOf("/") == 0 || (protocol > 0 && (queryparams < 0 || (queryparams > protocol))));
 		}
 
 		/** Removes potentially harmful string headers from a link **/

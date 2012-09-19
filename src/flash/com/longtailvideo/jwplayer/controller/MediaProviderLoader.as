@@ -25,7 +25,7 @@ package com.longtailvideo.jwplayer.controller {
 	 */
 	public class MediaProviderLoader extends EventDispatcher {
 		
-		private var repository:String = "http://providers.longtailvideo.com/5/";
+//		private var repository:String = "http://providers.longtailvideo.com/5/";
 
 		public var loadedSource:IMediaProvider;
 
@@ -38,9 +38,12 @@ package com.longtailvideo.jwplayer.controller {
 			newLoader.addEventListener(ErrorEvent.ERROR, loadHandler);
 			if (url.substr(url.length-4, 4) == ".swf") {
 				newLoader.load(url);
-			} else {
+/*			} else {
 				newLoader.load(repository + url + '.swf');
+*/			} else {
+				dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, "Provider must be a swf."));
 			}
+
 		}
 		
 		private function loadHandler(evt:Event):void {

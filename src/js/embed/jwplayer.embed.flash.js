@@ -157,6 +157,12 @@
 				delete params[toDelete[i]];
 			}
 			
+			var base = window.location.pathname.split("/");
+			base.splice(-1);
+			base = base.join("/");
+			params.base = base + "/";
+			
+			
 			//flashvars = jsonToFlashvars(params);
 			// TODO: add ability to pass in JSON directly instead of going to/from a string
 			storedFlashvars[_container.id] = stringify(params);

@@ -137,7 +137,7 @@ package com.longtailvideo.jwplayer.media {
 
 		/** Load the actual stream; requested with every HTTP seek. **/
 		private function loadStream():void {
-			var url:String = item.levels[_currentQuality].file;
+			var url:String = Strings.getAbsolutePath(item.levels[_currentQuality].file, config.base);
 			var prm:Number = _offset.byte;
 			if(_item.type == 'mp4') { prm = _offset.time; }
 			// Use startparam if needed

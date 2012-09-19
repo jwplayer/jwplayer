@@ -16,7 +16,7 @@ jwplayer = function(container) {
 	}
 };
 
-jwplayer.version = '6.0.2487';
+jwplayer.version = '6.0.2511';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -1152,11 +1152,12 @@ jwplayer.source = document.createElement("source");/**
 				var pluginObj = plugins[plugin],
 					pluginName = pluginObj.getPluginName(),
 					flashPath = pluginObj.getFlashPath(),
-					jsPlugin = pluginObj.getJS();
+					jsPlugin = pluginObj.getJS(),
+					pluginURL = pluginObj.getURL();
 				
 
 				if (flashPath) {
-					flashPlugins.plugins[flashPath] = utils.extend({}, config.plugins[plugin]);
+					flashPlugins.plugins[flashPath] = utils.extend({}, config.plugins[pluginURL]);
 					flashPlugins.plugins[flashPath].pluginmode = pluginObj.getPluginmode();
 					flashPlugins.length++;
 				}
@@ -1165,7 +1166,7 @@ jwplayer.source = document.createElement("source");/**
 					div.id = api.id + "_" + pluginName;
 					div.style.position = "absolute";
 					div.style.zIndex = jsplugins.length + 10;
-					jsplugins.plugins[pluginName] = pluginObj.getNewInstance(api, utils.extend({}, config.plugins[plugin]), div);
+					jsplugins.plugins[pluginName] = pluginObj.getNewInstance(api, utils.extend({}, config.plugins[pluginURL]), div);
 					jsplugins.length++;
 					api.onReady(resizer(jsplugins.plugins[pluginName], div, true));
 					api.onResize(resizer(jsplugins.plugins[pluginName], div));
@@ -1949,6 +1950,12 @@ jwplayer.source = document.createElement("source");/**
 			for (var i = 0; i < toDelete.length; i++) {
 				delete params[toDelete[i]];
 			}
+			
+			var base = window.location.pathname.split("/");
+			base.splice(-1);
+			base = base.join("/");
+			params.base = base + "/";
+			
 			
 			//flashvars = jsonToFlashvars(params);
 			// TODO: add ability to pass in JSON directly instead of going to/from a string

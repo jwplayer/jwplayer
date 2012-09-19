@@ -71,11 +71,12 @@
 				var pluginObj = plugins[plugin],
 					pluginName = pluginObj.getPluginName(),
 					flashPath = pluginObj.getFlashPath(),
-					jsPlugin = pluginObj.getJS();
+					jsPlugin = pluginObj.getJS(),
+					pluginURL = pluginObj.getURL();
 				
 
 				if (flashPath) {
-					flashPlugins.plugins[flashPath] = utils.extend({}, config.plugins[plugin]);
+					flashPlugins.plugins[flashPath] = utils.extend({}, config.plugins[pluginURL]);
 					flashPlugins.plugins[flashPath].pluginmode = pluginObj.getPluginmode();
 					flashPlugins.length++;
 				}
@@ -84,7 +85,7 @@
 					div.id = api.id + "_" + pluginName;
 					div.style.position = "absolute";
 					div.style.zIndex = jsplugins.length + 10;
-					jsplugins.plugins[pluginName] = pluginObj.getNewInstance(api, utils.extend({}, config.plugins[plugin]), div);
+					jsplugins.plugins[pluginName] = pluginObj.getNewInstance(api, utils.extend({}, config.plugins[pluginURL]), div);
 					jsplugins.length++;
 					api.onReady(resizer(jsplugins.plugins[pluginName], div, true));
 					api.onResize(resizer(jsplugins.plugins[pluginName], div));
