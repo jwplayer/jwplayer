@@ -54,6 +54,10 @@ Returns the playlist item object at the specified index. If the index is not spe
 Loads a new playlist into the player. The <em>playlist</em> parameter is required and can be either an <em>array</em> with playlist items or a <em>string</em> that points to the location of an RSS feed.
 </dd><dt>playlistItem(<em>index</em>)</dt><dd>
 Start playback of the playlist item at the specified index.
+</dd><dt>playlistNext()</dt><dd>
+Start playback of the next playlist item. If the current playlist item is the last one, the player jumps to the first.
+</dd><dt>playlistPrev()</dt><dd>
+Start playback of the previous playlist item. If the current playlist item is the first one, the player jumps to the last.
 </dd></dl>
 
 <dl><dt>onPlaylist(<em>callback</em>)</dt><dd>
@@ -69,7 +73,7 @@ Fired every time when a playlist item completes playback. It has no event attrib
 Fired when the player is done playing all items in the playlist. However, if the <strong>repeat</strong> option is set <em>true</em>, this is never fired.</dd></dl>
 
 
-<h2><a name="buffer"></a>Buffer</h2>
+<h2><a name="buffering"></a>Buffering</h2>
 
 <p>These API calls are used to update clients with the percentage of a file that's buffered into the player. This only applies to progressive downloads of media; streaming media do not expose this behavior.</p>
 
@@ -123,7 +127,7 @@ Fired when the player enters the IDLE state. Event attributes:
 
 
 
-<h2><a name="seek"></a>Seek</h2>
+<h2><a name="seeking"></a>Seeking</h2>
 
 <p>These API calls are used to retrieve and update the current media playback position.</p>
 
@@ -176,9 +180,9 @@ Fired when the player audio volume percentage was changed. Event attributes:
 
 
 
-<h2><a name="resize"></a>Resize</h2>
+<h2><a name="resizing"></a>Resizing</h2>
 
-<p>These API calls are used to retrieve and update the current player dimensions and fullscreen state. Note there is no API call to <strong>set fullscreen</strong>, due to phishing-related security restrictions in both Flash and HTML5.</p>
+<p>These API calls are used to retrieve and update the current player dimensions and fullscreen state. Note there is no API call to <strong>set</strong> the fullscreen state, due to phishing-related security restrictions in both Flash and HTML5.</p>
 
 <dl><dt>getFullscreen</dt><dd>
 Returns the current fullscreen state (<strong>true</strong> or <strong>false</strong>).
@@ -225,6 +229,27 @@ Fired when the active quality level is changed. Happens in respons to e.g. a use
 <ul><li><strong>currentQuality</strong> (Number): index of the new quality level in the <em>getQualityLevels()</em>  array.
 </li></ul></dd></dl>
 
+<h2><a name="captions"></a>Captions</h2>
+
+<p>These API calls are used to listen to or update the currently active captions track, if captions (subtitles) are provided:</p>
+
+<dl><dt>getCaptionsTracks()</dt><dd>
+Returns an array with captions tracks from the player. Each track is an object that always contains a <strong>label</strong> property and sometimes additional properties (like <strong>file</strong> or <strong>cues</strong>). 
+</dd><dt>getCurrentCaptions()</dt><dd>
+Returns the index of the currently active captions track.
+</dd></dl>
+
+<dl><dt>setCurrentCaptions(<em>index</em>)</dt><dd>
+Change the captions track to the provided index. The index must be within the list provided by <strong>getCaptionsTracks</strong>.
+</dd></dl>
+
+<dl><dt>onCaptionsTracks(<em>callback</em>)</dt><dd>
+Fired when the list of available captions tracks is updated. Happens e.g. shortly after a playlist item starts playing. Event attributes:
+<ul><li><strong>tracks</strong> (Array): the full array with new captions tracks.
+</li></ul></dd><dt>onCaptionsChange (<em>callback</em>)</dt><dd>
+Fired when the active captions track is changed. Happens in respons to e.g. a user clicking the controlbar captions menu or a script calling <strong>setCurrentCaptions</strong>. Event attributes:
+<ul><li><strong>currentCaption</strong> (Number): index of the new captions track in the <strong>getCaptionsTracks()</strong> array.
+</li></ul></dd></dl>
 
 
 <h2><a name="button"></a>Button</h2>
@@ -240,29 +265,6 @@ Adds a button to the dock. Attributes:
 </li></ul></dd><dt>removeButton(<em>id</em>)</dt><dd>
 Removes a button from the dock. Attributes:
 <ul><li><strong>id</strong> (String): The id used to identify the button when it was added.
-</li></ul></dd></dl>
-
-
-
-<h2><a name="controls"></a>Controls</h2>
-
-<p>This API call allows developers to interact with the built-in player controls (dock buttons, controlbar and display icons). Note that enabled controls will still fade out during playback if the video has no keyboard/mouse focus. When controls are disabled, JW Player is completely chrome-less.</p>
-
-<dl><dt>getControls()</dt><dd>
-Returns whether the built-in controls are currently enabled.
-</dd><dt>getSafeMargins()</dt><dd>
-Returns an array with the margins used by the controls. Scripts and plugins use this information to ensure their visual assets don't overlap with the controls. For example, if this call returns <strong>[40,30]</strong>, it means the top 40 pixels of the player are used by the dock buttons and the bottom 30 pixels are used by the controlbar.
-</dd></dl>
-
-<dl><dt>setControls(<em>controls</em>)</dt><dd>
-Enable the built-in controls by setting them <strong>true</strong>, disable the controls by setting them <strong>false</strong>.
-</dd></dl>
-
-<dl><dt>onControls(<em>callback</em>)</dt><dd>
-Fired when controls are enabled or disabled by a script. Event attributes:
-<ul><li><strong>controls</strong> (Boolean): New state of the controls. Is <strong>true</strong> when the controls were just enabled.
-</li></ul></dd><dt>onDisplayClick(<em>callback</em>)</dt><dd>
-Fired when a user clicks the video display. Especially useful for wiring your own controls when the built-in ones are disabled. Note the default click action (toggling play/pause) will still occur. There are no event attributes.
 </li></ul></dd></dl>
 
 
@@ -287,6 +289,16 @@ Fired when a media loading error has occurred in the player. Event attributes:
 <dl><dt>onMeta(<em>callback</em>)</dt><dd>
 Fired when new metadata has been broadcasted by the player. Event attributes:
 <ul><li><em>metadata</em> (Object): Object containing the new metadata. This can be metadata hidden in the media (XMP, ID3, keyframes) or metadata broadcasted by the playback provider (bandwidth, quality switches).
+</li></ul></dd></dl>
+
+
+
+<h2><a name="display"></a>Display</h2>
+
+<p>This API call allows developers to listen for and react to clicks on the video display.</p>
+
+<dl><dt>onDisplayClick(<em>callback</em>)</dt><dd>
+Fired when a user clicks the video display (not the controls). The default action (play/pause toggle) will still execute. There are no event attributes.
 </li></ul></dd></dl>
 
 
