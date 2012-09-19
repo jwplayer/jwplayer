@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+<head>
+<title>About JW Player Plugins</title>
+<style>
+    body { padding: 50px 100px; width: 700px; font: 13px/20px Arial; background: #FFF; }
+    a, h1, h2 { color: #369; }
+    h1 { font-size: 32px; }
+    h2 { margin-top: 50px; }
+    h3 { margin-top: 25px; }
+    img { display: block; margin: 0 10px; }
+    pre { font-size: 12px; background: #E5F3C8; padding:5px 10px; border: 1px solid #D3EAA4; }
+    dt { padding-left: 20px; font-weight: bold; }
+    dd { color: #333; font-style: italic; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+    tr { border-bottom: 1px solid #CCC; } 
+    tr:nth-child(even) { background: #EEE; }
+    td,th { padding: 5px; font-size: 12px; text-align: left; vertical-align: top; }
+</style>
+</head><body>
+
+<h1>About JW Player Plugins</h1>
+
+<p>This page explains what JW Player plugins are and how they can be embedded.</p>
+
+<h2>Introduction</h2>
+
+<p>JW Player features two popular APIs to customize and extend its looks and functionality:</p>
+
+<ul>
+<li>The <a href="skinning.html">PNG Skinning Model</a> allows changing the design of JW Player embeds.</li>
+<li>The <a href="scripting.html">JavaScript API</a> allows extending the player functionality or interacting with the webpage.</li>
+</ul>
+
+<p>Most JavaScript API interaction is performed by small scripts, embedded on the webpage. However, it is possible to package such scripts into a JW Player <strong>plugin</strong>. This is handy in case many players use the same script (e.g. an integration with your analytics backend). Plugins can also contain visual assets, which are automatically displayed on top of the video.</p>
+
+<p>Several 3rd party developers offer plugins for JW Player, which can usually be downloaded and embedded for free. Some plugins connect to popular analytics or advertising services, other plugins offer great looking playlists or other interface enhancements. In all cases, documentation and support is managed by the 3rd party plugin developer.</p>
+
+
+
+<h2>Embedding</h2>
+
+<p>Plugins are embedded into a player through the <em>plugins</em> configuration block. Here is an example, loading the <em>helloworld</em> plugin with a <em>text</em> configuration option:</p>
+
+<pre>
+jwplayer('myElement').setup({
+    file: '/assets/video.mp4',
+    plugins: {
+        '/scripts/helloworld.js': {
+            text: 'Hello world!'
+        }
+    }
+});
+</pre>
+
+<p>Multiple plugins can be loaded in one player, simply by listing them in the <strong>plugins</strong> block.</p>
+
+<p>See <a href="embedding.html">Embedding JW Player</a> for general info on embedding JW6.</p>
+
+
+
+<h2>JavaScript vs Flash</h2>
+
+<p>By default, JW Player plugins are written in JavaScript. This ensures they work in both <a href="browsers.html">Flash and HTML5 modes</a>, on desktops and devices. However, it is also possible to write plugins in Flash. These only work in Flash mode on desktops, but allow developers to leverage the richer Flash APIs and/or existing ActionScript frameworks.</p>
+
+<p>For info on building plugins yourself, see:</p>
+
+<ul>
+<li><a href="plugins-js.html">Building JavaScript Plugins</a> (for plugins that work everywhere)</li>
+<li><a href="plugins-flash.html">Building Flash Plugins</a> (for plugins that use Flash specific features)</li>
+</ul>
+
+</body>
+</html>

@@ -8,7 +8,7 @@
     h1 { font-size: 32px; }
     h2 { margin-top: 50px; }
     h3 { margin-top: 25px; }
-    img { display: block; margin: 0 10px; }
+    img { display: block; margin: 0 auto; box-shadow: 0 0 5px #999; }
     pre { font-size: 12px; background: #E5F3C8; padding:5px 10px; border: 1px solid #D3EAA4; }
     dt { padding-left: 20px; font-weight: bold; }
     dd { color: #333; font-style: italic; }
@@ -26,7 +26,89 @@
 
 
 
+<h2>Introduction</h2>
 
+<p>JW Player integrates with the <a href="http://google.com/analytics">Google Analytics service</a> (GA) for pinging back the number of <em>starts</em> and <em>completes</em> for each of your videos. That way, your video metrics can be found right next to your page metrics.</p>
+
+<p>The integration is straightforward, leveraging the GA &lt;script&gt; code available on the page the player is embedded on. This means Google Analytics for page tracking must always be embedded for JW Player to track video events.</p>
+
+
+
+<h2>Reports</h2>
+
+<p>JW Player leverages the so called <em>Event Tracking</em> functionality of Google Analytics to ping two types of events:</p>
+
+<ul>
+<li><strong>Video Plays</strong>: the number of times playback of a video was started. Only the initial start is counted, resuming of a paused video is not.</li>
+<li><strong>Video Completes</strong>: the number of times playback of a video was completed. This is a good indication of how well your videos engage with your viewers.</li>
+</ul>
+
+<p>Inside the Google Analytics interface, these two events can be found under <em>Content &raquo; Events</em>:</p>
+
+<p><img src="assets/ga-overview.jpg" alt="The Google Analytics events overview page" /></p>
+
+<p>Note that Google Analytics generally updates its data once per day. If you're just getting started with the GA integration, it may take until the next day for event data to first appear.</p>
+
+<h3>Event Properties</h3>
+
+<p>Each event in Google Analytics contains a <em>category</em>, <em>action</em> and <em>label</em> property. JW Player sets all three:</p>
+
+<ul>
+<li>The <strong>category</strong> is set to either <em>JW Player Video Plays</em> or <em>JW Player Video Completes</em>.</li>
+<li>The <strong>action</strong> is set to the URL of the video that was started, e.g. <em>http://example.com/myVideo.mp4</em>.</li>
+<li>The <strong>label</strong> is set to the URL of the page the video was embedded on, e.g. <em>http://example.com/blog/123/</em>.</li>
+</ul>
+
+<p>The Google Analytics interface can report events against any of these properties. For example, here is a report that shows the number of <em>Video Plays</em> for each video, by setting the <strong>action</strong> as primary dimension:</p>
+
+<p><img src="assets/ga-details.jpg" alt="A detailed Google Analytics events report" /></p>
+
+<p>Note that, if you embed a video with multiple sources, the Google Analytics interface will display the URL of the first source for that video.</p>
+
+
+
+<h2>Setup</h2>
+
+<p>If you have the Google Analytics javascript on your page, the integration with JW Player is straightforward. Simply include the <strong>ga: {}</strong> block in your <a href="embedding.html">configuration options</a> to enable it. Here's an example:</p>
+
+<pre>
+jwplayer("myElement").setup({
+    file: "/uploads/example.mp4",
+    image: "/uploads/example.jpg",
+    ga: {} 
+});
+</pre>
+
+<p>With this setup block added, JW Player will use the Google Analytics tracking code to fire an event every time a video starts or completes playback.</p>
+
+<h3>Configuration Options</h3>
+
+<p>Two configuration options are available to tune the Google Analytics integration:</p>
+
+<dl>
+<dt>idstring</dt><dd>
+By default, JW Player sets the action of a play/complete event to the <strong>file</strong> <a href="playlists.html">playlist property</a>. This option allows setting the action to a different playlist item property, like <strong>title</strong> or <strong>mediaid</strong>.
+</dd>
+<dt>trackingobject</dt><dd>
+By default, JW Player presumes the Google Analytics library is available in Javascript as a global variable called <strong>_gaq</strong>. This is the variable Google Analytics uses in all its examples and documentation. If you gave the Google Analytics object a different name (e.g. <strong>pageTracker</strong>), set this option to notify JW Player.
+</dd></dl>
+
+<p>Here is an example embed code that sets both configuration options:</p>
+
+<pre>
+jwplayer("myElement").setup({
+    file: "/uploads/example.mp4",
+    image: "/uploads/example.jpg",
+    ga: {
+        actionproperty: "title",
+        trackerobject: "pageTracker"
+    }
+});
+</pre>
+
+<p>With this setup, JW Player pings the title of videos instead of their URLs.</p>
+
+<p>Second, JW Player will fire events using the global variable called <strong>pageTracker</strong>. Note that this name was traditionally used by Google Analytics, before they moved to asynchronous tracking using <em>_gaq</em> a few years ago.</p>
 
 
 </body>
