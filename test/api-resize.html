@@ -46,7 +46,7 @@
     jwplayer().onResize(function(evt) {
         log("resize_output", "Player was resized. Dimensions: " + this.getWidth() + "x" + this.getHeight());
     });
-    function resize(width, height) {
+    function resizePlayer(width, height) {
         jwplayer("resize").resize(width, height);
     }
 </script>
@@ -60,12 +60,12 @@
     <td class="check"></td>
 </tr><tr>
     <td class="both"></td>
-    <td><a href="#" onclick="resize(300, 200); return false;">resize(300,200)</a></td>
+    <td><a href="#" onclick="resizePlayer(300, 200); return false;">resize(300,200)</a></td>
     <td>The player resizes to 300x200px.  The log below the player contains a new line with these dimensions.</td>
     <td class="check"></td>
 </tr><tr>
     <td class="both"></td>
-    <td><a href="#" onclick="resize('75%', '75%'); return false;">resize("75%", "75%")</a></td>
+    <td><a href="#" onclick="resizePlayer('75%', '75%'); return false;">resize("75%", "75%")</a></td>
     <td>The player resizes to 75% of it's parent's width and height.  The log below the player contains a new line with these dimensions.</td>
     <td class="check"></td>
 </tr><tr>
