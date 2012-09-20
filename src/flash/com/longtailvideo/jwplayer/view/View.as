@@ -4,9 +4,7 @@ package com.longtailvideo.jwplayer.view {
 	import com.longtailvideo.jwplayer.player.*;
 	import com.longtailvideo.jwplayer.plugins.*;
 	import com.longtailvideo.jwplayer.utils.*;
-	import com.longtailvideo.jwplayer.view.components.ControlbarComponent;
-	import com.longtailvideo.jwplayer.view.components.DockComponent;
-	import com.longtailvideo.jwplayer.view.components.LogoComponent;
+	import com.longtailvideo.jwplayer.view.components.*;
 	import com.longtailvideo.jwplayer.view.interfaces.*;
 	
 	import flash.display.*;
@@ -32,7 +30,6 @@ package com.longtailvideo.jwplayer.view {
 		protected var _root:MovieClip;
 
 		protected var _maskedLayers:MovieClip;
-		protected var _backgroundLayer:MovieClip;
 		protected var _mediaLayer:MovieClip;
 		protected var _mediaFade:Animations;
 		protected var _imageLayer:MovieClip;
@@ -237,14 +234,11 @@ package com.longtailvideo.jwplayer.view {
 		protected function setupLayers():void {
 			_maskedLayers = setupLayer("masked", currentLayer++);
 			
-			_backgroundLayer = setupLayer("background", 0, _maskedLayers);
-			setupBackground();
-
-			_mediaLayer = setupLayer("media", 1, _maskedLayers);
+			_mediaLayer = setupLayer("media", 0, _maskedLayers);
 			_mediaLayer.alpha = 0;
 			_mediaFade = new Animations(_mediaLayer);
 
-			_imageLayer = setupLayer("image", 1, _maskedLayers);
+			_imageLayer = setupLayer("image", 0, _maskedLayers);
 			_image = new Loader();
 			_image.contentLoaderInfo.addEventListener(Event.COMPLETE, imageComplete);
 			_image.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, imageError);
@@ -255,8 +249,6 @@ package com.longtailvideo.jwplayer.view {
 			imageDelay.addEventListener(TimerEvent.TIMER_COMPLETE, showImage);
 			mediaDelay.addEventListener(TimerEvent.TIMER_COMPLETE, showMedia);
 			
-			//setupLogo();
-
 			_componentsLayer = setupLayer("components", currentLayer++);
 
 			_pluginsLayer = setupLayer("plugins", currentLayer++);
@@ -269,13 +261,7 @@ package com.longtailvideo.jwplayer.view {
 			_instreamAnim = new Animations(_instreamLayer);
 			_instreamAnim.addEventListener(Event.COMPLETE, instreamAnimationComplete);
 		}
-			
-/*		protected function setupLogo():void {
-			_logo = new LogoComponent(_player);
-		}
 
-*/
-		
 		protected function setupLayer(name:String, index:Number, parent:DisplayObjectContainer=null):MovieClip {
 			var layer:MovieClip = new MovieClip();
 			parent ? parent.addChildAt(layer,index) : _root.addChildAt(layer, index);
@@ -284,26 +270,6 @@ package com.longtailvideo.jwplayer.view {
 			layer.y = 0;
 			return layer;
 		}
-
-
-		protected function setupBackground():void {
-			var background:MovieClip = new MovieClip();
-			background.name = "background";
-			_backgroundLayer.addChild(background);
-			
-/*			var screenColor:Color;
-			if (_model.config.screencolor) {
-				screenColor = _model.config.screencolor;
-			} else if (_model.config.pluginConfig('display').hasOwnProperty('backgroundcolor')) {
-				screenColor = new Color(String(_model.config.pluginConfig('display')['backgroundcolor']));
-			}
-			
-			background.graphics.beginFill(screenColor ? screenColor.color : 0x000000, screenColor ? 1 : 0);
-			background.graphics.drawRect(0, 0, 1, 1);
-			background.graphics.endFill();
-*/
-		}
-
 
 		protected function setupDisplayMask():void {
 			_displayMasker = new MovieClip();
@@ -324,7 +290,6 @@ package com.longtailvideo.jwplayer.view {
 			setupComponent(_components.display, n++);
 			setupComponent(_components.playlist, n++);
 			setupComponent(_components.logo, n++);
-			//setupComponent(_logo, n++);
 			setupComponent(_components.controlbar, n++);
 			setupComponent(_components.dock, n++);
 		}
@@ -395,7 +360,6 @@ package com.longtailvideo.jwplayer.view {
 				_normalScreen.height = _player.config.height;
 			} 
 
-			resizeBackground();
 			resizeMasker();
 
 			_imageLayer.x = _mediaLayer.x = _components.display.x;
@@ -413,7 +377,13 @@ package com.longtailvideo.jwplayer.view {
 
 			resizeImage(_player.config.width, _player.config.height);
 			resizeMedia(_player.config.width, _player.config.height);
+
+			_instreamLayer.graphics.clear();
+			_instreamLayer.graphics.beginFill(0);
+			_instreamLayer.graphics.drawRect(0, 0, _player.config.width, _player.config.height);
+			_instreamLayer.graphics.endFill();
 			
+				
 /*			if (_logo) {
 				_logo.x = _components.display.x;
 				_logo.y = _components.display.y;
@@ -492,15 +462,6 @@ package com.longtailvideo.jwplayer.view {
 			}
 			
 		}
-
-		protected function resizeBackground():void {
-			var bg:DisplayObject = _backgroundLayer.getChildByName("background");
-			bg.width = RootReference.stage.stageWidth;
-			bg.height = RootReference.stage.stageHeight;
-			bg.x = 0;
-			bg.y = 0;
-		}
-
 
 		protected function resizeMasker():void {
 			if (_displayMasker == null)
