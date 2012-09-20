@@ -214,8 +214,8 @@
 		_this.getControls = function() {
 			return _callInternal("jwGetControls");
 		};
-		_this.getSafeMargins = function() {
-			return _callInternal("jwGetSafeMargins");
+		_this.getSafeRegion = function() {
+			return _callInternal("jwGetSafeRegion");
 		};	
 		_this.setControls = function(state) {
 			_callInternal("jwSetControls", state);

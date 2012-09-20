@@ -312,8 +312,8 @@
 			return model.config.controls;
 		}
 
-		public function getSafeMargins():Rectangle {
-			return view.getSafeMargins();
+		public function getSafeRegion():Rectangle {
+			return view.getSafeRegion();
 		}
 
 		public function setControls(state:Boolean):void {

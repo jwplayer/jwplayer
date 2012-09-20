@@ -60,6 +60,9 @@
 				case 'title':
 					itm['title'] = _textContent(node);
 					break;
+				case 'guid':
+					itm['mediaid'] = _textContent(node);
+					break;
 				case 'pubdate':
 					itm['date'] = _textContent(node);
 					break;

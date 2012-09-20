@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2530';
+	jwplayer.html5.version = '6.0.2534';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -802,6 +802,9 @@
 					break;
 				case 'title':
 					itm['title'] = _textContent(node);
+					break;
+				case 'guid':
+					itm['mediaid'] = _textContent(node);
 					break;
 				case 'pubdate':
 					itm['date'] = _textContent(node);
@@ -4270,7 +4273,7 @@
 			_api.jwGetCurrentQuality = _controller.getCurrentQuality;
 			_api.jwSetCurrentQuality = _controller.setCurrentQuality;
 			_api.jwSetControls = _view.setControls;
-			_api.jwGetSafeMargins = _view.getSafeMargins; 
+			_api.jwGetSafeRegion = _view.getSafeRegion; 
 			
 			_api.jwGetPlaylistIndex = _statevarFactory('item');
 			_api.jwGetPosition = _statevarFactory('position');
@@ -6683,7 +6686,7 @@
 			}
 		}
 		
-		this.getSafeMargins = function() {
+		this.getSafeRegion = function() {
 			var controls = _model.controls,
 				dispBounds = utils.bounds(_container),
 				dispOffset = dispBounds.top,

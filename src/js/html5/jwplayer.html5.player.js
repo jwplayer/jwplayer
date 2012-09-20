@@ -64,7 +64,7 @@
 			_api.jwGetCurrentQuality = _controller.getCurrentQuality;
 			_api.jwSetCurrentQuality = _controller.setCurrentQuality;
 			_api.jwSetControls = _view.setControls;
-			_api.jwGetSafeMargins = _view.getSafeMargins; 
+			_api.jwGetSafeRegion = _view.getSafeRegion; 
 			
 			_api.jwGetPlaylistIndex = _statevarFactory('item');
 			_api.jwGetPosition = _statevarFactory('position');

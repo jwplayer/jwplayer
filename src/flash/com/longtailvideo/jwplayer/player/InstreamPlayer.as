@@ -531,7 +531,7 @@ package com.longtailvideo.jwplayer.player
 			throw new Error("Unsupported IPlayer method in InstreamPlayer");
 		}
 		
-		public function getSafeMargins():Rectangle {
+		public function getSafeRegion():Rectangle {
 			throw new Error("Unsupported IPlayer method in InstreamPlayer");
 		}
 		

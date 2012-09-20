@@ -597,7 +597,7 @@
 			}
 		}
 		
-		this.getSafeMargins = function() {
+		this.getSafeRegion = function() {
 			var controls = _model.controls,
 				dispBounds = utils.bounds(_container),
 				dispOffset = dispBounds.top,

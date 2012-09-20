@@ -33,6 +33,9 @@
 					case 'title':
 						itm['title'] = i.text().toString();
 						break;
+					case 'guid':
+						itm['mediaid'] = i.text().toString();
+						break;
 					case 'pubdate':
 						itm['date'] = i.text().toString();
 						break;

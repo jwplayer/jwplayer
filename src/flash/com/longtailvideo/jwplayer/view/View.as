@@ -741,7 +741,7 @@ package com.longtailvideo.jwplayer.view {
 			}
 		}
 		
-		public function getSafeMargins():Rectangle {
+		public function getSafeRegion():Rectangle {
 			var bounds:Rectangle = new Rectangle();
 			var logo:LogoComponent = _components.logo as LogoComponent;
 			var dock:DockComponent = _components.dock as DockComponent;

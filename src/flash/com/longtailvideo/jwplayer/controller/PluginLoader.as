@@ -37,6 +37,8 @@ package com.longtailvideo.jwplayer.controller {
 
 		private var loaders:Dictionary;
 		
+		private var errorState:Boolean = false;
+		
 		// So plugins can embed assets
 		private var flexDisplay:IFlexDisplayObject;
 		
@@ -69,6 +71,7 @@ package com.longtailvideo.jwplayer.controller {
 		}
 		
 		private function pluginLoadFailed(evt:ErrorEvent):void {
+			errorState = true;
 			dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, "Error loading plugin: Plugin file not found"));
 		}
 		
@@ -83,6 +86,8 @@ package com.longtailvideo.jwplayer.controller {
 		}
 		
 		private function checkComplete():void {
+			if (errorState) return;
+			
 			var waiting:Boolean = false;
 			for each(var remaining:String in loaders) {
 				// Still waiting for some plugins to load

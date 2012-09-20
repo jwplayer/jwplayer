@@ -114,7 +114,7 @@ package com.longtailvideo.jwplayer.utils {
 			if (evt is SecurityErrorEvent) {
 				dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, "Crossdomain loading denied."));
 			} else {
-				dispatchEvent(evt.clone());
+				dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, "File not found."));
 			}
 			_errorState = true;
 		}

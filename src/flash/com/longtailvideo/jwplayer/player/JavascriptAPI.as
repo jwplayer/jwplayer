@@ -116,7 +116,7 @@ package com.longtailvideo.jwplayer.player {
 				ExternalInterface.addCallback("jwGetVolume", js_getVolume);
 				ExternalInterface.addCallback("jwGetStretching", js_getStretching);
 				ExternalInterface.addCallback("jwGetControls", js_getControls);
-				ExternalInterface.addCallback("jwGetSafeMargins", js_getSafeMargins);
+				ExternalInterface.addCallback("jwGetSafeRegion", js_getSafeRegion);
 
 				// Player API Calls
 				ExternalInterface.addCallback("jwPlay", js_play);
@@ -542,8 +542,8 @@ package com.longtailvideo.jwplayer.player {
 			return _player.getControls();
 		}
 
-		protected function js_getSafeMargins():Object {
-			return JavascriptSerialization.rectangleToObject(_player.getSafeMargins());
+		protected function js_getSafeRegion():Object {
+			return JavascriptSerialization.rectangleToObject(_player.getSafeRegion());
 		}
 		
 		protected function js_setControls(state:Boolean):void {

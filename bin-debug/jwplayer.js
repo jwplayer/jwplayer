@@ -16,7 +16,7 @@ jwplayer = function(container) {
 	}
 };
 
-jwplayer.version = '6.0.2530';
+jwplayer.version = '6.0.2534';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -2439,8 +2439,8 @@ jwplayer.source = document.createElement("source");/**
 		_this.getControls = function() {
 			return _callInternal("jwGetControls");
 		};
-		_this.getSafeMargins = function() {
-			return _callInternal("jwGetSafeMargins");
+		_this.getSafeRegion = function() {
+			return _callInternal("jwGetSafeRegion");
 		};	
 		_this.setControls = function(state) {
 			_callInternal("jwSetControls", state);

@@ -80,7 +80,7 @@ package com.longtailvideo.jwplayer.player {
 		function getCurrentQuality():Number;
 		function setCurrentQuality(index:Number):void;
 		function getControls():Boolean;
-		function getSafeMargins():Rectangle;
+		function getSafeRegion():Rectangle;
 		function setControls(state:Boolean):void;
 
 	}
