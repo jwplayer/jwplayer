@@ -40,8 +40,8 @@
 <p>This guide and the accompanying <a href="skin-reference.html">Skin XML Reference</a> contain all info you need to design and package a JW Player skin from scratch. However, an existing skin may already satisfy 90% of your requirements. In that case, we recommend you simply modify an existing skin instead of building one from scratch:</p>
 
 <ul>
-<li>The JW Player <a href="http://developer.longtailvideo.com/trac/">developer site</a> contains a skinning SDK download, with sources for 2 skins.</li>
-<li>The JW Player <a href="http://www.longtailvideo.com/jw-player/">product pages</a> contain links to skins of several key partners.</li>
+<li>The developer site has a <a href="http://developer.longtailvideo.com/trac/browser/sdks">skinning SDK</a>, which includes the default JW5 and JW6 skins.</li>
+<li>The <a href="http://www.longtailvideo.com/jw-player/">higher editions</a> of JW Player include 8 skins, which can be unzipped and edited.</li>
 </ul>
 
 <p>Editing an existing skin also allows you to become proficient with the JW Player skinning model while avoiding beginner mistakes that may be hard to find.</p>
@@ -134,18 +134,18 @@ myCoolSkin/tooltip/
 
 <h2>Packaging a Skin</h2>
 
-<p>When your skin is completed, it is possible to package it into a single file, so distributing and loading the skin is much faster. This is as easy as zipping the skin XML file along with the subfolders containing the component graphics.</p>
-
-<p>The XML file should be named the same as the skin itself. For example, a skin called <strong>myCoolSkin</strong> would contain an XML file called <em>myCoolSkin.xml</em>, and would be zipped into <em>myCoolSkin.zip</em>.</p>
-
-<p>Once you have zipped everything up, using a skin is a matter of:</p>
+<p>When your skin is completed, it is possible to package it, so distributing and loading the skin is much faster. You need to package your skin in two ways though:</p>
 
 <ul>
-<li>Uploading the skin to your server</li>
-<li>Setting the <em>skin</em> option in your player embed code to the URL of the ZIP file.</li>
+<li>For Flash, the XML file and PNG images should be compressed into a ZIP file.</li>
+<li>For HTML5, the PNG should be embedded into the XML file as base64 encoded strings.</li>
 </ul>
 
-<p>If you are very happy with your resulting skin and have no problem with others using your skin too, please consider <a href="http://www.longtailvideo.com/support/contact-us/?reason=3">submitting the skin</a> to our addons library. </p>
+<p>Zipping a skin should be quite straightforward. You can simply ZIP everything including the directories. Do note the XML file should be named the same as the skin itself. For example, a skin named <strong>myCoolSkin.zip</strong> would contain an XML file called <em>myCoolSkin.xml</em>.</p>
+
+<p>Creating base64 images of a skin is slightly harder, though tools are available to do this for you. A simple tool is <a href="http://www.askapache.com/online-tools/base64-image-converter/">this free base64 image service</a>. More advanced, but harder to use tools (like <a href="http://ant.apache.org/">Apache Ant</a>) can automate this for you.</p>
+
+
 
 </body>
 </html>

@@ -31,11 +31,9 @@
 <p>JW Player supports both external and embedded captions:</p>
 
 <ul>
-<li>External captions should be in <strong>WebVTT</strong> (<a href="http://dev.w3.org/html5/webvtt/">Web Video Text Tracks</a>) format, which is part of the HTML5 standard. The captions are stored and served as separate text files.</li>
-<li>Embedded captions should be in <strong>TX3G</strong> (<a href="http://en.wikipedia.org/wiki/MPEG-4_Part_17">3GPP Timed Text</a>) format, which is part of the MP4 standard. The captions are stored inside the MP4 video files, requiring no separate downloads.</li>
+<li>External captions can be in <strong>WebVTT</strong> (<a href="http://dev.w3.org/html5/webvtt/">Web Video Text Tracks</a>) format, which is part of the HTML5 standard. Additionally, <a href="http://en.wikipedia.org/wiki/SubRip">SRT</a> and <a href="http://www.w3.org/TR/2010/PR-ttaf1-dfxp-20100914/">DFXP</a> are supported. In all cases, the captions are stored and served as separate text files.</li>
+<li>Embedded captions can be in <strong>TX3G</strong> (<a href="http://en.wikipedia.org/wiki/MPEG-4_Part_17">3GPP Timed Text</a>) format, which is part of the MP4 standard. The captions are stored inside the MP4 video files, requiring no separate downloads.</li>
 </ul>
-
-<p>Note that WebVTT builds upon the SRT (<a href="http://en.wikipedia.org/wiki/SubRip">SubRip</a>) format, which is also supported by JW Player.</p>
 
 <p>Unfortunately, neither external nor embedded captions are supported on all desktop browsers and mobile devices. Here is the breakdown:</p>
 
@@ -44,12 +42,16 @@
 </tr><tr>
     <th>WebVTT</th><td>yes</td><td>yes</td><td>-</td><td>-</td>
 </tr><tr>
+    <th>SRT</th><td>yes</td><td>yes</td><td>-</td><td>-</td>
+</tr><tr>
+    <th>DFXP</th><td>-</td><td>yes</td><td>-</td><td>-</td>
+</tr><tr>
     <th>TX3G</th><td>-</td><td>yes</td><td>yes</td><td>-</td>
 </tr></table>
 
-<p>WebVTT does not work on mobile devices, since it is not possible for JW Player to <em>polyfill</em> the captions on top of the video during (full-screen) playback. Support for <a href="http://www.longtailvideo.com/html5/#accessibility">HTML5 Text Tracks</a> on iOS and Android will fix this in the (hopefully near-term) future.</p>
+<p>WebVTT, SRT and DFXP do not work on mobile devices, since it is not possible for JW Player to <em>polyfill</em> the captions on top of the video during (full-screen) playback. Support for <a href="http://www.longtailvideo.com/html5/#accessibility">HTML5 Text Tracks</a> on iOS and Android will fix this in the (hopefully near-term) future. On top of that, JW6 currently does not support DFXP captions in HTML5.</p>
 
-<p>TX3G tracks do render on iOS (still not on Android), but on desktops they only display in Flash. TX3G tracks are also hard to edit, since they require tools (like <a href="http://handbrake.fr">Handbrake</a>) to <em>mux</em> your MP4 files. WebVTT files can be authored with any text editor.</p>
+<p>TX3G tracks do render on iOS (not on Android), but on desktops they only display in Flash. TX3G tracks are also hard to edit, since they require tools (like <a href="http://handbrake.fr">Handbrake</a>) to <em>mux</em> your MP4 files. WebVTT files can be authored with any text editor.</p>
 
 
 
@@ -82,9 +84,9 @@ look what you gone and done now, ay.
 
 <dl>
 <dt>file</dt>
-<dd>URL to the WebVTT (or SRT) file to display (e.g. <strong>/assets/myCaptions.vtt</strong>). Note these captions are subject to <a href="crossdomain.html">Crossdomain Security Restrictions</a>, in both Flash and HTML5 mode.</dd>
+<dd>URL to the WebVTT (or SRT/DFXP) file to display (e.g. <strong>/assets/myCaptions.vtt</strong>). Note these captions are subject to <a href="crossdomain.html">Crossdomain Security Restrictions</a>, in both Flash and HTML5 mode.</dd>
 <dt>label</dt>
-<dd>Human-readable name of the captions track (e.g. <strong>Closed Captions</strong>). Is displayed in the captions selection menu if more than one track is provided.</dd>
+<dd>Human-readable name of the captions track (e.g. <strong>English Captions</strong>). Is displayed in the captions selection menu if more than one track is provided.</dd>
 </dl>
 
 <p>Here is a basic example setup, using one video and three SRT files:</p>
@@ -105,7 +107,7 @@ jwplayer("myElement").setup({
 });
 </pre>
 
-<p>See <a href="playlists.html">Working with Playlist</a> for more info on embedding playlists.</p>
+<p>Note that the <strong>playlist</strong> object must be used when embedding captions! See <a href="playlists.html">Working with Playlist</a> for more info on embedding playlists.</p>
 
 <h3>Captions in Feeds</h3>
 
@@ -138,28 +140,29 @@ jwplayer("myElement").setup({
 <p>It is possible to change the styling of the captions using the <strong>captions</strong> options block of player setups. The following style properties can be set:</p>
 
 <dl>
-<dt>background</dt>
-<dd>By default, no background is displayed for the captions. Instead, they are printed with a thin black outline. Set this option to a hexadecimal color (e.g. <strong>000000</strong>) to draw a colored box around the captions instead. It makes the captions more readable, but also sets them more apart from the video.</dd>
+<dt>back</dt>
+<dd>By default, no background is displayed for the captions. Instead, they are printed with a thin black outline. Set this option <strong>true</strong> to draw a black box around the captions instead. It makes the captions more readable, but also sets them more apart from the video.</dd>
 <dt>color</dt>
 <dd>Can be any hexadecimal color value, the default is <strong>FFFFFF</strong>.</dd>
 <dt>fontsize</dt>
 <dd>By default, the captions are displayed using a font size that fits 80 characters per line. Use this option to override this selection with a specific fontsize in pixels (e.g. <strong>20</strong>). Note the captions are still scaled up during fullscreen playback.</dd>
 </dl>
 
-<p>Here is an example setup where the captions are set in 20px red with a black background:</p>
+<p>Here is an example setup where the captions are set in 20px red with a background:</p>
 
 <pre>
 jwplayer("myElement").setup({
     captions: {
-        background: '000000',
+        back: true,
         color: 'cc0000',
-        fontSize: '20'
+        fontsize: 20
     },
     height: 360,
     playlist: [{
-        captions: [
-            { file: "/assets/captions.vtt", label: "Closed Captions" },
-        ],
+        captions: [{ 
+            file: "/assets/captions.vtt", 
+            label: "Closed Captions" 
+        }],
         file: "/assets/sintel.mp4",
         image: "/assets/sintel.jpg"
     }],
@@ -171,7 +174,7 @@ jwplayer("myElement").setup({
 
 <h3>Inline Styling</h3>
 
-<p>At present, JW Player does not support WebVTT cue settings (<em>line</em>, <em>position</em>, <em>size</em>, etc.), nor most WebVTT cue objects (<em>class</em>, <em>ruby</em>, <em>timestamp</em>, etc.). They will not break playback, but are simply ignored. However, the following cues are supported, for both SRT and WebVTT:</p>
+<p>At present, JW Player does not support WebVTT cue settings (<em>line</em>, <em>position</em>, <em>size</em>, etc.), nor most WebVTT cue objects (<em>class</em>, <em>ruby</em>, <em>timestamp</em>, etc.). They will not break playback, but are simply ignored. However, some basic HTML tags are supported in all text formats:</p>
 
 <ul>
 <li><strong>&lt;b&gt;</strong>: to make text bold.</li>

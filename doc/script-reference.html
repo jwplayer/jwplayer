@@ -250,8 +250,8 @@ Removes a button from the dock. Attributes:
 
 <dl><dt>getControls()</dt><dd>
 Returns whether the built-in controls are currently enabled.
-</dd><dt>getSafeMargins()</dt><dd>
-Returns an array with the margins used by the controls. Scripts and plugins use this information to ensure their visual assets don't overlap with the controls. For example, if this call returns <strong>[40,30]</strong>, it means the top 40 pixels of the player are used by the dock buttons and the bottom 30 pixels are used by the controlbar.
+</dd><dt>getSafeRegion()</dt><dd>
+Returns an array with the region of the display not used by the controls. Scripts and plugins use this information to ensure their visual assets don't overlap with the controls. An example region the call can return is: <pre>{ x:0, y:30, width:480, height:200 }</pre>
 </dd></dl>
 
 <dl><dt>setControls(<em>controls</em>)</dt><dd>

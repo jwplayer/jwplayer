@@ -26,7 +26,7 @@
 
 <h2>Introduction</h2>
 
-<p>JW6 offers a set of hosted services that augment the functionality of the client-side JW Player library. A key service is the JW Player Analytics Service, which provides basic video analytics to all users of JW Player. It is available at no extra charge.</p>
+<p>JW6 offers a set of hosted services that augment the functionality of the client-side JW Player library. A key service is the JW Player Analytics Service, which provides basic video analytics to all users of JW Player. It is available for all, including publishers that are using the Free edition.</p>
 
 <p>Video analytics can be found inside your <a href="http://longtailvideo.com/account">JW Player Dashboard</a>, which also holds the download zip and license key. Analytics are automatically enabled when a valid license key is setup.</p>
 
@@ -47,11 +47,13 @@
 &lt;script type="text/javascript"&gt;jwplayer.key="Ksio49Ksi8bdi8KS8S";&lt;/script&gt;
 </pre>
 
-<p>Note the key is used for more purposes than analytics matching. For example, it also contains info on the player edition you are licensed to use.</p>
+<p>Note that users of the <strong>Free</strong> edition can get a JW Player Key by <a href="http://www.longtailvideo.com">logging into the dashboard</a>. If you don't have a login yet, you can sign up for free.</p>
+
+<p>Users of the other JW6 editions will likely already have a key set, since the key is also used to unlock the additional features of each edition.</p>
 
 <h3>Configuration Options</h3>
 
-<p>The global <strong>jwplayer.key</strong> setting is all you need to have video analytics appear in your account. However, two advanced configuration options are available to change the behavior of the JW Player Analytics. Both are set inside a <a href="embedding.html">configuration block</a> called <strong>analytics</strong>:</p>
+<p>The global <strong>jwplayer.key</strong> setting is all you need to have video analytics appear in your account. However, two advanced configuration options are available to change the behavior of the JW Player Analytics. Both are set inside a configuration block called <strong>analytics</strong>:</p>
 
 <dl><dt>cookies</dt><dd>
 By default, JW Player uses cookies to track viewers across different pages on your site. This allows you to see e.g. the number of unique or returning viewers for your videos. Since tracking of cookies requires the explicit consent of viewers in the European Union, it is possible to disable cookie tracking by settings this option to <strong>false</strong>. Basic events (start, complete) will still be captured. 
@@ -71,17 +73,7 @@ jwplayer("myElement").setup({
 });
 </pre>
 
-<p>And here's a setup in which analytics are disabled altogether:</p>
-
-<pre>
-jwplayer("myElement").setup({
-    file: "/uploads/example.mp4",
-    image: "/uploads/example.jpg",
-    analytics: {
-        enabled: false
-    }
-});
-</pre>
+<p>See <a href="embedding.html">Embedding JW Player</a> for more general info on embedding the player.</p>
 
 </body>
 </html>

@@ -169,6 +169,30 @@
 
 
 
+<h2>Captions</h2>
+
+<p>JW6 has built-in support for closed captions and subtitles. This replaces the external Captions plugin. A CC button on the controlbar will automatically appear when captions are available.</p>
+
+<h3>Added</h3>
+
+<dl>
+<dt>WebVTT captions</dt>
+<dd>JW6 brings basic support for <a href="captions.html">WebVTT captions</a>, a new format standardized in HTML5.</dd>
+<dt>Captions in playlists or feeds</dt>
+<dd>JW6 supports setting multiple captions as file/label combinations in inline playlists. Additionally, JW6 supports <strong>media:subtitle</strong> in RSS feeds to load multiple captions per playlist item.</dd>
+</dl>
+
+<h3>Removed</h3>
+
+<dl>
+<dt>The <em>captions.file(s)</em> properties</dt>
+<dd>Captions now have to get loaded as part of a playlist. This is done through either a playlist captions sub-block or <strong>media:subtitle</strong> in RSS.</dd>
+<dt>Styling in DFXP files</dt>
+<dd>JW6 drops support for styling in DFXP captions, aligning its supported feature set with WebVTT and SRT. Styling <a href="captions.html">through configuration options</a> is still supported.</dd>
+</dl>
+
+
+
 <h2>Skinning</h2>
 
 <p>JW6 contains a much slicker default skin, as well as many UX enhancements (like the use of subtle animations).</p>
