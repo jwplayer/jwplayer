@@ -40,11 +40,9 @@
 			_hiding,
 			_button,
 			_config = utils.extend({
-				backgroundcolor: '#000',
 				showicons: TRUE,
 				bufferrotation: 45,
 				bufferinterval: 100,
-				fontcase: "",
 				fontcolor: '#ccc',
 				overcolor: '#fff',
 				fontsize: 15,
@@ -246,10 +244,6 @@
 			if (_button) _button.hide();
 		}
 
-		this.getBGColor = function() {
-			return _config.backgroundcolor;
-		}
-		
 		/** NOT SUPPORTED : Using this for now to hack around instream API **/
 		this.setAlternateClickHandler = function(handler) {
 			_alternateClickHandler = handler;

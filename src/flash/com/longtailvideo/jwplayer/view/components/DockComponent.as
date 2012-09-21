@@ -47,7 +47,7 @@ package com.longtailvideo.jwplayer.view.components {
 				alpha = 0;
 			}
 			settings = {
-				iconalpha: !isNaN(getConfigParam("iconalpha")) ? getConfigParam("iconalpha") : 0.8,
+				iconalpha: !isNaN(getConfigParam("iconalpha")) ? getConfigParam("iconalpha") : 0.75,
 				iconalphaactive: !isNaN(getConfigParam("iconalphaactive")) ? getConfigParam("iconalphaactive") : 0.5,
 				iconalphaover: !isNaN(getConfigParam("iconalphaover")) ? getConfigParam("iconalphaover") : 1,
 				margin: !isNaN(getConfigParam("margin")) ? getConfigParam("margin") : 8

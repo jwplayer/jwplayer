@@ -29,8 +29,8 @@ package com.longtailvideo.jwplayer.view.components {
 			
 			settings = {
 				fontcase: null,
-				fontcolor: 0xffffff,
-				fontsize: 12,
+				fontcolor: 0xcccccc,
+				fontsize: 11,
 				fontweight: null,
 				activecolor: 0xffffff,
 				overcolor: 0xffffff

@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2537';
+	jwplayer.html5.version = '6.0.2543';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -886,12 +886,11 @@
 			_skin,
 			_dividerElement = _layoutElement("divider", CB_DIVIDER),
 			_defaults = {
-				margin : 10,
-				maxwidth: 0,
+				margin : 8,
+				maxwidth: 800,
 				font : "Arial,sans-serif",
-				fontsize : 10,
-				fontcolor : parseInt("000000", 16),
-				fontstyle : "normal",
+				fontsize : 11,
+				fontcolor : parseInt("eeeeee", 16),
 				fontweight : "bold",
 				layout : {
 					left: {
@@ -1169,7 +1168,6 @@
 				font: _settings.fontsize + "px/" + _getSkinElement("background").height + "px " + _settings.font,
 				color: _settings.fontcolor,
 				'font-weight': _settings.fontweight,
-				'font-style': _settings.fontstyle,
 				'text-align': 'center',
 				padding: '0 5px'
 			});
@@ -2374,11 +2372,9 @@
 			_hiding,
 			_button,
 			_config = utils.extend({
-				backgroundcolor: '#000',
 				showicons: TRUE,
 				bufferrotation: 45,
 				bufferinterval: 100,
-				fontcase: "",
 				fontcolor: '#ccc',
 				overcolor: '#fff',
 				fontsize: 15,
@@ -2580,10 +2576,6 @@
 			if (_button) _button.hide();
 		}
 
-		this.getBGColor = function() {
-			return _config.backgroundcolor;
-		}
-		
 		/** NOT SUPPORTED : Using this for now to hack around instream API **/
 		this.setAlternateClickHandler = function(handler) {
 			_alternateClickHandler = handler;
@@ -2875,10 +2867,10 @@
 	html5.dock = function(api, config) {
 		var _api = api,
 			_defaults = {
-				iconalpha: 0.8,
+				iconalpha: 0.75,
 				iconalphaactive: 0.5,
 				iconalphaover: 1,
-				margin: 6
+				margin: 8
 			},
 			_config = utils.extend({}, _defaults, config), 
 			_id = _api.id + "_dock",
@@ -3646,7 +3638,8 @@
 		MENU_CLASS = 'jwmenu',
 		OPTION_CLASS = 'jwoption',
 		UNDEFINED = undefined,
-		WHITE = '#ffffff';
+		WHITE = '#ffffff',
+		CCC = '#cccccc';
 	
 	/** HTML5 Overlay class **/
 	html5.menu = function(name, id, skin, changeHandler) {
@@ -3657,8 +3650,8 @@
 			_overlay = new html5.overlay(_id+"_overlay", skin),
 			_settings = utils.extend({
 				fontcase: UNDEFINED,
-				fontcolor: WHITE,
-				fontsize: 12,
+				fontcolor: CCC,
+				fontsize: 11,
 				fontweight: UNDEFINED,
 				activecolor: WHITE,
 				overcolor: WHITE
@@ -4343,23 +4336,26 @@
  * @version 6.0
  */
 (function(html5) {
-	var WHITE = "#ffffff",
-		GRAY = "#cccccc",
+	var WHITE = "#FFFFFF",
+		CCC = "#CCCCCC",
+		THREES = "#333333",
+		NINES = "#999999",
+		NORMAL = "normal",
 		_defaults = {
 			size: 180,
 			//position: html5.view.positions.NONE,
-			itemheight: 60,
-			thumbs: true,
-			
-			fontcolor: GRAY,
-			overcolor: WHITE,
-			activecolor: "#999999",
-			backgroundcolor: "#000000",
-			fontweight: "normal",
-			titlecolor: GRAY,
+			//thumbs: true,
+			// Colors
+			backgroundcolor: THREES,
+			fontcolor: NINES,
+			overcolor: CCC,
+			activecolor: CCC,
+			titlecolor: CCC,
 			titleovercolor: WHITE,
 			titleactivecolor: WHITE,
-			titleweight: "normal",
+			
+			fontweight: NORMAL,
+			titleweight: NORMAL,
 			fontsize: 11,
 			titlesize: 13
 		},
@@ -4389,6 +4385,7 @@
 			_lastCurrent = -1,
 			_clickedIndex,
 			_slider,
+			_itemheight = 60,
 			_elements = {
 				'background': undefined,
 				'divider': undefined,
@@ -4424,7 +4421,7 @@
 			
 			_populateSkinElements();
 			if (_elements.item) {
-				_settings.itemheight = _elements.item.height;
+				_itemheight = _elements.item.height;
 			}
 			
 			_setupStyles();
@@ -4438,8 +4435,7 @@
 		}
 		
 		function _setupStyles() {
-			var imgPos = 0, imgWidth = 0, imgHeight = 0, 
-				itemheight = _settings.itemheight;
+			var imgPos = 0, imgWidth = 0, imgHeight = 0; 
 
 			utils.clearCss(_internalSelector());
 
@@ -4458,12 +4454,12 @@
 
 			
         	if (_elements.itemImage) {
-        		imgPos = (itemheight - _elements.itemImage.height) / 2 + "px ";
+        		imgPos = (_itemheight - _elements.itemImage.height) / 2 + "px ";
         		imgWidth = _elements.itemImage.width;
         		imgHeight = _elements.itemImage.height;
         	} else {
-        		imgWidth = itemheight * 4 / 3;
-        		imgHeight = itemheight
+        		imgWidth = _itemheight * 4 / 3;
+        		imgHeight = _itemheight
         	}
 			
         	if (_elements.divider) {
@@ -4483,8 +4479,8 @@
 			
 			_css(_internalSelector("jwlist li"), {
 				'background-image': _elements.item ? "url("+_elements.item.src+")" : "",
-				height: itemheight,
-				'background-size': JW_CSS_100PCT + " " + itemheight + "px",
+				height: _itemheight,
+				'background-size': JW_CSS_100PCT + " " + _itemheight + "px",
 		    	cursor: 'pointer'
 			});
 
@@ -4507,7 +4503,7 @@
 
 			_css(_internalSelector("jwtextwrapper"), {
 				padding: "0 5px 0 " + (imgPos ? 0 : "5px"),
-				height: itemheight - 5,
+				height: _itemheight - 5,
 				position: JW_CSS_RELATIVE
 			});
 			
@@ -4530,7 +4526,7 @@
 	    	    'line-height': 18,
 	    	    'margin-top': 5,
 	        	overflow: 'hidden',
-	        	height: itemheight,
+	        	height: _itemheight,
 	        	position: JW_CSS_RELATIVE
 	    	});
 
@@ -4621,7 +4617,7 @@
 			if (utils.isIOS() && window.iScroll) {
 				_wrapper.innerHTML = "";
 				_appendChild(_wrapper, _ul);
-				_ul.style.height = _settings.itemheight * _playlist.length + "px";
+				_ul.style.height = _itemheight * _playlist.length + "px";
 				var myscroll = new iScroll(_wrapper.id);
 			} else {
 				_appendChild(_container, _ul);
@@ -4656,14 +4652,14 @@
 			_clickedIndex = -1;
 				
 			if (utils.isIOS() && window.iScroll) {
-				_ul.scrollTop = idx * _settings.itemheight;
+				_ul.scrollTop = idx * _itemheight;
 			} else if (_slider && _slider.visible()) {
 				_slider.thumbPosition(idx / (_api.jwGetPlaylist().length-1)) ;
 			}
 		}
 
 		function _showThumbs() {
-			return _settings.thumbs.toString().toLowerCase() == "true";	
+			return true;//_settings.thumbs.toString().toLowerCase() == "true";	
 		}
 
 		function _itemHandler(evt) {
@@ -6399,7 +6395,7 @@
 				_hideLogo();
 			}
 			_css(_internalSelector(), {
-				'background-color': _audioMode ? 'transparent' : _display.getBGColor()
+				'background-color': _audioMode ? 'transparent' : '#000'
 			});
 		}
 		

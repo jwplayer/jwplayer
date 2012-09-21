@@ -172,7 +172,7 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 		
 		private function get maxWidth():Number {
-			return getConfigParam('maxwidth') ? Number(getConfigParam('maxwidth')) : 0;			
+			return getConfigParam('maxwidth') ? Number(getConfigParam('maxwidth')) : 800;			
 		}
 		
 		private function stateHandler(evt:PlayerEvent=null):void {
@@ -529,11 +529,9 @@ package com.longtailvideo.jwplayer.view.components {
 		private function addTextField(name:String):void {
 			var textFormat:TextFormat = new TextFormat();
 			
-			if (fontColor) {
-				textFormat.color = fontColor.color;
-			}
+			textFormat.color = fontColor ? fontColor.color : 0xEEEEEE;
 			
-			textFormat.size = fontSize ? fontSize : 10;
+			textFormat.size = fontSize ? fontSize : 11;
 			textFormat.font = "_sans";
 			textFormat.bold = (!fontWeight || fontWeight == "bold");
 			
@@ -708,7 +706,7 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 			
 			if (getConfigParam('position') == 'over' || _player.config.fullscreen == true) {
-				var margin:Number = getConfigParam('margin') == null ? 0 : getConfigParam('margin');
+				var margin:Number = getConfigParam('margin') == null ? 8 : getConfigParam('margin');
 				var maxMargin:Number = (maxWidth && width > maxWidth) ? (width - maxWidth) / 2 : 0;
 				x = (maxMargin ? maxMargin : margin) + player.config.pluginConfig('display')['x'];
 				y = height - background.height - margin + player.config.pluginConfig('display')['y'];

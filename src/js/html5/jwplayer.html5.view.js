@@ -306,7 +306,7 @@
 				_hideLogo();
 			}
 			_css(_internalSelector(), {
-				'background-color': _audioMode ? 'transparent' : _display.getBGColor()
+				'background-color': _audioMode ? 'transparent' : '#000'
 			});
 		}
 		

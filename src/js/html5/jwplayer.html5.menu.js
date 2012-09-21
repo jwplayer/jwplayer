@@ -13,7 +13,8 @@
 		MENU_CLASS = 'jwmenu',
 		OPTION_CLASS = 'jwoption',
 		UNDEFINED = undefined,
-		WHITE = '#ffffff';
+		WHITE = '#ffffff',
+		CCC = '#cccccc';
 	
 	/** HTML5 Overlay class **/
 	html5.menu = function(name, id, skin, changeHandler) {
@@ -24,8 +25,8 @@
 			_overlay = new html5.overlay(_id+"_overlay", skin),
 			_settings = utils.extend({
 				fontcase: UNDEFINED,
-				fontcolor: WHITE,
-				fontsize: 12,
+				fontcolor: CCC,
+				fontsize: 11,
 				fontweight: UNDEFINED,
 				activecolor: WHITE,
 				overcolor: WHITE

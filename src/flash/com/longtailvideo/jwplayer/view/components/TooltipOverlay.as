@@ -72,9 +72,6 @@ package com.longtailvideo.jwplayer.view.components
 			var elem:DisplayObject = skin.getSkinElement('tooltip', name);
 			if (!elem) {
 				elem = new Sprite();
-				var gfx:Graphics = (elem as Sprite).graphics;
-				gfx.beginFill(0, 0);
-				gfx.drawRect(0, 0, 1, 1);
 			}
 			return elem;
 		}
@@ -89,8 +86,8 @@ package com.longtailvideo.jwplayer.view.components
 			
 			for each (var vertical:String in ["top", "bottom"]) {
 				for each (var horizontal:String in ["left", "right"]) {
-					borders[horizontal].x = borders[vertical+horizontal].x = (horizontal == "left") ? 0 : wid - borders[horizontal].width;  
-					borders[vertical].y = borders[vertical+horizontal].y = (vertical == "top") ? 0 : hei - borders[vertical].height;
+					borders[horizontal].x = borders[vertical+horizontal].x = (horizontal == "left" && borders[horizontal].width > 0) ? 0 : wid - borders[horizontal].width;  
+					borders[vertical].y = borders[vertical+horizontal].y = (vertical == "top" && borders[vertical].height > 0) ? 0 : hei - borders[vertical].height;
 
 					borders[horizontal].y = borders.top.height; 
 					borders[horizontal].height = hei - borders.top.height - borders.bottom.height;
@@ -99,8 +96,8 @@ package com.longtailvideo.jwplayer.view.components
 				borders[vertical].width = wid - borders.left.width - borders.right.width;
 			}
 			
-			contentWidth = borders.top.width;
-			contentHeight = borders.left.height;
+			contentWidth = borders.top.width ? borders.top.width : wid;
+			contentHeight = borders.left.height ? borders.left.height : hei;
 			back.height = contentHeight;
 			back.width = contentWidth;
 			back.x = borders.top.x;

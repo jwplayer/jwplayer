@@ -24,10 +24,10 @@
 	html5.dock = function(api, config) {
 		var _api = api,
 			_defaults = {
-				iconalpha: 0.8,
+				iconalpha: 0.75,
 				iconalphaactive: 0.5,
 				iconalphaover: 1,
-				margin: 6
+				margin: 8
 			},
 			_config = utils.extend({}, _defaults, config), 
 			_id = _api.id + "_dock",

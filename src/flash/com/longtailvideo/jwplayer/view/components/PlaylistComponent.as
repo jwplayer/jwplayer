@@ -252,7 +252,7 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 
 		override protected function get backgroundColor():Color {
-			return getColor("backgroundcolor", 0);
+			return getColor("backgroundcolor", 0x333333);
 		}
 		
 		override protected function get fontSize():Number {
@@ -260,15 +260,15 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 
 		override protected function get fontColor():Color {
-			return getColor("fontcolor", 0xcccccc);
+			return getColor("fontcolor", 0x999999);
 		}
 		
 		private function get overColor():Color {
-			return getColor("overcolor", 0xffffff);
+			return getColor("overcolor", 0xcccccc);
 		}
 		
 		private function get activeColor():Color {
-			return getColor("activecolor", 0x999999);
+			return getColor("activecolor", 0xcccccc);
 		}
 		
 		private function get titleSize():Number {
@@ -506,7 +506,8 @@ package com.longtailvideo.jwplayer.view.components {
 			var description:TextField = btn.getChildByName("description") as TextField;
 			if (playlistItem.image || playlistItem['playlist.image']) {
 				var imageFile:String = playlistItem['playlist.image'] ? playlistItem['playlist.image'] : playlistItem.image;
-				if (getConfigParam('thumbs') != false && _player.config.playlistposition != 'none') {
+				//if (getConfigParam('thumbs') != false && _player.config.playlistposition != 'none') {
+				if (_player.config.playlistposition != 'none') {
 					var img:Sprite = btn.getChildByName("image") as Sprite;
 					if (img) {
 						img.alpha = 0;
@@ -533,7 +534,8 @@ package com.longtailvideo.jwplayer.view.components {
 			} catch (e:Error) {
 			}
 			img = btn.getChildByName("image") as MovieClip;
-			if (img && (!(playlistItem.image || playlistItem['playlist.image']) || getConfigParam('thumbs') == false)) {
+//			if (img && (!(playlistItem.image || playlistItem['playlist.image']) || getConfigParam('thumbs') == false)) {
+			if (img && (!(playlistItem.image || playlistItem['playlist.image']))) {
 				if (!img.getChildByName("imageBackground")) {
 					btn.getChildByName("image").visible = false;
 				}

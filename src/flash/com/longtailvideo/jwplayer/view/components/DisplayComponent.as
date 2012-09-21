@@ -43,8 +43,8 @@
 			setupIcons();
 			
 			// Override defaults
-			if (!isNaN(getConfigParam('bufferRotation'))) _bufferRotationAngle = Number(getConfigParam('bufferrotation'));
-			if (!isNaN(getConfigParam('bufferInterval'))) _bufferRotationTime = Number(getConfigParam('bufferinterval'));
+			if (!isNaN(getConfigParam('bufferrotation'))) _bufferRotationAngle = Number(getConfigParam('bufferrotation'));
+			if (!isNaN(getConfigParam('bufferinterval'))) _bufferRotationTime = Number(getConfigParam('bufferinterval'));
 			
 			_bufferStateTimer = new Timer(50, 1);
 			_bufferStateTimer.addEventListener(TimerEvent.TIMER_COMPLETE, showBufferIcon);

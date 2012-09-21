@@ -50,12 +50,11 @@
 			_skin,
 			_dividerElement = _layoutElement("divider", CB_DIVIDER),
 			_defaults = {
-				margin : 10,
-				maxwidth: 0,
+				margin : 8,
+				maxwidth: 800,
 				font : "Arial,sans-serif",
-				fontsize : 10,
-				fontcolor : parseInt("000000", 16),
-				fontstyle : "normal",
+				fontsize : 11,
+				fontcolor : parseInt("eeeeee", 16),
 				fontweight : "bold",
 				layout : {
 					left: {
@@ -333,7 +332,6 @@
 				font: _settings.fontsize + "px/" + _getSkinElement("background").height + "px " + _settings.font,
 				color: _settings.fontcolor,
 				'font-weight': _settings.fontweight,
-				'font-style': _settings.fontstyle,
 				'text-align': 'center',
 				padding: '0 5px'
 			});
