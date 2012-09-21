@@ -38,14 +38,14 @@
 			_completedState = FALSE,
 			_visibilities = {},
 			_hiding,
-			_button,		
+			_button,
 			_config = utils.extend({
 				backgroundcolor: '#000',
 				showicons: TRUE,
-				bufferrotation: 15,
+				bufferrotation: 45,
 				bufferinterval: 100,
 				fontcase: "",
-				fontcolor: '#fff',
+				fontcolor: '#ccc',
 				overcolor: '#fff',
 				fontsize: 15,
 				fontweight: ""

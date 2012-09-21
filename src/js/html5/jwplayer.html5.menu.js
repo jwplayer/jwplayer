@@ -112,7 +112,7 @@
 		
 		function _getSkinElement(name) {
 			var elem = skin.getSkinElement('tooltip', name);
-			return elem;
+			return elem ? elem : { width: 0, height: 0, src: UNDEFINED };
 		}
 
 		this.show = _overlay.show;

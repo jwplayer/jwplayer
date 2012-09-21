@@ -32,7 +32,7 @@
 		
 		/** Setting defaults **/
 		protected var _bufferRotationTime:Number = 100;
-		protected var _bufferRotationAngle:Number = 15;
+		protected var _bufferRotationAngle:Number = 45;
 
 		protected var _forced:String = "";
 		
@@ -95,8 +95,8 @@
 			_overlay.name = "overlay";
 			addChildAt(_overlay, 1);
 			
-			_textFormat = new TextFormat("_sans", fontSize ? fontSize : 15, fontColor ? fontColor.toString() : 0, (fontWeight == "bold"));
-			_textOverFormat = new TextFormat("_sans", fontSize ? fontSize : 15, fontOverColor ? fontOverColor.toString() : 0, (fontWeight == "bold"));
+			_textFormat = new TextFormat("_sans", fontSize ? fontSize : 15, fontColor ? fontColor.toString() : 0xCCCCCC, (fontWeight == "bold"));
+			_textOverFormat = new TextFormat("_sans", fontSize ? fontSize : 15, fontOverColor ? fontOverColor.toString() : 0xFFFFFF, (fontWeight == "bold"));
 			
 			_youtubeMask = new MovieClip();
 		}

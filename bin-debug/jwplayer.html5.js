@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2534';
+	jwplayer.html5.version = '6.0.2537';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -840,6 +840,8 @@
  * 
  * @author pablo
  * @version 6.0
+ * 
+ * TODO: Since the volume slider was moved from the controbar skinning component to the tooltip component, we should clean up how it gets created 
  */
 (function(jwplayer) {
 	var html5 = jwplayer.html5,
@@ -1447,15 +1449,16 @@
 		
 		function _buildSlider(name) {
 			var slider = _createSpan(),
-				prefix = name + "SliderCap",
-				vertical = !!_getSkinElement(prefix+"Bottom").src,
+				skinPrefix = name + (name=="time"?"Slider":""),
+				capPrefix = skinPrefix + "Cap",
+				vertical = name == "volume",
 				left = vertical ? "Top" : "Left",
 				right = vertical ? "Bottom" : "Right",
-				capLeft = _buildImage(prefix + left, NULL, FALSE, FALSE, vertical),
-				capRight = _buildImage(prefix + right, NULL, FALSE, FALSE, vertical),
+				capLeft = _buildImage(capPrefix + left, NULL, FALSE, FALSE, vertical),
+				capRight = _buildImage(capPrefix + right, NULL, FALSE, FALSE, vertical),
 				rail = _buildSliderRail(name, vertical, left, right),
-				capLeftSkin = _getSkinElement(prefix+left),
-				capRightSkin = _getSkinElement(prefix+left),
+				capLeftSkin = _getSkinElement(capPrefix+left),
+				capRightSkin = _getSkinElement(capPrefix+left),
 				railSkin = _getSkinElement(name+"SliderRail");
 			
 			slider.className = "jwslider jw" + name;
@@ -1504,7 +1507,7 @@
 			rail.className = "jwrail jwsmooth";
 
 			for (var i=0; i<railElements.length; i++) {
-				var prefix = name + "Slider" + railElements[i],
+				var prefix = name + (name=="time"?"Slider":"") + railElements[i],
 					element = _buildImage(prefix, NULL, !vertical, (name=="volume")),
 					capLeft = _buildImage(prefix + "Cap" + left, NULL, FALSE, FALSE, vertical),
 					capRight = _buildImage(prefix + "Cap" + right, NULL, FALSE, FALSE, vertical),
@@ -1674,7 +1677,7 @@
 		
 		
 		function _styleVolumeSlider(slider, vertical, left, right) {
-			var prefix = "volumeSlider";
+			var prefix = "volume";
 			_css(_internalSelector(".jwvolume"), {
 				width: _getSkinElement(prefix+"Rail").width + (vertical ? 0 : _getSkinElement(prefix+"Cap"+left).width + _getSkinElement(prefix+"Cap"+right).width),
 				height: vertical ? (
@@ -1838,9 +1841,10 @@
 
 		function _sliderPercent(name, pct) {
 			var vertical = _elements[name].vertical,
+				prefix = name + (name=="time"?"Slider":""),
 				size = 100 * Math.min(Math.max(0, pct), 1) + "%",
-				progress = _elements[name+'SliderProgress'],
-				thumb = _elements[name+'SliderThumb'],
+				progress = _elements[prefix+'Progress'],
+				thumb = _elements[prefix+'Thumb'],
 				hide = FALSE;
 			
 			// Set style directly on the elements; Using the stylesheets results in some flickering in Chrome.
@@ -1875,7 +1879,7 @@
 		}
 
 		function _getSkinElement(name) {
-			var elem = _skin.getSkinElement('controlbar', name); 
+			var elem = _skin.getSkinElement(name.indexOf("volume") == 0 ? 'tooltip' : 'controlbar', name); 
 			if (elem) {
 				return elem;
 			} else {
@@ -1950,7 +1954,7 @@
     	cursor: 'pointer'
     });
 
-    _css(CB_CLASS+' .jwcapRight,'+CB_CLASS+' .jwtimeSliderCapRight,'+CB_CLASS+' .jwvolumeSliderCapRight', { 
+    _css(CB_CLASS+' .jwcapRight,'+CB_CLASS+' .jwtimeSliderCapRight,'+CB_CLASS+' .jwvolumeCapRight', { 
 		right: 0,
 		position: JW_CSS_ABSOLUTE
 	});
@@ -2368,14 +2372,14 @@
 			_completedState = FALSE,
 			_visibilities = {},
 			_hiding,
-			_button,		
+			_button,
 			_config = utils.extend({
 				backgroundcolor: '#000',
 				showicons: TRUE,
-				bufferrotation: 15,
+				bufferrotation: 45,
 				bufferinterval: 100,
 				fontcase: "",
-				fontcolor: '#fff',
+				fontcolor: '#ccc',
 				overcolor: '#fff',
 				fontsize: 15,
 				fontweight: ""
@@ -3741,7 +3745,7 @@
 		
 		function _getSkinElement(name) {
 			var elem = skin.getSkinElement('tooltip', name);
-			return elem;
+			return elem ? elem : { width: 0, height: 0, src: UNDEFINED };
 		}
 
 		this.show = _overlay.show;
@@ -5952,7 +5956,7 @@
 		}
 
 		var _volume = _this.volume = function(vol) {
-			_videotag.volume = vol / 100;
+			_videotag.volume = Math.min(Math.max(0, vol / 100), 1);
 		}
 		
 		function _volumeHandler(evt) {

@@ -70,8 +70,13 @@ package com.longtailvideo.jwplayer.view.components
 		
 		protected function getSkinElement(name:String):DisplayObject {
 			var elem:DisplayObject = skin.getSkinElement('tooltip', name);
-			if (elem) return elem;
-			else return new Sprite();
+			if (!elem) {
+				elem = new Sprite();
+				var gfx:Graphics = (elem as Sprite).graphics;
+				gfx.beginFill(0, 0);
+				gfx.drawRect(0, 0, 1, 1);
+			}
+			return elem;
 		}
 		
 		protected function getSkinSetting(name:String):* {

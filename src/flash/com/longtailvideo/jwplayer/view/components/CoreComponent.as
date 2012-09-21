@@ -72,31 +72,23 @@ package com.longtailvideo.jwplayer.view.components {
 		///////////////////////////////////////////		
 		
 		protected function get backgroundColor():Color {
-			return getConfigParam("backgroundcolor") ? new Color(String(getConfigParam("backgroundcolor"))) : null;
+			return (getConfigParam("backgroundcolor") != null) ? new Color(String(getConfigParam("backgroundcolor"))) : null;
 		}
 
 		protected function get fontColor():Color {
-			return getConfigParam("fontcolor") ? new Color(String(getConfigParam("fontcolor"))) : null;
+			return (getConfigParam("fontcolor") != null) ? new Color(String(getConfigParam("fontcolor"))) : null;
 		}
 
 		protected function get fontOverColor():Color {
-			return getConfigParam("overcolor") ? new Color(String(getConfigParam("overcolor"))) : null;
+			return (getConfigParam("overcolor") != null) ? new Color(String(getConfigParam("overcolor"))) : null;
 		}
 
 		protected function get fontSize():Number {
 			return getConfigParam("fontsize") ? Number(getConfigParam("fontsize")) : 0;
 		}
 		
-		protected function get fontFace():String {
-			return getConfigParam("font");
-		}
-		
 		protected function get fontWeight():String { 
 			return getConfigParam("fontweight") ? String(getConfigParam("fontweight")).toLowerCase() : "";
-		}
-		
-		protected function get fontStyle():String {
-			return getConfigParam("fontstyle") ? String(getConfigParam("fontstyle")).toLowerCase() : "";
 		}
 		
 		/** Whether or not the component has been hidden. **/

@@ -175,10 +175,6 @@ package com.longtailvideo.jwplayer.view.components {
 			return getConfigParam('maxwidth') ? Number(getConfigParam('maxwidth')) : 0;			
 		}
 		
-		private function get volumeVertical():Boolean {
-			return (getSkinElement("volumeSliderCapTop") != null);
-		}
-		
 		private function stateHandler(evt:PlayerEvent=null):void {
 			updateControlbarState();
 			redraw();
@@ -328,10 +324,6 @@ package com.longtailvideo.jwplayer.view.components {
 					volume.reset();
 					volume.thumbVisible = false;
 				}
-				if (!volumeVertical) {
-					var volumeWidth:Number = getSkinElement("volumeSliderRail").width + volume.capsWidth;
-					volume.resize(volumeWidth, volume.height);
-				}
 			}
 		}
 
@@ -417,7 +409,7 @@ package com.longtailvideo.jwplayer.view.components {
 			if (_buttons.hd) {
 				_buttons.hd.addEventListener(MouseEvent.MOUSE_OVER, showHdOverlay);
 			}
-			if (_buttons.mute && _volSlider && volumeVertical) {
+			if (_buttons.mute && _volSlider) {
 				_buttons.mute.addEventListener(MouseEvent.MOUSE_OVER, showVolumeOverlay);
 				if (_buttons.unmute) {
 					_buttons.unmute.addEventListener(MouseEvent.MOUSE_OVER, showVolumeOverlay);
@@ -522,14 +514,12 @@ package com.longtailvideo.jwplayer.view.components {
 
 		private function addSlider(name:String, event:String, callback:Function, margin:Number=0):void {
 			try {
-				var slider:Slider = (name == "time") ? new TimeSlider(name, _player.skin) : new Slider(name, _player.skin, volumeVertical);
+				var slider:Slider = (name == "time") ? new TimeSlider(name+"Slider", _player.skin) : new Slider(name, _player.skin, true, "tooltip");
 				slider.addEventListener(event, callback);
 				slider.name = name;
 				slider.tabEnabled = false;
 				_buttons[name] = slider;
-				if (volumeVertical) {
-					_defaultLayout = removeButtonFromLayout("volume", _defaultLayout);
-				}
+				_defaultLayout = removeButtonFromLayout("volume", _defaultLayout);
 			} catch (e:Error) {
 				Logger.log("Could not create " + name + "slider");
 			}
@@ -544,9 +534,8 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 			
 			textFormat.size = fontSize ? fontSize : 10;
-			textFormat.font = fontFace ? fontFace : "_sans";
+			textFormat.font = "_sans";
 			textFormat.bold = (!fontWeight || fontWeight == "bold");
-			textFormat.italic = (fontStyle && fontStyle == "italic");
 			
 			var textField:TextField = new TextField();
 			textField.defaultTextFormat = textFormat;
@@ -782,17 +771,18 @@ package com.longtailvideo.jwplayer.view.components {
 				var buttonPosition:Point = button.localToGlobal(new Point(button.width / 2, 0)); 
 				var cbBounds:Rectangle = this.getBounds(RootReference.root);
 
+				overlay.offsetX = 0;
 				overlay.x = buttonPosition.x;
 				overlay.y = cbBounds.y;
 
-				var overlayBounds:Rectangle = overlay.getBounds(RootReference.root);
 				
+				var overlayBounds:Rectangle = overlay.getBounds(RootReference.root);
+
+
 				if (overlayBounds.right >= cbBounds.right) {
 					overlay.offsetX -= cbBounds.right - overlayBounds.right;
 				} else if (overlayBounds.left < cbBounds.left) {
 					overlay.offsetX += cbBounds.left + overlayBounds.left;
-				} else {
-					overlay.offsetX = 0;
 				}
 				
 

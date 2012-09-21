@@ -287,7 +287,7 @@
 		}
 
 		var _volume = _this.volume = function(vol) {
-			_videotag.volume = vol / 100;
+			_videotag.volume = Math.min(Math.max(0, vol / 100), 1);
 		}
 		
 		function _volumeHandler(evt) {

@@ -55,10 +55,13 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _lastHeight:Number = 0;
 		/** Vertical or horizontal slider **/
 		protected var _vertical:Boolean;
+		/** Which skin component to get the assets from **/
+		protected var _skinComponent:String;
 		
-		public function Slider(name:String, skin:ISkin, vertical:Boolean=false) {
+		public function Slider(name:String, skin:ISkin, vertical:Boolean=false, component:String="controlbar") {
 			_name = name;
 			_skin = skin;
+			_skinComponent = component;
 			_vertical = vertical;
 			
 			this.buttonMode = true;
@@ -97,7 +100,7 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		
 		public function addElement(elementName:String, visible:Boolean=false):Sprite {
-			var element:DisplayObject = _skin.getSkinElement('controlbar', _name + "Slider" + elementName);
+			var element:DisplayObject = _skin.getSkinElement(_skinComponent, _name + elementName);
 			if (!element) {
 				element = new Sprite();
 			}
@@ -282,7 +285,7 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 		
 		private function moveHandler(evt:MouseEvent):void {
-			if (_name != "time" || _dragging) {
+			if (_name != "timeSlider" || _dragging) {
 				resizeSlider(thumbPercent(), 0, _capLeft[dim], _progress, _progressCapLeft, _progressCapRight);
 			}
 		}

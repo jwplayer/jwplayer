@@ -1,5 +1,4 @@
-// TODO: remove font, fontStyle
-
+// TODO: remove font
 package com.longtailvideo.jwplayer.view.components {
 	import com.longtailvideo.jwplayer.events.*;
 	import com.longtailvideo.jwplayer.model.*;
@@ -223,7 +222,6 @@ package com.longtailvideo.jwplayer.view.components {
 			descriptionTextFormat.leading = 1;
 			descriptionTextFormat.font = "_sans";
 			descriptionTextFormat.bold = (fontWeight == "bold");
-			descriptionTextFormat.italic = (fontStyle == "italic");
 			var description:TextField = new TextField();
 			description.name = "description";
 			description.wordWrap = true;
@@ -254,7 +252,7 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 
 		override protected function get backgroundColor():Color {
-			return new Color(getConfigParam("backgroundcolor") ? String(getConfigParam("backgroundcolor")) : "#000000");
+			return getColor("backgroundcolor", 0);
 		}
 		
 		override protected function get fontSize():Number {
@@ -262,15 +260,15 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 
 		override protected function get fontColor():Color {
-			return new Color(getConfigParam("fontcolor") ? String(getConfigParam("fontcolor")) : "#cccccc");
+			return getColor("fontcolor", 0xcccccc);
 		}
 		
 		private function get overColor():Color {
-			return new Color(getConfigParam("overcolor") ? String(getConfigParam("overcolor")) : "#ffffff");
+			return getColor("overcolor", 0xffffff);
 		}
 		
 		private function get activeColor():Color {
-			return new Color(getConfigParam("activecolor") ? String(getConfigParam("activecolor")) : "#999999");
+			return getColor("activecolor", 0x999999);
 		}
 		
 		private function get titleSize():Number {
@@ -282,15 +280,19 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 
 		private function get titleColor():Color {
-			return new Color(getConfigParam("titlecolor") ? String(getConfigParam("titlecolor")) : "#cccccc");
+			return getColor("titlecolor", 0xcccccc);
 		}
 
 		private function get titleOverColor():Color {
-			return new Color(getConfigParam("titleovercolor") ? String(getConfigParam("titleovercolor")) : "#ffffff");
+			return getColor("titleovercolor", 0xffffff);
 		}
 
 		private function get titleActiveColor():Color {
-			return new Color(getConfigParam("titleactivecolor") ? String(getConfigParam("titleactivecolor")) : "#ffffff");
+			return getColor("titleactivecolor", 0xffffff);
+		}
+		
+		private function getColor(id:String, defaultVal:uint):Color {
+			return new Color(getConfigParam(id) != null ? String(getConfigParam(id)) : defaultVal);
 		}
 
 		
