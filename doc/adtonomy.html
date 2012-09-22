@@ -25,6 +25,256 @@
 <p>This document explains how to run server-less preroll videos, text overlays and image endcaps. See <a href="advertising.html">Advertising With JW Player</a> for a general overview of all supported advertising options.</p>
 
 
+<h2>Introduction</h2>
+
+<p>JW6 supports the ability to run in-video advertisements without using an adserver. This is particularly useful if you are running lower volume ad deals, house ads or e-commerce / direct marketing promotions. Three types of self-served ads are supported:</p>
+
+<dl>
+<dt>Video pre-roll</dt>
+<dd>Typically a 15 or 30 second MP4 clip, played before the actual content. This is also great for bumper clips.</dd>
+<dt>Text overlays</dt>
+<dd>Basic text messages, appearing over the bottom part of the video. Exactly when they appear can be configured.</dd>
+<dt>Image end-cap</dt>
+<dd>Typically a 300x250 large JPG image, displayed after the video ended. This is great for e.g. Call-To-Actions.</dd>
+</dl>
+
+<p><img src="assets/adtonomy-ads.jpg" alt="Adtonomy preroll, overlay and endcap examples" /></p>
+
+<p>When a visitor clicks any of these ads, he or she will be redirected to the page you have setup using the <em>clickURL</em> property of the respective ads. Basic trackers can be placed on the <em>impression</em> and <em>click</em> action for each ad.</p>
+
+<h3>Requirements</h3>
+
+<p>In order to start running advertisements, you need:</p>
+
+<ul>
+<li>A valid license for the <strong>Advertising</strong> edition of JW Player. The lower tier editions do not support advertising.</li>
+<li>A working JW Player 6 installation, ready to be amended with ads. Please refer to <a href="embedding.html">Embedding JW Player</a> to get started.</li>
+<li>The <strong>primary</strong> configuration option of your player set to <em>flash</em>! An important limitation of JW6 advertising support is that, to date, it only works in the <a href="browsers.html">Flash rendering mode</a>.</li>
+</ul>
+
+<!-- To do: make a nice image-->
+
+
+<h2>Basic Setups</h2>
+
+<p>Ads are setup in the <em>advertising</em> configuration block. This block requires a <em>schedule</em> sub-block for your ads. The schedule consists of ad breaks which are set to run at different points during the video playback. The next section of this guide describes in detail how a schedule is constructed.</p>
+
+<p>There are three types of ads available: video pre-rolls, text overlay, and image end-caps. Here are example setups for all three. They contain a single ad and no tracking calls:</p>
+
+<h3>Video pre-roll</h3>
+
+<p>This is a basic advertising setup using a video pre-roll:</p>
+
+<pre>
+jwplayer('myElement').setup({
+    primary: 'flash',
+    file: 'assets/myVideo.mp4',
+    advertising: {
+        schedule: {
+            adbreak1: {
+                offset:'pre',
+                ad: {
+                    source: 'video',
+                    videoURL:'/assets/myPreroll.mp4',
+                    clickURL: 'http://example.com/'
+                }
+            }
+        }
+     }
+});
+</pre>
+
+<p><strong>Note that advertising is currently only available in Flash, so make sure to set the <em>primary</em> option to <em>flash</em>.</strong></p>
+
+<h3>Text Overlay</h3>
+
+<p>This setup contains a text overlay that pops up 10 seconds in the video:</p>
+
+<pre>
+jwplayer('myElement').setup({
+    primary: 'flash',
+    file: 'assets/myVideo.mp4',
+    advertising: {
+        schedule: {
+            adbreak2: {
+                offset: 10,
+                ad: {
+                    source: 'text',
+                    displayURL: 'www.longtailvideo.com',
+                    clickURL: 'http://longtailvideo.com/jw-player/',
+                    title: 'Longtail Video',
+                    description: 'Home of the JW Player'
+                }
+            }
+        }
+    }
+});
+</pre>
+
+<p><strong>Note that advertising is currently only available in Flash, so make sure to set the <em>primary</em> option to <em>flash</em>.</strong></p>
+
+<h3>Image end-cap</h3>
+
+<p>The end-cap in this setup is a JPG image:</p>
+
+<pre>
+jwplayer('myElement').setup({
+    primary: 'flash',
+    file: 'assets/myVideo.mp4',
+    advertising: {
+        schedule: {
+            adbreak3: {
+                offset: 'end',
+                ad: {
+                    source: 'image',
+                    imageURL: '/assets/myEndcap.jpg',
+                    clickURL: 'http://example.com'
+                }
+            }
+        }
+    }
+});
+</pre>
+
+<p><strong>Note that advertising is currently only available in Flash, so make sure to set the <em>primary</em> option to <em>flash</em>.</strong></p>
+
+
+<h2>Ad Schedule</h2>
+
+<p>This section explains in detail how the ad schedule works.</p>
+
+<p>The <em>schedule</em> block contains one type of object, ad breaks. Each ad break specifies a point in time during the video playback when an ad or ads should play. To put together a schedule just requires putting together a set of ad breaks:</p>
+
+<pre>
+schedule: {
+    adbreak1: {
+        // ad break info
+    },
+    adbreak2: {
+        // ad break info
+    },
+    adbreak3: {
+        // ad break info
+    }
+}
+</pre>
+
+<p>Note the ad schedule is applied to each playlist item. If you have a <a href="playlists.html">multi-video playlist</a>, the ads are repeated for every entry. For example, a video preroll ad will play before each video in the playlist.</p>
+
+<h3>Ad Breaks</h3>
+
+<p>An ad breaks represents a point in time where an ad should be delivered. Each ad break in a schedule must have a unique name, an <em>offset</em> and an <em>ad</em> sub-block:</p>
+
+<dl>
+    <dt>offset</dt>
+    <dd>This required option describes the point in time at which to play the ad. Values permitted include the words "pre" and "end", or an offset in sections:<ul>
+<li><strong>pre</strong>: specifies that the (video) ad should be played before the video content.</li>
+<li><strong>end</strong>: specifies that the (image) ad should display after the video content.</li>
+<li>Offset in seconds: specifies that the (text) overlay should popup at the provided offset.</li>
+    </dd>
+    <dt>ad</dt>
+    <dd>This configuration block contains all info for the ad. See below sub-section for details.</dd>
+</dl>
+
+<p>Here's the ad break skeleton of a video preroll ad:</p>
+
+<pre>
+adbreak1: {
+    offset: 'pre',
+    ad: {
+        //ad info
+    }
+}
+</pre>
+
+<h3>Ads</h3>
+
+<p>The ad block contains the actual ad configuration. Depending on the type of ad (video, text, image), different fields are used:</p>
+
+<dl>
+<dt>source</dt>
+<dd>This option is required and identifies the type of ad. It can be:<ul>
+<li><strong>video</strong>: in case of a video pre-roll ad.</li>
+<li><strong>text</strong>: in case of a text overlay ad.</li>
+<li><strong>image</strong>: in case of an image end-cap ad.</li>
+</ul></dd>
+<dt>clickURL</dt>
+<dd>This optional option identifies the url to be opened on an ad click.</dd>
+<dt>tracking</dt>
+<dd>This optional block contains the impression and click trackers. See below for more info.</dd>
+</dl>
+
+<dl>
+<dt>videoURL</dt>
+<dd>This option is required when the <strong>source</strong> is set to <strong>video</strong>.<br>It defines the link to the MP4 video to play as pre-roll.</dd>
+<dt>imageURL</dt>
+<dd>This option is required when the <strong>source</strong> is set to <strong>image</strong>.<br>It defines the link to the JPG image to display as end-cap.</dd>
+<dt>title</dt>
+<dd>This option is required when the <strong>source</strong> is set to <strong>text</strong>.<br>It defines the title text to display in the overlay.</dd>
+<dt>description</dt>
+<dd>This option is required when the <strong>source</strong> is set to <strong>text</strong>.<br>It defines a single line of description text to display in the overlay.</dd>
+<dt>displayURL</dt>
+<dd>This option is required when the <strong>source</strong> is set to <strong>text</strong>.<br>It defines a human-friendly version of the click URL to display in the overlay.</dd>
+</dl>
+
+<p>Here's an example ad block, of a text overlay:</p>
+
+<pre>
+ad: {
+    source: 'text',
+    displayURL: 'www.example.com',
+    clickURL: 'http://www.example.com/landing/',
+    title: 'My cool ad',
+    description: 'A description of this cool ad',
+    tracking: {
+        // tracking info
+    }
+}
+</pre>
+
+<h3>Tracking</h3>
+
+<p>The <em>tracking</em> block specify tracking URLs. There are pinged by JW Player when the particular ad action occurs. Tracking is not required and quite sophisticated, but great for retrieving advertising analytics. Two trackers are available:</p>
+
+<dl>
+<dt>impression</dt>
+<dd>This URL is pinged when the ad is displayed to the viewer.</dd>
+<dt>click</dt>
+<dd>This URL is pinged when the ad is clicked by the viewer.</dd>
+</dl>
+
+<p>Here's an example tracking block:</p>
+
+<pre>
+tracking: {
+    impression: 'http://example.com/impression/12345',
+    click: 'http://example.com/click/12345'
+}
+</pre>
+
+<p>Note JW Player does nothing with the data returned by these URLs. Typically, these URLs would serve up an empty HTML page or a 1x1 pixel image.</p>
+
+<h2>Additional Options</h2>
+
+<p>In addition to the <em>schedule</em> there is one configuration option that can be set. It impacts only the video pre-roll:</p>
+
+<dl>
+<dt>admessage</dt>
+<dd>The ad message is the text displayed to users while the ad runs, typically something like "Your video will resume in xx seconds." (which is the default). The characters <strong>xx</strong> are automatically replaced with a countdown for the ad by JW Player.</dd>
+</dl>
+
+<p>Here's an example setup with a customized pre-roll admessage:</p>
+
+<pre>
+jwplayer('myElement').setup({
+    primary: 'flash',
+    file: 'assets/myVideo.mp4',
+    advertising: {
+        admessage: 'Only xx more seconds until the show starts...'
+        schedule { // schedule info }
+    }
+});
+</pre>
 
 </body>
 </html>
