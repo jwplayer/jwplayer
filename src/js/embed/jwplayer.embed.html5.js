@@ -16,15 +16,17 @@
 		
 		function _resizePlugin (plugin, div, onready) {
 			return function(evt) {
-				var displayarea = document.querySelector("#" + _container.id + " .jwmain");
-				if (onready) {
-					displayarea.appendChild(div);
-				}
-				if (typeof plugin.resize == "function") {
-					plugin.resize(displayarea.clientWidth, displayarea.clientHeight);
-				}
-				div.left = displayarea.style.left;
-				div.top = displayarea.style.top;
+				try {
+					var displayarea = document.querySelector("#" + _container.id + " .jwmain");
+					if (onready) {
+						displayarea.appendChild(div);
+					}
+					if (typeof plugin.resize == "function") {
+						plugin.resize(displayarea.clientWidth, displayarea.clientHeight);
+					}
+					div.left = displayarea.style.left;
+					div.top = displayarea.style.top;
+				} catch(e) {}
 			}
 		}
 		

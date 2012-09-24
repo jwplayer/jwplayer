@@ -24,15 +24,17 @@
 		
 		function _resizePlugin(plugin, div, onready) {
 			return function(evt) {
-				if (onready) {
-					document.getElementById(_api.id+"_wrapper").appendChild(div);
-				}
-				var display = document.getElementById(_api.id).getPluginConfig("display");
-				if (typeof plugin.resize == "function") {
-					plugin.resize(display.width, display.height);
-				}
-				div.style.left = display.x;
-				div.style.top = display.h;
+				try {
+					if (onready) {
+						document.getElementById(_api.id+"_wrapper").appendChild(div);
+					}
+					var display = document.getElementById(_api.id).getPluginConfig("display");
+					if (typeof plugin.resize == "function") {
+						plugin.resize(display.width, display.height);
+					}
+					div.style.left = display.x;
+					div.style.top = display.h;
+				} catch (e) {}
 			}
 		}
 		
