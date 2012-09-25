@@ -26,8 +26,32 @@
 	 * @return	{Object}			The playlistentry, amended with the MRSS info.
 	 **/
 	mediaparser.parseGroup = function(obj, itm) {
-		for (var i = 0; i < _numChildren(obj); i++) {
-			var node = obj.childNodes[i];
+		var node, 
+			i,
+			captions = [];
+
+		function getLabel(code) {
+			var LANGS = { 
+				"zh": "Chinese",
+				"nl": "Dutch",
+				"en": "English",
+				"fr": "French",
+				"de": "German",
+				"it": "Italian",
+				"ja": "Japanese",
+				"pt": "Portuguese",
+				"ru": "Russian",
+				"es": "Spanish"
+			};
+			
+			if(LANGS[code]) {
+				return LANGS[code];
+			}
+			return code;
+		}	
+
+		for (i = 0; i < _numChildren(obj); i++) {
+			node = obj.childNodes[i];
 			if (node.prefix == PREFIX) {
 				if (!_localName(node)){
 					continue;
@@ -71,9 +95,21 @@
 					case 'group':
 						mediaparser.parseGroup(node, itm);
 						break;
+					case 'subtitle':
+						var entry = {};
+						entry.file = _xmlAttribute(node, 'url');
+						if (_xmlAttribute(node, 'lang').length > 0) {
+							entry.label = getLabel(_xmlAttribute(node, 'lang'));
+						}
+						captions.push(entry);
 				}
 			}
 		}
+
+		if(captions.length > 0) {
+			itm['captions'] = captions;
+		}
+
 		return itm;
 	}
 	

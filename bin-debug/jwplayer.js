@@ -16,7 +16,7 @@ jwplayer = function(container) {
 	}
 };
 
-jwplayer.version = '6.0.2551';
+jwplayer.version = '6.0.2555';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -714,6 +714,8 @@ jwplayer.source = document.createElement("source");/**
 		JWPLAYER_MEDIA_MUTE : 'jwplayerMediaMute',
 		JWPLAYER_MEDIA_LEVELS: 'jwplayerMediaLevels',
 		JWPLAYER_MEDIA_LEVEL_CHANGED: 'jwplayerMediaLevelChanged',
+		JWPLAYER_CAPTIONS_CHANGED: 'jwplayerCaptionsChanged',
+		JWPLAYER_CAPTIONS_LIST: 'jwplayerCaptionsList',
 
 		// State events
 		JWPLAYER_PLAYER_STATE : 'jwplayerPlayerState',
@@ -731,11 +733,10 @@ jwplayer.source = document.createElement("source");/**
 
 		// Display CLick
 		JWPLAYER_DISPLAY_CLICK : 'jwplayerViewClick',
-		
-		// Controls show/hide
-		JWPLAYER_CONTROLS : 'jwplayerViewControls',
 
-		
+		// Controls show/hide 
+	 	JWPLAYER_CONTROLS : 'jwplayerViewControls', 
+
 		// Instream events
 		JWPLAYER_INSTREAM_CLICK : 'jwplayerInstreamClicked',
 		JWPLAYER_INSTREAM_DESTROYED : 'jwplayerInstreamDestroyed'
@@ -2440,6 +2441,15 @@ jwplayer.source = document.createElement("source");/**
 		_this.setCurrentQuality = function(level) {
 			_callInternal("jwSetCurrentQuality", level);
 		};
+		_this.getCaptionsList = function() {
+			return _callInternal("jwGetCaptionsList");
+		};
+		_this.getCurrentCaptions = function() {
+			return _callInternal("jwGetCurrentCaptions");
+		};
+		_this.setCurrentCaptions = function(caption) {
+			_callInternal("jwSetCurrentCaptions", caption);
+		};
 		_this.getControls = function() {
 			return _callInternal("jwGetControls");
 		};
@@ -2471,7 +2481,9 @@ jwplayer.source = document.createElement("source");/**
 			onDisplayClick: events.JWPLAYER_DISPLAY_CLICK,
 			onControls: events.JWPLAYER_CONTROLS,
 			onQualityLevels: events.JWPLAYER_MEDIA_LEVELS,
-			onQualityChange: events.JWPLAYER_MEDIA_LEVEL_CHANGED
+			onQualityChange: events.JWPLAYER_MEDIA_LEVEL_CHANGED,
+			onCaptionsList: events.JWPLAYER_CAPTIONS_LIST,
+			onCaptionsChange: events.JWPLAYER_CAPTIONS_CHANGED
 		};
 		
 		utils.foreach(_eventMapping, function(event) {

@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2551';
+	jwplayer.html5.version = '6.0.2555';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -689,8 +689,32 @@
 	 * @return	{Object}			The playlistentry, amended with the MRSS info.
 	 **/
 	mediaparser.parseGroup = function(obj, itm) {
-		for (var i = 0; i < _numChildren(obj); i++) {
-			var node = obj.childNodes[i];
+		var node, 
+			i,
+			captions = [];
+
+		function getLabel(code) {
+			var LANGS = { 
+				"zh": "Chinese",
+				"nl": "Dutch",
+				"en": "English",
+				"fr": "French",
+				"de": "German",
+				"it": "Italian",
+				"ja": "Japanese",
+				"pt": "Portuguese",
+				"ru": "Russian",
+				"es": "Spanish"
+			};
+			
+			if(LANGS[code]) {
+				return LANGS[code];
+			}
+			return code;
+		}	
+
+		for (i = 0; i < _numChildren(obj); i++) {
+			node = obj.childNodes[i];
 			if (node.prefix == PREFIX) {
 				if (!_localName(node)){
 					continue;
@@ -734,9 +758,21 @@
 					case 'group':
 						mediaparser.parseGroup(node, itm);
 						break;
+					case 'subtitle':
+						var entry = {};
+						entry.file = _xmlAttribute(node, 'url');
+						if (_xmlAttribute(node, 'lang').length > 0) {
+							entry.label = getLabel(_xmlAttribute(node, 'lang'));
+						}
+						captions.push(entry);
 				}
 			}
 		}
+
+		if(captions.length > 0) {
+			itm['captions'] = captions;
+		}
+
 		return itm;
 	}
 	
@@ -834,6 +870,584 @@
 	
 	
 })(jwplayer.html5.parsers);
+(function(parsers) {
+
+
+    /** Component that loads and parses an SRT file. **/
+    parsers.srt = function(_success, _failure) {
+
+
+        /** XMLHTTP Object. **/
+        var _request,
+        /** URL of the SRT file. **/
+        _url,
+        _seconds = jwplayer.utils.seconds;
+
+
+        /** Handle errors. **/
+        function _error(status) {
+            if(status == 0) {
+                _failure("Crossdomain loading denied: "+_url);
+            } else if (status == 404) { 
+                _failure("SRT File not found: "+_url);
+            } else { 
+                _failure("Error "+status+" loading SRT file: "+_url);
+            }
+        };
+
+
+        /** Load a new SRT file. **/
+        this.load = function(url) {
+            _url = url;
+            try {
+                _request.open("GET", url, true);
+                _request.send(null);
+            } catch (error) {
+                _failure("Error loading SRT File: "+url);
+            }
+        };
+
+
+        /** Proceed from loading to parsing. **/
+        function _parse(data) {
+            // Trim whitespace and split the list by returns.
+            var _captions = [{begin:0, text:''}];
+            data = data.replace(/^\s+/, '').replace(/\s+$/, '');
+            var list = data.split("\r\n\r\n");
+            if(list.length == 1) { list = data.split("\n\n"); }
+            for(var i=0; i<list.length; i++) {
+                if (list[i] == "WEBVTT") {
+                    continue;
+                }
+                // Parse each entry
+                var entry = _entry(list[i]);
+                if(entry['text']) {
+                    _captions.push(entry);
+                    // Insert empty caption at the end.
+                    if(entry['end']) {
+                        _captions.push({begin:entry['end'],text:''});
+                        delete entry['end'];
+                    }
+                }
+            }
+            if(_captions.length > 1) {
+                _success(_captions);
+            } else {
+                _failure("Invalid SRT file: "+_url);
+            }
+        };
+
+
+        /** Parse a single captions entry. **/
+        function _entry(data) {
+            var entry = {};
+            var array = data.split("\r\n");
+            if(array.length == 1) { array = data.split("\n"); }
+            try {
+                // Second line contains the start and end.
+                var idx = 1;
+                if (array[0].indexOf(' --> ') > 0) {
+                    idx = 0;
+                }
+                var index = array[idx].indexOf(' --> ');
+                if(index > 0) {
+                    entry['begin'] = _seconds(array[idx].substr(0,index));
+                    entry['end'] = _seconds(array[idx].substr(index+5));
+                }
+                // Third line starts the text.
+                if(array[idx+1]) {
+                    entry['text'] = array[idx+1];
+                    // Arbitrary number of additional lines.
+                    for (var i=idx+2; i<array.length; i++) {
+                        entry['text'] += '<br/>' + array[i];
+                    }
+                }
+            } catch (error) {}
+            return entry;
+        };
+
+        /** Setup the SRT parser. **/
+        function _setup() {
+            _request = new XMLHttpRequest();
+            _request.onreadystatechange = function() {
+                if (_request.readyState === 4) {
+                    if (_request.status === 200) {
+                        _parse(_request.responseText);
+                    } else {
+                        _error(_request.status);
+                    }
+                }
+            };
+        };
+        _setup();
+
+
+    };
+
+
+})(jwplayer.html5.parsers);
+(function(html5) {
+
+    var utils = jwplayer.utils,
+        events = jwplayer.events,
+        states = events.state,
+        _css = utils.css,
+        
+        PLAYING = "playing",
+
+        DOCUMENT = document,
+        D_CLASS = ".jwcaptions",
+        D_PREVIEW_CLASS = ".jwpreview",
+        D_ERROR_CLASS = ".jwerror",
+        TRUE = true,
+        FALSE = false,
+
+        /** Some CSS constants we should use for minimization **/
+        JW_CSS_ABSOLUTE = "absolute",
+        JW_CSS_NONE = "none",
+        JW_CSS_100PCT = "100%",
+        JW_CSS_HIDDEN = "hidden";
+
+    /** Displays closed captions or subtitles on top of the video. **/
+    html5.captions = function(api, options) {
+        
+        var _api = api,
+            _display,
+
+        /** Dimensions of the display. **/
+        _dimensions,
+        
+        _defaults = {
+            back: false,
+            color: '#FFFFFF',
+            fontSize: 15
+        },
+
+        /** Default configuration options. **/
+        _options = {
+            fontFamily: 'Arial,sans-serif',
+            fontStyle: 'normal',
+            fontWeight: 'normal',
+            textDecoration: 'none'
+        },
+        
+        /** Reference to the text renderer. **/
+        _renderer,
+        /** Current player state. **/
+        _state,
+        /** Currently active captions track. **/
+        _track,
+        /** List with all tracks. **/
+        _tracks = [],
+        /** Currently selected track in the displayed track list. **/
+        _selectedTrack = 0,
+        /** Flag to remember fullscreen state. **/
+        _fullscreen = false,
+        /** Event dispatcher for captions events. **/
+        _eventDispatcher = new events.eventdispatcher();
+
+        utils.extend(this, _eventDispatcher);
+
+        function _init() {
+
+            _display = DOCUMENT.createElement("div");
+            _display.id = _api.id + "_caption";
+            _display.className = "jwcaptions";
+
+            _api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
+            _api.jwAddEventListener(events.JWPLAYER_PLAYLIST_ITEM, _itemHandler);
+            _api.jwAddEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
+            _api.jwAddEventListener(events.JWPLAYER_ERROR, _errorHandler);
+            _api.jwAddEventListener(events.JWPLAYER_READY, _setup);
+            _api.jwAddEventListener(events.JWPLAYER_MEDIA_TIME, _timeHandler);
+            _api.jwAddEventListener(events.JWPLAYER_FULLSCREEN, _fullscreenHandler);
+        }
+
+       /** Read or write a cookie. **/
+  /*       function _cookie(name,value) {
+            name = 'jwplayercaptions' + name;
+            if(value !== undefined) {
+                var c = name+'='+value+'; expires=Wed, 1 Jan 2020 00:00:00 UTC; path=/';
+                document.cookie = c;
+            } else {
+                // http://www.quirksmode.org/js/cookies.html
+                var list = document.cookie.split(';');
+                for(var i=0; i< list.length; i++) {
+                    var c = list[i];
+                    while (c.charAt(0) == ' ') {
+                        c = c.substring(1,c.length);
+                    }
+                    if (c.indexOf(name) == 0) {
+                        return c.substring(name.length+1, c.length);
+                    }
+                }
+            }
+            return null;
+        };
+*/
+
+        /** Error loading/parsing the captions. **/
+        function _errorHandler(error) {
+            utils.log("CAPTIONS(" + error + ")");
+        };
+
+        /** Player jumped to idle state. **/
+        function _idleHandler() {
+            _state = 'idle';
+            _redraw();
+        };
+
+        function _stateHandler(evt) {
+            switch(evt.newstate) {
+            case states.IDLE:
+                _idleHandler();
+                break;
+            case states.PLAYING:
+                _playHandler();
+                break;
+            }
+        }
+
+        function _fullscreenHandler(event) {
+            _fullscreen = event.fullscreen;
+            if(event.fullscreen) {
+                var height = _display.offsetHeight,
+                    width = _display.offsetWidth;
+                if(height != 0 && width != 0) {
+                    console.log(width + " x " + height);
+                    _renderer.resize(width, Math.round(height*0.94));
+                }
+            }
+            else {
+                _redraw();
+            }
+            
+        }
+
+        /** Listen to playlist item updates. **/
+        function _itemHandler(event) {
+            _track = 0;
+            _tracks = [];
+            _renderer.update(0);
+
+            var item = _api.jwGetPlaylist()[_api.jwGetPlaylistIndex()],
+                captions = item['captions'],
+                i = 0,
+                label = "",
+                file = "";
+
+            if (captions) {
+                for (i = 0; i < captions.length; i++) {
+                    if (captions[i].label) {
+                        _tracks.push(captions[i]);
+                    }
+                    else if (captions[i].file) {
+                        file = captions[i].file;
+                        label = file.substring(file.lastIndexOf('/')+1,file.indexOf('.'));
+                        _tracks.push({file: file, label: label});
+                    }
+                }
+            }   
+            
+            _selectedTrack = 0;
+            _redraw();
+            _sendEvent(events.JWPLAYER_CAPTIONS_LIST, _getTracks(), _selectedTrack);
+        };
+
+
+        /** Load captions. **/
+        function _load(file) {
+            var loader = new jwplayer.html5.parsers.srt(_loadHandler,_errorHandler);
+            loader.load(file);
+        };
+
+
+        /** Captions were loaded. **/
+        function _loadHandler(data) {
+            _renderer.populate(data);
+            _tracks[_track].data = data;
+            _redraw();
+        };
+
+
+        /** Player started playing. **/
+        function _playHandler(event) {
+            _state = PLAYING;
+            _redraw();
+        };
+
+        /** Update the interface. **/
+        function _redraw() {
+            if(!_tracks.length) {
+                _renderer.hide();
+            } else {
+                if(_state == PLAYING && _selectedTrack > 0) {
+                    _renderer.show();
+                    if (_fullscreen) {
+                        _fullscreenHandler({fullscreen: true});
+                        return;
+                    }
+                    var width = _api.jwGetWidth();
+                    if (_api._model && _api._model.config
+                            && _api._model.config.listbar && _api._model.config.listbar.size) {
+                        width = width - _api._model.config.listbar.size;
+                    }
+                    _renderer.resize(width, Math.round(_api.jwGetHeight()*0.94));
+                } else {
+                    _renderer.hide();
+                }
+            }
+        };
+
+        /** Set dock buttons when player is ready. **/
+        function _setup() {
+
+            for (var rule in _defaults) {
+                if (options && options[rule.toLowerCase()] != undefined) {
+                    // Fix for colors, since the player automatically converts to HEX.
+                    if(rule == 'color') {
+                        _options['color'] = '#'+String(options['color']).substr(-6);
+                    } else {
+                        _options[rule] = options[rule.toLowerCase()];
+                    }
+                }
+                else {
+                    _options[rule] = _defaults[rule];
+                }
+            }
+
+            // Place renderer and selector.
+            _renderer = new jwplayer.html5.captions.renderer(_options,_display);
+            _redraw();
+        };
+
+
+        /** Selection menu was closed. **/
+        function _renderCaptions(index) {
+            // Store new state and track
+            if(index > 0) {
+                _track = index - 1;
+                _selectedTrack = index;
+            } else {
+                _selectedTrack = 0;
+            }
+            // Load new captions
+            if(_tracks[_track].data) {
+                _renderer.populate(_tracks[_track].data);
+            } else {
+                _load(_tracks[_track].file);
+            }
+            _redraw();
+        };
+
+
+        /** Listen to player time updates. **/
+        function _timeHandler(event) {
+            _renderer.update(event.position);
+        };
+
+        function _sendEvent(type, tracks, track) {
+            var captionsEvent = {type: type, tracks: tracks, track: track};
+            _eventDispatcher.sendEvent(type, captionsEvent);
+        };
+
+        function _getTracks() {
+            var list = new Array();
+            list.push({label: "(Off)"});
+            for (var i = 0; i < _tracks.length; i++) {
+                list.push({label: _tracks[i].label});
+            }
+            return list;
+        };
+
+        this.element = function() {
+            return _display;
+        }
+        
+        this.getCaptionsList = function() {
+            return _getTracks();
+        };
+        
+        this.getCurrentCaptions = function() {
+            return _selectedTrack;
+        };
+        
+        this.setCurrentCaptions = function(index) {
+            if (index >= 0 && _selectedTrack != index && index <= _tracks.length) {
+                _renderCaptions(index);
+                _sendEvent(events.JWPLAYER_CAPTIONS_CHANGED, _getTracks(), _selectedTrack);
+            }
+        };
+        
+        _init();
+
+    };
+
+    _css(D_CLASS, {
+        position: JW_CSS_ABSOLUTE,
+        cursor: "pointer",
+        width: JW_CSS_100PCT,
+        height: JW_CSS_100PCT,
+        overflow: JW_CSS_HIDDEN
+    });
+
+})(jwplayer.html5);
+(function(html5) {
+
+
+    /** Component that renders the actual captions on screen. **/
+    html5.captions.renderer = function(_options,_div) {
+
+
+        /** Captions bottom position. **/
+        var _bottom,
+        /** Current list with captions. **/
+        _captions,
+        /** Container of captions. **/
+        _container,
+        /** Current actie captions entry. **/
+        _current,
+        /** Height of a single line. **/
+        _line,
+        /** Current video position. **/
+        _position,
+        /** Should the captions be visible or not. **/
+        _visible = 'visible',
+        /** Width of the display. **/
+        _width;
+
+
+        /** Hide the rendering component. **/
+        this.hide = function() {
+            _style({display:'none'});
+        };
+
+
+        /** Assign list of captions to the renderer. **/
+        this.populate = function(captions) {
+            _current = -1;
+            _captions = captions;
+            _select();
+        };
+
+
+        /** Render the active caption. **/
+        function _render(html) {
+            _container.innerHTML = html;
+            if(html == '') { 
+                _visible = 'hidden';
+            } else { 
+                _visible = 'visible';
+            }
+            setTimeout(_resize,20);
+        };
+
+
+        /** Store new dimensions. **/
+        this.resize = function(width,bottom) {
+            _width = width;
+            _bottom = bottom;
+            _resize();
+        };
+
+
+        /** Resize the captions. **/
+        function _resize() {
+            var size = Math.round(_options.fontSize * Math.pow(_width/400,0.6)),
+                line = Math.round(size * 1.4),
+                left,
+                top;
+
+            _style({
+                fontSize: size + 'px',
+                lineHeight: line + 'px',
+                visibility: _visible
+            });
+            left = Math.round(_width/2 - _container.clientWidth/2);
+            top = Math.round(_bottom - _container.clientHeight);
+            _style({
+                left: left + 'px',
+                top: top + 'px'
+            });
+        };
+
+
+        /** Select a caption for rendering. **/
+        function _select() {
+            var found = -1;
+            for (var i=0; i < _captions.length; i++) {
+                if (_captions[i]['begin'] <= _position && 
+                    (i == _captions.length-1 || _captions[i+1]['begin'] >= _position)) {
+                    found = i;
+                    break;
+                }
+            }
+            // If none, empty the text. If not current, re-render.
+            if(found == -1) {
+                _render('');
+            } else if (found != _current) {
+                _current = found;
+                _render(_captions[i]['text']);
+            }
+        };
+
+
+        /** Constructor for the renderer. **/
+        function _setup() {
+            _container = document.createElement("div");
+            _div.appendChild(_container);
+            _style({
+                color: '#'+_options.color.substr(-6),
+                display: 'block',
+                fontFamily: _options.fontFamily,
+                fontStyle: _options.fontStyle,
+                fontWeight: _options.fontWeight,
+                height: 'auto',
+                margin: '0 0 0 0',
+                padding: '3px 9px',
+                position: 'absolute',
+                textAlign: 'center',
+                textDecoration: _options.textDecoration,
+                whiteSpace: 'nowrap',
+                width: 'auto'
+            });
+            if(_options.back) {
+                _style({background:'#000'});
+            } else {
+                _style({textShadow: '-2px 0px 1px #000,2px 0px 1px #000,0px -2px 1px #000,0px 2px 1px #000,-1px 1px 1px #000,1px 1px 1px #000,1px -1px 1px #000,1px 1px 1px #000'});
+            }
+        };
+        _setup();
+
+
+        /** Show the rendering component. **/
+        this.show = function() {
+            _style({display:'block'});
+            _resize();
+        };
+
+
+        /** Apply CSS styles to elements. **/
+        function _style(styles) {
+            for(var property in styles) {
+              _container.style[property] = styles[property];
+            }
+        };
+
+
+        /** Update the video position. **/
+        this.update = function(position) {
+            _position = position;
+            if(_captions) {
+                _select();
+            }
+        };
+
+
+    };
+
+
+})(jwplayer.html5);
 // TODO: blankButton
 /**
  * JW Player HTML5 Controlbar component
@@ -914,7 +1528,7 @@
 						    _layoutElement("duration", CB_TEXT), 
 						    _dividerElement,
 						    _layoutElement("hd", CB_BUTTON), 
-						    //_layoutElement("cc", CB_BUTTON), 
+						    _layoutElement("cc", CB_BUTTON), 
 						    _dividerElement,
 						    _layoutElement("mute", CB_BUTTON), 
 						    _layoutElement("volume", CB_SLIDER), 
@@ -935,6 +1549,8 @@
 			_position,
 			_levels,
 			_currentQuality,
+			_captions,
+			_currentCaptions,
 			_currentVolume,
 			_volumeOverlay,
 			_cbBounds,
@@ -1022,6 +1638,8 @@
 			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_LOADED, _playlistHandler);
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_LEVELS, _qualityHandler);
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_LEVEL_CHANGED, _qualityLevelChanged);
+			_api.jwAddEventListener(events.JWPLAYER_CAPTIONS_LIST, _captionsHandler);
+			_api.jwAddEventListener(events.JWPLAYER_CAPTIONS_CHANGED, _captionChanged);
 			_controlbar.addEventListener('mouseover', function(){
 				// Slider listeners
 				WINDOW.addEventListener('mousemove', _sliderMouseEvent, FALSE);
@@ -1121,6 +1739,7 @@
 				_css(_internalSelector(".nextdiv"), not_hidden);
 			}
 			_css(_internalSelector(".jwhd"), hidden);
+			_css(_internalSelector(".jwcc"), hidden);
 			_redraw();
 		}
 		
@@ -1146,6 +1765,29 @@
 			}
 		}
 		
+		function _captionsHandler(evt) {
+			_captions = evt.tracks;
+			if (_captions && _captions.length > 1 && _ccOverlay) {
+				_css(_internalSelector(".jwcc"), { display: UNDEFINED });
+				_ccOverlay.clearOptions();
+				for (var i=0; i<_captions.length; i++) {
+					_ccOverlay.addOption(_captions[i].label, i);
+				}
+				_captionChanged(evt);
+			} else {
+				_css(_internalSelector(".jwcc"), { display: "none" });
+			}
+			_redraw();
+		}
+		
+		function _captionChanged(evt) {
+			if (!_captions) return;
+			_currentCaptions = evt.track;
+			if (_ccOverlay && _currentCaptions >= 0) {
+				_ccOverlay.setActive(evt.track);
+			}
+		}
+
 		// Bit of a hacky way to determine if the playlist is available 
 		function _sidebarShowing() {
 			return (!!DOCUMENT.querySelector("#"+_api.id+" .jwplaylist"));
@@ -1434,6 +2076,13 @@
 			}
 		}
 		
+		function _showCc() {
+			if (_captions && _captions.length > 1) {
+				_ccOverlay.show();
+				_hideOverlays('cc');
+			}
+		}
+
 		function _switchLevel(newlevel) {
 			if (newlevel >= 0 && newlevel < _levels.length) {
 				_api.jwSetCurrentQuality(newlevel);
@@ -1441,6 +2090,13 @@
 			}
 		}
 		
+		function _switchCaption(newcaption) {
+			if (newcaption >= 0 && newcaption < _captions.length) {
+				_api.jwSetCurrentCaptions(newcaption);
+				_ccOverlay.hide();
+			}
+		}
+
 		function _cc() {
 			_toggleButton("cc");
 		}
@@ -1710,6 +2366,11 @@
 				_hdOverlay = new html5.menu('hd', _id+"_hd", _skin, _switchLevel);
 				_addOverlay(_hdOverlay, _elements.hd, _showHd);
 				_overlays.hd = _hdOverlay;
+			}
+			if (_elements.cc) {
+				_ccOverlay = new html5.menu('cc', _id+"_cc", _skin, _switchCaption);
+				_addOverlay(_ccOverlay, _elements.cc, _showCc);
+				_overlays.cc = _ccOverlay;
 			}
 			if (_elements.mute && _elements.volume && _elements.volume.vertical) {
 				_volumeOverlay = new html5.overlay(_id+"_volumeoverlay", _skin);
@@ -2053,11 +2714,11 @@
 					jwplayer.playerReady(evt);
 				}
 
-				_eventDispatcher.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_LOADED, {playlist: _model.playlist});
-				_eventDispatcher.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_ITEM, {index: _model.item});
-				
 				_model.addGlobalListener(_forward);
 				_view.addGlobalListener(_forward);
+
+				_eventDispatcher.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_LOADED, {playlist: _model.playlist});
+				_eventDispatcher.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_ITEM, {index: _model.item});
 				
 				_load();
 				
@@ -2253,6 +2914,18 @@
 			else return null;
 		}
 
+		function _setCurrentCaptions(caption) {
+			_view.setCurrentCaptions(caption);
+		}
+
+		function _getCurrentCaptions() {
+			return _view.getCurrentCaptions();
+		}
+
+		function _getCaptionsList() {
+			return _view.getCaptionsList();
+		}
+
 		/** Used for the InStream API **/
 		function _detachMedia() {
 			try {
@@ -2309,6 +2982,9 @@
 		this.setCurrentQuality = _waitForReady(_setCurrentQuality);
 		this.getCurrentQuality = _getCurrentQuality;
 		this.getQualityLevels = _getQualityLevels;
+		this.setCurrentCaptions = _waitForReady(_setCurrentCaptions);
+		this.getCurrentCaptions = _getCurrentCaptions;
+		this.getCaptionsList = _getCaptionsList;
 		
 		this.playerReady = _playerReady;
 
@@ -4269,6 +4945,9 @@
 			_api.jwGetQualityLevels = _controller.getQualityLevels;
 			_api.jwGetCurrentQuality = _controller.getCurrentQuality;
 			_api.jwSetCurrentQuality = _controller.setCurrentQuality;
+			_api.jwGetCaptionsList = _controller.getCaptionsList;
+			_api.jwGetCurrentCaptions = _controller.getCurrentCaptions;
+			_api.jwSetCurrentCaptions = _controller.setCurrentCaptions;
 			_api.jwSetControls = _view.setControls;
 			_api.jwGetSafeRegion = _view.getSafeRegion; 
 			
@@ -6140,6 +6819,7 @@
 			_display,
 			_dock,
 			_logo,
+			_captions,
 			_playlist,
 			_audioMode,
 			_isMobile = utils.isMobile(),
@@ -6158,6 +6838,18 @@
 			
 			var replace = document.getElementById(_api.id);
 			replace.parentNode.replaceChild(_playerElement, replace);
+		}
+
+		this.getCurrentCaptions = function() {
+			return _captions.getCurrentCaptions();
+		}
+
+		this.setCurrentCaptions = function(caption) {
+			_captions.setCurrentCaptions(caption);
+		}
+
+		this.getCaptionsList = function() {
+			return _captions.getCaptionsList();
 		}
 		
 		this.setup = function(skin) {
@@ -6242,18 +6934,25 @@
 			clearTimeout(_controlsTimeout);
 			_controlsTimeout = 0;
 		}
+
+		function forward(evt) {
+			_eventDispatcher.sendEvent(evt.type, evt);
+		}
 		
 		function _setupControls() {
 			var width = _model.width,
 				height = _model.height,
 				cbSettings = _model.componentConfig('controlbar'),
 				displaySettings = _model.componentConfig('display');
+
+			_captions = new html5.captions(_api, _model.captions);
+			_captions.addEventListener(events.JWPLAYER_CAPTIONS_LIST, forward);
+			_captions.addEventListener(events.JWPLAYER_CAPTIONS_CHANGED, forward);
+			_controlsLayer.appendChild(_captions.element());
+
 		
 			_display = new html5.display(_api, displaySettings);
-			_display.addEventListener(events.JWPLAYER_DISPLAY_CLICK, function(evt) {
-				// Forward Display Clicks
-				_eventDispatcher.sendEvent(evt.type, evt);
-			});
+			_display.addEventListener(events.JWPLAYER_DISPLAY_CLICK, forward);
 			_controlsLayer.appendChild(_display.element());
 			
 			_logo = new html5.logo(_api, _model.componentConfig('logo'));
@@ -6261,6 +6960,8 @@
 			
 			_dock = new html5.dock(_api, _model.componentConfig('dock'));
 			_controlsLayer.appendChild(_dock.element());
+
+			
 			
 			new html5.rightclick(_api, {});
 			

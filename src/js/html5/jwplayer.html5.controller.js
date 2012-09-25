@@ -44,11 +44,11 @@
 					jwplayer.playerReady(evt);
 				}
 
-				_eventDispatcher.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_LOADED, {playlist: _model.playlist});
-				_eventDispatcher.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_ITEM, {index: _model.item});
-				
 				_model.addGlobalListener(_forward);
 				_view.addGlobalListener(_forward);
+
+				_eventDispatcher.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_LOADED, {playlist: _model.playlist});
+				_eventDispatcher.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_ITEM, {index: _model.item});
 				
 				_load();
 				
@@ -244,6 +244,18 @@
 			else return null;
 		}
 
+		function _setCurrentCaptions(caption) {
+			_view.setCurrentCaptions(caption);
+		}
+
+		function _getCurrentCaptions() {
+			return _view.getCurrentCaptions();
+		}
+
+		function _getCaptionsList() {
+			return _view.getCaptionsList();
+		}
+
 		/** Used for the InStream API **/
 		function _detachMedia() {
 			try {
@@ -300,6 +312,9 @@
 		this.setCurrentQuality = _waitForReady(_setCurrentQuality);
 		this.getCurrentQuality = _getCurrentQuality;
 		this.getQualityLevels = _getQualityLevels;
+		this.setCurrentCaptions = _waitForReady(_setCurrentCaptions);
+		this.getCurrentCaptions = _getCurrentCaptions;
+		this.getCaptionsList = _getCaptionsList;
 		
 		this.playerReady = _playerReady;
 

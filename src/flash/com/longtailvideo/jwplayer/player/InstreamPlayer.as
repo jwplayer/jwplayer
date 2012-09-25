@@ -523,6 +523,20 @@ package com.longtailvideo.jwplayer.player
 			throw new Error("Unsupported IPlayer method in InstreamPlayer");
 		}
 		
+		public function getCaptionsList():Array {
+			throw new Error("Unsupported IPlayer method in InstreamPlayer");
+			return null;
+		}
+		
+		public function getCurrentCaptions():Number {
+			throw new Error("Unsupported IPlayer method in InstreamPlayer");
+			return null;
+		}
+		
+		public function setCurrentCaptions(index:Number):void {
+			throw new Error("Unsupported IPlayer method in InstreamPlayer");
+		}
+
 		public function getControls():Boolean {
 			throw new Error("Unsupported IPlayer method in InstreamPlayer");
 		}

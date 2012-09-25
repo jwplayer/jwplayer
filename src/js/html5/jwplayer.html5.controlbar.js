@@ -78,7 +78,7 @@
 						    _layoutElement("duration", CB_TEXT), 
 						    _dividerElement,
 						    _layoutElement("hd", CB_BUTTON), 
-						    //_layoutElement("cc", CB_BUTTON), 
+						    _layoutElement("cc", CB_BUTTON), 
 						    _dividerElement,
 						    _layoutElement("mute", CB_BUTTON), 
 						    _layoutElement("volume", CB_SLIDER), 
@@ -99,6 +99,8 @@
 			_position,
 			_levels,
 			_currentQuality,
+			_captions,
+			_currentCaptions,
 			_currentVolume,
 			_volumeOverlay,
 			_cbBounds,
@@ -186,6 +188,8 @@
 			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_LOADED, _playlistHandler);
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_LEVELS, _qualityHandler);
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_LEVEL_CHANGED, _qualityLevelChanged);
+			_api.jwAddEventListener(events.JWPLAYER_CAPTIONS_LIST, _captionsHandler);
+			_api.jwAddEventListener(events.JWPLAYER_CAPTIONS_CHANGED, _captionChanged);
 			_controlbar.addEventListener('mouseover', function(){
 				// Slider listeners
 				WINDOW.addEventListener('mousemove', _sliderMouseEvent, FALSE);
@@ -285,6 +289,7 @@
 				_css(_internalSelector(".nextdiv"), not_hidden);
 			}
 			_css(_internalSelector(".jwhd"), hidden);
+			_css(_internalSelector(".jwcc"), hidden);
 			_redraw();
 		}
 		
@@ -310,6 +315,29 @@
 			}
 		}
 		
+		function _captionsHandler(evt) {
+			_captions = evt.tracks;
+			if (_captions && _captions.length > 1 && _ccOverlay) {
+				_css(_internalSelector(".jwcc"), { display: UNDEFINED });
+				_ccOverlay.clearOptions();
+				for (var i=0; i<_captions.length; i++) {
+					_ccOverlay.addOption(_captions[i].label, i);
+				}
+				_captionChanged(evt);
+			} else {
+				_css(_internalSelector(".jwcc"), { display: "none" });
+			}
+			_redraw();
+		}
+		
+		function _captionChanged(evt) {
+			if (!_captions) return;
+			_currentCaptions = evt.track;
+			if (_ccOverlay && _currentCaptions >= 0) {
+				_ccOverlay.setActive(evt.track);
+			}
+		}
+
 		// Bit of a hacky way to determine if the playlist is available 
 		function _sidebarShowing() {
 			return (!!DOCUMENT.querySelector("#"+_api.id+" .jwplaylist"));
@@ -598,6 +626,13 @@
 			}
 		}
 		
+		function _showCc() {
+			if (_captions && _captions.length > 1) {
+				_ccOverlay.show();
+				_hideOverlays('cc');
+			}
+		}
+
 		function _switchLevel(newlevel) {
 			if (newlevel >= 0 && newlevel < _levels.length) {
 				_api.jwSetCurrentQuality(newlevel);
@@ -605,6 +640,13 @@
 			}
 		}
 		
+		function _switchCaption(newcaption) {
+			if (newcaption >= 0 && newcaption < _captions.length) {
+				_api.jwSetCurrentCaptions(newcaption);
+				_ccOverlay.hide();
+			}
+		}
+
 		function _cc() {
 			_toggleButton("cc");
 		}
@@ -874,6 +916,11 @@
 				_hdOverlay = new html5.menu('hd', _id+"_hd", _skin, _switchLevel);
 				_addOverlay(_hdOverlay, _elements.hd, _showHd);
 				_overlays.hd = _hdOverlay;
+			}
+			if (_elements.cc) {
+				_ccOverlay = new html5.menu('cc', _id+"_cc", _skin, _switchCaption);
+				_addOverlay(_ccOverlay, _elements.cc, _showCc);
+				_overlays.cc = _ccOverlay;
 			}
 			if (_elements.mute && _elements.volume && _elements.volume.vertical) {
 				_volumeOverlay = new html5.overlay(_id+"_volumeoverlay", _skin);

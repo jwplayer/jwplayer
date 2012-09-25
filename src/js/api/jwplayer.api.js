@@ -211,6 +211,15 @@
 		_this.setCurrentQuality = function(level) {
 			_callInternal("jwSetCurrentQuality", level);
 		};
+		_this.getCaptionsList = function() {
+			return _callInternal("jwGetCaptionsList");
+		};
+		_this.getCurrentCaptions = function() {
+			return _callInternal("jwGetCurrentCaptions");
+		};
+		_this.setCurrentCaptions = function(caption) {
+			_callInternal("jwSetCurrentCaptions", caption);
+		};
 		_this.getControls = function() {
 			return _callInternal("jwGetControls");
 		};
@@ -242,7 +251,9 @@
 			onDisplayClick: events.JWPLAYER_DISPLAY_CLICK,
 			onControls: events.JWPLAYER_CONTROLS,
 			onQualityLevels: events.JWPLAYER_MEDIA_LEVELS,
-			onQualityChange: events.JWPLAYER_MEDIA_LEVEL_CHANGED
+			onQualityChange: events.JWPLAYER_MEDIA_LEVEL_CHANGED,
+			onCaptionsList: events.JWPLAYER_CAPTIONS_LIST,
+			onCaptionsChange: events.JWPLAYER_CAPTIONS_CHANGED
 		};
 		
 		utils.foreach(_eventMapping, function(event) {

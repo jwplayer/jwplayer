@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <script type="text/javascript" src="assets/primaryCookie.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css" />
+
+    <title>Captions: Basic Setup</title>
+
+</head>
+<body>
+
+<h2>Captions: Basic Setup</h2>
+<div class="core">List of test devices</div>
+<p>This test implements the basic functionality of the Caption feature</p>
+
+<div id="player"></div>
+<script type="text/javascript">
+function loadPlayer(key,captions) {
+    var options = {
+        
+        height: 270,
+        
+        playlist: [{
+            file: 'http://content.bitsontherun.com/videos/'+key+'.mp4',
+            image: 'http://content.bitsontherun.com/thumbs/'+key.substr(0,8)+'-480.jpg',
+            captions: []
+        }],
+        primary: primaryCookie,
+        width: 480
+    };
+    if(captions) { 
+        options.playlist[0].captions.push({file: captions, label: "English"});
+    }
+    jwplayer("player").setup(options);
+}
+</script>
+
+<ul>
+    <li><a href="javascript:loadPlayer('7OCSON1y','assets/captions/corrie.srt')">srt captions</a></li>
+    <li><a href="javascript:loadPlayer('7OCSON1y','assets/captions/corrie.vtt')">vtt captions</a></li>
+    <li><a href="javascript:loadPlayer('7OCSON1y','assets/captions/corrie.xml')">dfxp captions (flash only)</a></li>
+    <li><a href="javascript:loadPlayer('aytCR4cx-393434')">mp4 captions (flash only)</a></li>
+</ul>
+
+<table><tr>
+<th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop">
+    <td>Click each link above and play the video</td>
+    <td>The CC button should be visible in the controlbar. <br/>
+        The list of captions tracks with two options: (Off) and English should be shown
+        above the CC button in the controlbar upon mouseover.
+    </td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Mouseover the CC button</td>
+    <td>A menu with two options should pop up. The first option (Off) should be selected by default.
+    </td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Click on English in the menu to change the captions track.</td>
+    <td>The video should display english captions. <br/>
+        Watch the video from beginning to end to ensure that the captions are displayed at the right time.
+    </td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Seek to the middle of the video, and pause it and resume it</td>
+    <td>The appropriate captions should be displayed. Listen to the audio to ensure that the captions are correct.
+    </td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Change the captions track back to (Off)</td>
+    <td>The captions should immediately disappear from the video.
+    </td>
+    <td class="check"></td>
+</tr></table>
+
+
+</body>
+</html>

@@ -155,6 +155,11 @@ package com.longtailvideo.jwplayer.player {
 				ExternalInterface.addCallback("jwGetQualityLevels", js_getQualityLevels);
 				ExternalInterface.addCallback("jwGetCurrentQuality", js_getCurrentQuality);
 				ExternalInterface.addCallback("jwSetCurrentQuality", js_setCurrentQuality);
+
+				// Captions API
+				ExternalInterface.addCallback("jwGetCaptionsList", js_getCaptionsList);
+				ExternalInterface.addCallback("jwGetCurrentCaptions", js_getCurrentCaptions);
+				ExternalInterface.addCallback("jwSetCurrentCaptions", js_setCurrentCaptions);
 				
 				// UNIMPLEMENTED
 				//ExternalInterface.addCallback("jwGetBandwidth", js_getBandwidth); 
@@ -194,8 +199,9 @@ package com.longtailvideo.jwplayer.player {
 		
 		protected function listenerCallback(evt:Event):void {
 			var args:Object = {};
-			
-			if (evt is MediaEvent)
+			if (evt is CaptionsEvent)
+				args = listenerCallbackCaptions(evt as CaptionsEvent);
+			else if (evt is MediaEvent)
 				args = listenerCallbackMedia(evt as MediaEvent);
 			else if (evt is PlayerStateEvent)
 				args = listenerCallbackState(evt as PlayerStateEvent);
@@ -271,6 +277,15 @@ package com.longtailvideo.jwplayer.player {
 			if (evt.type == MediaEvent.JWPLAYER_MEDIA_VOLUME)
 				returnObj.volume = evt.volume;
 
+			return returnObj;
+		}
+
+		protected function listenerCallbackCaptions(evt:CaptionsEvent):Object {
+			var returnObj:Object = {};
+			
+			if (evt.currentTrack >= 0)		returnObj.track = evt.currentTrack;
+			if (evt.tracks)					returnObj.tracks = JavascriptSerialization.stripDots(evt.tracks);
+	
 			return returnObj;
 		}
 		
@@ -536,6 +551,18 @@ package com.longtailvideo.jwplayer.player {
 		
 		protected function js_setCurrentQuality(index:Number):void {
 			_player.setCurrentQuality(index);	
+		}
+
+		protected function js_getCaptionsList():Array {
+			return _player.getCaptionsList();
+		}
+		
+		protected function js_getCurrentCaptions():Number {
+			return _player.getCurrentCaptions();
+		}
+		
+		protected function js_setCurrentCaptions(index:Number):void {
+			_player.setCurrentCaptions(index);	
 		}
 		
 		protected function js_getControls():Boolean {

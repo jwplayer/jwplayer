@@ -2,6 +2,7 @@ package com.longtailvideo.jwplayer.view {
 	import com.longtailvideo.jwplayer.model.PlayerConfig;
 	import com.longtailvideo.jwplayer.player.IPlayer;
 	import com.longtailvideo.jwplayer.plugins.PluginConfig;
+	import com.longtailvideo.jwplayer.view.components.CaptionsComponent;
 	import com.longtailvideo.jwplayer.view.components.ControlbarComponent;
 	import com.longtailvideo.jwplayer.view.components.DisplayComponent;
 	import com.longtailvideo.jwplayer.view.components.DockComponent;
@@ -23,6 +24,7 @@ package com.longtailvideo.jwplayer.view {
 		protected var _config:PlayerConfig;
 		protected var _skin:ISkin;
 		protected var _player:IPlayer;
+		protected var _captions:CaptionsComponent;
 		
 		/**
 		 * @inheritDoc
@@ -40,6 +42,7 @@ package com.longtailvideo.jwplayer.view {
 			_playlist = new PlaylistComponent(_player);
 			_dock = new DockComponent(_player);
 			_logo = new LogoComponent(_player, redraw);
+			_captions = new CaptionsComponent(_player);
 		}
 		
 		
@@ -81,7 +84,14 @@ package com.longtailvideo.jwplayer.view {
 			return _logo;
 		}
 
+		/**
+		 * @inheritDoc
+		 */
+		public function get captions():CaptionsComponent {
+			return _captions;
+		}
 		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -104,6 +114,8 @@ package com.longtailvideo.jwplayer.view {
 			}
 			
 			resizeComponent(_dock, dockConfig);
+
+			resizeComponent(_captions, _config.pluginConfig('display'));
 		}
 		
 		

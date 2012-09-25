@@ -63,6 +63,9 @@
 			_api.jwGetQualityLevels = _controller.getQualityLevels;
 			_api.jwGetCurrentQuality = _controller.getCurrentQuality;
 			_api.jwSetCurrentQuality = _controller.setCurrentQuality;
+			_api.jwGetCaptionsList = _controller.getCaptionsList;
+			_api.jwGetCurrentCaptions = _controller.getCurrentCaptions;
+			_api.jwSetCurrentCaptions = _controller.setCurrentCaptions;
 			_api.jwSetControls = _view.setControls;
 			_api.jwGetSafeRegion = _view.getSafeRegion; 
 			

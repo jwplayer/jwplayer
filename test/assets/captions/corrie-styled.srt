@@ -1,0 +1,43 @@
+1
+00:00:08,000 --> 00:00:10,000
+- <b>Nothing</b> is going on.
+
+2
+00:00:10,500 --> 00:00:12,500
+<font face="Times, serif" size="20" color="#FFCC00">You liar!</font>
+
+3
+00:00:13,500 --> 00:00:15,000
+<u>Are</u> <i>you</i>?
+
+4
+00:00:17,000 --> 00:00:20,000
+Violet, <i><b><u>please</u></b></i>!
+- I am <font face="Courier, monospace" size="25" color="#FF0000"><b><u>not</u></b></font> your babe!
+
+5
+00:00:24,000 --> 00:00:29,000
+<font color="#00FF00">You <u>stupid cow</u>,
+look what you gone and done now, ay.</font>
+
+6
+00:00:34,000 --> 00:00:36,000
+<b>Vi, please.
+- <i>Leave me alone!</i></b>
+
+7
+00:00:36,000 --> 00:00:38,500
+- <u><a href="http://www.korrelatie.nl">We need to talk.</a></u>
+- Jason, are you deaf?!</span>
+
+8
+00:00:41,000 --> 00:00:43,000
+What's going on?
+ 
+ 
+ <font size="10">[extra spaces]</font>
+
+9
+00:00:43,000 --> 00:00:45,000
+Gét out thëre and try tø ßalvage this© !
+<font size="10">[some UTF chars]</font>

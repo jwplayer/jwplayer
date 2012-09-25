@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Captions: Playlist test</title>
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <script type="text/javascript" src="assets/primaryCookie.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+</head>
+<body>
+
+
+<h1>Captions: Playlist test</h1>
+<div class="core">List of test devices</div>
+<p>This test implements the Captions feature in a playlist.</p>
+
+<div id="container"></div>
+
+<script type="text/javascript">
+
+
+function loadPlayer() {
+    var options = {
+        height: 300,
+        width: 640,
+        playlist: [{
+            file: 'http://content.bitsontherun.com/videos/bkaovAYt-injeKYZS.mp4',
+            image: 'http://content.bitsontherun.com/thumbs/bkaovAYt-720.jpg',
+            captions: [
+                {file: 'assets/captions/bunny-eng.txt', label: 'English'}
+            ]
+        },{
+            file: 'http://content.bitsontherun.com/videos/3XnJSIm4-injeKYZS.mp4',
+            image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-720.jpg',
+            captions: [
+                {file: 'assets/captions/sintel-ch.srt', label: 'Chinese'},
+                {file: 'assets/captions/sintel-fa.srt', label: 'Farsi'},
+                {file: 'assets/captions/sintel-gr.srt', label: 'Greek'},
+                {file: 'assets/captions/sintel-jp.srt', label: 'Japanese'},
+                {file: 'assets/captions/sintel-ko.srt', label: 'Korean'},
+                {file: 'assets/captions/sintel-pl.srt', label: 'Polish'},
+                {file: 'assets/captions/sintel-ru.srt', label: 'Russian'},
+                {file: 'assets/captions/sintel-sp.srt', label: 'Spanish'},
+                {file: 'assets/captions/sintel-tr.srt', label: 'Turkish'}
+            ]
+        }],
+        primary: primaryCookie
+    };
+    jwplayer("container").setup(options);
+};
+loadPlayer();
+</script>
+
+<table><tr>
+<th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop">
+    <td>Play the first video</td>
+    <td>The CC button should be visible in the controlbar. <br/>
+    </td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Mouseover the CC button.</td>
+    <td>A menu with (Off) and English should pop up.<br/>
+    </td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Click the English option in the menu</td>
+    <td>The video should display english captions at the right time.
+    </td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Play the second video. </td>
+    <td>The next video should start playing. Captions should not be displayed. 
+    </td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Mouseover the CC button in the controlbar</td>
+    <td>The menu that pops up should contain 10 options. (Off) should be highlighted by default.
+    </td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Select the Turkish option in the menu. </td>
+    <td>The video should begin the display turkish captions. The CC menu should reflect this change. 
+    </td>
+    <td class="check"></td>
+</tr></table>
+
+</body>
+</html>

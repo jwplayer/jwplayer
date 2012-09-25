@@ -307,6 +307,18 @@
 		public function setCurrentQuality(index:Number):void {
 			if (model.media) model.media.currentQuality = index;
 		}
+
+		public function getCaptionsList():Array {
+			return view.components.captions.getCaptionsList();
+		}
+		
+		public function getCurrentCaptions():Number {
+			return view.components.captions.getCurrentCaptions();
+		}
+		
+		public function setCurrentCaptions(index:Number):void {
+			view.components.captions.setCurrentCaptions(index);
+		}
 		
 		public function getControls():Boolean {
 			return model.config.controls;

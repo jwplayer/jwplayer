@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Captions: Configurations</title>
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <script type="text/javascript" src="assets/primaryCookie.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+</head>
+<body>
+
+
+<h1>Captions: Configurations</h1>
+<div class="core">List of test devices</div>
+<p>This test implements the configuration options available for the Captions feature.</p>
+
+<div id="container"></div>
+
+<script type="text/javascript">
+
+
+function loadPlayer() {
+    var options = {
+        height: 300,
+        width: 640,
+        playlist: [{
+            file: 'http://content.bitsontherun.com/videos/7OCSON1y.mp4',
+            image: 'http://content.bitsontherun.com/thumbs/7OCSON1y-320.jpg',
+            captions: [
+                {file: 'assets/captions/corrie.srt', label: 'English'}
+            ]
+        }],
+        captions: {
+            back: true,
+            color: 'cc0000',
+            fontsize: 20
+        },
+        primary: primaryCookie
+    };
+    jwplayer("container").setup(options);
+};
+loadPlayer();
+</script>
+
+<table><tr>
+<th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop">
+    <td>Play the video, set the captions track to 1 (English)</td>
+    <td>The captions should play along with the video in English. <br/>
+        The text will be red in color, the font size will to 20 (larger than normal), 
+        and the background will be black. 
+    </td>
+    <td class="check"></td>
+</tr></table>
+
+
+</body>
+</html>

@@ -79,6 +79,9 @@ package com.longtailvideo.jwplayer.player {
 		function getQualityLevels():Array;
 		function getCurrentQuality():Number;
 		function setCurrentQuality(index:Number):void;
+		function getCaptionsList():Array;
+		function getCurrentCaptions():Number;
+		function setCurrentCaptions(index:Number):void;
 		function getControls():Boolean;
 		function getSafeRegion():Rectangle;
 		function setControls(state:Boolean):void;

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <script type="text/javascript" src="assets/primaryCookie.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css" />
+
+    <title>Captions: API Test</title>
+
+</head>
+<body>
+
+<h2>Captions: API Test</h2>
+<div class="core">List of test devices</div>
+<p>This test implements the Javascript API calls available for the Captions feature.</p>
+
+<div id="player"></div>
+<script type="text/javascript">
+function loadPlayer(key,captions) {
+    var options = {
+        playlist: [{
+            title: 'Big Buck Bunny',
+            description: 'One captions track',
+            file: 'http://content.bitsontherun.com/videos/bkaovAYt-injeKYZS.mp4',
+            image: 'http://content.bitsontherun.com/thumbs/bkaovAYt-720.jpg',
+            captions: [
+                {file: 'assets/captions/bunny-eng.txt', label: 'English'}
+            ]
+        },{
+            title: 'Bits on the Run',
+            description: 'No captions tracks',
+            file: 'http://content.bitsontherun.com/videos/yYul4DRz-327.mp4',
+            image: 'http://content.bitsontherun.com/thumbs/yYul4DRz-320.jpg',
+            captions: []
+        },{
+            title: 'Sintel',
+            description: 'Nine captions track',
+            file: 'http://content.bitsontherun.com/videos/3XnJSIm4-injeKYZS.mp4',
+            image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-720.jpg',
+            captions: [
+                {file: 'assets/captions/sintel-ch.srt', label: 'Chinese'},
+                {file: 'assets/captions/sintel-fa.srt', label: 'Farsi'},
+                {file: 'assets/captions/sintel-gr.srt', label: 'Greek'},
+                {file: 'assets/captions/sintel-jp.srt', label: 'Japanese'},
+                {file: 'assets/captions/sintel-ko.srt', label: 'Korean'},
+                {file: 'assets/captions/sintel-pl.srt', label: 'Polish'},
+                {file: 'assets/captions/sintel-ru.srt', label: 'Russian'},
+                {file: 'assets/captions/sintel-sp.srt', label: 'Spanish'},
+                {file: 'assets/captions/sintel-tr.srt', label: 'Turkish'}
+            ]
+        }],
+        height: 300,
+        listbar: {
+            position: 'right',
+            size: 260
+        },
+        primary: primaryCookie,
+        width: 720
+    };
+    jwplayer("player").setup(options);
+}
+loadPlayer();
+
+function getCurrentCaptions() {
+    appendLog("The current captions track is: " + jwplayer().getCurrentCaptions());
+ };
+function getCaptionsList() {
+    var levels = jwplayer().getCaptionsList();
+    var text = "The list of captions tracks is: ";
+    if(levels) { 
+        for (var i=0; i < levels.length; i++) { 
+            text += levels[i].label +", ";
+        }
+    } else { text += "-  "; }
+    appendLog(text.substr(0,text.length-2));
+};
+function setCurrentCaptions() {
+    var level = prompt("Set the captions track","1");
+    if(level != undefined) {
+        jwplayer().setCurrentCaptions(level);
+    }
+};
+
+jwplayer().onCaptionsList(function captionsList(event) {
+    var text = "List of captions tracks changed to: ";
+    if(event.tracks) {
+        for (var i=0; i < event.tracks.length; i++) { 
+            text += event.tracks[i].label +", ";
+        }
+    }   
+    appendLog(text.substr(0,text.length-2));
+});
+jwplayer().onCaptionsChange(function captionsChange(event) {
+    if (event.track != undefined) {
+        appendLog("Current captions track changed to: " + event.track);
+    }
+});
+
+function appendLog(text) {
+    var log = document.getElementById("log");
+    var inner = log.innerHTML;
+    log.innerHTML = inner + text + "<br/>";
+};
+function clearLog(text) {
+    var log = document.getElementById("log").innerHTML = "";
+};
+</script>
+
+<ol>
+    <li><a href="javascript:getCurrentCaptions();">Get the current captions track</a></li>
+    <li><a href="javascript:getCaptionsList();">Get the list of captions tracks</a></li>
+    <li><a href="javascript:setCurrentCaptions();">Set the current captions track</a></li>
+    <li><a href="javascript:clearLog();">Clear the message log</a></li>
+</ol>
+
+<pre id="log"></pre>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Click to play first video</td>
+    <td>Captions list should be logged (2 captions, with labels).</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Click to play second video</td>
+    <td>Captions list should be logged (no captions, just (Off)).</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Click to play third video</td>
+    <td>Captions list should be logged (9 captions, with labels).</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Click <em>Get current captions track</em></td>
+    <td>Captions track 0 (Off) should be logged</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Click <em>Get list of captions tracks</em></td>
+    <td>List of 9 caption labels should be logged</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Click <em>Set captions track</em> and set 2</td>
+    <td>Farsi captions should be visible on the video<br/>CC menu in controlbar should mirror the change.<br/>Switch to new captions track (2) should be logged</td>
+    <td class="check"></td>
+</tr></table>
+
+</body>
+</html>

@@ -5,6 +5,7 @@ package com.longtailvideo.jwplayer.view {
 	import com.longtailvideo.jwplayer.view.interfaces.IDockComponent;
 	import com.longtailvideo.jwplayer.view.interfaces.IPlayerComponent;
 	import com.longtailvideo.jwplayer.view.interfaces.IPlaylistComponent;
+	import com.longtailvideo.jwplayer.view.components.CaptionsComponent;
 	
 	
 	/**
@@ -16,6 +17,7 @@ package com.longtailvideo.jwplayer.view {
 		function get dock():IDockComponent;
 		function get playlist():IPlaylistComponent;
 		function get logo():IPlayerComponent;
+		function get captions():CaptionsComponent;
 		function redraw():void;
 	}
 }

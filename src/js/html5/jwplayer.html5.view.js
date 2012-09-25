@@ -51,6 +51,7 @@
 			_display,
 			_dock,
 			_logo,
+			_captions,
 			_playlist,
 			_audioMode,
 			_isMobile = utils.isMobile(),
@@ -69,6 +70,18 @@
 			
 			var replace = document.getElementById(_api.id);
 			replace.parentNode.replaceChild(_playerElement, replace);
+		}
+
+		this.getCurrentCaptions = function() {
+			return _captions.getCurrentCaptions();
+		}
+
+		this.setCurrentCaptions = function(caption) {
+			_captions.setCurrentCaptions(caption);
+		}
+
+		this.getCaptionsList = function() {
+			return _captions.getCaptionsList();
 		}
 		
 		this.setup = function(skin) {
@@ -153,18 +166,25 @@
 			clearTimeout(_controlsTimeout);
 			_controlsTimeout = 0;
 		}
+
+		function forward(evt) {
+			_eventDispatcher.sendEvent(evt.type, evt);
+		}
 		
 		function _setupControls() {
 			var width = _model.width,
 				height = _model.height,
 				cbSettings = _model.componentConfig('controlbar'),
 				displaySettings = _model.componentConfig('display');
+
+			_captions = new html5.captions(_api, _model.captions);
+			_captions.addEventListener(events.JWPLAYER_CAPTIONS_LIST, forward);
+			_captions.addEventListener(events.JWPLAYER_CAPTIONS_CHANGED, forward);
+			_controlsLayer.appendChild(_captions.element());
+
 		
 			_display = new html5.display(_api, displaySettings);
-			_display.addEventListener(events.JWPLAYER_DISPLAY_CLICK, function(evt) {
-				// Forward Display Clicks
-				_eventDispatcher.sendEvent(evt.type, evt);
-			});
+			_display.addEventListener(events.JWPLAYER_DISPLAY_CLICK, forward);
 			_controlsLayer.appendChild(_display.element());
 			
 			_logo = new html5.logo(_api, _model.componentConfig('logo'));
@@ -172,6 +192,8 @@
 			
 			_dock = new html5.dock(_api, _model.componentConfig('dock'));
 			_controlsLayer.appendChild(_dock.element());
+
+			
 			
 			new html5.rightclick(_api, {});
 			

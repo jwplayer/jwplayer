@@ -149,7 +149,8 @@ package com.longtailvideo.jwplayer.view {
 			RootReference.stage.addEventListener(MouseEvent.MOUSE_MOVE, moveHandler);
 			RootReference.stage.addEventListener(KeyboardEvent.KEY_DOWN, moveHandler);
 			
-			
+			components.captions.addEventListener(CaptionsEvent.JWPLAYER_CAPTIONS_CHANGED, forward);
+			components.captions.addEventListener(CaptionsEvent.JWPLAYER_CAPTIONS_LIST, forward);
 
 			_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_LOADED, mediaLoaded);
 			_model.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_ITEM, itemHandler);
@@ -286,7 +287,7 @@ package com.longtailvideo.jwplayer.view {
 
 		protected function setupComponents():void {
 			var n:Number = 0;
-			
+			setupComponent(_components.captions, n++);
 			setupComponent(_components.display, n++);
 			setupComponent(_components.playlist, n++);
 			setupComponent(_components.logo, n++);
@@ -335,6 +336,7 @@ package com.longtailvideo.jwplayer.view {
 				_components.dock.hide();
 				_components.logo.hide();
 				_components.playlist.hide();
+				_components.captions.hide();
 				hideImage();
 				_mediaFade.fade(0);
 				return;

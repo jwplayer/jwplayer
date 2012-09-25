@@ -22,7 +22,7 @@ package com.longtailvideo.jwplayer.parsers {
 		 **/
 		public static function parseGroup(obj:XML, itm:Object):Object {
 			var ytp:Boolean = false;
-
+			var captions:Array = [];
 			for each (var i:XML in obj.children()) {
 				if (i.namespace().prefix == MediaParser.PREFIX) {
 					switch (i.localName().toLowerCase()) {
@@ -74,8 +74,18 @@ package com.longtailvideo.jwplayer.parsers {
 						case 'group':
 							itm = MediaParser.parseGroup(i, itm);
 							break;
+						case 'subtitle': 
+							var entry:Object = {};
+							entry.file = Strings.xmlAttribute(i, 'url');
+							if (Strings.xmlAttribute(i, 'lang').length > 0) {
+								entry.label = ISO639.label(Strings.xmlAttribute(i, 'lang'));
+							}
+							captions.push(entry);		
 					}
 				}
+			}
+			if(captions.length > 0) {
+				itm['captions'] = captions;
 			}
 			return itm;
 		}

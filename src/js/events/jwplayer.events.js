@@ -34,6 +34,8 @@
 		JWPLAYER_MEDIA_MUTE : 'jwplayerMediaMute',
 		JWPLAYER_MEDIA_LEVELS: 'jwplayerMediaLevels',
 		JWPLAYER_MEDIA_LEVEL_CHANGED: 'jwplayerMediaLevelChanged',
+		JWPLAYER_CAPTIONS_CHANGED: 'jwplayerCaptionsChanged',
+		JWPLAYER_CAPTIONS_LIST: 'jwplayerCaptionsList',
 
 		// State events
 		JWPLAYER_PLAYER_STATE : 'jwplayerPlayerState',
@@ -51,11 +53,10 @@
 
 		// Display CLick
 		JWPLAYER_DISPLAY_CLICK : 'jwplayerViewClick',
-		
-		// Controls show/hide
-		JWPLAYER_CONTROLS : 'jwplayerViewControls',
 
-		
+		// Controls show/hide 
+	 	JWPLAYER_CONTROLS : 'jwplayerViewControls', 
+
 		// Instream events
 		JWPLAYER_INSTREAM_CLICK : 'jwplayerInstreamClicked',
 		JWPLAYER_INSTREAM_DESTROYED : 'jwplayerInstreamDestroyed'

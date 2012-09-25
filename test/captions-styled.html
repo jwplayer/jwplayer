@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Captions: SRT Style Test</title>
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <script type="text/javascript" src="assets/primaryCookie.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+</head>
+<body>
+
+
+<h1>Captions: SRT Style Test</h1>
+<div class="core">List of test devices</div>
+<p>This test implements all Captions API calls available to JavaScript.</p>
+
+<div id="container"></div>
+
+<script type="text/javascript">
+
+
+function loadPlayer() {
+    var options = {
+        height: 300,
+        width: 640,
+        playlist: [{
+            file: 'http://content.bitsontherun.com/videos/7OCSON1y.mp4',
+            image: 'http://content.bitsontherun.com/thumbs/7OCSON1y-320.jpg',
+            captions: [
+                {file: 'assets/captions/corrie-styled.srt', label: 'English'}
+            ]
+        }],
+        primary: primaryCookie
+    };
+    jwplayer("container").setup(options);
+};
+loadPlayer();
+</script>
+
+<table><tr>
+<th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop">
+    <td>Play the video</td>
+    <td>The CC button should show up with a menu containing (Off) and English options.
+    </td> 
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Select the English option for the menu</td>
+    <td>The video should display english captions with the CSS styles as specified by the captions file. <br/>
+        Watch the video from beginning to end to ensure that the captions are displayed at the right time
+        with the right styling.
+    </td>
+    <td class="check"></td>
+</tr></table>
+
+
+</body>
+</html>

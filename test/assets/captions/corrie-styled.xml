@@ -1,0 +1,26 @@
+<tt xmlns="http://www.w3.org/2006/10/ttaf1" xmlns:tts="http://www.w3.org/2006/04/ttaf1#styling">
+  <head>
+   <styling>
+      <style id="boldened" tts:fontWeight="bold" />
+      <style id="yellow" tts:color="#FFFF00" />
+      <style id="bigger" tts:fontWeight="bold" tts:fontSize="20" tts:textDecoration="underline" />
+      <style id="serifed" tts:fontFamily="Times,serif" tts:fontStyle="italic" />
+   </styling>
+  </head>
+  <body>
+    <div>
+      <p begin="00:00:08" end="00:00:10" style="boldened">- Nothing is going on.</p>
+      <p begin="00:00:10.5" end="00:00:12.5" style="yellow">You liar!</p>
+      <p begin="00:00:13.5" end="00:00:15" style="yellow"><span tts:fontSize="30" tts:color="#FFCC00">Are you?</span></p>
+      <p begin="00:00:17" end="00:00:20" style="bigger">Violet, please!<br/>- I am <span tts:fontSize="30">not</span> your babe!</p>
+      <p begin="00:00:24" end="00:00:29" style="yellow">
+          You <span tts:textDecoration="underline" tts:fontStyle="italic">stupid cow</span>, look what<br/>you gone and done now, ay.
+      </p>
+      <p begin="00:00:34" end="00:00:36" style="serifed">Vi, please.<br/>- Leave me alone!</p>
+      <p begin="00:00:36" end="00:00:38.5" style="serifed">- We need to <span style="yellow">talk</span>
+.<br/>- Jason, are you deaf?!</p>
+      <p begin="00:00:41" end="00:00:42.9" style="boldened">What's going on?<br/>&nbsp;<br/>&nbsp;<br/><span tts:fontSize="-5" tts:fontWeight="normal">[some extra linebreaks]</span></p>
+      <p begin="00:00:43" end="00:00:45" style="boldened">Gét out thëre and try tø ßalvage this©!<br/>&nbsp;<span tts:fontSize="-5" tts:fontWeight="normal">[some special characters]</span></p>
+    </div>
+  </body>
+</tt>

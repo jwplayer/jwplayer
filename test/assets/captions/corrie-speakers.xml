@@ -1,0 +1,23 @@
+<tt xmlns="http://www.w3.org/2006/10/ttaf1" xmlns:tts="http://www.w3.org/2006/04/ttaf1#styling">
+  <head>
+   <styling>
+      <style id="jason" tts:color="#00FF00" />
+      <style id="violet" tts:color="#FF0000" />
+      <style id="sarah" tts:color="#FFCC00" />
+      <style id="eileen" tts:color="#3333FF" />
+   </styling>
+  </head>
+  <body>
+    <div>
+      <p begin="00:00:08" end="00:00:10" style="jason">Nothing is going on.</p>
+      <p begin="00:00:10.5" end="00:00:12.5" style="sarah">You liar!</p>
+      <p begin="00:00:13.5" end="00:00:15" style="violet">Are you?</p>
+      <p begin="00:00:17" end="00:00:20" style="jason">Violet, please!<br/><span style="violet">I am not your babe!</span></p>
+      <p begin="00:00:24" end="00:00:29" style="jason">You stupid cow,<br/>look what you have done now, ay.</p>
+      <p begin="00:00:34" end="00:00:36" style="jason">Vi, please.<br/><span style="violet">Leave me alone!</span></p>
+      <p begin="00:00:36" end="00:00:38.5" style="jason">We need to talk.<br/><span style="violet">Jason, are you deaf?</span></p>
+      <p begin="00:00:41" end="00:00:42.9" style="eileen">What's going on?</p>
+      <p begin="00:00:43" end="00:00:45" style="eileen">Get out there<br/>and try to salvage this!</p>
+    </div>
+  </body>
+</tt>
