@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Captions: RSS Feed Test</title>
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <script type="text/javascript" src="assets/primaryCookie.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+</head>
+<body>
+
+
+<h1>Captions: RSS Feed Test</h1>
+<div class="core">List of test devices</div>
+<p>This test implements Captions functionality with an RSS feed playlist.</p>
+
+<div id="container"></div>
+
+<script type="text/javascript">
+
+
+function loadPlayer() {
+    var options = {
+        height: 300,
+        captions: {back: true},
+        width: 640,
+        playlist: 'assets/captions/captions.rss',
+        primary: primaryCookie
+    };
+    jwplayer("container").setup(options);
+};
+loadPlayer();
+</script>
+
+<table><tr>
+<th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop">
+    <td>Play the video</td>
+    <td>The CC button should be visible in the controlbar. <br/>
+    </td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Mouseover the CC button.</td>
+    <td>A menu with (Off) and English, Russian and Spanish should pop up.<br/>
+    </td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Click the Spanish option in the menu</td>
+    <td>The video should display spanish captions at the right time.
+    </td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Change the captions back to (Off) </td>
+    <td>The video should stop displaying captions.
+    </td>
+    <td class="check"></td>
+</tr></table>
+
+
+</body>
+</html>
