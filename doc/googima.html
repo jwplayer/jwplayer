@@ -8,7 +8,7 @@
     h1 { font-size: 32px; }
     h2 { margin-top: 50px; }
     h3 { margin-top: 25px; }
-    img { display: block; margin: 0 10px; }
+    img { display: block; margin: 0 auto; }
     pre { font-size: 12px; background: #E5F3C8; padding:5px 10px; border: 1px solid #D3EAA4; }
     dt { padding-left: 20px; font-weight: bold; }
     dd { color: #333; font-style: italic; }
@@ -20,10 +20,172 @@
 </style>
 </head><body>
 
-<h1>Running Google DFP Ads</h1>
+<h1>Running Google IMA Ads</h1>
 
-<p>This document explains how to setup advertisements managed by Google's DFP Ad Server with JW Player. See <a href="advertising.html">Advertising With JW Player</a> for a general overview of all supported advertising options.</p>
+<p>This document explains how to setup advertisements managed by Google's DFP Ad Server with JW Player. See <a href="advertising.html">Advertising In JW Player</a> for a general overview of all supported advertising options.</p>
 
+<h2>Introduction</h2>
+
+<p>JW Player's built-in support for Interactive Media Ads (IMA) allows publishers to run in-video advertisements served up by Google's <em>Dart For Publishers</em> and <em>AdSense For Video</em> servers. The latest version (IMA3) and playback in Flash rendering mode are supported. HTML5 support is not yet available.</p>
+
+<p><img src="assets/googima-examples.jpg" alt="A GoogIMA preroll with companion example" /></p>
+
+<p>Above is a screenshot of a basic pre-roll video with HTML companion ad. At large, the following types of advertisements are supported:</p>
+
+<ul>
+<li>Linear pre-, mid- and post-roll videos (e.g. <em>TrueView</em>)</li>
+<li>Non-linear  text overlays (and other <em>AdSense</em> formats)</li>
+<li>HTML Companions</li>
+</ul>
+
+
+
+<h2>Basic Setup</h2>
+
+<p>To configure ads using IMA, include an <strong>advertising</strong> block with the <strong>client</strong> option set to <em>googima</em>. Here is a basic setup, setting a DFP tag as pre-roll video:</p>
+
+<pre>
+jwplayer('myElement').setup({
+    primary: 'flash',
+    file: 'assets/myVideo.mp4',
+    advertising: {
+        client: 'googima',
+        schedule: {
+            adbreak1: {
+                offset:'pre',
+                tag: 'http://ad.doubleclick.net/pfadx/ABC;sz=300x300;ord=45028616;dcmt=text/xml'
+            }
+        }
+     }
+});
+</pre>
+
+<p>In addition to the advertising options, don't forget to set <strong>primary</strong> to <em>flash</em>. This because IMA is not yet supported in HTML5. See <a href="embedding.html">Embedding JW Player</a> </p>
+
+
+
+<h2>The Schedule</h2>
+
+<p>The schedule is the place where advertisements are getting targeted to certain positions on the video timeline. Above example loads just a single ad in the <em>pre</em> (pre-roll) position, but multiple ads can be scheduled to various positions in the video. Do this by simply setting multiple ads inside the block. Note they each must have a unique name (without spaced or special chars).</p>
+
+<p>For each ad, the following properties are available:</p>
+
+<dl>
+<dt>tag</dt>
+<dd>The advertising tag, which can be copy-pasted from the DFP or AFV dashboard.</dd>
+<dt>position</dt>
+<dd>The position of the ad in the video. It can be:<ul>
+<li><strong>pre</strong>: The ad is a linear pre-roll and must be shown before the content starts.</li>
+<li><strong>post</strong>: The ad is a linear post-roll and must be shown after the content is completed.</li>
+<li>An offset in mm:ss (e.g. <strong>01:30</strong>): The ad must be shown at this position in the video. It can be a linear mid-roll or a non-linear overlay.</li>
+</ul></dd>
+<dt>targets</dt>
+<dd>An array with the HTML element to target for companion ads. See <strong>Companions</strong>  below for more info.</dd>
+
+<h3>Example</h3>
+
+<p>Here is an example IMA schedule that includes a pre-roll ad, post-roll ad and an ad that appears after 2 minutes:</p>
+
+<pre>
+jwplayer('myElement').setup({
+    primary: 'flash',
+    file: 'assets/myVideo.mp4',
+    advertising: {
+        client: 'googima',
+        schedule: {
+            break1: {
+                offset:'pre',
+                tag: 'http://ad.doubleclick.net/pfadx/ABC;sz=300x300;ord=4502861;dcmt=text/xml'
+            },
+            break2: {
+                offset:'02:00',
+                tag: 'http://ad.doubleclick.net/pfadx/XYZ;sz=300x300;ord=994752;dcmt=text/xml'
+            },
+            break3: {
+                offset:'post',
+                tag: 'http://ad.doubleclick.net/pfadx/HAL;sz=300x300;ord=8923503;dcmt=text/xml'
+            }
+        }
+     }
+});
+</pre>
+
+<p>Note that playlists are not supported with Google IMA. The ad schedule is applied to the first video in a playlist only.</p>
+
+
+
+<h2>Companions</h2>
+
+<p>JW Player supports displaying companions for IMA ads. The following is needed:</p>
+
+<ul>
+<li>An HTML container element (usually a &lt;div&gt; tag) for the companion content to go into.</li>
+<li>A <em>targets</em> block inside your ad schedule, which points to the ID of the HTML container</li>
+<li>A JavaScript function that assists JW Player in placing the companion inside the div.</li>
+</ul>
+
+<p>Here is a full example, containing all three pieces:</p>
+
+<pre>
+&lt;div id="videoplayer"&gt;&lt/div&gt;
+&lt;div id="companion"&gt;&lt/div&gt;
+    
+&lt;script type="text/javascript"&gt;
+
+jwplayer("videoplayer").setup({
+    primary: 'flash',
+    file: 'assets/myVideo.mp4',
+    advertising: {
+        client: 'googima':
+        schedule: {
+            myPreroll: {
+                tag: 'http://ad.doubleclick.net/pfadx/AS;sz=300x300;ord=5036130;dcmt=text/xml',
+                position: 'pre',
+                targets: ['companion']
+            }
+        }
+    }
+});
+
+function syncRoadBlock(id, ad, ty, ct, wi, he) {
+    if (ty == "StaticResource") {
+        document.getElementById(id).innerHTML = "&lt;a target='_blank' href='" + ct + 
+            "'&gt;&lt;img src='" + ad + "' width='" + wi + "' height='" + he + "'/&gt;&lt;/a&gt;";
+    } else if (ty == "HTMLResource") {
+        document.getElementById(id).innerHTML = ad;
+    }
+};
+&lt;/script&gt;
+</pre>
+
+<p>Note the JavaScript function has to be called <em>syncRoadBlock()</em> and has to be available for IMA companion ads to work.</p>
+
+
+<h2>Ad Message</h2>
+
+<p>In addition to the <em>schedule</em> there are two options that can be set. They impact only the linear pre/mid/postrolls:</p>
+
+<dl>
+<dt>admessagedynamic</dt>
+<dd>The ad message is the text displayed to users while the ad runs, typically something like "Your video will resume shortly.". The default is a countdown saying <strong>This ad will close in XX seconds</strong>.</dd>
+<dt>admessagedynamickey</dt>
+<dd>The ad message key is the part of the message that will get replaced by the number of seconds remaining. This can be e.g. <strong>XX</strong>.</dd>
+</dl>
+
+<p>Here's an example setup with a customized ad message:</p>
+
+<pre>
+jwplayer('myElement').setup({
+    primary: 'flash',
+    file: 'assets/myVideo.mp4',
+    advertising: {
+        client: 'googima',
+        admessagedynamic: 'Only XX more seconds until the show starts...',
+        admessagedynamickey: 'XX',
+        schedule { // schedule info }
+    }
+});
+</pre>
 
 
 </body>
