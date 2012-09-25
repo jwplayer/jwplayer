@@ -108,15 +108,20 @@ package com.longtailvideo.jwplayer.model {
 					if (!item.provider) {
 						item.provider = JWParser.getProvider(item);
 					}
-					if (item.provider == "youtube" && !item.image) {
-						item.image = 'http://i.ytimg.com/vi/' + YouTubeMediaProvider.getID(item.file) + '/0.jpg';
+					if (item.provider) {
+						if (item.provider == "youtube" && !item.image) {
+							item.image = 'http://i.ytimg.com/vi/' + YouTubeMediaProvider.getID(item.file) + '/0.jpg';
+						}
+						list.push(item);
 					}
+					list = newList;
+					index = 0;
 				}
-				list = newList;
-				index = 0;
+			}
+			if (list.length > 0) {
 				dispatchEvent(new PlaylistEvent(PlaylistEvent.JWPLAYER_PLAYLIST_LOADED, this));
 			} else {
-				dispatchEvent(new PlayerEvent(PlayerEvent.JWPLAYER_ERROR, "Loaded playlist is empty"));
+				playlistError("No playable sources found");
 			}
 			return;
 		}

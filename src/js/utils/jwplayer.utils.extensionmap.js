@@ -1,6 +1,6 @@
 /**
  * JW Player Media Extension to Mime Type mapping
- *
+ * 
  * @author zach
  * @modified pablo
  * @version 6.0

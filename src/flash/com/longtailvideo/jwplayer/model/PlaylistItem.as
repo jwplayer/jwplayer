@@ -248,9 +248,6 @@ package com.longtailvideo.jwplayer.model {
 				case "smil":
 					return "rtmp";
 					break;
-				case "m3u8": 
-					return "hls";
-					break;
 				case "webm":
 					return "webm";
 					break;
@@ -276,9 +273,6 @@ package com.longtailvideo.jwplayer.model {
 					break;
 				case "rtmp":
 					return "rtmp";
-					break;
-				case "hls": 
-					return "hls";
 					break;
 				case "youtube":
 					return "youtube";

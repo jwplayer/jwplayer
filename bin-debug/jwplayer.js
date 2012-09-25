@@ -16,7 +16,7 @@ jwplayer = function(container) {
 	}
 };
 
-jwplayer.version = '6.0.2555';
+jwplayer.version = '6.0.2567';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -382,7 +382,7 @@ jwplayer.source = document.createElement("source");/**
 	
 })(jwplayer);/**
  * JW Player Media Extension to Mime Type mapping
- *
+ * 
  * @author zach
  * @modified pablo
  * @version 6.0
@@ -2042,6 +2042,7 @@ jwplayer.source = document.createElement("source");/**
 		function _flashCanPlay(file, type) {
 			if (utils.isYouTube(file)) return true;
 			if (utils.isRtmp(file,type)) return true;
+			if (type == "hls") return true;
 
 			var mappedType = utils.extensionmap[type ? type : utils.extension(file)];
 			
