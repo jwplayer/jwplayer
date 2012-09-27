@@ -304,8 +304,8 @@
 			}
 			return _this;
 		};
-		_this.registerPlugin = function(id, arg1, arg2) {
-			jwplayer.plugins.registerPlugin(id, arg1, arg2);
+		_this.registerPlugin = function(id, target, arg1, arg2) {
+			jwplayer.plugins.registerPlugin(id, target, arg1, arg2);
 		};
 		
 		/** Use this function to set the internal low-level player.  This is a javascript object which contains the low-level API calls. **/

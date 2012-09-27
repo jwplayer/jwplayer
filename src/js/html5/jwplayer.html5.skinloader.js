@@ -51,26 +51,39 @@
 			});
 		}
 		
+		function _getElementsByTagName(xml, tagName) {
+			return xml ? xml.getElementsByTagName(tagName) : null;
+		}
+		
 		function _loadSkin(xml) {
-			var components = xml.getElementsByTagName('component');
+			var skinNode = _getElementsByTagName(xml, 'skin')[0],
+				components = _getElementsByTagName(skinNode, 'component'),
+				target = skinNode.getAttribute("target"); 
+
+			if (!target || parseFloat(target) > parseFloat(jwplayer.version)) {
+				errorHandler("Incompatible player version")
+			}
+			
 			if (components.length === 0) {
 				errorHandler("Skin formatting error")
 			}
 			for (var componentIndex = 0; componentIndex < components.length; componentIndex++) {
-				var componentName = _lowerCase(components[componentIndex].getAttribute("name"));
-				var component = {
-					settings: {},
-					elements: {},
-					layout: {}
-				};
+				var componentName = _lowerCase(components[componentIndex].getAttribute("name")),
+					component = {
+						settings: {},
+						elements: {},
+						layout: {}
+					},
+					elements = _getElementsByTagName(_getElementsByTagName(components[componentIndex], 'elements')[0], 'element');
+					
 				_skin[componentName] = component;
-				var elements = components[componentIndex].getElementsByTagName('elements')[0].getElementsByTagName('element');
+
 				for (var elementIndex = 0; elementIndex < elements.length; elementIndex++) {
 					_loadImage(elements[elementIndex], componentName);
 				}
-				var settingsElement = components[componentIndex].getElementsByTagName('settings')[0];
+				var settingsElement = _getElementsByTagName(components[componentIndex], 'settings')[0];
 				if (settingsElement && settingsElement.childNodes.length > 0) {
-					var settings = settingsElement.getElementsByTagName('setting');
+					var settings = _getElementsByTagName(settingsElement, 'setting');
 					for (var settingIndex = 0; settingIndex < settings.length; settingIndex++) {
 						var name = settings[settingIndex].getAttribute("name");
 						var value = settings[settingIndex].getAttribute("value");
@@ -78,9 +91,9 @@
 						component.settings[_lowerCase(name)] = value;
 					}
 				}
-				var layout = components[componentIndex].getElementsByTagName('layout')[0];
+				var layout = _getElementsByTagName(components[componentIndex], 'layout')[0];
 				if (layout && layout.childNodes.length > 0) {
-					var groups = layout.getElementsByTagName('group');
+					var groups = _getElementsByTagName(layout, 'group');
 					for (var groupIndex = 0; groupIndex < groups.length; groupIndex++) {
 						var group = groups[groupIndex],
 							_layout = {
@@ -91,7 +104,7 @@
 							var attribute = group.attributes[attributeIndex];
 							_layout[attribute.name] = attribute.value;
 						}
-						var groupElements = group.getElementsByTagName('*');
+						var groupElements = _getElementsByTagName(group, '*');
 						for (var groupElementIndex = 0; groupElementIndex < groupElements.length; groupElementIndex++) {
 							var element = groupElements[groupElementIndex];
 							_layout.elements.push({

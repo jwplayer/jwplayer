@@ -11,6 +11,7 @@
 			_loading = false,
 			_iscomplete = false,
 			_errorState = false,
+			_errorMessage,
 			_eventDispatcher = new events.eventdispatcher();
 		
 		
@@ -31,7 +32,7 @@
 		 */
 		function _complete() {
 			if (_errorState) {
-				_eventDispatcher.sendEvent(events.ERROR);
+				_eventDispatcher.sendEvent(events.ERROR, {message: _errorMessage});
 			} else if (!_iscomplete) {
 				_iscomplete = true;
 				_status = utils.loaderstatus.COMPLETE;
@@ -41,12 +42,18 @@
 		
 		// This is not entirely efficient, but it's simple
 		function _checkComplete() {
-			if (!_iscomplete) {
+			if (!_iscomplete && !_errorState) {
 				var incomplete = 0, plugins = model.getPlugins();
-				for (plugin in plugins) {
-					var status = plugins[plugin].getStatus(); 
+				for (var plugin in plugins) {
+					var pluginObj = plugins[plugin],
+						target = pluginObj.getTarget(),
+						status = plugins[plugin].getStatus(); 
 					if (status == utils.loaderstatus.LOADING || status == utils.loaderstatus.NEW) {
 						incomplete++;
+					} else if (!target || parseFloat(target) > parseFloat(jwplayer.version)) {
+						_errorState = true;
+						_errorMessage = "Incompatible player version";
+						_complete();
 					}
 				}
 				
@@ -137,9 +144,10 @@
 			_checkComplete();
 		}
 		
-		var _pluginError = this.pluginFailed = function() {
+		var _pluginError = this.pluginFailed = function(evt) {
 			if (!_errorState) {
 				_errorState = true;
+				_errorMessage = "File not found";
 				_complete();
 			}
 		}

@@ -16,7 +16,7 @@ jwplayer = function(container) {
 	}
 };
 
-jwplayer.version = '6.0.2567';
+jwplayer.version = '6.0.2575';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -903,12 +903,12 @@ jwplayer.source = document.createElement("source");/**
 		return _pluginLoaders[id];
 	}
 	
-	jwplayer.plugins.registerPlugin = function(id, arg1, arg2) {
+	jwplayer.plugins.registerPlugin = function(id, target, arg1, arg2) {
 		var pluginId = jwplayer.utils.getPluginName(id);
 		if (!_plugins[pluginId]) {
 			_plugins[pluginId] = new jwplayer.plugins.plugin(id);
 		}
-		_plugins[pluginId].registerPlugin(id, arg1, arg2);
+		_plugins[pluginId].registerPlugin(id, target, arg1, arg2);
 //		} else {
 //			jwplayer.utils.log("A plugin ("+id+") was registered with the player that was not loaded. Please check your configuration.");
 //			for (var pluginloader in _pluginLoaders){
@@ -954,6 +954,7 @@ jwplayer.source = document.createElement("source");/**
 		var _status = utils.loaderstatus.NEW,
 			_flashPath,
 			_js,
+			_target,
 			_completeTimeout;
 		
 		var _eventDispatcher = new events.eventdispatcher();
@@ -1008,11 +1009,12 @@ jwplayer.source = document.createElement("source");/**
 			}
 		}
 		
-		this.registerPlugin = function(id, arg1, arg2) {
+		this.registerPlugin = function(id, target, arg1, arg2) {
 			if (_completeTimeout){
 				clearTimeout(_completeTimeout);
 				_completeTimeout = undefined;
 			}
+			_target = target;
 			if (arg1 && arg2) {
 				_flashPath = arg2;
 				_js = arg1;
@@ -1058,6 +1060,10 @@ jwplayer.source = document.createElement("source");/**
 		this.getJS = function() {
 			return _js;
 		}
+		
+		this.getTarget = function() {
+			return _target;
+		}
 
 		this.getPluginmode = function() {
 			if (typeof _flashPath != UNDEFINED
@@ -1093,6 +1099,7 @@ jwplayer.source = document.createElement("source");/**
 			_loading = false,
 			_iscomplete = false,
 			_errorState = false,
+			_errorMessage,
 			_eventDispatcher = new events.eventdispatcher();
 		
 		
@@ -1113,7 +1120,7 @@ jwplayer.source = document.createElement("source");/**
 		 */
 		function _complete() {
 			if (_errorState) {
-				_eventDispatcher.sendEvent(events.ERROR);
+				_eventDispatcher.sendEvent(events.ERROR, {message: _errorMessage});
 			} else if (!_iscomplete) {
 				_iscomplete = true;
 				_status = utils.loaderstatus.COMPLETE;
@@ -1123,12 +1130,18 @@ jwplayer.source = document.createElement("source");/**
 		
 		// This is not entirely efficient, but it's simple
 		function _checkComplete() {
-			if (!_iscomplete) {
+			if (!_iscomplete && !_errorState) {
 				var incomplete = 0, plugins = model.getPlugins();
-				for (plugin in plugins) {
-					var status = plugins[plugin].getStatus(); 
+				for (var plugin in plugins) {
+					var pluginObj = plugins[plugin],
+						target = pluginObj.getTarget(),
+						status = plugins[plugin].getStatus(); 
 					if (status == utils.loaderstatus.LOADING || status == utils.loaderstatus.NEW) {
 						incomplete++;
+					} else if (!target || parseFloat(target) > parseFloat(jwplayer.version)) {
+						_errorState = true;
+						_errorMessage = "Incompatible player version";
+						_complete();
 					}
 				}
 				
@@ -1219,9 +1232,10 @@ jwplayer.source = document.createElement("source");/**
 			_checkComplete();
 		}
 		
-		var _pluginError = this.pluginFailed = function() {
+		var _pluginError = this.pluginFailed = function(evt) {
 			if (!_errorState) {
 				_errorState = true;
+				_errorMessage = "File not found";
 				_complete();
 			}
 		}
@@ -1406,7 +1420,7 @@ jwplayer.source = document.createElement("source");/**
 		}
 		
 		function _pluginError(evt) {
-			_errorScreen(_container, _errorText + "Could not load plugins");
+			_errorScreen(_container, "Could not load plugins: " + evt.message);
 		}
 		
 		function _sourceError() {
@@ -2542,8 +2556,8 @@ jwplayer.source = document.createElement("source");/**
 			}
 			return _this;
 		};
-		_this.registerPlugin = function(id, arg1, arg2) {
-			jwplayer.plugins.registerPlugin(id, arg1, arg2);
+		_this.registerPlugin = function(id, target, arg1, arg2) {
+			jwplayer.plugins.registerPlugin(id, target, arg1, arg2);
 		};
 		
 		/** Use this function to set the internal low-level player.  This is a javascript object which contains the low-level API calls. **/

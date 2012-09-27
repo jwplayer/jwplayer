@@ -27,7 +27,8 @@
 				abouttext: 'About JW Player ' + html5.version + '...'
 			}, config),
 			_mouseOverContext = false,
-			_menu;
+			_menu,
+			_about;
 			
 		function _init() {
 			_container = DOCUMENT.getElementById(_api.id);

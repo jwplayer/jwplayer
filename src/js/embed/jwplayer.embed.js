@@ -69,7 +69,7 @@
 		}
 		
 		function _pluginError(evt) {
-			_errorScreen(_container, _errorText + "Could not load plugins");
+			_errorScreen(_container, "Could not load plugins: " + evt.message);
 		}
 		
 		function _sourceError() {

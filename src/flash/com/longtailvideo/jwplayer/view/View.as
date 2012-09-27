@@ -487,6 +487,9 @@ package com.longtailvideo.jwplayer.view {
 
 
 		public function addPlugin(id:String, plugin:IPlugin):void {
+			if (!(plugin is IPlugin6)) {
+				throw new Error("Incompatible plugin version");
+			}
 			try {
 				_allPlugins.push(plugin);
 				var plugDO:DisplayObject = plugin as DisplayObject;
@@ -523,8 +526,8 @@ package com.longtailvideo.jwplayer.view {
 		}
 
 
-		public function getPlugin(id:String):IPlugin {
-			return _plugins[id] as IPlugin;
+		public function getPlugin(id:String):IPlugin6 {
+			return _plugins[id] as IPlugin6;
 		}
 
 

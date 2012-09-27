@@ -1,4 +1,5 @@
 package com.longtailvideo.jwplayer.view.skins {
+	import com.longtailvideo.jwplayer.player.PlayerVersion;
 	import com.longtailvideo.jwplayer.utils.AssetLoader;
 	import com.longtailvideo.jwplayer.utils.Logger;
 	import com.longtailvideo.jwplayer.utils.Strings;
@@ -75,6 +76,13 @@ package com.longtailvideo.jwplayer.view.skins {
 			
 			for each (var attrib:XML in _skinXML.attributes()) {
 				_props[attrib.localName()] = attrib.toString();
+			}
+			
+			var playerVersion:Number = Number(PlayerVersion.version.replace(/^(\d\.\d+).*/, "$1"));
+
+			if (!_props.target || (Number(_props.target) > playerVersion)) {
+				sendError("Error loading skin: Incompatible player version");
+				return;
 			}
 			
 			parseConfig(_skinXML.settings);

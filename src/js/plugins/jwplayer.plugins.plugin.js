@@ -16,6 +16,7 @@
 		var _status = utils.loaderstatus.NEW,
 			_flashPath,
 			_js,
+			_target,
 			_completeTimeout;
 		
 		var _eventDispatcher = new events.eventdispatcher();
@@ -70,11 +71,12 @@
 			}
 		}
 		
-		this.registerPlugin = function(id, arg1, arg2) {
+		this.registerPlugin = function(id, target, arg1, arg2) {
 			if (_completeTimeout){
 				clearTimeout(_completeTimeout);
 				_completeTimeout = undefined;
 			}
+			_target = target;
 			if (arg1 && arg2) {
 				_flashPath = arg2;
 				_js = arg1;
@@ -119,6 +121,10 @@
 		
 		this.getJS = function() {
 			return _js;
+		}
+		
+		this.getTarget = function() {
+			return _target;
 		}
 
 		this.getPluginmode = function() {

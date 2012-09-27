@@ -6,9 +6,9 @@ package com.longtailvideo.jwplayer.view.skins {
 		
 		public var layout:Object = {}
 		
-		public var version:String = "";
 		public var name:String = "";
 		public var author:String = "";
+		public var target:String = ""; 
 			
 		public function SkinProperties() {
 		}

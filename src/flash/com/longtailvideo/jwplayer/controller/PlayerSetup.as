@@ -206,7 +206,12 @@ package com.longtailvideo.jwplayer.controller {
 				for (var pluginId:String in loader.plugins) {
 					var plugin:DisplayObject = loader.plugins[pluginId] as DisplayObject;
 					if (plugin is IPlugin) {
-						_view.addPlugin(pluginId, plugin as IPlugin);
+						try {
+							_view.addPlugin(pluginId, plugin as IPlugin);
+						} catch (e:Error) {
+							tasker.failure(new ErrorEvent(ErrorEvent.ERROR, false, false, "Error loading plugin: " + e.message)); 
+						}
+							
 					}
 				}
 			}
@@ -267,7 +272,12 @@ package com.longtailvideo.jwplayer.controller {
 		protected function initPlugins():void {
 			for each (var pluginId:String in _view.loadedPlugins()) {
 				try {
-					var plugin:IPlugin = _view.getPlugin(pluginId);
+					var plugin:IPlugin6 = _view.getPlugin(pluginId);
+					var version:String = PlayerVersion.version.replace(/^(\d\.\d+).*/, "$1");
+					if (!plugin['target'] || (Number(plugin['target']) > Number(version))) {
+						tasker.failure(new ErrorEvent(ErrorEvent.ERROR, false, false, "Error loading plugin: Incompatible player version"));
+						return;
+					}
 					plugin.initPlugin(_player, _model.config.pluginConfig(pluginId));
 				} catch (e:Error) {
 					Logger.log("Error initializing plugin: " + e.message);
