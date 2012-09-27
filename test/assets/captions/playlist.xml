@@ -3,11 +3,11 @@
     <title>Example RSS playlist with captions</title>
 
     <item>
-      <title>Coronation Street</title>
+      <title>Big Buck Bunny Trailer</title>
       <description>Single, external SRT captions.</description>
-      <jwplayer:file>http://content.bitsontherun.com/videos/7OCSON1y.mp4</jwplayer:file>
-      <jwplayer:image>http://content.bitsontherun.com/thumbs/7OCSON1y-320.jpg</jwplayer:image>
-      <jwplayer:captions.file>assets/corrie.srt</jwplayer:captions.file>
+      <jwplayer:file>http://content.bitsontherun.com/videos/bkaovAYt-injeKYZS.mp4</jwplayer:file>
+      <jwplayer:image>http://content.bitsontherun.com/thumbs/bkaovAYt-320.jpg</jwplayer:image>
+      <jwplayer:captions.file>assets/bunny-en.srt</jwplayer:captions.file>
     </item>
 
     <item>

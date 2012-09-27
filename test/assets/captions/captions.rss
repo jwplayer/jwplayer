@@ -6,9 +6,9 @@
       <description>Sintel is a fantasy computer generated short movie. It's the third 
          release from the Blender Open Movie Project.</description>
       <media:content url="http://content.bitsontherun.com/videos/3XnJSIm4-injeKYZS.mp4" />
-      <media:subtitle url="sintel-en.srt" lang="en" />
-      <media:subtitle url="sintel-ru.srt" lang="ru" />
-      <media:subtitle url="sintel-sp.srt" lang="es" />
+      <media:subtitle url="assets/captions/sintel-en.srt" lang="en" />
+      <media:subtitle url="assets/captions/sintel-ru.srt" lang="ru" />
+      <media:subtitle url="assets/captions/sintel-sp.srt" lang="es" />
       <media:thumbnail url="http://content.bitsontherun.com/thumbs/3XnJSIm4-720.jpg" />
     </item>
   </channel>

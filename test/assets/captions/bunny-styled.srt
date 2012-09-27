@@ -1,0 +1,36 @@
+1
+00:00:00,000 --> 00:00:04,000
+The <b>Peach Open Movie Project</b> presents
+
+2
+00:00:06,500 --> 00:00:09,000
+<font face="Times, serif" size="20" color="#FFCC00">One big rabbit</font>
+
+3
+00:00:11,000 --> 00:00:13,000
+<u>Three</u> <i>rodents</i>
+
+4
+00:00:16,500 --> 00:00:19,000
+And one <i><b><u>giant</u></b></i> payback
+
+5
+00:00:23,000 --> 00:00:25,000
+<font face="Courier, monospace" size="25" color="#FF0000"><b><u>Get ready</u></b></font>
+
+6
+00:00:27,000 --> 00:00:30,000
+<font color="#00FF00">Big <u>Buck</u> Bunny</font>
+
+7
+00:00:30,000 --> 00:00:31,000
+<u><a href="http://www.longtailvideo.com">Coming soon</a></u>
+
+8
+00:00:31,000 --> 00:00:33,000
+www.bigbuckbunny.org
+ 
+ 
+<font size="10">[extra spaces]</font>
+Licénséd as Creativë Commonß 3.0 attribution
+<font size="10">[some UTF chars]</font>
