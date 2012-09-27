@@ -293,10 +293,12 @@
 		/** Pause playback. **/
 		override public function pause():void {
 			// Pause VOD or close live stream
-			if(_item.duration > 0) {
-				_stream.pause();
-			} else { 
-				_stream.close();
+			if (_stream) {
+				if(_item.duration > 0) {
+					_stream.pause();
+				} else { 
+					_stream.close();
+				}
 			}
 			clearInterval(_interval);
 			setState(PlayerState.PAUSED);

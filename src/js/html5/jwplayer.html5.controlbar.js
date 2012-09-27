@@ -5,7 +5,8 @@
  * @author pablo
  * @version 6.0
  * 
- * TODO: Since the volume slider was moved from the controbar skinning component to the tooltip component, we should clean up how it gets created 
+ * TODO: Since the volume slider was moved from the controbar skinning component
+ * to the tooltip component, we should clean up how it gets created
  */
 (function(jwplayer) {
 	var html5 = jwplayer.html5,
@@ -15,13 +16,13 @@
 		_css = utils.css,
 		_setTransition = utils.transitionStyle,
 
-		/** Controlbar element types **/
+		/** Controlbar element types * */
 		CB_BUTTON = "button",
 		CB_TEXT = "text",
 		CB_DIVIDER = "divider",
 		CB_SLIDER = "slider",
 		
-		/** Some CSS constants we should use for minimization **/
+		/** Some CSS constants we should use for minimization * */
 		JW_CSS_RELATIVE = "relative",
 		JW_CSS_ABSOLUTE = "absolute",
 		JW_CSS_NONE = "none",
@@ -34,6 +35,9 @@
 		JW_CSS_100PCT = "100%",
 		JW_CSS_SMOOTH_EASE = "opacity .15s, background .15s, visibility .15s",
 		
+		HIDDEN = { display: JW_CSS_NONE },
+		NOT_HIDDEN = { display: UNDEFINED },
+		
 		CB_CLASS = '.jwcontrolbar',
 		
 		FALSE = false,
@@ -44,7 +48,7 @@
 		WINDOW = window,
 		DOCUMENT = document;
 	
-	/** HTML5 Controlbar class **/
+	/** HTML5 Controlbar class * */
 	html5.controlbar = function(api, config) {
 		var _api,
 			_skin,
@@ -274,22 +278,13 @@
 		
 		function _fullscreenHandler(evt) {
 			_toggleButton("fullscreen", evt.fullscreen);
+			_updateNextPrev();
 		}
 		
 		function _playlistHandler(evt) {
-			var hidden = { display: JW_CSS_NONE },
-				not_hidden = { display: UNDEFINED };
-			if (_api.jwGetPlaylist().length < 2 || _sidebarShowing()) {
-				_css(_internalSelector(".jwnext"), hidden);
-				_css(_internalSelector(".jwprev"), hidden);
-				_css(_internalSelector(".nextdiv"), hidden);
-			} else {
-				_css(_internalSelector(".jwnext"), not_hidden);
-				_css(_internalSelector(".jwprev"), not_hidden);
-				_css(_internalSelector(".nextdiv"), not_hidden);
-			}
-			_css(_internalSelector(".jwhd"), hidden);
-			_css(_internalSelector(".jwcc"), hidden);
+			_css(_internalSelector(".jwhd"), HIDDEN);
+			_css(_internalSelector(".jwcc"), HIDDEN);
+			_updateNextPrev();
 			_redraw();
 		}
 		
@@ -338,11 +333,11 @@
 			}
 		}
 
-		// Bit of a hacky way to determine if the playlist is available 
+		// Bit of a hacky way to determine if the playlist is available
 		function _sidebarShowing() {
-			return (!!DOCUMENT.querySelector("#"+_api.id+" .jwplaylist"));
+			return (!!DOCUMENT.querySelector("#"+_api.id+" .jwplaylist") && !_api.jwGetFullscreen());
 		}
-
+		
 		/**
 		 * Styles specific to this controlbar/skin
 		 */
@@ -571,7 +566,7 @@
 			}
 			if (_elements[name]) {
 				_elements[name].className = 'jw' + name + (state ? " jwtoggle jwtoggling" : " jwtoggling");
-				// Use the jwtoggling class to temporarily disable the animation;
+				// Use the jwtoggling class to temporarily disable the animation
 				setTimeout(function() {
 					_elements[name].className = _elements[name].className.replace(" jwtoggling", ""); 
 				}, 100);
@@ -992,6 +987,7 @@
 					'margin-left': max ? _controlbar.clientWidth / -2 : UNDEFINED,
 					width: max ? JW_CSS_100PCT : UNDEFINED
 				});
+
 			
 				setTimeout(function() {
 					var newBounds = utils.bounds(_controlbar);
@@ -1004,6 +1000,18 @@
 					_positionOverlays();
 				}, 0);
 			}, 0);
+		}
+		
+		function _updateNextPrev() {
+			if (_api.jwGetPlaylist().length > 1 && !_sidebarShowing()) {
+				_css(_internalSelector(".jwnext"), NOT_HIDDEN);
+				_css(_internalSelector(".jwprev"), NOT_HIDDEN);
+				_css(_internalSelector(".nextdiv"), NOT_HIDDEN);
+			} else {
+				_css(_internalSelector(".jwnext"), HIDDEN);
+				_css(_internalSelector(".jwprev"), HIDDEN);
+				_css(_internalSelector(".nextdiv"), HIDDEN);
+			}
 		}
 		
 		function _positionOverlays() {
@@ -1109,13 +1117,11 @@
 		_this.show = function() {
 			_this.visible = true;
 			_controlbar.style.opacity = 1;
-			//_css(_internalSelector(), { opacity: 1, visibility: "visible" });
 		}
 		
 		_this.hide = function() {
 			_this.visible = false;
 			_controlbar.style.opacity = 0;
-			//_css(_internalSelector(), { opacity: 0, visibility: JW_CSS_HIDDEN });
 		}
 		
 		// Call constructor
@@ -1123,14 +1129,13 @@
 
 	}
 
-	/*************************************************************
-	 * Player stylesheets - done once on script initialization;  *
-	 * These CSS rules are used for all JW Player instances      *
-	 *************************************************************/
+	/***************************************************************************
+	 * Player stylesheets - done once on script initialization; * These CSS
+	 * rules are used for all JW Player instances *
+	 **************************************************************************/
 
 	_css(CB_CLASS, {
 		position: JW_CSS_ABSOLUTE,
-		//visibility: JW_CSS_HIDDEN,
 		opacity: 0
 	});
 	

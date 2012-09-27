@@ -241,7 +241,7 @@
 			
 			var textWrapper = _createElement("div", "jwtextwrapper");
         	var title = _createElement("span", "jwtitle");
-        	title.innerHTML = item ? item.title : "";
+        	title.innerHTML = (item && item.title) ? item.title : "";
         	_appendChild(textWrapper, title);
 
 	        if (item.description) {

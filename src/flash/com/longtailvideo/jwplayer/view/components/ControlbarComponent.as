@@ -251,7 +251,10 @@ package com.longtailvideo.jwplayer.view.components {
 			} else {
 				hideButton('pause');
 			}
-			if (!getConfigParam('forcenextprev') && (player.playlist.length <= 1 || player.config.playlistposition.toLowerCase() != "none")) {
+//			var forced:Boolean = Boolean(getConfigParam('forcenextprev'));
+			var multiList:Boolean = player.playlist.length >= 1;
+			var playlistShowing:Boolean = (player.config.fullscreen == false && player.config.playlistposition.toLowerCase() != "none");  
+			if (!(multiList && !playlistShowing)) {
 				newLayout = newLayout.replace(/\|?(prev|next)/g, "");
 				hideButton('prev');
 				hideButton('next');

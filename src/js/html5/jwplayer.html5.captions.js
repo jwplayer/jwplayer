@@ -126,7 +126,6 @@
                 var height = _display.offsetHeight,
                     width = _display.offsetWidth;
                 if(height != 0 && width != 0) {
-                    console.log(width + " x " + height);
                     _renderer.resize(width, Math.round(height*0.94));
                 }
             }
