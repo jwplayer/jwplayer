@@ -72,7 +72,7 @@
 				length: 0,
 				plugins: {}
 			},
-			premiumPlugins = ["sharing", "related", "ga"],
+
 			plugins = model.getPlugins();
 			
 			for (var plugin in plugins) {
@@ -88,13 +88,8 @@
 					flashPlugins.plugins[flashPath].pluginmode = pluginObj.getPluginmode();
 					flashPlugins.length++;
 				}
-				if (premiumPlugins.indexOf(plugin) >= 0 && config[plugin]) {
-					if (!config.plugins) {
-						config.plugins = {};
-					}
-					config.plugins[plugin] = config[plugin];
-				}
-				if (jsPlugin && config.plugins && config.plugins[plugin]) {
+
+				if (jsPlugin && config.plugins && config.plugins[pluginURL]) {
 					var div = document.createElement("div");
 					div.id = api.id + "_" + pluginName;
 					div.style.position = "absolute";
