@@ -114,7 +114,6 @@ package com.longtailvideo.jwplayer.model {
 						}
 						list.push(item);
 					}
-					list = newList;
 					index = 0;
 				}
 			}
