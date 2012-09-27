@@ -71,6 +71,7 @@ package com.longtailvideo.jwplayer.model {
 		 */
 		public function load(newPlaylist:Object):void {
 			var newList:Array = [];
+			list = [];
 			if (newPlaylist is Array) {
 				for (var i:Number = 0; i < (newPlaylist as Array).length; i++) {
 					if (!(newPlaylist[i] is PlaylistItem)) {

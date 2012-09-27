@@ -87,7 +87,7 @@
 					}
 					config.plugins[plugin] = config[plugin];
 				}
-				if (jsPlugin && config.plugins[plugin]) {
+				if (jsPlugin && config.plugins && config.plugins[plugin]) {
 					var div = document.createElement("div");
 					div.id = api.id + "_" + pluginName;
 					div.style.position = "absolute";
