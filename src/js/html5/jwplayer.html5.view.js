@@ -68,6 +68,11 @@
 			_playerElement = _createElement("div", PLAYER_CLASS);
 			_playerElement.id = _api.id;
 			
+			_css(_internalSelector(), {
+				width: _model.width,
+				height: _model.height
+			});
+			
 			var replace = document.getElementById(_api.id);
 			replace.parentNode.replaceChild(_playerElement, replace);
 		}
@@ -241,6 +246,7 @@
 				}
 			} else {
 		    	_fakeFullscreen(FALSE);
+				_model.setFullscreen(FALSE);
 				if (_model.fullscreen) {
 				    if (DOCUMENT.cancelFullScreen) {  
 				    	DOCUMENT.cancelFullScreen();  
@@ -249,12 +255,15 @@
 				    } else if (DOCUMENT.webkitCancelFullScreen) {  
 				    	DOCUMENT.webkitCancelFullScreen();  
 				    }
-					_model.setFullscreen(FALSE);
 				}
 			}
 			if (_controlbar) _controlbar.redraw();
 			if (_display) _display.redraw();
 			_resizeMedia();
+			if (_model.stretching == utils.stretching.EXACTFIT) {
+				// Browsers seem to need an extra second to figure out how large they are in fullscreen...
+				setTimeout(_resizeMedia, 1000);
+			}
 			_eventDispatcher.sendEvent(events.JWPLAYER_RESIZE);
 		}
 
@@ -395,11 +404,9 @@
 		 * If the browser enters or exits fullscreen mode (without the view's knowing about it) update the model.
 		 **/
 		function _fullscreenChangeHandler(evt) {
-			if (evt.target.id == _api.id) {
-				var fsNow = _isNativeFullscreen();
-				if (_model.fullscreen != fsNow) {
-					_fullscreen(fsNow);
-				}
+			var fsNow = _isNativeFullscreen();
+			if (_model.fullscreen && !fsNow) {
+				_fullscreen(fsNow);
 			}
 		}
 		

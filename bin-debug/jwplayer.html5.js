@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2585';
+	jwplayer.html5.version = '6.0.2594';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -1108,6 +1108,7 @@
             _fullscreen = event.fullscreen;
             if(event.fullscreen) {
                 _fullscreenResize();
+                // to fix browser fullscreen issue
                 setTimeout(_fullscreenResize, 500);
             }
             else {
@@ -4926,14 +4927,14 @@
 			_instreamPlayer;
 
 		function _init() {
-			jwplayer.utils.css.block();
-			
 			_model = new html5.model(config); 
 			_api.id = _model.id;
 			_view = new html5.view(_api, _model); 
 			_controller = new html5.controller(_model, _view);
 			
 			_api._model = _model;
+
+			jwplayer.utils.css.block();
 			
 			_initializeAPI();
 			
@@ -6879,6 +6880,11 @@
 			_playerElement = _createElement("div", PLAYER_CLASS);
 			_playerElement.id = _api.id;
 			
+			_css(_internalSelector(), {
+				width: _model.width,
+				height: _model.height
+			});
+			
 			var replace = document.getElementById(_api.id);
 			replace.parentNode.replaceChild(_playerElement, replace);
 		}
@@ -7052,6 +7058,7 @@
 				}
 			} else {
 		    	_fakeFullscreen(FALSE);
+				_model.setFullscreen(FALSE);
 				if (_model.fullscreen) {
 				    if (DOCUMENT.cancelFullScreen) {  
 				    	DOCUMENT.cancelFullScreen();  
@@ -7060,12 +7067,15 @@
 				    } else if (DOCUMENT.webkitCancelFullScreen) {  
 				    	DOCUMENT.webkitCancelFullScreen();  
 				    }
-					_model.setFullscreen(FALSE);
 				}
 			}
 			if (_controlbar) _controlbar.redraw();
 			if (_display) _display.redraw();
 			_resizeMedia();
+			if (_model.stretching == utils.stretching.EXACTFIT) {
+				// Browsers seem to need an extra second to figure out how large they are in fullscreen...
+				setTimeout(_resizeMedia, 1000);
+			}
 			_eventDispatcher.sendEvent(events.JWPLAYER_RESIZE);
 		}
 
@@ -7206,11 +7216,9 @@
 		 * If the browser enters or exits fullscreen mode (without the view's knowing about it) update the model.
 		 **/
 		function _fullscreenChangeHandler(evt) {
-			if (evt.target.id == _api.id) {
-				var fsNow = _isNativeFullscreen();
-				if (_model.fullscreen != fsNow) {
-					_fullscreen(fsNow);
-				}
+			var fsNow = _isNativeFullscreen();
+			if (_model.fullscreen && !fsNow) {
+				_fullscreen(fsNow);
 			}
 		}
 		
