@@ -354,9 +354,7 @@
 			_css(_internalSelector(".jwtext"), {
 				font: _settings.fontsize + "px/" + _getSkinElement("background").height + "px " + _settings.font,
 				color: _settings.fontcolor,
-				'font-weight': _settings.fontweight,
-				'text-align': 'center',
-				padding: '0 5px'
+				'font-weight': _settings.fontweight
 			});
 
 			_css(_internalSelector(".jwoverlay"), {
@@ -684,6 +682,7 @@
 			if (name == "time") {
 				_timeOverlay = new html5.overlay(_id+"_timetooltip", _skin);
 				_timeOverlayText = _createElement("div");
+				_timeOverlayText.className = "jwoverlaytext";
 				_timeOverlay.setContents(_timeOverlayText);
 				_timeRail = rail;
 				_setTimeOverlay(0);
@@ -706,7 +705,8 @@
 			rail.className = "jwrail jwsmooth";
 
 			for (var i=0; i<railElements.length; i++) {
-				var prefix = name + (name=="time"?"Slider":"") + railElements[i],
+				var sliderPrefix = (name=="time"?"Slider":""),
+					prefix = name + sliderPrefix + railElements[i],
 					element = _buildImage(prefix, NULL, !vertical, (name=="volume")),
 					capLeft = _buildImage(prefix + "Cap" + left, NULL, FALSE, FALSE, vertical),
 					capRight = _buildImage(prefix + "Cap" + right, NULL, FALSE, FALSE, vertical),
@@ -742,7 +742,7 @@
 				}
 			}
 			
-			var thumb = _buildImage(name + "SliderThumb", NULL, FALSE, FALSE, vertical);
+			var thumb = _buildImage(name + sliderPrefix + "Thumb", NULL, FALSE, FALSE, vertical);
 			if (thumb) {
 				_css(_internalSelector('.'+thumb.className), {
 					opacity: name == "time" ? 0 : 1,
@@ -926,6 +926,7 @@
 			if (_elements.fullscreen) {
 				_fullscreenOverlay = new html5.overlay(_id+"_fullscreenoverlay", _skin);
 				var text = _createElement("div");
+				text.className = "jwoverlaytext";
 				text.innerHTML = "Fullscreen";
 				_fullscreenOverlay.setContents(text);
 				_addOverlay(_fullscreenOverlay, _elements.fullscreen, _showFullscreen);
@@ -1214,6 +1215,10 @@
 		'text-align': 'center'
 	});
     
+	_css(CB_CLASS + ' .jwoverlaytext', {
+		padding: 3
+	});
+
     _css(CB_CLASS + ' .jwvertical *', {
     	display: JW_CSS_BLOCK,
     });

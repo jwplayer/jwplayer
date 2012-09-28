@@ -180,8 +180,13 @@
 			if (label) {
 				var tooltip = new html5.overlay(icon.id+"_tooltip", _skin, true),
 					tipText = _createElement("div");
+				tipText.id = tooltip.id + "_label";
 				tipText.innerHTML = label;
+				_css('#'+tipText.id, {
+					padding: 3
+				});
 				tooltip.setContents(tipText);
+				
 				
 				var timeout;
 				newButton.addEventListener('mouseover', function() { 
