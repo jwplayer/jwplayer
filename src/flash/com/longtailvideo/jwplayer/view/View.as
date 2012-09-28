@@ -599,7 +599,7 @@ package com.longtailvideo.jwplayer.view {
 		}
 
 		protected function showMedia(evt:TimerEvent = null):void {
-			if (_model.media.display && !audioMode) {
+			if (_model.media.display && !audioMode && _player.state != PlayerState.IDLE) {
 				_mediaFade.fade(1);
 				_imageFade.cancelAnimation();
 				_imageLayer.alpha = 0;
