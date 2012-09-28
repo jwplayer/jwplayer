@@ -1137,13 +1137,15 @@
 
             if (captions) {
                 for (i = 0; i < captions.length; i++) {
-                    if (captions[i].label) {
-                        _tracks.push(captions[i]);
-                    }
-                    else if (captions[i].file) {
-                        file = captions[i].file;
-                        label = file.substring(file.lastIndexOf('/')+1,file.indexOf('.'));
-                        _tracks.push({file: file, label: label});
+                    file = captions[i].file;
+                    if(_isValidCaption(file)) {
+                        if (captions[i].label) {
+                            _tracks.push(captions[i]);
+                        }
+                        else if (file) {
+                            label = file.substring(file.lastIndexOf('/')+1,file.indexOf('.'));
+                            _tracks.push({file: file, label: label});
+                        }
                     }
                 }
             }   
@@ -1152,6 +1154,14 @@
             _redraw();
             _sendEvent(events.JWPLAYER_CAPTIONS_LIST, _getTracks(), _selectedTrack);
         };
+
+        function _isValidCaption(file) {
+            if (!file || file.length < 4) {
+                return false;
+            }
+            var ext = file.substr(file.length-4);
+            return (ext == ".srt" || ext == ".vtt" || ext ==".txt");
+        }
 
 
         /** Load captions. **/
@@ -1332,6 +1342,9 @@
 
         /** Render the active caption. **/
         function _render(html) {
+            _style({
+                left: '0px',
+            });
             _container.innerHTML = html;
             if(html == '') { 
                 _visible = 'hidden';
@@ -1358,6 +1371,7 @@
                 top;
 
             _style({
+                maxWidth: _width + 'px',
                 fontSize: size + 'px',
                 lineHeight: line + 'px',
                 visibility: _visible
@@ -1407,7 +1421,7 @@
                 position: 'absolute',
                 textAlign: 'center',
                 textDecoration: _options.textDecoration,
-                whiteSpace: 'nowrap',
+                wordWrap: 'break-word',
                 width: 'auto'
             });
             if(_options.back) {

@@ -39,6 +39,9 @@
 
         /** Render the active caption. **/
         function _render(html) {
+            _style({
+                left: '0px',
+            });
             _container.innerHTML = html;
             if(html == '') { 
                 _visible = 'hidden';
@@ -65,6 +68,7 @@
                 top;
 
             _style({
+                maxWidth: _width + 'px',
                 fontSize: size + 'px',
                 lineHeight: line + 'px',
                 visibility: _visible
@@ -114,7 +118,7 @@
                 position: 'absolute',
                 textAlign: 'center',
                 textDecoration: _options.textDecoration,
-                whiteSpace: 'nowrap',
+                wordWrap: 'break-word',
                 width: 'auto'
             });
             if(_options.back) {

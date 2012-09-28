@@ -149,13 +149,15 @@
 
             if (captions) {
                 for (i = 0; i < captions.length; i++) {
-                    if (captions[i].label) {
-                        _tracks.push(captions[i]);
-                    }
-                    else if (captions[i].file) {
-                        file = captions[i].file;
-                        label = file.substring(file.lastIndexOf('/')+1,file.indexOf('.'));
-                        _tracks.push({file: file, label: label});
+                    file = captions[i].file;
+                    if(_isValidCaption(file)) {
+                        if (captions[i].label) {
+                            _tracks.push(captions[i]);
+                        }
+                        else if (file) {
+                            label = file.substring(file.lastIndexOf('/')+1,file.indexOf('.'));
+                            _tracks.push({file: file, label: label});
+                        }
                     }
                 }
             }   
@@ -164,6 +166,14 @@
             _redraw();
             _sendEvent(events.JWPLAYER_CAPTIONS_LIST, _getTracks(), _selectedTrack);
         };
+
+        function _isValidCaption(file) {
+            if (!file || file.length < 4) {
+                return false;
+            }
+            var ext = file.substr(file.length-4);
+            return (ext == ".srt" || ext == ".vtt" || ext ==".txt");
+        }
 
 
         /** Load captions. **/
