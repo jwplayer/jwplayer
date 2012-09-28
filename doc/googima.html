@@ -73,21 +73,6 @@ jwplayer('myElement').setup({
 <dl>
 <dt>tag</dt>
 <dd>The advertising tag, which can be copy-pasted from the DFP or AFV dashboard.</dd>
-<dt>publisher</dt>
-<dd>For AFV ads only. To be used in place of the ad tag.</dd>
-<dt>type</dt>
-<dd>The type of ad to be played. Supported values are: <ul>
-<li><strong>audio</strong></li>
-<li><strong>full_slot</strong></li>
-<li><strong>graphical</strong></li>
-<li><strong>graphical_full_slot</strong></li>
-<li><strong>graphical_overlay</strong></li>
-<li><strong>overlay</strong></li>
-<li><strong>text_full_slot</strong></li>
-<li><strong>text_or_graphical</strong></li>
-<li><strong>text_overlay</strong></li>
-<li><strong>video</strong></li>   
-</ul></dd>
 <dt>position</dt>
 <dd>The position of the ad in the video. It can be:<ul>
 <li><strong>pre</strong>: The ad is a linear pre-roll and must be shown before the content starts.</li>
@@ -109,18 +94,15 @@ jwplayer('myElement').setup({
         client: 'googima',
         schedule: {
             break1: {
-                type:'video',
-                position:'pre',
+                offset:'pre',
                 tag: 'http://ad.doubleclick.net/pfadx/ABC;sz=300x300;ord=4502861;dcmt=text/xml'
             },
             break2: {
-                type:'video',
-                position:'02:00',
+                offset:'02:00',
                 tag: 'http://ad.doubleclick.net/pfadx/XYZ;sz=300x300;ord=994752;dcmt=text/xml'
             },
             break3: {
-                type:'video',
-                position:'post',
+                offset:'post',
                 tag: 'http://ad.doubleclick.net/pfadx/HAL;sz=300x300;ord=8923503;dcmt=text/xml'
             }
         }
@@ -157,7 +139,6 @@ jwplayer("videoplayer").setup({
         client: 'googima':
         schedule: {
             myPreroll: {
-                type: 'video',
                 tag: 'http://ad.doubleclick.net/pfadx/AS;sz=300x300;ord=5036130;dcmt=text/xml',
                 position: 'pre',
                 targets: ['companion']
