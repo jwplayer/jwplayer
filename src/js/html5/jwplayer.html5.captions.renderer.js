@@ -41,6 +41,7 @@
         function _render(html) {
             _style({
                 left: '0px',
+                top: '0px'
             });
             _container.innerHTML = html;
             if(html == '') { 
@@ -62,6 +63,11 @@
 
         /** Resize the captions. **/
         function _resize() {
+            _style({
+                left: '0px',
+                top: '0px'
+            });
+
             var size = Math.round(_options.fontSize * Math.pow(_width/400,0.6)),
                 line = Math.round(size * 1.4),
                 left,
@@ -73,8 +79,10 @@
                 lineHeight: line + 'px',
                 visibility: _visible
             });
+
             left = Math.round(_width/2 - _container.clientWidth/2);
             top = Math.round(_bottom - _container.clientHeight);
+            
             _style({
                 left: left + 'px',
                 top: top + 'px'

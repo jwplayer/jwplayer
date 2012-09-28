@@ -9,10 +9,6 @@
 
         DOCUMENT = document,
         D_CLASS = ".jwcaptions",
-        D_PREVIEW_CLASS = ".jwpreview",
-        D_ERROR_CLASS = ".jwerror",
-        TRUE = true,
-        FALSE = false,
 
         /** Some CSS constants we should use for minimization **/
         JW_CSS_ABSOLUTE = "absolute",
@@ -123,16 +119,23 @@
         function _fullscreenHandler(event) {
             _fullscreen = event.fullscreen;
             if(event.fullscreen) {
-                var height = _display.offsetHeight,
-                    width = _display.offsetWidth;
-                if(height != 0 && width != 0) {
-                    _renderer.resize(width, Math.round(height*0.94));
-                }
+                _fullscreenResize();
+                // to fix browser fullscreen issue
+                setTimeout(_fullscreenResize, 500);
             }
             else {
                 _redraw();
             }
             
+        }
+
+        function _fullscreenResize() {
+            var height = _display.offsetHeight,
+                width = _display.offsetWidth;
+            console.log(width + " x " + height);
+            if(height != 0 && width != 0) {
+                _renderer.resize(width, Math.round(height*0.94));
+            }
         }
 
         /** Listen to playlist item updates. **/

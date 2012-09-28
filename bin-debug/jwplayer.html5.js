@@ -997,10 +997,6 @@
 
         DOCUMENT = document,
         D_CLASS = ".jwcaptions",
-        D_PREVIEW_CLASS = ".jwpreview",
-        D_ERROR_CLASS = ".jwerror",
-        TRUE = true,
-        FALSE = false,
 
         /** Some CSS constants we should use for minimization **/
         JW_CSS_ABSOLUTE = "absolute",
@@ -1111,16 +1107,22 @@
         function _fullscreenHandler(event) {
             _fullscreen = event.fullscreen;
             if(event.fullscreen) {
-                var height = _display.offsetHeight,
-                    width = _display.offsetWidth;
-                if(height != 0 && width != 0) {
-                    _renderer.resize(width, Math.round(height*0.94));
-                }
+                _fullscreenResize();
+                setTimeout(_fullscreenResize, 500);
             }
             else {
                 _redraw();
             }
             
+        }
+
+        function _fullscreenResize() {
+            var height = _display.offsetHeight,
+                width = _display.offsetWidth;
+            console.log(width + " x " + height);
+            if(height != 0 && width != 0) {
+                _renderer.resize(width, Math.round(height*0.94));
+            }
         }
 
         /** Listen to playlist item updates. **/
@@ -1344,6 +1346,7 @@
         function _render(html) {
             _style({
                 left: '0px',
+                top: '0px'
             });
             _container.innerHTML = html;
             if(html == '') { 
@@ -1365,6 +1368,11 @@
 
         /** Resize the captions. **/
         function _resize() {
+            _style({
+                left: '0px',
+                top: '0px'
+            });
+
             var size = Math.round(_options.fontSize * Math.pow(_width/400,0.6)),
                 line = Math.round(size * 1.4),
                 left,
@@ -1376,8 +1384,10 @@
                 lineHeight: line + 'px',
                 visibility: _visible
             });
+
             left = Math.round(_width/2 - _container.clientWidth/2);
             top = Math.round(_bottom - _container.clientHeight);
+            
             _style({
                 left: left + 'px',
                 top: top + 'px'
