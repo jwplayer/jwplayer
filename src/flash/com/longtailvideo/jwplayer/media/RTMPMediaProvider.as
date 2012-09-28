@@ -112,10 +112,8 @@
 					_stage = RootReference.stage['stageVideos'][0];
 					_stage.viewPort = new Rectangle(0,0,320,240);
 					_stage.addEventListener('renderState', renderHandler);
-					_stage.attachNetStream(_stream);
-				} else {
-					_video.attachNetStream(_stream);
 				}
+				attachNetStream(_stream);
 			}
 			// Load either file, streamer or manifest
 			if (_item.file.substr(0,4) == 'rtmp') {
@@ -148,6 +146,14 @@
 		}
 
 
+		private function attachNetStream(stream:NetStream):void {
+			if (_stage) {
+				_stage.attachNetStream(_stream);
+			} else {
+				_video.attachNetStream(_stream);
+			}
+		}
+		
 		/** Get one or more levels from the loadbalancing XML. **/
 		private function loaderComplete(event:Event):void {
 			var xml:XML = (event.target as AssetLoader).loadedObject;
@@ -307,6 +313,7 @@
 
 		/** Resume playing. **/
 		override public function play():void {
+			attachNetStream(_stream);
 			if(_metadata) {
 				// Resume VOD and restart live stream
 				if(_item.duration > 0) {
@@ -467,6 +474,7 @@
 				_stream.close();
 			}
 			_stream = null;
+			attachNetStream(null);
 			_levels = [];
 			_application = _type = undefined;
 			_metadata = _transition = _auto = false;

@@ -100,12 +100,13 @@ package com.longtailvideo.jwplayer.media {
 					_stage = RootReference.stage['stageVideos'][0];
 					_stage.viewPort = new Rectangle(0,0,320,240);
 					_stage.addEventListener('renderState', renderHandler);
-					_stage.attachNetStream(_stream);
 				} else {
 					_video.addEventListener('renderState', renderHandler);
-					_video.attachNetStream(_stream);
 				}
 			}
+			
+			attachNetStream(_stream);
+			
 			// Set initial quality and set levels
 			_currentQuality = 0;
 			for (var i:Number=0; i < _item.levels.length; i++) {
@@ -130,6 +131,15 @@ package com.longtailvideo.jwplayer.media {
 		}
 
 
+		private function attachNetStream(stream:NetStream):void {
+			if (_stage) {
+				_stage.attachNetStream(stream);
+			} else {
+				_video.attachNetStream(stream);
+			}
+		}
+		
+		
 		/** Load new quality level; only requested on quality switches. **/
 		private function loadQuality():void {
 			_keyframes = undefined;
@@ -204,6 +214,7 @@ package com.longtailvideo.jwplayer.media {
 		override public function play():void {
 			clearInterval(_interval);
 			_interval = setInterval(positionHandler, 100);
+			attachNetStream(_stream);
 			_stream.resume();
 			super.play();
 		}
@@ -321,6 +332,9 @@ package com.longtailvideo.jwplayer.media {
 			} else {
 				_stream.pause();
 				_stream.seek(0);
+			}
+			if (_stageEnabled) {
+				attachNetStream(null);
 			}
 			clearInterval(_interval);
 			_keyframes = undefined;
