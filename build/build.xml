@@ -117,8 +117,8 @@
 
 			<arg line="-default-background-color=0x000000" />
 
-			<!-- Enable incremental compilation -->
-			<arg line="${incrementLine}" />
+			<!-- Enable incremental compilation - this seems to break embedded assets (Flex 4.6) -->
+			<!--arg line="${incrementLine}" /-->
 
 			<!-- Needed for Flex 4.x -->
 			<arg line="-static-link-runtime-shared-libraries=true" />
