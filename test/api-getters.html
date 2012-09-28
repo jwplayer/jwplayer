@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Getters</title>
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <script type="text/javascript" src="assets/primaryCookie.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+
+</head>
+<body>
+
+<h1>API Getters</h1>
+<div class="core">List of test devices</div>
+<p>This page tests the various getters not listed in other tests</p>
+
+<h2>Position / Duration</h2>
+
+<div style="position: relative">
+	<div id="player"></div>
+	<pre id="output" style="float:right; top:0; right: 0; position:absolute"></pre>
+</div>
+
+<script type="text/javascript">
+	function log(message) {
+		var element = document.getElementById("output");
+		if (!message) element.innerHTML = "";
+		else element.innerHTML += message + "\n";
+	}
+
+    jwplayer("player").setup({
+        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
+   		image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+   		primary: primaryCookie
+    });
+
+	function getSomething(getter) {
+		log(getter + "(): " + jwplayer("player")[getter]());
+	}
+
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Load the players</td>
+    <td>Firefox, IE8: Players load in Flash.  Otherwise, players load in HTML5 mode</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>While the player is idle, check <a href="#" onclick="getSomething('getPosition'); return false;">getPosition()</a></td>
+    <td>Value returned should be 0</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>While the player is idle, check <a href="#" onclick="getSomething('getDuration'); return false;">getDuration()</a></td>
+    <td>Value should be -1</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>While the player is idle, check <a href="#" onclick="getSomething('getBuffer'); return false;">getBuffer()</a></td>
+    <td>Value should be 0</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>While the video is idle, check <a href="#" onclick="getSomething('getState'); return false;">getState()</a></td>
+    <td>The value returned should be "IDLE"</td>
+    <td class="check"></td>
+</tr><tr>
+</tr><tr>
+    <td class="both"></td>
+    <td>Play the video, check <a href="#" onclick="getSomething('getPosition'); return false;">getPosition()</a> a few times</td>
+    <td>Value returned should be consistent with the elapsed time in the player</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>While the player is playing, check <a href="#" onclick="getSomething('getDuration'); return false;">getDuration()</a></td>
+    <td>Value should be a floating-point number (in this example, around 52 seconds)</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>While the video is playing, check <a href="#" onclick="getSomething('getBuffer'); return false;">getBuffer() a few times</a></td>
+    <td>The value returned should be a number between 0 and 100, and match the percentage of the time slider's buffer region</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>While the video is playing, check <a href="#" onclick="getSomething('getState'); return false;">getState()</a></td>
+    <td>The value returned should be "PLAYING"</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Pause the player and check <a href="#" onclick="getSomething('getState'); return false;">getState()</a></td>
+    <td>The value returned should be "PAUSED"</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Check <a href="#" onclick="getSomething('getFullscreen'); return false;">getFullscreen()</a></td>
+    <td>The value returned should be false</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Check <a href="#" onclick="getSomething('getWidth'); return false;">getWidth()</a></td>
+    <td>The value returned should be 480</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Check <a href="#" onclick="getSomething('getHeight'); return false;">getHeight()</a></td>
+    <td>The value returned should be 270</td>
+    <td class="check"></td>
+</tr></table>
+
+
+</body>
+</html>

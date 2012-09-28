@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2595';
+	jwplayer.html5.version = '6.0.2596';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -3791,7 +3791,6 @@
 	  	position: "absolute",
 	  	//visibility: "hidden",
 	  	opacity: 0,
-	  	width: JW_CSS_100PCT
 //	  	overflow: "hidden"
 	});
 	
@@ -4532,6 +4531,7 @@
 			utils.extend(_model, {
 				id: config.id,
 				state : events.state.IDLE,
+				duration: -1,
 				position: 0,
 				buffer: 0,
 			}, _model.config);
@@ -4557,16 +4557,23 @@
 		_eventMap[events.JWPLAYER_MEDIA_VOLUME] = "volume";
 		_eventMap[events.JWPLAYER_PLAYER_STATE] = "newstate->state";
 		_eventMap[events.JWPLAYER_MEDIA_BUFFER] = "bufferPercent->buffer";
-		_eventMap[events.JWPLAYER_MEDIA_TIME] = "position";
+		_eventMap[events.JWPLAYER_MEDIA_TIME] = "position,duration";
 			
 		function _videoEventHandler(evt) {
-			var mapping = _eventMap[evt.type];
-			if (mapping) {
-				var split = mapping.split("->"),
-					eventProp = split[0],
-					stateProp = split[1] ? split[1] : eventProp;
-				if (_model[stateProp] != evt[eventProp]) {
-					_model[stateProp] = evt[eventProp];
+			var mappings = (_eventMap[evt.type] ? _eventMap[evt.type].split(",") : []), i, _sendEvent;
+			if (mappings.length > 0) {
+				for (i=0; i<mappings.length; i++) {
+					var mapping = mappings[i],
+						split = mapping.split("->"),
+						eventProp = split[0],
+						stateProp = split[1] ? split[1] : eventProp;
+						
+					if (_model[stateProp] != evt[eventProp]) {
+						_model[stateProp] = evt[eventProp];
+						_sendEvent = true;
+					}
+				}
+				if (_sendEvent) {
 					_model.sendEvent(evt.type, evt);
 				}
 			} else {

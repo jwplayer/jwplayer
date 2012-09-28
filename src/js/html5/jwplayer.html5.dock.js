@@ -238,7 +238,6 @@
 	  	position: "absolute",
 	  	//visibility: "hidden",
 	  	opacity: 0,
-	  	width: JW_CSS_100PCT
 //	  	overflow: "hidden"
 	});
 	
