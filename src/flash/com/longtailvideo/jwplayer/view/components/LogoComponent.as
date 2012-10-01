@@ -16,7 +16,7 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var defaults:Object = {
 			prefix: "http://l.longtailvideo.com/flash/", 
 			file: "logo.png", 
-			link: "http://www.longtailvideo.com/players/jw-flv-player/",
+			link: 'http://www.longtailvideo.com/jwpabout/?a=logo&v='+PlayerVersion.version+'&m=flash',
 			linktarget: "_top",
 			margin: 8, 
 			hide: true, 

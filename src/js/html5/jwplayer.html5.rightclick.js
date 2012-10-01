@@ -23,7 +23,7 @@
 		var _api = api,
 			_container,// = DOCUMENT.getElementById(_api.id),
 			_config = utils.extend({
-				aboutlink: 'http://www.longtailvideo.com/players/jw-flv-player',
+				aboutlink: 'http://www.longtailvideo.com/jwpabout/?a=right-click&v='+html5.version+'&m=html5',
 				abouttext: 'About JW Player ' + html5.version + '...'
 			}, config),
 			_mouseOverContext = false,

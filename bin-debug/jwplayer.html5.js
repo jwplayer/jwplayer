@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2616';
+	jwplayer.html5.version = '6.0.2619';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -4339,7 +4339,7 @@
 	logo.defaults = {
 		prefix: "http://l.longtailvideo.com/html5/",
 		file: "logo.png",
-		link: "http://www.longtailvideo.com/players/jw-flv-player/",
+		link: 'http://www.longtailvideo.com/jwpabout/?a=logo&v='+jwplayer.version+'&m=html5',
 		linktarget: "_top",
 		margin: 8,
 		hide: true,
@@ -5839,7 +5839,7 @@
 		var _api = api,
 			_container,// = DOCUMENT.getElementById(_api.id),
 			_config = utils.extend({
-				aboutlink: 'http://www.longtailvideo.com/players/jw-flv-player',
+				aboutlink: 'http://www.longtailvideo.com/jwpabout/?a=right-click&v='+html5.version+'&m=html5',
 				abouttext: 'About JW Player ' + html5.version + '...'
 			}, config),
 			_mouseOverContext = false,

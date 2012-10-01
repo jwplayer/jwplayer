@@ -3,6 +3,7 @@ package com.longtailvideo.jwplayer.view {
 	import com.longtailvideo.jwplayer.events.GlobalEventDispatcher;
 	import com.longtailvideo.jwplayer.events.ViewEvent;
 	import com.longtailvideo.jwplayer.player.IPlayer;
+	import com.longtailvideo.jwplayer.player.PlayerVersion;
 	import com.longtailvideo.jwplayer.utils.Configger;
 	import com.longtailvideo.jwplayer.utils.Logger;
 	import com.longtailvideo.jwplayer.utils.Stretcher;
@@ -62,7 +63,7 @@ package com.longtailvideo.jwplayer.view {
 
 		/** jump to the about page. **/
 		protected function aboutHandler(evt:ContextMenuEvent):void {
-			navigateToURL(new URLRequest('http://www.longtailvideo.com/players/jw-flv-player'), '_top');
+			navigateToURL(new URLRequest('http://www.longtailvideo.com/jwpabout/?a=right-click&v='+PlayerVersion.version+'&m=flash'), '_top');
 		}
 
 		/** change the debug system. **/

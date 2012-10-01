@@ -137,7 +137,7 @@
 	logo.defaults = {
 		prefix: "http://l.longtailvideo.com/html5/",
 		file: "logo.png",
-		link: "http://www.longtailvideo.com/players/jw-flv-player/",
+		link: 'http://www.longtailvideo.com/jwpabout/?a=logo&v='+jwplayer.version+'&m=html5',
 		linktarget: "_top",
 		margin: 8,
 		hide: true,
