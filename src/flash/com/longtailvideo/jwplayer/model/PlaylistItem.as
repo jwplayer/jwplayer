@@ -40,13 +40,14 @@ package com.longtailvideo.jwplayer.model {
 					height: obj.height,
 					label: obj.label
 				};
-				delete obj.file;
-				delete obj.type;
-				delete obj.width;
-				delete obj.height;
-				delete obj.label;
 				obj.levels = [singleLevel];
 			}
+			
+			delete obj.file;
+			delete obj.type;
+			delete obj.width;
+			delete obj.height;
+			delete obj.label;
 			
 			for (var itm:String in obj) {
 				if (itm == "levels") {
