@@ -124,7 +124,7 @@
 		_model.setPlaylist = function(playlist) {
 			_model.playlist = _filterPlaylist(playlist);
 			
-			if (playlist.length == 0) {
+			if (_model.playlist.length == 0) {
 				_model.sendEvent(events.JWPLAYER_ERROR, { message: "Error loading playlist: No playable sources found" });
 			} else {
 				_model.sendEvent(events.JWPLAYER_PLAYLIST_LOADED, {
