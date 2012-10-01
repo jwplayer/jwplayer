@@ -194,7 +194,7 @@
 	};
 	
 	function _cssReset() {
-		_css(JW_CLASS + ["", "div", "span", "a", "img", "ul", "li", "video"].join(","+JW_CLASS), {
+		_css(JW_CLASS + ["", "div", "span", "a", "img", "ul", "li", "video"].join(","+JW_CLASS) + ", .jwclick", {
 			margin: 0,
 			padding: 0,
 			border: 0,

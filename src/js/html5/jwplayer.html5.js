@@ -6,5 +6,5 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2605';
+	jwplayer.html5.version = '6.0.2608';
 })(jwplayer);

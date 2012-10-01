@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2605';
+	jwplayer.html5.version = '6.0.2608';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -430,7 +430,7 @@
 	};
 	
 	function _cssReset() {
-		_css(JW_CLASS + ["", "div", "span", "a", "img", "ul", "li", "video"].join(","+JW_CLASS), {
+		_css(JW_CLASS + ["", "div", "span", "a", "img", "ul", "li", "video"].join(","+JW_CLASS) + ", .jwclick", {
 			margin: 0,
 			padding: 0,
 			border: 0,
@@ -5251,7 +5251,7 @@
 			_css(_internalSelector("jwdescription"), {
 	    	    display: 'block',
 	    	    'font-size': _settings.fontsize,
-	    	    'line-height': 18,
+	    	    'line-height': 19,
 	    	    'margin-top': 5,
 	        	overflow: 'hidden',
 	        	height: _itemheight,

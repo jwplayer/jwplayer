@@ -192,7 +192,7 @@
 			_css(_internalSelector("jwdescription"), {
 	    	    display: 'block',
 	    	    'font-size': _settings.fontsize,
-	    	    'line-height': 18,
+	    	    'line-height': 19,
 	    	    'margin-top': 5,
 	        	overflow: 'hidden',
 	        	height: _itemheight,

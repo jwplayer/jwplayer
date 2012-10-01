@@ -16,7 +16,7 @@ jwplayer = function(container) {
 	}
 };
 
-jwplayer.version = '6.0.2605';
+jwplayer.version = '6.0.2608';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -345,7 +345,7 @@ jwplayer.source = document.createElement("source");/**
 	 */
 	utils.getPluginName = function(pluginName) {
 		/** Regex locates the characters after the last slash, until it encounters a dash. **/
-		return pluginName.replace(/^.*\/([^-]*)-?.*\.(swf|js)$/, "$1")
+		return pluginName.replace(/^(.*\/)?([^-]*)-?.*\.(swf|js)$/, "$2")
 	};
 
 	/**
@@ -1163,9 +1163,9 @@ jwplayer.source = document.createElement("source");/**
 
 			plugins = model.getPlugins();
 			
-			for (var plugin in plugins) {
-				var pluginObj = plugins[plugin],
-					pluginName = pluginObj.getPluginName(),
+			for (var plugin in config.plugins) {
+				var pluginName = utils.getPluginName(plugin),
+					pluginObj = plugins[pluginName],
 					flashPath = pluginObj.getFlashPath(),
 					jsPlugin = pluginObj.getJS(),
 					pluginURL = pluginObj.getURL();
@@ -1181,6 +1181,7 @@ jwplayer.source = document.createElement("source");/**
 					var div = document.createElement("div");
 					div.id = api.id + "_" + pluginName;
 					div.style.position = "absolute";
+					div.style.top = 0;
 					div.style.zIndex = jsplugins.length + 10;
 					jsplugins.plugins[pluginName] = pluginObj.getNewInstance(api, utils.extend({}, config.plugins[pluginURL]), div);
 					jsplugins.length++;

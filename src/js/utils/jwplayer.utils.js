@@ -322,7 +322,7 @@
 	 */
 	utils.getPluginName = function(pluginName) {
 		/** Regex locates the characters after the last slash, until it encounters a dash. **/
-		return pluginName.replace(/^.*\/([^-]*)-?.*\.(swf|js)$/, "$1")
+		return pluginName.replace(/^(.*\/)?([^-]*)-?.*\.(swf|js)$/, "$2")
 	};
 
 	/**

@@ -75,9 +75,9 @@
 
 			plugins = model.getPlugins();
 			
-			for (var plugin in plugins) {
-				var pluginObj = plugins[plugin],
-					pluginName = pluginObj.getPluginName(),
+			for (var plugin in config.plugins) {
+				var pluginName = utils.getPluginName(plugin),
+					pluginObj = plugins[pluginName],
 					flashPath = pluginObj.getFlashPath(),
 					jsPlugin = pluginObj.getJS(),
 					pluginURL = pluginObj.getURL();
@@ -93,6 +93,7 @@
 					var div = document.createElement("div");
 					div.id = api.id + "_" + pluginName;
 					div.style.position = "absolute";
+					div.style.top = 0;
 					div.style.zIndex = jsplugins.length + 10;
 					jsplugins.plugins[pluginName] = pluginObj.getNewInstance(api, utils.extend({}, config.plugins[pluginURL]), div);
 					jsplugins.length++;
