@@ -168,7 +168,9 @@
 		_model.setVolume = function(newVol) {
 			if (_model.mute && newVol > 0) _model.setMute(FALSE);
 			newVol = Math.round(newVol);
-			utils.saveCookie("volume", newVol);
+			if (!_model.mute) {
+				utils.saveCookie("volume", newVol);
+			}
 			_video.volume(newVol);
 		}
 

@@ -88,7 +88,9 @@ package com.longtailvideo.jwplayer.player {
 		}
 		
 		protected function updateVolumeCookie(evt:MediaEvent):void {
-			callJS("function(vol) { try { jwplayer.utils.saveCookie('volume', vol) } catch(e) {} }", evt.volume.toString());
+			if (!_player.config.mute) {
+				callJS("function(vol) { try { jwplayer.utils.saveCookie('volume', vol) } catch(e) {} }", evt.volume.toString());
+			}
 		}
 
 		protected function updateMuteCookie(evt:MediaEvent):void {

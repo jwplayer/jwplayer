@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2602';
+	jwplayer.html5.version = '6.0.2605';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -4643,7 +4643,9 @@
 		_model.setVolume = function(newVol) {
 			if (_model.mute && newVol > 0) _model.setMute(FALSE);
 			newVol = Math.round(newVol);
-			utils.saveCookie("volume", newVol);
+			if (!_model.mute) {
+				utils.saveCookie("volume", newVol);
+			}
 			_video.volume(newVol);
 		}
 

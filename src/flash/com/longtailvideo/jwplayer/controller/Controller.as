@@ -320,10 +320,12 @@ package com.longtailvideo.jwplayer.controller {
 			}
 */
 			if (_model.media) {
+				if (!_model.mute) {
+					setCookie('volume', vol);
+				}
 				mute(false); 
 				_model.config.volume = vol;
 				_model.media.setVolume(vol);
-				setCookie('volume', vol);
 				return true;
 			}
 			return false;
