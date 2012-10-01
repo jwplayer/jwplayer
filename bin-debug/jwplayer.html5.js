@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2615';
+	jwplayer.html5.version = '6.0.2616';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -2889,6 +2889,7 @@
 		}
 		
 		function _seek(pos) {
+			if (_model.state != states.PLAYING) _play(true);
 			_video.seek(pos);
 		}
 		
@@ -6694,7 +6695,8 @@
 		
 		var _seek = _this.seek = function(pos) {
 			if (!_attached) return; 
-			if (_videotag.readyState >= _videotag.HAVE_FUTURE_DATA) {
+			//if (_videotag.readyState >= _videotag.HAVE_FUTURE_DATA) {
+			if (_canSeek) {
 				_delayedSeek = 0;
 				_videotag.currentTime = pos;
 			} else {
@@ -6905,6 +6907,7 @@
 			_audioMode,
 			_isMobile = utils.isMobile(),
 			_isIPad = utils.isIPad() || utils.isAndroid(),
+			_isIPod = utils.isIPod(),
 			_forcedControls = (_model.mobilecontrols),
 			_errorState = FALSE,
 			_replayState,
@@ -7291,7 +7294,10 @@
 		}
 
 		function _showDisplay() {
-			if (_display && _model.controls && !_audioMode) _display.show();
+			if (_display && _model.controls && !_audioMode) {
+				if (!_isIPod || _api.jwGetState() == states.IDLE)
+					_display.show();
+			}
 			if (_isMobile && !_forcedControls) {
 				_controlsLayer.style.display = "block";
 			}

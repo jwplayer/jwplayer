@@ -269,7 +269,8 @@
 		
 		var _seek = _this.seek = function(pos) {
 			if (!_attached) return; 
-			if (_videotag.readyState >= _videotag.HAVE_FUTURE_DATA) {
+			//if (_videotag.readyState >= _videotag.HAVE_FUTURE_DATA) {
+			if (_canSeek) {
 				_delayedSeek = 0;
 				_videotag.currentTime = pos;
 			} else {

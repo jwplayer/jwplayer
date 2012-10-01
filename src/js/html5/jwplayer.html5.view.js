@@ -56,6 +56,7 @@
 			_audioMode,
 			_isMobile = utils.isMobile(),
 			_isIPad = utils.isIPad() || utils.isAndroid(),
+			_isIPod = utils.isIPod(),
 			_forcedControls = (_model.mobilecontrols),
 			_errorState = FALSE,
 			_replayState,
@@ -442,7 +443,10 @@
 		}
 
 		function _showDisplay() {
-			if (_display && _model.controls && !_audioMode) _display.show();
+			if (_display && _model.controls && !_audioMode) {
+				if (!_isIPod || _api.jwGetState() == states.IDLE)
+					_display.show();
+			}
 			if (_isMobile && !_forcedControls) {
 				_controlsLayer.style.display = "block";
 			}
