@@ -104,6 +104,8 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _volumeOverlay:TooltipOverlay;
 		protected var _fullscreenOverlay:TooltipOverlay;
 		
+		protected var _mouseOverButton:Boolean = false;
+		
 
 		protected var _bgColorSheet:Sprite;
 
@@ -457,6 +459,9 @@ package com.longtailvideo.jwplayer.view.components {
 				_volumeOverlay.name = "volumeOverlay";
 				_volumeOverlay.addChild(_volSlider);
 				createOverlay(_volumeOverlay, _buttons.mute);
+				if(_buttons.unmute) {
+					createOverlay(_volumeOverlay, _buttons.unmute);
+				}
 			}
 			
 			_fullscreenOverlay = new TooltipOverlay(_player.skin);
@@ -468,14 +473,30 @@ package com.longtailvideo.jwplayer.view.components {
 		private function createOverlay(overlay:TooltipOverlay, button:DisplayObject):void {
 			if (button && overlay) {
 				var fadeTimer:Timer = new Timer(500, 1);
+				
 				overlay.alpha = 0;
 				overlay.addEventListener(MouseEvent.MOUSE_MOVE, function(evt:Event):void { fadeTimer.reset(); });
-				overlay.addEventListener(MouseEvent.MOUSE_OUT, function(evt:Event):void { fadeTimer.start(); });
+				overlay.addEventListener(MouseEvent.MOUSE_OUT, function(evt:Event):void { overlayOutHandler(fadeTimer); });
+				button.addEventListener(MouseEvent.MOUSE_OUT, function(evt:Event):void { _mouseOverButton = false; fadeTimer.start(); });
+				button.addEventListener(MouseEvent.MOUSE_OVER, function(evt:Event):void { fadeTimer.reset(); _mouseOverButton = true; });
 				RootReference.stage.addChild(overlay);
-				fadeTimer.addEventListener(TimerEvent.TIMER_COMPLETE, function(evt:Event):void { overlay.hide(); });
+				fadeTimer.addEventListener(TimerEvent.TIMER_COMPLETE, function(evt:Event):void { overlay.hide(); }); 
 			}
 		}
 		
+		private function overlayOutHandler(timer:Timer):void {
+			timer.start();
+			var buttonTimer:Timer = new Timer(200,1);
+			buttonTimer.addEventListener(TimerEvent.TIMER_COMPLETE, function(evt:Event):void { overlayOutTimerHandler(timer); });
+			buttonTimer.start();
+		}
+		
+		private function overlayOutTimerHandler(timer:Timer):void {
+			if (_mouseOverButton) {
+				timer.reset();
+			}	
+		}
+
 		private function hdOption(level:Number):void {
 			if (_levels && level >=0 && _levels.length > level) {
 				_player.setCurrentQuality(level);
@@ -945,3 +966,4 @@ package com.longtailvideo.jwplayer.view.components {
 		
 	}
 }
+ 

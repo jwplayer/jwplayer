@@ -132,7 +132,6 @@
         function _fullscreenResize() {
             var height = _display.offsetHeight,
                 width = _display.offsetWidth;
-            console.log(width + " x " + height);
             if(height != 0 && width != 0) {
                 _renderer.resize(width, Math.round(height*0.94));
             }

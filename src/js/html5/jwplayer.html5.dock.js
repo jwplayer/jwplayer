@@ -11,7 +11,8 @@
 		_css = utils.css,
 		_bounds = utils.bounds,
 
-		D_CLASS = ".jwdock", 
+		D_CLASS = ".jwdock",
+		DB_CLASS = ".jwdockbuttons", 
 		UNDEFINED = undefined,
 		DOCUMENT = document,
 
@@ -37,6 +38,7 @@
 			_buttons = {},
 			_tooltips = {},
 			_container,
+			_buttonContainer,
 			_dockBounds,
 			_this = this;
 
@@ -44,6 +46,8 @@
 			_this.visible = false;
 			
 			_container = _createElement("div", "jwdock");
+			_buttonContainer = _createElement("div", "jwdockbuttons");
+			_container.appendChild(_buttonContainer);
 			_container.id = _id;
 
 			_setupElements();
@@ -66,6 +70,10 @@
 				padding: _config.margin
 			});
 
+			_css(DB_CLASS, {
+				height: button.height
+			});
+
 			_css(_internalSelector("button"), {
 				width: button.width,
 				cursor: "pointer",
@@ -80,8 +88,8 @@
 			_css(_internalSelector("button:active>div"), { opacity: _config.iconalphaactive});
 			_css(_internalSelector(".jwoverlay"), { top: _config.margin + button.height });
 			
-			_createImage("capLeft", _container);
-			_createImage("capRight", _container);
+			_createImage("capLeft", _buttonContainer);
+			_createImage("capRight", _buttonContainer);
 			_createImage("divider");
 		}
 		
@@ -124,7 +132,7 @@
 			});
 			tipBounds = _bounds(tooltip.element());
 			if (_dockBounds.left > tipBounds.left) {
-				tooltip.offsetX(_dockBounds.left - tipBounds.left);
+				tooltip.offsetX(_dockBounds.left - tipBounds.left + 8);
 			}
 
 		}
@@ -160,8 +168,8 @@
 			// Can't duplicate button ids
 			if (_buttons[id]) return;
 			
-			var divider = _createElement("div", "divider", _container),
-				newButton = _createElement("button", null, _container),
+			var divider = _createElement("div", "divider", _buttonContainer),
+				newButton = _createElement("button", null, _buttonContainer),
 				icon = _createElement("div", null, newButton);
 		
 			icon.id = _id + "_" + id;
@@ -213,8 +221,8 @@
 		
 		_this.removeButton = function(id) {
 			if (_buttons[id]) {
-				_container.removeChild(_buttons[id].element);
-				_container.removeChild(_buttons[id].divider);
+				_buttonContainer.removeChild(_buttons[id].element);
+				_buttonContainer.removeChild(_buttons[id].divider);
 				delete _buttons[id];
 				_buttonCount--;
 				_setCaps();
@@ -226,7 +234,7 @@
 		}
 		
 		function _setCaps() {
-			_css(D_CLASS + " .capLeft, " + D_CLASS + " .capRight", {
+			_css(DB_CLASS + " .capLeft, " + DB_CLASS + " .capRight", {
 				display: _buttonCount ? "block" : "none"
 			});
 		}
@@ -237,15 +245,11 @@
 	_css(D_CLASS, {
 	  	position: "absolute",
 	  	//visibility: "hidden",
+	  	width: JW_CSS_100PCT,
 	  	opacity: 0,
-//	  	overflow: "hidden"
+		//overflow: "hidden"
 	});
-	
-	
-	_css(D_CLASS + " button", {
-		position: "relative",
-	});
-	
+		
 	_css(D_CLASS + " > *", {
 		height: JW_CSS_100PCT,
 	  	'float': "left"
@@ -257,23 +261,36 @@
 	  	'z-index': 99
 	});
 
-	_css(D_CLASS + " .divider", {
+	_css(DB_CLASS, {
+	  	position: "absolute",
+	});
+
+	_css(DB_CLASS + " button", {
+		position: "relative",
+	});
+	
+	_css(DB_CLASS + " > *", {
+		height: JW_CSS_100PCT,
+	  	'float': "left"
+	});
+
+	_css(DB_CLASS + " .divider", {
 		display: "none"
 	});
 
-	_css(D_CLASS + " button ~ .divider", {
+	_css(DB_CLASS + " button ~ .divider", {
 		display: "block"
 	});
 
-	_css(D_CLASS + " .capLeft, " + D_CLASS + " .capRight", {
+	_css(DB_CLASS + " .capLeft, " + DB_CLASS + " .capRight", {
 		display: "none"
 	});
 
-	_css(D_CLASS + " .capRight", {
+	_css(DB_CLASS + " .capRight", {
 		'float': "right"
 	});
 	
-	_css(D_CLASS + " button > div", {
+	_css(DB_CLASS + " button > div", {
 		left: 0,
 		right: 0,
 		top: 0,
@@ -285,7 +302,7 @@
 	});
 
 	utils.transitionStyle(D_CLASS, "background .15s, opacity .15s");
-	utils.transitionStyle(D_CLASS + " button div", "opacity .15s");
 	utils.transitionStyle(D_CLASS + " .jwoverlay", "opacity .15s");
+	utils.transitionStyle(DB_CLASS + " button div", "opacity .15s");
 
 })(jwplayer.html5);

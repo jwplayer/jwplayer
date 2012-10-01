@@ -850,6 +850,7 @@
 		}
 		
 		function _positionTimeTooltip(evt) {
+			_railBounds = utils.bounds(_timeRail);
 			if (!_railBounds || _railBounds.width == 0) return;
 			var element = _timeOverlay.element(), 
 				position = (evt.pageX - _railBounds.left) - WINDOW.pageXOffset;
@@ -1019,8 +1020,8 @@
 			var overlayBounds, i, overlay;
 			for (i in _overlays) {
 				overlay = _overlays[i];
-				overlayBounds = utils.bounds(overlay.element());
 				overlay.offsetX(0);
+				overlayBounds = utils.bounds(overlay.element());
 				if (overlayBounds.right > _cbBounds.right) {
 					overlay.offsetX(_cbBounds.right - overlayBounds.right);
 				} else if (overlayBounds.left < _cbBounds.left) {
