@@ -2,18 +2,14 @@
  * A button from within the dock.
  **/
 package com.longtailvideo.jwplayer.view.components {
-	import com.longtailvideo.jwplayer.model.Color;
-	import com.longtailvideo.jwplayer.utils.RootReference;
-	import com.longtailvideo.jwplayer.view.interfaces.IDockButton;
-	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
+	import com.longtailvideo.jwplayer.model.*;
+	import com.longtailvideo.jwplayer.utils.*;
+	import com.longtailvideo.jwplayer.view.interfaces.*;
 	
 	import flash.display.*;
 	import flash.events.*;
-	import flash.geom.ColorTransform;
-	import flash.geom.Rectangle;
-	import flash.text.TextField;
-	import flash.text.TextFormat;
-	import flash.text.TextFormatAlign;
+	import flash.geom.*;
+	import flash.text.*;
 	
 	public class DockButton extends ComponentButton implements IDockButton {
 		/** Background over state **/
@@ -169,6 +165,10 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		public function get active():Boolean {
 			return _active;
+		}
+		
+		public function hide():void {
+			_tooltip.hide();
 		}
 	}
 }

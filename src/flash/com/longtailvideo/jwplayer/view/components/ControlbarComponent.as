@@ -880,6 +880,7 @@ package com.longtailvideo.jwplayer.view.components {
 			hideHdOverlay();
 			hideCcOverlay();
 			hideFullscreenOverlay();
+			if (_timeSlider is TimeSlider) (_timeSlider as TimeSlider).hide();
 		}
 		
 		private function clearDividers():void {

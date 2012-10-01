@@ -149,8 +149,7 @@ package com.longtailvideo.jwplayer.view {
 			RootReference.stage.addEventListener(MouseEvent.MOUSE_MOVE, moveHandler);
 			RootReference.stage.addEventListener(KeyboardEvent.KEY_DOWN, moveHandler);
 			
-			components.captions.addEventListener(CaptionsEvent.JWPLAYER_CAPTIONS_CHANGED, forward);
-			components.captions.addEventListener(CaptionsEvent.JWPLAYER_CAPTIONS_LIST, forward);
+			addComponentListeners();
 
 			_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_LOADED, mediaLoaded);
 			_model.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_ITEM, itemHandler);
@@ -163,6 +162,27 @@ package com.longtailvideo.jwplayer.view {
 			stateHandler();
 
 			redraw();
+		}
+		
+		protected function addComponentListeners():void {
+			components.controlbar.addEventListener(MouseEvent.MOUSE_OVER, preventFade);
+			components.controlbar.addEventListener(MouseEvent.MOUSE_OUT, resumeFade);
+			components.dock.addEventListener(MouseEvent.MOUSE_OVER, preventFade);
+			components.dock.addEventListener(MouseEvent.MOUSE_OUT, resumeFade);
+			components.logo.addEventListener(MouseEvent.MOUSE_OVER, preventFade);
+			components.logo.addEventListener(MouseEvent.MOUSE_OUT, resumeFade);
+			components.captions.addEventListener(CaptionsEvent.JWPLAYER_CAPTIONS_CHANGED, forward);
+			components.captions.addEventListener(CaptionsEvent.JWPLAYER_CAPTIONS_LIST, forward);
+		}
+		
+		protected var _preventFade:Boolean = false;
+		
+		protected function preventFade(evt:Event=null):void {
+			_preventFade = true;
+		}
+		
+		protected function resumeFade(evt:Event=null):void {
+			_preventFade = false;
 		}
 		
 		protected function keyFocusOutHandler(evt:FocusEvent):void {
@@ -706,10 +726,10 @@ package com.longtailvideo.jwplayer.view {
 		}
 		
 		private function hideControls():void {
+			if (_preventFade) return;
 			_components.dock.hide();
 			_components.controlbar.hide();
 			_components.logo.hide();
-//			(new Animations(_instreamLayer)).fade(0);
 		}
 		
 		private function showControls():void {
@@ -718,7 +738,6 @@ package com.longtailvideo.jwplayer.view {
 				_components.dock.show();
 			}
 			_components.logo.show();
-//			(new Animations(_instreamLayer)).fade(1);
 		}
 		
 		/** If the mouse leaves the stage, hide the controlbar if position is 'over' **/

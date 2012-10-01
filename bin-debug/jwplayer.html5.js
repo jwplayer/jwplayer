@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2613';
+	jwplayer.html5.version = '6.0.2615';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -4348,6 +4348,7 @@
 	_css(LOGO_CLASS, {
 		cursor: "pointer",
 	  	position: "absolute",
+	  	'z-index': 100,
 	  	opacity: 0
 	});
 
@@ -6976,11 +6977,16 @@
 			
 			_controlsLayer.addEventListener('mouseout', _fadeControls, FALSE);
 			_controlsLayer.addEventListener('mousemove', _startFade, FALSE);
-			if (_controlbar) {
-				_controlbar.element().addEventListener('mousemove', _cancelFade, FALSE);
-				_controlbar.element().addEventListener('mouseout', _resumeFade, FALSE);
+			_componentFadeListeners(_controlbar);
+			_componentFadeListeners(_dock);
+			_componentFadeListeners(_logo);
+		}
+		
+		function _componentFadeListeners(comp) {
+			if (comp) {
+				comp.element().addEventListener('mousemove', _cancelFade, FALSE);
+				comp.element().addEventListener('mouseout', _resumeFade, FALSE);
 			}
-			
 		}
 	
 		function _createElement(elem, className) {

@@ -42,7 +42,7 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 
 		private function outHandler(evt:MouseEvent = null):void {
-			_tooltip.hide();
+			hide();
 		}
 		
 		private function moveHandler(evt:MouseEvent):void {
@@ -55,6 +55,10 @@ package com.longtailvideo.jwplayer.view.components {
 		public function audioMode(state:Boolean):void {
 			_audioMode = state;
 			if (_audioMode) outHandler();
+		}
+		
+		public function hide():void {
+			_tooltip.hide();
 		}
 	}
 }

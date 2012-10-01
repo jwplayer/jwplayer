@@ -128,11 +128,16 @@
 			
 			_controlsLayer.addEventListener('mouseout', _fadeControls, FALSE);
 			_controlsLayer.addEventListener('mousemove', _startFade, FALSE);
-			if (_controlbar) {
-				_controlbar.element().addEventListener('mousemove', _cancelFade, FALSE);
-				_controlbar.element().addEventListener('mouseout', _resumeFade, FALSE);
+			_componentFadeListeners(_controlbar);
+			_componentFadeListeners(_dock);
+			_componentFadeListeners(_logo);
+		}
+		
+		function _componentFadeListeners(comp) {
+			if (comp) {
+				comp.element().addEventListener('mousemove', _cancelFade, FALSE);
+				comp.element().addEventListener('mouseout', _resumeFade, FALSE);
 			}
-			
 		}
 	
 		function _createElement(elem, className) {

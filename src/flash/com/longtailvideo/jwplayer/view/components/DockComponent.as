@@ -42,7 +42,6 @@ package com.longtailvideo.jwplayer.view.components {
 			buttons = new Vector.<DockButton>;
 			dividers = new Vector.<DisplayObject>;
 			if (player.config.dock) {
-				player.addEventListener(PlayerStateEvent.JWPLAYER_PLAYER_STATE, stateHandler);
 				player.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_COMPLETE, playlistComplete);
 				alpha = 0;
 			}
@@ -179,55 +178,13 @@ package com.longtailvideo.jwplayer.view.components {
 			if (_fullscreen != _player.config.fullscreen) {
 				_fullscreen = _player.config.fullscreen;
 			}
-			stateHandler();
 		}
 		
 		/** Hide the dock if the controlbar is set to be hidden on idle **/
 		private function get hideOnIdle():Boolean {
 			return true;
-			//return String(_player.config.pluginConfig("controlbar")['idlehide']) == "true";
 		}
 		
-		/** Start the fade timer **/
-/*		private function startFader():void {
-			if (!isNaN(timeout)) {
-				clearTimeout(timeout);
-			}
-			timeout = setTimeout(moveTimeout, 2000);
-		}
-*/		
-/*		/** If the mouse leaves the stage, hide the dock 
-		private function mouseLeftStage(evt:Event=null):void {
-			moveTimeout();
-		}
-		
-		/** Show the buttons on mousemove. 
-		private function moveHandler(evt:Event = null):void {
-			clearTimeout(timeout);
-			if (hidden) { return; }
-			
-			if (player.state != PlayerState.IDLE || replayState) {
-				if (!visible) {
-					alpha = 0;
-					visible = true;
-					sendShow();
-					animations.fade(1);
-				}
-				if (!replayState) startFader();
-			}
-		}
-		
-		
-		/** Hide the buttons again when move has timed out. 
-		private function moveTimeout():void {
-			if (hidden) return;
-			
-			sendHide();
-			animations.fade(0);
-			
-		}
-
-*/	
 		private function fadeComplete(evt:Event):void {
 			if (alpha == 0) {
 				visible = false;
@@ -237,40 +194,19 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		private function playlistComplete(evt:PlaylistEvent):void {
 			replayState = true;
-			stateHandler();
 		}
 
-		/** Process state changes **/
-		private function stateHandler(evt:PlayerStateEvent = undefined):void {
-/*			switch (player.state) {
-				case PlayerState.IDLE:
-					clearTimeout(timeout);
-					if (!hidden) {
-						if (replayState) {
-							moveHandler();
-						}
-					}
-					break;
-				default:
-					replayState = false;
-					moveHandler();
-					startFader();
-					break;
-			}
-*/		}
-		
 		public override function show():void {
 			if (player.config.dock) {
-				//_hiding = false;
-				//this.visible = true;
 				animations.fade(1, 0.5);
 			}
 		}
 
 		public override function hide():void {
 			if (player.config.dock) {
-				//_hiding = true;
-				//this.visible = false;
+				for each (var button:DockButton in buttons) {
+					button.hide();
+				}
 				animations.fade(0, 0.5);
 			}
 		}

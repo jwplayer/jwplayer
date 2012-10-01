@@ -22,8 +22,6 @@ package com.longtailvideo.jwplayer.view.components {
 			hide: true, 
 			position: "top-right"
 		}
-		/** Reference to the current fade timer **/
-		protected var timeoutInterval:uint;
 		/** Seconds after fading in to hide logo again **/
 		protected var timeout:Number = 2;
 		/** Reference to the loader **/
@@ -144,9 +142,7 @@ package com.longtailvideo.jwplayer.view.components {
 			visible = true;
 			_showing = true;
 			//alpha = 0;
-			clearTimeout(timeoutInterval);
 			animations.fade(1, 0.25);
-			timeoutInterval = setTimeout(hide, timeout * 1000);
 			mouseEnabled = true;
 		}
 		
@@ -157,7 +153,6 @@ package com.longtailvideo.jwplayer.view.components {
 				mouseEnabled = false;
 				_showing = false;
 				animations.fade(0, 0.5);
-				clearTimeout(timeoutInterval);
 			}
 		}
 		

@@ -147,6 +147,7 @@
 	_css(LOGO_CLASS, {
 		cursor: "pointer",
 	  	position: "absolute",
+	  	'z-index': 100,
 	  	opacity: 0
 	});
 
