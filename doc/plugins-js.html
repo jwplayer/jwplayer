@@ -72,8 +72,8 @@
 
   };
 
-  // This line registers above code as a plugin called "helloworld".
-  jwplayer().registerPlugin('helloworld', template);
+  // This line registers above code as a 6.0 compatible plugin called "helloworld".
+  jwplayer().registerPlugin('helloworld', '6.0', template);
 
 })(jwplayer);
 </pre>
@@ -119,8 +119,9 @@ jwplayer("myElement").setup({
 
 <p>The <em>registerPlugin()</em> method has an interesting feature: it can be used to load an ActionScript (SWF) plugin in addition to the regular plugin JavaScript. With this feature, you can write <em>hybrid</em> plugins. These plugins can leverage the features and performance of Flash, but work in HTML5 mode too:</p>
 
-<pre>jwplayer().registerPlugin(id, jsPlugin, swfURL);
+<pre>jwplayer().registerPlugin(id, target, jsPlugin, swfURL);
 </pre><ul><li><strong>id</strong> {String}: The id of the plugin.
+<li><strong>target</strong> {String}: The player version this plugin targets.
 </li><li><strong>jsPlugin</strong> {Function}: The plugin javascript function.
 </li><li><strong>swfURL</strong> {String}: The URL of the Flash plugin to load.  Please note, the <em>id</em> property set in the Flash plugin must match the file name of the plugin SWF.
 </li></ul><p>

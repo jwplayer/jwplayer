@@ -53,7 +53,7 @@
 <p>The skin XML document contains all the settings and all the (links to) images for your skin. The XML file is easy to create and edit with any text or HTML editor. Here's its overall structure:</p>
 
 <pre>
-&lt;skin version='2' name='SkinName' author='skinAuthor'&gt;
+&lt;skin target='6.0' name='SkinName' author='skinAuthor'&gt;
    &lt;components&gt;
       &lt;component name='controlbar'&gt;
          &lt;settings&gt;
@@ -70,7 +70,7 @@
 &lt;/skin&gt;
 </pre>
 
-<p>The main element, <strong>&lt;skin&gt;</strong>, declares that this XML is a JW Player skin. Version 2 skins contain the JW6 options (like the tooltip) version 1 skins (JW5) did not have. The additional <em>name</em> and <em>author</em> attributes are optional but useful metadata.</p>
+<p>The main element, <strong>&lt;skin&gt;</strong>, declares that this XML is a JW Player skin. The <strong>target</strong> attribute declares this skin works in player 6.0 and up. The attribute is required for a skin to work in JW6! The additional <em>name</em> and <em>author</em> attributes are optional but useful metadata.</p>
 
 <p>Inside the <em>&lt;skin&gt;</em> element, 5 <strong>&lt;component&gt;</strong> elements are placed, named <em>controlbar</em>, <em>display</em>, <em>dock</em>, <em>playlist</em> and <em>tooltip</em>. They correspond to the following visuals:</p>
 

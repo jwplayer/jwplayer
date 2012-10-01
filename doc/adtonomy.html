@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-<title>Running Your Own Ads</title>
+<title>Running Direct Ads</title>
 <style>
     body { padding: 50px 100px; width: 700px; font: 13px/20px Arial; background: #FFF; }
     a, h1, h2 { color: #369; }
@@ -20,7 +20,7 @@
 </style>
 </head><body>
 
-<h1>Running Your Own Ads</h1>
+<h1>Running Direct Ads</h1>
 
 <p>This document explains how to run server-less preroll videos, text overlays and image endcaps. See <a href="advertising.html">Advertising In JW Player</a> for a general overview of all supported advertising options.</p>
 
@@ -139,7 +139,7 @@ jwplayer('myElement').setup({
 <p><strong>Note that advertising is currently only available in Flash, so make sure to set the <em>primary</em> option to <em>flash</em>.</strong></p>
 
 
-<h2>Ad Schedule</h2>
+<h2>Schedule</h2>
 
 <p>This section explains in detail how the ad schedule works.</p>
 
@@ -161,7 +161,7 @@ schedule: {
 
 <p>Note the ad schedule is applied to each playlist item. If you have a <a href="playlists.html">multi-video playlist</a>, the ads are repeated for every entry. For example, a video preroll ad will play before each video in the playlist.</p>
 
-<h3>Ad Breaks</h3>
+<h3>Breaks</h3>
 
 <p>An ad breaks represents a point in time where an ad should be delivered. Each ad break in a schedule must have a unique name, an <em>offset</em> and an <em>ad</em> sub-block:</p>
 
