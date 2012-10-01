@@ -254,8 +254,8 @@ package com.longtailvideo.jwplayer.view.components {
 				hideButton('pause');
 			}
 //			var forced:Boolean = Boolean(getConfigParam('forcenextprev'));
-			var multiList:Boolean = player.playlist.length >= 1;
-			var playlistShowing:Boolean = (player.config.fullscreen == false && player.config.playlistposition.toLowerCase() != "none");  
+			var multiList:Boolean = player.playlist.length > 1;
+			var playlistShowing:Boolean = (player.config.fullscreen == false && player.config.playlistposition.toLowerCase() != "none");
 			if (!(multiList && !playlistShowing)) {
 				newLayout = newLayout.replace(/\|?(prev|next)/g, "");
 				hideButton('prev');
