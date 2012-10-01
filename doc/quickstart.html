@@ -22,67 +22,75 @@
 
 <h1>Quick Start</h1>
 
-<p>Getting JW Player up and running is now easier than ever. Only a few lines of HTML code is needed to embed a video that works on any desktop browser and mobile device. This guide walks through the necessary steps.</p>
+<p>Getting JW Player up and running is now easier than ever. Only a few lines of HTML code are needed to embed a video that works on all popular desktop browsers and mobile devices. This guide walks through the necessary steps.</p>
 
 
 
-<h2>Uploading the Files</h2>
+<h2>1: Upload JW Player</h2>
 
-<p>In order to embed a video, you first need the file uploaded to your server. Ensure it is in the MP4 format, since that can be played on any browser and device (including iPad, iPhone and Android).</p>
+<p>Before embedding a video, you must upload JW Player to your website. Unzip your player download and upload the <strong>jwplayer</strong> folder to the wwwroot of your website. The following three files should now be accessible over the internet:</p>
 
 <ul>
-<li>If your video is not in the MP4 format, you can convert it using a free tool like Handbrake. See our <a href="encoding.html">Video Encoding guide</a> for more info.</li>
-<li>If you have no video at hand, feel free to use <a href="http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4">this short clip</a> for your testing.</li>
+<li><em>http://yoursite.com/jwplayer/jwplayer.js</em> (the light-weight embed library)</li>
+<li><em>http://yoursite.com/jwplayer/jwplayer.html5.js</em> (the actual HTML5 player)</li>
+<li><em>http://yoursite.com/jwplayer/jwplayer.flash.js</em> (the actual Flash player)</li>
 </ul>
 
-<p>Second, you should grab JW Player <a href="http://www.longtailvideo.com/players/jw-flv-player/">from our site</a> and upload it to your webserver. The following three files need uploaded and placed in a directory that's accessible from the internet:</p>
-
-<ol>
-<li><strong>jwplayer.js</strong>: the overall embed library.</li>
-<li><strong>jwplayer.html5.js</strong>: the actual HTML5 player.</li>
-<li><strong>jwplayer.flash.js</strong>: the actual Flash player.</li>
-</ol>
-
-<p>Third, you should upload a poster image to your server. This image (in JPG format) is displayed before the video starts. An interesting frame from the video usually works well to draw attention and entices users to click <em>play</em>. <a href="http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg">Here is an image</a> for our short test clip.</p>
+<p>The download of the <strong>Free</strong> edition is found <a href="http://www.longtailvideo.com/players/jw-flv-player/">on the JW6 product site</a>. Downloads of the <strong>Pro</strong>, <strong>Premium</strong> and <strong>Ads</strong> editions are found <a href="http://www.longtailvideo.com/account/">in your account dashboard</a>.</p>
 
 
 
-<h2>Embedding the Player</h2>
+<h2>2: Include JW Player</h2>
 
-<p>With all files uploaded to your site, embedding the JW Player is a simple, 3-step process. Open your web page in an HTML editor and:</p>
+<p>With the JW Player uploaded to your site, it now must be added to your code. Do this by linking <em>jwplayer.js</em> in the &lt;head&gt; of your HTML page:</p>
 
-<ol>
-<li>Load the JW Player embed library from the head of your page:
-<pre>&lt;script type="text/javascript" src="/scripts/jwplayer.js" &gt;&lt;/script&gt;</pre>
-</li>
-<li>Insert a &lt;div&gt; element with a unique <em>id</em> at the location you want the player to appear:
-<pre>&lt;div id="myElement"&gt;Loading the player ...&lt;/div&gt;</pre>
-</li>
-<li>Insert a script that invokes the JW Player <em>setup()</em> call on your &lt;div&gt;:</li>
-<pre>&lt;script type="text/javascript"&gt;
+<pre>&lt;script type="text/javascript" src="/jwplayer/jwplayer.js" &gt;&lt;/script&gt;</pre>
+
+<p>Since the embed library is light-weight, it's no problem to simply include JW Player with every page on your site.</p>
+
+<p>Note you don't have to include the library in the &lt;head&gt; of your page, as long as it is included before an actual video is embedded.</p>
+
+<h3>JW Player Key</h3>
+
+<p>If you have a JW Player account key, set it in a second line of code right below the first one:</p>
+
+<pre>&lt;script type="text/javascript"&gt;jwplayer.key="YOUR_JW_PLAYER_ACCOUNT_KEY";&lt;/script&gt;</pre>
+
+<p>The key enables tracking of <a href="analytics.html">video analytics</a> to your account. It also unlocks the <a href="about.html#editions">additional features</a> of the <strong>Pro</strong>, <strong>Premium</strong> and <strong>Ads</strong> editions.</p>
+
+
+
+<h2>3: Embed a Video</h2>
+
+<p>With JW Player uploaded and included, it's now time to actually embed a video. Therefore, insert this HTML code at the location you want the video to appear:</p>
+
+<pre>
+&lt;div id="myElement"&gt;Loading the player...&lt;/div&gt;
+
+&lt;script type="text/javascript"&gt;
     jwplayer("myElement").setup({
         file: "/uploads/example.mp4",
-        height: 270,
         image: "/uploads/example.jpg",
-        width: 480
     });
-&lt;/script&gt;</pre></li>
-</ol>
+&lt;/script&gt;
+</pre>
 
-<p>In the setup() block, <em>file</em> and <em>image</em> should be the URLs to your video file and poster images. Their paths should be relative to the HTML page (just like when embedding an image using &lt;img&gt;). The <em>height</em> and <em>width</em> are used to set the dimensions of the player. Feel free to change these to values that make the player nicely fit your page.</p>
+<p>In this code, the &lt;div&gt; element is used as a container to load JW Player into. It must have a unique <em>id</em> attribute.</p>
+
+<p>The setup() block defines which video <em>file</em> and poster <em>image</em> to load. Their URLs should be relative to the HTML page (just like embedding an images &lt;img&gt;).</p>
 
 
 
 <h2>Next Steps</h2>
 
-<p>That's it! With a few lines of code, you embedded a video that can be watched on any desktop browser, tablet or mobile phone. Next, JW Player supports many options for enhancing and tuning your audio or video embeds. Here are a few interesting guides:</p>
+<p>That's it! With a few lines of code, you embedded a video that can be watched on any desktop browser, tablet or mobile phone. Next, JW Player supports many options for enhancing and tuning your embeds. Here are a few interesting guides:</p>
 
 <ul>
-<li><a href="media.html">Supported Media Formats</a> lists audio and video types can be played on which browsers &amp; devices.</li>
-<li><a href="embedding.html">Embedding JW Player</a> lists all options for modifying the player's layout and behavior.</li>
+<li><a href="media.html">Supported Media Formats</a> lists which audio &amp; video types are played on which browsers &amp; devices.</li>
+<li><a href="embedding.html">Embedding JW Player</a> lists the options for modifying the player's layout and behavior.</li>
 </ul>
 <ul>
-<li><a href="playlists.html">Working with Playlists</a> explains how to group multiple videos into a playlist.</li>
+<li><a href="playlists.html">Working with Playlists</a> explains how to group multiple videos (or qualities) into a playlist.</li>
 <li><a href="captions.html">Adding Video Captions</a> explains how to add closed captions or subtitles to your embeds.</li>
 </ul>
 <ul>

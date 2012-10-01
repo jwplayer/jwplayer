@@ -30,17 +30,17 @@
 
 <h2>Media Support</h2>
 
-<p>Since JW Player relies upon the underlying Flash and HTML5 frameworks for media playback, not a whole lot has changed in terms of media support.</p>
+<p>Due to its revamped media selection engine, JW6 supports multiple content types in multiple qualities, using an inline setup or RSS feed. The <strong>Premium</strong> and <strong>Ads</strong> editions include support for Apple HLS in Flash.</p>
 
 <h3>Added</h3>
 
 <dl>
 <dt>Defined list of formats</dt>
-<dd>The docs for JW6 clearly define all <a href="media.html">supported media formats</a>, including their expected extensions and mimetypes. JW6 officially supports MP4/FLV/WebM video, AAC/MP3/Vorbis audio, YouTube streams and RTMP streams.</dd>
+<dd>The docs for JW6 clearly define all <a href="media.html">supported media formats</a>, including their expected extensions and mimetypes. JW6 supports MP4/FLV/WebM video, AAC/MP3/Vorbis audio, YouTube and HLS/RTMP streams.</dd>
 <dt>Setting multiple formats</dt>
 <dd>Setting multiple formats for one clip (RTMP+MP4, MP4+WebM, etc) has become more flexible and easier in JW6. Simply provide a list of sources using <a href="playlists.html">inline playlists</a> or <a href="feeds.html">mRSS feeds</a>. JW Player automatically detects and filters which formats can be played on each device.</dd>
 <dt>Apple HLS in Flash</dt>
-<dd>JW6 supports HTTP adaptive streaming through the <a href="hls.html">Apple HLS protocol</a>. In addition to iOS, HLS streams can also be played on the desktop (in Flash mode). Both live and on-demand are supported.</dd>
+<dd>In the <strong>Premium</strong> and <strong>Ads</strong> editions, JW6 supports HTTP adaptive streaming through the <a href="hls.html">Apple HLS protocol</a>. In addition to iOS, HLS streams can also be played on the desktop (in Flash mode). Both live and on-demand are supported.</dd>
 </dl>
 
 <h3>Removed</h3>
@@ -56,7 +56,7 @@
 
 <h2>Device Support</h2>
 
-<p>One of the major internal changed in JW6 is a full refactor of its HTML5 playback. The HTML5 rendering mode is now leaner, more stable and in support of recent browser features.</p>
+<p>One of the major internal changes in JW6 is a full refactor of its HTML5 playback. The HTML5 rendering mode is now leaner, more stable and in support of recent browser features.</p>
 
 <h3>Added</h3>
 
@@ -220,7 +220,7 @@
 <dt>The horizontal volume slider</dt>
 <dd>The horizontal volume slider of JW5 is replaced with a vertical one (in the tooltip) for JW6. This leaves more space for the timeslider, for increased seeking accuracy.</dd>
 <dt>SWF skinning</dt>
-<dd>JW6 does not support SWF skins anymore. The newer <a href="skinning.html">PNG/XML skinning model</a> is more flexible, less error-prone and more compatible than the SWF model.</dd>
+<dd>JW6 does not support SWF skins anymore. The newer <a href="skinning.html">PNG skinning model</a> is more flexible, less error-prone and more compatible than the SWF model.</dd>
 </dl>
 
 
@@ -256,9 +256,24 @@
 
 
 
+<h2>Analytics</h2>
+
+<p>JW6 introduces the free JW Player Analytics service, available to all JW Player users. The <strong>Premium</strong> and <strong>Ads</strong> editions also support Google Analytics.</p>
+
+<h3>Added</h3>
+
+<dl>
+<dt>JW Player Analytics</dt>
+<dd>A <a href="analytics.html">free analytics service</a> that enables all JW Player users to see how their video streams are performing.</dd>
+<dt>Google Analytics</dt>
+<dd>This former plugin <a href="gapro.html">is now built-in</a> for the <strong>Premium</strong> and <strong>Ads</strong> editions, making it straightforward to setup.</dd>
+</dl>
+
+
+
 <h2>Streaming</h2>
 
-<p>A new Quality API allows for manual quality selection across streaming technologies. HLS support across Flash and HTML5 allows publishers to leverage HTTP adaptive streaming.</p>
+<p>A new Quality API allows for manual quality selection across streaming technologies. HLS support across Flash and HTML5 (in the <strong>Premium</strong> and <strong>Ads</strong> editions) allows publishers to leverage HTTP adaptive streaming.</p>
 
 <h3>Added</h3>
 
@@ -266,7 +281,7 @@
 <dt>Manual quality switching</dt>
 <dd>For every media format, there's now the ability to set multiple quality levels. Viewers can select their preferred quality through a controlbar tooltip menu. For RTMP and YouTube, JW6 includes an <strong>auto</strong> quality level. When enabled, the optimal quality is automatically selected based upon bandwidth and screen size.</dd>
 <dt>Apple HLS in Flash</dt>
-<dd>JW6 supports HTTP adaptive streaming through the <a href="hls.html">Apple HLS protocol</a>. In addition to iOS, HLS streams can also be played on the desktop (in Flash mode). Both live and on-demand are supported.</dd>
+<dd>The <strong>Premium</strong> and <strong>Ads</strong> editions of JW6 support HTTP adaptive streaming through the <a href="hls.html">Apple HLS protocol</a>. In addition to iOS, HLS streams can be played on the desktop (in Flash mode). Both on-demand and live are supported.</dd>
 <dt>Loading single RTMP URLs</dt>
 <dd>JW6 support loading of a <a href="rtmp.html">single RTMP URL</a> in addition to a separate file/streamer setup. This eases RTMP setups and makes RTMP compatible with multi-format loading using both <a href="playlists.html">inline playlists</a> and <a href="feeds.html">RSS feeds</a> (e.g. RTMP+MP4). For dynamic streams, <a href="rtmp.html">SMIL manifests</a> are required.</dd>
 </dl>
@@ -285,44 +300,29 @@
 </dl>
 
 
-<h2>Analytics</h2>
-
-<p>JW6 introduces the free JW Player Analytics service, available to all JW Player users. It also supports Google Analytics in its higher editions.</p>
-
-<h3>Added</h3>
-
-<dl>
-<dt>JW Player Analytics</dt>
-<dd>A free analytics service that enables all JW Player users to see how their video streams are performing.</dd>
-<dt>Google Analytics</dt>
-<dd>This former plugin is now built into JW6 and straightforward to setup.</dd>
-</dl>
-
-
 
 <h2>Discovery</h2>
 
-<p>JW6 integrates <em>video sharing</em> and <em>related videos</em> features into its higher editions. Previously, this functionality was only available through separate plugins.</p>
+<p>The <strong>Premium</strong> and <strong>Ads</strong> editions of JW6 include <em>video sharing</em> and <em>related videos</em> features.</p>
 
 <h3>Added</h3>
 
 <dl>
 <dt>The <em>sharing</em> and <em>related</em> blocks.</dt>
-<dd>JW6 can set a <a href="sharing.html">social sharing</a> and <a href="related.html">related videos</a> overlay with built-in configuration blocks. These features do not have to be loaded as 3rd party plugins anymore.</dd>
+<dd>The <strong>Premium</strong> and <strong>Ads</strong> editions of JW6 can set a <a href="sharing.html">social sharing</a> and <a href="related.html">related videos</a> overlay with built-in configuration blocks.</dd>
 </dl>
-
 
 
 
 <h2>Advertising</h2>
 
-<p>JW6 integrates the former advertising plugins into its <em>Advertising</em> edition. This makes setup the advertising client and schedule both easier and faster. <a href="http://www.longtailvideo.com/contact-us/">Please contact us</a> if you are running ads in JW5 and want info on migrating to JW6.</p>
+<p>JW6 integrates all its advertising support into the <strong>Ads</strong> edition. This makes setup the advertising client and schedule both easier and faster. <a href="http://www.longtailvideo.com/contact-us/">Please contact us</a> if you are running ads in JW5 and want info on migrating to JW6.</p>
 
 
 
 <h2>Plugins</h2>
 
-<p>JW6 de-emphasizes its plugin model in favor of more built-in features (hd, captions, tooltips, gapro, sharing, related, advertising) and a more extensive <a href="scripting.html">JavaScript API</a>. However, JW6 continues to support building and loading plugins to add 3rd party functionality.</p>
+<p>JW6 de-emphasizes its plugin model in favor of more built-in features (hd, captions, tooltips), the <strong>Premium</strong> edition (gapro, sharing, related), the <strong>Ads</strong> edition (ova, googima, adtonomy) and a more extensive <a href="scripting.html">JavaScript API</a>. However, JW6 continues to support building and loading plugins to add 3rd party functionality.</p>
 
 <h3>Added</h3>
 

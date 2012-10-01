@@ -49,7 +49,7 @@
 </tr></table>
 
 <ol>
-    <li>New versions are frequently released. We always test the <a href="http://gs.statcounter.com/">most widely used</a> one.</li>
+<li>New versions are frequently released. We always test the <a href="http://gs.statcounter.com/">most widely used</a> one.</li>
 </ol>
 
 <p>All JW Player features are supported on these browsers, with the exception of media playback. In a nutshell, not all browsers support WebM video and Vorbis audio. See <a href="media.html">Supported Media Formats</a> for details.</p>
@@ -65,16 +65,19 @@
 <table><tr>
     <th>Device</th><th>HTML5</th><th>Flash</th>
 </tr><tr>
-    <td>iOS 4</td><td>yes</td><td>-</td>
-</tr><tr>
-    <td>iOS 5</td><td>yes</td><td>-</td>
+    <td>iOS <sup>1</sup></td><td>yes</td><td>-</td>
 </tr><tr>
     <td>Android 2.3</td><td>yes</td><td>-</td>
 </tr><tr>
     <td>Android 4</td><td>yes</td><td>-</td>
 </tr></table>
 
-<p>For many devices not on this list (e.g. <em>Android 2.2</em> or <em>BlackBerry</em>), JW Player will still provide users with an option to play the embedded audio or video file. Instead of a full-fledged player, a nicely formatted link to the file is then displayed. See <a href="#fallback">Download Fallback</a> for more info.</p>
+<ol>
+<li>iOS devices are easily upgraded. We test iPhone &amp; iPad on the <a href="http://david-smith.org/iosversionstats/">most widely used</a> iOS version.</li>
+</ol>
+
+
+<p>For many devices not on this list (e.g. <em>Android 2.2</em> or <em>BlackBerry 7</em>), JW Player will still provide users with an option to play the embedded audio or video file. Instead of a full-fledged player, a nicely formatted link to the file is then displayed. See <a href="#fallback">Download Fallback</a> for more info.</p>
 
 <p>There's a few key differences in JW Player's approach to mobile devices compared to desktop browsers:</p>
 
@@ -103,11 +106,10 @@
 <p>All features of JW Player (playlists, skinning, scripting, etc.) are available in both rendering modes. Whether JW Player renders itself in Flash or HTML5 is therefore totally depending upon the media format(s) that is/are embedded. See <a href="media.html">Supported Media Formats</a> for details. Here's a quick overview:</p>
 
 <ul>
-<li>MP4, AAC and MP3 can be played in both HTML5 and Flash.</li>
-<li>WebM, Vorbis and HLS can only be played in HTML5.</li>
+<li>MP4, AAC, MP3 and HLS can be played in both HTML5 and Flash.</li>
+<li>WebM and Vorbis can only be played in HTML5.</li>
 <li>FLV, RTMP and YouTube can only be played in Flash.</li>
 </ul>
-
 
 <p>At large, the market moves away from Flash towards HTML5. Therefore, JW Player prefers to use HTML5 over Flash if a piece of content can be played in both modes on a certain browser. This behavior can be changed though, by setting the configuration option <strong>primary</strong> to <em>flash</em>. See <a href="embedding.html">Embedding the Player</a> for more info.</p>
 
