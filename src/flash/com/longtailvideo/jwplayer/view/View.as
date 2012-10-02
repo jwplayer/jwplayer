@@ -370,10 +370,11 @@ package com.longtailvideo.jwplayer.view {
 				}
 				if (!_model.config.controls) {
 					_components.display.hide();
-					_components.controlbar.hide();
 					_components.dock.hide();
+					_components.controlbar.hide();
 				} else {
 					_components.display.show();
+					if (_completeState) _components.dock.show();
 				}
 				_components.controlbar.audioMode(false);
 				showMedia();

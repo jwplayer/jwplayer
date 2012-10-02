@@ -1,6 +1,7 @@
 package com.longtailvideo.jwplayer.view.components {
 	import com.longtailvideo.jwplayer.events.ViewEvent;
 	import com.longtailvideo.jwplayer.utils.Animations;
+	import com.longtailvideo.jwplayer.utils.Logger;
 	import com.longtailvideo.jwplayer.utils.RootReference;
 	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
 	
@@ -161,7 +162,9 @@ package com.longtailvideo.jwplayer.view.components {
 			var offset:Number = _capLeft[dim];
 			resizeSlider(1, 0, offset, _rail, _railCapLeft, _railCapRight);
 			resizeSlider(_currentBuffer, _bufferOffset, offset, _buffer, _bufferCapLeft, _bufferCapRight);
-			resizeSlider(_currentProgress, 0, offset, _progress, _progressCapLeft, _progressCapRight);
+			if (!_dragging) {
+				resizeSlider(_currentProgress, 0, offset, _progress, _progressCapLeft, _progressCapRight);
+			}
 
 			if (_thumb && !_dragging) {
 				if (_vertical) {
