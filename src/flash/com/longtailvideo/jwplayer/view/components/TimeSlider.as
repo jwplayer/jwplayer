@@ -49,7 +49,7 @@ package com.longtailvideo.jwplayer.view.components {
 			RootReference.stage.setChildIndex(_tooltip, RootReference.stage.numChildren-1);
 			_tooltip.x = evt.stageX;
 			_tooltip.y = _rail.localToGlobal(new Point(0, 0)).y;
-			_tooltip.text = Strings.digits(_duration * evt.localX / _width);
+			_tooltip.text = Strings.digits(_duration * (evt.localX - _capLeft.width) / _width);
 		}
 		
 		public function audioMode(state:Boolean):void {

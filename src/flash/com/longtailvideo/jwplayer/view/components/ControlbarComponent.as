@@ -355,7 +355,10 @@ package com.longtailvideo.jwplayer.view.components {
 			var durationField:TextField = getTextField('duration');
 			if (durationField) durationField.text = Strings.digits(duration);
 			var timeSlider:TimeSlider = getSlider('time') as TimeSlider;
-			if (timeSlider) timeSlider.duration = duration;
+			if (timeSlider) {
+				timeSlider.duration = duration;
+				timeSlider.live = (duration <= 0);
+			}
 		}
 
 
@@ -692,8 +695,8 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 			var percent:Number = Math.round(duration * evt.data);
 			dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_SEEK, percent));
+			_timeSlider.live = (duration <= 0);
 		}
-
 
 		private function addButtonDisplayObject(icon:ComponentButton, name:String, handler:Function=null):MovieClip {
 			var acs:AccessibilityProperties = new AccessibilityProperties();

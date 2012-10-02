@@ -58,6 +58,7 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _vertical:Boolean;
 		/** Which skin component to get the assets from **/
 		protected var _skinComponent:String;
+		protected var _isLive:Boolean;
 		
 		public function Slider(name:String, skin:ISkin, vertical:Boolean=false, component:String="controlbar") {
 			_name = name;
@@ -67,6 +68,7 @@ package com.longtailvideo.jwplayer.view.components {
 			
 			this.buttonMode = true;
 			this.mouseChildren = true;
+			this.live = false;
 			
 			var left:String = vertical ? "Top" : "Left";
 			var right:String = vertical ? "Bottom" : "Right";
@@ -289,7 +291,9 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		private function moveHandler(evt:MouseEvent):void {
 			if (_name != "timeSlider" || _dragging) {
-				resizeSlider(thumbPercent(), 0, _capLeft[dim], _progress, _progressCapLeft, _progressCapRight);
+				if (!_isLive) {
+					resizeSlider(thumbPercent(), 0, _capLeft[dim], _progress, _progressCapLeft, _progressCapRight);
+				}
 			}
 		}
 		
@@ -336,6 +340,10 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		public function get capsWidth():Number {
 			return _capLeft.width + _capRight.width;
+		}
+		
+		public function set live(state:Boolean):void {
+			_isLive = state;
 		}
 	}
 }
