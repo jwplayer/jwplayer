@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2619';
+	jwplayer.html5.version = '6.0.2622';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -3131,6 +3131,8 @@
 			_eventDispatcher.sendEvent(events.JWPLAYER_DISPLAY_CLICK);
 		}
 		
+		this.clickHandler = _clickHandler;
+		
 		function _createIcons() {
 			var	outStyle = {
 					font: _config.fontweight + " " + _config.fontsize + "px/"+(parseInt(_config.fontsize)+3)+"px Arial,Helvetica,sans-serif",
@@ -3672,7 +3674,9 @@
 			return elem ? elem : { width: 0, height: 0, src: "" };
 		}
 
-		_this.redraw = function() {};
+		_this.redraw = function() {
+			_dockBounds = _bounds(_container);
+		};
 		
 		function _positionTooltip(name) {
 			var tooltip = _tooltips[name],
@@ -6980,6 +6984,11 @@
 			
 			_controlsLayer.addEventListener('mouseout', _fadeControls, FALSE);
 			_controlsLayer.addEventListener('mousemove', _startFade, FALSE);
+			if (utils.isIE()) {
+				// Not sure why this is needed
+				_videoLayer.addEventListener('mousemove', _startFade, FALSE);
+				_videoLayer.addEventListener('click', _display.clickHandler);
+			}
 			_componentFadeListeners(_controlbar);
 			_componentFadeListeners(_dock);
 			_componentFadeListeners(_logo);
@@ -7114,14 +7123,19 @@
 				    }
 				}
 			}
-			if (_controlbar) _controlbar.redraw();
-			if (_display) _display.redraw();
+			_redrawComponent(_controlbar);
+			_redrawComponent(_display);
+			_redrawComponent(_dock);
 			_resizeMedia();
 			if (_model.stretching == utils.stretching.EXACTFIT) {
 				// Browsers seem to need an extra second to figure out how large they are in fullscreen...
 				setTimeout(_resizeMedia, 1000);
 			}
 			_eventDispatcher.sendEvent(events.JWPLAYER_RESIZE);
+		}
+		
+		function _redrawComponent(comp) {
+			if (comp) comp.redraw();
 		}
 
 		/**
@@ -7547,7 +7561,8 @@
 
 	_css('.' + VIEW_VIDEO_CONTAINER_CLASS, {
 		visibility: "hidden",
-		overflow: "hidden"
+		overflow: "hidden",
+		cursor: "pointer"
 	});
 
 	_css('.' + VIEW_VIDEO_CONTAINER_CLASS + " video", {

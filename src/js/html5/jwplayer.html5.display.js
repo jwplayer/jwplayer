@@ -88,6 +88,8 @@
 			_eventDispatcher.sendEvent(events.JWPLAYER_DISPLAY_CLICK);
 		}
 		
+		this.clickHandler = _clickHandler;
+		
 		function _createIcons() {
 			var	outStyle = {
 					font: _config.fontweight + " " + _config.fontsize + "px/"+(parseInt(_config.fontsize)+3)+"px Arial,Helvetica,sans-serif",

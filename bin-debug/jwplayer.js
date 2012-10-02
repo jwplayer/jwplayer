@@ -16,7 +16,7 @@ jwplayer = function(container) {
 	}
 };
 
-jwplayer.version = '6.0.2619';
+jwplayer.version = '6.0.2622';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -393,13 +393,15 @@ jwplayer.source = document.createElement("source");/**
 		image = "image",
 		mp4 = "mp4",
 		webm = "webm",
+		ogg = "ogg",
 		aac = "aac",
 		mp3 = "mp3",
 		vorbis = "vorbis",
 		
 		mimeMap = {
 			mp4: video+mp4,
-			vorbis: audio+"ogg",
+			vorbis: audio+ogg,
+			ogg: video+ogg,
 			webm: video+webm,
 			aac: audio+mp4,
 			mp3: audio+mp3,
@@ -415,6 +417,7 @@ jwplayer.source = document.createElement("source");/**
 			"f4a": mimeMap[aac],
 			"aac": mimeMap[aac],
 			"mp3": mimeMap[mp3],
+			"ogv": mimeMap[ogg],
 			"ogg": mimeMap[vorbis],
 			"oga": mimeMap[vorbis],
 			"webm": mimeMap[webm],

@@ -78,6 +78,9 @@ package com.longtailvideo.jwplayer.view {
 		// Timeout for fading controls
 		private var _fadingOut:uint;
 		
+		// Set to true during the player's completed state
+		private var _completeState:Boolean;
+		
 		public function View(player:IPlayer, model:Model) {
 			_player = player;
 			_model = model;
@@ -637,6 +640,7 @@ package com.longtailvideo.jwplayer.view {
 					imageDelay.start();
 					break;
 				case PlayerState.BUFFERING:
+					_completeState = false;
 					showControls();
 					break;
 				case PlayerState.PLAYING:
@@ -647,7 +651,7 @@ package com.longtailvideo.jwplayer.view {
 		}
 
 		protected function completeHandler(evt:PlaylistEvent):void {
-			Logger.log("Playlist complete");
+			_completeState = true;
 			_components.dock.show();
 		}
 		
@@ -727,7 +731,7 @@ package com.longtailvideo.jwplayer.view {
 		
 		private function hideControls():void {
 			if (_preventFade) return;
-			_components.dock.hide();
+			if (!_completeState) _components.dock.hide();
 			_components.controlbar.hide();
 			_components.logo.hide();
 		}

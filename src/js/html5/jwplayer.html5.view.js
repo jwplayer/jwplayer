@@ -129,6 +129,11 @@
 			
 			_controlsLayer.addEventListener('mouseout', _fadeControls, FALSE);
 			_controlsLayer.addEventListener('mousemove', _startFade, FALSE);
+			if (utils.isIE()) {
+				// Not sure why this is needed
+				_videoLayer.addEventListener('mousemove', _startFade, FALSE);
+				_videoLayer.addEventListener('click', _display.clickHandler);
+			}
 			_componentFadeListeners(_controlbar);
 			_componentFadeListeners(_dock);
 			_componentFadeListeners(_logo);
@@ -263,14 +268,19 @@
 				    }
 				}
 			}
-			if (_controlbar) _controlbar.redraw();
-			if (_display) _display.redraw();
+			_redrawComponent(_controlbar);
+			_redrawComponent(_display);
+			_redrawComponent(_dock);
 			_resizeMedia();
 			if (_model.stretching == utils.stretching.EXACTFIT) {
 				// Browsers seem to need an extra second to figure out how large they are in fullscreen...
 				setTimeout(_resizeMedia, 1000);
 			}
 			_eventDispatcher.sendEvent(events.JWPLAYER_RESIZE);
+		}
+		
+		function _redrawComponent(comp) {
+			if (comp) comp.redraw();
 		}
 
 		/**
@@ -696,7 +706,8 @@
 
 	_css('.' + VIEW_VIDEO_CONTAINER_CLASS, {
 		visibility: "hidden",
-		overflow: "hidden"
+		overflow: "hidden",
+		cursor: "pointer"
 	});
 
 	_css('.' + VIEW_VIDEO_CONTAINER_CLASS + " video", {

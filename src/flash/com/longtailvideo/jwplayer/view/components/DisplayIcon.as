@@ -189,8 +189,8 @@ package com.longtailvideo.jwplayer.view.components {
 		private function positionText():void {
 			if (!_textField.text) return;
 			
-			var maxX:Number = -1;
-			var maxY:Number = -1;
+			var maxX:Number = Number.MIN_VALUE;
+			var maxY:Number = Number.MIN_VALUE;
 			var minX:Number = Number.MAX_VALUE;
 			var minY:Number = Number.MAX_VALUE;
 			for (var i:Number = 0; i < _textField.text.length; i++) {
@@ -203,12 +203,13 @@ package com.longtailvideo.jwplayer.view.components {
 				}
 			}
 			
-			if (maxX > 0 && maxY > 0) {
+			if (maxX > Number.MIN_VALUE && maxY > Number.MIN_VALUE) {
 				_textField.width = Math.round(maxX - minX + 10);
 				_textField.height = Math.round(maxY + 5);
 				_textField.y = Math.round((_background.height - maxY) / 2 - minY);
 			} else {
 				_textField.height = _textField.textHeight;
+				_textField.width = 0;
 			}
 			
 		}

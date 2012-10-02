@@ -118,7 +118,9 @@
 			return elem ? elem : { width: 0, height: 0, src: "" };
 		}
 
-		_this.redraw = function() {};
+		_this.redraw = function() {
+			_dockBounds = _bounds(_container);
+		};
 		
 		function _positionTooltip(name) {
 			var tooltip = _tooltips[name],
