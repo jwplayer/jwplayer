@@ -42,9 +42,10 @@
 		
 		// This is not entirely efficient, but it's simple
 		function _checkComplete() {
+			if (!config || !config.plugins) _complete();
 			if (!_iscomplete && !_errorState) {
 				var incomplete = 0, plugins = model.getPlugins();
-				for (var plugin in plugins) {
+				for (var plugin in config.plugins) {
 					var pluginObj = plugins[plugin],
 						target = pluginObj.getTarget(),
 						status = plugins[plugin].getStatus(); 

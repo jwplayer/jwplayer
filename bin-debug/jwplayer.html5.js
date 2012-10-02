@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2624';
+	jwplayer.html5.version = '6.0.2635';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -3360,7 +3360,7 @@
 
 			_createElement('capLeft', _container);
 			_bg = _createElement('background', _container);
-			_text = _createElement('text', _container, textStyle, textStyleOver);
+			_text = _createElement('jwtext', _container, textStyle, textStyleOver);
 			_icon = _createElement('icon', _container);
 			_createElement('capRight', _container);
 
@@ -3507,15 +3507,12 @@
 		
 		var _hide = this.hide = function() {
 			_container.style.opacity = 0;
-			//_css(_internalSelector(), { opacity: 0 });
 			// Needed for IE9 for some reason
 			if (_bg && utils.isIE()) _bg.style.opacity = 0;
 		}
 
 		var _show = this.show = function() {
 			_container.style.opacity = 1;
-			//_css(_internalSelector(), { opacity: 1 });
-//			_container.style.opacity = 1;
 			if (_bg && utils.isIE()) _bg.style.opacity = 1;
 		}
 
@@ -3543,7 +3540,7 @@
 		'vertical-align': "middle",
 	}, true);
 
-	_css(DI_CLASS + " .text", {
+	_css(DI_CLASS + " .jwtext", {
 		color : "#fff",
 		'max-width' : "300px",
 		'overflow-y' : "hidden",
@@ -6558,7 +6555,8 @@
 					position : _position,
 					duration : _duration
 				});
-				if (_position >= _duration && _duration > 0) {
+				// Working around a Galaxy Tab bug; otherwise _duration should be > 0
+				if (_position >= _duration && _duration > 3) {
 					_complete();
 				}
 			}

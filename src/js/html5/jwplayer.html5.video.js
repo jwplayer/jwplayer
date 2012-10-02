@@ -128,7 +128,8 @@
 					position : _position,
 					duration : _duration
 				});
-				if (_position >= _duration && _duration > 0) {
+				// Working around a Galaxy Tab bug; otherwise _duration should be > 0
+				if (_position >= _duration && _duration > 3) {
 					_complete();
 				}
 			}

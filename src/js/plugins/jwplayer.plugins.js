@@ -4,8 +4,8 @@
  * @version 5.5
  */
 (function(jwplayer) {
-	var _plugins = {};		
-	var _pluginLoaders = {};
+	var _plugins = {},	
+		_pluginLoaders = {};
 	
 	jwplayer.plugins = function() {
 	}

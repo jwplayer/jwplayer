@@ -16,7 +16,7 @@ jwplayer = function(container) {
 	}
 };
 
-jwplayer.version = '6.0.2624';
+jwplayer.version = '6.0.2635';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -895,8 +895,8 @@ jwplayer.source = document.createElement("source");/**
  * @version 5.5
  */
 (function(jwplayer) {
-	var _plugins = {};		
-	var _pluginLoaders = {};
+	var _plugins = {},	
+		_pluginLoaders = {};
 	
 	jwplayer.plugins = function() {
 	}
@@ -1133,9 +1133,10 @@ jwplayer.source = document.createElement("source");/**
 		
 		// This is not entirely efficient, but it's simple
 		function _checkComplete() {
+			if (!config || !config.plugins) _complete();
 			if (!_iscomplete && !_errorState) {
 				var incomplete = 0, plugins = model.getPlugins();
-				for (var plugin in plugins) {
+				for (var plugin in config.plugins) {
 					var pluginObj = plugins[plugin],
 						target = pluginObj.getTarget(),
 						status = plugins[plugin].getStatus(); 
