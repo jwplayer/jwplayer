@@ -58,7 +58,16 @@ package com.longtailvideo.jwplayer.view {
 		}
 		
 		protected function setAboutText():void {
-			about = new ContextMenuItem('About JW Player ' + _player.version + '...');
+			var edition:String = _player['edition'];
+			if (!edition || edition == "free" || edition.length == 0) {
+				about = new ContextMenuItem('About JW Player ' + _player.version + '...');
+			}
+			else {
+				var version:String = PlayerVersion.version;
+				edition = edition.charAt(0).toUpperCase() + edition.substr(1);
+				version += " (" + edition + " edition)";
+				about = new ContextMenuItem('About JW Player ' + version + '...');
+			}
 		}
 
 		/** jump to the about page. **/

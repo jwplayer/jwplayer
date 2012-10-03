@@ -5969,6 +5969,14 @@
 	        _menu.onmouseout = function() { _mouseOverContext = false; };
 	        DOCUMENT.addEventListener("mousedown", _hideContext, false);
 	        _about = _createElement(RC_ITEM_CLASS);
+	        if (jwplayer().config.key) {
+	        	var	licenseKey = new utils.key(jwplayer().config.key),
+	        		edition = licenseKey.edition();
+	        	if (edition != "free" && edition != "invalid") {
+	        		edition = edition.charAt(0).toUpperCase() + edition.substr(1);
+	        		_config.abouttext = 'About JW Player ' + html5.version + ' (' + edition + ' edition) ...'
+	        	}
+	        }
 	        _about.innerHTML = _config.abouttext;
 	        _about.onclick = _clickHandler;
 	        _menu.appendChild(_about);
