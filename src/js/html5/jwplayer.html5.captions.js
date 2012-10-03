@@ -174,13 +174,20 @@
                 return false;
             }
             var ext = file.substr(file.length-4);
-            return (ext == ".srt" || ext == ".vtt" || ext ==".txt");
+            return (ext == ".srt" || ext == ".vtt" || ext ==".txt" || ext == ".xml");
         }
 
 
         /** Load captions. **/
         function _load(file) {
-            var loader = new jwplayer.html5.parsers.srt(_loadHandler,_errorHandler);
+            var ext = file.substr(file.length-4),
+                loader;
+            if (ext == ".xml") {
+                loader = new jwplayer.html5.parsers.dfxp(_loadHandler,_errorHandler);
+            }
+            else {
+                loader = new jwplayer.html5.parsers.srt(_loadHandler,_errorHandler);   
+            }
             loader.load(file);
         };
 
