@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2644';
+	jwplayer.html5.version = '6.0.2654';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -6663,14 +6663,14 @@
 
 		function _durationUpdateHandler(evt) {
 			if (!_attached) return;
-			if (_duration < 0) _duration = _videotag.duration;
+			if (_duration < 0) _duration = _round(_videotag.duration);
 			_timeUpdateHandler();
 		}
 
 		function _timeUpdateHandler(evt) {
 			if (!_attached) return;
 			if (_state == states.PLAYING && !_dragging) {
-				_position = _videotag.currentTime;
+				_position = _round(_videotag.currentTime);
 				_sendEvent(events.JWPLAYER_MEDIA_TIME, {
 					position : _position,
 					duration : _duration
@@ -6680,6 +6680,10 @@
 					_complete();
 				}
 			}
+		}
+		
+		function _round(number) {
+			return Number(number.toFixed(2));
 		}
 
 		function _canPlayHandler(evt) {
@@ -7230,8 +7234,8 @@
 				}
 			} else {
 		    	_fakeFullscreen(FALSE);
-				_model.setFullscreen(FALSE);
 				if (_model.fullscreen) {
+					_model.setFullscreen(FALSE);
 				    if (DOCUMENT.cancelFullScreen) {  
 				    	DOCUMENT.cancelFullScreen();  
 				    } else if (DOCUMENT.mozCancelFullScreen) {  
