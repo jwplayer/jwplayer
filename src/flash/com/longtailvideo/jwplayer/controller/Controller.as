@@ -167,7 +167,7 @@ package com.longtailvideo.jwplayer.controller {
 				
 				dispatchEvent(new PlayerEvent(PlayerEvent.JWPLAYER_READY));
 
-				playlistLoadHandler();
+//				playlistLoadHandler();
 
 				// Broadcast playlist loaded (which was swallowed during player setup);
 				if (_model.playlist.length > 0) {
