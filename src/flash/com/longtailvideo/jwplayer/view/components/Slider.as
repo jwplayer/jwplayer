@@ -291,7 +291,7 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		private function moveHandler(evt:MouseEvent):void {
 			if (_name != "timeSlider" || _dragging) {
-				if (!_isLive) {
+				if (!_isLive || (name != "timeSlider")) {
 					resizeSlider(thumbPercent(), 0, _capLeft[dim], _progress, _progressCapLeft, _progressCapRight);
 				}
 			}
