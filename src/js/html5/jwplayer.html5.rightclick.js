@@ -8,6 +8,13 @@
 	var utils = jwplayer.utils,
 		_css = utils.css,
 		
+		FREE = "free",
+		PRO = "pro",
+		PREMIUM = "premium",
+		ADS = "ads",
+		INVALID = "invalid",
+		ABOUT_DEFAULT = "About JW Player ",
+		LINK_DEFAULT = "http://www.longtailvideo.com/jwpabout/?a=right-click&v=",
 
 		DOCUMENT = document,
 		RC_CLASS = ".jwclick",
@@ -22,9 +29,10 @@
 	html5.rightclick = function(api, config) {
 		var _api = api,
 			_container,// = DOCUMENT.getElementById(_api.id),
+			_linkFlag = "f",
 			_config = utils.extend({
-				aboutlink: 'http://www.longtailvideo.com/jwpabout/?a=right-click&v='+html5.version+'&m=html5',
-				abouttext: 'About JW Player ' + html5.version + '...'
+				aboutlink: LINK_DEFAULT+html5.version+_linkFlag+'&m=html5',
+				abouttext: ABOUT_DEFAULT + html5.version + '...'
 			}, config),
 			_mouseOverContext = false,
 			_menu,
@@ -43,9 +51,23 @@
 	        if (jwplayer().config.key) {
 	        	var	licenseKey = new utils.key(jwplayer().config.key),
 	        		edition = licenseKey.edition();
-	        	if (edition != "free" && edition != "invalid") {
+	        	if (edition != FREE && edition != INVALID) {
 	        		edition = edition.charAt(0).toUpperCase() + edition.substr(1);
-	        		_config.abouttext = 'About JW Player ' + html5.version + ' (' + edition + ' edition) ...'
+	        		_config.abouttext = ABOUT_DEFAULT + html5.version + ' (' + edition + ' edition) ...';
+	        		edition = edition.toLowerCase();
+	        		if (edition == PRO) {
+	        			_linkFlag = "p";
+	        		}
+	        		else if (edition == PREMIUM) {
+	        			_linkFlag = "r";
+	        		}
+	        		else if (edition == ADS) {
+	        			_linkFlag = "a";
+	        		}
+	        		else {
+	        			_linkFlag = "f";	
+	        		}
+	        		_config.aboutlink = LINK_DEFAULT+html5.version+_linkFlag+'&m=html5';
 	        	}
 	        }
 	        _about.innerHTML = _config.abouttext;

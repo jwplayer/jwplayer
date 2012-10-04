@@ -30,6 +30,8 @@ package com.longtailvideo.jwplayer.view {
 		protected var about:ContextMenuItem;
 		/** Debug menu item **/
 		protected var debug:ContextMenuItem;
+		/** Link flag for the menu click handler **/
+		protected var linkFlag:String;
 	
 		/** Constructor. **/
 		public function RightclickMenu(player:IPlayer, clip:MovieClip) {
@@ -67,18 +69,33 @@ package com.longtailvideo.jwplayer.view {
 			}
 			if (!edition || edition == "free" || edition.length == 0) {
 				about = new ContextMenuItem('About JW Player ' + _player.version + '...');
+				linkFlag = "f";
 			}
 			else {
 				var version:String = PlayerVersion.version;
 				edition = edition.charAt(0).toUpperCase() + edition.substr(1);
 				version += " (" + edition + " edition)";
 				about = new ContextMenuItem('About JW Player ' + version + '...');
+				switch (edition.toLowerCase()) {
+					case "pro": 
+						linkFlag = "p"
+						break;
+					case "premium": 
+						linkFlag = "r";
+						break;
+					case "ads":
+						linkFlag = "a";
+						break;
+					default: 
+						linkFlag = "f";
+						break
+				}
 			}
 		}
 
 		/** jump to the about page. **/
 		protected function aboutHandler(evt:ContextMenuEvent):void {
-			navigateToURL(new URLRequest('http://www.longtailvideo.com/jwpabout/?a=right-click&v='+PlayerVersion.version+'&m=flash'), '_top');
+			navigateToURL(new URLRequest('http://www.longtailvideo.com/jwpabout/?a=right-click&v='+PlayerVersion.version+linkFlag+'&m=flash'), '_top');
 		}
 
 		/** change the debug system. **/
