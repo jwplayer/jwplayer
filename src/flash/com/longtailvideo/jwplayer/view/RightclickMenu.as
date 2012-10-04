@@ -58,7 +58,13 @@ package com.longtailvideo.jwplayer.view {
 		}
 		
 		protected function setAboutText():void {
-			var edition:String = _player['edition'];
+			var edition:String = "";
+			try {
+				edition = _player['edition'];
+			}
+			catch (error:Error) {
+				edition = "";
+			}
 			if (!edition || edition == "free" || edition.length == 0) {
 				about = new ContextMenuItem('About JW Player ' + _player.version + '...');
 			}
