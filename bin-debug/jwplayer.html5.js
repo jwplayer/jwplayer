@@ -1144,6 +1144,8 @@
         _selectedTrack = 0,
         /** Flag to remember fullscreen state. **/
         _fullscreen = false,
+        /** Current captions file being read. **/
+        _file,
         /** Event dispatcher for captions events. **/
         _eventDispatcher = new events.eventdispatcher();
 
@@ -1245,11 +1247,11 @@
             if (captions) {
                 for (i = 0; i < captions.length; i++) {
                     file = captions[i].file;
-                    if(_isValidCaption(file)) {
+                    if(file) {
                         if (captions[i].label) {
                             _tracks.push(captions[i]);
                         }
-                        else if (file) {
+                        else {
                             label = file.substring(file.lastIndexOf('/')+1,file.indexOf('.'));
                             _tracks.push({file: file, label: label});
                         }
@@ -1262,28 +1264,23 @@
             _sendEvent(events.JWPLAYER_CAPTIONS_LIST, _getTracks(), _selectedTrack);
         };
 
-        function _isValidCaption(file) {
-            if (!file || file.length < 4) {
-                return false;
-            }
-            var ext = file.substr(file.length-4);
-            return (ext == ".srt" || ext == ".vtt" || ext ==".txt" || ext == ".xml");
-        }
-
-
         /** Load captions. **/
         function _load(file) {
-            var ext = file.substr(file.length-4),
+            _file = file;
+            utils.ajax(file, _xmlReadHandler, _errorHandler);
+        };
+
+        function _xmlReadHandler(xmlEvent) {
+            var rss = xmlEvent.responseXML.firstChild,
                 loader;
-            if (ext == ".xml") {
+            if (html5.parsers.localName(rss) == "tt") {
                 loader = new jwplayer.html5.parsers.dfxp(_loadHandler,_errorHandler);
             }
             else {
                 loader = new jwplayer.html5.parsers.srt(_loadHandler,_errorHandler);   
             }
-            loader.load(file);
-        };
-
+            loader.load(_file);
+        }
 
         /** Captions were loaded. **/
         function _loadHandler(data) {
