@@ -45,7 +45,8 @@ package com.longtailvideo.jwplayer.view.components {
 			super(player, "logo");
 			animations = new Animations(this);
 			_player = player;
-			
+			var linkFlag:String = _getLinkFlag(_getEdition());
+			defaults.link = 'http://www.longtailvideo.com/jwpabout/?a=logo&v='+PlayerVersion.version+linkFlag+'&m=flash',
 			setupDefaults();
 			setupMouseEvents();
 			loadFile();
@@ -54,6 +55,30 @@ package com.longtailvideo.jwplayer.view.components {
 			if (getConfigParam('hide').toString().toLowerCase() == "false") {
 				show();
 			}
+		}
+		
+		private function _getLinkFlag(edition:String):String {
+			switch (edition.toLowerCase()) {
+				case "pro":
+					return "p";
+				case "premium":
+					return "r";
+				case "ads":
+					return "a";
+				default:
+					return "f";
+			}
+		}
+		
+		private function _getEdition():String {
+			var edition:String = "";
+			try {
+				edition = _player['edition'];
+			}
+			catch(error:Error) {
+				edition = "";
+			}
+			return edition;		
 		}
 		
 		/**

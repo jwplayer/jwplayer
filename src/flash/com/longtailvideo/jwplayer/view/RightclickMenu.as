@@ -60,36 +60,41 @@ package com.longtailvideo.jwplayer.view {
 		}
 		
 		protected function setAboutText():void {
-			var edition:String = "";
-			try {
-				edition = _player['edition'];
-			}
-			catch (error:Error) {
-				edition = "";
-			}
-			if (!edition || edition == "free" || edition.length == 0) {
+			var edition:String = _getEdition();
+			if (edition == "free" || edition.length == 0) {
 				about = new ContextMenuItem('About JW Player ' + _player.version + '...');
 				linkFlag = "f";
 			}
 			else {
 				var version:String = PlayerVersion.version;
+				linkFlag = _getLinkFlag(edition);
 				edition = edition.charAt(0).toUpperCase() + edition.substr(1);
 				version += " (" + edition + " edition)";
 				about = new ContextMenuItem('About JW Player ' + version + '...');
-				switch (edition.toLowerCase()) {
-					case "pro": 
-						linkFlag = "p"
-						break;
-					case "premium": 
-						linkFlag = "r";
-						break;
-					case "ads":
-						linkFlag = "a";
-						break;
-					default: 
-						linkFlag = "f";
-						break
-				}
+			}
+		}
+		
+		private function _getEdition():String {
+			var edition:String = "";
+			try {
+				edition = _player['edition'];
+			}
+			catch(error:Error) {
+				edition = "";
+			}
+			return edition;
+		}
+		
+		private function _getLinkFlag(edition:String):String {
+			switch (edition.toLowerCase()) {
+				case "pro": 
+					return "p";
+				case "premium": 
+					return "r";
+				case "ads":
+					return "a";
+				default: 
+					return "f";
 			}
 		}
 

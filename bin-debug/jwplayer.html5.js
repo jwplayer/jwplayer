@@ -4324,6 +4324,7 @@
 	
 		UNDEFINED = undefined,
 		
+		LINK_DEFAULT = "http://www.longtailvideo.com/jwpabout/?a=logo&v=",
 		JW_CSS_VISIBLE = "visible",
 		JW_CSS_HIDDEN = "hidden",
 		LOGO_CLASS = ".jwlogo";
@@ -4355,6 +4356,9 @@
 				}
 			} catch(e) {}
 			
+			var linkFlag = _getLinkFlag(_getEdition());
+			_defaults.link = LINK_DEFAULT+jwplayer.version+linkFlag+'&m=html5';
+
 			_settings = utils.extend({}, _defaults, logoConfig);
 			_settings.hide = (_settings.hide.toString() == "true");
 		}
@@ -4424,6 +4428,31 @@
 			}
 			return;
 		}
+
+		function _getEdition() {
+			if (jwplayer().config.key) {
+				var	licenseKey = new utils.key(jwplayer().config.key);
+				return licenseKey.edition();
+			}
+			else {
+				return "";
+			}
+		}
+
+		function _getLinkFlag(edition) {
+			if (edition == "pro") {
+				return "p";
+			}
+			else if (edition == "premium") {
+				return "r";
+			}
+			else if (edition == "ads") {
+				return "a";
+			}
+			else {
+				return "f";
+			}
+		}
 		
 		function _internalSelector(selector) {
 			return "#" + _id + " " + (selector ? selector : "");
@@ -4449,7 +4478,7 @@
 	logo.defaults = {
 		prefix: "http://l.longtailvideo.com/html5/",
 		file: "logo.png",
-		link: 'http://www.longtailvideo.com/jwpabout/?a=logo&v='+jwplayer.version+'&m=html5',
+		link: LINK_DEFAULT+jwplayer.version+'&m=html5',
 		linktarget: "_top",
 		margin: 8,
 		hide: true,
@@ -5938,7 +5967,6 @@
 		PRO = "pro",
 		PREMIUM = "premium",
 		ADS = "ads",
-		INVALID = "invalid",
 		ABOUT_DEFAULT = "About JW Player ",
 		LINK_DEFAULT = "http://www.longtailvideo.com/jwpabout/?a=right-click&v=",
 
@@ -5974,32 +6002,43 @@
 	        _menu.onmouseout = function() { _mouseOverContext = false; };
 	        DOCUMENT.addEventListener("mousedown", _hideContext, false);
 	        _about = _createElement(RC_ITEM_CLASS);
-	        if (jwplayer().config.key) {
-	        	var	licenseKey = new utils.key(jwplayer().config.key),
-	        		edition = licenseKey.edition();
-	        	if (edition != FREE && edition != INVALID) {
-	        		edition = edition.charAt(0).toUpperCase() + edition.substr(1);
-	        		_config.abouttext = ABOUT_DEFAULT + html5.version + ' (' + edition + ' edition) ...';
-	        		edition = edition.toLowerCase();
-	        		if (edition == PRO) {
-	        			_linkFlag = "p";
-	        		}
-	        		else if (edition == PREMIUM) {
-	        			_linkFlag = "r";
-	        		}
-	        		else if (edition == ADS) {
-	        			_linkFlag = "a";
-	        		}
-	        		else {
-	        			_linkFlag = "f";	
-	        		}
-	        		_config.aboutlink = LINK_DEFAULT+html5.version+_linkFlag+'&m=html5';
-	        	}
+
+	        var edition = _getEdition();
+	        _linkFlag = _getLinkFlag(edition);
+	        if (edition != FREE && edition.length != 0) {
+        		edition = edition.charAt(0).toUpperCase() + edition.substr(1);
+        		_config.abouttext = ABOUT_DEFAULT + html5.version + ' (' + edition + ' edition) ...';
+        		_config.aboutlink = LINK_DEFAULT+html5.version+_linkFlag+'&m=html5';
 	        }
 	        _about.innerHTML = _config.abouttext;
 	        _about.onclick = _clickHandler;
 	        _menu.appendChild(_about);
 	        DOCUMENT.body.appendChild(_menu);
+		}
+
+		function _getEdition() {
+			if (jwplayer().config.key) {
+				var	licenseKey = new utils.key(jwplayer().config.key);
+				return licenseKey.edition();
+			}
+			else {
+				return "";
+			}
+		}
+
+		function _getLinkFlag(edition) {
+			if (edition == PRO) {
+				return "p";
+			}
+			else if (edition == PREMIUM) {
+				return "r";
+			}
+			else if (edition == ADS) {
+				return "a";
+			}
+			else {
+				return "f";
+			}
 		}
 		
 		function _createElement(className) {
