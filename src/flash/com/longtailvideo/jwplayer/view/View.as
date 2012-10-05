@@ -653,7 +653,9 @@ package com.longtailvideo.jwplayer.view {
 
 		protected function completeHandler(evt:PlaylistEvent):void {
 			_completeState = true;
-			_components.dock.show();
+			if (_model.config.controls && !audioMode) {
+				_components.dock.show();
+			}
 		}
 		
 		protected function forward(evt:Event):void {
