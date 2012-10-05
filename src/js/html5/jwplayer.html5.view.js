@@ -558,6 +558,9 @@
 							_hideDisplay();
 						}
 					}
+				} else {
+					_showVideo(FALSE);
+					_display.hidePreview(FALSE);
 				}
 				_startFade();
 				break;

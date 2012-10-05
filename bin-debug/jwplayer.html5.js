@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2662';
+	jwplayer.html5.version = '6.0.2665';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -826,7 +826,7 @@
 				}
 				switch (_localName(node).toLowerCase()) {
 					case 'content':
-						itm['file'] = _xmlAttribute(node, 'url');
+						//itm['file'] = _xmlAttribute(node, 'url');
 						if (_xmlAttribute(node, 'duration')) {
 							itm['duration'] = utils.seconds(_xmlAttribute(node, 'duration'));
 						}
@@ -5642,7 +5642,7 @@
 				}
 				
 				var playlist = new _jw.playlist(html5.parsers.rssparser.parse(rss));
-				// TODO: full source inspection here - need to detect if there are playable sources in the list
+				playlist = _filterPlaylist(playlist);
 				if (playlist && playlist.length && playlist[0].sources && playlist[0].sources.length && playlist[0].sources[0].file) {
 					_eventDispatcher.sendEvent(events.JWPLAYER_PLAYLIST_LOADED, {
 						playlist: playlist
@@ -5653,6 +5653,21 @@
 			} catch (e) {
 				_playlistError();
 			}
+		}
+		
+		function _filterPlaylist(list) {
+			if (!list) return;
+			var newList = [], i, item, sources;
+			for (i=0; i < list.length; i++) {
+				item = list[i];
+				sources = utils.filterSources(item.sources);
+				
+				if (sources && sources.length) {
+					item.sources = sources;
+					newList.push(item);
+				}
+			}
+			return newList;
 		}
 		
 		function _playlistLoadError() {
@@ -6831,11 +6846,25 @@
 			_duration = item.duration ? item.duration : -1;
 			_position = 0;
 			
-			if (_currentQuality < 0) _currentQuality = 0;
 			_levels = _item.sources;
+			_pickInitialQuality();
 			_sendLevels(_levels);
 			
 			_completeLoad();
+		}
+		
+		function _pickInitialQuality() {
+			if (_currentQuality < 0) _currentQuality = 0;
+			var _sortedLevels = _levels.slice(0).sort(function(a, b) { return Number(b.width) - Number(a.width) }),
+				bounds = utils.bounds(_videotag),
+				i, level;
+			for (i=0; i<_sortedLevels.length; i++) {
+				level = _sortedLevels[i];
+				if (level.width && level.width <= bounds.width) {
+					_currentQuality = _levels.indexOf(level);
+					break;
+				}
+			}
 		}
 		
 		function _completeLoad() {
@@ -7597,6 +7626,9 @@
 							_hideDisplay();
 						}
 					}
+				} else {
+					_showVideo(FALSE);
+					_display.hidePreview(FALSE);
 				}
 				_startFade();
 				break;

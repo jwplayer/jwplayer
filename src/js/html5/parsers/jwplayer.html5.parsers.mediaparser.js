@@ -58,7 +58,7 @@
 				}
 				switch (_localName(node).toLowerCase()) {
 					case 'content':
-						itm['file'] = _xmlAttribute(node, 'url');
+						//itm['file'] = _xmlAttribute(node, 'url');
 						if (_xmlAttribute(node, 'duration')) {
 							itm['duration'] = utils.seconds(_xmlAttribute(node, 'duration'));
 						}

@@ -29,7 +29,7 @@
 				}
 				
 				var playlist = new _jw.playlist(html5.parsers.rssparser.parse(rss));
-				// TODO: full source inspection here - need to detect if there are playable sources in the list
+				playlist = _filterPlaylist(playlist);
 				if (playlist && playlist.length && playlist[0].sources && playlist[0].sources.length && playlist[0].sources[0].file) {
 					_eventDispatcher.sendEvent(events.JWPLAYER_PLAYLIST_LOADED, {
 						playlist: playlist
@@ -40,6 +40,21 @@
 			} catch (e) {
 				_playlistError();
 			}
+		}
+		
+		function _filterPlaylist(list) {
+			if (!list) return;
+			var newList = [], i, item, sources;
+			for (i=0; i < list.length; i++) {
+				item = list[i];
+				sources = utils.filterSources(item.sources);
+				
+				if (sources && sources.length) {
+					item.sources = sources;
+					newList.push(item);
+				}
+			}
+			return newList;
 		}
 		
 		function _playlistLoadError() {

@@ -222,11 +222,25 @@
 			_duration = item.duration ? item.duration : -1;
 			_position = 0;
 			
-			if (_currentQuality < 0) _currentQuality = 0;
 			_levels = _item.sources;
+			_pickInitialQuality();
 			_sendLevels(_levels);
 			
 			_completeLoad();
+		}
+		
+		function _pickInitialQuality() {
+			if (_currentQuality < 0) _currentQuality = 0;
+			var _sortedLevels = _levels.slice(0).sort(function(a, b) { return Number(b.width) - Number(a.width) }),
+				bounds = utils.bounds(_videotag),
+				i, level;
+			for (i=0; i<_sortedLevels.length; i++) {
+				level = _sortedLevels[i];
+				if (level.width && level.width <= bounds.width) {
+					_currentQuality = _levels.indexOf(level);
+					break;
+				}
+			}
 		}
 		
 		function _completeLoad() {

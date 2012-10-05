@@ -109,8 +109,9 @@ package com.longtailvideo.jwplayer.media {
 			
 			// Set initial quality and set levels
 			_currentQuality = 0;
-			for (var i:Number=0; i < _item.levels.length; i++) {
-				if (_item.levels[i].width && _item.levels[i].width < _config.width * 1.5) {
+			var sortedLevels:Array = _item.levels.sort(function(obj1:Object, obj2:Object):Number { return (obj2.width > obj1.width ? 1 : (obj1.width > obj2.width ? -1 : 0) ); }, Array.RETURNINDEXEDARRAY);
+			for each (var i:Number in sortedLevels) {
+				if (_item.levels[i].width && _item.levels[i].width <= _config.width) {
 					_currentQuality = i;
 					break;
 				}
