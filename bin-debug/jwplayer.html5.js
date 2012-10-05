@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2654';
+	jwplayer.html5.version = '6.0.2662';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -3503,7 +3503,6 @@
 			style = utils.extend( {}, style);
 			if (name.indexOf("Icon") > 0) _iconWidth = skinElem.width;
 			if (skinElem.src) {
-				//_show();
 				style['background-image'] = 'url(' + skinElem.src + ')';
 				style['width'] = skinElem.width;
 			}
@@ -3540,12 +3539,9 @@
 				'background-repeat': 'repeat-x',
 				'background-size': JW_CSS_100PCT + " " + bgSkin.height + "px",
 				position: "absolute",
-//				top: 0,
 				width: UNDEFINED,
-//				width: hasCaps ? UNDEFINED : (showText ? "100%" : bgSkin.width),
-//				'margin-left': !showText ? (bgSkin.width - _iconWidth) / -2 : UNDEFINED,
-				left: hasCaps ? capLeftSkin.width : 0,
-				right: hasCaps ? capRightSkin.width : 0
+				left: hasCaps ? capLeftSkin.width - 1: 0,
+				right: hasCaps ? capRightSkin.width - 1 : 0
 			});
 			_css(_internalSelector(".capLeft"), {
 				display: hasCaps ? UNDEFINED : JW_CSS_NONE,
@@ -6071,8 +6067,6 @@
 	        _menu.style.left = evt.clientX + scrollLeft + 'px';
 	        _menu.style.top = evt.clientY + scrollTop + 'px';
 	        _menu.style.display = 'block';
-	        _about.style.padding = '8px 21px';
-	        _about.style.margin = '0px';
 	        evt.preventDefault();
 	    }
 
@@ -6114,13 +6108,8 @@
 	
 	_css(RC_ITEM_CLASS, {
 		padding: "8px 21px",
-		margin: '0px',
 		'text-align': 'left',
-		cursor: "pointer",
-		color: 'inherit',
-		'background-color': 'inherit',
-		'font-size': 'inherit',
-		'font-family': 'inherit'
+		cursor: "pointer"
 	}, true);
 
 	_css(RC_ITEM_CLASS + ":hover", {
@@ -7097,7 +7086,7 @@
 			_playlist,
 			_audioMode,
 			_isMobile = utils.isMobile(),
-			_isIPad = utils.isIPad() || utils.isAndroid(),
+			_isIPad = utils.isIPad(),// || utils.isAndroid(),
 			_isIPod = utils.isIPod(),
 			_forcedControls = (_model.mobilecontrols),
 			_errorState = FALSE,
@@ -7267,8 +7256,6 @@
 				if (_forcedControls) {
 					_showControls();
 				}
-			} else {
-				_videoTag.controls = TRUE;
 			}
 				
 			setTimeout(function() {
@@ -7501,12 +7488,14 @@
 			}
 			if (_isMobile && !_forcedControls) {
 				_controlsLayer.style.display = "block";
+				_videoTag.controls = false;
 			}
 		}
 		function _hideDisplay() {
 			if (_display) {
 				if (_isMobile && !_forcedControls) {
 					_controlsLayer.style.display = "none";
+					_videoTag.controls = true;
 				}
 				_display.hide();
 			}
@@ -7596,8 +7585,7 @@
 					_resizeMedia();
 					_display.hidePreview(TRUE);
 					if (_isMobile) {
-						if (_isIPad && !_forcedControls) _videoTag.controls = TRUE;
-						else { 
+						if (!_isIPad || _forcedControls) {
 							_hideDisplay();
 						}
 					}
@@ -7614,7 +7602,7 @@
 					_display.hidePreview(FALSE);
 					_showDisplay();
 				}
-				if (_isIPad) _videoTag.controls = FALSE;
+//				if (_isIPad) _videoTag.controls = FALSE;
 				break;
 			case states.BUFFERING:
 				_showDisplay();
@@ -7625,8 +7613,8 @@
 				_showDisplay();
 				if (!_isMobile || _forcedControls) {
 					_showControls();
-				} else if (_isIPad) {
-					_videoTag.controls = FALSE;
+//				} else if (_isIPad) {
+//					_videoTag.controls = FALSE;
 				}
 				break;
 			}

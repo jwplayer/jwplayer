@@ -55,7 +55,7 @@
 			_playlist,
 			_audioMode,
 			_isMobile = utils.isMobile(),
-			_isIPad = utils.isIPad() || utils.isAndroid(),
+			_isIPad = utils.isIPad(),// || utils.isAndroid(),
 			_isIPod = utils.isIPod(),
 			_forcedControls = (_model.mobilecontrols),
 			_errorState = FALSE,
@@ -225,8 +225,6 @@
 				if (_forcedControls) {
 					_showControls();
 				}
-			} else {
-				_videoTag.controls = TRUE;
 			}
 				
 			setTimeout(function() {
@@ -459,12 +457,14 @@
 			}
 			if (_isMobile && !_forcedControls) {
 				_controlsLayer.style.display = "block";
+				_videoTag.controls = false;
 			}
 		}
 		function _hideDisplay() {
 			if (_display) {
 				if (_isMobile && !_forcedControls) {
 					_controlsLayer.style.display = "none";
+					_videoTag.controls = true;
 				}
 				_display.hide();
 			}
@@ -554,8 +554,7 @@
 					_resizeMedia();
 					_display.hidePreview(TRUE);
 					if (_isMobile) {
-						if (_isIPad && !_forcedControls) _videoTag.controls = TRUE;
-						else { 
+						if (!_isIPad || _forcedControls) {
 							_hideDisplay();
 						}
 					}
@@ -572,7 +571,7 @@
 					_display.hidePreview(FALSE);
 					_showDisplay();
 				}
-				if (_isIPad) _videoTag.controls = FALSE;
+//				if (_isIPad) _videoTag.controls = FALSE;
 				break;
 			case states.BUFFERING:
 				_showDisplay();
@@ -583,8 +582,8 @@
 				_showDisplay();
 				if (!_isMobile || _forcedControls) {
 					_showControls();
-				} else if (_isIPad) {
-					_videoTag.controls = FALSE;
+//				} else if (_isIPad) {
+//					_videoTag.controls = FALSE;
 				}
 				break;
 			}

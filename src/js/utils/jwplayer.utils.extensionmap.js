@@ -39,7 +39,7 @@
 			"ogg": mimeMap[vorbis],
 			"oga": mimeMap[vorbis],
 			"webm": mimeMap[webm],
-			"m3u8": mimeMap.hls,
+			"m3u8": mimeMap.hls
 		}, 
 		video = "video", 
 		flashExtensions = {

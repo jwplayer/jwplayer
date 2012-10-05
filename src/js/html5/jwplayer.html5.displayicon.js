@@ -70,7 +70,6 @@
 			style = utils.extend( {}, style);
 			if (name.indexOf("Icon") > 0) _iconWidth = skinElem.width;
 			if (skinElem.src) {
-				//_show();
 				style['background-image'] = 'url(' + skinElem.src + ')';
 				style['width'] = skinElem.width;
 			}
@@ -107,12 +106,9 @@
 				'background-repeat': 'repeat-x',
 				'background-size': JW_CSS_100PCT + " " + bgSkin.height + "px",
 				position: "absolute",
-//				top: 0,
 				width: UNDEFINED,
-//				width: hasCaps ? UNDEFINED : (showText ? "100%" : bgSkin.width),
-//				'margin-left': !showText ? (bgSkin.width - _iconWidth) / -2 : UNDEFINED,
-				left: hasCaps ? capLeftSkin.width : 0,
-				right: hasCaps ? capRightSkin.width : 0
+				left: hasCaps ? capLeftSkin.width - 1: 0,
+				right: hasCaps ? capRightSkin.width - 1 : 0
 			});
 			_css(_internalSelector(".capLeft"), {
 				display: hasCaps ? UNDEFINED : JW_CSS_NONE,
