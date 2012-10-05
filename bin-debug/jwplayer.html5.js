@@ -6071,6 +6071,8 @@
 	        _menu.style.left = evt.clientX + scrollLeft + 'px';
 	        _menu.style.top = evt.clientY + scrollTop + 'px';
 	        _menu.style.display = 'block';
+	        _about.style.padding = '8px 21px';
+	        _about.style.margin = '0px';
 	        evt.preventDefault();
 	    }
 
@@ -6112,8 +6114,13 @@
 	
 	_css(RC_ITEM_CLASS, {
 		padding: "8px 21px",
+		margin: '0px',
 		'text-align': 'left',
-		cursor: "pointer"
+		cursor: "pointer",
+		color: 'inherit',
+		'background-color': 'inherit',
+		'font-size': 'inherit',
+		'font-family': 'inherit'
 	}, true);
 
 	_css(RC_ITEM_CLASS + ":hover", {

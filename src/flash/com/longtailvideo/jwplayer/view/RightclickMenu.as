@@ -30,8 +30,6 @@ package com.longtailvideo.jwplayer.view {
 		protected var about:ContextMenuItem;
 		/** Debug menu item **/
 		protected var debug:ContextMenuItem;
-		/** Link flag for the menu click handler **/
-		protected var linkFlag:String;
 	
 		/** Constructor. **/
 		public function RightclickMenu(player:IPlayer, clip:MovieClip) {
@@ -60,47 +58,12 @@ package com.longtailvideo.jwplayer.view {
 		}
 		
 		protected function setAboutText():void {
-			var edition:String = _getEdition();
-			if (edition == "free" || edition.length == 0) {
-				about = new ContextMenuItem('About JW Player ' + _player.version + '...');
-				linkFlag = "f";
-			}
-			else {
-				var version:String = PlayerVersion.version;
-				linkFlag = _getLinkFlag(edition);
-				edition = edition.charAt(0).toUpperCase() + edition.substr(1);
-				version += " (" + edition + " edition)";
-				about = new ContextMenuItem('About JW Player ' + version + '...');
-			}
-		}
-		
-		private function _getEdition():String {
-			var edition:String = "";
-			try {
-				edition = _player['edition'];
-			}
-			catch(error:Error) {
-				edition = "";
-			}
-			return edition;
-		}
-		
-		private function _getLinkFlag(edition:String):String {
-			switch (edition.toLowerCase()) {
-				case "pro": 
-					return "p";
-				case "premium": 
-					return "r";
-				case "ads":
-					return "a";
-				default: 
-					return "f";
-			}
+			about = new ContextMenuItem('About JW Player ' + _player.version + '...');
 		}
 
 		/** jump to the about page. **/
 		protected function aboutHandler(evt:ContextMenuEvent):void {
-			navigateToURL(new URLRequest('http://www.longtailvideo.com/jwpabout/?a=right-click&v='+PlayerVersion.version+linkFlag+'&m=flash'), '_top');
+			navigateToURL(new URLRequest('http://www.longtailvideo.com/jwpabout/?a=right-click&v='+PlayerVersion.version+'f&m=flash'), '_top');
 		}
 
 		/** change the debug system. **/
