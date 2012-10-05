@@ -152,8 +152,16 @@
 		position: "absolute",
 		'z-index': 999,
 	}, true);
-	
-	
+
+	_css(RC_CLASS + " div", {
+		padding: "8px 21px",
+		margin: '0px',
+		'background-color': JW_CSS_WHITE,
+		border: "none",
+		'font-family': '"MS Sans Serif", "Geneva", sans-serif',
+		'font-size': 10,
+		color: 'inherit'
+	}, true);
 	
 	_css(RC_ITEM_CLASS, {
 		padding: "8px 21px",
