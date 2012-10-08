@@ -6,17 +6,26 @@
  */
 (function(jwplayer) {
 	var utils = jwplayer.utils,
-		events = jwplayer.events;
+		events = jwplayer.events,
+		
+		DOCUMENT = document;
 	
 	var embed = jwplayer.embed = function(playerApi) {
 //		var mediaConfig = utils.mediaparser.parseMedia(playerApi.container);
 		var _config = new embed.config(playerApi.config),
-			_container,
+			_container, _oldContainer,
+			_width = _config.width,
+			_height = _config.height,
 			_errorText = "Error loading player: ",
 			_pluginloader = jwplayer.plugins.loadPlugins(playerApi.id, _config.plugins);
 
 		_config.id = playerApi.id;
-		_container = document.getElementById(playerApi.id);
+		_oldContainer = DOCUMENT.getElementById(playerApi.id);
+		_container = DOCUMENT.createElement("div");
+		_container.id = _oldContainer.id;
+		_container.style.width = _width.toString().indexOf("%") > 0 ? _width : (_width + "px");
+		_container.style.height = _height.toString().indexOf("%") > 0 ? _height : (_height + "px");
+		_oldContainer.parentNode.replaceChild(_container, _oldContainer);
 		
 		function _setupEvents(api, events) {
 			for (var evt in events) {

@@ -1103,6 +1103,7 @@ jwplayer.source = document.createElement("source");/**
 			_iscomplete = false,
 			_errorState = false,
 			_errorMessage,
+			_config = config,
 			_eventDispatcher = new events.eventdispatcher();
 		
 		
@@ -1133,13 +1134,15 @@ jwplayer.source = document.createElement("source");/**
 		
 		// This is not entirely efficient, but it's simple
 		function _checkComplete() {
-			if (!config || !config.plugins) _complete();
+			if (!_config) _complete();
 			if (!_iscomplete && !_errorState) {
 				var incomplete = 0, plugins = model.getPlugins();
-				for (var plugin in config.plugins) {
-					var pluginObj = plugins[plugin],
+				
+				for (var plugin in _config) {
+					var pluginName = utils.getPluginName(plugin),
+						pluginObj = plugins[pluginName],
 						target = pluginObj.getTarget(),
-						status = plugins[plugin].getStatus(); 
+						status = pluginObj.getStatus(); 
 					if (status == utils.loaderstatus.LOADING || status == utils.loaderstatus.NEW) {
 						incomplete++;
 					} else if (!target || parseFloat(target) > parseFloat(jwplayer.version)) {
@@ -1357,17 +1360,26 @@ jwplayer.source = document.createElement("source");/**
  */
 (function(jwplayer) {
 	var utils = jwplayer.utils,
-		events = jwplayer.events;
+		events = jwplayer.events,
+		
+		DOCUMENT = document;
 	
 	var embed = jwplayer.embed = function(playerApi) {
 //		var mediaConfig = utils.mediaparser.parseMedia(playerApi.container);
 		var _config = new embed.config(playerApi.config),
-			_container,
+			_container, _oldContainer,
+			_width = _config.width,
+			_height = _config.height,
 			_errorText = "Error loading player: ",
 			_pluginloader = jwplayer.plugins.loadPlugins(playerApi.id, _config.plugins);
 
 		_config.id = playerApi.id;
-		_container = document.getElementById(playerApi.id);
+		_oldContainer = DOCUMENT.getElementById(playerApi.id);
+		_container = DOCUMENT.createElement("div");
+		_container.id = _oldContainer.id;
+		_container.style.width = _width.toString().indexOf("%") > 0 ? _width : (_width + "px");
+		_container.style.height = _height.toString().indexOf("%") > 0 ? _height : (_height + "px");
+		_oldContainer.parentNode.replaceChild(_container, _oldContainer);
 		
 		function _setupEvents(api, events) {
 			for (var evt in events) {

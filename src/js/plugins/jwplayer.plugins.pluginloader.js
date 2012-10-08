@@ -12,6 +12,7 @@
 			_iscomplete = false,
 			_errorState = false,
 			_errorMessage,
+			_config = config,
 			_eventDispatcher = new events.eventdispatcher();
 		
 		
@@ -42,13 +43,15 @@
 		
 		// This is not entirely efficient, but it's simple
 		function _checkComplete() {
-			if (!config || !config.plugins) _complete();
+			if (!_config) _complete();
 			if (!_iscomplete && !_errorState) {
 				var incomplete = 0, plugins = model.getPlugins();
-				for (var plugin in config.plugins) {
-					var pluginObj = plugins[plugin],
+				
+				for (var plugin in _config) {
+					var pluginName = utils.getPluginName(plugin),
+						pluginObj = plugins[pluginName],
 						target = pluginObj.getTarget(),
-						status = plugins[plugin].getStatus(); 
+						status = pluginObj.getStatus(); 
 					if (status == utils.loaderstatus.LOADING || status == utils.loaderstatus.NEW) {
 						incomplete++;
 					} else if (!target || parseFloat(target) > parseFloat(jwplayer.version)) {
