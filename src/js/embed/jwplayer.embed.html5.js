@@ -23,10 +23,6 @@
 					}
 					if (typeof plugin.resize == "function") {
 						plugin.resize(displayarea.clientWidth, displayarea.clientHeight);
-						// Browsers seem to need an extra second to figure out how large they are in fullscreen...
-						setTimeout(function () { 
-							plugin.resize(displayarea.clientWidth, displayarea.clientHeight); 
-						}, 100);
 					}
 					div.left = displayarea.style.left;
 					div.top = displayarea.style.top;
