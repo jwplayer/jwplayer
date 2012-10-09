@@ -65,6 +65,9 @@
 	/** Loads an XML file into a DOM object * */
 	utils.ajax = function(xmldocpath, completecallback, errorcallback) {
 		var xmlhttp;
+		// Hash tags should be removed from the URL since they can't be loaded in IE
+		if (xmldocpath.indexOf("#") > 0) xmldocpath = xmldocpath.replace(/#.*$/, "");
+
 		if (_isCrossdomain(xmldocpath) && utils.exists(WINDOW.XDomainRequest)) {
 			// IE9
 			xmlhttp = new XDomainRequest();

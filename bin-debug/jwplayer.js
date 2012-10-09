@@ -16,7 +16,7 @@ jwplayer = function(container) {
 	}
 };
 
-jwplayer.version = '6.0.2674';
+jwplayer.version = '6.0.2677';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -1437,7 +1437,7 @@ jwplayer.source = document.createElement("source");/**
 		}
 		
 		function _sourceError() {
-			_errorScreen(_container, _errorText  + "No media sources found");
+			_errorScreen(_container, _errorText  + "No playable sources found");
 		}
 		
 		function _errorScreen(container, message) {
@@ -1703,7 +1703,8 @@ jwplayer.source = document.createElement("source");/**
 
 
 		function _embed() {
-			var file, image, youtube, i, playlist = params.playlist, item, sources; 
+			var file, image, youtube, i, playlist = params.playlist, item, sources, i,
+				types = ["mp4", "flv", "webm", "aac", "mp3", "vorbis"]; 
 			if (playlist && playlist.length) {
 				item = playlist[0];
 				sources = item.sources;
@@ -1713,13 +1714,15 @@ jwplayer.source = document.createElement("source");/**
 					var source = sources[i], 
 						type = source.type ? source.type : utils.extensionmap.extType(utils.extension(source.file));
 					if (source.file) {
-						if (("mp4,flv,webm,aac,mp3,vorbis").split(",").indexOf(type) > -1) {
-							file = source.file;
-							image = item.image;
-							continue;
-						} else if (utils.isYouTube(source.file)){
-							youtube = source.file;
+						for (i in types) {
+							if (type == types[i]) {
+								file = source.file;
+								image = item.image;
+							}
 						}
+						if (file) continue;
+					} else if (utils.isYouTube(source.file)) {
+						youtube = source.file;
 					}
 				}
 			} else {
@@ -1765,8 +1768,8 @@ jwplayer.source = document.createElement("source");/**
 			var _prefix = "#" + _container.id + " .jwdownload";
 
 			_css(_prefix+"display", {
-				width: utils.styleDimension(Math.max(300, _width)),
-				height: utils.styleDimension(Math.max(200, _height)),
+				width: utils.styleDimension(Math.max(320, _width)),
+				height: utils.styleDimension(Math.max(180, _height)),
 				background: "black center no-repeat " + (_image ? 'url('+_image+')' : ""),
 				backgroundSize: "contain",
 				position: JW_CSS_RELATIVE,
@@ -1989,7 +1992,7 @@ jwplayer.source = document.createElement("source");/**
 			}
 			
 			var base = window.location.pathname.split("/");
-			base.splice(-1);
+			base.splice(base.length-1, 1);
 			base = base.join("/");
 			params.base = base + "/";
 			
@@ -2000,8 +2003,6 @@ jwplayer.source = document.createElement("source");/**
 
 			if (utils.isIE()) {
 				var html = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" ' +
-				'bgcolor="' +
-				bgcolor +
 				'" width="100%" height="100%" ' +
 				'id="' +
 				_container.id +
@@ -2014,6 +2015,7 @@ jwplayer.source = document.createElement("source");/**
 				html += '<param name="allowscriptaccess" value="always">';
 				html += '<param name="seamlesstabbing" value="true">';
 				html += '<param name="wmode" value="' + wmode + '">';
+				html += '<param name="bgcolor" value="' + bgcolor + '">';
 				html += '</object>';
 
 				_container.outerHTML = html;
@@ -2025,7 +2027,7 @@ jwplayer.source = document.createElement("source");/**
 				obj.setAttribute('data', _player.src);
 				obj.setAttribute('width', "100%");
 				obj.setAttribute('height', "100%");
-				obj.setAttribute('bgcolor', '#000000');
+				obj.setAttribute('bgcolor', bgcolor);
 				obj.setAttribute('id', _container.id);
 				obj.setAttribute('name', _container.id);
 				obj.setAttribute('tabindex', 0);

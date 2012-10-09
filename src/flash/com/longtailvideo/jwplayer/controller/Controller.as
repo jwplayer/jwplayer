@@ -150,7 +150,6 @@ package com.longtailvideo.jwplayer.controller {
 		protected function setupError(evt:ErrorEvent):void {
 			Logger.log("STARTUP: Error occurred during player startup: " + evt.text);
 			_view.completeView(true, evt.text);
-			dispatchEvent(evt.clone());
 		}
 
 

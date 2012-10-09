@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2674';
+	jwplayer.html5.version = '6.0.2677';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -74,6 +74,9 @@
 	/** Loads an XML file into a DOM object * */
 	utils.ajax = function(xmldocpath, completecallback, errorcallback) {
 		var xmlhttp;
+		// Hash tags should be removed from the URL since they can't be loaded in IE
+		if (xmldocpath.indexOf("#") > 0) xmldocpath = xmldocpath.replace(/#.*$/, "");
+
 		if (_isCrossdomain(xmldocpath) && utils.exists(WINDOW.XDomainRequest)) {
 			// IE9
 			xmlhttp = new XDomainRequest();

@@ -45,7 +45,7 @@
 
 <script type="text/javascript">
 	var server_path = window.location.pathname.split("/");
-	server_path.splice(-1);
+	server_path.splice(server_path.length-1, 1);
 	var absolute_path = server_path.join("/");
 
     jwplayer("video_absolute").setup({

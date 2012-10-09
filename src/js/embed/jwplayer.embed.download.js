@@ -31,7 +31,8 @@
 
 
 		function _embed() {
-			var file, image, youtube, i, playlist = params.playlist, item, sources; 
+			var file, image, youtube, i, playlist = params.playlist, item, sources, i,
+				types = ["mp4", "flv", "webm", "aac", "mp3", "vorbis"]; 
 			if (playlist && playlist.length) {
 				item = playlist[0];
 				sources = item.sources;
@@ -41,13 +42,15 @@
 					var source = sources[i], 
 						type = source.type ? source.type : utils.extensionmap.extType(utils.extension(source.file));
 					if (source.file) {
-						if (("mp4,flv,webm,aac,mp3,vorbis").split(",").indexOf(type) > -1) {
-							file = source.file;
-							image = item.image;
-							continue;
-						} else if (utils.isYouTube(source.file)){
-							youtube = source.file;
+						for (i in types) {
+							if (type == types[i]) {
+								file = source.file;
+								image = item.image;
+							}
 						}
+						if (file) continue;
+					} else if (utils.isYouTube(source.file)) {
+						youtube = source.file;
 					}
 				}
 			} else {
@@ -93,8 +96,8 @@
 			var _prefix = "#" + _container.id + " .jwdownload";
 
 			_css(_prefix+"display", {
-				width: utils.styleDimension(Math.max(300, _width)),
-				height: utils.styleDimension(Math.max(200, _height)),
+				width: utils.styleDimension(Math.max(320, _width)),
+				height: utils.styleDimension(Math.max(180, _height)),
 				background: "black center no-repeat " + (_image ? 'url('+_image+')' : ""),
 				backgroundSize: "contain",
 				position: JW_CSS_RELATIVE,

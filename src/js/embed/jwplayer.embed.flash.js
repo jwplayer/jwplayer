@@ -160,7 +160,7 @@
 			}
 			
 			var base = window.location.pathname.split("/");
-			base.splice(-1);
+			base.splice(base.length-1, 1);
 			base = base.join("/");
 			params.base = base + "/";
 			
@@ -171,8 +171,6 @@
 
 			if (utils.isIE()) {
 				var html = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" ' +
-				'bgcolor="' +
-				bgcolor +
 				'" width="100%" height="100%" ' +
 				'id="' +
 				_container.id +
@@ -185,6 +183,7 @@
 				html += '<param name="allowscriptaccess" value="always">';
 				html += '<param name="seamlesstabbing" value="true">';
 				html += '<param name="wmode" value="' + wmode + '">';
+				html += '<param name="bgcolor" value="' + bgcolor + '">';
 				html += '</object>';
 
 				_container.outerHTML = html;
@@ -196,7 +195,7 @@
 				obj.setAttribute('data', _player.src);
 				obj.setAttribute('width', "100%");
 				obj.setAttribute('height', "100%");
-				obj.setAttribute('bgcolor', '#000000');
+				obj.setAttribute('bgcolor', bgcolor);
 				obj.setAttribute('id', _container.id);
 				obj.setAttribute('name', _container.id);
 				obj.setAttribute('tabindex', 0);
