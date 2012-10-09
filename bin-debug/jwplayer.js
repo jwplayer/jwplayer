@@ -2119,6 +2119,9 @@ jwplayer.source = document.createElement("source");/**
 					}
 					if (typeof plugin.resize == "function") {
 						plugin.resize(displayarea.clientWidth, displayarea.clientHeight);
+						setTimeout(function () {
+							plugin.resize(displayarea.clientWidth, displayarea.clientHeight);
+						}, 400);
 					}
 					div.left = displayarea.style.left;
 					div.top = displayarea.style.top;

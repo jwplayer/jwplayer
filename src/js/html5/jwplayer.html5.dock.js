@@ -126,15 +126,17 @@
 			var tooltip = _tooltips[name],
 				tipBounds,
 				button = _buttons[name],
+				dockBounds,
 				buttonBounds = _bounds(button.icon);
 
 			tooltip.offsetX(0);
+			dockBounds = _bounds(_container);
 			_css('#' + tooltip.element().id, {
-				left: buttonBounds.left - _dockBounds.left + buttonBounds.width / 2
+				left: buttonBounds.left - dockBounds.left + buttonBounds.width / 2
 			});
-			tipBounds = _bounds(tooltip.element());
-			if (_dockBounds.left > tipBounds.left) {
-				tooltip.offsetX(_dockBounds.left - tipBounds.left + 8);
+			tipBounds = _bounds(tooltip.element());	
+			if (dockBounds.left > tipBounds.left) {
+				tooltip.offsetX(dockBounds.left - tipBounds.left + 8);
 			}
 
 		}
