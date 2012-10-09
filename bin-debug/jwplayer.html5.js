@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2665';
+	jwplayer.html5.version = '6.0.2674';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -2137,7 +2137,7 @@
 		}
 
 		function _prev() {
-			_api.jwPlaylistNext();
+			_api.jwPlaylistPrev();
 		}
 
 		function _toggleButton(name, state) {
@@ -7186,6 +7186,8 @@
 			_playerElement.appendChild(newContainer);
 			
 			DOCUMENT.addEventListener('webkitfullscreenchange', _fullscreenChangeHandler, FALSE);
+			_videoTag.addEventListener('webkitbeginfullscreen', _fullscreenChangeHandler, FALSE);
+			_videoTag.addEventListener('webkitendfullscreen', _fullscreenChangeHandler, FALSE);
 			DOCUMENT.addEventListener('mozfullscreenchange', _fullscreenChangeHandler, FALSE);
 			DOCUMENT.addEventListener('keydown', _keyHandler, FALSE);
 			
@@ -7331,6 +7333,8 @@
 				    	DOCUMENT.mozCancelFullScreen();  
 				    } else if (DOCUMENT.webkitCancelFullScreen) {  
 				    	DOCUMENT.webkitCancelFullScreen();  
+				    } else if (_videoTag.webkitExitFullScreen) {
+				    	_videoTag.webkitExitFullScreen();
 				    }
 				}
 			}
@@ -7474,9 +7478,9 @@
 		 * Return whether or not we're in native fullscreen
 		 */
 		function _isNativeFullscreen() {
-			var fsElements = [DOCUMENT.mozFullScreenElement, DOCUMENT.webkitCurrentFullScreenElement];
+			var fsElements = [DOCUMENT.mozFullScreenElement, DOCUMENT.webkitCurrentFullScreenElement, _videoTag.webkitDisplayingFullscreen];
 			for (var i=0; i<fsElements.length; i++) {
-				if (fsElements[i] && fsElements[i].id == _api.id)
+				if (fsElements[i] && (!fsElements[i].id || fsElements[i].id == _api.id))
 					return TRUE;
 			}
 			return FALSE;
@@ -7487,7 +7491,7 @@
 		 **/
 		function _fullscreenChangeHandler(evt) {
 			var fsNow = _isNativeFullscreen();
-			if (_model.fullscreen && !fsNow) {
+			if (_model.fullscreen != fsNow) {
 				_fullscreen(fsNow);
 			}
 		}
@@ -7592,6 +7596,7 @@
 
 		function _playlistCompleteHandler() {
 			_replayState = TRUE;
+			_fullscreen(false);
 			if (_model.controls) {
 				_showDock();
 			}
@@ -7622,7 +7627,7 @@
 					_resizeMedia();
 					_display.hidePreview(TRUE);
 					if (_isMobile) {
-						if (!_isIPad || _forcedControls) {
+						if (!(_isIPad && _forcedControls)) {
 							_hideDisplay();
 						}
 					}

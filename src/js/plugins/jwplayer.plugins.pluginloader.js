@@ -50,11 +50,12 @@
 				for (var plugin in _config) {
 					var pluginName = utils.getPluginName(plugin),
 						pluginObj = plugins[pluginName],
+						js = pluginObj.getJS(),
 						target = pluginObj.getTarget(),
 						status = pluginObj.getStatus(); 
 					if (status == utils.loaderstatus.LOADING || status == utils.loaderstatus.NEW) {
 						incomplete++;
-					} else if (!target || parseFloat(target) > parseFloat(jwplayer.version)) {
+					} else if (js && (!target || parseFloat(target) > parseFloat(jwplayer.version))) {
 						_errorState = true;
 						_errorMessage = "Incompatible player version";
 						_complete();

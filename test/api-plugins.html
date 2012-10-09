@@ -82,6 +82,41 @@
     <td class="check"></td>
 </tr></table>
 
+<h2>SWF plugin loaded</h2>
+
+<div id="swfplugin">asdf</div>
+
+<script type="text/javascript">
+    jwplayer("swfplugin").setup({
+        primary: primaryCookie,
+		sources: [
+  			{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4' },
+			{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm' }
+   		],
+ 		image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+ 		title: "Sintel Trailer",
+ 		plugins: {
+ 		    '../../../sdks/jw6-plugin-sdk/plugins/apitester/apitester.swf': {
+				message: "Plugin loaded successfully"
+	    	}
+ 		}
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Load the player with HTML5 primary</td>
+    <td>Player should appear no plugin loaded</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Load the player with Flash primary</td>
+    <td>Player should appear with the message "Plugin loaded successfully" placed in the top-left corner (in Flash mode)</td>
+    <td class="check"></td>
+</tr></table>
+
 <h2>No plugin loaded</h2>
 
 <div id="noplugin">asdf</div>
@@ -107,9 +142,6 @@
     <td>Player should appear with no plugin loaded</td>
     <td class="check"></td>
 </tr></table>
-
-
-
 
 
 </body>

@@ -555,7 +555,7 @@
 		}
 
 		function _prev() {
-			_api.jwPlaylistNext();
+			_api.jwPlaylistPrev();
 		}
 
 		function _toggleButton(name, state) {
