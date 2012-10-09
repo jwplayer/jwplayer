@@ -25,7 +25,6 @@ package com.longtailvideo.jwplayer.view {
 		protected var _fullscreen:Boolean = false;
 		protected var _preserveAspect:Boolean = false;
 		protected var _normalScreen:Rectangle;
-		protected var stage:Stage;
 
 		protected var _root:MovieClip;
 
@@ -148,7 +147,7 @@ package com.longtailvideo.jwplayer.view {
 			RootReference.stage.addEventListener(FocusEvent.FOCUS_OUT, keyFocusOutHandler);
 			RootReference.stage.addEventListener(FocusEvent.FOCUS_IN, keyFocusInHandler);
 //			RootReference.stage.addEventListener(FocusEvent.KEY_FOCUS_CHANGE, keyFocusChanged);
-//			RootReference.stage.addEventListener(Event.MOUSE_LEAVE, mouseLeftStage);
+			RootReference.stage.addEventListener(Event.MOUSE_LEAVE, moveTimeout);
 			RootReference.stage.addEventListener(MouseEvent.MOUSE_MOVE, moveHandler);
 			RootReference.stage.addEventListener(KeyboardEvent.KEY_DOWN, moveHandler);
 			
@@ -729,6 +728,7 @@ package com.longtailvideo.jwplayer.view {
 		
 		/** Hide controls again when move has timed out. **/
 		private function moveTimeout(evt:Event=null):void {
+			clearTimeout(_fadingOut);
 			hideControls();
 		}
 		

@@ -70,8 +70,8 @@
     <td class="check"></td>
 </tr><tr>
     <td class="desktop"></td>
-    <td><a href="javascript:jwplayer().load({file:'404.mp4'}).play()">Play a 404 video</a></td>
-    <td>Error message shouldn't display (black screen)</td>
+    <td><a href="#" onclick="jwplayer().load({file:'404.mp4'}).play(); return false;">Play a 404 video</a></td>
+    <td>Error message shouldn't display (playback stops, shows poster image)</td>
     <td class="check"></td>
 </tr></table>
 

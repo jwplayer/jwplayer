@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2677';
+	jwplayer.html5.version = '6.0.2680';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -554,7 +554,7 @@
 		}
 
 		if (video) {
-			if (scale && !utils.isMobile()) {
+			if (scale) {
 				domelement.style.width = elementWidth + "px";
 				domelement.style.height = elementHeight + "px"; 
 				xoff = ((parentWidth - elementWidth) / 2) / xscale;
@@ -2555,37 +2555,39 @@
 			}
 		}
 
-		var _redraw = _this.redraw = function() {
+		var _redraw = function() {
 			clearTimeout(_redrawTimeout);
-			_redrawTimeout = setTimeout(function() {
-				_createStyles();
-				var capLeft = _getSkinElement("capLeft"), capRight = _getSkinElement("capRight")
-				_css(_internalSelector('.jwgroup.jwcenter'), {
-					left: Math.round(utils.parseDimension(_groups.left.offsetWidth) + capLeft.width),
-					right: Math.round(utils.parseDimension(_groups.right.offsetWidth) + capRight.width)
-				});
-				
-				var max = (_controlbar.parentNode.clientWidth > _settings.maxwidth), 
-					margin = _audioMode ? 0 : _settings.margin;
-				
-				_css(_internalSelector(), {
-					left:  max ? "50%" : margin,
-					right:  max ? UNDEFINED : margin,
-					'margin-left': max ? _controlbar.clientWidth / -2 : UNDEFINED,
-					width: max ? JW_CSS_100PCT : UNDEFINED
-				});
-
+			_redrawTimeout = setTimeout(_this.redraw, 0);
+		}
+		
+		_this.redraw = function() {
+			_createStyles();
+			var capLeft = _getSkinElement("capLeft"), capRight = _getSkinElement("capRight")
+			_css(_internalSelector('.jwgroup.jwcenter'), {
+				left: Math.round(utils.parseDimension(_groups.left.offsetWidth) + capLeft.width),
+				right: Math.round(utils.parseDimension(_groups.right.offsetWidth) + capRight.width)
+			});
 			
-				setTimeout(function() {
-					var newBounds = utils.bounds(_controlbar);
-					if (!_cbBounds || newBounds.width != _cbBounds.width) {
-						_cbBounds = newBounds;
-						if (_cbBounds.width > 0) {
-							_railBounds = utils.bounds(_timeRail);
-						}
+			var max = (_controlbar.parentNode.clientWidth > _settings.maxwidth), 
+				margin = _audioMode ? 0 : _settings.margin;
+			
+			_css(_internalSelector(), {
+				left:  max ? "50%" : margin,
+				right:  max ? UNDEFINED : margin,
+				'margin-left': max ? _controlbar.clientWidth / -2 : UNDEFINED,
+				width: max ? JW_CSS_100PCT : UNDEFINED
+			});
+
+		
+			setTimeout(function() {
+				var newBounds = utils.bounds(_controlbar);
+				if (!_cbBounds || newBounds.width != _cbBounds.width) {
+					_cbBounds = newBounds;
+					if (_cbBounds.width > 0) {
+						_railBounds = utils.bounds(_timeRail);
 					}
-					_positionOverlays();
-				}, 0);
+				}
+				_positionOverlays();
 			}, 0);
 		}
 		
@@ -7134,6 +7136,7 @@
 			_errorState = FALSE,
 			_replayState,
 			_readyState,
+			_fullscreenInterval,
 			_eventDispatcher = new events.eventdispatcher();
 		
 		utils.extend(this, _eventDispatcher);
@@ -7343,13 +7346,17 @@
 				    }
 				}
 			}
+
 			_redrawComponent(_controlbar);
 			_redrawComponent(_display);
 			_redrawComponent(_dock);
 			_resizeMedia();
-			if (_model.stretching == utils.stretching.EXACTFIT) {
+			
+			if (_model.fullscreen) {
 				// Browsers seem to need an extra second to figure out how large they are in fullscreen...
-				setTimeout(_resizeMedia, 1000);
+				_fullscreenInterval = setInterval(_resizeMedia, 200);
+			} else {
+				clearInterval(_fullscreenInterval);
 			}
 			_eventDispatcher.sendEvent(events.JWPLAYER_RESIZE);
 		}

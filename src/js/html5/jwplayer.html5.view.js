@@ -61,6 +61,7 @@
 			_errorState = FALSE,
 			_replayState,
 			_readyState,
+			_fullscreenInterval,
 			_eventDispatcher = new events.eventdispatcher();
 		
 		utils.extend(this, _eventDispatcher);
@@ -270,13 +271,17 @@
 				    }
 				}
 			}
+
 			_redrawComponent(_controlbar);
 			_redrawComponent(_display);
 			_redrawComponent(_dock);
 			_resizeMedia();
-			if (_model.stretching == utils.stretching.EXACTFIT) {
+			
+			if (_model.fullscreen) {
 				// Browsers seem to need an extra second to figure out how large they are in fullscreen...
-				setTimeout(_resizeMedia, 1000);
+				_fullscreenInterval = setInterval(_resizeMedia, 200);
+			} else {
+				clearInterval(_fullscreenInterval);
 			}
 			_eventDispatcher.sendEvent(events.JWPLAYER_RESIZE);
 		}

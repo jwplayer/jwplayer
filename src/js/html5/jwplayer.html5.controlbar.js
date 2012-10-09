@@ -970,37 +970,39 @@
 			}
 		}
 
-		var _redraw = _this.redraw = function() {
+		var _redraw = function() {
 			clearTimeout(_redrawTimeout);
-			_redrawTimeout = setTimeout(function() {
-				_createStyles();
-				var capLeft = _getSkinElement("capLeft"), capRight = _getSkinElement("capRight")
-				_css(_internalSelector('.jwgroup.jwcenter'), {
-					left: Math.round(utils.parseDimension(_groups.left.offsetWidth) + capLeft.width),
-					right: Math.round(utils.parseDimension(_groups.right.offsetWidth) + capRight.width)
-				});
-				
-				var max = (_controlbar.parentNode.clientWidth > _settings.maxwidth), 
-					margin = _audioMode ? 0 : _settings.margin;
-				
-				_css(_internalSelector(), {
-					left:  max ? "50%" : margin,
-					right:  max ? UNDEFINED : margin,
-					'margin-left': max ? _controlbar.clientWidth / -2 : UNDEFINED,
-					width: max ? JW_CSS_100PCT : UNDEFINED
-				});
-
+			_redrawTimeout = setTimeout(_this.redraw, 0);
+		}
+		
+		_this.redraw = function() {
+			_createStyles();
+			var capLeft = _getSkinElement("capLeft"), capRight = _getSkinElement("capRight")
+			_css(_internalSelector('.jwgroup.jwcenter'), {
+				left: Math.round(utils.parseDimension(_groups.left.offsetWidth) + capLeft.width),
+				right: Math.round(utils.parseDimension(_groups.right.offsetWidth) + capRight.width)
+			});
 			
-				setTimeout(function() {
-					var newBounds = utils.bounds(_controlbar);
-					if (!_cbBounds || newBounds.width != _cbBounds.width) {
-						_cbBounds = newBounds;
-						if (_cbBounds.width > 0) {
-							_railBounds = utils.bounds(_timeRail);
-						}
+			var max = (_controlbar.parentNode.clientWidth > _settings.maxwidth), 
+				margin = _audioMode ? 0 : _settings.margin;
+			
+			_css(_internalSelector(), {
+				left:  max ? "50%" : margin,
+				right:  max ? UNDEFINED : margin,
+				'margin-left': max ? _controlbar.clientWidth / -2 : UNDEFINED,
+				width: max ? JW_CSS_100PCT : UNDEFINED
+			});
+
+		
+			setTimeout(function() {
+				var newBounds = utils.bounds(_controlbar);
+				if (!_cbBounds || newBounds.width != _cbBounds.width) {
+					_cbBounds = newBounds;
+					if (_cbBounds.width > 0) {
+						_railBounds = utils.bounds(_timeRail);
 					}
-					_positionOverlays();
-				}, 0);
+				}
+				_positionOverlays();
 			}, 0);
 		}
 		

@@ -103,7 +103,7 @@
 		}
 
 		if (video) {
-			if (scale && !utils.isMobile()) {
+			if (scale) {
 				domelement.style.width = elementWidth + "px";
 				domelement.style.height = elementHeight + "px"; 
 				xoff = ((parentWidth - elementWidth) / 2) / xscale;
