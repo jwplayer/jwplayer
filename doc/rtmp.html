@@ -55,7 +55,7 @@
 <p>In order to use RTMP, your host or CDN needs to have a dedicated RTMP server installed. There are two major offerings, both supported by JW Player:</p>
 
 <ul>
-<li>The <a href="http://www.wowza.com/">Wowza Media Server</a> is today's most widely used solution. It includes support for almost any streaming protocol, including RTMP.</li>
+<li>The <a href="http://www.wowza.com/">Wowza Media Server</a> is today's most widely used solution. It includes support for almost any streaming protocol, including RTMP. Wowza 3 introduced dedicated support for JW6 SMIL manifests  (see below)</li>
 <li>The <a href="http://www.adobe.com/products/flash-media-server-family.html">Adobe Media Server</a> is another great option. Since Flash is developed by Adobe, new RTMP functionalities find their way in FMS first.</li>
 </ul>
 
@@ -199,6 +199,17 @@ Here is a basic example, using three different streams:</p>
 </ul>
 
 <p>Users are able to override the automated selection by setting the quality from a popup menu. The <em>height</em> attributes of the streams in the manifest are used to set the labels of this menu (e.g. <em>720p</em>).</p>
+
+<h3>Wowza 3</h3>
+
+<p>Wowza Media Server 3 introduced dedicated support for these SMIL manifests. If you are running version 3.1.2.15 or higher, append <strong>/jwplayer.smil</strong> to the URL of your adaptive streams to get these manifests.</p>
+
+<p>Here is how the URL to a SMIL manifest and an M3U8 manifest (for <a href="hls.html">Apple HLS streaming</a>) look like with Wowza3:</p>
+
+<pre>
+http://example.com/vod/smil:myvideo.smil/jwplayer.smil
+http://example.com/vod/smil:myvideo.smil/manifest.m3u8
+</pre>
 
 
 
