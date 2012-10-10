@@ -37,14 +37,18 @@
 				_status = _loaderstatus.LOADING;
 				var scriptTag = DOCUMENT.createElement("script");
 				// Most browsers
-				scriptTag.onload = _sendComplete;
-				scriptTag.onerror = _sendError;
-				// IE
-				scriptTag.onreadystatechange = function() {
-					if (scriptTag.readyState == 'loaded' || scriptTag.readyState == 'complete') {
-						_sendComplete();
+				if (scriptTag.addEventListener) {
+					scriptTag.onload = _sendComplete;
+					scriptTag.onerror = _sendError;
+				}
+				else if (scriptTag.readyState) {
+					// IE
+					scriptTag.onreadystatechange = function() {
+						if (scriptTag.readyState == 'loaded' || scriptTag.readyState == 'complete') {
+							_sendComplete();
+						}
+						// Error?
 					}
-					// Error?
 				}
 				DOCUMENT.getElementsByTagName("head")[0].appendChild(scriptTag);
 				scriptTag.src = url;

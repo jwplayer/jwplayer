@@ -26,7 +26,7 @@
         _dimensions,
         
         _defaults = {
-            back: false,
+            back: true,
             color: '#FFFFFF',
             fontSize: 15
         },

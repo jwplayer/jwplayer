@@ -31,7 +31,7 @@ package com.longtailvideo.jwplayer.view.components {
 		private var _defaults:Object = {
 			color: '#FFFFFF',
 			fontSize: 15,
-			back: false
+			back: true
 		};
 		
 		private var _style:Object = {
