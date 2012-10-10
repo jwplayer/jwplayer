@@ -1270,7 +1270,7 @@
         /** Load captions. **/
         function _load(file) {
             _file = file;
-            utils.ajax(file, _xmlReadHandler, _errorHandler);
+            utils.ajax(file, _xmlReadHandler, _xmlFailedHandler);
         };
 
         function _xmlReadHandler(xmlEvent) {
@@ -1282,6 +1282,11 @@
             else {
                 loader = new jwplayer.html5.parsers.srt(_loadHandler,_errorHandler);   
             }
+            loader.load(_file);
+        }
+
+        function _xmlFailedHandler(xmlEvent) {
+            var loader = new jwplayer.html5.parsers.srt(_loadHandler,_errorHandler);
             loader.load(_file);
         }
 
