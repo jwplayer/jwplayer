@@ -6,6 +6,7 @@
     <title>Big Buck Bunny Trailer</title>
     <description>Big Buck Bunny is a short animated film by the Blender Institute. It is made using free and open source software.</description>
     <media:content url="http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4" />
+    <media:content url="http://content.bitsontherun.com/videos/bkaovAYt-27m5HpIu.webm" />
     <media:thumbnail url="http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg" />
     <guid>bkaovAYt</guid>
   </item>
@@ -14,6 +15,7 @@
     <title>Sintel Trailer</title>
     <description>Sintel is a fantasy computer generated short movie. It's the third release from the Blender Open Movie Project.</description>
     <media:content url="http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4" />
+    <media:content url="http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm" />
     <media:thumbnail url="http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg" />
     <guid>3XnJSIm4</guid>
   </item>
@@ -22,6 +24,7 @@
     <title>Elephants Dream Trailer</title>
     <description>Elephants Dream is the world's first open movie, made entirely with open source graphics software such as Blender.</description>
     <media:content url="http://content.bitsontherun.com/videos/kaUXWqTZ-52qL9xLP.mp4" />
+    <media:content url="http://content.bitsontherun.com/videos/kaUXWqTZ-27m5HpIu.webm" />
     <media:thumbnail url="http://content.bitsontherun.com/thumbs/kaUXWqTZ-480.jpg" />
     <guid>kaUXWqTZ</guid>
   </item>

@@ -126,10 +126,10 @@
 				// This will throw an error on Windows Mobile 7.5.  We want to trigger the error so that we can move 
 				// down to the next section
 				var xml = xmlhttp.responseXML;
-				if (xml) return completecallback(xmlhttp);
+				if (xml && xml.firstChild) return completecallback(xmlhttp);
 			} catch (e) {}
 			var parsedXML = utils.parseXML(xmlhttp.responseText);
-			if (parsedXML) {
+			if (parsedXML && parsedXML.firstChild) {
 				xmlhttp = utils.extend({}, xmlhttp, {responseXML:parsedXML});
 			} else {
 				if (errorcallback) errorcallback(xmldocpath);
