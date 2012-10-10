@@ -1697,7 +1697,9 @@
 			_railBounds,
 			_timeOverlay,
 			_timeOverlayText,
+			_hdTimer,
 			_hdOverlay,
+			_ccTimer,
 			_ccOverlay,
 			_fullscreenOverlay,
 			_redrawTimeout,
@@ -2199,6 +2201,10 @@
 		
 		function _showHd() {
 			if (_levels && _levels.length > 1) {
+				if (_hdTimer) {
+					clearTimeout(_hdTimer);
+					_hdTimer = undefined;
+				}
 				_hdOverlay.show();
 				_hideOverlays('hd');
 			}
@@ -2206,6 +2212,10 @@
 		
 		function _showCc() {
 			if (_captions && _captions.length > 1) {
+				if (_ccTimer) {
+					clearTimeout(_ccTimer);
+					_ccTimer = undefined;
+				}
 				_ccOverlay.show();
 				_hideOverlays('cc');
 			}
@@ -2495,12 +2505,12 @@
 		function _buildOverlays() {
 			if (_elements.hd) {
 				_hdOverlay = new html5.menu('hd', _id+"_hd", _skin, _switchLevel);
-				_addOverlay(_hdOverlay, _elements.hd, _showHd);
+				_addOverlay(_hdOverlay, _elements.hd, _showHd, _setHdTimer);
 				_overlays.hd = _hdOverlay;
 			}
 			if (_elements.cc) {
 				_ccOverlay = new html5.menu('cc', _id+"_cc", _skin, _switchCaption);
-				_addOverlay(_ccOverlay, _elements.cc, _showCc);
+				_addOverlay(_ccOverlay, _elements.cc, _showCc, _setCcTimer);
 				_overlays.cc = _ccOverlay;
 			}
 			if (_elements.mute && _elements.volume && _elements.volume.vertical) {
@@ -2520,11 +2530,24 @@
  			}
 		}
 		
-		function _addOverlay(overlay, button, hoverAction) {
+		function _setCcTimer() {
+			_ccTimer = setTimeout(_ccOverlay.hide, 500);
+		}
+
+		function _setHdTimer() {
+			_hdTimer = setTimeout(_hdOverlay.hide, 500);
+		}
+
+		function _addOverlay(overlay, button, hoverAction, timer) {
 			var element = overlay.element();
 			_appendChild(button, element);
 			button.addEventListener('mousemove', hoverAction, FALSE);
-			button.addEventListener('mouseout', overlay.hide, FALSE);
+			if (timer) {
+				button.addEventListener('mouseout', timer, FALSE);	
+			}
+			else {
+				button.addEventListener('mouseout', overlay.hide, FALSE);
+			}
 			_css('#'+element.id, {
 				left: "50%"
 			});
