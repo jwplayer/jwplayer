@@ -57,6 +57,7 @@
 			_logo.id = _id;
 			
 			if (!_settings.file) {
+				_logo.style.display = "none";
 				return;
 			}
 			
