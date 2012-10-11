@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2680';
+	jwplayer.html5.version = '6.0.2689';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -3573,8 +3573,8 @@
 				'background-size': JW_CSS_100PCT + " " + bgSkin.height + "px",
 				position: "absolute",
 				width: UNDEFINED,
-				left: hasCaps ? capLeftSkin.width - 1: 0,
-				right: hasCaps ? capRightSkin.width - 1 : 0
+				left: hasCaps ? capLeftSkin.width : 0,
+				right: hasCaps ? capRightSkin.width : 0
 			});
 			_css(_internalSelector(".capLeft"), {
 				display: hasCaps ? UNDEFINED : JW_CSS_NONE,
@@ -6434,7 +6434,9 @@
  * @version 6.0
  */
 (function(html5) {
-	var _utils = jwplayer.utils;
+	var utils = jwplayer.utils,
+	
+		FORMAT_ERROR = "Skin formatting error";
 	
 	/** Constructor **/
 	html5.skinloader = function(skinPath, completeHandler, errorHandler) {
@@ -6452,12 +6454,12 @@
 			if (typeof _skinPath != "string" || _skinPath === "") {
 				_loadSkin(html5.defaultskin().xml);
 			} else {
-				if (_utils.extension(_skinPath) != "xml") {
+				if (utils.extension(_skinPath) != "xml") {
 					_errorHandler("Skin not a valid file type");
 					return;
 				}
 				// Load the default skin first; if any components are defined in the loaded skin, they will overwrite the default
-				var defaultLoader = new html5.skinloader("", _defaultLoaded, errorHandler);
+				var defaultLoader = new html5.skinloader("", _defaultLoaded, _errorHandler);
 			}
 			
 		}
@@ -6465,14 +6467,15 @@
 		
 		function _defaultLoaded(defaultSkin) {
 			_skin = defaultSkin;
-			_utils.ajax(_utils.getAbsolutePath(_skinPath), function(xmlrequest) {
+			utils.ajax(utils.getAbsolutePath(_skinPath), function(xmlrequest) {
 				try {
-					if (_utils.exists(xmlrequest.responseXML)){
+					if (utils.exists(xmlrequest.responseXML)){
 						_loadSkin(xmlrequest.responseXML);
 						return;	
 					}
 				} catch (err){
-					_clearSkin();
+					//_clearSkin();
+					_errorHandler(FORMAT_ERROR);
 				}
 			}, function(message) {
 				_errorHandler(message);
@@ -6489,11 +6492,11 @@
 				target = skinNode.getAttribute("target"); 
 
 			if (!target || parseFloat(target) > parseFloat(jwplayer.version)) {
-				errorHandler("Incompatible player version")
+				_errorHandler("Incompatible player version")
 			}
 			
 			if (components.length === 0) {
-				errorHandler("Skin formatting error")
+				_errorHandler(FORMAT_ERROR);
 			}
 			for (var componentIndex = 0; componentIndex < components.length; componentIndex++) {
 				var componentName = _lowerCase(components[componentIndex].getAttribute("name")),
@@ -6515,7 +6518,7 @@
 					for (var settingIndex = 0; settingIndex < settings.length; settingIndex++) {
 						var name = settings[settingIndex].getAttribute("name");
 						var value = settings[settingIndex].getAttribute("value");
-						if(/color$/.test(name)) { value = _utils.stringToColor(value); }
+						if(/color$/.test(name)) { value = utils.stringToColor(value); }
 						component.settings[_lowerCase(name)] = value;
 					}
 				}
@@ -6542,7 +6545,7 @@
 								var elementAttribute = element.attributes[elementAttributeIndex];
 								_layout.elements[groupElementIndex][_lowerCase(elementAttribute.name)] = elementAttribute.value;
 							}
-							if (!_utils.exists(_layout.elements[groupElementIndex].name)) {
+							if (!utils.exists(_layout.elements[groupElementIndex].name)) {
 								_layout.elements[groupElementIndex].name = element.tagName;
 							}
 						}
@@ -6577,7 +6580,7 @@
 			if (elementSource.indexOf('data:image/png;base64,') === 0) {
 				imgUrl = elementSource;
 			} else {
-				var skinUrl = _utils.getAbsolutePath(_skinPath);
+				var skinUrl = utils.getAbsolutePath(_skinPath);
 				var skinRoot = skinUrl.substr(0, skinUrl.lastIndexOf('/'));
 				imgUrl = [skinRoot, component, elementSource].join('/');
 			}
@@ -6642,7 +6645,7 @@
 				elementObj.ready = true;
 				_resetCompleteIntervalTest();
 			} else {
-				_utils.log("Loaded an image for a missing element: " + component + "." + element);
+				utils.log("Loaded an image for a missing element: " + component + "." + element);
 			}
 		}
 		
@@ -6687,7 +6690,7 @@
 			"pause" : _playHandler,
 			"play" : _playHandler,
 			"playing" : _playHandler,
-			"progress" : _generalHandler,
+			"progress" : _progressHandler,
 			"ratechange" : _generalHandler,
 			"readystatechange" : _generalHandler,
 			"seeked" : _sendSeekEvent,
@@ -6795,7 +6798,7 @@
 		}
 		
 		function _round(number) {
-			return Number(number.toFixed(2));
+			return Number(number.toFixed(1));
 		}
 
 		function _canPlayHandler(evt) {
@@ -6803,9 +6806,13 @@
 			if (!_canSeek) {
 				_canSeek = true;
 				_sendBufferFull();
-				if (_delayedSeek > 0) {
-					_seek(_delayedSeek);
-				}
+			}
+		}
+		
+		function _progressHandler(evt) {
+			if (_canSeek && _delayedSeek > 0) {
+				// Need to set a brief timeout before executing delayed seek; IE9 stalls otherwise. 
+				setTimeout(function() { _seek(_delayedSeek); }, 200);
 			}
 		}
 		
@@ -6921,7 +6928,7 @@
 		var _stop = _this.stop = function() {
 			if (!_attached) return;
 			_videotag.removeAttribute("src");
-			_videotag.load();
+			if (!utils.isIE()) _videotag.load();
 			_currentQuality = -1;
 			clearInterval(_bufferInterval);
 			_setState(states.IDLE);
@@ -7080,7 +7087,7 @@
 			if (quality >=0) {
 				if (_levels && _levels.length > quality) {
 					_currentQuality = quality;
-					_sendEvent(events.JWPLAYER_MEDIA_LEVEL_CHANGED, { currentQuality: quality, levels: _levels} );
+					_sendEvent(events.JWPLAYER_MEDIA_LEVEL_CHANGED, { currentQuality: quality, levels: _getPublicLevels(_levels)} );
 					var currentTime = _videotag.currentTime;
 					_completeLoad();
 					_this.seek(currentTime);

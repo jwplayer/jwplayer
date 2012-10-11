@@ -93,7 +93,7 @@
     });
 
     function getCurrentQuality() {
-        appendLog("The current quality level is: "+jwplayer().getCurrentQuality());
+        appendLog("The current quality level is: "+jwplayer().getQualityLevels()[jwplayer().getCurrentQuality()].label);
      };
     function getQualityLevels() {
         var levels = jwplayer().getQualityLevels();
@@ -121,7 +121,7 @@
         appendLog(text.substr(0,text.length-2));
     });
     jwplayer().onQualityChange(function qualityChange(event) {
-        appendLog("Current quality level changed to: "+event.currentQuality);
+        appendLog("Current quality level changed to: "+event.levels[event.currentQuality].label);
     });
 
     function appendLog(text) {
@@ -154,17 +154,17 @@
 </tr><tr>
     <td class="both"></td>
     <td>Click to play second video</td>
-    <td>Quality level list should be logged (1 level, no label).</td>
+    <td>Quality level list should be logged (1 level, label is "0").</td>
     <td class="check"></td>
 </tr><tr>
     <td class="both"></td>
-    <td>Click to play second video</td>
+    <td>Click to play third video</td>
     <td>Quality level list should be logged (4 levels, with labels).</td>
     <td class="check"></td>
 </tr><tr>
     <td class="both"></td>
     <td>Click <em>Get current Quality level</em></td>
-    <td>Quality level 1 (360p) should be logged</td>
+    <td>Quality level 0 (180p) should be logged</td>
     <td class="check"></td>
 </tr><tr>
     <td class="both"></td>
@@ -174,7 +174,7 @@
 </tr><tr>
     <td class="both"></td>
     <td>Click <em>Set quality level</em> and set 2</td>
-    <td>Quality should change (improved visuals, buffering)<br/>HD menu in controlbar should mirror the change.<br/>Switch to new quality level (2)should be logged</td>
+    <td>Quality should change (improved visuals, buffering)<br/>The third item HD menu in controlbar should be active.<br/>Log should read: "Current quality level changed to: 720p"</td>
     <td class="check"></td>
 </tr></table>
 

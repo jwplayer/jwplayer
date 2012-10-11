@@ -28,7 +28,7 @@
 			"pause" : _playHandler,
 			"play" : _playHandler,
 			"playing" : _playHandler,
-			"progress" : _generalHandler,
+			"progress" : _progressHandler,
 			"ratechange" : _generalHandler,
 			"readystatechange" : _generalHandler,
 			"seeked" : _sendSeekEvent,
@@ -136,7 +136,7 @@
 		}
 		
 		function _round(number) {
-			return Number(number.toFixed(2));
+			return Number(number.toFixed(1));
 		}
 
 		function _canPlayHandler(evt) {
@@ -144,9 +144,13 @@
 			if (!_canSeek) {
 				_canSeek = true;
 				_sendBufferFull();
-				if (_delayedSeek > 0) {
-					_seek(_delayedSeek);
-				}
+			}
+		}
+		
+		function _progressHandler(evt) {
+			if (_canSeek && _delayedSeek > 0) {
+				// Need to set a brief timeout before executing delayed seek; IE9 stalls otherwise. 
+				setTimeout(function() { _seek(_delayedSeek); }, 200);
 			}
 		}
 		
@@ -262,7 +266,7 @@
 		var _stop = _this.stop = function() {
 			if (!_attached) return;
 			_videotag.removeAttribute("src");
-			_videotag.load();
+			if (!utils.isIE()) _videotag.load();
 			_currentQuality = -1;
 			clearInterval(_bufferInterval);
 			_setState(states.IDLE);
@@ -421,7 +425,7 @@
 			if (quality >=0) {
 				if (_levels && _levels.length > quality) {
 					_currentQuality = quality;
-					_sendEvent(events.JWPLAYER_MEDIA_LEVEL_CHANGED, { currentQuality: quality, levels: _levels} );
+					_sendEvent(events.JWPLAYER_MEDIA_LEVEL_CHANGED, { currentQuality: quality, levels: _getPublicLevels(_levels)} );
 					var currentTime = _videotag.currentTime;
 					_completeLoad();
 					_this.seek(currentTime);

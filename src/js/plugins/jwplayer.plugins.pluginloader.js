@@ -89,7 +89,7 @@
 				
 
 				if (flashPath) {
-					flashPlugins.plugins[flashPath] = utils.extend({}, config.plugins[pluginURL]);
+					flashPlugins.plugins[flashPath] = utils.extend({}, config.plugins[plugin]);
 					flashPlugins.plugins[flashPath].pluginmode = pluginObj.getPluginmode();
 					flashPlugins.length++;
 				}

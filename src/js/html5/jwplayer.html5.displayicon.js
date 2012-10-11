@@ -107,8 +107,8 @@
 				'background-size': JW_CSS_100PCT + " " + bgSkin.height + "px",
 				position: "absolute",
 				width: UNDEFINED,
-				left: hasCaps ? capLeftSkin.width - 1: 0,
-				right: hasCaps ? capRightSkin.width - 1 : 0
+				left: hasCaps ? capLeftSkin.width : 0,
+				right: hasCaps ? capRightSkin.width : 0
 			});
 			_css(_internalSelector(".capLeft"), {
 				display: hasCaps ? UNDEFINED : JW_CSS_NONE,

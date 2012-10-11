@@ -46,10 +46,10 @@
 			if (_pluginloader.getStatus() == utils.loaderstatus.COMPLETE) {
 				for (var mode = 0; mode < _config.modes.length; mode++) {
 					if (_config.modes[mode].type && embed[_config.modes[mode].type]) {
-						var modeconfig = _config.modes[mode].config;
-						var configClone = utils.extend({}, modeconfig ? embed.config.addConfig(_config, modeconfig) : _config);
-						
-						var embedder = new embed[_config.modes[mode].type](_container, _config.modes[mode], configClone, _pluginloader, playerApi);
+						var modeconfig = _config.modes[mode].config,
+							configClone = utils.extend({}, modeconfig ? embed.config.addConfig(_config, modeconfig) : _config),
+							embedder = new embed[_config.modes[mode].type](_container, _config.modes[mode], configClone, _pluginloader, playerApi);
+
 						if (embedder.supportsConfig()) {
 							embedder.addEventListener(events.ERROR, _embedError);
 							embedder.embed();
@@ -58,7 +58,6 @@
 						}
 					}
 				}
-				
 				
 				if (_config.fallback) {
 					utils.log("No suitable players found and fallback enabled");
@@ -94,6 +93,7 @@
 			style.width = utils.styleDimension(_config.width);
 			style.height = utils.styleDimension(_config.height);
 			style.display = "table";
+			style.opacity = 1;
 			
 			var text = document.createElement("p"),
 				textStyle = text.style;	

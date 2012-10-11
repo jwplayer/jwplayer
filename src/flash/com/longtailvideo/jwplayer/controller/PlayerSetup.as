@@ -133,7 +133,8 @@ package com.longtailvideo.jwplayer.controller {
 				} else if (Strings.extension(confHash['skin']) == "xml") {
 					skin = new PNGSkin();
 				} else {
-					tasker.failure(new ErrorEvent(ErrorEvent.ERROR, false, false, "Skin could not be loaded: Skin not a valid file type"));	
+					tasker.failure(new ErrorEvent(ErrorEvent.ERROR, false, false, "Skin could not be loaded: Skin not a valid file type"));
+					return;
 				}
 			} else {
 				skin = new DefaultSkin();

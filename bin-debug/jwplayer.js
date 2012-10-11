@@ -16,7 +16,7 @@ jwplayer = function(container) {
 	}
 };
 
-jwplayer.version = '6.0.2680';
+jwplayer.version = '6.0.2689';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -224,6 +224,8 @@ jwplayer.source = document.createElement("source");/**
 	 * If the browser has flash capabilities, return the flash version 
 	 */
 	utils.flashVersion = function() {
+		if (utils.isAndroid()) return 0;
+		
 		var plugins = NAVIGATOR.plugins, flash;
 		if (plugins != UNDEFINED) {
 			flash = plugins['Shockwave Flash'];
@@ -1184,7 +1186,7 @@ jwplayer.source = document.createElement("source");/**
 				
 
 				if (flashPath) {
-					flashPlugins.plugins[flashPath] = utils.extend({}, config.plugins[pluginURL]);
+					flashPlugins.plugins[flashPath] = utils.extend({}, config.plugins[plugin]);
 					flashPlugins.plugins[flashPath].pluginmode = pluginObj.getPluginmode();
 					flashPlugins.length++;
 				}
@@ -1405,10 +1407,10 @@ jwplayer.source = document.createElement("source");/**
 			if (_pluginloader.getStatus() == utils.loaderstatus.COMPLETE) {
 				for (var mode = 0; mode < _config.modes.length; mode++) {
 					if (_config.modes[mode].type && embed[_config.modes[mode].type]) {
-						var modeconfig = _config.modes[mode].config;
-						var configClone = utils.extend({}, modeconfig ? embed.config.addConfig(_config, modeconfig) : _config);
-						
-						var embedder = new embed[_config.modes[mode].type](_container, _config.modes[mode], configClone, _pluginloader, playerApi);
+						var modeconfig = _config.modes[mode].config,
+							configClone = utils.extend({}, modeconfig ? embed.config.addConfig(_config, modeconfig) : _config),
+							embedder = new embed[_config.modes[mode].type](_container, _config.modes[mode], configClone, _pluginloader, playerApi);
+
 						if (embedder.supportsConfig()) {
 							embedder.addEventListener(events.ERROR, _embedError);
 							embedder.embed();
@@ -1417,7 +1419,6 @@ jwplayer.source = document.createElement("source");/**
 						}
 					}
 				}
-				
 				
 				if (_config.fallback) {
 					utils.log("No suitable players found and fallback enabled");
@@ -1453,6 +1454,7 @@ jwplayer.source = document.createElement("source");/**
 			style.width = utils.styleDimension(_config.width);
 			style.height = utils.styleDimension(_config.height);
 			style.display = "table";
+			style.opacity = 1;
 			
 			var text = document.createElement("p"),
 				textStyle = text.style;	
@@ -1708,7 +1710,7 @@ jwplayer.source = document.createElement("source");/**
 
 		function _embed() {
 			var file, image, youtube, i, playlist = params.playlist, item, sources, i,
-				types = ["mp4", "flv", "webm", "aac", "mp3", "vorbis"]; 
+				types = ["mp4", "aac", "mp3"]; 
 			if (playlist && playlist.length) {
 				item = playlist[0];
 				sources = item.sources;
@@ -1771,6 +1773,9 @@ jwplayer.source = document.createElement("source");/**
 		function _styleElements() {
 			var _prefix = "#" + _container.id + " .jwdownload";
 
+			_container.style.width = "";
+			_container.style.height = "";
+			
 			_css(_prefix+"display", {
 				width: utils.styleDimension(Math.max(320, _width)),
 				height: utils.styleDimension(Math.max(180, _height)),
@@ -2150,7 +2155,7 @@ jwplayer.source = document.createElement("source");/**
 				if (playerOptions.skin && playerOptions.skin.toLowerCase().indexOf(".zip") > 0) {
 					playerOptions.skin = playerOptions.skin.replace(/\.zip/i, ".xml");
 				}
-				
+
 				var html5player = new jwplayer.html5.player(playerOptions);
 				_api.container = document.getElementById(_api.id);
 				_api.setPlayer(html5player, "html5");
@@ -2254,13 +2259,10 @@ jwplayer.source = document.createElement("source");/**
 			if (!mimetype) {
 				return true;
 			}
-			
+
 			try {
 				if (video.canPlayType(mimetype)) {
 					return true;
-				} else if (mimetype == "audio/mp3" && navigator.userAgent.match(/safari/i)) {
-					// Work around Mac Safari bug
-					return video.canPlayType("audio/mpeg");
 				} else {
 					return false;
 				}

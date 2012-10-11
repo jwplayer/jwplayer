@@ -32,7 +32,7 @@
 
 		function _embed() {
 			var file, image, youtube, i, playlist = params.playlist, item, sources, i,
-				types = ["mp4", "flv", "webm", "aac", "mp3", "vorbis"]; 
+				types = ["mp4", "aac", "mp3"]; 
 			if (playlist && playlist.length) {
 				item = playlist[0];
 				sources = item.sources;
@@ -95,6 +95,9 @@
 		function _styleElements() {
 			var _prefix = "#" + _container.id + " .jwdownload";
 
+			_container.style.width = "";
+			_container.style.height = "";
+			
 			_css(_prefix+"display", {
 				width: utils.styleDimension(Math.max(320, _width)),
 				height: utils.styleDimension(Math.max(180, _height)),

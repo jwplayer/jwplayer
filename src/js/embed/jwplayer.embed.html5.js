@@ -48,7 +48,7 @@
 				if (playerOptions.skin && playerOptions.skin.toLowerCase().indexOf(".zip") > 0) {
 					playerOptions.skin = playerOptions.skin.replace(/\.zip/i, ".xml");
 				}
-				
+
 				var html5player = new jwplayer.html5.player(playerOptions);
 				_api.container = document.getElementById(_api.id);
 				_api.setPlayer(html5player, "html5");
@@ -152,13 +152,10 @@
 			if (!mimetype) {
 				return true;
 			}
-			
+
 			try {
 				if (video.canPlayType(mimetype)) {
 					return true;
-				} else if (mimetype == "audio/mp3" && navigator.userAgent.match(/safari/i)) {
-					// Work around Mac Safari bug
-					return video.canPlayType("audio/mpeg");
 				} else {
 					return false;
 				}

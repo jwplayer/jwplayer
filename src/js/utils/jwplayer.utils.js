@@ -201,6 +201,8 @@
 	 * If the browser has flash capabilities, return the flash version 
 	 */
 	utils.flashVersion = function() {
+		if (utils.isAndroid()) return 0;
+		
 		var plugins = NAVIGATOR.plugins, flash;
 		if (plugins != UNDEFINED) {
 			flash = plugins['Shockwave Flash'];
