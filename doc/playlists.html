@@ -87,25 +87,6 @@ jwplayer("myElement").setup({
 
 <p>Let's take a look at a few examples of playlists. These examples only show the contents of the <em>setup()</em> code block. See <a href="embedding.html">Embedding JW Player</a> on how to set the script library and container element.</p>
 
-<h3>Setting Multiple Formats</h3>
-
-<p>This setup has one item in the playlist with two sources: MP4 and WebM. JW Player will automatically display the MP4 source on Chrome/IE/Safari and the WebM source on Firefox:</p>
-
-<pre>
-jwplayer("myElement").setup({
-    playlist: [{
-        image: "/assets/sintel.jpg",
-        sources: [
-            { file: "/assets/sintel.mp4" },
-            { file: "/assets/sintel.webm" }
-        ],
-        title: "Sintel Movie Trailer"
-    }
-});
-</pre>
-
-<p>See <a href="browsers.html">Browser &amp; Device Support</a> for more info on browser support and mode/source selection.</p>
-
 <h3>Setting Multiple Qualities</h3>
 
 <p>This setup has one item in the playlist with two sources. Both are MP4, but one is 640x360 pixels (SD) and the other is 1280x720 pixels (HD):</p>
@@ -127,6 +108,24 @@ jwplayer("myElement").setup({
 
 <p>For both desktop and mobile, the source that is closest to the player dimensions will be pre-selected. If no width and height is provided, the first level is pre-selected.</p>
 
+<h3>Setting Multiple Formats</h3>
+
+<p>This setup has one item in the playlist with two sources: MP4 and WebM. JW Player will automatically display the MP4 source on Chrome/IE/Safari and the WebM source on Firefox:</p>
+
+<pre>
+jwplayer("myElement").setup({
+    playlist: [{
+        image: "/assets/sintel.jpg",
+        sources: [
+            { file: "/assets/sintel.mp4" },
+            { file: "/assets/sintel.webm" }
+        ],
+        title: "Sintel Movie Trailer"
+    }
+});
+</pre>
+
+<p>See <a href="browsers.html">Browser &amp; Device Support</a> for more info on browser support and mode/source selection.</p>
 
 <h3>Setting Multiple Items</h3>
 
