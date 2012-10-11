@@ -655,6 +655,7 @@ package com.longtailvideo.jwplayer.view {
 			if (_model.config.controls && !audioMode) {
 				_components.dock.show();
 			}
+			loadImage(_model.playlist.getItemAt(0).image);
 		}
 		
 		protected function forward(evt:Event):void {

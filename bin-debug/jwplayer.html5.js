@@ -3303,6 +3303,10 @@
 			_clearError();
 			_item = _api.jwGetPlaylist()[_api.jwGetPlaylistIndex()];
 			var newImage = _item ? _item.image : "";
+			_loadImage(newImage);
+		}
+
+		function _loadImage(newImage) {
 			if (_image != newImage) {
 				if (_image) {
 					_setVisibility(D_PREVIEW_CLASS, FALSE);
@@ -3318,6 +3322,8 @@
 		function _playlistCompleteHandler() {
 			_completedState = TRUE;
 			_setIcon("replay");
+			var item = _api.jwGetPlaylist()[0];
+			_loadImage(item.image);
 		}
 		
 		var _stateTimeout;
