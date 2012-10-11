@@ -23,27 +23,40 @@
 
 <h2>Player Setup</h2>
 
-<p>Before a player can be embedded, the 3 JW Player files (and your media files) need to be uploaded to your site. See the <a href="quickstart.html">Quick Start</a> for more info on this. With the files online, embedding the JW Player is a simple, 3-step process. Open your web page in an HTML editor and:</p>
+<p>Before a player can be embedded, the 3 JW Player files (and your media files) need to be uploaded to your site. See the <a href="quickstart.html">Quick Start</a> for more info on this. With the files online, embedding the JW Player is a simple, 2-step process. Open your web page in an HTML editor and:</p>
 
-<ol>
-<li>Embed the main JW Player script library into the head of your page (note the Flash and HTML5 player area automatically loaded):
+<h3>1: Add library to &lt;head&gt;</h3>
+
+<p>Embed the main JW Player script library into the head of your page (note the Flash and HTML5 player area automatically loaded):</p>
+
 <pre>&lt;script type="text/javascript" src="/scripts/jwplayer.js" &gt;&lt;/script&gt;</pre>
-</li>
-<li>Insert a &lt;div&gt; element with a unique <em>id</em> at the location you want the player to appear:
+
+<p>If you bought the <strong>Pro</strong>, <strong>Premium</strong> or <strong>Ads</strong> edition, or want to use our free <a href="analytics.html">JW Analytics</a> service, add a second line with your JW Player key, right below the first one:</p>
+
+<pre>&lt;script type="text/javascript"&gt;jwplayer.key="YOUR_JW_PLAYER_KEY";&lt;/script&gt;</pre>
+
+<p>Note your key can be found in our Dashboard. <a href="http://www.longtailvideo.com/jw-player/sign-up/">Click here to login</a> (or sign up) and get your key.</p>
+
+<h3>2: Add embed to &lt;body&gt;</h3>
+
+<p>Insert a &lt;div&gt; element with a unique <em>id</em>  in the body of your page, at the location you want the player to appear:</p>
+
 <pre>&lt;div id="myElement"&gt;Loading the player ...&lt;/div&gt;</pre>
-</li>
-<li>Insert a script that invokes the JW Player <em>setup()</em> call on your &lt;div&gt;:</li>
-<pre>&lt;script type="text/javascript"&gt;
+
+<p>Right below it, insert a script that invokes the JW Player <em>setup()</em> call on your &lt;div&gt;:</p>
+
+<pre>
+&lt;script type="text/javascript"&gt;
     jwplayer("myElement").setup({
         file: "/uploads/example.mp4",
         height: 360,
         image: "/uploads/example.jpg",
         width: 640
     });
-&lt;/script&gt;</pre></li>
-</ol>
+&lt;/script&gt;
+</pre>
 
-<p>The last code block is where the heavy lifting happens. The script in it tells the JW Player library to setup a player instance over the DOM element with ID <em>container</em>. Inside the setup call, the script provides a list of options for configuring the player. In this setup, only the <em>file</em>, <em>height</em>, <em>image</em> and <em>width</em> options are set, but many more are available. They are listed below.</p>
+<p>The last code block is where the heavy lifting happens. The script tells the JW Player library to setup a player instance over the DOM element with ID <em>container</em>. Inside the setup call, the script provides a list of options for configuring the player. In this setup, only the <em>file</em>, <em>height</em>, <em>image</em> and <em>width</em> options are set, but many more are available. They are listed below.</p>
 
 
 
