@@ -16,7 +16,7 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var defaults:Object = {
 			prefix: "http://l.longtailvideo.com/flash/", 
 			file: "logo.png", 
-			link: 'http://www.longtailvideo.com/jwpabout/?a=logo&v='+PlayerVersion.version+'&m=flash',
+			link: 'http://www.longtailvideo.com/jwpabout/?a=l&v='+PlayerVersion.version+'&m=f&e=o',
 			linktarget: "_top",
 			margin: 8, 
 			hide: true, 
@@ -46,7 +46,7 @@ package com.longtailvideo.jwplayer.view.components {
 			animations = new Animations(this);
 			_player = player;
 			var linkFlag:String = _getLinkFlag(_getEdition());
-			defaults.link = 'http://www.longtailvideo.com/jwpabout/?a=logo&v='+PlayerVersion.version+linkFlag+'&m=flash',
+			defaults.link = 'http://www.longtailvideo.com/jwpabout/?a=l&v='+PlayerVersion.version+'&m=f&e='+linkFlag,
 			setupDefaults();
 			setupMouseEvents();
 			loadFile();
@@ -65,6 +65,8 @@ package com.longtailvideo.jwplayer.view.components {
 					return "r";
 				case "ads":
 					return "a";
+				case "open":
+					return "o";
 				default:
 					return "f";
 			}
@@ -76,7 +78,7 @@ package com.longtailvideo.jwplayer.view.components {
 				edition = _player['edition'];
 			}
 			catch(error:Error) {
-				edition = "";
+				edition = "open";
 			}
 			return edition;		
 		}

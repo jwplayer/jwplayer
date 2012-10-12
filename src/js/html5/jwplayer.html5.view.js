@@ -211,10 +211,13 @@
 			
 			_dock = new html5.dock(_api, _model.componentConfig('dock'));
 			_controlsLayer.appendChild(_dock.element());
-
 			
-			
-			new html5.rightclick(_api, {});
+			if (_api.edition) {
+				new html5.rightclick(_api, {abouttext: _model.abouttext, aboutlink: _model.aboutlink});	
+			}
+			else {
+				new html5.rightclick(_api, {});
+			}
 			
 			if (_model.playlistsize && _model.playlistposition && _model.playlistposition != "none") {
 				_playlist = new html5.playlistcomponent(_api, {});

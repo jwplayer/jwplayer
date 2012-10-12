@@ -63,7 +63,7 @@ package com.longtailvideo.jwplayer.view {
 
 		/** jump to the about page. **/
 		protected function aboutHandler(evt:ContextMenuEvent):void {
-			navigateToURL(new URLRequest('http://www.longtailvideo.com/jwpabout/?a=right-click&v='+PlayerVersion.version+'f&m=flash'), '_top');
+			navigateToURL(new URLRequest('http://www.longtailvideo.com/jwpabout/?a=r&v='+PlayerVersion.version+'&m=f&e=o'), '_top');
 		}
 
 		/** change the debug system. **/

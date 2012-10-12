@@ -4361,7 +4361,13 @@
 	
 		UNDEFINED = undefined,
 		
-		LINK_DEFAULT = "http://www.longtailvideo.com/jwpabout/?a=logo&v=",
+		FREE = "free",
+		PRO = "pro",
+		PREMIUM = "premium",
+		ADS = "ads",
+		OPEN = "open",
+
+		LINK_DEFAULT = "http://www.longtailvideo.com/jwpabout/?a=l&v=",
 		JW_CSS_VISIBLE = "visible",
 		JW_CSS_HIDDEN = "hidden",
 		LOGO_CLASS = ".jwlogo";
@@ -4394,7 +4400,7 @@
 			} catch(e) {}
 			
 			var linkFlag = _getLinkFlag(_getEdition());
-			_defaults.link = LINK_DEFAULT+jwplayer.version+linkFlag+'&m=html5';
+			_defaults.link = LINK_DEFAULT+jwplayer.version+'&m=h&e='+linkFlag;
 
 			_settings = utils.extend({}, _defaults, logoConfig);
 			_settings.hide = (_settings.hide.toString() == "true");
@@ -4473,19 +4479,22 @@
 				return licenseKey.edition();
 			}
 			else {
-				return "";
+				return OPEN;
 			}
 		}
 
 		function _getLinkFlag(edition) {
-			if (edition == "pro") {
+			if (edition == PRO) {
 				return "p";
 			}
-			else if (edition == "premium") {
+			else if (edition == PREMIUM) {
 				return "r";
 			}
-			else if (edition == "ads") {
+			else if (edition == ADS) {
 				return "a";
+			}
+			else if (edition == OPEN) {
+				return "o";
 			}
 			else {
 				return "f";
@@ -4516,7 +4525,7 @@
 	logo.defaults = {
 		prefix: "http://l.longtailvideo.com/html5/",
 		file: "logo.png",
-		link: LINK_DEFAULT+jwplayer.version+'&m=html5',
+		link: LINK_DEFAULT+jwplayer.version+'&m=h&e=f',
 		linktarget: "_top",
 		margin: 8,
 		hide: true,
@@ -6015,13 +6024,9 @@
 (function(html5) {
 	var utils = jwplayer.utils,
 		_css = utils.css,
-		
-		FREE = "free",
-		PRO = "pro",
-		PREMIUM = "premium",
-		ADS = "ads",
+
 		ABOUT_DEFAULT = "About JW Player ",
-		LINK_DEFAULT = "http://www.longtailvideo.com/jwpabout/?a=right-click&v=",
+		LINK_DEFAULT = "http://www.longtailvideo.com/jwpabout/?a=r&v=",
 
 		DOCUMENT = document,
 		RC_CLASS = ".jwclick",
@@ -6036,9 +6041,8 @@
 	html5.rightclick = function(api, config) {
 		var _api = api,
 			_container,// = DOCUMENT.getElementById(_api.id),
-			_linkFlag = "f",
 			_config = utils.extend({
-				aboutlink: LINK_DEFAULT+html5.version+_linkFlag+'&m=html5',
+				aboutlink: LINK_DEFAULT+html5.version+'&m=h&e=o',
 				abouttext: ABOUT_DEFAULT + html5.version + '...'
 			}, config),
 			_mouseOverContext = false,
@@ -6055,43 +6059,10 @@
 	        _menu.onmouseout = function() { _mouseOverContext = false; };
 	        DOCUMENT.addEventListener("mousedown", _hideContext, false);
 	        _about = _createElement(RC_ITEM_CLASS);
-
-	        var edition = _getEdition();
-	        _linkFlag = _getLinkFlag(edition);
-	        if (edition != FREE && edition.length != 0) {
-        		edition = edition.charAt(0).toUpperCase() + edition.substr(1);
-        		_config.abouttext = ABOUT_DEFAULT + html5.version + ' (' + edition + ' edition) ...';
-        		_config.aboutlink = LINK_DEFAULT+html5.version+_linkFlag+'&m=html5';
-	        }
 	        _about.innerHTML = _config.abouttext;
 	        _about.onclick = _clickHandler;
 	        _menu.appendChild(_about);
 	        DOCUMENT.body.appendChild(_menu);
-		}
-
-		function _getEdition() {
-			if (jwplayer().config.key) {
-				var	licenseKey = new utils.key(jwplayer().config.key);
-				return licenseKey.edition();
-			}
-			else {
-				return "";
-			}
-		}
-
-		function _getLinkFlag(edition) {
-			if (edition == PRO) {
-				return "p";
-			}
-			else if (edition == PREMIUM) {
-				return "r";
-			}
-			else if (edition == ADS) {
-				return "a";
-			}
-			else {
-				return "f";
-			}
 		}
 		
 		function _createElement(className) {
@@ -7328,10 +7299,13 @@
 			
 			_dock = new html5.dock(_api, _model.componentConfig('dock'));
 			_controlsLayer.appendChild(_dock.element());
-
 			
-			
-			new html5.rightclick(_api, {});
+			if (_api.edition) {
+				new html5.rightclick(_api, {abouttext: _model.abouttext, aboutlink: _model.aboutlink});	
+			}
+			else {
+				new html5.rightclick(_api, {});
+			}
 			
 			if (_model.playlistsize && _model.playlistposition && _model.playlistposition != "none") {
 				_playlist = new html5.playlistcomponent(_api, {});

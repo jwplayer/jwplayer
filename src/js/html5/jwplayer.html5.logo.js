@@ -12,7 +12,13 @@
 	
 		UNDEFINED = undefined,
 		
-		LINK_DEFAULT = "http://www.longtailvideo.com/jwpabout/?a=logo&v=",
+		FREE = "free",
+		PRO = "pro",
+		PREMIUM = "premium",
+		ADS = "ads",
+		OPEN = "open",
+
+		LINK_DEFAULT = "http://www.longtailvideo.com/jwpabout/?a=l&v=",
 		JW_CSS_VISIBLE = "visible",
 		JW_CSS_HIDDEN = "hidden",
 		LOGO_CLASS = ".jwlogo";
@@ -45,7 +51,7 @@
 			} catch(e) {}
 			
 			var linkFlag = _getLinkFlag(_getEdition());
-			_defaults.link = LINK_DEFAULT+jwplayer.version+linkFlag+'&m=html5';
+			_defaults.link = LINK_DEFAULT+jwplayer.version+'&m=h&e='+linkFlag;
 
 			_settings = utils.extend({}, _defaults, logoConfig);
 			_settings.hide = (_settings.hide.toString() == "true");
@@ -124,19 +130,22 @@
 				return licenseKey.edition();
 			}
 			else {
-				return "";
+				return OPEN;
 			}
 		}
 
 		function _getLinkFlag(edition) {
-			if (edition == "pro") {
+			if (edition == PRO) {
 				return "p";
 			}
-			else if (edition == "premium") {
+			else if (edition == PREMIUM) {
 				return "r";
 			}
-			else if (edition == "ads") {
+			else if (edition == ADS) {
 				return "a";
+			}
+			else if (edition == OPEN) {
+				return "o";
 			}
 			else {
 				return "f";
@@ -167,7 +176,7 @@
 	logo.defaults = {
 		prefix: "http://l.longtailvideo.com/html5/",
 		file: "logo.png",
-		link: LINK_DEFAULT+jwplayer.version+'&m=html5',
+		link: LINK_DEFAULT+jwplayer.version+'&m=h&e=f',
 		linktarget: "_top",
 		margin: 8,
 		hide: true,
