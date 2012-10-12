@@ -128,9 +128,7 @@ package com.longtailvideo.jwplayer.controller {
 		protected function loadSkin():void {
 			var skin:ISkin;
 			if (confHash && confHash['skin']) {
-				if (Strings.extension(confHash['skin']) == "zip") {
-					skin = new ZIPSkin();
-				} else if (Strings.extension(confHash['skin']) == "xml") {
+				if (Strings.extension(confHash['skin']) == "xml") {
 					skin = new PNGSkin();
 				} else {
 					tasker.failure(new ErrorEvent(ErrorEvent.ERROR, false, false, "Skin could not be loaded: Skin not a valid file type"));

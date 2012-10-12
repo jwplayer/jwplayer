@@ -1,6 +1,7 @@
 package com.longtailvideo.jwplayer.view.skins {
 	import com.longtailvideo.jwplayer.player.PlayerVersion;
 	import com.longtailvideo.jwplayer.utils.AssetLoader;
+	import com.longtailvideo.jwplayer.utils.Base64Decoder;
 	import com.longtailvideo.jwplayer.utils.Logger;
 	import com.longtailvideo.jwplayer.utils.Strings;
 	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
@@ -12,6 +13,7 @@ package com.longtailvideo.jwplayer.view.skins {
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
+	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
 
 	/**
@@ -37,6 +39,8 @@ package com.longtailvideo.jwplayer.view.skins {
 		protected var _components:Object = {};
 		
 		protected var _errorState:Boolean = false;
+
+		private var PNGSTART:String = "data:image/png;base64,";
 
 		public namespace skinNS = "http://developer.longtailvideo.com/trac/wiki/Skinning";
 		use namespace skinNS;
@@ -135,7 +139,17 @@ package com.longtailvideo.jwplayer.view.skins {
 				_loaders[newLoader] = {componentName:component, elementName:element.@name.toString()};
 				newLoader.addEventListener(Event.COMPLETE, elementHandler);
 				newLoader.addEventListener(ErrorEvent.ERROR, elementError);
-				newLoader.load(_urlPrefix + component + '/' + element.@src.toString());
+				
+				var src:String = element.@src.toString();
+				var index:Number = src.indexOf(PNGSTART);
+				if (index >= 0) {
+					src = src.substr(index + PNGSTART.length);
+					var byteSrc:ByteArray = Base64Decoder.decode(src);
+					newLoader.loadBytes(byteSrc);					
+				}
+				else {
+					newLoader.load(_urlPrefix + component + '/' + element.@src.toString());	
+				}
 			}
 		}
 		

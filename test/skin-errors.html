@@ -20,7 +20,7 @@
     jwplayer("skin404").setup({
         playlist: 'assets/clips.rss',
         primary: primaryCookie,
-        skin: "assets/notfound.zip"
+        skin: "assets/notfound.xml"
     });
 </script>
 
@@ -43,6 +43,27 @@
         playlist: 'assets/clips.rss',
         primary: primaryCookie,
         skin: "assets/five.swf"
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Load the player</td>
+    <td>Player should display an error message: "Error loading skin: Skin not a valid file type".</td>
+    <td class="check"></td>
+</tr></table>
+
+<h2>Loading ZIP Skins</h2>
+
+<div id="zip"></div>
+
+<script type="text/javascript">
+    jwplayer("zip").setup({
+        playlist: 'assets/clips.rss',
+        primary: primaryCookie,
+        skin: "assets/five.zip"
     });
 </script>
 
