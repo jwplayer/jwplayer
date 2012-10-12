@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2696';
+	jwplayer.html5.version = '6.0.2705';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -4585,7 +4585,7 @@
 			var top = _getSkinElement('menuTop'+name),
 				menuOption = _getSkinElement('menuOption'),
 				menuOptionOver = _getSkinElement('menuOptionOver'),
-				menuOptionActive = _getSkinElement('menuOptionOver');
+				menuOptionActive = _getSkinElement('menuOptionActive');
 
 			if (top) {
 				_container.appendChild(top.image);

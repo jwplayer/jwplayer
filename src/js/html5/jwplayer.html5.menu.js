@@ -41,7 +41,7 @@
 			var top = _getSkinElement('menuTop'+name),
 				menuOption = _getSkinElement('menuOption'),
 				menuOptionOver = _getSkinElement('menuOptionOver'),
-				menuOptionActive = _getSkinElement('menuOptionOver');
+				menuOptionActive = _getSkinElement('menuOptionActive');
 
 			if (top) {
 				_container.appendChild(top.image);
