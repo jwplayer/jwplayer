@@ -35,7 +35,7 @@
 <dt>file</dt>
 <dd>Location of an external JPG, PNG or GIF image to be used as watermark (e.g. <strong>/assets/logo.png</strong>). We recommend using 24 bit PNG images with transparency, since they blend nicely with the video.<dd>
 <dt>hide</dt>
-<dd>By default (<strong>true</strong>), the logo will automatically show and hide along with the other player controls. When this option is set <strong>false</strong>, the logo will stay visible all the time.</dd>
+<dd>By default (<strong>false</strong>), the logo remains visible all the time. When this option is set <strong>true</strong>, the logo will automatically show and hide along with the other player controls.</dd>
 <dt>link</dt>
 <dd>HTTP URL to jump to when the watermark image is clicked (e.g. <strong>http://example.com/</strong>). If it is not set, a click on the watermark does nothing in particular.</dd>
 <dt>margin</dt>
@@ -54,8 +54,7 @@ jwplayer("myElement").setup({
     height: 360,
     image: "/assets/myVideo.jpg",
     logo: {
-        file: '/assets/myLogo.png',
-        hide: false
+        file: '/assets/myLogo.png'
     },
     width: 640
 });
