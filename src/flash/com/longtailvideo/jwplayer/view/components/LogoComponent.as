@@ -19,7 +19,7 @@ package com.longtailvideo.jwplayer.view.components {
 			link: 'http://www.longtailvideo.com/jwpabout/?a=l&v='+PlayerVersion.version+'&m=f&e=o',
 			linktarget: "_top",
 			margin: 8, 
-			hide: true, 
+			hide: false, 
 			position: "top-right"
 		}
 		/** Seconds after fading in to hide logo again **/

@@ -179,7 +179,7 @@
 		link: LINK_DEFAULT+jwplayer.version+'&m=h&e=f',
 		linktarget: "_top",
 		margin: 8,
-		hide: true,
+		hide: false,
 		position: "top-right"
 	};
 	
