@@ -140,6 +140,7 @@
 		}
 
 		function _canPlayHandler(evt) {
+			_generalHandler(evt);
 			if (!_attached) return;
 			if (!_canSeek) {
 				_canSeek = true;
@@ -258,7 +259,7 @@
 			
 			_bufferInterval = setInterval(_sendBufferUpdate, 100);
 
-			if (utils.isIPod()) {
+			if (utils.isIPod() || utils.isAndroid(2.3)) {
 				_sendBufferFull();
 			}
 		}

@@ -447,7 +447,7 @@
 		}
 		
 		function _showDock() {
-			if (_dock && !_audioMode) _dock.show();
+			if (_dock && !_audioMode && (!_isMobile || _replayState)) _dock.show();
 		}
 		function _hideDock() {
 			if (_dock && !(_replayState || _forcedControls)) {

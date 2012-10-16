@@ -1,7 +1,8 @@
 package com.longtailvideo.jwplayer.view.components
 {
-	import com.longtailvideo.jwplayer.utils.Animations;
-	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
+	import com.longtailvideo.jwplayer.model.*;
+	import com.longtailvideo.jwplayer.utils.*;
+	import com.longtailvideo.jwplayer.view.interfaces.*;
 	
 	import flash.display.*;
 	import flash.external.ExternalInterface;
@@ -31,11 +32,34 @@ package com.longtailvideo.jwplayer.view.components
 		private var _y:Number = 0;
 		// X offset
 		private var _offset:Number = 0;
+		// Format for text
+		protected var textFormat:TextFormat;
+		// Default settings
+		protected var settings:Object = {
+			fontcase: null,
+			fontcolor: 0xcccccc,
+			fontsize: 11,
+			fontweight: null,
+			activecolor: 0xffffff,
+			overcolor: 0xffffff
+		}
 		
 
 		
 		public function TooltipOverlay(skin:ISkin, inverted:Boolean=false) {
 			this.skin = skin;
+			
+			for (var prop:String in settings) {
+				if (getSkinSetting(prop)) {
+					settings[prop] = getSkinSetting(prop);
+				}
+			} 
+
+			textFormat = new TextFormat("_sans");
+			textFormat.size = settings.fontsize;
+			textFormat.color = new Color(settings.fontcolor).color;
+			textFormat.bold = (String(settings.fontweight).toLowerCase() == "bold");
+			
 			_inverted = inverted;
 			createBorders();
 			back = getSkinElement('background');
@@ -46,7 +70,7 @@ package com.longtailvideo.jwplayer.view.components
 			fade = new Animations(this);
 			_text = new TextField();
 			_text.autoSize = TextFieldAutoSize.CENTER;
-			_text.defaultTextFormat = new TextFormat("_sans", 12, 0xffffff, null, null, null, null, null, TextFormatAlign.CENTER, 5, 5);
+			_text.defaultTextFormat = new TextFormat("_sans", textFormat.size, textFormat.color, textFormat.bold, null, null, null, null, TextFormatAlign.CENTER, 5, 5);
 			_text.visible = false;
 			super.addChild(_text);
 		}

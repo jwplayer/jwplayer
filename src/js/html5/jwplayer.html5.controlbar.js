@@ -609,6 +609,8 @@
 				element = _buildImage(divider.element);
 			} else {
 				element = _buildImage(divider.name);
+				if (!element) element = _createSpan();
+				element.className = "jwblankDivider";
 			}
 			if (divider.className) element.className += " " + divider.className;
 			return element;

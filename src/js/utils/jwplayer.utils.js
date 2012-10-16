@@ -124,8 +124,12 @@
 	}
 
 	/** Matches Android devices **/	
-	utils.isAndroid = function() {
-		return _userAgentMatch(/android/i);
+	utils.isAndroid = function(version) {
+		if (version) {
+			return _userAgentMatch(new RegExp("android.*"+version, "i"));
+		} else {
+			return _userAgentMatch(/android/i);
+		}
 	}
 
 	/**

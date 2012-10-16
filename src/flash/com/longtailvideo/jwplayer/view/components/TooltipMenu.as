@@ -11,10 +11,8 @@ package com.longtailvideo.jwplayer.view.components {
 	public class TooltipMenu extends TooltipOverlay {
 		private var menuTop:DisplayObject;
 		private var options:Vector.<TooltipOption>;
-		private var outFormat:TextFormat;
 		private var overFormat:TextFormat;
 		private var activeFormat:TextFormat;
-		private var settings:Object;
 		private var clickHandler:Function;
 		
 		public function TooltipMenu(name:String, skin:ISkin, click:Function=null) {
@@ -27,27 +25,6 @@ package com.longtailvideo.jwplayer.view.components {
 			
 			clickHandler = click;
 			
-			settings = {
-				fontcase: null,
-				fontcolor: 0xcccccc,
-				fontsize: 11,
-				fontweight: null,
-				activecolor: 0xffffff,
-				overcolor: 0xffffff
-			};
-			
-			for (var prop:String in settings) {
-				if (getSkinSetting(prop)) {
-					settings[prop] = getSkinSetting(prop);
-				}
-			} 
-			
-			
-			outFormat = new TextFormat("_sans");
-			outFormat.size = settings.fontsize;
-			outFormat.color = new Color(settings.fontcolor).color;
-			outFormat.bold = (String(settings.fontweight).toLowerCase() == "bold");
-
 			overFormat = new TextFormat();
 			overFormat.color = new Color(settings.overcolor).color;
 
@@ -58,7 +35,7 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		public function addOption(label:String, value:*):void {
 			var option:TooltipOption = new TooltipOption(getSkinElement('menuOption'), getSkinElement('menuOptionOver'), getSkinElement('menuOptionActive'), 
-														 outFormat, overFormat, activeFormat, 
+														 textFormat, overFormat, activeFormat, 
 														 (String(settings.fontcase).toLowerCase() == "upper"));
 			option.y = menuTop.height + options.length * option.height;
 			option.label = label;
@@ -108,18 +85,18 @@ internal class TooltipOption extends Sprite {
 	private var overBack:DisplayObject;
 	private var activeBack:DisplayObject;
 	private var isActive:Boolean = false;
-	private var outFormat:TextFormat;
+	private var textFormat:TextFormat;
 	private var overFormat:TextFormat;
 	private var activeFormat:TextFormat;
 	private var allcaps:Boolean = false;
 	private var text:TextField;
 	
 	public function TooltipOption(out:DisplayObject, over:DisplayObject, active:DisplayObject, 
-								  outFormat:TextFormat, overFormat:TextFormat, activeFormat:TextFormat, caps:Boolean):void {
+								  textFormat:TextFormat, overFormat:TextFormat, activeFormat:TextFormat, caps:Boolean):void {
 		outBack = out;
 		overBack = over;
 		activeBack = active;
-		this.outFormat = outFormat;
+		this.textFormat = textFormat;
 		this.overFormat = overFormat;
 		this.activeFormat = activeFormat;
 		this.allcaps = caps;
@@ -139,7 +116,7 @@ internal class TooltipOption extends Sprite {
 			addChild(activeBack);
 		}
 		text = new TextField();
-		text.defaultTextFormat = outFormat;
+		text.defaultTextFormat = textFormat;
 		text.height = outBack.height;
 		text.autoSize = TextFieldAutoSize.LEFT;
 		text.x = outBack.width;
@@ -161,7 +138,7 @@ internal class TooltipOption extends Sprite {
 			outBack.visible = true;
 			overBack.visible = false;
 		}
-		text.textColor = outFormat.color as uint;
+		text.textColor = textFormat.color as uint;
 	}
 	
 	public function set label(s:String):void {
@@ -180,7 +157,7 @@ internal class TooltipOption extends Sprite {
 			outBack.visible = !isActive;
 			overBack.visible = false;
 		}
-		text.textColor = uint(isActive ? activeFormat.color : outFormat.color);
+		text.textColor = uint(isActive ? activeFormat.color : textFormat.color);
 	} 
 	
 }

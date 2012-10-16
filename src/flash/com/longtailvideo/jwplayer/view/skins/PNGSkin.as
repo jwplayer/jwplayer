@@ -91,6 +91,11 @@ package com.longtailvideo.jwplayer.view.skins {
 			
 			parseConfig(_skinXML.settings);
 			
+			if ((_skinXML.components.component as XMLList).length() == 0) {
+				checkComplete();
+				return;
+			}
+			
 			for each (var comp:XML in _skinXML.components.component) {
 				parseConfig(comp.settings, comp.@name.toString());
 				loadElements(comp.@name.toString(), comp..element);

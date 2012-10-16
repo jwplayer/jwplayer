@@ -66,9 +66,10 @@
 			if (!target || parseFloat(target) > parseFloat(jwplayer.version)) {
 				_errorHandler("Incompatible player version")
 			}
-			
+
 			if (components.length === 0) {
-				_errorHandler(FORMAT_ERROR);
+				// This is legal according to the skin doc - don't produce an error.
+				//_errorHandler(FORMAT_ERROR);
 			}
 			for (var componentIndex = 0; componentIndex < components.length; componentIndex++) {
 				var componentName = _lowerCase(components[componentIndex].getAttribute("name")),

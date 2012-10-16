@@ -16,7 +16,7 @@ jwplayer = function(container) {
 	}
 };
 
-jwplayer.version = '6.0.2705';
+jwplayer.version = '6.0.2723';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -147,8 +147,12 @@ jwplayer.source = document.createElement("source");/**
 	}
 
 	/** Matches Android devices **/	
-	utils.isAndroid = function() {
-		return _userAgentMatch(/android/i);
+	utils.isAndroid = function(version) {
+		if (version) {
+			return _userAgentMatch(new RegExp("android.*"+version, "i"));
+		} else {
+			return _userAgentMatch(/android/i);
+		}
 	}
 
 	/**
@@ -1425,13 +1429,15 @@ jwplayer.source = document.createElement("source");/**
 					new embed.download(_container, _config, _sourceError);
 				} else {
 					utils.log("No suitable players found and fallback disabled");
+					_replaceContainer();
 				}
 				
-//				new embed.logo(utils.extend({
-//					hide: true
-//				}, _config.components.logo), "none", playerApi.id);
 			}
 		};
+		
+		function _replaceContainer() {
+			_container.parentNode.replaceChild(_oldContainer, _container);
+		}
 		
 		function _embedError(evt) {
 			_errorScreen(_container, _errorText + evt.message);

@@ -48,7 +48,7 @@
 				log("onplaylistresult", evt);
     		},
 			onPlaylistComplete: function(evt) {
-    			alert("Playlist complete");
+				log("onplaylistresult", evt);
     		}
     	}
     });
@@ -69,7 +69,7 @@
 </tr><tr>
     <td class="both"></td>
     <td>Begin playback of the first item, skip to the second item, and wait for playback to complete</td>
-    <td>The replay icon should appear, and aAn alert should pop up saying "Playlist complete".</td>
+    <td>The replay icon should appear, and the box below the player should contains a printout of the onPlaylistComplete event object.</td>
     <td class="check"></td>
 </tr></table>
 

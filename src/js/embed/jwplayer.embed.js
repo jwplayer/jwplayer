@@ -64,13 +64,15 @@
 					new embed.download(_container, _config, _sourceError);
 				} else {
 					utils.log("No suitable players found and fallback disabled");
+					_replaceContainer();
 				}
 				
-//				new embed.logo(utils.extend({
-//					hide: true
-//				}, _config.components.logo), "none", playerApi.id);
 			}
 		};
+		
+		function _replaceContainer() {
+			_container.parentNode.replaceChild(_oldContainer, _container);
+		}
 		
 		function _embedError(evt) {
 			_errorScreen(_container, _errorText + evt.message);
