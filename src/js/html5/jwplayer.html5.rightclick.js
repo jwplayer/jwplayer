@@ -107,7 +107,7 @@
 		border: "1px solid #bcbcbc",
 		'font-family': '"MS Sans Serif", "Geneva", sans-serif',
 		'font-size': 10,
-		width: 200,
+		width: 320,
 		'-webkit-box-shadow': JW_CSS_BOX_SHADOW,
 		'-moz-box-shadow': JW_CSS_BOX_SHADOW,
 		'box-shadow': JW_CSS_BOX_SHADOW,
