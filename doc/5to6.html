@@ -132,7 +132,7 @@
 <dt>The <em>front/back/light/screencolor</em> options</dt>
 <dd>Due to technical limitations, these options only worked in Flash. The new <a href="skins.html">PNG Skinning Model</a> has many more features beyond setting the colors of controls.</dd>
 <dt>The <em>bufferlength</em> and <em>smoothing</em> options</dt>
-<dd>These options catered only to the Flash mode. Video is now always smoothed through StageVideo. The <a href="rtmp.html">bufferlength or RTMP</a> can still be set, e.g. to enable low-latency live streaming.</dd>
+<dd>These options catered only to the Flash mode. Video is now always smoothed through StageVideo. The <a href="rtmp.html">bufferlength for RTMP</a> can still be set, e.g. to enable low-latency live streaming.</dd>
 <dt>The <em>config</em> option</dt>
 <dd>The removal of &lt;embed&gt; support also removed the need for external XML configurations. They can now be loaded as part of the player itself, e.g. using JSONp callbacks or an <strong>&lt;iframe&gt;</strong> tag.</dd>
 <dt>The logo <em>over</em>, <em>out</em>, <em>linktarget</em> and <em>timeout</em> options</dt>
@@ -143,7 +143,7 @@
 
 <h2>Playlists</h2>
 
-<p>JW6 rationalizes playlist support around inline JSON and RSS feeds. With both mechanism, multiple media sources can now be set per item, for optimal cross-platform support.</p>
+<p>JW6 rationalizes playlist support around inline JSON and RSS feeds. With both mechanisms, multiple media sources can now be set per item, for optimal cross-platform support.</p>
 
 <h3>Added</h3>
 
@@ -287,7 +287,7 @@
 <dt>Apple HLS in Flash</dt>
 <dd>The <strong>Premium</strong> and <strong>Ads</strong> editions of JW6 support HTTP adaptive streaming through the <a href="hls.html">Apple HLS protocol</a>. In addition to iOS, HLS streams can be played on the desktop (in Flash mode). Both on-demand and live are supported.</dd>
 <dt>Loading single RTMP URLs</dt>
-<dd>JW6 support loading of a <a href="rtmp.html">single RTMP URL</a> in addition to a separate file/streamer setup. This eases RTMP setups and makes RTMP compatible with multi-format loading using both <a href="playlists.html">inline playlists</a> and <a href="feeds.html">RSS feeds</a> (e.g. RTMP+MP4). For dynamic streams, <a href="rtmp.html">SMIL manifests</a> are required.</dd>
+<dd>JW6 support loading of a <a href="rtmp.html">single RTMP URL</a>, instead of a separate file/streamer setup. This eases RTMP setups and makes RTMP compatible with multi-format loading using both <a href="playlists.html">inline playlists</a> and <a href="feeds.html">RSS feeds</a> (e.g. RTMP+MP4). For dynamic streams, <a href="rtmp.html">SMIL manifests</a> are required.</dd>
 </dl>
 
 <h3>Removed</h3>

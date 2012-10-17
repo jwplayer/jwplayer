@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-<title>Displaying a Logo</title>
+<title>Player Branding Options</title>
 <style>
     body { padding: 50px 100px; width: 700px; font: 13px/20px Arial; background: #FFF; }
     a, h1, h2 { color: #369; }
@@ -20,14 +20,31 @@
 </style>
 </head><body>
 
-<h1>Displaying a Logo</h1>
+<h1>Player Branding Options</h1>
 
-<p>The <strong>Free</strong> edition of JW Player contains a small logo in the top right corner of the display. This cannot be changed.</p>
+<p>This guide describes the branding options available in the <strong>Pro</strong>, <strong>Premium</strong> and <strong>Ads</strong> editions of JW Player.</p>
 
-<p>In the <strong>Pro</strong>, <strong>Premium</strong> and <strong>Ads</strong> editions, this logo is disabled. Instead, publishers are able to set their own logo, e.g. to add some branding or to implement a Call-to-Action. This guide explains how to do so.</p>
+<h2>Introduction</h2>
+
+<p>The <strong>Free</strong> edition of JW Player contains two mechanisms we use to message the JW Player brand:</p>
+
+<ol>
+<li>During playback of media, a small <em>JW Player</em> logo is shown in the top right corner of the display. When a viewer clicks this logo, he is redirected to our <a href="http://www.longtailvideo.com/jw-player/learn-more">learn more page</a>.</li>
+<li>When a viewer right-clicks JW Player, he will see a context menu that includes an item labeled <em>About JW Player 6.x.xxx...</em> When clicking this item, he is also redirected to our learn more page.</li>
+</ol>
+
+<p>In the <strong>Free</strong> edition of JW Player, these two mechanisms cannot be changed. In the <strong>Pro</strong>, <strong>Premium</strong> and <strong>Ads</strong> editions though:</p>
+
+<ul>
+<li>The default JW Player logo is disabled.</li>
+<li>A custom logo can be set using configuration options.</li>
+<li>A custom right-click can be set using configuration options.</li>
+</ul>
+
+<p>The logo options in particular are useful to add some branding or to implement a Call-to-Action.</p>
 
 
-<h2>Configuration Options</h2>
+<h2>Setting the Logo</h2>
 
 <p>A dedicated options block, called <strong>logo</strong>, is available for configuring the logo. It has the following properties:</p>
 
@@ -44,9 +61,9 @@
 <dd>This sets the corner in which to display the watermark. It can be <strong>top-right</strong> (the default), <strong>top-left</strong>, <strong>bottom-right</strong> or <strong>bottom-left</strong>. Note the default position is preferred, since the logo won't interfere with the controlbar, captions, overlay ads and dock buttons.</dd>
 </dl>
 
-<h2>Example Setups</h2>
+<h3>Logo Example</h3>
 
-<p>Here is an example configuration that sets a channel logo that's always visible on top of the video:</p>
+<p>Here is an example configuration, that sets a logo and a click action:</p>
 
 <pre>
 jwplayer("myElement").setup({
@@ -54,7 +71,8 @@ jwplayer("myElement").setup({
     height: 360,
     image: "/assets/myVideo.jpg",
     logo: {
-        file: '/assets/myLogo.png'
+        file: '/assets/myLogo.png',
+        link: 'http://example.com'
     },
     width: 640
 });
@@ -62,24 +80,21 @@ jwplayer("myElement").setup({
 
 <p>See <a href="embedding.html">Embedding the Player</a> for more info on configuring player embeds.</p>
 
-<h3>Call-to-action</h3>
 
-<p>Here is another example configuration, this time implementing a call-to-action that asks viewers to register for a service:</p>
+<h2>Setting the Right-click</h2>
 
-<pre>
-jwplayer("myElement").setup({
-    file: "/assets/myVideo.mp4",
-    height: 360,
-    image: "/assets/myVideo.jpg",
-    logo: {
-        file: '/assets/buy.png',
-        link: '/registration/'
-    },
-    width: 640
-});
-</pre>
+<p>The right-click does not have a dedicated option block. Instead, two simple global configuration options are available:</p>
 
-<p>Again, note that setting a custom logo only works in the <strong>Pro</strong>, <strong>Premium</strong> and <strong>Ads</strong> editions of JW Player.</p>
+<dl>
+<dt>abouttext</dt>
+<dd>Text to display in the right-click menu. The default is <strong>About JW Player 6.x.xxx</strong>.<dd>
+<dt>aboutlink</dt>
+<dd>URL to link to when clicking the right-click menu. The default is <strong>http://www.longtailvideo.com/jw-player/learn-more</strong>.</dd>
+</dl>
+
+<p>Again, note that setting both a custom logo and right-click only works in the <strong>Pro</strong>, <strong>Premium</strong> and <strong>Ads</strong> editions of JW Player.</p>
+
+
 
 </body>
 </html>
