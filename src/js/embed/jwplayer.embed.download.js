@@ -46,11 +46,12 @@
 							if (type == types[i]) {
 								file = source.file;
 								image = item.image;
+							} else if (utils.isYouTube(source.file)) {
+								youtube = source.file;
 							}
 						}
-						if (file) continue;
-					} else if (utils.isYouTube(source.file)) {
-						youtube = source.file;
+
+						if (file || youtube) continue;
 					}
 				}
 			} else {

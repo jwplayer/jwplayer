@@ -133,6 +133,7 @@ package com.longtailvideo.jwplayer.view.components {
 			
 			if (_noText) {
 				_iconContainer.x = _background.x + _background.width / 2;
+				_background.width = _defaultBGWidth;
 			} else {
 				_iconContainer.x = _textField.x + _textField.width + _icon.width / 2;
 				_background.width = Math.max(_defaultBGWidth, _textField.width + _iconContainer.width);

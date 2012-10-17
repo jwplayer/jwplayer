@@ -84,7 +84,7 @@ package com.longtailvideo.jwplayer.view.components {
 	public class ControlbarComponent extends CoreComponent implements IControlbarComponent {
 		protected var _buttons:Object = {};
 		protected var _customButtons:Array = [];
-		protected var _removedButtons:Array = [];
+//		protected var _removedButtons:Array = [];
 		protected var _dividers:Array;
 		protected var _dividerElements:Object;
 		protected var _defaultLayout:String = "[play|prev next|elapsed][time][duration|hd cc|mute volume|fullscreen]";
@@ -187,7 +187,8 @@ package com.longtailvideo.jwplayer.view.components {
 			redraw();
 		}
 
-		
+
+		/*
 		private function parseStructuredLayout(structuredLayout:Object):String {
 			var layoutString:String = "";
 			getTextField('elapsed').visible = false;
@@ -224,20 +225,21 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 			return layoutString;
 		}
-		
+		*/
 
 		private function updateControlbarState():void {
 			var newLayout:String = _defaultLayout;
-			var controlbarLayout:Object = _player.skin.getSkinProperties().layout['controlbar'];
+/*			var controlbarLayout:Object = _player.skin.getSkinProperties().layout['controlbar'];
 			if (controlbarLayout) {
 				newLayout = parseStructuredLayout(controlbarLayout);
 			}
-			removeInactive(newLayout);
-			newLayout = newLayout.replace("blank", _customButtons.join("|"));
+*/			removeInactive(newLayout);
+/*			newLayout = newLayout.replace("blank", _customButtons.join("|"));
 			newLayout = removeButtonFromLayout("blank", newLayout);
 			for each (var removed:String in _removedButtons) {
 				newLayout = removeButtonFromLayout(removed, newLayout);
 			}
+*/
 			if (player.state == PlayerState.PLAYING) {
 				newLayout = newLayout.replace('play', 'pause');
 				hideButton('play');
@@ -710,7 +712,8 @@ package com.longtailvideo.jwplayer.view.components {
 			return null;
 		}
 
-		public function addButton(icon:DisplayObject, name:String, handler:Function=null):MovieClip {
+/*
+		protected function addButton(icon:DisplayObject, name:String, handler:Function=null):MovieClip {
 			if (_customButtons.indexOf(name) < 0) {
 				_customButtons.push(name);
 			}
@@ -739,7 +742,7 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 
 
-		public function removeButton(name:String):void {
+		protected function removeButton(name:String):void {
 			if (_buttons[name] is DisplayObject && this.contains(_buttons[name] as DisplayObject)) {
 				removeChild(_buttons[name]);
 				_buttons[name] = null;
@@ -751,7 +754,7 @@ package com.longtailvideo.jwplayer.view.components {
 				redraw();
 			}
 		}
-
+*/
 
 		private function hideButton(name:String, state:Boolean = true):void {
 			var button:DisplayObject = _buttons[name];

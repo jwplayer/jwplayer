@@ -69,7 +69,9 @@
 
 			if (components.length === 0) {
 				// This is legal according to the skin doc - don't produce an error.
-				//_errorHandler(FORMAT_ERROR);
+				// _errorHandler(FORMAT_ERROR);
+				_completeHandler(_skin);
+				return;
 			}
 			for (var componentIndex = 0; componentIndex < components.length; componentIndex++) {
 				var componentName = _lowerCase(components[componentIndex].getAttribute("name")),
@@ -203,7 +205,7 @@
 					}
 				}
 			}
-			if (_loading === false) {
+			if (_loading == false) {
 				clearInterval(_completeInterval);
 				_completeHandler(_skin);
 			}

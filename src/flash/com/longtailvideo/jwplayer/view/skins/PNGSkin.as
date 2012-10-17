@@ -101,13 +101,13 @@ package com.longtailvideo.jwplayer.view.skins {
 				loadElements(comp.@name.toString(), comp..element);
 			}
 
-			var cbLayout:XML = (_skinXML.components.component.(@name=="controlbar").layout as XMLList)[0] as XML;
+/*			var cbLayout:XML = (_skinXML.components.component.(@name=="controlbar").layout as XMLList)[0] as XML;
 			if (cbLayout) {
 				parseControlbarLayout(cbLayout);
 			}
-			
+*/			
 		}
-
+/*
 		protected function parseControlbarLayout(layout:XML):void {
 			_props.layout['controlbar'] = {};
 			for each(var group:XML in layout.group) {
@@ -123,6 +123,7 @@ package com.longtailvideo.jwplayer.view.skins {
 				_props.layout['controlbar'][group.@position.toString().toLowerCase()] = groupArray;
 			}
 		}
+*/
 		
 		protected function parseConfig(settings:XMLList, component:String=""):void {
 			for each(var setting:XML in settings.setting) {

@@ -64,9 +64,6 @@ package com.longtailvideo.jwplayer.view.interfaces {
 	[Event(name="jwPlayerViewSeek", type="com.longtailvideo.jwplayer.events.ViewEvent")]
 
 	public interface IControlbarComponent extends IPlayerComponent {
-		function addButton(icon:DisplayObject, name:String, handler:Function = null):MovieClip;
-		function removeButton(name:String):void;
-		function getButton(buttonName:String):DisplayObject;
 		function audioMode(state:Boolean):void;
 	}
 }

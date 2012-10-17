@@ -20,7 +20,7 @@
 			"canplaythrough" : _generalHandler,
 			"durationchange" : _durationUpdateHandler,
 			"emptied" : _generalHandler,
-			"ended" : _generalHandler,
+			"ended" : _endedHandler,
 			"error" : _errorHandler,
 			"loadeddata" : _generalHandler,
 			"loadedmetadata" : _canPlayHandler,
@@ -116,7 +116,10 @@
 
 		function _durationUpdateHandler(evt) {
 			if (!_attached) return;
-			if (_duration < 0) _duration = _round(_videotag.duration);
+			var newDuration = _round(_videotag.duration);
+			if (_duration != newDuration) {
+				_duration = newDuration;
+			}
 			_timeUpdateHandler();
 		}
 
@@ -129,12 +132,12 @@
 					duration : _duration
 				});
 				// Working around a Galaxy Tab bug; otherwise _duration should be > 0
-				if (_position >= _duration && _duration > 3) {
+				if (_position >= _duration && _duration > 3 && !utils.isAndroid(2.3)) {
 					_complete();
 				}
 			}
 		}
-		
+
 		function _round(number) {
 			return Number(number.toFixed(1));
 		}
@@ -166,7 +169,7 @@
 			if (!_attached || _dragging) return;
 			
 			if (_videotag.paused) {
-				if (_videotag.currentTime == _videotag.duration) {
+				if (_videotag.currentTime == _videotag.duration && _videotag.duration > 3) {
 					// Needed as of Chrome 20
 					_complete();
 				} else {
@@ -381,7 +384,10 @@
 				return _videotag.buffered.end(_videotag.buffered.length-1) / _videotag.duration;
 		}
 		
-
+		function _endedHandler() {
+			if (utils.isAndroid(2.3)) _complete();
+		}
+		
 		function _complete() {
 			//_stop();
 			if (_state != states.IDLE) {

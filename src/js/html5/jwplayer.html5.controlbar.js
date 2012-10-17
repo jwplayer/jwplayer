@@ -609,8 +609,10 @@
 				element = _buildImage(divider.element);
 			} else {
 				element = _buildImage(divider.name);
-				if (!element) element = _createSpan();
-				element.className = "jwblankDivider";
+				if (!element) {
+					element = _createSpan();
+					element.className = "jwblankDivider";
+				}
 			}
 			if (divider.className) element.className += " " + divider.className;
 			return element;
@@ -1019,16 +1021,16 @@
 			});
 
 		
-			setTimeout(function() {
-				var newBounds = utils.bounds(_controlbar);
-				if (!_cbBounds || newBounds.width != _cbBounds.width) {
-					_cbBounds = newBounds;
-					if (_cbBounds.width > 0) {
-						_railBounds = utils.bounds(_timeRail);
-					}
-				}
+//			setTimeout(function() {
+//				var newBounds = utils.bounds(_controlbar);
+//				if (!_cbBounds || newBounds.width != _cbBounds.width) {
+//					_cbBounds = newBounds;
+//					if (_cbBounds.width > 0) {
+//						_railBounds = utils.bounds(_timeRail);
+//					}
+//				}
 				_positionOverlays();
-			}, 0);
+//			}, 0);
 		}
 		
 		function _updateNextPrev() {
@@ -1045,6 +1047,7 @@
 		
 		function _positionOverlays() {
 			var overlayBounds, i, overlay;
+			_cbBounds = utils.bounds(_controlbar);
 			for (i in _overlays) {
 				overlay = _overlays[i];
 				overlay.offsetX(0);
@@ -1253,7 +1256,7 @@
 
 	_setTransition(CB_CLASS, JW_CSS_SMOOTH_EASE);
 	_setTransition(CB_CLASS + ' button', JW_CSS_SMOOTH_EASE);
-	_setTransition(CB_CLASS + ' .jwtime .jwsmooth span', JW_CSS_SMOOTH_EASE + ", width .25s linear, left .25s linear");
+	_setTransition(CB_CLASS + ' .jwtime .jwsmooth span', JW_CSS_SMOOTH_EASE + ", width .15s linear, left .15s linear");
 	_setTransition(CB_CLASS + ' .jwtoggling', JW_CSS_NONE);
 
 })(jwplayer);

@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2723';
+	jwplayer.html5.version = '6.0.2725';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -2199,8 +2199,10 @@
 				element = _buildImage(divider.element);
 			} else {
 				element = _buildImage(divider.name);
-				if (!element) element = _createSpan();
-				element.className = "jwblankDivider";
+				if (!element) {
+					element = _createSpan();
+					element.className = "jwblankDivider";
+				}
 			}
 			if (divider.className) element.className += " " + divider.className;
 			return element;
@@ -2609,16 +2611,16 @@
 			});
 
 		
-			setTimeout(function() {
-				var newBounds = utils.bounds(_controlbar);
-				if (!_cbBounds || newBounds.width != _cbBounds.width) {
-					_cbBounds = newBounds;
-					if (_cbBounds.width > 0) {
-						_railBounds = utils.bounds(_timeRail);
-					}
-				}
+//			setTimeout(function() {
+//				var newBounds = utils.bounds(_controlbar);
+//				if (!_cbBounds || newBounds.width != _cbBounds.width) {
+//					_cbBounds = newBounds;
+//					if (_cbBounds.width > 0) {
+//						_railBounds = utils.bounds(_timeRail);
+//					}
+//				}
 				_positionOverlays();
-			}, 0);
+//			}, 0);
 		}
 		
 		function _updateNextPrev() {
@@ -2635,6 +2637,7 @@
 		
 		function _positionOverlays() {
 			var overlayBounds, i, overlay;
+			_cbBounds = utils.bounds(_controlbar);
 			for (i in _overlays) {
 				overlay = _overlays[i];
 				overlay.offsetX(0);
@@ -2843,7 +2846,7 @@
 
 	_setTransition(CB_CLASS, JW_CSS_SMOOTH_EASE);
 	_setTransition(CB_CLASS + ' button', JW_CSS_SMOOTH_EASE);
-	_setTransition(CB_CLASS + ' .jwtime .jwsmooth span', JW_CSS_SMOOTH_EASE + ", width .25s linear, left .25s linear");
+	_setTransition(CB_CLASS + ' .jwtime .jwsmooth span', JW_CSS_SMOOTH_EASE + ", width .15s linear, left .15s linear");
 	_setTransition(CB_CLASS + ' .jwtoggling', JW_CSS_NONE);
 
 })(jwplayer);/**
@@ -5424,7 +5427,7 @@
         	_css(_internalSelector("jwplaylistimg"), {
 			    height: imgHeight,
 			    width: imgWidth,
-				margin: imgPos + "10px " + imgPos + imgPos
+				margin: imgPos ? (imgPos + imgPos + imgPos + imgPos) : "0 5px 0 0"
         	});
 			
 			_css(_internalSelector("jwlist li"), {
@@ -5452,7 +5455,7 @@
 
 
 			_css(_internalSelector("jwtextwrapper"), {
-				padding: "0 5px 0 " + (imgPos ? 0 : "5px"),
+				//padding: "0 5px 0 " + (imgPos ? 0 : "5px"),
 				height: _itemheight - 5,
 				position: JW_CSS_RELATIVE
 			});
@@ -6492,7 +6495,9 @@
 
 			if (components.length === 0) {
 				// This is legal according to the skin doc - don't produce an error.
-				//_errorHandler(FORMAT_ERROR);
+				// _errorHandler(FORMAT_ERROR);
+				_completeHandler(_skin);
+				return;
 			}
 			for (var componentIndex = 0; componentIndex < components.length; componentIndex++) {
 				var componentName = _lowerCase(components[componentIndex].getAttribute("name")),
@@ -6626,7 +6631,7 @@
 					}
 				}
 			}
-			if (_loading === false) {
+			if (_loading == false) {
 				clearInterval(_completeInterval);
 				_completeHandler(_skin);
 			}
@@ -6678,7 +6683,7 @@
 			"canplaythrough" : _generalHandler,
 			"durationchange" : _durationUpdateHandler,
 			"emptied" : _generalHandler,
-			"ended" : _generalHandler,
+			"ended" : _endedHandler,
 			"error" : _errorHandler,
 			"loadeddata" : _generalHandler,
 			"loadedmetadata" : _canPlayHandler,
@@ -6774,7 +6779,10 @@
 
 		function _durationUpdateHandler(evt) {
 			if (!_attached) return;
-			if (_duration < 0) _duration = _round(_videotag.duration);
+			var newDuration = _round(_videotag.duration);
+			if (_duration != newDuration) {
+				_duration = newDuration;
+			}
 			_timeUpdateHandler();
 		}
 
@@ -6787,12 +6795,12 @@
 					duration : _duration
 				});
 				// Working around a Galaxy Tab bug; otherwise _duration should be > 0
-				if (_position >= _duration && _duration > 3) {
+				if (_position >= _duration && _duration > 3 && !utils.isAndroid(2.3)) {
 					_complete();
 				}
 			}
 		}
-		
+
 		function _round(number) {
 			return Number(number.toFixed(1));
 		}
@@ -6824,7 +6832,7 @@
 			if (!_attached || _dragging) return;
 			
 			if (_videotag.paused) {
-				if (_videotag.currentTime == _videotag.duration) {
+				if (_videotag.currentTime == _videotag.duration && _videotag.duration > 3) {
 					// Needed as of Chrome 20
 					_complete();
 				} else {
@@ -7039,7 +7047,10 @@
 				return _videotag.buffered.end(_videotag.buffered.length-1) / _videotag.duration;
 		}
 		
-
+		function _endedHandler() {
+			if (utils.isAndroid(2.3)) _complete();
+		}
+		
 		function _complete() {
 			//_stop();
 			if (_state != states.IDLE) {

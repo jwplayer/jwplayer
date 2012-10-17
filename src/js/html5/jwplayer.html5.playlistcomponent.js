@@ -143,7 +143,7 @@
         	_css(_internalSelector("jwplaylistimg"), {
 			    height: imgHeight,
 			    width: imgWidth,
-				margin: imgPos + "10px " + imgPos + imgPos
+				margin: imgPos ? (imgPos + imgPos + imgPos + imgPos) : "0 5px 0 0"
         	});
 			
 			_css(_internalSelector("jwlist li"), {
@@ -171,7 +171,7 @@
 
 
 			_css(_internalSelector("jwtextwrapper"), {
-				padding: "0 5px 0 " + (imgPos ? 0 : "5px"),
+				//padding: "0 5px 0 " + (imgPos ? 0 : "5px"),
 				height: _itemheight - 5,
 				position: JW_CSS_RELATIVE
 			});
