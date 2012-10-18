@@ -24,7 +24,7 @@
 				
 				
 				if (html5.parsers.localName(rss) != "rss") {
-					_playlistError("Playlist is not a valid RSS feed");
+					_playlistError("Not a valid RSS feed");
 					return;
 				}
 				
@@ -57,8 +57,8 @@
 			return newList;
 		}
 		
-		function _playlistLoadError() {
-			_playlistError();
+		function _playlistLoadError(err) {
+			_playlistError(err.match(/invalid/i) ? "Not a valid RSS feed" : "");
 		}
 		
 		function _playlistError(msg) {

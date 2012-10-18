@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2725';
+	jwplayer.html5.version = '6.0.2734';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -141,7 +141,7 @@
 			if (parsedXML && parsedXML.firstChild) {
 				xmlhttp = utils.extend({}, xmlhttp, {responseXML:parsedXML});
 			} else {
-				if (errorcallback) errorcallback(xmldocpath);
+				if (errorcallback) errorcallback(xmlhttp.responseText ? "Invalid XML" : xmldocpath);
 				return;
 			}
 			completecallback(xmlhttp);
@@ -5708,7 +5708,7 @@
 				
 				
 				if (html5.parsers.localName(rss) != "rss") {
-					_playlistError("Playlist is not a valid RSS feed");
+					_playlistError("Not a valid RSS feed");
 					return;
 				}
 				
@@ -5741,8 +5741,8 @@
 			return newList;
 		}
 		
-		function _playlistLoadError() {
-			_playlistError();
+		function _playlistLoadError(err) {
+			_playlistError(err.match(/invalid/i) ? "Not a valid RSS feed" : "");
 		}
 		
 		function _playlistError(msg) {

@@ -132,7 +132,7 @@
 			if (parsedXML && parsedXML.firstChild) {
 				xmlhttp = utils.extend({}, xmlhttp, {responseXML:parsedXML});
 			} else {
-				if (errorcallback) errorcallback(xmldocpath);
+				if (errorcallback) errorcallback(xmlhttp.responseText ? "Invalid XML" : xmldocpath);
 				return;
 			}
 			completecallback(xmlhttp);
