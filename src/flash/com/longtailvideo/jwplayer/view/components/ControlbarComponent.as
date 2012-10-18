@@ -352,15 +352,31 @@ package com.longtailvideo.jwplayer.view.components {
 			if (duration < 0) {
 				duration = 0;
 			}
+			
+			var redrawNeeded:Boolean = false;
+			
+			var newElapsed:String = Strings.digits(position);
 			var elapsedText:TextField = getTextField('elapsed');
-			if (elapsedText) elapsedText.text = Strings.digits(position);
+			if (elapsedText) {
+				if (newElapsed.length != elapsedText.text.length) redrawNeeded = true;
+				elapsedText.text = newElapsed;	
+			}
+			
+			
+			var newDuration:String = Strings.digits(duration);
 			var durationField:TextField = getTextField('duration');
-			if (durationField) durationField.text = Strings.digits(duration);
+			if (durationField) {
+				if (newDuration.length != elapsedText.text.length) redrawNeeded = true;
+				durationField.text = newDuration;
+			} 
+			
 			var timeSlider:TimeSlider = getSlider('time') as TimeSlider;
 			if (timeSlider) {
 				timeSlider.duration = duration;
 				timeSlider.live = (duration <= 0);
 			}
+			
+			if (redrawNeeded) redraw();
 		}
 
 
@@ -603,7 +619,7 @@ package com.longtailvideo.jwplayer.view.components {
 
 		private function addSlider(name:String, event:String, callback:Function, margin:Number=0):void {
 			try {
-				var slider:Slider = (name == "time") ? new TimeSlider(name+"Slider", _player.skin) : new Slider(name, _player.skin, true, "tooltip");
+				var slider:Slider = (name == "time") ? new TimeSlider(name+"Slider", _player.skin, this) : new Slider(name, _player.skin, true, "tooltip");
 				slider.addEventListener(event, callback);
 				slider.name = name;
 				slider.tabEnabled = false;

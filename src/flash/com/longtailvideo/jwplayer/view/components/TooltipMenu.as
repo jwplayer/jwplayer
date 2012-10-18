@@ -61,13 +61,9 @@ package com.longtailvideo.jwplayer.view.components {
 			while(i = options.pop()) {
 				removeChild(i);
 			}
-			this.height = menuTop.height;
+			//this.height = menuTop.height;
 		}
 		
-		override protected function resize(width:Number, height:Number):void {
-			super.resize(width, height);			
-		} 
-
 	}
 
 	

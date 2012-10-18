@@ -4,6 +4,7 @@ package com.longtailvideo.jwplayer.view.components {
 	import com.longtailvideo.jwplayer.utils.Strings;
 	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
 	
+	import flash.display.DisplayObject;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
 	
@@ -11,9 +12,12 @@ package com.longtailvideo.jwplayer.view.components {
 		private var _duration:Number;
 		private var _tooltip:TooltipOverlay;
 		private var _audioMode:Boolean = false;
+		private var _controlbar:DisplayObject;
 		
-		public function TimeSlider(name:String, skin:ISkin) {
+		public function TimeSlider(name:String, skin:ISkin, controlbar:DisplayObject) {
 			super(name, skin);
+			
+			_controlbar = controlbar;
 			
 			_duration = 0;
 			_tooltip = new TooltipOverlay(skin);
@@ -48,7 +52,7 @@ package com.longtailvideo.jwplayer.view.components {
 		private function moveHandler(evt:MouseEvent):void {
 			RootReference.stage.setChildIndex(_tooltip, RootReference.stage.numChildren-1);
 			_tooltip.x = evt.stageX;
-			_tooltip.y = _rail.localToGlobal(new Point(0, 0)).y;
+			_tooltip.y = _controlbar.getBounds(RootReference.stage).y;
 			_tooltip.text = Strings.digits(_duration * (evt.localX - _capLeft.width) / _width);
 		}
 		

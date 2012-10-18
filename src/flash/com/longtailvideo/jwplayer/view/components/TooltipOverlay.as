@@ -17,9 +17,8 @@ package com.longtailvideo.jwplayer.view.components
 		protected var arrow:DisplayObject;
 		// Skin
 		protected var skin:ISkin;
-		// Dimensions of tooltip contents
-		protected var contentWidth:Number = 0;
-		protected var contentHeight:Number = 0;
+		// Tooltip contents
+		protected var content:Sprite;
 		// Fade in/out animation
 		protected var fade:Animations;
 		// Label text field
@@ -44,8 +43,6 @@ package com.longtailvideo.jwplayer.view.components
 			overcolor: 0xffffff
 		}
 		
-
-		
 		public function TooltipOverlay(skin:ISkin, inverted:Boolean=false) {
 			this.skin = skin;
 			
@@ -59,7 +56,7 @@ package com.longtailvideo.jwplayer.view.components
 			textFormat.size = settings.fontsize;
 			textFormat.color = new Color(settings.fontcolor).color;
 			textFormat.bold = (String(settings.fontweight).toLowerCase() == "bold");
-			
+
 			_inverted = inverted;
 			createBorders();
 			back = getSkinElement('background');
@@ -69,10 +66,15 @@ package com.longtailvideo.jwplayer.view.components
 			super.addChild(arrow);
 			fade = new Animations(this);
 			_text = new TextField();
-			_text.autoSize = TextFieldAutoSize.CENTER;
+			_text.autoSize = TextFieldAutoSize.LEFT;
 			_text.defaultTextFormat = new TextFormat("_sans", textFormat.size, textFormat.color, textFormat.bold, null, null, null, null, TextFormatAlign.CENTER, 5, 5);
 			_text.visible = false;
-			super.addChild(_text);
+			
+			content = new Sprite();
+			content.addChild(_text);
+			super.addChild(content);
+			
+			redraw();
 		}
 		
 		private function createBorders():void {
@@ -104,62 +106,36 @@ package com.longtailvideo.jwplayer.view.components
 			return skin.getSkinProperties() ? skin.getSkinProperties()['tooltip.'+name] : null;
 		}
 
-		protected function resize(wid:Number, hei:Number):void {
-			wid = Math.ceil(wid);
-			hei = Math.ceil(hei);
-			
-			for each (var vertical:String in ["top", "bottom"]) {
-				for each (var horizontal:String in ["left", "right"]) {
-					borders[horizontal].x = borders[vertical+horizontal].x = (horizontal == "left" && borders[horizontal].width > 0) ? 0 : wid - borders[horizontal].width;  
-					borders[vertical].y = borders[vertical+horizontal].y = (vertical == "top" && borders[vertical].height > 0) ? 0 : hei - borders[vertical].height;
+		protected function redraw():void {
+			borders.top.x = borders.bottom.x = borders.left.width;
+			borders.top.width = borders.bottom.width = content.width;
+			borders.topright.x = borders.top.x + borders.top.width;
+			borders.left.height = borders.right.height = content.height;
+			borders.left.y = borders.right.y = borders.top.height;
+			borders.bottomleft.y = borders.bottomright.y = borders.bottom.y = borders.top.height + content.height;
+			borders.topright.x = borders.right.x = borders.bottomright.x = borders.left.width + content.width;
 
-					borders[horizontal].y = borders.top.height; 
-					borders[horizontal].height = hei - borders.top.height - borders.bottom.height;
-				}
-				borders[vertical].x = borders.left.width; 
-				borders[vertical].width = wid - borders.left.width - borders.right.width;
-			}
-			
-			contentWidth = borders.top.width ? borders.top.width : wid;
-			contentHeight = borders.left.height ? borders.left.height : hei;
-			back.height = contentHeight;
-			back.width = contentWidth;
-			back.x = borders.top.x;
-			back.y = borders.left.y;
-			arrow.y = _inverted ? 0 : hei;
+			back.height = content.height;
+			back.width = content.width;
+			back.x = content.x = borders.top.x;
+			back.y = content.y = borders.left.y;
+			arrow.y = _inverted ? 0 : borders.bottom.y + borders.bottom.height;
 			positionX();
 			positionY();
 		}
 		
-		public override function set width(value:Number):void {
-			resize(Math.max(value, borders.left.width + borders.right.width), height);
-		}
-
-		public override function set height(value:Number):void {
-			resize(width, Math.round(Math.max(value, borders.bottom.height + borders.top.height)));
-		}
-		
 		public override function addChild(child:DisplayObject):DisplayObject {
-			positionChild(child);
-			return super.addChild(child); 
+			content.addChild(child);
+			redraw();
+			return child;
 		}
 		
-		private function positionChild(child:DisplayObject):void {
-			var wid:Number = contentWidth + borders.right.width + borders.left.width;
-			var hei:Number = contentHeight + borders.top.width + borders.bottom.width;
-			var toResize:Boolean = false;
-			child.x += borders.left.width;
-			child.y += borders.top.height;
-			if ((child.x + child.width - borders.left.width) > contentWidth) {
-				wid = child.x + child.width + borders.right.width;
-				toResize = true;
-			}
-			if ((child.y + child.height - borders.top.height) > contentHeight) {
-				hei = child.y + child.height + borders.bottom.height;
-				toResize = true;
-			}
-			if (toResize) resize(wid, hei);
+		public override function removeChild(child:DisplayObject):DisplayObject {
+			content.removeChild(child);
+			redraw();
+			return child;
 		}
+		
 
 		public function set text(s:String):void {
 			_text.visible = Boolean(s);
@@ -168,10 +144,8 @@ package com.longtailvideo.jwplayer.view.components
 				if (fontcase && fontcase.toLowerCase() == "upper") s = s.toUpperCase();
 				_text.text = s;
 				_text.x = _text.y = 0;
-				_text.width = _text.textWidth + 10;
-				_text.height = _text.textHeight;
-				positionChild(_text);
 			}
+			redraw();
 		}
 		
 		public function set offsetX(offset:Number):void {
@@ -194,18 +168,14 @@ package com.longtailvideo.jwplayer.view.components
 		}
 		
 		protected function positionX():void {
-			var origin:Number = arrow.x;
-			var w:Number = arrow.width / 2;
-			arrow.x = Math.ceil(((contentWidth + borders.left.width + borders.right.width - arrow.width) / 2) + _offset);
-			super.x = Math.ceil(_x - arrow.x - w);
+			arrow.x = ((content.width + borders.left.width + borders.right.width - arrow.width) / 2) + _offset;
+			super.x = Math.ceil(_x - arrow.x - (arrow.width/2));
 		}
 		
 		protected function positionY():void {
-			super.y = Math.ceil(_y - (_inverted ? -arrow.height : (contentHeight + borders.top.height + borders.bottom.height + arrow.height)));
+			super.y = Math.ceil(_y - (_inverted ? -arrow.height : height));
 		}
 		
-
-
 		public function hide():void {
 			fade.cancelAnimation();
 			fade.fade(0);
