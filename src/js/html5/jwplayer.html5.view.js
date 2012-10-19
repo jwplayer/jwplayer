@@ -70,10 +70,11 @@
 			_playerElement = _createElement("div", PLAYER_CLASS);
 			_playerElement.id = _api.id;
 			
-			_css(_internalSelector(), {
-				width: _model.width,
-				height: _model.height
-			});
+//			_css(_internalSelector(), {
+//				width: _model.width,
+//				height: _model.height
+//			});
+			_resize(_model.width, _model.height);
 			
 			var replace = document.getElementById(_api.id);
 			replace.parentNode.replaceChild(_playerElement, replace);
@@ -300,13 +301,16 @@
 			//if (_model.fullscreen) return;
 			
 			if (utils.exists(width) && utils.exists(height)) {
-				_css(_internalSelector(), {
-					width: width,
-					height: height
-				});
+//				_css(_internalSelector(), {
+//					width: width,
+//					height: height
+//				});
 				_model.width = width;
 				_model.height = height;
 			}
+			
+			_playerElement.style.width = isNaN(width) ? width : width + "px"; 
+			_playerElement.style.height = isNaN(height) ? height : height + "px"; 
 
 			if (_display) _display.redraw();
 			if (_controlbar) _controlbar.redraw();
@@ -362,16 +366,18 @@
 			if (_logo && _audioMode) {
 				_hideLogo();
 			}
-			_css(_internalSelector(), {
-				'background-color': _audioMode ? 'transparent' : '#000'
-			});
+			//_css(_internalSelector(), {
+			_playerElement.style.backgroundColor = _audioMode ? 'transparent' : '#000';
+			//});
 		}
 		
 		function _resizeMedia() {
-			utils.stretch(_model.stretching, 
-					_videoTag, 
-					_videoLayer.clientWidth, _videoLayer.clientHeight, 
-					_videoTag.videoWidth, _videoTag.videoHeight);
+			if (_videoTag) {
+				utils.stretch(_model.stretching, 
+						_videoTag, 
+						_videoLayer.clientWidth, _videoLayer.clientHeight, 
+						_videoTag.videoWidth, _videoTag.videoHeight);
+			}
 		}
 		
 		this.resize = _resize;

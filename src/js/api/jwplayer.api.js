@@ -294,10 +294,6 @@
 			if (jwplayer.embed) {
 				// Destroy original API on setup() to remove existing listeners
 				_remove(_this);
-				if (utils.clearCss) {
-					// Clear HTML5 rules
-					utils.clearCss("#"+_this.id);
-				}
 				var newApi = jwplayer(_this.id);
 				newApi.config = options;
 				return new jwplayer.embed(newApi);
@@ -546,17 +542,23 @@
 	};
 	
 	api.destroyPlayer = function(playerId) {
-		var index = -1;
+		var index = -1, player;
 		for (var p = 0; p < _players.length; p++) {
 			if (_players[p].id == playerId) {
 				index = p;
+				player = _players[p];
 				continue;
 			}
 		}
 		if (index >= 0) {
-			var id = _players[index].id,
-				toDestroy = document.getElementById(id + "_wrapper");
+			var id = player.id,
+				toDestroy = document.getElementById(id + (player.renderingMode == "flash" ? "_wrapper" : ""));
 			
+			if (utils.clearCss) {
+				// Clear HTML5 rules
+				utils.clearCss("#"+id);
+			}
+
 //			if (!toDestroy) {
 //				toDestroy = document.getElementById(id);	
 //			}

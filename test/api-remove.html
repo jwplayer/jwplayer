@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Removing the Player</title>
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+    
+
+</head>
+<body>
+
+<h1>Removing the Player</h1>
+<div class="core">List of test devices</div>
+<p>This page tests the player's remove() API.  Note, some of the steps cannot be performed on iPhone/iPod, since buttons are unclickable while video is playing.</p>
+
+<h2>jwplayer().remove()</h2>
+
+<div id="toRemove"></div>
+
+<script type="text/javascript">
+	var videos = {
+			sintel: [{
+				image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+				sources: [
+					{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4' },
+					{ file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm' }
+				]
+			}],
+			bunny: [{
+				image: 'http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg',
+				sources: [
+					{ file: 'http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4' },
+					{ file: 'http://content.bitsontherun.com/videos/bkaovAYt-27m5HpIu.webm' }
+				]
+			}]
+	}
+
+	function setup(mode, video) {
+		if (!mode) mode = "html5" 
+		if (!video) video = "sintel";
+		
+	    jwplayer("toRemove").setup({
+			playlist: videos[video],
+			primary: mode
+	    });
+	}
+
+	function remove() {
+		jwplayer("toRemove").remove();
+	}
+
+	setup('html5');
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Page loads</td>
+    <td>Player loads in HTML5, except for IE8; Sintel video</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td><a href="#" onclick="remove(); return false;">Remove the player</a></td>
+    <td>Player should be removed from the page.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td><a href="#" onclick="setup('html5', 'bunny'); return false;">Set up player</a></td>
+    <td>Player sets up in HTML5 mode (except IE8) with Big Buck Bunny video.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Begin playback</td>
+    <td>Video should play.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>While video is playing, <a href="#" onclick="remove(); return false;">remove the player</a></td>
+    <td>Player should be removed from the page.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td><a href="#" onclick="setup('flash', 'sintel'); return false;">Set up player</a></td>
+    <td>Player sets up in Flash mode Sintel video (HTML5 on mobile).</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Begin playback</td>
+    <td>Video should play.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>While video is playing, <a href="#" onclick="setup('html5', 'bunny'); return false;">Set up the player again</a></td>
+    <td>Big Buck Bunny is loaded in HTML5 mode (IE loads in Flash).</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Begin playback</td>
+    <td>Video should play.</td>
+    <td class="check"></td>
+</tr></table>
+
+
+
+</body>
+</html>
