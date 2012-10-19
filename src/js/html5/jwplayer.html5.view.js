@@ -274,6 +274,9 @@
 				    	_videoTag.webkitExitFullScreen();
 				    }
 				}
+				if (_isIPad && _api.jwGetState() == states.PAUSED) {
+					setTimeout(_showDisplay, 500);
+				}
 			}
 
 			_redrawComponent(_controlbar);
@@ -475,7 +478,7 @@
 			}
 			if (_isMobile && !_forcedControls) {
 				_controlsLayer.style.display = "block";
-				_videoTag.controls = false;
+				if (!(_isMobile && _model.fullscreen)) _videoTag.controls = false;
 			}
 		}
 		function _hideDisplay() {

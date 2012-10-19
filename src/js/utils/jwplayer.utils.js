@@ -362,5 +362,9 @@
 		}
 	}
 
+	/** Determines if the current page is HTTPS **/
+	utils.isHTTPS = function() {
+		return (WINDOW.location.href.indexOf("https") == 0);	
+	}
 	
 })(jwplayer);

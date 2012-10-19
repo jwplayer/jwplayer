@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2741';
+	jwplayer.html5.version = '6.0.2742';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -4414,8 +4414,8 @@
 				}
 			}
 			try {
-				if (window.location.href.indexOf("https") == 0) {
-					_defaults.prefix = _defaults.prefix.replace("http://l.longtailvideo.com", "https://securel.longtailvideo.com");
+				if (utils.isHTTPS()) {
+					_defaults.prefix = _defaults.prefix.replace("http://", "https://secure");
 				}
 			} catch(e) {}
 			
@@ -7392,6 +7392,9 @@
 				    	_videoTag.webkitExitFullScreen();
 				    }
 				}
+				if (_isIPad && _api.jwGetState() == states.PAUSED) {
+					setTimeout(_showDisplay, 500);
+				}
 			}
 
 			_redrawComponent(_controlbar);
@@ -7593,7 +7596,7 @@
 			}
 			if (_isMobile && !_forcedControls) {
 				_controlsLayer.style.display = "block";
-				_videoTag.controls = false;
+				if (!(_isMobile && _model.fullscreen)) _videoTag.controls = false;
 			}
 		}
 		function _hideDisplay() {

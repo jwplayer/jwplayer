@@ -62,6 +62,9 @@
 				_file = file;
 				_image = image;
 				if (_logo.prefix) {
+					if (utils.isHTTPS()) {
+						_logo.prefix = _logo.prefix.replace('http://', 'https://secure');
+					}
 					_logo.prefix += jwplayer.version.split(/\W/).splice(0, 2).join("/") + "/";
 				}
 				_buildElements();

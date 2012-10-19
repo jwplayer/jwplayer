@@ -45,8 +45,8 @@
 				}
 			}
 			try {
-				if (window.location.href.indexOf("https") == 0) {
-					_defaults.prefix = _defaults.prefix.replace("http://l.longtailvideo.com", "https://securel.longtailvideo.com");
+				if (utils.isHTTPS()) {
+					_defaults.prefix = _defaults.prefix.replace("http://", "https://secure");
 				}
 			} catch(e) {}
 			

@@ -16,7 +16,7 @@ jwplayer = function(container) {
 	}
 };
 
-jwplayer.version = '6.0.2741';
+jwplayer.version = '6.0.2742';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -385,6 +385,10 @@ jwplayer.source = document.createElement("source");/**
 		}
 	}
 
+	/** Determines if the current page is HTTPS **/
+	utils.isHTTPS = function() {
+		return (WINDOW.location.href.indexOf("https") == 0);	
+	}
 	
 })(jwplayer);/**
  * JW Player Media Extension to Mime Type mapping
@@ -1746,6 +1750,9 @@ jwplayer.source = document.createElement("source");/**
 				_file = file;
 				_image = image;
 				if (_logo.prefix) {
+					if (utils.isHTTPS()) {
+						_logo.prefix = _logo.prefix.replace('http://', 'https://secure');
+					}
 					_logo.prefix += jwplayer.version.split(/\W/).splice(0, 2).join("/") + "/";
 				}
 				_buildElements();
