@@ -52,12 +52,13 @@
 <li>The <strong>primary</strong> configuration option of your player set to <em>flash</em>! An important limitation of JW6 advertising support is that, to date, it only works in the <a href="browsers.html">Flash rendering mode</a>.</li>
 </ul>
 
-<!-- To do: make a nice image-->
 
 
 <h2>Basic Setups</h2>
 
-<p>Ads are setup in the <em>advertising</em> configuration block. This block requires a <em>schedule</em> sub-block for your ads. The schedule consists of ad breaks which are set to run at different points during the video playback. The next section of this guide describes in detail how a schedule is constructed.</p>
+<p>Ads are setup in the <strong>advertising</strong> configuration block. Inside, the <strong>client</strong> option is set to <em>direct</em>.</p>
+
+<p>Next, the <strong>schedule</strong> sub-block defines the ad breaks which are set to run at different points during the video playback. The next section of this guide describes in detail how a schedule is constructed.</p>
 
 <p>There are three types of ads available: video pre-rolls, text overlay, and image end-caps. Here are example setups for all three. They contain a single ad and no tracking calls:</p>
 
@@ -70,6 +71,7 @@ jwplayer('myElement').setup({
     primary: 'flash',
     file: 'assets/myVideo.mp4',
     advertising: {
+        client: 'direct',
         schedule: {
             adbreak1: {
                 offset:'pre',
@@ -95,6 +97,7 @@ jwplayer('myElement').setup({
     primary: 'flash',
     file: 'assets/myVideo.mp4',
     advertising: {
+        client: 'direct',
         schedule: {
             adbreak2: {
                 offset: 10,
@@ -122,6 +125,7 @@ jwplayer('myElement').setup({
     primary: 'flash',
     file: 'assets/myVideo.mp4',
     advertising: {
+        client: 'direct',
         schedule: {
             adbreak3: {
                 offset: 'end',
@@ -270,7 +274,8 @@ jwplayer('myElement').setup({
     primary: 'flash',
     file: 'assets/myVideo.mp4',
     advertising: {
-        admessage: 'Only xx more seconds until the show starts...'
+        admessage: 'Only xx more seconds until the show starts...',
+        client: 'direct',
         schedule { // schedule info }
     }
 });
