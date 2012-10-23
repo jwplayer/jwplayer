@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Setup Wizard Test</title>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+</head>
+<body>
+
+<h1>Setup Wizard Test</h1>
+<div class="core">List of test devices</div>
+<p>This test consists of a test plan for the JW6 setup wizard</p>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Go to <a href="http://23.21.231.215/jw-player/wizard/">Setup Wizard</a></td>
+    <td>The page should look similar to <a href="https://trac.longtailvideo.com/trac/attachment/wiki/Player6SpecWizard/wireframe.png">this image.</a> <br>
+        The player should load in HTML5 mode where possible. </td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Use Charles to map the player to the latest version locally</td>
+    <td>(Refresh the page). The latest version of the player should be running.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Click on each of the presets</td>
+    <td>The player should reload each time. <br/>
+        The embed code will be updated with the video file. <br/>
+        The image and file fields in the form will also be updated. <br/>
+        In each case the Video field should be updated with the new URL.
+    </td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Click play</td>
+    <td>The Sintel video should play normally. <br/>
+        All the player controls should look normal<br/>
+    </td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Change the video URL, click outside the text field</td>
+    <td>Player reloads with new video. <br/>
+        Embed code shows the new URL in the file config</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Change the image URL, click outside the text field</td>
+    <td>Player reloads with new thumbnail. <br/>
+        Embed code shows the new URL in the image config</td>
+    </td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Click on the primary = flash radio button </td>
+    <td>Player reloads in flash mode.<br/>
+        Embed code shows "flash" in the primary config</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Click the button above 640x360 <br/>
+    <td>The player reloads with a larger size, still in flash mode.  <br/>
+        Embed code shows the new height and width in the config<br/>
+        The file and image are still the new ones. </td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Change the size using the input fields</td>
+    <td>Player reloads with the new size. <br/>
+        Embed code shows the new height and width in the config </td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop"></td>
+    <td>Change the autostart to true</td>
+    <td>Player reloads and starts playing automatically<br/>
+        Embed code shows "autostart: true" in the config</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Change autostart back to false</td>
+    <td>Player reloads and does not start playing <br/>
+        "autostart: true" disappears from the embed code</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Change any setting</td>
+    <td>Player reloads<br/>
+        The embed code shows a random container number each time you do this.</td>
+    <td class="check"></td>
+</tr></table>
+
+
+</body>
+</html>
