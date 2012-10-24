@@ -6,7 +6,7 @@
 (function(jwplayer) {
 	var embed = jwplayer.embed,
 		utils = jwplayer.utils,
-		
+
 		DOCUMENT = document,
 		
 		JW_CSS_CURSOR = "pointer",
@@ -24,7 +24,7 @@
 			_file, 
 			_image,
 			_logo = _options.logo ? _options.logo : {
-				prefix: 'http://l.longtailvideo.com/download/',
+				prefix: 'http://p.jwpcdn.com/',
 				file: 'logo.png',
 				margin: 10
 			};
@@ -63,9 +63,9 @@
 				_image = image;
 				if (_logo.prefix) {
 					if (utils.isHTTPS()) {
-						_logo.prefix = _logo.prefix.replace('http://', 'https://secure');
+						_logo.prefix = _logo.prefix.replace('http://', 'https://ssl.');
 					}
-					_logo.prefix += jwplayer.version.split(/\W/).splice(0, 2).join("/") + "/";
+					_logo.prefix += jwplayer.version.split(/\W/).splice(0, 2).join("/");
 				}
 				_buildElements();
 				_styleElements();

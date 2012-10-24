@@ -41,10 +41,13 @@ package com.longtailvideo.jwplayer.view {
 			_display = new DisplayComponent(_player);
 			_playlist = new PlaylistComponent(_player);
 			_dock = new DockComponent(_player);
-			_logo = new LogoComponent(_player, redraw);
 			_captions = new CaptionsComponent(_player);
+			setupLogo();
 		}
 		
+		protected function setupLogo():void {
+			_logo = new LogoComponent(_player, redraw);
+		}
 		
 		/**
 		 * @inheritDoc

@@ -389,7 +389,7 @@ jwplayer.source = document.createElement("source");/**
 	utils.isHTTPS = function() {
 		return (WINDOW.location.href.indexOf("https") == 0);	
 	}
-	
+
 })(jwplayer);/**
  * JW Player Media Extension to Mime Type mapping
  * 
@@ -571,35 +571,6 @@ jwplayer.source = document.createElement("source");/**
 		}
 		return string;
 	}
-	
-	/**
-	 * Convert a time-representing string to a number.
-	 *
-	 * @param {String}	The input string. Supported are 00:03:00.1 / 03:00.1 / 180.1s / 3.2m / 3.2h
-	 * @return {Number}	The number of seconds.
-	 */
-	utils.seconds = function(str) {
-		str = str.replace(',', '.');
-		var arr = str.split(':');
-		var sec = 0;
-		if (str.substr(-1) == 's') {
-			sec = Number(str.substr(0, str.length - 1));
-		} else if (str.substr(-1) == 'm') {
-			sec = Number(str.substr(0, str.length - 1)) * 60;
-		} else if (str.substr(-1) == 'h') {
-			sec = Number(str.substr(0, str.length - 1)) * 3600;
-		} else if (arr.length > 1) {
-			sec = Number(arr[arr.length - 1]);
-			sec += Number(arr[arr.length - 2]) * 60;
-			if (arr.length == 3) {
-				sec += Number(arr[arr.length - 3]) * 3600;
-			}
-		} else {
-			sec = Number(str);
-		}
-		return sec;
-	}
-	
 	
 	/**
 	 * Get the value of a case-insensitive attribute in an XML node
@@ -1694,7 +1665,7 @@ jwplayer.source = document.createElement("source");/**
 (function(jwplayer) {
 	var embed = jwplayer.embed,
 		utils = jwplayer.utils,
-		
+
 		DOCUMENT = document,
 		
 		JW_CSS_CURSOR = "pointer",
@@ -1712,7 +1683,7 @@ jwplayer.source = document.createElement("source");/**
 			_file, 
 			_image,
 			_logo = _options.logo ? _options.logo : {
-				prefix: 'http://l.longtailvideo.com/download/',
+				prefix: 'http://p.jwpcdn.com/',
 				file: 'logo.png',
 				margin: 10
 			};
@@ -1751,9 +1722,9 @@ jwplayer.source = document.createElement("source");/**
 				_image = image;
 				if (_logo.prefix) {
 					if (utils.isHTTPS()) {
-						_logo.prefix = _logo.prefix.replace('http://', 'https://secure');
+						_logo.prefix = _logo.prefix.replace('http://', 'https://ssl.');
 					}
-					_logo.prefix += jwplayer.version.split(/\W/).splice(0, 2).join("/") + "/";
+					_logo.prefix += jwplayer.version.split(/\W/).splice(0, 2).join("/");
 				}
 				_buildElements();
 				_styleElements();
@@ -1811,6 +1782,8 @@ jwplayer.source = document.createElement("source");/**
 				right: _logo.margin + "px",
 				background: "top right no-repeat url(" + _logo.prefix + _logo.file + ")"
 			});
+			
+			console.log(_logo.prefix + _logo.file);
 			
 			_css(_prefix+"icon", {
 				background: "center no-repeat url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAA6/NlyAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAgNJREFUeNrs28lqwkAYB/CZqNVDDj2r6FN41QeIy8Fe+gj6BL275Q08u9FbT8ZdwVfotSBYEPUkxFOoks4EKiJdaDuTjMn3wWBO0V/+sySR8SNSqVRKIR8qaXHkzlqS9jCfzzWcTCYp9hF5o+59sVjsiRzcegSckFzcjT+ruN80TeSlAjCAAXzdJSGPFXRpAAMYwACGZQkSdhG4WCzehMNhqV6vG6vVSrirKVEw66YoSqDb7cqlUilE8JjHd/y1MQefVzqdDmiaJpfLZWHgXMHn8F6vJ1cqlVAkEsGuAn83J4gAd2RZymQygX6/L1erVQt+9ZPWb+CDwcCC2zXGJaewl/DhcHhK3DVj+KfKZrMWvFarcYNLomAv4aPRSFZVlTlcSPA5fDweW/BoNIqFnKV53JvncjkLns/n/cLdS+92O7RYLLgsKfv9/t8XlDn4eDyiw+HA9Jyz2eyt0+kY2+3WFC5hluej0Ha7zQQq9PPwdDq1Et1sNsx/nFBgCqWJ8oAK1aUptNVqcYWewE4nahfU0YQnk4ntUEfGMIU2m01HoLaCKbTRaDgKtaVLk9tBYaBcE/6Artdr4RZ5TB6/dC+9iIe/WgAMYADDpAUJAxjAAAYwgGFZgoS/AtNNTF7Z2bL0BYPBV3Jw5xFwwWcYxgtBP5OkE8i9G7aWGOOCruvauwADALMLMEbKf4SdAAAAAElFTkSuQmCC)"
@@ -2298,7 +2271,9 @@ jwplayer.source = document.createElement("source");/**
 	var _players = [], 
 		utils = jwplayer.utils, 
 		events = jwplayer.events,
-		states = events.state;
+		states = events.state,
+		
+		DOCUMENT = document;
 	
 	var api = jwplayer.api = function(container) {
 		var _this = this,
@@ -2442,7 +2417,7 @@ jwplayer.source = document.createElement("source");/**
 			if (_this.renderingMode == "html5") {
 				_player.jwResize(width, height);
 			} else {
-				var wrapper = document.getElementById(_this.id + "_wrapper");
+				var wrapper = DOCUMENT.getElementById(_this.id + "_wrapper");
 				if (wrapper) {
 					wrapper.style.width = utils.styleDimension(width);
 					wrapper.style.height = utils.styleDimension(height);
@@ -2732,9 +2707,9 @@ jwplayer.source = document.createElement("source");/**
 			_playerReady = true;
 			
 			if (!_player) {
-				_this.setPlayer(document.getElementById(obj.id));
+				_this.setPlayer(DOCUMENT.getElementById(obj.id));
 			}
-			_this.container = document.getElementById(_this.id);
+			_this.container = DOCUMENT.getElementById(_this.id);
 			
 			utils.foreach(_listeners, function(eventType) {
 				_addInternalListener(_player, eventType);
@@ -2792,7 +2767,7 @@ jwplayer.source = document.createElement("source");/**
 			_container = identifier;
 		} else if (typeof identifier == 'string') {
 			// Find container by ID
-			_container = document.getElementById(identifier);
+			_container = DOCUMENT.getElementById(identifier);
 		}
 		
 		if (_container) {
@@ -2842,7 +2817,7 @@ jwplayer.source = document.createElement("source");/**
 		}
 		if (index >= 0) {
 			var id = player.id,
-				toDestroy = document.getElementById(id + (player.renderingMode == "flash" ? "_wrapper" : ""));
+				toDestroy = DOCUMENT.getElementById(id + (player.renderingMode == "flash" ? "_wrapper" : ""));
 			
 			if (utils.clearCss) {
 				// Clear HTML5 rules
@@ -2850,11 +2825,11 @@ jwplayer.source = document.createElement("source");/**
 			}
 
 //			if (!toDestroy) {
-//				toDestroy = document.getElementById(id);	
+//				toDestroy = DOCUMENT.getElementById(id);	
 //			}
 			
 			if (toDestroy) {
-				var replacement = document.createElement('div');
+				var replacement = DOCUMENT.createElement('div');
 				replacement.id = id;
 				toDestroy.parentNode.replaceChild(replacement, toDestroy);
 			}

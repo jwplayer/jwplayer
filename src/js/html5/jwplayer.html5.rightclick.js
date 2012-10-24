@@ -45,7 +45,7 @@
 	        _about.innerHTML = _config.abouttext;
 	        _about.onclick = _clickHandler;
 	        _menu.appendChild(_about);
-	        DOCUMENT.body.appendChild(_menu);
+	        _container.appendChild(_menu);
 		}
 		
 		function _createElement(className) {
@@ -70,13 +70,14 @@
 	        // we assume we have a standards compliant browser, but check if we have IE
 	        // Also, document.body.scrollTop does not work in IE
 	        var target = evt.target != null ? evt.target : evt.srcElement,
-	        	scrollTop = DOCUMENT.body.scrollTop ? DOCUMENT.body.scrollTop : DOCUMENT.documentElement.scrollTop,
-	        	scrollLeft = DOCUMENT.body.scrollLeft ? DOCUMENT.body.scrollLeft : DOCUMENT.documentElement.scrollLeft;
+	        	bounds = utils.bounds(_container),
+	        	scrollTop = bounds.top,// ? DOCUMENT.body.scrollTop : DOCUMENT.documentElement.scrollTop,
+	        	scrollLeft = bounds.left;// ? DOCUMENT.body.scrollLeft : DOCUMENT.documentElement.scrollLeft;
 
 	        // hide the menu first to avoid an "up-then-over" visual effect
 	        _menu.style.display = JW_CSS_NONE;
-	        _menu.style.left = evt.clientX + scrollLeft + 'px';
-	        _menu.style.top = evt.clientY + scrollTop + 'px';
+	        _menu.style.left = evt.pageX - scrollLeft + 'px';
+	        _menu.style.top = evt.pageY - scrollTop + 'px';
 	        _menu.style.display = 'block';
 	        evt.preventDefault();
 	    }

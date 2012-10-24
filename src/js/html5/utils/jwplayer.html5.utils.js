@@ -181,13 +181,47 @@
 	/** Format the elapsed / remaining text. **/
 	utils.timeFormat = function(sec) {
 		if (sec > 0) {
-			var str = Math.floor(sec / 60) < 10 ? "0" + Math.floor(sec / 60) + ":" : Math.floor(sec / 60) + ":";
-			str += Math.floor(sec % 60) < 10 ? "0" + Math.floor(sec % 60) : Math.floor(sec % 60);
+			var hrs = Math.floor(sec / 3600),
+				mins = Math.floor((sec - hrs*3600) / 60),
+				secs = Math.floor(sec % 60);
+				
+			return (hrs ? hrs + ":" : "") 
+					+ (mins < 10 ? "0" : "") + mins + ":"
+					+ (secs < 10 ? "0" : "") + secs;
 			return str;
 		} else {
 			return "00:00";
 		}
 	}
+	
+	/**
+	 * Convert a time-representing string to a number.
+	 *
+	 * @param {String}	The input string. Supported are 00:03:00.1 / 03:00.1 / 180.1s / 3.2m / 3.2h
+	 * @return {Number}	The number of seconds.
+	 */
+	utils.seconds = function(str) {
+		str = str.replace(',', '.');
+		var arr = str.split(':');
+		var sec = 0;
+		if (str.substr(-1) == 's') {
+			sec = Number(str.substr(0, str.length - 1));
+		} else if (str.substr(-1) == 'm') {
+			sec = Number(str.substr(0, str.length - 1)) * 60;
+		} else if (str.substr(-1) == 'h') {
+			sec = Number(str.substr(0, str.length - 1)) * 3600;
+		} else if (arr.length > 1) {
+			sec = Number(arr[arr.length - 1]);
+			sec += Number(arr[arr.length - 2]) * 60;
+			if (arr.length == 3) {
+				sec += Number(arr[arr.length - 3]) * 3600;
+			}
+		} else {
+			sec = Number(str);
+		}
+		return sec;
+	}
+	
 
 	/** Replacement for getBoundingClientRect, which isn't supported in iOS 3.1.2 **/
 	utils.bounds = function(element) {

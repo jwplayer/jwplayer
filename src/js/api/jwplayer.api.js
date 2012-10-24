@@ -8,7 +8,9 @@
 	var _players = [], 
 		utils = jwplayer.utils, 
 		events = jwplayer.events,
-		states = events.state;
+		states = events.state,
+		
+		DOCUMENT = document;
 	
 	var api = jwplayer.api = function(container) {
 		var _this = this,
@@ -152,7 +154,7 @@
 			if (_this.renderingMode == "html5") {
 				_player.jwResize(width, height);
 			} else {
-				var wrapper = document.getElementById(_this.id + "_wrapper");
+				var wrapper = DOCUMENT.getElementById(_this.id + "_wrapper");
 				if (wrapper) {
 					wrapper.style.width = utils.styleDimension(width);
 					wrapper.style.height = utils.styleDimension(height);
@@ -442,9 +444,9 @@
 			_playerReady = true;
 			
 			if (!_player) {
-				_this.setPlayer(document.getElementById(obj.id));
+				_this.setPlayer(DOCUMENT.getElementById(obj.id));
 			}
-			_this.container = document.getElementById(_this.id);
+			_this.container = DOCUMENT.getElementById(_this.id);
 			
 			utils.foreach(_listeners, function(eventType) {
 				_addInternalListener(_player, eventType);
@@ -502,7 +504,7 @@
 			_container = identifier;
 		} else if (typeof identifier == 'string') {
 			// Find container by ID
-			_container = document.getElementById(identifier);
+			_container = DOCUMENT.getElementById(identifier);
 		}
 		
 		if (_container) {
@@ -552,7 +554,7 @@
 		}
 		if (index >= 0) {
 			var id = player.id,
-				toDestroy = document.getElementById(id + (player.renderingMode == "flash" ? "_wrapper" : ""));
+				toDestroy = DOCUMENT.getElementById(id + (player.renderingMode == "flash" ? "_wrapper" : ""));
 			
 			if (utils.clearCss) {
 				// Clear HTML5 rules
@@ -560,11 +562,11 @@
 			}
 
 //			if (!toDestroy) {
-//				toDestroy = document.getElementById(id);	
+//				toDestroy = DOCUMENT.getElementById(id);	
 //			}
 			
 			if (toDestroy) {
-				var replacement = document.createElement('div');
+				var replacement = DOCUMENT.createElement('div');
 				replacement.id = id;
 				toDestroy.parentNode.replaceChild(replacement, toDestroy);
 			}

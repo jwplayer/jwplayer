@@ -14,7 +14,7 @@ package com.longtailvideo.jwplayer.view.components {
 	public class LogoComponent extends CoreComponent implements IPlayerComponent {
 		/** Configuration defaults **/
 		protected var defaults:Object = {
-			prefix: "http://l.longtailvideo.com/flash/", 
+			prefix: "http://p.jwpcdn.com/", 
 			file: "logo.png", 
 			link: 'http://www.longtailvideo.com/jwpabout/?a=l&v='+PlayerVersion.version+'&m=f&e=o',
 			linktarget: "_top",
@@ -107,7 +107,7 @@ package com.longtailvideo.jwplayer.view.components {
 			if (getConfigParam('file') && prefix) {
 				try {
 					if (RootReference.root.loaderInfo.url.indexOf("https://") == 0) {
-						prefix = prefix.replace("http://", "https://secure");
+						prefix = prefix.replace("http://", "https://ssl.");
 					}
 				} catch(e:Error) {}
 				defaults['file'] = prefix + versionInfo[1] + "/" + versionInfo[2] + "/" + getConfigParam('file');

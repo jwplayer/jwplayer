@@ -25,12 +25,13 @@ package com.longtailvideo.jwplayer.utils {
 		 * Convert a number to a digital-clock like string.
 		 *
 		 * @param nbr	The number of seconds.
-		 * @return		A MN:SS string.
+		 * @return		An H:MN:SS string.
 		 **/
 		public static function digits(nbr:Number):String {
-			var min:Number = Math.floor(nbr / 60);
+			var hrs:Number = Math.floor(nbr / 3600);
+			var min:Number = Math.floor((nbr - (hrs*3600)) / 60);
 			var sec:Number = Math.floor(nbr % 60);
-			var str:String = Strings.zero(min) + ':' + Strings.zero(sec);
+			var str:String = (hrs ? hrs + ':' : '') + Strings.zero(min) + ':' + Strings.zero(sec);
 			return str;
 		}
 		

@@ -46,7 +46,7 @@
 			}
 			try {
 				if (utils.isHTTPS()) {
-					_defaults.prefix = _defaults.prefix.replace("http://", "https://secure");
+					_defaults.prefix = _defaults.prefix.replace("http://", "https://ssl.");
 				}
 			} catch(e) {}
 			
@@ -174,7 +174,7 @@
 	};
 	
 	logo.defaults = {
-		prefix: "http://l.longtailvideo.com/html5/",
+		prefix: "http://p.jwpcdn.com/",
 		file: "logo.png",
 		link: LINK_DEFAULT+jwplayer.version+'&m=h&e=f',
 		linktarget: "_top",

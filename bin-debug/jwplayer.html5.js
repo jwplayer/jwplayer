@@ -190,13 +190,47 @@
 	/** Format the elapsed / remaining text. **/
 	utils.timeFormat = function(sec) {
 		if (sec > 0) {
-			var str = Math.floor(sec / 60) < 10 ? "0" + Math.floor(sec / 60) + ":" : Math.floor(sec / 60) + ":";
-			str += Math.floor(sec % 60) < 10 ? "0" + Math.floor(sec % 60) : Math.floor(sec % 60);
+			var hrs = Math.floor(sec / 3600),
+				mins = Math.floor((sec - hrs*3600) / 60),
+				secs = Math.floor(sec % 60);
+				
+			return (hrs ? hrs + ":" : "") 
+					+ (mins < 10 ? "0" : "") + mins + ":"
+					+ (secs < 10 ? "0" : "") + secs;
 			return str;
 		} else {
 			return "00:00";
 		}
 	}
+	
+	/**
+	 * Convert a time-representing string to a number.
+	 *
+	 * @param {String}	The input string. Supported are 00:03:00.1 / 03:00.1 / 180.1s / 3.2m / 3.2h
+	 * @return {Number}	The number of seconds.
+	 */
+	utils.seconds = function(str) {
+		str = str.replace(',', '.');
+		var arr = str.split(':');
+		var sec = 0;
+		if (str.substr(-1) == 's') {
+			sec = Number(str.substr(0, str.length - 1));
+		} else if (str.substr(-1) == 'm') {
+			sec = Number(str.substr(0, str.length - 1)) * 60;
+		} else if (str.substr(-1) == 'h') {
+			sec = Number(str.substr(0, str.length - 1)) * 3600;
+		} else if (arr.length > 1) {
+			sec = Number(arr[arr.length - 1]);
+			sec += Number(arr[arr.length - 2]) * 60;
+			if (arr.length == 3) {
+				sec += Number(arr[arr.length - 3]) * 3600;
+			}
+		} else {
+			sec = Number(str);
+		}
+		return sec;
+	}
+	
 
 	/** Replacement for getBoundingClientRect, which isn't supported in iOS 3.1.2 **/
 	utils.bounds = function(element) {
@@ -250,7 +284,7 @@
 		_block = 0,
 		exists = utils.exists,
 		_ruleIndexes = {},
-		_debug = false,
+		_debug = true,
 				
 		JW_CLASS = '.jwplayer ';
 
@@ -4415,7 +4449,7 @@
 			}
 			try {
 				if (utils.isHTTPS()) {
-					_defaults.prefix = _defaults.prefix.replace("http://", "https://secure");
+					_defaults.prefix = _defaults.prefix.replace("http://", "https://ssl.");
 				}
 			} catch(e) {}
 			
@@ -4543,7 +4577,7 @@
 	};
 	
 	logo.defaults = {
-		prefix: "http://l.longtailvideo.com/html5/",
+		prefix: "http://p.jwpcdn.com/",
 		file: "logo.png",
 		link: LINK_DEFAULT+jwplayer.version+'&m=h&e=f',
 		linktarget: "_top",
@@ -6082,7 +6116,7 @@
 	        _about.innerHTML = _config.abouttext;
 	        _about.onclick = _clickHandler;
 	        _menu.appendChild(_about);
-	        DOCUMENT.body.appendChild(_menu);
+	        _container.appendChild(_menu);
 		}
 		
 		function _createElement(className) {
@@ -6107,13 +6141,14 @@
 	        // we assume we have a standards compliant browser, but check if we have IE
 	        // Also, document.body.scrollTop does not work in IE
 	        var target = evt.target != null ? evt.target : evt.srcElement,
-	        	scrollTop = DOCUMENT.body.scrollTop ? DOCUMENT.body.scrollTop : DOCUMENT.documentElement.scrollTop,
-	        	scrollLeft = DOCUMENT.body.scrollLeft ? DOCUMENT.body.scrollLeft : DOCUMENT.documentElement.scrollLeft;
+	        	bounds = utils.bounds(_container),
+	        	scrollTop = bounds.top,// ? DOCUMENT.body.scrollTop : DOCUMENT.documentElement.scrollTop,
+	        	scrollLeft = bounds.left;// ? DOCUMENT.body.scrollLeft : DOCUMENT.documentElement.scrollLeft;
 
 	        // hide the menu first to avoid an "up-then-over" visual effect
 	        _menu.style.display = JW_CSS_NONE;
-	        _menu.style.left = evt.clientX + scrollLeft + 'px';
-	        _menu.style.top = evt.clientY + scrollTop + 'px';
+	        _menu.style.left = evt.pageX - scrollLeft + 'px';
+	        _menu.style.top = evt.pageY - scrollTop + 'px';
 	        _menu.style.display = 'block';
 	        evt.preventDefault();
 	    }
