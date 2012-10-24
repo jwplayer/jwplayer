@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2742';
+	jwplayer.html5.version = '6.0.2763';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -284,7 +284,7 @@
 		_block = 0,
 		exists = utils.exists,
 		_ruleIndexes = {},
-		_debug = true,
+		_debug = false,
 				
 		JW_CLASS = '.jwplayer ';
 
