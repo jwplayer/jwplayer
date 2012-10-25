@@ -277,7 +277,7 @@
 		}
 
 		_this.play = function() {
-			if (_attached) _videotag.play();
+			if (_attached && !_dragging) _videotag.play();
 		}
 
 		var _pause = _this.pause = function() {

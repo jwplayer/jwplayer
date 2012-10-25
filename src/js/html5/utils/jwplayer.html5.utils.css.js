@@ -181,6 +181,9 @@
 	}
 	
 	utils.transitionStyle = function(selector, style) {
+		// Safari 5 has problems with CSS3 transitions
+		if(navigator.userAgent.match(/5\.\d(\.\d)? safari/i)) return;
+		
 		utils.css(selector, {
 			'-webkit-transition': style,
 			'-moz-transition': style,

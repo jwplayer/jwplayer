@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2763';
+	jwplayer.html5.version = '6.0.2772';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -454,6 +454,9 @@
 	}
 	
 	utils.transitionStyle = function(selector, style) {
+		// Safari 5 has problems with CSS3 transitions
+		if(navigator.userAgent.match(/5\.\d(\.\d)? safari/i)) return;
+		
 		utils.css(selector, {
 			'-webkit-transition': style,
 			'-moz-transition': style,
@@ -6975,7 +6978,7 @@
 		}
 
 		_this.play = function() {
-			if (_attached) _videotag.play();
+			if (_attached && !_dragging) _videotag.play();
 		}
 
 		var _pause = _this.pause = function() {
