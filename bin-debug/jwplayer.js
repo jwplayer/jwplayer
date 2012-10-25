@@ -2136,11 +2136,6 @@ jwplayer.source = document.createElement("source");/**
 //					delete playerOptions[toDelete[i]];
 //				}
 
-				// Use XML skins instead of ZIP in HTML5 mode
-				if (playerOptions.skin && playerOptions.skin.toLowerCase().indexOf(".zip") > 0) {
-					playerOptions.skin = playerOptions.skin.replace(/\.zip/i, ".xml");
-				}
-
 				var html5player = new jwplayer.html5.player(playerOptions);
 				_api.container = document.getElementById(_api.id);
 				_api.setPlayer(html5player, "html5");
