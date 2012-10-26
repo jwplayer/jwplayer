@@ -11,6 +11,10 @@
 		states = events.state,
 		_css = utils.css, 
 		_bounds = utils.bounds,
+		_isMobile = utils.isMobile(),
+		_isIPad = utils.isIPad(),
+		_isIPod = utils.isIPod(),
+		_isAndroid = utils.isAndroid(),
 
 		DOCUMENT = document, 
 		PLAYER_CLASS = "jwplayer", 
@@ -54,9 +58,6 @@
 			_captions,
 			_playlist,
 			_audioMode,
-			_isMobile = utils.isMobile(),
-			_isIPad = utils.isIPad(),// || utils.isAndroid(),
-			_isIPod = utils.isIPod(),
 			_forcedControls = (_model.mobilecontrols),
 			_errorState = FALSE,
 			_replayState,
@@ -477,14 +478,14 @@
 					_display.show();
 			}
 			if (_isMobile && !_forcedControls) {
-				_controlsLayer.style.display = "block";
+				if (_isAndroid) _controlsLayer.style.display = "block";
 				if (!(_isMobile && _model.fullscreen)) _videoTag.controls = false;
 			}
 		}
 		function _hideDisplay() {
 			if (_display) {
 				if (_isMobile && !_forcedControls) {
-					_controlsLayer.style.display = "none";
+					if (_isAndroid) _controlsLayer.style.display = "none";
 					_videoTag.controls = true;
 				}
 				_display.hide();
@@ -587,7 +588,7 @@
 				_startFade();
 				break;
 			case states.IDLE:
-				if (!_isMobile) {
+				if (!_isAndroid) {
 					_showVideo(FALSE);
 				}
 				//_hideControls();

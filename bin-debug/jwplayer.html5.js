@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2772';
+	jwplayer.html5.version = '6.0.2784';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -385,8 +385,8 @@
 
 		if (sheet) {
 			var rules = sheet.cssRules;
-			if (utils.exists(ruleIndex)) {
-				sheet.deleteRule(_ruleIndexes[selector]);
+			if (utils.exists(ruleIndex) && ruleIndex < rules.length && rules[ruleIndex].selectorText == selector) {
+				sheet.deleteRule(ruleIndex);
 			} else {
 				_ruleIndexes[selector] = rules.length;	
 			}
@@ -3539,7 +3539,10 @@
 			_skin = _api.skin,
 			_id = id,
 			_container, 
-//			_bg,
+			_bgSkin,
+			_capLeftSkin,
+			_capRightSkin,
+			_hasCaps,
 			_text,
 			_icon,
 			_iconElement,
@@ -3549,13 +3552,14 @@
 			_container = _createElement("jwdisplayIcon");
 			_container.id = _id;
 
-			_createElement('capLeft', _container);
+			
+			//_createElement('capLeft', _container);
 //			_bg = _createElement('background', _container);
+			_createBackground();
 			_text = _createElement('jwtext', _container, textStyle, textStyleOver);
 			_icon = _createElement('icon', _container);
-			_createElement('capRight', _container);
+			//_createElement('capRight', _container);
 			
-			_styleIcon('background');
 			
 			_hide();
 			_redraw();
@@ -3576,66 +3580,75 @@
 			return elem;
 		}
 		
+		function _createBackground() {
+			_bgSkin = _getSkinElement('background');
+			_capLeftSkin = _getSkinElement('capLeft');
+			_capRightSkin = _getSkinElement('capRight');
+			_hasCaps = (_capLeftSkin.width * _capRightSkin.width > 0);
+			
+			_css(_internalSelector(), {
+				'background-image': "url(" + _capLeftSkin.src + "), url(" + _bgSkin.src + "), url(" + _capRightSkin.src + ")",
+				'background-position': "left,center,right",
+				'background-repeat': 'no-repeat',
+				padding: "0 " + _capRightSkin.width + "px 0 " + _capLeftSkin.width + "px",
+				height: _bgSkin.height,
+				'margin-top': _bgSkin.height / -2
+			});
+			
+			if (_bgSkin.overSrc) {	
+				_css("#"+_api.id+" .jwdisplay:hover " + _internalSelector(), {
+					'background-image': "url(" + _capLeftSkin.overSrc + "), url(" + _bgSkin.overSrc + "), url(" + _capRightSkin.overSrc + ")",
+				});
+			}
+
+		}
+		
 		function _styleIcon(name, selector, style, overstyle) {
-			var skinElem = _getSkinElement(name), 
-				overElem = _getSkinElement(name + "Over");
+			var skinElem = _getSkinElement(name); 
 
 			style = utils.extend({}, style);
 			if (name.indexOf("Icon") > 0) _iconWidth = skinElem.width;
 			if (skinElem.src) {
 				style['background-image'] = 'url(' + skinElem.src + ')';
-				style['width'] = skinElem.width;
+				style['width'] = skinElem.width;// + (name.toLowerCase().indexOf("cap") == 0 ? 1 : 0);
 			}
 			_css(_internalSelector(selector), style);
 
 			overstyle = utils.extend({}, overstyle);
-			if (overElem.src) {
-				overstyle['background-image'] = 'url(' + overElem.src + ')';
+			if (skinElem.overSrc) {
+				overstyle['background-image'] = 'url(' + skinElem.overSrc + ')';
 			}
 			_iconElement = skinElem;
 			_css("#"+_api.id+" .jwdisplay:hover " + (selector ? selector : _internalSelector()), overstyle);
 		}
 
 		function _getSkinElement(name) {
-			var elem = _skin.getSkinElement('display', name);
+			var elem = _skin.getSkinElement('display', name),
+				overElem = _skin.getSkinElement('display', name + 'Over');
+				
 			if (elem) {
+				elem.overSrc = (overElem && overElem.src) ? overElem.src : "";
 				return elem;
 			}
-			return { src : "", width : 0, height : 0 };
+			return { src : "", overSrc : "", width : 0, height : 0 };
 		}
 		
 		function _redraw() {
-			var bgSkin = _getSkinElement('background'),
-				capLeftSkin = _getSkinElement('capLeft'),
-				capRightSkin = _getSkinElement('capRight'),
-				hasCaps = (capLeftSkin.width * capRightSkin.width > 0),
-				showText = hasCaps || (_iconWidth == 0);
-//				width = utils.bounds(_container).width;
-			
-			_css(_internalSelector(".capLeft"), {
-				display: hasCaps ? UNDEFINED : JW_CSS_NONE
-				//'float': "left"
-			});
-
-			_css(_internalSelector(".capRight"), {
-				display: hasCaps ? UNDEFINED : JW_CSS_NONE
-				//'float': "right"
-			});
+			var showText = _hasCaps || (_iconWidth == 0),
+				px100pct = "px " + JW_CSS_100PCT,
+				contentWidth;
 			
 			_css(_internalSelector('.jwtext'), {
-				display: (_text.innerHTML && showText) ? UNDEFINED : JW_CSS_NONE,
-				padding: hasCaps ? 0 : "0 10px"
+				display: (_text.innerHTML && showText) ? UNDEFINED : JW_CSS_NONE
 			});
 
 			setTimeout(function() {
-				_css(_internalSelector(), {
-					'margin-top': bgSkin.height / -2,
-					height: bgSkin.height,
-					width : UNDEFINED,
-					'background-position': capLeftSkin.width + "px 0",
-					'background-repeat': 'no-repeat',
-					'background-size': (_iconElement.width + (showText ? utils.bounds(_text).width : 0)) + "px " + JW_CSS_100PCT
-				});
+				 contentWidth = utils.bounds(_container).width - _capRightSkin.width - _capLeftSkin.width; //Math.ceil(_iconElement.width + (showText ? utils.bounds(_text).width: 0));
+				 _css(_internalSelector(), {
+					//width : contentWidth,
+					//'background-position': _capLeftSkin.width + "px 0",
+					'background-size': [_capLeftSkin.width + px100pct, contentWidth + px100pct, _capRightSkin.width + px100pct].join(",")
+				}, true);
 			}, 0);
 			
 
@@ -3643,11 +3656,11 @@
 			/*
 			_css(_internalSelector('.background'), {
 				'background-repeat': 'repeat-x',
-				'background-size': JW_CSS_100PCT + " " + bgSkin.height + "px",
+				'background-size': JW_CSS_100PCT + " " + _bgSkin.height + "px",
 				position: "absolute",
 				width: UNDEFINED,
-				left: hasCaps ? capLeftSkin.width : 0,
-				right: hasCaps ? capRightSkin.width : 0
+				left: _hasCaps ? _capLeftSkin.width : 0,
+				right: _hasCaps ? _capRightSkin.width : 0
 			});
 			*/
 
@@ -3743,6 +3756,7 @@
 
 	_css(DI_CLASS + " .jwtext", {
 		color : "#fff",
+		padding: "0 1px",
 		'max-width' : "300px",
 		'overflow-y' : "hidden",
 		'text-align': JW_CSS_CENTER,
@@ -7167,6 +7181,10 @@
 		states = events.state,
 		_css = utils.css, 
 		_bounds = utils.bounds,
+		_isMobile = utils.isMobile(),
+		_isIPad = utils.isIPad(),
+		_isIPod = utils.isIPod(),
+		_isAndroid = utils.isAndroid(),
 
 		DOCUMENT = document, 
 		PLAYER_CLASS = "jwplayer", 
@@ -7210,9 +7228,6 @@
 			_captions,
 			_playlist,
 			_audioMode,
-			_isMobile = utils.isMobile(),
-			_isIPad = utils.isIPad(),// || utils.isAndroid(),
-			_isIPod = utils.isIPod(),
 			_forcedControls = (_model.mobilecontrols),
 			_errorState = FALSE,
 			_replayState,
@@ -7633,14 +7648,14 @@
 					_display.show();
 			}
 			if (_isMobile && !_forcedControls) {
-				_controlsLayer.style.display = "block";
+				if (_isAndroid) _controlsLayer.style.display = "block";
 				if (!(_isMobile && _model.fullscreen)) _videoTag.controls = false;
 			}
 		}
 		function _hideDisplay() {
 			if (_display) {
 				if (_isMobile && !_forcedControls) {
-					_controlsLayer.style.display = "none";
+					if (_isAndroid) _controlsLayer.style.display = "none";
 					_videoTag.controls = true;
 				}
 				_display.hide();
@@ -7743,7 +7758,7 @@
 				_startFade();
 				break;
 			case states.IDLE:
-				if (!_isMobile) {
+				if (!_isAndroid) {
 					_showVideo(FALSE);
 				}
 				//_hideControls();

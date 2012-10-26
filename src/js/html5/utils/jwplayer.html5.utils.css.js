@@ -112,8 +112,8 @@
 
 		if (sheet) {
 			var rules = sheet.cssRules;
-			if (utils.exists(ruleIndex)) {
-				sheet.deleteRule(_ruleIndexes[selector]);
+			if (utils.exists(ruleIndex) && ruleIndex < rules.length && rules[ruleIndex].selectorText == selector) {
+				sheet.deleteRule(ruleIndex);
 			} else {
 				_ruleIndexes[selector] = rules.length;	
 			}
