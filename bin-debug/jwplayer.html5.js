@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2786';
+	jwplayer.html5.version = '6.0.2790';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -3644,7 +3644,7 @@
 			});
 
 			setTimeout(function() {
-				 contentWidth = utils.bounds(_container).width - _capRightSkin.width - _capLeftSkin.width; //Math.ceil(_iconElement.width + (showText ? utils.bounds(_text).width: 0));
+				 contentWidth = Math.max(_iconElement.width, utils.bounds(_container).width - _capRightSkin.width - _capLeftSkin.width); //Math.ceil(_iconElement.width + (showText ? utils.bounds(_text).width: 0));
 				 if (utils.isFF() || utils.isIE()) contentWidth ++;
 				 _css(_internalSelector(), {
 					//width : contentWidth,
@@ -5046,7 +5046,7 @@
 			}
 
 			_css(_internalSelector(), {
-				padding: _borderSizes.top + "px " + _borderSizes.right + "px " + _borderSizes.bottom + "px " + _borderSizes.left + "px"  
+				padding: (_borderSizes.top+1) + "px " + _borderSizes.right + "px " + (_borderSizes.bottom+1) + "px " + _borderSizes.left + "px"  
 			});
 			
 			_this.showing = false;
@@ -5199,7 +5199,7 @@
 	_css(OVERLAY_CLASS + " .jwborder", {
 		position: JW_CSS_ABSOLUTE,
 		'background-size': JW_CSS_100PCT + " " + JW_CSS_100PCT
-	});
+	}, true);
 
 	_css(OVERLAY_CLASS + " .jwback", {
 		position: JW_CSS_ABSOLUTE,

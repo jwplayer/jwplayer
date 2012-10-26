@@ -130,7 +130,7 @@
 			});
 
 			setTimeout(function() {
-				 contentWidth = utils.bounds(_container).width - _capRightSkin.width - _capLeftSkin.width; //Math.ceil(_iconElement.width + (showText ? utils.bounds(_text).width: 0));
+				 contentWidth = Math.max(_iconElement.width, utils.bounds(_container).width - _capRightSkin.width - _capLeftSkin.width); //Math.ceil(_iconElement.width + (showText ? utils.bounds(_text).width: 0));
 				 if (utils.isFF() || utils.isIE()) contentWidth ++;
 				 _css(_internalSelector(), {
 					//width : contentWidth,

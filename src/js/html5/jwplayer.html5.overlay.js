@@ -104,7 +104,7 @@
 			}
 
 			_css(_internalSelector(), {
-				padding: _borderSizes.top + "px " + _borderSizes.right + "px " + _borderSizes.bottom + "px " + _borderSizes.left + "px"  
+				padding: (_borderSizes.top+1) + "px " + _borderSizes.right + "px " + (_borderSizes.bottom+1) + "px " + _borderSizes.left + "px"  
 			});
 			
 			_this.showing = false;
@@ -257,7 +257,7 @@
 	_css(OVERLAY_CLASS + " .jwborder", {
 		position: JW_CSS_ABSOLUTE,
 		'background-size': JW_CSS_100PCT + " " + JW_CSS_100PCT
-	});
+	}, true);
 
 	_css(OVERLAY_CLASS + " .jwback", {
 		position: JW_CSS_ABSOLUTE,
