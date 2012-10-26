@@ -16,7 +16,7 @@ jwplayer = function(container) {
 	}
 };
 
-jwplayer.version = '6.0.2784';
+jwplayer.version = '6.0.2786';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -136,16 +136,20 @@ jwplayer.source = document.createElement("source");/**
 		var agent = NAVIGATOR.userAgent.toLowerCase();
 		return (agent.match(regex) !== null);
 	};
-
-	utils.isIE = function() {
-		return _userAgentMatch(/msie/i);
-	};
 	
-	/** Matches iOS and Android devices **/	
-	utils.isMobile = function() {
-		return utils.isIOS() || utils.isAndroid();
+	function _browserCheck(regex) {
+		return function() {
+			return _userAgentMatch(regex);
+		}
 	}
 
+
+	utils.isIE = _browserCheck(/msie/i);
+	utils.isFF = _browserCheck(/firefox/i);
+	utils.isIOS = _browserCheck(/iP(hone|ad|od)/i);
+	utils.isIPod = _browserCheck(/iP(hone|od)/i);
+	utils.isIPad = _browserCheck(/iPad/i);
+	
 	/** Matches Android devices **/	
 	utils.isAndroid = function(version) {
 		if (version) {
@@ -155,20 +159,11 @@ jwplayer.source = document.createElement("source");/**
 		}
 	}
 
-	/**
-	 * Detects whether the current browser is mobile Safari.
-	 */
-	utils.isIOS = function() {
-		return _userAgentMatch(/iP(hone|ad|od)/i);
-	};
-	
-	utils.isIPod = function() {
-		return _userAgentMatch(/iP(hone|od)/i);
-	};
+	/** Matches iOS and Android devices **/	
+	utils.isMobile = function() {
+		return utils.isIOS() || utils.isAndroid();
+	}
 
-	utils.isIPad = function() {
-		return _userAgentMatch(/iPad/i);
-	};
 
 	/** Save a setting **/
 	utils.saveCookie = function(name, value) {

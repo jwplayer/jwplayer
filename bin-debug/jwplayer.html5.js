@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.0.2784';
+	jwplayer.html5.version = '6.0.2786';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -3586,21 +3586,22 @@
 			_capRightSkin = _getSkinElement('capRight');
 			_hasCaps = (_capLeftSkin.width * _capRightSkin.width > 0);
 			
-			_css(_internalSelector(), {
+			var style = {
 				'background-image': "url(" + _capLeftSkin.src + "), url(" + _bgSkin.src + "), url(" + _capRightSkin.src + ")",
 				'background-position': "left,center,right",
 				'background-repeat': 'no-repeat',
 				padding: "0 " + _capRightSkin.width + "px 0 " + _capLeftSkin.width + "px",
 				height: _bgSkin.height,
 				'margin-top': _bgSkin.height / -2
-			});
+			};
 			
-			if (_bgSkin.overSrc) {	
-				_css("#"+_api.id+" .jwdisplay:hover " + _internalSelector(), {
-					'background-image': "url(" + _capLeftSkin.overSrc + "), url(" + _bgSkin.overSrc + "), url(" + _capRightSkin.overSrc + ")",
-				});
+			_css(_internalSelector(), style);
+			
+			if (_bgSkin.overSrc) {
+				style['background-image'] = "url(" + _capLeftSkin.overSrc + "), url(" + _bgSkin.overSrc + "), url(" + _capRightSkin.overSrc + ")"; 
 			}
 
+			_css("#"+_api.id+" .jwdisplay:hover " + _internalSelector(), style);
 		}
 		
 		function _styleIcon(name, selector, style, overstyle) {
@@ -3644,6 +3645,7 @@
 
 			setTimeout(function() {
 				 contentWidth = utils.bounds(_container).width - _capRightSkin.width - _capLeftSkin.width; //Math.ceil(_iconElement.width + (showText ? utils.bounds(_text).width: 0));
+				 if (utils.isFF() || utils.isIE()) contentWidth ++;
 				 _css(_internalSelector(), {
 					//width : contentWidth,
 					//'background-position': _capLeftSkin.width + "px 0",
