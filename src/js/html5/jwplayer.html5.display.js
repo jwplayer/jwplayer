@@ -276,7 +276,8 @@
 		width: JW_CSS_100PCT,
 		height: JW_CSS_100PCT,
 		background: 'no-repeat center',
-		overflow: JW_CSS_HIDDEN
+		overflow: JW_CSS_HIDDEN,
+		opacity: 0
 	});
 
 	_css(D_CLASS +', '+D_CLASS + ' *', {

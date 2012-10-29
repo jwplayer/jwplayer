@@ -55,6 +55,7 @@
 			_display,
 			_dock,
 			_logo,
+			_logoConfig = utils.extend({}, _model.componentConfig("logo")),
 			_captions,
 			_playlist,
 			_audioMode,
@@ -198,17 +199,19 @@
 				cbSettings = _model.componentConfig('controlbar'),
 				displaySettings = _model.componentConfig('display');
 
+			_checkAudioMode(height);
+
 			_captions = new html5.captions(_api, _model.captions);
 			_captions.addEventListener(events.JWPLAYER_CAPTIONS_LIST, forward);
 			_captions.addEventListener(events.JWPLAYER_CAPTIONS_CHANGED, forward);
 			_controlsLayer.appendChild(_captions.element());
 
-		
 			_display = new html5.display(_api, displaySettings);
 			_display.addEventListener(events.JWPLAYER_DISPLAY_CLICK, forward);
+			if (_audioMode) _display.hidePreview(TRUE);
 			_controlsLayer.appendChild(_display.element());
 			
-			_logo = new html5.logo(_api, _model.componentConfig('logo'));
+			_logo = new html5.logo(_api, _logoConfig);
 			_controlsLayer.appendChild(_logo.element());
 			
 			_dock = new html5.dock(_api, _model.componentConfig('dock'));
@@ -354,7 +357,7 @@
 		}
 		
 		function _checkAudioMode(height) {
-			_audioMode = (!!_controlbar && height <= 40 && height.toString().indexOf("%") < 0);
+			_audioMode = ((!_isMobile || _forcedControls) && height <= 40 && height.toString().indexOf("%") < 0);
 			if (_controlbar) {
 				if (_audioMode) {
 					_controlbar.audioMode(TRUE);
@@ -469,7 +472,7 @@
 			if (_logo && !_audioMode) _logo.show();
 		}
 		function _hideLogo() {
-			if (_logo && (!_forcedControls || _audioMode)) _logo.hide();
+			if (_logo && (!_forcedControls || _audioMode)) _logo.hide(_audioMode);
 		}
 
 		function _showDisplay() {
@@ -583,7 +586,7 @@
 					}
 				} else {
 					_showVideo(FALSE);
-					_display.hidePreview(FALSE);
+					_display.hidePreview(_audioMode);
 				}
 				_startFade();
 				break;
@@ -596,6 +599,7 @@
 				if (!_audioMode) {
 					_display.hidePreview(FALSE);
 					_showDisplay();
+					if (!_logoConfig.hide) _showLogo();	
 				}
 //				if (_isIPad) _videoTag.controls = FALSE;
 				break;

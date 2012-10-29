@@ -68,10 +68,12 @@
 			}
 			
 			var positions = (/(\w+)-(\w+)/).exec(_settings.position),
-				style = {
+				style = {},
+/*
 					opacity: _settings.hide ? UNDEFINED : 1,
 					visibility: _settings.hide ? UNDEFINED : JW_CSS_VISIBLE
 				},
+*/
 				margin = _settings.margin;
 
 			if (positions.length == 3) {
@@ -156,8 +158,8 @@
 			return "#" + _id + " " + (selector ? selector : "");
 		}
 		
-		this.hide = function() {
-			if (_settings.hide) {
+		this.hide = function(forced) {
+			if (_settings.hide || forced) {
 				_showing = false;
 				_logo.style.opacity = 0;
 			}

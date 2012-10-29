@@ -3503,7 +3503,8 @@
 		width: JW_CSS_100PCT,
 		height: JW_CSS_100PCT,
 		background: 'no-repeat center',
-		overflow: JW_CSS_HIDDEN
+		overflow: JW_CSS_HIDDEN,
+		opacity: 0
 	});
 
 	_css(D_CLASS +', '+D_CLASS + ' *', {
@@ -3512,7 +3513,8 @@
     	'-o-transition': JW_CSS_SMOOTH_EASE
 	});
 
-})(jwplayer.html5);/**
+})(jwplayer.html5);
+/**
  * JW Player display component
  * 
  * @author pablo
@@ -4490,10 +4492,12 @@
 			}
 			
 			var positions = (/(\w+)-(\w+)/).exec(_settings.position),
-				style = {
+				style = {},
+/*
 					opacity: _settings.hide ? UNDEFINED : 1,
 					visibility: _settings.hide ? UNDEFINED : JW_CSS_VISIBLE
 				},
+*/
 				margin = _settings.margin;
 
 			if (positions.length == 3) {
@@ -4578,8 +4582,8 @@
 			return "#" + _id + " " + (selector ? selector : "");
 		}
 		
-		this.hide = function() {
-			if (_settings.hide) {
+		this.hide = function(forced) {
+			if (_settings.hide || forced) {
 				_showing = false;
 				_logo.style.opacity = 0;
 			}
@@ -7227,6 +7231,7 @@
 			_display,
 			_dock,
 			_logo,
+			_logoConfig = utils.extend({}, _model.componentConfig("logo")),
 			_captions,
 			_playlist,
 			_audioMode,
@@ -7370,17 +7375,19 @@
 				cbSettings = _model.componentConfig('controlbar'),
 				displaySettings = _model.componentConfig('display');
 
+			_checkAudioMode(height);
+
 			_captions = new html5.captions(_api, _model.captions);
 			_captions.addEventListener(events.JWPLAYER_CAPTIONS_LIST, forward);
 			_captions.addEventListener(events.JWPLAYER_CAPTIONS_CHANGED, forward);
 			_controlsLayer.appendChild(_captions.element());
 
-		
 			_display = new html5.display(_api, displaySettings);
 			_display.addEventListener(events.JWPLAYER_DISPLAY_CLICK, forward);
+			if (_audioMode) _display.hidePreview(TRUE);
 			_controlsLayer.appendChild(_display.element());
 			
-			_logo = new html5.logo(_api, _model.componentConfig('logo'));
+			_logo = new html5.logo(_api, _logoConfig);
 			_controlsLayer.appendChild(_logo.element());
 			
 			_dock = new html5.dock(_api, _model.componentConfig('dock'));
@@ -7526,7 +7533,7 @@
 		}
 		
 		function _checkAudioMode(height) {
-			_audioMode = (!!_controlbar && height <= 40 && height.toString().indexOf("%") < 0);
+			_audioMode = ((!_isMobile || _forcedControls) && height <= 40 && height.toString().indexOf("%") < 0);
 			if (_controlbar) {
 				if (_audioMode) {
 					_controlbar.audioMode(TRUE);
@@ -7641,7 +7648,7 @@
 			if (_logo && !_audioMode) _logo.show();
 		}
 		function _hideLogo() {
-			if (_logo && (!_forcedControls || _audioMode)) _logo.hide();
+			if (_logo && (!_forcedControls || _audioMode)) _logo.hide(_audioMode);
 		}
 
 		function _showDisplay() {
@@ -7755,7 +7762,7 @@
 					}
 				} else {
 					_showVideo(FALSE);
-					_display.hidePreview(FALSE);
+					_display.hidePreview(_audioMode);
 				}
 				_startFade();
 				break;
@@ -7768,6 +7775,7 @@
 				if (!_audioMode) {
 					_display.hidePreview(FALSE);
 					_showDisplay();
+					if (!_logoConfig.hide) _showLogo();	
 				}
 //				if (_isIPad) _videoTag.controls = FALSE;
 				break;
