@@ -568,7 +568,7 @@ package com.longtailvideo.jwplayer.controller {
 
 			if (!_model.playlist.contains(item)) {
 				_model.playlist.load(item);
-				//return false;
+				return false;
 			}
 			
 			try {
