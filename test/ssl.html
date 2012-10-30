@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SSL Player</title>
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <script type="text/javascript" src="assets/primaryCookie.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+</head>
+<body>
+
+<h1>SSL Player</h1>
+<div class="core">List of test devices</div>
+<p>This test ensures that the player can operate on an SSL page.  This page must be run on a server which supports SSL.</p>
+
+<h2>Basic Embed</h2>
+
+<div id="container"></div>
+
+<script type="text/javascript">
+    jwplayer("container").setup({
+        file: 'https://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4',
+        image: 'https://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+        primary: primaryCookie
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Initial page load</td>
+    <td>480x200 poster image should be visible, with play button in the middle.  JW Player logo should appear in the top right corner</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Check browser console</td>
+    <td>No insecure content warnings should be displayed</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Check network inspector</td>
+    <td>The player logo should be loaded from https://ssl.p.longtailvideo.com</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Check logo certificate</td>
+    <td>Copy the loaded logo's URL and view that link in the browser.  Certificate should be validated by the browser.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Play video</td>
+    <td>Video should play.  There may be a browser warning.</td>
+    <td class="check"></td>
+</tr></table>
+
+
+</body>
+</html>
