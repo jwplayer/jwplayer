@@ -41,7 +41,7 @@ package com.longtailvideo.jwplayer.player
 	
 	public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPlayer, IPlayer {
 
-		public static const UNSUPPORTED_ERROR = "Unsupported IPlayer method in InstreamPlayer";
+		public static const UNSUPPORTED_ERROR:String = "Unsupported IPlayer method in InstreamPlayer";
 		// Player's MVC
 		protected var _model:Model;
 		protected var _view:View;
