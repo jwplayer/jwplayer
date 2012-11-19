@@ -41,6 +41,7 @@ package com.longtailvideo.jwplayer.player
 	
 	public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPlayer, IPlayer {
 
+		public static const UNSUPPORTED_ERROR = "Unsupported IPlayer method in InstreamPlayer";
 		// Player's MVC
 		protected var _model:Model;
 		protected var _view:View;
@@ -61,6 +62,8 @@ package com.longtailvideo.jwplayer.player
 		protected var _mediaDisplayed:Boolean = false;
 		protected var _playCalled:Boolean = false;
 		protected var _viewSetup:Boolean = false;
+		
+		
 		
 		public function InstreamPlayer(target:IPlugin, item:PlaylistItem, options:IInstreamOptions, model:Model, view:View, controller:Controller) {
 			_plugin = target;
@@ -444,109 +447,117 @@ package com.longtailvideo.jwplayer.player
 		}
 		
 		public function lock(target:IPlugin, callback:Function):void {
-			throw new Error("Unsupported IPlayer method in InstreamPlayer");
+			throw new Error(UNSUPPORTED_ERROR);
 		}
 		
 		public function unlock(target:IPlugin):Boolean {
-			throw new Error("Unsupported IPlayer method in InstreamPlayer");
+			throw new Error(UNSUPPORTED_ERROR);
 			return false;
 		}
 		
 		public function volume(volume:Number):Boolean {
-			throw new Error("Unsupported IPlayer method in InstreamPlayer");
+			throw new Error(UNSUPPORTED_ERROR);
 			return false;
 		}
 		
 		public function mute(state:Boolean):void {
-			throw new Error("Unsupported IPlayer method in InstreamPlayer");
+			throw new Error(UNSUPPORTED_ERROR);
 		}
 		
 		public function stop():Boolean {
-			throw new Error("Unsupported IPlayer method in InstreamPlayer");
+			throw new Error(UNSUPPORTED_ERROR);
 			return false;
 		}
 		
 		public function load(item:*):Boolean {
-			throw new Error("Unsupported IPlayer method in InstreamPlayer");
+			throw new Error(UNSUPPORTED_ERROR);
 			return false;
 		}
 		
 		public function playlistItem(index:Number):Boolean {
-			throw new Error("Unsupported IPlayer method in InstreamPlayer");
+			throw new Error(UNSUPPORTED_ERROR);
 			return false;
 		}
 		
 		public function playlistNext():Boolean {
-			throw new Error("Unsupported IPlayer method in InstreamPlayer");
+			throw new Error(UNSUPPORTED_ERROR);
 			return false;
 		}
 		
 		public function playlistPrev():Boolean {
-			throw new Error("Unsupported IPlayer method in InstreamPlayer");
+			throw new Error(UNSUPPORTED_ERROR);
 			return false;
 		}
 		
 		public function redraw():Boolean {
-			throw new Error("Unsupported IPlayer method in InstreamPlayer");
+			throw new Error(UNSUPPORTED_ERROR);
 			return false;
 		}
 		
 		public function fullscreen(on:Boolean):void {
-			throw new Error("Unsupported IPlayer method in InstreamPlayer");
+			throw new Error(UNSUPPORTED_ERROR);
 		}
 		
 		public function get controls():IPlayerComponents {
-			throw new Error("Unsupported IPlayer method in InstreamPlayer");
+			throw new Error(UNSUPPORTED_ERROR);
 			return null;
 		}
 		
 		public function overrideComponent(plugin:IPlayerComponent):void {
-			throw new Error("Unsupported IPlayer method in InstreamPlayer");
+			throw new Error(UNSUPPORTED_ERROR);
 		}
 		
 		public function loadInstream(target:IPlugin, item:PlaylistItem, options:IInstreamOptions=null):IInstreamPlayer {
-			throw new Error("Unsupported IPlayer method in InstreamPlayer");
+			throw new Error(UNSUPPORTED_ERROR);
 			return null;
 		}
 		
 		public function getQualityLevels():Array {
-			throw new Error("Unsupported IPlayer method in InstreamPlayer");
+			throw new Error(UNSUPPORTED_ERROR);
 			return null;
 		}
 		
 		public function getCurrentQuality():Number {
-			throw new Error("Unsupported IPlayer method in InstreamPlayer");
+			throw new Error(UNSUPPORTED_ERROR);
 			return null;
 		}
 		
 		public function setCurrentQuality(index:Number):void {
-			throw new Error("Unsupported IPlayer method in InstreamPlayer");
+			throw new Error(UNSUPPORTED_ERROR);
 		}
 		
 		public function getCaptionsList():Array {
-			throw new Error("Unsupported IPlayer method in InstreamPlayer");
+			throw new Error(UNSUPPORTED_ERROR);
 			return null;
 		}
 		
 		public function getCurrentCaptions():Number {
-			throw new Error("Unsupported IPlayer method in InstreamPlayer");
+			throw new Error(UNSUPPORTED_ERROR);
 			return null;
 		}
 		
 		public function setCurrentCaptions(index:Number):void {
-			throw new Error("Unsupported IPlayer method in InstreamPlayer");
+			throw new Error(UNSUPPORTED_ERROR);
 		}
 
 		public function getControls():Boolean {
-			throw new Error("Unsupported IPlayer method in InstreamPlayer");
+			throw new Error(UNSUPPORTED_ERROR);
 		}
 		
 		public function setControls(state:Boolean):void {
-			throw new Error("Unsupported IPlayer method in InstreamPlayer");
+			throw new Error(UNSUPPORTED_ERROR);
 		}
 		
 		public function getSafeRegion():Rectangle {
-			throw new Error("Unsupported IPlayer method in InstreamPlayer");
+			throw new Error(UNSUPPORTED_ERROR);
+		}
+		
+		public function get edition():String {
+			throw new Error(UNSUPPORTED_ERROR);
+		}
+		
+		public function get token():String {
+			throw new Error(UNSUPPORTED_ERROR);
 		}
 		
 	}

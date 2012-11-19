@@ -383,5 +383,14 @@
 			return super.dispatchEvent(event);
 		}
 		
+		public function get edition():String {
+			return "";
+		}
+		
+		public function get token():String {
+			return "";
+		}
+		
+		
 	}
 }

@@ -85,6 +85,8 @@ package com.longtailvideo.jwplayer.player {
 		function getControls():Boolean;
 		function getSafeRegion():Rectangle;
 		function setControls(state:Boolean):void;
+		function get token():String;
+		function get edition():String;
 
 	}
 }
