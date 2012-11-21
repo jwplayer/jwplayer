@@ -205,7 +205,8 @@
 			'font-size': "100%",
 			font: 'inherit',
 			'vertical-align': 'baseline',
-			'background-color': 'transparent'
+			'background-color': 'transparent',
+			'text-align': 'left'
 		});
 		
 		_css(JW_CLASS + "ul", { 'list-style': "none" });

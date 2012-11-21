@@ -326,6 +326,7 @@ package com.longtailvideo.jwplayer.view {
 
 		protected function resizeHandler(event:Event):void {
 			_fullscreen = (RootReference.stage.displayState == StageDisplayState.FULL_SCREEN);
+			_preventFade = false;
 			if (_model.fullscreen != _fullscreen) {
 				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_FULLSCREEN, _fullscreen));
 			}
