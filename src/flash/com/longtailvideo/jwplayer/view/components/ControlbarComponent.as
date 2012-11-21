@@ -366,7 +366,7 @@ package com.longtailvideo.jwplayer.view.components {
 			var newDuration:String = Strings.digits(duration);
 			var durationField:TextField = getTextField('duration');
 			if (durationField) {
-				if (newDuration.length != elapsedText.text.length) redrawNeeded = true;
+				if (newDuration.length != durationField.text.length) redrawNeeded = true;
 				durationField.text = newDuration;
 			} 
 			
@@ -654,10 +654,11 @@ package com.longtailvideo.jwplayer.view.components {
 				textBackground.name = 'back';
 				textBackground.x = textBackground.y = 0;
 				textContainer.addChild(textBackground);
+				textContainer.addChild(textField);
+				addChild(textContainer);
+				_buttons[name] = textContainer;
 			}
-			textContainer.addChild(textField);
-			addChild(textContainer);
-			_buttons[name] = textContainer;
+			
 		}
 
 
@@ -920,6 +921,9 @@ package com.longtailvideo.jwplayer.view.components {
 		private function alignTextFields():void {
 			for each(var fieldName:String in ['elapsed','duration']) {
 				var textContainer:Sprite = getButton(fieldName) as Sprite;
+				if (!textContainer) {
+					continue;
+				}
 				textContainer.tabEnabled = false;
 				textContainer.buttonMode = false;
 				var textField:TextField = getTextField(fieldName);

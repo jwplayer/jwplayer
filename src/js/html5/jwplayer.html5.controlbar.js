@@ -579,22 +579,20 @@
 		}
 		
 		function _buildText(name, style) {
-			var element = _createSpan();
-			element.id = _createElementId(name); 
-			element.className = "jwtext jw" + name;
-			
-			var css = {};
-			
+			var css = {};			
 			var skinElement = _getSkinElement(name+"Background");
 			if (skinElement.src) {
+				var element = _createSpan();
+				element.id = _createElementId(name); 
+				element.className = "jwtext jw" + name;
 				css.background = "url(" + skinElement.src + ") no-repeat center";
 				css['background-size'] = "100% " + _getSkinElement("background").height + "px";
+				_css(_internalSelector('.jw'+name), css);
+				element.innerHTML = "00:00";
+				_elements[name] = element;
+				return element;
 			}
-
-			_css(_internalSelector('.jw'+name), css);
-			element.innerHTML = "00:00";
-			_elements[name] = element;
-			return element;
+			return null;
 		}
 		
 		function _buildDivider(divider) {
