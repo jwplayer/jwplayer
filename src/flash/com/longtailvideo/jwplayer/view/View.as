@@ -504,12 +504,6 @@ package com.longtailvideo.jwplayer.view {
 			return _components;
 		}
 
-		/** This feature, while not yet implemented, will allow the API to replace the built-in components with any class that implements the control interfaces. **/
-		public function overrideComponent(newComponent:IPlayerComponent):void {
-			dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, "overrideComponent not implemented"));
-		}
-
-
 		public function addPlugin(id:String, plugin:IPlugin):void {
 			if (!(plugin is IPlugin6)) {
 				throw new Error("Incompatible plugin version");
@@ -781,12 +775,13 @@ package com.longtailvideo.jwplayer.view {
 			var dockShowing:Boolean = (dock.numButtons > 0);
 			var cb:ControlbarComponent = _components.controlbar as ControlbarComponent;
 			var logoTop:Boolean = (logo.position.indexOf("top") == 0);
+			var logoShowing:Boolean = (logo.height > 0);
 			
 			if (_model.config.controls) {
 				bounds.x = 0;
-				bounds.y = Math.round(Math.max(dockShowing ? dock.getBounds(_componentsLayer).bottom : 0, logoTop ? logo.getBounds(_componentsLayer).bottom : 0));
+				bounds.y = Math.round(Math.max(dockShowing ? dock.getBounds(_componentsLayer).bottom : 0, (logoTop && logoShowing) ? logo.getBounds(_componentsLayer).bottom : 0));
 				bounds.width = Math.round(_components.display.width);
-				bounds.height = Math.round((logoTop ? cb.getBounds(_componentsLayer).top : logo.getBounds(_componentsLayer).top) - bounds.y);
+				bounds.height = Math.round((logoTop ? cb.getBounds(_componentsLayer).top : (logoShowing ? logo.getBounds(_componentsLayer).top : 0) ) - bounds.y);
 			}
 			
 			return bounds;

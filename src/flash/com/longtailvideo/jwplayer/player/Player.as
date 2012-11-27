@@ -270,13 +270,6 @@
 			return view.components;
 		}
 
-		/**
-		 * @inheritDoc
-		 */
-		public function overrideComponent(plugin:IPlayerComponent):void {
-			view.overrideComponent(plugin);
-		}
-
 		/** 
 		 * @private
 		 * 
