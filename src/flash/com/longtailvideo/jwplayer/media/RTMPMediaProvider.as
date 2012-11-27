@@ -133,6 +133,8 @@
 					_application = _item.file.substr(0, slash+1);
 					id = _item.file.substr(slash+1);
 				}
+				// TODO: What if RTMP file has more than one quality level.
+				// Check for item.levels before disregarding all others
 				_levels = [{label:'0',id:loadID(id)}];
 				loadWrap();
 			} else if(_item.streamer) {

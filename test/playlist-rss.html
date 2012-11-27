@@ -18,7 +18,7 @@
 <div id="basic"></div>
 <script type="text/javascript">
     jwplayer("basic").setup({
-        playlist: 'assets/jw6-qualities.rss',
+        playlist: 'assets/basic.rss',
         primary: primaryCookie
     });
 </script>
@@ -68,6 +68,36 @@
     });
     function mediaID() {
         var first = jwplayer('mixed').getPlaylist()[0];
+        alert('The first media ID is: '+first.mediaid);
+    }
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Initial page load</td>
+    <td>Bunny and Elephants should be visible on MP4/HTML5 browsers and Flash.<br>
+        Sintel and Elephants should be visible on WebM/HTML5 browsers.<br>
+        Bunny, Sintel and Elephants should be visible on MP4+WebM/HTML5 browsers.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td><a href="javascript:mediaID()">Get mediaid</a></td>
+    <td>The 8 character mediaid of the first video should pop up.</td>
+    <td class="check"></td>
+</tr></table>
+
+
+<h2>Unsorted Quality Levels</h2>
+<div id="unsorted"></div>
+<script type="text/javascript">
+    jwplayer("unsorted").setup({
+        playlist: 'assets/unsorted.rss',
+        primary: primaryCookie
+    });
+    function mediaID() {
+        var first = jwplayer('unsorted').getPlaylist()[0];
         alert('The first media ID is: '+first.mediaid);
     }
 </script>

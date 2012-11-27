@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Unsorted Quality Levels</title>
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <script type="text/javascript" src="assets/primaryCookie.js"></script>
+    <link type="text/css" rel="stylesheet" href="assets/style.css"  media="all" />
+</head>
+<body>
+
+<h1>Unsorted Quality Levels</h1>
+<div class="core">List of test devices</div>
+<p>This test consists of a basic setup with an RSS feed with multiple levels (unsorted)</p>
+
+<h2>Video Provider</h2>
+<div id="unsorted"></div>
+<script type="text/javascript">
+    jwplayer("unsorted").setup({
+        playlist: 'assets/unsorted.rss',
+        primary: primaryCookie
+    });
+</script>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="both"></td>
+    <td>Initial page load</td>
+    <td>Sintel poster should be visible on HTML5/MP4 browsers. Won't work on FF<br>
+    <td class="check"></td>
+</tr><tr>
+    <td class="both"></td>
+    <td>Click Play. Hover over HD button</td>
+    <td>6 quality levels should show. The order show be as follows: <br/>
+        546p/818p/136p/272p/306p/204p <br>
+        Same order and labels in both flash and html5</td>
+    <td class="check"></td>
+</tr></table>
+
+</body>
+</html>

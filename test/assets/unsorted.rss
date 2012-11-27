@@ -1,0 +1,17 @@
+<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/">
+<channel>
+  <title>Unsorted RSS Feed</title>
+  <item>
+    <title>Sintel Trailer</title>
+    <description>Sintel is a fantasy computer generated short movie. It's the third release from the Blender Open Movie Project.</description>
+    <media:content url="http://content.bitsontherun.com/videos/3XnJSIm4-DZ7jSYgM.mp4" width="1280" height="546"/>
+    <media:content url="http://content.bitsontherun.com/videos/3XnJSIm4-el5vTWpr.mp4" width="1920" height="818"/>
+    <media:content url="http://content.bitsontherun.com/videos/3XnJSIm4-injeKYZS.mp4" width="320" height="136"/>
+    <media:content url="http://content.bitsontherun.com/videos/3XnJSIm4-kNspJqnJ.mp4" width="640" height="272"/>
+    <media:content url="http://content.bitsontherun.com/videos/3XnJSIm4-bPwArWA4.mp4" width="720" height="306"/>
+    <media:content url="http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4" width="480" height="204"/>
+    <media:thumbnail url="http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg" />
+    <guid>3XnJSIm4</guid>
+  </item>
+</channel>
+</rss>
