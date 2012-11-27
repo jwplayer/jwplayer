@@ -54,10 +54,7 @@ package com.longtailvideo.jwplayer.parsers {
 							levels.push(level);
 						}
 					}
-					// Sort levels by bitrate desc
-					if(levels.length && bitrates) {
-						levels.sortOn('bitrate',Array.NUMERIC | Array.DESCENDING);
-					}
+					
 				// Only a single file found
 				} else if(Strings.xmlAttribute(parent,'src')) {
 					levels.push({id:Strings.xmlAttribute(parent,'src')});

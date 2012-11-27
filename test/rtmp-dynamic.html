@@ -125,6 +125,66 @@
     <td class="check"></td>
 </tr></table>
 
+<h2>Unsorted Levels</h2>
+
+<div id="container3"></div>
+<pre id="log3"></pre>
+
+<script type="text/javascript">
+    jwplayer("container3").setup({
+        file: 'assets/unsorted.smil',
+        image: 'http://d3el35u4qe4frz.cloudfront.net/q1fx20VZ-480.jpg',
+        width: 600,
+        height: 200
+    });
+    jwplayer("container3").onMeta(function(event){
+        if(event.metadata.bandwidth) {
+            var html = 'bandwidth: '+event.metadata.bandwidth;
+            html += ', screenwidth: '+ event.metadata.screenwidth;
+            html += ', qualitylevel: '+event.metadata.qualitylevel;
+            html += ', transitioning: '+event.metadata.transitioning;
+            html += ', bufferfill: '+event.metadata.bufferfill;
+            document.getElementById('log3').innerHTML = html;
+        }
+    });
+</script>
+
+<p>
+    Resize the player to 
+    <a href="javascript:jwplayer('container3').resize(300,200)">300</a>, 
+    <a href="javascript:jwplayer('container3').resize(600,200)">600</a> or
+    <a href="javascript:jwplayer('container3').resize(900,200)">900</a> wide.
+</p>
+
+<table><tr>
+    <th></th><th>Action</th><th>Expected result(s)</th><th>Works?</th>
+</tr><tr>
+    <td class="desktop">
+    <td>Start video.</td>
+    <td>Log should confirm quality level 3 is playing.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Hover over HD button</td>
+    <td>Levels should not be in a sorted order</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Resize to 900px wide</td>
+    <td>Stream should transition to quality level 2.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Resize to 300px wide wide</td>
+    <td>Stream should transition to quality level 0.</td>
+    <td class="check"></td>
+</tr><tr>
+    <td class="desktop">
+    <td>Go fullscreen</td>
+    <td>Stream should transition to quality level 1 or 2 (depending upon monitor).</td>
+    <td class="check"></td>
+</tr></table>
+
 
 </body>
 </html>

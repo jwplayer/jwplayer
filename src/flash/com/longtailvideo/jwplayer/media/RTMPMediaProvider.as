@@ -548,7 +548,7 @@
 					swapLevel(autoLevel());
 				// Switch to/within manual
 				} else if(quality > 0 && (_auto || quality != _level+1)) {
-					swapLevel(quality-1);
+					swapLevel(quality-1, true);
 					_auto = false;
 					level = quality;
 				}
@@ -590,31 +590,41 @@
 
 		/** Determine which level to use for autoswitching. **/
 		private function autoLevel():Number {
+			var sortedLevels:Array = [];
+			if (_levels[0].bitrate) {
+				sortedLevels = _levels.sort(function(obj1:Object, obj2:Object):Number { return (obj2.bitrate > obj1.bitrate ? 1 : (obj1.bitrate > obj2.bitrate ? -1 : 0) ); }, Array.RETURNINDEXEDARRAY);	
+			}
+			else if (_levels[0].width) {
+				sortedLevels = _levels.sort(function(obj1:Object, obj2:Object):Number { return (obj2.width > obj1.width ? 1 : (obj1.width > obj2.width ? -1 : 0) ); }, Array.RETURNINDEXEDARRAY);
+			}
+			else {
+				return 0;
+			}
+			
 			// Grab the highest one first.
 			var level:Number = 0;
 			// Next restrict by screenwidth
 			if(_levels[0].width) {
-				level = _levels.length - 1;
-				for(var j:Number=0; j<_levels.length; j++) {
-					if(_levels[j].width < _config.width * 1.5) {
-						level = j;
+				level = sortedLevels[sortedLevels.length - 1];
+				for(var j:Number=0; j<sortedLevels.length; j++) {
+					if(_levels[sortedLevels[j]].width < _config.width * 1.5) {
+						level = sortedLevels[j];
 						break;
 					}
 				}
 			}
 			// Next further restrict by bandwidth
 			if(_bandwidth && _levels[0].bitrate) {
-				level = _levels.length - 1;
-				for(var i:Number = j; i < _levels.length; i++) {
-					if(_levels[i].bitrate < _bandwidth / 1.5) {
-						level = i;
+				level = sortedLevels[sortedLevels.length - 1];
+				for(var i:Number = j; i < sortedLevels.length; i++) {
+					if(_levels[sortedLevels[i]].bitrate < _bandwidth / 1.5) {
+						level = sortedLevels[i];
 						break;
 					}
 				}
 			}
 			return level;
 		}
-
-
+		
     }
 }
