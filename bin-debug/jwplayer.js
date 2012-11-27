@@ -400,7 +400,7 @@ jwplayer.source = document.createElement("source");/**
 		webm = "webm",
 		ogg = "ogg",
 		aac = "aac",
-		mp3 = "mp3",
+		mp3 = "mpeg",
 		vorbis = "vorbis",
 		
 		mimeMap = {
