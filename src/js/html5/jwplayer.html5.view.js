@@ -422,8 +422,10 @@
 		function _fakeFullscreen(state) {
 			if (state) {
 				_playerElement.className += " jwfullscreen";
+				(DOCUMENT.getElementsByTagName("body")[0]).style["overflow-y"] = "hidden";
 			} else {
 				_playerElement.className = _playerElement.className.replace(/\s+jwfullscreen/, "");
+				(DOCUMENT.getElementsByTagName("body")[0]).style["overflow-y"] = "";
 			}
 		}
 
