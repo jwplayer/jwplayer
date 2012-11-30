@@ -1165,16 +1165,21 @@ jwplayer.source = document.createElement("source");/**
 					flashPlugins.length++;
 				}
 
-				if (jsPlugin && config.plugins && config.plugins[pluginURL]) {
-					var div = document.createElement("div");
-					div.id = api.id + "_" + pluginName;
-					div.style.position = "absolute";
-					div.style.top = 0;
-					div.style.zIndex = jsplugins.length + 10;
-					jsplugins.plugins[pluginName] = pluginObj.getNewInstance(api, utils.extend({}, config.plugins[pluginURL]), div);
-					jsplugins.length++;
-					api.onReady(resizer(jsplugins.plugins[pluginName], div, true));
-					api.onResize(resizer(jsplugins.plugins[pluginName], div));
+				try {
+					if (jsPlugin && config.plugins && config.plugins[pluginURL]) {
+						var div = document.createElement("div");
+						div.id = api.id + "_" + pluginName;
+						div.style.position = "absolute";
+						div.style.top = 0;
+						div.style.zIndex = jsplugins.length + 10;
+						jsplugins.plugins[pluginName] = pluginObj.getNewInstance(api, utils.extend({}, config.plugins[pluginURL]), div);
+						jsplugins.length++;
+						api.onReady(resizer(jsplugins.plugins[pluginName], div, true));
+						api.onResize(resizer(jsplugins.plugins[pluginName], div));
+					}
+				}
+				catch (err) {
+					console.log ("ERROR: Failed to load " + pluginName + ".");
 				}
 			}
 			
