@@ -1353,12 +1353,16 @@ jwplayer.source = document.createElement("source");/**
 	var embed = jwplayer.embed = function(playerApi) {
 //		var mediaConfig = utils.mediaparser.parseMedia(playerApi.container);
 		var _config = new embed.config(playerApi.config),
-			_container, _oldContainer,
+			_container, _oldContainer, _fallbackDiv,
 			_width = _config.width,
 			_height = _config.height,
 			_errorText = "Error loading player: ",
 			_pluginloader = jwplayer.plugins.loadPlugins(playerApi.id, _config.plugins);
 
+		if (_config.fallbackDiv) {
+			_fallbackDiv = _config.fallbackDiv;
+			delete _config.fallbackDiv;
+		}
 		_config.id = playerApi.id;
 		_oldContainer = DOCUMENT.getElementById(playerApi.id);
 		_container = DOCUMENT.createElement("div");
@@ -1411,7 +1415,7 @@ jwplayer.source = document.createElement("source");/**
 		};
 		
 		function _replaceContainer() {
-			_container.parentNode.replaceChild(_oldContainer, _container);
+			_container.parentNode.replaceChild(_fallbackDiv, _container);
 		}
 		
 		function _embedError(evt) {
@@ -2551,6 +2555,10 @@ jwplayer.source = document.createElement("source");/**
 		_this.setup = function(options) {
 			if (jwplayer.embed) {
 				// Destroy original API on setup() to remove existing listeners
+				var fallbackDiv = DOCUMENT.getElementById(_this.id);
+				if (fallbackDiv) {
+					options["fallbackDiv"] = fallbackDiv;
+				}
 				_remove(_this);
 				var newApi = jwplayer(_this.id);
 				newApi.config = options;
