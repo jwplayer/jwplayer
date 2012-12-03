@@ -35,7 +35,6 @@
 		
 		function _playerReady(evt) {
 			if (!_ready) {
-				_ready = true;
 				
 				_view.completeSetup();
 				_eventDispatcher.sendEvent(evt.type, evt);
@@ -55,6 +54,8 @@
 				if (_model.autostart && !utils.isMobile()) {
 					_play();
 				}
+				
+				_ready = true;
 				
 				while (_queuedCalls.length > 0) {
 					var queuedCall = _queuedCalls.shift();

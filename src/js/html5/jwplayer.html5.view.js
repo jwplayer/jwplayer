@@ -239,7 +239,7 @@
 			}
 				
 			setTimeout(function() {
-				_resize(width, height);
+				_resize(_model.width, _model.height);
 			}, 0);
 		}
 

@@ -2407,8 +2407,8 @@ jwplayer.source = document.createElement("source");/**
 			return _this;
 		};
 		_this.resize = function(width, height) {
-			if (_this.renderingMode == "html5") {
-				_player.jwResize(width, height);
+			if (_this.renderingMode != "flash") {
+				_callInternal("jwResize", width, height);
 			} else {
 				var wrapper = DOCUMENT.getElementById(_this.id + "_wrapper");
 				if (wrapper) {
