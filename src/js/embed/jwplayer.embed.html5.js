@@ -38,12 +38,10 @@
 				_loader.setupPlugins(_api, _options, _resizePlugin);
 				_container.innerHTML = "";
 				var playerOptions = jwplayer.utils.extend({}, _options);
-//				var toDelete = ["plugins", "modes", "events"];
-//				
-//				for (var i = 0; i < toDelete.length; i++){
-//					delete playerOptions[toDelete[i]];
-//				}
-
+				
+				// Volume option is tricky to remove, since it needs to be in the HTML5 player model.  So we'll remove it here.
+				delete playerOptions.volume;
+				
 				var html5player = new jwplayer.html5.player(playerOptions);
 				_api.container = document.getElementById(_api.id);
 				_api.setPlayer(html5player, "html5");

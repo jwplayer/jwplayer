@@ -142,6 +142,15 @@
 				}
 			}
 			
+			var bgcolor = "#000000",
+				flashPlayer, //flashvars,
+				wmode = params.wmode ? params.wmode : (params.height && params.height <= 40 ? "transparent" : "opaque"),
+				toDelete = ["height", "width", "modes", "events", "primary", "base", "fallback", "volume"];
+			
+			for (var i = 0; i < toDelete.length; i++) {
+				delete params[toDelete[i]];
+			}
+			
 			// If we've set any cookies in HTML5 mode, bring them into flash
 			var cookies = utils.getCookies();
 			for (var cookie in cookies) {
@@ -150,14 +159,7 @@
 				}
 			}
 			
-			var bgcolor = "#000000",
-				flashPlayer, //flashvars,
-				wmode = params.wmode ? params.wmode : (params.height && params.height <= 40 ? "transparent" : "opaque"),
-				toDelete = ["height", "width", "modes", "events", "primary", "base", "fallback"];
-			
-			for (var i = 0; i < toDelete.length; i++) {
-				delete params[toDelete[i]];
-			}
+
 			
 			var base = window.location.pathname.split("/");
 			base.splice(base.length-1, 1);

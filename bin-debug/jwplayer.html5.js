@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.1.2883';
+	jwplayer.html5.version = '6.1.2885';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -4776,17 +4776,17 @@
 			// Saved settings
 			_cookies = utils.getCookies(),
 			// Sub-component configurations
-			_componentConfigs = {},
+			_componentConfigs = {
+				controlbar: {},
+				display: {}
+			},
 			// Defaults
 			_defaults = {
 				autostart: FALSE,
-				controlbar: TRUE,
 				controls: TRUE,
 				debug: UNDEF,
 				fullscreen: FALSE,
 				height: 320,
-				icons: TRUE,
-				item: 0,
 				mobilecontrols: FALSE,
 				mute: FALSE,
 				playlist: [],
@@ -4795,8 +4795,8 @@
 				repeat: FALSE,
 				skin: UNDEF,
 				stretching: utils.stretching.UNIFORM,
-				volume: 90,
-				width: 480
+				width: 480,
+				volume: 90
 			};
 
 		function _parseConfig(config) {
@@ -4814,12 +4814,11 @@
 				state : events.state.IDLE,
 				duration: -1,
 				position: 0,
-				buffer: 0,
+				buffer: 0
 			}, _model.config);
 			// This gets added later
 			_model.playlist = [];
-			_setComponentConfigs();
-			_model.setItem(_model.config.item);
+			_model.setItem(0);
 			
 			_videoTag = document.createElement("video");
 			_video = new html5.video(_videoTag);
@@ -4828,11 +4827,6 @@
 			_video.addGlobalListener(_videoEventHandler);
 		}
 		
-		function _setComponentConfigs() {
-			_componentConfigs.display = { showicons: _model.icons };
-			_componentConfigs.controlbar = {};
-		}
-
 		var _eventMap = {};
 		_eventMap[events.JWPLAYER_MEDIA_MUTE] = "mute";
 		_eventMap[events.JWPLAYER_MEDIA_VOLUME] = "volume";
@@ -7627,7 +7621,7 @@
 		}
 		
 		function _showControlbar() {
-			if (_controlbar && _model.controlbar) _controlbar.show();
+			if (_controlbar) _controlbar.show();
 		}
 		function _hideControlbar() {
 			if (_controlbar && !_audioMode && !_forcedControls) {

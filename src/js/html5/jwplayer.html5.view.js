@@ -452,7 +452,7 @@
 		}
 		
 		function _showControlbar() {
-			if (_controlbar && _model.controlbar) _controlbar.show();
+			if (_controlbar) _controlbar.show();
 		}
 		function _hideControlbar() {
 			if (_controlbar && !_audioMode && !_forcedControls) {

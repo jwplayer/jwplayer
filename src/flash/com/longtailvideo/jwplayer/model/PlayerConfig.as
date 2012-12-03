@@ -19,7 +19,6 @@ package com.longtailvideo.jwplayer.model {
 		protected var _autostart:Boolean 	= false; 
 		protected var _bandwidth:Number		= 1500;
 		protected var _fullscreen:Boolean 	= false;
-		protected var _item:Number			= 0;
 		protected var _levels:Array			= null;
 		protected var _mute:Boolean 		= false;
 		protected var _repeat:Boolean 		= false; 
@@ -30,8 +29,6 @@ package com.longtailvideo.jwplayer.model {
 		protected var _volume:Number 		= 90;
 
 		//TODO: Move to ENUM class
-		protected var _controlbar:String 	= "over";
-		protected var _dock:Boolean 		= true;
 		protected var _height:Number 		= 400;
 		protected var _playlistpos:String	= "none";
 		protected var _playlistsize:String 	= "180";
@@ -45,8 +42,6 @@ package com.longtailvideo.jwplayer.model {
 		protected var _debug:String			= Logger.NONE;
 		
 		public function PlayerConfig():void {
-			controlbar = _controlbar;
-			setPluginProperty('controlbar.idlehide', true); 
 			playlistposition = _playlistpos;
 			playlistsize = _playlistsize;
 		}
@@ -54,8 +49,12 @@ package com.longtailvideo.jwplayer.model {
 		public function setConfig(config:Object):void {
 			for (var item:String in config) {
 				if (item.indexOf(".") > 0) {
-					setPluginProperty(item, config[item]);
-					_singleItem[item.toLowerCase()] = config[item];
+					if (item.indexOf("playlist.") == 0 || item.indexOf("controlbar.") == 0)
+						continue;
+					else {
+						setPluginProperty(item, config[item]);
+						_singleItem[item.toLowerCase()] = config[item];
+					}
 				} else if (_singleItem.hasOwnProperty(item)) {
 					if (item == "file" && Strings.extension(config[item]) == "xml" && !(config['provider'])) {
 						setProperty("playlistfile", config[item]);
@@ -130,10 +129,6 @@ package com.longtailvideo.jwplayer.model {
 		public function set playlist(x:String):void { 
 			_playlistfile = x; 
 		}
-		public function set playlistfile(x:String):void {
-			_playlistfile = x;
-		} 
-
 
 		/** Text description of the file. **/
 		public function get description():String { return playlistItem('description'); }
@@ -184,22 +179,6 @@ package com.longtailvideo.jwplayer.model {
 		// LAYOUT PROPERTIES
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-		/** Position of the controlbar. Can be set to top, bottom, over and none.  @default bottom **/
-		public function get controlbar():String { 
-			if (_pluginConfig['controlbar'] && _pluginConfig['controlbar'].hasOwnProperty('position'))
-				return _pluginConfig['controlbar']['position'];
-			else return _controlbar;
-		}
-		public function set controlbar(x:String):void { 
-			setPluginProperty('controlbar.position', x.toLowerCase()); 
-		}
-
-		/** Set this to true to show the dock with large buttons in the top right of the player. Available since 4.5.  @default true **/
-		public function get dock():Boolean { return _dock; }
-		public function set dock(x:Boolean):void {
-			_dock = x;
-		}
-
 		/** Height of the display in pixels. @default 280 **/
 		public function get height():Number { return _height; }
 		public function set height(x:Number):void { _height = x; }
@@ -244,10 +223,6 @@ package com.longtailvideo.jwplayer.model {
 		public function get fullscreen():Boolean { return _fullscreen; }
 		public function set fullscreen(x:Boolean):void { _fullscreen = x; }		
 		
-		/** PlaylistItem that should start to play. Use this to set a specific start-item. @default 0 **/
-		public function get item():Number { return _item; }
-		public function set item(x:Number):void { _item = x; }
-
 		/** Mute all sounds on startup. This value is set in a user cookie, and is retrieved the next time the player loads. **/
 		public function get mute():Boolean { return _mute; }
 		public function set mute(x:Boolean):void { _mute = x;}

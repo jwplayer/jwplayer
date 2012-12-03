@@ -115,10 +115,8 @@ package com.longtailvideo.jwplayer.view.components {
 		public function ControlbarComponent(player:IPlayer) {
 			super(player, "controlbar");
 			animations = new Animations(this);
-			if (getConfigParam('position') == "over" && hideOnIdle) {
-				alpha = 0;
-				visible = false;
-			}
+			alpha = 0;
+			visible = false;
 			_layoutManager = new ControlbarLayoutManager(this);
 			_dividers = [];
 			_dividerElements = {
@@ -174,10 +172,6 @@ package com.longtailvideo.jwplayer.view.components {
 			redraw();
 		}
 
-		private function get hideOnIdle():Boolean {
-			return String(getConfigParam('idlehide')) == "true";
-		}
-		
 		private function get maxWidth():Number {
 			return getConfigParam('maxwidth') ? Number(getConfigParam('maxwidth')) : 800;			
 		}
@@ -814,19 +808,12 @@ package com.longtailvideo.jwplayer.view.components {
 				return;
 			}
 			
-			if (getConfigParam('position') == 'over' || _player.config.fullscreen == true) {
-				var margin:Number = getConfigParam('margin') == null ? 8 : getConfigParam('margin');
-				var maxMargin:Number = (maxWidth && width > maxWidth) ? (width - maxWidth) / 2 : 0;
-				x = (maxMargin ? maxMargin : margin) + player.config.pluginConfig('display')['x'];
-				y = height - background.height - margin + player.config.pluginConfig('display')['y'];
-				_width = width - 2 * (maxMargin ? maxMargin : margin);
-				_bgColorSheet.visible = false;
-			} else {
-				_width = width;
-				_bgColorSheet.visible = true;
-			}
-
-			//shade.width = _width;
+			var margin:Number = getConfigParam('margin') == null ? 8 : getConfigParam('margin');
+			var maxMargin:Number = (maxWidth && width > maxWidth) ? (width - maxWidth) / 2 : 0;
+			x = (maxMargin ? maxMargin : margin) + player.config.pluginConfig('display')['x'];
+			y = height - background.height - margin + player.config.pluginConfig('display')['y'];
+			_width = width - 2 * (maxMargin ? maxMargin : margin);
+			_bgColorSheet.visible = false;
 
 			var backgroundWidth:Number = _width;
 
@@ -944,11 +931,7 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 
 		override public function show():void {
-			if (getConfigParam('position') == "over") {
-//				_hiding = false;
-//				this.visible = true;
-				animations.fade(1, .5);
-			}
+			animations.fade(1, .5);
 		}
 		
 		public function audioMode(state:Boolean):void {
@@ -960,9 +943,7 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 		
 		override public function hide():void {
-			if (getConfigParam('position') == "over" && !_audioMode) {
-//				_hiding = true;
-//				this.visible = false;
+			if (!_audioMode) {
 				animations.fade(0, .5);
 				hideOverlays();
 			}

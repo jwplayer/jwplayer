@@ -12,42 +12,26 @@
 
 	var config = embed.config = function(config) {
 		
-		function _setSources(modes, base, players) {
-			for (var i=0; i<modes.length; i++) {
-				var mode = modes[i].type;
-				if (!modes[i].src) {
-					modes[i].src = players[mode] ? players[mode] : base + "jwplayer." + mode + (mode == "flash" ? ".swf" : ".js");
-				}
-			}
-		}
-		
 		var _defaults = {
 				fallback: true,
 				height: 270,
 				primary: "html5",
 				width: 480,
-				base: UNDEFINED
+				base: config.base ? config.base : utils.getScriptPath("jwplayer.js")
 			},
+			_config = utils.extend(_defaults, config),
 			_modes = {
-			    html5: { type: "html5" },
-				flash: { type: "flash" }
-			},
-			_config = utils.extend(_defaults, config);
+			    html5: { type: "html5", src: _config.base + "jwplayer.html5.js" },
+				flash: { type: "flash", src: _config.base + "jwplayer.flash.swf" }
+			};
 
-		if (!_config.base) {
-			_config.base = utils.getScriptPath("jwplayer.js");
-		}
-		
-		if (!_config.modes) {
-			_config.modes = (_config.primary == "flash") ? [_modes.flash, _modes.html5] : [_modes.html5, _modes.flash]; 
-		}
+		// No longer allowing user-set modes block as of 6.0
+		_config.modes = (_config.primary == "flash") ? [_modes.flash, _modes.html5] : [_modes.html5, _modes.flash]; 
 		
 		if (_config.listbar) {
 			_config.playlistsize = _config.listbar.size;
 			_config.playlistposition = _config.listbar.position;
 		}
-		
-		_setSources(_config.modes, _config.base, { html5: _config.html5player, flash: _config.flashplayer })
 		
 		_normalizePlaylist(_config);
 		

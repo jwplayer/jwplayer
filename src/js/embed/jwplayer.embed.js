@@ -50,8 +50,7 @@
 			if (_pluginloader.getStatus() == utils.loaderstatus.COMPLETE) {
 				for (var mode = 0; mode < _config.modes.length; mode++) {
 					if (_config.modes[mode].type && embed[_config.modes[mode].type]) {
-						var modeconfig = _config.modes[mode].config,
-							configClone = utils.extend({}, modeconfig ? embed.config.addConfig(_config, modeconfig) : _config),
+						var configClone = utils.extend({}, _config),
 							embedder = new embed[_config.modes[mode].type](_container, _config.modes[mode], configClone, _pluginloader, playerApi);
 
 						if (embedder.supportsConfig()) {
