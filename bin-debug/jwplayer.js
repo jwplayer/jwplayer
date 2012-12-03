@@ -16,7 +16,7 @@ jwplayer = function(container) {
 	}
 };
 
-jwplayer.version = '6.1.2885';
+jwplayer.version = '6.1.2888';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");
@@ -2192,6 +2192,11 @@ jwplayer.source = document.createElement("source");/**
 		function _html5CanPlay(file, type) {
 			// HTML5 playback is not sufficiently supported on Blackberry devices; should fail over automatically.
 			if(navigator.userAgent.match(/BlackBerry/i) !== null) { return false; }
+
+			// HLS not sufficiently supported on Android devices; should fail over automatically.
+			if (utils.isAndroid() && (utils.extension(file) == "m3u" || utils.extension(file) == "m3u8")) {
+				return false;
+			}
 
 			// Ensure RTMP files are not seen as videos
 			if (utils.isRtmp(file,type)) return false;

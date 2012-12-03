@@ -31,6 +31,12 @@
 				// Insert a small delay here so that other complete handlers can execute
 				setTimeout(_completeHandler, 25);
 			});
+			_model.addEventListener(events.JWPLAYER_MEDIA_ERROR, function(evt) {
+				// Re-dispatch media errors as general error
+				var evtClone = utils.extend({}, evt);
+				evtClone.type = events.JWPLAYER_ERROR;
+				_eventDispatcher.sendEvent(evtClone.type, evtClone);
+			});
 		}
 		
 		function _playerReady(evt) {

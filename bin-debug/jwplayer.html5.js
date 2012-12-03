@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.1.2885';
+	jwplayer.html5.version = '6.1.2888';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -2917,6 +2917,12 @@
 				// Insert a small delay here so that other complete handlers can execute
 				setTimeout(_completeHandler, 25);
 			});
+			_model.addEventListener(events.JWPLAYER_MEDIA_ERROR, function(evt) {
+				// Re-dispatch media errors as general error
+				var evtClone = utils.extend({}, evt);
+				evtClone.type = events.JWPLAYER_ERROR;
+				_eventDispatcher.sendEvent(evtClone.type, evtClone);
+			});
 		}
 		
 		function _playerReady(evt) {
@@ -4492,11 +4498,6 @@
 			
 			var positions = (/(\w+)-(\w+)/).exec(_settings.position),
 				style = {},
-/*
-					opacity: _settings.hide ? UNDEFINED : 1,
-					visibility: _settings.hide ? UNDEFINED : JW_CSS_VISIBLE
-				},
-*/
 				margin = _settings.margin;
 
 			if (positions.length == 3) {
@@ -4508,12 +4509,7 @@
 
 			_css(_internalSelector(), style); 
 			
-			if (_settings.file.indexOf("/") >= 0) {
-				_logo.src = _settings.file;
-			} else {
-				_logo.src = _settings.prefix + _settings.file;
-			}
-			
+			_logo.src = (_settings.prefix ? _settings.prefix : "") + _settings.file;
 			_logo.onclick = _clickHandler;
 		}
 		
