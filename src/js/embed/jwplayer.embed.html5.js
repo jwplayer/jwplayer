@@ -112,6 +112,11 @@
 			// HTML5 playback is not sufficiently supported on Blackberry devices; should fail over automatically.
 			if(navigator.userAgent.match(/BlackBerry/i) !== null) { return false; }
 
+			// HLS not sufficiently supported on Android devices; should fail over automatically.
+			if (utils.isAndroid() && (utils.extension(file) == "m3u" || utils.extension(file) == "m3u8")) {
+				return false;
+			}
+
 			// Ensure RTMP files are not seen as videos
 			if (utils.isRtmp(file,type)) return false;
 
