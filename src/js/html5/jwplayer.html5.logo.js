@@ -69,11 +69,6 @@
 			
 			var positions = (/(\w+)-(\w+)/).exec(_settings.position),
 				style = {},
-/*
-					opacity: _settings.hide ? UNDEFINED : 1,
-					visibility: _settings.hide ? UNDEFINED : JW_CSS_VISIBLE
-				},
-*/
 				margin = _settings.margin;
 
 			if (positions.length == 3) {
@@ -85,12 +80,7 @@
 
 			_css(_internalSelector(), style); 
 			
-			if (_settings.file.indexOf("/") >= 0) {
-				_logo.src = _settings.file;
-			} else {
-				_logo.src = _settings.prefix + _settings.file;
-			}
-			
+			_logo.src = (_settings.prefix ? _settings.prefix : "") + _settings.file;
 			_logo.onclick = _clickHandler;
 		}
 		
