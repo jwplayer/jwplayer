@@ -196,7 +196,7 @@
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_LEVEL_CHANGED, _qualityLevelChanged);
 			_api.jwAddEventListener(events.JWPLAYER_CAPTIONS_LIST, _captionsHandler);
 			_api.jwAddEventListener(events.JWPLAYER_CAPTIONS_CHANGED, _captionChanged);
-			_controlbar.addEventListener('mouseover', function(){
+			_controlbar.addEventListener('mouseover', function() {
 				// Slider listeners
 				WINDOW.addEventListener('mousemove', _sliderMouseEvent, FALSE);
 				WINDOW.addEventListener('mouseup', _sliderMouseEvent, FALSE);
@@ -207,6 +207,7 @@
 				WINDOW.removeEventListener('mousemove', _sliderMouseEvent);
 				WINDOW.removeEventListener('mouseup', _sliderMouseEvent);
 				WINDOW.removeEventListener('mousedown', _killSelect);
+				DOCUMENT.onselectstart = null;
 			}, false);
 		}
 		
@@ -833,8 +834,6 @@
 				_elements[name+'Rail'].className = "jwrail jwsmooth";
 				_dragging = NULL;
 				_sliderMapping[name](pct);
-				DOCUMENT.onselectstart = null;
-
 			} else {
 				if (_dragging == "time") {
 					_setProgress(pct);
