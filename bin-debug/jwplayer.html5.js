@@ -1027,7 +1027,8 @@
         var _request,
         /** URL of the SRT file. **/
         _url,
-        _seconds = jwplayer.utils.seconds;
+        _utils = jwplayer.utils,
+        _seconds = _utils.seconds;
 
 
         /** Handle errors. **/
@@ -1046,6 +1047,18 @@
         this.load = function(url) {
             _url = url;
             try {
+                if (_isCrossdomain(url) && _utils.exists(window.XDomainRequest)) {
+                    // IE9
+                    _request = new XDomainRequest();
+                    _request.onload = function () {
+                        var data = _request.responseText;
+                        _parse(data);
+                    }
+                    _request.onerror = function() {
+                        var error = _request.status;
+                        _error (error);
+                    }
+                }
                 _request.open("GET", url, true);
                 _request.send(null);
             } catch (error) {
@@ -1111,6 +1124,14 @@
             } catch (error) {}
             return entry;
         };
+
+        function _isCrossdomain(path) {
+            if (path && path.indexOf("://") >= 0) {
+                if (path.split("/")[2] != window.location.href.split("/")[2])
+                    return true
+            } 
+            return false;   
+        }
 
         /** Setup the SRT parser. **/
         function _setup() {
