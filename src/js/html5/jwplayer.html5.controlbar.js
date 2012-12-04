@@ -146,7 +146,7 @@
 			
 			_sliderMapping = {
 				time: _seek,
-				volume: _volume,
+				volume: _volume
 			},
 		
 			_overlays = {},
@@ -1248,7 +1248,7 @@
 	});
 
     _css(CB_CLASS + ' .jwvertical *', {
-    	display: JW_CSS_BLOCK,
+    	display: JW_CSS_BLOCK
     });
 
 	_setTransition(CB_CLASS, JW_CSS_SMOOTH_EASE);

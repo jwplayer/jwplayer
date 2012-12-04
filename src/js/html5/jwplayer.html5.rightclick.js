@@ -113,7 +113,7 @@
 		'-moz-box-shadow': JW_CSS_BOX_SHADOW,
 		'box-shadow': JW_CSS_BOX_SHADOW,
 		position: "absolute",
-		'z-index': 999,
+		'z-index': 999
 	}, true);
 
 	_css(RC_CLASS + " div", {

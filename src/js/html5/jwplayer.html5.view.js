@@ -536,7 +536,7 @@
 				newRect = {
 					x: rect1.x,
 					y: bottomCutout ? rect1.y : rect2.bottom,
-					width: rect1.width,
+					width: rect1.width
 				};
 			
 		}

@@ -113,7 +113,7 @@
 			});
 			
 			_css(_internalSelector("jwlist"), {
-				'background-image': _elements.background ? " url("+_elements.background.src+")" : "",
+				'background-image': _elements.background ? " url("+_elements.background.src+")" : ""
 			});
 			
 			_css(_internalSelector("jwlist" + " *"), {

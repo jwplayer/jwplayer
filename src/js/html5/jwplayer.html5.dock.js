@@ -266,11 +266,11 @@
 	});
 
 	_css(DB_CLASS, {
-	  	position: "absolute",
+	  	position: "absolute"
 	});
 
 	_css(DB_CLASS + " button", {
-		position: "relative",
+		position: "relative"
 	});
 	
 	_css(DB_CLASS + " > *", {

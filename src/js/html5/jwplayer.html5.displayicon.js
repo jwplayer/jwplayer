@@ -242,7 +242,7 @@
 	});
 
 	_css(DI_CLASS + " div", {
-		'vertical-align': "middle",
+		'vertical-align': "middle"
 	}, true);
 
 	_css(DI_CLASS + " .jwtext", {

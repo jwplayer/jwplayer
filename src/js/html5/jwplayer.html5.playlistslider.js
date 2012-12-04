@@ -275,7 +275,7 @@
 		position: JW_CSS_ABSOLUTE,
 	    width: JW_CSS_100PCT,
 	    'background-position': "center",
-	    'background-size': JW_CSS_100PCT + " " + JW_CSS_100PCT,
+	    'background-size': JW_CSS_100PCT + " " + JW_CSS_100PCT
 	});
 
 	_css(_globalSelector(SLIDER_TOPCAP_CLASS, SLIDER_RAILTOP_CLASS, SLIDER_THUMBTOP_CLASS), { top: 0 });
