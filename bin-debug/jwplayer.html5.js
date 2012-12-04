@@ -3674,6 +3674,9 @@
 			setTimeout(function() {
 				 contentWidth = Math.max(_iconElement.width, utils.bounds(_container).width - _capRightSkin.width - _capLeftSkin.width); //Math.ceil(_iconElement.width + (showText ? utils.bounds(_text).width: 0));
 				 if (utils.isFF() || utils.isIE()) contentWidth ++;
+				 // Fix for 1 pixel gap in Chrome. This is a chrome bug that needs to be fixed. 
+				 // TODO: Remove below once chrome fixes this bug.
+				 if (utils.isChrome() && _container.parentNode.clientWidth % 2 == 1) contentWidth++;
 				 _css(_internalSelector(), {
 					//width : contentWidth,
 					//'background-position': _capLeftSkin.width + "px 0",

@@ -123,6 +123,7 @@
 
 	utils.isIE = _browserCheck(/msie/i);
 	utils.isFF = _browserCheck(/firefox/i);
+	utils.isChrome = _browserCheck(/chrome/i);
 	utils.isIOS = _browserCheck(/iP(hone|ad|od)/i);
 	utils.isIPod = _browserCheck(/iP(hone|od)/i);
 	utils.isIPad = _browserCheck(/iPad/i);
