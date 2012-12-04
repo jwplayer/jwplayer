@@ -39,66 +39,6 @@
 		return "";
 	}
 	
-	/**
-	 * Converts a JSON object into its string representation.
-	 * @param obj {Object} String, Number, Array or nested Object to serialize
-	 * Serialization code borrowed from 
-	 */
-	utils.jsonToString = function(obj) {
-		// Use browser's native JSON implementation if it exists.
-		var JSON = JSON || {}
-		if (JSON && JSON.stringify) {
-			return JSON.stringify(obj);
-		}
-
-		var type = typeof (obj);
-		if (type != "object" || obj === null) {
-			// Object is string or number
-			if (type == "string") {
-				obj = '"'+obj.replace(/"/g, '\\"')+'"';
-			} else {
-				return String(obj);
-			}
-		}
-		else {
-			// Object is an array or object
-			var toReturn = [],
-				isArray = (obj && obj.constructor == Array);
-				
-			for (var item in obj) {
-				var value = obj[item];
-				
-				switch (typeof(value)) {
-					case "string":
-						value = '"' + value.replace(/"/g, '\\"') + '"';
-						break;
-					case "object":
-						if (utils.exists(value)) {
-							value = utils.jsonToString(value);
-						}
-						break;
-				}
-				if (isArray) {
-					// Array
-					if (typeof(value) != "function") {
-						toReturn.push(String(value));
-					}
-				} else {
-					// Object
-					if (typeof(value) != "function") {
-						toReturn.push('"' + item + '":' + String(value));
-					}
-				}
-			}
-			
-			if (isArray) {
-				return "[" + String(toReturn) + "]";
-			} else {
-				return "{" + String(toReturn) + "}";
-			}
-		}
-	};
-	
 	/** Returns the extension of a file name * */
 	utils.extension = function(path) {
 		if (!path || path.substr(0,4) == 'rtmp') { return ""; }

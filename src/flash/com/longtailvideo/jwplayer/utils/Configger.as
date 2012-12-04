@@ -62,7 +62,6 @@ package com.longtailvideo.jwplayer.utils {
 				try {
 					var flashvars:Object = ExternalInterface.call("jwplayer.embed.flash.getVars", ExternalInterface.objectID);
 					if (flashvars !== null) {
-						// TODO: add ability to pass in JSON directly instead of going to/from a string
 						for (var param:String in flashvars) {
 							setConfigParam(param, flashvars[param]);
 						}
@@ -100,9 +99,10 @@ package com.longtailvideo.jwplayer.utils {
 			}
 		}
 
-		private function setConfigParam(name:String, value:String):void {
+		private function setConfigParam(name:String, value:*):void {
+			if (value is String) value = Strings.serialize(Strings.trim(value));
 			if (name != "fullscreen") {
-				_config[name.toLowerCase()] = Strings.serialize(Strings.trim(value));
+				_config[name.toLowerCase()] = value;
 			}
 		}
 

@@ -75,30 +75,6 @@
 			return flat;
 		};
 		
-		/**function jsonToFlashvars(json) {
-			var flashvars = [];
-			for (var key in json) {
-				if (typeof(json[key]) == "object") {
-					flashvars += key + '=' + encodeURIComponent("[[JSON]]"+utils.jsonToString(json[key])) + '&';
-				} else {
-					flashvars += key + '=' + encodeURIComponent(json[key]) + '&';
-				}
-			}
-			return flashvars.substring(0, flashvars.length - 1);
-		}**/
-
-		function stringify(json) {
-			var flashvars = {};
-			for (var key in json) {
-				if (typeof(json[key]) == "object") {
-					flashvars[key] = "[[JSON]]"+utils.jsonToString(json[key]);
-				} else {
-					flashvars[key] = json[key];
-				}
-			}
-			return flashvars;
-		}
-
 		this.embed = function() {		
 			// Make sure we're passing the correct ID into Flash for Linux API support
 			_options.id = _api.id;
@@ -166,10 +142,7 @@
 			base = base.join("/");
 			params.base = base + "/";
 			
-			
-			//flashvars = jsonToFlashvars(params);
-			// TODO: add ability to pass in JSON directly instead of going to/from a string
-			storedFlashvars[_container.id] = stringify(params);
+			storedFlashvars[_container.id] = params;
 
 			if (utils.isIE()) {
 				var html = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" ' +

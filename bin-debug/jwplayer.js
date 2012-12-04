@@ -581,66 +581,6 @@ jwplayer.source = document.createElement("source");/**
 		return "";
 	}
 	
-	/**
-	 * Converts a JSON object into its string representation.
-	 * @param obj {Object} String, Number, Array or nested Object to serialize
-	 * Serialization code borrowed from 
-	 */
-	utils.jsonToString = function(obj) {
-		// Use browser's native JSON implementation if it exists.
-		var JSON = JSON || {}
-		if (JSON && JSON.stringify) {
-			return JSON.stringify(obj);
-		}
-
-		var type = typeof (obj);
-		if (type != "object" || obj === null) {
-			// Object is string or number
-			if (type == "string") {
-				obj = '"'+obj.replace(/"/g, '\\"')+'"';
-			} else {
-				return String(obj);
-			}
-		}
-		else {
-			// Object is an array or object
-			var toReturn = [],
-				isArray = (obj && obj.constructor == Array);
-				
-			for (var item in obj) {
-				var value = obj[item];
-				
-				switch (typeof(value)) {
-					case "string":
-						value = '"' + value.replace(/"/g, '\\"') + '"';
-						break;
-					case "object":
-						if (utils.exists(value)) {
-							value = utils.jsonToString(value);
-						}
-						break;
-				}
-				if (isArray) {
-					// Array
-					if (typeof(value) != "function") {
-						toReturn.push(String(value));
-					}
-				} else {
-					// Object
-					if (typeof(value) != "function") {
-						toReturn.push('"' + item + '":' + String(value));
-					}
-				}
-			}
-			
-			if (isArray) {
-				return "[" + String(toReturn) + "]";
-			} else {
-				return "{" + String(toReturn) + "}";
-			}
-		}
-	};
-	
 	/** Returns the extension of a file name * */
 	utils.extension = function(path) {
 		if (!path || path.substr(0,4) == 'rtmp') { return ""; }
@@ -1546,103 +1486,6 @@ jwplayer.source = document.createElement("source");/**
 		}
 	}
 	
-	
-//	function _isPosition(string) {
-//		var lower = string.toLowerCase();
-//		var positions = ["left", "right", "top", "bottom"];
-//		
-//		for (var position = 0; position < positions.length; position++) {
-//			if (lower == positions[position]) {
-//				return true;
-//			}
-//		}
-//		
-//		return false;
-//	}
-//	
-//	function _isPlaylist(property) {
-//		var result = false;
-//		// JSON Playlist
-//		result = (property instanceof Array) ||
-//		// Single playlist item as an Object
-//		(typeof property == "object" && !property.position && !property.size);
-//		return result;
-//	}
-	
-//	function getSize(size) {
-//		if (typeof size == "string") {
-//			if (parseInt(size).toString() == size || size.toLowerCase().indexOf("px") > -1) {
-//				return parseInt(size);
-//			} 
-//		}
-//		return size;
-//	}
-	
-//	var components = ["playlist", "dock", "controlbar", "logo", "display"];
-	
-//	function getPluginNames(config) {
-//		var pluginNames = {};
-//		switch(utils.typeOf(config.plugins)){
-//			case "object":
-//				for (var plugin in config.plugins) {
-//					pluginNames[utils.getPluginName(plugin)] = plugin;
-//				}
-//				break;
-//			case "string":
-//				var pluginArray = config.plugins.split(",");
-//				for (var i=0; i < pluginArray.length; i++) {
-//					pluginNames[utils.getPluginName(pluginArray[i])] = pluginArray[i];	
-//				}
-//				break;
-//		}
-//		return pluginNames;
-//	}
-//	
-//	function addConfigParameter(config, componentType, componentName, componentParameter){
-//		if (utils.typeOf(config[componentType]) != "object"){
-//			config[componentType] = {};
-//		}
-//		var componentConfig = config[componentType][componentName];
-//
-//		if (utils.typeOf(componentConfig) != "object") {
-//			config[componentType][componentName] = componentConfig = {};
-//		}
-//
-//		if (componentParameter) {
-//			if (componentType == "plugins") {
-//				var pluginName = utils.getPluginName(componentName);
-//				componentConfig[componentParameter] = config[pluginName+"."+componentParameter];
-//				delete config[pluginName+"."+componentParameter];
-//			} else {
-//				componentConfig[componentParameter] = config[componentName+"."+componentParameter];
-//				delete config[componentName+"."+componentParameter];
-//			}
-//		}
-//	}
-	
-//	jwplayer.embed.deserialize = function(config){
-//		var pluginNames = getPluginNames(config);
-//		
-//		for (var pluginId in pluginNames) {
-//			addConfigParameter(config, "plugins", pluginNames[pluginId]);
-//		}
-//		
-//		for (var parameter in config) {
-//			if (parameter.indexOf(".") > -1) {
-//				var path = parameter.split(".");
-//				var prefix = path[0];
-//				var parameter = path[1];
-//
-//				if (utils.isInArray(components, prefix)) {
-//					addConfigParameter(config, "components", prefix, parameter);
-//				} else if (pluginNames[prefix]) {
-//					addConfigParameter(config, "plugins", pluginNames[prefix], parameter);
-//				}
-//			}
-//		}
-//		return config;
-//	}
-	
 })(jwplayer);
 /**
  * Download mode embedder for the JW Player
@@ -1888,30 +1731,6 @@ jwplayer.source = document.createElement("source");/**
 			return flat;
 		};
 		
-		/**function jsonToFlashvars(json) {
-			var flashvars = [];
-			for (var key in json) {
-				if (typeof(json[key]) == "object") {
-					flashvars += key + '=' + encodeURIComponent("[[JSON]]"+utils.jsonToString(json[key])) + '&';
-				} else {
-					flashvars += key + '=' + encodeURIComponent(json[key]) + '&';
-				}
-			}
-			return flashvars.substring(0, flashvars.length - 1);
-		}**/
-
-		function stringify(json) {
-			var flashvars = {};
-			for (var key in json) {
-				if (typeof(json[key]) == "object") {
-					flashvars[key] = "[[JSON]]"+utils.jsonToString(json[key]);
-				} else {
-					flashvars[key] = json[key];
-				}
-			}
-			return flashvars;
-		}
-
 		this.embed = function() {		
 			// Make sure we're passing the correct ID into Flash for Linux API support
 			_options.id = _api.id;
@@ -1979,10 +1798,7 @@ jwplayer.source = document.createElement("source");/**
 			base = base.join("/");
 			params.base = base + "/";
 			
-			
-			//flashvars = jsonToFlashvars(params);
-			// TODO: add ability to pass in JSON directly instead of going to/from a string
-			storedFlashvars[_container.id] = stringify(params);
+			storedFlashvars[_container.id] = params;
 
 			if (utils.isIE()) {
 				var html = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" ' +

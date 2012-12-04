@@ -48,7 +48,7 @@ package com.longtailvideo.jwplayer.controller {
 		/** User-defined configuration **/
 		protected var confHash:Object;
 		
-		/** JSON Playlist passed in **/
+		/** Playlist passed in **/
 		protected var confPlaylist:Array;
 		
 		/** Loader to pre-cache preview image **/		
