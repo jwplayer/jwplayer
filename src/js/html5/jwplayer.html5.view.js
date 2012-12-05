@@ -254,7 +254,7 @@
 
 			if (state) {
 				if (!_model.fullscreen) {
-					_fakeFullscreen(TRUE);
+					if (!_isIPad) _fakeFullscreen(TRUE);
 					if (_playerElement.requestFullScreen) {
 						_playerElement.requestFullScreen();
 					} else if (_playerElement.mozRequestFullScreen) {
@@ -265,7 +265,8 @@
 					_model.setFullscreen(TRUE);
 				}
 			} else {
-		    	_fakeFullscreen(FALSE);
+				if (!_isIPad) _fakeFullscreen(FALSE);
+			
 				if (_model.fullscreen) {
 					_model.setFullscreen(FALSE);
 				    if (DOCUMENT.cancelFullScreen) {  

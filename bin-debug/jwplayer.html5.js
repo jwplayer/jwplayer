@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.1.2888';
+	jwplayer.html5.version = '6.1.2902';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -1795,7 +1795,7 @@
 			
 			_sliderMapping = {
 				time: _seek,
-				volume: _volume,
+				volume: _volume
 			},
 		
 			_overlays = {},
@@ -2897,7 +2897,7 @@
 	});
 
     _css(CB_CLASS + ' .jwvertical *', {
-    	display: JW_CSS_BLOCK,
+    	display: JW_CSS_BLOCK
     });
 
 	_setTransition(CB_CLASS, JW_CSS_SMOOTH_EASE);
@@ -3784,7 +3784,7 @@
 	});
 
 	_css(DI_CLASS + " div", {
-		'vertical-align': "middle",
+		'vertical-align': "middle"
 	}, true);
 
 	_css(DI_CLASS + " .jwtext", {
@@ -4067,11 +4067,11 @@
 	});
 
 	_css(DB_CLASS, {
-	  	position: "absolute",
+	  	position: "absolute"
 	});
 
 	_css(DB_CLASS + " button", {
-		position: "relative",
+		position: "relative"
 	});
 	
 	_css(DB_CLASS + " > *", {
@@ -5467,7 +5467,7 @@
 			});
 			
 			_css(_internalSelector("jwlist"), {
-				'background-image': _elements.background ? " url("+_elements.background.src+")" : "",
+				'background-image': _elements.background ? " url("+_elements.background.src+")" : ""
 			});
 			
 			_css(_internalSelector("jwlist" + " *"), {
@@ -6098,7 +6098,7 @@
 		position: JW_CSS_ABSOLUTE,
 	    width: JW_CSS_100PCT,
 	    'background-position': "center",
-	    'background-size': JW_CSS_100PCT + " " + JW_CSS_100PCT,
+	    'background-size': JW_CSS_100PCT + " " + JW_CSS_100PCT
 	});
 
 	_css(_globalSelector(SLIDER_TOPCAP_CLASS, SLIDER_RAILTOP_CLASS, SLIDER_THUMBTOP_CLASS), { top: 0 });
@@ -6220,7 +6220,7 @@
 		'-moz-box-shadow': JW_CSS_BOX_SHADOW,
 		'box-shadow': JW_CSS_BOX_SHADOW,
 		position: "absolute",
-		'z-index': 999,
+		'z-index': 999
 	}, true);
 
 	_css(RC_CLASS + " div", {
@@ -7443,7 +7443,7 @@
 
 			if (state) {
 				if (!_model.fullscreen) {
-					_fakeFullscreen(TRUE);
+					if (!_isIPad) _fakeFullscreen(TRUE);
 					if (_playerElement.requestFullScreen) {
 						_playerElement.requestFullScreen();
 					} else if (_playerElement.mozRequestFullScreen) {
@@ -7454,7 +7454,8 @@
 					_model.setFullscreen(TRUE);
 				}
 			} else {
-		    	_fakeFullscreen(FALSE);
+				if (!_isIPad) _fakeFullscreen(FALSE);
+			
 				if (_model.fullscreen) {
 					_model.setFullscreen(FALSE);
 				    if (DOCUMENT.cancelFullScreen) {  
@@ -7725,7 +7726,7 @@
 				newRect = {
 					x: rect1.x,
 					y: bottomCutout ? rect1.y : rect2.bottom,
-					width: rect1.width,
+					width: rect1.width
 				};
 			
 		}
