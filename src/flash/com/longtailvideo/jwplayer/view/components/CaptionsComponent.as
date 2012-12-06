@@ -320,7 +320,7 @@ package com.longtailvideo.jwplayer.view.components {
 			//_dispatcher.removeGlobalListener(listener);
 		}
 		
-		public function hide():void {
+		public function hide(force:Boolean = false):void {
 			
 		}
 		

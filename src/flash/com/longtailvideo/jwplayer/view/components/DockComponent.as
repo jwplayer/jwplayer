@@ -198,7 +198,7 @@ package com.longtailvideo.jwplayer.view.components {
 			animations.fade(1, 0.5);
 		}
 
-		public override function hide():void {
+		public override function hide(force:Boolean = false):void {
 			for each (var button:DockButton in buttons) {
 				button.hide();
 			}

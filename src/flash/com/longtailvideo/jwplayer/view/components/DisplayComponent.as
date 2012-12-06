@@ -281,7 +281,7 @@
 		
 		
 		/** Hide the display icon **/
-		public override function hide():void {
+		public override function hide(force:Boolean = false):void {
 			if (_overlay) {
 				_overlay.visible = false;
 			}

@@ -33,7 +33,7 @@ package com.longtailvideo.jwplayer.view.components {
 			_playerReady = true;
 		}
 		
-		public function hide():void {
+		public function hide(force:Boolean = false):void {
 			if (!_hiding) {
 				_hiding = true;
 				this.visible = false;

@@ -357,7 +357,7 @@ package com.longtailvideo.jwplayer.view {
 				_components.controlbar.resize(_player.config.width, _player.config.height);
 				_components.display.hide();
 				_components.dock.hide();
-				_components.logo.hide();
+				_components.logo.hide(true);
 				_components.playlist.hide();
 				_components.captions.hide();
 				hideImage();

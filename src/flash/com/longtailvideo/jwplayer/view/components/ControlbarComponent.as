@@ -942,7 +942,7 @@ package com.longtailvideo.jwplayer.view.components {
 			//moveTimeout();
 		}
 		
-		override public function hide():void {
+		override public function hide(force:Boolean = false):void {
 			if (!_audioMode) {
 				animations.fade(0, .5);
 				hideOverlays();

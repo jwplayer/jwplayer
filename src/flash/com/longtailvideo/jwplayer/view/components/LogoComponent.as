@@ -175,8 +175,8 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		
 		/** Fade out **/
-		override public function hide():void {
-			if (getConfigParam('hide').toString() == "true") {
+		override public function hide(force:Boolean = false):void {
+			if (getConfigParam('hide').toString() == "true" || force) {
 				mouseEnabled = false;
 				_showing = false;
 				animations.fade(0, 0.5);
