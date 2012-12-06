@@ -41,10 +41,8 @@ package com.longtailvideo.jwplayer.view.components {
 			animations.addEventListener(Event.COMPLETE, fadeComplete);
 			buttons = new Vector.<DockButton>;
 			dividers = new Vector.<DisplayObject>;
-			if (player.config.dock) {
-				player.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_COMPLETE, playlistComplete);
-				alpha = 0;
-			}
+			player.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_COMPLETE, playlistComplete);
+			alpha = 0;
 			settings = {
 				iconalpha: !isNaN(getConfigParam("iconalpha")) ? getConfigParam("iconalpha") : 0.75,
 				iconalphaactive: !isNaN(getConfigParam("iconalphaactive")) ? getConfigParam("iconalphaactive") : 0.5,
@@ -197,17 +195,12 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 
 		public override function show():void {
-			if (player.config.dock) {
-				animations.fade(1, 0.5);
-			}
+			animations.fade(1, 0.5);
 		}
 
 		public override function hide():void {
-			if (player.config.dock) {
-				for each (var button:DockButton in buttons) {
-					button.hide();
-				}
-				animations.fade(0, 0.5);
+			for each (var button:DockButton in buttons) {
+				button.hide();
 			}
 		}
 
