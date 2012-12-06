@@ -202,6 +202,7 @@ package com.longtailvideo.jwplayer.view.components {
 			for each (var button:DockButton in buttons) {
 				button.hide();
 			}
+			animations.fade(0, 0.5);
 		}
 
 		protected override function get displayRect():Rectangle {
