@@ -681,7 +681,7 @@
 			var controls = _model.controls,
 				dispBounds = utils.bounds(_container),
 				dispOffset = dispBounds.top,
-				cbBounds = utils.bounds(_controlbar.element()),
+				cbBounds = utils.bounds(_controlbar ? _controlbar.element() : null),
 				dockButtons = (_dock.numButtons() > 0),
 				dockBounds = utils.bounds(_dock.element()),
 				logoBounds = utils.bounds(_logo.element()),
@@ -691,7 +691,10 @@
 			bounds.x = 0;
 			bounds.y = Math.max(dockButtons ? (dockBounds.top + dockBounds.height - dispOffset) : 0, logoTop ? (logoBounds.top + logoBounds.height - dispOffset) : 0);
 			bounds.width = dispBounds.width;
-			bounds.height = (logoTop ? cbBounds.top : logoBounds.top) - bounds.y - dispOffset;
+			if (cbBounds.height) 
+				bounds.height = (logoTop ? cbBounds.top : logoBounds.top) - bounds.y - dispOffset;
+			else
+				bounds.height = dispBounds.height - bounds.y;
 			
 			return {
 				x: 0,
