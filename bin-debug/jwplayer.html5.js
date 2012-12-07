@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.1.2926';
+	jwplayer.html5.version = '6.1.2930';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -7255,6 +7255,7 @@
 			_replayState,
 			_readyState,
 			_fullscreenInterval,
+			_inCB = FALSE,
 			_eventDispatcher = new events.eventdispatcher();
 		
 		utils.extend(this, _eventDispatcher);
@@ -7358,8 +7359,6 @@
 				}
 			}
 		}
-		
-		var _inCB = FALSE;
 		
 		function _cancelFade() {
 			clearTimeout(_controlsTimeout);
@@ -7486,7 +7485,13 @@
 			} else {
 				clearInterval(_fullscreenInterval);
 			}
-			_eventDispatcher.sendEvent(events.JWPLAYER_RESIZE);
+			
+			setTimeout(function() {
+				var dispBounds = utils.bounds(_container);
+				_model.width = dispBounds.width;
+				_model.height = dispBounds.height;
+				_eventDispatcher.sendEvent(events.JWPLAYER_RESIZE);
+			}, 0);
 		}
 		
 		function _redrawComponent(comp) {
@@ -7497,13 +7502,7 @@
 		 * Resize the player
 		 */
 		function _resize(width, height) {
-			//if (_model.fullscreen) return;
-			
 			if (utils.exists(width) && utils.exists(height)) {
-//				_css(_internalSelector(), {
-//					width: width,
-//					height: height
-//				});
 				_model.width = width;
 				_model.height = height;
 			}
@@ -7565,9 +7564,7 @@
 			if (_logo && _audioMode) {
 				_hideLogo();
 			}
-			//_css(_internalSelector(), {
 			_playerElement.style.backgroundColor = _audioMode ? 'transparent' : '#000';
-			//});
 		}
 		
 		function _resizeMedia() {
@@ -7641,6 +7638,7 @@
 			if (_model.fullscreen != fsNow) {
 				_fullscreen(fsNow);
 			}
+			
 		}
 		
 		function _showControlbar() {
@@ -7649,7 +7647,6 @@
 		function _hideControlbar() {
 			if (_controlbar && !_audioMode && !_forcedControls) {
 				_controlbar.hide();
-//				_setTimeout(function() { _controlbar.style.display="none")
 			}
 		}
 		
@@ -7700,25 +7697,10 @@
 			if (_model.controls || _audioMode) {
 				_showControlbar();
 				_showDock();
-				_sendControlsEvent();
 			}
 			_showLogo();
 		}
 
-		function _sendControlsEvent() {
-			return;
-			var height = _bounds(_container).height,
-				y = 0;
-			if (_controlbar && _controlbar.visible) {
-				height -= _bounds(_controlbar.element()).height;
-			}
-			if (_dock && _dock.visible) {
-				y = _bounds(_dock.element()).height;
-			}
-			if (_dock) {}
-			
-		}
-		
 		// Subtracts rect2 rectangle from rect1 rectangle's area
 		function _subtractRect(rect1, rect2) {
 			if (rect2.right < rect1.left || rect2.left > rect1.right) return rect1;
