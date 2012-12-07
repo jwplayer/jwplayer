@@ -937,7 +937,7 @@ package com.longtailvideo.jwplayer.view.components {
 		public function audioMode(state:Boolean):void {
 			_audioMode = state;
 			stateHandler();
-			(_timeSlider as TimeSlider).audioMode(state);
+			if (_timeSlider) (_timeSlider as TimeSlider).audioMode(state);
 			if (state) show();
 			//moveTimeout();
 		}
