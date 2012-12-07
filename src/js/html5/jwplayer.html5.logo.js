@@ -151,12 +151,14 @@
 		this.hide = function(forced) {
 			if (_settings.hide || forced) {
 				_showing = false;
+				_logo.style.visibility = "hidden";
 				_logo.style.opacity = 0;
 			}
 		}
 
 		this.show = function() {
 			_showing = true;
+			_logo.style.visibility = "visible";
 			_logo.style.opacity = 1;
 		}
 		

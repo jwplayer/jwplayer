@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.1.2923';
+	jwplayer.html5.version = '6.1.2925';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -4604,12 +4604,14 @@
 		this.hide = function(forced) {
 			if (_settings.hide || forced) {
 				_showing = false;
+				_logo.style.visibility = "hidden";
 				_logo.style.opacity = 0;
 			}
 		}
 
 		this.show = function() {
 			_showing = true;
+			_logo.style.visibility = "visible";
 			_logo.style.opacity = 1;
 		}
 		
