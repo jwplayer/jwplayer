@@ -49,12 +49,8 @@ package com.longtailvideo.jwplayer.model {
 		public function setConfig(config:Object):void {
 			for (var item:String in config) {
 				if (item.indexOf(".") > 0) {
-					if (item.indexOf("playlist.") == 0 || item.indexOf("controlbar.") == 0)
-						continue;
-					else {
-						setPluginProperty(item, config[item]);
-						_singleItem[item.toLowerCase()] = config[item];
-					}
+					setPluginProperty(item, config[item]);
+					_singleItem[item.toLowerCase()] = config[item];
 				} else if (_singleItem.hasOwnProperty(item)) {
 					if (item == "file" && Strings.extension(config[item]) == "xml" && !(config['provider'])) {
 						setProperty("playlistfile", config[item]);

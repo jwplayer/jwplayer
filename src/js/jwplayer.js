@@ -8,7 +8,7 @@ jwplayer = function(container) {
 	}
 };
 
-jwplayer.version = '6.1.2913';
+jwplayer.version = '6.1.2916';
 
 // "Shiv" method for older IE browsers; required for parsing media tags
 jwplayer.vid = document.createElement("video");

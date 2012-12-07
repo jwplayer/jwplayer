@@ -100,10 +100,16 @@ package com.longtailvideo.jwplayer.utils {
 		}
 
 		private function setConfigParam(name:String, value:*):void {
-			if (value is String) value = Strings.serialize(Strings.trim(value));
-			if (name != "fullscreen") {
-				_config[name.toLowerCase()] = value;
+			// A list of forbidden config params 
+			var disallowed:Vector.<RegExp> = new <RegExp>[ /fullscreen/i, /controlbar\./i, /playlist\./i ];
+			
+			// If a forbidden param gets matched, exit without setting the parameter.
+			for each(var regex:RegExp in disallowed) {
+				if (regex.test(name)) return;	
 			}
+			
+			if (value is String) value = Strings.serialize(Strings.trim(value));
+			_config[name.toLowerCase()] = value;
 		}
 
 	}
