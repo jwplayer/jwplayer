@@ -438,6 +438,7 @@ jwplayer.source = document.createElement("source");/**
 			"m4v": video,
 			"mp4": video,
 			"aac": video,
+			"f4a": video,
 			"mp3": "sound",
 			"smil": "rtmp",
 			"m3u8": "hls"
