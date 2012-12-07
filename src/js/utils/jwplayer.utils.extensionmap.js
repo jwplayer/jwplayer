@@ -13,7 +13,7 @@
 		webm = "webm",
 		ogg = "ogg",
 		aac = "aac",
-		mp3 = "mpeg",
+		mp3 = "mp3",
 		vorbis = "vorbis",
 		
 		mimeMap = {
