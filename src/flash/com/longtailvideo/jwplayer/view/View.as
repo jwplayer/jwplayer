@@ -240,16 +240,21 @@ package com.longtailvideo.jwplayer.view {
 			if (!isError) {
 				_root.visible = true;
 			} else {
-				var errorMessage:TextField = new TextField();
-				errorMessage.defaultTextFormat = new TextFormat("_sans", 15, 0xffffff, false, false, false, null, null, TextFormatAlign.CENTER);
-				errorMessage.text = errorMsg.replace(":", ":\n");
-				errorMessage.width = RootReference.stage.stageWidth - 300;
-				errorMessage.height = errorMessage.textHeight + 10;
-				errorMessage.autoSize = TextFieldAutoSize.CENTER;
-
-				errorMessage.x = (RootReference.stage.stageWidth - errorMessage.textWidth) / 2;
-				errorMessage.y = (RootReference.stage.stageHeight - errorMessage.textHeight) / 2;
-				RootReference.stage.addChild(errorMessage);
+				// Make this asynchronous; fixes an issue in IE9/Flash 11.4+
+				setTimeout(function():void {
+					var errorMessage:TextField = new TextField();
+					errorMessage.defaultTextFormat = new TextFormat("_sans", 15, 0xffffff, false, false, false, null, null, TextFormatAlign.CENTER);
+					errorMessage.text = errorMsg.replace(":", ":\n");
+					var stageWidth:Number = RootReference.stage.stageWidth;
+					var stg:Stage = RootReference.stage;
+					errorMessage.width = RootReference.stage.stageWidth - 300;
+					errorMessage.height = errorMessage.textHeight + 10;
+					errorMessage.autoSize = TextFieldAutoSize.CENTER;
+	
+					errorMessage.x = (RootReference.stage.stageWidth - errorMessage.textWidth) / 2;
+					errorMessage.y = (RootReference.stage.stageHeight - errorMessage.textHeight) / 2;
+					RootReference.stage.addChild(errorMessage);
+				}, 0);
 			}
 		}
 
