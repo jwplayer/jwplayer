@@ -438,7 +438,9 @@
 					}
 					//	Do live stream subscription, for Edgecast/Limelight.
 					if (getConfigProperty('subscribe')) {
-						_connection.call("FCSubscribe", null, _levels[_level].id);
+						for (var i:Number = 0; i < _levels.length; i++) {
+							_connection.call("FCSubscribe", null, _levels[i].id);	
+						}
 					} else {
 						// No subscription? Then simply setup the connection.
 						setStream();
