@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.1.2930';
+	jwplayer.html5.version = '6.1.2935';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -3633,7 +3633,8 @@
 		}
 		
 		function _styleIcon(name, selector, style, overstyle) {
-			var skinElem = _getSkinElement(name); 
+			var skinElem = _getSkinElement(name);
+			if (name == "replayIcon" && !skinElem.src) skinElem = _getSkinElement("playIcon"); 
 
 			style = utils.extend({}, style);
 			if (name.indexOf("Icon") > 0) _iconWidth = skinElem.width;

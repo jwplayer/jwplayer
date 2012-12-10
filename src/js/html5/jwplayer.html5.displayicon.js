@@ -91,7 +91,8 @@
 		}
 		
 		function _styleIcon(name, selector, style, overstyle) {
-			var skinElem = _getSkinElement(name); 
+			var skinElem = _getSkinElement(name);
+			if (name == "replayIcon" && !skinElem.src) skinElem = _getSkinElement("playIcon"); 
 
 			style = utils.extend({}, style);
 			if (name.indexOf("Icon") > 0) _iconWidth = skinElem.width;
