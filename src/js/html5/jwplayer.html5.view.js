@@ -686,6 +686,14 @@
 			}
 		}
 
+		this.destroy = function () {
+			DOCUMENT.removeEventListener('webkitfullscreenchange', _fullscreenChangeHandler, FALSE);
+			DOCUMENT.removeEventListener('mozfullscreenchange', _fullscreenChangeHandler, FALSE);
+			_videoTag.removeEventListener('webkitbeginfullscreen', _fullscreenChangeHandler, FALSE);
+			_videoTag.removeEventListener('webkitendfullscreen', _fullscreenChangeHandler, FALSE);
+			DOCUMENT.removeEventListener('keydown', _keyHandler, FALSE);
+		}
+
 		_init();
 
 		

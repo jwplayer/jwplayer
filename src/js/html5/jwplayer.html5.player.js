@@ -101,6 +101,12 @@
 					_instreamPlayer.jwInstreamDestroy();
 				}
 			}
+
+			_api.jwPlayerDestroy = function() {
+				if (_view) {
+					_view.destroy();
+				}
+			}
 			
 			/** Events **/
 			_api.jwAddEventListener = _controller.addEventListener;

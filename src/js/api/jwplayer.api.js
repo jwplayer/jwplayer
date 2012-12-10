@@ -231,6 +231,9 @@
 		_this.setControls = function(state) {
 			_callInternal("jwSetControls", state);
 		};
+		_this.destroyPlayer = function () {
+			_callInternal ("jwPlayerDestroy");
+		}
 		
 		var _eventMapping = {
 			onBufferChange: events.JWPLAYER_MEDIA_BUFFER,
