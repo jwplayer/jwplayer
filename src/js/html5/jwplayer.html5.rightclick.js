@@ -95,6 +95,10 @@
 		this.element = function() {
 			return _menu;
 		}
+
+		this.destroy = function() {
+			DOCUMENT.removeEventListener("mousedown", _hideContext, false);
+		}
 		
 		_init();
 	};

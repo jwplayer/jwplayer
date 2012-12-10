@@ -63,6 +63,7 @@
 			_errorState = FALSE,
 			_replayState,
 			_readyState,
+			_rightClickMenu,
 			_fullscreenInterval,
 			_inCB = FALSE,
 			_eventDispatcher = new events.eventdispatcher();
@@ -217,10 +218,10 @@
 			_controlsLayer.appendChild(_dock.element());
 			
 			if (_api.edition) {
-				new html5.rightclick(_api, {abouttext: _model.abouttext, aboutlink: _model.aboutlink});	
+				_rightClickMenu = new html5.rightclick(_api, {abouttext: _model.abouttext, aboutlink: _model.aboutlink});	
 			}
 			else {
-				new html5.rightclick(_api, {});
+				_rightClickMenu = new html5.rightclick(_api, {});
 			}
 			
 			if (_model.playlistsize && _model.playlistposition && _model.playlistposition != "none") {
@@ -692,6 +693,9 @@
 			_videoTag.removeEventListener('webkitbeginfullscreen', _fullscreenChangeHandler, FALSE);
 			_videoTag.removeEventListener('webkitendfullscreen', _fullscreenChangeHandler, FALSE);
 			DOCUMENT.removeEventListener('keydown', _keyHandler, FALSE);
+			if (_rightClickMenu) {
+				_rightClickMenu.destroy();
+			}
 		}
 
 		_init();
