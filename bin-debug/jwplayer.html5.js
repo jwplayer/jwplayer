@@ -5329,6 +5329,12 @@
 					_instreamPlayer.jwInstreamDestroy();
 				}
 			}
+
+			_api.jwPlayerDestroy = function() {
+				if (_view) {
+					_view.destroy();
+				}
+			}
 			
 			/** Events **/
 			_api.jwAddEventListener = _controller.addEventListener;
@@ -7875,6 +7881,14 @@
 				width: controls ? bounds.width : 0,
 				height: controls ? bounds.height : 0
 			}
+		}
+
+		this.destroy = function () {
+			DOCUMENT.removeEventListener('webkitfullscreenchange', _fullscreenChangeHandler, FALSE);
+			DOCUMENT.removeEventListener('mozfullscreenchange', _fullscreenChangeHandler, FALSE);
+			_videoTag.removeEventListener('webkitbeginfullscreen', _fullscreenChangeHandler, FALSE);
+			_videoTag.removeEventListener('webkitendfullscreen', _fullscreenChangeHandler, FALSE);
+			DOCUMENT.removeEventListener('keydown', _keyHandler, FALSE);
 		}
 
 		_init();

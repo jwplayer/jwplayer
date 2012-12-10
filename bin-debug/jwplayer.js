@@ -2297,6 +2297,9 @@ jwplayer.source = document.createElement("source");/**
 		_this.setControls = function(state) {
 			_callInternal("jwSetControls", state);
 		};
+		_this.destroyPlayer = function () {
+			_callInternal ("jwPlayerDestroy");
+		}
 		
 		var _eventMapping = {
 			onBufferChange: events.JWPLAYER_MEDIA_BUFFER,
@@ -2636,6 +2639,9 @@ jwplayer.source = document.createElement("source");/**
 //			}
 			
 			if (toDestroy) {
+				if (player.renderingMode == "html5") {
+					player.destroyPlayer();
+				}
 				var replacement = DOCUMENT.createElement('div');
 				replacement.id = id;
 				toDestroy.parentNode.replaceChild(replacement, toDestroy);

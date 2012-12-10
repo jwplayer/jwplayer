@@ -573,6 +573,9 @@
 //			}
 			
 			if (toDestroy) {
+				if (player.renderingMode == "html5") {
+					player.destroyPlayer();
+				}
 				var replacement = DOCUMENT.createElement('div');
 				replacement.id = id;
 				toDestroy.parentNode.replaceChild(replacement, toDestroy);
