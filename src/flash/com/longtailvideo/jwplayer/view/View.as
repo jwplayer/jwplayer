@@ -382,6 +382,7 @@ package com.longtailvideo.jwplayer.view {
 					if (_completeState) _components.dock.show();
 				}
 				_components.controlbar.audioMode(false);
+				_components.logo.show();
 				showMedia();
 			}
 			
@@ -737,7 +738,7 @@ package com.longtailvideo.jwplayer.view {
 			if (_preventFade) return;
 			if (!_completeState) _components.dock.hide();
 			_components.controlbar.hide();
-			_components.logo.hide();
+			_components.logo.hide(audioMode);
 		}
 		
 		private function showControls():void {
@@ -745,7 +746,7 @@ package com.longtailvideo.jwplayer.view {
 				_components.controlbar.show();
 				_components.dock.show();
 			}
-			_components.logo.show();
+			if (!audioMode) _components.logo.show();
 		}
 		
 		/** If the mouse leaves the stage, hide the controlbar if position is 'over' **/
