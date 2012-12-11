@@ -192,6 +192,8 @@
 		this.supportsConfig = function() {
 			if (_flashVersion) {
 				if (_options) {
+					if (utils.typeOf(_options.playlist) == "string") return true;
+
 					try {
 						var item = _options.playlist[0],
 							sources = item.sources;
