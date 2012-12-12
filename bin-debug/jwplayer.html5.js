@@ -6,7 +6,7 @@
  */
 (function(jwplayer) {
 	jwplayer.html5 = {};
-	jwplayer.html5.version = '6.1.2948';
+	jwplayer.html5.version = '6.1.2951';
 })(jwplayer);/**
  * HTML5-only utilities for the JW Player.
  * 
@@ -7702,7 +7702,6 @@
 			_hideControlbar();
 			_hideDock();
 			_hideLogo();
-			_sendControlsEvent();
 		}
 
 		function _showControls() {

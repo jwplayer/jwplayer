@@ -500,7 +500,6 @@
 			_hideControlbar();
 			_hideDock();
 			_hideLogo();
-			_sendControlsEvent();
 		}
 
 		function _showControls() {
