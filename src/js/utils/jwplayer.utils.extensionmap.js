@@ -22,7 +22,7 @@
 			ogg: video+ogg,
 			webm: video+webm,
 			aac: audio+mp4,
-			mp3: audio+mp3,
+			mp3: audio+"mpeg",
 			hls: "application/vnd.apple.mpegurl"
 		},
 		
