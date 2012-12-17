@@ -9,7 +9,7 @@ package com.longtailvideo.jwplayer.controller {
 	import flash.events.EventDispatcher;
 	import flash.utils.Dictionary;
 	
-	import mx.core.IFlexDisplayObject;
+//	import mx.core.IFlexDisplayObject;
 
 	/**
 	 * Sent when the plugin loader has loaded all valid plugins.
@@ -40,7 +40,7 @@ package com.longtailvideo.jwplayer.controller {
 		private var errorState:Boolean = false;
 		
 		// So plugins can embed assets
-		private var flexDisplay:IFlexDisplayObject;
+//		private var flexDisplay:IFlexDisplayObject;
 		
 		public function PluginLoader() {
 			loaders = new Dictionary();
