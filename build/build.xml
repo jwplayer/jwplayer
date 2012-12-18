@@ -38,6 +38,12 @@
 			<fileset dir="${basedir}/src/js/api" includes="jwplayer.*.js" excludes="jwplayer.api.js" />
 			<fileset dir="${basedir}/src/js" includes="jwplayer.sourceend.js" />
 		</concat>
+		<!-- Set the player version -->
+		<replaceregexp 
+			file="${outputpath}"
+			match="jwplayer\.version = '(.*)'\;"
+			replace="jwplayer\.version = '${application.majorversion}.${application.minorversion}.${jwplayer.version}'\;"
+		/>
 	</target>
 
 	<target name="build-html5">
@@ -49,9 +55,15 @@
 			<fileset dir="${basedir}/src/js/html5/parsers" includes="jwplayer.html5.parsers*.js" excludes="jwplayer.html5.parsers.js" />
 			<fileset dir="${basedir}/src/js/html5" includes="jwplayer.html5*.js" excludes="jwplayer.html5.js" />
 		</concat>
+		<!-- Set the player version -->
+		<replaceregexp 
+			file="${outputpath}"
+			match="jwplayer\.html5\.version = '(.*)'\;"
+			replace="jwplayer\.html5\.version = '${application.majorversion}.${application.minorversion}.${jwplayer.version}'\;"
+		/>
 	</target>
 
-	<target name="debug-js">
+	<target name="debug-js" depends="get-revision">
 		<antcall target="build-embedder">
 			<param name="outputpath" value="${debug.dir}/jwplayer.js"/>
 		</antcall>
@@ -98,7 +110,7 @@
 	</target>
 	
 	
-	<target name="build-swf">
+	<target name="build-swf" depends="get-revision">
 		<condition property="debugLine" value="-debug=true" else="">
 			<isset property="debug" />
 		</condition>
@@ -108,6 +120,8 @@
 		<condition property="incrementLine" value="-incremental=true" else="">
 			<isset property="increment" />
 		</condition>
+		
+		<property name="version" value='"${application.majorversion}.${application.minorversion}.${jwplayer.version}"' />
 		
 		<exec executable="${mxmlc.exe}" dir="${basedir}" failonerror="true">
 			<!-- Point to the main class .as file -->
@@ -145,6 +159,9 @@
 
 			<!-- Enable debugging -->
 			<arg line="${debugLine}" />
+			
+			<!-- Player version -->
+			<arg line="-define=JWPLAYER::version,'${version}'"/>
 
 		</exec>
 	</target>
@@ -156,16 +173,36 @@
 		<antcall target="release-flash" />
 	</target>
 
+	<target name="get-revision">
+        <exec executable="svn" outputproperty="revision" dir="${basedir}" failifexecutionfails="false">
+            <arg line="info"/>
+        	<redirector>
+        		<outputfilterchain>
+        			<linecontainsregexp>
+        				<regexp pattern="^Revision" />
+        			</linecontainsregexp>
+        			<tokenfilter>
+        				<replaceregex pattern="[\D]+(\d+)" replace="\1"/>
+        			</tokenfilter>
+        		</outputfilterchain>
+        	</redirector>
+        </exec>
+		
+		<condition property="jwplayer.version" value="${revision}" else="????">
+			<isset property="revision" />
+		</condition>
+		
+	</target>
+	
+	
 	<!-- Updates various version numbers from SVN -->
-	<target name="update-version">
+	<!--target name="update-version">
 		<antcall target="clean-assets" />
 		<exec executable="svn" failonerror="false" failifexecutionfails="false" dir="${basedir}" >
 			<arg value="up" />
 		</exec>
-		<exec executable="bash" outputproperty="versionnumber" failonerror="false" failifexecutionfails="false" dir="${basedir}" resultproperty="execresult">
-			<arg value="-c" />
-			<arg value="echo '1+'`svn info | grep Revision | sed s\/Revision\\:\\ \/\/` | bc" />
-		</exec>
+		<antcall "get-revision" />
+
 		<condition property="jsmatch" value="jwplayer\.version = '(.*)'\;" else="@%%@">
 			<equals arg1="${execresult}" arg2="0" />
 		</condition>
@@ -178,8 +215,7 @@
 		<replaceregexp file="${basedir}/src/js/jwplayer.js" match="${jsmatch}" replace="jwplayer\.version \= '${application.majorversion}.${application.minorversion}.${versionnumber}';" byline="true"/>
 		<replaceregexp file="${basedir}/src/js/html5/jwplayer.html5.js" match="${html5match}" replace="jwplayer\.html5\.version \= '${application.majorversion}.${application.minorversion}.${versionnumber}';" byline="true"/>
 		<replaceregexp file="${basedir}/src/flash/com/longtailvideo/jwplayer/player/PlayerVersion.as" match="${flashmatch}" replace="protected static var _version\:String \= '${application.majorversion}.${application.minorversion}.${versionnumber}';" byline="true"/>
-		<!--replace file="${basedir}/jwplayer.js" token=", logoConfig);" value=");" /-->
-	</target>
+	</target-->
 	
 	
 	<!-- Clean out a directory -->
