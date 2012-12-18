@@ -143,6 +143,10 @@
 		}
 
 		function _canPlayHandler(evt) {
+		    if (evt.type == "loadedmetadata") {
+                
+                _sendEvent(events.JWPLAYER_MEDIA_META);
+            }
 			_generalHandler(evt);
 			if (!_attached) return;
 			if (!_canSeek) {
