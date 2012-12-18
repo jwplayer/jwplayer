@@ -77,11 +77,11 @@
 		<!--replace file="${basedir}/jwplayer.min.js" token=", logoConfig);" value=");"/-->
 		<java jar="${basedir}/build/yuicompressor-2.4.2.jar" fork="true">
 			<arg line="'${debug.dir}/jwplayer.js'"/>
-			<arg line="-o '${basedir}/jwplayer.js'"/>
+			<arg line="-o '${release.dir}/jwplayer.js'"/>
 		</java>
 		<java jar="${basedir}/build/yuicompressor-2.4.2.jar" fork="true">
 			<arg line="'${debug.dir}/jwplayer.html5.js'"/>
-			<arg line="-o '${basedir}/jwplayer.html5.js'"/>
+			<arg line="-o '${release.dir}/jwplayer.html5.js'"/>
 		</java>
 	</target>
 	
@@ -105,7 +105,7 @@
 			<param name="class" value="${application.class}" />
 			<param name="package" value="${application.package}" />
 			<param name="optimize" value="true" />
-			<param name="outputPath" value="${basedir}"/>
+			<param name="outputPath" value="${release.dir}"/>
 		</antcall>
 	</target>
 	
