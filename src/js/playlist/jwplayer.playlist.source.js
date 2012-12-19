@@ -29,6 +29,8 @@
 		if (_source.type && _source.type.indexOf("/") > 0) {
 			_source.type = utils.extensionmap.mimeType(_source.type);
 		}
+		if (_source.type == "m3u8") _source.type = "hls";
+		if (_source.type == "smil") _source.type = "rtmp";
 		return _source;
 	};
 	

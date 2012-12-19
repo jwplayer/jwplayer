@@ -65,7 +65,7 @@
 				}
 			}
 				
-			config.playlist = [singleItem];
+			config.playlist = [new playlistitem(singleItem)];
 		} else {
 			// Use JW Player playlist items to normalize sources of existing playlist items
 			for (var i=0; i<config.playlist.length; i++) {

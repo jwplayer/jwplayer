@@ -81,22 +81,6 @@
 				} catch(e) {
 					return false;
 				}
-//				if (_options) {
-//					var item = jwplayer.utils.getFirstPlaylistItemFromConfig(_options);
-//					if (typeof item.file == "undefined" && typeof item.levels == "undefined") {
-//						return true;
-//					} else if (item.file) {
-//						return html5CanPlay(jwplayer.vid, item.file, item.provider, item.playlistfile);
-//					} else if (item.levels && item.levels.length) {
-//						for (var i = 0; i < item.levels.length; i++) {
-//							if (item.levels[i].file && html5CanPlay(jwplayer.vid, item.levels[i].file, item.provider, item.playlistfile)) {
-//								return true;
-//							}
-//						}
-//					}
-//				} else {
-//					return true;
-//				}
 			}
 			
 			return false;

@@ -8,13 +8,7 @@
 (function(playlist) {
 	var _item = playlist.item = function(config) {
 		var _playlistitem = jwplayer.utils.extend({}, _item.defaults, config);
-		
-/*
-		if (_playlistitem.type) {
-			_playlistitem.provider = _playlistitem.type;
-			delete _playlistitem.type;
-		}
-*/		
+
 		if (_playlistitem.sources.length == 0) {
 			_playlistitem.sources = [new playlist.source(_playlistitem)];
 		}
@@ -23,14 +17,6 @@
 		for (var i=0; i < _playlistitem.sources.length; i++) {
 			_playlistitem.sources[i] = new playlist.source(_playlistitem.sources[i]);
 		}
-/*		
- * 
-		if (!_playlistitem.provider) {
-			_playlistitem.provider = _getProvider(_playlistitem.levels[0]);
-		} else {
-			_playlistitem.provider = _playlistitem.provider.toLowerCase();
-		}
-*/
 
 		return _playlistitem;
 	};
