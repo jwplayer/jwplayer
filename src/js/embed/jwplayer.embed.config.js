@@ -33,6 +33,9 @@
 			_config.playlistposition = _config.listbar.position;
 		}
 		
+		if (_config.flashplayer) _modes.flash.src = _config.flashplayer;
+		if (_config.html5player) _modes.html5.src = _config.html5player;
+		
 		_normalizePlaylist(_config);
 		
 		return _config;
