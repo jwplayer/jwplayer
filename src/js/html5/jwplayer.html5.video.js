@@ -145,7 +145,7 @@
 		function _canPlayHandler(evt) {
 		    if (evt.type == "loadedmetadata") {
                 
-                _sendEvent(events.JWPLAYER_MEDIA_META);
+                _sendEvent(events.JWPLAYER_MEDIA_META,{duration:_videotag.duration,height:_videotag.videoHeight,width:_videotag.videoWidth});
             }
 			_generalHandler(evt);
 			if (!_attached) return;
