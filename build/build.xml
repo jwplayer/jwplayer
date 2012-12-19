@@ -227,12 +227,14 @@
 	<!--
 		 Builds the player code library used by plugins
 	-->
-	<target name="build-lib">
+	<target name="build-lib" depends="get-revision">
 		<!-- Clean the SDK directory -->
 		<antcall target="clean-dir">
 			<param name="clean-directory" value="${sdk.dir}"/>
 		</antcall>
-
+		
+		<property name="version" value='"${application.majorversion}.${application.minorversion}.${jwplayer.version}"' />
+		
 		<!-- Build the library SWC -->
 		<exec executable="${compc.exe}" dir="${src.dir}" failonerror="true">
 			<arg line="-source-path ." />
@@ -244,7 +246,10 @@
 			<arg line="-target-player=${flexsdk.target}" />
 			<arg line="-include-classes com.longtailvideo.jwplayer.player.Player" />
 			<arg line="-compiler.external-library-path+='${lib.dir}'" />
+			<!-- Player version -->
+			<arg line="-define=JWPLAYER::version,'${version}'"/>
 		</exec>
+		
 	</target>
 
 </project>
