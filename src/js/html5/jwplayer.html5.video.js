@@ -143,16 +143,17 @@
 		}
 
 		function _canPlayHandler(evt) {
-		    if (evt.type == "loadedmetadata") {
-                
-                _sendEvent(events.JWPLAYER_MEDIA_META,{duration:_videotag.duration,height:_videotag.videoHeight,width:_videotag.videoWidth});
-            }
+
 			_generalHandler(evt);
 			if (!_attached) return;
 			if (!_canSeek) {
 				_canSeek = true;
 				_sendBufferFull();
 			}
+			if (evt.type == "loadedmetadata") {
+                
+                _sendEvent(events.JWPLAYER_MEDIA_META,{duration:_videotag.duration,height:_videotag.videoHeight,width:_videotag.videoWidth});
+            }
 		}
 		
 		function _progressHandler(evt) {
