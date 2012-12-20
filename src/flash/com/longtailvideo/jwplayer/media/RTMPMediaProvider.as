@@ -1,16 +1,13 @@
 ﻿package com.longtailvideo.jwplayer.media {
     import com.longtailvideo.jwplayer.events.MediaEvent;
-    import com.longtailvideo.jwplayer.events.PlayerEvent;
     import com.longtailvideo.jwplayer.model.PlayerConfig;
     import com.longtailvideo.jwplayer.model.PlaylistItem;
-    import com.longtailvideo.jwplayer.model.PlaylistItemLevel;
     import com.longtailvideo.jwplayer.parsers.SMILParser;
     import com.longtailvideo.jwplayer.player.PlayerState;
     import com.longtailvideo.jwplayer.utils.*;
     import com.wowza.encryptionAS3.TEA;
     
     import flash.events.*;
-    import flash.external.ExternalInterface;
     import flash.geom.Rectangle;
     import flash.media.*;
     import flash.net.*;
@@ -325,12 +322,8 @@
 					setState(PlayerState.BUFFERING);
 				}
 			} else {
-				// Start stream. If _type it is VOD for sure.
-				if(_type) {
-					_stream.play(_levels[_level].id,0);
-				} else {
-					_stream.play(_levels[_level].id);
-				}
+				// Start stream.
+				_stream.play(_levels[_level].id);
 			}
 			clearInterval(_interval);
 			_interval = setInterval(positionInterval, 100);
