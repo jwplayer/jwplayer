@@ -19,7 +19,7 @@
 				width: 480,
 				base: config.base ? config.base : utils.getScriptPath("jwplayer.js")
 			},
-			_config = utils.extend(_defaults, config),
+			_config = utils.extend(_defaults, jwplayer.defaults, config),
 			_modes = {
 			    html5: { type: "html5", src: _config.base + "jwplayer.html5.js" },
 				flash: { type: "flash", src: _config.base + "jwplayer.flash.swf" }
