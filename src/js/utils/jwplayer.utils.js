@@ -204,12 +204,18 @@
 		if (utils.isAndroid()) return 0;
 		
 		var plugins = NAVIGATOR.plugins, flash;
-		if (plugins != UNDEFINED) {
-			flash = plugins['Shockwave Flash'];
-			if (flash) {
-				return parseInt(flash.description.replace(/\D+(\d+)\..*/, "$1"));
+		
+		try {
+			if (plugins !== UNDEFINED) {
+				flash = plugins['Shockwave Flash'];
+				if (flash) {
+					return parseInt(flash.description.replace(/\D+(\d+)\..*/, "$1"));
+				}
 			}
+		} catch(e) {
+			// The above evaluation (plugins != undefined) messes up IE7
 		}
+		
 		if (typeof WINDOW.ActiveXObject != UNDEFINED) {
 			try {
 				flash = new ActiveXObject("ShockwaveFlash.ShockwaveFlash");

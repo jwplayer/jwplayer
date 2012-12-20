@@ -191,9 +191,9 @@ package com.longtailvideo.jwplayer.utils {
 			if (path.indexOf("/") === 0) {
 				patharray = path.split("/");
 			} else {
-				var basepath:String = basepath.split("?")[0];
-				basepath = basepath.substring(protocol.length + domain.length + 1, basepath.lastIndexOf('/'));
-				patharray = basepath.split("/").concat(path.split("/"));
+				var newbase:String = basepath.split("?")[0];
+				newbase = newbase.substring(protocol.length + domain.length + 1, newbase.lastIndexOf('/'));
+				patharray = newbase.split("/").concat(path.split("/"));
 			}
 			var result:Array = [];
 			for (var i:int = 0; i < patharray.length; i++) {
