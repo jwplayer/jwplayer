@@ -234,6 +234,7 @@ package com.longtailvideo.jwplayer.model {
 			switch (extension) {
 				case "flv": 
 					return "flv";
+				case "mov":
 				case "f4v":
 				case "m4v": 
 				case "mp4":

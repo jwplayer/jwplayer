@@ -4,14 +4,29 @@
     import com.longtailvideo.jwplayer.model.PlaylistItem;
     import com.longtailvideo.jwplayer.parsers.SMILParser;
     import com.longtailvideo.jwplayer.player.PlayerState;
-    import com.longtailvideo.jwplayer.utils.*;
+    import com.longtailvideo.jwplayer.utils.AssetLoader;
+    import com.longtailvideo.jwplayer.utils.NetClient;
+    import com.longtailvideo.jwplayer.utils.RootReference;
+    import com.longtailvideo.jwplayer.utils.Stretcher;
     import com.wowza.encryptionAS3.TEA;
     
-    import flash.events.*;
+    import flash.events.AsyncErrorEvent;
+    import flash.events.ErrorEvent;
+    import flash.events.Event;
+    import flash.events.IOErrorEvent;
+    import flash.events.NetStatusEvent;
+    import flash.events.SecurityErrorEvent;
     import flash.geom.Rectangle;
-    import flash.media.*;
-    import flash.net.*;
-    import flash.utils.*;
+    import flash.media.SoundTransform;
+    import flash.media.Video;
+    import flash.net.NetConnection;
+    import flash.net.NetStream;
+    import flash.net.NetStreamPlayOptions;
+    import flash.net.NetStreamPlayTransitions;
+    import flash.net.ObjectEncoding;
+    import flash.net.Responder;
+    import flash.utils.clearInterval;
+    import flash.utils.setInterval;
 
 
 	/**
@@ -202,6 +217,7 @@
 					url = parts.join("?");
 					break;
 				case '.mp4':
+				case '.mov':
 				case '.m4v':
 				case '.f4v':
 					_type = 'mp4';

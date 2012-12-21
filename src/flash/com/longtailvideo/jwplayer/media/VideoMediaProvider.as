@@ -5,14 +5,24 @@ package com.longtailvideo.jwplayer.media {
 	import com.longtailvideo.jwplayer.model.PlayerConfig;
 	import com.longtailvideo.jwplayer.model.PlaylistItem;
 	import com.longtailvideo.jwplayer.player.PlayerState;
-	import com.longtailvideo.jwplayer.utils.*;
+	import com.longtailvideo.jwplayer.utils.NetClient;
+	import com.longtailvideo.jwplayer.utils.RootReference;
+	import com.longtailvideo.jwplayer.utils.Stretcher;
+	import com.longtailvideo.jwplayer.utils.Strings;
 	
-	import flash.events.*;
-	import flash.external.ExternalInterface;
+	import flash.events.AsyncErrorEvent;
+	import flash.events.ErrorEvent;
+	import flash.events.Event;
+	import flash.events.IOErrorEvent;
+	import flash.events.NetStatusEvent;
 	import flash.geom.Rectangle;
-	import flash.media.*;
-	import flash.net.*;
-	import flash.utils.*;
+	import flash.media.SoundTransform;
+	import flash.media.Video;
+	import flash.net.NetConnection;
+	import flash.net.NetStream;
+	import flash.utils.clearInterval;
+	import flash.utils.setInterval;
+	import flash.utils.setTimeout;
 
 
 	/**
