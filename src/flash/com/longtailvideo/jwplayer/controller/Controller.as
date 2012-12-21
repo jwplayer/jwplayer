@@ -83,6 +83,8 @@ package com.longtailvideo.jwplayer.controller {
 		protected var _preplay:Boolean = false;
 		/** Set the playlist index to this on next play (after playlist complete) **/
 		protected var _loadOnPlay:Number = -1;
+		/** Whether to stop the playlist onComplete **/
+		protected var _stopPlaylist:Boolean = false;
 
 		/** Reference to a PlaylistItem which has triggered an external MediaProvider load **/
 		protected var _delayedItem:PlaylistItem;
@@ -216,6 +218,12 @@ package com.longtailvideo.jwplayer.controller {
 		protected function completeHandler(evt:MediaEvent=null):void {
 			if (locking) {
 				_completeOnUnlock = true;
+				return;
+			}
+			
+			if (_stopPlaylist) {
+				// This happens if stop() is called onComplete
+				_stopPlaylist = false;
 				return;
 			}
 			
@@ -438,6 +446,9 @@ package com.longtailvideo.jwplayer.controller {
 				case PlayerState.PAUSED:
 					_model.media.stop();
 					return true;
+					break;
+				default:
+					_stopPlaylist = true;
 					break;
 			}
 			

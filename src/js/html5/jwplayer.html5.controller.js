@@ -19,7 +19,8 @@
 			_ready = false,
 			_loadOnPlay = -1,
 			_preplay, 
-			_actionOnAttach, 
+			_actionOnAttach,
+			_stopPlaylist = false,
 			_interruptPlay,
 			_queuedCalls = [];
 		
@@ -149,6 +150,8 @@
 			try {
 				if (!_isIdle()) {
 					_video.stop();
+				} else {
+					_stopPlaylist = true;
 				}
 				if (_preplay) {
 					_interruptPlay = true;
@@ -223,7 +226,12 @@
 			if (!_isIdle()) {
 				// Something has made an API call before the complete handler has fired.
 				return;
+			} else if (_stopPlaylist) {
+				// Stop called in onComplete event listener
+				_stopPlaylist = false;
+				return;
 			}
+				
 			_actionOnAttach = _completeHandler;
 			if (_model.repeat) {
 				_next();
@@ -306,7 +314,11 @@
 		this.play = _waitForReady(_play);
 		this.pause = _waitForReady(_pause);
 		this.seek = _waitForReady(_seek);
-		this.stop = _waitForReady(_stop);
+		this.stop = function() {
+			// Something has called stop() in an onComplete handler
+			_stopPlaylist = true;
+			_waitForReady(_stop);
+		}
 		this.load = _waitForReady(_load);
 		this.next = _waitForReady(_next);
 		this.prev = _waitForReady(_prev);
