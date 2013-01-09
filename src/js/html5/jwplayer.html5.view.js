@@ -18,6 +18,7 @@
 
 		DOCUMENT = document, 
 		PLAYER_CLASS = "jwplayer", 
+		PLAYER_CONTAINER_CLASS = "jwcontainer", 
 		FULLSCREEN_SELECTOR = "."+PLAYER_CLASS+".jwfullscreen",
 		VIEW_MAIN_CONTAINER_CLASS = "jwmain",
 		VIEW_INSTREAM_CONTAINER_CLASS = "jwinstream",
@@ -116,10 +117,7 @@
 			_container.appendChild(_controlsLayer);
 			_container.appendChild(_instreamLayer);
 			
-			var newContainer = _createElement("div");
-			newContainer.style.position="absolute";
-			newContainer.style.width="100%";
-			newContainer.style.height="100%";
+			var newContainer = _createElement("div", PLAYER_CONTAINER_CLASS);
 			newContainer.appendChild(_container);
 			newContainer.appendChild(_playlistLayer);
 			_playerElement.appendChild(newContainer);
@@ -710,12 +708,18 @@
 
 	// Container styles
 	_css('.' + PLAYER_CLASS, {
-		position: "relative",
+		//position: "relative",
 		opacity: 0,
 		'min-height': utils.isMobile() ? 200 : 0,
     	'-webkit-transition': JW_CSS_SMOOTH_EASE,
     	'-moz-transition': JW_CSS_SMOOTH_EASE,
     	'-o-transition': JW_CSS_SMOOTH_EASE
+	});
+
+	_css('.' + PLAYER_CONTAINER_CLASS, {
+		position: "relative",
+		width: JW_CSS_100PCT,
+		height: JW_CSS_100PCT
 	});
 
 	_css('.' + VIEW_MAIN_CONTAINER_CLASS, {
