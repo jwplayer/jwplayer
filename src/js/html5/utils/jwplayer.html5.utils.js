@@ -188,7 +188,6 @@
 			return (hrs ? hrs + ":" : "") 
 					+ (mins < 10 ? "0" : "") + mins + ":"
 					+ (secs < 10 ? "0" : "") + secs;
-			return str;
 		} else {
 			return "00:00";
 		}

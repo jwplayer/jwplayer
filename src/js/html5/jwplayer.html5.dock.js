@@ -248,10 +248,8 @@
 
 	_css(D_CLASS, {
 	  	position: "absolute",
-	  	//visibility: "hidden",
 	  	width: JW_CSS_100PCT,
-	  	opacity: 0,
-		//overflow: "hidden"
+	  	opacity: 0
 	});
 		
 	_css(D_CLASS + " > *", {

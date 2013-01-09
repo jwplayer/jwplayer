@@ -49,7 +49,6 @@
 			_wrapper,
 			_container,
 			_playlist,
-			_items,
 			_ul,
 			_lastCurrent = -1,
 			_clickedIndex,
@@ -73,11 +72,11 @@
 		};
 		
 		this.show = function() {
-			_show(_wrapper);
+			utils.show(_wrapper);
 		}
 
 		this.hide = function() {
-			_hide(_wrapper);
+			utils.hide(_wrapper);
 		}
 
 
@@ -271,14 +270,12 @@
 			if (!_playlist) {
 				return;
 			}
-			items = [];
 			_ul = _createList();
 			
 			for (var i=0; i<_playlist.length; i++) {
 				var li = _createItem(i);
 				li.onclick = _clickHandler(i);
 				_appendChild(_ul, li);
-				items.push(li);
 			}
 			
 			_lastCurrent = _api.jwGetPlaylistIndex();

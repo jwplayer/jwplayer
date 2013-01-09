@@ -24,7 +24,7 @@
 			_api=api, _model=model, _view=view, _controller=controller,
 			_video, _oldsrc, _oldsources, _oldpos, _oldstate, _olditem,
 			_provider, _cbar, _disp, _instreamMode = false,
-			_dispatcher, _instreamContainer,
+			_dispatcher, _instreamContainer, _fakemodel,
 			_self = this;
 
 

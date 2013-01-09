@@ -254,10 +254,10 @@
 
 		/** NOT SUPPORTED : Using this for now to hack around instream API **/
 		this.setAlternateClickHandler = function(handler) {
-			_alternateClickHandler = handler;
+			//_alternateClickHandler = handler;
 		}
 		this.revertAlternateClickHandler = function() {
-			_alternateClickHandler = undefined;
+			//_alternateClickHandler = undefined;
 		}
 
 		_init();

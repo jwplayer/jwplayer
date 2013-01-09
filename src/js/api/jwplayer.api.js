@@ -285,7 +285,6 @@
 		_this.remove = function() {
 			if (!_playerReady) {
 				throw "Cannot call remove() before player is ready";
-				return;
 			}
 			_remove(this);
 		};

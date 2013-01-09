@@ -143,19 +143,6 @@
 				}, true);
 			}, 0);
 			
-
-				
-			/*
-			_css(_internalSelector('.background'), {
-				'background-repeat': 'repeat-x',
-				'background-size': JW_CSS_100PCT + " " + _bgSkin.height + "px",
-				position: "absolute",
-				width: UNDEFINED,
-				left: _hasCaps ? _capLeftSkin.width : 0,
-				right: _hasCaps ? _capRightSkin.width : 0
-			});
-			*/
-
 		}
 		
 		this.element = function() {

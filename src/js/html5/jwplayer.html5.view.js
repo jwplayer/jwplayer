@@ -51,6 +51,7 @@
 			_videoTag,
 			_videoLayer,
 			_instreamLayer,
+			_instreamMode = FALSE,
 			_controlbar,
 			_display,
 			_dock,
@@ -609,21 +610,26 @@
 		}
 		
 		this.setupInstream = function(instreamDisplay, instreamVideo) {
-			_setVisibility(_internalSelector(VIEW_INSTREAM_CONTAINER_CLASS), TRUE);
+			// Instream not supported in HTML5 mode
+/*			_setVisibility(_internalSelector(VIEW_INSTREAM_CONTAINER_CLASS), TRUE);
 			_setVisibility(_internalSelector(VIEW_CONTROLS_CONTAINER_CLASS), FALSE);
 			_instreamLayer.appendChild(instreamDisplay);
 			_instreamVideo = instreamVideo;
 			_stateHandler({newstate:states.PLAYING});
 			_instreamMode = TRUE;
+*/			
 		}
 		
 		var _destroyInstream = this.destroyInstream = function() {
+			// Instream not supported in HTML5 mode
+/*
 			_setVisibility(_internalSelector(VIEW_INSTREAM_CONTAINER_CLASS), FALSE);
 			_setVisibility(_internalSelector(VIEW_CONTROLS_CONTAINER_CLASS), TRUE);
 			_instreamLayer.innerHTML = "";
 			_instreamVideo = null;
 			_instreamMode = FALSE;
 			_resize(_model.width, _model.height);
+*/			
 		}
 		
 		this.setupError = function(message) {

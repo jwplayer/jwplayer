@@ -15,14 +15,14 @@
 	 * @param {Number} length
 	 * @param {String} padder
 	 */
-	utils.pad = function (string, length, padder) {
+	utils.pad = function (str, length, padder) {
 		if (!padder){
 			padder = "0";
 		}
-		while (string.length < length) {
-			string = padder + string;
+		while (str.length < length) {
+			str = padder + str;
 		}
-		return string;
+		return str;
 	}
 	
 	/**

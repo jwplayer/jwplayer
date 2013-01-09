@@ -182,12 +182,8 @@
 			} catch (err) {
 				_eventDispatcher.sendEvent(events.JWPLAYER_ERROR, err);
 			}
-			return false;
-
 			
-			if (_model.state == states.PLAYING || _model.state == states.BUFFERING) {
-				_video.pause();
-			}
+			return false;
 		}
 		
 		function _isIdle() {

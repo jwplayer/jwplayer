@@ -6,6 +6,7 @@
  */
 (function(jwplayer) {
 	var events = jwplayer.events,
+		utils = jwplayer.utils,
 		states = events.state;
 	
 	jwplayer.api.instream = function(api, player, item, options) {
@@ -64,7 +65,7 @@
 		}		
 		this.dispatchEvent = function(type, calledArguments) {
 			if (_listeners[type]) {
-				var args = _utils.translateEventResponse(type, calledArguments[1]);
+				var args = utils.translateEventResponse(type, calledArguments[1]);
 				for (var l = 0; l < _listeners[type].length; l++) {
 					if (typeof _listeners[type][l] == 'function') {
 						_listeners[type][l].call(this, args);
