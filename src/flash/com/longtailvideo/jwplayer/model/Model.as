@@ -3,7 +3,12 @@ package com.longtailvideo.jwplayer.model {
 	import com.longtailvideo.jwplayer.events.MediaEvent;
 	import com.longtailvideo.jwplayer.events.PlayerEvent;
 	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
-	import com.longtailvideo.jwplayer.media.*;
+	import com.longtailvideo.jwplayer.media.IMediaProvider;
+	import com.longtailvideo.jwplayer.media.MediaProvider;
+	import com.longtailvideo.jwplayer.media.RTMPMediaProvider;
+	import com.longtailvideo.jwplayer.media.SoundMediaProvider;
+	import com.longtailvideo.jwplayer.media.VideoMediaProvider;
+	import com.longtailvideo.jwplayer.media.YouTubeMediaProvider;
 	import com.longtailvideo.jwplayer.player.PlayerState;
 	
 	import flash.events.Event;
@@ -190,7 +195,7 @@ package com.longtailvideo.jwplayer.model {
 
 			if (_currentMedia != newMedia) {
 				if (_currentMedia) {
-					_currentMedia.stop();
+					if (_currentMedia.state != PlayerState.IDLE) _currentMedia.stop();
 					_currentMedia.removeGlobalListener(forwardEvents);
 				}
 				newMedia.addGlobalListener(forwardEvents);

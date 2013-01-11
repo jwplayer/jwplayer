@@ -3,9 +3,6 @@
 	import com.longtailvideo.jwplayer.events.GlobalEventDispatcher;
 	import com.longtailvideo.jwplayer.events.IGlobalEventDispatcher;
 	import com.longtailvideo.jwplayer.events.PlayerEvent;
-	import com.longtailvideo.jwplayer.media.IMediaProvider;
-	import com.longtailvideo.jwplayer.media.MediaProvider;
-	import com.longtailvideo.jwplayer.media.VideoMediaProvider;
 	import com.longtailvideo.jwplayer.model.IInstreamOptions;
 	import com.longtailvideo.jwplayer.model.IPlaylist;
 	import com.longtailvideo.jwplayer.model.InstreamOptions;
@@ -17,14 +14,12 @@
 	import com.longtailvideo.jwplayer.utils.RootReference;
 	import com.longtailvideo.jwplayer.view.IPlayerComponents;
 	import com.longtailvideo.jwplayer.view.View;
-	import com.longtailvideo.jwplayer.view.interfaces.IPlayerComponent;
 	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
 	
 	import flash.display.DisplayObject;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.geom.Rectangle;
-	import flash.utils.setTimeout;
 	
 	
 	/**

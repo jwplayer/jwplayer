@@ -41,7 +41,7 @@
 		JW_CSS_HIDDEN = "hidden";
 
 	html5.view = function(api, model) {
-		var _api = api, 
+		var _api = api,
 			_model = model, 
 			_playerElement,
 			_container,

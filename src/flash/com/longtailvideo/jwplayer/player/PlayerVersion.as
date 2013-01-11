@@ -9,5 +9,6 @@ package com.longtailvideo.jwplayer.player {
 		}
 		
 		public static var id:String = "";
+		public static var edition:String = "";
 	}
 }

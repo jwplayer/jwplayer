@@ -590,7 +590,7 @@ package com.longtailvideo.jwplayer.controller {
 					dispatchEvent(new PlayerStateEvent(PlayerStateEvent.JWPLAYER_PLAYER_STATE, PlayerState.BUFFERING, PlayerState.IDLE));
 				}
 			} catch (err:Error) {
-				Logger.log(err.message, "ERROR");
+				Logger.log(err.message, "Error Loading Item");
 				return false;
 			}
 			Logger.log("Loading PlaylistItem: " + item.toString(), "LOAD");
@@ -625,7 +625,7 @@ package com.longtailvideo.jwplayer.controller {
 
 		protected function loadObject(item:Object):Boolean {
 			if (item.hasOwnProperty('file') || item.hasOwnProperty('levels')) {
-				_model.playlist.load(new PlaylistItem(item));
+				loadPlaylistItem(new PlaylistItem(item));
 				return true;
 			}
 			return false;
