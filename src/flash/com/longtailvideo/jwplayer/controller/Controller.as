@@ -624,7 +624,7 @@ package com.longtailvideo.jwplayer.controller {
 
 
 		protected function loadObject(item:Object):Boolean {
-			if (item.hasOwnProperty('file') || item.hasOwnProperty('levels')) {
+			if (item.hasOwnProperty('file') || item.hasOwnProperty('sources')) {
 				loadPlaylistItem(new PlaylistItem(item));
 				return true;
 			}
