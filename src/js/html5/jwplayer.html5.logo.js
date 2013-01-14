@@ -38,18 +38,6 @@
 		}
 		
 		function _setupConfig() {
-			if (_defaults.prefix) {
-				var version = jwplayer.version.split(/\W/).splice(0, 2).join("/");
-				if (_defaults.prefix.indexOf(version) < 0) {
-					_defaults.prefix += version + "/";
-				}
-			}
-			try {
-				if (utils.isHTTPS()) {
-					_defaults.prefix = _defaults.prefix.replace("http://", "https://ssl.");
-				}
-			} catch(e) {}
-			
 			var linkFlag = _getLinkFlag(_getEdition());
 			_defaults.link = LINK_DEFAULT+jwplayer.version+'&m=h&e='+linkFlag;
 
@@ -168,7 +156,7 @@
 	};
 	
 	logo.defaults = {
-		prefix: "http://p.jwpcdn.com/",
+		prefix: utils.repo(),
 		file: "logo.png",
 		link: LINK_DEFAULT+jwplayer.version+'&m=h&e=f',
 		linktarget: "_top",

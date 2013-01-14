@@ -368,5 +368,18 @@
 	utils.isHTTPS = function() {
 		return (WINDOW.location.href.indexOf("https") == 0);	
 	}
+	
+	/** Gets the repository location **/
+	utils.repo = function() {
+		var repo = "http://p.jwpcdn.com/" + jwplayer.version.split(/\W/).splice(0, 2).join("/") + "/";
+		
+		try {
+			if (utils.isHTTPS()) {
+				repo = repo.replace("http://", "https://ssl.");
+			}
+		} catch(e) {}
+		
+		return repo;
+	}
 
 })(jwplayer);

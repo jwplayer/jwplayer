@@ -28,13 +28,6 @@
 					return url;
 				case utils.pluginPathType.RELATIVE:
 					return utils.getAbsolutePath(url, window.location.href);
-//				case utils.pluginPathType.CDN:
-//					_status = utils.loaderstatus.COMPLETE;
-//					var pluginName = utils.getPluginName(url);
-//					var pluginVersion = utils.getPluginVersion(url);
-					//var repo = (window.location.href.indexOf("https://") == 0) ? _repo.replace("http://", "https://secure") : _repo;
-//					return repo + "/" + jwplayer.version.split(".")[0] + "/" + pluginName + "/" 
-//							+ pluginName + (pluginVersion !== "" ? ("-" + pluginVersion) : "") + ".js";
 			}
 		}
 		

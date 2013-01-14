@@ -24,7 +24,7 @@
 			_file, 
 			_image,
 			_logo = _options.logo ? _options.logo : {
-				prefix: 'http://p.jwpcdn.com/',
+				prefix: utils.repo(),
 				file: 'logo.png',
 				margin: 10
 			};
@@ -61,12 +61,6 @@
 			if (file) {
 				_file = file;
 				_image = image;
-				if (_logo.prefix) {
-					if (utils.isHTTPS()) {
-						_logo.prefix = _logo.prefix.replace('http://', 'https://ssl.');
-					}
-					_logo.prefix += jwplayer.version.split(/\W/).splice(0, 2).join("/");
-				}
 				_buildElements();
 				_styleElements();
 			} else if (youtube) {
