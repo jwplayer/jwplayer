@@ -81,7 +81,7 @@
 		}
 
 		function _load(item) {
-			_stop();
+			_stop(true);
 			
 			switch (utils.typeOf(item)) {
 			case "string":
@@ -145,12 +145,12 @@
 			return false;
 		}
 
-		function _stop() {
+		function _stop(internal) {
 			_actionOnAttach = null;
 			try {
 				if (!_isIdle()) {
 					_video.stop();
-				} else {
+				} else if (!internal) {
 					_stopPlaylist = true;
 				}
 				if (_preplay) {
@@ -234,7 +234,7 @@
 			} else {
 				if (_model.item == _model.playlist.length - 1) {
 					_loadOnPlay = 0;
-					_stop();
+					_stop(true);
 					setTimeout(function() { _eventDispatcher.sendEvent(events.JWPLAYER_PLAYLIST_COMPLETE)}, 0);
 				} else {
 					_next();
