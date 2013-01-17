@@ -81,7 +81,12 @@
 		// Current quality level index
 		_currentQuality = -1,
 		// Reference to self
-		_this = this;
+		_this = this,
+		
+		_beforecompleted = false;
+		;
+		
+		
 		
 		utils.extend(_this, _eventDispatcher);
 
@@ -397,9 +402,15 @@
 			//_stop();
 			if (_state != states.IDLE) {
 				_currentQuality = -1;
-				_setState(states.IDLE);
+
 				_sendEvent(events.JWPLAYER_MEDIA_BEFORECOMPLETE);
-				_sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
+
+				_beforecompleted = true;
+				if (_attached) {
+				    _setState(states.IDLE);
+    				_sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
+    			    _beforecompleted = false; 	
+                }
 			}
 		}
 		
@@ -417,6 +428,11 @@
 		 */
 		_this.attachMedia = function() {
 			_attached = true;
+			if (_beforecompleted) {
+			    _setState(states.IDLE);
+			    _sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
+                _beforecompleted = false;
+			}
 		}
 		
 		// Provide access to video tag

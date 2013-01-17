@@ -165,6 +165,7 @@
 		}
 
 		function _pause(state) {
+		    _actionOnAttach = null;
 			if (!utils.exists(state)) state = true;
 			if (!state) return _play();
 			try {
@@ -313,7 +314,7 @@
 		this.stop = function() {
 			// Something has called stop() in an onComplete handler
 			_stopPlaylist = true;
-			_waitForReady(_stop);
+			_waitForReady(_stop)();
 		}
 		this.load = _waitForReady(_load);
 		this.next = _waitForReady(_next);
