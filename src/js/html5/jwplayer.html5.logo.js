@@ -38,7 +38,7 @@
 		}
 		
 		function _setupConfig() {
-			var linkFlag = _getLinkFlag(_getEdition());
+			var linkFlag = _getLinkFlag(_api.edition());
 			_defaults.link = LINK_DEFAULT+jwplayer.version+'&m=h&e='+linkFlag;
 
 			_settings = utils.extend({}, _defaults, logoConfig);
@@ -104,16 +104,6 @@
 			return;
 		}
 
-		function _getEdition() {
-			if (jwplayer().config.key) {
-				var	licenseKey = new utils.key(jwplayer().config.key);
-				return licenseKey.edition();
-			}
-			else {
-				return OPEN;
-			}
-		}
-
 		function _getLinkFlag(edition) {
 			if (edition == PRO) {
 				return "p";
@@ -124,11 +114,11 @@
 			else if (edition == ADS) {
 				return "a";
 			}
-			else if (edition == OPEN) {
-				return "o";
+			else if (edition == FREE) {
+				return "f";
 			}
 			else {
-				return "f";
+				return "o";
 			}
 		}
 		
