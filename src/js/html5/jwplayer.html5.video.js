@@ -10,7 +10,6 @@
 		events = jwplayer.events, 
 		states = events.state;
 	
-
 	/** HTML5 video class * */
 	jwplayer.html5.video = function(videotag) {
 
@@ -80,13 +79,12 @@
 		_levels,
 		// Current quality level index
 		_currentQuality = -1,
+		// Whether or not we're on an Android device
+		_isAndroid = utils.isAndroid(),
 		// Reference to self
 		_this = this,
 		
 		_beforecompleted = false;
-		;
-		
-		
 		
 		utils.extend(_this, _eventDispatcher);
 
@@ -120,15 +118,20 @@
 		}
 
 		function _durationUpdateHandler(evt) {
+			//_generalHandler(evt);
 			if (!_attached) return;
 			var newDuration = _round(_videotag.duration);
 			if (_duration != newDuration) {
 				_duration = newDuration;
 			}
+			if (_isAndroid && _delayedSeek > 0 && newDuration > _delayedSeek) {
+				_seek(_delayedSeek);
+			}
 			_timeUpdateHandler();
 		}
 
 		function _timeUpdateHandler(evt) {
+			//_generalHandler(evt);
 			if (!_attached) return;
 			if (_state == states.PLAYING && !_dragging) {
 				_position = _round(_videotag.currentTime);
@@ -148,8 +151,7 @@
 		}
 
 		function _canPlayHandler(evt) {
-
-			_generalHandler(evt);
+			//_generalHandler(evt);
 			if (!_attached) return;
 			if (!_canSeek) {
 				_canSeek = true;
@@ -162,9 +164,12 @@
 		}
 		
 		function _progressHandler(evt) {
-			if (_canSeek && _delayedSeek > 0) {
+			//_generalHandler(evt);
+			if (_canSeek && _delayedSeek > 0 && !_isAndroid) {
 				// Need to set a brief timeout before executing delayed seek; IE9 stalls otherwise. 
-				setTimeout(function() { _seek(_delayedSeek); }, 200);
+				setTimeout(function() { 
+					_seek(_delayedSeek);
+				}, 200);
 			}
 		}
 		
@@ -176,6 +181,7 @@
 		}
 
 		function _playHandler(evt) {
+			//_generalHandler(evt);
 			if (!_attached || _dragging) return;
 			
 			if (_videotag.paused) {
