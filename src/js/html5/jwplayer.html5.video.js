@@ -158,7 +158,11 @@
 				_sendBufferFull();
 			}
 			if (evt.type == "loadedmetadata") {
-                
+                //fixes Chrome bug where it doesn't like being muted before video is loaded
+                if (_videotag.muted) {
+                    _videotag.muted = false;
+                    _videotag.muted = true;
+                }
                 _sendEvent(events.JWPLAYER_MEDIA_META,{duration:_videotag.duration,height:_videotag.videoHeight,width:_videotag.videoWidth});
             }
 		}
@@ -184,6 +188,7 @@
 			//_generalHandler(evt);
 			if (!_attached || _dragging) return;
 			
+
 			if (_videotag.paused) {
 				if (_videotag.currentTime == _videotag.duration && _videotag.duration > 3) {
 					// Needed as of Chrome 20
