@@ -349,7 +349,7 @@
 				if (!_videotag.muted) {
 					_lastVolume = _videotag.volume * 100;
 					_videotag.muted = true;
-					_volume(0);
+					//_volume(0);
 				}
 			} else {
 				if (_videotag.muted) {
