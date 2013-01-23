@@ -15,7 +15,6 @@
 		_isIPad = utils.isIPad(),
 		_isIPod = utils.isIPod(),
 		_isAndroid = utils.isAndroid(),
-		_isAndroid23 = utils.isAndroid(2.3),
 
 		DOCUMENT = document, 
 		PLAYER_CLASS = "jwplayer", 
@@ -42,7 +41,7 @@
 		JW_CSS_HIDDEN = "hidden",
 		JW_CSS_NONE = "none",
 		JW_CSS_BLOCK = "block";
-
+	
 	html5.view = function(api, model) {
 		var _api = api,
 			_model = model, 
@@ -527,13 +526,11 @@
 		}
 		
 		function _showVideo(state) {
-			if (_isAndroid23) return;
-
 			state = state && !_audioMode;
 			_css(_internalSelector(VIEW_VIDEO_CONTAINER_CLASS), {
-				//visibility: state ? "visible" : JW_CSS_HIDDEN,
-				//opacity: state ? 1 : 0
-				display: state ? JW_CSS_BLOCK : JW_CSS_NONE
+				visibility: state ? "visible" : JW_CSS_HIDDEN,
+				opacity: state ? 1 : 0
+				//display: state ? JW_CSS_BLOCK : JW_CSS_NONE
 			});
 		}
 
@@ -748,7 +745,8 @@
 
 	_css('.' + VIEW_VIDEO_CONTAINER_CLASS, {
 		overflow: JW_CSS_HIDDEN,
-		display: _isAndroid23 ? JW_CSS_BLOCK : JW_CSS_NONE,
+		visibility: JW_CSS_HIDDEN,
+		opacity: 0,
 		cursor: "pointer"
 	});
 
