@@ -15,6 +15,7 @@
 		_isIPad = utils.isIPad(),
 		_isIPod = utils.isIPod(),
 		_isAndroid = utils.isAndroid(),
+		_isAndroid23 = utils.isAndroid(2.3),
 
 		DOCUMENT = document, 
 		PLAYER_CLASS = "jwplayer", 
@@ -38,7 +39,9 @@
 		JW_CSS_100PCT = "100%",
 		JW_CSS_ABSOLUTE = "absolute",
 		JW_CSS_IMPORTANT = " !important",
-		JW_CSS_HIDDEN = "hidden";
+		JW_CSS_HIDDEN = "hidden",
+		JW_CSS_NONE = "none",
+		JW_CSS_BLOCK = "block";
 
 	html5.view = function(api, model) {
 		var _api = api,
@@ -223,7 +226,7 @@
 				_rightClickMenu = new html5.rightclick(_api, {});
 			}
 			
-			if (_model.playlistsize && _model.playlistposition && _model.playlistposition != "none") {
+			if (_model.playlistsize && _model.playlistposition && _model.playlistposition != JW_CSS_NONE) {
 				_playlist = new html5.playlistcomponent(_api, {});
 				_playlistLayer.appendChild(_playlist.element());
 			}
@@ -334,7 +337,7 @@
 			if (_playlist && playlistSize && (playlistPos == "right" || playlistPos == "bottom")) {
 				_playlist.redraw();
 				
-				var playlistStyle = { display: "block" }, containerStyle = {};
+				var playlistStyle = { display: JW_CSS_BLOCK }, containerStyle = {};
 				playlistStyle[playlistPos] = 0;
 				containerStyle[playlistPos] = playlistSize;
 				
@@ -420,7 +423,7 @@
 		function _fakeFullscreen(state) {
 			if (state) {
 				_playerElement.className += " jwfullscreen";
-				(DOCUMENT.getElementsByTagName("body")[0]).style["overflow-y"] = "hidden";
+				(DOCUMENT.getElementsByTagName("body")[0]).style["overflow-y"] = JW_CSS_HIDDEN;
 			} else {
 				_playerElement.className = _playerElement.className.replace(/\s+jwfullscreen/, "");
 				(DOCUMENT.getElementsByTagName("body")[0]).style["overflow-y"] = "";
@@ -481,14 +484,14 @@
 					_display.show();
 			}
 			if (_isMobile && !_forcedControls) {
-				if (_isAndroid) _controlsLayer.style.display = "block";
+				if (_isAndroid) _controlsLayer.style.display = JW_CSS_BLOCK;
 				if (!(_isMobile && _model.fullscreen)) _videoTag.controls = false;
 			}
 		}
 		function _hideDisplay() {
 			if (_display) {
 				if (_isMobile && !_forcedControls) {
-					if (_isAndroid) _controlsLayer.style.display = "none";
+					if (_isAndroid) _controlsLayer.style.display = JW_CSS_NONE;
 					_videoTag.controls = true;
 				}
 				_display.hide();
@@ -524,10 +527,13 @@
 		}
 		
 		function _showVideo(state) {
+			if (_isAndroid23) return;
+
 			state = state && !_audioMode;
 			_css(_internalSelector(VIEW_VIDEO_CONTAINER_CLASS), {
-				visibility: state ? "visible" : "hidden",
-				opacity: state ? 1 : 0
+				//visibility: state ? "visible" : JW_CSS_HIDDEN,
+				//opacity: state ? 1 : 0
+				display: state ? JW_CSS_BLOCK : JW_CSS_NONE
 			});
 		}
 
@@ -575,9 +581,7 @@
 				_startFade();
 				break;
 			case states.IDLE:
-				if (!_isAndroid) {
-					_showVideo(FALSE);
-				}
+				_showVideo(FALSE);
 				//_hideControls();
 				_fadeControls();
 				if (!_audioMode) {
@@ -637,7 +641,7 @@
 		}
 		
 		function _setVisibility(selector, state) {
-			_css(selector, { display: state ? "block" : "none" });
+			_css(selector, { display: state ? JW_CSS_BLOCK : JW_CSS_NONE });
 		}
 		
 		this.addButton = function(icon, label, handler, id) {
@@ -743,8 +747,8 @@
 	});
 
 	_css('.' + VIEW_VIDEO_CONTAINER_CLASS, {
-		visibility: "hidden",
-		overflow: "hidden",
+		overflow: JW_CSS_HIDDEN,
+		display: _isAndroid23 ? JW_CSS_BLOCK : JW_CSS_NONE,
 		cursor: "pointer"
 	});
 
@@ -758,7 +762,7 @@
 		position: JW_CSS_ABSOLUTE,
 		height : JW_CSS_100PCT,
 		width: JW_CSS_100PCT,
-		display: "none"
+		display: JW_CSS_NONE
 	});
 	
 	_css('.' + VIEW_INSTREAM_CONTAINER_CLASS, {
@@ -791,7 +795,7 @@
 	}, TRUE);
 
 	_css(FULLSCREEN_SELECTOR + ' .'+ VIEW_PLAYLIST_CONTAINER_CLASS, {
-		display: "none"
+		display: JW_CSS_NONE
 	}, TRUE);
 	
 	_css('.' + PLAYER_CLASS+' .jwuniform', {
