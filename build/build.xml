@@ -72,13 +72,14 @@
 		</antcall>
 	</target>
 	
-	<target name="release-js">
-		<antcall target="debug-js"></antcall>
+	<target name="release-js" depends="debug-js">
 		<!--replace file="${basedir}/jwplayer.min.js" token=", logoConfig);" value=");"/-->
+		<mkdir dir="${release.dir}" />
 		<java jar="${basedir}/build/yuicompressor-2.4.2.jar" fork="true">
 			<arg line="'${debug.dir}/jwplayer.js'"/>
 			<arg line="-o '${release.dir}/jwplayer.js'"/>
 		</java>
+		<echo>Building html5</echo>
 		<java jar="${basedir}/build/yuicompressor-2.4.2.jar" fork="true">
 			<arg line="'${debug.dir}/jwplayer.html5.js'"/>
 			<arg line="-o '${release.dir}/jwplayer.html5.js'"/>
