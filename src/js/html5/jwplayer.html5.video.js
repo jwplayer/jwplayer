@@ -197,7 +197,12 @@
 					_pause();
 				}
 			} else {
-				_setState(states.PLAYING);
+				if (utils.isFF() && evt.type=="play" && _state == states.BUFFERING)
+					// In FF, we get an extra "play" event on startup - we need to wait for "playing",
+					// which is also handled by this function
+					return;
+				else
+					_setState(states.PLAYING);
 			}
 		}
 
