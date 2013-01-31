@@ -465,6 +465,7 @@ package com.longtailvideo.jwplayer.controller {
 
 			_lockingResume = true;
 			stop();
+			_stopPlaylist = false;
 			if (_model.playlist.currentIndex == _model.playlist.length - 1) {
 				_player.playlist.currentIndex = 0;
 			} else {
@@ -484,6 +485,7 @@ package com.longtailvideo.jwplayer.controller {
 
 			_lockingResume = true;
 			stop();
+			_stopPlaylist = false;
 			if (_model.playlist.currentIndex <= 0) {
 				_model.playlist.currentIndex = _model.playlist.length - 1;
 			} else {
@@ -504,6 +506,7 @@ package com.longtailvideo.jwplayer.controller {
 			_lockingResume = true;
 			if (0 <= index && index < _player.playlist.length) {
 				stop();
+				_stopPlaylist = false;
 				_player.playlist.currentIndex = index;
 				_interruptPlay = false;
 				play();
