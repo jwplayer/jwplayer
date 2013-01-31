@@ -38,7 +38,10 @@
 		}
 		
 		function _setupConfig() {
-			var linkFlag = _getLinkFlag(_api.edition());
+			var linkFlag = "o";
+			if (_api.edition) {
+				linkFlag = _getLinkFlag(_api.edition());
+			}
 			_defaults.link = LINK_DEFAULT+jwplayer.version+'&m=h&e='+linkFlag;
 
 			_settings = utils.extend({}, _defaults, logoConfig);
