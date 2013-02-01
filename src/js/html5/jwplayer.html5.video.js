@@ -114,11 +114,11 @@
 
 		
 		function _generalHandler(evt) {
-			//console.log("%s %o (%s,%s)", evt.type, evt);
+			//if (evt) console.log("%s %o (%s,%s)", evt.type, evt);
 		}
 
 		function _durationUpdateHandler(evt) {
-			//_generalHandler(evt);
+			_generalHandler(evt);
 			if (!_attached) return;
 			var newDuration = _round(_videotag.duration);
 			if (_duration != newDuration) {
@@ -131,7 +131,7 @@
 		}
 
 		function _timeUpdateHandler(evt) {
-			//_generalHandler(evt);
+			_generalHandler(evt);
 			if (!_attached) return;
 			if (_state == states.PLAYING && !_dragging) {
 				_position = _round(_videotag.currentTime);
@@ -140,9 +140,9 @@
 					duration : _duration
 				});
 				// Working around a Galaxy Tab bug; otherwise _duration should be > 0
-				if (_position >= _duration && _duration > 3 && !utils.isAndroid(2.3)) {
-					_complete();
-				}
+//				if (_position >= _duration && _duration > 3 && !utils.isAndroid(2.3)) {
+//					_complete();
+//				}
 			}
 		}
 
@@ -151,7 +151,7 @@
 		}
 
 		function _canPlayHandler(evt) {
-			//_generalHandler(evt);
+			_generalHandler(evt);
 			if (!_attached) return;
 			if (!_canSeek) {
 				_canSeek = true;
@@ -168,7 +168,7 @@
 		}
 		
 		function _progressHandler(evt) {
-			//_generalHandler(evt);
+			_generalHandler(evt);
 			if (_canSeek && _delayedSeek > 0 && !_isAndroid) {
 				// Need to set a brief timeout before executing delayed seek; IE9 stalls otherwise. 
 				setTimeout(function() { 
@@ -185,7 +185,7 @@
 		}
 
 		function _playHandler(evt) {
-			//_generalHandler(evt);
+			_generalHandler(evt);
 			if (!_attached || _dragging) return;
 			
 
@@ -411,7 +411,8 @@
 		}
 		
 		function _endedHandler() {
-			if (utils.isAndroid(2.3)) _complete();
+			//if (utils.isAndroid(2.3)) _complete();
+			_complete();
 		}
 		
 		function _complete() {
