@@ -58,7 +58,7 @@ package com.longtailvideo.jwplayer.model {
 						if (config[item] is Array) {
 							for (var i:Number = 0; i < (config[item] as Array).length; i++) {
 								var level:Object = config[item][i];
-								_singleItem.addLevel(new PlaylistItemLevel(level.file, level.type, level.bitrate, level.width, level.streamer));
+								_singleItem.addLevel(new PlaylistItemLevel(level.file, level.type, level["default"], level.streamer));
 							}
 						}
 					} else {

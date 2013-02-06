@@ -225,9 +225,6 @@
 				for (var i=0; i<levels.length; i++) {
 					var level = levels[i], publicLevel = {};
 					publicLevel.label = _levelLabel(level) ? _levelLabel(level) : i;
-					if (level.width) publicLevel.width = level.width;
-					if (level.height) publicLevel.height = level.height;
-					if (level.bitrate) publicLevel.bitrate = level.bitrate;
 					publicLevels[i] = publicLevel;
 				}
 			}
@@ -243,9 +240,6 @@
 		
 		function _levelLabel(level) {
 			if (level.label) return level.label;
-			else if (level.height) return level.height + "p";
-			else if (level.width) return Math.round(level.width * 9 / 16) + "p";
-			else if (level.bitrate) return level.bitrate + "kbps";
 			else return 0;
 		}
 		
@@ -265,13 +259,9 @@
 		
 		function _pickInitialQuality() {
 			if (_currentQuality < 0) _currentQuality = 0;
-			var _sortedLevels = _levels.slice(0).sort(function(a, b) { return Number(b.width) - Number(a.width) }),
-				bounds = utils.bounds(_videotag),
-				i, level;
-			for (i=0; i<_sortedLevels.length; i++) {
-				level = _sortedLevels[i];
-				if (level.width && level.width <= bounds.width) {
-					_currentQuality = _levels.indexOf(level);
+			for (i=0; i<_levels.length; i++) {
+				if (_levels[i]["default"]) {
+					_currentQuality = i;
 					break;
 				}
 			}

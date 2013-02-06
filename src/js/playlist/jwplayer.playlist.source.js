@@ -10,10 +10,8 @@
 		defaults = {
 			file: UNDEF,
 			label: UNDEF,
-			bitrate: UNDEF,
-			width: UNDEF,
-			height: UNDEF,
-			type: UNDEF
+			type: UNDEF,
+			"default": UNDEF
 		};
 	
 	playlist.source = function(config) {

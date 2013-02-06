@@ -36,8 +36,6 @@ package com.longtailvideo.jwplayer.model {
 				var singleLevel:Object = {
 					file: obj.file,
 					type: obj.type,
-					width: obj.width,
-					height: obj.height,
 					label: obj.label
 				};
 				obj.levels = [singleLevel];
@@ -45,8 +43,6 @@ package com.longtailvideo.jwplayer.model {
 			
 			delete obj.file;
 			delete obj.type;
-			delete obj.width;
-			delete obj.height;
 			delete obj.label;
 			
 			for (var itm:String in obj) {
@@ -59,17 +55,13 @@ package com.longtailvideo.jwplayer.model {
 						if (level['file']) {
 							var newLevel:PlaylistItemLevel = new PlaylistItemLevel(level['file'],
 								level['type'],
-								Number(level['bitrate']), 
-								Number(level['width']), 
-								Number(level['height']), 
+								level['default'],
 								level['streamer']);
 							for (var otherProp:String in level) {
 								switch(otherProp) {
 									case "file":
 									case "type":
-									case "bitrate":
-									case "width":
-									case "height":
+									case "default":
 									case "streamer":
 										break;
 									default:
