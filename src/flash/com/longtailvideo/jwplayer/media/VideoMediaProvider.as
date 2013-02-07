@@ -5,6 +5,7 @@ package com.longtailvideo.jwplayer.media {
 	import com.longtailvideo.jwplayer.model.PlayerConfig;
 	import com.longtailvideo.jwplayer.model.PlaylistItem;
 	import com.longtailvideo.jwplayer.player.PlayerState;
+	import com.longtailvideo.jwplayer.utils.Configger;
 	import com.longtailvideo.jwplayer.utils.NetClient;
 	import com.longtailvideo.jwplayer.utils.RootReference;
 	import com.longtailvideo.jwplayer.utils.Stretcher;
@@ -126,6 +127,16 @@ package com.longtailvideo.jwplayer.media {
 					break;
 				}
 			}
+			
+			if (config.qualitylabel) {
+				for (i = 0; i < _item.levels.length; i++) {
+					if (_item.levels[i].label == config.qualitylabel) {
+						_currentQuality = i;
+						break;
+					}
+				}
+			}
+			
 			sendQualityEvent(MediaEvent.JWPLAYER_MEDIA_LEVELS, _item.levels, _currentQuality);
 			// Do not set a stretchable media for AAC files.
 			_item.type == "aac" ? media = null: media = _video;
@@ -379,7 +390,9 @@ package com.longtailvideo.jwplayer.media {
 				_item.setLevel(quality);
 				_currentQuality = quality;
 				_starttime = _position;
-				sendQualityEvent(MediaEvent.JWPLAYER_MEDIA_LEVEL_CHANGED, _item.levels, _currentQuality);
+				_config.qualitylabel = _item.levels[_currentQuality].label;
+				sendQualityEvent(MediaEvent.JWPLAYER_MEDIA_LEVEL_CHANGED, _item.levels, _currentQuality); 
+				Configger.saveCookie("qualityLabel", _item.levels[_currentQuality].label);
 				loadQuality();
 			}
 		}

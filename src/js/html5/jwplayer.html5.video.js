@@ -259,11 +259,24 @@
 		
 		function _pickInitialQuality() {
 			if (_currentQuality < 0) _currentQuality = 0;
-			for (i=0; i<_levels.length; i++) {
+			
+			for (var i=0; i<_levels.length; i++) {
 				if (_levels[i]["default"]) {
 					_currentQuality = i;
 					break;
 				}
+			}
+
+			var cookies = utils.getCookies(),
+				label = cookies["qualityLabel"];
+
+			if (label) {
+				for (i=0; i<_levels.length; i++) {
+					if (_levels[i]["label"] == label) {
+						_currentQuality = i;
+						break;
+					}
+				} 
 			}
 		}
 		
@@ -460,6 +473,7 @@
 			if (quality >=0) {
 				if (_levels && _levels.length > quality) {
 					_currentQuality = quality;
+					utils.saveCookie("qualityLabel", _levels[quality].label);
 					_sendEvent(events.JWPLAYER_MEDIA_LEVEL_CHANGED, { currentQuality: quality, levels: _getPublicLevels(_levels)} );
 					var currentTime = _videotag.currentTime;
 					_completeLoad();

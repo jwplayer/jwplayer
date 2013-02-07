@@ -5,6 +5,7 @@
     import com.longtailvideo.jwplayer.parsers.SMILParser;
     import com.longtailvideo.jwplayer.player.PlayerState;
     import com.longtailvideo.jwplayer.utils.AssetLoader;
+    import com.longtailvideo.jwplayer.utils.Configger;
     import com.longtailvideo.jwplayer.utils.NetClient;
     import com.longtailvideo.jwplayer.utils.RootReference;
     import com.longtailvideo.jwplayer.utils.Stretcher;
@@ -238,23 +239,42 @@
 
 		/** Finalizes the loading process **/
 		private function loadWrap():void {
-			// Set initial level and auto quality flag
-			if(_levels.length > 1) {
-				_auto = true;
-				_level = autoLevel();
-			} else { 
-				_auto = false;
-				_level = 0;
-			}
+			
 			// Do not set media object for audio streams
 			if (_type == 'aac' || _type == 'mp3') {
 				media = null;
 			} else if (!media) {
 				media = _video;
 			}
+			
+			var level:Number = 0;
+			
+			if (_config.qualitylabel) {
+				var levels:Array = qualityLevels;
+				for (var i:Number = 0; i< levels.length; i++) {
+					if (_config.qualitylabel == levels[i].label) {
+						level = i;
+						break;
+					}
+				}
+			}
+			
+			if (level <= 0) {
+				if (_levels.length) {
+					_auto = true;
+					_level = autoLevel();
+				}
+				else {
+					_auto = false;
+					_level = 0;
+				}
+			}
+			else {
+				_level = level - 1;
+			}
 			// Dispatch quality levels event
 			var event:MediaEvent = new MediaEvent(MediaEvent.JWPLAYER_MEDIA_LEVELS);
-			event.currentQuality = 0;
+			event.currentQuality = level;
 			event.levels = qualityLevels;
 			dispatchEvent(event);
 			// Connect to RTMP server
@@ -525,7 +545,7 @@
 		override public function get qualityLevels():Array {
 			var levels:Array = [];
 			if(_levels) {
-				if(_auto) { 
+				if(_levels.length > 1) { 
 					levels.push({label:'Auto'}); 
 				}
 				for (var i:Number=0; i<_levels.length; i++) {
@@ -567,9 +587,11 @@
 				}
 			}
 			if(level > -1) {
+				_config.qualitylabel = qualityLevels[quality].label;
 				var event:MediaEvent = new MediaEvent(MediaEvent.JWPLAYER_MEDIA_LEVEL_CHANGED);
+				Configger.saveCookie("qualityLabel", _config.qualitylabel);
 				event.levels = qualityLevels;
-				event.currentQuality = level;
+				event.currentQuality = quality;
 				dispatchEvent(event);
 			}
 		}

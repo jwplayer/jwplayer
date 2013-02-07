@@ -51,7 +51,8 @@ package com.longtailvideo.jwplayer.model {
 						continue;
 					}
 					var levels:Array = obj[itm] as Array;
-					for each (var level:Object in levels) {
+					for (var i:Number = 0; i < levels.length; i++) {
+						var level:Object = levels[i];
 						if (level['file']) {
 							var newLevel:PlaylistItemLevel = new PlaylistItemLevel(level['file'],
 								level['type'],
@@ -68,6 +69,9 @@ package com.longtailvideo.jwplayer.model {
 										newLevel[otherProp] = level[otherProp];
 										break;
 								}
+							}
+							if (!newLevel.hasOwnProperty("label")) {
+								newLevel["label"] = i.toString();
 							}
 							addLevel(newLevel);
 						}
