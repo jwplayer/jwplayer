@@ -4,12 +4,12 @@ package com.longtailvideo.jwplayer.view.components {
 	import com.longtailvideo.jwplayer.events.MediaEvent;
 	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
 	import com.longtailvideo.jwplayer.events.PlaylistEvent;
-	import com.longtailvideo.jwplayer.model.PlaylistItem;
 	import com.longtailvideo.jwplayer.parsers.DFXP;
 	import com.longtailvideo.jwplayer.parsers.ISO639;
 	import com.longtailvideo.jwplayer.parsers.SRT;
 	import com.longtailvideo.jwplayer.player.IPlayer;
 	import com.longtailvideo.jwplayer.player.PlayerState;
+	import com.longtailvideo.jwplayer.utils.Configger;
 	import com.longtailvideo.jwplayer.utils.Logger;
 	import com.longtailvideo.jwplayer.view.interfaces.IPlayerComponent;
 	
@@ -144,6 +144,16 @@ package com.longtailvideo.jwplayer.view.components {
 				if (_tracks[i]["default"]) {
 					defaultTrack = i+1;
 					break;
+				}
+			}
+			
+			if (_player.config.captionlabel) {
+				tracks = _getTracks();
+				for (i = 0; i < tracks.length; i++) {
+					if (tracks[i].label == _player.config.captionlabel) {
+						defaultTrack = i;
+						break;
+					}
 				}
 			}
 			
@@ -283,7 +293,7 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		private function _getTracks():Array {
 			var list:Array = new Array();
-			list.push({label: "(Off)"});
+			list.push({label: "Off"});
 			for each (var t:Object in _tracks) {
 				list.push({label: t.label});
 			}
@@ -301,7 +311,10 @@ package com.longtailvideo.jwplayer.view.components {
 		public function setCurrentCaptions(index:Number):void {
 			if (index >= 0 && _selectedTrack != index && index <= _tracks.length) {
 				_renderCaptions(index);
-				_sendEvent(CaptionsEvent.JWPLAYER_CAPTIONS_CHANGED, _getTracks(), _selectedTrack);
+				var tracks:Array = _getTracks();
+				_player.config.captionlabel = tracks[_selectedTrack].label;
+				Configger.saveCookie("captionLabel", tracks[_selectedTrack].label);
+				_sendEvent(CaptionsEvent.JWPLAYER_CAPTIONS_CHANGED, tracks, _selectedTrack);
 			}
 		}
 		

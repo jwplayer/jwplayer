@@ -73,6 +73,7 @@ package com.longtailvideo.jwplayer.player {
 			_player.addEventListener(MediaEvent.JWPLAYER_MEDIA_VOLUME, updateVolumeCookie);
 			_player.addEventListener(MediaEvent.JWPLAYER_MEDIA_MUTE, updateMuteCookie);
 			_player.addEventListener(MediaEvent.JWPLAYER_MEDIA_LEVEL_CHANGED, updateLevelCookie);
+			_player.addEventListener(CaptionsEvent.JWPLAYER_CAPTIONS_CHANGED, updateCaptionCookie);
 		}
 		
 		protected function resetPosition(evt:PlaylistEvent):void {
@@ -100,6 +101,10 @@ package com.longtailvideo.jwplayer.player {
 		
 		protected function updateLevelCookie(evt:MediaEvent):void {
 			callJS("function(state) { try { jwplayer.utils.saveCookie('qualityLabel', state) } catch(e) {} }", evt.levels[evt.currentQuality].label);
+		}
+		
+		protected function updateCaptionCookie(evt:CaptionsEvent):void {
+			callJS("function(state) { try { jwplayer.utils.saveCookie('captionLabel', state) } catch(e) {} }", evt.tracks[evt.currentTrack].label);
 		}
 
 		protected function setupJSListeners():void {

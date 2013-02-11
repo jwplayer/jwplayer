@@ -158,6 +158,20 @@
                 }
             }
 
+
+            var cookies = utils.getCookies(),
+                label = cookies["captionLabel"];
+
+            if (label) {
+                tracks = _getTracks();
+                for (i = 0; i < tracks.length; i++) {
+                    if (label == tracks[i].label) {
+                        defaultTrack = i;
+                        break;
+                    }
+                }
+            }
+
             _renderCaptions(defaultTrack);
 
             _redraw();
@@ -260,7 +274,7 @@
             }
 
             if (_track >= _tracks.length) return;
-            
+
             // Load new captions
             if(_tracks[_track].data) {
                 _renderer.populate(_tracks[_track].data);
@@ -283,7 +297,7 @@
 
         function _getTracks() {
             var list = new Array();
-            list.push({label: "(Off)"});
+            list.push({label: "Off"});
             for (var i = 0; i < _tracks.length; i++) {
                 list.push({label: _tracks[i].label});
             }
@@ -305,7 +319,9 @@
         this.setCurrentCaptions = function(index) {
             if (index >= 0 && _selectedTrack != index && index <= _tracks.length) {
                 _renderCaptions(index);
-                _sendEvent(events.JWPLAYER_CAPTIONS_CHANGED, _getTracks(), _selectedTrack);
+                var tracks = _getTracks();
+                utils.saveCookie("captionLabel", tracks[_selectedTrack].label);
+                _sendEvent(events.JWPLAYER_CAPTIONS_CHANGED, tracks, _selectedTrack);
             }
         };
         
