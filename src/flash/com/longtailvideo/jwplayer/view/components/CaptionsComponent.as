@@ -1,19 +1,25 @@
 package com.longtailvideo.jwplayer.view.components {
 	
-	import com.longtailvideo.jwplayer.events.*;
+	import com.longtailvideo.jwplayer.events.CaptionsEvent;
+	import com.longtailvideo.jwplayer.events.MediaEvent;
+	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
+	import com.longtailvideo.jwplayer.events.PlaylistEvent;
 	import com.longtailvideo.jwplayer.model.PlaylistItem;
 	import com.longtailvideo.jwplayer.parsers.DFXP;
 	import com.longtailvideo.jwplayer.parsers.ISO639;
 	import com.longtailvideo.jwplayer.parsers.SRT;
-	import com.longtailvideo.jwplayer.player.*;
-	import com.longtailvideo.jwplayer.plugins.*;
-	import com.longtailvideo.jwplayer.utils.*;
-	import com.longtailvideo.jwplayer.view.interfaces.*;
+	import com.longtailvideo.jwplayer.player.IPlayer;
+	import com.longtailvideo.jwplayer.player.PlayerState;
+	import com.longtailvideo.jwplayer.utils.Logger;
+	import com.longtailvideo.jwplayer.view.interfaces.IPlayerComponent;
 	
-	import flash.display.*;
-	import flash.events.*;
-	import flash.external.ExternalInterface;
-	import flash.net.*;
+	import flash.display.Sprite;
+	import flash.events.ErrorEvent;
+	import flash.events.Event;
+	import flash.events.IOErrorEvent;
+	import flash.events.SecurityErrorEvent;
+	import flash.net.URLLoader;
+	import flash.net.URLRequest;
 	
 	
 	/** Plugin for playing closed captions with a video. **/
@@ -21,9 +27,6 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		/** Save the last resize dimensions. **/
 		private var _dimensions:Array;
-		/** List with configuration options. **/
-		private var _config:Object = {
-		};
 		
 		/** Cookie object for storing track prefs. **/
 		//private var _cookie:SharedObject;
@@ -115,29 +118,36 @@ package com.longtailvideo.jwplayer.view.components {
 			_renderer.setPosition(0);
 			_item = _player.playlist.currentItem;
 			
-			var caps:Array = _item['captions'];
-			
-			if (caps) {
-				for each (var entry:Object in caps) {
-					if (entry.label) {
-						_tracks.push(entry);
-					}
-					else if (entry.file) {
-						var file:String = entry.file;
-						var slash:Number = file.lastIndexOf('/');
-						var dot:Number = file.indexOf('.');
-						var label:String = (file.substr(slash+1,1) as String).toUpperCase()+file.substr(slash+2,dot-slash-2);
-						_tracks.push({file: file, label: label});
-					}
+			var tracks:Object = _item["tracks"];
+			var caps:Array = [];
+			for (var i:Number = 0; i < tracks.length; i++) {
+				var kind:String = tracks[i].kind.toLowerCase();
+				if (kind == "captions" || kind == "subtitles") {
+					caps.push(tracks[i]);
 				}
 			}
 			
-			if (!_tracks.length) {
-				_selectedTrack = 0;
+			for (i = 0; i < caps.length; i++) {
+				var entry:Object = caps[i];
+				if (entry.file) {
+					if (!entry.label) {
+						entry.label = i.toString();
+					}
+					_tracks.push(entry);
+				}
 			}
-			else {
-				setCurrentCaptions(0);
+			
+			var defaultTrack:Number = 0;
+			_selectedTrack = 0;
+			
+			for (i = 0; i < _tracks.length; i++) {
+				if (_tracks[i]["default"]) {
+					defaultTrack = i+1;
+					break;
+				}
 			}
+			
+			_renderCaptions(defaultTrack);
 			_redraw();
 			_sendEvent(CaptionsEvent.JWPLAYER_CAPTIONS_LIST, _getTracks(), _selectedTrack);
 		};
@@ -190,7 +200,6 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		/** Parse track info from MP4 metadata. **/
 		private function _metaTracks(info:Object):void {
-			var found:Boolean = false;
 			for(var i:Number = 0; i < info.length; i++) {
 				if(info[i].sampledescription[0].sampletype == 'tx3g') {
 					_tracks.push({
@@ -236,16 +245,15 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		/** Rendering the captions. **/
 		private function _renderCaptions(index:Number):void {
-			// Set and cookie state/label
 			if(index > 0) {
 				_track = index - 1;
 				_selectedTrack = index;
-				_config.label = _tracks[_track].label;
 			} else {
 				_selectedTrack = 0;
 			}
-		
-			//_cookie.flush();
+			
+			if (_track >= _tracks.length) return;
+
 			// Update UI
 			if(_tracks[_track].file) {
 				if(_tracks[_track].data) {

@@ -73,29 +73,6 @@
             _api.jwAddEventListener(events.JWPLAYER_FULLSCREEN, _fullscreenHandler);
         }
 
-       /** Read or write a cookie. **/
-  /*       function _cookie(name,value) {
-            name = 'jwplayercaptions' + name;
-            if(value !== undefined) {
-                var c = name+'='+value+'; expires=Wed, 1 Jan 2020 00:00:00 UTC; path=/';
-                document.cookie = c;
-            } else {
-                // http://www.quirksmode.org/js/cookies.html
-                var list = document.cookie.split(';');
-                for(var i=0; i< list.length; i++) {
-                    var c = list[i];
-                    while (c.charAt(0) == ' ') {
-                        c = c.substring(1,c.length);
-                    }
-                    if (c.indexOf(name) == 0) {
-                        return c.substring(name.length+1, c.length);
-                    }
-                }
-            }
-            return null;
-        };
-*/
-
         /** Error loading/parsing the captions. **/
         function _errorHandler(error) {
             utils.log("CAPTIONS(" + error + ")");
@@ -146,27 +123,43 @@
             _renderer.update(0);
 
             var item = _api.jwGetPlaylist()[_api.jwGetPlaylistIndex()],
-                captions = item['captions'],
+                tracks = item['tracks'],
+                captions = [],
                 i = 0,
                 label = "",
+                defaultTrack = 0;
                 file = "";
 
-            if (captions) {
-                for (i = 0; i < captions.length; i++) {
-                    file = captions[i].file;
-                    if(file) {
-                        if (captions[i].label) {
-                            _tracks.push(captions[i]);
-                        }
-                        else {
-                            label = file.substring(file.lastIndexOf('/')+1,file.indexOf('.'));
-                            _tracks.push({file: file, label: label});
-                        }
-                    }
+            for (i = 0; i < tracks.length; i++) {
+                var kind = tracks[i].kind.toLowerCase();
+                if (kind == "captions" || kind == "subtitles") {
+                    captions.push(tracks[i]);
                 }
-            }   
-            
+            }
+
             _selectedTrack = 0;
+
+            for (i = 0; i < captions.length; i++) {
+                file = captions[i].file;
+                if(file) {
+                    if (!captions[i].label) {
+                        captions[i].label = i.toString();
+                       
+                    }
+                    _tracks.push(captions[i]);
+                }
+            }
+
+
+            for (i = 0; i < _tracks.length; i++) {
+                if (_tracks[i]["default"]) {
+                    defaultTrack = i+1;
+                    break;
+                }
+            }
+
+            _renderCaptions(defaultTrack);
+
             _redraw();
             _sendEvent(events.JWPLAYER_CAPTIONS_LIST, _getTracks(), _selectedTrack);
         };
@@ -197,7 +190,9 @@
         /** Captions were loaded. **/
         function _loadHandler(data) {
             _renderer.populate(data);
-            _tracks[_track].data = data;
+            if (_track < _tracks.length) {
+                _tracks[_track].data = data;
+            }
             _redraw();
         };
 
@@ -263,6 +258,9 @@
             } else {
                 _selectedTrack = 0;
             }
+
+            if (_track >= _tracks.length) return;
+            
             // Load new captions
             if(_tracks[_track].data) {
                 _renderer.populate(_tracks[_track].data);
