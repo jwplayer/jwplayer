@@ -111,6 +111,8 @@
 			_timeRail,
 			_railBounds,
 			_timeOverlay,
+			_timeOverlayContainer,
+			_timeOverlayThumb,
 			_timeOverlayText,
 			_hdTimer,
 			_hdOverlay,
@@ -187,6 +189,7 @@
 		function _addEventListeners() {
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_TIME, _timeUpdated);
 			_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
+			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_ITEM, _itemHandler);
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_MUTE, _muteHandler);
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_VOLUME, _volumeHandler);
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_BUFFER, _bufferHandler);
@@ -262,6 +265,20 @@
 				_timeUpdated({ position: 0, duration: 0});
 				break;
 			}
+		}
+		
+		function _itemHandler(evt) {
+			var tracks = _api.jwGetPlaylist()[evt.index].tracks;
+			if (utils.typeOf(tracks) == "array") {
+				for (var i=0; i < tracks.length; i++) {
+					if (tracks[i].file && tracks[i].kind && tracks[i].kind.toLowerCase() == "thumbnails") {
+						_timeOverlayThumb.load(tracks[i].file);
+						return;
+					}
+				}
+			}
+			// If we're here, there are no thumbnails to load - we should clear out the thumbs from the previous item
+			_timeOverlayThumb.load();
 		}
 		
 		function _muteHandler() {
@@ -694,9 +711,15 @@
 
 			if (name == "time") {
 				_timeOverlay = new html5.overlay(_id+"_timetooltip", _skin);
+				_timeOverlayThumb = new html5.thumbs(_id+"_thumb");
 				_timeOverlayText = _createElement("div");
 				_timeOverlayText.className = "jwoverlaytext";
-				_timeOverlay.setContents(_timeOverlayText);
+				_timeOverlayContainer = _createElement("div");
+				_appendChild(_timeOverlayContainer, _timeOverlayThumb.element());
+				_appendChild(_timeOverlayContainer, _timeOverlayText);
+				_timeOverlay.setContents(_timeOverlayContainer);
+				_overlays.time = _timeOverlay;
+				
 				_timeRail = rail;
 				_setTimeOverlay(0);
 				_appendChild(rail, _timeOverlay.element());
@@ -873,6 +896,9 @@
 		
 		function _setTimeOverlay(sec) {
 			_timeOverlayText.innerHTML = utils.timeFormat(sec);
+			_timeOverlayThumb.updateTimeline(sec); 
+			_timeOverlay.setContents(_timeOverlayContainer);
+			_positionOverlay(_timeOverlay);		
 		}
 		
 		function _styleTimeSlider(slider) {
@@ -1046,17 +1072,22 @@
 			var overlayBounds, i, overlay;
 			_cbBounds = utils.bounds(_controlbar);
 			for (i in _overlays) {
-				overlay = _overlays[i];
-				overlay.offsetX(0);
-				overlayBounds = utils.bounds(overlay.element());
-				if (overlayBounds.right > _cbBounds.right) {
-					overlay.offsetX(_cbBounds.right - overlayBounds.right);
-				} else if (overlayBounds.left < _cbBounds.left) {
-					overlay.offsetX(_cbBounds.left - overlayBounds.left);
-				}
+				_positionOverlay(_overlays[i]);
 			}
 		}
 
+		function _positionOverlay(overlay, bounds) {
+			if (!_cbBounds) {
+				_cbBounds = utils.bounds(_controlbar);
+			}
+ 			overlay.offsetX(0);
+			overlayBounds = utils.bounds(overlay.element());
+			if (overlayBounds.right > _cbBounds.right) {
+				overlay.offsetX(_cbBounds.right - overlayBounds.right);
+			} else if (overlayBounds.left < _cbBounds.left) {
+				overlay.offsetX(_cbBounds.left - overlayBounds.left);
+			}
+		}
 		
 
 		_this.audioMode = function(mode) {
@@ -1244,7 +1275,8 @@
 	});
     
 	_css(CB_CLASS + ' .jwoverlaytext', {
-		padding: 3
+		padding: 3,
+		'text-align': 'center'
 	});
 
     _css(CB_CLASS + ' .jwvertical *', {
@@ -1253,7 +1285,7 @@
 
 	_setTransition(CB_CLASS, JW_CSS_SMOOTH_EASE);
 	_setTransition(CB_CLASS + ' button', JW_CSS_SMOOTH_EASE);
-	_setTransition(CB_CLASS + ' .jwtime .jwsmooth span', JW_CSS_SMOOTH_EASE + ", width .15s linear, left .15s linear");
+	_setTransition(CB_CLASS + ' .jwtime .jwsmooth span, .jwtime .jwoverlay', JW_CSS_SMOOTH_EASE + ", width .15s linear, left .15s linear");
 	_setTransition(CB_CLASS + ' .jwtoggling', JW_CSS_NONE);
 
 })(jwplayer);

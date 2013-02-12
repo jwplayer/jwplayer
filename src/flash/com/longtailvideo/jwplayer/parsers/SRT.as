@@ -8,8 +8,8 @@ package com.longtailvideo.jwplayer.parsers {
 		
 
         /** Parse SRT captions string into an array. **/
-        public static function parseCaptions(dat:String):Array {
-            var arr:Array = new Array({begin:0,text:''});
+        public static function parseCaptions(dat:String, mergeBeginEnd:Boolean=false):Array {
+            var arr:Array = mergeBeginEnd ? [] : [{begin:0,text:''}];
             // Trim whitespace and split the list by returns.
             dat = dat.replace(/^\s+/, '').replace(/\s+$/, '');
             var lst:Array = dat.split("\r\n\r\n");
@@ -23,7 +23,7 @@ package com.longtailvideo.jwplayer.parsers {
                 if(obj['text']) {
                     arr.push(obj);
                     // Insert empty caption at the end.
-                    if(obj['end']) {
+                    if(obj['end'] && !mergeBeginEnd) {
                         arr.push({begin:obj['end'],text:''});
                         delete obj['end'];
                     }

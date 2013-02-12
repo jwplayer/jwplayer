@@ -1,17 +1,32 @@
 package com.longtailvideo.jwplayer.view.components {
-	import com.longtailvideo.jwplayer.events.*;
-	import com.longtailvideo.jwplayer.model.*;
-	import com.longtailvideo.jwplayer.player.*;
-	import com.longtailvideo.jwplayer.plugins.*;
-	import com.longtailvideo.jwplayer.utils.*;
-	import com.longtailvideo.jwplayer.view.interfaces.*;
+	import com.longtailvideo.jwplayer.events.CaptionsEvent;
+	import com.longtailvideo.jwplayer.events.MediaEvent;
+	import com.longtailvideo.jwplayer.events.PlayerEvent;
+	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
+	import com.longtailvideo.jwplayer.events.PlaylistEvent;
+	import com.longtailvideo.jwplayer.events.ViewEvent;
+	import com.longtailvideo.jwplayer.model.PlaylistItem;
+	import com.longtailvideo.jwplayer.player.IPlayer;
+	import com.longtailvideo.jwplayer.player.PlayerState;
+	import com.longtailvideo.jwplayer.utils.Animations;
+	import com.longtailvideo.jwplayer.utils.Logger;
+	import com.longtailvideo.jwplayer.utils.RootReference;
+	import com.longtailvideo.jwplayer.utils.Strings;
+	import com.longtailvideo.jwplayer.view.interfaces.IControlbarComponent;
 	
-	import flash.accessibility.*;
-	import flash.display.*;
-	import flash.events.*;
-	import flash.geom.*;
-	import flash.text.*;
-	import flash.utils.*;
+	import flash.accessibility.AccessibilityProperties;
+	import flash.display.DisplayObject;
+	import flash.display.MovieClip;
+	import flash.display.Sprite;
+	import flash.events.Event;
+	import flash.events.MouseEvent;
+	import flash.events.TimerEvent;
+	import flash.geom.Point;
+	import flash.geom.Rectangle;
+	import flash.text.TextField;
+	import flash.text.TextFieldAutoSize;
+	import flash.text.TextFormat;
+	import flash.utils.Timer;
 
 
 	/**
@@ -165,9 +180,25 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 		}
 
-
 		private function playlistHandler(evt:PlaylistEvent):void {
-			if (_timeSlider) _timeSlider.reset();
+			if (_timeSlider) {
+				_timeSlider.reset();
+				var item:PlaylistItem = player.playlist.currentItem;
+				var setThumbs:Boolean = false;
+				if (item.tracks.length > 0) {
+					for each(var track:Object in item.tracks) {
+						if (track.file && track.kind is String && String(track.kind).toLowerCase() == "thumbnails") {
+							(_timeSlider as TimeSlider).setThumbs(track.file);
+							setThumbs = true;
+							continue;
+						}
+					}
+				}
+				if (!setThumbs) {
+					(_timeSlider as TimeSlider).setThumbs();
+				}
+			}
+			
 			updateControlbarState();
 			redraw();
 		}

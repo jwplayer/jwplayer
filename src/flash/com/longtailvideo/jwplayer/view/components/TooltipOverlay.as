@@ -1,12 +1,16 @@
 package com.longtailvideo.jwplayer.view.components
 {
-	import com.longtailvideo.jwplayer.model.*;
-	import com.longtailvideo.jwplayer.utils.*;
-	import com.longtailvideo.jwplayer.view.interfaces.*;
+	import com.longtailvideo.jwplayer.model.Color;
+	import com.longtailvideo.jwplayer.utils.Animations;
+	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
 	
-	import flash.display.*;
-	import flash.external.ExternalInterface;
-	import flash.text.*;
+	import flash.display.DisplayObject;
+	import flash.display.Sprite;
+	import flash.geom.Rectangle;
+	import flash.text.TextField;
+	import flash.text.TextFieldAutoSize;
+	import flash.text.TextFormat;
+	import flash.text.TextFormatAlign;
 	
 	public class TooltipOverlay extends Sprite {
 		// Border skin elements
@@ -42,7 +46,10 @@ package com.longtailvideo.jwplayer.view.components
 			activecolor: 0xffffff,
 			overcolor: 0xffffff
 		}
-		
+		// Dimensions of the content's children
+		protected var contentDimensions:Rectangle = new Rectangle();
+			
+			
 		public function TooltipOverlay(skin:ISkin, inverted:Boolean=false) {
 			this.skin = skin;
 			
@@ -72,7 +79,7 @@ package com.longtailvideo.jwplayer.view.components
 			
 			content = new Sprite();
 			content.addChild(_text);
-			super.addChild(content);
+			//super.addChild(content);
 			
 			redraw();
 		}
@@ -107,16 +114,17 @@ package com.longtailvideo.jwplayer.view.components
 		}
 
 		protected function redraw():void {
+			updateContentDimensions();
 			borders.top.x = borders.bottom.x = borders.left.width;
-			borders.top.width = borders.bottom.width = content.width;
+			borders.top.width = borders.bottom.width = contentDimensions.width;
 			borders.topright.x = borders.top.x + borders.top.width;
-			borders.left.height = borders.right.height = content.height;
+			borders.left.height = borders.right.height = contentDimensions.height;
 			borders.left.y = borders.right.y = borders.top.height;
-			borders.bottomleft.y = borders.bottomright.y = borders.bottom.y = borders.top.height + content.height;
-			borders.topright.x = borders.right.x = borders.bottomright.x = borders.left.width + content.width;
+			borders.bottomleft.y = borders.bottomright.y = borders.bottom.y = borders.top.height + contentDimensions.height;
+			borders.topright.x = borders.right.x = borders.bottomright.x = borders.left.width + contentDimensions.width;
 
-			back.height = content.height;
-			back.width = content.width;
+			back.height = contentDimensions.height;
+			back.width = contentDimensions.width;
 			back.x = content.x = borders.top.x;
 			back.y = content.y = borders.left.y;
 			arrow.y = _inverted ? 0 : borders.bottom.y + borders.bottom.height;
@@ -127,7 +135,41 @@ package com.longtailvideo.jwplayer.view.components
 		public override function addChild(child:DisplayObject):DisplayObject {
 			content.addChild(child);
 			redraw();
+			super.addChild(content);
 			return child;
+		}
+		
+		protected function updateContentDimensions():void {
+			contentDimensions = new Rectangle(0, 0, 0, 0);
+			// For the first pass, figure out the minimum x/y coordinates of the children
+			for (var i=0; i < content.numChildren; i++) {
+				var child:DisplayObject = content.getChildAt(i);
+				if (child != _text) {
+					contentDimensions.x = Math.min(contentDimensions.x, child.x);
+					contentDimensions.y = Math.min(contentDimensions.y, child.y);
+				}
+			}
+			// Second pass sets the width/height and subtracts the origin
+			for (i=0; i < content.numChildren; i++) {
+				child = content.getChildAt(i);
+				if (child != _text) {
+					contentDimensions.width = Math.max(contentDimensions.width, child.x + child.width) - contentDimensions.x;
+					contentDimensions.height = Math.max(contentDimensions.height, child.y + child.height) - contentDimensions.y;
+				}
+			}
+			
+			if (_text.visible) {
+				_text.x = _text.y = 0;
+				if (contentDimensions.width > 0) {
+					_text.width = contentDimensions.width;
+					_text.autoSize = TextFieldAutoSize.CENTER;
+					_text.y = contentDimensions.height + 3; 
+					contentDimensions.height += _text.height + 3;
+				} else {
+					contentDimensions.width = _text.width;
+					contentDimensions.height = _text.height;
+				}
+			}
 		}
 		
 		public override function removeChild(child:DisplayObject):DisplayObject {
@@ -136,6 +178,9 @@ package com.longtailvideo.jwplayer.view.components
 			return child;
 		}
 		
+		public override function contains(child:DisplayObject):Boolean {
+			return content.contains(child);
+		}
 
 		public function set text(s:String):void {
 			_text.visible = Boolean(s);
@@ -143,9 +188,9 @@ package com.longtailvideo.jwplayer.view.components
 				var fontcase:String = getSkinSetting("fontcase");
 				if (fontcase && fontcase.toLowerCase() == "upper") s = s.toUpperCase();
 				_text.text = s;
-				_text.x = _text.y = 0;
 			}
 			redraw();
+			super.addChild(content);
 		}
 		
 		public function set offsetX(offset:Number):void {
@@ -168,12 +213,12 @@ package com.longtailvideo.jwplayer.view.components
 		}
 		
 		protected function positionX():void {
-			arrow.x = ((content.width + borders.left.width + borders.right.width - arrow.width) / 2) + _offset;
+			arrow.x = ((contentDimensions.width + borders.left.width + borders.right.width - arrow.width) / 2) + _offset;
 			super.x = Math.ceil(_x - arrow.x - (arrow.width/2));
 		}
 		
 		protected function positionY():void {
-			super.y = Math.ceil(_y - (_inverted ? -arrow.height : height));
+			super.y = Math.ceil(_y - (_inverted ? -arrow.height : (borders.top.height + borders.bottom.height + arrow.height + contentDimensions.height)));
 		}
 		
 		public function hide():void {
@@ -185,6 +230,7 @@ package com.longtailvideo.jwplayer.view.components
 			fade.cancelAnimation();
 			fade.fade(1);
 		}
+		
 
 	}
 }

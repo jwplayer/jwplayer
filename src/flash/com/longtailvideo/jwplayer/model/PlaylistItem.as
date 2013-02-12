@@ -22,6 +22,7 @@ package com.longtailvideo.jwplayer.model {
 		protected var _type:String			= null;
 		protected var _currentLevel:Number 	= 0;
 		protected var _levels:Array			= [];
+		protected var _tracks:Array			= [];
 		
 		
 		public function PlaylistItem(obj:Object = null) {
@@ -293,6 +294,14 @@ package com.longtailvideo.jwplayer.model {
 		
 		public function get type():String {
 			return _type;
+		}
+		
+		public function get tracks():Array {
+			return _tracks;
+		}
+		
+		public function set tracks(t:Array):void {
+			_tracks = t;
 		}
 		
 	}

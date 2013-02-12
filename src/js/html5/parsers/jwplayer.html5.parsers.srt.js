@@ -2,7 +2,7 @@
 
 
     /** Component that loads and parses an SRT file. **/
-    parsers.srt = function(_success, _failure) {
+    parsers.srt = function(_success, _failure, _mergeBeginEnd) {
 
 
         /** XMLHTTP Object. **/
@@ -52,7 +52,7 @@
         /** Proceed from loading to parsing. **/
         function _parse(data) {
             // Trim whitespace and split the list by returns.
-            var _captions = [{begin:0, text:''}];
+            var _captions = _mergeBeginEnd ? [] : [{begin:0, text:''}];
             data = data.replace(/^\s+/, '').replace(/\s+$/, '');
             var list = data.split("\r\n\r\n");
             if(list.length == 1) { list = data.split("\n\n"); }
@@ -65,7 +65,7 @@
                 if(entry['text']) {
                     _captions.push(entry);
                     // Insert empty caption at the end.
-                    if(entry['end']) {
+                    if(entry['end'] && !_mergeBeginEnd) {
                         _captions.push({begin:entry['end'],text:''});
                         delete entry['end'];
                     }

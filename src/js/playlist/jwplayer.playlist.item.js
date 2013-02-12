@@ -41,7 +41,8 @@
 		title: "",
 		tags: "",
 		duration: -1,
-		sources: []
+		sources: [],
+		tracks: []
 	};
 	
 })(jwplayer.playlist);
