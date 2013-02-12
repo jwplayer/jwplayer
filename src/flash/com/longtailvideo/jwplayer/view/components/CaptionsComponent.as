@@ -220,8 +220,22 @@ package com.longtailvideo.jwplayer.view.components {
 					});
 				}
 			}
+			
+			var defaultTrack:Number = 0;
+			var tracks:Array = _getTracks();
+			
+			if (_player.config.captionlabel) {
+				for (i = 0; i < tracks.length; i++) {
+					if (tracks[i].label == _player.config.captionlabel) {
+						defaultTrack = i;
+						break;
+					}
+				}
+			}
+			
+			_renderCaptions(defaultTrack);
 			_redraw();
-			_sendEvent(CaptionsEvent.JWPLAYER_CAPTIONS_LIST, _getTracks(), _selectedTrack);
+			_sendEvent(CaptionsEvent.JWPLAYER_CAPTIONS_LIST, tracks, _selectedTrack);
 		};
 		
 		
