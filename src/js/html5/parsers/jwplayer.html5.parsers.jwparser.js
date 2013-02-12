@@ -23,19 +23,73 @@
 	 * @return {Object} The playlistentry, amended with the JWPlayer info.
 	 */
 	jwparser.parseEntry = function(obj, itm) {
+		var sources = [],
+			tracks = [],
+			_xmlAttribute = jwplayer.utils.xmlAttribute;
+			def = "default",
+			label = "label",
+			file = "file";
 		for ( var i = 0; i < obj.childNodes.length; i++) {
 			var node = obj.childNodes[i];
 			if (node.prefix == PREFIX) {
 				var _localName = _parsers.localName(node);
-				itm[_localName] = jwplayer.utils.serialize(_parsers.textContent(node));
-				if (_localName == "file" && itm.sources) {
-					// jwplayer namespace file should override existing source
-					// (probably set in MediaParser)
+				if (_localName == "source") {
 					delete itm.sources;
+					sources.push({
+						file: _xmlAttribute(node, file),
+						"default": _xmlAttribute(node, def),
+						label: _xmlAttribute(node, label)
+					});
+				}
+				else if (_localName == "track") {
+					delete itm.tracks;
+					tracks.push({
+						file: _xmlAttribute(node, file),
+						"default": _xmlAttribute(node, def),
+						kind: _xmlAttribute(node, "kind"),
+						label: _xmlAttribute(node, label)
+					});
+				}
+				else {
+					itm[_localName] = jwplayer.utils.serialize(_parsers.textContent(node));
+					if (_localName == "file" && itm.sources) {
+						// jwplayer namespace file should override existing source
+						// (probably set in MediaParser)
+						delete itm.sources;
+					}
+				}
+				
+			}
+			if (!itm[file]) {
+				itm[file] = itm['link'];
+			}
+		}
+
+
+		if (sources.length) {
+			itm.sources = [];
+			for (i = 0; i < sources.length; i++) {
+				if (sources[i].file.length > 0) {
+					sources[i][def] = (sources[i][def] == "true") ? true : false;
+					if (!sources[i].label.length) { 
+						delete sources[i].label;
+					}
+					itm.sources.push(sources[i]);
 				}
 			}
-			if (!itm['file']) {
-				itm['file'] = itm['link'];
+		}
+
+		if (tracks.length) {
+			itm.tracks = [];
+			for (i = 0; i < tracks.length; i++) {
+				if (tracks[i].file.length > 0) {
+					tracks[i][def] = (tracks[i][def] == "true") ? true : false;
+					tracks[i].kind = (!tracks[i].kind.length) ? "captions" : tracks[i].kind;
+					if (!tracks[i].label.length) {
+						delete tracks[i].label;
+					}
+					itm.tracks.push(tracks[i]);
+				}
 			}
 		}
 		return itm;

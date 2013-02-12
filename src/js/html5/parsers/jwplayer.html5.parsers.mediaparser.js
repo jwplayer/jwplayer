@@ -28,6 +28,7 @@
 	mediaparser.parseGroup = function(obj, itm) {
 		var node, 
 			i,
+			tracks = "tracks",
 			captions = [];
 
 		function getLabel(code) {
@@ -98,6 +99,7 @@
 					case 'subtitle':
 						var entry = {};
 						entry.file = _xmlAttribute(node, 'url');
+						entry.kind = "captions";
 						if (_xmlAttribute(node, 'lang').length > 0) {
 							entry.label = getLabel(_xmlAttribute(node, 'lang'));
 						}
@@ -106,8 +108,12 @@
 			}
 		}
 
-		if(captions.length > 0) {
-			itm['captions'] = captions;
+		if (!itm.hasOwnProperty(tracks)) {
+			itm[tracks] = [];
+		}
+
+		for(i = 0; i < captions.length; i++) {
+			itm[tracks].push(captions[i]);
 		}
 
 		return itm;

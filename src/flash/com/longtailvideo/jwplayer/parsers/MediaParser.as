@@ -78,6 +78,7 @@ package com.longtailvideo.jwplayer.parsers {
 						case 'subtitle': 
 							var entry:Object = {};
 							entry.file = Strings.xmlAttribute(i, 'url');
+							entry.kind = "captions";
 							if (Strings.xmlAttribute(i, 'lang').length > 0) {
 								entry.label = ISO639.label(Strings.xmlAttribute(i, 'lang'));
 							}
@@ -85,9 +86,15 @@ package com.longtailvideo.jwplayer.parsers {
 					}
 				}
 			}
-			if(captions.length > 0) {
-				itm['captions'] = captions;
+			
+			if(!itm.hasOwnProperty("tracks")) { 
+				itm['tracks'] = [];
 			}
+			
+			for (var j:Number = 0; j < captions.length; j++) {
+				itm['tracks'].push(captions[j]);
+			}
+			
 			return itm;
 		}
 
