@@ -33,7 +33,7 @@ package com.longtailvideo.jwplayer.view.components
 		private var container:Sprite;
 		
 		public function TooltipThumbnails(skin:ISkin) {
-			//super(skin);
+			spriteDimensions = new Rectangle();
 			
 			container = new Sprite();
 			addChild(container);
@@ -52,14 +52,13 @@ package com.longtailvideo.jwplayer.view.components
 		}
 		
 		public function load(vttFile:String):void {
-			spriteDimensions = null;
 			loadedImage = null;
+			spriteDimensions = new Rectangle();
 			if (vttFile && vttFile != loadedVTT) {
 				loadedVTT = vttFile;
 				imageLoader.visible = true;
 				vttPath = loadedVTT.split("?")[0].split("/").slice(0, -1).join("/");
 				vttLoader.load(loadedVTT, String);
-				spriteDimensions = new Rectangle();
 			} else {
 				loadedVTT = null;
 			}
