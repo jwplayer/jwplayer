@@ -41,7 +41,8 @@
         function _render(html) {
             _style({
                 left: '0px',
-                top: '0px'
+                top: '0px',
+                visibility: 'hidden'
             });
             _container.innerHTML = html;
             if(html == '') { 
