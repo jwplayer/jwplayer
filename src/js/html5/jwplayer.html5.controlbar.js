@@ -718,11 +718,11 @@
 				_appendChild(_timeOverlayContainer, _timeOverlayThumb.element());
 				_appendChild(_timeOverlayContainer, _timeOverlayText);
 				_timeOverlay.setContents(_timeOverlayContainer);
-				_overlays.time = _timeOverlay;
+				//_overlays.time = _timeOverlay;
 				
 				_timeRail = rail;
 				_setTimeOverlay(0);
-				_appendChild(rail, _timeOverlay.element());
+				_appendChild(slider, _timeOverlay.element());
 				_styleTimeSlider(slider);
 				_setProgress(0);
 				_setBuffer(0);
@@ -873,6 +873,7 @@
 
 		function _showTimeTooltip(evt) {
 			if (_timeOverlay && _duration && !_audioMode) {
+				_positionOverlay(_timeOverlay);
 				_timeOverlay.show();
 			}
 		}
@@ -891,6 +892,7 @@
 			if (position >= 0 && position <= _railBounds.width) {
 				element.style.left = Math.round(position) + "px";
 				_setTimeOverlay(_duration * position / _railBounds.width);
+				_cbBounds = utils.bounds(_controlbar);
 			}
 		}
 		
@@ -898,7 +900,8 @@
 			_timeOverlayText.innerHTML = utils.timeFormat(sec);
 			_timeOverlayThumb.updateTimeline(sec); 
 			_timeOverlay.setContents(_timeOverlayContainer);
-			_positionOverlay(_timeOverlay);		
+			_cbBounds = utils.bounds(_controlbar);
+			_positionOverlay(_timeOverlay);
 		}
 		
 		function _styleTimeSlider(slider) {
@@ -1042,18 +1045,8 @@
 				'margin-left': max ? _controlbar.clientWidth / -2 : UNDEFINED,
 				width: max ? JW_CSS_100PCT : UNDEFINED
 			});
-
 		
-//			setTimeout(function() {
-//				var newBounds = utils.bounds(_controlbar);
-//				if (!_cbBounds || newBounds.width != _cbBounds.width) {
-//					_cbBounds = newBounds;
-//					if (_cbBounds.width > 0) {
-//						_railBounds = utils.bounds(_timeRail);
-//					}
-//				}
-				_positionOverlays();
-//			}, 0);
+			_positionOverlays();
 		}
 		
 		function _updateNextPrev() {
@@ -1285,7 +1278,7 @@
 
 	_setTransition(CB_CLASS, JW_CSS_SMOOTH_EASE);
 	_setTransition(CB_CLASS + ' button', JW_CSS_SMOOTH_EASE);
-	_setTransition(CB_CLASS + ' .jwtime .jwsmooth span, .jwtime .jwoverlay', JW_CSS_SMOOTH_EASE + ", width .15s linear, left .15s linear");
+	_setTransition(CB_CLASS + ' .jwtime .jwsmooth span', JW_CSS_SMOOTH_EASE + ", width .15s linear, left .05s linear");
 	_setTransition(CB_CLASS + ' .jwtoggling', JW_CSS_NONE);
 
 })(jwplayer);
