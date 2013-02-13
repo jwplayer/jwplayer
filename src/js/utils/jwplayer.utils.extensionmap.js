@@ -39,7 +39,8 @@
 			"ogg": mimeMap[vorbis],
 			"oga": mimeMap[vorbis],
 			"webm": mimeMap[webm],
-			"m3u8": mimeMap.hls
+			"m3u8": mimeMap.hls,
+			"hls": mimeMap.hls
 		}, 
 		video = "video", 
 		flashExtensions = {
@@ -53,7 +54,8 @@
 			"f4a": video,
 			"mp3": "sound",
 			"smil": "rtmp",
-			"m3u8": "hls"
+			"m3u8": "hls",
+			"hls": "hls"
 		};
 	
 	var _extensionmap = utils.extensionmap = {};
