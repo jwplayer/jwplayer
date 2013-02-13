@@ -68,7 +68,7 @@ package com.longtailvideo.jwplayer.view.components {
 		private function moveHandler(evt:MouseEvent):void {
 			if (_duration > 0) {
 				RootReference.stage.setChildIndex(_tooltip, RootReference.stage.numChildren-1);
-				var seconds:Number = Math.round(_duration * (evt.localX - _capLeft.width) / _width);
+				var seconds:Number = Math.round(_duration * sliderPercent(evt.localX));
 				_tooltip.x = evt.stageX;
 				_tooltip.y = _controlbar.getBounds(RootReference.stage).y;
 				_tooltip.text = Strings.digits(seconds);

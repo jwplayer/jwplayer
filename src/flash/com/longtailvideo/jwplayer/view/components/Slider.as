@@ -1,7 +1,5 @@
 package com.longtailvideo.jwplayer.view.components {
 	import com.longtailvideo.jwplayer.events.ViewEvent;
-	import com.longtailvideo.jwplayer.utils.Animations;
-	import com.longtailvideo.jwplayer.utils.Logger;
 	import com.longtailvideo.jwplayer.utils.RootReference;
 	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
 	
@@ -170,7 +168,7 @@ package com.longtailvideo.jwplayer.view.components {
 
 			if (_thumb && !_dragging) {
 				if (_vertical) {
-					 _thumb.y = (1-_currentProgress) * _height + _capLeft.height - _thumb.height/2;
+					_thumb.y = (1-_currentProgress) * _height + _capLeft.height - _thumb.height/2;
 				} else {
 					_thumb.x = _currentProgress * _width + _capLeft.width - _thumb.width/2;
 				}
@@ -285,11 +283,11 @@ package com.longtailvideo.jwplayer.view.components {
 				_thumb.startDrag(true, rct);
 				_dragging = true;
 				RootReference.stage.addEventListener(MouseEvent.MOUSE_UP, upHandler);
-				RootReference.stage.addEventListener(MouseEvent.MOUSE_MOVE, moveHandler);
+				RootReference.stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMoveHandler);
 			}
 		}
 		
-		private function moveHandler(evt:MouseEvent):void {
+		private function mouseMoveHandler(evt:MouseEvent):void {
 			if (_name != "timeSlider" || _dragging) {
 				if (!_isLive || (name != "timeSlider")) {
 					resizeSlider(thumbPercent(), 0, _capLeft[dim], _progress, _progressCapLeft, _progressCapRight);
@@ -298,21 +296,25 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 		
 		private function thumbPercent():Number {
+			return sliderPercent(_vertical ? _thumb.y : _thumb.x);
+		}
+		
+		protected function sliderPercent(pixels:Number):Number {
 			if (_vertical) {
-				return 1 - (_thumb.y - _capLeft.height + _thumb.height/2) / _height;
+				return 1 - (pixels - _capLeft.height + _thumb.height/2) / _height;
 			} else { 
-				return (_thumb.x - _capLeft.width + _thumb.width/2) / _width;
+				return (pixels - _capLeft.width + _thumb.width/2) / _width;
 			}
 		}
 		
 		/** Handle mouse releases. **/
 		private function upHandler(evt:MouseEvent):void {
-			RootReference.stage.removeEventListener(MouseEvent.MOUSE_UP, upHandler);
-			RootReference.stage.removeEventListener(MouseEvent.MOUSE_MOVE, moveHandler);
-			dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_CLICK, thumbPercent()));
 			_thumb.stopDrag();
-			moveHandler(evt);
+			mouseMoveHandler(evt);
 			_dragging = false;
+			RootReference.stage.removeEventListener(MouseEvent.MOUSE_UP, upHandler);
+			RootReference.stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMoveHandler);
+			dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_CLICK, thumbPercent()));
 		}
 		
 		
