@@ -39,6 +39,8 @@
 			_visibilities = {},
 			_hiding,
 			_button,
+			_forced,
+			_previousState;
 			_config = utils.extend({
 				showicons: TRUE,
 				bufferrotation: 45,
@@ -143,6 +145,11 @@
 		
 		var _stateTimeout;
 		
+		
+		function _getState() {
+		    return _forced ? _forced : (_api ? _api.jwGetState() : states.IDLE);
+		}
+		
 		function _stateHandler(evt) {
 			clearTimeout(_stateTimeout);
 			_stateTimeout = setTimeout(function() {
@@ -151,28 +158,45 @@
 		}
 		
 		function _updateDisplay(state) {
-			if (_button) _button.setRotation(0);
-			switch(state) {
-			case states.IDLE:
-				if (!_errorState && !_completedState) {
-					if (_image && !_imageHidden) {
-						_setVisibility(D_PREVIEW_CLASS, TRUE);
-					}
-					_setIcon('play', _item ? _item.title : "");
-				}
-				break;
-			case states.BUFFERING:
-				_clearError();
-				_completedState = FALSE;
-				_setIcon('buffer');
-				break;
-			case states.PLAYING:
-				_setIcon();
-				break;
-			case states.PAUSED:
-				_setIcon('play');
-				break;
+	        state = _getState();
+		    if (state!=_previousState) {
+		        _previousState = state;
+    			if (_button) _button.setRotation(0);
+    			switch(state) {
+    			case states.IDLE:
+    				if (!_errorState && !_completedState) {
+    					if (_image && !_imageHidden) {
+    						_setVisibility(D_PREVIEW_CLASS, TRUE);
+    					}
+    					_setIcon('play', _item ? _item.title : "");
+    				}
+    				break;
+    			case states.BUFFERING:
+    				_clearError();
+    				_completedState = FALSE;
+    				_setIcon('buffer');
+    				break;
+    			case states.PLAYING:
+    				_setIcon();
+    				break;
+    			case states.PAUSED:
+    				_setIcon('play');
+    				break;
+    			}
 			}
+		}
+		
+	
+		this.forceState = function(state) {
+		    _forced = state;
+		    _updateDisplay(state);
+		    this.show();
+		}
+		
+		this.releaseState = function(state) {
+		    _forced = null;
+		    _updateDisplay(state);
+		    this.show();
 		}
 		
 		this.hidePreview = function(state) {
@@ -245,7 +269,7 @@
 		}
 
 		this.show = function() {
-			if (_button && _api.jwGetState() != states.PLAYING) _button.show();
+			if (_button && _getState() != states.PLAYING) _button.show();
 		}
 		
 		this.hide = function() {

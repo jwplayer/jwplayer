@@ -144,6 +144,9 @@ package com.longtailvideo.jwplayer.player {
 				ExternalInterface.addCallback("jwSetFullscreen", js_fullscreen);
 				ExternalInterface.addCallback("jwSetStretching", js_setStretching);
 				ExternalInterface.addCallback("jwSetControls", js_setControls);
+				ExternalInterface.addCallback("jwForceState", js_forceState);
+				ExternalInterface.addCallback("jwReleaseState", js_releaseState);
+				
 				
 				// Player Controls APIs
 				ExternalInterface.addCallback("jwControlbarShow", js_showControlbar);
@@ -496,6 +499,16 @@ package com.longtailvideo.jwplayer.player {
 			_player.redraw();
 		}
 
+		
+		protected function js_forceState(state:String):void {
+			
+			_player.controls.display.forceState(state);
+		}
+		
+		protected function js_releaseState():void {
+			
+			_player.controls.display.releaseState();
+		}
 		
 		protected function js_loadInstream(item:Object, config:Object):void {
 			_isItem = new PlaylistItem(item);

@@ -666,6 +666,17 @@
 			}
 		}
 		
+		this.forceState = function(state) {
+		      _display.forceState(state);
+		}
+		
+		this.releaseState = function() {
+		    
+		    
+		    _display.releaseState(_api.jwGetState());
+		}
+		
+		
 		this.getSafeRegion = function() {
 			var controls = _model.controls,
 				dispBounds = utils.bounds(_container),

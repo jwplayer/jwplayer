@@ -68,6 +68,11 @@
 			_api.jwSetCurrentCaptions = _controller.setCurrentCaptions;
 			_api.jwSetControls = _view.setControls;
 			_api.jwGetSafeRegion = _view.getSafeRegion; 
+			_api.jwForceState = _view.forceState;
+			_api.jwReleaseState = _view.releaseState;
+			
+			
+			
 			
 			_api.jwGetPlaylistIndex = _statevarFactory('item');
 			_api.jwGetPosition = _statevarFactory('position');
@@ -82,6 +87,7 @@
 			_api.jwGetStretching = _statevarFactory('stretching');
 			_api.jwGetPlaylist = _statevarFactory('playlist');
 			_api.jwGetControls = _statevarFactory('controls');
+
 
 			/** InStream API **/
 			_api.jwDetachMedia = _controller.detachMedia;

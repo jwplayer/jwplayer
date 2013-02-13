@@ -53,6 +53,17 @@
 				_callbacks[id]();
 			}
 		};
+		
+		_this.forceState = function(state) {
+		    _callInternal("jwForceState", state);
+		    return _this;  
+		};
+		
+		_this.releaseState = function() {
+		    
+		    return _callInternal("jwReleaseState");
+		}
+		
 		_this.getDuration = function() {
 			return _callInternal('jwGetDuration');
 		};
