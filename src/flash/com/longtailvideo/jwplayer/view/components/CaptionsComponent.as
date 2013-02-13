@@ -336,7 +336,6 @@ package com.longtailvideo.jwplayer.view.components {
 			var captionsEvent:CaptionsEvent = new CaptionsEvent(type);
 			captionsEvent.tracks = tracks;
 			captionsEvent.currentTrack = track;
-			Logger.log("dispatching captions event of type: " + type);
 			dispatchEvent(captionsEvent);
 		}
 		
