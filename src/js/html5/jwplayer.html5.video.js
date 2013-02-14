@@ -12,8 +12,9 @@
 	
 	/** HTML5 video class * */
 	jwplayer.html5.video = function(videotag) {
+		var _isIE = utils.isIE(),
 
-		var _mediaEvents = {
+			_mediaEvents = {
 			"abort" : _generalHandler,
 			"canplay" : _canPlayHandler,
 			"canplaythrough" : _generalHandler,
@@ -31,7 +32,7 @@
 			"ratechange" : _generalHandler,
 			"readystatechange" : _generalHandler,
 			"seeked" : _sendSeekEvent,
-			"seeking" : _generalHandler,
+			"seeking" : _isIE ? _bufferStateHandler : _generalHandler,
 			"stalled" : _generalHandler,
 			"suspend" : _generalHandler,
 			"timeupdate" : _timeUpdateHandler,
@@ -114,7 +115,7 @@
 
 		
 		function _generalHandler(evt) {
-			//if (evt) console.log("%s %o (%s,%s)", evt.type, evt);
+			//if (evt) utils.log("%s %o (%s,%s)", evt.type, evt);
 		}
 
 		function _durationUpdateHandler(evt) {
@@ -207,8 +208,9 @@
 		}
 
 		function _bufferStateHandler(evt) {
+			_generalHandler(evt);
 			if (!_attached) return;
-			_setState(states.BUFFERING);
+			if (!_dragging) _setState(states.BUFFERING);
 		}
 
 		function _errorHandler(evt) {
@@ -299,7 +301,7 @@
 		var _stop = _this.stop = function() {
 			if (!_attached) return;
 			_videotag.removeAttribute("src");
-			if (!utils.isIE()) _videotag.load();
+			if (!_isIE) _videotag.load();
 			_currentQuality = -1;
 			clearInterval(_bufferInterval);
 			_setState(states.IDLE);
@@ -334,12 +336,16 @@
 			}
 		}
 		
-		function _sendSeekEvent() {
+		function _sendSeekEvent(evt) {
+			_generalHandler(evt);
 			if (!_dragging) {
 				_sendEvent(events.JWPLAYER_MEDIA_SEEK, {
 					position: _position,
 					offset: _videotag.currentTime
 				});
+				if (_state != states.PAUSED) {
+					_setState(states.PLAYING);
+				}
 			}
 		}
 
