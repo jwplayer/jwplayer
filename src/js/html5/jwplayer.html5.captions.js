@@ -81,7 +81,7 @@
         /** Player jumped to idle state. **/
         function _idleHandler() {
             _state = 'idle';
-            _redraw();
+            _redraw(false);
         };
 
         function _stateHandler(evt) {
@@ -103,7 +103,7 @@
                 setTimeout(_fullscreenResize, 500);
             }
             else {
-                _redraw();
+                _redraw(true);
             }
             
         }
@@ -174,7 +174,7 @@
 
             _renderCaptions(defaultTrack);
 
-            _redraw();
+            _redraw(false);
             _sendEvent(events.JWPLAYER_CAPTIONS_LIST, _getTracks(), _selectedTrack);
         };
 
@@ -207,18 +207,18 @@
             if (_track < _tracks.length) {
                 _tracks[_track].data = data;
             }
-            _redraw();
+            _redraw(false);
         };
 
 
         /** Player started playing. **/
         function _playHandler(event) {
             _state = PLAYING;
-            _redraw();
+            _redraw(false);
         };
 
         /** Update the interface. **/
-        function _redraw() {
+        function _redraw(timeout) {
             if(!_tracks.length) {
                 _renderer.hide();
             } else {
@@ -228,17 +228,24 @@
                         _fullscreenHandler({fullscreen: true});
                         return;
                     }
-                    var width = _api.jwGetWidth();
-                    if (_api._model && _api._model.config
-                            && _api._model.config.listbar && _api._model.config.listbar.size) {
-                        width = width - _api._model.config.listbar.size;
+                    _normalResize();
+                    if (timeout) {
+                        setTimeout(_normalResize, 500);
                     }
-                    _renderer.resize(width, Math.round(_api.jwGetHeight()*0.94));
                 } else {
                     _renderer.hide();
                 }
             }
         };
+
+        function _normalResize() {
+            var width = _api.jwGetWidth();
+            if (_api._model && _api._model.config
+                    && _api._model.config.listbar && _api._model.config.listbar.size) {
+                width = width - _api._model.config.listbar.size;
+            }
+            _renderer.resize(width, Math.round(_api.jwGetHeight()*0.94));
+        }
 
         /** Set dock buttons when player is ready. **/
         function _setup() {
@@ -259,7 +266,7 @@
 
             // Place renderer and selector.
             _renderer = new jwplayer.html5.captions.renderer(_options,_display);
-            _redraw();
+            _redraw(false);
         };
 
 
@@ -281,7 +288,7 @@
             } else {
                 _load(_tracks[_track].file);
             }
-            _redraw();
+            _redraw(false);
         };
 
 
