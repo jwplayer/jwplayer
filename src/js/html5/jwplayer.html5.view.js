@@ -486,14 +486,16 @@
 			}
 			if (_isMobile && !_forcedControls) {
 				if (_isAndroid) _controlsLayer.style.display = JW_CSS_BLOCK;
-				if (!(_isMobile && _model.fullscreen)) _videoTag.controls = false;
+				if (!(_isMobile && _model.fullscreen)) {
+					_videoTag.controls = false;
+				}
 			}
 		}
 		function _hideDisplay() {
 			if (_display) {
 				if (_isMobile && !_forcedControls) {
-					if (_isAndroid) _controlsLayer.style.display = JW_CSS_NONE;
-					_videoTag.controls = true;
+					if (_isAndroid && _model.controls) _controlsLayer.style.display = JW_CSS_NONE;
+					_videoTag.controls = _model.controls;
 				}
 				_display.hide();
 			}
