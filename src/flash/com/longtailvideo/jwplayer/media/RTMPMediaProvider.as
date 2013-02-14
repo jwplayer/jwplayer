@@ -146,8 +146,6 @@
 					_application = _item.file.substr(0, slash+1);
 					id = _item.file.substr(slash+1);
 				}
-				// TODO: What if RTMP file has more than one quality level.
-				// Check for item.levels before disregarding all others
 				_levels = [{label:'0',id:loadID(id)}];
 				loadWrap();
 			} else if(_item.streamer) {
@@ -204,11 +202,17 @@
 		private function loadID(url:String):String {
 			var parts:Array = url.split("?");
 			var extension:String = parts[0].substr(-4);
+			
+			// Remove flv: if the url starts with that
+			if (parts[0].indexOf('flv:') == 0) {
+				parts[0] = parts[0].substr(4);
+				_type = "flv";
+			}
+			
 			switch (extension) {
 				case '.flv':
 					_type = 'flv';
 					parts[0] = parts[0].substr(0, parts[0].length-4);
-					parts[0].indexOf('flv:') == 0 ? parts[0] = parts[0].substr(4): null;
 					url = parts.join("?");
 					break;
 				case '.mp3':
@@ -232,6 +236,9 @@
 					parts[0].indexOf('mp4:') == 0 ? null: parts[0] = 'mp4:' + parts[0];
 					url = parts.join("?");
 					break;
+				default: 
+					// Live streams will go here after the flv has been stripped
+					url = parts.join("?");
 			}
 			return url;
 		}
