@@ -1,15 +1,21 @@
 package com.longtailvideo.jwplayer.view.components {
-	import com.longtailvideo.jwplayer.events.*;
-	import com.longtailvideo.jwplayer.player.*;
-	import com.longtailvideo.jwplayer.utils.*;
-	import com.longtailvideo.jwplayer.view.interfaces.*;
+	import com.longtailvideo.jwplayer.player.IPlayer;
+	import com.longtailvideo.jwplayer.player.PlayerState;
+	import com.longtailvideo.jwplayer.player.PlayerVersion;
+	import com.longtailvideo.jwplayer.utils.Animations;
+	import com.longtailvideo.jwplayer.utils.Logger;
+	import com.longtailvideo.jwplayer.utils.RootReference;
+	import com.longtailvideo.jwplayer.utils.Strings;
+	import com.longtailvideo.jwplayer.view.interfaces.IPlayerComponent;
 	
-	import flash.display.*;
-	import flash.events.*;
-	import flash.external.*;
-	import flash.net.*;
-	import flash.system.*;
-	import flash.utils.*;
+	import flash.display.DisplayObject;
+	import flash.display.Loader;
+	import flash.events.ErrorEvent;
+	import flash.events.Event;
+	import flash.events.IOErrorEvent;
+	import flash.events.MouseEvent;
+	import flash.net.URLRequest;
+	import flash.net.navigateToURL;
 	
 	public class LogoComponent extends CoreComponent implements IPlayerComponent {
 		/** Configuration defaults **/
@@ -93,11 +99,8 @@ package com.longtailvideo.jwplayer.view.components {
 		protected function setupMouseEvents():void {
 			this.mouseChildren = false;
 			this.buttonMode = true;
-			if (getConfigParam('link')) {
-				addEventListener(MouseEvent.CLICK, clickHandler);
-			} else {
-				this.mouseEnabled = false;
-			}
+			addEventListener(MouseEvent.CLICK, clickHandler);
+			this.mouseEnabled = false;
 		}
 		
 		protected function loadFile():void {
@@ -140,12 +143,18 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		/** Handles mouse clicks **/
 		protected function clickHandler(evt:MouseEvent):void {
-			if (_showing) {
+			var link:String = getConfigParam('link');
+			if (_showing && link) {
 				_player.pause();
 				_player.fullscreen(false);
-				var link:String = getConfigParam('link');
-				if (link) {
-					navigateToURL(new URLRequest(Strings.cleanLink(link)), getConfigParam('linktarget'));
+				navigateToURL(new URLRequest(Strings.cleanLink(link)), getConfigParam('linktarget'));
+			}
+			else {
+				if (_player.state == PlayerState.IDLE || _player.state == PlayerState.PAUSED) {
+					_player.play();
+				}
+				else {
+					_player.pause();
 				}
 			}
 		}

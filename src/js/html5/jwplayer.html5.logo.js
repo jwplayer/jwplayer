@@ -9,6 +9,7 @@
 	var utils = jwplayer.utils,
 		html5 = jwplayer.html5,
 		_css = utils.css,
+		states = jwplayer.events.state,
 	
 		UNDEFINED = undefined,
 		
@@ -42,7 +43,10 @@
 			if (_api.edition) {
 				linkFlag = _getLinkFlag(_api.edition());
 			}
-			_defaults.link = LINK_DEFAULT+jwplayer.version+'&m=h&e='+linkFlag;
+
+			if (linkFlag == "o" || linkFlag == "f") {
+				_defaults.link = LINK_DEFAULT+jwplayer.version+'&m=h&e='+linkFlag;
+			}
 
 			_settings = utils.extend({}, _defaults, logoConfig);
 			_settings.hide = (_settings.hide.toString() == "true");
@@ -94,9 +98,22 @@
 			return parseInt(_settings.margin);
 		}
 
+		function _togglePlay() {
+			if (_api.jwGetState() == states.IDLE || _api.jwGetState() == states.PAUSED) {
+				_api.jwPlay();
+			}
+			else {
+				_api.jwPause();
+			}
+		}
+
 		function _clickHandler(evt) {
 			if (utils.exists(evt)) {
 				evt.stopPropagation();
+			}
+
+			if (!_showing || !_settings.link) {
+				_togglePlay();
 			}
 			
 			if (_showing && _settings.link) {
@@ -151,7 +168,6 @@
 	logo.defaults = {
 		prefix: utils.repo(),
 		file: "logo.png",
-		link: LINK_DEFAULT+jwplayer.version+'&m=h&e=f',
 		linktarget: "_top",
 		margin: 8,
 		hide: false,
