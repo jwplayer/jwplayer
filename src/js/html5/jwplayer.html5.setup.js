@@ -85,7 +85,12 @@
 		}
 		
 		function _parseConfig() {
-			_taskComplete(PARSE_CONFIG);
+			if (model.edition() == "invalid") {
+				_error("Error setting up player: Invalid license key");
+			}
+			else {
+				_taskComplete(PARSE_CONFIG);
+			}
 		}
 		
 		function _loadSkin() {
