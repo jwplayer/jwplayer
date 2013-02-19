@@ -1,34 +1,16 @@
 ﻿package com.longtailvideo.jwplayer.media {
-    import com.longtailvideo.jwplayer.events.MediaEvent;
-    import com.longtailvideo.jwplayer.model.PlayerConfig;
-    import com.longtailvideo.jwplayer.model.PlaylistItem;
-    import com.longtailvideo.jwplayer.parsers.SMILParser;
-    import com.longtailvideo.jwplayer.player.PlayerState;
-    import com.longtailvideo.jwplayer.utils.AssetLoader;
-    import com.longtailvideo.jwplayer.utils.Configger;
-    import com.longtailvideo.jwplayer.utils.NetClient;
-    import com.longtailvideo.jwplayer.utils.RootReference;
-    import com.longtailvideo.jwplayer.utils.Stretcher;
-    import com.wowza.encryptionAS3.TEA;
+    import com.longtailvideo.jwplayer.events.*;
+    import com.longtailvideo.jwplayer.model.*;
+    import com.longtailvideo.jwplayer.parsers.*;
+    import com.longtailvideo.jwplayer.player.*;
+    import com.longtailvideo.jwplayer.utils.*;
+    import com.wowza.encryptionAS3.*;
     
-    import flash.events.AsyncErrorEvent;
-    import flash.events.ErrorEvent;
-    import flash.events.Event;
-    import flash.events.IOErrorEvent;
-    import flash.events.NetStatusEvent;
-    import flash.events.SecurityErrorEvent;
-    import flash.geom.Rectangle;
-    import flash.media.SoundTransform;
-    import flash.media.Video;
-    import flash.net.NetConnection;
-    import flash.net.NetStream;
-    import flash.net.NetStreamPlayOptions;
-    import flash.net.NetStreamPlayTransitions;
-    import flash.net.ObjectEncoding;
-    import flash.net.Responder;
-    import flash.utils.clearInterval;
-    import flash.utils.setInterval;
-
+    import flash.events.*;
+    import flash.geom.*;
+    import flash.media.*;
+    import flash.net.*;
+    import flash.utils.*;
 
 	/**
 	 * Wrapper for playback of media streamed over RTMP.
@@ -485,7 +467,24 @@
 				// Server cannot be reached (anymore)
 				case 'NetConnection.Connect.Rejected':
 				case 'NetConnection.Connect.Failed':
-					error("Error loading stream: Could not connect to server");
+					var code:Number;
+					var redirect:String;
+					try { 
+						code = evt.info.ex.code;
+						redirect = evt.info.ex.redirect;
+					} catch(e:Error) {}
+					
+					if (code == 302 && redirect) {
+						var newItem:PlaylistItem = new PlaylistItem({
+							streamer: redirect,
+							file: _item.file.replace(_application, "")
+						});
+						stop();
+						setTimeout(load, 0, newItem);
+						return;
+					} else {
+						error("Error loading stream: Could not connect to server");
+					}
 					break;
 				// Server connected, but stream failed.
 				case 'NetStream.Seek.Failed':
