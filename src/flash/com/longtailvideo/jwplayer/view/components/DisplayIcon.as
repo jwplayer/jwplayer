@@ -3,7 +3,6 @@ package com.longtailvideo.jwplayer.view.components {
 	
 	import flash.display.*;
 	import flash.events.*;
-	import flash.external.*;
 	import flash.geom.*;
 	import flash.text.*;
 	import flash.utils.*;
@@ -219,6 +218,10 @@ package com.longtailvideo.jwplayer.view.components {
 			if (parent && parent.parent) {
 				var display:DisplayObject = parent.parent;
 				if (display.getRect(RootReference.stage).containsPoint(new Point(evt.stageX, evt.stageY))) {
+					if (!evt.stageX && !evt.stageY) {
+						hover(false);
+						return;
+					}
 					hover(true);
 				} else if (_hovering) {
 					hover(false);
