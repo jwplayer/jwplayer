@@ -98,6 +98,9 @@
 			_videotag.controls = true;
 			_videotag.controls = false;
 			
+			// Enable AirPlay
+			_videotag.setAttribute("x-webkit-airplay", "allow");
+			
 			_attached = true;
 		}
 
