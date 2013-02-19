@@ -105,6 +105,7 @@
         }
         
         // Update display
+        // TODO: only load image if it's different from the last one
         var _updateTimeline = this.updateTimeline = function(seconds) {
         	var i = 0;
         	if (!_cues) return; 
