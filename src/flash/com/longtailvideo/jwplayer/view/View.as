@@ -107,6 +107,13 @@ package com.longtailvideo.jwplayer.view {
 		// Set to true during the player's completed state
 		private var _completeState:Boolean;
 		
+		// Timer for poster image. Fixes chromes cache issues
+		private var _imageTimer:Timer;
+		// Current image url being loaded
+		private var _imageUrl:String;
+		// Indicator for whether the image has been loaded
+		private var _imageLoaded:Boolean = false;
+		
 		public function View(player:IPlayer, model:Model) {
 			_player = player;
 			_model = model;
@@ -284,6 +291,9 @@ package com.longtailvideo.jwplayer.view {
 			_imageLayer.addChild(_image);
 			_imageLayer.alpha = 0;
 			_imageFade = new Animations(_imageLayer);
+			
+			_imageTimer = new Timer(1000,1);
+			_imageTimer.addEventListener(TimerEvent.TIMER_COMPLETE, _imageTimerHandler);
 
 			imageDelay.addEventListener(TimerEvent.TIMER_COMPLETE, showImage);
 			mediaDelay.addEventListener(TimerEvent.TIMER_COMPLETE, showMedia);
@@ -590,6 +600,9 @@ package com.longtailvideo.jwplayer.view {
 			if (_model.playlist.currentItem && _model.playlist.currentItem.image) {
 				if (_lastImage != _model.playlist.currentItem.image) {
 					_lastImage = _model.playlist.currentItem.image;
+					// reset timer and imageLoaded for new playlist item
+					_imageLoaded = false;
+					_imageTimer.reset();
 					loadImage(_lastImage);
 				}
 			} else {
@@ -599,22 +612,48 @@ package com.longtailvideo.jwplayer.view {
 
 
 		protected function loadImage(url:String):void {
+			_imageUrl = url;
 			_image.visible = true;
-			//_image.load(new URLRequest(url), new LoaderContext(true));
+			
+			// Only start timer once. 
+			//Don't want to keep retrying if image doesn't load after cachebuster
+			if (!_imageTimer.currentCount) {
+				_imageTimer.start();
+			}
 			_image.load(new URLRequest(url));
 		}
-
-
+	
+		// If the image doesn't load in 1 second (Chrome cache issue)
+		private function _imageTimerHandler(evt:TimerEvent):void {
+			// attempt to stop caching by adding a cachebuster to the url
+			var buster:Number = Math.round(Math.random() * 100000);
+			if (_imageUrl.indexOf("?") == -1) {
+				_imageUrl += ("?busted=" + buster);
+			}
+			else {
+				var params:Array = _imageUrl.split("?");
+				_imageUrl = params[0] + "?busted=" + buster + "&" + params[1];
+			}
+			
+			loadImage(_imageUrl);	
+		}
+		
+		
 		protected function imageComplete(evt:Event):void {
 			if (_image) {
+				_imageLoaded = true;
+				// stop the timer if it is running since image was successfully loaded
+				if (_imageTimer.running) {
+					_imageTimer.stop();
+				}
 				resizeImage(_player.config.width, _player.config.height);
 				if (_model.state != PlayerState.PLAYING && _model.state != PlayerState.PAUSED) { 
 					showImage();
 				}
 			}
 		}
-
-
+	
+		
 		protected function imageError(evt:ErrorEvent):void {
 			Logger.log('Error loading preview image: '+evt.text);
 		}
