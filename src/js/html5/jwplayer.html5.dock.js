@@ -18,9 +18,9 @@
 
 		/** Some CSS constants we should use for minimization * */
 		JW_CSS_NONE = "none", 
+		JW_CSS_BLOCK = "block", 
 		JW_CSS_100PCT = "100%",
-		JW_CSS_CENTER = "center",
-		JW_CSS_ABSOLUTE = "absolute";
+		JW_CSS_CENTER = "center";
 
 	html5.dock = function(api, config) {
 		var _api = api,
@@ -49,7 +49,7 @@
 			_buttonContainer = _createElement("div", "jwdockbuttons");
 			_container.appendChild(_buttonContainer);
 			_container.id = _id;
-
+			
 			_setupElements();
 			
 			setTimeout(function() {
@@ -77,7 +77,7 @@
 			_css(_internalSelector("button"), {
 				width: button.width,
 				cursor: "pointer",
-				border: "none",
+				border: JW_CSS_NONE,
 				background: button.src
 			});
 			
@@ -150,22 +150,21 @@
 		}
 
 		_this.hide = function() {
+			if (!_this.visible) return;
 			_this.visible = false;
-//			_css(_internalSelector(), {
-//				opacity: 0
-//			});
 			_container.style.opacity = 0;
-			_container.style.visibility = "hidden";
+			setTimeout(function() {
+				_container.style.display = JW_CSS_NONE
+			}, 150);
 		}
 
 		_this.show = function() {
+			if (_this.visible || !_buttonCount) return;
 			_this.visible = true;
-//			_css(_internalSelector(), {
-//				visibility: "visible",
-//				opacity: 1
-//			});
-			_container.style.opacity = 1;
-			_container.style.visibility = "visible";
+			_container.style.display = JW_CSS_BLOCK;
+			setTimeout(function() {
+				_container.style.opacity = 1;
+			}, 0);
 		}
 		
 		_this.addButton = function(url, label, clickHandler, id) {
@@ -192,7 +191,7 @@
 			if (label) {
 				var tooltip = new html5.overlay(icon.id+"_tooltip", _skin, true),
 					tipText = _createElement("div");
-				tipText.id = tooltip.id + "_label";
+				tipText.id = icon.id + "_label";
 				tipText.innerHTML = label;
 				_css('#'+tipText.id, {
 					padding: 3
@@ -239,7 +238,7 @@
 		
 		function _setCaps() {
 			_css(DB_CLASS + " .capLeft, " + DB_CLASS + " .capRight", {
-				display: _buttonCount ? "block" : "none"
+				display: _buttonCount ? JW_CSS_BLOCK : JW_CSS_NONE
 			});
 		}
 
@@ -247,9 +246,8 @@
 	};
 
 	_css(D_CLASS, {
-	  	position: "absolute",
-	  	width: JW_CSS_100PCT,
-	  	opacity: 0
+	  	opacity: 0,
+	  	display: JW_CSS_NONE
 	});
 		
 	_css(D_CLASS + " > *", {
@@ -259,12 +257,8 @@
 
 	_css(D_CLASS + " > .jwoverlay", {
 		height: 'auto',
-	  	'float': "none",
+	  	'float': JW_CSS_NONE,
 	  	'z-index': 99
-	});
-
-	_css(DB_CLASS, {
-	  	position: "absolute"
 	});
 
 	_css(DB_CLASS + " button", {
@@ -277,15 +271,15 @@
 	});
 
 	_css(DB_CLASS + " .divider", {
-		display: "none"
+		display: JW_CSS_NONE
 	});
 
 	_css(DB_CLASS + " button ~ .divider", {
-		display: "block"
+		display: JW_CSS_BLOCK
 	});
 
 	_css(DB_CLASS + " .capLeft, " + DB_CLASS + " .capRight", {
-		display: "none"
+		display: JW_CSS_NONE
 	});
 
 	_css(DB_CLASS + " .capRight", {

@@ -138,7 +138,11 @@
 
 			_stateHandler({newstate:states.IDLE});
 			
-			_controlsLayer.addEventListener('mouseout', _fadeControls, FALSE);
+			_controlsLayer.addEventListener('mouseout', function() {
+				clearTimeout(_controlsTimeout);
+				_controlsTimeout = setTimeout(_fadeControls, 10);
+			}, FALSE);
+			
 			_controlsLayer.addEventListener('mousemove', _startFade, FALSE);
 			if (utils.isIE()) {
 				// Not sure why this is needed
@@ -182,7 +186,7 @@
 			_inCB = FALSE;
 		}
 		
-		function _fadeControls() {
+		function _fadeControls(evt) {
 			if (_api.jwGetState() != states.BUFFERING) {
 				_hideControlbar();
 				_hideDock();

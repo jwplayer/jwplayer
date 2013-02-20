@@ -34,6 +34,7 @@
 		JW_CSS_RIGHT = "right",
 		JW_CSS_100PCT = "100%",
 		JW_CSS_SMOOTH_EASE = "opacity .15s, background .15s, visibility .15s",
+		JW_VISIBILITY_TIMEOUT = 150,
 		
 		HIDDEN = { display: JW_CSS_NONE },
 		NOT_HIDDEN = { display: UNDEFINED },
@@ -120,6 +121,7 @@
 			_ccOverlay,
 			_fullscreenOverlay,
 			_redrawTimeout,
+			_hideTimeout,
 			_audioMode = FALSE,
 			_dragging = FALSE,
 			_lastSeekTime = 0,
@@ -199,13 +201,13 @@
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_LEVEL_CHANGED, _qualityLevelChanged);
 			_api.jwAddEventListener(events.JWPLAYER_CAPTIONS_LIST, _captionsHandler);
 			_api.jwAddEventListener(events.JWPLAYER_CAPTIONS_CHANGED, _captionChanged);
-			_controlbar.addEventListener('mouseover', function() {
+			_controlbar.addEventListener('mouseover', function(evt) {
 				// Slider listeners
 				WINDOW.addEventListener('mousemove', _sliderMouseEvent, FALSE);
 				WINDOW.addEventListener('mouseup', _sliderMouseEvent, FALSE);
 				WINDOW.addEventListener('mousedown', _killSelect, FALSE);
 			}, false);
-			_controlbar.addEventListener('mouseout', function(){
+			_controlbar.addEventListener('mouseout', function(evt){
 				// Slider listeners
 				WINDOW.removeEventListener('mousemove', _sliderMouseEvent);
 				WINDOW.removeEventListener('mouseup', _sliderMouseEvent);
@@ -1027,7 +1029,7 @@
 			clearTimeout(_redrawTimeout);
 			_redrawTimeout = setTimeout(_this.redraw, 0);
 		}
-		
+
 		_this.redraw = function() {
 			_createStyles();
 			var capLeft = _getSkinElement("capLeft"), capRight = _getSkinElement("capRight")
@@ -1168,14 +1170,32 @@
 		}
 		
 		_this.show = function() {
+			if (_this.visible) return;
+			_clearHideTimeout();
 			_this.visible = true;
-			_controlbar.style.opacity = 1;
+			_controlbar.style.display = JW_CSS_INLINE_BLOCK;
+			_redraw();
+			_hideTimeout = setTimeout(function() {
+				_controlbar.style.opacity = 1;
+			}, 10);
+		}
+		
+		function _clearHideTimeout() {
+			clearTimeout(_hideTimeout);
+			_hideTimeout = UNDEFINED;
 		}
 		
 		_this.hide = function() {
+			if (!_this.visible) return;
 			_this.visible = false;
 			_controlbar.style.opacity = 0;
+			_clearHideTimeout();
+			_hideTimeout = setTimeout(function() {
+				_controlbar.style.display = JW_CSS_NONE;
+			}, JW_VISIBILITY_TIMEOUT);
 		}
+		
+		
 		
 		// Call constructor
 		_init();
@@ -1189,7 +1209,8 @@
 
 	_css(CB_CLASS, {
 		position: JW_CSS_ABSOLUTE,
-		opacity: 0
+		opacity: 0,
+		display: JW_CSS_NONE
 	});
 	
 	_css(CB_CLASS+' span', {
