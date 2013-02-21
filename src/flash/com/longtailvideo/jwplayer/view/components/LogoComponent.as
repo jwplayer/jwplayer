@@ -104,7 +104,7 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 		
 		protected function loadFile():void {
-			var versionRE:RegExp = /(\d+)\.(\d+)\./;
+			var versionRE:RegExp = /(\S+)\.(\S+)\./;
 			var versionInfo:Array = versionRE.exec(_player.version);
 			var prefix:String = getConfigParam('prefix');
 			if (getConfigParam('file') && prefix) {

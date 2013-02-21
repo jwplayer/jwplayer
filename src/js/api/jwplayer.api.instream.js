@@ -16,11 +16,14 @@
 			_item = item,
 			_options = options,
 			_listeners = {},
-			_stateListeners = {};
+			_stateListeners = {},
+			_this = this;
 		
 		function _init() {
-		   	_api.callInternal("jwLoadInstream", item, options);
+		   	_api.callInternal("jwLoadInstream", item, options ? options : {});
 		}
+
+		/*
 		
 		function _addInternalListener(player, type) {
 			_player.jwInstreamAddEventListener(type, 'function(dat) { jwplayer("' + _api.id + '").dispatchInstreamEvent("' + type + '", dat); }');
@@ -62,8 +65,9 @@
 					}
 				}
 			};
-		}		
-		this.dispatchEvent = function(type, calledArguments) {
+		}
+		
+		_this.dispatchEvent = function(type, calledArguments) {
 			if (_listeners[type]) {
 				var args = utils.translateEventResponse(type, calledArguments[1]);
 				for (var l = 0; l < _listeners[type].length; l++) {
@@ -75,73 +79,77 @@
 		}
 		
 		
-		this.onError = function(callback) {
+		_this.onError = function(callback) {
 			return _eventListener(events.JWPLAYER_ERROR, callback);
 		};
-		this.onFullscreen = function(callback) {
+		_this.onFullscreen = function(callback) {
 			return _eventListener(events.JWPLAYER_FULLSCREEN, callback);
 		};
-		this.onMeta = function(callback) {
+		_this.onMeta = function(callback) {
 			return _eventListener(events.JWPLAYER_MEDIA_META, callback);
 		};
-		this.onMute = function(callback) {
+		_this.onMute = function(callback) {
 			return _eventListener(events.JWPLAYER_MEDIA_MUTE, callback);
 		};
-		this.onComplete = function(callback) {
+		_this.onComplete = function(callback) {
 			return _eventListener(events.JWPLAYER_MEDIA_COMPLETE, callback);
 		};
-		this.onSeek = function(callback) {
+		_this.onSeek = function(callback) {
 			return _eventListener(events.JWPLAYER_MEDIA_SEEK, callback);
 		};
-		this.onTime = function(callback) {
+		_this.onTime = function(callback) {
 			return _eventListener(events.JWPLAYER_MEDIA_TIME, callback);
 		};
-		this.onVolume = function(callback) {
+		_this.onVolume = function(callback) {
 			return _eventListener(events.JWPLAYER_MEDIA_VOLUME, callback);
 		};
 		// State events
-		this.onBuffer = function(callback) {
+		_this.onBuffer = function(callback) {
 			return _stateListener(states.BUFFERING, callback);
 		};
-		this.onPause = function(callback) {
+		_this.onPause = function(callback) {
 			return _stateListener(states.PAUSED, callback);
 		};
-		this.onPlay = function(callback) {
+		_this.onPlay = function(callback) {
 			return _stateListener(states.PLAYING, callback);
 		};
-		this.onIdle = function(callback) {
+		_this.onIdle = function(callback) {
 			return _stateListener(states.IDLE, callback);
 		};
 		// Instream events
-		this.onInstreamClick = function(callback) {
+		_this.onInstreamClick = function(callback) {
 			return _eventListener(events.JWPLAYER_INSTREAM_CLICK, callback);
 		};
-		this.onInstreamDestroyed = function(callback) {
+		_this.onInstreamDestroyed = function(callback) {
 			return _eventListener(events.JWPLAYER_INSTREAM_DESTROYED, callback);
 		};
+		*/
 		
-		this.play = function(state) {
+		_this.play = function(state) {
 			_player.jwInstreamPlay(state);
 		};
-		this.pause= function(state) {
+		_this.pause = function(state) {
 			_player.jwInstreamPause(state);
 		};
-		this.seek = function(pos) {
-			_player.jwInstreamSeek(pos);
-		};
-		this.destroy = function() {
+		_this.destroy = function() {
 			_player.jwInstreamDestroy();
 		};
-		this.getState = function() {
+		/*
+		_this.seek = function(pos) {
+			_player.jwInstreamSeek(pos);
+		};
+		_this.getState = function() {
 			return _player.jwInstreamGetState();
 		}
-		this.getDuration = function() {
+		_this.getDuration = function() {
 			return _player.jwInstreamGetDuration();
 		}
-		this.getPosition = function() {
+		_this.getPosition = function() {
 			return _player.jwInstreamGetPosition();
 		}
 
+		*/
+		
 		_init();
 		
 		

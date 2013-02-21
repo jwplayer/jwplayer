@@ -59,7 +59,7 @@ package com.longtailvideo.jwplayer.view.components {
 		/** Map with style properties loaded by DFXP. **/
 		private var _styles:Object;
 		/** Currently active track. **/
-		private var _track:Number;
+		private var _track:Number = 0;
 		/** Current listing of tracks. **/
 		private var _tracks:Array;
 		/** Currently selected track index. **/

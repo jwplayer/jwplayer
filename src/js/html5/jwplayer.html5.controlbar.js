@@ -184,7 +184,7 @@
 				_volumeHandler();
 				_muteHandler();
 			}, 0);
-			
+			_playlistHandler();
 			_this.visible = false;
 		}
 		

@@ -108,7 +108,7 @@
 					}
 				}
 				catch (err) {
-					console.log ("ERROR: Failed to load " + pluginName + ".");
+					utils.log ("ERROR: Failed to load " + pluginName + ".");
 				}
 			}
 			

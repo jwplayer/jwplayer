@@ -13,7 +13,6 @@
 	/** HTML5 video class * */
 	jwplayer.html5.video = function(videotag) {
 		var _isIE = utils.isIE(),
-
 			_mediaEvents = {
 			"abort" : _generalHandler,
 			"canplay" : _canPlayHandler,
@@ -191,15 +190,9 @@
 		function _playHandler(evt) {
 			_generalHandler(evt);
 			if (!_attached || _dragging) return;
-			
 
 			if (_videotag.paused) {
-				if (_videotag.currentTime == _videotag.duration && _videotag.duration > 3) {
-					// Needed as of Chrome 20
-					_complete();
-				} else {
-					_pause();
-				}
+				_pause();
 			} else {
 				if (utils.isFF() && evt.type=="play" && _state == states.BUFFERING)
 					// In FF, we get an extra "play" event on startup - we need to wait for "playing",
@@ -422,13 +415,12 @@
 				return _videotag.buffered.end(_videotag.buffered.length-1) / _videotag.duration;
 		}
 		
-		function _endedHandler() {
-			//if (utils.isAndroid(2.3)) _complete();
-			_complete();
+		function _endedHandler(evt) {
+			_generalHandler(evt);
+			if (_attached) _complete();
 		}
 		
 		function _complete() {
-			//_stop();
 			if (_state != states.IDLE) {
 				_currentQuality = -1;
 
@@ -457,6 +449,7 @@
 		 */
 		_this.attachMedia = function() {
 			_attached = true;
+			_canSeek = false;
 			if (_beforecompleted) {
 			    _setState(states.IDLE);
 			    _sendEvent(events.JWPLAYER_MEDIA_COMPLETE);

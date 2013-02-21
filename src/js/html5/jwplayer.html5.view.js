@@ -261,7 +261,7 @@
 
 			if (state) {
 				if (!_model.fullscreen) {
-					if (!_isIPad) _fakeFullscreen(TRUE);
+					_fakeFullscreen(TRUE);
 					if (_playerElement.requestFullScreen) {
 						_playerElement.requestFullScreen();
 					} else if (_playerElement.mozRequestFullScreen) {
@@ -272,8 +272,7 @@
 					_model.setFullscreen(TRUE);
 				}
 			} else {
-				if (!_isIPad) _fakeFullscreen(FALSE);
-			
+				_fakeFullscreen(FALSE);
 				if (_model.fullscreen) {
 					_model.setFullscreen(FALSE);
 				    if (DOCUMENT.cancelFullScreen) {  
@@ -426,6 +425,7 @@
 		 * This method sets the CSS of the container element to a fixed position with 100% width and height.
 		 */
 		function _fakeFullscreen(state) {
+			if (_isMobile) return;
 			if (state) {
 				_playerElement.className += " jwfullscreen";
 				(DOCUMENT.getElementsByTagName("body")[0]).style["overflow-y"] = JW_CSS_HIDDEN;
@@ -618,25 +618,22 @@
 		
 		this.setupInstream = function(instreamDisplay, instreamVideo) {
 			// Instream not supported in HTML5 mode
-/*			_setVisibility(_internalSelector(VIEW_INSTREAM_CONTAINER_CLASS), TRUE);
+			_setVisibility(_internalSelector(VIEW_INSTREAM_CONTAINER_CLASS), TRUE);
 			_setVisibility(_internalSelector(VIEW_CONTROLS_CONTAINER_CLASS), FALSE);
 			_instreamLayer.appendChild(instreamDisplay);
 			_instreamVideo = instreamVideo;
 			_stateHandler({newstate:states.PLAYING});
 			_instreamMode = TRUE;
-*/			
 		}
 		
 		var _destroyInstream = this.destroyInstream = function() {
 			// Instream not supported in HTML5 mode
-/*
 			_setVisibility(_internalSelector(VIEW_INSTREAM_CONTAINER_CLASS), FALSE);
 			_setVisibility(_internalSelector(VIEW_CONTROLS_CONTAINER_CLASS), TRUE);
 			_instreamLayer.innerHTML = "";
 			_instreamVideo = null;
 			_instreamMode = FALSE;
 			_resize(_model.width, _model.height);
-*/			
 		}
 		
 		this.setupError = function(message) {

@@ -457,6 +457,8 @@
 			}
 		};
 		
+		_this.callInternal = _callInternal;
+		
 		_this.playerReady = function(obj) {
 			_playerReady = true;
 			

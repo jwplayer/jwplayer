@@ -11,7 +11,7 @@
 		TRUE = true,
 		FALSE = false;
 
-	html5.model = function(config) {
+	html5.model = function(config, video) {
 		var _model = this, 
 			// Video provider
 			_video, 
@@ -64,8 +64,13 @@
 			_model.playlist = [];
 			_model.setItem(0);
 			
-			_videoTag = document.createElement("video");
-			_video = new html5.video(_videoTag);
+			if (video) {
+				_video = video;
+				_videoTag = _video.getTag();
+			} else {
+				_videoTag = document.createElement("video");
+				_video = new html5.video(_videoTag);
+			}
 			_video.volume(_model.volume);
 			_video.mute(_model.mute);
 			_video.addGlobalListener(_videoEventHandler);
