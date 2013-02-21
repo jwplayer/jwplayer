@@ -766,6 +766,7 @@ package com.longtailvideo.jwplayer.view {
 		
 		/** Show controls on mousemove or keyboard press and restart the countdown. **/
 		private function moveHandler(evt:Event=null):void {
+			Mouse.show();
 			if (_player.state != PlayerState.IDLE) {
 				if (evt is MouseEvent) {
 					var mouseEvent:MouseEvent = evt as MouseEvent;
@@ -782,19 +783,18 @@ package com.longtailvideo.jwplayer.view {
 		/** Hide controls again when move has timed out. **/
 		private function moveTimeout(evt:Event=null):void {
 			clearTimeout(_fadingOut);
+			if (_player.state == PlayerState.PLAYING) Mouse.hide();
 			hideControls();
 		}
 		
 		private function hideControls():void {
 			if (_preventFade) return;
 			if (!_completeState) _components.dock.hide();
-			if (_player.state == PlayerState.PLAYING) Mouse.hide();
 			_components.controlbar.hide();
 			_components.logo.hide(audioMode);
 		}
 		
 		private function showControls():void {
-			Mouse.show();
 			if (_model.config.controls || audioMode) {
 				_components.controlbar.show();
 				_components.dock.show();
