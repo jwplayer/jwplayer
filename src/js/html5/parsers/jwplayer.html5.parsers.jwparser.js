@@ -28,7 +28,8 @@
 			_xmlAttribute = jwplayer.utils.xmlAttribute;
 			def = "default",
 			label = "label",
-			file = "file";
+			file = "file",
+			type = "type";
 		for ( var i = 0; i < obj.childNodes.length; i++) {
 			var node = obj.childNodes[i];
 			if (node.prefix == PREFIX) {
@@ -38,7 +39,8 @@
 					sources.push({
 						file: _xmlAttribute(node, file),
 						"default": _xmlAttribute(node, def),
-						label: _xmlAttribute(node, label)
+						label: _xmlAttribute(node, label),
+						type: _xmlAttribute(node, type)
 					});
 				}
 				else if (_localName == "track") {

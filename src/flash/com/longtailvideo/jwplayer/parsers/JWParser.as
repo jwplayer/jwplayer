@@ -58,6 +58,10 @@ package com.longtailvideo.jwplayer.parsers {
 						source.file = Strings.xmlAttribute(i,"file");
 						source["default"] = Strings.xmlAttribute(i, "default");
 						source.label = Strings.xmlAttribute(i, "label");
+						source.type = Strings.xmlAttribute(i, "type");
+						if(source.type.length) {
+							source.type = MediaParser.getType(source.type);
+						}
 						if (source.file.length > 0) {
 							sources.push(source);
 						}
@@ -89,7 +93,7 @@ package com.longtailvideo.jwplayer.parsers {
 			if (sources.length > 0) {
 				delete itm.levels;
 				for (var j:Number = 0; j < sources.length; j++) {
-					sources[j]["default"] = sources[j]["default"] == "true" ? true : false;
+					sources[j]["default"] = (sources[j]["default"].toString() == "true");
 					sources[j].label.length == 0 ? delete sources[j].label : null;
 				}
 				itm.levels = sources;
@@ -98,7 +102,7 @@ package com.longtailvideo.jwplayer.parsers {
 			if (tracks.length > 0) {
 				delete itm.tracks;
 				for (j = 0; j < tracks.length; j++) {
-					tracks[j]["default"] = tracks[j]["default"] == "true" ? true : false;
+					tracks[j]["default"] = (tracks[j]["default"].toString() == "true");
 					tracks[j].kind = tracks[j].kind.length == 0 ? "captions" : tracks[j].kind;
 					tracks[j].label.length == 0 ? delete tracks[j].label : null;
 				}
