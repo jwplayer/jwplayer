@@ -211,14 +211,16 @@ package com.longtailvideo.jwplayer.view.components {
 		/** Parse track info from MP4 metadata. **/
 		private function _metaTracks(info:Object):void {
 			for(var i:Number = 0; i < info.length; i++) {
-				if(info[i].sampledescription[0].sampletype == 'tx3g') {
-					_tracks.push({
-						data: undefined,
-						file: undefined,
-						id: i,
-						label: ISO639.label(info[i].language)
-					});
-				}
+				try {
+					if(info[i].sampledescription[0].sampletype == 'tx3g') {
+						_tracks.push({
+							data: undefined,
+							file: undefined,
+							id: i,
+							label: ISO639.label(info[i].language)
+						});
+					}
+				} catch (e:Error) {}
 			}
 			
 			var defaultTrack:Number = 0;

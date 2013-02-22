@@ -477,7 +477,8 @@
 					if (code == 302 && redirect) {
 						var newItem:PlaylistItem = new PlaylistItem({
 							streamer: redirect,
-							file: _item.file.replace(_application, "")
+							file: _item.file.replace(_application, ""),
+							type: "rtmp"
 						});
 						stop();
 						setTimeout(load, 0, newItem);
