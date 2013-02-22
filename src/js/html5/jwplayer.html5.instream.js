@@ -34,8 +34,6 @@
 
 		/** Load an instream item and initialize playback **/
 		this.load = function(item, options) {
-			// Update the instream player's model
-			_copyModel();
 			// Sets internal instream mode to true
 			_instreamMode = true;
 			// Instream playback options
@@ -51,6 +49,8 @@
 			_setupProvider();
 			// Initialize the instream player's model copied from main player's model
 			_fakemodel = new html5.model({}, _provider);
+			// Update the instream player's model
+			_copyModel();
 			// Set the new model's playlist
 			_fakemodel.setPlaylist([item]);
 			// Store this to compare later (in case the main player switches to the next playlist item when we switch out of instream playback mode 
@@ -196,8 +196,8 @@
 		}
 
 		function _copyModel() {
-			_controller.setMute(_model.mute);
-			_controller.setVolume(_model.volume);
+			_fakemodel.setVolume(_model.volume);
+			_fakemodel.setMute(_model.mute);
 		}
 		
 		function _setupProvider() {
@@ -209,6 +209,8 @@
 				_provider.addEventListener(_events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
 			}
 			_provider.attachMedia();
+			_provider.mute(_model.mute);
+			_provider.volume(_model.volume);
 		}
 		
 		/** Forward provider events to listeners **/		
@@ -305,12 +307,12 @@
 		this.jwSetFullscreen = _api.jwSetFullscreen;
 		this.jwGetVolume = function() { return _model.volume; };
 		this.jwSetVolume = function(vol) {
-			_provider.volume(vol);
+			_fakemodel.setVolume(vol);
 			_api.jwSetVolume(vol);
 		}
 		this.jwGetMute = function() { return _model.mute; };
 		this.jwSetMute = function(state) {
-			_provider.mute(state);
+			_fakemodel.setMute(state);
 			_api.jwSetMute(state);
 		}
 		this.jwGetState = function() { return _model.state; };

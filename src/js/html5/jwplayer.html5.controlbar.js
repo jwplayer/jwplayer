@@ -533,7 +533,7 @@
 		}
 		
 		function _mute() {
-			_api.jwSetMute();
+			_api.jwSetMute(!_toggleStates.mute);
 			_muteHandler({mute:_toggleStates.mute});
 		}
 
@@ -1175,6 +1175,7 @@
 			_this.visible = true;
 			_controlbar.style.display = JW_CSS_INLINE_BLOCK;
 			_redraw();
+			_muteHandler();
 			_hideTimeout = setTimeout(function() {
 				_controlbar.style.opacity = 1;
 			}, 10);

@@ -170,12 +170,14 @@
 			if (!_model.mute) {
 				utils.saveCookie("volume", newVol);
 			}
+			_videoEventHandler({type:events.JWPLAYER_MEDIA_VOLUME, volume: newVol});
 			_video.volume(newVol);
 		}
 
 		_model.setMute = function(state) {
 			if (!utils.exists(state)) state = !_model.mute;
 			utils.saveCookie("mute", state);
+			_videoEventHandler({type:events.JWPLAYER_MEDIA_MUTE, mute: state});
 			_video.mute(state);
 		}
 

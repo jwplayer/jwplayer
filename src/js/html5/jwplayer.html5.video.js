@@ -170,13 +170,15 @@
             }
 		}
 		
+		
+		
 		function _progressHandler(evt) {
 			_generalHandler(evt);
 			if (_canSeek && _delayedSeek > 0 && !_isAndroid) {
-				// Need to set a brief timeout before executing delayed seek; IE9 stalls otherwise. 
-				setTimeout(function() { 
-					_seek(_delayedSeek);
-				}, 200);
+				// Need to set a brief timeout before executing delayed seek; IE9 stalls otherwise.
+				if (_isIE) setTimeout(_seek, 200, _delayedSeek);
+				// Otherwise call it immediately
+				else _seek(_delayedSeek);
 			}
 		}
 		
@@ -347,6 +349,7 @@
 
 		var _volume = _this.volume = function(vol) {
 			_videotag.volume = Math.min(Math.max(0, vol / 100), 1);
+			_lastVolume = _videotag.volume * 100;
 		}
 		
 		function _volumeHandler(evt) {
@@ -359,18 +362,13 @@
 		}
 		
 		_this.mute = function(state) {
-			if (!utils.exists(state)) state = !_videotag.mute;
+			if (!utils.exists(state)) state = !_videotag.muted;
 			if (state) {
-				if (!_videotag.muted) {
-					_lastVolume = _videotag.volume * 100;
-					_videotag.muted = true;
-					//_volume(0);
-				}
+				_lastVolume = _videotag.volume * 100;
+				_videotag.muted = true;
 			} else {
-				if (_videotag.muted) {
-					_volume(_lastVolume);
-					_videotag.muted = false;
-				}
+				_volume(_lastVolume);
+				_videotag.muted = false;
 			}
 		}
 

@@ -633,7 +633,7 @@
 			_instreamLayer.innerHTML = "";
 			_instreamVideo = null;
 			_instreamMode = FALSE;
-			_resize(_model.width, _model.height);
+			//_resize(_model.width, _model.height);
 		}
 		
 		this.setupError = function(message) {
