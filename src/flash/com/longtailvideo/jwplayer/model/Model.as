@@ -2,7 +2,6 @@ package com.longtailvideo.jwplayer.model {
 	import com.longtailvideo.jwplayer.events.GlobalEventDispatcher;
 	import com.longtailvideo.jwplayer.events.MediaEvent;
 	import com.longtailvideo.jwplayer.events.PlayerEvent;
-	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
 	import com.longtailvideo.jwplayer.media.IMediaProvider;
 	import com.longtailvideo.jwplayer.media.MediaProvider;
 	import com.longtailvideo.jwplayer.media.RTMPMediaProvider;
@@ -186,6 +185,18 @@ package com.longtailvideo.jwplayer.model {
 				provider.initializeMediaProvider(config);
 			}
 		}
+		
+		/**
+		 * Player edition
+		 */
+		public function get edition():String {
+			return "";
+		}
+
+		public function get token():String {
+			return "";
+		}
+		
 
 		public function setActiveMediaProvider(type:String):Boolean {
 			if (!hasMediaProvider(type))

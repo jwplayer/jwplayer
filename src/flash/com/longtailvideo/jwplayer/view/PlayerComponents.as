@@ -26,10 +26,13 @@ package com.longtailvideo.jwplayer.view {
 		protected var _player:IPlayer;
 		protected var _captions:CaptionsComponent;
 		
+		protected static var logoClass:Class;
+		
 		/**
 		 * @inheritDoc
 		 */
 		public function PlayerComponents(player:IPlayer) {
+			if (!logoClass)  logoClass = LogoComponent;
 			_player = player;
 			_skin = player.skin;
 			_config = player.config;
@@ -46,7 +49,7 @@ package com.longtailvideo.jwplayer.view {
 		}
 		
 		protected function setupLogo():void {
-			_logo = new LogoComponent(_player, redraw);
+			_logo = new logoClass(_player, redraw);
 		}
 		
 		/**

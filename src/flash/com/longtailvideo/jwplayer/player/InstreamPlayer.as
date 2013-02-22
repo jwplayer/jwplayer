@@ -354,13 +354,7 @@ package com.longtailvideo.jwplayer.player
 			_mediaMask.graphics.drawRect(viewDisplay.x, viewDisplay.y, viewDisplay.width, viewDisplay.height) ;
 			_mediaLayer.mask = _mediaMask;
 			
-			if (_isConfig.pluginConfig('controlbar')['position'] == 'over' || _isConfig.fullscreen) {
-				_controls.controlbar.resize(viewDisplay.width, viewDisplay.height);
-			} else {
-				_controls.controlbar.resize(viewControlbar.width, viewControlbar.height);
-			}
-			_controls.controlbar.x = viewControlbar.x;
-			_controls.controlbar.y = viewControlbar.y;
+			_controls.controlbar.resize(viewDisplay.width, viewDisplay.height);
 			_controls.controlbar.show();
 		}
 		
@@ -532,11 +526,11 @@ package com.longtailvideo.jwplayer.player
 		}
 		
 		public function get edition():String {
-			throw new Error(UNSUPPORTED_ERROR);
+			return _model.edition;
 		}
 		
 		public function get token():String {
-			throw new Error(UNSUPPORTED_ERROR);
+			return _model.token;
 		}
 		
 	}

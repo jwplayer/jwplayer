@@ -6,7 +6,6 @@ package com.longtailvideo.jwplayer.player {
 	import com.longtailvideo.jwplayer.model.PlaylistItem;
 	import com.longtailvideo.jwplayer.plugins.IPlugin;
 	import com.longtailvideo.jwplayer.view.IPlayerComponents;
-	import com.longtailvideo.jwplayer.view.interfaces.IPlayerComponent;
 	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
 	
 	import flash.events.IEventDispatcher;

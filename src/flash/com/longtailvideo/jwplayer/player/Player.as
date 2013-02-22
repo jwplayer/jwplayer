@@ -372,11 +372,11 @@
 		}
 		
 		public function get edition():String {
-			return "";
+			return model.edition;
 		}
 		
 		public function get token():String {
-			return "";
+			return model.token;
 		}
 		
 		
