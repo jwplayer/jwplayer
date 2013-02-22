@@ -13,7 +13,7 @@
 	
 	html5.instream = function(api, model, view, controller) {
 		var _defaultOptions = {
-			controlbarseekable:"always",
+			controlbarseekable:"never",
 			controlbarpausable:true,
 			controlbarstoppable:true,
 			playlistclickable:true
@@ -286,6 +286,8 @@
 
 		this.jwSeek = function(position) {
 			switch(_options.controlbarseekable.toLowerCase()) {
+			case "never":
+				return;
 			case "always":
 				this.jwInstreamSeek(position);
 				break;

@@ -102,10 +102,17 @@
 				}, 10);
 			}
 			
+			_api.jwInstreamPlay = function() {
+				if (_instreamPlayer) _instreamPlayer.jwInstreamPlay();
+			}
+			
+			_api.jwInstreamPause = function() {
+				if (_instreamPlayer) _instreamPlayer.jwInstreamPause();
+			}
+			
 			_api.jwInstreamDestroy = function() {
-				if (_instreamPlayer) {
-					_instreamPlayer.jwInstreamDestroy();
-				}
+				if (_instreamPlayer) _instreamPlayer.jwInstreamDestroy();
+				_instreamPlayer = undefined;
 			}
 
 			_api.jwPlayerDestroy = function() {
