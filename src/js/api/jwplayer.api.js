@@ -90,11 +90,6 @@
 			if (_this.renderingMode == "flash") {
 				utils.deepReplaceKeyName(playlist, ["__dot__","__spc__","__dsh__"], ["."," ","-"]);	
 			}
-			for (var i = 0; i < playlist.length; i++) {
-				if (!utils.exists(playlist[i].index)) {
-					playlist[i].index = i;
-				}
-			}
 			return playlist;
 		};
 		_this.getPlaylistItem = function(item) {

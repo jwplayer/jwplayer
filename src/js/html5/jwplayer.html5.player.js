@@ -42,6 +42,65 @@
 			utils.log('There was a problem setting up the player: ', evt);
 			utils.css.unblock();
 		}
+
+		function _normalizePlaylist() {
+			var list = _model.playlist,
+				arr = [];
+
+			for (var i = 0; i < list.length; i++) {
+				arr.push(_normalizePlaylistItem(list[i]));
+			}
+
+			return arr;
+		}
+
+		function _normalizePlaylistItem(item) {
+			var obj = {
+				'description':	item.description,
+				'file':			item.file,
+				'image':		item.image,
+				'mediaid':		item.mediaid,
+				'title':		item.title
+			};
+
+			for (var i in item) {
+				obj[i] = item[i];
+			}
+
+			obj['sources'] = [];
+			obj['tracks'] = [];
+			if (item.sources.length > 0) {
+				for (i in item.sources) {
+					var source = item.sources[i];
+					var sourceCopy = {
+						file: source.file,
+						type: source.type ? source.type : undefined,
+						label: source.label,
+						"default": source["default"] ? true : false
+					};
+					obj['sources'].push(sourceCopy);
+				}
+			}
+
+			if (item.tracks.length > 0) {
+				for (i in item.tracks) {
+					var track = item.tracks[i];
+					var trackCopy = {
+						file: track.file,
+						kind: track.kind ? track.kind : undefined,
+						label: track.label,
+						"default": track["default"] ? true : false
+					};
+					obj['tracks'].push(trackCopy);
+				}
+			}
+
+			if (!item.file && item.sources.length > 0) {
+				item.file = item.sources[0].file;
+			}
+
+			return obj;
+		}
 		
 		function _initializeAPI() {
 			
@@ -85,7 +144,7 @@
 			_api.jwGetMute = _statevarFactory('mute');
 			_api.jwGetState = _statevarFactory('state');
 			_api.jwGetStretching = _statevarFactory('stretching');
-			_api.jwGetPlaylist = _statevarFactory('playlist');
+			_api.jwGetPlaylist = _normalizePlaylist;
 			_api.jwGetControls = _statevarFactory('controls');
 
 

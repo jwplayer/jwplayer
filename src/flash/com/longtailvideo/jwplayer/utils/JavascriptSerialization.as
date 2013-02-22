@@ -22,44 +22,48 @@ package com.longtailvideo.jwplayer.utils
 		
 		public static function playlistItemToObject(item:PlaylistItem):Object {
 			var obj:Object = {
-				'author':		item.author,
-				'date':			item.date,
-				'description':	item.description,
-				'duration':		item.duration,
-				'file':			item.file,
-				'image':		item.image,
-				'link':			item.link,
-				'mediaid':		item.mediaid,
-				'provider':		item.provider,
-				'start':		item.start,
-				'streamer':		item.streamer,
-				'tags':			item.tags,
-				'title':		item.title,
-				'type':			item.provider
+				'description':	item.description.length ? item.description : undefined,
+				'file':			item.file.length ? item.file : undefined,
+				'image':		item.image.length ? item.image : undefined,
+				'mediaid':		item.mediaid.length ? item.mediaid : undefined,
+				'title':		item.title.length ? item.title : undefined
 			};
 			
 			for (var i:String in item) {
 				obj[i] = item[i];
 			}
 			
+			obj['sources'] = [];
+			obj['tracks'] = [];
 			if (item.levels.length > 0) {
-				obj['levels'] = [];
 				for each (var level:PlaylistItemLevel in item.levels) {
 					var levelCopy:Object = {
 						file: level.file,
-						type: level.type,
-						streamer: level.streamer,
-						bitrate: level.bitrate,
-						width: level.width,
-						height: level.height
+						type: level.type ? level.type : undefined,
+						label: level.label,
+						"default": level["default"] ? true : false
 					};
-					for (var dynamicProperty:String in level) {
-						levelCopy[dynamicProperty] = level[dynamicProperty];
-					}
-					obj['levels'].push(levelCopy);
+					obj['sources'].push(levelCopy);
 				}
 			}
 			
+			if (item.tracks.length > 0) {
+				for each (var track:Object in item.tracks) {
+					var trackCopy:Object = {
+						file: track.file,
+						kind: track.kind ? track.kind : undefined,
+						label: track.label,
+						"default": track["default"] ? true : false
+					};
+					obj['tracks'].push(trackCopy);
+				}
+			}
+			
+			if (!item.file && item.sources.length > 0) {
+				item.file = item.sources[0].file;
+			}
+			
+			delete obj.levels;
 			return obj;
 		}
 		

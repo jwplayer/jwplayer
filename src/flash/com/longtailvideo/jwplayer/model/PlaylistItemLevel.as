@@ -5,7 +5,6 @@ package com.longtailvideo.jwplayer.model {
 		public var file:String		= "";
 		public var type:String		= "";
 		public var streamer:String	= "";
-		public var def:Boolean = false;
 		
 		/**
 		 * @param file - The location of the file to play
@@ -16,7 +15,7 @@ package com.longtailvideo.jwplayer.model {
 		public function PlaylistItemLevel(file:String, type:String="", def:Boolean=false, streamer:String="") {
 			this.file = file;
 			this.type = type;
-			this.def = def;
+			this["default"] = def;
 			this.streamer = streamer;
 		}
 		

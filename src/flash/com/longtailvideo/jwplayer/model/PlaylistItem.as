@@ -12,7 +12,6 @@ package com.longtailvideo.jwplayer.model {
 		public var image:String			= "";
 		public var mediaid:String		= "";
 		public var title:String			= "";
-		public var tags:String			= "";
 		
 		protected var _duration:Number		= -1;
 		protected var _provider:String		= "";
@@ -73,6 +72,10 @@ package com.longtailvideo.jwplayer.model {
 							}
 							if (!newLevel.hasOwnProperty("label")) {
 								newLevel["label"] = i.toString();
+							}
+							
+							if (!newLevel.type || !newLevel.type.length) {
+								newLevel.type = levelType(level);
 							}
 							addLevel(newLevel);
 						}

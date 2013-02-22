@@ -122,7 +122,7 @@ package com.longtailvideo.jwplayer.media {
 			_currentQuality = 0;
 			
 			for (var i:Number = 0; i < _item.levels.length; i++) {
-				if (_item.levels[i].def) {
+				if (_item.levels[i]["default"]) {
 					_currentQuality = i;
 					break;
 				}

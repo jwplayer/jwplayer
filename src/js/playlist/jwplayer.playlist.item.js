@@ -42,7 +42,6 @@
 		for (var i=0; i < _playlistitem.tracks.length; i++) {
 			_playlistitem.tracks[i] = new playlist.track(_playlistitem.tracks[i]);
 		}
-
 		return _playlistitem;
 	};
 	
@@ -51,8 +50,6 @@
 		image: "",
 		mediaid: "",
 		title: "",
-		tags: "",
-		duration: -1,
 		sources: [],
 		tracks: []
 	};
