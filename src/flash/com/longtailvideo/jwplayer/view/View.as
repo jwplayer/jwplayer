@@ -606,6 +606,7 @@ package com.longtailvideo.jwplayer.view {
 					loadImage(_lastImage);
 				}
 			} else {
+				_lastImage = undefined;
 				_image.visible = false;
 			}
 		}
