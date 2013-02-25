@@ -330,9 +330,9 @@
 			}
 		}
 
-		_this.attachMedia = function() {
+		_this.attachMedia = function(seekable) {
 			if (_this.renderingMode == "html5") {
-				return _callInternal("jwAttachMedia");
+				return _callInternal("jwAttachMedia", seekable);
 			}
 		}
 

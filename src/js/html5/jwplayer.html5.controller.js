@@ -278,9 +278,9 @@
 			}
 		}
 
-		function _attachMedia() {
+		function _attachMedia(seekable) {
 			try {
-				var ret = _model.getVideo().attachMedia();
+				var ret = _model.getVideo().attachMedia(seekable);
 				if (typeof _actionOnAttach == "function") {
 					_actionOnAttach();
 				}
