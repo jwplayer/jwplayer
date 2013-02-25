@@ -120,6 +120,7 @@
 			_clearError();
 			_item = _api.jwGetPlaylist()[_api.jwGetPlaylistIndex()];
 			var newImage = _item ? _item.image : "";
+			_previousState = undefined;
 			_loadImage(newImage);
 		}
 

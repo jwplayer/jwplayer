@@ -219,7 +219,7 @@ package com.longtailvideo.jwplayer.model {
 				if (getItemAt(idx) != lastItem) {
 					lastItem = currentItem;
 					dispatchEvent(new PlaylistEvent(PlaylistEvent.JWPLAYER_PLAYLIST_ITEM, this));
-				} 
+				}
 			} else {
 				lastItem = null;
 				index = -1;

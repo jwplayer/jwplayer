@@ -193,7 +193,6 @@ package com.longtailvideo.jwplayer.controller {
 		protected function playlistLoadHandler(evt:PlaylistEvent=null):void {
 			if (!_playlistReady) {
 				_playlistReady = true;
-
 				_model.playlist.currentIndex = 0;
 	
 				if(_model.config.autostart) {
@@ -620,6 +619,7 @@ package com.longtailvideo.jwplayer.controller {
 
 		protected function loadArray(item:Array):Boolean {
 			if (item.length > 0) {
+				_playlistReady = false;
 				_model.playlist.load(item);
 				return true;
 			}
