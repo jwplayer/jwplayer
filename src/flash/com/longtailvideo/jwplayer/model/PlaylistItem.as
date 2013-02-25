@@ -80,7 +80,33 @@ package com.longtailvideo.jwplayer.model {
 							addLevel(newLevel);
 						}
 					}
-				} else {
+				}
+				else if (itm == "tracks") {
+					if (!(obj[itm] is Array)) {
+						continue;
+					}
+					this[itm] = [];
+					var tracks:Array = obj[itm] as Array;
+					for (i = 0; i < tracks.length; i++) {
+						var track:Object = tracks[i];
+						if (track['file']) {
+							var newTrack:PlaylistItemTrack = new PlaylistItemTrack(track['file'],
+								track['kind'],
+								track['default'],
+								track['label']);
+							
+							if (!newTrack.label.length) {
+								newTrack.label = i.toString();
+							}
+							
+							if (!newTrack.kind || !newTrack.kind.length) {
+								newTrack.kind = "captions";
+							}
+							this[itm].push(newTrack);
+						}
+					}
+				}
+				else {
 					try {
 						this[itm] = obj[itm];
 					} catch(e:Error) {
