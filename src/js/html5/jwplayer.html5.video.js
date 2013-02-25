@@ -445,9 +445,9 @@
 		/**
 		 * Begin listening to events again  
 		 */
-		_this.attachMedia = function() {
+		_this.attachMedia = function(seekable) {
 			_attached = true;
-			_canSeek = false;
+			if (!seekable) _canSeek = false;
 			if (_beforecompleted) {
 			    _setState(states.IDLE);
 			    _sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
