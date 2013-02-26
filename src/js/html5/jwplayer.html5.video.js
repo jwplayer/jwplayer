@@ -194,7 +194,12 @@
 			if (!_attached || _dragging) return;
 
 			if (_videotag.paused) {
-				_pause();
+				if (_videotag.currentTime == _videotag.duration && _videotag.duration > 3) {
+					// Needed as of Chrome 20
+					_complete();
+				} else {
+					_pause();
+				}
 			} else {
 				if (utils.isFF() && evt.type=="play" && _state == states.BUFFERING)
 					// In FF, we get an extra "play" event on startup - we need to wait for "playing",
