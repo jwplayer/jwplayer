@@ -185,8 +185,8 @@ package com.longtailvideo.jwplayer.utils {
 			if (isAbsolutePath(path)) {
 				return path;
 			}
-			var protocol:String = basepath.substring(0, basepath.indexOf("://") + 3);
-			var domain:String = basepath.substring(protocol.length, basepath.indexOf('/', protocol.length + 1));
+			var protocol:String = basepath.indexOf("//") > -1 ? basepath.substring(0, basepath.indexOf("//") + 2) : "";
+			var domain:String = protocol ? basepath.substring(protocol.length, basepath.indexOf('/', protocol.length + 1)) : "";
 			var patharray:Array;
 			if (path.indexOf("/") === 0) {
 				patharray = path.split("/");
