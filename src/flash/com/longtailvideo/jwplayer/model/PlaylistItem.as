@@ -44,6 +44,7 @@ package com.longtailvideo.jwplayer.model {
 			delete obj.file;
 			delete obj.type;
 			delete obj.label;
+			delete obj.duration;
 			
 			for (var itm:String in obj) {
 				if (itm == "levels") {
@@ -70,9 +71,6 @@ package com.longtailvideo.jwplayer.model {
 										break;
 								}
 							}
-							if (!newLevel.hasOwnProperty("label")) {
-								newLevel["label"] = i.toString();
-							}
 							
 							if (!newLevel.type || !newLevel.type.length) {
 								newLevel.type = levelType(level);
@@ -95,10 +93,6 @@ package com.longtailvideo.jwplayer.model {
 								track['default'],
 								track['label']);
 							
-							if (!newTrack.label.length) {
-								newTrack.label = i.toString();
-							}
-							
 							if (!newTrack.kind || !newTrack.kind.length) {
 								newTrack.kind = "captions";
 							}
@@ -112,6 +106,24 @@ package com.longtailvideo.jwplayer.model {
 					} catch(e:Error) {
 						Logger.log("Could not set playlist item property " + itm + " (" + e.message+")");
 					}
+				}
+			}
+			
+			for (i = 0; i < this["levels"].length; i++) {
+				level = this["levels"][i];
+				if (!level.hasOwnProperty("label")) {
+					level.label = i.toString();
+				}
+			}
+			
+			var captionsCount:Number = 0;
+			for (i = 0; i < this["tracks"].length; i++) {
+				track = this["tracks"][i];
+				if (track.kind == "captions") {
+					if (!track.hasOwnProperty("label")) {
+						track.label = captionsCount.toString();
+					}
+					captionsCount++;
 				}
 			}
 		}

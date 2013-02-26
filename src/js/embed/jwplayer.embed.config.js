@@ -37,7 +37,7 @@
 		if (_config.html5player) _modes.html5.src = _config.html5player;
 		
 		_normalizePlaylist(_config);
-		
+
 		return _config;
 	};
 

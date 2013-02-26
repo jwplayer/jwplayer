@@ -17,16 +17,12 @@
 
 		/** Each source should be a named object **/
 		for (var i=0; i < _playlistitem.sources.length; i++) {
-			var label = _playlistitem.sources[i].label;
 			var def = _playlistitem.sources[i]["default"];
 			if (def) {
 				_playlistitem.sources[i]["default"] = (def.toString() == "true");
 			}
 			else {
 				_playlistitem.sources[i]["default"] = false;	
-			}
-			if (!label || !label.length) {
-				_playlistitem.sources[i].label = i.toString();
 			}
 
 			_playlistitem.sources[i] = new playlist.source(_playlistitem.sources[i]);
