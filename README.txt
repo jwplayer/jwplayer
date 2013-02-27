@@ -25,9 +25,10 @@ If you're using Flash Builder, you may use the following method to build the Fla
 5. Click the "Finish" button
 6. Right-click on your new project, and select "Properties"
 7. Under the "ActionScript Compiler" tab, click the radio button that reads "Use a specific version", and make sure it reads "10.0.0".
-8. Click the "OK" button.
-9. In the project source tree, navigate to the foler: src -> flash -> com -> longtailvideo -> jwplayer -> player
-10. Right click on Player.as and select "Set as Default Application"
-11. Under the "Project" menu, choose "Export Release Build".
-12. Make sure "Player.as" is selected as the application, and click "Finish"
-13. The flash component will be compiled as bin-release/Player.swf.
+8. Under "Additional compiler arguments" add the following (quotes needed):  -define+=JWPLAYER::version,'"6.0.9999"'   
+9. Click the "OK" button.
+10. In the project source tree, navigate to the foler: src -> flash -> com -> longtailvideo -> jwplayer -> player
+11. Right click on Player.as and select "Set as Default Application"
+12. Under the "Project" menu, choose "Export Release Build".
+13. Make sure "Player.as" is selected as the application, and click "Finish"
+14. The flash component will be compiled as bin-release/Player.swf.
