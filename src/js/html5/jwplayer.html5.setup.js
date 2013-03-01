@@ -85,7 +85,7 @@
 		}
 		
 		function _parseConfig() {
-			if (model.edition() == "invalid") {
+			if (model.edition && model.edition() == "invalid") {
 				_error("Error setting up player: Invalid license key");
 			}
 			else {

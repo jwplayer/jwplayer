@@ -122,7 +122,6 @@
 		
 		_model.setPlaylist = function(playlist) {
 			_model.playlist = _filterPlaylist(playlist);
-			
 			if (_model.playlist.length == 0) {
 				_model.sendEvent(events.JWPLAYER_ERROR, { message: "Error loading playlist: No playable sources found" });
 			} else {
@@ -141,7 +140,11 @@
 				var item = utils.extend({}, playlist[i]);
 				item.sources = utils.filterSources(item.sources);
 				if (item.sources.length > 0) {
-					pl.push(item)
+					for (var j = 0; j < item.sources.length; j++) {
+						var source = item.sources[j];
+						if (!source.label) source.label = j.toString();
+					}
+					pl.push(item);
 				}
 			}
 			return pl;

@@ -219,7 +219,7 @@
 
         /** Update the interface. **/
         function _redraw(timeout) {
-            if(!_tracks.length) {
+            if(utils.isMobile() || !_tracks.length) {
                 _renderer.hide();
             } else {
                 if(_state == PLAYING && _selectedTrack > 0) {
