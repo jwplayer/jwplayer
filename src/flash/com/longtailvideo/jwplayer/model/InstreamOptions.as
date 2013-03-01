@@ -4,7 +4,7 @@ package com.longtailvideo.jwplayer.model {
 	
 	public class InstreamOptions implements IInstreamOptions {
 
-		protected var _controlbarSeekable:String = ControlbarSeekOptions.ALWAYS;
+		protected var _controlbarSeekable:String = ControlbarSeekOptions.NEVER;
 		protected var _controlbarPausable:Boolean = true;
 		protected var _controlbarStoppable:Boolean = true;
 		protected var _playlistClickable:Boolean = true;

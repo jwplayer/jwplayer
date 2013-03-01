@@ -353,8 +353,10 @@
 		}
 
 		var _volume = _this.volume = function(vol) {
-			_videotag.volume = Math.min(Math.max(0, vol / 100), 1);
-			_lastVolume = _videotag.volume * 100;
+			if (utils.exists(vol)) {
+				_videotag.volume = Math.min(Math.max(0, vol / 100), 1);
+				_lastVolume = _videotag.volume * 100;
+			}
 		}
 		
 		function _volumeHandler(evt) {

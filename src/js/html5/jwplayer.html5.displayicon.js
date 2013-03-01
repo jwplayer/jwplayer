@@ -168,8 +168,12 @@
 		this.setIcon = function(name) {
 			var newIcon = _createElement('icon');
 			newIcon.id = _container.id + "_" + name;
-			_styleIcon(name+"Icon", "#"+newIcon.id)
-			_container.replaceChild(newIcon, _icon);
+			_styleIcon(name+"Icon", "#"+newIcon.id);
+			if (_container.contains(_icon)) {
+				_container.replaceChild(newIcon, _icon);
+			} else {
+				_container.appendChild(newIcon);
+			}
 			_icon = newIcon;
 		}
 
