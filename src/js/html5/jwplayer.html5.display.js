@@ -40,7 +40,7 @@
 			_hiding,
 			_button,
 			_forced,
-			_previousState;
+			_previousState,
 			_config = utils.extend({
 				showicons: TRUE,
 				bufferrotation: 45,

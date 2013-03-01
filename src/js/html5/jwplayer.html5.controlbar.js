@@ -1076,7 +1076,7 @@
 				_cbBounds = utils.bounds(_controlbar);
 			}
  			overlay.offsetX(0);
-			overlayBounds = utils.bounds(overlay.element());
+			var overlayBounds = utils.bounds(overlay.element());
 			if (overlayBounds.right > _cbBounds.right) {
 				overlay.offsetX(_cbBounds.right - overlayBounds.right);
 			} else if (overlayBounds.left < _cbBounds.left) {

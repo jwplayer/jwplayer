@@ -127,7 +127,7 @@
                 captions = [],
                 i = 0,
                 label = "",
-                defaultTrack = 0;
+                defaultTrack = 0,
                 file = "";
 
             for (i = 0; i < tracks.length; i++) {
