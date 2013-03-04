@@ -74,7 +74,7 @@
 								file: _xmlAttribute(node, 'url'),
 								type: _xmlAttribute(node, 'type'),
 								width: _xmlAttribute(node, 'width'),
-								label: _xmlAttribute(node, 'height') ? _xmlAttribute(node, 'height') + "p" : undefined
+								label: _xmlAttribute(node, 'label')
 							});
 						}
 						break;

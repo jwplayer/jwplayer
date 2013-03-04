@@ -16,6 +16,7 @@
 	
 	playlist.track = function(config) {
 		var _track = utils.extend({}, defaults);
+		if (!config) config = {};
 		
 		for (var property in defaults) {
 			if (utils.exists(config[property])) {
