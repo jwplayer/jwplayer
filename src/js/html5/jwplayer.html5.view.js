@@ -425,7 +425,8 @@
 		 * This method sets the CSS of the container element to a fixed position with 100% width and height.
 		 */
 		function _fakeFullscreen(state) {
-			if (_isMobile) return;
+		    //this was here to fix a bug with iOS resizing from fullscreen, but it caused another bug with android, multiple sources.
+			//if (_isMobile) return;
 			if (state) {
 				_playerElement.className += " jwfullscreen";
 				(DOCUMENT.getElementsByTagName("body")[0]).style["overflow-y"] = JW_CSS_HIDDEN;
