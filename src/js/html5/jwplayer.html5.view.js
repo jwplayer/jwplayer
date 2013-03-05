@@ -15,7 +15,7 @@
 		_isIPad = utils.isIPad(),
 		_isIPod = utils.isIPod(),
 		_isAndroid = utils.isAndroid(),
-
+        _isIOS = utils.isIOS();
 		DOCUMENT = document, 
 		PLAYER_CLASS = "jwplayer", 
 		FULLSCREEN_SELECTOR = "."+PLAYER_CLASS+".jwfullscreen",
@@ -426,7 +426,7 @@
 		 */
 		function _fakeFullscreen(state) {
 		    //this was here to fix a bug with iOS resizing from fullscreen, but it caused another bug with android, multiple sources.
-			//if (_isMobile) return;
+			if (_isIOS) return;
 			if (state) {
 				_playerElement.className += " jwfullscreen";
 				(DOCUMENT.getElementsByTagName("body")[0]).style["overflow-y"] = JW_CSS_HIDDEN;
