@@ -329,8 +329,8 @@
 			if (_display) _display.redraw();
 			if (_controlbar) _controlbar.redraw();
 			if (_logo) {
+				_logo.offset(_controlbar && _logo.position().indexOf("bottom") >= 0 ? _controlbar.height() + _controlbar.margin() : 0);
 				setTimeout(function() {
-					_logo.offset(_controlbar && _logo.position().indexOf("bottom") >= 0 ? _controlbar.element().clientHeight + _controlbar.margin() : 0);
 					if (_dock) _dock.offset(_logo.position() == "top-left" ? _logo.element().clientWidth + _logo.margin() : 0)
 				}, 500);
 			}

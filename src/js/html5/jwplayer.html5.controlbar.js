@@ -1102,6 +1102,11 @@
 		_this.margin = function() {
 			return parseInt(_settings.margin);
 		};
+		
+		_this.height = function() {
+			return _bgHeight;
+		}
+		
 
 		function _setBuffer(pct) {
 			pct = Math.min(Math.max(0, pct), 1);
