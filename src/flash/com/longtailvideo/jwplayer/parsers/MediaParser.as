@@ -56,13 +56,15 @@ package com.longtailvideo.jwplayer.parsers {
 								if (!itm.levels) {
 									itm.levels = new Array();
 								}
-								itm.levels.push({
+								var level:Object = {
 									width:Strings.xmlAttribute(i, 'width'),
 									bitrate:Strings.xmlAttribute(i, 'bitrate'),
 									file:Strings.xmlAttribute(i, 'url'),
 									height:Strings.xmlAttribute(i, 'height'),
-									type:getType(Strings.xmlAttribute(i, 'type'))
-								});
+									type: getType(Strings.xmlAttribute(i, 'type'))
+								};
+								if (Strings.isYouTube(level.file)) level.type = "youtube";
+								itm.levels.push(level);
 							}
 							break;
 						case 'title':
