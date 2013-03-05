@@ -724,7 +724,7 @@
 				
 				_timeRail = rail;
 				_setTimeOverlay(0);
-				_appendChild(slider, _timeOverlay.element());
+				_appendChild(rail, _timeOverlay.element());
 				_styleTimeSlider(slider);
 				_setProgress(0);
 				_setBuffer(0);
