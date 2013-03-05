@@ -185,7 +185,7 @@
 			translated = utils.extend(translated, translated.data);
 			delete translated.data;
 		} else if (typeof translated.metadata == OBJECT) {
-			utils.deepReplaceKeyName(translated.metadata, ["__dot__","__spc__","__dsh__"], ["."," ","-"]);
+			utils.deepReplaceKeyName(translated.metadata, ["__dot__","__spc__","__dsh__","__default__"], ["."," ","-","default"]);
 		}
 		
 		var rounders = ["position", "duration", "offset"];
