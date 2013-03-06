@@ -15,7 +15,7 @@
 		_isIPad = utils.isIPad(),
 		_isIPod = utils.isIPod(),
 		_isAndroid = utils.isAndroid(),
-        _isIOS = utils.isIOS();
+        _isIOS = utils.isIOS(),
 		DOCUMENT = document, 
 		PLAYER_CLASS = "jwplayer", 
 		FULLSCREEN_SELECTOR = "."+PLAYER_CLASS+".jwfullscreen",

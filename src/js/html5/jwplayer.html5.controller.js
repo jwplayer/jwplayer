@@ -300,7 +300,7 @@
 		}
 		
 		function _callMethod(func, args) {
-			var _args = [];
+			var _args = [], i;
 			for (i=0; i < args.length; i++) {
 				_args.push(args[i]);
 			}

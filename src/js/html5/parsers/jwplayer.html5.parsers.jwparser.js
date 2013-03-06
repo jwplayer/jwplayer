@@ -25,7 +25,7 @@
 	jwparser.parseEntry = function(obj, itm) {
 		var sources = [],
 			tracks = [],
-			_xmlAttribute = jwplayer.utils.xmlAttribute;
+			_xmlAttribute = jwplayer.utils.xmlAttribute,
 			def = "default",
 			label = "label",
 			file = "file",
