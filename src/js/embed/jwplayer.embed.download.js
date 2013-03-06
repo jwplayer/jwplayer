@@ -42,6 +42,7 @@
 					var source = sources[i], 
 						type = source.type ? source.type : utils.extensionmap.extType(utils.extension(source.file));
 					if (source.file) {
+						// TODO: shouldn't be using same variable in nested loop...  Clean up at some point
 						for (i in types) {
 							if (type == types[i]) {
 								file = source.file;
