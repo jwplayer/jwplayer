@@ -43,7 +43,7 @@
 					sources[i].type = type;
 				}
 
-				if (_canPlayHTML5(type)) {
+				if (utils.canPlayHTML5(type)) {
 					if (!selectedType) {
 						selectedType = type;
 					}
@@ -57,7 +57,7 @@
 	}
 	
 	/** Returns true if the type is playable in HTML5 **/
-	function _canPlayHTML5(type) {
+	utils.canPlayHTML5 = function(type) {
 		var mime = utils.extensionmap.types[type];
 		return (!!mime && jwplayer.vid.canPlayType(mime));
 	}

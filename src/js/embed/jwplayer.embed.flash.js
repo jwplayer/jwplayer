@@ -221,6 +221,8 @@
 		 * Determines if a Flash can play a particular file, based on its extension
 		 */
 		function _flashCanPlay(file, type) {
+			// TODO: Return false if isMobile
+			
 			if (utils.isYouTube(file)) return true;
 			if (utils.isRtmp(file,type)) return true;
 			if (type == "hls") return true;
