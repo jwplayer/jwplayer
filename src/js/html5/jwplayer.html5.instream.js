@@ -128,14 +128,13 @@
 		};
 		
 		/** Forward any calls to add and remove events directly to our event dispatcher **/
-		/*
+		
 		this.jwInstreamAddEventListener = function(type, listener) {
 			_dispatcher.addEventListener(type, listener);
 		} 
 		this.jwInstreamRemoveEventListener = function(type, listener) {
 			_dispatcher.removeEventListener(type, listener);
 		}
-		*/
 
 		/** Start instream playback **/
 		this.jwInstreamPlay = function() {
@@ -192,7 +191,7 @@
 			_dispatcher = new _events.eventdispatcher();
 			// Listen for player resize events
 			_api.jwAddEventListener(_events.JWPLAYER_RESIZE, _resize);
-			_api.jwAddEventListener(_events.JWPLAYER_FULLSCREEN, _resize);
+			_api.jwAddEventListener(_events.JWPLAYER_FULLSCREEN, _fullscreenHandler);
 		}
 
 		function _copyModel() {
@@ -218,6 +217,11 @@
 			if (_instreamMode) {
 				_sendEvent(evt.type, evt);
 			}
+		}
+
+		function _fullscreenHandler(evt) {
+			_forward(evt);
+			_resize();
 		}
 		
 		/** Handle the JWPLAYER_MEDIA_BUFFER_FULL event **/		

@@ -174,6 +174,13 @@
 				_instreamPlayer = undefined;
 			}
 
+			_api.jwInstreamAddEventListener = function(type, listener) {
+				if (_instreamPlayer) _instreamPlayer.jwInstreamAddEventListener(type, listener);
+			} 
+			_api.jwInstreamRemoveEventListener = function(type, listener) {
+				if (_instreamPlayer) _instreamPlayer.jwInstreamRemoveEventListener(type, listener);
+			}
+
 			_api.jwPlayerDestroy = function() {
 				if (_view) {
 					_view.destroy();

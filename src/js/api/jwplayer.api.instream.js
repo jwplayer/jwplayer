@@ -134,6 +134,14 @@
 		_this.destroy = function() {
 			_player.jwInstreamDestroy();
 		};
+		
+		_this.addEventListener = function(type, listener) {
+			_player.jwInstreamAddEventListener(type, listener);
+		} 
+		_this.removeEventListener = function(type, listener) {
+			_player.jwInstreamRemoveEventListener(type, listener);
+		}
+
 		/*
 		_this.seek = function(pos) {
 			_player.jwInstreamSeek(pos);
