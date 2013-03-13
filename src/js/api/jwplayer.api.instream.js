@@ -23,7 +23,7 @@
 		   	_api.callInternal("jwLoadInstream", item, options ? options : {});
 		}
 
-		/*
+		
 		
 		function _addInternalListener(player, type) {
 			_player.jwInstreamAddEventListener(type, 'function(dat) { jwplayer("' + _api.id + '").dispatchInstreamEvent("' + type + '", dat); }');
@@ -94,15 +94,15 @@
 		_this.onComplete = function(callback) {
 			return _eventListener(events.JWPLAYER_MEDIA_COMPLETE, callback);
 		};
-		_this.onSeek = function(callback) {
-			return _eventListener(events.JWPLAYER_MEDIA_SEEK, callback);
-		};
+		// _this.onSeek = function(callback) {
+		// 	return _eventListener(events.JWPLAYER_MEDIA_SEEK, callback);
+		// };
 		_this.onTime = function(callback) {
 			return _eventListener(events.JWPLAYER_MEDIA_TIME, callback);
 		};
-		_this.onVolume = function(callback) {
-			return _eventListener(events.JWPLAYER_MEDIA_VOLUME, callback);
-		};
+		// _this.onVolume = function(callback) {
+		// 	return _eventListener(events.JWPLAYER_MEDIA_VOLUME, callback);
+		// };
 		// State events
 		_this.onBuffer = function(callback) {
 			return _stateListener(states.BUFFERING, callback);
@@ -116,14 +116,14 @@
 		_this.onIdle = function(callback) {
 			return _stateListener(states.IDLE, callback);
 		};
-		// Instream events
-		_this.onInstreamClick = function(callback) {
-			return _eventListener(events.JWPLAYER_INSTREAM_CLICK, callback);
-		};
-		_this.onInstreamDestroyed = function(callback) {
-			return _eventListener(events.JWPLAYER_INSTREAM_DESTROYED, callback);
-		};
-		*/
+		// // Instream events
+		// _this.onInstreamClick = function(callback) {
+		// 	return _eventListener(events.JWPLAYER_INSTREAM_CLICK, callback);
+		// };
+		// _this.onInstreamDestroyed = function(callback) {
+		// 	return _eventListener(events.JWPLAYER_INSTREAM_DESTROYED, callback);
+		// };
+		
 		
 		_this.play = function(state) {
 			_player.jwInstreamPlay(state);
@@ -135,12 +135,12 @@
 			_player.jwInstreamDestroy();
 		};
 		
-		_this.addEventListener = function(type, listener) {
-			_player.jwInstreamAddEventListener(type, listener);
-		} 
-		_this.removeEventListener = function(type, listener) {
-			_player.jwInstreamRemoveEventListener(type, listener);
-		}
+		// _this.addEventListener = function(type, listener) {
+		// 	_player.jwInstreamAddEventListener(type, listener);
+		// } 
+		// _this.removeEventListener = function(type, listener) {
+		// 	_player.jwInstreamRemoveEventListener(type, listener);
+		// }
 
 		/*
 		_this.seek = function(pos) {
