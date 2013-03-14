@@ -117,9 +117,9 @@
 			return _stateListener(states.IDLE, callback);
 		};
 		// // Instream events
-		// _this.onInstreamClick = function(callback) {
-		// 	return _eventListener(events.JWPLAYER_INSTREAM_CLICK, callback);
-		// };
+		_this.onClick = function(callback) {
+			return _eventListener(events.JWPLAYER_INSTREAM_CLICK, callback);
+		};
 		// _this.onInstreamDestroyed = function(callback) {
 		// 	return _eventListener(events.JWPLAYER_INSTREAM_DESTROYED, callback);
 		// };

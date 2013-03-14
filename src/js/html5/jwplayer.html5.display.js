@@ -50,7 +50,8 @@
 				fontsize: 15,
 				fontweight: ""
 			}, _skin.getComponentSettings('display'), config),
-			_eventDispatcher = new events.eventdispatcher();
+			_eventDispatcher = new events.eventdispatcher(),
+			_alternateClickHandler;
 			
 		utils.extend(this, _eventDispatcher);
 			
@@ -78,6 +79,10 @@
 		}
 		
 		function _clickHandler(evt) {
+			if (_alternateClickHandler) {
+				_alternateClickHandler(evt);
+				return;
+			}
 			switch (_api.jwGetState()) {
 			case states.PLAYING:
 			case states.BUFFERING:
@@ -279,10 +284,10 @@
 
 		/** NOT SUPPORTED : Using this for now to hack around instream API **/
 		this.setAlternateClickHandler = function(handler) {
-			//_alternateClickHandler = handler;
+			_alternateClickHandler = handler;
 		}
 		this.revertAlternateClickHandler = function() {
-			//_alternateClickHandler = undefined;
+			_alternateClickHandler = undefined;
 		}
 
 		_init();

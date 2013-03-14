@@ -75,9 +75,11 @@
 				if (_fakemodel.state == _states.PAUSED) {
 					_self.jwInstreamPlay();
 				} else {
+					_self.jwInstreamPause();
 					_sendEvent(_events.JWPLAYER_INSTREAM_CLICK, evt);
 				}
 			});
+
 			_instreamContainer.appendChild(_disp.element());
 
 			// Instream controlbar (if not iOS/Android)
@@ -106,6 +108,9 @@
 			if (_oldstate == _states.IDLE) {
 				_provider.stop(true);
 			}
+
+			// Reverting instream click handler
+			_disp.revertAlternateClickHandler();
 			// We don't want the instream provider to be attached to the video tag anymore
 			_provider.detachMedia();
 			// Return the view to its normal state
