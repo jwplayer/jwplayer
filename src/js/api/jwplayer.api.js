@@ -157,6 +157,7 @@
 			return _this;
 		};
 		_this.resize = function(width, height) {
+			delete _this.config.aspectratio;
 			if (_this.renderingMode != "flash") {
 				_callInternal("jwResize", width, height);
 			} else {

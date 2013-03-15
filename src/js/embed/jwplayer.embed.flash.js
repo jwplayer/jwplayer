@@ -74,6 +74,25 @@
 			flat.plugins = pluginKeys.join(',');
 			return flat;
 		};
+
+		function _browserResizeHandler(evt) {
+			if (!_api.config.aspectratio) return;
+			var wrapper = document.getElementById(_api.id + "_wrapper"),
+				width = wrapper.clientWidth,
+				height = width * (1/_api.config.aspectratio),
+				lb = _api.config.listbar;
+			
+			if (lb) {
+				if (lb.position == "bottom") {
+					height += lb.size;
+				}
+				else if (lb.position == "right") {
+					width -= lb.size;
+					height = width * (1/_api.config.aspectratio);
+				}
+			}
+			wrapper.style.height = utils.styleDimension(height);
+		}
 		
 		this.embed = function() {		
 			// Make sure we're passing the correct ID into Flash for Linux API support
@@ -101,6 +120,8 @@
 				_container.parentNode.replaceChild(_wrapper, _container);
 				_wrapper.appendChild(_container);
 			}
+
+			window.onresize = _browserResizeHandler;
 			
 			var flashPlugins = _loader.setupPlugins(_api, params, _resizePlugin);
 			

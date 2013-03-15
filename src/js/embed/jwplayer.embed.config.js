@@ -17,7 +17,8 @@
 				height: 270,
 				primary: "html5",
 				width: 480,
-				base: config.base ? config.base : utils.getScriptPath("jwplayer.js")
+				base: config.base ? config.base : utils.getScriptPath("jwplayer.js"),
+				aspectratio: ""
 			},
 			_config = utils.extend(_defaults, jwplayer.defaults, config),
 			_modes = {
@@ -38,8 +39,34 @@
 		
 		_normalizePlaylist(_config);
 
+		evaluateAspectRatio(_config);
+
 		return _config;
 	};
+
+	function evaluateAspectRatio(config) {
+		var ar = config.aspectratio,
+			ratio = getRatio(ar);
+		if (config.width.toString().indexOf("%") == -1) {
+			delete config.aspectratio;	
+		}
+		else if (!ratio) {
+			delete config.aspectratio;
+		}
+		else {
+			config.aspectratio = ratio;	
+		}
+	}
+
+	function getRatio(ar) {
+		if (typeof ar != "string" || !utils.exists(ar)) return 0;
+		var index = ar.indexOf(":");
+		if (index == -1) return 0;
+		var w = parseFloat(ar.substr(0,index)),
+			h = parseFloat(ar.substr(index+1));
+		if (w <= 0 || h <= 0) return 0;
+		return w/h;
+	}
 
 	/** Appends a new configuration onto an old one; used for mode configuration **/
 	config.addConfig = function(oldConfig, newConfig) {

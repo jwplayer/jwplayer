@@ -51,6 +51,30 @@
 				scriptLoader.addEventListener(events.COMPLETE, _this.embed);
 				scriptLoader.load();
 			}
+
+			window.onresize = _browserResizeHandler;
+		}
+
+		function _browserResizeHandler(evt) {
+			if (!_api.config.aspectratio) return;
+			var container = document.getElementById(_api.id).parentNode,
+				width = parseFloat(_api.config.width),
+				lb = _api.config.listbar,
+				height;
+
+			width = container.clientWidth * (width/100);
+			height = width * (1/_api.config.aspectratio);
+
+			if (lb) {
+				if (lb.position == "bottom") {
+					height += lb.size;
+				}
+				else if (lb.position == "right") {
+					width -= lb.size;
+					height = width * (1/_api.config.aspectratio);
+				}
+			}
+			_api.callInternal("jwResize", _api.config.width, height);
 		}
 		
 		function _loadError(evt) {

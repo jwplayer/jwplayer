@@ -71,6 +71,11 @@
             _api.jwAddEventListener(events.JWPLAYER_READY, _setup);
             _api.jwAddEventListener(events.JWPLAYER_MEDIA_TIME, _timeHandler);
             _api.jwAddEventListener(events.JWPLAYER_FULLSCREEN, _fullscreenHandler);
+            _api.jwAddEventListener(events.JWPLAYER_RESIZE, _resizeHandler);
+        }
+
+        function _resizeHandler(evt) {
+            _redraw(false);
         }
 
         /** Error loading/parsing the captions. **/
@@ -239,12 +244,18 @@
         };
 
         function _normalResize() {
-            var width = _api.jwGetWidth();
+            var width = document.getElementById(_api.id).clientWidth,
+                height = _api.jwGetHeight();
             if (_api._model && _api._model.config
                     && _api._model.config.listbar && _api._model.config.listbar.size) {
-                width = width - _api._model.config.listbar.size;
+                if (_api._model.config.listbar.position == "bottom") {
+                    height -= _api._model.config.listbar.size;
+                }
+                else if (_api._model.config.listbar.position == "right") {
+                    width -= _api._model.config.listbar.size;
+                }
             }
-            _renderer.resize(width, Math.round(_api.jwGetHeight()*0.94));
+            _renderer.resize(width, Math.round(height*0.94));
         }
 
         /** Set dock buttons when player is ready. **/
