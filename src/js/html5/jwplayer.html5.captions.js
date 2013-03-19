@@ -244,18 +244,7 @@
         };
 
         function _normalResize() {
-            var width = document.getElementById(_api.id).clientWidth,
-                height = _api.jwGetHeight();
-            if (_api._model && _api._model.config
-                    && _api._model.config.listbar && _api._model.config.listbar.size) {
-                if (_api._model.config.listbar.position == "bottom") {
-                    height -= _api._model.config.listbar.size;
-                }
-                else if (_api._model.config.listbar.position == "right") {
-                    width -= _api._model.config.listbar.size;
-                }
-            }
-            _renderer.resize(width, Math.round(height*0.94));
+            _renderer.resize();
         }
 
         /** Set dock buttons when player is ready. **/

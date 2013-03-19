@@ -5,7 +5,7 @@
  * @version 6.0
  */
 (function(jwplayer) {
-	var utils = jwplayer.utils, 
+	var utils = jwplayer.utils,
 		events = jwplayer.events,
 		storedFlashvars = {};
 
@@ -75,25 +75,6 @@
 			return flat;
 		};
 
-		function _browserResizeHandler(evt) {
-			if (!_api.config.aspectratio) return;
-			var wrapper = document.getElementById(_api.id + "_wrapper"),
-				width = wrapper.clientWidth,
-				height = width * (1/_api.config.aspectratio),
-				lb = _api.config.listbar;
-			
-			if (lb) {
-				if (lb.position == "bottom") {
-					height += lb.size;
-				}
-				else if (lb.position == "right") {
-					width -= lb.size;
-					height = width * (1/_api.config.aspectratio);
-				}
-			}
-			wrapper.style.height = utils.styleDimension(height);
-		}
-		
 		this.embed = function() {		
 			// Make sure we're passing the correct ID into Flash for Linux API support
 			_options.id = _api.id;
@@ -104,7 +85,9 @@
 				return false;
 			}
 			
-			var _wrapper;
+			var _wrapper,
+			 	_aspect,
+				lb = _api.config.listbar;
 			
 			var params = utils.extend({}, _options);
 			
@@ -113,15 +96,35 @@
 				_wrapper = document.getElementById(_container.id + "_wrapper");
 			} else {
 				_wrapper = document.createElement("div");
+				_aspect = document.createElement("div");
+				_aspect.style.display = "none";
+				_aspect.id = _container.id + "_aspect";
 				_wrapper.id = _container.id + "_wrapper";
 				_wrapper.style.position = "relative";
+				_wrapper.style.display = "inline-block";
 				_wrapper.style.width = utils.styleDimension(params.width);
 				_wrapper.style.height= utils.styleDimension(params.height);
+				
+				if (_api.config.aspectratio) {
+					var ar = parseFloat(_api.config.aspectratio);
+					_aspect.style.display = "block";
+					_aspect.style.marginTop = _api.config.aspectratio;
+					_wrapper.style.height = "auto";
+					if (lb) {
+						if(lb.position == "bottom") {
+							_aspect.style.paddingBottom = lb.size + "px";
+						}
+						else if(lb.position == "right") {
+							_aspect.style.marginBottom = (-1 * lb.size * (ar/100)) + "px";
+						}
+					}
+				}
+				
 				_container.parentNode.replaceChild(_wrapper, _container);
 				_wrapper.appendChild(_container);
+				_wrapper.appendChild(_aspect);
+				
 			}
-
-			window.onresize = _browserResizeHandler;
 			
 			var flashPlugins = _loader.setupPlugins(_api, params, _resizePlugin);
 			
@@ -167,7 +170,7 @@
 
 			if (utils.isIE()) {
 				var html = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" ' +
-				'" width="100%" height="100%" ' +
+				'" width="100%" height="100%"' +
 				'id="' +
 				_container.id +
 				'" name="' +
@@ -204,6 +207,9 @@
 				flashPlayer = obj;
 			}
 			
+			if (_api.config.aspectratio) {
+				flashPlayer.style.position = "absolute";		
+			}
 			_api.container = flashPlayer;
 			_api.setPlayer(flashPlayer, "flash");
 		}

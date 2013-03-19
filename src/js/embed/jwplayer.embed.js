@@ -26,26 +26,7 @@
 		_config.id = playerApi.id;
 		_oldContainer = DOCUMENT.getElementById(playerApi.id);
 		if (_config.aspectratio) {
-			var width = parseFloat(_width),
-				height,
-				lb = _config.listbar;
-
-			width = _oldContainer.parentNode.clientWidth * (width/100);
-			height = width * (1/_config.aspectratio);
-
-			if (lb) {
-				if (lb.position == "bottom") {
-					height += lb.size;
-				}
-				else if (lb.position == "right") {
-					width -= lb.size;
-					height = width * (1/_config.aspectratio);
-				}
-			}
-				
-			_config.height = height; 
-			_height = _config.height;
-			playerApi.config.aspectratio = _config.aspectratio;
+		 	playerApi.config.aspectratio = _config.aspectratio;
 		}
 		_container = DOCUMENT.createElement("div");
 		_container.id = _oldContainer.id;

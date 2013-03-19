@@ -18,11 +18,13 @@
         _isIOS = utils.isIOS(),
 		DOCUMENT = document, 
 		PLAYER_CLASS = "jwplayer", 
+		ASPECT_MODE = "aspectMode",
 		FULLSCREEN_SELECTOR = "."+PLAYER_CLASS+".jwfullscreen",
 		VIEW_MAIN_CONTAINER_CLASS = "jwmain",
 		VIEW_INSTREAM_CONTAINER_CLASS = "jwinstream",
 		VIEW_VIDEO_CONTAINER_CLASS = "jwvideo", 
 		VIEW_CONTROLS_CONTAINER_CLASS = "jwcontrols",
+		VIEW_ASPECT_CONTAINER_CLASS = "jwaspect",
 		VIEW_PLAYLIST_CONTAINER_CLASS = "jwplaylistcontainer",
 		
 		/*************************************************************
@@ -47,6 +49,7 @@
 			_playerElement,
 			_container,
 			_controlsLayer,
+			_aspectLayer,
 			_playlistLayer,
 			_controlsTimeout=0,
 			_timeoutDuration = 2000,
@@ -74,13 +77,18 @@
 		utils.extend(this, _eventDispatcher);
 
 		function _init() {
-			_playerElement = _createElement("div", PLAYER_CLASS);
+			_playerElement = _createElement("div", PLAYER_CLASS + " playlist-" + _model.playlistposition);
 			_playerElement.id = _api.id;
 			
 //			_css(_internalSelector(), {
 //				width: _model.width,
 //				height: _model.height
 //			});
+
+			if (_model.aspectratio) {
+				_playerElement.className = _playerElement.className.replace(PLAYER_CLASS, PLAYER_CLASS + " " + ASPECT_MODE);
+			}
+
 			_resize(_model.width, _model.height);
 			
 			var replace = document.getElementById(_api.id);
@@ -111,6 +119,7 @@
 			_controlsLayer = _createElement("span", VIEW_CONTROLS_CONTAINER_CLASS);
 			_instreamLayer = _createElement("span", VIEW_INSTREAM_CONTAINER_CLASS);
 			_playlistLayer = _createElement("span", VIEW_PLAYLIST_CONTAINER_CLASS);
+			_aspectLayer = _createElement("span", VIEW_ASPECT_CONTAINER_CLASS);
 
 			_setupControls();
 			
@@ -118,13 +127,18 @@
 			_container.appendChild(_controlsLayer);
 			_container.appendChild(_instreamLayer);
 			
-			var newContainer = _createElement("div");
-			newContainer.style.position="absolute";
-			newContainer.style.width="100%";
-			newContainer.style.height="100%";
-			newContainer.appendChild(_container);
-			newContainer.appendChild(_playlistLayer);
-			_playerElement.appendChild(newContainer);
+			// var newContainer = _createElement("div");
+			// newContainer.style.position="absolute";
+			// newContainer.style.width="100%";
+			// newContainer.style.height="100%";
+			// newContainer.appendChild(_container);
+			// newContainer.appendChild(_aspectLayer);
+			// newContainer.appendChild(_playlistLayer);
+			// _playerElement.appendChild(newContainer);
+
+			_playerElement.appendChild(_container);
+			_playerElement.appendChild(_aspectLayer);
+			_playerElement.appendChild(_playlistLayer);
 			
 			DOCUMENT.addEventListener('webkitfullscreenchange', _fullscreenChangeHandler, FALSE);
 			_videoTag.addEventListener('webkitbeginfullscreen', _fullscreenChangeHandler, FALSE);
@@ -152,6 +166,42 @@
 			_componentFadeListeners(_controlbar);
 			_componentFadeListeners(_dock);
 			_componentFadeListeners(_logo);
+
+			_css('#' + _playerElement.id + '.' + ASPECT_MODE + " ." + VIEW_ASPECT_CONTAINER_CLASS, {
+				"margin-top": _model.aspectratio,
+				display: JW_CSS_BLOCK
+			});
+
+			var ar = utils.exists (_model.aspectratio) ? parseFloat(_model.aspectratio) : 100,
+				size = _model.playlistsize;
+			_css('#' + _playerElement.id + '.playlist-right .' + VIEW_ASPECT_CONTAINER_CLASS, {
+				"margin-bottom": -1 * size * (ar/100) + "px"
+			});
+
+			_css('#' + _playerElement.id + '.playlist-right .' + VIEW_PLAYLIST_CONTAINER_CLASS, {
+				width: size + "px",
+				right: 0,
+				top: 0,
+				height: "100%"
+			});
+
+			_css('#' + _playerElement.id + '.playlist-bottom .' + VIEW_ASPECT_CONTAINER_CLASS, {
+				"padding-bottom": size + "px"
+			});
+
+			_css('#' + _playerElement.id + '.playlist-bottom .' + VIEW_PLAYLIST_CONTAINER_CLASS, {
+				width: "100%",
+				height: size + "px",
+				bottom: 0
+			});
+
+			_css('#' + _playerElement.id + '.playlist-right .' + VIEW_MAIN_CONTAINER_CLASS, {
+				right: size + "px"
+			});
+
+			_css('#' + _playerElement.id + '.playlist-bottom .' + VIEW_MAIN_CONTAINER_CLASS, {
+				bottom: size + "px"
+			});
 		}
 		
 		function _componentFadeListeners(comp) {
@@ -324,7 +374,9 @@
 			}
 			
 			_playerElement.style.width = isNaN(width) ? width : width + "px"; 
-			_playerElement.style.height = isNaN(height) ? height : height + "px"; 
+			if (_playerElement.className.indexOf(ASPECT_MODE) == -1) {
+				_playerElement.style.height = isNaN(height) ? height : height + "px"; 
+			}
 
 			if (_display) _display.redraw();
 			if (_controlbar) _controlbar.redraw();
@@ -727,6 +779,7 @@
 	// Container styles
 	_css('.' + PLAYER_CLASS, {
 		position: "relative",
+		display: 'inline-block',
 		opacity: 0,
 		'min-height': utils.isMobile() ? 200 : 0,
     	'-webkit-transition': JW_CSS_SMOOTH_EASE,
@@ -781,6 +834,14 @@
 		bottom: 0,
 		right: 0,
 		display: 'none'
+	});
+
+	_css('.' + VIEW_ASPECT_CONTAINER_CLASS, {
+		display: 'none'
+	});
+
+	_css('.' + PLAYER_CLASS + '.' + ASPECT_MODE , {
+		height: 'auto'
 	});
 
 	// Fullscreen styles

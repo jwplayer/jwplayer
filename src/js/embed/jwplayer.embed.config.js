@@ -65,7 +65,7 @@
 		var w = parseFloat(ar.substr(0,index)),
 			h = parseFloat(ar.substr(index+1));
 		if (w <= 0 || h <= 0) return 0;
-		return w/h;
+		return (h/w * 100) + "%";
 	}
 
 	/** Appends a new configuration onto an old one; used for mode configuration **/

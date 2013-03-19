@@ -4,13 +4,12 @@
     /** Component that renders the actual captions on screen. **/
     html5.captions.renderer = function(_options,_div) {
 
-
-        /** Captions bottom position. **/
-        var _bottom,
         /** Current list with captions. **/
-        _captions,
+        var _captions,
         /** Container of captions. **/
         _container,
+        /** Text container of captions. **/
+        _textContainer,
         /** Current actie captions entry. **/
         _current,
         /** Height of a single line. **/
@@ -19,13 +18,17 @@
         _position,
         /** Should the captions be visible or not. **/
         _visible = 'visible',
-        /** Width of the display. **/
-        _width;
+        /** Interval for resize. **/
+        _interval;
 
 
         /** Hide the rendering component. **/
         this.hide = function() {
-            _style({display:'none'});
+            _style(_container, {display:'none'});
+            if (_interval) {
+                clearInterval(_interval);
+                _interval = null;
+            }
         };
 
 
@@ -39,12 +42,10 @@
 
         /** Render the active caption. **/
         function _render(html) {
-            _style({
-                left: '0px',
-                top: '0px',
+            _style(_container, {
                 visibility: 'hidden'
             });
-            _container.innerHTML = html;
+            _textContainer.innerHTML = html;
             if(html == '') { 
                 _visible = 'hidden';
             } else { 
@@ -55,38 +56,21 @@
 
 
         /** Store new dimensions. **/
-        this.resize = function(width,bottom) {
-            _width = width;
-            _bottom = bottom;
+        this.resize = function() {
             _resize();
         };
 
-
         /** Resize the captions. **/
         function _resize() {
-            _style({
-                left: '0px',
-                top: '0px'
-            });
+            var width = _container.clientWidth,
+                size = Math.round(_options.fontSize * Math.pow(width/400,0.6)),
+                line = Math.round(size * 1.4);
 
-            var size = Math.round(_options.fontSize * Math.pow(_width/400,0.6)),
-                line = Math.round(size * 1.4),
-                left,
-                top;
-
-            _style({
-                maxWidth: _width + 'px',
+            _style(_textContainer, {
+                maxWidth: width + 'px',
                 fontSize: size + 'px',
                 lineHeight: line + 'px',
                 visibility: _visible
-            });
-
-            left = Math.round(_width/2 - _container.clientWidth/2);
-            top = Math.round(_bottom - _container.clientHeight);
-            
-            _style({
-                left: left + 'px',
-                top: top + 'px'
             });
         };
 
@@ -114,26 +98,38 @@
         /** Constructor for the renderer. **/
         function _setup() {
             _container = document.createElement("div");
+            _textContainer = document.createElement("span");
+            _container.appendChild(_textContainer);
             _div.appendChild(_container);
-            _style({
-                color: '#'+_options.color.substr(-6),
+            
+            _style(_container, {
                 display: 'block',
+                height: 'auto',
+                position: 'absolute',
+                bottom: '20px',
+                textAlign: 'center',
+                width: '100%'
+            });
+
+            _style(_textContainer, {
+                color: '#'+_options.color.substr(-6),
+                display: 'inline-block',
                 fontFamily: _options.fontFamily,
                 fontStyle: _options.fontStyle,
                 fontWeight: _options.fontWeight,
                 height: 'auto',
-                margin: '0 0 0 0',
-                padding: '3px 9px',
-                position: 'absolute',
+                margin: 'auto',
+                position: 'relative',
                 textAlign: 'center',
                 textDecoration: _options.textDecoration,
                 wordWrap: 'break-word',
                 width: 'auto'
             });
+
             if(_options.back) {
-                _style({background:'#000'});
+                _style(_textContainer, {background:'#000'});
             } else {
-                _style({textShadow: '-2px 0px 1px #000,2px 0px 1px #000,0px -2px 1px #000,0px 2px 1px #000,-1px 1px 1px #000,1px 1px 1px #000,1px -1px 1px #000,1px 1px 1px #000'});
+                _style(_textContainer, {textShadow: '-2px 0px 1px #000,2px 0px 1px #000,0px -2px 1px #000,0px 2px 1px #000,-1px 1px 1px #000,1px 1px 1px #000,1px -1px 1px #000,1px 1px 1px #000'});
             }
         };
         _setup();
@@ -141,15 +137,18 @@
 
         /** Show the rendering component. **/
         this.show = function() {
-            _style({display:'block'});
+            _style(_container, {display:'block'});
+            if (!_interval) {
+                _interval = setInterval(_resize, 250);
+            }
             _resize();
         };
 
 
         /** Apply CSS styles to elements. **/
-        function _style(styles) {
+        function _style(div, styles) {
             for(var property in styles) {
-              _container.style[property] = styles[property];
+              div.style[property] = styles[property];
             }
         };
 
