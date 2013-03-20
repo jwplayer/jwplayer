@@ -28,6 +28,9 @@
 		if (_config.aspectratio) {
 		 	playerApi.config.aspectratio = _config.aspectratio;
 		}
+		else {
+			delete playerApi.config.aspectratio;
+		}
 		_container = DOCUMENT.createElement("div");
 		_container.id = _oldContainer.id;
 		_container.style.width = _width.toString().indexOf("%") > 0 ? _width : (_width + "px");
