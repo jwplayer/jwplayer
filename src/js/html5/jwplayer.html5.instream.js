@@ -25,7 +25,7 @@
 			_video, _oldsrc, _oldsources, _oldpos, _oldstate, _olditem,
 			_provider, _cbar, _disp, _instreamMode = false,
 			_dispatcher, _instreamContainer, _fakemodel,
-			_self = this;
+			_self = this, _loadError = true;
 
 
 		/*****************************************
@@ -51,53 +51,63 @@
 			_fakemodel = new html5.model({}, _provider);
 			// Update the instream player's model
 			_copyModel();
+			_fakemodel.addEventListener(jwplayer.events.JWPLAYER_ERROR,errorHandler)
 			// Set the new model's playlist
-			_fakemodel.setPlaylist([item]);
-			// Store this to compare later (in case the main player switches to the next playlist item when we switch out of instream playback mode 
 			_olditem = _model.playlist[_model.item];
-			// Keep track of the original player state
-			_oldstate = _api.jwGetState();
-			// If the player's currently playing, pause the video tag
-			if (_oldstate == _states.BUFFERING || _oldstate == _states.PLAYING) {
-				_video.pause();
-			} else if (_oldstate == _states.IDLE) {
-				_api.jwStop();
-			}
-			
-			// Copy the video src/sources tags and store the current playback time
+                // Keep track of the original player state
+            _oldstate = _api.jwGetState();
+
 			_oldsrc = _video.src ? _video.src : _video.currentSrc;
-			_oldsources = _video.innerHTML;
-			_oldpos = _video.currentTime;
-			
-			// Instream display component
-			_disp = new html5.display(_self);
-			_disp.setAlternateClickHandler(function(evt) {
-				if (_fakemodel.state == _states.PAUSED) {
-					_self.jwInstreamPlay();
-				} else {
-					_self.jwInstreamPause();
-					_sendEvent(_events.JWPLAYER_INSTREAM_CLICK, evt);
-				}
-			});
+            _oldsources = _video.innerHTML;
+            _oldpos = _video.currentTime;
+            _fakemodel.setPlaylist([item]);                
+			// Store this to compare later (in case the main player switches to the next playlist item when we switch out of instream playback mode 
+			if (_loadError){
 
-			_instreamContainer.appendChild(_disp.element());
+    			// If the player's currently playing, pause the video tag
+    			if (_oldstate == _states.BUFFERING || _oldstate == _states.PLAYING) {
+    				_video.pause();
+    			} else if (_oldstate == _states.IDLE) {
+    				_api.jwStop();
+    			}
+    			
+    			// Copy the video src/sources tags and store the current playback time
 
-			// Instream controlbar (if not iOS/Android)
-			if (!_utils.isMobile()) {
-				_cbar = new html5.controlbar(_self);
-				_instreamContainer.appendChild(_cbar.element());
-				_cbar.show();
-			}
-
-			// Show the instream layer
-			_view.setupInstream(_instreamContainer, _video);
-			// Resize the instream components to the proper size
-			_resize();
-			// Load the instream item
-			_provider.load(_fakemodel.playlist[0]);
+    			// Instream display component
+    			_disp = new html5.display(_self);
+    			_disp.setAlternateClickHandler(function(evt) {
+    				if (_fakemodel.state == _states.PAUSED) {
+    					_self.jwInstreamPlay();
+    				} else {
+    					_self.jwInstreamPause();
+    					_sendEvent(_events.JWPLAYER_INSTREAM_CLICK, evt);
+    				}
+    			});
+    
+    			_instreamContainer.appendChild(_disp.element());
+    
+    			// Instream controlbar (if not iOS/Android)
+    			if (!_utils.isMobile()) {
+    				_cbar = new html5.controlbar(_self);
+    				_instreamContainer.appendChild(_cbar.element());
+    				_cbar.show();
+    			}
+    
+    			// Show the instream layer
+    			_view.setupInstream(_instreamContainer, _video);
+    			// Resize the instream components to the proper size
+    			_resize();
+    			// Load the instream item
+    			_provider.load(_fakemodel.playlist[0]);
+    		}
 			
 		}
-			
+	   
+	    function errorHandler(evt) {
+	        _sendEvent(evt.type,evt);
+	        _loadError = false;
+	        _self.jwInstreamDestroy(false);
+	    }
 		/** Stop the instream playback and revert the main player back to its original state **/
 		this.jwInstreamDestroy = function(complete) {
 			if (!_instreamMode) return;
@@ -109,8 +119,9 @@
 				_provider.stop(true);
 			}
 
-			// Reverting instream click handler
-			_disp.revertAlternateClickHandler();
+			// Reverting instream click handler --for some reason throws an error if there was an error loading instream
+			if (_loadError)
+			 _disp.revertAlternateClickHandler();
 			// We don't want the instream provider to be attached to the video tag anymore
 			_provider.detachMedia();
 			// Return the view to its normal state

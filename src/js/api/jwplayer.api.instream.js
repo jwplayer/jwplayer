@@ -120,9 +120,9 @@
 		_this.onClick = function(callback) {
 			return _eventListener(events.JWPLAYER_INSTREAM_CLICK, callback);
 		};
-		// _this.onInstreamDestroyed = function(callback) {
-		// 	return _eventListener(events.JWPLAYER_INSTREAM_DESTROYED, callback);
-		// };
+	    _this.onInstreamDestroyed = function(callback) {
+		 	return _eventListener(events.JWPLAYER_INSTREAM_DESTROYED, callback);
+		 };
 		
 		
 		_this.play = function(state) {
