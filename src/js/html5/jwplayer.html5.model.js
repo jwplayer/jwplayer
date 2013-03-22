@@ -126,7 +126,7 @@
 				_model.sendEvent(events.JWPLAYER_ERROR, { message: "Error loading playlist: No playable sources found" });
 			} else {
 				_model.sendEvent(events.JWPLAYER_PLAYLIST_LOADED, {
-					playlist: playlist
+					playlist: jwplayer(_model.id).getPlaylist()
 				});
 				_model.item = -1;
 				_model.setItem(0);

@@ -96,7 +96,7 @@
 			}
 
 			if (!item.file && item.sources.length > 0) {
-				item.file = item.sources[0].file;
+				obj.file = item.sources[0].file;
 			}
 
 			return obj;

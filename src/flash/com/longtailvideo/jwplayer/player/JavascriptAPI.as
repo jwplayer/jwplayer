@@ -313,8 +313,7 @@ package com.longtailvideo.jwplayer.player {
 
 		protected function listenerCallbackPlaylist(evt:PlaylistEvent):Object {
 			if (evt.type == PlaylistEvent.JWPLAYER_PLAYLIST_LOADED) {
-				var list:Array = JavascriptSerialization.playlistToArray(_player.playlist);
-				list = JavascriptSerialization.stripDots(list) as Array;
+				var list:Array = js_getPlaylist();
 				return { playlist: list };
 			} else if (evt.type == PlaylistEvent.JWPLAYER_PLAYLIST_ITEM) {
 				return { index: _player.playlist.currentIndex };

@@ -53,7 +53,7 @@
 				_model.addGlobalListener(_forward);
 				_view.addGlobalListener(_forward);
 
-				_eventDispatcher.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_LOADED, {playlist: _model.playlist});
+				_eventDispatcher.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_LOADED, {playlist: jwplayer(_model.id).getPlaylist()});
 				_eventDispatcher.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_ITEM, {index: _model.item});
 				
 				_load();
