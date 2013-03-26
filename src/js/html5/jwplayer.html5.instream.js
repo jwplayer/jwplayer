@@ -25,7 +25,7 @@
 			_video, _oldsrc, _oldsources, _oldpos, _oldstate, _olditem,
 			_provider, _cbar, _disp, _instreamMode = false,
 			_dispatcher, _instreamContainer, _fakemodel,
-			_self = this, _loadError = true;
+			_self = this, _loadError = false;
 
 
 		/*****************************************
@@ -62,7 +62,7 @@
             _oldpos = _video.currentTime;
             _fakemodel.setPlaylist([item]);                
 			// Store this to compare later (in case the main player switches to the next playlist item when we switch out of instream playback mode 
-			if (_loadError){
+			if (!_loadError){
 
     			// If the player's currently playing, pause the video tag
     			if (_oldstate == _states.BUFFERING || _oldstate == _states.PLAYING) {
@@ -105,7 +105,7 @@
 	   
 	    function errorHandler(evt) {
 	        _sendEvent(evt.type,evt);
-	        _loadError = false;
+	        _loadError = true;
 	        _self.jwInstreamDestroy(false);
 	    }
 		/** Stop the instream playback and revert the main player back to its original state **/
@@ -120,8 +120,8 @@
 			}
 
 			// Reverting instream click handler --for some reason throws an error if there was an error loading instream
-			if (_loadError)
-			 _disp.revertAlternateClickHandler();
+			if (!_loadError)
+			     _disp.revertAlternateClickHandler();
 			// We don't want the instream provider to be attached to the video tag anymore
 			_provider.detachMedia();
 			// Return the view to its normal state
