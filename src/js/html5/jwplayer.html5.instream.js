@@ -25,7 +25,7 @@
 			_video, _oldsrc, _oldsources, _oldpos, _oldstate, _olditem,
 			_provider, _cbar, _disp, _instreamMode = false,
 			_dispatcher, _instreamContainer, _fakemodel,
-			_self = this, _loadError = false;
+			_self = this, _loadError = false, _shouldSeek = true;
 
 
 		/*****************************************
@@ -55,8 +55,11 @@
 			// Set the new model's playlist
 			_olditem = _model.playlist[_model.item];
                 // Keep track of the original player state
-            _oldstate = _api.jwGetState();
-
+            _oldstate = _model.getVideo().checkComplete() ? _states.IDLE : api.jwGetState();
+            if (_controller.checkBeforePlay()) {
+                _oldstate = _states.PLAYING;
+                _shouldSeek = false;
+            }
 			_oldsrc = _video.src ? _video.src : _video.currentSrc;
             _oldsources = _video.innerHTML;
             _oldpos = _video.currentTime;
@@ -67,9 +70,7 @@
     			// If the player's currently playing, pause the video tag
     			if (_oldstate == _states.BUFFERING || _oldstate == _states.PLAYING) {
     				_video.pause();
-    			} else if (_oldstate == _states.IDLE) {
-    				_api.jwStop();
-    			}
+    	        } 
     			
     			// Copy the video src/sources tags and store the current playback time
 
@@ -137,7 +138,7 @@
 				_video.play();
 				if (_model.playlist[_model.item] == _olditem) {
 					// We need to seek using the player's real provider, since the seek may have to be delayed
-					_model.getVideo().seek(_oldpos);
+					if (_shouldSeek) _model.getVideo().seek(_oldpos);
 				}
 			}
 			return;
@@ -216,13 +217,13 @@
 		}
 		
 		function _setupProvider() {
-			if (!_provider) {
+			//if (!_provider) {
 				_provider = new html5.video(_video);
 				_provider.addGlobalListener(_forward);
 				_provider.addEventListener(_events.JWPLAYER_MEDIA_META, _metaHandler);
 				_provider.addEventListener(_events.JWPLAYER_MEDIA_COMPLETE, _completeHandler);
 				_provider.addEventListener(_events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
-			}
+			//}
 			_provider.attachMedia();
 			_provider.mute(_model.mute);
 			_provider.volume(_model.volume);

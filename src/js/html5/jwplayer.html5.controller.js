@@ -118,7 +118,7 @@
 					_load(_loadOnPlay);
 					_loadOnPlay = -1;
 				}
-				_actionOnAttach = _play;
+				//_actionOnAttach = _play;
 				if (!_preplay) {
 					_preplay = true;
 					_eventDispatcher.sendEvent(events.JWPLAYER_MEDIA_BEFOREPLAY);
@@ -332,7 +332,9 @@
 		this.setCurrentCaptions = _waitForReady(_setCurrentCaptions);
 		this.getCurrentCaptions = _getCurrentCaptions;
 		this.getCaptionsList = _getCaptionsList;
-		
+		this.checkBeforePlay = function() {
+            return _preplay;
+        }
 		this.playerReady = _playerReady;
 
 		_init();

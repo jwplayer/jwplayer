@@ -84,6 +84,9 @@
 		// Reference to self
 		_this = this,
 		
+		//make sure we only do complete once
+		_completeOnce = false,
+		
 		_beforecompleted = false;
 		
 		utils.extend(_this, _eventDispatcher);
@@ -196,7 +199,7 @@
 			if (_videotag.paused) {
 				if (_videotag.currentTime == _videotag.duration && _videotag.duration > 3) {
 					// Needed as of Chrome 20
-					_complete();
+					//_complete();
 				} else {
 					_pause();
 				}
@@ -250,6 +253,7 @@
 		
 		_this.load = function(item) {
 			if (!_attached) return;
+			_completeOnce = false;
 			_item = item;
 			_delayedSeek = 0;
 			_duration = item.duration ? item.duration : -1;
@@ -426,12 +430,14 @@
 		}
 		
 		function _complete() {
+		    //if (_completeOnce) return;
+		    _completeOnce = true;
 			if (_state != states.IDLE) {
 				_currentQuality = -1;
-
+                _beforecompleted = true;
 				_sendEvent(events.JWPLAYER_MEDIA_BEFORECOMPLETE);
 
-				_beforecompleted = true;
+
 				if (_attached) {
 				    _setState(states.IDLE);
     				_sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
@@ -440,6 +446,10 @@
 			}
 		}
 		
+        this.checkComplete = function() {
+            
+            return _beforecompleted;
+        }
 
 		/**
 		 * Return the video tag and stop listening to events  
