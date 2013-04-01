@@ -144,7 +144,7 @@
 		}
 		for (var selector in _styleSheets) {
 			if (selector.indexOf(filter) >= 0) {
-				_styleSheets[selector].innerHTML = '';
+				_updateStylesheet(selector);
 			}
 		}
 	}
