@@ -66,6 +66,9 @@ package com.longtailvideo.jwplayer.media {
 
 		public override function initializeMediaProvider(cfg:PlayerConfig):void {
 			super.initializeMediaProvider(cfg);
+
+			if (_stageEnabled && cfg.hasOwnProperty('stagevideo') && cfg['stagevideo'].toString() == "false") _stageEnabled = false;
+
 			_connection = new NetConnection();
 			_connection.connect(null);
 			_stream = new NetStream(_connection);

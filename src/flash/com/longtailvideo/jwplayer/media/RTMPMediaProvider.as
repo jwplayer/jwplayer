@@ -62,6 +62,10 @@
 		/** Constructor; sets up the connection and loader. **/
 		public override function initializeMediaProvider(cfg:PlayerConfig):void {
 			super.initializeMediaProvider(cfg);
+			
+			// Allow stagevideo to be disabled by user config
+			if (_stageEnabled && cfg.hasOwnProperty('stagevideo') && cfg['stagevideo'].toString() == "false") _stageEnabled = false;
+			
 			_connection = new NetConnection();
 			_connection.addEventListener(NetStatusEvent.NET_STATUS, statusHandler);
 			_connection.addEventListener(SecurityErrorEvent.SECURITY_ERROR, errorHandler);
