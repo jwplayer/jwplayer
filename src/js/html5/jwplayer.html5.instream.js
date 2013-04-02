@@ -157,12 +157,16 @@
 		this.jwInstreamPlay = function() {
 			if (!_instreamMode) return;
 			_provider.play(true);
+			_model.state = jwplayer.events.state.PLAYING;
+			_disp.show();  
 		}
 
 		/** Pause instream playback **/
 		this.jwInstreamPause = function() {
 			if (!_instreamMode) return;
 			_provider.pause(true);
+			_model.state = jwplayer.events.state.PAUSED;
+			_disp.show();
 		}
 		
 		/** Seek to a point in instream media **/
