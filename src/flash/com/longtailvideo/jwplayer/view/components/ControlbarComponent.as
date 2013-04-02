@@ -873,7 +873,7 @@ package com.longtailvideo.jwplayer.view.components {
 
 
 		private function redraw():void {
-			if (_player.config.height <= 40 || _player.config.fullscreen) {
+			if (_player.config.height <= 40 || _player.config.fullscreen && _currentLayout) {
 				_currentLayout = _currentLayout.replace("fullscreen", "");
 				hideButton('fullscreen', true);
 			} else {
