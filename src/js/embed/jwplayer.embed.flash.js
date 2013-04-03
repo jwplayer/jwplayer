@@ -161,7 +161,7 @@
 			
 
 			
-			var base = window.location.pathname.split("/");
+			var base = window.location.href.split("/");
 			base.splice(base.length-1, 1);
 			base = base.join("/");
 			params.base = base + "/";

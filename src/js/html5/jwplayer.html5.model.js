@@ -120,6 +120,7 @@
 			}
 		}
 		
+		// TODO: make this a synchronous action; throw error if playlist is empty
 		_model.setPlaylist = function(playlist) {
 			_model.playlist = _filterPlaylist(playlist);
 			if (_model.playlist.length == 0) {

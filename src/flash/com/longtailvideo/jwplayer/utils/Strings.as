@@ -189,6 +189,9 @@ package com.longtailvideo.jwplayer.utils {
 			var domain:String = protocol ? basepath.substring(protocol.length, basepath.indexOf('/', protocol.length + 1)) : "";
 			var patharray:Array;
 			if (path.indexOf("/") === 0) {
+				if(isAbsolutePath(basepath)) {
+					return protocol + domain + path;
+				}
 				patharray = path.split("/");
 			} else {
 				var newbase:String = basepath.split("?")[0];
@@ -211,7 +214,7 @@ package com.longtailvideo.jwplayer.utils {
 		public static function isAbsolutePath(path:String):Boolean {
 			var protocol:int = path.indexOf("://");
 			var queryparams:int = path.indexOf("?");
-			return (path.indexOf("/") == 0 || (protocol > 0 && (queryparams < 0 || (queryparams > protocol))));
+			return ((protocol > 0 && (queryparams < 0 || (queryparams > protocol))));
 		}
 
 		/** Removes potentially harmful string headers from a link **/
