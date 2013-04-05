@@ -152,22 +152,25 @@
 		}
 		
 		_model.setItem = function(index) {
-			var newItem;
-			if (index == _model.playlist.length || index < -1)
-				newItem = 0;
-			else if (index == -1 || index > _model.playlist.length)
-				newItem = _model.playlist.length - 1;
-			else
-				newItem = index;
-			
-			if (newItem != _model.item) {
-				_model.item = newItem;
-				_model.sendEvent(events.JWPLAYER_PLAYLIST_ITEM, {
-					"index": _model.item
-				});
-			}
-		}
-		
+            var newItem;
+            var repeat = false;
+            if (index == _model.playlist.length || index < -1) {
+                newItem = 0;
+                repeat = true;
+            }
+            else if (index == -1 || index > _model.playlist.length)
+                newItem = _model.playlist.length - 1;
+            else
+                newItem = index;
+            
+            if (repeat  || newItem != _model.item) {
+                _model.item = newItem;
+                _model.sendEvent(events.JWPLAYER_PLAYLIST_ITEM, {
+                    "index": _model.item
+                });
+            }
+        }
+        
 		_model.setVolume = function(newVol) {
 			if (_model.mute && newVol > 0) _model.setMute(FALSE);
 			newVol = Math.round(newVol);

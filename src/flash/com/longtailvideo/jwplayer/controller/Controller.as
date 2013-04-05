@@ -239,6 +239,7 @@ package com.longtailvideo.jwplayer.controller {
 			if (_model.config.repeat) {
 				if (_model.playlist.currentIndex == _model.playlist.length - 1) {
 					_model.playlist.currentIndex = 0;
+					_model.dispatchEvent(new PlaylistEvent(PlaylistEvent.JWPLAYER_PLAYLIST_ITEM, _model.playlist))
 					play();
 				} else {
 					next();
