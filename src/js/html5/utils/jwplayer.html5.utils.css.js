@@ -10,6 +10,7 @@
 		_rules = {},
 		_block = 0,
 		exists = utils.exists,
+		_foreach = utils.foreach,
 		_ruleIndexes = {},
 		_debug = false,
 				
@@ -39,14 +40,14 @@
 			_rules[selector] = {};
 		}
 
-		for (var style in styles) {
-			var val = _styleValue(style, styles[style], important);
+		_foreach(styles, function(style, val) {
+			val = _styleValue(style, val, important);
 			if (exists(_rules[selector][style]) && !exists(val)) {
 				delete _rules[selector][style];
 			} else if (exists(val)) {
 				_rules[selector][style] = val;
 			}
-		}
+		});
 
 		if (_block > 0)
 			return;
@@ -67,9 +68,9 @@
 	
 	var _applyStyles = function() {
 		// IE9 limits the number of style tags in the head, so we need to update the entire stylesheet each time
-		for (var selector in _styleSheets) {
+		_foreach(_styleSheets, function(selector, val) {
 			_updateStylesheet(selector);
-		}
+		});
 	}
 	
 	function _styleValue(style, value, important) {
@@ -125,9 +126,9 @@
 	function _getRuleText(selector) {
 		var ruleText = selector + "{\n";
 		var styles = _rules[selector];
-		for (var style in styles) {
-			ruleText += "  "+style + ": " + styles[style] + ";\n";
-		}
+		_foreach(styles, function(style, val) {
+			ruleText += "  "+style + ": " + val + ";\n";
+		});
 		ruleText += "}\n";
 		return ruleText;
 	}
@@ -137,16 +138,16 @@
 	 * Removes all css elements which match a particular style
 	 */
 	utils.clearCss = function(filter) {
-		for (var rule in _rules) {
+		_foreach(_rules, function(rule, val) {
 			if (rule.indexOf(filter) >= 0) {
 				delete _rules[rule];
 			}
-		}
-		for (var selector in _styleSheets) {
+		});
+		_foreach(_styleSheets, function(selector, val) {
 			if (selector.indexOf(filter) >= 0) {
 				_updateStylesheet(selector);
 			}
-		}
+		});
 	}
 	
 	utils.transform = function(element, value) {

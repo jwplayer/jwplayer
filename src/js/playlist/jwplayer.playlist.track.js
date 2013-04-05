@@ -18,13 +18,13 @@
 		var _track = utils.extend({}, defaults);
 		if (!config) config = {};
 		
-		for (var property in defaults) {
+		utils.foreach(defaults, function(property, value) {
 			if (utils.exists(config[property])) {
 				_track[property] = config[property];
 				// Actively move from config to track
 				delete config[property];
 			}
-		}
+		});
 		
 		return _track;
 	};

@@ -43,14 +43,14 @@
 						type = source.type ? source.type : utils.extensionmap.extType(utils.extension(source.file));
 					if (source.file) {
 						// TODO: shouldn't be using same variable in nested loop...  Clean up at some point
-						for (i in types) {
+						utils.foreach(types, function(i, val) {
 							if (type == types[i]) {
 								file = source.file;
 								image = item.image;
 							} else if (utils.isYouTube(source.file)) {
 								youtube = source.file;
 							}
-						}
+						});
 
 						if (file || youtube) continue;
 					}
@@ -85,9 +85,9 @@
 		function _css(selector, style) {
 			var elements = DOCUMENT.querySelectorAll(selector);
 			for (var i=0; i<elements.length; i++) {
-				for (var prop in style) {
-					elements[i].style[prop] = style[prop];
-				}
+				utils.foreach(style, function(prop, val) {
+					elements[i].style[prop] = val;
+				});
 			}
 		}
 		

@@ -1,5 +1,5 @@
 (function(html5) {
-
+	var _foreach = jwplayer.utils.foreach;
 
     /** Component that renders the actual captions on screen. **/
     html5.captions.renderer = function(_options,_div) {
@@ -147,9 +147,9 @@
 
         /** Apply CSS styles to elements. **/
         function _style(div, styles) {
-            for(var property in styles) {
-              div.style[property] = styles[property];
-            }
+        	_foreach(styles, function(property, val) {
+                div.style[property] = val;
+        	});
         };
 
 

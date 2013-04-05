@@ -38,11 +38,11 @@
 		_oldContainer.parentNode.replaceChild(_container, _oldContainer);
 		
 		function _setupEvents(api, events) {
-			for (var evt in events) {
+			utils.foreach(events, function(evt, val) {
 				if (typeof api[evt] == "function") {
-					(api[evt]).call(api, events[evt]);
+					(api[evt]).call(api, val);
 				}
-			}
+			});
 		}
 		
 		function _embedPlayer() {

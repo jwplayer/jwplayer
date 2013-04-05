@@ -538,11 +538,11 @@
 		}
 
 		function _hideOverlays(exception) {
-			for (var i in _overlays) {
-				if (i != exception && _overlays.hasOwnProperty(i)) {
-					_overlays[i].hide();
+			utils.foreach(_overlays, function(i, overlay) {
+				if (i != exception) {
+					overlay.hide();
 				}
-			}
+			});
 		}
 		
 		function _showVolume() {
@@ -1066,9 +1066,9 @@
 		function _positionOverlays() {
 			var overlayBounds, i, overlay;
 			_cbBounds = utils.bounds(_controlbar);
-			for (i in _overlays) {
-				_positionOverlay(_overlays[i]);
-			}
+			utils.foreach(_overlays, function(i, overlay) {
+				_positionOverlay(overlay);
+			});
 		}
 
 		function _positionOverlay(overlay, bounds) {

@@ -63,15 +63,14 @@
 				'title':		item.title
 			};
 
-			for (var i in item) {
-				obj[i] = item[i];
-			}
+			utils.foreach(item, function(i, val) {
+				obj[i] = val;
+			});
 
 			obj['sources'] = [];
 			obj['tracks'] = [];
 			if (item.sources.length > 0) {
-				for (i in item.sources) {
-					var source = item.sources[i];
+				utils.foreach(item.sources, function(i, source) {
 					var sourceCopy = {
 						file: source.file,
 						type: source.type ? source.type : undefined,
@@ -79,12 +78,11 @@
 						"default": source["default"] ? true : false
 					};
 					obj['sources'].push(sourceCopy);
-				}
+				});
 			}
 
 			if (item.tracks.length > 0) {
-				for (i in item.tracks) {
-					var track = item.tracks[i];
+				utils.foreach(item.tracks, function(i, track) {
 					var trackCopy = {
 						file: track.file,
 						kind: track.kind ? track.kind : undefined,
@@ -92,7 +90,7 @@
 						"default": track["default"] ? true : false
 					};
 					obj['tracks'].push(trackCopy);
-				}
+				});
 			}
 
 			if (!item.file && item.sources.length > 0) {

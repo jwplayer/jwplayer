@@ -204,11 +204,9 @@
 					clearTimeout(timeout); 
 					_positionTooltip(id); 
 					tooltip.show();
-					for (var i in _tooltips) {
-						if (i != id) {
-							_tooltips[i].hide();
-						}
-					}
+					utils.foreach(_tooltips, function(i, tooltip) {
+						if (i != id) tooltip.hide();
+					});
 				}, false);
 				newButton.addEventListener('mouseout', function() {
 					timeout = setTimeout(tooltip.hide, 100); 

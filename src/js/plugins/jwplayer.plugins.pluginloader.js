@@ -4,7 +4,9 @@
  * @version 5.6
  */
 (function(jwplayer) {
-	var utils = jwplayer.utils, events = jwplayer.events;
+	var utils = jwplayer.utils, 
+		events = jwplayer.events,
+		_foreach = utils.foreach;
 
 	jwplayer.plugins.pluginloader = function(model, config) {
 		var _status = utils.loaderstatus.NEW,
@@ -47,12 +49,13 @@
 			if (!_iscomplete && !_errorState) {
 				var incomplete = 0, plugins = model.getPlugins();
 				
-				for (var plugin in _config) {
+				utils.foreach(_config, function(plugin, val) {
 					var pluginName = utils.getPluginName(plugin),
 						pluginObj = plugins[pluginName],
 						js = pluginObj.getJS(),
 						target = pluginObj.getTarget(),
 						status = pluginObj.getStatus(); 
+
 					if (status == utils.loaderstatus.LOADING || status == utils.loaderstatus.NEW) {
 						incomplete++;
 					} else if (js && (!target || parseFloat(target) > parseFloat(jwplayer.version))) {
@@ -60,7 +63,7 @@
 						_errorMessage = "Incompatible player version";
 						_complete();
 					}
-				}
+				});
 				
 				if (incomplete == 0) {
 					_complete();
@@ -80,7 +83,7 @@
 
 			plugins = model.getPlugins();
 			
-			for (var plugin in config.plugins) {
+			_foreach(config.plugins, function(plugin, pluginConfig) {
 				var pluginName = utils.getPluginName(plugin),
 					pluginObj = plugins[pluginName],
 					flashPath = pluginObj.getFlashPath(),
@@ -89,7 +92,7 @@
 				
 
 				if (flashPath) {
-					flashPlugins.plugins[flashPath] = utils.extend({}, config.plugins[plugin]);
+					flashPlugins.plugins[flashPath] = utils.extend({}, pluginConfig);
 					flashPlugins.plugins[flashPath].pluginmode = pluginObj.getPluginmode();
 					flashPlugins.length++;
 				}
@@ -110,7 +113,7 @@
 				catch (err) {
 					utils.log ("ERROR: Failed to load " + pluginName + ".");
 				}
-			}
+			});
 			
 			api.plugins = jsplugins.plugins;
 			
@@ -128,21 +131,21 @@
 			_loading = true;
 			
 			/** First pass to create the plugins and add listeners **/
-			for (var plugin in config) {
+			_foreach(config, function(plugin, val) {
 				if (utils.exists(plugin)) {
 					var pluginObj = model.addPlugin(plugin);
 					pluginObj.addEventListener(events.COMPLETE, _checkComplete);
 					pluginObj.addEventListener(events.ERROR, _pluginError);
 				}
-			}
+			});
 			
 			var plugins = model.getPlugins();
 			
 			/** Second pass to actually load the plugins **/
-			for (plugin in plugins) {
+			_foreach(plugins, function(plugin, pluginObj) {
 				// Plugin object ensures that it's only loaded once
-				plugins[plugin].load();
-			}
+				pluginObj.load();
+			});
 			
 			_loading = false;
 			

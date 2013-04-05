@@ -46,12 +46,11 @@
 			
 			var flat = {};
 			
-			for (var component in componentBlock) {
-				var componentConfig = componentBlock[component];
-				for (var param in componentConfig) {
-					flat[component + '.' + param] = componentConfig[param];
-				}
-			}
+			utils.foreach(componentBlock, function(component, componentConfig) {
+				utils.foreach(componentConfig, function(param, val) {
+					flat[component + '.' + param] = val;
+				});
+			});
 			
 			return flat;
 		};
@@ -63,14 +62,13 @@
 			
 			var flat = {}, pluginKeys = [];
 			
-			for (var plugin in pluginBlock) {
+			utils.foreach(pluginBlock, function(plugin, pluginConfig) {
 				var pluginName = utils.getPluginName(plugin);
-				var pluginConfig = pluginBlock[plugin];
 				pluginKeys.push(plugin);
-				for (var param in pluginConfig) {
-					flat[pluginName + '.' + param] = pluginConfig[param];
-				}
-			}
+				utils.foreach(pluginConfig, function(param, val) {
+					flat[pluginName + '.' + param] = val;
+				});
+			});
 			flat.plugins = pluginKeys.join(',');
 			return flat;
 		};
@@ -153,13 +151,11 @@
 			
 			// If we've set any cookies in HTML5 mode, bring them into flash
 			var cookies = utils.getCookies();
-			for (var cookie in cookies) {
+			utils.foreach(cookies, function(cookie, val) {
 				if (typeof(params[cookie])=="undefined") {
-					params[cookie] = cookies[cookie];
+					params[cookie] = val;
 				}
-			}
-			
-
+			});
 			
 			var base = window.location.href.split("/");
 			base.splice(base.length-1, 1);

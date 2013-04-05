@@ -79,9 +79,9 @@
 		if (!config.playlist) {
 			var singleItem = {};
 			
-			for (var itemProp in playlistitem.defaults) {
+			utils.foreach(playlistitem.defaults, function(itemProp, val) {
 				_moveProperty(config, singleItem, itemProp);
-			}
+			});
 
 			if (!singleItem.sources) {
 				if (config.levels) {

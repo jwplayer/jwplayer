@@ -339,9 +339,9 @@
 
 		
 		function _populateSkinElements() {
-			for (var element in _elements) {
+			utils.foreach(_elements, function(element, _) {
 				_elements[element] = _skin.getSkinElement("playlist", element);
-			}
+			});
 		}
 		
 		_setup();

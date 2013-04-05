@@ -249,8 +249,7 @@
 
         /** Set dock buttons when player is ready. **/
         function _setup() {
-
-            for (var rule in _defaults) {
+        	utils.foreach(_defaults, function(rule, val) {
                 if (options && options[rule.toLowerCase()] != undefined) {
                     // Fix for colors, since the player automatically converts to HEX.
                     if(rule == 'color') {
@@ -260,9 +259,9 @@
                     }
                 }
                 else {
-                    _options[rule] = _defaults[rule];
+                    _options[rule] = val;
                 }
-            }
+        	});
 
             // Place renderer and selector.
             _renderer = new jwplayer.html5.captions.renderer(_options,_display);

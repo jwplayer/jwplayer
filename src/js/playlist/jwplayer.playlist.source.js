@@ -17,13 +17,14 @@
 	playlist.source = function(config) {
 		var _source = utils.extend({}, defaults);
 		
-		for (var property in defaults) {
+		utils.foreach(defaults, function(property, value) {
 			if (utils.exists(config[property])) {
 				_source[property] = config[property];
 				// Actively move from config to source
 				delete config[property];
 			}
-		}
+		});
+		
 		if (_source.type && _source.type.indexOf("/") > 0) {
 			_source.type = utils.extensionmap.mimeType(_source.type);
 		}

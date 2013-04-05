@@ -44,9 +44,9 @@
 			};
 
 		function _parseConfig(config) {
-			for (var i in config) {
-				config[i] = utils.serialize(config[i]);
-			}
+			utils.foreach(config, function(i, val) {
+				config[i] = utils.serialize(val);
+			});
 			return config;
 		}
 

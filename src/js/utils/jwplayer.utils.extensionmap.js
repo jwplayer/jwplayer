@@ -15,6 +15,7 @@
 		aac = "aac",
 		mp3 = "mp3",
 		vorbis = "vorbis",
+		_foreach = utils.foreach,
 		
 		mimeMap = {
 			mp4: video+mp4,
@@ -59,20 +60,23 @@
 		};
 	
 	var _extensionmap = utils.extensionmap = {};
-	for (var ext in html5Extensions) {
-		_extensionmap[ext] = { html5: html5Extensions[ext] };
-	}
-	for (ext in flashExtensions) {
+	_foreach(html5Extensions, function(ext, val) {
+		_extensionmap[ext] = { html5: val };
+	});
+
+	_foreach(flashExtensions, function(ext, val) {
 		if (!_extensionmap[ext]) _extensionmap[ext] = {};
-		_extensionmap[ext].flash = flashExtensions[ext];
-	}
+		_extensionmap[ext].flash = val;
+	});
 	
 	_extensionmap.types = mimeMap; 
 
 	_extensionmap.mimeType = function(mime) {
-		for (var type in mimeMap) {
-			if (mimeMap[type] == mime) return type;
-		}
+		var returnType;
+		_foreach(mimeMap, function(type, val) {
+			if (!returnType && val == mime) returnType = type;
+		});
+		return returnType;
 	}
 
 	_extensionmap.extType = function(extension) {

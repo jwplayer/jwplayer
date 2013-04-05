@@ -107,9 +107,9 @@
 		}
 
 		function _setupListeners() {
-			for (var evt in _mediaEvents) {
-				_videotag.addEventListener(evt, _mediaEvents[evt], false);
-			}
+			utils.foreach(_mediaEvents, function(evt, evtCallback) {
+				_videotag.addEventListener(evt, evtCallback, false);
+			});
 		}
 
 		function _sendEvent(type, data) {

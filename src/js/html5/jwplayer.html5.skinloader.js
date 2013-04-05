@@ -7,7 +7,7 @@
  */
 (function(html5) {
 	var utils = jwplayer.utils,
-	
+		_foreach = utils.foreach,
 		FORMAT_ERROR = "Skin formatting error";
 	
 	/** Constructor **/
@@ -181,30 +181,32 @@
 		}
 		
 		function _clearSkin() {
-			for (var componentName in _skin) {
-				var component = _skin[componentName];
-				for (var elementName in component.elements) {
-					var element = component.elements[elementName];
+			_foreach(_skin, function(componentName, component) {
+				_foreach(component.elements, function(elementName, element) {
 					var img = element.image;
 					img.onload = null;
 					img.onerror = null;
 					delete element.image;
 					delete component.elements[elementName];
-				}
+				});
 				delete _skin[componentName];
-			}
+			});
 		}
 		
 		function _checkComplete() {
-			for (var component in _skin) {
-				if (component != 'properties') {
-					for (var element in _skin[component].elements) {
-						if (!_getElement(component, element).ready) {
-							return;
+			var ready = true;
+			_foreach(_skin, function(componentName, component) {
+				if (componentName != 'properties') {
+					_foreach(component.elements, function(element, _) {
+						if (!_getElement(componentName, element).ready) {
+							ready = false;
 						}
-					}
+					});
 				}
-			}
+			});
+			
+			if (!ready) return;
+			
 			if (_loading == false) {
 				clearInterval(_completeInterval);
 				_completeHandler(_skin);

@@ -85,13 +85,13 @@
 		var args = utils.extend['arguments'];
 		if (args.length > 1) {
 			for ( var i = 1; i < args.length; i++) {
-				for ( var element in args[i]) {
+				utils.foreach(args[i], function(element, arg) {
 					try {
-						if (utils.exists(args[i][element])) {
-							args[0][element] = args[i][element];
+						if (utils.exists(arg)) {
+							args[0][element] = arg;
 						}
 					} catch(e) {}
-				}
+				});
 			}
 			return args[0];
 		}
@@ -189,11 +189,11 @@
 		}
 		
 		var rounders = ["position", "duration", "offset"];
-		for (var rounder in rounders) {
-			if (translated[rounders[rounder]]) {
-				translated[rounders[rounder]] = Math.round(translated[rounders[rounder]] * 1000) / 1000;
+		utils.foreach(rounders, function(rounder, val) {
+			if (translated[val]) {
+				translated[val] = Math.round(translated[val] * 1000) / 1000;
 			}
-		}
+		});
 		
 		return translated;
 	}
@@ -261,11 +261,11 @@
 			}
 			break;
 		case OBJECT:
-			for ( var key in obj) {
+			utils.foreach(obj, function(key, val) {
 				var searches, replacements;
 				if (searchString instanceof Array && replaceString instanceof Array) {
 					if (searchString.length != replaceString.length)
-						continue;
+						return;
 					else {
 						searches = searchString;
 						replacements = replaceString;
@@ -278,11 +278,11 @@
 				for (var i=0; i < searches.length; i++) {
 					newkey = newkey.replace(new RegExp(searchString[i], "g"), replaceString[i]);
 				}
-				obj[newkey] = jwplayer.utils.deepReplaceKeyName(obj[key], searchString, replaceString);
+				obj[newkey] = jwplayer.utils.deepReplaceKeyName(val, searchString, replaceString);
 				if (key != newkey) {
 					delete obj[key];
 				}
-			}
+			});
 			break;
 		}
 		return obj;
@@ -359,9 +359,13 @@
 	 * Iterates over an object and executes a callback function for each property (if it exists)
 	 * This is a safe way to iterate over objects if another script has modified the object prototype
 	 */
-	utils.foreach = function(obj, each) {
-		for (var i in obj) {
-			if (obj.hasOwnProperty(i)) each(i);
+	utils.foreach = function(aData, fnEach) {
+		var key, val;
+		for (key in aData) {
+			if (aData.hasOwnProperty(key)) {
+				val = aData[key];
+				fnEach(key, val);
+			}
 		}
 	}
 
@@ -382,5 +386,5 @@
 		
 		return repo;
 	}
-
+	
 })(jwplayer);
