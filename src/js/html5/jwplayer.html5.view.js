@@ -57,6 +57,7 @@
 			_videoLayer,
 			_instreamLayer,
 			_instreamMode = FALSE,
+			_instreamHadControls,
 			_controlbar,
 			_display,
 			_dock,
@@ -625,13 +626,17 @@
 			case states.PLAYING:
 				if (!_model.getVideo().audioMode() || _isMobile) {
 					_showVideo(TRUE);
+                    //_api.jwSetControls(false);
 					_resizeMedia();
 					_display.hidePreview(TRUE);
 					if (_isMobile) {
 						if (!(_isIPad && _forcedControls)) {
 							_hideDisplay();
 						}
+						//if (_instreamMode)
+						  //_api.jwSetControls(false);
 					}
+					
 				} else {
 					_showVideo(FALSE);
 					_display.hidePreview(_audioMode);
@@ -676,6 +681,13 @@
 			_instreamLayer.appendChild(instreamDisplay);
 			_instreamVideo = instreamVideo;
 			_stateHandler({newstate:states.PLAYING});
+			
+			if (_isMobile) {
+                _instreamHadControls = _api.jwGetControls();
+                console.log(_instreamHadControls);
+                _api.jwSetControls(FALSE);
+
+            }
 			_instreamMode = TRUE;
 		}
 		
@@ -686,6 +698,9 @@
 			_instreamLayer.innerHTML = "";
 			_instreamVideo = null;
 			_instreamMode = FALSE;
+			if (_isMobile) {
+		        _api.jwSetControls(_instreamHadControls);
+			}
 			//_resize(_model.width, _model.height);
 		}
 		
@@ -727,8 +742,6 @@
 		}
 		
 		this.releaseState = function() {
-		    
-		    
 		    _display.releaseState(_api.jwGetState());
 		}
 		
