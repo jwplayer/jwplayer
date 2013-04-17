@@ -119,7 +119,7 @@
 			if (_oldstate == _states.IDLE) {
 				_provider.stop(true);
 			}
-
+            _dispatcher.resetEventListeners();
 			// Reverting instream click handler --for some reason throws an error if there was an error loading instream
 			if (!_loadError)
 			     _disp.revertAlternateClickHandler();
