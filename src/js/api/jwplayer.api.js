@@ -160,6 +160,7 @@
 			if (_this.renderingMode != "flash") {
 				var player = document.getElementById(_this.id);
 				player.className = player.className.replace(/\s+aspectMode/, "");
+				player.style.display = "block";
 				_callInternal("jwResize", width, height);
 			} else {
 				var wrapper = DOCUMENT.getElementById(_this.id + "_wrapper"),
@@ -168,6 +169,7 @@
 					aspect.style.display = 'none';
 				}
 				if (wrapper) {
+					wrapper.style.display = "block";
 					wrapper.style.width = utils.styleDimension(width);
 					wrapper.style.height = utils.styleDimension(height);
 				}

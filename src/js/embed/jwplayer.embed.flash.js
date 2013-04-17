@@ -99,7 +99,7 @@
 				_aspect.id = _container.id + "_aspect";
 				_wrapper.id = _container.id + "_wrapper";
 				_wrapper.style.position = "relative";
-				_wrapper.style.display = "inline-block";
+				_wrapper.style.display = "block";
 				_wrapper.style.width = utils.styleDimension(params.width);
 				_wrapper.style.height= utils.styleDimension(params.height);
 				
@@ -108,6 +108,7 @@
 					_aspect.style.display = "block";
 					_aspect.style.marginTop = _api.config.aspectratio;
 					_wrapper.style.height = "auto";
+					_wrapper.style.display = "inline-block";
 					if (lb) {
 						if(lb.position == "bottom") {
 							_aspect.style.paddingBottom = lb.size + "px";

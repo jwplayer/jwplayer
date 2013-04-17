@@ -87,6 +87,9 @@
 //			});
 
 			if (_model.aspectratio) {
+				_css('.' + PLAYER_CLASS, {
+					display: 'inline-block',
+				});
 				_playerElement.className = _playerElement.className.replace(PLAYER_CLASS, PLAYER_CLASS + " " + ASPECT_MODE);
 			}
 
@@ -792,7 +795,7 @@
 	// Container styles
 	_css('.' + PLAYER_CLASS, {
 		position: "relative",
-		display: 'inline-block',
+		display: 'block',
 		opacity: 0,
 		'min-height': utils.isMobile() ? 200 : 0,
     	'-webkit-transition': JW_CSS_SMOOTH_EASE,
