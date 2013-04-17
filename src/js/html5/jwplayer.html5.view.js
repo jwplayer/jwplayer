@@ -88,7 +88,7 @@
 
 			if (_model.aspectratio) {
 				_css('.' + PLAYER_CLASS, {
-					display: 'inline-block',
+					display: 'inline-block'
 				});
 				_playerElement.className = _playerElement.className.replace(PLAYER_CLASS, PLAYER_CLASS + " " + ASPECT_MODE);
 			}
