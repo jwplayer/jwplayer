@@ -115,9 +115,10 @@
 			// We're not in instream mode anymore.
 			_instreamMode = false;
 			// Load the original item into our provider, which sets up the regular player's video tag
-			_provider.load(_olditem, false);
-			if (_oldstate == _states.IDLE) {
-				_provider.stop(true);
+			if (_oldstate != _states.IDLE) {
+				_provider.load(_olditem, false);
+			} else {
+				_provider.stop();
 			}
             _dispatcher.resetEventListeners();
 			// Reverting instream click handler --for some reason throws an error if there was an error loading instream
