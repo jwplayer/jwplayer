@@ -34,6 +34,14 @@
 
 		/** Load an instream item and initialize playback **/
 		this.load = function(item, options) {
+			if (_utils.isAndroid(2.3)) {
+				errorHandler({
+					type: _events.JWPLAYER_ERROR,
+					message: "Error loading instream: Cannot play instream on Android 2.3"
+				});
+				return;
+			}
+			
 			// Sets internal instream mode to true
 			_instreamMode = true;
 			// Instream playback options
@@ -51,7 +59,7 @@
 			_fakemodel = new html5.model({}, _provider);
 			// Update the instream player's model
 			_copyModel();
-			_fakemodel.addEventListener(jwplayer.events.JWPLAYER_ERROR,errorHandler)
+			_fakemodel.addEventListener(_events.JWPLAYER_ERROR,errorHandler)
 			// Set the new model's playlist
 			_olditem = _model.playlist[_model.item];
                 // Keep track of the original player state
