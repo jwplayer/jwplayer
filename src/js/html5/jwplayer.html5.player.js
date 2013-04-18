@@ -154,9 +154,7 @@
 				if (!_instreamPlayer) {
 					_instreamPlayer = new html5.instream(_api, _model, _view, _controller);
 				}
-				setTimeout(function() {
-					_instreamPlayer.load(item, options);
-				}, 10);
+				_instreamPlayer.load(item, options);
 			}
 			
 			_api.jwInstreamPlay = function() {

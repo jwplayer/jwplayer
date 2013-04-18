@@ -263,9 +263,6 @@
 			_pickInitialQuality();
 			_sendLevels(_levels);
 			
-			// on iPod/iPhone with instream, the current time of the main video can be applied to the loaded video
-			if (_videotag.currentTime > 0) _videotag.currentTime = 0;
-			
 			_completeLoad();
 		}
 		
