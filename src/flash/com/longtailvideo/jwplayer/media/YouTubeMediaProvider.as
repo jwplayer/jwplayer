@@ -155,6 +155,9 @@
 					case 150:
 						error("Error loading YouTube: Embedding not allowed");
 						break;
+					default:
+						error("Error loading YouTube: Video could not be played");
+						break;
 				}
 			} else {
 				error("Error loading YouTube: API connection error");
