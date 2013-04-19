@@ -142,13 +142,13 @@
 			var embed = _createElement("embed", "", _container);
 
 			/** Left as a dense regular expression for brevity.  Matches the following YouTube URL types:
-			 * http://www.youtube.com/watch?v=ylLzyHk54Z0
-			 * http://www.youtube.com/watch#!v=ylLzyHk54Z0
-			 * http://www.youtube.com/v/ylLzyHk54Z0
-			 * http://youtu.be/ylLzyHk54Z0
-			 * ylLzyHk54Z0
+			 * http://www.youtube.com/watch?v=YE7VzlLtp-4
+			 * http://www.youtube.com/watch#!v=YE7VzlLtp-4
+			 * http://www.youtube.com/v/YE7VzlLtp-4
+			 * http://youtu.be/YE7VzlLtp-4
+			 * YE7VzlLtp-4
 			 **/
-			embed.src = "http://www.youtube.com/v/" + (/v[=\/](\w*)|\/(\w+)$|^(\w+)$/i).exec(path).slice(1).join('');
+			embed.src = "http://www.youtube.com/v/" + (/v=([^&]+)|\/([\w-]+)$|^([\w-]+)$/i).exec(path).slice(1).join('');
 			embed.type = "application/x-shockwave-flash";
 			embed.width = _width;
 			embed.height = _height;
