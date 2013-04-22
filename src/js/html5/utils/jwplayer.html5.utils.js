@@ -58,6 +58,7 @@
 	
 	/** Returns true if the type is playable in HTML5 **/
 	utils.canPlayHTML5 = function(type) {
+		if (utils.isAndroid() && (type == "hls" || type == "m3u" || type == "m3u8")) return false;
 		var mime = utils.extensionmap.types[type];
 		return (!!mime && jwplayer.vid.canPlayType(mime));
 	}
