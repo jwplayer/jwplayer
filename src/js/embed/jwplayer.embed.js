@@ -46,6 +46,15 @@
 		}
 		
 		function _embedPlayer() {
+			if (_config.sitecatalyst) {
+				try {
+					var m = s.Media;
+				}
+				catch (e) {
+					_adobeError();
+					return;
+				}
+			}
 			if (utils.typeOf(_config.playlist) == "array" && _config.playlist.length < 2) {
 				if (_config.playlist.length == 0 || !_config.playlist[0].sources || _config.playlist[0].sources.length == 0) {
 					_sourceError();
@@ -93,6 +102,10 @@
 		
 		function _sourceError() {
 			_errorScreen(_container, _errorText  + "No playable sources found");
+		}
+
+		function _adobeError() {
+			_errorScreen(_container, "Adobe SiteCatalyst Error: Could not find Media Module");	
 		}
 		
 		function _errorScreen(container, message) {
