@@ -1,16 +1,35 @@
 ﻿package com.longtailvideo.jwplayer.media {
-    import com.longtailvideo.jwplayer.events.*;
-    import com.longtailvideo.jwplayer.model.*;
-    import com.longtailvideo.jwplayer.parsers.*;
-    import com.longtailvideo.jwplayer.player.*;
-    import com.longtailvideo.jwplayer.utils.*;
-    import com.wowza.encryptionAS3.*;
+    import com.longtailvideo.jwplayer.events.MediaEvent;
+    import com.longtailvideo.jwplayer.model.PlayerConfig;
+    import com.longtailvideo.jwplayer.model.PlaylistItem;
+    import com.longtailvideo.jwplayer.parsers.SMILParser;
+    import com.longtailvideo.jwplayer.player.PlayerState;
+    import com.longtailvideo.jwplayer.utils.AssetLoader;
+    import com.longtailvideo.jwplayer.utils.Configger;
+    import com.longtailvideo.jwplayer.utils.NetClient;
+    import com.longtailvideo.jwplayer.utils.RootReference;
+    import com.longtailvideo.jwplayer.utils.Stretcher;
+    import com.wowza.encryptionAS3.TEA;
     
-    import flash.events.*;
-    import flash.geom.*;
-    import flash.media.*;
-    import flash.net.*;
-    import flash.utils.*;
+    import flash.events.AsyncErrorEvent;
+    import flash.events.ErrorEvent;
+    import flash.events.Event;
+    import flash.events.IOErrorEvent;
+    import flash.events.NetStatusEvent;
+    import flash.events.SecurityErrorEvent;
+    import flash.external.ExternalInterface;
+    import flash.geom.Rectangle;
+    import flash.media.SoundTransform;
+    import flash.media.Video;
+    import flash.net.NetConnection;
+    import flash.net.NetStream;
+    import flash.net.NetStreamPlayOptions;
+    import flash.net.NetStreamPlayTransitions;
+    import flash.net.ObjectEncoding;
+    import flash.net.Responder;
+    import flash.utils.clearInterval;
+    import flash.utils.setInterval;
+    import flash.utils.setTimeout;
 
 	/**
 	 * Wrapper for playback of media streamed over RTMP.
@@ -298,6 +317,7 @@
 							_video.height = data.height;
 							resize(_config.width, _config.height);
 						}
+						data.provider = "rtmp";
 						sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_META, {metadata: data});
 					}
 					break;
@@ -307,6 +327,7 @@
 					break;
 				// TX3G text data received
 				case 'textdata':
+					data.provider = "rtmp";
 					sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_META, {metadata: data});
 					break;
 				// Quality level transition completed

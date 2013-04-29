@@ -65,6 +65,8 @@ package com.longtailvideo.jwplayer.view.components {
 		/** Currently selected track index. **/
 		private var _selectedTrack:Number;
 		
+		private var _rtmpTrack:Number = -1;
+		
 		
 		/** Constructor; inits the parser, selector and renderer. **/
 		public function CaptionsComponent(player:IPlayer) {
@@ -114,6 +116,7 @@ package com.longtailvideo.jwplayer.view.components {
 		/** Check playlist item for captions. **/
 		private function _itemHandler(event:PlaylistEvent):void {
 			_track = 0;
+			_rtmpTrack = -1;
 			_tracks = new Array();
 			_renderer.setPosition(0);
 			_item = _player.playlist.currentItem;
@@ -182,10 +185,34 @@ package com.longtailvideo.jwplayer.view.components {
 			_redraw();
 		};
 		
+		private function _rtmpMetaHandler(event:MediaEvent):void {
+			if (_state == PlayerState.IDLE) { return; }
+			if (event.metadata.type == "textdata") {
+				if (!_tracks.length) {
+					_tracks.push({
+						data: undefined,
+						file: undefined,
+						id: 0,
+						label: "On"
+					});
+					_initializeCaptions();
+					_rtmpTrack = event.metadata.trackid;
+					_renderer.setCaptions(event.metadata.text.replace(/\n$/,''));
+				}
+				else if (event.metadata.trackid == _rtmpTrack) {
+					_renderer.setCaptions(event.metadata.text.replace(/\n$/,''));
+				}
+			}
+		}
+		
 		
 		/** Check for captions in metadata. **/
 		private function _metaHandler(event:MediaEvent):void {
 			if(_state == PlayerState.IDLE) { return; }
+			if (event.metadata.provider == "rtmp") {
+				_rtmpMetaHandler(event);
+				return;
+			}
 			if(event.metadata.type == 'textdata') {
 				if(_tracks.length) {
 					if(event.metadata.trackid == _tracks[_track].id) {
@@ -222,12 +249,15 @@ package com.longtailvideo.jwplayer.view.components {
 					}
 				} catch (e:Error) {}
 			}
-			
+			_initializeCaptions();
+		};
+		
+		private function _initializeCaptions():void {
 			var defaultTrack:Number = 0;
 			var tracks:Array = _getTracks();
 			
 			if (_player.config.captionlabel) {
-				for (i = 0; i < tracks.length; i++) {
+				for (var i:Number = 0; i < tracks.length; i++) {
 					if (tracks[i].label == _player.config.captionlabel) {
 						defaultTrack = i;
 						break;
@@ -238,7 +268,7 @@ package com.longtailvideo.jwplayer.view.components {
 			_renderCaptions(defaultTrack);
 			_redraw();
 			_sendEvent(CaptionsEvent.JWPLAYER_CAPTIONS_LIST, tracks, _selectedTrack);
-		};
+		}
 		
 		
 		/** Show/hide the captions, update the button, save state in cookie. **/
