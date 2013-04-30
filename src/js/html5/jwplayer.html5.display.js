@@ -174,7 +174,8 @@
     					if (_image && !_imageHidden) {
     						_setVisibility(D_PREVIEW_CLASS, TRUE);
     					}
-    					_setIcon('play', _item ? _item.title : "");
+    					var disp = !(_api._model.config.displaytitle === false);
+    					_setIcon('play', (_item && disp) ? _item.title : "");
     				}
     				break;
     			case states.BUFFERING:

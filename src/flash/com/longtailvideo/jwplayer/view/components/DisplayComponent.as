@@ -248,7 +248,8 @@
 			
 			var icon:DisplayIcon = getIcon('play');
 			if (_player.state == PlayerState.IDLE) {
-				setDisplay(icon, _player.playlist.currentItem ? _player.playlist.currentItem.title : "");
+				var disp:Boolean = !(_player.config.displaytitle == false);
+				setDisplay(icon, (_player.playlist.currentItem && disp) ? _player.playlist.currentItem.title : "");
 			} else {
 				setDisplay(icon);
 			}
