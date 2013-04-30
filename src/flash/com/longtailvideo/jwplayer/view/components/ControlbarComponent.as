@@ -397,7 +397,7 @@ package com.longtailvideo.jwplayer.view.components {
 			
 			var timeSlider:TimeSlider = getSlider('time') as TimeSlider;
 			if (timeSlider) {
-				timeSlider.duration = duration;
+				timeSlider.setDuration(duration);
 				timeSlider.live = (duration <= 0);
 			}
 			

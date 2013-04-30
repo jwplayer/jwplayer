@@ -37,12 +37,8 @@ package com.longtailvideo.jwplayer.view.components {
 			
 		}
 		
-		public function set duration(d:Number):void {
+		public function setDuration(d:Number):void {
 			_duration = d;
-		}
-		
-		public function get duration():Number {
-			return _duration;
 		}
 		
 		private function overHandler(evt:MouseEvent):void {

@@ -15,6 +15,7 @@ package com.longtailvideo.jwplayer.view {
 	import com.longtailvideo.jwplayer.plugins.IPlugin6;
 	import com.longtailvideo.jwplayer.plugins.PluginConfig;
 	import com.longtailvideo.jwplayer.utils.Animations;
+	import com.longtailvideo.jwplayer.utils.Draw;
 	import com.longtailvideo.jwplayer.utils.Logger;
 	import com.longtailvideo.jwplayer.utils.RootReference;
 	import com.longtailvideo.jwplayer.utils.Stretcher;
@@ -43,6 +44,7 @@ package com.longtailvideo.jwplayer.view {
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.net.URLRequest;
+	import flash.system.LoaderContext;
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
@@ -621,7 +623,7 @@ package com.longtailvideo.jwplayer.view {
 			if (!_imageTimer.currentCount) {
 				_imageTimer.start();
 			}
-			_image.load(new URLRequest(url));
+			_image.load(new URLRequest(url), new LoaderContext(true));
 		}
 	
 		// If the image doesn't load in 1 second (Chrome cache issue)
@@ -647,6 +649,7 @@ package com.longtailvideo.jwplayer.view {
 				if (_imageTimer.running) {
 					_imageTimer.stop();
 				}
+				Draw.smooth(_image);
 				resizeImage(_player.config.width, _player.config.height);
 				if (_model.state != PlayerState.PLAYING && _model.state != PlayerState.PAUSED) { 
 					showImage();

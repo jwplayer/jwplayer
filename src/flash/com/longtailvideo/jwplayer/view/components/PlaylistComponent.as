@@ -565,6 +565,7 @@ package com.longtailvideo.jwplayer.view.components {
 					} else {
 						msk = Draw.rect(button, '0xFF0000', img.width, img.height, img.x, img.y);
 					}
+					Draw.smooth(ldr);
 					img.addChild(ldr);
 					img.cacheAsBitmap = true;
 					img.mask = msk;

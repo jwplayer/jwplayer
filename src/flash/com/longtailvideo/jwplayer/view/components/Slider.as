@@ -301,9 +301,9 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		protected function sliderPercent(pixels:Number):Number {
 			if (_vertical) {
-				return 1 - (pixels - _capLeft.height + _thumb.height/2) / _height;
+				return Math.min(1, 1 - (pixels - _capLeft.height + _thumb.height/2) / _height);
 			} else { 
-				return (pixels - _capLeft.width + _thumb.width/2) / _width;
+				return Math.min(1, (pixels - _capLeft.width + _thumb.width/2) / _width);
 			}
 		}
 		
