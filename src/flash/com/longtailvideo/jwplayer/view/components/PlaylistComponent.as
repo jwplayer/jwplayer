@@ -1,21 +1,39 @@
 // TODO: remove font
 package com.longtailvideo.jwplayer.view.components {
-	import com.longtailvideo.jwplayer.events.*;
-	import com.longtailvideo.jwplayer.model.*;
-	import com.longtailvideo.jwplayer.player.*;
-	import com.longtailvideo.jwplayer.utils.*;
-	import com.longtailvideo.jwplayer.view.*;
-	import com.longtailvideo.jwplayer.view.interfaces.*;
-	import com.longtailvideo.jwplayer.view.skins.*;
+	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
+	import com.longtailvideo.jwplayer.events.PlaylistEvent;
+	import com.longtailvideo.jwplayer.events.ViewEvent;
+	import com.longtailvideo.jwplayer.model.Color;
+	import com.longtailvideo.jwplayer.model.PlaylistItem;
+	import com.longtailvideo.jwplayer.player.IPlayer;
+	import com.longtailvideo.jwplayer.player.PlayerState;
+	import com.longtailvideo.jwplayer.utils.Draw;
+	import com.longtailvideo.jwplayer.utils.Logger;
+	import com.longtailvideo.jwplayer.utils.RootReference;
+	import com.longtailvideo.jwplayer.utils.Stacker;
+	import com.longtailvideo.jwplayer.utils.Stretcher;
+	import com.longtailvideo.jwplayer.view.PlayerLayoutManager;
+	import com.longtailvideo.jwplayer.view.interfaces.IPlaylistComponent;
+	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
 	
 	import flash.accessibility.AccessibilityProperties;
-	import flash.display.*;
-	import flash.events.*;
-	import flash.geom.*;
-	import flash.net.*;
-	import flash.system.*;
-	import flash.text.*;
-	import flash.utils.*;
+	import flash.display.DisplayObject;
+	import flash.display.DisplayObjectContainer;
+	import flash.display.Loader;
+	import flash.display.LoaderInfo;
+	import flash.display.MovieClip;
+	import flash.display.Sprite;
+	import flash.events.Event;
+	import flash.events.IOErrorEvent;
+	import flash.events.MouseEvent;
+	import flash.geom.Rectangle;
+	import flash.net.URLRequest;
+	import flash.system.LoaderContext;
+	import flash.text.TextField;
+	import flash.text.TextFormat;
+	import flash.utils.Dictionary;
+	import flash.utils.clearInterval;
+	import flash.utils.setInterval;
 	
 	public class PlaylistComponent extends CoreComponent implements IPlaylistComponent {
 		/** Array with all button instances **/
@@ -439,6 +457,10 @@ package com.longtailvideo.jwplayer.view.components {
 				if (buttons[i]) {
 					(buttons[i].s as Stacker).rearrange(wid);
 				}
+			}
+			
+			for each (div in dividers) {
+				div.width = wid;
 			}
 		}
 		
