@@ -184,7 +184,10 @@
 			if (typeof clickHandler == "string") {
 				clickHandler = new Function(clickHandler);
 			}
-			newButton.addEventListener("click", clickHandler);
+			newButton.addEventListener("click", function(evt) {
+				clickHandler(evt);
+				evt.preventDefault();
+			});
 			
 			_buttons[id] = { element: newButton, label: label, divider: divider, icon: icon };
 			

@@ -516,10 +516,11 @@
 		}
 		
 		function _buttonClickHandler(name) {
-			return function() {
+			return function(evt) {
 				if (_buttonMapping[name]) {
 					_buttonMapping[name]();
 				}
+				evt.preventDefault();
 			}
 		}
 		
