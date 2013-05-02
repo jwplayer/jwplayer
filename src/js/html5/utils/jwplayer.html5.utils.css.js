@@ -207,7 +207,8 @@
 			font: 'inherit',
 			'vertical-align': 'baseline',
 			'background-color': 'transparent',
-			'text-align': 'left'
+			'text-align': 'left',
+			'direction':'ltr'
 		});
 		
 		_css(JW_CLASS + "ul", { 'list-style': "none" });
