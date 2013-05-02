@@ -179,7 +179,7 @@
 			_generalHandler(evt);
 			if (_canSeek && _delayedSeek > 0 && !_isAndroid) {
 				// Need to set a brief timeout before executing delayed seek; IE9 stalls otherwise.
-				if (_isIE) setTimeout(_seek, 200, _delayedSeek);
+				if (_isIE) setTimeout(function() { _seek(_delayedSeek);}, 200);
 				// Otherwise call it immediately
 				else _seek(_delayedSeek);
 			}
