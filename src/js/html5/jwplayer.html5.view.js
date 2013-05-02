@@ -394,6 +394,8 @@
 			var playlistSize = _model.playlistsize,
 				playlistPos = _model.playlistposition
 			
+			_checkAudioMode(height);
+
 			if (_playlist && playlistSize && (playlistPos == "right" || playlistPos == "bottom")) {
 				_playlist.redraw();
 				
@@ -410,8 +412,7 @@
 				_css(_internalSelector(VIEW_PLAYLIST_CONTAINER_CLASS), playlistStyle);
 				_css(_internalSelector(VIEW_MAIN_CONTAINER_CLASS), containerStyle);
 			}
-			
-			_checkAudioMode(height);
+
 			_resizeMedia();
 
 			_eventDispatcher.sendEvent(events.JWPLAYER_RESIZE);
@@ -420,7 +421,7 @@
 		}
 		
 		function _checkAudioMode(height) {
-			_audioMode = ((!_isMobile || _forcedControls) && height <= 40 && height.toString().indexOf("%") < 0);
+			_audioMode = _isAudioMode(height);
 			if (_controlbar) {
 				if (_audioMode) {
 					_controlbar.audioMode(TRUE);
@@ -437,6 +438,13 @@
 				_hideLogo();
 			}
 			_playerElement.style.backgroundColor = _audioMode ? 'transparent' : '#000';
+		}
+		
+		function _isAudioMode(height) {
+			if (_isMobile && !_forcedControls) return FALSE;
+			else if (height.toString().indexOf("%") > 0) return FALSE;
+			else if (_model.playlistposition == "bottom") return height <= (40 + _model.playlistsize);
+			else return height <= 40; 	
 		}
 		
 		function _resizeMedia() {

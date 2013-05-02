@@ -386,10 +386,10 @@ package com.longtailvideo.jwplayer.view {
 				_components.display.hide();
 				_components.dock.hide();
 				_components.logo.hide(true);
-				_components.playlist.hide();
 				_components.captions.hide();
 				hideImage();
 				_mediaFade.fade(0);
+				_components.redraw();
 				return;
 			} else {
 				if (_controlbarMargin > 0) {
@@ -765,7 +765,12 @@ package com.longtailvideo.jwplayer.view {
 		}
 		
 		protected function get audioMode():Boolean {
-			return RootReference.stage.stageHeight <= 40;
+			var plConfig:PluginConfig = _model.config.pluginConfig('playlist');
+			if (PlayerLayoutManager.testPosition(plConfig.position) == PlayerLayoutManager.BOTTOM) {
+				return RootReference.stage.stageHeight <= (40 + plConfig.size);
+			} else {
+				return RootReference.stage.stageHeight <= 40;
+			}
 		}
 		
 		/** Show controls on mousemove or keyboard press and restart the countdown. **/
