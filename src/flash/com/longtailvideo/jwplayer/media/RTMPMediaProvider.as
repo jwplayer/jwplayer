@@ -416,6 +416,10 @@
 		/** Resize the Video and possible StageVideo. **/
 		override public function resize(width:Number, height:Number):void {
 			if(_media) {
+				if (_media.numChildren > 0) {
+					_media.width = _media.getChildAt(0).width;
+					_media.height = _media.getChildAt(0).height;
+				}
 				Stretcher.stretch(_media, width, height, _config.stretching);
 				if (_stage) {
 					_stage.viewPort = new Rectangle(_media.x,_media.y,_media.width,_media.height);

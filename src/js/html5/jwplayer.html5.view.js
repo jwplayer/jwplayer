@@ -448,7 +448,7 @@
 		}
 		
 		function _resizeMedia() {
-			if (_videoTag) {
+			if (_videoTag && _playerElement.className.indexOf(ASPECT_MODE) == -1) {
 				utils.stretch(_model.stretching, 
 						_videoTag, 
 						_videoLayer.clientWidth, _videoLayer.clientHeight, 
