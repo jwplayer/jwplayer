@@ -48,12 +48,15 @@
 		function _embedPlayer() {
 			if (_config.sitecatalyst) {
 				try {
-					var m = s.Media;
+					if (s != null && s.hasOwnProperty("Media")) {}
 				}
 				catch (e) {
 					_adobeError();
 					return;
 				}
+			}
+			else {
+				console.log ("never got sitecatalyst stuffs");
 			}
 			if (utils.typeOf(_config.playlist) == "array" && _config.playlist.length < 2) {
 				if (_config.playlist.length == 0 || !_config.playlist[0].sources || _config.playlist[0].sources.length == 0) {
