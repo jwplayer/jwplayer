@@ -1,13 +1,26 @@
 package com.longtailvideo.jwplayer.player {
-	import com.longtailvideo.jwplayer.events.*;
-	import com.longtailvideo.jwplayer.model.*;
-	import com.longtailvideo.jwplayer.plugins.*;
-	import com.longtailvideo.jwplayer.utils.*;
-	import com.longtailvideo.jwplayer.view.interfaces.*;
+	import com.longtailvideo.jwplayer.events.CaptionsEvent;
+	import com.longtailvideo.jwplayer.events.InstreamEvent;
+	import com.longtailvideo.jwplayer.events.MediaEvent;
+	import com.longtailvideo.jwplayer.events.PlayerEvent;
+	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
+	import com.longtailvideo.jwplayer.events.PlaylistEvent;
+	import com.longtailvideo.jwplayer.events.ViewEvent;
+	import com.longtailvideo.jwplayer.model.IInstreamOptions;
+	import com.longtailvideo.jwplayer.model.InstreamOptions;
+	import com.longtailvideo.jwplayer.model.PlaylistItem;
+	import com.longtailvideo.jwplayer.plugins.AbstractPlugin;
+	import com.longtailvideo.jwplayer.plugins.IPlugin;
+	import com.longtailvideo.jwplayer.utils.JavascriptSerialization;
+	import com.longtailvideo.jwplayer.utils.Logger;
+	import com.longtailvideo.jwplayer.utils.RootReference;
+	import com.longtailvideo.jwplayer.view.interfaces.IPlayerComponent;
 	
-	import flash.events.*;
-	import flash.external.*;
-	import flash.utils.*;
+	import flash.events.Event;
+	import flash.events.TimerEvent;
+	import flash.external.ExternalInterface;
+	import flash.utils.Timer;
+	import flash.utils.setTimeout;
 	
 	public class JavascriptAPI {
 		protected var _player:IPlayer;
@@ -175,6 +188,9 @@ package com.longtailvideo.jwplayer.player {
 				ExternalInterface.addCallback("jwGetCaptionsList", js_getCaptionsList);
 				ExternalInterface.addCallback("jwGetCurrentCaptions", js_getCurrentCaptions);
 				ExternalInterface.addCallback("jwSetCurrentCaptions", js_setCurrentCaptions);
+				
+				// Ads API
+				ExternalInterface.addCallback("jwPlayAd", js_playAd);
 				
 				// UNIMPLEMENTED
 				//ExternalInterface.addCallback("jwGetBandwidth", js_getBandwidth); 
@@ -599,6 +615,11 @@ package com.longtailvideo.jwplayer.player {
 		
 		protected function js_setControls(state:Boolean):void {
 			_player.setControls(state);
+		}
+		
+		protected function js_playAd(ad:String):void {
+			//This is a stub. Needs to be replaced
+			ExternalInterface.call("console.log", "Time to play ad in flash: " + ad);
 		}
 		
 		protected function callJS(functionName:String, args:*):void {

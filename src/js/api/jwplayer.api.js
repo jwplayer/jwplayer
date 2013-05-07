@@ -248,6 +248,9 @@
 		_this.destroyPlayer = function () {
 			_callInternal ("jwPlayerDestroy");
 		}
+		_this.playAd = function(ad) {
+			_callInternal("jwPlayAd", ad);
+		}
 		
 		var _eventMapping = {
 			onBufferChange: events.JWPLAYER_MEDIA_BUFFER,
@@ -272,7 +275,13 @@
 			onQualityLevels: events.JWPLAYER_MEDIA_LEVELS,
 			onQualityChange: events.JWPLAYER_MEDIA_LEVEL_CHANGED,
 			onCaptionsList: events.JWPLAYER_CAPTIONS_LIST,
-			onCaptionsChange: events.JWPLAYER_CAPTIONS_CHANGED
+			onCaptionsChange: events.JWPLAYER_CAPTIONS_CHANGED,
+			onAdError: events.JWPLAYER_AD_ERROR,
+			onAdClick: events.JWPLAYER_AD_CLICK,
+			onAdImpression: events.JWPLAYER_AD_IMPRESSION,
+			onAdTime: events.JWPLAYER_AD_TIME,
+			onAdComplete: events.JWPLAYER_AD_COMPLETE,
+			onAdCompanions: events.JWPLAYER_AD_COMPANIONS
 		};
 		
 		utils.foreach(_eventMapping, function(event) {

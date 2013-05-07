@@ -128,9 +128,6 @@
 			_api.jwForceState = _view.forceState;
 			_api.jwReleaseState = _view.releaseState;
 			
-			
-			
-			
 			_api.jwGetPlaylistIndex = _statevarFactory('item');
 			_api.jwGetPosition = _statevarFactory('position');
 			_api.jwGetDuration = _statevarFactory('duration');
@@ -145,10 +142,15 @@
 			_api.jwGetPlaylist = _normalizePlaylist;
 			_api.jwGetControls = _statevarFactory('controls');
 
-
 			/** InStream API **/
 			_api.jwDetachMedia = _controller.detachMedia;
 			_api.jwAttachMedia = _controller.attachMedia;
+
+			/** Ads API **/
+			_api.jwPlayAd = function (ad) { 
+				// This is a stub. Needs to be replaced.
+				console.log ("Time to play ad: " + ad); 
+			}
 			
 			_api.jwLoadInstream = function(item, options) {
 				if (!_instreamPlayer) {

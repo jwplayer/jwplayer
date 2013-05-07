@@ -59,7 +59,15 @@
 
 		// Instream events
 		JWPLAYER_INSTREAM_CLICK : 'jwplayerInstreamClicked',
-		JWPLAYER_INSTREAM_DESTROYED : 'jwplayerInstreamDestroyed'
+		JWPLAYER_INSTREAM_DESTROYED : 'jwplayerInstreamDestroyed',
+
+		// Ad events
+		JWPLAYER_AD_TIME: "jwplayerAdTime",
+		JWPLAYER_AD_ERROR: "jwplayerAdError",
+		JWPLAYER_AD_CLICK: "jwplayerAdClicked",
+		JWPLAYER_AD_COMPLETE: "jwplayerAdComplete",
+		JWPLAYER_AD_IMPRESSION: "jwplayerAdImpression",
+		JWPLAYER_AD_COMPANIONS: "jwplayerAdCompanions"
 	};
 
 })(jwplayer);
