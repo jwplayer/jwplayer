@@ -53,6 +53,7 @@
 			_instreamContainer.id = _self.id + "_instream_container";
 			// Make sure the original player's provider stops broadcasting events (pseudo-lock...)
 			_video = _controller.detachMedia();
+
 			// Create (or reuse) video media provider.  No checks right now to make sure it's a valid playlist item (i.e. provider="video").
 			_setupProvider();
 			// Initialize the instream player's model copied from main player's model
@@ -113,7 +114,14 @@
 		}
 	   
 	    function errorHandler(evt) {
-	        _sendEvent(evt.type,evt);
+	        
+	        if (evt.type == _events.JWPLAYER_MEDIA_ERROR) {
+	           var evtClone = _utils.extend({}, evt);
+                evtClone.type = _events.JWPLAYER_ERROR;
+                _sendEvent(evtClone.type, evtClone);
+	       } else {
+	           _sendEvent(evt.type,evt);
+	       }
 	        _loadError = true;
 	        _self.jwInstreamDestroy(false);
 	    }
@@ -236,6 +244,7 @@
 				_provider.addEventListener(_events.JWPLAYER_MEDIA_META, _metaHandler);
 				_provider.addEventListener(_events.JWPLAYER_MEDIA_COMPLETE, _completeHandler);
 				_provider.addEventListener(_events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
+				_provider.addEventListener(_events.JWPLAYER_MEDIA_ERROR,errorHandler);
 			//}
 			_provider.attachMedia();
 			_provider.mute(_model.mute);
