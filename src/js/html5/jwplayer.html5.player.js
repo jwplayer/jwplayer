@@ -148,8 +148,14 @@
 
 			/** Ads API **/
 			_api.jwPlayAd = function (ad) { 
-				// This is a stub. Needs to be replaced.
-				console.log ("Time to play ad: " + ad); 
+				var plugins = jwplayer(_api.id).plugins;
+				if (plugins.vast) {
+					plugins.vast.jwPlayAd(ad);
+				}
+				else if (plugins.googima) {
+					// This needs to be added once the googima Ads API is implemented
+					//plugins.googima.jwPlayAd(ad);
+				}
 			}
 			
 			_api.jwLoadInstream = function(item, options) {
@@ -183,6 +189,14 @@
 				if (_view) {
 					_view.destroy();
 				}
+			}
+
+			_api.jwIsBeforePlay = function () {
+				return _controller.checkBeforePlay();
+			}
+
+			_api.jwIsBeforeComplete = function () {
+				return _model.getVideo().checkComplete();
 			}
 			
 			/** Events **/

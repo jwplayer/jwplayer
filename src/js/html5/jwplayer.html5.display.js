@@ -174,7 +174,10 @@
     					if (_image && !_imageHidden) {
     						_setVisibility(D_PREVIEW_CLASS, TRUE);
     					}
-    					var disp = !(_api._model.config.displaytitle === false);
+    					var disp = true;
+    					if (_api._model && _api._model.config.displaytitle === false) {
+    						disp = false;
+    					}
     					_setIcon('play', (_item && disp) ? _item.title : "");
     				}
     				break;

@@ -440,8 +440,8 @@
 
 				if (_attached) {
 				    _setState(states.IDLE);
+    			    _beforecompleted = false;
     				_sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
-    			    _beforecompleted = false; 	
                 }
 			}
 		}

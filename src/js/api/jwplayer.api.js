@@ -512,6 +512,13 @@
 		_this.getCurrentItem = function() {
 			return _callInternal('jwGetPlaylistIndex');
 		};
+
+		_this.isBeforePlay = function () {
+			return _player.jwIsBeforePlay();
+		}
+		_this.isBeforeComplete = function () {
+			return _player.jwIsBeforeComplete();
+		}
 		
 		/** Using this function instead of array.slice since Arguments are not an array **/
 		function slice(list, from, to) {
@@ -616,6 +623,7 @@
 		
 		return null;
 	};
+
 
 	jwplayer.playerReady = function(obj) {
 		var api = jwplayer.api.playerById(obj.id);
