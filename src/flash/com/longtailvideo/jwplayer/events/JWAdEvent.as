@@ -11,8 +11,9 @@ package com.longtailvideo.jwplayer.events
 		public static var JWPLAYER_AD_COMPANIONS:String = "jwplayerAdCompanions";
 		
 		
-		public var duration:Number 			= -1;
-		public var position:Number 			= -1;
+		public var duration:Number;
+		public var position:Number;
+		public var companions:Array;
 		public var tag:String;
 		
 		public function JWAdEvent(type:String, msg:String=undefined)

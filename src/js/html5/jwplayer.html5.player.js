@@ -152,10 +152,10 @@
 				if (plugins.vast) {
 					plugins.vast.jwPlayAd(ad);
 				}
-				else if (plugins.googima) {
-					// This needs to be added once the googima Ads API is implemented
-					//plugins.googima.jwPlayAd(ad);
-				}
+				// else if (plugins.googima) {
+				// 	// This needs to be added once the googima Ads API is implemented
+				// 	//plugins.googima.jwPlayAd(ad);
+				// }
 			}
 			
 			_api.jwLoadInstream = function(item, options) {

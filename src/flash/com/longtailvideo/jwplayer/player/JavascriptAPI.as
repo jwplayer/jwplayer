@@ -327,9 +327,10 @@ package com.longtailvideo.jwplayer.player {
 		protected function listenerCallbackAds(evt:JWAdEvent):Object {
 			var returnObj:Object = {};
 			returnObj.tag = evt.tag;
-			if (returnObj.message)  returnObj.message = evt.message;
-			if (returnObj.duration)  returnObj.duration = evt.duration;
-			if (returnObj.position) returnObj.position = evt.position;
+			if (evt.message)  returnObj.message = evt.message;
+			if (evt.duration)  returnObj.duration = evt.duration;
+			if (evt.position) returnObj.position = evt.position;
+			if (evt.companions) returnObj.companions = evt.companions;
 			return returnObj;
 			
 		}
