@@ -79,6 +79,7 @@ package com.longtailvideo.jwplayer.view {
 		protected var _instreamLayer:MovieClip;
 		protected var _instreamPlugin:IPlugin;
 		protected var _instreamAnim:Animations;
+		protected var _instreamControls:PlayerComponents;
 		
 		protected var _displayMasker:MovieClip;
 		
@@ -115,6 +116,8 @@ package com.longtailvideo.jwplayer.view {
 		private var _imageUrl:String;
 		// Indicator for whether the image has been loaded
 		private var _imageLoaded:Boolean = false;
+		// Indicates whether the instream player is being displayed
+		private var _instreamMode:Boolean = false;
 		
 		public function View(player:IPlayer, model:Model) {
 			_player = player;
@@ -719,9 +722,10 @@ package com.longtailvideo.jwplayer.view {
 				dispatchEvent(evt);
 		}
 		
-		public function setupInstream(instreamDisplay:DisplayObject, plugin:IPlugin):void {
+		public function setupInstream(instreamDisplay:DisplayObject, controls:PlayerComponents, plugin:IPlugin):void {
 			_instreamAnim.cancelAnimation();
 			_instreamPlugin = plugin;
+			_instreamControls = controls;
 			if (instreamDisplay) {
 				_instreamLayer.addChild(instreamDisplay);
 			}
@@ -739,6 +743,7 @@ package com.longtailvideo.jwplayer.view {
 			}
 			
 			_instreamAnim.fade(1);
+			_instreamMode = true;
 		}
 		
 		public function destroyInstream():void {
@@ -753,6 +758,7 @@ package com.longtailvideo.jwplayer.view {
 			}
 
 			_instreamAnim.fade(0);
+			_instreamMode = false;
 		}
 		
 		protected function instreamAnimationComplete(evt:Event):void {
@@ -833,6 +839,16 @@ package com.longtailvideo.jwplayer.view {
 				_model.config.controls = newstate;
 				redraw();
 				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_CONTROLS, newstate));
+				if (_instreamMode) {
+					if (newstate) {
+						_instreamControls.controlbar.show();
+						_instreamControls.display.show();
+					}
+					else {
+						_instreamControls.controlbar.hide();
+						_instreamControls.display.hide();
+					}
+				}
 			}
 		}
 		

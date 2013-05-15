@@ -1,19 +1,40 @@
 package com.longtailvideo.jwplayer.player
 {
-	import com.longtailvideo.jwplayer.controller.*;
-	import com.longtailvideo.jwplayer.events.*;
-	import com.longtailvideo.jwplayer.media.*;
-	import com.longtailvideo.jwplayer.model.*;
-	import com.longtailvideo.jwplayer.parsers.*;
-	import com.longtailvideo.jwplayer.plugins.*;
-	import com.longtailvideo.jwplayer.utils.*;
-	import com.longtailvideo.jwplayer.view.*;
-	import com.longtailvideo.jwplayer.view.interfaces.*;
+	import com.longtailvideo.jwplayer.controller.Controller;
+	import com.longtailvideo.jwplayer.events.GlobalEventDispatcher;
+	import com.longtailvideo.jwplayer.events.InstreamEvent;
+	import com.longtailvideo.jwplayer.events.MediaEvent;
+	import com.longtailvideo.jwplayer.events.PlayerEvent;
+	import com.longtailvideo.jwplayer.events.ViewEvent;
+	import com.longtailvideo.jwplayer.media.MediaProvider;
+	import com.longtailvideo.jwplayer.media.RTMPMediaProvider;
+	import com.longtailvideo.jwplayer.media.VideoMediaProvider;
+	import com.longtailvideo.jwplayer.model.Color;
+	import com.longtailvideo.jwplayer.model.ControlbarSeekOptions;
+	import com.longtailvideo.jwplayer.model.IInstreamOptions;
+	import com.longtailvideo.jwplayer.model.IPlaylist;
+	import com.longtailvideo.jwplayer.model.Model;
+	import com.longtailvideo.jwplayer.model.PlayerConfig;
+	import com.longtailvideo.jwplayer.model.Playlist;
+	import com.longtailvideo.jwplayer.model.PlaylistItem;
+	import com.longtailvideo.jwplayer.parsers.JWParser;
+	import com.longtailvideo.jwplayer.plugins.IPlugin;
+	import com.longtailvideo.jwplayer.utils.Stretcher;
+	import com.longtailvideo.jwplayer.view.IPlayerComponents;
+	import com.longtailvideo.jwplayer.view.PlayerComponents;
+	import com.longtailvideo.jwplayer.view.View;
+	import com.longtailvideo.jwplayer.view.interfaces.IControlbarComponent;
+	import com.longtailvideo.jwplayer.view.interfaces.IDisplayComponent;
+	import com.longtailvideo.jwplayer.view.interfaces.IPlayerComponent;
+	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
 	
-	import flash.display.*;
-	import flash.events.*;
-	import flash.geom.*;
-	import flash.utils.*;
+	import flash.display.DisplayObject;
+	import flash.display.MovieClip;
+	import flash.display.Sprite;
+	import flash.events.Event;
+	import flash.external.ExternalInterface;
+	import flash.geom.Rectangle;
+	import flash.utils.setTimeout;
 	
 	public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPlayer, IPlayer {
 
@@ -104,7 +125,7 @@ package com.longtailvideo.jwplayer.player
 			if (_playCalled) {
 				_viewSetup = true;
 				_controls.display.forceState(PlayerState.BUFFERING);
-				_view.setupInstream(_instreamDisplay, _plugin);
+				_view.setupInstream(_instreamDisplay, _controls, _plugin);
 			}
 
 			
@@ -285,7 +306,7 @@ package com.longtailvideo.jwplayer.player
 		public function play():Boolean {
 			_playCalled = true;
 			if (!_viewSetup) {
-				_view.setupInstream(_instreamDisplay, _plugin);
+				_view.setupInstream(_instreamDisplay, _controls, _plugin);
 			}
 			if (_provider && _provider.state != PlayerState.PLAYING) {
 				_provider.play();
@@ -355,7 +376,14 @@ package com.longtailvideo.jwplayer.player
 			_mediaLayer.mask = _mediaMask;
 			
 			_controls.controlbar.resize(viewDisplay.width, viewDisplay.height);
-			_controls.controlbar.show();
+			if (!_model.config.controls) {
+				_controls.controlbar.hide();
+				_controls.display.hide();
+			}
+			else {
+				_controls.controlbar.show();
+				_controls.display.show();
+			}
 		}
 		
 		protected function removeEventListeners():void {
