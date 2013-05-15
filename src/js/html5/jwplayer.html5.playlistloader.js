@@ -17,11 +17,18 @@
 		
 		function _playlistLoaded(loadedEvent) {
 			try {
-				var rss = loadedEvent.responseXML.firstChild;
+				var childNodes = loadedEvent.responseXML.childNodes;
+				var rss = "";
+				for (var i = 0; i < childNodes.length; i++) {
+					rss = childNodes[i];
+					if (rss.nodeType != rss.COMMENT_NODE) {
+						break;
+					}
+				}
+				
 				if (html5.parsers.localName(rss) == "xml") {
 					rss = rss.nextSibling;
 				}
-				
 				
 				if (html5.parsers.localName(rss) != "rss") {
 					_playlistError("Not a valid RSS feed");
