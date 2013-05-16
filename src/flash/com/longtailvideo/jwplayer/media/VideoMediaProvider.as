@@ -292,7 +292,7 @@ package com.longtailvideo.jwplayer.media {
 			clearInterval(_interval);
 			// Pseudo: seek on first load in range, request when outside
 			if(_startparam) {
-				if(_offset.time == 0 && pos < range) {
+				if(_offset.time < pos && pos < range) {
 					_position = pos;
 					if(_item.type == 'flv') {
 						_stream.seek(_position);
