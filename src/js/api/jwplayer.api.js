@@ -94,9 +94,12 @@
 		};
 		_this.getPlaylistItem = function(item) {
 			if (!utils.exists(item)) {
-				item = _this.getCurrentItem();
+				item = _this.getPlaylistIndex();
 			}
 			return _this.getPlaylist()[item];
+		};
+		_this.getPlaylistIndex = function() {
+			return _callInternal('jwGetPlaylistIndex');
 		};
 		_this.getPosition = function() {
 			return _callInternal('jwGetPosition');
@@ -507,10 +510,6 @@
 		
 		_this.getItemMeta = function() {
 			return _itemMeta;
-		};
-		
-		_this.getCurrentItem = function() {
-			return _callInternal('jwGetPlaylistIndex');
 		};
 
 		_this.isBeforePlay = function () {
