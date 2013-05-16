@@ -77,7 +77,9 @@ package com.longtailvideo.jwplayer.parsers {
 							itm['tags'] = i.text().toString();
 							break;
 						case 'thumbnail':
-							itm['image'] = Strings.xmlAttribute(i, 'url');
+							if (!itm['image']) {
+								itm['image'] = Strings.xmlAttribute(i, 'url');
+							}
 							break;
 						case 'credit':
 							itm['author'] = i.text().toString();

@@ -88,7 +88,9 @@
 						itm['mediaid'] = _textContent(node);
 						break;
 					case 'thumbnail':
-						itm['image'] = _xmlAttribute(node, 'url');
+						if (!itm['image']) {
+							itm['image'] = _xmlAttribute(node, 'url');
+						}
 						break;
 					case 'player':
 						var url = node.url;
