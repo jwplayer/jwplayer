@@ -1,7 +1,7 @@
 package com.longtailvideo.jwplayer.player {
-	import com.longtailvideo.jwplayer.events.JWAdEvent;
 	import com.longtailvideo.jwplayer.events.CaptionsEvent;
 	import com.longtailvideo.jwplayer.events.InstreamEvent;
+	import com.longtailvideo.jwplayer.events.JWAdEvent;
 	import com.longtailvideo.jwplayer.events.MediaEvent;
 	import com.longtailvideo.jwplayer.events.PlayerEvent;
 	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
@@ -12,6 +12,7 @@ package com.longtailvideo.jwplayer.player {
 	import com.longtailvideo.jwplayer.model.PlaylistItem;
 	import com.longtailvideo.jwplayer.plugins.AbstractPlugin;
 	import com.longtailvideo.jwplayer.plugins.IPlugin;
+	import com.longtailvideo.jwplayer.plugins.PluginConfig;
 	import com.longtailvideo.jwplayer.utils.JavascriptSerialization;
 	import com.longtailvideo.jwplayer.utils.Logger;
 	import com.longtailvideo.jwplayer.utils.RootReference;
@@ -191,7 +192,7 @@ package com.longtailvideo.jwplayer.player {
 				ExternalInterface.addCallback("jwSetCurrentCaptions", js_setCurrentCaptions);
 				
 				// Ads API
-				ExternalInterface.addCallback("jwPlayAd", js_playAd);
+				//ExternalInterface.addCallback("jwPlayAd", js_playAd);
 				
 				// UNIMPLEMENTED
 				//ExternalInterface.addCallback("jwGetBandwidth", js_getBandwidth); 
@@ -634,6 +635,8 @@ package com.longtailvideo.jwplayer.player {
 		protected function js_playAd(ad:String):void {
 			//This is a stub. Needs to be replaced
 			ExternalInterface.call("console.log", "Time to play ad in flash: " + ad);
+			//var p:PluginConfig = _player.config.pluginConfig("vast");
+			
 		}
 		
 		protected function callJS(functionName:String, args:*):void {
