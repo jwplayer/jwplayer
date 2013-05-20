@@ -259,6 +259,7 @@
 			onBufferChange: events.JWPLAYER_MEDIA_BUFFER,
 			onBufferFull: events.JWPLAYER_MEDIA_BUFFER_FULL,
 			onError: events.JWPLAYER_ERROR,
+			onSetupError: events.JWPLAYER_SETUP_ERROR,
 			onFullscreen: events.JWPLAYER_FULLSCREEN,
 			onMeta: events.JWPLAYER_MEDIA_META,
 			onMute: events.JWPLAYER_MEDIA_MUTE,

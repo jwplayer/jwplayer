@@ -84,10 +84,14 @@
 				}
 				
 				if (_config.fallback) {
-					utils.log("No suitable players found and fallback enabled");
+					var message = "No suitable players found and fallback enabled";
+					playerApi.dispatchEvent(events.JWPLAYER_SETUP_ERROR, {message: message, fallback: true});
+					utils.log(message);
 					new embed.download(_container, _config, _sourceError);
 				} else {
-					utils.log("No suitable players found and fallback disabled");
+					var message = "No suitable players found and fallback disabled";
+					playerApi.dispatchEvent(events.JWPLAYER_SETUP_ERROR, {message: message, fallback: false});
+					utils.log(message);
 					_replaceContainer();
 				}
 				
@@ -115,7 +119,10 @@
 		}
 		
 		function _errorScreen(container, message) {
-			if (!_config.fallback) return;
+			if (!_config.fallback) {
+				playerApi.dispatchEvent(events.JWPLAYER_SETUP_ERROR, {message: message, fallback: false});
+				return;
+			}
 				
 			var style = container.style;
 			style.backgroundColor = "#000";
@@ -135,6 +142,7 @@
 
 			container.innerHTML = "";
 			container.appendChild(text);
+			playerApi.dispatchEvent(events.JWPLAYER_SETUP_ERROR, {message: message, fallback: true});
 		}
 
 		// Make this publicly accessible so the HTML5 player can error out on setup using the same code

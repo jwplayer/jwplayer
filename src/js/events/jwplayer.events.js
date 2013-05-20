@@ -16,6 +16,7 @@
 		JWPLAYER_FULLSCREEN : 'jwplayerFullscreen',
 		JWPLAYER_RESIZE : 'jwplayerResize',
 		JWPLAYER_ERROR : 'jwplayerError',
+		JWPLAYER_SETUP_ERROR : 'jwplayerSetupError',
 
 		// Media Events
 		JWPLAYER_MEDIA_BEFOREPLAY : 'jwplayerMediaBeforePlay',
