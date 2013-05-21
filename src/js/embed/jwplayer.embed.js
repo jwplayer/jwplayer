@@ -18,6 +18,7 @@
 			_height = _config.height,
 			_errorText = "Error loading player: ",
 			_pluginloader = jwplayer.plugins.loadPlugins(playerApi.id, _config.plugins);
+			_setupErrorTimer = null;
 
 		if (_config.fallbackDiv) {
 			_fallbackDiv = _config.fallbackDiv;
@@ -85,12 +86,14 @@
 				
 				if (_config.fallback) {
 					var message = "No suitable players found and fallback enabled";
-					playerApi.dispatchEvent(events.JWPLAYER_SETUP_ERROR, {message: message, fallback: true});
+					_setupErrorTimer = setTimeout (function (evt) {
+						_dispatchSetupError(playerApi, message, true);
+					}, 10);
 					utils.log(message);
 					new embed.download(_container, _config, _sourceError);
 				} else {
 					var message = "No suitable players found and fallback disabled";
-					playerApi.dispatchEvent(events.JWPLAYER_SETUP_ERROR, {message: message, fallback: false});
+					_dispatchSetupError(playerApi, message, false);
 					utils.log(message);
 					_replaceContainer();
 				}
@@ -120,7 +123,7 @@
 		
 		function _errorScreen(container, message) {
 			if (!_config.fallback) {
-				playerApi.dispatchEvent(events.JWPLAYER_SETUP_ERROR, {message: message, fallback: false});
+				_dispatchSetupError(playerApi, message, false);
 				return;
 			}
 				
@@ -142,7 +145,7 @@
 
 			container.innerHTML = "";
 			container.appendChild(text);
-			playerApi.dispatchEvent(events.JWPLAYER_SETUP_ERROR, {message: message, fallback: true});
+			_dispatchSetupError(playerApi, message, true);
 		}
 
 		// Make this publicly accessible so the HTML5 player can error out on setup using the same code
@@ -154,5 +157,13 @@
 		
 		return playerApi;
 	};
+
+	function _dispatchSetupError(playerApi, message, fallback) {
+		if (_setupErrorTimer) {
+			clearTimeout(_setupErrorTimer);
+			_setupErrorTimer = null;
+		}
+		playerApi.dispatchEvent(events.JWPLAYER_SETUP_ERROR, {message: message, fallback: fallback});
+	}
 	
 })(jwplayer);
