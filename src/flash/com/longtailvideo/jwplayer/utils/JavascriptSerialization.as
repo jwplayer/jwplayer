@@ -22,11 +22,11 @@ package com.longtailvideo.jwplayer.utils
 		
 		public static function playlistItemToObject(item:PlaylistItem):Object {
 			var obj:Object = {
-				'description':	item.description.length ? item.description : undefined,
-				'file':			item.file.length ? item.file : undefined,
-				'image':		item.image.length ? item.image : undefined,
-				'mediaid':		item.mediaid.length ? item.mediaid : undefined,
-				'title':		item.title.length ? item.title : undefined
+				'description':	item.description && item.description.length ? item.description : undefined,
+				'file':			item.file && item.file.length ? item.file : undefined,
+				'image':		item.image && item.image.length ? item.image : undefined,
+				'mediaid':		item.mediaid && item.mediaid.length ? item.mediaid : undefined,
+				'title':		item.title && item.title.length ? item.title : undefined
 			};
 			
 			for (var i:String in item) {
