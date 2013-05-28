@@ -83,11 +83,6 @@
 			_playerElement = _createElement("div", PLAYER_CLASS + " playlist-" + _model.playlistposition);
 			_playerElement.id = _api.id;
 			
-//			_css(_internalSelector(), {
-//				width: _model.width,
-//				height: _model.height
-//			});
-
 			if (_model.aspectratio) {
 				_css('.' + PLAYER_CLASS, {
 					display: 'inline-block'
@@ -133,15 +128,6 @@
 			_container.appendChild(_controlsLayer);
 			_container.appendChild(_instreamLayer);
 			
-			// var newContainer = _createElement("div");
-			// newContainer.style.position="absolute";
-			// newContainer.style.width="100%";
-			// newContainer.style.height="100%";
-			// newContainer.appendChild(_container);
-			// newContainer.appendChild(_aspectLayer);
-			// newContainer.appendChild(_playlistLayer);
-			// _playerElement.appendChild(newContainer);
-
 			_playerElement.appendChild(_container);
 			_playerElement.appendChild(_aspectLayer);
 			_playerElement.appendChild(_playlistLayer);
@@ -301,9 +287,6 @@
 				}
 			}
 				
-			setTimeout(function() {
-				_resize(_model.width, _model.height);
-			}, 0);
 		}
 
 		/** 

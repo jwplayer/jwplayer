@@ -406,9 +406,6 @@
 			}, 0);
 		}
 		
-		function _setStateAfterTimeout(newstate) {
-		}
-		
 		function _sendBufferUpdate() {
 			if (!_attached) return; 
 			var newBuffer = _getBuffer();
