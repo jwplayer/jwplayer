@@ -1,10 +1,17 @@
 package com.longtailvideo.jwplayer.view.components {
-	import com.longtailvideo.jwplayer.utils.*;
-	import flash.display.*;
-	import flash.events.*;
-	import flash.net.*;
-	import flash.utils.*;
+	import com.longtailvideo.jwplayer.utils.Logger;
+	import com.longtailvideo.jwplayer.utils.RootReference;
+	import com.longtailvideo.jwplayer.utils.Stretcher;
+	
+	import flash.display.DisplayObject;
+	import flash.display.Loader;
+	import flash.display.MovieClip;
+	import flash.display.Sprite;
+	import flash.events.Event;
+	import flash.events.IOErrorEvent;
+	import flash.events.MouseEvent;
 	import flash.external.ExternalInterface;
+	import flash.net.URLRequest;
 	
 	public class ComponentButton extends MovieClip {
 		protected var _background:DisplayObject;
@@ -40,12 +47,9 @@ package com.longtailvideo.jwplayer.view.components {
 			_imageLayer.x = 0;
 			_imageLayer.y = 0;
 			setImage(_outIcon);
-//			addEventListener(MouseEvent.MOUSE_OVER, overHandler);
-//			addEventListener(MouseEvent.MOUSE_OUT, outHandler);
 			addEventListener(MouseEvent.CLICK, clickHandler);
 			RootReference.stage.addEventListener(MouseEvent.MOUSE_MOVE, moveHandler);
-			//RootReference.stage.addEventListener(MouseEvent.CLICK, clickHandler);
-			
+			RootReference.stage.addEventListener(Event.MOUSE_LEAVE, mouseOutHandler);
 		}
 		
 		protected function moveHandler(event:MouseEvent):void {
@@ -58,6 +62,12 @@ package com.longtailvideo.jwplayer.view.components {
 				_over = false;
 				outHandler(event);
 			}
+		}
+		
+		
+		protected function mouseOutHandler(evt:Event):void {
+			_over = false;
+			outHandler();			
 		}
 		
 		protected function outHandler(event:MouseEvent=null):void {

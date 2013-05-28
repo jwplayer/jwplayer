@@ -1,15 +1,12 @@
 ﻿package com.longtailvideo.jwplayer.view.components {
 	import com.longtailvideo.jwplayer.events.*;
-	import com.longtailvideo.jwplayer.model.*;
 	import com.longtailvideo.jwplayer.player.*;
 	import com.longtailvideo.jwplayer.utils.*;
 	import com.longtailvideo.jwplayer.view.interfaces.*;
 	
 	import flash.display.*;
 	import flash.events.*;
-	import flash.external.ExternalInterface;
 	import flash.geom.*;
-	import flash.net.*;
 	import flash.text.*;
 	import flash.utils.*;
 

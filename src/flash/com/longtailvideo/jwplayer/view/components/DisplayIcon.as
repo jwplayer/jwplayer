@@ -1,11 +1,18 @@
 package com.longtailvideo.jwplayer.view.components {
-	import com.longtailvideo.jwplayer.utils.*;
+	import com.longtailvideo.jwplayer.utils.Animations;
+	import com.longtailvideo.jwplayer.utils.RootReference;
 	
-	import flash.display.*;
-	import flash.events.*;
-	import flash.geom.*;
-	import flash.text.*;
-	import flash.utils.*;
+	import flash.display.DisplayObject;
+	import flash.display.Sprite;
+	import flash.events.Event;
+	import flash.events.MouseEvent;
+	import flash.events.TimerEvent;
+	import flash.geom.Point;
+	import flash.geom.Rectangle;
+	import flash.text.TextField;
+	import flash.text.TextFormat;
+	import flash.text.TextFormatAlign;
+	import flash.utils.Timer;
 	
 	public class DisplayIcon extends Sprite {
 		// Skin elements
@@ -82,6 +89,7 @@ package com.longtailvideo.jwplayer.view.components {
 			buildIcon();
 
 			RootReference.stage.addEventListener(MouseEvent.MOUSE_MOVE, _moveHandler);
+			RootReference.stage.addEventListener(Event.MOUSE_LEAVE, _mouseLeaveHandler);
 		}
 		
 		private function buildIcon():void {
@@ -228,6 +236,11 @@ package com.longtailvideo.jwplayer.view.components {
 				}
 			}
 		}
+		
+		private function _mouseLeaveHandler(evt:Event):void {
+			hover(false);
+		}
+
 
 
 		private function hover(state:Boolean):void {

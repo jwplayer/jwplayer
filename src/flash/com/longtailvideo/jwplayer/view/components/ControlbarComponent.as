@@ -754,49 +754,7 @@ package com.longtailvideo.jwplayer.view.components {
 			return null;
 		}
 
-/*
-		protected function addButton(icon:DisplayObject, name:String, handler:Function=null):MovieClip {
-			if (_customButtons.indexOf(name) < 0) {
-				_customButtons.push(name);
-			}
-			if (_removedButtons.indexOf(name) >= 0) {
-				_removedButtons.splice(_removedButtons.indexOf(name), 1);
-			}
-			icon.x = icon.y = 0;
-			var button:ComponentButton = new ComponentButton();
-			button.name = name;
-			button.clickFunction = handler;
-			var outBackground:DisplayObject = getSkinElement("blankButton");
-			if (outBackground) {
-				var outImage:Sprite = new Sprite();
-				var outIcon:DisplayObject = icon;
-				var outOffset:Number = Math.round((outBackground.height - outIcon.height) / 2);
-				outBackground.width = outIcon.width + 2 * outOffset;
-				outImage.addChild(outBackground);
-				outImage.addChild(outIcon);
-				outIcon.x = outIcon.y = outOffset;
-				button.setOutIcon(outImage);
 
-				button.init();
-				return addButtonDisplayObject(button, name);
-			}
-			return null;
-		}
-
-
-		protected function removeButton(name:String):void {
-			if (_buttons[name] is DisplayObject && this.contains(_buttons[name] as DisplayObject)) {
-				removeChild(_buttons[name]);
-				_buttons[name] = null;
-				_defaultLayout = removeButtonFromLayout(name, _defaultLayout);
-				_currentLayout = removeButtonFromLayout(name, _currentLayout);
-				if (_removedButtons.indexOf(name) < 0) {
-					_removedButtons.push(name);
-				}
-				redraw();
-			}
-		}
-*/
 
 		private function hideButton(name:String, state:Boolean = true):void {
 			var button:DisplayObject = _buttons[name];
