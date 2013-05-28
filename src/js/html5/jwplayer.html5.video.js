@@ -79,6 +79,8 @@
 		_levels,
 		// Current quality level index
 		_currentQuality = -1,
+		// Prevent state change events from cycling too quickly
+		_stateTimeout,
 		// Whether or not we're on an Android device
 		_isAndroid = utils.isAndroid(),
 		// Reference to self
@@ -204,12 +206,7 @@
 					_pause();
 				}
 			} else {
-				if (utils.isFF() && evt.type=="play" && _state == states.BUFFERING)
-					// In FF, we get an extra "play" event on startup - we need to wait for "playing",
-					// which is also handled by this function
-					return;
-				else
-					_setState(states.PLAYING);
+				_setState(states.PLAYING);
 			}
 		}
 
@@ -383,24 +380,31 @@
 			}
 		}
 
-		/** Set the current player state * */
+		/** Set the current player state after a 0-second timeout* */
 		function _setState(newstate) {
-			// Handles a FF 3.5 issue
-			if (newstate == states.PAUSED && _state == states.IDLE) {
-				return;
-			}
-			
-			// Ignore state changes while dragging the seekbar
-			if (_dragging) return
+			if (_stateTimeout) clearTimeout(_stateTimeout);
+			_stateTimeout = setTimeout(function() {
+				_stateTimeout = 0;
+				// Handles a FF 3.5 issue
+				if (newstate == states.PAUSED && _state == states.IDLE) {
+					return;
+				}
+				
+				// Ignore state changes while dragging the seekbar
+				if (_dragging) return;
 
-			if (_state != newstate) {
-				var oldstate = _state;
-				_state = newstate;
-				_sendEvent(events.JWPLAYER_PLAYER_STATE, {
-					oldstate : oldstate,
-					newstate : newstate
-				});
-			}
+				if (_state != newstate) {
+					var oldstate = _state;
+					_state = newstate;
+					_sendEvent(events.JWPLAYER_PLAYER_STATE, {
+						oldstate : oldstate,
+						newstate : newstate
+					});
+				}
+			}, 0);
+		}
+		
+		function _setStateAfterTimeout(newstate) {
 		}
 		
 		function _sendBufferUpdate() {
