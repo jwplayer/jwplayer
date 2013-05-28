@@ -32,7 +32,9 @@
 			_text,
 			_icon,
 			_iconElement,
-			_iconWidth = 0;
+			_iconWidth = 0,
+			_widthInterval,
+			_repeatCount;
 
 		function _init() {
 			_container = _createElement("jwdisplayIcon");
@@ -123,28 +125,36 @@
 		
 		function _redraw() {
 			var showText = _hasCaps || (_iconWidth == 0),
-				px100pct = "px " + JW_CSS_100PCT,
-				contentWidth;
+				px100pct = "px " + JW_CSS_100PCT;
 			
 			_css(_internalSelector('.jwtext'), {
 				display: (_text.innerHTML && showText) ? UNDEFINED : JW_CSS_NONE
 			});
-
-			setTimeout(function() {
-				 contentWidth = Math.max(_iconElement.width, utils.bounds(_container).width - _capRightSkin.width - _capLeftSkin.width); //Math.ceil(_iconElement.width + (showText ? utils.bounds(_text).width: 0));
-				 if (utils.isFF() || utils.isIE()) contentWidth ++;
-				 // Fix for 1 pixel gap in Chrome. This is a chrome bug that needs to be fixed. 
-				 // TODO: Remove below once chrome fixes this bug.
-				 if (utils.isChrome() && _container.parentNode.clientWidth % 2 == 1) contentWidth++;
-				 _css(_internalSelector(), {
-					//width : contentWidth,
-					//'background-position': _capLeftSkin.width + "px 0",
-					'background-size': [_capLeftSkin.width + px100pct, contentWidth + px100pct, _capRightSkin.width + px100pct].join(",")
-				}, true);
-			}, 0);
+			
+			_repeatCount = 10;
+			setTimeout(function() { _setWidth(px100pct); }, 0);
+			if (showText) {
+				_widthInterval = setInterval(function() { _setWidth(px100pct) }, 100);
+			}
 			
 		}
 		
+		function _setWidth(px100pct) {
+			if (_repeatCount <= 0) {
+				clearInterval(_widthInterval);
+			} else {
+				_repeatCount--;
+				var contentWidth = Math.max(_iconElement.width, utils.bounds(_container).width - _capRightSkin.width - _capLeftSkin.width);
+				if (utils.isFF() || utils.isIE()) contentWidth ++;
+				// Fix for 1 pixel gap in Chrome. This is a chrome bug that needs to be fixed. 
+				// TODO: Remove below once chrome fixes this bug.
+				if (utils.isChrome() && _container.parentNode.clientWidth % 2 == 1) contentWidth++;
+				_css(_internalSelector(), {
+					'background-size': [_capLeftSkin.width + px100pct, contentWidth + px100pct, _capRightSkin.width + px100pct].join(",")
+				}, true);
+			}
+		}
+			
 		this.element = function() {
 			return _container;
 		}

@@ -287,7 +287,9 @@
 				}
 			}
 				
-			_checkAudioMode(height);
+			setTimeout(function() { 
+				_resize(_model.width, _model.height, false);
+			}, 0);
 		}
 
 		/** 
@@ -357,7 +359,8 @@
 		/**
 		 * Resize the player
 		 */
-		function _resize(width, height) {
+		function _resize(width, height, sendResize) {
+			if (!utils.exists(sendResize)) sendResize = true;
 			if (utils.exists(width) && utils.exists(height)) {
 				_model.width = width;
 				_model.height = height;
@@ -401,7 +404,7 @@
 
 			_resizeMedia();
 
-			_eventDispatcher.sendEvent(events.JWPLAYER_RESIZE);
+			if (sendResize) _eventDispatcher.sendEvent(events.JWPLAYER_RESIZE);
 			
 			return;
 		}
