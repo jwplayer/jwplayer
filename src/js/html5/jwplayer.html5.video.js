@@ -329,27 +329,29 @@
 			else _videotag.play();
 		}
 		
-		var _seek = _this.seek = function(pos) {
+		var _seek = _this.seek = function(seekPos) {
 			if (!_attached) return; 
-			//if (_videotag.readyState >= _videotag.HAVE_FUTURE_DATA) {
+
+			if (!_dragging && _delayedSeek == 0) {
+				_sendEvent(events.JWPLAYER_MEDIA_SEEK, {
+					position: _position,
+					offset: seekPos
+				});
+			}
+
 			if (_canSeek) {
 				_delayedSeek = 0;
-				_videotag.currentTime = pos;
+				_videotag.currentTime = seekPos;
 			} else {
-				_delayedSeek = pos;
+				_delayedSeek = seekPos;
 			}
+			
 		}
 		
 		function _sendSeekEvent(evt) {
 			_generalHandler(evt);
-			if (!_dragging) {
-				_sendEvent(events.JWPLAYER_MEDIA_SEEK, {
-					position: _position,
-					offset: _videotag.currentTime
-				});
-				if (_state != states.PAUSED) {
-					_setState(states.PLAYING);
-				}
+			if (!_dragging && _state != states.PAUSED) {
+				_setState(states.PLAYING);
 			}
 		}
 
