@@ -840,7 +840,7 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 			
 			var margin:Number = getConfigParam('margin') == null ? 8 : getConfigParam('margin');
-			var maxMargin:Number = (maxWidth && width > maxWidth) ? (width - maxWidth) / 2 : 0;
+			var maxMargin:Number = (!_audioMode && maxWidth && width > maxWidth) ? (width - maxWidth) / 2 : 0;
 			x = (maxMargin ? maxMargin : margin) + player.config.pluginConfig('display')['x'];
 			y = height - background.height - margin + player.config.pluginConfig('display')['y'];
 			_width = width - 2 * (maxMargin ? maxMargin : margin);

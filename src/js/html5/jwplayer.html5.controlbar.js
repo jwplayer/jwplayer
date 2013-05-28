@@ -386,7 +386,7 @@
 			
 			if (_settings.maxwidth > 0) {
 				_css(_internalSelector(), {
-					'max-width': _settings.maxwidth
+					'max-width': _audioMode ? UNDEFINED : _settings.maxwidth
 				});
 			}
 		}
@@ -1039,7 +1039,7 @@
 				right: Math.round(utils.parseDimension(_groups.right.offsetWidth) + capRight.width)
 			});
 			
-			var max = (_controlbar.parentNode.clientWidth > _settings.maxwidth), 
+			var max = (!_audioMode && _controlbar.parentNode.clientWidth > _settings.maxwidth), 
 				margin = _audioMode ? 0 : _settings.margin;
 			
 			_css(_internalSelector(), {

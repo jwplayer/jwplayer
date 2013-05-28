@@ -287,6 +287,7 @@
 				}
 			}
 				
+			_checkAudioMode(height);
 		}
 
 		/** 
