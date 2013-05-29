@@ -224,6 +224,7 @@
 	
 
 	/** Replacement for getBoundingClientRect, which isn't supported in iOS 3.1.2 **/
+/*
 	utils.bounds = function(element) {
 		if (!element) return {
 			left: 0,
@@ -254,6 +255,22 @@
 			bottom: top + height
 		};
 	}
+	*/
+	utils.bounds = function(element) {
+		try { 
+			return element.getBoundingClientRect(element);
+		} catch (e) {
+			return {
+				left: 0,
+				right: 0,
+				width: 0,
+				height: 0,
+				top: 0,
+				bottom: 0
+			};
+		}
+	}
+	
 	
 	utils.empty = function(element) {
 		if (!element) return;

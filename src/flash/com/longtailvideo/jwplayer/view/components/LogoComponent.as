@@ -43,11 +43,8 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _width:Number;
 		protected var _height:Number;
 		
-		/** Callback to execute when load is complete **/
-		protected var _loadCallback:Function;
-		
 		/** Constructor **/
-		public function LogoComponent(player:IPlayer, loadCallback:Function=null) {
+		public function LogoComponent(player:IPlayer) {
 			super(player, "logo");
 			animations = new Animations(this);
 			_player = player;
@@ -57,7 +54,6 @@ package com.longtailvideo.jwplayer.view.components {
 			setupMouseEvents();
 			loadFile();
 			alpha = 0;
-			_loadCallback = loadCallback;
 			if (getConfigParam('hide').toString().toLowerCase() == "false") {
 				show();
 			}
@@ -128,7 +124,6 @@ package com.longtailvideo.jwplayer.view.components {
 		protected function loaderHandler(evt:Event):void {
 			if (loader is DisplayObject) {
 				addChild(loader);
-				if (_loadCallback != null) _loadCallback();
 				resize(_width, _height);
 			} else {
 				Logger.log("Logo was not a display object");
