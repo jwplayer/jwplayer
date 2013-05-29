@@ -45,7 +45,7 @@
 //			_bg = _createElement('background', _container);
 			_createBackground();
 			_text = _createElement('jwtext', _container, textStyle, textStyleOver);
-			_icon = _createElement('icon', _container);
+			_icon = _createElement('jwicon', _container);
 			//_createElement('capRight', _container);
 			
 			
@@ -176,7 +176,7 @@
 		}
 		
 		this.setIcon = function(name) {
-			var newIcon = _createElement('icon');
+			var newIcon = _createElement('jwicon');
 			newIcon.id = _container.id + "_" + name;
 			_styleIcon(name+"Icon", "#"+newIcon.id);
 			if (_container.contains(_icon)) {
