@@ -192,6 +192,10 @@
         function _xmlReadHandler(xmlEvent) {
             var rss = xmlEvent.responseXML.firstChild,
                 loader;
+
+            // IE9 sets the firstChild element to the root <xml> tag
+            if (html5.parsers.localName(rss) == "xml") rss = rss.nextSibling;
+
             if (html5.parsers.localName(rss) == "tt") {
                 loader = new jwplayer.html5.parsers.dfxp(_loadHandler,_errorHandler);
             }
