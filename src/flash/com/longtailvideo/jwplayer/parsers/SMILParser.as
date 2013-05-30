@@ -33,6 +33,7 @@ package com.longtailvideo.jwplayer.parsers {
 						var bitrate:Number = Number(Strings.xmlAttribute(i,'system-bitrate'));
 						var width:Number = Number(Strings.xmlAttribute(i,'width'));
 						var height:Number = Number(Strings.xmlAttribute(i,'height'));
+						var label:String = Strings.xmlAttribute(i,'title');
 						// Include the label attribute
 						if(id) {
 							level.id = id;
@@ -51,6 +52,7 @@ package com.longtailvideo.jwplayer.parsers {
 								level.height = height;
 								level.label = height + 'p';
 							}
+							if (label) level.label = label;
 							levels.push(level);
 						}
 					}

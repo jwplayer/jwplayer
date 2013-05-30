@@ -17,7 +17,6 @@
     import flash.events.IOErrorEvent;
     import flash.events.NetStatusEvent;
     import flash.events.SecurityErrorEvent;
-    import flash.external.ExternalInterface;
     import flash.geom.Rectangle;
     import flash.media.SoundTransform;
     import flash.media.Video;
@@ -67,14 +66,13 @@
 		private var _type:String;
 		/** Video object to be instantiated. **/
 		private var _video:Video;
-
-
+		
 		/** Initialize RTMP provider. **/
 		public function RTMPMediaProvider(stageVideoEnabled:Boolean=true) {
 			_stageEnabled = stageVideoEnabled;
 			super('rtmp');
 			_stretch = false;
-			_bandwidth = 0;
+			_bandwidth = Number.MAX_VALUE;
 		}
 
 
@@ -662,6 +660,9 @@
 		/** Determine which level to use for autoswitching. **/
 		private function autoLevel():Number {
 			var sortedLevels:Array = [];
+			var useWidth:Boolean = true;
+			var useBitrate:Boolean = true;
+			
 			if (_levels[0].bitrate) {
 				sortedLevels = _levels.sort(function(obj1:Object, obj2:Object):Number { return (obj2.bitrate > obj1.bitrate ? 1 : (obj1.bitrate > obj2.bitrate ? -1 : 0) ); }, Array.RETURNINDEXEDARRAY);	
 			}
@@ -671,13 +672,24 @@
 			else {
 				return 0;
 			}
+
+			// Check to make sure all levels contain a width and bitrate.  If one level does not contain the required informtaion, that heursitic won't be used.
+			for (var i:Number = 0; i < _levels.length; i++) {
+				if (!_levels[i].bitrate > 0 && useBitrate) {
+					useBitrate = false;
+				}
+				if (!_levels[i].width > 0 && useWidth) {
+					useWidth = false;
+				}
+			}
 			
 			// Grab the highest one first.
 			var level:Number = 0;
+			var j:Number = 0;
 			// Next restrict by screenwidth
-			if(_levels[0].width) {
+			if(useWidth) {
 				level = sortedLevels[sortedLevels.length - 1];
-				for(var j:Number=0; j<sortedLevels.length; j++) {
+				for(j=0; j<sortedLevels.length; j++) {
 					if(_levels[sortedLevels[j]].width < _config.width * 1.5) {
 						level = sortedLevels[j];
 						break;
@@ -685,15 +697,20 @@
 				}
 			}
 			// Next further restrict by bandwidth
-			if(_bandwidth && _levels[0].bitrate) {
+			if(_bandwidth && useBitrate) {
 				level = sortedLevels[sortedLevels.length - 1];
-				for(var i:Number = j; i < sortedLevels.length; i++) {
+				for(i = j; i < sortedLevels.length; i++) {
 					if(_levels[sortedLevels[i]].bitrate < _bandwidth / 1.5) {
 						level = sortedLevels[i];
 						break;
 					}
 				}
 			}
+			
+			if (!useBitrate && !useWidth) {
+				level = 0;
+			}
+			
 			return level;
 		}
 		
