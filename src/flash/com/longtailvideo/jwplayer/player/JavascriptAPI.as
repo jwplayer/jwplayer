@@ -12,7 +12,6 @@ package com.longtailvideo.jwplayer.player {
 	import com.longtailvideo.jwplayer.model.PlaylistItem;
 	import com.longtailvideo.jwplayer.plugins.AbstractPlugin;
 	import com.longtailvideo.jwplayer.plugins.IPlugin;
-	import com.longtailvideo.jwplayer.plugins.PluginConfig;
 	import com.longtailvideo.jwplayer.utils.JavascriptSerialization;
 	import com.longtailvideo.jwplayer.utils.Logger;
 	import com.longtailvideo.jwplayer.utils.RootReference;

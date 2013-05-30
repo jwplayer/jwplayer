@@ -636,7 +636,12 @@
 			if(_level == index || (!force && _transition)) {
 				return;
 			}
+			
 			_level = index;
+			
+			// If a manual quality switch has been requested before the stream is ready, don't swap the stream
+			if (!_stream) return;
+			
 			if(force) { 
 				// Force instant swap (results in re-buffer).
 				clearInterval(_interval);
