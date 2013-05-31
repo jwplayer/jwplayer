@@ -84,10 +84,10 @@
 						    _dividerElement,
 						    _layoutElement("hd", CB_BUTTON), 
 						    _layoutElement("cc", CB_BUTTON), 
-						    _dividerElement,
+						    _layoutElement("divider", CB_DIVIDER, 'hddiv'),
 						    _layoutElement("mute", CB_BUTTON), 
 						    _layoutElement("volume", CB_SLIDER), 
-						    _dividerElement,
+    					    _layoutElement("divider", CB_DIVIDER, 'fsdiv'),
 						    _layoutElement("fullscreen", CB_BUTTON)
 					    ]
 					}
@@ -123,7 +123,7 @@
 			_redrawTimeout,
 			_hideTimeout,
 			_audioMode = FALSE,
-			_dragging = FALSE,
+			_dragging = FALSE,		
 			_lastSeekTime = 0,
 			_lastTooltipPositionTime = 0,
 			
@@ -320,6 +320,7 @@
 				}
 				_qualityLevelChanged(evt);
 			} else {
+				_css(_internalSelector(".hddiv"), HIDDEN);
 				_css(_internalSelector(".jwhd"), { display: "none" });
 			}
 			_redraw();
@@ -1092,6 +1093,10 @@
 				_css(_internalSelector(".jwfullscreen"), { display: mode ? JW_CSS_NONE : UNDEFINED });
 				_css(_internalSelector(".jwhd"), { display: mode ? JW_CSS_NONE : UNDEFINED });
 				_css(_internalSelector(".jwcc"), { display: mode ? JW_CSS_NONE : UNDEFINED });
+				if (mode) {
+					_css(_internalSelector(".fsdiv"), HIDDEN);
+					_css(_internalSelector(".hddiv"), HIDDEN);
+				}
 				_redraw();
 			}
 		}

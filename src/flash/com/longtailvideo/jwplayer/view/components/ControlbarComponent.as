@@ -310,6 +310,7 @@ package com.longtailvideo.jwplayer.view.components {
 				newLayout = newLayout.replace(/\|?cc/g, "");
 				hideButton('cc');
 			}
+
 			_currentLayout = removeInactive(newLayout);
 		}
 
@@ -834,6 +835,17 @@ package com.longtailvideo.jwplayer.view.components {
 			if (_player.config.height <= 40 || _player.config.fullscreen && _currentLayout) {
 				_currentLayout = _currentLayout.replace("fullscreen", "");
 				hideButton('fullscreen', true);
+				if (_audioMode) {
+					//removing a trailing divide from the right. (if its at the end, we don't need a divider)
+					var sections:Array = _currentLayout.split("]");
+					var myPattern:RegExp = /\| *$/;  
+					sections[sections.length-2]  = sections[sections.length-2].replace(myPattern, "");
+					_currentLayout = "";
+					sections.forEach(function(chunk:String):void {
+						_currentLayout += chunk + "]";
+						
+					});
+				}
 			} else {
 				hideButton('fullscreen', false);
 			}
