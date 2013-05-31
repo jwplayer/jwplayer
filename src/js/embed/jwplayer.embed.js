@@ -8,6 +8,8 @@
 	var utils = jwplayer.utils,
 		events = jwplayer.events,
 		
+		TRUE = true,
+		FALSE = false,
 		DOCUMENT = document;
 	
 	var embed = jwplayer.embed = function(playerApi) {
@@ -18,7 +20,7 @@
 			_height = _config.height,
 			_errorText = "Error loading player: ",
 			_pluginloader = jwplayer.plugins.loadPlugins(playerApi.id, _config.plugins),
-			_playlistLoading = false;
+			_playlistLoading = FALSE,
 			_setupErrorTimer = null;
 
 		if (_config.fallbackDiv) {
@@ -76,15 +78,15 @@
 				var loader = new jwplayer.playlist.loader();
 				loader.addEventListener(events.JWPLAYER_PLAYLIST_LOADED, function(evt) {
 					_config.playlist = evt.playlist;
-					_playlistLoading = false;
+					_playlistLoading = FALSE;
 					_embedPlayer();
 				});
 				loader.addEventListener(events.JWPLAYER_ERROR, function(evt) {
 					console.log("Ajax error: ", evt);
-					_playlistLoading = false;
+					_playlistLoading = FALSE;
 					_sourceError();
 				});
-				_playlistLoading = true;
+				_playlistLoading = TRUE;
 				loader.load(_config.playlist);
 				return;
 			}
@@ -107,13 +109,13 @@
 				if (_config.fallback) {
 					var message = "No suitable players found and fallback enabled";
 					_setupErrorTimer = setTimeout (function (evt) {
-						_dispatchSetupError(message, true);
+						_dispatchSetupError(message, TRUE);
 					}, 10);
 					utils.log(message);
 					new embed.download(_container, _config, _sourceError);
 				} else {
 					var message = "No suitable players found and fallback disabled";
-					_dispatchSetupError(message, false);
+					_dispatchSetupError(message, FALSE);
 					utils.log(message);
 					_replaceContainer();
 				}
@@ -143,7 +145,7 @@
 		
 		function _errorScreen(container, message) {
 			if (!_config.fallback) {
-				_dispatchSetupError(message, false);
+				_dispatchSetupError(message, FALSE);
 				return;
 			}
 				
@@ -165,7 +167,7 @@
 
 			container.innerHTML = "";
 			container.appendChild(text);
-			_dispatchSetupError(message, true);
+			_dispatchSetupError(message, TRUE);
 		}
 
 		function _dispatchSetupError(message, fallback) {
