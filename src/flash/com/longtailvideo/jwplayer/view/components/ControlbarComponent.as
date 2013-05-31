@@ -841,10 +841,9 @@ package com.longtailvideo.jwplayer.view.components {
 					var myPattern:RegExp = /\| *$/;  
 					sections[sections.length-2]  = sections[sections.length-2].replace(myPattern, "");
 					_currentLayout = "";
-					sections.forEach(function(chunk:String):void {
+					for each (var chunk:String in sections) {
 						_currentLayout += chunk + "]";
-						
-					});
+					}
 				}
 			} else {
 				hideButton('fullscreen', false);
