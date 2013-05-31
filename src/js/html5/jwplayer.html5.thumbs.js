@@ -31,7 +31,7 @@
         	
         	if (vtt) {
             	_vttPath = vtt.split("?")[0].split("/").slice(0, -1).join("/");
-            	new html5.parsers.srt(_vttLoaded, _vttFailed, true).load(vtt);
+            	new jwplayer.parsers.srt(_vttLoaded, _vttFailed, true).load(vtt);
         	}
         }
         

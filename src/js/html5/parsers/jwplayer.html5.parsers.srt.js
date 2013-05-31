@@ -134,4 +134,4 @@
     };
 
 
-})(jwplayer.html5.parsers);
+})(jwplayer.parsers);

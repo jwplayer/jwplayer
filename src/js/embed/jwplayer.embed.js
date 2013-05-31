@@ -18,6 +18,7 @@
 			_height = _config.height,
 			_errorText = "Error loading player: ",
 			_pluginloader = jwplayer.plugins.loadPlugins(playerApi.id, _config.plugins),
+			_playlistLoading = false;
 			_setupErrorTimer = null;
 
 		if (_config.fallbackDiv) {
@@ -67,6 +68,25 @@
 					_sourceError();
 					return;
 				}
+			}
+			
+			if (_playlistLoading) return;
+			
+			if (utils.typeOf(_config.playlist) == "string") {
+				var loader = new jwplayer.playlist.loader();
+				loader.addEventListener(events.JWPLAYER_PLAYLIST_LOADED, function(evt) {
+					_config.playlist = evt.playlist;
+					_playlistLoading = false;
+					_embedPlayer();
+				});
+				loader.addEventListener(events.JWPLAYER_ERROR, function(evt) {
+					console.log("Ajax error: ", evt);
+					_playlistLoading = false;
+					_sourceError();
+				});
+				_playlistLoading = true;
+				loader.load(_config.playlist);
+				return;
 			}
 			
 			if (_pluginloader.getStatus() == utils.loaderstatus.COMPLETE) {

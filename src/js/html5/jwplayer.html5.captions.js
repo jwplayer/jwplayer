@@ -3,6 +3,7 @@
     var utils = jwplayer.utils,
         events = jwplayer.events,
         states = events.state,
+        parsers = jwplayer.parsers,
         _css = utils.css,
         
         PLAYING = "playing",
@@ -194,19 +195,19 @@
                 loader;
 
             // IE9 sets the firstChild element to the root <xml> tag
-            if (html5.parsers.localName(rss) == "xml") rss = rss.nextSibling;
+            if (parsers.localName(rss) == "xml") rss = rss.nextSibling;
 
-            if (html5.parsers.localName(rss) == "tt") {
-                loader = new jwplayer.html5.parsers.dfxp(_loadHandler,_errorHandler);
+            if (parsers.localName(rss) == "tt") {
+                loader = new jwplayer.parsers.dfxp(_loadHandler,_errorHandler);
             }
             else {
-                loader = new jwplayer.html5.parsers.srt(_loadHandler,_errorHandler);   
+                loader = new jwplayer.parsers.srt(_loadHandler,_errorHandler);   
             }
             loader.load(_file);
         }
 
         function _xmlFailedHandler(xmlEvent) {
-            var loader = new jwplayer.html5.parsers.srt(_loadHandler,_errorHandler);
+            var loader = new jwplayer.parsers.srt(_loadHandler,_errorHandler);
             loader.load(_file);
         }
 

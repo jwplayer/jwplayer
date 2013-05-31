@@ -8,7 +8,8 @@
 	var html5 = jwplayer.html5,
 		utils = jwplayer.utils, 
 		events = jwplayer.events, 
-		states = events.state;
+		states = events.state,
+		playlist = jwplayer.playlist;
 		
 	html5.controller = function(model, view) {
 		var _model = model,
@@ -77,7 +78,9 @@
 		}
 		
 		function _bufferFullHandler(evt) {
-			_video.play();
+			if (_model.state == states.BUFFERING) {
+				_video.play();
+			}
 		}
 
 		function _load(item) {
@@ -89,7 +92,7 @@
 				break;
 			case "object":
 			case "array":
-				_model.setPlaylist(new jwplayer.playlist(item));
+				_model.setPlaylist(new playlist(item));
 				break;
 			case "number":
 				_model.setItem(item);
@@ -97,8 +100,8 @@
 			}
 		}
 		
-		function _loadPlaylist(playlist) {
-			var loader = new html5.playlistloader();
+		function _loadPlaylist(pl) {
+			var loader = new playlist.loader();
 			loader.addEventListener(events.JWPLAYER_PLAYLIST_LOADED, function(evt) {
 				_load(evt.playlist);
 			});
@@ -107,7 +110,7 @@
 				evt.message = "Could not load playlist: " + evt.message; 
 				_forward(evt);
 			});
-			loader.load(playlist);
+			loader.load(pl);
 		}
 		
 		function _play(state) {
