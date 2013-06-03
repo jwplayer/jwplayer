@@ -686,7 +686,6 @@
 			
 			if (_isMobile) {
                 _instreamHadControls = _api.jwGetControls();
-                console.log(_instreamHadControls);
                 _api.jwSetControls(FALSE);
             }
 			_instreamMode = TRUE;

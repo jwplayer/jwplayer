@@ -50,6 +50,7 @@
 		}
 		
 		function _embedPlayer() {
+			
 			if (_config.sitecatalyst) {
 				try {
 					if (s != null && s.hasOwnProperty("Media")) {
@@ -82,7 +83,6 @@
 					_embedPlayer();
 				});
 				loader.addEventListener(events.JWPLAYER_ERROR, function(evt) {
-					console.log("Ajax error: ", evt);
 					_playlistLoading = FALSE;
 					_sourceError();
 				});
@@ -90,7 +90,7 @@
 				loader.load(_config.playlist);
 				return;
 			}
-			
+
 			if (_pluginloader.getStatus() == utils.loaderstatus.COMPLETE) {
 				for (var mode = 0; mode < _config.modes.length; mode++) {
 					if (_config.modes[mode].type && embed[_config.modes[mode].type]) {

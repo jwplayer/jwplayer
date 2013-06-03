@@ -78,7 +78,8 @@
 		}
 		
 		function _bufferFullHandler(evt) {
-			if (_model.state == states.BUFFERING) {
+			if (_model.state == states.BUFFERING || _model.state == states.IDLE) {
+				// IDLE is in there for mobile devices, who don't wait before sending out the buffer full event
 				_video.play();
 			}
 		}
