@@ -49,7 +49,7 @@ package com.longtailvideo.jwplayer.view {
 		}
 		
 		protected function setupLogo():void {
-			_logo = new logoClass(_player);
+			_logo = new logoClass(_player, redraw);
 		}
 		
 		/**
