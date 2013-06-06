@@ -30,8 +30,6 @@
 			<fileset dir="${basedir}/src/js/events" includes="jwplayer.events.*.js" excludes="jwplayer.events.js" />
 			<fileset dir="${basedir}/src/js/plugins" includes="jwplayer.plugins.js" />
 			<fileset dir="${basedir}/src/js/plugins" includes="jwplayer.plugins.*.js" excludes="jwplayer.plugins.js" />
-			<fileset dir="${basedir}/src/js/parsers" includes="jwplayer.parsers.js" />
-			<fileset dir="${basedir}/src/js/parsers" includes="jwplayer.parsers.*.js" excludes="jwplayer.parsers.js" />
 			<fileset dir="${basedir}/src/js/playlist" includes="jwplayer.playlist.js" />
 			<fileset dir="${basedir}/src/js/playlist" includes="jwplayer.playlist.*.js" excludes="jwplayer.playlist.js" />
 			<fileset dir="${basedir}/src/js/embed" includes="jwplayer.embed.js" />
