@@ -4,10 +4,10 @@
  * @author pablo
  * @version 6.0
  */
-(function(playlist) {
-	var _jw = jwplayer, utils = _jw.utils, events = _jw.events, parsers = _jw.parsers;
+(function(html5) {
+	var _jw = jwplayer, utils = _jw.utils, events = _jw.events;
 
-	playlist.loader = function() {
+	html5.playlistloader = function() {
 		var _eventDispatcher = new events.eventdispatcher();
 		utils.extend(this, _eventDispatcher);
 		
@@ -26,20 +26,20 @@
 					}
 				}
 				
-				if (parsers.localName(rss) == "xml") {
+				if (html5.parsers.localName(rss) == "xml") {
 					rss = rss.nextSibling;
 				}
 				
-				if (parsers.localName(rss) != "rss") {
+				if (html5.parsers.localName(rss) != "rss") {
 					_playlistError("Not a valid RSS feed");
 					return;
 				}
 				
-				var pl = new playlist(parsers.rssparser.parse(rss));
-//				pl = _filterPlaylist(pl);
-				if (pl && pl.length && pl[0].sources && pl[0].sources.length && pl[0].sources[0].file) {
+				var playlist = new _jw.playlist(html5.parsers.rssparser.parse(rss));
+				playlist = _filterPlaylist(playlist);
+				if (playlist && playlist.length && playlist[0].sources && playlist[0].sources.length && playlist[0].sources[0].file) {
 					_eventDispatcher.sendEvent(events.JWPLAYER_PLAYLIST_LOADED, {
-						playlist: pl
+						playlist: playlist
 					});
 				} else {
 					_playlistError("No playable sources found");
@@ -49,7 +49,7 @@
 			}
 		}
 		
-		var _filterPlaylist = this.filter = function(list) {
+		function _filterPlaylist(list) {
 			if (!list) return;
 			var newList = [], i, item, sources;
 			for (i=0; i < list.length; i++) {
@@ -74,4 +74,4 @@
 			});
 		}
 	}
-})(jwplayer.playlist);
+})(jwplayer.html5);

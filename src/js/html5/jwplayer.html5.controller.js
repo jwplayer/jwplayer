@@ -8,8 +8,7 @@
 	var html5 = jwplayer.html5,
 		utils = jwplayer.utils, 
 		events = jwplayer.events, 
-		states = events.state,
-		playlist = jwplayer.playlist;
+		states = events.state;
 		
 	html5.controller = function(model, view) {
 		var _model = model,
@@ -78,10 +77,7 @@
 		}
 		
 		function _bufferFullHandler(evt) {
-			if (_model.state == states.BUFFERING || _model.state == states.IDLE) {
-				// IDLE is in there for mobile devices, who don't wait before sending out the buffer full event
-				_video.play();
-			}
+			_video.play();
 		}
 
 		function _load(item) {
@@ -93,7 +89,7 @@
 				break;
 			case "object":
 			case "array":
-				_model.setPlaylist(new playlist(item));
+				_model.setPlaylist(new jwplayer.playlist(item));
 				break;
 			case "number":
 				_model.setItem(item);
@@ -101,8 +97,8 @@
 			}
 		}
 		
-		function _loadPlaylist(pl) {
-			var loader = new playlist.loader();
+		function _loadPlaylist(playlist) {
+			var loader = new html5.playlistloader();
 			loader.addEventListener(events.JWPLAYER_PLAYLIST_LOADED, function(evt) {
 				_load(evt.playlist);
 			});
@@ -111,7 +107,7 @@
 				evt.message = "Could not load playlist: " + evt.message; 
 				_forward(evt);
 			});
-			loader.load(pl);
+			loader.load(playlist);
 		}
 		
 		function _play(state) {

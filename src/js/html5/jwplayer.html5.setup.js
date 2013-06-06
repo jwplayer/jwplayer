@@ -109,12 +109,11 @@
 		function _loadPlaylist() {
 			switch(utils.typeOf(_model.config.playlist)) {
 			case "string":
-//				var loader = new html5.playlistloader();
-//				loader.addEventListener(events.JWPLAYER_PLAYLIST_LOADED, _playlistLoaded);
-//				loader.addEventListener(events.JWPLAYER_ERROR, _playlistError);
-//				loader.load(_model.config.playlist);
-//				break;
-				_error("Can't load a playlist as a string anymore");
+				var loader = new html5.playlistloader();
+				loader.addEventListener(events.JWPLAYER_PLAYLIST_LOADED, _playlistLoaded);
+				loader.addEventListener(events.JWPLAYER_ERROR, _playlistError);
+				loader.load(_model.config.playlist);
+				break;
 			case "array":
 				_completePlaylist(new playlist(_model.config.playlist));
 			}

@@ -90,4 +90,4 @@
 
 	
 	
-})(jwplayer.parsers);
+})(jwplayer.html5.parsers);

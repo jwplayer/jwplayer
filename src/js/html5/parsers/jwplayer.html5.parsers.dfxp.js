@@ -1,5 +1,6 @@
 (function(parsers) {
 
+
     /** Component that loads and parses an DFXP file. **/
     parsers.dfxp = function(_success, _failure) {
 
@@ -101,4 +102,4 @@
     };
 
 
-})(jwplayer.parsers);
+})(jwplayer.html5.parsers);

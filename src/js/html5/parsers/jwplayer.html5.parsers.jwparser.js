@@ -6,7 +6,7 @@
  * @version 6.0
  */
 (function(jwplayer) {
-	var _parsers = jwplayer.parsers;
+	var _parsers = jwplayer.html5.parsers;
 	
 	var jwparser = _parsers.jwparser = function() {
 	};
