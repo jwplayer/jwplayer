@@ -53,7 +53,6 @@
 			_lastCurrent = -1,
 			_clickedIndex,
 			_slider,
-			_lastHeight = -1,
 			_itemheight = 60,
 			_elements = {
 				'background': undefined,
@@ -62,22 +61,21 @@
 				'itemOver': undefined,
 				'itemImage': undefined,
 				'itemActive': undefined
-			},
-			_this = this;
+			};
 
-		_this.element = function() {
+		this.element = function() {
 			return _wrapper;
 		};
 		
-		_this.redraw = function() {
+		this.redraw = function() {
 			if (_slider) _slider.redraw();
 		};
 		
-		_this.show = function() {
+		this.show = function() {
 			utils.show(_wrapper);
 		}
 
-		_this.hide = function() {
+		this.hide = function() {
 			utils.hide(_wrapper);
 		}
 
@@ -98,29 +96,6 @@
 			
 			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_LOADED, _rebuildPlaylist);
 			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_ITEM, _itemHandler);
-			
-			_setupResponsiveListener();
-		}
-		
-		/** 
-		 * This method sets up a check which displays or removes the vertical slider if 
-		 * the listbar's height changes, for example with responsive design.
-		 **/
-		function _setupResponsiveListener() {
-			var responsiveListenerInterval = setInterval(function() {
-				var wrapperDOM = DOCUMENT.getElementById(_wrapper.id),
-					containerHeight = utils.bounds(wrapperDOM).height; 
-						
-				if (wrapperDOM != _wrapper) {
-					// Player has been destroyed; clean up
-					clearInterval(responsiveListenerInterval);
-				} else {
-					if (containerHeight != _lastHeight) {
-						_lastHeight = containerHeight;
-						_this.redraw();
-					}
-				}
-			}, 200)
 		}
 		
 		function _internalSelector(className) {
@@ -314,6 +289,7 @@
 				_appendChild(_container, _ul);
 				_slider = new html5.playlistslider(_wrapper.id + "_slider", _api.skin, _wrapper, _ul);
 			}
+			
 		}
 		
 		function _getPlaylist() {
@@ -396,8 +372,7 @@
 		width: JW_CSS_100PCT,
     	'list-style': 'none',
     	margin: 0,
-    	padding: 0,
-    	overflow: JW_CSS_HIDDEN
+    	padding: 0
 	});
 	
 	_css(PL_CLASS+' .jwlistcontainer', {

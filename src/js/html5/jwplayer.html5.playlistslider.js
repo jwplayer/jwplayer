@@ -29,7 +29,6 @@
 	
 		/** Some CSS constants we should use for minimization **/
 		JW_CSS_ABSOLUTE = "absolute",
-		JW_CSS_HIDDEN = "hidden",
 		JW_CSS_100PCT = "100%";
 	
 	html5.playlistslider = function(id, skin, parent, pane) {
@@ -191,7 +190,7 @@
 				_visible = true;
 				_css(_internalSelector(SLIDER_THUMB_CLASS), { height: Math.max(_rail.clientHeight * pct , _sliderThumbCapTop.height + _sliderThumbCapBottom.height) });
 			}
-			_css(_internalSelector(), { visibility: _visible ? "visible" : JW_CSS_HIDDEN });
+			_css(_internalSelector(), { visibility: _visible ? "visible" : "hidden" });
 			if (_pane) {
 				_pane.style.width = _visible ? _pane.parentElement.clientWidth - _sliderRail.width + "px" : "";
 			}
@@ -265,20 +264,18 @@
 	_css(_globalSelector(SLIDER_CLASS), {
 		position: JW_CSS_ABSOLUTE,
 		height: JW_CSS_100PCT,
-		visibility: JW_CSS_HIDDEN,
+		visibility: "hidden",
 		right: 0,
 		top: 0,
 		cursor: "pointer",
-		'z-index': 1,
-		overflow: JW_CSS_HIDDEN
+		'z-index': 1
 	});
 	
 	_css(_globalSelector(SLIDER_CLASS) + ' *', {
 		position: JW_CSS_ABSOLUTE,
 	    width: JW_CSS_100PCT,
 	    'background-position': "center",
-	    'background-size': JW_CSS_100PCT + " " + JW_CSS_100PCT,
-		overflow: JW_CSS_HIDDEN
+	    'background-size': JW_CSS_100PCT + " " + JW_CSS_100PCT
 	});
 
 	_css(_globalSelector(SLIDER_TOPCAP_CLASS, SLIDER_RAILTOP_CLASS, SLIDER_THUMBTOP_CLASS), { top: 0 });
