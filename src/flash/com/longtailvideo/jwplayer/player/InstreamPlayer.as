@@ -32,7 +32,6 @@ package com.longtailvideo.jwplayer.player
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
 	import flash.events.Event;
-	import flash.external.ExternalInterface;
 	import flash.geom.Rectangle;
 	import flash.utils.setTimeout;
 	
@@ -125,7 +124,8 @@ package com.longtailvideo.jwplayer.player
 			if (_playCalled) {
 				_viewSetup = true;
 				_controls.display.forceState(PlayerState.BUFFERING);
-				_view.setupInstream(_instreamDisplay, _controls, _plugin);
+				_view.setupInstream(_instreamDisplay, _plugin);
+//				_view.setupInstream(_instreamDisplay, _controls, _plugin);
 			}
 
 			
@@ -306,7 +306,8 @@ package com.longtailvideo.jwplayer.player
 		public function play():Boolean {
 			_playCalled = true;
 			if (!_viewSetup) {
-				_view.setupInstream(_instreamDisplay, _controls, _plugin);
+				_view.setupInstream(_instreamDisplay, _plugin);
+//				_view.setupInstream(_instreamDisplay, _controls, _plugin);
 			}
 			if (_provider && _provider.state != PlayerState.PLAYING) {
 				_provider.play();
@@ -376,14 +377,15 @@ package com.longtailvideo.jwplayer.player
 			_mediaLayer.mask = _mediaMask;
 			
 			_controls.controlbar.resize(viewDisplay.width, viewDisplay.height);
-			if (!_model.config.controls) {
-				_controls.controlbar.hide();
-				_controls.display.hide();
-			}
-			else {
-				_controls.controlbar.show();
-				_controls.display.show();
-			}
+			_controls.controlbar.show();
+//			if (!_model.config.controls) {
+//				_controls.controlbar.hide();
+//				_controls.display.hide();
+//			}
+//			else {
+//				_controls.controlbar.show();
+//				_controls.display.show();
+//			}
 		}
 		
 		protected function removeEventListeners():void {

@@ -100,10 +100,11 @@
     			if (!_utils.isMobile()) {
     				_cbar = new html5.controlbar(_self);
     				_instreamContainer.appendChild(_cbar.element());
-    				if (_api.jwGetControls()) {
-    					_cbar.show();
-    					_disp.show();
-    				}
+    				_cbar.show();
+    				// if (_api.jwGetControls()) {
+    				// 	_cbar.show();
+    				// 	_disp.show();
+    				// }
     			}
     
     			// Show the instream layer
@@ -178,7 +179,8 @@
 			if (!_instreamMode) return;
 			_provider.play(true);
 			_model.state = jwplayer.events.state.PLAYING;
-			if (_api.jwGetControls()) { _disp.show();  }
+			_disp.show();
+			// if (_api.jwGetControls()) { _disp.show();  }
 		}
 
 		/** Pause instream playback **/
@@ -186,7 +188,8 @@
 			if (!_instreamMode) return;
 			_provider.pause(true);
 			_model.state = jwplayer.events.state.PAUSED;
-			if (_api.jwGetControls()) { _disp.show(); }
+			_disp.show();
+			// if (_api.jwGetControls()) { _disp.show(); }
 		}
 		
 		/** Seek to a point in instream media **/
@@ -248,7 +251,7 @@
 				_provider.addEventListener(_events.JWPLAYER_MEDIA_COMPLETE, _completeHandler);
 				_provider.addEventListener(_events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
 				_provider.addEventListener(_events.JWPLAYER_MEDIA_ERROR,errorHandler);
-				_provider.addEventListener(_events.JWPLAYER_PLAYER_STATE, _stateHandler);
+				// _provider.addEventListener(_events.JWPLAYER_PLAYER_STATE, _stateHandler);
 			//}
 			_provider.attachMedia();
 			_provider.mute(_model.mute);
@@ -307,10 +310,10 @@
 			}
 		}
 
-		function _stateHandler(evt) {
-			if (!_instreamMode) return;
-			_model.state = evt.newstate;
-		}
+		// function _stateHandler(evt) {
+		// 	if (!_instreamMode) return;
+		// 	_model.state = evt.newstate;
+		// }
 		
 		
 		/**************************************

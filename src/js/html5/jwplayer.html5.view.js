@@ -55,8 +55,8 @@
 			_timeoutDuration = 2000,
 			_videoTag,
 			_videoLayer,
-			_instreamControlbar,
-			_instreamDisplay,
+			// _instreamControlbar,
+			// _instreamDisplay,
 			_instreamLayer,
 			_instreamMode = FALSE,
 			_instreamHadControls,
@@ -674,14 +674,16 @@
 			return '#' + _api.id + (className ? " ." + className : "");
 		}
 		
-		this.setupInstream = function(instreamContainer, instreamCb, instreamDisp, instreamVideo) {
+		// this.setupInstream = function(instreamContainer, instreamCb, instreamDisp, instreamVideo) {
+		this.setupInstream = function(instreamDisplay, instreamVideo) {
 			// Instream not supported in HTML5 mode
 			_setVisibility(_internalSelector(VIEW_INSTREAM_CONTAINER_CLASS), TRUE);
 			_setVisibility(_internalSelector(VIEW_CONTROLS_CONTAINER_CLASS), FALSE);
-			_instreamLayer.appendChild(instreamContainer);
+			_instreamLayer.appendChild(instreamDisplay);
+			// _instreamLayer.appendChild(instreamContainer);
 			_instreamVideo = instreamVideo;
-			_instreamDisplay = instreamDisp;
-			_instreamControlbar = instreamCb
+			// _instreamDisplay = instreamDisp;
+			// _instreamControlbar = instreamCb
 			_stateHandler({newstate:states.PLAYING});
 			
 			if (_isMobile) {
@@ -733,16 +735,16 @@
 					_hideControls();
 					_hideDisplay();
 				}
-				if (_instreamMode) {
-					if (state) {
-						_instreamControlbar.show();
-						_instreamDisplay.show();
-					}
-					else {
-						_instreamControlbar.hide();
-						_instreamDisplay.hide();
-					}
-				}
+				// if (_instreamMode) {
+				// 	if (state) {
+				// 		_instreamControlbar.show();
+				// 		_instreamDisplay.show();
+				// 	}
+				// 	else {
+				// 		_instreamControlbar.hide();
+				// 		_instreamDisplay.hide();
+				// 	}
+				// }
 				_eventDispatcher.sendEvent(events.JWPLAYER_CONTROLS, { controls: newstate });
 			}
 		}
