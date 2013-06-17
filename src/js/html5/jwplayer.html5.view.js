@@ -621,7 +621,6 @@
 					_showDisplay();
 					if (!_logoConfig.hide) _showLogo();	
 				}
-//				if (_isIPad) _videoTag.controls = FALSE;
 				break;
 			case states.BUFFERING:
 				_showDisplay();
@@ -629,10 +628,7 @@
 				break;
 			case states.PAUSED:
 				_showDisplay();
-
 				_showControls();
-//				} else if (_isIPad) {
-//					_videoTag.controls = FALSE;
 				break;
 			}
 		}

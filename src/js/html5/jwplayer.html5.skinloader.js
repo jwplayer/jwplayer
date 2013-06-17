@@ -222,7 +222,7 @@
 		function _completeImageLoad(img, element, component) {
 			var elementObj = _getElement(component, element);
 			if(elementObj) {
-				elementObj.height = Math.round((img.height / _ratio) * _mobileMultiplier );
+				elementObj.height = Math.round((img.height / _ratio) * _mobileMultiplier);
 				elementObj.width = Math.round((img.width / _ratio) * _mobileMultiplier);
 				elementObj.src = img.src;
 				elementObj.ready = true;

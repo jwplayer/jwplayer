@@ -44,7 +44,8 @@
 	
 	html5.viewmobile = function(api, model) {
 		var _api = api,
-			_model = model, 
+			_model = model,
+			_touchApi = utils.touch,
 			_playerElement,
 			_container,
 			_controlsLayer,
@@ -54,8 +55,7 @@
 			_timeoutDuration = 2000,
 			_videoTag,
 			_videoLayer,
-			// _instreamControlbar,
-			// _instreamDisplay,
+			_playerTouch,
 			_instreamLayer,
 			_instreamMode = FALSE,
 			_instreamHadControls,
@@ -130,9 +130,10 @@
 			_playerElement.appendChild(_aspectLayer);
 			_playerElement.appendChild(_playlistLayer);
 
-			
+			_playerTouch = new _touchApi(_controlsLayer);
+			_playerTouch.addEventListener("tap", _touchHandler);
 			_api.jwAddEventListener(events.JWPLAYER_PLAYER_READY, _readyHandler);
-			_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
+			//_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
 			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_COMPLETE, _playlistCompleteHandler);
 			_stateHandler({newstate:states.IDLE});
 			
@@ -181,7 +182,20 @@
 		}
 		
 		function _startFade() {
-
+			clearTimeout(_controlsTimeout);
+			if (_api.jwGetState() == states.PLAYING || _api.jwGetState() == states.PAUSED) {
+				_showControls();
+				if (!_inCB) {
+					_controlsTimeout = setTimeout(_fadeControls, _timeoutDuration);
+				}
+			}
+		}
+		var showing = false;
+		
+		function _touchHandler() {
+			showing ? _hideControls() : _showControls();
+			showing = !showing;
+			
 		}
 		
 		function _cancelFade() {
@@ -192,7 +206,13 @@
 		}
 		
 		function _fadeControls(evt) {
-
+			if (_api.jwGetState() != states.BUFFERING) {
+				_hideControlbar();
+				_hideDock();
+				_hideLogo();
+			}
+			clearTimeout(_controlsTimeout);
+			_controlsTimeout = 0;
 		}
 
 		function forward(evt) {
@@ -214,7 +234,7 @@
 						_controlbar = new html5.controlbar(_api, cbSettings);
 			_controlsLayer.appendChild(_controlbar.element());
 
-			_showControls();
+			//_showControls();
 				
 			setTimeout(function() { 
 				_resize(_model.width, _model.height, false);
@@ -372,17 +392,41 @@
 		
 		function _updateState(state) {
 			switch(state) {
-				case states.IDLE:
+				case states.PLAYING:
+				if (!_model.getVideo().audioMode()) {
+					_showVideo(TRUE);
+                    //_api.jwSetControls(false);
+					_resizeMedia();
+					_display.hidePreview(TRUE);
+					
+				} else {
 					_showVideo(FALSE);
-					//_hideControls();
-					_fadeControls();
-					if (!_audioMode) {
-						_display.hidePreview(FALSE);
-						_showDisplay();
-						if (!_logoConfig.hide) _showLogo();	
-					}
-	//				if (_isIPad) _videoTag.controls = FALSE;
-					break;
+					_display.hidePreview(_audioMode);
+				}
+				_startFade();
+				break;
+			case states.IDLE:
+				_showVideo(FALSE);
+				//_hideControls();
+				_fadeControls();
+				if (!_audioMode) {
+					_display.hidePreview(FALSE);
+					_showDisplay();
+					if (!_logoConfig.hide) _showLogo();	
+				}
+//				if (_isIPad) _videoTag.controls = FALSE;
+				break;
+			case states.BUFFERING:
+				_showDisplay();
+				_showControls();
+				break;
+			case states.PAUSED:
+				_showDisplay();
+
+				_showControls();
+//				} else if (_isIPad) {
+//					_videoTag.controls = FALSE;
+				break;
 			}
 		}
 		
