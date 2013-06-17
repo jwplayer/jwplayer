@@ -210,7 +210,6 @@ package com.longtailvideo.jwplayer.view.skins {
 					newSprite.addChild(bitmap);
 					newSprite.height = Math.round(bitmap.height / _ratio);
 					newSprite.width = Math.round(bitmap.width / _ratio);
-					Logger.log(newSprite.width, component + "." + element);
 					bitmap.name = 'bitmap';
 					return newSprite;
 				} else {

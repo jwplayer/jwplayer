@@ -674,6 +674,7 @@ package com.longtailvideo.jwplayer.view {
 
 		protected function completeHandler(evt:PlaylistEvent):void {
 			_completeState = true;
+			fullscreen(false);
 			if (_model.config.controls && !audioMode) {
 				_components.dock.show();
 			}

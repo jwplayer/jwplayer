@@ -74,15 +74,14 @@
 				height: button.height
 			});
 
-			_css(_internalSelector("button"), {
+			_css(_internalSelector("button"), utils.extend(_formatBackground(button), {
 				width: button.width,
 				cursor: "pointer",
 				border: JW_CSS_NONE,
-				background: _formatBackground(button)
-			});
+			}));
 			
-			_css(_internalSelector("button:hover"), { background: _formatBackground(buttonOver) });
-			_css(_internalSelector("button:active"), { background: _formatBackground(buttonActive) });
+			_css(_internalSelector("button:hover"), _formatBackground(buttonOver));
+			_css(_internalSelector("button:active"), _formatBackground(buttonActive));
 			_css(_internalSelector("button>div"), { opacity: _config.iconalpha });
 			_css(_internalSelector("button:hover>div"), { opacity: _config.iconalphaover });
 			_css(_internalSelector("button:active>div"), { opacity: _config.iconalphaactive});
@@ -94,15 +93,18 @@
 		}
 		
 		function _formatBackground(elem) {
-			return (elem && elem.src) ? "url("+elem.src+") center/"+elem.width+"px "+elem.height+"px" : UNDEFINED
+			if (!(elem && elem.src)) return {};
+			return { 
+				background: "url("+elem.src+") center",
+				'background-size': elem.width+"px "+elem.height+"px"
+			}
 		}
 		
 		function _createImage(className, parent) {
 			var skinElem = _getSkinElement(className);
-			_css(_internalSelector("." + className), {
-				width: skinElem.width,
-				background: _formatBackground(skinElem)
-			});
+			_css(_internalSelector("." + className), utils.extend(_formatBackground(skinElem), {
+				width: skinElem.width
+			}));
 			return _createElement("div", className, parent);
 		}
 		

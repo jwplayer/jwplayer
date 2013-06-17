@@ -444,7 +444,7 @@
 			var element = _createSpan(),
 				skinElem = _getSkinElement(name),
 				center = nocenter ? " left center" : " center",
-				size = "/" + _elementSize(skinElem),
+				size = _elementSize(skinElem),
 				newStyle;
 
 			element.className = 'jw'+name;
@@ -456,12 +456,14 @@
 			
 			if (stretch) {
 				newStyle = {
-					background: "url('" + skinElem.src + "') repeat-x " + center + size,
+					background: "url('" + skinElem.src + "') repeat-x " + center,
+					'background-size': size,
 					height: vertical ? skinElem.height : UNDEFINED 
 				};
 			} else {
 				newStyle = {
-					background: "url('" + skinElem.src + "') no-repeat" + center + size,
+					background: "url('" + skinElem.src + "') no-repeat" + center,
+					'background-size': size,
 					width: skinElem.width,
 					height: vertical ? skinElem.height : UNDEFINED 
 				};
@@ -504,12 +506,14 @@
 			
 			_css(selector, { 
 				width: out.width,
-				background: 'url('+ out.src +') no-repeat center/' + _elementSize(out)
+				background: 'url('+ out.src +') no-repeat center',
+				'background-size': _elementSize(out)
 			});
 			
 			if (over.src) {
 				_css(selector + ':hover', { 
-					background: 'url('+ over.src +') no-repeat center/' + _elementSize(over)
+					background: 'url('+ over.src +') no-repeat center',
+					'background-size': _elementSize(over)
 				});
 			}
 		}
@@ -605,7 +609,8 @@
 				var element = _createSpan();
 				element.id = _createElementId(name); 
 				element.className = "jwtext jw" + name;
-				css.background = "url(" + skinElement.src + ") no-repeat center/"+_elementSize(_getSkinElement("background"));
+				css.background = "url(" + skinElement.src + ") no-repeat center";
+				css['background-size'] = _elementSize(_getSkinElement("background"));
 				_css(_internalSelector('.jw'+name), css);
 				element.innerHTML = "00:00";
 				_elements[name] = element;

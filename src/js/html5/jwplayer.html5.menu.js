@@ -54,29 +54,30 @@
 			if (menuOption) {
 				var selector = '#'+id+' .'+OPTION_CLASS;
 				
-				_css(selector, {
-					'background': _formatBackground(menuOption),
+				_css(selector, utils.extend(_formatBackground(menuOption), {
 					height: menuOption.height,
 					color: _settings.fontcolor,
 					'padding-left': menuOption.width,
 					font: _settings.fontweight + " " + _settings.fontsize + "px Arial,Helvetica,sans-serif",
 					'line-height': menuOption.height,
 					'text-transform': (_settings.fontcase == "upper") ? "uppercase" : UNDEFINED 
-				});
-				_css(selector+":hover", {
-					'background': _formatBackground(menuOptionOver),
+				}));
+				_css(selector+":hover", utils.extend(_formatBackground(menuOptionOver), {
 					color: _settings.overcolor
-				});
-				_css(selector+".active", {
-					'background': _formatBackground(menuOptionActive),
+				}));
+				_css(selector+".active", utils.extend(_formatBackground(menuOptionActive), {
 					color: _settings.activecolor
-				});
+				}));
 			}
 			_overlay.setContents(_container);
 		}
 		
 		function _formatBackground(elem) {
-			return (elem && elem.src) ? "url(" + elem.src + ") no-repeat left/" + elem.width + "px " + elem.height + "px" : UNDEFINED;
+			if (!(elem && elem.src)) return {};
+			return {
+				background: "url(" + elem.src + ") no-repeat left",
+				'background-size': elem.width + "px " + elem.height + "px" 
+			};
 		}
 		
 		this.element = function() {

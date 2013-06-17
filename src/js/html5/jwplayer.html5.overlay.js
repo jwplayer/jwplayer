@@ -126,16 +126,17 @@
 			var skinElem = _getSkinElement(name),
 				elem = _createElement(className, _container);
 			
-			_css(_internalSelector(className.replace(" ", ".")), {
-				'background': _formatBackground(skinElem)
-			});
+			_css(_internalSelector(className.replace(" ", ".")), _formatBackground(skinElem));
 			
 			return [elem, skinElem];
 			
 		}
 		
 		function _formatBackground(elem) {
-			return "url("+elem.src+") center/" + elem.width + "px " + elem.height + "px";
+			return {
+				background: "url("+elem.src+") center",
+				'background-size': elem.width + "px " + elem.height + "px"
+			}
 		}
 		
 		function _createBorderElement(dim1, dim2) {
@@ -143,11 +144,10 @@
 			var created = _createSkinElement('cap' + dim1 + dim2, "jwborder jw" + dim1 + (dim2 ? dim2 : "")), 
 				elem = created[0],
 				skinElem = created[1],
-				elemStyle = {
-					'background': _formatBackground(skinElem),
+				elemStyle = utils.extend(_formatBackground(skinElem), {
 					width: (dim1 == LEFT || dim2 == LEFT || dim1 == RIGHT || dim2 == RIGHT) ? skinElem.width: UNDEFINED,
 					height: (dim1 == TOP || dim2 == TOP || dim1 == BOTTOM || dim2 == BOTTOM) ? skinElem.height: UNDEFINED
-				};
+				});
 			
 			
 			elemStyle[dim1] = ((dim1 == BOTTOM && !_inverted) || (dim1 == TOP && _inverted)) ? _arrowHeight : 0;
