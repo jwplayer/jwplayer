@@ -20,6 +20,7 @@
 			_skinPath = skinPath,
 			_error = false,
 			_defaultSkin,
+			_mobileMultiplier = jwplayer.utils.isMobile() ? 1.5 : 1;
 			_ratio = 1;
 		
 		/** Load the skin **/
@@ -221,8 +222,8 @@
 		function _completeImageLoad(img, element, component) {
 			var elementObj = _getElement(component, element);
 			if(elementObj) {
-				elementObj.height = Math.round(img.height / _ratio);
-				elementObj.width = Math.round(img.width / _ratio);
+				elementObj.height = Math.round((img.height / _ratio) * _mobileMultiplier );
+				elementObj.width = Math.round((img.width / _ratio) * _mobileMultiplier);
 				elementObj.src = img.src;
 				elementObj.ready = true;
 				_resetCompleteIntervalTest();
