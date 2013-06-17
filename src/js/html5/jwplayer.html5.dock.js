@@ -77,7 +77,7 @@
 			_css(_internalSelector("button"), utils.extend(_formatBackground(button), {
 				width: button.width,
 				cursor: "pointer",
-				border: JW_CSS_NONE,
+				border: JW_CSS_NONE
 			}));
 			
 			_css(_internalSelector("button:hover"), _formatBackground(buttonOver));
