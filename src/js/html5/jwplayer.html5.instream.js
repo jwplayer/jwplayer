@@ -97,7 +97,7 @@
     			_instreamContainer.appendChild(_disp.element());
     
     			// Instream controlbar (if not iOS/Android)
-    			if (!_utils.isMobile()) {
+    			//if (!_utils.isMobile()) {
     				_cbar = new html5.controlbar(_self);
     				_instreamContainer.appendChild(_cbar.element());
     				_cbar.show();
@@ -105,7 +105,7 @@
     				// 	_cbar.show();
     				// 	_disp.show();
     				// }
-    			}
+    			//}
     
     			// Show the instream layer
     			_view.setupInstream(_instreamContainer, _cbar, _disp, _video);

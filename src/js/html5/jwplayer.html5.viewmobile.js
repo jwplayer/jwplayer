@@ -11,6 +11,10 @@
 		states = events.state,
 		_css = utils.css, 
 		_bounds = utils.bounds,
+		_isIPad = utils.isIPad(),
+		_isIPod = utils.isIPod(),
+		_isAndroid = utils.isAndroid(),
+        _isIOS = utils.isIOS(),
 		DOCUMENT = document, 
 		PLAYER_CLASS = "jwplayer", 
 		ASPECT_MODE = "aspectMode",
@@ -38,7 +42,7 @@
 		JW_CSS_NONE = "none",
 		JW_CSS_BLOCK = "block";
 	
-	html5.view = function(api, model) {
+	html5.viewmobile = function(api, model) {
 		var _api = api,
 			_model = model, 
 			_playerElement,
@@ -67,7 +71,6 @@
 			_errorState = FALSE,
 			_replayState,
 			_readyState,
-			_rightClickMenu,
 			_fullscreenInterval,
 			_inCB = FALSE,
 			_eventDispatcher = new events.eventdispatcher();
@@ -261,19 +264,11 @@
 			_dock = new html5.dock(_api, _model.componentConfig('dock'));
 			_controlsLayer.appendChild(_dock.element());
 			
-			if (_api.edition) {
-				_rightClickMenu = new html5.rightclick(_api, {abouttext: _model.abouttext, aboutlink: _model.aboutlink});	
-			}
-			else {
-				_rightClickMenu = new html5.rightclick(_api, {});
-			}
-			
 			if (_model.playlistsize && _model.playlistposition && _model.playlistposition != JW_CSS_NONE) {
 				_playlist = new html5.playlistcomponent(_api, {});
 				_playlistLayer.appendChild(_playlist.element());
 			}
 			
-
 			_controlbar = new html5.controlbar(_api, cbSettings);
 			_controlsLayer.appendChild(_controlbar.element());
 			if (_forcedControls) {
@@ -319,6 +314,9 @@
 				    } else if (_videoTag.webkitExitFullScreen) {
 				    	_videoTag.webkitExitFullScreen();
 				    }
+				}
+				if (_isIPad && _api.jwGetState() == states.PAUSED) {
+					setTimeout(_showDisplay, 500);
 				}
 			}
 
@@ -420,6 +418,7 @@
 		}
 		
 		function _isAudioMode(height) {
+			//if (_isMobile && !_forcedControls) return FALSE;
 			if (height.toString().indexOf("%") > 0) return FALSE;
 			else if (_model.playlistposition == "bottom") return height <= (40 + _model.playlistsize);
 			else return height <= 40; 	
@@ -467,6 +466,8 @@
 		 * This method sets the CSS of the container element to a fixed position with 100% width and height.
 		 */
 		function _fakeFullscreen(state) {
+		    //this was here to fix a bug with iOS resizing from fullscreen, but it caused another bug with android, multiple sources.
+			if (_isIOS) return;
 			if (state) {
 				_playerElement.className += " jwfullscreen";
 				(DOCUMENT.getElementsByTagName("body")[0]).style["overflow-y"] = JW_CSS_HIDDEN;
@@ -509,7 +510,7 @@
 		}
 		
 		function _showDock() {
-			if (_dock && !_audioMode && _replayState) _dock.show();
+			if (_dock && !_audioMode &&  _replayState) _dock.show();
 		}
 		function _hideDock() {
 			if (_dock && !(_replayState || _forcedControls)) {
@@ -525,12 +526,23 @@
 		}
 
 		function _showDisplay() {
-			if (_display && _model.controls && !_audioMode) {				
-				_display.show();
+			if (_display && _model.controls && !_audioMode) {
+				if (!_isIPod || _api.jwGetState() == states.IDLE)
+					_display.show();
 			}
+			/*if (_isMobile && !_forcedControls) {
+				if (_isAndroid) _controlsLayer.style.display = JW_CSS_BLOCK;
+				if (!(_isMobile && _model.fullscreen)) {
+					_videoTag.controls = false;
+				}
+			}*/
 		}
 		function _hideDisplay() {
 			if (_display) {
+				/*if (_isMobile && !_forcedControls) {
+					if (_isAndroid && _model.controls) _controlsLayer.style.display = JW_CSS_NONE;
+					_videoTag.controls = _model.controls;
+				}*/
 				_display.hide();
 			}
 		}
@@ -631,8 +643,7 @@
 				_showDisplay();
 
 				_showControls();
-//				} else if (_isIPad) {
-//					_videoTag.controls = FALSE;
+
 				break;
 			}
 		}
@@ -652,7 +663,6 @@
 			// _instreamDisplay = instreamDisp;
 			// _instreamControlbar = instreamCb
 			_stateHandler({newstate:states.PLAYING});
-			
 			
 			_instreamMode = TRUE;
 		}
@@ -752,9 +762,6 @@
 			_videoTag.removeEventListener('webkitbeginfullscreen', _fullscreenChangeHandler, FALSE);
 			_videoTag.removeEventListener('webkitendfullscreen', _fullscreenChangeHandler, FALSE);
 			DOCUMENT.removeEventListener('keydown', _keyHandler, FALSE);
-			if (_rightClickMenu) {
-				_rightClickMenu.destroy();
-			}
 		}
 
 		_init();
@@ -767,7 +774,7 @@
 		position: "relative",
 		display: 'block',
 		opacity: 0,
-		'min-height': 0,
+		'min-height': 200,
     	'-webkit-transition': JW_CSS_SMOOTH_EASE,
     	'-moz-transition': JW_CSS_SMOOTH_EASE,
     	'-o-transition': JW_CSS_SMOOTH_EASE

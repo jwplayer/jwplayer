@@ -17,7 +17,7 @@
 		function _init() {
 			_model = new html5.model(config); 
 			_api.id = _model.id;
-			_view = new html5.view(_api, _model); 
+			_view = utils.isMobile() ? new html5.viewmobile(_api,_model) : new html5.view(_api, _model); 
 			_controller = new html5.controller(_model, _view);
 			
 			_api._model = _model;
