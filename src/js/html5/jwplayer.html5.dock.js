@@ -78,11 +78,11 @@
 				width: button.width,
 				cursor: "pointer",
 				border: JW_CSS_NONE,
-				background: button.src
+				background: _formatBackground(button)
 			});
 			
-			if (buttonOver.src) _css(_internalSelector("button:hover"), { background: buttonOver.src });
-			if (buttonActive.src) _css(_internalSelector("button:active"), { background: buttonActive.src });
+			_css(_internalSelector("button:hover"), { background: _formatBackground(buttonOver) });
+			_css(_internalSelector("button:active"), { background: _formatBackground(buttonActive) });
 			_css(_internalSelector("button>div"), { opacity: _config.iconalpha });
 			_css(_internalSelector("button:hover>div"), { opacity: _config.iconalphaover });
 			_css(_internalSelector("button:active>div"), { opacity: _config.iconalphaactive});
@@ -93,11 +93,15 @@
 			_createImage("divider");
 		}
 		
+		function _formatBackground(elem) {
+			return (elem && elem.src) ? "url("+elem.src+") center/"+elem.width+"px "+elem.height+"px" : UNDEFINED
+		}
+		
 		function _createImage(className, parent) {
 			var skinElem = _getSkinElement(className);
 			_css(_internalSelector("." + className), {
 				width: skinElem.width,
-				background: skinElem.src
+				background: _formatBackground(skinElem)
 			});
 			return _createElement("div", className, parent);
 		}

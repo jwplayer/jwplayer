@@ -127,11 +127,15 @@
 				elem = _createElement(className, _container);
 			
 			_css(_internalSelector(className.replace(" ", ".")), {
-				'background-image': skinElem.src
+				'background': _formatBackground(skinElem)
 			});
 			
 			return [elem, skinElem];
 			
+		}
+		
+		function _formatBackground(elem) {
+			return "url("+elem.src+") center/" + elem.width + "px " + elem.height + "px";
 		}
 		
 		function _createBorderElement(dim1, dim2) {
@@ -140,7 +144,7 @@
 				elem = created[0],
 				skinElem = created[1],
 				elemStyle = {
-					'background-image': skinElem.src,
+					'background': _formatBackground(skinElem),
 					width: (dim1 == LEFT || dim2 == LEFT || dim1 == RIGHT || dim2 == RIGHT) ? skinElem.width: UNDEFINED,
 					height: (dim1 == TOP || dim2 == TOP || dim1 == BOTTOM || dim2 == BOTTOM) ? skinElem.height: UNDEFINED
 				};
@@ -223,14 +227,12 @@
 			_this.showing = true;
 			_container.style.opacity = 1;
 			_container.style.visibility = "visible";
-			//_css(_internalSelector(), { opacity: 1, visibility: "visible" });
 		}
 		
 		_this.hide = function() {
 			_this.showing = false;
 			_container.style.opacity = 0;
 			_container.style.visibility = JW_CSS_HIDDEN;
-			//_css(_internalSelector(), { opacity: 0, visibility: JW_CSS_HIDDEN });
 		}
 		
 		// Call constructor

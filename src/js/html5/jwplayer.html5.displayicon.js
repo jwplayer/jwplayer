@@ -99,8 +99,8 @@
 			style = utils.extend({}, style);
 			if (name.indexOf("Icon") > 0) _iconWidth = skinElem.width;
 			if (skinElem.src) {
-				style['background-image'] = 'url(' + skinElem.src + ')';
-				style['width'] = skinElem.width;// + (name.toLowerCase().indexOf("cap") == 0 ? 1 : 0);
+				style['background'] = 'no-repeat center/'+skinElem.width+'px '+skinElem.height+'px url(' + skinElem.src + ')';
+				style['width'] = skinElem.width;
 			}
 			_css(_internalSelector(selector), style);
 

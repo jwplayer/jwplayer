@@ -441,27 +441,27 @@
 		}
 		
 		function _buildImage(name, style, stretch, nocenter, vertical) {
-			var element = _createSpan();
-			element.className = 'jw'+name;
-			
-			var center = nocenter ? " left center" : " center";
+			var element = _createSpan(),
+				skinElem = _getSkinElement(name),
+				center = nocenter ? " left center" : " center",
+				size = "/" + _elementSize(skinElem),
+				newStyle;
 
-			var skinElem = _getSkinElement(name);
+			element.className = 'jw'+name;
 			element.innerHTML = "&nbsp;";
+			
 			if (!skinElem || skinElem.src == "") {
 				return;
 			}
 			
-			var newStyle;
-			
 			if (stretch) {
 				newStyle = {
-					background: "url('" + skinElem.src + "') repeat-x " + center,
+					background: "url('" + skinElem.src + "') repeat-x " + center + size,
 					height: vertical ? skinElem.height : UNDEFINED 
 				};
 			} else {
 				newStyle = {
-					background: "url('" + skinElem.src + "') no-repeat" + center,
+					background: "url('" + skinElem.src + "') no-repeat" + center + size,
 					width: skinElem.width,
 					height: vertical ? skinElem.height : UNDEFINED 
 				};
@@ -500,18 +500,16 @@
 		}
 		
 		function _buttonStyle(selector, out, over) {
-			if (!out.src) {
-				return;
-			}
+			if (!out || !out.src) return;
 			
 			_css(selector, { 
 				width: out.width,
-				background: 'url('+ out.src +') center no-repeat'
+				background: 'url('+ out.src +') no-repeat center/' + _elementSize(out)
 			});
 			
 			if (over.src) {
 				_css(selector + ':hover', { 
-					background: 'url('+ over.src +') center no-repeat'
+					background: 'url('+ over.src +') no-repeat center/' + _elementSize(over)
 				});
 			}
 		}
@@ -607,14 +605,17 @@
 				var element = _createSpan();
 				element.id = _createElementId(name); 
 				element.className = "jwtext jw" + name;
-				css.background = "url(" + skinElement.src + ") no-repeat center";
-				css['background-size'] = "100% " + _getSkinElement("background").height + "px";
+				css.background = "url(" + skinElement.src + ") no-repeat center/"+_elementSize(_getSkinElement("background"));
 				_css(_internalSelector('.jw'+name), css);
 				element.innerHTML = "00:00";
 				_elements[name] = element;
 				return element;
 			}
 			return null;
+		}
+		
+		function _elementSize(skinElem) {
+			return skinElem ? parseInt(skinElem.width) + "px " + parseInt(skinElem.height) + "px" : "0 0";
 		}
 		
 		function _buildDivider(divider) {

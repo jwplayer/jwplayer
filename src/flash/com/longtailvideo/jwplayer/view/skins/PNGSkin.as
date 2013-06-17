@@ -37,6 +37,8 @@ package com.longtailvideo.jwplayer.view.skins {
 		protected var _props:SkinProperties = new SkinProperties();
 		protected var _loaders:Dictionary = new Dictionary();
 		protected var _components:Object = {};
+		/* "Pixelratio" skin attribute, which allows for high pixel-density images */ 
+		protected var _ratio:Number = 1; 
 		
 		protected var _errorState:Boolean = false;
 
@@ -79,7 +81,11 @@ package com.longtailvideo.jwplayer.view.skins {
 			}
 			
 			for each (var attrib:XML in _skinXML.attributes()) {
-				_props[attrib.localName()] = attrib.toString();
+				if (attrib.localName() == "pixelratio") {
+					_ratio = Number(attrib.toString());
+				} else {
+					_props[attrib.localName()] = attrib.toString();
+				}
 			}
 			
 			var playerVersion:Number = Number(PlayerVersion.version.replace(/^(\d\.\d+).*/, "$1"));
@@ -101,30 +107,8 @@ package com.longtailvideo.jwplayer.view.skins {
 				loadElements(comp.@name.toString(), comp..element);
 			}
 
-/*			var cbLayout:XML = (_skinXML.components.component.(@name=="controlbar").layout as XMLList)[0] as XML;
-			if (cbLayout) {
-				parseControlbarLayout(cbLayout);
-			}
-*/			
 		}
-/*
-		protected function parseControlbarLayout(layout:XML):void {
-			_props.layout['controlbar'] = {};
-			for each(var group:XML in layout.group) {
-				var groupArray:Array = new Array();
-				for each(var element:XML in group.*) {
-					groupArray.push({
-						type: element.localName(),
-						name: element.@name.toString(),
-						element: element.@element.toString(),
-						width: (element.localName() == "divider" ? Number(element.@width.toString()) : null)
-					});
-				}
-				_props.layout['controlbar'][group.@position.toString().toLowerCase()] = groupArray;
-			}
-		}
-*/
-		
+
 		protected function parseConfig(settings:XMLList, component:String=""):void {
 			for each(var setting:XML in settings.setting) {
 				if (component) {
@@ -206,7 +190,6 @@ package com.longtailvideo.jwplayer.view.skins {
 			if (numElements > 0) {
 				return;
 			}
-			
 			dispatchEvent(new Event(Event.COMPLETE));
 		}
 		
@@ -225,6 +208,9 @@ package com.longtailvideo.jwplayer.view.skins {
 					var bitmap:Bitmap = new Bitmap((sprite.getChildAt(0) as Bitmap).bitmapData);
 					var newSprite:Sprite = new Sprite();
 					newSprite.addChild(bitmap);
+					newSprite.height = Math.round(bitmap.height / _ratio);
+					newSprite.width = Math.round(bitmap.width / _ratio);
+					Logger.log(newSprite.width, component + "." + element);
 					bitmap.name = 'bitmap';
 					return newSprite;
 				} else {

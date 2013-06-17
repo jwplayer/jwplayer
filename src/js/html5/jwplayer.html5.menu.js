@@ -44,13 +44,18 @@
 				menuOptionActive = _getSkinElement('menuOptionActive');
 
 			if (top && top.image) {
-				_container.appendChild(top.image);
+				topImage = new Image();
+				topImage.src = top.src;
+				topImage.width = top.width;
+				topImage.height = top.height;
+				_container.appendChild(topImage);
 			}
 			
 			if (menuOption) {
 				var selector = '#'+id+' .'+OPTION_CLASS;
+				
 				_css(selector, {
-					'background-image': menuOption.src,
+					'background': _formatBackground(menuOption),
 					height: menuOption.height,
 					color: _settings.fontcolor,
 					'padding-left': menuOption.width,
@@ -59,15 +64,19 @@
 					'text-transform': (_settings.fontcase == "upper") ? "uppercase" : UNDEFINED 
 				});
 				_css(selector+":hover", {
-					'background-image': menuOptionOver.src ? menuOptionOver.src : UNDEFINED,
+					'background': _formatBackground(menuOptionOver),
 					color: _settings.overcolor
 				});
 				_css(selector+".active", {
-					'background-image': menuOptionActive.src ? menuOptionActive.src : UNDEFINED,
+					'background': _formatBackground(menuOptionActive),
 					color: _settings.activecolor
 				});
 			}
 			_overlay.setContents(_container);
+		}
+		
+		function _formatBackground(elem) {
+			return (elem && elem.src) ? "url(" + elem.src + ") no-repeat left/" + elem.width + "px " + elem.height + "px" : UNDEFINED;
 		}
 		
 		this.element = function() {
@@ -128,7 +137,6 @@
 	}
 	
 	_css(_class(MENU_CLASS + ' ' + OPTION_CLASS), {
-		'background-repeat': "no-repeat",
 		cursor: "pointer",
 		position: "relative"
 	});

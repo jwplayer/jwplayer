@@ -19,7 +19,8 @@
 			_completeInterval,
 			_skinPath = skinPath,
 			_error = false,
-			_defaultSkin;
+			_defaultSkin,
+			_ratio = 1;
 		
 		/** Load the skin **/
 		function _load() {
@@ -61,7 +62,11 @@
 		function _loadSkin(xml) {
 			var skinNode = _getElementsByTagName(xml, 'skin')[0],
 				components = _getElementsByTagName(skinNode, 'component'),
-				target = skinNode.getAttribute("target"); 
+				target = skinNode.getAttribute("target"),
+				ratio = parseFloat(skinNode.getAttribute("pixelratio"));
+
+			// Make sure ratio is set; don't want any divides by zero
+			if (ratio > 0) _ratio = ratio; 
 
 			if (!target || parseFloat(target) > parseFloat(jwplayer.version)) {
 				_errorHandler("Incompatible player version")
@@ -216,8 +221,8 @@
 		function _completeImageLoad(img, element, component) {
 			var elementObj = _getElement(component, element);
 			if(elementObj) {
-				elementObj.height = img.height;
-				elementObj.width = img.width;
+				elementObj.height = Math.round(img.height / _ratio);
+				elementObj.width = Math.round(img.width / _ratio);
 				elementObj.src = img.src;
 				elementObj.ready = true;
 				_resetCompleteIntervalTest();
