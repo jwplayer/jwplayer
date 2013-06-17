@@ -129,33 +129,13 @@
 			_playerElement.appendChild(_container);
 			_playerElement.appendChild(_aspectLayer);
 			_playerElement.appendChild(_playlistLayer);
-			
-			DOCUMENT.addEventListener('webkitfullscreenchange', _fullscreenChangeHandler, FALSE);
-			_videoTag.addEventListener('webkitbeginfullscreen', _fullscreenChangeHandler, FALSE);
-			_videoTag.addEventListener('webkitendfullscreen', _fullscreenChangeHandler, FALSE);
-			DOCUMENT.addEventListener('mozfullscreenchange', _fullscreenChangeHandler, FALSE);
-			DOCUMENT.addEventListener('keydown', _keyHandler, FALSE);
+
 			
 			_api.jwAddEventListener(events.JWPLAYER_PLAYER_READY, _readyHandler);
 			_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
 			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_COMPLETE, _playlistCompleteHandler);
-
 			_stateHandler({newstate:states.IDLE});
 			
-			_controlsLayer.addEventListener('mouseout', function() {
-				clearTimeout(_controlsTimeout);
-				_controlsTimeout = setTimeout(_fadeControls, 10);
-			}, FALSE);
-			
-			_controlsLayer.addEventListener('mousemove', _startFade, FALSE);
-			if (utils.isIE()) {
-				// Not sure why this is needed
-				_videoLayer.addEventListener('mousemove', _startFade, FALSE);
-				_videoLayer.addEventListener('click', _display.clickHandler);
-			}
-			_componentFadeListeners(_controlbar);
-			_componentFadeListeners(_dock);
-			_componentFadeListeners(_logo);
 
 			_css('#' + _playerElement.id + '.' + ASPECT_MODE + " ." + VIEW_ASPECT_CONTAINER_CLASS, {
 				"margin-top": _model.aspectratio,
@@ -194,13 +174,6 @@
 			});
 		}
 		
-		function _componentFadeListeners(comp) {
-			if (comp) {
-				comp.element().addEventListener('mousemove', _cancelFade, FALSE);
-				comp.element().addEventListener('mouseout', _resumeFade, FALSE);
-			}
-		}
-	
 		function _createElement(elem, className) {
 			var newElement = DOCUMENT.createElement(elem);
 			if (className) newElement.className = className;
@@ -208,32 +181,18 @@
 		}
 		
 		function _startFade() {
-			clearTimeout(_controlsTimeout);
-			if (_api.jwGetState() == states.PLAYING || _api.jwGetState() == states.PAUSED) {
-				_showControls();
-				if (!_inCB) {
-					_controlsTimeout = setTimeout(_fadeControls, _timeoutDuration);
-				}
-			}
+
 		}
 		
 		function _cancelFade() {
-			clearTimeout(_controlsTimeout);
-			_inCB = TRUE;
 		}
 		
 		function _resumeFade() {
-			_inCB = FALSE;
+
 		}
 		
 		function _fadeControls(evt) {
-			if (_api.jwGetState() != states.BUFFERING) {
-				_hideControlbar();
-				_hideDock();
-				_hideLogo();
-			}
-			clearTimeout(_controlsTimeout);
-			_controlsTimeout = 0;
+
 		}
 
 		function forward(evt) {
@@ -245,35 +204,17 @@
 				height = _model.height,
 				cbSettings = _model.componentConfig('controlbar'),
 				displaySettings = _model.componentConfig('display');
-
-			_checkAudioMode(height);
-
-			_captions = new html5.captions(_api, _model.captions);
-			_captions.addEventListener(events.JWPLAYER_CAPTIONS_LIST, forward);
-			_captions.addEventListener(events.JWPLAYER_CAPTIONS_CHANGED, forward);
-			_controlsLayer.appendChild(_captions.element());
-
 			_display = new html5.display(_api, displaySettings);
-			_display.addEventListener(events.JWPLAYER_DISPLAY_CLICK, forward);
-			if (_audioMode) _display.hidePreview(TRUE);
 			_controlsLayer.appendChild(_display.element());
-			
 			_logo = new html5.logo(_api, _logoConfig);
 			_controlsLayer.appendChild(_logo.element());
 			
 			_dock = new html5.dock(_api, _model.componentConfig('dock'));
 			_controlsLayer.appendChild(_dock.element());
-			
-			if (_model.playlistsize && _model.playlistposition && _model.playlistposition != JW_CSS_NONE) {
-				_playlist = new html5.playlistcomponent(_api, {});
-				_playlistLayer.appendChild(_playlist.element());
-			}
-			
-			_controlbar = new html5.controlbar(_api, cbSettings);
+						_controlbar = new html5.controlbar(_api, cbSettings);
 			_controlsLayer.appendChild(_controlbar.element());
-			if (_forcedControls) {
-				_showControls();
-			}
+
+			_showControls();
 				
 			setTimeout(function() { 
 				_resize(_model.width, _model.height, false);
@@ -285,59 +226,7 @@
 		 * Otherwise, use the false fullscreen method using CSS. 
 		 **/
 		var _fullscreen = this.fullscreen = function(state) {
-			if (!utils.exists(state)) {
-				state = !_model.fullscreen;
-			}
-
-			if (state) {
-				if (!_model.fullscreen) {
-					_fakeFullscreen(TRUE);
-					if (_playerElement.requestFullScreen) {
-						_playerElement.requestFullScreen();
-					} else if (_playerElement.mozRequestFullScreen) {
-						_playerElement.mozRequestFullScreen();
-					} else if (_playerElement.webkitRequestFullScreen) {
-						_playerElement.webkitRequestFullScreen();
-					}
-					_model.setFullscreen(TRUE);
-				}
-			} else {
-				_fakeFullscreen(FALSE);
-				if (_model.fullscreen) {
-					_model.setFullscreen(FALSE);
-				    if (DOCUMENT.cancelFullScreen) {  
-				    	DOCUMENT.cancelFullScreen();  
-				    } else if (DOCUMENT.mozCancelFullScreen) {  
-				    	DOCUMENT.mozCancelFullScreen();  
-				    } else if (DOCUMENT.webkitCancelFullScreen) {  
-				    	DOCUMENT.webkitCancelFullScreen();  
-				    } else if (_videoTag.webkitExitFullScreen) {
-				    	_videoTag.webkitExitFullScreen();
-				    }
-				}
-				if (_isIPad && _api.jwGetState() == states.PAUSED) {
-					setTimeout(_showDisplay, 500);
-				}
-			}
-
-			_redrawComponent(_controlbar);
-			_redrawComponent(_display);
-			_redrawComponent(_dock);
-			_resizeMedia();
 			
-			if (_model.fullscreen) {
-				// Browsers seem to need an extra second to figure out how large they are in fullscreen...
-				_fullscreenInterval = setInterval(_resizeMedia, 200);
-			} else {
-				clearInterval(_fullscreenInterval);
-			}
-			
-			setTimeout(function() {
-				var dispBounds = utils.bounds(_container);
-				_model.width = dispBounds.width;
-				_model.height = dispBounds.height;
-				_eventDispatcher.sendEvent(events.JWPLAYER_RESIZE);
-			}, 0);
 		}
 		
 		function _redrawComponent(comp) {
@@ -348,7 +237,6 @@
 		 * Resize the player
 		 */
 		function _resize(width, height, sendResize) {
-			if (!utils.exists(sendResize)) sendResize = true;
 			if (utils.exists(width) && utils.exists(height)) {
 				_model.width = width;
 				_model.height = height;
@@ -367,61 +255,7 @@
 					if (_dock) _dock.offset(_logo.position() == "top-left" ? _logo.element().clientWidth + _logo.margin() : 0)
 				}, 500);
 			}
-
-			var playlistSize = _model.playlistsize,
-				playlistPos = _model.playlistposition
-			
-			_checkAudioMode(height);
-
-			if (_playlist && playlistSize && (playlistPos == "right" || playlistPos == "bottom")) {
-				_playlist.redraw();
-				
-				var playlistStyle = { display: JW_CSS_BLOCK }, containerStyle = {};
-				playlistStyle[playlistPos] = 0;
-				containerStyle[playlistPos] = playlistSize;
-				
-				if (playlistPos == "right") {
-					playlistStyle.width = playlistSize;
-				} else {
-					playlistStyle.height = playlistSize;
-				}
-				
-				_css(_internalSelector(VIEW_PLAYLIST_CONTAINER_CLASS), playlistStyle);
-				_css(_internalSelector(VIEW_MAIN_CONTAINER_CLASS), containerStyle);
-			}
-
 			_resizeMedia();
-
-			if (sendResize) _eventDispatcher.sendEvent(events.JWPLAYER_RESIZE);
-			
-			return;
-		}
-		
-		function _checkAudioMode(height) {
-			_audioMode = _isAudioMode(height);
-			if (_controlbar) {
-				if (_audioMode) {
-					_controlbar.audioMode(TRUE);
-					_showControls();
-					_display.hidePreview(TRUE);
-					_hideDisplay();
-					_showVideo(FALSE);
-				} else {
-					_controlbar.audioMode(FALSE);
-					_updateState(_api.jwGetState());
-				}
-			}
-			if (_logo && _audioMode) {
-				_hideLogo();
-			}
-			_playerElement.style.backgroundColor = _audioMode ? 'transparent' : '#000';
-		}
-		
-		function _isAudioMode(height) {
-			//if (_isMobile && !_forcedControls) return FALSE;
-			if (height.toString().indexOf("%") > 0) return FALSE;
-			else if (_model.playlistposition == "bottom") return height <= (40 + _model.playlistsize);
-			else return height <= 40; 	
 		}
 		
 		function _resizeMedia() {
@@ -432,71 +266,23 @@
 						_videoTag.videoWidth, _videoTag.videoHeight);
 			}
 		}
+		function _checkAudioMode(height) {
+
+		}
 		
+
+
 		this.resize = _resize;
 		this.resizeMedia = _resizeMedia;
-
 		var _completeSetup = this.completeSetup = function() {
 			_css(_internalSelector(), {opacity: 1});
 		}
-		
-		/**
-		 * Listen for keystrokes while in fullscreen mode.  
-		 * ESC returns from fullscreen
-		 * SPACE toggles playback
-		 **/
-		function _keyHandler(evt) {
-			if (_model.fullscreen) {
-				switch (evt.keyCode) {
-				// ESC
-				case 27:
-					_fullscreen(FALSE);
-					break;
-				// SPACE
-//				case 32:
-//					if (_model.state == states.PLAYING || _model.state = states.BUFFERING)
-//						_api.jwPause();
-//					break;
-				}
-			}
-		}
-		
-		/**
-		 * False fullscreen mode. This is used for browsers without full support for HTML5 fullscreen.
-		 * This method sets the CSS of the container element to a fixed position with 100% width and height.
-		 */
-		function _fakeFullscreen(state) {
-		    //this was here to fix a bug with iOS resizing from fullscreen, but it caused another bug with android, multiple sources.
-			if (_isIOS) return;
-			if (state) {
-				_playerElement.className += " jwfullscreen";
-				(DOCUMENT.getElementsByTagName("body")[0]).style["overflow-y"] = JW_CSS_HIDDEN;
-			} else {
-				_playerElement.className = _playerElement.className.replace(/\s+jwfullscreen/, "");
-				(DOCUMENT.getElementsByTagName("body")[0]).style["overflow-y"] = "";
-			}
-		}
 
-		/**
-		 * Return whether or not we're in native fullscreen
-		 */
-		function _isNativeFullscreen() {
-			var fsElements = [DOCUMENT.mozFullScreenElement, DOCUMENT.webkitCurrentFullScreenElement, _videoTag.webkitDisplayingFullscreen];
-			for (var i=0; i<fsElements.length; i++) {
-				if (fsElements[i] && (!fsElements[i].id || fsElements[i].id == _api.id))
-					return TRUE;
-			}
-			return FALSE;
-		}
-		
 		/**
 		 * If the browser enters or exits fullscreen mode (without the view's knowing about it) update the model.
 		 **/
 		function _fullscreenChangeHandler(evt) {
-			var fsNow = _isNativeFullscreen();
-			if (_model.fullscreen != fsNow) {
-				_fullscreen(fsNow);
-			}
+
 			
 		}
 		
@@ -504,13 +290,13 @@
 			if (_controlbar) _controlbar.show();
 		}
 		function _hideControlbar() {
-			if (_controlbar && !_audioMode && !_forcedControls) {
+			if (_controlbar && !_audioMode) {
 				_controlbar.hide();
 			}
 		}
 		
 		function _showDock() {
-			if (_dock && !_audioMode &&  _replayState) _dock.show();
+			if (_dock && !_audioMode) _dock.show();
 		}
 		function _hideDock() {
 			if (_dock && !(_replayState || _forcedControls)) {
@@ -526,23 +312,12 @@
 		}
 
 		function _showDisplay() {
-			if (_display && _model.controls && !_audioMode) {
-				if (!_isIPod || _api.jwGetState() == states.IDLE)
-					_display.show();
+			if (_display && _model.controls && !_audioMode) {				
+				_display.show();
 			}
-			/*if (_isMobile && !_forcedControls) {
-				if (_isAndroid) _controlsLayer.style.display = JW_CSS_BLOCK;
-				if (!(_isMobile && _model.fullscreen)) {
-					_videoTag.controls = false;
-				}
-			}*/
 		}
 		function _hideDisplay() {
 			if (_display) {
-				/*if (_isMobile && !_forcedControls) {
-					if (_isAndroid && _model.controls) _controlsLayer.style.display = JW_CSS_NONE;
-					_videoTag.controls = _model.controls;
-				}*/
 				_display.hide();
 			}
 		}
@@ -561,20 +336,6 @@
 			_showLogo();
 		}
 
-		// Subtracts rect2 rectangle from rect1 rectangle's area
-		function _subtractRect(rect1, rect2) {
-			if (rect2.right < rect1.left || rect2.left > rect1.right) return rect1;
-			if (rect2.bottom < rect1.top || rect2.top > rect1.bottom) return rect1;
-			
-			var bottomCutout = (rect2.y > rect2.height / 2),  
-				newRect = {
-					x: rect1.x,
-					y: bottomCutout ? rect1.y : rect2.bottom,
-					width: rect1.width
-				};
-			
-		}
-		
 		function _showVideo(state) {
 			state = state && !_audioMode;
 			_css(_internalSelector(VIEW_VIDEO_CONTAINER_CLASS), {
@@ -611,40 +372,17 @@
 		
 		function _updateState(state) {
 			switch(state) {
-			case states.PLAYING:
-				if (!_model.getVideo().audioMode()) {
-					_showVideo(TRUE);
-                    //_api.jwSetControls(false);
-					_resizeMedia();
-					_display.hidePreview(TRUE);
-					
-				} else {
+				case states.IDLE:
 					_showVideo(FALSE);
-					_display.hidePreview(_audioMode);
-				}
-				_startFade();
-				break;
-			case states.IDLE:
-				_showVideo(FALSE);
-				//_hideControls();
-				_fadeControls();
-				if (!_audioMode) {
-					_display.hidePreview(FALSE);
-					_showDisplay();
-					if (!_logoConfig.hide) _showLogo();	
-				}
-//				if (_isIPad) _videoTag.controls = FALSE;
-				break;
-			case states.BUFFERING:
-				_showDisplay();
-				_showControls();
-				break;
-			case states.PAUSED:
-				_showDisplay();
-
-				_showControls();
-
-				break;
+					//_hideControls();
+					_fadeControls();
+					if (!_audioMode) {
+						_display.hidePreview(FALSE);
+						_showDisplay();
+						if (!_logoConfig.hide) _showLogo();	
+					}
+	//				if (_isIPad) _videoTag.controls = FALSE;
+					break;
 			}
 		}
 		
@@ -706,16 +444,6 @@
 					_hideControls();
 					_hideDisplay();
 				}
-				// if (_instreamMode) {
-				// 	if (state) {
-				// 		_instreamControlbar.show();
-				// 		_instreamDisplay.show();
-				// 	}
-				// 	else {
-				// 		_instreamControlbar.hide();
-				// 		_instreamDisplay.hide();
-				// 	}
-				// }
 				_eventDispatcher.sendEvent(events.JWPLAYER_CONTROLS, { controls: newstate });
 			}
 		}
@@ -730,38 +458,11 @@
 		
 		
 		this.getSafeRegion = function() {
-			var controls = _model.controls,
-				dispBounds = utils.bounds(_container),
-				dispOffset = dispBounds.top,
-				cbBounds = utils.bounds(_controlbar ? _controlbar.element() : null),
-				dockButtons = (_dock.numButtons() > 0),
-				dockBounds = utils.bounds(_dock.element()),
-				logoBounds = utils.bounds(_logo.element()),
-				logoTop = (_logo.position().indexOf("top") == 0), 
-				bounds = {};
-			
-			bounds.x = 0;
-			bounds.y = Math.max(dockButtons ? (dockBounds.top + dockBounds.height - dispOffset) : 0, logoTop ? (logoBounds.top + logoBounds.height - dispOffset) : 0);
-			bounds.width = dispBounds.width;
-			if (cbBounds.height) 
-				bounds.height = (logoTop ? cbBounds.top : logoBounds.top) - bounds.y - dispOffset;
-			else
-				bounds.height = dispBounds.height - bounds.y;
-			
-			return {
-				x: 0,
-				y: controls ? bounds.y : 0,
-				width: controls ? bounds.width : 0,
-				height: controls ? bounds.height : 0
-			}
+
 		}
 
 		this.destroy = function () {
-			DOCUMENT.removeEventListener('webkitfullscreenchange', _fullscreenChangeHandler, FALSE);
-			DOCUMENT.removeEventListener('mozfullscreenchange', _fullscreenChangeHandler, FALSE);
-			_videoTag.removeEventListener('webkitbeginfullscreen', _fullscreenChangeHandler, FALSE);
-			_videoTag.removeEventListener('webkitendfullscreen', _fullscreenChangeHandler, FALSE);
-			DOCUMENT.removeEventListener('keydown', _keyHandler, FALSE);
+
 		}
 
 		_init();
