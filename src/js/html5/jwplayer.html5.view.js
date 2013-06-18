@@ -46,6 +46,7 @@
 	html5.view = function(api, model) {
 		var _api = api,
 			_model = model, 
+			_touchApi = utils.touch,
 			_playerElement,
 			_container,
 			_controlsLayer,
@@ -55,6 +56,7 @@
 			_timeoutDuration = 2000,
 			_videoTag,
 			_videoLayer,
+			_playerTouch,
 			// _instreamControlbar,
 			// _instreamDisplay,
 			_instreamLayer,
@@ -68,7 +70,6 @@
 			_captions,
 			_playlist,
 			_audioMode,
-			_forcedControls = (_model.mobilecontrols),
 			_errorState = FALSE,
 			_replayState,
 			_readyState,
@@ -131,29 +132,38 @@
 			_playerElement.appendChild(_container);
 			_playerElement.appendChild(_aspectLayer);
 			_playerElement.appendChild(_playlistLayer);
-			
-			DOCUMENT.addEventListener('webkitfullscreenchange', _fullscreenChangeHandler, FALSE);
-			_videoTag.addEventListener('webkitbeginfullscreen', _fullscreenChangeHandler, FALSE);
-			_videoTag.addEventListener('webkitendfullscreen', _fullscreenChangeHandler, FALSE);
-			DOCUMENT.addEventListener('mozfullscreenchange', _fullscreenChangeHandler, FALSE);
-			DOCUMENT.addEventListener('keydown', _keyHandler, FALSE);
-			
+			if (!_isMobile){
+				DOCUMENT.addEventListener('webkitfullscreenchange', _fullscreenChangeHandler, FALSE);
+				_videoTag.addEventListener('webkitbeginfullscreen', _fullscreenChangeHandler, FALSE);
+				_videoTag.addEventListener('webkitendfullscreen', _fullscreenChangeHandler, FALSE);
+				DOCUMENT.addEventListener('mozfullscreenchange', _fullscreenChangeHandler, FALSE);
+				DOCUMENT.addEventListener('keydown', _keyHandler, FALSE);
+			}
 			_api.jwAddEventListener(events.JWPLAYER_PLAYER_READY, _readyHandler);
+			
 			_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
+			
 			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_COMPLETE, _playlistCompleteHandler);
 
 			_stateHandler({newstate:states.IDLE});
 			
-			_controlsLayer.addEventListener('mouseout', function() {
-				clearTimeout(_controlsTimeout);
-				_controlsTimeout = setTimeout(_fadeControls, 10);
-			}, FALSE);
-			
-			_controlsLayer.addEventListener('mousemove', _startFade, FALSE);
-			if (utils.isIE()) {
-				// Not sure why this is needed
-				_videoLayer.addEventListener('mousemove', _startFade, FALSE);
-				_videoLayer.addEventListener('click', _display.clickHandler);
+			if (!_isMobile) {
+				_controlsLayer.addEventListener('mouseout', function() {
+					clearTimeout(_controlsTimeout);
+					_controlsTimeout = setTimeout(_fadeControls, 10);
+				}, FALSE);
+				
+				_controlsLayer.addEventListener('mousemove', _startFade, FALSE);
+				if (utils.isIE()) {
+					// Not sure why this is needed
+					_videoLayer.addEventListener('mousemove', _startFade, FALSE);
+					_videoLayer.addEventListener('click', _display.clickHandler);
+				}
+			} else {
+				
+				_playerTouch = new _touchApi(_controlsLayer);
+				_playerTouch.addEventListener(utils.touchEvents.TAP, _touchHandler);
+				
 			}
 			_componentFadeListeners(_controlbar);
 			_componentFadeListeners(_dock);
@@ -207,6 +217,19 @@
 			var newElement = DOCUMENT.createElement(elem);
 			if (className) newElement.className = className;
 			return newElement;
+		}
+		
+		
+		
+		var showing = false;
+		
+		function _touchHandler() {
+			showing ? _hideControls() : _showControls();
+			showing = !showing;
+			if (showing) {
+				
+				_controlsTimeout = setTimeout(_fadeControls, 4000);
+			}
 		}
 		
 		function _startFade() {
@@ -278,14 +301,10 @@
 				_playlistLayer.appendChild(_playlist.element());
 			}
 			
-			if (!_isMobile || _forcedControls) {
-				// TODO: allow override for showing HTML controlbar on iPads
-				_controlbar = new html5.controlbar(_api, cbSettings);
-				_controlsLayer.appendChild(_controlbar.element());
-				if (_forcedControls) {
-					_showControls();
-				}
-			}
+
+		// TODO: allow override for showing HTML controlbar on iPads
+			_controlbar = new html5.controlbar(_api, cbSettings);
+			_controlsLayer.appendChild(_controlbar.element());
 				
 			setTimeout(function() { 
 				_resize(_model.width, _model.height, false);
@@ -434,8 +453,8 @@
 		}
 		
 		function _isAudioMode(height) {
-			if (_isMobile && !_forcedControls) return FALSE;
-			else if (height.toString().indexOf("%") > 0) return FALSE;
+
+			if (height.toString().indexOf("%") > 0) return FALSE;
 			else if (_model.playlistposition == "bottom") return height <= (40 + _model.playlistsize);
 			else return height <= 40; 	
 		}
@@ -520,16 +539,16 @@
 			if (_controlbar) _controlbar.show();
 		}
 		function _hideControlbar() {
-			if (_controlbar && !_audioMode && !_forcedControls) {
+			if (_controlbar && !_audioMode) {
 				_controlbar.hide();
 			}
 		}
 		
 		function _showDock() {
-			if (_dock && !_audioMode && (!_isMobile || _replayState)) _dock.show();
+			if (_dock && !_audioMode) _dock.show();
 		}
 		function _hideDock() {
-			if (_dock && !(_replayState || _forcedControls)) {
+			if (_dock && !_replayState) {
 				_dock.hide();
 			}
 		}
@@ -538,7 +557,7 @@
 			if (_logo && !_audioMode) _logo.show();
 		}
 		function _hideLogo() {
-			if (_logo && (!_forcedControls || _audioMode)) _logo.hide(_audioMode);
+			if (_logo && _audioMode) _logo.hide(_audioMode);
 		}
 
 		function _showDisplay() {
@@ -546,19 +565,14 @@
 				if (!_isIPod || _api.jwGetState() == states.IDLE)
 					_display.show();
 			}
-			if (_isMobile && !_forcedControls) {
-				if (_isAndroid) _controlsLayer.style.display = JW_CSS_BLOCK;
-				if (!(_isMobile && _model.fullscreen)) {
-					_videoTag.controls = false;
-				}
+
+			if (!(_isMobile && _model.fullscreen)) {
+				_videoTag.controls = false;
 			}
+			
 		}
 		function _hideDisplay() {
 			if (_display) {
-				if (_isMobile && !_forcedControls) {
-					if (_isAndroid && _model.controls) _controlsLayer.style.display = JW_CSS_NONE;
-					_videoTag.controls = _model.controls;
-				}
 				_display.hide();
 			}
 		}
@@ -633,13 +647,6 @@
                     //_api.jwSetControls(false);
 					_resizeMedia();
 					_display.hidePreview(TRUE);
-					if (_isMobile) {
-						if (!(_isIPad && _forcedControls)) {
-							_hideDisplay();
-						}
-						//if (_instreamMode)
-						  //_api.jwSetControls(false);
-					}
 					
 				} else {
 					_showVideo(FALSE);
@@ -665,11 +672,11 @@
 				break;
 			case states.PAUSED:
 				_showDisplay();
-				if (!_isMobile || _forcedControls) {
+				//if (!_isMobile || _forcedControls) {
 					_showControls();
 //				} else if (_isIPad) {
 //					_videoTag.controls = FALSE;
-				}
+				//}
 				break;
 			}
 		}
