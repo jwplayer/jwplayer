@@ -22,6 +22,7 @@
 			_actionOnAttach,
 			_stopPlaylist = false,
 			_interruptPlay,
+			_isPhone = utils.isPhone(),
 			_queuedCalls = [];
 		
 		utils.extend(this, _eventDispatcher);
@@ -77,7 +78,14 @@
 		}
 		
 		function _bufferFullHandler(evt) {
-			_video.play();
+			if (_isPhone) {
+				// Needed for Android 4.0 phone
+				_video.play();
+	//			setTimeout(function() { _video.play(); }, 500);
+		//		setTimeout(function() { _video.play(); }, 1000);
+			} else {
+				_video.play();
+			}
 		}
 
 		function _load(item) {
@@ -137,6 +145,10 @@
 					_video.play();
 				}
 				
+				if (_isPhone) {
+					_view.fullscreen(true);
+				}
+
 				return true;
 			} catch (err) {
 				_eventDispatcher.sendEvent(events.JWPLAYER_ERROR, err);

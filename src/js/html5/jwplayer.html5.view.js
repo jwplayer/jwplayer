@@ -303,13 +303,17 @@
 
 			if (state) {
 				if (!_model.fullscreen) {
-					_fakeFullscreen(TRUE);
-					if (_playerElement.requestFullScreen) {
-						_playerElement.requestFullScreen();
-					} else if (_playerElement.mozRequestFullScreen) {
-						_playerElement.mozRequestFullScreen();
-					} else if (_playerElement.webkitRequestFullScreen) {
-						_playerElement.webkitRequestFullScreen();
+					if (_isMobile) {
+						_videoElement.webkitEnterFullScreen();
+					} else {
+						_fakeFullscreen(TRUE);
+						if (_playerElement.requestFullScreen) {
+							_playerElement.requestFullScreen();
+						} else if (_playerElement.mozRequestFullScreen) {
+							_playerElement.mozRequestFullScreen();
+						} else if (_playerElement.webkitRequestFullScreen) {
+							_playerElement.webkitRequestFullScreen();
+						}
 					}
 					_model.setFullscreen(TRUE);
 				}

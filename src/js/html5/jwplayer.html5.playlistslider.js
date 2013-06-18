@@ -8,7 +8,8 @@
  */
 (function(html5) {
 	var events = jwplayer.events,
-		utils = jwplayer.utils, 
+		utils = jwplayer.utils,
+		touchevents = utils.touchEvents,
 		_css = utils.css,
 	
 		SLIDER_CLASS = 'jwslider',
@@ -43,6 +44,8 @@
 			_thumbPercent = 0, 
 			_dragTimeout, 
 			_dragInterval,
+			_isMobile = utils.isMobile(),
+			_touch,
 			_visible = true,
 			
 			// Skin elements
@@ -75,8 +78,14 @@
 			_wrapper = _createElement(SLIDER_CLASS, null, parent);
 			_wrapper.id = id;
 			
-			_wrapper.addEventListener('mousedown', _startDrag, false);
-			_wrapper.addEventListener('click', _moveThumb, false);
+			_touch = new utils.touch(_pane);
+			
+			if (_isMobile) {
+				_touch.addEventListener(touchevents.DRAG, _touchDrag);
+			} else {
+				_wrapper.addEventListener('mousedown', _startDrag, false);
+				_wrapper.addEventListener('click', _moveThumb, false);
+			}
 			
 			_populateSkinElements();
 			
@@ -92,8 +101,10 @@
 			_rail = _createElement(SLIDER_RAIL_CLASS, null, _wrapper);
 			_thumb = _createElement(SLIDER_THUMB_CLASS, null, _wrapper);
 			
-			capTop.addEventListener('mousedown', _scroll(-1), false);
-			capBottom.addEventListener('mousedown', _scroll(1), false);
+			if (!_isMobile) {
+				capTop.addEventListener('mousedown', _scroll(-1), false);
+				capBottom.addEventListener('mousedown', _scroll(1), false);
+			}
 			
 			_createElement(SLIDER_RAILTOP_CLASS, _sliderRailCapTop, _rail);
 			_createElement(SLIDER_RAILBACK_CLASS, _sliderRail, _rail, true);
@@ -115,8 +126,10 @@
 			_redraw();
 			
 			if (_pane) {
-				_pane.addEventListener("mousewheel", _scrollHandler, false);
-				_pane.addEventListener("DOMMouseScroll", _scrollHandler, false);
+				if (!_isMobile) {
+					_pane.addEventListener("mousewheel", _scrollHandler, false);
+					_pane.addEventListener("DOMMouseScroll", _scrollHandler, false);
+				}
 			}
 		}
 		
@@ -214,6 +227,10 @@
 			DOCUMENT.onselectstart = function() { return false; }; 
 			WINDOW.addEventListener('mousemove', _moveThumb, false);
 			WINDOW.addEventListener('mouseup', _endDrag, false);
+		}
+		
+		function _touchDrag(evt) {
+			_setThumbPosition(_thumbPercent - (evt.deltaY / _pane.clientHeight));
 		}
 		
 		function _moveThumb(evt) {

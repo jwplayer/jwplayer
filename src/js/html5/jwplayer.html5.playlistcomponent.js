@@ -63,6 +63,7 @@
 				'itemImage': undefined,
 				'itemActive': undefined
 			},
+			_isMobile = utils.isMobile(),
 			_this = this;
 
 		_this.element = function() {
@@ -299,7 +300,12 @@
 			
 			for (var i=0; i<_playlist.length; i++) {
 				var li = _createItem(i);
-				li.onclick = _clickHandler(i);
+				if (_isMobile) {
+					var touch = new utils.touch(li);
+					touch.addEventListener(utils.touchEvents.TAP, _clickHandler(i));
+				} else {
+					li.onclick = _clickHandler(i);
+				}
 				_appendChild(_ul, li);
 			}
 			
