@@ -10,19 +10,15 @@
     var TOUCH_MOVE = "touchmove",
         TOUCH_START = "touchstart",
         TOUCH_END = "touchend",
-        TOUCH_CANCEL = "touchcancel",
-        DRAG = "drag",
-        DRAG_START = "dragStart",
-        DRAG_END = "dragEnd",
-        TAP = "tap";
+        TOUCH_CANCEL = "touchcancel";
 
     utils.touch = function(elem) {
-
         var _elem = elem,
             _isListening = false,
             _handlers = {},
             _startEvent = null,
-            _gotMove = false;
+            _gotMove = false, 
+            _events = utils.touchEvents;
 
         document.addEventListener(TOUCH_MOVE, touchHandler);
         document.addEventListener(TOUCH_END, touchHandler);
@@ -31,28 +27,29 @@
 
         function touchHandler(evt) {
             if(evt.type == TOUCH_START) {
+                evt.cancelBubble = true;
                 _isListening = true;
-                _startEvent = createEvent(DRAG_START, evt);
+                _startEvent = createEvent(_events.DRAG_START, evt);
             }
             else if(evt.type == TOUCH_MOVE) {
                 if(_isListening) {
                     if(_gotMove) {
-                        triggerEvent(DRAG, evt);
+                        triggerEvent(_events.DRAG, evt);
                     }
                     else {
-                        triggerEvent(DRAG_START, evt, _startEvent);
+                        triggerEvent(_events.DRAG_START, evt, _startEvent);
                         _gotMove = true;
-                        triggerEvent(DRAG, evt);
+                        triggerEvent(_events.DRAG, evt);
                     }
                 }
             }
             else {
                 if(_isListening) {
                     if(_gotMove) {
-                        triggerEvent(DRAG_END, evt);
+                        triggerEvent(_events.DRAG_END, evt);
                     }
                     else {
-                        triggerEvent(TAP, evt);
+                        triggerEvent(_events.TAP, evt);
                     }
                 }
                 _gotMove = false;
@@ -90,7 +87,7 @@
             evt.y = (touch.clientY - rect.top);
             evt.deltaX = 0;
             evt.deltaY = 0;
-            if(type != TAP && _startEvent) {
+            if(type != _events.TAP && _startEvent) {
                 evt.deltaX = evt.x - _startEvent.x;
                 evt.deltaY = evt.y - _startEvent.y;
             }
