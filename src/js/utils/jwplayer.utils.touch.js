@@ -21,13 +21,24 @@
             _events = utils.touchEvents;
 
         document.addEventListener(TOUCH_MOVE, touchHandler);
-        document.addEventListener(TOUCH_END, touchHandler);
+        document.addEventListener(TOUCH_END, documentEndHandler);
         document.addEventListener(TOUCH_CANCEL, touchHandler);
         elem.addEventListener(TOUCH_START, touchHandler);
+        elem.addEventListener(TOUCH_END, touchHandler);
+
+        function documentEndHandler(evt) {
+            if(_isListening) {
+                if(_gotMove) {
+                    triggerEvent(_events.DRAG_END, evt);
+                }
+            }
+            _gotMove = false;
+            _isListening = false;
+            _startEvent = null; 
+        }
 
         function touchHandler(evt) {
             if(evt.type == TOUCH_START) {
-                evt.cancelBubble = true;
                 _isListening = true;
                 _startEvent = createEvent(_events.DRAG_START, evt);
             }
@@ -45,6 +56,8 @@
             }
             else {
                 if(_isListening) {
+                    // This allows the controlbar/dock/logo tap events not to be forwarded to the view
+                    evt.cancelBubble = true;
                     if(_gotMove) {
                         triggerEvent(_events.DRAG_END, evt);
                     }
