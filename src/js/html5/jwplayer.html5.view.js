@@ -11,6 +11,11 @@
 		states = events.state,
 		_css = utils.css, 
 		_bounds = utils.bounds,
+		_isMobile = utils.isMobile(),
+		_isIPad = utils.isIPad(),
+		_isIPod = utils.isIPod(),
+		_isAndroid = utils.isAndroid(),
+        _isIOS = utils.isIOS(),
 		DOCUMENT = document, 
 		PLAYER_CLASS = "jwplayer", 
 		ASPECT_MODE = "aspectMode",
@@ -273,11 +278,13 @@
 				_playlistLayer.appendChild(_playlist.element());
 			}
 			
-
-			_controlbar = new html5.controlbar(_api, cbSettings);
-			_controlsLayer.appendChild(_controlbar.element());
-			if (_forcedControls) {
-				_showControls();
+			if (!_isMobile || _forcedControls) {
+				// TODO: allow override for showing HTML controlbar on iPads
+				_controlbar = new html5.controlbar(_api, cbSettings);
+				_controlsLayer.appendChild(_controlbar.element());
+				if (_forcedControls) {
+					_showControls();
+				}
 			}
 				
 			setTimeout(function() { 
@@ -319,6 +326,9 @@
 				    } else if (_videoTag.webkitExitFullScreen) {
 				    	_videoTag.webkitExitFullScreen();
 				    }
+				}
+				if (_isIPad && _api.jwGetState() == states.PAUSED) {
+					setTimeout(_showDisplay, 500);
 				}
 			}
 
@@ -420,7 +430,8 @@
 		}
 		
 		function _isAudioMode(height) {
-			if (height.toString().indexOf("%") > 0) return FALSE;
+			if (_isMobile && !_forcedControls) return FALSE;
+			else if (height.toString().indexOf("%") > 0) return FALSE;
 			else if (_model.playlistposition == "bottom") return height <= (40 + _model.playlistsize);
 			else return height <= 40; 	
 		}
@@ -467,6 +478,8 @@
 		 * This method sets the CSS of the container element to a fixed position with 100% width and height.
 		 */
 		function _fakeFullscreen(state) {
+		    //this was here to fix a bug with iOS resizing from fullscreen, but it caused another bug with android, multiple sources.
+			if (_isIOS) return;
 			if (state) {
 				_playerElement.className += " jwfullscreen";
 				(DOCUMENT.getElementsByTagName("body")[0]).style["overflow-y"] = JW_CSS_HIDDEN;
@@ -509,7 +522,7 @@
 		}
 		
 		function _showDock() {
-			if (_dock && !_audioMode) _dock.show();
+			if (_dock && !_audioMode && (!_isMobile || _replayState)) _dock.show();
 		}
 		function _hideDock() {
 			if (_dock && !(_replayState || _forcedControls)) {
@@ -525,12 +538,23 @@
 		}
 
 		function _showDisplay() {
-			if (_display && _model.controls && !_audioMode) {				
-				_display.show();
+			if (_display && _model.controls && !_audioMode) {
+				if (!_isIPod || _api.jwGetState() == states.IDLE)
+					_display.show();
+			}
+			if (_isMobile && !_forcedControls) {
+				if (_isAndroid) _controlsLayer.style.display = JW_CSS_BLOCK;
+				if (!(_isMobile && _model.fullscreen)) {
+					_videoTag.controls = false;
+				}
 			}
 		}
 		function _hideDisplay() {
 			if (_display) {
+				if (_isMobile && !_forcedControls) {
+					if (_isAndroid && _model.controls) _controlsLayer.style.display = JW_CSS_NONE;
+					_videoTag.controls = _model.controls;
+				}
 				_display.hide();
 			}
 		}
@@ -600,11 +624,18 @@
 		function _updateState(state) {
 			switch(state) {
 			case states.PLAYING:
-				if (!_model.getVideo().audioMode()) {
+				if (!_model.getVideo().audioMode() || _isMobile) {
 					_showVideo(TRUE);
                     //_api.jwSetControls(false);
 					_resizeMedia();
 					_display.hidePreview(TRUE);
+					if (_isMobile) {
+						if (!(_isIPad && _forcedControls)) {
+							_hideDisplay();
+						}
+						//if (_instreamMode)
+						  //_api.jwSetControls(false);
+					}
 					
 				} else {
 					_showVideo(FALSE);
@@ -621,14 +652,20 @@
 					_showDisplay();
 					if (!_logoConfig.hide) _showLogo();	
 				}
+//				if (_isIPad) _videoTag.controls = FALSE;
 				break;
 			case states.BUFFERING:
 				_showDisplay();
-				_showControls();
+				if (_isMobile) _showVideo(TRUE);
+				else _showControls();
 				break;
 			case states.PAUSED:
 				_showDisplay();
-				_showControls();
+				if (!_isMobile || _forcedControls) {
+					_showControls();
+//				} else if (_isIPad) {
+//					_videoTag.controls = FALSE;
+				}
 				break;
 			}
 		}
@@ -649,7 +686,10 @@
 			// _instreamControlbar = instreamCb
 			_stateHandler({newstate:states.PLAYING});
 			
-			
+			if (_isMobile) {
+                _instreamHadControls = _api.jwGetControls();
+                _api.jwSetControls(FALSE);
+            }
 			_instreamMode = TRUE;
 		}
 		
@@ -660,6 +700,9 @@
 			_instreamLayer.innerHTML = "";
 			_instreamVideo = null;
 			_instreamMode = FALSE;
+			if (_isMobile) {
+		        _api.jwSetControls(_instreamHadControls);
+			}
 			//_resize(_model.width, _model.height);
 		}
 		
@@ -763,7 +806,7 @@
 		position: "relative",
 		display: 'block',
 		opacity: 0,
-		'min-height': 0,
+		'min-height': utils.isMobile() ? 200 : 0,
     	'-webkit-transition': JW_CSS_SMOOTH_EASE,
     	'-moz-transition': JW_CSS_SMOOTH_EASE,
     	'-o-transition': JW_CSS_SMOOTH_EASE
