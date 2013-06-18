@@ -23,13 +23,15 @@
 		JW_CSS_NONE = "none",
 		JW_CSS_100PCT = "100%",
 		JW_CSS_HIDDEN = "hidden",
-		JW_CSS_SMOOTH_EASE = "opacity .25s, background-image .25s, color .25s";
+		JW_CSS_SMOOTH_EASE = "opacity .25s, background-image .25s, color .25s",
+		JW_VISIBILITY_TIMEOUT = 150;
 
 	
 	html5.display = function(api, config) {
 		var _api = api,
 			_skin = api.skin,
 			_display, _preview,
+			_displayTouch,
 			_item,
 			_image, _imageWidth, _imageHeight, _imageURL, 
 			_imageHidden = FALSE,
@@ -38,6 +40,7 @@
 			_completedState = FALSE,
 			_visibilities = {},
 			_hiding,
+			_hideTimeout,
 			_button,
 			_forced,
 			_previousState,
@@ -70,7 +73,13 @@
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
 			_api.jwAddEventListener(events.JWPLAYER_ERROR, _errorHandler);
 
-			_display.addEventListener('click', _clickHandler, FALSE);
+			if (!utils.isMobile()) {
+				_display.addEventListener('click', _clickHandler, FALSE);
+			}
+			else {
+				_displayTouch = new utils.touch(_display);
+				_displayTouch.addEventListener(utils.touchEvents.TAP, _clickHandler);
+			}
 			
 			_createIcons();
 			//_createTextFields();
@@ -83,6 +92,7 @@
 				_alternateClickHandler(evt);
 				return;
 			}
+			if (utils.isMobile() && _hiding) return;
 			switch (_api.jwGetState()) {
 			case states.PLAYING:
 			case states.BUFFERING:
@@ -212,6 +222,10 @@
 		this.hidePreview = function(state) {
 			_imageHidden = state;
 			_setVisibility(D_PREVIEW_CLASS, !state);
+			if (state) {
+				_hiding = true;
+				_hideDisplay();
+			}
 		}
 
 		this.element = function() {
@@ -279,11 +293,34 @@
 		}
 
 		this.show = function() {
-			if (_button && _getState() != states.PLAYING) _button.show();
+			if (_button && _getState() != states.PLAYING) {
+				_clearHideTimeout();
+				_display.style.display = "block";
+				_button.show();
+				_hiding = false;
+			}
 		}
 		
 		this.hide = function() {
-			if (_button) _button.hide();
+			if (_button) {
+				_button.hide();
+				_hiding = true;
+			}
+			_hideDisplay();
+		}
+
+		function _hideDisplay() {
+			if (utils.isMobile()) {
+				_clearHideTimeout();
+				_hideTimeout = setTimeout(function() {
+					_display.style.display = JW_CSS_NONE;
+				}, JW_VISIBILITY_TIMEOUT);
+			}
+		}
+
+		function _clearHideTimeout() {
+			clearTimeout(_hideTimeout);
+			_hideTimeout = undefined;
 		}
 
 		/** NOT SUPPORTED : Using this for now to hack around instream API **/
