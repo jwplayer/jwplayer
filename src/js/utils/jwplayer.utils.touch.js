@@ -56,12 +56,12 @@
             }
             else {
                 if(_isListening) {
-                    // This allows the controlbar/dock/logo tap events not to be forwarded to the view
-                    evt.cancelBubble = true;
                     if(_gotMove) {
                         triggerEvent(_events.DRAG_END, evt);
                     }
                     else {
+                        // This allows the controlbar/dock/logo tap events not to be forwarded to the view
+                        evt.cancelBubble = true;
                         triggerEvent(_events.TAP, evt);
                     }
                 }
