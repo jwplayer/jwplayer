@@ -116,8 +116,10 @@
 			_timeOverlayThumb,
 			_timeOverlayText,
 			_hdTimer,
+			_hdTapTimer,
 			_hdOverlay,
 			_ccTimer,
+			_ccTapTimer,
 			_ccOverlay,
 			_fullscreenOverlay,
 			_redrawTimeout,
@@ -488,7 +490,7 @@
 			if (!utils.isMobile()) {
 				button.addEventListener("click", _buttonClickHandler(name), FALSE);	
 			}
-			else {
+			else if (name != "hd" && name != "cc") {
 				var buttonTouch = new utils.touch(button); 
 				buttonTouch.addEventListener(utils.touchEvents.TAP, _buttonClickHandler(name));
 			}
@@ -975,14 +977,14 @@
 					_addOverlay(_hdOverlay, _elements.hd, _showHd, _setHdTimer);
 				}
 				else {
-					_addMobileOverlay(_hdOverlay, _elements.hd, _showHd, _setHdTimer);	
+					_addMobileOverlay(_hdOverlay, _elements.hd, _showHd, _hdTapTimer);
 				}
 				_overlays.hd = _hdOverlay;
 			}
 			if (_elements.cc) {
 				_ccOverlay = new html5.menu('cc', _id+"_cc", _skin, _switchCaption);
 				if (!utils.isMobile()) {
-					_addOverlay(_ccOverlay, _elements.cc, _showCc, _setCcTimer);
+					_addOverlay(_ccOverlay, _elements.cc, _showCc, _ccTapTimer);
 				}
 				else {
 					_addMobileOverlay(_ccOverlay, _elements.cc, _showCc, _setCcTimer);	
@@ -1035,8 +1037,15 @@
 			_appendChild(button, element);
 			var buttonTouch = new utils.touch(button); 
 			buttonTouch.addEventListener(utils.touchEvents.TAP, function(evt) {
-				setTimeout(overlay.hide, 3000);
-				tapAction();
+				if (timer) {
+					clearTimeout(timer);
+					timer = undefined;
+					overlay.hide();
+				}
+				else {
+					timer = setTimeout(overlay.hide, 4000);
+					tapAction();
+				}
 			});
 			_css('#'+element.id, {
 				left: "50%"
