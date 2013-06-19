@@ -280,7 +280,7 @@
 			_display = new html5.display(_api, displaySettings);
 			_display.addEventListener(events.JWPLAYER_DISPLAY_CLICK, forward);
 			if (_audioMode) _display.hidePreview(TRUE);
-			// _controlsLayer.appendChild(_display.element());
+			_controlsLayer.appendChild(_display.element());
 			
 			_logo = new html5.logo(_api, _logoConfig);
 			_controlsLayer.appendChild(_logo.element());
