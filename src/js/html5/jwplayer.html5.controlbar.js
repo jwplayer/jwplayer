@@ -205,19 +205,21 @@
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_LEVEL_CHANGED, _qualityLevelChanged);
 			_api.jwAddEventListener(events.JWPLAYER_CAPTIONS_LIST, _captionsHandler);
 			_api.jwAddEventListener(events.JWPLAYER_CAPTIONS_CHANGED, _captionChanged);
-			_controlbar.addEventListener('mouseover', function(evt) {
-				// Slider listeners
-				WINDOW.addEventListener('mousemove', _sliderMouseEvent, FALSE);
-				WINDOW.addEventListener('mouseup', _sliderMouseEvent, FALSE);
-				WINDOW.addEventListener('mousedown', _killSelect, FALSE);
-			}, false);
-			_controlbar.addEventListener('mouseout', function(evt){
-				// Slider listeners
-				WINDOW.removeEventListener('mousemove', _sliderMouseEvent);
-				WINDOW.removeEventListener('mouseup', _sliderMouseEvent);
-				WINDOW.removeEventListener('mousedown', _killSelect);
-				DOCUMENT.onselectstart = null;
-			}, false);
+			if (!utils.isMobile()) {
+				_controlbar.addEventListener('mouseover', function(evt) {
+					// Slider listeners
+					WINDOW.addEventListener('mousemove', _sliderMouseEvent, FALSE);
+					WINDOW.addEventListener('mouseup', _sliderMouseEvent, FALSE);
+					WINDOW.addEventListener('mousedown', _killSelect, FALSE);
+				}, false);
+				_controlbar.addEventListener('mouseout', function(evt){
+					// Slider listeners
+					WINDOW.removeEventListener('mousemove', _sliderMouseEvent);
+					WINDOW.removeEventListener('mouseup', _sliderMouseEvent);
+					WINDOW.removeEventListener('mousedown', _killSelect);
+					DOCUMENT.onselectstart = null;
+				}, false);
+			}
 		}
 		
 		function _timeUpdated(evt) {
@@ -523,7 +525,7 @@
 				'background-size': _elementSize(out)
 			});
 			
-			if (over.src) {
+			if (over.src && !utils.isMobile()) {
 				_css(selector + ':hover', { 
 					background: 'url('+ over.src +') no-repeat center',
 					'background-size': _elementSize(over)
@@ -817,9 +819,17 @@
 				_appendChild(vertical && progressRail ? progressRail : rail, thumb);
 			}
 			
-			rail.addEventListener('mousedown', _sliderMouseDown(name), FALSE);
+			if (!utils.isMobile()) {
+				rail.addEventListener('mousedown', _sliderMouseDown(name), FALSE);
+			}
+			else {
+				var railTouch = new utils.touch(rail);
+				railTouch.addEventListener(utils.touchEvents.DRAG_START, _sliderDragStart);
+				railTouch.addEventListener(utils.touchEvents.DRAG, _sliderDragEvent);
+				railTouch.addEventListener(utils.touchEvents.DRAG_END, _sliderDragEvent);	
+			}
 			
-			if (name == "time") {
+			if (name == "time" && !utils.isMobile()) {
 				rail.addEventListener('mousemove', _showTimeTooltip, FALSE);
 				rail.addEventListener('mouseout', _hideTimeTooltip, FALSE);
 			}
@@ -858,6 +868,40 @@
 			});
 		}
 
+		function _sliderDragStart(evt) {
+			_elements['timeRail'].className = "jwrail";
+			if (!_idle()) {
+				_api.jwSeekDrag(TRUE);
+				_dragging = "time";
+				_eventDispatcher.sendEvent(events.JWPLAYER_USER_ACTION);
+			}
+		}
+
+		function _sliderDragEvent(evt) {
+			if (!_dragging) return;
+			var currentTime = (new Date()).getTime();
+			var rail = _elements[_dragging].getElementsByClassName('jwrail')[0],
+				railRect = utils.bounds(rail),
+				pct = evt.x / railRect.width;
+			if (pct > 100) {
+				pct = 100;
+			}
+			if (evt.type == utils.touchEvents.DRAG_END) {
+				_api.jwSeekDrag(FALSE);
+				_elements['timeRail'].className = "jwrail jwsmooth";
+				_dragging = NULL;
+				_sliderMapping['time'](pct);
+				_eventDispatcher.sendEvent(events.JWPLAYER_USER_ACTION);
+			}
+			else {
+				_setProgress(pct);
+				if (currentTime - _lastSeekTime > 500) {
+					_lastSeekTime = currentTime;
+					_sliderMapping['time'](pct);
+				}
+				_eventDispatcher.sendEvent(events.JWPLAYER_USER_ACTION);
+			}
+		}
 		
 		function _sliderMouseEvent(evt) {
 			

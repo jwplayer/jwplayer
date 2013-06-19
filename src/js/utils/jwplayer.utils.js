@@ -98,10 +98,6 @@
 		return null;
 	};
 
-	utils.mLog = function (msg) {
-		// document.getElementById("log").innerHTML += msg + "\n";
-	}
-
 	/** Logger * */
 	utils.log = function(msg, obj) {
 		if (typeof console != UNDEFINED && typeof console.log != UNDEFINED) {
