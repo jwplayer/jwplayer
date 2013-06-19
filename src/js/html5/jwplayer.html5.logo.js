@@ -114,7 +114,7 @@
 		}
 
 		function _clickHandler(evt) {
-			if (utils.exists(evt)) {
+			if (utils.exists(evt) && evt.stopPropagation) {
 				evt.stopPropagation();
 			}
 
