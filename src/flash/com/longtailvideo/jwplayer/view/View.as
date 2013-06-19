@@ -665,6 +665,7 @@ package com.longtailvideo.jwplayer.view {
 					showControls();
 					break;
 				case PlayerState.PAUSED:
+					showControls();
 					Mouse.show();
 				case PlayerState.PLAYING:
 					mediaDelay.start();
@@ -747,7 +748,7 @@ package com.longtailvideo.jwplayer.view {
 		/** Show controls on mousemove or keyboard press and restart the countdown. **/
 		private function moveHandler(evt:Event=null):void {
 			Mouse.show();
-			if (_player.state != PlayerState.IDLE) {
+			if (_player.state != PlayerState.IDLE && _player.state != PlayerState.PAUSED) {
 				if (evt is MouseEvent) {
 					var mouseEvent:MouseEvent = evt as MouseEvent;
 					if (!(_components.display as DisplayObject).getRect(RootReference.stage).containsPoint(new Point(mouseEvent.stageX, mouseEvent.stageY))) {
@@ -764,6 +765,7 @@ package com.longtailvideo.jwplayer.view {
 		private function moveTimeout(evt:Event=null):void {
 			clearTimeout(_fadingOut);
 			if (_player.state == PlayerState.PLAYING) Mouse.hide();
+			if (_player.state != PlayerState.PAUSED)
 			hideControls();
 		}
 		
@@ -836,8 +838,5 @@ package com.longtailvideo.jwplayer.view {
 			
 			return bounds;
 		}
-
-		
-		
 	}
 }

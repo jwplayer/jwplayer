@@ -53,7 +53,7 @@
 			_aspectLayer,
 			_playlistLayer,
 			_controlsTimeout=0,
-			_timeoutDuration = 2000,
+			_timeoutDuration = _isMobile ? 4000 : 2000,
 			_videoTag,
 			_videoLayer,
 			_playerTouch,
@@ -227,6 +227,7 @@
 			showing ? _hideControls() : _showControls();
 			showing = !showing;
 			if (showing) {
+				clearTimeout(_controlsTimeout);
 				_controlsTimeout = setTimeout(_fadeControls, 4000);
 			}
 		}
@@ -251,7 +252,7 @@
 		}
 		
 		function _fadeControls(evt) {
-			if (_api.jwGetState() != states.BUFFERING) {
+			if (_api.jwGetState() != states.BUFFERING && _api.jwGetState() != states.PAUSED) {
 				_hideControlbar();
 				_hideDock();
 				_hideLogo();
@@ -590,20 +591,6 @@
 			_showLogo();
 		}
 
-		// Subtracts rect2 rectangle from rect1 rectangle's area
-		function _subtractRect(rect1, rect2) {
-			if (rect2.right < rect1.left || rect2.left > rect1.right) return rect1;
-			if (rect2.bottom < rect1.top || rect2.top > rect1.bottom) return rect1;
-			
-			var bottomCutout = (rect2.y > rect2.height / 2),  
-				newRect = {
-					x: rect1.x,
-					y: bottomCutout ? rect1.y : rect2.bottom,
-					width: rect1.width
-				};
-			
-		}
-		
 		function _showVideo(state) {
 			state = state && !_audioMode;
 			_css(_internalSelector(VIEW_VIDEO_CONTAINER_CLASS), {
@@ -656,7 +643,8 @@
 			case states.IDLE:
 				_showVideo(FALSE);
 				//_hideControls();
-				_fadeControls();
+				if (_api.jwGetState() == states.PAUSED) _showControls();
+				//_fadeControls();
 				if (!_audioMode) {
 					_display.hidePreview(FALSE);
 					_showDisplay();
