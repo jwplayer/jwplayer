@@ -1033,10 +1033,10 @@
 			if (_elements.cc) {
 				_ccOverlay = new html5.menu('cc', _id+"_cc", _skin, _switchCaption);
 				if (!utils.isMobile()) {
-					_addOverlay(_ccOverlay, _elements.cc, _showCc, _ccTapTimer);
+					_addOverlay(_ccOverlay, _elements.cc, _showCc, _setCcTimer);
 				}
 				else {
-					_addMobileOverlay(_ccOverlay, _elements.cc, _showCc, _setCcTimer);	
+					_addMobileOverlay(_ccOverlay, _elements.cc, _showCc, _ccTapTimer);	
 				}
 				_overlays.cc = _ccOverlay;
 			}
