@@ -46,7 +46,6 @@
 	html5.view = function(api, model) {
 		var _api = api,
 			_model = model, 
-			_touchApi = utils.touch,
 			_playerElement,
 			_container,
 			_controlsLayer,
@@ -56,7 +55,6 @@
 			_timeoutDuration = _isMobile ? 4000 : 2000,
 			_videoTag,
 			_videoLayer,
-			_playerTouch,
 			// _instreamControlbar,
 			// _instreamDisplay,
 			_instreamLayer,
@@ -159,12 +157,7 @@
 					_videoLayer.addEventListener('mousemove', _startFade, FALSE);
 					_videoLayer.addEventListener('click', _display.clickHandler);
 				}
-			} else {
-				
-				_playerTouch = new _touchApi(_controlsLayer);
-				_playerTouch.addEventListener(utils.touchEvents.TAP, _touchHandler);
-				
-			}
+			} 
 			_componentFadeListeners(_controlbar);
 			_componentFadeListeners(_dock);
 			_componentFadeListeners(_logo);
@@ -221,20 +214,20 @@
 		
 		
 		
-		var showing = false;
+		var _showing = false;
 		
 		function _touchHandler() {
-			showing ? _hideControls() : _showControls();
-			showing = !showing;
+			_showing ? _hideControls() : _showControls();
+			_showing = !_showing;
 			if (showing) {
 				clearTimeout(_controlsTimeout);
-				_controlsTimeout = setTimeout(_fadeControls, 4000);
+				_controlsTimeout = setTimeout(_fadeControls, _timeoutDuration);
 			}
 		}
 
 		function _resetTapTimer() {
 			clearTimeout(_controlsTimeout);
-			_controlsTimeout = setTimeout(_fadeControls, 4000);
+			_controlsTimeout = setTimeout(_fadeControls, _timeoutDuration);
 		}
 		
 		function _startFade() {
@@ -264,6 +257,7 @@
 			}
 			clearTimeout(_controlsTimeout);
 			_controlsTimeout = 0;
+			_showing = FALSE;
 		}
 
 		function forward(evt) {
@@ -284,7 +278,10 @@
 			_controlsLayer.appendChild(_captions.element());
 
 			_display = new html5.display(_api, displaySettings);
-			_display.addEventListener(events.JWPLAYER_DISPLAY_CLICK, forward);
+			_display.addEventListener(events.JWPLAYER_DISPLAY_CLICK, function(evt) {
+				forward(evt);
+				_touchHandler();
+				});
 			if (_audioMode) _display.hidePreview(TRUE);
 			_controlsLayer.appendChild(_display.element());
 			

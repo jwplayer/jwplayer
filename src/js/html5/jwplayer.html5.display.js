@@ -9,7 +9,7 @@
 		events = jwplayer.events,
 		states = events.state,
 		_css = utils.css,
-		
+		_isMobile = utils.isMobile(),
 
 		DOCUMENT = document,
 		D_CLASS = ".jwdisplay",
@@ -73,7 +73,7 @@
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
 			_api.jwAddEventListener(events.JWPLAYER_ERROR, _errorHandler);
 
-			if (!utils.isMobile()) {
+			if (!_isMobile) {
 				_display.addEventListener('click', _clickHandler, FALSE);
 			}
 			else {
@@ -92,7 +92,8 @@
 				_alternateClickHandler(evt);
 				return;
 			}
-			if (utils.isMobile() && _hiding) return;
+			_eventDispatcher.sendEvent(events.JWPLAYER_DISPLAY_CLICK);
+			if (_isMobile && _hiding) return;
 			switch (_api.jwGetState()) {
 			case states.PLAYING:
 			case states.BUFFERING:
@@ -102,7 +103,7 @@
 				_api.jwPlay();
 				break;
 			}
-			_eventDispatcher.sendEvent(events.JWPLAYER_DISPLAY_CLICK);
+			
 		}
 		
 		this.clickHandler = _clickHandler;
@@ -224,7 +225,7 @@
 			_setVisibility(D_PREVIEW_CLASS, !state);
 			if (state) {
 				_hiding = true;
-				_hideDisplay();
+				//_hideDisplay();
 			}
 		}
 
@@ -310,7 +311,7 @@
 		}
 
 		function _hideDisplay() {
-			if (utils.isMobile()) {
+			if (_isMobile) {
 				_clearHideTimeout();
 				_hideTimeout = setTimeout(function() {
 					_display.style.display = JW_CSS_NONE;
