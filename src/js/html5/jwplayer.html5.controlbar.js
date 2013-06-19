@@ -478,6 +478,8 @@
 			if (!_getSkinElement(name + "Button").src) {
 				return NULL;
 			}
+
+			if (utils.isMobile() && (name == "mute" || name == "volume")) return NULL;
 			
 			var element = _createSpan();
 			element.className = 'jw'+name + ' jwbuttoncontainer';
@@ -530,7 +532,9 @@
 				if (_buttonMapping[name]) {
 					_buttonMapping[name]();
 				}
-				evt.preventDefault();
+				if (evt.preventDefault) {
+					evt.preventDefault();
+				}
 			}
 		}
 		
