@@ -8,7 +8,10 @@
 	var html5 = jwplayer.html5,
 		utils = jwplayer.utils, 
 		events = jwplayer.events, 
-		states = events.state;
+		states = events.state,
+		
+		TRUE = true,
+		FALSE = false;
 		
 	html5.controller = function(model, view) {
 		var _model = model,
@@ -16,11 +19,11 @@
 			_video = model.getVideo(),
 			_controller = this,
 			_eventDispatcher = new events.eventdispatcher(_model.id, _model.config.debug),
-			_ready = false,
+			_ready = FALSE,
 			_loadOnPlay = -1,
 			_preplay, 
 			_actionOnAttach,
-			_stopPlaylist = false,
+			_stopPlaylist = FALSE,
 			_interruptPlay,
 			_isPhone = utils.isPhone(),
 			_queuedCalls = [];
@@ -63,7 +66,7 @@
 					_play();
 				}
 				
-				_ready = true;
+				_ready = TRUE;
 				
 				while (_queuedCalls.length > 0) {
 					var queuedCall = _queuedCalls.shift();
@@ -78,18 +81,11 @@
 		}
 		
 		function _bufferFullHandler(evt) {
-			if (_isPhone) {
-				// Needed for Android 4.0 phone
-				_video.play();
-	//			setTimeout(function() { _video.play(); }, 500);
-		//		setTimeout(function() { _video.play(); }, 1000);
-			} else {
-				_video.play();
-			}
+			_video.play();
 		}
 
 		function _load(item) {
-			_stop(true);
+			_stop(TRUE);
 			
 			switch (utils.typeOf(item)) {
 			case "string":
@@ -119,7 +115,7 @@
 		}
 		
 		function _play(state) {
-			if (!utils.exists(state)) state = true;
+			if (!utils.exists(state)) state = TRUE;
 			if (!state) return _pause();
 			try {
 				if (_loadOnPlay >= 0) {
@@ -128,33 +124,34 @@
 				}
 				//_actionOnAttach = _play;
 				if (!_preplay) {
-					_preplay = true;
+					_preplay = TRUE;
 					_eventDispatcher.sendEvent(events.JWPLAYER_MEDIA_BEFOREPLAY);
-					_preplay = false;
+					_preplay = FALSE;
 					if (_interruptPlay) {
-						_interruptPlay = false;
+						_interruptPlay = FALSE;
 						_actionOnAttach = null;
 						return;
 					}
 				}
 				
 				if (_isIdle()) {
-					if (_model.playlist.length == 0) return false;
+					if (_model.playlist.length == 0) return FALSE;
 					_video.load(_model.playlist[_model.item]);
 				} else if (_model.state == states.PAUSED) {
 					_video.play();
 				}
 				
 				if (_isPhone) {
-					_view.fullscreen(true);
+					_view.fullscreen(TRUE);
 				}
 
-				return true;
+				return TRUE;
 			} catch (err) {
+				alert("Error: " + err.message);
 				_eventDispatcher.sendEvent(events.JWPLAYER_ERROR, err);
 				_actionOnAttach = null;
 			}
-			return false;
+			return FALSE;
 		}
 
 		function _stop(internal) {
@@ -163,22 +160,22 @@
 				if (!_isIdle()) {
 					_video.stop();
 				} else if (!internal) {
-					_stopPlaylist = true;
+					_stopPlaylist = TRUE;
 				}
 				if (_preplay) {
-					_interruptPlay = true;
+					_interruptPlay = TRUE;
 				}
-				return true;
+				return TRUE;
 			} catch (err) {
 				_eventDispatcher.sendEvent(events.JWPLAYER_ERROR, err);
 			}
-			return false;
+			return FALSE;
 
 		}
 
 		function _pause(state) {
 		    _actionOnAttach = null;
-			if (!utils.exists(state)) state = true;
+			if (!utils.exists(state)) state = TRUE;
 			if (!state) return _play();
 			try {
 				switch (_model.state) {
@@ -188,15 +185,15 @@
 						break;
 					default:
 						if (_preplay) {
-							_interruptPlay = true;
+							_interruptPlay = TRUE;
 						}
 				}
-				return true;
+				return TRUE;
 			} catch (err) {
 				_eventDispatcher.sendEvent(events.JWPLAYER_ERROR, err);
 			}
 			
-			return false;
+			return FALSE;
 		}
 		
 		function _isIdle() {
@@ -204,7 +201,7 @@
 		}
 		
 		function _seek(pos) {
-			if (_model.state != states.PLAYING) _play(true);
+			if (_model.state != states.PLAYING) _play(TRUE);
 			_video.seek(pos);
 		}
 		
@@ -237,7 +234,7 @@
 				return;
 			} else if (_stopPlaylist) {
 				// Stop called in onComplete event listener
-				_stopPlaylist = false;
+				_stopPlaylist = FALSE;
 				return;
 			}
 				
@@ -247,7 +244,7 @@
 			} else {
 				if (_model.item == _model.playlist.length - 1) {
 					_loadOnPlay = 0;
-					_stop(true);
+					_stop(TRUE);
 					setTimeout(function() { _eventDispatcher.sendEvent(events.JWPLAYER_PLAYLIST_COMPLETE)}, 0);
 				} else {
 					_next();
@@ -325,7 +322,7 @@
 		this.seek = _waitForReady(_seek);
 		this.stop = function() {
 			// Something has called stop() in an onComplete handler
-			_stopPlaylist = true;
+			_stopPlaylist = TRUE;
 			_waitForReady(_stop)();
 		}
 		this.load = _waitForReady(_load);

@@ -327,24 +327,26 @@
 			}
 
 			if (state) {
-				if (!_model.fullscreen) {
-					if (_isMobile) {
-						_videoElement.webkitEnterFullScreen();
-					} else {
-						_fakeFullscreen(TRUE);
-						if (_playerElement.requestFullScreen) {
-							_playerElement.requestFullScreen();
-						} else if (_playerElement.mozRequestFullScreen) {
-							_playerElement.mozRequestFullScreen();
-						} else if (_playerElement.webkitRequestFullScreen) {
-							_playerElement.webkitRequestFullScreen();
-						}
+				if (_isMobile) {
+					_videoTag.webkitEnterFullScreen();
+					_model.setFullscreen(TRUE);
+				} else if (!_model.fullscreen) {
+					_fakeFullscreen(TRUE);
+					if (_playerElement.requestFullScreen) {
+						_playerElement.requestFullScreen();
+					} else if (_playerElement.mozRequestFullScreen) {
+						_playerElement.mozRequestFullScreen();
+					} else if (_playerElement.webkitRequestFullScreen) {
+						_playerElement.webkitRequestFullScreen();
 					}
 					_model.setFullscreen(TRUE);
 				}
 			} else {
-				_fakeFullscreen(FALSE);
-				if (_model.fullscreen) {
+				if (_isMobile) {
+					_videoTag.webkitExitFullScreen();
+					_model.setFullscreen(TRUE);
+				} else if (_model.fullscreen) {
+					_fakeFullscreen(FALSE);
 					_model.setFullscreen(FALSE);
 				    if (DOCUMENT.cancelFullScreen) {  
 				    	DOCUMENT.cancelFullScreen();  
@@ -352,8 +354,6 @@
 				    	DOCUMENT.mozCancelFullScreen();  
 				    } else if (DOCUMENT.webkitCancelFullScreen) {  
 				    	DOCUMENT.webkitCancelFullScreen();  
-				    } else if (_videoTag.webkitExitFullScreen) {
-				    	_videoTag.webkitExitFullScreen();
 				    }
 				}
 				if (_isIPad && _api.jwGetState() == states.PAUSED) {

@@ -8,7 +8,10 @@
 
 	var utils = jwplayer.utils, 
 		events = jwplayer.events, 
-		states = events.state;
+		states = events.state,
+		
+		TRUE = true,
+		FALSE = false;
 	
 	/** HTML5 video class * */
 	jwplayer.html5.video = function(videotag) {
@@ -62,7 +65,7 @@
 		// If we should seek on canplay
 		_delayedSeek,
 		// If we're currently dragging the seek bar
-		_dragging,
+		_dragging = FALSE,
 		// Current media state
 		_state = states.IDLE,
 		// Save the volume state before muting
@@ -74,7 +77,7 @@
 		// Event dispatcher
 		_eventDispatcher = new events.eventdispatcher(),
 		// Whether or not we're listening to video tag events
-		_attached = false,
+		_attached = FALSE,
 		// Quality levels
 		_levels,
 		// Current quality level index
@@ -85,9 +88,9 @@
 		_this = this,
 		
 		//make sure we only do complete once
-		_completeOnce = false,
+		_completeOnce = FALSE,
 		
-		_beforecompleted = false;
+		_beforecompleted = FALSE;
 		
 		utils.extend(_this, _eventDispatcher);
 
@@ -97,18 +100,18 @@
 			_setupListeners();
 
 			// Workaround for a Safari bug where video disappears on switch to fullscreen
-			_videotag.controls = true;
-			_videotag.controls = false;
+			_videotag.controls = TRUE;
+			_videotag.controls = FALSE;
 			
 			// Enable AirPlay
 			_videotag.setAttribute("x-webkit-airplay", "allow");
 			
-			_attached = true;
+			_attached = TRUE;
 		}
 
 		function _setupListeners() {
 			utils.foreach(_mediaEvents, function(evt, evtCallback) {
-				_videotag.addEventListener(evt, evtCallback, false);
+				_videotag.addEventListener(evt, evtCallback, FALSE);
 			});
 		}
 
@@ -160,14 +163,14 @@
 			_generalHandler(evt);
 			if (!_attached) return;
 			if (!_canSeek) {
-				_canSeek = true;
+				_canSeek = TRUE;
 				_sendBufferFull();
 			}
 			if (evt.type == "loadedmetadata") {
                 //fixes Chrome bug where it doesn't like being muted before video is loaded
                 if (_videotag.muted) {
-                    _videotag.muted = false;
-                    _videotag.muted = true;
+                    _videotag.muted = FALSE;
+                    _videotag.muted = TRUE;
                 }
                 _sendEvent(events.JWPLAYER_MEDIA_META,{duration:_videotag.duration,height:_videotag.videoHeight,width:_videotag.videoWidth});
             }
@@ -187,7 +190,7 @@
 		
 		function _sendBufferFull() {
 			if (!_bufferFull) {
-				_bufferFull = true;
+				_bufferFull = TRUE;
 				_sendEvent(events.JWPLAYER_MEDIA_BUFFER_FULL);
 			}
 		}
@@ -253,7 +256,7 @@
 		
 		_this.load = function(item) {
 			if (!_attached) return;
-			_completeOnce = false;
+			_completeOnce = FALSE;
 			_item = item;
 			_delayedSeek = 0;
 			_duration = item.duration ? item.duration : -1;
@@ -290,8 +293,8 @@
 		}
 		
 		function _completeLoad() {
-			_canSeek = false;
-			_bufferFull = false;
+			_canSeek = FALSE;
+			_bufferFull = FALSE;
 			_source = _levels[_currentQuality];
 			
 			_setState(states.BUFFERING); 
@@ -300,7 +303,7 @@
 			
 			_bufferInterval = setInterval(_sendBufferUpdate, 100);
 
-			if (utils.isIPod() || utils.isAndroid(2.3)) {
+			if (utils.isMobile()) {
 				_sendBufferFull();
 			}
 		}
@@ -315,7 +318,9 @@
 		}
 
 		_this.play = function() {
-			if (_attached && !_dragging) _videotag.play();
+			if (_attached && !_dragging) {
+				_videotag.play();
+			}
 		}
 
 		var _pause = _this.pause = function() {
@@ -378,10 +383,10 @@
 			if (!utils.exists(state)) state = !_videotag.muted;
 			if (state) {
 				_lastVolume = _videotag.volume * 100;
-				_videotag.muted = true;
+				_videotag.muted = TRUE;
 			} else {
 				_volume(_lastVolume);
-				_videotag.muted = false;
+				_videotag.muted = FALSE;
 			}
 		}
 
@@ -433,16 +438,16 @@
 		
 		function _complete() {
 		    //if (_completeOnce) return;
-		    _completeOnce = true;
+		    _completeOnce = TRUE;
 			if (_state != states.IDLE) {
 				_currentQuality = -1;
-                _beforecompleted = true;
+                _beforecompleted = TRUE;
 				_sendEvent(events.JWPLAYER_MEDIA_BEFORECOMPLETE);
 
 
 				if (_attached) {
 				    _setState(states.IDLE);
-    			    _beforecompleted = false;
+    			    _beforecompleted = FALSE;
     				_sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
                 }
 			}
@@ -457,7 +462,7 @@
 		 * Return the video tag and stop listening to events  
 		 */
 		_this.detachMedia = function() {
-			_attached = false;
+			_attached = FALSE;
 			return _videotag;
 		}
 		
@@ -465,12 +470,12 @@
 		 * Begin listening to events again  
 		 */
 		_this.attachMedia = function(seekable) {
-			_attached = true;
-			if (!seekable) _canSeek = false;
+			_attached = TRUE;
+			if (!seekable) _canSeek = FALSE;
 			if (_beforecompleted) {
 			    _setState(states.IDLE);
 			    _sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
-                _beforecompleted = false;
+                _beforecompleted = FALSE;
 			}
 		}
 		
@@ -481,7 +486,7 @@
 		}
 		
 		_this.audioMode = function() {
-			if (!_levels) { return false; }
+			if (!_levels) { return FALSE; }
 			var type = _levels[0].type;
 			return (type == "aac" || type == "mp3" || type == "vorbis");
 		}
