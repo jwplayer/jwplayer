@@ -130,13 +130,13 @@
 			_playerElement.appendChild(_container);
 			_playerElement.appendChild(_aspectLayer);
 			_playerElement.appendChild(_playlistLayer);
-			if (!_isMobile){
-				DOCUMENT.addEventListener('webkitfullscreenchange', _fullscreenChangeHandler, FALSE);
-				_videoTag.addEventListener('webkitbeginfullscreen', _fullscreenChangeHandler, FALSE);
-				_videoTag.addEventListener('webkitendfullscreen', _fullscreenChangeHandler, FALSE);
-				DOCUMENT.addEventListener('mozfullscreenchange', _fullscreenChangeHandler, FALSE);
-				DOCUMENT.addEventListener('keydown', _keyHandler, FALSE);
-			}
+
+			DOCUMENT.addEventListener('webkitfullscreenchange', _fullscreenChangeHandler, FALSE);
+			_videoTag.addEventListener('webkitbeginfullscreen', _fullscreenChangeHandler, FALSE);
+			_videoTag.addEventListener('webkitendfullscreen', _fullscreenChangeHandler, FALSE);
+			DOCUMENT.addEventListener('mozfullscreenchange', _fullscreenChangeHandler, FALSE);
+			DOCUMENT.addEventListener('keydown', _keyHandler, FALSE);
+
 			_api.jwAddEventListener(events.JWPLAYER_PLAYER_READY, _readyHandler);
 			
 			_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
@@ -341,7 +341,7 @@
 			} else {
 				if (_isMobile) {
 					_videoTag.webkitExitFullScreen();
-					_model.setFullscreen(TRUE);
+					_model.setFullscreen(FALSE);
 				} else if (_model.fullscreen) {
 					_fakeFullscreen(FALSE);
 					_model.setFullscreen(FALSE);
@@ -539,7 +539,7 @@
 		}
 		
 		function _showControlbar() {
-			if (_controlbar) _controlbar.show();
+			if (_controlbar && !utils.isPhone()) _controlbar.show();
 		}
 		function _hideControlbar() {
 			if (_controlbar && !_audioMode) {
@@ -651,6 +651,7 @@
 				if (!_audioMode) {
 					_display.hidePreview(FALSE);
 					_showDisplay();
+					_showDock();
 					if (!_logoConfig.hide) _showLogo();	
 				}
 //				if (_isIPad) _videoTag.controls = FALSE;
