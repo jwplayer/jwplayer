@@ -231,6 +231,11 @@
 				_controlsTimeout = setTimeout(_fadeControls, 4000);
 			}
 		}
+
+		function _resetTapTimer() {
+			clearTimeout(_controlsTimeout);
+			_controlsTimeout = setTimeout(_fadeControls, 4000);
+		}
 		
 		function _startFade() {
 			clearTimeout(_controlsTimeout);
@@ -304,6 +309,7 @@
 
 		// TODO: allow override for showing HTML controlbar on iPads
 			_controlbar = new html5.controlbar(_api, cbSettings);
+			_controlbar.addEventListener(events.JWPLAYER_USER_ACTION, _resetTapTimer);
 			_controlsLayer.appendChild(_controlbar.element());
 				
 			setTimeout(function() { 

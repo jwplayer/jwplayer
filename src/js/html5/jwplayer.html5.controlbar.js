@@ -128,6 +128,7 @@
 			_dragging = FALSE,		
 			_lastSeekTime = 0,
 			_lastTooltipPositionTime = 0,
+			_eventDispatcher = new events.eventdispatcher(),
 			
 			_toggles = {
 				play: "pause",
@@ -157,6 +158,7 @@
 		
 			_overlays = {},
 			_this = this;
+			utils.extend(_this, _eventDispatcher);
 
 		function _layoutElement(name, type, className) {
 			return { name: name, type: type, className: className };
@@ -533,6 +535,9 @@
 			return function(evt) {
 				if (_buttonMapping[name]) {
 					_buttonMapping[name]();
+					if (utils.isMobile()) {
+						_eventDispatcher.sendEvent(events.JWPLAYER_USER_ACTION);
+					}
 				}
 				if (evt.preventDefault) {
 					evt.preventDefault();
@@ -1033,6 +1038,7 @@
 		}
 
 		function _addMobileOverlay(overlay, button, tapAction, timer) {
+			if (!utils.isMobile()) return;
 			var element = overlay.element();
 			_appendChild(button, element);
 			var buttonTouch = new utils.touch(button); 
@@ -1046,6 +1052,7 @@
 					timer = setTimeout(overlay.hide, 4000);
 					tapAction();
 				}
+				_eventDispatcher.sendEvent(events.JWPLAYER_USER_ACTION);
 			});
 			_css('#'+element.id, {
 				left: "50%"
