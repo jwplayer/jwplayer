@@ -482,7 +482,14 @@
 			var element = _createSpan();
 			element.className = 'jw'+name + ' jwbuttoncontainer';
 			var button = _createElement("button");
-			button.addEventListener("click", _buttonClickHandler(name), FALSE);
+
+			if (!utils.isMobile()) {
+				button.addEventListener("click", _buttonClickHandler(name), FALSE);	
+			}
+			else {
+				var buttonTouch = new utils.touch(button); 
+				buttonTouch.addEventListener(utils.touchEvents.TAP, _buttonClickHandler(name));
+			}
 			button.innerHTML = "&nbsp;";
 			_appendChild(element, button);
 
@@ -960,12 +967,22 @@
 		function _buildOverlays() {
 			if (_elements.hd) {
 				_hdOverlay = new html5.menu('hd', _id+"_hd", _skin, _switchLevel);
-				_addOverlay(_hdOverlay, _elements.hd, _showHd, _setHdTimer);
+				if (!utils.isMobile()) {
+					_addOverlay(_hdOverlay, _elements.hd, _showHd, _setHdTimer);
+				}
+				else {
+					_addMobileOverlay(_hdOverlay, _elements.hd, _showHd, _setHdTimer);	
+				}
 				_overlays.hd = _hdOverlay;
 			}
 			if (_elements.cc) {
 				_ccOverlay = new html5.menu('cc', _id+"_cc", _skin, _switchCaption);
-				_addOverlay(_ccOverlay, _elements.cc, _showCc, _setCcTimer);
+				if (!utils.isMobile()) {
+					_addOverlay(_ccOverlay, _elements.cc, _showCc, _setCcTimer);
+				}
+				else {
+					_addMobileOverlay(_ccOverlay, _elements.cc, _showCc, _setCcTimer);	
+				}
 				_overlays.cc = _ccOverlay;
 			}
 			if (_elements.mute && _elements.volume && _elements.volume.vertical) {
@@ -994,6 +1011,7 @@
 		}
 
 		function _addOverlay(overlay, button, hoverAction, timer) {
+			if (utils.isMobile()) return;
 			var element = overlay.element();
 			_appendChild(button, element);
 			button.addEventListener('mousemove', hoverAction, FALSE);
@@ -1003,6 +1021,19 @@
 			else {
 				button.addEventListener('mouseout', overlay.hide, FALSE);
 			}
+			_css('#'+element.id, {
+				left: "50%"
+			});
+		}
+
+		function _addMobileOverlay(overlay, button, tapAction, timer) {
+			var element = overlay.element();
+			_appendChild(button, element);
+			var buttonTouch = new utils.touch(button); 
+			buttonTouch.addEventListener(utils.touchEvents.TAP, function(evt) {
+				setTimeout(overlay.hide, 3000);
+				tapAction();
+			});
 			_css('#'+element.id, {
 				left: "50%"
 			});

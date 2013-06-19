@@ -76,7 +76,13 @@
 			_css(_internalSelector(), style); 
 			
 			_logo.src = (_settings.prefix ? _settings.prefix : "") + _settings.file;
-			_logo.onclick = _clickHandler;
+			if (!utils.isMobile()) {
+				_logo.onclick = _clickHandler;
+			}
+			else {
+				var logoTouch = new utils.touch(_logo);
+				logoTouch.addEventListener(utils.touchEvents.TAP, _clickHandler);
+			}
 		}
 		
 		this.resize = function(width, height) {

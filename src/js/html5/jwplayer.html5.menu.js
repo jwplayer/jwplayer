@@ -88,7 +88,13 @@
 			var option = _createElement(OPTION_CLASS, _container);
 			option.id = _id+"_option_"+value;
 			option.innerHTML = label;
-			option.addEventListener('click', _clickHandler(_options.length, value));
+			if (!utils.isMobile()) {
+				option.addEventListener('click', _clickHandler(_options.length, value));
+			}
+			else {
+				var optionTouch = new utils.touch(option);
+				optionTouch.addEventListener(utils.touchEvents.TAP, _clickHandler(_options.length, value));
+			}
 			_options.push(option);
 		}
 		

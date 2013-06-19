@@ -190,10 +190,16 @@
 			if (typeof clickHandler == "string") {
 				clickHandler = new Function(clickHandler);
 			}
-			newButton.addEventListener("click", function(evt) {
-				clickHandler(evt);
-				evt.preventDefault();
-			});
+			if (!utils.isMobile()) {
+				newButton.addEventListener("click", function(evt) {
+					clickHandler(evt);
+					evt.preventDefault();
+				});
+			}
+			else {
+				var buttonTouch = new utils.touch(newButton);
+				buttonTouch.addEventListener(utils.touchEvents.TAP, clickHandler);
+			}
 			
 			_buttons[id] = { element: newButton, label: label, divider: divider, icon: icon };
 			
@@ -207,22 +213,23 @@
 				});
 				tooltip.setContents(tipText);
 				
-				
-				var timeout;
-				newButton.addEventListener('mouseover', function() { 
-					clearTimeout(timeout); 
-					_positionTooltip(id); 
-					tooltip.show();
-					utils.foreach(_tooltips, function(i, tooltip) {
-						if (i != id) tooltip.hide();
-					});
-				}, false);
-				newButton.addEventListener('mouseout', function() {
-					timeout = setTimeout(tooltip.hide, 100); 
-				} , false);
-				
-				_container.appendChild(tooltip.element());
-				_tooltips[id] = tooltip;
+				if(!utils.isMobile()) {
+					var timeout;
+					newButton.addEventListener('mouseover', function() { 
+						clearTimeout(timeout); 
+						_positionTooltip(id); 
+						tooltip.show();
+						utils.foreach(_tooltips, function(i, tooltip) {
+							if (i != id) tooltip.hide();
+						});
+					}, false);
+					newButton.addEventListener('mouseout', function() {
+						timeout = setTimeout(tooltip.hide, 100); 
+					} , false);
+					
+					_container.appendChild(tooltip.element());
+					_tooltips[id] = tooltip;
+				}
 			}
 			
 			_buttonCount++;
