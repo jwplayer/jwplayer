@@ -219,7 +219,7 @@
 		function _touchHandler() {
 			_showing ? _hideControls() : _showControls();
 			_showing = !_showing;
-			if (showing) {
+			if (_showing) {
 				clearTimeout(_controlsTimeout);
 				_controlsTimeout = setTimeout(_fadeControls, _timeoutDuration);
 			}
