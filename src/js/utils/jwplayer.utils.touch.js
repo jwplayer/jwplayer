@@ -96,7 +96,7 @@
             var evt = {};
             evt.type = type;
             evt.target = _elem;
-            evt.x = (touch.clientX - rect.left);
+            evt.x = ((touch.pageX - window.scrollX) - rect.left);
             evt.y = (touch.clientY - rect.top);
             evt.deltaX = 0;
             evt.deltaY = 0;
