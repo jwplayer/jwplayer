@@ -198,7 +198,9 @@
 			}
 			else {
 				var buttonTouch = new utils.touch(newButton);
-				buttonTouch.addEventListener(utils.touchEvents.TAP, clickHandler);
+				buttonTouch.addEventListener(utils.touchEvents.TAP, function(evt) {
+					clickHandler(evt);
+				});
 			}
 			
 			_buttons[id] = { element: newButton, label: label, divider: divider, icon: icon };

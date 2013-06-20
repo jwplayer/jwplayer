@@ -982,7 +982,7 @@
 			_railBounds = utils.bounds(_timeRail);
 			if (!_railBounds || _railBounds.width == 0) return;
 			var element = _timeOverlay.element(), 
-				position = evt.pageX ? ((evt.pageX - _railBounds.left) - WINDOW.pageXOffset) : (evt.x - WINDOW.pageXOffset);
+				position = evt.pageX ? ((evt.pageX - _railBounds.left) - WINDOW.pageXOffset) : (evt.x);
 			if (position >= 0 && position <= _railBounds.width) {
 				element.style.left = Math.round(position) + "px";
 				_setTimeOverlay(_duration * position / _railBounds.width);
