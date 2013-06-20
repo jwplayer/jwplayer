@@ -277,7 +277,7 @@
 		
 		function _itemHandler(evt) {
 			var tracks = _api.jwGetPlaylist()[evt.index].tracks;
-			if (utils.typeOf(tracks) == "array") {
+			if (utils.typeOf(tracks) == "array" && !utils.isMobile()) {
 				for (var i=0; i < tracks.length; i++) {
 					if (tracks[i].file && tracks[i].kind && tracks[i].kind.toLowerCase() == "thumbnails") {
 						_timeOverlayThumb.load(tracks[i].file);
@@ -826,7 +826,8 @@
 				var railTouch = new utils.touch(rail);
 				railTouch.addEventListener(utils.touchEvents.DRAG_START, _sliderDragStart);
 				railTouch.addEventListener(utils.touchEvents.DRAG, _sliderDragEvent);
-				railTouch.addEventListener(utils.touchEvents.DRAG_END, _sliderDragEvent);	
+				railTouch.addEventListener(utils.touchEvents.DRAG_END, _sliderDragEvent);
+				railTouch.addEventListener(utils.touchEvents.TAP, _sliderTapEvent);
 			}
 			
 			if (name == "time" && !utils.isMobile()) {
@@ -849,6 +850,62 @@
 			DOCUMENT.onselectstart = function () { return FALSE; };
 		}
 
+		function _sliderDragStart(evt) {
+			_elements['timeRail'].className = "jwrail";
+			if (!_idle()) {
+				_api.jwSeekDrag(TRUE);
+				_dragging = "time";
+				_showTimeTooltip();
+				_eventDispatcher.sendEvent(events.JWPLAYER_USER_ACTION);
+			}
+		}
+
+		function _sliderDragEvent(evt) {
+			if (!_dragging) return;
+			var currentTime = (new Date()).getTime();
+
+			if (currentTime - _lastTooltipPositionTime > 50) {
+				_positionTimeTooltip(evt);
+				_lastTooltipPositionTime = currentTime;
+			}
+
+			var rail = _elements[_dragging].getElementsByClassName('jwrail')[0],
+				railRect = utils.bounds(rail),
+				pct = evt.x / railRect.width;
+			if (pct > 100) {
+				pct = 100;
+			}
+			if (evt.type == utils.touchEvents.DRAG_END) {
+				_api.jwSeekDrag(FALSE);
+				_elements['timeRail'].className = "jwrail jwsmooth";
+				_dragging = NULL;
+				_sliderMapping['time'](pct);
+				_hideTimeTooltip();
+				_eventDispatcher.sendEvent(events.JWPLAYER_USER_ACTION);
+			}
+			else {
+				_setProgress(pct);
+				if (currentTime - _lastSeekTime > 500) {
+					_lastSeekTime = currentTime;
+					_sliderMapping['time'](pct);
+				}
+				_eventDispatcher.sendEvent(events.JWPLAYER_USER_ACTION);
+			}
+		}
+
+		function _sliderTapEvent(evt) {
+			var rail = _elements['time'].getElementsByClassName('jwrail')[0],
+				railRect = utils.bounds(rail),
+				pct = evt.x / railRect.width;		
+			if (pct > 100) {
+				pct = 100;
+			}
+			if (!_idle()) {
+				_sliderMapping['time'](pct);
+				_eventDispatcher.sendEvent(events.JWPLAYER_USER_ACTION);
+			}
+		}
+
 		function _sliderMouseDown(name) {
 			return (function(evt) {
 				if (evt.button != 0)
@@ -866,41 +923,6 @@
 				}
 				
 			});
-		}
-
-		function _sliderDragStart(evt) {
-			_elements['timeRail'].className = "jwrail";
-			if (!_idle()) {
-				_api.jwSeekDrag(TRUE);
-				_dragging = "time";
-				_eventDispatcher.sendEvent(events.JWPLAYER_USER_ACTION);
-			}
-		}
-
-		function _sliderDragEvent(evt) {
-			if (!_dragging) return;
-			var currentTime = (new Date()).getTime();
-			var rail = _elements[_dragging].getElementsByClassName('jwrail')[0],
-				railRect = utils.bounds(rail),
-				pct = evt.x / railRect.width;
-			if (pct > 100) {
-				pct = 100;
-			}
-			if (evt.type == utils.touchEvents.DRAG_END) {
-				_api.jwSeekDrag(FALSE);
-				_elements['timeRail'].className = "jwrail jwsmooth";
-				_dragging = NULL;
-				_sliderMapping['time'](pct);
-				_eventDispatcher.sendEvent(events.JWPLAYER_USER_ACTION);
-			}
-			else {
-				_setProgress(pct);
-				if (currentTime - _lastSeekTime > 500) {
-					_lastSeekTime = currentTime;
-					_sliderMapping['time'](pct);
-				}
-				_eventDispatcher.sendEvent(events.JWPLAYER_USER_ACTION);
-			}
 		}
 		
 		function _sliderMouseEvent(evt) {
@@ -960,7 +982,7 @@
 			_railBounds = utils.bounds(_timeRail);
 			if (!_railBounds || _railBounds.width == 0) return;
 			var element = _timeOverlay.element(), 
-				position = (evt.pageX - _railBounds.left) - WINDOW.pageXOffset;
+				position = evt.pageX ? ((evt.pageX - _railBounds.left) - WINDOW.pageXOffset) : (evt.x - WINDOW.pageXOffset);
 			if (position >= 0 && position <= _railBounds.width) {
 				element.style.left = Math.round(position) + "px";
 				_setTimeOverlay(_duration * position / _railBounds.width);
