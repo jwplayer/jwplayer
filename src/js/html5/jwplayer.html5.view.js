@@ -250,7 +250,7 @@
 		}
 		
 		function _fadeControls(evt) {
-			if (_api.jwGetState() != states.BUFFERING && _api.jwGetState() != states.PAUSED) {
+			if (_api.jwGetState() == states.PLAYING) {
 				_hideControlbar();
 				_hideDock();
 				_hideLogo();
@@ -631,12 +631,10 @@
 		function _updateState(state) {
 			switch(state) {
 			case states.PLAYING:
-				if (!_model.getVideo().audioMode() || _isMobile) {
+				if (!_model.getVideo().audioMode()) {
 					_showVideo(TRUE);
-                    //_api.jwSetControls(false);
 					_resizeMedia();
 					_display.hidePreview(TRUE);
-					
 				} else {
 					_showVideo(FALSE);
 					_display.hidePreview(_audioMode);
@@ -645,16 +643,13 @@
 				break;
 			case states.IDLE:
 				_showVideo(FALSE);
-				//_hideControls();
 				if (_api.jwGetState() == states.PAUSED) _showControls();
-				//_fadeControls();
 				if (!_audioMode) {
 					_display.hidePreview(FALSE);
 					_showDisplay();
 					_showDock();
 					if (!_logoConfig.hide) _showLogo();	
 				}
-//				if (_isIPad) _videoTag.controls = FALSE;
 				break;
 			case states.BUFFERING:
 				_showDisplay();
@@ -663,11 +658,7 @@
 				break;
 			case states.PAUSED:
 				_showDisplay();
-				//if (!_isMobile || _forcedControls) {
-					_showControls();
-//				} else if (_isIPad) {
-//					_videoTag.controls = FALSE;
-				//}
+				_showControls();
 				break;
 			}
 		}
@@ -732,7 +723,9 @@
 			_model.controls = newstate;
 			if (newstate != oldstate) {
 				if (newstate) {
-					_showDisplay();
+					//_showDisplay();
+					//_showControls();
+					_stateHandler({newstate: _api.jwGetState()});
 				} else {
 					_hideControls();
 					_hideDisplay();

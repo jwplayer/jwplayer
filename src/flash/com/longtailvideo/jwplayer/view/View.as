@@ -1,21 +1,58 @@
 package com.longtailvideo.jwplayer.view {
-	import com.longtailvideo.jwplayer.events.*;
-	import com.longtailvideo.jwplayer.model.*;
-	import com.longtailvideo.jwplayer.player.*;
-	import com.longtailvideo.jwplayer.plugins.*;
-	import com.longtailvideo.jwplayer.utils.*;
-	import com.longtailvideo.jwplayer.view.components.*;
-	import com.longtailvideo.jwplayer.view.interfaces.*;
+	import com.longtailvideo.jwplayer.events.CaptionsEvent;
+	import com.longtailvideo.jwplayer.events.GlobalEventDispatcher;
+	import com.longtailvideo.jwplayer.events.IGlobalEventDispatcher;
+	import com.longtailvideo.jwplayer.events.MediaEvent;
+	import com.longtailvideo.jwplayer.events.PlayerEvent;
+	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
+	import com.longtailvideo.jwplayer.events.PlaylistEvent;
+	import com.longtailvideo.jwplayer.events.ViewEvent;
+	import com.longtailvideo.jwplayer.model.Model;
+	import com.longtailvideo.jwplayer.player.IPlayer;
+	import com.longtailvideo.jwplayer.player.PlayerState;
+	import com.longtailvideo.jwplayer.player.PlayerVersion;
+	import com.longtailvideo.jwplayer.plugins.IPlugin;
+	import com.longtailvideo.jwplayer.plugins.IPlugin6;
+	import com.longtailvideo.jwplayer.plugins.PluginConfig;
+	import com.longtailvideo.jwplayer.utils.Animations;
+	import com.longtailvideo.jwplayer.utils.Draw;
+	import com.longtailvideo.jwplayer.utils.Logger;
+	import com.longtailvideo.jwplayer.utils.RootReference;
+	import com.longtailvideo.jwplayer.utils.Stretcher;
+	import com.longtailvideo.jwplayer.view.components.ControlbarComponent;
+	import com.longtailvideo.jwplayer.view.components.DockComponent;
+	import com.longtailvideo.jwplayer.view.components.LogoComponent;
+	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
 	
-	import flash.display.*;
-	import flash.events.*;
-	import flash.external.*;
-	import flash.geom.*;
-	import flash.net.*;
-	import flash.system.*;
-	import flash.text.*;
-	import flash.ui.*;
-	import flash.utils.*;
+	import flash.display.DisplayObject;
+	import flash.display.DisplayObjectContainer;
+	import flash.display.Loader;
+	import flash.display.MovieClip;
+	import flash.display.Sprite;
+	import flash.display.Stage;
+	import flash.display.StageAlign;
+	import flash.display.StageDisplayState;
+	import flash.display.StageScaleMode;
+	import flash.events.ErrorEvent;
+	import flash.events.Event;
+	import flash.events.FocusEvent;
+	import flash.events.IOErrorEvent;
+	import flash.events.KeyboardEvent;
+	import flash.events.MouseEvent;
+	import flash.events.TimerEvent;
+	import flash.external.ExternalInterface;
+	import flash.geom.Point;
+	import flash.geom.Rectangle;
+	import flash.net.URLRequest;
+	import flash.system.LoaderContext;
+	import flash.text.TextField;
+	import flash.text.TextFieldAutoSize;
+	import flash.text.TextFormat;
+	import flash.text.TextFormatAlign;
+	import flash.ui.Mouse;
+	import flash.utils.Timer;
+	import flash.utils.clearTimeout;
+	import flash.utils.setTimeout;
 
 	public class View extends GlobalEventDispatcher {
 		protected var _player:IPlayer;
@@ -658,6 +695,7 @@ package com.longtailvideo.jwplayer.view {
 			switch (_model.state) {
 				case PlayerState.IDLE:
 					hideControls();
+					components.dock.show();					
 					imageDelay.start();
 					break;
 				case PlayerState.BUFFERING:
@@ -771,7 +809,7 @@ package com.longtailvideo.jwplayer.view {
 		
 		private function hideControls():void {
 			if (_preventFade) return;
-			if (!_completeState) _components.dock.hide();
+			if (_player.state == PlayerState.PLAYING) _components.dock.hide();
 			_components.controlbar.hide();
 			_components.logo.hide(audioMode);
 		}

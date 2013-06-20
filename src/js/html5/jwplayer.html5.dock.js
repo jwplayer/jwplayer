@@ -195,8 +195,7 @@
 					clickHandler(evt);
 					evt.preventDefault();
 				});
-			}
-			else {
+			} else {
 				var buttonTouch = new utils.touch(newButton);
 				buttonTouch.addEventListener(utils.touchEvents.TAP, function(evt) {
 					clickHandler(evt);
