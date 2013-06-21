@@ -131,6 +131,8 @@
 			} catch (e) {}
 			var parsedXML = utils.parseXML(xmlhttp.responseText);
 			if (parsedXML && parsedXML.firstChild) {
+				//fix for strange android 4.0 bug where this strange field breaks everything.
+				if (xmlhttp.hasOwnProperty('responseBlob')) delete xmlhttp['responseBlob'];
 				xmlhttp = utils.extend({}, xmlhttp, {responseXML:parsedXML});
 			} else {
 				if (errorcallback) errorcallback(xmlhttp.responseText ? "Invalid XML" : xmldocpath);
