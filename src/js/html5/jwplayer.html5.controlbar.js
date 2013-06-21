@@ -564,6 +564,12 @@
 		function _hideOverlays(exception) {
 			utils.foreach(_overlays, function(i, overlay) {
 				if (i != exception) {
+					if (i == "cc") {
+						_clearCcTapTimeout();
+					}
+					if (i == "hd") {
+						_clearHdTapTimeout();
+					}
 					overlay.hide();
 				}
 			});
@@ -668,7 +674,7 @@
 			if (_levels && _levels.length > 1) {
 				if (_hdTimer) {
 					clearTimeout(_hdTimer);
-					_hdTimer = undefined;
+					_hdTimer = UNDEFINED;
 				}
 				_hdOverlay.show();
 				_hideOverlays('hd');
@@ -679,7 +685,7 @@
 			if (_captions && _captions.length > 1) {
 				if (_ccTimer) {
 					clearTimeout(_ccTimer);
-					_ccTimer = undefined;
+					_ccTimer = UNDEFINED;
 				}
 				_ccOverlay.show();
 				_hideOverlays('cc');
@@ -689,6 +695,7 @@
 		function _switchLevel(newlevel) {
 			if (newlevel >= 0 && newlevel < _levels.length) {
 				_api.jwSetCurrentQuality(newlevel);
+				_clearHdTapTimeout();
 				_hdOverlay.hide();
 			}
 		}
@@ -696,6 +703,7 @@
 		function _switchCaption(newcaption) {
 			if (newcaption >= 0 && newcaption < _captions.length) {
 				_api.jwSetCurrentCaptions(newcaption);
+				_clearCcTapTimeout();
 				_ccOverlay.hide();
 			}
 		}
@@ -1048,7 +1056,7 @@
 					_addOverlay(_hdOverlay, _elements.hd, _showHd, _setHdTimer);
 				}
 				else {
-					_addMobileOverlay(_hdOverlay, _elements.hd, _showHd, _hdTapTimer);
+					_addMobileOverlay(_hdOverlay, _elements.hd, _showHd, "hd");
 				}
 				_overlays.hd = _hdOverlay;
 			}
@@ -1058,7 +1066,7 @@
 					_addOverlay(_ccOverlay, _elements.cc, _showCc, _setCcTimer);
 				}
 				else {
-					_addMobileOverlay(_ccOverlay, _elements.cc, _showCc, _ccTapTimer);	
+					_addMobileOverlay(_ccOverlay, _elements.cc, _showCc, "cc");	
 				}
 				_overlays.cc = _ccOverlay;
 			}
@@ -1103,26 +1111,48 @@
 			});
 		}
 
-		function _addMobileOverlay(overlay, button, tapAction, timer) {
+		function _addMobileOverlay(overlay, button, tapAction, name) {
 			if (!utils.isMobile()) return;
 			var element = overlay.element();
 			_appendChild(button, element);
 			var buttonTouch = new utils.touch(button); 
 			buttonTouch.addEventListener(utils.touchEvents.TAP, function(evt) {
-				if (timer) {
-					clearTimeout(timer);
-					timer = undefined;
-					overlay.hide();
-				}
-				else {
-					timer = setTimeout(overlay.hide, 4000);
-					tapAction();
-				}
-				_eventDispatcher.sendEvent(events.JWPLAYER_USER_ACTION);
+				_overlayTapHandler(overlay, tapAction, name);
 			});
 			_css('#'+element.id, {
 				left: "50%"
 			});
+		}
+
+		function _overlayTapHandler(overlay, tapAction, name) {
+			if (name == "cc") {
+				if (_ccTapTimer) {
+					_clearCcTapTimeout();
+					overlay.hide();
+				}
+				else {
+					_ccTapTimer = setTimeout(function (evt) {
+						overlay.hide(); 
+						_ccTapTimer = UNDEFINED;
+					}, 4000);
+					tapAction();
+				}
+				_eventDispatcher.sendEvent(events.JWPLAYER_USER_ACTION);
+			}
+			else if (name == "hd") {
+				if (_hdTapTimer) {
+					_clearHdTapTimeout();
+					overlay.hide();
+				}
+				else {
+					_hdTapTimer = setTimeout(function (evt) {
+						overlay.hide(); 
+						_hdTapTimer = UNDEFINED;
+					}, 4000);
+					tapAction();
+				}
+				_eventDispatcher.sendEvent(events.JWPLAYER_USER_ACTION);
+			}	
 		}
 		
 		function _buildGroup(pos) {
@@ -1318,6 +1348,16 @@
 		function _clearHideTimeout() {
 			clearTimeout(_hideTimeout);
 			_hideTimeout = UNDEFINED;
+		}
+
+		function _clearCcTapTimeout() {
+			clearTimeout(_ccTapTimer);
+			_ccTapTimer = UNDEFINED;
+		}
+
+		function _clearHdTapTimeout() {
+			clearTimeout(_hdTapTimer);
+			_hdTapTimer = UNDEFINED;
 		}
 		
 		_this.hide = function() {
