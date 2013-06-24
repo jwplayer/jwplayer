@@ -40,6 +40,7 @@
 			_container,
 			_buttonContainer,
 			_dockBounds,
+			_fadeTimeout,
 			_this = this;
 
 		function _init() {
@@ -159,7 +160,8 @@
 			if (!_this.visible) return;
 			_this.visible = false;
 			_container.style.opacity = 0;
-			setTimeout(function() {
+			clearTimeout(_fadeTimeout);
+			_fadeTimeout = setTimeout(function() {
 				_container.style.display = JW_CSS_NONE
 			}, 150);
 		}
@@ -168,7 +170,8 @@
 			if (_this.visible || !_buttonCount) return;
 			_this.visible = true;
 			_container.style.display = JW_CSS_BLOCK;
-			setTimeout(function() {
+			clearTimeout(_fadeTimeout);
+			_fadeTimeout = setTimeout(function() {
 				_container.style.opacity = 1;
 			}, 0);
 		}
