@@ -83,8 +83,9 @@
 						    _layoutElement("duration", CB_TEXT), 
 						    _dividerElement,
 						    _layoutElement("hd", CB_BUTTON), 
-						    _layoutElement("cc", CB_BUTTON), 
 						    _layoutElement("divider", CB_DIVIDER, 'hddiv'),
+						    _layoutElement("cc", CB_BUTTON), 
+						    _layoutElement("divider", CB_DIVIDER, 'ccdiv'),
 						    _layoutElement("mute", CB_BUTTON), 
 						    _layoutElement("volume", CB_SLIDER), 
     					    _layoutElement("divider", CB_DIVIDER, 'fsdiv'),
@@ -347,8 +348,10 @@
 				for (var i=0; i<_captions.length; i++) {
 					_ccOverlay.addOption(_captions[i].label, i);
 				}
+				_css(_internalSelector(".hddiv"), HIDDEN);
 				_captionChanged(evt);
 			} else {
+				_css(_internalSelector(".ccdiv"), HIDDEN);
 				_css(_internalSelector(".jwcc"), { display: "none" });
 			}
 			_redraw();
