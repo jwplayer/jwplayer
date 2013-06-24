@@ -272,9 +272,9 @@ package com.longtailvideo.jwplayer.view.components {
 				if (_timeSlider) {
 					_timeSlider.reset();
 					_timeSlider.thumbVisible = false;
-					if (_player.playlist.currentItem) {
-						setTime(0, _player.playlist.currentItem.duration);
-					}
+				}
+				if (_player.playlist.currentItem) {
+					setTime(0, _player.playlist.currentItem.duration);
 				}
 				hideButton('pause');
 			} else {
@@ -346,8 +346,8 @@ package com.longtailvideo.jwplayer.view.components {
 							var offsetPercent:Number = (evt.offset / evt.duration) * 100;
 							scrubber.setBuffer(evt.bufferPercent / (1-offsetPercent/100), offsetPercent);
 						}
-						if (evt.position > 0) { setTime(evt.position, evt.duration); }
 					}
+					if (evt.position > 0) { setTime(evt.position, evt.duration); }
 					break;
 				default:
 					scrubber.reset();

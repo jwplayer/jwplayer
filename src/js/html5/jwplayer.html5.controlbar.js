@@ -1010,6 +1010,12 @@
 		}
 		
 		function _styleTimeSlider(slider) {
+			if (!_elements['timeSliderRail']) {
+				_css(_internalSelector(".jwtime"), {
+					display: "none"
+				});
+			}
+
 			if (_elements['timeSliderThumb']) {
 				_css(_internalSelector(".jwtimeSliderThumb"), {
 					'margin-left': (_getSkinElement("timeSliderThumb").width/-2)
