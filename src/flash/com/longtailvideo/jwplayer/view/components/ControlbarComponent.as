@@ -102,7 +102,7 @@ package com.longtailvideo.jwplayer.view.components {
 //		protected var _removedButtons:Array = [];
 		protected var _dividers:Array;
 		protected var _dividerElements:Object;
-		protected var _defaultLayout:String = "[play|prev next|elapsed][time][duration|hd cc|mute volume|fullscreen]";
+		protected var _defaultLayout:String = "[play|prev next|elapsed][time][duration|hd|cc|mute volume|fullscreen]";
 		protected var _currentLayout:String;
 		protected var _layoutManager:ControlbarLayoutManager;
 		protected var _width:Number;

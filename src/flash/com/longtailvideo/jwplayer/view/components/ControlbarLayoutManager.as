@@ -45,6 +45,7 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		
 		private function position(group:String, align:String):void {
+			group = group.replace("<divider>hd<divider>cc<divider>","<divider>hd cc<divider>");
 			var items:Array = group.split(/(<[^>]*>)/);
 			if (align == "right") { items = items.reverse(); }
 			for  (var i:Number = 0; i < items.length; i++) {
