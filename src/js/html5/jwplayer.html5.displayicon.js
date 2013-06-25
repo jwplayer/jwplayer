@@ -96,21 +96,25 @@
 			var skinElem = _getSkinElement(name);
 			if (name == "replayIcon" && !skinElem.src) skinElem = _getSkinElement("playIcon"); 
 
-			style = utils.extend({}, style);
-			if (name.indexOf("Icon") > 0) _iconWidth = skinElem.width;
 			if (skinElem.src) {
+				style = utils.extend({}, style);
+				if (name.indexOf("Icon") > 0) _iconWidth = skinElem.width;
 				style['background-image'] = 'url(' + skinElem.src + ')';
 				style['background-size'] = skinElem.width+'px '+skinElem.height+'px';
 				style['width'] = skinElem.width;
+				_css(_internalSelector(selector), style);
+				
+				overstyle = utils.extend({}, overstyle);
+				if (skinElem.overSrc) {
+					overstyle['background-image'] = 'url(' + skinElem.overSrc + ')';
+				}
+				_css("#"+_api.id+" .jwdisplay:hover " + (selector ? selector : _internalSelector()), overstyle);
+				_css(_internalSelector(), { display: "table" }, true);
+			} else {
+				_css(_internalSelector(), { display: "none" }, true);
 			}
-			_css(_internalSelector(selector), style);
 
-			overstyle = utils.extend({}, overstyle);
-			if (skinElem.overSrc) {
-				overstyle['background-image'] = 'url(' + skinElem.overSrc + ')';
-			}
 			_iconElement = skinElem;
-			_css("#"+_api.id+" .jwdisplay:hover " + (selector ? selector : _internalSelector()), overstyle);
 		}
 
 		function _getSkinElement(name) {
@@ -215,13 +219,10 @@
 		
 		var _hide = this.hide = function() {
 			_container.style.opacity = 0;
-			// Needed for IE9 for some reason
-			//if (_bg && utils.isIE()) _bg.style.opacity = 0;
 		}
 
 		var _show = this.show = function() {
 			_container.style.opacity = 1;
-			//if (_bg && utils.isIE()) _bg.style.opacity = 1;
 		}
 
 		_init();
