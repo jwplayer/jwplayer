@@ -244,6 +244,8 @@
 			if (_buttons[id]) {
 				_buttonContainer.removeChild(_buttons[id].element);
 				_buttonContainer.removeChild(_buttons[id].divider);
+				var tooltip = document.getElementById(""+_id + "_" + id + "_tooltip");
+				if (tooltip) _container.removeChild(tooltip);
 				delete _buttons[id];
 				_buttonCount--;
 				_setCaps();

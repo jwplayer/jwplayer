@@ -108,6 +108,7 @@ package com.longtailvideo.jwplayer.view.components {
 		public function removeButton(name:String):void {
 			var found:DockButton = namedButton(name) 
 			if (found) {
+				found.removeTooltip();
 				removeChild(found);
 				buttons.splice(buttons.indexOf(found), 1);
 			}

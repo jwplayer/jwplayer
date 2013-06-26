@@ -168,6 +168,10 @@ package com.longtailvideo.jwplayer.view.components {
 		public function hide():void {
 			_tooltip.hide();
 		}
+		
+		public function removeTooltip():void {
+			if (_tooltip) RootReference.stage.removeChild(_tooltip);
+		}
 	}
 }
 
