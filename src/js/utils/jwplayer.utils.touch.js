@@ -93,13 +93,14 @@
                 return null;
             }
             var rect = _elem.getBoundingClientRect();
-            var evt = {};
-            evt.type = type;
-            evt.target = _elem;
-            evt.x = ((touch.pageX - window.scrollX) - rect.left);
-            evt.y = (touch.clientY - rect.top);
-            evt.deltaX = 0;
-            evt.deltaY = 0;
+            var evt = {
+                type: type,
+                target: _elem,
+                x: ((touch.pageX - window.scrollX) - rect.left),
+                y: touch.pageY,
+                deltaX: 0,
+                deltaY: 0
+            };
             if(type != _events.TAP && _startEvent) {
                 evt.deltaX = evt.x - _startEvent.x;
                 evt.deltaY = evt.y - _startEvent.y;
