@@ -89,7 +89,9 @@
 				style['background-image'] = "url(" + _capLeftSkin.overSrc + "), url(" + _bgSkin.overSrc + "), url(" + _capRightSkin.overSrc + ")"; 
 			}
 
-			_css("#"+_api.id+" .jwdisplay:hover " + _internalSelector(), style);
+			if (!utils.isMobile()) {
+				_css("#"+_api.id+" .jwdisplay:hover " + _internalSelector(), style);
+			}
 		}
 		
 		function _styleIcon(name, selector, style, overstyle) {
@@ -108,7 +110,9 @@
 				if (skinElem.overSrc) {
 					overstyle['background-image'] = 'url(' + skinElem.overSrc + ')';
 				}
-				_css("#"+_api.id+" .jwdisplay:hover " + (selector ? selector : _internalSelector()), overstyle);
+				if (!utils.isMobile()) {
+					_css("#"+_api.id+" .jwdisplay:hover " + (selector ? selector : _internalSelector()), overstyle);
+				}
 				_css(_internalSelector(), { display: "table" }, true);
 			} else {
 				_css(_internalSelector(), { display: "none" }, true);

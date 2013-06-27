@@ -192,13 +192,16 @@
 			var overStyle = { overflow: 'hidden' };
 			if (_settings.overcolor !== "") overStyle.color = _settings.overcolor;
 			if (_elements.itemOver) overStyle['background-image'] = "url("+_elements.itemOver.src+")";
-			_css(_internalSelector("jwlist li:hover"), overStyle);
-			_css(_internalSelector("jwlist li:hover .jwtitle"), {
-				color: _settings.titleovercolor
-			});
-			_css(_internalSelector("jwlist li:hover .jwdescription"), {
-				color: _settings.overcolor
-			});
+			
+			if (!_isMobile) {
+				_css(_internalSelector("jwlist li:hover"), overStyle);
+				_css(_internalSelector("jwlist li:hover .jwtitle"), {
+					color: _settings.titleovercolor
+				});
+				_css(_internalSelector("jwlist li:hover .jwdescription"), {
+					color: _settings.overcolor
+				});
+			}
 
 
 			_css(_internalSelector("jwtextwrapper"), {
