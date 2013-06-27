@@ -116,7 +116,6 @@
 			_api.jwSetFullscreen = _controller.setFullscreen;
 			_api.jwResize = _view.resize;		
 			_api.jwSeekDrag = _model.seekDrag;
-			_api.jwSetStretching = _controller.setStretching;
 			_api.jwGetQualityLevels = _controller.getQualityLevels;
 			_api.jwGetCurrentQuality = _controller.getCurrentQuality;
 			_api.jwSetCurrentQuality = _controller.setCurrentQuality;

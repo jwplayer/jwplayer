@@ -156,7 +156,6 @@ package com.longtailvideo.jwplayer.player {
 				ExternalInterface.addCallback("jwSetMute", js_mute);
 				ExternalInterface.addCallback("jwSetVolume", js_volume);
 				ExternalInterface.addCallback("jwSetFullscreen", js_fullscreen);
-				ExternalInterface.addCallback("jwSetStretching", js_setStretching);
 				ExternalInterface.addCallback("jwSetControls", js_setControls);
 				ExternalInterface.addCallback("jwForceState", js_forceState);
 				ExternalInterface.addCallback("jwReleaseState", js_releaseState);
@@ -522,12 +521,6 @@ package com.longtailvideo.jwplayer.player {
 				_player.fullscreen(false);
 			}
 		}
-		
-		protected function js_setStretching(stretching:String):void {
-			_player.config.stretching = stretching;
-			_player.redraw();
-		}
-
 		
 		protected function js_forceState(state:String):void {
 			

@@ -209,12 +209,6 @@
 			_view.fullscreen(state);
 		}
 
-		function _setStretching(stretching) {
-			_model.stretching = stretching;
-			// TODO: Send stretching event
-			_view.resize();
-		}
-
 		function _item(index) {
 			_load(index);
 			_play();
@@ -332,7 +326,6 @@
 		this.setVolume = _waitForReady(_model.setVolume);
 		this.setMute = _waitForReady(_model.setMute);
 		this.setFullscreen = _waitForReady(_setFullscreen);
-		this.setStretching = _waitForReady(_setStretching);
 		this.detachMedia = _detachMedia; 
 		this.attachMedia = _attachMedia;
 		this.setCurrentQuality = _waitForReady(_setCurrentQuality);
