@@ -539,7 +539,7 @@
 		}
 		
 		function _showControlbar() {
-			if (_controlbar && !utils.isPhone()) _controlbar.show();
+			if (_controlbar) _controlbar.show();
 		}
 		function _hideControlbar() {
 			if (_controlbar && !_audioMode) {
