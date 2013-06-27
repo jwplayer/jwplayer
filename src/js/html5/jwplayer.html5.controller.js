@@ -25,7 +25,6 @@
 			_actionOnAttach,
 			_stopPlaylist = FALSE,
 			_interruptPlay,
-			_isPhone = utils.isPhone(),
 			_queuedCalls = [];
 		
 		utils.extend(this, _eventDispatcher);
@@ -141,10 +140,6 @@
 					_video.play();
 				}
 				
-				if (_isPhone) {
-					_view.fullscreen(TRUE);
-				}
-
 				return TRUE;
 			} catch (err) {
 				alert("Error: " + err.message);
