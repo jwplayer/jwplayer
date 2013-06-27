@@ -70,14 +70,13 @@
 	        // we assume we have a standards compliant browser, but check if we have IE
 	        // Also, document.body.scrollTop does not work in IE
 	        var target = evt.target != null ? evt.target : evt.srcElement,
-	        	bounds = utils.bounds(_container),
-	        	scrollTop = bounds.top,// ? DOCUMENT.body.scrollTop : DOCUMENT.documentElement.scrollTop,
-	        	scrollLeft = bounds.left;// ? DOCUMENT.body.scrollLeft : DOCUMENT.documentElement.scrollLeft;
-
-	        // hide the menu first to avoid an "up-then-over" visual effect
+	        	containerBounds = utils.bounds(_container),
+	        	bounds = utils.bounds(target);
+	        
+	    	// hide the menu first to avoid an "up-then-over" visual effect
 	        _menu.style.display = JW_CSS_NONE;
-	        _menu.style.left = evt.pageX - scrollLeft + 'px';
-	        _menu.style.top = evt.pageY - scrollTop + 'px';
+	        _menu.style.left = (evt.offsetX ? evt.offsetX : evt.layerX) + bounds.left - containerBounds.left + 'px';
+	        _menu.style.top = (evt.offsetY ? evt.offsetY : evt.layerY) + bounds.top - containerBounds.top + 'px';
 	        _menu.style.display = 'block';
 	        evt.preventDefault();
 	    }
