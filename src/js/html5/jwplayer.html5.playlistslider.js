@@ -230,7 +230,7 @@
 		}
 		
 		function _touchDrag(evt) {
-			_setThumbPosition(_thumbPercent - (evt.deltaY / _pane.clientHeight));
+			_setThumbPosition(_thumbPercent - (evt.deltaY * 2 / _pane.clientHeight));
 		}
 		
 		function _moveThumb(evt) {

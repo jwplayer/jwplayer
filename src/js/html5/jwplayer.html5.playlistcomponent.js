@@ -32,6 +32,7 @@
 		events = jwplayer.events,
 		utils = jwplayer.utils, 
 		_css = utils.css,
+		_isMobile = utils.isMobile(),
 		
 		PL_CLASS = '.jwplaylist',
 		DOCUMENT = document,
@@ -63,7 +64,6 @@
 				'itemImage': undefined,
 				'itemActive': undefined
 			},
-			_isMobile = utils.isMobile(),
 			_this = this;
 
 		_this.element = function() {
@@ -425,5 +425,9 @@
 	_css(PL_CLASS+' .jwplaylistdivider', {
 		position: JW_CSS_ABSOLUTE
 	});
+	
+	if (_isMobile) utils.transitionStyle(PL_CLASS+' .jwlist', "top .35s");
+
+
 
 })(jwplayer.html5);
