@@ -695,17 +695,20 @@ package com.longtailvideo.jwplayer.view {
 			switch (_model.state) {
 				case PlayerState.IDLE:
 					hideControls();
-					components.dock.show();					
+					components.dock.show();
+					components.logo.show();
 					imageDelay.start();
 					break;
 				case PlayerState.BUFFERING:
 					_completeState = false;
-					showControls();
+					hideControls();
 					break;
 				case PlayerState.PAUSED:
 					showControls();
 					Mouse.show();
+					break;
 				case PlayerState.PLAYING:
+					hideControls();
 					mediaDelay.start();
 					break;
 			}
@@ -803,15 +806,16 @@ package com.longtailvideo.jwplayer.view {
 		private function moveTimeout(evt:Event=null):void {
 			clearTimeout(_fadingOut);
 			if (_player.state == PlayerState.PLAYING) Mouse.hide();
-			if (_player.state != PlayerState.PAUSED)
-			hideControls();
+			if (_player.state != PlayerState.PAUSED) hideControls();
 		}
 		
 		private function hideControls():void {
 			if (_preventFade) return;
-			if (_player.state == PlayerState.PLAYING) _components.dock.hide();
 			_components.controlbar.hide();
-			_components.logo.hide(audioMode);
+			if (_player.state != PlayerState.IDLE) {
+				_components.dock.hide();
+				_components.logo.hide(audioMode);
+			}
 		}
 		
 		private function showControls():void {

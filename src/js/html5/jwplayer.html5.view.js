@@ -69,6 +69,7 @@
 			_playlist,
 			_audioMode,
 			_errorState = FALSE,
+			_showing = FALSE,
 			_replayState,
 			_readyState,
 			_rightClickMenu,
@@ -148,7 +149,7 @@
 			if (!_isMobile) {
 				_controlsLayer.addEventListener('mouseout', function() {
 					clearTimeout(_controlsTimeout);
-					_controlsTimeout = setTimeout(_fadeControls, 10);
+					_controlsTimeout = setTimeout(_hideControls, 10);
 				}, FALSE);
 				
 				_controlsLayer.addEventListener('mousemove', _startFade, FALSE);
@@ -212,22 +213,18 @@
 			return newElement;
 		}
 		
-		
-		
-		var _showing = false;
-		
 		function _touchHandler() {
 			_showing ? _hideControls() : _showControls();
 			_showing = !_showing;
 			if (_showing) {
 				clearTimeout(_controlsTimeout);
-				_controlsTimeout = setTimeout(_fadeControls, _timeoutDuration);
+				_controlsTimeout = setTimeout(_hideControls, _timeoutDuration);
 			}
 		}
 
 		function _resetTapTimer() {
 			clearTimeout(_controlsTimeout);
-			_controlsTimeout = setTimeout(_fadeControls, _timeoutDuration);
+			_controlsTimeout = setTimeout(_hideControls, _timeoutDuration);
 		}
 		
 		function _startFade() {
@@ -235,7 +232,7 @@
 			if (_api.jwGetState() == states.PLAYING || _api.jwGetState() == states.PAUSED) {
 				_showControls();
 				if (!_inCB) {
-					_controlsTimeout = setTimeout(_fadeControls, _timeoutDuration);
+					_controlsTimeout = setTimeout(_hideControls, _timeoutDuration);
 				}
 			}
 		}
@@ -249,17 +246,6 @@
 			_inCB = FALSE;
 		}
 		
-		function _fadeControls(evt) {
-			if (_api.jwGetState() == states.PLAYING) {
-				_hideControlbar();
-				_hideDock();
-				_hideLogo();
-			}
-			clearTimeout(_controlsTimeout);
-			_controlsTimeout = 0;
-			_showing = FALSE;
-		}
-
 		function forward(evt) {
 			_eventDispatcher.sendEvent(evt.type, evt);
 		}
@@ -310,7 +296,7 @@
 			_controlsLayer.appendChild(_controlbar.element());
 				
 			setTimeout(function() { 
-				_resize(_model.width, _model.height, false);
+				_resize(_model.width, _model.height, FALSE);
 			}, 0);
 		}
 
@@ -386,7 +372,7 @@
 		 * Resize the player
 		 */
 		function _resize(width, height, sendResize) {
-			if (!utils.exists(sendResize)) sendResize = true;
+			if (!utils.exists(sendResize)) sendResize = TRUE;
 			if (utils.exists(width) && utils.exists(height)) {
 				_model.width = width;
 				_model.height = height;
@@ -560,7 +546,7 @@
 			if (_logo && !_audioMode) _logo.show();
 		}
 		function _hideLogo() {
-			if (_logo && _audioMode) _logo.hide(_audioMode);
+			if (_logo) _logo.hide(_audioMode);
 		}
 
 		function _showDisplay() {
@@ -570,7 +556,7 @@
 			}
 
 			if (!(_isMobile && _model.fullscreen)) {
-				_videoTag.controls = false;
+				_videoTag.controls = FALSE;
 			}
 			
 		}
@@ -581,9 +567,16 @@
 		}
 
 		function _hideControls() {
+			clearTimeout(_controlsTimeout);
+			_controlsTimeout = 0;
+			_showing = FALSE;
+
 			_hideControlbar();
-			_hideDock();
-			_hideLogo();
+
+			if (_api.jwGetState() != states.IDLE) {
+				_hideDock();
+				_hideLogo();
+			}
 		}
 
 		function _showControls() {
@@ -591,7 +584,7 @@
 				_showControlbar();
 				_showDock();
 			}
-			_showLogo();
+			if (_logoConfig.hide) _showLogo();	
 		}
 
 		function _showVideo(state) {
@@ -605,7 +598,7 @@
 
 		function _playlistCompleteHandler() {
 			_replayState = TRUE;
-			_fullscreen(false);
+			_fullscreen(FALSE);
 			if (_model.controls) {
 				_showDock();
 			}
@@ -639,22 +632,21 @@
 					_showVideo(FALSE);
 					_display.hidePreview(_audioMode);
 				}
-				_startFade();
+				_hideControls();
 				break;
 			case states.IDLE:
 				_showVideo(FALSE);
-				if (_api.jwGetState() == states.PAUSED) _showControls();
 				if (!_audioMode) {
 					_display.hidePreview(FALSE);
 					_showDisplay();
 					_showDock();
-					if (!_logoConfig.hide) _showLogo();	
+					_showLogo();	
 				}
 				break;
 			case states.BUFFERING:
 				_showDisplay();
+				_hideControls();
 				if (_isMobile) _showVideo(TRUE);
-				else _showControls();
 				break;
 			case states.PAUSED:
 				_showDisplay();
@@ -700,7 +692,7 @@
 		}
 		
 		this.setupError = function(message) {
-			_errorState = true;
+			_errorState = TRUE;
 			jwplayer.embed.errorScreen(_playerElement, message);
 			_completeSetup();
 		}
