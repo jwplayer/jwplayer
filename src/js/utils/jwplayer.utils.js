@@ -142,16 +142,6 @@
 	utils.isMobile = function() {
 		return utils.isIOS() || utils.isAndroid();
 	}
-
-	/** Check device width to see if we're working with a phone that needs to go fullscreen while playing **/
-//	utils.isTablet = function() {
-//		return utils.isIPad() || (utils.isAndroid(4) && !_userAgentMatch(/mobile/i));
-//	}
-
-	utils.isPhone = function() {
-		return utils.isIPod() || utils.isAndroid(2.3) || (utils.isAndroid(4) && _userAgentMatch(/mobile/i));
-	}
-	
 	
 	/** Save a setting **/
 	utils.saveCookie = function(name, value) {

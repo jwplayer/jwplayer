@@ -291,10 +291,10 @@
 			_dock = new html5.dock(_api, _model.componentConfig('dock'));
 			_controlsLayer.appendChild(_dock.element());
 			
-			if (_api.edition) {
+			if (_api.edition && !_isMobile) {
 				_rightClickMenu = new html5.rightclick(_api, {abouttext: _model.abouttext, aboutlink: _model.aboutlink});	
 			}
-			else {
+			else if (!_isMobile) {
 				_rightClickMenu = new html5.rightclick(_api, {});
 			}
 			
