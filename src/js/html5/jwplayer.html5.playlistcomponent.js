@@ -317,15 +317,9 @@
 			
 			_lastCurrent = _api.jwGetPlaylistIndex();
 			
-			if (utils.isIOS() && window.iScroll) {
-				_wrapper.innerHTML = "";
-				_appendChild(_wrapper, _ul);
-				_ul.style.height = _itemheight * _playlist.length + "px";
-				var myscroll = new iScroll(_wrapper.id);
-			} else {
-				_appendChild(_container, _ul);
-				_slider = new html5.playlistslider(_wrapper.id + "_slider", _api.skin, _wrapper, _ul);
-			}
+			_appendChild(_container, _ul);
+			_slider = new html5.playlistslider(_wrapper.id + "_slider", _api.skin, _wrapper, _ul);
+			
 		}
 		
 		function _getPlaylist() {
@@ -353,9 +347,7 @@
 			if (idx == _clickedIndex) return;
 			_clickedIndex = -1;
 				
-			if (utils.isIOS() && window.iScroll) {
-				_ul.scrollTop = idx * _itemheight;
-			} else if (_slider && _slider.visible()) {
+			if (_slider && _slider.visible()) {
 				_slider.thumbPosition(idx / (_api.jwGetPlaylist().length-1)) ;
 			}
 		}
