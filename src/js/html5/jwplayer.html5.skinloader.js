@@ -20,7 +20,8 @@
 			_skinPath = skinPath,
 			_error = false,
 			_defaultSkin,
-			_mobileMultiplier = jwplayer.utils.isMobile() ? 1.5 : 1;
+			// Keeping this as 1 for now. Will change if necessary for mobile
+			_mobileMultiplier = jwplayer.utils.isMobile() ? 1 : 1;
 			_ratio = 1;
 		
 		/** Load the skin **/
