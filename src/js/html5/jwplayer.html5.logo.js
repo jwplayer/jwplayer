@@ -187,6 +187,6 @@
 	  	opacity: 0
 	});
 
-	utils.transitionStyle(LOGO_CLASS, "visibility .15s, opacity .15s");
+	utils.transitionStyle(LOGO_CLASS, "visibility .25s, opacity .25s");
 
 })(jwplayer);

@@ -163,7 +163,7 @@
 			clearTimeout(_fadeTimeout);
 			_fadeTimeout = setTimeout(function() {
 				_container.style.display = JW_CSS_NONE
-			}, 150);
+			}, 250);
 		}
 
 		_this.show = function() {
@@ -317,8 +317,8 @@
 		'background-repeat': "no-repeat"
 	});
 
-	utils.transitionStyle(D_CLASS, "background .15s, opacity .15s");
-	utils.transitionStyle(D_CLASS + " .jwoverlay", "opacity .15s");
-	utils.transitionStyle(DB_CLASS + " button div", "opacity .15s");
+	utils.transitionStyle(D_CLASS, "background .25s, opacity .25s");
+	utils.transitionStyle(D_CLASS + " .jwoverlay", "opacity .25s");
+	utils.transitionStyle(DB_CLASS + " button div", "opacity .25s");
 
 })(jwplayer.html5);

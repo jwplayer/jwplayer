@@ -24,7 +24,7 @@
 		JW_CSS_100PCT = "100%",
 		JW_CSS_HIDDEN = "hidden",
 		JW_CSS_SMOOTH_EASE = "opacity .25s, background-image .25s, color .25s",
-		JW_VISIBILITY_TIMEOUT = 150;
+		JW_VISIBILITY_TIMEOUT = 250;
 
 	
 	html5.display = function(api, config) {

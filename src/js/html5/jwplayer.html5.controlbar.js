@@ -33,8 +33,8 @@
 		JW_CSS_LEFT = "left",
 		JW_CSS_RIGHT = "right",
 		JW_CSS_100PCT = "100%",
-		JW_CSS_SMOOTH_EASE = "opacity .15s, background .15s, visibility .15s",
-		JW_VISIBILITY_TIMEOUT = 150,
+		JW_CSS_SMOOTH_EASE = "opacity .25s, background .25s, visibility .25s",
+		JW_VISIBILITY_TIMEOUT = 250,
 		
 		HIDDEN = { display: JW_CSS_NONE },
 		NOT_HIDDEN = { display: UNDEFINED },
@@ -1483,7 +1483,7 @@
 
 	_setTransition(CB_CLASS, JW_CSS_SMOOTH_EASE);
 	_setTransition(CB_CLASS + ' button', JW_CSS_SMOOTH_EASE);
-	_setTransition(CB_CLASS + ' .jwtime .jwsmooth span', JW_CSS_SMOOTH_EASE + ", width .15s linear, left .05s linear");
+	_setTransition(CB_CLASS + ' .jwtime .jwsmooth span', JW_CSS_SMOOTH_EASE + ", width .25s linear, left .05s linear");
 	_setTransition(CB_CLASS + ' .jwtoggling', JW_CSS_NONE);
 
 })(jwplayer);
