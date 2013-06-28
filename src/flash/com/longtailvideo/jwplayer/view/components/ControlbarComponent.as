@@ -117,7 +117,6 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _currentCaptions:Number = 0;
 		protected var _ccOverlay:TooltipMenu;
 		protected var _volumeOverlay:TooltipOverlay;
-		protected var _fullscreenOverlay:TooltipOverlay;
 		
 		protected var _mouseOverButton:Boolean = false;
 		
@@ -481,15 +480,6 @@ package com.longtailvideo.jwplayer.view.components {
 					_buttons.unmute.addEventListener(MouseEvent.MOUSE_OVER, showVolumeOverlay);
 				}
 			}
-			if (_buttons.fullscreen) {
-				_buttons.fullscreen.addEventListener(MouseEvent.MOUSE_OVER, showFullscreenOverlay);
-				_buttons.fullscreen.addEventListener(MouseEvent.CLICK, hideFullscreenOverlay);
-				if (_buttons.normalscreen) {
-					_buttons.normalscreen.addEventListener(MouseEvent.MOUSE_OVER, showFullscreenOverlay);
-					_buttons.normalscreen.addEventListener(MouseEvent.CLICK, hideFullscreenOverlay);
-				}
-
-			}
 		}
 		
 		private function setupOverlays():void {
@@ -511,10 +501,6 @@ package com.longtailvideo.jwplayer.view.components {
 				}
 			}
 			
-			_fullscreenOverlay = new TooltipOverlay(_player.skin);
-			_fullscreenOverlay.text = "Fullscreen";
-			_fullscreenOverlay.name = "fullscreenOverlay";
-			createOverlay(_fullscreenOverlay, _buttons.fullscreen);
 		}
 		
 		private function createOverlay(overlay:TooltipOverlay, button:DisplayObject):void {
@@ -563,14 +549,12 @@ package com.longtailvideo.jwplayer.view.components {
 			if (_hdOverlay && _levels && _levels.length > 1) _hdOverlay.show();
 			hideCcOverlay();
 			hideVolumeOverlay();
-			hideFullscreenOverlay();
 		}
 		
 		private function showCcOverlay(evt:MouseEvent):void {
 			if (_ccOverlay && _captions && _captions.length > 1) _ccOverlay.show();
 			hideHdOverlay();
 			hideVolumeOverlay();
-			hideFullscreenOverlay();
 		}
 
 		private function hideHdOverlay(evt:MouseEvent=null):void {
@@ -692,26 +676,11 @@ package com.longtailvideo.jwplayer.view.components {
 			dispatchEvent(evt);
 		}
 
-		private function showFullscreenOverlay(evt:MouseEvent):void {
-			if (_audioMode) return;
-			if (_fullscreenOverlay) _fullscreenOverlay.show();
-			hideHdOverlay();
-			hideCcOverlay();
-			hideVolumeOverlay();
-		}
-		
-		private function hideFullscreenOverlay(evt:MouseEvent=null):void {
-			if (_fullscreenOverlay) {
-				_fullscreenOverlay.hide();
-			}
-		}
-
 		private function showVolumeOverlay(evt:MouseEvent):void {
 			if (_audioMode) return;
 			if (_volumeOverlay) _volumeOverlay.show();
 			hideHdOverlay();
 			hideCcOverlay();
-			hideFullscreenOverlay();
 		}
 		
 		private function hideVolumeOverlay(evt:MouseEvent=null):void {
@@ -855,8 +824,6 @@ package com.longtailvideo.jwplayer.view.components {
 			positionOverlay(_hdOverlay, getButton('hd'));
 			positionOverlay(_ccOverlay, getButton('cc'));
 			positionOverlay(_volumeOverlay, player.config.mute ? getButton('unmute') : getButton('mute'));
-			positionOverlay(_fullscreenOverlay, player.config.fullscreen ? getButton('normalscreen') : getButton('fullscreen'));
-			
 		}
 
 
@@ -889,7 +856,6 @@ package com.longtailvideo.jwplayer.view.components {
 			hideVolumeOverlay();
 			hideHdOverlay();
 			hideCcOverlay();
-			hideFullscreenOverlay();
 			if (_timeSlider is TimeSlider) (_timeSlider as TimeSlider).hide();
 		}
 		

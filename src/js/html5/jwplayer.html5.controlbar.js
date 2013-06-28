@@ -122,7 +122,6 @@
 			_ccTimer,
 			_ccTapTimer,
 			_ccOverlay,
-			_fullscreenOverlay,
 			_redrawTimeout,
 			_hideTimeout,
 			_audioMode = FALSE,
@@ -1085,15 +1084,6 @@
 				_addOverlay(_volumeOverlay, _elements.mute, _showVolume);
 				_overlays.volume = _volumeOverlay;
 			}
-			if (_elements.fullscreen) {
-				_fullscreenOverlay = new html5.overlay(_id+"_fullscreenoverlay", _skin);
-				var text = _createElement("div");
-				text.className = "jwoverlaytext";
-				text.innerHTML = "Fullscreen";
-				_fullscreenOverlay.setContents(text);
-				_addOverlay(_fullscreenOverlay, _elements.fullscreen, _showFullscreen);
-				_overlays.fullscreen = _fullscreenOverlay;
- 			}
 		}
 		
 		function _setCcTimer() {
