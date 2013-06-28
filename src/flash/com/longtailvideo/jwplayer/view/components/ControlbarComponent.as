@@ -119,6 +119,7 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _volumeOverlay:TooltipOverlay;
 		protected var _lastPos:Number = 0;
 		protected var _lastDur:Number = 0;
+		protected var _dispWidth:Number = -1;
 		protected var _smallPlayer:Boolean = false;
 		protected var _mouseOverButton:Boolean = false;
 		
@@ -390,7 +391,7 @@ package com.longtailvideo.jwplayer.view.components {
 			var newDuration:String = Strings.digits(duration);
 			var durationField:TextField = getTextField('duration');
 			
-			if (_width < 320) {
+			if (_dispWidth > 0 && _dispWidth < 320) {
 				newElapsed = "";
 				newDuration = "";
 			}
@@ -779,7 +780,7 @@ package com.longtailvideo.jwplayer.view.components {
 				visible = false;
 				return;
 			}
-			
+			_dispWidth = width;
 			var margin:Number = getConfigParam('margin') == null ? 8 : getConfigParam('margin');
 			var maxMargin:Number = (!_audioMode && maxWidth && width > maxWidth) ? (width - maxWidth) / 2 : 0;
 			x = (maxMargin ? maxMargin : margin) + player.config.pluginConfig('display')['x'];
@@ -834,7 +835,7 @@ package com.longtailvideo.jwplayer.view.components {
 				hideButton('fullscreen', false);
 			}
 			
-			if (!isNaN(_width) && _width < 320) {
+			if (_dispWidth > 0 && _dispWidth < 320) {
 				_currentLayout = _currentLayout.replace("duration","");
 				_currentLayout = _currentLayout.replace("elapsed","");
 				if (!_smallPlayer) {
@@ -902,25 +903,23 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 		
 		private function alignTextFields():void {
-			if (_width > 320) {
-				for each(var fieldName:String in ['elapsed','duration']) {
-					var textContainer:Sprite = getButton(fieldName) as Sprite;
-					if (!textContainer) {
-						continue;
-					}
-					textContainer.tabEnabled = false;
-					textContainer.buttonMode = false;
-					var textField:TextField = getTextField(fieldName);
-					var textBackground:DisplayObject = textContainer.getChildByName('back');
-					
-					if (textField && textBackground) {
-						textBackground.width = textField.textWidth + 10; 
-						textBackground.height = background.height; 
-						textField.x = (textBackground.width - textField.width) / 2; 
-						textField.y = (textBackground.height - textField.height) / 2;
-					}
-				}	
-			}
+			for each(var fieldName:String in ['elapsed','duration']) {
+				var textContainer:Sprite = getButton(fieldName) as Sprite;
+				if (!textContainer) {
+					continue;
+				}
+				textContainer.tabEnabled = false;
+				textContainer.buttonMode = false;
+				var textField:TextField = getTextField(fieldName);
+				var textBackground:DisplayObject = textContainer.getChildByName('back');
+				
+				if (textField && textBackground) {
+					textBackground.width = textField.textWidth + 10; 
+					textBackground.height = background.height; 
+					textField.x = (textBackground.width - textField.width) / 2; 
+					textField.y = (textBackground.height - textField.height) / 2;
+				}
+			}	
 		}
 
 

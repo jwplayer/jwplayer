@@ -598,13 +598,15 @@
 		}
 		
 		function _hideTimes() {
-			if (utils.bounds(_controlbar).width >= 320) {
-				_css(_internalSelector(".jwelapsed"),  NOT_HIDDEN);				
-				_css(_internalSelector(".jwduration"),  NOT_HIDDEN);
-			} else {
-				_css(_internalSelector(".jwelapsed"),  HIDDEN);				
-				_css(_internalSelector(".jwduration"), HIDDEN);
-				
+			if(_controlbar) {
+				if (utils.bounds(_controlbar.parentNode).width >= 320) {
+					_css(_internalSelector(".jwelapsed"),  NOT_HIDDEN);				
+					_css(_internalSelector(".jwduration"),  NOT_HIDDEN);
+				} else {
+					_css(_internalSelector(".jwelapsed"),  HIDDEN);				
+					_css(_internalSelector(".jwduration"), HIDDEN);
+					
+				}
 			}
 		}
 		function _showVolume() {
