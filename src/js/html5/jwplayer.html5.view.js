@@ -533,7 +533,7 @@
 		}
 		
 		function _showDock() {
-			if (_dock && !_audioMode) _dock.show();
+			if (_dock && !_audioMode && _model.controls) _dock.show();
 		}
 		function _hideDock() {
 			if (_dock && !_replayState) {

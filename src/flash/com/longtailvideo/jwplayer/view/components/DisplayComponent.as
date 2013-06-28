@@ -263,8 +263,9 @@
 		}
 		
 		
-		protected function clickHandler(event:MouseEvent):void {
+		protected function clickHandler(event:MouseEvent):void { 
 			dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_CLICK));
+			if (!_player.getControls()) return;
 			if (currentState == PlayerState.PLAYING || currentState == PlayerState.BUFFERING) {
 				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_PAUSE));
 			} else {

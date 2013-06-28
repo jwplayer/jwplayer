@@ -93,7 +93,10 @@
 				return;
 			}
 			_eventDispatcher.sendEvent(events.JWPLAYER_DISPLAY_CLICK);
+			
 			if (_isMobile && _hiding) return;
+			if (!_api.jwGetControls()) return;
+
 			switch (_api.jwGetState()) {
 			case states.PLAYING:
 			case states.BUFFERING:
