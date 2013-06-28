@@ -383,7 +383,7 @@
 			}
 
 			if (_display) _display.redraw();
-			if (_controlbar) _controlbar.redraw();
+			if (_controlbar) _controlbar.redraw(TRUE);
 			if (_logo) {
 				_logo.offset(_controlbar && _logo.position().indexOf("bottom") >= 0 ? _controlbar.height() + _controlbar.margin() : 0);
 				setTimeout(function() {

@@ -15,7 +15,6 @@
 		states = events.state,
 		_css = utils.css,
 		_setTransition = utils.transitionStyle,
-
 		/** Controlbar element types * */
 		CB_BUTTON = "button",
 		CB_TEXT = "text",
@@ -127,6 +126,7 @@
 			_audioMode = FALSE,
 			_dragging = FALSE,		
 			_lastSeekTime = 0,
+			_lastWidth = -1,
 			_lastTooltipPositionTime = 0,
 			_eventDispatcher = new events.eventdispatcher(),
 			
@@ -177,7 +177,8 @@
 			_controlbar.className = "jwcontrolbar";
 
 			_skin = _api.skin;
-			
+
+			_setupResponsiveListener();
 			_layout = _skin.getComponentLayout('controlbar');
 			if (!_layout) _layout = _defaults.layout;
 			utils.clearCss('#'+_id);
@@ -190,6 +191,24 @@
 			}, 0);
 			_playlistHandler();
 			_this.visible = false;
+		}
+		
+		
+		function _setupResponsiveListener() {
+			var responsiveListenerInterval = setInterval(function() {
+				var cbDOM = DOCUMENT.getElementById(_id),
+					containerWidth = utils.bounds(cbDOM).width; 
+						
+				if (cbDOM != _controlbar) {
+					// Player has been destroyed; clean up
+					clearInterval(responsiveListenerInterval);
+				} else if (containerWidth > 0) {
+					if (_this.visible && containerWidth != _lastWidth) {
+						_lastWidth = containerWidth;
+						_this.show(TRUE);
+					}
+				}
+			}, 200)
 		}
 		
 		function _addEventListeners() {
@@ -222,6 +241,7 @@
 			}
 		}
 		
+
 		function _timeUpdated(evt) {
 			var refreshRequired = FALSE,
 				timeString;
@@ -577,6 +597,16 @@
 			});
 		}
 		
+		function _hideTimes() {
+			if (utils.bounds(_controlbar).width >= 320) {
+				_css(_internalSelector(".jwelapsed"),  NOT_HIDDEN);				
+				_css(_internalSelector(".jwduration"),  NOT_HIDDEN);
+			} else {
+				_css(_internalSelector(".jwelapsed"),  HIDDEN);				
+				_css(_internalSelector(".jwduration"), HIDDEN);
+				
+			}
+		}
 		function _showVolume() {
 			if (_audioMode) return;
 			_volumeOverlay.show();
@@ -1184,14 +1214,17 @@
 			_redrawTimeout = setTimeout(_this.redraw, 0);
 		}
 
-		_this.redraw = function() {
+		_this.redraw = function(resize) {
+			if (resize && _this.visible) {
+				_this.show(TRUE);
+			}
 			_createStyles();
 			var capLeft = _getSkinElement("capLeft"), capRight = _getSkinElement("capRight")
 			_css(_internalSelector('.jwgroup.jwcenter'), {
 				left: Math.round(utils.parseDimension(_groups.left.offsetWidth) + capLeft.width),
 				right: Math.round(utils.parseDimension(_groups.right.offsetWidth) + capRight.width)
 			});
-			
+		
 			var max = (!_audioMode && _controlbar.parentNode.clientWidth > _settings.maxwidth), 
 				margin = _audioMode ? 0 : _settings.margin;
 			
@@ -1332,13 +1365,14 @@
 			parent.appendChild(child);
 		}
 		
-		_this.show = function() {
-			if (_this.visible) return;
+		_this.show = function(resize) {
+			if (_this.visible && !resize) return;
 			_clearHideTimeout();
 			_this.visible = true;
 			_controlbar.style.display = JW_CSS_INLINE_BLOCK;
 			_redraw();
 			_muteHandler();
+			_hideTimes();
 			_hideTimeout = setTimeout(function() {
 				_controlbar.style.opacity = 1;
 			}, 10);

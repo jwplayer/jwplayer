@@ -117,7 +117,9 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _currentCaptions:Number = 0;
 		protected var _ccOverlay:TooltipMenu;
 		protected var _volumeOverlay:TooltipOverlay;
-		
+		protected var _lastPos:Number = 0;
+		protected var _lastDur:Number = 0;
+		protected var _smallPlayer:Boolean = false;
 		protected var _mouseOverButton:Boolean = false;
 		
 
@@ -338,6 +340,8 @@ package com.longtailvideo.jwplayer.view.components {
 			switch (evt.type) {
 				case MediaEvent.JWPLAYER_MEDIA_BUFFER:
 				case MediaEvent.JWPLAYER_MEDIA_TIME:
+					_lastPos = evt.position;
+					_lastDur = evt.duration;
 					if (scrubber) {
 						scrubber.setProgress(evt.position / evt.duration * 100);
 						scrubber.thumbVisible = (evt.duration > 0);
@@ -371,6 +375,7 @@ package com.longtailvideo.jwplayer.view.components {
 
 
 		private function setTime(position:Number, duration:Number):void {
+
 			if (position < 0) {
 				position = 0;
 			}
@@ -382,15 +387,23 @@ package com.longtailvideo.jwplayer.view.components {
 			
 			var newElapsed:String = Strings.digits(position);
 			var elapsedText:TextField = getTextField('elapsed');
+			var newDuration:String = Strings.digits(duration);
+			var durationField:TextField = getTextField('duration');
+			
+			if (_width < 320) {
+				newElapsed = "";
+				newDuration = "";
+			}
+			
 			if (elapsedText) {
 				if (newElapsed.length != elapsedText.text.length) redrawNeeded = true;
 				elapsedText.text = newElapsed;	
 			}
 			
 			
-			var newDuration:String = Strings.digits(duration);
-			var durationField:TextField = getTextField('duration');
+
 			if (durationField) {
+				
 				if (newDuration.length != durationField.text.length) redrawNeeded = true;
 				durationField.text = newDuration;
 			} 
@@ -814,8 +827,25 @@ package com.longtailvideo.jwplayer.view.components {
 						_currentLayout += chunk + "]";
 					}
 				}
+				
+			
 			} else {
+				
 				hideButton('fullscreen', false);
+			}
+			
+			if (!isNaN(_width) && _width < 320) {
+				_currentLayout = _currentLayout.replace("duration","");
+				_currentLayout = _currentLayout.replace("elapsed","");
+				if (!_smallPlayer) {
+					setTime(0,0);
+					_smallPlayer = true;
+				}
+			} else {
+				if (_smallPlayer) {
+					setTime(_lastPos,_lastDur);
+					_smallPlayer = false;
+				}
 			}
 			clearDividers();
 			alignTextFields();
@@ -872,23 +902,25 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 		
 		private function alignTextFields():void {
-			for each(var fieldName:String in ['elapsed','duration']) {
-				var textContainer:Sprite = getButton(fieldName) as Sprite;
-				if (!textContainer) {
-					continue;
-				}
-				textContainer.tabEnabled = false;
-				textContainer.buttonMode = false;
-				var textField:TextField = getTextField(fieldName);
-				var textBackground:DisplayObject = textContainer.getChildByName('back');
-				
-				if (textField && textBackground) {
-					textBackground.width = textField.textWidth + 10; 
-					textBackground.height = background.height; 
-					textField.x = (textBackground.width - textField.width) / 2; 
-					textField.y = (textBackground.height - textField.height) / 2;
-				}
-			} 
+			if (_width > 320) {
+				for each(var fieldName:String in ['elapsed','duration']) {
+					var textContainer:Sprite = getButton(fieldName) as Sprite;
+					if (!textContainer) {
+						continue;
+					}
+					textContainer.tabEnabled = false;
+					textContainer.buttonMode = false;
+					var textField:TextField = getTextField(fieldName);
+					var textBackground:DisplayObject = textContainer.getChildByName('back');
+					
+					if (textField && textBackground) {
+						textBackground.width = textField.textWidth + 10; 
+						textBackground.height = background.height; 
+						textField.x = (textBackground.width - textField.width) / 2; 
+						textField.y = (textBackground.height - textField.height) / 2;
+					}
+				}	
+			}
 		}
 
 
