@@ -180,6 +180,7 @@ package com.longtailvideo.jwplayer.view {
 			_model.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_ITEM, itemHandler);
 			_model.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_COMPLETE, completeHandler);
 			_model.addEventListener(PlayerStateEvent.JWPLAYER_PLAYER_STATE, stateHandler);
+			_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_ERROR, errorHandler);
 
 			layoutManager = new PlayerLayoutManager(_player);
 			setupRightClick();
@@ -714,6 +715,10 @@ package com.longtailvideo.jwplayer.view {
 			}
 		}
 
+		protected function errorHandler(evt:MediaEvent):void {
+			components.controlbar.hide(audioMode);
+		}
+		
 		protected function completeHandler(evt:PlaylistEvent):void {
 			_completeState = true;
 			fullscreen(false);

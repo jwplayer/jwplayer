@@ -139,9 +139,8 @@
 			DOCUMENT.addEventListener('keydown', _keyHandler, FALSE);
 
 			_api.jwAddEventListener(events.JWPLAYER_PLAYER_READY, _readyHandler);
-			
 			_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
-			
+			_api.jwAddEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
 			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_COMPLETE, _playlistCompleteHandler);
 
 			_stateHandler({newstate:states.IDLE});
@@ -619,6 +618,10 @@
 			_stateTimeout = setTimeout(function() {
 				_updateState(evt.newstate);
 			}, 100);
+		}
+		
+		function _errorHandler() {
+			_hideControlbar();
 		}
 		
 		function _updateState(state) {
