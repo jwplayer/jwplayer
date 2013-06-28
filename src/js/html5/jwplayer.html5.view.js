@@ -213,8 +213,11 @@
 		}
 		
 		function _touchHandler() {
-			_showing ? _hideControls() : _showControls();
-			_showing = !_showing;
+			if (_isMobile) {
+				_showing ? _hideControls() : _showControls();
+			} else {
+				_stateHandler(_api.jwGetState())
+			}
 			if (_showing) {
 				clearTimeout(_controlsTimeout);
 				_controlsTimeout = setTimeout(_hideControls, _timeoutDuration);
@@ -228,7 +231,7 @@
 		
 		function _startFade() {
 			clearTimeout(_controlsTimeout);
-			if (_api.jwGetState() == states.PLAYING || _api.jwGetState() == states.PAUSED) {
+			if (_api.jwGetState() == states.PAUSED || _api.jwGetState() == states.PLAYING) {
 				_showControls();
 				if (!_inCB) {
 					_controlsTimeout = setTimeout(_hideControls, _timeoutDuration);
@@ -526,6 +529,7 @@
 		function _showControlbar() {
 			if (_controlbar) _controlbar.show();
 		}
+		
 		function _hideControlbar() {
 			if (_controlbar && !_audioMode) {
 				_controlbar.hide();
@@ -570,15 +574,18 @@
 			_controlsTimeout = 0;
 			_showing = FALSE;
 
-			_hideControlbar();
+			var state = _api.jwGetState();
+			
+			if (state != states.PAUSED) _hideControlbar();
 
-			if (_api.jwGetState() != states.IDLE) {
+			if (state != states.IDLE) {
 				_hideDock();
 				_hideLogo();
 			}
 		}
 
 		function _showControls() {
+			_showing = TRUE;
 			if (_model.controls || _audioMode) {
 				_showControlbar();
 				_showDock();
@@ -591,7 +598,6 @@
 			_css(_internalSelector(VIEW_VIDEO_CONTAINER_CLASS), {
 				visibility: state ? "visible" : JW_CSS_HIDDEN,
 				opacity: state ? 1 : 0
-				//display: state ? JW_CSS_BLOCK : JW_CSS_NONE
 			});
 		}
 
