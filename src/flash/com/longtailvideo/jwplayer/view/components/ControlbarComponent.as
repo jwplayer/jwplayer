@@ -101,8 +101,7 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _customButtons:Array = [];
 //		protected var _removedButtons:Array = [];
 		protected var _dividers:Array;
-		protected var _dividerElements:Object;
-		protected var _defaultLayout:String = "[play|prev next|elapsed][time][duration|hd|cc|mute volume|fullscreen]";
+		protected var _defaultLayout:String = "[play prev next elapsed][time][duration hd cc mute volume fullscreen]";
 		protected var _currentLayout:String;
 		protected var _layoutManager:ControlbarLayoutManager;
 		protected var _width:Number;
@@ -122,8 +121,8 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _dispWidth:Number = -1;
 		protected var _smallPlayer:Boolean = false;
 		protected var _mouseOverButton:Boolean = false;
-		
-
+		protected var _numDividers:Number = -1;
+		protected var _divIndex = 0;
 		protected var _bgColorSheet:Sprite;
 
 		protected var animations:Animations;
@@ -136,9 +135,6 @@ package com.longtailvideo.jwplayer.view.components {
 			visible = false;
 			_layoutManager = new ControlbarLayoutManager(this);
 			_dividers = [];
-			_dividerElements = {
-				'divider': setupDivider('divider') 
-			};
 			setupBackground();
 			setupDefaultButtons();
 			setupOverlays();
@@ -148,13 +144,6 @@ package com.longtailvideo.jwplayer.view.components {
 			updateVolumeSlider();
 		}
 		
-		private function setupDivider(name:String):Object {
-			return {
-				copies: [],
-				index: 0
-			};	
-		}
-
 		private function addEventListeners():void {
 			player.addEventListener(PlayerStateEvent.JWPLAYER_PLAYER_STATE, stateHandler);
 			player.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_LOADED, playlistHandler);
@@ -286,7 +275,7 @@ package com.longtailvideo.jwplayer.view.components {
 			var multiList:Boolean = player.playlist.length > 1;
 			var playlistShowing:Boolean = (player.config.fullscreen == false && player.config.playlistposition.toLowerCase() != "none");
 			if (!(multiList && !playlistShowing)) {
-				newLayout = newLayout.replace(/\|?(prev|next)/g, "");
+				newLayout = newLayout.replace(/(prev next)/g, "");
 				hideButton('prev');
 				hideButton('next');
 			}
@@ -304,12 +293,12 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 			
 			if (!_levels || _levels.length < 2) {
-				newLayout = newLayout.replace(/\|?hd/g, "");
+				newLayout = newLayout.replace(/hd/g, "");
 				hideButton('hd');
 			}
 
 			if (!_captions || _captions.length < 2) {
-				newLayout = newLayout.replace(/\|?cc/g, "");
+				newLayout = newLayout.replace(/cc/g, "");
 				hideButton('cc');
 			}
 
@@ -331,7 +320,7 @@ package com.longtailvideo.jwplayer.view.components {
 
 		private function removeButtonFromLayout(button:String, layout:String):String {
 			layout = layout.replace(button, "");
-			layout = layout.replace(/\|+/g, "|");
+			//layout = layout.replace(/\|+/g, "|");
 			return layout;
 		}
 
@@ -749,13 +738,11 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 
 		public function getButton(buttonName:String):DisplayObject {
-			if (_dividerElements[buttonName]) {
-				var dividerInfo:Object = _dividerElements[buttonName];
-				if (dividerInfo.index >= dividerInfo.copies.length) {
-					dividerInfo.copies.push(getSkinElement(buttonName));
+			if (buttonName == "divider") {
+				if (_divIndex + 1> _dividers.length ) {
+					_dividers.push(getSkinElement(buttonName));
 				}
-				var divider:DisplayObject = dividerInfo.copies[dividerInfo.index++] as DisplayObject;
-				return divider;
+				return _dividers[_divIndex++];
 			} else {
 				return _buttons[buttonName];
 			}
@@ -818,18 +805,6 @@ package com.longtailvideo.jwplayer.view.components {
 			if (_player.config.height <= 40 || _player.config.fullscreen && _currentLayout) {
 				_currentLayout = _currentLayout.replace("fullscreen", "");
 				hideButton('fullscreen', true);
-				if (_audioMode) {
-					//removing a trailing divide from the right. (if its at the end, we don't need a divider)
-					var sections:Array = _currentLayout.split("]");
-					var myPattern:RegExp = /\| *$/;  
-					sections[sections.length-2]  = sections[sections.length-2].replace(myPattern, "");
-					_currentLayout = "";
-					for each (var chunk:String in sections) {
-						_currentLayout += chunk + "]";
-					}
-				}
-				
-			
 			} else {
 				
 				hideButton('fullscreen', false);
@@ -850,6 +825,7 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 			clearDividers();
 			alignTextFields();
+			addDividers();
 			_layoutManager.resize(_width, _height);
 
 			positionOverlay(_hdOverlay, getButton('hd'));
@@ -891,15 +867,29 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 		
 		private function clearDividers():void {
-			for each (var dividerInfo:Object in _dividerElements) {
-				dividerInfo.index = 0;
-				for (var i:Number=0; i < dividerInfo.copies.length; i++) {
-					var divider:DisplayObject = dividerInfo.copies[i] as DisplayObject;
-					if (divider && divider.parent) {
-						divider.parent.removeChild(divider);
-					}
-				} 
+			for each (var divider:DisplayObject in _dividers) {
+				if (divider && divider.parent) {
+					divider.parent.removeChild(divider);
+				}
 			}
+			_divIndex = 0;
+		}
+		
+		
+		private function addDividers():void {
+			var controlbarPattern:RegExp = /\[(.*)\]\[.*\]\[(.*)\]/;
+			var result:Object = controlbarPattern.exec(_currentLayout);
+			var rightDivide:Array = ["play","pause","prev","next"];
+			var leftDivide:Array = ["hd","cc","mute","fullscreen"];
+			_numDividers = 0;
+			rightDivide.forEach( function(elem:String,index:int,arr:Array):void {
+				_numDividers++;
+				_currentLayout = _currentLayout.replace(elem,elem+"|");
+			});
+			leftDivide.forEach( function(elem:String,index:int,arr:Array):void {
+				_numDividers++;
+				_currentLayout = _currentLayout.replace(elem,"|"+elem);
+			});
 		}
 		
 		private function alignTextFields():void {
@@ -924,6 +914,8 @@ package com.longtailvideo.jwplayer.view.components {
 
 
 		public function get layout():String {
+			
+			
 			return _currentLayout.replace(/\|/g, "<divider>");
 		}
 

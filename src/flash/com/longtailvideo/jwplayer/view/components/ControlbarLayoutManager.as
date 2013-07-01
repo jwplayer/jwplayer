@@ -45,7 +45,6 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		
 		private function position(group:String, align:String):void {
-			group = group.replace("<divider>hd<divider>cc<divider>","<divider>hd cc<divider>");
 			var items:Array = group.split(/(<[^>]*>)/);
 			if (align == "right") { items = items.reverse(); }
 			for  (var i:Number = 0; i < items.length; i++) {
@@ -152,32 +151,19 @@ package com.longtailvideo.jwplayer.view.components {
 		private function positionCenter(center:String):void {
 			var centerPattern:RegExp = /\W/;
 			var elements:Array = center.split(centerPattern);
-			var dividers:Array = center.split(/<[^\>]*>/);
-			var divider:DisplayObject = _controlbar.getButton("divider");
-			var dividerOffset:Number = 0;
-			if (divider) {
-				dividerOffset = divider.width * (dividers.length - 1);
-			}
-			var elementWidth:Number = (_currentRight - _currentLeft - dividerOffset) / elements.length;
-			for (var i:Number = 0; i < dividers.length; i++) {
-				if (i > 0) {
-					placeLeft(divider);
-				}
-				var spacers:Array = (dividers[i] as String).split(" ");
-				for (var j:Number = 0; j < spacers.length; j++) {
-					var element:DisplayObject = _controlbar.getButton(spacers[j]);
-					if (element) {
-						if (element is Slider) {
-							(element as Slider).resize(elementWidth, element.height);
-						}
-						element.visible = true;
-						if (!_controlbar.contains(element)) {
-							_controlbar.addChild(element);
-						}
-						element.x = _currentLeft;	
-						element.y = (_height - element.height) / 2;
+			var elementWidth:Number = (_currentRight - _currentLeft) / elements.length;
+			var element:DisplayObject = _controlbar.getButton("time");
+			if (element) {
+					if (element is Slider) {
+						(element as Slider).resize(elementWidth, element.height);
 					}
-				}
+					element.visible = true;
+					if (!_controlbar.contains(element)) {
+						_controlbar.addChild(element);
+					}
+					element.x = _currentLeft;	
+					element.y = (_height - element.height) / 2;
+			
 			}
 		}
 	}
