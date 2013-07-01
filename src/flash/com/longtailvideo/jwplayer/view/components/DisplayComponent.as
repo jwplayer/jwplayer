@@ -1,14 +1,23 @@
 ﻿package com.longtailvideo.jwplayer.view.components {
-	import com.longtailvideo.jwplayer.events.*;
-	import com.longtailvideo.jwplayer.player.*;
-	import com.longtailvideo.jwplayer.utils.*;
-	import com.longtailvideo.jwplayer.view.interfaces.*;
+	import com.longtailvideo.jwplayer.events.PlayerEvent;
+	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
+	import com.longtailvideo.jwplayer.events.PlaylistEvent;
+	import com.longtailvideo.jwplayer.events.ViewEvent;
+	import com.longtailvideo.jwplayer.player.IPlayer;
+	import com.longtailvideo.jwplayer.player.PlayerState;
+	import com.longtailvideo.jwplayer.utils.Animations;
+	import com.longtailvideo.jwplayer.utils.Logger;
+	import com.longtailvideo.jwplayer.view.interfaces.IDisplayComponent;
 	
-	import flash.display.*;
-	import flash.events.*;
-	import flash.geom.*;
-	import flash.text.*;
-	import flash.utils.*;
+	import flash.display.DisplayObject;
+	import flash.display.MovieClip;
+	import flash.display.Sprite;
+	import flash.events.MouseEvent;
+	import flash.events.TimerEvent;
+	import flash.geom.Rectangle;
+	import flash.system.System;
+	import flash.text.TextFormat;
+	import flash.utils.Timer;
 
 	public class DisplayComponent extends CoreComponent implements IDisplayComponent {
 		protected var _icon:DisplayIcon;
@@ -32,6 +41,9 @@
 		protected var _bufferRotationAngle:Number = 45;
 
 		protected var _forced:String = "";
+
+		/** Keep track of the last click to enable double-click **/
+		protected var _lastClick:Date;
 		
 		public function DisplayComponent(player:IPlayer) {
 			super(player, "display");
@@ -262,8 +274,7 @@
 			_errorState = true;
 		}
 		
-		
-		protected function clickHandler(event:MouseEvent):void { 
+		protected function clickHandler(event:MouseEvent):void {
 			dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_CLICK));
 			if (!_player.getControls()) return;
 			if (currentState == PlayerState.PLAYING || currentState == PlayerState.BUFFERING) {
@@ -271,6 +282,15 @@
 			} else {
 				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_PLAY));
 			}
+			
+			var currentTime:Date = new Date();
+			if (_lastClick && currentTime.getTime() - _lastClick.getTime() < 500) {
+				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_FULLSCREEN, !_player.config.fullscreen));
+				_lastClick = null;
+			} else {
+				_lastClick = new Date();
+			}
+			
 		}
 		
 		

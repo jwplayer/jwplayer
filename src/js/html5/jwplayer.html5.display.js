@@ -54,7 +54,8 @@
 				fontweight: ""
 			}, _skin.getComponentSettings('display'), config),
 			_eventDispatcher = new events.eventdispatcher(),
-			_alternateClickHandler;
+			_alternateClickHandler,
+			_lastClick;
 			
 		utils.extend(this, _eventDispatcher);
 			
@@ -107,6 +108,21 @@
 				break;
 			}
 			
+			if (!_isMobile) {
+				var currentClick = _getCurrentTime();
+				if (_lastClick && currentClick - _lastClick < 500) {
+					_api.jwSetFullscreen();
+					_lastClick = undefined;
+				} else {
+					_lastClick = _getCurrentTime();
+				}
+			}
+			
+		}
+		
+		/** Returns the current timestamp in milliseconds **/
+		function _getCurrentTime() {
+			return new Date().getTime();
 		}
 		
 		this.clickHandler = _clickHandler;
