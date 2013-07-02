@@ -95,8 +95,18 @@
 			}
 			_eventDispatcher.sendEvent(events.JWPLAYER_DISPLAY_CLICK);
 			
-			if (_isMobile && _hiding) return;
 			if (!_api.jwGetControls()) return;
+
+			// Handle double-clicks for fullscreen toggle
+			var currentClick = _getCurrentTime();
+			if (_lastClick && currentClick - _lastClick < 500) {
+				_api.jwSetFullscreen();
+				_lastClick = undefined;
+			} else {
+				_lastClick = _getCurrentTime();
+			}
+
+			if (_isMobile && _hiding) return;
 
 			switch (_api.jwGetState()) {
 			case states.PLAYING:
@@ -106,16 +116,6 @@
 			default:
 				_api.jwPlay();
 				break;
-			}
-			
-			if (!_isMobile) {
-				var currentClick = _getCurrentTime();
-				if (_lastClick && currentClick - _lastClick < 500) {
-					_api.jwSetFullscreen();
-					_lastClick = undefined;
-				} else {
-					_lastClick = _getCurrentTime();
-				}
 			}
 			
 		}
