@@ -101,13 +101,14 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _customButtons:Array = [];
 //		protected var _removedButtons:Array = [];
 		protected var _dividers:Array;
-		protected var _defaultLayout:String = "[play prev next elapsed][time][duration hd cc mute volume fullscreen]";
+		protected var _defaultLayout:String = "[play prev next elapsed][time][duration hd cc mute volumeH fullscreen]";
 		protected var _currentLayout:String;
 		protected var _layoutManager:ControlbarLayoutManager;
 		protected var _width:Number;
 		protected var _height:Number;
 		protected var _timeSlider:Slider;
-		protected var _volSlider:Slider;
+		protected var _volSliderV:Slider;
+		protected var _volSliderH:Slider;
 		protected var _audioMode:Boolean = false;
 		protected var _levels:Array;
 		protected var _currentQuality:Number = 0;
@@ -164,10 +165,12 @@ package com.longtailvideo.jwplayer.view.components {
 		private function lockHandler(evt:PlayerEvent):void {
 			if (_player.locked) {
 				if (_timeSlider) _timeSlider.lock();
-				if (_volSlider) _volSlider.lock();
+				if (_volSliderV) _volSliderV.lock();
+				if (_volSliderH) _volSliderH.lock();
 			} else {
 				if (_timeSlider) _timeSlider.unlock();
-				if (_volSlider) _volSlider.unlock();
+				if (_volSliderV) _volSliderV.unlock();
+				if (_volSliderH) _volSliderH.unlock();
 			}
 		}
 
@@ -350,15 +353,18 @@ package com.longtailvideo.jwplayer.view.components {
 
 
 		private function updateVolumeSlider(evt:MediaEvent=null):void {
-			var volume:Slider = _volSlider;
-			if (volume) {
-				if (!_player.config.mute) {
-					volume.setBuffer(100);
-					volume.setProgress(_player.config.volume);
-					volume.thumbVisible = true;
-				} else {
-					volume.reset();
-					volume.thumbVisible = false;
+			var sliders:Array = [_volSliderH, _volSliderV];
+			
+			for each (var volume:Slider in sliders) {
+				if (volume) {
+					if (!_player.config.mute) {
+						volume.setBuffer(100);
+						volume.setProgress(_player.config.volume);
+						volume.thumbVisible = true;
+					} else {
+						volume.reset();
+						volume.thumbVisible = false;
+					}
 				}
 			}
 		}
@@ -469,15 +475,17 @@ package com.longtailvideo.jwplayer.view.components {
 			addTextField('duration');
 			addSlider('time', ViewEvent.JWPLAYER_VIEW_CLICK, seekHandler);
 			_timeSlider = getSlider('time');
-			addSlider('volume', ViewEvent.JWPLAYER_VIEW_CLICK, volumeHandler);
-			_volSlider = getSlider('volume');
+			addSlider('volumeV', ViewEvent.JWPLAYER_VIEW_CLICK, volumeHandler, 0, true);
+			addSlider('volumeH', ViewEvent.JWPLAYER_VIEW_CLICK, volumeHandler, 0, false);
+			_volSliderV = getSlider('volumeV');
+			_volSliderH = getSlider('volumeH');
 			if (_buttons.hd) {
 				_buttons.hd.addEventListener(MouseEvent.MOUSE_OVER, showHdOverlay);
 			}
 			if (_buttons.cc) {
 				_buttons.cc.addEventListener(MouseEvent.MOUSE_OVER, showCcOverlay);
 			}
-			if (_buttons.mute && _volSlider) {
+			if (_buttons.mute && _volSliderV) {
 				_buttons.mute.addEventListener(MouseEvent.MOUSE_OVER, showVolumeOverlay);
 				if (_buttons.unmute) {
 					_buttons.unmute.addEventListener(MouseEvent.MOUSE_OVER, showVolumeOverlay);
@@ -494,10 +502,10 @@ package com.longtailvideo.jwplayer.view.components {
 			_ccOverlay.name = "ccOverlay";
 			createOverlay(_ccOverlay, _buttons.cc);
 
-			if (_volSlider) {
+			if (_volSliderV) {
 				_volumeOverlay = new TooltipOverlay(_player.skin);
 				_volumeOverlay.name = "volumeOverlay";
-				_volumeOverlay.addChild(_volSlider);
+				_volumeOverlay.addChild(_volSliderV);
 				createOverlay(_volumeOverlay, _buttons.mute);
 				if(_buttons.unmute) {
 					createOverlay(_volumeOverlay, _buttons.unmute);
@@ -630,14 +638,21 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 
 
-		private function addSlider(name:String, event:String, callback:Function, margin:Number=0):void {
+		private function addSlider(name:String, event:String, callback:Function, margin:Number=0, vertical:Boolean=true):void {
 			try {
-				var slider:Slider = (name == "time") ? new TimeSlider(name+"Slider", _player.skin, this) : new Slider(name, _player.skin, true, "tooltip");
+				var slider:Slider;
+				if (name == "time") {
+					// Time Slider
+					slider = new TimeSlider(name+"Slider", _player.skin, this);
+				} else {
+					// Volume
+					slider = new Slider('volume', _player.skin, vertical, vertical ? "tooltip" : "controlbar");
+				}
 				slider.addEventListener(event, callback);
 				slider.name = name;
 				slider.tabEnabled = false;
 				_buttons[name] = slider;
-				_defaultLayout = removeButtonFromLayout("volume", _defaultLayout);
+				//_defaultLayout = removeButtonFromLayout("volume", _defaultLayout);
 			} catch (e:Error) {
 				Logger.log("Could not create " + name + "slider");
 			}
@@ -806,8 +821,14 @@ package com.longtailvideo.jwplayer.view.components {
 				_currentLayout = _currentLayout.replace("fullscreen", "");
 				hideButton('fullscreen', true);
 			} else {
-				
 				hideButton('fullscreen', false);
+			}
+
+			if (_audioMode) {
+				hideButton('volumeH', false);
+			} else {
+				_currentLayout = _currentLayout.replace("volumeH", "");
+				hideButton('volumeH', true);
 			}
 			
 			if (_dispWidth > 0 && _dispWidth < 320) {
@@ -914,8 +935,6 @@ package com.longtailvideo.jwplayer.view.components {
 
 
 		public function get layout():String {
-			
-			
 			return _currentLayout.replace(/\|/g, "<divider>");
 		}
 

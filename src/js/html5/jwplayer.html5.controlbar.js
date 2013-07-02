@@ -15,6 +15,7 @@
 		states = events.state,
 		_css = utils.css,
 		_setTransition = utils.transitionStyle,
+		_isMobile = utils.isMobile(),
 		/** Controlbar element types * */
 		CB_BUTTON = "button",
 		CB_TEXT = "text",
@@ -87,6 +88,7 @@
 						    _layoutElement("divider", CB_DIVIDER, 'ccdiv'),
 						    _layoutElement("mute", CB_BUTTON), 
 						    _layoutElement("volume", CB_SLIDER), 
+						    _layoutElement("volumeH", CB_SLIDER), 
     					    _layoutElement("divider", CB_DIVIDER, 'fsdiv'),
 						    _layoutElement("fullscreen", CB_BUTTON)
 					    ]
@@ -224,7 +226,7 @@
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_LEVEL_CHANGED, _qualityLevelChanged);
 			_api.jwAddEventListener(events.JWPLAYER_CAPTIONS_LIST, _captionsHandler);
 			_api.jwAddEventListener(events.JWPLAYER_CAPTIONS_CHANGED, _captionChanged);
-			if (!utils.isMobile()) {
+			if (!_isMobile) {
 				_controlbar.addEventListener('mouseover', function(evt) {
 					// Slider listeners
 					WINDOW.addEventListener('mousemove', _sliderMouseEvent, FALSE);
@@ -297,7 +299,7 @@
 		
 		function _itemHandler(evt) {
 			var tracks = _api.jwGetPlaylist()[evt.index].tracks;
-			if (utils.typeOf(tracks) == "array" && !utils.isMobile()) {
+			if (utils.typeOf(tracks) == "array" && !_isMobile) {
 				for (var i=0; i < tracks.length; i++) {
 					if (tracks[i].file && tracks[i].kind && tracks[i].kind.toLowerCase() == "thumbnails") {
 						_timeOverlayThumb.load(tracks[i].file);
@@ -336,9 +338,13 @@
 			_redraw();
 		}
 		
+		function _hasHD() {
+			return (_levels && _levels.length > 1 && _hdOverlay);
+		}
+		
 		function _qualityHandler(evt) {
 			_levels = evt.levels;
-			if (_levels && _levels.length > 1 && _hdOverlay) {
+			if (_hasHD()) {
 				_css(_internalSelector(".jwhd"), { display: UNDEFINED });
 				_hdOverlay.clearOptions();
 				for (var i=0; i<_levels.length; i++) {
@@ -359,9 +365,13 @@
 			}
 		}
 		
+		function _hasCaptions() {
+			return (_captions && _captions.length > 1 && _ccOverlay);			
+		}
+		
 		function _captionsHandler(evt) {
 			_captions = evt.tracks;
-			if (_captions && _captions.length > 1 && _ccOverlay) {
+			if (_hasCaptions()) {
 				_css(_internalSelector(".jwcc"), { display: UNDEFINED });
 				_ccOverlay.clearOptions();
 				for (var i=0; i<_captions.length; i++) {
@@ -481,7 +491,7 @@
 			if (!skinElem || skinElem.src == "") {
 				return;
 			}
-			
+
 			if (stretch) {
 				newStyle = {
 					background: "url('" + skinElem.src + "') repeat-x " + center,
@@ -497,7 +507,7 @@
 				};
 			}
 			element.skin = skinElem;
-			_css(_internalSelector('.jw'+name), utils.extend(newStyle, style));
+			_css(_internalSelector((vertical? ".jwvertical " : "") + '.jw'+name), utils.extend(newStyle, style));
 			_elements[name] = element;
 			return element;
 		}
@@ -507,13 +517,13 @@
 				return NULL;
 			}
 
-			if (utils.isMobile() && (name == "mute" || name == "volume")) return NULL;
+			if (_isMobile && (name == "mute" || name.indexOf("volume")==0)) return NULL;
 			
 			var element = _createSpan();
 			element.className = 'jw'+name + ' jwbuttoncontainer';
 			var button = _createElement("button");
 
-			if (!utils.isMobile()) {
+			if (!_isMobile) {
 				button.addEventListener("click", _buttonClickHandler(name), FALSE);	
 			}
 			else if (name != "hd" && name != "cc") {
@@ -547,7 +557,7 @@
 				'background-size': _elementSize(out)
 			});
 			
-			if (over.src && !utils.isMobile()) {
+			if (over.src && !_isMobile) {
 				_css(selector + ':hover', { 
 					background: 'url('+ over.src +') no-repeat center',
 					'background-size': _elementSize(over)
@@ -559,7 +569,7 @@
 			return function(evt) {
 				if (_buttonMapping[name]) {
 					_buttonMapping[name]();
-					if (utils.isMobile()) {
+					if (_isMobile) {
 						_eventDispatcher.sendEvent(events.JWPLAYER_USER_ACTION);
 					}
 				}
@@ -748,9 +758,9 @@
 		
 		function _buildSlider(name) {
 			var slider = _createSpan(),
+				vertical = name == "volume",
 				skinPrefix = name + (name=="time"?"Slider":""),
 				capPrefix = skinPrefix + "Cap",
-				vertical = name == "volume",
 				left = vertical ? "Top" : "Left",
 				right = vertical ? "Bottom" : "Right",
 				capLeft = _buildImage(capPrefix + left, NULL, FALSE, FALSE, vertical),
@@ -798,7 +808,7 @@
 				_styleTimeSlider(slider);
 				_setProgress(0);
 				_setBuffer(0);
-			} else if (name == "volume") {
+			} else if (name.indexOf("volume")==0) {
 				_styleVolumeSlider(slider, vertical, left, right);
 			}
 			
@@ -815,11 +825,12 @@
 			for (var i=0; i<railElements.length; i++) {
 				var sliderPrefix = (name=="time"?"Slider":""),
 					prefix = name + sliderPrefix + railElements[i],
-					element = _buildImage(prefix, NULL, !vertical, (name=="volume")),
+					element = _buildImage(prefix, NULL, !vertical, (name.indexOf("volume")==0), vertical),
 					capLeft = _buildImage(prefix + "Cap" + left, NULL, FALSE, FALSE, vertical),
 					capRight = _buildImage(prefix + "Cap" + right, NULL, FALSE, FALSE, vertical),
 					capLeftSkin = _getSkinElement(prefix + "Cap" + left),
 					capRightSkin = _getSkinElement(prefix + "Cap" + right);
+
 				if (element) {
 					var railElement = _createSpan();
 					railElement.className = "jwrailgroup " + railElements[i];
@@ -861,8 +872,10 @@
 				_appendChild(vertical && progressRail ? progressRail : rail, thumb);
 			}
 			
-			if (!utils.isMobile()) {
-				rail.addEventListener('mousedown', _sliderMouseDown(name), FALSE);
+			if (!_isMobile) {
+				var sliderName = name;
+				if (sliderName == "volume" && !vertical) sliderName += "H";
+				rail.addEventListener('mousedown', _sliderMouseDown(sliderName), FALSE);
 			}
 			else {
 				var railTouch = new utils.touch(rail);
@@ -872,7 +885,7 @@
 				railTouch.addEventListener(utils.touchEvents.TAP, _sliderTapEvent);
 			}
 			
-			if (name == "time" && !utils.isMobile()) {
+			if (name == "time" && !_isMobile) {
 				rail.addEventListener('mousemove', _showTimeTooltip, FALSE);
 				rail.addEventListener('mouseout', _hideTimeTooltip, FALSE);
 			}
@@ -992,7 +1005,7 @@
 
 				_elements[name+'Rail'].className = "jwrail jwsmooth";
 				_dragging = NULL;
-				_sliderMapping[name](pct);
+				_sliderMapping[name.replace("H", "")](pct);
 			} else {
 				if (_dragging == "time") {
 					_setProgress(pct);
@@ -1001,7 +1014,7 @@
 				}
 				if (currentTime - _lastSeekTime > 500) {
 					_lastSeekTime = currentTime;
-					_sliderMapping[_dragging](pct);
+					_sliderMapping[_dragging.replace("H", "")](pct);
 				}
 			}
 			return false;
@@ -1059,9 +1072,11 @@
 		
 		
 		function _styleVolumeSlider(slider, vertical, left, right) {
-			var prefix = "volume";
-			_css(_internalSelector(".jwvolume"), {
-				width: _getSkinElement(prefix+"Rail").width + (vertical ? 0 : _getSkinElement(prefix+"Cap"+left).width + _getSkinElement(prefix+"Cap"+right).width),
+			var prefix = "volume" + (vertical ? "" : "H"),
+				direction = vertical ? "vertical" : "horizontal";
+			
+			_css(_internalSelector(".jw"+prefix+".jw" + direction), {
+				width: _getSkinElement(prefix+"Rail", vertical).width + (vertical ? 0 : _getSkinElement(prefix+"Cap"+left).width + _getSkinElement(prefix+"Cap"+right).width),
 				height: vertical ? (
 							_getSkinElement(prefix+"Cap"+left).height + 
 							_getSkinElement(prefix+"Rail").height + 
@@ -1070,7 +1085,8 @@
 							_getSkinElement(prefix+"Cap"+right).height
 						) : UNDEFINED
 			});
-			if (vertical) slider.className += " jwvertical";
+			
+			slider.className += " jw" + direction;
 		}
 		
 		var _groups = {};
@@ -1092,7 +1108,7 @@
 		function _buildOverlays() {
 			if (_elements.hd) {
 				_hdOverlay = new html5.menu('hd', _id+"_hd", _skin, _switchLevel);
-				if (!utils.isMobile()) {
+				if (!_isMobile) {
 					_addOverlay(_hdOverlay, _elements.hd, _showHd, _setHdTimer);
 				}
 				else {
@@ -1102,7 +1118,7 @@
 			}
 			if (_elements.cc) {
 				_ccOverlay = new html5.menu('cc', _id+"_cc", _skin, _switchCaption);
-				if (!utils.isMobile()) {
+				if (!_isMobile) {
 					_addOverlay(_ccOverlay, _elements.cc, _showCc, _setCcTimer);
 				}
 				else {
@@ -1127,7 +1143,7 @@
 		}
 
 		function _addOverlay(overlay, button, hoverAction, timer) {
-			if (utils.isMobile()) return;
+			if (_isMobile) return;
 			var element = overlay.element();
 			_appendChild(button, element);
 			button.addEventListener('mousemove', hoverAction, FALSE);
@@ -1143,7 +1159,7 @@
 		}
 
 		function _addMobileOverlay(overlay, button, tapAction, name) {
-			if (!utils.isMobile()) return;
+			if (!_isMobile) return;
 			var element = overlay.element();
 			_appendChild(button, element);
 			var buttonTouch = new utils.touch(button); 
@@ -1237,6 +1253,12 @@
 				width: max ? JW_CSS_100PCT : UNDEFINED
 			});
 		
+			_css(_internalSelector(".jwfullscreen"), { display: _audioMode ? JW_CSS_NONE : UNDEFINED });
+			_css(_internalSelector(".jwvolumeH"), { display: _audioMode ? JW_CSS_BLOCK : JW_CSS_NONE });
+			_css(_internalSelector(".jwhd"), { display: !_audioMode && _hasHD() ? UNDEFINED : JW_CSS_NONE });
+			_css(_internalSelector(".jwcc"), { display: !_audioMode && _hasCaptions() ? UNDEFINED : JW_CSS_NONE });
+
+			
 			_positionOverlays();
 		}
 		
@@ -1277,9 +1299,6 @@
 		_this.audioMode = function(mode) {
 			if (mode != _audioMode) {
 				_audioMode = mode;
-				_css(_internalSelector(".jwfullscreen"), { display: mode ? JW_CSS_NONE : UNDEFINED });
-				_css(_internalSelector(".jwhd"), { display: mode ? JW_CSS_NONE : UNDEFINED });
-				_css(_internalSelector(".jwcc"), { display: mode ? JW_CSS_NONE : UNDEFINED });
 				if (mode) {
 					_css(_internalSelector(".fsdiv"), HIDDEN);
 					_css(_internalSelector(".hddiv"), HIDDEN);
@@ -1310,6 +1329,7 @@
 		}
 
 		function _sliderPercent(name, pct) {
+			if (!_elements[name]) return;
 			var vertical = _elements[name].vertical,
 				prefix = name + (name=="time"?"Slider":""),
 				size = 100 * Math.min(Math.max(0, pct), 1) + "%",
@@ -1342,6 +1362,7 @@
 		
 		function _setVolume (pct) {
 			_sliderPercent('volume', pct);	
+			_sliderPercent('volumeH', pct);	
 		}
 
 		function _setProgress(pct) {
@@ -1349,7 +1370,12 @@
 		}
 
 		function _getSkinElement(name) {
-			var elem = _skin.getSkinElement(name.indexOf("volume") == 0 ? 'tooltip' : 'controlbar', name); 
+			var component = 'controlbar', elem, newname = name;
+			if (name.indexOf("volume") == 0) {
+				if (name.indexOf("volumeH") == 0) newname = name.replace("volumeH", "volume");
+				else component = "tooltip";
+			} 
+			elem = _skin.getSkinElement(component, newname);
 			if (elem) {
 				return elem;
 			} else {
@@ -1506,6 +1532,10 @@
     _css(CB_CLASS + ' .jwvertical *', {
     	display: JW_CSS_BLOCK
     });
+
+    _css(CB_CLASS + ' .jwvertical .jwvolumeProgress', {
+    	height: "auto"
+    }, TRUE);
 
 	_setTransition(CB_CLASS, JW_CSS_SMOOTH_EASE);
 	_setTransition(CB_CLASS + ' button', JW_CSS_SMOOTH_EASE);
