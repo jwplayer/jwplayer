@@ -271,7 +271,6 @@
 			
 			return rect;
 		} catch (e) {
-			console.log(e);
 			return {
 				left: 0,
 				right: 0,
