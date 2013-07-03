@@ -252,7 +252,7 @@ package com.longtailvideo.jwplayer.view.components {
 			if (controlbarLayout) {
 				newLayout = parseStructuredLayout(controlbarLayout);
 			}
-*/			removeInactive(newLayout);
+*/			_currentLayout = removeInactive(newLayout);
 /*			newLayout = newLayout.replace("blank", _customButtons.join("|"));
 			newLayout = removeButtonFromLayout("blank", newLayout);
 			for each (var removed:String in _removedButtons) {
