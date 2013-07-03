@@ -2,7 +2,7 @@ import base64
 from xml.dom import minidom
 import re
 
-basePath = '../../../skins'
+basePath = '../../../commercial/skins'
 skinName = 'six'
 skinPath = basePath + '/' + skinName + '/src/' + skinName + '.xml'
 skinFile = open(skinPath,'r')

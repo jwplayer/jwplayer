@@ -149,22 +149,30 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		
 		private function positionCenter(center:String):void {
-			var centerPattern:RegExp = /\W/;
-			var elements:Array = center.split(centerPattern);
-			var elementWidth:Number = (_currentRight - _currentLeft) / elements.length;
-			var element:DisplayObject = _controlbar.getButton("time");
-			if (element) {
-					if (element is Slider) {
-						(element as Slider).resize(elementWidth, element.height);
-					}
-					element.visible = true;
-					if (!_controlbar.contains(element)) {
-						_controlbar.addChild(element);
-					}
-					element.x = _currentLeft;	
-					element.y = (_height - element.height) / 2;
-			
+			var elementWidth:Number = (_currentRight - _currentLeft);
+
+			var time:Slider = _controlbar.getButton("time") as Slider;
+			var alt:Sprite = _controlbar.getButton("alt") as Sprite;
+			if (time) {
+				time.resize(elementWidth, time.height);
+				if (!_controlbar.contains(time)) _controlbar.addChild(time);
+				time.x = _currentLeft;	
+				time.y = (_height - time.height) / 2;
 			}
+			
+			if (alt) {
+				var bg:DisplayObject = alt.getChildByName('back');
+				bg.width  = elementWidth;
+
+				var text:TextField = alt.getChildByName('text') as TextField;
+				text.y = (bg.height - text.height) / 2;
+				
+				if (!_controlbar.contains(alt)) _controlbar.addChild(alt);
+				alt.x = _currentLeft;	
+				alt.y = (_height - alt.height) / 2;
+			}
+			
+			
 		}
 	}
 }

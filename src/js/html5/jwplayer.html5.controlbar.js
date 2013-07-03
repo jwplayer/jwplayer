@@ -37,6 +37,7 @@
 		JW_VISIBILITY_TIMEOUT = 250,
 		
 		HIDDEN = { display: JW_CSS_NONE },
+		SHOWING = { display: JW_CSS_BLOCK },
 		NOT_HIDDEN = { display: UNDEFINED },
 		
 		CB_CLASS = '.jwcontrolbar',
@@ -73,7 +74,10 @@
 					},
 					center: {
 						position: "center",
-						elements: [ _layoutElement("time", CB_SLIDER) ]
+						elements: [ 
+						    _layoutElement("time", CB_SLIDER),
+						    _layoutElement("alt", CB_TEXT)
+						]
 					},
 					right: {
 						position: "right",
@@ -671,13 +675,14 @@
 		}
 		
 		function _buildText(name, style) {
-			var css = {};			
-			var skinElement = _getSkinElement(name+"Background");
+			var css = {},
+				skinName = (name == "alt") ? "elapsed" : name,
+				skinElement = _getSkinElement(skinName+"Background");
 			if (skinElement.src) {
 				var element = _createSpan();
 				element.id = _createElementId(name); 
 				element.className = "jwtext jw" + name;
-				css.background = "url(" + skinElement.src + ") no-repeat center";
+				css.background = "url(" + skinElement.src + ") repeat-x center";
 				css['background-size'] = _elementSize(_getSkinElement("background"));
 				_css(_internalSelector('.jw'+name), css);
 				element.innerHTML = "00:00";
@@ -1055,6 +1060,20 @@
 			_setProgress(0);
 		}
 		
+		
+		_this.setText = function(text) {
+			_css(_internalSelector(".jwelapsed"), text ? HIDDEN : SHOWING);
+			_css(_internalSelector(".jwduration"), text ? HIDDEN : SHOWING);
+			_css(_internalSelector(".jwtime"), text ? HIDDEN : SHOWING);
+			_css(_internalSelector(".jwalt"), text ? SHOWING : HIDDEN);
+			var altText = _getElementBySelector(".jwalt");
+			if (altText) altText.innerHTML = text;
+			_redraw();
+		} 
+		
+		function _getElementBySelector(selector) {
+			return _controlbar.querySelector(selector);
+		}
 		
 		function _styleVolumeSlider(slider, vertical, left, right) {
 			var prefix = "volume" + (vertical ? "" : "H"),
@@ -1504,7 +1523,18 @@
 		padding: '0 5px',
 		'text-align': 'center'
 	});
-    
+
+    _css(CB_CLASS + ' .jwalt', {
+		display: JW_CSS_NONE
+	});
+
+    _css(CB_CLASS + ' .jwalt', {
+    	position: JW_CSS_ABSOLUTE,
+    	left: 0,
+    	right: 0,
+    	'text-align': "left"
+	}, TRUE);
+
 	_css(CB_CLASS + ' .jwoverlaytext', {
 		padding: 3,
 		'text-align': 'center'

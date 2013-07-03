@@ -1,32 +1,16 @@
 package com.longtailvideo.jwplayer.view.components {
-	import com.longtailvideo.jwplayer.events.CaptionsEvent;
-	import com.longtailvideo.jwplayer.events.MediaEvent;
-	import com.longtailvideo.jwplayer.events.PlayerEvent;
-	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
-	import com.longtailvideo.jwplayer.events.PlaylistEvent;
-	import com.longtailvideo.jwplayer.events.ViewEvent;
-	import com.longtailvideo.jwplayer.model.PlaylistItem;
-	import com.longtailvideo.jwplayer.player.IPlayer;
-	import com.longtailvideo.jwplayer.player.PlayerState;
-	import com.longtailvideo.jwplayer.utils.Animations;
-	import com.longtailvideo.jwplayer.utils.Logger;
-	import com.longtailvideo.jwplayer.utils.RootReference;
-	import com.longtailvideo.jwplayer.utils.Strings;
-	import com.longtailvideo.jwplayer.view.interfaces.IControlbarComponent;
+	import com.longtailvideo.jwplayer.events.*;
+	import com.longtailvideo.jwplayer.model.*;
+	import com.longtailvideo.jwplayer.player.*;
+	import com.longtailvideo.jwplayer.utils.*;
+	import com.longtailvideo.jwplayer.view.interfaces.*;
 	
-	import flash.accessibility.AccessibilityProperties;
-	import flash.display.DisplayObject;
-	import flash.display.MovieClip;
-	import flash.display.Sprite;
-	import flash.events.Event;
-	import flash.events.MouseEvent;
-	import flash.events.TimerEvent;
-	import flash.geom.Point;
-	import flash.geom.Rectangle;
-	import flash.text.TextField;
-	import flash.text.TextFieldAutoSize;
-	import flash.text.TextFormat;
-	import flash.utils.Timer;
+	import flash.accessibility.*;
+	import flash.display.*;
+	import flash.events.*;
+	import flash.geom.*;
+	import flash.text.*;
+	import flash.utils.*;
 
 
 	/**
@@ -101,12 +85,13 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _customButtons:Array = [];
 //		protected var _removedButtons:Array = [];
 		protected var _dividers:Array;
-		protected var _defaultLayout:String = "[play prev next elapsed][time][duration hd cc mute volumeH fullscreen]";
+		protected var _defaultLayout:String = "[play prev next elapsed][time alt][duration hd cc mute volumeH fullscreen]";
 		protected var _currentLayout:String;
 		protected var _layoutManager:ControlbarLayoutManager;
 		protected var _width:Number;
 		protected var _height:Number;
 		protected var _timeSlider:Slider;
+		protected var _timeAlt:TextField;
 		protected var _volSliderV:Slider;
 		protected var _volSliderH:Slider;
 		protected var _audioMode:Boolean = false;
@@ -143,6 +128,15 @@ package com.longtailvideo.jwplayer.view.components {
 			updateControlbarState();
 			setTime(0, 0);
 			updateVolumeSlider();
+			
+		}
+		
+		public function setText(text:String=""):void {
+			if (_timeAlt) {
+				_timeAlt.text = text;
+			}
+			updateControlbarState();
+			redraw();
 		}
 		
 		private function addEventListeners():void {
@@ -274,7 +268,6 @@ package com.longtailvideo.jwplayer.view.components {
 			} else {
 				hideButton('pause');
 			}
-//			var forced:Boolean = Boolean(getConfigParam('forcenextprev'));
 			var multiList:Boolean = player.playlist.length > 1;
 			var playlistShowing:Boolean = (player.config.fullscreen == false && player.config.playlistposition.toLowerCase() != "none");
 			if (!(multiList && !playlistShowing)) {
@@ -305,6 +298,20 @@ package com.longtailvideo.jwplayer.view.components {
 				hideButton('cc');
 			}
 
+			if (_timeAlt && _timeAlt.text) {
+				_timeSlider.visible = false;
+				hideButton('alt', false);
+				hideButton('elapsed', true);
+				hideButton('duration', true);
+				newLayout = newLayout.replace("duration","");
+				newLayout = newLayout.replace("elapsed","");
+				_timeSlider.visible = false;
+			} else {
+				hideButton('alt', true);
+				//_timeAlt.visible = false;
+				_timeSlider.visible = true;
+			}
+			
 			_currentLayout = removeInactive(newLayout);
 		}
 
@@ -395,11 +402,8 @@ package com.longtailvideo.jwplayer.view.components {
 				if (newElapsed.length != elapsedText.text.length) redrawNeeded = true;
 				elapsedText.text = newElapsed;	
 			}
-			
-			
 
 			if (durationField) {
-				
 				if (newDuration.length != durationField.text.length) redrawNeeded = true;
 				durationField.text = newDuration;
 			} 
@@ -473,6 +477,8 @@ package com.longtailvideo.jwplayer.view.components {
 			addComponentButton('mute', ViewEvent.JWPLAYER_VIEW_MUTE, true);
 			addTextField('elapsed');
 			addTextField('duration');
+			addTextField('alt');
+			_timeAlt = getTextField('alt');
 			addSlider('time', ViewEvent.JWPLAYER_VIEW_CLICK, seekHandler);
 			_timeSlider = getSlider('time');
 			addSlider('volumeV', ViewEvent.JWPLAYER_VIEW_CLICK, volumeHandler, 0, true);
@@ -673,11 +679,13 @@ package com.longtailvideo.jwplayer.view.components {
 			textField.selectable = false;
 			textField.autoSize = TextFieldAutoSize.LEFT;
 			textField.name = 'text';
-
+			
 			var textContainer:Sprite = new Sprite();
 			textContainer.name = name;
 			
-			var textBackground:DisplayObject = getSkinElement(name + 'Background'); 
+			var skinName:String = (name == "alt" ? "elapsed" : name); 
+			
+			var textBackground:DisplayObject = getSkinElement(skinName+'Background'); 
 			if (textBackground) {
 				textBackground.name = 'back';
 				textBackground.x = textBackground.y = 0;
@@ -763,7 +771,7 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 		}
 		
-		private function getTextField(textName:String):TextField {
+		public function getTextField(textName:String):TextField {
 			var textContainer:Sprite = getButton(textName) as Sprite;
 			if (textContainer) {
 				return textContainer.getChildByName('text') as TextField;
@@ -846,8 +854,8 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 			
 			clearDividers();
-			alignTextFields();
 			addDividers();
+			alignTextFields();
 			_layoutManager.resize(_width, _height);
 
 			positionOverlay(_hdOverlay, getButton('hd'));

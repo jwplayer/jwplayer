@@ -46,7 +46,7 @@
 		/>
 	</target>
 
-	<target name="build-html5">
+	<target name="build-html5" depends="minify-skin">
 		<concat destfile="${outputpath}">
 			<fileset dir="${basedir}/src/js/html5" includes="jwplayer.html5.js" />
 			<fileset dir="${basedir}/src/js/html5/utils" includes="jwplayer.html5.utils.js" />
@@ -60,6 +60,18 @@
 			file="${outputpath}"
 			match="jwplayer\.html5\.version = '(.*)'\;"
 			replace="jwplayer\.html5\.version = '${application.majorversion}.${application.minorversion}.${jwplayer.version}'\;"
+		/>
+	</target>
+
+	<target name="minify-skin">
+        <exec executable="python" outputproperty="minifiedSkin">
+            <arg file="${basedir}/build/skin-packer.py" />
+            <arg line="assets/six.xml" />
+        </exec>
+        
+        <replaceregexp file="${basedir}/src/js/html5/jwplayer.html5.defaultskin.js"
+			match="this\.text = '(.*)'\;?"
+			replace="this\.text = '${minifiedSkin}'\;"
 		/>
 	</target>
 
