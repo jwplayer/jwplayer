@@ -32,6 +32,7 @@ package com.longtailvideo.jwplayer.model {
 		protected var _height:Number 		= 400;
 		protected var _playlistpos:String	= "none";
 		protected var _playlistsize:String 	= "180";
+		protected var _playlistlayout:String = "extended";
 		protected var _skin:String 			= null;
 		protected var _width:Number 		= 280;
 		
@@ -44,6 +45,7 @@ package com.longtailvideo.jwplayer.model {
 		public function PlayerConfig():void {
 			playlistposition = _playlistpos;
 			playlistsize = _playlistsize;
+			playlistlayout = _playlistlayout
 		}
 		
 		public function setConfig(config:Object):void {
@@ -194,6 +196,13 @@ package com.longtailvideo.jwplayer.model {
 		public function set playlistsize(x:String):void {
 			_playlistsize = x;
 			setPluginProperty('playlist.size', x.toString());
+		}
+		
+		/** When below this refers to the playlist layout. Can be extended or basic @default extended **/
+		public function get playlistlayout():String { return _playlistlayout; }
+		public function set playlistlayout(x:String):void {
+			_playlistlayout = x;
+			setPluginProperty('playlist.layout', x.toString());
 		}
 
 		/** 

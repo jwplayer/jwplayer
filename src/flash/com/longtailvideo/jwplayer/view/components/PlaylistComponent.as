@@ -67,6 +67,8 @@ package com.longtailvideo.jwplayer.view.components {
 		private var pendingBuild:Boolean = false;
 		/** Map of images and loaders **/
 		private var imageLoaderMap:Dictionary;
+		
+		private var isBasic:Boolean = false;
 
 		public function PlaylistComponent(player:IPlayer) {
 			super(player, "playlist");
@@ -82,6 +84,7 @@ package com.longtailvideo.jwplayer.view.components {
 			
 			skinLoaded = true;
 			skin = _player.skin;
+			isBasic = (_player.config.playlistlayout == "basic");
 			continueSetup();
 		}
 		
@@ -183,6 +186,7 @@ package com.longtailvideo.jwplayer.view.components {
 			if (backActive) {
 				backActive.name = "backActive";
 				backActive.visible = false;
+				if (isBasic) { backActive.height = 32; }
 				addElement(backActive, btn, 0, 0);
 			}
 
@@ -190,6 +194,7 @@ package com.longtailvideo.jwplayer.view.components {
 			if (backOver) {
 				backOver.name = "backOver";
 				backOver.visible = false;
+				if (isBasic) { backOver.height = 32; }
 				addElement(backOver, btn, 0, 0);
 			}
 			
@@ -201,6 +206,7 @@ package com.longtailvideo.jwplayer.view.components {
 				back.graphics.endFill();
 			}
 			back.name = "back";
+			if (isBasic) { back.height = 32; }
 			addElement(back, btn, 0, 0);
 			
 			var img:MovieClip = new MovieClip;
@@ -214,12 +220,12 @@ package com.longtailvideo.jwplayer.view.components {
 				imgBG.x = imgBG.y = (back.height - imgBG.height) / 2;
 				img.graphics.drawRect(0, 0, imgBG.width + 2 * imgBG.x, back.height);
 				imageOffset = 0;
-			} else {
-				img.graphics.drawRect(0, 0, 4 * back.height / 3, back.height);
-			}
-			img.graphics.endFill();
-			img['stacker.noresize'] = true;
-			addElement(img, btn, 0, 0);
+				img.graphics.endFill();
+				img['stacker.noresize'] = true;
+				if (!isBasic) {
+					addElement(img, btn, 0, 0);
+				}
+			} 
 			
 			var titleTextFormat:TextFormat = new TextFormat();
 			titleTextFormat.size = titleSize;
@@ -233,7 +239,12 @@ package com.longtailvideo.jwplayer.view.components {
 			title.multiline = true;	
 			title.width = 335;
 			title.height = 20;
-			addElement(title, btn, img.width + imageOffset, imgBG ? imgBG.x - 5 : 5);
+			if (!isBasic) {
+				addElement(title, btn, img.width + imageOffset, imgBG ? imgBG.x - 5 : 5);
+			}
+			else {
+				addElement(title, btn, 10, 5);
+			}
 				
 			var descriptionTextFormat:TextFormat = new TextFormat();
 			descriptionTextFormat.size = fontSize;
@@ -248,6 +259,7 @@ package com.longtailvideo.jwplayer.view.components {
 			description.height = Math.max(0, back.height - 30);
 			descriptionTextFormat.leading = 6;
 			description.defaultTextFormat = descriptionTextFormat;
+			if (isBasic) { description.height = 0};
 			if(back.height <= 40) {
 				description.visible = false;
 			}
@@ -581,17 +593,21 @@ package com.longtailvideo.jwplayer.view.components {
 						msk.x = bg.x;
 						msk.y = bg.y;
 						msk.cacheAsBitmap = true;
-						button.addChild(msk);
+						if (!isBasic) {
+							button.addChild(msk);
+						}
 						ldr.x = bg.x;
 						ldr.y = bg.y;
-					} else {
+					} else if (!isBasic) {
 						msk = Draw.rect(button, '0xFF0000', img.width, img.height, img.x, img.y);
 					}
-					Draw.smooth(ldr);
-					img.addChild(ldr);
-					img.cacheAsBitmap = true;
-					img.mask = msk;
-					Stretcher.stretch(ldr, image[0], image[1], Stretcher.FILL);
+					if (!isBasic) {
+						Draw.smooth(ldr);
+						img.addChild(ldr);
+						img.cacheAsBitmap = true;
+						img.mask = msk;
+						Stretcher.stretch(ldr, image[0], image[1], Stretcher.FILL);
+					}
 				}
 			} catch (err:Error) {
 				Logger.log('Error loading playlist image: '+err.message);

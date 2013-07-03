@@ -36,6 +36,7 @@
 				playlist: [],
 				playlistposition: "none",
 				playlistsize: 180,
+				playlistlayout: "extended",
 				repeat: FALSE,
 				skin: UNDEF,
 				stretching: utils.stretching.UNIFORM,

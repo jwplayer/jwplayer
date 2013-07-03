@@ -55,7 +55,7 @@
 			_clickedIndex,
 			_slider,
 			_lastHeight = -1,
-			_itemheight = 60,
+			_itemheight = 76,
 			_elements = {
 				'background': undefined,
 				'divider': undefined,
@@ -64,6 +64,7 @@
 				'itemImage': undefined,
 				'itemActive': undefined
 			},
+			_isBasic,
 			_this = this;
 
 		_this.element = function() {
@@ -86,13 +87,15 @@
 		function _setup() {
 			_wrapper = _createElement("div", "jwplaylist"); 
 			_wrapper.id = _api.id + "_jwplayer_playlistcomponent";
+
+			_isBasic = (_api._model.playlistlayout == "basic");
 			
 			_container = _createElement("div", "jwlistcontainer");
 			_appendChild(_wrapper, _container);
 			
 			_populateSkinElements();
-			if (_elements.item) {
-				_itemheight = _elements.item.height;
+			if (_isBasic) {
+				_itemheight = 32;
 			}
 			
 			_setupStyles();
@@ -168,7 +171,7 @@
         	_css(_internalSelector("jwplaylistimg"), {
 			    height: imgHeight,
 			    width: imgWidth,
-				margin: imgPos ? (imgPos + imgPos + imgPos + imgPos) : "0 5px 0 0"
+				margin: imgPos ? (imgPos + "0 " + imgPos + imgPos) : "0 5px 0 0"
         	});
 			
 			_css(_internalSelector("jwlist li"), {
@@ -202,34 +205,33 @@
 					color: _settings.overcolor
 				});
 			}
-
-
+	
 			_css(_internalSelector("jwtextwrapper"), {
-				//padding: "0 5px 0 " + (imgPos ? 0 : "5px"),
-				height: _itemheight - 5,
+				height: _itemheight,
 				position: JW_CSS_RELATIVE
 			});
-			
+
 			_css(_internalSelector("jwtitle"), {
-	    		height: 15,
 	        	overflow: 'hidden',
 	        	display: "inline-block",
-	        	width: JW_CSS_100PCT,
+	        	height: _isBasic ? 32 : 20,
 	        	color: _settings.titlecolor,
-	        	'margin-top': imgPos ? imgPos : 7,
-	        	'line-height': 13,
 		    	'font-size': _settings.titlesize,
-	        	'font-weight': _settings.titleweight
+	        	'font-weight': _settings.titleweight,
+	        	'margin-top': _isBasic ? '0 10px' : 10,
+	        	'margin-left': 10,
+	        	'margin-right': 10,
+	        	'line-height': _isBasic ? 32 : 20
 	    	});
-			
-			
+	    
 			_css(_internalSelector("jwdescription"), {
 	    	    display: 'block',
 	    	    'font-size': _settings.fontsize,
-	    	    'line-height': 19,
-	    	    'margin-top': 5,
+	    	    'line-height': 18,
+	    	    'margin-left': 10,
+	    	    'margin-right': 10,
 	        	overflow: 'hidden',
-	        	height: _itemheight,
+	        	height: 36,
 	        	position: JW_CSS_RELATIVE
 	    	});
 
@@ -256,29 +258,27 @@
 		        
 			var imageWrapper = _createElement("div", "jwplaylistimg jwfill");
         	
-			if (_showThumbs() && (item.image || item['playlist.image'] || _elements.itemImage) ) {
-				var imageSrc; 
-				if (item['playlist.image']) {
-					imageSrc = item['playlist.image'];	
-				} else if (item.image) {
-					imageSrc = item.image;
-				} else if (_elements.itemImage) {
-					imageSrc = _elements.itemImage.src;
-				}
-	        	
-	        	_css('#'+li.id+' .jwplaylistimg', {
-					'background-image': imageSrc ? 'url('+imageSrc+')': null
+			var imageSrc; 
+			if (item['playlist.image'] && _elements.itemImage) {
+				imageSrc = item['playlist.image'];	
+			} else if (item.image && _elements.itemImage) {
+				imageSrc = item.image;
+			} else if (_elements.itemImage) {
+				imageSrc = _elements.itemImage.src;
+			}
+			if (imageSrc && !_isBasic) {
+				_css('#'+li.id+' .jwplaylistimg', {
+					'background-image': imageSrc
 	        	});
-	        	
 				_appendChild(li, imageWrapper);
-	        }
-			
+			}
+		
 			var textWrapper = _createElement("div", "jwtextwrapper");
         	var title = _createElement("span", "jwtitle");
         	title.innerHTML = (item && item.title) ? item.title : "";
         	_appendChild(textWrapper, title);
 
-	        if (item.description) {
+	        if (item.description && !_isBasic) {
 	        	var desc = _createElement("span", "jwdescription");
 	        	desc.innerHTML = item.description;
 	        	_appendChild(textWrapper, desc);
@@ -353,10 +353,6 @@
 			if (_slider && _slider.visible()) {
 				_slider.thumbPosition(idx / (_api.jwGetPlaylist().length-1)) ;
 			}
-		}
-
-		function _showThumbs() {
-			return true;//_settings.thumbs.toString().toLowerCase() == "true";	
 		}
 
 		function _itemHandler(evt) {

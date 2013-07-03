@@ -32,6 +32,7 @@
 		if (_config.listbar) {
 			_config.playlistsize = _config.listbar.size;
 			_config.playlistposition = _config.listbar.position;
+			_config.playlistlayout = _config.listbar.layout;
 		}
 		
 		if (_config.flashplayer) _modes.flash.src = _config.flashplayer;
