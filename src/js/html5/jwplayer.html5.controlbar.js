@@ -66,10 +66,8 @@
 						position: "left",
 						elements: [ 
 						   _layoutElement("play", CB_BUTTON), 
-						   _dividerElement, 
 						   _layoutElement("prev", CB_BUTTON), 
 						   _layoutElement("next", CB_BUTTON), 
-						   _layoutElement("divider", CB_DIVIDER, 'nextdiv'),
 						   _layoutElement("elapsed", CB_TEXT)
 						]
 					},
@@ -81,15 +79,11 @@
 						position: "right",
 						elements: [ 
 						    _layoutElement("duration", CB_TEXT), 
-						    _dividerElement,
 						    _layoutElement("hd", CB_BUTTON), 
-						    _layoutElement("divider", CB_DIVIDER, 'hddiv'),
 						    _layoutElement("cc", CB_BUTTON), 
-						    _layoutElement("divider", CB_DIVIDER, 'ccdiv'),
 						    _layoutElement("mute", CB_BUTTON), 
 						    _layoutElement("volume", CB_SLIDER), 
 						    _layoutElement("volumeH", CB_SLIDER), 
-    					    _layoutElement("divider", CB_DIVIDER, 'fsdiv'),
 						    _layoutElement("fullscreen", CB_BUTTON)
 					    ]
 					}
@@ -345,15 +339,14 @@
 		function _qualityHandler(evt) {
 			_levels = evt.levels;
 			if (_hasHD()) {
-				_css(_internalSelector(".jwhd"), { display: UNDEFINED });
+				_css(_internalSelector(".jwhd"), NOT_HIDDEN);
 				_hdOverlay.clearOptions();
 				for (var i=0; i<_levels.length; i++) {
 					_hdOverlay.addOption(_levels[i].label, i);
 				}
 				_qualityLevelChanged(evt);
 			} else {
-				_css(_internalSelector(".hddiv"), HIDDEN);
-				_css(_internalSelector(".jwhd"), { display: "none" });
+				_css(_internalSelector(".jwhd"), HIDDEN);
 			}
 			_redraw();
 		}
@@ -372,16 +365,14 @@
 		function _captionsHandler(evt) {
 			_captions = evt.tracks;
 			if (_hasCaptions()) {
-				_css(_internalSelector(".jwcc"), { display: UNDEFINED });
+				_css(_internalSelector(".jwcc"), NOT_HIDDEN);
 				_ccOverlay.clearOptions();
 				for (var i=0; i<_captions.length; i++) {
 					_ccOverlay.addOption(_captions[i].label, i);
 				}
-				_css(_internalSelector(".hddiv"), HIDDEN);
 				_captionChanged(evt);
 			} else {
-				_css(_internalSelector(".ccdiv"), HIDDEN);
-				_css(_internalSelector(".jwcc"), { display: "none" });
+				_css(_internalSelector(".jwcc"), HIDDEN );
 			}
 			_redraw();
 		}
@@ -459,17 +450,14 @@
 			if (capRight) _appendChild(_controlbar, capRight);
 		}
 		
-		function _buildElement(element) {
+		function _buildElement(element,pos) {
 			switch (element.type) {
-			case CB_DIVIDER:
-				return _buildDivider(element);
-				break;
 			case CB_TEXT:
 				return _buildText(element.name);
 				break;
 			case CB_BUTTON:
 				if (element.name != "blank") {
-					return _buildButton(element.name);
+					return _buildButton(element.name,pos);
 				}
 				break;
 			case CB_SLIDER:
@@ -512,7 +500,7 @@
 			return element;
 		}
 
-		function _buildButton(name) {
+		function _buildButton(name,pos) {
 			if (!_getSkinElement(name + "Button").src) {
 				return NULL;
 			}
@@ -520,9 +508,19 @@
 			if (_isMobile && (name == "mute" || name.indexOf("volume")==0)) return NULL;
 			
 			var element = _createSpan();
-			element.className = 'jw'+name + ' jwbuttoncontainer';
+			var span = _createSpan();
+			var divider = _buildDivider(_dividerElement);
 			var button = _createElement("button");
-
+			element.style += " display:inline-block";
+			element.className = 'jw'+name + ' jwbuttoncontainer';
+			if (pos == "left") {
+				_appendChild(element, span);
+				_appendChild(element,divider);
+			} else {
+				_appendChild(element, divider);
+				_appendChild(element, span);
+			}
+			
 			if (!_isMobile) {
 				button.addEventListener("click", _buttonClickHandler(name), FALSE);	
 			}
@@ -531,7 +529,7 @@
 				buttonTouch.addEventListener(utils.touchEvents.TAP, _buttonClickHandler(name));
 			}
 			button.innerHTML = "&nbsp;";
-			_appendChild(element, button);
+			_appendChild(span, button);
 
 			var outSkin = _getSkinElement(name + "Button");
 			var overSkin = _getSkinElement(name + "ButtonOver");
@@ -694,21 +692,10 @@
 		}
 		
 		function _buildDivider(divider) {
-			var element;
-			if (divider.width) {
+			var element = _buildImage(divider.name);
+			if (!element) {
 				element = _createSpan();
 				element.className = "jwblankDivider";
-				_css(element, {
-					width: parseInt(divider.width)
-				});
-			} else if (divider.element) {
-				element = _buildImage(divider.element);
-			} else {
-				element = _buildImage(divider.name);
-				if (!element) {
-					element = _createSpan();
-					element.className = "jwblankDivider";
-				}
 			}
 			if (divider.className) element.className += " " + divider.className;
 			return element;
@@ -1055,9 +1042,7 @@
 		
 		function _styleTimeSlider(slider) {
 			if (!_elements['timeSliderRail']) {
-				_css(_internalSelector(".jwtime"), {
-					display: "none"
-				});
+				_css(_internalSelector(".jwtime"), HIDDEN);
 			}
 
 			if (_elements['timeSliderThumb']) {
@@ -1207,14 +1192,14 @@
 			elem.className = "jwgroup jw" + pos;
 			_groups[pos] = elem;
 			if (_layout[pos]) {
-				_buildElements(_layout[pos], _groups[pos]);
+				_buildElements(_layout[pos], _groups[pos],pos);
 			}
 		}
 		
-		function _buildElements(group, container) {
+		function _buildElements(group, container,pos) {
 			if (group && group.elements.length > 0) {
 				for (var i=0; i<group.elements.length; i++) {
-					var element = _buildElement(group.elements[i]);
+					var element = _buildElement(group.elements[i],pos);
 					if (element) {
 						if (group.elements[i].name == "volume" && element.vertical) {
 							_volumeOverlay = new html5.overlay(_id+"_volumeOverlay", _skin);
@@ -1266,11 +1251,9 @@
 			if (_api.jwGetPlaylist().length > 1 && !_sidebarShowing()) {
 				_css(_internalSelector(".jwnext"), NOT_HIDDEN);
 				_css(_internalSelector(".jwprev"), NOT_HIDDEN);
-				_css(_internalSelector(".nextdiv"), NOT_HIDDEN);
 			} else {
 				_css(_internalSelector(".jwnext"), HIDDEN);
 				_css(_internalSelector(".jwprev"), HIDDEN);
-				_css(_internalSelector(".nextdiv"), HIDDEN);
 			}
 		}
 		
@@ -1299,10 +1282,6 @@
 		_this.audioMode = function(mode) {
 			if (mode != _audioMode) {
 				_audioMode = mode;
-				if (mode) {
-					_css(_internalSelector(".fsdiv"), HIDDEN);
-					_css(_internalSelector(".hddiv"), HIDDEN);
-				}
 				_redraw();
 			}
 		}
@@ -1393,6 +1372,8 @@
 			parent.appendChild(child);
 		}
 		
+		
+		//because of size impacting whether to show duration/elapsed time, optional resize argument overrides the this.visible return clause.
 		_this.show = function(resize) {
 			if (_this.visible && !resize) return;
 			_clearHideTimeout();

@@ -123,7 +123,7 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _smallPlayer:Boolean = false;
 		protected var _mouseOverButton:Boolean = false;
 		protected var _numDividers:Number = -1;
-		protected var _divIndex = 0;
+		protected var _divIndex:Number = 0;
 		protected var _bgColorSheet:Sprite;
 
 		protected var animations:Animations;
@@ -844,6 +844,7 @@ package com.longtailvideo.jwplayer.view.components {
 					_smallPlayer = false;
 				}
 			}
+			
 			clearDividers();
 			alignTextFields();
 			addDividers();
@@ -898,18 +899,29 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		
 		private function addDividers():void {
+			
 			var controlbarPattern:RegExp = /\[(.*)\]\[.*\]\[(.*)\]/;
 			var result:Object = controlbarPattern.exec(_currentLayout);
 			var rightDivide:Array = ["play","pause","prev","next"];
 			var leftDivide:Array = ["hd","cc","mute","fullscreen"];
 			_numDividers = 0;
+			
+			//make sure we don't add dividers a layout that already has dividers
+			var div:RegExp = /\|/g;  
+			_currentLayout = _currentLayout.replace(div,"");
+						
 			rightDivide.forEach( function(elem:String,index:int,arr:Array):void {
-				_numDividers++;
-				_currentLayout = _currentLayout.replace(elem,elem+"|");
+				
+				if (_currentLayout.match(elem)) {
+					_currentLayout = _currentLayout.replace(elem,elem+"|");
+					_numDividers++;
+				}
 			});
 			leftDivide.forEach( function(elem:String,index:int,arr:Array):void {
-				_numDividers++;
-				_currentLayout = _currentLayout.replace(elem,"|"+elem);
+				if (_currentLayout.match(elem)) {
+					_currentLayout = _currentLayout.replace(elem,"|" + elem);
+					_numDividers++;
+				}
 			});
 		}
 		
