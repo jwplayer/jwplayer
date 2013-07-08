@@ -99,5 +99,6 @@ package com.longtailvideo.jwplayer.player
 		function getPosition():Number;
 		function getDuration():Number;
 		function getState():String;
+		function setText(text:String=""):void;
 	}
 }

@@ -198,33 +198,10 @@
 			_provider.seek(position);
 		}
 		
-		/** Get the current instream state **/
-		/*
-		this.jwInstreamGetState = function() {
-			if (!_instreamMode) return undefined;
-			return _fakemodel.state;
+		/** Set custom text in the controlbar **/
+		this.jwInstreamSetText = function(text) {
+			_cbar.setText(text);
 		}
-		*/
-
-		/** Get the current instream playback position **/
-		/*
-		this.jwInstreamGetPosition = function() {
-			if (!_instreamMode) return undefined;
-			return _fakemodel.position;
-		}
-		*/
-
-		/** Get the current instream media duration **/
-		/*
-		this.jwInstreamGetDuration = function() {
-			if (!_instreamMode) return undefined;
-			return _fakemodel.duration;
-		}
-		
-		this.playlistClickable = function() {
-			return (!_instreamMode || _options.playlistclickable.toString().toLowerCase()=="true");
-		}
-		*/
 
 		/*****************************
 		 ****** Private methods ****** 

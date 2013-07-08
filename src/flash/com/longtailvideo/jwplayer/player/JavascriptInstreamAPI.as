@@ -61,6 +61,7 @@ package com.longtailvideo.jwplayer.player {
 				
 				// Instream API
 				ExternalInterface.addCallback("jwInstreamDestroy", js_destroyInstream);
+				ExternalInterface.addCallback("jwInstreamSetText", js_setText);
 				
 			} catch(e:Error) {
 				Logger.log("Could not initialize Instream JavaScript API: "  + e.message);
@@ -248,6 +249,12 @@ package com.longtailvideo.jwplayer.player {
 			if (!_isPlayer) return;
 			
 			_isPlayer.destroy();
+		}
+
+		protected function js_setText(text:String=""):void {
+			if (!_isPlayer) return;
+			
+			_isPlayer.setText(text);
 		}
 
 		

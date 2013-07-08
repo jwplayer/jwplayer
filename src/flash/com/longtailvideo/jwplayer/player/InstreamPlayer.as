@@ -337,6 +337,10 @@ package com.longtailvideo.jwplayer.player
 			_destroy();
 		}
 		
+		public function setText(text:String=""):void {
+			_controls.controlbar.setText(text);
+		}
+		
 		protected function _destroy(complete:Boolean=false):void {
 			if (!complete && _provider.state != PlayerState.IDLE) {
 				_provider.stop();
@@ -427,6 +431,10 @@ package com.longtailvideo.jwplayer.player
 		
 		public function get skin():ISkin {
 			return _skin;
+		}
+		
+		public function getControls():Boolean {
+			return _model.config.controls;
 		}
 		
 
@@ -543,10 +551,6 @@ package com.longtailvideo.jwplayer.player
 			throw new Error(UNSUPPORTED_ERROR);
 		}
 
-		public function getControls():Boolean {
-			throw new Error(UNSUPPORTED_ERROR);
-		}
-		
 		public function setControls(state:Boolean):void {
 			throw new Error(UNSUPPORTED_ERROR);
 		}

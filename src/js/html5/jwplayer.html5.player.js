@@ -189,6 +189,10 @@
 					_view.destroy();
 				}
 			}
+			
+			_api.jwInstreamSetText = function(text) {
+				if (_instreamPlayer) _instreamPlayer.jwInstreamSetText(text);
+			}
 
 			_api.jwIsBeforePlay = function () {
 				return _controller.checkBeforePlay();

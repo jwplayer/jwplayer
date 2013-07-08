@@ -65,5 +65,6 @@ package com.longtailvideo.jwplayer.view.interfaces {
 
 	public interface IControlbarComponent extends IPlayerComponent {
 		function audioMode(state:Boolean):void;
+		function setText(text:String=""):void;
 	}
 }

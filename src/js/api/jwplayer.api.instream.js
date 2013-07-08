@@ -135,28 +135,9 @@
 			_player.jwInstreamDestroy();
 		};
 		
-		// _this.addEventListener = function(type, listener) {
-		// 	_player.jwInstreamAddEventListener(type, listener);
-		// } 
-		// _this.removeEventListener = function(type, listener) {
-		// 	_player.jwInstreamRemoveEventListener(type, listener);
-		// }
-
-		/*
-		_this.seek = function(pos) {
-			_player.jwInstreamSeek(pos);
-		};
-		_this.getState = function() {
-			return _player.jwInstreamGetState();
+		_this.setText = function(text) {
+			_player.jwInstreamSetText(text ? text : "");
 		}
-		_this.getDuration = function() {
-			return _player.jwInstreamGetDuration();
-		}
-		_this.getPosition = function() {
-			return _player.jwInstreamGetPosition();
-		}
-
-		*/
 		
 		_init();
 		
