@@ -166,7 +166,7 @@
 				}
 				_image = newImage;
 				_getImage();
-			} else if (_image) {
+			} else if (_image && !_hiding) {
 				_setVisibility(D_PREVIEW_CLASS, TRUE);
 			}
 			_updateDisplay(_api.jwGetState());
@@ -200,7 +200,7 @@
     			if (_button) _button.setRotation(0);
     			switch(state) {
     			case states.IDLE:
-    				if (!_errorState && !_completedState) {
+    				if (!_errorState && !_completedState && !_hiding) {
     					if (_image && !_imageHidden) {
     						_setVisibility(D_PREVIEW_CLASS, TRUE);
     					}

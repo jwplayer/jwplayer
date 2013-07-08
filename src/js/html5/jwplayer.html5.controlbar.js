@@ -749,6 +749,8 @@
 		}
 		
 		function _buildSlider(name) {
+			if (_isMobile && name.indexOf("volume") == 0) return;
+			
 			var slider = _createSpan(),
 				vertical = name == "volume",
 				skinPrefix = name + (name=="time"?"Slider":""),
@@ -808,7 +810,7 @@
 		}
 		
 		function _buildSliderRail(name, vertical, left, right) {
-			var rail = _createSpan(), 
+			var rail = _createSpan(),
 				railElements = ['Rail', 'Buffer', 'Progress'],
 				progressRail;
 			
@@ -846,10 +848,18 @@
 						height: vertical ? "auto" : UNDEFINED
 					});
 
-					if (i == 2) progressRail = railElement;
-					
-					_elements[prefix] = railElement;
-					_appendChild(rail, railElement);
+					if (i == 2) {
+						progressRail = railElement;
+
+						var progressContainer = _createSpan();
+						progressContainer.className = "jwprogressOverflow";
+						_appendChild(progressContainer, railElement);
+						_elements[prefix] = progressContainer;
+						_appendChild(rail, progressContainer);
+					} else {
+						_elements[prefix] = railElement;
+						_appendChild(rail, railElement);
+					}
 				}
 			}
 			
@@ -1079,8 +1089,16 @@
 			var prefix = "volume" + (vertical ? "" : "H"),
 				direction = vertical ? "vertical" : "horizontal";
 			
+//			var w = _getSkinElement(prefix+"Rail").width + (vertical ? 0 : _getSkinElement(prefix+"Cap"+left).width + _getSkinElement(prefix+"Cap"+right).width);
+			console.log("slider width",  _getSkinElement(prefix+"Rail").width, _getSkinElement(prefix+"Cap"+left).width, _getSkinElement(prefix+"Cap"+right).width, vertical);
+			
 			_css(_internalSelector(".jw"+prefix+".jw" + direction), {
-				width: _getSkinElement(prefix+"Rail", vertical).width + (vertical ? 0 : _getSkinElement(prefix+"Cap"+left).width + _getSkinElement(prefix+"Cap"+right).width),
+				width: _getSkinElement(prefix+"Rail", vertical).width + (vertical ? 0 : 
+					(_getSkinElement(prefix+"Cap"+left).width + 
+					_getSkinElement(prefix+"RailCap"+left).width +
+					_getSkinElement(prefix+"RailCap"+right).width + 
+					_getSkinElement(prefix+"Cap"+right).width)
+				),
 				height: vertical ? (
 							_getSkinElement(prefix+"Cap"+left).height + 
 							_getSkinElement(prefix+"Rail").height + 
@@ -1332,21 +1350,17 @@
 				prefix = name + (name=="time"?"Slider":""),
 				size = 100 * Math.min(Math.max(0, pct), 1) + "%",
 				progress = _elements[prefix+'Progress'],
-				thumb = _elements[prefix+'Thumb'],
-				hide = FALSE;
+				thumb = _elements[prefix+'Thumb'];
 			
 			// Set style directly on the elements; Using the stylesheets results in some flickering in Chrome.
 			if (progress) {
 				if (vertical) {
 					progress.style.height = size;
 					progress.style.bottom = 0;
-					if (progress.clientHeight <= progress.capSize) hide = TRUE;
 				} else {
 					progress.style.width = size;
-					if (progress.clientWidth <= progress.capSize) hide = TRUE;
 				}
-				progress.style.opacity = ((!hide && pct > 0) || _dragging) ? 1 : 0;
-				
+				progress.style.opacity = (pct > 0 || _dragging) ? 1 : 0;
 			}
 			
 			if (thumb) {
@@ -1547,6 +1561,11 @@
     _css(CB_CLASS + ' .jwvertical .jwvolumeProgress', {
     	height: "auto"
     }, TRUE);
+
+    _css(CB_CLASS + ' .jwprogressOverflow', {
+    	position: JW_CSS_ABSOLUTE,
+    	overflow: JW_CSS_HIDDEN
+    });
 
 	_setTransition(CB_CLASS, JW_CSS_SMOOTH_EASE);
 	_setTransition(CB_CLASS + ' button', JW_CSS_SMOOTH_EASE);
