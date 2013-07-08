@@ -242,17 +242,9 @@ package com.longtailvideo.jwplayer.view.components {
 
 		private function updateControlbarState():void {
 			var newLayout:String = _defaultLayout;
-/*			var controlbarLayout:Object = _player.skin.getSkinProperties().layout['controlbar'];
-			if (controlbarLayout) {
-				newLayout = parseStructuredLayout(controlbarLayout);
-			}
-*/			_currentLayout = removeInactive(newLayout);
-/*			newLayout = newLayout.replace("blank", _customButtons.join("|"));
-			newLayout = removeButtonFromLayout("blank", newLayout);
-			for each (var removed:String in _removedButtons) {
-				newLayout = removeButtonFromLayout(removed, newLayout);
-			}
-*/
+
+			_currentLayout = removeInactive(newLayout);
+
 			if (player.state == PlayerState.PLAYING) {
 				newLayout = newLayout.replace('play', 'pause');
 				hideButton('play');
@@ -298,18 +290,20 @@ package com.longtailvideo.jwplayer.view.components {
 				hideButton('cc');
 			}
 
-			if (_timeAlt && _timeAlt.text) {
-				_timeSlider.visible = false;
-				hideButton('alt', false);
-				hideButton('elapsed', true);
-				hideButton('duration', true);
-				newLayout = newLayout.replace("duration","");
-				newLayout = newLayout.replace("elapsed","");
-				_timeSlider.visible = false;
-			} else {
-				hideButton('alt', true);
-				//_timeAlt.visible = false;
-				_timeSlider.visible = true;
+			if (_timeSlider) {
+				if (_timeAlt && _timeAlt.text) {
+					_timeSlider.visible = false;
+					hideButton('alt', false);
+					hideButton('elapsed', true);
+					hideButton('duration', true);
+					newLayout = newLayout.replace("duration","");
+					newLayout = newLayout.replace("elapsed","");
+					_timeSlider.visible = false;
+				} else {
+					hideButton('alt', true);
+					//_timeAlt.visible = false;
+					_timeSlider.visible = true;
+				}
 			}
 			
 			_currentLayout = removeInactive(newLayout);
