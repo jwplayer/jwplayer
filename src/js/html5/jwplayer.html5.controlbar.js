@@ -848,9 +848,9 @@
 						height: vertical ? "auto" : UNDEFINED
 					});
 
-					if (i == 2) {
-						progressRail = railElement;
-
+					if (i == 2) progressRail = railElement;
+					
+					if (i == 2 && !vertical) {
 						var progressContainer = _createSpan();
 						progressContainer.className = "jwprogressOverflow";
 						_appendChild(progressContainer, railElement);
