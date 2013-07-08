@@ -1089,9 +1089,6 @@
 			var prefix = "volume" + (vertical ? "" : "H"),
 				direction = vertical ? "vertical" : "horizontal";
 			
-//			var w = _getSkinElement(prefix+"Rail").width + (vertical ? 0 : _getSkinElement(prefix+"Cap"+left).width + _getSkinElement(prefix+"Cap"+right).width);
-			console.log("slider width",  _getSkinElement(prefix+"Rail").width, _getSkinElement(prefix+"Cap"+left).width, _getSkinElement(prefix+"Cap"+right).width, vertical);
-			
 			_css(_internalSelector(".jw"+prefix+".jw" + direction), {
 				width: _getSkinElement(prefix+"Rail", vertical).width + (vertical ? 0 : 
 					(_getSkinElement(prefix+"Cap"+left).width + 
@@ -1100,12 +1097,12 @@
 					_getSkinElement(prefix+"Cap"+right).width)
 				),
 				height: vertical ? (
-							_getSkinElement(prefix+"Cap"+left).height + 
-							_getSkinElement(prefix+"Rail").height + 
-							_getSkinElement(prefix+"RailCap"+left).height + 
-							_getSkinElement(prefix+"RailCap"+right).height + 
-							_getSkinElement(prefix+"Cap"+right).height
-						) : UNDEFINED
+					_getSkinElement(prefix+"Cap"+left).height + 
+					_getSkinElement(prefix+"Rail").height + 
+					_getSkinElement(prefix+"RailCap"+left).height + 
+					_getSkinElement(prefix+"RailCap"+right).height + 
+					_getSkinElement(prefix+"Cap"+right).height
+				) : UNDEFINED
 			});
 			
 			slider.className += " jw" + direction;
