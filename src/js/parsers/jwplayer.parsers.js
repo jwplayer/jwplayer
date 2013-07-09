@@ -5,7 +5,7 @@
  * @version 6.0
  */
 (function(html5) {
-	html5.parsers = {
+	jwplayer.parsers = {
 		localName : function(node) {
 			if (!node) {
 				return "";
@@ -40,4 +40,4 @@
 		}
 
 	};
-})(jwplayer.html5);
+})(jwplayer);

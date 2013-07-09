@@ -9,7 +9,7 @@
 	var _item = playlist.item = function(config) {
 		var utils = jwplayer.utils,
 			_playlistitem = utils.extend({}, _item.defaults, config);
-		_playlistitem.tracks = utils.exists(config.tracks) ? config.tracks : [];
+		_playlistitem.tracks = (config && utils.exists(config.tracks)) ? config.tracks : [];
 
 		if (_playlistitem.sources.length == 0) {
 			_playlistitem.sources = [new playlist.source(_playlistitem)];

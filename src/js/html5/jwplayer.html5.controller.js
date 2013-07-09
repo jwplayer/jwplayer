@@ -9,7 +9,7 @@
 		utils = jwplayer.utils, 
 		events = jwplayer.events, 
 		states = events.state,
-		
+		playlist = jwplayer.playlist,
 		TRUE = true,
 		FALSE = false;
 		
@@ -100,8 +100,8 @@
 			}
 		}
 		
-		function _loadPlaylist(playlist) {
-			var loader = new html5.playlistloader();
+		function _loadPlaylist(toLoad) {
+			var loader = new playlist.loader();
 			loader.addEventListener(events.JWPLAYER_PLAYLIST_LOADED, function(evt) {
 				_load(evt.playlist);
 			});
@@ -110,7 +110,7 @@
 				evt.message = "Could not load playlist: " + evt.message; 
 				_forward(evt);
 			});
-			loader.load(playlist);
+			loader.load(toLoad);
 		}
 		
 		function _play(state) {

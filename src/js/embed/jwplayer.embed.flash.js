@@ -240,30 +240,30 @@
 			}
 			return false;
 		}
-		
-		/**
-		 * Determines if a Flash can play a particular file, based on its extension
-		 */
-		function _flashCanPlay(file, type) {
-			// TODO: Return false if isMobile
-			
-			if (utils.isYouTube(file)) return true;
-			if (utils.isRtmp(file,type)) return true;
-			if (type == "hls") return true;
-
-			var mappedType = utils.extensionmap[type ? type : utils.extension(file)];
-			
-			// If no type or unrecognized type, don't allow to play
-			if (!mappedType) {
-				return false;
-			}
-
-			return !!(mappedType.flash);
-		}
 	}
 	
 	_flash.getVars = function(id) {
 		return storedFlashvars[id];		
+	}
+
+	/**
+	 * Determines if a Flash can play a particular file, based on its extension
+	 */
+	var _flashCanPlay = jwplayer.embed.flashCanPlay = function(file, type) {
+		// TODO: Return false if isMobile
+		
+		if (utils.isYouTube(file)) return true;
+		if (utils.isRtmp(file,type)) return true;
+		if (type == "hls") return true;
+
+		var mappedType = utils.extensionmap[type ? type : utils.extension(file)];
+		
+		// If no type or unrecognized type, don't allow to play
+		if (!mappedType) {
+			return false;
+		}
+
+		return !!(mappedType.flash);
 	}
 	
 })(jwplayer);

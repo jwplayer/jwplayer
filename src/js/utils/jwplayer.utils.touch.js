@@ -96,7 +96,7 @@
             var evt = {
                 type: type,
                 target: _elem,
-                x: ((touch.pageX - window.scrollX) - rect.left),
+                x: ((touch.pageX - window.pageXOffset) - rect.left),
                 y: touch.pageY,
                 deltaX: 0,
                 deltaY: 0

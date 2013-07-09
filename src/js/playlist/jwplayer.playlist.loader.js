@@ -4,10 +4,10 @@
  * @author pablo
  * @version 6.0
  */
-(function(html5) {
-	var _jw = jwplayer, utils = _jw.utils, events = _jw.events;
+(function(playlist) {
+	var _jw = jwplayer, utils = _jw.utils, events = _jw.events, parsers = _jw.parsers;
 
-	html5.playlistloader = function() {
+	playlist.loader = function() {
 		var _eventDispatcher = new events.eventdispatcher();
 		utils.extend(this, _eventDispatcher);
 		
@@ -21,25 +21,25 @@
 				var rss = "";
 				for (var i = 0; i < childNodes.length; i++) {
 					rss = childNodes[i];
-					if (rss.nodeType != rss.COMMENT_NODE) {
+					if (rss.nodeType != 8) { // 8: Node.COMMENT_NODE (IE8 doesn't have the Node.COMMENT_NODE constant)
 						break;
 					}
 				}
 				
-				if (html5.parsers.localName(rss) == "xml") {
+				if (parsers.localName(rss) == "xml") {
 					rss = rss.nextSibling;
 				}
 				
-				if (html5.parsers.localName(rss) != "rss") {
+				if (parsers.localName(rss) != "rss") {
 					_playlistError("Not a valid RSS feed");
 					return;
 				}
 				
-				var playlist = new _jw.playlist(html5.parsers.rssparser.parse(rss));
-				playlist = _filterPlaylist(playlist);
-				if (playlist && playlist.length && playlist[0].sources && playlist[0].sources.length && playlist[0].sources[0].file) {
+				var pl = new playlist(parsers.rssparser.parse(rss));
+				pl = utils.filterPlaylist(pl, true);
+				if (pl && pl.length && pl[0].sources && pl[0].sources.length && pl[0].sources[0].file) {
 					_eventDispatcher.sendEvent(events.JWPLAYER_PLAYLIST_LOADED, {
-						playlist: playlist
+						playlist: pl
 					});
 				} else {
 					_playlistError("No playable sources found");
@@ -47,21 +47,6 @@
 			} catch (e) {
 				_playlistError();
 			}
-		}
-		
-		function _filterPlaylist(list) {
-			if (!list) return;
-			var newList = [], i, item, sources;
-			for (i=0; i < list.length; i++) {
-				item = list[i];
-				sources = utils.filterSources(item.sources);
-				
-				if (sources && sources.length) {
-					item.sources = sources;
-					newList.push(item);
-				}
-			}
-			return newList;
 		}
 		
 		function _playlistLoadError(err) {
@@ -74,4 +59,4 @@
 			});
 		}
 	}
-})(jwplayer.html5);
+})(jwplayer.playlist);
