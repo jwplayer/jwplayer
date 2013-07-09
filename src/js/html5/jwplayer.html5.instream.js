@@ -113,9 +113,13 @@
     			_resize();
     			// Load the instream item
     			_provider.load(_fakemodel.playlist[0]);
+    			//_fakemodel.getVideo().addEventListener('webkitendfullscreen', _fullscreenChangeHandler, FALSE);
     		}
 			
 		}
+		
+		
+		_fullscreenHandler
 	   
 	    function errorHandler(evt) {
 	        
@@ -228,23 +232,41 @@
 				_provider.addEventListener(_events.JWPLAYER_MEDIA_COMPLETE, _completeHandler);
 				_provider.addEventListener(_events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
 				_provider.addEventListener(_events.JWPLAYER_MEDIA_ERROR,errorHandler);
-				// _provider.addEventListener(_events.JWPLAYER_PLAYER_STATE, _stateHandler);
+				_provider.addEventListener(_events.JWPLAYER_PLAYER_STATE, _stateHandler);
 			//}
 			_provider.attachMedia();
 			_provider.mute(_model.mute);
 			_provider.volume(_model.volume);
 		}
 		
+		
+		function _stateHandler(evt) {
+			
+			_fakemodel.state = evt.newstate;
+			_forward(evt);
+		}
 		/** Forward provider events to listeners **/		
 		function _forward(evt) {
 			if (_instreamMode) {
 				_sendEvent(evt.type, evt);
 			}
 		}
+		
+		
 
 		function _fullscreenHandler(evt) {
 			_forward(evt);
 			_resize();
+			if (_utils.isIPad() && !evt.fullscreen && _fakemodel.state == jwplayer.events.state.PAUSED) {
+				_disp.show(true);
+
+			}
+			if (_utils.isIPad() && !evt.fullscreen && _fakemodel.state == jwplayer.events.state.PLAYING) {
+				_disp.hide();
+
+			}
+			
+			
 		}
 		
 		/** Handle the JWPLAYER_MEDIA_BUFFER_FULL event **/		
@@ -349,7 +371,7 @@
 			_fakemodel.setMute(state);
 			_api.jwSetMute(state);
 		}
-		this.jwGetState = function() { return _model.state; };
+		this.jwGetState = function() { return _fakemodel.state; };
 		this.jwGetPlaylist = function() { return [_item]; };
 		this.jwGetPlaylistIndex = function() { return 0; };
 		this.jwGetStretching = function() { return _model.config.stretching; };

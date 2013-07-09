@@ -312,8 +312,8 @@
 			}
 		}
 
-		this.show = function() {
-			if (_button && _getState() != states.PLAYING) {
+		this.show = function(force) {
+			if (_button && (force || _getState() != states.PLAYING)) {
 				_clearHideTimeout();
 				_display.style.display = "block";
 				_button.show();

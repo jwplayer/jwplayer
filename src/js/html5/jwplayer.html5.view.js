@@ -330,6 +330,10 @@
 				if (_isMobile) {
 					_videoTag.webkitExitFullScreen();
 					_model.setFullscreen(FALSE);
+					if(_isIPad) {
+						_videoTag.controls = TRUE;
+						_videoTag.controls = FALSE;
+					}
 				} else if (_model.fullscreen) {
 					_fakeFullscreen(FALSE);
 					_model.setFullscreen(FALSE);
