@@ -187,6 +187,7 @@ package com.longtailvideo.jwplayer.view.components {
 				backActive.name = "backActive";
 				backActive.visible = false;
 				if (isBasic) { backActive.height = 32; }
+				else { backActive.height = 76; }
 				addElement(backActive, btn, 0, 0);
 			}
 
@@ -195,6 +196,7 @@ package com.longtailvideo.jwplayer.view.components {
 				backOver.name = "backOver";
 				backOver.visible = false;
 				if (isBasic) { backOver.height = 32; }
+				else { backOver.height = 76; }
 				addElement(backOver, btn, 0, 0);
 			}
 			
@@ -207,6 +209,7 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 			back.name = "back";
 			if (isBasic) { back.height = 32; }
+			else { back.height = 76; }
 			addElement(back, btn, 0, 0);
 			
 			var img:MovieClip = new MovieClip;
