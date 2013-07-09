@@ -37,7 +37,7 @@
 			newSources = [];
 			for (var i=0; i<sources.length; i++) {
 				var type = sources[i].type,
-					file = sources[i].file;
+					file = sources[i].file.trim();
 				if (!type) {
 					type = extensionmap.extType(utils.extension(file));
 					sources[i].type = type;
