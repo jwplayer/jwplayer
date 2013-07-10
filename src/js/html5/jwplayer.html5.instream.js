@@ -33,7 +33,7 @@
 		 *****************************************/
 
 		/** Load an instream item and initialize playback **/
-		this.load = function(item, options) {
+		_self.load = function(item, options) {
 			if (_utils.isAndroid(2.3)) {
 				errorHandler({
 					type: _events.JWPLAYER_ERROR,
@@ -86,29 +86,34 @@
     			// Instream display component
     			_disp = new html5.display(_self);
     			_disp.setAlternateClickHandler(function(evt) {
-    				if (_fakemodel.state == _states.PAUSED) {
-    					_self.jwInstreamPlay();
-    				} else {
-    					_self.jwInstreamPause();
-    					_sendEvent(_events.JWPLAYER_INSTREAM_CLICK, evt);
+    				if (_api.jwGetControls()) {
+        				if (_fakemodel.state == _states.PAUSED) {
+        					_self.jwInstreamPlay();
+        				} else {
+        					_self.jwInstreamPause();
+        				}
     				}
+					_sendEvent(_events.JWPLAYER_INSTREAM_CLICK, evt);
     			});
     
     			_instreamContainer.appendChild(_disp.element());
     
-    			// Instream controlbar (if not iOS/Android)
-    			//if (!_utils.isMobile()) {
-    				_cbar = new html5.controlbar(_self);
-    				_instreamContainer.appendChild(_cbar.element());
+    			// Instream controlbar
+   				_cbar = new html5.controlbar(_self);
+   				_instreamContainer.appendChild(_cbar.element());
+   				_cbar.show();
+   				
+   				// Match the main player's controls state
+   				if (_api.jwGetControls()) {
     				_cbar.show();
-    				// if (_api.jwGetControls()) {
-    				// 	_cbar.show();
-    				// 	_disp.show();
-    				// }
-    			//}
-    
+    				_disp.show();
+    			} else {
+    				_cbar.hide();
+    				_disp.hide();
+    			}
+    			
     			// Show the instream layer
-    			_view.setupInstream(_instreamContainer, _cbar, _disp, _video);
+    			_view.setupInstream(_instreamContainer, _cbar, _disp);
     			// Resize the instream components to the proper size
     			_resize();
     			// Load the instream item
@@ -134,7 +139,7 @@
 	        _self.jwInstreamDestroy(false);
 	    }
 		/** Stop the instream playback and revert the main player back to its original state **/
-		this.jwInstreamDestroy = function(complete) {
+		_self.jwInstreamDestroy = function(complete) {
 			if (!_instreamMode) return;
 			// We're not in instream mode anymore.
 			_instreamMode = false;
@@ -171,15 +176,15 @@
 		
 		/** Forward any calls to add and remove events directly to our event dispatcher **/
 		
-		this.jwInstreamAddEventListener = function(type, listener) {
+		_self.jwInstreamAddEventListener = function(type, listener) {
 			_dispatcher.addEventListener(type, listener);
 		} 
-		this.jwInstreamRemoveEventListener = function(type, listener) {
+		_self.jwInstreamRemoveEventListener = function(type, listener) {
 			_dispatcher.removeEventListener(type, listener);
 		}
 
 		/** Start instream playback **/
-		this.jwInstreamPlay = function() {
+		_self.jwInstreamPlay = function() {
 			if (!_instreamMode) return;
 			_provider.play(true);
 			_model.state = jwplayer.events.state.PLAYING;
@@ -188,7 +193,7 @@
 		}
 
 		/** Pause instream playback **/
-		this.jwInstreamPause = function() {
+		_self.jwInstreamPause = function() {
 			if (!_instreamMode) return;
 			_provider.pause(true);
 			_model.state = jwplayer.events.state.PAUSED;
@@ -197,13 +202,13 @@
 		}
 		
 		/** Seek to a point in instream media **/
-		this.jwInstreamSeek = function(position) {
+		_self.jwInstreamSeek = function(position) {
 			if (!_instreamMode) return;
 			_provider.seek(position);
 		}
 		
 		/** Set custom text in the controlbar **/
-		this.jwInstreamSetText = function(text) {
+		_self.jwInstreamSetText = function(text) {
 			_cbar.setText(text);
 		}
 
@@ -319,72 +324,72 @@
 		 *****  Duplicate main html5 api  *****
 		 **************************************/
 		
-		this.jwPlay = function(state) {
+		_self.jwPlay = function(state) {
 			if (_options.controlbarpausable.toString().toLowerCase()=="true") {
-				this.jwInstreamPlay();
+				_self.jwInstreamPlay();
 			}
 		};
 		
-		this.jwPause = function(state) {
+		_self.jwPause = function(state) {
 			if (_options.controlbarpausable.toString().toLowerCase()=="true") {
-				this.jwInstreamPause();
+				_self.jwInstreamPause();
 			}
 		};
 
-		this.jwStop = function() {
+		_self.jwStop = function() {
 			if (_options.controlbarstoppable.toString().toLowerCase()=="true") {
-				this.jwInstreamDestroy();
+				_self.jwInstreamDestroy();
 				_api.jwStop();
 			}
 		};
 
-		this.jwSeek = function(position) {
+		_self.jwSeek = function(position) {
 			switch(_options.controlbarseekable.toLowerCase()) {
 			case "never":
 				return;
 			case "always":
-				this.jwInstreamSeek(position);
+				_self.jwInstreamSeek(position);
 				break;
 			case "backwards":
 				if (_fakemodel.position > position) {
-					this.jwInstreamSeek(position);
+					_self.jwInstreamSeek(position);
 				}
 				break;
 			}
 		};
 		
-		this.jwSeekDrag = function(state) { _fakemodel.seekDrag(state); };
+		_self.jwSeekDrag = function(state) { _fakemodel.seekDrag(state); };
 		
-		this.jwGetPosition = function() {};
-		this.jwGetDuration = function() {};
-		this.jwGetWidth = _api.jwGetWidth;
-		this.jwGetHeight = _api.jwGetHeight;
-		this.jwGetFullscreen = _api.jwGetFullscreen;
-		this.jwSetFullscreen = _api.jwSetFullscreen;
-		this.jwGetVolume = function() { return _model.volume; };
-		this.jwSetVolume = function(vol) {
+		_self.jwGetPosition = function() {};
+		_self.jwGetDuration = function() {};
+		_self.jwGetWidth = _api.jwGetWidth;
+		_self.jwGetHeight = _api.jwGetHeight;
+		_self.jwGetFullscreen = _api.jwGetFullscreen;
+		_self.jwSetFullscreen = _api.jwSetFullscreen;
+		_self.jwGetVolume = function() { return _model.volume; };
+		_self.jwSetVolume = function(vol) {
 			_fakemodel.setVolume(vol);
 			_api.jwSetVolume(vol);
 		}
-		this.jwGetMute = function() { return _model.mute; };
-		this.jwSetMute = function(state) {
+		_self.jwGetMute = function() { return _model.mute; };
+		_self.jwSetMute = function(state) {
 			_fakemodel.setMute(state);
 			_api.jwSetMute(state);
 		}
-		this.jwGetState = function() { return _fakemodel.state; };
-		this.jwGetPlaylist = function() { return [_item]; };
-		this.jwGetPlaylistIndex = function() { return 0; };
-		this.jwGetStretching = function() { return _model.config.stretching; };
-		this.jwAddEventListener = function(type, handler) { _dispatcher.addEventListener(type, handler); };
-		this.jwRemoveEventListener = function(type, handler) { _dispatcher.removeEventListener(type, handler); };
-		this.jwSetCurrentQuality = function() {};
-		this.jwGetQualityLevels = function() { return [] };
+		_self.jwGetState = function() { return _fakemodel.state; };
+		_self.jwGetPlaylist = function() { return [_item]; };
+		_self.jwGetPlaylistIndex = function() { return 0; };
+		_self.jwGetStretching = function() { return _model.config.stretching; };
+		_self.jwAddEventListener = function(type, handler) { _dispatcher.addEventListener(type, handler); };
+		_self.jwRemoveEventListener = function(type, handler) { _dispatcher.removeEventListener(type, handler); };
+		_self.jwSetCurrentQuality = function() {};
+		_self.jwGetQualityLevels = function() { return [] };
 
-		this.skin = _api.skin;
-		this.id = _api.id + "_instream";
+		_self.skin = _api.skin;
+		_self.id = _api.id + "_instream";
 
 		_init();
-		return this;
+		return _self;
 	};
 })(jwplayer.html5);
 

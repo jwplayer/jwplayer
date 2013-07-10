@@ -35,7 +35,7 @@
 		TRUE = true,
 		FALSE = false,
 		
-		JW_CSS_SMOOTH_EASE = "opacity .5s ease",
+		JW_CSS_SMOOTH_EASE = "opacity .25s ease",
 		JW_CSS_100PCT = "100%",
 		JW_CSS_ABSOLUTE = "absolute",
 		JW_CSS_IMPORTANT = " !important",
@@ -58,8 +58,9 @@
 			// _instreamControlbar,
 			// _instreamDisplay,
 			_instreamLayer,
+			_instreamControlbar,
+			_instreamDisplay,
 			_instreamMode = FALSE,
-			_instreamHadControls,
 			_controlbar,
 			_display,
 			_dock,
@@ -672,35 +673,21 @@
 			return '#' + _api.id + (className ? " ." + className : "");
 		}
 		
-		// this.setupInstream = function(instreamContainer, instreamCb, instreamDisp, instreamVideo) {
-		this.setupInstream = function(instreamDisplay, instreamVideo) {
-			// Instream not supported in HTML5 mode
+		this.setupInstream = function(instreamContainer, instreamControlbar, instreamDisplay) {
 			_setVisibility(_internalSelector(VIEW_INSTREAM_CONTAINER_CLASS), TRUE);
 			_setVisibility(_internalSelector(VIEW_CONTROLS_CONTAINER_CLASS), FALSE);
-			_instreamLayer.appendChild(instreamDisplay);
-			// _instreamLayer.appendChild(instreamContainer);
-			_instreamVideo = instreamVideo;
-			// _instreamDisplay = instreamDisp;
-			// _instreamControlbar = instreamCb
+			_instreamLayer.appendChild(instreamContainer);
+			_instreamControlbar = instreamControlbar;
+			_instreamDisplay = instreamDisplay;
 			_stateHandler({newstate:states.PLAYING});
-			
-			if (_isMobile) {
-                _instreamHadControls = _api.jwGetControls();
-            }
 			_instreamMode = TRUE;
 		}
 		
 		var _destroyInstream = this.destroyInstream = function() {
-			// Instream not supported in HTML5 mode
 			_setVisibility(_internalSelector(VIEW_INSTREAM_CONTAINER_CLASS), FALSE);
 			_setVisibility(_internalSelector(VIEW_CONTROLS_CONTAINER_CLASS), TRUE);
 			_instreamLayer.innerHTML = "";
-			_instreamVideo = null;
 			_instreamMode = FALSE;
-			if (_isMobile) {
-		        _api.jwSetControls(_instreamHadControls);
-			}
-			//_resize(_model.width, _model.height);
 		}
 		
 		this.setupError = function(message) {
@@ -727,24 +714,25 @@
 			_model.controls = newstate;
 			if (newstate != oldstate) {
 				if (newstate) {
-					//_showDisplay();
-					//_showControls();
 					_stateHandler({newstate: _api.jwGetState()});
 				} else {
 					_hideControls();
 					_hideDisplay();
 				}
-				// if (_instreamMode) {
-				// 	if (state) {
-				// 		_instreamControlbar.show();
-				// 		_instreamDisplay.show();
-				// 	}
-				// 	else {
-				// 		_instreamControlbar.hide();
-				// 		_instreamDisplay.hide();
-				// 	}
-				// }
+				if (_instreamMode) {
+					_hideInstream(!state);
+				}
 				_eventDispatcher.sendEvent(events.JWPLAYER_CONTROLS, { controls: newstate });
+			}
+		}
+		
+		function _hideInstream(hidden) {
+			if (hidden) {
+				_instreamControlbar.hide();
+				_instreamDisplay.hide();
+			} else {
+				_instreamControlbar.show();
+				_instreamDisplay.show();
 			}
 		}
 		
@@ -904,5 +892,5 @@
 	_css('.' + PLAYER_CLASS+' .jwexactfit', {
 		'background-size': JW_CSS_100PCT + " " + JW_CSS_100PCT + JW_CSS_IMPORTANT
 	});
-	
+
 })(jwplayer.html5);

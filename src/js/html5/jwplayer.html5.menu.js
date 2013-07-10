@@ -44,7 +44,7 @@
 				menuOptionActive = _getSkinElement('menuOptionActive');
 
 			if (top && top.image) {
-				topImage = new Image();
+				var topImage = new Image();
 				topImage.src = top.src;
 				topImage.width = top.width;
 				topImage.height = top.height;

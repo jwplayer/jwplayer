@@ -21,7 +21,7 @@
 			_error = false,
 			_defaultSkin,
 			// Keeping this as 1 for now. Will change if necessary for mobile
-			_mobileMultiplier = jwplayer.utils.isMobile() ? 1 : 1;
+			_mobileMultiplier = jwplayer.utils.isMobile() ? 1 : 1,
 			_ratio = 1;
 		
 		/** Load the skin **/
