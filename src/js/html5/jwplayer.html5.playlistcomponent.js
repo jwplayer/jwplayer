@@ -97,7 +97,10 @@
 			if (_isBasic) {
 				_itemheight = 32;
 			}
-			
+			if (_elements.divider) {
+				_itemheight += _elements.divider.height;
+			}
+
 			_setupStyles();
 			
 			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_LOADED, _rebuildPlaylist);
@@ -214,14 +217,14 @@
 			_css(_internalSelector("jwtitle"), {
 	        	overflow: 'hidden',
 	        	display: "inline-block",
-	        	height: _isBasic ? 32 : 20,
+	        	height: _isBasic ? _itemheight : 20,
 	        	color: _settings.titlecolor,
 		    	'font-size': _settings.titlesize,
 	        	'font-weight': _settings.titleweight,
 	        	'margin-top': _isBasic ? '0 10px' : 10,
 	        	'margin-left': 10,
 	        	'margin-right': 10,
-	        	'line-height': _isBasic ? 32 : 20
+	        	'line-height': _isBasic ? _itemheight : 20
 	    	});
 	    
 			_css(_internalSelector("jwdescription"), {
@@ -254,6 +257,10 @@
 	        if (index > 0) {
 	        	div = _createElement("div", "jwplaylistdivider");
 	        	_appendChild(li, div);
+	        }
+	        else {
+	        	var divHeight = _elements.divider ? _elements.divider.height : 0;
+	        	li.style.height = (_itemheight - divHeight) + "px";
 	        }
 		        
 			var imageWrapper = _createElement("div", "jwplaylistimg jwfill");
