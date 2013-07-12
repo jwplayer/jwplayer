@@ -1,16 +1,32 @@
 package com.longtailvideo.jwplayer.view.components {
-	import com.longtailvideo.jwplayer.events.*;
-	import com.longtailvideo.jwplayer.model.*;
-	import com.longtailvideo.jwplayer.player.*;
-	import com.longtailvideo.jwplayer.utils.*;
-	import com.longtailvideo.jwplayer.view.interfaces.*;
+	import com.longtailvideo.jwplayer.events.CaptionsEvent;
+	import com.longtailvideo.jwplayer.events.MediaEvent;
+	import com.longtailvideo.jwplayer.events.PlayerEvent;
+	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
+	import com.longtailvideo.jwplayer.events.PlaylistEvent;
+	import com.longtailvideo.jwplayer.events.ViewEvent;
+	import com.longtailvideo.jwplayer.model.PlaylistItem;
+	import com.longtailvideo.jwplayer.player.IPlayer;
+	import com.longtailvideo.jwplayer.player.PlayerState;
+	import com.longtailvideo.jwplayer.utils.Animations;
+	import com.longtailvideo.jwplayer.utils.Logger;
+	import com.longtailvideo.jwplayer.utils.RootReference;
+	import com.longtailvideo.jwplayer.utils.Strings;
+	import com.longtailvideo.jwplayer.view.interfaces.IControlbarComponent;
 	
-	import flash.accessibility.*;
-	import flash.display.*;
-	import flash.events.*;
-	import flash.geom.*;
-	import flash.text.*;
-	import flash.utils.*;
+	import flash.accessibility.AccessibilityProperties;
+	import flash.display.DisplayObject;
+	import flash.display.MovieClip;
+	import flash.display.Sprite;
+	import flash.events.Event;
+	import flash.events.MouseEvent;
+	import flash.events.TimerEvent;
+	import flash.geom.Point;
+	import flash.geom.Rectangle;
+	import flash.text.TextField;
+	import flash.text.TextFieldAutoSize;
+	import flash.text.TextFormat;
+	import flash.utils.Timer;
 
 
 	/**
@@ -337,14 +353,24 @@ package com.longtailvideo.jwplayer.view.components {
 					_lastPos = evt.position;
 					_lastDur = evt.duration;
 					if (scrubber) {
-						scrubber.setProgress(evt.position / evt.duration * 100);
-						scrubber.thumbVisible = (evt.duration > 0);
+						if (evt.duration <= -60) {
+							scrubber.setProgress((evt.duration - evt.position) / evt.duration * 100);
+						}
+						else {
+							scrubber.setProgress(evt.position / evt.duration * 100);	
+						}
+						scrubber.thumbVisible = (evt.duration > 0 || evt.duration <= -60);
 						if (evt.bufferPercent > 0) {
 							var offsetPercent:Number = (evt.offset / evt.duration) * 100;
 							scrubber.setBuffer(evt.bufferPercent / (1-offsetPercent/100), offsetPercent);
 						}
 					}
-					if (evt.position > 0) { setTime(evt.position, evt.duration); }
+					var timeSlider:TimeSlider = getSlider('time') as TimeSlider;
+					if (timeSlider) {
+						timeSlider.setDuration(evt.duration);
+						timeSlider.live = (evt.duration <= 0 && evt.duration > -60);
+					}
+					if (evt.position > 0 || evt.duration <= -60) { setTime(evt.position, evt.duration); }
 					break;
 				default:
 					scrubber.reset();
@@ -372,11 +398,10 @@ package com.longtailvideo.jwplayer.view.components {
 
 
 		private function setTime(position:Number, duration:Number):void {
-
-			if (position < 0) {
+			if (position < 0 && duration > -60) {
 				position = 0;
 			}
-			if (duration < 0) {
+			if (duration < 0 && duration > -60) {
 				duration = 0;
 			}
 			
@@ -386,6 +411,11 @@ package com.longtailvideo.jwplayer.view.components {
 			var elapsedText:TextField = getTextField('elapsed');
 			var newDuration:String = Strings.digits(duration);
 			var durationField:TextField = getTextField('duration');
+			
+			if (duration <= -60) {
+				newElapsed = "-"+ Strings.digits((-1*duration));
+				newDuration = "Live";
+			}
 			
 			if (_dispWidth > 0 && _dispWidth < 320) {
 				newElapsed = "";
@@ -405,7 +435,7 @@ package com.longtailvideo.jwplayer.view.components {
 			var timeSlider:TimeSlider = getSlider('time') as TimeSlider;
 			if (timeSlider) {
 				timeSlider.setDuration(duration);
-				timeSlider.live = (duration <= 0);
+				timeSlider.live = (duration <= 0 && duration > -60);
 			}
 			
 			if (redrawNeeded) redraw();

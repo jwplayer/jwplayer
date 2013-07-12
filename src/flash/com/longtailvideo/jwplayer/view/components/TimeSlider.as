@@ -6,6 +6,7 @@ package com.longtailvideo.jwplayer.view.components {
 	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.external.ExternalInterface;
 	
 	public class TimeSlider extends Slider {
 		private var _duration:Number;
@@ -62,12 +63,19 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 		
 		private function moveHandler(evt:MouseEvent):void {
-			if (_duration > 0) {
+			if (_duration > 0 || _duration <= -60) {
 				RootReference.stage.setChildIndex(_tooltip, RootReference.stage.numChildren-1);
 				var seconds:Number = Math.round(_duration * sliderPercent(evt.localX));
+				if (_duration <= -60) {
+					seconds = _duration - seconds;
+					seconds = seconds > 0 ? 0 : seconds;
+					_tooltip.text = "-" + Strings.digits((-1*seconds));
+				}
+				else {
+					_tooltip.text = Strings.digits(seconds)
+				}
 				_tooltip.x = evt.stageX;
 				_tooltip.y = _controlbar.getBounds(RootReference.stage).y;
-				_tooltip.text = Strings.digits(seconds);
 				_thumbnailImages.updateTimeline(seconds);
 			}
 		}
