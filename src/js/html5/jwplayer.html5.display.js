@@ -23,8 +23,7 @@
 		JW_CSS_NONE = "none",
 		JW_CSS_100PCT = "100%",
 		JW_CSS_HIDDEN = "hidden",
-		JW_CSS_SMOOTH_EASE = "opacity .25s, background-image .25s, color .25s",
-		JW_VISIBILITY_TIMEOUT = 250;
+		JW_CSS_SMOOTH_EASE = "opacity .25s, background-image .25s, color .25s"
 
 	
 	html5.display = function(api, config) {
@@ -326,17 +325,8 @@
 				_button.hide();
 				_hiding = true;
 			}
-			_hideDisplay();
 		}
 
-		function _hideDisplay() {
-			if (_isMobile) {
-				_clearHideTimeout();
-				_hideTimeout = setTimeout(function() {
-					_display.style.display = JW_CSS_NONE;
-				}, JW_VISIBILITY_TIMEOUT);
-			}
-		}
 
 		function _clearHideTimeout() {
 			clearTimeout(_hideTimeout);
