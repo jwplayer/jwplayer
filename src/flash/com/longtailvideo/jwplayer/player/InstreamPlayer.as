@@ -178,11 +178,17 @@ package com.longtailvideo.jwplayer.player
 		}
 		
 		protected function displayClicked(evt:ViewEvent):void {
-			if (getState() == PlayerState.PAUSED) {
-				play();
-			} else {
-				dispatchEvent(new InstreamEvent(InstreamEvent.JWPLAYER_INSTREAM_CLICKED));
+			if (getControls()) {
+				if (getState() == PlayerState.PAUSED) {
+					play();
+				} else {
+					pause();
+				}
 			}
+			
+			var event:InstreamEvent = new InstreamEvent(InstreamEvent.JWPLAYER_INSTREAM_CLICKED);
+			event.hasControls = getControls();
+			dispatchEvent(event);
 		}
 
 		protected function addControlbarListeners():void {

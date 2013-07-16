@@ -43,7 +43,9 @@ package com.longtailvideo.jwplayer.events
 		public static var JWPLAYER_INSTREAM_DESTROYED:String = "jwplayerInstreamDestroyed";
 
 		public var destroyedReason:String;
-
+		public var hasControls:Boolean;
+		
+		
 		public function InstreamEvent(type:String, reason:String=null) {
 			if (reason) destroyedReason = reason;
 			super(type);

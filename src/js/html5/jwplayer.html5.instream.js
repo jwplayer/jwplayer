@@ -92,7 +92,11 @@
         				} else {
         					_self.jwInstreamPause();
         				}
+        				evt.hasControls = true;
+    				} else {
+    					evt.hasControls = false;
     				}
+    				
 					_sendEvent(_events.JWPLAYER_INSTREAM_CLICK, evt);
     			});
     
@@ -197,8 +201,7 @@
 			if (!_instreamMode) return;
 			_provider.pause(true);
 			_model.state = jwplayer.events.state.PAUSED;
-			_disp.show();
-			// if (_api.jwGetControls()) { _disp.show(); }
+			if (_api.jwGetControls()) { _disp.show(); }
 		}
 		
 		/** Seek to a point in instream media **/
