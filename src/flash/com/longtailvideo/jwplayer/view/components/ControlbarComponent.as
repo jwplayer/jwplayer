@@ -935,7 +935,7 @@ package com.longtailvideo.jwplayer.view.components {
 			var controlbarPattern:RegExp = /\[(.*)\]\[.*\]\[(.*)\]/;
 			var result:Object = controlbarPattern.exec(_currentLayout);
 			var rightDivide:Array = ["play","pause","prev","next"];
-			var leftDivide:Array = ["hd","cc","mute","fullscreen"];
+			var leftDivide:Array = player.config.mute ? ["hd","cc","unmute","fullscreen"] : ["hd","cc","mute","fullscreen"];
 			_numDividers = 0;
 			
 			//make sure we don't add dividers a layout that already has dividers
