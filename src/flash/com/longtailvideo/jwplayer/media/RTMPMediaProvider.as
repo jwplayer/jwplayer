@@ -612,7 +612,7 @@
 				if(quality == 0 && !_auto) {
 					level = 0;
 					_auto = true;
-					swapLevel(autoLevel());
+					swapLevel(autoLevel(), true);
 				// Switch to/within manual
 				} else if(quality > 0 && (_auto || quality != _level+1)) {
 					swapLevel(quality-1, true);
