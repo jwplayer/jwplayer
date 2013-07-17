@@ -65,12 +65,12 @@ package com.longtailvideo.jwplayer.view.components {
 		/** Currently selected track index. **/
 		private var _selectedTrack:Number;
 		
-		private var _rtmpTrack:Number = -1;
+		private var _streamTrack:Number = -1;
 		
 		
 		/** Constructor; inits the parser, selector and renderer. **/
 		public function CaptionsComponent(player:IPlayer) {
-
+			
 			//_cookie = SharedObject.getLocal('com.jeroenwijering','/');
 			_loader = new URLLoader();
 			_loader.addEventListener(Event.COMPLETE,_loaderHandler);
@@ -116,7 +116,7 @@ package com.longtailvideo.jwplayer.view.components {
 		/** Check playlist item for captions. **/
 		private function _itemHandler(event:PlaylistEvent):void {
 			_track = 0;
-			_rtmpTrack = -1;
+			_streamTrack = -1;
 			_tracks = new Array();
 			_renderer.setPosition(0);
 			_item = _player.playlist.currentItem;
@@ -185,7 +185,8 @@ package com.longtailvideo.jwplayer.view.components {
 			_redraw();
 		};
 		
-		private function _rtmpMetaHandler(event:MediaEvent):void {
+		/** Handle captions which come in from a stream **/
+		private function _streamCaptions(event:MediaEvent):void {
 			if (_state == PlayerState.IDLE) { return; }
 			if (event.metadata.type == "textdata") {
 				if (!_tracks.length) {
@@ -196,10 +197,10 @@ package com.longtailvideo.jwplayer.view.components {
 						label: "On"
 					});
 					_initializeCaptions();
-					_rtmpTrack = event.metadata.trackid;
+					_streamTrack = event.metadata.trackid;
 					_renderer.setCaptions(event.metadata.text.replace(/\n$/,''));
 				}
-				else if (event.metadata.trackid == _rtmpTrack) {
+				else if (event.metadata.trackid == _streamTrack) {
 					_renderer.setCaptions(event.metadata.text.replace(/\n$/,''));
 				}
 			}
@@ -209,8 +210,8 @@ package com.longtailvideo.jwplayer.view.components {
 		/** Check for captions in metadata. **/
 		private function _metaHandler(event:MediaEvent):void {
 			if(_state == PlayerState.IDLE) { return; }
-			if (event.metadata.provider == "rtmp") {
-				_rtmpMetaHandler(event);
+			if (event.metadata.provider == "rtmp" || event.metadata.provider == "hls") {
+				_streamCaptions(event);
 				return;
 			}
 			if(event.metadata.type == 'textdata') {
@@ -297,7 +298,7 @@ package com.longtailvideo.jwplayer.view.components {
 			_renderer.scaleY = _renderer.scaleX;
 			_renderer.y = Math.round(height * 0.94);
 		};
-	
+		
 		
 		/** Rendering the captions. **/
 		private function _renderCaptions(index:Number):void {
@@ -309,7 +310,7 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 			
 			if (_track >= _tracks.length) return;
-
+			
 			// Update UI
 			if(_tracks[_track].file) {
 				if(_tracks[_track].data) {
@@ -333,7 +334,8 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		/** Update the position in the video. **/
 		private function _timeHandler(event:MediaEvent):void {
-			_renderer.setPosition(event.position);
+			if (event.position >= -1)
+				_renderer.setPosition(event.position);
 		};
 		
 		
