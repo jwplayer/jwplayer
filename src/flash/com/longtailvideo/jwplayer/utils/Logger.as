@@ -25,6 +25,9 @@ package com.longtailvideo.jwplayer.utils {
 		/** Reference to the player config **/
 		private static var _config:PlayerConfig;
 		
+		/** filter stuff **/
+		public static var filter:String = "";
+		
 		
 		/**
 		 * Log a message to the output system.
@@ -60,6 +63,7 @@ package com.longtailvideo.jwplayer.utils {
 		/** Send the messages to the output system. **/
 		private static function send(text:String):void {
 			var debug:String = _config ? _config.debug : TRACE;
+			if (filter && !(new RegExp(filter, "ig")).test(text)) return;
 			switch (debug) {
 				case CONSOLE:
 					if (ExternalInterface.available) {
