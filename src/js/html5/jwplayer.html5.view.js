@@ -451,6 +451,7 @@
 		function _isAudioMode(height) {
 			var bounds = utils.bounds(_playerElement);
 			if (height.toString().indexOf("%") > 0) return FALSE;
+			else if (bounds.height == 0) return FALSE;
 			else if (_model.playlistposition == "bottom") return bounds.height <= 40 + _model.playlistsize;
 			else return bounds.height <= 40; 	
 		}
