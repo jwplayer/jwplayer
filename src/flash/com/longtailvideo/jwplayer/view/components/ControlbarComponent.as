@@ -352,25 +352,29 @@ package com.longtailvideo.jwplayer.view.components {
 				case MediaEvent.JWPLAYER_MEDIA_TIME:
 					_lastPos = evt.position;
 					_lastDur = evt.duration;
-					if (scrubber) {
-						if (evt.duration <= -60) {
-							scrubber.setProgress((evt.duration - evt.position) / evt.duration * 100);
+					if (evt.duration == -1) {
+						setText(player.playlist.currentItem.title || "Live broadcast");
+					} else {
+						if (scrubber) {
+							if (evt.duration <= -60) {
+								scrubber.setProgress((evt.duration - evt.position) / evt.duration * 100);
+							}
+							else {
+								scrubber.setProgress(evt.position / evt.duration * 100);	
+							}
+							scrubber.thumbVisible = (evt.duration > 0 || evt.duration <= -60);
+							if (evt.bufferPercent > 0) {
+								var offsetPercent:Number = (evt.offset / evt.duration) * 100;
+								scrubber.setBuffer(evt.bufferPercent / (1-offsetPercent/100), offsetPercent);
+							}
 						}
-						else {
-							scrubber.setProgress(evt.position / evt.duration * 100);	
+						var timeSlider:TimeSlider = getSlider('time') as TimeSlider;
+						if (timeSlider) {
+							timeSlider.setDuration(evt.duration);
+							timeSlider.live = (evt.duration <= 0 && evt.duration > -60);
 						}
-						scrubber.thumbVisible = (evt.duration > 0 || evt.duration <= -60);
-						if (evt.bufferPercent > 0) {
-							var offsetPercent:Number = (evt.offset / evt.duration) * 100;
-							scrubber.setBuffer(evt.bufferPercent / (1-offsetPercent/100), offsetPercent);
-						}
+						if (evt.position > 0 || evt.duration <= -60) { setTime(evt.position, evt.duration); }
 					}
-					var timeSlider:TimeSlider = getSlider('time') as TimeSlider;
-					if (timeSlider) {
-						timeSlider.setDuration(evt.duration);
-						timeSlider.live = (evt.duration <= 0 && evt.duration > -60);
-					}
-					if (evt.position > 0 || evt.duration <= -60) { setTime(evt.position, evt.duration); }
 					break;
 				default:
 					scrubber.reset();
