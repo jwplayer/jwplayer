@@ -245,25 +245,30 @@
 		function _timeUpdated(evt) {
 			var refreshRequired = FALSE,
 				timeString;
-			
-			if (_elements.elapsed) {
-				timeString = utils.timeFormat(evt.position);
-				_elements.elapsed.innerHTML = timeString;
-				refreshRequired = (timeString.length != utils.timeFormat(_position).length);
-			}
-			if (_elements.duration) {
-				timeString = utils.timeFormat(evt.duration);
-				_elements.duration.innerHTML = timeString;
-				refreshRequired = (refreshRequired || (timeString.length != utils.timeFormat(_duration).length));
-			}
-			if (evt.duration > 0) {
-				_setProgress(evt.position / evt.duration);
+			if (evt.duration == Number.POSITIVE_INFINITY) 
+			{
+				_this.setText(_api.jwGetPlaylist()[_api.jwGetPlaylistIndex()].title || "Live broadcast")
+				
 			} else {
-				_setProgress(0);
-			}
-			_duration = evt.duration;
-			_position = evt.position;
-			
+				if (_elements.elapsed) {
+					timeString = utils.timeFormat(evt.position);
+					_elements.elapsed.innerHTML = timeString;
+					refreshRequired = (timeString.length != utils.timeFormat(_position).length);
+				}
+				if (_elements.duration) {
+					timeString = utils.timeFormat(evt.duration);
+					_elements.duration.innerHTML = timeString;
+					refreshRequired = (refreshRequired || (timeString.length != utils.timeFormat(_duration).length));
+				}
+				if (evt.duration > 0) {
+					_setProgress(evt.position / evt.duration);
+				} else {
+					_setProgress(0);
+				}
+				_duration = evt.duration;
+				_position = evt.position;
+				_this.setText();
+			}	
 			if (refreshRequired) _redraw();
 		}
 		
@@ -611,7 +616,7 @@
 		
 		function _hideTimes() {
 			if(_controlbar) {
-				if (utils.bounds(_controlbar.parentNode).width >= 320) {
+				if (utils.bounds(_controlbar.parentNode).width >= 320 && !_getElementBySelector(".jwalt").innerHTML) {
 					_css(_internalSelector(".jwelapsed"),  NOT_HIDDEN);				
 					_css(_internalSelector(".jwduration"),  NOT_HIDDEN);
 				} else {
@@ -1077,6 +1082,7 @@
 			_css(_internalSelector(".jwtime"), text ? HIDDEN : SHOWING);
 			_css(_internalSelector(".jwalt"), text ? SHOWING : HIDDEN);
 			var altText = _getElementBySelector(".jwalt");
+			
 			if (altText) altText.innerHTML = text;
 			_redraw();
 		} 
@@ -1536,7 +1542,8 @@
 	});
 
     _css(CB_CLASS + ' .jwalt', {
-		display: JW_CSS_NONE
+		display: JW_CSS_NONE,
+		overflow: 'hidden'
 	});
 
     _css(CB_CLASS + ' .jwalt', {

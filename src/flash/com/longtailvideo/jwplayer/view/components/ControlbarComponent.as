@@ -126,7 +126,8 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _numDividers:Number = -1;
 		protected var _divIndex:Number = 0;
 		protected var _bgColorSheet:Sprite;
-
+		public var _altMask:Sprite;
+		
 		protected var animations:Animations;
 		protected var _fadingOut:Number;
 		
@@ -154,6 +155,8 @@ package com.longtailvideo.jwplayer.view.components {
 			updateControlbarState();
 			redraw();
 		}
+		
+		
 		
 		private function addEventListeners():void {
 			player.addEventListener(PlayerStateEvent.JWPLAYER_PLAYER_STATE, stateHandler);
@@ -307,7 +310,7 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 
 			if (_timeSlider) {
-				if (_timeAlt && _timeAlt.text) {
+				if (_timeAlt && _timeAlt.text) { //&& !_showTime) {
 					_timeSlider.visible = false;
 					hideButton('alt', false);
 					hideButton('elapsed', true);
@@ -352,7 +355,7 @@ package com.longtailvideo.jwplayer.view.components {
 				case MediaEvent.JWPLAYER_MEDIA_TIME:
 					_lastPos = evt.position;
 					_lastDur = evt.duration;
-					if (evt.duration == -1) {
+					if (evt.duration == -1 && evt.type == MediaEvent.JWPLAYER_MEDIA_TIME) {
 						setText(player.playlist.currentItem.title || "Live broadcast");
 					} else {
 						if (scrubber) {
@@ -374,6 +377,7 @@ package com.longtailvideo.jwplayer.view.components {
 							timeSlider.live = (evt.duration <= 0 && evt.duration > -60);
 						}
 						if (evt.position > 0 || evt.duration <= -60) { setTime(evt.position, evt.duration); }
+						setText();
 					}
 					break;
 				default:
@@ -722,12 +726,25 @@ package com.longtailvideo.jwplayer.view.components {
 				addChild(textContainer);
 				_buttons[name] = textContainer;
 			}
+			if (name == "alt") {
+				_altMask = new Sprite;
+				addChild(_altMask);
+				textContainer.mask = _altMask;
+			}
 			
 		}
 
 
 		private function forward(evt:ViewEvent):void {
 			dispatchEvent(evt);
+		}
+		
+		public function setAltMask(width:Number, height:Number):void {
+			_altMask.graphics.clear();
+			_altMask.graphics.beginFill( 0xffffff );
+			_altMask.graphics.drawRect( 0 , 0 , width , height );
+			_altMask.x = 0;
+			_altMask.y = 0;
 		}
 
 		private function showVolumeOverlay(evt:MouseEvent):void {
@@ -818,6 +835,7 @@ package com.longtailvideo.jwplayer.view.components {
 				visible = false;
 				return;
 			}
+			
 			_dispWidth = width;
 			var margin:Number = getConfigParam('margin') == null ? 8 : getConfigParam('margin');
 			var maxMargin:Number = (!_audioMode && maxWidth && width > maxWidth) ? (width - maxWidth) / 2 : 0;

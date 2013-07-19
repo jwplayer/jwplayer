@@ -159,14 +159,17 @@ package com.longtailvideo.jwplayer.view.components {
 				time.x = _currentLeft;	
 				time.y = (_height - time.height) / 2;
 			}
-			
+
 			if (alt) {
 				var bg:DisplayObject = alt.getChildByName('back');
 				bg.width  = elementWidth;
-
+				
 				var text:TextField = alt.getChildByName('text') as TextField;
 				text.y = (bg.height - text.height) / 2;
 				
+				_controlbar.setAltMask(bg.width,bg.height);
+				//alt.mask.width = bg.width;
+//				altMask.width = bg.width;
 				if (!_controlbar.contains(alt)) _controlbar.addChild(alt);
 				alt.x = _currentLeft;	
 				alt.y = (_height - alt.height) / 2;
