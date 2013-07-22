@@ -92,7 +92,8 @@
 				_alternateClickHandler(evt);
 				return;
 			}
-			_eventDispatcher.sendEvent(events.JWPLAYER_DISPLAY_CLICK);
+
+			if (!_isMobile) _eventDispatcher.sendEvent(events.JWPLAYER_DISPLAY_CLICK);
 			
 			if (!_api.jwGetControls()) return;
 
@@ -105,8 +106,34 @@
 				_lastClick = _getCurrentTime();
 			}
 
-			if (_isMobile && _hiding) return;
+			var cbBounds = utils.bounds(_display.parentNode.querySelector(".jwcontrolbar")),
+				displayBounds = utils.bounds(_display),
+				playSquare = {
+					left: cbBounds.left - 10 - displayBounds.left,
+					right: cbBounds.left + 30 - displayBounds.left,
+					top: displayBounds.bottom - 40,
+					bottom: displayBounds.bottom
+				},
+				fsSquare = {
+					left: cbBounds.right - 30 - displayBounds.left,
+					right: cbBounds.right + 10 - displayBounds.left,
+					top: playSquare.top,
+					bottom: playSquare.bottom
+				};
+				
 
+			if (_isMobile) {
+				if (_inside(playSquare, evt.x, evt.y)) {
+					// Perform play/pause toggle below
+				} else if (_inside(fsSquare, evt.x, evt.y)) {
+					_api.jwSetFullscreen();
+					return;
+				} else {
+					_eventDispatcher.sendEvent(events.JWPLAYER_DISPLAY_CLICK);
+					if (_hiding) return;
+				}
+			}
+			
 			switch (_api.jwGetState()) {
 			case states.PLAYING:
 			case states.BUFFERING:
@@ -117,6 +144,10 @@
 				break;
 			}
 			
+		}
+		
+		function _inside(rect, x, y) {
+			return (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom);
 		}
 		
 		/** Returns the current timestamp in milliseconds **/
