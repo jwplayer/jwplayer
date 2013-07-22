@@ -622,7 +622,6 @@
 				} else {
 					_css(_internalSelector(".jwelapsed"),  HIDDEN);				
 					_css(_internalSelector(".jwduration"), HIDDEN);
-					
 				}
 			}
 		}
@@ -1083,7 +1082,7 @@
 			_css(_internalSelector(".jwalt"), text ? SHOWING : HIDDEN);
 			var altText = _getElementBySelector(".jwalt");
 			
-			if (altText) altText.innerHTML = text;
+			if (altText) altText.innerHTML = text || "";
 			_redraw();
 		} 
 		
