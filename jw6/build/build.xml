@@ -1,0 +1,270 @@
+<?xml version="1.0"?>
+<project name="jwplayer" basedir="../" default="build-all">
+	<!-- Define variables/paths used in this build script -->
+	<property file="./build/build.properties" />
+
+	<!--
+		 Have you edited the properties file to make sure the paths are right oo your system?
+	-->
+	<target name="check-properties">
+		<fail unless="compc.exe">The "compc.exe" property must be set in ${build.dir}/build.properties.</fail>
+		<fail unless="mxmlc.exe">The "mxmlc.exe" property must be set in ${build.dir}/build.properties.</fail>
+	</target>
+
+	<target name="clean-assets">
+		<exec executable="svn" failonerror="true" failifexecutionfails="true" dir="${debug.dir}">
+			<arg line="revert jwplayer.flash.swf jwplayer.html5.js jwplayer.js" />
+		</exec>
+		<exec executable="svn" failonerror="true" failifexecutionfails="true" dir="${release.dir}">
+			<arg line="revert jwplayer.flash.swf jwplayer.html5.js jwplayer.js" />
+		</exec>
+	</target>
+	
+	<target name="build-embedder">
+		<concat destfile="${outputpath}">
+			<fileset dir="${basedir}/src/js" includes="jwplayer.sourcestart.js" />
+			<fileset dir="${basedir}/src/js" includes="jwplayer.js" />
+			<fileset dir="${basedir}/src/js/utils" includes="jwplayer.utils.js" excludes="" />
+			<fileset dir="${basedir}/src/js/utils" includes="jwplayer.utils.*.js" excludes="" />
+			<fileset dir="${basedir}/src/js/events" includes="jwplayer.events.js" />
+			<fileset dir="${basedir}/src/js/events" includes="jwplayer.events.*.js" excludes="jwplayer.events.js" />
+			<fileset dir="${basedir}/src/js/plugins" includes="jwplayer.plugins.js" />
+			<fileset dir="${basedir}/src/js/plugins" includes="jwplayer.plugins.*.js" excludes="jwplayer.plugins.js" />
+			<fileset dir="${basedir}/src/js/parsers" includes="jwplayer.parsers.js" />
+			<fileset dir="${basedir}/src/js/parsers" includes="jwplayer.parsers.*.js" excludes="jwplayer.parsers.js" />
+			<fileset dir="${basedir}/src/js/playlist" includes="jwplayer.playlist.js" />
+			<fileset dir="${basedir}/src/js/playlist" includes="jwplayer.playlist.*.js" excludes="jwplayer.playlist.js" />
+			<fileset dir="${basedir}/src/js/embed" includes="jwplayer.embed.js" />
+			<fileset dir="${basedir}/src/js/embed" includes="jwplayer.embed.*.js" excludes="jwplayer.embed.js" />
+			<fileset dir="${basedir}/src/js/api" includes="jwplayer.api.js" />
+			<fileset dir="${basedir}/src/js/api" includes="jwplayer.*.js" excludes="jwplayer.api.js" />
+			<fileset dir="${basedir}/src/js" includes="jwplayer.sourceend.js" />
+		</concat>
+		<!-- Set the player version -->
+		<replaceregexp 
+			file="${outputpath}"
+			match="jwplayer\.version = '(.*)'\;"
+			replace="jwplayer\.version = '${application.majorversion}.${application.minorversion}.${jwplayer.version}'\;"
+		/>
+	</target>
+
+	<target name="build-html5" depends="minify-skin">
+		<concat destfile="${outputpath}">
+			<fileset dir="${basedir}/src/js/html5" includes="jwplayer.html5.js" />
+			<fileset dir="${basedir}/src/js/html5/utils" includes="jwplayer.html5.utils.js" />
+			<fileset dir="${basedir}/src/js/html5/utils" includes="jwplayer.html5.utils*.js" excludes="jwplayer.html5.utils.js" />
+			<fileset dir="${basedir}/src/js/html5/parsers" includes="jwplayer.html5.parsers.js" />
+			<fileset dir="${basedir}/src/js/html5/parsers" includes="jwplayer.html5.parsers*.js" excludes="jwplayer.html5.parsers.js" />
+			<fileset dir="${basedir}/src/js/html5" includes="jwplayer.html5*.js" excludes="jwplayer.html5.js" />
+		</concat>
+		<!-- Set the player version -->
+		<replaceregexp 
+			file="${outputpath}"
+			match="jwplayer\.html5\.version = '(.*)'\;"
+			replace="jwplayer\.html5\.version = '${application.majorversion}.${application.minorversion}.${jwplayer.version}'\;"
+		/>
+	</target>
+
+	<target name="minify-skin">
+        <exec executable="python" outputproperty="minifiedSkin">
+            <arg file="${basedir}/build/skin-packer.py" />
+            <arg line="assets/six.xml" />
+        </exec>
+        
+        <replaceregexp file="${basedir}/src/js/html5/jwplayer.html5.defaultskin.js"
+			match="this\.text = '(.*)'\;?"
+			replace="this\.text = '${minifiedSkin}'\;"
+		/>
+	</target>
+
+	<target name="debug-js" depends="get-revision">
+		<antcall target="build-embedder">
+			<param name="outputpath" value="${debug.dir}/jwplayer.js"/>
+		</antcall>
+		<antcall target="build-html5">
+			<param name="outputpath" value="${debug.dir}/jwplayer.html5.js"/>
+		</antcall>
+	</target>
+	
+	<target name="release-js" depends="debug-js">
+		<!--replace file="${basedir}/jwplayer.min.js" token=", logoConfig);" value=");"/-->
+		<mkdir dir="${release.dir}" />
+		<java jar="${basedir}/build/yuicompressor-2.4.2.jar" fork="true">
+			<arg line="'${debug.dir}/jwplayer.js'"/>
+			<arg line="-o '${release.dir}/jwplayer.js'"/>
+		</java>
+		<echo>Building html5</echo>
+		<java jar="${basedir}/build/yuicompressor-2.4.2.jar" fork="true">
+			<arg line="'${debug.dir}/jwplayer.html5.js'"/>
+			<arg line="-o '${release.dir}/jwplayer.html5.js'"/>
+		</java>
+	</target>
+	
+	<!--
+		 Compile the player in debug mode.
+	-->
+	<target name="debug-flash" depends="check-properties">
+		<antcall target="build-swf">
+			<param name="swf" value="jwplayer.flash" />
+			<param name="class" value="${application.class}" />
+			<param name="package" value="${application.package}" />
+			<param name="debug" value="true" />
+			<param name="increment" value="true"/>
+			<param name="outputPath" value="${debug.dir}"/>
+		</antcall>
+	</target>
+
+	<target name="release-flash">
+		<antcall target="build-swf">
+			<param name="swf" value="jwplayer.flash" />
+			<param name="class" value="${application.class}" />
+			<param name="package" value="${application.package}" />
+			<param name="optimize" value="true" />
+			<param name="outputPath" value="${release.dir}"/>
+		</antcall>
+	</target>
+	
+	
+	<target name="build-swf" depends="get-revision">
+		<condition property="debugLine" value="-debug=true" else="">
+			<isset property="debug" />
+		</condition>
+		<condition property="optimizeLine" value="-optimize=true" else="">
+			<isset property="optimize" />
+		</condition>
+		<condition property="incrementLine" value="-incremental=true" else="">
+			<isset property="increment" />
+		</condition>
+		
+		<property name="version" value='"${application.majorversion}.${application.minorversion}.${jwplayer.version}"' />
+		
+		<exec executable="${mxmlc.exe}" dir="${basedir}" failonerror="true">
+			<!-- Point to the main class .as file -->
+			<arg line="'${src.dir}/${package}/${class}.as'" />
+
+			<!-- Place the built .swf file in the "bin" directory -->
+			<arg line="-output '${outputPath}/${swf}.swf'" />
+
+			<!-- Define source directories for "src" and "tests" -->
+			<arg line="-compiler.source-path '${src.dir}'" />
+
+			<!-- Include the necessary framework libraries in the class path -->
+			<arg line="-compiler.library-path '${flexsdk.lib.dir}'" />
+			<arg line="-compiler.library-path '${lib.dir}'" />
+
+			<arg line="-default-background-color=0x000000" />
+
+			<!-- Enable incremental compilation - this seems to break embedded assets (Flex 4.6) -->
+			<!--arg line="${incrementLine}" /-->
+
+			<!-- Needed for Flex 4.x -->
+			<arg line="-static-link-runtime-shared-libraries=true" />
+
+			<!-- Optimize for size -->
+			<arg line="${optimizeLine}" />
+
+			<!-- Target a minimum flash player -->
+			<arg line="-target-player=${flexsdk.target}" />
+
+			<!-- Compile with network sandbox -->
+			<arg line="-use-network=false" />
+
+			<!-- Ignore missing type definitions -->
+			<arg line="-warnings=false" />
+
+			<!-- Enable debugging -->
+			<arg line="${debugLine}" />
+			
+			<!-- Player version -->
+			<arg line="-define=JWPLAYER::version,'${version}'"/>
+
+		</exec>
+	</target>
+	
+	<target name="build-all">
+		<antcall target="debug-js" />
+		<antcall target="release-js" />
+		<antcall target="debug-flash" />
+		<antcall target="release-flash" />
+	</target>
+
+	<target name="get-revision">
+        <exec executable="svn" outputproperty="revision" dir="${basedir}" failifexecutionfails="false">
+            <arg line="info"/>
+        	<redirector>
+        		<outputfilterchain>
+        			<linecontainsregexp>
+        				<regexp pattern="^Revision" />
+        			</linecontainsregexp>
+        			<tokenfilter>
+        				<replaceregex pattern="[\D]+(\d+)" replace="\1"/>
+        			</tokenfilter>
+        		</outputfilterchain>
+        	</redirector>
+        </exec>
+		
+		<condition property="jwplayer.version" value="${revision}" else="????">
+			<isset property="revision" />
+		</condition>
+		
+	</target>
+	
+	
+	<!-- Updates various version numbers from SVN -->
+	<!--target name="update-version">
+		<antcall target="clean-assets" />
+		<exec executable="svn" failonerror="false" failifexecutionfails="false" dir="${basedir}" >
+			<arg value="up" />
+		</exec>
+		<antcall "get-revision" />
+
+		<condition property="jsmatch" value="jwplayer\.version = '(.*)'\;" else="@%%@">
+			<equals arg1="${execresult}" arg2="0" />
+		</condition>
+		<condition property="html5match" value="jwplayer\.html5\.version = '(.*)'\;" else="@%%@">
+			<equals arg1="${execresult}" arg2="0" />
+		</condition>
+		<condition property="flashmatch" value="protected static var _version\:String \= '(.*)';" else="@%%@">
+			<equals arg1="${execresult}" arg2="0" />
+		</condition>
+		<replaceregexp file="${basedir}/src/js/jwplayer.js" match="${jsmatch}" replace="jwplayer\.version \= '${application.majorversion}.${application.minorversion}.${versionnumber}';" byline="true"/>
+		<replaceregexp file="${basedir}/src/js/html5/jwplayer.html5.js" match="${html5match}" replace="jwplayer\.html5\.version \= '${application.majorversion}.${application.minorversion}.${versionnumber}';" byline="true"/>
+		<replaceregexp file="${basedir}/src/flash/com/longtailvideo/jwplayer/player/PlayerVersion.as" match="${flashmatch}" replace="protected static var _version\:String \= '${application.majorversion}.${application.minorversion}.${versionnumber}';" byline="true"/>
+	</target-->
+	
+	
+	<!-- Clean out a directory -->
+	<target name="clean-dir">
+		<delete dir="${clean-directory}" />
+		<mkdir dir="${clean-directory}" />
+	</target>
+	
+	<!--
+		 Builds the player code library used by plugins
+	-->
+	<target name="build-lib" depends="get-revision">
+		<!-- Clean the SDK directory -->
+		<antcall target="clean-dir">
+			<param name="clean-directory" value="${sdk.dir}"/>
+		</antcall>
+		
+		<property name="version" value='"${application.majorversion}.${application.minorversion}.${jwplayer.version}"' />
+		
+		<!-- Build the library SWC -->
+		<exec executable="${compc.exe}" dir="${src.dir}" failonerror="true">
+			<arg line="-source-path ." />
+			<arg line="-output '${sdk.dir}/lib/jwplayer-6-lib.swc'" />
+			<!-- Include the necessary framework libraries in the class path -->
+			<arg line="-compiler.library-path '${flexsdk.lib.dir}'" />
+			<arg line="-compiler.library-path '${lib.dir}'" />
+			<!-- Target Flash Player -->
+			<arg line="-target-player=${flexsdk.target}" />
+			<arg line="-include-classes com.longtailvideo.jwplayer.player.Player" />
+			<arg line="-compiler.external-library-path+='${lib.dir}'" />
+			<!-- Player version -->
+			<arg line="-define=JWPLAYER::version,'${version}'"/>
+		</exec>
+		
+	</target>
+
+</project>
