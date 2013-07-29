@@ -689,7 +689,7 @@
 				css.background = "url(" + skinElement.src + ") repeat-x center";
 				css['background-size'] = _elementSize(_getSkinElement("background"));
 				_css(_internalSelector('.jw'+name), css);
-				element.innerHTML = "00:00";
+				name != "alt" ? element.innerHTML = "00:00" : element.innerHTML = "";
 				_elements[name] = element;
 				return element;
 			}
