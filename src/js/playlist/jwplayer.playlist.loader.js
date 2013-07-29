@@ -36,14 +36,9 @@
 				}
 				
 				var pl = new playlist(parsers.rssparser.parse(rss));
-				pl = utils.filterPlaylist(pl, true);
-				if (pl && pl.length && pl[0].sources && pl[0].sources.length && pl[0].sources[0].file) {
-					_eventDispatcher.sendEvent(events.JWPLAYER_PLAYLIST_LOADED, {
-						playlist: pl
-					});
-				} else {
-					_playlistError("No playable sources found");
-				}
+				_eventDispatcher.sendEvent(events.JWPLAYER_PLAYLIST_LOADED, {
+					playlist: pl
+				});
 			} catch (e) {
 				_playlistError();
 			}
