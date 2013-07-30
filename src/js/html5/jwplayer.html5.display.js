@@ -231,7 +231,7 @@
     			if (_button) _button.setRotation(0);
     			switch(state) {
     			case states.IDLE:
-    				if (!_errorState && !_completedState && !_hiding) {
+    				if (!_errorState && !_completedState) {
     					if (_image && !_imageHidden) {
     						_setVisibility(D_PREVIEW_CLASS, TRUE);
     					}
