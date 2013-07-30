@@ -1030,7 +1030,7 @@
 		}
 
 		function _showTimeTooltip(evt) {
-			if (_timeOverlay && _duration && !_audioMode) {
+			if (_timeOverlay && _duration && !_audioMode && !_isMobile) {
 				_positionOverlay(_timeOverlay);
 				_timeOverlay.show();
 			}
@@ -1083,7 +1083,9 @@
 			_css(_internalSelector(".jwduration"), text ? HIDDEN : SHOWING);
 			_css(_internalSelector(".jwtime"), text ? HIDDEN : SHOWING);
 			_css(_internalSelector(".jwalt"), text ? SHOWING : HIDDEN);
-			_styleTimeSlider();
+			if (!_elements['timeSliderRail']) {
+				_css(_internalSelector(".jwtime"), HIDDEN);
+			}
 			var altText = _getElementBySelector(".jwalt");
 			
 			if (altText) altText.innerHTML = text || "";
