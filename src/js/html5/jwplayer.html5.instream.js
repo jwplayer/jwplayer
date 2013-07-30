@@ -127,9 +127,6 @@
 			
 		}
 		
-		
-		_fullscreenHandler
-	   
 	    function errorHandler(evt) {
 	        
 	        if (evt.type == _events.JWPLAYER_MEDIA_ERROR) {

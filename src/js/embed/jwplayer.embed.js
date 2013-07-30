@@ -84,7 +84,7 @@
 				});
 				loader.addEventListener(events.JWPLAYER_ERROR, function(evt) {
 					_playlistLoading = FALSE;
-					_sourceError();
+					_sourceError(evt);
 				});
 				_playlistLoading = TRUE;
 				loader.load(_config.playlist);
@@ -135,8 +135,12 @@
 			_errorScreen(_container, "Could not load plugins: " + evt.message);
 		}
 		
-		function _sourceError() {
-			_errorScreen(_container, _errorText  + "No playable sources found");
+		function _sourceError(evt) {
+			if (evt && evt.message) {
+				_errorScreen(_container, "Error loading playlist: " + evt.message);
+			} else {
+				_errorScreen(_container, _errorText  + "No playable sources found");
+			}
 		}
 
 		function _adobeError() {
