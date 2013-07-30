@@ -127,6 +127,7 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _divIndex:Number = 0;
 		protected var _bgColorSheet:Sprite;
 		public var _altMask:Sprite;
+		protected var _liveMode:Boolean = false;
 		
 		protected var animations:Animations;
 		protected var _fadingOut:Number;
@@ -149,6 +150,9 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 		
 		public function setText(text:String=""):void {
+			if (text.length) { 
+				_liveMode = true;
+			}
 			if (_timeAlt) {
 				_timeAlt.text = text;
 			}
@@ -188,6 +192,7 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 
 		private function playlistHandler(evt:PlaylistEvent):void {
+			_liveMode = false;
 			if (_timeSlider) {
 				_timeSlider.reset();
 				var item:PlaylistItem = player.playlist.currentItem;
@@ -310,7 +315,7 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 
 			if (_timeSlider) {
-				if (_timeAlt && _timeAlt.text) { //&& !_showTime) {
+				if (_timeAlt && _timeAlt.text || _liveMode) { //&& !_showTime) {
 					_timeSlider.visible = false;
 					hideButton('alt', false);
 					hideButton('elapsed', true);

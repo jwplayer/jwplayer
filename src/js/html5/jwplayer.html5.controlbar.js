@@ -245,7 +245,8 @@
 		function _timeUpdated(evt) {
 			var refreshRequired = FALSE,
 				timeString;
-			if (evt.duration == Number.POSITIVE_INFINITY) 
+			// Positive infinity for live streams on iPad, 0 for live streams on Safari (HTML5)
+			if (evt.duration == Number.POSITIVE_INFINITY || !evt.duration) 
 			{
 				_this.setText(_api.jwGetPlaylist()[_api.jwGetPlaylistIndex()].title || "Live broadcast")
 				
@@ -616,6 +617,7 @@
 		
 		function _hideTimes() {
 			if(_controlbar) {
+				if (!_getElementBySelector(".jwalt")) return;
 				if (utils.bounds(_controlbar.parentNode).width >= 320 && !_getElementBySelector(".jwalt").innerHTML) {
 					_css(_internalSelector(".jwelapsed"),  NOT_HIDDEN);				
 					_css(_internalSelector(".jwduration"),  NOT_HIDDEN);
