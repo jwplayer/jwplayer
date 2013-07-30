@@ -217,7 +217,7 @@
 			if (_isMobile) {
 				_showing ? _hideControls() : _showControls();
 			} else {
-				_stateHandler(_api.jwGetState())
+				_stateHandler(_api.jwGetState());
 			}
 			if (_showing) {
 				clearTimeout(_controlsTimeout);
@@ -601,10 +601,22 @@
 
 		function _showVideo(state) {
 			state = state && !_audioMode;
-			_css(_internalSelector(VIEW_VIDEO_CONTAINER_CLASS), {
-				visibility: state ? "visible" : JW_CSS_HIDDEN,
-				opacity: state ? 1 : 0
-			});
+			if (state || _isAndroid) {
+				// Changing visibility to hidden on Android < 4.2 causes 
+				// the pause event to be fired. This causes audio files to 
+				// become unplayable. Hence the video tag is always kept 
+				// visible on Android devices.
+				_css(_internalSelector(VIEW_VIDEO_CONTAINER_CLASS), {
+					visibility: "visible",
+					opacity: 1
+				});
+			}
+			else {
+				_css(_internalSelector(VIEW_VIDEO_CONTAINER_CLASS), {
+					visibility: JW_CSS_HIDDEN,
+					opacity: 0
+				});		
+			}
 		}
 
 		function _playlistCompleteHandler() {
@@ -646,6 +658,7 @@
 				} else {
 					_showVideo(FALSE);
 					_display.hidePreview(_audioMode);
+					_display.setHiding(true);
 				}
 				_hideControls();
 				break;

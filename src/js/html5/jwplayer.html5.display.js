@@ -278,6 +278,10 @@
 			}
 		}
 
+		this.setHiding = function(state) {
+			_hiding = true;
+		}
+
 		this.element = function() {
 			return _display;
 		}

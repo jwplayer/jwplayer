@@ -180,6 +180,7 @@
 			_css(_internalSelector("jwlist li"), {
 				'background-image': _elements.item ? "url("+_elements.item.src+")" : "",
 				height: _itemheight,
+				overflow: 'hidden',
 				'background-size': JW_CSS_100PCT + " " + _itemheight + "px",
 		    	cursor: 'pointer'
 			});
@@ -261,6 +262,7 @@
 	        else {
 	        	var divHeight = _elements.divider ? _elements.divider.height : 0;
 	        	li.style.height = (_itemheight - divHeight) + "px";
+	        	li.style["background-size"] = "100% " + (_itemheight - divHeight) + "px";
 	        }
 		        
 			var imageWrapper = _createElement("div", "jwplaylistimg jwfill");
