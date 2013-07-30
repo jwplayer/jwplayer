@@ -1082,6 +1082,7 @@
 			_css(_internalSelector(".jwduration"), text ? HIDDEN : SHOWING);
 			_css(_internalSelector(".jwtime"), text ? HIDDEN : SHOWING);
 			_css(_internalSelector(".jwalt"), text ? SHOWING : HIDDEN);
+			_styleTimeSlider();
 			var altText = _getElementBySelector(".jwalt");
 			
 			if (altText) altText.innerHTML = text || "";
