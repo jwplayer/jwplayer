@@ -123,8 +123,6 @@
 					bottom: playSquare.bottom
 				};
 				
-
-			utils.mLog("post bounds stuff and things");
 			if (_isMobile) {
 				if (_inside(playSquare, evt.x, evt.y)) {
 					// Perform play/pause toggle below
@@ -132,7 +130,6 @@
 					_api.jwSetFullscreen();
 					return;
 				} else {
-					utils.mLog("sending out click event");
 					_eventDispatcher.sendEvent(events.JWPLAYER_DISPLAY_CLICK);
 					if (_hiding) return;
 				}
