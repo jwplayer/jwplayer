@@ -93,7 +93,9 @@
 				return;
 			}
 
-			if (!_isMobile) _eventDispatcher.sendEvent(events.JWPLAYER_DISPLAY_CLICK);
+			if (!_isMobile || !_api.jwGetControls()) {
+				_eventDispatcher.sendEvent(events.JWPLAYER_DISPLAY_CLICK);
+			}
 			
 			if (!_api.jwGetControls()) return;
 
@@ -122,6 +124,7 @@
 				};
 				
 
+			utils.mLog("post bounds stuff and things");
 			if (_isMobile) {
 				if (_inside(playSquare, evt.x, evt.y)) {
 					// Perform play/pause toggle below
@@ -129,6 +132,7 @@
 					_api.jwSetFullscreen();
 					return;
 				} else {
+					utils.mLog("sending out click event");
 					_eventDispatcher.sendEvent(events.JWPLAYER_DISPLAY_CLICK);
 					if (_hiding) return;
 				}
