@@ -111,6 +111,7 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _volSliderV:Slider;
 		protected var _volSliderH:Slider;
 		protected var _audioMode:Boolean = false;
+		protected var _hideFullscreen:Boolean = false;
 		protected var _levels:Array;
 		protected var _currentQuality:Number = 0;
 		protected var _hdOverlay:TooltipMenu;
@@ -876,7 +877,7 @@ package com.longtailvideo.jwplayer.view.components {
 
 
 		private function redraw():void {
-			if (_player.config.height <= 40 || _player.config.fullscreen && _currentLayout) {
+			if (_audioMode || _hideFullscreen || _player.config.fullscreen && _currentLayout) {
 				_currentLayout = _currentLayout.replace("fullscreen", "");
 				hideButton('fullscreen', true);
 			} else {
@@ -1020,7 +1021,12 @@ package com.longtailvideo.jwplayer.view.components {
 			if (state) show();
 			//moveTimeout();
 		}
-		
+
+		public function hideFullscreen(state:Boolean):void {
+			_hideFullscreen = state;
+			stateHandler();
+		}
+
 		override public function hide(force:Boolean = false):void {
 			if (!_audioMode) {
 				animations.fade(0, .5);

@@ -660,10 +660,12 @@
 					_showVideo(TRUE);
 					_resizeMedia();
 					_display.hidePreview(TRUE);
+					if (_controlbar) _controlbar.hideFullscreen(FALSE);
 				} else {
 					_showVideo(FALSE);
 					_display.hidePreview(_audioMode);
-					_display.setHiding(true);
+					_display.setHiding(TRUE);
+					if (_controlbar) _controlbar.hideFullscreen(TRUE);
 				}
 				_hideControls();
 				break;
@@ -674,6 +676,7 @@
 					_showDisplay();
 					_showDock();
 					_showLogo();	
+					if (_controlbar) _controlbar.hideFullscreen(FALSE);
 				}
 				break;
 			case states.BUFFERING:

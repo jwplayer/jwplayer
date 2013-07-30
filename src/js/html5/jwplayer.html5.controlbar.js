@@ -124,6 +124,7 @@
 			_redrawTimeout,
 			_hideTimeout,
 			_audioMode = FALSE,
+			_hideFullscreen = FALSE,
 			_dragging = FALSE,		
 			_lastSeekTime = 0,
 			_lastWidth = -1,
@@ -1280,7 +1281,7 @@
 				width: max ? JW_CSS_100PCT : UNDEFINED
 			});
 		
-			_css(_internalSelector(".jwfullscreen"), { display: _audioMode ? JW_CSS_NONE : UNDEFINED });
+			_css(_internalSelector(".jwfullscreen"), { display: (_audioMode || _hideFullscreen) ? JW_CSS_NONE : UNDEFINED });
 			_css(_internalSelector(".jwvolumeH"), { display: _audioMode ? JW_CSS_BLOCK : JW_CSS_NONE });
 			_css(_internalSelector(".jwhd"), { display: !_audioMode && _hasHD() ? UNDEFINED : JW_CSS_NONE });
 			_css(_internalSelector(".jwcc"), { display: !_audioMode && _hasCaptions() ? UNDEFINED : JW_CSS_NONE });
@@ -1327,7 +1328,15 @@
 				_redraw();
 			}
 		}
-		
+
+		/** Whether or not to show the fullscreen icon - used when an audio file is played **/
+		_this.hideFullscreen = function(mode) {
+			if (mode != _hideFullscreen) {
+				_hideFullscreen = mode;
+				_redraw();
+			}
+		}
+
 		_this.element = function() {
 			return _controlbar;
 		};
