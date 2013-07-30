@@ -76,6 +76,7 @@
 			_rightClickMenu,
 			_fullscreenInterval,
 			_inCB = FALSE,
+			_currentState,
 			_eventDispatcher = new events.eventdispatcher();
 		
 		utils.extend(this, _eventDispatcher);
@@ -293,10 +294,11 @@
 			}
 			
 
-		// TODO: allow override for showing HTML controlbar on iPads
-			_controlbar = new html5.controlbar(_api, cbSettings);
-			_controlbar.addEventListener(events.JWPLAYER_USER_ACTION, _resetTapTimer);
-			_controlsLayer.appendChild(_controlbar.element());
+			if (!_isIPod) {
+				_controlbar = new html5.controlbar(_api, cbSettings);
+				_controlbar.addEventListener(events.JWPLAYER_USER_ACTION, _resetTapTimer);
+				_controlsLayer.appendChild(_controlbar.element());
+			} 
 				
 			setTimeout(function() { 
 				_resize(_model.width, _model.height, FALSE);
@@ -593,8 +595,10 @@
 		function _showControls() {
 			_showing = TRUE;
 			if (_model.controls || _audioMode) {
-				_showControlbar();
-				_showDock();
+				if (!(_isIPod && _currentState == states.PAUSED)) {
+					_showControlbar();
+					_showDock();
+				}
 			}
 			if (_logoConfig.hide) _showLogo();	
 		}
@@ -649,6 +653,7 @@
 		}
 		
 		function _updateState(state) {
+			_currentState = state;
 			switch(state) {
 			case states.PLAYING:
 				if (!_model.getVideo().audioMode()) {
