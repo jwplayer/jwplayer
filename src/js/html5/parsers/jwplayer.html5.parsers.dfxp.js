@@ -38,6 +38,7 @@
             var _captions = [{begin:0, text:''}];
             data = data.replace(/^\s+/, '').replace(/\s+$/, '');
             var list = data.split("</p>");
+            var list2 = data.split ("</tt:p>");
             var newlist = [];
             for (var i = 0; i < list.length; i++) {
                 if (list[i].indexOf("<p") >= 0) {
@@ -45,7 +46,14 @@
                     newlist.push(list[i]);
                 }
             }
+            for (var i = 0; i < list2.length; i++) {
+                if (list2[i].indexOf("<tt:p") >= 0) {
+                    list2[i] = list2[i].substr(list2[i].indexOf("<tt:p") + 5).replace(/^\s+/, '').replace(/\s+$/, '');
+                    newlist.push(list2[i]);
+                }
+            }
             list = newlist;
+
             for (i = 0; i < list.length; i++) {
                 var entry = _entry(list[i]);
                 if(entry['text']) {
