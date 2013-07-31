@@ -142,7 +142,6 @@
 				
 				return TRUE;
 			} catch (err) {
-				alert("Error: " + err.message);
 				_eventDispatcher.sendEvent(events.JWPLAYER_ERROR, err);
 				_actionOnAttach = null;
 			}
