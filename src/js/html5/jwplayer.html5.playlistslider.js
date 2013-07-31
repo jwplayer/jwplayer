@@ -217,7 +217,7 @@
 				top: _topHeight + (_rail.clientHeight - _thumb.clientHeight) * _thumbPercent
 			});
 			if (pane) {
-				pane.style.top = (_wrapper.clientHeight - pane.scrollHeight) * _thumbPercent + "px";
+				pane.style.top = Math.min(0, _wrapper.clientHeight - pane.scrollHeight) * _thumbPercent + "px";
 			}
 		}
 
