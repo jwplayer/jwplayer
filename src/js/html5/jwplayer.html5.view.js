@@ -584,9 +584,11 @@
 
 			var state = _api.jwGetState();
 			
-			if (!model.controls || state != states.PAUSED) _hideControlbar();
+			if (!model.controls || state != states.PAUSED) {
+				_hideControlbar();
+			}
 
-			if (state != states.IDLE) {
+			if (state != states.IDLE && state != states.PAUSED) {
 				_hideDock();
 				_hideLogo();
 			}
