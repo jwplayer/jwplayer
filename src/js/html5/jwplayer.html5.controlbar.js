@@ -16,6 +16,7 @@
 		_css = utils.css,
 		_setTransition = utils.transitionStyle,
 		_isMobile = utils.isMobile(),
+		_nonChromeAndroid = utils.isAndroid(4) && !utils.isChrome(),
 		/** Controlbar element types * */
 		CB_BUTTON = "button",
 		CB_TEXT = "text",
@@ -516,7 +517,11 @@
 				return NULL;
 			}
 
+			// Don't show volume or mute controls on mobile, since it's not possible to modify audio levels in JS
 			if (_isMobile && (name == "mute" || name.indexOf("volume")==0)) return NULL;
+			// Having issues with stock (non-chrome) Android browser and showing overlays.  Just remove HD/CC buttons in that case
+			if (_nonChromeAndroid && /hd|cc/.test(name)) return NULL;
+			
 			
 			var element = _createSpan();
 			var span = _createSpan();
