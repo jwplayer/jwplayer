@@ -11,7 +11,7 @@
 	//Declare namespace
 	var utils = jwplayer.utils = function() {
 	};
-
+	
 	/**
 	 * Returns true if the value of the object is null, undefined or the empty
 	 * string
@@ -128,6 +128,10 @@
 	utils.isIPod = _browserCheck(/iP(hone|od)/i);
 	utils.isIPad = _browserCheck(/iPad/i);
 	utils.isSafari602 = _browserCheck(/Macintosh.*Mac OS X 10_8.*6\.0\.\d* Safari/i);
+
+	utils.isSafari = function() {
+		return (_userAgentMatch(/safari/i) && !_userAgentMatch(/chrome/i) && !_userAgentMatch(/chromium/i) && !isAndroid());
+	}
 	
 	/** Matches Android devices **/	
 	utils.isAndroid = function(version) {

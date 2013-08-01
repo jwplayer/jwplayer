@@ -248,7 +248,7 @@
 			var refreshRequired = FALSE,
 				timeString;
 			// Positive infinity for live streams on iPad, 0 for live streams on Safari (HTML5)
-			if (evt.duration == Number.POSITIVE_INFINITY || !evt.duration) 
+			if (evt.duration == Number.POSITIVE_INFINITY || (!evt.duration && utils.isSafari())) 
 			{
 				_this.setText(_api.jwGetPlaylist()[_api.jwGetPlaylistIndex()].title || "Live broadcast")
 				
