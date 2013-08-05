@@ -56,12 +56,12 @@
 				
 				<element name="volumeCapLeft" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAAaCAYAAACdM43SAAAAEklEQVR42mP4//8/AwgzDHcGAFd5m2W1AHjxAAAAAElFTkSuQmCC"/>
 				<element name="volumeCapRight" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAAaCAYAAACdM43SAAAAEklEQVR42mP4//8/AwgzDHcGAFd5m2W1AHjxAAAAAElFTkSuQmCC"/>
-				<element name="volumeRail" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAaCAYAAACU2C2oAAAAJ0lEQVR42mNgGKmAkZ2d/T82CRZBQUEG0iS4uLiwS/z79480iZELACI6B6IMya0cAAAAAElFTkSuQmCC"/>
-				<element name="volumeRailCapLeft" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAaCAYAAACU2C2oAAAAWUlEQVR42mNgGKmAhZeXV+Dv37/rgdgBRQKI17OwsDjw8PAwMDExMfz//x8u4SAiIsLAzs6OahRIlaCgIIYdTP/+/Tvw+/dvBiCNgpmAkoHfv39fgC4xcgEA0S0uZvsN3cMAAAAASUVORK5CYII="/>
-				<element name="volumeRailCapRight" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAaCAYAAACU2C2oAAAAV0lEQVR4nOWLsQ3AIAzAHKkIKQ9wA+fwMf/wABlIOrRDUU/Aoy3DqUjOOTYh0lNKTUop8QrcnTknEdGl1rodZsYYg0tVvx5VfYK7b2GtBdB/wcw60DiWG0FiJPdOE5H1AAAAAElFTkSuQmCC"/>
-				<element name="volumeProgress" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAaCAYAAACU2C2oAAAAHklEQVR42mNgGKmA8efPn/+xSbC8f/+eYaAkRi4AAN3oEgFUFwFbAAAAAElFTkSuQmCC"/>
-				<element name="volumeProgressCapLeft" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAaCAYAAACU2C2oAAAASElEQVR42mNgGKmA8dOnTwKsrKzrmZiYHJAlWL58+YIhCJb4+PGjAzajWN6/f4/VDpYPHz4c+P//P6ZRQDsCf//+vR6b5MgEANZJHohmJlVJAAAAAElFTkSuQmCC"/>
-				<element name="volumeProgressCapRight" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAaCAYAAACU2C2oAAAAQklEQVR42mNgGKmA8efPn/+RBf79+3fg9+/fgYwvXrz4j64aJMny/v17bCY54JJgwCrByMiIaRRIkJWVNXDERgcDAPCvH8SwwVkvAAAAAElFTkSuQmCC"/>
+				<element name="volumeRail" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADQAAAAaCAYAAAD43n+tAAAANklEQVR42u3PsQ3AMAgAMIZKSGz8/yvNBdlbZH/gCACAmycz31Wh7g6hL4eqaldoZoQAAP7pAACeB6WdpTwEAAAAAElFTkSuQmCC"/>
+				<element name="volumeRailCapLeft" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAaCAYAAACQLf2VAAAAUklEQVR42mNkQAOMg1aAl5dX4O/fv+uB2AEmsJ+RkdGBg4ODgYmJCSzwX1RUlIGdnR2u5b+amhqKGfsVFRUdmJmZEYZKSEj0c3FxJQxu76MLAAClCw6mxiBchAAAAABJRU5ErkJggg=="/>
+				<element name="volumeRailCapRight" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAaCAYAAACQLf2VAAAAU0lEQVR42tXMMQoAIQxE0XTaRLaS1GlCGkW8Px5t3KzsIRx4zYeE6JqllBByzouZHxIR1FpRSsEbFrk7gqpGAM058fvCGAOhtXZOeu8IZnaeXrMN+2gdUQAHUEcAAAAASUVORK5CYII="/>
+				<element name="volumeProgress" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADQAAAAaCAYAAAD43n+tAAAAL0lEQVR42u3PsQ0AIAwDsCLx/6udM8EFFTuyP3AVAMBkJTk/hXZ3l5CQkBAAwNsFna8SATE1MG0AAAAASUVORK5CYII="/>
+				<element name="volumeProgressCapLeft" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAaCAYAAACQLf2VAAAASklEQVR42mNkQAOMg1bg06dPAqysrOuZmJgcwALPnj3bD+OABa5fv/4fRcuxY8dQBbZt27b/////CC2rVq0S+P3793qYIOOQCQ8A+QIdmsjAgckAAAAASUVORK5CYII="/>
+				<element name="volumeProgressCapRight" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAaCAYAAACQLf2VAAAAQUlEQVR42mNgGDLg58+f/0H4+/fv+z99+iTA+OLFi/8wyX///h1gef/+PbIGB3QBBhQBRkZGhBYQh5WVNXDoBAcA0N8jO0ip8PQAAAAASUVORK5CYII="/>
 				<element name="volumeThumb" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAAaCAYAAACdM43SAAAAEklEQVR42mP4//8/AwgzDHcGAFd5m2W1AHjxAAAAAElFTkSuQmCC"/>
 			</elements>
 		</component>
