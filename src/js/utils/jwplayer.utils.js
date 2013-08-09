@@ -539,7 +539,7 @@
 				var type = sources[i].type,
 					file = sources[i].file;
 				
-				if (!!file.trim) file = file.trim();
+				if (file && !!file.trim) file = file.trim();
 				
 				if (!type) {
 					type = extensionmap.extType(utils.extension(file));
