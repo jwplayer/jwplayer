@@ -271,7 +271,7 @@
 				_duration = evt.duration;
 				_position = evt.position;
 				_this.setText();
-			}	
+			}
 			if (refreshRequired) _redraw();
 		}
 		
@@ -625,11 +625,9 @@
 			if(_controlbar) {
 				if (!_getElementBySelector(".jwalt")) return;
 				if (utils.bounds(_controlbar.parentNode).width >= 320 && !_getElementBySelector(".jwalt").innerHTML) {
-					_css(_internalSelector(".jwelapsed"),  NOT_HIDDEN);				
-					_css(_internalSelector(".jwduration"),  NOT_HIDDEN);
+					_css(_internalSelector(".jwhidden"),  NOT_HIDDEN);				
 				} else {
-					_css(_internalSelector(".jwelapsed"),  HIDDEN);				
-					_css(_internalSelector(".jwduration"), HIDDEN);
+					_css(_internalSelector(".jwhidden"),  HIDDEN);				
 				}
 			}
 		}
@@ -693,11 +691,15 @@
 			if (skinElement.src) {
 				var element = _createSpan();
 				element.id = _createElementId(name); 
-				element.className = "jwtext jw" + name;
+				if (name == "elapsed" || name == "duration")
+					element.className = "jwtext jw" + name + " jwhidden";
+				else
+					element.className = "jwtext jw" + name;
 				css.background = "url(" + skinElement.src + ") repeat-x center";
 				css['background-size'] = _elementSize(_getSkinElement("background"));
 				_css(_internalSelector('.jw'+name), css);
 				name != "alt" ? element.innerHTML = "00:00" : element.innerHTML = "";
+				
 				_elements[name] = element;
 				return element;
 			}
@@ -1587,6 +1589,8 @@
     _css(CB_CLASS + ' .jwprogressOverflow', {
     	position: JW_CSS_ABSOLUTE,
     	overflow: JW_CSS_HIDDEN
+    });
+    _css(CB_CLASS + ' .jwduration .jwhidden', {
     });
 
 	_setTransition(CB_CLASS, JW_CSS_SMOOTH_EASE);
