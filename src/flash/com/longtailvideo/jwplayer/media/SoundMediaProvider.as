@@ -1,15 +1,22 @@
 ﻿package com.longtailvideo.jwplayer.media {
 
 
-	import com.longtailvideo.jwplayer.events.*;
+	import com.longtailvideo.jwplayer.events.MediaEvent;
 	import com.longtailvideo.jwplayer.model.PlayerConfig;
 	import com.longtailvideo.jwplayer.model.PlaylistItem;
 	import com.longtailvideo.jwplayer.player.PlayerState;
 	
-	import flash.events.*;
-	import flash.media.*;
+	import flash.events.ErrorEvent;
+	import flash.events.Event;
+	import flash.events.IOErrorEvent;
+	import flash.events.ProgressEvent;
+	import flash.media.Sound;
+	import flash.media.SoundChannel;
+	import flash.media.SoundLoaderContext;
+	import flash.media.SoundTransform;
 	import flash.net.URLRequest;
-	import flash.utils.*;
+	import flash.utils.clearInterval;
+	import flash.utils.setInterval;
 
 
 	/**
@@ -28,6 +35,9 @@
 		private var _positionInterval:Number;
 		/** Whether the sound is fully buffered. **/
 		private var _buffered:Boolean;
+		
+		private var _lastDuration:Number = -1;
+		private var _lastPosition:Number = -1;
 
 
 		/** Constructor; sets up the connection and display. **/
@@ -108,6 +118,7 @@
 			// Evaluate sound duration
 			if (_sound.bytesLoaded / _sound.bytesTotal > 0.1) {
 				_item.duration = _sound.length / 1000 / _sound.bytesLoaded * _sound.bytesTotal;
+				_item.duration = Math.round(_item.duration * 10)/10;
 			}
 			// Send buffer updates until complete
 			if (!_buffered) {
@@ -124,9 +135,13 @@
 				setState(PlayerState.BUFFERING);
 			}
 			// Send time ticks when playing
-			if (state == PlayerState.PLAYING) {
+			if (state == PlayerState.PLAYING && _item.duration > 0) {
 				_position = Math.floor(_channel.position / 100) / 10;
-				sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_TIME, {position: _position, duration: _item.duration});
+				if (_position != _lastPosition || _item.duration != _lastDuration) {
+					_lastPosition = _position;
+					_lastDuration = _item.duration;
+					sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_TIME, {position: _position, duration: _item.duration});	
+				}
 			}
 		}
 

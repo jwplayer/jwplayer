@@ -151,9 +151,7 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 		
 		public function setText(text:String=""):void {
-			if (text.length) { 
-				_liveMode = true;
-			}
+			_liveMode = text.length ? true : false;
 			if (_timeAlt) {
 				_timeAlt.text = text;
 			}
