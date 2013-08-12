@@ -588,6 +588,10 @@
 				_hideControlbar();
 			}
 
+			if (!model.controls) {
+				_hideDock();
+			}
+
 			if (state != states.IDLE && state != states.PAUSED) {
 				_hideDock();
 				_hideLogo();
