@@ -294,11 +294,11 @@
 			}
 			
 
-			if (!_isIPod) {
-				_controlbar = new html5.controlbar(_api, cbSettings);
-				_controlbar.addEventListener(events.JWPLAYER_USER_ACTION, _resetTapTimer);
-				_controlsLayer.appendChild(_controlbar.element());
-			} 
+			_controlbar = new html5.controlbar(_api, cbSettings);
+			_controlbar.addEventListener(events.JWPLAYER_USER_ACTION, _resetTapTimer);
+			_controlsLayer.appendChild(_controlbar.element());
+			
+			if (_isIPod) _hideControlbar();
 				
 			setTimeout(function() { 
 				_resize(_model.width, _model.height, FALSE);
@@ -535,6 +535,7 @@
 		}
 		
 		function _showControlbar() {
+			if (_isIPod && !_audioMode) return; 
 			if (_controlbar) _controlbar.show();
 		}
 		
