@@ -82,8 +82,9 @@
                 idx = data.indexOf("\" end=\"");
                 entry['begin'] = _seconds(data.substr(0, idx));
                 data = data.substr(idx + 7);
-                idx = data.indexOf("\">");
+                idx = data.indexOf("\"");
                 entry['end'] = _seconds(data.substr(0, idx));
+                idx = data.indexOf("\">");
                 data = data.substr(idx + 2);
                 entry['text'] = data;
             } catch (error) {}

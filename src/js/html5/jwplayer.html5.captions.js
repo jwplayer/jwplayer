@@ -196,6 +196,8 @@
 
             // IE9 sets the firstChild element to the root <xml> tag
             if (parsers.localName(rss) == "xml") rss = rss.nextSibling;
+            // Ignore all comments
+            while (rss.nodeType == rss.COMMENT_NODE) rss = rss.nextSibling;
 
             if (parsers.localName(rss) == "tt") {
                 loader = new jwplayer.parsers.dfxp(_loadHandler,_errorHandler);
