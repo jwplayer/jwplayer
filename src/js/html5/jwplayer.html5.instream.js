@@ -80,7 +80,7 @@
     			if (_oldstate == _states.BUFFERING || _oldstate == _states.PLAYING) {
     				_video.pause();
     	        } 
-    			
+
     			// Copy the video src/sources tags and store the current playback time
 
     			// Instream display component
@@ -99,7 +99,10 @@
     				
 					_sendEvent(_events.JWPLAYER_INSTREAM_CLICK, evt);
     			});
-    
+        		if (_utils.isIE()) {
+					// Not sure why this is needed
+					_video.parentElement.addEventListener('click', _disp.clickHandler);
+				}
     			_instreamContainer.appendChild(_disp.element());
     
     			// Instream controlbar
