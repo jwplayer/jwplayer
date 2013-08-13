@@ -148,7 +148,7 @@
 			 * http://youtu.be/YE7VzlLtp-4
 			 * YE7VzlLtp-4
 			 **/
-			embed.src = "http://www.youtube.com/v/" + (/v=([^&]+)|\/([\w-]+)$|^([\w-]+)$/i).exec(path).slice(1).join('');
+			embed.src = "http://www.youtube.com/v/" + (/v=([^&]+)|\/([\w-]+)($|\?)|^([\w-]+)$/i).exec(path).slice(1).join('').replace("?", "");
 			embed.type = "application/x-shockwave-flash";
 			embed.width = _width;
 			embed.height = _height;

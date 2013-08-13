@@ -348,7 +348,7 @@
 	 * Determines if a URL is a YouTube link
 	 */
 	utils.isYouTube = function(path) {
-		return (path.indexOf("youtube.com") > -1 || path.indexOf("youtu.be") > -1);
+		return /^(http|\/\/).*(youtube\.com|youtu\.be)\/.+/.test(path);
 	};
 
 	/**
