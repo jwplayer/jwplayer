@@ -55,7 +55,7 @@
 		}
 		
 		function _clickHandler() {
-			window.location.href = _config.aboutlink;
+			window.top.location = _config.aboutlink;
 		}
 		
 	    function _showContext(evt) {
