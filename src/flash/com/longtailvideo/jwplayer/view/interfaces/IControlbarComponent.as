@@ -67,5 +67,6 @@ package com.longtailvideo.jwplayer.view.interfaces {
 		function audioMode(state:Boolean):void;
 		function hideFullscreen(state:Boolean):void;
 		function setText(text:String=""):void;
+		function setInstreamMode(mode:Boolean):void;
 	}
 }

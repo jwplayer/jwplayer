@@ -132,11 +132,13 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		protected var animations:Animations;
 		protected var _fadingOut:Number;
+		protected var _instreamMode:Boolean;
 		
 		public function ControlbarComponent(player:IPlayer) {
 			super(player, "controlbar");
 			animations = new Animations(this);
 			alpha = 0;
+			_instreamMode = false;
 			visible = false;
 			_layoutManager = new ControlbarLayoutManager(this);
 			_dividers = [];
@@ -350,6 +352,10 @@ package com.longtailvideo.jwplayer.view.components {
 			//layout = layout.replace(/\|+/g, "|");
 			return layout;
 		}
+		
+		public function setInstreamMode(mode:Boolean):void {
+			_instreamMode = mode;
+		}
 
 
 		private function mediaHandler(evt:MediaEvent):void {
@@ -360,7 +366,7 @@ package com.longtailvideo.jwplayer.view.components {
 					_lastPos = evt.position;
 					_lastDur = evt.duration;
 					if (evt.duration == -1 && evt.type == MediaEvent.JWPLAYER_MEDIA_TIME) {
-						setText(player.playlist.currentItem.title || "Live broadcast");
+						if (!_instreamMode) { setText(player.playlist.currentItem.title || "Live broadcast"); }
 					} else {
 						if (scrubber) {
 							if (evt.duration <= -60) {
@@ -381,7 +387,7 @@ package com.longtailvideo.jwplayer.view.components {
 							timeSlider.live = (evt.duration <= 0 && evt.duration > -60);
 						}
 						if (evt.position > 0 || evt.duration <= -60) { setTime(evt.position, evt.duration); }
-						setText();
+						if (!_instreamMode) { setText(); }
 					}
 					break;
 				default:

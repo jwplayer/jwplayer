@@ -138,6 +138,13 @@
 		_this.setText = function(text) {
 			_player.jwInstreamSetText(text ? text : "");
 		}
+
+		_this.getState = function() {
+			return _player.jwInstreamState();
+		}
+		_this.setClick = function (url) {
+			_player.jwInstreamClick(url);
+		}
 		
 		_init();
 		

@@ -32,7 +32,10 @@ package com.longtailvideo.jwplayer.player
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.external.ExternalInterface;
 	import flash.geom.Rectangle;
+	import flash.net.URLRequest;
+	import flash.net.navigateToURL;
 	import flash.utils.setTimeout;
 	
 	public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPlayer, IPlayer {
@@ -58,6 +61,7 @@ package com.longtailvideo.jwplayer.player
 		protected var _mediaDisplayed:Boolean = false;
 		protected var _playCalled:Boolean = false;
 		protected var _viewSetup:Boolean = false;
+		protected var _clickUrl:String = "";
 		
 		
 		
@@ -182,6 +186,8 @@ package com.longtailvideo.jwplayer.player
 				if (getState() == PlayerState.PAUSED) {
 					play();
 				} else {
+					var req:URLRequest = new URLRequest(_clickUrl);
+					navigateToURL(req);
 					pause();
 				}
 			}
@@ -200,6 +206,7 @@ package com.longtailvideo.jwplayer.player
 			_controls.controlbar.addEventListener(ViewEvent.JWPLAYER_VIEW_PLAY, playClicked);
 			_controls.controlbar.addEventListener(ViewEvent.JWPLAYER_VIEW_STOP, stopClicked);
 			_view.components.playlist.addEventListener(ViewEvent.JWPLAYER_VIEW_ITEM, playlistClicked);
+			_controls.controlbar.setInstreamMode(true);
 		}
 		
 		protected function volumeClicked(evt:ViewEvent):void {
@@ -302,12 +309,7 @@ package com.longtailvideo.jwplayer.player
 			}
 			
 		}
-		
-		protected function forwardEvent(event:PlayerEvent):void {
-			var clone:PlayerEvent = event.clone() as PlayerEvent;
-			dispatchEvent(clone);
-		}
-		
+
 		public function play():Boolean {
 			_playCalled = true;
 			if (!_viewSetup) {
@@ -345,6 +347,10 @@ package com.longtailvideo.jwplayer.player
 			_controls.controlbar.setText(text);
 		}
 		
+		public function setClick(url:String=""):void {
+			_clickUrl = url;
+		}
+		
 		protected function _destroy(complete:Boolean=false):void {
 			if (!complete && _provider.state != PlayerState.IDLE) {
 				_provider.stop();
@@ -352,6 +358,7 @@ package com.longtailvideo.jwplayer.player
 			_view.destroyInstream();
 			_provider = null;
 			removeEventListeners();
+			_controls.controlbar.setInstreamMode(false);
 			dispatchEvent(new InstreamEvent(InstreamEvent.JWPLAYER_INSTREAM_DESTROYED, complete ? "complete" : "destroy"));
 		}
 		

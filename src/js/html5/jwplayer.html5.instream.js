@@ -215,6 +215,11 @@
 			_cbar.setText(text);
 		}
 
+		_self.jwInstreamState = function() {
+			if (!_instreamMode) return;
+			return _model.state;
+		}
+
 		/*****************************
 		 ****** Private methods ****** 
 		 *****************************/

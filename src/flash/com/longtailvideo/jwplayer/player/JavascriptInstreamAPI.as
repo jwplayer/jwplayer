@@ -58,10 +58,12 @@ package com.longtailvideo.jwplayer.player {
 				ExternalInterface.addCallback("jwInstreamPlay", js_play);
 				ExternalInterface.addCallback("jwInstreamPause", js_pause);
 				ExternalInterface.addCallback("jwInstreamSeek", js_seek);
+				ExternalInterface.addCallback("jwInstreamState", js_state);
 				
 				// Instream API
 				ExternalInterface.addCallback("jwInstreamDestroy", js_destroyInstream);
 				ExternalInterface.addCallback("jwInstreamSetText", js_setText);
+				ExternalInterface.addCallback("jwInstreamClick", js_setClick);
 				
 			} catch(e:Error) {
 				Logger.log("Could not initialize Instream JavaScript API: "  + e.message);
@@ -163,7 +165,13 @@ package com.longtailvideo.jwplayer.player {
 				return {
 					destroyedReason: evt.destroyedReason
 				}
-			} else return {};
+			} else if (evt.type == InstreamEvent.JWPLAYER_INSTREAM_CLICKED) {
+				return {
+					hasControls: evt.hasControls
+				};
+			} else {
+				return {};
+			}
 		}
 
 
@@ -256,7 +264,16 @@ package com.longtailvideo.jwplayer.player {
 			
 			_isPlayer.setText(text);
 		}
-
+		
+		protected function js_state():String {
+			if (!_isPlayer) return PlayerState.IDLE;
+			return _isPlayer.getState();
+		}
+		
+		protected function js_setClick(url:String):void {
+			if (!_isPlayer) return;
+			_isPlayer.setClick(url);
+		}
 		
 	}
 

@@ -171,6 +171,11 @@
 			_api.jwInstreamPause = function() {
 				if (_instreamPlayer) _instreamPlayer.jwInstreamPause();
 			}
+
+			_api.jwInstreamState = function() {
+				if (_instreamPlayer) return _instreamPlayer.jwInstreamState();
+				return "";
+			}
 			
 			_api.jwInstreamDestroy = function() {
 				if (_instreamPlayer) _instreamPlayer.jwInstreamDestroy();

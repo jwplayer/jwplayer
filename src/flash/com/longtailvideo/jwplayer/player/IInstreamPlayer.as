@@ -100,5 +100,6 @@ package com.longtailvideo.jwplayer.player
 		function getDuration():Number;
 		function getState():String;
 		function setText(text:String=""):void;
+		function setClick(url:String=""):void;
 	}
 }
