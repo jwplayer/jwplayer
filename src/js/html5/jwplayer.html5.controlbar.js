@@ -149,7 +149,9 @@
 				mute: _mute,
 				fullscreen: _fullscreen,
 				next: _next,
-				prev: _prev
+				prev: _prev,
+				hd: _hd,
+				cc: _cc
 			},
 			
 			
@@ -365,6 +367,11 @@
 		
 		function _qualityLevelChanged(evt) {
 			_currentQuality = evt.currentQuality;
+			if (_levels.length == 2) {
+				_css(_internalSelector(".jwhd"), {
+					opacity: (_currentQuality ? 1 : 0.5)
+				});
+			}
 			if (_hdOverlay && _currentQuality >= 0) {
 				_hdOverlay.setActive(evt.currentQuality);
 			}
@@ -392,6 +399,11 @@
 		function _captionChanged(evt) {
 			if (!_captions) return;
 			_currentCaptions = evt.track;
+			if (_captions.length == 2) {
+				_css(_internalSelector(".jwcc"), {
+					opacity: (_currentCaptions ? 1 : 0.5)
+				});
+			}
 			if (_ccOverlay && _currentCaptions >= 0) {
 				_ccOverlay.setActive(evt.track);
 			}
@@ -721,7 +733,7 @@
 		}
 		
 		function _showHd() {
-			if (_levels && _levels.length > 1) {
+			if (_levels && _levels.length > 2) {
 				if (_hdTimer) {
 					clearTimeout(_hdTimer);
 					_hdTimer = UNDEFINED;
@@ -732,7 +744,7 @@
 		}
 		
 		function _showCc() {
-			if (_captions && _captions.length > 1) {
+			if (_captions && _captions.length > 2) {
 				if (_ccTimer) {
 					clearTimeout(_ccTimer);
 					_ccTimer = UNDEFINED;
@@ -759,7 +771,13 @@
 		}
 
 		function _cc() {
-			_toggleButton("cc");
+			if (_captions.length != 2) return;
+			_switchCaption((_currentCaptions + 1) % 2); 
+		}
+
+		function _hd() {
+			if (_levels.length != 2) return;
+			_switchLevel((_currentQuality + 1) % 2);
 		}
 		
 		function _buildSlider(name) {

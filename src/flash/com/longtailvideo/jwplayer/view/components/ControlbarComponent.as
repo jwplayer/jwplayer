@@ -605,13 +605,13 @@ package com.longtailvideo.jwplayer.view.components {
 
 		private function showHdOverlay(evt:MouseEvent):void {
 			if (_audioMode) return;
-			if (_hdOverlay && _levels && _levels.length > 1) _hdOverlay.show();
+			if (_hdOverlay && _levels && _levels.length > 2) _hdOverlay.show();
 			hideCcOverlay();
 			hideVolumeOverlay();
 		}
 		
 		private function showCcOverlay(evt:MouseEvent):void {
-			if (_ccOverlay && _captions && _captions.length > 1) _ccOverlay.show();
+			if (_ccOverlay && _captions && _captions.length > 2) _ccOverlay.show();
 			hideHdOverlay();
 			hideVolumeOverlay();
 		}
@@ -627,6 +627,16 @@ package com.longtailvideo.jwplayer.view.components {
 				_ccOverlay.hide();
 			}
 		}
+		
+		private function toggleHD():void {
+			if (_levels.length != 2) return;
+			hdOption((_currentQuality + 1) % 2);
+		}
+		
+		private function toggleCC():void {
+			if (_captions.length != 2) return;
+			ccOption((_currentCaptions + 1) % 2);
+		}
 
 		private function levelsHandler(evt:MediaEvent):void {
 			_levels = evt.levels;
@@ -641,6 +651,9 @@ package com.longtailvideo.jwplayer.view.components {
 
 		private function levelChanged(evt:MediaEvent):void {
 			_currentQuality = evt.currentQuality;
+			if (_levels.length == 2) {
+				getButton("hd").alpha = (_currentQuality ? 1 : 0.5);
+			}
 			if (_levels.length > 1) {
 				_hdOverlay.setActive(evt.currentQuality);
 			}
@@ -662,6 +675,9 @@ package com.longtailvideo.jwplayer.view.components {
 		private function captionChanged(evt:CaptionsEvent):void {
 			if (!_captions) return;
 			_currentCaptions = evt.currentTrack;
+			if (_captions.length == 2) {
+				getButton("cc").alpha = (_currentCaptions ? 1 : 0.5);
+			}
 			if (_captions.length > 1) {
 				_ccOverlay.setActive(evt.currentTrack);
 			}
@@ -675,7 +691,13 @@ package com.longtailvideo.jwplayer.view.components {
 			button.setOutIcon(getSkinElement(name + "Button"));
 			button.setOverIcon(getSkinElement(name + "ButtonOver"));
 			button.clickFunction = function():void {
-				if (event) {
+				if (name == "hd") {
+					toggleHD();
+				}
+				else if (name == "cc") {
+					toggleCC();
+				}
+				else if (event) {
 					forward(new ViewEvent(event, eventData));
 				}
 			}
