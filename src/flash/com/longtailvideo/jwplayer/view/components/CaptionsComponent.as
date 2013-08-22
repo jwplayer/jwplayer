@@ -34,11 +34,11 @@ package com.longtailvideo.jwplayer.view.components {
 		private var _defaults:Object = {
 			color: '#FFFFFF',
 			fontSize: 15,
+			fontFamily: 'Arial,sans-serif',
 			back: true
 		};
 		
 		private var _style:Object = {
-			fontFamily: 'Arial,sans-serif',
 			fontStyle: 'normal',
 			fontWeight: 'normal',
 			leading: 5,

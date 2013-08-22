@@ -29,12 +29,12 @@
         _defaults = {
             back: true,
             color: '#FFFFFF',
-            fontSize: 15
+            fontSize: 15,
+            fontFamily: 'Arial,sans-serif'
         },
 
         /** Default configuration options. **/
         _options = {
-            fontFamily: 'Arial,sans-serif',
             fontStyle: 'normal',
             fontWeight: 'normal',
             textDecoration: 'none'
