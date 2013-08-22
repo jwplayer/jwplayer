@@ -350,6 +350,29 @@
 	utils.isYouTube = function(path) {
 		return /^(http|\/\/).*(youtube\.com|youtu\.be)\/.+/.test(path);
 	};
+	
+	/** 
+	 * Returns a YouTube ID from a number of YouTube URL formats:
+	 * 
+	 * Matches the following YouTube URL types:
+	 *  - http://www.youtube.com/watch?v=YE7VzlLtp-4
+	 *  - http://www.youtube.com/watch?v=YE7VzlLtp-4&extra_param=123
+	 *  - http://www.youtube.com/watch#!v=YE7VzlLtp-4
+	 *  - http://www.youtube.com/watch#!v=YE7VzlLtp-4?extra_param=123&another_param=456
+	 *  - http://www.youtube.com/v/YE7VzlLtp-4
+	 *  - http://www.youtube.com/v/YE7VzlLtp-4?extra_param=123&another_param=456
+	 *  - http://youtu.be/YE7VzlLtp-4
+	 *  - http://youtu.be/YE7VzlLtp-4?extra_param=123&another_param=456
+	 *  - YE7VzlLtp-4
+	 **/
+	utils.youTubeID = function(path) {
+		try {
+			// Left as a dense regular expression for brevity.  
+			return (/v[=\/]([^?&]*)|youtu\.be\/([^?]*)|^([\w-]*)$/i).exec(path).slice(1).join('').replace("?", "");		
+		} catch (e) {
+			return "";
+		}
+	}
 
 	/**
 	 * Determines if a URL is an RTMP link
