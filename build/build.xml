@@ -150,7 +150,6 @@
 
 			<!-- Include the necessary framework libraries in the class path -->
 			<arg line="-compiler.library-path '${flexsdk.lib.dir}'" />
-			<arg line="-compiler.library-path '${lib.dir}'" />
 
 			<arg line="-default-background-color=0x000000" />
 
@@ -256,11 +255,9 @@
 			<arg line="-output '${sdk.dir}/lib/jwplayer-6-lib.swc'" />
 			<!-- Include the necessary framework libraries in the class path -->
 			<arg line="-compiler.library-path '${flexsdk.lib.dir}'" />
-			<arg line="-compiler.library-path '${lib.dir}'" />
 			<!-- Target Flash Player -->
 			<arg line="-target-player=${flexsdk.target}" />
 			<arg line="-include-classes com.longtailvideo.jwplayer.player.Player" />
-			<arg line="-compiler.external-library-path+='${lib.dir}'" />
 			<!-- Player version -->
 			<arg line="-define=JWPLAYER::version,'${version}'"/>
 		</exec>
