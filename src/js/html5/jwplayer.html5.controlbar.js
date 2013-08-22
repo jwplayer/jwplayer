@@ -1290,7 +1290,9 @@
 				width: max ? JW_CSS_100PCT : UNDEFINED
 			});
 		
-			_css(_internalSelector(".jwfullscreen"), { display: (_audioMode || _hideFullscreen) ? JW_CSS_NONE : UNDEFINED });
+			// ie <= IE10 does not allow fullscreen from inside an iframe. Hide the FS button. (TODO: Fix for IE11)
+			var ieIframe = !(top === self) && utils.isIE();
+			_css(_internalSelector(".jwfullscreen"), { display: (_audioMode || _hideFullscreen || ieIframe) ? JW_CSS_NONE : UNDEFINED });
 			_css(_internalSelector(".jwvolumeH"), { display: _audioMode ? JW_CSS_BLOCK : JW_CSS_NONE });
 			_css(_internalSelector(".jwhd"), { display: !_audioMode && _hasHD() ? UNDEFINED : JW_CSS_NONE });
 			_css(_internalSelector(".jwcc"), { display: !_audioMode && _hasCaptions() ? UNDEFINED : JW_CSS_NONE });
