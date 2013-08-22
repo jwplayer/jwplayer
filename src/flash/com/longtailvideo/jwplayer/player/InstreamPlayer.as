@@ -32,7 +32,6 @@ package com.longtailvideo.jwplayer.player
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
 	import flash.events.Event;
-	import flash.external.ExternalInterface;
 	import flash.geom.Rectangle;
 	import flash.net.URLRequest;
 	import flash.net.navigateToURL;
@@ -567,6 +566,14 @@ package com.longtailvideo.jwplayer.player
 		}
 		
 		public function getSafeRegion():Rectangle {
+			throw new Error(UNSUPPORTED_ERROR);
+		}
+		
+		public function checkBeforePlay():Boolean {
+			throw new Error(UNSUPPORTED_ERROR);
+		}
+		
+		public function checkBeforeComplete():Boolean {
 			throw new Error(UNSUPPORTED_ERROR);
 		}
 		

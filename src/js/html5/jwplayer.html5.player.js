@@ -156,6 +156,17 @@
 				// 	//plugins.googima.jwPlayAd(ad);
 				// }
 			}
+
+			_api.jwPauseAd = function () { 
+				var plugins = jwplayer(_api.id).plugins;
+				if (plugins.vast) {
+					plugins.vast.jwPauseAd();
+				}
+				// else if (plugins.googima) {
+				// 	// This needs to be added once the googima Ads API is implemented
+				// 	//plugins.googima.jwPauseAd();
+				// }
+			}
 			
 			_api.jwLoadInstream = function(item, options) {
 				if (!_instreamPlayer) {

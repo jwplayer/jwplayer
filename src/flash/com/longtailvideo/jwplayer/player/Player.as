@@ -379,6 +379,14 @@
 			return model.token;
 		}
 		
+		public function checkBeforePlay():Boolean {
+			return controller.checkBeforePlay();
+		}
+		
+		public function checkBeforeComplete():Boolean {
+			return model.checkBeforeComplete();
+		}
+		
 		
 	}
 }

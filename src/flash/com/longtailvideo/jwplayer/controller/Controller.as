@@ -724,6 +724,10 @@ package com.longtailvideo.jwplayer.controller {
 				return false;
 			}
 		}
+		
+		public function checkBeforePlay():Boolean {
+			return _preplay;
+		}
 
 
 		protected function setCookie(name:String, value:*):void {

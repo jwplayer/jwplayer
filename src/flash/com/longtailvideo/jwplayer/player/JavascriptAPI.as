@@ -191,6 +191,8 @@ package com.longtailvideo.jwplayer.player {
 				
 				// Ads API
 				//ExternalInterface.addCallback("jwPlayAd", js_playAd);
+				ExternalInterface.addCallback("jwIsBeforePlay", js_isBeforePlay);
+				ExternalInterface.addCallback("jwIsBeforeComplete", js_isBeforeComplete);
 				
 				// UNIMPLEMENTED
 				//ExternalInterface.addCallback("jwGetBandwidth", js_getBandwidth); 
@@ -628,7 +630,14 @@ package com.longtailvideo.jwplayer.player {
 			//This is a stub. Needs to be replaced
 			ExternalInterface.call("console.log", "Time to play ad in flash: " + ad);
 			//var p:PluginConfig = _player.config.pluginConfig("vast");
-			
+		}
+		
+		protected function js_isBeforePlay():Boolean {
+			return _player.checkBeforePlay();
+		}
+		
+		protected function js_isBeforeComplete():Boolean {
+			return _player.checkBeforeComplete();
 		}
 		
 		protected function callJS(functionName:String, args:*):void {

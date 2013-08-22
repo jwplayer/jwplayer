@@ -245,7 +245,17 @@
 			_callInternal ("jwPlayerDestroy");
 		}
 		_this.playAd = function(ad) {
-			_callInternal("jwPlayAd", ad);
+			var plugins = jwplayer(_this.id).plugins;
+			if (plugins.vast) {
+				plugins.vast.jwPlayAd(ad);
+			}
+			// _callInternal("jwPlayAd", ad);
+		}
+		_this.pauseAd = function() {
+			var plugins = jwplayer(_this.id).plugins;
+			if (plugins.vast) {
+				plugins.vast.jwPauseAd();
+			}
 		}
 		
 		var _eventMapping = {
@@ -507,10 +517,10 @@
 		};
 
 		_this.isBeforePlay = function () {
-			return _player.jwIsBeforePlay();
+			return _callInternal('jwIsBeforePlay');
 		}
 		_this.isBeforeComplete = function () {
-			return _player.jwIsBeforeComplete();
+			return _callInternal('jwIsBeforeComplete');
 		}
 		
 		/** Using this function instead of array.slice since Arguments are not an array **/
