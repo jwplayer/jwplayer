@@ -141,14 +141,7 @@
 		function _embedYouTube(path) {
 			var embed = _createElement("embed", "", _container);
 
-			/** Left as a dense regular expression for brevity.  Matches the following YouTube URL types:
-			 * http://www.youtube.com/watch?v=YE7VzlLtp-4
-			 * http://www.youtube.com/watch#!v=YE7VzlLtp-4
-			 * http://www.youtube.com/v/YE7VzlLtp-4
-			 * http://youtu.be/YE7VzlLtp-4
-			 * YE7VzlLtp-4
-			 **/
-			embed.src = "http://www.youtube.com/v/" + (/v=([^&]+)|\/([\w-]+)($|\?)|^([\w-]+)$/i).exec(path).slice(1).join('').replace("?", "");
+			embed.src = "http://www.youtube.com/v/" + utils.youTubeID(path);
 			embed.type = "application/x-shockwave-flash";
 			embed.width = _width;
 			embed.height = _height;
