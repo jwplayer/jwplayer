@@ -256,6 +256,9 @@
 			if (plugins.vast) {
 				plugins.vast.jwPauseAd();
 			}
+			else {
+				_callInternal("jwPauseAd");
+			}
 		}
 		
 		var _eventMapping = {
