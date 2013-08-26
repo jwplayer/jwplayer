@@ -21,11 +21,26 @@
 		
 		var _item,
 			_options,
-			_api=api, _model=model, _view=view, _controller=controller,
-			_video, _oldsrc, _oldsources, _oldpos, _oldstate, _olditem,
-			_provider, _cbar, _disp, _instreamMode = false,
-			_dispatcher, _instreamContainer, _fakemodel,
-			_self = this, _loadError = false, _shouldSeek = true;
+			_api=api, 
+			_model = model, 
+			_view = view, 
+			_controller = controller,
+			_video, 
+			_oldsrc, 
+			_oldsources, 
+			_oldpos, 
+			_oldstate, 
+			_olditem,
+			_provider, 
+			_cbar, 
+			_disp, 
+			_instreamMode = false,
+			_dispatcher, 
+			_instreamContainer, 
+			_fakemodel,
+			_self = this, 
+			_loadError = false, 
+			_shouldSeek = true;
 
 
 		/*****************************************
@@ -42,6 +57,8 @@
 				return;
 			}
 			
+			// Tracks whether an error occurs during loading
+			_loadError = false;
 			// Sets internal instream mode to true
 			_instreamMode = true;
 			// Instream playback options
@@ -131,17 +148,18 @@
 		}
 		
 	    function errorHandler(evt) {
-	        
-	        if (evt.type == _events.JWPLAYER_MEDIA_ERROR) {
-	           var evtClone = _utils.extend({}, evt);
-                evtClone.type = _events.JWPLAYER_ERROR;
-                _sendEvent(evtClone.type, evtClone);
-	       } else {
-	           _sendEvent(evt.type,evt);
-	       }
-	        _loadError = true;
-	        _self.jwInstreamDestroy(false);
+	    	if (evt.type == _events.JWPLAYER_MEDIA_ERROR) {
+	    		var evtClone = _utils.extend({}, evt);
+	    		evtClone.type = _events.JWPLAYER_ERROR;
+	    		_sendEvent(evtClone.type, evtClone);
+	    	} else {
+	    		_sendEvent(evt.type,evt);
+	    	}
+
+	    	_loadError = true;
+	    	_self.jwInstreamDestroy(false);
 	    }
+	    
 		/** Stop the instream playback and revert the main player back to its original state **/
 		_self.jwInstreamDestroy = function(complete) {
 			if (!_instreamMode) return;
