@@ -172,6 +172,8 @@
 				_instreamPlayer.load(item, options);
 			}
 			
+			
+			
 			_api.jwInstreamPlay = function() {
 				if (_instreamPlayer) _instreamPlayer.jwInstreamPlay();
 			}
@@ -205,6 +207,10 @@
 			
 			_api.jwInstreamSetText = function(text) {
 				if (_instreamPlayer) _instreamPlayer.jwInstreamSetText(text);
+			}
+			
+			_api.jwInstreamUpdateSkipTime = function(position) {
+				if (_instreamPlayer) _instreamPlayer.jwInstreamUpdateSkipTime(position);
 			}
 
 			_api.jwIsBeforePlay = function () {

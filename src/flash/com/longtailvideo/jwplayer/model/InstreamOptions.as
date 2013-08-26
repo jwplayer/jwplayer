@@ -9,6 +9,7 @@ package com.longtailvideo.jwplayer.model {
 		protected var _controlbarStoppable:Boolean = true;
 		protected var _playlistClickable:Boolean = true;
 		protected var _autoLoad:Boolean = false;
+		protected var skipoffset:Number = -1;
 		
 		public function InstreamOptions(options:Object=null) {
 			if (options) {
@@ -60,6 +61,14 @@ package com.longtailvideo.jwplayer.model {
 
 		public function get autoload():Boolean {
 			return _autoLoad;
+		}
+		
+		public function get skipOffset():Number {
+			return skipoffset;
+		}
+		
+		public function set skipOffset(p:Number):void {
+			skipoffset = p;
 		}
 	}
 }

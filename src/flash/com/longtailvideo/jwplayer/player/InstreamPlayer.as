@@ -36,6 +36,7 @@ package com.longtailvideo.jwplayer.player
 	import flash.net.URLRequest;
 	import flash.net.navigateToURL;
 	import flash.utils.setTimeout;
+	import flash.external.ExternalInterface;
 	
 	public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPlayer, IPlayer {
 
@@ -346,6 +347,9 @@ package com.longtailvideo.jwplayer.player
 			_controls.controlbar.setText(text);
 		}
 		
+		public function updateSkipTime(pos:Number):void {
+		 	ExternalInterface.call("console.log","furk");
+		}
 		public function setClick(url:String=""):void {
 			_clickUrl = url;
 		}

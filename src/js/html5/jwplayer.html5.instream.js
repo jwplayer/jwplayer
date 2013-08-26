@@ -16,7 +16,8 @@
 			controlbarseekable:"never",
 			controlbarpausable:true,
 			controlbarstoppable:true,
-			playlistclickable:true
+			playlistclickable:true,
+			skipoffset:-1
 		};
 		
 		var _item,
@@ -231,6 +232,12 @@
 		/** Set custom text in the controlbar **/
 		_self.jwInstreamSetText = function(text) {
 			_cbar.setText(text);
+		}
+		
+		
+		_self.jwInstreamUpdateSkipTime = function(position) {
+			
+			
 		}
 
 		_self.jwInstreamState = function() {
