@@ -367,10 +367,8 @@
 		
 		function _qualityLevelChanged(evt) {
 			_currentQuality = evt.currentQuality;
-			if (_levels.length == 2) {
-				_css(_internalSelector(".jwhd"), {
-					opacity: (_currentQuality ? 1 : 0.5)
-				});
+			if (_elements.hd) {
+				_elements.hd.querySelector("button").className = (_levels.length == 2 && _currentQuality == 0) ? "off" : "";
 			}
 			if (_hdOverlay && _currentQuality >= 0) {
 				_hdOverlay.setActive(evt.currentQuality);
@@ -399,10 +397,8 @@
 		function _captionChanged(evt) {
 			if (!_captions) return;
 			_currentCaptions = evt.track;
-			if (_captions.length == 2) {
-				_css(_internalSelector(".jwcc"), {
-					opacity: (_currentCaptions ? 1 : 0.5)
-				});
+			if (_elements.cc) {
+				_elements.cc.querySelector("button").className = (_captions.length == 2 && _currentCaptions == 0) ? "off" : "";
 			}
 			if (_ccOverlay && _currentCaptions >= 0) {
 				_ccOverlay.setActive(evt.track);
@@ -559,11 +555,12 @@
 			button.innerHTML = "&nbsp;";
 			_appendChild(span, button);
 
-			var outSkin = _getSkinElement(name + "Button");
-			var overSkin = _getSkinElement(name + "ButtonOver");
+			var outSkin = _getSkinElement(name + "Button"),
+				overSkin = _getSkinElement(name + "ButtonOver"),
+				offSkin = _getSkinElement(name + "ButtonOff");
 			
 			
-			_buttonStyle(_internalSelector('.jw'+name+" button"), outSkin, overSkin);
+			_buttonStyle(_internalSelector('.jw'+name+" button"), outSkin, overSkin, offSkin);
 			var toggle = _toggles[name];
 			if (toggle) {
 				_buttonStyle(_internalSelector('.jw'+name+'.jwtoggle button'), _getSkinElement(toggle+"Button"), _getSkinElement(toggle+"ButtonOver"));
@@ -574,7 +571,7 @@
 			return element;
 		}
 		
-		function _buttonStyle(selector, out, over) {
+		function _buttonStyle(selector, out, over, off) {
 			if (!out || !out.src) return;
 			
 			_css(selector, { 
@@ -584,9 +581,16 @@
 			});
 			
 			if (over.src && !_isMobile) {
-				_css(selector + ':hover', { 
+				_css(selector + ':hover,' + selector + '.off:hover', { 
 					background: 'url('+ over.src +') no-repeat center',
 					'background-size': _elementSize(over)
+				});
+			}
+			
+			if (off && off.src) {
+				_css(selector + '.off', { 
+					background: 'url('+ off.src +') no-repeat center',
+					'background-size': _elementSize(off)
 				});
 			}
 		}

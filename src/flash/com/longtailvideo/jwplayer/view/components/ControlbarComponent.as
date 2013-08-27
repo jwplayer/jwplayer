@@ -651,9 +651,12 @@ package com.longtailvideo.jwplayer.view.components {
 
 		private function levelChanged(evt:MediaEvent):void {
 			_currentQuality = evt.currentQuality;
-			if (_levels.length == 2) {
-				getButton("hd").alpha = (_currentQuality ? 1 : 0.5);
+			var button:ComponentButton = getButton("hd") as ComponentButton;
+			
+			if (button) {
+				button.setOutIcon(getSkinElement("hdButton" + (_levels.length == 2 && _currentQuality == 0 ? "Off" : "")));
 			}
+			
 			if (_levels.length > 1) {
 				_hdOverlay.setActive(evt.currentQuality);
 			}
@@ -674,10 +677,13 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		private function captionChanged(evt:CaptionsEvent):void {
 			if (!_captions) return;
+			var button:ComponentButton = getButton("cc") as ComponentButton;
 			_currentCaptions = evt.currentTrack;
-			if (_captions.length == 2) {
-				getButton("cc").alpha = (_currentCaptions ? 1 : 0.5);
+			
+			if (button) {
+				button.setOutIcon(getSkinElement("ccButton" + (_captions.length == 2 && _currentCaptions == 0 ? "Off" : "")));
 			}
+			
 			if (_captions.length > 1) {
 				_ccOverlay.setActive(evt.currentTrack);
 			}
