@@ -166,6 +166,19 @@
 			}, 250);
 		}
 
+
+		_this.showTemp = function(resize) {
+			if (!this.visible) {
+					_container.style.opacity = 0;
+					_container.style.display = JW_CSS_BLOCK;
+			}
+		}
+		
+		_this.hideTemp = function(resize) {
+			if (!this.visible) {
+					_container.style.display = JW_CSS_NONE;
+			}
+		}
 		_this.show = function() {
 			if (_this.visible || !_buttonCount) return;
 			_this.visible = true;

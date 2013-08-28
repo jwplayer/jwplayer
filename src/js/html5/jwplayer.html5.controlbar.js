@@ -1467,6 +1467,20 @@
 			}, 10);
 		}
 		
+		_this.showTemp = function(resize) {
+			if (!this.visible) {
+					_controlbar.style.opacity = 0;
+					_controlbar.style.display = JW_CSS_INLINE_BLOCK;
+			}
+		}
+		
+		_this.hideTemp = function(resize) {
+			if (!this.visible) {
+					_controlbar.style.display = JW_CSS_NONE;
+			}
+		}
+		
+		
 		function _clearHideTimeout() {
 			clearTimeout(_hideTimeout);
 			_hideTimeout = UNDEFINED;

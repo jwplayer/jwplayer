@@ -58,6 +58,7 @@
 			// _instreamControlbar,
 			// _instreamDisplay,
 			_instreamLayer,
+			_instreamSkip,
 			_instreamControlbar,
 			_instreamDisplay,
 			_instreamMode = FALSE,
@@ -77,11 +78,13 @@
 			_fullscreenInterval,
 			_inCB = FALSE,
 			_currentState,
+			_safeRegion,
 			_eventDispatcher = new events.eventdispatcher();
-		
+
 		utils.extend(this, _eventDispatcher);
 
 		function _init() {
+
 			_playerElement = _createElement("div", PLAYER_CLASS + " playlist-" + _model.playlistposition);
 			_playerElement.id = _api.id;
 			
@@ -144,7 +147,6 @@
 			_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
 			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_COMPLETE, _playlistCompleteHandler);
-
 			_stateHandler({newstate:states.IDLE});
 			
 			if (!_isMobile) {
@@ -600,6 +602,7 @@
 		}
 
 		function _showControls() {
+
 			_showing = TRUE;
 			if (_model.controls || _audioMode) {
 				if (!(_isIPod && _currentState == states.PAUSED)) {
@@ -607,7 +610,8 @@
 					_showDock();
 				}
 			}
-			if (_logoConfig.hide) _showLogo();	
+			if (_logoConfig.hide) _showLogo();
+
 		}
 
 		function _showVideo(state) {
@@ -702,7 +706,7 @@
 			return '#' + _api.id + (className ? " ." + className : "");
 		}
 		
-		this.setupInstream = function(instreamContainer, instreamControlbar, instreamDisplay) {
+		this.setupInstream = function(instreamContainer, instreamControlbar, instreamDisplay, skipoffset) {
 			_setVisibility(_internalSelector(VIEW_INSTREAM_CONTAINER_CLASS), TRUE);
 			_setVisibility(_internalSelector(VIEW_CONTROLS_CONTAINER_CLASS), FALSE);
 			_instreamLayer.appendChild(instreamContainer);
@@ -710,6 +714,10 @@
 			_instreamDisplay = instreamDisplay;
 			_stateHandler({newstate:states.PLAYING});
 			_instreamMode = TRUE;
+			if (skipoffset >= 0) {
+				_createSkipUI(skipoffset);
+				
+			}
 		}
 		
 		var _destroyInstream = this.destroyInstream = function() {
@@ -725,6 +733,13 @@
 			_completeSetup();
 		}
 		
+		function _createSkipUI(skipoffset) {
+			
+			_instreamSkip = _createElement("canvas", VIEW_INSTREAM_CONTAINER_CLASS);
+			_instreamSkip.id = "skipElem";
+			_instreamLayer.appendChild(_instreamSkip);
+			
+		}
 		function _setVisibility(selector, state) {
 			_css(selector, { display: state ? JW_CSS_BLOCK : JW_CSS_NONE });
 		}
@@ -775,16 +790,19 @@
 		
 		
 		this.getSafeRegion = function() {
+			_controlbar.showTemp();
+			_dock.showTemp();
 			var controls = _model.controls,
 				dispBounds = utils.bounds(_container),
 				dispOffset = dispBounds.top,
-				cbBounds = utils.bounds(_controlbar ? _controlbar.element() : null),
-				dockButtons = (_dock.numButtons() > 0),
+				cbBounds = _instreamMode ? utils.bounds(DOCUMENT.getElementById(_api.id + "_instream_controlbar")) : utils.bounds(_controlbar ? _controlbar.element() : null),
+				dockButtons = _instreamMode ? false : (_dock.numButtons() > 0),
 				dockBounds = utils.bounds(_dock.element()),
 				logoBounds = utils.bounds(_logo.element()),
 				logoTop = (_logo.position().indexOf("top") == 0), 
 				bounds = {};
-			
+			_controlbar.hideTemp();
+			_dock.hideTemp();
 			bounds.x = 0;
 			bounds.y = Math.max(dockButtons ? (dockBounds.top + dockBounds.height - dispOffset) : 0, logoTop ? (logoBounds.top + logoBounds.height - dispOffset) : 0);
 			bounds.width = dispBounds.width;
@@ -798,7 +816,8 @@
 				y: controls ? bounds.y : 0,
 				width: controls ? bounds.width : 0,
 				height: controls ? bounds.height : 0
-			}
+			};
+
 		}
 
 		this.destroy = function () {
