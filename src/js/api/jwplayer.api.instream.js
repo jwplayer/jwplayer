@@ -82,6 +82,9 @@
 		_this.onError = function(callback) {
 			return _eventListener(events.JWPLAYER_ERROR, callback);
 		};
+		_this.onMediaError = function(callback) {
+			return _eventListener(events.JWPLAYER_MEDIA_ERROR, callback);
+		};
 		_this.onFullscreen = function(callback) {
 			return _eventListener(events.JWPLAYER_FULLSCREEN, callback);
 		};

@@ -100,8 +100,6 @@ package com.longtailvideo.jwplayer.player {
 			}
 		}
 		
-		
-		
 		protected function listenerCallback(evt:Event):void {
 			var args:Object = {};
 			
@@ -116,8 +114,11 @@ package com.longtailvideo.jwplayer.player {
 			}
 			
 			args.type = evt.type;
-			var callbacks:Array = _listeners[evt.type] as Array;
+			if (evt.type == MediaEvent.JWPLAYER_MEDIA_ERROR) {
+				_isPlayer.destroy();
+			}
 			
+			var callbacks:Array = _listeners[evt.type] as Array;
 			
 			if (callbacks) {
 				for each (var call:String in callbacks) {
