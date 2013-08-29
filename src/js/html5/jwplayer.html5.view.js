@@ -1008,9 +1008,9 @@
 
 
 	_css('.' + VIEW_INSTREAM_SKIP_CLASS, {
-		position: 'relative',
-		float:'right',
-		display:'inline-block'
+		'position': 'relative',
+		'float':'right',
+		'display':'inline-block'
 	});
 
 	_css('.' + VIEW_ASPECT_CONTAINER_CLASS, {
