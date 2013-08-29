@@ -3,6 +3,7 @@ package com.longtailvideo.jwplayer.player
 	import com.longtailvideo.jwplayer.controller.Controller;
 	import com.longtailvideo.jwplayer.events.GlobalEventDispatcher;
 	import com.longtailvideo.jwplayer.events.InstreamEvent;
+	import com.longtailvideo.jwplayer.events.JWAdEvent;
 	import com.longtailvideo.jwplayer.events.MediaEvent;
 	import com.longtailvideo.jwplayer.events.PlayerEvent;
 	import com.longtailvideo.jwplayer.events.ViewEvent;
@@ -32,11 +33,11 @@ package com.longtailvideo.jwplayer.player
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.external.ExternalInterface;
 	import flash.geom.Rectangle;
 	import flash.net.URLRequest;
 	import flash.net.navigateToURL;
 	import flash.utils.setTimeout;
-	import flash.external.ExternalInterface;
 	
 	public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPlayer, IPlayer {
 
@@ -62,7 +63,7 @@ package com.longtailvideo.jwplayer.player
 		protected var _playCalled:Boolean = false;
 		protected var _viewSetup:Boolean = false;
 		protected var _clickUrl:String = "";
-		
+		protected var _skipOffset:Number = -1;
 		
 		
 		public function InstreamPlayer(target:IPlugin, item:PlaylistItem, options:IInstreamOptions, model:Model, view:View, controller:Controller) {
@@ -80,7 +81,7 @@ package com.longtailvideo.jwplayer.player
 			if (!_options.autoload) {
 				_playCalled = true;
 			}
-			
+			if (_options.skipOffset) _skipOffset = _options.skipOffset;
 			_isConfig = new PlayerConfig();
 			_isConfig.setConfig({
 				volume: _model.config.volume,
@@ -128,9 +129,12 @@ package com.longtailvideo.jwplayer.player
 			if (_playCalled) {
 				_viewSetup = true;
 				_controls.display.forceState(PlayerState.BUFFERING);
-				_view.setupInstream(_instreamDisplay, _controls, _plugin);
+				_view.setupInstream(_instreamDisplay, _controls, _plugin, _skipOffset);
 			}
-
+			if(_skipOffset >= 0) {
+				_view.addEventListener(JWAdEvent.JWPLAYER_AD_SKIPPED, skipAd);
+				
+			}
 			
 			_provider.load(_item);
 		}
@@ -175,6 +179,10 @@ package com.longtailvideo.jwplayer.player
 				_controls.display.releaseState();
 					
 			}
+		}
+		
+		protected function skipAd(event:Event):void {
+			destroy();
 		}
 		
 		protected function addDisplayListeners():void {
@@ -348,7 +356,7 @@ package com.longtailvideo.jwplayer.player
 		}
 		
 		public function updateSkipTime(pos:Number):void {
-		 	ExternalInterface.call("console.log","furk");
+			_view.updateSkipText(pos);
 		}
 		public function setClick(url:String=""):void {
 			_clickUrl = url;

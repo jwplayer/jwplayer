@@ -9,7 +9,7 @@ package com.longtailvideo.jwplayer.events
 		public static var JWPLAYER_AD_COMPLETE:String = "jwplayerAdComplete";
 		public static var JWPLAYER_AD_IMPRESSION:String = "jwplayerAdImpression";
 		public static var JWPLAYER_AD_COMPANIONS:String = "jwplayerAdCompanions";
-		
+		public static var JWPLAYER_AD_SKIPPED:String =  "jwplayerAdSkipped";
 		
 		public var duration:Number;
 		public var position:Number;

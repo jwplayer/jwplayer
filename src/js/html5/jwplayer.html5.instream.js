@@ -76,9 +76,11 @@
 			_setupProvider();
 			// Initialize the instream player's model copied from main player's model
 			_fakemodel = new html5.model({}, _provider);
+			
 			// Update the instream player's model
 			_copyModel();
-			_fakemodel.addEventListener(_events.JWPLAYER_ERROR,errorHandler)
+			_fakemodel.addEventListener(_events.JWPLAYER_ERROR,errorHandler);
+			_view.addEventListener(_events.JWPLAYER_AD_SKIPPED, _skipAd);
 			// Set the new model's playlist
 			_olditem = _model.playlist[_model.item];
                 // Keep track of the original player state
@@ -138,7 +140,7 @@
     			}
     			
     			// Show the instream layer
-    			_view.setupInstream(_instreamContainer, _cbar, _disp);
+    			_view.setupInstream(_instreamContainer, _cbar, _disp, _defaultOptions.skipoffset);
     			// Resize the instream components to the proper size
     			_resize();
     			// Load the instream item
@@ -236,7 +238,7 @@
 		
 		
 		_self.jwInstreamUpdateSkipTime = function(position) {
-			
+			_view.updateSkipTime(position);
 			
 		}
 
@@ -271,13 +273,17 @@
 				_provider.addEventListener(_events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
 				_provider.addEventListener(_events.JWPLAYER_MEDIA_ERROR,errorHandler);
 				_provider.addEventListener(_events.JWPLAYER_PLAYER_STATE, _stateHandler);
+
 			//}
 			_provider.attachMedia();
 			_provider.mute(_model.mute);
 			_provider.volume(_model.volume);
 		}
 		
-		
+		function _skipAd(evt) {
+			
+			_self.jwInstreamDestroy(true);
+		}
 		function _stateHandler(evt) {
 			
 			_fakemodel.state = evt.newstate;

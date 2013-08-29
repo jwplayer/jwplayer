@@ -69,7 +69,8 @@
 		JWPLAYER_AD_CLICK: "jwplayerAdClicked",
 		JWPLAYER_AD_COMPLETE: "jwplayerAdComplete",
 		JWPLAYER_AD_IMPRESSION: "jwplayerAdImpression",
-		JWPLAYER_AD_COMPANIONS: "jwplayerAdCompanions"
+		JWPLAYER_AD_COMPANIONS: "jwplayerAdCompanions",
+		JWPLAYER_AD_SKIPPED: "jwplayerAdSkipped"
 	};
 
 })(jwplayer);

@@ -7,6 +7,7 @@ package com.longtailvideo.jwplayer.view {
 	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
 	import com.longtailvideo.jwplayer.events.PlaylistEvent;
 	import com.longtailvideo.jwplayer.events.ViewEvent;
+	import com.longtailvideo.jwplayer.events.JWAdEvent;
 	import com.longtailvideo.jwplayer.model.Model;
 	import com.longtailvideo.jwplayer.player.IPlayer;
 	import com.longtailvideo.jwplayer.player.PlayerState;
@@ -80,7 +81,9 @@ package com.longtailvideo.jwplayer.view {
 		protected var _instreamPlugin:IPlugin;
 		protected var _instreamAnim:Animations;
 		protected var _instreamControls:IPlayerComponents;
-		
+		protected var _skipUI:MovieClip;
+		protected var _skipText:TextField;
+		protected var _skipSet:Boolean = false;
 		protected var _displayMasker:MovieClip;
 		
 		protected var _image:Loader;
@@ -118,6 +121,8 @@ package com.longtailvideo.jwplayer.view {
 		private var _imageLoaded:Boolean = false;
 		// Indicates whether the instream player is being displayed
 		private var _instreamMode:Boolean = false;
+		private static var _SKIP_HEIGHT = 65;
+		private static var _SKIP_WIDTH = 115;
 		
 		public function View(player:IPlayer, model:Model) {
 			_player = player;
@@ -469,6 +474,11 @@ package com.longtailvideo.jwplayer.view {
 					}
 				}
 			}
+			if (_instreamMode && _skipUI) {
+				
+				_skipUI.x = _player.config.width - _SKIP_WIDTH;
+				_skipUI.y = _player.config.height/2 - Math.floor(_SKIP_HEIGHT/2);
+			}
 		}
 
 		protected function resizeMedia(width:Number, height:Number):void {
@@ -736,7 +746,7 @@ package com.longtailvideo.jwplayer.view {
 				dispatchEvent(evt);
 		}
 		
-		public function setupInstream(instreamDisplay:DisplayObject, controls:IPlayerComponents, plugin:IPlugin):void {
+		public function setupInstream(instreamDisplay:DisplayObject, controls:IPlayerComponents, plugin:IPlugin, _skipOffset:Number = -1):void {
 			_instreamAnim.cancelAnimation();
 			_instreamPlugin = plugin;
 			_instreamControls = controls;
@@ -746,6 +756,10 @@ package com.longtailvideo.jwplayer.view {
 			_mediaLayer.visible = false;
 			_componentsLayer.visible = false;
 
+			if (_skipOffset >= 0) {
+				setupSkipUI(_skipOffset);
+				
+			}
 			try {
 				var pluginDO:DisplayObject = plugin as DisplayObject;
 				if (pluginDO) {
@@ -758,6 +772,58 @@ package com.longtailvideo.jwplayer.view {
 			
 			_instreamAnim.fade(1);
 			_instreamMode = true;
+		}
+		
+		private function setupSkipUI(skipOffset:Number):void {
+			
+			_skipUI = new MovieClip();
+			_skipUI.x = _player.config.width - _SKIP_WIDTH;
+			_skipUI.y = _player.config.height/2 - Math.floor(_SKIP_HEIGHT/2);
+			_instreamLayer.addChild(_skipUI);
+			_skipUI.graphics.beginFill(0x000000, .5); 
+			_skipUI.graphics.drawRect(0,0,_SKIP_WIDTH,_SKIP_HEIGHT);
+			_skipUI.graphics.endFill();
+			_skipUI.graphics.lineStyle(1, 0xFFFFFF);
+			_skipUI.graphics.beginFill(0xFFFFFF, 0);
+			_skipUI.graphics.drawRect(0,0,_SKIP_WIDTH,_SKIP_HEIGHT);
+			_skipUI.graphics.endFill();
+			_skipText = new TextField();
+			_skipUI.addChild(_skipText);
+			var myFormat:TextFormat = new TextFormat();
+			myFormat.align = TextFormatAlign.CENTER;
+			myFormat.font = "Arial"
+			myFormat.size = 13;
+			_skipText.defaultTextFormat = myFormat;
+			_skipText.y = 25;
+			updateSkipText(skipOffset);
+		}
+		
+		
+		public function updateSkipText(skipOffset:Number):void {
+			if (skipOffset > 0) {
+				_skipText.text = "Skip ad in " + skipOffset;
+				_skipText.textColor= 0xFFFFFF;
+			} else if (!_skipSet) {
+				_skipText.y = 22;
+				_skipText.x = 10;
+				_skipText.text = "Skip Ad >>";
+				var myFormat:TextFormat = new TextFormat();
+				myFormat.align = TextFormatAlign.CENTER;
+				myFormat.font = "Arial"
+				myFormat.size = 20;
+				myFormat.underline = true;
+				
+				_skipText.setTextFormat(myFormat);
+				_skipUI.addEventListener(MouseEvent.CLICK, skipAd);
+				_skipUI.buttonMode = true;
+				_skipUI.mouseChildren=false;
+				_skipSet = true;
+			}
+		}
+		
+		
+		private function skipAd(evt:Event):void {
+			dispatchEvent(new JWAdEvent(JWAdEvent.JWPLAYER_AD_SKIPPED));
 		}
 		
 		public function destroyInstream():void {

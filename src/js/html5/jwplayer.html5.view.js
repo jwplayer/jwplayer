@@ -26,6 +26,7 @@
 		VIEW_CONTROLS_CONTAINER_CLASS = "jwcontrols",
 		VIEW_ASPECT_CONTAINER_CLASS = "jwaspect",
 		VIEW_PLAYLIST_CONTAINER_CLASS = "jwplaylistcontainer",
+		VIEW_INSTREAM_SKIP_CLASS = "jwinstreamskip"
 		
 		/*************************************************************
 		 * Player stylesheets - done once on script initialization;  *
@@ -41,7 +42,9 @@
 		JW_CSS_IMPORTANT = " !important",
 		JW_CSS_HIDDEN = "hidden",
 		JW_CSS_NONE = "none",
-		JW_CSS_BLOCK = "block";
+		JW_CSS_BLOCK = "block",
+		SKIP_WIDTH = 115,
+		SKIP_HEIGHT = 65;
 	
 	html5.view = function(api, model) {
 		var _api = api,
@@ -55,13 +58,16 @@
 			_timeoutDuration = _isMobile ? 4000 : 2000,
 			_videoTag,
 			_videoLayer,
+			_lastSkipWidth,
 			// _instreamControlbar,
 			// _instreamDisplay,
 			_instreamLayer,
+			_instreamSkipContainer,
 			_instreamSkip,
 			_instreamControlbar,
 			_instreamDisplay,
 			_instreamMode = FALSE,
+			_instreamSkipSet = FALSE,
 			_controlbar,
 			_display,
 			_dock,
@@ -78,7 +84,6 @@
 			_fullscreenInterval,
 			_inCB = FALSE,
 			_currentState,
-			_safeRegion,
 			_eventDispatcher = new events.eventdispatcher();
 
 		utils.extend(this, _eventDispatcher);
@@ -359,7 +364,7 @@
 			_redrawComponent(_display);
 			_redrawComponent(_dock);
 			_resizeMedia();
-			
+
 			if (_model.fullscreen) {
 				// Browsers seem to need an extra second to figure out how large they are in fullscreen...
 				_fullscreenInterval = setInterval(_resizeMedia, 200);
@@ -372,7 +377,18 @@
 				_model.width = dispBounds.width;
 				_model.height = dispBounds.height;
 				_eventDispatcher.sendEvent(events.JWPLAYER_RESIZE);
+
 			}, 0);
+			
+			setTimeout(function() {
+				if (_instreamMode && _instreamSkipContainer) {
+					var playersize = utils.bounds(document.getElementById(_api.id));
+
+					_instreamSkipContainer.style.top = (playersize.height/2 - 32) +"px";
+
+				}
+				
+			},1000);
 		}
 		
 		function _redrawComponent(comp) {
@@ -725,6 +741,7 @@
 			_setVisibility(_internalSelector(VIEW_CONTROLS_CONTAINER_CLASS), TRUE);
 			_instreamLayer.innerHTML = "";
 			_instreamMode = FALSE;
+			_instreamSkipSet = FALSE;
 		}
 		
 		this.setupError = function(message) {
@@ -734,12 +751,105 @@
 		}
 		
 		function _createSkipUI(skipoffset) {
+			_instreamSkipContainer = _createElement("div",VIEW_INSTREAM_SKIP_CLASS);
+			var playersize = utils.bounds(document.getElementById(_api.id));
+			_instreamSkipContainer.style.top = (playersize.height/2 - Math.floor(SKIP_HEIGHT/2)) +"px";
+			_instreamSkipContainer.style.width = SKIP_WIDTH + "px";
+			_instreamSkipContainer.style.height = SKIP_HEIGHT +"px";
 			
-			_instreamSkip = _createElement("canvas", VIEW_INSTREAM_CONTAINER_CLASS);
-			_instreamSkip.id = "skipElem";
-			_instreamLayer.appendChild(_instreamSkip);
+			//_instreamSkipContainer.style.bottom= saferegion.height +"px";
+			_instreamSkipContainer.id = "skipContainer";
+			_instreamSkip = _createElement("canvas");
+			_instreamSkip.width = SKIP_WIDTH;
+			_instreamSkip.height = SKIP_HEIGHT;
+			_instreamLayer.appendChild(_instreamSkipContainer);
+			_instreamSkipContainer.appendChild(_instreamSkip);
+			_updateTime(skipoffset);
+			_setupResponsiveListener();
+		}
+		
+		function _setupResponsiveListener() {
+			var responsiveListenerInterval = setInterval(function() {
+				var skipDOM = DOCUMENT.getElementById(_api.id),
+					skipWidth = utils.bounds(skipDOM).width; 
+						
+				if (skipDOM != _playerElement) {
+					// Player has been destroyed; clean up
+					clearInterval(responsiveListenerInterval);
+				} else if (skipWidth > 0) {
+					if (skipWidth != _lastSkipWidth) {
+						_lastSkipWidth = skipWidth;
+						var playersize = utils.bounds(skipDOM);
+						_instreamSkipContainer.style.top = (playersize.height/2 - Math.floor(SKIP_HEIGHT/2)) +"px";
+					}
+				}
+			}, 200)
+		}
+		
+		function _updateTime(skipoffset){
+			var ctx=_instreamSkip.getContext("2d");
+			ctx.clearRect(0,0,SKIP_WIDTH,SKIP_HEIGHT);
+			ctx.fillStyle="black";
+			ctx.globalAlpha = 0.5;
+			ctx.fillRect(0,0,SKIP_WIDTH,SKIP_HEIGHT);
+			
+			ctx.globalAlpha = 1.0;
+			ctx.strokeStyle = "white";
+    		ctx.strokeRect(0,0,SKIP_WIDTH,SKIP_HEIGHT);
+
+			ctx.font="13px Arial";
+			ctx.fillStyle="white";
+			var x = _instreamSkip.width / 2;
+			var y = _instreamSkip.height / 2;
+			ctx.textAlign = "center";
+			ctx.fillText("Skip ad in " + skipoffset ,x,y + 6);
 			
 		}
+		
+		this.updateSkipTime = function(time) {
+			var saferegion = _api.jwGetSafeRegion();
+			var ctx=_instreamSkip.getContext("2d");
+			if (time >= 0) {
+				_updateTime(time);
+			} else if (!_instreamSkipSet) {
+				ctx.clearRect(0,0,SKIP_WIDTH,SKIP_HEIGHT);
+				ctx.fillStyle="black";
+				ctx.globalAlpha = 0.5;
+				ctx.fillRect(0,0,SKIP_WIDTH,SKIP_HEIGHT);
+				ctx.globalAlpha = 1.0;
+				ctx.strokeStyle = "white";
+		   		ctx.strokeRect(0,0,SKIP_WIDTH,SKIP_HEIGHT);
+		   		ctx.fillStyle="white";
+				ctx.font="20px Arial";
+				var x = _instreamSkip.width / 2;
+				var y = _instreamSkip.height / 2;
+				ctx.textAlign = "center";
+				ctx.fillText("Skip ad >>",x,y + 10);
+				_instreamSkipContainer.addEventListener('click',skipAd);
+				_instreamSkipSet = TRUE;
+				_instreamSkipContainer.style.cursor = "pointer";
+				var textWidth =ctx.measureText("Skip ad >>").width;
+				var startY = y+10+(parseInt(20/15));
+				var endY = startY;
+ 				var underlineHeight = parseInt(20)/15;
+ 				if(underlineHeight < 1) underlineHeight = 1;
+ 				var startX,endX;
+				ctx.beginPath();
+				startX = x - (textWidth/2);
+    			endX = x + (textWidth/2);
+				ctx.strokeStyle = "white";
+				ctx.lineWidth = underlineHeight;
+				ctx.moveTo(startX,startY);
+				ctx.lineTo(endX,endY);
+				ctx.stroke();
+				
+			}
+		}
+		
+		function skipAd() {
+			_eventDispatcher.sendEvent(events.JWPLAYER_AD_SKIPPED);
+		}
+		
 		function _setVisibility(selector, state) {
 			_css(selector, { display: state ? JW_CSS_BLOCK : JW_CSS_NONE });
 		}
@@ -894,6 +1004,13 @@
 		bottom: 0,
 		right: 0,
 		display: 'none'
+	});
+
+
+	_css('.' + VIEW_INSTREAM_SKIP_CLASS, {
+		position: 'relative',
+		float:'right',
+		display:'inline-block'
 	});
 
 	_css('.' + VIEW_ASPECT_CONTAINER_CLASS, {
