@@ -291,7 +291,8 @@
 			onAdImpression: events.JWPLAYER_AD_IMPRESSION,
 			onAdTime: events.JWPLAYER_AD_TIME,
 			onAdComplete: events.JWPLAYER_AD_COMPLETE,
-			onAdCompanions: events.JWPLAYER_AD_COMPANIONS
+			onAdCompanions: events.JWPLAYER_AD_COMPANIONS,
+			onAdSkipped: events.JWPLAYER_AD_SKIPPED
 		};
 		
 		utils.foreach(_eventMapping, function(event) {

@@ -825,7 +825,15 @@
 				var y = _instreamSkip.height / 2;
 				ctx.textAlign = "center";
 				ctx.fillText("Skip ad >>",x,y + 10);
-				_instreamSkipContainer.addEventListener('click',skipAd);
+				if (_isMobile) {
+					var skipTouch = new utils.touch(_instreamSkipContainer);
+					skipTouch.addEventListener(utils.touchEvents.TAP, function(evt) {
+						skipAd();
+					})
+				}
+				else {
+					_instreamSkipContainer.addEventListener('click', skipAd);
+				}
 				_instreamSkipSet = TRUE;
 				_instreamSkipContainer.style.cursor = "pointer";
 				var textWidth =ctx.measureText("Skip ad >>").width;
