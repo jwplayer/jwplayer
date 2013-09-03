@@ -190,14 +190,13 @@ package com.longtailvideo.jwplayer.player
 		}
 		
 		protected function displayClicked(evt:ViewEvent):void {
-			if (getControls()) {
-				if (getState() == PlayerState.PAUSED) {
+			if (getState() == PlayerState.PAUSED) {
+				if (getControls())
 					play();
-				} else {
-					var req:URLRequest = new URLRequest(_clickUrl);
-					navigateToURL(req);
-					pause();
-				}
+			} else {
+				var req:URLRequest = new URLRequest(_clickUrl);
+				navigateToURL(req);
+				pause();
 			}
 			
 			var event:InstreamEvent = new InstreamEvent(InstreamEvent.JWPLAYER_INSTREAM_CLICKED);
