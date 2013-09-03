@@ -756,7 +756,7 @@ package com.longtailvideo.jwplayer.view {
 			_mediaLayer.visible = false;
 			_componentsLayer.visible = false;
 
-			if (_skipOffset >= 0) {
+			if (_skipOffset >= 0 && _model.config.controls) {
 				setupSkipUI(_skipOffset);
 				
 			}

@@ -730,7 +730,7 @@
 			_instreamDisplay = instreamDisplay;
 			_stateHandler({newstate:states.PLAYING});
 			_instreamMode = TRUE;
-			if (skipoffset >= 0) {
+			if (skipoffset >= 0 && _model.controls) {
 				_createSkipUI(skipoffset);
 				
 			}
