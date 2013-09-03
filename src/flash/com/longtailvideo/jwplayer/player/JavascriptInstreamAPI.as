@@ -268,10 +268,10 @@ package com.longtailvideo.jwplayer.player {
 			_isPlayer.setText(text);
 		}
 		
-		protected function js_updateSkipTime(pos:Number):void {
+		protected function js_updateSkipTime(pos:Number, tag:String):void {
 			if (!_isPlayer) return;
 			
-			_isPlayer.updateSkipTime(pos);
+			_isPlayer.updateSkipTime(pos, tag);
 		}
 		
 		protected function js_state():String {

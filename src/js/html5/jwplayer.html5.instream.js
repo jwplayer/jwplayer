@@ -237,8 +237,8 @@
 		}
 		
 		
-		_self.jwInstreamUpdateSkipTime = function(position) {
-			_view.updateSkipTime(position);			
+		_self.jwInstreamUpdateSkipTime = function(position, tag) {
+			_view.updateSkipTime(position, tag);			
 		}
 
 		_self.jwInstreamState = function() {

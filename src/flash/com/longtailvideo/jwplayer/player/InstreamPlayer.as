@@ -354,8 +354,8 @@ package com.longtailvideo.jwplayer.player
 			_controls.controlbar.setText(text);
 		}
 		
-		public function updateSkipTime(pos:Number):void {
-			_view.updateSkipText(pos);
+		public function updateSkipTime(pos:Number, tag:String):void {
+			_view.updateSkipText(pos, tag);
 		}
 		public function setClick(url:String=""):void {
 			_clickUrl = url;

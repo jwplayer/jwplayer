@@ -142,8 +142,8 @@
 			_player.jwInstreamSetText(text ? text : "");
 		}
 
-		_this.updateSkipTime = function(pos) {
-			_player.jwInstreamUpdateSkipTime(pos);
+		_this.updateSkipTime = function(pos, tag) {
+			_player.jwInstreamUpdateSkipTime(pos, tag);
 		}
 
 

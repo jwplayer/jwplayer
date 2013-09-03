@@ -84,6 +84,7 @@
 			_fullscreenInterval,
 			_inCB = FALSE,
 			_currentState,
+			_adTag,
 			_eventDispatcher = new events.eventdispatcher();
 
 		utils.extend(this, _eventDispatcher);
@@ -806,7 +807,8 @@
 			
 		}
 		
-		this.updateSkipTime = function(time) {
+		this.updateSkipTime = function(time, tag) {
+			_adTag = tag;
 			var ctx=_instreamSkip.getContext("2d");
 			if (time >= 0) {
 				_updateTime(time);
@@ -854,7 +856,7 @@
 		}
 		
 		function skipAd() {
-			_eventDispatcher.sendEvent(events.JWPLAYER_AD_SKIPPED);
+			_eventDispatcher.sendEvent(events.JWPLAYER_AD_SKIPPED, {tag: _adTag});
 		}
 		
 		function _setVisibility(selector, state) {

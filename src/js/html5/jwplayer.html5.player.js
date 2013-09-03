@@ -209,8 +209,8 @@
 				if (_instreamPlayer) _instreamPlayer.jwInstreamSetText(text);
 			}
 			
-			_api.jwInstreamUpdateSkipTime = function(position) {
-				if (_instreamPlayer) _instreamPlayer.jwInstreamUpdateSkipTime(position);
+			_api.jwInstreamUpdateSkipTime = function(position, tag) {
+				if (_instreamPlayer) _instreamPlayer.jwInstreamUpdateSkipTime(position, tag);
 			}
 
 			_api.jwIsBeforePlay = function () {

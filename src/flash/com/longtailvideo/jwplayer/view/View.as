@@ -2,12 +2,12 @@ package com.longtailvideo.jwplayer.view {
 	import com.longtailvideo.jwplayer.events.CaptionsEvent;
 	import com.longtailvideo.jwplayer.events.GlobalEventDispatcher;
 	import com.longtailvideo.jwplayer.events.IGlobalEventDispatcher;
+	import com.longtailvideo.jwplayer.events.JWAdEvent;
 	import com.longtailvideo.jwplayer.events.MediaEvent;
 	import com.longtailvideo.jwplayer.events.PlayerEvent;
 	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
 	import com.longtailvideo.jwplayer.events.PlaylistEvent;
 	import com.longtailvideo.jwplayer.events.ViewEvent;
-	import com.longtailvideo.jwplayer.events.JWAdEvent;
 	import com.longtailvideo.jwplayer.model.Model;
 	import com.longtailvideo.jwplayer.player.IPlayer;
 	import com.longtailvideo.jwplayer.player.PlayerState;
@@ -121,8 +121,9 @@ package com.longtailvideo.jwplayer.view {
 		private var _imageLoaded:Boolean = false;
 		// Indicates whether the instream player is being displayed
 		private var _instreamMode:Boolean = false;
-		private static var _SKIP_HEIGHT = 65;
-		private static var _SKIP_WIDTH = 115;
+		private static var _SKIP_HEIGHT:Number = 65;
+		private static var _SKIP_WIDTH:Number = 115;
+		private var _adTag:String = "";
 		
 		public function View(player:IPlayer, model:Model) {
 			_player = player;
@@ -796,11 +797,12 @@ package com.longtailvideo.jwplayer.view {
 			myFormat.size = 13;
 			_skipText.defaultTextFormat = myFormat;
 			_skipText.y = 25;
-			updateSkipText(skipOffset);
+			updateSkipText(skipOffset, "");
 		}
 		
 		
-		public function updateSkipText(skipOffset:Number):void {
+		public function updateSkipText(skipOffset:Number, tag:String):void {
+			_adTag = tag;
 			if (skipOffset > 0) {
 				_skipText.text = "Skip ad in " + skipOffset;
 				_skipText.textColor= 0xFFFFFF;
@@ -824,7 +826,9 @@ package com.longtailvideo.jwplayer.view {
 		
 		
 		private function skipAd(evt:Event):void {
-			dispatchEvent(new JWAdEvent(JWAdEvent.JWPLAYER_AD_SKIPPED));
+			var adEvent:JWAdEvent = new JWAdEvent(JWAdEvent.JWPLAYER_AD_SKIPPED);
+			adEvent.tag = _adTag;
+			dispatchEvent(adEvent);
 		}
 		
 		public function destroyInstream():void {
