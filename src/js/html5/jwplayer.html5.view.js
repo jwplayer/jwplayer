@@ -730,7 +730,7 @@
 			_instreamDisplay = instreamDisplay;
 			_stateHandler({newstate:states.PLAYING});
 			_instreamMode = TRUE;
-			if (skipoffset >= 0 && _model.controls) {
+			if (skipoffset >= 0) {
 				_createSkipUI(skipoffset);
 				
 			}
@@ -756,12 +756,12 @@
 			_instreamSkipContainer.style.top = (playersize.height/2 - Math.floor(SKIP_HEIGHT/2)) +"px";
 			_instreamSkipContainer.style.width = SKIP_WIDTH + "px";
 			_instreamSkipContainer.style.height = SKIP_HEIGHT +"px";
-			
-			//_instreamSkipContainer.style.bottom= saferegion.height +"px";
+
 			_instreamSkipContainer.id = "skipContainer";
 			_instreamSkip = _createElement("canvas");
 			_instreamSkip.width = SKIP_WIDTH;
 			_instreamSkip.height = SKIP_HEIGHT;
+			_instreamSkipContainer.style.visibility = _model.controls ? "visible" : "hidden";
 			_instreamLayer.appendChild(_instreamSkipContainer);
 			_instreamSkipContainer.appendChild(_instreamSkip);
 			_updateTime(skipoffset);
@@ -807,7 +807,6 @@
 		}
 		
 		this.updateSkipTime = function(time) {
-			var saferegion = _api.jwGetSafeRegion();
 			var ctx=_instreamSkip.getContext("2d");
 			if (time >= 0) {
 				_updateTime(time);
@@ -892,9 +891,11 @@
 			if (hidden) {
 				_instreamControlbar.hide();
 				_instreamDisplay.hide();
+;				if (_instreamSkipContainer) _instreamSkipContainer.style.visibility = "hidden";
 			} else {
 				_instreamControlbar.show();
 				_instreamDisplay.show();
+				if (_instreamSkipContainer) _instreamSkipContainer.style.visibility = "visible";
 			}
 		}
 		

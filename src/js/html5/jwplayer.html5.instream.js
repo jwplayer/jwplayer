@@ -238,9 +238,7 @@
 		
 		
 		_self.jwInstreamUpdateSkipTime = function(position) {
-			if (_model.controls)
-				_view.updateSkipTime(position);
-			
+			_view.updateSkipTime(position);			
 		}
 
 		_self.jwInstreamState = function() {

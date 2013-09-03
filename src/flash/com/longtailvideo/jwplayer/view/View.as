@@ -756,7 +756,7 @@ package com.longtailvideo.jwplayer.view {
 			_mediaLayer.visible = false;
 			_componentsLayer.visible = false;
 
-			if (_skipOffset >= 0 && _model.config.controls) {
+			if (_skipOffset >= 0) {
 				setupSkipUI(_skipOffset);
 				
 			}
@@ -777,6 +777,7 @@ package com.longtailvideo.jwplayer.view {
 		private function setupSkipUI(skipOffset:Number):void {
 			
 			_skipUI = new MovieClip();
+			_skipUI.visible = _model.config.controls;
 			_skipUI.x = _player.config.width - _SKIP_WIDTH;
 			_skipUI.y = _player.config.height/2 - Math.floor(_SKIP_HEIGHT/2);
 			_instreamLayer.addChild(_skipUI);
@@ -924,10 +925,12 @@ package com.longtailvideo.jwplayer.view {
 				// Reverting changes for setControls in ads (due to regressions in mobile)
 				if (_instreamMode) {
 					if (newstate) {
+						if (_skipUI) _skipUI.visible = true;
 						_instreamControls.controlbar.show();
 						_instreamControls.display.show();
 					}
 					else {
+						if (_skipUI) _skipUI.visible = false;
 						_instreamControls.controlbar.hide();
 						_instreamControls.display.hide();
 					}

@@ -355,7 +355,7 @@ package com.longtailvideo.jwplayer.player
 		}
 		
 		public function updateSkipTime(pos:Number):void {
-			if (_model.config.controls) _view.updateSkipText(pos);
+			_view.updateSkipText(pos);
 		}
 		public function setClick(url:String=""):void {
 			_clickUrl = url;
