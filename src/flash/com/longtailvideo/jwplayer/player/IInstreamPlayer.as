@@ -101,6 +101,5 @@ package com.longtailvideo.jwplayer.player
 		function getState():String;
 		function setText(text:String=""):void;
 		function updateSkipTime(pos:Number, tag:String):void;
-		function setClick(url:String=""):void;
 	}
 }

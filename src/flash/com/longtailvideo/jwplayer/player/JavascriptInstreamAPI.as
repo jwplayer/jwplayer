@@ -63,7 +63,6 @@ package com.longtailvideo.jwplayer.player {
 				// Instream API
 				ExternalInterface.addCallback("jwInstreamDestroy", js_destroyInstream);
 				ExternalInterface.addCallback("jwInstreamSetText", js_setText);
-				ExternalInterface.addCallback("jwInstreamClick", js_setClick);
 				ExternalInterface.addCallback("jwInstreamUpdateSkipTime", js_updateSkipTime);
 				
 				
@@ -278,12 +277,7 @@ package com.longtailvideo.jwplayer.player {
 			if (!_isPlayer) return PlayerState.IDLE;
 			return _isPlayer.getState();
 		}
-		
-		protected function js_setClick(url:String):void {
-			if (!_isPlayer) return;
-			_isPlayer.setClick(url);
-		}
-		
+
 	}
 
 }
