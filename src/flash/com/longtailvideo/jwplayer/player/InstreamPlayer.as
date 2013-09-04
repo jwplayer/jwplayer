@@ -62,6 +62,7 @@ package com.longtailvideo.jwplayer.player
 		protected var _mediaDisplayed:Boolean = false;
 		protected var _playCalled:Boolean = false;
 		protected var _viewSetup:Boolean = false;
+		protected var _clickUrl:String = "";
 		protected var _skipOffset:Number = -1;
 		
 		
@@ -189,13 +190,15 @@ package com.longtailvideo.jwplayer.player
 		}
 		
 		protected function displayClicked(evt:ViewEvent):void {
-			if (getControls()) {
-				if (getState() == PlayerState.PAUSED) {
+			if (getState() == PlayerState.PAUSED) {
+				if (getControls())
 					play();
-				} else {
-					pause();
-				}
+			} else {
+				var req:URLRequest = new URLRequest(_clickUrl);
+				navigateToURL(req);
+				pause();
 			}
+			
 			var event:InstreamEvent = new InstreamEvent(InstreamEvent.JWPLAYER_INSTREAM_CLICKED);
 			event.hasControls = getControls();
 			dispatchEvent(event);
@@ -353,6 +356,9 @@ package com.longtailvideo.jwplayer.player
 		
 		public function updateSkipTime(pos:Number, tag:String):void {
 			_view.updateSkipText(pos, tag);
+		}
+		public function setClick(url:String=""):void {
+			_clickUrl = url;
 		}
 		
 		protected function _destroy(complete:Boolean=false):void {
