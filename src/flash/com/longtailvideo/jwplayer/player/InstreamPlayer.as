@@ -190,18 +190,20 @@ package com.longtailvideo.jwplayer.player
 		}
 		
 		protected function displayClicked(evt:ViewEvent):void {
-			if (getState() == PlayerState.PAUSED) {
+			var state:String = getState();
+			if (state == PlayerState.PAUSED) {
 				if (getControls())
 					play();
 			} else {
+				var event:InstreamEvent = new InstreamEvent(InstreamEvent.JWPLAYER_INSTREAM_CLICKED);
+				event.hasControls = getControls();
+				dispatchEvent(event);
 				var req:URLRequest = new URLRequest(_clickUrl);
 				navigateToURL(req);
 				pause();
 			}
 			
-			var event:InstreamEvent = new InstreamEvent(InstreamEvent.JWPLAYER_INSTREAM_CLICKED);
-			event.hasControls = getControls();
-			dispatchEvent(event);
+
 		}
 
 		protected function addControlbarListeners():void {
