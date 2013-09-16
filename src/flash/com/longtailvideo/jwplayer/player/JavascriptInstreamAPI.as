@@ -20,12 +20,14 @@ package com.longtailvideo.jwplayer.player {
 		protected var _player:IPlayer;
 		protected var _lockPlugin:IPlugin;
 		protected var _lockedPlayer:Boolean = false;
+		protected var _tag:String;
 		
 		public function JavascriptInstreamAPI(isplayer:IInstreamPlayer, options:IInstreamOptions, player:IPlayer, lockPlugin:IPlugin) {
 			_isPlayer = isplayer;
 			_isOptions = options;
 			_player = player;
 			_lockPlugin = lockPlugin;
+			_tag = options.tag;
 
 			setupPlayerListeners();
 			setupJSListeners();
@@ -114,6 +116,8 @@ package com.longtailvideo.jwplayer.player {
 			}
 			
 			args.type = evt.type;
+			args.tag = _tag;
+			
 			if (evt.type == MediaEvent.JWPLAYER_MEDIA_ERROR) {
 				_isPlayer.destroy();
 			}
@@ -165,16 +169,11 @@ package com.longtailvideo.jwplayer.player {
 
 		protected function listenerCallbackInstream(evt:InstreamEvent):Object {
 			if (evt.type == InstreamEvent.JWPLAYER_INSTREAM_DESTROYED) {
-				return {
-					destroyedReason: evt.destroyedReason
-				}
+				return { destroyedReason: evt.destroyedReason };
 			} else if (evt.type == InstreamEvent.JWPLAYER_INSTREAM_CLICKED) {
-				return {
-					hasControls: evt.hasControls
-				};
-			} else {
-				return {};
-			}
+				return { hasControls: evt.hasControls };
+			} 
+			return {};
 		}
 
 

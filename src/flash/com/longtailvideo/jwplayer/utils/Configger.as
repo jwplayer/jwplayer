@@ -42,6 +42,7 @@ package com.longtailvideo.jwplayer.utils {
 		 * Loads configuration flashvars
 		 * @param params Hash map containing key/value pairs
 		 */
+		/*
 		public function loadFlashvars(params:Object):void {
 			try {
 				for (var param:String in params) {
@@ -53,6 +54,7 @@ package com.longtailvideo.jwplayer.utils {
 			}
 		
 		}
+		*/
 
 		/**
 		 * Loads configuration from JW Embedder

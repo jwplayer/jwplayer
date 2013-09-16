@@ -9,7 +9,8 @@ package com.longtailvideo.jwplayer.model {
 		protected var _controlbarStoppable:Boolean = true;
 		protected var _playlistClickable:Boolean = true;
 		protected var _autoLoad:Boolean = false;
-		protected var skipoffset:Number = -1;
+		protected var _skipoffset:Number = -1;
+		protected var _tag:String;
 		
 		public function InstreamOptions(options:Object=null) {
 			if (options) {
@@ -64,11 +65,19 @@ package com.longtailvideo.jwplayer.model {
 		}
 		
 		public function get skipOffset():Number {
-			return skipoffset;
+			return _skipoffset;
 		}
 		
 		public function set skipOffset(p:Number):void {
-			skipoffset = p;
+			_skipoffset = p;
+		}
+		
+		public function get tag():String {
+			return _tag;
+		}
+
+		public function set tag(t:String) {
+			_tag = t;
 		}
 	}
 }

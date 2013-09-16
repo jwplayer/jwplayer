@@ -14,13 +14,16 @@
 		var _api = api,
 			_player = player,
 			_item = item,
-			_options = options,
+			_options = options || {},
 			_listeners = {},
 			_stateListeners = {},
 			_this = this;
 		
 		function _init() {
-		   	_api.callInternal("jwLoadInstream", item, options ? options : {});
+			_this.type = "instream";
+			_this.tracker = _options.tracker;
+			
+		   	_api.callInternal("jwLoadInstream", item, _options);
 		}
 
 		

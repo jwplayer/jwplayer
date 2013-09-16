@@ -33,7 +33,6 @@ package com.longtailvideo.jwplayer.player
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
 	import flash.events.Event;
-	import flash.external.ExternalInterface;
 	import flash.geom.Rectangle;
 	import flash.net.URLRequest;
 	import flash.net.navigateToURL;

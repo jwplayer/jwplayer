@@ -17,7 +17,8 @@
 			controlbarpausable:true,
 			controlbarstoppable:true,
 			playlistclickable:true,
-			skipoffset:-1
+			skipoffset:-1,
+			tag: null
 		};
 		
 		var _item,
@@ -40,7 +41,7 @@
 			_instreamContainer, 
 			_fakemodel,
 			_self = this, 
-			_loadError = false, 
+			_loadError = false,
 			_shouldSeek = true;
 
 
@@ -245,7 +246,7 @@
 			if (!_instreamMode) return;
 			return _model.state;
 		}
-
+		
 		/*****************************
 		 ****** Private methods ****** 
 		 *****************************/
@@ -338,6 +339,8 @@
 		
 		function _sendEvent(type, data, forceSend) {
 			if (_instreamMode || forceSend) {
+				data = data || {};
+				if (_defaultOptions.tag && !data.tag) data.tag = _defaultOptions.tag;
 				_dispatcher.sendEvent(type, data);
 			}
 		}

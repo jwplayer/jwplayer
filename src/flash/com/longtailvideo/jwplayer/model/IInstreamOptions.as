@@ -8,5 +8,6 @@ package com.longtailvideo.jwplayer.model
 		function get playlistclickable():Boolean;
 		function get autoload():Boolean;
 		function get skipOffset():Number;
+		function get tag():String;
 	}
 }
