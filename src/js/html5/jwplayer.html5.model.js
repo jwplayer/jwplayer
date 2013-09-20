@@ -64,17 +64,8 @@
 			// This gets added later
 			_model.playlist = [];
 			_model.setItem(0);
-			
-			if (video) {
-				_video = video;
-				_videoTag = _video.getTag();
-			} else {
-				_videoTag = document.createElement("video");
-				_video = new html5.video(_videoTag);
-			}
-			_video.volume(_model.volume);
-			_video.mute(_model.mute);
-			_video.addGlobalListener(_videoEventHandler);
+			_model.setVideo(video ? video : new html5.video());
+
 		}
 		
 		var _eventMap = {};
@@ -104,6 +95,20 @@
 			} else {
 				_model.sendEvent(evt.type, evt);
 			}
+		}
+		
+		/** Sets the video provider **/
+		_model.setVideo = function(video) {
+			if (_video) {
+				_video.removeGlobalListener(_videoEventHandler);
+			}
+
+			_video = video;
+			_videoTag = _video.getTag();
+
+			_video.volume(_model.volume);
+			_video.mute(_model.mute);
+			_video.addGlobalListener(_videoEventHandler);
 		}
 		
 		_model.getVideo = function() {

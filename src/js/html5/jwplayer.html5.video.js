@@ -96,6 +96,8 @@
 
 		// Constructor
 		function _init(videotag) {
+			if (!videotag) videotag = document.createElement("video");
+
 			_videotag = videotag;
 			_setupListeners();
 

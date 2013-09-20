@@ -16,7 +16,6 @@
 	html5.controller = function(model, view) {
 		var _model = model,
 			_view = view,
-			_video = model.getVideo(),
 			_controller = this,
 			_eventDispatcher = new events.eventdispatcher(_model.id, _model.config.debug),
 			_ready = FALSE,
@@ -41,6 +40,10 @@
 				evtClone.type = events.JWPLAYER_ERROR;
 				_eventDispatcher.sendEvent(evtClone.type, evtClone);
 			});
+		}
+		
+		function _video() {
+			return model.getVideo();
 		}
 		
 		function _playerReady(evt) {
@@ -80,7 +83,7 @@
 		}
 		
 		function _bufferFullHandler(evt) {
-			_video.play();
+			_video().play();
 		}
 
 		function _load(item) {
@@ -135,9 +138,9 @@
 				
 				if (_isIdle()) {
 					if (_model.playlist.length == 0) return FALSE;
-					_video.load(_model.playlist[_model.item]);
+					_video().load(_model.playlist[_model.item]);
 				} else if (_model.state == states.PAUSED) {
-					_video.play();
+					_video().play();
 				}
 				
 				return TRUE;
@@ -152,7 +155,7 @@
 			_actionOnAttach = null;
 			try {
 				if (!_isIdle()) {
-					_video.stop();
+					_video().stop();
 				} else if (!internal) {
 					_stopPlaylist = TRUE;
 				}
@@ -175,7 +178,7 @@
 				switch (_model.state) {
 					case states.PLAYING:
 					case states.BUFFERING:
-						_video.pause();
+						_video().pause();
 						break;
 					default:
 						if (_preplay) {
@@ -196,7 +199,7 @@
 		
 		function _seek(pos) {
 			if (_model.state != states.PLAYING) _play(TRUE);
-			_video.seek(pos);
+			_video().seek(pos);
 		}
 		
 		function _setFullscreen(state) {
@@ -241,16 +244,16 @@
 		}
 		
 		function _setCurrentQuality(quality) {
-			_video.setCurrentQuality(quality);
+			_video().setCurrentQuality(quality);
 		}
 
 		function _getCurrentQuality() {
-			if (_video) return _video.getCurrentQuality();
+			if (_video()) return _video().getCurrentQuality();
 			else return -1;
 		}
 
 		function _getQualityLevels() {
-			if (_video) return _video.getQualityLevels();
+			if (_video()) return _video().getQualityLevels();
 			else return null;
 		}
 
