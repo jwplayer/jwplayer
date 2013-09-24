@@ -64,11 +64,11 @@ package com.longtailvideo.jwplayer.model {
 			return _autoLoad;
 		}
 		
-		public function get skipOffset():Number {
+		public function get skipoffset():Number {
 			return _skipoffset;
 		}
 		
-		public function set skipOffset(p:Number):void {
+		public function set skipoffset(p:Number):void {
 			_skipoffset = p;
 		}
 		

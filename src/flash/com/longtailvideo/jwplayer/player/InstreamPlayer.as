@@ -80,7 +80,7 @@ package com.longtailvideo.jwplayer.player
 			if (!_options.autoload) {
 				_playCalled = true;
 			}
-			if (_options.skipOffset) _skipOffset = _options.skipOffset;
+			if (_options.skipoffset >= 0) _skipOffset = _options.skipoffset;
 			_isConfig = new PlayerConfig();
 			_isConfig.setConfig({
 				volume: _model.config.volume,
