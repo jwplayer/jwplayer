@@ -214,7 +214,7 @@ package com.longtailvideo.jwplayer.view {
 		}
 		
 		protected function resumeFade(evt:Event=null):void {
-			_preventFade = false;
+			if (_model.media.display) _preventFade = false;
 		}
 		
 		protected function keyFocusOutHandler(evt:FocusEvent):void {
@@ -364,7 +364,7 @@ package com.longtailvideo.jwplayer.view {
 
 		protected function resizeHandler(event:Event):void {
 			_fullscreen = (RootReference.stage.displayState == StageDisplayState.FULL_SCREEN);
-			_preventFade = false;
+			if (_model.media.display) _preventFade = false;
 			if (_model.fullscreen != _fullscreen) {
 				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_FULLSCREEN, _fullscreen));
 			}
@@ -700,6 +700,7 @@ package com.longtailvideo.jwplayer.view {
 			} else {
 				showImage();
 				components.controlbar.hideFullscreen(true);
+				if (_model.state != PlayerState.IDLE) showControls();
 			} 
 		}
 		
@@ -715,6 +716,10 @@ package com.longtailvideo.jwplayer.view {
 					imageDelay.start();
 					break;
 				case PlayerState.BUFFERING:
+					if (!_model.media.display) {
+						showControls();
+						_preventFade = true;
+					}
 					_completeState = false;
 					hideControls();
 					break;

@@ -26,7 +26,7 @@
 		VIEW_CONTROLS_CONTAINER_CLASS = "jwcontrols",
 		VIEW_ASPECT_CONTAINER_CLASS = "jwaspect",
 		VIEW_PLAYLIST_CONTAINER_CLASS = "jwplaylistcontainer",
-		VIEW_INSTREAM_SKIP_CLASS = "jwinstreamskip"
+		VIEW_INSTREAM_SKIP_CLASS = "jwinstreamskip",
 		
 		/*************************************************************
 		 * Player stylesheets - done once on script initialization;  *
@@ -559,7 +559,7 @@
 		}
 		
 		function _hideControlbar() {
-			if (_controlbar && !_audioMode) {
+			if (_controlbar && !_audioMode && !_model.getVideo().audioMode()) {
 				_controlbar.hide();
 			}
 		}
@@ -568,7 +568,7 @@
 			if (_dock && !_audioMode && _model.controls) _dock.show();
 		}
 		function _hideDock() {
-			if (_dock && !_replayState) {
+			if (_dock && !_replayState && !_model.getVideo().audioMode()) {
 				_dock.hide();
 			}
 		}
@@ -577,7 +577,7 @@
 			if (_logo && !_audioMode) _logo.show();
 		}
 		function _hideLogo() {
-			if (_logo) _logo.hide(_audioMode);
+			if (_logo && !_model.getVideo().audioMode()) _logo.hide(_audioMode);
 		}
 
 		function _showDisplay() {
@@ -689,13 +689,18 @@
 					_resizeMedia();
 					_display.hidePreview(TRUE);
 					if (_controlbar) _controlbar.hideFullscreen(FALSE);
+					_hideControls();
 				} else {
 					_showVideo(FALSE);
 					_display.hidePreview(_audioMode);
 					_display.setHiding(TRUE);
-					if (_controlbar) _controlbar.hideFullscreen(TRUE);
+					if (_controlbar) {
+						_showControls();
+						_controlbar.hideFullscreen(TRUE);
+					} 
+					_showDock();
+					_showLogo();
 				}
-				_hideControls();
 				break;
 			case states.IDLE:
 				_showVideo(FALSE);
