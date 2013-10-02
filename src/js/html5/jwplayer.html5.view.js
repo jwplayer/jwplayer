@@ -147,6 +147,7 @@
 			_videoTag.addEventListener('webkitbeginfullscreen', _fullscreenChangeHandler, FALSE);
 			_videoTag.addEventListener('webkitendfullscreen', _fullscreenChangeHandler, FALSE);
 			DOCUMENT.addEventListener('mozfullscreenchange', _fullscreenChangeHandler, FALSE);
+			DOCUMENT.addEventListener('MSFullscreenChange', _fullscreenChangeHandler, FALSE);
 			DOCUMENT.addEventListener('keydown', _keyHandler, FALSE);
 
 			_api.jwAddEventListener(events.JWPLAYER_PLAYER_READY, _readyHandler);
@@ -336,6 +337,8 @@
 						_playerElement.mozRequestFullScreen();
 					} else if (_playerElement.webkitRequestFullScreen) {
 						_playerElement.webkitRequestFullScreen();
+					} else if (_playerElement.msRequestFullscreen) {
+						_playerElement.msRequestFullscreen();
 					}
 					_model.setFullscreen(TRUE);
 				}
@@ -356,6 +359,8 @@
 				    	DOCUMENT.mozCancelFullScreen();  
 				    } else if (DOCUMENT.webkitCancelFullScreen) {  
 				    	DOCUMENT.webkitCancelFullScreen();  
+				    } else if (DOCUMENT.msExitFullscreen) {
+				    	DOCUMENT.msExitFullscreen();
 				    }
 				}
 				if (_isIPad && _api.jwGetState() == states.PAUSED) {
@@ -536,12 +541,12 @@
 		 * Return whether or not we're in native fullscreen
 		 */
 		function _isNativeFullscreen() {
-			var fsElements = [DOCUMENT.mozFullScreenElement, DOCUMENT.webkitCurrentFullScreenElement, _videoTag.webkitDisplayingFullscreen];
-			for (var i=0; i<fsElements.length; i++) {
-				if (fsElements[i] && (!fsElements[i].id || fsElements[i].id == _api.id))
-					return TRUE;
-			}
-			return FALSE;
+			var fsElement = DOCUMENT.mozFullScreenElement || 
+							DOCUMENT.webkitCurrentFullScreenElement ||
+							DOCUMENT.msFullscreenElement ||
+							_videoTag.webkitDisplayingFullscreen;
+			
+			return !!(fsElement && (!fsElement.id || fsElement.id == _api.id));
 		}
 		
 		/**
@@ -954,6 +959,7 @@
 		this.destroy = function () {
 			DOCUMENT.removeEventListener('webkitfullscreenchange', _fullscreenChangeHandler, FALSE);
 			DOCUMENT.removeEventListener('mozfullscreenchange', _fullscreenChangeHandler, FALSE);
+			DOCUMENT.removeEventListener('MSFullscreenChange', _fullscreenChangeHandler, FALSE);
 			_videoTag.removeEventListener('webkitbeginfullscreen', _fullscreenChangeHandler, FALSE);
 			_videoTag.removeEventListener('webkitendfullscreen', _fullscreenChangeHandler, FALSE);
 			DOCUMENT.removeEventListener('keydown', _keyHandler, FALSE);
