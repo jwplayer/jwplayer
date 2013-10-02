@@ -323,6 +323,8 @@
 			}
 
 			if (state) {
+				if (_model.getVideo().audioMode()) return;
+				
 				if (_isMobile) {
 					_videoTag.webkitEnterFullScreen();
 					_model.setFullscreen(TRUE);
@@ -869,7 +871,10 @@
 		}
 		
 		this.addButton = function(icon, label, handler, id) {
-			if (_dock) _dock.addButton(icon, label, handler, id);
+			if (_dock) {
+				_dock.addButton(icon, label, handler, id);
+				if (_api.jwGetState() == states.IDLE) _showDock();
+			}
 		}
 
 		this.removeButton = function(id) {
