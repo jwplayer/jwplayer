@@ -272,7 +272,7 @@
 				_provider.addEventListener(_events.JWPLAYER_MEDIA_COMPLETE, _completeHandler);
 				_provider.addEventListener(_events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
 				_provider.addEventListener(_events.JWPLAYER_MEDIA_ERROR,errorHandler);
-				_provider.addEventListener(_events.JWPLAYER_PLAYER_STATE, _stateHandler);
+				//_provider.addEventListener(_events.JWPLAYER_PLAYER_STATE, _stateHandler);
 
 			//}
 			_provider.attachMedia();
