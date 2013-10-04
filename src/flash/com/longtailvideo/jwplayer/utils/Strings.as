@@ -237,7 +237,13 @@ package com.longtailvideo.jwplayer.utils {
 				return false;
 		}
 		
-
+		/** Capitalizes the first letter of a string; rest is lowercased **/
+		public static function capitalizeFirst(s:String):String {
+			var firstChar:String = s.charAt(0);
+			var rest:String = s.substr(1, s.length-1);
+			
+			return firstChar.toUpperCase() + rest.toLowerCase();
+		}
 		
 	}
 	
