@@ -759,7 +759,7 @@
 		
 		this.setupError = function(message) {
 			_errorState = TRUE;
-			jwplayer.embed.errorScreen(_playerElement, message);
+			jwplayer.embed.errorScreen(_playerElement, message, _model);
 			_completeSetup();
 		}
 		

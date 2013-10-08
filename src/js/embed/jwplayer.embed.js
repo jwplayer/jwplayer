@@ -139,36 +139,6 @@
 			}
 		}
 
-		function _errorScreen(message) {
-			if (_errorOccurred) return;
-			
-			if (!_config.fallback) {
-				_dispatchSetupError(message, FALSE);
-				return;
-			}
-			
-			var style = _container.style;
-			style.backgroundColor = "#000";
-			style.color = "#FFF";
-			style.width = utils.styleDimension(_config.width);
-			style.height = utils.styleDimension(_config.height);
-			style.display = "table";
-			style.opacity = 1;
-			
-			var text = document.createElement("p"),
-				textStyle = text.style;	
-			textStyle.verticalAlign = "middle";
-			textStyle.textAlign = "center";
-			textStyle.display = "table-cell";
-			textStyle.font = "15px/20px Arial, Helvetica, sans-serif";
-			text.innerHTML = message.replace(":", ":<br>");
-
-			_container.innerHTML = "";
-			_container.appendChild(text);
-			_errorOccurred = TRUE;
-			_dispatchSetupError(message, TRUE);
-		}
-
 		function _dispatchSetupError(message, fallback) {
 			if (_setupErrorTimer) {
 				clearTimeout(_setupErrorTimer);
@@ -177,12 +147,46 @@
 			playerApi.dispatchEvent(events.JWPLAYER_SETUP_ERROR, {message: message, fallback: fallback});
 		}	
 
-		// Make this publicly accessible so the HTML5 player can error out on setup using the same code
+		function _errorScreen(message) {
+			if (_errorOccurred) return;
+
+			if (!_config.fallback) {
+				_dispatchSetupError(message, FALSE);
+				return;
+			}
+
+			_errorOccurred = TRUE;
+			_displayError(_container, message)
+			_dispatchSetupError(message, TRUE);
+		}
+		
 		_this.errorScreen = _errorScreen;
 		
 		return _this;
 	};
 
-	
+	function _displayError(container, message, config) {
+		var style = container.style;
+		style.backgroundColor = "#000";
+		style.color = "#FFF";
+		style.width = utils.styleDimension(config.width);
+		style.height = utils.styleDimension(config.height);
+		style.display = "table";
+		style.opacity = 1;
+		
+		var text = document.createElement("p"),
+			textStyle = text.style;	
+		textStyle.verticalAlign = "middle";
+		textStyle.textAlign = "center";
+		textStyle.display = "table-cell";
+		textStyle.font = "15px/20px Arial, Helvetica, sans-serif";
+		text.innerHTML = message.replace(":", ":<br>");
+
+		container.innerHTML = "";
+		container.appendChild(text);
+	}
+
+	// Make this publicly accessible so the HTML5 player can error out on setup using the same code
+	jwplayer.embed.errorScreen = _displayError;
 	
 })(jwplayer);
