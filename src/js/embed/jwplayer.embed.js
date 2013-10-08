@@ -21,7 +21,9 @@
 			_errorText = "Error loading player: ",
 			_pluginloader = jwplayer.plugins.loadPlugins(playerApi.id, _config.plugins),
 			_playlistLoading = FALSE,
-			_setupErrorTimer = null;
+			_errorOccurred = FALSE,
+			_setupErrorTimer = null,
+			_this = this;
 
 		if (_config.fallbackDiv) {
 			_fallbackDiv = _config.fallbackDiv;
@@ -49,22 +51,16 @@
 			});
 		}
 		
-		function _embedPlayer() {
-			
-			if (_config.sitecatalyst) {
-				try {
-					if (s != null && s.hasOwnProperty("Media")) {
+		_this.embed = function() {
+			if (_errorOccurred) return;
 
-					}
-					else {
-						_adobeError();
-					}
-				}
-				catch (e) {
-					_adobeError();
-					return;
-				}
-			}
+			_pluginloader.addEventListener(events.COMPLETE, _doEmbed);
+			_pluginloader.addEventListener(events.ERROR, _pluginError);
+			_pluginloader.load();
+		}
+		
+		function _doEmbed() {
+			if (_errorOccurred) return;
 
 			if (utils.typeOf(_config.playlist) == "array" && _config.playlist.length < 2) {
 				if (_config.playlist.length == 0 || !_config.playlist[0].sources || _config.playlist[0].sources.length == 0) {
@@ -80,7 +76,7 @@
 				loader.addEventListener(events.JWPLAYER_PLAYLIST_LOADED, function(evt) {
 					_config.playlist = evt.playlist;
 					_playlistLoading = FALSE;
-					_embedPlayer();
+					_doEmbed();
 				});
 				loader.addEventListener(events.JWPLAYER_ERROR, function(evt) {
 					_playlistLoading = FALSE;
@@ -128,32 +124,30 @@
 		}
 		
 		function _embedError(evt) {
-			_errorScreen(_container, _errorText + evt.message);
+			_errorScreen(_errorText + evt.message);
 		}
 		
 		function _pluginError(evt) {
-			_errorScreen(_container, "Could not load plugins: " + evt.message);
+			_errorScreen("Could not load plugins: " + evt.message);
 		}
 		
 		function _sourceError(evt) {
 			if (evt && evt.message) {
-				_errorScreen(_container, "Error loading playlist: " + evt.message);
+				_errorScreen("Error loading playlist: " + evt.message);
 			} else {
-				_errorScreen(_container, _errorText  + "No playable sources found");
+				_errorScreen(_errorText  + "No playable sources found");
 			}
 		}
 
-		function _adobeError() {
-			_errorScreen(_container, "Adobe SiteCatalyst Error: Could not find Media Module");	
-		}
-		
-		function _errorScreen(container, message) {
+		function _errorScreen(message) {
+			if (_errorOccurred) return;
+			
 			if (!_config.fallback) {
 				_dispatchSetupError(message, FALSE);
 				return;
 			}
-				
-			var style = container.style;
+			
+			var style = _container.style;
 			style.backgroundColor = "#000";
 			style.color = "#FFF";
 			style.width = utils.styleDimension(_config.width);
@@ -169,8 +163,9 @@
 			textStyle.font = "15px/20px Arial, Helvetica, sans-serif";
 			text.innerHTML = message.replace(":", ":<br>");
 
-			container.innerHTML = "";
-			container.appendChild(text);
+			_container.innerHTML = "";
+			_container.appendChild(text);
+			_errorOccurred = TRUE;
 			_dispatchSetupError(message, TRUE);
 		}
 
@@ -183,13 +178,9 @@
 		}	
 
 		// Make this publicly accessible so the HTML5 player can error out on setup using the same code
-		jwplayer.embed.errorScreen = _errorScreen;
+		_this.errorScreen = _errorScreen;
 		
-		_pluginloader.addEventListener(events.COMPLETE, _embedPlayer);
-		_pluginloader.addEventListener(events.ERROR, _pluginError);
-		_pluginloader.load();
-		
-		return playerApi;
+		return _this;
 	};
 
 	

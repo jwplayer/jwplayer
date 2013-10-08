@@ -338,7 +338,8 @@
 				_remove(_this);
 				var newApi = jwplayer(_this.id);
 				newApi.config = options;
-				return new jwplayer.embed(newApi);
+				var embedder = new jwplayer.embed(newApi);
+				embedder.embed();
 			}
 			return _this;
 		};
