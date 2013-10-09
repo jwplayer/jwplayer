@@ -100,7 +100,7 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 		
 		
-		public function addElement(elementName:String, visible:Boolean=false):Sprite {
+		protected function addElement(elementName:String, visible:Boolean=false):Sprite {
 			var element:DisplayObject = _skin.getSkinElement(_skinComponent, _name + elementName);
 			if (!element) {
 				element = new Sprite();

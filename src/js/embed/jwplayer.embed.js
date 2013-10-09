@@ -156,7 +156,7 @@
 			}
 
 			_errorOccurred = TRUE;
-			_displayError(_container, message)
+			_displayError(_container, message, _config)
 			_dispatchSetupError(message, TRUE);
 		}
 		

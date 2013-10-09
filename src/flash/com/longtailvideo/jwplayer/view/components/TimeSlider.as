@@ -1,12 +1,15 @@
 package com.longtailvideo.jwplayer.view.components {
+	import com.longtailvideo.jwplayer.events.ViewEvent;
 	import com.longtailvideo.jwplayer.utils.RootReference;
 	import com.longtailvideo.jwplayer.utils.Strings;
 	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
 	
 	import flash.display.DisplayObject;
+	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
-	import flash.external.ExternalInterface;
+	import flash.utils.clearTimeout;
+	import flash.utils.setTimeout;
 	
 	public class TimeSlider extends Slider {
 		private var _duration:Number;
@@ -14,6 +17,8 @@ package com.longtailvideo.jwplayer.view.components {
 		private var _audioMode:Boolean = false;
 		private var _controlbar:DisplayObject;
 		private var _thumbnailImages:TooltipThumbnails;
+		private var _cues:Array = [];
+		private var _activeCue:Object;
 		
 		public function TimeSlider(name:String, skin:ISkin, controlbar:DisplayObject) {
 			super(name, skin);
@@ -38,16 +43,52 @@ package com.longtailvideo.jwplayer.view.components {
 			
 		}
 		
+		protected function addCue(pos:Number, text:String):void {
+			var cueElem:Sprite = addElement("cue", true);
+			var cue:Object = {
+				position: pos,
+				text: text,
+				element: cueElem
+			};
+			_cues.push(cue);
+			cueElem.addEventListener(MouseEvent.MOUSE_OVER, function():void { _activeCue = cue; });
+			cueElem.addEventListener(MouseEvent.MOUSE_OUT, function():void { _activeCue = null; });
+			cueElem.addEventListener(MouseEvent.CLICK, cueClickHandler);
+			cueElem.addEventListener(MouseEvent.MOUSE_MOVE, moveHandler);
+			positionCues();
+		}
+		
+		protected function cueClickHandler(evt:MouseEvent):void {
+			dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_CLICK, _activeCue.position / _duration));
+		}
+
+		protected function positionCues():void {
+			for each (var cue:Object in _cues) {
+				cue.element.x = (cue.position / _duration) * _width;
+			}
+			
+		}
+		
+		public override function resize(width:Number, height:Number):void {
+			super.resize(width, height);
+			positionCues();
+		}
+		
 		public function setDuration(d:Number):void {
 			_duration = d;
+			positionCues();
 		}
 		
 		private function overHandler(evt:MouseEvent):void {
 			if (!_audioMode) _tooltip.show();
 		}
 
+		var hideTimeout:Number;
+		
 		private function outHandler(evt:MouseEvent = null):void {
-			hide();
+			hideTimeout = setTimeout(function():void {
+				if (!_activeCue) hide();
+			}, 100);
 		}
 		
 		public function setThumbs(thumbs:String=null):void {
@@ -63,16 +104,21 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 		
 		private function moveHandler(evt:MouseEvent):void {
+			clearTimeout(hideTimeout);
 			if (_duration > 0 || _duration <= -60) {
 				RootReference.stage.setChildIndex(_tooltip, RootReference.stage.numChildren-1);
-				var seconds:Number = Math.round(_duration * sliderPercent(evt.localX));
-				if (_duration <= -60) {
-					seconds = _duration - seconds;
-					seconds = seconds > 0 ? 0 : seconds;
-					_tooltip.text = "-" + Strings.digits((-1*seconds));
-				}
-				else {
-					_tooltip.text = Strings.digits(seconds)
+				if (_activeCue) {
+					_tooltip.text = _activeCue.text;
+				} else {
+					var seconds:Number = Math.round(_duration * sliderPercent(evt.localX));
+					if (_duration <= -60) {
+						seconds = _duration - seconds;
+						seconds = seconds > 0 ? 0 : seconds;
+						_tooltip.text = "-" + Strings.digits((-1*seconds));
+					}
+					else {
+						_tooltip.text = Strings.digits(seconds);
+					}
 				}
 				_tooltip.x = evt.stageX;
 				_tooltip.y = _controlbar.getBounds(RootReference.stage).y;
@@ -88,5 +134,6 @@ package com.longtailvideo.jwplayer.view.components {
 		public function hide():void {
 			_tooltip.hide();
 		}
+		
 	}
 }

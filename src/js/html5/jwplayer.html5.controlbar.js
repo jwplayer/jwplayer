@@ -130,6 +130,8 @@
 			_lastSeekTime = 0,
 			_lastWidth = -1,
 			_lastTooltipPositionTime = 0,
+			_cues = [],
+			_activeCue,
 			_eventDispatcher = new events.eventdispatcher(),
 			
 			_toggles = {
@@ -267,6 +269,7 @@
 				}
 				if (evt.duration > 0) {
 					_setProgress(evt.position / evt.duration);
+					refreshRequired = (refreshRequired || evt.duration != _duration);
 				} else {
 					_setProgress(0);
 				}
@@ -667,7 +670,7 @@
 		}
 		
 		function _seek(pct) {
-			_api.jwSeek(pct * _duration);
+			_api.jwSeek(_activeCue ? _activeCue.position : pct * _duration);
 		}
 		
 		function _fullscreen() {
@@ -1084,7 +1087,7 @@
 		}
 		
 		function _setTimeOverlay(sec) {
-			_timeOverlayText.innerHTML = utils.timeFormat(sec);
+			_timeOverlayText.innerHTML = _activeCue ? _activeCue.text : utils.timeFormat(sec);
 			_timeOverlayThumb.updateTimeline(sec); 
 			_timeOverlay.setContents(_timeOverlayContainer);
 			_cbBounds = utils.bounds(_controlbar);
@@ -1102,10 +1105,48 @@
 				});
 			}
 
+			var cueClass = "timeSliderCue", 
+				cue = _getSkinElement(cueClass),
+				cueStyle = {
+					'z-index': 1 	
+				};
+			
+			if (cue && cue.src) {
+				_buildImage(cueClass);
+			} else {
+				cueStyle.display = JW_CSS_NONE;
+			}
+			_css(_internalSelector(".jw" + cueClass), cueStyle);
+			
 			_setBuffer(0);
 			_setProgress(0);
 		}
 		
+		function _addCue(timePos, text) {
+			if (timePos >= 0) {
+				var cueElem = _buildImage("timeSliderCue"),
+					rail = _controlbar.querySelector(".jwtimeSliderRail");
+					
+				if (cueElem && rail) {
+					rail.appendChild(cueElem);
+					cueElem.addEventListener("mouseover", function() { _activeCue = cue; }, false);
+					cueElem.addEventListener("mouseout", function() { _activeCue = NULL; }, false);
+				}
+
+				_cues.push({
+					position: timePos,
+					text: text,
+					element: cueElem
+				});
+			}
+			_drawCues();
+		}
+		
+		function _drawCues() {
+			utils.foreach(_cues, function(idx, cue) {
+				cue.element.style.left = (100 * cue.position / _duration) + "%";
+			});
+		}
 		
 		_this.setText = function(text) {
 			_css(_internalSelector(".jwelapsed"), text ? HIDDEN : SHOWING);
@@ -1319,8 +1360,8 @@
 			_css(_internalSelector(".jwhd"), { display: !_audioMode && _hasHD() ? UNDEFINED : JW_CSS_NONE });
 			_css(_internalSelector(".jwcc"), { display: !_audioMode && _hasCaptions() ? UNDEFINED : JW_CSS_NONE });
 
-			
 			_positionOverlays();
+			_drawCues();
 		}
 		
 		function _updateNextPrev() {
