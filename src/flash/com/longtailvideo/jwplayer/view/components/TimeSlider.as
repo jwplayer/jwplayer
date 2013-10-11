@@ -99,6 +99,19 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 		}
 		
+		public function setCues(cues:Array=null):void {	
+			for each (var cue:Object in cues) {
+				addCue(cue.begin,cue.text);
+			}	
+		}
+		
+		public function removeCues():void {	
+			for each (var cue:Object in _cues) {
+				removeChild(cue.element);
+			}
+			_cues = [];
+		}
+		
 		private function thumbsLoaded(evt:Event):void {
 			_tooltip.addChild(_thumbnailImages);
 		}

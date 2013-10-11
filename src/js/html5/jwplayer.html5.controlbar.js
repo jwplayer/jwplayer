@@ -309,17 +309,25 @@
 		}
 		
 		function _itemHandler(evt) {
-			var tracks = _api.jwGetPlaylist()[evt.index].tracks;
+			var tracks = _api.jwGetPlaylist()[evt.index].tracks,
+				tracksloaded = FALSE,
+				cuesloaded = FALSE;
+			_removeCues();
 			if (utils.typeOf(tracks) == "array" && !_isMobile) {
 				for (var i=0; i < tracks.length; i++) {
-					if (tracks[i].file && tracks[i].kind && tracks[i].kind.toLowerCase() == "thumbnails") {
+					if (!tracksloaded && tracks[i].file && tracks[i].kind && tracks[i].kind.toLowerCase() == "thumbnails") {
 						_timeOverlayThumb.load(tracks[i].file);
-						return;
+						tracksloaded  = TRUE;
+					}
+					if (tracks[i].file && tracks[i].kind && tracks[i].kind.toLowerCase() == "chapters") {
+						_loadCues(tracks[i].file)
+						cuesloaded = TRUE;
 					}
 				}
 			}
 			// If we're here, there are no thumbnails to load - we should clear out the thumbs from the previous item
-			_timeOverlayThumb.load();
+			if (!tracksloaded) _timeOverlayThumb.load();
+
 		}
 		
 		function _muteHandler() {
@@ -834,7 +842,6 @@
 				_appendChild(_timeOverlayContainer, _timeOverlayText);
 				_timeOverlay.setContents(_timeOverlayContainer);
 				//_overlays.time = _timeOverlay;
-				
 				_timeRail = rail;
 				_setTimeOverlay(0);
 				_appendChild(rail, _timeOverlay.element());
@@ -1125,19 +1132,20 @@
 		function _addCue(timePos, text) {
 			if (timePos >= 0) {
 				var cueElem = _buildImage("timeSliderCue"),
-					rail = _controlbar.querySelector(".jwtimeSliderRail");
-					
+					rail = _controlbar.querySelector(".jwtimeSliderRail"),
+					cue = {
+						position: timePos,
+						text: text,
+						element: cueElem};
+				
+				
 				if (cueElem && rail) {
 					rail.appendChild(cueElem);
 					cueElem.addEventListener("mouseover", function() { _activeCue = cue; }, false);
 					cueElem.addEventListener("mouseout", function() { _activeCue = NULL; }, false);
 				}
 
-				_cues.push({
-					position: timePos,
-					text: text,
-					element: cueElem
-				});
+				_cues.push(cue);
 			}
 			_drawCues();
 		}
@@ -1146,6 +1154,14 @@
 			utils.foreach(_cues, function(idx, cue) {
 				cue.element.style.left = (100 * cue.position / _duration) + "%";
 			});
+		}
+		
+		function _removeCues() {
+			var rail = _controlbar.querySelector(".jwtimeSliderRail");
+			utils.foreach(_cues, function(idx, cue) {
+				rail.removeChild(cue.element);
+			});
+			_cues = [];	
 		}
 		
 		_this.setText = function(text) {
@@ -1535,6 +1551,28 @@
 		function _clearHdTapTimeout() {
 			clearTimeout(_hdTapTimer);
 			_hdTapTimer = UNDEFINED;
+		}
+		
+		function _loadCues(vttFile) {
+			if (vttFile) {
+	           	new jwplayer.parsers.srt(_cueLoaded, _cueFailed, true).load(vttFile);
+	       } else {
+	       		_cues = [];
+	       }
+		}
+		
+		function _cueLoaded(data) {
+			if (!utils.typeOf(data) == "array") {
+        		return _cueFailed("Invalid data");
+        	}
+        	utils.foreach(data,function(idx,elem) {
+        		
+        		_addCue(elem.begin,elem.text);
+        	});
+		}
+		
+		function _cueFailed(error) {
+			utils.log("Cues failed to load: " + error);
 		}
 		
 		_this.hide = function() {

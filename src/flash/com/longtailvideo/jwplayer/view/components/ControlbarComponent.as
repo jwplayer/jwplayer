@@ -6,9 +6,11 @@ package com.longtailvideo.jwplayer.view.components {
 	import com.longtailvideo.jwplayer.events.PlaylistEvent;
 	import com.longtailvideo.jwplayer.events.ViewEvent;
 	import com.longtailvideo.jwplayer.model.PlaylistItem;
+	import com.longtailvideo.jwplayer.parsers.SRT;
 	import com.longtailvideo.jwplayer.player.IPlayer;
 	import com.longtailvideo.jwplayer.player.PlayerState;
 	import com.longtailvideo.jwplayer.utils.Animations;
+	import com.longtailvideo.jwplayer.utils.AssetLoader;
 	import com.longtailvideo.jwplayer.utils.Logger;
 	import com.longtailvideo.jwplayer.utils.RootReference;
 	import com.longtailvideo.jwplayer.utils.Strings;
@@ -18,8 +20,11 @@ package com.longtailvideo.jwplayer.view.components {
 	import flash.display.DisplayObject;
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
+	import flash.events.ErrorEvent;
 	import flash.events.Event;
+	import flash.events.IOErrorEvent;
 	import flash.events.MouseEvent;
+	import flash.events.SecurityErrorEvent;
 	import flash.events.TimerEvent;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
@@ -27,7 +32,6 @@ package com.longtailvideo.jwplayer.view.components {
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	import flash.utils.Timer;
-
 
 	/**
 	 * Sent when the user interface requests that the player play the currently loaded media
@@ -129,7 +133,7 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _bgColorSheet:Sprite;
 		public var _altMask:Sprite;
 		protected var _liveMode:Boolean = false;
-		
+		private var _vttLoader:AssetLoader;
 		protected var animations:Animations;
 		protected var _fadingOut:Number;
 		protected var _instreamMode:Boolean;
@@ -149,7 +153,9 @@ package com.longtailvideo.jwplayer.view.components {
 			updateControlbarState();
 			setTime(0, 0);
 			updateVolumeSlider();
-			
+			_vttLoader = new AssetLoader();
+			_vttLoader.addEventListener(Event.COMPLETE, loadComplete);
+			_vttLoader.addEventListener(ErrorEvent.ERROR, loadError);		
 		}
 		
 		public function setText(text:String=""):void {
@@ -194,16 +200,19 @@ package com.longtailvideo.jwplayer.view.components {
 
 		private function playlistHandler(evt:PlaylistEvent):void {
 			_liveMode = false;
+			(_timeSlider as TimeSlider).removeCues();
 			if (_timeSlider) {
 				_timeSlider.reset();
 				var item:PlaylistItem = player.playlist.currentItem;
 				var setThumbs:Boolean = false;
 				if (item.tracks.length > 0) {
 					for each(var track:Object in item.tracks) {
-						if (track.file && track.kind is String && String(track.kind).toLowerCase() == "thumbnails") {
+						if (!setThumbs && track.file && track.kind is String && String(track.kind).toLowerCase() == "thumbnails") {
 							(_timeSlider as TimeSlider).setThumbs(track.file);
 							setThumbs = true;
-							continue;
+						}
+						if (track.file && track.kind is String && String(track.kind).toLowerCase() == "chapters") {
+							setCues(track.file);
 						}
 					}
 				}
@@ -215,7 +224,20 @@ package com.longtailvideo.jwplayer.view.components {
 			updateControlbarState();
 			redraw();
 		}
+		
+		private function setCues(file:String=null):void {
+			_vttLoader.load(file, String);
+		}
 
+		private function loadComplete(evt:Event):void {
+			var cues:Array = SRT.parseCaptions(_vttLoader.loadedObject as String, true);
+			(_timeSlider as TimeSlider).setCues(cues);
+		}
+		
+		private function loadError(evt:Event):void {
+			Logger.log("error loading cues:" + evt.type);
+		}
+		
 		private function get maxWidth():Number {
 			return getConfigParam('maxwidth') ? Number(getConfigParam('maxwidth')) : 800;			
 		}
