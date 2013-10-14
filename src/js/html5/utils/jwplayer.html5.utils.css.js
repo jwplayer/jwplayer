@@ -208,7 +208,8 @@
 			'vertical-align': 'baseline',
 			'background-color': 'transparent',
 			'text-align': 'left',
-			'direction':'ltr'
+			'direction':'ltr',
+			'-webkit-tap-highlight-color': 'rgba(255, 255, 255, 0)'
 		});
 		
 		_css(JW_CLASS + "ul", { 'list-style': "none" });
