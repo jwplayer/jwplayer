@@ -427,10 +427,13 @@
 		if (xmldocpath.indexOf("#") > 0) xmldocpath = xmldocpath.replace(/#.*$/, "");
 
 		if (_isCrossdomain(xmldocpath) && utils.exists(WINDOW.XDomainRequest)) {
-			// IE9
+			// IE8 / 9
 			xmlhttp = new XDomainRequest();
 			xmlhttp.onload = _ajaxComplete(xmlhttp, xmldocpath, completecallback, errorcallback);
 			xmlhttp.onerror = _ajaxError(errorcallback, xmldocpath, xmlhttp);
+			xmlhttp.ontimeout = function() {};
+			xmlhttp.onprogress = function() {};
+			xmlhttp.timeout = 5000;
 		} else if (utils.exists(WINDOW.XMLHttpRequest)) {
 			// Firefox, Chrome, Opera, Safari
 			xmlhttp = new XMLHttpRequest();
