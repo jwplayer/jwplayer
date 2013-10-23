@@ -187,8 +187,7 @@
 		
 		utils.css(selector, {
 			'-webkit-transition': style,
-			'-moz-transition': style,
-			'-o-transition': style
+			transition: style
 		});
 	}
 
