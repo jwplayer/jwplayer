@@ -9,8 +9,7 @@
 		UNDEFINED = "undefined", STRING = "string", OBJECT = "object";
 	
 	//Declare namespace
-	var utils = jwplayer.utils = function() {
-	};
+	var utils = jwplayer.utils = function() {};
 
 	/**
 	 * Returns true if the value of the object is null, undefined or the empty
@@ -565,7 +564,7 @@
 				var type = sources[i].type,
 					file = sources[i].file;
 				
-				if (file && !!file.trim) file = file.trim();
+				if (file) file = utils.trim(file);
 				
 				if (!type) {
 					type = extensionmap.extType(utils.extension(file));

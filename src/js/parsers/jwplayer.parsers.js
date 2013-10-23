@@ -21,9 +21,9 @@
 			if (!node) {
 				return "";
 			} else if (node.textContent) {
-				return node.textContent;
+				return jwplayer.utils.trim(node.textContent);
 			} else if (node.text) {
-				return node.text;
+				return jwplayer.utils.trim(node.text);
 			} else {
 				return "";
 			}
