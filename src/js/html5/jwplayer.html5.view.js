@@ -16,8 +16,9 @@
 		_isIPod = utils.isIPod(),
 		_isAndroid = utils.isAndroid(),
         _isIOS = utils.isIOS(),
-		DOCUMENT = document, 
-		PLAYER_CLASS = "jwplayer", 
+        _isIOS7 = utils.isIOS7(),
+		DOCUMENT = document,
+		PLAYER_CLASS = "jwplayer",
 		ASPECT_MODE = "aspectMode",
 		FULLSCREEN_SELECTOR = "."+PLAYER_CLASS+".jwfullscreen",
 		VIEW_MAIN_CONTAINER_CLASS = "jwmain",
@@ -347,7 +348,9 @@
 					_videoTag.webkitExitFullScreen();
 					_model.setFullscreen(FALSE);
 					if(_isIPad) {
-						_videoTag.controls = TRUE;
+						if (!_isIOS7)	{
+							_videoTag.controls = TRUE;
+						}
 						_videoTag.controls = FALSE;
 					}
 				} else if (_model.fullscreen) {

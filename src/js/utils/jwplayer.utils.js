@@ -126,6 +126,7 @@
 	utils.isIOS = _browserCheck(/iP(hone|ad|od)/i);
 	utils.isIPod = _browserCheck(/iP(hone|od)/i);
 	utils.isIPad = _browserCheck(/iPad/i);
+	utils.isIOS7 = utils.isIOS && _browserCheck(/OS 7_.+ like Mac OS X/i);
 	utils.isSafari602 = _browserCheck(/Macintosh.*Mac OS X 10_8.*6\.0\.\d* Safari/i);
 
 	utils.isSafari = function() {
