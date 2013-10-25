@@ -764,19 +764,21 @@
 		}
 		
 		function _createSkipUI(skipoffset) {
-			_instreamSkipContainer = _createElement("div",VIEW_INSTREAM_SKIP_CLASS);
+			if (!_instreamSkipContainer) {
+				_instreamSkipContainer = _createElement("div",VIEW_INSTREAM_SKIP_CLASS);
+				_instreamSkipContainer.id = "skipContainer";
+				_instreamSkip = _createElement("canvas");
+				_instreamSkipContainer.appendChild(_instreamSkip);
+			}
 			var playersize = utils.bounds(document.getElementById(_api.id));
 			_instreamSkipContainer.style.top = (playersize.height/2 - Math.floor(SKIP_HEIGHT/2)) +"px";
 			_instreamSkipContainer.style.width = SKIP_WIDTH + "px";
 			_instreamSkipContainer.style.height = SKIP_HEIGHT +"px";
-
-			_instreamSkipContainer.id = "skipContainer";
-			_instreamSkip = _createElement("canvas");
+			_instreamSkipContainer.style.visibility = _model.controls ? "visible" : "hidden";
 			_instreamSkip.width = SKIP_WIDTH;
 			_instreamSkip.height = SKIP_HEIGHT;
-			_instreamSkipContainer.style.visibility = _model.controls ? "visible" : "hidden";
+			
 			_instreamLayer.appendChild(_instreamSkipContainer);
-			_instreamSkipContainer.appendChild(_instreamSkip);
 			_updateTime(skipoffset);
 			_setupResponsiveListener();
 		}
