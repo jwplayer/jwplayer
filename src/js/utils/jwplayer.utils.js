@@ -123,16 +123,23 @@
 	utils.isIE = _browserCheck(/msie/i);
 	utils.isFF = _browserCheck(/firefox/i);
 	utils.isChrome = _browserCheck(/chrome/i);
-	utils.isIOS = _browserCheck(/iP(hone|ad|od)/i);
 	utils.isIPod = _browserCheck(/iP(hone|od)/i);
 	utils.isIPad = _browserCheck(/iPad/i);
-	utils.isIOS7 = utils.isIOS && _browserCheck(/OS 7_.+ like Mac OS X/i);
 	utils.isSafari602 = _browserCheck(/Macintosh.*Mac OS X 10_8.*6\.0\.\d* Safari/i);
 
 	utils.isSafari = function() {
 		return (_userAgentMatch(/safari/i) && !_userAgentMatch(/chrome/i) && !_userAgentMatch(/chromium/i) && !_userAgentMatch(/android/i));
 	}
-	
+
+	/** Matches iOS devices **/
+	utils.isIOS = function(version) {
+		if (version) {
+			return _userAgentMatch(new RegExp("iP(hone|ad|od).+\\sOS\\s"+version, "i"));
+		} else {
+			return _userAgentMatch(/iP(hone|ad|od)/i);
+		}
+	};
+
 	/** Matches Android devices **/	
 	utils.isAndroid = function(version) {
 		if (version) {

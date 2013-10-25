@@ -84,6 +84,8 @@
 		_currentQuality = -1,
 		// Whether or not we're on an Android device
 		_isAndroid = utils.isAndroid(),
+		// Whether or not we're on an iOS 7 device
+		_isIOS7 = utils.isIOS(7),
 		// Reference to self
 		_this = this,
 		
@@ -102,8 +104,10 @@
 			_setupListeners();
 
 			// Workaround for a Safari bug where video disappears on switch to fullscreen
-			_videotag.controls = TRUE;
-			_videotag.controls = FALSE;
+			if (!_isIOS7)	{
+				_videotag.controls = TRUE;
+				_videotag.controls = FALSE;
+			}
 			
 			// Enable AirPlay
 			_videotag.setAttribute("x-webkit-airplay", "allow");
