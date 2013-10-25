@@ -849,6 +849,7 @@ package com.longtailvideo.jwplayer.view {
 
 			_instreamAnim.fade(0);
 			_instreamMode = false;
+			_skipSet = false;
 		}
 		
 		protected function instreamAnimationComplete(evt:Event):void {

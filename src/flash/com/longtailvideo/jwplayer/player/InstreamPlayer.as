@@ -81,6 +81,7 @@ package com.longtailvideo.jwplayer.player
 				_playCalled = true;
 			}
 			if (_options.skipoffset >= 0) _skipOffset = _options.skipoffset;
+
 			_isConfig = new PlayerConfig();
 			_isConfig.setConfig({
 				volume: _model.config.volume,
@@ -364,7 +365,7 @@ package com.longtailvideo.jwplayer.player
 		}
 		
 		protected function _destroy(complete:Boolean=false):void {
-			if (!complete && _provider.state != PlayerState.IDLE) {
+			if (!complete && _provider && _provider.state != PlayerState.IDLE) {
 				_provider.stop();
 			}
 			_view.destroyInstream();
