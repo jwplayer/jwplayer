@@ -53,7 +53,7 @@
         function _parse(data) {
             // Trim whitespace and split the list by returns.
             var _captions = _mergeBeginEnd ? [] : [{begin:0, text:''}];
-            data = utils.trim(data);
+            data = _utils.trim(data);
             var list = data.split("\r\n\r\n");
             if(list.length == 1) { list = data.split("\n\n"); }
             for(var i=0; i<list.length; i++) {
