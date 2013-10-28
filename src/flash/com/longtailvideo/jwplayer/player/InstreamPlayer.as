@@ -28,7 +28,7 @@ package com.longtailvideo.jwplayer.player
 	import com.longtailvideo.jwplayer.view.interfaces.IDisplayComponent;
 	import com.longtailvideo.jwplayer.view.interfaces.IPlayerComponent;
 	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
-	
+	import flash.external.ExternalInterface;
 	import flash.display.DisplayObject;
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
@@ -198,9 +198,8 @@ package com.longtailvideo.jwplayer.player
 				var event:InstreamEvent = new InstreamEvent(InstreamEvent.JWPLAYER_INSTREAM_CLICKED);
 				event.hasControls = getControls();
 				dispatchEvent(event);
-				_view.fullscreen(false);	
-				var req:URLRequest = new URLRequest(_clickUrl);
-				navigateToURL(req);
+				_view.fullscreen(false);
+				ExternalInterface.call('window.open', _clickUrl, '_blank');
 				pause();
 			}
 			
