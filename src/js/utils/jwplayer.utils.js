@@ -5,8 +5,14 @@
  * @version 6.0
  */
 (function(jwplayer) {
-	var DOCUMENT = document, WINDOW = window, NAVIGATOR = navigator, 
-		UNDEFINED = "undefined", STRING = "string", OBJECT = "object";
+	var DOCUMENT = document, 
+		WINDOW = window, 
+		NAVIGATOR = navigator, 
+		UNDEFINED = "undefined", 
+		STRING = "string", 
+		OBJECT = "object",
+		TRUE = true, 
+		FALSE = false;
 	
 	//Declare namespace
 	var utils = jwplayer.utils = function() {};
@@ -25,9 +31,9 @@
 		case OBJECT:
 			return (item !== null);
 		case UNDEFINED:
-			return false;
+			return FALSE;
 		}
-		return true;
+		return TRUE;
 	}
 
 	/** Used for styling dimensions in CSS -- return the string unchanged if it's a percentage width; add 'px' otherwise **/ 
@@ -141,11 +147,13 @@
 	};
 
 	/** Matches Android devices **/	
-	utils.isAndroid = function(version) {
+	utils.isAndroid = function(version, excludeChrome) {
+		//Android Browser appears to include a user-agent string for Chrome/18
+		var androidBrowser = excludeChrome ? !_userAgentMatch(/chrome\/[23456789]/i) : TRUE;
 		if (version) {
-			return _userAgentMatch(new RegExp("android.*"+version, "i"));
+			return androidBrowser && _userAgentMatch(new RegExp("android.*"+version, "i"));
 		} else {
-			return _userAgentMatch(/android/i);
+			return androidBrowser && _userAgentMatch(/android/i);
 		}
 	}
 
@@ -188,7 +196,7 @@
 	utils.translateEventResponse = function(type, eventProperties) {
 		var translated = utils.extend({}, eventProperties);
 		if (type == jwplayer.events.JWPLAYER_FULLSCREEN && !translated.fullscreen) {
-			translated.fullscreen = translated.message == "true" ? true : false;
+			translated.fullscreen = translated.message == "true" ? TRUE : FALSE;
 			delete translated.message;
 		} else if (typeof translated.data == OBJECT) {
 			// Takes ViewEvent "data" block and moves it up a level
@@ -451,7 +459,7 @@
 		}
 		 
 		try {
-			xmlhttp.open("GET", xmldocpath, true);
+			xmlhttp.open("GET", xmldocpath, TRUE);
 			xmlhttp.send(null);
 		} catch (error) {
 			if (errorcallback) errorcallback(xmldocpath);
@@ -462,9 +470,9 @@
 	function _isCrossdomain(path) {
 		if (path && path.indexOf("://") >= 0) {
 			if (path.split("/")[2] != WINDOW.location.href.split("/")[2])
-				return true
+				return TRUE;
 		} 
-		return false;	
+		return FALSE;	
 	}
 	
 	function _ajaxError(errorcallback, xmldocpath, xmlhttp) {
@@ -549,7 +557,7 @@
 		if (checkFlash && pl.length == 0) {
 			for (i=0; i < playlist.length; i++) {
 				item = utils.extend({}, playlist[i]);
-				item.sources = utils.filterSources(item.sources, true);
+				item.sources = utils.filterSources(item.sources, TRUE);
 				if (item.sources.length > 0) {
 					for (j = 0; j < item.sources.length; j++) {
 						source = item.sources[j];
@@ -605,7 +613,7 @@
 	
 	/** Returns true if the type is playable in HTML5 **/
 	utils.canPlayHTML5 = function(type) {
-		if (utils.isAndroid() && (type == "hls" || type == "m3u" || type == "m3u8")) return false;
+		if (utils.isAndroid() && (type == "hls" || type == "m3u" || type == "m3u8")) return FALSE;
 		var mime = utils.extensionmap.types[type];
 		return (!!mime && !!jwplayer.vid.canPlayType && jwplayer.vid.canPlayType(mime));
 	}
@@ -650,9 +658,9 @@
 		if (val == null) {
 			return null;
 		} else if (val.toString().toLowerCase() == 'true') {
-			return true;
+			return TRUE;
 		} else if (val.toString().toLowerCase() == 'false') {
-			return false;
+			return FALSE;
 		} else if (isNaN(Number(val)) || val.length > 5 || val.length == 0) {
 			return val;
 		} else {

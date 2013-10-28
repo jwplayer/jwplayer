@@ -83,7 +83,7 @@
 		// Current quality level index
 		_currentQuality = -1,
 		// Whether or not we're on an Android device
-		_isAndroid = utils.isAndroid(),
+		_isAndroid = utils.isAndroid(FALSE, TRUE),
 		// Whether or not we're on an iOS 7 device
 		_isIOS7 = utils.isIOS(7),
 		// Reference to self
@@ -147,6 +147,7 @@
 
 		function _timeUpdateHandler(evt) {
 			_generalHandler(evt);
+			_progressHandler(evt);
 			if (!_attached) return;
 			if (_state == states.PLAYING && !_dragging) {
 				_position = _round(_videotag.currentTime);
@@ -188,7 +189,7 @@
 			_generalHandler(evt);
 			if (_canSeek && _delayedSeek > 0 && !_isAndroid) {
 				// Need to set a brief timeout before executing delayed seek; IE9 stalls otherwise.
-				if (_isIE) setTimeout(function() { _seek(_delayedSeek);}, 200);
+				if (_isIE) setTimeout(function() { if (_delayedSeek > 0) _seek(_delayedSeek);}, 200);
 				// Otherwise call it immediately
 				else _seek(_delayedSeek);
 			}
