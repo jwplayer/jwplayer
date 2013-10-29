@@ -83,7 +83,6 @@ package com.longtailvideo.jwplayer.view {
 		protected var _instreamControls:IPlayerComponents;
 		protected var _skipUI:MovieClip;
 		protected var _skipText:TextField;
-		protected var _skipSet:Boolean = false;
 		protected var _displayMasker:MovieClip;
 		
 		protected var _image:Loader;
@@ -811,7 +810,7 @@ package com.longtailvideo.jwplayer.view {
 			if (skipOffset > 0) {
 				_skipText.text = "Skip ad in " + skipOffset;
 				_skipText.textColor= 0xFFFFFF;
-			} else if (!_skipSet) {
+			} else {
 				_skipText.y = 22;
 				_skipText.x = 10;
 				_skipText.text = "Skip Ad >>";
@@ -825,7 +824,6 @@ package com.longtailvideo.jwplayer.view {
 				_skipUI.addEventListener(MouseEvent.CLICK, skipAd);
 				_skipUI.buttonMode = true;
 				_skipUI.mouseChildren=false;
-				_skipSet = true;
 			}
 		}
 		
@@ -849,7 +847,6 @@ package com.longtailvideo.jwplayer.view {
 
 			_instreamAnim.fade(0);
 			_instreamMode = false;
-			_skipSet = false;
 		}
 		
 		protected function instreamAnimationComplete(evt:Event):void {
