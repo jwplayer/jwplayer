@@ -147,6 +147,7 @@ package com.longtailvideo.jwplayer.view.components {
 				loader.load(new URLRequest(outIcon));
 				_outIcon = loader;
 			}
+			if (!_over) outHandler();
 		}
 		
 		
