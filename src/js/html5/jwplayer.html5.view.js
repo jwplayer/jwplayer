@@ -844,7 +844,7 @@
 					var skipTouch = new utils.touch(_instreamSkipContainer);
 					skipTouch.addEventListener(utils.touchEvents.TAP, function(evt) {
 						skipAd();
-					})
+					});
 				}
 				else {
 					_instreamSkipContainer.addEventListener('click', skipAd);
@@ -928,34 +928,40 @@
 		
 		
 		this.getSafeRegion = function() {
+			var bounds = {
+				x: 0,
+				y: 0,
+				width: 0,
+				height: 0
+			};
+			if (!_model.controls) {
+				return bounds;
+			}
 			_controlbar.showTemp();
 			_dock.showTemp();
-			var controls = _model.controls,
-				dispBounds = utils.bounds(_container),
+			var dispBounds = utils.bounds(_container),
 				dispOffset = dispBounds.top,
-				cbBounds = _instreamMode ? utils.bounds(DOCUMENT.getElementById(_api.id + "_instream_controlbar")) : utils.bounds(_controlbar ? _controlbar.element() : null),
+				cbBounds = _instreamMode ? utils.bounds(DOCUMENT.getElementById(_api.id + "_instream_controlbar")) : utils.bounds(_controlbar.element()),
 				dockButtons = _instreamMode ? false : (_dock.numButtons() > 0),
-				dockBounds = utils.bounds(_dock.element()),
-				logoBounds = utils.bounds(_logo.element()),
-				logoTop = (_logo.position().indexOf("top") == 0), 
-				bounds = {};
+				logoTop = (_logo.position().indexOf("top") === 0),
+				dockBounds,
+				logoBounds = utils.bounds(_logo.element());
+			if (dockButtons) {
+				dockBounds = utils.bounds(_dock.element());
+				bounds.y = Math.max(0, dockBounds.bottom - dispOffset);
+			}
+			if (logoTop) {
+				bounds.y = Math.max(bounds.y, logoBounds.bottom - dispOffset);
+			}
+			bounds.width = dispBounds.width;
+			if (cbBounds.height) {
+				bounds.height = (logoTop ? cbBounds.top : logoBounds.top) - dispOffset - bounds.y;
+			} else {
+				bounds.height = dispBounds.height - bounds.y;
+			}
 			_controlbar.hideTemp();
 			_dock.hideTemp();
-			bounds.x = 0;
-			bounds.y = Math.max(dockButtons ? (dockBounds.top + dockBounds.height - dispOffset) : 0, logoTop ? (logoBounds.top + logoBounds.height - dispOffset) : 0);
-			bounds.width = dispBounds.width;
-			if (cbBounds.height) 
-				bounds.height = (logoTop ? cbBounds.top : logoBounds.top) - bounds.y - dispOffset;
-			else
-				bounds.height = dispBounds.height - bounds.y;
-			
-			return {
-				x: 0,
-				y: controls ? bounds.y : 0,
-				width: controls ? bounds.width : 0,
-				height: controls ? bounds.height : 0
-			};
-
+			return bounds;
 		}
 
 		this.destroy = function () {
