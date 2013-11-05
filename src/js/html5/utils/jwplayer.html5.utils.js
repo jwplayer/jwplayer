@@ -48,7 +48,7 @@
 			top: 0,
 			bottom: 0
 		};
-		if (!element || !DOCUMENT.contains(element)) {
+		if (!element || !DOCUMENT.body.contains(element)) {
 			return bounds;
 		}
 		if (element.getBoundingClientRect) {
