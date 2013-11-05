@@ -1289,6 +1289,7 @@
 
 		function _overlayTapHandler(overlay, tapAction, name) {
 			if (name == "cc") {
+				if (_captions.length == 2) tapAction = _cc;
 				if (_ccTapTimer) {
 					_clearCcTapTimeout();
 					overlay.hide();
@@ -1303,6 +1304,7 @@
 				_eventDispatcher.sendEvent(events.JWPLAYER_USER_ACTION);
 			}
 			else if (name == "hd") {
+				if (_levels.length == 2) tapAction = _hd;
 				if (_hdTapTimer) {
 					_clearHdTapTimeout();
 					overlay.hide();
