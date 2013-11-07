@@ -340,6 +340,7 @@
 				newApi.config = options;
 				var embedder = new jwplayer.embed(newApi);
 				embedder.embed();
+				return newApi;
 			}
 			return _this;
 		};
@@ -444,14 +445,14 @@
 				var args = utils.translateEventResponse(type, arguments[1]);
 				for (var l = 0; l < _listeners[type].length; l++) {
 					if (typeof _listeners[type][l] == 'function') {
-						try {
+						// try {
 							if (type == events.JWPLAYER_PLAYLIST_LOADED) {
 								utils.deepReplaceKeyName(args.playlist, ["__dot__","__spc__","__dsh__","__default__"], ["."," ","-","default"]);
 							}
 							_listeners[type][l].call(this, args);
-						} catch(e) {
-							utils.log("There was an error calling back an event handler");
-						}
+						// } catch(e) {
+						// 	utils.log("There was an error calling back an event handler");
+						// }
 					}
 				}
 			}
