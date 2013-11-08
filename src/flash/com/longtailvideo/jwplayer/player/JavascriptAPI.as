@@ -478,6 +478,9 @@ package com.longtailvideo.jwplayer.player {
 		}
 		
 		protected function js_load(toLoad:*):void {
+			if (_instream) {
+				_instream.destroy();
+			}
 			_player.load(toLoad);
 		}
 		

@@ -109,7 +109,12 @@
 			_api.jwSeek = _controller.seek;
 			_api.jwSetVolume = _controller.setVolume;
 			_api.jwSetMute = _controller.setMute;
-			_api.jwLoad = _controller.load;
+			_api.jwLoad =  function(item) {
+			    if (_instreamPlayer) {
+			        _instreamPlayer.jwInstreamDestroy(false);
+			    }
+			    _controller.load(item);
+			}
 			_api.jwPlaylistNext = _controller.next;
 			_api.jwPlaylistPrev = _controller.prev;
 			_api.jwPlaylistItem = _controller.item;

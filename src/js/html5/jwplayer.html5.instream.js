@@ -281,8 +281,7 @@
 		}
 		
 		function _skipAd(evt) {
-			
-			_self.jwInstreamDestroy(true);
+			_self.jwInstreamDestroy(false);
 		}
 		function _stateHandler(evt) {
 			
