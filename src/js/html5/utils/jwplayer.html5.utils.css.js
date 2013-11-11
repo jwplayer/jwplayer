@@ -40,19 +40,26 @@
 			_rules[selector] = {};
 		}
 
+		var dirty = false;
 		_foreach(styles, function(style, val) {
 			val = _styleValue(style, val, important);
-			if (exists(_rules[selector][style]) && !exists(val)) {
+			if (exists(val)) {
+				if (_rules[selector][style] !== val) {
+					_rules[selector][style] = val;
+					dirty = true;
+				}
+			} else if (exists(_rules[selector][style])) {
 				delete _rules[selector][style];
-			} else if (exists(val)) {
-				_rules[selector][style] = val;
-			}
+				dirty = true;
+			} 
 		});
 
 		if (_block > 0)
 			return;
 		
-		_updateStylesheet(selector);
+		if (dirty) {
+			_updateStylesheet(selector);
+		}
 	}
 	
 	_css.block = function() {
@@ -61,7 +68,7 @@
 	
 	_css.unblock = function() {
 		_block = Math.max(_block-1, 0);
-		if (_block == 0) {
+		if (_block === 0) {
 			_applyStyles();
 		}
 	}
@@ -85,7 +92,6 @@
 			case "z-index":
 			case "opacity":
 				return value + importantString;
-				break;
 			default:
 				if (style.match(/color/i)) {
 					return "#" + utils.pad(value.toString(16).replace(/^0x/i,""), 6) + importantString;
@@ -212,7 +218,7 @@
 		});
 		
 		_css(JW_CLASS + "ul", { 'list-style': "none" });
-	};
+	}
 
 	_cssReset();
 	
