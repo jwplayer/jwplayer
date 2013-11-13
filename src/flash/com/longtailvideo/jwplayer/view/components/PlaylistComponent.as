@@ -60,6 +60,7 @@ package com.longtailvideo.jwplayer.view.components {
 		private var slider:Sprite;
 		/** The playlist background **/
 		private var background:Sprite;
+		private var clicksActive:Boolean = true;
 		/** Internal reference to the skin **/
 		private var skin:ISkin;
 		private var skinLoaded:Boolean = false;
@@ -650,6 +651,7 @@ package com.longtailvideo.jwplayer.view.components {
 			scrollEase(ips, cps);
 		}
 		
+	
 		
 		/** Start scrolling the playlist on mousedown. **/
 		private function sdownHandler(evt:MouseEvent):void {
@@ -668,9 +670,11 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		/** Handle a click on a button. **/
 		private function clickHandler(evt:MouseEvent):void {
-			var itemNumber:Number = translateUIToModelPlaylistIndex(Number(evt.target.name)); 
-			dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_ITEM, itemNumber)); 
-			_player.playlistItem(itemNumber);
+			if (clicksActive) {
+				var itemNumber:Number = translateUIToModelPlaylistIndex(Number(evt.target.name)); 
+				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_ITEM, itemNumber)); 
+				_player.playlistItem(itemNumber);
+			}
 		}
 		
 		
@@ -743,6 +747,14 @@ package com.longtailvideo.jwplayer.view.components {
 
 		}
 		
+		public function removeClickHandler():void {
+			clicksActive = false;
+		}
+		
+		public function addClickHandler():void {
+			
+			clicksActive = true;
+		}
 		
 		/** New playlist loaded: rebuild the playclip. **/
 		protected function playlistHandler(evt:PlaylistEvent = null):void {

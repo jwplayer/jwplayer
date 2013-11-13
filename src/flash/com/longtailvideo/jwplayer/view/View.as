@@ -23,6 +23,8 @@ package com.longtailvideo.jwplayer.view {
 	import com.longtailvideo.jwplayer.view.components.ControlbarComponent;
 	import com.longtailvideo.jwplayer.view.components.DockComponent;
 	import com.longtailvideo.jwplayer.view.components.LogoComponent;
+	import com.longtailvideo.jwplayer.view.components.PlaylistComponent;
+	import com.longtailvideo.jwplayer.view.interfaces.IPlayerComponent;
 	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
 	
 	import flash.display.DisplayObject;
@@ -71,7 +73,8 @@ package com.longtailvideo.jwplayer.view {
 		protected var _mediaFade:Animations;
 		protected var _imageLayer:MovieClip;
 		protected var _imageFade:Animations;
-
+		protected var _playlist:IPlayerComponent;
+		protected var _playlistLayer:MovieClip;
 		protected var _componentsLayer:MovieClip;
 		protected var _pluginsLayer:MovieClip;
 		protected var _plugins:Object;
@@ -156,6 +159,10 @@ package com.longtailvideo.jwplayer.view {
 
 		public function get skin():ISkin {
 			return _skin;
+		}
+		
+		public function get playlist():IPlayerComponent {
+			return _playlist;
 		}
 
 
@@ -310,7 +317,7 @@ package com.longtailvideo.jwplayer.view {
 			mediaDelay.addEventListener(TimerEvent.TIMER_COMPLETE, showMedia);
 			
 			_componentsLayer = setupLayer("components", currentLayer++);
-
+			_playlistLayer = setupLayer("playlist", currentLayer++);
 			_pluginsLayer = setupLayer("plugins", currentLayer++);
 			_plugins = {};
 			_allPlugins = new Vector.<IPlugin>;
@@ -348,7 +355,8 @@ package com.longtailvideo.jwplayer.view {
 			var n:Number = 0;
 			setupComponent(_components.captions, n++);
 			setupComponent(_components.display, n++);
-			setupComponent(_components.playlist, n++);
+			_playlist = _components.playlist;
+			_playlistLayer.addChild(_playlist as DisplayObject);
 			setupComponent(_components.logo, n++);
 			setupComponent(_components.controlbar, n++);
 			setupComponent(_components.dock, n++);
@@ -591,6 +599,7 @@ package com.longtailvideo.jwplayer.view {
 			return _plugins[id] as IPlugin6;
 		}
 
+			
 
 		public function bringPluginToFront(id:String):void {
 			var plugin:IPlugin = getPlugin(id);
@@ -760,7 +769,7 @@ package com.longtailvideo.jwplayer.view {
 			}
 			_mediaLayer.visible = false;
 			_componentsLayer.visible = false;
-
+			(_playlist as PlaylistComponent).removeClickHandler();
 			if (_skipOffset >= 0) {
 				setupSkipUI(_skipOffset);
 				
@@ -838,6 +847,7 @@ package com.longtailvideo.jwplayer.view {
 			if (_instreamPlugin && _instreamPlugin is DisplayObject) {
 				_pluginsLayer.addChild(_instreamPlugin as DisplayObject);
 			}
+			(_playlist as PlaylistComponent).addClickHandler();
 			_mediaLayer.visible = true;
 			_componentsLayer.visible = true;
 			
