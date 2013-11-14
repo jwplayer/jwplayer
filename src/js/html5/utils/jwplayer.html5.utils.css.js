@@ -40,26 +40,19 @@
 			_rules[selector] = {};
 		}
 
-		var dirty = false;
 		_foreach(styles, function(style, val) {
 			val = _styleValue(style, val, important);
-			if (exists(val)) {
-				if (_rules[selector][style] !== val) {
-					_rules[selector][style] = val;
-					dirty = true;
-				}
-			} else if (exists(_rules[selector][style])) {
+			if (exists(_rules[selector][style]) && !exists(val)) {
 				delete _rules[selector][style];
-				dirty = true;
-			} 
+			} else if (exists(val)) {
+				_rules[selector][style] = val;
+			}
 		});
 
 		if (_block > 0)
 			return;
 		
-		if (dirty) {
-			_updateStylesheet(selector);
-		}
+		_updateStylesheet(selector);
 	}
 	
 	_css.block = function() {
@@ -122,7 +115,7 @@
 			if (utils.exists(ruleIndex) && ruleIndex < rules.length && rules[ruleIndex].selectorText == selector) {
 				sheet.deleteRule(ruleIndex);
 			} else {
-				_ruleIndexes[selector] = rules.length;	
+				_ruleIndexes[selector] = rules.length;  
 			}
 			sheet.insertRule(_getRuleText(selector), _ruleIndexes[selector]);
 		}
@@ -202,6 +195,28 @@
 		utils.transform(domelement, "rotate(" + deg + "deg)");
 	};
 	
+	utils.rgbHex = function(color) {
+		var hex = String(color).replace('#','');
+		if (hex.length === 3) {
+			hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+		}
+		return '#'+hex.substr(-6);
+	};
+
+	utils.hexToRgba = function(hexColor, opacity) {
+		var style = 'rgb';
+		var channels = [
+			parseInt(hexColor.substr(1, 2), 16),
+			parseInt(hexColor.substr(3, 2), 16),
+			parseInt(hexColor.substr(5, 2), 16)
+		];
+		if(opacity !== undefined && opacity !== 100) {
+			style += 'a';
+			channels.push(opacity / 100);
+		}
+		return style +'('+ channels.join(',') +')';
+	};
+
 	function _cssReset() {
 		_css(JW_CLASS + ["", "div", "span", "a", "img", "ul", "li", "video"].join(","+JW_CLASS) + ", .jwclick", {
 			margin: 0,

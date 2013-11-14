@@ -35,6 +35,7 @@ package com.longtailvideo.jwplayer.view.components {
 			color: '#FFFFFF',
 			fontSize: 15,
 			fontFamily: 'Arial,sans-serif',
+			fontOpacity: 100,
 			back: true
 		};
 		

@@ -55,6 +55,9 @@ package com.longtailvideo.jwplayer.view.components {
                 _outline.alpha = 0;
                 _field.filters = new Array(new DropShadowFilter(0,45,0,1,2,2,10,3));
             }
+			if (style.fontOpacity !== null && style.fontOpacity !== 100) {
+				_field.alpha = style.fontOpacity / 100;
+			}
         };
 
 

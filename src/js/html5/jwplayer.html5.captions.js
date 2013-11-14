@@ -30,7 +30,8 @@
             back: true,
             color: '#FFFFFF',
             fontSize: 15,
-            fontFamily: 'Arial,sans-serif'
+            fontFamily: 'Arial,sans-serif',
+            fontOpacity: 100
         },
 
         /** Default configuration options. **/
@@ -82,13 +83,13 @@
         /** Error loading/parsing the captions. **/
         function _errorHandler(error) {
             utils.log("CAPTIONS(" + error + ")");
-        };
+        }
 
         /** Player jumped to idle state. **/
         function _idleHandler() {
             _state = 'idle';
             _redraw(false);
-        };
+        }
 
         function _stateHandler(evt) {
             switch(evt.newstate) {
@@ -116,8 +117,8 @@
 
         function _fullscreenResize() {
             var height = _display.offsetHeight,
-                width = _display.offsetWidth;
-            if(height != 0 && width != 0) {
+                width  = _display.offsetWidth;
+            if (height !== 0 && width !== 0) {
                 _renderer.resize(width, Math.round(height*0.94));
             }
         }
@@ -134,7 +135,8 @@
                 i = 0,
                 label = "",
                 defaultTrack = 0,
-                file = "";
+                file = "",
+                cookies;
 
             for (i = 0; i < tracks.length; i++) {
                 var kind = tracks[i].kind.toLowerCase();
@@ -156,7 +158,6 @@
                 }
             }
 
-
             for (i = 0; i < _tracks.length; i++) {
                 if (_tracks[i]["default"]) {
                     defaultTrack = i+1;
@@ -164,9 +165,8 @@
                 }
             }
 
-
-            var cookies = utils.getCookies(),
-                label = cookies["captionLabel"];
+            cookies = utils.getCookies();
+            label = cookies["captionLabel"];
 
             if (label) {
                 tracks = _getTracks();
@@ -182,13 +182,13 @@
 
             _redraw(false);
             _sendEvent(events.JWPLAYER_CAPTIONS_LIST, _getTracks(), _selectedTrack);
-        };
+        }
 
         /** Load captions. **/
         function _load(file) {
             _file = file;
             utils.ajax(file, _xmlReadHandler, _xmlFailedHandler);
-        };
+        }
 
         function _xmlReadHandler(xmlEvent) {
             var rss = xmlEvent.responseXML.firstChild,
@@ -220,14 +220,14 @@
                 _tracks[_track].data = data;
             }
             _redraw(false);
-        };
+        }
 
 
         /** Player started playing. **/
         function _playHandler(event) {
             _state = PLAYING;
             _redraw(false);
-        };
+        }
 
         /** Update the interface. **/
         function _redraw(timeout) {
@@ -248,19 +248,19 @@
                     _renderer.hide();
                 }
             }
-        };
+        }
 
         function _normalResize() {
             _renderer.resize();
         }
 
-        /** Set dock buttons when player is ready. **/
+        /** Setup captions when player is ready. **/
         function _setup() {
-        	utils.foreach(_defaults, function(rule, val) {
-                if (options && options[rule.toLowerCase()] != undefined) {
+            utils.foreach(_defaults, function(rule, val) {
+                if (options && options[rule.toLowerCase()] !== undefined) {
                     // Fix for colors, since the player automatically converts to HEX.
                     if(rule == 'color') {
-                        _options['color'] = '#'+String(options['color']).substr(-6);
+                        _options['color'] = utils.rgbHex(options['color']);
                     } else {
                         _options[rule] = options[rule.toLowerCase()];
                     }
@@ -268,12 +268,12 @@
                 else {
                     _options[rule] = val;
                 }
-        	});
+            });
 
             // Place renderer and selector.
             _renderer = new jwplayer.html5.captions.renderer(_options,_display);
             _redraw(false);
-        };
+        }
 
 
         /** Selection menu was closed. **/
@@ -295,31 +295,30 @@
                 _load(_tracks[_track].file);
             }
             _redraw(false);
-        };
+        }
 
 
         /** Listen to player time updates. **/
         function _timeHandler(event) {
             _renderer.update(event.position);
-        };
+        }
 
         function _sendEvent(type, tracks, track) {
             var captionsEvent = {type: type, tracks: tracks, track: track};
             _eventDispatcher.sendEvent(type, captionsEvent);
-        };
+        }
 
         function _getTracks() {
-            var list = new Array();
-            list.push({label: "Off"});
+            var list = [{label: "Off"}];
             for (var i = 0; i < _tracks.length; i++) {
                 list.push({label: _tracks[i].label});
             }
             return list;
-        };
+        }
 
         this.element = function() {
             return _display;
-        }
+        };
         
         this.getCaptionsList = function() {
             return _getTracks();

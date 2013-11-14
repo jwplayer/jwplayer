@@ -1,5 +1,4 @@
-(function(html5) {
-	var _foreach = jwplayer.utils.foreach;
+(function(html5, utils) {
 
     /** Component that renders the actual captions on screen. **/
     html5.captions.renderer = function(_options,_div) {
@@ -46,13 +45,13 @@
                 visibility: 'hidden'
             });
             _textContainer.innerHTML = html;
-            if(html == '') { 
+            if(html === '') { 
                 _visible = 'hidden';
             } else { 
                 _visible = 'visible';
             }
             setTimeout(_resize,20);
-        };
+        }
 
 
         /** Store new dimensions. **/
@@ -72,8 +71,7 @@
                 lineHeight: line + 'px',
                 visibility: _visible
             });
-        };
-
+        }
 
         /** Select a caption for rendering. **/
         function _select() {
@@ -92,8 +90,7 @@
                 _current = found;
                 _render(_captions[i]['text']);
             }
-        };
-
+        }
 
         /** Constructor for the renderer. **/
         function _setup() {
@@ -111,8 +108,8 @@
                 width: '100%'
             });
 
-            _style(_textContainer, {
-                color: '#'+_options.color.substr(-6),
+            var textStyle = {
+                color: utils.hexToRgba(utils.rgbHex(_options.color), _options.fontOpacity),
                 display: 'inline-block',
                 fontFamily: _options.fontFamily,
                 fontStyle: _options.fontStyle,
@@ -124,16 +121,14 @@
                 textDecoration: _options.textDecoration,
                 wordWrap: 'break-word',
                 width: 'auto'
-            });
-
+            };
             if(_options.back) {
-                _style(_textContainer, {background:'#000'});
+                textStyle.background = '#000';
             } else {
-                _style(_textContainer, {textShadow: '-2px 0px 1px #000,2px 0px 1px #000,0px -2px 1px #000,0px 2px 1px #000,-1px 1px 1px #000,1px 1px 1px #000,1px -1px 1px #000,1px 1px 1px #000'});
+                textStyle.textShadow = '-2px 0px 1px #000,2px 0px 1px #000,0px -2px 1px #000,0px 2px 1px #000,-1px 1px 1px #000,1px 1px 1px #000,1px -1px 1px #000,1px 1px 1px #000';
             }
-        };
-        _setup();
-
+            _style(_textContainer, textStyle);
+        }
 
         /** Show the rendering component. **/
         this.show = function() {
@@ -144,14 +139,12 @@
             _resize();
         };
 
-
         /** Apply CSS styles to elements. **/
         function _style(div, styles) {
-        	_foreach(styles, function(property, val) {
+            utils.foreach(styles, function(property, val) {
                 div.style[property] = val;
-        	});
-        };
-
+            });
+        }
 
         /** Update the video position. **/
         this.update = function(position) {
@@ -161,8 +154,7 @@
             }
         };
 
-
+        _setup();
     };
 
-
-})(jwplayer.html5);
+})(jwplayer.html5, jwplayer.utils);
