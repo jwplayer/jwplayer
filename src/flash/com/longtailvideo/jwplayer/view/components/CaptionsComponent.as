@@ -39,6 +39,7 @@ package com.longtailvideo.jwplayer.view.components {
 		};
 		
 		private var _background:Object = {
+			back: true,
 			backgroundColor: '#000000',
 			backgroundOpacity: 100
 		};
@@ -93,12 +94,12 @@ package com.longtailvideo.jwplayer.view.components {
 			var config:Object = _player.config.captions;
 			
 			_extend(_style, _defaults, config);
+			_extend(_background, _background, config);
 			
 			// Fix for colors, since the player automatically converts to HEX.
 			_style.color = _rgbHex(_style.color);
 			
-			if (config.back) {
-				_extend(_background, _background, config);
+			if (_background.back) {
 				_background.backgroundColor = _rgbHex(_background.backgroundColor);
 				_background.backgroundColor = _hexToUint(_background.backgroundColor);
 			} else {
