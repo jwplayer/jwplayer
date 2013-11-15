@@ -376,9 +376,6 @@ package com.longtailvideo.jwplayer.view.components {
 		private function get _playlist():Array {
 			var arr:Array = [];
 			for (var i:Number = 0; i < _player.playlist.length; i++) {
-				if (_player.playlist.getItemAt(i)["ova.hidden"]) {
-					continue;
-				}
 				arr.push(_player.playlist.getItemAt(i));
 			}
 			return arr;
@@ -386,27 +383,14 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		private function translateUIToModelPlaylistIndex(index:Number):Number{
 			for (var i:Number = 0; i < _player.playlist.length; i++) {
-				if (_player.playlist.getItemAt(i).hasOwnProperty("ova.hidden")){
-					continue;
-				} else {
-					if (index == 0){
-						return i;
-					}
-					index--;
+				if (index == 0){
+					return i;
 				}
+				index--;
 			}
 			return 0;
 		}
 		
-		private function translateModelToUIPlaylistIndex(index:Number):Number{
-			var result:Number = index;
-			for (var i:Number = 0; i < index; i++) {
-				if (_player.playlist.getItemAt(i).hasOwnProperty("ova.hidden")){
-					result--;
-				}
-			}
-			return result;
-		}
 		
 		
 		/** Setup all buttons in the playlist **/
@@ -708,7 +692,7 @@ package com.longtailvideo.jwplayer.view.components {
 				return;
 			}
 			
-			var idx:Number = translateModelToUIPlaylistIndex(_player.playlist.currentIndex);
+			var idx:Number = _player.playlist.currentIndex;
 			var button:Sprite = getButton(idx);
 			
 			if (!skinLoaded) return;
