@@ -35,8 +35,12 @@ package com.longtailvideo.jwplayer.view.components {
 			color: '#FFFFFF',
 			fontSize: 15,
 			fontFamily: 'Arial,sans-serif',
-			fontOpacity: 100,
-			back: true
+			fontOpacity: 100
+		};
+		
+		private var _background:Object = {
+			backgroundColor: '#000000',
+			backgroundOpacity: 100
 		};
 		
 		private var _style:Object = {
@@ -88,26 +92,50 @@ package com.longtailvideo.jwplayer.view.components {
 			
 			var config:Object = _player.config.captions;
 			
-			for (var rule:String in _defaults) {
-				if (config && config[rule.toLowerCase()] != undefined) {
-					// Fix for colors, since the player automatically converts to HEX.
-					if(rule == 'color') {
-						_style['color'] = '#'+String(config['color']).substr(-6);
-					} else {
-						_style[rule] = config[rule.toLowerCase()];
-					}
-				}
-				else {
-					_style[rule] = _defaults[rule];
-				}
+			_extend(_style, _defaults, config);
+			
+			// Fix for colors, since the player automatically converts to HEX.
+			_style.color = _rgbHex(_style.color);
+			
+			if (config.back) {
+				_extend(_background, _background, config);
+				_background.backgroundColor = _rgbHex(_background.backgroundColor);
+				_background.backgroundColor = _hexToUint(_background.backgroundColor);
+			} else {
+				_background = null;
 			}
 			
 			// Place renderer and selector.
-			_renderer = new CaptionRenderer(_style,_style.back);
+			_renderer = new CaptionRenderer(_style, _background);
 			addChild(_renderer);
 			_redraw();
 		};
 		
+		private function _extend(target:Object, defaults:Object, options:Object):void {
+			for (var rule:String in defaults) {
+				var value:* = defaults[rule];
+				if (options) {
+					if (options[rule] != undefined) {
+						value = options[rule];
+					} else if (options[rule.toLowerCase()] != undefined) {
+						value = options[rule.toLowerCase()];
+					}
+				}
+				target[rule] = value;
+			}
+		}
+		
+		private function _rgbHex(color:*):String {
+			var hex:String = String(color).replace('#','');
+			if (hex.length === 3) {
+				hex = hex.charAt(0)+hex.charAt(0)+hex.charAt(1)+hex.charAt(1)+hex.charAt(2)+hex.charAt(2);
+			}
+			return '#'+hex.substr(-6);
+		};
+		
+		private function _hexToUint(hex:String):uint {
+			return parseInt(hex.substr(-6), 16);
+		}
 		
 		/** The captions loader returns errors (file not found or security error). **/
 		private function _errorHandler(event:ErrorEvent):void {

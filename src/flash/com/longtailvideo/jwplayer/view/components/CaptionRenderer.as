@@ -4,7 +4,8 @@ package com.longtailvideo.jwplayer.view.components {
     import flash.display.*;
     import flash.filters.DropShadowFilter;
     import flash.text.*;
-
+	import flash.geom.ColorTransform;
+	
 
     /** Captions component that renders the actual lines. **/
     public class CaptionRenderer extends MovieClip {
@@ -31,7 +32,7 @@ package com.longtailvideo.jwplayer.view.components {
 
 
         /** Constructor; solely inits the captions file loader. **/
-        public function CaptionRenderer(style:Object,outline:Boolean) {
+        public function CaptionRenderer(style:Object, background:Object) {
             // Create the text outline sprite.
             _outline = new Sprite();
             addChild(_outline);
@@ -48,8 +49,11 @@ package com.longtailvideo.jwplayer.view.components {
             _style = style;
             _sheet = new StyleSheet();
             _field.styleSheet = _sheet;
-            if(outline) {
-                _outline.alpha = 1;
+            if(background !== null) {
+				var ct:ColorTransform = new ColorTransform();
+				ct.color = background.backgroundColor;
+				ct.alphaOffset = background.backgroundOpacity * 255 / 100 - 255;
+				_outline.transform.colorTransform = ct;
                 _field.filters = new Array();
             } else { 
                 _outline.alpha = 0;
@@ -60,9 +64,8 @@ package com.longtailvideo.jwplayer.view.components {
 			}
         };
 
-
         /** Render the caption into the field. */
-        private function _renderCaption(text:String,style:Object=null):void {
+        private function _renderCaption(text:String, style:Object=null):void {
             if (style) {
                 _sheet.setStyle("p",style);
             } else { 

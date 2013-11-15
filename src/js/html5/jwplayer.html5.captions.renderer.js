@@ -112,7 +112,7 @@
                 color: utils.hexToRgba(utils.rgbHex(_options.color), _options.fontOpacity),
                 display: 'inline-block',
                 fontFamily: _options.fontFamily,
-                fontStyle: _options.fontStyle,
+                fontStyle:  _options.fontStyle,
                 fontWeight: _options.fontWeight,
                 height: 'auto',
                 margin: 'auto',
@@ -123,7 +123,8 @@
                 width: 'auto'
             };
             if(_options.back) {
-                textStyle.background = '#000';
+                var bgColor = _options.backgroundColor;
+                textStyle.background = utils.hexToRgba(utils.rgbHex(bgColor), _options.backgroundOpacity);
             } else {
                 textStyle.textShadow = '-2px 0px 1px #000,2px 0px 1px #000,0px -2px 1px #000,0px 2px 1px #000,-1px 1px 1px #000,1px 1px 1px #000,1px -1px 1px #000,1px 1px 1px #000';
             }

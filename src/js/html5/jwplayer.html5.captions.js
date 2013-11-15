@@ -28,10 +28,12 @@
         
         _defaults = {
             back: true,
-            color: '#FFFFFF',
+            color: '#FFF',
             fontSize: 15,
             fontFamily: 'Arial,sans-serif',
-            fontOpacity: 100
+            fontOpacity: 100,
+            backgroundColor: '#000',
+            backgroundOpacity: 100
         },
 
         /** Default configuration options. **/
@@ -257,21 +259,18 @@
         /** Setup captions when player is ready. **/
         function _setup() {
             utils.foreach(_defaults, function(rule, val) {
-                if (options && options[rule.toLowerCase()] !== undefined) {
-                    // Fix for colors, since the player automatically converts to HEX.
-                    if(rule == 'color') {
-                        _options['color'] = utils.rgbHex(options['color']);
-                    } else {
-                        _options[rule] = options[rule.toLowerCase()];
+                if (options) {
+                    if (options[rule] !== undefined) {
+                        val = options[rule];
+                    } else if (options[rule.toLowerCase()] !== undefined) {
+                        val = options[rule.toLowerCase()];
                     }
                 }
-                else {
-                    _options[rule] = val;
-                }
+                _options[rule] = val;
             });
 
             // Place renderer and selector.
-            _renderer = new jwplayer.html5.captions.renderer(_options,_display);
+            _renderer = new jwplayer.html5.captions.renderer(_options, _display);
             _redraw(false);
         }
 
