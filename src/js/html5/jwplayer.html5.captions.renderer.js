@@ -122,13 +122,29 @@
                 wordWrap: 'break-word',
                 width: 'auto'
             };
+
+            addEdgeStyle(_options.edgeStyle, textStyle, _options.fontOpacity);
+
             if(_options.back) {
                 var bgColor = _options.backgroundColor;
                 textStyle.background = utils.hexToRgba(utils.rgbHex(bgColor), _options.backgroundOpacity);
-            } else {
-                textStyle.textShadow = '-2px 0px 1px #000,2px 0px 1px #000,0px -2px 1px #000,0px 2px 1px #000,-1px 1px 1px #000,1px 1px 1px #000,1px -1px 1px #000,1px 1px 1px #000';
+            } else if (_options.edgeStyle === null) {
+                addEdgeStyle('uniform', textStyle);
             }
             _style(_textContainer, textStyle);
+        }
+
+        function addEdgeStyle(option, style, fontOpacity) {
+            var color = utils.hexToRgba('#000000', fontOpacity);
+            if (option === 'dropshadow') {       // small drop shadow
+                style.textShadow = '0 2px 1px '+color;
+            } else if (option === 'raised') {    // larger drop shadow
+                style.textShadow = '0 0 5px '+color+', 0 1px 5px '+color+', 0 2px 5px '+color;
+            } else if (option === 'depressed') { // top down shadow
+                style.textShadow = '0 -2px 1px '+color;
+            } else if (option === 'uniform') {   // outline
+                style.textShadow = '-2px 0 1px '+color+',2px 0 1px '+color+',0 -2px 1px '+color+',0 2px 1px '+color+',-1px 1px 1px '+color+',1px 1px 1px '+color+',1px -1px 1px '+color+',1px 1px 1px '+color;
+            }
         }
 
         /** Show the rendering component. **/

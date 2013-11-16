@@ -16,6 +16,7 @@
         JW_CSS_NONE = "none",
         JW_CSS_100PCT = "100%",
         JW_CSS_HIDDEN = "hidden";
+        JW_CSS_NORMAL = "normal";
 
     /** Displays closed captions or subtitles on top of the video. **/
     html5.captions = function(api, options) {
@@ -33,14 +34,17 @@
             fontFamily: 'Arial,sans-serif',
             fontOpacity: 100,
             backgroundColor: '#000',
-            backgroundOpacity: 100
+            backgroundOpacity: 100,
+            // if back == false edgeStyle defaults to 'uniform',
+            // otherwise it's 'none'
+            edgeStyle: null
         },
 
         /** Default configuration options. **/
         _options = {
-            fontStyle: 'normal',
-            fontWeight: 'normal',
-            textDecoration: 'none'
+            fontStyle: JW_CSS_NORMAL,
+            fontWeight: JW_CSS_NORMAL,
+            textDecoration: JW_CSS_NONE
         },
         
         /** Reference to the text renderer. **/

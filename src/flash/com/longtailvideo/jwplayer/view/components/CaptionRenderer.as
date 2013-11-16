@@ -1,10 +1,15 @@
 package com.longtailvideo.jwplayer.view.components {
 
 
-    import flash.display.*;
+    import flash.display.MovieClip;
+    import flash.display.Sprite;
     import flash.filters.DropShadowFilter;
-    import flash.text.*;
-	import flash.geom.ColorTransform;
+    import flash.geom.ColorTransform;
+    import flash.text.StyleSheet;
+    import flash.text.TextField;
+    import flash.text.TextFieldAutoSize;
+    import flash.text.TextFormat;
+    import flash.text.TextLineMetrics;
 	
 
     /** Captions component that renders the actual lines. **/
@@ -35,7 +40,7 @@ package com.longtailvideo.jwplayer.view.components {
         public function CaptionRenderer(style:Object, background:Object) {
             // Create the text outline sprite.
             _outline = new Sprite();
-            addChild(_outline);
+            
             // Create the textfield sprite.
             _field = new TextField();
             _field.width = 400;
@@ -44,25 +49,46 @@ package com.longtailvideo.jwplayer.view.components {
             _field.multiline = true;
             _field.selectable = false;
             _field.wordWrap = true;
-            addChild(_field);
+            
             // Set the style and outline.
             _style = style;
             _sheet = new StyleSheet();
             _field.styleSheet = _sheet;
+			
+			_addEdgeStyle(style.edgeStyle);
+			
             if(background !== null) {
 				var ct:ColorTransform = new ColorTransform();
 				ct.color = background.backgroundColor;
 				ct.alphaOffset = background.backgroundOpacity * 255 / 100 - 255;
 				_outline.transform.colorTransform = ct;
-                _field.filters = new Array();
-            } else { 
+            } else {
                 _outline.alpha = 0;
-                _field.filters = new Array(new DropShadowFilter(0,45,0,1,2,2,10,3));
+				if (style.edgeStyle === null) { 
+					_addEdgeStyle('uniform');
+				}
             }
 			if (style.fontOpacity !== null && style.fontOpacity !== 100) {
 				_field.alpha = style.fontOpacity / 100;
 			}
+			
+			addChild(_outline);
+			addChild(_field);
         };
+		
+		private function _addEdgeStyle(edgeStyle:String):void {
+			var filters:Array = new Array();
+			if (edgeStyle === 'dropshadow') {       // small drop shadow
+				filters.push(new DropShadowFilter(2,90,0,1,2,2,1,3));
+			} else if (edgeStyle === 'raised') {    // larger drop shadow
+				filters.push(new DropShadowFilter(1,90,0,1,5,5,3,3));
+			} else if (edgeStyle === 'depressed') { // top down shadow
+				filters.push(new DropShadowFilter(-2,90,0,1,2,2,1,3));
+			} else if (edgeStyle === 'uniform') {   // outline
+				filters.push(new DropShadowFilter(0,45,0,1,2,2,10,3));
+			}
+			_field.filters = filters;
+		}
 
         /** Render the caption into the field. */
         private function _renderCaption(text:String, style:Object=null):void {
