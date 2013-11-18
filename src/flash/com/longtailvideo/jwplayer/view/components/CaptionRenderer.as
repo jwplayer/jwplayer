@@ -4,7 +4,7 @@ package com.longtailvideo.jwplayer.view.components {
     import flash.display.MovieClip;
     import flash.display.Sprite;
     import flash.filters.DropShadowFilter;
-    import flash.geom.ColorTransform;
+    import flash.geom.Rectangle;
     import flash.text.StyleSheet;
     import flash.text.TextField;
     import flash.text.TextFieldAutoSize;
@@ -14,7 +14,6 @@ package com.longtailvideo.jwplayer.view.components {
 
     /** Captions component that renders the actual lines. **/
     public class CaptionRenderer extends MovieClip {
-
 
         /** Array with captions. **/
         private var _captions:Array;
@@ -34,12 +33,12 @@ package com.longtailvideo.jwplayer.view.components {
         private var _sheet:StyleSheet;
         /** Default captions style. **/
         private var _style:Object;
+		/** Default captions style. **/
+		private var _bg:Object;
 
 
         /** Constructor; solely inits the captions file loader. **/
         public function CaptionRenderer(style:Object, background:Object) {
-            // Create the text outline sprite.
-            _outline = new Sprite();
             
             // Create the textfield sprite.
             _field = new TextField();
@@ -57,22 +56,20 @@ package com.longtailvideo.jwplayer.view.components {
 			
 			_addEdgeStyle(style.edgeStyle);
 			
-            if(background !== null) {
-				var ct:ColorTransform = new ColorTransform();
-				ct.color = background.backgroundColor;
-				ct.alphaOffset = background.backgroundOpacity * 255 / 100 - 255;
-				_outline.transform.colorTransform = ct;
-            } else {
-                _outline.alpha = 0;
+			if (background.backgroundOpacity === 0 && background.windowOpacity === 0) {
 				if (style.edgeStyle === null) { 
 					_addEdgeStyle('uniform');
 				}
-            }
+            } else {
+				// Create the text outline sprite.
+				_bg = background;
+				_outline = new Sprite();
+				addChild(_outline);
+			}
 			if (style.fontOpacity !== null && style.fontOpacity !== 100) {
 				_field.alpha = style.fontOpacity / 100;
 			}
 			
-			addChild(_outline);
 			addChild(_field);
         };
 		
@@ -92,32 +89,70 @@ package com.longtailvideo.jwplayer.view.components {
 
         /** Render the caption into the field. */
         private function _renderCaption(text:String, style:Object=null):void {
-            if (style) {
-                _sheet.setStyle("p",style);
-            } else { 
-                _sheet.setStyle("p",_style);
+            if (style == null) {
+				style = _style;
             }
+			_sheet.setStyle("p", style);
+			
             // Place the text and align bottom
             _field.htmlText = '<p>'+text+'</p>';
-            _field.y = _outline.y = -_field.height;
-            _outline.graphics.clear();
-            // Render the text outline.
-            for (var i:Number = 0; i < _field.numLines; i++) {
-                var metrics:TextLineMetrics = _field.getLineMetrics(i);
-                if(metrics.width > 16) {
-                    _outline.graphics.beginFill(0x000000);
-                    _outline.graphics.drawRect(
-                        200 - metrics.width/2 - 8,
-                        i * metrics.height - 2,
-                        metrics.width + 16,
-                        metrics.height + 4
-                    );
-                    _outline.graphics.endFill();
-                }
-            }
-        };
-
-
+            _field.y = -_field.height;
+			
+			if (_outline) {
+				_outline.graphics.clear();
+				if (text) {
+					_renderBackground();
+				}
+			}
+		}
+		
+		private function _renderBackground():void {
+			var i:Number;
+			var lines:Array = new Array();
+			var lineRect:Rectangle;
+			var windowRect:Rectangle = new Rectangle(200, 0, 0, 0);
+			var metrics:TextLineMetrics;
+			_outline.y = _field.y;
+			for (i = 0; i < _field.numLines; i++) {
+				metrics = _field.getLineMetrics(i);
+				if(metrics.width > 16) {
+					lineRect = new Rectangle(
+						_field.width/2 - metrics.width/2 - 8,
+						i * metrics.height,
+						metrics.width + 16,
+						metrics.height
+					);
+					lines.push(lineRect);
+					windowRect = windowRect.union(lineRect);
+				}
+			}
+			// Render the captions window
+			if (_bg.windowOpacity > 0 && width && height) {
+				_outline.graphics.beginFill(_bg.windowColor, _bg.windowOpacity / 100);
+				_outline.graphics.drawRoundRect(
+					windowRect.x-5,
+					windowRect.y-5,
+					windowRect.width+10,
+					windowRect.height+10, 10
+				);
+				_outline.graphics.endFill();
+			}
+			// Render the text outline
+			if (_bg.backgroundOpacity > 0) {
+				_outline.graphics.beginFill(_bg.backgroundColor, _bg.backgroundOpacity / 100);
+				for (i = 0; i < lines.length; i++) {
+					lineRect = lines[i];
+					_outline.graphics.drawRect(
+						lineRect.x,
+						lineRect.y,
+						lineRect.width,
+						lineRect.height
+					);
+				}
+				_outline.graphics.endFill();
+			}
+		}
+		
         /** Select the caption to be rendered. **/
         private function _selectCaption():void {
             var found:Number = -1;
@@ -134,9 +169,9 @@ package com.longtailvideo.jwplayer.view.components {
                 _renderCaption('');
             } else if (found != _current) {
                 _current = found;
-                _renderCaption(_captions[i]['text'],_captions[i]['style']);
+                _renderCaption(_captions[i]['text'], _captions[i]['style']);
             }
-        };
+        }
 
 
         /** Set the array with captions. **/
@@ -151,7 +186,7 @@ package com.longtailvideo.jwplayer.view.components {
                 _captions = captions;
             }
             _selectCaption();
-        };
+        }
 
 
         /** Change the captions in response to the time. **/
@@ -160,10 +195,13 @@ package com.longtailvideo.jwplayer.view.components {
             if(_captions) {
                 _selectCaption();
             }
-        };
-
-
-    };
+        }
+		
+		/** update field width to fill player **/
+		public function setMaxWidth(width:Number):void {
+			_field.width = width - 16;
+		}
+    }
 
 
 }

@@ -17,6 +17,7 @@
         JW_CSS_100PCT = "100%",
         JW_CSS_HIDDEN = "hidden";
         JW_CSS_NORMAL = "normal";
+        JW_CSS_WHITE = "#FFFFFF";
 
     /** Displays closed captions or subtitles on top of the video. **/
     html5.captions = function(api, options) {
@@ -29,7 +30,7 @@
         
         _defaults = {
             back: true,
-            color: '#FFF',
+            color: JW_CSS_WHITE,
             fontSize: 15,
             fontFamily: 'Arial,sans-serif',
             fontOpacity: 100,
@@ -37,7 +38,9 @@
             backgroundOpacity: 100,
             // if back == false edgeStyle defaults to 'uniform',
             // otherwise it's 'none'
-            edgeStyle: null
+            edgeStyle: null,
+            windowColor: JW_CSS_WHITE,
+            windowOpacity: 0
         },
 
         /** Default configuration options. **/
@@ -95,6 +98,7 @@
         function _idleHandler() {
             _state = 'idle';
             _redraw(false);
+            _renderer.update(0);
         }
 
         function _stateHandler(evt) {

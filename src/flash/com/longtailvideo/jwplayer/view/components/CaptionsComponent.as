@@ -42,7 +42,9 @@ package com.longtailvideo.jwplayer.view.components {
 		private var _background:Object = {
 			back: true,
 			backgroundColor: '#000000',
-			backgroundOpacity: 100
+			backgroundOpacity: 100,
+			windowColor: '#FFFFFF',
+			windowOpacity: 0
 		};
 		
 		private var _style:Object = {
@@ -100,13 +102,12 @@ package com.longtailvideo.jwplayer.view.components {
 			// Fix for colors, since the player automatically converts to HEX.
 			_style.color = _rgbHex(_style.color);
 			
-			if (_background.back) {
-				_background.backgroundColor = _rgbHex(_background.backgroundColor);
-				_background.backgroundColor = _hexToUint(_background.backgroundColor);
-			} else {
-				_background = null;
+			_background.backgroundColor = _hexToUint(_rgbHex(_background.backgroundColor));
+			_background.windowColor = _hexToUint(_rgbHex(_background.windowColor));
+			if (_background.back === false) {
+				_background.backgroundOpacity = 0;
 			}
-			
+				
 			// Place renderer and selector.
 			_renderer = new CaptionRenderer(_style, _background);
 			addChild(_renderer);
@@ -324,9 +325,9 @@ package com.longtailvideo.jwplayer.view.components {
 		/** Resize the captions, relatively smaller as the screen grows */
 		public function resize(width:Number, height:Number):void {
 			_dimensions = new Array(width,height);
-			_renderer.width = Math.round(400 * Math.pow(width/400,0.6));
+			_renderer.setMaxWidth(width);
+			_renderer.scaleX = _renderer.scaleY = Math.pow(width/400,0.6);
 			_renderer.x = Math.round(width/2 -_renderer.width/2);
-			_renderer.scaleY = _renderer.scaleX;
 			_renderer.y = Math.round(height * 0.94);
 		};
 		
@@ -360,6 +361,9 @@ package com.longtailvideo.jwplayer.view.components {
 		private function _stateHandler(event:PlayerStateEvent):void {
 			_state = event.newstate;
 			_redraw();
+			if(_state == PlayerState.IDLE) {
+				_renderer.setPosition(0);
+			}
 		};
 		
 		
