@@ -39,14 +39,14 @@ package com.longtailvideo.jwplayer.utils {
 		public var loadedObject:*;
 
 
-		public function load(location:String, expectedClass:Class=null):void {
+		public function load(location:String, expectedClass:Class=null, forceLoader:Boolean=false):void {
 			_errorState = false;
 			
 			LoadedClass = expectedClass;
 
 			var ext:String = Strings.extension(location);
 
-			if (_loaderExtensions.indexOf(ext.toLowerCase()) >= 0) {
+			if (forceLoader || _loaderExtensions.indexOf(ext.toLowerCase()) >= 0) {
 				useLoader(location);
 			} else {
 				useURLLoader(location);
