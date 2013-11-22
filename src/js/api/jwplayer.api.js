@@ -476,6 +476,7 @@
 				if (typeof _player != "undefined" && typeof _player[funcName] == "function") {
 					// Can't use apply here -- Flash's externalinterface doesn't like it.
 					switch(args.length) {
+						case 6:  return (_player[funcName])(args[0], args[1], args[2], args[3], args[4], args[5]);
 						case 5:  return (_player[funcName])(args[0], args[1], args[2], args[3], args[4]);
 						case 4:  return (_player[funcName])(args[0], args[1], args[2], args[3]);
 						case 3:  return (_player[funcName])(args[0], args[1], args[2]);
