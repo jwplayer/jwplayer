@@ -626,6 +626,7 @@ package com.longtailvideo.jwplayer.player {
 		
 		protected function js_setControls(state:Boolean):void {
 			_player.setControls(state);
+			if (_instream) _instream.setControls(state);
 		}
 		
 		protected function js_isBeforePlay():Boolean {

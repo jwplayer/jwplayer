@@ -808,7 +808,7 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 
 		private function showVolumeOverlay(evt:MouseEvent):void {
-			if (_audioMode) return;
+			if (_audioMode || _instreamMode) return;
 			if (_volumeOverlay) _volumeOverlay.show();
 			hideHdOverlay();
 			hideCcOverlay();
@@ -938,8 +938,8 @@ package com.longtailvideo.jwplayer.view.components {
 				hideButton('fullscreen', false);
 			}
 
-			if (_audioMode) {
-				hideButton('volumeH', false);
+			if (_audioMode ||  _instreamMode) {
+				hideButton('volumeH', false)
 			} else {
 				_currentLayout = _currentLayout.replace("volumeH", "");
 				hideButton('volumeH', true);

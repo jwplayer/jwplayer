@@ -100,7 +100,7 @@ package com.longtailvideo.jwplayer.player
 		function getDuration():Number;
 		function getState():String;
 		function setText(text:String=""):void;
-		function updateSkipTime(pos:Number, tag:String):void;
 		function setClick(url:String=""):void;
+		function setControls(controls:Boolean):void;
 	}
 }

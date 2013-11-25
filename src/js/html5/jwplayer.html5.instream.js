@@ -27,6 +27,7 @@
 			_model = model, 
 			_view = view, 
 			_controller = controller,
+			_skipButton,
 			_video, 
 			_oldsrc, 
 			_oldsources, 
@@ -128,6 +129,7 @@
     
     			// Instream controlbar
    				_cbar = new html5.controlbar(_self);
+   				_cbar.instreamMode(true)
    				_instreamContainer.appendChild(_cbar.element());
    				_cbar.show();
    				
@@ -141,7 +143,22 @@
     			}
     			
     			// Show the instream layer
-    			_view.setupInstream(_instreamContainer, _cbar, _disp, _defaultOptions.skipoffset);
+    			_view.setupInstream(_instreamContainer, _cbar, _disp);
+    			
+    			if ( _defaultOptions.skipoffset > 0) {
+    			    
+    			    _skipButton = new html5.adskipbutton(_options.skipoffset,_options.tag);
+    			    var skipElem = _skipButton.element()
+    			    _instreamContainer.appendChild(skipElem);
+    			    skipElem.style.visibility = _model.controls ? "visible" : "hidden";
+    			    var safe = _view.getSafeRegion();
+    			    var playersize = _utils.bounds(document.getElementById(_api.id));
+    			    skipElem.style.bottom = playersize.height - (safe.y + safe.height) + 10  + "px";
+    			    skipElem.style.right = "10px";
+    			    _skipButton.addEventListener(_events.JWPLAYER_AD_SKIPPED, _skipAd);
+    			    
+    			}
+    			
     			// Resize the instream components to the proper size
     			_resize();
     			// Load the instream item
@@ -237,10 +254,6 @@
 			_cbar.setText(text);
 		}
 		
-		
-		_self.jwInstreamUpdateSkipTime = function(position, tag) {
-			_view.updateSkipTime(position, tag);			
-		}
 
 		_self.jwInstreamState = function() {
 			if (!_instreamMode) return;
@@ -272,6 +285,9 @@
 				_provider.addEventListener(_events.JWPLAYER_MEDIA_COMPLETE, _completeHandler);
 				_provider.addEventListener(_events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
 				_provider.addEventListener(_events.JWPLAYER_MEDIA_ERROR,errorHandler);
+				_provider.addEventListener(_events.JWPLAYER_MEDIA_TIME,function(evt) {
+				    _skipButton.updateSkipTime(evt.position);
+				})
 				//_provider.addEventListener(_events.JWPLAYER_PLAYER_STATE, _stateHandler);
 
 			//}
@@ -354,6 +370,11 @@
 			}
 		}
 
+        _self.setControls = function(mode) {
+            if (_skipButton) {
+                (_skipButton.element()).style.visibility = mode ? "visible" : "hidden";
+            }
+        }
 		// function _stateHandler(evt) {
 		// 	if (!_instreamMode) return;
 		// 	_model.state = evt.newstate;

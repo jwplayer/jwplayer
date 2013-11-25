@@ -24,15 +24,18 @@ package com.longtailvideo.jwplayer.player
 	import com.longtailvideo.jwplayer.view.IPlayerComponents;
 	import com.longtailvideo.jwplayer.view.PlayerComponents;
 	import com.longtailvideo.jwplayer.view.View;
+	import com.longtailvideo.jwplayer.view.components.AdSkipButton;
+	import com.longtailvideo.jwplayer.view.components.ControlbarComponent;
 	import com.longtailvideo.jwplayer.view.interfaces.IControlbarComponent;
 	import com.longtailvideo.jwplayer.view.interfaces.IDisplayComponent;
 	import com.longtailvideo.jwplayer.view.interfaces.IPlayerComponent;
 	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
-	import flash.external.ExternalInterface;
+	
 	import flash.display.DisplayObject;
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.external.ExternalInterface;
 	import flash.geom.Rectangle;
 	import flash.net.URLRequest;
 	import flash.net.navigateToURL;
@@ -41,6 +44,8 @@ package com.longtailvideo.jwplayer.player
 	public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPlayer, IPlayer {
 
 		public static const UNSUPPORTED_ERROR:String = "Unsupported IPlayer method in InstreamPlayer";
+		private static var _SKIP_HEIGHT:Number = 30;
+		private static var _SKIP_WIDTH:Number = 80;
 		// Player's MVC
 		protected var _model:Model;
 		protected var _view:View;
@@ -63,7 +68,7 @@ package com.longtailvideo.jwplayer.player
 		protected var _viewSetup:Boolean = false;
 		protected var _clickUrl:String = "";
 		protected var _skipOffset:Number = -1;
-		
+		protected var _skipButton:AdSkipButton;
 		
 		public function InstreamPlayer(target:IPlugin, item:PlaylistItem, options:IInstreamOptions, model:Model, view:View, controller:Controller) {
 			_plugin = target;
@@ -80,7 +85,7 @@ package com.longtailvideo.jwplayer.player
 			if (!_options.autoload) {
 				_playCalled = true;
 			}
-			if (_options.skipoffset >= 0) _skipOffset = _options.skipoffset;
+
 
 			_isConfig = new PlayerConfig();
 			_isConfig.setConfig({
@@ -116,11 +121,22 @@ package com.longtailvideo.jwplayer.player
 
 			addDisplayListeners();
 			addControlbarListeners();
-			
 			initializeLayers();
 			
 			resizeHandler();
-			
+			if (_options.skipoffset >= 0) {
+				_skipOffset = _options.skipoffset;
+				_skipButton = new AdSkipButton(_skipOffset,_options.tag);
+				_instreamDisplay.addChild(_skipButton);
+				var safe:Rectangle = getSafeRegion();
+				_skipButton.visible = _model.config.controls;
+				_skipButton.x = config.width - (10 + _SKIP_WIDTH);
+				_skipButton.y = safe.y + safe.height - (10 + _SKIP_HEIGHT);
+				_skipButton.addEventListener(JWAdEvent.JWPLAYER_AD_SKIPPED,function():void {
+					destroy();
+					
+				});
+			}
 			_view.addEventListener(ViewEvent.JWPLAYER_RESIZE, resizeHandler);
 			_view.addEventListener(ViewEvent.JWPLAYER_VIEW_REDRAW, resizeHandler);
 			_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_VOLUME, playerVolumeUpdated);
@@ -129,12 +145,9 @@ package com.longtailvideo.jwplayer.player
 			if (_playCalled) {
 				_viewSetup = true;
 				_controls.display.forceState(PlayerState.BUFFERING);
-				_view.setupInstream(_instreamDisplay, _controls, _plugin, _skipOffset);
+				_view.setupInstream(_instreamDisplay, _controls, _plugin);
 			}
-			if(_skipOffset >= 0) {
-				_view.addEventListener(JWAdEvent.JWPLAYER_AD_SKIPPED, skipAd);
-				
-			}
+
 			
 			_provider.load(_item);
 		}
@@ -156,6 +169,10 @@ package com.longtailvideo.jwplayer.player
 				}
 			});
 			
+			
+			_provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, function(evt:MediaEvent):void {
+				if (_skipButton) _skipButton.updateSkipText(evt.position);
+			});
 			_provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_COMPLETE, function(evt:MediaEvent):void {
 				setTimeout(function():void { _destroy(true); }, 0);
 			});
@@ -167,6 +184,8 @@ package com.longtailvideo.jwplayer.player
 			});
 		}
 		
+		
+
 		protected function showMedia():void {
 			if (!_mediaDisplayed) {
 				_mediaDisplayed = true;
@@ -356,9 +375,6 @@ package com.longtailvideo.jwplayer.player
 			_controls.controlbar.setText(text);
 		}
 		
-		public function updateSkipTime(pos:Number, tag:String):void {
-			_view.updateSkipText(pos, tag);
-		}
 		public function setClick(url:String=""):void {
 			_clickUrl = url;
 		}
@@ -405,6 +421,12 @@ package com.longtailvideo.jwplayer.player
 			
 			_controls.controlbar.resize(viewDisplay.width, viewDisplay.height);
 			_controls.controlbar.show();
+			var safe:Rectangle = getSafeRegion();
+			if (_skipButton) {
+				_skipButton.visible = _model.config.controls;
+				_skipButton.x = config.width - (10 + _SKIP_WIDTH);
+				_skipButton.y = safe.y + safe.height - (10 + _SKIP_HEIGHT);
+			}
 			if (!_model.config.controls) {
 				_controls.controlbar.hide();
 				_controls.display.hide();
@@ -413,6 +435,7 @@ package com.longtailvideo.jwplayer.player
 				_controls.controlbar.show();
 				_controls.display.show();
 			}
+			
 		}
 		
 		protected function removeEventListeners():void {
@@ -575,11 +598,13 @@ package com.longtailvideo.jwplayer.player
 		}
 
 		public function setControls(state:Boolean):void {
-			throw new Error(UNSUPPORTED_ERROR);
+			if (_skipButton) {
+				_skipButton.visible = state;
+			}
 		}
 		
 		public function getSafeRegion():Rectangle {
-			throw new Error(UNSUPPORTED_ERROR);
+			return _view.getSafeRegion();
 		}
 		
 		public function checkBeforePlay():Boolean {

@@ -66,7 +66,6 @@ package com.longtailvideo.jwplayer.player {
 				ExternalInterface.addCallback("jwInstreamDestroy", js_destroyInstream);
 				ExternalInterface.addCallback("jwInstreamSetText", js_setText);
 				ExternalInterface.addCallback("jwInstreamClick", js_setClick);
-				ExternalInterface.addCallback("jwInstreamUpdateSkipTime", js_updateSkipTime);
 				
 				
 			} catch(e:Error) {
@@ -265,12 +264,6 @@ package com.longtailvideo.jwplayer.player {
 			if (!_isPlayer) return;
 			
 			_isPlayer.setText(text);
-		}
-		
-		protected function js_updateSkipTime(pos:Number, tag:String):void {
-			if (!_isPlayer) return;
-			
-			_isPlayer.updateSkipTime(pos, tag);
 		}
 		
 		protected function js_state():String {

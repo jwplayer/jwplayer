@@ -132,6 +132,7 @@
 			_lastTooltipPositionTime = 0,
 			_cues = [],
 			_activeCue,
+			_instreamMode = FALSE,
 			_eventDispatcher = new events.eventdispatcher(),
 			
 			_toggles = {
@@ -659,7 +660,7 @@
 			}
 		}
 		function _showVolume() {
-			if (_audioMode) return;
+			if (_audioMode || _instreamMode) return;
 			_volumeOverlay.show();
 			_hideOverlays('volume');
 		}
@@ -1374,7 +1375,7 @@
 			// ie <= IE10 does not allow fullscreen from inside an iframe. Hide the FS button. (TODO: Fix for IE11)
 			var ieIframe = !(top === self) && utils.isIE();
 			_css(_internalSelector(".jwfullscreen"), { display: (_audioMode || _hideFullscreen || ieIframe) ? JW_CSS_NONE : UNDEFINED });
-			_css(_internalSelector(".jwvolumeH"), { display: _audioMode ? JW_CSS_BLOCK : JW_CSS_NONE });
+			_css(_internalSelector(".jwvolumeH"), { display: _audioMode||_instreamMode ? JW_CSS_BLOCK : JW_CSS_NONE });
 			_css(_internalSelector(".jwhd"), { display: !_audioMode && _hasHD() ? UNDEFINED : JW_CSS_NONE });
 			_css(_internalSelector(".jwcc"), { display: !_audioMode && _hasCaptions() ? UNDEFINED : JW_CSS_NONE });
 
@@ -1420,6 +1421,12 @@
 				_redraw();
 			}
 		}
+		
+	   _this.instreamMode = function(mode) {
+            if (mode != _instreamMode) {
+                _instreamMode = mode;
+            }
+        }
 
 		/** Whether or not to show the fullscreen icon - used when an audio file is played **/
 		_this.hideFullscreen = function(mode) {

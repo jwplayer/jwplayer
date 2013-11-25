@@ -127,7 +127,7 @@
 			_api.jwGetCaptionsList = _controller.getCaptionsList;
 			_api.jwGetCurrentCaptions = _controller.getCurrentCaptions;
 			_api.jwSetCurrentCaptions = _controller.setCurrentCaptions;
-			_api.jwSetControls = _view.setControls;
+
 			_api.jwGetSafeRegion = _view.getSafeRegion; 
 			_api.jwForceState = _view.forceState;
 			_api.jwReleaseState = _view.releaseState;
@@ -178,7 +178,10 @@
 			}
 			
 			
-			
+			_api.jwSetControls = function(mode) {
+			    _view.setControls(mode);
+			    if(_instreamPlayer) _instreamPlayer.setControls(mode);
+			}
 			_api.jwInstreamPlay = function() {
 				if (_instreamPlayer) _instreamPlayer.jwInstreamPlay();
 			}
@@ -214,10 +217,6 @@
 				if (_instreamPlayer) _instreamPlayer.jwInstreamSetText(text);
 			}
 			
-			_api.jwInstreamUpdateSkipTime = function(position, tag) {
-				if (_instreamPlayer) _instreamPlayer.jwInstreamUpdateSkipTime(position, tag);
-			}
-
 			_api.jwIsBeforePlay = function () {
 				return _controller.checkBeforePlay();
 			}

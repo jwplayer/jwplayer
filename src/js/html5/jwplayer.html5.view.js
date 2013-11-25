@@ -26,8 +26,7 @@
 		VIEW_CONTROLS_CONTAINER_CLASS = "jwcontrols",
 		VIEW_ASPECT_CONTAINER_CLASS = "jwaspect",
 		VIEW_PLAYLIST_CONTAINER_CLASS = "jwplaylistcontainer",
-		VIEW_INSTREAM_SKIP_CLASS = "jwinstreamskip",
-		
+
 		/*************************************************************
 		 * Player stylesheets - done once on script initialization;  *
 		 * These CSS rules are used for all JW Player instances      *
@@ -42,10 +41,8 @@
 		JW_CSS_IMPORTANT = " !important",
 		JW_CSS_HIDDEN = "hidden",
 		JW_CSS_NONE = "none",
-		JW_CSS_BLOCK = "block",
-		SKIP_WIDTH = 115,
-		SKIP_HEIGHT = 65;
-	
+		JW_CSS_BLOCK = "block";
+
 	html5.view = function(api, model) {
 		var _api = api,
 			_model = model, 
@@ -58,16 +55,12 @@
 			_timeoutDuration = _isMobile ? 4000 : 2000,
 			_videoTag,
 			_videoLayer,
-			_lastSkipWidth,
 			// _instreamControlbar,
 			// _instreamDisplay,
 			_instreamLayer,
-			_instreamSkipContainer,
-			_instreamSkip,
 			_instreamControlbar,
 			_instreamDisplay,
 			_instreamMode = FALSE,
-			_instreamSkipSet = FALSE,
 			_controlbar,
 			_display,
 			_dock,
@@ -388,15 +381,7 @@
 
 			}, 0);
 			
-			setTimeout(function() {
-				if (_instreamMode && _instreamSkipContainer) {
-					var playersize = utils.bounds(document.getElementById(_api.id));
 
-					_instreamSkipContainer.style.top = (playersize.height/2 - 32) +"px";
-
-				}
-				
-			},1000);
 		}
 		
 		function _redrawComponent(comp) {
@@ -735,7 +720,7 @@
 			return '#' + _api.id + (className ? " ." + className : "");
 		}
 		
-		this.setupInstream = function(instreamContainer, instreamControlbar, instreamDisplay, skipoffset) {
+		this.setupInstream = function(instreamContainer, instreamControlbar, instreamDisplay) {
 			_setVisibility(_internalSelector(VIEW_INSTREAM_CONTAINER_CLASS), TRUE);
 			_setVisibility(_internalSelector(VIEW_CONTROLS_CONTAINER_CLASS), FALSE);
 			_instreamLayer.appendChild(instreamContainer);
@@ -743,10 +728,7 @@
 			_instreamDisplay = instreamDisplay;
 			_stateHandler({newstate:states.PLAYING});
 			_instreamMode = TRUE;
-			if (skipoffset >= 0) {
-				_createSkipUI(skipoffset);
-				
-			}
+
 		}
 		
 		var _destroyInstream = this.destroyInstream = function() {
@@ -754,7 +736,6 @@
 			_setVisibility(_internalSelector(VIEW_CONTROLS_CONTAINER_CLASS), TRUE);
 			_instreamLayer.innerHTML = "";
 			_instreamMode = FALSE;
-			_instreamSkipSet = FALSE;
 		}
 		
 		this.setupError = function(message) {
@@ -762,116 +743,7 @@
 			jwplayer.embed.errorScreen(_playerElement, message, _model);
 			_completeSetup();
 		}
-		
-		function _createSkipUI(skipoffset) {
-			if (!_instreamSkipContainer) {
-				_instreamSkipContainer = _createElement("div",VIEW_INSTREAM_SKIP_CLASS);
-				_instreamSkipContainer.id = "skipContainer";
-				_instreamSkip = _createElement("canvas");
-				_instreamSkipContainer.appendChild(_instreamSkip);
-			}
-			var playersize = utils.bounds(document.getElementById(_api.id));
-			_instreamSkipContainer.style.top = (playersize.height/2 - Math.floor(SKIP_HEIGHT/2)) +"px";
-			_instreamSkipContainer.style.width = SKIP_WIDTH + "px";
-			_instreamSkipContainer.style.height = SKIP_HEIGHT +"px";
-			_instreamSkipContainer.style.visibility = _model.controls ? "visible" : "hidden";
-			_instreamSkip.width = SKIP_WIDTH;
-			_instreamSkip.height = SKIP_HEIGHT;
-			
-			_instreamLayer.appendChild(_instreamSkipContainer);
-			_updateTime(skipoffset);
-			_setupResponsiveListener();
-		}
-		
-		function _setupResponsiveListener() {
-			var responsiveListenerInterval = setInterval(function() {
-				var skipDOM = DOCUMENT.getElementById(_api.id),
-					skipWidth = utils.bounds(skipDOM).width; 
-						
-				if (skipDOM != _playerElement) {
-					// Player has been destroyed; clean up
-					clearInterval(responsiveListenerInterval);
-				} else if (skipWidth > 0) {
-					if (skipWidth != _lastSkipWidth) {
-						_lastSkipWidth = skipWidth;
-						var playersize = utils.bounds(skipDOM);
-						_instreamSkipContainer.style.top = (playersize.height/2 - Math.floor(SKIP_HEIGHT/2)) +"px";
-					}
-				}
-			}, 200)
-		}
-		
-		function _updateTime(skipoffset){
-			var ctx=_instreamSkip.getContext("2d");
-			ctx.clearRect(0,0,SKIP_WIDTH,SKIP_HEIGHT);
-			ctx.fillStyle="black";
-			ctx.globalAlpha = 0.5;
-			ctx.fillRect(0,0,SKIP_WIDTH,SKIP_HEIGHT);
-			
-			ctx.globalAlpha = 1.0;
-			ctx.strokeStyle = "white";
-    		ctx.strokeRect(0,0,SKIP_WIDTH,SKIP_HEIGHT);
 
-			ctx.font="13px Arial";
-			ctx.fillStyle="white";
-			var x = _instreamSkip.width / 2;
-			var y = _instreamSkip.height / 2;
-			ctx.textAlign = "center";
-			ctx.fillText("Skip ad in " + skipoffset ,x,y + 6);
-			
-		}
-		
-		this.updateSkipTime = function(time, tag) {
-			_adTag = tag;
-			var ctx=_instreamSkip.getContext("2d");
-			if (time >= 0) {
-				_updateTime(time);
-			} else if (!_instreamSkipSet) {
-				ctx.clearRect(0,0,SKIP_WIDTH,SKIP_HEIGHT);
-				ctx.fillStyle="black";
-				ctx.globalAlpha = 0.5;
-				ctx.fillRect(0,0,SKIP_WIDTH,SKIP_HEIGHT);
-				ctx.globalAlpha = 1.0;
-				ctx.strokeStyle = "white";
-		   		ctx.strokeRect(0,0,SKIP_WIDTH,SKIP_HEIGHT);
-		   		ctx.fillStyle="white";
-				ctx.font="20px Arial";
-				var x = _instreamSkip.width / 2;
-				var y = _instreamSkip.height / 2;
-				ctx.textAlign = "center";
-				ctx.fillText("Skip ad >>",x,y + 10);
-				if (_isMobile) {
-					var skipTouch = new utils.touch(_instreamSkipContainer);
-					skipTouch.addEventListener(utils.touchEvents.TAP, function(evt) {
-						skipAd();
-					});
-				}
-				else {
-					_instreamSkipContainer.addEventListener('click', skipAd);
-				}
-				_instreamSkipSet = TRUE;
-				_instreamSkipContainer.style.cursor = "pointer";
-				var textWidth =ctx.measureText("Skip ad >>").width;
-				var startY = y+10+(parseInt(20/15));
-				var endY = startY;
- 				var underlineHeight = parseInt(20)/15;
- 				if(underlineHeight < 1) underlineHeight = 1;
- 				var startX,endX;
-				ctx.beginPath();
-				startX = x - (textWidth/2);
-    			endX = x + (textWidth/2);
-				ctx.strokeStyle = "white";
-				ctx.lineWidth = underlineHeight;
-				ctx.moveTo(startX,startY);
-				ctx.lineTo(endX,endY);
-				ctx.stroke();
-				
-			}
-		}
-		
-		function skipAd() {
-			_eventDispatcher.sendEvent(events.JWPLAYER_AD_SKIPPED, {tag: _adTag});
-		}
 		
 		function _setVisibility(selector, state) {
 			_css(selector, { display: state ? JW_CSS_BLOCK : JW_CSS_NONE });
@@ -910,11 +782,9 @@
 			if (hidden) {
 				_instreamControlbar.hide();
 				_instreamDisplay.hide();
-;				if (_instreamSkipContainer) _instreamSkipContainer.style.visibility = "hidden";
 			} else {
 				_instreamControlbar.show();
 				_instreamDisplay.show();
-				if (_instreamSkipContainer) _instreamSkipContainer.style.visibility = "visible";
 			}
 		}
 		
@@ -1041,12 +911,6 @@
 		display: 'none'
 	});
 
-
-	_css('.' + VIEW_INSTREAM_SKIP_CLASS, {
-		'position': 'relative',
-		'float':'right',
-		'display':'inline-block'
-	});
 
 	_css('.' + VIEW_ASPECT_CONTAINER_CLASS, {
 		display: 'none'
