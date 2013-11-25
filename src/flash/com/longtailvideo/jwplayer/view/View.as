@@ -2,7 +2,7 @@ package com.longtailvideo.jwplayer.view {
 	import com.longtailvideo.jwplayer.events.CaptionsEvent;
 	import com.longtailvideo.jwplayer.events.GlobalEventDispatcher;
 	import com.longtailvideo.jwplayer.events.IGlobalEventDispatcher;
-	import com.longtailvideo.jwplayer.events.JWAdEvent;
+
 	import com.longtailvideo.jwplayer.events.MediaEvent;
 	import com.longtailvideo.jwplayer.events.PlayerEvent;
 	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
@@ -84,8 +84,7 @@ package com.longtailvideo.jwplayer.view {
 		protected var _instreamPlugin:IPlugin;
 		protected var _instreamAnim:Animations;
 		protected var _instreamControls:IPlayerComponents;
-		protected var _skipUI:MovieClip;
-		protected var _skipText:TextField;
+
 		protected var _displayMasker:MovieClip;
 		
 		protected var _image:Loader;
@@ -123,8 +122,7 @@ package com.longtailvideo.jwplayer.view {
 		private var _imageLoaded:Boolean = false;
 		// Indicates whether the instream player is being displayed
 		private var _instreamMode:Boolean = false;
-		private static var _SKIP_HEIGHT:Number = 65;
-		private static var _SKIP_WIDTH:Number = 115;
+
 		private var _adTag:String = "";
 		
 		public function View(player:IPlayer, model:Model) {
@@ -482,11 +480,7 @@ package com.longtailvideo.jwplayer.view {
 					}
 				}
 			}
-			if (_instreamMode && _skipUI) {
-				
-				_skipUI.x = _player.config.width - _SKIP_WIDTH;
-				_skipUI.y = _player.config.height/2 - Math.floor(_SKIP_HEIGHT/2);
-			}
+
 		}
 
 		protected function resizeMedia(width:Number, height:Number):void {
@@ -760,7 +754,7 @@ package com.longtailvideo.jwplayer.view {
 				dispatchEvent(evt);
 		}
 		
-		public function setupInstream(instreamDisplay:DisplayObject, controls:IPlayerComponents, plugin:IPlugin, _skipOffset:Number = -1):void {
+		public function setupInstream(instreamDisplay:DisplayObject, controls:IPlayerComponents, plugin:IPlugin):void {
 			_instreamAnim.cancelAnimation();
 			_instreamPlugin = plugin;
 			_instreamControls = controls;
@@ -770,10 +764,7 @@ package com.longtailvideo.jwplayer.view {
 			_mediaLayer.visible = false;
 			_componentsLayer.visible = false;
 			(_playlist as PlaylistComponent).removeClickHandler();
-			if (_skipOffset >= 0) {
-				setupSkipUI(_skipOffset);
-				
-			}
+
 			try {
 				var pluginDO:DisplayObject = plugin as DisplayObject;
 				if (pluginDO) {
@@ -788,60 +779,7 @@ package com.longtailvideo.jwplayer.view {
 			_instreamMode = true;
 		}
 		
-		private function setupSkipUI(skipOffset:Number):void {
-			
-			_skipUI = new MovieClip();
-			_skipUI.visible = _model.config.controls;
-			_skipUI.x = _player.config.width - _SKIP_WIDTH;
-			_skipUI.y = _player.config.height/2 - Math.floor(_SKIP_HEIGHT/2);
-			_instreamLayer.addChild(_skipUI);
-			_skipUI.graphics.beginFill(0x000000, .5); 
-			_skipUI.graphics.drawRect(0,0,_SKIP_WIDTH,_SKIP_HEIGHT);
-			_skipUI.graphics.endFill();
-			_skipUI.graphics.lineStyle(1, 0xFFFFFF);
-			_skipUI.graphics.beginFill(0xFFFFFF, 0);
-			_skipUI.graphics.drawRect(0,0,_SKIP_WIDTH,_SKIP_HEIGHT);
-			_skipUI.graphics.endFill();
-			_skipText = new TextField();
-			_skipUI.addChild(_skipText);
-			var myFormat:TextFormat = new TextFormat();
-			myFormat.align = TextFormatAlign.CENTER;
-			myFormat.font = "Arial"
-			myFormat.size = 13;
-			_skipText.defaultTextFormat = myFormat;
-			_skipText.y = 25;
-			updateSkipText(skipOffset, "");
-		}
-		
-		
-		public function updateSkipText(skipOffset:Number, tag:String):void {
-			_adTag = tag;
-			if (skipOffset > 0) {
-				_skipText.text = "Skip ad in " + skipOffset;
-				_skipText.textColor= 0xFFFFFF;
-			} else {
-				_skipText.y = 22;
-				_skipText.x = 10;
-				_skipText.text = "Skip Ad >>";
-				var myFormat:TextFormat = new TextFormat();
-				myFormat.align = TextFormatAlign.CENTER;
-				myFormat.font = "Arial"
-				myFormat.size = 20;
-				myFormat.underline = true;
-				
-				_skipText.setTextFormat(myFormat);
-				_skipUI.addEventListener(MouseEvent.CLICK, skipAd);
-				_skipUI.buttonMode = true;
-				_skipUI.mouseChildren=false;
-			}
-		}
-		
-		
-		private function skipAd(evt:Event):void {
-			var adEvent:JWAdEvent = new JWAdEvent(JWAdEvent.JWPLAYER_AD_SKIPPED);
-			adEvent.tag = _adTag;
-			dispatchEvent(adEvent);
-		}
+	
 		
 		public function destroyInstream():void {
 			if (_instreamPlugin && _instreamPlugin is DisplayObject) {
@@ -942,12 +880,10 @@ package com.longtailvideo.jwplayer.view {
 				// Reverting changes for setControls in ads (due to regressions in mobile)
 				if (_instreamMode) {
 					if (newstate) {
-						if (_skipUI) _skipUI.visible = true;
 						_instreamControls.controlbar.show();
 						_instreamControls.display.show();
 					}
 					else {
-						if (_skipUI) _skipUI.visible = false;
 						_instreamControls.controlbar.hide();
 						_instreamControls.display.hide();
 					}
