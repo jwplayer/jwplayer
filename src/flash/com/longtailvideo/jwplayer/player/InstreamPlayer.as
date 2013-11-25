@@ -134,7 +134,9 @@ package com.longtailvideo.jwplayer.player
 				_skipButton.y = safe.y + safe.height - (10 + _SKIP_HEIGHT);
 				_skipButton.addEventListener(JWAdEvent.JWPLAYER_AD_SKIPPED,function():void {
 					destroy();
-					
+					var ev:JWAdEvent = new JWAdEvent(JWAdEvent.JWPLAYER_AD_SKIPPED);
+					ev.tag = _options.tag;
+					dispatchEvent(ev);
 				});
 			}
 			_view.addEventListener(ViewEvent.JWPLAYER_RESIZE, resizeHandler);

@@ -130,7 +130,9 @@
 		 	return _eventListener(events.JWPLAYER_INSTREAM_DESTROYED, callback);
 		 };
 		
-		
+		_this.onAdSkipped = function(callback) {
+            return _eventListener(events.JWPLAYER_AD_SKIPPED, callback);
+        };
 		_this.play = function(state) {
 			_player.jwInstreamPlay(state);
 		};

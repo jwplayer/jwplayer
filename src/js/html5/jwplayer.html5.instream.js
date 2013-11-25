@@ -297,6 +297,7 @@
 		}
 		
 		function _skipAd(evt) {
+		    _sendEvent(evt.type,evt);
 			_self.jwInstreamDestroy(false);
 		}
 		function _stateHandler(evt) {
