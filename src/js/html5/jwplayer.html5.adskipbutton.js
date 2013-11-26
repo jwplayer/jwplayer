@@ -92,8 +92,8 @@
                     _skip_image_over.style.left = (ctx.measureText(text).width + 14) + "px";
 
                     if (_utils.isMobile()) {
-                        var skipTouch = new utils.touch(_instreamSkipContainer);
-                        skipTouch.addEventListener(utils.touchEvents.TAP, function(evt) {
+                        var skipTouch = new _utils.touch(_instreamSkipContainer);
+                        skipTouch.addEventListener(_utils.touchEvents.TAP, function(evt) {
                             skipAd();
                         });
                     }
