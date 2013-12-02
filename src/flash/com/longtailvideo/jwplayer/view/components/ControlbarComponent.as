@@ -327,7 +327,7 @@ package com.longtailvideo.jwplayer.view.components {
 				hideButton("normalscreen");
 			}
 			
-			if (!_levels || _levels.length < 2) {
+			if (_instreamMode || !_levels || _levels.length < 2) {
 				newLayout = newLayout.replace(/hd/g, "");
 				hideButton('hd');
 			}
