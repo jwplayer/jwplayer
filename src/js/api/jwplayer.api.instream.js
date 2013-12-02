@@ -9,37 +9,26 @@
 		utils = jwplayer.utils,
 		states = events.state;
 	
-	jwplayer.api.instream = function(api, player, item, options) {
+	jwplayer.api.instream = function(_api, _player) {
 		
-		var _api = api,
-			_player = player,
-			_item = item,
-			_options = options || {},
+		var _item,
+			_options,
 			_listeners = {},
 			_stateListeners = {},
 			_this = this;
-		
-		function _init() {
-			_this.type = "instream";
-			_this.tracker = _options.tracker;
-			
-		   	_api.callInternal("jwLoadInstream", item, _options);
-		}
 
-		
-		
-		function _addInternalListener(player, type) {
-			_player.jwInstreamAddEventListener(type, 'function(dat) { jwplayer("' + _api.id + '").dispatchInstreamEvent("' + type + '", dat); }');
-		};
+		function _addInternalListener(id, type) {
+			_player.jwInstreamAddEventListener(type, 'function(dat) { jwplayer("' + id + '").dispatchInstreamEvent("' + type + '", dat); }');
+		}
 
 		function _eventListener(type, callback) {
 			if (!_listeners[type]) {
 				_listeners[type] = [];
-				_addInternalListener(_player, type);
+				_addInternalListener(_api.id, type);
 			}
 			_listeners[type].push(callback);
 			return this;
-		};
+		}
 
 		function _stateListener(state, callback) {
 			if (!_stateListeners[state]) {
@@ -48,7 +37,7 @@
 			}
 			_stateListeners[state].push(callback);
 			return this;
-		};
+		}
 
 		function _stateCallback(state) {
 			return function(args) {
@@ -70,6 +59,18 @@
 			};
 		}
 		
+		_this.tracker = null;
+		_this.type = 'instream';
+		
+		_this.init = function(options) {
+			_options = options || {};
+			_this.tracker = _options.tracker;
+			_api.callInternal('jwInitInstream', _options);
+		};
+		_this.loadItem = function(item) {
+			_item = item;
+			_api.callInternal('jwLoadItemInstream', _item);
+		};
 		_this.dispatchEvent = function(type, calledArguments) {
 			if (_listeners[type]) {
 				var args = utils.translateEventResponse(type, calledArguments[1]);
@@ -79,9 +80,7 @@
 					}
 				}
 			}
-		}
-		
-		
+		};
 		_this.onError = function(callback) {
 			return _eventListener(events.JWPLAYER_ERROR, callback);
 		};
@@ -126,13 +125,12 @@
 		_this.onClick = function(callback) {
 			return _eventListener(events.JWPLAYER_INSTREAM_CLICK, callback);
 		};
-	    _this.onInstreamDestroyed = function(callback) {
-		 	return _eventListener(events.JWPLAYER_INSTREAM_DESTROYED, callback);
-		 };
-		
+		_this.onInstreamDestroyed = function(callback) {
+			return _eventListener(events.JWPLAYER_INSTREAM_DESTROYED, callback);
+		};
 		_this.onAdSkipped = function(callback) {
-            return _eventListener(events.JWPLAYER_AD_SKIPPED, callback);
-        };
+			return _eventListener(events.JWPLAYER_AD_SKIPPED, callback);
+		};
 		_this.play = function(state) {
 			_player.jwInstreamPlay(state);
 		};
@@ -142,23 +140,15 @@
 		_this.destroy = function() {
 			_player.jwInstreamDestroy();
 		};
-		
 		_this.setText = function(text) {
-			_player.jwInstreamSetText(text ? text : "");
-		}
-
-
+			_player.jwInstreamSetText(text ? text : '');
+		};
 		_this.getState = function() {
 			return _player.jwInstreamState();
-		}
+		};
 		_this.setClick = function (url) {
 			_player.jwInstreamClick(url);
-		}
-		
-		_init();
-		
-		
-	}
+		};
+	};
 	
 })(jwplayer);
-

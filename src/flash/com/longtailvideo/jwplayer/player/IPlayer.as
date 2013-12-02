@@ -73,7 +73,7 @@ package com.longtailvideo.jwplayer.player {
 		function redraw():Boolean;
 		function fullscreen(on:Boolean):void;
 		function get controls():IPlayerComponents;
-		function loadInstream(target:IPlugin, item:PlaylistItem, options:IInstreamOptions=null):IInstreamPlayer;
+		function setupInstream(target:IPlugin):IInstreamPlayer;
 		function getQualityLevels():Array;
 		function getCurrentQuality():Number;
 		function setCurrentQuality(index:Number):void;

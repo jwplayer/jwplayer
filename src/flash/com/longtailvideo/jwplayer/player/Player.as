@@ -277,12 +277,9 @@
 		/**
 		 * @inheritDoc
 		 **/
-		public function loadInstream(target:IPlugin, item:PlaylistItem, options:IInstreamOptions=null):IInstreamPlayer {
-			if (!options) options = new InstreamOptions();
-			var instream:IInstreamPlayer = new InstreamPlayer(target, item, options, model, view, controller);
-			return instream;
+		public function setupInstream(target:IPlugin):IInstreamPlayer {
+			return new InstreamPlayer(target, model, view, controller);
 		}
-
 
 		public function getQualityLevels():Array {
 			return model.media ? model.media.qualityLevels : null;

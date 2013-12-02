@@ -170,13 +170,16 @@
 				}
 			}
 			
-			_api.jwLoadInstream = function(item, options) {
+			_api.jwInitInstream = function(options) {
 				if (!_instreamPlayer) {
 					_instreamPlayer = new html5.instream(_api, _model, _view, _controller);
 				}
-				_instreamPlayer.load(item, options);
+				_instreamPlayer.init(options);
 			}
 			
+			_api.jwLoadItemInstream = function(item) {
+				_instreamPlayer.load(item);
+			}
 			
 			_api.jwSetControls = function(mode) {
 			    _view.setControls(mode);

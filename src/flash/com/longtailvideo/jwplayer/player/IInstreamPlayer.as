@@ -1,6 +1,7 @@
 package com.longtailvideo.jwplayer.player
 {
 	import com.longtailvideo.jwplayer.events.IGlobalEventDispatcher;
+	import com.longtailvideo.jwplayer.model.IInstreamOptions;
 
 	/**
 	 * Fired when a portion of the current media has been loaded into the buffer.
@@ -102,5 +103,8 @@ package com.longtailvideo.jwplayer.player
 		function setText(text:String=""):void;
 		function setClick(url:String=""):void;
 		function setControls(controls:Boolean):void;
+		function init(options:Object=null):void;
+		function loadItem(item:Object):void;
+		function getOptions():IInstreamOptions;
 	}
 }

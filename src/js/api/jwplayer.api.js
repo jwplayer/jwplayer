@@ -4,7 +4,7 @@
  * @author Pablo
  * @version 5.8
  */
-(function(jwplayer) {
+(function(jwplayer, undefined) {
 	var _players = [], 
 		utils = jwplayer.utils, 
 		events = jwplayer.events,
@@ -18,10 +18,10 @@
 			_stateListeners = {},
 			_componentListeners = {},
 			_readyListeners = [],
-			_player = undefined,
+			_player,
 			_playerReady = false,
 			_queuedCalls = [],
-			_instream = undefined,
+			_instream,
 			_itemMeta = {},
 			_callbacks = {};
 		
@@ -46,7 +46,7 @@
 				utils.log("Could not add dock button" + e.message);
 			}
 		};
-		_this.removeButton = function(id) { _callInternal('jwDockRemoveButton', id); },
+		_this.removeButton = function(id) { _callInternal('jwDockRemoveButton', id); };
 
 		_this.callback = function(id) {
 			if (_callbacks[id]) {
@@ -141,7 +141,7 @@
 			return _this;
 		};
 		_this.playlistItem = function(item) {
-			_callInternal("jwPlaylistItem", parseInt(item));
+			_callInternal("jwPlaylistItem", parseInt(item, 10));
 			return _this;
 		};
 		_this.playlistPrev = function() {
@@ -173,7 +173,7 @@
 			return _this;
 		};
 		_this.play = function(state) {
-			if (typeof state == "undefined") {
+			if (state === undefined) {
 				state = _this.getState();
 				if (state == states.PLAYING || state == states.BUFFERING) {
 					_callInternal("jwPause");
@@ -186,7 +186,7 @@
 			return _this;
 		};
 		_this.pause = function(state) {
-			if (typeof state == "undefined") {
+			if (state === undefined) {
 				state = _this.getState();
 				if (state == states.PLAYING || state == states.BUFFERING) {
 					_callInternal("jwPause");
@@ -210,10 +210,16 @@
 			_callInternal("jwSetVolume", volume);
 			return _this;
 		};
-		_this.loadInstream = function(item, instreamOptions) {
-			_instream = new api.instream(this, _player, item, instreamOptions);
+		_this.setupInstream = function() {
+			_instream = new api.instream(this, _player);
 			return _instream;
 		};
+		_this.loadInstream = function(item, options) {
+			_instream = _this.setupInstream();
+			_instream.init(options);
+            _instream.loadItem(item);
+            return _instream;
+		}
 		_this.getQualityLevels = function() {
 			return _callInternal("jwGetQualityLevels");
 		};
@@ -373,7 +379,7 @@
 			}
 			_stateListeners[state].push(callback);
 			return _this;
-		};
+		}
 
 		function _stateCallback(state) {
 			return function(args) {
@@ -404,7 +410,7 @@
 			}
 			_componentListeners[component][type].push(callback);
 			return _this;
-		};
+		}
 		
 		function _componentCallback(component, type) {
 			return function(event) {
@@ -427,7 +433,7 @@
 			} catch(e) {
 				utils.log("Could not add internal listener");
 			}
-		};
+		}
 		
 		function _eventListener(type, callback) {
 			if (!_listeners[type]) {
@@ -438,7 +444,7 @@
 			}
 			_listeners[type].push(callback);
 			return _this;
-		};
+		}
 		
 		_this.dispatchEvent = function(type) {
 			if (_listeners[type]) {
@@ -489,7 +495,7 @@
 			} else {
 				_queuedCalls.push(arguments);
 			}
-		};
+		}
 		
 		_this.callInternal = _callInternal;
 		

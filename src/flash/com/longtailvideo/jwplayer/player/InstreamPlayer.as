@@ -14,6 +14,7 @@ package com.longtailvideo.jwplayer.player
 	import com.longtailvideo.jwplayer.model.ControlbarSeekOptions;
 	import com.longtailvideo.jwplayer.model.IInstreamOptions;
 	import com.longtailvideo.jwplayer.model.IPlaylist;
+	import com.longtailvideo.jwplayer.model.InstreamOptions;
 	import com.longtailvideo.jwplayer.model.Model;
 	import com.longtailvideo.jwplayer.model.PlayerConfig;
 	import com.longtailvideo.jwplayer.model.Playlist;
@@ -25,7 +26,6 @@ package com.longtailvideo.jwplayer.player
 	import com.longtailvideo.jwplayer.view.PlayerComponents;
 	import com.longtailvideo.jwplayer.view.View;
 	import com.longtailvideo.jwplayer.view.components.AdSkipButton;
-	import com.longtailvideo.jwplayer.view.components.ControlbarComponent;
 	import com.longtailvideo.jwplayer.view.interfaces.IControlbarComponent;
 	import com.longtailvideo.jwplayer.view.interfaces.IDisplayComponent;
 	import com.longtailvideo.jwplayer.view.interfaces.IPlayerComponent;
@@ -37,8 +37,6 @@ package com.longtailvideo.jwplayer.player
 	import flash.events.Event;
 	import flash.external.ExternalInterface;
 	import flash.geom.Rectangle;
-	import flash.net.URLRequest;
-	import flash.net.navigateToURL;
 	import flash.utils.setTimeout;
 	
 	public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPlayer, IPlayer {
@@ -64,28 +62,29 @@ package com.longtailvideo.jwplayer.player
 		protected var _isConfig:PlayerConfig;
 		protected var _controls:PlayerComponents;
 		protected var _mediaDisplayed:Boolean = false;
-		protected var _playCalled:Boolean = false;
-		protected var _viewSetup:Boolean = false;
 		protected var _clickUrl:String = "";
 		protected var _skipOffset:Number = -1;
 		protected var _skipButton:AdSkipButton;
 		
-		public function InstreamPlayer(target:IPlugin, item:PlaylistItem, options:IInstreamOptions, model:Model, view:View, controller:Controller) {
+		protected var _viewSetup:Boolean = false;
+		protected var _playerLocked:Boolean = false;
+		
+		public function InstreamPlayer(target:IPlugin, model:Model, view:View, controller:Controller) {
+			
 			_plugin = target;
-			_item = item;
-			_options = options;
 			_model = model;
 			_controller = controller;
 			_view = view;
 			
-			if (!target || !item || !options || !model || !view || !controller) {
+			if (!target || !model || !view || !controller) {
 				throw new ArgumentError("InstreamPlayer must be initialized with non-null arguments");
-			} 
-				
-			if (!_options.autoload) {
-				_playCalled = true;
 			}
-
+		}
+		
+		public function init(options:Object=null):void {
+			_options = new InstreamOptions(options);
+			
+			lock(_plugin, _lockCallback);
 
 			_isConfig = new PlayerConfig();
 			_isConfig.setConfig({
@@ -107,18 +106,32 @@ package com.longtailvideo.jwplayer.player
 				_isConfig.setConfig(_view.skin.getSkinProperties());
 				_skin = _view.skin;
 			}
-			
-			completeInit();
-			
 		}
 		
-		protected function completeInit(evt:Event=null):void {
-			
+		public function loadItem(item:Object):void {
+			_item = new PlaylistItem(item);
+			if (_playerLocked) {
+				beginPlayback();
+			}
+		}
+		
+		public function getOptions():IInstreamOptions {
+			return _options;
+		}
+		
+		private function _lockCallback():void {
+			_playerLocked = true;
+			if (_item && (!_provider || _provider.item !== _item)) {
+				beginPlayback();
+			}
+		}
+		
+		private function beginPlayback():void {
 			_controls = new PlayerComponents(this);
 			(_controls.display as MovieClip).name = "instream_display";
-
+			
 			setupProvider();
-
+			
 			addDisplayListeners();
 			addControlbarListeners();
 			initializeLayers();
@@ -143,13 +156,9 @@ package com.longtailvideo.jwplayer.player
 			_view.addEventListener(ViewEvent.JWPLAYER_VIEW_REDRAW, resizeHandler);
 			_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_VOLUME, playerVolumeUpdated);
 			_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_MUTE, playerMuteUpdated);
-
-			if (_playCalled) {
-				_viewSetup = true;
-				_controls.display.forceState(PlayerState.BUFFERING);
-				_view.setupInstream(_instreamDisplay, _controls, _plugin);
-			}
-
+			
+			_controls.display.forceState(PlayerState.BUFFERING);
+			_setupView();
 			
 			_provider.load(_item);
 		}
@@ -158,16 +167,17 @@ package com.longtailvideo.jwplayer.player
 			setProvider(_item);
 			
 			_provider.initializeMediaProvider(_isConfig);
+			
+			_provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_ERROR, _errorHandler);
+			
 			_provider.addGlobalListener(function(evt:Event):void {
 				dispatchEvent(evt);
 			});
 			
 			_provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_BUFFER_FULL, function(evt:MediaEvent):void {
-				if (_playCalled) {
-					_provider.play();
-					if (!_mediaDisplayed && _isConfig.stretching == Stretcher.EXACTFIT) {
-						showMedia();
-					}
+				_provider.play();
+				if (!_mediaDisplayed && _isConfig.stretching == Stretcher.EXACTFIT) {
+					showMedia();
 				}
 			});
 			
@@ -186,7 +196,15 @@ package com.longtailvideo.jwplayer.player
 			});
 		}
 		
-		
+		private function _errorHandler(evt:PlayerEvent):void {
+			if (evt.type == MediaEvent.JWPLAYER_MEDIA_ERROR) {
+				// Translate media error into player error.
+				dispatchEvent(new PlayerEvent(PlayerEvent.JWPLAYER_ERROR, (evt as MediaEvent).message));
+			} else {
+				dispatchEvent(evt);
+			}
+			_destroy();
+		}
 
 		protected function showMedia():void {
 			if (!_mediaDisplayed) {
@@ -341,10 +359,7 @@ package com.longtailvideo.jwplayer.player
 		}
 
 		public function play():Boolean {
-			_playCalled = true;
-			if (!_viewSetup) {
-				_view.setupInstream(_instreamDisplay, _controls, _plugin);
-			}
+			_setupView();
 			if (_provider && _provider.state != PlayerState.PLAYING) {
 				_provider.play();
 			}
@@ -381,6 +396,13 @@ package com.longtailvideo.jwplayer.player
 			_clickUrl = url;
 		}
 		
+		protected function _setupView():void {
+			if (!_viewSetup) {
+				_view.setupInstream(_instreamDisplay, _controls, _plugin);
+				_viewSetup = true;
+			}
+		}
+		 
 		protected function _destroy(complete:Boolean=false):void {
 			if (!complete && _provider && _provider.state != PlayerState.IDLE) {
 				_provider.stop();
@@ -389,6 +411,7 @@ package com.longtailvideo.jwplayer.player
 			_provider = null;
 			removeEventListeners();
 			_controls.controlbar.setInstreamMode(false);
+			unlock(_plugin);
 			dispatchEvent(new InstreamEvent(InstreamEvent.JWPLAYER_INSTREAM_DESTROYED, complete ? "complete" : "destroy"));
 		}
 		
@@ -485,12 +508,6 @@ package com.longtailvideo.jwplayer.player
 			return _model.config.controls;
 		}
 		
-
-		
-		/********** UNSUPPORTED IPLAYER METHODS *******/
-		/**    These methods should not be called    **/
-		/**********************************************/
-		
 		public function get version():String {
 			return PlayerVersion.version;
 		}
@@ -502,17 +519,39 @@ package com.longtailvideo.jwplayer.player
 		}
 		
 		public function get locked():Boolean {
-			return false;
+			return _controller.locking;
 		}
 		
 		public function lock(target:IPlugin, callback:Function):void {
-			throw new Error(UNSUPPORTED_ERROR);
+			_controller.lockPlayback(target, callback);
 		}
 		
 		public function unlock(target:IPlugin):Boolean {
-			throw new Error(UNSUPPORTED_ERROR);
-			return false;
+			_playerLocked = false;
+			return _controller.unlockPlayback(target);
 		}
+
+		public function setControls(state:Boolean):void {
+			if (_skipButton) {
+				_skipButton.visible = state;
+			}
+		}
+		
+		public function getSafeRegion():Rectangle {
+			return _view.getSafeRegion();
+		}
+		
+		public function get edition():String {
+			return _model.edition;
+		}
+		
+		public function get token():String {
+			return _model.token;
+		}
+		
+		/********** UNSUPPORTED IPLAYER METHODS *******/
+		/**    These methods should not be called    **/
+		/**********************************************/
 		
 		public function volume(volume:Number):Boolean {
 			throw new Error(UNSUPPORTED_ERROR);
@@ -566,7 +605,7 @@ package com.longtailvideo.jwplayer.player
 			throw new Error(UNSUPPORTED_ERROR);
 		}
 		
-		public function loadInstream(target:IPlugin, item:PlaylistItem, options:IInstreamOptions=null):IInstreamPlayer {
+		public function setupInstream(target:IPlugin):IInstreamPlayer {
 			throw new Error(UNSUPPORTED_ERROR);
 			return null;
 		}
@@ -599,16 +638,6 @@ package com.longtailvideo.jwplayer.player
 			throw new Error(UNSUPPORTED_ERROR);
 		}
 
-		public function setControls(state:Boolean):void {
-			if (_skipButton) {
-				_skipButton.visible = state;
-			}
-		}
-		
-		public function getSafeRegion():Rectangle {
-			return _view.getSafeRegion();
-		}
-		
 		public function checkBeforePlay():Boolean {
 			throw new Error(UNSUPPORTED_ERROR);
 		}
@@ -616,14 +645,6 @@ package com.longtailvideo.jwplayer.player
 		public function checkBeforeComplete():Boolean {
 			throw new Error(UNSUPPORTED_ERROR);
 		}
-		
-		public function get edition():String {
-			return _model.edition;
-		}
-		
-		public function get token():String {
-			return _model.token;
-		}
-		
+
 	}
 }

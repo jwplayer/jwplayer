@@ -33,8 +33,6 @@ package com.longtailvideo.jwplayer.player {
 		
 		protected var _lockPlugin:IPlugin;
 		protected var _instream:IInstreamPlayer;
-		protected var _isItem:PlaylistItem;
-		protected var _isConfig:IInstreamOptions;
 		
 		protected var _destroyed:Boolean = false;
 		
@@ -174,7 +172,8 @@ package com.longtailvideo.jwplayer.player {
 				ExternalInterface.addCallback("jwDockShow", js_showDock);
 				
 				// Instream API
-				ExternalInterface.addCallback("jwLoadInstream", js_loadInstream);
+				ExternalInterface.addCallback("jwInitInstream", js_initInstream);
+				ExternalInterface.addCallback("jwLoadItemInstream", js_loadItemInstream);
 
 				// The player shouldn't send any events if it's been destroyed
 				ExternalInterface.addCallback("jwDestroyAPI", js_destroyAPI);
@@ -536,28 +535,14 @@ package com.longtailvideo.jwplayer.player {
 			_player.controls.display.releaseState();
 		}
 		
-		protected function js_loadInstream(item:Object, config:Object):void {
-			_isItem = new PlaylistItem(item);
-			_isConfig = new InstreamOptions(config);
-
-			if (!_isConfig.autoload) {
-				_player.lock(_lockPlugin, function():void {
-					_instream = _player.loadInstream(_lockPlugin, _isItem, _isConfig);
-					beginInstream();
-				});
-			} else {
-				_instream = _player.loadInstream(_lockPlugin, _isItem, _isConfig);
-				beginInstream();
-			}
+		protected function js_initInstream(options:Object):void {
+			_instream = _player.setupInstream(_lockPlugin);
+			_instream.init(options);
 		}
 		
-		protected function beginInstream():void {
-			if (_instream) {
-				_instream.addEventListener(InstreamEvent.JWPLAYER_INSTREAM_DESTROYED, function(evt:InstreamEvent):void {
-					_player.unlock(_lockPlugin);
-				});
-				new JavascriptInstreamAPI(_instream, _isConfig, _player, _lockPlugin);	
-			}	
+		protected function js_loadItemInstream(item:Object):void {
+			_instream.loadItem(item);
+			new JavascriptInstreamAPI(_instream, _player, _lockPlugin);
 		}
 		
 		protected function setComponentVisibility(component:IPlayerComponent, state:Boolean):void {

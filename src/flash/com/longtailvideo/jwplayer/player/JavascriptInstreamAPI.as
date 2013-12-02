@@ -15,18 +15,18 @@ package com.longtailvideo.jwplayer.player {
 	public class JavascriptInstreamAPI {
 		
 		protected var _isPlayer:IInstreamPlayer;
-		protected var _isOptions:IInstreamOptions;
 		protected var _listeners:Object = {};
 		protected var _player:IPlayer;
 		protected var _lockPlugin:IPlugin;
 		protected var _lockedPlayer:Boolean = false;
 		protected var _tag:String;
 		
-		public function JavascriptInstreamAPI(isplayer:IInstreamPlayer, options:IInstreamOptions, player:IPlayer, lockPlugin:IPlugin) {
+		public function JavascriptInstreamAPI(isplayer:IInstreamPlayer, player:IPlayer, lockPlugin:IPlugin) {
 			_isPlayer = isplayer;
-			_isOptions = options;
 			_player = player;
 			_lockPlugin = lockPlugin;
+			
+			var options:IInstreamOptions = _isPlayer.getOptions();
 			_tag = options.tag;
 
 			setupPlayerListeners();
@@ -117,10 +117,6 @@ package com.longtailvideo.jwplayer.player {
 			args.type = evt.type;
 			args.tag = _tag;
 			
-			if (evt.type == MediaEvent.JWPLAYER_MEDIA_ERROR) {
-				_isPlayer.destroy();
-			}
-			
 			var callbacks:Array = _listeners[evt.type] as Array;
 			
 			if (callbacks) {
@@ -202,8 +198,9 @@ package com.longtailvideo.jwplayer.player {
 
 		protected function js_play(playstate:*=null):void {
 			if (!_isPlayer) return;
-
-			if (_isOptions.autoload && !_lockedPlayer) {
+			
+			var options:IInstreamOptions = _isPlayer.getOptions();
+			if (options.autoload && !_lockedPlayer) {
 				_lockedPlayer = true;
 				_player.lock(_lockPlugin, function():void {
 					doPlay(playstate);
