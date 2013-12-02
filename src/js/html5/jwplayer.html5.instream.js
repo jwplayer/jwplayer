@@ -286,7 +286,8 @@
 				_provider.addEventListener(_events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
 				_provider.addEventListener(_events.JWPLAYER_MEDIA_ERROR,errorHandler);
 				_provider.addEventListener(_events.JWPLAYER_MEDIA_TIME,function(evt) {
-				    _skipButton.updateSkipTime(evt.position);
+					if (_skipButton)
+						_skipButton.updateSkipTime(evt.position);
 				})
 				//_provider.addEventListener(_events.JWPLAYER_PLAYER_STATE, _stateHandler);
 
