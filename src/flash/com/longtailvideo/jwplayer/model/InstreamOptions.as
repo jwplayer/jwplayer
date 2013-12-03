@@ -7,8 +7,8 @@ package com.longtailvideo.jwplayer.model {
 		protected var _controlbarSeekable:String = ControlbarSeekOptions.NEVER;
 		protected var _controlbarPausable:Boolean = true;
 		protected var _controlbarStoppable:Boolean = true;
+		protected var _loadingMessage:String = "Loading ad";
 		protected var _playlistClickable:Boolean = true;
-		protected var _autoLoad:Boolean = false;
 		protected var _skipoffset:Number = -1;
 		protected var _tag:String;
 		
@@ -48,20 +48,20 @@ package com.longtailvideo.jwplayer.model {
 			return _controlbarStoppable;
 		}
 		
+		public function set loadingmessage(s:String):void {
+			_loadingMessage = s;
+		}
+		
+		public function get loadingmessage():String {
+			return _loadingMessage;
+		}
+		
 		public function set playlistclickable(b:Boolean):void {
 			_playlistClickable = b;
 		}
 
 		public function get playlistclickable():Boolean {
 			return _playlistClickable;
-		}
-		
-		public function set autoload(b:Boolean):void {
-			_autoLoad = b;
-		}
-
-		public function get autoload():Boolean {
-			return _autoLoad;
 		}
 		
 		public function get skipoffset():Number {

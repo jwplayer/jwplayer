@@ -198,16 +198,7 @@ package com.longtailvideo.jwplayer.player {
 
 		protected function js_play(playstate:*=null):void {
 			if (!_isPlayer) return;
-			
-			var options:IInstreamOptions = _isPlayer.getOptions();
-			if (options.autoload && !_lockedPlayer) {
-				_lockedPlayer = true;
-				_player.lock(_lockPlugin, function():void {
-					doPlay(playstate);
-				});
-			} else {
-				doPlay(playstate);
-			}
+			doPlay(playstate);
 		}
 		
 		protected function doPlay(playstate:*=null):void {

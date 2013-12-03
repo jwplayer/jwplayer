@@ -63,7 +63,6 @@ package com.longtailvideo.jwplayer.player
 		protected var _controls:PlayerComponents;
 		protected var _mediaDisplayed:Boolean = false;
 		protected var _clickUrl:String = "";
-		protected var _skipOffset:Number = -1;
 		protected var _skipButton:AdSkipButton;
 		
 		protected var _viewSetup:Boolean = false;
@@ -106,6 +105,36 @@ package com.longtailvideo.jwplayer.player
 				_isConfig.setConfig(_view.skin.getSkinProperties());
 				_skin = _view.skin;
 			}
+			
+			// init display to show loading state
+			_skipButton = null;
+			if (_options.skipoffset >= 0) {
+				_skipButton = new AdSkipButton(_options.skipoffset, _options.tag);
+				_skipButton.addEventListener(JWAdEvent.JWPLAYER_AD_SKIPPED,function():void {
+					destroy();
+					var ev:JWAdEvent = new JWAdEvent(JWAdEvent.JWPLAYER_AD_SKIPPED);
+					ev.tag = _options.tag;
+					dispatchEvent(ev);
+				});
+			}
+			
+			_controls = new PlayerComponents(this);
+			(_controls.display as MovieClip).name = "instream_display";
+			
+			addControlbarListeners();
+			initializeLayers();
+			
+			resizeHandler();
+			
+			_view.addEventListener(ViewEvent.JWPLAYER_RESIZE, resizeHandler);
+			_view.addEventListener(ViewEvent.JWPLAYER_VIEW_REDRAW, resizeHandler);
+			_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_VOLUME, playerVolumeUpdated);
+			_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_MUTE, playerMuteUpdated);
+			
+			_setupView();
+			
+			setText(_options.loadingmessage);
+			_controls.display.forceState(PlayerState.BUFFERING);
 		}
 		
 		public function loadItem(item:Object):void {
@@ -127,39 +156,17 @@ package com.longtailvideo.jwplayer.player
 		}
 		
 		private function beginPlayback():void {
-			_controls = new PlayerComponents(this);
-			(_controls.display as MovieClip).name = "instream_display";
-			
-			setupProvider();
-			
+			// activate ad interface
 			addDisplayListeners();
-			addControlbarListeners();
-			initializeLayers();
-			
-			resizeHandler();
-			if (_options.skipoffset >= 0) {
-				_skipOffset = _options.skipoffset;
-				_skipButton = new AdSkipButton(_skipOffset,_options.tag);
+			if (_skipButton) {
 				_instreamDisplay.addChild(_skipButton);
 				var safe:Rectangle = getSafeRegion();
 				_skipButton.visible = _model.config.controls;
 				_skipButton.x = config.width - (10 + _SKIP_WIDTH);
 				_skipButton.y = safe.y + safe.height - (10 + _SKIP_HEIGHT);
-				_skipButton.addEventListener(JWAdEvent.JWPLAYER_AD_SKIPPED,function():void {
-					destroy();
-					var ev:JWAdEvent = new JWAdEvent(JWAdEvent.JWPLAYER_AD_SKIPPED);
-					ev.tag = _options.tag;
-					dispatchEvent(ev);
-				});
 			}
-			_view.addEventListener(ViewEvent.JWPLAYER_RESIZE, resizeHandler);
-			_view.addEventListener(ViewEvent.JWPLAYER_VIEW_REDRAW, resizeHandler);
-			_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_VOLUME, playerVolumeUpdated);
-			_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_MUTE, playerMuteUpdated);
 			
-			_controls.display.forceState(PlayerState.BUFFERING);
-			_setupView();
-			
+			setupProvider();
 			_provider.load(_item);
 		}
 		
@@ -173,7 +180,6 @@ package com.longtailvideo.jwplayer.player
 			_provider.addGlobalListener(function(evt:Event):void {
 				dispatchEvent(evt);
 			});
-			
 			_provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_BUFFER_FULL, function(evt:MediaEvent):void {
 				_provider.play();
 				if (!_mediaDisplayed && _isConfig.stretching == Stretcher.EXACTFIT) {

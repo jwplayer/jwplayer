@@ -64,7 +64,7 @@
 		
 		_this.init = function(options) {
 			_options = options || {};
-			_this.tracker = _options.tracker;
+			_this.tracker = _options.tracker || null;
 			_api.callInternal('jwInitInstream', _options);
 		};
 		_this.loadItem = function(item) {

@@ -75,7 +75,7 @@
 						file: source.file,
 						type: source.type ? source.type : undefined,
 						label: source.label,
-						"default": source["default"] ? true : false
+						'default': source['default'] ? true : false
 					};
 					obj['sources'].push(sourceCopy);
 				});
@@ -87,7 +87,7 @@
 						file: track.file,
 						kind: track.kind ? track.kind : undefined,
 						label: track.label,
-						"default": track["default"] ? true : false
+						'default': track['default'] ? true : false
 					};
 					obj['tracks'].push(trackCopy);
 				});
@@ -110,9 +110,7 @@
 			_api.jwSetVolume = _controller.setVolume;
 			_api.jwSetMute = _controller.setMute;
 			_api.jwLoad =  function(item) {
-			    if (_instreamPlayer) {
-			        _instreamPlayer.jwInstreamDestroy(false);
-			    }
+				_api.jwInstreamDestroy();
 			    _controller.load(item);
 			}
 			_api.jwPlaylistNext = _controller.next;
@@ -171,9 +169,8 @@
 			}
 			
 			_api.jwInitInstream = function(options) {
-				if (!_instreamPlayer) {
-					_instreamPlayer = new html5.instream(_api, _model, _view, _controller);
-				}
+				_api.jwInstreamDestroy();
+				_instreamPlayer = new html5.instream(_api, _model, _view, _controller);
 				_instreamPlayer.init(options);
 			}
 			
@@ -195,11 +192,11 @@
 
 			_api.jwInstreamState = function() {
 				if (_instreamPlayer) return _instreamPlayer.jwInstreamState();
-				return "";
+				return '';
 			}
 			
-			_api.jwInstreamDestroy = function() {
-				if (_instreamPlayer) _instreamPlayer.jwInstreamDestroy();
+			_api.jwInstreamDestroy = function(complete) {
+				if (_instreamPlayer) _instreamPlayer.jwInstreamDestroy(complete||false);
 				_instreamPlayer = undefined;
 			}
 

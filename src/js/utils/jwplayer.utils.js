@@ -27,7 +27,6 @@
 		switch (typeof (item)) {
 		case STRING:
 			return (item.length > 0);
-			break;
 		case OBJECT:
 			return (item !== null);
 		case UNDEFINED:
@@ -445,7 +444,6 @@
 			// IE8 / 9
 			xmlhttp = new XDomainRequest();
 			xmlhttp.onload = _ajaxComplete(xmlhttp, xmldocpath, completecallback, errorcallback);
-			xmlhttp.onerror = _ajaxError(errorcallback, xmldocpath, xmlhttp);
 			xmlhttp.ontimeout = function() {};
 			xmlhttp.onprogress = function() {};
 			xmlhttp.timeout = 5000;
@@ -453,11 +451,12 @@
 			// Firefox, Chrome, Opera, Safari
 			xmlhttp = new XMLHttpRequest();
 			xmlhttp.onreadystatechange = _readyStateChangeHandler(xmlhttp, xmldocpath, completecallback, errorcallback);
-			xmlhttp.onerror = _ajaxError(errorcallback, xmldocpath);
 		} else {
 			if (errorcallback) errorcallback();
+			return xmlhttp; 
 		}
-		 
+		xmlhttp.onerror = _ajaxError(errorcallback, xmldocpath, xmlhttp);
+
 		try {
 			xmlhttp.open("GET", xmldocpath, TRUE);
 			xmlhttp.send(null);
@@ -478,8 +477,8 @@
 	function _ajaxError(errorcallback, xmldocpath, xmlhttp) {
 		return function() {
 			errorcallback("Error loading file");
-		}
- 	}
+		};
+	}
 	
 	function _readyStateChangeHandler(xmlhttp, xmldocpath, completecallback, errorcallback) {
 		return function() {
@@ -512,7 +511,7 @@
 				return;
 			}
 			completecallback(xmlhttp);
-		}
+		};
 	}
 	
 	/** Takes an XML string and returns an XML object **/

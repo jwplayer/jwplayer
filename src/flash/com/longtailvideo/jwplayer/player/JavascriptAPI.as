@@ -538,11 +538,11 @@ package com.longtailvideo.jwplayer.player {
 		protected function js_initInstream(options:Object):void {
 			_instream = _player.setupInstream(_lockPlugin);
 			_instream.init(options);
+			new JavascriptInstreamAPI(_instream, _player, _lockPlugin);
 		}
 		
 		protected function js_loadItemInstream(item:Object):void {
 			_instream.loadItem(item);
-			new JavascriptInstreamAPI(_instream, _player, _lockPlugin);
 		}
 		
 		protected function setComponentVisibility(component:IPlayerComponent, state:Boolean):void {
