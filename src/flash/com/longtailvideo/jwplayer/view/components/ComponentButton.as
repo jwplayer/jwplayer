@@ -138,6 +138,8 @@ package com.longtailvideo.jwplayer.view.components {
 
 		
 		public function setOutIcon(outIcon:* = null):void {
+			if (_outIcon && _imageLayer.contains(_outIcon))
+				_imageLayer.removeChild(_outIcon);
 			if (outIcon is DisplayObject) {
 				_outIcon = outIcon as DisplayObject;
 			} else if (outIcon is String) {
@@ -146,10 +148,12 @@ package com.longtailvideo.jwplayer.view.components {
 				loader.contentLoaderInfo.addEventListener(Event.COMPLETE, function(evt:Event):void { centerIcon(loader); });
 				loader.load(new URLRequest(outIcon));
 				_outIcon = loader;
+				
 			}
+			if (_outIcon && _imageLayer)
+				_imageLayer.addChild(_outIcon);
 			if (!_over) outHandler();
 		}
-		
 		
 		public function setOverIcon(overIcon:DisplayObject = null):void {
 			if (overIcon) {
