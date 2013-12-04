@@ -12,7 +12,9 @@
         FALSE = false,
         _events = jwplayer.events, 
         VIEW_INSTREAM_SKIP_CLASS = "jwinstreamskip",
-        VIEW_INSTREAM_IMAGE = "jwinstreamimage";
+        VIEW_INSTREAM_IMAGE = "jwinstreamimage"
+        COUNTDOWN_TEXT = "Skip ad in ",
+        SKIP_TEXT = "Skip";
         
         jwplayer.html5.adskipbutton = function(skipOffset,adTag) {
             var _instreamSkipContainer,
@@ -62,7 +64,7 @@
                 var y = _instreamSkip.height / 2;
                 ctx.textAlign = "center";
                 ctx.font = 'Bold 11px Sans-Serif';
-                ctx.fillText("Skip ad in " + Math.ceil(_skipOffset - currTime) ,x,y + 4);
+                ctx.fillText(COUNTDOWN_TEXT + Math.ceil(_skipOffset - currTime) ,x,y + 4);
             
             }
             
@@ -85,11 +87,10 @@
                     var y = _instreamSkip.height / 2;
                     ctx.textAlign = "start";
                     ctx.font = 'Bold 12px Sans-Serif';
-                    var text = "Skip Ad";
-                    ctx.fillText(text,10,y + 4);
-                    //_css( "#"+_skip_image.id + " ."+VIEW_INSTREAM_IMAGE,"left:"+(ctx.measureText(text).width + 14) + "px");
-                    _skip_image.style.left = (ctx.measureText(text).width + 14) + "px";
-                    _skip_image_over.style.left = (ctx.measureText(text).width + 14) + "px";
+                    
+                    ctx.fillText(SKIP_TEXT,(_SKIP_WIDTH - SKIP_TEXT.length * 12 + 10)/2,y + 4);
+                    _skip_image.style.left = (ctx.measureText(SKIP_TEXT).width + 24) + "px";
+                    _skip_image_over.style.left = (ctx.measureText(SKIP_TEXT).width + 24) + "px";
 
                     if (_utils.isMobile()) {
                         var skipTouch = new _utils.touch(_instreamSkipContainer);
@@ -125,8 +126,7 @@
                 var y = _instreamSkip.height / 2;
                 ctx.textAlign = "start";
                 ctx.font = 'Bold 12px Sans-Serif';
-                var text = "Skip Ad";
-                ctx.fillText(text,10,y + 4);
+                ctx.fillText(SKIP_TEXT,(_SKIP_WIDTH - SKIP_TEXT.length * 12 + 3)/2,y + 4);
                 _skip_image.style.display = "none";
                 _skip_image_over.style.display = "";
             }
@@ -145,8 +145,7 @@
                 var y = _instreamSkip.height / 2;
                 ctx.textAlign = "start";
                 ctx.font = 'Bold 12px Sans-Serif';
-                var text = "Skip Ad";
-                ctx.fillText(text,10,y + 4);
+                ctx.fillText(SKIP_TEXT,(_SKIP_WIDTH - SKIP_TEXT.length * 12 + 3)/2,y + 4);
                 _skip_image_over.style.display = "none";
                 _skip_image.style.display = "";
             }
