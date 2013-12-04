@@ -4,12 +4,12 @@
  * @author pablo
  * @version 6.0
  */
-(function(html5) {
-    var _jw = jwplayer, 
-        _utils = _jw.utils, 
-        _events = _jw.events, 
+(function(jwplayer) {
+    var html5 = jwplayer.html5, 
+        _utils = jwplayer.utils, 
+        _events = jwplayer.events, 
         _states = _events.state,
-        _playlist = _jw.playlist;
+        _playlist = jwplayer.playlist;
     
     html5.instream = function(_api, _model, _view, _controller) {
         var _defaultOptions = {
@@ -177,7 +177,7 @@
                 _sendEvent(evt.type, evt);
             }
 
-            _api.jwInstreamDestroy();
+            _api.jwInstreamDestroy(false, _self);
         }
         
         /** Stop the instream playback and revert the main player back to its original state **/
@@ -289,7 +289,7 @@
         
         function _skipAd(evt) {
             _sendEvent(evt.type,evt);
-            _api.jwInstreamDestroy();
+            _api.jwInstreamDestroy(false, _self);
         }
         function _stateHandler(evt) {
             _fakemodel.state = evt.newstate;
@@ -322,7 +322,7 @@
         /** Handle the JWPLAYER_MEDIA_COMPLETE event **/        
         function _completeHandler(evt) {
             setTimeout(function() {
-                _api.jwInstreamDestroy(true);
+                _api.jwInstreamDestroy(true, _self);
             }, 10);
         }
 
@@ -377,7 +377,7 @@
 
         _self.jwStop = function() {
             if (_options.controlbarstoppable.toString().toLowerCase()=="true") {
-                _api.jwInstreamDestroy();
+                _api.jwInstreamDestroy(false, _self);
                 _api.jwStop();
             }
         };
@@ -445,4 +445,4 @@
 
         return _self;
     };
-})(jwplayer.html5);
+})(window.jwplayer);

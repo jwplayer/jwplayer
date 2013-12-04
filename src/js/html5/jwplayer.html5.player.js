@@ -4,8 +4,9 @@
  * @author pablo
  * @version 6.0
  */
-(function(html5) {
-	var utils = jwplayer.utils;
+(function(jwplayer) {
+	var html5 = jwplayer.html5,
+		utils = jwplayer.utils;
 	
 	html5.player = function(config) {
 		var _api = this,
@@ -22,7 +23,7 @@
 			
 			_api._model = _model;
 
-			jwplayer.utils.css.block();
+			utils.css.block();
 			
 			_initializeAPI();
 			
@@ -30,7 +31,6 @@
 			setup.addEventListener(jwplayer.events.JWPLAYER_READY, _readyHandler);
 			setup.addEventListener(jwplayer.events.JWPLAYER_ERROR, _errorHandler);
 			setup.start();
-
 		}
 		
 		function _readyHandler(evt) {
@@ -195,9 +195,14 @@
 				return '';
 			}
 			
-			_api.jwInstreamDestroy = function(complete) {
-				if (_instreamPlayer) _instreamPlayer.jwInstreamDestroy(complete||false);
-				_instreamPlayer = undefined;
+			_api.jwInstreamDestroy = function(complete, _instance) {
+				_instance = _instance || _instreamPlayer;
+				if (_instance) {
+					_instance.jwInstreamDestroy(complete||false);
+					if (_instance === _instreamPlayer) {
+						_instreamPlayer = undefined;
+					}
+				}
 			}
 
 			_api.jwInstreamAddEventListener = function(type, listener) {
@@ -243,9 +248,7 @@
 			};
 		}
 		
-
-
 		_init();
 	}
-})(jwplayer.html5);
+})(window.jwplayer);
 
