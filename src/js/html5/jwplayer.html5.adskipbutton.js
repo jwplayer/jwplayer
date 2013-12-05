@@ -5,14 +5,13 @@
  * @version 6.8
  */
 (function(jwplayer) {
-    var html = jwplayer.html, 
-        _utils = jwplayer.utils,
+    var _utils = jwplayer.utils,
         _css = _utils.css,
         TRUE = true,
         FALSE = false,
         _events = jwplayer.events, 
         VIEW_INSTREAM_SKIP_CLASS = "jwinstreamskip",
-        VIEW_INSTREAM_IMAGE = "jwinstreamimage"
+        VIEW_INSTREAM_IMAGE = "jwinstreamimage",
         COUNTDOWN_TEXT = "Skip ad in ",
         SKIP_TEXT = "Skip";
         
@@ -83,7 +82,6 @@
                     _instreamSkipContainer.appendChild(_skip_image_over);
                     ctx.fillStyle="#979797";
                     ctx.globalAlpha = 1.0;
-                    var x = _instreamSkip.width / 2;
                     var y = _instreamSkip.height / 2;
                     ctx.textAlign = "start";
                     ctx.font = 'Bold 12px Sans-Serif';
@@ -94,9 +92,7 @@
 
                     if (_utils.isMobile()) {
                         var skipTouch = new _utils.touch(_instreamSkipContainer);
-                        skipTouch.addEventListener(_utils.touchEvents.TAP, function(evt) {
-                            skipAd();
-                        });
+                        skipTouch.addEventListener(_utils.touchEvents.TAP, skipAd);
                     }
                     else {
                         _instreamSkipContainer.addEventListener('click', skipAd);
@@ -122,7 +118,6 @@
                 _instreamSkipContainer.appendChild(_skip_image_over);
                 ctx.fillStyle="#FFFFFF";
                 ctx.globalAlpha = 1.0;
-                var x = _instreamSkip.width / 2;
                 var y = _instreamSkip.height / 2;
                 ctx.textAlign = "start";
                 ctx.font = 'Bold 12px Sans-Serif';
@@ -141,7 +136,6 @@
                 _instreamSkipContainer.appendChild(_skip_image_over);
                 ctx.fillStyle="#979797";
                 ctx.globalAlpha = 1.0;
-                var x = _instreamSkip.width / 2;
                 var y = _instreamSkip.height / 2;
                 ctx.textAlign = "start";
                 ctx.font = 'Bold 12px Sans-Serif';
@@ -169,12 +163,12 @@
                 ctx.closePath();
                 if (stroke) {
                     ctx.strokeStyle = "white";
-                    ctx.globalAlpha = over ? 1.0 : .25;
+                    ctx.globalAlpha = over ? 1.0 : 0.25;
                     ctx.stroke();
                 }
                 if (fill) {
                     ctx.fillStyle = "#000000";
-                    ctx.globalAlpha = .5;
+                    ctx.globalAlpha = 0.5;
                     ctx.fill();
                 }
             }
@@ -202,4 +196,4 @@
             'position': 'relative',
             'bottom':"25px"
         });
-})(jwplayer);
+})(window.jwplayer);
