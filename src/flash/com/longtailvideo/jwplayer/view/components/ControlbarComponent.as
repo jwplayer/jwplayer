@@ -22,9 +22,7 @@ package com.longtailvideo.jwplayer.view.components {
 	import flash.display.Sprite;
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
-	import flash.events.IOErrorEvent;
 	import flash.events.MouseEvent;
-	import flash.events.SecurityErrorEvent;
 	import flash.events.TimerEvent;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
@@ -803,7 +801,7 @@ package com.longtailvideo.jwplayer.view.components {
 			_altMask.graphics.clear();
 			_altMask.graphics.beginFill( 0xffffff );
 			_altMask.graphics.drawRect( 0 , 0 , width , height );
-			_altMask.x = 0;
+			_altMask.x = getButton('alt') ? getButton('alt').x : 0;
 			_altMask.y = 0;
 		}
 
