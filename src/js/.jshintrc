@@ -1,0 +1,16 @@
+{
+	"evil": false,
+    "regexdash": true,
+	"browser": true,
+	"devel": true,
+	"jquery": false,
+	"laxbreak": true,
+	"laxcomma": true,
+	"smarttabs": true,
+	"white": false,
+	"sub": true,
+	"trailing": false,
+	"asi": true,
+	"undef": true,
+	"unused": true
+}
