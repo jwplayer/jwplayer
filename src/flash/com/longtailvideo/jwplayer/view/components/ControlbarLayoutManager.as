@@ -167,10 +167,11 @@ package com.longtailvideo.jwplayer.view.components {
 				var text:TextField = alt.getChildByName('text') as TextField;
 				text.y = (bg.height - text.height) / 2;
 				
-				_controlbar.setAltMask(elementWidth,bg.height);
 				if (!_controlbar.contains(alt)) _controlbar.addChild(alt);
 				alt.x = _currentLeft;	
 				alt.y = (_height - alt.height) / 2;
+
+				_controlbar.setAltMask(elementWidth,bg.height);
 			}
 			
 			
