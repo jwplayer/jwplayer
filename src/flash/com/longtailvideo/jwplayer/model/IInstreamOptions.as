@@ -2,6 +2,7 @@ package com.longtailvideo.jwplayer.model
 {
 	public interface IInstreamOptions
 	{
+		function update(options:Object=null):void;
 		function get controlbarseekable():String;
 		function get controlbarpausable():Boolean;
 		function get controlbarstoppable():Boolean;

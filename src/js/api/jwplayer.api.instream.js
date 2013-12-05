@@ -62,14 +62,15 @@
 		_this.tracker = null;
 		_this.type = 'instream';
 		
-		_this.init = function(options) {
-			_options = options || {};
-			_this.tracker = _options.tracker || null;
-			_api.callInternal('jwInitInstream', _options);
+		_this.init = function() {
+			_api.callInternal('jwInitInstream');
+			return _this;
 		};
-		_this.loadItem = function(item) {
+		_this.loadItem = function(item, options) {
 			_item = item;
-			_api.callInternal('jwLoadItemInstream', _item);
+			_options = options || {};
+			_this.tracker = _options.tracker;
+			_api.callInternal('jwLoadItemInstream', _item, _options);
 		};
 		_this.dispatchEvent = function(type, calledArguments) {
 			if (_listeners[type]) {
@@ -138,7 +139,7 @@
 			_player.jwInstreamPause(state);
 		};
 		_this.destroy = function() {
-			_player.jwInstreamDestroy();
+			_api.callInternal('jwInstreamDestroy');
 		};
 		_this.setText = function(text) {
 			_player.jwInstreamSetText(text ? text : '');
@@ -151,4 +152,4 @@
 		};
 	};
 	
-})(jwplayer);
+})(window.jwplayer);

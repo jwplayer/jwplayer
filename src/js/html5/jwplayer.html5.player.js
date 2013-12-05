@@ -9,7 +9,7 @@
 		utils = jwplayer.utils;
 	
 	html5.player = function(config) {
-		var _api = this,
+		var _this = this,
 			_model, 
 			_view, 
 			_controller,
@@ -17,11 +17,11 @@
 
 		function _init() {
 			_model = new html5.model(config); 
-			_api.id = _model.id;
-			_view = new html5.view(_api, _model); 
+			_this.id = _model.id;
+			_view = new html5.view(_this, _model); 
 			_controller = new html5.controller(_model, _view);
 			
-			_api._model = _model;
+			_this._model = _model;
 
 			utils.css.block();
 			
@@ -103,55 +103,55 @@
 		function _initializeAPI() {
 			
 			/** Methods **/
-			_api.jwPlay = _controller.play;
-			_api.jwPause = _controller.pause;
-			_api.jwStop = _controller.stop;
-			_api.jwSeek = _controller.seek;
-			_api.jwSetVolume = _controller.setVolume;
-			_api.jwSetMute = _controller.setMute;
-			_api.jwLoad =  function(item) {
-				_api.jwInstreamDestroy();
+			_this.jwPlay = _controller.play;
+			_this.jwPause = _controller.pause;
+			_this.jwStop = _controller.stop;
+			_this.jwSeek = _controller.seek;
+			_this.jwSetVolume = _controller.setVolume;
+			_this.jwSetMute = _controller.setMute;
+			_this.jwLoad =  function(item) {
+				_this.jwInstreamDestroy();
 			    _controller.load(item);
 			}
-			_api.jwPlaylistNext = _controller.next;
-			_api.jwPlaylistPrev = _controller.prev;
-			_api.jwPlaylistItem = _controller.item;
-			_api.jwSetFullscreen = _controller.setFullscreen;
-			_api.jwResize = _view.resize;		
-			_api.jwSeekDrag = _model.seekDrag;
-			_api.jwGetQualityLevels = _controller.getQualityLevels;
-			_api.jwGetCurrentQuality = _controller.getCurrentQuality;
-			_api.jwSetCurrentQuality = _controller.setCurrentQuality;
-			_api.jwGetCaptionsList = _controller.getCaptionsList;
-			_api.jwGetCurrentCaptions = _controller.getCurrentCaptions;
-			_api.jwSetCurrentCaptions = _controller.setCurrentCaptions;
+			_this.jwPlaylistNext = _controller.next;
+			_this.jwPlaylistPrev = _controller.prev;
+			_this.jwPlaylistItem = _controller.item;
+			_this.jwSetFullscreen = _controller.setFullscreen;
+			_this.jwResize = _view.resize;		
+			_this.jwSeekDrag = _model.seekDrag;
+			_this.jwGetQualityLevels = _controller.getQualityLevels;
+			_this.jwGetCurrentQuality = _controller.getCurrentQuality;
+			_this.jwSetCurrentQuality = _controller.setCurrentQuality;
+			_this.jwGetCaptionsList = _controller.getCaptionsList;
+			_this.jwGetCurrentCaptions = _controller.getCurrentCaptions;
+			_this.jwSetCurrentCaptions = _controller.setCurrentCaptions;
 
-			_api.jwGetSafeRegion = _view.getSafeRegion; 
-			_api.jwForceState = _view.forceState;
-			_api.jwReleaseState = _view.releaseState;
+			_this.jwGetSafeRegion = _view.getSafeRegion; 
+			_this.jwForceState = _view.forceState;
+			_this.jwReleaseState = _view.releaseState;
 			
-			_api.jwGetPlaylistIndex = _statevarFactory('item');
-			_api.jwGetPosition = _statevarFactory('position');
-			_api.jwGetDuration = _statevarFactory('duration');
-			_api.jwGetBuffer = _statevarFactory('buffer');
-			_api.jwGetWidth = _statevarFactory('width');
-			_api.jwGetHeight = _statevarFactory('height');
-			_api.jwGetFullscreen = _statevarFactory('fullscreen');
-			_api.jwGetVolume = _statevarFactory('volume');
-			_api.jwGetMute = _statevarFactory('mute');
-			_api.jwGetState = _statevarFactory('state');
-			_api.jwGetStretching = _statevarFactory('stretching');
-			_api.jwGetPlaylist = _normalizePlaylist;
-			_api.jwGetControls = _statevarFactory('controls');
+			_this.jwGetPlaylistIndex = _statevarFactory('item');
+			_this.jwGetPosition = _statevarFactory('position');
+			_this.jwGetDuration = _statevarFactory('duration');
+			_this.jwGetBuffer = _statevarFactory('buffer');
+			_this.jwGetWidth = _statevarFactory('width');
+			_this.jwGetHeight = _statevarFactory('height');
+			_this.jwGetFullscreen = _statevarFactory('fullscreen');
+			_this.jwGetVolume = _statevarFactory('volume');
+			_this.jwGetMute = _statevarFactory('mute');
+			_this.jwGetState = _statevarFactory('state');
+			_this.jwGetStretching = _statevarFactory('stretching');
+			_this.jwGetPlaylist = _normalizePlaylist;
+			_this.jwGetControls = _statevarFactory('controls');
 
 			/** InStream API **/
-			_api.jwDetachMedia = _controller.detachMedia;
-			_api.jwAttachMedia = _controller.attachMedia;
+			_this.jwDetachMedia = _controller.detachMedia;
+			_this.jwAttachMedia = _controller.attachMedia;
 
 			/** Ads API **/
-			_api.jwPlayAd = function (ad) { 
+			_this.jwPlayAd = function (ad) { 
 				// THIS SHOULD NOT BE USED!
-				var plugins = jwplayer(_api.id).plugins;
+				var plugins = jwplayer(_this.id).plugins;
 				if (plugins.vast) {
 					plugins.vast.jwPlayAd(ad);
 				}
@@ -161,82 +161,85 @@
 				// }
 			}
 
-			_api.jwPauseAd = function () { 
-				var plugins = jwplayer(_api.id).plugins;
+			_this.jwPauseAd = function () { 
+				var plugins = jwplayer(_this.id).plugins;
 				if (plugins.googima) {
 					plugins.googima.jwPauseAd();
 				}
 			}
 			
-			_api.jwInitInstream = function(options) {
-				_api.jwInstreamDestroy();
-				_instreamPlayer = new html5.instream(_api, _model, _view, _controller);
-				_instreamPlayer.init(options);
+			_this.jwInitInstream = function() {
+				_this.jwInstreamDestroy();
+				_instreamPlayer = new html5.instream(_this, _model, _view, _controller);
+				_instreamPlayer.init();
 			}
 			
-			_api.jwLoadItemInstream = function(item) {
-				_instreamPlayer.load(item);
+			_this.jwLoadItemInstream = function(item, options) {
+				if(!_instreamPlayer) {
+					throw 'Instream player undefined';
+				}
+				_instreamPlayer.load(item, options);
 			}
 			
-			_api.jwSetControls = function(mode) {
+			_this.jwSetControls = function(mode) {
 			    _view.setControls(mode);
 			    if(_instreamPlayer) _instreamPlayer.setControls(mode);
 			}
-			_api.jwInstreamPlay = function() {
+			_this.jwInstreamPlay = function() {
 				if (_instreamPlayer) _instreamPlayer.jwInstreamPlay();
 			}
 			
-			_api.jwInstreamPause = function() {
+			_this.jwInstreamPause = function() {
 				if (_instreamPlayer) _instreamPlayer.jwInstreamPause();
 			}
 
-			_api.jwInstreamState = function() {
+			_this.jwInstreamState = function() {
 				if (_instreamPlayer) return _instreamPlayer.jwInstreamState();
 				return '';
 			}
 			
-			_api.jwInstreamDestroy = function(complete, _instance) {
-				_instance = _instance || _instreamPlayer;
-				if (_instance) {
-					_instance.jwInstreamDestroy(complete||false);
-					if (_instance === _instreamPlayer) {
+			_this.jwInstreamDestroy = function(complete, _instreamInstance) {
+				_instreamInstance = _instreamInstance || _instreamPlayer;
+				if (_instreamInstance) {
+					_instreamInstance.jwInstreamDestroy(complete||false);
+					if (_instreamInstance === _instreamPlayer) {
 						_instreamPlayer = undefined;
 					}
 				}
 			}
 
-			_api.jwInstreamAddEventListener = function(type, listener) {
+			_this.jwInstreamAddEventListener = function(type, listener) {
 				if (_instreamPlayer) _instreamPlayer.jwInstreamAddEventListener(type, listener);
 			} 
-			_api.jwInstreamRemoveEventListener = function(type, listener) {
+			_this.jwInstreamRemoveEventListener = function(type, listener) {
 				if (_instreamPlayer) _instreamPlayer.jwInstreamRemoveEventListener(type, listener);
 			}
 
-			_api.jwPlayerDestroy = function() {
+			_this.jwPlayerDestroy = function() {
 				if (_view) {
 					_view.destroy();
 				}
 			}
 			
-			_api.jwInstreamSetText = function(text) {
+			_this.jwInstreamSetText = function(text) {
 				if (_instreamPlayer) _instreamPlayer.jwInstreamSetText(text);
 			}
 			
-			_api.jwIsBeforePlay = function () {
+			_this.jwIsBeforePlay = function () {
 				return _controller.checkBeforePlay();
 			}
 
-			_api.jwIsBeforeComplete = function () {
+			_this.jwIsBeforeComplete = function () {
 				return _model.getVideo().checkComplete();
 			}
 			
 			/** Events **/
-			_api.jwAddEventListener = _controller.addEventListener;
-			_api.jwRemoveEventListener = _controller.removeEventListener;
+			_this.jwAddEventListener = _controller.addEventListener;
+			_this.jwRemoveEventListener = _controller.removeEventListener;
 			
 			/** Dock **/
-			_api.jwDockAddButton = _view.addButton;
-			_api.jwDockRemoveButton = _view.removeButton;
+			_this.jwDockAddButton = _view.addButton;
+			_this.jwDockRemoveButton = _view.removeButton;
 						
 		}
 

@@ -80,9 +80,7 @@ package com.longtailvideo.jwplayer.player
 			}
 		}
 		
-		public function init(options:Object=null):void {
-			_options = new InstreamOptions(options);
-			
+		public function init():void {
 			lock(_plugin, _lockCallback);
 
 			_isConfig = new PlayerConfig();
@@ -106,18 +104,6 @@ package com.longtailvideo.jwplayer.player
 				_skin = _view.skin;
 			}
 			
-			// init display to show loading state
-			_skipButton = null;
-			if (_options.skipoffset >= 0) {
-				_skipButton = new AdSkipButton(_options.skipoffset, _options.tag);
-				_skipButton.addEventListener(JWAdEvent.JWPLAYER_AD_SKIPPED,function():void {
-					destroy();
-					var ev:JWAdEvent = new JWAdEvent(JWAdEvent.JWPLAYER_AD_SKIPPED);
-					ev.tag = _options.tag;
-					dispatchEvent(ev);
-				});
-			}
-			
 			_controls = new PlayerComponents(this);
 			(_controls.display as MovieClip).name = "instream_display";
 			
@@ -133,11 +119,16 @@ package com.longtailvideo.jwplayer.player
 			
 			_setupView();
 			
-			setText(_options.loadingmessage);
+			//default options
+			_options = new InstreamOptions();
+			
 			_controls.display.forceState(PlayerState.BUFFERING);
+			setText(_options.loadingmessage);
 		}
 		
-		public function loadItem(item:Object):void {
+		public function loadItem(item:Object, options:Object=null):void {
+			_options.update(options);
+			
 			_item = new PlaylistItem(item);
 			if (_playerLocked) {
 				beginPlayback();
@@ -158,7 +149,15 @@ package com.longtailvideo.jwplayer.player
 		private function beginPlayback():void {
 			// activate ad interface
 			addDisplayListeners();
-			if (_skipButton) {
+
+			if (_options.skipoffset >= 0) {
+				_skipButton = new AdSkipButton(_options.skipoffset, _options.tag);
+				_skipButton.addEventListener(JWAdEvent.JWPLAYER_AD_SKIPPED,function():void {
+					destroy();
+					var ev:JWAdEvent = new JWAdEvent(JWAdEvent.JWPLAYER_AD_SKIPPED);
+					ev.tag = _options.tag;
+					dispatchEvent(ev);
+				});
 				_instreamDisplay.addChild(_skipButton);
 				var safe:Rectangle = getSafeRegion();
 				_skipButton.visible = _model.config.controls;

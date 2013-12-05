@@ -13,6 +13,10 @@ package com.longtailvideo.jwplayer.model {
 		protected var _tag:String;
 		
 		public function InstreamOptions(options:Object=null) {
+			update(options);
+		}
+		
+		public function update(options:Object=null):void {
 			if (options) {
 				for (var i:String in options) {
 					try {

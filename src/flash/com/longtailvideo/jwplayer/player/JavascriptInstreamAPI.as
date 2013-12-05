@@ -4,7 +4,6 @@ package com.longtailvideo.jwplayer.player {
 	import com.longtailvideo.jwplayer.events.PlayerEvent;
 	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
 	import com.longtailvideo.jwplayer.model.IInstreamOptions;
-	import com.longtailvideo.jwplayer.plugins.IPlugin;
 	import com.longtailvideo.jwplayer.utils.JavascriptSerialization;
 	import com.longtailvideo.jwplayer.utils.Logger;
 	
@@ -16,22 +15,13 @@ package com.longtailvideo.jwplayer.player {
 		
 		protected var _isPlayer:IInstreamPlayer;
 		protected var _listeners:Object = {};
-		protected var _player:IPlayer;
-		protected var _lockPlugin:IPlugin;
-		protected var _lockedPlayer:Boolean = false;
 		protected var _tag:String;
 		
-		public function JavascriptInstreamAPI(isplayer:IInstreamPlayer, player:IPlayer, lockPlugin:IPlugin) {
+		public function JavascriptInstreamAPI(isplayer:IInstreamPlayer) {
 			_isPlayer = isplayer;
-			_player = player;
-			_lockPlugin = lockPlugin;
-			
-			var options:IInstreamOptions = _isPlayer.getOptions();
-			_tag = options.tag;
 
 			setupPlayerListeners();
 			setupJSListeners();
-			
 		}
 		
 		protected function setupPlayerListeners():void {
@@ -47,6 +37,8 @@ package com.longtailvideo.jwplayer.player {
 		
 		protected function setupJSListeners():void {
 			try {
+				ExternalInterface.addCallback("jwLoadItemInstream", js_loadItemInstream);
+
 				// Event handlers
 				ExternalInterface.addCallback("jwInstreamAddEventListener", js_addEventListener);
 				ExternalInterface.addCallback("jwInstreamRemoveEventListener", js_removeEventListener);
@@ -78,6 +70,14 @@ package com.longtailvideo.jwplayer.player {
 		/***********************************************
 		 **              EVENT LISTENERS              **
 		 ***********************************************/
+		
+		protected function js_loadItemInstream(item:Object, options:Object):void {
+			if (!_isPlayer) {
+				throw(new Error('Instream player undefined'));
+			}
+			_tag = options.tag;
+			_isPlayer.loadItem(item, options);
+		}
 		
 		protected function js_addEventListener(eventType:String, callback:String):void {
 			if (!_isPlayer) return;
@@ -244,7 +244,6 @@ package com.longtailvideo.jwplayer.player {
 		
 		protected function js_destroyInstream():void {
 			if (!_isPlayer) return;
-			
 			_isPlayer.destroy();
 		}
 

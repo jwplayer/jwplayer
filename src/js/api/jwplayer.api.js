@@ -9,15 +9,12 @@
 		utils = jwplayer.utils, 
 		events = jwplayer.events,
 		states = events.state,
-		
 		DOCUMENT = document;
 	
 	var api = jwplayer.api = function(container) {
 		var _this = this,
 			_listeners = {},
 			_stateListeners = {},
-			_componentListeners = {},
-			_readyListeners = [],
 			_player,
 			_playerReady = false,
 			_queuedCalls = [],
@@ -46,7 +43,9 @@
 				utils.log("Could not add dock button" + e.message);
 			}
 		};
-		_this.removeButton = function(id) { _callInternal('jwDockRemoveButton', id); };
+		_this.removeButton = function(id) {
+			_callInternal('jwDockRemoveButton', id);
+		};
 
 		_this.callback = function(id) {
 			if (_callbacks[id]) {
@@ -62,7 +61,7 @@
 		_this.releaseState = function() {
 		    
 		    return _callInternal("jwReleaseState");
-		}
+		};
 		
 		_this.getDuration = function() {
 			return _callInternal('jwGetDuration');
@@ -154,7 +153,7 @@
 		};
 		_this.resize = function(width, height) {
 			if (_this.renderingMode != "flash") {
-				var player = document.getElementById(_this.id);
+				var player = DOCUMENT.getElementById(_this.id);
 				player.className = player.className.replace(/\s+aspectMode/, "");
 				player.style.display = "block";
 				_callInternal("jwResize", width, height);
@@ -210,13 +209,15 @@
 			_callInternal("jwSetVolume", volume);
 			return _this;
 		};
-		_this.setupInstream = function() {
-			_instream = new api.instream(this, _player);
-			return _instream;
+		_this.createInstream = function() {
+			return new api.instream(this, _player);
+		};
+		_this.setInstream = function(instream) {
+			_instream = instream;
+			return instream;
 		};
 		_this.loadInstream = function(item, options) {
-			_instream = _this.setupInstream();
-			_instream.init(options);
+			_instream = _this.setInstream(_this.createInstream()).init(options);
             _instream.loadItem(item);
             return _instream;
 		}
@@ -398,34 +399,7 @@
 					}
 				}
 			};
-		}
-		
-		function _componentListener(component, type, callback) {
-			if (!_componentListeners[component]) {
-				_componentListeners[component] = {};
-			}
-			if (!_componentListeners[component][type]) {
-				_componentListeners[component][type] = [];
-				_eventListener(type, _componentCallback(component, type));
-			}
-			_componentListeners[component][type].push(callback);
-			return _this;
-		}
-		
-		function _componentCallback(component, type) {
-			return function(event) {
-				if (component == event.component) {
-					var callbacks = _componentListeners[component][type];
-					if (callbacks) {
-						for (var c = 0; c < callbacks.length; c++) {
-							if (typeof callbacks[c] == 'function') {
-								callbacks[c].call(this, event);
-							}
-						}
-					}
-				}
-			};
-		}		
+		}	
 		
 		function _addInternalListener(player, type) {
 			try {
@@ -472,29 +446,26 @@
 
 		function _callInternal() {
 			if (_playerReady) {
-				var funcName = arguments[0],
-				args = [];
-			
-				for (var argument = 1; argument < arguments.length; argument++) {
-					args.push(arguments[argument]);
-				}
-				
-				if (typeof _player != "undefined" && typeof _player[funcName] == "function") {
-					// Can't use apply here -- Flash's externalinterface doesn't like it.
-					switch(args.length) {
-						case 6:  return (_player[funcName])(args[0], args[1], args[2], args[3], args[4], args[5]);
-						case 5:  return (_player[funcName])(args[0], args[1], args[2], args[3], args[4]);
-						case 4:  return (_player[funcName])(args[0], args[1], args[2], args[3]);
-						case 3:  return (_player[funcName])(args[0], args[1], args[2]);
-						case 2:  return (_player[funcName])(args[0], args[1]);
-						case 1:  return (_player[funcName])(args[0]);
-						default: return (_player[funcName])();
+				if (_player) {
+					var args = Array.prototype.slice.call(arguments, 0),
+						funcName = args.shift();
+					if (typeof _player[funcName] === 'function') {
+						// Can't use apply here -- Flash's externalinterface doesn't like it.
+						//return func.apply(player, args);
+						switch(args.length) {
+							case 6:  return _player[funcName](args[0], args[1], args[2], args[3], args[4], args[5]);
+							case 5:  return _player[funcName](args[0], args[1], args[2], args[3], args[4]);
+							case 4:  return _player[funcName](args[0], args[1], args[2], args[3]);
+							case 3:  return _player[funcName](args[0], args[1], args[2]);
+							case 2:  return _player[funcName](args[0], args[1]);
+							case 1:  return _player[funcName](args[0]);
+						}
+						return _player[funcName]();
 					}
 				}
 				return null;
-			} else {
-				_queuedCalls.push(arguments);
 			}
+			_queuedCalls.push(arguments);
 		}
 		
 		_this.callInternal = _callInternal;
@@ -511,7 +482,7 @@
 				_addInternalListener(_player, eventType);
 			});
 			
-			_eventListener(events.JWPLAYER_PLAYLIST_ITEM, function(data) {
+			_eventListener(events.JWPLAYER_PLAYLIST_ITEM, function() {
 				_itemMeta = {};
 			});
 			
@@ -537,20 +508,6 @@
 			return _callInternal('jwIsBeforeComplete');
 		}
 		
-		/** Using this function instead of array.slice since Arguments are not an array **/
-		function slice(list, from, to) {
-			var ret = [];
-			if (!from) {
-				from = 0;
-			}
-			if (!to) {
-				to = list.length - 1;
-			}
-			for (var i = from; i <= to; i++) {
-				ret.push(list[i]);
-			}
-			return ret;
-		}
 		return _this
 	};
 	
@@ -641,7 +598,6 @@
 		return null;
 	};
 
-
 	jwplayer.playerReady = function(obj) {
 		var api = jwplayer.api.playerById(obj.id);
 
@@ -652,5 +608,5 @@
 		}
 		
 	};
-})(jwplayer);
 
+})(window.jwplayer);

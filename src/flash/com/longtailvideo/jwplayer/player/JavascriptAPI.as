@@ -1,15 +1,11 @@
 package com.longtailvideo.jwplayer.player {
 	import com.longtailvideo.jwplayer.events.CaptionsEvent;
-	import com.longtailvideo.jwplayer.events.InstreamEvent;
 	import com.longtailvideo.jwplayer.events.JWAdEvent;
 	import com.longtailvideo.jwplayer.events.MediaEvent;
 	import com.longtailvideo.jwplayer.events.PlayerEvent;
 	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
 	import com.longtailvideo.jwplayer.events.PlaylistEvent;
 	import com.longtailvideo.jwplayer.events.ViewEvent;
-	import com.longtailvideo.jwplayer.model.IInstreamOptions;
-	import com.longtailvideo.jwplayer.model.InstreamOptions;
-	import com.longtailvideo.jwplayer.model.PlaylistItem;
 	import com.longtailvideo.jwplayer.plugins.AbstractPlugin;
 	import com.longtailvideo.jwplayer.plugins.IPlugin;
 	import com.longtailvideo.jwplayer.utils.JavascriptSerialization;
@@ -173,8 +169,7 @@ package com.longtailvideo.jwplayer.player {
 				
 				// Instream API
 				ExternalInterface.addCallback("jwInitInstream", js_initInstream);
-				ExternalInterface.addCallback("jwLoadItemInstream", js_loadItemInstream);
-
+				
 				// The player shouldn't send any events if it's been destroyed
 				ExternalInterface.addCallback("jwDestroyAPI", js_destroyAPI);
 
@@ -479,6 +474,7 @@ package com.longtailvideo.jwplayer.player {
 		protected function js_load(toLoad:*):void {
 			if (_instream) {
 				_instream.destroy();
+				_instream = null;
 			}
 			_player.load(toLoad);
 		}
@@ -535,14 +531,13 @@ package com.longtailvideo.jwplayer.player {
 			_player.controls.display.releaseState();
 		}
 		
-		protected function js_initInstream(options:Object):void {
+		protected function js_initInstream():void {
+			if (_instream) {
+				_instream.destroy();
+			}
 			_instream = _player.setupInstream(_lockPlugin);
-			_instream.init(options);
-			new JavascriptInstreamAPI(_instream, _player, _lockPlugin);
-		}
-		
-		protected function js_loadItemInstream(item:Object):void {
-			_instream.loadItem(item);
+			_instream.init();
+			new JavascriptInstreamAPI(_instream);
 		}
 		
 		protected function setComponentVisibility(component:IPlayerComponent, state:Boolean):void {
