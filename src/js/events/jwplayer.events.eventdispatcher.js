@@ -5,13 +5,15 @@
  * @modified pablo
  * @version 6.0
  */
-(function(events) {
-	var _utils = jwplayer.utils; 
+(function(jwplayer) {
+	var events = jwplayer.events,
+		_utils = jwplayer.utils; 
 	
 	events.eventdispatcher = function(id, debug) {
 		var _id = id,
 			_debug = debug,
-			_listeners, _globallisteners;
+			_listeners,
+			_globallisteners;
 		
 		/** Clears all event listeners **/
 		this.resetEventListeners = function() {
@@ -33,7 +35,7 @@
 				}
 				_listeners[type].push({
 					listener: listener,
-					count: count
+					count: count || null
 				});
 			} catch (err) {
 				_utils.log("error", err);
@@ -67,7 +69,7 @@
 				}
 				_globallisteners.push({
 					listener: listener,
-					count: count
+					count: count || null
 				});
 			} catch (err) {
 				_utils.log("error", err);
@@ -81,10 +83,9 @@
 				return;
 			}
 			try {
-				for (var globalListenerIndex = 0; globalListenerIndex < _globallisteners.length; globalListenerIndex++) {
-					if (_globallisteners[globalListenerIndex].listener.toString() == listener.toString()) {
-						_globallisteners.splice(globalListenerIndex, 1);
-						break;
+				for (var index = _globallisteners.length; index--;) {
+					if (_globallisteners[index].listener.toString() == listener.toString()) {
+						_globallisteners.splice(index, 1);
 					}
 				}
 			} catch (err) {
@@ -107,37 +108,27 @@
 			if (_debug) {
 				_utils.log(type, data);
 			}
-			if (_utils.typeOf(_listeners[type]) != "undefined") {
-				for (var listenerIndex = 0; listenerIndex < _listeners[type].length; listenerIndex++) {
-					try {
-						_listeners[type][listenerIndex].listener(data);
-					} catch (err) {
-						_utils.log("There was an error while handling a listener: " + err.toString(), _listeners[type][listenerIndex].listener);
-					}
-					if (_listeners[type][listenerIndex]) {
-						if (_listeners[type][listenerIndex].count === 1) {
-							delete _listeners[type][listenerIndex];
-						} else if (_listeners[type][listenerIndex].count > 0) {
-							_listeners[type][listenerIndex].count = _listeners[type][listenerIndex].count - 1;
-						}
-					}
-				}
-			}
-			var globalListenerIndex;
-			for (globalListenerIndex = 0; globalListenerIndex < _globallisteners.length; globalListenerIndex++) {
-				try {
-					_globallisteners[globalListenerIndex].listener(data);
-				} catch (err) {
-					_utils.log("There was an error while handling a listener: " + err.toString(), _globallisteners[globalListenerIndex].listener);
-				}
-				if (_globallisteners[globalListenerIndex]) {
-					if (_globallisteners[globalListenerIndex].count === 1) {
-						delete _globallisteners[globalListenerIndex];
-					} else if (_globallisteners[globalListenerIndex].count > 0) {
-						_globallisteners[globalListenerIndex].count = _globallisteners[globalListenerIndex].count - 1;
-					}
-				}
-			}
+			dispatchEvent(_listeners[type], data, type);
+			dispatchEvent(_globallisteners, data, type);
 		};
+
+		function dispatchEvent(listeners, data, type) {
+			if (!listeners) {
+				return;
+			}
+			for (var index = 0; index < listeners.length; index++) {
+				var listener = listeners[index];
+				if (listener) {
+					if (listener.count !== null && --listener.count === 0) {
+						delete listeners[index];
+					}
+					try {
+						listener.listener(data);
+					} catch (err) {
+						_utils.log('Error handling "'+ type +'" event listener ['+ index +']: '+ err.toString(), listener.listener, data);
+					}
+				}
+			}
+		}
 	};
-})(jwplayer.events);
+})(window.jwplayer);
