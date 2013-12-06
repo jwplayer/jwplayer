@@ -150,7 +150,7 @@ package com.longtailvideo.jwplayer.player
 			// activate ad interface
 			addDisplayListeners();
 
-			if (_options.skipoffset >= 0) {
+			if (_options.skipoffset) {
 				_skipButton = new AdSkipButton(_options.skipoffset, _options.tag);
 				_skipButton.addEventListener(JWAdEvent.JWPLAYER_AD_SKIPPED,function():void {
 					destroy();
@@ -188,7 +188,7 @@ package com.longtailvideo.jwplayer.player
 			
 			
 			_provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, function(evt:MediaEvent):void {
-				if (_skipButton) _skipButton.updateSkipText(evt.position);
+				if (_skipButton) _skipButton.updateSkipText(evt.position, evt.duration);
 			});
 			_provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_COMPLETE, function(evt:MediaEvent):void {
 				setTimeout(function():void { _destroy(true); }, 0);

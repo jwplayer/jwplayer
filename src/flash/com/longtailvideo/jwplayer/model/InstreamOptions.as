@@ -9,7 +9,7 @@ package com.longtailvideo.jwplayer.model {
 		protected var _controlbarStoppable:Boolean = true;
 		protected var _loadingMessage:String = "Loading ad";
 		protected var _playlistClickable:Boolean = true;
-		protected var _skipoffset:Number = -1;
+		protected var _skipoffset:String = null;
 		protected var _tag:String;
 		
 		public function InstreamOptions(options:Object=null) {
@@ -68,11 +68,11 @@ package com.longtailvideo.jwplayer.model {
 			return _playlistClickable;
 		}
 		
-		public function get skipoffset():Number {
+		public function get skipoffset():String {
 			return _skipoffset;
 		}
 		
-		public function set skipoffset(p:Number):void {
+		public function set skipoffset(p:String):void {
 			_skipoffset = p;
 		}
 		

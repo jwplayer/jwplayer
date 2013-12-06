@@ -8,7 +8,7 @@ package com.longtailvideo.jwplayer.model
 		function get controlbarstoppable():Boolean;
 		function get loadingmessage():String;
 		function get playlistclickable():Boolean;
-		function get skipoffset():Number;
+		function get skipoffset():String;
 		function get tag():String;
 	}
 }

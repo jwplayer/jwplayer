@@ -18,7 +18,7 @@
             controlbarstoppable: true,
             loadingmessage: 'Loading ad',
             playlistclickable: true,
-            skipoffset: -1,
+            skipoffset: null,
             tag: null
         };
         
@@ -154,7 +154,7 @@
                 _video.parentElement.addEventListener('click', _disp.clickHandler);
             }
 
-            if (_options.skipoffset > 0) {
+            if (_options.skipoffset) {
                 _skipButton = new html5.adskipbutton(_options.skipoffset, _options.tag);
                 _skipButton.addEventListener(_events.JWPLAYER_AD_SKIPPED, _skipAd);
 
@@ -294,7 +294,7 @@
                 _provider.addEventListener(_events.JWPLAYER_MEDIA_ERROR, errorHandler);
                 _provider.addEventListener(_events.JWPLAYER_MEDIA_TIME, function(evt) {
                     if (_skipButton)
-                        _skipButton.updateSkipTime(evt.position);
+                        _skipButton.updateSkipTime(evt.position, evt.duration);
                 });
                 //_provider.addEventListener(_events.JWPLAYER_PLAYER_STATE, _stateHandler);
 

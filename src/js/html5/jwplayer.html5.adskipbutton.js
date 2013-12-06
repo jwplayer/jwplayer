@@ -9,21 +9,20 @@
         _css = _utils.css,
         TRUE = true,
         FALSE = false,
-        _events = jwplayer.events, 
+        _events = jwplayer.events,
         VIEW_INSTREAM_SKIP_CLASS = "jwinstreamskip",
         VIEW_INSTREAM_IMAGE = "jwinstreamimage",
         COUNTDOWN_TEXT = "Skip ad in ",
         SKIP_TEXT = "Skip";
         
-        jwplayer.html5.adskipbutton = function(skipOffset,adTag) {
+        jwplayer.html5.adskipbutton = function(_skipOffset, _adTag) {
             var _instreamSkipContainer,
                 _instreamSkip,
                 _dispatcher = new _events.eventdispatcher(),
-                _skipOffset = skipOffset,
+                _offsetTime = -1,
                 _SKIP_WIDTH = 80,
                 _SKIP_HEIGHT = 30,
                 _instreamSkipSet = FALSE,
-                _adTag = adTag,
                 _this = this,
                 _SKIP_ICON = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAICAYAAAArzdW1AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA3NpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo0ODkzMWI3Ny04YjE5LTQzYzMtOGM2Ni0wYzdkODNmZTllNDYiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6RDI0OTcxRkE0OEM2MTFFM0I4MTREM0ZBQTFCNDE3NTgiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6RDI0OTcxRjk0OEM2MTFFM0I4MTREM0ZBQTFCNDE3NTgiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChNYWNpbnRvc2gpIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6NDA5ZGQxNDktNzdkMi00M2E3LWJjYWYtOTRjZmM2MWNkZDI0IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjQ4OTMxYjc3LThiMTktNDNjMy04YzY2LTBjN2Q4M2ZlOWU0NiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PqAZXX0AAABYSURBVHjafI2BCcAwCAQ/kr3ScRwjW+g2SSezCi0kYHpwKLy8JCLDbWaGTM+MAFzuVNXhNiTQsh+PS9QhZ7o9JuFMeUVNwjsamDma4K+3oy1cqX/hxyPAAAQwNKV27g9PAAAAAElFTkSuQmCC",
                 _SKIP_ICON_OVER= "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAICAYAAAArzdW1AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA3NpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo0ODkzMWI3Ny04YjE5LTQzYzMtOGM2Ni0wYzdkODNmZTllNDYiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6RDI0OTcxRkU0OEM2MTFFM0I4MTREM0ZBQTFCNDE3NTgiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6RDI0OTcxRkQ0OEM2MTFFM0I4MTREM0ZBQTFCNDE3NTgiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChNYWNpbnRvc2gpIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6NDA5ZGQxNDktNzdkMi00M2E3LWJjYWYtOTRjZmM2MWNkZDI0IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjQ4OTMxYjc3LThiMTktNDNjMy04YzY2LTBjN2Q4M2ZlOWU0NiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PvgIj/QAAABYSURBVHjadI6BCcAgDAS/0jmyih2tm2lHSRZJX6hQQ3w4FP49LKraSHV3ZLDzAuAi3cwaqUhSfvft+EweznHneUdTzPGRmp5hEJFhAo3LaCnjn7blzCvAAH9YOSCL5RZKAAAAAElFTkSuQmCC",
@@ -47,11 +46,14 @@
                 _instreamSkipContainer.style.height = _SKIP_HEIGHT +"px";
                 _this.width = _instreamSkip.width = _SKIP_WIDTH;
                 _this.height = _instreamSkip.height = _SKIP_HEIGHT;
+                _updateOffset(0, 0);
                 _updateTime(0);
             }
             
             
             function _updateTime(currTime) {
+                if (_offsetTime < 0) return;
+
                 var ctx=_instreamSkip.getContext("2d");
                 ctx.clearRect(0,0,_SKIP_WIDTH,_SKIP_HEIGHT);
                 drawRoundRect(ctx,0,0,_SKIP_WIDTH,_SKIP_HEIGHT,10,TRUE,FALSE,FALSE);
@@ -63,14 +65,28 @@
                 var y = _instreamSkip.height / 2;
                 ctx.textAlign = "center";
                 ctx.font = 'Bold 11px Sans-Serif';
-                ctx.fillText(COUNTDOWN_TEXT + Math.ceil(_skipOffset - currTime) ,x,y + 4);
+                ctx.fillText(COUNTDOWN_TEXT + Math.ceil(_offsetTime - currTime) ,x,y + 4);
             
             }
             
-            _this.updateSkipTime = function(time, tag) {
-                _adTag = tag;
-                var ctx=_instreamSkip.getContext("2d");
-                if (_skipOffset - time > 0) {
+            function _updateOffset(pos, duration) {
+                if (_skipOffset.substr(-1) == "%") {
+                    var percent = parseFloat(_skipOffset.slice(0, -1));
+                    if (duration && !isNaN(percent)) {
+                        _offsetTime = duration * percent / 100;
+                    }
+                } else if (_utils.typeOf(_skipOffset) == "string") {
+                    _offsetTime = _utils.seconds(_skipOffset);
+                } else if (!isNaN(_skipOffset)) {
+                    _offsetTime = _skipOffset;
+                }
+            }
+
+            _this.updateSkipTime = function(time, duration) {
+                var ctx = _instreamSkip.getContext("2d");
+                _updateOffset(time, duration);
+
+                if (_offsetTime >=0 && _offsetTime - time > 0) {
                     _updateTime(time);
                 } else if (!_instreamSkipSet) {
                     _instreamSkipSet = TRUE;
@@ -102,7 +118,8 @@
                     _instreamSkipContainer.style.cursor = "pointer";
                     
                 }
-            }
+            };
+
             function skipAd() {
                 _dispatcher.sendEvent(_events.JWPLAYER_AD_SKIPPED, {tag: _adTag});
             }
