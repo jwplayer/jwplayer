@@ -467,11 +467,8 @@
 	};
 	
 	function _isCrossdomain(path) {
-		if (path && path.indexOf("://") >= 0) {
-			if (path.split("/")[2] != WINDOW.location.href.split("/")[2])
-				return TRUE;
-		} 
-		return FALSE;	
+		return (path && path.indexOf('://') >= 0) &&
+				(path.split('/')[2] != WINDOW.location.href.split('/')[2]);
 	}
 	
 	function _ajaxError(errorcallback, xmldocpath, xmlhttp) {
