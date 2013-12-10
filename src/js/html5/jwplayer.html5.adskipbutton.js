@@ -140,7 +140,7 @@
                 var y = _instreamSkip.height / 2;
                 ctx.textAlign = "start";
                 ctx.font = 'Bold 12px Sans-Serif';
-                ctx.fillText(SKIP_TEXT,(_SKIP_WIDTH - SKIP_TEXT.length * 12 + 3)/2,y + 4);
+                ctx.fillText(SKIP_TEXT,(_SKIP_WIDTH - SKIP_TEXT.length * 12 + 10)/2,y + 4);
                 _skip_image.style.display = "none";
                 _skip_image_over.style.display = "";
             }
@@ -158,7 +158,7 @@
                 var y = _instreamSkip.height / 2;
                 ctx.textAlign = "start";
                 ctx.font = 'Bold 12px Sans-Serif';
-                ctx.fillText(SKIP_TEXT,(_SKIP_WIDTH - SKIP_TEXT.length * 12 + 3)/2,y + 4);
+                ctx.fillText(SKIP_TEXT,(_SKIP_WIDTH - SKIP_TEXT.length * 12 + 10)/2,y + 4);
                 _skip_image_over.style.display = "none";
                 _skip_image.style.display = "";
             }
