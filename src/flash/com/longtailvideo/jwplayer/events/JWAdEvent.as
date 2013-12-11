@@ -13,6 +13,8 @@ package com.longtailvideo.jwplayer.events
 		
 		public var duration:Number;
 		public var position:Number;
+		public var currentAd:Number;
+		public var totalAds:Number;
 		public var companions:Array;
 		public var tag:String;
 		
