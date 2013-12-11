@@ -197,12 +197,23 @@ package com.longtailvideo.jwplayer.view.components
 			updateSkipText(0, 0);
 			_skipTime = false;
 			_skipArrow.visible = false;
+			_skipArrowHover.visible = false;
+			graphics.clear();
+			graphics.beginFill(0x000000, .5); 
+			graphics.drawRoundRect(0.5,0.5,_SKIP_WIDTH,_SKIP_HEIGHT,10,10);
+			graphics.endFill();
+			graphics.lineStyle(1, 0xFFFFFF,.25);
+			graphics.beginFill(0xFFFFFF, 0);
+			graphics.drawRoundRect(0.5,0.5,_SKIP_WIDTH,_SKIP_HEIGHT,10,10);
+			graphics.endFill();
 		}
 		
 		private function skipAd(evt:Event):void {
-			var adEvent:JWAdEvent = new JWAdEvent(JWAdEvent.JWPLAYER_AD_SKIPPED);
-			adEvent.tag = _adTag;
-			dispatchEvent(adEvent);
+			if (_skipTime) {
+				var adEvent:JWAdEvent = new JWAdEvent(JWAdEvent.JWPLAYER_AD_SKIPPED);
+				adEvent.tag = _adTag;
+				dispatchEvent(adEvent);
+			}
 		}
 		
 	}

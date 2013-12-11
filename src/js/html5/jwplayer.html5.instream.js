@@ -168,11 +168,12 @@
                 _video.parentElement.addEventListener('click', _disp.clickHandler);
             }
             if (_utils.typeOf(options) == "object") {
-                if (_options.skipoffset) {
+                if (options.skipoffset) {
+                    _options = _utils.extend(_defaultOptions, options);
                     _skipButton = new html5.adskipbutton(_options.skipoffset, _options.tag);
                     _skipButton.addEventListener(_events.JWPLAYER_AD_SKIPPED, _skipAd);
                 // Instream playback options
-                    _options = _utils.extend(_defaultOptions, options);
+  
                     var skipElem = _skipButton.element();
                     skipElem.style.visibility = _model.controls ? "visible" : "hidden";
                     var safe = _view.getSafeRegion();
@@ -337,7 +338,7 @@
         
         function _skipAd(evt) {
             _sendEvent(evt.type, evt);
-            _api.jwInstreamDestroy(false, _this);
+            _completeHandler(null);
         }
         function _stateHandler(evt) {
             _fakemodel.state = evt.newstate;

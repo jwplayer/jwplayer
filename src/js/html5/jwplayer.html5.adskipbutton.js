@@ -125,7 +125,9 @@
             };
 
             function skipAd() {
-                _dispatcher.sendEvent(_events.JWPLAYER_AD_SKIPPED, {tag: _adTag});
+                if (_instreamSkipSet) {
+                    _dispatcher.sendEvent(_events.JWPLAYER_AD_SKIPPED, {tag: _adTag});
+                }
             }
             
             this.reset = function(offset) {

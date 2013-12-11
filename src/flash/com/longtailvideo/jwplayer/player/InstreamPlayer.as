@@ -168,12 +168,7 @@ package com.longtailvideo.jwplayer.player
 
 			if (_options.skipoffset) {
 				_skipButton = new AdSkipButton(_options.skipoffset, _options.tag);
-				_skipButton.addEventListener(JWAdEvent.JWPLAYER_AD_SKIPPED,function():void {
-					destroy();
-					var ev:JWAdEvent = new JWAdEvent(JWAdEvent.JWPLAYER_AD_SKIPPED);
-					ev.tag = _options.tag;
-					dispatchEvent(ev);
-				});
+				_skipButton.addEventListener(JWAdEvent.JWPLAYER_AD_SKIPPED,skipHandler);
 				_instreamDisplay.addChild(_skipButton);
 				var safe:Rectangle = getSafeRegion();
 				_skipButton.visible = _model.config.controls;
@@ -189,6 +184,18 @@ package com.longtailvideo.jwplayer.player
 			_provider.load(_item);
 		}
 		
+		private function skipHandler(evt:JWAdEvent):void {
+			var ev:JWAdEvent = new JWAdEvent(JWAdEvent.JWPLAYER_AD_SKIPPED);
+			ev.tag = _options.tag;
+			if (_items && _items.length > 0) {
+				var medEvent:MediaEvent = evt as MediaEvent;
+				ev.currentAd = _itemNdx + 1;
+				ev.totalAds = _items.length;
+
+			}
+			_completeHandler(null);
+			dispatchEvent(ev);
+		}
 		
 		protected function setupProvider():void {
 			setProvider(_item);
@@ -198,11 +205,7 @@ package com.longtailvideo.jwplayer.player
 			_provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_ERROR, _errorHandler);
 			
 			_provider.addGlobalListener(function(evt:Event):void {
-				if (evt.type == "jwplayerMediaComplete" && _items && _items.length > 0) {
-					var medEvent:MediaEvent = evt as MediaEvent;
-					medEvent.currentItem = _itemNdx;
-					medEvent.totalItems = _items.length;
-				}
+
 				dispatchEvent(evt);
 			});
 			_provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_BUFFER_FULL, function(evt:MediaEvent):void {

@@ -1,5 +1,6 @@
 package com.longtailvideo.jwplayer.player {
 	import com.longtailvideo.jwplayer.events.InstreamEvent;
+	import com.longtailvideo.jwplayer.events.JWAdEvent;
 	import com.longtailvideo.jwplayer.events.MediaEvent;
 	import com.longtailvideo.jwplayer.events.PlayerEvent;
 	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
@@ -114,6 +115,8 @@ package com.longtailvideo.jwplayer.player {
 			
 			if (evt is MediaEvent)
 				args = listenerCallbackMedia(evt as MediaEvent);
+			else if (evt is JWAdEvent) 
+				args = listenerCallbackAds(evt as JWAdEvent);
 			else if (evt is PlayerStateEvent)
 				args = listenerCallbackState(evt as PlayerStateEvent);
 			else if (evt is InstreamEvent)
@@ -160,6 +163,16 @@ package com.longtailvideo.jwplayer.player {
 			if (evt.type == MediaEvent.JWPLAYER_MEDIA_VOLUME)
 				returnObj.volume = evt.volume;
 
+			return returnObj;
+		}
+		
+		
+		protected function listenerCallbackAds(evt:JWAdEvent):Object {
+			var returnObj:Object = {};
+			
+			if (evt.totalAds) 					returnObj.totalAds = evt.totalAds;
+			if (evt.currentAd)		 		    returnObj.currentAd = evt.currentAd;
+			if (evt.tag)						returnObj.tag = evt.tag;
 			return returnObj;
 		}
 		
