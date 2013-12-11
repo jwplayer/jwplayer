@@ -70,7 +70,11 @@
 			_item = item;
 			_options = options || {};
 			_this.tracker = _options.tracker;
-			_api.callInternal('jwLoadItemInstream', _item, _options);
+			if (utils.typeOf(item) == "array") {
+			   _api.callInternal('jwLoadArrayInstream', _item, _options);
+			} else {
+    	       _api.callInternal('jwLoadItemInstream', _item, _options);
+    		}
 		};
 		_this.dispatchEvent = function(type, calledArguments) {
 			if (_listeners[type]) {

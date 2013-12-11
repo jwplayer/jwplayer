@@ -64,7 +64,9 @@ package com.longtailvideo.jwplayer.player
 		protected var _mediaDisplayed:Boolean = false;
 		protected var _clickUrl:String = "";
 		protected var _skipButton:AdSkipButton;
-		
+		protected var _items:Array;
+		protected var _optionsList:Array;
+		protected var _itemNdx:Number;
 		protected var _viewSetup:Boolean = false;
 		protected var _playerLocked:Boolean = false;
 		
@@ -135,6 +137,20 @@ package com.longtailvideo.jwplayer.player
 			}
 		}
 		
+		public function loadArray(items:Array, options:Array=null):void {
+			_items = items;
+			_optionsList = options;
+			_itemNdx = 0;
+			var single:Object = items[_itemNdx];
+			var opt:Object = options[_itemNdx];
+			_options.update(opt);
+
+			_item = new PlaylistItem(single);
+			if (_playerLocked) {
+				beginPlayback();
+			}
+		}
+		
 		public function getOptions():IInstreamOptions {
 			return _options;
 		}
@@ -169,6 +185,11 @@ package com.longtailvideo.jwplayer.player
 			_provider.load(_item);
 		}
 		
+		private function continuePlayback():void {
+			_provider.load(_item);
+		}
+		
+		
 		protected function setupProvider():void {
 			setProvider(_item);
 			
@@ -177,6 +198,11 @@ package com.longtailvideo.jwplayer.player
 			_provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_ERROR, _errorHandler);
 			
 			_provider.addGlobalListener(function(evt:Event):void {
+				if (evt.type == "jwplayerMediaComplete" && _items && _items.length > 0) {
+					var medEvent:MediaEvent = evt as MediaEvent;
+					medEvent.currentItem = _itemNdx;
+					medEvent.totalItems = _items.length;
+				}
 				dispatchEvent(evt);
 			});
 			_provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_BUFFER_FULL, function(evt:MediaEvent):void {
@@ -190,9 +216,7 @@ package com.longtailvideo.jwplayer.player
 			_provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, function(evt:MediaEvent):void {
 				if (_skipButton) _skipButton.updateSkipText(evt.position, evt.duration);
 			});
-			_provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_COMPLETE, function(evt:MediaEvent):void {
-				setTimeout(function():void { _destroy(true); }, 0);
-			});
+			_provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_COMPLETE, _completeHandler);
 			
 			_provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_META, function(evt:MediaEvent):void {
 				if (evt.metadata.width && evt.metadata.height) {
@@ -312,6 +336,23 @@ package com.longtailvideo.jwplayer.player
 				_destroy();
 				_controller.setPlaylistIndex(evt.data);
 				_controller.play();
+			}
+		}
+		
+		protected function _completeHandler(evt:MediaEvent):void {
+			if (_items && _items.length > _itemNdx+1) {
+				_itemNdx++;
+				var single:Object = _items[_itemNdx];
+				var opt:Object = _optionsList[_itemNdx];
+				_options.update(opt);
+				_mediaDisplayed = false;
+				_item = new PlaylistItem(single);
+				if (_skipButton) _skipButton.reset(opt.skipoffset ? opt.skipoffset : "-1");
+				if (_playerLocked) {
+					continuePlayback();
+				}
+			} else {
+				setTimeout(function():void { _destroy(true); }, 0);
 			}
 		}
 		

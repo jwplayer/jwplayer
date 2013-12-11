@@ -38,7 +38,7 @@ package com.longtailvideo.jwplayer.player {
 		protected function setupJSListeners():void {
 			try {
 				ExternalInterface.addCallback("jwLoadItemInstream", js_loadItemInstream);
-
+				ExternalInterface.addCallback("jwLoadArrayInstream", js_loadArrayInstream);
 				// Event handlers
 				ExternalInterface.addCallback("jwInstreamAddEventListener", js_addEventListener);
 				ExternalInterface.addCallback("jwInstreamRemoveEventListener", js_removeEventListener);
@@ -77,6 +77,14 @@ package com.longtailvideo.jwplayer.player {
 			}
 			_tag = options.tag;
 			_isPlayer.loadItem(item, options);
+		}
+		
+		protected function js_loadArrayInstream(items:Array, options:Array):void {
+			if (!_isPlayer) {
+				throw(new Error('Instream player undefined'));
+			}
+			_tag = options[0].tag;
+			_isPlayer.loadArray(items, options);
 		}
 		
 		protected function js_addEventListener(eventType:String, callback:String):void {

@@ -181,6 +181,13 @@
 				_instreamPlayer.load(item, options);
 			}
 			
+			_this.jwLoadArrayInstream = function(item, options) {
+                if(!_instreamPlayer) {
+                    throw 'Instream player undefined';
+                }
+                _instreamPlayer.load(item, options);
+            }
+			
 			_this.jwSetControls = function(mode) {
 			    _view.setControls(mode);
 			    if(_instreamPlayer) _instreamPlayer.setControls(mode);

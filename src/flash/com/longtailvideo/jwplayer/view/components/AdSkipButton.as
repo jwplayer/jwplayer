@@ -115,6 +115,18 @@ package com.longtailvideo.jwplayer.view.components
 			if (_offsetTime < 0) return;
 			
 			if (currTime < _offsetTime) {
+				var myFormat:TextFormat = new TextFormat();
+				myFormat.align = TextFormatAlign.CENTER;
+				
+				myFormat.font = "_sans";
+				myFormat.size = 11;
+				myFormat.bold = true;
+				_skipText.alpha = .75;
+				_skipText.width = _SKIP_WIDTH;
+				_skipText.x = 0;
+				_skipText.setTextFormat(myFormat);
+				_skipText.y = _SKIP_HEIGHT/2 - 17/2;
+				_skipText.height = _SKIP_HEIGHT-_skipText.y;
 				_skipText.text = "Skip ad in " + Math.ceil(_offsetTime - currTime);
 				_skipText.textColor= 0x979797;
 			} else if (!_skipTime) {
@@ -123,6 +135,7 @@ package com.longtailvideo.jwplayer.view.components
 				var myFormat:TextFormat = new TextFormat();
 				myFormat.align = TextFormatAlign.LEFT;
 				addChild(_skipArrow);
+				_skipArrow.visible = true;
 				myFormat.font = "_sans";
 				myFormat.size = 12;
 				myFormat.bold = true;
@@ -144,35 +157,46 @@ package com.longtailvideo.jwplayer.view.components
 		}
 		
 		private function mouseoverSkipAd(evt:Event):void {
-			_skipArrow.visible = false;
-			_skipArrowHover.visible = true;
-			graphics.clear();
-			graphics.beginFill(0x000000, .5); 
-			graphics.drawRoundRect(0.5,0.5,_SKIP_WIDTH,_SKIP_HEIGHT,10,10);
-			graphics.endFill();
-			graphics.lineStyle(1,0xFFFFFF, 1); 
-			graphics.beginFill(0xFFFFFF, 0);
-			graphics.drawRoundRect(0.5,0.5,_SKIP_WIDTH,_SKIP_HEIGHT,10,10);
-			graphics.endFill();
-			_skipText.textColor = 0xE1E1E1;
-			_skipText.alpha = 1.0;
+			if (_skipTime) {
+				_skipArrow.visible = false;
+				_skipArrowHover.visible = true;
+				graphics.clear();
+				graphics.beginFill(0x000000, .5); 
+				graphics.drawRoundRect(0.5,0.5,_SKIP_WIDTH,_SKIP_HEIGHT,10,10);
+				graphics.endFill();
+				graphics.lineStyle(1,0xFFFFFF, 1); 
+				graphics.beginFill(0xFFFFFF, 0);
+				graphics.drawRoundRect(0.5,0.5,_SKIP_WIDTH,_SKIP_HEIGHT,10,10);
+				graphics.endFill();
+				_skipText.textColor = 0xE1E1E1;
+				_skipText.alpha = 1.0;
+			}
 		}
 		
 		private function mouseoutSkipAd(evt:Event):void {
-			_skipArrowHover.visible = false;
-			_skipArrow.visible = true;
-			graphics.clear();
-			graphics.beginFill(0x000000, .5); 
-			graphics.drawRoundRect(0.5,0.5,_SKIP_WIDTH,_SKIP_HEIGHT,10,10);
-			graphics.endFill();
-			graphics.lineStyle(1, 0xFFFFFF,.25);
-			graphics.beginFill(0xFFFFFF, 0);
-			graphics.drawRoundRect(0.5,0.5,_SKIP_WIDTH,_SKIP_HEIGHT,10,10);
-			graphics.endFill();
-			_skipText.textColor =  0x979797;;
+			if (_skipTime) {
+				_skipArrowHover.visible = false;
+				_skipArrow.visible = true;
+				graphics.clear();
+				graphics.beginFill(0x000000, .5); 
+				graphics.drawRoundRect(0.5,0.5,_SKIP_WIDTH,_SKIP_HEIGHT,10,10);
+				graphics.endFill();
+				graphics.lineStyle(1, 0xFFFFFF,.25);
+				graphics.beginFill(0xFFFFFF, 0);
+				graphics.drawRoundRect(0.5,0.5,_SKIP_WIDTH,_SKIP_HEIGHT,10,10);
+				graphics.endFill();
+				_skipText.textColor =  0x979797;
+			}
 		}
 		public function resize(width:Number, height:Number):void
 		{
+		}
+		
+		public function reset(offSet:String):void {
+			_skipOffset = offSet;
+			updateSkipText(0, 0);
+			_skipTime = false;
+			_skipArrow.visible = false;
 		}
 		
 		private function skipAd(evt:Event):void {

@@ -23,6 +23,8 @@
         };
         
         var _item,
+            _array,
+            _optionList,
             _options,
             _skipButton,
             _video,
@@ -126,14 +128,26 @@
                 return;
             }
 
-            // Instream playback options
-            _options = _utils.extend(_defaultOptions, options);
+            
+
             
             // Copy the playlist item passed in and make sure it's formatted as a proper playlist item
-            _item = new _playlist.item(item);
+            if (_utils.typeOf(item) == "object") {
+                _item = new _playlist.item(item);
+                _fakemodel.setPlaylist([item]);
+
+            } else if (_utils.typeOf(item) == "array") {
+                
+                _array = item;
+                
+                item = _array.shift();
+                if (_array.length == 0 ) _array = null;
+                _item = new _playlist.item(item);
+                _fakemodel.setPlaylist([item]);
+            }
+            
             
             _fakemodel.addEventListener(_events.JWPLAYER_ERROR, errorHandler);
-            _fakemodel.setPlaylist([item]);
 
             // start listening for ad click
             _disp.setAlternateClickHandler(function(evt) {
@@ -153,18 +167,35 @@
             if (_utils.isIE()) {
                 _video.parentElement.addEventListener('click', _disp.clickHandler);
             }
-
-            if (_options.skipoffset) {
-                _skipButton = new html5.adskipbutton(_options.skipoffset, _options.tag);
-                _skipButton.addEventListener(_events.JWPLAYER_AD_SKIPPED, _skipAd);
-
-                var skipElem = _skipButton.element();
-                skipElem.style.visibility = _model.controls ? "visible" : "hidden";
-                var safe = _view.getSafeRegion();
-                var playersize = _utils.bounds(document.getElementById(_api.id));
-                skipElem.style.bottom = playersize.height - (safe.y + safe.height) + 10  + "px";
-                skipElem.style.right = "10px";
-                _instreamContainer.appendChild(skipElem);
+            if (_utils.typeOf(options) == "object") {
+                if (_options.skipoffset) {
+                    _skipButton = new html5.adskipbutton(_options.skipoffset, _options.tag);
+                    _skipButton.addEventListener(_events.JWPLAYER_AD_SKIPPED, _skipAd);
+                // Instream playback options
+                    _options = _utils.extend(_defaultOptions, options);
+                    var skipElem = _skipButton.element();
+                    skipElem.style.visibility = _model.controls ? "visible" : "hidden";
+                    var safe = _view.getSafeRegion();
+                    var playersize = _utils.bounds(document.getElementById(_api.id));
+                    skipElem.style.bottom = playersize.height - (safe.y + safe.height) + 10  + "px";
+                    skipElem.style.right = "10px";
+                    _instreamContainer.appendChild(skipElem);
+                }
+            } else {
+                _optionList = options;
+                var curOpt = options.shift();
+                if (curOpt.skipoffset) {
+                    _skipButton = new html5.adskipbutton(curOpt.skipoffset, options.tag);
+                    _skipButton.addEventListener(_events.JWPLAYER_AD_SKIPPED, _skipAd);
+                    _options = _utils.extend(_defaultOptions, curOpt);
+                    var skipElem = _skipButton.element();
+                    skipElem.style.visibility = _model.controls ? "visible" : "hidden";
+                    var safe = _view.getSafeRegion();
+                    var playersize = _utils.bounds(document.getElementById(_api.id));
+                    skipElem.style.bottom = playersize.height - (safe.y + safe.height) + 10  + "px";
+                    skipElem.style.right = "10px";
+                    _instreamContainer.appendChild(skipElem);
+                }
             }
             _view.addEventListener(_events.JWPLAYER_AD_SKIPPED, _skipAd);
             
@@ -286,16 +317,16 @@
         
         function _setupProvider() {
             //if (!_provider) {
-                _provider = new html5.video(_video);
-                _provider.addGlobalListener(_forward);
-                _provider.addEventListener(_events.JWPLAYER_MEDIA_META, _metaHandler);
-                _provider.addEventListener(_events.JWPLAYER_MEDIA_COMPLETE, _completeHandler);
-                _provider.addEventListener(_events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
-                _provider.addEventListener(_events.JWPLAYER_MEDIA_ERROR, errorHandler);
-                _provider.addEventListener(_events.JWPLAYER_MEDIA_TIME, function(evt) {
-                    if (_skipButton)
-                        _skipButton.updateSkipTime(evt.position, evt.duration);
-                });
+            _provider = new html5.video(_video);
+            _provider.addGlobalListener(_forward);
+            _provider.addEventListener(_events.JWPLAYER_MEDIA_META, _metaHandler);
+            _provider.addEventListener(_events.JWPLAYER_MEDIA_COMPLETE, _completeHandler);
+            _provider.addEventListener(_events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
+            _provider.addEventListener(_events.JWPLAYER_MEDIA_ERROR, errorHandler);
+            _provider.addEventListener(_events.JWPLAYER_MEDIA_TIME, function(evt) {
+                if (_skipButton)
+                    _skipButton.updateSkipTime(evt.position, evt.duration);
+            });
                 //_provider.addEventListener(_events.JWPLAYER_PLAYER_STATE, _stateHandler);
 
             //}
@@ -338,9 +369,19 @@
 
         /** Handle the JWPLAYER_MEDIA_COMPLETE event **/        
         function _completeHandler(evt) {
-            setTimeout(function() {
-                _api.jwInstreamDestroy(true, _this);
-            }, 10);
+            if (_array) {
+                item = _array.shift();
+                _item = new _playlist.item(item);
+                _fakemodel.setPlaylist([item]);
+                var options = _optionList.shift();
+                if (_array.length == 0) _array = null;
+                _provider.load(_fakemodel.playlist[0]);
+                if (_skipButton) _skipButton.reset(options.skipoffset||-1);
+            } else {
+                setTimeout(function() {
+                    _api.jwInstreamDestroy(true, _this);
+                }, 10);
+            }
         }
 
         /** Handle the JWPLAYER_MEDIA_META event **/        

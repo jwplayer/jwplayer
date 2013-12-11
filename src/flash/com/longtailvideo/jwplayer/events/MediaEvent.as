@@ -250,7 +250,8 @@ package com.longtailvideo.jwplayer.events {
 		public var mute:Boolean				= false;
 		public var levels:Array				= null;
 		public var currentQuality:Number		= -1;
-	
+		public var currentItem:Number		= -1;
+		public var totalItems:Number		= -1;
 		public function MediaEvent(type:String) {
 			super(type);
 		}

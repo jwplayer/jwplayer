@@ -105,6 +105,7 @@ package com.longtailvideo.jwplayer.player
 		function setControls(controls:Boolean):void;
 		function init():void;
 		function loadItem(item:Object, options:Object=null):void;
+		function loadArray(items:Array, options:Array=null):void;
 		function getOptions():IInstreamOptions;
 	}
 }
