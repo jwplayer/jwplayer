@@ -220,7 +220,7 @@
 			_instream = _this.setInstream(_this.createInstream()).init(options);
             _instream.loadItem(item);
             return _instream;
-		}
+		};
 		_this.getQualityLevels = function() {
 			return _callInternal("jwGetQualityLevels");
 		};
@@ -250,14 +250,14 @@
 		};
 		_this.destroyPlayer = function () {
 			_callInternal ("jwPlayerDestroy");
-		}
+		};
 		_this.playAd = function(ad) {
 			var plugins = jwplayer(_this.id).plugins;
 			if (plugins.vast) {
 				plugins.vast.jwPlayAd(ad);
 			}
 			// _callInternal("jwPlayAd", ad);
-		}
+		};
 		_this.pauseAd = function() {
 			var plugins = jwplayer(_this.id).plugins;
 			if (plugins.vast) {
@@ -266,7 +266,7 @@
 			else {
 				_callInternal("jwPauseAd");
 			}
-		}
+		};
 		
 		var _eventMapping = {
 			onBufferChange: events.JWPLAYER_MEDIA_BUFFER,
@@ -365,13 +365,13 @@
 			if (_this.renderingMode == "html5") {
 				return _callInternal("jwDetachMedia");
 			}
-		}
+		};
 
 		_this.attachMedia = function(seekable) {
 			if (_this.renderingMode == "html5") {
 				return _callInternal("jwAttachMedia", seekable);
 			}
-		}
+		};
 
 		function _stateListener(state, callback) {
 			if (!_stateListeners[state]) {
@@ -389,8 +389,9 @@
 					var callbacks = _stateListeners[newstate];
 					if (callbacks) {
 						for (var c = 0; c < callbacks.length; c++) {
-							if (typeof callbacks[c] == 'function') {
-								callbacks[c].call(this, {
+							var fn = callbacks[c];
+							if (typeof fn == 'function') {
+								fn.call(this, {
 									oldstate: oldstate,
 									newstate: newstate
 								});
@@ -419,20 +420,34 @@
 			_listeners[type].push(callback);
 			return _this;
 		}
+
+		_this.removeEventListener = function(type, callback) {
+			var listeners = _listeners[type];
+			if (listeners) {
+				for (var l = listeners.length; l--;) {
+					if (listeners[l] === callback) {
+						listeners.splice(l, 1);
+					}
+				}
+			}
+		};
 		
 		_this.dispatchEvent = function(type) {
-			if (_listeners[type]) {
+			var listeners = _listeners[type];
+			if (listeners) {
+				listeners = listeners.slice(0); //copy array
 				var args = utils.translateEventResponse(type, arguments[1]);
-				for (var l = 0; l < _listeners[type].length; l++) {
-					if (typeof _listeners[type][l] == 'function') {
-						// try {
-							if (type == events.JWPLAYER_PLAYLIST_LOADED) {
+				for (var l = 0; l < listeners.length; l++) {
+					var fn = listeners[l];
+					if (typeof fn === 'function') {
+						try {
+							if (type === events.JWPLAYER_PLAYLIST_LOADED) {
 								utils.deepReplaceKeyName(args.playlist, ["__dot__","__spc__","__dsh__","__default__"], ["."," ","-","default"]);
 							}
-							_listeners[type][l].call(this, args);
-						// } catch(e) {
-						// 	utils.log("There was an error calling back an event handler");
-						// }
+							fn.call(this, args);
+						} catch(e) {
+							utils.log("There was an error calling back an event handler");
+						}
 					}
 				}
 			}
@@ -503,12 +518,12 @@
 
 		_this.isBeforePlay = function () {
 			return _callInternal('jwIsBeforePlay');
-		}
+		};
 		_this.isBeforeComplete = function () {
 			return _callInternal('jwIsBeforeComplete');
-		}
+		};
 		
-		return _this
+		return _this;
 	};
 	
 	api.selectPlayer = function(identifier) {

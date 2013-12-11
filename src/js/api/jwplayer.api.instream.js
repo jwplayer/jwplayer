@@ -46,8 +46,9 @@
 					var callbacks = _stateListeners[newstate];
 					if (callbacks) {
 						for (var c = 0; c < callbacks.length; c++) {
-							if (typeof callbacks[c] == 'function') {
-								callbacks[c].call(this, {
+							var fn = callbacks[c];
+							if (typeof fn == 'function') {
+								fn.call(this, {
 									oldstate: oldstate,
 									newstate: newstate,
 									type: args.type
@@ -59,7 +60,6 @@
 			};
 		}
 		
-		_this.tracker = null;
 		_this.type = 'instream';
 		
 		_this.init = function() {
@@ -69,19 +69,37 @@
 		_this.loadItem = function(item, options) {
 			_item = item;
 			_options = options || {};
-			_this.tracker = _options.tracker;
 			if (utils.typeOf(item) == "array") {
 			   _api.callInternal('jwLoadArrayInstream', _item, _options);
 			} else {
     	       _api.callInternal('jwLoadItemInstream', _item, _options);
     		}
 		};
+
+		_this.removeEvents = function() {
+			_listeners = _stateListeners = {};
+		};
+
+		_this.removeEventListener = function(type, callback) {
+			var listeners = _listeners[type];
+			if (listeners) {
+				for (var l = listeners.length; l--;) {
+					if (listeners[l] === callback) {
+						listeners.splice(l, 1);
+					}
+				}
+			}
+		};
+
 		_this.dispatchEvent = function(type, calledArguments) {
-			if (_listeners[type]) {
+			var listeners = _listeners[type];
+			if (listeners) {
+				listeners = listeners.slice(0); //copy array
 				var args = utils.translateEventResponse(type, calledArguments[1]);
-				for (var l = 0; l < _listeners[type].length; l++) {
-					if (typeof _listeners[type][l] == 'function') {
-						_listeners[type][l].call(this, args);
+				for (var l = 0; l < listeners.length; l++) {
+					var fn = listeners[l];
+					if (typeof fn == 'function') {
+						fn.call(this, args);
 					}
 				}
 			}
@@ -143,6 +161,7 @@
 			_player.jwInstreamPause(state);
 		};
 		_this.destroy = function() {
+			_this.removeEvents();
 			_api.callInternal('jwInstreamDestroy');
 		};
 		_this.setText = function(text) {
