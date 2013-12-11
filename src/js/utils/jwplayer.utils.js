@@ -33,13 +33,12 @@
 			return FALSE;
 		}
 		return TRUE;
-	}
+	};
 
 	/** Used for styling dimensions in CSS -- return the string unchanged if it's a percentage width; add 'px' otherwise **/ 
 	utils.styleDimension = function(dimension) {
 		return dimension + (dimension.toString().indexOf("%") > 0 ? "" : "px");
-	}
-
+	};
 	
 	/** Gets an absolute file path based on a relative filepath * */
 	utils.getAbsolutePath = function(path, base) {
@@ -103,14 +102,10 @@
 	};
 
 	/** Logger * */
-	utils.log = function(msg, obj) {
-		if (typeof console != UNDEFINED && typeof console.log != UNDEFINED) {
-			if (obj) {
-				console.log(msg, obj);
-			} else {
-				console.log(msg);
-			}
-		}
+	var console = window.console = window.console || {log: function(){}};
+	utils.log = function() {
+		var args = Array.prototype.slice.call(arguments, 0);
+		console.log.apply(console, args);
 	};
 
 	var _userAgentMatch = utils.userAgentMatch = function(regex) {
@@ -121,9 +116,8 @@
 	function _browserCheck(regex) {
 		return function() {
 			return _userAgentMatch(regex);
-		}
+		};
 	}
-
 
 	utils.isIE = _browserCheck(/msie/i);
 	utils.isFF = _browserCheck(/firefox/i);
@@ -134,7 +128,7 @@
 
 	utils.isSafari = function() {
 		return (_userAgentMatch(/safari/i) && !_userAgentMatch(/chrome/i) && !_userAgentMatch(/chromium/i) && !_userAgentMatch(/android/i));
-	}
+	};
 
 	/** Matches iOS devices **/
 	utils.isIOS = function(version) {
@@ -154,17 +148,17 @@
 		} else {
 			return androidBrowser && _userAgentMatch(/android/i);
 		}
-	}
+	};
 
 	/** Matches iOS and Android devices **/	
 	utils.isMobile = function() {
 		return utils.isIOS() || utils.isAndroid();
-	}
+	};
 	
 	/** Save a setting **/
 	utils.saveCookie = function(name, value) {
 		DOCUMENT.cookie = "jwplayer." + name + "=" + value + "; path=/";
-	}
+	};
 
 	/** Retrieve saved  player settings **/
 	utils.getCookies = function() {
@@ -172,13 +166,12 @@
 		var cookies = DOCUMENT.cookie.split('; ');
 		for (var i=0; i<cookies.length; i++) {
 			var split = cookies[i].split('=');
-			if (split[0].indexOf("jwplayer.") == 0) {
+			if (split[0].indexOf("jwplayer.") === 0) {
 				jwCookies[split[0].substring(9, split[0].length)] = split[1];
 			}
 		}
 		return jwCookies;
-	}
-	
+	};
 
 	/** Returns the true type of an object * */
 	utils.typeOf = function(value) {
@@ -199,8 +192,10 @@
 			delete translated.message;
 		} else if (typeof translated.data == OBJECT) {
 			// Takes ViewEvent "data" block and moves it up a level
-			translated = utils.extend(translated, translated.data);
+			var data = translated.data;
 			delete translated.data;
+			translated = utils.extend(translated, data);
+
 		} else if (typeof translated.metadata == OBJECT) {
 			utils.deepReplaceKeyName(translated.metadata, ["__dot__","__spc__","__dsh__","__default__"], ["."," ","-","default"]);
 		}
@@ -213,7 +208,7 @@
 		});
 		
 		return translated;
-	}
+	};
 
 	/**
 	 * If the browser has flash capabilities, return the flash version 
@@ -227,7 +222,7 @@
 			if (plugins !== UNDEFINED) {
 				flash = plugins['Shockwave Flash'];
 				if (flash) {
-					return parseInt(flash.description.replace(/\D+(\d+)\..*/, "$1"));
+					return parseInt(flash.description.replace(/\D+(\d+)\..*/, "$1"), 10);
 				}
 			}
 		} catch(e) {
@@ -236,9 +231,9 @@
 		
 		if (typeof WINDOW.ActiveXObject != UNDEFINED) {
 			try {
-				flash = new ActiveXObject("ShockwaveFlash.ShockwaveFlash");
+				flash = new WINDOW.ActiveXObject("ShockwaveFlash.ShockwaveFlash");
 				if (flash) {
-					return parseInt(flash.GetVariable("$version").split(" ")[1].split(",")[0]);
+					return parseInt(flash.GetVariable("$version").split(" ")[1].split(",")[0], 10);
 				}
 			} catch (err) {
 			}
@@ -257,7 +252,7 @@
 			}
 		}
 		return "";
-	}
+	};
 
 	/**
 	 * Recursively traverses nested object, replacing key names containing a
@@ -313,7 +308,7 @@
 		ABSOLUTE : 0,
 		RELATIVE : 1,
 		CDN : 2
-	}
+	};
 
 	/*
 	 * Test cases getPathType('hd') getPathType('hd-1') getPathType('hd-1.4')
@@ -348,7 +343,7 @@
 	 */
 	utils.getPluginName = function(pluginName) {
 		/** Regex locates the characters after the last slash, until it encounters a dash. **/
-		return pluginName.replace(/^(.*\/)?([^-]*)-?.*\.(swf|js)$/, "$2")
+		return pluginName.replace(/^(.*\/)?([^-]*)-?.*\.(swf|js)$/, "$2");
 	};
 
 	/**
@@ -386,13 +381,13 @@
 		} catch (e) {
 			return "";
 		}
-	}
+	};
 
 	/**
 	 * Determines if a URL is an RTMP link
 	 */
 	utils.isRtmp = function(file,type) {
-		return (file.indexOf("rtmp") == 0 || type == 'rtmp');
+		return (file.indexOf("rtmp") === 0 || type == 'rtmp');
 	};
 
 	/**
@@ -413,12 +408,12 @@
 				fnEach(key, val);
 			}
 		}
-	}
+	};
 
 	/** Determines if the current page is HTTPS **/
 	utils.isHTTPS = function() {
-		return (WINDOW.location.href.indexOf("https") == 0);	
-	}
+		return (WINDOW.location.href.indexOf("https") === 0);	
+	};
 	
 	/** Gets the repository location **/
 	utils.repo = function() {
@@ -431,8 +426,7 @@
 		} catch(e) {}
 		
 		return repo;
-	}
-
+	};
 	
 	/** Loads an XML file into a DOM object * */
 	utils.ajax = function(xmldocpath, completecallback, errorcallback) {
@@ -442,19 +436,22 @@
 
 		if (_isCrossdomain(xmldocpath) && utils.exists(WINDOW.XDomainRequest)) {
 			// IE8 / 9
-			xmlhttp = new XDomainRequest();
+			xmlhttp = new WINDOW.XDomainRequest();
 			xmlhttp.onload = _ajaxComplete(xmlhttp, xmldocpath, completecallback, errorcallback);
-			xmlhttp.ontimeout = function() {};
-			xmlhttp.onprogress = function() {};
+			xmlhttp.ontimeout = xmlhttp.onprogress = function(){};
 			xmlhttp.timeout = 5000;
 		} else if (utils.exists(WINDOW.XMLHttpRequest)) {
 			// Firefox, Chrome, Opera, Safari
-			xmlhttp = new XMLHttpRequest();
+			xmlhttp = new WINDOW.XMLHttpRequest();
 			xmlhttp.onreadystatechange = _readyStateChangeHandler(xmlhttp, xmldocpath, completecallback, errorcallback);
 		} else {
 			if (errorcallback) errorcallback();
 			return xmlhttp; 
 		}
+		if (xmlhttp.overrideMimeType) {
+			xmlhttp.overrideMimeType('text/xml');
+		}
+
 		xmlhttp.onerror = _ajaxError(errorcallback, xmldocpath, xmlhttp);
 
 		try {
@@ -488,23 +485,31 @@
 					errorcallback("File not found");
 				}
 			}
-		}
+		};
 	}
 	
 	function _ajaxComplete(xmlhttp, xmldocpath, completecallback, errorcallback) {
 		return function() {
 			// Handle the case where an XML document was returned with an incorrect MIME type.
+			var xml, firstChild;
 			try {
 				// This will throw an error on Windows Mobile 7.5.  We want to trigger the error so that we can move 
 				// down to the next section
-				var xml = xmlhttp.responseXML;
-				if (xml && xml.firstChild) return completecallback(xmlhttp);
-			} catch (e) {}
+				xml = xmlhttp.responseXML;
+				firstChild = xml.firstChild;
+			} catch (e) {
+				utils.log('xml mime type error', e);
+			}
+			if (xml && firstChild) {
+				return completecallback(xmlhttp);
+			}
 			var parsedXML = utils.parseXML(xmlhttp.responseText);
 			if (parsedXML && parsedXML.firstChild) {
 				xmlhttp = utils.extend({}, xmlhttp, {responseXML:parsedXML});
 			} else {
-				if (errorcallback) errorcallback(xmlhttp.responseText ? "Invalid XML" : xmldocpath);
+				if (errorcallback) {
+					errorcallback(xmlhttp.responseText ? "Invalid XML" : xmldocpath);
+				}
 				return;
 			}
 			completecallback(xmlhttp);
@@ -517,14 +522,14 @@
 			var parsedXML;
 			// Parse XML in FF/Chrome/Safari/Opera
 			if (WINDOW.DOMParser) {
-				parsedXML = (new DOMParser()).parseFromString(input,"text/xml");
+				parsedXML = (new WINDOW.DOMParser()).parseFromString(input,"text/xml");
 				try {
 					if (parsedXML.childNodes[0].firstChild.nodeName == "parsererror")
 						return;
 				} catch(e) {}
 			} else { 
 				// Internet Explorer
-				parsedXML = new ActiveXObject("Microsoft.XMLDOM");
+				parsedXML = new WINDOW.ActiveXObject("Microsoft.XMLDOM");
 				parsedXML.async="false";
 				parsedXML.loadXML(input);
 			}
@@ -532,17 +537,17 @@
 		} catch(e) {
 			return;
 		}
-	}	
+	};
 	
 	/** Go through the playlist and choose a single playable type to play; remove sources of a different type **/
 	utils.filterPlaylist = function(playlist, checkFlash) {
-		var pl = [];
-		for (var i=0; i < playlist.length; i++) {
-			var item = utils.extend({}, playlist[i]);
+		var pl = [], i, item, j, source;
+		for (i=0; i < playlist.length; i++) {
+			item = utils.extend({}, playlist[i]);
 			item.sources = utils.filterSources(item.sources);
 			if (item.sources.length > 0) {
-				for (var j = 0; j < item.sources.length; j++) {
-					var source = item.sources[j];
+				for (j = 0; j < item.sources.length; j++) {
+					source = item.sources[j];
 					if (!source.label) source.label = j.toString();
 				}
 				pl.push(item);
@@ -550,7 +555,7 @@
 		}
 		
 		// HTML5 filtering failed; try for Flash sources
-		if (checkFlash && pl.length == 0) {
+		if (checkFlash && pl.length === 0) {
 			for (i=0; i < playlist.length; i++) {
 				item = utils.extend({}, playlist[i]);
 				item.sources = utils.filterSources(item.sources, TRUE);
@@ -564,8 +569,7 @@
 			}
 		}
 		return pl;
-	}
-	
+	};
 
 	/** Filters the sources by taking the first playable type and eliminating sources of a different type **/
 	utils.filterSources = function(sources, filterFlash) {
@@ -605,14 +609,14 @@
 			}
 		}
 		return newSources;
-	}
+	};
 	
 	/** Returns true if the type is playable in HTML5 **/
 	utils.canPlayHTML5 = function(type) {
 		if (utils.isAndroid() && (type == "hls" || type == "m3u" || type == "m3u8")) return FALSE;
 		var mime = utils.extensionmap.types[type];
 		return (!!mime && !!jwplayer.vid.canPlayType && jwplayer.vid.canPlayType(mime));
-	}
+	};
 
 	/**
 	 * Convert a time-representing string to a number.
@@ -640,7 +644,7 @@
 			sec = Number(str);
 		}
 		return sec;
-	}
+	};
 	
 	/**
 	 * Basic serialization: string representations of booleans and numbers are
@@ -657,11 +661,11 @@
 			return TRUE;
 		} else if (val.toString().toLowerCase() == 'false') {
 			return FALSE;
-		} else if (isNaN(Number(val)) || val.length > 5 || val.length == 0) {
+		} else if (isNaN(Number(val)) || val.length > 5 || val.length === 0) {
 			return val;
 		} else {
 			return Number(val);
 		}
-	}
+	};
 	
 })(jwplayer);
