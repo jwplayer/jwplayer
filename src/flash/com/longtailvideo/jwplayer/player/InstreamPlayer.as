@@ -6,6 +6,7 @@ package com.longtailvideo.jwplayer.player
 	import com.longtailvideo.jwplayer.events.JWAdEvent;
 	import com.longtailvideo.jwplayer.events.MediaEvent;
 	import com.longtailvideo.jwplayer.events.PlayerEvent;
+	import com.longtailvideo.jwplayer.events.PlaylistEvent;
 	import com.longtailvideo.jwplayer.events.ViewEvent;
 	import com.longtailvideo.jwplayer.media.MediaProvider;
 	import com.longtailvideo.jwplayer.media.RTMPMediaProvider;
@@ -356,6 +357,8 @@ package com.longtailvideo.jwplayer.player
 					continuePlayback();
 				}
 			} else {
+				var ev:PlaylistEvent = new PlaylistEvent(PlaylistEvent.JWPLAYER_PLAYLIST_COMPLETE,null);
+				dispatchEvent(ev);
 				setTimeout(function():void { _destroy(true); }, 0);
 			}
 		}

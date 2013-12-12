@@ -366,6 +366,7 @@
                 _provider.load(_fakemodel.playlist[0]);
                 _skipButton.reset(_options.skipoffset||-1);
             } else {
+                _sendEvent(_events.JWPLAYER_PLAYLIST_COMPLETE, {}, true);
                 setTimeout(function() {
                     _api.jwInstreamDestroy(true, _this);
                 }, 10);
