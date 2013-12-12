@@ -125,6 +125,11 @@
 		// _this.onSeek = function(callback) {
 		// 	return _eventListener(events.JWPLAYER_MEDIA_SEEK, callback);
 		// };
+		
+		_this.onPlaylistComplete = function(callback) {
+            return _eventListener(events.JWPLAYER_PLAYLIST_COMPLETE,callback);
+        }
+        
 		_this.onTime = function(callback) {
 			return _eventListener(events.JWPLAYER_MEDIA_TIME, callback);
 		};
