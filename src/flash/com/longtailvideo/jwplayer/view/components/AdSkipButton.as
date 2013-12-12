@@ -204,8 +204,8 @@ package com.longtailvideo.jwplayer.view.components
 			_skipOffset = offSet;
 			updateSkipText(0, 0);
 			_skipTime = false;
-			_skipArrow.visible = false;
-			_skipArrowHover.visible = false;
+			if (_skipArrow) _skipArrow.visible = false;
+			if (_skipArrowHover) _skipArrowHover.visible = false;
 			graphics.clear();
 
 		}
