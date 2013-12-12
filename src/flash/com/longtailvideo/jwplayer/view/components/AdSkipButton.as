@@ -34,10 +34,8 @@ package com.longtailvideo.jwplayer.view.components
 		protected var _skipArrowHover:Bitmap;
 		protected var _skipTime:Boolean = false;
 		
-		public function AdSkipButton(skipOffset:String, adTag:String)
+		public function AdSkipButton()
 		{
-			_skipOffset = skipOffset;
-			_adTag = adTag;
 			graphics.beginFill(0x000000, .5); 
 			graphics.drawRoundRect(0.5,0.5,_SKIP_WIDTH,_SKIP_HEIGHT,10,10);
 			graphics.endFill();
@@ -106,6 +104,8 @@ package com.longtailvideo.jwplayer.view.components
 			if (isNaN(_offsetTime)) {
 				_offsetTime = -1;
 				this.visible = false;
+			} else {
+				this.visible = true;
 			}
 		}
 		
@@ -115,6 +115,14 @@ package com.longtailvideo.jwplayer.view.components
 			if (_offsetTime < 0) return;
 			
 			if (currTime < _offsetTime) {
+				graphics.clear();
+				graphics.beginFill(0x000000, .5); 
+				graphics.drawRoundRect(0.5,0.5,_SKIP_WIDTH,_SKIP_HEIGHT,10,10);
+				graphics.endFill();
+				graphics.lineStyle(1, 0xFFFFFF,.25);
+				graphics.beginFill(0xFFFFFF, 0);
+				graphics.drawRoundRect(0.5,0.5,_SKIP_WIDTH,_SKIP_HEIGHT,10,10);
+				graphics.endFill();
 				var myFormat:TextFormat = new TextFormat();
 				myFormat.align = TextFormatAlign.CENTER;
 				
@@ -199,13 +207,7 @@ package com.longtailvideo.jwplayer.view.components
 			_skipArrow.visible = false;
 			_skipArrowHover.visible = false;
 			graphics.clear();
-			graphics.beginFill(0x000000, .5); 
-			graphics.drawRoundRect(0.5,0.5,_SKIP_WIDTH,_SKIP_HEIGHT,10,10);
-			graphics.endFill();
-			graphics.lineStyle(1, 0xFFFFFF,.25);
-			graphics.beginFill(0xFFFFFF, 0);
-			graphics.drawRoundRect(0.5,0.5,_SKIP_WIDTH,_SKIP_HEIGHT,10,10);
-			graphics.endFill();
+
 		}
 		
 		private function skipAd(evt:Event):void {

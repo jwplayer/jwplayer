@@ -128,9 +128,6 @@
                 return;
             }
 
-            
-
-            
             // Copy the playlist item passed in and make sure it's formatted as a proper playlist item
             if (_utils.typeOf(item) == "object") {
                 _item = new _playlist.item(item);
@@ -148,7 +145,15 @@
             
             
             _fakemodel.addEventListener(_events.JWPLAYER_ERROR, errorHandler);
-
+            _skipButton = new html5.adskipbutton();
+            _skipButton.addEventListener(_events.JWPLAYER_AD_SKIPPED, _skipAd);
+            var safe = _view.getSafeRegion();
+            var playersize = _utils.bounds(document.getElementById(_api.id));
+            var skipElem = _skipButton.element();
+            skipElem.style.bottom = playersize.height - (safe.y + safe.height) + 10  + "px";
+            skipElem.style.right = "10px";
+            _instreamContainer.appendChild(skipElem);
+            skipElem.style.visibility = "hidden";
             // start listening for ad click
             _disp.setAlternateClickHandler(function(evt) {
                 if (_api.jwGetControls()) {
@@ -164,39 +169,20 @@
                 
                 _sendEvent(_events.JWPLAYER_INSTREAM_CLICK, evt);
             });
+            
+            
+            
             if (_utils.isIE()) {
                 _video.parentElement.addEventListener('click', _disp.clickHandler);
             }
             if (_utils.typeOf(options) == "object") {
-                if (options.skipoffset) {
-                    _options = _utils.extend(_defaultOptions, options);
-                    _skipButton = new html5.adskipbutton(_options.skipoffset, _options.tag);
-                    _skipButton.addEventListener(_events.JWPLAYER_AD_SKIPPED, _skipAd);
-                // Instream playback options
-  
-                    var skipElem = _skipButton.element();
-                    skipElem.style.visibility = _model.controls ? "visible" : "hidden";
-                    var safe = _view.getSafeRegion();
-                    var playersize = _utils.bounds(document.getElementById(_api.id));
-                    skipElem.style.bottom = playersize.height - (safe.y + safe.height) + 10  + "px";
-                    skipElem.style.right = "10px";
-                    _instreamContainer.appendChild(skipElem);
-                }
+                _options = _utils.extend(_defaultOptions, options);
+                _skipButton.reset(_options.skipoffset || -1);
             } else {
                 _optionList = options;
                 var curOpt = options.shift();
-                if (curOpt.skipoffset) {
-                    _skipButton = new html5.adskipbutton(curOpt.skipoffset, options.tag);
-                    _skipButton.addEventListener(_events.JWPLAYER_AD_SKIPPED, _skipAd);
-                    _options = _utils.extend(_defaultOptions, curOpt);
-                    var skipElem = _skipButton.element();
-                    skipElem.style.visibility = _model.controls ? "visible" : "hidden";
-                    var safe = _view.getSafeRegion();
-                    var playersize = _utils.bounds(document.getElementById(_api.id));
-                    skipElem.style.bottom = playersize.height - (safe.y + safe.height) + 10  + "px";
-                    skipElem.style.right = "10px";
-                    _instreamContainer.appendChild(skipElem);
-                }
+                _options = _utils.extend(_defaultOptions, curOpt);
+                _skipButton.reset(curOpt.skipoffset || -1);
             }
             _view.addEventListener(_events.JWPLAYER_AD_SKIPPED, _skipAd);
             
@@ -377,7 +363,7 @@
                 var options = _optionList.shift();
                 if (_array.length == 0) _array = null;
                 _provider.load(_fakemodel.playlist[0]);
-                if (_skipButton) _skipButton.reset(options.skipoffset||-1);
+                _skipButton.reset(options.skipoffset||-1);
             } else {
                 setTimeout(function() {
                     _api.jwInstreamDestroy(true, _this);

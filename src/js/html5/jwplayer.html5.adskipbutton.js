@@ -10,12 +10,14 @@
         TRUE = true,
         FALSE = false,
         _events = jwplayer.events,
-        VIEW_INSTREAM_SKIP_CLASS = "jwinstreamskip",
-        VIEW_INSTREAM_IMAGE = "jwinstreamimage",
+        VIEW_INSTREAM_SKIP_CLASS = "jwskip",
+        VIEW_INSTREAM_IMAGE = "jwskipimage",
+        VIEW_INSTREAM_OVER = "jwskipover",
+        VIEW_INSTREAM_OUT = "jwskipout",
         COUNTDOWN_TEXT = "Skip ad in ",
         SKIP_TEXT = "Skip";
         
-        jwplayer.html5.adskipbutton = function(_skipOffset, _adTag) {
+        jwplayer.html5.adskipbutton = function() {
             var _instreamSkipContainer,
                 _instreamSkip,
                 _dispatcher = new _events.eventdispatcher(),
@@ -35,10 +37,10 @@
                 _skip_image = new Image();
                 _skip_image.src = _SKIP_ICON;
                 _skip_image.id = "jwskipimage";
-                _skip_image.className = VIEW_INSTREAM_IMAGE;
+                _skip_image.className = VIEW_INSTREAM_IMAGE + " " + VIEW_INSTREAM_OUT;;
                 _skip_image_over = new Image();
                 _skip_image_over.src = _SKIP_ICON_OVER;
-                _skip_image_over.className = VIEW_INSTREAM_IMAGE;
+                _skip_image_over.className = VIEW_INSTREAM_IMAGE + " " + VIEW_INSTREAM_OVER;
                 _instreamSkipContainer = _createElement("div",VIEW_INSTREAM_SKIP_CLASS);
                 _instreamSkipContainer.id = "skipContainer";
                 _instreamSkip = _createElement("canvas");
@@ -47,8 +49,6 @@
                 _instreamSkipContainer.style.height = _SKIP_HEIGHT +"px";
                 _this.width = _instreamSkip.width = _SKIP_WIDTH;
                 _this.height = _instreamSkip.height = _SKIP_HEIGHT;
-                _updateOffset(0, 0);
-                _updateTime(0);
             }
             
             
@@ -88,54 +88,59 @@
             _this.updateSkipTime = function(time, duration) {
                 var ctx = _instreamSkip.getContext("2d");
                 _updateOffset(time, duration);
-
-                if (_offsetTime >=0 && _offsetTime - time > 0) {
-                    _updateTime(time);
-                } else if (!_instreamSkipSet) {
-                    _instreamSkipSet = TRUE;
-                    ctx.clearRect(0,0,_SKIP_WIDTH,_SKIP_HEIGHT);
-                    drawRoundRect(ctx,0,0,_SKIP_WIDTH,_SKIP_HEIGHT,10,TRUE,FALSE,FALSE);
-                    drawRoundRect(ctx,0,0,_SKIP_WIDTH,_SKIP_HEIGHT,10,FALSE,TRUE);
-                    _instreamSkipContainer.appendChild(_skip_image);
-                    _skip_image_over.style.display = "none";
-                    _skip_image.style.display = "";
-                    _instreamSkipContainer.appendChild(_skip_image_over);
-                    ctx.fillStyle="#979797";
-                    ctx.globalAlpha = 1.0;
-                    var y = _instreamSkip.height / 2;
-                    ctx.textAlign = "start";
-                    ctx.font = 'Bold 12px Sans-Serif';
-                    
-                    ctx.fillText(SKIP_TEXT,(_SKIP_WIDTH - SKIP_TEXT.length * 12 + 10)/2,y + 4);
-                    _skip_image.style.left = (ctx.measureText(SKIP_TEXT).width + 24) + "px";
-                    _skip_image_over.style.left = (ctx.measureText(SKIP_TEXT).width + 24) + "px";
-
-                    if (_utils.isMobile()) {
-                        var skipTouch = new _utils.touch(_instreamSkipContainer);
-                        skipTouch.addEventListener(_utils.touchEvents.TAP, skipAd);
+                if (_offsetTime >= 0) {
+                    if (_offsetTime - time > 0) {
+                        _updateTime(time);
+                    } else if (!_instreamSkipSet) {
+                        _instreamSkipSet = TRUE;
+                        ctx.clearRect(0,0,_SKIP_WIDTH,_SKIP_HEIGHT);
+                        drawRoundRect(ctx,0,0,_SKIP_WIDTH,_SKIP_HEIGHT,10,TRUE,FALSE,FALSE);
+                        drawRoundRect(ctx,0,0,_SKIP_WIDTH,_SKIP_HEIGHT,10,FALSE,TRUE);
+                        _instreamSkipContainer.appendChild(_skip_image);
+                        _skip_image_over.style.display = "none";
+                        _skip_image.style.display = "";
+                        _instreamSkipContainer.appendChild(_skip_image_over);
+                        ctx.fillStyle="#979797";
+                        ctx.globalAlpha = 1.0;
+                        var y = _instreamSkip.height / 2;
+                        ctx.textAlign = "start";
+                        ctx.font = 'Bold 12px Sans-Serif';
+                        
+                        ctx.fillText(SKIP_TEXT,(_SKIP_WIDTH - SKIP_TEXT.length * 12 + 10)/2,y + 4);
+                        _skip_image.style.left = (ctx.measureText(SKIP_TEXT).width + 24) + "px";
+                        _skip_image_over.style.left = (ctx.measureText(SKIP_TEXT).width + 24) + "px";
+    
+                        if (_utils.isMobile()) {
+                            var skipTouch = new _utils.touch(_instreamSkipContainer);
+                            skipTouch.addEventListener(_utils.touchEvents.TAP, skipAd);
+                        }
+                        else {
+                            _instreamSkipContainer.addEventListener('click', skipAd);
+                            _instreamSkipContainer.addEventListener('mouseover', onMouseOver);
+                            _instreamSkipContainer.addEventListener('mouseout', onMouseOut);
+                        }
+                        _instreamSkipContainer.style.cursor = "pointer";
+                        
                     }
-                    else {
-                        _instreamSkipContainer.addEventListener('click', skipAd);
-                        _instreamSkipContainer.addEventListener('mouseover', onMouseOver);
-                        _instreamSkipContainer.addEventListener('mouseout', onMouseOut);
-                    }
-                    _instreamSkipContainer.style.cursor = "pointer";
-                    
                 }
             };
 
             function skipAd() {
                 if (_instreamSkipSet) {
-                    _dispatcher.sendEvent(_events.JWPLAYER_AD_SKIPPED, {tag: _adTag});
+                    _dispatcher.sendEvent(_events.JWPLAYER_AD_SKIPPED);
                 }
             }
             
             this.reset = function(offset) {
-                _instreamSkipSet = false   
+                _instreamSkipSet = false;
+                _skipOffset = offset;
                 _updateOffset(0, 0);
                 _updateTime(0);
+                if (_skipOffset > 0) {
+                    _instreamSkipContainer.style.visibility = "visible";
+                }
                 _skip_image_over.style.display = "none";
-                 _skip_image.style.display = "none";
+                _skip_image.style.display = "none";
             }
             
             function onMouseOver(){
@@ -145,9 +150,6 @@
                     ctx.clearRect(0,0,_SKIP_WIDTH,_SKIP_HEIGHT);
                     drawRoundRect(ctx,0,0,_SKIP_WIDTH,_SKIP_HEIGHT,10,TRUE,FALSE,TRUE);
                     drawRoundRect(ctx,0,0,_SKIP_WIDTH,_SKIP_HEIGHT,10,FALSE,TRUE,TRUE);
-                    _instreamSkipContainer.appendChild(_skip_image);
-                    _skip_image_over.style.display = "none";
-                    _instreamSkipContainer.appendChild(_skip_image_over);
                     ctx.fillStyle="#FFFFFF";
                     ctx.globalAlpha = 1.0;
                     var y = _instreamSkip.height / 2;
@@ -167,7 +169,6 @@
                     drawRoundRect(ctx,0,0,_SKIP_WIDTH,_SKIP_HEIGHT,10,FALSE,TRUE,FALSE);
                     _instreamSkipContainer.appendChild(_skip_image);
                     _skip_image_over.style.display = "none";
-                    _instreamSkipContainer.appendChild(_skip_image_over);
                     ctx.fillStyle="#979797";
                     ctx.globalAlpha = 1.0;
                     var y = _instreamSkip.height / 2;
@@ -209,6 +210,10 @@
                 }
             }
             
+            function _internalSelector(name) {
+                return '#' + _id + (name ? " " + name : "");
+            }
+            
             function _createElement(elem, className) {
                 var newElement = document.createElement(elem);
                 if (className) newElement.className = className;
@@ -231,5 +236,13 @@
         _css('.' + VIEW_INSTREAM_IMAGE, {
             'position': 'relative',
             'bottom':"25px"
+        });
+        
+        _css('.' + VIEW_INSTREAM_OVER, {
+
+        });
+       
+        _css('.' + VIEW_INSTREAM_OUT, {
+
         });
 })(window.jwplayer);

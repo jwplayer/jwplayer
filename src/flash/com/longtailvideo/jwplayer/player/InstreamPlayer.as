@@ -119,6 +119,14 @@ package com.longtailvideo.jwplayer.player
 			_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_VOLUME, playerVolumeUpdated);
 			_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_MUTE, playerMuteUpdated);
 			
+			_skipButton = new AdSkipButton();
+			_skipButton.addEventListener(JWAdEvent.JWPLAYER_AD_SKIPPED,skipHandler);
+			_instreamDisplay.addChild(_skipButton);
+			var safe:Rectangle = getSafeRegion();
+			if (_skipButton.visible) 
+				_skipButton.visible = _model.config.controls;
+			_skipButton.x = config.width - (10 + _SKIP_WIDTH);
+			_skipButton.y = safe.y + safe.height - (10 + _SKIP_HEIGHT);
 			_setupView();
 			
 			//default options
@@ -166,16 +174,9 @@ package com.longtailvideo.jwplayer.player
 			// activate ad interface
 			addDisplayListeners();
 
-			if (_options.skipoffset) {
-				_skipButton = new AdSkipButton(_options.skipoffset, _options.tag);
-				_skipButton.addEventListener(JWAdEvent.JWPLAYER_AD_SKIPPED,skipHandler);
-				_instreamDisplay.addChild(_skipButton);
-				var safe:Rectangle = getSafeRegion();
-				_skipButton.visible = _model.config.controls;
-				_skipButton.x = config.width - (10 + _SKIP_WIDTH);
-				_skipButton.y = safe.y + safe.height - (10 + _SKIP_HEIGHT);
-			}
+
 			
+			_skipButton.reset(_options.skipoffset);
 			setupProvider();
 			_provider.load(_item);
 		}
