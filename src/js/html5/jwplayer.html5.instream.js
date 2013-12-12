@@ -150,7 +150,7 @@
                     var curOpt = options[_arrayIndex];
                 }
                 _options = _utils.extend(_defaultOptions, curOpt);
-                _skipButton.reset(curOpt.skipoffset || -1);
+                _skipButton.reset(_options.skipoffset || -1);
                 _array = item;
                 
                 item = _array[_arrayIndex];
@@ -364,7 +364,7 @@
                     curOpt = _optionList[_arrayIndex];
                 _options = _utils.extend(_defaultOptions, curOpt);
                 _provider.load(_fakemodel.playlist[0]);
-                _skipButton.reset(options.skipoffset||-1);
+                _skipButton.reset(_options||-1);
             } else {
                 setTimeout(function() {
                     _api.jwInstreamDestroy(true, _this);
