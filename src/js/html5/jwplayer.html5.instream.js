@@ -100,7 +100,15 @@
             _cbar = new html5.controlbar(_this);
             _cbar.instreamMode(true);
             _instreamContainer.appendChild(_cbar.element());
-
+            _skipButton = new html5.adskipbutton();
+            _skipButton.addEventListener(_events.JWPLAYER_AD_SKIPPED, _skipAd);
+            var safe = _view.getSafeRegion();
+            var playersize = _utils.bounds(document.getElementById(_api.id));
+            var skipElem = _skipButton.element();
+            skipElem.style.bottom = playersize.height - (safe.y + safe.height) + 10  + "px";
+            skipElem.style.right = "10px";
+            _instreamContainer.appendChild(skipElem);
+            skipElem.style.visibility = "hidden";
             // Match the main player's controls state
             if (_api.jwGetControls()) {
                 _cbar.show();
@@ -136,31 +144,23 @@
                 _options = _utils.extend(_defaultOptions, options);
                 _skipButton.reset(_options.skipoffset || -1);
             } else if (_utils.typeOf(item) == "array") {
+                _arrayIndex = 0;
                 if (options) {
                     _optionList = options;
-                    var curOpt = options.shift();
+                    var curOpt = options[_arrayIndex];
                 }
                 _options = _utils.extend(_defaultOptions, curOpt);
                 _skipButton.reset(curOpt.skipoffset || -1);
                 _array = item;
                 
-                item = _array.shift();
-                if (_array.length == 0 ) _array = null;
+                item = _array[_arrayIndex];
                 _item = new _playlist.item(item);
                 _fakemodel.setPlaylist([item]);
             }
             
             
             _fakemodel.addEventListener(_events.JWPLAYER_ERROR, errorHandler);
-            _skipButton = new html5.adskipbutton();
-            _skipButton.addEventListener(_events.JWPLAYER_AD_SKIPPED, _skipAd);
-            var safe = _view.getSafeRegion();
-            var playersize = _utils.bounds(document.getElementById(_api.id));
-            var skipElem = _skipButton.element();
-            skipElem.style.bottom = playersize.height - (safe.y + safe.height) + 10  + "px";
-            skipElem.style.right = "10px";
-            _instreamContainer.appendChild(skipElem);
-            skipElem.style.visibility = "hidden";
+
             // start listening for ad click
             _disp.setAlternateClickHandler(function(evt) {
                 if (_api.jwGetControls()) {
@@ -182,15 +182,7 @@
             if (_utils.isIE()) {
                 _video.parentElement.addEventListener('click', _disp.clickHandler);
             }
-            if (_utils.typeOf(options) == "object") {
-
-            } else {
-                
-                _optionList = options;
-                var curOpt = options.shift();
-                _options = _utils.extend(_defaultOptions, curOpt);
-                _skipButton.reset(curOpt.skipoffset || -1);
-            }
+ 
             _view.addEventListener(_events.JWPLAYER_AD_SKIPPED, _skipAd);
             
             // Load the instream item
@@ -363,12 +355,14 @@
 
         /** Handle the JWPLAYER_MEDIA_COMPLETE event **/        
         function _completeHandler(evt) {
-            if (_array) {
-                item = _array.shift();
+            if (_arrayIndex && _array && _arrayIndex + 1 > array.length) {
+                _arrayIndex++;
+                item = _array[_arrayIndex];
                 _item = new _playlist.item(item);
                 _fakemodel.setPlaylist([item]);
-                var options = _optionList.shift();
-                if (_array.length == 0) _array = null;
+                if (_optionList)
+                    curOpt = _optionList[_arrayIndex];
+                _options = _utils.extend(_defaultOptions, curOpt);
                 _provider.load(_fakemodel.playlist[0]);
                 _skipButton.reset(options.skipoffset||-1);
             } else {
