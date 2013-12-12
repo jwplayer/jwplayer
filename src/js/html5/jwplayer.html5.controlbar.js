@@ -310,25 +310,26 @@
 		}
 		
 		function _itemHandler(evt) {
-			var tracks = _api.jwGetPlaylist()[evt.index].tracks,
-				tracksloaded = FALSE,
-				cuesloaded = FALSE;
-			_removeCues();
-			if (utils.typeOf(tracks) == "array" && !_isMobile) {
-				for (var i=0; i < tracks.length; i++) {
-					if (!tracksloaded && tracks[i].file && tracks[i].kind && tracks[i].kind.toLowerCase() == "thumbnails") {
-						_timeOverlayThumb.load(tracks[i].file);
-						tracksloaded  = TRUE;
-					}
-					if (tracks[i].file && tracks[i].kind && tracks[i].kind.toLowerCase() == "chapters") {
-						_loadCues(tracks[i].file)
-						cuesloaded = TRUE;
-					}
-				}
+		    if(!_instreamMode) {
+    			var tracks = _api.jwGetPlaylist()[evt.index].tracks,
+    				tracksloaded = FALSE,
+    				cuesloaded = FALSE;
+    			_removeCues();
+    			if (utils.typeOf(tracks) == "array" && !_isMobile) {
+    				for (var i=0; i < tracks.length; i++) {
+    					if (!tracksloaded && tracks[i].file && tracks[i].kind && tracks[i].kind.toLowerCase() == "thumbnails") {
+    						_timeOverlayThumb.load(tracks[i].file);
+    						tracksloaded  = TRUE;
+    					}
+    					if (tracks[i].file && tracks[i].kind && tracks[i].kind.toLowerCase() == "chapters") {
+    						_loadCues(tracks[i].file)
+    						cuesloaded = TRUE;
+    					}
+    				}
+    			}
+    			// If we're here, there are no thumbnails to load - we should clear out the thumbs from the previous item
+    			if (!tracksloaded) _timeOverlayThumb.load();
 			}
-			// If we're here, there are no thumbnails to load - we should clear out the thumbs from the previous item
-			if (!tracksloaded) _timeOverlayThumb.load();
-
 		}
 		
 		function _muteHandler() {

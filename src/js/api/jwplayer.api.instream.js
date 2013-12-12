@@ -130,6 +130,10 @@
             return _eventListener(events.JWPLAYER_PLAYLIST_COMPLETE,callback);
         }
         
+        _this.onPlaylistItem = function(callback) {
+            return _eventListener(events.JWPLAYER_PLAYLIST_ITEM,callback);
+        }
+        
 		_this.onTime = function(callback) {
 			return _eventListener(events.JWPLAYER_MEDIA_TIME, callback);
 		};

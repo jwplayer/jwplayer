@@ -152,8 +152,8 @@ package com.longtailvideo.jwplayer.view.components {
 			_tracks = new Array();
 			_renderer.setPosition(0);
 			_item = _player.playlist.currentItem;
-			
-			var tracks:Object = _item["tracks"];
+			if (_item)
+				var tracks:Object = _item["tracks"];
 			var caps:Array = [];
 			for (var i:Number = 0; i < tracks.length; i++) {
 				var kind:String = tracks[i].kind.toLowerCase();

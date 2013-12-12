@@ -24,7 +24,7 @@
         
         var _item,
             _array,
-            _arrayIndex,
+            _arrayIndex = 0,
             _optionList,
             _options,
             _skipButton,
@@ -136,7 +136,7 @@
                 });
                 return;
             }
-
+            _sendEvent(_events.JWPLAYER_PLAYLIST_ITEM, {index:_arrayIndex}, true);
             // Copy the playlist item passed in and make sure it's formatted as a proper playlist item
             if (_utils.typeOf(item) == "object") {
                 _item = new _playlist.item(item);
@@ -144,7 +144,6 @@
                 _options = _utils.extend(_defaultOptions, options);
                 _skipButton.reset(_options.skipoffset || -1);
             } else if (_utils.typeOf(item) == "array") {
-                _arrayIndex = 0;
                 if (options) {
                     _optionList = options;
                     var curOpt = options[_arrayIndex];
@@ -357,6 +356,7 @@
         function _completeHandler(evt) {
             if (_array && _arrayIndex + 1 < _array.length) {
                 _arrayIndex++;
+                 _sendEvent(_events.JWPLAYER_PLAYLIST_ITEM, {index:_arrayIndex}, true);
                 item = _array[_arrayIndex];
                 _item = new _playlist.item(item);
                 _fakemodel.setPlaylist([item]);

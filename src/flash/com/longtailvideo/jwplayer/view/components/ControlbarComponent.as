@@ -197,30 +197,32 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 
 		private function playlistHandler(evt:PlaylistEvent):void {
-			_liveMode = false;
-			(_timeSlider as TimeSlider).removeCues();
-			if (_timeSlider) {
-				_timeSlider.reset();
-				var item:PlaylistItem = player.playlist.currentItem;
-				var setThumbs:Boolean = false;
-				if (item.tracks.length > 0) {
-					for each(var track:Object in item.tracks) {
-						if (!setThumbs && track.file && track.kind is String && String(track.kind).toLowerCase() == "thumbnails") {
-							(_timeSlider as TimeSlider).setThumbs(track.file);
-							setThumbs = true;
-						}
-						if (track.file && track.kind is String && String(track.kind).toLowerCase() == "chapters") {
-							setCues(track.file);
+			if (!_instreamMode) {
+				_liveMode = false;
+				(_timeSlider as TimeSlider).removeCues();
+				if (_timeSlider) {
+					_timeSlider.reset();
+					var item:PlaylistItem = player.playlist.currentItem;
+					var setThumbs:Boolean = false;
+					if (item.tracks.length > 0) {
+						for each(var track:Object in item.tracks) {
+							if (!setThumbs && track.file && track.kind is String && String(track.kind).toLowerCase() == "thumbnails") {
+								(_timeSlider as TimeSlider).setThumbs(track.file);
+								setThumbs = true;
+							}
+							if (track.file && track.kind is String && String(track.kind).toLowerCase() == "chapters") {
+								setCues(track.file);
+							}
 						}
 					}
+					if (!setThumbs) {
+						(_timeSlider as TimeSlider).setThumbs();
+					}
 				}
-				if (!setThumbs) {
-					(_timeSlider as TimeSlider).setThumbs();
-				}
+				
+				updateControlbarState();
+				redraw();
 			}
-			
-			updateControlbarState();
-			redraw();
 		}
 		
 		private function setCues(file:String=null):void {

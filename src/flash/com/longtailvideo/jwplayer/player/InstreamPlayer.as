@@ -67,7 +67,7 @@ package com.longtailvideo.jwplayer.player
 		protected var _skipButton:AdSkipButton;
 		protected var _items:Array;
 		protected var _optionsList:Array;
-		protected var _itemNdx:Number;
+		protected var _itemNdx:Number = 0;
 		protected var _viewSetup:Boolean = false;
 		protected var _playerLocked:Boolean = false;
 		
@@ -139,7 +139,8 @@ package com.longtailvideo.jwplayer.player
 		
 		public function loadItem(item:Object, options:Object=null):void {
 			_options.update(options);
-			
+			var ev:PlaylistEvent = new PlaylistEvent(PlaylistEvent.JWPLAYER_PLAYLIST_ITEM,null);
+			dispatchEvent(ev);
 			_item = new PlaylistItem(item);
 			if (_playerLocked) {
 				beginPlayback();
@@ -153,7 +154,8 @@ package com.longtailvideo.jwplayer.player
 			var single:Object = items[_itemNdx];
 			var opt:Object = options[_itemNdx];
 			_options.update(opt);
-
+			var ev:PlaylistEvent = new PlaylistEvent(PlaylistEvent.JWPLAYER_PLAYLIST_ITEM,null);
+			dispatchEvent(ev);
 			_item = new PlaylistItem(single);
 			if (_playerLocked) {
 				beginPlayback();
@@ -349,6 +351,8 @@ package com.longtailvideo.jwplayer.player
 				_itemNdx++;
 				var single:Object = _items[_itemNdx];
 				var opt:Object = _optionsList[_itemNdx];
+				var ev:PlaylistEvent = new PlaylistEvent(PlaylistEvent.JWPLAYER_PLAYLIST_ITEM,null);
+				dispatchEvent(ev);
 				_options.update(opt);
 				_mediaDisplayed = false;
 				_item = new PlaylistItem(single);
@@ -555,6 +559,10 @@ package com.longtailvideo.jwplayer.player
 		
 		public function get skin():ISkin {
 			return _skin;
+		}
+		
+		public function getIndex():Number {
+			return _itemNdx;
 		}
 		
 		public function getControls():Boolean {

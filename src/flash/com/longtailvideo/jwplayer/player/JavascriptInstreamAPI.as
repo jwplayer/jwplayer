@@ -4,6 +4,7 @@ package com.longtailvideo.jwplayer.player {
 	import com.longtailvideo.jwplayer.events.MediaEvent;
 	import com.longtailvideo.jwplayer.events.PlayerEvent;
 	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
+	import com.longtailvideo.jwplayer.events.PlaylistEvent;
 	import com.longtailvideo.jwplayer.model.IInstreamOptions;
 	import com.longtailvideo.jwplayer.utils.JavascriptSerialization;
 	import com.longtailvideo.jwplayer.utils.Logger;
@@ -123,6 +124,8 @@ package com.longtailvideo.jwplayer.player {
 				args = listenerCallbackInstream(evt as InstreamEvent);
 			else if (evt is PlayerEvent) {
 				args = { message: (evt as PlayerEvent).message };
+			} else if (evt is PlaylistEvent) {
+				args = listenerCallbackPlaylist(evt as PlaylistEvent);
 			}
 			
 			args.type = evt.type;
@@ -192,7 +195,11 @@ package com.longtailvideo.jwplayer.player {
 			return {};
 		}
 
-
+		protected function listenerCallbackPlaylist(evt:PlaylistEvent):Object {
+			 if (evt.type == PlaylistEvent.JWPLAYER_PLAYLIST_ITEM) {
+				return { index: _isPlayer.getIndex() };
+			} else return {};
+		}
 		/***********************************************
 		 **                 GETTERS                   **
 		 ***********************************************/

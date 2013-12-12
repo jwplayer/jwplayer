@@ -99,6 +99,7 @@ package com.longtailvideo.jwplayer.player
 		function destroy():void;
 		function getPosition():Number;
 		function getDuration():Number;
+		function getIndex():Number;
 		function getState():String;
 		function setText(text:String=""):void;
 		function setClick(url:String=""):void;
