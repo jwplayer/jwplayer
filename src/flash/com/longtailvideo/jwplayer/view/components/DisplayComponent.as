@@ -6,7 +6,6 @@
 	import com.longtailvideo.jwplayer.player.IPlayer;
 	import com.longtailvideo.jwplayer.player.PlayerState;
 	import com.longtailvideo.jwplayer.utils.Animations;
-	import com.longtailvideo.jwplayer.utils.Logger;
 	import com.longtailvideo.jwplayer.view.interfaces.IDisplayComponent;
 	
 	import flash.display.DisplayObject;
@@ -15,7 +14,6 @@
 	import flash.events.MouseEvent;
 	import flash.events.TimerEvent;
 	import flash.geom.Rectangle;
-	import flash.system.System;
 	import flash.text.TextFormat;
 	import flash.utils.Timer;
 
@@ -270,7 +268,7 @@
 		
 		
 		protected function errorHandler(event:PlayerEvent):void {
-			setDisplay(getIcon('error'), event.message.replace(":",":\n"));
+			setDisplay(getIcon('error'), (''+event.message).replace(":",":\n"));
 			_errorState = true;
 		}
 		
