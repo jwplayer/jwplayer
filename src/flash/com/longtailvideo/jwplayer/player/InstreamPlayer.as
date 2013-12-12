@@ -233,7 +233,7 @@ package com.longtailvideo.jwplayer.player
 		private function _errorHandler(evt:PlayerEvent):void {
 			if (evt.type == MediaEvent.JWPLAYER_MEDIA_ERROR) {
 				// Translate media error into player error.
-				dispatchEvent(new PlayerEvent(PlayerEvent.JWPLAYER_ERROR, ''+(evt as MediaEvent).message));
+				dispatchEvent(new PlayerEvent(PlayerEvent.JWPLAYER_ERROR, (evt as MediaEvent).message));
 			} else {
 				dispatchEvent(evt);
 			}
