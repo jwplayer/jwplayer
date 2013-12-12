@@ -176,7 +176,10 @@
 			return _player.jwInstreamState();
 		};
 		_this.setClick = function (url) {
-			_player.jwInstreamClick(url);
+			//only present in flashMode
+			if (_player.jwInstreamClick) {
+				_player.jwInstreamClick(url);
+			}
 		};
 	};
 	
