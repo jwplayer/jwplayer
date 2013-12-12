@@ -155,7 +155,7 @@ package com.longtailvideo.jwplayer.view.components {
 			if (_item)
 				var tracks:Object = _item["tracks"];
 			var caps:Array = [];
-			for (var i:Number = 0; i < tracks.length; i++) {
+			for (var i:Number = 0; tracks && i < tracks.length; i++) {
 				var kind:String = tracks[i].kind.toLowerCase();
 				if (kind == "captions" || kind == "subtitles") {
 					caps.push(tracks[i]);

@@ -122,11 +122,12 @@ package com.longtailvideo.jwplayer.player {
 				args = listenerCallbackState(evt as PlayerStateEvent);
 			else if (evt is InstreamEvent)
 				args = listenerCallbackInstream(evt as InstreamEvent);
-			else if (evt is PlayerEvent) {
-				args = { message: (evt as PlayerEvent).message };
-			} else if (evt is PlaylistEvent) {
+			else if (evt is PlaylistEvent) {
 				args = listenerCallbackPlaylist(evt as PlaylistEvent);
 			}
+			else if (evt is PlayerEvent) {
+				args = { message: (evt as PlayerEvent).message };
+			} 
 			
 			args.type = evt.type;
 			args.tag = _tag;
