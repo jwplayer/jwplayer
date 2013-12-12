@@ -355,7 +355,7 @@
 
         /** Handle the JWPLAYER_MEDIA_COMPLETE event **/        
         function _completeHandler(evt) {
-            if (_arrayIndex && _array && _arrayIndex + 1 > array.length) {
+            if (_array && _arrayIndex + 1 < _array.length) {
                 _arrayIndex++;
                 item = _array[_arrayIndex];
                 _item = new _playlist.item(item);
@@ -364,7 +364,7 @@
                     curOpt = _optionList[_arrayIndex];
                 _options = _utils.extend(_defaultOptions, curOpt);
                 _provider.load(_fakemodel.playlist[0]);
-                _skipButton.reset(_options||-1);
+                _skipButton.reset(_options.skipoffset||-1);
             } else {
                 setTimeout(function() {
                     _api.jwInstreamDestroy(true, _this);
