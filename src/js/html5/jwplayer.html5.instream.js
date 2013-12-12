@@ -24,6 +24,7 @@
         
         var _item,
             _array,
+            _arrayIndex,
             _optionList,
             _options,
             _skipButton,
@@ -132,9 +133,15 @@
             if (_utils.typeOf(item) == "object") {
                 _item = new _playlist.item(item);
                 _fakemodel.setPlaylist([item]);
-
+                _options = _utils.extend(_defaultOptions, options);
+                _skipButton.reset(_options.skipoffset || -1);
             } else if (_utils.typeOf(item) == "array") {
-                
+                if (options) {
+                    _optionList = options;
+                    var curOpt = options.shift();
+                }
+                _options = _utils.extend(_defaultOptions, curOpt);
+                _skipButton.reset(curOpt.skipoffset || -1);
                 _array = item;
                 
                 item = _array.shift();
@@ -176,9 +183,9 @@
                 _video.parentElement.addEventListener('click', _disp.clickHandler);
             }
             if (_utils.typeOf(options) == "object") {
-                _options = _utils.extend(_defaultOptions, options);
-                _skipButton.reset(_options.skipoffset || -1);
+
             } else {
+                
                 _optionList = options;
                 var curOpt = options.shift();
                 _options = _utils.extend(_defaultOptions, curOpt);
