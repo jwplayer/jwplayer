@@ -6,6 +6,7 @@ package com.longtailvideo.jwplayer.view.components {
 	import com.longtailvideo.jwplayer.model.Color;
 	import com.longtailvideo.jwplayer.model.PlaylistItem;
 	import com.longtailvideo.jwplayer.player.IPlayer;
+	import com.longtailvideo.jwplayer.player.IInstreamPlayer;
 	import com.longtailvideo.jwplayer.player.PlayerState;
 	import com.longtailvideo.jwplayer.utils.Draw;
 	import com.longtailvideo.jwplayer.utils.Logger;
@@ -77,12 +78,12 @@ package com.longtailvideo.jwplayer.view.components {
 			imageLoaderMap = new Dictionary();
 			buttons = [];
 			dividers = new Vector.<DisplayObject>;
-			
-			player.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_ITEM, itemHandler);
-			player.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_LOADED, playlistHandler);
-			player.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_UPDATED, playlistHandler);
-			player.addEventListener(PlayerStateEvent.JWPLAYER_PLAYER_STATE, stateHandler);
-			
+			if (!(player is IInstreamPlayer)) {
+				player.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_ITEM, itemHandler);
+				player.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_LOADED, playlistHandler);
+				player.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_UPDATED, playlistHandler);
+				player.addEventListener(PlayerStateEvent.JWPLAYER_PLAYER_STATE, stateHandler);
+			}
 			skinLoaded = true;
 			skin = _player.skin;
 			isBasic = (_player.config.playlistlayout == "basic");
