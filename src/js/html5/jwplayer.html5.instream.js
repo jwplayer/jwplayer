@@ -144,9 +144,10 @@
                 _options = _utils.extend(_defaultOptions, options);
                 _skipButton.reset(_options.skipoffset || -1);
             } else if (_utils.typeOf(item) == "array") {
+                var curOpt;
                 if (options) {
                     _optionList = options;
-                    var curOpt = options[_arrayIndex];
+                    curOpt = options[_arrayIndex];
                 }
                 _options = _utils.extend(_defaultOptions, curOpt);
                 _skipButton.reset(_options.skipoffset || -1);
@@ -187,16 +188,10 @@
             // Load the instream item
             _provider.load(_fakemodel.playlist[0]);
             //_fakemodel.getVideo().addEventListener('webkitendfullscreen', _fullscreenChangeHandler, FALSE);
-        }
+        };
         
         function errorHandler(evt) {
-            if (evt.type == _events.JWPLAYER_MEDIA_ERROR) {
-                var evtClone = _utils.extend({}, evt);
-                evtClone.type = _events.JWPLAYER_ERROR;
-                _sendEvent(evtClone.type, evtClone);
-            } else {
-                _sendEvent(evt.type, evt);
-            }
+            _sendEvent(evt.type, evt);
 
             if (_fakemodel) {
                 _api.jwInstreamDestroy(false, _this);
@@ -258,10 +253,10 @@
         
         _this.jwInstreamAddEventListener = function(type, listener) {
             _dispatcher.addEventListener(type, listener);
-        } 
+        } ;
         _this.jwInstreamRemoveEventListener = function(type, listener) {
             _dispatcher.removeEventListener(type, listener);
-        }
+        };
 
         /** Start instream playback **/
         _this.jwInstreamPlay = function() {
@@ -270,7 +265,7 @@
             _model.state = _states.PLAYING;
             _disp.show();
             // if (_api.jwGetControls()) { _disp.show();  }
-        }
+        };
 
         /** Pause instream playback **/
         _this.jwInstreamPause = function() {
@@ -278,23 +273,23 @@
             _provider.pause(true);
             _model.state = _states.PAUSED;
             if (_api.jwGetControls()) { _disp.show(); }
-        }
+        };
         
         /** Seek to a point in instream media **/
         _this.jwInstreamSeek = function(position) {
             //if (!_item) return;
             _provider.seek(position);
-        }
+        };
         
         /** Set custom text in the controlbar **/
         _this.jwInstreamSetText = function(text) {
             _cbar.setText(text);
-        }
+        };
 
         _this.jwInstreamState = function() {
             //if (!_item) return;
             return _model.state;
-        }
+        };
         
         /*****************************
          ****** Private methods ****** 
@@ -312,9 +307,6 @@
                 if (_skipButton)
                     _skipButton.updateSkipTime(evt.position, evt.duration);
             });
-                //_provider.addEventListener(_events.JWPLAYER_PLAYER_STATE, _stateHandler);
-
-            //}
             _provider.attachMedia();
             _provider.mute(_model.mute);
             _provider.volume(_model.volume);
@@ -323,10 +315,6 @@
         function _skipAd(evt) {
             _sendEvent(evt.type, evt);
             _completeHandler(null);
-        }
-        function _stateHandler(evt) {
-            _fakemodel.state = evt.newstate;
-            _forward(evt);
         }
         /** Forward provider events to listeners **/        
         function _forward(evt) {
@@ -345,7 +333,7 @@
         }
         
         /** Handle the JWPLAYER_MEDIA_BUFFER_FULL event **/     
-        function _bufferFullHandler(evt) {
+        function _bufferFullHandler() {
             if (_disp) {
                 _disp.releaseState(_this.jwGetState());
             }
@@ -353,23 +341,25 @@
         }
 
         /** Handle the JWPLAYER_MEDIA_COMPLETE event **/        
-        function _completeHandler(evt) {
+        function _completeHandler() {
             if (_array && _arrayIndex + 1 < _array.length) {
                 _arrayIndex++;
                  _sendEvent(_events.JWPLAYER_PLAYLIST_ITEM, {index:_arrayIndex}, true);
-                item = _array[_arrayIndex];
+                var item = _array[_arrayIndex];
                 _item = new _playlist.item(item);
                 _fakemodel.setPlaylist([item]);
-                if (_optionList)
+                var curOpt;
+                if (_optionList) {
                     curOpt = _optionList[_arrayIndex];
+                }
                 _options = _utils.extend(_defaultOptions, curOpt);
                 _provider.load(_fakemodel.playlist[0]);
                 _skipButton.reset(_options.skipoffset||-1);
             } else {
-                _sendEvent(_events.JWPLAYER_PLAYLIST_COMPLETE, {}, true);
                 setTimeout(function() {
+                    _sendEvent(_events.JWPLAYER_PLAYLIST_COMPLETE, {}, true);
                     _api.jwInstreamDestroy(true, _this);
-                }, 10);
+                }, 0);
             }
         }
 
@@ -404,19 +394,19 @@
             if (_skipButton) {
                 (_skipButton.element()).style.visibility = mode ? "visible" : "hidden";
             }
-        }
+        };
         
         /**************************************
          *****  Duplicate main html5 api  *****
          **************************************/
         
-        _this.jwPlay = function(state) {
+        _this.jwPlay = function() {
             if (_options.controlbarpausable.toString().toLowerCase()=="true") {
                 _this.jwInstreamPlay();
             }
         };
         
-        _this.jwPause = function(state) {
+        _this.jwPause = function() {
             if (_options.controlbarpausable.toString().toLowerCase()=="true") {
                 _this.jwInstreamPause();
             }
@@ -458,12 +448,12 @@
         _this.jwSetVolume = function(vol) {
             _fakemodel.setVolume(vol);
             _api.jwSetVolume(vol);
-        }
+        };
         _this.jwGetMute = function() { return _model.mute; };
         _this.jwSetMute = function(state) {
             _fakemodel.setMute(state);
             _api.jwSetMute(state);
-        }
+        };
         _this.jwGetState = function() {
             if (!_fakemodel) {
                 return _states.IDLE;
@@ -487,7 +477,7 @@
         };
         _this.jwSetCurrentQuality = function() {};
         _this.jwGetQualityLevels = function() {
-            return []
+            return [];
         };
 
         _this.skin = _api.skin;
