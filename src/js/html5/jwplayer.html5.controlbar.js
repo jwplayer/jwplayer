@@ -32,7 +32,7 @@
 		JW_CSS_INLINE_BLOCK = "inline-block",
 		JW_CSS_HIDDEN = "hidden",
 		JW_CSS_LEFT = "left",
-		JW_CSS_RIGHT = "right",
+		// JW_CSS_RIGHT = "right",
 		JW_CSS_100PCT = "100%",
 		JW_CSS_SMOOTH_EASE = "opacity .25s, background .25s, visibility .25s",
 		JW_VISIBILITY_TIMEOUT = 250,
@@ -46,7 +46,7 @@
 		FALSE = false,
 		TRUE = true,
 		NULL = null,
-		UNDEFINED = undefined,
+		UNDEFINED,
 		
 		WINDOW = window,
 		DOCUMENT = document;
@@ -76,21 +76,21 @@
 					center: {
 						position: "center",
 						elements: [ 
-						    _layoutElement("time", CB_SLIDER),
-						    _layoutElement("alt", CB_TEXT)
+							_layoutElement("time", CB_SLIDER),
+							_layoutElement("alt", CB_TEXT)
 						]
 					},
 					right: {
 						position: "right",
 						elements: [ 
-						    _layoutElement("duration", CB_TEXT), 
-						    _layoutElement("hd", CB_BUTTON), 
-						    _layoutElement("cc", CB_BUTTON), 
-						    _layoutElement("mute", CB_BUTTON), 
-						    _layoutElement("volume", CB_SLIDER), 
-						    _layoutElement("volumeH", CB_SLIDER), 
-						    _layoutElement("fullscreen", CB_BUTTON)
-					    ]
+							_layoutElement("duration", CB_TEXT), 
+							_layoutElement("hd", CB_BUTTON), 
+							_layoutElement("cc", CB_BUTTON), 
+							_layoutElement("mute", CB_BUTTON), 
+							_layoutElement("volume", CB_SLIDER), 
+							_layoutElement("volumeH", CB_SLIDER), 
+							_layoutElement("fullscreen", CB_BUTTON)
+						]
 					}
 				}
 			},
@@ -215,7 +215,7 @@
 						_this.show(TRUE);
 					}
 				}
-			}, 200)
+			}, 200);
 		}
 		
 		function _addEventListeners() {
@@ -232,13 +232,13 @@
 			_api.jwAddEventListener(events.JWPLAYER_CAPTIONS_LIST, _captionsHandler);
 			_api.jwAddEventListener(events.JWPLAYER_CAPTIONS_CHANGED, _captionChanged);
 			if (!_isMobile) {
-				_controlbar.addEventListener('mouseover', function(evt) {
+				_controlbar.addEventListener('mouseover', function() {
 					// Slider listeners
 					WINDOW.addEventListener('mousemove', _sliderMouseEvent, FALSE);
 					WINDOW.addEventListener('mouseup', _sliderMouseEvent, FALSE);
 					WINDOW.addEventListener('mousedown', _killSelect, FALSE);
 				}, false);
-				_controlbar.addEventListener('mouseout', function(evt){
+				_controlbar.addEventListener('mouseout', function(){
 					// Slider listeners
 					WINDOW.removeEventListener('mousemove', _sliderMouseEvent);
 					WINDOW.removeEventListener('mouseup', _sliderMouseEvent);
@@ -255,7 +255,7 @@
 			// Positive infinity for live streams on iPad, 0 for live streams on Safari (HTML5)
 			if (evt.duration == Number.POSITIVE_INFINITY || (!evt.duration && utils.isSafari() && !_isMobile)) 
 			{
-				_this.setText(_api.jwGetPlaylist()[_api.jwGetPlaylistIndex()].title || "Live broadcast")
+				_this.setText(_api.jwGetPlaylist()[_api.jwGetPlaylistIndex()].title || "Live broadcast");
 				
 			} else {
 				if (_elements.elapsed) {
@@ -310,33 +310,33 @@
 		}
 		
 		function _itemHandler(evt) {
-		    if(!_instreamMode) {
-    			var tracks = _api.jwGetPlaylist()[evt.index].tracks,
-    				tracksloaded = FALSE,
-    				cuesloaded = FALSE;
-    			_removeCues();
-    			if (utils.typeOf(tracks) == "array" && !_isMobile) {
-    				for (var i=0; i < tracks.length; i++) {
-    					if (!tracksloaded && tracks[i].file && tracks[i].kind && tracks[i].kind.toLowerCase() == "thumbnails") {
-    						_timeOverlayThumb.load(tracks[i].file);
-    						tracksloaded  = TRUE;
-    					}
-    					if (tracks[i].file && tracks[i].kind && tracks[i].kind.toLowerCase() == "chapters") {
-    						_loadCues(tracks[i].file)
-    						cuesloaded = TRUE;
-    					}
-    				}
-    			}
-    			// If we're here, there are no thumbnails to load - we should clear out the thumbs from the previous item
-    			if (!tracksloaded) _timeOverlayThumb.load();
+			if(!_instreamMode) {
+				var tracks = _api.jwGetPlaylist()[evt.index].tracks,
+					tracksloaded = FALSE,
+					cuesloaded = FALSE;
+				_removeCues();
+				if (utils.typeOf(tracks) == "array" && !_isMobile) {
+					for (var i=0; i < tracks.length; i++) {
+						if (!tracksloaded && tracks[i].file && tracks[i].kind && tracks[i].kind.toLowerCase() == "thumbnails") {
+							_timeOverlayThumb.load(tracks[i].file);
+							tracksloaded  = TRUE;
+						}
+						if (tracks[i].file && tracks[i].kind && tracks[i].kind.toLowerCase() == "chapters") {
+							_loadCues(tracks[i].file);
+							cuesloaded = TRUE;
+						}
+					}
+				}
+				// If we're here, there are no thumbnails to load - we should clear out the thumbs from the previous item
+				if (!tracksloaded) _timeOverlayThumb.load();
 			}
 		}
 		
 		function _muteHandler() {
 			var state = _api.jwGetMute();
 			_toggleButton("mute", state);
-			_setVolume(state ? 0 : _currentVolume)
- 		}
+			_setVolume(state ? 0 : _currentVolume);
+		}
 
 		function _volumeHandler() {
 			_currentVolume = _api.jwGetVolume() / 100;
@@ -352,7 +352,7 @@
 			_updateNextPrev();
 		}
 		
-		function _playlistHandler(evt) {
+		function _playlistHandler() {
 			_css(_internalSelector(".jwhd"), HIDDEN);
 			_css(_internalSelector(".jwcc"), HIDDEN);
 			_updateNextPrev();
@@ -381,7 +381,7 @@
 		function _qualityLevelChanged(evt) {
 			_currentQuality = evt.currentQuality;
 			if (_elements.hd) {
-				_elements.hd.querySelector("button").className = (_levels.length == 2 && _currentQuality == 0) ? "off" : "";
+				_elements.hd.querySelector("button").className = (_levels.length === 2 && _currentQuality == 0) ? "off" : "";
 			}
 			if (_hdOverlay && _currentQuality >= 0) {
 				_hdOverlay.setActive(evt.currentQuality);
@@ -411,7 +411,7 @@
 			if (!_captions) return;
 			_currentCaptions = evt.track;
 			if (_elements.cc) {
-				_elements.cc.querySelector("button").className = (_captions.length == 2 && _currentCaptions == 0) ? "off" : "";
+				_elements.cc.querySelector("button").className = (_captions.length === 2 && _currentCaptions == 0) ? "off" : "";
 			}
 			if (_ccOverlay && _currentCaptions >= 0) {
 				_ccOverlay.setActive(evt.track);
@@ -432,8 +432,8 @@
 			_bgHeight = _getSkinElement("background").height;
 			
 			_css('#'+_id, {
-		  		height: _bgHeight,
-		  		bottom: _audioMode ? 0 : _settings.margin
+				height: _bgHeight,
+				bottom: _audioMode ? 0 : _settings.margin
 			});
 			
 			_css(_internalSelector(".jwtext"), {
@@ -487,7 +487,6 @@
 			switch (element.type) {
 			case CB_TEXT:
 				return _buildText(element.name);
-				break;
 			case CB_BUTTON:
 				if (element.name != "blank") {
 					return _buildButton(element.name,pos);
@@ -495,7 +494,6 @@
 				break;
 			case CB_SLIDER:
 				return _buildSlider(element.name);
-				break;
 			}
 		}
 		
@@ -539,7 +537,7 @@
 			}
 
 			// Don't show volume or mute controls on mobile, since it's not possible to modify audio levels in JS
-			if (_isMobile && (name == "mute" || name.indexOf("volume")==0)) return NULL;
+			if (_isMobile && (name == "mute" || name.indexOf("volume")===0)) return NULL;
 			// Having issues with stock (non-chrome) Android browser and showing overlays.  Just remove HD/CC buttons in that case
 			if (_nonChromeAndroid && /hd|cc/.test(name)) return NULL;
 			
@@ -619,7 +617,7 @@
 				if (evt.preventDefault) {
 					evt.preventDefault();
 				}
-			}
+			};
 		}
 		
 
@@ -673,11 +671,11 @@
 			_api.jwSetVolume(pct * 100);
 		}
 		
-		function _showFullscreen() {
-			if (_audioMode) return;
-			_fullscreenOverlay.show();
-			_hideOverlays('fullscreen');
-		}
+		// function _showFullscreen() {
+		// 	if (_audioMode) return;
+		// 	_fullscreenOverlay.show();
+		// 	_hideOverlays('fullscreen');
+		// }
 		
 		function _seek(pct) {
 			_api.jwSeek(_activeCue ? _activeCue.position : pct * _duration);
@@ -713,7 +711,7 @@
 			return _id + "_" + name;
 		}
 		
-		function _buildText(name, style) {
+		function _buildText(name) {
 			var css = {},
 				skinName = (name == "alt") ? "elapsed" : name,
 				skinElement = _getSkinElement(skinName+"Background");
@@ -727,7 +725,7 @@
 				css.background = "url(" + skinElement.src + ") repeat-x center";
 				css['background-size'] = _elementSize(_getSkinElement("background"));
 				_css(_internalSelector('.jw'+name), css);
-				name != "alt" ? element.innerHTML = "00:00" : element.innerHTML = "";
+				element.innerHTML = (name != "alt") ? "00:00" : "";
 				
 				_elements[name] = element;
 				return element;
@@ -850,7 +848,7 @@
 				_styleTimeSlider(slider);
 				_setProgress(0);
 				_setBuffer(0);
-			} else if (name.indexOf("volume")==0) {
+			} else if (name.indexOf("volume")===0) {
 				_styleVolumeSlider(slider, vertical, left, right);
 			}
 			
@@ -860,13 +858,14 @@
 		function _buildSliderRail(name, vertical, left, right) {
 			var rail = _createSpan(),
 				railElements = ['Rail', 'Buffer', 'Progress'],
-				progressRail;
+				progressRail,
+				sliderPrefix;
 			
 			rail.className = "jwrail jwsmooth";
 
 			for (var i=0; i<railElements.length; i++) {
-				var sliderPrefix = (name=="time"?"Slider":""),
-					prefix = name + sliderPrefix + railElements[i],
+				sliderPrefix = (name=="time"?"Slider":"");
+				var prefix = name + sliderPrefix + railElements[i],
 					element = _buildImage(prefix, NULL, !vertical, (name.indexOf("volume")==0), vertical),
 					capLeft = _buildImage(prefix + "Cap" + left, NULL, FALSE, FALSE, vertical),
 					capRight = _buildImage(prefix + "Cap" + right, NULL, FALSE, FALSE, vertical),
@@ -955,7 +954,7 @@
 			DOCUMENT.onselectstart = function () { return FALSE; };
 		}
 
-		function _sliderDragStart(evt) {
+		function _sliderDragStart() {
 			_elements['timeRail'].className = "jwrail";
 			if (!_idle()) {
 				_api.jwSeekDrag(TRUE);
@@ -1070,14 +1069,14 @@
 			return false;
 		}
 
-		function _showTimeTooltip(evt) {
+		function _showTimeTooltip() {
 			if (_timeOverlay && _duration && !_audioMode && !_isMobile) {
 				_positionOverlay(_timeOverlay);
 				_timeOverlay.show();
 			}
 		}
 		
-		function _hideTimeTooltip(evt) {
+		function _hideTimeTooltip() {
 			if (_timeOverlay) {
 				_timeOverlay.hide();
 			}
@@ -1103,7 +1102,7 @@
 			_positionOverlay(_timeOverlay);
 		}
 		
-		function _styleTimeSlider(slider) {
+		function _styleTimeSlider() {
 			if (!_elements['timeSliderRail']) {
 				_css(_internalSelector(".jwtime"), HIDDEN);
 			}
@@ -1178,7 +1177,7 @@
 			
 			if (altText) altText.innerHTML = text || "";
 			_redraw();
-		} 
+		};
 		
 		function _getElementBySelector(selector) {
 			return _controlbar.querySelector(selector);
@@ -1281,7 +1280,7 @@
 			var element = overlay.element();
 			_appendChild(button, element);
 			var buttonTouch = new utils.touch(button); 
-			buttonTouch.addEventListener(utils.touchEvents.TAP, function(evt) {
+			buttonTouch.addEventListener(utils.touchEvents.TAP, function() {
 				_overlayTapHandler(overlay, tapAction, name);
 			});
 			_css('#'+element.id, {
@@ -1297,7 +1296,7 @@
 					overlay.hide();
 				}
 				else {
-					_ccTapTimer = setTimeout(function (evt) {
+					_ccTapTimer = setTimeout(function () {
 						overlay.hide(); 
 						_ccTapTimer = UNDEFINED;
 					}, 4000);
@@ -1312,7 +1311,7 @@
 					overlay.hide();
 				}
 				else {
-					_hdTapTimer = setTimeout(function (evt) {
+					_hdTapTimer = setTimeout(function () {
 						overlay.hide(); 
 						_hdTapTimer = UNDEFINED;
 					}, 4000);
@@ -1350,7 +1349,7 @@
 		var _redraw = function() {
 			clearTimeout(_redrawTimeout);
 			_redrawTimeout = setTimeout(_this.redraw, 0);
-		}
+		};
 
 		_this.redraw = function(resize) {
 			if (resize && _this.visible) {
@@ -1374,7 +1373,7 @@
 			});
 		
 			// ie <= IE10 does not allow fullscreen from inside an iframe. Hide the FS button. (TODO: Fix for IE11)
-			var ieIframe = !(top === self) && utils.isIE();
+			var ieIframe = !(top === window.self) && utils.isIE();
 			_css(_internalSelector(".jwfullscreen"), { display: (_audioMode || _hideFullscreen || ieIframe) ? JW_CSS_NONE : UNDEFINED });
 			_css(_internalSelector(".jwvolumeH"), { display: _audioMode||_instreamMode ? JW_CSS_BLOCK : JW_CSS_NONE });
 			_css(_internalSelector(".jwhd"), { display: !_audioMode && _hasHD() ? UNDEFINED : JW_CSS_NONE });
@@ -1382,7 +1381,7 @@
 
 			_positionOverlays();
 			_drawCues();
-		}
+		};
 		
 		function _updateNextPrev() {
 			if (_api.jwGetPlaylist().length > 1 && !_sidebarShowing()) {
@@ -1395,18 +1394,17 @@
 		}
 		
 		function _positionOverlays() {
-			var overlayBounds, i, overlay;
 			_cbBounds = utils.bounds(_controlbar);
 			utils.foreach(_overlays, function(i, overlay) {
 				_positionOverlay(overlay);
 			});
 		}
 
-		function _positionOverlay(overlay, bounds) {
+		function _positionOverlay(overlay) {
 			if (!_cbBounds) {
 				_cbBounds = utils.bounds(_controlbar);
 			}
- 			overlay.offsetX(0);
+			overlay.offsetX(0);
 			var overlayBounds = utils.bounds(overlay.element());
 			if (overlayBounds.right > _cbBounds.right) {
 				overlay.offsetX(_cbBounds.right - overlayBounds.right);
@@ -1421,13 +1419,13 @@
 				_audioMode = mode;
 				_redraw();
 			}
-		}
+		};
 		
 	   _this.instreamMode = function(mode) {
-            if (mode != _instreamMode) {
-                _instreamMode = mode;
-            }
-        }
+			if (mode != _instreamMode) {
+				_instreamMode = mode;
+			}
+		};
 
 		/** Whether or not to show the fullscreen icon - used when an audio file is played **/
 		_this.hideFullscreen = function(mode) {
@@ -1435,7 +1433,7 @@
 				_hideFullscreen = mode;
 				_redraw();
 			}
-		}
+		};
 
 		_this.element = function() {
 			return _controlbar;
@@ -1447,7 +1445,7 @@
 		
 		_this.height = function() {
 			return _bgHeight;
-		}
+		};
 		
 
 		function _setBuffer(pct) {
@@ -1511,7 +1509,7 @@
 					src: "",
 					image: UNDEFINED,
 					ready: FALSE
-				}
+				};
 			}
 		}
 		
@@ -1532,20 +1530,20 @@
 			_hideTimeout = setTimeout(function() {
 				_controlbar.style.opacity = 1;
 			}, 10);
-		}
+		};
 		
-		_this.showTemp = function(resize) {
+		_this.showTemp = function() {
 			if (!this.visible) {
-					_controlbar.style.opacity = 0;
-					_controlbar.style.display = JW_CSS_INLINE_BLOCK;
+				_controlbar.style.opacity = 0;
+				_controlbar.style.display = JW_CSS_INLINE_BLOCK;
 			}
-		}
+		};
 		
-		_this.hideTemp = function(resize) {
+		_this.hideTemp = function() {
 			if (!this.visible) {
-					_controlbar.style.display = JW_CSS_NONE;
+				_controlbar.style.display = JW_CSS_NONE;
 			}
-		}
+		};
 		
 		
 		function _clearHideTimeout() {
@@ -1565,20 +1563,20 @@
 		
 		function _loadCues(vttFile) {
 			if (vttFile) {
-	           	new jwplayer.parsers.srt(_cueLoaded, _cueFailed, true).load(vttFile);
-	       } else {
-	       		_cues = [];
-	       }
+				new jwplayer.parsers.srt(_cueLoaded, _cueFailed, true).load(vttFile);
+		   } else {
+				_cues = [];
+		   }
 		}
 		
 		function _cueLoaded(data) {
-			if (!utils.typeOf(data) == "array") {
-        		return _cueFailed("Invalid data");
-        	}
-        	utils.foreach(data,function(idx,elem) {
-        		
-        		_addCue(elem.begin,elem.text);
-        	});
+			if (utils.typeOf(data) !== "array") {
+				return _cueFailed("Invalid data");
+			}
+			utils.foreach(data,function(idx,elem) {
+				
+				_addCue(elem.begin,elem.text);
+			});
 		}
 		
 		function _cueFailed(error) {
@@ -1593,14 +1591,14 @@
 			_hideTimeout = setTimeout(function() {
 				_controlbar.style.display = JW_CSS_NONE;
 			}, JW_VISIBILITY_TIMEOUT);
-		}
+		};
 		
 		
 		
 		// Call constructor
 		_init();
 
-	}
+	};
 
 	/***************************************************************************
 	 * Player stylesheets - done once on script initialization; * These CSS
@@ -1618,86 +1616,86 @@
 	});
 	utils.dragStyle(CB_CLASS+' span', JW_CSS_NONE);
 	
-    _css(CB_CLASS+' .jwgroup', {
-    	display: JW_CSS_INLINE
-    });
-    
-    _css(CB_CLASS+' span, '+CB_CLASS+' .jwgroup button,'+CB_CLASS+' .jwleft', {
-    	position: JW_CSS_RELATIVE,
+	_css(CB_CLASS+' .jwgroup', {
+		display: JW_CSS_INLINE
+	});
+	
+	_css(CB_CLASS+' span, '+CB_CLASS+' .jwgroup button,'+CB_CLASS+' .jwleft', {
+		position: JW_CSS_RELATIVE,
 		'float': JW_CSS_LEFT
-    });
-    
+	});
+	
 	_css(CB_CLASS+' .jwright', {
 		position: JW_CSS_ABSOLUTE
 	});
 	
-    _css(CB_CLASS+' .jwcenter', {
-    	position: JW_CSS_ABSOLUTE
-    });
-    
-    _css(CB_CLASS+' buttoncontainer,'+CB_CLASS+' button', {
-    	display: JW_CSS_INLINE_BLOCK,
-    	height: JW_CSS_100PCT,
-    	border: JW_CSS_NONE,
-    	cursor: 'pointer'
-    });
+	_css(CB_CLASS+' .jwcenter', {
+		position: JW_CSS_ABSOLUTE
+	});
+	
+	_css(CB_CLASS+' buttoncontainer,'+CB_CLASS+' button', {
+		display: JW_CSS_INLINE_BLOCK,
+		height: JW_CSS_100PCT,
+		border: JW_CSS_NONE,
+		cursor: 'pointer'
+	});
 
-    _css(CB_CLASS+' .jwcapRight,'+CB_CLASS+' .jwtimeSliderCapRight,'+CB_CLASS+' .jwvolumeCapRight', { 
+	_css(CB_CLASS+' .jwcapRight,'+CB_CLASS+' .jwtimeSliderCapRight,'+CB_CLASS+' .jwvolumeCapRight', { 
 		right: 0,
 		position: JW_CSS_ABSOLUTE
 	});
 
-    _css(CB_CLASS+' .jwcapBottom', { 
+	_css(CB_CLASS+' .jwcapBottom', { 
 		bottom: 0,
-    	position: JW_CSS_ABSOLUTE
+		position: JW_CSS_ABSOLUTE
 	});
 
-    _css(CB_CLASS+' .jwtime', {
-    	position: JW_CSS_ABSOLUTE,
-    	height: JW_CSS_100PCT,
-    	width: JW_CSS_100PCT,
-    	left: 0
-    });
-    
-    _css(CB_CLASS + ' .jwthumb', {
-    	position: JW_CSS_ABSOLUTE,
-    	height: JW_CSS_100PCT,
-    	cursor: 'pointer'
-    });
-    
-    _css(CB_CLASS + ' .jwrail', {
-    	position: JW_CSS_ABSOLUTE,
-    	cursor: 'pointer'
-    });
+	_css(CB_CLASS+' .jwtime', {
+		position: JW_CSS_ABSOLUTE,
+		height: JW_CSS_100PCT,
+		width: JW_CSS_100PCT,
+		left: 0
+	});
+	
+	_css(CB_CLASS + ' .jwthumb', {
+		position: JW_CSS_ABSOLUTE,
+		height: JW_CSS_100PCT,
+		cursor: 'pointer'
+	});
+	
+	_css(CB_CLASS + ' .jwrail', {
+		position: JW_CSS_ABSOLUTE,
+		cursor: 'pointer'
+	});
 
-    _css(CB_CLASS + ' .jwrailgroup', {
-    	position: JW_CSS_ABSOLUTE,
-    	width: JW_CSS_100PCT
-    });
+	_css(CB_CLASS + ' .jwrailgroup', {
+		position: JW_CSS_ABSOLUTE,
+		width: JW_CSS_100PCT
+	});
 
-    _css(CB_CLASS + ' .jwrailgroup span', {
-    	position: JW_CSS_ABSOLUTE
-    });
+	_css(CB_CLASS + ' .jwrailgroup span', {
+		position: JW_CSS_ABSOLUTE
+	});
 
-    _css(CB_CLASS + ' .jwdivider+.jwdivider', {
-    	display: JW_CSS_NONE
-    });
-    
-    _css(CB_CLASS + ' .jwtext', {
+	_css(CB_CLASS + ' .jwdivider+.jwdivider', {
+		display: JW_CSS_NONE
+	});
+	
+	_css(CB_CLASS + ' .jwtext', {
 		padding: '0 5px',
 		'text-align': 'center'
 	});
 
-    _css(CB_CLASS + ' .jwalt', {
+	_css(CB_CLASS + ' .jwalt', {
 		display: JW_CSS_NONE,
 		overflow: 'hidden'
 	});
 
-    _css(CB_CLASS + ' .jwalt', {
-    	position: JW_CSS_ABSOLUTE,
-    	left: 0,
-    	right: 0,
-    	'text-align': "left"
+	_css(CB_CLASS + ' .jwalt', {
+		position: JW_CSS_ABSOLUTE,
+		left: 0,
+		right: 0,
+		'text-align': "left"
 	}, TRUE);
 
 	_css(CB_CLASS + ' .jwoverlaytext', {
@@ -1705,20 +1703,20 @@
 		'text-align': 'center'
 	});
 
-    _css(CB_CLASS + ' .jwvertical *', {
-    	display: JW_CSS_BLOCK
-    });
+	_css(CB_CLASS + ' .jwvertical *', {
+		display: JW_CSS_BLOCK
+	});
 
-    _css(CB_CLASS + ' .jwvertical .jwvolumeProgress', {
-    	height: "auto"
-    }, TRUE);
+	_css(CB_CLASS + ' .jwvertical .jwvolumeProgress', {
+		height: "auto"
+	}, TRUE);
 
-    _css(CB_CLASS + ' .jwprogressOverflow', {
-    	position: JW_CSS_ABSOLUTE,
-    	overflow: JW_CSS_HIDDEN
-    });
-    _css(CB_CLASS + ' .jwduration .jwhidden', {
-    });
+	_css(CB_CLASS + ' .jwprogressOverflow', {
+		position: JW_CSS_ABSOLUTE,
+		overflow: JW_CSS_HIDDEN
+	});
+	_css(CB_CLASS + ' .jwduration .jwhidden', {
+	});
 
 	_setTransition(CB_CLASS, JW_CSS_SMOOTH_EASE);
 	_setTransition(CB_CLASS + ' button', JW_CSS_SMOOTH_EASE);

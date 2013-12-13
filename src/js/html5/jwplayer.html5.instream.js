@@ -26,7 +26,11 @@
             _array,
             _arrayIndex = 0,
             _optionList,
-            _options,
+            _options = { // these are for before load
+                controlbarseekable: 'never',
+                controlbarpausable: false,
+                controlbarstoppable: false
+            },
             _skipButton,
             _video,
             _oldsrc,
