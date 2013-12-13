@@ -203,33 +203,38 @@ package com.longtailvideo.jwplayer.player
 		
 		protected function setupProvider():void {
 			setProvider(_item);
-			
 			_provider.initializeMediaProvider(_isConfig);
 			
 			_provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_ERROR, _errorHandler);
 			
-			_provider.addGlobalListener(function(evt:Event):void {
-
-				dispatchEvent(evt);
-			});
-			_provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_BUFFER_FULL, function(evt:MediaEvent):void {
-				_provider.play();
-				if (!_mediaDisplayed && _isConfig.stretching == Stretcher.EXACTFIT) {
-					showMedia();
-				}
-			});
-			
-			
-			_provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, function(evt:MediaEvent):void {
-				if (_skipButton) _skipButton.updateSkipText(evt.position, evt.duration);
-			});
+			_provider.addGlobalListener(eventForwarder);
+			_provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_BUFFER_FULL, bufferFullHandler);
+			_provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, timeHandler);
 			_provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_COMPLETE, _completeHandler);
 			
-			_provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_META, function(evt:MediaEvent):void {
-				if (evt.metadata.width && evt.metadata.height) {
-					showMedia();
-				}
-			});
+			_provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_META,metaHandler);
+		}
+		
+		
+		private function bufferFullHandler(evt:MediaEvent):void {
+			_provider.play();
+			if (!_mediaDisplayed && _isConfig.stretching == Stretcher.EXACTFIT) {
+				showMedia();
+			}
+		}
+		
+		private function metaHandler(evt:MediaEvent):void {
+			if (evt.metadata.width && evt.metadata.height) {
+				showMedia();
+			}
+		}
+		
+		private function eventForwarder(evt:Event):void {
+			dispatchEvent(evt);
+		}
+		
+		private function timeHandler(evt:MediaEvent):void {
+			_skipButton.updateSkipText(evt.position, evt.duration);
 		}
 		
 		private function _errorHandler(evt:PlayerEvent):void {
@@ -363,7 +368,9 @@ package com.longtailvideo.jwplayer.player
 			} else {
 				var ev:PlaylistEvent = new PlaylistEvent(PlaylistEvent.JWPLAYER_PLAYLIST_COMPLETE,null);
 				dispatchEvent(ev);
-				setTimeout(function():void { _destroy(true); }, 0);
+				setTimeout(function():void { 
+					_destroy(evt ? true : false); 
+				}, 0);
 			}
 		}
 		
@@ -461,12 +468,13 @@ package com.longtailvideo.jwplayer.player
 		}
 		 
 		protected function _destroy(complete:Boolean=false):void {
+			removeEventListeners();
 			if (!complete && _provider && _provider.state != PlayerState.IDLE) {
 				_provider.stop();
 			}
 			_view.destroyInstream();
 			_provider = null;
-			removeEventListeners();
+
 			_controls.controlbar.setInstreamMode(false);
 			unlock(_plugin);
 			dispatchEvent(new InstreamEvent(InstreamEvent.JWPLAYER_INSTREAM_DESTROYED, complete ? "complete" : "destroy"));
@@ -526,6 +534,13 @@ package com.longtailvideo.jwplayer.player
 			_model.removeEventListener(MediaEvent.JWPLAYER_MEDIA_VOLUME, playerVolumeUpdated);
 			_model.removeEventListener(MediaEvent.JWPLAYER_MEDIA_MUTE, playerMuteUpdated);
 			_view.components.playlist.removeEventListener(ViewEvent.JWPLAYER_VIEW_ITEM, playlistClicked);
+			_provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_ERROR, _errorHandler);
+			_provider.removeGlobalListener(eventForwarder);
+			_provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_BUFFER_FULL, bufferFullHandler);
+			_provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, timeHandler);
+			_provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_COMPLETE, _completeHandler);
+			_provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_META,metaHandler);
+			
 		}
 		
 		public function getState():String {
