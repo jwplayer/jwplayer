@@ -197,8 +197,8 @@ package com.longtailvideo.jwplayer.player
 				ev.totalAds = _items.length;
 
 			}
-			_completeHandler(null);
 			dispatchEvent(ev);
+			_completeHandler(null);
 		}
 		
 		protected function setupProvider():void {
