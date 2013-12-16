@@ -5,7 +5,6 @@ package com.longtailvideo.jwplayer.player {
 	import com.longtailvideo.jwplayer.events.PlayerEvent;
 	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
 	import com.longtailvideo.jwplayer.events.PlaylistEvent;
-	import com.longtailvideo.jwplayer.model.IInstreamOptions;
 	import com.longtailvideo.jwplayer.utils.JavascriptSerialization;
 	import com.longtailvideo.jwplayer.utils.Logger;
 	
@@ -17,7 +16,6 @@ package com.longtailvideo.jwplayer.player {
 		
 		protected var _isPlayer:IInstreamPlayer;
 		protected var _listeners:Object = {};
-		protected var _tag:String;
 		
 		public function JavascriptInstreamAPI(isplayer:IInstreamPlayer) {
 			_isPlayer = isplayer;
@@ -32,6 +30,11 @@ package com.longtailvideo.jwplayer.player {
 		
 		protected function instreamDestroyed(evt:InstreamEvent):void {
 			setTimeout(function():void {
+				//remove all listeners
+				_isPlayer.removeEventListener(InstreamEvent.JWPLAYER_INSTREAM_DESTROYED, instreamDestroyed);
+				for each (var eventType:String in _listeners) {
+					_isPlayer.removeEventListener(eventType, listenerCallback);
+				}
 				_listeners = {};
 				_isPlayer = null;
 			}, 0);
@@ -77,7 +80,6 @@ package com.longtailvideo.jwplayer.player {
 			if (!_isPlayer) {
 				throw(new Error('Instream player undefined'));
 			}
-			_tag = options.tag;
 			_isPlayer.loadItem(item, options);
 		}
 		
@@ -85,7 +87,6 @@ package com.longtailvideo.jwplayer.player {
 			if (!_isPlayer) {
 				throw(new Error('Instream player undefined'));
 			}
-			_tag = options[0].tag;
 			_isPlayer.loadArray(items, options);
 		}
 		
@@ -101,6 +102,7 @@ package com.longtailvideo.jwplayer.player {
 		
 		protected function js_removeEventListener(eventType:String, callback:String):void {
 			if (!_isPlayer) return;
+			_isPlayer.removeEventListener(eventType, listenerCallback);
 			
 			var callbacks:Array = _listeners[eventType];
 			if (callbacks) {
@@ -130,7 +132,6 @@ package com.longtailvideo.jwplayer.player {
 			} 
 			
 			args.type = evt.type;
-			args.tag = _tag;
 			
 			var callbacks:Array = _listeners[evt.type] as Array;
 			

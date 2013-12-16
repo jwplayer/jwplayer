@@ -10,6 +10,7 @@ package com.longtailvideo.jwplayer.player
 	import com.longtailvideo.jwplayer.events.ViewEvent;
 	import com.longtailvideo.jwplayer.media.MediaProvider;
 	import com.longtailvideo.jwplayer.media.RTMPMediaProvider;
+	import com.longtailvideo.jwplayer.media.SoundMediaProvider;
 	import com.longtailvideo.jwplayer.media.VideoMediaProvider;
 	import com.longtailvideo.jwplayer.model.Color;
 	import com.longtailvideo.jwplayer.model.ControlbarSeekOptions;
@@ -139,11 +140,11 @@ package com.longtailvideo.jwplayer.player
 		
 		public function loadItem(item:Object, options:Object=null):void {
 			_options.update(options);
-			var ev:PlaylistEvent = new PlaylistEvent(PlaylistEvent.JWPLAYER_PLAYLIST_ITEM,null);
+			var ev:PlaylistEvent = new PlaylistEvent(PlaylistEvent.JWPLAYER_PLAYLIST_ITEM, null);
 			dispatchEvent(ev);
 			_item = new PlaylistItem(item);
 			if (_playerLocked) {
-				beginPlayback();
+				beginPlayback(_item);
 			}
 		}
 		
@@ -151,15 +152,7 @@ package com.longtailvideo.jwplayer.player
 			_items = items;
 			_optionsList = options;
 			_itemNdx = 0;
-			var single:Object = items[_itemNdx];
-			var opt:Object = options[_itemNdx];
-			_options.update(opt);
-			var ev:PlaylistEvent = new PlaylistEvent(PlaylistEvent.JWPLAYER_PLAYLIST_ITEM,null);
-			dispatchEvent(ev);
-			_item = new PlaylistItem(single);
-			if (_playerLocked) {
-				beginPlayback();
-			}
+			loadItem(items[_itemNdx], options[_itemNdx]);
 		}
 		
 		public function getOptions():IInstreamOptions {
@@ -169,23 +162,21 @@ package com.longtailvideo.jwplayer.player
 		private function _lockCallback():void {
 			_playerLocked = true;
 			if (_item && (!_provider || _provider.item !== _item)) {
-				beginPlayback();
+				beginPlayback(_item);
 			}
 		}
 		
-		private function beginPlayback():void {
+		private function beginPlayback(item:PlaylistItem):void {
 			// activate ad interface
 			addDisplayListeners();
-
-
 			
 			_skipButton.reset(_options.skipoffset);
-			setupProvider();
-			_provider.load(_item);
+			setupProvider(item);
+			_provider.load(item);
 		}
 		
-		private function continuePlayback():void {
-			_provider.load(_item);
+		private function continuePlayback(item:PlaylistItem):void {
+			_provider.load(item);
 		}
 		
 		private function skipHandler(evt:JWAdEvent):void {
@@ -195,14 +186,13 @@ package com.longtailvideo.jwplayer.player
 				var medEvent:MediaEvent = evt as MediaEvent;
 				ev.currentAd = _itemNdx + 1;
 				ev.totalAds = _items.length;
-
 			}
 			dispatchEvent(ev);
 			_completeHandler(null);
 		}
 		
-		protected function setupProvider():void {
-			setProvider(_item);
+		protected function setupProvider(item:PlaylistItem):void {
+			setProvider(item);
 			_provider.initializeMediaProvider(_isConfig);
 			
 			_provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_ERROR, _errorHandler);
@@ -218,13 +208,13 @@ package com.longtailvideo.jwplayer.player
 		
 		private function bufferFullHandler(evt:MediaEvent):void {
 			_provider.play();
-			if (!_mediaDisplayed && _isConfig.stretching == Stretcher.EXACTFIT) {
+			if (!_mediaDisplayed && (_isConfig.stretching == Stretcher.EXACTFIT || _provider is SoundMediaProvider)) {
 				showMedia();
 			}
 		}
 		
 		private function metaHandler(evt:MediaEvent):void {
-			if (evt.metadata.width && evt.metadata.height) {
+			if (evt.metadata.width && evt.metadata.height) { //_provider sound
 				showMedia();
 			}
 		}
@@ -272,8 +262,9 @@ package com.longtailvideo.jwplayer.player
 		protected function displayClicked(evt:ViewEvent):void {
 			var state:String = getState();
 			if (state == PlayerState.PAUSED) {
-				if (getControls())
+				if (getControls()) {
 					play();
+				}
 			} else {
 				var event:InstreamEvent = new InstreamEvent(InstreamEvent.JWPLAYER_INSTREAM_CLICKED);
 				event.hasControls = getControls();
@@ -282,8 +273,6 @@ package com.longtailvideo.jwplayer.player
 				ExternalInterface.call('window.open', _clickUrl, '_blank');
 				pause();
 			}
-			
-
 		}
 
 		protected function addControlbarListeners():void {
@@ -363,7 +352,7 @@ package com.longtailvideo.jwplayer.player
 				_item = new PlaylistItem(single);
 				if (_skipButton) _skipButton.reset(opt.skipoffset ? opt.skipoffset : "-1");
 				if (_playerLocked) {
-					continuePlayback();
+					continuePlayback(_item);
 				}
 			} else {
 				var ev:PlaylistEvent = new PlaylistEvent(PlaylistEvent.JWPLAYER_PLAYLIST_COMPLETE,null);
@@ -414,6 +403,9 @@ package com.longtailvideo.jwplayer.player
 					break;
 				case 'video':
 					_provider = new VideoMediaProvider(false);
+					break;
+				case 'sound':
+					_provider = new SoundMediaProvider();
 					break;
 				default:
 					throw new Error("Unsupported Instream Format; only video or rtmp are currently supported");
@@ -590,7 +582,7 @@ package com.longtailvideo.jwplayer.player
 		
 		public function get playlist():IPlaylist {
 			var pl:Playlist = new Playlist();
-			pl.load([_item]);
+			pl.load([_item]); //
 			return pl;
 		}
 		
