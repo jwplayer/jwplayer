@@ -45,6 +45,7 @@
             _instreamContainer,
             _fakemodel,
             _this = this,
+            _timeout,
             _shouldSeek = true;
 
         // Listen for player resize events
@@ -104,22 +105,23 @@
             _cbar = new html5.controlbar(_this);
             _cbar.instreamMode(true);
             _instreamContainer.appendChild(_cbar.element());
-            _skipButton = new html5.adskipbutton();
-            _skipButton.addEventListener(_events.JWPLAYER_AD_SKIPPED, _skipAd);
-            var safe = _view.getSafeRegion();
             var playersize = _utils.bounds(document.getElementById(_api.id));
+            var safe = _view.getSafeRegion();
+            _skipButton = new html5.adskipbutton(playersize.height - (safe.y + safe.height) + 10);
+            _skipButton.addEventListener(_events.JWPLAYER_AD_SKIPPED, _skipAd);
+ 
+
             var skipElem = _skipButton.element();
-            skipElem.style.bottom = playersize.height - (safe.y + safe.height) + 10  + "px";
-            skipElem.style.right = "10px";
             _instreamContainer.appendChild(skipElem);
-            skipElem.style.visibility = "hidden";
             // Match the main player's controls state
             if (_api.jwGetControls()) {
                 _cbar.show();
                 _disp.show();
+                _skipButton.show();
             } else {
                 _cbar.hide();
                 _disp.hide();
+                _skipButton.hide();
             }
             
             // Show the instream layer
@@ -207,7 +209,8 @@
             if (!_fakemodel) {
                 return;
             }
-
+            if (_timeout) clearTimeout(_timeout);
+            _timeout = null;
             // Load the original item into our provider, which sets up the regular player's video tag
             if (_oldstate != _states.IDLE) {
                 _provider.load(_olditem, false);
@@ -348,7 +351,9 @@
         function _completeHandler() {
             if (_array && _arrayIndex + 1 < _array.length) {
                 _arrayIndex++;
-                 _sendEvent(_events.JWPLAYER_PLAYLIST_ITEM, {index:_arrayIndex}, true);
+                _timeout = setTimeout(function() {
+                     _sendEvent(_events.JWPLAYER_PLAYLIST_ITEM, {index:_arrayIndex}, true);
+                }, 0);
                 var item = _array[_arrayIndex];
                 _item = new _playlist.item(item);
                 _fakemodel.setPlaylist([item]);
@@ -395,9 +400,7 @@
         }
 
         _this.setControls = function(mode) {
-            if (_skipButton) {
-                (_skipButton.element()).style.visibility = mode ? "visible" : "hidden";
-            }
+            mode ? _skipButton.show() : _skipButton.hide();
         };
         
         /**************************************
