@@ -1,6 +1,7 @@
-(function(html5) {
+(function(jwplayer) {
 
-    var utils = jwplayer.utils,
+    var html5 = jwplayer.html5,
+        utils = jwplayer.utils,
         events = jwplayer.events,
         states = events.state,
         parsers = jwplayer.parsers,
@@ -15,8 +16,8 @@
         JW_CSS_ABSOLUTE = "absolute",
         JW_CSS_NONE = "none",
         JW_CSS_100PCT = "100%",
-        JW_CSS_HIDDEN = "hidden";
-        JW_CSS_NORMAL = "normal";
+        JW_CSS_HIDDEN = "hidden",
+        JW_CSS_NORMAL = "normal",
         JW_CSS_WHITE = "#FFFFFF";
 
     /** Displays closed captions or subtitles on top of the video. **/
@@ -24,48 +25,44 @@
         
         var _api = api,
             _display,
+            _defaults = {
+                back: true,
+                color: JW_CSS_WHITE,
+                fontSize: 15,
+                fontFamily: 'Arial,sans-serif',
+                fontOpacity: 100,
+                backgroundColor: '#000',
+                backgroundOpacity: 100,
+                // if back == false edgeStyle defaults to 'uniform',
+                // otherwise it's 'none'
+                edgeStyle: null,
+                windowColor: JW_CSS_WHITE,
+                windowOpacity: 0
+            },
 
-        /** Dimensions of the display. **/
-        _dimensions,
-        
-        _defaults = {
-            back: true,
-            color: JW_CSS_WHITE,
-            fontSize: 15,
-            fontFamily: 'Arial,sans-serif',
-            fontOpacity: 100,
-            backgroundColor: '#000',
-            backgroundOpacity: 100,
-            // if back == false edgeStyle defaults to 'uniform',
-            // otherwise it's 'none'
-            edgeStyle: null,
-            windowColor: JW_CSS_WHITE,
-            windowOpacity: 0
-        },
-
-        /** Default configuration options. **/
-        _options = {
-            fontStyle: JW_CSS_NORMAL,
-            fontWeight: JW_CSS_NORMAL,
-            textDecoration: JW_CSS_NONE
-        },
-        
-        /** Reference to the text renderer. **/
-        _renderer,
-        /** Current player state. **/
-        _state,
-        /** Currently active captions track. **/
-        _track,
-        /** List with all tracks. **/
-        _tracks = [],
-        /** Currently selected track in the displayed track list. **/
-        _selectedTrack = 0,
-        /** Flag to remember fullscreen state. **/
-        _fullscreen = false,
-        /** Current captions file being read. **/
-        _file,
-        /** Event dispatcher for captions events. **/
-        _eventDispatcher = new events.eventdispatcher();
+            /** Default configuration options. **/
+            _options = {
+                fontStyle: JW_CSS_NORMAL,
+                fontWeight: JW_CSS_NORMAL,
+                textDecoration: JW_CSS_NONE
+            },
+            
+            /** Reference to the text renderer. **/
+            _renderer,
+            /** Current player state. **/
+            _state,
+            /** Currently active captions track. **/
+            _track,
+            /** List with all tracks. **/
+            _tracks = [],
+            /** Currently selected track in the displayed track list. **/
+            _selectedTrack = 0,
+            /** Flag to remember fullscreen state. **/
+            _fullscreen = false,
+            /** Current captions file being read. **/
+            _file,
+            /** Event dispatcher for captions events. **/
+            _eventDispatcher = new events.eventdispatcher();
 
         utils.extend(this, _eventDispatcher);
 
@@ -85,7 +82,7 @@
             _api.jwAddEventListener(events.JWPLAYER_RESIZE, _resizeHandler);
         }
 
-        function _resizeHandler(evt) {
+        function _resizeHandler() {
             _redraw(false);
         }
 
@@ -134,7 +131,7 @@
         }
 
         /** Listen to playlist item updates. **/
-        function _itemHandler(event) {
+        function _itemHandler() {
             _track = 0;
             _tracks = [];
             _renderer.update(0);
@@ -218,7 +215,7 @@
             loader.load(_file);
         }
 
-        function _xmlFailedHandler(xmlEvent) {
+        function _xmlFailedHandler() {
             var loader = new jwplayer.parsers.srt(_loadHandler,_errorHandler);
             loader.load(_file);
         }
@@ -234,7 +231,7 @@
 
 
         /** Player started playing. **/
-        function _playHandler(event) {
+        function _playHandler() {
             _state = PLAYING;
             _redraw(false);
         }
@@ -356,4 +353,4 @@
         overflow: JW_CSS_HIDDEN
     });
 
-})(jwplayer.html5);
+})(jwplayer);
