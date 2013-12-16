@@ -526,13 +526,14 @@ package com.longtailvideo.jwplayer.player
 			_model.removeEventListener(MediaEvent.JWPLAYER_MEDIA_VOLUME, playerVolumeUpdated);
 			_model.removeEventListener(MediaEvent.JWPLAYER_MEDIA_MUTE, playerMuteUpdated);
 			_view.components.playlist.removeEventListener(ViewEvent.JWPLAYER_VIEW_ITEM, playlistClicked);
-			_provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_ERROR, _errorHandler);
-			_provider.removeGlobalListener(eventForwarder);
-			_provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_BUFFER_FULL, bufferFullHandler);
-			_provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, timeHandler);
-			_provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_COMPLETE, _completeHandler);
-			_provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_META,metaHandler);
-			
+			if (_provider) {
+				_provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_ERROR, _errorHandler);
+				_provider.removeGlobalListener(eventForwarder);
+				_provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_BUFFER_FULL, bufferFullHandler);
+				_provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, timeHandler);
+				_provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_COMPLETE, _completeHandler);
+				_provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_META,metaHandler);
+			}
 		}
 		
 		public function getState():String {
