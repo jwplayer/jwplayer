@@ -105,23 +105,13 @@
             _cbar = new html5.controlbar(_this);
             _cbar.instreamMode(true);
             _instreamContainer.appendChild(_cbar.element());
-            var playersize = _utils.bounds(document.getElementById(_api.id));
-            var safe = _view.getSafeRegion();
-            _skipButton = new html5.adskipbutton(playersize.height - (safe.y + safe.height) + 10);
-            _skipButton.addEventListener(_events.JWPLAYER_AD_SKIPPED, _skipAd);
- 
 
-            var skipElem = _skipButton.element();
-            _instreamContainer.appendChild(skipElem);
-            // Match the main player's controls state
             if (_api.jwGetControls()) {
                 _cbar.show();
                 _disp.show();
-                _skipButton.show();
             } else {
                 _cbar.hide();
                 _disp.hide();
-                _skipButton.hide();
             }
             
             // Show the instream layer
@@ -143,6 +133,10 @@
                 return;
             }
             _sendEvent(_events.JWPLAYER_PLAYLIST_ITEM, {index:_arrayIndex}, true);
+            var playersize = _utils.bounds(document.getElementById(_api.id));
+            var safe = _view.getSafeRegion();
+            _skipButton = new html5.adskipbutton(playersize.height - (safe.y + safe.height) + 10);
+            _skipButton.addEventListener(_events.JWPLAYER_AD_SKIPPED, _skipAd);
             // Copy the playlist item passed in and make sure it's formatted as a proper playlist item
             if (_utils.typeOf(item) == "object") {
                 _item = new _playlist.item(item);
@@ -164,7 +158,17 @@
                 _fakemodel.setPlaylist([item]);
             }
             
+
+            if (_api.jwGetControls()) {
+                _skipButton.show();
+            } else {
+                _skipButton.hide();
+            }
             
+
+            var skipElem = _skipButton.element();
+            _instreamContainer.appendChild(skipElem);
+            // Match the main player's controls state
             _fakemodel.addEventListener(_events.JWPLAYER_ERROR, errorHandler);
 
             // start listening for ad click
