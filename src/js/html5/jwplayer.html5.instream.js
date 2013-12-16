@@ -45,8 +45,8 @@
             _instreamContainer,
             _fakemodel,
             _this = this,
-            _timeout,
-            _shouldSeek = true;
+            _shouldSeek = true,
+            _completeTimeoutId = -1;
 
         // Listen for player resize events
         _api.jwAddEventListener(_events.JWPLAYER_RESIZE, _resize);
@@ -209,8 +209,9 @@
             if (!_fakemodel) {
                 return;
             }
-            if (_timeout) clearTimeout(_timeout);
-            _timeout = null;
+            clearTimeout(_completeTimeoutId);
+            _completeTimeoutId = -1;
+
             // Load the original item into our provider, which sets up the regular player's video tag
             if (_oldstate != _states.IDLE) {
                 _provider.load(_olditem, false);
@@ -351,9 +352,6 @@
         function _completeHandler() {
             if (_array && _arrayIndex + 1 < _array.length) {
                 _arrayIndex++;
-                _timeout = setTimeout(function() {
-                     _sendEvent(_events.JWPLAYER_PLAYLIST_ITEM, {index:_arrayIndex}, true);
-                }, 0);
                 var item = _array[_arrayIndex];
                 _item = new _playlist.item(item);
                 _fakemodel.setPlaylist([item]);
@@ -364,8 +362,11 @@
                 _options = _utils.extend(_defaultOptions, curOpt);
                 _provider.load(_fakemodel.playlist[0]);
                 _skipButton.reset(_options.skipoffset||-1);
+                _completeTimeoutId = setTimeout(function() {
+                    _sendEvent(_events.JWPLAYER_PLAYLIST_ITEM, {index:_arrayIndex}, true);
+                }, 0);
             } else {
-                setTimeout(function() {
+                _completeTimeoutId = setTimeout(function() {
                     _sendEvent(_events.JWPLAYER_PLAYLIST_COMPLETE, {}, true);
                     _api.jwInstreamDestroy(true, _this);
                 }, 0);
