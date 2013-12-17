@@ -25,7 +25,9 @@ package com.longtailvideo.jwplayer.view.components
 		protected var _loaders:Dictionary = new Dictionary();
 		private static var _SKIP_ICON:String = "iVBORw0KGgoAAAANSUhEUgAAAAkAAAAICAYAAAArzdW1AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA3NpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo0ODkzMWI3Ny04YjE5LTQzYzMtOGM2Ni0wYzdkODNmZTllNDYiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6RDI0OTcxRkE0OEM2MTFFM0I4MTREM0ZBQTFCNDE3NTgiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6RDI0OTcxRjk0OEM2MTFFM0I4MTREM0ZBQTFCNDE3NTgiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChNYWNpbnRvc2gpIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6NDA5ZGQxNDktNzdkMi00M2E3LWJjYWYtOTRjZmM2MWNkZDI0IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjQ4OTMxYjc3LThiMTktNDNjMy04YzY2LTBjN2Q4M2ZlOWU0NiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PqAZXX0AAABYSURBVHjafI2BCcAwCAQ/kr3ScRwjW+g2SSezCi0kYHpwKLy8JCLDbWaGTM+MAFzuVNXhNiTQsh+PS9QhZ7o9JuFMeUVNwjsamDma4K+3oy1cqX/hxyPAAAQwNKV27g9PAAAAAElFTkSuQmCC";
 		private static var _SKIP_ICON_OVER:String = "iVBORw0KGgoAAAANSUhEUgAAAAkAAAAICAYAAAArzdW1AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA3NpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo0ODkzMWI3Ny04YjE5LTQzYzMtOGM2Ni0wYzdkODNmZTllNDYiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6RDI0OTcxRkU0OEM2MTFFM0I4MTREM0ZBQTFCNDE3NTgiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6RDI0OTcxRkQ0OEM2MTFFM0I4MTREM0ZBQTFCNDE3NTgiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChNYWNpbnRvc2gpIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6NDA5ZGQxNDktNzdkMi00M2E3LWJjYWYtOTRjZmM2MWNkZDI0IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjQ4OTMxYjc3LThiMTktNDNjMy04YzY2LTBjN2Q4M2ZlOWU0NiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PvgIj/QAAABYSURBVHjadI6BCcAgDAS/0jmyih2tm2lHSRZJX6hQQ3w4FP49LKraSHV3ZLDzAuAi3cwaqUhSfvft+EweznHneUdTzPGRmp5hEJFhAo3LaCnjn7blzCvAAH9YOSCL5RZKAAAAAElFTkSuQmCC";
-		protected var _skipText:TextField;
+		protected var _skipTextField:TextField;
+		protected var _skipText:String;
+		protected var _skipMessage:String;
 		protected var _skipOffset:String;
 		protected var _offsetTime:Number = -1;
 		
@@ -34,8 +36,10 @@ package com.longtailvideo.jwplayer.view.components
 		protected var _skipArrowHover:Bitmap;
 		protected var _skipTime:Boolean = false;
 		
-		public function AdSkipButton()
+		public function AdSkipButton(skipMessage:String,skipText:String)
 		{
+			_skipMessage = skipMessage;
+			_skipText = skipText;
 			graphics.beginFill(0x000000, .5); 
 			graphics.drawRoundRect(0.5,0.5,_SKIP_WIDTH,_SKIP_HEIGHT,10,10);
 			graphics.endFill();
@@ -63,14 +67,14 @@ package com.longtailvideo.jwplayer.view.components
 			myFormat.font = "_sans";
 			myFormat.size = 11;
 			myFormat.bold = true;
-			_skipText = new TextField();
-			_skipText.alpha = .75;
-			_skipText.width = _SKIP_WIDTH;
+			_skipTextField = new TextField();
+			_skipTextField.alpha = .75;
+			_skipTextField.width = _SKIP_WIDTH;
 				
-			_skipText.defaultTextFormat = myFormat;
-			_skipText.y = _SKIP_HEIGHT/2 - 17/2;
-			_skipText.height = _SKIP_HEIGHT-_skipText.y;
-			addChild(_skipText);
+			_skipTextField.defaultTextFormat = myFormat;
+			_skipTextField.y = _SKIP_HEIGHT/2 - 17/2;
+			_skipTextField.height = _SKIP_HEIGHT-_skipTextField.y;
+			addChild(_skipTextField);
 			updateSkipText(0, 0);
 		}
 		
@@ -111,7 +115,7 @@ package com.longtailvideo.jwplayer.view.components
 		
 		public function updateSkipText(currTime:Number, duration:Number):void {
 			updateOffset(currTime, duration);
-			
+			var myFormat:TextFormat;
 			if (_offsetTime < 0) return;
 			
 			if (currTime < _offsetTime) {
@@ -123,38 +127,39 @@ package com.longtailvideo.jwplayer.view.components
 				graphics.beginFill(0xFFFFFF, 0);
 				graphics.drawRoundRect(0.5,0.5,_SKIP_WIDTH,_SKIP_HEIGHT,10,10);
 				graphics.endFill();
-				var myFormat:TextFormat = new TextFormat();
+				myFormat = new TextFormat();
 				myFormat.align = TextFormatAlign.CENTER;
 				
 				myFormat.font = "_sans";
 				myFormat.size = 11;
 				myFormat.bold = true;
-				_skipText.alpha = .75;
-				_skipText.width = _SKIP_WIDTH;
-				_skipText.x = 0;
-				_skipText.setTextFormat(myFormat);
-				_skipText.y = _SKIP_HEIGHT/2 - 17/2;
-				_skipText.height = _SKIP_HEIGHT-_skipText.y;
-				_skipText.text = "Skip ad in " + Math.ceil(_offsetTime - currTime);
-				_skipText.textColor= 0x979797;
+				_skipTextField.alpha = .75;
+				_skipTextField.width = _SKIP_WIDTH;
+				_skipTextField.x = 0;
+				_skipTextField.setTextFormat(myFormat);
+				_skipTextField.y = _SKIP_HEIGHT/2 - 17/2;
+				_skipTextField.height = _SKIP_HEIGHT-_skipTextField.y;
+				var re:RegExp = /xx/gi;
+				_skipTextField.text = _skipMessage.replace(re, Math.ceil(_offsetTime - currTime));
+				_skipTextField.textColor= 0x979797;
 			} else if (!_skipTime) {
 				_skipTime = true;
-				_skipText.text = "Skip";
-				var myFormat:TextFormat = new TextFormat();
+				_skipTextField.text = _skipText;
+				myFormat = new TextFormat();
 				myFormat.align = TextFormatAlign.LEFT;
 				addChild(_skipArrow);
 				_skipArrow.visible = true;
 				myFormat.font = "_sans";
 				myFormat.size = 12;
 				myFormat.bold = true;
-				_skipText.setTextFormat(myFormat);
-				_skipText.x = 20;
+				_skipTextField.setTextFormat(myFormat);
+				_skipTextField.x = 20;
 				
-				_skipArrow.x = _skipText.x + _skipText.textWidth + 6;
+				_skipArrow.x = _skipTextField.x + _skipTextField.textWidth + 6;
 				_skipArrow.y = _SKIP_HEIGHT/2 - _skipArrow.height/2 + 2;
 				_skipArrowHover.visible = false;
 				addChild(_skipArrowHover);
-				_skipArrowHover.x = _skipText.x + _skipText.textWidth + 6;
+				_skipArrowHover.x = _skipTextField.x + _skipTextField.textWidth + 6;
 				_skipArrowHover.y = _SKIP_HEIGHT/2 - _skipArrow.height/2 + 2;
 				addEventListener(MouseEvent.CLICK, skipAd);
 				addEventListener(MouseEvent.ROLL_OVER, mouseoverSkipAd);
@@ -176,8 +181,8 @@ package com.longtailvideo.jwplayer.view.components
 				graphics.beginFill(0xFFFFFF, 0);
 				graphics.drawRoundRect(0.5,0.5,_SKIP_WIDTH,_SKIP_HEIGHT,10,10);
 				graphics.endFill();
-				_skipText.textColor = 0xE1E1E1;
-				_skipText.alpha = 1.0;
+				_skipTextField.textColor = 0xE1E1E1;
+				_skipTextField.alpha = 1.0;
 			}
 		}
 		
@@ -193,7 +198,7 @@ package com.longtailvideo.jwplayer.view.components
 				graphics.beginFill(0xFFFFFF, 0);
 				graphics.drawRoundRect(0.5,0.5,_SKIP_WIDTH,_SKIP_HEIGHT,10,10);
 				graphics.endFill();
-				_skipText.textColor =  0x979797;
+				_skipTextField.textColor =  0x979797;
 			}
 		}
 		public function resize(width:Number, height:Number):void

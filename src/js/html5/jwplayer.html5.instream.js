@@ -135,7 +135,7 @@
             _sendEvent(_events.JWPLAYER_PLAYLIST_ITEM, {index:_arrayIndex}, true);
             var playersize = _utils.bounds(document.getElementById(_api.id));
             var safe = _view.getSafeRegion();
-            _skipButton = new html5.adskipbutton(playersize.height - (safe.y + safe.height) + 10);
+            _skipButton = new html5.adskipbutton(playersize.height - (safe.y + safe.height) + 10, options.skipMessage, options.skipText);
             _skipButton.addEventListener(_events.JWPLAYER_AD_SKIPPED, _skipAd);
             // Copy the playlist item passed in and make sure it's formatted as a proper playlist item
             if (_utils.typeOf(item) == "object") {

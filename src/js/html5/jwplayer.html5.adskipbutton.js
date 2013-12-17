@@ -14,14 +14,14 @@
         VIEW_INSTREAM_IMAGE = "jwskipimage",
         VIEW_INSTREAM_OVER = "jwskipover",
         VIEW_INSTREAM_OUT = "jwskipout",
-        COUNTDOWN_TEXT = "Skip ad in ",
         _SKIP_WIDTH = 80,
-        _SKIP_HEIGHT = 30,
-        SKIP_TEXT = "Skip";
+        _SKIP_HEIGHT = 30;
         
-        jwplayer.html5.adskipbutton = function(bottom) {
+        jwplayer.html5.adskipbutton = function(bottom, skipMessage, skipText) {
             var _instreamSkipContainer,
                 _instreamSkip,
+                _skipMessage = skipMessage,
+                _skipText = skipText,
                 _dispatcher = new _events.eventdispatcher(),
                 _offsetTime = -1,
                 _bottom = bottom,
@@ -70,7 +70,8 @@
                 var y = _instreamSkip.height / 2;
                 ctx.textAlign = "center";
                 ctx.font = 'Bold 11px Sans-Serif';
-                ctx.fillText(COUNTDOWN_TEXT + Math.ceil(_offsetTime - currTime) ,x,y + 4);
+                var message = 
+                ctx.fillText(_skipMessage.replace(/xx/gi, Math.ceil(_offsetTime - currTime)), x, y + 4);
             
             }
             
@@ -110,9 +111,9 @@
                         ctx.textAlign = "start";
                         ctx.font = 'Bold 12px Sans-Serif';
                         
-                        ctx.fillText(SKIP_TEXT,(_SKIP_WIDTH - SKIP_TEXT.length * 12 + 10)/2,y + 4);
-                        _css(_internalSelector(VIEW_INSTREAM_OVER), { "display":"none","left":(ctx.measureText(SKIP_TEXT).width + 24) + "px" });
-                        _css(_internalSelector(VIEW_INSTREAM_OUT), { "display":"","left":(ctx.measureText(SKIP_TEXT).width + 24) + "px"  });
+                        ctx.fillText(_skipText,(_SKIP_WIDTH - _skipText.length * 12 + 10)/2,y + 4);
+                        _css(_internalSelector(VIEW_INSTREAM_OVER), { "display":"none","left":(ctx.measureText(_skipText).width + 24) + "px" });
+                        _css(_internalSelector(VIEW_INSTREAM_OUT), { "display":"","left":(ctx.measureText(_skipText).width + 24) + "px"  });
     
                         if (_utils.isMobile()) {
                             var skipTouch = new _utils.touch(_instreamSkipContainer);
@@ -157,7 +158,7 @@
                     var y = _instreamSkip.height / 2;
                     ctx.textAlign = "start";
                     ctx.font = 'Bold 12px Sans-Serif';
-                    ctx.fillText(SKIP_TEXT,(_SKIP_WIDTH - SKIP_TEXT.length * 12 + 10)/2,y + 4);
+                    ctx.fillText(_skipText,(_SKIP_WIDTH - _skipText.length * 12 + 10)/2,y + 4);
                     _css(_internalSelector(VIEW_INSTREAM_OVER), { "display":"" });
                     _css(_internalSelector(VIEW_INSTREAM_OUT), { "display":"none" });
                 }
@@ -174,7 +175,7 @@
                     var y = _instreamSkip.height / 2;
                     ctx.textAlign = "start";
                     ctx.font = 'Bold 12px Sans-Serif';
-                    ctx.fillText(SKIP_TEXT,(_SKIP_WIDTH - SKIP_TEXT.length * 12 + 10)/2,y + 4);
+                    ctx.fillText(_skipText,(_SKIP_WIDTH - _skipText.length * 12 + 10)/2,y + 4);
                     _css(_internalSelector(VIEW_INSTREAM_OVER), { "display":"none" });
                     _css(_internalSelector(VIEW_INSTREAM_OUT), { "display":"" });
                 }

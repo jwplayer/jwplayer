@@ -121,14 +121,7 @@ package com.longtailvideo.jwplayer.player
 			_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_VOLUME, playerVolumeUpdated);
 			_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_MUTE, playerMuteUpdated);
 			
-			_skipButton = new AdSkipButton();
-			_skipButton.addEventListener(JWAdEvent.JWPLAYER_AD_SKIPPED,skipHandler);
-			_instreamDisplay.addChild(_skipButton);
-			var safe:Rectangle = getSafeRegion();
-			if (_skipButton.visible) 
-				_skipButton.visible = _model.config.controls;
-			_skipButton.x = config.width - (10 + _SKIP_WIDTH);
-			_skipButton.y = safe.y + safe.height - (10 + _SKIP_HEIGHT);
+
 			_setupView();
 			
 			//default options
@@ -140,6 +133,14 @@ package com.longtailvideo.jwplayer.player
 		
 		public function loadItem(item:Object, options:Object=null):void {
 			_options.update(options);
+			_skipButton = new AdSkipButton(options.skipMessage,options.skipText);
+			_skipButton.addEventListener(JWAdEvent.JWPLAYER_AD_SKIPPED,skipHandler);
+			_instreamDisplay.addChild(_skipButton);
+			var safe:Rectangle = getSafeRegion();
+			if (_skipButton.visible) 
+				_skipButton.visible = _model.config.controls;
+			_skipButton.x = config.width - (10 + _SKIP_WIDTH);
+			_skipButton.y = safe.y + safe.height - (10 + _SKIP_HEIGHT);
 			var ev:PlaylistEvent = new PlaylistEvent(PlaylistEvent.JWPLAYER_PLAYLIST_ITEM, null);
 			dispatchEvent(ev);
 			_item = new PlaylistItem(item);
