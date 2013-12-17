@@ -61,8 +61,8 @@
 
                 var ctx=_instreamSkip.getContext("2d");
                 ctx.clearRect(0,0,_SKIP_WIDTH,_SKIP_HEIGHT);
-                drawRoundRect(ctx,0,0,_SKIP_WIDTH,_SKIP_HEIGHT,10,TRUE,FALSE,FALSE);
-                drawRoundRect(ctx,0,0,_SKIP_WIDTH,_SKIP_HEIGHT,10,FALSE,TRUE,FALSE);
+                drawRoundRect(ctx,0,0,_SKIP_WIDTH,_SKIP_HEIGHT,5,TRUE,FALSE,FALSE);
+                drawRoundRect(ctx,0,0,_SKIP_WIDTH,_SKIP_HEIGHT,5,FALSE,TRUE,FALSE);
 
                 ctx.fillStyle="#979797";
                 ctx.globalAlpha = 1.0;
@@ -70,7 +70,7 @@
                 var y = _instreamSkip.height / 2;
                 ctx.textAlign = "center";
                 ctx.font = 'Bold 11px Sans-Serif';
-                var message = 
+
                 ctx.fillText(_skipMessage.replace(/xx/gi, Math.ceil(_offsetTime - currTime)), x, y + 4);
             
             }
@@ -100,20 +100,21 @@
                     } else if (!_instreamSkipSet) {
                         _instreamSkipSet = TRUE;
                         ctx.clearRect(0,0,_SKIP_WIDTH,_SKIP_HEIGHT);
-                        drawRoundRect(ctx,0,0,_SKIP_WIDTH,_SKIP_HEIGHT,10,TRUE,FALSE,FALSE);
-                        drawRoundRect(ctx,0,0,_SKIP_WIDTH,_SKIP_HEIGHT,10,FALSE,TRUE);
+                        drawRoundRect(ctx,0,0,_SKIP_WIDTH,_SKIP_HEIGHT,5,TRUE,FALSE,FALSE);
+                        drawRoundRect(ctx,0,0,_SKIP_WIDTH,_SKIP_HEIGHT,5,FALSE,TRUE);
 
 
 
                         ctx.fillStyle="#979797";
                         ctx.globalAlpha = 1.0;
                         var y = _instreamSkip.height / 2;
-                        ctx.textAlign = "start";
+                        var x = _instreamSkip.width / 2;
+                        ctx.textAlign = "center";
                         ctx.font = 'Bold 12px Sans-Serif';
                         
-                        ctx.fillText(_skipText,(_SKIP_WIDTH - _skipText.length * 12 + 10)/2,y + 4);
-                        _css(_internalSelector(VIEW_INSTREAM_OVER), { "display":"none","left":(ctx.measureText(_skipText).width + 24) + "px" });
-                        _css(_internalSelector(VIEW_INSTREAM_OUT), { "display":"","left":(ctx.measureText(_skipText).width + 24) + "px"  });
+                        ctx.fillText(_skipText + "     ",x,y + 4); //add the padding to put the skip icon over but keep it centered
+                        _css(_internalSelector(VIEW_INSTREAM_OVER), { "display":"none","left":_instreamSkip.width  - ((_instreamSkip.width - ctx.measureText(_skipText).width)/2) - 4 + "px" });
+                        _css(_internalSelector(VIEW_INSTREAM_OUT), { "display":"","left":_instreamSkip.width  - ((_instreamSkip.width - ctx.measureText(_skipText).width)/2) - 4 + "px" });
     
                         if (_utils.isMobile()) {
                             var skipTouch = new _utils.touch(_instreamSkipContainer);
@@ -151,14 +152,15 @@
                     var ctx=_instreamSkip.getContext("2d");
     
                     ctx.clearRect(0,0,_SKIP_WIDTH,_SKIP_HEIGHT);
-                    drawRoundRect(ctx,0,0,_SKIP_WIDTH,_SKIP_HEIGHT,10,TRUE,FALSE,TRUE);
-                    drawRoundRect(ctx,0,0,_SKIP_WIDTH,_SKIP_HEIGHT,10,FALSE,TRUE,TRUE);
+                    drawRoundRect(ctx,0,0,_SKIP_WIDTH,_SKIP_HEIGHT,5,TRUE,FALSE,TRUE);
+                    drawRoundRect(ctx,0,0,_SKIP_WIDTH,_SKIP_HEIGHT,5,FALSE,TRUE,TRUE);
                     ctx.fillStyle="#FFFFFF";
                     ctx.globalAlpha = 1.0;
                     var y = _instreamSkip.height / 2;
-                    ctx.textAlign = "start";
-                    ctx.font = 'Bold 12px Sans-Serif';
-                    ctx.fillText(_skipText,(_SKIP_WIDTH - _skipText.length * 12 + 10)/2,y + 4);
+                    var x = _instreamSkip.width / 2;
+                    ctx.textAlign = "center";
+                    ctx.font = 'Bold 12px Sans-Serif';   
+                    ctx.fillText(_skipText + "     ",x,y + 4);
                     _css(_internalSelector(VIEW_INSTREAM_OVER), { "display":"" });
                     _css(_internalSelector(VIEW_INSTREAM_OUT), { "display":"none" });
                 }
@@ -168,14 +170,15 @@
                 if (_instreamSkipSet) {
                     var ctx=_instreamSkip.getContext("2d");
                     ctx.clearRect(0,0,_SKIP_WIDTH,_SKIP_HEIGHT);
-                    drawRoundRect(ctx,0,0,_SKIP_WIDTH,_SKIP_HEIGHT,10,TRUE,FALSE,FALSE);
-                    drawRoundRect(ctx,0,0,_SKIP_WIDTH,_SKIP_HEIGHT,10,FALSE,TRUE,FALSE);
+                    drawRoundRect(ctx,0,0,_SKIP_WIDTH,_SKIP_HEIGHT,5,TRUE,FALSE,FALSE);
+                    drawRoundRect(ctx,0,0,_SKIP_WIDTH,_SKIP_HEIGHT,5,FALSE,TRUE,FALSE);
                     ctx.fillStyle="#979797";
                     ctx.globalAlpha = 1.0;
                     var y = _instreamSkip.height / 2;
-                    ctx.textAlign = "start";
-                    ctx.font = 'Bold 12px Sans-Serif';
-                    ctx.fillText(_skipText,(_SKIP_WIDTH - _skipText.length * 12 + 10)/2,y + 4);
+                    var x = _instreamSkip.width / 2;
+                    ctx.textAlign = "center";
+                    ctx.font = 'Bold 12px Sans-Serif';   
+                    ctx.fillText(_skipText + "     ",x,y + 4);
                     _css(_internalSelector(VIEW_INSTREAM_OVER), { "display":"none" });
                     _css(_internalSelector(VIEW_INSTREAM_OUT), { "display":"" });
                 }

@@ -144,23 +144,23 @@ package com.longtailvideo.jwplayer.view.components
 				_skipTextField.textColor= 0x979797;
 			} else if (!_skipTime) {
 				_skipTime = true;
-				_skipTextField.text = _skipText;
+				_skipTextField.text = _skipText; //add the padding to put the skip icon over but keep it centered
 				myFormat = new TextFormat();
-				myFormat.align = TextFormatAlign.LEFT;
+				myFormat.rightMargin = 10;
+				myFormat.align = TextFormatAlign.CENTER;
 				addChild(_skipArrow);
 				_skipArrow.visible = true;
 				myFormat.font = "_sans";
 				myFormat.size = 12;
 				myFormat.bold = true;
 				_skipTextField.setTextFormat(myFormat);
-				_skipTextField.x = 20;
+
+				//_skipTextField.x = 20;
 				
-				_skipArrow.x = _skipTextField.x + _skipTextField.textWidth + 6;
-				_skipArrow.y = _SKIP_HEIGHT/2 - _skipArrow.height/2 + 2;
+				_skipArrow.x = _skipArrowHover.x =  (_SKIP_WIDTH - ((_SKIP_WIDTH - _skipTextField.textWidth) /2) -2);
+				_skipArrow.y = _skipArrowHover.y = _SKIP_HEIGHT/2 - _skipArrow.height/2 + 2;
 				_skipArrowHover.visible = false;
 				addChild(_skipArrowHover);
-				_skipArrowHover.x = _skipTextField.x + _skipTextField.textWidth + 6;
-				_skipArrowHover.y = _SKIP_HEIGHT/2 - _skipArrow.height/2 + 2;
 				addEventListener(MouseEvent.CLICK, skipAd);
 				addEventListener(MouseEvent.ROLL_OVER, mouseoverSkipAd);
 				addEventListener(MouseEvent.MOUSE_OUT, mouseoutSkipAd);
