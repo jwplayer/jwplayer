@@ -10,6 +10,7 @@ package com.longtailvideo.jwplayer.view.components {
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.text.TextField;
+	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	import flash.text.TextFormatAlign;
 	import flash.utils.Timer;
@@ -112,6 +113,7 @@ package com.longtailvideo.jwplayer.view.components {
 			
 			_textField = new TextField();
 			_textFormat.align = TextFormatAlign.CENTER;
+			_textField.multiline = true;
 			_textField.selectable = false;
 			_textField.defaultTextFormat = _textFormat;
 			_container.addChild(_textField);
@@ -172,9 +174,11 @@ package com.longtailvideo.jwplayer.view.components {
 			
 			_textField.visible = true;
 			_textField.wordWrap = true;
+			_textField.autoSize = TextFieldAutoSize.CENTER; //fix for height stuck at 0
 			_textField.width = 300;
 			_textField.text = _text.substr(0, 500);
-				
+			_textField.autoSize = TextFieldAutoSize.NONE;
+			
 			var elipses:Boolean = false;
 			if (_textField.numLines > 2) {
 				while(_textField.numLines > 2) {
@@ -182,8 +186,8 @@ package com.longtailvideo.jwplayer.view.components {
 					_textField.text = _textField.text.replace(/(.*).$/, "$1");
 				}
 				if (elipses) {
-					_textField.text = _textField.text.substr(0, _textField.text.length-3);
-					_textField.text = _textField.text.substr(0, _textField.text.lastIndexOf(" ")) + "...";
+					newText = _textField.text.substr(0, _textField.text.length-3);
+					_textField.text = newText.substr(0, newText.lastIndexOf(" ")) + "...";
 				}
 			}
 
