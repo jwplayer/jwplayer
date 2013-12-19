@@ -57,6 +57,7 @@
 			_videoLayer,
 			// _instreamControlbar,
 			// _instreamDisplay,
+			_oldModel,
 			_instreamLayer,
 			_instreamControlbar,
 			_instreamDisplay,
@@ -720,20 +721,24 @@
 			return '#' + _api.id + (className ? " ." + className : "");
 		}
 		
-		this.setupInstream = function(instreamContainer, instreamControlbar, instreamDisplay) {
+		this.setupInstream = function(instreamContainer, instreamControlbar, instreamDisplay, instreamModel) {
 			_setVisibility(_internalSelector(VIEW_INSTREAM_CONTAINER_CLASS), TRUE);
 			_setVisibility(_internalSelector(VIEW_CONTROLS_CONTAINER_CLASS), FALSE);
+			_oldModel = _model;
+			_model = instreamModel;
 			_instreamLayer.appendChild(instreamContainer);
 			_instreamControlbar = instreamControlbar;
 			_instreamDisplay = instreamDisplay;
 			_stateHandler({newstate:states.PLAYING});
 			_instreamMode = TRUE;
+			
 
 		}
 		
 		var _destroyInstream = this.destroyInstream = function() {
 			_setVisibility(_internalSelector(VIEW_INSTREAM_CONTAINER_CLASS), FALSE);
 			_setVisibility(_internalSelector(VIEW_CONTROLS_CONTAINER_CLASS), TRUE);
+			_model = _oldModel;
 			_instreamLayer.innerHTML = "";
 			_instreamMode = FALSE;
 		}

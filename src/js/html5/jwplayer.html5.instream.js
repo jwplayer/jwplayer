@@ -95,7 +95,6 @@
             // Instream display
             _disp = new html5.display(_this);
             _disp.forceState(_states.BUFFERING);
-            
             // Create the container in which the controls will be placed
             _instreamContainer = document.createElement("div");
             _instreamContainer.id = _this.id + "_instream_container";
@@ -115,7 +114,7 @@
             }
             
             // Show the instream layer
-            _view.setupInstream(_instreamContainer, _cbar, _disp);
+            _view.setupInstream(_instreamContainer, _cbar, _disp, _fakemodel);
             
             // Resize the instream components to the proper size
             _resize();
@@ -215,22 +214,24 @@
             }
             clearTimeout(_completeTimeoutId);
             _completeTimeoutId = -1;
-
+            _provider.detachMedia();
+                        // Re-attach the controller
+            _controller.attachMedia();
             // Load the original item into our provider, which sets up the regular player's video tag
             if (_oldstate != _states.IDLE) {
-                _provider.load(_olditem, false);
+                //_provider.load(_olditem, false);
+                _model.getVideo().load(_olditem,false);
             } else {
-                _provider.stop();
+               _model.getVideo().stop();
             }
             _dispatcher.resetEventListeners();
 
             // We don't want the instream provider to be attached to the video tag anymore
-            _provider.detachMedia();
+
             _provider.resetEventListeners();
             _fakemodel.resetEventListeners();
 
-            // Return the view to its normal state
-            _view.destroyInstream();
+
 
             // If we added the controlbar anywhere, let's get rid of it
             if (_cbar) {
@@ -247,8 +248,7 @@
                 reason: complete ? "complete" : "destroyed"
             }, true);
 
-            // Re-attach the controller
-            _controller.attachMedia();
+
 
             if (_oldstate == _states.PLAYING) {
                 // Model was already correct; just resume playback
@@ -258,6 +258,9 @@
                     if (_shouldSeek) _model.getVideo().seek(_oldpos);
                 }
             }
+
+                        // Return the view to its normal state
+            _view.destroyInstream(_provider.audioMode());
             _fakemodel = null;
         };
         
