@@ -17,10 +17,11 @@
         _SKIP_WIDTH = 80,
         _SKIP_HEIGHT = 30;
         
-        jwplayer.html5.adskipbutton = function(bottom, skipMessage, skipText) {
+        jwplayer.html5.adskipbutton = function(api, bottom, skipMessage, skipText) {
             var _instreamSkipContainer,
                 _instreamSkip,
                 _skipMessage = skipMessage,
+                _api = api,
                 _skipText = skipText,
                 _dispatcher = new _events.eventdispatcher(),
                 _offsetTime = -1,
@@ -38,21 +39,19 @@
             function _init() {
                 _skip_image = new Image();
                 _skip_image.src = _SKIP_ICON;
-                _skip_image.id = "jwskipimage";
                 _skip_image.className = VIEW_INSTREAM_IMAGE + " " + VIEW_INSTREAM_OUT;
                 _skip_image_over = new Image();
                 _skip_image_over.src = _SKIP_ICON_OVER;
                 _skip_image_over.className = VIEW_INSTREAM_IMAGE + " " + VIEW_INSTREAM_OVER;
-                _skip_image_over.id = "jwskipimageover";
                 _instreamSkipContainer = _createElement("div",VIEW_INSTREAM_SKIP_CLASS);
-                _instreamSkipContainer.id = "skipContainer";
+                _instreamSkipContainer.id = api.id + "_skipcontainer";
                 _instreamSkip = _createElement("canvas");
                 _instreamSkipContainer.appendChild(_instreamSkip);
                 _this.width = _instreamSkip.width = _SKIP_WIDTH;
                 _this.height = _instreamSkip.height = _SKIP_HEIGHT;
                 _instreamSkipContainer.appendChild(_skip_image_over);
                 _instreamSkipContainer.appendChild(_skip_image);
-                _css(_internalSelector(), { "visibility":"hidden","bottom":_bottom+"px"   });
+                _css(_internalSelector(), { "visibility":"hidden","bottom":_bottom+"px"});
             }
             
             
@@ -113,9 +112,8 @@
                         ctx.font = 'Bold 12px Sans-Serif';
                         
                         ctx.fillText(_skipText + "     ",x,y + 4); //add the padding to put the skip icon over but keep it centered
-                        _css(_internalSelector(VIEW_INSTREAM_OVER), { "display":"none","left":_instreamSkip.width  - ((_instreamSkip.width - ctx.measureText(_skipText).width)/2) - 4 + "px" });
-                        _css(_internalSelector(VIEW_INSTREAM_OUT), { "display":"","left":_instreamSkip.width  - ((_instreamSkip.width - ctx.measureText(_skipText).width)/2) - 4 + "px" });
-    
+                        ctx.drawImage(_skip_image, _instreamSkip.width  - ((_instreamSkip.width - ctx.measureText(_skipText).width)/2) - 4, (_SKIP_HEIGHT - _skip_image.height) / 2);
+
                         if (_utils.isMobile()) {
                             var skipTouch = new _utils.touch(_instreamSkipContainer);
                             skipTouch.addEventListener(_utils.touchEvents.TAP, skipAd);
@@ -142,9 +140,6 @@
                 _skipOffset = offset;
                 _updateOffset(0, 0);
                 _updateTime(0);
-                _css(_internalSelector(VIEW_INSTREAM_OVER), { "display":"none" });
-                _css(_internalSelector(VIEW_INSTREAM_OUT), { "display":"none" });
-
             };
             
             function onMouseOver(){
@@ -161,8 +156,7 @@
                     ctx.textAlign = "center";
                     ctx.font = 'Bold 12px Sans-Serif';   
                     ctx.fillText(_skipText + "     ",x,y + 4);
-                    _css(_internalSelector(VIEW_INSTREAM_OVER), { "display":"" });
-                    _css(_internalSelector(VIEW_INSTREAM_OUT), { "display":"none" });
+                    ctx.drawImage(_skip_image_over, _instreamSkip.width  - ((_instreamSkip.width - ctx.measureText(_skipText).width)/2) - 4, (_SKIP_HEIGHT - _skip_image.height) / 2);
                 }
             }
             
@@ -179,8 +173,7 @@
                     ctx.textAlign = "center";
                     ctx.font = 'Bold 12px Sans-Serif';   
                     ctx.fillText(_skipText + "     ",x,y + 4);
-                    _css(_internalSelector(VIEW_INSTREAM_OVER), { "display":"none" });
-                    _css(_internalSelector(VIEW_INSTREAM_OUT), { "display":"" });
+                    ctx.drawImage(_skip_image, _instreamSkip.width  - ((_instreamSkip.width - ctx.measureText(_skipText).width)/2) - 4, (_SKIP_HEIGHT - _skip_image.height) / 2);
                 }
             }
             
@@ -252,7 +245,7 @@
         
         _css('.' + VIEW_INSTREAM_IMAGE, {
             'position': 'relative',
-            'bottom':"25px"
+            'display':'none'
         });
 
 })(window.jwplayer);
