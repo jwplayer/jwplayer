@@ -32,7 +32,7 @@
 		_config.id = playerApi.id;
 		_oldContainer = DOCUMENT.getElementById(playerApi.id);
 		if (_config.aspectratio) {
-		 	playerApi.config.aspectratio = _config.aspectratio;
+			playerApi.config.aspectratio = _config.aspectratio;
 		}
 		else {
 			delete playerApi.config.aspectratio;
@@ -57,7 +57,7 @@
 			_pluginloader.addEventListener(events.COMPLETE, _doEmbed);
 			_pluginloader.addEventListener(events.ERROR, _pluginError);
 			_pluginloader.load();
-		}
+		};
 		
 		function _doEmbed() {
 			if (_errorOccurred) return;
@@ -101,23 +101,23 @@
 						}
 					}
 				}
-				
+				var message;
 				if (_config.fallback) {
-					var message = "No suitable players found and fallback enabled";
-					_setupErrorTimer = setTimeout (function (evt) {
+					message = "No suitable players found and fallback enabled";
+					_setupErrorTimer = setTimeout(function() {
 						_dispatchSetupError(message, TRUE);
 					}, 10);
 					utils.log(message);
 					new embed.download(_container, _config, _sourceError);
 				} else {
-					var message = "No suitable players found and fallback disabled";
+					message = "No suitable players found and fallback disabled";
 					_dispatchSetupError(message, FALSE);
 					utils.log(message);
 					_replaceContainer();
 				}
 				
 			}
-		};
+		}
 		
 		function _replaceContainer() {
 			_container.parentNode.replaceChild(_fallbackDiv, _container);
@@ -144,7 +144,10 @@
 				clearTimeout(_setupErrorTimer);
 				_setupErrorTimer = null;
 			}
-			playerApi.dispatchEvent(events.JWPLAYER_SETUP_ERROR, {message: message, fallback: fallback});
+			_setupErrorTimer = setTimeout(function() {
+				_setupErrorTimer = null;
+				playerApi.dispatchEvent(events.JWPLAYER_SETUP_ERROR, {message: message, fallback: fallback});
+			}, 0);
 		}	
 
 		function _errorScreen(message) {
@@ -156,7 +159,7 @@
 			}
 
 			_errorOccurred = TRUE;
-			_displayError(_container, message, _config)
+			_displayError(_container, message, _config);
 			_dispatchSetupError(message, TRUE);
 		}
 		
