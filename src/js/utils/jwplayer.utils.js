@@ -46,7 +46,7 @@
 			base = DOCUMENT.location.href;
 		}
 		if (!utils.exists(path)) {
-			return undefined;
+			return;
 		}
 		if (isAbsolutePath(path)) {
 			return path;
@@ -105,7 +105,11 @@
 	var console = window.console = window.console || {log: function(){}};
 	utils.log = function() {
 		var args = Array.prototype.slice.call(arguments, 0);
-		console.log.apply(console, args);
+		if (typeof console.log === OBJECT) {
+			console.log(args);
+		} else {
+			console.log.apply(console, args);
+		}
 	};
 
 	var _userAgentMatch = utils.userAgentMatch = function(regex) {
@@ -176,7 +180,7 @@
 	/** Returns the true type of an object * */
 	utils.typeOf = function(value) {
 		var typeofString = typeof value;
-		if (typeofString === 'object') {
+		if (typeofString === OBJECT) {
 			if (!value) return "null";
 			return (value instanceof Array) ? 'array' : typeofString;
 		} else {
@@ -484,6 +488,7 @@
 				case 404:
 					errorcallback("File not found");
 				}
+				
 			}
 		};
 	}
