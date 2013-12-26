@@ -105,31 +105,13 @@
 			
 			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_LOADED, _rebuildPlaylist);
 			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_ITEM, _itemHandler);
-			
-			_setupResponsiveListener();
+			_api.jwAddEventListener(events.JWPLAYER_RESIZE, _resizeHandler);
 		}
 		
-		/** 
-		 * This method sets up a check which displays or removes the vertical slider if 
-		 * the listbar's height changes, for example with responsive design.
-		 **/
-		function _setupResponsiveListener() {
-			var responsiveListenerInterval = setInterval(function() {
-				var wrapperDOM = DOCUMENT.getElementById(_wrapper.id),
-					containerHeight = utils.bounds(wrapperDOM).height; 
-						
-				if (wrapperDOM != _wrapper) {
-					// Player has been destroyed; clean up
-					clearInterval(responsiveListenerInterval);
-				} else {
-					if (containerHeight != _lastHeight) {
-						_lastHeight = containerHeight;
-						_this.redraw();
-					}
-				}
-			}, 200)
-		}
-		
+        function _resizeHandler(evt) {
+            _this.redraw();
+        }
+
 		function _internalSelector(className) {
 			return '#' + _wrapper.id + (className ? ' .' + className : "");
 		}

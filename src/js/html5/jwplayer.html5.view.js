@@ -55,6 +55,7 @@
 			_timeoutDuration = _isMobile ? 4000 : 2000,
 			_videoTag,
 			_videoLayer,
+			_lastWidth,
 			// _instreamControlbar,
 			// _instreamDisplay,
 			_oldModel,
@@ -113,11 +114,35 @@
 			return _captions.getCaptionsList();
 		}
 		
+		
+        function _responsiveListener() {
+            var playerDOM = DOCUMENT.getElementById(_playerElement.id), 
+                size = utils.bounds(playerDOM), 
+                containerWidth = size.width;
+
+            if (playerDOM != _playerElement) {
+                 window.removeEventListener('resize', _responsiveListener);
+                 if (_isMobile) {
+                    window.removeEventListener("orientationchange", _responsiveListener);
+                 }
+            } else if (containerWidth > 0) {
+                if (containerWidth != _lastWidth) {
+                    _lastWidth = containerWidth;
+                    _eventDispatcher.sendEvent(events.JWPLAYER_RESIZE, {
+                        width : size.width,
+                        height : size.height
+                    });
+                }
+            }
+        }
+
+        
 		this.setup = function(skin) {
 			if (_errorState) return;
 			_api.skin = skin;
 			
 			_container = _createElement("span", VIEW_MAIN_CONTAINER_CLASS);
+			_container.id = _api.id + "_view";
 			_videoLayer = _createElement("span", VIEW_VIDEO_CONTAINER_CLASS);
 			
 			_videoTag = _model.getVideo().getTag();
@@ -143,7 +168,12 @@
 			DOCUMENT.addEventListener('mozfullscreenchange', _fullscreenChangeHandler, FALSE);
 			DOCUMENT.addEventListener('MSFullscreenChange', _fullscreenChangeHandler, FALSE);
 			DOCUMENT.addEventListener('keydown', _keyHandler, FALSE);
-
+			
+            window.addEventListener('resize', _responsiveListener, false);
+			if (_isMobile) {
+			    window.addEventListener("orientationchange", _responsiveListener, false);
+			}
+			
 			_api.jwAddEventListener(events.JWPLAYER_PLAYER_READY, _readyHandler);
 			_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
@@ -374,15 +404,6 @@
 				clearInterval(_fullscreenInterval);
 			}
 			
-			setTimeout(function() {
-				var dispBounds = utils.bounds(_container);
-				_model.width = dispBounds.width;
-				_model.height = dispBounds.height;
-				_eventDispatcher.sendEvent(events.JWPLAYER_RESIZE);
-
-			}, 0);
-			
-
 		}
 		
 		function _redrawComponent(comp) {
@@ -436,8 +457,6 @@
 			}
 
 			_resizeMedia();
-
-			if (sendResize) _eventDispatcher.sendEvent(events.JWPLAYER_RESIZE);
 			
 			return;
 		}

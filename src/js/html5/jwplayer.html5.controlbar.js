@@ -184,8 +184,6 @@
 			_controlbar.className = "jwcontrolbar";
 
 			_skin = _api.skin;
-
-			_setupResponsiveListener();
 			_layout = _skin.getComponentLayout('controlbar');
 			if (!_layout) _layout = _defaults.layout;
 			utils.clearCss('#'+_id);
@@ -201,23 +199,6 @@
 		}
 		
 		
-		function _setupResponsiveListener() {
-			var responsiveListenerInterval = setInterval(function() {
-				var cbDOM = DOCUMENT.getElementById(_id),
-					containerWidth = utils.bounds(cbDOM).width; 
-						
-				if (cbDOM != _controlbar) {
-					// Player has been destroyed; clean up
-					clearInterval(responsiveListenerInterval);
-				} else if (containerWidth > 0) {
-					if (_this.visible && containerWidth != _lastWidth) {
-						_lastWidth = containerWidth;
-						_this.show(TRUE);
-					}
-				}
-			}, 200);
-		}
-		
 		function _addEventListeners() {
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_TIME, _timeUpdated);
 			_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
@@ -231,6 +212,7 @@
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_LEVEL_CHANGED, _qualityLevelChanged);
 			_api.jwAddEventListener(events.JWPLAYER_CAPTIONS_LIST, _captionsHandler);
 			_api.jwAddEventListener(events.JWPLAYER_CAPTIONS_CHANGED, _captionChanged);
+			_api.jwAddEventListener(events.JWPLAYER_RESIZE,_resizeHandler);
 			if (!_isMobile) {
 				_controlbar.addEventListener('mouseover', function() {
 					// Slider listeners
@@ -248,6 +230,13 @@
 			}
 		}
 		
+        function _resizeHandler(evt) {
+            var cbDOM = DOCUMENT.getElementById(_id),
+                containerWidth = utils.bounds(cbDOM).width;
+             if (containerWidth > 0)
+                _this.show(TRUE);
+        }
+
 
 		function _timeUpdated(evt) {
 			var refreshRequired = FALSE,
