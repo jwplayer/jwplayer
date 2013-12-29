@@ -128,7 +128,6 @@
 			_hideFullscreen = FALSE,
 			_dragging = FALSE,		
 			_lastSeekTime = 0,
-			_lastWidth = -1,
 			_lastTooltipPositionTime = 0,
 			_cues = [],
 			_activeCue,
@@ -186,7 +185,7 @@
 			_skin = _api.skin;
 			_layout = _skin.getComponentLayout('controlbar');
 			if (!_layout) _layout = _defaults.layout;
-			utils.clearCss('#'+_id);
+			utils.clearCss(_internalSelector());
 			_createStyles();
 			_buildControlbar();
 			_addEventListeners();
@@ -230,12 +229,12 @@
 			}
 		}
 		
-        function _resizeHandler(evt) {
-            var cbDOM = DOCUMENT.getElementById(_id),
-                containerWidth = utils.bounds(cbDOM).width;
-             if (containerWidth > 0)
-                _this.show(TRUE);
-        }
+		function _resizeHandler() {
+			var cbDOM = DOCUMENT.getElementById(_id);
+			if (utils.bounds(cbDOM).width > 0) {
+				_this.show(TRUE);
+			}
+		}
 
 
 		function _timeUpdated(evt) {
@@ -368,9 +367,9 @@
 		}
 		
 		function _qualityLevelChanged(evt) {
-			_currentQuality = evt.currentQuality;
+			_currentQuality = evt.currentQuality|0;
 			if (_elements.hd) {
-				_elements.hd.querySelector("button").className = (_levels.length === 2 && _currentQuality == 0) ? "off" : "";
+				_elements.hd.querySelector("button").className = (_levels.length === 2 && _currentQuality === 0) ? "off" : "";
 			}
 			if (_hdOverlay && _currentQuality >= 0) {
 				_hdOverlay.setActive(evt.currentQuality);
@@ -398,9 +397,9 @@
 		
 		function _captionChanged(evt) {
 			if (!_captions) return;
-			_currentCaptions = evt.track;
+			_currentCaptions = evt.track|0;
 			if (_elements.cc) {
-				_elements.cc.querySelector("button").className = (_captions.length === 2 && _currentCaptions == 0) ? "off" : "";
+				_elements.cc.querySelector("button").className = (_captions.length === 2 && _currentCaptions === 0) ? "off" : "";
 			}
 			if (_ccOverlay && _currentCaptions >= 0) {
 				_ccOverlay.setActive(evt.track);
@@ -420,10 +419,14 @@
 
 			_bgHeight = _getSkinElement("background").height;
 			
-			_css('#'+_id, {
+			var styles = {
 				height: _bgHeight,
 				bottom: _audioMode ? 0 : _settings.margin
-			});
+			};
+			if (_settings.maxwidth > 0) {
+				styles['max-width'] =  _audioMode ? UNDEFINED : _settings.maxwidth;
+			}
+			_css(_internalSelector(), styles);
 			
 			_css(_internalSelector(".jwtext"), {
 				font: _settings.fontsize + "px/" + _getSkinElement("background").height + "px " + _settings.font,
@@ -434,13 +437,6 @@
 			_css(_internalSelector(".jwoverlay"), {
 				bottom: _bgHeight
 			});
-
-			
-			if (_settings.maxwidth > 0) {
-				_css(_internalSelector(), {
-					'max-width': _audioMode ? UNDEFINED : _settings.maxwidth
-				});
-			}
 		}
 
 		
@@ -496,7 +492,7 @@
 			element.className = 'jw'+name;
 			element.innerHTML = "&nbsp;";
 			
-			if (!skinElem || skinElem.src == "") {
+			if (!skinElem || !skinElem.src) {
 				return;
 			}
 
@@ -723,7 +719,7 @@
 		}
 		
 		function _elementSize(skinElem) {
-			return skinElem ? parseInt(skinElem.width) + "px " + parseInt(skinElem.height) + "px" : "0 0";
+			return skinElem ? parseInt(skinElem.width, 10) + "px " + parseInt(skinElem.height, 10) + "px" : "0 0";
 		}
 		
 		function _buildDivider(divider) {
@@ -785,7 +781,7 @@
 		}
 		
 		function _buildSlider(name) {
-			if (_isMobile && name.indexOf("volume") == 0) return;
+			if (_isMobile && name.indexOf("volume") === 0) return;
 			
 			var slider = _createSpan(),
 				vertical = name == "volume",
@@ -797,8 +793,8 @@
 				capRight = _buildImage(capPrefix + right, NULL, FALSE, FALSE, vertical),
 				rail = _buildSliderRail(name, vertical, left, right),
 				capLeftSkin = _getSkinElement(capPrefix+left),
-				capRightSkin = _getSkinElement(capPrefix+left),
-				railSkin = _getSkinElement(name+"SliderRail");
+				capRightSkin = _getSkinElement(capPrefix+left);
+				//railSkin = _getSkinElement(name+"SliderRail");
 			
 			slider.className = "jwslider jw" + name;
 			
@@ -855,7 +851,7 @@
 			for (var i=0; i<railElements.length; i++) {
 				sliderPrefix = (name=="time"?"Slider":"");
 				var prefix = name + sliderPrefix + railElements[i],
-					element = _buildImage(prefix, NULL, !vertical, (name.indexOf("volume")==0), vertical),
+					element = _buildImage(prefix, NULL, !vertical, (name.indexOf("volume")===0), vertical),
 					capLeft = _buildImage(prefix + "Cap" + left, NULL, FALSE, FALSE, vertical),
 					capRight = _buildImage(prefix + "Cap" + right, NULL, FALSE, FALSE, vertical),
 					capLeftSkin = _getSkinElement(prefix + "Cap" + left),
@@ -1001,7 +997,7 @@
 
 		function _sliderMouseDown(name) {
 			return (function(evt) {
-				if (evt.button != 0)
+				if (evt.button)
 					return;
 				
 				_elements[name+'Rail'].className = "jwrail";
@@ -1027,7 +1023,7 @@
 				_lastTooltipPositionTime = currentTime;
 			}
 			
-			if (!_dragging || evt.button != 0) {
+			if (!_dragging || evt.button) {
 				return;
 			}
 			
@@ -1073,7 +1069,7 @@
 		
 		function _positionTimeTooltip(evt) {
 			_railBounds = utils.bounds(_timeRail);
-			if (!_railBounds || _railBounds.width == 0) return;
+			if (!_railBounds || _railBounds.width === 0) return;
 			var element = _timeOverlay.element(), 
 				position = evt.pageX ? ((evt.pageX - _railBounds.left) - WINDOW.pageXOffset) : (evt.x);
 			if (position >= 0 && position <= _railBounds.width) {
@@ -1105,7 +1101,7 @@
 			var cueClass = "timeSliderCue", 
 				cue = _getSkinElement(cueClass),
 				cueStyle = {
-					'z-index': 1 	
+					'z-index': 1
 				};
 			
 			if (cue && cue.src) {
@@ -1155,6 +1151,7 @@
 		}
 		
 		_this.setText = function(text) {
+			//optimize
 			_css(_internalSelector(".jwelapsed"), text ? HIDDEN : SHOWING);
 			_css(_internalSelector(".jwduration"), text ? HIDDEN : SHOWING);
 			_css(_internalSelector(".jwtime"), text ? HIDDEN : SHOWING);
@@ -1163,8 +1160,9 @@
 				_css(_internalSelector(".jwtime"), HIDDEN);
 			}
 			var altText = _getElementBySelector(".jwalt");
-			
-			if (altText) altText.innerHTML = text || "";
+			if (altText) {
+				altText.innerHTML = text || "";
+			}
 			_redraw();
 		};
 		
@@ -1345,7 +1343,9 @@
 				_this.show(TRUE);
 			}
 			_createStyles();
-			var capLeft = _getSkinElement("capLeft"), capRight = _getSkinElement("capRight")
+			var capLeft = _getSkinElement("capLeft"),
+				capRight = _getSkinElement("capRight");
+
 			_css(_internalSelector('.jwgroup.jwcenter'), {
 				left: Math.round(utils.parseDimension(_groups.left.offsetWidth) + capLeft.width),
 				right: Math.round(utils.parseDimension(_groups.right.offsetWidth) + capRight.width)
@@ -1362,7 +1362,7 @@
 			});
 		
 			// ie <= IE10 does not allow fullscreen from inside an iframe. Hide the FS button. (TODO: Fix for IE11)
-			var ieIframe = !(top === window.self) && utils.isIE();
+			var ieIframe = (top !== window.self) && utils.isIE();
 			_css(_internalSelector(".jwfullscreen"), { display: (_audioMode || _hideFullscreen || ieIframe) ? JW_CSS_NONE : UNDEFINED });
 			_css(_internalSelector(".jwvolumeH"), { display: _audioMode||_instreamMode ? JW_CSS_BLOCK : JW_CSS_NONE });
 			_css(_internalSelector(".jwhd"), { display: !_audioMode && _hasHD() ? UNDEFINED : JW_CSS_NONE });
@@ -1429,7 +1429,7 @@
 		};
 
 		_this.margin = function() {
-			return parseInt(_settings.margin);
+			return parseInt(_settings.margin, 10);
 		};
 		
 		_this.height = function() {
@@ -1484,8 +1484,8 @@
 
 		function _getSkinElement(name) {
 			var component = 'controlbar', elem, newname = name;
-			if (name.indexOf("volume") == 0) {
-				if (name.indexOf("volumeH") == 0) newname = name.replace("volumeH", "volume");
+			if (name.indexOf("volume") === 0) {
+				if (name.indexOf("volumeH") === 0) newname = name.replace("volumeH", "volume");
 				else component = "tooltip";
 			} 
 			elem = _skin.getSkinElement(component, newname);
