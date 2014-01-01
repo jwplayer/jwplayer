@@ -12,15 +12,13 @@
 		
 		MENU_CLASS = 'jwmenu',
 		OPTION_CLASS = 'jwoption',
-		UNDEFINED = undefined,
+		UNDEFINED,
 		WHITE = '#ffffff',
 		CCC = '#cccccc';
 	
 	/** HTML5 Overlay class **/
 	html5.menu = function(name, id, skin, changeHandler) {
-		var _skin = skin,
-			_name = name,
-			_id = id,
+		var _id = id,
 			_changeHandler = changeHandler,
 			_overlay = new html5.overlay(_id+"_overlay", skin),
 			_settings = utils.extend({
@@ -96,20 +94,20 @@
 				optionTouch.addEventListener(utils.touchEvents.TAP, _clickHandler(_options.length, value));
 			}
 			_options.push(option);
-		}
+		};
 		
 		function _clickHandler(index, value) {
 			return function() {
 				_setActive(index);
 				if (_changeHandler) _changeHandler(value);
-			}
+			};
 		}
 		
 		this.clearOptions = function() {
 			while(_options.length > 0) {
 				_container.removeChild(_options.pop());
 			}
-		}
+		};
 
 		var _setActive = this.setActive = function(index) {
 			for (var i = 0; i < _options.length; i++) {
@@ -117,7 +115,7 @@
 				option.className = option.className.replace(" active", "");
 				if (i == index) option.className += " active";
 			}
-		}
+		};
 		
 
 		function _createElement(className, parent) {
@@ -137,7 +135,7 @@
 		this.offsetX = _overlay.offsetX;
 		
 		_init();
-	}
+	};
 	
 	function _class(className) {
 		return "." + className.replace(/ /g, " .");
@@ -148,5 +146,4 @@
 		position: "relative"
 	});
 	
-
 })(jwplayer);

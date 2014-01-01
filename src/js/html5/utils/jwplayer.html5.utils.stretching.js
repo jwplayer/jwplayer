@@ -5,23 +5,31 @@
  * @version 6.0
  */
 (function(utils) {
+	
+	/** Stretching options **/
+	var _stretching = utils.stretching = {
+		NONE : "none",
+		FILL : "fill",
+		UNIFORM : "uniform",
+		EXACTFIT : "exactfit"
+	};
+
 	utils.scale = function(domelement, xscale, yscale, xoffset, yoffset) {
-		var value, exists = utils.exists;
+		var value;
 		
 		// Set defaults
-		if (!exists(xscale)) xscale = 1;
-		if (!exists(yscale)) yscale = 1;
-		if (!exists(xoffset)) xoffset = 0;
-		if (!exists(yoffset)) yoffset = 0;
+		xscale = xscale || 1;
+		yscale = yscale || 1;
+		xoffset = xoffset|0;
+		yoffset = yoffset|0;
 		
-		if (xscale == 1 && yscale == 1 && xoffset == 0 && yoffset == 0) {
+		if (xscale === 1 && yscale === 1 && xoffset === 0 && yoffset === 0) {
 			value = "";
 		} else {
-			value = "scale("+xscale+","+yscale+") translate("+xoffset+"px,"+yoffset+"px)";
+			value = "scale("+xscale+", "+yscale+") translate("+xoffset+"px, "+yoffset+"px)";
 		}
 		
 		utils.transform(domelement, value);
-		
 	};
 	
 	/**
@@ -51,8 +59,7 @@
 		var xscale = parentWidth / elementWidth,
 			yscale = parentHeight / elementHeight,
 			xoff = 0, yoff = 0,
-			style = {},
-			video = (domelement.tagName.toLowerCase() == "video"),
+			video = (domelement.tagName.toLowerCase() === "video"),
 			scale = false,
 			stretchClass;
 		
@@ -71,12 +78,15 @@
 				elementWidth = elementWidth * yscale;
 				elementHeight = elementHeight * yscale;
 			}
+			/* falls through */
 		case _stretching.NONE:
 			xscale = yscale = 1;
+			/* falls through */
 		case _stretching.EXACTFIT:
 			scale = true;
 			break;
 		case _stretching.UNIFORM:
+			/* falls through */
 		default:
 			if (xscale > yscale) {
 				if (elementWidth * yscale / parentWidth > 0.95) {
@@ -114,17 +124,8 @@
 				domelement.style.height = "";
 			}
 		} else {
-			domelement.className = domelement.className.replace(/\s*jw(none|exactfit|uniform|fill)/g, "");
-			domelement.className += " " + stretchClass;
+			domelement.className = domelement.className.replace(/\s*jw(none|exactfit|uniform|fill)/g, "") +  " " + stretchClass;
 		}
-	};
-	
-	/** Stretching options **/
-	var _stretching = utils.stretching = {
-		NONE : "none",
-		FILL : "fill",
-		UNIFORM : "uniform",
-		EXACTFIT : "exactfit"
 	};
 
 })(jwplayer.utils);

@@ -18,13 +18,14 @@
 		function _init() {
 			_model = new html5.model(config); 
 			_this.id = _model.id;
+
+			utils.css.block(_this.id);
+			
 			_view = new html5.view(_this, _model); 
 			_controller = new html5.controller(_model, _view);
 			
 			_this._model = _model;
 
-			utils.css.block();
-			
 			_initializeAPI();
 			
 			var setup = new html5.setup(_model, _view, _controller);
@@ -35,12 +36,12 @@
 		
 		function _readyHandler(evt) {
 			_controller.playerReady(evt);
-			utils.css.unblock();
+			utils.css.unblock(_this.id);
 		}
 
 		function _errorHandler(evt) {
 			utils.log('There was a problem setting up the player: ', evt);
-			utils.css.unblock();
+			utils.css.unblock(_this.id);
 		}
 
 		function _normalizePlaylist() {
@@ -112,7 +113,7 @@
 			_this.jwLoad =  function(item) {
 				_this.jwInstreamDestroy();
 			    _controller.load(item);
-			}
+			};
 			_this.jwPlaylistNext = _controller.next;
 			_this.jwPlaylistPrev = _controller.prev;
 			_this.jwPlaylistItem = _controller.item;
@@ -159,51 +160,52 @@
 				// 	// This needs to be added once the googima Ads API is implemented
 				// 	//plugins.googima.jwPlayAd(ad);
 				// }
-			}
+			};
 
 			_this.jwPauseAd = function () { 
 				var plugins = jwplayer(_this.id).plugins;
 				if (plugins.googima) {
 					plugins.googima.jwPauseAd();
 				}
-			}
+			};
 			
 			_this.jwInitInstream = function() {
 				_this.jwInstreamDestroy();
 				_instreamPlayer = new html5.instream(_this, _model, _view, _controller);
 				_instreamPlayer.init();
-			}
+			};
 			
 			_this.jwLoadItemInstream = function(item, options) {
 				if(!_instreamPlayer) {
 					throw 'Instream player undefined';
 				}
 				_instreamPlayer.load(item, options);
-			}
+			};
 			
 			_this.jwLoadArrayInstream = function(item, options) {
                 if(!_instreamPlayer) {
                     throw 'Instream player undefined';
                 }
                 _instreamPlayer.load(item, options);
-            }
+            };
 			
 			_this.jwSetControls = function(mode) {
 			    _view.setControls(mode);
 			    if(_instreamPlayer) _instreamPlayer.setControls(mode);
-			}
+			};
+
 			_this.jwInstreamPlay = function() {
 				if (_instreamPlayer) _instreamPlayer.jwInstreamPlay();
-			}
+			};
 			
 			_this.jwInstreamPause = function() {
 				if (_instreamPlayer) _instreamPlayer.jwInstreamPause();
-			}
+			};
 
 			_this.jwInstreamState = function() {
 				if (_instreamPlayer) return _instreamPlayer.jwInstreamState();
 				return '';
-			}
+			};
 			
 			_this.jwInstreamDestroy = function(complete, _instreamInstance) {
 				_instreamInstance = _instreamInstance || _instreamPlayer;
@@ -213,32 +215,33 @@
 						_instreamPlayer = undefined;
 					}
 				}
-			}
+			};
 
 			_this.jwInstreamAddEventListener = function(type, listener) {
 				if (_instreamPlayer) _instreamPlayer.jwInstreamAddEventListener(type, listener);
-			} 
+			};
+
 			_this.jwInstreamRemoveEventListener = function(type, listener) {
 				if (_instreamPlayer) _instreamPlayer.jwInstreamRemoveEventListener(type, listener);
-			}
+			};
 
 			_this.jwPlayerDestroy = function() {
 				if (_view) {
 					_view.destroy();
 				}
-			}
+			};
 			
 			_this.jwInstreamSetText = function(text) {
 				if (_instreamPlayer) _instreamPlayer.jwInstreamSetText(text);
-			}
+			};
 			
 			_this.jwIsBeforePlay = function () {
 				return _controller.checkBeforePlay();
-			}
+			};
 
 			_this.jwIsBeforeComplete = function () {
 				return _model.getVideo().checkComplete();
-			}
+			};
 			
 			/** Events **/
 			_this.jwAddEventListener = _controller.addEventListener;
@@ -259,6 +262,7 @@
 		}
 		
 		_init();
-	}
+	};
+	
 })(window.jwplayer);
 

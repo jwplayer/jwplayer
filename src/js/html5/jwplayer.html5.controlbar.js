@@ -123,7 +123,7 @@
 			_ccTapTimer,
 			_ccOverlay,
 			_redrawTimeout,
-			_hideTimeout,
+			_hideTimeout = -1,
 			_audioMode = FALSE,
 			_hideFullscreen = FALSE,
 			_dragging = FALSE,		
@@ -211,7 +211,7 @@
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_LEVEL_CHANGED, _qualityLevelChanged);
 			_api.jwAddEventListener(events.JWPLAYER_CAPTIONS_LIST, _captionsHandler);
 			_api.jwAddEventListener(events.JWPLAYER_CAPTIONS_CHANGED, _captionChanged);
-			_api.jwAddEventListener(events.JWPLAYER_RESIZE,_resizeHandler);
+			_api.jwAddEventListener(events.JWPLAYER_RESIZE, _resizeHandler);
 			if (!_isMobile) {
 				_controlbar.addEventListener('mouseover', function() {
 					// Slider listeners
@@ -230,35 +230,32 @@
 		}
 		
 		function _resizeHandler() {
-			var cbDOM = DOCUMENT.getElementById(_id);
-			if (utils.bounds(cbDOM).width > 0) {
+			_cbBounds = utils.bounds(_controlbar);
+			if (_cbBounds.width > 0) {
 				_this.show(TRUE);
 			}
 		}
 
 
 		function _timeUpdated(evt) {
-			var refreshRequired = FALSE,
-				timeString;
+			_css.block(_id); //unblock on redraw
+
 			// Positive infinity for live streams on iPad, 0 for live streams on Safari (HTML5)
-			if (evt.duration == Number.POSITIVE_INFINITY || (!evt.duration && utils.isSafari() && !_isMobile)) 
-			{
+			if (evt.duration == Number.POSITIVE_INFINITY || (!evt.duration && utils.isSafari() && !_isMobile)) {
 				_this.setText(_api.jwGetPlaylist()[_api.jwGetPlaylistIndex()].title || "Live broadcast");
 				
 			} else {
+				var timeString;
 				if (_elements.elapsed) {
 					timeString = utils.timeFormat(evt.position);
 					_elements.elapsed.innerHTML = timeString;
-					refreshRequired = (timeString.length != utils.timeFormat(_position).length);
 				}
 				if (_elements.duration) {
 					timeString = utils.timeFormat(evt.duration);
 					_elements.duration.innerHTML = timeString;
-					refreshRequired = (refreshRequired || (timeString.length != utils.timeFormat(_duration).length));
 				}
 				if (evt.duration > 0) {
 					_setProgress(evt.position / evt.duration);
-					refreshRequired = (refreshRequired || evt.duration != _duration);
 				} else {
 					_setProgress(0);
 				}
@@ -266,7 +263,6 @@
 				_position = evt.position;
 				_this.setText();
 			}
-			if (refreshRequired) _redraw();
 		}
 		
 		function _stateHandler(evt) {
@@ -284,11 +280,11 @@
 			case states.IDLE:
 				_toggleButton("play", FALSE);
 				_css(_internalSelector('.jwtimeSliderThumb'), { opacity: 0 });
-				if (_elements["timeRail"]) {
-					_elements["timeRail"].className = "jwrail";
+				if (_elements.timeRail) {
+					_elements.timeRail.className = "jwrail";
 					setTimeout(function() {
 						// Temporarily disable the buffer animation
-						_elements["timeRail"].className += " jwsmooth";
+						_elements.timeRail.className += " jwsmooth";
 					}, 100);
 				}
 				_setBuffer(0);
@@ -426,7 +422,7 @@
 			if (_settings.maxwidth > 0) {
 				styles['max-width'] =  _audioMode ? UNDEFINED : _settings.maxwidth;
 			}
-			_css(_internalSelector(), styles);
+			_css.style(_controlbar, styles);
 			
 			_css(_internalSelector(".jwtext"), {
 				font: _settings.fontsize + "px/" + _getSkinElement("background").height + "px " + _settings.font,
@@ -635,11 +631,14 @@
 		
 		function _hideTimes() {
 			if(_controlbar) {
-				if (!_getElementBySelector(".jwalt")) return;
-				if (utils.bounds(_controlbar.parentNode).width >= 320 && !_getElementBySelector(".jwalt").innerHTML) {
-					_css(_internalSelector(".jwhidden"),  NOT_HIDDEN);				
+				var jwalt = _getElementBySelector(".jwalt"),
+					jwhidden;
+				if (!jwalt) return;
+				jwhidden = _controlbar.querySelectorAll(".jwhidden");
+				if (_controlbar.parentNode.clientWidth >= 320 && !jwalt.firstChild) {
+					_css.style(jwhidden, NOT_HIDDEN);				
 				} else {
-					_css(_internalSelector(".jwhidden"),  HIDDEN);				
+					_css.style(jwhidden, HIDDEN);				
 				}
 			}
 		}
@@ -940,7 +939,7 @@
 		}
 
 		function _sliderDragStart() {
-			_elements['timeRail'].className = "jwrail";
+			_elements.timeRail.className = "jwrail";
 			if (!_idle()) {
 				_api.jwSeekDrag(TRUE);
 				_dragging = "time";
@@ -951,6 +950,7 @@
 
 		function _sliderDragEvent(evt) {
 			if (!_dragging) return;
+
 			var currentTime = (new Date()).getTime();
 
 			if (currentTime - _lastTooltipPositionTime > 50) {
@@ -958,7 +958,7 @@
 				_lastTooltipPositionTime = currentTime;
 			}
 
-			var rail = _elements[_dragging].getElementsByClassName('jwrail')[0],
+			var rail = _elements[_dragging].querySelector('.jwrail'),
 				railRect = utils.bounds(rail),
 				pct = evt.x / railRect.width;
 			if (pct > 100) {
@@ -966,7 +966,7 @@
 			}
 			if (evt.type == utils.touchEvents.DRAG_END) {
 				_api.jwSeekDrag(FALSE);
-				_elements['timeRail'].className = "jwrail jwsmooth";
+				_elements.timeRail.className = "jwrail jwsmooth";
 				_dragging = NULL;
 				_sliderMapping['time'](pct);
 				_hideTimeTooltip();
@@ -983,14 +983,14 @@
 		}
 
 		function _sliderTapEvent(evt) {
-			var rail = _elements['time'].getElementsByClassName('jwrail')[0],
+			var rail = _elements.time.querySelector('.jwrail'),
 				railRect = utils.bounds(rail),
 				pct = evt.x / railRect.width;		
 			if (pct > 100) {
 				pct = 100;
 			}
 			if (!_idle()) {
-				_sliderMapping['time'](pct);
+				_sliderMapping.time(pct);
 				_eventDispatcher.sendEvent(events.JWPLAYER_USER_ACTION);
 			}
 		}
@@ -1027,7 +1027,7 @@
 				return;
 			}
 			
-			var rail = _elements[_dragging].getElementsByClassName('jwrail')[0],
+			var rail = _elements[_dragging].querySelector('.jwrail'),
 				railRect = utils.bounds(rail),
 				name = _dragging,
 				pct = _elements[name].vertical ? (railRect.bottom - evt.pageY) / railRect.height : (evt.pageX - railRect.left) / railRect.width;
@@ -1070,12 +1070,12 @@
 		function _positionTimeTooltip(evt) {
 			_railBounds = utils.bounds(_timeRail);
 			if (!_railBounds || _railBounds.width === 0) return;
+			_cbBounds = utils.bounds(_controlbar);
 			var element = _timeOverlay.element(), 
 				position = evt.pageX ? ((evt.pageX - _railBounds.left) - WINDOW.pageXOffset) : (evt.x);
 			if (position >= 0 && position <= _railBounds.width) {
-				element.style.left = Math.round(position) + "px";
 				_setTimeOverlay(_duration * position / _railBounds.width);
-				_cbBounds = utils.bounds(_controlbar);
+				_css.style(element, {left: Math.round(position)});
 			}
 		}
 		
@@ -1083,16 +1083,15 @@
 			_timeOverlayText.innerHTML = _activeCue ? _activeCue.text : utils.timeFormat(sec);
 			_timeOverlayThumb.updateTimeline(sec); 
 			_timeOverlay.setContents(_timeOverlayContainer);
-			_cbBounds = utils.bounds(_controlbar);
 			_positionOverlay(_timeOverlay);
 		}
 		
 		function _styleTimeSlider() {
-			if (!_elements['timeSliderRail']) {
+			if (!_elements.timeSliderRail) {
 				_css(_internalSelector(".jwtime"), HIDDEN);
 			}
 
-			if (_elements['timeSliderThumb']) {
+			if (_elements.timeSliderThumb) {
 				_css(_internalSelector(".jwtimeSliderThumb"), {
 					'margin-left': (_getSkinElement("timeSliderThumb").width/-2)
 				});
@@ -1151,17 +1150,18 @@
 		}
 		
 		_this.setText = function(text) {
-			//optimize
-			_css(_internalSelector(".jwelapsed"), text ? HIDDEN : SHOWING);
-			_css(_internalSelector(".jwduration"), text ? HIDDEN : SHOWING);
-			_css(_internalSelector(".jwtime"), text ? HIDDEN : SHOWING);
-			_css(_internalSelector(".jwalt"), text ? SHOWING : HIDDEN);
-			if (!_elements['timeSliderRail']) {
-				_css(_internalSelector(".jwtime"), HIDDEN);
+			_css.block(_id); //unblock on redraw
+			_css.style(_controlbar.querySelector(".jwelapsed"), text ? HIDDEN : SHOWING);
+			_css.style(_controlbar.querySelector(".jwduration"), text ? HIDDEN : SHOWING);
+			if (!_elements.timeSliderRail) {
+				_css.style(_controlbar.querySelector(".jwtime"), HIDDEN);
+			} else {
+				_css.style(_controlbar.querySelector(".jwtime"), text ? HIDDEN : SHOWING);
 			}
-			var altText = _getElementBySelector(".jwalt");
-			if (altText) {
-				altText.innerHTML = text || "";
+			var jwalt = _getElementBySelector(".jwalt");
+			if (jwalt) {
+				_css.style(jwalt, text ? SHOWING : HIDDEN);
+				jwalt.innerHTML = text || "";
 			}
 			_redraw();
 		};
@@ -1339,37 +1339,52 @@
 		};
 
 		_this.redraw = function(resize) {
+			_css.block(_id);
+
 			if (resize && _this.visible) {
 				_this.show(TRUE);
 			}
 			_createStyles();
 			var capLeft = _getSkinElement("capLeft"),
-				capRight = _getSkinElement("capRight");
+				capRight = _getSkinElement("capRight"),
+				margin = _audioMode ? 0 : _settings.margin,
+				centerCss = {
+					left:  Math.round(utils.parseDimension(_groups.left.offsetWidth) + capLeft.width),
+					right: Math.round(utils.parseDimension(_groups.right.offsetWidth) + capRight.width)
+				},
+				max = !_audioMode && _controlbar.parentNode.clientWidth > _settings.maxwidth,
+				controlbarCss = {
+					left:  max ? "50%" : margin,
+					right: max ? UNDEFINED : margin,
+					'margin-left': max ? _cbBounds.width / -2 : UNDEFINED,
+					width: max ? JW_CSS_100PCT : UNDEFINED
+				},
+				ieIframe = (top !== window.self) && utils.isIE();
 
-			_css(_internalSelector('.jwgroup.jwcenter'), {
-				left: Math.round(utils.parseDimension(_groups.left.offsetWidth) + capLeft.width),
-				right: Math.round(utils.parseDimension(_groups.right.offsetWidth) + capRight.width)
-			});
-		
-			var max = (!_audioMode && _controlbar.parentNode.clientWidth > _settings.maxwidth), 
-				margin = _audioMode ? 0 : _settings.margin;
-			
-			_css(_internalSelector(), {
-				left:  max ? "50%" : margin,
-				right:  max ? UNDEFINED : margin,
-				'margin-left': max ? _controlbar.clientWidth / -2 : UNDEFINED,
-				width: max ? JW_CSS_100PCT : UNDEFINED
-			});
-		
+			_css.style(_controlbar, controlbarCss);
+			_css(_internalSelector('.jwgroup.jwcenter'), centerCss);
+
 			// ie <= IE10 does not allow fullscreen from inside an iframe. Hide the FS button. (TODO: Fix for IE11)
-			var ieIframe = (top !== window.self) && utils.isIE();
-			_css(_internalSelector(".jwfullscreen"), { display: (_audioMode || _hideFullscreen || ieIframe) ? JW_CSS_NONE : UNDEFINED });
-			_css(_internalSelector(".jwvolumeH"), { display: _audioMode||_instreamMode ? JW_CSS_BLOCK : JW_CSS_NONE });
-			_css(_internalSelector(".jwhd"), { display: !_audioMode && _hasHD() ? UNDEFINED : JW_CSS_NONE });
-			_css(_internalSelector(".jwcc"), { display: !_audioMode && _hasCaptions() ? UNDEFINED : JW_CSS_NONE });
+			_css(_internalSelector(".jwfullscreen"), {
+				display: (_audioMode || _hideFullscreen || ieIframe) ? JW_CSS_NONE : UNDEFINED
+			});
+			_css(_internalSelector(".jwvolumeH"), {
+				display: _audioMode || _instreamMode ? JW_CSS_BLOCK : JW_CSS_NONE
+			});
+			_css(_internalSelector(".jwhd"), {
+				display: !_audioMode && _hasHD() ? UNDEFINED : JW_CSS_NONE
+			});
+			_css(_internalSelector(".jwcc"), {
+				display: !_audioMode && _hasCaptions() ? UNDEFINED : JW_CSS_NONE
+			});
 
-			_positionOverlays();
 			_drawCues();
+
+			for (var i in _overlays) {
+				_positionOverlay(_overlays[i]);
+			}
+
+			_css.unblock(_id);
 		};
 		
 		function _updateNextPrev() {
@@ -1381,25 +1396,22 @@
 				_css(_internalSelector(".jwprev"), HIDDEN);
 			}
 		}
-		
-		function _positionOverlays() {
-			_cbBounds = utils.bounds(_controlbar);
-			utils.foreach(_overlays, function(i, overlay) {
-				_positionOverlay(overlay);
-			});
-		}
 
+		// var _pCount = 0;
 		function _positionOverlay(overlay) {
+			var id = _id + '_overlay';
+			_css.block(id);
+			overlay.offsetX(0);
+			var overlayBounds = utils.bounds(overlay.element());
 			if (!_cbBounds) {
 				_cbBounds = utils.bounds(_controlbar);
 			}
-			overlay.offsetX(0);
-			var overlayBounds = utils.bounds(overlay.element());
 			if (overlayBounds.right > _cbBounds.right) {
 				overlay.offsetX(_cbBounds.right - overlayBounds.right);
 			} else if (overlayBounds.left < _cbBounds.left) {
 				overlay.offsetX(_cbBounds.left - overlayBounds.left);
 			}
+			_css.unblock(id);
 		}
 		
 
@@ -1510,15 +1522,21 @@
 		//because of size impacting whether to show duration/elapsed time, optional resize argument overrides the this.visible return clause.
 		_this.show = function(resize) {
 			if (_this.visible && !resize) return;
-			_clearHideTimeout();
+
 			_this.visible = true;
-			_controlbar.style.display = JW_CSS_INLINE_BLOCK;
-			_redraw();
-			_muteHandler();
+			_css.style(_controlbar, {display: JW_CSS_INLINE_BLOCK});
 			_hideTimes();
+			_cbBounds = utils.bounds(_controlbar);
+
+			_css.block(_id); //unblock on redraw
+
+			_muteHandler();
+			_redraw();
+
+			_clearHideTimeout();
 			_hideTimeout = setTimeout(function() {
 				_controlbar.style.opacity = 1;
-			}, 10);
+			}, 0);
 		};
 		
 		_this.showTemp = function() {
@@ -1537,7 +1555,7 @@
 		
 		function _clearHideTimeout() {
 			clearTimeout(_hideTimeout);
-			_hideTimeout = UNDEFINED;
+			_hideTimeout = -1;
 		}
 
 		function _clearCcTapTimeout() {

@@ -4,23 +4,20 @@
  * @author pablo
  * @version 6.0
  */
-(function(html5) {
-	var utils = jwplayer.utils, 
-		events = jwplayer.events, 
-		states = events.state, 
+(function(jwplayer) {
+	var html5 = jwplayer.html5,
+		utils = jwplayer.utils,
 		_css = utils.css,
 		_bounds = utils.bounds,
 
 		D_CLASS = ".jwdock",
-		DB_CLASS = ".jwdockbuttons", 
-		UNDEFINED = undefined,
+		DB_CLASS = ".jwdockbuttons",
 		DOCUMENT = document,
 
 		/** Some CSS constants we should use for minimization * */
-		JW_CSS_NONE = "none", 
-		JW_CSS_BLOCK = "block", 
-		JW_CSS_100PCT = "100%",
-		JW_CSS_CENTER = "center";
+		JW_CSS_NONE = "none",
+		JW_CSS_BLOCK = "block",
+		JW_CSS_100PCT = "100%";
 
 	html5.dock = function(api, config) {
 		var _api = api,
@@ -33,7 +30,6 @@
 			_config = utils.extend({}, _defaults, config), 
 			_id = _api.id + "_dock",
 			_skin = _api.skin,
-			_height,
 			_buttonCount = 0,
 			_buttons = {},
 			_tooltips = {},
@@ -98,7 +94,7 @@
 			return { 
 				background: "url("+elem.src+") center",
 				'background-size': elem.width+"px "+elem.height+"px"
-			}
+			};
 		}
 		
 		function _createImage(className, parent) {
@@ -109,7 +105,7 @@
 			return _createElement("div", className, parent);
 		}
 		
-		function _internalSelector(selector, hover) {
+		function _internalSelector(selector) {
 			return "#" + _id + " " + (selector ? selector : "");
 		}
 
@@ -150,11 +146,11 @@
 	
 		_this.element = function() {
 			return _container;
-		}
+		};
 		
 		_this.offset = function(offset) {
 			_css(_internalSelector(), { 'margin-left': offset });
-		}
+		};
 
 		_this.hide = function() {
 			if (!_this.visible) return;
@@ -162,23 +158,23 @@
 			_container.style.opacity = 0;
 			clearTimeout(_fadeTimeout);
 			_fadeTimeout = setTimeout(function() {
-				_container.style.display = JW_CSS_NONE
+				_container.style.display = JW_CSS_NONE;
 			}, 250);
-		}
+		};
 
-
-		_this.showTemp = function(resize) {
-			if (!this.visible) {
-					_container.style.opacity = 0;
-					_container.style.display = JW_CSS_BLOCK;
+		_this.showTemp = function() {
+			if (!_this.visible) {
+				_container.style.opacity = 0;
+				_container.style.display = JW_CSS_BLOCK;
 			}
-		}
+		};
 		
-		_this.hideTemp = function(resize) {
-			if (!this.visible) {
-					_container.style.display = JW_CSS_NONE;
+		_this.hideTemp = function() {
+			if (!_this.visible) {
+				_container.style.display = JW_CSS_NONE;
 			}
-		}
+		};
+
 		_this.show = function() {
 			if (_this.visible || !_buttonCount) return;
 			_this.visible = true;
@@ -187,7 +183,7 @@
 			_fadeTimeout = setTimeout(function() {
 				_container.style.opacity = 1;
 			}, 0);
-		}
+		};
 		
 		_this.addButton = function(url, label, clickHandler, id) {
 			// Can't duplicate button ids
@@ -198,7 +194,7 @@
 				icon = _createElement("div", null, newButton);
 		
 			icon.id = _id + "_" + id;
-			icon.innerHTML = "&nbsp;"
+			icon.innerHTML = "&nbsp;";
 			_css("#"+icon.id, {
 				'background-image': url
 			});
@@ -251,7 +247,7 @@
 			
 			_buttonCount++;
 			_setCaps();
-		}
+		};
 		
 		_this.removeButton = function(id) {
 			if (_buttons[id]) {
@@ -263,11 +259,11 @@
 				_buttonCount--;
 				_setCaps();
 			}
-		}
+		};
 		
 		_this.numButtons = function() {
 			return _buttonCount;
-		}
+		};
 		
 		function _setCaps() {
 			_css(DB_CLASS + " .capLeft, " + DB_CLASS + " .capRight", {
@@ -279,19 +275,19 @@
 	};
 
 	_css(D_CLASS, {
-	  	opacity: 0,
-	  	display: JW_CSS_NONE
+		opacity: 0,
+		display: JW_CSS_NONE
 	});
 		
 	_css(D_CLASS + " > *", {
 		height: JW_CSS_100PCT,
-	  	'float': "left"
+		'float': "left"
 	});
 
 	_css(D_CLASS + " > .jwoverlay", {
 		height: 'auto',
-	  	'float': JW_CSS_NONE,
-	  	'z-index': 99
+		'float': JW_CSS_NONE,
+		'z-index': 99
 	});
 
 	_css(DB_CLASS + " button", {
@@ -300,7 +296,7 @@
 	
 	_css(DB_CLASS + " > *", {
 		height: JW_CSS_100PCT,
-	  	'float': "left"
+		'float': "left"
 	});
 
 	_css(DB_CLASS + " .divider", {
@@ -334,4 +330,4 @@
 	utils.transitionStyle(D_CLASS + " .jwoverlay", "opacity .25s");
 	utils.transitionStyle(DB_CLASS + " button div", "opacity .25s");
 
-})(jwplayer.html5);
+})(jwplayer);

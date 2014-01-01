@@ -32,7 +32,7 @@
 		LEFT = "left",
 		WHITE = "#ffffff",
 		
-		UNDEFINED = undefined,
+		UNDEFINED,
 		DOCUMENT = document,
 		
 		_defaults = {
@@ -103,7 +103,7 @@
 				utils.transform(_internalSelector("jwarrow"), "rotate(180deg)");
 			}
 
-			_css(_internalSelector(), {
+			_css.style(_container, {
 				padding: (_borderSizes.top+1) + "px " + _borderSizes.right + "px " + (_borderSizes.bottom+1) + "px " + _borderSizes.left + "px"  
 			});
 			
@@ -113,7 +113,7 @@
 		function _internalSelector(name) {
 			return '#' + _id + (name ? " ." + name : "");
 		}
-		
+
 		function _createElement(className, parent) {
 			var elem = DOCUMENT.createElement("div");
 			if (className) elem.className = className;
@@ -136,7 +136,7 @@
 			return {
 				background: "url("+elem.src+") center",
 				'background-size': elem.width + "px " + elem.height + "px"
-			}
+			};
 		}
 		
 		function _createBorderElement(dim1, dim2) {
@@ -186,27 +186,27 @@
 			_contents.appendChild(contents);
 			clearTimeout(contentsTimeout);
 			contentsTimeout = setTimeout(_position, 0);
-		}
+		};
 		
 		_this.offsetX = function(offset) {
 			_offset = offset;
 			clearTimeout(contentsTimeout);
 			_position();
-		}
+		};
 		
 		function _position() {
-			if (_container.clientWidth == 0) return;
-			_css(_internalSelector(), {
+			if (_container.clientWidth === 0) return;
+			_css.style(_container, {
 				'margin-left': Math.round(_offset - _container.clientWidth / 2)
 			});
-			_css(_internalSelector("jwarrow"), {
+			_css.style(_container.querySelectorAll(".jwarrow"), {
 				'margin-left': Math.round((_arrow.width / -2) - _offset)
 			});
 		}
 		
 		_this.borderWidth = function() {
-			return _borderSizes.left
-		}
+			return _borderSizes.left;
+		};
 
 		function _getSkinElement(name) {
 			var elem = _skin.getSkinElement('tooltip', name); 
@@ -219,7 +219,7 @@
 					src: "",
 					image: UNDEFINED,
 					ready: false
-				}
+				};
 			}
 		}
 		
@@ -227,18 +227,18 @@
 			_this.showing = true;
 			_container.style.opacity = 1;
 			_container.style.visibility = "visible";
-		}
+		};
 		
 		_this.hide = function() {
 			_this.showing = false;
 			_container.style.opacity = 0;
 			_container.style.visibility = JW_CSS_HIDDEN;
-		}
+		};
 		
 		// Call constructor
 		_init();
 
-	}
+	};
 
 	/*************************************************************
 	 * Player stylesheets - done once on script initialization;  *
@@ -267,4 +267,5 @@
 	});
 
 	_setTransition(OVERLAY_CLASS, JW_CSS_SMOOTH_EASE);
+	
 })(jwplayer);

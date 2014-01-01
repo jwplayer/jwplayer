@@ -4,8 +4,9 @@
  * @author pablo
  * @version 6.0
  */
-(function(html5) {
-	var utils = jwplayer.utils,
+(function(jwplayer) {
+	var html5 = jwplayer.html5,
+		utils = jwplayer.utils,
 		events = jwplayer.events,
 		states = events.state,
 		_css = utils.css,
@@ -14,16 +15,14 @@
 		DOCUMENT = document,
 		D_CLASS = ".jwdisplay",
 		D_PREVIEW_CLASS = ".jwpreview",
-		D_ERROR_CLASS = ".jwerror",
 		TRUE = true,
 		FALSE = false,
 
 		/** Some CSS constants we should use for minimization **/
 		JW_CSS_ABSOLUTE = "absolute",
-		JW_CSS_NONE = "none",
 		JW_CSS_100PCT = "100%",
 		JW_CSS_HIDDEN = "hidden",
-		JW_CSS_SMOOTH_EASE = "opacity .25s, background-image .25s, color .25s"
+		JW_CSS_SMOOTH_EASE = "opacity .25s, background-image .25s, color .25s";
 
 	
 	html5.display = function(api, config) {
@@ -32,7 +31,7 @@
 			_display, _preview,
 			_displayTouch,
 			_item,
-			_image, _imageWidth, _imageHeight, _imageURL, 
+			_image, _imageWidth, _imageHeight, 
 			_imageHidden = FALSE,
 			_icons = {},
 			_errorState = FALSE,
@@ -160,7 +159,7 @@
 		
 		function _createIcons() {
 			var	outStyle = {
-					font: _config.fontweight + " " + _config.fontsize + "px/"+(parseInt(_config.fontsize)+3)+"px Arial,Helvetica,sans-serif",
+					font: _config.fontweight + " " + _config.fontsize + "px/"+(parseInt(_config.fontsize, 10)+3)+"px Arial, Helvetica, sans-serif",
 					color: _config.fontcolor
 				},
 				overStyle = {color:_config.overcolor};
@@ -173,7 +172,7 @@
 			if (!_config.showicons) return;
 			
 			if (name || text) {
-				_button.setRotation(name == "buffer" ? parseInt(_config.bufferrotation) : 0, parseInt(_config.bufferinterval));
+				_button.setRotation(name == "buffer" ? parseInt(_config.bufferrotation, 10) : 0, parseInt(_config.bufferinterval, 10));
 				_button.setIcon(name);
 				_button.setText(text);
 			} else {
@@ -214,7 +213,7 @@
 		
 		
 		function _getState() {
-		    return _forced ? _forced : (_api ? _api.jwGetState() : states.IDLE);
+			return _forced ? _forced : (_api ? _api.jwGetState() : states.IDLE);
 		}
 		
 		function _stateHandler(evt) {
@@ -225,50 +224,50 @@
 		}
 		
 		function _updateDisplay(state) {
-	        state = _getState();
-		    if (state!=_previousState) {
-		        _previousState = state;
-    			if (_button) _button.setRotation(0);
-    			switch(state) {
-    			case states.IDLE:
-    				if (!_errorState && !_completedState) {
-    					if (_image && !_imageHidden) {
-    						_setVisibility(D_PREVIEW_CLASS, TRUE);
-    					}
-    					var disp = true;
-    					if (_api._model && _api._model.config.displaytitle === false) {
-    						disp = false;
-    					}
-    					_setIcon('play', (_item && disp) ? _item.title : "");
-    				}
-    				break;
-    			case states.BUFFERING:
-    				_clearError();
-    				_completedState = FALSE;
-    				_setIcon('buffer');
-    				break;
-    			case states.PLAYING:
-    				_setIcon();
-    				break;
-    			case states.PAUSED:
-    				_setIcon('play');
-    				break;
-    			}
+			state = _getState();
+			if (state!=_previousState) {
+				_previousState = state;
+				if (_button) _button.setRotation(0);
+				switch(state) {
+				case states.IDLE:
+					if (!_errorState && !_completedState) {
+						if (_image && !_imageHidden) {
+							_setVisibility(D_PREVIEW_CLASS, TRUE);
+						}
+						var disp = true;
+						if (_api._model && _api._model.config.displaytitle === false) {
+							disp = false;
+						}
+						_setIcon('play', (_item && disp) ? _item.title : "");
+					}
+					break;
+				case states.BUFFERING:
+					_clearError();
+					_completedState = FALSE;
+					_setIcon('buffer');
+					break;
+				case states.PLAYING:
+					_setIcon();
+					break;
+				case states.PAUSED:
+					_setIcon('play');
+					break;
+				}
 			}
 		}
 		
 	
 		this.forceState = function(state) {
-		    _forced = state;
-		    _updateDisplay(state);
-		    this.show();
-		}
+			_forced = state;
+			_updateDisplay(state);
+			this.show();
+		};
 		
 		this.releaseState = function(state) {
-		    _forced = null;
-		    _updateDisplay(state);
-		    this.show();
-		}
+			_forced = null;
+			_updateDisplay(state);
+			this.show();
+		};
 		
 		this.hidePreview = function(state) {
 			_imageHidden = state;
@@ -277,15 +276,15 @@
 				_hiding = true;
 				//_hideDisplay();
 			}
-		}
+		};
 
-		this.setHiding = function(state) {
+		this.setHiding = function() {
 			_hiding = true;
-		}
+		};
 
 		this.element = function() {
 			return _display;
-		}
+		};
 		
 		function _internalSelector(selector) {
 			return '#' + _display.id + ' ' + selector;
@@ -354,15 +353,14 @@
 				_button.show();
 				_hiding = false;
 			}
-		}
+		};
 		
 		this.hide = function() {
 			if (_button) {
 				_button.hide();
 				_hiding = true;
 			}
-		}
-
+		};
 
 		function _clearHideTimeout() {
 			clearTimeout(_hideTimeout);
@@ -372,10 +370,11 @@
 		/** NOT SUPPORTED : Using this for now to hack around instream API **/
 		this.setAlternateClickHandler = function(handler) {
 			_alternateClickHandler = handler;
-		}
+		};
+
 		this.revertAlternateClickHandler = function() {
 			_alternateClickHandler = undefined;
-		}
+		};
 
 		_init();
 	};
@@ -398,9 +397,9 @@
 	});
 
 	_css(D_CLASS +', '+D_CLASS + ' *', {
-    	'-webkit-transition': JW_CSS_SMOOTH_EASE,
-    	'-moz-transition': JW_CSS_SMOOTH_EASE,
-    	'-o-transition': JW_CSS_SMOOTH_EASE
+		'-webkit-transition': JW_CSS_SMOOTH_EASE,
+		'-moz-transition': JW_CSS_SMOOTH_EASE,
+		'-o-transition': JW_CSS_SMOOTH_EASE
 	});
 
-})(jwplayer.html5);
+})(jwplayer);

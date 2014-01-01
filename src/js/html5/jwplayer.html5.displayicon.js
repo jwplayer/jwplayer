@@ -4,21 +4,19 @@
  * @author pablo
  * @version 6.0
  */
-(function(html5) {
-	var utils = jwplayer.utils, 
-		events = jwplayer.events, 
-		states = events.state, 
+(function(jwplayer) {
+	var html5 = jwplayer.html5,
+		utils = jwplayer.utils,
 		_css = utils.css,
 
 		DI_CLASS = ".jwdisplayIcon", 
-		UNDEFINED = undefined,
+		UNDEFINED,
 		DOCUMENT = document,
 
 		/** Some CSS constants we should use for minimization * */
 		JW_CSS_NONE = "none", 
 		JW_CSS_100PCT = "100%",
-		JW_CSS_CENTER = "center",
-		JW_CSS_ABSOLUTE = "absolute";
+		JW_CSS_CENTER = "center";
 
 	html5.displayicon = function(id, api, textStyle, textStyleOver) {
 		var _api = api,
@@ -63,8 +61,9 @@
 			elem.className = name;
 			if (parent) parent.appendChild(elem);
 
-			_styleIcon(name, "."+name, style, overstyle);
-			
+			if (_container) {
+				_styleIcon(name, "."+name, style, overstyle);
+			}
 			return elem;
 		}
 		
@@ -83,7 +82,7 @@
 				'margin-top': _bgSkin.height / -2
 			};
 			
-			_css(_internalSelector(), style);
+			_css.style(_container, style);
 			
 			if (_bgSkin.overSrc) {
 				style['background-image'] = "url(" + _capLeftSkin.overSrc + "), url(" + _bgSkin.overSrc + "), url(" + _capRightSkin.overSrc + ")"; 
@@ -100,7 +99,7 @@
 
 			if (skinElem.src) {
 				style = utils.extend({}, style);
-				if (name.indexOf("Icon") > 0) _iconWidth = skinElem.width;
+				if (name.indexOf("Icon") > 0) _iconWidth = skinElem.width|0;
 				style['background-image'] = 'url(' + skinElem.src + ')';
 				style['background-size'] = skinElem.width+'px '+skinElem.height+'px';
 				style['width'] = skinElem.width;
@@ -113,9 +112,9 @@
 				if (!utils.isMobile()) {
 					_css("#"+_api.id+" .jwdisplay:hover " + (selector ? selector : _internalSelector()), overstyle);
 				}
-				_css(_internalSelector(), { display: "table" }, true);
+				_css.style(_container, { display: "table" });
 			} else {
-				_css(_internalSelector(), { display: "none" }, true);
+				_css.style(_container, { display: "none" });
 			}
 
 			_iconElement = skinElem;
@@ -133,7 +132,7 @@
 		}
 		
 		function _redraw() {
-			var showText = _hasCaps || (_iconWidth == 0),
+			var showText = _hasCaps || (_iconWidth === 0),
 				px100pct = "px " + JW_CSS_100PCT;
 			
 			_css(_internalSelector('.jwtext'), {
@@ -141,11 +140,14 @@
 			});
 			
 			_repeatCount = 10;
-			setTimeout(function() { _setWidth(px100pct); }, 0);
+			setTimeout(function() {
+				_setWidth(px100pct);
+			}, 0);
 			if (showText) {
-				_widthInterval = setInterval(function() { _setWidth(px100pct) }, 100);
+				_widthInterval = setInterval(function() {
+					_setWidth(px100pct);
+				}, 100);
 			}
-			
 		}
 		
 		function _setWidth(px100pct) {
@@ -158,7 +160,7 @@
 				// Fix for 1 pixel gap in Chrome. This is a chrome bug that needs to be fixed. 
 				// TODO: Remove below once chrome fixes this bug.
 				if (utils.isChrome() && _container.parentNode.clientWidth % 2 == 1) contentWidth++;
-				_css(_internalSelector(), {
+				_css.style(_container, {
 					'background-size': [_capLeftSkin.width + px100pct, contentWidth + px100pct, _capRightSkin.width + px100pct].join(",")
 				}, true);
 			}
@@ -166,7 +168,7 @@
 			
 		this.element = function() {
 			return _container;
-		}
+		};
 
 		this.setText = function(text) {
 			var style = _text.style;
@@ -182,7 +184,7 @@
 			style.display = "";
 			//setTimeout(_redraw, 100);
 			_redraw();
-		}
+		};
 		
 		this.setIcon = function(name) {
 			var newIcon = _createElement('jwicon');
@@ -194,18 +196,20 @@
 				_container.appendChild(newIcon);
 			}
 			_icon = newIcon;
-		}
+		};
 
-		var _bufferInterval, _bufferAngle = 0, _currentAngle;
+		var _bufferInterval,
+			_bufferAngle = 0,
+			_currentAngle;
 		
 		function startRotation(angle, interval) {
 			clearInterval(_bufferInterval);
-			_currentAngle = 0
-			_bufferAngle = angle;
-			if (angle == 0) {
+			_currentAngle = 0;
+			_bufferAngle = angle|0;
+			if (_bufferAngle === 0) {
 				rotateIcon();
 			} else {
-				_bufferInterval = setInterval(rotateIcon, interval)
+				_bufferInterval = setInterval(rotateIcon, interval);
 			}
 		}
 
@@ -223,11 +227,11 @@
 		
 		var _hide = this.hide = function() {
 			_container.style.opacity = 0;
-		}
+		};
 
-		var _show = this.show = function() {
+		this.show = function() {
 			_container.style.opacity = 1;
-		}
+		};
 
 		_init();
 	};
@@ -235,10 +239,10 @@
 	_css(DI_CLASS, {
 		display : 'table',
 		cursor : 'pointer',
-    	position: "relative",
-    	'margin-left': "auto",
-    	'margin-right': "auto",
-    	top: "50%"
+		position: "relative",
+		'margin-left': "auto",
+		'margin-right': "auto",
+		top: "50%"
 	}, true);
 
 	_css(DI_CLASS + " div", {
@@ -265,4 +269,4 @@
 		'user-select' : JW_CSS_NONE
 	});
 
-})(jwplayer.html5);
+})(jwplayer);

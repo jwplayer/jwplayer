@@ -16,7 +16,6 @@
 	html5.controller = function(model, view) {
 		var _model = model,
 			_view = view,
-			_controller = this,
 			_eventDispatcher = new events.eventdispatcher(_model.id, _model.config.debug),
 			_ready = FALSE,
 			_loadOnPlay = -1,
@@ -30,7 +29,7 @@
 
 		function _init() {
 			_model.addEventListener(events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
-			_model.addEventListener(events.JWPLAYER_MEDIA_COMPLETE, function(evt) {
+			_model.addEventListener(events.JWPLAYER_MEDIA_COMPLETE, function() {
 				// Insert a small delay here so that other complete handlers can execute
 				setTimeout(_completeHandler, 25);
 			});
@@ -82,7 +81,7 @@
 			_eventDispatcher.sendEvent(evt.type, evt);
 		}
 		
-		function _bufferFullHandler(evt) {
+		function _bufferFullHandler() {
 			_video().play();
 		}
 
@@ -137,7 +136,9 @@
 				}
 				
 				if (_isIdle()) {
-					if (_model.playlist.length == 0) return FALSE;
+					if (_model.playlist.length === 0) {
+						return FALSE;
+					}
 					_video().load(_model.playlist[_model.item]);
 				} else if (_model.state == states.PAUSED) {
 					_video().play();
@@ -207,8 +208,10 @@
 		}
 
 		function _item(index) {
+			utils.css.block(_model.id + '_next');
 			_load(index);
 			_play();
+			utils.css.unblock(_model.id + '_next');
 		}
 		
 		function _prev() {
@@ -228,7 +231,7 @@
 				_stopPlaylist = FALSE;
 				return;
 			}
-				
+			
 			_actionOnAttach = _completeHandler;
 			if (_model.repeat) {
 				_next();
@@ -236,7 +239,9 @@
 				if (_model.item == _model.playlist.length - 1) {
 					_loadOnPlay = 0;
 					_stop(TRUE);
-					setTimeout(function() { _eventDispatcher.sendEvent(events.JWPLAYER_PLAYLIST_COMPLETE)}, 0);
+					setTimeout(function() {
+						_eventDispatcher.sendEvent(events.JWPLAYER_PLAYLIST_COMPLETE);
+					}, 0);
 				} else {
 					_next();
 				}
@@ -280,7 +285,7 @@
 
 		function _attachMedia(seekable) {
 			try {
-				var ret = _model.getVideo().attachMedia(seekable);
+				_model.getVideo().attachMedia(seekable);
 				if (typeof _actionOnAttach == "function") {
 					_actionOnAttach();
 				}
@@ -296,7 +301,7 @@
 				} else {
 					_queuedCalls.push({ method: func, arguments: arguments});
 				}
-			}
+			};
 		}
 		
 		function _callMethod(func, args) {
@@ -315,7 +320,7 @@
 			// Something has called stop() in an onComplete handler
 			_stopPlaylist = TRUE;
 			_waitForReady(_stop)();
-		}
+		};
 		this.load = _waitForReady(_load);
 		this.next = _waitForReady(_next);
 		this.prev = _waitForReady(_prev);
@@ -333,11 +338,11 @@
 		this.getCaptionsList = _getCaptionsList;
 		this.checkBeforePlay = function() {
             return _preplay;
-        }
+        };
 		this.playerReady = _playerReady;
 
 		_init();
-	}
+	};
 	
 })(jwplayer);
 
