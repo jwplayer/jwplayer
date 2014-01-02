@@ -269,7 +269,11 @@
 			switch (evt.newstate) {
 			case states.BUFFERING:
 			case states.PLAYING:
-				_css(_internalSelector('.jwtimeSliderThumb'), { opacity: 1 });
+				if (_elements.timeSliderThumb) {
+					_css.style(_elements.timeSliderThumb, {
+						opacity: 1
+					});
+				}
 				_toggleButton("play", TRUE);
 				break;
 			case states.PAUSED:
@@ -279,7 +283,11 @@
 				break;
 			case states.IDLE:
 				_toggleButton("play", FALSE);
-				_css(_internalSelector('.jwtimeSliderThumb'), { opacity: 0 });
+				if (_elements.timeSliderThumb) {
+					_css.style(_elements.timeSliderThumb, {
+						opacity: 0
+					});
+				}
 				if (_elements.timeRail) {
 					_elements.timeRail.className = "jwrail";
 					setTimeout(function() {
@@ -1092,7 +1100,7 @@
 			}
 
 			if (_elements.timeSliderThumb) {
-				_css(_internalSelector(".jwtimeSliderThumb"), {
+				_css.style(_elements.timeSliderThumb, {
 					'margin-left': (_getSkinElement("timeSliderThumb").width/-2)
 				});
 			}
@@ -1362,7 +1370,7 @@
 				ieIframe = (top !== window.self) && utils.isIE();
 
 			_css.style(_controlbar, controlbarCss);
-			_css(_internalSelector('.jwgroup.jwcenter'), centerCss);
+			_css.style(_groups.center, centerCss);
 
 			// ie <= IE10 does not allow fullscreen from inside an iframe. Hide the FS button. (TODO: Fix for IE11)
 			_css(_internalSelector(".jwfullscreen"), {
@@ -1721,8 +1729,6 @@
 	_css(CB_CLASS + ' .jwprogressOverflow', {
 		position: JW_CSS_ABSOLUTE,
 		overflow: JW_CSS_HIDDEN
-	});
-	_css(CB_CLASS + ' .jwduration .jwhidden', {
 	});
 
 	_setTransition(CB_CLASS, JW_CSS_SMOOTH_EASE);

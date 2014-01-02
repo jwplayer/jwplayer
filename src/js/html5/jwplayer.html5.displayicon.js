@@ -29,6 +29,7 @@
 			_hasCaps,
 			_text,
 			_icon,
+			_iconCache = {},
 			_iconElement,
 			_iconWidth = 0,
 			_widthInterval,
@@ -62,7 +63,7 @@
 			if (parent) parent.appendChild(elem);
 
 			if (_container) {
-				_styleIcon(name, "."+name, style, overstyle);
+				_styleIcon(elem, name, "."+name, style, overstyle);
 			}
 			return elem;
 		}
@@ -81,36 +82,36 @@
 				height: _bgSkin.height,
 				'margin-top': _bgSkin.height / -2
 			};
+			_css(_internalSelector(), style);
 			
-			_css.style(_container, style);
-			
-			if (_bgSkin.overSrc) {
-				style['background-image'] = "url(" + _capLeftSkin.overSrc + "), url(" + _bgSkin.overSrc + "), url(" + _capRightSkin.overSrc + ")"; 
-			}
-
 			if (!utils.isMobile()) {
+				if (_bgSkin.overSrc) {
+					style['background-image'] = "url(" + _capLeftSkin.overSrc + "), url(" + _bgSkin.overSrc + "), url(" + _capRightSkin.overSrc + ")"; 
+				}
 				_css("#"+_api.id+" .jwdisplay:hover " + _internalSelector(), style);
 			}
 		}
 		
-		function _styleIcon(name, selector, style, overstyle) {
+		function _styleIcon(element, name, selector, style, overstyle) {
 			var skinElem = _getSkinElement(name);
 			if (name == "replayIcon" && !skinElem.src) skinElem = _getSkinElement("playIcon"); 
 
 			if (skinElem.src) {
 				style = utils.extend({}, style);
 				if (name.indexOf("Icon") > 0) _iconWidth = skinElem.width|0;
-				style['background-image'] = 'url(' + skinElem.src + ')';
-				style['background-size'] = skinElem.width+'px '+skinElem.height+'px';
-				style['width'] = skinElem.width;
-				_css(_internalSelector(selector), style);
+				style.width = skinElem.width;
+				_css.style(element, style);
+				_css(selector, {
+					'background-image': 'url(' + skinElem.src + ')',
+					'background-size': skinElem.width+'px '+skinElem.height+'px'
+				});
 				
 				overstyle = utils.extend({}, overstyle);
 				if (skinElem.overSrc) {
 					overstyle['background-image'] = 'url(' + skinElem.overSrc + ')';
 				}
 				if (!utils.isMobile()) {
-					_css("#"+_api.id+" .jwdisplay:hover " + (selector ? selector : _internalSelector()), overstyle);
+					_css("#"+_api.id+" .jwdisplay:hover " + selector, overstyle);
 				}
 				_css.style(_container, { display: "table" });
 			} else {
@@ -135,7 +136,7 @@
 			var showText = _hasCaps || (_iconWidth === 0),
 				px100pct = "px " + JW_CSS_100PCT;
 			
-			_css(_internalSelector('.jwtext'), {
+			_css.style(_text, {
 				display: (_text.innerHTML && showText) ? UNDEFINED : JW_CSS_NONE
 			});
 			
@@ -161,7 +162,7 @@
 				// TODO: Remove below once chrome fixes this bug.
 				if (utils.isChrome() && _container.parentNode.clientWidth % 2 == 1) contentWidth++;
 				_css.style(_container, {
-					'background-size': [_capLeftSkin.width + px100pct, contentWidth + px100pct, _capRightSkin.width + px100pct].join(",")
+					'background-size': [_capLeftSkin.width + px100pct, contentWidth + px100pct, _capRightSkin.width + px100pct].join(", ")
 				}, true);
 			}
 		}
@@ -187,15 +188,18 @@
 		};
 		
 		this.setIcon = function(name) {
-			var newIcon = _createElement('jwicon');
-			newIcon.id = _container.id + "_" + name;
-			_styleIcon(name+"Icon", "#"+newIcon.id);
-			if (_container.contains(_icon)) {
-				_container.replaceChild(newIcon, _icon);
-			} else {
-				_container.appendChild(newIcon);
+			var icon = _iconCache[name];
+			if (!icon) {
+				icon = _createElement('jwicon');
+				icon.id = _container.id + "_" + name;
 			}
-			_icon = newIcon;
+			_styleIcon(icon, name+"Icon", "#"+icon.id);
+			if (_container.contains(_icon)) {
+				_container.replaceChild(icon, _icon);
+			} else {
+				_container.appendChild(icon);
+			}
+			_icon = icon;
 		};
 
 		var _bufferInterval,
