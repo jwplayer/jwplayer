@@ -344,8 +344,13 @@
 				if (_model.getVideo().audioMode()) return;
 				
 				if (_isMobile) {
-					_videoTag.webkitEnterFullScreen();
-					_model.setFullscreen(TRUE);
+					try {
+						_videoTag.webkitEnterFullScreen();
+						_model.setFullscreen(TRUE);
+					} catch(e) {
+						//object can't go fullscreen
+						return;
+					}
 				} else if (!_model.fullscreen) {
 					_fakeFullscreen(TRUE);
 					if (_playerElement.requestFullScreen) {
