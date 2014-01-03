@@ -72,8 +72,8 @@
 			if (utils.typeOf(item) == "array") {
 			   _api.callInternal('jwLoadArrayInstream', _item, _options);
 			} else {
-    	       _api.callInternal('jwLoadItemInstream', _item, _options);
-    		}
+			   _api.callInternal('jwLoadItemInstream', _item, _options);
+			}
 		};
 
 		_this.removeEvents = function() {
@@ -127,13 +127,13 @@
 		// };
 		
 		_this.onPlaylistComplete = function(callback) {
-            return _eventListener(events.JWPLAYER_PLAYLIST_COMPLETE,callback);
-        }
-        
-        _this.onPlaylistItem = function(callback) {
-            return _eventListener(events.JWPLAYER_PLAYLIST_ITEM,callback);
-        }
-        
+			return _eventListener(events.JWPLAYER_PLAYLIST_COMPLETE,callback);
+		};
+		
+		_this.onPlaylistItem = function(callback) {
+			return _eventListener(events.JWPLAYER_PLAYLIST_ITEM,callback);
+		};
+		
 		_this.onTime = function(callback) {
 			return _eventListener(events.JWPLAYER_MEDIA_TIME, callback);
 		};

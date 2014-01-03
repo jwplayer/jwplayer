@@ -25,9 +25,8 @@
 		JW_CSS_SMOOTH_EASE = "opacity .25s, background-image .25s, color .25s";
 
 	
-	html5.display = function(api, config) {
-		var _api = api,
-			_skin = api.skin,
+	html5.display = function(_api, config) {
+		var _skin = _api.skin,
 			_display, _preview,
 			_displayTouch,
 			_item,

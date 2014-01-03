@@ -495,6 +495,11 @@
             return [];
         };
 
+        // for supporting api interface in html5 display
+        _this.jwGetControls = function() {
+            return false;//_api.jwGetControls();
+        };
+
         _this.skin = _api.skin;
         _this.id = _api.id + "_instream";
 
