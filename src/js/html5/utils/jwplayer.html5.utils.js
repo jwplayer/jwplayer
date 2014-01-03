@@ -5,8 +5,7 @@
  * @version 6.0
  */
 (function(utils) {
-	var DOCUMENT = document, WINDOW = window;
-	
+	var DOCUMENT = document;
 
 	/**
 	 * Cleans up a css dimension (e.g. '420px') and returns an integer.
@@ -17,9 +16,8 @@
 				return 0;
 			} else if (dimension.lastIndexOf("%") > -1) {
 				return dimension;
-			} else {
-				return parseInt(dimension.replace("px", ""), 10);
 			}
+			return parseInt(dimension.replace("px", ""), 10);
 		}
 		return dimension;
 	};
