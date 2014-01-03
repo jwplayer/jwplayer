@@ -427,9 +427,6 @@
 				height: _bgHeight,
 				bottom: _audioMode ? 0 : _settings.margin
 			};
-			if (_settings.maxwidth > 0) {
-				styles['max-width'] =  _audioMode ? UNDEFINED : _settings.maxwidth;
-			}
 			_css.style(_controlbar, styles);
 			
 			_css(_internalSelector(".jwtext"), {
@@ -1265,9 +1262,6 @@
 			else {
 				button.addEventListener('mouseout', overlay.hide, FALSE);
 			}
-			_css('#'+element.id, {
-				left: "50%"
-			});
 		}
 
 		function _addMobileOverlay(overlay, button, tapAction, name) {
@@ -1277,9 +1271,6 @@
 			var buttonTouch = new utils.touch(button); 
 			buttonTouch.addEventListener(utils.touchEvents.TAP, function() {
 				_overlayTapHandler(overlay, tapAction, name);
-			});
-			_css('#'+element.id, {
-				left: "50%"
 			});
 		}
 
@@ -1360,12 +1351,11 @@
 					left:  Math.round(utils.parseDimension(_groups.left.offsetWidth) + capLeft.width),
 					right: Math.round(utils.parseDimension(_groups.right.offsetWidth) + capRight.width)
 				},
-				max = !_audioMode && _controlbar.parentNode.clientWidth > _settings.maxwidth,
+				maxMargin = (_controlbar.parentNode.clientWidth - _settings.maxwidth)/2|0,
+				max = !_audioMode && maxMargin > 0,
 				controlbarCss = {
-					left:  max ? "50%" : margin,
-					right: max ? UNDEFINED : margin,
-					'margin-left': max ? _cbBounds.width / -2 : UNDEFINED,
-					width: max ? JW_CSS_100PCT : UNDEFINED
+					left:  max ? maxMargin : margin,
+					right: max ? maxMargin : margin
 				},
 				ieIframe = (top !== window.self) && utils.isIE();
 

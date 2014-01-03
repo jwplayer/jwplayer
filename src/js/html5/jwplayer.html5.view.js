@@ -87,7 +87,7 @@
 			_playerElement.id = _api.id;
 			
 			if (_model.aspectratio) {
-				_css('.' + PLAYER_CLASS, {
+				_css.style(_playerElement, {
 					display: 'inline-block'
 				});
 				_playerElement.className = _playerElement.className.replace(PLAYER_CLASS, PLAYER_CLASS + " " + ASPECT_MODE);
@@ -248,7 +248,11 @@
 		
 		function _touchHandler() {
 			if (_isMobile) {
-				_showing ? _hideControls() : _showControls();
+				if (_showing) {
+					_hideControls();
+				} else {
+					_showControls();
+				}
 			} else {
 				_stateHandler(_api.jwGetState());
 			}
@@ -420,13 +424,18 @@
 				_model.height = height;
 			}
 			
-			_playerElement.style.width = isNaN(width) ? width : width + "px"; 
+			var playerStyle = { width: width };
 			if (_playerElement.className.indexOf(ASPECT_MODE) == -1) {
-				_playerElement.style.height = isNaN(height) ? height : height + "px"; 
+				playerStyle.height = height; 
 			}
+			_css.style(_playerElement, playerStyle);
 
-			if (_display) _display.redraw();
-			if (_controlbar) _controlbar.redraw(TRUE);
+			if (_display) {
+				_display.redraw();
+			}
+			if (_controlbar) {
+				_controlbar.redraw(TRUE);
+			}
 			if (_logo) {
 				_logo.offset(_controlbar && _logo.position().indexOf("bottom") >= 0 ? _controlbar.height() + _controlbar.margin() : 0);
 				setTimeout(function() {
@@ -444,7 +453,11 @@
 			if (_playlist && playlistSize && (playlistPos == "right" || playlistPos == "bottom")) {
 				_playlist.redraw();
 				
-				var playlistStyle = { display: JW_CSS_BLOCK }, containerStyle = {};
+				var playlistStyle = {
+						display: JW_CSS_BLOCK
+					},
+					containerStyle = {};
+
 				playlistStyle[playlistPos] = 0;
 				containerStyle[playlistPos] = playlistSize;
 				
@@ -454,8 +467,8 @@
 					playlistStyle.height = playlistSize;
 				}
 				
-				_css(_internalSelector(VIEW_PLAYLIST_CONTAINER_CLASS), playlistStyle);
-				_css(_internalSelector(VIEW_MAIN_CONTAINER_CLASS), containerStyle);
+				_css.style(_playlistLayer, playlistStyle);
+				_css.style(_container, containerStyle);
 			}
 
 			_resizeMedia();
@@ -507,7 +520,9 @@
 		this.resizeMedia = _resizeMedia;
 
 		var _completeSetup = this.completeSetup = function() {
-			_css(_internalSelector(), {opacity: 1});
+			_css.style(_playerElement, {
+				opacity: 1
+			});
 		};
 		
 		/**
@@ -655,13 +670,13 @@
 				// the pause event to be fired. This causes audio files to 
 				// become unplayable. Hence the video tag is always kept 
 				// visible on Android devices.
-				_css(_internalSelector(VIEW_VIDEO_CONTAINER_CLASS), {
+				_css.style(_videoLayer, {
 					visibility: "visible",
 					opacity: 1
 				});
 			}
 			else {
-				_css(_internalSelector(VIEW_VIDEO_CONTAINER_CLASS), {
+				_css.style(_videoLayer, {
 					visibility: JW_CSS_HIDDEN,
 					opacity: 0
 				});		
@@ -877,7 +892,8 @@
 
 	// Container styles
 	_css('.' + PLAYER_CLASS, {
-		position: "relative",
+		position: 'relative',
+		// overflow: 'hidden',
 		display: 'block',
 		opacity: 0,
 		'min-height': 0,
