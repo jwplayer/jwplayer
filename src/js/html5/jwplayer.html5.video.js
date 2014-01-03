@@ -41,23 +41,17 @@
 			"volumechange" : _volumeHandler,
 			"waiting" : _bufferStateHandler
 		},
-		
-		_extensions = utils.extensionmap,
 
 		// Current playlist item
 		_item,
 		// Currently playing source
 		_source,
-		// Current type - used to filter the sources
-		_type,
 		// Reference to the video tag
 		_videotag,
 		// Current duration
 		_duration,
 		// Current position
 		_position,
-		// Requested seek position
-		_seekOffset,
 		// Whether seeking is ready yet
 		_canSeek,
 		// Whether we have sent out the BUFFER_FULL event
@@ -174,13 +168,13 @@
 				_sendBufferFull();
 			}
 			if (evt.type == "loadedmetadata") {
-                //fixes Chrome bug where it doesn't like being muted before video is loaded
-                if (_videotag.muted) {
-                    _videotag.muted = FALSE;
-                    _videotag.muted = TRUE;
-                }
-                _sendEvent(events.JWPLAYER_MEDIA_META,{duration:_videotag.duration,height:_videotag.videoHeight,width:_videotag.videoWidth});
-            }
+				//fixes Chrome bug where it doesn't like being muted before video is loaded
+				if (_videotag.muted) {
+					_videotag.muted = FALSE;
+					_videotag.muted = TRUE;
+				}
+				_sendEvent(events.JWPLAYER_MEDIA_META,{duration:_videotag.duration,height:_videotag.videoHeight,width:_videotag.videoWidth});
+			}
 		}
 		
 		
@@ -232,7 +226,9 @@
 		function _errorHandler(evt) {
 			if (!_attached) return;
 			utils.log("Error playing media: %o", _videotag.error);
-			_eventDispatcher.sendEvent(events.JWPLAYER_MEDIA_ERROR, {message: "Error loading media: File could not be played"});
+			_eventDispatcher.sendEvent(events.JWPLAYER_MEDIA_ERROR, {
+				message: "Error loading media: File could not be played"
+			});
 			_setState(states.IDLE);
 		}
 
@@ -274,7 +270,7 @@
 			_sendLevels(_levels);
 			
 			_completeLoad();
-		}
+		};
 		
 		function _pickInitialQuality() {
 			if (_currentQuality < 0) _currentQuality = 0;
@@ -315,34 +311,34 @@
 			}
 		}
 
-		var _stop = _this.stop = function() {
+		_this.stop = function() {
 			if (!_attached) return;
 			_videotag.removeAttribute("src");
 			if (!_isIE) _videotag.load();
 			_currentQuality = -1;
 			clearInterval(_bufferInterval);
 			_setState(states.IDLE);
-		}
+		};
 
 		_this.play = function() {
 			if (_attached && !_dragging) {
 				_videotag.play();
 			}
-		}
+		};
 
 		var _pause = _this.pause = function() {
 			if (_attached) {
 				_videotag.pause();
 				_setState(states.PAUSED);
 			}
-		}
+		};
 			
 		_this.seekDrag = function(state) {
 			if (!_attached) return; 
 			_dragging = state;
 			if (state) _videotag.pause();
 			else _videotag.play();
-		}
+		};
 		
 		var _seek = _this.seek = function(seekPos) {
 			if (!_attached) return; 
@@ -361,7 +357,7 @@
 				_delayedSeek = seekPos;
 			}
 			
-		}
+		};
 		
 		function _sendSeekEvent(evt) {
 			_generalHandler(evt);
@@ -375,7 +371,7 @@
 				_videotag.volume = Math.min(Math.max(0, vol / 100), 1);
 				_lastVolume = _videotag.volume * 100;
 			}
-		}
+		};
 		
 		function _volumeHandler(evt) {
 			_sendEvent(events.JWPLAYER_MEDIA_VOLUME, {
@@ -395,7 +391,7 @@
 				_volume(_lastVolume);
 				_videotag.muted = FALSE;
 			}
-		}
+		};
 
 		/** Set the current player state * */
 		function _setState(newstate) {
@@ -405,7 +401,7 @@
 			}
 			
 			// Ignore state changes while dragging the seekbar
-			if (_dragging) return
+			if (_dragging) return;
 
 			if (_state != newstate) {
 				var oldstate = _state;
@@ -444,26 +440,26 @@
 		}
 		
 		function _complete() {
-		    //if (_completeOnce) return;
-		    _completeOnce = TRUE;
+			//if (_completeOnce) return;
+			_completeOnce = TRUE;
 			if (_state != states.IDLE) {
 				_currentQuality = -1;
-                _beforecompleted = TRUE;
+				_beforecompleted = TRUE;
 				_sendEvent(events.JWPLAYER_MEDIA_BEFORECOMPLETE);
 
 
 				if (_attached) {
-				    _setState(states.IDLE);
-    			    _beforecompleted = FALSE;
-    				_sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
-                }
+					_setState(states.IDLE);
+					_beforecompleted = FALSE;
+					_sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
+				}
 			}
 		}
 		
-        this.checkComplete = function() {
-            
-            return _beforecompleted;
-        }
+		this.checkComplete = function() {
+			
+			return _beforecompleted;
+		};
 
 		/**
 		 * Return the video tag and stop listening to events  
@@ -471,7 +467,7 @@
 		_this.detachMedia = function() {
 			_attached = FALSE;
 			return _videotag;
-		}
+		};
 		
 		/**
 		 * Begin listening to events again  
@@ -480,27 +476,27 @@
 			_attached = TRUE;
 			if (!seekable) _canSeek = FALSE;
 			if (_beforecompleted) {
-			    _setState(states.IDLE);
-			    _sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
-                _beforecompleted = FALSE;
+				_setState(states.IDLE);
+				_sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
+				_beforecompleted = FALSE;
 			}
-		}
+		};
 		
 		// Provide access to video tag
 		// TODO: remove; used by InStream
 		_this.getTag = function() {
 			return _videotag;
-		}
+		};
 		
 		_this.audioMode = function() {
 			if (!_levels) { return FALSE; }
 			var type = _levels[0].type;
 			return (type == "aac" || type == "mp3" || type == "vorbis");
-		}
+		};
 
 		_this.setCurrentQuality = function(quality) {
 			if (_currentQuality == quality) return;
-			quality = parseInt(quality);
+			quality = parseInt(quality, 10);
 			if (quality >=0) {
 				if (_levels && _levels.length > quality) {
 					_currentQuality = quality;
@@ -511,19 +507,19 @@
 					_this.seek(currentTime);
 				}
 			}
-		}
+		};
 		
 		_this.getCurrentQuality = function() {
 			return _currentQuality;
-		}
+		};
 		
 		_this.getQualityLevels = function() {
 			return _getPublicLevels(_levels);
-		}
+		};
 		
 		// Call constructor
 		_init(videotag);
 
-	}
+	};
 
 })(jwplayer);
