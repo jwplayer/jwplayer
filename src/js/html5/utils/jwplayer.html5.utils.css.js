@@ -59,7 +59,7 @@
 		_updateStylesheet(selector);
 	};
 
-	_css.style = function(elements, styles) {
+	_css.style = function(elements, styles, immediate) {
 		if (elements.length === undefined) {
 			elements = [elements];
 		}
@@ -67,7 +67,7 @@
 		var cssRules = {};
 		_updateStyleAttributes(cssRules, styles);
 
-		if (_cssBlock !== null) {
+		if (_cssBlock !== null && !immediate) {
 			elements.__cssRules = _extend(elements.__cssRules, cssRules);
 			if (_cssBlock.elements.indexOf(elements) < 0) {
 				_cssBlock.elements.push(elements);
