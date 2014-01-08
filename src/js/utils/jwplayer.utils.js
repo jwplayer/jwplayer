@@ -503,7 +503,7 @@
 				xml = xmlhttp.responseXML;
 				firstChild = xml.firstChild;
 			} catch (e) {
-				utils.log('xml mime type error', e);
+				
 			}
 			if (xml && firstChild) {
 				return completecallback(xmlhttp);
