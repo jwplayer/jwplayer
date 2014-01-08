@@ -162,6 +162,7 @@
                        
                     }
                     _tracks.push(captions[i]);
+                    _load(_tracks[i].file,i)
                 }
             }
 
@@ -185,20 +186,18 @@
                     }
                 }
             }
-
-
-
             _redraw(false);
             _sendEvent(events.JWPLAYER_CAPTIONS_LIST, _getTracks(), _selectedTrack);
         }
 
         /** Load captions. **/
-        function _load(file) {
-            _file = file;
-            utils.ajax(file, _xmlReadHandler, _xmlFailedHandler);
+        function _load(file,index) {
+            utils.ajax(file, function(xmlEvent) {
+                    _xmlReadHandler(xmlEvent,index); 
+                }, _xmlFailedHandler);
         }
 
-        function _xmlReadHandler(xmlEvent) {
+        function _xmlReadHandler(xmlEvent,index) {
             var rss = xmlEvent.responseXML.firstChild,
                 parser;
 
@@ -208,26 +207,27 @@
             while (rss.nodeType == rss.COMMENT_NODE) rss = rss.nextSibling;
 
             if (parsers.localName(rss) == "tt") {
-                parser = new jwplayer.parsers.dfxp(_loadHandler,_errorHandler);
+                parser = new jwplayer.parsers.dfxp();
             }
             else {
-                parser = new jwplayer.parsers.srt(_loadHandler,_errorHandler);   
+                parser = new jwplayer.parsers.srt();   
             }
-            parser.parse(xmlEvent.responseText);
+            try {
+                var data = parser.parse(xmlEvent.responseText);
+                _renderer.populate(data);
+                if (_track < _tracks.length) {
+                    _tracks[index].data = data;
+                }
+                _redraw(false);
+            } catch (e) {
+                _errorHandler(e.message + ": " +_tracks[index].file);
+            }
         }
 
         function _xmlFailedHandler(message) {
             _errorHandler(message);
         }
 
-        /** Captions were loaded. **/
-        function _loadHandler(data) {
-            _renderer.populate(data);
-            if (_track < _tracks.length) {
-                _tracks[_track].data = data;
-            }
-            _redraw(false);
-        }
 
 
         /** Player started playing. **/
@@ -298,7 +298,7 @@
             if(_tracks[_track].data) {
                 _renderer.populate(_tracks[_track].data);
             } else {
-                _load(_tracks[_track].file);
+                _errorHandler("file not loaded");
             }
             _redraw(false);
         }

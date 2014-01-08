@@ -1,7 +1,7 @@
 (function(parsers) {
 
     /** Component that loads and parses an DFXP file. **/
-    parsers.dfxp = function(_success, _failure) {
+    parsers.dfxp = function() {
         
         var _seconds = jwplayer.utils.seconds;
 
@@ -37,9 +37,9 @@
                 }
             }
             if(_captions.length > 1) {
-                _success(_captions);
+                return _captions;
             } else {
-                _failure("Invalid DFXP file: "+_url);
+                throw { message:"Invalid DFXP file:"};
             }
         };
 
