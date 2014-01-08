@@ -640,7 +640,7 @@
 					jwhidden;
 				if (!jwalt) return;
 				jwhidden = _controlbar.querySelectorAll(".jwhidden");
-				if (_controlbar.parentNode.clientWidth >= 320 && !jwalt.firstChild) {
+				if ((_controlbar.parentNode && _controlbar.parentNode.clientWidth >= 320) && !jwalt.firstChild) {
 					_css.style(jwhidden, NOT_HIDDEN);				
 				} else {
 					_css.style(jwhidden, HIDDEN);				
@@ -1351,7 +1351,7 @@
 					left:  Math.round(utils.parseDimension(_groups.left.offsetWidth) + capLeft.width),
 					right: Math.round(utils.parseDimension(_groups.right.offsetWidth) + capRight.width)
 				},
-				maxMargin = (_controlbar.parentNode.clientWidth - _settings.maxwidth)/2|0,
+				maxMargin = ((_controlbar.parentNode ? _controlbar.parentNode.clientWidth : 0) - _settings.maxwidth)/2|0,
 				max = !_audioMode && maxMargin > 0,
 				controlbarCss = {
 					left:  max ? maxMargin : margin,
