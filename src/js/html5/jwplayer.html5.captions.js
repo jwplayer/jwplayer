@@ -95,7 +95,7 @@
         function _idleHandler() {
             _state = 'idle';
             _redraw(false);
-            _renderer.update(0);
+            //_renderer.update(0);
         }
 
         function _stateHandler(evt) {
@@ -180,12 +180,13 @@
                 for (i = 0; i < tracks.length; i++) {
                     if (label == tracks[i].label) {
                         defaultTrack = i;
+                        _renderCaptions(defaultTrack);
                         break;
                     }
                 }
             }
 
-            _renderCaptions(defaultTrack);
+
 
             _redraw(false);
             _sendEvent(events.JWPLAYER_CAPTIONS_LIST, _getTracks(), _selectedTrack);
@@ -199,7 +200,7 @@
 
         function _xmlReadHandler(xmlEvent) {
             var rss = xmlEvent.responseXML.firstChild,
-                loader;
+                parser;
 
             // IE9 sets the firstChild element to the root <xml> tag
             if (parsers.localName(rss) == "xml") rss = rss.nextSibling;
@@ -207,17 +208,16 @@
             while (rss.nodeType == rss.COMMENT_NODE) rss = rss.nextSibling;
 
             if (parsers.localName(rss) == "tt") {
-                loader = new jwplayer.parsers.dfxp(_loadHandler,_errorHandler);
+                parser = new jwplayer.parsers.dfxp(_loadHandler,_errorHandler);
             }
             else {
-                loader = new jwplayer.parsers.srt(_loadHandler,_errorHandler);   
+                parser = new jwplayer.parsers.srt(_loadHandler,_errorHandler);   
             }
-            loader.load(_file);
+            parser.parse(xmlEvent.responseText);
         }
 
-        function _xmlFailedHandler() {
-            var loader = new jwplayer.parsers.srt(_loadHandler,_errorHandler);
-            loader.load(_file);
+        function _xmlFailedHandler(message) {
+            _errorHandler(message);
         }
 
         /** Captions were loaded. **/
@@ -287,7 +287,9 @@
                 _track = index - 1;
                 _selectedTrack = index;
             } else {
+                _redraw(false);
                 _selectedTrack = 0;
+                return;
             }
 
             if (_track >= _tracks.length) return;
