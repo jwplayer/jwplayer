@@ -166,7 +166,7 @@
 			style === 'opacity') {
 			return '' + value + importantString;
 		}
-		if (style.match(/color/i)) {
+		if ((/color/i).test(style)) {
 			return "#" + utils.pad(value.toString(16).replace(/^0x/i,""), 6) + importantString;
 		}
 		return Math.ceil(value) + "px" + importantString;

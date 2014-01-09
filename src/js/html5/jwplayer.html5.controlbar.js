@@ -186,8 +186,10 @@
 			_layout = _skin.getComponentLayout('controlbar');
 			if (!_layout) _layout = _defaults.layout;
 			utils.clearCss(_internalSelector());
+			_css.block(_id+'build');
 			_createStyles();
 			_buildControlbar();
+			_css.unblock(_id+'build');
 			_addEventListeners();
 			setTimeout(function() {
 				_volumeHandler();
@@ -423,10 +425,16 @@
 
 			_bgHeight = _getSkinElement("background").height;
 			
+			var margin = _audioMode ? 0 : _settings.margin;
 			var styles = {
 				height: _bgHeight,
-				bottom: _audioMode ? 0 : _settings.margin
+				bottom: margin,
+				left: margin,
+				right: margin
 			};
+			if (!_audioMode) {
+				styles['max-width'] = _settings.maxWidth;
+			}
 			_css.style(_controlbar, styles);
 			
 			_css(_internalSelector(".jwtext"), {
@@ -1346,20 +1354,11 @@
 			_createStyles();
 			var capLeft = _getSkinElement("capLeft"),
 				capRight = _getSkinElement("capRight"),
-				margin = _audioMode ? 0 : _settings.margin,
 				centerCss = {
 					left:  Math.round(utils.parseDimension(_groups.left.offsetWidth) + capLeft.width),
 					right: Math.round(utils.parseDimension(_groups.right.offsetWidth) + capRight.width)
 				},
-				maxMargin = ((_controlbar.parentNode ? _controlbar.parentNode.clientWidth : 0) - _settings.maxwidth)/2|0,
-				max = !_audioMode && maxMargin > 0,
-				controlbarCss = {
-					left:  max ? maxMargin : margin,
-					right: max ? maxMargin : margin
-				},
 				ieIframe = (top !== window.self) && utils.isIE();
-
-			_css.style(_controlbar, controlbarCss);
 			_css.style(_groups.center, centerCss);
 
 			// ie <= IE10 does not allow fullscreen from inside an iframe. Hide the FS button. (TODO: Fix for IE11)
@@ -1612,6 +1611,7 @@
 
 	_css(CB_CLASS, {
 		position: JW_CSS_ABSOLUTE,
+		margin: 'auto',
 		opacity: 0,
 		display: JW_CSS_NONE
 	});
