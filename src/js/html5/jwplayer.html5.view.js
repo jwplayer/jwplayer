@@ -844,7 +844,7 @@
 				width: 0,
 				height: 0
 			};
-			if (!_model.controls) {
+			if ((_instreamMode && !_oldModel.controls) || !_model.controls) {
 				return bounds;
 			}
 			_controlbar.showTemp();
