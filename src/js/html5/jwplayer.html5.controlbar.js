@@ -1164,8 +1164,6 @@
 		
 		_this.setText = function(text) {
 			_css.block(_id); //unblock on redraw
-			_css.style(_controlbar.querySelector(".jwelapsed"), text ? HIDDEN : SHOWING);
-			_css.style(_controlbar.querySelector(".jwduration"), text ? HIDDEN : SHOWING);
 			if (!_elements.timeSliderRail) {
 				_css.style(_controlbar.querySelector(".jwtime"), HIDDEN);
 			} else {
@@ -1696,6 +1694,7 @@
 		overflow: 'hidden'
 	});
 
+	// important
 	_css(CB_CLASS + ' .jwalt', {
 		position: JW_CSS_ABSOLUTE,
 		left: 0,
@@ -1712,6 +1711,7 @@
 		display: JW_CSS_BLOCK
 	});
 
+	// important
 	_css(CB_CLASS + ' .jwvertical .jwvolumeProgress', {
 		height: "auto"
 	}, TRUE);
