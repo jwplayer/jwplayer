@@ -57,6 +57,8 @@
             _tracks = [],
             /**counter for downloading all the tracks**/
             _dlCount = 0,
+            
+            _waiting = -1,
             /** Currently selected track in the displayed track list. **/
             _selectedTrack = 0,
             /** Flag to remember fullscreen state. **/
@@ -218,7 +220,6 @@
             }
             try {
                 var data = parser.parse(xmlEvent.responseText);
-                _renderer.populate(data);
                 if (_track < _tracks.length) {
                     _tracks[index].data = data;
                 }
@@ -228,6 +229,10 @@
             }
             
             if (_dlCount == _tracks.length) {
+                if (_waiting > 0) {
+                    _renderCaptions(_waiting);
+                    _waiting = -1;
+                }
                 sendAll();
             }
         }
@@ -236,6 +241,10 @@
             _dlCount++;
             _errorHandler(message);
             if (_dlCount == _tracks.length) {
+                if (_waiting > 0) {
+                    _renderCaptions(_waiting);
+                    _waiting = -1;
+                }
                 sendAll();
             }
         }
@@ -320,6 +329,8 @@
                 _renderer.populate(_tracks[_track].data);
             } else if (_dlCount == _tracks.length)  {
                 _errorHandler("file not loaded: " + _tracks[_track].file);
+            } else {
+                _waiting = index;
             }
             _redraw(false);
         }
