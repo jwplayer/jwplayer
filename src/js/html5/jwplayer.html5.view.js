@@ -173,6 +173,7 @@
 			_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
 			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_COMPLETE, _playlistCompleteHandler);
+			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_ITEM,_playlistItemHandler);
 			_stateHandler({newstate:states.IDLE});
 			
 			if (!_isMobile) {
@@ -240,6 +241,11 @@
 			}
 		}
 	
+	    function _captionsLoadedHandler(evt) {
+	        _model.getVideo().addCaptions(evt.captionData,_model.fullscreen, _api.jwGetCurrentCaptions());
+	    }
+	
+	
 		function _createElement(elem, className) {
 			var newElement = DOCUMENT.createElement(elem);
 			if (className) newElement.className = className;
@@ -299,6 +305,7 @@
 			_captions = new html5.captions(_api, _model.captions);
 			_captions.addEventListener(events.JWPLAYER_CAPTIONS_LIST, forward);
 			_captions.addEventListener(events.JWPLAYER_CAPTIONS_CHANGED, forward);
+			_captions.addEventListener(events.JWPLAYER_CAPTIONS_LOADED, _captionsLoadedHandler);
 			_controlsLayer.appendChild(_captions.element());
 
 			_display = new html5.display(_api, displaySettings);
@@ -346,7 +353,7 @@
 
 			if (state) {
 				if (_model.getVideo().audioMode()) return;
-				
+				_model.getVideo().fsCaptions(state,_api.jwGetCurrentCaptions());
 				if (_isMobile) {
 					try {
 						_videoTag.webkitEnterFullScreen();
@@ -367,16 +374,24 @@
 						_playerElement.msRequestFullscreen();
 					}
 					_model.setFullscreen(TRUE);
+				
 				}
 			} else {
 				if (_isMobile) {
 					_videoTag.webkitExitFullScreen();
 					_model.setFullscreen(FALSE);
+
 					if(_isIPad) {
+                        var curr = _model.getVideo().fsCaptions(state,_api.jwGetCurrentCaptions());
+                        if (curr)
+                            _api.jwSetCurrentCaptions(curr+1);
+                        else 
+                            _api.jwSetCurrentCaptions(0);
 						_videoTag.controls = TRUE;
 						_videoTag.controls = FALSE;
 					}
 				} else if (_model.fullscreen) {
+
 					_fakeFullscreen(FALSE);
 					_model.setFullscreen(FALSE);
 					if (DOCUMENT.cancelFullScreen) {  
@@ -690,6 +705,11 @@
 				_showDock();
 			}
 		}
+		
+		
+	    function _playlistItemHandler() {
+            _model.getVideo().resetCaptions();
+        }
 
 		function _readyHandler() {
 			_readyState = TRUE;

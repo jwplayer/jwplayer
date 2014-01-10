@@ -55,6 +55,8 @@
             _track,
             /** List with all tracks. **/
             _tracks = [],
+            /**counter for downloading all the tracks**/
+            _dlCount = 0,
             /** Currently selected track in the displayed track list. **/
             _selectedTrack = 0,
             /** Flag to remember fullscreen state. **/
@@ -62,7 +64,9 @@
             /** Current captions file being read. **/
             _file,
             /** Event dispatcher for captions events. **/
-            _eventDispatcher = new events.eventdispatcher();
+            _eventDispatcher = new events.eventdispatcher(),
+            
+            _this = this;
 
         utils.extend(this, _eventDispatcher);
 
@@ -200,7 +204,7 @@
         function _xmlReadHandler(xmlEvent,index) {
             var rss = xmlEvent.responseXML.firstChild,
                 parser;
-
+            _dlCount++;
             // IE9 sets the firstChild element to the root <xml> tag
             if (parsers.localName(rss) == "xml") rss = rss.nextSibling;
             // Ignore all comments
@@ -222,13 +226,30 @@
             } catch (e) {
                 _errorHandler(e.message + ": " +_tracks[index].file);
             }
+            
+            if (_dlCount == _tracks.length) {
+                sendAll();
+            }
         }
 
         function _xmlFailedHandler(message) {
+            _dlCount++;
             _errorHandler(message);
+            if (_dlCount == _tracks.length) {
+                sendAll();
+            }
         }
 
-
+    
+        function sendAll() {
+            
+            var data = [];
+            for(var i = 0;i < _tracks.length;i++) {
+                
+                data.push(_tracks[i]);
+            }
+            _eventDispatcher.sendEvent(events.JWPLAYER_CAPTIONS_LOADED, {captionData:data});
+        }
 
         /** Player started playing. **/
         function _playHandler() {
@@ -287,8 +308,8 @@
                 _track = index - 1;
                 _selectedTrack = index;
             } else {
-                _redraw(false);
                 _selectedTrack = 0;
+                _redraw(false);
                 return;
             }
 
@@ -297,8 +318,8 @@
             // Load new captions
             if(_tracks[_track].data) {
                 _renderer.populate(_tracks[_track].data);
-            } else {
-                _errorHandler("file not loaded");
+            } else if (_dlCount == _tracks.length)  {
+                _errorHandler("file not loaded: " + _tracks[_track].file);
             }
             _redraw(false);
         }

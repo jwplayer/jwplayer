@@ -83,6 +83,12 @@
 		// Reference to self
 		_this = this,
 		
+		//tracks for ios
+		_tracks = [],
+		
+		//selected track
+		_selected,
+		
 		//make sure we only do complete once
 		_completeOnce = FALSE,
 		
@@ -454,6 +460,60 @@
 					_sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
 				}
 			}
+		}
+		
+		this.addCaptions = function(tracks,fullscreen,curr) {
+		    if (utils.isIOS() && _videotag.addTextTrack) {
+		        if (curr > 0)
+    		        curr = tracks[curr-1].label;
+		        utils.foreach(tracks, function(index,elem) {
+		            if (elem.data) {
+	
+		                var track = _videotag.addTextTrack(elem.kind,elem.label);
+		                elem.label == curr ? track.mode = "showing" : track.mode = "hidden";
+		                utils.foreach(elem.data, function (ndx,element) {
+		                   if (ndx % 2 == 1)
+		                      track.addCue(new TextTrackCue(element.begin,elem.data[parseInt(ndx)+1].begin,element.text)) 
+		                });
+		                
+		                fullscreen ? track.mode = "hidden" : track.mode = "disabled";
+
+		                _tracks.push(track);
+		            }
+		        });
+		        if (fullscreen && _tracks[0] && curr == 0) {
+		          _tracks[0].mode = "showing";
+		          _tracks[0].mode = "hidden";
+		        }
+		    }
+		}
+		
+		
+		this.resetCaptions = function() {
+		    
+		    _tracks = [];
+		}
+		this.fsCaptions = function(state,curr) {
+	       if (utils.isIOS() && _videotag.addTextTrack) {
+	           var ret = null;
+    	       utils.foreach(_tracks, function(index,elem) {
+    	            if (!state && elem.mode == "showing") {
+    	                ret = parseInt(index);
+    	            }
+                    state ? elem.mode = "hidden" : elem.mode = "disabled";
+                       
+               });
+               if (state && _tracks[0]) {
+                    _tracks[0].mode = "showing";
+                    _tracks[0].mode = "hidden";
+                    if (curr > 0) {
+                        _tracks[curr-1].mode = "showing";
+                    }
+               }
+               if (!state) {
+                   return ret;
+               }
+            }
 		}
 		
 		this.checkComplete = function() {
