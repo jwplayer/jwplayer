@@ -27,7 +27,7 @@
 			
 			if (vtt) {
 				_vttPath = vtt.split("?")[0].split("/").slice(0, -1).join("/");
-				utils.ajax(vtt,_vttLoaded,_vttFailed)
+				utils.ajax(vtt,_vttLoaded, _vttFailed);
 			}
 		}
 		
@@ -80,6 +80,7 @@
 				} else {
 					var image = new Image();
 					image.addEventListener('load', _imageLoaded, false);
+					image.src = url;
 				}
 				_src = url;
 			}
