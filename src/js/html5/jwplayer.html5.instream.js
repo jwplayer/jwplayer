@@ -134,7 +134,7 @@
             _sendEvent(_events.JWPLAYER_PLAYLIST_ITEM, {index:_arrayIndex}, true);
             var playersize = _utils.bounds(document.getElementById(_api.id));
             var safe = _view.getSafeRegion();
-            _skipButton = new html5.adskipbutton(_api,playersize.height - (safe.y + safe.height) + 10, options.skipMessage, options.skipText);
+            _skipButton = new html5.adskipbutton(_api, playersize.height - (safe.y + safe.height) + 10, options.skipMessage, options.skipText);
             _skipButton.addEventListener(_events.JWPLAYER_AD_SKIPPED, _skipAd);
             // Copy the playlist item passed in and make sure it's formatted as a proper playlist item
             if (_utils.typeOf(item) == "object") {
@@ -339,11 +339,13 @@
         function _fullscreenHandler(evt) {
             _forward(evt);
             _resize();
-            if (_utils.isIPad() && !evt.fullscreen && _fakemodel.state == _states.PAUSED) {
-                _disp.show(true);
-            }
-            if (_utils.isIPad() && !evt.fullscreen && _fakemodel.state == _states.PLAYING) {
-                _disp.hide();
+            if (!evt.fullscreen && _utils.isIPad()) {
+                if (_fakemodel.state === _states.PAUSED) {
+                    _disp.show(true);
+                }
+                else if (_fakemodel.state === _states.PLAYING) {
+                    _disp.hide();
+                } 
             }
         }
         
@@ -408,7 +410,11 @@
         }
 
         _this.setControls = function(mode) {
-            mode ? _skipButton.show() : _skipButton.hide();
+            if (mode) {
+                _skipButton.show();
+            } else {
+                _skipButton.hide();
+            }
         };
         
         /**************************************
