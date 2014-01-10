@@ -9,9 +9,9 @@
         var _utils = jwplayer.utils,
         _seconds = _utils.seconds;
 
-        this.parse = function(data) {
+        this.parse = function(data,mergeBeginEnd) {
             // Trim whitespace and split the list by returns.
-            var _captions = [{begin:0, text:''}];
+            var _captions = mergeBeginEnd ? [] : [{begin:0, text:''}];
             data = _utils.trim(data);
             var list = data.split("\r\n\r\n");
             if(list.length == 1) { list = data.split("\n\n"); }
@@ -24,7 +24,7 @@
                 if(entry['text']) {
                     _captions.push(entry);
                     // Insert empty caption at the end.
-                    if(entry['end']) {
+                    if(entry['end'] && !mergeBeginEnd) {
                         _captions.push({begin:entry['end'],text:''});
                         delete entry['end'];
                     }

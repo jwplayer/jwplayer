@@ -27,11 +27,17 @@
 			
 			if (vtt) {
 				_vttPath = vtt.split("?")[0].split("/").slice(0, -1).join("/");
-				new jwplayer.parsers.srt(_vttLoaded, _vttFailed, true).load(vtt);
+				utils.ajax(vtt,_vttLoaded,_vttFailed)
 			}
 		}
 		
 		function _vttLoaded(data) {
+		    try {
+		      data = new jwplayer.parsers.srt().parse(data.responseText,true);
+		    } catch (e) {
+		        _vttFailed(e.message);
+		        return;
+		    }
 			if (utils.typeOf(data) !== "array") {
 				return _vttFailed("Invalid data");
 			}
