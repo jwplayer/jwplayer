@@ -1,6 +1,5 @@
 package com.longtailvideo.jwplayer.utils {
 	import flash.display.DisplayObject;
-	import flash.display.MovieClip;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.utils.Dictionary;
@@ -42,7 +41,6 @@ package com.longtailvideo.jwplayer.utils {
 				var anim:Animations = targetMapping[_tgt] as Animations;
 				anim.cancelAnimation();
 			}
-			targetMapping[_tgt] = this; 
 		}
 		
 		/**
@@ -52,6 +50,7 @@ package com.longtailvideo.jwplayer.utils {
 		 * @param spd	The amount of alpha change per frame.
 		 **/
 		public function fade(end:Number = 1, spd:Number = 0.25):void {
+			targetMapping[_tgt] = this; 
 			_end = end;
 			if (_tgt.alpha > _end) {
 				_spd = -Math.abs(spd);
@@ -66,7 +65,7 @@ package com.longtailvideo.jwplayer.utils {
 		/** The fade enterframe function. **/
 		private function fadeHandler(evt:Event):void {
 			if ((_tgt.alpha >= _end - _spd && _spd > 0) || (_tgt.alpha <= _end + _spd && _spd < 0)) {
-				_tgt.removeEventListener(Event.ENTER_FRAME, frameHandler);
+				cancelAnimation();
 				_tgt.alpha = _end;
 				if (_end == 0) {
 					_tgt.visible = false;
@@ -89,6 +88,7 @@ package com.longtailvideo.jwplayer.utils {
 		 * @param spd	The movement speed (1 - 2).
 		 **/
 		public function ease(xps:Number, yps:Number, spd:Number = 2):void {
+			targetMapping[_tgt] = this; 
 			_spd = spd;
 			if (!xps) {
 				_xps = _tgt.x;
@@ -108,7 +108,7 @@ package com.longtailvideo.jwplayer.utils {
 		/** The ease enterframe function. **/
 		private function easeHandler(evt:Event):void {
 			if (Math.abs(_tgt.x - _xps) < 1 && Math.abs(_tgt.y - _yps) < 1) {
-				_tgt.removeEventListener(Event.ENTER_FRAME, frameHandler);
+				cancelAnimation();
 				_tgt.x = _xps;
 				_tgt.y = _yps;
 				dispatchEvent(new Event(Event.COMPLETE));
@@ -120,9 +120,10 @@ package com.longtailvideo.jwplayer.utils {
 
 		/** Stop executing the current animation **/
 		public function cancelAnimation():void {
-			try {
+			if (frameHandler !== null) {
 				_tgt.removeEventListener(Event.ENTER_FRAME, frameHandler);
-			} catch(e:Error) {}
+			}
+			targetMapping[_tgt] = null;
 		}
 	}
 }
