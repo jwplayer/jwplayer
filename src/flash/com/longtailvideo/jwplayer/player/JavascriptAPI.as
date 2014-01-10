@@ -187,6 +187,7 @@ package com.longtailvideo.jwplayer.player {
 				// Ads API
 				ExternalInterface.addCallback("jwIsBeforePlay", js_isBeforePlay);
 				ExternalInterface.addCallback("jwIsBeforeComplete", js_isBeforeComplete);
+				ExternalInterface.addCallback("jwSetCues", js_setCues);
 				
 				// UNIMPLEMENTED
 				//ExternalInterface.addCallback("jwGetBandwidth", js_getBandwidth); 
@@ -620,6 +621,10 @@ package com.longtailvideo.jwplayer.player {
 		
 		protected function js_isBeforeComplete():Boolean {
 			return _player.checkBeforeComplete();
+		}
+
+		protected function js_setCues(cues):void {
+			_player.setCues(cues);
 		}
 		
 		protected function callJS(functionName:String, args:*):void {

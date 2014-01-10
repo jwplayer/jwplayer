@@ -761,6 +761,7 @@ package com.longtailvideo.jwplayer.view {
 			if (instreamDisplay) {
 				_instreamLayer.addChild(instreamDisplay);
 			}
+			_components.controlbar.hideOverlays();
 			_mediaLayer.visible = false;
 			_componentsLayer.visible = false;
 			(_playlist as PlaylistComponent).removeClickHandler();
@@ -908,6 +909,10 @@ package com.longtailvideo.jwplayer.view {
 			}
 			
 			return bounds;
+		}
+		
+		public function setCues(cues:Array):void {
+			_components.controlbar.setCues(cues);
 		}
 	}
 }

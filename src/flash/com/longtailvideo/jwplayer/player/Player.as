@@ -381,6 +381,9 @@
 			return model.checkBeforeComplete();
 		}
 		
+		public function setCues(cues:Array):void {
+			view.setCues(cues);
+		}
 		
 	}
 }

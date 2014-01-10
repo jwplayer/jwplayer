@@ -85,6 +85,7 @@ package com.longtailvideo.jwplayer.player {
 		function setControls(state:Boolean):void;
 		function checkBeforePlay():Boolean;
 		function checkBeforeComplete():Boolean;
+		function setCues(cues:Array):void;
 		function get token():String;
 		function get edition():String;
 

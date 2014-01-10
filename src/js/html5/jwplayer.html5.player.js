@@ -242,6 +242,9 @@
 			_this.jwIsBeforeComplete = function () {
 				return _model.getVideo().checkComplete();
 			};
+
+			/** Used by ads component to display upcoming cuepoints **/
+			_this.jwSetCues = _view.addCues;
 			
 			/** Events **/
 			_this.jwAddEventListener = _controller.addEventListener;

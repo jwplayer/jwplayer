@@ -211,7 +211,7 @@ package com.longtailvideo.jwplayer.view.components {
 								setThumbs = true;
 							}
 							if (track.file && track.kind is String && String(track.kind).toLowerCase() == "chapters") {
-								setCues(track.file);
+								loadCues(track.file);
 							}
 						}
 					}
@@ -225,13 +225,13 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 		}
 		
-		private function setCues(file:String=null):void {
+		private function loadCues(file:String=null):void {
 			_vttLoader.load(file, String);
 		}
 
 		private function loadComplete(evt:Event):void {
 			var cues:Array = SRT.parseCaptions(_vttLoader.loadedObject as String, true);
-			(_timeSlider as TimeSlider).setCues(cues);
+			setCues(cues);
 		}
 		
 		private function loadError(evt:Event):void {
@@ -995,7 +995,7 @@ package com.longtailvideo.jwplayer.view.components {
 			
 		}
 		
-		private function hideOverlays():void {
+		public function hideOverlays():void {
 			hideVolumeOverlay();
 			hideHdOverlay();
 			hideCcOverlay();
@@ -1109,6 +1109,10 @@ package com.longtailvideo.jwplayer.view.components {
 				return _buttons['capRight'];
 			}
 			return (new Sprite());
+		}
+		
+		public function setCues(cues:Array):void {
+			if (_timeSlider) (_timeSlider as TimeSlider).setCues(cues);		
 		}
 		
 	}

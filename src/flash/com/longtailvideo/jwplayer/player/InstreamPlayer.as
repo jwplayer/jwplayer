@@ -342,12 +342,13 @@ package com.longtailvideo.jwplayer.player
 		}
 		
 		protected function _completeHandler(evt:MediaEvent):void {
+			var newEvent:PlaylistEvent;
 			if (_items && _items.length > _itemNdx+1) {
 				_itemNdx++;
 				var single:Object = _items[_itemNdx];
 				var opt:Object = _optionsList[_itemNdx];
-				var ev:PlaylistEvent = new PlaylistEvent(PlaylistEvent.JWPLAYER_PLAYLIST_ITEM,null);
-				dispatchEvent(ev);
+				newEvent = new PlaylistEvent(PlaylistEvent.JWPLAYER_PLAYLIST_ITEM,null);
+				dispatchEvent(newEvent);
 				_options.update(opt);
 				_mediaDisplayed = false;
 				_item = new PlaylistItem(single);
@@ -356,8 +357,8 @@ package com.longtailvideo.jwplayer.player
 					continuePlayback(_item);
 				}
 			} else {
-				var ev:PlaylistEvent = new PlaylistEvent(PlaylistEvent.JWPLAYER_PLAYLIST_COMPLETE,null);
-				dispatchEvent(ev);
+				newEvent = new PlaylistEvent(PlaylistEvent.JWPLAYER_PLAYLIST_COMPLETE,null);
+				dispatchEvent(newEvent);
 				setTimeout(function():void { 
 					_destroy(evt ? true : false); 
 				}, 0);
@@ -713,6 +714,10 @@ package com.longtailvideo.jwplayer.player
 		}
 		
 		public function checkBeforeComplete():Boolean {
+			throw new Error(UNSUPPORTED_ERROR);
+		}
+		
+		public function setCues(cues:Array):void {
 			throw new Error(UNSUPPORTED_ERROR);
 		}
 

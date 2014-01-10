@@ -43,7 +43,7 @@ package com.longtailvideo.jwplayer.view.components {
 			
 		}
 		
-		protected function addCue(pos:Number, text:String):void {
+		protected function addCue(pos:*, text:String):void {
 			var cueElem:Sprite = addElement("cue", true);
 			var cue:Object = {
 				position: pos,
@@ -59,12 +59,20 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 		
 		protected function cueClickHandler(evt:MouseEvent):void {
-			dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_CLICK, _activeCue.position / _duration));
+			dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_CLICK, cuePosition(_activeCue) / _duration));
+		}
+		
+		protected function cuePosition(cue:Object):Number {
+			if (cue.position.toString().search(/%$/) > -1 ) {
+				return _duration * (parseFloat(cue.position.toString().replace("%", "")) / 100);
+			} else {
+				return cue.position;
+			}
 		}
 
 		protected function positionCues():void {
 			for each (var cue:Object in _cues) {
-				cue.element.x = (cue.position / _duration) * _width;
+				cue.element.x = (cuePosition(cue) / _duration) * _width;
 			}
 			
 		}

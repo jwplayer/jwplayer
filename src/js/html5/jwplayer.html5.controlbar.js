@@ -42,6 +42,7 @@
 		NOT_HIDDEN = { display: UNDEFINED },
 		
 		CB_CLASS = '.jwcontrolbar',
+		TYPEOF_ARRAY = "array",
 		
 		FALSE = false,
 		TRUE = true,
@@ -309,7 +310,7 @@
 					tracksloaded = FALSE,
 					cuesloaded = FALSE;
 				_removeCues();
-				if (utils.typeOf(tracks) == "array" && !_isMobile) {
+				if (utils.typeOf(tracks) == TYPEOF_ARRAY && !_isMobile) {
 					for (var i=0; i < tracks.length; i++) {
 						if (!tracksloaded && tracks[i].file && tracks[i].kind && tracks[i].kind.toLowerCase() == "thumbnails") {
 							_timeOverlayThumb.load(tracks[i].file);
@@ -1128,7 +1129,7 @@
 		}
 		
 		function _addCue(timePos, text) {
-			if (timePos >= 0) {
+			if (timePos.toString().search(/^[\d\.]+%?$/) >= 0) {
 				var cueElem = _buildImage("timeSliderCue"),
 					rail = _controlbar.querySelector(".jwtimeSliderRail"),
 					cue = {
@@ -1150,7 +1151,8 @@
 		
 		function _drawCues() {
 			utils.foreach(_cues, function(idx, cue) {
-				cue.element.style.left = (100 * cue.position / _duration) + "%";
+				if (cue.position.toString().search(/^[\d\.]+%$/) > -1) cue.element.style.left = cue.position;
+				else cue.element.style.left = (100 * cue.position / _duration) + "%";
 			});
 		}
 		
@@ -1565,26 +1567,30 @@
 		
 		function _loadCues(vttFile) {
 			if (vttFile) {
-				new jwplayer.parsers.srt(_cueLoaded, _cueFailed, true).load(vttFile);
+				utils.ajax(vttFile, _cueLoaded, _cueFailed);
 		   } else {
 				_cues = [];
 		   }
 		}
 		
-		function _cueLoaded(data) {
-			if (utils.typeOf(data) !== "array") {
+		function _cueLoaded(xmlEvent) {
+			var data = new jwplayer.parsers.srt().parse(xmlEvent.responseText);
+			if (utils.typeOf(data) !== TYPEOF_ARRAY) {
 				return _cueFailed("Invalid data");
 			}
-			utils.foreach(data,function(idx,elem) {
-				
-				_addCue(elem.begin,elem.text);
+			_this.addCues(data);
+		}
+
+		_this.addCues = function(cues) {
+			utils.foreach(cues,function(idx,elem) {
+				if (elem.text) _addCue(elem.begin,elem.text);
 			});
 		}
 		
 		function _cueFailed(error) {
 			utils.log("Cues failed to load: " + error);
 		}
-		
+
 		_this.hide = function() {
 			if (!_this.visible) return;
 			_this.visible = false;

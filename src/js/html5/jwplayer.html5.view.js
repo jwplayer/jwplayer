@@ -829,6 +829,10 @@
 			}
 		}
 		
+		this.addCues = function(cues) {
+			if (_controlbar) _controlbar.addCues(cues);
+		}
+
 		this.forceState = function(state) {
 			_display.forceState(state);
 		};
