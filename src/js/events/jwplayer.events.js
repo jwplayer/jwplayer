@@ -37,6 +37,8 @@
 		JWPLAYER_MEDIA_LEVEL_CHANGED: 'jwplayerMediaLevelChanged',
 		JWPLAYER_CAPTIONS_CHANGED: 'jwplayerCaptionsChanged',
 		JWPLAYER_CAPTIONS_LIST: 'jwplayerCaptionsList',
+        JWPLAYER_CAPTIONS_LOADED: 'jwplayerCaptionsLoaded',
+
 
 		// State events
 		JWPLAYER_PLAYER_STATE : 'jwplayerPlayerState',
