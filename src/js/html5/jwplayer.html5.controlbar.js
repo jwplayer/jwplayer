@@ -1574,7 +1574,7 @@
 		}
 		
 		function _cueLoaded(xmlEvent) {
-			var data = new jwplayer.parsers.srt().parse(xmlEvent.responseText);
+			var data = new jwplayer.parsers.srt().parse(xmlEvent.responseText,true);
 			if (utils.typeOf(data) !== TYPEOF_ARRAY) {
 				return _cueFailed("Invalid data");
 			}
