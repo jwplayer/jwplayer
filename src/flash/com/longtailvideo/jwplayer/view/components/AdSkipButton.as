@@ -1,13 +1,10 @@
 package com.longtailvideo.jwplayer.view.components
 {
 	import com.longtailvideo.jwplayer.events.JWAdEvent;
-	import com.longtailvideo.jwplayer.utils.AssetLoader;
-	import com.longtailvideo.jwplayer.utils.Base64Decoder;
 	import com.longtailvideo.jwplayer.utils.Strings;
 	
 	import flash.display.Bitmap;
 	import flash.display.Sprite;
-	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
 	import flash.events.MouseEvent;
