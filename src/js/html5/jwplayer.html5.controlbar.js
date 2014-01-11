@@ -32,7 +32,7 @@
 		JW_CSS_INLINE_BLOCK = "inline-block",
 		JW_CSS_HIDDEN = "hidden",
 		JW_CSS_LEFT = "left",
-		// JW_CSS_RIGHT = "right",
+		JW_CSS_RIGHT = "right",
 		JW_CSS_100PCT = "100%",
 		JW_CSS_SMOOTH_EASE = "opacity .25s, background .25s, visibility .25s",
 		JW_VISIBILITY_TIMEOUT = 250,
@@ -41,7 +41,7 @@
 		SHOWING = { display: JW_CSS_BLOCK },
 		NOT_HIDDEN = { display: UNDEFINED },
 		
-		CB_CLASS = '.jwcontrolbar',
+		CB_CLASS = 'span.jwcontrolbar',
 		TYPEOF_ARRAY = "array",
 		
 		FALSE = false,
@@ -1217,7 +1217,7 @@
 			_appendChild(_controlbar, _groups.right);
 			_buildOverlays();
 			
-			_css(_internalSelector(".jwright"), {
+			_css.style(_groups.right, {
 				right: _getSkinElement("capRight").width
 			});
 		}
@@ -1270,6 +1270,9 @@
 			else {
 				button.addEventListener('mouseout', overlay.hide, FALSE);
 			}
+			_css.style(element, {
+				left: '50%'
+			});
 		}
 
 		function _addMobileOverlay(overlay, button, tapAction, name) {
@@ -1585,7 +1588,7 @@
 			utils.foreach(cues,function(idx,elem) {
 				if (elem.text) _addCue(elem.begin,elem.text);
 			});
-		}
+		};
 		
 		function _cueFailed(error) {
 			utils.log("Cues failed to load: " + error);
@@ -1635,7 +1638,8 @@
 	});
 	
 	_css(CB_CLASS+' .jwright', {
-		position: JW_CSS_ABSOLUTE
+		position: JW_CSS_RELATIVE,
+		'float': JW_CSS_RIGHT
 	});
 	
 	_css(CB_CLASS+' .jwcenter', {
