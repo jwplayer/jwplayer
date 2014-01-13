@@ -9,7 +9,6 @@
 
 		DOCUMENT = document,
 		
-		JW_CSS_CURSOR = "pointer",
 		JW_CSS_NONE = "none",
 		JW_CSS_BLOCK = "block",
 		JW_CSS_100PCT = "100%",
@@ -31,7 +30,7 @@
 
 
 		function _embed() {
-			var file, image, youtube, i, playlist = params.playlist, item, sources, i,
+			var file, image, youtube, i, playlist = params.playlist, item, sources,
 				types = ["mp4", "aac", "mp3"]; 
 			if (playlist && playlist.length) {
 				item = playlist[0];
@@ -43,7 +42,7 @@
 						type = source.type ? source.type : utils.extensionmap.extType(utils.extension(source.file));
 					if (source.file) {
 						// TODO: shouldn't be using same variable in nested loop...  Clean up at some point
-						utils.foreach(types, function(i, val) {
+						utils.foreach(types, function(i) {
 							if (type == types[i]) {
 								file = source.file;
 								image = item.image;
@@ -132,19 +131,19 @@
 				parent.appendChild(_element);
 			}
 			return _element;
-		};
+		}
 		
 		/** 
 		 * Although this function creates a flash embed, the target is iOS, which interprets the embed code as a YouTube video, 
 		 * and plays it using the browser
 		 */
 		function _embedYouTube(path) {
-			var embed = _createElement("embed", "", _container);
+            var embed = _createElement("iframe", "", _container);
 
-			embed.src = "http://www.youtube.com/v/" + utils.youTubeID(path);
-			embed.type = "application/x-shockwave-flash";
-			embed.width = _width;
-			embed.height = _height;
+            embed.src = "http://www.youtube.com/embed/" + utils.youTubeID(path);
+            embed.width = _width;
+            embed.height = _height;
+            embed.style.border = "none";
 		}
 		
 		_embed();
