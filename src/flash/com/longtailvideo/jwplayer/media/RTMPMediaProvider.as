@@ -315,9 +315,9 @@
 							_video.height = data.height;
 							resize(_config.width, _config.height);
 						}
-						data.provider = "rtmp";
-						sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_META, {metadata: data});
 					}
+					data.provider = "rtmp";
+					sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_META, {metadata: data});
 					break;
 				// FCSubscribe call successfull
 				case 'fcsubscribe':
