@@ -123,7 +123,6 @@
 			} else if (containerWidth > 0) {
 				if (containerWidth != _lastWidth) {
 					_lastWidth = containerWidth;
-					_resizeMedia();
 					clearInterval(_resizeMediaInterval);
 					_resizeMediaInterval = setInterval(_resizeMedia, 50);
 					_eventDispatcher.sendEvent(events.JWPLAYER_RESIZE, {
@@ -464,7 +463,7 @@
 			if (className.indexOf(ASPECT_MODE) == -1) {
 				playerStyle.height = height;
 			}
-			_css.style(_playerElement, playerStyle, resetAspectMode);
+			_css.style(_playerElement, playerStyle, true);
 
 			if (_display) {
 				_display.redraw();
