@@ -377,18 +377,16 @@
 				
 				}
 			} else {
+			    var curr = _model.getVideo().fsCaptions(state,_api.jwGetCurrentCaptions());
+                if (curr)
+                    _api.jwSetCurrentCaptions(curr+1);
+                else 
+                    _api.jwSetCurrentCaptions(0);
 				if (_isMobile) {
 					_videoTag.webkitExitFullScreen();
 					_model.setFullscreen(FALSE);
-
 					if(_isIPad) {
-                        var curr = _model.getVideo().fsCaptions(state,_api.jwGetCurrentCaptions());
-                        if (curr)
-                            _api.jwSetCurrentCaptions(curr+1);
-                        else 
-                            _api.jwSetCurrentCaptions(0);
-						_videoTag.controls = TRUE;
-						_videoTag.controls = FALSE;
+                        _videoTag.controls = FALSE;
 					}
 				} else if (_model.fullscreen) {
 
@@ -422,6 +420,8 @@
 			}
 			
 		};
+		
+
 		
 		function _redrawComponent(comp) {
 			if (comp) comp.redraw();
