@@ -434,7 +434,7 @@
 				right: margin
 			};
 			if (!_audioMode) {
-				styles['max-width'] = _settings.maxWidth;
+				styles['max-width'] = _settings.maxwidth;
 			}
 			_css.style(_controlbar, styles);
 			
