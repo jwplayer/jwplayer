@@ -51,7 +51,7 @@
 			_controlsLayer,
 			_aspectLayer,
 			_playlistLayer,
-			_controlsTimeout=0,
+			_controlsTimeout = -1,
 			_timeoutDuration = _isMobile ? 4000 : 2000,
 			_videoTag,
 			_videoLayer,
@@ -74,7 +74,8 @@
 			_replayState,
 			_readyState,
 			_rightClickMenu,
-			_fullscreenInterval,
+			_fullscreenInterval = -1,
+			_resizeMediaInterval = -1,
 			_inCB = FALSE,
 			_currentState,
 			_eventDispatcher = new events.eventdispatcher();
@@ -122,6 +123,9 @@
 			} else if (containerWidth > 0) {
 				if (containerWidth != _lastWidth) {
 					_lastWidth = containerWidth;
+					_resizeMedia();
+					clearInterval(_resizeMediaInterval);
+					_resizeMediaInterval = setInterval(_resizeMedia, 50);
 					_eventDispatcher.sendEvent(events.JWPLAYER_RESIZE, {
 						width : bounds.width,
 						height : bounds.height
@@ -412,11 +416,10 @@
 			_redrawComponent(_dock);
 			_resizeMedia();
 
+			clearInterval(_fullscreenInterval);
 			if (_model.fullscreen) {
 				// Browsers seem to need an extra second to figure out how large they are in fullscreen...
 				_fullscreenInterval = setInterval(_resizeMedia, 200);
-			} else {
-				clearInterval(_fullscreenInterval);
 			}
 			
 		};
@@ -430,20 +433,38 @@
 		/**
 		 * Resize the player
 		 */
-		function _resize(width, height) {
-			var id = _api.id + '_view';
+		function _resize(width, height, resetAspectMode) {
+			var className = _playerElement.className,
+				playerStyle,
+				playlistStyle,
+				containerStyle,
+				playlistSize,
+				playlistPos,
+				id = _api.id + '_view';
 			_css.block(id);
 
+			// when jwResize is called remove aspectMode and force layout
+			resetAspectMode = !!resetAspectMode;
+			if (resetAspectMode) {
+				className = className.replace(/\s*aspectMode/, '');
+				if (_playerElement.className !== className) {
+					_playerElement.className = className;
+				}
+				_css.style(_playerElement, {
+					display: JW_CSS_BLOCK
+				}, resetAspectMode);
+			}
+			
 			if (utils.exists(width) && utils.exists(height)) {
 				_model.width = width;
 				_model.height = height;
 			}
 			
-			var playerStyle = { width: width };
-			if (_playerElement.className.indexOf(ASPECT_MODE) == -1) {
-				playerStyle.height = height; 
+			playerStyle = { width: width };
+			if (className.indexOf(ASPECT_MODE) == -1) {
+				playerStyle.height = height;
 			}
-			_css.style(_playerElement, playerStyle);
+			_css.style(_playerElement, playerStyle, resetAspectMode);
 
 			if (_display) {
 				_display.redraw();
@@ -459,19 +480,18 @@
 					}
 				}, 500);
 			}
-
-			var playlistSize = _model.playlistsize,
-				playlistPos = _model.playlistposition;
 			
 			_checkAudioMode(height);
 
+			playlistSize = _model.playlistsize;
+			playlistPos = _model.playlistposition;
 			if (_playlist && playlistSize && (playlistPos == "right" || playlistPos == "bottom")) {
 				_playlist.redraw();
 				
-				var playlistStyle = {
-						display: JW_CSS_BLOCK
-					},
-					containerStyle = {};
+				playlistStyle = {
+					display: JW_CSS_BLOCK
+				};
+				containerStyle = {};
 
 				playlistStyle[playlistPos] = 0;
 				containerStyle[playlistPos] = playlistSize;
@@ -486,7 +506,8 @@
 				_css.style(_container, containerStyle);
 			}
 
-			_resizeMedia();
+			// pass width, height from jwResize if present 
+			_resizeMedia(width, height);
 
 			_css.unblock(id);
 		}
@@ -522,12 +543,23 @@
 			return bounds.height <= 40;
 		}
 		
-		function _resizeMedia() {
+		function _resizeMedia(width, height) {
+			clearInterval(_resizeMediaInterval);
 			if (_videoTag && _playerElement.className.indexOf(ASPECT_MODE) == -1) {
-				utils.stretch(_model.stretching, 
-						_videoTag, 
-						_videoLayer.clientWidth, _videoLayer.clientHeight, 
-						_videoTag.videoWidth, _videoTag.videoHeight);
+				if (!width || isNaN(Number(width))) {
+					width  = _videoLayer.clientWidth;
+				}
+				if (!height || isNaN(Number(height))) {
+					height = _videoLayer.clientHeight;
+				}
+				var transformScale = utils.stretch(_model.stretching,
+					_videoTag, 
+					width, height, 
+					_videoTag.videoWidth, _videoTag.videoHeight);
+				// poll resizing if video is transformed
+				if (transformScale) {
+					_resizeMediaInterval = setInterval(_resizeMedia, 250);
+				}
 			}
 		}
 		
@@ -646,7 +678,6 @@
 
 		function _hideControls() {
 			clearTimeout(_controlsTimeout);
-			_controlsTimeout = 0;
 			_showing = FALSE;
 
 			var state = _api.jwGetState();
@@ -851,7 +882,7 @@
 		
 		this.addCues = function(cues) {
 			if (_controlbar) _controlbar.addCues(cues);
-		}
+		};
 
 		this.forceState = function(state) {
 			_display.forceState(state);

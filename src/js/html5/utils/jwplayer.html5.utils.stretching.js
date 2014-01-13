@@ -52,9 +52,9 @@
 	 *            elementHeight
 	 */
 	utils.stretch = function(stretching, domelement, parentWidth, parentHeight, elementWidth, elementHeight) {
-		if (!domelement) return;
-		if (!stretching) stretching = _stretching.UNIFORM;
-		if (!parentWidth || !parentHeight || !elementWidth || !elementHeight) return;
+		if (!domelement) return false;
+		if (!parentWidth || !parentHeight || !elementWidth || !elementHeight) return false;
+		stretching = stretching || _stretching.UNIFORM;
 		
 		var xscale = parentWidth / elementWidth,
 			yscale = parentHeight / elementHeight,
@@ -113,19 +113,23 @@
 		}
 
 		if (video) {
-			if (scale) {
-				domelement.style.width = elementWidth + "px";
-				domelement.style.height = elementHeight + "px"; 
+			var style = {};
+			if (scale && !(xscale === 1 && yscale === 1)) {
+				style.width = elementWidth;
+				style.height = elementHeight; 
 				xoff = ((parentWidth - elementWidth) / 2) / xscale;
 				yoff = ((parentHeight - elementHeight) / 2) / yscale;
 				utils.scale(domelement, xscale, yscale, xoff, yoff);
 			} else {
-				domelement.style.width = "";
-				domelement.style.height = "";
+				scale = false;
+				style.width = '';
+				style.height = '';
 			}
+			utils.css.style(domelement, style);
 		} else {
 			domelement.className = domelement.className.replace(/\s*jw(none|exactfit|uniform|fill)/g, "") +  " " + stretchClass;
 		}
+		return scale;
 	};
 
 })(jwplayer.utils);

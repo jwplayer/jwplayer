@@ -118,7 +118,10 @@
 			_this.jwPlaylistPrev = _controller.prev;
 			_this.jwPlaylistItem = _controller.item;
 			_this.jwSetFullscreen = _controller.setFullscreen;
-			_this.jwResize = _view.resize;		
+			_this.jwResize = function(width, height) {
+				var resetAspectMode = true;
+				_view.resize(width, height, resetAspectMode);
+			};
 			_this.jwSeekDrag = _model.seekDrag;
 			_this.jwGetQualityLevels = _controller.getQualityLevels;
 			_this.jwGetCurrentQuality = _controller.getCurrentQuality;

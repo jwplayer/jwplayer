@@ -236,27 +236,23 @@
 	};
 	
 	utils.transform = function(element, value) {
-		var transform = "-transform", style;
-		value = value ? value : "";
-		if (typeof element == "string") {
+		var transform = 'transform',
 			style = {};
-			style['-webkit'+transform] = value;
-			style['-ms'+transform] = value;
-			style['-moz'+transform] = value;
-			style['-o'+transform] = value;
-			utils.css(element, style);
+		value = value || '';
+		style[transform] = value;
+		style['-webkit-'+transform] = value;
+		style['-ms-'+transform] = value;
+		style['-moz-'+transform] = value;
+		style['-o-'+transform] = value;
+		if (typeof element === "string") {
+			_css(element, style);
 		} else {
-			transform = "Transform";
-			style = element.style;
-			style['webkit'+transform] = value;
-			style['Moz'+transform] = value;
-			style['ms'+transform] = value;
-			style['O'+transform] = value;
+			_css.style(element, style);
 		}
 	};
 	
 	utils.dragStyle = function(selector, style) {
-		utils.css(selector, {
+		_css(selector, {
 			'-webkit-user-select': style,
 			'-moz-user-select': style,
 			'-ms-user-select': style,
@@ -270,7 +266,7 @@
 		// Safari 5 has problems with CSS3 transitions
 		if(navigator.userAgent.match(/5\.\d(\.\d)? safari/i)) return;
 		
-		utils.css(selector, {
+		_css(selector, {
 			'-webkit-transition': style,
 			'-moz-transition': style,
 			'-o-transition': style,
