@@ -1084,17 +1084,22 @@
 		function _positionTimeTooltip(evt) {
 			_railBounds = utils.bounds(_timeRail);
 			if (!_railBounds || _railBounds.width === 0) return;
-			_cbBounds = utils.bounds(_controlbar);
 			var element = _timeOverlay.element(), 
 				position = evt.pageX ? ((evt.pageX - _railBounds.left) - WINDOW.pageXOffset) : (evt.x);
 			if (position >= 0 && position <= _railBounds.width) {
+				_cbBounds = utils.bounds(_controlbar);
+				_css.style(element, {
+					left: Math.round(position)
+				});
 				_setTimeOverlay(_duration * position / _railBounds.width);
-				_css.style(element, {left: Math.round(position)});
 			}
 		}
 		
 		function _setTimeOverlay(sec) {
-			_timeOverlayText.innerHTML = _activeCue ? _activeCue.text : utils.timeFormat(sec);
+			var text = _activeCue ? _activeCue.text : utils.timeFormat(sec);
+			if (_timeOverlayText.innerHTML !== text) {
+				_timeOverlayText.innerHTML = text;
+			}
 			_timeOverlayThumb.updateTimeline(sec); 
 			_timeOverlay.setContents(_timeOverlayContainer);
 			_positionOverlay(_timeOverlay);
@@ -1397,11 +1402,18 @@
 			}
 		}
 
-		// var _pCount = 0;
 		function _positionOverlay(overlay) {
 			var id = _id + '_overlay';
 			_css.block(id);
 			overlay.offsetX(0);
+			// TODO: are these bounds checks needed for anything other than _timeOverlay?
+			if (overlay === _timeOverlay) {
+				_css.unblock(id);
+				_css.unblock(_id);
+			}
+			if (!_cbBounds) {
+				_cbBounds = utils.bounds(_controlbar);
+			}
 			var overlayBounds = utils.bounds(overlay.element());
 			if (!_cbBounds) {
 				_cbBounds = utils.bounds(_controlbar);

@@ -225,14 +225,18 @@
 		
 		_this.show = function() {
 			_this.showing = true;
-			_container.style.opacity = 1;
-			_container.style.visibility = "visible";
+			_css.style(_container, {
+				opacity: 1,
+				visibility: "visible"
+			});
 		};
 		
 		_this.hide = function() {
 			_this.showing = false;
-			_container.style.opacity = 0;
-			_container.style.visibility = JW_CSS_HIDDEN;
+			_css.style(_container, {
+				opacity: 0,
+				visibility: JW_CSS_HIDDEN
+			});
 		};
 		
 		// Call constructor

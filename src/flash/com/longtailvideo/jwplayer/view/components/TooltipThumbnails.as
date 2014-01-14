@@ -78,7 +78,7 @@ package com.longtailvideo.jwplayer.view.components
 			if (!cues) return; 
 			
 			var i = 0; 
-			while(seconds > cues[i].end && i < cues.length) {
+			while(i < cues.length && seconds > cues[i].end) {
 				i++;
 			}
 			if (i == cues.length) i--;

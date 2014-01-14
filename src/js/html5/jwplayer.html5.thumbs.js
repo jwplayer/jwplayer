@@ -56,7 +56,7 @@
 		
 		function _loadImage(url) {
 			// only load image if it's different from the last one
-			if (url !== _url) {
+			if (url && url !== _url) {
 				_url = url;
 				if (url.indexOf("://") < 0) {
 					url = _vttPath ? _vttPath + "/" + url : url;
@@ -119,15 +119,13 @@
 		
 		// Update display
 		this.updateTimeline = function(seconds) {
+			if (!_cues) return;
 			var i = 0;
-			if (!_cues) return; 
 			while(i < _cues.length && seconds > _cues[i].end) {
 				i++;
 			}
-			if (i == _cues.length) i--;
-			if (_cues[i].text) {
-				_loadImage(_cues[i].text);
-			}
+			if (i === _cues.length) i--;
+			_loadImage(_cues[i].text);
 		};
 	};
 
