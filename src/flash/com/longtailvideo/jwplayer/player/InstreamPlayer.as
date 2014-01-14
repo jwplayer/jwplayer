@@ -271,7 +271,7 @@ package com.longtailvideo.jwplayer.player
 				event.hasControls = getControls();
 				dispatchEvent(event);
 				_view.fullscreen(false);
-				ExternalInterface.call('function(url) { window.open(url) }', _clickUrl, '_blank');
+				ExternalInterface.call('function(url) { window.open(url, "_blank"); }', _clickUrl);
 				pause();
 			}
 		}
