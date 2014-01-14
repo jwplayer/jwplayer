@@ -86,8 +86,10 @@
 		//tracks for ios
 		_tracks = [],
 		
+		_usedTrack = 0,
 		//selected track
-		_selected,
+		
+		_tracksOnce = false,
 		
 		//make sure we only do complete once
 		_completeOnce = FALSE,
@@ -463,49 +465,67 @@
 		}
 		
 		this.addCaptions = function(tracks,fullscreen,curr) {
-		    if (utils.isIOS() && _videotag.addTextTrack) {
+		    if (utils.isIOS() && _videotag.addTextTrack && !_tracksOnce) {
 		        if (curr > 0)
     		        curr = tracks[curr-1].label;
 		        utils.foreach(tracks, function(index,elem) {
 		            if (elem.data) {
-	
-		                var track = _videotag.addTextTrack(elem.kind,elem.label);
-		                elem.label == curr ? track.mode = "showing" : track.mode = "hidden";
+	                  _usedTrack = index;
+		                var track = findTrack(elem.kind,elem.label);
 		                utils.foreach(elem.data, function (ndx,element) {
 		                   if (ndx % 2 == 1)
 		                      track.addCue(new TextTrackCue(element.begin,elem.data[parseInt(ndx)+1].begin,element.text)) 
 		                });
-		                
-		                fullscreen ? track.mode = "hidden" : track.mode = "disabled";
-
 		                _tracks.push(track);
 		            }
 		        });
-		        if (fullscreen && _tracks[0] && curr == 0) {
-		          _tracks[0].mode = "showing";
-		          _tracks[0].mode = "hidden";
+		     }
+		}
+
+		function findTrack(kind,label) {
+		    for (var i = 0; i < _videotag.textTracks.length; i++) {
+		      if(_videotag.textTracks[i].label === label) {
+    		      _usedTrack = i;
+    		      return _videotag.textTracks[i];
 		        }
 		    }
+		    var track = _videotag.addTextTrack(kind,label);
+		    _usedTrack = _videotag.textTracks.length - 1;
+		    return track;
 		}
-		
 		
 		this.resetCaptions = function() {
 		    
+		    if (_tracks.length > 0) {
+		        _tracksOnce = true;
+		    }
 		    _tracks = [];
+		    
+		    for (var i = 0; i < _videotag.textTracks.length; i++) {
+
+
+               while( _videotag.textTracks[i].cues && _videotag.textTracks[i].cues.length && _videotag.textTracks[i].cues.length > 0) {
+                   _videotag.textTracks[i].removeCue(_videotag.textTracks[i].cues[0]);
+               }
+              //_videotag.textTracks[i].mode = "disabled";
+		    }
 		}
-		this.fsCaptions = function(state,curr) {
-	       if (utils.isIOS() && _videotag.addTextTrack) {
-	           var ret = null;
-    	       utils.foreach(_tracks, function(index,elem) {
-    	            if (!state && elem.mode == "showing") {
-    	                ret = parseInt(index);
-    	            }
-                    state ? elem.mode = "hidden" : elem.mode = "disabled";
-                       
+
+
+        this.fsCaptions = function(state,curr) {
+           if (utils.isIOS() && _videotag.addTextTrack && !_tracksOnce) {
+               var ret = null;
+               
+               utils.foreach(_tracks, function(index,elem) {
+                    if (!state && elem.mode == "showing") {
+                        ret = parseInt(index);
+                    }
+                    if (!state)
+                        elem.mode = "hidden";
                });
                if (state && _tracks[0]) {
-                    _tracks[0].mode = "showing";
-                    _tracks[0].mode = "hidden";
+                    _videotag.textTracks[0].mode = "showing";
+                    _videotag.textTracks[0].mode = "hidden";
                     if (curr > 0) {
                         _tracks[curr-1].mode = "showing";
                     }
@@ -514,7 +534,7 @@
                    return ret;
                }
             }
-		}
+        }
 		
 		this.checkComplete = function() {
 			

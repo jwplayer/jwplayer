@@ -141,6 +141,7 @@
             _track = 0;
             _tracks = [];
             _renderer.update(0);
+            _dlCount = 0;
 
             var item = _api.jwGetPlaylist()[_api.jwGetPlaylistIndex()],
                 tracks = item['tracks'],
@@ -168,7 +169,7 @@
                        
                     }
                     _tracks.push(captions[i]);
-                    _load(_tracks[i].file,i)
+                    _load(_tracks[i].file,i);
                 }
             }
 
@@ -208,6 +209,8 @@
                 parser;
             _dlCount++;
             // IE9 sets the firstChild element to the root <xml> tag
+            
+
             if (parsers.localName(rss) == "xml") rss = rss.nextSibling;
             // Ignore all comments
             while (rss.nodeType == rss.COMMENT_NODE) rss = rss.nextSibling;
