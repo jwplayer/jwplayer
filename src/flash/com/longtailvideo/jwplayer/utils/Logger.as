@@ -1,10 +1,6 @@
 package com.longtailvideo.jwplayer.utils {
 	import com.longtailvideo.jwplayer.model.PlayerConfig;
 	
-	import flash.events.AsyncErrorEvent;
-	import flash.events.Event;
-	import flash.events.SecurityErrorEvent;
-	import flash.events.StatusEvent;
 	import flash.external.ExternalInterface;
 	
 	

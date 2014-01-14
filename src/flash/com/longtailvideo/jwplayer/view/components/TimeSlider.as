@@ -103,7 +103,9 @@ package com.longtailvideo.jwplayer.view.components {
 			if (thumbs) {
 				_thumbnailImages.load(thumbs);
 			} else {
-				if (_tooltip.contains(_thumbnailImages)) _tooltip.removeChild(_thumbnailImages);
+				if (_tooltip.contains(_thumbnailImages)) {
+					_tooltip.removeChild(_thumbnailImages);
+				}
 			}
 		}
 		
