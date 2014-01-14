@@ -30,6 +30,8 @@ package com.longtailvideo.jwplayer.view.components
 		private var spriteDimensions:Rectangle;
 		private var container:Sprite;
 		private var loaderHash:Object;
+		private var _url:String;
+		private var _imageLoader:Loader;
 		
 		
 		public function TooltipThumbnails(skin:ISkin) {
@@ -86,38 +88,48 @@ package com.longtailvideo.jwplayer.view.components
 		}
 		
 		private function loadImage(url:String):void {
-			if (url.indexOf("://") < 0) {
-				url = vttPath ? vttPath + "/" + url : url;
-			}
-			var hashIndex = url.indexOf("#xywh");
-			if (hashIndex > 0) {
-				var regEx:RegExp = /(.+)\#xywh=(\d+),(\d+),(\d+),(\d+)/;
-				var thumbParams = regEx.exec(url);
-				url = thumbParams[1];
-				spriteDimensions.x = parseFloat(thumbParams[2]);
-				spriteDimensions.y = parseFloat(thumbParams[3]);
-				spriteDimensions.width = parseFloat(thumbParams[4]);
-				spriteDimensions.height = parseFloat(thumbParams[5]);
-			} else {
-				spriteDimensions.x =
-				spriteDimensions.y =
-				spriteDimensions.width =
-				spriteDimensions.height = 0;
-			}
-			
-			var imageLoader:Loader = loaderHash[url] as Loader;
-			if (!imageLoader) {
-				imageLoader = new Loader();
-				imageLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, imageLoaded);
-				loaderHash[url] = imageLoader;
-				imageLoader.load(new URLRequest(url));
-			} else {
-				updateSprite(imageLoader);
+			// only load image if it's different from the last one
+			if (url !== _url) {
+				_url = url;
+				if (url.indexOf("://") < 0) {
+					url = vttPath ? vttPath + "/" + url : url;
+				}
+				var hashIndex = url.indexOf("#xywh");
+				if (hashIndex > 0) {
+					var regEx:RegExp = /(.+)\#xywh=(\d+),(\d+),(\d+),(\d+)/;
+					var thumbParams = regEx.exec(url);
+					url = thumbParams[1];
+					spriteDimensions.x = parseFloat(thumbParams[2]);
+					spriteDimensions.y = parseFloat(thumbParams[3]);
+					spriteDimensions.width = parseFloat(thumbParams[4]);
+					spriteDimensions.height = parseFloat(thumbParams[5]);
+				} else {
+					spriteDimensions.x =
+					spriteDimensions.y =
+					spriteDimensions.width =
+					spriteDimensions.height = 0;
+				}
+				
+				var imageLoader:Loader = loaderHash[url] as Loader;
+				if (!imageLoader) {
+					imageLoader = new Loader();
+					imageLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, imageLoaded);
+					loaderHash[url] = imageLoader;
+					imageLoader.load(new URLRequest(url));
+				} else {
+					updateSprite(imageLoader);
+				}
+				if (_imageLoader) {
+					// ignore previous loader 
+					_imageLoader.contentLoaderInfo.removeEventListener(Event.COMPLETE, imageLoaded);
+				}
+				_imageLoader = imageLoader;
 			}
 		}
 
 		private function imageLoaded(evt:Event=null):void {
 			var imageLoader:Loader = evt.currentTarget.loader as Loader;
+			imageLoader.contentLoaderInfo.removeEventListener(Event.COMPLETE, imageLoaded);
 			updateSprite(imageLoader);
 			dispatchEvent(new Event(Event.COMPLETE));
 		}

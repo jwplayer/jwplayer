@@ -12,7 +12,9 @@
 			_cues,
 			_vttPath,
 			_id = id,
-			_src,
+			_url,
+			_images = {},
+			_image,
 			_eventDispatcher = new events.eventdispatcher();
 
 		utils.extend(this, _eventDispatcher);
@@ -54,46 +56,57 @@
 		
 		function _loadImage(url) {
 			// only load image if it's different from the last one
-			if (url !== _src) {
-				if (url.indexOf("://") < 0) url = _vttPath ? _vttPath + "/" + url : url;
+			if (url !== _url) {
+				_url = url;
+				if (url.indexOf("://") < 0) {
+					url = _vttPath ? _vttPath + "/" + url : url;
+				}
+				var style = {
+					'background-position': '0 0',
+					width: 0,
+					height: 0
+				};
 				var hashIndex = url.indexOf("#xywh");
 				if (hashIndex > 0) {
 					try {
-						var regEx = /(.+)\#xywh=(\d+),(\d+),(\d+),(\d+)/,
-							thumbParams = regEx.exec(url),
-							x = thumbParams[2] * -1,
-							y = thumbParams[3] * -1,
-							width = thumbParams[4],
-							height = thumbParams[5],
-							bgImage = thumbParams[1];
-						
-						_css.style(_display, {
-							'background-image': bgImage,
-							'background-position': x + "px " + y + "px",
-							width: width,
-							height: height
-						});
+						var matched = (/(.+)\#xywh=(\d+),(\d+),(\d+),(\d+)/).exec(url);
+						url = matched[1];
+						style['background-position'] = (matched[2] * -1) + 'px ' + (matched[3] * -1) + 'px';
+						style.width = matched[4];
+						style.height = matched[5];
 					} catch(e) {
 						_vttFailed("Could not parse thumbnail");
+						return;
 					}
-					
-				} else {
-					var image = new Image();
-					image.addEventListener('load', _imageLoaded, false);
-					image.src = url;
 				}
-				_src = url;
+
+				var image = _images[url];
+				if (!image) {
+					image = new Image();
+					image.onload = function() {
+						_updateSprite(image, style);
+					};
+					_images[url] = image;
+					image.src = url;
+				} else {
+					_updateSprite(image, style);
+				}
+				if (_image) {
+					// ignore previous image
+					_image.onload = null;
+				}
+				_image = image;
 			}
 		} 
 		
-		function _imageLoaded(evt) {
-			var image = evt.target;
-			_css.style(_display, {
-				'background-image': image.src,
-				'background-position': "0 0",
-				width: image.width,
-				height: image.height
-			});
+		function _updateSprite(image, style) {
+			image.onload = null;
+			if (!style.width) {
+				style.width = image.width;
+				style.height = image.height;
+			}
+			style['background-image'] = image.src;
+			_css.style(_display, style);
 		}
 		
 		this.load = function(thumbsVTT) {
