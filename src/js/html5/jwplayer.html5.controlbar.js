@@ -127,7 +127,7 @@
 			_hideTimeout = -1,
 			_audioMode = FALSE,
 			_hideFullscreen = FALSE,
-			_dragging = FALSE,		
+			_dragging = NULL,	
 			_lastSeekTime = 0,
 			_lastTooltipPositionTime = 0,
 			_cues = [],
@@ -192,10 +192,7 @@
 			_buildControlbar();
 			_css.unblock(_id+'build');
 			_addEventListeners();
-			setTimeout(function() {
-				_volumeHandler();
-				_muteHandler();
-			}, 0);
+			setTimeout(_volumeHandler, 0);
 			_playlistHandler();
 			_this.visible = false;
 		}
@@ -205,7 +202,7 @@
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_TIME, _timeUpdated);
 			_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
 			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_ITEM, _itemHandler);
-			_api.jwAddEventListener(events.JWPLAYER_MEDIA_MUTE, _muteHandler);
+			_api.jwAddEventListener(events.JWPLAYER_MEDIA_MUTE, _volumeHandler);
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_VOLUME, _volumeHandler);
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_BUFFER, _bufferHandler);
 			_api.jwAddEventListener(events.JWPLAYER_FULLSCREEN, _fullscreenHandler);
@@ -219,13 +216,11 @@
 				_controlbar.addEventListener('mouseover', function() {
 					// Slider listeners
 					WINDOW.addEventListener('mousemove', _sliderMouseEvent, FALSE);
-					WINDOW.addEventListener('mouseup', _sliderMouseEvent, FALSE);
 					WINDOW.addEventListener('mousedown', _killSelect, FALSE);
 				}, false);
 				_controlbar.addEventListener('mouseout', function(){
 					// Slider listeners
 					WINDOW.removeEventListener('mousemove', _sliderMouseEvent);
-					WINDOW.removeEventListener('mouseup', _sliderMouseEvent);
 					WINDOW.removeEventListener('mousedown', _killSelect);
 					DOCUMENT.onselectstart = null;
 				}, false);
@@ -327,15 +322,11 @@
 			}
 		}
 		
-		function _muteHandler() {
-			var state = _api.jwGetMute();
-			_toggleButton("mute", state);
-			_setVolume(state ? 0 : _currentVolume);
-		}
-
 		function _volumeHandler() {
+			var muted = _api.jwGetMute();
 			_currentVolume = _api.jwGetVolume() / 100;
-			_setVolume(_currentVolume);
+			_toggleButton("mute", muted || _currentVolume === 0);
+			_setVolume(muted ? 0 : _currentVolume);
 		}
 
 		function _bufferHandler(evt) {
@@ -625,8 +616,12 @@
 		}
 		
 		function _mute() {
-			_api.jwSetMute(!_toggleStates.mute);
-			_muteHandler({mute:_toggleStates.mute});
+			var muted = !_toggleStates.mute;
+			_api.jwSetMute(muted);
+			if (!muted && _currentVolume === 0) {
+				_api.jwSetVolume(20);
+			}
+			_volumeHandler();
 		}
 
 		function _hideOverlays(exception) {
@@ -952,11 +947,22 @@
 			DOCUMENT.onselectstart = function () { return FALSE; };
 		}
 
+		function _draggingStart(name) {
+			_draggingEnd();
+			_dragging = name;
+			WINDOW.addEventListener('mouseup', _sliderMouseEvent, FALSE);
+		}
+
+		function _draggingEnd() {
+			WINDOW.removeEventListener('mouseup', _sliderMouseEvent);
+			_dragging = NULL;
+		}
+
 		function _sliderDragStart() {
-			_elements.timeRail.className = "jwrail";
+			_elements.timeRail.className = 'jwrail';
 			if (!_idle()) {
 				_api.jwSeekDrag(TRUE);
-				_dragging = "time";
+				_draggingStart('time');
 				_showTimeTooltip();
 				_eventDispatcher.sendEvent(events.JWPLAYER_USER_ACTION);
 			}
@@ -981,7 +987,7 @@
 			if (evt.type == utils.touchEvents.DRAG_END) {
 				_api.jwSeekDrag(FALSE);
 				_elements.timeRail.className = "jwrail jwsmooth";
-				_dragging = NULL;
+				_draggingEnd();
 				_sliderMapping['time'](pct);
 				_hideTimeTooltip();
 				_eventDispatcher.sendEvent(events.JWPLAYER_USER_ACTION);
@@ -1019,12 +1025,11 @@
 				if (name == "time") {
 					if (!_idle()) {
 						_api.jwSeekDrag(TRUE);
-						_dragging = name;
+						_draggingStart(name);
 					}
 				} else {
-					_dragging = name;
+					_draggingStart(name);
 				}
-				
 			});
 		}
 		
@@ -1052,7 +1057,7 @@
 				}
 
 				_elements[name+'Rail'].className = "jwrail jwsmooth";
-				_dragging = NULL;
+				_draggingEnd();
 				_sliderMapping[name.replace("H", "")](pct);
 			} else {
 				if (_dragging == "time") {
@@ -1156,8 +1161,13 @@
 		
 		function _drawCues() {
 			utils.foreach(_cues, function(idx, cue) {
-				if (cue.position.toString().search(/^[\d\.]+%$/) > -1) cue.element.style.left = cue.position;
-				else cue.element.style.left = (100 * cue.position / _duration) + "%";
+				var style = {};
+				if (cue.position.toString().search(/^[\d\.]+%$/) > -1) {
+					style.left = cue.position;
+				} else {
+					style.left = (100 * cue.position / _duration) + "%";
+				}
+				_css.style(cue.element, style);
 			});
 		}
 		
@@ -1462,42 +1472,50 @@
 		
 
 		function _setBuffer(pct) {
-			pct = Math.min(Math.max(0, pct), 1);
 			if (_elements.timeSliderBuffer) {
-				_elements.timeSliderBuffer.style.width = pct * 100 + "%";
-				_elements.timeSliderBuffer.style.opacity = pct > 0 ? 1 : 0;
+				pct = Math.min(Math.max(0, pct), 1);
+				_css.style(_elements.timeSliderBuffer, {
+					width: pct * 100 + '%',
+					opacity: pct > 0 ? 1 : 0
+				});
 			}
 		}
 
 		function _sliderPercent(name, pct) {
 			if (!_elements[name]) return;
 			var vertical = _elements[name].vertical,
-				prefix = name + (name=="time"?"Slider":""),
-				size = 100 * Math.min(Math.max(0, pct), 1) + "%",
+				prefix = name + (name==='time' ? 'Slider' : ''),
+				size = 100 * Math.min(Math.max(0, pct), 1) + '%',
 				progress = _elements[prefix+'Progress'],
-				thumb = _elements[prefix+'Thumb'];
+				thumb = _elements[prefix+'Thumb'],
+				style;
 			
-			// Set style directly on the elements; Using the stylesheets results in some flickering in Chrome.
 			if (progress) {
+				style = {};
 				if (vertical) {
-					progress.style.height = size;
-					progress.style.bottom = 0;
+					style.height = size;
+					style.bottom = 0;
 				} else {
-					progress.style.width = size;
+					style.width = size;
 				}
-				progress.style.opacity = (pct > 0 || _dragging) ? 1 : 0;
+				if (name !=='volume') {
+					style.opacity = (pct > 0 || _dragging) ? 1 : 0;
+				}
+				_css.style(progress, style);
 			}
 			
 			if (thumb) {
+				style = {};
 				if (vertical) {
-					thumb.style.top = 0;
+					style.top = 0;
 				} else {
-					thumb.style.left = size;
+					style.left = size;
 				}
+				_css.style(thumb, style);
 			}
 		}
 		
-		function _setVolume (pct) {
+		function _setVolume(pct) {
 			_sliderPercent('volume', pct);	
 			_sliderPercent('volumeH', pct);	
 		}
@@ -1542,12 +1560,14 @@
 
 			_css.block(_id); //unblock on redraw
 
-			_muteHandler();
+			_volumeHandler();
 			_redraw();
 
 			_clearHideTimeout();
 			_hideTimeout = setTimeout(function() {
-				_controlbar.style.opacity = 1;
+				_css.style(_controlbar, {
+					opacity: 1
+				});
 			}, 0);
 		};
 		
@@ -1609,10 +1629,14 @@
 		_this.hide = function() {
 			if (!_this.visible) return;
 			_this.visible = false;
-			_controlbar.style.opacity = 0;
+			_css.style(_controlbar, {
+				opacity: 0
+			});
 			_clearHideTimeout();
 			_hideTimeout = setTimeout(function() {
-				_controlbar.style.display = JW_CSS_NONE;
+				_css.style(_controlbar, {
+					display: JW_CSS_NONE
+				});
 			}, JW_VISIBILITY_TIMEOUT);
 		};
 		
@@ -1748,4 +1772,4 @@
 	_setTransition(CB_CLASS + ' .jwtime .jwsmooth span', JW_CSS_SMOOTH_EASE + ", width .25s linear, left .05s linear");
 	_setTransition(CB_CLASS + ' .jwtoggling', JW_CSS_NONE);
 
-})(jwplayer);
+})(window.jwplayer);
