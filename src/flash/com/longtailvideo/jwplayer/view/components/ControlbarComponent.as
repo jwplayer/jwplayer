@@ -314,7 +314,7 @@ package com.longtailvideo.jwplayer.view.components {
 				hideButton('prev');
 				hideButton('next');
 			}
-			if (player.config.mute) {
+			if (isMuted) {
 				newLayout = newLayout.replace("mute", "unmute");
 				hideButton("mute");
 			} else {
@@ -418,22 +418,23 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 		}
 
-
 		private function updateVolumeSlider(evt:MediaEvent=null):void {
 			var sliders:Array = [_volSliderH, _volSliderV];
 			
 			for each (var volume:Slider in sliders) {
 				if (volume) {
-					if (!_player.config.mute) {
+					if (!isMuted) {
 						volume.setBuffer(100);
 						volume.setProgress(_player.config.volume);
-						volume.thumbVisible = true;
 					} else {
-						volume.reset();
-						volume.thumbVisible = false;
+						volume.setProgress(0);
 					}
 				}
 			}
+			
+			updateControlbarState();
+			redraw();
+
 		}
 
 
@@ -745,6 +746,7 @@ package com.longtailvideo.jwplayer.view.components {
 				} else {
 					// Volume
 					slider = new Slider('volume', _player.skin, vertical, vertical ? "tooltip" : "controlbar");
+					slider.thumbVisible = true;
 				}
 				slider.addEventListener(event, callback);
 				slider.name = name;
@@ -966,7 +968,7 @@ package com.longtailvideo.jwplayer.view.components {
 
 			positionOverlay(_hdOverlay, getButton('hd'));
 			positionOverlay(_ccOverlay, getButton('cc'));
-			positionOverlay(_volumeOverlay, player.config.mute ? getButton('unmute') : getButton('mute'));
+			positionOverlay(_volumeOverlay, isMuted ? getButton('unmute') : getButton('mute'));
 		}
 
 
@@ -1011,13 +1013,16 @@ package com.longtailvideo.jwplayer.view.components {
 			_divIndex = 0;
 		}
 		
+		private function get isMuted():Boolean {
+			return player.config.mute || (player.config.volume == 0); 
+		}
 		
 		private function addDividers():void {
 			
 			var controlbarPattern:RegExp = /\[(.*)\]\[.*\]\[(.*)\]/;
 			var result:Object = controlbarPattern.exec(_currentLayout);
 			var rightDivide:Array = ["play","pause","prev","next"];
-			var leftDivide:Array = player.config.mute ? ["hd","cc","unmute","fullscreen"] : ["hd","cc","mute","fullscreen"];
+			var leftDivide:Array = isMuted ? ["hd","cc","unmute","fullscreen"] : ["hd","cc","mute","fullscreen"];
 			_numDividers = 0;
 			
 			//make sure we don't add dividers a layout that already has dividers
