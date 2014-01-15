@@ -245,7 +245,9 @@
 		}
 	
 	    function _captionsLoadedHandler(evt) {
-	        _model.getVideo().addCaptions(evt.captionData,_model.fullscreen, _api.jwGetCurrentCaptions());
+	        
+	        //ios7captions
+	        //_model.getVideo().addCaptions(evt.captionData,_model.fullscreen, _api.jwGetCurrentCaptions());
 	    }
 	
 	
@@ -356,7 +358,9 @@
 
 			if (state) {
 				if (_model.getVideo().audioMode()) return;
-				_model.getVideo().fsCaptions(state,_api.jwGetCurrentCaptions());
+				
+				//ios7captions
+				//_model.getVideo().fsCaptions(state,_api.jwGetCurrentCaptions());
 				if (_isMobile) {
 					try {
 						_videoTag.webkitEnterFullScreen();
@@ -380,11 +384,13 @@
 				
 				}
 			} else {
-			    var curr = _model.getVideo().fsCaptions(state,_api.jwGetCurrentCaptions());
-                if (curr)
-                    _api.jwSetCurrentCaptions(curr+1);
-                else 
-                    _api.jwSetCurrentCaptions(0);
+			    
+			    //commenting out ios7 support
+			    //var curr = _model.getVideo().fsCaptions(state,_api.jwGetCurrentCaptions());
+                //if (curr)
+                 //   _api.jwSetCurrentCaptions(curr+1);
+                //else 
+                //    _api.jwSetCurrentCaptions(0);
 				if (_isMobile) {
 					_videoTag.webkitExitFullScreen();
 					_model.setFullscreen(FALSE);
@@ -738,7 +744,8 @@
 		
 		
 	    function _playlistItemHandler() {
-            _model.getVideo().resetCaptions();
+            //ios7 captions:
+            //_model.getVideo().resetCaptions();
         }
 
 		function _readyHandler() {
