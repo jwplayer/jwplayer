@@ -422,11 +422,9 @@
 				height: _bgHeight,
 				bottom: margin,
 				left: margin,
-				right: margin
+				right: margin,
+				'max-width': _audioMode ? '' : _settings.maxwidth
 			};
-			if (!_audioMode) {
-				styles['max-width'] = _settings.maxwidth;
-			}
 			_css.style(_controlbar, styles);
 			
 			_css(_internalSelector(".jwtext"), {
