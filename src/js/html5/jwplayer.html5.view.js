@@ -550,6 +550,7 @@
 		
 		function _resizeMedia(width, height) {
 			clearInterval(_resizeMediaInterval);
+			clearInterval(_fullscreenInterval);
 			if (_videoTag && _playerElement.className.indexOf(ASPECT_MODE) == -1) {
 				if (!width || isNaN(Number(width))) {
 					width  = _videoLayer.clientWidth;
@@ -563,6 +564,7 @@
 					_videoTag.videoWidth, _videoTag.videoHeight);
 				// poll resizing if video is transformed
 				if (transformScale) {
+					
 					_resizeMediaInterval = setInterval(_resizeMedia, 250);
 				}
 			}
@@ -822,6 +824,7 @@
 			_setVisibility(_internalSelector(VIEW_CONTROLS_CONTAINER_CLASS), FALSE);
 			_oldModel = _model;
 			_model = instreamModel;
+			instreamModel.fullscreen = _model.fullscreen;
 			_instreamLayer.appendChild(instreamContainer);
 			_instreamControlbar = instreamControlbar;
 			_instreamDisplay = instreamDisplay;
@@ -832,6 +835,7 @@
 		this.destroyInstream = function() {
 			_setVisibility(_internalSelector(VIEW_INSTREAM_CONTAINER_CLASS), FALSE);
 			_setVisibility(_internalSelector(VIEW_CONTROLS_CONTAINER_CLASS), TRUE);
+			_oldModel.fullscreen = _model.fullscreen;
 			_model = _oldModel;
 			_instreamLayer.innerHTML = "";
 			_instreamMode = FALSE;
