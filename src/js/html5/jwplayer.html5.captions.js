@@ -188,11 +188,12 @@
                 for (i = 0; i < tracks.length; i++) {
                     if (label == tracks[i].label) {
                         defaultTrack = i;
-                        _renderCaptions(defaultTrack);
+                        
                         break;
                     }
                 }
             }
+            if (defaultTrack > 0) _renderCaptions(defaultTrack);
             _redraw(false);
             _sendEvent(events.JWPLAYER_CAPTIONS_LIST, _getTracks(), _selectedTrack);
         }
