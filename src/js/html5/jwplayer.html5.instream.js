@@ -114,7 +114,7 @@
             }
             
             // Show the instream layer
-            _view.setupInstream(_instreamContainer, _cbar, _disp, _fakemodel);
+            _view.setupInstream(_instreamContainer, _cbar, _disp);
             
             // Resize the instream components to the proper size
             _resize();
