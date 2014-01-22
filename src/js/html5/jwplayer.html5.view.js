@@ -74,7 +74,6 @@
 			_replayState,
 			_readyState,
 			_rightClickMenu,
-			_fullscreenTimeout = -1,
 			_resizeMediaTimeout = -1,
 			_inCB = FALSE,
 			_currentState,
@@ -421,10 +420,10 @@
 			_redrawComponent(_dock);
 			_resizeMedia();
 
-			clearTimeout(_fullscreenTimeout);
 			if (_model.fullscreen) {
 				// Browsers seem to need an extra second to figure out how large they are in fullscreen...
-				_fullscreenTimeout = setTimeout(_resizeMedia, 200);
+				clearTimeout(_resizeMediaTimeout);
+				_resizeMediaTimeout = setTimeout(_resizeMedia, 200);
 			}
 			
 		};
