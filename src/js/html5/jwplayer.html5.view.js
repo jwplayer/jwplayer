@@ -819,6 +819,7 @@
 		}
 		
 		this.setupInstream = function(instreamContainer, instreamControlbar, instreamDisplay) {
+			_css.unblock();
 			_setVisibility(_internalSelector(VIEW_INSTREAM_CONTAINER_CLASS), TRUE);
 			_setVisibility(_internalSelector(VIEW_CONTROLS_CONTAINER_CLASS), FALSE);
 			_instreamLayer.appendChild(instreamContainer);
@@ -829,6 +830,7 @@
 		};
 		
 		this.destroyInstream = function() {
+			_css.unblock();
 			_setVisibility(_internalSelector(VIEW_INSTREAM_CONTAINER_CLASS), FALSE);
 			_setVisibility(_internalSelector(VIEW_CONTROLS_CONTAINER_CLASS), TRUE);
 			_instreamLayer.innerHTML = "";

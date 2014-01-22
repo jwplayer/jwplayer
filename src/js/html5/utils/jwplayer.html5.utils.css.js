@@ -91,7 +91,7 @@
 	};
 	
 	_css.unblock = function(id) {
-		if (_cssBlock && _cssBlock.id === id) {
+		if (_cssBlock && (!id || _cssBlock.id === id)) {
 			// IE9 limits the number of style tags in the head, so we need to update the entire stylesheet each time
 			for (var selector in _cssBlock.styleSheets) {
 				_updateStylesheet(selector);
