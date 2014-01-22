@@ -643,9 +643,9 @@
 				if (!jwalt) return;
 				jwhidden = _controlbar.querySelectorAll(".jwhidden");
 				if ((_controlbar.parentNode && _controlbar.parentNode.clientWidth >= 320) && !jwalt.firstChild) {
-					_css.style(jwhidden, NOT_HIDDEN);				
+					_css.style(jwhidden, NOT_HIDDEN);
 				} else {
-					_css.style(jwhidden, HIDDEN);				
+					_css.style(jwhidden, HIDDEN);
 				}
 			}
 		}
@@ -1163,7 +1163,7 @@
 				if (cue.position.toString().search(/^[\d\.]+%$/) > -1) {
 					style.left = cue.position;
 				} else {
-					style.left = (100 * cue.position / _duration) + "%";
+					style.left = (100 * cue.position / _duration).toFixed(2) + '%';
 				}
 				_css.style(cue.element, style);
 			});
@@ -1356,10 +1356,10 @@
 			}
 		}
 
-		var _redraw = function() {
+		function _redraw() {
 			clearTimeout(_redrawTimeout);
 			_redrawTimeout = setTimeout(_this.redraw, 0);
-		};
+		}
 
 		_this.redraw = function(resize) {
 			_css.block(_id);
@@ -1368,27 +1368,20 @@
 				_this.show(TRUE);
 			}
 			_createStyles();
-			var capLeft = _getSkinElement("capLeft"),
-				capRight = _getSkinElement("capRight"),
-				centerCss = {
-					left:  Math.round(utils.parseDimension(_groups.left.offsetWidth) + capLeft.width),
-					right: Math.round(utils.parseDimension(_groups.right.offsetWidth) + capRight.width)
-				},
-				ieIframe = (top !== window.self) && utils.isIE();
-			_css.style(_groups.center, centerCss);
 
 			// ie <= IE10 does not allow fullscreen from inside an iframe. Hide the FS button. (TODO: Fix for IE11)
+			var ieIframe = (top !== window.self) && utils.isIE();
 			_css(_internalSelector(".jwfullscreen"), {
-				display: (_audioMode || _hideFullscreen || ieIframe) ? JW_CSS_NONE : UNDEFINED
+				display: (_audioMode || _hideFullscreen || ieIframe) ? JW_CSS_NONE : ''
 			});
 			_css(_internalSelector(".jwvolumeH"), {
 				display: _audioMode || _instreamMode ? JW_CSS_BLOCK : JW_CSS_NONE
 			});
 			_css(_internalSelector(".jwhd"), {
-				display: !_audioMode && _hasHD() ? UNDEFINED : JW_CSS_NONE
+				display: !_audioMode && _hasHD() ? '' : JW_CSS_NONE
 			});
 			_css(_internalSelector(".jwcc"), {
-				display: !_audioMode && _hasCaptions() ? UNDEFINED : JW_CSS_NONE
+				display: !_audioMode && _hasCaptions() ? '' : JW_CSS_NONE
 			});
 
 			_drawCues();
@@ -1398,6 +1391,16 @@
 			}
 
 			_css.unblock(_id);
+
+			if (_this.visible) {
+				var capLeft = _getSkinElement("capLeft"),
+					capRight = _getSkinElement("capRight"),
+					centerCss = {
+						left:  Math.round(utils.parseDimension(_groups.left.offsetWidth) + capLeft.width),
+						right: Math.round(utils.parseDimension(_groups.right.offsetWidth) + capRight.width)
+					};
+				_css.style(_groups.center, centerCss);
+			}
 		};
 		
 		function _updateNextPrev() {
@@ -1473,7 +1476,7 @@
 			if (_elements.timeSliderBuffer) {
 				pct = Math.min(Math.max(0, pct), 1);
 				_css.style(_elements.timeSliderBuffer, {
-					width: pct * 100 + '%',
+					width: (pct * 100).toFixed(1) + '%',
 					opacity: pct > 0 ? 1 : 0
 				});
 			}
