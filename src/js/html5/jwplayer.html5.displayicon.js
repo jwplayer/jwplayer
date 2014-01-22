@@ -100,7 +100,6 @@
 				style = utils.extend({}, style);
 				if (name.indexOf("Icon") > 0) _iconWidth = skinElem.width|0;
 				style.width = skinElem.width;
-				_css.style(element, style);
 				_css(selector, {
 					'background-image': 'url(' + skinElem.src + ')',
 					'background-size': skinElem.width+'px '+skinElem.height+'px'
@@ -117,7 +116,9 @@
 			} else {
 				_css.style(_container, { display: "none" });
 			}
-
+			if (style) {
+				_css.style(element, style);
+			}
 			_iconElement = skinElem;
 		}
 
