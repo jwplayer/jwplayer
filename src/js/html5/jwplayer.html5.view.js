@@ -56,7 +56,6 @@
 			_videoTag,
 			_videoLayer,
 			_lastWidth,
-			_oldModel,
 			_instreamLayer,
 			_instreamControlbar,
 			_instreamDisplay,
@@ -74,7 +73,8 @@
 			_replayState,
 			_readyState,
 			_rightClickMenu,
-			_resizeMediaTimeout = -1,
+			_fullscreenInterval = -1,
+			_resizeMediaInterval = -1,
 			_inCB = FALSE,
 			_currentState,
 			_eventDispatcher = new events.eventdispatcher();
@@ -114,19 +114,16 @@
 		function _responsiveListener() {
 			var bounds = _bounds(_playerElement), 
 				containerWidth = bounds.width;
-			if (!document.body.contains(_playerElement)) {
-				window.removeEventListener('resize', _responsiveListener);
-				if (_isMobile) {
+			if (!DOCUMENT.contains(_playerElement)) {
+				 window.removeEventListener('resize', _responsiveListener);
+				 if (_isMobile) {
 					window.removeEventListener("orientationchange", _responsiveListener);
-				}
+				 }
 			} else if (containerWidth > 0) {
 				if (containerWidth != _lastWidth) {
 					_lastWidth = containerWidth;
-					if (_display) {
-						_display.redraw();
-					}
-					clearTimeout(_resizeMediaTimeout);
-					_resizeMediaTimeout = setTimeout(_resizeMedia, 50);
+					clearInterval(_resizeMediaInterval);
+					_resizeMediaInterval = setInterval(_resizeMedia, 50);
 					_eventDispatcher.sendEvent(events.JWPLAYER_RESIZE, {
 						width : bounds.width,
 						height : bounds.height
@@ -423,10 +420,10 @@
 			_redrawComponent(_dock);
 			_resizeMedia();
 
+			clearInterval(_fullscreenInterval);
 			if (_model.fullscreen) {
 				// Browsers seem to need an extra second to figure out how large they are in fullscreen...
-				clearTimeout(_resizeMediaTimeout);
-				_resizeMediaTimeout = setTimeout(_resizeMedia, 200);
+				_fullscreenInterval = setInterval(_resizeMedia, 200);
 			}
 			
 		};
@@ -551,7 +548,9 @@
 		}
 		
 		function _resizeMedia(width, height) {
-			if (_videoTag) {
+			clearInterval(_resizeMediaInterval);
+			clearInterval(_fullscreenInterval);
+			if (_videoTag && _playerElement.className.indexOf(ASPECT_MODE) == -1) {
 				if (!width || isNaN(Number(width))) {
 					width  = _videoLayer.clientWidth;
 				}
@@ -564,8 +563,8 @@
 					_videoTag.videoWidth, _videoTag.videoHeight);
 				// poll resizing if video is transformed
 				if (transformScale) {
-					clearTimeout(_resizeMediaTimeout);
-					_resizeMediaTimeout = setTimeout(_resizeMedia, 250);
+					
+					_resizeMediaInterval = setInterval(_resizeMedia, 250);
 				}
 			}
 		}
@@ -822,9 +821,6 @@
 		this.setupInstream = function(instreamContainer, instreamControlbar, instreamDisplay, instreamModel) {
 			_setVisibility(_internalSelector(VIEW_INSTREAM_CONTAINER_CLASS), TRUE);
 			_setVisibility(_internalSelector(VIEW_CONTROLS_CONTAINER_CLASS), FALSE);
-			_oldModel = _model;
-			_model = instreamModel;
-			instreamModel.fullscreen = _model.fullscreen;
 			_instreamLayer.appendChild(instreamContainer);
 			_instreamControlbar = instreamControlbar;
 			_instreamDisplay = instreamDisplay;
@@ -835,8 +831,6 @@
 		this.destroyInstream = function() {
 			_setVisibility(_internalSelector(VIEW_INSTREAM_CONTAINER_CLASS), FALSE);
 			_setVisibility(_internalSelector(VIEW_CONTROLS_CONTAINER_CLASS), TRUE);
-			_oldModel.fullscreen = _model.fullscreen;
-			_model = _oldModel;
 			_instreamLayer.innerHTML = "";
 			_instreamMode = FALSE;
 		};
@@ -909,7 +903,7 @@
 				width: 0,
 				height: 0
 			};
-			if ((_instreamMode && !_oldModel.controls) || !_model.controls) {
+			if (!_model.controls) {
 				return bounds;
 			}
 			_controlbar.showTemp();
@@ -995,15 +989,9 @@
 	});
 
 	_css('.' + VIEW_VIDEO_CONTAINER_CLASS + " video", {
-		background : 'transparent',
-		height : JW_CSS_100PCT,
-		width: JW_CSS_100PCT,
-		position: 'absolute',
-		margin: 'auto',
-		right: 0,
-		left: 0,
-		top: 0,
-		bottom: 0
+		background : "transparent",
+		width : JW_CSS_100PCT,
+		height : JW_CSS_100PCT
 	});
 
 	_css('.' + VIEW_PLAYLIST_CONTAINER_CLASS, {
