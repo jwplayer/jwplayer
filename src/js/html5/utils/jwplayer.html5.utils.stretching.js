@@ -15,20 +15,23 @@
 	};
 
 	utils.scale = function(domelement, xscale, yscale, xoffset, yoffset) {
-		var value;
+		var value = '';
 		
 		// Set defaults
 		xscale = xscale || 1;
 		yscale = yscale || 1;
 		xoffset = xoffset|0;
 		yoffset = yoffset|0;
-		
-		if (xscale === 1 && yscale === 1 && xoffset === 0 && yoffset === 0) {
-			value = "";
-		} else {
-			value = "scale("+xscale+", "+yscale+") translate("+xoffset+"px, "+yoffset+"px)";
+
+		if (xscale !== 1 || yscale !== 1) {
+			value = 'scale('+xscale+', '+yscale+')';
 		}
-		
+		if (xoffset || yoffset) {
+			if (value) {
+				value += ' ';
+			}
+			value = 'translate('+xoffset+'px, '+yoffset+'px)';
+		}
 		utils.transform(domelement, value);
 	};
 	
@@ -56,29 +59,21 @@
 		if (!parentWidth || !parentHeight || !elementWidth || !elementHeight) return false;
 		stretching = stretching || _stretching.UNIFORM;
 		
-		var xscale = parentWidth / elementWidth,
-			yscale = parentHeight / elementHeight,
-			xoff = 0, yoff = 0,
+		var xscale = Math.ceil(parentWidth/2) * 2 / elementWidth,
+			yscale = Math.ceil(parentHeight/2) * 2 / elementHeight,
 			video = (domelement.tagName.toLowerCase() === "video"),
 			scale = false,
-			stretchClass;
-		
-		if (video) {
-			utils.transform(domelement);
-		}
-
-		stretchClass = "jw" + stretching.toLowerCase();
+			stretchClass = "jw" + stretching.toLowerCase();
 		
 		switch (stretching.toLowerCase()) {
 		case _stretching.FILL:
 			if (xscale > yscale) {
-				elementWidth = elementWidth * xscale;
-				elementHeight = elementHeight * xscale;
+				yscale = xscale;
 			} else {
-				elementWidth = elementWidth * yscale;
-				elementHeight = elementHeight * yscale;
+				xscale = yscale;
 			}
-			/* falls through */
+			scale = true;
+			break;
 		case _stretching.NONE:
 			xscale = yscale = 1;
 			/* falls through */
@@ -106,24 +101,33 @@
 				}
 			}
 			if (scale) {
-				yscale = Math.ceil(100 * parentHeight / elementHeight) / 100;
-				xscale = Math.ceil(100 * parentWidth / elementWidth) / 100;
+				xscale = Math.ceil(parentWidth/2) * 2 / elementWidth;
+				yscale = Math.ceil(parentHeight/2) * 2 / elementHeight;
 			}
-			break;
 		}
 
 		if (video) {
-			var style = {};
-			if (scale && !(xscale === 1 && yscale === 1)) {
+			var style = {
+				left: '',
+				right: '',
+				width: '',
+				height: ''
+			};
+			if (scale) {
+				if (parentWidth < elementWidth) {
+					style.left = 
+					style.right =  Math.ceil((parentWidth - elementWidth)/2);
+				}
+				if (parentHeight < elementHeight) {
+					style.top = 
+					style.bottom =  Math.ceil((parentHeight - elementHeight)/2);
+				}
 				style.width = elementWidth;
-				style.height = elementHeight; 
-				xoff = ((parentWidth - elementWidth) / 2) / xscale;
-				yoff = ((parentHeight - elementHeight) / 2) / yscale;
-				utils.scale(domelement, xscale, yscale, xoff, yoff);
+				style.height = elementHeight;
+				utils.scale(domelement, xscale, yscale, 0, 0);
 			} else {
 				scale = false;
-				style.width = '';
-				style.height = '';
+				utils.transform(domelement);
 			}
 			utils.css.style(domelement, style);
 		} else {
