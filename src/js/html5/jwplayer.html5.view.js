@@ -122,6 +122,9 @@
 			} else if (containerWidth > 0) {
 				if (containerWidth != _lastWidth) {
 					_lastWidth = containerWidth;
+					if (_display) {
+						_display.redraw();
+					}
 					clearTimeout(_resizeMediaTimeout);
 					_resizeMediaTimeout = setTimeout(_resizeMedia, 50);
 					_eventDispatcher.sendEvent(events.JWPLAYER_RESIZE, {
