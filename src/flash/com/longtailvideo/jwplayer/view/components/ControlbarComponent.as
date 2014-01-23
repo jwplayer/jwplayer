@@ -199,8 +199,8 @@ package com.longtailvideo.jwplayer.view.components {
 		private function playlistHandler(evt:PlaylistEvent):void {
 			if (!_instreamMode) {
 				_liveMode = false;
-				(_timeSlider as TimeSlider).removeCues();
 				if (_timeSlider) {
+					(_timeSlider as TimeSlider).removeCues();
 					_timeSlider.reset();
 					var item:PlaylistItem = player.playlist.currentItem;
 					var setThumbs:Boolean = false;
