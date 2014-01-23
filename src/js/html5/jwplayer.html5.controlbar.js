@@ -1377,6 +1377,9 @@
 			_css(_internalSelector(".jwvolumeH"), {
 				display: _audioMode || _instreamMode ? JW_CSS_BLOCK : JW_CSS_NONE
 			});
+			_css(_internalSelector(".jwmute .jwoverlay"), {
+				display: !(_audioMode || _instreamMode) ? JW_CSS_BLOCK : JW_CSS_NONE
+			});
 			_css(_internalSelector(".jwhd"), {
 				display: !_audioMode && _hasHD() ? '' : JW_CSS_NONE
 			});
