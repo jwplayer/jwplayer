@@ -603,9 +603,7 @@ package com.longtailvideo.jwplayer.player
 		}
 
 		public function setControls(state:Boolean):void {
-			if (_skipButton) {
-				_skipButton.visible = state;
-			}
+			state ? _skipButton.show() : _skipButton.hide();
 		}
 		
 		public function getSafeRegion():Rectangle {

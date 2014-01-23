@@ -86,7 +86,7 @@
 		}
 		
 		function _clickHandler(evt) {
-			if (_alternateClickHandler) {
+			if (_alternateClickHandler && (_api.jwGetControls() || _api.jwGetState() == states.PLAYING)) {
 				_alternateClickHandler(evt);
 				return;
 			}
@@ -94,8 +94,8 @@
 			if (!_isMobile || !_api.jwGetControls()) {
 				_eventDispatcher.sendEvent(events.JWPLAYER_DISPLAY_CLICK);
 			}
-			
 			if (!_api.jwGetControls()) return;
+
 
 			// Handle double-clicks for fullscreen toggle
 			var currentClick = _getCurrentTime();

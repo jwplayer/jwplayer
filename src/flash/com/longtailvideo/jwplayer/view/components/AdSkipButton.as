@@ -33,6 +33,7 @@ package com.longtailvideo.jwplayer.view.components
 		protected var _skipMessage:String;
 		protected var _skipOffset:String;
 		protected var _offsetTime:Number = -1;
+		protected var _hidden = false;
 		
 		protected var _adTag:String;
 		protected var _skipArrow:Bitmap;
@@ -90,9 +91,22 @@ package com.longtailvideo.jwplayer.view.components
 			if (isNaN(_offsetTime)) {
 				_offsetTime = -1;
 				this.visible = false;
-			} else {
+			} else if (!_hidden) {
 				this.visible = true;
 			}
+		}
+		
+		
+		public function hide() {
+			_hidden = true;
+			this.visible = false;
+			
+		}
+		
+		
+		public function show() {
+			_hidden = false;
+			this.visible = true;
 		}
 		
 		public function updateSkipText(currTime:Number, duration:Number):void {

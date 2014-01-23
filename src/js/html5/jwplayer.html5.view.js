@@ -863,14 +863,16 @@
 				newstate = state ? TRUE : FALSE;
 			_model.controls = newstate;
 			if (newstate != oldstate) {
-				if (newstate) {
-					_stateHandler({newstate: _api.jwGetState()});
-				} else {
-					_hideControls();
-					_hideDisplay();
-				}
+
 				if (_instreamMode) {
 					_hideInstream(!state);
+				} else {
+				    if (newstate) {
+                        _stateHandler({newstate: _api.jwGetState()});
+                    } else {
+                        _hideControls();
+                        _hideDisplay();
+                    }
 				}
 				_eventDispatcher.sendEvent(events.JWPLAYER_CONTROLS, { controls: newstate });
 			}
