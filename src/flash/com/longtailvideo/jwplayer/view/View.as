@@ -2,7 +2,6 @@ package com.longtailvideo.jwplayer.view {
 	import com.longtailvideo.jwplayer.events.CaptionsEvent;
 	import com.longtailvideo.jwplayer.events.GlobalEventDispatcher;
 	import com.longtailvideo.jwplayer.events.IGlobalEventDispatcher;
-
 	import com.longtailvideo.jwplayer.events.MediaEvent;
 	import com.longtailvideo.jwplayer.events.PlayerEvent;
 	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
@@ -876,6 +875,7 @@ package com.longtailvideo.jwplayer.view {
 			var oldstate:Boolean = _model.config.controls;
 			if (newstate != oldstate) {
 				_model.config.controls = newstate;
+				stateHandler();
 				redraw();
 				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_CONTROLS, newstate));
 				// Reverting changes for setControls in ads (due to regressions in mobile)
