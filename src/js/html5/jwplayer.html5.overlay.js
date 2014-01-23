@@ -46,31 +46,32 @@
 	
 	/** HTML5 Overlay class **/
 	html5.overlay = function(id, skin, inverted) {
-		var _skin = skin,
+		var _this = this,
 			_id = id,
+			_skin = skin,
+			_inverted = inverted,
 			_container,
 			_contents,
-			_offset = 0,
-			_arrow, _arrowHeight,
-			_inverted = inverted,
+			_arrow,
+			_arrowElement,
 			_settings = utils.extend({}, _defaults, _skin.getComponentSettings('tooltip')),
-			_borderSizes = {},
-			_this = this;
+			_borderSizes = {};
 		
 		function _init() {
 			_container = _createElement(OVERLAY_CLASS.replace(".",""));
 			_container.id = _id;
 
-			_arrow = _createSkinElement("arrow", "jwarrow")[1];
-			_arrowHeight = _arrow.height;
+			var arrow = _createSkinElement("arrow", "jwarrow");
+			_arrowElement = arrow[0];
+			_arrow = arrow[1];
 			
-			_css(_internalSelector("jwarrow"), {
+			_css.style(_arrowElement, {
 				position: JW_CSS_ABSOLUTE,
 				//bottom: _inverted ? UNDEFINED : -1 * _arrow.height,
 				bottom: _inverted ? UNDEFINED : 0,
 				top: _inverted ? 0 : UNDEFINED,
 				width: _arrow.width,
-				height: _arrowHeight,
+				height: _arrow.height,
 				left: "50%"
 			});
 
@@ -83,8 +84,8 @@
 			_createBorderElement(TOP);
 			_createBorderElement(BOTTOM);
 			
-			_createSkinElement("background", "jwback");
-			_css(_internalSelector("jwback"), {
+			var back = _createSkinElement("background", "jwback");
+			_css.style(back[0], {
 				left: _borderSizes.left,
 				right: _borderSizes.right,
 				top: _borderSizes.top,
@@ -126,7 +127,8 @@
 			var skinElem = _getSkinElement(name),
 				elem = _createElement(className, _container);
 			
-			_css(_internalSelector(className.replace(" ", ".")), _formatBackground(skinElem));
+			_css.style(elem, _formatBackground(skinElem));
+			//_css(_internalSelector(className.replace(" ", ".")), _formatBackground(skinElem));
 			
 			return [elem, skinElem];
 			
@@ -150,18 +152,19 @@
 				});
 			
 			
-			elemStyle[dim1] = ((dim1 == BOTTOM && !_inverted) || (dim1 == TOP && _inverted)) ? _arrowHeight : 0;
+			elemStyle[dim1] = ((dim1 == BOTTOM && !_inverted) || (dim1 == TOP && _inverted)) ? _arrow.height : 0;
 			if (dim2) elemStyle[dim2] = 0;
 			
-			_css(_internalSelector(elem.className.replace(/ /g, ".")), elemStyle);
+			_css.style(elem, elemStyle);
+			//_css(_internalSelector(elem.className.replace(/ /g, ".")), elemStyle);
 			
 			var dim1style = {}, 
 				dim2style = {}, 
 				dims = { 
 					left: skinElem.width, 
 					right: skinElem.width, 
-					top: (_inverted ? _arrowHeight : 0) + skinElem.height, 
-					bottom: (_inverted ? 0 : _arrowHeight) + skinElem.height
+					top: (_inverted ? _arrow.height : 0) + skinElem.height, 
+					bottom: (_inverted ? 0 : _arrow.height) + skinElem.height
 				};
 			if (dim2) {
 				dim1style[dim2] = dims[dim2];
@@ -178,31 +181,48 @@
 		_this.element = function() {
 			return _container;
 		};
-
-		var contentsTimeout;
 		
 		_this.setContents = function(contents) {
 			utils.empty(_contents);
 			_contents.appendChild(contents);
-			clearTimeout(contentsTimeout);
-			contentsTimeout = setTimeout(_position, 0);
 		};
-		
-		_this.offsetX = function(offset) {
-			_offset = offset;
-			clearTimeout(contentsTimeout);
-			_position();
-		};
-		
-		function _position() {
-			if (_container.clientWidth === 0) return;
+
+		_this.positionX = function(x) {
 			_css.style(_container, {
-				'margin-left': Math.round(_offset - _container.clientWidth / 2)
+				left: Math.round(x)
 			});
-			_css.style(_container.querySelectorAll(".jwarrow"), {
-				'margin-left': Math.round((_arrow.width / -2) - _offset)
-			});
-		}
+		};
+		
+		_this.constrainX = function(containerBounds, forceRedraw) {
+			if (containerBounds.width !== 0) {
+				// reset and check bounds
+				_this.offsetX(0);
+				if (forceRedraw) {
+					_css.unblock();
+				}
+				var bounds = utils.bounds(_container);
+				if (bounds.width !== 0) {
+					if (bounds.right > containerBounds.right) {
+						_this.offsetX(containerBounds.right - bounds.right);
+					} else if (bounds.left < containerBounds.left) {
+						_this.offsetX(containerBounds.left - bounds.left);
+					}
+				}
+			}
+		};
+
+		_this.offsetX = function(offset) {
+			offset = Math.round(offset);
+			var width = _container.clientWidth;
+			if (width !== 0) {
+				_css.style(_container, {
+					'margin-left': Math.round(-width/2) + offset
+				});
+				_css.style(_arrowElement, {
+					'margin-left': Math.round(-_arrow.width/2) - offset
+				});
+			}
+		};
 		
 		_this.borderWidth = function() {
 			return _borderSizes.left;

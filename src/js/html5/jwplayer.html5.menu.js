@@ -133,6 +133,8 @@
 		this.show = _overlay.show;
 		this.hide = _overlay.hide;
 		this.offsetX = _overlay.offsetX;
+		this.positionX = _overlay.positionX;
+		this.constrainX = _overlay.constrainX;
 		
 		_init();
 	};

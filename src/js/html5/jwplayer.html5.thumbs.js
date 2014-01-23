@@ -24,18 +24,18 @@
 
 		function _loadVTT(vtt) {
 			_css.style(_display, {
-				display: "none"
+				display: 'none'
 			});
 			
 			if (vtt) {
 				_vttPath = vtt.split("?")[0].split("/").slice(0, -1).join("/");
-				utils.ajax(vtt,_vttLoaded, _vttFailed);
+				utils.ajax(vtt, _vttLoaded, _vttFailed);
 			}
 		}
 		
 		function _vttLoaded(data) {
 		    try {
-		      data = new jwplayer.parsers.srt().parse(data.responseText,true);
+		      data = new jwplayer.parsers.srt().parse(data.responseText, true);
 		    } catch (e) {
 		        _vttFailed(e.message);
 		        return;
@@ -43,18 +43,14 @@
 			if (utils.typeOf(data) !== "array") {
 				return _vttFailed("Invalid data");
 			}
-			_cues = data;
-
-			_css.style(_display, {
-				display: "block"
-			});
+			_cues = data; 
 		}
 		
 		function _vttFailed(error) {
 			utils.log("Thumbnails could not be loaded: " + error);        
 		}
 		
-		function _loadImage(url) {
+		function _loadImage(url, callback) {
 			// only load image if it's different from the last one
 			if (url && url !== _url) {
 				_url = url;
@@ -62,6 +58,8 @@
 					url = _vttPath ? _vttPath + "/" + url : url;
 				}
 				var style = {
+					display: 'block',
+					margin: '0 auto',
 					'background-position': '0 0',
 					width: 0,
 					height: 0
@@ -84,12 +82,12 @@
 				if (!image) {
 					image = new Image();
 					image.onload = function() {
-						_updateSprite(image, style);
+						_updateSprite(image, style, callback);
 					};
 					_images[url] = image;
 					image.src = url;
 				} else {
-					_updateSprite(image, style);
+					_updateSprite(image, style, callback);
 				}
 				if (_image) {
 					// ignore previous image
@@ -99,7 +97,7 @@
 			}
 		} 
 		
-		function _updateSprite(image, style) {
+		function _updateSprite(image, style, callback) {
 			image.onload = null;
 			if (!style.width) {
 				style.width = image.width;
@@ -107,6 +105,9 @@
 			}
 			style['background-image'] = image.src;
 			_css.style(_display, style);
+			if (callback) {
+				callback(style.width);
+			}
 		}
 		
 		this.load = function(thumbsVTT) {
@@ -118,14 +119,16 @@
 		};
 		
 		// Update display
-		this.updateTimeline = function(seconds) {
+		this.updateTimeline = function(seconds, callback) {
 			if (!_cues) return;
 			var i = 0;
 			while(i < _cues.length && seconds > _cues[i].end) {
 				i++;
 			}
 			if (i === _cues.length) i--;
-			_loadImage(_cues[i].text);
+			var url = _cues[i].text;
+			_loadImage(url, callback);
+			return url;
 		};
 	};
 

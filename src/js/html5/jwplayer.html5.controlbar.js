@@ -832,7 +832,6 @@
 				_appendChild(_timeOverlayContainer, _timeOverlayThumb.element());
 				_appendChild(_timeOverlayContainer, _timeOverlayText);
 				_timeOverlay.setContents(_timeOverlayContainer);
-				//_overlays.time = _timeOverlay;
 				_timeRail = rail;
 				_setTimeOverlay(0);
 				_appendChild(rail, _timeOverlay.element());
@@ -1073,7 +1072,7 @@
 
 		function _showTimeTooltip() {
 			if (_timeOverlay && _duration && !_audioMode && !_isMobile) {
-				_positionOverlay(_timeOverlay);
+				_positionOverlay('time', _timeOverlay);
 				_timeOverlay.show();
 			}
 		}
@@ -1085,27 +1084,46 @@
 		}
 		
 		function _positionTimeTooltip(evt) {
+			_cbBounds = utils.bounds(_controlbar);
 			_railBounds = utils.bounds(_timeRail);
 			if (!_railBounds || _railBounds.width === 0) return;
-			var element = _timeOverlay.element(), 
-				position = evt.pageX ? ((evt.pageX - _railBounds.left) - WINDOW.pageXOffset) : (evt.x);
+			var position = evt.x;
+			if (evt.pageX) {
+				position = evt.pageX - _railBounds.left;
+			}
 			if (position >= 0 && position <= _railBounds.width) {
-				_cbBounds = utils.bounds(_controlbar);
-				_css.style(element, {
-					left: Math.round(position)
-				});
+				_timeOverlay.positionX(Math.round(position));
 				_setTimeOverlay(_duration * position / _railBounds.width);
 			}
 		}
 		
 		function _setTimeOverlay(sec) {
-			var text = _activeCue ? _activeCue.text : utils.timeFormat(sec);
+			var thumbUrl = _timeOverlayThumb.updateTimeline(sec, function(width) {
+				_css.style(_timeOverlay.element(), {
+					'width': width
+				});
+				_positionOverlay('time', _timeOverlay);
+			});
+			var text;
+			if (_activeCue) {
+				text = _activeCue.text;
+				if (text) {
+					_css.style(_timeOverlay.element(), {
+						'width': (text.length > 32) ? 160: ''
+					});
+				}
+			} else {
+				text = utils.timeFormat(sec);
+				if (!thumbUrl) {
+					_css.style(_timeOverlay.element(), {
+						'width': ''
+					});
+				}
+			}
 			if (_timeOverlayText.innerHTML !== text) {
 				_timeOverlayText.innerHTML = text;
 			}
-			_timeOverlayThumb.updateTimeline(sec); 
-			_timeOverlay.setContents(_timeOverlayContainer);
-			_positionOverlay(_timeOverlay);
+			_positionOverlay('time', _timeOverlay);
 		}
 		
 		function _styleTimeSlider() {
@@ -1143,16 +1161,16 @@
 					cue = {
 						position: timePos,
 						text: text,
-						element: cueElem};
-				
+						element: cueElem
+					};
 				
 				if (cueElem && rail) {
 					rail.appendChild(cueElem);
 					cueElem.addEventListener("mouseover", function() { _activeCue = cue; }, false);
 					cueElem.addEventListener("mouseout", function() { _activeCue = NULL; }, false);
+					_cues.push(cue);
 				}
-
-				_cues.push(cue);
+				
 			}
 			_drawCues();
 		}
@@ -1174,7 +1192,7 @@
 			utils.foreach(_cues, function(idx, cue) {
 				rail.removeChild(cue.element);
 			});
-			_cues = [];	
+			_cues.length = 0;
 		}
 		
 		_this.setText = function(text) {
@@ -1389,9 +1407,7 @@
 
 			_drawCues();
 
-			for (var i in _overlays) {
-				_positionOverlay(_overlays[i]);
-			}
+			utils.foreach(_overlays, _positionOverlay);
 
 			_css.unblock(_id);
 
@@ -1416,28 +1432,12 @@
 			}
 		}
 
-		function _positionOverlay(overlay) {
-			var id = _id + '_overlay';
-			_css.block(id);
-			overlay.offsetX(0);
-			// TODO: are these bounds checks needed for anything other than _timeOverlay?
-			if (overlay === _timeOverlay) {
-				_css.unblock(id);
-				_css.unblock(_id);
-			}
+		function _positionOverlay(name, overlay) {
 			if (!_cbBounds) {
 				_cbBounds = utils.bounds(_controlbar);
 			}
-			var overlayBounds = utils.bounds(overlay.element());
-			if (!_cbBounds) {
-				_cbBounds = utils.bounds(_controlbar);
-			}
-			if (overlayBounds.right > _cbBounds.right) {
-				overlay.offsetX(_cbBounds.right - overlayBounds.right);
-			} else if (overlayBounds.left < _cbBounds.left) {
-				overlay.offsetX(_cbBounds.left - overlayBounds.left);
-			}
-			_css.unblock(id);
+			var forceRedraw = (overlay === _timeOverlay);
+			overlay.constrainX(_cbBounds, forceRedraw);
 		}
 		
 
@@ -1608,7 +1608,7 @@
 			if (vttFile) {
 				utils.ajax(vttFile, _cueLoaded, _cueFailed);
 		   } else {
-				_cues = [];
+				_cues.length = 0;
 		   }
 		}
 		
