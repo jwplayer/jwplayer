@@ -337,7 +337,7 @@
         }
         
         function _fullscreenHandler(evt) {
-            _forward(evt);
+            //_forward(evt);
             _resize();
             if (!evt.fullscreen && _utils.isIPad()) {
                 if (_fakemodel.state === _states.PAUSED) {
