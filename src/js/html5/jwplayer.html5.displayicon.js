@@ -9,7 +9,7 @@
 		utils = jwplayer.utils,
 		_css = utils.css,
 
-		DI_CLASS = ".jwdisplayIcon", 
+		DI_CLASS = ".jwplayer .jwdisplayIcon", 
 		UNDEFINED,
 		DOCUMENT = document,
 
@@ -140,6 +140,7 @@
 			_css.style(_text, {
 				display: (_text.innerHTML && showText) ? UNDEFINED : JW_CSS_NONE
 			});
+
 			
 			_repeatCount = 10;
 			setTimeout(function() {
@@ -248,7 +249,7 @@
 		'margin-left': "auto",
 		'margin-right': "auto",
 		top: "50%"
-	}, true);
+	});
 
 	_css(DI_CLASS + " div", {
 		position : "relative",
