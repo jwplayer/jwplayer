@@ -103,10 +103,10 @@ package com.longtailvideo.jwplayer.view.components {
 			if (thumbs) {
 				_thumbnailImages.load(thumbs);
 			} else {
-				_thumbnailImages.load(null);
 				if (_tooltip.contains(_thumbnailImages)) {
 					_tooltip.removeChild(_thumbnailImages);
 				}
+				_thumbnailImages.load(null);
 			}
 		}
 		
@@ -130,25 +130,27 @@ package com.longtailvideo.jwplayer.view.components {
 		private function moveHandler(evt:MouseEvent):void {
 			clearTimeout(hideTimeout);
 			if (_duration > 0 || _duration <= -60) {
+				var seconds:Number = Math.round(_duration * sliderPercent(evt.localX));
+				var text:String;
 				RootReference.stage.setChildIndex(_tooltip, RootReference.stage.numChildren-1);
 				if (_activeCue) {
 					_tooltip.maxWidth = 160;
-					_tooltip.text = _activeCue.text;
+					text = _activeCue.text;
 				} else {
 					_tooltip.maxWidth = 0;
-					var seconds:Number = Math.round(_duration * sliderPercent(evt.localX));
 					if (_duration <= -60) {
 						seconds = _duration - seconds;
 						seconds = seconds > 0 ? 0 : seconds;
-						_tooltip.text = "-" + Strings.digits((-1*seconds));
+						text = "-" + Strings.digits((-1*seconds));
 					}
 					else {
-						_tooltip.text = Strings.digits(seconds);
+						text = Strings.digits(seconds);
 					}
 				}
 				_tooltip.x = evt.stageX;
 				_tooltip.y = _controlbar.getBounds(RootReference.stage).y;
 				_thumbnailImages.updateTimeline(seconds);
+				_tooltip.text = text;
 			}
 		}
 		

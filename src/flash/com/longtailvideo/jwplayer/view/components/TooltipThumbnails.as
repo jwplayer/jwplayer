@@ -32,27 +32,43 @@ package com.longtailvideo.jwplayer.view.components
 		private var _url:String;
 		private var _imageLoader:Loader;
 		
-		
 		public function TooltipThumbnails(skin:ISkin) {
 			spriteDimensions = new Rectangle();
 			
 			container = new Sprite();
 			addChild(container);
-			
-			vttLoader = new AssetLoader();
-			vttLoader.addEventListener(Event.COMPLETE, loadComplete);
-			vttLoader.addEventListener(ErrorEvent.ERROR, loadError);
 		}
 		
 		public function load(vttFile:String):void {
-			_url = null;
-			loaderHash = {};
-			if (vttFile && vttFile != loadedVTT) {
-				loadedVTT = vttFile;
-				vttPath = loadedVTT.split("?")[0].split("/").slice(0, -1).join("/");
-				vttLoader.load(loadedVTT, String);
+			if (vttFile) {
+				if (vttFile != loadedVTT) {
+					loadedVTT = vttFile;
+					vttPath = loadedVTT.split("?")[0].split("/").slice(0, -1).join("/");
+					if (vttLoader) {
+						vttLoader.removeEventListener(Event.COMPLETE, loadComplete);
+						vttLoader.removeEventListener(ErrorEvent.ERROR, loadError);
+					}
+					vttLoader = new AssetLoader();
+					vttLoader.addEventListener(Event.COMPLETE, loadComplete);
+					vttLoader.addEventListener(ErrorEvent.ERROR, loadError);
+					vttLoader.load(loadedVTT, String);
+				}
 			} else {
+				_url = null;
+				loaderHash = {};
+				cues = null;
 				loadedVTT = null;
+				if (vttLoader) {
+					vttLoader.removeEventListener(Event.COMPLETE, loadComplete);
+					vttLoader.removeEventListener(ErrorEvent.ERROR, loadError);
+					vttLoader = null;
+				}
+				if (_imageLoader) {
+					_imageLoader.contentLoaderInfo.removeEventListener(Event.COMPLETE, imageLoaded);
+				}
+				while (container.numChildren > 0) {
+					container.removeChildAt(0);
+				}
 			}
 		}
 		
@@ -64,10 +80,13 @@ package com.longtailvideo.jwplayer.view.components
 				Logger.log("Could not load thumbnails");
 				return;
 			}
+			_url = null;
+			loaderHash = {};
 			updateTimeline(0);
 		}
 
 		private function loadError(evt:ErrorEvent):void {
+			loadedVTT = null;
 			Logger.log("Could not load thumbnails");
 		}
 		
@@ -114,10 +133,12 @@ package com.longtailvideo.jwplayer.view.components
 					imageLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, imageLoaded);
 					loaderHash[url] = imageLoader;
 					imageLoader.load(new URLRequest(url));
-				} else {
+				} else if (imageLoader.content) {
 					updateSprite(imageLoader);
+				} else {
+					imageLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, imageLoaded);
 				}
-				if (_imageLoader) {
+				if (_imageLoader && _imageLoader != imageLoader) {
 					// ignore previous loader 
 					_imageLoader.contentLoaderInfo.removeEventListener(Event.COMPLETE, imageLoaded);
 				}
