@@ -23,7 +23,6 @@ package com.longtailvideo.jwplayer.view.components
 	
 	public class TooltipThumbnails extends Sprite {
 		private var vttLoader:AssetLoader;
-		private var imageMask:Sprite;
 		private var vttPath:String;
 		private var loadedVTT:String;
 		private var cues:Array;
@@ -45,8 +44,6 @@ package com.longtailvideo.jwplayer.view.components
 			vttLoader.addEventListener(ErrorEvent.ERROR, loadError);
 			
 			loaderHash = {};
-
-			imageMask = new Sprite();
 		}
 		
 		public function load(vttFile:String):void {
@@ -109,7 +106,9 @@ package com.longtailvideo.jwplayer.view.components
 					spriteDimensions.width =
 					spriteDimensions.height = 0;
 				}
-				
+				while (container.numChildren > 0) {
+					container.removeChildAt(0);
+				}
 				var imageLoader:Loader = loaderHash[url] as Loader;
 				if (!imageLoader) {
 					imageLoader = new Loader();
@@ -135,25 +134,23 @@ package com.longtailvideo.jwplayer.view.components
 		}
 		
 		private function updateSprite(imageLoader:Loader):void {
-			if (!spriteDimensions.width) {
+			if (spriteDimensions.width === 0) {
 				spriteDimensions.width = imageLoader.content.width;
 				spriteDimensions.height = imageLoader.content.height;
-			}
-			imageLoader.x = -spriteDimensions.x;
-			imageLoader.y = -spriteDimensions.y;
-			if (spriteDimensions.width != imageMask.width || spriteDimensions.height != imageMask.height) {
+			} else {
+				imageLoader.x = -spriteDimensions.x;
+				imageLoader.y = -spriteDimensions.y;
+				var imageMask:Sprite = imageLoader.mask as Sprite;
+				if (!imageMask) {
+					imageMask = new Sprite();
+				}
 				imageMask.graphics.clear();
 				imageMask.graphics.beginFill(0x00ff00);
 				imageMask.graphics.drawRect(0, 0, spriteDimensions.width, spriteDimensions.height);
-			}
-			if (!container.contains(imageLoader)) {
-				while (container.numChildren > 0) {
-					container.removeChildAt(0);
-				}
 				imageLoader.mask = imageMask;
 				container.addChild(imageMask);
-				container.addChild(imageLoader);
 			}
+			container.addChild(imageLoader);
 		}
 	
 		public override function get width():Number {

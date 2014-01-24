@@ -48,6 +48,8 @@ package com.longtailvideo.jwplayer.view.components
 		}
 		// Dimensions of the content's children
 		protected var contentDimensions:Rectangle = new Rectangle();
+		// Max Width not including borders and padding
+		private var _maxWidth:Number = 0;
 			
 			
 		public function TooltipOverlay(skin:ISkin, inverted:Boolean=false) {
@@ -161,12 +163,28 @@ package com.longtailvideo.jwplayer.view.components
 			if (_text.visible) {
 				_text.x = _text.y = 0;
 				if (contentDimensions.width > 0) {
+					_text.multiline = true;
+					_text.wordWrap = true;
 					_text.width = contentDimensions.width;
 					_text.autoSize = TextFieldAutoSize.CENTER;
 					_text.y = contentDimensions.height + 3; 
 					contentDimensions.height += _text.height + 3;
 				} else {
-					contentDimensions.width = _text.width;
+					var width = _text.width;
+					if (_maxWidth && width > _maxWidth) {
+						_text.multiline = true;
+						_text.wordWrap = true;
+						_text.width = width;
+						_text.autoSize = TextFieldAutoSize.CENTER;
+						if (contentDimensions.height > 0) {
+							_text.y = contentDimensions.height + 3;
+						}
+						contentDimensions.height += _text.height + 6;
+					} else {
+						_text.multiline = false;
+						_text.wordWrap = false;
+					}
+					contentDimensions.width = width;
 					contentDimensions.height = _text.height;
 				}
 			}
@@ -181,16 +199,20 @@ package com.longtailvideo.jwplayer.view.components
 		public override function contains(child:DisplayObject):Boolean {
 			return content.contains(child);
 		}
-
+		
 		public function set text(s:String):void {
 			_text.visible = Boolean(s);
 			if (s) {
 				var fontcase:String = getSkinSetting("fontcase");
 				if (fontcase && fontcase.toLowerCase() == "upper") s = s.toUpperCase();
-				_text.text = s;
 			}
+			_text.text = s;
 			redraw();
 			super.addChild(content);
+		}
+		
+		public function set maxWidth(width:Number):void {
+			_maxWidth = width;
 		}
 		
 		public function set offsetX(offset:Number):void {

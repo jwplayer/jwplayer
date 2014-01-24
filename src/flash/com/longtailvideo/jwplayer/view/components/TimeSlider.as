@@ -131,8 +131,10 @@ package com.longtailvideo.jwplayer.view.components {
 			if (_duration > 0 || _duration <= -60) {
 				RootReference.stage.setChildIndex(_tooltip, RootReference.stage.numChildren-1);
 				if (_activeCue) {
+					_tooltip.maxWidth = 160;
 					_tooltip.text = _activeCue.text;
 				} else {
+					_tooltip.maxWidth = 0;
 					var seconds:Number = Math.round(_duration * sliderPercent(evt.localX));
 					if (_duration <= -60) {
 						seconds = _duration - seconds;
