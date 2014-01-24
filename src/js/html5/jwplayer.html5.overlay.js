@@ -194,18 +194,20 @@
 		};
 		
 		_this.constrainX = function(containerBounds, forceRedraw) {
-			if (containerBounds.width !== 0) {
+			if (_this.showing && containerBounds.width !== 0) {
 				// reset and check bounds
-				_this.offsetX(0);
-				if (forceRedraw) {
-					_css.unblock();
-				}
-				var bounds = utils.bounds(_container);
-				if (bounds.width !== 0) {
-					if (bounds.right > containerBounds.right) {
-						_this.offsetX(containerBounds.right - bounds.right);
-					} else if (bounds.left < containerBounds.left) {
-						_this.offsetX(containerBounds.left - bounds.left);
+				var width = _this.offsetX(0);
+				if (width) {
+					if (forceRedraw) {
+						_css.unblock();
+					}
+					var bounds = utils.bounds(_container);
+					if (bounds.width !== 0) {
+						if (bounds.right > containerBounds.right) {
+							_this.offsetX(containerBounds.right - bounds.right);
+						} else if (bounds.left < containerBounds.left) {
+							_this.offsetX(containerBounds.left - bounds.left);
+						}
 					}
 				}
 			}
@@ -222,6 +224,7 @@
 					'margin-left': Math.round(-_arrow.width/2) - offset
 				});
 			}
+			return width;
 		};
 		
 		_this.borderWidth = function() {

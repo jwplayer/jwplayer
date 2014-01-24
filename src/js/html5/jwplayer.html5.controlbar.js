@@ -651,7 +651,9 @@
 		}
 		function _showVolume() {
 			if (_audioMode || _instreamMode) return;
+			_css.block(_id); // unblock on position overlay
 			_volumeOverlay.show();
+			_positionOverlay('volume', _volumeOverlay);
 			_hideOverlays('volume');
 		}
 		
@@ -661,12 +663,6 @@
 			if (pct > 0.9) pct = 1;
 			_api.jwSetVolume(pct * 100);
 		}
-		
-		// function _showFullscreen() {
-		// 	if (_audioMode) return;
-		// 	_fullscreenOverlay.show();
-		// 	_hideOverlays('fullscreen');
-		// }
 		
 		function _seek(pct) {
 			_api.jwSeek(_activeCue ? _activeCue.position : pct * _duration);
@@ -744,7 +740,9 @@
 					clearTimeout(_hdTimer);
 					_hdTimer = UNDEFINED;
 				}
+				_css.block(_id); // unblock on position overlay
 				_hdOverlay.show();
+				_positionOverlay('hd', _hdOverlay);
 				_hideOverlays('hd');
 			}
 		}
@@ -755,7 +753,9 @@
 					clearTimeout(_ccTimer);
 					_ccTimer = UNDEFINED;
 				}
+				_css.block(_id); // unblock on position overlay
 				_ccOverlay.show();
+				_positionOverlay('cc', _ccOverlay);
 				_hideOverlays('cc');
 			}
 		}
@@ -1072,8 +1072,9 @@
 
 		function _showTimeTooltip() {
 			if (_timeOverlay && _duration && !_audioMode && !_isMobile) {
-				_positionOverlay('time', _timeOverlay);
+				_css.block(_id); // unblock on position overlay
 				_timeOverlay.show();
+				_positionOverlay('time', _timeOverlay);
 			}
 		}
 		
@@ -1407,7 +1408,7 @@
 
 			_drawCues();
 
-			utils.foreach(_overlays, _positionOverlay);
+			// utils.foreach(_overlays, _positionOverlay);
 
 			_css.unblock(_id);
 
@@ -1436,7 +1437,7 @@
 			if (!_cbBounds) {
 				_cbBounds = utils.bounds(_controlbar);
 			}
-			var forceRedraw = (overlay === _timeOverlay);
+			var forceRedraw = true;
 			overlay.constrainX(_cbBounds, forceRedraw);
 		}
 		
