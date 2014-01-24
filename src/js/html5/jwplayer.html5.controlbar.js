@@ -318,7 +318,9 @@
 					}
 				}
 				// If we're here, there are no thumbnails to load - we should clear out the thumbs from the previous item
-				if (!tracksloaded) _timeOverlayThumb.load();
+				if (!tracksloaded) {
+					_timeOverlayThumb.load();
+				}
 			}
 		}
 		

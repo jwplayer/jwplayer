@@ -11,6 +11,7 @@
 		var _display,
 			_cues,
 			_vttPath,
+			_vttRequest,
 			_id = id,
 			_url,
 			_images = {},
@@ -26,14 +27,31 @@
 			_css.style(_display, {
 				display: 'none'
 			});
-			
+
+			if (_vttRequest) {
+				_vttRequest.onload = null;
+				_vttRequest.onreadystatechange = null;
+				_vttRequest.onerror = null;
+				if (_vttRequest.abort) _vttRequest.abort();
+				_vttRequest = null;
+			}
+			if (_image) {
+				_image.onload = null;
+			}
+
 			if (vtt) {
 				_vttPath = vtt.split("?")[0].split("/").slice(0, -1).join("/");
-				utils.ajax(vtt, _vttLoaded, _vttFailed);
+				_vttRequest = utils.ajax(vtt, _vttLoaded, _vttFailed);
+			} else {
+				_cues =
+				_url =
+				_image = null;
+				_images = {};
 			}
 		}
 		
 		function _vttLoaded(data) {
+			_vttRequest = null;
 		    try {
 		      data = new jwplayer.parsers.srt().parse(data.responseText, true);
 		    } catch (e) {
@@ -47,6 +65,7 @@
 		}
 		
 		function _vttFailed(error) {
+			_vttRequest = null;
 			utils.log("Thumbnails could not be loaded: " + error);        
 		}
 		
