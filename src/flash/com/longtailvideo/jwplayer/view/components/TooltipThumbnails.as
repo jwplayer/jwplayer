@@ -42,11 +42,11 @@ package com.longtailvideo.jwplayer.view.components
 			vttLoader = new AssetLoader();
 			vttLoader.addEventListener(Event.COMPLETE, loadComplete);
 			vttLoader.addEventListener(ErrorEvent.ERROR, loadError);
-			
-			loaderHash = {};
 		}
 		
 		public function load(vttFile:String):void {
+			_url = null;
+			loaderHash = {};
 			if (vttFile && vttFile != loadedVTT) {
 				loadedVTT = vttFile;
 				vttPath = loadedVTT.split("?")[0].split("/").slice(0, -1).join("/");
@@ -86,8 +86,7 @@ package com.longtailvideo.jwplayer.view.components
 		
 		private function loadImage(url:String):void {
 			// only load image if it's different from the last one
-			if (url !== _url) {
-				_url = url;
+			if (url && url !== _url) {
 				if (url.indexOf("://") < 0) {
 					url = vttPath ? vttPath + "/" + url : url;
 				}
@@ -124,6 +123,7 @@ package com.longtailvideo.jwplayer.view.components
 				}
 				_imageLoader = imageLoader;
 			}
+			_url = url;
 		}
 
 		private function imageLoaded(evt:Event=null):void {
@@ -165,9 +165,6 @@ package com.longtailvideo.jwplayer.view.components
 			return spriteDimensions;
 		}
 
-		
-		
 	}
-	
 	
 }
