@@ -25,9 +25,6 @@ package com.longtailvideo.jwplayer.view.components {
 	/** Plugin for playing closed captions with a video. **/
 	public class CaptionsComponent extends Sprite implements IPlayerComponent {
 		
-		/** Save the last resize dimensions. **/
-		private var _dimensions:Array;
-		
 		/** Cookie object for storing track prefs. **/
 		//private var _cookie:SharedObject;
 		/** Default style properties. **/
@@ -324,10 +321,9 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		/** Resize the captions, relatively smaller as the screen grows */
 		public function resize(width:Number, height:Number):void {
-			_dimensions = new Array(width,height);
+			_renderer.scaleX = _renderer.scaleY = Math.pow(width/400, 0.6);
 			_renderer.setMaxWidth(width);
-			_renderer.scaleX = _renderer.scaleY = Math.pow(width/400,0.6);
-			_renderer.x = Math.round(width/2 -_renderer.width/2);
+			_renderer.x = Math.round((width -_renderer.width)/2);
 			_renderer.y = Math.round(height * 0.94);
 		};
 		

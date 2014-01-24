@@ -117,7 +117,7 @@ package com.longtailvideo.jwplayer.view.components {
 				metrics = _field.getLineMetrics(i);
 				if(metrics.width > 16) {
 					lineRect = new Rectangle(
-						_field.width/2 - metrics.width/2 - 8,
+						(_field.width - metrics.width)/2 - 8,
 						i * metrics.height,
 						metrics.width + 16,
 						metrics.height
@@ -200,6 +200,12 @@ package com.longtailvideo.jwplayer.view.components {
 		/** update field width to fill player **/
 		public function setMaxWidth(width:Number):void {
 			_field.width = width - 16;
+			if (_outline) {
+				_outline.graphics.clear();
+				if (_field.text) {
+					_renderBackground();
+				}
+			}
 		}
     }
 
