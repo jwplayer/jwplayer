@@ -9,8 +9,7 @@
 		utils = jwplayer.utils,
 		_css = utils.css,
 
-		DI_CLASS = ".jwplayer .jwdisplayIcon", 
-		UNDEFINED,
+		DI_CLASS = ".jwplayer .jwdisplayIcon",
 		DOCUMENT = document,
 
 		/** Some CSS constants we should use for minimization * */
@@ -32,7 +31,7 @@
 			_iconCache = {},
 			_iconElement,
 			_iconWidth = 0,
-			_widthInterval,
+			_setWidthTimeout = -1,
 			_repeatCount;
 
 		function _init() {
@@ -134,39 +133,31 @@
 		}
 		
 		function _redraw() {
-			var showText = _hasCaps || (_iconWidth === 0),
-				px100pct = "px " + JW_CSS_100PCT;
+			var showText = _hasCaps || (_iconWidth === 0);
 			
 			_css.style(_text, {
-				display: (_text.innerHTML && showText) ? UNDEFINED : JW_CSS_NONE
-			});
+				display: (_text.innerHTML && showText) ? '' : JW_CSS_NONE
+			}, true);
 
-			
-			_repeatCount = 10;
-			setTimeout(function() {
-				_setWidth(px100pct);
-			}, 0);
-			if (showText) {
-				_widthInterval = setInterval(function() {
-					_setWidth(px100pct);
-				}, 100);
-			}
+			_repeatCount = showText ? 10 : 0;
+			clearTimeout(_setWidthTimeout);
+			_setWidthTimeout = setTimeout(_setWidth, 0);
 		}
 		
-		function _setWidth(px100pct) {
-			if (_repeatCount <= 0) {
-				clearInterval(_widthInterval);
-			} else {
-				_repeatCount--;
-				var contentWidth = Math.max(_iconElement.width, utils.bounds(_container).width - _capRightSkin.width - _capLeftSkin.width);
-				if (utils.isFF() || utils.isIE()) contentWidth ++;
-				// Fix for 1 pixel gap in Chrome. This is a chrome bug that needs to be fixed. 
-				// TODO: Remove below once chrome fixes this bug.
-				if (utils.isChrome() && _container.parentNode.clientWidth % 2 == 1) contentWidth++;
-				_css.style(_container, {
-					'background-size': [_capLeftSkin.width + px100pct, contentWidth + px100pct, _capRightSkin.width + px100pct].join(", ")
-				}, true);
+		function _setWidth() {
+			if (_repeatCount--) {
+				_setWidthTimeout = setTimeout(_setWidth, 16);
 			}
+
+			var px100pct = 'px ' + JW_CSS_100PCT;
+			var contentWidth = Math.max(_iconElement.width, utils.bounds(_container).width - _capRightSkin.width - _capLeftSkin.width);
+			if (utils.isFF() || utils.isIE()) contentWidth ++;
+			// Fix for 1 pixel gap in Chrome. This is a chrome bug that needs to be fixed. 
+			// Remove below once chrome fixes this bug.
+			// if (utils.isChrome() && _container.parentNode.clientWidth % 2 == 1) contentWidth++;
+			_css.style(_container, {
+				'background-size': [_capLeftSkin.width + px100pct, contentWidth + px100pct, _capRightSkin.width + px100pct].join(", ")
+			});
 		}
 			
 		this.element = function() {
@@ -177,15 +168,12 @@
 			var style = _text.style;
 			_text.innerHTML = text ? text.replace(":", ":<br>") : "";
 			style.height = "0";
-			style.display = "block";
 			if (text) {
 				while (numLines(_text) > 2) {
 					_text.innerHTML = _text.innerHTML.replace(/(.*) .*$/, "$1...");
 				}
 			}
 			style.height = "";
-			style.display = "";
-			//setTimeout(_redraw, 100);
 			_redraw();
 		};
 		
