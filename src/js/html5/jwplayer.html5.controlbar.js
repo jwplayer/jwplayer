@@ -157,16 +157,17 @@
 				cc: _cc
 			},
 			
-			
 			_sliderMapping = {
 				time: _seek,
 				volume: _volume
 			},
 		
 			_overlays = {},
+			_jwhidden = [],
 			_this = this;
-			utils.extend(_this, _eventDispatcher);
 
+		utils.extend(_this, _eventDispatcher);
+			
 		function _layoutElement(name, type, className) {
 			return { name: name, type: type, className: className };
 		}
@@ -341,8 +342,8 @@
 		}
 		
 		function _playlistHandler() {
-			_css(_internalSelector(".jwhd"), HIDDEN);
-			_css(_internalSelector(".jwcc"), HIDDEN);
+			_css.style(_elements.hd, HIDDEN);
+			_css.style(_elements.cc, HIDDEN);
 			_updateNextPrev();
 			_redraw();
 		}
@@ -354,14 +355,14 @@
 		function _qualityHandler(evt) {
 			_levels = evt.levels;
 			if (_hasHD()) {
-				_css(_internalSelector(".jwhd"), NOT_HIDDEN);
+				_css.style(_elements.hd, NOT_HIDDEN);
 				_hdOverlay.clearOptions();
 				for (var i=0; i<_levels.length; i++) {
 					_hdOverlay.addOption(_levels[i].label, i);
 				}
 				_qualityLevelChanged(evt);
 			} else {
-				_css(_internalSelector(".jwhd"), HIDDEN);
+				_css.style(_elements.hd, HIDDEN);
 			}
 			_redraw();
 		}
@@ -383,14 +384,14 @@
 		function _captionsHandler(evt) {
 			_captions = evt.tracks;
 			if (_hasCaptions()) {
-				_css(_internalSelector(".jwcc"), NOT_HIDDEN);
+				_css.style(_elements.cc, NOT_HIDDEN);
 				_ccOverlay.clearOptions();
 				for (var i=0; i<_captions.length; i++) {
 					_ccOverlay.addOption(_captions[i].label, i);
 				}
 				_captionChanged(evt);
 			} else {
-				_css(_internalSelector(".jwcc"), HIDDEN );
+				_css.style(_elements.cc, HIDDEN );
 			}
 			_redraw();
 		}
@@ -469,7 +470,7 @@
 			if (capRight) _appendChild(_controlbar, capRight);
 		}
 		
-		function _buildElement(element,pos) {
+		function _buildElement(element, pos) {
 			switch (element.type) {
 			case CB_TEXT:
 				return _buildText(element.name);
@@ -517,7 +518,7 @@
 			return element;
 		}
 
-		function _buildButton(name,pos) {
+		function _buildButton(name, pos) {
 			if (!_getSkinElement(name + "Button").src) {
 				return NULL;
 			}
@@ -640,14 +641,12 @@
 		
 		function _hideTimes() {
 			if(_controlbar) {
-				var jwalt = _getElementBySelector(".jwalt"),
-					jwhidden;
+				var jwalt = _elements.alt;
 				if (!jwalt) return;
-				jwhidden = _controlbar.querySelectorAll(".jwhidden");
-				if ((_controlbar.parentNode && _controlbar.parentNode.clientWidth >= 320) && !jwalt.firstChild) {
-					_css.style(jwhidden, NOT_HIDDEN);
+				if (_controlbar.parentNode && _controlbar.parentNode.clientWidth >= 320) {
+					_css.style(_jwhidden, NOT_HIDDEN);
 				} else {
-					_css.style(jwhidden, HIDDEN);
+					_css.style(_jwhidden, HIDDEN);
 				}
 			}
 		}
@@ -701,19 +700,21 @@
 		}
 		
 		function _buildText(name) {
-			var css = {},
+			var style = {},
 				skinName = (name == "alt") ? "elapsed" : name,
 				skinElement = _getSkinElement(skinName+"Background");
 			if (skinElement.src) {
 				var element = _createSpan();
 				element.id = _createElementId(name); 
-				if (name == "elapsed" || name == "duration")
+				if (name == "elapsed" || name == "duration") {
 					element.className = "jwtext jw" + name + " jwhidden";
-				else
+					_jwhidden.push(element);
+				} else {
 					element.className = "jwtext jw" + name;
-				css.background = "url(" + skinElement.src + ") repeat-x center";
-				css['background-size'] = _elementSize(_getSkinElement("background"));
-				_css(_internalSelector('.jw'+name), css);
+				}
+				style.background = "url(" + skinElement.src + ") repeat-x center";
+				style['background-size'] = _elementSize(_getSkinElement("background"));
+				_css.style(element, style);
 				element.innerHTML = (name != "alt") ? "00:00" : "";
 				
 				_elements[name] = element;
@@ -1131,7 +1132,7 @@
 		
 		function _styleTimeSlider() {
 			if (!_elements.timeSliderRail) {
-				_css(_internalSelector(".jwtime"), HIDDEN);
+				_css.style(_elements.time, HIDDEN);
 			}
 
 			if (_elements.timeSliderThumb) {
@@ -1160,7 +1161,7 @@
 		function _addCue(timePos, text) {
 			if (timePos.toString().search(/^[\d\.]+%?$/) >= 0) {
 				var cueElem = _buildImage("timeSliderCue"),
-					rail = _controlbar.querySelector(".jwtimeSliderRail"),
+					rail = _elements.timeSliderRail,
 					cue = {
 						position: timePos,
 						text: text,
@@ -1191,7 +1192,7 @@
 		}
 		
 		function _removeCues() {
-			var rail = _controlbar.querySelector(".jwtimeSliderRail");
+			var rail = _elements.timeSliderRail;
 			utils.foreach(_cues, function(idx, cue) {
 				rail.removeChild(cue.element);
 			});
@@ -1200,12 +1201,13 @@
 		
 		_this.setText = function(text) {
 			_css.block(_id); //unblock on redraw
+			var jwalt = _elements.alt,
+				jwtime = _elements.time;
 			if (!_elements.timeSliderRail) {
-				_css.style(_controlbar.querySelector(".jwtime"), HIDDEN);
+				_css.style(jwtime, HIDDEN);
 			} else {
-				_css.style(_controlbar.querySelector(".jwtime"), text ? HIDDEN : SHOWING);
+				_css.style(jwtime, text ? HIDDEN : SHOWING);
 			}
-			var jwalt = _getElementBySelector(".jwalt");
 			if (jwalt) {
 				_css.style(jwalt, text ? SHOWING : HIDDEN);
 				jwalt.innerHTML = text || "";
@@ -1364,7 +1366,7 @@
 		function _buildElements(group, container,pos) {
 			if (group && group.elements.length > 0) {
 				for (var i=0; i<group.elements.length; i++) {
-					var element = _buildElement(group.elements[i],pos);
+					var element = _buildElement(group.elements[i], pos);
 					if (element) {
 						if (group.elements[i].name == "volume" && element.vertical) {
 							_volumeOverlay = new html5.overlay(_id+"_volumeOverlay", _skin);
@@ -1392,19 +1394,19 @@
 
 			// ie <= IE10 does not allow fullscreen from inside an iframe. Hide the FS button. (TODO: Fix for IE11)
 			var ieIframe = (top !== window.self) && utils.isIE();
-			_css(_internalSelector(".jwfullscreen"), {
+			_css.style(_elements.fullscreen, {
 				display: (_audioMode || _hideFullscreen || ieIframe) ? JW_CSS_NONE : ''
 			});
-			_css(_internalSelector(".jwvolumeH"), {
+			_css.style(_elements.volumeH, {
 				display: _audioMode || _instreamMode ? JW_CSS_BLOCK : JW_CSS_NONE
 			});
 			_css(_internalSelector(".jwmute .jwoverlay"), {
 				display: !(_audioMode || _instreamMode) ? JW_CSS_BLOCK : JW_CSS_NONE
 			});
-			_css(_internalSelector(".jwhd"), {
+			_css.style(_elements.hd, {
 				display: !_audioMode && _hasHD() ? '' : JW_CSS_NONE
 			});
-			_css(_internalSelector(".jwcc"), {
+			_css.style(_elements.cc, {
 				display: !_audioMode && _hasCaptions() ? '' : JW_CSS_NONE
 			});
 
@@ -1427,11 +1429,11 @@
 		
 		function _updateNextPrev() {
 			if (_api.jwGetPlaylist().length > 1 && !_sidebarShowing()) {
-				_css(_internalSelector(".jwnext"), NOT_HIDDEN);
-				_css(_internalSelector(".jwprev"), NOT_HIDDEN);
+				_css.style(_elements.next, NOT_HIDDEN);
+				_css.style(_elements.prev, NOT_HIDDEN);
 			} else {
-				_css(_internalSelector(".jwnext"), HIDDEN);
-				_css(_internalSelector(".jwprev"), HIDDEN);
+				_css.style(_elements.next, HIDDEN);
+				_css.style(_elements.prev, HIDDEN);
 			}
 		}
 
