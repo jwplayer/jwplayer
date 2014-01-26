@@ -139,14 +139,14 @@
 				display: (_text.innerHTML && showText) ? '' : JW_CSS_NONE
 			}, true);
 
-			_repeatCount = showText ? 10 : 0;
+			_repeatCount = showText ? 30 : 0;
 			clearTimeout(_setWidthTimeout);
 			_setWidthTimeout = setTimeout(_setWidth, 0);
 		}
 		
 		function _setWidth() {
 			if (_repeatCount--) {
-				_setWidthTimeout = setTimeout(_setWidth, 16);
+				_setWidthTimeout = setTimeout(_setWidth, 33);
 			}
 
 			var px100pct = 'px ' + JW_CSS_100PCT;

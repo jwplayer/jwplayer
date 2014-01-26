@@ -1,4 +1,3 @@
-// TODO: blankButton
 /**
  * JW Player HTML5 Controlbar component
  * 
@@ -68,10 +67,10 @@
 					left: {
 						position: "left",
 						elements: [ 
-						   _layoutElement("play", CB_BUTTON), 
-						   _layoutElement("prev", CB_BUTTON), 
-						   _layoutElement("next", CB_BUTTON), 
-						   _layoutElement("elapsed", CB_TEXT)
+							_layoutElement("play", CB_BUTTON), 
+							_layoutElement("prev", CB_BUTTON), 
+							_layoutElement("next", CB_BUTTON), 
+							_layoutElement("elapsed", CB_TEXT)
 						]
 					},
 					center: {
@@ -988,7 +987,7 @@
 				_api.jwSeekDrag(FALSE);
 				_elements.timeRail.className = "jwrail jwsmooth";
 				_draggingEnd();
-				_sliderMapping['time'](pct);
+				_sliderMapping.time(pct);
 				_hideTimeTooltip();
 				_eventDispatcher.sendEvent(events.JWPLAYER_USER_ACTION);
 			}
@@ -996,7 +995,7 @@
 				_setProgress(pct);
 				if (currentTime - _lastSeekTime > 500) {
 					_lastSeekTime = currentTime;
-					_sliderMapping['time'](pct);
+					_sliderMapping.time(pct);
 				}
 				_eventDispatcher.sendEvent(events.JWPLAYER_USER_ACTION);
 			}
@@ -1397,7 +1396,7 @@
 			_css.style(_elements.fullscreen, {
 				display: (_audioMode || _hideFullscreen || ieIframe) ? JW_CSS_NONE : ''
 			});
-			_css.style(_elements.volumeH, {
+			_css(_internalSelector(".jwvolumeH"), {
 				display: _audioMode || _instreamMode ? JW_CSS_BLOCK : JW_CSS_NONE
 			});
 			_css(_internalSelector(".jwmute .jwoverlay"), {
@@ -1453,7 +1452,7 @@
 			}
 		};
 		
-	   _this.instreamMode = function(mode) {
+		_this.instreamMode = function(mode) {
 			if (mode != _instreamMode) {
 				_instreamMode = mode;
 			}
@@ -1612,9 +1611,9 @@
 		function _loadCues(vttFile) {
 			if (vttFile) {
 				utils.ajax(vttFile, _cueLoaded, _cueFailed);
-		   } else {
+			} else {
 				_cues.length = 0;
-		   }
+			}
 		}
 		
 		function _cueLoaded(xmlEvent) {
