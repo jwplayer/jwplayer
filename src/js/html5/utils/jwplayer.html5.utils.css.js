@@ -60,6 +60,10 @@
 	};
 
 	_css.style = function(elements, styles, immediate) {
+		if (elements === undefined || elements === null) {
+			//utils.log('css.style invalid elements: '+ elements +' '+ JSON.stringify(styles) +' '+ immediate);
+			return;
+		}
 		if (elements.length === undefined) {
 			elements = [elements];
 		}

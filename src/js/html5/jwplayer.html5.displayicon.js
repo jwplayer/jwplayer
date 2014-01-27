@@ -137,7 +137,7 @@
 			
 			_css.style(_text, {
 				display: (_text.innerHTML && showText) ? '' : JW_CSS_NONE
-			}, true);
+			});
 
 			_repeatCount = showText ? 30 : 0;
 			clearTimeout(_setWidthTimeout);
@@ -168,12 +168,14 @@
 			var style = _text.style;
 			_text.innerHTML = text ? text.replace(":", ":<br>") : "";
 			style.height = "0";
+			style.display = "block";
 			if (text) {
 				while (numLines(_text) > 2) {
 					_text.innerHTML = _text.innerHTML.replace(/(.*) .*$/, "$1...");
 				}
 			}
 			style.height = "";
+			style.display = "";
 			_redraw();
 		};
 		
