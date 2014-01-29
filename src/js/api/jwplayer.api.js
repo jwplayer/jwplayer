@@ -437,14 +437,14 @@
 				for (var l = 0; l < listeners.length; l++) {
 					var fn = listeners[l];
 					if (typeof fn === 'function') {
-						// try {
+						try {
 							if (type === events.JWPLAYER_PLAYLIST_LOADED) {
 								utils.deepReplaceKeyName(args.playlist, ["__dot__","__spc__","__dsh__","__default__"], ["."," ","-","default"]);
 							}
 							fn.call(this, args);
-						// } catch(e) {
-						// 	utils.log("There was an error calling back an event handler");
-						// }
+						} catch(e) {
+							utils.log("There was an error calling back an event handler");
+						}
 					}
 				}
 			}
