@@ -467,7 +467,7 @@
 				if (errorcallback) errorcallback(xmldocpath);
 			}
 		}, 0);
-		
+
 		return xmlhttp;
 	};
 	
@@ -636,20 +636,20 @@
 		str = str.replace(',', '.');
 		var arr = str.split(':');
 		var sec = 0;
-		if (str.substr(-1) == 's') {
-			sec = Number(str.substr(0, str.length - 1));
-		} else if (str.substr(-1) == 'm') {
-			sec = Number(str.substr(0, str.length - 1)) * 60;
-		} else if (str.substr(-1) == 'h') {
-			sec = Number(str.substr(0, str.length - 1)) * 3600;
+		if (str.slice(-1) == 's') {
+			sec = parseFloat(str);
+		} else if (str.slice(-1) == 'm') {
+			sec = parseFloat(str) * 60;
+		} else if (str.slice(-1) == 'h') {
+			sec = parseFloat(str) * 3600;
 		} else if (arr.length > 1) {
-			sec = Number(arr[arr.length - 1]);
-			sec += Number(arr[arr.length - 2]) * 60;
+			sec = parseFloat(arr[arr.length - 1]);
+			sec += parseFloat(arr[arr.length - 2]) * 60;
 			if (arr.length == 3) {
-				sec += Number(arr[arr.length - 3]) * 3600;
+				sec += parseFloat(arr[arr.length - 3]) * 3600;
 			}
 		} else {
-			sec = Number(str);
+			sec = parseFloat(str);
 		}
 		return sec;
 	};

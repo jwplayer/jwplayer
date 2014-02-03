@@ -76,7 +76,7 @@
             function _updateOffset(pos, duration) {
                 if (_utils.typeOf(_skipOffset) == "number") {
                     _offsetTime = _skipOffset;
-                } else if (_skipOffset.substr(-1) == "%") { 
+                } else if (_skipOffset.slice(-1) == "%") { 
                     var percent = parseFloat(_skipOffset.slice(0, -1));
                     if (duration && !isNaN(percent)) {
                         _offsetTime = duration * percent / 100;
