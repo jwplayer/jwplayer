@@ -1148,6 +1148,7 @@
 			
 			if (cue && cue.src) {
 				_buildImage(cueClass);
+				cueStyle['margin-left'] = cue.width / -2;
 			} else {
 				cueStyle.display = JW_CSS_NONE;
 			}
