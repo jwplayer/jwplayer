@@ -433,7 +433,7 @@
 	};
 	
 	/** Loads an XML file into a DOM object * */
-	utils.ajax = function(xmldocpath, completecallback, errorcallback) {
+	utils.ajax = function(xmldocpath, completecallback, errorcallback, donotparse) {
 		var xmlhttp;
 		// Hash tags should be removed from the URL since they can't be loaded in IE
 		if (xmldocpath.indexOf("#") > 0) xmldocpath = xmldocpath.replace(/#.*$/, "");
@@ -441,13 +441,13 @@
 		if (_isCrossdomain(xmldocpath) && utils.exists(WINDOW.XDomainRequest)) {
 			// IE8 / 9
 			xmlhttp = new WINDOW.XDomainRequest();
-			xmlhttp.onload = _ajaxComplete(xmlhttp, xmldocpath, completecallback, errorcallback);
+			xmlhttp.onload = _ajaxComplete(xmlhttp, xmldocpath, completecallback, errorcallback, donotparse);
 			xmlhttp.ontimeout = xmlhttp.onprogress = function(){};
 			xmlhttp.timeout = 5000;
 		} else if (utils.exists(WINDOW.XMLHttpRequest)) {
 			// Firefox, Chrome, Opera, Safari
 			xmlhttp = new WINDOW.XMLHttpRequest();
-			xmlhttp.onreadystatechange = _readyStateChangeHandler(xmlhttp, xmldocpath, completecallback, errorcallback);
+			xmlhttp.onreadystatechange = _readyStateChangeHandler(xmlhttp, xmldocpath, completecallback, errorcallback,donotparse);
 		} else {
 			if (errorcallback) errorcallback();
 			return xmlhttp; 
@@ -482,12 +482,12 @@
 		};
 	}
 	
-	function _readyStateChangeHandler(xmlhttp, xmldocpath, completecallback, errorcallback) {
+	function _readyStateChangeHandler(xmlhttp, xmldocpath, completecallback, errorcallback, donotparse) {
 		return function() {
 			if (xmlhttp.readyState === 4) {
 				switch (xmlhttp.status) {
 				case 200:
-					_ajaxComplete(xmlhttp, xmldocpath, completecallback, errorcallback)();
+					_ajaxComplete(xmlhttp, xmldocpath, completecallback, errorcallback, donotparse)();
 					break;
 				case 404:
 					errorcallback("File not found");
@@ -497,31 +497,35 @@
 		};
 	}
 	
-	function _ajaxComplete(xmlhttp, xmldocpath, completecallback, errorcallback) {
+	function _ajaxComplete(xmlhttp, xmldocpath, completecallback, errorcallback, donotparse) {
 		return function() {
 			// Handle the case where an XML document was returned with an incorrect MIME type.
 			var xml, firstChild;
-			try {
-				// This will throw an error on Windows Mobile 7.5.  We want to trigger the error so that we can move 
-				// down to the next section
-				xml = xmlhttp.responseXML;
-				firstChild = xml.firstChild;
-			} catch (e) {
-				
-			}
-			if (xml && firstChild) {
-				return completecallback(xmlhttp);
-			}
-			var parsedXML = utils.parseXML(xmlhttp.responseText);
-			if (parsedXML && parsedXML.firstChild) {
-				xmlhttp = utils.extend({}, xmlhttp, {responseXML:parsedXML});
+			if (donotparse) {
+			    completecallback(xmlhttp);
 			} else {
-				if (errorcallback) {
-					errorcallback(xmlhttp.responseText ? "Invalid XML" : xmldocpath);
-				}
-				return;
-			}
-			completecallback(xmlhttp);
+    			try {
+    				// This will throw an error on Windows Mobile 7.5.  We want to trigger the error so that we can move 
+    				// down to the next section
+    				xml = xmlhttp.responseXML;
+    				firstChild = xml.firstChild;
+    			} catch (e) {
+    				
+    			}
+    			if (xml && firstChild) {
+    				return completecallback(xmlhttp);
+    			}
+    			var parsedXML = utils.parseXML(xmlhttp.responseText);
+    			if (parsedXML && parsedXML.firstChild) {
+    				xmlhttp = utils.extend({}, xmlhttp, {responseXML:parsedXML});
+    			} else {
+    				if (errorcallback) {
+    					errorcallback(xmlhttp.responseText ? "Invalid XML" : xmldocpath);
+    				}
+    				return;
+    			}
+    			completecallback(xmlhttp);
+    		}
 		};
 	}
 	

@@ -202,21 +202,21 @@
         function _load(file,index) {
             utils.ajax(file, function(xmlEvent) {
                     _xmlReadHandler(xmlEvent,index); 
-                }, _xmlFailedHandler);
+                }, _xmlFailedHandler, true);
         }
 
         function _xmlReadHandler(xmlEvent,index) {
-            var rss = xmlEvent.responseXML.firstChild,
+            var rss = xmlEvent.responseXML ? xmlEvent.responseXML.firstChild : null,
                 parser;
             _dlCount++;
             // IE9 sets the firstChild element to the root <xml> tag
             
-
-            if (parsers.localName(rss) == "xml") rss = rss.nextSibling;
-            // Ignore all comments
-            while (rss.nodeType == rss.COMMENT_NODE) rss = rss.nextSibling;
-
-            if (parsers.localName(rss) == "tt") {
+            if (rss) {
+                if (parsers.localName(rss) == "xml") rss = rss.nextSibling;
+                // Ignore all comments
+                while (rss.nodeType == rss.COMMENT_NODE) rss = rss.nextSibling;
+            }
+            if (rss && parsers.localName(rss) == "tt") {
                 parser = new jwplayer.parsers.dfxp();
             }
             else {
