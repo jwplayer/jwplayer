@@ -458,12 +458,16 @@
 
 		xmlhttp.onerror = _ajaxError(errorcallback, xmldocpath, xmlhttp);
 
-		try {
-			xmlhttp.open("GET", xmldocpath, TRUE);
-			xmlhttp.send(null);
-		} catch (error) {
-			if (errorcallback) errorcallback(xmldocpath);
-		}
+		// make XDomainRequest asynchronous:
+		setTimeout(function() {
+			try {
+				xmlhttp.open("GET", xmldocpath, TRUE);
+				xmlhttp.send(null);
+			} catch (error) {
+				if (errorcallback) errorcallback(xmldocpath);
+			}
+		}, 0);
+		
 		return xmlhttp;
 	};
 	
@@ -523,25 +527,24 @@
 	
 	/** Takes an XML string and returns an XML object **/
 	utils.parseXML = function(input) {
+		var parsedXML;
 		try {
-			var parsedXML;
 			// Parse XML in FF/Chrome/Safari/Opera
 			if (WINDOW.DOMParser) {
-				parsedXML = (new WINDOW.DOMParser()).parseFromString(input,"text/xml");
-				try {
-					if (parsedXML.childNodes[0].firstChild.nodeName == "parsererror")
-						return;
-				} catch(e) {}
+				parsedXML = (new WINDOW.DOMParser()).parseFromString(input, "text/xml");
+				if (parsedXML.childNodes[0].firstChild.nodeName == "parsererror") {
+					return;
+				}
 			} else { 
 				// Internet Explorer
 				parsedXML = new WINDOW.ActiveXObject("Microsoft.XMLDOM");
-				parsedXML.async="false";
+				parsedXML.async = "false";
 				parsedXML.loadXML(input);
 			}
-			return parsedXML;
 		} catch(e) {
 			return;
 		}
+		return parsedXML;
 	};
 	
 	/** Go through the playlist and choose a single playable type to play; remove sources of a different type **/
