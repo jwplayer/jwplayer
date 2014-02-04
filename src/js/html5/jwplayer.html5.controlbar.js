@@ -1611,7 +1611,7 @@
 		
 		function _loadCues(vttFile) {
 			if (vttFile) {
-				utils.ajax(vttFile, _cueLoaded, _cueFailed);
+				utils.ajax(vttFile, _cueLoaded, _cueFailed, TRUE);
 			} else {
 				_cues.length = 0;
 			}

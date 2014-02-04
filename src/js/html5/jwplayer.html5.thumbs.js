@@ -41,7 +41,7 @@
 
 			if (vtt) {
 				_vttPath = vtt.split("?")[0].split("/").slice(0, -1).join("/");
-				_vttRequest = utils.ajax(vtt, _vttLoaded, _vttFailed);
+				_vttRequest = utils.ajax(vtt, _vttLoaded, _vttFailed, true);
 			} else {
 				_cues =
 				_url =
