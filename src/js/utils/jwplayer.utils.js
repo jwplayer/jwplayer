@@ -123,12 +123,19 @@
 		};
 	}
 
-	utils.isIE = _browserCheck(/msie/i);
 	utils.isFF = _browserCheck(/firefox/i);
 	utils.isChrome = _browserCheck(/chrome/i);
 	utils.isIPod = _browserCheck(/iP(hone|od)/i);
 	utils.isIPad = _browserCheck(/iPad/i);
 	utils.isSafari602 = _browserCheck(/Macintosh.*Mac OS X 10_8.*6\.0\.\d* Safari/i);
+
+	utils.isIE = function(version) {
+		if (version) {
+			version = parseFloat(version).toFixed(1);
+			return _userAgentMatch(new RegExp('msie\\s*'+version+'|trident/.+rv:\\s*'+version, 'i'));
+		}
+		return _userAgentMatch(/msie|trident/i);
+	};
 
 	utils.isSafari = function() {
 		return (_userAgentMatch(/safari/i) && !_userAgentMatch(/chrome/i) && !_userAgentMatch(/chromium/i) && !_userAgentMatch(/android/i));
@@ -138,9 +145,8 @@
 	utils.isIOS = function(version) {
 		if (version) {
 			return _userAgentMatch(new RegExp("iP(hone|ad|od).+\\sOS\\s"+version, "i"));
-		} else {
-			return _userAgentMatch(/iP(hone|ad|od)/i);
 		}
+		return _userAgentMatch(/iP(hone|ad|od)/i);
 	};
 
 	/** Matches Android devices **/	
@@ -149,9 +155,8 @@
 		var androidBrowser = excludeChrome ? !_userAgentMatch(/chrome\/[23456789]/i) : TRUE;
 		if (version) {
 			return androidBrowser && _userAgentMatch(new RegExp("android.*"+version, "i"));
-		} else {
-			return androidBrowser && _userAgentMatch(/android/i);
 		}
+		return androidBrowser && _userAgentMatch(/android/i);
 	};
 
 	/** Matches iOS and Android devices **/	
@@ -183,9 +188,8 @@
 		if (typeofString === OBJECT) {
 			if (!value) return "null";
 			return (value instanceof Array) ? 'array' : typeofString;
-		} else {
-			return typeofString;
 		}
+		return typeofString;
 	};
 
 	/* Normalizes differences between Flash and HTML5 internal players' event responses. */
@@ -462,7 +466,7 @@
 		setTimeout(function() {
 			try {
 				xmlhttp.open("GET", xmldocpath, TRUE);
-				xmlhttp.send(null);
+				xmlhttp.send();
 			} catch (error) {
 				if (errorcallback) errorcallback(xmldocpath);
 			}
@@ -502,30 +506,33 @@
 			// Handle the case where an XML document was returned with an incorrect MIME type.
 			var xml, firstChild;
 			if (donotparse) {
-			    completecallback(xmlhttp);
+				completecallback(xmlhttp);
 			} else {
-    			try {
-    				// This will throw an error on Windows Mobile 7.5.  We want to trigger the error so that we can move 
-    				// down to the next section
-    				xml = xmlhttp.responseXML;
-    				firstChild = xml.firstChild;
-    			} catch (e) {
-    				
-    			}
-    			if (xml && firstChild) {
-    				return completecallback(xmlhttp);
-    			}
-    			var parsedXML = utils.parseXML(xmlhttp.responseText);
-    			if (parsedXML && parsedXML.firstChild) {
-    				xmlhttp = utils.extend({}, xmlhttp, {responseXML:parsedXML});
-    			} else {
-    				if (errorcallback) {
-    					errorcallback(xmlhttp.responseText ? "Invalid XML" : xmldocpath);
-    				}
-    				return;
-    			}
-    			completecallback(xmlhttp);
-    		}
+				try {
+					// This will throw an error on Windows Mobile 7.5.  We want to trigger the error so that we can move 
+					// down to the next section
+					xml = xmlhttp.responseXML;
+					firstChild = xml.firstChild;
+				} catch (e) {
+					
+				}
+				if (xml && firstChild) {
+					// if (firstChild.firstElementChild && firstChild.firstElementChild.nodeName == "parsererror") {
+					// 	-> errorcallback;
+					// }
+					return completecallback(xmlhttp);
+				}
+				var parsedXML = utils.parseXML(xmlhttp.responseText);
+				if (parsedXML && parsedXML.firstChild) {
+					xmlhttp = utils.extend({}, xmlhttp, {responseXML:parsedXML});
+				} else {
+					if (errorcallback) {
+						errorcallback(xmlhttp.responseText ? "Invalid XML" : xmldocpath);
+					}
+					return;
+				}
+				completecallback(xmlhttp);
+			}
 		};
 	}
 	
