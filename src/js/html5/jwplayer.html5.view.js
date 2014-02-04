@@ -56,6 +56,7 @@
 			_videoTag,
 			_videoLayer,
 			_lastWidth,
+			_lastHeight,
 			_instreamLayer,
 			_instreamControlbar,
 			_instreamDisplay,
@@ -112,23 +113,25 @@
 		
 		function _responsiveListener() {
 			var bounds = _bounds(_playerElement), 
-				containerWidth = bounds.width;
+				containerWidth = Math.round(bounds.width),
+				containerHeight = Math.round(bounds.height);
 			if (!DOCUMENT.body.contains(_playerElement)) {
 				window.removeEventListener('resize', _responsiveListener);
 				if (_isMobile) {
 					window.removeEventListener("orientationchange", _responsiveListener);
 				}
-			} else if (containerWidth > 0) {
-				if (containerWidth != _lastWidth) {
+			} else if (containerWidth && containerHeight) {
+				if (containerWidth !== _lastWidth || containerHeight !== _lastHeight) {
 					_lastWidth = containerWidth;
+					_lastHeight = containerHeight;
 					if (_display) {
 						_display.redraw();
 					}
 					clearTimeout(_resizeMediaTimeout);
 					_resizeMediaTimeout = setTimeout(_resizeMedia, 50);
 					_eventDispatcher.sendEvent(events.JWPLAYER_RESIZE, {
-						width : bounds.width,
-						height : bounds.height
+						width : containerWidth,
+						height : containerHeight
 					});
 				}
 			}
@@ -168,8 +171,10 @@
 			DOCUMENT.addEventListener('MSFullscreenChange', _fullscreenChangeHandler, FALSE);
 			DOCUMENT.addEventListener('keydown', _keyHandler, FALSE);
 			
+			window.removeEventListener('resize', _responsiveListener);
 			window.addEventListener('resize', _responsiveListener, false);
 			if (_isMobile) {
+				window.removeEventListener("orientationchange", _responsiveListener);
 				window.addEventListener("orientationchange", _responsiveListener, false);
 			}
 			
@@ -569,7 +574,11 @@
 			}
 		}
 		
-		this.resize = _resize;
+		this.resize = function(width, height) {
+			var resetAspectMode = true;
+			_resize(width, height, resetAspectMode);
+			_responsiveListener();
+		};
 		this.resizeMedia = _resizeMedia;
 
 		var _completeSetup = this.completeSetup = function() {
