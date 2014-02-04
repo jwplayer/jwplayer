@@ -123,6 +123,7 @@
 		};
 	}
 
+	utils.isMSIE = _browserCheck(/msie/i);
 	utils.isFF = _browserCheck(/firefox/i);
 	utils.isChrome = _browserCheck(/chrome/i);
 	utils.isIPod = _browserCheck(/iP(hone|od)/i);
@@ -517,9 +518,6 @@
 					
 				}
 				if (xml && firstChild) {
-					// if (firstChild.firstElementChild && firstChild.firstElementChild.nodeName == "parsererror") {
-					// 	-> errorcallback;
-					// }
 					return completecallback(xmlhttp);
 				}
 				var parsedXML = utils.parseXML(xmlhttp.responseText);
