@@ -104,6 +104,7 @@ package com.longtailvideo.jwplayer.player
 		function setText(text:String=""):void;
 		function setClick(url:String=""):void;
 		function setControls(controls:Boolean):void;
+		function hide():void;
 		function init():void;
 		function loadItem(item:Object, options:Object=null):void;
 		function loadArray(items:Array, options:Array=null):void;

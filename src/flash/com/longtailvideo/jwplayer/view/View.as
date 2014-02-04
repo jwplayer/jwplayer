@@ -797,6 +797,10 @@ package com.longtailvideo.jwplayer.view {
 			_instreamMode = false;
 		}
 		
+		public function hideInstream():void {
+			_instreamAnim.fade(0);
+		}
+		
 		protected function instreamAnimationComplete(evt:Event):void {
 			if (_instreamLayer.alpha == 0) {
 				while(_instreamLayer.numChildren > 0) {

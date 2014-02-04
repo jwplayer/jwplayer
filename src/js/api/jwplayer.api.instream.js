@@ -169,6 +169,9 @@
 		_this.pause = function(state) {
 			_player.jwInstreamPause(state);
 		};
+		_this.hide = function() {
+			_api.callInternal('jwInstreamHide');
+		};
 		_this.destroy = function() {
 			_this.removeEvents();
 			_api.callInternal('jwInstreamDestroy');

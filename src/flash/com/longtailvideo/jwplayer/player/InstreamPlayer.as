@@ -454,6 +454,11 @@ package com.longtailvideo.jwplayer.player
 			_clickUrl = url;
 		}
 		
+		public function hide():void {
+			removeEventListeners();
+			_view.hideInstream();
+		}
+		
 		protected function _setupView():void {
 			if (!_viewSetup) {
 				_view.setupInstream(_instreamDisplay, _controls, _plugin);
@@ -603,7 +608,9 @@ package com.longtailvideo.jwplayer.player
 		}
 
 		public function setControls(state:Boolean):void {
-			state ? _skipButton.show() : _skipButton.hide();
+			if (_skipButton) {
+				state ? _skipButton.show() : _skipButton.hide();
+			}
 		}
 		
 		public function getSafeRegion():Rectangle {
