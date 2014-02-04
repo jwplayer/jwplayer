@@ -4,8 +4,6 @@
  * @author pablo
  * @version 6.0
  * 
- * TODO: Since the volume slider was moved from the controbar skinning component
- * to the tooltip component, we should clean up how it gets created
  */
 (function(jwplayer) {
 	var html5 = jwplayer.html5,
@@ -338,6 +336,9 @@
 		function _fullscreenHandler(evt) {
 			_toggleButton("fullscreen", evt.fullscreen);
 			_updateNextPrev();
+			if (_this.visible) {
+				_this.show(TRUE);
+			}
 		}
 		
 		function _playlistHandler() {
@@ -1215,10 +1216,6 @@
 			_redraw();
 		};
 		
-		function _getElementBySelector(selector) {
-			return _controlbar.querySelector(selector);
-		}
-		
 		function _styleVolumeSlider(slider, vertical, left, right) {
 			var prefix = "volume" + (vertical ? "" : "H"),
 				direction = vertical ? "vertical" : "horizontal";
@@ -1392,8 +1389,8 @@
 			}
 			_createStyles();
 
-			// ie <= IE10 does not allow fullscreen from inside an iframe. Hide the FS button. (TODO: Fix for IE11)
-			var ieIframe = (top !== window.self) && utils.isIE();
+			// ie <= IE10 does not allow fullscreen from inside an iframe. Hide the FS button.
+			var ieIframe = (top !== window.self) && utils.isMSIE();
 			_css.style(_elements.fullscreen, {
 				display: (_audioMode || _hideFullscreen || ieIframe) ? JW_CSS_NONE : ''
 			});
@@ -1561,12 +1558,29 @@
 		//because of size impacting whether to show duration/elapsed time, optional resize argument overrides the this.visible return clause.
 		_this.show = function(resize) {
 			if (_this.visible && !resize) return;
-
 			_this.visible = true;
-			_css.style(_controlbar, {display: JW_CSS_INLINE_BLOCK});
-			_hideTimes();
+
+			var style = {
+				display: JW_CSS_INLINE_BLOCK
+			};
+
+			// IE applied max-width centering fix
+			var maxWidth = _settings.maxwidth|0;
+			if (!_audioMode && maxWidth) {
+				if (_controlbar.parentNode && utils.isIE()) {
+					if (_controlbar.parentNode.clientWidth > maxWidth + (_settings.margin|0 * 2)) {
+						style.width = maxWidth;
+					} else {
+						style.width = '';
+					}
+				}
+			}
+
+			_css.style(_controlbar, style);
 			_cbBounds = utils.bounds(_controlbar);
 
+			_hideTimes();
+			
 			_css.block(_id); //unblock on redraw
 
 			_volumeHandler();
