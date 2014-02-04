@@ -68,6 +68,8 @@
             /** Event dispatcher for captions events. **/
             _eventDispatcher = new events.eventdispatcher(),
             
+            _nonChromeAndroid = utils.isAndroid(4) && !utils.isChrome(),
+            
             _this = this;
 
         utils.extend(this, _eventDispatcher);
@@ -143,6 +145,8 @@
             _renderer.update(0);
             _dlCount = 0;
 
+            if (_nonChromeAndroid) return;
+            
             var item = _api.jwGetPlaylist()[_api.jwGetPlaylistIndex()],
                 tracks = item['tracks'],
                 captions = [],
@@ -272,7 +276,7 @@
 
         /** Update the interface. **/
         function _redraw(timeout) {
-            if(!_tracks.length) {
+            if(!_tracks.length || _nonChromeAndroid) {
                 _renderer.hide();
             } else {
                 if(_state == PLAYING && _selectedTrack > 0) {
@@ -333,6 +337,10 @@
                 _renderer.populate(_tracks[_track].data);
             } else if (_dlCount == _tracks.length)  {
                 _errorHandler("file not loaded: " + _tracks[_track].file);
+                if (_selectedTrack != 0) {
+                     _sendEvent(events.JWPLAYER_CAPTIONS_CHANGED, _tracks, 0);
+                }
+                _selectedTrack = 0;
             } else {
                 _waiting = index;
             }
