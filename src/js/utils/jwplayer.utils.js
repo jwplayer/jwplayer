@@ -514,11 +514,17 @@
 					// This will throw an error on Windows Mobile 7.5.  We want to trigger the error so that we can move 
 					// down to the next section
 					xml = xmlhttp.responseXML;
-					firstChild = xml.firstChild;
-				} catch (e) {
-					
-				}
-				if (xml && firstChild && !xml.firstChild.nodeName == "parsererror") {
+					if (xml) {
+						firstChild = xml.firstChild;
+						if (xml.lastChild && xml.lastChild.nodeName === 'parsererror') {
+							if (errorcallback) {
+								errorcallback("Invalid XML");
+							}
+							return;
+						}
+					}
+				} catch (e) {}
+				if (xml && firstChild) {
 					return completecallback(xmlhttp);
 				}
 				var parsedXML = utils.parseXML(xmlhttp.responseText);
@@ -542,7 +548,7 @@
 			// Parse XML in FF/Chrome/Safari/Opera
 			if (WINDOW.DOMParser) {
 				parsedXML = (new WINDOW.DOMParser()).parseFromString(input, "text/xml");
-				if (parsedXML.childNodes[0].firstChild.nodeName == "parsererror") {
+				if (parsedXML.childNodes && parsedXML.childNodes.length && parsedXML.childNodes[0].firstChild.nodeName == "parsererror") {
 					return;
 				}
 			} else { 
