@@ -518,7 +518,7 @@
 				} catch (e) {
 					
 				}
-				if (xml && firstChild) {
+				if (xml && firstChild && !xml.firstChild.nodeName == "parsererror") {
 					return completecallback(xmlhttp);
 				}
 				var parsedXML = utils.parseXML(xmlhttp.responseText);
