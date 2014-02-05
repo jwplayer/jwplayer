@@ -32,7 +32,7 @@
 			_iconElement,
 			_iconWidth = 0,
 			_setWidthTimeout = -1,
-			_repeatCount;
+			_repeatCount = 0;
 
 		function _init() {
 			_container = _createElement("jwdisplayIcon");
@@ -99,10 +99,8 @@
 				style = utils.extend({}, style);
 				if (name.indexOf("Icon") > 0) _iconWidth = skinElem.width|0;
 				style.width = skinElem.width;
-				_css(selector, {
-					'background-image': 'url(' + skinElem.src + ')',
-					'background-size': skinElem.width+'px '+skinElem.height+'px'
-				});
+				style['background-image'] = 'url(' + skinElem.src + ')';
+				style['background-size'] = skinElem.width+'px '+skinElem.height+'px';
 				
 				overstyle = utils.extend({}, overstyle);
 				if (skinElem.overSrc) {
@@ -140,23 +138,23 @@
 			});
 
 			_repeatCount = showText ? 30 : 0;
-			clearTimeout(_setWidthTimeout);
-			_setWidthTimeout = setTimeout(_setWidth, 0);
+			_setWidth();
 		}
 		
 		function _setWidth() {
-			if (_repeatCount--) {
+			clearTimeout(_setWidthTimeout);
+			if (_repeatCount-- > 0) {
 				_setWidthTimeout = setTimeout(_setWidth, 33);
 			}
 
 			var px100pct = 'px ' + JW_CSS_100PCT;
-			var contentWidth = Math.max(_iconElement.width, utils.bounds(_container).width - _capRightSkin.width - _capLeftSkin.width);
-			if (utils.isFF() || utils.isIE()) contentWidth ++;
+			var contentWidth = Math.ceil(Math.max(_iconElement.width, utils.bounds(_container).width - _capRightSkin.width - _capLeftSkin.width));
+			// if (utils.isFF() || utils.isIE()) contentWidth ++;
 			// Fix for 1 pixel gap in Chrome. This is a chrome bug that needs to be fixed. 
 			// Remove below once chrome fixes this bug.
 			// if (utils.isChrome() && _container.parentNode.clientWidth % 2 == 1) contentWidth++;
 			_css.style(_container, {
-				'background-size': [_capLeftSkin.width + px100pct, contentWidth + px100pct, _capRightSkin.width + px100pct].join(", ")
+				'background-size': [_capLeftSkin.width + px100pct, contentWidth + px100pct, _capRightSkin.width + px100pct].join(', ')
 			});
 		}
 			
