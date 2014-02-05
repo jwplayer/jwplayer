@@ -257,7 +257,9 @@
 				}
 				_duration = evt.duration;
 				_position = evt.position;
-				_this.setText();
+				if (!_instreamMode) { // TODO: tech dept cleanup
+					_this.setText();
+				}
 			}
 		}
 		
