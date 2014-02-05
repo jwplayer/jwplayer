@@ -1567,7 +1567,7 @@
 			// IE applied max-width centering fix
 			var maxWidth = _settings.maxwidth|0;
 			if (!_audioMode && maxWidth) {
-				if (_controlbar.parentNode && utils.isIE()) {
+				if (_controlbar.parentNode && utils.isIETrident()) {
 					if (_controlbar.parentNode.clientWidth > maxWidth + (_settings.margin|0 * 2)) {
 						style.width = maxWidth;
 					} else {
