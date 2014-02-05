@@ -60,6 +60,7 @@
 			_instreamLayer,
 			_instreamControlbar,
 			_instreamDisplay,
+			_instreamModel,
 			_instreamMode = FALSE,
 			_controlbar,
 			_display,
@@ -363,7 +364,7 @@
 			}
 
 			if (state) {
-				if (_model.getVideo().audioMode()) return;
+				if (_isAudioFile()) return;
 				
 				//ios7captions
 				//_model.getVideo().fsCaptions(state,_api.jwGetCurrentCaptions());
@@ -779,11 +780,17 @@
 			_hideControlbar();
 		}
 		
+		function _isAudioFile() {
+		    var model = _instreamMode ? _instreamModel : _model;
+		    return model.getVideo().audioMode()
+		}
+		
+		
 		function _updateState(state) {
 			_currentState = state;
 			switch(state) {
 			case states.PLAYING:
-				if (!_model.getVideo().audioMode()) {
+				if (!_isAudioFile()) {
 					_showVideo(TRUE);
 					_resizeMedia();
 					_display.hidePreview(TRUE);
@@ -827,13 +834,14 @@
 			return '#' + _api.id + (className ? " ." + className : "");
 		}
 		
-		this.setupInstream = function(instreamContainer, instreamControlbar, instreamDisplay) {
+		this.setupInstream = function(instreamContainer, instreamControlbar, instreamDisplay, instreamModel) {
 			_css.unblock();
 			_setVisibility(_internalSelector(VIEW_INSTREAM_CONTAINER_CLASS), TRUE);
 			_setVisibility(_internalSelector(VIEW_CONTROLS_CONTAINER_CLASS), FALSE);
 			_instreamLayer.appendChild(instreamContainer);
 			_instreamControlbar = instreamControlbar;
 			_instreamDisplay = instreamDisplay;
+			_instreamModel = instreamModel;
 			_stateHandler({newstate:states.PLAYING});
 			_instreamMode = TRUE;
 		};
