@@ -349,7 +349,7 @@
 		}
 		
 		function _hasHD() {
-			return (_levels && _levels.length > 1 && _hdOverlay);
+			return (!_instreamMode && _levels && _levels.length > 1 && _hdOverlay);
 		}
 		
 		function _qualityHandler(evt) {
@@ -378,7 +378,7 @@
 		}
 		
 		function _hasCaptions() {
-			return (_captions && _captions.length > 1 && _ccOverlay);			
+			return (!_instreamMode && _captions && _captions.length > 1 && _ccOverlay);			
 		}
 		
 		function _captionsHandler(evt) {
