@@ -17,10 +17,8 @@
 		JW_CSS_100PCT = "100%",
 		JW_CSS_CENTER = "center";
 
-	html5.displayicon = function(id, api, textStyle, textStyleOver) {
-		var _api = api,
-			_skin = _api.skin,
-			_id = id,
+	html5.displayicon = function(_id, _api, textStyle, textStyleOver) {
+		var _skin = _api.skin,
 			_container, 
 			_bgSkin,
 			_capLeftSkin,
@@ -46,6 +44,7 @@
 			_icon = _createElement('jwicon', _container);
 			//_createElement('capRight', _container);
 			
+			_api.jwAddEventListener(jwplayer.events.JWPLAYER_RESIZE, _setWidth);
 			
 			_hide();
 			_redraw();
@@ -149,13 +148,13 @@
 
 			var px100pct = 'px ' + JW_CSS_100PCT;
 			var contentWidth = Math.ceil(Math.max(_iconElement.width, utils.bounds(_container).width - _capRightSkin.width - _capLeftSkin.width));
-			// if (utils.isFF() || utils.isIE()) contentWidth ++;
-			// Fix for 1 pixel gap in Chrome. This is a chrome bug that needs to be fixed. 
-			// Remove below once chrome fixes this bug.
-			// if (utils.isChrome() && _container.parentNode.clientWidth % 2 == 1) contentWidth++;
-			_css.style(_container, {
+			var style = {
 				'background-size': [_capLeftSkin.width + px100pct, contentWidth + px100pct, _capRightSkin.width + px100pct].join(', ')
-			});
+			};
+			if (_container.parentNode) {
+				style.left = (_container.parentNode.clientWidth % 2 == 1) ? '0.5px' : '';
+			}
+			_css.style(_container, style);
 		}
 			
 		this.element = function() {
