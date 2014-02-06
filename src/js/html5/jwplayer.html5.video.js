@@ -311,7 +311,10 @@
             _setState(states.BUFFERING); 
             _videotag.src = _source.file;
             _videotag.load();
-            
+            //in ios and fullscreen, set controls true, then when it goes to normal screen the controls don't show'
+            if (utils.isIOS() && _videotag.webkitDisplayingFullscreen) {
+                _videotag.controls = TRUE;
+            }
             _bufferInterval = setInterval(_sendBufferUpdate, 100);
 
             if (utils.isMobile()) {
