@@ -39,6 +39,8 @@
 		JWPLAYER_CAPTIONS_LIST: 'jwplayerCaptionsList',
         JWPLAYER_CAPTIONS_LOADED: 'jwplayerCaptionsLoaded',
 
+        // Casting
+        JWPLAYER_CAST_AVAILABLE: 'jwplayerCastAvailable',
 
 		// State events
 		JWPLAYER_PLAYER_STATE : 'jwplayerPlayerState',
