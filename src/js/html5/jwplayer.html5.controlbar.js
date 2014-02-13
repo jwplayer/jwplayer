@@ -34,17 +34,18 @@
 		JW_CSS_SMOOTH_EASE = "opacity .25s, background .25s, visibility .25s",
 		JW_VISIBILITY_TIMEOUT = 250,
 		
-		HIDDEN = { display: JW_CSS_NONE },
-		SHOWING = { display: JW_CSS_BLOCK },
-		NOT_HIDDEN = { display: UNDEFINED },
-		
-		CB_CLASS = 'span.jwcontrolbar',
-		TYPEOF_ARRAY = "array",
-		
 		FALSE = false,
 		TRUE = true,
 		NULL = null,
+		EMPTY = '',
 		UNDEFINED,
+		
+		HIDDEN = { display: JW_CSS_NONE },
+		SHOWING = { display: JW_CSS_BLOCK },
+		NOT_HIDDEN = { display: EMPTY },
+		
+		CB_CLASS = 'span.jwcontrolbar',
+		TYPEOF_ARRAY = "array",
 		
 		WINDOW = window,
 		DOCUMENT = document;
@@ -86,7 +87,8 @@
 							_layoutElement("cc", CB_BUTTON), 
 							_layoutElement("mute", CB_BUTTON), 
 							_layoutElement("volume", CB_SLIDER), 
-							_layoutElement("volumeH", CB_SLIDER), 
+							_layoutElement("volumeH", CB_SLIDER),
+							_layoutElement("cast", CB_BUTTON),
 							_layoutElement("fullscreen", CB_BUTTON)
 						]
 					}
@@ -106,6 +108,7 @@
 			_captions,
 			_currentCaptions,
 			_currentVolume,
+			_castState = {},
 			_volumeOverlay,
 			_cbBounds,
 			_timeRail,
@@ -130,7 +133,6 @@
 			_cues = [],
 			_activeCue,
 			_instreamMode = FALSE,
-			_eventDispatcher = new events.eventdispatcher(),
 			
 			_toggles = {
 				play: "pause",
@@ -151,7 +153,8 @@
 				next: _next,
 				prev: _prev,
 				hd: _hd,
-				cc: _cc
+				cc: _cc,
+				cast: _cast
 			},
 			
 			_sliderMapping = {
@@ -161,9 +164,7 @@
 		
 			_overlays = {},
 			_jwhidden = [],
-			_this = this;
-
-		utils.extend(_this, _eventDispatcher);
+			_this = utils.extend(this, new events.eventdispatcher());
 			
 		function _layoutElement(name, type, className) {
 			return { name: name, type: type, className: className };
@@ -195,7 +196,6 @@
 			_this.visible = false;
 		}
 		
-		
 		function _addEventListeners() {
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_TIME, _timeUpdated);
 			_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
@@ -210,6 +210,9 @@
 			_api.jwAddEventListener(events.JWPLAYER_CAPTIONS_LIST, _captionsHandler);
 			_api.jwAddEventListener(events.JWPLAYER_CAPTIONS_CHANGED, _captionChanged);
 			_api.jwAddEventListener(events.JWPLAYER_RESIZE, _resizeHandler);
+			_api.jwAddEventListener(events.JWPLAYER_CAST_AVAILABLE, _castAvaiable);
+			_api.jwAddEventListener(events.JWPLAYER_CAST_SESSION, _castSession);
+
 			if (!_isMobile) {
 				_controlbar.addEventListener('mouseover', function() {
 					// Slider listeners
@@ -346,6 +349,7 @@
 		function _playlistHandler() {
 			_css.style(_elements.hd, HIDDEN);
 			_css.style(_elements.cc, HIDDEN);
+			_css.style(_elements.cast, HIDDEN);
 			_updateNextPrev();
 			_redraw();
 		}
@@ -372,7 +376,7 @@
 		function _qualityLevelChanged(evt) {
 			_currentQuality = evt.currentQuality|0;
 			if (_elements.hd) {
-				_elements.hd.querySelector("button").className = (_levels.length === 2 && _currentQuality === 0) ? "off" : "";
+				_elements.hd.querySelector("button").className = (_levels.length === 2 && _currentQuality === 0) ? "off" : EMPTY;
 			}
 			if (_hdOverlay && _currentQuality >= 0) {
 				_hdOverlay.setActive(evt.currentQuality);
@@ -402,10 +406,23 @@
 			if (!_captions) return;
 			_currentCaptions = evt.track|0;
 			if (_elements.cc) {
-				_elements.cc.querySelector("button").className = (_captions.length === 2 && _currentCaptions === 0) ? "off" : "";
+				_elements.cc.querySelector("button").className = (_captions.length === 2 && _currentCaptions === 0) ? "off" : EMPTY;
 			}
 			if (_ccOverlay && _currentCaptions >= 0) {
 				_ccOverlay.setActive(evt.track);
+			}
+		}
+
+		function _castAvaiable(evt) {
+			// chromecast button is displayed after receiving this event
+			_css.style(_elements.cast, evt.available ? NOT_HIDDEN : HIDDEN);
+			_castSession(evt);
+		}
+
+		function _castSession(evt) {
+			_castState = evt;
+			if (_elements.cast) {
+				_elements.cast.querySelector("button").className = evt.active ? EMPTY : "off";
 			}
 		}
 
@@ -428,7 +445,7 @@
 				bottom: margin,
 				left: margin,
 				right: margin,
-				'max-width': _audioMode ? '' : _settings.maxwidth
+				'max-width': _audioMode ? EMPTY : _settings.maxwidth
 			};
 			_css.style(_controlbar, styles);
 			
@@ -445,7 +462,7 @@
 
 		
 		function _internalSelector(name) {
-			return '#' + _id + (name ? " " + name : "");
+			return '#' + _id + (name ? " " + name : EMPTY);
 		}
 
 		function _createSpan() {
@@ -478,7 +495,7 @@
 				return _buildText(element.name);
 			case CB_BUTTON:
 				if (element.name != "blank") {
-					return _buildButton(element.name,pos);
+					return _buildButton(element.name, pos);
 				}
 				break;
 			case CB_SLIDER:
@@ -504,18 +521,18 @@
 				newStyle = {
 					background: "url('" + skinElem.src + "') repeat-x " + center,
 					'background-size': size,
-					height: vertical ? skinElem.height : UNDEFINED 
+					height: vertical ? skinElem.height : EMPTY 
 				};
 			} else {
 				newStyle = {
 					background: "url('" + skinElem.src + "') no-repeat" + center,
 					'background-size': size,
 					width: skinElem.width,
-					height: vertical ? skinElem.height : UNDEFINED 
+					height: vertical ? skinElem.height : EMPTY 
 				};
 			}
 			element.skin = skinElem;
-			_css(_internalSelector((vertical? ".jwvertical " : "") + '.jw'+name), utils.extend(newStyle, style));
+			_css(_internalSelector((vertical? ".jwvertical " : EMPTY) + '.jw'+name), utils.extend(newStyle, style));
 			_elements[name] = element;
 			return element;
 		}
@@ -600,7 +617,7 @@
 				if (_buttonMapping[name]) {
 					_buttonMapping[name]();
 					if (_isMobile) {
-						_eventDispatcher.sendEvent(events.JWPLAYER_USER_ACTION);
+						_this.sendEvent(events.JWPLAYER_USER_ACTION);
 					}
 				}
 				if (evt.preventDefault) {
@@ -691,7 +708,7 @@
 				_elements[name].className = 'jw' + name + (state ? " jwtoggle jwtoggling" : " jwtoggling");
 				// Use the jwtoggling class to temporarily disable the animation
 				setTimeout(function() {
-					_elements[name].className = _elements[name].className.replace(" jwtoggling", ""); 
+					_elements[name].className = _elements[name].className.replace(" jwtoggling", EMPTY); 
 				}, 100);
 			}
 			_toggleStates[name] = state;
@@ -717,7 +734,7 @@
 				style.background = "url(" + skinElement.src + ") repeat-x center";
 				style['background-size'] = _elementSize(_getSkinElement("background"));
 				_css.style(element, style);
-				element.innerHTML = (name != "alt") ? "00:00" : "";
+				element.innerHTML = (name != "alt") ? "00:00" : EMPTY;
 				
 				_elements[name] = element;
 				return element;
@@ -790,13 +807,21 @@
 			if (_levels.length != 2) return;
 			_switchLevel((_currentQuality + 1) % 2);
 		}
+
+		function _cast() {
+			if (_castState.active) {
+				_api.jwStopCasting();
+			} else {
+				_api.jwStartCasting();
+			}
+		}
 		
 		function _buildSlider(name) {
 			if (_isMobile && name.indexOf("volume") === 0) return;
 			
 			var slider = _createSpan(),
 				vertical = name == "volume",
-				skinPrefix = name + (name=="time"?"Slider":""),
+				skinPrefix = name + (name=="time"?"Slider":EMPTY),
 				capPrefix = skinPrefix + "Cap",
 				left = vertical ? "Top" : "Left",
 				right = vertical ? "Bottom" : "Right",
@@ -817,12 +842,12 @@
 			}
 
 			_css(_internalSelector(".jw" + name + " .jwrail"), {
-				left: vertical ? UNDEFINED : capLeftSkin.width,
-				right: vertical ? UNDEFINED : capRightSkin.width,
-				top: vertical ? capLeftSkin.height : UNDEFINED,
-				bottom: vertical ? capRightSkin.height : UNDEFINED,
-				width: vertical ? JW_CSS_100PCT : UNDEFINED,
-				height: vertical ? "auto" : UNDEFINED
+				left: vertical ? EMPTY : capLeftSkin.width,
+				right: vertical ? EMPTY : capRightSkin.width,
+				top: vertical ? capLeftSkin.height : EMPTY,
+				bottom: vertical ? capRightSkin.height : EMPTY,
+				width: vertical ? JW_CSS_100PCT : EMPTY,
+				height: vertical ? "auto" : EMPTY
 			});
 
 			_elements[name] = slider;
@@ -859,7 +884,7 @@
 			rail.className = "jwrail jwsmooth";
 
 			for (var i=0; i<railElements.length; i++) {
-				sliderPrefix = (name=="time"?"Slider":"");
+				sliderPrefix = (name=="time"?"Slider":EMPTY);
 				var prefix = name + sliderPrefix + railElements[i],
 					element = _buildImage(prefix, NULL, !vertical, (name.indexOf("volume")===0), vertical),
 					capLeft = _buildImage(prefix + "Cap" + left, NULL, FALSE, FALSE, vertical),
@@ -878,16 +903,16 @@
 					}
 					
 					_css(_internalSelector(".jwrailgroup." + railElements[i]), {
-						'min-width': (vertical ? UNDEFINED : capLeftSkin.width + capRightSkin.width)
+						'min-width': (vertical ? EMPTY : capLeftSkin.width + capRightSkin.width)
 					});
 					railElement.capSize = vertical ? capLeftSkin.height + capRightSkin.height : capLeftSkin.width + capRightSkin.width;
 					
 					_css(_internalSelector("." + element.className), {
-						left: vertical ? UNDEFINED : capLeftSkin.width,
-						right: vertical ? UNDEFINED : capRightSkin.width,
-						top: vertical ? capLeftSkin.height : UNDEFINED,
-						bottom: vertical ? capRightSkin.height : UNDEFINED,
-						height: vertical ? "auto" : UNDEFINED
+						left: vertical ? EMPTY : capLeftSkin.width,
+						right: vertical ? EMPTY : capRightSkin.width,
+						top: vertical ? capLeftSkin.height : EMPTY,
+						bottom: vertical ? capRightSkin.height : EMPTY,
+						height: vertical ? "auto" : EMPTY
 					});
 
 					if (i == 2) progressRail = railElement;
@@ -909,7 +934,7 @@
 			if (thumb) {
 				_css(_internalSelector('.'+thumb.className), {
 					opacity: name == "time" ? 0 : 1,
-					'margin-top': vertical ? thumb.skin.height / -2 : UNDEFINED
+					'margin-top': vertical ? thumb.skin.height / -2 : EMPTY
 				});
 				
 				thumb.className += " jwthumb";
@@ -966,7 +991,7 @@
 				_api.jwSeekDrag(TRUE);
 				_draggingStart('time');
 				_showTimeTooltip();
-				_eventDispatcher.sendEvent(events.JWPLAYER_USER_ACTION);
+				_this.sendEvent(events.JWPLAYER_USER_ACTION);
 			}
 		}
 
@@ -992,7 +1017,7 @@
 				_draggingEnd();
 				_sliderMapping.time(pct);
 				_hideTimeTooltip();
-				_eventDispatcher.sendEvent(events.JWPLAYER_USER_ACTION);
+				_this.sendEvent(events.JWPLAYER_USER_ACTION);
 			}
 			else {
 				_setProgress(pct);
@@ -1000,7 +1025,7 @@
 					_lastSeekTime = currentTime;
 					_sliderMapping.time(pct);
 				}
-				_eventDispatcher.sendEvent(events.JWPLAYER_USER_ACTION);
+				_this.sendEvent(events.JWPLAYER_USER_ACTION);
 			}
 		}
 
@@ -1013,7 +1038,7 @@
 			}
 			if (!_idle()) {
 				_sliderMapping.time(pct);
-				_eventDispatcher.sendEvent(events.JWPLAYER_USER_ACTION);
+				_this.sendEvent(events.JWPLAYER_USER_ACTION);
 			}
 		}
 
@@ -1060,7 +1085,7 @@
 
 				_elements[name+'Rail'].className = "jwrail jwsmooth";
 				_draggingEnd();
-				_sliderMapping[name.replace("H", "")](pct);
+				_sliderMapping[name.replace("H", EMPTY)](pct);
 			} else {
 				if (_dragging == "time") {
 					_setProgress(pct);
@@ -1069,7 +1094,7 @@
 				}
 				if (currentTime - _lastSeekTime > 500) {
 					_lastSeekTime = currentTime;
-					_sliderMapping[_dragging.replace("H", "")](pct);
+					_sliderMapping[_dragging.replace("H", EMPTY)](pct);
 				}
 			}
 			return false;
@@ -1115,14 +1140,14 @@
 				text = _activeCue.text;
 				if (text) {
 					_css.style(_timeOverlay.element(), {
-						'width': (text.length > 32) ? 160: ''
+						'width': (text.length > 32) ? 160: EMPTY
 					});
 				}
 			} else {
 				text = utils.timeFormat(sec);
 				if (!thumbUrl) {
 					_css.style(_timeOverlay.element(), {
-						'width': ''
+						'width': EMPTY
 					});
 				}
 			}
@@ -1213,13 +1238,13 @@
 			}
 			if (jwalt) {
 				_css.style(jwalt, text ? SHOWING : HIDDEN);
-				jwalt.innerHTML = text || "";
+				jwalt.innerHTML = text || EMPTY;
 			}
 			_redraw();
 		};
 		
 		function _styleVolumeSlider(slider, vertical, left, right) {
-			var prefix = "volume" + (vertical ? "" : "H"),
+			var prefix = "volume" + (vertical ? EMPTY : "H"),
 				direction = vertical ? "vertical" : "horizontal";
 			
 			_css(_internalSelector(".jw"+prefix+".jw" + direction), {
@@ -1235,7 +1260,7 @@
 					_getSkinElement(prefix+"RailCap"+left).height + 
 					_getSkinElement(prefix+"RailCap"+right).height + 
 					_getSkinElement(prefix+"Cap"+right).height
-				) : UNDEFINED
+				) : EMPTY
 			});
 			
 			slider.className += " jw" + direction;
@@ -1334,7 +1359,7 @@
 					}, 4000);
 					tapAction();
 				}
-				_eventDispatcher.sendEvent(events.JWPLAYER_USER_ACTION);
+				_this.sendEvent(events.JWPLAYER_USER_ACTION);
 			}
 			else if (name == "hd") {
 				if (_levels.length == 2) tapAction = _hd;
@@ -1349,7 +1374,7 @@
 					}, 4000);
 					tapAction();
 				}
-				_eventDispatcher.sendEvent(events.JWPLAYER_USER_ACTION);
+				_this.sendEvent(events.JWPLAYER_USER_ACTION);
 			}	
 		}
 		
@@ -1394,19 +1419,22 @@
 			// ie <= IE10 does not allow fullscreen from inside an iframe. Hide the FS button.
 			var ieIframe = (top !== window.self) && utils.isMSIE();
 			_css.style(_elements.fullscreen, {
-				display: (_audioMode || _hideFullscreen || ieIframe) ? JW_CSS_NONE : ''
+				display: (_audioMode || _hideFullscreen || ieIframe) ? JW_CSS_NONE : EMPTY
 			});
-			_css(_internalSelector(".jwvolumeH"), {
+
+			// TODO: hide these all by default (global styles at bottom), and update on _audioMode|_instreamMode change event
+			_css.style(_elements.volumeH, {
 				display: _audioMode || _instreamMode ? JW_CSS_BLOCK : JW_CSS_NONE
 			});
-			_css(_internalSelector(".jwmute .jwoverlay"), {
+			_css.style(_volumeOverlay.element(), {
 				display: !(_audioMode || _instreamMode) ? JW_CSS_BLOCK : JW_CSS_NONE
 			});
+
 			_css.style(_elements.hd, {
-				display: !_audioMode && _hasHD() ? '' : JW_CSS_NONE
+				display: !_audioMode && _hasHD() ? EMPTY : JW_CSS_NONE
 			});
 			_css.style(_elements.cc, {
-				display: !_audioMode && _hasCaptions() ? '' : JW_CSS_NONE
+				display: !_audioMode && _hasCaptions() ? EMPTY : JW_CSS_NONE
 			});
 
 			_drawCues();
@@ -1455,6 +1483,7 @@
 		_this.instreamMode = function(mode) {
 			if (mode != _instreamMode) {
 				_instreamMode = mode;
+				// TODO: redraw
 			}
 		};
 
@@ -1492,7 +1521,7 @@
 		function _sliderPercent(name, pct) {
 			if (!_elements[name]) return;
 			var vertical = _elements[name].vertical,
-				prefix = name + (name==='time' ? 'Slider' : ''),
+				prefix = name + (name==='time' ? 'Slider' : EMPTY),
 				size = 100 * Math.min(Math.max(0, pct), 1) + '%',
 				progress = _elements[prefix+'Progress'],
 				thumb = _elements[prefix+'Thumb'],
@@ -1545,7 +1574,7 @@
 				return {
 					width: 0,
 					height: 0,
-					src: "",
+					src: EMPTY,
 					image: UNDEFINED,
 					ready: FALSE
 				};
@@ -1573,7 +1602,7 @@
 					if (_controlbar.parentNode.clientWidth > maxWidth + (_settings.margin|0 * 2)) {
 						style.width = maxWidth;
 					} else {
-						style.width = '';
+						style.width = EMPTY;
 					}
 				}
 			}

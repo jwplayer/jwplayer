@@ -41,6 +41,7 @@
 
         // Casting
         JWPLAYER_CAST_AVAILABLE: 'jwplayerCastAvailable',
+        JWPLAYER_CAST_SESSION: 'jwplayerCastSession',
 
 		// State events
 		JWPLAYER_PLAYER_STATE : 'jwplayerPlayerState',

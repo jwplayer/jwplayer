@@ -801,7 +801,7 @@
 			switch(state) {
 			case states.PLAYING:
 				if (_model.getVideo().isCaster !== true) {
-					_this.releaseControls();
+					_forcedControlsState = null;
 				}
 				if (!_isAudioFile()) {
 					_showVideo(TRUE);
