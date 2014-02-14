@@ -327,6 +327,8 @@ package com.longtailvideo.jwplayer.player {
 			if (evt.duration)  returnObj.duration = evt.duration;
 			if (evt.position) returnObj.position = evt.position;
 			if (evt.companions) returnObj.companions = evt.companions;
+			if (evt.newstate) returnObj.newstate = evt.newstate;
+			if (evt.oldstate) returnObj.oldstate = evt.oldstate	;
 			return returnObj;
 			
 		}
