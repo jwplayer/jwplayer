@@ -175,22 +175,23 @@
 
             // start listening for ad click
             _disp.setAlternateClickHandler(function(evt) {
-                if (_api.jwGetControls()) {
-                    if (_fakemodel.state == _states.PAUSED) {
+                evt = evt || {};
+                evt.hasControls = !!_api.jwGetControls();
+                
+                _sendEvent(_events.JWPLAYER_INSTREAM_CLICK, evt);
+
+                // toggle playback after click event
+                if (evt.hasControls) {
+                    if (_fakemodel.state === _states.PAUSED) {
                         _this.jwInstreamPlay();
                     } else {
                         _this.jwInstreamPause();
                     }
-                    evt.hasControls = true;
-                } else {
-                    evt.hasControls = false;
                 }
-                
-                _sendEvent(_events.JWPLAYER_INSTREAM_CLICK, evt);
             });
             
             
-            
+            // IE 10 and 11?
             if (_utils.isIE()) {
                 _video.parentElement.addEventListener('click', _disp.clickHandler);
             }
@@ -398,7 +399,9 @@
         
         function _sendEvent(type, data) {
             data = data || {};
-            if (_defaultOptions.tag && !data.tag) data.tag = _defaultOptions.tag;
+            if (_defaultOptions.tag && !data.tag) {
+                data.tag = _defaultOptions.tag;
+            }
             _dispatcher.sendEvent(type, data);
         }
         
