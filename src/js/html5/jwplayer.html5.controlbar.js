@@ -1426,10 +1426,11 @@
 			_css.style(_elements.volumeH, {
 				display: _audioMode || _instreamMode ? JW_CSS_BLOCK : JW_CSS_NONE
 			});
-			_css.style(_volumeOverlay.element(), {
-				display: !(_audioMode || _instreamMode) ? JW_CSS_BLOCK : JW_CSS_NONE
-			});
-
+			if (_volumeOverlay) {
+				_css.style(_volumeOverlay.element(), {
+					display: !(_audioMode || _instreamMode) ? JW_CSS_BLOCK : JW_CSS_NONE
+				});
+			}
 			_css.style(_elements.hd, {
 				display: !_audioMode && _hasHD() ? EMPTY : JW_CSS_NONE
 			});
