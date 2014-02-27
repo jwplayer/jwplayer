@@ -794,8 +794,11 @@
 		    var model = _instreamMode ? _instreamModel : _model;
 		    return model.getVideo().audioMode();
 		}
-		
-		
+
+		function _isCasting() {
+			return _model.getVideo().isCaster && _model.getVideo().isCasting();
+		}
+
 		function _updateState(state) {
 			_currentState = state;
 			switch(state) {
@@ -803,15 +806,7 @@
 				if (_model.getVideo().isCaster !== true) {
 					_forcedControlsState = null;
 				}
-				if (!_isAudioFile()) {
-					_showVideo(TRUE);
-					_resizeMedia();
-					_display.hidePreview(TRUE);
-					if (_controlbar) {
-						_controlbar.hideFullscreen(FALSE);
-					}
-					_hideControls();
-				} else {
+				if (_isAudioFile() || _isCasting()) {
 					_showVideo(FALSE);
 					_display.hidePreview(_audioMode);
 					_display.setHiding(TRUE);
@@ -821,6 +816,14 @@
 					} 
 					_showDock();
 					_showLogo();
+				} else {
+					_showVideo(TRUE);
+					_resizeMedia();
+					_display.hidePreview(TRUE);
+					if (_controlbar) {
+						_controlbar.hideFullscreen(FALSE);
+					}
+					_hideControls();
 				}
 				break;
 			case states.IDLE:
