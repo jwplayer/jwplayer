@@ -395,10 +395,6 @@
 		opacity: 0
 	});
 
-	_css(D_CLASS +', '+D_CLASS + ' *', {
-		'-webkit-transition': JW_CSS_SMOOTH_EASE,
-		'-moz-transition': JW_CSS_SMOOTH_EASE,
-		'-o-transition': JW_CSS_SMOOTH_EASE
-	});
+	utils.transitionStyle(D_CLASS +', '+D_CLASS + ' *', JW_CSS_SMOOTH_EASE);
 
 })(jwplayer);

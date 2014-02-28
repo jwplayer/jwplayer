@@ -62,6 +62,7 @@
 			_instreamMode = FALSE,
 			_controlbar,
 			_display,
+			_castDisplay,
 			_dock,
 			_logo,
 			_logoConfig = utils.extend({}, _model.componentConfig("logo")),
@@ -92,14 +93,6 @@
 			}
 
 			_resize(_model.width, _model.height);
-
-			_model.addEventListener(events.JWPLAYER_CAST_AVAILABLE, function(evt) {
-				if (evt.available) {
-					_this.forceControls(true);
-				} else {
-					_this.releaseControls();
-				}
-			});
 			
 			var replace = DOCUMENT.getElementById(_api.id);
 			replace.parentNode.replaceChild(_playerElement, replace);
@@ -188,7 +181,25 @@
 			_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
 			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_COMPLETE, _playlistCompleteHandler);
-			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_ITEM,_playlistItemHandler);
+			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_ITEM, _playlistItemHandler);
+			_api.jwAddEventListener(events.JWPLAYER_CAST_AVAILABLE, function(evt) {
+				if (evt.available) {
+					_this.forceControls(true);
+				} else {
+					_this.releaseControls();
+				}
+			});
+			_api.jwAddEventListener(events.JWPLAYER_CAST_SESSION, function(evt) {
+				if (!_castDisplay) {
+					_castDisplay = new jwplayer.html5.castDisplay(_api.id);
+				}
+				if (evt.active) {
+					_castDisplay.show();
+				} else {
+					_castDisplay.hide();
+				}
+				
+			});
 			_stateHandler({newstate:states.IDLE});
 			
 			if (!_isMobile) {
