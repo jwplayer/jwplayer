@@ -192,10 +192,16 @@
 			_api.jwAddEventListener(events.JWPLAYER_CAST_SESSION, function(evt) {
 				if (!_castDisplay) {
 					_castDisplay = new jwplayer.html5.castDisplay(_api.id);
+					_castDisplay.statusDelegate = function(evt) {
+						_castDisplay.setState(evt.newstate);
+					};
 				}
+				_updateState(states.BUFFERING); // updates controls and video
 				if (evt.active) {
-					_castDisplay.show();
+					_castDisplay.setState('connecting').setName(evt.deviceName).show();
+					_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
 				} else {
+					_api.jwRemoveEventListener(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
 					_castDisplay.hide();
 				}
 				
@@ -812,12 +818,30 @@
 
 		function _updateState(state) {
 			_currentState = state;
+			// cast.display
+			if (_isCasting()) {
+				if (_display) {
+					_display.show();
+					_display.hidePreview(FALSE);
+				}
+				// hide video without audio and android checks
+				_css.style(_videoLayer, {
+					visibility: JW_CSS_HIDDEN,
+					opacity: 0
+				});
+				// force control bar without audio check
+				if (_controlbar) {
+					_controlbar.show();
+				}
+				return;
+			}
+			// player display
 			switch(state) {
 			case states.PLAYING:
 				if (_model.getVideo().isCaster !== true) {
 					_forcedControlsState = null;
 				}
-				if (_isAudioFile() || _isCasting()) {
+				if (_isAudioFile()) {
 					_showVideo(FALSE);
 					_display.hidePreview(_audioMode);
 					_display.setHiding(TRUE);
