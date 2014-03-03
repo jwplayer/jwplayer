@@ -117,7 +117,7 @@
 			if (!DOCUMENT.body.contains(_playerElement)) {
 				window.removeEventListener('resize', _responsiveListener);
 				if (_isMobile) {
-					window.removeEventListener("orientationchange", _responsiveListener);
+					window.removeEventListener('orientationchange', _responsiveListener);
 				}
 			} else if (containerWidth && containerHeight) {
 				if (containerWidth !== _lastWidth || containerHeight !== _lastHeight) {
@@ -173,8 +173,8 @@
 			window.removeEventListener('resize', _responsiveListener);
 			window.addEventListener('resize', _responsiveListener, false);
 			if (_isMobile) {
-				window.removeEventListener("orientationchange", _responsiveListener);
-				window.addEventListener("orientationchange", _responsiveListener, false);
+				window.removeEventListener('orientationchange', _responsiveListener);
+				window.addEventListener('orientationchange', _responsiveListener, false);
 			}
 			
 			_api.jwAddEventListener(events.JWPLAYER_PLAYER_READY, _readyHandler);
@@ -346,7 +346,7 @@
 			_display.addEventListener(events.JWPLAYER_DISPLAY_CLICK, function(evt) {
 				forward(evt);
 				_touchHandler();
-				});
+			});
 			if (_audioMode) _display.hidePreview(TRUE);
 			_controlsLayer.appendChild(_display.element());
 			
@@ -1029,6 +1029,8 @@
 		};
 
 		this.destroy = function() {
+			window.removeEventListener('resize', _responsiveListener);
+			window.removeEventListener('orientationchange', _responsiveListener);
 			DOCUMENT.removeEventListener('webkitfullscreenchange', _fullscreenChangeHandler, FALSE);
 			DOCUMENT.removeEventListener('mozfullscreenchange', _fullscreenChangeHandler, FALSE);
 			DOCUMENT.removeEventListener('MSFullscreenChange', _fullscreenChangeHandler, FALSE);
@@ -1038,6 +1040,18 @@
 			if (_rightClickMenu) {
 				_rightClickMenu.destroy();
 			}
+			if (_castDisplay) {
+				_api.jwRemoveEventListener(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
+				_castDisplay.destroy();
+			}
+			// if (_controlsLayer) {
+			// 	_controlsLayer.removeEventListener('mousemove', _startFade);
+			// 	//_controlsLayer.removeEventListener('mouseout', function() {
+			// }
+			// if (_videoLayer) {
+			// 	_videoLayer.removeEventListener('mousemove', _startFade);
+			// 	//_videoLayer.removeEventListener('click', _display.clickHandler);
+			// }
 		};
 
 		_init();
