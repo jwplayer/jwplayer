@@ -832,6 +832,7 @@
 				// force control bar without audio check
 				if (_controlbar) {
 					_controlbar.show();
+					_controlbar.hideFullscreen(TRUE);
 				}
 				return;
 			}
