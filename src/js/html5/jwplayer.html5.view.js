@@ -181,7 +181,7 @@
 			_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
 			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_COMPLETE, _playlistCompleteHandler);
-			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_ITEM, _playlistItemHandler);
+			// _api.jwAddEventListener(events.JWPLAYER_PLAYLIST_ITEM, _playlistItemHandler);
 			_api.jwAddEventListener(events.JWPLAYER_CAST_AVAILABLE, function(evt) {
 				if (evt.available) {
 					_this.forceControls(true);
@@ -781,10 +781,10 @@
 		}
 		
 		
-	    function _playlistItemHandler() {
+	    // function _playlistItemHandler() {
             //ios7 captions:
             //_model.getVideo().resetCaptions();
-        }
+        // }
 
 		function _readyHandler() {
 			_readyState = TRUE;
