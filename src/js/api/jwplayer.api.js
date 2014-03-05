@@ -298,7 +298,8 @@
 			onAdCompanions: events.JWPLAYER_AD_COMPANIONS,
 			onAdSkipped: events.JWPLAYER_AD_SKIPPED,
 			onAdPlay: events.JWPLAYER_AD_PLAY,
-			onAdPause: events.JWPLAYER_AD_PAUSE
+			onAdPause: events.JWPLAYER_AD_PAUSE,
+			onCast: events.JWPLAYER_CAST_SESSION
 		};
 		
 		utils.foreach(_eventMapping, function(event) {
