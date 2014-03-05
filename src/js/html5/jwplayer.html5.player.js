@@ -13,7 +13,8 @@
 			_model, 
 			_view, 
 			_controller,
-			_instreamPlayer;
+			_instreamPlayer,
+			_castController;
 
 		function _init() {
 			_model = new html5.model(config); 
@@ -25,6 +26,8 @@
 			_controller = new html5.controller(_model, _view);
 			
 			_this._model = _model;
+
+			_castController = new jwplayer.cast.controller(_this, _model);
 
 			_initializeAPI();
 			
@@ -253,7 +256,10 @@
 			/** Dock **/
 			_this.jwDockAddButton = _view.addButton;
 			_this.jwDockRemoveButton = _view.removeButton;
-						
+			
+			/** Chromecast **/
+			_this.jwStartCasting = _castController.startCasting;
+			_this.jwStopCasting = _castController.stopCasting;
 		}
 
 		/** Getters **/
