@@ -144,7 +144,7 @@ package com.longtailvideo.jwplayer.view.components
 		protected function updateContentDimensions():void {
 			contentDimensions = new Rectangle(0, 0, 0, 0);
 			// For the first pass, figure out the minimum x/y coordinates of the children
-			for (var i=0; i < content.numChildren; i++) {
+			for (var i:Number=0; i < content.numChildren; i++) {
 				var child:DisplayObject = content.getChildAt(i);
 				if (child != _text) {
 					contentDimensions.x = Math.min(contentDimensions.x, child.x);
@@ -170,7 +170,7 @@ package com.longtailvideo.jwplayer.view.components
 					_text.y = contentDimensions.height + 3; 
 					contentDimensions.height += _text.height + 3;
 				} else {
-					var width = _text.width;
+					var width:Number = _text.width;
 					if (_maxWidth && width > _maxWidth) {
 						_text.multiline = true;
 						_text.wordWrap = true;

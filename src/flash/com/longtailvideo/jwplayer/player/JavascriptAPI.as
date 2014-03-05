@@ -1,7 +1,7 @@
 package com.longtailvideo.jwplayer.player {
 	import com.longtailvideo.jwplayer.events.CaptionsEvent;
-	import com.longtailvideo.jwplayer.events.JWAdEvent;
 	import com.longtailvideo.jwplayer.events.InstreamEvent;
+	import com.longtailvideo.jwplayer.events.JWAdEvent;
 	import com.longtailvideo.jwplayer.events.MediaEvent;
 	import com.longtailvideo.jwplayer.events.PlayerEvent;
 	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
@@ -540,7 +540,7 @@ package com.longtailvideo.jwplayer.player {
 				_instream.destroy();
 			}
 			_instream = _player.setupInstream(_lockPlugin);
-			_instream.addEventListener(InstreamEvent.JWPLAYER_INSTREAM_DESTROYED, function(evt) {
+			_instream.addEventListener(InstreamEvent.JWPLAYER_INSTREAM_DESTROYED, function(evt:Event):void {
 				_instream = null;
 			}
 			);

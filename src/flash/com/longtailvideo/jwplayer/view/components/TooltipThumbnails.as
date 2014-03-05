@@ -93,7 +93,7 @@ package com.longtailvideo.jwplayer.view.components
 		public function updateTimeline(seconds:Number):void {
 			if (!cues) return; 
 			
-			var i = 0; 
+			var i:Number = 0; 
 			while(i < cues.length && seconds > cues[i].end) {
 				i++;
 			}
@@ -109,10 +109,10 @@ package com.longtailvideo.jwplayer.view.components
 				if (url.indexOf("://") < 0) {
 					url = vttPath ? vttPath + "/" + url : url;
 				}
-				var hashIndex = url.indexOf("#xywh");
+				var hashIndex:Number = url.indexOf("#xywh");
 				if (hashIndex > 0) {
 					var regEx:RegExp = /(.+)\#xywh=(\d+),(\d+),(\d+),(\d+)/;
-					var thumbParams = regEx.exec(url);
+					var thumbParams:Array = regEx.exec(url);
 					url = thumbParams[1];
 					spriteDimensions.x = parseFloat(thumbParams[2]);
 					spriteDimensions.y = parseFloat(thumbParams[3]);

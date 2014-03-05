@@ -19,6 +19,7 @@ package com.longtailvideo.jwplayer.view.components {
 		private var _thumbnailImages:TooltipThumbnails;
 		private var _cues:Array = [];
 		private var _activeCue:Object;
+		private var hideTimeout:Number;
 		
 		public function TimeSlider(name:String, skin:ISkin, controlbar:DisplayObject) {
 			super(name, skin);
@@ -91,8 +92,6 @@ package com.longtailvideo.jwplayer.view.components {
 			if (!_audioMode) _tooltip.show();
 		}
 
-		var hideTimeout:Number;
-		
 		private function outHandler(evt:MouseEvent = null):void {
 			hideTimeout = setTimeout(function():void {
 				if (!_activeCue) hide();

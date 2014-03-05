@@ -33,7 +33,7 @@ package com.longtailvideo.jwplayer.view.components
 		protected var _skipMessage:String;
 		protected var _skipOffset:String;
 		protected var _offsetTime:Number = -1;
-		protected var _hidden = false;
+		protected var _hidden:Boolean = false;
 		
 		protected var _adTag:String;
 		protected var _skipArrow:Bitmap;
@@ -97,14 +97,14 @@ package com.longtailvideo.jwplayer.view.components
 		}
 		
 		
-		public function hide() {
+		public function hide():void {
 			_hidden = true;
 			this.visible = false;
 			
 		}
 		
 		
-		public function show() {
+		public function show():void {
 			_hidden = false;
 			this.visible = true;
 		}

@@ -80,7 +80,7 @@ package com.longtailvideo.jwplayer.model {
 			return _tag;
 		}
 
-		public function set tag(t:String) {
+		public function set tag(t:String):void {
 			_tag = t;
 		}
 	}
