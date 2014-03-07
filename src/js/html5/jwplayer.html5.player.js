@@ -13,8 +13,7 @@
 			_model, 
 			_view, 
 			_controller,
-			_instreamPlayer,
-			_castController;
+			_instreamPlayer;
 
 		function _init() {
 			_model = new html5.model(config); 
@@ -26,10 +25,6 @@
 			_controller = new html5.controller(_model, _view);
 			
 			_this._model = _model;
-
-			if (_model.edition() === "ads") {
-				_castController = new jwplayer.cast.controller(_this, _model);
-			}
 
 			_initializeAPI();
 			
@@ -258,18 +253,6 @@
 			/** Dock **/
 			_this.jwDockAddButton = _view.addButton;
 			_this.jwDockRemoveButton = _view.removeButton;
-			
-			/** Chromecast **/
-			if (_castController) {
-				_this.jwStartCasting = function() {
-					// - replace any functions above as necessary
-					_castController.startCasting();
-				};
-				_this.jwStopCasting = function() {
-					// - restore controller functions
-					_castController.stopCasting();
-				};
-			}
 		}
 
 		/** Getters **/
