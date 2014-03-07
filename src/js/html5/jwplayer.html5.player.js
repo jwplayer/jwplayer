@@ -27,7 +27,9 @@
 			
 			_this._model = _model;
 
-			_castController = new jwplayer.cast.controller(_this, _model);
+			if (_model.edition() === "ads") {
+				_castController = new jwplayer.cast.controller(_this, _model);
+			}
 
 			_initializeAPI();
 			
@@ -258,8 +260,16 @@
 			_this.jwDockRemoveButton = _view.removeButton;
 			
 			/** Chromecast **/
-			_this.jwStartCasting = _castController.startCasting;
-			_this.jwStopCasting = _castController.stopCasting;
+			if (_castController) {
+				_this.jwStartCasting = function() {
+					// - replace any functions above as necessary
+					_castController.startCasting();
+				};
+				_this.jwStopCasting = function() {
+					// - restore controller functions
+					_castController.stopCasting();
+				};
+			}
 		}
 
 		/** Getters **/
