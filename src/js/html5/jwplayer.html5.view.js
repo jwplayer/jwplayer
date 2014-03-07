@@ -624,7 +624,7 @@
 					break;
 				// SPACE
 //				case 32:
-//					if (_model.state == states.PLAYING || _model.state = states.BUFFERING)
+//					if (_model.state == states.PLAYING || _model.state == states.BUFFERING)
 //						_api.jwPause();
 //					break;
 				}
@@ -813,7 +813,7 @@
 		}
 
 		function _isCasting() {
-			return _model.getVideo().isCaster && _model.getVideo().isCasting();
+			return _model.getVideo().isCaster;
 		}
 
 		function _updateState(state) {

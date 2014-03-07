@@ -4,12 +4,13 @@
  * @author pablo
  * @version 6.0
  */
-(function(html5) {
-	var utils = jwplayer.utils,
+(function(jwplayer) {
+	var html5 = jwplayer.html5,
+		utils = jwplayer.utils,
 		events = jwplayer.events,
-		UNDEF = undefined,
+		UNDEF,
 		TRUE = true,
-		FALSE = false;
+		FALSE = !TRUE;
 
 	html5.model = function(config, video) {
 		var _model = this, 
@@ -109,27 +110,27 @@
 			_video.volume(_model.volume);
 			_video.mute(_model.mute);
 			_video.addGlobalListener(_videoEventHandler);
-		}
+		};
 		
 		_model.getVideo = function() {
 			return _video;
-		}
+		};
 		
 		_model.seekDrag = function(state) {
 			_video.seekDrag(state);
-		}
+		};
 		
 		_model.setFullscreen = function(state) {
 			if (state != _model.fullscreen) {
 				_model.fullscreen = state;
 				_model.sendEvent(events.JWPLAYER_FULLSCREEN, { fullscreen: state } );
 			}
-		}
+		};
 		
 		// TODO: make this a synchronous action; throw error if playlist is empty
 		_model.setPlaylist = function(playlist) {
 			_model.playlist = utils.filterPlaylist(playlist);
-			if (_model.playlist.length == 0) {
+			if (_model.playlist.length === 0) {
 				_model.sendEvent(events.JWPLAYER_ERROR, { message: "Error loading playlist: No playable sources found" });
 			} else {
 				_model.sendEvent(events.JWPLAYER_PLAYLIST_LOADED, {
@@ -138,7 +139,7 @@
 				_model.item = -1;
 				_model.setItem(0);
 			}
-		}
+		};
 
 		_model.setItem = function(index) {
             var newItem;
@@ -158,7 +159,7 @@
                     "index": _model.item
                 });
             }
-        }
+        };
         
 		_model.setVolume = function(newVol) {
 			if (_model.mute && newVol > 0) _model.setMute(FALSE);
@@ -168,19 +169,20 @@
 			}
 			_videoEventHandler({type:events.JWPLAYER_MEDIA_VOLUME, volume: newVol});
 			_video.volume(newVol);
-		}
+		};
 
 		_model.setMute = function(state) {
 			if (!utils.exists(state)) state = !_model.mute;
 			utils.saveCookie("mute", state);
 			_videoEventHandler({type:events.JWPLAYER_MEDIA_MUTE, mute: state});
 			_video.mute(state);
-		}
+		};
 
 		_model.componentConfig = function(name) {
 			return _componentConfigs[name];
-		}
+		};
 		
 		_init();
-	}
-})(jwplayer.html5);
+	};
+
+})(jwplayer);

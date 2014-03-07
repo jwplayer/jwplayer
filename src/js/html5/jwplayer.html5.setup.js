@@ -126,6 +126,7 @@
 		
 		function _completePlaylist(playlist) {
 			_model.setPlaylist(playlist);
+			// TODO: _model.setItem(_model.config.item); //support this
 			if (_model.playlist[0].sources.length == 0) {
 				_error("Error loading playlist: No playable sources found");
 			} else {

@@ -42,8 +42,6 @@
             "waiting" : _bufferStateHandler
         },
 
-        // Current playlist item
-        _item,
         // Currently playing source
         _source,
         // Reference to the video tag
@@ -191,7 +189,11 @@
             _generalHandler(evt);
             if (_canSeek && _delayedSeek > 0 && !_isAndroid) {
                 // Need to set a brief timeout before executing delayed seek; IE9 stalls otherwise.
-                if (_isIE) setTimeout(function() { if (_delayedSeek > 0) _seek(_delayedSeek);}, 200);
+                if (_isIE) setTimeout(function() {
+                    if (_delayedSeek > 0) {
+                        _seek(_delayedSeek);
+                    }
+                }, 200);
                 // Otherwise call it immediately
                 else _seek(_delayedSeek);
             }
@@ -268,12 +270,11 @@
         _this.load = function(item) {
             if (!_attached) return;
             _completeOnce = FALSE;
-            _item = item;
             _delayedSeek = 0;
             _duration = item.duration ? item.duration : -1;
             _position = 0;
             
-            _levels = _item.sources;
+            _levels = item.sources;
             _pickInitialQuality();
             _sendLevels(_levels);
             
@@ -551,6 +552,7 @@
          */
         _this.detachMedia = function() {
             _attached = FALSE;
+            // _canSeek = FALSE;
             return _videotag;
         };
         
@@ -559,7 +561,9 @@
          */
         _this.attachMedia = function(seekable) {
             _attached = TRUE;
-            if (!seekable) _canSeek = FALSE;
+            if (!seekable) {
+                _canSeek = FALSE;
+            }
             if (_beforecompleted) {
                 _setState(states.IDLE);
                 _sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
@@ -568,7 +572,7 @@
         };
         
         // Provide access to video tag
-        // TODO: remove; used by InStream
+        // TODO: remove; used by InStream and cast.controller
         _this.getTag = function() {
             return _videotag;
         };
