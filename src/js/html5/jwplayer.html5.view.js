@@ -1144,6 +1144,7 @@
 		top: 0,
 		bottom: 0,
 		'z-index': 1000,
+		'margin-left':0,
 		position: "fixed"
 	}, TRUE);
 
