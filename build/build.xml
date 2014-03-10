@@ -72,8 +72,8 @@
         </exec>
         
         <replaceregexp file="${basedir}/src/js/html5/jwplayer.html5.defaultskin.js"
-			match="this\.text = '(.*)'\;?"
-			replace="this\.text = '${minifiedSkin}'\;"
+			match="var text = '(.*)'\;?"
+			replace="var text = '${minifiedSkin}'\;"
 		/>
 	</target>
 

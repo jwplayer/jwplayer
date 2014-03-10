@@ -27,7 +27,7 @@
 		/** Load the skin **/
 		function _load() {
 			if (typeof _skinPath != "string" || _skinPath === "") {
-				_loadSkin(html5.defaultskin().xml);
+				_loadSkin(html5.defaultskin());
 			} else {
 				if (utils.extension(_skinPath) != "xml") {
 					_errorHandler("Skin not a valid file type");
