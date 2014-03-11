@@ -23,6 +23,7 @@
 			_actionOnAttach,
 			_stopPlaylist = FALSE,
 			_interruptPlay,
+			_this = this,
 			_queuedCalls = [];
 		
 		utils.extend(this, _eventDispatcher);
@@ -73,6 +74,10 @@
 					var queuedCall = _queuedCalls.shift();
 					_callMethod(queuedCall.method, queuedCall.arguments);
 				}
+			}
+			
+			window.onbeforeunload = function() {
+			    _this.stop();
 			}
 		}
 
