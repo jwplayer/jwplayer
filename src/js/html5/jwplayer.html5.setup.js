@@ -14,8 +14,10 @@
  * @author pablo
  * @version 6.0
  */
-(function(html5) {
-	var _jw = jwplayer, utils = _jw.utils, events = _jw.events, playlist = _jw.playlist,
+(function(jwplayer) {
+	var html5 = jwplayer.html5,
+		utils = jwplayer.utils,
+		events = jwplayer.events,
 	
 		PARSE_CONFIG = 1,
 		LOAD_SKIN = 2,
@@ -25,12 +27,10 @@
 		INIT_PLUGINS = 6,
 		SEND_READY = 7;
 
-	html5.setup = function(model, view, controller) {
+	html5.setup = function(model, view) {
 		var _model = model, 
 			_view = view,
-			_controller = controller,
 			_completed = {},
-			_depends = {},
 			_skin,
 			_eventDispatcher = new events.eventdispatcher(),
 			_errorState = false,
@@ -98,7 +98,7 @@
 			_skin.load(_model.config.skin, _skinLoaded, _skinError);
 		}
 		
-		function _skinLoaded(skin) {
+		function _skinLoaded() {
 			_taskComplete(LOAD_SKIN);
 		}
 
@@ -115,28 +115,30 @@
 //				loader.load(_model.config.playlist);
 //				break;
 				_error("Can't load a playlist as a string anymore");
+				break;
 			case "array":
-				_completePlaylist(new playlist(_model.config.playlist));
+				_completePlaylist(new jwplayer.playlist(_model.config.playlist));
 			}
 		}
 		
-		function _playlistLoaded(evt) {
-			_completePlaylist(evt.playlist);
-		}
+		// function _playlistLoaded(evt) {
+		// 	_completePlaylist(evt.playlist);
+		// }
 		
 		function _completePlaylist(playlist) {
 			_model.setPlaylist(playlist);
-			// TODO: _model.setItem(_model.config.item); //support this
-			if (_model.playlist[0].sources.length == 0) {
+			// Support Playlist index in config?:
+			// _model.setItem(_model.config.item);
+			if (_model.playlist[0].sources.length === 0) {
 				_error("Error loading playlist: No playable sources found");
 			} else {
 				_taskComplete(LOAD_PLAYLIST);
 			}
 		}
 
-		function _playlistError(evt) {
-			_error("Error loading playlist: " + evt.message);
-		}
+		// function _playlistError(evt) {
+		// 	_error("Error loading playlist: " + evt.message);
+		// }
 		
 		function _loadPreview() {
 			var preview = _model.playlist[_model.item].image; 
@@ -181,7 +183,7 @@
 		this.start = _nextTask;
 		
 		_initQueue();
-	}
+	};
 
-})(jwplayer.html5);
+})(jwplayer);
 

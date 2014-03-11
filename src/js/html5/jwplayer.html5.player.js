@@ -27,8 +27,9 @@
 			_this._model = _model;
 
 			_initializeAPI();
+			_this.initializeAPI = _initializeAPI;
 			
-			var setup = new html5.setup(_model, _view, _controller);
+			var setup = new html5.setup(_model, _view);
 			setup.addEventListener(jwplayer.events.JWPLAYER_READY, _readyHandler);
 			setup.addEventListener(jwplayer.events.JWPLAYER_ERROR, _errorHandler);
 			setup.start();
@@ -100,7 +101,7 @@
 
 			return obj;
 		}
-		
+
 		function _initializeAPI() {
 			
 			/** Methods **/
