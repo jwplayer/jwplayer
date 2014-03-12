@@ -15,9 +15,7 @@
 	html5.model = function(config, video) {
 		var _model = this, 
 			// Video provider
-			_video, 
-			// HTML5 <video> tag
-			_videoTag,
+			_video,
 			// Saved settings
 			_cookies = utils.getCookies(),
 			// Sub-component configurations
@@ -105,7 +103,6 @@
 			}
 
 			_video = video;
-			_videoTag = _video.getTag();
 
 			_video.volume(_model.volume);
 			_video.mute(_model.mute);
