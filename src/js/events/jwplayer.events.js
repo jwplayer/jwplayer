@@ -74,6 +74,8 @@
 		JWPLAYER_AD_SKIPPED: "jwplayerAdSkipped",
 		JWPLAYER_AD_PLAY: "jwplayerAdPlay",
 		JWPLAYER_AD_PAUSE: "jwplayerAdPause",
+        JWPLAYER_AD_META: "jwplayerAdMeta",
+
 
 		// Casting
         JWPLAYER_CAST_AVAILABLE: 'jwplayerCastAvailable',

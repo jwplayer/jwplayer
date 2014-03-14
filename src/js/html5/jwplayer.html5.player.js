@@ -25,6 +25,7 @@
 			_controller = new html5.controller(_model, _view);
 			
 			_this._model = _model;
+			_this._view = _view;
 
 			_initializeAPI();
 			_this.initializeAPI = _initializeAPI;

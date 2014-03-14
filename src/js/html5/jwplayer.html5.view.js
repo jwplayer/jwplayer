@@ -63,6 +63,8 @@
 			_controlbar,
 			_display,
 			_castDisplay,
+			_saveControlBar,
+			_saveCB,
 			_dock,
 			_logo,
 			_logoConfig = utils.extend({}, _model.componentConfig("logo")),
@@ -376,6 +378,23 @@
 			if (_isIPod) _hideControlbar();
 		}
 
+        _this.replaceControlBar = function(newcb) {
+            _controlsLayer.removeChild(_controlbar.element());
+            _controlsLayer.appendChild(newcb.element());
+            newcb.show(TRUE);
+            newcb.instreamMode(true);
+            _saveCB = _controlbar;
+            _controlbar = newcb;
+            newcb.adcb();
+        }
+        
+        
+        _this.restoreControlBar = function() {
+            _controlsLayer.removeChild(_controlbar.element());
+            _controlsLayer.appendChild(_saveCB.element());
+            _controlbar = _saveCB;
+            _controlbar.redraw();
+        }
 		/** 
 		 * Switch to fullscreen mode.  If a native fullscreen method is available in the browser, use that.  
 		 * Otherwise, use the false fullscreen method using CSS. 

@@ -669,6 +669,14 @@
 				}
 			}
 		}
+		
+		_this.adcb = function() {
+		    _jwhidden.push(_elements.elapsed);
+		    _jwhidden.push(_elements.duration);
+		    _jwhidden.push(_elements.next);
+		    _jwhidden.push(_elements.prev);
+            _css.style(_jwhidden, HIDDEN);
+		}
 		function _showVolume() {
 			if (_audioMode || _instreamMode) return;
 			_css.block(_id); // unblock on position overlay

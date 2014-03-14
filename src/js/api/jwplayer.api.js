@@ -299,6 +299,7 @@
 			onAdSkipped: events.JWPLAYER_AD_SKIPPED,
 			onAdPlay: events.JWPLAYER_AD_PLAY,
 			onAdPause: events.JWPLAYER_AD_PAUSE,
+			onAdMeta: events.JWPLAYER_AD_META,
 			onCast: events.JWPLAYER_CAST_SESSION
 		};
 		
