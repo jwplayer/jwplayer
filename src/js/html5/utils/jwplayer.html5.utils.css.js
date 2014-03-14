@@ -16,14 +16,26 @@
 		JW_CLASS = '.jwplayer ';
 
 	function _createStylesheet(debugText) {
-		var styleSheet = document.createElement("style");
+		var styleSheet = document.createElement('style');
 		if (debugText) {
-			styleSheet.innerText = debugText;
+			styleSheet.appendChild(document.createTextNode(debugText));
 		}
-		styleSheet.type = "text/css";
+		styleSheet.type = 'text/css';
 		document.getElementsByTagName('head')[0].appendChild(styleSheet);
 		return styleSheet;
 	}
+
+	utils.cssKeyframes = function(keyframeName, keyframeSteps) {
+		var styleElement = _styleSheets['keyframes'];
+		if (!styleElement) {
+			styleElement = _createStylesheet();
+			_styleSheets['keyframes'] = styleElement;
+		}
+		var sheet = styleElement.sheet;
+		var rulesText = '@keyframes '+ keyframeName +' { '+ keyframeSteps +' }';
+		_insertRule(sheet, rulesText, sheet.cssRules.length);
+		_insertRule(sheet, rulesText.replace(/(keyframes|transform)/g, '-webkit-$1'), sheet.cssRules.length);
+	};
 	
 	var _css = utils.css = function(selector, styles, important) {
 		important = important || false;
@@ -209,7 +221,15 @@
 				ruleIndex = cssRules.length;
 				_ruleIndexes[selector] = ruleIndex;  
 			}
-			sheet.insertRule(ruleText, ruleIndex);
+			_insertRule(sheet, ruleText, ruleIndex);
+		}
+	}
+
+	function _insertRule(sheet, text, index) {
+		try {
+			sheet.insertRule(text, index);
+		} catch (e) {
+			//console.log(e.message, text);
 		}
 	}
 	
