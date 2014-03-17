@@ -347,9 +347,11 @@
 		}
 		
 		function _playlistHandler() {
-			_css.style(_elements.hd, HIDDEN);
-			_css.style(_elements.cc, HIDDEN);
-			_css.style(_elements.cast, HIDDEN);
+			_css.style([
+				_elements.hd,
+				_elements.cc,
+				_elements.cast
+			], HIDDEN);
 			_updateNextPrev();
 			_redraw();
 		}
@@ -397,7 +399,7 @@
 				}
 				_captionChanged(evt);
 			} else {
-				_css.style(_elements.cc, HIDDEN );
+				_css.style(_elements.cc, HIDDEN);
 			}
 			_redraw();
 		}
@@ -670,13 +672,36 @@
 			}
 		}
 		
-		_this.adcb = function() {
-		    _jwhidden.push(_elements.elapsed);
-		    _jwhidden.push(_elements.duration);
-		    _jwhidden.push(_elements.next);
-		    _jwhidden.push(_elements.prev);
-            _css.style(_jwhidden, HIDDEN);
+		_this.adMode = function(mode) {
+			if (mode) {
+				_removeFromArray(_jwhidden, _elements.elapsed);
+				_removeFromArray(_jwhidden, _elements.duration);
+			} else {
+				_addOnceToArray(_jwhidden, _elements.elapsed);
+				_addOnceToArray(_jwhidden, _elements.duration);
+			}
+			_css.style([
+				_elements.elapsed,
+				_elements.duration,
+				_elements.next,
+				_elements.prev
+			], mode ? HIDDEN : NOT_HIDDEN);
+		};
+
+		function _removeFromArray(array, item) {
+			var index = array.indexOf(item);
+			if (index > -1) {
+				array.splice(index, 1);
+			}
 		}
+
+		function _addOnceToArray(array, item) {
+			var index = array.indexOf(item);
+			if (index === -1) {
+				array.push(item);
+			}
+		}
+
 		function _showVolume() {
 			if (_audioMode || _instreamMode) return;
 			_css.block(_id); // unblock on position overlay
@@ -1065,7 +1090,7 @@
 		}
 
 		function _sliderMouseDown(name) {
-			return (function(evt) {
+			return function(evt) {
 				if (evt.button)
 					return;
 				
@@ -1079,7 +1104,7 @@
 				} else {
 					_draggingStart(name);
 				}
-			});
+			};
 		}
 		
 		function _sliderMouseEvent(evt) {
