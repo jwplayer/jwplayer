@@ -693,7 +693,21 @@
 		}
 		
 		function _seek(pct) {
-			_api.jwSeek(_activeCue ? _activeCue.position : pct * _duration);
+			var position;
+			if (_activeCue) {
+				pct = _activeCue.position;
+				if (pct.toString().slice(-1) === '%') {
+					// percent string
+					position = _duration * parseFloat(pct.slice(0, -1)) / 100;
+				} else {
+					// time value
+					position = parseFloat(pct);
+				}
+			} else {
+				// pct is normalized 0-1.0
+				position = pct * _duration;
+			}
+			_api.jwSeek(position);
 		}
 		
 		function _fullscreen() {
@@ -1195,7 +1209,8 @@
 		}
 		
 		function _addCue(timePos, text) {
-			if (timePos.toString().search(/^[\d\.]+%?$/) >= 0) {
+			// test digits or percent
+			if (/^[\d\.]+%?$/.test(timePos.toString())) {
 				var cueElem = _buildImage("timeSliderCue"),
 					rail = _elements.timeSliderRail,
 					cue = {
@@ -1218,10 +1233,16 @@
 		function _drawCues() {
 			utils.foreach(_cues, function(idx, cue) {
 				var style = {};
-				if (cue.position.toString().search(/^[\d\.]+%$/) > -1) {
+				if (cue.position.toString().slice(-1) === '%') {
 					style.left = cue.position;
 				} else {
-					style.left = (100 * cue.position / _duration).toFixed(2) + '%';
+					if (_duration > 0) {
+						style.left = (100 * cue.position / _duration).toFixed(2) + '%';
+						style.display = null;
+					} else {
+						style.left = 0;
+						style.display = 'none';
+					}
 				}
 				_css.style(cue.element, style);
 			});
@@ -1680,8 +1701,10 @@
 		}
 
 		_this.addCues = function(cues) {
-			utils.foreach(cues,function(idx,elem) {
-				if (elem.text) _addCue(elem.begin,elem.text);
+			utils.foreach(cues, function(idx, elem) {
+				if (elem.text) {
+					_addCue(elem.begin, elem.text);
+				}
 			});
 		};
 		
