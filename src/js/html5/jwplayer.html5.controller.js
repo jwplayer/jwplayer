@@ -13,20 +13,15 @@
 		TRUE = true,
 		FALSE = false;
 		
-	html5.controller = function(model, view) {
-		var _model = model,
-			_view = view,
-			_eventDispatcher = new events.eventdispatcher(_model.id, _model.config.debug),
-			_ready = FALSE,
+	html5.controller = function(_model, _view) {
+		var _ready = FALSE,
 			_loadOnPlay = -1,
 			_preplay, 
 			_actionOnAttach,
 			_stopPlaylist = FALSE,
 			_interruptPlay,
-			_this = this,
-			_queuedCalls = [];
-		
-		utils.extend(this, _eventDispatcher);
+			_queuedCalls = [],
+			_this = utils.extend(this, new events.eventdispatcher(_model.id, _model.config.debug));
 
 		function _init() {
 			_model.addEventListener(events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
@@ -38,29 +33,29 @@
 				// Re-dispatch media errors as general error
 				var evtClone = utils.extend({}, evt);
 				evtClone.type = events.JWPLAYER_ERROR;
-				_eventDispatcher.sendEvent(evtClone.type, evtClone);
+				_this.sendEvent(evtClone.type, evtClone);
 			});
 		}
 		
 		function _video() {
-			return model.getVideo();
+			return _model.getVideo();
 		}
 		
 		function _playerReady(evt) {
 			if (!_ready) {
 				
 				_view.completeSetup();
-				_eventDispatcher.sendEvent(evt.type, evt);
+				_this.sendEvent(evt.type, evt);
 
-				if (jwplayer.utils.exists(window.jwplayer.playerReady)) {
+				if (jwplayer.utils.exists(jwplayer.playerReady)) {
 					jwplayer.playerReady(evt);
 				}
 
 				_model.addGlobalListener(_forward);
 				_view.addGlobalListener(_forward);
 
-				_eventDispatcher.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_LOADED, {playlist: jwplayer(_model.id).getPlaylist()});
-				_eventDispatcher.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_ITEM, {index: _model.item});
+				_this.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_LOADED, {playlist: jwplayer(_model.id).getPlaylist()});
+				_this.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_ITEM, {index: _model.item});
 				
 				_load();
 				
@@ -75,15 +70,11 @@
 					_callMethod(queuedCall.method, queuedCall.arguments);
 				}
 			}
-			
-			window.onbeforeunload = function() {
-			    _this.stop();
-			}
 		}
 
 		
 		function _forward(evt) {
-			_eventDispatcher.sendEvent(evt.type, evt);
+			_this.sendEvent(evt.type, evt);
 		}
 		
 		function _bufferFullHandler() {
@@ -131,7 +122,7 @@
 				//_actionOnAttach = _play;
 				if (!_preplay) {
 					_preplay = TRUE;
-					_eventDispatcher.sendEvent(events.JWPLAYER_MEDIA_BEFOREPLAY);
+					_this.sendEvent(events.JWPLAYER_MEDIA_BEFOREPLAY);
 					_preplay = FALSE;
 					if (_interruptPlay) {
 						_interruptPlay = FALSE;
@@ -151,7 +142,7 @@
 				
 				return TRUE;
 			} catch (err) {
-				_eventDispatcher.sendEvent(events.JWPLAYER_ERROR, err);
+				_this.sendEvent(events.JWPLAYER_ERROR, err);
 				_actionOnAttach = null;
 			}
 			return FALSE;
@@ -170,7 +161,7 @@
 				}
 				return TRUE;
 			} catch (err) {
-				_eventDispatcher.sendEvent(events.JWPLAYER_ERROR, err);
+				_this.sendEvent(events.JWPLAYER_ERROR, err);
 			}
 			return FALSE;
 
@@ -193,7 +184,7 @@
 				}
 				return TRUE;
 			} catch (err) {
-				_eventDispatcher.sendEvent(events.JWPLAYER_ERROR, err);
+				_this.sendEvent(events.JWPLAYER_ERROR, err);
 			}
 			
 			return FALSE;
@@ -245,7 +236,7 @@
 					_loadOnPlay = 0;
 					_stop(TRUE);
 					setTimeout(function() {
-						_eventDispatcher.sendEvent(events.JWPLAYER_PLAYLIST_COMPLETE);
+						_this.sendEvent(events.JWPLAYER_PLAYLIST_COMPLETE);
 					}, 0);
 				} else {
 					_next();

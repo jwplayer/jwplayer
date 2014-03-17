@@ -4,8 +4,9 @@
  * @author pablo
  * @version 6.0
  */
-(function(jwplayer) {
-	var html5 = jwplayer.html5, 
+(function(window) {
+	var jwplayer = window.jwplayer,
+		html5 = jwplayer.html5, 
 		utils = jwplayer.utils, 
 		events = jwplayer.events, 
 		states = events.state,
@@ -197,7 +198,6 @@
 						_castDisplay.setState(evt.newstate);
 					};
 				}
-				_updateState(states.BUFFERING); // updates controls and video
 				if (evt.active) {
 					_castDisplay.setState('connecting').setName(evt.deviceName).show();
 					_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
@@ -631,6 +631,11 @@
 			_css.style(_playerElement, {
 				opacity: 1
 			});
+			window.onbeforeunload = function() {
+				if (!_isCasting()) {
+					_api.jwStop();
+				}
+			};
 		};
 		
 		/**
@@ -1195,4 +1200,4 @@
 		'background-size': JW_CSS_100PCT + " " + JW_CSS_100PCT + JW_CSS_IMPORTANT
 	});
 
-})(window.jwplayer);
+})(window);
