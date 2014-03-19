@@ -192,10 +192,12 @@
 		for (var i=0; i<elements.length; i++) {
 			var element = elements[i],
 				style, styleName;
-			for (style in cssRules) {
-				styleName = _styleAttributeName(style);
-				if (element.style[styleName] !== cssRules[style]) {
-					element.style[styleName] = cssRules[style];
+			if (element !== undefined && element !== null) {
+				for (style in cssRules) {
+					styleName = _styleAttributeName(style);
+					if (element.style[styleName] !== cssRules[style]) {
+						element.style[styleName] = cssRules[style];
+					}
 				}
 			}
 		}
