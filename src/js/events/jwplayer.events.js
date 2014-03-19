@@ -57,8 +57,8 @@
 		JWPLAYER_DISPLAY_CLICK : 'jwplayerViewClick',
 
 		// Controls show/hide 
-	 	JWPLAYER_CONTROLS : 'jwplayerViewControls', 
-	 	JWPLAYER_USER_ACTION : 'jwplayerUserAction', 
+		JWPLAYER_CONTROLS : 'jwplayerViewControls', 
+		JWPLAYER_USER_ACTION : 'jwplayerUserAction', 
 
 		// Instream events
 		JWPLAYER_INSTREAM_CLICK : 'jwplayerInstreamClicked',
@@ -79,7 +79,8 @@
 
 		// Casting
         JWPLAYER_CAST_AVAILABLE: 'jwplayerCastAvailable',
-        JWPLAYER_CAST_SESSION: 'jwplayerCastSession'
+        JWPLAYER_CAST_SESSION: 'jwplayerCastSession',
+        JWPLAYER_CAST_AD_CHANGED: 'jwplayerCastAdChanged'
 
 	};
 
