@@ -198,6 +198,7 @@
 					};
 				}
 				if (evt.active) {
+					_this.forceControls(TRUE);
 					_castDisplay.setState('connecting').setName(evt.deviceName).show();
 					_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
 					_api.jwAddEventListener(events.JWPLAYER_CAST_AD_CHANGED, _castAdChanged);
@@ -722,7 +723,7 @@
 			if (_forcedControlsState === TRUE) {
 				return;
 			}
-			// TODO: use _forcedControlsState for audio mode so that we don't need these checks
+			// TODO: use _forcedControlsState for audio mode so that we don't need these
 			if (_controlbar && !_audioMode && !_model.getVideo().audioMode()) {
 				_controlbar.hide();
 			}
