@@ -51,9 +51,8 @@
 		DOCUMENT = document;
 	
 	/** HTML5 Controlbar class * */
-	html5.controlbar = function(api, config) {
-		var _api,
-			_skin,
+	html5.controlbar = function(_api, _config) {
+		var _skin,
 			_dividerElement = _layoutElement("divider", CB_DIVIDER),
 			_defaults = {
 				margin : 8,
@@ -126,13 +125,14 @@
 			_redrawTimeout,
 			_hideTimeout = -1,
 			_audioMode = FALSE,
+			_instreamMode = FALSE,
+			_adMode = FALSE,
 			_hideFullscreen = FALSE,
 			_dragging = NULL,	
 			_lastSeekTime = 0,
 			_lastTooltipPositionTime = 0,
 			_cues = [],
 			_activeCue,
-			_instreamMode = FALSE,
 			
 			_toggles = {
 				play: "pause",
@@ -172,8 +172,6 @@
 		
 		function _init() {
 			_elements = {};
-			
-			_api = api;
 
 			_id = _api.id + "_controlbar";
 			_duration = _position = 0;
@@ -418,6 +416,11 @@
 		function _castAvaiable(evt) {
 			// chromecast button is displayed after receiving this event
 			_css.style(_elements.cast, evt.available ? NOT_HIDDEN : HIDDEN);
+			var className = _elements.cast.className.replace(/\s*jwcancast/, '');
+			if (evt.available) {
+				className += ' jwcancast';
+			}
+			_elements.cast.className = className;
 			_castSession(evt);
 		}
 
@@ -437,7 +440,7 @@
 		 * Styles specific to this controlbar/skin
 		 */
 		function _createStyles() {
-			_settings = utils.extend({}, _defaults, _skin.getComponentSettings('controlbar'), config);
+			_settings = utils.extend({}, _defaults, _skin.getComponentSettings('controlbar'), _config);
 
 			_bgHeight = _getSkinElement("background").height;
 			
@@ -671,22 +674,6 @@
 				}
 			}
 		}
-		
-		_this.adMode = function(mode) {
-			if (mode) {
-				_removeFromArray(_jwhidden, _elements.elapsed);
-				_removeFromArray(_jwhidden, _elements.duration);
-			} else {
-				_addOnceToArray(_jwhidden, _elements.elapsed);
-				_addOnceToArray(_jwhidden, _elements.duration);
-			}
-			_css.style([
-				_elements.elapsed,
-				_elements.duration,
-				_elements.next,
-				_elements.prev
-			], mode ? HIDDEN : NOT_HIDDEN);
-		};
 
 		function _removeFromArray(array, item) {
 			var index = array.indexOf(item);
@@ -1476,7 +1463,8 @@
 				display: (_audioMode || _hideFullscreen || ieIframe) ? JW_CSS_NONE : EMPTY
 			});
 
-			// TODO: hide these all by default (global styles at bottom), and update on _audioMode|_instreamMode change event
+			// TODO: hide these all by default (global styles at bottom), and update using classes when model changes:
+			// jwinstream, jwaudio, jwhas-hd, jwhas-cc (see jwcancast)
 			_css.style(_elements.volumeH, {
 				display: _audioMode || _instreamMode ? JW_CSS_BLOCK : JW_CSS_NONE
 			});
@@ -1529,25 +1517,50 @@
 		
 
 		_this.audioMode = function(mode) {
-			if (mode != _audioMode) {
-				_audioMode = mode;
+			if (mode !== UNDEFINED && mode !== _audioMode) {
+				_audioMode = !!mode;
 				_redraw();
 			}
+			return _audioMode;
 		};
 		
 		_this.instreamMode = function(mode) {
-			if (mode != _instreamMode) {
-				_instreamMode = mode;
+			if (mode !== UNDEFINED && mode !== _instreamMode) {
+				_instreamMode = !!mode;
 				// TODO: redraw
 			}
+			return _instreamMode;
+		};
+
+		_this.adMode = function(mode) {
+			if (mode !== UNDEFINED && mode !== _adMode) {
+				_adMode = !!mode;
+				if (mode) {
+					_removeFromArray(_jwhidden, _elements.elapsed);
+					_removeFromArray(_jwhidden, _elements.duration);
+				} else {
+					_addOnceToArray(_jwhidden, _elements.elapsed);
+					_addOnceToArray(_jwhidden, _elements.duration);
+				}
+				_css.style([
+					_elements.cast,
+					_elements.elapsed,
+					_elements.duration,
+					_elements.next,
+					_elements.prev
+				], mode ? HIDDEN : NOT_HIDDEN);
+				//_redraw();
+			}
+			return _adMode;
 		};
 
 		/** Whether or not to show the fullscreen icon - used when an audio file is played **/
 		_this.hideFullscreen = function(mode) {
-			if (mode != _hideFullscreen) {
-				_hideFullscreen = mode;
+			if (mode !== UNDEFINED && mode !== _hideFullscreen) {
+				_hideFullscreen = !!mode;
 				_redraw();
 			}
+			return _hideFullscreen;
 		};
 
 		_this.element = function() {
@@ -1844,6 +1857,14 @@
 	_css(CB_CLASS + ' .jwtext', {
 		padding: '0 5px',
 		'text-align': 'center'
+	});
+
+	_css(CB_CLASS + ' .jwcast', {
+		display: JW_CSS_NONE
+	});
+
+	_css(CB_CLASS + ' .jwcast.jwcancast', {
+		display: JW_CSS_BLOCK
 	});
 
 	_css(CB_CLASS + ' .jwalt', {

@@ -64,7 +64,6 @@
 			_controlbar,
 			_display,
 			_castDisplay,
-			_originalControlbar,
 			_dock,
 			_logo,
 			_logoConfig = utils.extend({}, _model.componentConfig("logo")),
@@ -201,12 +200,18 @@
 				if (evt.active) {
 					_castDisplay.setState('connecting').setName(evt.deviceName).show();
 					_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
+					_api.jwAddEventListener(events.JWPLAYER_CAST_AD_CHANGED, _castAdChanged);
 				} else {
 					_api.jwRemoveEventListener(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
+					_api.jwRemoveEventListener(events.JWPLAYER_CAST_AD_CHANGED, _castAdChanged);
 					_castDisplay.hide();
+					if (_controlbar.adMode()) {
+						_castAdsEnded();
+					}
 				}
 				
 			});
+
 			_stateHandler({newstate:states.IDLE});
 			
 			if (!_isMobile) {
@@ -369,7 +374,6 @@
 				_playlistLayer.appendChild(_playlist.element());
 			}
 			
-
 			_controlbar = new html5.controlbar(_api, cbSettings);
 			_controlbar.addEventListener(events.JWPLAYER_USER_ACTION, _resetTapTimer);
 			_controlsLayer.appendChild(_controlbar.element());
@@ -377,27 +381,38 @@
 			if (_isIPod) _hideControlbar();
 		}
 
-		_this.replaceControlBar = function(controlbar) {
-			if (!_originalControlbar) {
-				_controlsLayer.removeChild(_controlbar.element());
-				_controlsLayer.appendChild(controlbar.element());
-				controlbar.instreamMode(TRUE);
-				controlbar.adMode(TRUE);
-				controlbar.show(TRUE);
-				_originalControlbar = _controlbar;
-				_controlbar = controlbar;
+		function _castAdChanged(evt) {
+			if (evt.done) {
+				_castAdsEnded();
+				return;
 			}
-		};
-		
-		_this.restoreControlBar = function() {
-			if (_originalControlbar) {
-				_controlsLayer.removeChild(_controlbar.element());
-				_controlsLayer.appendChild(_originalControlbar.element());
-				_controlbar = _originalControlbar;
-				_originalControlbar = null;
-				_controlbar.redraw();
+
+			if (!_controlbar.adMode()) {
+				_castAdsStarted();
 			}
-		};
+
+			_controlbar.setText(evt.message);
+
+			if (_castDisplay) {
+				// TODO: setup companions in _castDisplay
+
+			}
+		}
+
+		function _castAdsStarted() {
+			_controlbar.instreamMode(true);
+			_controlbar.adMode(true);
+			_controlbar.show(true);
+		}
+
+		function _castAdsEnded() {
+			// controlbar reset
+			_controlbar.setText('');
+			_controlbar.adMode(false);
+			_controlbar.instreamMode(false);
+			_controlbar.show(true);
+			// TODO: reset companions in _castDisplay
+		}
 
 		/** 
 		 * Switch to fullscreen mode.  If a native fullscreen method is available in the browser, use that.  
