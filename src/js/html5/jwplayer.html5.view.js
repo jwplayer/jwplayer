@@ -719,6 +719,10 @@
 		}
 		
 		function _hideControlbar() {
+			if (_forcedControlsState === TRUE) {
+				return;
+			}
+			// TODO: use _forcedControlsState for audio mode so that we don't need these checks
 			if (_controlbar && !_audioMode && !_model.getVideo().audioMode()) {
 				_controlbar.hide();
 			}
@@ -884,6 +888,8 @@
 			case states.PLAYING:
 				if (_model.getVideo().isCaster !== TRUE) {
 					_forcedControlsState = null;
+				} else {
+					_forcedControlsState = TRUE;
 				}
 				if (_isAudioFile()) {
 					_showVideo(FALSE);
