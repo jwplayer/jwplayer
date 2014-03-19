@@ -415,12 +415,14 @@
 
 		function _castAvaiable(evt) {
 			// chromecast button is displayed after receiving this event
-			_css.style(_elements.cast, evt.available ? NOT_HIDDEN : HIDDEN);
-			var className = _elements.cast.className.replace(/\s*jwcancast/, '');
-			if (evt.available) {
-				className += ' jwcancast';
+			if (_elements.cast) {
+				_css.style(_elements.cast, evt.available ? NOT_HIDDEN : HIDDEN);
+				var className = _elements.cast.className.replace(/\s*jwcancast/, '');
+				if (evt.available) {
+					className += ' jwcancast';
+				}
+				_elements.cast.className = className;
 			}
-			_elements.cast.className = className;
 			_castSession(evt);
 		}
 
