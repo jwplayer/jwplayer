@@ -170,8 +170,8 @@
 		var importantString = important ? ' !important' : '';
 
 		//string
-		if (isNaN(value)) {
-			if (!!value.match(/png|gif|jpe?g/i) && value.indexOf('url') < 0) {
+		if (typeof value === 'string' && isNaN(value)) {
+			if ((/png|gif|jpe?g/i).test(value) && value.indexOf('url') < 0) {
 				return "url(" + value + ")";
 			}
 			return value + importantString;
