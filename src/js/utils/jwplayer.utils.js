@@ -484,7 +484,7 @@
 	
 	function _ajaxError(errorcallback, xmldocpath, xmlhttp) {
 		return function() {
-			errorcallback("Error loading file");
+			errorcallback("Error loading file", xmldocpath, xmlhttp);
 		};
 	}
 	
