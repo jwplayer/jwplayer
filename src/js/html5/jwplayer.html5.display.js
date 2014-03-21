@@ -22,7 +22,7 @@
 		JW_CSS_ABSOLUTE = "absolute",
 		JW_CSS_100PCT = "100%",
 		JW_CSS_HIDDEN = "hidden",
-		JW_CSS_SMOOTH_EASE = "opacity .25s, background-image .25s, color .25s";
+		JW_CSS_SMOOTH_EASE = "opacity .25s, color .25s";
 
 	
 	html5.display = function(_api, config) {
@@ -35,7 +35,6 @@
 			_icons = {},
 			_errorState = FALSE,
 			_completedState = FALSE,
-			_visibilities = {},
 			_hiding,
 			_hideTimeout,
 			_button,
@@ -296,7 +295,9 @@
 				img.addEventListener('load', _imageLoaded, FALSE);
 				img.src = _image;
 			} else {
-				_css(_internalSelector(D_PREVIEW_CLASS), { 'background-image': undefined });
+				_css(_internalSelector(D_PREVIEW_CLASS), {
+					'background-image': ''
+				});
 				_setVisibility(D_PREVIEW_CLASS, FALSE);
 				_imageWidth = _imageHeight = 0;
 			}
@@ -334,15 +335,10 @@
 		this.redraw = _redraw;
 		
 		function _setVisibility(selector, state) {
-			if (!utils.exists(_visibilities[selector])) _visibilities[selector] = false;
-			
-			if (_visibilities[selector] != state) {
-				_visibilities[selector] = state;
-				_css(_internalSelector(selector), {
-					opacity: state ? 1 : 0,
-					visibility: state ? "visible" : "hidden"
-				});
-			}
+			_css(_internalSelector(selector), {
+				opacity: state ? 1 : 0,
+				visibility: state ? "visible" : "hidden"
+			});
 		}
 
 		this.show = function(force) {
