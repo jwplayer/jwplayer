@@ -7,8 +7,6 @@
 (function(jwplayer) {
     var _utils = jwplayer.utils,
         _css = _utils.css,
-        TRUE = true,
-        FALSE = false,
         _events = jwplayer.events,
         VIEW_INSTREAM_SKIP_CLASS = "jwskip",
         VIEW_INSTREAM_IMAGE = "jwskipimage",
@@ -19,18 +17,17 @@
         _SKIP_ICON = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAICAYAAAArzdW1AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA3NpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo0ODkzMWI3Ny04YjE5LTQzYzMtOGM2Ni0wYzdkODNmZTllNDYiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6RDI0OTcxRkE0OEM2MTFFM0I4MTREM0ZBQTFCNDE3NTgiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6RDI0OTcxRjk0OEM2MTFFM0I4MTREM0ZBQTFCNDE3NTgiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChNYWNpbnRvc2gpIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6NDA5ZGQxNDktNzdkMi00M2E3LWJjYWYtOTRjZmM2MWNkZDI0IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjQ4OTMxYjc3LThiMTktNDNjMy04YzY2LTBjN2Q4M2ZlOWU0NiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PqAZXX0AAABYSURBVHjafI2BCcAwCAQ/kr3ScRwjW+g2SSezCi0kYHpwKLy8JCLDbWaGTM+MAFzuVNXhNiTQsh+PS9QhZ7o9JuFMeUVNwjsamDma4K+3oy1cqX/hxyPAAAQwNKV27g9PAAAAAElFTkSuQmCC",
         _SKIP_ICON_OVER = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAICAYAAAArzdW1AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA3NpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo0ODkzMWI3Ny04YjE5LTQzYzMtOGM2Ni0wYzdkODNmZTllNDYiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6RDI0OTcxRkU0OEM2MTFFM0I4MTREM0ZBQTFCNDE3NTgiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6RDI0OTcxRkQ0OEM2MTFFM0I4MTREM0ZBQTFCNDE3NTgiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChNYWNpbnRvc2gpIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6NDA5ZGQxNDktNzdkMi00M2E3LWJjYWYtOTRjZmM2MWNkZDI0IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjQ4OTMxYjc3LThiMTktNDNjMy04YzY2LTBjN2Q4M2ZlOWU0NiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PvgIj/QAAABYSURBVHjadI6BCcAgDAS/0jmyih2tm2lHSRZJX6hQQ3w4FP49LKraSHV3ZLDzAuAi3cwaqUhSfvft+EweznHneUdTzPGRmp5hEJFhAo3LaCnjn7blzCvAAH9YOSCL5RZKAAAAAElFTkSuQmCC";
         
-        jwplayer.html5.adskipbutton = function(_api, _bottom, _skipMessage, _skipText) {
+        jwplayer.html5.adskipbutton = function(_playerId, _bottom, _skipMessage, _skipText) {
             var _instreamSkipContainer,
                 _instreamSkip,
-                _dispatcher = new _events.eventdispatcher(),
                 _offsetTime = -1,
-                _instreamSkipSet = FALSE,
+                _instreamSkipSet = false,
                 _controls,
-                _this = this,
                 _skipOffset = 0,
                 _skip_image,
-                _skip_image_over;
-                _utils.extend(_this, _dispatcher);
+                _skip_image_over,
+                _mouseOver = false,
+                _this = _utils.extend(this, new _events.eventdispatcher());
                 
             function _init() {
                 _skip_image = new Image();
@@ -40,7 +37,7 @@
                 _skip_image_over.src = _SKIP_ICON_OVER;
                 _skip_image_over.className = VIEW_INSTREAM_IMAGE + " " + VIEW_INSTREAM_OVER;
                 _instreamSkipContainer = _createElement("div",VIEW_INSTREAM_SKIP_CLASS);
-                _instreamSkipContainer.id = _api.id + "_skipcontainer";
+                _instreamSkipContainer.id = _playerId + "_skipcontainer";
                 _instreamSkip = _createElement("canvas");
                 _instreamSkipContainer.appendChild(_instreamSkip);
                 _this.width = _instreamSkip.width = _SKIP_WIDTH;
@@ -51,26 +48,15 @@
                     "visibility": "hidden",
                     "bottom": _bottom
                 });
+                _instreamSkipContainer.addEventListener('mouseover', onMouseOver);
+                _instreamSkipContainer.addEventListener('mouseout', onMouseOut);
             }
             
             
             function _updateTime(currTime) {
                 if (_offsetTime < 0) return;
-
-                var ctx=_instreamSkip.getContext("2d");
-                ctx.clearRect(0,0,_SKIP_WIDTH,_SKIP_HEIGHT);
-                drawRoundRect(ctx,0,0,_SKIP_WIDTH,_SKIP_HEIGHT,5,TRUE,FALSE,FALSE);
-                drawRoundRect(ctx,0,0,_SKIP_WIDTH,_SKIP_HEIGHT,5,FALSE,TRUE,FALSE);
-
-                ctx.fillStyle="#979797";
-                ctx.globalAlpha = 1.0;
-                var x = _instreamSkip.width / 2;
-                var y = _instreamSkip.height / 2;
-                ctx.textAlign = "center";
-                ctx.font = 'Bold 11px Sans-Serif';
-
-                ctx.fillText(_skipMessage.replace(/xx/gi, Math.ceil(_offsetTime - currTime)), x, y + 4);
-            
+                var message = _skipMessage.replace(/xx/gi, Math.ceil(_offsetTime - currTime));
+                drawOut(message);
             }
             
             function _updateOffset(pos, duration) {
@@ -89,7 +75,6 @@
             }
 
             _this.updateSkipTime = function(time, duration) {
-                var ctx = _instreamSkip.getContext("2d");
                 _updateOffset(time, duration);
                 if (_offsetTime >= 0) {
                     _css.style(_instreamSkipContainer, {
@@ -98,22 +83,13 @@
                     if (_offsetTime - time > 0) {
                         _updateTime(time);
                     } else if (!_instreamSkipSet) {
-                        _instreamSkipSet = TRUE;
-                        ctx.clearRect(0,0,_SKIP_WIDTH,_SKIP_HEIGHT);
-                        drawRoundRect(ctx,0,0,_SKIP_WIDTH,_SKIP_HEIGHT,5,TRUE,FALSE,FALSE);
-                        drawRoundRect(ctx,0,0,_SKIP_WIDTH,_SKIP_HEIGHT,5,FALSE,TRUE);
+                        _instreamSkipSet = true;
 
-
-
-                        ctx.fillStyle="#979797";
-                        ctx.globalAlpha = 1.0;
-                        var y = _instreamSkip.height / 2;
-                        var x = _instreamSkip.width / 2;
-                        ctx.textAlign = "center";
-                        ctx.font = 'Bold 12px Sans-Serif';
-                        
-                        ctx.fillText(_skipText + "     ",x,y + 4); //add the padding to put the skip icon over but keep it centered
-                        ctx.drawImage(_skip_image, _instreamSkip.width  - ((_instreamSkip.width - ctx.measureText(_skipText).width)/2) - 4, (_SKIP_HEIGHT - _skip_image.height) / 2);
+                        if (_mouseOver) {
+                            drawOver();
+                        } else {
+                            drawOut();
+                        }
 
                         if (_utils.isMobile()) {
                             var skipTouch = new _utils.touch(_instreamSkipContainer);
@@ -121,8 +97,6 @@
                         }
                         else {
                             _instreamSkipContainer.addEventListener('click', skipAd);
-                            _instreamSkipContainer.addEventListener('mouseover', onMouseOver);
-                            _instreamSkipContainer.addEventListener('mouseout', onMouseOut);
                         }
                         _instreamSkipContainer.style.cursor = "pointer";
                         
@@ -132,7 +106,7 @@
 
             function skipAd() {
                 if (_instreamSkipSet) {
-                    _dispatcher.sendEvent(_events.JWPLAYER_AD_SKIPPED);
+                    _this.sendEvent(_events.JWPLAYER_AD_SKIPPED);
                 }
             }
             
@@ -144,43 +118,62 @@
             };
             
             function onMouseOver(){
+                _mouseOver = true;
                 if (_instreamSkipSet) {
-                    var ctx=_instreamSkip.getContext("2d");
-    
-                    ctx.clearRect(0,0,_SKIP_WIDTH,_SKIP_HEIGHT);
-                    drawRoundRect(ctx,0,0,_SKIP_WIDTH,_SKIP_HEIGHT,5,TRUE,FALSE,TRUE);
-                    drawRoundRect(ctx,0,0,_SKIP_WIDTH,_SKIP_HEIGHT,5,FALSE,TRUE,TRUE);
-                    ctx.fillStyle="#FFFFFF";
-                    ctx.globalAlpha = 1.0;
-                    var y = _instreamSkip.height / 2;
-                    var x = _instreamSkip.width / 2;
-                    ctx.textAlign = "center";
-                    ctx.font = 'Bold 12px Sans-Serif';   
-                    ctx.fillText(_skipText + "     ",x,y + 4);
-                    ctx.drawImage(_skip_image_over, _instreamSkip.width  - ((_instreamSkip.width - ctx.measureText(_skipText).width)/2) - 4, (_SKIP_HEIGHT - _skip_image.height) / 2);
+                    drawOver();
                 }
             }
             
             function onMouseOut(){
+                _mouseOver = false;
                 if (_instreamSkipSet) {
-                    var ctx=_instreamSkip.getContext("2d");
-                    ctx.clearRect(0,0,_SKIP_WIDTH,_SKIP_HEIGHT);
-                    drawRoundRect(ctx,0,0,_SKIP_WIDTH,_SKIP_HEIGHT,5,TRUE,FALSE,FALSE);
-                    drawRoundRect(ctx,0,0,_SKIP_WIDTH,_SKIP_HEIGHT,5,FALSE,TRUE,FALSE);
-                    ctx.fillStyle="#979797";
-                    ctx.globalAlpha = 1.0;
-                    var y = _instreamSkip.height / 2;
-                    var x = _instreamSkip.width / 2;
-                    ctx.textAlign = "center";
-                    ctx.font = 'Bold 12px Sans-Serif';   
-                    ctx.fillText(_skipText + "     ",x,y + 4);
+                    drawOut();
+                }
+            }
+
+            function drawOut(message) {
+                message = message || _skipText;
+
+                var ctx = _instreamSkip.getContext("2d");
+                ctx.clearRect(0,0,_SKIP_WIDTH,_SKIP_HEIGHT);
+                drawRoundRect(ctx,0,0,_SKIP_WIDTH,_SKIP_HEIGHT,5,true,false,false);
+                drawRoundRect(ctx,0,0,_SKIP_WIDTH,_SKIP_HEIGHT,5,false,true,false);
+                ctx.fillStyle="#979797";
+                ctx.globalAlpha = 1.0;
+                var y = _instreamSkip.height / 2;
+                var x = _instreamSkip.width / 2;
+                ctx.textAlign = "center";
+                ctx.font = 'Bold 12px Sans-Serif';   
+                if (message === _skipText) {
+                    x -= _skip_image.width;
                     ctx.drawImage(_skip_image, _instreamSkip.width  - ((_instreamSkip.width - ctx.measureText(_skipText).width)/2) - 4, (_SKIP_HEIGHT - _skip_image.height) / 2);
                 }
+                ctx.fillText(message, x, y + 4);
+            }
+
+            function drawOver(message) {
+                message = message || _skipText;
+
+                var ctx = _instreamSkip.getContext("2d");
+                ctx.clearRect(0,0,_SKIP_WIDTH,_SKIP_HEIGHT);
+                drawRoundRect(ctx,0,0,_SKIP_WIDTH,_SKIP_HEIGHT,5,true,false,true);
+                drawRoundRect(ctx,0,0,_SKIP_WIDTH,_SKIP_HEIGHT,5,false,true,true);
+                ctx.fillStyle="#FFFFFF";
+                ctx.globalAlpha = 1.0;
+                var y = _instreamSkip.height / 2;
+                var x = _instreamSkip.width / 2;
+                ctx.textAlign = "center";
+                ctx.font = 'Bold 12px Sans-Serif';
+                if (message === _skipText) {
+                    x -= _skip_image.width;
+                    ctx.drawImage(_skip_image_over, _instreamSkip.width  - ((_instreamSkip.width - ctx.measureText(_skipText).width)/2) - 4, (_SKIP_HEIGHT - _skip_image.height) / 2);  
+                }
+                ctx.fillText(message, x, y + 4);
             }
             
             function drawRoundRect(ctx, x, y, width, height, radius, fill, stroke, over) {
                 if (typeof stroke == "undefined" ) {
-                    stroke = TRUE;
+                    stroke = true;
                 }
                 if (typeof radius === "undefined") {
                     radius = 5;

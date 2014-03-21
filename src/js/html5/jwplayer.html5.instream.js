@@ -140,7 +140,7 @@
                 _item = new _playlist.item(item);
                 _fakemodel.setPlaylist([item]);
                 _options = _utils.extend(_defaultOptions, options);
-                _skipButton = new html5.adskipbutton(_api, playersize.height - (safe.y + safe.height) + 10, _options.skipMessage,_options.skipText);
+                _skipButton = new html5.adskipbutton(_api.id, playersize.height - (safe.y + safe.height) + 10, _options.skipMessage,_options.skipText);
                 _skipButton.addEventListener(_events.JWPLAYER_AD_SKIPPED, _skipAd);
                 _skipButton.reset(_options.skipoffset || -1);
             } else if (_utils.typeOf(item) == "array") {
@@ -150,7 +150,7 @@
                     curOpt = options[_arrayIndex];
                 }
                 _options = _utils.extend(_defaultOptions, curOpt);
-                _skipButton = new html5.adskipbutton(_api, playersize.height - (safe.y + safe.height) + 10, _options.skipMessage,_options.skipText);
+                _skipButton = new html5.adskipbutton(_api.id, playersize.height - (safe.y + safe.height) + 10, _options.skipMessage,_options.skipText);
                 _skipButton.addEventListener(_events.JWPLAYER_AD_SKIPPED, _skipAd);
                 _skipButton.reset(_options.skipoffset || -1);
                 _array = item;
@@ -333,7 +333,7 @@
         
         function _skipAd(evt) {
             _sendEvent(evt.type, evt);
-            _completeHandler(null);
+            _completeHandler();
         }
         /** Forward provider events to listeners **/        
         function _forward(evt) {

@@ -395,7 +395,10 @@
 			_controlbar.setText(evt.message);
 
 			if (_castDisplay) {
-				// TODO: setup companions in _castDisplay
+				if (evt.skipoffset !== undefined) {
+					_castDisplay.setSkipoffset(evt, _api.jwSkipAd);
+				}
+				_castDisplay.adChanged(evt);
 
 			}
 		}
@@ -412,7 +415,10 @@
 			_controlbar.adMode(false);
 			_controlbar.instreamMode(false);
 			_controlbar.show(true);
-			// TODO: reset companions in _castDisplay
+			// cast display reset
+			if (_castDisplay) {
+				_castDisplay.adsEnded();
+			}
 		}
 
 		/** 
@@ -648,7 +654,8 @@
 				opacity: 1
 			});
 			window.onbeforeunload = function() {
-				if (!_isCasting()) {
+				if (!_isCasting()) { // don't call stop while casting
+					// prevent video error in display on window close
 					_api.jwStop();
 				}
 			};
