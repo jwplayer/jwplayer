@@ -383,23 +383,34 @@
 		}
 
 		function _castAdChanged(evt) {
+			// end ad mode (ad provider removed)
 			if (evt.done) {
 				_castAdsEnded();
 				return;
 			}
-
+			// start ad mode
 			if (!_controlbar.adMode()) {
 				_castAdsStarted();
 			}
 
 			_controlbar.setText(evt.message);
 
+			// skip button and companions
 			if (_castDisplay) {
 				if (evt.skipoffset !== undefined) {
 					_castDisplay.setSkipoffset(evt, _api.jwSkipAd);
 				}
+				if (evt.companions !== undefined) {
+					_castDisplay.setCompanions(evt);
+				}
 				_castDisplay.adChanged(evt);
-
+			}
+			// clickthrough callback
+			var clickAd = evt.onClick;
+			if (clickAd !== undefined) {
+				_display.setAlternateClickHandler(function() {
+					clickAd(evt);
+				});
 			}
 		}
 
@@ -419,6 +430,9 @@
 			if (_castDisplay) {
 				_castDisplay.adsEnded();
 			}
+			// display click reset
+			_display.revertAlternateClickHandler();
+			_castDisplay.clickHandler = null;
 		}
 
 		/** 
