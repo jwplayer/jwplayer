@@ -397,12 +397,7 @@
 
 			// skip button and companions
 			if (_castDisplay) {
-				if (evt.skipoffset !== undefined) {
-					_castDisplay.setSkipoffset(evt, _api.jwSkipAd);
-				}
-				if (evt.companions !== undefined) {
-					_castDisplay.setCompanions(evt);
-				}
+				_castDisplay.setSkipoffset(evt, _api.jwSkipAd);
 				_castDisplay.adChanged(evt);
 			}
 			// clickthrough callback
@@ -432,7 +427,6 @@
 			}
 			// display click reset
 			_display.revertAlternateClickHandler();
-			_castDisplay.clickHandler = null;
 		}
 
 		/** 

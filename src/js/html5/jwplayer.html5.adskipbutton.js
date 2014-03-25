@@ -48,8 +48,16 @@
                     "visibility": "hidden",
                     "bottom": _bottom
                 });
+                // add event listeners once, exit with !_instreamSkipSet
                 _instreamSkipContainer.addEventListener('mouseover', onMouseOver);
                 _instreamSkipContainer.addEventListener('mouseout', onMouseOut);
+                if (_utils.isMobile()) {
+                    var skipTouch = new _utils.touch(_instreamSkipContainer);
+                    skipTouch.addEventListener(_utils.touchEvents.TAP, skipAd);
+                }
+                else {
+                    _instreamSkipContainer.addEventListener('click', skipAd);
+                }
             }
             
             
@@ -82,24 +90,20 @@
                     });
                     if (_offsetTime - time > 0) {
                         _updateTime(time);
+                        if (_instreamSkipSet) {
+                            _instreamSkipSet = false;
+                            _instreamSkipContainer.style.cursor = "default";
+                        }
                     } else if (!_instreamSkipSet) {
-                        _instreamSkipSet = true;
-
+                        if (!_instreamSkipSet) {
+                            _instreamSkipSet = true;
+                            _instreamSkipContainer.style.cursor = "pointer";
+                        }
                         if (_mouseOver) {
                             drawOver();
                         } else {
                             drawOut();
                         }
-
-                        if (_utils.isMobile()) {
-                            var skipTouch = new _utils.touch(_instreamSkipContainer);
-                            skipTouch.addEventListener(_utils.touchEvents.TAP, skipAd);
-                        }
-                        else {
-                            _instreamSkipContainer.addEventListener('click', skipAd);
-                        }
-                        _instreamSkipContainer.style.cursor = "pointer";
-                        
                     }
                 }
             };
