@@ -132,33 +132,25 @@
                 return;
             }
             _sendEvent(_events.JWPLAYER_PLAYLIST_ITEM, {index:_arrayIndex}, true);
-            var playersize = _utils.bounds(document.getElementById(_api.id));
-            var safe = _view.getSafeRegion();
 
+            var instreamLayer = _instreamContainer.parentNode;
+            var bottom = 10 + _utils.bounds(instreamLayer).bottom - _utils.bounds(_cbar.element()).top;
+            
             // Copy the playlist item passed in and make sure it's formatted as a proper playlist item
-            if (_utils.typeOf(item) == "object") {
-                _item = new _playlist.item(item);
-                _fakemodel.setPlaylist([item]);
-                _options = _utils.extend(_defaultOptions, options);
-                _skipButton = new html5.adskipbutton(_api.id, playersize.height - (safe.y + safe.height) + 10, _options.skipMessage,_options.skipText);
-                _skipButton.addEventListener(_events.JWPLAYER_AD_SKIPPED, _skipAd);
-                _skipButton.reset(_options.skipoffset || -1);
-            } else if (_utils.typeOf(item) == "array") {
-                var curOpt;
+            if (_utils.typeOf(item) === "array") {
                 if (options) {
                     _optionList = options;
-                    curOpt = options[_arrayIndex];
+                    options = options[_arrayIndex];
                 }
-                _options = _utils.extend(_defaultOptions, curOpt);
-                _skipButton = new html5.adskipbutton(_api.id, playersize.height - (safe.y + safe.height) + 10, _options.skipMessage,_options.skipText);
-                _skipButton.addEventListener(_events.JWPLAYER_AD_SKIPPED, _skipAd);
-                _skipButton.reset(_options.skipoffset || -1);
                 _array = item;
-                
                 item = _array[_arrayIndex];
-                _item = new _playlist.item(item);
-                _fakemodel.setPlaylist([item]);
             }
+            _options = _utils.extend(_defaultOptions, options);
+            _item = new _playlist.item(item);
+            _fakemodel.setPlaylist([item]);
+            _skipButton = new html5.adskipbutton(_api.id, bottom, _options.skipMessage, _options.skipText);
+            _skipButton.addEventListener(_events.JWPLAYER_AD_SKIPPED, _skipAd);
+            _skipButton.reset(_options.skipoffset || -1);
             
 
             if (_api.jwGetControls()) {
