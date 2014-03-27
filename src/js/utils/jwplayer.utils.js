@@ -455,7 +455,7 @@
 			xmlhttp = new WINDOW.XMLHttpRequest();
 			xmlhttp.onreadystatechange = _readyStateChangeHandler(xmlhttp, xmldocpath, completecallback, errorcallback,donotparse);
 		} else {
-			if (errorcallback) errorcallback();
+			if (errorcallback) errorcallback("",xmldocpath,xmlhttp);
 			return xmlhttp; 
 		}
 		if (xmlhttp.overrideMimeType) {
@@ -470,7 +470,7 @@
 				xmlhttp.open("GET", xmldocpath, TRUE);
 				xmlhttp.send();
 			} catch (error) {
-				if (errorcallback) errorcallback(xmldocpath);
+				if (errorcallback) errorcallback(xmldocpath,xmldocpath,xmlhttp);
 			}
 		}, 0);
 
@@ -496,7 +496,7 @@
 					_ajaxComplete(xmlhttp, xmldocpath, completecallback, errorcallback, donotparse)();
 					break;
 				case 404:
-					errorcallback("File not found");
+					errorcallback("File not found",xmldocpath,xmlhttp);
 				}
 				
 			}
@@ -518,7 +518,7 @@
 						firstChild = xml.firstChild;
 						if (xml.lastChild && xml.lastChild.nodeName === 'parsererror') {
 							if (errorcallback) {
-								errorcallback("Invalid XML");
+								errorcallback("Invalid XML",xmldocpath,xmlhttp);
 							}
 							return;
 						}
@@ -532,7 +532,7 @@
 					xmlhttp = utils.extend({}, xmlhttp, {responseXML:parsedXML});
 				} else {
 					if (errorcallback) {
-						errorcallback(xmlhttp.responseText ? "Invalid XML" : xmldocpath);
+						errorcallback(xmlhttp.responseText ? "Invalid XML" : xmldocpath, xmldocpath,xmlhttp);
 					}
 					return;
 				}
