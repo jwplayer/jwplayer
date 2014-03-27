@@ -17,11 +17,14 @@ package com.longtailvideo.jwplayer.player {
 		protected var _isPlayer:IInstreamPlayer;
 		protected var _listeners:Object = {};
 		
-		public function JavascriptInstreamAPI(isplayer:IInstreamPlayer) {
-			_isPlayer = isplayer;
-
-			setupPlayerListeners();
+		public function JavascriptInstreamAPI() {
 			setupJSListeners();
+		}
+		
+		public function setPlayer(isplayer:InstreamPlayer):void {
+			
+			_isPlayer = isplayer;
+			setupPlayerListeners();
 		}
 		
 		protected function setupPlayerListeners():void {

@@ -30,7 +30,7 @@ package com.longtailvideo.jwplayer.player {
 		
 		protected var _lockPlugin:IPlugin;
 		protected var _instream:IInstreamPlayer;
-		
+		protected var _instreamAPI:JavascriptInstreamAPI;
 		protected var _destroyed:Boolean = false;
 		
 		public function JavascriptAPI(player:IPlayer) {
@@ -83,6 +83,7 @@ package com.longtailvideo.jwplayer.player {
 			_player.addEventListener(MediaEvent.JWPLAYER_MEDIA_MUTE, updateMuteCookie);
 			_player.addEventListener(MediaEvent.JWPLAYER_MEDIA_LEVEL_CHANGED, updateLevelCookie);
 			_player.addEventListener(CaptionsEvent.JWPLAYER_CAPTIONS_CHANGED, updateCaptionCookie);
+			_instreamAPI = new JavascriptInstreamAPI();
 		}
 		
 		protected function resetPosition(evt:PlaylistEvent):void {
@@ -545,7 +546,7 @@ package com.longtailvideo.jwplayer.player {
 			}
 			);
 			_instream.init();
-			new JavascriptInstreamAPI(_instream);
+			_instreamAPI.setPlayer(_instream as InstreamPlayer);
 		}
 		
 		protected function setComponentVisibility(component:IPlayerComponent, state:Boolean):void {
