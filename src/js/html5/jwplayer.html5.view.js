@@ -209,11 +209,18 @@
 					if (_controlbar.adMode()) {
 						_castAdsEnded();
 					}
+					// redraw displayicon
+					_stateHandler({
+						newstate: _api.jwGetState()
+					});
+					_responsiveListener();
 				}
 				
 			});
 
-			_stateHandler({newstate:states.IDLE});
+			_stateHandler({
+				newstate:states.IDLE
+			});
 			
 			if (!_isMobile) {
 				_controlsLayer.addEventListener('mouseout', function() {
@@ -301,7 +308,9 @@
 					_showControls();
 				}
 			} else {
-				_stateHandler(_api.jwGetState());
+				_stateHandler({
+					newstate: _api.jwGetState()
+				});
 			}
 			if (_showing) {
 				_resetTapTimer();
@@ -388,25 +397,34 @@
 				_castAdsEnded();
 				return;
 			}
-			// start ad mode
-			if (!_controlbar.adMode()) {
-				_castAdsStarted();
+
+			if (!evt.complete) {
+				// start ad mode
+				if (!_controlbar.adMode()) {
+					_castAdsStarted();
+				}
+
+				_controlbar.setText(evt.message);
+
+				// clickthrough callback
+				var clickAd = evt.onClick;
+				if (clickAd !== undefined) {
+					_display.setAlternateClickHandler(function() {
+						clickAd(evt);
+					});
+				}
+				//skipAd callback
+				var skipAd = evt.onSkipAd;
+				if (skipAd !== undefined && _castDisplay) {
+					_castDisplay.setSkipoffset(evt, evt.onSkipAd);
+				}
 			}
 
-			_controlbar.setText(evt.message);
-
-			// skip button and companions
+			// update skip button and companions
 			if (_castDisplay) {
-				_castDisplay.setSkipoffset(evt, _api.jwSkipAd);
 				_castDisplay.adChanged(evt);
 			}
-			// clickthrough callback
-			var clickAd = evt.onClick;
-			if (clickAd !== undefined) {
-				_display.setAlternateClickHandler(function() {
-					clickAd(evt);
-				});
-			}
+
 		}
 
 		function _castAdsStarted() {
@@ -965,7 +983,9 @@
 			_instreamControlbar = instreamControlbar;
 			_instreamDisplay = instreamDisplay;
 			_instreamModel = instreamModel;
-			_stateHandler({newstate:states.PLAYING});
+			_stateHandler({
+				newstate: states.PLAYING
+			});
 			_instreamMode = TRUE;
 		};
 		
@@ -1008,13 +1028,18 @@
 					_hideInstream(!state);
 				} else {
 					if (newstate) {
-						_stateHandler({newstate: _api.jwGetState()});
+						_stateHandler({
+							newstate:
+							_api.jwGetState()
+						});
 					} else {
 						_hideControls();
 						_hideDisplay();
 					}
 				}
-				_this.sendEvent(events.JWPLAYER_CONTROLS, { controls: newstate });
+				_this.sendEvent(events.JWPLAYER_CONTROLS, {
+					controls: newstate
+				});
 			}
 		};
 
