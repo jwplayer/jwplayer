@@ -66,6 +66,7 @@
 		private var _type:String;
 		/** Video object to be instantiated. **/
 		private var _video:Video;
+		private var _loading:Boolean = false;
 		
 		/** Initialize RTMP provider. **/
 		public function RTMPMediaProvider(stageVideoEnabled:Boolean=true) {
@@ -116,6 +117,7 @@
 
 		/** Load content. **/
 		override public function load(itm:PlaylistItem):void {
+			_loading = true;
 			_item = itm;
 			_position = 0;
 			// Set Video or StageVideo
@@ -249,7 +251,7 @@
 
 		/** Finalizes the loading process **/
 		private function loadWrap():void {
-			
+
 			// Do not set media object for audio streams
 			if (_type == 'aac' || _type == 'mp3') {
 				media = null;
@@ -299,6 +301,7 @@
 
 		/** Get metadata information from netstream class. **/
 		public function onClientData(data:Object):void {
+
 			switch (data.type) {
 				// Stream metadata received
 				case 'metadata':
@@ -360,6 +363,12 @@
 
 		/** Resume playing. **/
 		override public function play():void {
+
+			if (_loading) {
+				
+				setTimeout(play,250);
+				return;
+			}
 			attachNetStream(_stream);
 			if(_metadata) {
 				// Resume VOD and restart live stream
@@ -446,6 +455,7 @@
 
 		/** Init NetStream after the connection is setup. **/
 		private function setStream():void {
+			_loading =false;
 			_stream = new NetStream(_connection);
 			_stream.addEventListener(NetStatusEvent.NET_STATUS, statusHandler);
 			_stream.addEventListener(IOErrorEvent.IO_ERROR, errorHandler);
