@@ -94,7 +94,7 @@
 			}
 
 			_resize(_model.width, _model.height);
-			
+		
 			var replace = DOCUMENT.getElementById(_api.id);
 			replace.parentNode.replaceChild(_playerElement, replace);
 		}
@@ -177,7 +177,10 @@
 				window.removeEventListener('orientationchange', _responsiveListener);
 				window.addEventListener('orientationchange', _responsiveListener, FALSE);
 			}
-			
+            //this for googima, after casting, to get the state right.
+            jwplayer(_api.id).onAdPlay(function() {
+                _updateState(states.PLAYING);
+            });
 			_api.jwAddEventListener(events.JWPLAYER_PLAYER_READY, _readyHandler);
 			_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
