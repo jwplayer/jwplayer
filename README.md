@@ -6,15 +6,15 @@ To build the JW Player, you will need the following software:
  * Flex SDK 4.1: http://sourceforge.net/adobe/flexsdk/wiki/Downloads/
  * Ant 1.7.0: http://ant.apache.org/bindownload.cgi
 
-=== Compiling the Player With the Flex SDK and Ant ===
+### Compiling the Player With the Flex SDK and Ant ###
 
 To compile with Flex and Ant, you'll first need to modify the build.properties file found in the 'build' folder.  
 
-ant -buildfile build\build.xml
+`ant -buildfile build\build.xml`
 
 If the build is successful, the new player assets (jwplayer.js, jwplayer.html5.js, jwplayer.flash.swf) will appear in the base folder (where this README.txt file is located)
 
-=== Compiling the flash component with Flash Builder ===
+### Compiling the flash component with Flash Builder ###
 
 If you're using Flash Builder, you may use the following method to build the Flash player component (jwplayer.flash.swf):
 
