@@ -85,18 +85,18 @@
 
 	/** Merges a list of objects **/
 	utils.extend = function() {
-		var args = utils.extend['arguments'];
+		var args = Array.prototype.slice.call(arguments, 0);
 		if (args.length > 1) {
-			for ( var i = 1; i < args.length; i++) {
-				utils.foreach(args[i], function(element, arg) {
-					try {
-						if (utils.exists(arg)) {
-							args[0][element] = arg;
-						}
-					} catch(e) {}
-				});
+			var objectToExtend = args[0],
+				extendEach = function(element, arg) {
+					if (arg !== undefined && arg !== null) {
+						objectToExtend[element] = arg;
+					}
+				};
+			for (var i = 1; i < args.length; i++) {
+				utils.foreach(args[i], extendEach);
 			}
-			return args[0];
+			return objectToExtend;
 		}
 		return null;
 	};
