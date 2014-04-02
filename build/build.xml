@@ -203,7 +203,7 @@
         	</redirector>
         </exec> -->
         <condition property="revision" value="${env.BUILD_NUMBER}" else="0">
-			<isset property="${env.BUILD_NUMBER}" />
+			<isset property="env.BUILD_NUMBER" />
 		</condition>
 		
 		<condition property="jwplayer.version" value="${revision}" else="????">
