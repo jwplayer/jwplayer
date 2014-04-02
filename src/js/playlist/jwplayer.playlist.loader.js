@@ -13,7 +13,7 @@
 		
 		this.load = function(playlistfile) {
 			utils.ajax(playlistfile, _playlistLoaded, _playlistLoadError);
-		}
+		};
 		
 		function _playlistLoaded(loadedEvent) {
 			try {
@@ -53,5 +53,5 @@
 				message: msg ? msg : 'Error loading file'
 			});
 		}
-	}
+	};
 })(jwplayer.playlist);

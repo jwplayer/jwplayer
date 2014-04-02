@@ -7,8 +7,7 @@
 (function(jwplayer) {
 	var utils = jwplayer.utils,
 		embed = jwplayer.embed,
-		playlistitem = jwplayer.playlist.item,
-		UNDEFINED = undefined;
+		playlistitem = jwplayer.playlist.item;
 
 	var config = embed.config = function(config) {
 		
@@ -73,14 +72,14 @@
 	config.addConfig = function(oldConfig, newConfig) {
 		_normalizePlaylist(newConfig);
 		return utils.extend(oldConfig, newConfig);
-	}
+	};
 	
 	/** Construct a playlist from base-level config elements **/
 	function _normalizePlaylist(config) {
 		if (!config.playlist) {
 			var singleItem = {};
 			
-			utils.foreach(playlistitem.defaults, function(itemProp, val) {
+			utils.foreach(playlistitem.defaults, function(itemProp) {
 				_moveProperty(config, singleItem, itemProp);
 			});
 

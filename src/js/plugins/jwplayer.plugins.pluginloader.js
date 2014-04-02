@@ -65,7 +65,7 @@
 					}
 				});
 				
-				if (incomplete == 0) {
+				if (incomplete === 0) {
 					_complete();
 				}
 			}
@@ -151,7 +151,7 @@
 			
 			// Make sure we're not hanging around waiting for plugins that already finished loading
 			_checkComplete();
-		}
+		};
 		
 		var _pluginError = this.pluginFailed = function(evt) {
 			if (!_errorState) {
@@ -159,11 +159,12 @@
 				_errorMessage = "File not found";
 				_complete();
 			}
-		}
+		};
 		
 		this.getStatus = function() {
 			return _status;
-		}
+		};
 		
-	}
+	};
+	
 })(jwplayer);

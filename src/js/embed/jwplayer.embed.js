@@ -63,7 +63,7 @@
 			if (_errorOccurred) return;
 
 			if (utils.typeOf(_config.playlist) == "array" && _config.playlist.length < 2) {
-				if (_config.playlist.length == 0 || !_config.playlist[0].sources || _config.playlist[0].sources.length == 0) {
+				if (_config.playlist.length === 0 || !_config.playlist[0].sources || _config.playlist[0].sources.length === 0) {
 					_sourceError();
 					return;
 				}

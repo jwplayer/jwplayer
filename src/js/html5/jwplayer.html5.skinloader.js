@@ -19,7 +19,6 @@
 			_completeInterval,
 			_skinPath = skinPath,
 			_error = false,
-			_defaultSkin,
 			// Keeping this as 1 for now. Will change if necessary for mobile
 			_mobileMultiplier = jwplayer.utils.isMobile() ? 1 : 1,
 			_ratio = 1;
@@ -34,7 +33,7 @@
 					return;
 				}
 				// Load the default skin first; if any components are defined in the loaded skin, they will overwrite the default
-				var defaultLoader = new html5.skinloader("", _defaultLoaded, _errorHandler);
+				new html5.skinloader("", _defaultLoaded, _errorHandler);
 			}
 			
 		}
@@ -71,7 +70,7 @@
 			if (ratio > 0) _ratio = ratio; 
 
 			if (!target || parseFloat(target) > parseFloat(jwplayer.version)) {
-				_errorHandler("Incompatible player version")
+				_errorHandler("Incompatible player version");
 			}
 
 			if (components.length === 0) {
@@ -187,24 +186,24 @@
 			img.src = imgUrl;
 		}
 		
-		function _clearSkin() {
-			_foreach(_skin, function(componentName, component) {
-				_foreach(component.elements, function(elementName, element) {
-					var img = element.image;
-					img.onload = null;
-					img.onerror = null;
-					delete element.image;
-					delete component.elements[elementName];
-				});
-				delete _skin[componentName];
-			});
-		}
+		// function _clearSkin() {
+		// 	_foreach(_skin, function(componentName, component) {
+		// 		_foreach(component.elements, function(elementName, element) {
+		// 			var img = element.image;
+		// 			img.onload = null;
+		// 			img.onerror = null;
+		// 			delete element.image;
+		// 			delete component.elements[elementName];
+		// 		});
+		// 		delete _skin[componentName];
+		// 	});
+		// }
 		
 		function _checkComplete() {
 			var ready = true;
 			_foreach(_skin, function(componentName, component) {
 				if (componentName != 'properties') {
-					_foreach(component.elements, function(element, _) {
+					_foreach(component.elements, function(element) {
 						if (!_getElement(componentName, element).ready) {
 							ready = false;
 						}
@@ -214,7 +213,7 @@
 			
 			if (!ready) return;
 			
-			if (_loading == false) {
+			if (!_loading) {
 				clearInterval(_completeInterval);
 				_completeHandler(_skin);
 			}

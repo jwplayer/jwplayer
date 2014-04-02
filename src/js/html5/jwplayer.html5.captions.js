@@ -63,14 +63,10 @@
             _selectedTrack = 0,
             /** Flag to remember fullscreen state. **/
             _fullscreen = false,
-            /** Current captions file being read. **/
-            _file,
             /** Event dispatcher for captions events. **/
             _eventDispatcher = new events.eventdispatcher(),
             
-            _nonChromeAndroid = utils.isAndroid(4) && !utils.isChrome(),
-            
-            _this = this;
+            _nonChromeAndroid = utils.isAndroid(4) && !utils.isChrome();
 
         utils.extend(this, _eventDispatcher);
 
@@ -323,7 +319,7 @@
             // Store new state and track
             if(index > 0) {
                 _track = index - 1;
-                _selectedTrack = index;
+                _selectedTrack = index|0;
             } else {
                 _selectedTrack = 0;
                 _redraw(false);
@@ -337,7 +333,7 @@
                 _renderer.populate(_tracks[_track].data);
             } else if (_dlCount == _tracks.length)  {
                 _errorHandler("file not loaded: " + _tracks[_track].file);
-                if (_selectedTrack != 0) {
+                if (_selectedTrack !== 0) {
                      _sendEvent(events.JWPLAYER_CAPTIONS_CHANGED, _tracks, 0);
                 }
                 _selectedTrack = 0;

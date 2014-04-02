@@ -23,7 +23,7 @@
 			str = padder + str;
 		}
 		return str;
-	}
+	};
 	
 	/**
 	 * Get the value of a case-insensitive attribute in an XML node
@@ -37,7 +37,7 @@
 				return xml.attributes[attrib].value.toString();
 		}
 		return "";
-	}
+	};
 	
 	/** Returns the extension of a file name * */
 	utils.extension = function(path) {
@@ -55,7 +55,7 @@
 			value = value.charAt(0) + value.charAt(0) + value.charAt(1) + value.charAt(1) + value.charAt(2) + value.charAt(2);
 		}
 		return parseInt(value, 16);
-	}
+	};
 
 
 })(jwplayer.utils);

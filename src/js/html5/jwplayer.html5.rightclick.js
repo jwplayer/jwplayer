@@ -37,15 +37,15 @@
 			_menu = _createElement(RC_CLASS);
 			_menu.id = _api.id + "_menu";
 			_menu.style.display = JW_CSS_NONE;
-	        _container.oncontextmenu = _showContext;
-	        _menu.onmouseover = function() { _mouseOverContext = true; };
-	        _menu.onmouseout = function() { _mouseOverContext = false; };
-	        DOCUMENT.addEventListener("mousedown", _hideContext, false);
-	        _about = _createElement(RC_ITEM_CLASS);
-	        _about.innerHTML = _config.abouttext;
-	        _about.onclick = _clickHandler;
-	        _menu.appendChild(_about);
-	        _container.appendChild(_menu);
+			_container.oncontextmenu = _showContext;
+			_menu.onmouseover = function() { _mouseOverContext = true; };
+			_menu.onmouseout = function() { _mouseOverContext = false; };
+			DOCUMENT.addEventListener("mousedown", _hideContext, false);
+			_about = _createElement(RC_ITEM_CLASS);
+			_about.innerHTML = _config.abouttext;
+			_about.onclick = _clickHandler;
+			_menu.appendChild(_about);
+			_container.appendChild(_menu);
 		}
 		
 		function _createElement(className) {
@@ -58,46 +58,46 @@
 			window.top.location = _config.aboutlink;
 		}
 		
-	    function _showContext(evt) {
-	        if (_mouseOverContext) {
-	            // returning because _mouseOverContext is true, indicating the mouse is over the menu
-	            return;
-	        }
+		function _showContext(evt) {
+			if (_mouseOverContext) {
+				// returning because _mouseOverContext is true, indicating the mouse is over the menu
+				return;
+			}
 
-	        // IE doesn't pass the event object
-	        if (evt == null) evt = window.event;
+			// IE doesn't pass the event object
+			if (evt == null) evt = window.event;
 
-	        // we assume we have a standards compliant browser, but check if we have IE
-	        // Also, document.body.scrollTop does not work in IE
-	        var target = evt.target != null ? evt.target : evt.srcElement,
-	        	containerBounds = utils.bounds(_container),
-	        	bounds = utils.bounds(target);
-	        
-	    	// hide the menu first to avoid an "up-then-over" visual effect
-	        _menu.style.display = JW_CSS_NONE;
-	        _menu.style.left = (evt.offsetX ? evt.offsetX : evt.layerX) + bounds.left - containerBounds.left + 'px';
-	        _menu.style.top = (evt.offsetY ? evt.offsetY : evt.layerY) + bounds.top - containerBounds.top + 'px';
-	        _menu.style.display = 'block';
-	        evt.preventDefault();
-	    }
+			// we assume we have a standards compliant browser, but check if we have IE
+			// Also, document.body.scrollTop does not work in IE
+			var target = evt.target != null ? evt.target : evt.srcElement,
+				containerBounds = utils.bounds(_container),
+				bounds = utils.bounds(target);
+			
+			// hide the menu first to avoid an "up-then-over" visual effect
+			_menu.style.display = JW_CSS_NONE;
+			_menu.style.left = (evt.offsetX ? evt.offsetX : evt.layerX) + bounds.left - containerBounds.left + 'px';
+			_menu.style.top = (evt.offsetY ? evt.offsetY : evt.layerY) + bounds.top - containerBounds.top + 'px';
+			_menu.style.display = 'block';
+			evt.preventDefault();
+		}
 
-	    function _hideContext() {
-	        if (_mouseOverContext) {
-	            // returning because _mouseOverContext is true, indicating the mouse is over the menu
-	            return;
-	        }
-	        else {
-	            _menu.style.display = JW_CSS_NONE;
-	        }
-	    }
+		function _hideContext() {
+			if (_mouseOverContext) {
+				// returning because _mouseOverContext is true, indicating the mouse is over the menu
+				return;
+			}
+			else {
+				_menu.style.display = JW_CSS_NONE;
+			}
+		}
 
 		this.element = function() {
 			return _menu;
-		}
+		};
 
 		this.destroy = function() {
 			DOCUMENT.removeEventListener("mousedown", _hideContext, false);
-		}
+		};
 		
 		_init();
 	};

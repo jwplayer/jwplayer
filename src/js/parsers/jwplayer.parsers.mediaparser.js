@@ -93,7 +93,7 @@
 						}
 						break;
 					case 'player':
-						var url = node.url;
+						// var url = node.url;
 						break;
 					case 'group':
 						mediaparser.parseGroup(node, itm);
@@ -119,6 +119,6 @@
 		}
 
 		return itm;
-	}
+	};
 	
 })(jwplayer.parsers);

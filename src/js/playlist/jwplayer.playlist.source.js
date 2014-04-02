@@ -5,7 +5,7 @@
  * @version 6.0
  */
 (function(playlist) {
-	var UNDEF = undefined,
+	var UNDEF,
 		utils = jwplayer.utils,
 		defaults = {
 			file: UNDEF,
@@ -17,7 +17,7 @@
 	playlist.source = function(config) {
 		var _source = utils.extend({}, defaults);
 		
-		utils.foreach(defaults, function(property, value) {
+		utils.foreach(defaults, function(property) {
 			if (utils.exists(config[property])) {
 				_source[property] = config[property];
 				// Actively move from config to source

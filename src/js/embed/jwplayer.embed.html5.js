@@ -30,7 +30,7 @@
 					div.left = displayarea.style.left;
 					div.top = displayarea.style.top;
 				} catch(e) {}
-			}
+			};
 		}
 		
 		_this.embed = function() {
@@ -52,7 +52,7 @@
 				scriptLoader.load();
 			}
 
-		}
+		};
 				
 		function _loadError(evt) {
 			_this.sendEvent(evt.type, {message: "HTML5 player not found"});
@@ -85,7 +85,7 @@
 			}
 			
 			return false;
-		}
+		};
 		
 		/**
 		 * Determines if a video element can play a particular file, based on its extension
@@ -120,7 +120,7 @@
 			// Last, but not least, we ask the browser 
 			// (But only if it's a video with an extension known to work in HTML5)
 			return _browserCanPlay(mappedType.html5);
-		};
+		}
 		
 		/**
 		 * 
