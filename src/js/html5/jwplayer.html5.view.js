@@ -201,6 +201,9 @@
 					};
 				}
 				if (evt.active) {
+					_css.style(_captions.element(), {
+						display: 'none'
+					});
 					_this.forceControls(TRUE);
 					_castDisplay.setState('connecting').setName(evt.deviceName).show();
 					_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
@@ -212,6 +215,9 @@
 					if (_controlbar.adMode()) {
 						_castAdsEnded();
 					}
+					_css.style(_captions.element(), {
+						display: null
+					});
 					// redraw displayicon
 					_stateHandler({
 						newstate: _api.jwGetState()
