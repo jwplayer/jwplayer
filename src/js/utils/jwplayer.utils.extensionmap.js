@@ -18,8 +18,9 @@
 		
 		mimeMap = {
 			mp4: video+mp4,
-			vorbis: audio+ogg,
 			ogg: video+ogg,
+			oga: audio+ogg,
+			vorbis: audio+ogg,
 			webm: video+webm,
 			aac: audio+mp4,
 			mp3: audio+"mpeg",
@@ -38,8 +39,10 @@
 			"ogv": mimeMap[ogg],
 			"ogg": mimeMap[vorbis],
 			"oga": mimeMap[vorbis],
+			"vorbis": mimeMap[vorbis],
 			"webm": mimeMap[webm],
 			"m3u8": mimeMap.hls,
+			"m3u": mimeMap.hls,
 			"hls": mimeMap.hls
 		}, 
 		videoX = "video", 

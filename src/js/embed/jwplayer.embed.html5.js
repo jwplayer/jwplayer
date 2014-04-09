@@ -15,7 +15,7 @@
 		
 		
 		function _resizePlugin (plugin, div, onready) {
-			return function(evt) {
+			return function() {
 				try {
 					var displayarea = document.querySelector("#" + _container.id + " .jwmain");
 					if (onready) {
@@ -93,20 +93,19 @@
 		 * @param {Object} type
 		 * @return {Boolean}
 		 */
-		function _html5CanPlay(file, type) {
+		var _html5CanPlay = jwplayer.embed.html5CanPlay  = function (file, type) {
 			// HTML5 playback is not sufficiently supported on Blackberry devices; should fail over automatically.
 			if(navigator.userAgent.match(/BlackBerry/i) !== null) { return false; }
 
-			// HLS not sufficiently supported on Android devices; should fail over automatically.
-			if (utils.isAndroid() && (utils.extension(file) == "m3u" || utils.extension(file) == "m3u8")) {
+
+			// Ensure RTMP files are not seen as videos
+			if (utils.isRtmp(file, type)) {
 				return false;
 			}
 
-			// Ensure RTMP files are not seen as videos
-			if (utils.isRtmp(file,type)) return false;
+			type = type || utils.extension(file);
+			var mappedType = extensionmap[type];
 
-			var mappedType = extensionmap[type ? type : utils.extension(file)];
-			
 			// If no type or unrecognized type, don't allow to play
 			if (!mappedType) {
 				return false;
@@ -116,37 +115,10 @@
 			if (mappedType.flash && !mappedType.html5) {
 				return false;
 			}
-			
-			// Last, but not least, we ask the browser 
-			// (But only if it's a video with an extension known to work in HTML5)
-			return _browserCanPlay(mappedType.html5);
-		}
+
+			return utils.canPlayHTML5(extensionmap.mimeType(mappedType.html5));
+		};
 		
-		/**
-		 * 
-		 * @param {DOMMediaElement} video
-		 * @param {String} mimetype
-		 * @return {Boolean}
-		 */
-		function _browserCanPlay(mimetype) {
-			var video = jwplayer.vid;
-
-			// OK to use HTML5 with no extension
-			if (!mimetype) {
-				return true;
-			}
-
-			try {
-				if (video.canPlayType(mimetype)) {
-					return true;
-				} else {
-					return false;
-				}
-			} catch(e) {
-				return false;
-			}
-			
-		}
 	};
 	
 })(jwplayer);
