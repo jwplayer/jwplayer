@@ -14,7 +14,7 @@
         FALSE = false;
     
     /** HTML5 video class * */
-    jwplayer.html5.video = function(videotag) {
+    jwplayer.html5.video = function(_videotag) {
         var _isIE = utils.isIE(),
             _mediaEvents = {
             "abort" : _generalHandler,
@@ -44,8 +44,6 @@
 
         // Currently playing source
         _source,
-        // Reference to the video tag
-        _videotag,
         // Current duration
         _duration,
         // Current position
@@ -55,7 +53,7 @@
         // Whether we have sent out the BUFFER_FULL event
         _bufferFull,
         // If we should seek on canplay
-        _delayedSeek,
+        _delayedSeek = 0,
         // If we're currently dragging the seek bar
         _dragging = FALSE,
         // Current media state
@@ -66,8 +64,6 @@
         _bufferInterval = -1,
         // Last sent buffer amount
         _bufferPercent = -1,
-        // Event dispatcher
-        _eventDispatcher = new events.eventdispatcher(),
         // Whether or not we're listening to video tag events
         _attached = FALSE,
         // Quality levels
@@ -78,8 +74,6 @@
         _isAndroid = utils.isAndroid(FALSE, TRUE),
         // Whether or not we're on an iOS 7 device
         _isIOS7 = utils.isIOS(7),
-        // Reference to self
-        _this = this,
         
         //tracks for ios
         _tracks = [],
@@ -92,15 +86,16 @@
         //make sure we only do complete once
         _completeOnce = FALSE,
         
-        _beforecompleted = FALSE;
-        
-        utils.extend(_this, _eventDispatcher);
+        _beforecompleted = FALSE,
+
+        _this = utils.extend(this, new events.eventdispatcher());
 
         // Constructor
-        function _init(videotag) {
-            if (!videotag) videotag = document.createElement("video");
+        function _init() {
+            if (!_videotag) {
+                _videotag = document.createElement("video");
+            }
 
-            _videotag = videotag;
             _setupListeners();
 
             // Workaround for a Safari bug where video disappears on switch to fullscreen
@@ -123,12 +118,12 @@
 
         function _sendEvent(type, data) {
             if (_attached) {
-                _eventDispatcher.sendEvent(type, data);
+                _this.sendEvent(type, data);
             }
         }
 
         
-        function _generalHandler(evt) {
+        function _generalHandler() {//evt) {
             //if (evt) utils.log("%s %o (%s,%s)", evt.type, evt);
         }
 
@@ -163,7 +158,7 @@
         }
 
         function _round(number) {
-            return Number(number.toFixed(1));
+            return (number * 10|0)/10;
         }
 
         function _canPlayHandler(evt) {
@@ -233,10 +228,10 @@
             if (!_dragging) _setState(states.BUFFERING);
         }
 
-        function _errorHandler(evt) {
+        function _errorHandler() {//evt) {
             if (!_attached) return;
             utils.log("Error playing media: %o", _videotag.error);
-            _eventDispatcher.sendEvent(events.JWPLAYER_MEDIA_ERROR, {
+            _sendEvent(events.JWPLAYER_MEDIA_ERROR, {
                 message: "Error loading media: File could not be played"
             });
             _setState(states.IDLE);
@@ -258,7 +253,8 @@
         function _sendLevels(levels) {
             var publicLevels = _getPublicLevels(levels);
             if (publicLevels) {
-                _eventDispatcher.sendEvent(events.JWPLAYER_MEDIA_LEVELS, { levels: publicLevels, currentQuality: _currentQuality });
+                //_sendEvent?
+                _this.sendEvent(events.JWPLAYER_MEDIA_LEVELS, { levels: publicLevels, currentQuality: _currentQuality });
             }
         }
         
@@ -355,7 +351,7 @@
         var _seek = _this.seek = function(seekPos) {
             if (!_attached) return; 
 
-            if (!_dragging && _delayedSeek == 0) {
+            if (!_dragging && _delayedSeek === 0) {
                 _sendEvent(events.JWPLAYER_MEDIA_SEEK, {
                     position: _position,
                     offset: seekPos
@@ -385,7 +381,7 @@
             }
         };
         
-        function _volumeHandler(evt) {
+        function _volumeHandler() {//evt) {
             _sendEvent(events.JWPLAYER_MEDIA_VOLUME, {
                 volume: Math.round(_videotag.volume * 100)
             });
@@ -440,7 +436,7 @@
         }
         
         function _getBuffer() {
-            if (_videotag.buffered.length == 0 || _videotag.duration == 0)
+            if (_videotag.buffered.length === 0 || !_videotag.duration)
                 return 0;
             else
                 return _videotag.buffered.end(_videotag.buffered.length-1) / _videotag.duration;
@@ -488,17 +484,17 @@
              }
         };
 
-        function findTrack(kind, label) {
-            for (var i = 0; i < _videotag.textTracks.length; i++) {
-              if(_videotag.textTracks[i].label === label) {
-                  _usedTrack = i;
-                  return _videotag.textTracks[i];
-                }
-            }
-            var track = _videotag.addTextTrack(kind,label);
-            _usedTrack = _videotag.textTracks.length - 1;
-            return track;
-        }
+        // function findTrack(kind, label) {
+        //     for (var i = 0; i < _videotag.textTracks.length; i++) {
+        //       if(_videotag.textTracks[i].label === label) {
+        //           _usedTrack = i;
+        //           return _videotag.textTracks[i];
+        //         }
+        //     }
+        //     var track = _videotag.addTextTrack(kind,label);
+        //     _usedTrack = _videotag.textTracks.length - 1;
+        //     return track;
+        // }
         
         this.resetCaptions = function() {
             /*
@@ -519,7 +515,7 @@
         };
 
 
-        this.fsCaptions = function(state,curr) {
+        this.fsCaptions = function(state) {//, curr) {
            if (utils.isIOS() && _videotag.addTextTrack && !_tracksOnce) {
                var ret = null;
                
@@ -607,8 +603,7 @@
             return _getPublicLevels(_levels);
         };
         
-        // Call constructor
-        _init(videotag);
+        _init();
 
     };
 

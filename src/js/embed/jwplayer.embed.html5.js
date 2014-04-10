@@ -97,11 +97,16 @@
 			// HTML5 playback is not sufficiently supported on Blackberry devices; should fail over automatically.
 			if(navigator.userAgent.match(/BlackBerry/i) !== null) { return false; }
 
-
-			// Ensure RTMP files are not seen as videos
-			if (utils.isRtmp(file, type)) {
-				return false;
+			// Youtube JavaScript API Provider
+			if (utils.isYouTube(file)) {
+				// TODO: check that js api requirements are met first
+				// https://developers.google.com/youtube/js_api_reference
+				
+				return true;
 			}
+
+			// RTMP is not supported in HTML5
+			if (utils.isRtmp(file, type)) return false;
 
 			type = type || utils.extension(file);
 			var mappedType = extensionmap[type];

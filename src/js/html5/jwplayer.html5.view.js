@@ -146,7 +146,8 @@
 			_container = _createElement("span", VIEW_MAIN_CONTAINER_CLASS);
 			_container.id = _api.id + "_view";
 			_videoLayer = _createElement("span", VIEW_VIDEO_CONTAINER_CLASS);
-			
+			_videoLayer.id = _api.id + "_media";
+
 			_videoTag = _model.getVideo().getTag();
 			_videoLayer.appendChild(_videoTag);
 			_controlsLayer = _createElement("span", VIEW_CONTROLS_CONTAINER_CLASS);
