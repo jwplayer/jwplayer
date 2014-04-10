@@ -621,7 +621,7 @@
 						}
 					}
 				} else {
-					if (utils.canPlayHTML5(type)) {
+					if (jwplayer.embed.html5CanPlay(file, type)) {
 						if (!selectedType) {
 							selectedType = type;
 						}
@@ -637,9 +637,20 @@
 	
 	/** Returns true if the type is playable in HTML5 **/
 	utils.canPlayHTML5 = function(type) {
-		if (utils.isAndroid() && (type == "hls" || type == "m3u" || type == "m3u8")) return FALSE;
-		var mime = utils.extensionmap.types[type];
-		return (!!mime && !!jwplayer.vid.canPlayType && jwplayer.vid.canPlayType(mime));
+		if (utils.isAndroid()) {
+			if (type == "hls" || type == "m3u" || type == "m3u8") {
+				return FALSE;
+			}
+		}
+		var mime = utils.extensionmap.types[type] || utils.extensionmap[type];
+		if (mime && jwplayer.vid) {
+			try {
+				return jwplayer.vid.canPlayType(mime);
+			} catch(e) {
+				// log canPlayType exception
+			}
+		}
+		return FALSE;
 	};
 
 	/**

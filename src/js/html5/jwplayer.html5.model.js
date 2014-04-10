@@ -12,8 +12,9 @@
 		TRUE = true,
 		FALSE = !TRUE;
 
-	html5.model = function(config, video) {
-		var _model = this, 
+	html5.model = function(config, _defaultProvider) {
+		_defaultProvider = _defaultProvider || new html5.video();
+		var _model = this,
 			// Video provider
 			_video,
 			// Saved settings
@@ -63,8 +64,6 @@
 			// This gets added later
 			_model.playlist = [];
 			_model.setItem(0);
-			_model.setVideo(video ? video : new html5.video());
-
 		}
 		
 		var _eventMap = {};
@@ -98,15 +97,15 @@
 		
 		/** Sets the video provider **/
 		_model.setVideo = function(video) {
-			if (_video) {
-				_video.removeGlobalListener(_videoEventHandler);
+			if (video !== _video) {
+				if (_video) {
+					_video.removeGlobalListener(_videoEventHandler);
+				}
+				_video = video;
+				_video.volume(_model.volume);
+				_video.mute(_model.mute);
+				_video.addGlobalListener(_videoEventHandler);
 			}
-
-			_video = video;
-
-			_video.volume(_model.volume);
-			_video.mute(_model.mute);
-			_video.addGlobalListener(_videoEventHandler);
 		};
 		
 		_model.getVideo = function() {
@@ -144,17 +143,29 @@
             if (index == _model.playlist.length || index < -1) {
                 newItem = 0;
                 repeat = true;
-            }
-            else if (index == -1 || index > _model.playlist.length)
+            } else if (index == -1 || index > _model.playlist.length) {
                 newItem = _model.playlist.length - 1;
-            else
+            } else {
                 newItem = index;
-            
-            if (repeat  || newItem != _model.item) {
+            }
+
+            if (repeat || newItem !== _model.item) {
                 _model.item = newItem;
                 _model.sendEvent(events.JWPLAYER_PLAYLIST_ITEM, {
                     "index": _model.item
                 });
+
+	            // select provider based on item source (video, youtube...)
+				var provider = _defaultProvider;
+				if (_model.playlist.length) {
+					var item = _model.playlist[newItem];
+					if (utils.isYouTube(item.sources[0].file)) {
+						// TODO: re-use YT provider
+						provider = new html5.youtube(_model.id);
+						provider.init(item);
+					}
+				}
+				_model.setVideo(provider);
             }
         };
         
