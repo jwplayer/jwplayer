@@ -14,33 +14,32 @@ package com.longtailvideo.jwplayer.player {
 	
 	public class JavascriptInstreamAPI {
 		
-		protected var _isPlayer:IInstreamPlayer;
-		protected var _listeners:Object = {};
+		protected var _isPlayer:InstreamPlayer;
 		
 		public function JavascriptInstreamAPI() {
 			setupJSListeners();
 		}
 		
 		public function setPlayer(isplayer:InstreamPlayer):void {
-			
+			_destroyInstreamPlayer(_isPlayer);
 			_isPlayer = isplayer;
-			setupPlayerListeners();
-		}
-		
-		protected function setupPlayerListeners():void {
 			_isPlayer.addEventListener(InstreamEvent.JWPLAYER_INSTREAM_DESTROYED, instreamDestroyed);
 		}
 		
 		protected function instreamDestroyed(evt:InstreamEvent):void {
-			setTimeout(function():void {
-				//remove all listeners
-				_isPlayer.removeEventListener(InstreamEvent.JWPLAYER_INSTREAM_DESTROYED, instreamDestroyed);
-				for each (var eventType:String in _listeners) {
-					_isPlayer.removeEventListener(eventType, listenerCallback);
-				}
-				_listeners = {};
+			_destroyInstreamPlayer(evt.currentTarget as InstreamPlayer);
+		}
+		
+		private function _destroyInstreamPlayer(isplayer:InstreamPlayer):void {
+			if (!isplayer) return;
+			isplayer.removeEventListener(InstreamEvent.JWPLAYER_INSTREAM_DESTROYED, instreamDestroyed);
+			for each (var eventType:String in isplayer.jsListeners) {
+				isplayer.removeEventListener(eventType, listenerCallback);
+			}
+			if (isplayer === _isPlayer) {
+				isplayer.jsListeners = {};
 				_isPlayer = null;
-			}, 0);
+			}
 		}
 		
 		protected function setupJSListeners():void {
@@ -97,18 +96,18 @@ package com.longtailvideo.jwplayer.player {
 		protected function js_addEventListener(eventType:String, callback:String):void {
 			if (!_isPlayer) return;
 			
-			if (!_listeners[eventType]) {
-				_listeners[eventType] = [];
+			if (!_isPlayer.jsListeners[eventType]) {
+				_isPlayer.jsListeners[eventType] = [];
 				_isPlayer.addEventListener(eventType, listenerCallback);
 			}
-			(_listeners[eventType] as Array).push(callback);
+			(_isPlayer.jsListeners[eventType] as Array).push(callback);
 		}
 		
 		protected function js_removeEventListener(eventType:String, callback:String):void {
 			if (!_isPlayer) return;
 			_isPlayer.removeEventListener(eventType, listenerCallback);
 			
-			var callbacks:Array = _listeners[eventType];
+			var callbacks:Array = _isPlayer.jsListeners[eventType];
 			if (callbacks) {
 				var callIndex:Number = callbacks.indexOf(callback);
 				if (callIndex > -1) {
@@ -137,7 +136,7 @@ package com.longtailvideo.jwplayer.player {
 			
 			args.type = evt.type;
 			
-			var callbacks:Array = _listeners[evt.type] as Array;
+			var callbacks:Array = _isPlayer.jsListeners[evt.type] as Array;
 			
 			if (callbacks) {
 				for each (var call:String in callbacks) {
@@ -145,16 +144,14 @@ package com.longtailvideo.jwplayer.player {
 					if (evt.type == MediaEvent.JWPLAYER_MEDIA_COMPLETE) {
 						ExternalInterface.call(call, args);
 					} else {
-						//Insert 1ms delay to allow all Flash listeners to complete before notifying JavaScript
+						//asynch callback to allow all Flash listeners to complete before notifying JavaScript
 						setTimeout(function():void {
 							ExternalInterface.call(call, args);
 						}, 0);
 					}
 				}
 			}
-			
 		}
-		
 		
 		protected function listenerCallbackMedia(evt:MediaEvent):Object {
 			var returnObj:Object = {};
