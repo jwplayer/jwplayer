@@ -34,6 +34,9 @@
 		 * to fire, if necessary.
 		 */
 		function _complete() {
+			if (_errorState) {
+				_eventDispatcher.sendEvent(events.ERROR, {message: _errorMessage});
+			}
 			if (!_iscomplete) {
 				_iscomplete = true;
 				_status = utils.loaderstatus.COMPLETE;
