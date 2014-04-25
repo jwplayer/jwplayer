@@ -95,17 +95,28 @@
 		 */
 		function _html5CanPlay(file, type) {
 			// HTML5 playback is not sufficiently supported on Blackberry devices; should fail over automatically.
-			if(navigator.userAgent.match(/BlackBerry/i) !== null) { return false; }
+			if(navigator.userAgent.match(/BlackBerry/i) !== null) {
+				return false;
+			}
+
+			var extension = utils.extension(file);
 
 			// HLS not sufficiently supported on Android devices; should fail over automatically.
-			if (utils.isAndroid() && (utils.extension(file) == "m3u" || utils.extension(file) == "m3u8")) {
-				return false;
+			if (extension == "m3u" || extension == "m3u8") {
+				//when androidhls is set to true on Android 4.1 and up allow HLS playback
+				if (_options.androidhls) {
+					if (utils.isAndroid(2, true) || utils.isAndroid(3, true) || utils.isAndroid('4.0', true)) {
+						return false;
+					}
+				} else if (utils.isAndroid()) {
+					return false;
+				}
 			}
 
 			// Ensure RTMP files are not seen as videos
 			if (utils.isRtmp(file,type)) return false;
 
-			var mappedType = extensionmap[type ? type : utils.extension(file)];
+			var mappedType = extensionmap[type ? type : extension];
 			
 			// If no type or unrecognized type, don't allow to play
 			if (!mappedType) {
