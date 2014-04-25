@@ -154,11 +154,11 @@
 	/** Matches Android devices **/	
 	utils.isAndroid = function(version, excludeChrome) {
 		//Android Browser appears to include a user-agent string for Chrome/18
-		var androidBrowser = excludeChrome ? !_userAgentMatch(/chrome\/[23456789]/i) : TRUE;
+		var androidBrowser = excludeChrome ? !_userAgentMatch(/chrome\/[1234567890]/i) : TRUE;
 		if (version) {
-			return androidBrowser && _userAgentMatch(new RegExp("android.*"+version, "i"));
+			return androidBrowser && _userAgentMatch(new RegExp("Android\s*"+version, "i"));
 		}
-		return androidBrowser && _userAgentMatch(/android/i);
+		return androidBrowser && _userAgentMatch(/Android/i);
 	};
 
 	/** Matches iOS and Android devices **/	
