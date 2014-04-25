@@ -339,7 +339,8 @@
 			'background-color': 'transparent',
 			'text-align': 'left',
 			'direction':'ltr',
-			'-webkit-tap-highlight-color': 'rgba(255, 255, 255, 0)'
+			'-webkit-tap-highlight-color': 'rgba(255, 255, 255, 0)',
+			'float':'none'
 		});
 		
 		_css(JW_CLASS + "ul", { 'list-style': "none" });
