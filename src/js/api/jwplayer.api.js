@@ -253,7 +253,9 @@
 			if (plugins.vast) {
 				plugins.vast.jwPlayAd(ad);
 			}
-			// _callInternal("jwPlayAd", ad);
+			else  {
+				_callInternal("jwPlayAd",ad);
+			}
 		};
 		_this.pauseAd = function() {
 			var plugins = jwplayer(_this.id).plugins;
