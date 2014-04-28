@@ -5,14 +5,15 @@
  * @version 6.0
  */
 (function(jwplayer) {
-	var utils = jwplayer.utils, extensionmap = utils.extensionmap, events = jwplayer.events;
+	var utils = jwplayer.utils,
+		extensionmap = utils.extensionmap,
+		events = jwplayer.events;
 
 	jwplayer.embed.html5 = function(_container, _player, _options, _loader, _api) {
 		var _this = this,
 			_eventdispatcher = new events.eventdispatcher();
 		
 		utils.extend(_this, _eventdispatcher);
-		
 		
 		function _resizePlugin (plugin, div, onready) {
 			return function(evt) {
@@ -74,7 +75,7 @@
 							var file = sources[i].file,
 								type = sources[i].type;
 							
-							if (_html5CanPlay(file, type)) {
+							if (_html5CanPlay(file, type, _options.androidhls)) {
 								return true;
 							}
 						}
@@ -86,78 +87,76 @@
 			
 			return false;
 		};
-		
-		/**
-		 * Determines if a video element can play a particular file, based on its extension
-		 * @param {Object} file
-		 * @param {Object} type
-		 * @return {Boolean}
-		 */
-		function _html5CanPlay(file, type) {
-			// HTML5 playback is not sufficiently supported on Blackberry devices; should fail over automatically.
-			if(navigator.userAgent.match(/BlackBerry/i) !== null) {
-				return false;
-			}
-
-			var extension = utils.extension(file);
-
-			// HLS not sufficiently supported on Android devices; should fail over automatically.
-			if (extension == "m3u" || extension == "m3u8") {
-				//when androidhls is set to true on Android 4.1 and up allow HLS playback
-				if (_options.androidhls) {
-					if (utils.isAndroid(2, true) || utils.isAndroid(3, true) || utils.isAndroid('4.0', true)) {
-						return false;
-					}
-				} else if (utils.isAndroid()) {
-					return false;
-				}
-			}
-
-			// Ensure RTMP files are not seen as videos
-			if (utils.isRtmp(file,type)) return false;
-
-			var mappedType = extensionmap[type ? type : extension];
-			
-			// If no type or unrecognized type, don't allow to play
-			if (!mappedType) {
-				return false;
-			}
-			
-			// Extension is recognized as a format Flash can play, but no HTML5 support is listed  
-			if (mappedType.flash && !mappedType.html5) {
-				return false;
-			}
-			
-			// Last, but not least, we ask the browser 
-			// (But only if it's a video with an extension known to work in HTML5)
-			return _browserCanPlay(mappedType.html5);
-		}
-		
-		/**
-		 * 
-		 * @param {DOMMediaElement} video
-		 * @param {String} mimetype
-		 * @return {Boolean}
-		 */
-		function _browserCanPlay(mimetype) {
-			var video = jwplayer.vid;
-
-			// OK to use HTML5 with no extension
-			if (!mimetype) {
-				return true;
-			}
-
-			try {
-				if (video.canPlayType(mimetype)) {
-					return true;
-				} else {
-					return false;
-				}
-			} catch(e) {
-				return false;
-			}
-			
-		}
 	};
+
+	/**
+	 * Determines if a video element can play a particular file, based on its extension
+	 * @param {Object} file
+	 * @param {Object} type
+	 * @return {Boolean}
+	 */
+	function _html5CanPlay(file, type, androidhls) {
+		// HTML5 playback is not sufficiently supported on Blackberry devices; should fail over automatically.
+		if(navigator.userAgent.match(/BlackBerry/i) !== null) {
+			return false;
+		}
+
+		var extension = utils.extension(file);
+
+		// HLS not sufficiently supported on Android devices; should fail over automatically.
+		if (extension == "m3u" || extension == "m3u8") {
+			//when androidhls is set to true on Android 4.1 and up allow HLS playback
+			if (androidhls) {
+				if (utils.isAndroid(2, true) || utils.isAndroid(3, true) || utils.isAndroid('4.0', true)) {
+					return false;
+				} else if (utils.isAndroid()) {
+					// return true for versions 4.1 and up.
+					// canPlayType returns '' in native browser even though HLS will play
+					return true;
+				}
+			} else if (utils.isAndroid()) {
+				return false;
+			}
+		}
+
+		// Ensure RTMP files are not seen as videos
+		if (utils.isRtmp(file,type)) return false;
+
+		var mappedType = extensionmap[type ? type : extension];
+		
+		// If no type or unrecognized type, don't allow to play
+		if (!mappedType) {
+			return false;
+		}
+		
+		// Extension is recognized as a format Flash can play, but no HTML5 support is listed  
+		if (mappedType.flash && !mappedType.html5) {
+			return false;
+		}
+		
+		// Last, but not least, we ask the browser 
+		// (But only if it's a video with an extension known to work in HTML5)
+		return _browserCanPlay(mappedType.html5);
+	}
+
+	/**
+	 * 
+	 * @param {DOMMediaElement} video
+	 * @param {String} mimetype
+	 * @return {Boolean}
+	 */
+	function _browserCanPlay(mimetype) {
+		// OK to use HTML5 with no extension
+		if (!mimetype) {
+			return true;
+		}
+		try {
+			var result = jwplayer.vid.canPlayType(mimetype);
+			return !!result;
+		} catch(e) {}
+		return false;
+	}
+
+	jwplayer.embed.html5CanPlay = _html5CanPlay;
 	
 })(jwplayer);
