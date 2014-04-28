@@ -40,6 +40,7 @@
 			"oga": mimeMap[vorbis],
 			"webm": mimeMap[webm],
 			"m3u8": mimeMap.hls,
+			"m3u": mimeMap.hls,
 			"hls": mimeMap.hls
 		}, 
 		videoX = "video", 

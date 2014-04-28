@@ -198,7 +198,7 @@
 	utils.translateEventResponse = function(type, eventProperties) {
 		var translated = utils.extend({}, eventProperties);
 		if (type == jwplayer.events.JWPLAYER_FULLSCREEN && !translated.fullscreen) {
-			translated.fullscreen = translated.message == "true" ? TRUE : FALSE;
+			translated.fullscreen = (translated.message === "true");
 			delete translated.message;
 		} else if (typeof translated.data == OBJECT) {
 			// Takes ViewEvent "data" block and moves it up a level
@@ -564,11 +564,11 @@
 	};
 	
 	/** Go through the playlist and choose a single playable type to play; remove sources of a different type **/
-	utils.filterPlaylist = function(playlist, checkFlash) {
+	utils.filterPlaylist = function(playlist, checkFlash, androidhls) {
 		var pl = [], i, item, j, source;
 		for (i=0; i < playlist.length; i++) {
 			item = utils.extend({}, playlist[i]);
-			item.sources = utils.filterSources(item.sources);
+			item.sources = utils.filterSources(item.sources, FALSE, androidhls);
 			if (item.sources.length > 0) {
 				for (j = 0; j < item.sources.length; j++) {
 					source = item.sources[j];
@@ -582,7 +582,7 @@
 		if (checkFlash && pl.length === 0) {
 			for (i=0; i < playlist.length; i++) {
 				item = utils.extend({}, playlist[i]);
-				item.sources = utils.filterSources(item.sources, TRUE);
+				item.sources = utils.filterSources(item.sources, TRUE, androidhls);
 				if (item.sources.length > 0) {
 					for (j = 0; j < item.sources.length; j++) {
 						source = item.sources[j];
@@ -596,7 +596,7 @@
 	};
 
 	/** Filters the sources by taking the first playable type and eliminating sources of a different type **/
-	utils.filterSources = function(sources, filterFlash) {
+	utils.filterSources = function(sources, filterFlash, androidhls) {
 		var selectedType, newSources, extensionmap = utils.extensionmap;
 		if (sources) {
 			newSources = [];
@@ -621,7 +621,7 @@
 						}
 					}
 				} else {
-					if (utils.canPlayHTML5(type)) {
+					if (jwplayer.embed.html5CanPlay(file, type, androidhls)) {
 						if (!selectedType) {
 							selectedType = type;
 						}
@@ -637,9 +637,8 @@
 	
 	/** Returns true if the type is playable in HTML5 **/
 	utils.canPlayHTML5 = function(type) {
-		if (utils.isAndroid() && (type == "hls" || type == "m3u" || type == "m3u8")) return FALSE;
 		var mime = utils.extensionmap.types[type];
-		return (!!mime && !!jwplayer.vid.canPlayType && jwplayer.vid.canPlayType(mime));
+		return (!!mime && !!jwplayer.vid.canPlayType && !!jwplayer.vid.canPlayType(mime));
 	};
 
 	/**
