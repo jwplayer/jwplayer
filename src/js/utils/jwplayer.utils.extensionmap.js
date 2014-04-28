@@ -36,7 +36,7 @@
 			"aac": mimeMap[aac],
 			"mp3": mimeMap[mp3],
 			"ogv": mimeMap[ogg],
-			"ogg": mimeMap[vorbis],
+			"ogg": mimeMap[ogg],
 			"oga": mimeMap[vorbis],
 			"webm": mimeMap[webm],
 			"m3u8": mimeMap.hls,

@@ -122,7 +122,7 @@
 		// Ensure RTMP files are not seen as videos
 		if (utils.isRtmp(file,type)) return false;
 
-		var mappedType = extensionmap[type ? type : extension];
+		var mappedType = extensionmap[type ? type : extension] || extensionmap[extension];
 		
 		// If no type or unrecognized type, don't allow to play
 		if (!mappedType) {

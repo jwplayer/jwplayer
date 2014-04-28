@@ -607,7 +607,8 @@
 				if (file) file = utils.trim(file);
 				
 				if (!type) {
-					type = extensionmap.extType(utils.extension(file));
+					var extension = utils.extension(file);
+					type = extensionmap.extType(extension);
 					sources[i].type = type;
 				}
 
