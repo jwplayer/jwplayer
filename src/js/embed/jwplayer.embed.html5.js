@@ -102,12 +102,14 @@
 		}
 
 		var extension = utils.extension(file);
+		type = type || extensionmap.extType(extension);
 
 		// HLS not sufficiently supported on Android devices; should fail over automatically.
-		if (extension == "m3u" || extension == "m3u8") {
+		if (type === "hls") {
 			//when androidhls is set to true on Android 4.1 and up allow HLS playback
 			if (androidhls) {
-				if (utils.isAndroid(2, true) || utils.isAndroid(3, true) || utils.isAndroid('4.0', true)) {
+				var isAndroidNative = utils.isAndroidNative;
+				if (isAndroidNative(2) || isAndroidNative(3) || isAndroidNative('4.0')) {
 					return false;
 				} else if (utils.isAndroid()) {
 					// return true for versions 4.1 and up.
@@ -122,7 +124,7 @@
 		// Ensure RTMP files are not seen as videos
 		if (utils.isRtmp(file,type)) return false;
 
-		var mappedType = extensionmap[type ? type : extension] || extensionmap[extension];
+		var mappedType = extensionmap[type] || extensionmap[extension];
 		
 		// If no type or unrecognized type, don't allow to play
 		if (!mappedType) {

@@ -152,13 +152,23 @@
 	};
 
 	/** Matches Android devices **/	
+	utils.isAndroidNative = function(version) {
+		return utils.isAndroid(version, true);
+	};
+
 	utils.isAndroid = function(version, excludeChrome) {
 		//Android Browser appears to include a user-agent string for Chrome/18
-		var androidBrowser = excludeChrome ? !_userAgentMatch(/chrome\/[1234567890]/i) : TRUE;
-		if (version) {
-			return androidBrowser && _userAgentMatch(new RegExp("Android\\s*"+version, "i"));
+		if (excludeChrome && _userAgentMatch(/chrome\/[123456789]/i)) {
+			return false;
 		}
-		return androidBrowser && _userAgentMatch(/Android/i);
+		if (version) {
+			// make sure whole number version check ends with point '.'
+			if (utils.isInt(version) && !/\./.test(version)) {
+				version = ''+ version +'.';
+			}
+			return _userAgentMatch(new RegExp("Android\\s*"+version, "i"));
+		}
+		return _userAgentMatch(/Android/i);
 	};
 
 	/** Matches iOS and Android devices **/	
@@ -182,6 +192,10 @@
 			}
 		}
 		return jwCookies;
+	};
+
+	utils.isInt = function(value) {
+		return value % 1 === 0;
 	};
 
 	/** Returns the true type of an object * */
@@ -679,7 +693,7 @@
 	 * @return {Object} The original value in the correct primitive type.
 	 */
 	utils.serialize = function(val) {
-		if (val == null) {
+		if (val === null) {
 			return null;
 		} else if (val.toString().toLowerCase() == 'true') {
 			return TRUE;

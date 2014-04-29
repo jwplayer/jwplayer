@@ -74,8 +74,8 @@
         _levels,
         // Current quality level index
         _currentQuality = -1,
-        // Whether or not we're on an Android device
-        _isAndroid = utils.isAndroid(FALSE, TRUE),
+        // Whether or not we're on an Android device and Not Chrome
+        _isAndroid = utils.isAndroidNative(),
         // Whether or not we're on an iOS 7 device
         _isIOS7 = utils.isIOS(7),
         // Reference to self
