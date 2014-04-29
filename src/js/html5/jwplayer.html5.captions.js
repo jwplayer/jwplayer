@@ -66,7 +66,7 @@
             /** Event dispatcher for captions events. **/
             _eventDispatcher = new events.eventdispatcher(),
             
-            _nonChromeAndroid = utils.isAndroid(4) && !utils.isChrome();
+            _nonChromeAndroid = utils.isAndroidNative(4);
 
         utils.extend(this, _eventDispatcher);
 
