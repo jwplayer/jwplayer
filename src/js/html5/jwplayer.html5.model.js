@@ -13,7 +13,7 @@
 		FALSE = !TRUE;
 
 	html5.model = function(config, _defaultProvider) {
-		_defaultProvider = _defaultProvider || new html5.video();
+		_defaultProvider = _defaultProvider || new html5.video(UNDEF, 'default');
 		var _model = this,
 			// Video provider
 			_video,

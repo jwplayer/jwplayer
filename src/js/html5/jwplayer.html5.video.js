@@ -14,81 +14,82 @@
         FALSE = false;
     
     /** HTML5 video class * */
-    jwplayer.html5.video = function(_videotag) {
+    jwplayer.html5.video = function(_videotag, _name) {
+        _name = _name || '';
         var _isIE = utils.isIE(),
             _mediaEvents = {
-            "abort" : _generalHandler,
-            "canplay" : _canPlayHandler,
-            "canplaythrough" : _generalHandler,
-            "durationchange" : _durationUpdateHandler,
-            "emptied" : _generalHandler,
-            "ended" : _endedHandler,
-            "error" : _errorHandler,
-            "loadeddata" : _generalHandler,
-            "loadedmetadata" : _canPlayHandler,
-            "loadstart" : _generalHandler,
-            "pause" : _playHandler,
-            "play" : _playHandler,
-            "playing" : _playHandler,
-            "progress" : _progressHandler,
-            "ratechange" : _generalHandler,
-            "readystatechange" : _generalHandler,
-            "seeked" : _sendSeekEvent,
-            "seeking" : _isIE ? _bufferStateHandler : _generalHandler,
-            "stalled" : _generalHandler,
-            "suspend" : _generalHandler,
-            "timeupdate" : _timeUpdateHandler,
-            "volumechange" : _volumeHandler,
-            "waiting" : _bufferStateHandler
-        },
+                abort : _generalHandler,
+                canplay : _canPlayHandler,
+                canplaythrough : _generalHandler,
+                durationchange : _durationUpdateHandler,
+                emptied : _generalHandler,
+                ended : _endedHandler,
+                error : _errorHandler,
+                loadeddata : _generalHandler,
+                loadedmetadata : _canPlayHandler,
+                loadstart : _generalHandler,
+                pause : _playHandler,
+                play : _playHandler,
+                playing : _playHandler,
+                progress : _progressHandler,
+                ratechange : _generalHandler,
+                readystatechange : _generalHandler,
+                seeked : _sendSeekEvent,
+                seeking : _isIE ? _bufferStateHandler : _generalHandler,
+                stalled : _generalHandler,
+                suspend : _generalHandler,
+                timeupdate : _timeUpdateHandler,
+                volumechange : _volumeHandler,
+                waiting : _bufferStateHandler
+            },
 
-        // Currently playing source
-        _source,
-        // Current duration
-        _duration,
-        // Current position
-        _position,
-        // Whether seeking is ready yet
-        _canSeek,
-        // Whether we have sent out the BUFFER_FULL event
-        _bufferFull,
-        // If we should seek on canplay
-        _delayedSeek = 0,
-        // If we're currently dragging the seek bar
-        _dragging = FALSE,
-        // Current media state
-        _state = states.IDLE,
-        // Save the volume state before muting
-        _lastVolume,
-        // Using setInterval to check buffered ranges
-        _bufferInterval = -1,
-        // Last sent buffer amount
-        _bufferPercent = -1,
-        // Whether or not we're listening to video tag events
-        _attached = FALSE,
-        // Quality levels
-        _levels,
-        // Current quality level index
-        _currentQuality = -1,
-        // Whether or not we're on an Android device and Not Chrome
-        _isAndroid = utils.isAndroidNative(),
-        // Whether or not we're on an iOS 7 device
-        _isIOS7 = utils.isIOS(7),
-        
-        //tracks for ios
-        _tracks = [],
-        
-        _usedTrack = 0,
-        //selected track
-        
-        _tracksOnce = false,
-        
-        //make sure we only do complete once
-        _completeOnce = FALSE,
-        
-        _beforecompleted = FALSE,
+            // Currently playing source
+            _source,
+            // Current duration
+            _duration,
+            // Current position
+            _position,
+            // Whether seeking is ready yet
+            _canSeek,
+            // Whether we have sent out the BUFFER_FULL event
+            _bufferFull,
+            // If we should seek on canplay
+            _delayedSeek = 0,
+            // If we're currently dragging the seek bar
+            _dragging = FALSE,
+            // Current media state
+            _state = states.IDLE,
+            // Save the volume state before muting
+            _lastVolume,
+            // Using setInterval to check buffered ranges
+            _bufferInterval = -1,
+            // Last sent buffer amount
+            _bufferPercent = -1,
+            // Whether or not we're listening to video tag events
+            _attached = FALSE,
+            // Quality levels
+            _levels,
+            // Current quality level index
+            _currentQuality = -1,
+            // Whether or not we're on an Android device and Not Chrome
+            _isAndroid = utils.isAndroidNative(),
+            // Whether or not we're on an iOS 7 device
+            _isIOS7 = utils.isIOS(7),
+            
+            //tracks for ios
+            _tracks = [],
+            
+            _usedTrack = 0,
+            //selected track
+            
+            _tracksOnce = false,
+            
+            //make sure we only do complete once
+            _completeOnce = FALSE,
+            
+            _beforecompleted = FALSE,
 
-        _this = utils.extend(this, new events.eventdispatcher());
+            _this = utils.extend(this, new events.eventdispatcher());
 
         // Constructor
         function _init() {
@@ -174,7 +175,11 @@
                     _videotag.muted = FALSE;
                     _videotag.muted = TRUE;
                 }
-                _sendEvent(events.JWPLAYER_MEDIA_META,{duration:_videotag.duration,height:_videotag.videoHeight,width:_videotag.videoWidth});
+                _sendEvent(events.JWPLAYER_MEDIA_META,{
+                    duration: _videotag.duration,
+                    height: _videotag.videoHeight,
+                    width: _videotag.videoWidth
+                });
             }
         }
         
@@ -213,19 +218,23 @@
                     _pause();
                 }
             } else {
-                if (utils.isFF() && evt.type=="play" && _state == states.BUFFERING)
+                if (utils.isFF() && evt.type=="play" && _state == states.BUFFERING) {
                     // In FF, we get an extra "play" event on startup - we need to wait for "playing",
                     // which is also handled by this function
                     return;
-                else
+                } else {
                     _setState(states.PLAYING);
+
+                }
             }
         }
 
         function _bufferStateHandler(evt) {
             _generalHandler(evt);
             if (!_attached) return;
-            if (!_dragging) _setState(states.BUFFERING);
+            if (!_dragging) {
+                _setState(states.BUFFERING);
+            }
         }
 
         function _errorHandler() {//evt) {
@@ -322,7 +331,9 @@
         _this.stop = function() {
             if (!_attached) return;
             _videotag.removeAttribute("src");
-            if (!_isIE) _videotag.load();
+            if (!_isIE) {
+                _videotag.load();
+            }
             _currentQuality = -1;
             clearInterval(_bufferInterval);
             _setState(states.IDLE);
@@ -344,8 +355,11 @@
         _this.seekDrag = function(state) {
             if (!_attached) return; 
             _dragging = state;
-            if (state) _videotag.pause();
-            else _videotag.play();
+            if (state) {
+                _videotag.pause();
+            } else {
+                _videotag.play();
+            }
         };
         
         var _seek = _this.seek = function(seekPos) {
@@ -436,10 +450,10 @@
         }
         
         function _getBuffer() {
-            if (_videotag.buffered.length === 0 || !_videotag.duration)
+            if (!_videotag.duration || _videotag.buffered.length === 0) {
                 return 0;
-            else
-                return _videotag.buffered.end(_videotag.buffered.length-1) / _videotag.duration;
+            }
+            return _videotag.buffered.end(_videotag.buffered.length-1) / _videotag.duration;
         }
         
         function _endedHandler(evt) {
@@ -516,26 +530,26 @@
 
 
         this.fsCaptions = function(state) {//, curr) {
-           if (utils.isIOS() && _videotag.addTextTrack && !_tracksOnce) {
-               var ret = null;
+            if (utils.isIOS() && _videotag.addTextTrack && !_tracksOnce) {
+                var ret = null;
                
-               utils.foreach(_tracks, function(index,elem) {
+                utils.foreach(_tracks, function(index,elem) {
                     if (!state && elem.mode == "showing") {
                         ret = parseInt(index);
                     }
                     if (!state)
                         elem.mode = "hidden";
-               });
+                });
                /*if (state && _tracks[0]) {
                     _videotag.textTracks[0].mode = "showing";
                     _videotag.textTracks[0].mode = "hidden";
                     if (curr > 0) {
                         _tracks[curr-1].mode = "showing";
                     }
-               }*/
-               if (!state) {
-                   return ret;
-               }
+                }*/
+                if (!state) {
+                    return ret;
+                }
             }
         };
         
