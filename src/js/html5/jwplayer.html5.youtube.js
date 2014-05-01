@@ -27,7 +27,9 @@
 			// function to call once api and view are ready
 			_youtubeEmbedReadyCallback = null,
 			// update timer
-			_playingInterval = -1;
+			_playingInterval = -1,
+			// post roll support
+            _beforecompleted = false;
 
 		// Load iFrame API
 		if (!_youtube && !_scriptLoader) {
@@ -313,6 +315,11 @@
 
 		_this.attachMedia = function() {
 			console.error('attachMedia called for Youtube');
+			if (_beforecompleted) {
+                _setState(states.IDLE);
+                _dispatchEvent(events.JWPLAYER_MEDIA_COMPLETE);
+                _beforecompleted = false;
+            }
 		};
 
 		// TODO: player must not expect tag to be video for all providers
@@ -332,6 +339,7 @@
         };
 
         this.checkComplete = function() {
+            return _beforecompleted;
         };
 
         _this.setControls = noop;
