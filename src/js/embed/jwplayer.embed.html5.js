@@ -99,7 +99,7 @@
 		}
 
 		// Youtube JavaScript API Provider
-		if (utils.isYouTube(file)) {
+		if (type === 'youtube' || utils.isYouTube(file)) {
 			// TODO: check that js api requirements are met first
 			// https://developers.google.com/youtube/js_api_reference
 			return true;
@@ -109,7 +109,7 @@
 		type = type || extensionmap.extType(extension);
 
 		// HLS not sufficiently supported on Android devices; should fail over automatically.
-		if (type === "hls") {
+		if (type === 'hls') {
 			//when androidhls is set to true, allow HLS playback on Android 4.1 and up
 			if (androidhls) {
 				var isAndroidNative = utils.isAndroidNative;
