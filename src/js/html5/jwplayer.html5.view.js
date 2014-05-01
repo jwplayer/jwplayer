@@ -16,7 +16,6 @@
 		_isIPad = utils.isIPad(),
 		_isIPod = utils.isIPod(),
 		_isAndroid = utils.isAndroid(),
-		_isIOS = utils.isIOS(),
 		DOCUMENT = document,
 		PLAYER_CLASS = "jwplayer",
 		ASPECT_MODE = "aspectMode",
@@ -148,7 +147,7 @@
 			_videoLayer.id = _api.id + "_media";
 
 			// adds video tag to video layer
-			_model.setContainer(_videoLayer);
+			_model.getVideo().setContainer(_videoLayer);
 
 			_controlsLayer = _createElement("span", VIEW_CONTROLS_CONTAINER_CLASS);
 			_instreamLayer = _createElement("span", VIEW_INSTREAM_CONTAINER_CLASS);
@@ -300,11 +299,10 @@
 		}
 	
 		function _captionsLoadedHandler() {//evt) {
-			
 			//ios7captions
-			//_model.getVideo().addCaptions(evt.captionData,_model.fullscreen, _api.jwGetCurrentCaptions());
+			//_model.getVideo().addCaptions(evt.captionData);
+			// set current captions evt.captionData[_api.jwGetCurrentCaptions()]
 		}
-	
 	
 		function _createElement(elem, className) {
 			var newElement = DOCUMENT.createElement(elem);
@@ -460,60 +458,14 @@
 		}
 
 		/** 
-		 * Switch to fullscreen mode.  If a native fullscreen method is available in the browser, use that.  
-		 * Otherwise, use the false fullscreen method using CSS. 
+		 * Switch fullscreen mode.
 		 **/
 		var _fullscreen = this.fullscreen = function(state) {
 			if (!utils.exists(state)) {
 				state = !_model.fullscreen;
 			}
 
-			if (state) {
-				if (_isAudioFile()) return;
-				
-				//ios7captions
-				//_model.getVideo().fsCaptions(state,_api.jwGetCurrentCaptions());
-				
-				if (!_isMobile && !_model.fullscreen) {
-					_fakeFullscreen(TRUE);
-					if (_playerElement.requestFullScreen) {
-						_playerElement.requestFullScreen();
-					} else if (_playerElement.mozRequestFullScreen) {
-						_playerElement.mozRequestFullScreen();
-					} else if (_playerElement.webkitRequestFullScreen) {
-						_playerElement.webkitRequestFullScreen();
-					} else if (_playerElement.msRequestFullscreen) {
-						_playerElement.msRequestFullscreen();
-					}
-				}
-				_model.setFullscreen(TRUE);
-
-			} else {
-				
-				//commenting out ios7 support
-				//var curr = _model.getVideo().fsCaptions(state,_api.jwGetCurrentCaptions());
-				//if (curr)
-				 //   _api.jwSetCurrentCaptions(curr+1);
-				//else 
-				//    _api.jwSetCurrentCaptions(0);
-				if (!_isMobile && _model.fullscreen) {
-					_fakeFullscreen(FALSE);
-					if (DOCUMENT.cancelFullScreen) {  
-						DOCUMENT.cancelFullScreen();  
-					} else if (DOCUMENT.mozCancelFullScreen) {  
-						DOCUMENT.mozCancelFullScreen();  
-					} else if (DOCUMENT.webkitCancelFullScreen) {  
-						DOCUMENT.webkitCancelFullScreen();  
-					} else if (DOCUMENT.msExitFullscreen) {
-						DOCUMENT.msExitFullscreen();
-					}
-				}
-				_model.setFullscreen(FALSE);
-
-				if (_isIPad && _api.jwGetState() == states.PAUSED) {
-					setTimeout(_showDisplay, 500);
-				}
-			}
+			_toggleFullscreen(state);
 
 			_redrawComponent(_controlbar);
 			_redrawComponent(_display);
@@ -648,25 +600,17 @@
 		}
 		
 		function _resizeMedia(width, height) {
-			var videoWidth = _model.getVideo().getWidth(),
-				videoHeight = _model.getVideo().getHeight();
-
-			if (videoWidth && videoHeight) {
-				if (!width || isNaN(Number(width))) {
-					width  = _videoLayer.clientWidth;
-				}
-				if (!height || isNaN(Number(height))) {
-					height = _videoLayer.clientHeight;
-				}
-				var transformScale = utils.stretch(_model.stretching,
-					_model.getVideo().getTag(), 
-					width, height, 
-					videoWidth, videoHeight);
-				// poll resizing if video is transformed
-				if (transformScale) {
-					clearTimeout(_resizeMediaTimeout);
-					_resizeMediaTimeout = setTimeout(_resizeMedia, 250);
-				}
+			if (!width || isNaN(Number(width))) {
+				width  = _videoLayer.clientWidth;
+			}
+			if (!height || isNaN(Number(height))) {
+				height = _videoLayer.clientHeight;
+			}
+			var transformScale = _model.getVideo().resize(width, height, _model.stretching);
+			// poll resizing if video is transformed
+			if (transformScale) {
+				clearTimeout(_resizeMediaTimeout);
+				_resizeMediaTimeout = setTimeout(_resizeMedia, 250);
 			}
 		}
 		
@@ -714,16 +658,49 @@
 		 * False fullscreen mode. This is used for browsers without full support for HTML5 fullscreen.
 		 * This method sets the CSS of the container element to a fixed position with 100% width and height.
 		 */
-		function _fakeFullscreen(state) {
-			//this was here to fix a bug with iOS resizing from fullscreen, but it caused another bug with android, multiple sources.
-			if (_isIOS) return;
-			if (state) {
-				_playerElement.className += " jwfullscreen";
-				(DOCUMENT.getElementsByTagName("body")[0]).style["overflow-y"] = JW_CSS_HIDDEN;
-			} else {
-				_playerElement.className = _playerElement.className.replace(/\s+jwfullscreen/, "");
-				(DOCUMENT.getElementsByTagName("body")[0]).style["overflow-y"] = "";
+		function _toggleFullscreen(state) {
+			state = !!state;
+			// don't go fullscreen in audio mode
+			if (state && _isAudioFile()) {
+				return;
 			}
+			// desktop fullscreen
+			if (!_isMobile && state !== _model.fullscreen) {
+				// If a native fullscreen method is available in the browser, use that.
+				if (state) {
+					(
+						_playerElement.requestFullScreen ||
+						_playerElement.mozRequestFullScreen ||
+						_playerElement.webkitRequestFullScreen ||
+						_playerElement.msRequestFullscreen
+					)();
+				} else {
+					(
+						DOCUMENT.cancelFullScreen ||
+						DOCUMENT.mozCancelFullScreen ||
+						DOCUMENT.webkitCancelFullScreen ||
+						DOCUMENT.msExitFullscreen
+					)();
+				}
+				// use the false fullscreen method using CSS.
+				if (state) {
+					_playerElement.className += " jwfullscreen";
+					_css.style(DOCUMENT.body, {
+						'overflow-y': JW_CSS_HIDDEN
+					});
+				} else {
+					_playerElement.className = _playerElement.className.replace(/\s+jwfullscreen/, "");
+					_css.style(DOCUMENT.body, {
+						'overflow-y': ''
+					});
+				}
+			}
+			// delay refresh on iPad when exiting fullscreen
+			if (!state && _isIPad && _api.jwGetState() == states.PAUSED) {
+				setTimeout(_showDisplay, 500);
+			}
+			// update model and set fullscreen on video provider (mobile video tag)
+			_model.setFullscreen(state);
 		}
 
 		/**
@@ -732,10 +709,10 @@
 		function _isNativeFullscreen() {
 			var fsElement = DOCUMENT.mozFullScreenElement || 
 							DOCUMENT.webkitCurrentFullScreenElement ||
-							DOCUMENT.msFullscreenElement ||
-							_model.getVideo().getTag().webkitDisplayingFullscreen;
+							DOCUMENT.msFullscreenElement;
 			
-			return !!(fsElement && (!fsElement.id || fsElement.id == _api.id));
+			return !!(fsElement && (!fsElement.id || fsElement.id == _api.id)) ||
+					_model.getVideo().getFullScreen();
 		}
 		
 		/**

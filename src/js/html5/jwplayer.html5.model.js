@@ -20,8 +20,6 @@
 			_providers = {
 				html5: _defaultProvider || new html5.video(UNDEF, 'default')
 			},
-			// Video Container
-			_container,
 			// Saved settings
 			_cookies = utils.getCookies(),
 			// Sub-component configurations
@@ -89,7 +87,7 @@
 						
 					if (_model[stateProp] != evt[eventProp]) {
 						_model[stateProp] = evt[eventProp];
-						_sendEvent = true;
+						_sendEvent = TRUE;
 					}
 				}
 				if (_sendEvent) {
@@ -116,35 +114,18 @@
 		_model.getVideo = function() {
 			return _video;
 		};
-
-		_model.setContainer = function(element) {
-			_container = element;
-			element.appendChild(_video.getTag());
-		};
 		
 		_model.seekDrag = function(state) {
 			_video.seekDrag(state);
 		};
 		
 		_model.setFullscreen = function(state) {
-			if (utils.isMobile()) {
-				if (state) {
-					try {
-						_video.getTag().webkitEnterFullScreen();
-					} catch(e) {
-						//object can't go fullscreen
-						return;
-					}
-				} else {
-					_video.getTag().webkitExitFullScreen();
-					if (utils.isIPad()) {
-						_video.getTag().controls = FALSE;
-					}
-				}
-			}
+			state = _video.setFullScreen(!!state);
 			if (state != _model.fullscreen) {
 				_model.fullscreen = state;
-				_model.sendEvent(events.JWPLAYER_FULLSCREEN, { fullscreen: state } );
+				_model.sendEvent(events.JWPLAYER_FULLSCREEN, {
+					fullscreen: state
+				});
 			}
 		};
 		
@@ -167,7 +148,7 @@
             var repeat = FALSE;
             if (index == _model.playlist.length || index < -1) {
                 newItem = 0;
-                repeat = true;
+                repeat = TRUE;
             } else if (index == -1 || index > _model.playlist.length) {
                 newItem = _model.playlist.length - 1;
             } else {

@@ -128,16 +128,11 @@
 				throw 'invalid Youtube ID';
 			}
 
-			playerVars = playerVars || {
-				autoplay: 0,
-				controls: 0
-			};
-
 			var ytConfig = {
 				height: '100%',
 				width: '100%',
 				videoId: videoId,
-				playerVars: playerVars,
+				playerVars: playerVars || {},
 				events: {
 					onReady: function(event) {
 						console.log('Youtube ready', event);
@@ -322,32 +317,45 @@
             }
 		};
 
-		// TODO: player must not expect tag to be video for all providers
-		_this.getTag = function() {
-			console.error('getTag called for Youtube');
-			//return document.createElement('video');
-			return _element;
-			//return _ytPlayer.getIframe()
+		_this.setContainer = function(element) {
+			element.appendChild(_element);
 		};
 
-		_this.getWidth = function() {
-            return _element.clientWidth;
-        };
-        
-        _this.getHeight = function() {
-            return _element.clientHeight;
-        };
+		_this.resize = function(width, height, stretching) {
+			utils.stretch(stretching,
+				_element,
+				width, height,
+				_element.clientWidth, _element.clientHeight);
+		};
+
+		_this.setFullScreen = _alwaysReturn(false);
+		_this.getFullScreen = _alwaysReturn(false);
 
         this.checkComplete = function() {
             return _beforecompleted;
         };
 
-        _this.setControls = noop;
-		
-		_this.audioMode = _alwaysReturn(false);
+		_this.getCurrentQuality = function() {
+			var ytQuality = _ytPlayer.getPlaybackQuality();
+			var ytLevels = _ytPlayer.getAvailableQualityLevels();
+			return ytLevels.indexOf(ytQuality);
+		};
+
+		_this.getQualityLevels = function() {
+			var levels = [];
+			var ytLevels = _ytPlayer.getAvailableQualityLevels();
+			for (var i=ytLevels.length; i--;) {
+				levels.push({
+					label: ytLevels[i]
+				});
+			}
+			return levels;
+		};
+
 		_this.setCurrentQuality = noop;
-		_this.getCurrentQuality = _alwaysReturn(0);
-		_this.getQualityLevels = _alwaysReturn(['Auto']);
+
+		_this.setControls = noop;
+		_this.audioMode = _alwaysReturn(false);
 	};
 
 	function _alwaysReturn(val) {
