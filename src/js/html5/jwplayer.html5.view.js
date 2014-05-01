@@ -52,7 +52,6 @@
 			_playlistLayer,
 			_controlsTimeout = -1,
 			_timeoutDuration = _isMobile ? 4000 : 2000,
-			_videoTag,
 			_videoLayer,
 			_lastWidth,
 			_lastHeight,
@@ -148,8 +147,9 @@
 			_videoLayer = _createElement("span", VIEW_VIDEO_CONTAINER_CLASS);
 			_videoLayer.id = _api.id + "_media";
 
-			_videoTag = _model.getVideo().getTag();
-			_videoLayer.appendChild(_videoTag);
+			// adds video tag to video layer
+			_model.setContainer(_videoLayer);
+
 			_controlsLayer = _createElement("span", VIEW_CONTROLS_CONTAINER_CLASS);
 			_instreamLayer = _createElement("span", VIEW_INSTREAM_CONTAINER_CLASS);
 			_playlistLayer = _createElement("span", VIEW_PLAYLIST_CONTAINER_CLASS);
@@ -165,9 +165,11 @@
 			_playerElement.appendChild(_aspectLayer);
 			_playerElement.appendChild(_playlistLayer);
 
+			// _videoTag.addEventListener('webkitbeginfullscreen', _fullscreenChangeHandler, FALSE);
+			// _videoTag.addEventListener('webkitendfullscreen', _fullscreenChangeHandler, FALSE);
+			_model.addEventListener('webkitbeginfullscreen', _fullscreenChangeHandler);
+			_model.addEventListener('webkitendfullscreen', _fullscreenChangeHandler);
 			DOCUMENT.addEventListener('webkitfullscreenchange', _fullscreenChangeHandler, FALSE);
-			_videoTag.addEventListener('webkitbeginfullscreen', _fullscreenChangeHandler, FALSE);
-			_videoTag.addEventListener('webkitendfullscreen', _fullscreenChangeHandler, FALSE);
 			DOCUMENT.addEventListener('mozfullscreenchange', _fullscreenChangeHandler, FALSE);
 			DOCUMENT.addEventListener('MSFullscreenChange', _fullscreenChangeHandler, FALSE);
 			DOCUMENT.addEventListener('keydown', _keyHandler, FALSE);
@@ -471,15 +473,8 @@
 				
 				//ios7captions
 				//_model.getVideo().fsCaptions(state,_api.jwGetCurrentCaptions());
-				if (_isMobile) {
-					try {
-						_videoTag.webkitEnterFullScreen();
-						_model.setFullscreen(TRUE);
-					} catch(e) {
-						//object can't go fullscreen
-						return;
-					}
-				} else if (!_model.fullscreen) {
+				
+				if (!_isMobile && !_model.fullscreen) {
 					_fakeFullscreen(TRUE);
 					if (_playerElement.requestFullScreen) {
 						_playerElement.requestFullScreen();
@@ -490,9 +485,9 @@
 					} else if (_playerElement.msRequestFullscreen) {
 						_playerElement.msRequestFullscreen();
 					}
-					_model.setFullscreen(TRUE);
-				
 				}
+				_model.setFullscreen(TRUE);
+
 			} else {
 				
 				//commenting out ios7 support
@@ -501,16 +496,8 @@
 				 //   _api.jwSetCurrentCaptions(curr+1);
 				//else 
 				//    _api.jwSetCurrentCaptions(0);
-				if (_isMobile) {
-					_videoTag.webkitExitFullScreen();
-					_model.setFullscreen(FALSE);
-					if(_isIPad) {
-						_videoTag.controls = FALSE;
-					}
-				} else if (_model.fullscreen) {
-
+				if (!_isMobile && _model.fullscreen) {
 					_fakeFullscreen(FALSE);
-					_model.setFullscreen(FALSE);
 					if (DOCUMENT.cancelFullScreen) {  
 						DOCUMENT.cancelFullScreen();  
 					} else if (DOCUMENT.mozCancelFullScreen) {  
@@ -521,6 +508,8 @@
 						DOCUMENT.msExitFullscreen();
 					}
 				}
+				_model.setFullscreen(FALSE);
+
 				if (_isIPad && _api.jwGetState() == states.PAUSED) {
 					setTimeout(_showDisplay, 500);
 				}
@@ -659,7 +648,10 @@
 		}
 		
 		function _resizeMedia(width, height) {
-			if (_videoTag) {
+			var videoWidth = _model.getVideo().getWidth(),
+				videoHeight = _model.getVideo().getHeight();
+
+			if (videoWidth && videoHeight) {
 				if (!width || isNaN(Number(width))) {
 					width  = _videoLayer.clientWidth;
 				}
@@ -667,9 +659,9 @@
 					height = _videoLayer.clientHeight;
 				}
 				var transformScale = utils.stretch(_model.stretching,
-					_videoTag, 
+					_model.getVideo().getTag(), 
 					width, height, 
-					_videoTag.videoWidth, _videoTag.videoHeight);
+					videoWidth, videoHeight);
 				// poll resizing if video is transformed
 				if (transformScale) {
 					clearTimeout(_resizeMediaTimeout);
@@ -741,7 +733,7 @@
 			var fsElement = DOCUMENT.mozFullScreenElement || 
 							DOCUMENT.webkitCurrentFullScreenElement ||
 							DOCUMENT.msFullscreenElement ||
-							_videoTag.webkitDisplayingFullscreen;
+							_model.getVideo().getTag().webkitDisplayingFullscreen;
 			
 			return !!(fsElement && (!fsElement.id || fsElement.id == _api.id));
 		}
@@ -795,7 +787,7 @@
 			}
 
 			if (!(_isMobile && _model.fullscreen)) {
-				_videoTag.controls = FALSE;
+				_model.getVideo().setControls(FALSE);
 			}
 			
 		}
@@ -1135,8 +1127,8 @@
 			DOCUMENT.removeEventListener('webkitfullscreenchange', _fullscreenChangeHandler, FALSE);
 			DOCUMENT.removeEventListener('mozfullscreenchange', _fullscreenChangeHandler, FALSE);
 			DOCUMENT.removeEventListener('MSFullscreenChange', _fullscreenChangeHandler, FALSE);
-			_videoTag.removeEventListener('webkitbeginfullscreen', _fullscreenChangeHandler, FALSE);
-			_videoTag.removeEventListener('webkitendfullscreen', _fullscreenChangeHandler, FALSE);
+			_model.removeEventListener('webkitbeginfullscreen', _fullscreenChangeHandler);
+			_model.removeEventListener('webkitendfullscreen', _fullscreenChangeHandler);
 			DOCUMENT.removeEventListener('keydown', _keyHandler, FALSE);
 			if (_rightClickMenu) {
 				_rightClickMenu.destroy();

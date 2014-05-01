@@ -40,7 +40,9 @@
                 suspend : _generalHandler,
                 timeupdate : _timeUpdateHandler,
                 volumechange : _volumeHandler,
-                waiting : _bufferStateHandler
+                waiting : _bufferStateHandler,
+                webkitbeginfullscreen: _fullscreenChangeHandler,
+                webkitendfullscreen: _fullscreenChangeHandler
             },
 
             // Currently playing source
@@ -84,9 +86,7 @@
             
             _tracksOnce = false,
             
-            //make sure we only do complete once
-            _completeOnce = FALSE,
-            
+            // post roll support
             _beforecompleted = FALSE,
 
             _this = utils.extend(this, new events.eventdispatcher());
@@ -263,7 +263,10 @@
             var publicLevels = _getPublicLevels(levels);
             if (publicLevels) {
                 //_sendEvent?
-                _this.sendEvent(events.JWPLAYER_MEDIA_LEVELS, { levels: publicLevels, currentQuality: _currentQuality });
+                _this.sendEvent(events.JWPLAYER_MEDIA_LEVELS, {
+                    levels: publicLevels,
+                    currentQuality: _currentQuality
+                });
             }
         }
         
@@ -274,7 +277,6 @@
         
         _this.load = function(item) {
             if (!_attached) return;
-            _completeOnce = FALSE;
             _delayedSeek = 0;
             _duration = item.duration ? item.duration : -1;
             _position = 0;
@@ -462,8 +464,6 @@
         }
         
         function _complete() {
-            //if (_completeOnce) return;
-            _completeOnce = TRUE;
             if (_state != states.IDLE) {
                 _currentQuality = -1;
                 _beforecompleted = TRUE;
@@ -476,6 +476,12 @@
                     _sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
                 }
             }
+        }
+
+        function _fullscreenChangeHandler(e) {
+            console.log('fullscreen change', e);
+            // forward event
+            _sendEvent(e.type);
         }
         
         this.addCaptions = function(tracks,fullscreen,curr) {
@@ -554,7 +560,6 @@
         };
         
         this.checkComplete = function() {
-            
             return _beforecompleted;
         };
 
@@ -586,6 +591,18 @@
         // TODO: remove; used by InStream and cast.controller
         _this.getTag = function() {
             return _videotag;
+        };
+
+        _this.getWidth = function() {
+            return _videotag.videoWidth;
+        };
+        
+        _this.getHeight = function() {
+            return _videotag.videoHeight;
+        };
+
+        _this.setControls = function(state) {
+            _videotag.controls = !!state;
         };
         
         _this.audioMode = function() {

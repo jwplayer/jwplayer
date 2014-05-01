@@ -22,11 +22,10 @@
 			_ytVideoId = null,
 			// iFrame Container (this element will be replaced by iFrame element)
 			_element = document.createElement('div'),
-			// media item, state
-			_item = null,
+			// player state
 			_state = states.IDLE,
 			// function to call once api and view are ready
-			_readyCallback = null,
+			_youtubeEmbedReadyCallback = null,
 			// update timer
 			_playingInterval = -1;
 
@@ -56,7 +55,7 @@
 
 		var _listeningForReady = false;
 		function _getVideoLayer() {
-			var videoLayer = document.getElementById(_playerId + '_media');
+			var videoLayer = _element.parentNode;
 			if (!videoLayer) {
 				console.log('YT DOM not ready');
 				// if DOM is not ready do embed on player ready...
@@ -74,9 +73,9 @@
 			console.log('YT _readyCheck', !!_youtube && !!_getVideoLayer(), event);
 			if (!!_youtube && !!_getVideoLayer()) {
 				// was not able to load item
-				if (_readyCallback) {
-					_readyCallback.apply(_this);
-					//_readyCallback = null;
+				if (_youtubeEmbedReadyCallback) {
+					_youtubeEmbedReadyCallback.apply(_this);
+					//_youtubeEmbedReadyCallback = null;
 				}
 			}
 		}
@@ -105,52 +104,43 @@
             });
 		}
 
+		// TODO: checkComplete
+		function _ended() {
+            if (_state != states.IDLE) {
+				_beforecompleted = true;
+                _dispatchEvent(events.JWPLAYER_MEDIA_BEFORECOMPLETE);
+                _setState(states.IDLE);
+                _beforecompleted = false;
+                _dispatchEvent(events.JWPLAYER_MEDIA_COMPLETE);
+            }
+        }
+
 		function _dispatchEvent(type, data) {
 			_this.sendEvent(type, data);
 		}
 
-		function _embedYoutubePlayer() {
+		function _embedYoutubePlayer(videoId, playerVars) {
 			console.log('YT _embedYoutubePlayer');
 
-			if (!_ytVideoId) {
+			if (!videoId) {
 				throw 'invalid Youtube ID';
 			}
 
-			// get video container
-			var videoLayer = _getVideoLayer();
-
-			// TODO: hide jwplayer.vid
-			// videoLayer.innerHTML = '';
-
-			videoLayer.appendChild(_element);		
+			playerVars = playerVars || {
+				autoplay: 0,
+				controls: 0
+			};
 
 			var ytConfig = {
 				height: '100%',
 				width: '100%',
-				videoId: _ytVideoId,
-				playerVars: {
-					autoplay: 0,
-					controls: 0
-				},
+				videoId: videoId,
+				playerVars: playerVars,
 				events: {
 					onReady: function(event) {
 						console.log('Youtube ready', event);
 
-						_setState(states.PAUSED);
-
-						// FIXME: show element
-						setTimeout(function() {
-							utils.css.style(videoLayer, {
-								opacity: 1,
-								visible: 'visible'
-							});
-							if (utils.isMobile()) {
-								utils.css.style(document.querySelector('.jwcontrols'), {
-									display: 'none'
-								});
-							}
-						}, 0);
-						
+						_setState(states.IDLE);
 
 						// TODO: get size from event.target or container
 						// _dispatchEvent(events.JWPLAYER_MEDIA_META, {
@@ -168,18 +158,22 @@
 						switch(event.data) {
 						case 1: //playing
 							return _setState(states.PLAYING);
-						case -1: //unstarted
 						case 2: //paused
 							return _setState(states.PAUSED);
 						case 3: //buffering
 							return _setState(states.BUFFERING);
-						// case 0: //ended
 						// case 5: //video cued (5)
+						case -1: //unstarted
+							return _setState(states.IDLE);
+						case 0: //ended
+							return _ended();
 						}
 						return _setState(states.IDLE);
 					},
 					onPlaybackQualityChange: function(event) {
 						console.log('Youtube quality change', event, event.target.getAvailableQualityLevels());
+						// make sure playback resumes
+						event.target.playVideo();
 					},
 					onError: function(event) {
 						console.error('Youtube Error', event);
@@ -191,17 +185,17 @@
 			};
 
 			_ytPlayer = new _youtube.Player(_element, ytConfig);
-			_readyCallback = null;
-			console.log('YT created player', _ytPlayer);
+			_ytVideoId = videoId;
+			_youtubeEmbedReadyCallback = null;
+			console.log('YT created player', _ytPlayer, ytConfig);
 		}
 
 		// Additional Provider Methods (not yet implemented in html5.video)
 
 		_this.init = function(item) {
 			console.log('YT init', item);
-			_ytVideoId = utils.youTubeID(item.sources[0].file);
-			_readyCallback = _embedYoutubePlayer;
-			_readyCheck();
+			// load item on embed for mobile touch to start
+			_this.load(item);
 		};
 
 		_this.destroy = function() {
@@ -211,8 +205,7 @@
 			_this =
 			_youtube =
 			_ytPlayer =
-			_element =
-			_item = null;
+			_element = null;
 		};
 
 
@@ -223,30 +216,65 @@
 
 		// Video Provider API
 		_this.load = function(item) {
-			console.log('YT load', item);
-			_item = item;
+			var url = item.sources[0].file;
+			var videoId = utils.youTubeID(url);
+
+			console.log('YT load', videoId, url, item);
+
 			_setState(states.BUFFERING);
 
 			if (!_youtube) {
-				// _item will be loaded when API is ready
+				console.log('YT load on init');
+				// load item when API is ready
+				_youtubeEmbedReadyCallback = function() {
+					// enabling autoplay here also throws an exception
+					_embedYoutubePlayer(videoId, {
+						autoplay: 0,
+						controls: 0
+					});
+				};
+				_readyCheck();
 				return;
 			}
 
 			if (!_ytPlayer) {
-				_embedYoutubePlayer();
+				console.log('YT load repeat embed');
+				_embedYoutubePlayer(videoId, {
+					autoplay: 1,
+					controls: 0
+				});
+				return;
+			}
+
+			if (_ytVideoId !== videoId) {
+				// An exception is thrown by the iframe_api - but the call works
+				// it's trying to access an element of the controls which is not present
+				// because we disabled control in the setup
+				_ytPlayer.loadVideoById(videoId);
+				_ytVideoId = videoId;
+
+				// _ytPlayer.loadVideoByUrl(url);
+				// _ytPlayer.cueVideoById(_ytVideoId);
+				// _ytPlayer.nextVideo();
+				
+			} else {
+				_ytPlayer.seekTo(0);
+				_ytPlayer.playVideo();
 			}
 		};
 		
 		_this.stop = function() {
 			console.log('YT stop');
+			// if (!_ytPlayer) return;
 			_ytPlayer.stopVideo();
-			_item = null;
+			// _ytVideoId = null;
+			_setState(states.IDLE);
 		};
 				
 		_this.play = function() {
 			console.log('YT play');
 			_ytPlayer.playVideo();
-		}
+		};
 		
 		_this.pause = function() {
 			console.log('YT pause');
@@ -290,21 +318,34 @@
 		// TODO: player must not expect tag to be video for all providers
 		_this.getTag = function() {
 			console.error('getTag called for Youtube');
-			return document.createElement('video');
-			//return _element; 
+			//return document.createElement('video');
+			return _element;
+			//return _ytPlayer.getIframe()
 		};
+
+		_this.getWidth = function() {
+            return _element.clientWidth;
+        };
+        
+        _this.getHeight = function() {
+            return _element.clientHeight;
+        };
+
+        this.checkComplete = function() {
+        };
+
+        _this.setControls = noop;
 		
 		_this.audioMode = _alwaysReturn(false);
 		_this.setCurrentQuality = noop;
 		_this.getCurrentQuality = _alwaysReturn(0);
 		_this.getQualityLevels = _alwaysReturn(['Auto']);
-		_this.checkComplete = _alwaysReturn(false);
 	};
 
 	function _alwaysReturn(val) {
 		return function() {
 			return val;
-		}
+		};
 	}
 	
 	function noop() {}

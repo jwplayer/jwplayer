@@ -13,10 +13,15 @@
 		FALSE = !TRUE;
 
 	html5.model = function(config, _defaultProvider) {
-		_defaultProvider = _defaultProvider || new html5.video(UNDEF, 'default');
 		var _model = this,
 			// Video provider
 			_video,
+			// Providers
+			_providers = {
+				html5: _defaultProvider || new html5.video(UNDEF, 'default')
+			},
+			// Video Container
+			_container,
 			// Saved settings
 			_cookies = utils.getCookies(),
 			// Sub-component configurations
@@ -111,12 +116,32 @@
 		_model.getVideo = function() {
 			return _video;
 		};
+
+		_model.setContainer = function(element) {
+			_container = element;
+			element.appendChild(_video.getTag());
+		};
 		
 		_model.seekDrag = function(state) {
 			_video.seekDrag(state);
 		};
 		
 		_model.setFullscreen = function(state) {
+			if (utils.isMobile()) {
+				if (state) {
+					try {
+						_video.getTag().webkitEnterFullScreen();
+					} catch(e) {
+						//object can't go fullscreen
+						return;
+					}
+				} else {
+					_video.getTag().webkitExitFullScreen();
+					if (utils.isIPad()) {
+						_video.getTag().controls = FALSE;
+					}
+				}
+			}
 			if (state != _model.fullscreen) {
 				_model.fullscreen = state;
 				_model.sendEvent(events.JWPLAYER_FULLSCREEN, { fullscreen: state } );
@@ -125,7 +150,7 @@
 		
 		// TODO: make this a synchronous action; throw error if playlist is empty
 		_model.setPlaylist = function(playlist) {
-			_model.playlist = utils.filterPlaylist(playlist, false, _model.androidhls);
+			_model.playlist = utils.filterPlaylist(playlist, FALSE, _model.androidhls);
 			if (_model.playlist.length === 0) {
 				_model.sendEvent(events.JWPLAYER_ERROR, { message: "Error loading playlist: No playable sources found" });
 			} else {
@@ -139,7 +164,7 @@
 
 		_model.setItem = function(index) {
             var newItem;
-            var repeat = false;
+            var repeat = FALSE;
             if (index == _model.playlist.length || index < -1) {
                 newItem = 0;
                 repeat = true;
@@ -152,17 +177,20 @@
             if (repeat || newItem !== _model.item) {
                 _model.item = newItem;
                 _model.sendEvent(events.JWPLAYER_PLAYLIST_ITEM, {
-                    "index": _model.item
+                    index: _model.item
                 });
 
 	            // select provider based on item source (video, youtube...)
-				var provider = _defaultProvider;
+				var provider = _providers.html5;
 				if (_model.playlist.length) {
 					var item = _model.playlist[newItem];
-					if (utils.isYouTube(item.sources[0].file)) {
-						// TODO: re-use YT provider
-						provider = new html5.youtube(_model.id);
-						provider.init(item);
+					var source = item.sources[0];
+					if (source.type === 'youtube' || utils.isYouTube(source.file)) {
+						provider = _providers.youtube;
+						if (!provider) {
+							provider = _providers.youtube = new html5.youtube(_model.id);
+							provider.init(item);
+						}
 					}
 				}
 				_model.setVideo(provider);
