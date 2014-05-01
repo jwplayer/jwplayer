@@ -601,9 +601,11 @@
 		
 		function _resizeMedia(width, height) {
 			if (!width || isNaN(Number(width))) {
+				if (!_videoLayer) return;
 				width  = _videoLayer.clientWidth;
 			}
 			if (!height || isNaN(Number(height))) {
+				if (!_videoLayer) return;
 				height = _videoLayer.clientHeight;
 			}
 			var transformScale = _model.getVideo().resize(width, height, _model.stretching);
