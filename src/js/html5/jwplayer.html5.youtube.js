@@ -128,7 +128,15 @@
 				height: '100%',
 				width: '100%',
 				videoId: videoId,
-				playerVars: playerVars || {},
+				playerVars: utils.extend({
+					autoplay: 0,
+					controls: 0,
+					showinfo: 0,
+					rel: 0,
+					modestbranding: 0,
+					playsinline: 1,
+					origin: location.protocol+'//'+location.hostname
+				}, playerVars),
 				events: {
 					onReady: function(event) {
 						console.log(_playerId, 'Youtube ready', event);
@@ -221,10 +229,7 @@
 				// load item when API is ready
 				_youtubeEmbedReadyCallback = function() {
 					// enabling autoplay here also throws an exception
-					_embedYoutubePlayer(videoId, {
-						autoplay: 0,
-						controls: 0
-					});
+					_embedYoutubePlayer(videoId);
 				};
 				_readyCheck();
 				return;
@@ -233,8 +238,7 @@
 			if (!_ytPlayer) {
 				console.log(_playerId, 'YT load repeat embed');
 				_embedYoutubePlayer(videoId, {
-					autoplay: 1,
-					controls: 0
+					autoplay: 1
 				});
 				return;
 			}
