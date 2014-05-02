@@ -4,14 +4,16 @@
 		utils = jwplayer.utils,
 		events = jwplayer.events,
 		states = events.state,
-
-		SCRIPT_URL = window.location.protocol + '//www.youtube.com/iframe_api',
-		_scriptLoader;
+		_scriptLoader = new utils.scriptloader(window.location.protocol + '//www.youtube.com/iframe_api');
 
 	window.onYouTubeIframeAPIReady = function() {
 		console.log('onYouTubeIframeAPIReady', window.YT);
 		_scriptLoader = null;
     };
+
+    _scriptLoader.addEventListener(events.ERROR, function(event) {
+		console.error('Youtube script Load Error: %o', event);
+	});
 
 	jwplayer.html5.youtube = function(_playerId) {
 
@@ -32,9 +34,7 @@
             _beforecompleted = false;
 
 		// Load iFrame API
-		if (!_youtube && !_scriptLoader) {
-			_scriptLoader = new utils.scriptloader(SCRIPT_URL);
-			_scriptLoader.addEventListener(events.ERROR, _onLoadError);
+		if (!_youtube && _scriptLoader) {
 			_scriptLoader.addEventListener(events.COMPLETE, _onLoadSuccess);
 			_scriptLoader.load();
 		}
@@ -51,15 +51,11 @@
 			}
 		}
 
-		function _onLoadError(event) {
-			console.error('Youtube script Load Error: %o', event);
-		}
-
 		var _listeningForReady = false;
 		function _getVideoLayer() {
 			var videoLayer = _element.parentNode;
 			if (!videoLayer) {
-				console.log('YT DOM not ready');
+				console.log(_playerId, 'YT DOM not ready');
 				// if DOM is not ready do embed on player ready...
 				// TODO: this should happen when container is added and trigger ready when done
 				if (!_listeningForReady) {
@@ -72,7 +68,7 @@
 		}
 
 		function _readyCheck(event) {
-			console.log('YT _readyCheck', !!_youtube && !!_getVideoLayer(), event);
+			console.log(_playerId, 'YT _readyCheck', !!_youtube && !!_getVideoLayer(), event);
 			if (!!_youtube && !!_getVideoLayer()) {
 				// was not able to load item
 				if (_youtubeEmbedReadyCallback) {
@@ -90,7 +86,7 @@
 			_state = state;
 			clearInterval(_playingInterval);
 			if (state === states.PLAYING) {
-				console.log('options', _ytPlayer.getOptions());
+				console.log(_playerId, 'options', _ytPlayer.getOptions());
 				_playingInterval = setInterval(_timeUpdateHandler, 250);
 			}
 			_dispatchEvent(events.JWPLAYER_PLAYER_STATE, change);
@@ -122,7 +118,7 @@
 		}
 
 		function _embedYoutubePlayer(videoId, playerVars) {
-			console.log('YT _embedYoutubePlayer');
+			console.log(_playerId, 'YT _embedYoutubePlayer');
 
 			if (!videoId) {
 				throw 'invalid Youtube ID';
@@ -135,7 +131,7 @@
 				playerVars: playerVars || {},
 				events: {
 					onReady: function(event) {
-						console.log('Youtube ready', event);
+						console.log(_playerId, 'Youtube ready', event);
 
 						_setState(states.IDLE);
 
@@ -151,7 +147,7 @@
 
 					},
 					onStateChange: function(event) {
-						console.log('Youtube state change', event);
+						console.log(_playerId, 'Youtube state change', event);
 						switch(event.data) {
 						case 1: //playing
 							return _setState(states.PLAYING);
@@ -168,12 +164,12 @@
 						return _setState(states.IDLE);
 					},
 					onPlaybackQualityChange: function(event) {
-						console.log('Youtube quality change', event, event.target.getAvailableQualityLevels());
+						console.log(_playerId, 'Youtube quality change', event, event.target.getAvailableQualityLevels());
 						// make sure playback resumes
 						event.target.playVideo();
 					},
 					onError: function(event) {
-						console.error('Youtube Error', event);
+						console.error(_playerId, 'Youtube Error', event);
 						_dispatchEvent(events.JWPLAYER_MEDIA_ERROR, {
 							message: 'Youtube Player Error: '+ event.data
 						});
@@ -184,19 +180,19 @@
 			_ytPlayer = new _youtube.Player(_element, ytConfig);
 			_ytVideoId = videoId;
 			_youtubeEmbedReadyCallback = null;
-			console.log('YT created player', _ytPlayer, ytConfig);
+			console.log(_playerId, 'YT created player', _ytPlayer, ytConfig);
 		}
 
 		// Additional Provider Methods (not yet implemented in html5.video)
 
 		_this.init = function(item) {
-			console.log('YT init', item);
+			console.log(_playerId, 'YT init', item);
 			// load item on embed for mobile touch to start
 			_this.load(item);
 		};
 
 		_this.destroy = function() {
-			console.log('YT destroy');
+			console.log(_playerId, 'YT destroy');
 			// TODO: remove element
 			clearInterval(_playingInterval);
 			_this =
@@ -207,7 +203,7 @@
 
 
 		_this.getElement = function() {
-			console.log('YT getElement');
+			console.log(_playerId, 'YT getElement');
 			return _element; 
 		};
 
@@ -216,12 +212,12 @@
 			var url = item.sources[0].file;
 			var videoId = utils.youTubeID(url);
 
-			console.log('YT load', videoId, url, item);
+			console.log(_playerId, 'YT load', videoId, url, item);
 
 			_setState(states.BUFFERING);
 
 			if (!_youtube) {
-				console.log('YT load on init');
+				console.log(_playerId, 'YT load on init');
 				// load item when API is ready
 				_youtubeEmbedReadyCallback = function() {
 					// enabling autoplay here also throws an exception
@@ -235,7 +231,7 @@
 			}
 
 			if (!_ytPlayer) {
-				console.log('YT load repeat embed');
+				console.log(_playerId, 'YT load repeat embed');
 				_embedYoutubePlayer(videoId, {
 					autoplay: 1,
 					controls: 0
@@ -261,7 +257,7 @@
 		};
 		
 		_this.stop = function() {
-			console.log('YT stop');
+			console.log(_playerId, 'YT stop');
 			// if (!_ytPlayer) return;
 			_ytPlayer.stopVideo();
 			// _ytVideoId = null;
@@ -269,29 +265,29 @@
 		};
 				
 		_this.play = function() {
-			console.log('YT play');
+			console.log(_playerId, 'YT play');
 			_ytPlayer.playVideo();
 		};
 		
 		_this.pause = function() {
-			console.log('YT pause');
+			console.log(_playerId, 'YT pause');
 			_ytPlayer.pauseVideo();
 		};
 
 		_this.seek = function(position) {
-			console.log('YT seek');
+			console.log(_playerId, 'YT seek');
 			_ytPlayer.seekTo(position);
 		};
 
 		_this.volume = function(volume) {
-			console.log('YT volume', volume);
+			console.log(_playerId, 'YT volume', volume);
 			if (!_ytPlayer) return;
 			// TODO: proper volume (controller should handle logic)
 			_ytPlayer.setVolume(volume);
 		};
 
 		_this.mute = function(mute) {
-			console.log('YT mute', mute);
+			console.log(_playerId, 'YT mute', mute);
 			if (!_ytPlayer) return;
 			// TODO: proper mute (controller should handle logic)
 			if (mute) {
@@ -304,12 +300,12 @@
 		_this.detachMedia = function() {
 			// temp return a video element so instream doesn't break.
 			// FOR VAST: prevent instream from being initialized while casting
-			console.error('detachMedia called for Youtube');
+			console.error(_playerId, 'detachMedia called for Youtube');
 			return document.createElement('video');
 		};
 
 		_this.attachMedia = function() {
-			console.error('attachMedia called for Youtube');
+			console.error(_playerId, 'attachMedia called for Youtube');
 			if (_beforecompleted) {
                 _setState(states.IDLE);
                 _dispatchEvent(events.JWPLAYER_MEDIA_COMPLETE);
