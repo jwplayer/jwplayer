@@ -611,19 +611,26 @@
 
 	/** Filters the sources by taking the first playable type and eliminating sources of a different type **/
 	utils.filterSources = function(sources, filterFlash, androidhls) {
-		var selectedType, newSources, extensionmap = utils.extensionmap;
+		var selectedType,
+			newSources;
+
 		if (sources) {
 			newSources = [];
 			for (var i=0; i<sources.length; i++) {
-				var type = sources[i].type,
-					file = sources[i].file;
+				var source = utils.extend({}, sources[i]),
+					file = source.file,
+					type = source.type;
 				
-				if (file) file = utils.trim(file);
+				if (file) {
+					source.file = file = utils.trim(''+file);
+				} else {
+					// source.file is required
+					continue;
+				}
 				
 				if (!type) {
 					var extension = utils.extension(file);
-					type = extensionmap.extType(extension);
-					sources[i].type = type;
+					source.type = type = utils.extensionmap.extType(extension);
 				}
 
 				if (filterFlash) {
@@ -632,7 +639,7 @@
 							selectedType = type;
 						}
 						if (type == selectedType) {
-							newSources.push(utils.extend({}, sources[i]));
+							newSources.push(source);
 						}
 					}
 				} else {
@@ -641,7 +648,7 @@
 							selectedType = type;
 						}
 						if (type == selectedType) {
-							newSources.push(utils.extend({}, sources[i]));
+							newSources.push(source);
 						}
 					}
 				}
