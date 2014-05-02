@@ -670,19 +670,23 @@
 			if (!_isMobile && state !== _model.fullscreen) {
 				// If a native fullscreen method is available in the browser, use that.
 				if (state) {
-					(
+					var requestFullscreen =
+						_playerElement.requestFullscreen ||
 						_playerElement.requestFullScreen ||
-						_playerElement.mozRequestFullScreen ||
+						_playerElement.webkitRequestFullscreen ||
 						_playerElement.webkitRequestFullScreen ||
-						_playerElement.msRequestFullscreen
-					)();
+						_playerElement.mozRequestFullScreen ||
+						_playerElement.msRequestFullscreen;
+					if (requestFullscreen) requestFullscreen();
 				} else {
-					(
+					var exitFullscreen =
+						DOCUMENT.exitFullscreen ||
 						DOCUMENT.cancelFullScreen ||
-						DOCUMENT.mozCancelFullScreen ||
+						DOCUMENT.webkitExitFullscreen ||
 						DOCUMENT.webkitCancelFullScreen ||
-						DOCUMENT.msExitFullscreen
-					)();
+						DOCUMENT.mozCancelFullScreen ||
+						DOCUMENT.msExitFullscreen;
+					if (exitFullscreen) exitFullscreen();
 				}
 				// use the false fullscreen method using CSS.
 				if (state) {
