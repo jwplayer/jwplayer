@@ -86,7 +86,7 @@
 			_state = state;
 			clearInterval(_playingInterval);
 			if (state === states.PLAYING) {
-				console.log(_playerId, 'options', _ytPlayer.getOptions());
+				console.log(_playerId, 'start time interval. options', _ytPlayer.getOptions());
 				_playingInterval = setInterval(_timeUpdateHandler, 250);
 			}
 			_dispatchEvent(events.JWPLAYER_PLAYER_STATE, change);
@@ -124,6 +124,11 @@
 				throw 'invalid Youtube ID';
 			}
 
+			var videoLayer = _element.parentNode;
+			if (!videoLayer) {
+				throw 'video layer removed from DOM';
+			}
+
 			var ytConfig = {
 				height: '100%',
 				width: '100%',
@@ -158,23 +163,31 @@
 						console.log(_playerId, 'Youtube state change', event);
 						switch(event.data) {
 						case 1: //playing
-							return _setState(states.PLAYING);
+							_setState(states.PLAYING);
+							return;
 						case 2: //paused
-							return _setState(states.PAUSED);
+							_setState(states.PAUSED);
+							return;
 						case 3: //buffering
-							return _setState(states.BUFFERING);
-						// case 5: //video cued (5)
+							_setState(states.BUFFERING);
+							//playvideo
+							return;
 						case -1: //unstarted
-							return _setState(states.IDLE);
+							_setState(states.IDLE);
+							return;
 						case 0: //ended
-							return _ended();
+							_ended();
+							return;
+						//case 5: //video cued (5)
 						}
-						return _setState(states.IDLE);
 					},
 					onPlaybackQualityChange: function(event) {
 						console.log(_playerId, 'Youtube quality change', event, event.target.getAvailableQualityLevels());
 						// make sure playback resumes
 						event.target.playVideo();
+					},
+					onPlaybackRateChange: function(event) {
+						console.log(_playerId, 'Youtube rate change', event);
 					},
 					onError: function(event) {
 						console.error(_playerId, 'Youtube Error', event);
@@ -184,6 +197,11 @@
 					}
 				}
 			};
+
+			//visibility fix
+			// videoLayer.className = ''; // remove jwvideo
+			videoLayer.style.visibility = 'visible';
+			videoLayer.style.opacity = 1;
 
 			_ytPlayer = new _youtube.Player(_element, ytConfig);
 			_ytVideoId = videoId;
@@ -243,7 +261,13 @@
 				return;
 			}
 
+			if (!_ytPlayer.getCurrentTime) {
+				console.error(_playerId, 'YT player API is not available');
+				return;
+			}
+
 			if (_ytVideoId !== videoId) {
+				console.log(_playerId, 'YT loadVideoById');
 				// An exception is thrown by the iframe_api - but the call works
 				// it's trying to access an element of the controls which is not present
 				// because we disabled control in the setup
@@ -255,8 +279,15 @@
 				// _ytPlayer.nextVideo();
 				
 			} else {
+				if (_ytPlayer.getCurrentTime() > 0) {
+					console.log(_playerId, 'seek');
 				_ytPlayer.seekTo(0);
+				}
+				console.log(_playerId, 'play', _ytPlayer.getPlayerState());
 				_ytPlayer.playVideo();
+				if (_ytPlayer.getPlayerState() === 1) {
+					_setState(states.PLAYING);
+				}
 			}
 		};
 		

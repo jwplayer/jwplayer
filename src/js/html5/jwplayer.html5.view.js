@@ -146,9 +146,6 @@
 			_videoLayer = _createElement("span", VIEW_VIDEO_CONTAINER_CLASS);
 			_videoLayer.id = _api.id + "_media";
 
-			// adds video tag to video layer
-			_model.getVideo().setContainer(_videoLayer);
-
 			_controlsLayer = _createElement("span", VIEW_CONTROLS_CONTAINER_CLASS);
 			_instreamLayer = _createElement("span", VIEW_INSTREAM_CONTAINER_CLASS);
 			_playlistLayer = _createElement("span", VIEW_PLAYLIST_CONTAINER_CLASS);
@@ -163,6 +160,9 @@
 			_playerElement.appendChild(_container);
 			_playerElement.appendChild(_aspectLayer);
 			_playerElement.appendChild(_playlistLayer);
+
+			// adds video tag to video layer
+			_model.getVideo().setContainer(_videoLayer);
 
 			// _videoTag.addEventListener('webkitbeginfullscreen', _fullscreenChangeHandler, FALSE);
 			// _videoTag.addEventListener('webkitendfullscreen', _fullscreenChangeHandler, FALSE);
