@@ -26,6 +26,9 @@
 			_element = document.createElement('div'),
 			// player state
 			_state = states.IDLE,
+			_bufferPercent = -1,
+			// only add player ready listener once 
+			_listeningForReady = false,
 			// function to call once api and view are ready
 			_youtubeEmbedReadyCallback = null,
 			// update timer
@@ -51,7 +54,6 @@
 			}
 		}
 
-		var _listeningForReady = false;
 		function _getVideoLayer() {
 			var videoLayer = _element.parentNode;
 			if (!videoLayer) {
@@ -88,18 +90,28 @@
 			if (state === states.PLAYING) {
 				console.log(_playerId, 'start time interval. options', _ytPlayer.getOptions());
 				_playingInterval = setInterval(_timeUpdateHandler, 250);
+			} else if (state === states.BUFFERING) {
+				_bufferUpdate();
 			}
 			_dispatchEvent(events.JWPLAYER_PLAYER_STATE, change);
 		}
 
 		function _timeUpdateHandler() {
-			_dispatchEvent(events.JWPLAYER_MEDIA_BUFFER, {
-				bufferPercent: Math.round(_ytPlayer.getVideoLoadedFraction() * 100)
-			});
+			_bufferUpdate();
             _dispatchEvent(events.JWPLAYER_MEDIA_TIME, {
                 position : (_ytPlayer.getCurrentTime() * 10|0)/10,
                 duration : _ytPlayer.getDuration()
             });
+		}
+
+		function _bufferUpdate() {
+			var bufferPercent = _ytPlayer ? Math.round(_ytPlayer.getVideoLoadedFraction() * 100) : 0;
+			if (_bufferPercent !== bufferPercent) {
+				_bufferPercent = bufferPercent;
+				_dispatchEvent(events.JWPLAYER_MEDIA_BUFFER, {
+					bufferPercent: bufferPercent
+				});
+			}
 		}
 
 		// TODO: checkComplete
@@ -285,7 +297,7 @@
 			} else {
 				if (_ytPlayer.getCurrentTime() > 0) {
 					console.log(_playerId, 'seek');
-				_ytPlayer.seekTo(0);
+					_ytPlayer.seekTo(0);
 				}
 				console.log(_playerId, 'play', _ytPlayer.getPlayerState());
 				_ytPlayer.playVideo();
