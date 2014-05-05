@@ -604,6 +604,7 @@ package com.longtailvideo.jwplayer.controller {
 				item.provider = JWParser.getProvider(item);
 				_model.playlist.load(item.file);
 			}
+			_model.setActiveMediaProvider(item.provider);
 			
 		}
 		protected function loadString(item:String):Boolean {
