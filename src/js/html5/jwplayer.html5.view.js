@@ -677,7 +677,7 @@
 						_playerElement.webkitRequestFullScreen ||
 						_playerElement.mozRequestFullScreen ||
 						_playerElement.msRequestFullscreen;
-					if (requestFullscreen) requestFullscreen();
+					if (requestFullscreen) requestFullscreen.apply(_playerElement);
 				} else {
 					var exitFullscreen =
 						DOCUMENT.exitFullscreen ||
@@ -686,7 +686,7 @@
 						DOCUMENT.webkitCancelFullScreen ||
 						DOCUMENT.mozCancelFullScreen ||
 						DOCUMENT.msExitFullscreen;
-					if (exitFullscreen) exitFullscreen();
+					if (exitFullscreen) exitFullscreen.apply(DOCUMENT);
 				}
 				// use the false fullscreen method using CSS.
 				if (state) {
