@@ -238,6 +238,10 @@
 			var url = item.sources[0].file;
 			var videoId = utils.youTubeID(url);
 
+			if (!item.image) {
+				item.image = 'http://i.ytimg.com/vi/' + videoId + '/0.jpg';
+			}
+
 			console.log(_playerId, 'YT load', videoId, url, item);
 
 			_setState(states.BUFFERING);
