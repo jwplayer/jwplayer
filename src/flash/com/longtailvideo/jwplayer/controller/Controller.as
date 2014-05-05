@@ -98,8 +98,6 @@ package com.longtailvideo.jwplayer.controller {
 
 		/** Reference to a PlaylistItem which has triggered an external MediaProvider load **/
 		protected var _delayedItem:PlaylistItem;
-		/** Loader for external MediaProviders **/
-		protected var _mediaLoader:MediaProviderLoader;
 		
 		public function Controller(player:IPlayer, model:Model, view:View) {
 			_player = player;
@@ -191,7 +189,6 @@ package com.longtailvideo.jwplayer.controller {
 
 		protected function errorHandler(evt:ErrorEvent):void {
 			_delayedItem = null;
-			_mediaLoader = null;
 			errorState(evt.text);
 		}
 		protected function playlistLoadHandler(evt:PlaylistEvent=null):void {
@@ -373,10 +370,6 @@ package com.longtailvideo.jwplayer.controller {
 				return false;
 			}
 			
-			if (_mediaLoader) {
-				_delayedItem = _model.playlist.currentItem;
-				return false;
-			}
 			
 			if (locking || _player.state == PlayerState.PLAYING || _player.state == PlayerState.BUFFERING) {
 				return false;
@@ -606,10 +599,11 @@ package com.longtailvideo.jwplayer.controller {
 		}
 
 		protected function loadFile(item:PlaylistItem):void {
-			item.provider = JWParser.getProvider(item);
-
-			_model.playlist.load(item.file); 
-			dispatchEvent(new PlayerStateEvent(PlayerStateEvent.JWPLAYER_PLAYER_STATE, PlayerState.BUFFERING, PlayerState.IDLE));
+			if (!item.provider)
+			{	
+				item.provider = JWParser.getProvider(item);
+				_model.playlist.load(item.file);
+			}
 			
 		}
 		protected function loadString(item:String):Boolean {
