@@ -25,6 +25,12 @@
 		VIEW_CONTROLS_CONTAINER_CLASS = "jwcontrols",
 		VIEW_ASPECT_CONTAINER_CLASS = "jwaspect",
 		VIEW_PLAYLIST_CONTAINER_CLASS = "jwplaylistcontainer",
+		FULLSCREEN_EVENTS = [
+			'fullscreenchange',
+			'webkitfullscreenchange',
+			'mozfullscreenchange',
+			'MSFullscreenChange'
+		],
 
 		/*************************************************************
 		 * Player stylesheets - done once on script initialization;  *
@@ -165,11 +171,11 @@
 
 			// _videoTag.addEventListener('webkitbeginfullscreen', _fullscreenChangeHandler, FALSE);
 			// _videoTag.addEventListener('webkitendfullscreen', _fullscreenChangeHandler, FALSE);
-			_model.addEventListener('webkitbeginfullscreen', _fullscreenChangeHandler);
-			_model.addEventListener('webkitendfullscreen', _fullscreenChangeHandler);
-			DOCUMENT.addEventListener('webkitfullscreenchange', _fullscreenChangeHandler, FALSE);
-			DOCUMENT.addEventListener('mozfullscreenchange', _fullscreenChangeHandler, FALSE);
-			DOCUMENT.addEventListener('MSFullscreenChange', _fullscreenChangeHandler, FALSE);
+			_model.addEventListener('fullscreenchange', _fullscreenChangeHandler);
+			for (var i=FULLSCREEN_EVENTS.length; i--;) {
+				DOCUMENT.addEventListener(FULLSCREEN_EVENTS[i], _fullscreenChangeHandler, FALSE);
+			}
+
 			DOCUMENT.addEventListener('keydown', _keyHandler, FALSE);
 			
 			window.removeEventListener('resize', _responsiveListener);
@@ -463,20 +469,7 @@
 			if (!utils.exists(state)) {
 				state = !_model.fullscreen;
 			}
-
 			_toggleFullscreen(state);
-
-			_redrawComponent(_controlbar);
-			_redrawComponent(_display);
-			_redrawComponent(_dock);
-			_resizeMedia();
-
-			if (_model.fullscreen) {
-				// Browsers seem to need an extra second to figure out how large they are in fullscreen...
-				clearTimeout(_resizeMediaTimeout);
-				_resizeMediaTimeout = setTimeout(_resizeMedia, 200);
-			}
-			
 		};
 		
 
@@ -665,8 +658,8 @@
 			if (state && _isAudioFile()) {
 				return;
 			}
-			// desktop fullscreen
-			if (!_isMobile && state !== _model.fullscreen) {
+			var playerFullscreen = false;
+			if (state !== _model.fullscreen) {
 				// If a native fullscreen method is available in the browser, use that.
 				if (state) {
 					var requestFullscreen =
@@ -674,9 +667,15 @@
 						_playerElement.requestFullScreen ||
 						_playerElement.webkitRequestFullscreen ||
 						_playerElement.webkitRequestFullScreen ||
+						_playerElement.webkitEnterFullscreen ||
+						_playerElement.webkitEnterFullScreen ||
 						_playerElement.mozRequestFullScreen ||
 						_playerElement.msRequestFullscreen;
-					if (requestFullscreen) requestFullscreen.apply(_playerElement);
+					if (requestFullscreen) {
+						requestFullscreen.apply(_playerElement);
+						// we need to wait for an error or onchange to know if this worked
+						playerFullscreen = true;
+					}
 				} else {
 					var exitFullscreen =
 						DOCUMENT.exitFullscreen ||
@@ -685,50 +684,85 @@
 						DOCUMENT.webkitCancelFullScreen ||
 						DOCUMENT.mozCancelFullScreen ||
 						DOCUMENT.msExitFullscreen;
-					if (exitFullscreen) exitFullscreen.apply(DOCUMENT);
+					if (exitFullscreen) {
+						exitFullscreen.apply(DOCUMENT);
+					}
+
 				}
-				// use the false fullscreen method using CSS.
-				if (state) {
-					_playerElement.className += " jwfullscreen";
-					_css.style(DOCUMENT.body, {
-						'overflow-y': JW_CSS_HIDDEN
-					});
-				} else {
-					_playerElement.className = _playerElement.className.replace(/\s+jwfullscreen/, "");
-					_css.style(DOCUMENT.body, {
-						'overflow-y': ''
-					});
+				
+				// use video tag fullscreen if player container fullscreen failed
+				if (!playerFullscreen) {
+					_model.getVideo().setFullScreen(state);
 				}
+
+				_fullscreenChangeHandler({
+					type: 'fullscreenrequest',
+					target: _playerElement,
+					jwstate: state
+				});
 			}
-			// delay refresh on iPad when exiting fullscreen
-			if (!state && _isIPad && _api.jwGetState() == states.PAUSED) {
-				setTimeout(_showDisplay, 500);
-			}
-			// update model and set fullscreen on video provider (mobile video tag)
-			_model.setFullscreen(state);
 		}
 
 		/**
 		 * Return whether or not we're in native fullscreen
 		 */
 		function _isNativeFullscreen() {
-			var fsElement = DOCUMENT.mozFullScreenElement || 
+			var fsElement = DOCUMENT.currentFullScreenElement ||
 							DOCUMENT.webkitCurrentFullScreenElement ||
+							DOCUMENT.mozFullScreenElement || 
 							DOCUMENT.msFullscreenElement;
-			
-			return !!(fsElement && (!fsElement.id || fsElement.id == _api.id)) ||
-					_model.getVideo().getFullScreen();
+			var fullscreen = fsElement && fsElement.id === _api.id;
+			return fullscreen || _model.getVideo().getFullScreen();
 		}
 		
 		/**
 		 * If the browser enters or exits fullscreen mode (without the view's knowing about it) update the model.
 		 **/
-		function _fullscreenChangeHandler() {
-			var fsNow = _isNativeFullscreen();
-			if (_model.fullscreen != fsNow) {
-				_fullscreen(fsNow);
+		function _fullscreenChangeHandler(event) {
+			// don't respond to fullscreen change handlers for elements outside the player (other players, etc...)
+			if (event.target !== _playerElement && !_playerElement.contains(event.target)) {
+				return;
 			}
-			
+
+			// var element = event.target;
+			var fullscreenState = (event.jwstate !== undefined) ? event.jwstate : _isNativeFullscreen();
+
+			// adjust UI based on player container fullscreen state
+			var className = _playerElement.className.replace(/\s*jwfullscreen/, '');
+			var bodyStyle = {};
+			if (fullscreenState) {
+				className += ' jwfullscreen';
+				bodyStyle['overflow-y'] = JW_CSS_HIDDEN;
+			} else {
+				bodyStyle['overflow-y'] = '';
+			}
+			_playerElement.className = className;
+			_css.style(DOCUMENT.body, bodyStyle);
+			_redrawComponent(_controlbar);
+			_redrawComponent(_display);
+			_redrawComponent(_dock);
+			_resizeMedia();
+
+			// update model
+			_model.setFullscreen(fullscreenState);
+
+			//ios7captions
+			// var curr = _model.getVideo().fsCaptions(fullscreenState, _api.jwGetCurrentCaptions());
+			// if (!fullscreenState) {
+				// if (curr) _api.jwSetCurrentCaptions(curr+1);
+				// else _api.jwSetCurrentCaptions(0);
+			// }
+
+			if (fullscreenState) {
+				// Browsers seem to need an extra second to figure out how large they are in fullscreen...
+				clearTimeout(_resizeMediaTimeout);
+				_resizeMediaTimeout = setTimeout(_resizeMedia, 200);
+
+			} else if (_isIPad && _api.jwGetState() == states.PAUSED) {
+				// delay refresh on iPad when exiting fullscreen
+				// TODO: cancel this if fullscreen or player state changes
+				setTimeout(_showDisplay, 500);
+			}
 		}
 		
 		function _showControlbar() {
@@ -1091,11 +1125,10 @@
 		this.destroy = function() {
 			window.removeEventListener('resize', _responsiveListener);
 			window.removeEventListener('orientationchange', _responsiveListener);
-			DOCUMENT.removeEventListener('webkitfullscreenchange', _fullscreenChangeHandler, FALSE);
-			DOCUMENT.removeEventListener('mozfullscreenchange', _fullscreenChangeHandler, FALSE);
-			DOCUMENT.removeEventListener('MSFullscreenChange', _fullscreenChangeHandler, FALSE);
-			_model.removeEventListener('webkitbeginfullscreen', _fullscreenChangeHandler);
-			_model.removeEventListener('webkitendfullscreen', _fullscreenChangeHandler);
+			for (var i=FULLSCREEN_EVENTS.length; i--;) {
+				DOCUMENT.removeEventListener(FULLSCREEN_EVENTS[i], _fullscreenChangeHandler, FALSE);
+			}
+			_model.removeEventListener('fullscreenchange', _fullscreenChangeHandler);
 			DOCUMENT.removeEventListener('keydown', _keyHandler, FALSE);
 			if (_rightClickMenu) {
 				_rightClickMenu.destroy();

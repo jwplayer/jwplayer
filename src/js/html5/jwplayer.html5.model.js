@@ -121,7 +121,6 @@
 		
 		_model.setFullscreen = function(state) {
 			state = !!state;
-			_video.setFullScreen(state);
 			if (state != _model.fullscreen) {
 				_model.fullscreen = state;
 				_model.sendEvent(events.JWPLAYER_FULLSCREEN, {

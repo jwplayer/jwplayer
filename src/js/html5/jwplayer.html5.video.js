@@ -41,8 +41,8 @@
 				timeupdate : _timeUpdateHandler,
 				volumechange : _volumeHandler,
 				waiting : _bufferStateHandler,
-				webkitbeginfullscreen: _fullscreenChangeHandler,
-				webkitendfullscreen: _fullscreenChangeHandler
+				webkitbeginfullscreen: _fullscreenBeginHandler,
+				webkitendfullscreen: _fullscreenEndHandler
 			},
 			// DOM container
 			_container,
@@ -88,6 +88,8 @@
 			
 			// post roll support
 			_beforecompleted = FALSE,
+
+			_fullscreenState = null,
 
 			_this = utils.extend(this, new events.eventdispatcher());
 
@@ -317,7 +319,7 @@
 			_videotag.src = _source.file;
 			_videotag.load();
 			//in ios and fullscreen, set controls true, then when it goes to normal screen the controls don't show'
-			if (utils.isIOS() && _videotag.webkitDisplayingFullscreen) {
+			if (utils.isIOS() && _this.getFullScreen()) {
 				_videotag.controls = TRUE;
 			}
 			_bufferInterval = setInterval(_sendBufferUpdate, 100);
@@ -475,10 +477,28 @@
 			}
 		}
 
-		function _fullscreenChangeHandler(e) {
-			console.log('fullscreen change', e);
-			// forward event
-			_sendEvent(e.type);
+		function _fullscreenBeginHandler(e) {
+			_fullscreenState = true;
+			_sendFullscreen(e);
+			// show controls on begin fullscreen so that they are disabled properly at end
+			if (utils.isIOS()) {
+				_videotag.controls = FALSE;
+			}
+		}
+
+		function _fullscreenEndHandler(e) {
+			_fullscreenState = false;
+			_sendFullscreen(e);
+			if (utils.isIOS()) {
+				_videotag.controls = FALSE;
+			}
+		}
+
+		function _sendFullscreen(e) {
+			_sendEvent('fullscreenchange', {
+				target: e.target,
+				jwstate: _fullscreenState
+			});
 		}
 		
 		this.addCaptions = function(tracks) {
@@ -620,36 +640,37 @@
 
 		_this.setFullScreen = function(state) {
 			state = !!state;
-			//ios7captions
-			// if (state) {
-				//_model.getVideo().fsCaptions(state,_api.jwGetCurrentCaptions());
-			// } else {
-				//var curr = _model.getVideo().fsCaptions(state,_api.jwGetCurrentCaptions());
-				//if (curr)
-				 //   _api.jwSetCurrentCaptions(curr+1);
-				//else 
-				//    _api.jwSetCurrentCaptions(0);
-			// }
-			if (utils.isMobile()) {
-				if (state) {
-					try {
-						_videotag.webkitEnterFullScreen();
-					} catch(e) {
-						//object can't go fullscreen
-						return false;
+
+			// This implementation if for iOS and Android WebKit only
+			// This won't get called if the player contain can go fullscreen
+			if (state) {
+				try {
+					var enterFullscreen =
+					_videotag.webkitEnterFullscreen ||
+					_videotag.webkitEnterFullScreen;
+					if (enterFullscreen) {
+						enterFullscreen.apply(_videotag);
 					}
-				} else {
-					_videotag.webkitExitFullScreen();
-					if (utils.isIPad()) {
-						_videotag.controls = FALSE;
-					}
+				} catch(e) {
+					//object can't go fullscreen
+					return false;
+				}
+				return _this.getFullScreen();
+
+			} else {
+				var exitFullscreen =
+				_videotag.webkitExitFullscreen ||
+				_videotag.webkitExitFullScreen;
+				if (exitFullscreen) {
+					exitFullscreen.apply(_videotag);
 				}
 			}
+
 			return state;
 		};
 
 		_this.getFullScreen = function() {
-			return _videotag.webkitDisplayingFullscreen;
+			return _fullscreenState || _videotag.webkitDisplayingFullscreen;
 		};
 		
 		_this.audioMode = function() {
