@@ -9,6 +9,7 @@
 	import com.longtailvideo.jwplayer.plugins.IPlugin;
 	import com.longtailvideo.jwplayer.utils.Logger;
 	import com.longtailvideo.jwplayer.utils.RootReference;
+	import com.longtailvideo.jwplayer.utils.SWFFocus;
 	import com.longtailvideo.jwplayer.view.IPlayerComponents;
 	import com.longtailvideo.jwplayer.view.View;
 	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
@@ -17,8 +18,8 @@
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.geom.Rectangle;
-	
-	
+
+
 	/**
 	 * Sent when the player has been initialized and skins and plugins have been successfully loaded.
 	 *
@@ -52,7 +53,10 @@
 				this.removeEventListener(Event.ADDED_TO_STAGE, setupPlayer);
 			} catch (err:Error) {
 			}
+
 			new RootReference(this);
+			//this.tabChildren = false;
+			//this.tabEnabled = true;
 			_dispatcher = new GlobalEventDispatcher();
 			model = newModel();
 			view = newView(model);
@@ -76,7 +80,7 @@
 		protected function playerReady(evt:PlayerEvent):void {
 			// Only handle JWPLAYER_READY once
 			controller.removeEventListener(PlayerEvent.JWPLAYER_READY, playerReady);
-			
+			SWFFocus.init(stage);
 			// Initialize Javascript interface
 			var jsAPI:JavascriptAPI = new JavascriptAPI(this);
 			

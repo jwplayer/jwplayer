@@ -139,6 +139,7 @@ package com.longtailvideo.jwplayer.view {
 			}
 
 			_root = new MovieClip();
+			//_root.tabChildren = false;
 			_normalScreen = new Rectangle();
 		}
 
@@ -171,7 +172,7 @@ package com.longtailvideo.jwplayer.view {
 		public function setupView():void {
 			RootReference.stage.addChildAt(_root, 0);
 			_root.visible = false;
-
+		
 			setupLayers();
 			createComponents();
 			setupComponents();
@@ -182,7 +183,9 @@ package com.longtailvideo.jwplayer.view {
 			RootReference.stage.addEventListener(Event.MOUSE_LEAVE, moveTimeout);
 			RootReference.stage.addEventListener(MouseEvent.MOUSE_MOVE, moveHandler);
 			RootReference.stage.addEventListener(KeyboardEvent.KEY_DOWN, moveHandler);
-			
+			//RootReference.stage.tabIndex = 0;
+			//RootReference.stage.tabChildren = false;
+			_root.tabIndex = 0;
 			addComponentListeners();
 
 			_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_LOADED, mediaLoaded);
@@ -226,11 +229,11 @@ package com.longtailvideo.jwplayer.view {
 
 			if (evt.shiftKey && firstIndex >= 0 && button.tabIndex == firstIndex) {
 				// User is tabbing backwards, and the button we're tabbing out of was the first tab index
-				blurPlayer(evt);
+				//blurPlayer(evt);
 			}
 			lastIndex = button.tabIndex;
 		}
-
+ 
 		/** 
 		 * Handles the loss of a button's focus.  
 		 * The player attempts to blur Flash's focus on the page after the last tabbable 
@@ -240,9 +243,9 @@ package com.longtailvideo.jwplayer.view {
 			var button:Sprite = evt.target as Sprite;
 			if (!button) { return; }
 
-			if (!evt.shiftKey && firstIndex >= 0 && button.tabIndex == firstIndex && lastIndex > firstIndex) {
+			if (!evt.shiftKey && firstIndex >= 0 && button.tabIndex == firstIndex) { //&& lastIndex > firstIndex) {
 				// Tabbing forward and we've wrapped around to the first button.
-				blurPlayer(evt);
+					//blurPlayer(evt);
 			} else if (firstIndex < 0 || button.tabIndex < firstIndex) {
 				firstIndex = button.tabIndex;
 			}

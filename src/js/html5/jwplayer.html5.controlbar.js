@@ -578,6 +578,7 @@
 				buttonTouch.addEventListener(utils.touchEvents.TAP, _buttonClickHandler(name));
 			}
 			button.innerHTML = "&nbsp;";
+			button.tabIndex = -1;
 			_appendChild(span, button);
 
 			var outSkin = _getSkinElement(name + "Button"),

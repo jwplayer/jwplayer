@@ -85,7 +85,7 @@
 
 			_playerElement = _createElement("div", PLAYER_CLASS + " playlist-" + _model.playlistposition);
 			_playerElement.id = _api.id;
-			
+			_playerElement.tabIndex = 0;
 			if (_model.aspectratio) {
 				_css.style(_playerElement, {
 					display: 'inline-block'

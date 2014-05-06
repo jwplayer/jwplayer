@@ -80,12 +80,12 @@ package com.longtailvideo.jwplayer.view.components {
 			var displayObjectSprite:Sprite = displayObject as Sprite;
 			if (align == "left") {
 				if (displayObjectSprite && displayObjectSprite.buttonMode) {
-					displayObjectSprite.tabIndex = _tabLeft++;
+					//displayObjectSprite.tabIndex = _tabLeft++;
 				}
 				placeLeft(displayObject);
 			} else if (align == "right") {
 				if (displayObjectSprite && displayObjectSprite.buttonMode) {
-					displayObjectSprite.tabIndex = _tabRight--;
+					//displayObjectSprite.tabIndex = _tabRight--;
 				}
 				placeRight(displayObject);
 			}
