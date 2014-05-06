@@ -90,6 +90,7 @@
 			_state = state;
 			clearInterval(_playingInterval);
 			if (state === states.PLAYING) {
+				_resetViewForMobile();
 				console.log(_playerId, 'start time interval. options', _ytPlayer.getOptions());
 				_playingInterval = setInterval(_timeUpdateHandler, 250);
 			} else if (state === states.BUFFERING) {
@@ -220,7 +221,28 @@
 			_ytPlayer = new _youtube.Player(_element, ytConfig);
 			_ytVideoId = videoId;
 			_youtubeEmbedReadyCallback = null;
+
+			_readyViewForMobile();
+
 			console.log(_playerId, 'YT created player', _ytPlayer, ytConfig);
+		}
+
+		function _readyViewForMobile() {
+			if (utils.isMobile()) {
+				_this.setVisibility(true);
+				// hide controls so use can click on iFrame
+				utils.css('#'+ _playerId + ' .jwcontrols', {
+					display: 'none'
+				});
+			}
+		}
+
+		function _resetViewForMobile() {
+			if (utils.isMobile()) {
+				utils.css('#'+ _playerId + ' .jwcontrols', {
+					display: ''
+				});
+			}
 		}
 
 		// Additional Provider Methods (not yet implemented in html5.video)
@@ -296,6 +318,8 @@
 				// _ytPlayer.cueVideoById(_ytVideoId);
 				// _ytPlayer.nextVideo();
 				
+				_readyViewForMobile();
+
 			} else {
 				if (_ytPlayer.getCurrentTime() > 0) {
 					console.log(_playerId, 'seek');
