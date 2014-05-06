@@ -488,7 +488,7 @@ package com.longtailvideo.jwplayer.utils
 			if (newFocus && oldFocus) _lastFocus = e.relatedObject;
 			if (!_flagActivated)
 			{
-				if (wrapOccurred(oldFocus, newFocus, e.shiftKey)) {
+				if (oldFocus.tabIndex == newFocus.tabIndex) {
 					// eTrace("wrap occurred: " + _idNext);
 					e.preventDefault();
 					eCall("function(){var elem = document.getElementById('"+ (e.shiftKey ? _idPrev : _idNext) +"'); if (elem) elem.focus();}");
