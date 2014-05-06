@@ -24,6 +24,8 @@
 			_ytVideoId = null,
 			// iFrame Container (this element will be replaced by iFrame element)
 			_element = document.createElement('div'),
+			// view container
+			_container,
 			// player state
 			_state = states.IDLE,
 			_bufferPercent = -1,
@@ -105,7 +107,7 @@
 		}
 
 		function _bufferUpdate() {
-			var bufferPercent = _ytPlayer ? Math.round(_ytPlayer.getVideoLoadedFraction() * 100) : 0;
+			var bufferPercent = (_ytPlayer && _ytPlayer.getVideoLoadedFraction) ? Math.round(_ytPlayer.getVideoLoadedFraction() * 100) : 0;
 			if (_bufferPercent !== bufferPercent) {
 				_bufferPercent = bufferPercent;
 				_dispatchEvent(events.JWPLAYER_MEDIA_BUFFER, {
@@ -365,7 +367,28 @@
 		};
 
 		_this.setContainer = function(element) {
+			_container = element;
 			element.appendChild(_element);
+		};
+
+		_this.setVisibility = function(state) {
+			state = !!state;
+			if (state) {
+				// Changing visibility to hidden on Android < 4.2 causes 
+				// the pause event to be fired. This causes audio files to 
+				// become unplayable. Hence the video tag is always kept 
+				// visible on Android devices.
+				utils.css.style(_container, {
+					visibility: 'visible',
+					opacity: 1
+				});
+			} else {
+				if (!utils.isMobile()) {
+					utils.css.style(_container, {
+						opacity: 0
+					}); 
+				}
+			}
 		};
 
 		_this.resize = function(width, height, stretching) {

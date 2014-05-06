@@ -15,7 +15,6 @@
 		_isMobile = utils.isMobile(),
 		_isIPad = utils.isIPad(),
 		_isIPod = utils.isIPod(),
-		_isAndroid = utils.isAndroid(),
 		DOCUMENT = document,
 		PLAYER_CLASS = "jwplayer",
 		ASPECT_MODE = "aspectMode",
@@ -820,22 +819,7 @@
 
 		function _showVideo(state) {
 			state = state && !_audioMode;
-			if (state || _isAndroid) {
-				// Changing visibility to hidden on Android < 4.2 causes 
-				// the pause event to be fired. This causes audio files to 
-				// become unplayable. Hence the video tag is always kept 
-				// visible on Android devices.
-				_css.style(_videoLayer, {
-					visibility: "visible",
-					opacity: 1
-				});
-			}
-			else {
-				_css.style(_videoLayer, {
-					visibility: JW_CSS_HIDDEN,
-					opacity: 0
-				});		
-			}
+			_model.getVideo().setVisibility(state);
 		}
 
 		function _playlistCompleteHandler() {

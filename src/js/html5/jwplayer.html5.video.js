@@ -44,7 +44,8 @@
 				webkitbeginfullscreen: _fullscreenChangeHandler,
 				webkitendfullscreen: _fullscreenChangeHandler
 			},
-
+			// DOM container
+			_container,
 			// Currently playing source
 			_source,
 			// Current duration
@@ -80,10 +81,9 @@
 			
 			//tracks for ios
 			_tracks = [],
-			
 			_usedTrack = 0,
+
 			//selected track
-			
 			_tracksOnce = false,
 			
 			// post roll support
@@ -584,7 +584,27 @@
 		};
 
 		_this.setContainer = function(element) {
+			_container = element;
 			element.appendChild(_videotag);
+		};
+
+		_this.setVisibility = function(state) {
+			state = !!state;
+			if (state || _isAndroid) {
+				// Changing visibility to hidden on Android < 4.2 causes 
+				// the pause event to be fired. This causes audio files to 
+				// become unplayable. Hence the video tag is always kept 
+				// visible on Android devices.
+				utils.css.style(_container, {
+					visibility: 'visible',
+					opacity: 1
+				});
+			} else {
+				utils.css.style(_container, {
+					visibility: '',
+					opacity: 0
+				}); 
+			}
 		};
 
 		_this.resize = function(width, height, stretching) {
