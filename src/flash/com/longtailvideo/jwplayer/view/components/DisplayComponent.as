@@ -48,7 +48,8 @@
 			addListeners();
 			setupDisplayObjects();
 			setupIcons();
-			
+			//this.tabEnabled = true;
+			this.tabIndex = 1;
 			// Override defaults
 			if (!isNaN(getConfigParam('bufferrotation'))) _bufferRotationAngle = Number(getConfigParam('bufferrotation'));
 			if (!isNaN(getConfigParam('bufferinterval'))) _bufferRotationTime = Number(getConfigParam('bufferinterval'));
@@ -87,6 +88,7 @@
 			player.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_COMPLETE, playlistComplete);
 			addEventListener(MouseEvent.CLICK, clickHandler);
 			this.buttonMode = true;
+			this.tabEnabled = true;
 		}
 		
 		

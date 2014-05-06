@@ -87,7 +87,7 @@ package com.longtailvideo.jwplayer.view.components {
 			var acs:AccessibilityProperties = new AccessibilityProperties();
 			acs.name = (name ? name : icon.name);
 			button.accessibilityProperties = acs;
-			button.tabEnabled = true;
+			button.tabEnabled = false;
 			button.tabChildren = false;
 			button.tabIndex = currentTab++;
 			button.setOutIcon(icon);

@@ -88,7 +88,11 @@
 
 			_playerElement = _createElement("div", PLAYER_CLASS + " playlist-" + _model.playlistposition);
 			_playerElement.id = _api.id;
-			
+			_playerElement.tabIndex = 0;
+			_playerElement.onfocusin = handleFocus;
+			_playerElement.addEventListener('focus',handleFocus);
+			_playerElement.onfocusout = handleBlur;
+			_playerElement.addEventListener('blur',handleBlur);
 			if (_model.aspectratio) {
 				_css.style(_playerElement, {
 					display: 'inline-block'
@@ -101,6 +105,17 @@
 			var replace = DOCUMENT.getElementById(_api.id);
 			replace.parentNode.replaceChild(_playerElement, replace);
 		}
+
+		function handleFocus(evt) {
+
+			_api.jwGetFocus();
+		}
+
+		function handleBlur(evt) {
+
+			_api.jwLoseFocus();
+		}
+
 
 		this.getCurrentCaptions = function() {
 			return _captions.getCurrentCaptions();
