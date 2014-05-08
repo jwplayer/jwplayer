@@ -92,11 +92,7 @@ package com.longtailvideo.jwplayer.view {
 		protected var layoutManager:PlayerLayoutManager;
 
 		protected var currentLayer:Number = 0;
-		
-		// Keep track of the first tabIndex
-		protected var firstIndex:Number = -1;
-		// Keep track of the last seen tabIndex
-		protected var lastIndex:Number = -1;
+
 
 		// Delay between IDLE state and when the preview image is shown
 		private var imageDelay:Timer = new Timer(100, 1);
@@ -127,7 +123,6 @@ package com.longtailvideo.jwplayer.view {
 		public function View(player:IPlayer, model:Model) {
 			_player = player;
 			_model = model;
-
 			RootReference.stage.scaleMode = StageScaleMode.NO_SCALE;
 			RootReference.stage.stage.align = StageAlign.TOP_LEFT;
 
@@ -139,6 +134,8 @@ package com.longtailvideo.jwplayer.view {
 			}
 
 			_root = new MovieClip();
+			_root.tabIndex = 0;
+			_root.focusRect = false;
 			_normalScreen = new Rectangle();
 		}
 
@@ -220,12 +217,15 @@ package com.longtailvideo.jwplayer.view {
 		}
 		
 		protected function keyFocusOutHandler(evt:FocusEvent):void {
-			Logger.log("player " + _player.config.id + " i lost focus");
+			var ev:ViewEvent = new ViewEvent(ViewEvent.JWPLAYER_VIEW_FOCUS);
+			ev.hasFocus = false;
+			dispatchEvent(ev);
 		}
  
 		protected function keyFocusInHandler(evt:FocusEvent):void {
-			Logger.log("player " + _player.config.id + " i have focus");
-
+			var ev:ViewEvent = new ViewEvent(ViewEvent.JWPLAYER_VIEW_FOCUS);
+			ev.hasFocus = true;
+			dispatchEvent(ev);
 		}
 		
 		
