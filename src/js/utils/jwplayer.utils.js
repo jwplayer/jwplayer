@@ -85,18 +85,18 @@
 
 	/** Merges a list of objects **/
 	utils.extend = function() {
-		var args = utils.extend['arguments'];
+		var args = Array.prototype.slice.call(arguments, 0);
 		if (args.length > 1) {
-			for ( var i = 1; i < args.length; i++) {
-				utils.foreach(args[i], function(element, arg) {
-					try {
-						if (utils.exists(arg)) {
-							args[0][element] = arg;
-						}
-					} catch(e) {}
-				});
+			var objectToExtend = args[0],
+				extendEach = function(element, arg) {
+					if (arg !== undefined && arg !== null) {
+						objectToExtend[element] = arg;
+					}
+				};
+			for (var i = 1; i < args.length; i++) {
+				utils.foreach(args[i], extendEach);
 			}
-			return args[0];
+			return objectToExtend;
 		}
 		return null;
 	};
@@ -152,13 +152,23 @@
 	};
 
 	/** Matches Android devices **/	
+	utils.isAndroidNative = function(version) {
+		return utils.isAndroid(version, true);
+	};
+
 	utils.isAndroid = function(version, excludeChrome) {
 		//Android Browser appears to include a user-agent string for Chrome/18
-		var androidBrowser = excludeChrome ? !_userAgentMatch(/chrome\/[23456789]/i) : TRUE;
-		if (version) {
-			return androidBrowser && _userAgentMatch(new RegExp("android.*"+version, "i"));
+		if (excludeChrome && _userAgentMatch(/chrome\/[123456789]/i)) {
+			return false;
 		}
-		return androidBrowser && _userAgentMatch(/android/i);
+		if (version) {
+			// make sure whole number version check ends with point '.'
+			if (utils.isInt(version) && !/\./.test(version)) {
+				version = ''+ version +'.';
+			}
+			return _userAgentMatch(new RegExp("Android\\s*"+version, "i"));
+		}
+		return _userAgentMatch(/Android/i);
 	};
 
 	/** Matches iOS and Android devices **/	
@@ -184,6 +194,10 @@
 		return jwCookies;
 	};
 
+	utils.isInt = function(value) {
+		return value % 1 === 0;
+	};
+
 	/** Returns the true type of an object * */
 	utils.typeOf = function(value) {
 		var typeofString = typeof value;
@@ -198,7 +212,7 @@
 	utils.translateEventResponse = function(type, eventProperties) {
 		var translated = utils.extend({}, eventProperties);
 		if (type == jwplayer.events.JWPLAYER_FULLSCREEN && !translated.fullscreen) {
-			translated.fullscreen = translated.message == "true" ? TRUE : FALSE;
+			translated.fullscreen = (translated.message === "true");
 			delete translated.message;
 		} else if (typeof translated.data == OBJECT) {
 			// Takes ViewEvent "data" block and moves it up a level
@@ -564,11 +578,11 @@
 	};
 	
 	/** Go through the playlist and choose a single playable type to play; remove sources of a different type **/
-	utils.filterPlaylist = function(playlist, checkFlash) {
+	utils.filterPlaylist = function(playlist, checkFlash, androidhls) {
 		var pl = [], i, item, j, source;
 		for (i=0; i < playlist.length; i++) {
 			item = utils.extend({}, playlist[i]);
-			item.sources = utils.filterSources(item.sources);
+			item.sources = utils.filterSources(item.sources, FALSE, androidhls);
 			if (item.sources.length > 0) {
 				for (j = 0; j < item.sources.length; j++) {
 					source = item.sources[j];
@@ -582,7 +596,7 @@
 		if (checkFlash && pl.length === 0) {
 			for (i=0; i < playlist.length; i++) {
 				item = utils.extend({}, playlist[i]);
-				item.sources = utils.filterSources(item.sources, TRUE);
+				item.sources = utils.filterSources(item.sources, TRUE, androidhls);
 				if (item.sources.length > 0) {
 					for (j = 0; j < item.sources.length; j++) {
 						source = item.sources[j];
@@ -596,19 +610,27 @@
 	};
 
 	/** Filters the sources by taking the first playable type and eliminating sources of a different type **/
-	utils.filterSources = function(sources, filterFlash) {
-		var selectedType, newSources, extensionmap = utils.extensionmap;
+	utils.filterSources = function(sources, filterFlash, androidhls) {
+		var selectedType,
+			newSources;
+
 		if (sources) {
 			newSources = [];
 			for (var i=0; i<sources.length; i++) {
-				var type = sources[i].type,
-					file = sources[i].file;
+				var source = utils.extend({}, sources[i]),
+					file = source.file,
+					type = source.type;
 				
-				if (file) file = utils.trim(file);
+				if (file) {
+					source.file = file = utils.trim(''+file);
+				} else {
+					// source.file is required
+					continue;
+				}
 				
 				if (!type) {
-					type = extensionmap.extType(utils.extension(file));
-					sources[i].type = type;
+					var extension = utils.extension(file);
+					source.type = type = utils.extensionmap.extType(extension);
 				}
 
 				if (filterFlash) {
@@ -617,16 +639,16 @@
 							selectedType = type;
 						}
 						if (type == selectedType) {
-							newSources.push(utils.extend({}, sources[i]));
+							newSources.push(source);
 						}
 					}
 				} else {
-					if (utils.canPlayHTML5(type)) {
+					if (jwplayer.embed.html5CanPlay(file, type, androidhls)) {
 						if (!selectedType) {
 							selectedType = type;
 						}
 						if (type == selectedType) {
-							newSources.push(utils.extend({}, sources[i]));
+							newSources.push(source);
 						}
 					}
 				}
@@ -637,9 +659,8 @@
 	
 	/** Returns true if the type is playable in HTML5 **/
 	utils.canPlayHTML5 = function(type) {
-		if (utils.isAndroid() && (type == "hls" || type == "m3u" || type == "m3u8")) return FALSE;
 		var mime = utils.extensionmap.types[type];
-		return (!!mime && !!jwplayer.vid.canPlayType && jwplayer.vid.canPlayType(mime));
+		return (!!mime && !!jwplayer.vid.canPlayType && !!jwplayer.vid.canPlayType(mime));
 	};
 
 	/**
@@ -679,7 +700,7 @@
 	 * @return {Object} The original value in the correct primitive type.
 	 */
 	utils.serialize = function(val) {
-		if (val == null) {
+		if (val === null) {
 			return null;
 		} else if (val.toString().toLowerCase() == 'true') {
 			return TRUE;

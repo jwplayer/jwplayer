@@ -4,7 +4,8 @@
  * @author pablo
  * @version 6.0
  */
-(function(html5) {
+(function(jwplayer) {
+	
 	jwplayer.parsers = {
 		localName : function(node) {
 			if (!node) {

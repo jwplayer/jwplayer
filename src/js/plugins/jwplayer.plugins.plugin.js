@@ -10,7 +10,7 @@
 		FLASH: 0,
 		JAVASCRIPT: 1,
 		HYBRID: 2
-	}
+	};
 	
 	plugins.plugin = function(url) {
 		var _status = utils.loaderstatus.NEW,
@@ -62,7 +62,7 @@
 				_loader.addEventListener(events.ERROR, errorHandler);
 				_loader.load();
 			}
-		}
+		};
 		
 		this.registerPlugin = function(id, target, arg1, arg2) {
 			if (_completeTimeout){
@@ -82,15 +82,15 @@
 			}
 			_status = utils.loaderstatus.COMPLETE;
 			_eventDispatcher.sendEvent(events.COMPLETE);
-		}
+		};
 		
 		this.getStatus = function() {
 			return _status;
-		}
+		};
 		
 		this.getPluginName = function() {
 			return utils.getPluginName(url);
-		}
+		};
 		
 		this.getFlashPath = function() {
 			if (_flashPath) {
@@ -110,34 +110,34 @@
 				}
 			}
 			return null;
-		}
+		};
 		
 		this.getJS = function() {
 			return _js;
-		}
+		};
 		
 		this.getTarget = function() {
 			return _target;
-		}
+		};
 
 		this.getPluginmode = function() {
 			if (typeof _flashPath != UNDEFINED
 			 && typeof _js != UNDEFINED) {
-			 	return plugins.pluginmodes.HYBRID;
-			 } else if (typeof _flashPath != UNDEFINED) {
-			 	return plugins.pluginmodes.FLASH;
-			 } else if (typeof _js != UNDEFINED) {
-			 	return plugins.pluginmodes.JAVASCRIPT;
-			 }
-		}
+				return plugins.pluginmodes.HYBRID;
+			} else if (typeof _flashPath != UNDEFINED) {
+				return plugins.pluginmodes.FLASH;
+			} else if (typeof _js != UNDEFINED) {
+				return plugins.pluginmodes.JAVASCRIPT;
+			}
+		};
 		
 		this.getNewInstance = function(api, config, div) {
 			return new _js(api, config, div);
-		}
+		};
 		
 		this.getURL = function() {
 			return url;
-		}
-	}
+		};
+	};
 	
 })(jwplayer.plugins);

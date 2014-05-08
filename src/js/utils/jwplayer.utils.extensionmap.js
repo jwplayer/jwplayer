@@ -8,7 +8,6 @@
 (function(utils) {
 	var video = "video/", 
 		audio = "audio/",
-		image = "image",
 		mp4 = "mp4",
 		webm = "webm",
 		ogg = "ogg",
@@ -37,22 +36,23 @@
 			"aac": mimeMap[aac],
 			"mp3": mimeMap[mp3],
 			"ogv": mimeMap[ogg],
-			"ogg": mimeMap[vorbis],
+			"ogg": mimeMap[ogg],
 			"oga": mimeMap[vorbis],
 			"webm": mimeMap[webm],
 			"m3u8": mimeMap.hls,
+			"m3u": mimeMap.hls,
 			"hls": mimeMap.hls
 		}, 
-		video = "video", 
+		videoX = "video", 
 		flashExtensions = {
-			"flv": video,
-			"f4v": video,
-			"mov": video,
-			"m4a": video,
-			"m4v": video,
-			"mp4": video,
-			"aac": video,
-			"f4a": video,
+			"flv": videoX,
+			"f4v": videoX,
+			"mov": videoX,
+			"m4a": videoX,
+			"m4v": videoX,
+			"mp4": videoX,
+			"aac": videoX,
+			"f4a": videoX,
 			"mp3": "sound",
 			"smil": "rtmp",
 			"m3u8": "hls",
@@ -77,10 +77,10 @@
 			if (!returnType && val == mime) returnType = type;
 		});
 		return returnType;
-	}
+	};
 
 	_extensionmap.extType = function(extension) {
 		return _extensionmap.mimeType(html5Extensions[extension]);
-	}
+	};
 
 })(jwplayer.utils);

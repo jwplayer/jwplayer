@@ -48,7 +48,6 @@
 			addListeners();
 			setupDisplayObjects();
 			setupIcons();
-			
 			// Override defaults
 			if (!isNaN(getConfigParam('bufferrotation'))) _bufferRotationAngle = Number(getConfigParam('bufferrotation'));
 			if (!isNaN(getConfigParam('bufferinterval'))) _bufferRotationTime = Number(getConfigParam('bufferinterval'));

@@ -74,8 +74,8 @@
         _levels,
         // Current quality level index
         _currentQuality = -1,
-        // Whether or not we're on an Android device
-        _isAndroid = utils.isAndroid(FALSE, TRUE),
+        // Whether or not we're on an Android device and Not Chrome
+        _isAndroid = utils.isAndroidNative(),
         // Whether or not we're on an iOS 7 device
         _isIOS7 = utils.isIOS(7),
         // Reference to self
@@ -470,6 +470,7 @@
         
         this.addCaptions = function(tracks,fullscreen,curr) {
             if (utils.isIOS() && _videotag.addTextTrack && !_tracksOnce) {
+                var TextTrackCue = window.TextTrackCue;
                 if (curr > 0)
                     curr = tracks[curr-1].label;
                 utils.foreach(tracks, function(index,elem) {
@@ -478,16 +479,16 @@
                         var track = _videotag.addTextTrack(elem.kind,elem.label);//findTrack(elem.kind,elem.label);
                         utils.foreach(elem.data, function (ndx,element) {
                            if (ndx % 2 == 1)
-                              track.addCue(new TextTrackCue(element.begin,elem.data[parseInt(ndx)+1].begin,element.text)) 
+                              track.addCue(new TextTrackCue(element.begin,elem.data[parseInt(ndx)+1].begin,element.text));
                         });
                         _tracks.push(track);
                         track.mode = "hidden";
                     }
                 });
              }
-        }
+        };
 
-        function findTrack(kind,label) {
+        function findTrack(kind, label) {
             for (var i = 0; i < _videotag.textTracks.length; i++) {
               if(_videotag.textTracks[i].label === label) {
                   _usedTrack = i;
@@ -515,7 +516,7 @@
                
               //_videotag.textTracks[i].mode = "disabled";
             }*/
-        }
+        };
 
 
         this.fsCaptions = function(state,curr) {
@@ -540,7 +541,7 @@
                    return ret;
                }
             }
-        }
+        };
         
         this.checkComplete = function() {
             

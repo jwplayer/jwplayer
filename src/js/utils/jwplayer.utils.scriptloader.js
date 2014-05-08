@@ -48,7 +48,7 @@
 							_sendComplete();
 						}
 						// Error?
-					}
+					};
 				}
 				DOCUMENT.getElementsByTagName("head")[0].appendChild(scriptTag);
 				scriptTag.src = url;
@@ -69,8 +69,8 @@
 		
 		this.getStatus = function() {
 			return _status;
-		}
-	}
+		};
+	};
 	
 	utils.scriptloader.loaders = {};
 })(jwplayer.utils);

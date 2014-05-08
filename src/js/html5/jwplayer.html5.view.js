@@ -85,7 +85,11 @@
 
 			_playerElement = _createElement("div", PLAYER_CLASS + " playlist-" + _model.playlistposition);
 			_playerElement.id = _api.id;
-			
+			_playerElement.tabIndex = 0;
+			_playerElement.onfocusin = handleFocus;
+			_playerElement.addEventListener('focus',handleFocus);
+			_playerElement.onfocusout = handleBlur;
+			_playerElement.addEventListener('blur',handleBlur);
 			if (_model.aspectratio) {
 				_css.style(_playerElement, {
 					display: 'inline-block'
@@ -98,6 +102,21 @@
 			var replace = DOCUMENT.getElementById(_api.id);
 			replace.parentNode.replaceChild(_playerElement, replace);
 		}
+
+		function handleFocus(evt) {
+			_this.sendEvent(events.JWPLAYER_VIEW_FOCUS, {
+						hasFocus:true
+					});
+		}
+
+		function handleBlur(evt) {
+			_this.sendEvent(events.JWPLAYER_VIEW_FOCUS, {
+						hasFocus:false
+					});
+
+
+		}
+
 
 		this.getCurrentCaptions = function() {
 			return _captions.getCurrentCaptions();
@@ -201,6 +220,9 @@
 					};
 				}
 				if (evt.active) {
+					_css.style(_captions.element(), {
+						display: 'none'
+					});
 					_this.forceControls(TRUE);
 					_castDisplay.setState('connecting').setName(evt.deviceName).show();
 					_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
@@ -212,6 +234,9 @@
 					if (_controlbar.adMode()) {
 						_castAdsEnded();
 					}
+					_css.style(_captions.element(), {
+						display: null
+					});
 					// redraw displayicon
 					_stateHandler({
 						newstate: _api.jwGetState()

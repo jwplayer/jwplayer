@@ -2,6 +2,7 @@
 <project name="jwplayer" basedir="../" default="build-all">
 	<!-- Define variables/paths used in this build script -->
 	<property file="./build/build.properties" />
+	<property environment="env" />
 
 	<!--
 		 Have you edited the properties file to make sure the paths are right oo your system?
@@ -188,7 +189,7 @@
 	</target>
 
 	<target name="get-revision">
-        <exec executable="svn" outputproperty="revision" dir="${basedir}" failifexecutionfails="false">
+        <!-- <exec executable="svn" outputproperty="revision" dir="${basedir}" failifexecutionfails="false">
             <arg line="info"/>
         	<redirector>
         		<outputfilterchain>
@@ -200,12 +201,16 @@
         			</tokenfilter>
         		</outputfilterchain>
         	</redirector>
-        </exec>
+        </exec> -->
+        <condition property="revision" value="${env.BUILD_NUMBER}" else="0">
+			<isset property="env.BUILD_NUMBER" />
+		</condition>
 		
 		<condition property="jwplayer.version" value="${revision}" else="????">
 			<isset property="revision" />
 		</condition>
 		
+		<echo message="free ${application.majorversion}.${application.minorversion}.${jwplayer.version}"/>
 	</target>
 	
 	

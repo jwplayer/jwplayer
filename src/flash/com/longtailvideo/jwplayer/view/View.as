@@ -92,11 +92,7 @@ package com.longtailvideo.jwplayer.view {
 		protected var layoutManager:PlayerLayoutManager;
 
 		protected var currentLayer:Number = 0;
-		
-		// Keep track of the first tabIndex
-		protected var firstIndex:Number = -1;
-		// Keep track of the last seen tabIndex
-		protected var lastIndex:Number = -1;
+
 
 		// Delay between IDLE state and when the preview image is shown
 		private var imageDelay:Timer = new Timer(100, 1);
@@ -127,7 +123,6 @@ package com.longtailvideo.jwplayer.view {
 		public function View(player:IPlayer, model:Model) {
 			_player = player;
 			_model = model;
-
 			RootReference.stage.scaleMode = StageScaleMode.NO_SCALE;
 			RootReference.stage.stage.align = StageAlign.TOP_LEFT;
 
@@ -139,6 +134,8 @@ package com.longtailvideo.jwplayer.view {
 			}
 
 			_root = new MovieClip();
+			_root.tabIndex = 0;
+			_root.focusRect = false;
 			_normalScreen = new Rectangle();
 		}
 
@@ -171,7 +168,7 @@ package com.longtailvideo.jwplayer.view {
 		public function setupView():void {
 			RootReference.stage.addChildAt(_root, 0);
 			_root.visible = false;
-
+		
 			setupLayers();
 			createComponents();
 			setupComponents();
@@ -182,7 +179,6 @@ package com.longtailvideo.jwplayer.view {
 			RootReference.stage.addEventListener(Event.MOUSE_LEAVE, moveTimeout);
 			RootReference.stage.addEventListener(MouseEvent.MOUSE_MOVE, moveHandler);
 			RootReference.stage.addEventListener(KeyboardEvent.KEY_DOWN, moveHandler);
-			
 			addComponentListeners();
 
 			_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_LOADED, mediaLoaded);
@@ -221,46 +217,15 @@ package com.longtailvideo.jwplayer.view {
 		}
 		
 		protected function keyFocusOutHandler(evt:FocusEvent):void {
-			var button:Sprite = evt.target as Sprite;
-			if (!button) { return; }
-
-			if (evt.shiftKey && firstIndex >= 0 && button.tabIndex == firstIndex) {
-				// User is tabbing backwards, and the button we're tabbing out of was the first tab index
-				blurPlayer(evt);
-			}
-			lastIndex = button.tabIndex;
+			var ev:ViewEvent = new ViewEvent(ViewEvent.JWPLAYER_VIEW_FOCUS);
+			ev.hasFocus = false;
+			dispatchEvent(ev);
 		}
-
-		/** 
-		 * Handles the loss of a button's focus.  
-		 * The player attempts to blur Flash's focus on the page after the last tabbable 
-		 * element so that keyboard users don't get stuck with their focus insideo of the player.   
-		 **/
+ 
 		protected function keyFocusInHandler(evt:FocusEvent):void {
-			var button:Sprite = evt.target as Sprite;
-			if (!button) { return; }
-
-			if (!evt.shiftKey && firstIndex >= 0 && button.tabIndex == firstIndex && lastIndex > firstIndex) {
-				// Tabbing forward and we've wrapped around to the first button.
-				blurPlayer(evt);
-			} else if (firstIndex < 0 || button.tabIndex < firstIndex) {
-				firstIndex = button.tabIndex;
-			}
-		}
-		
-		/**
-		 * Attempts to force the browser to blur the focus of the Flash player
-		 **/
-		protected function blurPlayer(evt:FocusEvent):void {
-			// Prevent focus from wrapping to the first button
-			evt.preventDefault();
-			// Nothing should be focused now
-			RootReference.stage.focus = null;
-			// Try to blur the Flash object in the browser
-			if (ExternalInterface.available) {
-				ExternalInterface.call("(function() { try { document.getElementById('"+PlayerVersion.id+"').blur(); } catch(e) {} })"); 
-			}
-			lastIndex = firstIndex;
+			var ev:ViewEvent = new ViewEvent(ViewEvent.JWPLAYER_VIEW_FOCUS);
+			ev.hasFocus = true;
+			dispatchEvent(ev);
 		}
 		
 		

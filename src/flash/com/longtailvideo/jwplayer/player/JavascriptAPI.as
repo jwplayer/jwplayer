@@ -42,8 +42,9 @@ package com.longtailvideo.jwplayer.player {
 
 			setupPlayerListeners();
 			setupJSListeners();
-			_player.addGlobalListener(queueEvents);
+			_instreamAPI = new JavascriptInstreamAPI();
 			
+			_player.addGlobalListener(queueEvents);
 		}
 		
 		/** Delay the response to PlayerReady to allow the external interface to initialize in some browsers **/
@@ -83,7 +84,6 @@ package com.longtailvideo.jwplayer.player {
 			_player.addEventListener(MediaEvent.JWPLAYER_MEDIA_MUTE, updateMuteCookie);
 			_player.addEventListener(MediaEvent.JWPLAYER_MEDIA_LEVEL_CHANGED, updateLevelCookie);
 			_player.addEventListener(CaptionsEvent.JWPLAYER_CAPTIONS_CHANGED, updateCaptionCookie);
-			_instreamAPI = new JavascriptInstreamAPI();
 		}
 		
 		protected function resetPosition(evt:PlaylistEvent):void {
@@ -198,7 +198,6 @@ package com.longtailvideo.jwplayer.player {
 			} catch(e:Error) {
 				Logger.log("Could not initialize JavaScript API: "  + e.message);
 			}
-			
 		}
 
 		
@@ -242,6 +241,9 @@ package com.longtailvideo.jwplayer.player {
 				args = { controls: (evt as ViewEvent).data };
 			else if (evt is ViewEvent && (evt as ViewEvent).data != null)
 				args = { data: JavascriptSerialization.stripDots((evt as ViewEvent).data) };
+			else if (evt is ViewEvent && (evt as ViewEvent).hasFocus != null) {
+				args =  {hasFocus: (evt as ViewEvent).hasFocus};
+			}
 			else if (evt is PlayerEvent) {
 				args = { message: (evt as PlayerEvent).message };
 			}

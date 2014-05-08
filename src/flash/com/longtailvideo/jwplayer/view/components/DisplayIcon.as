@@ -74,6 +74,7 @@ package com.longtailvideo.jwplayer.view.components {
 			
 			_container = new Sprite();
 			_container.mouseChildren = false;
+			_container.tabEnabled = false;
 			_container.buttonMode = true;
 			this.mouseEnabled = false;
 			this.mouseChildren = true;
