@@ -126,6 +126,7 @@
 			}
 		}
 		
+		var previewTimeout = -1;
 		function _loadPreview() {
 			var preview = _model.playlist[_model.item].image; 
 			if (preview) {
@@ -134,13 +135,15 @@
 				// If there was an error, continue anyway
 				img.addEventListener('error', _previewLoaded, false);
 				img.src = preview;
-				setTimeout(_previewLoaded, 500);
+				clearTimeout(previewTimeout);
+				previewTimeout = setTimeout(_previewLoaded, 500);
 			} else {
-				_taskComplete(LOAD_PREVIEW);	
+				_previewLoaded();	
 			}
 		}
 		
 		function _previewLoaded() {
+			clearTimeout(previewTimeout);
 			_taskComplete(LOAD_PREVIEW);
 		}
 

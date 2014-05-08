@@ -11,9 +11,7 @@
 		_rules = {},
 		_cssBlock = null,
 		_ruleIndexes = {},
-		_debug = false,
-				
-		JW_CLASS = '.jwplayer ';
+		_debug = false;
 
 	function _createStylesheet(debugText) {
 		var styleSheet = document.createElement('style');
@@ -326,23 +324,5 @@
 		}
 		return style +'('+ channels.join(',') +')';
 	};
-
-	(function cssReset() {
-		_css(JW_CLASS.slice(0, -1) + ["", "div", "span", "a", "img", "ul", "li", "video"].join(", "+JW_CLASS) + ", .jwclick", {
-			margin: 0,
-			padding: 0,
-			border: 0,
-			color: '#000000',
-			'font-size': "100%",
-			font: 'inherit',
-			'vertical-align': 'baseline',
-			'background-color': 'transparent',
-			'text-align': 'left',
-			'direction':'ltr',
-			'-webkit-tap-highlight-color': 'rgba(255, 255, 255, 0)'
-		});
-		
-		_css(JW_CLASS + "ul", { 'list-style': "none" });
-	})();
 	
 })(jwplayer);

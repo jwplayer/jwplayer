@@ -16,7 +16,7 @@
 		utils.extend(_this, _eventdispatcher);
 		
 		function _resizePlugin (plugin, div, onready) {
-			return function(evt) {
+			return function() {
 				try {
 					var displayarea = document.querySelector("#" + _container.id + " .jwmain");
 					if (onready) {
@@ -80,11 +80,8 @@
 							}
 						}
 					}
-				} catch(e) {
-					return false;
-				}
+				} catch(e) {}
 			}
-			
 			return false;
 		};
 	};
@@ -101,18 +98,25 @@
 			return false;
 		}
 
+		// Youtube JavaScript API Provider
+		if (type === 'youtube' || utils.isYouTube(file)) {
+			// TODO: check that js api requirements are met first
+			// https://developers.google.com/youtube/js_api_reference
+			return true;
+		}
+
 		var extension = utils.extension(file);
 		type = type || extensionmap.extType(extension);
 
 		// HLS not sufficiently supported on Android devices; should fail over automatically.
-		if (type === "hls") {
-			//when androidhls is set to true on Android 4.1 and up allow HLS playback
+		if (type === 'hls') {
+			//when androidhls is set to true, allow HLS playback on Android 4.1 and up
 			if (androidhls) {
 				var isAndroidNative = utils.isAndroidNative;
 				if (isAndroidNative(2) || isAndroidNative(3) || isAndroidNative('4.0')) {
 					return false;
-				} else if (utils.isAndroid()) {
-					// return true for versions 4.1 and up.
+				} else if (utils.isAndroid()) { //utils.isAndroidNative()) {
+					// skip canPlayType check
 					// canPlayType returns '' in native browser even though HLS will play
 					return true;
 				}
@@ -122,7 +126,7 @@
 		}
 
 		// Ensure RTMP files are not seen as videos
-		if (utils.isRtmp(file,type)) return false;
+		if (utils.isRtmp(file, type)) return false;
 
 		var mappedType = extensionmap[type] || extensionmap[extension];
 		

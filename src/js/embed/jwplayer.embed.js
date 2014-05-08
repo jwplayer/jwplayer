@@ -7,22 +7,23 @@
 (function(jwplayer) {
 	var utils = jwplayer.utils,
 		events = jwplayer.events,
-		
 		TRUE = true,
 		FALSE = false,
 		DOCUMENT = document;
 	
 	var embed = jwplayer.embed = function(playerApi) {
 //		var mediaConfig = utils.mediaparser.parseMedia(playerApi.container);
-		var _config = new embed.config(playerApi.config),
-			_container, _oldContainer, _fallbackDiv,
-			_width = _config.width,
-			_height = _config.height,
+
+		var _config    = new embed.config(playerApi.config),
+			_width     = _config.width,
+			_height    = _config.height,
 			_errorText = "Error loading player: ",
-			_pluginloader = jwplayer.plugins.loadPlugins(playerApi.id, _config.plugins),
+			_oldContainer    = DOCUMENT.getElementById(playerApi.id),
+			_pluginloader    = jwplayer.plugins.loadPlugins(playerApi.id, _config.plugins),
 			_playlistLoading = FALSE,
-			_errorOccurred = FALSE,
+			_errorOccurred   = FALSE,
 			_setupErrorTimer = null,
+			_fallbackDiv     = null,
 			_this = this;
 
 		if (_config.fallbackDiv) {
@@ -30,14 +31,13 @@
 			delete _config.fallbackDiv;
 		}
 		_config.id = playerApi.id;
-		_oldContainer = DOCUMENT.getElementById(playerApi.id);
 		if (_config.aspectratio) {
 			playerApi.config.aspectratio = _config.aspectratio;
 		}
 		else {
 			delete playerApi.config.aspectratio;
 		}
-		_container = DOCUMENT.createElement("div");
+		var _container = DOCUMENT.createElement("div");
 		_container.id = _oldContainer.id;
 		_container.style.width = _width.toString().indexOf("%") > 0 ? _width : (_width + "px");
 		_container.style.height = _height.toString().indexOf("%") > 0 ? _height : (_height + "px");
@@ -60,18 +60,18 @@
 		};
 		
 		function _doEmbed() {
-			if (_errorOccurred) return;
+			if (_errorOccurred) { return; }
 
-			if (utils.typeOf(_config.playlist) == "array" && _config.playlist.length < 2) {
+			if (utils.typeOf(_config.playlist) === "array" && _config.playlist.length < 2) {
 				if (_config.playlist.length === 0 || !_config.playlist[0].sources || _config.playlist[0].sources.length === 0) {
 					_sourceError();
 					return;
 				}
 			}
 			
-			if (_playlistLoading) return;
+			if (_playlistLoading) { return; }
 			
-			if (utils.typeOf(_config.playlist) == "string") {
+			if (utils.typeOf(_config.playlist) === "string") {
 				var loader = new jwplayer.playlist.loader();
 				loader.addEventListener(events.JWPLAYER_PLAYLIST_LOADED, function(evt) {
 					_config.playlist = evt.playlist;
@@ -96,6 +96,7 @@
 						if (embedder.supportsConfig()) {
 							embedder.addEventListener(events.ERROR, _embedError);
 							embedder.embed();
+							_insertCSS();
 							_setupEvents(playerApi, configClone.events);
 							return playerApi;
 						}
@@ -170,6 +171,12 @@
 		
 		return _this;
 	};
+
+	function _insertCSS() {
+		utils.css('.jwplayer:focus, .jw-tab-focus', {
+			outline : 'solid 2px #0B7EF4'
+		});
+	}
 
 	function _displayError(container, message, config) {
 		var style = container.style;

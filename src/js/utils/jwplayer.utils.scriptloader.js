@@ -16,25 +16,25 @@
 	
 	
 	utils.scriptloader = function(url) {
-		var _status = _loaderstatus.NEW,
-			_events = jwplayer.events,
-			_eventDispatcher = new _events.eventdispatcher();
-		
-		utils.extend(this, _eventDispatcher);
+		var _events = jwplayer.events,
+			_this = utils.extend(this, new _events.eventdispatcher()),
+			_status = _loaderstatus.NEW;
 		
 		this.load = function() {
-			var sameLoader = utils.scriptloader.loaders[url];
-			if (sameLoader && (sameLoader.getStatus() == _loaderstatus.NEW || sameLoader.getStatus() == _loaderstatus.LOADING)) {
-				// If we already have a scriptloader loading the same script, don't create a new one;
-				sameLoader.addEventListener(_events.ERROR, _sendError);
-				sameLoader.addEventListener(_events.COMPLETE, _sendComplete);
-				return;
-			}
-			
-			utils.scriptloader.loaders[url] = this;
-			
 			if (_status == _loaderstatus.NEW) {
-				_status = _loaderstatus.LOADING;
+				// If we already have a scriptloader loading the same script, don't create a new one;
+				var sameLoader = utils.scriptloader.loaders[url];
+				if (sameLoader) {
+					_status = sameLoader.getStatus();
+					if (_status < 2) {
+						// dispatch to this instances listeners when the first loader gets updates
+						sameLoader.addEventListener(_events.ERROR, _sendError);
+						sameLoader.addEventListener(_events.COMPLETE, _sendComplete);
+						return;
+					}
+					// already errored or loaded... keep going?
+				}
+				
 				var scriptTag = DOCUMENT.createElement("script");
 				// Most browsers
 				if (scriptTag.addEventListener) {
@@ -43,27 +43,30 @@
 				}
 				else if (scriptTag.readyState) {
 					// IE
-					scriptTag.onreadystatechange = function() {
+					scriptTag.onreadystatechange = function(evt) {
 						if (scriptTag.readyState == 'loaded' || scriptTag.readyState == 'complete') {
-							_sendComplete();
+							_sendComplete(evt);
 						}
 						// Error?
 					};
 				}
 				DOCUMENT.getElementsByTagName("head")[0].appendChild(scriptTag);
 				scriptTag.src = url;
+
+				_status = _loaderstatus.LOADING;
+				utils.scriptloader.loaders[url] = this;
 			}
 			
 		};
 		
 		function _sendError(evt) {
 			_status = _loaderstatus.ERROR;
-			_eventDispatcher.sendEvent(_events.ERROR);
+			_this.sendEvent(_events.ERROR, evt);
 		}
 		
 		function _sendComplete(evt) {
 			_status = _loaderstatus.COMPLETE;
-			_eventDispatcher.sendEvent(_events.COMPLETE);
+			_this.sendEvent(_events.COMPLETE, evt);
 		}
 
 		
