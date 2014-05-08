@@ -825,8 +825,6 @@ package com.longtailvideo.jwplayer.view {
 		}
 		
 		private function showControls():void {
-			var er:Error =new Error("BREAK");
-			ExternalInterface.call("console.log",er.getStackTrace());
 			if (_model.config.controls || audioMode) {
 				_components.controlbar.show();
 				_components.dock.show();
