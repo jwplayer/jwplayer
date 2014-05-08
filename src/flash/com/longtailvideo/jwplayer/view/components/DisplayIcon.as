@@ -242,6 +242,10 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 		}
 		
+		public function focusHandler(state:Boolean):void {
+			hover(state);
+		}
+		
 		private function _mouseLeaveHandler(evt:Event):void {
 			hover(false);
 		}

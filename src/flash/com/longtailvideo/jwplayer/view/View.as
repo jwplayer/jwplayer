@@ -178,7 +178,7 @@ package com.longtailvideo.jwplayer.view {
 			RootReference.stage.addEventListener(FocusEvent.FOCUS_IN, keyFocusInHandler);
 			RootReference.stage.addEventListener(Event.MOUSE_LEAVE, moveTimeout);
 			RootReference.stage.addEventListener(MouseEvent.MOUSE_MOVE, moveHandler);
-			RootReference.stage.addEventListener(KeyboardEvent.KEY_DOWN, moveHandler);
+			//RootReference.stage.addEventListener(KeyboardEvent.KEY_DOWN, moveHandler);
 			addComponentListeners();
 
 			_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_LOADED, mediaLoaded);
@@ -220,12 +220,20 @@ package com.longtailvideo.jwplayer.view {
 			var ev:ViewEvent = new ViewEvent(ViewEvent.JWPLAYER_VIEW_FOCUS);
 			ev.hasFocus = false;
 			dispatchEvent(ev);
+			_components.display.focusHandler(false);
 		}
  
 		protected function keyFocusInHandler(evt:FocusEvent):void {
 			var ev:ViewEvent = new ViewEvent(ViewEvent.JWPLAYER_VIEW_FOCUS);
 			ev.hasFocus = true;
 			dispatchEvent(ev);
+			if (_model.state == PlayerState.PLAYING) {
+				showControls();
+				stopFader();
+				startFader();
+			} else {
+				_components.display.focusHandler(true);
+			}
 		}
 		
 		
@@ -817,6 +825,8 @@ package com.longtailvideo.jwplayer.view {
 		}
 		
 		private function showControls():void {
+			var er:Error =new Error("BREAK");
+			ExternalInterface.call("console.log",er.getStackTrace());
 			if (_model.config.controls || audioMode) {
 				_components.controlbar.show();
 				_components.dock.show();
