@@ -624,10 +624,14 @@
 		if (api) {
 			api.playerReady(obj);	
 			api.onFocus(function(evt) {
-				if (evt.hasFocus)
-					console.log("player :" + api.id + " has focus");
-				else
-					console.log("player :" + api.id + " lost focus");
+				var container = this.getContainer();
+				if (evt.hasFocus) {
+					container.className = container.className + ' jw-tab-focus';
+				}
+				else {
+					// Lost focus, remove the class
+					container.className = container.className.replace(/ *jw-tab-focus/g, '');
+				}
 			});
 		} else {
 			jwplayer.api.selectPlayer(obj.id).playerReady(obj);
