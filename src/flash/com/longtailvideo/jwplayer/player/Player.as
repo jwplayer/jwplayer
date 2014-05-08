@@ -55,8 +55,6 @@
 			}
 
 			new RootReference(this);
-			//this.tabChildren = false;
-			//this.tabEnabled = true;
 			_dispatcher = new GlobalEventDispatcher();
 			model = newModel();
 			view = newView(model);

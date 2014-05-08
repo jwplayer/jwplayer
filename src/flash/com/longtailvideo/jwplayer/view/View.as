@@ -135,6 +135,7 @@ package com.longtailvideo.jwplayer.view {
 
 			_root = new MovieClip();
 			_root.tabIndex = 0;
+			_root.focusRect = false;
 			_normalScreen = new Rectangle();
 		}
 
@@ -216,12 +217,15 @@ package com.longtailvideo.jwplayer.view {
 		}
 		
 		protected function keyFocusOutHandler(evt:FocusEvent):void {
-			Logger.log("player " + _player.config.id + " i lost focus");
+			var ev:ViewEvent = new ViewEvent(ViewEvent.JWPLAYER_VIEW_FOCUS);
+			ev.hasFocus = false;
+			dispatchEvent(ev);
 		}
  
 		protected function keyFocusInHandler(evt:FocusEvent):void {
-			Logger.log("player " + _player.config.id + " i have focus");
-
+			var ev:ViewEvent = new ViewEvent(ViewEvent.JWPLAYER_VIEW_FOCUS);
+			ev.hasFocus = true;
+			dispatchEvent(ev);
 		}
 		
 		

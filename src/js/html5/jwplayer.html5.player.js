@@ -145,15 +145,6 @@
 			_this.jwGetStretching = _statevarFactory('stretching');
 			_this.jwGetPlaylist = _normalizePlaylist;
 			_this.jwGetControls = _statevarFactory('controls');
-			_this.jwGetFocus = function() {
-
-				console.log("player " + _this.id + " i have focus");
-			}
-
-			_this.jwLoseFocus = function() {
-
-				console.log("player " + _this.id + " i lost focus");
-			}
 			/** InStream API **/
 			_this.jwDetachMedia = _controller.detachMedia;
 			_this.jwAttachMedia = _controller.attachMedia;

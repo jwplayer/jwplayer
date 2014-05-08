@@ -104,13 +104,17 @@
 		}
 
 		function handleFocus(evt) {
-
-			_api.jwGetFocus();
+			_this.sendEvent(events.JWPLAYER_VIEW_FOCUS, {
+						hasFocus:true
+					});
 		}
 
 		function handleBlur(evt) {
+			_this.sendEvent(events.JWPLAYER_VIEW_FOCUS, {
+						hasFocus:false
+					});
 
-			_api.jwLoseFocus();
+
 		}
 
 

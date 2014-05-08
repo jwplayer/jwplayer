@@ -302,7 +302,9 @@
 			onAdPlay: events.JWPLAYER_AD_PLAY,
 			onAdPause: events.JWPLAYER_AD_PAUSE,
 			onAdMeta: events.JWPLAYER_AD_META,
-			onCast: events.JWPLAYER_CAST_SESSION
+			onCast: events.JWPLAYER_CAST_SESSION,
+			onFocus: events.JWPLAYER_VIEW_FOCUS
+			
 		};
 		
 		utils.foreach(_eventMapping, function(event) {
@@ -620,7 +622,13 @@
 		var api = jwplayer.api.playerById(obj.id);
 
 		if (api) {
-			api.playerReady(obj);
+			api.playerReady(obj);	
+			api.onFocus(function(evt) {
+				if (evt.hasFocus)
+					console.log("player :" + api.id + " has focus");
+				else
+					console.log("player :" + api.id + " lost focus");
+			});
 		} else {
 			jwplayer.api.selectPlayer(obj.id).playerReady(obj);
 		}

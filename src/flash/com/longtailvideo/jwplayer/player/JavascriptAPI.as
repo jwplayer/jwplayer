@@ -241,6 +241,9 @@ package com.longtailvideo.jwplayer.player {
 				args = { controls: (evt as ViewEvent).data };
 			else if (evt is ViewEvent && (evt as ViewEvent).data != null)
 				args = { data: JavascriptSerialization.stripDots((evt as ViewEvent).data) };
+			else if (evt is ViewEvent && (evt as ViewEvent).hasFocus != null) {
+				args =  {hasFocus: (evt as ViewEvent).hasFocus};
+			}
 			else if (evt is PlayerEvent) {
 				args = { message: (evt as PlayerEvent).message };
 			}
