@@ -17,7 +17,6 @@
 			// Youtube API and Player Instance
 			_youtube = window.YT,
 			_ytPlayer = null,
-			_ytVideoId = null,
 			// iFrame Container (this element will be replaced by iFrame element)
 			_element = document.createElement('div'),
 			// view container
@@ -217,7 +216,7 @@
 
 			_ytPlayer = new _youtube.Player(_element, ytConfig);
 			_element = _ytPlayer.getIframe();
-			_ytVideoId = videoId;
+
 			_youtubeEmbedReadyCallback = null;
 
 			_readyViewForMobile();
@@ -276,8 +275,6 @@
 				item.image = 'http://i.ytimg.com/vi/' + videoId + '/0.jpg';
 			}
 
-			// console.log(_playerId, 'YT load', videoId, url, item);
-
 			_setState(states.BUFFERING);
 
 			if (!_youtube) {
@@ -304,19 +301,22 @@
 				return;
 			}
 
-			if (_ytVideoId !== videoId) {
-				// console.log(_playerId, 'YT loadVideoById');
+			var currentVideoId = _ytPlayer.getVideoData().video_id;
+
+			if (currentVideoId !== videoId) {
 				// An exception is thrown by the iframe_api - but the call works
 				// it's trying to access an element of the controls which is not present
 				// because we disabled control in the setup
 				_ytPlayer.loadVideoById(videoId);
-				_ytVideoId = videoId;
 
 				// _ytPlayer.loadVideoByUrl(url);
-				// _ytPlayer.cueVideoById(_ytVideoId);
+				// _ytPlayer.cueVideoById(videoId);
 				// _ytPlayer.nextVideo();
-				
-				_readyViewForMobile();
+
+				// if player is unstarted, ready for mobile
+				if (_ytPlayer.getPlayerState() === -1) {
+					_readyViewForMobile();
+				}
 
 			} else {
 				if (_ytPlayer.getCurrentTime() > 0) {
@@ -335,7 +335,6 @@
 			// console.log(_playerId, 'YT stop');
 			// if (!_ytPlayer) return;
 			_ytPlayer.stopVideo();
-			// _ytVideoId = null;
 			_setState(states.IDLE);
 		};
 				
