@@ -35,8 +35,10 @@
 	</target>
 
 	<target name="build-js">
-        <exec executable="grunt" dir="${basedir}" failonerror="true">
+        <exec executable="npm" dir="${basedir}" failonerror="true">
+            <arg line="install" />
         </exec>
+        <exec executable="grunt" dir="${basedir}" failonerror="true"></exec>
 	</target>
 	
 	<!--
