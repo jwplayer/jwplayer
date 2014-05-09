@@ -56,7 +56,9 @@
 		// Display CLick
 		JWPLAYER_DISPLAY_CLICK : 'jwplayerViewClick',
 
-		JWPLAYER_VIEW_FOCUS: 'jwplayerViewFocus',
+        JWPLAYER_VIEW_FOCUS      : 'jwplayerViewFocus',
+        JWPLAYER_VIEW_BLUR       : 'jwplayerViewBlur',
+        JWPLAYER_VIEW_MOUSE_DOWN : 'jwplayerViewMouseDown',
 
 		// Controls show/hide 
 		JWPLAYER_CONTROLS : 'jwplayerViewControls', 
