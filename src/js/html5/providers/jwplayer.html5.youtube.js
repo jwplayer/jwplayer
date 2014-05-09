@@ -54,6 +54,7 @@
 
 		function _onLoadError(event) {
 			console.log('Error loading Youtube iFrame API: %o', event);
+			// TODO: dispatch video error
 		}
 
 		function _getVideoLayer() {
@@ -114,6 +115,7 @@
 				_dispatchEvent(events.JWPLAYER_MEDIA_BUFFER, {
 					bufferPercent: bufferPercent
 				});
+				//if (bufferPercent === 100) _dispatchEvent(events.JWPLAYER_MEDIA_BUFFER_FULL);
 			}
 		}
 
@@ -169,6 +171,11 @@
 						// 	height: 300
 						// });
 
+						// _sendLevels 
+						// _dispatchEvent(events.JWPLAYER_MEDIA_LEVELS, {
+						// 	levels: _this.getQualityLevels(),
+						// 	currentQuality: _this.getCurrentQuality()
+						// });
 					},
 					onStateChange: function(event) {
 						// console.log(_playerId, 'Youtube state change', event);
@@ -278,7 +285,7 @@
 			_setState(states.BUFFERING);
 
 			if (!_youtube) {
-				// console.log(_playerId, 'YT load on init');
+				console.log(_playerId, 'YT load on init');
 				// load item when API is ready
 				_youtubeEmbedReadyCallback = function() {
 					// enabling autoplay here also throws an exception
@@ -289,7 +296,7 @@
 			}
 
 			if (!_ytPlayer) {
-				// console.log(_playerId, 'YT load repeat embed');
+				console.log(_playerId, 'YT load repeat embed');
 				_embedYoutubePlayer(videoId, {
 					autoplay: 1
 				});
@@ -297,13 +304,14 @@
 			}
 
 			if (!_ytPlayer.getCurrentTime) {
-				// console.error(_playerId, 'YT player API is not available');
+				console.error(_playerId, 'YT player API is not available');
 				return;
 			}
 
 			var currentVideoId = _ytPlayer.getVideoData().video_id;
 
 			if (currentVideoId !== videoId) {
+				console.log(_playerId, 'YT loadVideoById', videoId);
 				// An exception is thrown by the iframe_api - but the call works
 				// it's trying to access an element of the controls which is not present
 				// because we disabled control in the setup
@@ -318,12 +326,15 @@
 					_readyViewForMobile();
 				}
 
+				// TODO: track timeout and clear on play or other command
+				setTimeout(_ytPlayer.playVideo, 1000);
+
 			} else {
 				if (_ytPlayer.getCurrentTime() > 0) {
 					// console.log(_playerId, 'seek');
 					_ytPlayer.seekTo(0);
 				}
-				// console.log(_playerId, 'play', _ytPlayer.getPlayerState());
+				console.log(_playerId, 'play', _ytPlayer.getPlayerState());
 				_ytPlayer.playVideo();
 				if (_ytPlayer.getPlayerState() === 1) {
 					_setState(states.PLAYING);
@@ -353,6 +364,11 @@
 		_this.seek = function(position) {
 			// console.log(_playerId, 'YT seek');
 			_ytPlayer.seekTo(position);
+
+			// _sendEvent(events.JWPLAYER_MEDIA_SEEK, {
+			// 	position: _position,
+			// 	offset: seekPos
+			// });
 		};
 
 		_this.volume = function(volume) {
@@ -388,6 +404,7 @@
 		};
 
 		_this.setContainer = function(element) {
+			console.log('add YT to DOM');
 			_container = element;
 			element.appendChild(_element);
 		};
@@ -398,6 +415,7 @@
 
 		_this.remove = function() {
 			if (_container === _element.parentNode) {
+				console.log('remove YT from DOM');
 				_container.removeChild(_element);
 			}
 		};
@@ -423,13 +441,15 @@
 		};
 
 		_this.resize = function(width, height, stretching) {
+			// TODO: look into Youtube resize method
+			//_container
 			utils.stretch(stretching,
 				_element,
 				width, height,
 				_element.clientWidth, _element.clientHeight);
 		};
 
-		_this.setFullScreen = _alwaysReturn(false);
+		_this.setFullScreen =
 		_this.getFullScreen = _alwaysReturn(false);
 
 		this.checkComplete = function() {

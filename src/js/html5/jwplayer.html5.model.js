@@ -83,7 +83,7 @@
 					var mapping = mappings[i],
 						split = mapping.split("->"),
 						eventProp = split[0],
-						stateProp = split[1] ? split[1] : eventProp;
+						stateProp = split[1] || eventProp;
 						
 					if (_model[stateProp] != evt[eventProp]) {
 						_model[stateProp] = evt[eventProp];

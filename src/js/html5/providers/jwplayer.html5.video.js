@@ -91,7 +91,7 @@
 
 			_fullscreenState = null,
 
-			_this = utils.extend(this, new events.eventdispatcher());
+			_this = utils.extend(this, new events.eventdispatcher(_name));
 
 		// Constructor
 		function _init() {
@@ -501,7 +501,7 @@
 			});
 		}
 		
-		this.addCaptions = function(tracks) {
+		_this.addCaptions = function(tracks) {
 			if (utils.isIOS() && _videotag.addTextTrack && !_tracksOnce) {
 				var TextTrackCue = window.TextTrackCue;
 				utils.foreach(tracks, function(index,elem) {
@@ -532,7 +532,7 @@
 		//     return track;
 		// }
 		
-		this.resetCaptions = function() {
+		_this.resetCaptions = function() {
 			/*
 			if (_tracks.length > 0) {
 				_tracksOnce = true;
@@ -551,7 +551,7 @@
 		};
 
 
-		this.fsCaptions = function(state) {//, curr) {
+		_this.fsCaptions = function(state) {//, curr) {
 			if (utils.isIOS() && _videotag.addTextTrack && !_tracksOnce) {
 				var ret = null;
 			   
