@@ -86,7 +86,7 @@
 
             // Used to differentiate tab focus events from click events, because when
             //  it is a click, the mouseDown event will occur immediately prior
-            _focusFromClick : false,
+            _focusFromClick = false,
 
 			_this = utils.extend(this, new events.eventdispatcher());
 

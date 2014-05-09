@@ -634,7 +634,8 @@
         api.onBlur(removeFocusBorder);
 
         api.onFocus(function(evt) {
-            if (evt.wasTabEvent) {
+            var fromFlash = (evt.wasTabEvent === undefined);
+            if (fromFlash || evt.wasTabEvent) {
                 addFocusBorder.call(this);
             }
             else {
