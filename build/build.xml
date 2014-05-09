@@ -118,7 +118,18 @@
 
 		</exec>
 	</target>
-	
+
+    <!--
+        The next two targets only need to exist until the commercial build
+        is updated to use build-js target instead of debug-js target
+    -->
+    <target name="debug-js">
+        <antcall target="build-js" />
+    </target>
+    <target name="release-js">
+        <antcall target="build-js" />
+    </target>
+
 	<target name="build-all">
 		<antcall target="build-js" />
 		<antcall target="debug-flash" />
