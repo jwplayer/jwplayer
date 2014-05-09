@@ -7,8 +7,7 @@ module.exports = function(grunt) {
             options: {
                 separator: ''
             },
-            embedder: {
-                // Note: We are not setting the version!!
+            shared: {
                 src: [
                     'src/js/jwplayer.sourcestart.js',
                     'src/js/jwplayer.js',
@@ -31,7 +30,6 @@ module.exports = function(grunt) {
                 dest: 'bin-debug/jwplayer.js'
             },
             html5: {
-                // Note: We are not setting the version!!
                 src: [
                     'src/js/html5/jwplayer.html5.js',
                     'src/js/html5/utils/jwplayer.html5.utils.js',
@@ -41,6 +39,26 @@ module.exports = function(grunt) {
                     'src/js/html5/jwplayer.html5.*.js'
                 ],
                 dest: 'bin-debug/jwplayer.html5.js'
+            }
+        },
+
+
+        replace : {
+            shared : {
+                src: 'bin-debug/jwplayer.js',
+                overwrite: true,
+                replacements:[{
+                    from : /jwplayer\.version = '(.*)'/,
+                    to   : "jwplayer.version = '<%= pkg.version %>'"
+                }]
+            },
+            html5 : {
+                src: 'bin-debug/jwplayer.html5.js',
+                overwrite: true,
+                replacements:[{
+                    from : /jwplayer\.html5\.version = '(.*)'/,
+                    to   : "jwplayer.html5.version = '<%= pkg.version %>'"
+                }]
             }
         },
 
@@ -62,9 +80,10 @@ module.exports = function(grunt) {
 
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-text-replace');
 
     
 
-    grunt.registerTask('default', ['concat', 'uglify']);
+    grunt.registerTask('default', ['concat', 'replace', 'uglify']);
 
 }
