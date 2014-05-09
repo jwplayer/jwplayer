@@ -11,10 +11,6 @@
 		_scriptLoader = null;
     };
 
-    _scriptLoader.addEventListener(events.ERROR, function(event) {
-		console.log('Youtube script Load Error: %o', event);
-	});
-
 	jwplayer.html5.youtube = function(_playerId) {
 
 		var _this = utils.extend(this, new events.eventdispatcher('html5.youtube')),
@@ -36,11 +32,12 @@
 			// update timer
 			_playingInterval = -1,
 			// post roll support
-            _beforecompleted = false;
+			_beforecompleted = false;
 
 		// Load iFrame API
 		if (!_youtube && _scriptLoader) {
 			_scriptLoader.addEventListener(events.COMPLETE, _onLoadSuccess);
+			_scriptLoader.addEventListener(events.ERROR, _onLoadError);
 			_scriptLoader.load();
 		}
 		// setup container
@@ -54,6 +51,10 @@
 				// poll until Yo API is loaded
 				setTimeout(_onLoadSuccess, 100);
 			}
+		}
+
+		function _onLoadError(event) {
+			console.log('Error loading Youtube iFrame API: %o', event);
 		}
 
 		function _getVideoLayer() {
@@ -71,7 +72,7 @@
 			return videoLayer;
 		}
 
-		function _readyCheck(event) {
+		function _readyCheck() {
 			// console.log(_playerId, 'YT _readyCheck', !!_youtube && !!_getVideoLayer(), event);
 			if (!!_youtube && !!_getVideoLayer()) {
 				// was not able to load item
@@ -101,10 +102,10 @@
 
 		function _timeUpdateHandler() {
 			_bufferUpdate();
-            _dispatchEvent(events.JWPLAYER_MEDIA_TIME, {
-                position : (_ytPlayer.getCurrentTime() * 10|0)/10,
-                duration : _ytPlayer.getDuration()
-            });
+			_dispatchEvent(events.JWPLAYER_MEDIA_TIME, {
+				position : (_ytPlayer.getCurrentTime() * 10|0)/10,
+				duration : _ytPlayer.getDuration()
+			});
 		}
 
 		function _bufferUpdate() {
@@ -119,14 +120,14 @@
 
 		// TODO: checkComplete
 		function _ended() {
-            if (_state != states.IDLE) {
+			if (_state != states.IDLE) {
 				_beforecompleted = true;
-                _dispatchEvent(events.JWPLAYER_MEDIA_BEFORECOMPLETE);
-                _setState(states.IDLE);
-                _beforecompleted = false;
-                _dispatchEvent(events.JWPLAYER_MEDIA_COMPLETE);
-            }
-        }
+				_dispatchEvent(events.JWPLAYER_MEDIA_BEFORECOMPLETE);
+				_setState(states.IDLE);
+				_beforecompleted = false;
+				_dispatchEvent(events.JWPLAYER_MEDIA_COMPLETE);
+			}
+		}
 
 		function _dispatchEvent(type, data) {
 			_this.sendEvent(type, data);
@@ -158,9 +159,8 @@
 					origin: location.protocol+'//'+location.hostname
 				}, playerVars),
 				events: {
-					onReady: function(event) {
+					onReady: function() {
 						// console.log(_playerId, 'Youtube ready', event);
-
 						_setState(states.IDLE);
 
 						// TODO: get size from event.target or container
@@ -169,9 +169,6 @@
 						// 	width: 400,
 						// 	height: 300
 						// });
-
-						// FIXME: 'playVideo' fails because of iOS's touch event requirement
-						//_dispatchEvent(events.JWPLAYER_MEDIA_BUFFER_FULL);
 
 					},
 					onStateChange: function(event) {
@@ -351,6 +348,8 @@
 			_ytPlayer.pauseVideo();
 		};
 
+		_this.seekDrag = noop;
+
 		_this.seek = function(position) {
 			// console.log(_playerId, 'YT seek');
 			_ytPlayer.seekTo(position);
@@ -372,8 +371,6 @@
 			}
 		};
 		
-		_this.seekDrag = noop;
-
 		_this.detachMedia = function() {
 			// temp return a video element so instream doesn't break.
 			// FOR VAST: prevent instream from being initialized while casting
@@ -384,10 +381,10 @@
 		_this.attachMedia = function() {
 			// console.error(_playerId, 'attachMedia called for Youtube');
 			if (_beforecompleted) {
-                _setState(states.IDLE);
-                _dispatchEvent(events.JWPLAYER_MEDIA_COMPLETE);
-                _beforecompleted = false;
-            }
+				_setState(states.IDLE);
+				_dispatchEvent(events.JWPLAYER_MEDIA_COMPLETE);
+				_beforecompleted = false;
+			}
 		};
 
 		_this.setContainer = function(element) {
@@ -425,9 +422,9 @@
 		_this.setFullScreen = _alwaysReturn(false);
 		_this.getFullScreen = _alwaysReturn(false);
 
-        this.checkComplete = function() {
-            return _beforecompleted;
-        };
+		this.checkComplete = function() {
+			return _beforecompleted;
+		};
 
 		_this.getCurrentQuality = function() {
 			var ytQuality = _ytPlayer.getPlaybackQuality();
