@@ -216,6 +216,7 @@
 			videoLayer.style.opacity = 1;
 
 			_ytPlayer = new _youtube.Player(_element, ytConfig);
+			_element = _ytPlayer.getIframe();
 			_ytVideoId = videoId;
 			_youtubeEmbedReadyCallback = null;
 
@@ -390,6 +391,16 @@
 		_this.setContainer = function(element) {
 			_container = element;
 			element.appendChild(_element);
+		};
+
+		_this.getContainer = function() {
+			return _container;
+		};
+
+		_this.remove = function() {
+			if (_container === _element.parentNode) {
+				_container.removeChild(_element);
+			}
 		};
 
 		_this.setVisibility = function(state) {

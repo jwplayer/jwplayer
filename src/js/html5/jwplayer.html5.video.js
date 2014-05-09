@@ -608,6 +608,16 @@
 			element.appendChild(_videotag);
 		};
 
+		_this.getContainer = function() {
+			return _container;
+		};
+
+		_this.remove = function() {
+			if (_container === _videotag.parentNode) {
+				_container.removeChild(_videotag);
+			}
+		};
+
 		_this.setVisibility = function(state) {
 			state = !!state;
 			if (state || _isAndroid) {

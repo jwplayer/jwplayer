@@ -103,6 +103,11 @@
 			if (video !== _video) {
 				if (_video) {
 					_video.removeGlobalListener(_videoEventHandler);
+					var container = _video.getContainer();
+					if (container) {
+						_video.remove();
+						video.setContainer(container);
+					}
 				}
 				_video = video;
 				_video.volume(_model.volume);
