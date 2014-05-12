@@ -609,6 +609,13 @@
 		return pl;
 	};
 
+    /**
+     * Ensure a number is between two bounds
+     */
+    utils.between = function(num, min, max) {
+        return Math.max(Math.min(num, max), min);
+    };
+
 	/** Filters the sources by taking the first playable type and eliminating sources of a different type **/
 	utils.filterSources = function(sources, filterFlash, androidhls) {
 		var selectedType,
