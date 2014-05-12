@@ -60,6 +60,9 @@
 			
 		}
 		
+		public function focusHandler(state:Boolean):void {
+			_icon.focusHandler(state);
+		}
 		
 		private function itemHandler(evt:PlaylistEvent):void {
 			_playStateTimer.delay = (_icon ? 10 : 50);
