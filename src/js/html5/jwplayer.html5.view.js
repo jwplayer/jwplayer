@@ -83,6 +83,11 @@
 			_resizeMediaTimeout = -1,
 			_inCB = FALSE,
 			_currentState,
+
+            // Used to differentiate tab focus events from click events, because when
+            //  it is a click, the mouseDown event will occur immediately prior
+            _focusFromClick = false,
+
 			_this = utils.extend(this, new events.eventdispatcher());
 
 		function _init() {
@@ -90,6 +95,7 @@
 			_playerElement = _createElement("div", PLAYER_CLASS + " playlist-" + _model.playlistposition);
 			_playerElement.id = _api.id;
 			_playerElement.tabIndex = 0;
+			_playerElement.onmousedown = handleMouseDown;
 			_playerElement.onfocusin = handleFocus;
 			_playerElement.addEventListener('focus',handleFocus);
 			_playerElement.onfocusout = handleBlur;
@@ -107,18 +113,26 @@
 			replace.parentNode.replaceChild(_playerElement, replace);
 		}
 
+		function handleMouseDown(evt) {
+            _focusFromClick = true;
+
+            _this.sendEvent(events.JWPLAYER_VIEW_MOUSE_DOWN, {
+                event : evt
+            });
+		}
+
 		function handleFocus(evt) {
-			_this.sendEvent(events.JWPLAYER_VIEW_FOCUS, {
-						hasFocus:true
-					});
+            var wasTabEvent = ! _focusFromClick;
+            _focusFromClick = false;
+
+            _this.sendEvent(events.JWPLAYER_VIEW_FOCUS, {
+                wasTabEvent : wasTabEvent
+            });
 		}
 
 		function handleBlur(evt) {
-			_this.sendEvent(events.JWPLAYER_VIEW_FOCUS, {
-						hasFocus:false
-					});
-
-
+            _focusFromClick = false;
+            _this.sendEvent(events.JWPLAYER_VIEW_BLUR);
 		}
 
 		this.getCurrentCaptions = function() {
