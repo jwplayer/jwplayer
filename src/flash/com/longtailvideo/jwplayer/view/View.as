@@ -217,13 +217,13 @@ package com.longtailvideo.jwplayer.view {
 		}
 		
 		protected function keyFocusOutHandler(evt:FocusEvent):void {
-			var ev:ViewEvent = new ViewEvent(ViewEvent.JWPLAYER_VIEW_FOCUS);
+			var ev:ViewEvent = new ViewEvent(ViewEvent.JWPLAYER_VIEW_TAB_FOCUS);
 			ev.hasFocus = false;
 			dispatchEvent(ev);
 		}
  
 		protected function keyFocusInHandler(evt:FocusEvent):void {
-			var ev:ViewEvent = new ViewEvent(ViewEvent.JWPLAYER_VIEW_FOCUS);
+			var ev:ViewEvent = new ViewEvent(ViewEvent.JWPLAYER_VIEW_TAB_FOCUS);
 			ev.hasFocus = true;
 			dispatchEvent(ev);
 		}
