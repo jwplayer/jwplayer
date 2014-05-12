@@ -613,6 +613,16 @@
 		};
 
 		_this.remove = function() {
+			// stop video silently
+			if (_videotag) {
+				_videotag.removeAttribute("src");
+				if (!_isIE) {
+					_videotag.load();
+				}
+			}
+			clearInterval(_bufferInterval);
+			_currentQuality = -1;
+			// remove
 			if (_container === _videotag.parentNode) {
 				_container.removeChild(_videotag);
 			}

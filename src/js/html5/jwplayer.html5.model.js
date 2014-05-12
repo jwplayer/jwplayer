@@ -166,20 +166,24 @@
                     index: _model.item
                 });
 
+                var item = _model.playlist[newItem];
+
 	            // select provider based on item source (video, youtube...)
 				var provider = _providers.html5;
 				if (_model.playlist.length) {
-					var item = _model.playlist[newItem];
 					var source = item.sources[0];
 					if (source.type === 'youtube' || utils.isYouTube(source.file)) {
 						provider = _providers.youtube;
 						if (!provider) {
 							provider = _providers.youtube = new html5.youtube(_model.id);
-							provider.init(item);
 						}
 					}
 				}
 				_model.setVideo(provider);
+				// this allows the provider to load preview images (youtube player data)
+				if (provider.init) {
+					provider.init(item);
+				}
             }
         };
         
