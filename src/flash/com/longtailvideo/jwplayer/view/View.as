@@ -108,8 +108,6 @@ package com.longtailvideo.jwplayer.view {
 		// Set to true during the player's completed state
 		private var _completeState:Boolean;
 		
-		private var _inFocus:Boolean;
-		
 		private var _currPos:Number = 0;
 		private var _duration:Number = -1;
 		
@@ -228,15 +226,12 @@ package com.longtailvideo.jwplayer.view {
 		
 		protected function keyFocusOutHandler(evt:FocusEvent):void {
 			var ev:ViewEvent = new ViewEvent(ViewEvent.JWPLAYER_VIEW_FOCUS);
-			_inFocus = ev.hasFocus = false;
-			
 			dispatchEvent(ev);
 			_components.display.focusHandler(false);
 		}
  
 		protected function keyFocusInHandler(evt:FocusEvent):void {
 			var ev:ViewEvent = new ViewEvent(ViewEvent.JWPLAYER_VIEW_FOCUS);
-			_inFocus = ev.hasFocus = true;
 			dispatchEvent(ev);
 			if (_model.state == PlayerState.PLAYING) {
 				showControls();

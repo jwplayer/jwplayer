@@ -245,14 +245,12 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 		
 		public function focusHandler(state:Boolean):void {
-			ExternalInterface.call("console.log", "setting infocus to " + state);
 			_inFocus = state;
 			hover(state);
 		}
 		
 		private function _mouseLeaveHandler(evt:Event):void {
 			if(!_inFocus){
-				ExternalInterface.call("console.log", "here " + _inFocus);
 				hover(false);
 			}
 		}
