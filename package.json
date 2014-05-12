@@ -1,0 +1,25 @@
+{
+  "name": "jwplayer-free",
+  "version": "6.9.0",
+  "description": "The JW Player is free for non-commerical use. To buy a license for commercial use, please visit \r http://www.jwplayer.com/pricing/",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JWPlayer/jwplayer-free.git"
+  },
+  "bugs": {
+    "url": "https://github.com/JWPlayer/jwplayer-free/issues"
+  },
+  "homepage": "https://github.com/JWPlayer/jwplayer-free",
+  "devDependencies": {
+    "grunt": "^0.4.4",
+    "grunt-cli": "^0.1.13",
+    "grunt-contrib-clean": "^0.5.0",
+    "grunt-contrib-concat": "^0.4.0",
+    "grunt-contrib-copy": "^0.5.0",
+    "grunt-contrib-uglify": "^0.4.0",
+    "grunt-text-replace": "^0.3.11"
+  }
+}
