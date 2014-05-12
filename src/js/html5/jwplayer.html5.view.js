@@ -100,6 +100,8 @@
 			_playerElement.addEventListener('focus',handleFocus);
 			_playerElement.onfocusout = handleBlur;
 			_playerElement.addEventListener('blur',handleBlur);
+            _playerElement.addEventListener('keydown',handleKeydown);
+
 			if (_model.aspectratio) {
 				_css.style(_playerElement, {
 					display: 'inline-block'
@@ -112,6 +114,58 @@
 			var replace = DOCUMENT.getElementById(_api.id);
 			replace.parentNode.replaceChild(_playerElement, replace);
 		}
+
+        function adjustSeek (amount) {
+            var newSeek = utils.between(_model.position+ amount, 0, this.getDuration());
+            this.seek(newSeek);
+        }
+
+        function adjustVolume (amount) {
+            var newVol = utils.between(this.getVolume() + amount, 0, 100);
+            this.setVolume(newVol);
+        }
+
+        function handleKeydown(evt) {
+            var jw = jwplayer(_api.id);
+            switch(evt.keyCode) {
+                case 13: // enter
+                case 32: // space
+                    jw.play();
+                    break;
+                case 37: // left-arrow
+                    adjustSeek.call(jw, -5);
+                    break;
+                case 39: // right-arrow
+                    adjustSeek.call(jw, 5);
+                    break;
+                case 38: // up-arrow
+                    adjustVolume.call(jw, 10);
+                    break;
+                case 40: // down-arrow
+                    adjustVolume.call(jw, -10);
+                    break;
+                case 77: // m-key
+                    jw.setMute();
+                    break;
+                case 70: // f-key
+                    jw.setFullscreen();
+                    break;
+                default:
+                    if (evt.keyCode >= 48 && evt.keyCode <= 59) {
+                        // if 0-9 number key, move to n/10 of the percentage of the video
+                        var number = evt.keyCode - 48;
+                        var newSeek = (number/10) * jw.getDuration();
+                        jw.seek(newSeek);
+                    }
+                    break;
+            }
+
+            if ([13,32,38,40].indexOf(evt.keyCode) > -1) {
+                // Prevent keypresses from scrolling the screen
+                evt.preventDefault();
+                return false;
+            }
+        }
 
 		function handleMouseDown(evt) {
             _focusFromClick = true;
@@ -806,7 +860,7 @@
 			if (_isIPod && !_audioMode) return; 
 			if (_controlbar) _controlbar.show();
 		}
-		
+
 		function _hideControlbar() {
 			if (_forcedControlsState === TRUE) {
 				return;

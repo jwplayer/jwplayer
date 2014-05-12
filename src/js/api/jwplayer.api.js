@@ -62,7 +62,7 @@
 		    
 		    return _callInternal("jwReleaseState");
 		};
-		
+
 		_this.getDuration = function() {
 			return _callInternal('jwGetDuration');
 		};
