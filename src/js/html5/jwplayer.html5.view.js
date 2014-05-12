@@ -83,6 +83,11 @@
 			_resizeMediaTimeout = -1,
 			_inCB = FALSE,
 			_currentState,
+
+            // Used to differentiate tab focus events from click events, because when
+            //  it is a click, the mouseDown event will occur immediately prior
+            _focusFromClick = false,
+
 			_this = utils.extend(this, new events.eventdispatcher());
 
 		function _init() {
@@ -90,12 +95,13 @@
 			_playerElement = _createElement("div", PLAYER_CLASS + " playlist-" + _model.playlistposition);
 			_playerElement.id = _api.id;
 			_playerElement.tabIndex = 0;
+			_playerElement.onmousedown = handleMouseDown;
 			_playerElement.onfocusin = handleFocus;
 			_playerElement.addEventListener('focus',handleFocus);
 			_playerElement.onfocusout = handleBlur;
 			_playerElement.addEventListener('blur',handleBlur);
-            _playerElement.onkeydown = handleKeydown;
             _playerElement.addEventListener('keydown',handleKeydown);
+
 			if (_model.aspectratio) {
 				_css.style(_playerElement, {
 					display: 'inline-block'
@@ -108,18 +114,6 @@
 			var replace = DOCUMENT.getElementById(_api.id);
 			replace.parentNode.replaceChild(_playerElement, replace);
 		}
-
-        function handleFocus(evt) {
-            _this.sendEvent(events.JWPLAYER_VIEW_FOCUS, {
-                hasFocus: true
-            });
-        }
-
-        function handleBlur(evt) {
-            _this.sendEvent(events.JWPLAYER_VIEW_FOCUS, {
-                hasFocus: false
-            });
-        }
 
         function adjustSeek (amount) {
             var newSeek = utils.between(_model.position+ amount, 0, this.getDuration());
@@ -134,8 +128,8 @@
         function handleKeydown(evt) {
             var jw = jwplayer(_api.id);
             switch(evt.keyCode) {
-                case 32:
-                case 13:
+                case 13: // enter
+                case 32: // space
                     jw.play();
                     break;
                 case 37: // left-arrow
@@ -166,9 +160,34 @@
                     break;
             }
 
-            // Prevent keypresses from propagating out
-            return false;
+            if ([13,32,38,40].indexOf(evt.keyCode) > -1) {
+                // Prevent keypresses from scrolling the screen
+                evt.preventDefault();
+                return false;
+            }
         }
+
+		function handleMouseDown(evt) {
+            _focusFromClick = true;
+
+            _this.sendEvent(events.JWPLAYER_VIEW_MOUSE_DOWN, {
+                event : evt
+            });
+		}
+
+		function handleFocus(evt) {
+            var wasTabEvent = ! _focusFromClick;
+            _focusFromClick = false;
+
+            _this.sendEvent(events.JWPLAYER_VIEW_FOCUS, {
+                wasTabEvent : wasTabEvent
+            });
+		}
+
+		function handleBlur(evt) {
+            _focusFromClick = false;
+            _this.sendEvent(events.JWPLAYER_VIEW_BLUR);
+		}
 
 		this.getCurrentCaptions = function() {
 			return _captions.getCurrentCaptions();
@@ -837,7 +856,7 @@
 			if (_isIPod && !_audioMode) return; 
 			if (_controlbar) _controlbar.show();
 		}
-		
+
 		function _hideControlbar() {
 			if (_forcedControlsState === TRUE) {
 				return;

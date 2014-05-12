@@ -145,6 +145,7 @@
 	
 	_css(_class(MENU_CLASS + ' ' + OPTION_CLASS), {
 		cursor: "pointer",
+        "white-space": "nowrap",
 		position: "relative"
 	});
 	
