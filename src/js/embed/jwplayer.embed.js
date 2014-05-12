@@ -173,7 +173,10 @@
 	};
 
 	function _insertCSS() {
-		utils.css('.jwplayer:focus, .jw-tab-focus', {
+		utils.css('.jwplayer:focus', {
+			outline : 'none'
+		});
+		utils.css('.jw-tab-focus:focus', {
 			outline : 'solid 2px #0B7EF4'
 		});
 	}

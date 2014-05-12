@@ -198,7 +198,7 @@
 			if (_model.state != states.PLAYING) _play(TRUE);
 			_video().seek(pos);
 		}
-		
+
 		function _setFullscreen(state) {
 			_view.fullscreen(state);
 		}
