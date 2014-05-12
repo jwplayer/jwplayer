@@ -42,7 +42,6 @@ package com.longtailvideo.jwplayer.view {
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
 	import flash.events.TimerEvent;
-	import flash.external.ExternalInterface;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.net.URLRequest;
@@ -108,6 +107,9 @@ package com.longtailvideo.jwplayer.view {
 		
 		// Set to true during the player's completed state
 		private var _completeState:Boolean;
+		
+		private var _currPos:Number = 0;
+		private var _duration:Number = -1;
 		
 		// Timer for poster image. Fixes chromes cache issues
 		private var _imageTimer:Timer;
@@ -178,7 +180,7 @@ package com.longtailvideo.jwplayer.view {
 			RootReference.stage.addEventListener(FocusEvent.FOCUS_IN, keyFocusInHandler);
 			RootReference.stage.addEventListener(Event.MOUSE_LEAVE, moveTimeout);
 			RootReference.stage.addEventListener(MouseEvent.MOUSE_MOVE, moveHandler);
-			//RootReference.stage.addEventListener(KeyboardEvent.KEY_DOWN, moveHandler);
+			RootReference.stage.addEventListener(KeyboardEvent.KEY_DOWN, keyboardHandler);
 			addComponentListeners();
 
 			_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_LOADED, mediaLoaded);
@@ -186,7 +188,8 @@ package com.longtailvideo.jwplayer.view {
 			_model.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_COMPLETE, completeHandler);
 			_model.addEventListener(PlayerStateEvent.JWPLAYER_PLAYER_STATE, stateHandler);
 			_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_ERROR, errorHandler);
-
+			_player.addEventListener(MediaEvent.JWPLAYER_MEDIA_BUFFER, mediaHandler);
+			_player.addEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, mediaHandler);
 			layoutManager = new PlayerLayoutManager(_player);
 			setupRightClick();
 
@@ -208,6 +211,11 @@ package com.longtailvideo.jwplayer.view {
 		
 		protected var _preventFade:Boolean = false;
 		
+		private function mediaHandler(evt):void {
+			_currPos = evt.position;
+			_duration = evt.duration;
+		}
+		
 		protected function preventFade(evt:Event=null):void {
 			_preventFade = true;
 		}
@@ -218,14 +226,12 @@ package com.longtailvideo.jwplayer.view {
 		
 		protected function keyFocusOutHandler(evt:FocusEvent):void {
 			var ev:ViewEvent = new ViewEvent(ViewEvent.JWPLAYER_VIEW_FOCUS);
-			ev.hasFocus = false;
 			dispatchEvent(ev);
 			_components.display.focusHandler(false);
 		}
  
 		protected function keyFocusInHandler(evt:FocusEvent):void {
 			var ev:ViewEvent = new ViewEvent(ViewEvent.JWPLAYER_VIEW_FOCUS);
-			ev.hasFocus = true;
 			dispatchEvent(ev);
 			if (_model.state == PlayerState.PLAYING) {
 				showControls();
@@ -588,6 +594,8 @@ package com.longtailvideo.jwplayer.view {
 
 
 		protected function itemHandler(evt:PlaylistEvent):void {
+			_currPos = 0;
+			_duration = -1;
 			if (_model.playlist.currentItem && _model.playlist.currentItem.image) {
 				if (_lastImage != _model.playlist.currentItem.image) {
 					_lastImage = _model.playlist.currentItem.image;
@@ -792,7 +800,7 @@ package com.longtailvideo.jwplayer.view {
 			}
 		}
 		
-		/** Show controls on mousemove or keyboard press and restart the countdown. **/
+		/** Show controls on mousemove and restart the countdown. **/
 		private function moveHandler(evt:Event=null):void {
 			Mouse.show();
 			if (_player.state != PlayerState.IDLE && _player.state != PlayerState.PAUSED) {
@@ -806,6 +814,45 @@ package com.longtailvideo.jwplayer.view {
 				stopFader();
 				startFader();
 			}
+		}
+		
+		private function keyboardHandler(evt:KeyboardEvent):void {
+			if (evt.keyCode == 32 || evt.keyCode == 13) {
+				if (_player.state == PlayerState.PLAYING || _player.state == PlayerState.BUFFERING) {
+					dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_PAUSE));
+				} else {
+					dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_PLAY));
+				}
+			}
+			if (evt.keyCode == 39) {
+				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_SEEK, _currPos + 5));
+			}
+
+			if (evt.keyCode == 37) {
+				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_SEEK, _currPos - 5));
+			}
+			
+			if (evt.keyCode == 38) {
+				var newvol:Number = _player.config.volume * 1.1;
+				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_VOLUME, (newvol > 100 ? 100 : newvol)));
+			}
+			if (evt.keyCode == 40) {
+				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_VOLUME, _player.config.volume * .9));
+			}
+
+			if (evt.keyCode == 77) {
+				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_MUTE, !_player.config.mute));
+			}
+			if (evt.keyCode == 70) {
+				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_FULLSCREEN, true));
+			}
+			if (evt.keyCode >= 48 && evt.keyCode <= 59) {
+				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_SEEK, Math.round(_duration * ((evt.keyCode - 48)/10))));
+			}
+			if (evt.keyCode >= 48 && evt.keyCode <= 59) {
+				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_SEEK, Math.round(_duration * ((evt.keyCode - 48)/10))));
+			}
+			
 		}
 		
 		/** Hide controls again when move has timed out. **/
