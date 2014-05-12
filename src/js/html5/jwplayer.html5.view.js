@@ -170,8 +170,8 @@
 		function handleMouseDown(evt) {
             _focusFromClick = true;
 
-            _this.sendEvent(events.JWPLAYER_VIEW_MOUSE_DOWN, {
-                event : evt
+            _this.sendEvent(events.JWPLAYER_VIEW_TAB_FOCUS, {
+                hasFocus : false
             });
 		}
 
@@ -179,14 +179,18 @@
             var wasTabEvent = ! _focusFromClick;
             _focusFromClick = false;
 
-            _this.sendEvent(events.JWPLAYER_VIEW_FOCUS, {
-                wasTabEvent : wasTabEvent
-            });
+            if (wasTabEvent) {
+                _this.sendEvent(events.JWPLAYER_VIEW_TAB_FOCUS, {
+                    hasFocus : true
+                });
+            }
 		}
 
 		function handleBlur(evt) {
             _focusFromClick = false;
-            _this.sendEvent(events.JWPLAYER_VIEW_BLUR);
+            _this.sendEvent(events.JWPLAYER_VIEW_TAB_FOCUS, {
+                hasFocus : false
+            });
 		}
 
 		this.getCurrentCaptions = function() {
