@@ -2,15 +2,9 @@
   "name": "jwplayer-free",
   "version": "6.9.0",
   "description": "The JW Player is free for non-commerical use. To buy a license for commercial use, please visit \r http://www.jwplayer.com/pricing/",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/JWPlayer/jwplayer-free.git"
-  },
-  "bugs": {
-    "url": "https://github.com/JWPlayer/jwplayer-free/issues"
   },
   "homepage": "https://github.com/JWPlayer/jwplayer-free",
   "devDependencies": {
