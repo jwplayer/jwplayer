@@ -272,10 +272,7 @@
 			});
 			
 			if (!_isMobile) {
-				_controlsLayer.addEventListener('mouseout', function() {
-					clearTimeout(_controlsTimeout);
-					_controlsTimeout = setTimeout(_hideControls, 10);
-				}, FALSE);
+				_controlsLayer.addEventListener('mouseout', _mouseoutHandler, FALSE);
 				
 				_controlsLayer.addEventListener('mousemove', _startFade, FALSE);
 				if (utils.isIE()) {
@@ -342,6 +339,11 @@
 			// set current captions evt.captionData[_api.jwGetCurrentCaptions()]
 		}
 	
+	
+		function _mouseoutHandler() {
+			clearTimeout(_controlsTimeout);
+			_controlsTimeout = setTimeout(_hideControls, 10);
+		}
 		function _createElement(elem, className) {
 			var newElement = DOCUMENT.createElement(elem);
 			if (className) newElement.className = className;
@@ -1170,14 +1172,15 @@
 				_api.jwRemoveEventListener(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
 				_castDisplay.destroy();
 			}
-			// if (_controlsLayer) {
-			// 	_controlsLayer.removeEventListener('mousemove', _startFade);
-			// 	//_controlsLayer.removeEventListener('mouseout', function() {
-			// }
-			// if (_videoLayer) {
-			// 	_videoLayer.removeEventListener('mousemove', _startFade);
-			// 	//_videoLayer.removeEventListener('click', _display.clickHandler);
-			// }
+			 if (_controlsLayer) {
+			 	_controlsLayer.removeEventListener('mousemove', _startFade);
+			 	_controlsLayer.removeEventListener('mouseout', _mouseoutHandler); 
+			 }
+			 
+			 if (_videoLayer) {
+			 	_videoLayer.removeEventListener('mousemove', _startFade);
+			 	_videoLayer.removeEventListener('click', _display.clickHandler);
+			 }
 		};
 
 		_init();

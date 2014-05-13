@@ -111,6 +111,13 @@
 			}
 		};
 		
+		_model.destroy = function() {
+			if (_video) {
+				_video.removeGlobalListener(_videoEventHandler);
+				_video.destroy();
+			}
+		};
+		
 		_model.getVideo = function() {
 			return _video;
 		};

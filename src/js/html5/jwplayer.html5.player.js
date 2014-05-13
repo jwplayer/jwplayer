@@ -227,6 +227,9 @@
 			_this.jwPlayerDestroy = function() {
 				if (_view) {
 					_view.destroy();
+				} 
+				if (_model) {
+					_model.destroy();
 				}
 			};
 			
