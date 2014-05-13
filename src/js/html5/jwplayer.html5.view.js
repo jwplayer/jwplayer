@@ -126,6 +126,10 @@
         }
 
         function handleKeydown(evt) {
+            // On keypress show the controlbar for a few seconds
+            _controlbar.show();
+            _resetTapTimer();
+
             var jw = jwplayer(_api.id);
             switch(evt.keyCode) {
                 case 13: // enter
@@ -181,9 +185,8 @@
             _focusFromClick = false;
 
             if (wasTabEvent) {
+                // On tab-focus, show the control bar for a few seconds
                 _controlbar.show();
-
-                // Hide controlbar after x seconds
                 _resetTapTimer();
 
                 _this.sendEvent(events.JWPLAYER_VIEW_TAB_FOCUS, {
@@ -1042,7 +1045,6 @@
 					if (_controlbar) {
 						_controlbar.hideFullscreen(FALSE);
 					}
-					_hideControls();
 				}
 				break;
 			case states.IDLE:
