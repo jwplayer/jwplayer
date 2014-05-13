@@ -5,7 +5,7 @@
 	<property environment="env" />
 
 	<!--
-		 Have you edited the properties file to make sure the paths are right on your system?
+		 Have you edited the properties file to make sure the paths are right oo your system?
 	-->
 	<target name="check-properties">
 		<fail unless="compc.exe">The "compc.exe" property must be set in ${build.dir}/build.properties.</fail>
@@ -21,6 +21,51 @@
 		</exec>
 	</target>
 	
+	<target name="build-embedder">
+		<concat destfile="${outputpath}">
+			<fileset dir="${basedir}/src/js" includes="jwplayer.sourcestart.js" />
+			<fileset dir="${basedir}/src/js" includes="jwplayer.js" />
+			<fileset dir="${basedir}/src/js/utils" includes="jwplayer.utils.js" excludes="" />
+			<fileset dir="${basedir}/src/js/utils" includes="jwplayer.utils.*.js" excludes="" />
+			<fileset dir="${basedir}/src/js/events" includes="jwplayer.events.js" />
+			<fileset dir="${basedir}/src/js/events" includes="jwplayer.events.*.js" excludes="jwplayer.events.js" />
+			<fileset dir="${basedir}/src/js/plugins" includes="jwplayer.plugins.js" />
+			<fileset dir="${basedir}/src/js/plugins" includes="jwplayer.plugins.*.js" excludes="jwplayer.plugins.js" />
+			<fileset dir="${basedir}/src/js/parsers" includes="jwplayer.parsers.js" />
+			<fileset dir="${basedir}/src/js/parsers" includes="jwplayer.parsers.*.js" excludes="jwplayer.parsers.js" />
+			<fileset dir="${basedir}/src/js/playlist" includes="jwplayer.playlist.js" />
+			<fileset dir="${basedir}/src/js/playlist" includes="jwplayer.playlist.*.js" excludes="jwplayer.playlist.js" />
+			<fileset dir="${basedir}/src/js/embed" includes="jwplayer.embed.js" />
+			<fileset dir="${basedir}/src/js/embed" includes="jwplayer.embed.*.js" excludes="jwplayer.embed.js" />
+			<fileset dir="${basedir}/src/js/api" includes="jwplayer.api.js" />
+			<fileset dir="${basedir}/src/js/api" includes="jwplayer.*.js" excludes="jwplayer.api.js" />
+			<fileset dir="${basedir}/src/js" includes="jwplayer.sourceend.js" />
+		</concat>
+		<!-- Set the player version -->
+		<replaceregexp 
+			file="${outputpath}"
+			match="jwplayer\.version = '(.*)'\;"
+			replace="jwplayer\.version = '${application.majorversion}.${application.minorversion}.${jwplayer.version}'\;"
+		/>
+	</target>
+
+	<target name="build-html5" depends="minify-skin">
+		<concat destfile="${outputpath}">
+			<fileset dir="${basedir}/src/js/html5" includes="jwplayer.html5.js" />
+			<fileset dir="${basedir}/src/js/html5/utils" includes="jwplayer.html5.utils.js" />
+			<fileset dir="${basedir}/src/js/html5/utils" includes="jwplayer.html5.utils*.js" excludes="jwplayer.html5.utils.js" />
+			<fileset dir="${basedir}/src/js/html5/parsers" includes="jwplayer.html5.parsers.js" />
+			<fileset dir="${basedir}/src/js/html5/parsers" includes="jwplayer.html5.parsers*.js" excludes="jwplayer.html5.parsers.js" />
+			<fileset dir="${basedir}/src/js/html5/providers" includes="jwplayer.html5*.js" />
+			<fileset dir="${basedir}/src/js/html5" includes="jwplayer.html5*.js" excludes="jwplayer.html5.js" />
+		</concat>
+		<!-- Set the player version -->
+		<replaceregexp 
+			file="${outputpath}"
+			match="jwplayer\.html5\.version = '(.*)'\;"
+			replace="jwplayer\.html5\.version = '${application.majorversion}.${application.minorversion}.${jwplayer.version}'\;"
+		/>
+	</target>
 
 	<target name="minify-skin">
         <exec executable="python" outputproperty="minifiedSkin">
@@ -34,11 +79,27 @@
 		/>
 	</target>
 
-	<target name="build-js">
-        <exec executable="npm" dir="${basedir}" failonerror="true">
-            <arg line="install" />
-        </exec>
-        <exec executable="grunt" dir="${basedir}" failonerror="true"></exec>
+	<target name="debug-js" depends="get-revision">
+		<antcall target="build-embedder">
+			<param name="outputpath" value="${debug.dir}/jwplayer.js"/>
+		</antcall>
+		<antcall target="build-html5">
+			<param name="outputpath" value="${debug.dir}/jwplayer.html5.js"/>
+		</antcall>
+	</target>
+	
+	<target name="release-js" depends="debug-js">
+		<!--replace file="${basedir}/jwplayer.min.js" token=", logoConfig);" value=");"/-->
+		<mkdir dir="${release.dir}" />
+		<java jar="${basedir}/build/yuicompressor-2.4.2.jar" fork="true">
+			<arg line="'${debug.dir}/jwplayer.js'"/>
+			<arg line="-o '${release.dir}/jwplayer.js'"/>
+		</java>
+		<echo>Building html5</echo>
+		<java jar="${basedir}/build/yuicompressor-2.4.2.jar" fork="true">
+			<arg line="'${debug.dir}/jwplayer.html5.js'"/>
+			<arg line="-o '${release.dir}/jwplayer.html5.js'"/>
+		</java>
 	</target>
 	
 	<!--
@@ -120,25 +181,28 @@
 
 		</exec>
 	</target>
-
-    <!--
-        The next two targets only need to exist until the commercial build
-        is updated to use build-js target instead of debug-js target
-    -->
-    <target name="debug-js">
-        <antcall target="build-js" />
-    </target>
-    <target name="release-js">
-        <antcall target="build-js" />
-    </target>
-
+	
 	<target name="build-all">
-		<antcall target="build-js" />
+		<antcall target="debug-js" />
+		<antcall target="release-js" />
 		<antcall target="debug-flash" />
 		<antcall target="release-flash" />
 	</target>
 
 	<target name="get-revision">
+        <!-- <exec executable="svn" outputproperty="revision" dir="${basedir}" failifexecutionfails="false">
+            <arg line="info"/>
+        	<redirector>
+        		<outputfilterchain>
+        			<linecontainsregexp>
+        				<regexp pattern="^Revision" />
+        			</linecontainsregexp>
+        			<tokenfilter>
+        				<replaceregex pattern="[\D]+(\d+)" replace="\1"/>
+        			</tokenfilter>
+        		</outputfilterchain>
+        	</redirector>
+        </exec> -->
         <condition property="revision" value="${env.BUILD_NUMBER}" else="0">
 			<isset property="env.BUILD_NUMBER" />
 		</condition>
@@ -150,7 +214,29 @@
 		<echo message="free ${application.majorversion}.${application.minorversion}.${jwplayer.version}"/>
 	</target>
 	
+	
+	<!-- Updates various version numbers from SVN -->
+	<!--target name="update-version">
+		<antcall target="clean-assets" />
+		<exec executable="svn" failonerror="false" failifexecutionfails="false" dir="${basedir}" >
+			<arg value="up" />
+		</exec>
+		<antcall "get-revision" />
 
+		<condition property="jsmatch" value="jwplayer\.version = '(.*)'\;" else="@%%@">
+			<equals arg1="${execresult}" arg2="0" />
+		</condition>
+		<condition property="html5match" value="jwplayer\.html5\.version = '(.*)'\;" else="@%%@">
+			<equals arg1="${execresult}" arg2="0" />
+		</condition>
+		<condition property="flashmatch" value="protected static var _version\:String \= '(.*)';" else="@%%@">
+			<equals arg1="${execresult}" arg2="0" />
+		</condition>
+		<replaceregexp file="${basedir}/src/js/jwplayer.js" match="${jsmatch}" replace="jwplayer\.version \= '${application.majorversion}.${application.minorversion}.${versionnumber}';" byline="true"/>
+		<replaceregexp file="${basedir}/src/js/html5/jwplayer.html5.js" match="${html5match}" replace="jwplayer\.html5\.version \= '${application.majorversion}.${application.minorversion}.${versionnumber}';" byline="true"/>
+		<replaceregexp file="${basedir}/src/flash/com/longtailvideo/jwplayer/player/PlayerVersion.as" match="${flashmatch}" replace="protected static var _version\:String \= '${application.majorversion}.${application.minorversion}.${versionnumber}';" byline="true"/>
+	</target-->
+	
 	
 	<!-- Clean out a directory -->
 	<target name="clean-dir">

@@ -64,9 +64,7 @@
             /** Flag to remember fullscreen state. **/
             _fullscreen = false,
             /** Event dispatcher for captions events. **/
-            _eventDispatcher = new events.eventdispatcher(),
-            
-            _nonChromeAndroid = utils.isAndroidNative(4);
+            _eventDispatcher = new events.eventdispatcher();      
 
         utils.extend(this, _eventDispatcher);
 
@@ -140,8 +138,6 @@
             _tracks = [];
             _renderer.update(0);
             _dlCount = 0;
-
-            if (_nonChromeAndroid) return;
             
             var item = _api.jwGetPlaylist()[_api.jwGetPlaylistIndex()],
                 tracks = item['tracks'],
@@ -272,7 +268,7 @@
 
         /** Update the interface. **/
         function _redraw(timeout) {
-            if(!_tracks.length || _nonChromeAndroid) {
+            if(!_tracks.length ) {
                 _renderer.hide();
             } else {
                 if(_state == PLAYING && _selectedTrack > 0) {

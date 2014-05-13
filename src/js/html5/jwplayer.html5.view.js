@@ -81,8 +81,13 @@
 			_readyState,
 			_rightClickMenu,
 			_resizeMediaTimeout = -1,
-			_inCB = FALSE,
+			_inCB = FALSE, // in control bar
 			_currentState,
+
+            // Used to differentiate tab focus events from click events, because when
+            //  it is a click, the mouseDown event will occur immediately prior
+            _focusFromClick = false,
+
 			_this = utils.extend(this, new events.eventdispatcher());
 
 		function _init() {
@@ -90,10 +95,13 @@
 			_playerElement = _createElement("div", PLAYER_CLASS + " playlist-" + _model.playlistposition);
 			_playerElement.id = _api.id;
 			_playerElement.tabIndex = 0;
+			_playerElement.onmousedown = handleMouseDown;
 			_playerElement.onfocusin = handleFocus;
 			_playerElement.addEventListener('focus',handleFocus);
 			_playerElement.onfocusout = handleBlur;
 			_playerElement.addEventListener('blur',handleBlur);
+            _playerElement.addEventListener('keydown',handleKeydown);
+
 			if (_model.aspectratio) {
 				_css.style(_playerElement, {
 					display: 'inline-block'
@@ -107,18 +115,88 @@
 			replace.parentNode.replaceChild(_playerElement, replace);
 		}
 
-		function handleFocus(evt) {
-			_this.sendEvent(events.JWPLAYER_VIEW_FOCUS, {
-						hasFocus:true
-					});
+        function adjustSeek (amount) {
+            var newSeek = utils.between(_model.position+ amount, 0, this.getDuration());
+            this.seek(newSeek);
+        }
+
+        function adjustVolume (amount) {
+            var newVol = utils.between(this.getVolume() + amount, 0, 100);
+            this.setVolume(newVol);
+        }
+
+        function handleKeydown(evt) {
+            var jw = jwplayer(_api.id);
+            switch(evt.keyCode) {
+                case 13: // enter
+                case 32: // space
+                    jw.play();
+                    break;
+                case 37: // left-arrow
+                    adjustSeek.call(jw, -5);
+                    break;
+                case 39: // right-arrow
+                    adjustSeek.call(jw, 5);
+                    break;
+                case 38: // up-arrow
+                    adjustVolume.call(jw, 10);
+                    break;
+                case 40: // down-arrow
+                    adjustVolume.call(jw, -10);
+                    break;
+                case 77: // m-key
+                    jw.setMute();
+                    break;
+                case 70: // f-key
+                    jw.setFullscreen();
+                    break;
+                default:
+                    if (evt.keyCode >= 48 && evt.keyCode <= 59) {
+                        // if 0-9 number key, move to n/10 of the percentage of the video
+                        var number = evt.keyCode - 48;
+                        var newSeek = (number/10) * jw.getDuration();
+                        jw.seek(newSeek);
+                    }
+                    break;
+            }
+
+            if ([13,32,38,40].indexOf(evt.keyCode) > -1) {
+                // Prevent keypresses from scrolling the screen
+                evt.preventDefault();
+                return false;
+            }
+        }
+
+		function handleMouseDown() {
+            _focusFromClick = true;
+
+            // After a click it no longer has "tab-focus"
+            _this.sendEvent(events.JWPLAYER_VIEW_TAB_FOCUS, {
+                hasFocus : false
+            });
 		}
 
-		function handleBlur(evt) {
-			_this.sendEvent(events.JWPLAYER_VIEW_FOCUS, {
-						hasFocus:false
-					});
+		function handleFocus() {
+            var wasTabEvent = ! _focusFromClick;
+            _focusFromClick = false;
 
+            if (wasTabEvent) {
+                _controlbar.show();
 
+                // Hide controlbar after x seconds
+                _resetTapTimer();
+
+                _this.sendEvent(events.JWPLAYER_VIEW_TAB_FOCUS, {
+                    hasFocus : true
+                });
+            }
+		}
+
+		function handleBlur() {
+            _focusFromClick = false;
+            _this.sendEvent(events.JWPLAYER_VIEW_TAB_FOCUS, {
+                hasFocus : false
+            });
 		}
 
 		this.getCurrentCaptions = function() {
@@ -788,7 +866,7 @@
 			if (_isIPod && !_audioMode) return; 
 			if (_controlbar) _controlbar.show();
 		}
-		
+
 		function _hideControlbar() {
 			if (_forcedControlsState === TRUE) {
 				return;
