@@ -36,14 +36,10 @@
 			_container = _createElement("jwdisplayIcon");
 			_container.id = _id;
 
-			
-			//_createElement('capLeft', _container);
-//			_bg = _createElement('background', _container);
 			_createBackground();
 			_text = _createElement('jwtext', _container, textStyle, textStyleOver);
 			_icon = _createElement('jwicon', _container);
-			//_createElement('capRight', _container);
-			
+
 			_api.jwAddEventListener(jwplayer.events.JWPLAYER_RESIZE, _setWidth);
 			
 			_hide();
@@ -86,7 +82,7 @@
 				if (_bgSkin.overSrc) {
 					style['background-image'] = "url(" + _capLeftSkin.overSrc + "), url(" + _bgSkin.overSrc + "), url(" + _capRightSkin.overSrc + ")"; 
 				}
-				_css("#"+_api.id+" .jwdisplay:hover " + _internalSelector(), style);
+				_css(".jw-tab-focus "+ _internalSelector() + ", #"+_api.id+" .jwdisplay:hover " + _internalSelector(), style);
 			}
 		}
 		
