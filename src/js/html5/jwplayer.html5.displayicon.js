@@ -46,8 +46,8 @@
 			_redraw();
 		}
 
-		function _internalSelector(selector, hover) {
-			return "#" + _id + (hover ? ":hover" : "") + " " + (selector ? selector : "");
+		function _internalSelector() {
+			return "#" + _id;
 		}
 
 		function _createElement(name, parent, style, overstyle) {
