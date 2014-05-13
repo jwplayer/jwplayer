@@ -56,6 +56,7 @@
 			<fileset dir="${basedir}/src/js/html5/utils" includes="jwplayer.html5.utils*.js" excludes="jwplayer.html5.utils.js" />
 			<fileset dir="${basedir}/src/js/html5/parsers" includes="jwplayer.html5.parsers.js" />
 			<fileset dir="${basedir}/src/js/html5/parsers" includes="jwplayer.html5.parsers*.js" excludes="jwplayer.html5.parsers.js" />
+			<fileset dir="${basedir}/src/js/html5/providers" includes="jwplayer.html5*.js" />
 			<fileset dir="${basedir}/src/js/html5" includes="jwplayer.html5*.js" excludes="jwplayer.html5.js" />
 		</concat>
 		<!-- Set the player version -->

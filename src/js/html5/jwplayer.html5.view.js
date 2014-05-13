@@ -81,7 +81,7 @@
 			_readyState,
 			_rightClickMenu,
 			_resizeMediaTimeout = -1,
-			_inCB = FALSE,
+			_inCB = FALSE, // in control bar
 			_currentState,
 
             // Used to differentiate tab focus events from click events, because when
@@ -167,26 +167,32 @@
             }
         }
 
-		function handleMouseDown(evt) {
+		function handleMouseDown() {
             _focusFromClick = true;
 
+            // After a click it no longer has "tab-focus"
             _this.sendEvent(events.JWPLAYER_VIEW_TAB_FOCUS, {
                 hasFocus : false
             });
 		}
 
-		function handleFocus(evt) {
+		function handleFocus() {
             var wasTabEvent = ! _focusFromClick;
             _focusFromClick = false;
 
             if (wasTabEvent) {
+                _controlbar.show();
+
+                // Hide controlbar after x seconds
+                _resetTapTimer();
+
                 _this.sendEvent(events.JWPLAYER_VIEW_TAB_FOCUS, {
                     hasFocus : true
                 });
             }
 		}
 
-		function handleBlur(evt) {
+		function handleBlur() {
             _focusFromClick = false;
             _this.sendEvent(events.JWPLAYER_VIEW_TAB_FOCUS, {
                 hasFocus : false

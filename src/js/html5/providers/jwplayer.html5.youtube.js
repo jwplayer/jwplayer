@@ -11,17 +11,12 @@
 		_scriptLoader = null;
     };
 
-    _scriptLoader.addEventListener(events.ERROR, function(event) {
-		console.log('Youtube script Load Error: %o', event);
-	});
-
 	jwplayer.html5.youtube = function(_playerId) {
 
 		var _this = utils.extend(this, new events.eventdispatcher('html5.youtube')),
 			// Youtube API and Player Instance
 			_youtube = window.YT,
 			_ytPlayer = null,
-			_ytVideoId = null,
 			// iFrame Container (this element will be replaced by iFrame element)
 			_element = document.createElement('div'),
 			// view container
@@ -35,12 +30,15 @@
 			_youtubeEmbedReadyCallback = null,
 			// update timer
 			_playingInterval = -1,
+			// current Youtube state, tracked because state events fail to fire
+			_youtubeState = -1,
 			// post roll support
-            _beforecompleted = false;
+			_beforecompleted = false;
 
 		// Load iFrame API
 		if (!_youtube && _scriptLoader) {
 			_scriptLoader.addEventListener(events.COMPLETE, _onLoadSuccess);
+			_scriptLoader.addEventListener(events.ERROR, _onLoadError);
 			_scriptLoader.load();
 		}
 		// setup container
@@ -54,6 +52,11 @@
 				// poll until Yo API is loaded
 				setTimeout(_onLoadSuccess, 100);
 			}
+		}
+
+		function _onLoadError() {
+			// console.log('Error loading Youtube iFrame API: %o', event);
+			// TODO: dispatch video error
 		}
 
 		function _getVideoLayer() {
@@ -71,7 +74,7 @@
 			return videoLayer;
 		}
 
-		function _readyCheck(event) {
+		function _readyCheck() {
 			// console.log(_playerId, 'YT _readyCheck', !!_youtube && !!_getVideoLayer(), event);
 			if (!!_youtube && !!_getVideoLayer()) {
 				// was not able to load item
@@ -88,45 +91,89 @@
 				newstate : state
 			};
 			_state = state;
-			clearInterval(_playingInterval);
-			if (state === states.PLAYING) {
-				_resetViewForMobile();
-				// console.log(_playerId, 'start time interval. options', _ytPlayer.getOptions());
-				_playingInterval = setInterval(_timeUpdateHandler, 250);
-			} else if (state === states.BUFFERING) {
-				_bufferUpdate();
+			if (state === states.IDLE) {
+				clearInterval(_playingInterval);
+			} else {
+				// always run this interval when not idle because we can't trust events from iFrame
+				_playingInterval = setInterval(_checkPlaybackHandler, 250);
+				if (state === states.PLAYING) {
+					_resetViewForMobile();
+				} else if (state === states.BUFFERING) {
+					_bufferUpdate();
+				}
 			}
 			_dispatchEvent(events.JWPLAYER_PLAYER_STATE, change);
 		}
 
+		function _checkPlaybackHandler() {
+			// return if player is not initialized and ready
+			if (!_ytPlayer || !_ytPlayer.getPlayerState) {
+				return;
+			}
+			// manually check for state changes since API fails to do so
+			var youtubeState = _ytPlayer.getPlayerState();
+			if (youtubeState !== null &&
+				youtubeState !== undefined &&
+				youtubeState !== _youtubeState) {
+				// console.log('manual state update', 'state', _getYoutubePlayerStateString());
+				_youtubeState = youtubeState;
+				_onYoutubeStateChange({
+					data: youtubeState
+				});
+			}
+			// handle time and buffer updates
+			var youtubeStates = _youtube.PlayerState;
+			if (youtubeState === youtubeStates.PLAYING) {
+				_timeUpdateHandler();
+			} else if (youtubeState === youtubeStates.BUFFERING) {
+				_bufferUpdate();
+			}
+			
+		}
+
+		// function _getYoutubePlayerStateString() {
+		// 	var state = _ytPlayer.getPlayerState();
+		// 	var states = _youtube.PlayerState;
+		// 	for (var name in states) {
+		// 		if (states[name] === state) {
+		// 			return name;
+		// 		}
+		// 	}
+		// 	return 'unknown';
+		// }
+
 		function _timeUpdateHandler() {
 			_bufferUpdate();
-            _dispatchEvent(events.JWPLAYER_MEDIA_TIME, {
-                position : (_ytPlayer.getCurrentTime() * 10|0)/10,
-                duration : _ytPlayer.getDuration()
-            });
+			_dispatchEvent(events.JWPLAYER_MEDIA_TIME, {
+				position : (_ytPlayer.getCurrentTime() * 10|0)/10,
+				duration : _ytPlayer.getDuration()
+			});
 		}
 
 		function _bufferUpdate() {
-			var bufferPercent = (_ytPlayer && _ytPlayer.getVideoLoadedFraction) ? Math.round(_ytPlayer.getVideoLoadedFraction() * 100) : 0;
+			var bufferPercent = 0;
+			if (_ytPlayer && _ytPlayer.getVideoLoadedFraction) {
+				bufferPercent = Math.round(_ytPlayer.getVideoLoadedFraction() * 100);
+			}
 			if (_bufferPercent !== bufferPercent) {
 				_bufferPercent = bufferPercent;
 				_dispatchEvent(events.JWPLAYER_MEDIA_BUFFER, {
 					bufferPercent: bufferPercent
 				});
+				//if (bufferPercent === 100) _dispatchEvent(events.JWPLAYER_MEDIA_BUFFER_FULL);
 			}
 		}
 
 		// TODO: checkComplete
 		function _ended() {
-            if (_state != states.IDLE) {
+			if (_state != states.IDLE) {
 				_beforecompleted = true;
-                _dispatchEvent(events.JWPLAYER_MEDIA_BEFORECOMPLETE);
-                _setState(states.IDLE);
-                _beforecompleted = false;
-                _dispatchEvent(events.JWPLAYER_MEDIA_COMPLETE);
-            }
-        }
+				_dispatchEvent(events.JWPLAYER_MEDIA_BEFORECOMPLETE);
+				_setState(states.IDLE);
+				_beforecompleted = false;
+				_dispatchEvent(events.JWPLAYER_MEDIA_COMPLETE);
+			}
+		}
 
 		function _dispatchEvent(type, data) {
 			_this.sendEvent(type, data);
@@ -141,7 +188,7 @@
 
 			var videoLayer = _element.parentNode;
 			if (!videoLayer) {
-				throw 'video layer removed from DOM';
+				throw 'Youtube iFrame removed from DOM';
 			}
 
 			var ytConfig = {
@@ -158,68 +205,23 @@
 					origin: location.protocol+'//'+location.hostname
 				}, playerVars),
 				events: {
-					onReady: function(event) {
-						// console.log(_playerId, 'Youtube ready', event);
-
-						_setState(states.IDLE);
-
-						// TODO: get size from event.target or container
-						// _dispatchEvent(events.JWPLAYER_MEDIA_META, {
-						// 	duration: event.target.getDuration(),
-						// 	width: 400,
-						// 	height: 300
-						// });
-
-						// FIXME: 'playVideo' fails because of iOS's touch event requirement
-						//_dispatchEvent(events.JWPLAYER_MEDIA_BUFFER_FULL);
-
-					},
-					onStateChange: function(event) {
-						// console.log(_playerId, 'Youtube state change', event);
-						switch(event.data) {
-						case 1: //playing
-							_setState(states.PLAYING);
-							return;
-						case 2: //paused
-							_setState(states.PAUSED);
-							return;
-						case 3: //buffering
-							_setState(states.BUFFERING);
-							//playvideo
-							return;
-						case -1: //unstarted
-							_setState(states.IDLE);
-							return;
-						case 0: //ended
-							_ended();
-							return;
-						//case 5: //video cued (5)
-						}
-					},
-					onPlaybackQualityChange: function(event) {
-						// console.log(_playerId, 'Youtube quality change', event, event.target.getAvailableQualityLevels());
-						// make sure playback resumes
-						event.target.playVideo();
-					},
-					// onPlaybackRateChange: function(event) {
-						// console.log(_playerId, 'Youtube rate change', event);
-					// },
-					onError: function(event) {
-						// console.error(_playerId, 'Youtube Error', event);
-						_dispatchEvent(events.JWPLAYER_MEDIA_ERROR, {
-							message: 'Youtube Player Error: '+ event.data
-						});
-					}
+					onReady: _onYoutubePlayerReady,
+					onStateChange: _onYoutubeStateChange,
+					onPlaybackQualityChange: _onYoutubePlaybackQualityChange,
+					// onPlaybackRateChange: _onYoutubePlaybackRateChange,
+					onError: _onYoutubePlayerError
 				}
 			};
 
 			//visibility fix
 			// videoLayer.className = ''; // remove jwvideo
-			videoLayer.style.visibility = 'visible';
-			videoLayer.style.opacity = 1;
+			// videoLayer.style.visibility = 'visible';
+			// videoLayer.style.opacity = 1;
+			_this.setVisibility(true);
 
 			_ytPlayer = new _youtube.Player(_element, ytConfig);
-			_ytVideoId = videoId;
+			_element = _ytPlayer.getIframe();
+
 			_youtubeEmbedReadyCallback = null;
 
 			_readyViewForMobile();
@@ -227,6 +229,71 @@
 			// console.log(_playerId, 'YT created player', _ytPlayer, ytConfig);
 		}
 
+		// Youtube Player Event Handlers
+		function _onYoutubePlayerReady() {
+			// console.log(_playerId, 'Youtube ready', event, 'state', _getYoutubePlayerStateString(), 'data', _ytPlayer.getVideoData());
+			_setState(states.IDLE);
+
+			// TODO: get size from event.target or container
+			// _dispatchEvent(events.JWPLAYER_MEDIA_META, {
+			// 	duration: event.target.getDuration(),
+			// 	width: 400,
+			// 	height: 300
+			// });
+
+			// _sendLevels 
+			// _dispatchEvent(events.JWPLAYER_MEDIA_LEVELS, {
+			// 	levels: _this.getQualityLevels(),
+			// 	currentQuality: _this.getCurrentQuality()
+			// });
+		}
+
+		function _onYoutubeStateChange(event) {
+			var youtubeStates = _youtube.PlayerState;
+			// console.log(_playerId, 'Youtube state change', event, 'state', _getYoutubePlayerStateString(), 'data', _ytPlayer.getVideoData());
+			switch(event.data) {
+			case youtubeStates.UNSTARTED:// -1: //unstarted
+				_setState(states.IDLE);
+				return;
+			case youtubeStates.ENDED:// 0: //ended
+				_ended();
+				return;
+			case youtubeStates.PLAYING: // 1: playing
+				_setState(states.PLAYING);
+				return;
+			case youtubeStates.PAUSED:// 2: //paused
+				_setState(states.PAUSED);
+				return;
+			case youtubeStates.BUFFERING:// 3: //buffering
+				_setState(states.BUFFERING);
+				//playvideo
+				return;
+			case youtubeStates.CUED:// 5: //video cued (5)
+				// paused at start
+				_setState(states.PAUSED); //_setState(states.IDLE);
+				// call play?
+				return;
+			}
+		}
+
+		function _onYoutubePlaybackQualityChange(event) {
+			// console.log(_playerId, 'Youtube quality change', event, event.target.getAvailableQualityLevels());
+			// make sure playback resumes
+			event.target.playVideo();
+		}
+
+		// function _onYoutubePlaybackRateChange(event) {
+			// console.log(_playerId, 'Youtube rate change', event);
+		// }
+
+		function _onYoutubePlayerError(event) {
+			// console.error(_playerId, 'Youtube Error', event);
+			_dispatchEvent(events.JWPLAYER_MEDIA_ERROR, {
+				message: 'Youtube Player Error: '+ event.data
+			});
+		}
+
+		// Mobile view helpers
 		function _readyViewForMobile() {
 			if (utils.isMobile()) {
 				_this.setVisibility(true);
@@ -245,17 +312,36 @@
 			}
 		}
 
+		// Internal operations
+
+		function _stopVideo() {
+			clearInterval(_playingInterval);
+			if (_ytPlayer && _ytPlayer.stopVideo) {
+				// console.log(_playerId, 'YT stop internal', 'state', _getYoutubePlayerStateString(), 'data', _ytPlayer.getVideoData());
+				try {
+					_ytPlayer.stopVideo();
+					_ytPlayer.clearVideo();
+				} catch(e) {
+					console.error('Error stopping YT', e);
+				}
+			}
+		}
+
+
 		// Additional Provider Methods (not yet implemented in html5.video)
 
 		_this.init = function(item) {
 			// console.log(_playerId, 'YT init', item);
 			// load item on embed for mobile touch to start
-			_this.load(item);
+			_setItem(item);
 		};
 
 		_this.destroy = function() {
 			// console.log(_playerId, 'YT destroy');
-			// TODO: remove element
+			// remove element
+			if (_container === _element.parentNode) {
+				_container.removeChild(_element);
+			}
 			clearInterval(_playingInterval);
 			_this =
 			_youtube =
@@ -271,6 +357,15 @@
 
 		// Video Provider API
 		_this.load = function(item) {
+			_setState(states.BUFFERING);
+			_setItem(item);
+			// start playback if api is ready
+			if (_ytPlayer.playVideo) {
+				_ytPlayer.playVideo();
+			}
+		};
+
+		function _setItem(item) {
 			var url = item.sources[0].file;
 			var videoId = utils.youTubeID(url);
 
@@ -278,9 +373,7 @@
 				item.image = 'http://i.ytimg.com/vi/' + videoId + '/0.jpg';
 			}
 
-			// console.log(_playerId, 'YT load', videoId, url, item);
-
-			_setState(states.BUFFERING);
+			_this.setVisibility(true);
 
 			if (!_youtube) {
 				// console.log(_playerId, 'YT load on init');
@@ -301,59 +394,65 @@
 				return;
 			}
 
-			if (!_ytPlayer.getCurrentTime) {
-				// console.error(_playerId, 'YT player API is not available');
+			if (!_ytPlayer.getPlayerState) {
+				console.error(_playerId, 'YT player API is not available');
 				return;
 			}
 
-			if (_ytVideoId !== videoId) {
-				// console.log(_playerId, 'YT loadVideoById');
+			var currentVideoId = _ytPlayer.getVideoData().video_id;
+
+			if (currentVideoId !== videoId) {
+				// console.log(_playerId, 'YT loadVideoById', videoId, 'current', currentVideoId, 'state', _getYoutubePlayerStateString(), 'data', _ytPlayer.getVideoData());
 				// An exception is thrown by the iframe_api - but the call works
 				// it's trying to access an element of the controls which is not present
 				// because we disabled control in the setup
 				_ytPlayer.loadVideoById(videoId);
-				_ytVideoId = videoId;
 
 				// _ytPlayer.loadVideoByUrl(url);
-				// _ytPlayer.cueVideoById(_ytVideoId);
+				// _ytPlayer.cueVideoById(videoId);
 				// _ytPlayer.nextVideo();
-				
-				_readyViewForMobile();
 
+				// if player is unstarted, ready for mobile
+				var youtubeState = _ytPlayer.getPlayerState();
+				var youtubeStates = _youtube.PlayerState;
+				if (youtubeState === youtubeStates.UNSTARTED || youtubeState === youtubeStates.CUED) {
+					_readyViewForMobile();
+				}
 			} else {
 				if (_ytPlayer.getCurrentTime() > 0) {
-					// console.log(_playerId, 'seek');
+					// console.log(_playerId, 'seek first then...');
 					_ytPlayer.seekTo(0);
 				}
-				// console.log(_playerId, 'play', _ytPlayer.getPlayerState());
-				_ytPlayer.playVideo();
-				if (_ytPlayer.getPlayerState() === 1) {
-					_setState(states.PLAYING);
-				}
+				// console.log(_playerId, 'just play', 'state', _getYoutubePlayerStateString());
 			}
-		};
+		}
 		
 		_this.stop = function() {
 			// console.log(_playerId, 'YT stop');
-			// if (!_ytPlayer) return;
-			_ytPlayer.stopVideo();
-			// _ytVideoId = null;
+			_stopVideo();
 			_setState(states.IDLE);
 		};
 				
 		_this.play = function() {
-			// console.log(_playerId, 'YT play');
+			// console.log(_playerId, 'YT play', 'state', _getYoutubePlayerStateString());
 			_ytPlayer.playVideo();
 		};
 		
 		_this.pause = function() {
-			// console.log(_playerId, 'YT pause');
+			// console.log(_playerId, 'YT pause', 'state', _getYoutubePlayerStateString());
 			_ytPlayer.pauseVideo();
 		};
+
+		_this.seekDrag = noop;
 
 		_this.seek = function(position) {
 			// console.log(_playerId, 'YT seek');
 			_ytPlayer.seekTo(position);
+
+			// _sendEvent(events.JWPLAYER_MEDIA_SEEK, {
+			// 	position: _position,
+			// 	offset: seekPos
+			// });
 		};
 
 		_this.volume = function(volume) {
@@ -372,8 +471,6 @@
 			}
 		};
 		
-		_this.seekDrag = noop;
-
 		_this.detachMedia = function() {
 			// temp return a video element so instream doesn't break.
 			// FOR VAST: prevent instream from being initialized while casting
@@ -384,15 +481,34 @@
 		_this.attachMedia = function() {
 			// console.error(_playerId, 'attachMedia called for Youtube');
 			if (_beforecompleted) {
-                _setState(states.IDLE);
-                _dispatchEvent(events.JWPLAYER_MEDIA_COMPLETE);
-                _beforecompleted = false;
-            }
+				_setState(states.IDLE);
+				_dispatchEvent(events.JWPLAYER_MEDIA_COMPLETE);
+				_beforecompleted = false;
+			}
 		};
 
 		_this.setContainer = function(element) {
+			// console.log('add YT to DOM');
 			_container = element;
 			element.appendChild(_element);
+			_this.setVisibility(true);
+		};
+
+		_this.getContainer = function() {
+			return _container;
+		};
+
+		_this.remove = function() {
+			// stop video silently
+			_stopVideo();
+			// don't remove, just hide so we can reuse player
+			utils.css.style(_element, {
+				display: 'none'
+			});
+			// if (_container === _element.parentNode) {
+			// 	// console.log('hide YT in DOM');
+			// 	_container.removeChild(_element);
+			// }
 		};
 
 		_this.setVisibility = function(state) {
@@ -402,6 +518,9 @@
 				// the pause event to be fired. This causes audio files to 
 				// become unplayable. Hence the video tag is always kept 
 				// visible on Android devices.
+				utils.css.style(_element, {
+					display: 'block'
+				});
 				utils.css.style(_container, {
 					visibility: 'visible',
 					opacity: 1
@@ -416,18 +535,20 @@
 		};
 
 		_this.resize = function(width, height, stretching) {
+			// TODO: look into Youtube resize method
+			//_container
 			utils.stretch(stretching,
 				_element,
 				width, height,
 				_element.clientWidth, _element.clientHeight);
 		};
 
-		_this.setFullScreen = _alwaysReturn(false);
+		_this.setFullScreen =
 		_this.getFullScreen = _alwaysReturn(false);
 
-        this.checkComplete = function() {
-            return _beforecompleted;
-        };
+		this.checkComplete = function() {
+			return _beforecompleted;
+		};
 
 		_this.getCurrentQuality = function() {
 			var ytQuality = _ytPlayer.getPlaybackQuality();
