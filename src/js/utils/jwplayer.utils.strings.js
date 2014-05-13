@@ -39,9 +39,27 @@
 		return "";
 	};
 	
-	/** Returns the extension of a file name * */
+	/**
+     * This does not return the file extension, instead it returns a media type extension
+     */
+    function getAzureFileFormat(path) {
+        var match = path.match(/manifest\(format=(.*),audioTrack/);
+        if (!match || !match[1]) {
+            // not an azure file
+            return false;
+        }
+
+        return match[1].split('-')[0];
+    }
+
 	utils.extension = function(path) {
 		if (!path || path.substr(0,4) == 'rtmp') { return ""; }
+
+        var azureFormat = getAzureFileFormat(path);
+        if (azureFormat) {
+            return azureFormat;
+        }
+
 		path = path.substring(path.lastIndexOf("/") + 1, path.length).split("?")[0].split("#")[0];
 		if (path.lastIndexOf('.') > -1) {
 			return path.substr(path.lastIndexOf('.') + 1, path.length).toLowerCase();
