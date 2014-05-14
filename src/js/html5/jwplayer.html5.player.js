@@ -112,7 +112,6 @@
 			_this.jwSetVolume = _controller.setVolume;
 			_this.jwSetMute = _controller.setMute;
 			_this.jwLoad =  function(item) {
-				_this.jwInstreamDestroy();
 			    _controller.load(item);
 			};
 			_this.jwPlaylistNext = _controller.next;
@@ -155,16 +154,24 @@
 				var plugins = jwplayer(_this.id).plugins;
 				if (plugins.vast) {
 					plugins.vast.jwPlayAd(ad);
-				} else if (plugins.googima) {
-				// 	// This needs to be added once the googima Ads API is implemented
+				} //else if (plugins.googima) {
+				// 	// This needs to be added once the googima Ads API is implemented 
 				 	//plugins.googima.jwPlayAd(ad);
-				}
+				 	//not supporting for now
+				//}
 			};
 
 			_this.jwPauseAd = function () { 
 				var plugins = jwplayer(_this.id).plugins;
 				if (plugins.googima) {
 					plugins.googima.jwPauseAd();
+				}
+			};
+			
+			_this.jwDestroyGoogima = function() {
+				var plugins = jwplayer(_this.id).plugins;
+				if (plugins.googima) {
+					plugins.googima.jwDestroyGoogima();
 				}
 			};
 			

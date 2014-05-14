@@ -136,7 +136,15 @@
 			return _this;
 		};
 		_this.load = function(toLoad) {
-			_callInternal("jwLoad", toLoad);
+			_callInternal("jwInstreamDestroy");
+			if (jwplayer(_this.id).plugins.googima) {
+				_callInternal("jwDestroyGoogima");
+				setTimeout(function() {
+					_callInternal("jwLoad", toLoad);
+				}, 250);
+			} else {
+				_callInternal("jwLoad", toLoad);
+			}
 			return _this;
 		};
 		_this.playlistItem = function(item) {
