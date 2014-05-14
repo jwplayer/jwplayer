@@ -100,7 +100,7 @@
 			_playerElement.addEventListener('focus',handleFocus);
 			_playerElement.onfocusout = handleBlur;
 			_playerElement.addEventListener('blur',handleBlur);
-            _playerElement.addEventListener('keydown',handleKeydown);
+            _playerElement.addEventListener('keydown', handleKeydown);
 
 			if (_model.aspectratio) {
 				_css.style(_playerElement, {
@@ -126,21 +126,31 @@
         }
 
         function handleKeydown(evt) {
+
             // On keypress show the controlbar for a few seconds
-            _controlbar.show();
-            _resetTapTimer();
+            if (!_controlbar.adMode()) {
+                _showControlbar();
+                _resetTapTimer();
+            }
 
             var jw = jwplayer(_api.id);
             switch(evt.keyCode) {
+                case 27: // Esc
+                    jw.setFullscreen(FALSE);
+                    break;
                 case 13: // enter
                 case 32: // space
                     jw.play();
                     break;
-                case 37: // left-arrow
-                    adjustSeek.call(jw, -5);
+                case 37: // left-arrow, if not adMode
+                    if (!_controlbar.adMode()) {
+                        adjustSeek.call(jw, -5);
+                    }
                     break;
-                case 39: // right-arrow
-                    adjustSeek.call(jw, 5);
+                case 39: // right-arrow, if not adMode
+                    if (!_controlbar.adMode()) {
+                        adjustSeek.call(jw, 5);
+                    }
                     break;
                 case 38: // up-arrow
                     adjustVolume.call(jw, 10);
@@ -164,7 +174,7 @@
                     break;
             }
 
-            if ([13,32,38,40].indexOf(evt.keyCode) > -1) {
+            if (/13|32|38|40/.test(evt.keyCode)) {
                 // Prevent keypresses from scrolling the screen
                 evt.preventDefault();
                 return false;
@@ -185,14 +195,16 @@
             _focusFromClick = false;
 
             if (wasTabEvent) {
-                // On tab-focus, show the control bar for a few seconds
-                _controlbar.show();
-                _resetTapTimer();
-
                 _this.sendEvent(events.JWPLAYER_VIEW_TAB_FOCUS, {
                     hasFocus : true
                 });
             }
+
+            // On tab-focus, show the control bar for a few seconds
+            if (!_controlbar.adMode()) {
+                _showControlbar();
+                _resetTapTimer();
+             }
 		}
 
 		function handleBlur() {
@@ -276,8 +288,6 @@
 				DOCUMENT.addEventListener(FULLSCREEN_EVENTS[i], _fullscreenChangeHandler, FALSE);
 			}
 
-			DOCUMENT.addEventListener('keydown', _keyHandler, FALSE);
-			
 			window.removeEventListener('resize', _responsiveListener);
 			window.addEventListener('resize', _responsiveListener, FALSE);
 			if (_isMobile) {
@@ -286,7 +296,11 @@
 			}
             //this for googima, after casting, to get the state right.
             jwplayer(_api.id).onAdPlay(function() {
+                _controlbar.adMode(true);
                 _updateState(states.PLAYING);
+            });
+            jwplayer(_api.id).onAdComplete(function() {
+                _controlbar.adMode(false);
             });
 			_api.jwAddEventListener(events.JWPLAYER_PLAYER_READY, _readyHandler);
 			_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
@@ -727,27 +741,7 @@
 			};
 		};
 		
-		/**
-		 * Listen for keystrokes while in fullscreen mode.  
-		 * ESC returns from fullscreen
-		 * SPACE toggles playback
-		 **/
-		function _keyHandler(evt) {
-			if (_model.fullscreen) {
-				switch (evt.keyCode) {
-				// ESC
-				case 27:
-					_fullscreen(FALSE);
-					break;
-				// SPACE
-//				case 32:
-//					if (_model.state == states.PLAYING || _model.state == states.BUFFERING)
-//						_api.jwPause();
-//					break;
-				}
-			}
-		}
-		
+
 		/**
 		 * False fullscreen mode. This is used for browsers without full support for HTML5 fullscreen.
 		 * This method sets the CSS of the container element to a fixed position with 100% width and height.
@@ -1228,7 +1222,7 @@
 				DOCUMENT.removeEventListener(FULLSCREEN_EVENTS[i], _fullscreenChangeHandler, FALSE);
 			}
 			_model.removeEventListener('fullscreenchange', _fullscreenChangeHandler);
-			DOCUMENT.removeEventListener('keydown', _keyHandler, FALSE);
+			_playerElement.removeEventListener('keydown', handleKeydown, FALSE);
 			if (_rightClickMenu) {
 				_rightClickMenu.destroy();
 			}
