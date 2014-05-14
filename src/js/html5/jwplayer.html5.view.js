@@ -40,7 +40,6 @@
 		TRUE = true,
 		FALSE = !TRUE,
 		
-		JW_CLASS = '.jwplayer ',
 		JW_CSS_SMOOTH_EASE = "opacity .25s ease",
 		JW_CSS_100PCT = "100%",
 		JW_CSS_ABSOLUTE = "absolute",
@@ -1248,23 +1247,6 @@
 
 		_init();
 	};
-
-	// Reset CSS
-	_css(JW_CLASS.slice(0, -1) + ["", "div", "span", "a", "img", "ul", "li", "video"].join(", "+JW_CLASS) + ", .jwclick", {
-		margin: 0,
-		padding: 0,
-		border: 0,
-		color: '#000000',
-		'font-size': "100%",
-		font: 'inherit',
-		'vertical-align': 'baseline',
-		'background-color': 'transparent',
-		'text-align': 'left',
-		'direction':'ltr',
-		'-webkit-tap-highlight-color': 'rgba(255, 255, 255, 0)'
-	});
-
-	_css(JW_CLASS + "ul", { 'list-style': "none" });
 
 	// Container styles
 	_css('.' + PLAYER_CLASS, {
