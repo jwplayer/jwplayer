@@ -141,7 +141,7 @@
 				_callInternal("jwDestroyGoogima");
 				setTimeout(function() {
 					_callInternal("jwLoad", toLoad);
-				}, 250);
+				}, 500);
 			} else {
 				_callInternal("jwLoad", toLoad);
 			}
