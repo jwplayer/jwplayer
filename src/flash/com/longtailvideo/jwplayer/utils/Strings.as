@@ -124,12 +124,29 @@ package com.longtailvideo.jwplayer.utils {
 		 * @return 			Everything trailing the final '.' character
 		 * 
 		 */
-		public static function extension(filename:String):String {
+
+        public static function getAzureFileFormat(path:String):String {
+            var match:Array = path.match(/manifest\(format=(.*),audioTrack/);
+            if (!match || !match[1]) {
+                // not an azure file
+                return "";
+            }
+
+            return match[1].split('-')[0];
+        }
+
+        public static function extension(filename:String):String {
+
+            var azureFormat:String = getAzureFileFormat(filename);
+            if (azureFormat) {
+                return azureFormat;
+            }
+
 			if (filename && filename.lastIndexOf(".") > 0) {
 				filename = String(filename.split("?")[0]).split("#")[0]; 
 				return filename.substring(filename.lastIndexOf(".")+1, filename.length).toLowerCase();
 			} else {
-				return "";
+                return "";
 			}
 		}
 		
