@@ -28,5 +28,6 @@ package com.longtailvideo.jwplayer.view.interfaces {
 		//function setText(displayText:String):void;
 		function forceState(forcedState:String):void;
 		function releaseState():void;
+		function focusHandler(state:Boolean):void;
 	}
 }

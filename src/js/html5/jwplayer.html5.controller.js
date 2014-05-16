@@ -16,7 +16,7 @@
 	html5.controller = function(_model, _view) {
 		var _ready = FALSE,
 			_loadOnPlay = -1,
-			_preplay, 
+			_preplay = FALSE,
 			_actionOnAttach,
 			_stopPlaylist = FALSE,
 			_interruptPlay,
@@ -198,7 +198,7 @@
 			if (_model.state != states.PLAYING) _play(TRUE);
 			_video().seek(pos);
 		}
-		
+
 		function _setFullscreen(state) {
 			_view.fullscreen(state);
 		}

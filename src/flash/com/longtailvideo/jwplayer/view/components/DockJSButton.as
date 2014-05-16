@@ -24,9 +24,9 @@ package com.longtailvideo.jwplayer.view.components {
         public function DockJSButton(name:String, back:DisplayObject, backOver:DisplayObject, tab:Number):void {
             this.name = name;
             setBackground(back);
-			this.tabEnabled = true;
+			this.tabEnabled = false;
 			this.tabChildren = false;
-			this.tabIndex = tab;
+			//this.tabIndex = tab;
 			this.buttonMode = true;
 			_outLoader = new Loader();
             _outLoader.contentLoaderInfo.addEventListener(Event.COMPLETE,_loadOutHandler);

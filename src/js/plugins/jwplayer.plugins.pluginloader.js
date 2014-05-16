@@ -36,7 +36,8 @@
 		function _complete() {
 			if (_errorState) {
 				_eventDispatcher.sendEvent(events.ERROR, {message: _errorMessage});
-			} else if (!_iscomplete) {
+			}
+			if (!_iscomplete) {
 				_iscomplete = true;
 				_status = utils.loaderstatus.COMPLETE;
 				_eventDispatcher.sendEvent(events.COMPLETE);
@@ -65,7 +66,7 @@
 					}
 				});
 				
-				if (incomplete == 0) {
+				if (incomplete === 0) {
 					_complete();
 				}
 			}
@@ -151,7 +152,7 @@
 			
 			// Make sure we're not hanging around waiting for plugins that already finished loading
 			_checkComplete();
-		}
+		};
 		
 		var _pluginError = this.pluginFailed = function(evt) {
 			if (!_errorState) {
@@ -159,11 +160,12 @@
 				_errorMessage = "File not found";
 				_complete();
 			}
-		}
+		};
 		
 		this.getStatus = function() {
 			return _status;
-		}
+		};
 		
-	}
+	};
+	
 })(jwplayer);

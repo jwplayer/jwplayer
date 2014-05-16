@@ -431,6 +431,7 @@
 			if (_elements.cast) {
 				_elements.cast.querySelector("button").className = evt.active ? EMPTY : "off";
 			}
+			_redraw();
 		}
 
 		// Bit of a hacky way to determine if the playlist is available
@@ -577,6 +578,7 @@
 				buttonTouch.addEventListener(utils.touchEvents.TAP, _buttonClickHandler(name));
 			}
 			button.innerHTML = "&nbsp;";
+			button.tabIndex = -1;
 			_appendChild(span, button);
 
 			var outSkin = _getSkinElement(name + "Button"),
@@ -1461,8 +1463,9 @@
 
 			// ie <= IE10 does not allow fullscreen from inside an iframe. Hide the FS button.
 			var ieIframe = (top !== window.self) && utils.isMSIE();
+			var casting = _castState.active;
 			_css.style(_elements.fullscreen, {
-				display: (_audioMode || _hideFullscreen || ieIframe) ? JW_CSS_NONE : EMPTY
+				display: (_audioMode || casting || _hideFullscreen || ieIframe) ? JW_CSS_NONE : EMPTY
 			});
 
 			// TODO: hide these all by default (global styles at bottom), and update using classes when model changes:
@@ -1476,10 +1479,10 @@
 				});
 			}
 			_css.style(_elements.hd, {
-				display: !_audioMode && _hasHD() ? EMPTY : JW_CSS_NONE
+				display: !_audioMode && !casting && _hasHD() ? EMPTY : JW_CSS_NONE
 			});
 			_css.style(_elements.cc, {
-				display: !_audioMode && _hasCaptions() ? EMPTY : JW_CSS_NONE
+				display: !_audioMode && !casting && _hasCaptions() ? EMPTY : JW_CSS_NONE
 			});
 
 			_drawCues();

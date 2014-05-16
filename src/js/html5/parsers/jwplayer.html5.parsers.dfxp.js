@@ -11,13 +11,14 @@
             var list = data.split("</p>");
             var list2 = data.split ("</tt:p>");
             var newlist = [];
-            for (var i = 0; i < list.length; i++) {
+            var i;
+            for (i = 0; i < list.length; i++) {
                 if (list[i].indexOf("<p") >= 0) {
                     list[i] = list[i].substr(list[i].indexOf("<p") + 2).replace(/^\s+/, '').replace(/\s+$/, '');
                     newlist.push(list[i]);
                 }
             }
-            for (var i = 0; i < list2.length; i++) {
+            for (i = 0; i < list2.length; i++) {
                 if (list2[i].indexOf("<tt:p") >= 0) {
                     list2[i] = list2[i].substr(list2[i].indexOf("<tt:p") + 5).replace(/^\s+/, '').replace(/\s+$/, '');
                     newlist.push(list2[i]);
@@ -60,7 +61,7 @@
                 entry['text'] = data;
             } catch (error) {}
             return entry;
-        };
+        }
 
     };
 

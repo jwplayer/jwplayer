@@ -10,18 +10,13 @@
 		html5 = jwplayer.html5,
 		_css = utils.css,
 		states = jwplayer.events.state,
-	
-		UNDEFINED = undefined,
 		
 		FREE = "free",
 		PRO = "pro",
 		PREMIUM = "premium",
 		ADS = "ads",
-		OPEN = "open",
 
 		LINK_DEFAULT = "http://www.longtailvideo.com/jwpabout/?a=l&v=",
-		JW_CSS_VISIBLE = "visible",
-		JW_CSS_HIDDEN = "hidden",
 		LOGO_CLASS = ".jwlogo";
 	
 	
@@ -85,8 +80,7 @@
 			}
 		}
 		
-		this.resize = function(width, height) {
-		};
+		this.resize = function() {};
 		
 		this.element = function() {
 			return _logo;
@@ -94,15 +88,15 @@
 		
 		this.offset = function(offset) {
 			_css(_internalSelector(), { 'margin-bottom': offset }); 
-		}
+		};
 		
 		this.position = function() {
 			return _settings.position;
-		}
+		};
 
 		this.margin = function() {
 			return parseInt(_settings.margin);
-		}
+		};
 
 		function _togglePlay() {
 			if (_api.jwGetState() == states.IDLE || _api.jwGetState() == states.PAUSED) {
@@ -158,13 +152,13 @@
 				_logo.style.visibility = "hidden";
 				_logo.style.opacity = 0;
 			}
-		}
+		};
 
 		this.show = function() {
 			_showing = true;
 			_logo.style.visibility = "visible";
 			_logo.style.opacity = 1;
-		}
+		};
 		
 		_setup();
 		
@@ -182,9 +176,9 @@
 	
 	_css(LOGO_CLASS, {
 		cursor: "pointer",
-	  	position: "absolute",
-	  	'z-index': 100,
-	  	opacity: 0
+		position: "absolute",
+		'z-index': 100,
+		opacity: 0
 	});
 
 	utils.transitionStyle(LOGO_CLASS, "visibility .25s, opacity .25s");

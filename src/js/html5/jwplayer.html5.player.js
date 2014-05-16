@@ -145,7 +145,6 @@
 			_this.jwGetStretching = _statevarFactory('stretching');
 			_this.jwGetPlaylist = _normalizePlaylist;
 			_this.jwGetControls = _statevarFactory('controls');
-
 			/** InStream API **/
 			_this.jwDetachMedia = _controller.detachMedia;
 			_this.jwAttachMedia = _controller.attachMedia;
@@ -156,11 +155,10 @@
 				var plugins = jwplayer(_this.id).plugins;
 				if (plugins.vast) {
 					plugins.vast.jwPlayAd(ad);
-				}
-				// else if (plugins.googima) {
+				} else if (plugins.googima) {
 				// 	// This needs to be added once the googima Ads API is implemented
-				// 	//plugins.googima.jwPlayAd(ad);
-				// }
+				 	//plugins.googima.jwPlayAd(ad);
+				}
 			};
 
 			_this.jwPauseAd = function () { 

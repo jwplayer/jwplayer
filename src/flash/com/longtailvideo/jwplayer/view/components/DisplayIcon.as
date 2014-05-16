@@ -14,6 +14,7 @@ package com.longtailvideo.jwplayer.view.components {
 	import flash.text.TextFormat;
 	import flash.text.TextFormatAlign;
 	import flash.utils.Timer;
+	import flash.external.ExternalInterface;
 	
 	public class DisplayIcon extends Sprite {
 		// Skin elements
@@ -52,10 +53,11 @@ package com.longtailvideo.jwplayer.view.components {
 		private var _noText:Boolean = false;
 		private var _hovering:Boolean = false;
 		
+		private var _inFocus:Boolean = false;
+		
 		public function DisplayIcon(elements:Object, textFormat:TextFormat, overFormat:TextFormat=null) {
 			_icon = elements.icon ? elements.icon : new Sprite(),
 			_iconOver = elements.iconOver;
-			
 			_background = elements.background ? elements.background : new Sprite();
 			_backgroundOver = elements.backgroundOver;
 			
@@ -74,6 +76,7 @@ package com.longtailvideo.jwplayer.view.components {
 			
 			_container = new Sprite();
 			_container.mouseChildren = false;
+			_container.tabEnabled = false;
 			_container.buttonMode = true;
 			this.mouseEnabled = false;
 			this.mouseChildren = true;
@@ -230,19 +233,26 @@ package com.longtailvideo.jwplayer.view.components {
 			if (parent && parent.parent) {
 				var display:DisplayObject = parent.parent;
 				if (display.getRect(RootReference.stage).containsPoint(new Point(evt.stageX, evt.stageY))) {
-					if (!evt.stageX && !evt.stageY) {
+					if (!evt.stageX && !evt.stageY && !_inFocus) {
 						hover(false);
 						return;
 					}
 					hover(true);
-				} else if (_hovering) {
+				} else if (_hovering && !_inFocus) {
 					hover(false);
 				}
 			}
 		}
 		
+		public function focusHandler(state:Boolean):void {
+			_inFocus = state;
+			hover(state);
+		}
+		
 		private function _mouseLeaveHandler(evt:Event):void {
-			hover(false);
+			if(!_inFocus){
+				hover(false);
+			}
 		}
 
 

@@ -36,22 +36,18 @@
 			_container = _createElement("jwdisplayIcon");
 			_container.id = _id;
 
-			
-			//_createElement('capLeft', _container);
-//			_bg = _createElement('background', _container);
 			_createBackground();
 			_text = _createElement('jwtext', _container, textStyle, textStyleOver);
 			_icon = _createElement('jwicon', _container);
-			//_createElement('capRight', _container);
-			
+
 			_api.jwAddEventListener(jwplayer.events.JWPLAYER_RESIZE, _setWidth);
 			
 			_hide();
 			_redraw();
 		}
 
-		function _internalSelector(selector, hover) {
-			return "#" + _id + (hover ? ":hover" : "") + " " + (selector ? selector : "");
+		function _internalSelector() {
+			return "#" + _id;
 		}
 
 		function _createElement(name, parent, style, overstyle) {
@@ -86,7 +82,7 @@
 				if (_bgSkin.overSrc) {
 					style['background-image'] = "url(" + _capLeftSkin.overSrc + "), url(" + _bgSkin.overSrc + "), url(" + _capRightSkin.overSrc + ")"; 
 				}
-				_css("#"+_api.id+" .jwdisplay:hover " + _internalSelector(), style);
+				_css(".jw-tab-focus "+ _internalSelector() + ", #"+_api.id+" .jwdisplay:hover " + _internalSelector(), style);
 			}
 		}
 		
@@ -100,7 +96,7 @@
 				style.width = skinElem.width;
 				style['background-image'] = 'url(' + skinElem.src + ')';
 				style['background-size'] = skinElem.width+'px '+skinElem.height+'px';
-				
+				style['float'] = 'none';
 				overstyle = utils.extend({}, overstyle);
 				if (skinElem.overSrc) {
 					overstyle['background-image'] = 'url(' + skinElem.overSrc + ')';
@@ -235,7 +231,8 @@
 		position: "relative",
 		'margin-left': "auto",
 		'margin-right': "auto",
-		top: "50%"
+		top: "50%",
+		'float':'none'
 	});
 
 	_css(DI_CLASS + " div", {

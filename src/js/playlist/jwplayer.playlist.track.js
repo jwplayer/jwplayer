@@ -5,7 +5,7 @@
  * @version 6.3
  */
 (function(playlist) {
-	var UNDEF = undefined,
+	var UNDEF,
 		utils = jwplayer.utils,
 		defaults = {
 			file: UNDEF,
@@ -18,7 +18,7 @@
 		var _track = utils.extend({}, defaults);
 		if (!config) config = {};
 		
-		utils.foreach(defaults, function(property, value) {
+		utils.foreach(defaults, function(property) {
 			if (utils.exists(config[property])) {
 				_track[property] = config[property];
 				// Actively move from config to track

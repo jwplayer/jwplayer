@@ -64,7 +64,7 @@
                 }
             } catch (error) {}
             return entry;
-        };
+        }
 
     };
 

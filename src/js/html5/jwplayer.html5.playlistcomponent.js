@@ -54,7 +54,6 @@
 			_lastCurrent = -1,
 			_clickedIndex,
 			_slider,
-			_lastHeight = -1,
 			_itemheight = 76,
 			_elements = {
 				'background': undefined,
@@ -77,11 +76,11 @@
 		
 		_this.show = function() {
 			utils.show(_wrapper);
-		}
+		};
 
 		_this.hide = function() {
 			utils.hide(_wrapper);
-		}
+		};
 
 
 		function _setup() {
@@ -108,9 +107,9 @@
 			_api.jwAddEventListener(events.JWPLAYER_RESIZE, _resizeHandler);
 		}
 		
-        function _resizeHandler(evt) {
-            _this.redraw();
-        }
+		function _resizeHandler(evt) {
+			_this.redraw();
+		}
 
 		function _internalSelector(className) {
 			return '#' + _wrapper.id + (className ? ' .' + className : "");
@@ -135,36 +134,36 @@
 			});
 
 			
-        	if (_elements.itemImage) {
-        		imgPos = (_itemheight - _elements.itemImage.height) / 2 + "px ";
-        		imgWidth = _elements.itemImage.width;
-        		imgHeight = _elements.itemImage.height;
-        	} else {
-        		imgWidth = _itemheight * 4 / 3;
-        		imgHeight = _itemheight
-        	}
+			if (_elements.itemImage) {
+				imgPos = (_itemheight - _elements.itemImage.height) / 2 + "px ";
+				imgWidth = _elements.itemImage.width;
+				imgHeight = _elements.itemImage.height;
+			} else {
+				imgWidth = _itemheight * 4 / 3;
+				imgHeight = _itemheight;
+			}
 			
-        	if (_elements.divider) {
-        		_css(_internalSelector("jwplaylistdivider"), {
-        			'background-image': "url("+_elements.divider.src + ")",
-        			'background-size': JW_CSS_100PCT + " " + _elements.divider.height + "px",
-        			width: JW_CSS_100PCT,
-        			height: _elements.divider.height
-        		});
-        	}
-        	
-        	_css(_internalSelector("jwplaylistimg"), {
-			    height: imgHeight,
-			    width: imgWidth,
+			if (_elements.divider) {
+				_css(_internalSelector("jwplaylistdivider"), {
+					'background-image': "url("+_elements.divider.src + ")",
+					'background-size': JW_CSS_100PCT + " " + _elements.divider.height + "px",
+					width: JW_CSS_100PCT,
+					height: _elements.divider.height
+				});
+			}
+			
+			_css(_internalSelector("jwplaylistimg"), {
+				height: imgHeight,
+				width: imgWidth,
 				margin: imgPos ? (imgPos + "0 " + imgPos + imgPos) : "0 5px 0 0"
-        	});
+			});
 			
 			_css(_internalSelector("jwlist li"), {
 				'background-image': _elements.item ? "url("+_elements.item.src+")" : "",
 				height: _itemheight,
 				overflow: 'hidden',
 				'background-size': JW_CSS_100PCT + " " + _itemheight + "px",
-		    	cursor: 'pointer'
+				cursor: 'pointer'
 			});
 
 			var activeStyle = { overflow: 'hidden' };
@@ -198,28 +197,28 @@
 			});
 
 			_css(_internalSelector("jwtitle"), {
-	        	overflow: 'hidden',
-	        	display: "inline-block",
-	        	height: _isBasic ? _itemheight : 20,
-	        	color: _settings.titlecolor,
-		    	'font-size': _settings.titlesize,
-	        	'font-weight': _settings.titleweight,
-	        	'margin-top': _isBasic ? '0 10px' : 10,
-	        	'margin-left': 10,
-	        	'margin-right': 10,
-	        	'line-height': _isBasic ? _itemheight : 20
-	    	});
-	    
+				overflow: 'hidden',
+				display: "inline-block",
+				height: _isBasic ? _itemheight : 20,
+				color: _settings.titlecolor,
+				'font-size': _settings.titlesize,
+				'font-weight': _settings.titleweight,
+				'margin-top': _isBasic ? '0 10px' : 10,
+				'margin-left': 10,
+				'margin-right': 10,
+				'line-height': _isBasic ? _itemheight : 20
+			});
+		
 			_css(_internalSelector("jwdescription"), {
-	    	    display: 'block',
-	    	    'font-size': _settings.fontsize,
-	    	    'line-height': 18,
-	    	    'margin-left': 10,
-	    	    'margin-right': 10,
-	        	overflow: 'hidden',
-	        	height: 36,
-	        	position: JW_CSS_RELATIVE
-	    	});
+				display: 'block',
+				'font-size': _settings.fontsize,
+				'line-height': 18,
+				'margin-left': 10,
+				'margin-right': 10,
+				overflow: 'hidden',
+				height: 36,
+				position: JW_CSS_RELATIVE
+			});
 
 		}
 
@@ -237,18 +236,18 @@
 			
 			li.id = _ul.id + '_item_' + index;
 
-	        if (index > 0) {
-	        	div = _createElement("div", "jwplaylistdivider");
-	        	_appendChild(li, div);
-	        }
-	        else {
-	        	var divHeight = _elements.divider ? _elements.divider.height : 0;
-	        	li.style.height = (_itemheight - divHeight) + "px";
-	        	li.style["background-size"] = "100% " + (_itemheight - divHeight) + "px";
-	        }
-		        
+			if (index > 0) {
+				div = _createElement("div", "jwplaylistdivider");
+				_appendChild(li, div);
+			}
+			else {
+				var divHeight = _elements.divider ? _elements.divider.height : 0;
+				li.style.height = (_itemheight - divHeight) + "px";
+				li.style["background-size"] = "100% " + (_itemheight - divHeight) + "px";
+			}
+				
 			var imageWrapper = _createElement("div", "jwplaylistimg jwfill");
-        	
+			
 			var imageSrc; 
 			if (item['playlist.image'] && _elements.itemImage) {
 				imageSrc = item['playlist.image'];	
@@ -260,22 +259,22 @@
 			if (imageSrc && !_isBasic) {
 				_css('#'+li.id+' .jwplaylistimg', {
 					'background-image': imageSrc
-	        	});
+				});
 				_appendChild(li, imageWrapper);
 			}
 		
 			var textWrapper = _createElement("div", "jwtextwrapper");
-        	var title = _createElement("span", "jwtitle");
-        	title.innerHTML = (item && item.title) ? item.title : "";
-        	_appendChild(textWrapper, title);
+			var title = _createElement("span", "jwtitle");
+			title.innerHTML = (item && item.title) ? item.title : "";
+			_appendChild(textWrapper, title);
 
-	        if (item.description && !_isBasic) {
-	        	var desc = _createElement("span", "jwdescription");
-	        	desc.innerHTML = item.description;
-	        	_appendChild(textWrapper, desc);
-	        }
-	        
-	        _appendChild(li, textWrapper);
+			if (item.description && !_isBasic) {
+				var desc = _createElement("span", "jwdescription");
+				desc.innerHTML = item.description;
+				_appendChild(textWrapper, desc);
+			}
+			
+			_appendChild(li, textWrapper);
 			return li;
 		}
 		
@@ -332,7 +331,7 @@
 				_clickedIndex = index;
 				_api.jwPlaylistItem(index);
 				_api.jwPlay(true);
-			}
+			};
 		}
 		
 		function _scrollToItem() {
@@ -357,7 +356,7 @@
 
 		
 		function _populateSkinElements() {
-			utils.foreach(_elements, function(element, _) {
+			utils.foreach(_elements, function(element) {
 				_elements[element] = _skin.getSkinElement("playlist", element);
 			});
 		}
@@ -370,7 +369,7 @@
 
 	_css(PL_CLASS, {
 		position: JW_CSS_ABSOLUTE,
-	    width: JW_CSS_100PCT,
+		width: JW_CSS_100PCT,
 		height: JW_CSS_100PCT
 	});
 	
@@ -378,9 +377,9 @@
 
 	_css(PL_CLASS + ' .jwplaylistimg', {
 		position: JW_CSS_RELATIVE,
-	    width: JW_CSS_100PCT,
-	    'float': 'left',
-	    margin: '0 5px 0 0',
+		width: JW_CSS_100PCT,
+		'float': 'left',
+		margin: '0 5px 0 0',
 		background: "#000",
 		overflow: JW_CSS_HIDDEN
 	});
@@ -388,10 +387,10 @@
 	_css(PL_CLASS+' .jwlist', {
 		position: JW_CSS_ABSOLUTE,
 		width: JW_CSS_100PCT,
-    	'list-style': 'none',
-    	margin: 0,
-    	padding: 0,
-    	overflow: JW_CSS_HIDDEN
+		'list-style': 'none',
+		margin: 0,
+		padding: 0,
+		overflow: JW_CSS_HIDDEN
 	});
 	
 	_css(PL_CLASS+' .jwlistcontainer', {
@@ -402,7 +401,7 @@
 	});
 
 	_css(PL_CLASS+' .jwlist li', {
-	    width: JW_CSS_100PCT
+		width: JW_CSS_100PCT
 	});
 
 	_css(PL_CLASS+' .jwtextwrapper', {
