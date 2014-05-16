@@ -10,7 +10,7 @@
 		events = jwplayer.events,
 		states = events.state,
 		DOCUMENT = document;
-	
+
 	var api = jwplayer.api = function(container) {
 		var _this = this,
 			_listeners = {},
@@ -62,7 +62,7 @@
 		    
 		    return _callInternal("jwReleaseState");
 		};
-		
+
 		_this.getDuration = function() {
 			return _callInternal('jwGetDuration');
 		};
@@ -136,6 +136,10 @@
 			return _this;
 		};
 		_this.load = function(toLoad) {
+			_callInternal("jwInstreamDestroy");
+			if (jwplayer(_this.id).plugins.googima) {
+				_callInternal("jwDestroyGoogima");
+			}
 			_callInternal("jwLoad", toLoad);
 			return _this;
 		};
@@ -253,7 +257,9 @@
 			if (plugins.vast) {
 				plugins.vast.jwPlayAd(ad);
 			}
-			// _callInternal("jwPlayAd", ad);
+			else  {
+				_callInternal("jwPlayAd",ad);
+			}
 		};
 		_this.pauseAd = function() {
 			var plugins = jwplayer(_this.id).plugins;
@@ -505,7 +511,17 @@
 			_eventListener(events.JWPLAYER_MEDIA_META, function(data) {
 				utils.extend(_itemMeta, data.metadata);
 			});
-			
+
+            _eventListener(events.JWPLAYER_VIEW_TAB_FOCUS, function(data) {
+                var container = this.getContainer();
+                if (data.hasFocus === true) {
+                    addFocusBorder(container);
+                }
+                else {
+                    removeFocusBorder(container);
+                }
+            });
+
 			_this.dispatchEvent(events.API_READY);
 			
 			while (_queuedCalls.length > 0) {
@@ -617,12 +633,20 @@
 	jwplayer.playerReady = function(obj) {
 		var api = jwplayer.api.playerById(obj.id);
 
-		if (api) {
-			api.playerReady(obj);
-		} else {
-			jwplayer.api.selectPlayer(obj.id).playerReady(obj);
-		}
-		
+        if (!api) {
+            jwplayer.api.selectPlayer(obj.id).playerReady(obj);
+            return;
+        }
+
+        api.playerReady(obj);
 	};
+
+    function addFocusBorder(container) {
+        container.className = container.className + ' jw-tab-focus';
+    }
+
+    function removeFocusBorder(container) {
+        container.className = container.className.replace(/ *jw-tab-focus */g, ' ');
+    }
 
 })(window.jwplayer);

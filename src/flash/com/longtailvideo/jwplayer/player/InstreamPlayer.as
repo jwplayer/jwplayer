@@ -72,6 +72,8 @@ package com.longtailvideo.jwplayer.player
 		protected var _viewSetup:Boolean = false;
 		protected var _playerLocked:Boolean = false;
 		
+		public var jsListeners:Object = {};
+		
 		public function InstreamPlayer(target:IPlugin, model:Model, view:View, controller:Controller) {
 			
 			_plugin = target;

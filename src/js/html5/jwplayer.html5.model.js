@@ -12,10 +12,14 @@
 		TRUE = true,
 		FALSE = !TRUE;
 
-	html5.model = function(config, video) {
-		var _model = this, 
+	html5.model = function(config, _defaultProvider) {
+		var _model = this,
 			// Video provider
 			_video,
+			// Providers
+			_providers = {
+				html5: _defaultProvider || new html5.video(UNDEF, 'default')
+			},
 			// Saved settings
 			_cookies = utils.getCookies(),
 			// Sub-component configurations
@@ -63,8 +67,6 @@
 			// This gets added later
 			_model.playlist = [];
 			_model.setItem(0);
-			_model.setVideo(video ? video : new html5.video());
-
 		}
 		
 		var _eventMap = {};
@@ -81,11 +83,11 @@
 					var mapping = mappings[i],
 						split = mapping.split("->"),
 						eventProp = split[0],
-						stateProp = split[1] ? split[1] : eventProp;
+						stateProp = split[1] || eventProp;
 						
 					if (_model[stateProp] != evt[eventProp]) {
 						_model[stateProp] = evt[eventProp];
-						_sendEvent = true;
+						_sendEvent = TRUE;
 					}
 				}
 				if (_sendEvent) {
@@ -98,15 +100,20 @@
 		
 		/** Sets the video provider **/
 		_model.setVideo = function(video) {
-			if (_video) {
-				_video.removeGlobalListener(_videoEventHandler);
+			if (video !== _video) {
+				if (_video) {
+					_video.removeGlobalListener(_videoEventHandler);
+					var container = _video.getContainer();
+					if (container) {
+						_video.remove();
+						video.setContainer(container);
+					}
+				}
+				_video = video;
+				_video.volume(_model.volume);
+				_video.mute(_model.mute);
+				_video.addGlobalListener(_videoEventHandler);
 			}
-
-			_video = video;
-
-			_video.volume(_model.volume);
-			_video.mute(_model.mute);
-			_video.addGlobalListener(_videoEventHandler);
 		};
 		
 		_model.getVideo = function() {
@@ -118,15 +125,18 @@
 		};
 		
 		_model.setFullscreen = function(state) {
+			state = !!state;
 			if (state != _model.fullscreen) {
 				_model.fullscreen = state;
-				_model.sendEvent(events.JWPLAYER_FULLSCREEN, { fullscreen: state } );
+				_model.sendEvent(events.JWPLAYER_FULLSCREEN, {
+					fullscreen: state
+				});
 			}
 		};
 		
 		// TODO: make this a synchronous action; throw error if playlist is empty
 		_model.setPlaylist = function(playlist) {
-			_model.playlist = utils.filterPlaylist(playlist);
+			_model.playlist = utils.filterPlaylist(playlist, FALSE, _model.androidhls);
 			if (_model.playlist.length === 0) {
 				_model.sendEvent(events.JWPLAYER_ERROR, { message: "Error loading playlist: No playable sources found" });
 			} else {
@@ -140,21 +150,40 @@
 
 		_model.setItem = function(index) {
             var newItem;
-            var repeat = false;
+            var repeat = FALSE;
             if (index == _model.playlist.length || index < -1) {
                 newItem = 0;
-                repeat = true;
-            }
-            else if (index == -1 || index > _model.playlist.length)
+                repeat = TRUE;
+            } else if (index == -1 || index > _model.playlist.length) {
                 newItem = _model.playlist.length - 1;
-            else
+            } else {
                 newItem = index;
-            
-            if (repeat  || newItem != _model.item) {
+            }
+
+            if (repeat || newItem !== _model.item) {
                 _model.item = newItem;
                 _model.sendEvent(events.JWPLAYER_PLAYLIST_ITEM, {
-                    "index": _model.item
+                    index: _model.item
                 });
+
+                var item = _model.playlist[newItem];
+
+	            // select provider based on item source (video, youtube...)
+				var provider = _providers.html5;
+				if (_model.playlist.length) {
+					var source = item.sources[0];
+					if (source.type === 'youtube' || utils.isYouTube(source.file)) {
+						provider = _providers.youtube;
+						if (!provider) {
+							provider = _providers.youtube = new html5.youtube(_model.id);
+						}
+					}
+				}
+				_model.setVideo(provider);
+				// this allows the provider to load preview images (youtube player data)
+				if (provider.init) {
+					provider.init(item);
+				}
             }
         };
         

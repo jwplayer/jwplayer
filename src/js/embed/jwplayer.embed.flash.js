@@ -20,10 +20,10 @@
 			param.setAttribute('name', name);
 			param.setAttribute('value', value);
 			object.appendChild(param);
-		};
+		}
 		
 		function _resizePlugin(plugin, div, onready) {
-			return function(evt) {
+			return function() {
 				try {
 					if (onready) {
 						document.getElementById(_api.id+"_wrapper").appendChild(div);
@@ -35,25 +35,8 @@
 					div.style.left = display.x;
 					div.style.top = display.h;
 				} catch (e) {}
-			}
+			};
 		}
-		
-		
-		function parseComponents(componentBlock) {
-			if (!componentBlock) {
-				return {};
-			}
-			
-			var flat = {};
-			
-			utils.foreach(componentBlock, function(component, componentConfig) {
-				utils.foreach(componentConfig, function(param, val) {
-					flat[component + '.' + param] = val;
-				});
-			});
-			
-			return flat;
-		};
 		
 		function parsePlugins(pluginBlock) {
 			if (!pluginBlock) {
@@ -71,7 +54,7 @@
 			});
 			flat.plugins = pluginKeys.join(',');
 			return flat;
-		};
+		}
 
 		this.embed = function() {		
 			// Make sure we're passing the correct ID into Flash for Linux API support
@@ -84,7 +67,7 @@
 			}
 			
 			var _wrapper,
-			 	_aspect,
+				_aspect,
 				lb = _api.config.listbar;
 			
 			var params = utils.extend({}, _options);
@@ -194,7 +177,7 @@
 				obj.setAttribute('bgcolor', bgcolor);
 				obj.setAttribute('id', _container.id);
 				obj.setAttribute('name', _container.id);
-				obj.setAttribute('tabindex', 0);
+				//obj.setAttribute('tabindex', 0);
 				appendAttribute(obj, 'allowfullscreen', 'true');
 				appendAttribute(obj, 'allowscriptaccess', 'always');
 				appendAttribute(obj, 'seamlesstabbing', 'true');
@@ -209,7 +192,8 @@
 			}
 			_api.container = flashPlayer;
 			_api.setPlayer(flashPlayer, "flash");
-		}
+		};
+
 		/**
 		 * Detects whether Flash supports this configuration
 		 */
@@ -239,12 +223,12 @@
 				}
 			}
 			return false;
-		}
-	}
+		};
+	};
 	
 	_flash.getVars = function(id) {
 		return storedFlashvars[id];		
-	}
+	};
 
 	/**
 	 * Determines if a Flash can play a particular file, based on its extension
@@ -264,6 +248,6 @@
 		}
 
 		return !!(mappedType.flash);
-	}
+	};
 	
 })(jwplayer);

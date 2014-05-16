@@ -11,9 +11,12 @@
 				plugins[pluginName] = new jwplayer.plugins.plugin(url);
 			}
 			return plugins[pluginName];
-		}
+		};
+
 		this.getPlugins = function() {
 			return plugins;
-		}
-	}
+		};
+
+	};
+	
 })(jwplayer);

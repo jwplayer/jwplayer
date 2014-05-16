@@ -98,8 +98,6 @@ package com.longtailvideo.jwplayer.controller {
 
 		/** Reference to a PlaylistItem which has triggered an external MediaProvider load **/
 		protected var _delayedItem:PlaylistItem;
-		/** Loader for external MediaProviders **/
-		protected var _mediaLoader:MediaProviderLoader;
 		
 		public function Controller(player:IPlayer, model:Model, view:View) {
 			_player = player;
@@ -189,7 +187,10 @@ package com.longtailvideo.jwplayer.controller {
 			}
 		}
 
-
+		protected function errorHandler(evt:ErrorEvent):void {
+			_delayedItem = null;
+			errorState(evt.text);
+		}
 		protected function playlistLoadHandler(evt:PlaylistEvent=null):void {
 			if (!_playlistReady) {
 				_playlistReady = true;
@@ -212,11 +213,7 @@ package com.longtailvideo.jwplayer.controller {
 		}
 
 
-		protected function errorHandler(evt:ErrorEvent):void {
-			_delayedItem = null;
-			_mediaLoader = null;
-			errorState(evt.text);
-		}
+
 
 
 		protected function errorState(message:String=""):void {
@@ -373,10 +370,6 @@ package com.longtailvideo.jwplayer.controller {
 				return false;
 			}
 			
-			if (_mediaLoader) {
-				_delayedItem = _model.playlist.currentItem;
-				return false;
-			}
 			
 			if (locking || _player.state == PlayerState.PLAYING || _player.state == PlayerState.BUFFERING) {
 				return false;
@@ -594,14 +587,9 @@ package com.longtailvideo.jwplayer.controller {
 			
 			try {
 				if (!item.streamer && _model.config.streamer) { item.streamer = _model.config.streamer; }
-				if (!item.provider) { item.provider = JWParser.getProvider(item); }
 				
-				if (!setProvider(item) && item.file) {
-					_model.playlist.load(item.file); 
-				} else if(_mediaLoader) {
-					_model.setActiveMediaProvider('default');
-					dispatchEvent(new PlayerStateEvent(PlayerStateEvent.JWPLAYER_PLAYER_STATE, PlayerState.BUFFERING, PlayerState.IDLE));
-				}
+				loadFile(item);
+				
 			} catch (err:Error) {
 				Logger.log(err.message, "Error Loading Item");
 				return false;
@@ -610,7 +598,15 @@ package com.longtailvideo.jwplayer.controller {
 			return true;
 		}
 
-
+		protected function loadFile(item:PlaylistItem):void {
+			if (!item.provider)
+			{	
+				item.provider = JWParser.getProvider(item);
+				_model.playlist.load(item.file);
+			}
+			_model.setActiveMediaProvider(item.provider);
+			
+		}
 		protected function loadString(item:String):Boolean {
 			_playlistReady = false;
 			_model.playlist.load(item);
@@ -646,41 +642,6 @@ package com.longtailvideo.jwplayer.controller {
 		}
 
 
-		protected function setProvider(item:PlaylistItem):Boolean {
-			var provider:String = item.provider;
-
-			if (provider) {
-
-				// If the model doesn't have an instance of the provider, load & instantiate it
-				if (!_model.hasMediaProvider(provider)) {
-					_mediaLoader = new MediaProviderLoader();
-					_mediaLoader.addEventListener(Event.COMPLETE, mediaSourceLoaded);
-					_mediaLoader.addEventListener(ErrorEvent.ERROR, errorHandler);
-					_mediaLoader.loadSource(provider);
-					return true;
-				}
-
-				_model.setActiveMediaProvider(provider);
-				return true;
-			}
-
-			return false;
-		}
-
-
-		protected function mediaSourceLoaded(evt:Event):void {
-			var loader:MediaProviderLoader = _mediaLoader;
-			_mediaLoader = null;
-			if (_delayedItem) {
-				_model.setMediaProvider(_delayedItem.provider, loader.loadedSource);
-				_model.setActiveMediaProvider(_delayedItem.provider);
-				_delayedItem = null;
-				play();
-			} else {
-				_model.setMediaProvider(_model.playlist.currentItem.provider, loader.loadedSource);
-				_model.setActiveMediaProvider(_model.playlist.currentItem.provider);
-			}
-		}
 
 
 		private function bufferFullHandler(evt:MediaEvent):void {

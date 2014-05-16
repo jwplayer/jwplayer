@@ -42,7 +42,6 @@ package com.longtailvideo.jwplayer.view {
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
 	import flash.events.TimerEvent;
-	import flash.external.ExternalInterface;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.net.URLRequest;
@@ -92,11 +91,7 @@ package com.longtailvideo.jwplayer.view {
 		protected var layoutManager:PlayerLayoutManager;
 
 		protected var currentLayer:Number = 0;
-		
-		// Keep track of the first tabIndex
-		protected var firstIndex:Number = -1;
-		// Keep track of the last seen tabIndex
-		protected var lastIndex:Number = -1;
+
 
 		// Delay between IDLE state and when the preview image is shown
 		private var imageDelay:Timer = new Timer(100, 1);
@@ -113,6 +108,9 @@ package com.longtailvideo.jwplayer.view {
 		// Set to true during the player's completed state
 		private var _completeState:Boolean;
 		
+		private var _currPos:Number = 0;
+		private var _duration:Number = -1;
+		
 		// Timer for poster image. Fixes chromes cache issues
 		private var _imageTimer:Timer;
 		// Current image url being loaded
@@ -127,7 +125,6 @@ package com.longtailvideo.jwplayer.view {
 		public function View(player:IPlayer, model:Model) {
 			_player = player;
 			_model = model;
-
 			RootReference.stage.scaleMode = StageScaleMode.NO_SCALE;
 			RootReference.stage.stage.align = StageAlign.TOP_LEFT;
 
@@ -139,6 +136,8 @@ package com.longtailvideo.jwplayer.view {
 			}
 
 			_root = new MovieClip();
+			_root.tabIndex = 0;
+			_root.focusRect = false;
 			_normalScreen = new Rectangle();
 		}
 
@@ -171,7 +170,7 @@ package com.longtailvideo.jwplayer.view {
 		public function setupView():void {
 			RootReference.stage.addChildAt(_root, 0);
 			_root.visible = false;
-
+		
 			setupLayers();
 			createComponents();
 			setupComponents();
@@ -181,8 +180,7 @@ package com.longtailvideo.jwplayer.view {
 			RootReference.stage.addEventListener(FocusEvent.FOCUS_IN, keyFocusInHandler);
 			RootReference.stage.addEventListener(Event.MOUSE_LEAVE, moveTimeout);
 			RootReference.stage.addEventListener(MouseEvent.MOUSE_MOVE, moveHandler);
-			RootReference.stage.addEventListener(KeyboardEvent.KEY_DOWN, moveHandler);
-			
+			RootReference.stage.addEventListener(KeyboardEvent.KEY_DOWN, keyboardHandler);
 			addComponentListeners();
 
 			_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_LOADED, mediaLoaded);
@@ -190,7 +188,8 @@ package com.longtailvideo.jwplayer.view {
 			_model.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_COMPLETE, completeHandler);
 			_model.addEventListener(PlayerStateEvent.JWPLAYER_PLAYER_STATE, stateHandler);
 			_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_ERROR, errorHandler);
-
+			_player.addEventListener(MediaEvent.JWPLAYER_MEDIA_BUFFER, mediaHandler);
+			_player.addEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, mediaHandler);
 			layoutManager = new PlayerLayoutManager(_player);
 			setupRightClick();
 
@@ -212,6 +211,11 @@ package com.longtailvideo.jwplayer.view {
 		
 		protected var _preventFade:Boolean = false;
 		
+		private function mediaHandler(evt):void {
+			_currPos = evt.position;
+			_duration = evt.duration;
+		}
+		
 		protected function preventFade(evt:Event=null):void {
 			_preventFade = true;
 		}
@@ -221,46 +225,23 @@ package com.longtailvideo.jwplayer.view {
 		}
 		
 		protected function keyFocusOutHandler(evt:FocusEvent):void {
-			var button:Sprite = evt.target as Sprite;
-			if (!button) { return; }
-
-			if (evt.shiftKey && firstIndex >= 0 && button.tabIndex == firstIndex) {
-				// User is tabbing backwards, and the button we're tabbing out of was the first tab index
-				blurPlayer(evt);
-			}
-			lastIndex = button.tabIndex;
+			var ev:ViewEvent = new ViewEvent(ViewEvent.JWPLAYER_VIEW_TAB_FOCUS);
+			ev.hasFocus = false;
+			dispatchEvent(ev);
+			_components.display.focusHandler(false);
 		}
 
-		/** 
-		 * Handles the loss of a button's focus.  
-		 * The player attempts to blur Flash's focus on the page after the last tabbable 
-		 * element so that keyboard users don't get stuck with their focus insideo of the player.   
-		 **/
 		protected function keyFocusInHandler(evt:FocusEvent):void {
-			var button:Sprite = evt.target as Sprite;
-			if (!button) { return; }
-
-			if (!evt.shiftKey && firstIndex >= 0 && button.tabIndex == firstIndex && lastIndex > firstIndex) {
-				// Tabbing forward and we've wrapped around to the first button.
-				blurPlayer(evt);
-			} else if (firstIndex < 0 || button.tabIndex < firstIndex) {
-				firstIndex = button.tabIndex;
+			var ev:ViewEvent = new ViewEvent(ViewEvent.JWPLAYER_VIEW_TAB_FOCUS);
+			ev.hasFocus = true;
+			dispatchEvent(ev);
+			if (_model.state == PlayerState.PLAYING) {
+				showControls();
+				stopFader();
+				startFader();
+			} else {
+				_components.display.focusHandler(true);
 			}
-		}
-		
-		/**
-		 * Attempts to force the browser to blur the focus of the Flash player
-		 **/
-		protected function blurPlayer(evt:FocusEvent):void {
-			// Prevent focus from wrapping to the first button
-			evt.preventDefault();
-			// Nothing should be focused now
-			RootReference.stage.focus = null;
-			// Try to blur the Flash object in the browser
-			if (ExternalInterface.available) {
-				ExternalInterface.call("(function() { try { document.getElementById('"+PlayerVersion.id+"').blur(); } catch(e) {} })"); 
-			}
-			lastIndex = firstIndex;
 		}
 		
 		
@@ -615,6 +596,8 @@ package com.longtailvideo.jwplayer.view {
 
 
 		protected function itemHandler(evt:PlaylistEvent):void {
+			_currPos = 0;
+			_duration = -1;
 			if (_model.playlist.currentItem && _model.playlist.currentItem.image) {
 				if (_lastImage != _model.playlist.currentItem.image) {
 					_lastImage = _model.playlist.currentItem.image;
@@ -819,7 +802,7 @@ package com.longtailvideo.jwplayer.view {
 			}
 		}
 		
-		/** Show controls on mousemove or keyboard press and restart the countdown. **/
+		/** Show controls on mousemove and restart the countdown. **/
 		private function moveHandler(evt:Event=null):void {
 			Mouse.show();
 			if (_player.state != PlayerState.IDLE && _player.state != PlayerState.PAUSED) {
@@ -833,6 +816,48 @@ package com.longtailvideo.jwplayer.view {
 				stopFader();
 				startFader();
 			}
+		}
+		
+		private function keyboardHandler(evt:KeyboardEvent):void {
+			showControls();
+			stopFader();
+			startFader();
+			if (evt.keyCode == 32 || evt.keyCode == 13) {
+				if (_player.state == PlayerState.PLAYING || _player.state == PlayerState.BUFFERING) {
+					dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_PAUSE));
+				} else {
+					dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_PLAY));
+				}
+			}
+			if (evt.keyCode == 39) {
+				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_SEEK, _currPos + 5));
+			}
+
+			if (evt.keyCode == 37) {
+				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_SEEK, _currPos - 5));
+			}
+			
+			if (evt.keyCode == 38) {
+				var newvol:Number = _player.config.volume * 1.1;
+				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_VOLUME, (newvol > 100 ? 100 : newvol)));
+			}
+			if (evt.keyCode == 40) {
+				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_VOLUME, _player.config.volume * .9));
+			}
+
+			if (evt.keyCode == 77) {
+				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_MUTE, !_player.config.mute));
+			}
+			if (evt.keyCode == 70) {
+				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_FULLSCREEN, true));
+			}
+			if (evt.keyCode >= 48 && evt.keyCode <= 59) {
+				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_SEEK, Math.round(_duration * ((evt.keyCode - 48)/10))));
+			}
+			if (evt.keyCode >= 48 && evt.keyCode <= 59) {
+				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_SEEK, Math.round(_duration * ((evt.keyCode - 48)/10))));
+			}
+			
 		}
 		
 		/** Hide controls again when move has timed out. **/

@@ -7,8 +7,7 @@
  * TODO: reuse this code for vertical controlbar volume slider
  */
 (function(html5) {
-	var events = jwplayer.events,
-		utils = jwplayer.utils,
+	var utils = jwplayer.utils,
 		touchevents = utils.touchEvents,
 		_css = utils.css,
 	
@@ -26,7 +25,7 @@
 	
 		DOCUMENT = document,
 		WINDOW = window,
-		UNDEFINED = undefined,
+		UNDEFINED,
 	
 		/** Some CSS constants we should use for minimization **/
 		JW_CSS_ABSOLUTE = "absolute",
@@ -35,7 +34,6 @@
 	
 	html5.playlistslider = function(id, skin, parent, pane) {
 		var _skin = skin,
-			_id = id,
 			_pane = pane,
 			_wrapper,
 			_rail,
@@ -178,7 +176,7 @@
 					_redrawTimeout = setTimeout(_redraw, 10);
 				}
 			}, 0);
-		}
+		};
 		
 
 		function _scrollHandler(evt) {
@@ -188,13 +186,19 @@
 			_setThumbPosition(_thumbPercent - wheelData / 10);
 			  
 			// Cancel event so the page doesn't scroll
-			if(evt.stopPropagation) evt.stopPropagation();
-			if(evt.preventDefault) evt.preventDefault();
+			if(evt.stopPropagation) {
+				evt.stopPropagation();
+			}
+			if(evt.preventDefault) {
+				evt.preventDefault();
+			} else {
+				evt.returnValue = false;
+			}
 			evt.cancelBubble = true;
 			evt.cancel = true;
-			evt.returnValue = false;
+			
 			return false;
-		};
+		}
 	
 		function _setThumbPercent(pct) {
 			if (pct < 0) pct = 0;
@@ -219,7 +223,7 @@
 			if (pane) {
 				pane.style.top = Math.min(0, _wrapper.clientHeight - pane.scrollHeight) * _thumbPercent + "px";
 			}
-		}
+		};
 
 
 		function _startDrag(evt) {
@@ -247,13 +251,13 @@
 		function _scroll(dir) {
 			return function(evt) {
 				if (evt.button > 0) return;
-				_setThumbPosition(_thumbPercent+(dir*.05));
+				_setThumbPosition(_thumbPercent+(dir*0.05));
 				_dragTimeout = setTimeout(function() {
 					_dragInterval = setInterval(function() {
-						_setThumbPosition(_thumbPercent+(dir*.05));
+						_setThumbPosition(_thumbPercent+(dir*0.05));
 					}, 50);
 				}, 500);
-			}
+			};
 		}
 		
 		function _endDrag() {

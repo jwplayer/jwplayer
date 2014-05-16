@@ -192,7 +192,8 @@
 			var divider = _createElement("div", "divider", _buttonContainer),
 				newButton = _createElement("button", null, _buttonContainer),
 				icon = _createElement("div", null, newButton);
-		
+			
+			newButton.tabIndex = -1;
 			icon.id = _id + "_" + id;
 			icon.innerHTML = "&nbsp;";
 			_css("#"+icon.id, {

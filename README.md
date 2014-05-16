@@ -1,5 +1,5 @@
-The JW Player is free for non-commerical use.  To buy a license for commercial use, please visit 
-https://www.longtailvideo.com/players/order.
+The JW Player is free for non-commerical use. To buy a license for commercial use, please visit 
+http://www.jwplayer.com/pricing/
 
 To build the JW Player, you will need the following software:
 
@@ -32,3 +32,8 @@ If you're using Flash Builder, you may use the following method to build the Fla
 12. Under the "Project" menu, choose "Export Release Build".
 13. Make sure "Player.as" is selected as the application, and click "Finish"
 14. The flash component will be compiled as bin-release/Player.swf.
+
+### Software License ###
+The use of the JW Player Open Source edition is governed by a [Creative Commons license](http://creativecommons.org/licenses/by-nc-sa/3.0/). You can use, modify, copy, and distribute this edition as long as it’s for non-commercial use, you provide attribution, and share under a similar license.
+http://www.jwplayer.com/license/
+

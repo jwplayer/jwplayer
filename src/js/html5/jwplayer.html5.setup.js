@@ -107,39 +107,26 @@
 		}
 
 		function _loadPlaylist() {
-			switch(utils.typeOf(_model.config.playlist)) {
-			case "string":
-//				var loader = new html5.playlistloader();
-//				loader.addEventListener(events.JWPLAYER_PLAYLIST_LOADED, _playlistLoaded);
-//				loader.addEventListener(events.JWPLAYER_ERROR, _playlistError);
-//				loader.load(_model.config.playlist);
-//				break;
-				_error("Can't load a playlist as a string anymore");
-				break;
-			case "array":
+			var type = utils.typeOf(_model.config.playlist);
+			if (type === "array") {
 				_completePlaylist(new jwplayer.playlist(_model.config.playlist));
+			} else {
+				_error("Playlist type not supported: "+ type);
 			}
 		}
 		
-		// function _playlistLoaded(evt) {
-		// 	_completePlaylist(evt.playlist);
-		// }
-		
 		function _completePlaylist(playlist) {
 			_model.setPlaylist(playlist);
-			// Support Playlist index in config?:
+			// TODO: support playlist index in config
 			// _model.setItem(_model.config.item);
-			if (_model.playlist[0].sources.length === 0) {
+			if (_model.playlist.length === 0 || _model.playlist[0].sources.length === 0) {
 				_error("Error loading playlist: No playable sources found");
 			} else {
 				_taskComplete(LOAD_PLAYLIST);
 			}
 		}
-
-		// function _playlistError(evt) {
-		// 	_error("Error loading playlist: " + evt.message);
-		// }
 		
+		var previewTimeout = -1;
 		function _loadPreview() {
 			var preview = _model.playlist[_model.item].image; 
 			if (preview) {
@@ -148,13 +135,15 @@
 				// If there was an error, continue anyway
 				img.addEventListener('error', _previewLoaded, false);
 				img.src = preview;
-				setTimeout(_previewLoaded, 500);
+				clearTimeout(previewTimeout);
+				previewTimeout = setTimeout(_previewLoaded, 500);
 			} else {
-				_taskComplete(LOAD_PREVIEW);	
+				_previewLoaded();	
 			}
 		}
 		
 		function _previewLoaded() {
+			clearTimeout(previewTimeout);
 			_taskComplete(LOAD_PREVIEW);
 		}
 
