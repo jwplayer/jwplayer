@@ -13,7 +13,7 @@
 		_css = utils.css,
 		_setTransition = utils.transitionStyle,
 		_isMobile = utils.isMobile(),
-		_nonChromeAndroid = utils.isAndroid(4) && !utils.isChrome(),
+		_nonChromeAndroid = utils.isAndroid(4,true),
 		/** Controlbar element types * */
 		CB_BUTTON = "button",
 		CB_TEXT = "text",

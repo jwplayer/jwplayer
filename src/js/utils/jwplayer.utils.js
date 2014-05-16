@@ -157,8 +157,8 @@
 	};
 
 	utils.isAndroid = function(version, excludeChrome) {
-		//Android Browser appears to include a user-agent string for Chrome/18
-		if (excludeChrome && _userAgentMatch(/chrome\/[123456789]/i)) {
+		//Android Browser appears to include a user-agent string for Chrome/18 
+		if (excludeChrome && _userAgentMatch(/chrome\/[123456789]/i && !_userAgentMatch(/chrome\/18/))) {
 			return false;
 		}
 		if (version) {
