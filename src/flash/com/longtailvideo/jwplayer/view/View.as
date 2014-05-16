@@ -819,6 +819,9 @@ package com.longtailvideo.jwplayer.view {
 		}
 		
 		private function keyboardHandler(evt:KeyboardEvent):void {
+			showControls();
+			stopFader();
+			startFader();
 			if (evt.keyCode == 32 || evt.keyCode == 13) {
 				if (_player.state == PlayerState.PLAYING || _player.state == PlayerState.BUFFERING) {
 					dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_PAUSE));
@@ -846,7 +849,7 @@ package com.longtailvideo.jwplayer.view {
 				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_MUTE, !_player.config.mute));
 			}
 			if (evt.keyCode == 70) {
-				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_FULLSCREEN, true));
+				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_FULLSCREEN, !_player.config.fullscreen));
 			}
 			if (evt.keyCode >= 48 && evt.keyCode <= 59) {
 				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_SEEK, Math.round(_duration * ((evt.keyCode - 48)/10))));
