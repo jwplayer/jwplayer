@@ -40,7 +40,6 @@
 		TRUE = true,
 		FALSE = !TRUE,
 		
-		JW_CLASS = '.jwplayer ',
 		JW_CSS_SMOOTH_EASE = "opacity .25s ease",
 		JW_CSS_100PCT = "100%",
 		JW_CSS_ABSOLUTE = "absolute",
@@ -81,8 +80,13 @@
 			_readyState,
 			_rightClickMenu,
 			_resizeMediaTimeout = -1,
-			_inCB = FALSE,
+			_inCB = FALSE, // in control bar
 			_currentState,
+
+            // Used to differentiate tab focus events from click events, because when
+            //  it is a click, the mouseDown event will occur immediately prior
+            _focusFromClick = false,
+
 			_this = utils.extend(this, new events.eventdispatcher());
 
 		function _init() {
@@ -90,10 +94,13 @@
 			_playerElement = _createElement("div", PLAYER_CLASS + " playlist-" + _model.playlistposition);
 			_playerElement.id = _api.id;
 			_playerElement.tabIndex = 0;
+			_playerElement.onmousedown = handleMouseDown;
 			_playerElement.onfocusin = handleFocus;
 			_playerElement.addEventListener('focus',handleFocus);
 			_playerElement.onfocusout = handleBlur;
 			_playerElement.addEventListener('blur',handleBlur);
+            _playerElement.addEventListener('keydown', handleKeydown);
+
 			if (_model.aspectratio) {
 				_css.style(_playerElement, {
 					display: 'inline-block'
@@ -107,18 +114,103 @@
 			replace.parentNode.replaceChild(_playerElement, replace);
 		}
 
-		function handleFocus(evt) {
-			_this.sendEvent(events.JWPLAYER_VIEW_FOCUS, {
-						hasFocus:true
-					});
+        function adjustSeek (amount) {
+            var newSeek = utils.between(_model.position+ amount, 0, this.getDuration());
+            this.seek(newSeek);
+        }
+
+        function adjustVolume (amount) {
+            var newVol = utils.between(this.getVolume() + amount, 0, 100);
+            this.setVolume(newVol);
+        }
+
+        function handleKeydown(evt) {
+
+            // On keypress show the controlbar for a few seconds
+            if (!_controlbar.adMode()) {
+                _showControlbar();
+                _resetTapTimer();
+            }
+
+            var jw = jwplayer(_api.id);
+            switch(evt.keyCode) {
+                case 27: // Esc
+                    jw.setFullscreen(FALSE);
+                    break;
+                case 13: // enter
+                case 32: // space
+                    jw.play();
+                    break;
+                case 37: // left-arrow, if not adMode
+                    if (!_controlbar.adMode()) {
+                        adjustSeek.call(jw, -5);
+                    }
+                    break;
+                case 39: // right-arrow, if not adMode
+                    if (!_controlbar.adMode()) {
+                        adjustSeek.call(jw, 5);
+                    }
+                    break;
+                case 38: // up-arrow
+                    adjustVolume.call(jw, 10);
+                    break;
+                case 40: // down-arrow
+                    adjustVolume.call(jw, -10);
+                    break;
+                case 77: // m-key
+                    jw.setMute();
+                    break;
+                case 70: // f-key
+                    jw.setFullscreen();
+                    break;
+                default:
+                    if (evt.keyCode >= 48 && evt.keyCode <= 59) {
+                        // if 0-9 number key, move to n/10 of the percentage of the video
+                        var number = evt.keyCode - 48;
+                        var newSeek = (number/10) * jw.getDuration();
+                        jw.seek(newSeek);
+                    }
+                    break;
+            }
+
+            if (/13|32|38|40/.test(evt.keyCode)) {
+                // Prevent keypresses from scrolling the screen
+                evt.preventDefault();
+                return false;
+            }
+        }
+
+		function handleMouseDown() {
+            _focusFromClick = true;
+
+            // After a click it no longer has "tab-focus"
+            _this.sendEvent(events.JWPLAYER_VIEW_TAB_FOCUS, {
+                hasFocus : false
+            });
 		}
 
-		function handleBlur(evt) {
-			_this.sendEvent(events.JWPLAYER_VIEW_FOCUS, {
-						hasFocus:false
-					});
+		function handleFocus() {
+            var wasTabEvent = ! _focusFromClick;
+            _focusFromClick = false;
 
+            if (wasTabEvent) {
+                _this.sendEvent(events.JWPLAYER_VIEW_TAB_FOCUS, {
+                    hasFocus : true
+                });
+            }
 
+            // On tab-focus, show the control bar for a few seconds
+            if (!_controlbar.adMode()) {
+                _showControlbar();
+                _resetTapTimer();
+             }
+		}
+
+		function handleBlur() {
+            _focusFromClick = false;
+            _this.sendEvent(events.JWPLAYER_VIEW_TAB_FOCUS, {
+                hasFocus : false
+            });
 		}
 
 		this.getCurrentCaptions = function() {
@@ -195,8 +287,6 @@
 				DOCUMENT.addEventListener(FULLSCREEN_EVENTS[i], _fullscreenChangeHandler, FALSE);
 			}
 
-			DOCUMENT.addEventListener('keydown', _keyHandler, FALSE);
-			
 			window.removeEventListener('resize', _responsiveListener);
 			window.addEventListener('resize', _responsiveListener, FALSE);
 			if (_isMobile) {
@@ -205,7 +295,11 @@
 			}
             //this for googima, after casting, to get the state right.
             jwplayer(_api.id).onAdPlay(function() {
+                _controlbar.adMode(true);
                 _updateState(states.PLAYING);
+            });
+            jwplayer(_api.id).onAdComplete(function() {
+                _controlbar.adMode(false);
             });
 			_api.jwAddEventListener(events.JWPLAYER_PLAYER_READY, _readyHandler);
 			_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
@@ -646,27 +740,7 @@
 			};
 		};
 		
-		/**
-		 * Listen for keystrokes while in fullscreen mode.  
-		 * ESC returns from fullscreen
-		 * SPACE toggles playback
-		 **/
-		function _keyHandler(evt) {
-			if (_model.fullscreen) {
-				switch (evt.keyCode) {
-				// ESC
-				case 27:
-					_fullscreen(FALSE);
-					break;
-				// SPACE
-//				case 32:
-//					if (_model.state == states.PLAYING || _model.state == states.BUFFERING)
-//						_api.jwPause();
-//					break;
-				}
-			}
-		}
-		
+
 		/**
 		 * False fullscreen mode. This is used for browsers without full support for HTML5 fullscreen.
 		 * This method sets the CSS of the container element to a fixed position with 100% width and height.
@@ -788,7 +862,7 @@
 			if (_isIPod && !_audioMode) return; 
 			if (_controlbar) _controlbar.show();
 		}
-		
+
 		function _hideControlbar() {
 			if (_forcedControlsState === TRUE) {
 				return;
@@ -964,7 +1038,6 @@
 					if (_controlbar) {
 						_controlbar.hideFullscreen(FALSE);
 					}
-					_hideControls();
 				}
 				break;
 			case states.IDLE:
@@ -1148,7 +1221,7 @@
 				DOCUMENT.removeEventListener(FULLSCREEN_EVENTS[i], _fullscreenChangeHandler, FALSE);
 			}
 			_model.removeEventListener('fullscreenchange', _fullscreenChangeHandler);
-			DOCUMENT.removeEventListener('keydown', _keyHandler, FALSE);
+			_playerElement.removeEventListener('keydown', handleKeydown, FALSE);
 			if (_rightClickMenu) {
 				_rightClickMenu.destroy();
 			}
@@ -1168,23 +1241,6 @@
 
 		_init();
 	};
-
-	// Reset CSS
-	_css(JW_CLASS.slice(0, -1) + ["", "div", "span", "a", "img", "ul", "li", "video"].join(", "+JW_CLASS) + ", .jwclick", {
-		margin: 0,
-		padding: 0,
-		border: 0,
-		color: '#000000',
-		'font-size': "100%",
-		font: 'inherit',
-		'vertical-align': 'baseline',
-		'background-color': 'transparent',
-		'text-align': 'left',
-		'direction':'ltr',
-		'-webkit-tap-highlight-color': 'rgba(255, 255, 255, 0)'
-	});
-
-	_css(JW_CLASS + "ul", { 'list-style': "none" });
 
 	// Container styles
 	_css('.' + PLAYER_CLASS, {

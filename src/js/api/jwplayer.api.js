@@ -10,7 +10,7 @@
 		events = jwplayer.events,
 		states = events.state,
 		DOCUMENT = document;
-	
+
 	var api = jwplayer.api = function(container) {
 		var _this = this,
 			_listeners = {},
@@ -62,7 +62,7 @@
 		    
 		    return _callInternal("jwReleaseState");
 		};
-		
+
 		_this.getDuration = function() {
 			return _callInternal('jwGetDuration');
 		};
@@ -302,9 +302,7 @@
 			onAdPlay: events.JWPLAYER_AD_PLAY,
 			onAdPause: events.JWPLAYER_AD_PAUSE,
 			onAdMeta: events.JWPLAYER_AD_META,
-			onCast: events.JWPLAYER_CAST_SESSION,
-			onFocus: events.JWPLAYER_VIEW_FOCUS
-			
+			onCast: events.JWPLAYER_CAST_SESSION
 		};
 		
 		utils.foreach(_eventMapping, function(event) {
@@ -509,7 +507,17 @@
 			_eventListener(events.JWPLAYER_MEDIA_META, function(data) {
 				utils.extend(_itemMeta, data.metadata);
 			});
-			
+
+            _eventListener(events.JWPLAYER_VIEW_TAB_FOCUS, function(data) {
+                var container = this.getContainer();
+                if (data.hasFocus === true) {
+                    addFocusBorder(container);
+                }
+                else {
+                    removeFocusBorder(container);
+                }
+            });
+
 			_this.dispatchEvent(events.API_READY);
 			
 			while (_queuedCalls.length > 0) {
@@ -621,22 +629,20 @@
 	jwplayer.playerReady = function(obj) {
 		var api = jwplayer.api.playerById(obj.id);
 
-		if (api) {
-			api.playerReady(obj);	
-			api.onFocus(function(evt) {
-				var container = this.getContainer();
-				if (evt.hasFocus) {
-					container.className = container.className + ' jw-tab-focus';
-				}
-				else {
-					// Lost focus, remove the class
-					container.className = container.className.replace(/ *jw-tab-focus/g, '');
-				}
-			});
-		} else {
-			jwplayer.api.selectPlayer(obj.id).playerReady(obj);
-		}
-		
+        if (!api) {
+            jwplayer.api.selectPlayer(obj.id).playerReady(obj);
+            return;
+        }
+
+        api.playerReady(obj);
 	};
+
+    function addFocusBorder(container) {
+        container.className = container.className + ' jw-tab-focus';
+    }
+
+    function removeFocusBorder(container) {
+        container.className = container.className.replace(/ *jw-tab-focus */g, ' ');
+    }
 
 })(window.jwplayer);
