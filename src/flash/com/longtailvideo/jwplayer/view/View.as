@@ -817,6 +817,9 @@ package com.longtailvideo.jwplayer.view {
 		}
 		
 		private function keyboardHandler(evt:KeyboardEvent):void {
+			showControls();
+			stopFader();
+			startFader();
 			if (evt.keyCode == 32 || evt.keyCode == 13) {
 				if (_player.state == PlayerState.PLAYING || _player.state == PlayerState.BUFFERING) {
 					dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_PAUSE));
