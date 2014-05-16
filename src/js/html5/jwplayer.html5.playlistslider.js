@@ -186,11 +186,17 @@
 			_setThumbPosition(_thumbPercent - wheelData / 10);
 			  
 			// Cancel event so the page doesn't scroll
-			if(evt.stopPropagation) evt.stopPropagation();
-			if(evt.preventDefault) evt.preventDefault();
+			if(evt.stopPropagation) {
+				evt.stopPropagation();
+			}
+			if(evt.preventDefault) {
+				evt.preventDefault();
+			} else {
+				evt.returnValue = false;
+			}
 			evt.cancelBubble = true;
 			evt.cancel = true;
-			evt.returnValue = false;
+			
 			return false;
 		}
 	

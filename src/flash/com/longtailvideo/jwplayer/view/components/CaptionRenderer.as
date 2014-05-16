@@ -199,7 +199,7 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		/** update field width to fill player **/
 		public function setMaxWidth(width:Number):void {
-			_field.width = width - 16;
+			_field.width = (width - 16) / this.scaleX;
 			if (_outline) {
 				_outline.graphics.clear();
 				if (_field.text) {
