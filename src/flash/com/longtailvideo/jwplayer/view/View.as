@@ -836,20 +836,20 @@ package com.longtailvideo.jwplayer.view {
 			if (evt.keyCode == 37) {
 				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_SEEK, _currPos - 5));
 			}
-			
+			var newvol:Number;
 			if (evt.keyCode == 38) {
-				var newvol:Number = _player.config.volume * 1.1;
+				newvol = _player.config.volume + 10;
 				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_VOLUME, (newvol > 100 ? 100 : newvol)));
 			}
 			if (evt.keyCode == 40) {
-				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_VOLUME, _player.config.volume * .9));
+				newvol = _player.config.volume - 10;
+				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_VOLUME,(newvol < 0 ? 0 : newvol)));
 			}
-
 			if (evt.keyCode == 77) {
 				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_MUTE, !_player.config.mute));
 			}
 			if (evt.keyCode == 70) {
-				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_FULLSCREEN, true));
+				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_FULLSCREEN, !_player.config.fullscreen));
 			}
 			if (evt.keyCode >= 48 && evt.keyCode <= 59) {
 				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_SEEK, Math.round(_duration * ((evt.keyCode - 48)/10))));
