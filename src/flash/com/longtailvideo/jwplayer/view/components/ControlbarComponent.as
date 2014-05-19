@@ -1034,20 +1034,24 @@ package com.longtailvideo.jwplayer.view.components {
 			//make sure we don't add dividers a layout that already has dividers
 			var div:RegExp = /\|/g;  
 			_currentLayout = _currentLayout.replace(div,"");
-						
-			rightDivide.forEach( function(elem:String, index:int, arr:Array):void {
+			
+			var i:uint;
+			var elem:String;
+			for (i=rightDivide.length; i--;) {
+				elem = rightDivide[i];
 				if (_currentLayout.indexOf(elem) > -1) {
 					_currentLayout = _currentLayout.replace(elem, elem+"|");
 					_numDividers++;
 				}
-			});
+			}
 			
-			leftDivide.forEach( function(elem:String,index:int,arr:Array):void {
+			for (i=leftDivide.length; i--;) {
+				elem = leftDivide[i];
 				if (_currentLayout.indexOf(elem) > -1) {
 					_currentLayout = _currentLayout.replace(elem, "|" + elem);
 					_numDividers++;
 				}
-			});
+			}
 		}
 		
 		private function alignTextFields():void {
