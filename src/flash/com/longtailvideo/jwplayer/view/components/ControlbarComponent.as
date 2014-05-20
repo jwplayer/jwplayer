@@ -418,23 +418,23 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 		}
 
-		private function updateVolumeSlider(evt:MediaEvent=null):void {
+		private function updateVolumeSlider():void {
 			var sliders:Array = [_volSliderH, _volSliderV];
 			
 			for each (var volume:Slider in sliders) {
-				if (volume) {
-					if (!isMuted) {
-						volume.setBuffer(100);
-						volume.setProgress(_player.config.volume);
-					} else {
-						volume.setProgress(0);
-					}
-				}
+				if (!volume) { continue; }
+
+                if (isMuted) {
+                    volume.setProgress(0);
+                    continue;
+                }
+                // TODO: Can we remove this setBuffer() ?
+                volume.setBuffer(100);
+                volume.setProgress(_player.config.volume);
 			}
 			
 			updateControlbarState();
 			redraw();
-
 		}
 
 
@@ -826,9 +826,7 @@ package com.longtailvideo.jwplayer.view.components {
 			var volume:Number = Math.round(evt.data * 100);
 			volume = volume < 10 ? 0 : volume;
 			if (!_player.locked) {
-				var volumeEvent:MediaEvent = new MediaEvent(MediaEvent.JWPLAYER_MEDIA_VOLUME);
-				volumeEvent.volume = volume;
-				updateVolumeSlider(volumeEvent);
+				updateVolumeSlider();
 			}
 			dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_VOLUME, volume));
 		}

@@ -10,7 +10,7 @@ package com.longtailvideo.jwplayer.view.components {
 	import flash.events.MouseEvent;
 	import flash.utils.clearTimeout;
 	import flash.utils.setTimeout;
-	
+
 	public class TimeSlider extends Slider {
 		private var _duration:Number;
 		private var _tooltip:TooltipOverlay;
@@ -41,7 +41,6 @@ package com.longtailvideo.jwplayer.view.components {
 			_clickArea.addEventListener(MouseEvent.MOUSE_OVER, overHandler);
 			_clickArea.addEventListener(MouseEvent.MOUSE_OUT, outHandler);
 			_clickArea.addEventListener(MouseEvent.MOUSE_MOVE, moveHandler);
-			
 		}
 		
 		protected function addCue(pos:*, text:String):void {
@@ -140,9 +139,8 @@ package com.longtailvideo.jwplayer.view.components {
 					if (_duration <= -60) {
 						seconds = _duration - seconds;
 						seconds = seconds > 0 ? 0 : seconds;
-						text = "-" + Strings.digits((-1*seconds));
-					}
-					else {
+						text = "-" + Strings.digits(-1*seconds);
+					} else {
 						text = Strings.digits(seconds);
 					}
 				}

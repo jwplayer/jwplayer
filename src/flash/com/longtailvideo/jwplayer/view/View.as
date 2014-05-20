@@ -854,10 +854,7 @@ package com.longtailvideo.jwplayer.view {
 			if (evt.keyCode >= 48 && evt.keyCode <= 59) {
 				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_SEEK, Math.round(_duration * ((evt.keyCode - 48)/10))));
 			}
-			if (evt.keyCode >= 48 && evt.keyCode <= 59) {
-				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_SEEK, Math.round(_duration * ((evt.keyCode - 48)/10))));
-			}
-			
+
 		}
 		
 		/** Hide controls again when move has timed out. **/
