@@ -1,5 +1,5 @@
 package com.longtailvideo.jwplayer.view.components {
-	import com.longtailvideo.jwplayer.events.ViewEvent;
+    import com.longtailvideo.jwplayer.events.ViewEvent;
 	import com.longtailvideo.jwplayer.utils.RootReference;
 	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
 
@@ -167,11 +167,11 @@ package com.longtailvideo.jwplayer.view.components {
 
 		public function redrawHelper() {
 
-			var offset:Number = _capLeft[dim];
-			resizeSlider(1, 0, offset, _rail, _railCapLeft, _railCapRight);
-			resizeSlider(_currentBuffer, _bufferOffset, offset, _buffer, _bufferCapLeft, _bufferCapRight);
+			var padding:Number = _capLeft[dim];
+			resizeSlider(1, 0, padding, _rail, _railCapLeft, _railCapRight);
+			resizeSlider(_currentBuffer, _bufferOffset, padding, _buffer, _bufferCapLeft, _bufferCapRight);
 			if (!_dragging) {
-				resizeSlider(_currentProgress, 0, offset, _progress, _progressCapLeft, _progressCapRight);
+				resizeSlider(_currentProgress, 0, padding, _progress, _progressCapLeft, _progressCapRight);
 			}
 
 			if (_thumb && !_dragging) {
@@ -185,8 +185,8 @@ package com.longtailvideo.jwplayer.view.components {
 
 			_clickArea.graphics.clear();
 			_clickArea.graphics.beginFill(0, 0);
-			_clickArea.x = (_vertical ? 0 : offset);
-			_clickArea.y = (_vertical ? offset : 0);
+			_clickArea.x = (_vertical ? 0 : padding);
+			_clickArea.y = (_vertical ? padding : 0);
 			_clickArea.graphics.drawRect(0, 0, _width, _height);
 			center();
 		}
@@ -307,12 +307,13 @@ package com.longtailvideo.jwplayer.view.components {
 		protected function sliderPercent(pixels:Number):Number {
 			var percent;
 
+			// we subtract 1 from the numerator and denominator since the bounding box reports
+			// a localX between [1, width], instead of [0, width-1]
 			if (_vertical) {
-				percent = 1 - (pixels / _height);
+				percent = 1 - (pixels-1)/(_height-1);
 			} else {
-				percent = pixels / _width;
+				percent = (pixels-1) / (_width-1);
 			}
-
 			return Math.max(Math.min(1, percent), 0);
 		}
 		
