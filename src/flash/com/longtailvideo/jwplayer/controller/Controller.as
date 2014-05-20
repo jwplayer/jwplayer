@@ -558,6 +558,7 @@ package com.longtailvideo.jwplayer.controller {
 			if (_model.state != PlayerState.IDLE) {
 				_model.media.stop();
 			}
+			_model.loadCalled();
 			if (item is PlaylistItem) {
 				return loadPlaylistItem(item as PlaylistItem);
 			} else if (item is String) {
