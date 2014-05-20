@@ -3,15 +3,13 @@ package com.longtailvideo.jwplayer.view.components {
 	import com.longtailvideo.jwplayer.utils.RootReference;
 	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
 
-import flash.display.Bitmap;
-
-import flash.display.DisplayObject;
+	import flash.display.Bitmap;
+	import flash.display.DisplayObject;
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
 	import flash.geom.ColorTransform;
 	import flash.geom.Rectangle;
 
-    import com.demonsters.debugger.MonsterDebugger;
 	/**
 	 * Sent when the slider is clicked
 	 *
@@ -52,9 +50,6 @@ import flash.display.DisplayObject;
 		protected var _name:String;
 		/** Skin **/
 		protected var _skin:ISkin;
-		/** Last set dimensions **/
-		protected var _lastWidth:Number = 0;
-		protected var _lastHeight:Number = 0;
 		/** Vertical or horizontal slider **/
 		protected var _vertical:Boolean;
 		/** Which skin component to get the assets from **/
@@ -93,13 +88,13 @@ import flash.display.DisplayObject;
 			_capRight = addElement("Cap"+right, true);
 			_clickArea = addElement("clickarea", true);
 
-            _clickArea.addEventListener(MouseEvent.MOUSE_DOWN, downHandler);
+			_clickArea.addEventListener(MouseEvent.MOUSE_DOWN, downHandler);
 
-            // Adjust the graphic for thumb to be centered
-            var bmp = _thumb.getChildAt(0);
-            if (bmp is Bitmap) {
-                bmp[pos] = -(_thumb[dim]/2);
-            }
+			// Adjust the graphic for thumb to be centered
+			var bmp = _thumb.getChildAt(0);
+			if (bmp is Bitmap) {
+				bmp[pos] = -(_thumb[dim]/2);
+			}
 
 			if (_vertical) {
 				resize(width, _capLeft.height + _capRight.height + _railCapLeft.height + _rail.height + _railCapRight.height);
@@ -130,7 +125,7 @@ import flash.display.DisplayObject;
 			if (_progress) {
 				_progress.visible = true;
 			}
-			resize(_lastWidth, _lastHeight);
+			redrawHelper();
 		}
 		
 		/**
@@ -147,13 +142,13 @@ import flash.display.DisplayObject;
 			if (_buffer) {
 				_buffer.visible = (_currentBuffer > 0);
 			}
-			resize(_lastWidth, _lastHeight);
+			redrawHelper();
 		}
+
 
 		public function resize(width:Number, height:Number):void {
 			if (width * height == 0) return;
-			_lastWidth = width;
-			_lastHeight = height;
+
 			var scale:Number = _vertical ? this.scaleY : this.scaleX;
 			this.scaleX = this.scaleY = 1;
 			if (_vertical) {
@@ -167,7 +162,11 @@ import flash.display.DisplayObject;
 				_capLeft.x = 0;
 				_capRight.x = width - _capRight.width;
 			}
-			
+			redrawHelper();
+		}
+
+		public function redrawHelper() {
+
 			var offset:Number = _capLeft[dim];
 			resizeSlider(1, 0, offset, _rail, _railCapLeft, _railCapRight);
 			resizeSlider(_currentBuffer, _bufferOffset, offset, _buffer, _bufferCapLeft, _bufferCapRight);
@@ -175,19 +174,19 @@ import flash.display.DisplayObject;
 				resizeSlider(_currentProgress, 0, offset, _progress, _progressCapLeft, _progressCapRight);
 			}
 
-            if (_thumb && !_dragging) {
-                var offset:Number = _thumb[dim]/2;
-                if (_vertical) {
-                    _thumb.y = (1-_currentProgress) * (_height- offset*2) + offset;
-                } else {
-                    _thumb.x = _currentProgress * (_width-offset*2) + offset;
-                }
-            }
+			if (_thumb && !_dragging) {
+				var thumbOffset:Number = _thumb[dim]/2;
+				if (_vertical) {
+					_thumb.y = (1-_currentProgress) * (_height- thumbOffset*2) + thumbOffset;
+				} else {
+					_thumb.x = _currentProgress * (_width-thumbOffset*2) + thumbOffset;
+				}
+			}
 
 			_clickArea.graphics.clear();
 			_clickArea.graphics.beginFill(0, 0);
-            _clickArea.x = (_vertical ? 0 : offset);
-            _clickArea.y = (_vertical ? offset : 0);
+			_clickArea.x = (_vertical ? 0 : offset);
+			_clickArea.y = (_vertical ? offset : 0);
 			_clickArea.graphics.drawRect(0, 0, _width, _height);
 			center();
 		}
@@ -200,11 +199,11 @@ import flash.display.DisplayObject;
 			return _vertical ? "y" : "x";
 		}
 
-		private function resizeSlider(pct:Number, offset:Number, startPosition:Number, slider:DisplayObject, capLeft:DisplayObject, capRight:DisplayObject):void {
+		private function resizeSlider(pct:Number, bufferOffsetPct:Number, startPosition:Number, slider:DisplayObject, capLeft:DisplayObject, capRight:DisplayObject):void {
 			var size:Number = _vertical ? _height : _width;
 			var scaledSize:Number = size * pct;
 			if (scaledSize > 0) {
-                var sliderSize:Number = Math.max(0, Math.round(size * (pct - offset) - capLeft[dim] - capRight[dim]));
+				var sliderSize:Number = Math.max(0, Math.round(size * (pct - bufferOffsetPct) - capLeft[dim] - capRight[dim]));
 				slider.visible = capLeft.visible = capRight.visible = true;
 
 				if (_vertical) {
@@ -216,7 +215,7 @@ import flash.display.DisplayObject;
 				} else {
 					capLeft.x = startPosition;
 					resizeElement(capLeft, Math.min(scaledSize, capLeft.width));
-					slider[dim] = size - capLeft.width - capRight.width;
+					slider[dim] = _width - capLeft.width - capRight.width;
 					slider.x  = capLeft.x + capLeft.width;
 					resizeElement(slider, sliderSize);
 					capRight.x = slider.x + sliderSize;
@@ -284,7 +283,7 @@ import flash.display.DisplayObject;
 				if (_vertical) {
 					rct = new Rectangle(0, _thumb.height/2, 0, _height - _thumb.height/2);
 				} else {
-                    rct = new Rectangle(_thumb.width/2, 0, _width - _thumb.width/2 , 0);
+					rct = new Rectangle(_thumb.width/2, 0, _width - _thumb.width/2 , 0);
 				}
 				_thumb.startDrag(true, rct);
 				_dragging = true;
@@ -301,22 +300,21 @@ import flash.display.DisplayObject;
 			}
 		}
 
-        private function thumbPercent():Number {
-            return sliderPercent( _vertical ? _thumb.y : _thumb.x);
-        }
+		private function thumbPercent():Number {
+			return sliderPercent( _vertical ? _thumb.y : _thumb.x);
+		}
 
-        protected function sliderPercent(pixels:Number):Number {
-            var percent;
+		protected function sliderPercent(pixels:Number):Number {
+			var percent;
 
-            if (_vertical) {
-                percent = 1 - (pixels / _height);
-            } else {
-                percent = pixels / _width;
-            }
+			if (_vertical) {
+				percent = 1 - (pixels / _height);
+			} else {
+				percent = pixels / _width;
+			}
 
-            //MonsterDebugger.trace(this, "slider percent pixels : " +pixels + " percent : " + percent);
-            return Math.max(Math.min(1, percent), 0);
-        }
+			return Math.max(Math.min(1, percent), 0);
+		}
 		
 		/** Handle mouse releases. **/
 		private function upHandler(evt:MouseEvent):void {
