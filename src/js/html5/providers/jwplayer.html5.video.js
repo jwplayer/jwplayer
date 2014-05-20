@@ -395,8 +395,8 @@
 				_lastVolume = _videotag.volume * 100;
 			}
 		};
-		
-		function _volumeHandler() {//evt) {
+
+		function _volumeHandler() {
 			_sendEvent(events.JWPLAYER_MEDIA_VOLUME, {
 				volume: Math.round(_videotag.volume * 100)
 			});
