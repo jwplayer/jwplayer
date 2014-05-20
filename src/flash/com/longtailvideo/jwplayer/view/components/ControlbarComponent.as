@@ -424,7 +424,7 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 		}
 
-		private function updateVolumeSlider():void {
+		private function updateVolumeSlider(event:Event=null):void {
 			var sliders:Array = [_volSliderH, _volSliderV];
 
 			for each (var volume:Slider in sliders) {

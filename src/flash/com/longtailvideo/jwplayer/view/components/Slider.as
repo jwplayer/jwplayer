@@ -1,14 +1,14 @@
 package com.longtailvideo.jwplayer.view.components {
     import com.longtailvideo.jwplayer.events.ViewEvent;
-	import com.longtailvideo.jwplayer.utils.RootReference;
-	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
-
-	import flash.display.Bitmap;
-	import flash.display.DisplayObject;
-	import flash.display.Sprite;
-	import flash.events.MouseEvent;
-	import flash.geom.ColorTransform;
-	import flash.geom.Rectangle;
+    import com.longtailvideo.jwplayer.utils.RootReference;
+    import com.longtailvideo.jwplayer.view.interfaces.ISkin;
+    
+    import flash.display.Bitmap;
+    import flash.display.DisplayObject;
+    import flash.display.Sprite;
+    import flash.events.MouseEvent;
+    import flash.geom.ColorTransform;
+    import flash.geom.Rectangle;
 
 	/**
 	 * Sent when the slider is clicked
@@ -305,14 +305,16 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 
 		protected function sliderPercent(pixels:Number):Number {
-			var percent;
+			var percent:Number;
 
 			// we subtract 1 from the numerator and denominator since the bounding box reports
 			// a localX between [1, width], instead of [0, width-1]
 			if (_vertical) {
 				percent = 1 - (pixels-1)/(_height-1);
 			} else {
-				percent = (pixels-1) / (_width-1);
+				pixels -= _thumb.width/2;
+				var adjustedWidth:Number = _width - _thumb.width;
+				percent = (pixels-1) / (adjustedWidth-1);
 			}
 			return Math.max(Math.min(1, percent), 0);
 		}
@@ -326,7 +328,6 @@ package com.longtailvideo.jwplayer.view.components {
 			RootReference.stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMoveHandler);
 			dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_CLICK, thumbPercent()));
 		}
-		
 		
 		/** Reset the slider to its original state**/
 		public function reset():void {
