@@ -91,9 +91,11 @@ package com.longtailvideo.jwplayer.view.components {
 			_clickArea.addEventListener(MouseEvent.MOUSE_DOWN, downHandler);
 
 			// Adjust the graphic for thumb to be centered
-			var bmp = _thumb.getChildAt(0);
-			if (bmp is Bitmap) {
-				bmp[pos] = -(_thumb[dim]/2);
+			if (_thumb.numChildren) {
+				var bmp:Bitmap = _thumb.getChildAt(0) as Bitmap;
+				if (bmp) {
+					bmp[pos] = -(_thumb[dim]/2);
+				}
 			}
 
 			if (_vertical) {
@@ -165,7 +167,7 @@ package com.longtailvideo.jwplayer.view.components {
 			redrawHelper();
 		}
 
-		public function redrawHelper() {
+		public function redrawHelper():void {
 
 			var padding:Number = _capLeft[dim];
 			resizeSlider(1, 0, padding, _rail, _railCapLeft, _railCapRight);
