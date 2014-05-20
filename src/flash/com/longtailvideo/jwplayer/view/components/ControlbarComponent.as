@@ -104,6 +104,7 @@ package com.longtailvideo.jwplayer.view.components {
 //		protected var _removedButtons:Array = [];
 		protected var _dividers:Array;
 		protected var _defaultLayout:String = "[play prev next elapsed][time alt][duration hd cc mute volumeH fullscreen]";
+		protected var _defaultButtons:Array;
 		protected var _currentLayout:String;
 		protected var _layoutManager:ControlbarLayoutManager;
 		protected var _width:Number;
@@ -355,12 +356,17 @@ package com.longtailvideo.jwplayer.view.components {
 			
 			_currentLayout = removeInactive(newLayout);
 		}
-
-
+		
 		private function removeInactive(layout:String):String {
-			var buttons:Array = _defaultLayout.match(/\W*([A-Za-z0-9]+?)\W/g);
-			for (var i:Number = 0; i < buttons.length; i++) {
-				var button:String = (buttons[i] as String).replace(/\W/g, "");
+			var i:uint;
+			if (!_defaultButtons) {
+				_defaultButtons = _defaultLayout.match(/\W*([A-Za-z0-9]+?)\W/g);
+				for (i = 0; i < _defaultButtons.length; i++) {
+					_defaultButtons[i] = (_defaultButtons[i] as String).replace(/\W/g, "");
+				}
+			}
+			for (i = 0; i < _defaultButtons.length; i++) {
+				var button:String = _defaultButtons[i];
 				if (!_buttons[button]) {
 					layout = removeButtonFromLayout(button, layout);
 				}
@@ -1026,20 +1032,24 @@ package com.longtailvideo.jwplayer.view.components {
 			//make sure we don't add dividers a layout that already has dividers
 			var div:RegExp = /\|/g;  
 			_currentLayout = _currentLayout.replace(div,"");
-						
-			rightDivide.forEach( function(elem:String,index:int,arr:Array):void {
-				
-				if (_currentLayout.match(elem)) {
-					_currentLayout = _currentLayout.replace(elem,elem+"|");
+			
+			var i:uint;
+			var elem:String;
+			for (i=rightDivide.length; i--;) {
+				elem = rightDivide[i];
+				if (_currentLayout.indexOf(elem) > -1) {
+					_currentLayout = _currentLayout.replace(elem, elem+"|");
 					_numDividers++;
 				}
-			});
-			leftDivide.forEach( function(elem:String,index:int,arr:Array):void {
-				if (_currentLayout.match(elem)) {
-					_currentLayout = _currentLayout.replace(elem,"|" + elem);
+			}
+			
+			for (i=leftDivide.length; i--;) {
+				elem = leftDivide[i];
+				if (_currentLayout.indexOf(elem) > -1) {
+					_currentLayout = _currentLayout.replace(elem, "|" + elem);
 					_numDividers++;
 				}
-			});
+			}
 		}
 		
 		private function alignTextFields():void {

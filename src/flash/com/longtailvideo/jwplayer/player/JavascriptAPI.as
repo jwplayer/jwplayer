@@ -473,7 +473,7 @@ package com.longtailvideo.jwplayer.player {
 		protected function js_stop():void {
 			_player.stop();
 		}
-		
+
 		protected function js_seek(position:Number=0):void {
 			_player.seek(position);
 		}
@@ -624,7 +624,7 @@ package com.longtailvideo.jwplayer.player {
 			return _player.checkBeforeComplete();
 		}
 
-		protected function js_setCues(cues):void {
+		protected function js_setCues(cues:Array):void {
 			_player.setCues(cues);
 		}
 		
