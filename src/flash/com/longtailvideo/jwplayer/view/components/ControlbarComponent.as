@@ -154,7 +154,7 @@ package com.longtailvideo.jwplayer.view.components {
 			updateVolumeSlider();
 			_vttLoader = new AssetLoader();
 			_vttLoader.addEventListener(Event.COMPLETE, loadComplete);
-			_vttLoader.addEventListener(ErrorEvent.ERROR, loadError);		
+			_vttLoader.addEventListener(ErrorEvent.ERROR, loadError);
 		}
 		
 		public function setText(text:String=""):void {
@@ -424,23 +424,21 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 		}
 
-		private function updateVolumeSlider(evt:MediaEvent=null):void {
+		private function updateVolumeSlider():void {
 			var sliders:Array = [_volSliderH, _volSliderV];
-			
+
 			for each (var volume:Slider in sliders) {
-				if (volume) {
-					if (!isMuted) {
-						volume.setBuffer(100);
-						volume.setProgress(_player.config.volume);
-					} else {
-						volume.setProgress(0);
-					}
+				if (!volume) { continue; }
+
+				if (isMuted) {
+					volume.setProgress(0);
+					continue;
 				}
+				volume.setProgress(_player.config.volume);
 			}
-			
+
 			updateControlbarState();
 			redraw();
-
 		}
 
 
@@ -552,8 +550,8 @@ package com.longtailvideo.jwplayer.view.components {
 			_timeAlt = getTextField('alt');
 			addSlider('time', ViewEvent.JWPLAYER_VIEW_CLICK, seekHandler);
 			_timeSlider = getSlider('time');
-			addSlider('volumeV', ViewEvent.JWPLAYER_VIEW_CLICK, volumeHandler, 0, true);
-			addSlider('volumeH', ViewEvent.JWPLAYER_VIEW_CLICK, volumeHandler, 0, false);
+			addSlider('volumeV', ViewEvent.JWPLAYER_VIEW_CLICK, volumeHandler, true);
+			addSlider('volumeH', ViewEvent.JWPLAYER_VIEW_CLICK, volumeHandler, false);
 			_volSliderV = getSlider('volumeV');
 			_volSliderH = getSlider('volumeH');
 			if (_buttons.hd) {
@@ -743,7 +741,7 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 
 
-		private function addSlider(name:String, event:String, callback:Function, margin:Number=0, vertical:Boolean=true):void {
+		private function addSlider(name:String, event:String, callback:Function, vertical:Boolean=true):void {
 			try {
 				var slider:Slider;
 				if (name == "time") {
@@ -829,14 +827,17 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 
 		private function volumeHandler(evt:ViewEvent):void {
+			if (_player.locked) {
+				return;
+			}
+
 			var volume:Number = Math.round(evt.data * 100);
 			volume = volume < 10 ? 0 : volume;
-			if (!_player.locked) {
-				var volumeEvent:MediaEvent = new MediaEvent(MediaEvent.JWPLAYER_MEDIA_VOLUME);
-				volumeEvent.volume = volume;
-				updateVolumeSlider(volumeEvent);
-			}
+
+			// update player.config.volume
 			dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_VOLUME, volume));
+
+			updateVolumeSlider();
 		}
 
 

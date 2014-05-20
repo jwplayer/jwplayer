@@ -1,14 +1,15 @@
 package com.longtailvideo.jwplayer.view.components {
-	import com.longtailvideo.jwplayer.events.ViewEvent;
+    import com.longtailvideo.jwplayer.events.ViewEvent;
 	import com.longtailvideo.jwplayer.utils.RootReference;
 	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
-	
+
+	import flash.display.Bitmap;
 	import flash.display.DisplayObject;
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
 	import flash.geom.ColorTransform;
 	import flash.geom.Rectangle;
-	
+
 	/**
 	 * Sent when the slider is clicked
 	 *
@@ -49,9 +50,6 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _name:String;
 		/** Skin **/
 		protected var _skin:ISkin;
-		/** Last set dimensions **/
-		protected var _lastWidth:Number = 0;
-		protected var _lastHeight:Number = 0;
 		/** Vertical or horizontal slider **/
 		protected var _vertical:Boolean;
 		/** Which skin component to get the assets from **/
@@ -89,9 +87,15 @@ package com.longtailvideo.jwplayer.view.components {
 			_capLeft = addElement("Cap"+left, true);
 			_capRight = addElement("Cap"+right, true);
 			_clickArea = addElement("clickarea", true);
-			
+
 			_clickArea.addEventListener(MouseEvent.MOUSE_DOWN, downHandler);
-			
+
+			// Adjust the graphic for thumb to be centered
+			var bmp = _thumb.getChildAt(0);
+			if (bmp is Bitmap) {
+				bmp[pos] = -(_thumb[dim]/2);
+			}
+
 			if (_vertical) {
 				resize(width, _capLeft.height + _capRight.height + _railCapLeft.height + _rail.height + _railCapRight.height);
 			} else {
@@ -121,7 +125,7 @@ package com.longtailvideo.jwplayer.view.components {
 			if (_progress) {
 				_progress.visible = true;
 			}
-			resize(_lastWidth, _lastHeight);
+			redrawHelper();
 		}
 		
 		/**
@@ -138,13 +142,13 @@ package com.longtailvideo.jwplayer.view.components {
 			if (_buffer) {
 				_buffer.visible = (_currentBuffer > 0);
 			}
-			resize(_lastWidth, _lastHeight);
+			redrawHelper();
 		}
-		
+
+
 		public function resize(width:Number, height:Number):void {
 			if (width * height == 0) return;
-			_lastWidth = width;
-			_lastHeight = height;
+
 			var scale:Number = _vertical ? this.scaleY : this.scaleX;
 			this.scaleX = this.scaleY = 1;
 			if (_vertical) {
@@ -158,25 +162,32 @@ package com.longtailvideo.jwplayer.view.components {
 				_capLeft.x = 0;
 				_capRight.x = width - _capRight.width;
 			}
-			
-			var offset:Number = _capLeft[dim];
-			resizeSlider(1, 0, offset, _rail, _railCapLeft, _railCapRight);
-			resizeSlider(_currentBuffer, _bufferOffset, offset, _buffer, _bufferCapLeft, _bufferCapRight);
+			redrawHelper();
+		}
+
+		public function redrawHelper() {
+
+			var padding:Number = _capLeft[dim];
+			resizeSlider(1, 0, padding, _rail, _railCapLeft, _railCapRight);
+			resizeSlider(_currentBuffer, _bufferOffset, padding, _buffer, _bufferCapLeft, _bufferCapRight);
 			if (!_dragging) {
-				resizeSlider(_currentProgress, 0, offset, _progress, _progressCapLeft, _progressCapRight);
+				resizeSlider(_currentProgress, 0, padding, _progress, _progressCapLeft, _progressCapRight);
 			}
 
 			if (_thumb && !_dragging) {
+				var thumbOffset:Number = _thumb[dim]/2;
 				if (_vertical) {
-					_thumb.y = (1-_currentProgress) * _height + _capLeft.height - _thumb.height/2;
+					_thumb.y = (1-_currentProgress) * (_height- thumbOffset*2) + thumbOffset;
 				} else {
-					_thumb.x = _currentProgress * _width + _capLeft.width - _thumb.width/2;
+					_thumb.x = _currentProgress * (_width-thumbOffset*2) + thumbOffset;
 				}
 			}
-			
+
 			_clickArea.graphics.clear();
 			_clickArea.graphics.beginFill(0, 0);
-			_clickArea.graphics.drawRect(_vertical ? 0 : offset, _vertical ? offset : 0, _width, _height); 
+			_clickArea.x = (_vertical ? 0 : padding);
+			_clickArea.y = (_vertical ? padding : 0);
+			_clickArea.graphics.drawRect(0, 0, _width, _height);
 			center();
 		}
 		
@@ -187,15 +198,12 @@ package com.longtailvideo.jwplayer.view.components {
 		private function get pos():String {
 			return _vertical ? "y" : "x";
 		}
-		
-		private function resizeSlider(pct:Number, offset:Number, startPosition:Number, slider:DisplayObject, capLeft:DisplayObject, capRight:DisplayObject):void {
+
+		private function resizeSlider(pct:Number, bufferOffsetPct:Number, startPosition:Number, slider:DisplayObject, capLeft:DisplayObject, capRight:DisplayObject):void {
 			var size:Number = _vertical ? _height : _width;
 			var scaledSize:Number = size * pct;
-			var sliderSize:Number = Math.max(0, Math.round(size * (pct - offset) - capLeft[dim] - capRight[dim]));
 			if (scaledSize > 0) {
-				/*if (slider.alpha == 0) new Animations(slider).fade(1); else slider.visible = true;
-				if (capLeft.alpha == 0) new Animations(capLeft).fade(1); else capLeft.visible = true;
-				if (capRight.alpha == 0) new Animations(capRight).fade(1); else capRight.visible = true;*/
+				var sliderSize:Number = Math.max(0, Math.round(size * (pct - bufferOffsetPct) - capLeft[dim] - capRight[dim]));
 				slider.visible = capLeft.visible = capRight.visible = true;
 
 				if (_vertical) {
@@ -205,18 +213,15 @@ package com.longtailvideo.jwplayer.view.components {
 					sliderSize = capRight.y - (capLeft.y + capLeft.height);
 					slider.height = sliderSize;
 				} else {
-					capLeft.x = startPosition + size * offset;
+					capLeft.x = startPosition;
 					resizeElement(capLeft, Math.min(scaledSize, capLeft.width));
-					slider[dim] = size - capLeft.width - capRight.width;
-					slider.x = capLeft.x + capLeft.width;
+					slider[dim] = _width - capLeft.width - capRight.width;
+					slider.x  = capLeft.x + capLeft.width;
 					resizeElement(slider, sliderSize);
 					capRight.x = slider.x + sliderSize;
 					resizeElement(capRight, Math.min(scaledSize - capLeft.width, capRight.width));
 				}				
 			} else {
-/*				new Animations(slider).fade(0);
-				new Animations(capLeft).fade(0);
-				new Animations(capRight).fade(0);*/
 				slider.visible = capLeft.visible = capRight.visible = false;
 			}
 		}
@@ -276,9 +281,9 @@ package com.longtailvideo.jwplayer.view.components {
 			if (_thumb && !_lock) {
 				var rct:Rectangle;
 				if (_vertical) {
-					rct = new Rectangle(_thumb.x, _capLeft.height - _thumb.height/2, 0, _height);
+					rct = new Rectangle(0, _thumb.height/2, 0, _height - _thumb.height/2);
 				} else {
-					rct = new Rectangle(_capLeft.width - _thumb.width/2, _thumb.y, _width, 0);
+					rct = new Rectangle(_thumb.width/2, 0, _width - _thumb.width/2 , 0);
 				}
 				_thumb.startDrag(true, rct);
 				_dragging = true;
@@ -294,17 +299,22 @@ package com.longtailvideo.jwplayer.view.components {
 				}
 			}
 		}
-		
+
 		private function thumbPercent():Number {
-			return sliderPercent(_vertical ? _thumb.y : _thumb.x);
+			return sliderPercent( _vertical ? _thumb.y : _thumb.x);
 		}
-		
+
 		protected function sliderPercent(pixels:Number):Number {
+			var percent;
+
+			// we subtract 1 from the numerator and denominator since the bounding box reports
+			// a localX between [1, width], instead of [0, width-1]
 			if (_vertical) {
-				return Math.min(1, 1 - (pixels - _capLeft.height + _thumb.height/2) / _height);
-			} else { 
-				return Math.min(1, (pixels - _capLeft.width + _thumb.width/2) / _width);
+				percent = 1 - (pixels-1)/(_height-1);
+			} else {
+				percent = (pixels-1) / (_width-1);
 			}
+			return Math.max(Math.min(1, percent), 0);
 		}
 		
 		/** Handle mouse releases. **/
