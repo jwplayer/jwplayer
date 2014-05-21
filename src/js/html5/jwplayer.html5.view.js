@@ -298,6 +298,9 @@
                 _controlbar.adMode(true);
                 _updateState(states.PLAYING);
             });
+            jwplayer(_api.id).onAdSkipped(function() {
+                _controlbar.adMode(false);
+            });
             jwplayer(_api.id).onAdComplete(function() {
                 _controlbar.adMode(false);
             });
