@@ -225,13 +225,15 @@ package com.longtailvideo.jwplayer.view {
 		}
 		
 		protected function keyFocusOutHandler(evt:FocusEvent):void {
-			var ev:ViewEvent = new ViewEvent(ViewEvent.JWPLAYER_VIEW_FOCUS);
+			var ev:ViewEvent = new ViewEvent(ViewEvent.JWPLAYER_VIEW_TAB_FOCUS);
+			ev.hasFocus = false;
 			dispatchEvent(ev);
 			_components.display.focusHandler(false);
 		}
- 
+
 		protected function keyFocusInHandler(evt:FocusEvent):void {
-			var ev:ViewEvent = new ViewEvent(ViewEvent.JWPLAYER_VIEW_FOCUS);
+			var ev:ViewEvent = new ViewEvent(ViewEvent.JWPLAYER_VIEW_TAB_FOCUS);
+			ev.hasFocus = true;
 			dispatchEvent(ev);
 			if (_model.state == PlayerState.PLAYING) {
 				showControls();
@@ -817,6 +819,9 @@ package com.longtailvideo.jwplayer.view {
 		}
 		
 		private function keyboardHandler(evt:KeyboardEvent):void {
+			showControls();
+			stopFader();
+			startFader();
 			if (evt.keyCode == 32 || evt.keyCode == 13) {
 				if (_player.state == PlayerState.PLAYING || _player.state == PlayerState.BUFFERING) {
 					dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_PAUSE));
@@ -831,28 +836,31 @@ package com.longtailvideo.jwplayer.view {
 			if (evt.keyCode == 37) {
 				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_SEEK, _currPos - 5));
 			}
-			
+			var newvol:Number;
 			if (evt.keyCode == 38) {
-				var newvol:Number = _player.config.volume * 1.1;
+				newvol = _player.config.volume + 10;
+				// change the volume
 				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_VOLUME, (newvol > 100 ? 100 : newvol)));
+				// update the slider
+				dispatchEvent(new ViewEvent(MediaEvent.JWPLAYER_MEDIA_VOLUME));
 			}
 			if (evt.keyCode == 40) {
-				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_VOLUME, _player.config.volume * .9));
+				newvol = _player.config.volume - 10;
+				// change the volume
+				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_VOLUME,(newvol < 0 ? 0 : newvol)));
+				// update the slider
+				dispatchEvent(new ViewEvent(MediaEvent.JWPLAYER_MEDIA_VOLUME));
 			}
-
 			if (evt.keyCode == 77) {
 				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_MUTE, !_player.config.mute));
 			}
 			if (evt.keyCode == 70) {
-				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_FULLSCREEN, true));
+				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_FULLSCREEN, !_player.config.fullscreen));
 			}
 			if (evt.keyCode >= 48 && evt.keyCode <= 59) {
 				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_SEEK, Math.round(_duration * ((evt.keyCode - 48)/10))));
 			}
-			if (evt.keyCode >= 48 && evt.keyCode <= 59) {
-				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_SEEK, Math.round(_duration * ((evt.keyCode - 48)/10))));
-			}
-			
+
 		}
 		
 		/** Hide controls again when move has timed out. **/

@@ -111,7 +111,7 @@ package com.longtailvideo.jwplayer.parsers {
 			
 			return itm;
 		}
-		
+
 		public static function getProvider(item:Object):String {
 			if (item['type']) {
 				return item['type'];
@@ -127,6 +127,7 @@ package com.longtailvideo.jwplayer.parsers {
 					return extensions[ext];
 				}
 			}
+
 			return "";
 		}
 		

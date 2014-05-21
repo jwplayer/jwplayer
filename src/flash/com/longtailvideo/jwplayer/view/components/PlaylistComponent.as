@@ -74,7 +74,7 @@ package com.longtailvideo.jwplayer.view.components {
 
 		public function PlaylistComponent(player:IPlayer) {
 			super(player, "playlist");
-			
+			this.tabEnabled = false;
 			imageLoaderMap = new Dictionary();
 			buttons = [];
 			dividers = new Vector.<DisplayObject>;
@@ -449,6 +449,7 @@ package com.longtailvideo.jwplayer.view.components {
 					btn.buttonMode = true;
 					btn.mouseChildren = false;
 					btn.tabChildren = false;
+					btn.tabEnabled = false;
 					btn.name = i.toString();
 					buttons.push({c: btn, s: stc});
 					setContents(i);

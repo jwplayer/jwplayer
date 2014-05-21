@@ -83,7 +83,7 @@
 					var mapping = mappings[i],
 						split = mapping.split("->"),
 						eventProp = split[0],
-						stateProp = split[1] ? split[1] : eventProp;
+						stateProp = split[1] || eventProp;
 						
 					if (_model[stateProp] != evt[eventProp]) {
 						_model[stateProp] = evt[eventProp];
@@ -103,6 +103,11 @@
 			if (video !== _video) {
 				if (_video) {
 					_video.removeGlobalListener(_videoEventHandler);
+					var container = _video.getContainer();
+					if (container) {
+						_video.remove();
+						video.setContainer(container);
+					}
 				}
 				_video = video;
 				_video.volume(_model.volume);
@@ -168,20 +173,24 @@
                     index: _model.item
                 });
 
+                var item = _model.playlist[newItem];
+
 	            // select provider based on item source (video, youtube...)
 				var provider = _providers.html5;
 				if (_model.playlist.length) {
-					var item = _model.playlist[newItem];
 					var source = item.sources[0];
 					if (source.type === 'youtube' || utils.isYouTube(source.file)) {
 						provider = _providers.youtube;
 						if (!provider) {
 							provider = _providers.youtube = new html5.youtube(_model.id);
-							provider.init(item);
 						}
 					}
 				}
 				_model.setVideo(provider);
+				// this allows the provider to load preview images (youtube player data)
+				if (provider.init) {
+					provider.init(item);
+				}
             }
         };
         

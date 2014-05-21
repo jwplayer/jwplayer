@@ -157,8 +157,8 @@
 	};
 
 	utils.isAndroid = function(version, excludeChrome) {
-		//Android Browser appears to include a user-agent string for Chrome/18
-		if (excludeChrome && _userAgentMatch(/chrome\/[123456789]/i)) {
+		//Android Browser appears to include a user-agent string for Chrome/18 
+		if (excludeChrome && _userAgentMatch(/chrome\/[123456789]/i && !_userAgentMatch(/chrome\/18/))) {
 			return false;
 		}
 		if (version) {
@@ -608,6 +608,13 @@
 		}
 		return pl;
 	};
+
+    /**
+     * Ensure a number is between two bounds
+     */
+    utils.between = function(num, min, max) {
+        return Math.max(Math.min(num, max), min);
+    };
 
 	/** Filters the sources by taking the first playable type and eliminating sources of a different type **/
 	utils.filterSources = function(sources, filterFlash, androidhls) {

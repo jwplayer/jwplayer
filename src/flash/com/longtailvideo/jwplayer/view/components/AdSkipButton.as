@@ -75,7 +75,7 @@ package com.longtailvideo.jwplayer.view.components
 		
 
 		
-		private function updateOffset(pos, duration):void {
+		private function updateOffset(pos:Number, duration:Number):void {
 			try {
 				if (_skipOffset.substr(-1) == "%") {
 					var percent:Number = parseFloat(_skipOffset.slice(0, -1));
