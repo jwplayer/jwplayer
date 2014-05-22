@@ -298,6 +298,9 @@
                 _controlbar.adMode(true);
                 _updateState(states.PLAYING);
             });
+            jwplayer(_api.id).onAdSkipped(function() {
+                _controlbar.adMode(false);
+            });
             jwplayer(_api.id).onAdComplete(function() {
                 _controlbar.adMode(false);
             });
@@ -860,7 +863,7 @@
 		
 		function _showControlbar() {
 			if (_isIPod && !_audioMode) return; 
-			if (_controlbar) _controlbar.show();
+			if (_controlbar && _model.controls ) _controlbar.show();
 		}
 
 		function _hideControlbar() {
@@ -1030,7 +1033,6 @@
 						_controlbar.hideFullscreen(TRUE);
 					} 
 					_showDock();
-					_showLogo();
 				} else {
 					_showVideo(TRUE);
 					_resizeMedia();
@@ -1046,7 +1048,6 @@
 					_display.hidePreview(FALSE);
 					_showDisplay();
 					_showDock();
-					_showLogo();
 					if (_controlbar) {
 						_controlbar.hideFullscreen(FALSE);
 					}
@@ -1064,6 +1065,8 @@
 				_showControls();
 				break;
 			}
+
+			_showLogo();
 		}
 		
 		function _internalSelector(className) {
