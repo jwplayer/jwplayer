@@ -14,6 +14,7 @@
 		_setTransition = utils.transitionStyle,
 		_isMobile = utils.isMobile(),
 		_nonChromeAndroid = utils.isAndroid(4,true),
+
 		/** Controlbar element types * */
 		CB_BUTTON = "button",
 		CB_TEXT = "text",
@@ -49,7 +50,31 @@
 		
 		WINDOW = window,
 		DOCUMENT = document;
-	
+
+
+	function _removeFromArray(array, item) {
+		var index = array.indexOf(item);
+		if (index > -1) {
+			array.splice(index, 1);
+		}
+	}
+
+	function _addOnceToArray(array, item) {
+		var index = array.indexOf(item);
+		if (index === -1) {
+			array.push(item);
+		}
+	}
+
+	function _createElementId(_id, name) {
+		return _id + "_" + name;
+	}
+
+	function _elementSize(skinElem) {
+		return skinElem ? parseInt(skinElem.width, 10) + "px " + parseInt(skinElem.height, 10) + "px" : "0 0";
+	}
+
+
 	/** HTML5 Controlbar class * */
 	html5.controlbar = function(_api, _config) {
 		var _skin,
@@ -679,20 +704,6 @@
 			}
 		}
 
-		function _removeFromArray(array, item) {
-			var index = array.indexOf(item);
-			if (index > -1) {
-				array.splice(index, 1);
-			}
-		}
-
-		function _addOnceToArray(array, item) {
-			var index = array.indexOf(item);
-			if (index === -1) {
-				array.push(item);
-			}
-		}
-
 		function _showVolume() {
 			if (_audioMode || _instreamMode) return;
 			_css.block(_id); // unblock on position overlay
@@ -751,18 +762,14 @@
 			}
 			_toggleStates[name] = state;
 		}
-		
-		function _createElementId(name) {
-			return _id + "_" + name;
-		}
-		
+
 		function _buildText(name) {
 			var style = {},
 				skinName = (name == "alt") ? "elapsed" : name,
 				skinElement = _getSkinElement(skinName+"Background");
 			if (skinElement.src) {
 				var element = _createSpan();
-				element.id = _createElementId(name); 
+				element.id = _createElementId(_id, name);
 				if (name == "elapsed" || name == "duration") {
 					element.className = "jwtext jw" + name + " jwhidden";
 					_jwhidden.push(element);
@@ -779,11 +786,7 @@
 			}
 			return null;
 		}
-		
-		function _elementSize(skinElem) {
-			return skinElem ? parseInt(skinElem.width, 10) + "px " + parseInt(skinElem.height, 10) + "px" : "0 0";
-		}
-		
+
 		function _buildDivider(divider) {
 			var element = _buildImage(divider.name);
 			if (!element) {

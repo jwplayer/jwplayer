@@ -20,6 +20,7 @@
 			_errorText = "Error loading player: ",
 			_oldContainer    = DOCUMENT.getElementById(playerApi.id),
 			_pluginloader    = jwplayer.plugins.loadPlugins(playerApi.id, _config.plugins),
+			_loader,
 			_playlistLoading = FALSE,
 			_errorOccurred   = FALSE,
 			_setupErrorTimer = null,
@@ -58,6 +59,10 @@
 				_pluginloader.removeEventListener(events.ERROR);
 				_pluginloader.destroy();
 			}
+			if (_loader) {
+				_loader.removeEventListener(events.JWPLAYER_ERROR);
+				_loader.removeEventListener(events.JWPLAYER_PLAYLIST_LOADED);
+			}
 		}
 		
 		function _doEmbed() {
@@ -73,18 +78,18 @@
 			if (_playlistLoading) { return; }
 			
 			if (utils.typeOf(_config.playlist) === "string") {
-				var loader = new jwplayer.playlist.loader();
-				loader.addEventListener(events.JWPLAYER_PLAYLIST_LOADED, function(evt) {
+				_loader = new jwplayer.playlist.loader();
+				_loader.addEventListener(events.JWPLAYER_PLAYLIST_LOADED, function(evt) {
 					_config.playlist = evt.playlist;
 					_playlistLoading = FALSE;
 					_doEmbed();
 				});
-				loader.addEventListener(events.JWPLAYER_ERROR, function(evt) {
+				_loader.addEventListener(events.JWPLAYER_ERROR, function(evt) {
 					_playlistLoading = FALSE;
 					_sourceError(evt);
 				});
 				_playlistLoading = TRUE;
-				loader.load(_config.playlist);
+				_loader.load(_config.playlist);
 				return;
 			}
 

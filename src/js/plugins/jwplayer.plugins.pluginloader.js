@@ -154,10 +154,10 @@
 			_checkComplete();
 		};
 
-		this.destroy() {
+		this.destroy = function() {
 			// TODO: destroy
 		}
-		
+
 		var _pluginError = this.pluginFailed = function(evt) {
 			if (!_errorState) {
 				_errorState = true;
