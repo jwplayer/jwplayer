@@ -40,6 +40,8 @@ package com.longtailvideo.jwplayer.view.components {
 		/** Current width and height **/
 		protected var _width:Number;
 		protected var _height:Number;
+		/** Rectangle used to constrain thumb dragging **/
+		protected var _dragRect:Rectangle;
 		/** Currently dragging thumb **/
 		protected var _dragging:Boolean;
 		/** Lock state of the slider **/
@@ -91,15 +93,16 @@ package com.longtailvideo.jwplayer.view.components {
 			_clickArea.addEventListener(MouseEvent.MOUSE_DOWN, downHandler);
 
 			// Adjust the graphic for thumb to be centered
-			var bmp = _thumb.getChildAt(0);
-			if (bmp is Bitmap) {
-				bmp[pos] = -(_thumb[dim]/2);
+			if (_thumb.numChildren) {
+				var bmp:Bitmap = _thumb.getChildAt(0) as Bitmap;
+				if (bmp) {
+					bmp[pos] = -thumbOffset;
+				}
 			}
-
 			if (_vertical) {
-				resize(width, _capLeft.height + _capRight.height + _railCapLeft.height + _rail.height + _railCapRight.height);
+				resize(this.width, _capLeft.height + _capRight.height + _railCapLeft.height + _rail.height + _railCapRight.height);
 			} else {
-				resize(_capLeft.width + _capRight.width + _railCapLeft.width + _rail.width + _railCapRight.width, height);
+				resize(_capLeft.width + _capRight.width + _railCapLeft.width + _rail.width + _railCapRight.width, this.height);
 			}
 		}
 		
@@ -152,28 +155,35 @@ package com.longtailvideo.jwplayer.view.components {
 			var scale:Number = _vertical ? this.scaleY : this.scaleX;
 			this.scaleX = this.scaleY = 1;
 			if (_vertical) {
-				_height = height * scale - _capLeft.height - _capRight.height;
+				_height = height * scale;
 				_width = width;
 				_capLeft.y = 0;
 				_capRight.y = height - _capRight.height;
 			} else {
-				_width = width * scale - _capLeft.width - _capRight.width;
+				_width = width * scale;
 				_height = height;
 				_capLeft.x = 0;
 				_capRight.x = width - _capRight.width;
 			}
+			
+			if (_vertical) {
+				_dragRect = new Rectangle(0, thumbOffset, 0, _height - thumbOffset*2);
+			} else {
+				_dragRect = new Rectangle(thumbOffset, 0, _width - thumbOffset*2, 0);
+			}
+			
 			redrawHelper();
 		}
 
-		public function redrawHelper() {
+		public function redrawHelper():void {
 
 			var padding:Number = _capLeft[dim];
-			resizeSlider(1, 0, padding, _rail, _railCapLeft, _railCapRight);
-			resizeSlider(_currentBuffer, _bufferOffset, padding, _buffer, _bufferCapLeft, _bufferCapRight);
+			var paddingEnd:Number = _capRight[dim];
+			resizeSlider(1, 0, padding, paddingEnd, _rail, _railCapLeft, _railCapRight);
+			resizeSlider(thumbAdjust(_currentBuffer), thumbAdjust(_bufferOffset), padding, paddingEnd, _buffer, _bufferCapLeft, _bufferCapRight);
 			if (!_dragging) {
-				resizeSlider(_currentProgress, 0, padding, _progress, _progressCapLeft, _progressCapRight);
+				resizeSlider(thumbAdjust(_currentProgress), 0, padding, paddingEnd, _progress, _progressCapLeft, _progressCapRight);
 			}
-
 			if (_thumb && !_dragging) {
 				var thumbOffset:Number = _thumb[dim]/2;
 				if (_vertical) {
@@ -185,8 +195,6 @@ package com.longtailvideo.jwplayer.view.components {
 
 			_clickArea.graphics.clear();
 			_clickArea.graphics.beginFill(0, 0);
-			_clickArea.x = (_vertical ? 0 : padding);
-			_clickArea.y = (_vertical ? padding : 0);
 			_clickArea.graphics.drawRect(0, 0, _width, _height);
 			center();
 		}
@@ -199,26 +207,37 @@ package com.longtailvideo.jwplayer.view.components {
 			return _vertical ? "y" : "x";
 		}
 
-		private function resizeSlider(pct:Number, bufferOffsetPct:Number, startPosition:Number, slider:DisplayObject, capLeft:DisplayObject, capRight:DisplayObject):void {
-			var size:Number = _vertical ? _height : _width;
+		private function get fullSize():Number {
+			return _vertical ? _height : _width;
+		}
+		
+		private function get thumbOffset():Number {
+			if (!thumbVisible) {
+				return 0;
+			}
+			return Math.round(_thumb[dim]/2);
+		}
+
+		private function resizeSlider(pct:Number, bufferOffsetPct:Number, startPosition:Number, endPadding:Number, slider:DisplayObject, capLeft:DisplayObject, capRight:DisplayObject):void {
+			var size:Number = fullSize - startPosition - endPadding;
 			var scaledSize:Number = size * pct;
 			if (scaledSize > 0) {
-				var sliderSize:Number = Math.max(0, Math.round(size * (pct - bufferOffsetPct) - capLeft[dim] - capRight[dim]));
+				var sliderSize:Number;
 				slider.visible = capLeft.visible = capRight.visible = true;
-
 				if (_vertical) {
-					capLeft.y = startPosition + (_height - capLeft.height - capRight.height) * (1-pct);
-					capRight.y = startPosition + _height - capRight.height;
+					capLeft.y = startPosition + (size - capLeft.height - capRight.height) * (1-pct);
+					capRight.y = startPosition + size - capRight.height;
 					slider.y = capLeft.y + capLeft.height;
 					sliderSize = capRight.y - (capLeft.y + capLeft.height);
-					slider.height = sliderSize;
+					slider.height = Math.ceil(sliderSize);
 				} else {
 					capLeft.x = startPosition;
 					resizeElement(capLeft, Math.min(scaledSize, capLeft.width));
-					slider[dim] = _width - capLeft.width - capRight.width;
+					slider[dim] = size - capLeft.width - capRight.width;
 					slider.x  = capLeft.x + capLeft.width;
+					sliderSize = Math.max(0, size * (pct - bufferOffsetPct) - capLeft[dim] - capRight[dim]);
 					resizeElement(slider, sliderSize);
-					capRight.x = slider.x + sliderSize;
+					capRight.x = slider.x + Math.floor(sliderSize);
 					resizeElement(capRight, Math.min(scaledSize - capLeft.width, capRight.width));
 				}				
 			} else {
@@ -279,13 +298,7 @@ package com.longtailvideo.jwplayer.view.components {
 		/** Handle mouse downs. **/
 		private function downHandler(evt:MouseEvent):void {
 			if (_thumb && !_lock) {
-				var rct:Rectangle;
-				if (_vertical) {
-					rct = new Rectangle(0, _thumb.height/2, 0, _height - _thumb.height/2);
-				} else {
-					rct = new Rectangle(_thumb.width/2, 0, _width - _thumb.width/2 , 0);
-				}
-				_thumb.startDrag(true, rct);
+				_thumb.startDrag(true, _dragRect);
 				_dragging = true;
 				RootReference.stage.addEventListener(MouseEvent.MOUSE_UP, upHandler);
 				RootReference.stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMoveHandler);
@@ -295,26 +308,40 @@ package com.longtailvideo.jwplayer.view.components {
 		private function mouseMoveHandler(evt:MouseEvent):void {
 			if (_name != "timeSlider" || _dragging) {
 				if (!_isLive || (name != "timeSlider")) {
-					resizeSlider(thumbPercent(), 0, _capLeft[dim], _progress, _progressCapLeft, _progressCapRight);
+					resizeSlider(thumbAdjust(thumbPercent()), 0, _capLeft[dim], _capRight[dim], _progress, _progressCapLeft, _progressCapRight);
 				}
 			}
 		}
 
+		private function thumbAdjust(input:Number):Number {
+			// take a number between 0-1, and adjust it so that the slider drawn will land under the center of the thumb
+			if (input > 0 && input < 1) {
+				var normalizedOffset:Number = thumbOffset / fullSize;
+				var output:Number;
+				if (_vertical) {
+					output = input / (1+normalizedOffset);
+				} else {
+					output = input / (1+normalizedOffset) + normalizedOffset;
+				}
+				return output;
+			}
+			return input;
+		}
+
 		private function thumbPercent():Number {
-			return sliderPercent( _vertical ? _thumb.y : _thumb.x);
+			return sliderPercent(_thumb[pos]);
 		}
 
 		protected function sliderPercent(pixels:Number):Number {
 			var percent:Number;
 
-			// we subtract 1 from the numerator and denominator since the bounding box reports
-			// a localX between [1, width], instead of [0, width-1]
+				pixels -= thumbOffset;
+			var adjustedSize:Number = fullSize - thumbOffset*2;
+
 			if (_vertical) {
-				percent = 1 - (pixels-1)/(_height-1);
+				percent = 1 - pixels/adjustedSize;
 			} else {
-				pixels -= _thumb.width/2;
-				var adjustedWidth:Number = _width - _thumb.width;
-				percent = (pixels-1) / (adjustedWidth-1);
+				percent = pixels/adjustedSize;
 			}
 			return Math.max(Math.min(1, percent), 0);
 		}
