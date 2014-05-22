@@ -8,7 +8,7 @@
 	var html5 = jwplayer.html5,
 		utils = jwplayer.utils,
 		events = jwplayer.events,
-		UNDEF,
+		UNDEFINED,
 		TRUE = true,
 		FALSE = !TRUE;
 
@@ -18,7 +18,7 @@
 			_video,
 			// Providers
 			_providers = {
-				html5: _defaultProvider || new html5.video(UNDEF, 'default')
+				html5: _defaultProvider || new html5.video(UNDEFINED, 'default')
 			},
 			// Saved settings
 			_cookies = utils.getCookies(),
@@ -31,7 +31,7 @@
 			_defaults = {
 				autostart: FALSE,
 				controls: TRUE,
-				debug: UNDEF,
+				debug: UNDEFINED,
 				fullscreen: FALSE,
 				height: 320,
 				mobilecontrols: FALSE,
@@ -41,7 +41,7 @@
 				playlistsize: 180,
 				playlistlayout: "extended",
 				repeat: FALSE,
-				skin: UNDEF,
+				skin: UNDEFINED,
 				stretching: utils.stretching.UNIFORM,
 				width: 480,
 				volume: 90
@@ -70,11 +70,11 @@
 		}
 		
 		var _eventMap = {};
-		_eventMap[events.JWPLAYER_MEDIA_MUTE] = "mute";
+		_eventMap[events.JWPLAYER_MEDIA_MUTE]   = "mute";
 		_eventMap[events.JWPLAYER_MEDIA_VOLUME] = "volume";
 		_eventMap[events.JWPLAYER_PLAYER_STATE] = "newstate->state";
 		_eventMap[events.JWPLAYER_MEDIA_BUFFER] = "bufferPercent->buffer";
-		_eventMap[events.JWPLAYER_MEDIA_TIME] = "position,duration";
+		_eventMap[events.JWPLAYER_MEDIA_TIME]   = "position,duration";
 			
 		function _videoEventHandler(evt) {
 			var mappings = (_eventMap[evt.type] ? _eventMap[evt.type].split(",") : []), i, _sendEvent;
