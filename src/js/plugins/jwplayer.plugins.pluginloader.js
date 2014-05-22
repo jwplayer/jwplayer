@@ -153,6 +153,10 @@
 			// Make sure we're not hanging around waiting for plugins that already finished loading
 			_checkComplete();
 		};
+
+		this.destroy() {
+			// TODO: destroy
+		}
 		
 		var _pluginError = this.pluginFailed = function(evt) {
 			if (!_errorState) {

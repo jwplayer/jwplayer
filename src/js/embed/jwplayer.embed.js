@@ -10,7 +10,7 @@
 		TRUE = true,
 		FALSE = false,
 		DOCUMENT = document;
-	
+
 	var embed = jwplayer.embed = function(playerApi) {
 //		var mediaConfig = utils.mediaparser.parseMedia(playerApi.container);
 
@@ -37,19 +37,12 @@
 		else {
 			delete playerApi.config.aspectratio;
 		}
+
 		var _container = DOCUMENT.createElement("div");
 		_container.id = _oldContainer.id;
 		_container.style.width = _width.toString().indexOf("%") > 0 ? _width : (_width + "px");
 		_container.style.height = _height.toString().indexOf("%") > 0 ? _height : (_height + "px");
 		_oldContainer.parentNode.replaceChild(_container, _oldContainer);
-		
-		function _setupEvents(api, events) {
-			utils.foreach(events, function(evt, val) {
-				if (typeof api[evt] == "function") {
-					(api[evt]).call(api, val);
-				}
-			});
-		}
 		
 		_this.embed = function() {
 			if (_errorOccurred) return;
@@ -58,6 +51,14 @@
 			_pluginloader.addEventListener(events.ERROR, _pluginError);
 			_pluginloader.load();
 		};
+
+		_this.destroy = function() {
+			if (_pluginloader) {
+				_pluginloader.removeEventListener(events.COMPLETE);
+				_pluginloader.removeEventListener(events.ERROR);
+				_pluginloader.destroy();
+			}
+		}
 		
 		function _doEmbed() {
 			if (_errorOccurred) { return; }
@@ -172,6 +173,15 @@
 		return _this;
 	};
 
+	function _setupEvents(api, events) {
+		utils.foreach(events, function(evt, val) {
+			var fn = api[evt];
+			if (typeof fn == "function") {
+				fn.call(api, val);
+			}
+		});
+	}
+
 	function _insertCSS() {
 		utils.css('.jwplayer:focus', {
 			outline : 'none'
@@ -189,9 +199,9 @@
 		style.height = utils.styleDimension(config.height);
 		style.display = "table";
 		style.opacity = 1;
-		
+
 		var text = document.createElement("p"),
-			textStyle = text.style;	
+			textStyle = text.style;
 		textStyle.verticalAlign = "middle";
 		textStyle.textAlign = "center";
 		textStyle.display = "table-cell";

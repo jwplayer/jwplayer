@@ -147,8 +147,11 @@
 		}
 
 		function _previewLoaded() {
-			_previewImg.removeEventListener('load');
-			_previewImg.removeEventListener('error');
+			if (_previewImg) {
+				_previewImg.removeEventListener('load', _previewLoaded, false);
+				_previewImg.removeEventListener('error', _previewLoaded, false);
+			}
+
 			clearTimeout(previewTimeout);
 			_taskComplete(LOAD_PREVIEW);
 		}
