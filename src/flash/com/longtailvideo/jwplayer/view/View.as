@@ -846,14 +846,14 @@ package com.longtailvideo.jwplayer.view {
 				// change the volume
 				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_VOLUME, (newvol > 100 ? 100 : newvol)));
 				// update the slider
-				dispatchEvent(new ViewEvent(MediaEvent.JWPLAYER_MEDIA_VOLUME));
+				dispatchEvent(new MediaEvent(MediaEvent.JWPLAYER_MEDIA_VOLUME));
 			}
 			if (evt.keyCode == 40) {
 				newvol = _player.config.volume - 10;
 				// change the volume
 				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_VOLUME,(newvol < 0 ? 0 : newvol)));
 				// update the slider
-				dispatchEvent(new ViewEvent(MediaEvent.JWPLAYER_MEDIA_VOLUME));
+				dispatchEvent(new MediaEvent(MediaEvent.JWPLAYER_MEDIA_VOLUME));
 			}
 			if (evt.keyCode == 77) {
 				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_MUTE, !_player.config.mute));

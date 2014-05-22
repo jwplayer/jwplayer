@@ -340,6 +340,11 @@
 			_setState(states.IDLE);
 		};
 
+
+		_this.destroy = function() {
+			clearInterval(_bufferInterval);
+		};
+		
 		_this.play = function() {
 			if (_attached && !_dragging) {
 				_videotag.play();
