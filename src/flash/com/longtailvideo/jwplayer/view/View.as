@@ -10,7 +10,6 @@ package com.longtailvideo.jwplayer.view {
 	import com.longtailvideo.jwplayer.model.Model;
 	import com.longtailvideo.jwplayer.player.IPlayer;
 	import com.longtailvideo.jwplayer.player.PlayerState;
-	import com.longtailvideo.jwplayer.player.PlayerVersion;
 	import com.longtailvideo.jwplayer.plugins.IPlugin;
 	import com.longtailvideo.jwplayer.plugins.IPlugin6;
 	import com.longtailvideo.jwplayer.plugins.PluginConfig;
@@ -30,7 +29,6 @@ package com.longtailvideo.jwplayer.view {
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Loader;
 	import flash.display.MovieClip;
-	import flash.display.Sprite;
 	import flash.display.Stage;
 	import flash.display.StageAlign;
 	import flash.display.StageDisplayState;
