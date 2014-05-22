@@ -159,7 +159,6 @@ package com.longtailvideo.jwplayer.events {
 		
 		/** Sent along with REQUEST Event types. **/
 		public var data:*;
-		public var hasFocus:Boolean;
 		
 		public function ViewEvent(type:String, data:*=null) {
 			super(type);

@@ -49,6 +49,10 @@
 				return;
 			}
 			try {
+				if (listener === undefined) {
+					_listeners[type] = [];
+					return;
+				}
 				for (var listenerIndex = 0; listenerIndex < _listeners[type].length; listenerIndex++) {
 					if (_listeners[type][listenerIndex].listener.toString() == listener.toString()) {
 						_listeners[type].splice(listenerIndex, 1);

@@ -95,6 +95,7 @@ package com.longtailvideo.jwplayer.view.components {
 		protected function setupMouseEvents():void {
 			this.mouseChildren = false;
 			this.buttonMode = true;
+			this.tabEnabled = false;
 			addEventListener(MouseEvent.CLICK, clickHandler);
 			this.mouseEnabled = false;
 		}
