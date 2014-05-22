@@ -232,6 +232,10 @@ package com.longtailvideo.jwplayer.view {
 		}
 
 		protected function keyFocusInHandler(evt:FocusEvent):void {
+			//ignore if its coming from sharing text input field, which needs focus
+			if (evt.target is flash.text.TextField) {
+				return;
+			}
 			var ev:ViewEvent = new ViewEvent(ViewEvent.JWPLAYER_VIEW_TAB_FOCUS);
 			ev.hasFocus = true;
 			dispatchEvent(ev);
