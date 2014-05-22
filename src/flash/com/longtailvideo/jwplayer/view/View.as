@@ -225,8 +225,7 @@ package com.longtailvideo.jwplayer.view {
 		}
 		
 		protected function keyFocusOutHandler(evt:FocusEvent):void {
-			var ev:ViewEvent = new ViewEvent(ViewEvent.JWPLAYER_VIEW_TAB_FOCUS);
-			ev.hasFocus = false;
+			var ev:ViewEvent = new ViewEvent(ViewEvent.JWPLAYER_VIEW_TAB_FOCUS, false);
 			dispatchEvent(ev);
 			_components.display.focusHandler(false);
 		}
@@ -236,8 +235,7 @@ package com.longtailvideo.jwplayer.view {
 			if (evt.target is flash.text.TextField) {
 				return;
 			}
-			var ev:ViewEvent = new ViewEvent(ViewEvent.JWPLAYER_VIEW_TAB_FOCUS);
-			ev.hasFocus = true;
+			var ev:ViewEvent = new ViewEvent(ViewEvent.JWPLAYER_VIEW_TAB_FOCUS, true);
 			dispatchEvent(ev);
 			if (_model.state == PlayerState.PLAYING) {
 				showControls();
@@ -851,7 +849,7 @@ package com.longtailvideo.jwplayer.view {
 			if (evt.keyCode == 40) {
 				newvol = _player.config.volume - 10;
 				// change the volume
-				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_VOLUME,(newvol < 0 ? 0 : newvol)));
+				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_VOLUME, (newvol < 0 ? 0 : newvol)));
 				// update the slider
 				dispatchEvent(new MediaEvent(MediaEvent.JWPLAYER_MEDIA_VOLUME));
 			}
