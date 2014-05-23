@@ -279,15 +279,12 @@
 		
 		_this.load = function(item) {
 			if (!_attached) return;
-			_delayedSeek = 0;
-			_duration = item.duration ? item.duration : -1;
-			_position = 0;
 			
 			_levels = item.sources;
 			_pickInitialQuality();
 			_sendLevels(_levels);
 			
-			_completeLoad();
+			_completeLoad(0, item.duration);
 		};
 		
 		function _pickInitialQuality() {
@@ -310,22 +307,42 @@
 
 		}
 		
-		function _completeLoad() {
+		function _completeLoad(startTime, duration) {
 			_canSeek = FALSE;
 			_bufferFull = FALSE;
 			_source = _levels[_currentQuality];
 			
-			_setState(states.BUFFERING); 
-			_videotag.src = _source.file;
-			_videotag.load();
-			//in ios and fullscreen, set controls true, then when it goes to normal screen the controls don't show'
-			if (utils.isIOS() && _this.getFullScreen()) {
-				_videotag.controls = TRUE;
-			}
+			_setState(states.BUFFERING);
 			_bufferInterval = setInterval(_sendBufferUpdate, 100);
 
+			_delayedSeek = 0;
+			_position = 0;
+
+			var sourceChanged = _videotag.src !== _source.file;
+			if (sourceChanged) {
+				_duration = duration ? duration : -1;
+				_videotag.src = _source.file;
+				_videotag.load();
+			} else {
+				_videotag.currentTime = 0;
+			}
+			
 			if (utils.isMobile()) {
+				// always reload on mobile
+				if (!sourceChanged) {
+					_videotag.load();
+				}
+				// results in html5.controller calling video.play()
 				_sendBufferFull();
+			}
+			
+			//in ios and fullscreen, set controls true, then when it goes to normal screen the controls don't show'
+			if (utils.isIOS() && _this.getFullScreen()) {
+				_videotag.controls = true;
+			}
+
+			if (startTime > 0) {
+				_seek(startTime);
 			}
 		}
 
@@ -717,9 +734,12 @@
 						currentQuality: quality,
 						levels: _getPublicLevels(_levels)
 					});
-					var currentTime = _videotag.currentTime;
-					_completeLoad();
-					_this.seek(currentTime);
+					var time = _round(_videotag.currentTime);
+					var duration = _round(_videotag.duration);
+					if (duration <=0) {
+						duration = _duration;
+					}
+					_completeLoad(time, duration);
 				}
 			}
 		};
