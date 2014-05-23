@@ -50,7 +50,7 @@
 			if (!_iscomplete && !_errorState) {
 				var incomplete = 0, plugins = model.getPlugins();
 				
-				utils.foreach(_config, function(plugin, val) {
+				utils.foreach(_config, function(plugin) {
 					var pluginName = utils.getPluginName(plugin),
 						pluginObj = plugins[pluginName],
 						js = pluginObj.getJS(),
@@ -132,7 +132,7 @@
 			_loading = true;
 			
 			/** First pass to create the plugins and add listeners **/
-			_foreach(config, function(plugin, val) {
+			_foreach(config, function(plugin) {
 				if (utils.exists(plugin)) {
 					var pluginObj = model.addPlugin(plugin);
 					pluginObj.addEventListener(events.COMPLETE, _checkComplete);
@@ -153,8 +153,15 @@
 			// Make sure we're not hanging around waiting for plugins that already finished loading
 			_checkComplete();
 		};
-		
-		var _pluginError = this.pluginFailed = function(evt) {
+
+		this.destroy = function() {
+			if (_eventDispatcher) {
+				_eventDispatcher.resetEventListeners();
+				_eventDispatcher = null;
+			}
+		};
+
+		var _pluginError = this.pluginFailed = function() {
 			if (!_errorState) {
 				_errorState = true;
 				_errorMessage = "File not found";

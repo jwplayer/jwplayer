@@ -135,9 +135,8 @@
 			var preview = _model.playlist[_model.item].image;
 			if (preview) {
 				_previewImg = new Image();
-				_previewImg.addEventListener('load', _previewLoaded, false);
-				// If there was an error, continue anyway
-				_previewImg.addEventListener('error', _previewLoaded, false);
+				_previewImg.onload = _previewLoaded;
+				_previewImg.onerror = _previewLoaded;
 				_previewImg.src = preview;
 				clearTimeout(previewTimeout);
 				previewTimeout = setTimeout(_previewLoaded, 500);
@@ -147,8 +146,12 @@
 		}
 
 		function _previewLoaded() {
-			_previewImg.removeEventListener('load');
-			_previewImg.removeEventListener('error');
+			if (_previewImg) {
+				_previewImg.onload = null;
+				_previewImg.onerror = null;
+				_previewImg = null;
+			}
+
 			clearTimeout(previewTimeout);
 			_taskComplete(LOAD_PREVIEW);
 		}

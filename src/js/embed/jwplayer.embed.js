@@ -10,7 +10,7 @@
 		TRUE = true,
 		FALSE = false,
 		DOCUMENT = document;
-	
+
 	var embed = jwplayer.embed = function(playerApi) {
 //		var mediaConfig = utils.mediaparser.parseMedia(playerApi.container);
 
@@ -20,6 +20,7 @@
 			_errorText = "Error loading player: ",
 			_oldContainer    = DOCUMENT.getElementById(playerApi.id),
 			_pluginloader    = jwplayer.plugins.loadPlugins(playerApi.id, _config.plugins),
+			_loader,
 			_playlistLoading = FALSE,
 			_errorOccurred   = FALSE,
 			_setupErrorTimer = null,
@@ -37,19 +38,12 @@
 		else {
 			delete playerApi.config.aspectratio;
 		}
+
 		var _container = DOCUMENT.createElement("div");
 		_container.id = _oldContainer.id;
 		_container.style.width = _width.toString().indexOf("%") > 0 ? _width : (_width + "px");
 		_container.style.height = _height.toString().indexOf("%") > 0 ? _height : (_height + "px");
 		_oldContainer.parentNode.replaceChild(_container, _oldContainer);
-		
-		function _setupEvents(api, events) {
-			utils.foreach(events, function(evt, val) {
-				if (typeof api[evt] == "function") {
-					(api[evt]).call(api, val);
-				}
-			});
-		}
 		
 		_this.embed = function() {
 			if (_errorOccurred) return;
@@ -57,6 +51,17 @@
 			_pluginloader.addEventListener(events.COMPLETE, _doEmbed);
 			_pluginloader.addEventListener(events.ERROR, _pluginError);
 			_pluginloader.load();
+		};
+
+		_this.destroy = function() {
+			if (_pluginloader) {
+				_pluginloader.destroy();
+				_pluginloader = null;
+			}
+			if (_loader) {
+				_loader.resetEventListeners();
+				_loader = null;
+			}
 		};
 		
 		function _doEmbed() {
@@ -72,18 +77,18 @@
 			if (_playlistLoading) { return; }
 			
 			if (utils.typeOf(_config.playlist) === "string") {
-				var loader = new jwplayer.playlist.loader();
-				loader.addEventListener(events.JWPLAYER_PLAYLIST_LOADED, function(evt) {
+				_loader = new jwplayer.playlist.loader();
+				_loader.addEventListener(events.JWPLAYER_PLAYLIST_LOADED, function(evt) {
 					_config.playlist = evt.playlist;
 					_playlistLoading = FALSE;
 					_doEmbed();
 				});
-				loader.addEventListener(events.JWPLAYER_ERROR, function(evt) {
+				_loader.addEventListener(events.JWPLAYER_ERROR, function(evt) {
 					_playlistLoading = FALSE;
 					_sourceError(evt);
 				});
 				_playlistLoading = TRUE;
-				loader.load(_config.playlist);
+				_loader.load(_config.playlist);
 				return;
 			}
 
@@ -172,6 +177,15 @@
 		return _this;
 	};
 
+	function _setupEvents(api, events) {
+		utils.foreach(events, function(evt, val) {
+			var fn = api[evt];
+			if (typeof fn == "function") {
+				fn.call(api, val);
+			}
+		});
+	}
+
 	function _insertCSS() {
 		utils.css('.jwplayer:focus', {
 			outline : 'none'
@@ -189,9 +203,9 @@
 		style.height = utils.styleDimension(config.height);
 		style.display = "table";
 		style.opacity = 1;
-		
+
 		var text = document.createElement("p"),
-			textStyle = text.style;	
+			textStyle = text.style;
 		textStyle.verticalAlign = "middle";
 		textStyle.textAlign = "center";
 		textStyle.display = "table-cell";

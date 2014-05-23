@@ -241,8 +241,7 @@
 				}
 
 				if (_setup) {
-					_setup.removeEventListener(jwplayer.events.JWPLAYER_READY);
-					_setup.removeEventListener(jwplayer.events.JWPLAYER_ERROR);
+					_setup.resetEventListeners();
 				}
 			};
 			
