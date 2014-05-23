@@ -37,9 +37,6 @@
 			_errorState = false,
 			_queue = [];
 
-		// This is higher scope so it can be used in two functions to remove event listeners
-		var _previewImg;
-
 		function _initQueue() {
 			_addTask(PARSE_CONFIG, _parseConfig);
 			_addTask(LOAD_SKIN, _loadSkin, PARSE_CONFIG);
@@ -131,6 +128,7 @@
 		}
 
 		var previewTimeout = -1;
+		var _previewImg;
 		function _loadPreview() {
 			var preview = _model.playlist[_model.item].image;
 			if (preview) {

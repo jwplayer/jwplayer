@@ -47,7 +47,7 @@
 				_view.completeSetup();
 				_this.sendEvent(evt.type, evt);
 
-				if (jwplayer.utils.exists(jwplayer.playerReady)) {
+				if (jwplayer.playerReady) {
 					jwplayer.playerReady(evt);
 				}
 
