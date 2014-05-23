@@ -10,6 +10,10 @@ package com.longtailvideo.jwplayer.view.components {
     import flash.geom.ColorTransform;
     import flash.geom.Rectangle;
 
+    // CONFIG::debugging {
+	// 	import com.demonsters.debugger.MonsterDebugger;
+	// }
+
 	/**
 	 * Sent when the slider is clicked
 	 *
@@ -90,22 +94,25 @@ package com.longtailvideo.jwplayer.view.components {
 			_capRight = addElement("Cap"+right, true);
 			_clickArea = addElement("clickarea", true);
 
-			_clickArea.addEventListener(MouseEvent.MOUSE_DOWN, downHandler);
+			// _thumb.alpha = 0.5;
 
-			// Adjust the graphic for thumb to be centered
+			// center thumb
 			if (_thumb.numChildren) {
 				var bmp:Bitmap = _thumb.getChildAt(0) as Bitmap;
 				if (bmp) {
 					bmp[pos] = -thumbOffset;
 				}
 			}
+
+			_clickArea.addEventListener(MouseEvent.MOUSE_DOWN, downHandler);
+			_dragRect = new Rectangle(0, 0, 0, 0);
+			
 			if (_vertical) {
-				resize(this.width, _capLeft.height + _capRight.height + _railCapLeft.height + _rail.height + _railCapRight.height);
+				resize(this.width, _capLeft.height + _railCapLeft.height + _rail.height + _railCapRight.height + _capRight.height);
 			} else {
-				resize(_capLeft.width + _capRight.width + _railCapLeft.width + _rail.width + _railCapRight.width, this.height);
+				resize(_capLeft.width + _railCapLeft.width + _rail.width + _railCapRight.width + _capRight.width, this.height);
 			}
 		}
-		
 		
 		protected function addElement(elementName:String, visible:Boolean=false):Sprite {
 			var element:DisplayObject = _skin.getSkinElement(_skinComponent, _name + elementName);
@@ -118,8 +125,8 @@ package com.longtailvideo.jwplayer.view.components {
 			return element as Sprite;
 		}
 		
-		
 		public function setProgress(progress:Number):void {
+			// MonsterDebugger.trace(this, _name +(_vertical?'V':'')+' progress: '+ progress);
 			if (_dragging) return;
 			if (isNaN(progress)) {
 				progress = 0;
@@ -128,7 +135,7 @@ package com.longtailvideo.jwplayer.view.components {
 			if (_progress) {
 				_progress.visible = true;
 			}
-			redrawHelper();
+			redraw();
 		}
 		
 		/**
@@ -145,13 +152,15 @@ package com.longtailvideo.jwplayer.view.components {
 			if (_buffer) {
 				_buffer.visible = (_currentBuffer > 0);
 			}
-			redrawHelper();
+			// redraw buffer
+			resizeSlider(thumbAdjust(_currentBuffer), thumbAdjust(_bufferOffset), _capLeft[dim], _capRight[dim], _buffer, _bufferCapLeft, _bufferCapRight);
 		}
-
 
 		public function resize(width:Number, height:Number):void {
 			if (width * height == 0) return;
 
+			_clickArea.graphics.clear();
+			
 			var scale:Number = _vertical ? this.scaleY : this.scaleX;
 			this.scaleX = this.scaleY = 1;
 			if (_vertical) {
@@ -165,37 +174,55 @@ package com.longtailvideo.jwplayer.view.components {
 				_capLeft.x = 0;
 				_capRight.x = width - _capRight.width;
 			}
-			
-			if (_vertical) {
-				_dragRect = new Rectangle(0, thumbOffset, 0, _height - thumbOffset*2);
+
+			_clickArea.graphics.beginFill(0, 0);
+			_clickArea.graphics.drawRect(0, 0, _width, _height);
+
+			// skins with thumbs should extend over caps, skins without a thumb should not
+			var offset:Number = thumbOffset;
+			var size:Number = fullSize;
+			if (offset < 1) {
+				size -= _capLeft[dim] + _capRight[dim];
+				_dragRect[pos] = _capLeft[dim];
 			} else {
-				_dragRect = new Rectangle(thumbOffset, 0, _width - thumbOffset*2, 0);
+				_dragRect[pos] = offset;
 			}
+			_dragRect[dim] = size - offset*2;
+
+			// MonsterDebugger.trace(this, _name +(_vertical?'V':'')+ ' resize: '+ _width +'x'+ _height +' thumbOffset '+ thumbOffset);
+			// MonsterDebugger.trace(this, _name +(_vertical?'V':'')+ ' cap left: '+ _capLeft[dim] +' thumb offset: '+ thumbOffset +' thumb dim: '+ _thumb[dim]);
 			
-			redrawHelper();
+			redraw();
 		}
 
-		public function redrawHelper():void {
-
+		public function redraw():void {
 			var padding:Number = _capLeft[dim];
 			var paddingEnd:Number = _capRight[dim];
 			resizeSlider(1, 0, padding, paddingEnd, _rail, _railCapLeft, _railCapRight);
 			resizeSlider(thumbAdjust(_currentBuffer), thumbAdjust(_bufferOffset), padding, paddingEnd, _buffer, _bufferCapLeft, _bufferCapRight);
+			
 			if (!_dragging) {
 				resizeSlider(thumbAdjust(_currentProgress), 0, padding, paddingEnd, _progress, _progressCapLeft, _progressCapRight);
-			}
-			if (_thumb && !_dragging) {
-				var thumbOffset:Number = _thumb[dim]/2;
+				if (_thumb) {
+				var offset:Number = thumbOffset;
+				var size:Number = fullSize;
+				if (offset < 1) {
+					offset = _capLeft[dim];
+					//size = - caps
+				}
 				if (_vertical) {
-					_thumb.y = (1-_currentProgress) * (_height- thumbOffset*2) + thumbOffset;
+					_thumb.y = (1-_currentProgress) * (size-thumbOffset*2) + offset;
 				} else {
-					_thumb.x = _currentProgress * (_width-thumbOffset*2) + thumbOffset;
+					_thumb.x = _currentProgress * (size-thumbOffset*2) + offset;
 				}
 			}
+			}
 
-			_clickArea.graphics.clear();
-			_clickArea.graphics.beginFill(0, 0);
-			_clickArea.graphics.drawRect(0, 0, _width, _height);
+			// MonsterDebugger.trace(this, _name +(_vertical?'V':'')+' redraw: '+_currentProgress +' _thumb[pos]='+ _thumb[pos] +
+			//		 ' min: '+ (1 * (_height-thumbOffset*2) + thumbOffset) +' max: '+ (0 * (fullSize-thumbOffset*2) + thumbOffset));
+
+			// MonsterDebugger.trace(this, _name +(_vertical?'V':'')+ ' redraw '+ _capLeft[dim] +'['+ _railCapLeft[dim] +'-'+ _rail[dim] +'-'+ _railCapRight[dim] +']'+ _capRight[dim] +' '+ fullSize +'<'+ this[dim]);
+
 			center();
 		}
 		
@@ -212,40 +239,37 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 		
 		private function get thumbOffset():Number {
-			if (!thumbVisible) {
-				return 0;
-			}
 			return Math.round(_thumb[dim]/2);
 		}
 
 		private function resizeSlider(pct:Number, bufferOffsetPct:Number, startPosition:Number, endPadding:Number, slider:DisplayObject, capLeft:DisplayObject, capRight:DisplayObject):void {
 			var size:Number = fullSize - startPosition - endPadding;
-			var scaledSize:Number = size * pct;
+			var scaledSize:Number = Math.round(size * pct);
 			if (scaledSize > 0) {
 				var sliderSize:Number;
 				slider.visible = capLeft.visible = capRight.visible = true;
 				if (_vertical) {
-					capLeft.y = startPosition + (size - capLeft.height - capRight.height) * (1-pct);
+					capLeft.y = startPosition + Math.round((size - capLeft.height - capRight.height) * (1-pct));
 					capRight.y = startPosition + size - capRight.height;
 					slider.y = capLeft.y + capLeft.height;
-					sliderSize = capRight.y - (capLeft.y + capLeft.height);
-					slider.height = Math.ceil(sliderSize);
+					sliderSize = capRight.y - capLeft.y - capLeft.height;
+					slider.height = sliderSize;
 				} else {
 					capLeft.x = startPosition;
 					resizeElement(capLeft, Math.min(scaledSize, capLeft.width));
 					slider[dim] = size - capLeft.width - capRight.width;
 					slider.x  = capLeft.x + capLeft.width;
-					sliderSize = Math.max(0, size * (pct - bufferOffsetPct) - capLeft[dim] - capRight[dim]);
+					sliderSize = Math.round(Math.max(0, size * (pct - bufferOffsetPct) - capLeft[dim] - capRight[dim]));
 					resizeElement(slider, sliderSize);
-					capRight.x = slider.x + Math.floor(sliderSize);
+					capRight.x = slider.x + sliderSize;
 					resizeElement(capRight, Math.min(scaledSize - capLeft.width, capRight.width));
 				}				
 			} else {
 				slider.visible = capLeft.visible = capRight.visible = false;
 			}
 		}
-		
-		
+
+
 		private function resizeElement(element:DisplayObject, maskSize:Number):void {
 			if (element) {
 				if (_width && _height) {
@@ -275,6 +299,7 @@ package com.longtailvideo.jwplayer.view.components {
 			var maxDimension:Number = 0;	
 			var element:DisplayObject;
 			
+			// find max dimension
 			for(var i:Number = 0; i < numChildren; i++) {
 				element = getChildAt(i);
 				if (_vertical) {
@@ -283,7 +308,13 @@ package com.longtailvideo.jwplayer.view.components {
 					if (element.height > maxDimension) maxDimension = element.height;
 				}
 			}
-			
+
+			// set drag center
+			if (_vertical) {
+				_dragRect.x = (maxDimension - _thumb.width)/2;
+			}
+
+			// center in max
 			for(i = 0; i < numChildren; i++) {
 				element = getChildAt(i);
 				if (_vertical) {
@@ -291,12 +322,13 @@ package com.longtailvideo.jwplayer.view.components {
 				} else {
 					element.y = (maxDimension - element.height) / 2;
 				}
-				
 			}
 		}
 		
+		
 		/** Handle mouse downs. **/
 		private function downHandler(evt:MouseEvent):void {
+			// MonsterDebugger.trace(this, _name +(_vertical?'V':'')+' drag rect='+ _dragRect.toString());
 			if (_thumb && !_lock) {
 				_thumb.startDrag(true, _dragRect);
 				_dragging = true;
@@ -306,22 +338,29 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 		
 		private function mouseMoveHandler(evt:MouseEvent):void {
-			if (_name != "timeSlider" || _dragging) {
-				if (!_isLive || (name != "timeSlider")) {
-					resizeSlider(thumbAdjust(thumbPercent()), 0, _capLeft[dim], _capRight[dim], _progress, _progressCapLeft, _progressCapRight);
-				}
+			if (_dragging || _name != "timeSlider" || !_isLive) {
+				// MonsterDebugger.trace(this, _name +(_vertical?'V':'')+' mouseMoveHandler '+_thumb[pos]);
+				resizeSlider(thumbAdjust(thumbPercent()), 0, _capLeft[dim], _capRight[dim], _progress, _progressCapLeft, _progressCapRight);
 			}
 		}
 
 		private function thumbAdjust(input:Number):Number {
 			// take a number between 0-1, and adjust it so that the slider drawn will land under the center of the thumb
 			if (input > 0 && input < 1) {
-				var normalizedOffset:Number = thumbOffset / fullSize;
+				var offset:Number = thumbOffset;
+				if (!_thumb.visible || offset < 1) {
+					return input;
+				}
+				var normalizedOffset:Number = offset / fullSize;
 				var output:Number;
 				if (_vertical) {
 					output = input / (1+normalizedOffset);
+					// MonsterDebugger.trace(this, _name +(_vertical?'V':'')+' thumb adjust '+ 
+					// 	input.toFixed(3)+'/'+(1+normalizedOffset).toFixed(3) +'='+ output.toFixed(3));
 				} else {
 					output = input / (1+normalizedOffset) + normalizedOffset;
+					// MonsterDebugger.trace(this, _name +(_vertical?'V':'')+' thumb adjust '+
+					// 	input.toFixed(3)+'/'+(1+normalizedOffset).toFixed(3) +'+'+ normalizedOffset.toFixed(3) +'='+ output.toFixed(3));
 				}
 				return output;
 			}
@@ -334,14 +373,19 @@ package com.longtailvideo.jwplayer.view.components {
 
 		protected function sliderPercent(pixels:Number):Number {
 			var percent:Number;
+			var offset:Number = _thumb.visible ? thumbOffset : 0;
+			if (offset < 1) {
+				offset = _capLeft[dim];
+			}
 
-				pixels -= thumbOffset;
-			var adjustedSize:Number = fullSize - thumbOffset*2;
+			var size:Number = fullSize - offset*2;
+			
+			pixels -= offset;
 
 			if (_vertical) {
-				percent = 1 - pixels/adjustedSize;
+				percent = 1 - pixels/size;
 			} else {
-				percent = pixels/adjustedSize;
+				percent = pixels/size;
 			}
 			return Math.max(Math.min(1, percent), 0);
 		}
