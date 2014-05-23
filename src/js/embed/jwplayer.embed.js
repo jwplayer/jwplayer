@@ -187,10 +187,10 @@
 	}
 
 	function _insertCSS() {
-		utils.css('.jwplayer:focus', {
+		utils.css('object.jwswf, .jwplayer:focus', {
 			outline : 'none'
 		});
-		utils.css('object.jwswf:focus, .jw-tab-focus:focus', {
+		utils.css('.jw-tab-focus:focus', {
 			outline : 'solid 2px #0B7EF4'
 		});
 	}
