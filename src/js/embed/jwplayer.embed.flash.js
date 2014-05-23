@@ -177,6 +177,7 @@
 				obj.setAttribute('bgcolor', bgcolor);
 				obj.setAttribute('id', _container.id);
 				obj.setAttribute('name', _container.id);
+				obj.className = 'jwswf';
 				//obj.setAttribute('tabindex', 0);
 				appendAttribute(obj, 'allowfullscreen', 'true');
 				appendAttribute(obj, 'allowscriptaccess', 'always');

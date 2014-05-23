@@ -190,7 +190,7 @@
 		utils.css('.jwplayer:focus', {
 			outline : 'none'
 		});
-		utils.css('.jw-tab-focus:focus', {
+		utils.css('object.jwswf:focus, .jw-tab-focus:focus', {
 			outline : 'solid 2px #0B7EF4'
 		});
 	}
