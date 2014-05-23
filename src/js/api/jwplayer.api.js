@@ -136,11 +136,14 @@
 
 		// Take a mapping of function names to event names and setup listeners
 		function initializeMapping(mapping, listener) {
-			utils.foreach(mapping, function(name, value) {
-				_this[name] = function(callback) {
-					return listener(value, callback);
+			for (var name in mapping) {
+				if (mapping.hasOwnProperty(name)) {
+					var value = mapping[name];
+					_this[name] = function(callback) {
+						return listener(value, callback);
+					};
 				}
-			});
+			}
 		}
 		initializeMapping(_stateMapping, _stateListener);
 		initializeMapping(_eventMapping, _eventListener);
@@ -154,19 +157,17 @@
 					return _callInternal.call(this, internalName, arg1);
 				}
 				return _callInternal.call(this, internalName);
-			}
-		};
+			};
+		}
 		utils.foreach(_internalFuncsToGenerate, generateInternalFunction);
 
 
 		// Functions which cannot be auto-generated
 
- 		//TODO:: Why name switch between removeButton and DockRemoveButton?
 		_this.removeButton = function(id) {
 			_callInternal('jwDockRemoveButton', id);
 		};
 
-		//TODO:: Why name switch between destroyPlayer and playerDestroy?
 		_this.destroyPlayer = function () {
 			_callInternal ("jwPlayerDestroy");
 		};
@@ -339,6 +340,7 @@
 
 			if (_embedder) {
 				_embedder.destroy();
+				_embedder = null;
 			}
 
 			api.destroyPlayer(this.id);
@@ -396,14 +398,14 @@
 			};
 		}	
 		
-		function _addInternalListener(embeddedPlayer, type) {
-			var playerApi = jwplayer(_this.id);
-
-			// This sends an event to the embed object of either Flash or HTML5
-			embeddedPlayer.jwAddEventListener(type, function(data) {
-				playerApi.dispatchEvent(type, data);
-			});
+		function _addInternalListener(player, type) {
+			try {
+				player.jwAddEventListener(type, 'function(dat) { jwplayer("' + _this.id + '").dispatchEvent("' + type + '", dat); }');
+			} catch(e) {
+				utils.log("Could not add internal listener");
+			}
 		}
+
 		
 		function _eventListener(type, callback) {
 			if (!_listeners[type]) {
