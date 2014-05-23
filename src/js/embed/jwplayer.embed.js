@@ -55,15 +55,14 @@
 
 		_this.destroy = function() {
 			if (_pluginloader) {
-				_pluginloader.removeEventListener(events.COMPLETE);
-				_pluginloader.removeEventListener(events.ERROR);
 				_pluginloader.destroy();
+				_pluginloader = null;
 			}
 			if (_loader) {
-				_loader.removeEventListener(events.JWPLAYER_ERROR);
-				_loader.removeEventListener(events.JWPLAYER_PLAYLIST_LOADED);
+				_loader.resetEventListeners();
+				_loader = null;
 			}
-		}
+		};
 		
 		function _doEmbed() {
 			if (_errorOccurred) { return; }
