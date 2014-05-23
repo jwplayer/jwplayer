@@ -173,7 +173,7 @@
                     break;
             }
 
-            if (/13|32|38|40/.test(evt.keyCode)) {
+            if (/13|32|37|38|39|40/.test(evt.keyCode)) {
                 // Prevent keypresses from scrolling the screen
                 evt.preventDefault();
                 return false;
