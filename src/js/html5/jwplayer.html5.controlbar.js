@@ -314,10 +314,6 @@
 				}
 				if (_elements.timeRail) {
 					_elements.timeRail.className = "jwrail";
-					setTimeout(function() {
-						// Temporarily disable the buffer animation
-						_elements.timeRail.className += " jwsmooth";
-					}, 100);
 				}
 				_setBuffer(0);
 				_timeUpdated({ position: 0, duration: 0});
@@ -922,7 +918,7 @@
 				progressRail,
 				sliderPrefix;
 			
-			rail.className = "jwrail jwsmooth";
+			rail.className = "jwrail";
 
 			for (var i=0; i<railElements.length; i++) {
 				sliderPrefix = (name=="time"?"Slider":EMPTY);
@@ -1054,7 +1050,7 @@
 			}
 			if (evt.type == utils.touchEvents.DRAG_END) {
 				_api.jwSeekDrag(FALSE);
-				_elements.timeRail.className = "jwrail jwsmooth";
+				_elements.timeRail.className = "jwrail";
 				_draggingEnd();
 				_sliderMapping.time(pct);
 				_hideTimeTooltip();
@@ -1124,7 +1120,7 @@
 					_api.jwSeekDrag(FALSE);
 				}
 
-				_elements[name+'Rail'].className = "jwrail jwsmooth";
+				_elements[name+'Rail'].className = "jwrail";
 				_draggingEnd();
 				_sliderMapping[name.replace("H", EMPTY)](pct);
 			} else {
@@ -1909,7 +1905,7 @@
 
 	_setTransition(CB_CLASS, JW_CSS_SMOOTH_EASE);
 	_setTransition(CB_CLASS + ' button', JW_CSS_SMOOTH_EASE);
-	_setTransition(CB_CLASS + ' .jwtime .jwsmooth span', JW_CSS_SMOOTH_EASE + ", width .25s linear, left .05s linear");
+	//_setTransition(CB_CLASS + ' .jwtime .jwsmooth span', JW_CSS_SMOOTH_EASE + ", width .25s linear, left .05s linear");
 	_setTransition(CB_CLASS + ' .jwtoggling', JW_CSS_NONE);
 
 })(window.jwplayer);
