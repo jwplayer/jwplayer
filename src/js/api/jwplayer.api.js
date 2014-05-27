@@ -11,6 +11,59 @@
 		states = events.state,
 		DOCUMENT = document;
 
+	function addFocusBorder(container) {
+		container.className = container.className + ' jw-tab-focus';
+	}
+
+	function removeFocusBorder(container) {
+		container.className = container.className.replace(/ *jw-tab-focus */g, ' ');
+	}
+
+	var _eventMapping = {
+		onBufferChange: events.JWPLAYER_MEDIA_BUFFER,
+		onBufferFull: events.JWPLAYER_MEDIA_BUFFER_FULL,
+		onError: events.JWPLAYER_ERROR,
+		onSetupError: events.JWPLAYER_SETUP_ERROR,
+		onFullscreen: events.JWPLAYER_FULLSCREEN,
+		onMeta: events.JWPLAYER_MEDIA_META,
+		onMute: events.JWPLAYER_MEDIA_MUTE,
+		onPlaylist: events.JWPLAYER_PLAYLIST_LOADED,
+		onPlaylistItem: events.JWPLAYER_PLAYLIST_ITEM,
+		onPlaylistComplete: events.JWPLAYER_PLAYLIST_COMPLETE,
+		onReady: events.API_READY,
+		onResize: events.JWPLAYER_RESIZE,
+		onComplete: events.JWPLAYER_MEDIA_COMPLETE,
+		onSeek: events.JWPLAYER_MEDIA_SEEK,
+		onTime: events.JWPLAYER_MEDIA_TIME,
+		onVolume: events.JWPLAYER_MEDIA_VOLUME,
+		onBeforePlay: events.JWPLAYER_MEDIA_BEFOREPLAY,
+		onBeforeComplete: events.JWPLAYER_MEDIA_BEFORECOMPLETE,
+		onDisplayClick: events.JWPLAYER_DISPLAY_CLICK,
+		onControls: events.JWPLAYER_CONTROLS,
+		onQualityLevels: events.JWPLAYER_MEDIA_LEVELS,
+		onQualityChange: events.JWPLAYER_MEDIA_LEVEL_CHANGED,
+		onCaptionsList: events.JWPLAYER_CAPTIONS_LIST,
+		onCaptionsChange: events.JWPLAYER_CAPTIONS_CHANGED,
+		onAdError: events.JWPLAYER_AD_ERROR,
+		onAdClick: events.JWPLAYER_AD_CLICK,
+		onAdImpression: events.JWPLAYER_AD_IMPRESSION,
+		onAdTime: events.JWPLAYER_AD_TIME,
+		onAdComplete: events.JWPLAYER_AD_COMPLETE,
+		onAdCompanions: events.JWPLAYER_AD_COMPANIONS,
+		onAdSkipped: events.JWPLAYER_AD_SKIPPED,
+		onAdPlay: events.JWPLAYER_AD_PLAY,
+		onAdPause: events.JWPLAYER_AD_PAUSE,
+		onAdMeta: events.JWPLAYER_AD_META,
+		onCast: events.JWPLAYER_CAST_SESSION
+	};
+
+	var _stateMapping = {
+		onBuffer: states.BUFFERING,
+		onPause: states.PAUSED,
+		onPlay: states.PLAYING,
+		onIdle: states.IDLE
+	};
+
 	var api = jwplayer.api = function(container) {
 		var _this = this,
 			_listeners = {},
@@ -21,10 +74,27 @@
 			_instream,
 			_itemMeta = {},
 			_callbacks = {};
-		
+
 		_this.container = container;
 		_this.id = container.id;
-		
+
+		_this.setup = function(options) {
+			if (jwplayer.embed) {
+				// Destroy original API on setup() to remove existing listeners
+				var fallbackDiv = DOCUMENT.getElementById(_this.id);
+				if (fallbackDiv) {
+					options["fallbackDiv"] = fallbackDiv;
+				}
+				_remove(_this);
+				var newApi = jwplayer(_this.id);
+				newApi.config = options;
+				var embedder = new jwplayer.embed(newApi);
+				embedder.embed();
+				return newApi;
+			}
+			return _this;
+		};
+
 		// Player Getters
 		_this.getBuffer = function() {
 			return _callInternal('jwGetBuffer');
@@ -32,7 +102,7 @@
 		_this.getContainer = function() {
 			return _this.container;
 		};
-				
+
 		_this.addButton = function(icon, label, handler, id) {
 			try {
 				_callbacks[id] = handler;
@@ -52,14 +122,14 @@
 				_callbacks[id]();
 			}
 		};
-		
+
 		_this.forceState = function(state) {
 		    _callInternal("jwForceState", state);
-		    return _this;  
+		    return _this;
 		};
-		
+
 		_this.releaseState = function() {
-		    
+
 		    return _callInternal("jwReleaseState");
 		};
 
@@ -84,7 +154,7 @@
 		_this.getPlaylist = function() {
 			var playlist = _callInternal('jwGetPlaylist');
 			if (_this.renderingMode == "flash") {
-				utils.deepReplaceKeyName(playlist, ["__dot__","__spc__","__dsh__","__default__"], ["."," ","-","default"]);	
+				utils.deepReplaceKeyName(playlist, ["__dot__","__spc__","__dsh__","__default__"], ["."," ","-","default"]);
 			}
 			return playlist;
 		};
@@ -245,7 +315,7 @@
 		};
 		_this.getSafeRegion = function() {
 			return _callInternal("jwGetSafeRegion");
-		};	
+		};
 		_this.setControls = function(state) {
 			_callInternal("jwSetControls", state);
 		};
@@ -270,65 +340,18 @@
 				_callInternal("jwPauseAd");
 			}
 		};
-		
-		var _eventMapping = {
-			onBufferChange: events.JWPLAYER_MEDIA_BUFFER,
-			onBufferFull: events.JWPLAYER_MEDIA_BUFFER_FULL,
-			onError: events.JWPLAYER_ERROR,
-			onSetupError: events.JWPLAYER_SETUP_ERROR,
-			onFullscreen: events.JWPLAYER_FULLSCREEN,
-			onMeta: events.JWPLAYER_MEDIA_META,
-			onMute: events.JWPLAYER_MEDIA_MUTE,
-			onPlaylist: events.JWPLAYER_PLAYLIST_LOADED,
-			onPlaylistItem: events.JWPLAYER_PLAYLIST_ITEM,
-			onPlaylistComplete: events.JWPLAYER_PLAYLIST_COMPLETE,
-			onReady: events.API_READY,
-			onResize: events.JWPLAYER_RESIZE,
-			onComplete: events.JWPLAYER_MEDIA_COMPLETE,
-			onSeek: events.JWPLAYER_MEDIA_SEEK,
-			onTime: events.JWPLAYER_MEDIA_TIME,
-			onVolume: events.JWPLAYER_MEDIA_VOLUME,
-			onBeforePlay: events.JWPLAYER_MEDIA_BEFOREPLAY,
-			onBeforeComplete: events.JWPLAYER_MEDIA_BEFORECOMPLETE,
-			onDisplayClick: events.JWPLAYER_DISPLAY_CLICK,
-			onControls: events.JWPLAYER_CONTROLS,
-			onQualityLevels: events.JWPLAYER_MEDIA_LEVELS,
-			onQualityChange: events.JWPLAYER_MEDIA_LEVEL_CHANGED,
-			onCaptionsList: events.JWPLAYER_CAPTIONS_LIST,
-			onCaptionsChange: events.JWPLAYER_CAPTIONS_CHANGED,
-			onAdError: events.JWPLAYER_AD_ERROR,
-			onAdClick: events.JWPLAYER_AD_CLICK,
-			onAdImpression: events.JWPLAYER_AD_IMPRESSION,
-			onAdTime: events.JWPLAYER_AD_TIME,
-			onAdComplete: events.JWPLAYER_AD_COMPLETE,
-			onAdCompanions: events.JWPLAYER_AD_COMPANIONS,
-			onAdSkipped: events.JWPLAYER_AD_SKIPPED,
-			onAdPlay: events.JWPLAYER_AD_PLAY,
-			onAdPause: events.JWPLAYER_AD_PAUSE,
-			onAdMeta: events.JWPLAYER_AD_META,
-			onCast: events.JWPLAYER_CAST_SESSION
-		};
-		
-		utils.foreach(_eventMapping, function(event) {
-			_this[event] = _eventCallback(_eventMapping[event], _eventListener); 
-		});
 
-		var _stateMapping = {
-			onBuffer: states.BUFFERING,
-			onPause: states.PAUSED,
-			onPlay: states.PLAYING,
-			onIdle: states.IDLE 
-		};
 
-		utils.foreach(_stateMapping, function(state) {
-			_this[state] = _eventCallback(_stateMapping[state], _stateListener); 
-		});
-		
-		function _eventCallback(event, listener) {
-			return function(callback) {
-				return listener(event, callback);
-			};
+		// Take a mapping of function names to event names and setup listeners
+		function initializeMapping(mapping, listener) {
+			utils.foreach(mapping, function(name, value) {
+				_this[name] = function(callback) {
+					return listener(value, callback);
+				}
+			});
 		}
+		initializeMapping(_stateMapping, _stateListener);
+		initializeMapping(_eventMapping, _eventListener);
 
 		_this.remove = function() {
 			if (!_playerReady) {
@@ -336,38 +359,22 @@
 			}
 			_remove(this);
 		};
-		
+
 		function _remove(player) {
 			_queuedCalls = [];
 			api.destroyPlayer(player.id);
 		}
-		
-		_this.setup = function(options) {
-			if (jwplayer.embed) {
-				// Destroy original API on setup() to remove existing listeners
-				var fallbackDiv = DOCUMENT.getElementById(_this.id);
-				if (fallbackDiv) {
-					options["fallbackDiv"] = fallbackDiv;
-				}
-				_remove(_this);
-				var newApi = jwplayer(_this.id);
-				newApi.config = options;
-				var embedder = new jwplayer.embed(newApi);
-				embedder.embed();
-				return newApi;
-			}
-			return _this;
-		};
+
 		_this.registerPlugin = function(id, target, arg1, arg2) {
 			jwplayer.plugins.registerPlugin(id, target, arg1, arg2);
 		};
-		
+
 		/** Use this function to set the internal low-level player.  This is a javascript object which contains the low-level API calls. **/
 		_this.setPlayer = function(player, renderingMode) {
 			_player = player;
 			_this.renderingMode = renderingMode;
 		};
-		
+
 		_this.detachMedia = function() {
 			if (_this.renderingMode == "html5") {
 				return _callInternal("jwDetachMedia");
@@ -407,16 +414,17 @@
 					}
 				}
 			};
-		}	
-		
-		function _addInternalListener(player, type) {
-			try {
-				player.jwAddEventListener(type, 'function(dat) { jwplayer("' + _this.id + '").dispatchEvent("' + type + '", dat); }');
-			} catch(e) {
-				utils.log("Could not add internal listener");
-			}
 		}
-		
+
+		function _addInternalListener(embeddedPlayer, type) {
+			var playerApi = jwplayer(_this.id);
+
+			// This sends an event to the embed object of either Flash or HTML5
+			embeddedPlayer.jwAddEventListener(type, function(data) {
+				playerApi.dispatchEvent(type, data);
+			});
+		}
+
 		function _eventListener(type, callback) {
 			if (!_listeners[type]) {
 				_listeners[type] = [];
@@ -438,7 +446,7 @@
 				}
 			}
 		};
-		
+
 		_this.dispatchEvent = function(type) {
 			var listeners = _listeners[type];
 			if (listeners) {
@@ -489,25 +497,25 @@
 			}
 			_queuedCalls.push(arguments);
 		}
-		
+
 		_this.callInternal = _callInternal;
-		
+
 		_this.playerReady = function(obj) {
 			_playerReady = true;
-			
+
 			if (!_player) {
 				_this.setPlayer(DOCUMENT.getElementById(obj.id));
 			}
 			_this.container = DOCUMENT.getElementById(_this.id);
-			
+
 			utils.foreach(_listeners, function(eventType) {
 				_addInternalListener(_player, eventType);
 			});
-			
+
 			_eventListener(events.JWPLAYER_PLAYLIST_ITEM, function() {
 				_itemMeta = {};
 			});
-			
+
 			_eventListener(events.JWPLAYER_MEDIA_META, function(data) {
 				utils.extend(_itemMeta, data.metadata);
 			});
@@ -523,12 +531,12 @@
             });
 
 			_this.dispatchEvent(events.API_READY);
-			
+
 			while (_queuedCalls.length > 0) {
 				_callInternal.apply(this, _queuedCalls.shift());
 			}
 		};
-		
+
 		_this.getItemMeta = function() {
 			return _itemMeta;
 		};
@@ -539,17 +547,28 @@
 		_this.isBeforeComplete = function () {
 			return _callInternal('jwIsBeforeComplete');
 		};
-		
+
 		return _this;
 	};
-	
+
+	jwplayer.playerReady = function(obj) {
+		var api = jwplayer.api.playerById(obj.id);
+
+		if (!api) {
+			jwplayer.api.selectPlayer(obj.id).playerReady(obj);
+			return;
+		}
+
+		api.playerReady(obj);
+	};
+
 	api.selectPlayer = function(identifier) {
 		var _container;
-		
+
 		if (!utils.exists(identifier)) {
 			identifier = 0;
 		}
-		
+
 		if (identifier.nodeType) {
 			// Handle DOM Element
 			_container = identifier;
@@ -557,7 +576,7 @@
 			// Find container by ID
 			_container = DOCUMENT.getElementById(identifier);
 		}
-		
+
 		if (_container) {
 			var foundPlayer = api.playerById(_container.id);
 			if (foundPlayer) {
@@ -569,10 +588,10 @@
 		} else if (typeof identifier == "number") {
 			return _players[identifier];
 		}
-		
+
 		return null;
 	};
-	
+
 
 	api.playerById = function(id) {
 		for (var p = 0; p < _players.length; p++) {
@@ -582,18 +601,18 @@
 		}
 		return null;
 	};
-	
+
 	api.addPlayer = function(player) {
 		for (var p = 0; p < _players.length; p++) {
 			if (_players[p] == player) {
 				return player; // Player is already in the list;
 			}
 		}
-		
+
 		_players.push(player);
 		return player;
 	};
-	
+
 	api.destroyPlayer = function(playerId) {
 		var index = -1, player;
 		for (var p = 0; p < _players.length; p++) {
@@ -606,16 +625,16 @@
 		if (index >= 0) {
 			var id = player.id,
 				toDestroy = DOCUMENT.getElementById(id + (player.renderingMode == "flash" ? "_wrapper" : ""));
-			
+
 			if (utils.clearCss) {
 				// Clear HTML5 rules
 				utils.clearCss("#"+id);
 			}
 
 //			if (!toDestroy) {
-//				toDestroy = DOCUMENT.getElementById(id);	
+//				toDestroy = DOCUMENT.getElementById(id);
 //			}
-			
+
 			if (toDestroy) {
 				if (player.renderingMode == "html5") {
 					player.destroyPlayer();
@@ -626,27 +645,7 @@
 			}
 			_players.splice(index, 1);
 		}
-		
+
 		return null;
 	};
-
-	jwplayer.playerReady = function(obj) {
-		var api = jwplayer.api.playerById(obj.id);
-
-        if (!api) {
-            jwplayer.api.selectPlayer(obj.id).playerReady(obj);
-            return;
-        }
-
-        api.playerReady(obj);
-	};
-
-    function addFocusBorder(container) {
-        container.className = container.className + ' jw-tab-focus';
-    }
-
-    function removeFocusBorder(container) {
-        container.className = container.className.replace(/ *jw-tab-focus */g, ' ');
-    }
-
 })(window.jwplayer);
