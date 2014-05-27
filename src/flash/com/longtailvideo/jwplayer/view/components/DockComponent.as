@@ -1,15 +1,16 @@
 package com.longtailvideo.jwplayer.view.components {
-	import com.longtailvideo.jwplayer.events.*;
-	import com.longtailvideo.jwplayer.player.*;
-	import com.longtailvideo.jwplayer.utils.*;
-	import com.longtailvideo.jwplayer.view.interfaces.*;
+	import com.longtailvideo.jwplayer.events.PlaylistEvent;
+	import com.longtailvideo.jwplayer.player.IPlayer;
+	import com.longtailvideo.jwplayer.utils.Animations;
+	import com.longtailvideo.jwplayer.view.interfaces.IDockButton;
+	import com.longtailvideo.jwplayer.view.interfaces.IDockComponent;
 	
-	import flash.accessibility.*;
-	import flash.display.*;
-	import flash.events.*;
-	import flash.external.ExternalInterface;
-	import flash.geom.*;
-	import flash.utils.*;
+	import flash.accessibility.AccessibilityProperties;
+	import flash.display.DisplayObject;
+	import flash.events.Event;
+	import flash.geom.Point;
+	import flash.geom.Rectangle;
+
 	
 	public class DockComponent extends CoreComponent implements IDockComponent {
 		/** Default configuration vars for this component. **/

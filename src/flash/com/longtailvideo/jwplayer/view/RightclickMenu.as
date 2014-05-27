@@ -1,12 +1,10 @@
 package com.longtailvideo.jwplayer.view {
 
 	import com.longtailvideo.jwplayer.events.GlobalEventDispatcher;
-	import com.longtailvideo.jwplayer.events.ViewEvent;
 	import com.longtailvideo.jwplayer.player.IPlayer;
 	import com.longtailvideo.jwplayer.player.PlayerVersion;
 	import com.longtailvideo.jwplayer.utils.Configger;
 	import com.longtailvideo.jwplayer.utils.Logger;
-	import com.longtailvideo.jwplayer.utils.Stretcher;
 	
 	import flash.display.MovieClip;
 	import flash.events.ContextMenuEvent;

@@ -14,7 +14,6 @@ package com.longtailvideo.jwplayer.view.components {
 	import flash.text.TextFormat;
 	import flash.text.TextFormatAlign;
 	import flash.utils.Timer;
-	import flash.external.ExternalInterface;
 	
 	public class DisplayIcon extends Sprite {
 		// Skin elements

@@ -1,6 +1,5 @@
 package com.longtailvideo.jwplayer.events {
 	import com.longtailvideo.jwplayer.model.IPlaylist;
-	import com.longtailvideo.jwplayer.model.Playlist;
 	
 	import flash.events.Event;
 	

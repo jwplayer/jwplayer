@@ -20,11 +20,8 @@ package com.longtailvideo.jwplayer.utils
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.FocusEvent;
-	import flash.events.KeyboardEvent;
 	import flash.external.ExternalInterface;
 	import flash.system.Capabilities;
-	import flash.ui.Keyboard;
-	import flash.utils.setTimeout;
 	
 	
 	/**

@@ -1,6 +1,5 @@
 package com.longtailvideo.jwplayer.parsers {
 
-	import com.longtailvideo.jwplayer.model.PlaylistItemLevel;
 	import com.longtailvideo.jwplayer.utils.Strings;
 
 	/**

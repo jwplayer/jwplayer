@@ -1,9 +1,5 @@
 package com.longtailvideo.jwplayer.view.interfaces {
-	import com.longtailvideo.jwplayer.events.IGlobalEventDispatcher;
 	
-	import flash.display.DisplayObject;
-	
-
 	/**
 	 * Sent when the user interface requests that the player play the currently loaded media
 	 *

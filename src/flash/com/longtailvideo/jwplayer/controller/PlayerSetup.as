@@ -1,17 +1,29 @@
 package com.longtailvideo.jwplayer.controller {
-	import com.longtailvideo.jwplayer.events.*;
-	import com.longtailvideo.jwplayer.model.*;
-	import com.longtailvideo.jwplayer.player.*;
-	import com.longtailvideo.jwplayer.plugins.*;
-	import com.longtailvideo.jwplayer.utils.*;
-	import com.longtailvideo.jwplayer.view.*;
-	import com.longtailvideo.jwplayer.view.interfaces.*;
-	import com.longtailvideo.jwplayer.view.skins.*;
+	import com.longtailvideo.jwplayer.events.PlayerEvent;
+	import com.longtailvideo.jwplayer.events.PlaylistEvent;
+	import com.longtailvideo.jwplayer.model.Model;
+	import com.longtailvideo.jwplayer.player.IPlayer;
+	import com.longtailvideo.jwplayer.player.PlayerVersion;
+	import com.longtailvideo.jwplayer.plugins.IPlugin;
+	import com.longtailvideo.jwplayer.plugins.IPlugin6;
+	import com.longtailvideo.jwplayer.utils.Configger;
+	import com.longtailvideo.jwplayer.utils.Logger;
+	import com.longtailvideo.jwplayer.utils.Strings;
+	import com.longtailvideo.jwplayer.view.View;
+	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
+	import com.longtailvideo.jwplayer.view.skins.DefaultSkin;
+	import com.longtailvideo.jwplayer.view.skins.PNGSkin;
+	import com.longtailvideo.jwplayer.view.skins.SkinProperties;
 	
-	import flash.display.*;
-	import flash.events.*;
-	import flash.net.*;
-	import flash.utils.*;
+	import flash.display.DisplayObject;
+	import flash.display.Loader;
+	import flash.events.ErrorEvent;
+	import flash.events.Event;
+	import flash.events.EventDispatcher;
+	import flash.events.IOErrorEvent;
+	import flash.events.TimerEvent;
+	import flash.net.URLRequest;
+	import flash.utils.Timer;
 
 	/**
 	 * Sent when the all of the setup steps have successfully completed.

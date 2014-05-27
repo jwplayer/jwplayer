@@ -3,8 +3,12 @@ package com.longtailvideo.jwplayer.view.components {
 
     import com.longtailvideo.jwplayer.utils.Logger;
     
-    import flash.display.*;
-    import flash.events.*;
+    import flash.display.DisplayObject;
+    import flash.display.Loader;
+    import flash.events.ErrorEvent;
+    import flash.events.Event;
+    import flash.events.IOErrorEvent;
+    import flash.events.MouseEvent;
     import flash.external.ExternalInterface;
     import flash.net.URLRequest;
 
