@@ -34,25 +34,20 @@
 			_completed = {},
 			_skin,
 			_eventDispatcher = new events.eventdispatcher(),
-			_errorState = false,
-			_queue = [];
+			_errorState = false;
 
 		// This is higher scope so it can be used in two functions to remove event listeners
 		var _previewImg;
 
-		function _initQueue() {
-			_addTask(PARSE_CONFIG, _parseConfig);
-			_addTask(LOAD_SKIN, _loadSkin, PARSE_CONFIG);
-			_addTask(LOAD_PLAYLIST, _loadPlaylist, PARSE_CONFIG);
-			_addTask(LOAD_PREVIEW, _loadPreview, LOAD_PLAYLIST);
-			_addTask(SETUP_COMPONENTS, _setupComponents, LOAD_PREVIEW + "," + LOAD_SKIN);
-			_addTask(INIT_PLUGINS, _initPlugins, SETUP_COMPONENTS + "," + LOAD_PLAYLIST);
-			_addTask(SEND_READY, _sendReady, INIT_PLUGINS);
-		}
-
-		function _addTask(name, method, depends) {
-			_queue.push({name:name, method:method, depends:depends});
-		}
+		var _queue = [
+			{name: PARSE_CONFIG,     method:_parseConfig,     depends:false},
+			{name: LOAD_SKIN,        method:_loadSkin,        depends:PARSE_CONFIG},
+			{name: LOAD_PLAYLIST,    method:_loadPlaylist,    depends:PARSE_CONFIG},
+			{name: LOAD_PREVIEW,     method:_loadPreview,     depends:LOAD_PLAYLIST},
+			{name: SETUP_COMPONENTS, method:_setupComponents, depends:LOAD_PREVIEW+","+LOAD_SKIN},
+			{name: INIT_PLUGINS,     method:_initPlugins,     depends:SETUP_COMPONENTS+","+LOAD_PLAYLIST},
+			{name: SEND_READY,       method:_sendReady,       depends:INIT_PLUGINS}
+		];
 
 		function _nextTask() {
 			for (var i=0; i < _queue.length; i++) {
@@ -180,7 +175,6 @@
 		
 		this.start = _nextTask;
 
-		_initQueue();
 	};
 
 })(jwplayer);
