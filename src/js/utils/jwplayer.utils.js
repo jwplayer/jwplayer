@@ -123,8 +123,6 @@
 		};
 	}
 
-	// TODO: Rename "isIETrident" (true for all versions of IE) with "isIE" in 6.9
-	utils.isMSIE = _browserCheck(/msie/i);
 	utils.isFF = _browserCheck(/firefox/i);
 	utils.isChrome = _browserCheck(/chrome/i);
 	utils.isIPod = _browserCheck(/iP(hone|od)/i);
@@ -139,7 +137,23 @@
 		return _userAgentMatch(/trident/i);
 	};
 
-	utils.isIE = function() {
+
+	utils.isMSIE = function(version) {
+		if (version) {
+			version = parseFloat(version).toFixed(1);
+			return _userAgentMatch(new RegExp('msie\\s*'+version, 'i'));
+		}
+		return _userAgentMatch(/msie/i);
+	};
+	utils.isIE = function(version) {
+		if (version) {
+			version = parseFloat(version).toFixed(1);
+			if (version >= 11) {
+				return utils.isIETrident(version);
+			} else {
+				return utils.isMSIE(version);
+			}
+		}
 		return utils.isMSIE() || utils.isIETrident();
 	};
 	
