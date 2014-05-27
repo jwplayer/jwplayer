@@ -19,6 +19,43 @@
 		container.className = container.className.replace(/ *jw-tab-focus */g, ' ');
 	}
 
+	var _internalFuncsToGenerate = [
+		'getBuffer',
+		'getCaptionsList',
+		'getControls',
+		'getCurrentCaptions',
+		'getCurrentQuality',
+		'getDuration',
+		'getFullscreen',
+		'getHeight',
+		'getLockState',
+		'getMute',
+		'getPlaylistIndex',
+		'getSafeRegion',
+		'getPosition',
+		'getQualityLevels',
+		'getState',
+		'getVolume',
+		'getWidth',
+		'isBeforeComplete',
+		'isBeforePlay',
+		'releaseState'
+	];
+
+	var _chainableInternalFuncs = [
+		'playlistNext',
+		'stop',
+
+		// The following pass an argument to function
+		'forceState',
+		'playlistPrev',
+		'seek',
+		'setCurrentCaptions',
+		'setControls',
+		'setCurrentQuality',
+		'setVolume'
+	];
+
 	var _eventMapping = {
 		onBufferChange: events.JWPLAYER_MEDIA_BUFFER,
 		onBufferFull: events.JWPLAYER_MEDIA_BUFFER_FULL,
@@ -95,10 +132,6 @@
 			return _this;
 		};
 
-		// Player Getters
-		_this.getBuffer = function() {
-			return _callInternal('jwGetBuffer');
-		};
 		_this.getContainer = function() {
 			return _this.container;
 		};
@@ -123,33 +156,8 @@
 			}
 		};
 
-		_this.forceState = function(state) {
-		    _callInternal("jwForceState", state);
-		    return _this;
-		};
-
-		_this.releaseState = function() {
-
-		    return _callInternal("jwReleaseState");
-		};
-
-		_this.getDuration = function() {
-			return _callInternal('jwGetDuration');
-		};
-		_this.getFullscreen = function() {
-			return _callInternal('jwGetFullscreen');
-		};
-		_this.getHeight = function() {
-			return _callInternal('jwGetHeight');
-		};
-		_this.getLockState = function() {
-			return _callInternal('jwGetLockState');
-		};
 		_this.getMeta = function() {
 			return _this.getItemMeta();
-		};
-		_this.getMute = function() {
-			return _callInternal('jwGetMute');
 		};
 		_this.getPlaylist = function() {
 			var playlist = _callInternal('jwGetPlaylist');
@@ -164,24 +172,10 @@
 			}
 			return _this.getPlaylist()[item];
 		};
-		_this.getPlaylistIndex = function() {
-			return _callInternal('jwGetPlaylistIndex');
-		};
-		_this.getPosition = function() {
-			return _callInternal('jwGetPosition');
-		};
 		_this.getRenderingMode = function() {
 			return _this.renderingMode;
 		};
-		_this.getState = function() {
-			return _callInternal('jwGetState');
-		};
-		_this.getVolume = function() {
-			return _callInternal('jwGetVolume');
-		};
-		_this.getWidth = function() {
-			return _callInternal('jwGetWidth');
-		};
+
 		// Player Public Methods
 		_this.setFullscreen = function(fullscreen) {
 			if (!utils.exists(fullscreen)) {
@@ -215,14 +209,6 @@
 		};
 		_this.playlistItem = function(item) {
 			_callInternal("jwPlaylistItem", parseInt(item, 10));
-			return _this;
-		};
-		_this.playlistPrev = function() {
-			_callInternal("jwPlaylistPrev");
-			return _this;
-		};
-		_this.playlistNext = function() {
-			_callInternal("jwPlaylistNext");
 			return _this;
 		};
 		_this.resize = function(width, height) {
@@ -268,18 +254,6 @@
 			}
 			return _this;
 		};
-		_this.stop = function() {
-			_callInternal("jwStop");
-			return _this;
-		};
-		_this.seek = function(position) {
-			_callInternal("jwSeek", position);
-			return _this;
-		};
-		_this.setVolume = function(volume) {
-			_callInternal("jwSetVolume", volume);
-			return _this;
-		};
 		_this.createInstream = function() {
 			return new api.instream(this, _player);
 		};
@@ -291,33 +265,6 @@
 			_instream = _this.setInstream(_this.createInstream()).init(options);
             _instream.loadItem(item);
             return _instream;
-		};
-		_this.getQualityLevels = function() {
-			return _callInternal("jwGetQualityLevels");
-		};
-		_this.getCurrentQuality = function() {
-			return _callInternal("jwGetCurrentQuality");
-		};
-		_this.setCurrentQuality = function(level) {
-			_callInternal("jwSetCurrentQuality", level);
-		};
-		_this.getCaptionsList = function() {
-			return _callInternal("jwGetCaptionsList");
-		};
-		_this.getCurrentCaptions = function() {
-			return _callInternal("jwGetCurrentCaptions");
-		};
-		_this.setCurrentCaptions = function(caption) {
-			_callInternal("jwSetCurrentCaptions", caption);
-		};
-		_this.getControls = function() {
-			return _callInternal("jwGetControls");
-		};
-		_this.getSafeRegion = function() {
-			return _callInternal("jwGetSafeRegion");
-		};
-		_this.setControls = function(state) {
-			_callInternal("jwSetControls", state);
 		};
 		_this.destroyPlayer = function () {
 			_callInternal ("jwPlayerDestroy");
@@ -350,8 +297,23 @@
 				}
 			});
 		}
+
 		initializeMapping(_stateMapping, _stateListener);
 		initializeMapping(_eventMapping, _eventListener);
+
+
+		// given a name "getBuffer", it adds to jwplayer.api a function which internally triggers jwGetBuffer
+		function generateInternalFunction(chainable, index, name) {
+			var internalName = 'jw' + name.charAt(0).toUpperCase() + name.slice(1);
+
+			_this[name] = function() {
+				var value = _callInternal.apply(this, [internalName].concat(Array.prototype.slice.call(arguments, 0)) );
+				return (chainable ? _this : value);
+			}
+		};
+		utils.foreach(_internalFuncsToGenerate, generateInternalFunction.bind({}, false));
+		utils.foreach(_chainableInternalFuncs,  generateInternalFunction.bind({}, true));
+
 
 		_this.remove = function() {
 			if (!_playerReady) {
@@ -538,13 +500,6 @@
 
 		_this.getItemMeta = function() {
 			return _itemMeta;
-		};
-
-		_this.isBeforePlay = function () {
-			return _callInternal('jwIsBeforePlay');
-		};
-		_this.isBeforeComplete = function () {
-			return _callInternal('jwIsBeforeComplete');
 		};
 
 		return _this;
