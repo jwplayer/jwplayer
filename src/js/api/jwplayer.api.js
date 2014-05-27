@@ -416,13 +416,12 @@
 			};
 		}
 
-		function _addInternalListener(embeddedPlayer, type) {
-			var playerApi = jwplayer(_this.id);
-
-			// This sends an event to the embed object of either Flash or HTML5
-			embeddedPlayer.jwAddEventListener(type, function(data) {
-				playerApi.dispatchEvent(type, data);
-			});
+		function _addInternalListener(player, type) {
+			try {
+				player.jwAddEventListener(type, 'function(dat) { jwplayer("' + _this.id + '").dispatchEvent("' + type + '", dat); }');
+			} catch(e) {
+				utils.log("Could not add internal listener");
+			}
 		}
 
 		function _eventListener(type, callback) {
