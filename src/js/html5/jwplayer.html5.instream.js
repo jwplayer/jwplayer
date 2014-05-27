@@ -182,9 +182,8 @@
                 }
             });
             
-            
-            // IE 10 and 11?
-            if (_utils.isIE()) {
+
+            if (_utils.isMSIE()) {
                 _video.parentElement.addEventListener('click', _disp.clickHandler);
             }
  

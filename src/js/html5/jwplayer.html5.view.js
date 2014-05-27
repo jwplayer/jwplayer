@@ -358,7 +358,7 @@
 				_controlsLayer.addEventListener('mouseout', _mouseoutHandler, FALSE);
 				
 				_controlsLayer.addEventListener('mousemove', _startFade, FALSE);
-				if (utils.isIE()) {
+				if (utils.isMSIE()) {
 					// Not sure why this is needed
 					_videoLayer.addEventListener('mousemove', _startFade, FALSE);
 					_videoLayer.addEventListener('click', _display.clickHandler);

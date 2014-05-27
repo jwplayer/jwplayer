@@ -124,21 +124,25 @@
 	}
 
 	// TODO: Rename "isIETrident" (true for all versions of IE) with "isIE" in 6.9
-	utils.isIE = utils.isMSIE = _browserCheck(/msie/i);
+	utils.isMSIE = _browserCheck(/msie/i);
 	utils.isFF = _browserCheck(/firefox/i);
 	utils.isChrome = _browserCheck(/chrome/i);
 	utils.isIPod = _browserCheck(/iP(hone|od)/i);
 	utils.isIPad = _browserCheck(/iPad/i);
 	utils.isSafari602 = _browserCheck(/Macintosh.*Mac OS X 10_8.*6\.0\.\d* Safari/i);
-
+	
 	utils.isIETrident = function(version) {
 		if (version) {
 			version = parseFloat(version).toFixed(1);
-			return _userAgentMatch(new RegExp('msie\\s*'+version+'|trident/.+rv:\\s*'+version, 'i'));
+			return _userAgentMatch(new RegExp('trident/.+rv:\\s*'+version, 'i'));
 		}
-		return _userAgentMatch(/msie|trident/i);
+		return _userAgentMatch(/trident/i);
 	};
 
+	utils.isIE = function() {
+		return utils.isMSIE() || utils.isIETrident();
+	};
+	
 	utils.isSafari = function() {
 		return (_userAgentMatch(/safari/i) && !_userAgentMatch(/chrome/i) && !_userAgentMatch(/chromium/i) && !_userAgentMatch(/android/i));
 	};

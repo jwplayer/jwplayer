@@ -16,7 +16,7 @@
 	/** HTML5 video class * */
 	jwplayer.html5.video = function(_videotag, _name) {
 		_name = _name || '';
-		var _isIE = utils.isIE(),
+		var _isIE = utils.isMSIE(),
 			_mediaEvents = {
 				abort : _generalHandler,
 				canplay : _canPlayHandler,
