@@ -11,6 +11,59 @@
 		states = events.state,
 		DOCUMENT = document;
 
+	function addFocusBorder(container) {
+		container.className = container.className + ' jw-tab-focus';
+	}
+
+	function removeFocusBorder(container) {
+		container.className = container.className.replace(/ *jw-tab-focus */g, ' ');
+	}
+
+	var _eventMapping = {
+		onBufferChange: events.JWPLAYER_MEDIA_BUFFER,
+		onBufferFull: events.JWPLAYER_MEDIA_BUFFER_FULL,
+		onError: events.JWPLAYER_ERROR,
+		onSetupError: events.JWPLAYER_SETUP_ERROR,
+		onFullscreen: events.JWPLAYER_FULLSCREEN,
+		onMeta: events.JWPLAYER_MEDIA_META,
+		onMute: events.JWPLAYER_MEDIA_MUTE,
+		onPlaylist: events.JWPLAYER_PLAYLIST_LOADED,
+		onPlaylistItem: events.JWPLAYER_PLAYLIST_ITEM,
+		onPlaylistComplete: events.JWPLAYER_PLAYLIST_COMPLETE,
+		onReady: events.API_READY,
+		onResize: events.JWPLAYER_RESIZE,
+		onComplete: events.JWPLAYER_MEDIA_COMPLETE,
+		onSeek: events.JWPLAYER_MEDIA_SEEK,
+		onTime: events.JWPLAYER_MEDIA_TIME,
+		onVolume: events.JWPLAYER_MEDIA_VOLUME,
+		onBeforePlay: events.JWPLAYER_MEDIA_BEFOREPLAY,
+		onBeforeComplete: events.JWPLAYER_MEDIA_BEFORECOMPLETE,
+		onDisplayClick: events.JWPLAYER_DISPLAY_CLICK,
+		onControls: events.JWPLAYER_CONTROLS,
+		onQualityLevels: events.JWPLAYER_MEDIA_LEVELS,
+		onQualityChange: events.JWPLAYER_MEDIA_LEVEL_CHANGED,
+		onCaptionsList: events.JWPLAYER_CAPTIONS_LIST,
+		onCaptionsChange: events.JWPLAYER_CAPTIONS_CHANGED,
+		onAdError: events.JWPLAYER_AD_ERROR,
+		onAdClick: events.JWPLAYER_AD_CLICK,
+		onAdImpression: events.JWPLAYER_AD_IMPRESSION,
+		onAdTime: events.JWPLAYER_AD_TIME,
+		onAdComplete: events.JWPLAYER_AD_COMPLETE,
+		onAdCompanions: events.JWPLAYER_AD_COMPANIONS,
+		onAdSkipped: events.JWPLAYER_AD_SKIPPED,
+		onAdPlay: events.JWPLAYER_AD_PLAY,
+		onAdPause: events.JWPLAYER_AD_PAUSE,
+		onAdMeta: events.JWPLAYER_AD_META,
+		onCast: events.JWPLAYER_CAST_SESSION
+	};
+
+	var _stateMapping = {
+		onBuffer: states.BUFFERING,
+		onPause: states.PAUSED,
+		onPlay: states.PLAYING,
+		onIdle: states.IDLE
+	};
+
 	var api = jwplayer.api = function(container) {
 		var _this = this,
 			_listeners = {},
@@ -24,7 +77,24 @@
 		
 		_this.container = container;
 		_this.id = container.id;
-		
+
+		_this.setup = function(options) {
+			if (jwplayer.embed) {
+				// Destroy original API on setup() to remove existing listeners
+				var fallbackDiv = DOCUMENT.getElementById(_this.id);
+				if (fallbackDiv) {
+					options["fallbackDiv"] = fallbackDiv;
+				}
+				_remove(_this);
+				var newApi = jwplayer(_this.id);
+				newApi.config = options;
+				var embedder = new jwplayer.embed(newApi);
+				embedder.embed();
+				return newApi;
+			}
+			return _this;
+		};
+
 		// Player Getters
 		_this.getBuffer = function() {
 			return _callInternal('jwGetBuffer');
@@ -270,65 +340,18 @@
 				_callInternal("jwPauseAd");
 			}
 		};
-		
-		var _eventMapping = {
-			onBufferChange: events.JWPLAYER_MEDIA_BUFFER,
-			onBufferFull: events.JWPLAYER_MEDIA_BUFFER_FULL,
-			onError: events.JWPLAYER_ERROR,
-			onSetupError: events.JWPLAYER_SETUP_ERROR,
-			onFullscreen: events.JWPLAYER_FULLSCREEN,
-			onMeta: events.JWPLAYER_MEDIA_META,
-			onMute: events.JWPLAYER_MEDIA_MUTE,
-			onPlaylist: events.JWPLAYER_PLAYLIST_LOADED,
-			onPlaylistItem: events.JWPLAYER_PLAYLIST_ITEM,
-			onPlaylistComplete: events.JWPLAYER_PLAYLIST_COMPLETE,
-			onReady: events.API_READY,
-			onResize: events.JWPLAYER_RESIZE,
-			onComplete: events.JWPLAYER_MEDIA_COMPLETE,
-			onSeek: events.JWPLAYER_MEDIA_SEEK,
-			onTime: events.JWPLAYER_MEDIA_TIME,
-			onVolume: events.JWPLAYER_MEDIA_VOLUME,
-			onBeforePlay: events.JWPLAYER_MEDIA_BEFOREPLAY,
-			onBeforeComplete: events.JWPLAYER_MEDIA_BEFORECOMPLETE,
-			onDisplayClick: events.JWPLAYER_DISPLAY_CLICK,
-			onControls: events.JWPLAYER_CONTROLS,
-			onQualityLevels: events.JWPLAYER_MEDIA_LEVELS,
-			onQualityChange: events.JWPLAYER_MEDIA_LEVEL_CHANGED,
-			onCaptionsList: events.JWPLAYER_CAPTIONS_LIST,
-			onCaptionsChange: events.JWPLAYER_CAPTIONS_CHANGED,
-			onAdError: events.JWPLAYER_AD_ERROR,
-			onAdClick: events.JWPLAYER_AD_CLICK,
-			onAdImpression: events.JWPLAYER_AD_IMPRESSION,
-			onAdTime: events.JWPLAYER_AD_TIME,
-			onAdComplete: events.JWPLAYER_AD_COMPLETE,
-			onAdCompanions: events.JWPLAYER_AD_COMPANIONS,
-			onAdSkipped: events.JWPLAYER_AD_SKIPPED,
-			onAdPlay: events.JWPLAYER_AD_PLAY,
-			onAdPause: events.JWPLAYER_AD_PAUSE,
-			onAdMeta: events.JWPLAYER_AD_META,
-			onCast: events.JWPLAYER_CAST_SESSION
-		};
-		
-		utils.foreach(_eventMapping, function(event) {
-			_this[event] = _eventCallback(_eventMapping[event], _eventListener); 
-		});
 
-		var _stateMapping = {
-			onBuffer: states.BUFFERING,
-			onPause: states.PAUSED,
-			onPlay: states.PLAYING,
-			onIdle: states.IDLE 
-		};
 
-		utils.foreach(_stateMapping, function(state) {
-			_this[state] = _eventCallback(_stateMapping[state], _stateListener); 
-		});
-		
-		function _eventCallback(event, listener) {
-			return function(callback) {
-				return listener(event, callback);
-			};
+		// Take a mapping of function names to event names and setup listeners
+		function initializeMapping(mapping, listener) {
+			utils.foreach(mapping, function(name, value) {
+				_this[name] = function(callback) {
+					return listener(value, callback);
+				}
+			});
 		}
+		initializeMapping(_stateMapping, _stateListener);
+		initializeMapping(_eventMapping, _eventListener);
 
 		_this.remove = function() {
 			if (!_playerReady) {
@@ -342,22 +365,6 @@
 			api.destroyPlayer(player.id);
 		}
 		
-		_this.setup = function(options) {
-			if (jwplayer.embed) {
-				// Destroy original API on setup() to remove existing listeners
-				var fallbackDiv = DOCUMENT.getElementById(_this.id);
-				if (fallbackDiv) {
-					options["fallbackDiv"] = fallbackDiv;
-				}
-				_remove(_this);
-				var newApi = jwplayer(_this.id);
-				newApi.config = options;
-				var embedder = new jwplayer.embed(newApi);
-				embedder.embed();
-				return newApi;
-			}
-			return _this;
-		};
 		_this.registerPlugin = function(id, target, arg1, arg2) {
 			jwplayer.plugins.registerPlugin(id, target, arg1, arg2);
 		};
@@ -640,13 +647,4 @@
 
         api.playerReady(obj);
 	};
-
-    function addFocusBorder(container) {
-        container.className = container.className + ' jw-tab-focus';
-    }
-
-    function removeFocusBorder(container) {
-        container.className = container.className.replace(/ *jw-tab-focus */g, ' ');
-    }
-
 })(window.jwplayer);
