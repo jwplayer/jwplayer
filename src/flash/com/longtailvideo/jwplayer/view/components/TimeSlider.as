@@ -128,7 +128,7 @@ package com.longtailvideo.jwplayer.view.components {
 		private function moveHandler(evt:MouseEvent):void {
 			clearTimeout(hideTimeout);
 			if (_duration > 0 || _duration <= -60) {
-				var seconds:Number = Math.round(_duration * sliderPercent(evt.localX));
+				var seconds:Number = _duration * sliderPercent(evt.localX);
 				var text:String;
 				RootReference.stage.setChildIndex(_tooltip, RootReference.stage.numChildren-1);
 				if (_activeCue) {
@@ -138,9 +138,11 @@ package com.longtailvideo.jwplayer.view.components {
 					_tooltip.maxWidth = 0;
 					if (_duration <= -60) {
 						seconds = _duration - seconds;
-						seconds = seconds > 0 ? 0 : seconds;
+						seconds = Math.min(0, seconds);
+						seconds = Math.max(Math.round(seconds), _duration);
 						text = "-" + Strings.digits(-1*seconds);
 					} else {
+						seconds = Math.min(Math.round(seconds), _duration);
 						text = Strings.digits(seconds);
 					}
 				}
