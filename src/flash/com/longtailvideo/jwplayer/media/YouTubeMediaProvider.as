@@ -1,6 +1,5 @@
 ﻿package com.longtailvideo.jwplayer.media {
 	import com.longtailvideo.jwplayer.events.MediaEvent;
-	import com.longtailvideo.jwplayer.model.PlayerConfig;
 	import com.longtailvideo.jwplayer.model.PlaylistItem;
 	import com.longtailvideo.jwplayer.player.PlayerState;
 	import com.longtailvideo.jwplayer.plugins.PluginConfig;
@@ -9,7 +8,6 @@
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
-	import flash.events.StatusEvent;
 	import flash.events.TimerEvent;
 	import flash.net.URLRequest;
 	import flash.utils.Timer;

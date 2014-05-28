@@ -2,12 +2,15 @@
  * A button from within the dock.
  **/
 package com.longtailvideo.jwplayer.view.components {
-	import com.longtailvideo.jwplayer.utils.*;
-	import com.longtailvideo.jwplayer.view.interfaces.*;
+	import com.longtailvideo.jwplayer.utils.RootReference;
+	import com.longtailvideo.jwplayer.view.interfaces.IDockButton;
+	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
 	
-	import flash.display.*;
-	import flash.events.*;
-	import flash.geom.*;
+	import flash.display.DisplayObject;
+	import flash.display.Sprite;
+	import flash.events.MouseEvent;
+	import flash.geom.Rectangle;
+
 	
 	public class DockButton extends ComponentButton implements IDockButton {
 		/** Background over state **/

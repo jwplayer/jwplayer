@@ -4,8 +4,6 @@
 package com.longtailvideo.jwplayer.utils {
 
 	import flash.display.DisplayObject;
-	import flash.display.Sprite;
-	import flash.geom.Rectangle;
 
 	public class Stretcher {
 

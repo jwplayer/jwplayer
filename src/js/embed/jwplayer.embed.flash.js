@@ -148,7 +148,7 @@
 			
 			storedFlashvars[_container.id] = params;
 
-			if (utils.isIE()) {
+			if (utils.isMSIE()) {
 				var html = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" ' +
 				'" width="100%" height="100%"' +
 				'id="' +

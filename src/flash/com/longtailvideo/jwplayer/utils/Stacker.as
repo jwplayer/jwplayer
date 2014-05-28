@@ -2,7 +2,6 @@ package com.longtailvideo.jwplayer.utils {
     import flash.display.DisplayObject;
     import flash.display.InteractiveObject;
     import flash.display.MovieClip;
-    import flash.display.Sprite;
 
     public class Stacker {
         /** Reference to the clip to stack. **/

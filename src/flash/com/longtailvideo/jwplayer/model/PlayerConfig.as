@@ -1,10 +1,12 @@
 package com.longtailvideo.jwplayer.model {
-	import com.longtailvideo.jwplayer.player.*;
-	import com.longtailvideo.jwplayer.plugins.*;
-	import com.longtailvideo.jwplayer.utils.*;
+	import com.longtailvideo.jwplayer.player.PlayerVersion;
+	import com.longtailvideo.jwplayer.plugins.PluginConfig;
+	import com.longtailvideo.jwplayer.utils.Logger;
+	import com.longtailvideo.jwplayer.utils.Strings;
+	import com.longtailvideo.jwplayer.utils.TypeChecker;
 	
-	import flash.events.*;
-	import flash.utils.*;
+	import flash.events.EventDispatcher;
+	import flash.utils.getQualifiedClassName;
 
 	/**
 	 * Configuration data for the player
