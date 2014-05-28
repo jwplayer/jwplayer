@@ -83,6 +83,11 @@
 			_inCB = FALSE, // in control bar
 			_currentState,
 
+			// view fullscreen methods and ability
+			_requestFullscreen,
+			_exitFullscreen,
+			_elementFullscreen = false,
+
             // Used to differentiate tab focus events from click events, because when
             //  it is a click, the mouseDown event will occur immediately prior
             _focusFromClick = false,
@@ -100,6 +105,24 @@
 			_playerElement.onfocusout = handleBlur;
 			_playerElement.addEventListener('blur',handleBlur);
             _playerElement.addEventListener('keydown', handleKeydown);
+
+			_requestFullscreen =
+				_playerElement.requestFullscreen ||
+				_playerElement.requestFullScreen ||
+				_playerElement.webkitRequestFullscreen ||
+				_playerElement.webkitRequestFullScreen ||
+				_playerElement.webkitEnterFullscreen ||
+				_playerElement.webkitEnterFullScreen ||
+				_playerElement.mozRequestFullScreen ||
+				_playerElement.msRequestFullscreen;
+			_exitFullscreen =
+				DOCUMENT.exitFullscreen ||
+				DOCUMENT.cancelFullScreen ||
+				DOCUMENT.webkitExitFullscreen ||
+				DOCUMENT.webkitCancelFullScreen ||
+				DOCUMENT.mozCancelFullScreen ||
+				DOCUMENT.msExitFullscreen;
+			_elementFullscreen = _requestFullscreen && _exitFullscreen;
 
 			if (_model.aspectratio) {
 				_css.style(_playerElement, {
@@ -756,48 +779,30 @@
 			if (state && _isAudioFile()) {
 				return;
 			}
-			var playerFullscreen = false;
 			if (state !== _model.fullscreen) {
 				// If a native fullscreen method is available in the browser, use that.
 				if (state) {
-					var requestFullscreen =
-						_playerElement.requestFullscreen ||
-						_playerElement.requestFullScreen ||
-						_playerElement.webkitRequestFullscreen ||
-						_playerElement.webkitRequestFullScreen ||
-						_playerElement.webkitEnterFullscreen ||
-						_playerElement.webkitEnterFullScreen ||
-						_playerElement.mozRequestFullScreen ||
-						_playerElement.msRequestFullscreen;
-					if (requestFullscreen) {
-						requestFullscreen.apply(_playerElement);
-						// we need to wait for an error or onchange to know if this worked
-						playerFullscreen = true;
+					if (_requestFullscreen) {
+						_requestFullscreen.apply(_playerElement);
 					}
 				} else {
-					var exitFullscreen =
-						DOCUMENT.exitFullscreen ||
-						DOCUMENT.cancelFullScreen ||
-						DOCUMENT.webkitExitFullscreen ||
-						DOCUMENT.webkitCancelFullScreen ||
-						DOCUMENT.mozCancelFullScreen ||
-						DOCUMENT.msExitFullscreen;
-					if (exitFullscreen) {
-						exitFullscreen.apply(DOCUMENT);
+					if (_exitFullscreen) {
+						_exitFullscreen.apply(DOCUMENT);
 					}
-
 				}
 				
-				// use video tag fullscreen if player container fullscreen failed
-				if (!playerFullscreen) {
+				if (_elementFullscreen) {
+					_fullscreenChangeHandler({
+						type: 'fullscreenrequest',
+						target: _playerElement,
+						jwstate: state
+					});
+				} else {
+					// use video tag fullscreen if container fullscreen is not available
 					_model.getVideo().setFullScreen(state);
 				}
 
-				_fullscreenChangeHandler({
-					type: 'fullscreenrequest',
-					target: _playerElement,
-					jwstate: state
-				});
+
 			}
 		}
 
@@ -805,12 +810,15 @@
 		 * Return whether or not we're in native fullscreen
 		 */
 		function _isNativeFullscreen() {
-			var fsElement = DOCUMENT.currentFullScreenElement ||
+			if (_elementFullscreen) {
+				var fsElement = DOCUMENT.currentFullScreenElement ||
 							DOCUMENT.webkitCurrentFullScreenElement ||
 							DOCUMENT.mozFullScreenElement || 
 							DOCUMENT.msFullscreenElement;
-			var fullscreen = fsElement && fsElement.id === _api.id;
-			return fullscreen || _model.getVideo().getFullScreen();
+				return !!(fsElement && fsElement.id === _api.id);
+			}
+			// if player element view fullscreen not available, return video fullscreen state
+			return _model.getVideo().getFullScreen();
 		}
 		
 		/**
@@ -1234,15 +1242,14 @@
 				_api.jwRemoveEventListener(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
 				_castDisplay.destroy();
 			}
-			 if (_controlsLayer) {
-			 	_controlsLayer.removeEventListener('mousemove', _startFade);
-			 	_controlsLayer.removeEventListener('mouseout', _mouseoutHandler); 
-			 }
-			 
-			 if (_videoLayer) {
-			 	_videoLayer.removeEventListener('mousemove', _startFade);
-			 	_videoLayer.removeEventListener('click', _display.clickHandler);
-			 }
+			if (_controlsLayer) {
+				_controlsLayer.removeEventListener('mousemove', _startFade);
+				_controlsLayer.removeEventListener('mouseout', _mouseoutHandler); 
+			}
+			if (_videoLayer) {
+				_videoLayer.removeEventListener('mousemove', _startFade);
+				_videoLayer.removeEventListener('click', _display.clickHandler);
+			}
 		};
 
 		_init();
