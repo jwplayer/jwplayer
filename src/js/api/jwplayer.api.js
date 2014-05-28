@@ -101,7 +101,7 @@
 		onIdle: states.IDLE
 	};
 
-	var api = jwplayer.api = function(container) {
+	jwplayer.api = function(container) {
 		var _this = this,
 			_listeners = {},
 			_stateListeners = {},
@@ -109,6 +109,7 @@
 			_playerReady = false,
 			_queuedCalls = [],
 			_instream,
+			_embedder,
 			_itemMeta = {},
 			_callbacks = {};
 
@@ -125,8 +126,8 @@
 				_remove(_this);
 				var newApi = jwplayer(_this.id);
 				newApi.config = options;
-				var embedder = new jwplayer.embed(newApi);
-				embedder.embed();
+				_embedder = new jwplayer.embed(newApi);
+				_embedder.embed();
 				return newApi;
 			}
 			return _this;
@@ -255,7 +256,7 @@
 			return _this;
 		};
 		_this.createInstream = function() {
-			return new api.instream(this, _player);
+			return new jwplayer.api.instream(this, _player);
 		};
 		_this.setInstream = function(instream) {
 			_instream = instream;
@@ -310,13 +311,13 @@
 				var value = _callInternal.apply(this, [internalName].concat(Array.prototype.slice.call(arguments, 0)) );
 				return (chainable ? _this : value);
 			}
-		};
+		}
 		var nonChainingGenerator = function(index, name) {
 			generateInternalFunction(false, name);
-		}
+		};
 		var chainingGenerator    = function(index, name) {
 			generateInternalFunction(true, name);
-		}
+		};
 		utils.foreach(_internalFuncsToGenerate, nonChainingGenerator);
 		utils.foreach(_chainableInternalFuncs,  chainingGenerator);
 
@@ -330,7 +331,12 @@
 
 		function _remove(player) {
 			_queuedCalls = [];
-			api.destroyPlayer(player.id);
+
+			if (_embedder && _embedder.destroy) {
+				_embedder.destroy();
+			}
+
+			jwplayer.api.destroyPlayer(player.id);
 		}
 
 		_this.registerPlugin = function(id, target, arg1, arg2) {
@@ -488,7 +494,7 @@
 			});
 
             _eventListener(events.JWPLAYER_VIEW_TAB_FOCUS, function(data) {
-                var container = this.getContainer();
+                var container = _this.getContainer();
                 if (data.hasFocus === true) {
                     addFocusBorder(container);
                 }
@@ -522,7 +528,7 @@
 		api.playerReady(obj);
 	};
 
-	api.selectPlayer = function(identifier) {
+	jwplayer.api.selectPlayer = function(identifier) {
 		var _container;
 
 		if (!utils.exists(identifier)) {
@@ -538,12 +544,12 @@
 		}
 
 		if (_container) {
-			var foundPlayer = api.playerById(_container.id);
+			var foundPlayer = jwplayer.api.playerById(_container.id);
 			if (foundPlayer) {
 				return foundPlayer;
 			} else {
 				// Todo: register new object
-				return api.addPlayer(new api(_container));
+				return jwplayer.api.addPlayer(new jwplayer.api(_container));
 			}
 		} else if (typeof identifier == "number") {
 			return _players[identifier];
@@ -553,7 +559,7 @@
 	};
 
 
-	api.playerById = function(id) {
+	jwplayer.api.playerById = function(id) {
 		for (var p = 0; p < _players.length; p++) {
 			if (_players[p].id == id) {
 				return _players[p];
@@ -562,7 +568,7 @@
 		return null;
 	};
 
-	api.addPlayer = function(player) {
+	jwplayer.api.addPlayer = function(player) {
 		for (var p = 0; p < _players.length; p++) {
 			if (_players[p] == player) {
 				return player; // Player is already in the list;
@@ -573,38 +579,36 @@
 		return player;
 	};
 
-	api.destroyPlayer = function(playerId) {
-		var index = -1, player;
-		for (var p = 0; p < _players.length; p++) {
-			if (_players[p].id == playerId) {
-				index = p;
-				player = _players[p];
-				continue;
+	jwplayer.api.destroyPlayer = function(playerId) {
+		var index, player, toDestroy;
+
+		utils.foreach(_players, function(idx, value) {
+			if (value.id === playerId) {
+				index = idx;
+				player = value;
 			}
+		});
+
+		if (index === undefined || player === undefined) {
+			return null;
 		}
-		if (index >= 0) {
-			var id = player.id,
-				toDestroy = DOCUMENT.getElementById(id + (player.renderingMode == "flash" ? "_wrapper" : ""));
 
-			if (utils.clearCss) {
-				// Clear HTML5 rules
-				utils.clearCss("#"+id);
+		utils.clearCss("#"+player.id);
+
+		toDestroy = DOCUMENT.getElementById(player.id + (player.renderingMode == "flash" ? "_wrapper" : ""));
+
+		if (toDestroy) {
+			if (player.renderingMode === "html5") {
+				// calls jwPlayerDestroy()
+				player.destroyPlayer();
 			}
-
-//			if (!toDestroy) {
-//				toDestroy = DOCUMENT.getElementById(id);
-//			}
-
-			if (toDestroy) {
-				if (player.renderingMode == "html5") {
-					player.destroyPlayer();
-				}
-				var replacement = DOCUMENT.createElement('div');
-				replacement.id = id;
-				toDestroy.parentNode.replaceChild(replacement, toDestroy);
-			}
-			_players.splice(index, 1);
+			var replacement = DOCUMENT.createElement('div');
+			replacement.id = player.id;
+			toDestroy.parentNode.replaceChild(replacement, toDestroy);
 		}
+
+		// Remove from array of players
+		_players.splice(index, 1);
 
 		return null;
 	};
