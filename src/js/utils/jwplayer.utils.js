@@ -473,6 +473,7 @@
 	/** Loads an XML file into a DOM object * */
 	utils.ajax = function(xmldocpath, completecallback, errorcallback, donotparse) {
 		var xmlhttp;
+		var isError = false;
 		// Hash tags should be removed from the URL since they can't be loaded in IE
 		if (xmldocpath.indexOf("#") > 0) xmldocpath = xmldocpath.replace(/#.*$/, "");
 
@@ -495,11 +496,19 @@
 		}
 
 		xmlhttp.onerror = _ajaxError(errorcallback, xmldocpath, xmlhttp);
-
+		try {
+			xmlhttp.open("GET", xmldocpath, TRUE);
+		} catch (error) {
+			isError = true;
+		}
 		// make XDomainRequest asynchronous:
 		setTimeout(function() {
+			if (isError) {
+				if (errorcallback) errorcallback(xmldocpath,xmldocpath,xmlhttp);
+				return;
+			}
 			try {
-				xmlhttp.open("GET", xmldocpath, TRUE);
+
 				xmlhttp.send();
 			} catch (error) {
 				if (errorcallback) errorcallback(xmldocpath,xmldocpath,xmlhttp);
