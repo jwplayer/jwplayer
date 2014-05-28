@@ -74,7 +74,8 @@ package com.longtailvideo.jwplayer.view.components {
 
 		public function PlaylistComponent(player:IPlayer) {
 			super(player, "playlist");
-			
+			this.tabEnabled = false;
+			this.tabChildren = false;
 			imageLoaderMap = new Dictionary();
 			buttons = [];
 			dividers = new Vector.<DisplayObject>;
@@ -428,15 +429,12 @@ package com.longtailvideo.jwplayer.view.components {
 					scrollEase();
 				}
 			}
-			var currentTab:Number=500;
+
 			for (var i:Number = 0; i < _playlist.length; i++) {
 				var div:DisplayObject;
 				if (clr || buttons.length == 0) {
 					var btn:MovieClip;
 					btn = buildButton();
-					btn.tabEnabled = true;
-					btn.tabChildren = false;
-					btn.tabIndex = currentTab++;
 					if (i > 0) {
 						div = getSkinElement("divider");
 						if (div) {
@@ -451,6 +449,8 @@ package com.longtailvideo.jwplayer.view.components {
 					btn.y = i * (buttonheight + (div ? div.height : 0));
 					btn.buttonMode = true;
 					btn.mouseChildren = false;
+					btn.tabChildren = false;
+					btn.tabEnabled = false;
 					btn.name = i.toString();
 					buttons.push({c: btn, s: stc});
 					setContents(i);

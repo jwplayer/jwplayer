@@ -1,0 +1,21 @@
+{
+	"evil": false,
+	"regexdash": true,
+	"browser": true,
+	"devel": true,
+	"node": false,
+	"freeze": true,
+	"immed": true,
+	"jquery": false,
+	"laxbreak": true,
+	"laxcomma": true,
+	"smarttabs": true,
+	"white": false,
+	"sub": true,
+	"trailing": false,
+	"undef": true,
+	"unused": true,
+	"globals": {
+		"jwplayer": true
+	}
+}

@@ -1,11 +1,10 @@
 package com.longtailvideo.jwplayer.view {
-	import com.longtailvideo.jwplayer.player.IPlayer;
+	import com.longtailvideo.jwplayer.view.components.CaptionsComponent;
 	import com.longtailvideo.jwplayer.view.interfaces.IControlbarComponent;
 	import com.longtailvideo.jwplayer.view.interfaces.IDisplayComponent;
 	import com.longtailvideo.jwplayer.view.interfaces.IDockComponent;
 	import com.longtailvideo.jwplayer.view.interfaces.IPlayerComponent;
 	import com.longtailvideo.jwplayer.view.interfaces.IPlaylistComponent;
-	import com.longtailvideo.jwplayer.view.components.CaptionsComponent;
 	
 	
 	/**

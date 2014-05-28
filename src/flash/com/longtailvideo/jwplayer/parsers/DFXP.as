@@ -1,10 +1,6 @@
 package com.longtailvideo.jwplayer.parsers {
 
 
-    import com.longtailvideo.jwplayer.utils.Strings;
-    import com.longtailvideo.jwplayer.utils.Logger;
-
-
     /** Parse styling and contents of W3C Timed Text XML files. **/
     public class DFXP {
 

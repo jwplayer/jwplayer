@@ -104,6 +104,7 @@ package com.longtailvideo.jwplayer.view.components {
 //		protected var _removedButtons:Array = [];
 		protected var _dividers:Array;
 		protected var _defaultLayout:String = "[play prev next elapsed][time alt][duration hd cc mute volumeH fullscreen]";
+		protected var _defaultButtons:Array;
 		protected var _currentLayout:String;
 		protected var _layoutManager:ControlbarLayoutManager;
 		protected var _width:Number;
@@ -153,7 +154,7 @@ package com.longtailvideo.jwplayer.view.components {
 			updateVolumeSlider();
 			_vttLoader = new AssetLoader();
 			_vttLoader.addEventListener(Event.COMPLETE, loadComplete);
-			_vttLoader.addEventListener(ErrorEvent.ERROR, loadError);		
+			_vttLoader.addEventListener(ErrorEvent.ERROR, loadError);
 		}
 		
 		public function setText(text:String=""):void {
@@ -355,12 +356,17 @@ package com.longtailvideo.jwplayer.view.components {
 			
 			_currentLayout = removeInactive(newLayout);
 		}
-
-
+		
 		private function removeInactive(layout:String):String {
-			var buttons:Array = _defaultLayout.match(/\W*([A-Za-z0-9]+?)\W/g);
-			for (var i:Number = 0; i < buttons.length; i++) {
-				var button:String = (buttons[i] as String).replace(/\W/g, "");
+			var i:uint;
+			if (!_defaultButtons) {
+				_defaultButtons = _defaultLayout.match(/\W*([A-Za-z0-9]+?)\W/g);
+				for (i = 0; i < _defaultButtons.length; i++) {
+					_defaultButtons[i] = (_defaultButtons[i] as String).replace(/\W/g, "");
+				}
+			}
+			for (i = 0; i < _defaultButtons.length; i++) {
+				var button:String = _defaultButtons[i];
 				if (!_buttons[button]) {
 					layout = removeButtonFromLayout(button, layout);
 				}
@@ -418,23 +424,21 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 		}
 
-		private function updateVolumeSlider(evt:MediaEvent=null):void {
+		private function updateVolumeSlider(event:Event=null):void {
 			var sliders:Array = [_volSliderH, _volSliderV];
-			
+
 			for each (var volume:Slider in sliders) {
-				if (volume) {
-					if (!isMuted) {
-						volume.setBuffer(100);
-						volume.setProgress(_player.config.volume);
-					} else {
-						volume.setProgress(0);
-					}
+				if (!volume) { continue; }
+
+				if (isMuted) {
+					volume.setProgress(0);
+					continue;
 				}
+				volume.setProgress(_player.config.volume);
 			}
-			
+
 			updateControlbarState();
 			redraw();
-
 		}
 
 
@@ -546,8 +550,8 @@ package com.longtailvideo.jwplayer.view.components {
 			_timeAlt = getTextField('alt');
 			addSlider('time', ViewEvent.JWPLAYER_VIEW_CLICK, seekHandler);
 			_timeSlider = getSlider('time');
-			addSlider('volumeV', ViewEvent.JWPLAYER_VIEW_CLICK, volumeHandler, 0, true);
-			addSlider('volumeH', ViewEvent.JWPLAYER_VIEW_CLICK, volumeHandler, 0, false);
+			addSlider('volumeV', ViewEvent.JWPLAYER_VIEW_CLICK, volumeHandler, true);
+			addSlider('volumeH', ViewEvent.JWPLAYER_VIEW_CLICK, volumeHandler, false);
 			_volSliderV = getSlider('volumeV');
 			_volSliderH = getSlider('volumeH');
 			if (_buttons.hd) {
@@ -737,7 +741,7 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 
 
-		private function addSlider(name:String, event:String, callback:Function, margin:Number=0, vertical:Boolean=true):void {
+		private function addSlider(name:String, event:String, callback:Function, vertical:Boolean=true):void {
 			try {
 				var slider:Slider;
 				if (name == "time") {
@@ -823,14 +827,17 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 
 		private function volumeHandler(evt:ViewEvent):void {
+			if (_player.locked) {
+				return;
+			}
+
 			var volume:Number = Math.round(evt.data * 100);
 			volume = volume < 10 ? 0 : volume;
-			if (!_player.locked) {
-				var volumeEvent:MediaEvent = new MediaEvent(MediaEvent.JWPLAYER_MEDIA_VOLUME);
-				volumeEvent.volume = volume;
-				updateVolumeSlider(volumeEvent);
-			}
+
+			// update player.config.volume
 			dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_VOLUME, volume));
+
+			updateVolumeSlider();
 		}
 
 
@@ -1028,20 +1035,24 @@ package com.longtailvideo.jwplayer.view.components {
 			//make sure we don't add dividers a layout that already has dividers
 			var div:RegExp = /\|/g;  
 			_currentLayout = _currentLayout.replace(div,"");
-						
-			rightDivide.forEach( function(elem:String,index:int,arr:Array):void {
-				
-				if (_currentLayout.match(elem)) {
-					_currentLayout = _currentLayout.replace(elem,elem+"|");
+			
+			var i:uint;
+			var elem:String;
+			for (i=rightDivide.length; i--;) {
+				elem = rightDivide[i];
+				if (_currentLayout.indexOf(elem) > -1) {
+					_currentLayout = _currentLayout.replace(elem, elem+"|");
 					_numDividers++;
 				}
-			});
-			leftDivide.forEach( function(elem:String,index:int,arr:Array):void {
-				if (_currentLayout.match(elem)) {
-					_currentLayout = _currentLayout.replace(elem,"|" + elem);
+			}
+			
+			for (i=leftDivide.length; i--;) {
+				elem = leftDivide[i];
+				if (_currentLayout.indexOf(elem) > -1) {
+					_currentLayout = _currentLayout.replace(elem, "|" + elem);
 					_numDividers++;
 				}
-			});
+			}
 		}
 		
 		private function alignTextFields():void {

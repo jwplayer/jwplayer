@@ -89,7 +89,7 @@ package com.longtailvideo.jwplayer.model {
 		protected var _currentMedia:IMediaProvider;
 		protected var _mediaSources:Object;
 		protected var _preComplete:Boolean = false;
-		
+		protected var _cancelComplete:Boolean = false;
 		/** Constructor **/
 		public function Model() {
 			_config = new PlayerConfig();
@@ -220,6 +220,11 @@ package com.longtailvideo.jwplayer.model {
 		public function checkBeforeComplete():Boolean {
 			return _preComplete;
 		}
+		public function loadCalled():void {
+			if (_preComplete) {
+				_cancelComplete = true;
+			}
+		}
 
 		
 		protected function forwardEvents(evt:Event):void {
@@ -233,6 +238,10 @@ package com.longtailvideo.jwplayer.model {
 				} 
 				if (evt.type == MediaEvent.JWPLAYER_MEDIA_COMPLETE) {
 					_preComplete = false;
+					if (_cancelComplete) {
+						_cancelComplete = false;
+						return;
+					}
 				}
 				dispatchEvent(evt);
 			}

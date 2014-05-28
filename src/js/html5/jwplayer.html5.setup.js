@@ -27,28 +27,27 @@
 		INIT_PLUGINS = 6,
 		SEND_READY = 7;
 
+
 	html5.setup = function(model, view) {
-		var _model = model, 
+		var _model = model,
 			_view = view,
 			_completed = {},
 			_skin,
 			_eventDispatcher = new events.eventdispatcher(),
-			_errorState = false,
-			_queue = [];
-			
-		function _initQueue() {
-			_addTask(PARSE_CONFIG, _parseConfig);
-			_addTask(LOAD_SKIN, _loadSkin, PARSE_CONFIG);
-			_addTask(LOAD_PLAYLIST, _loadPlaylist, PARSE_CONFIG);
-			_addTask(LOAD_PREVIEW, _loadPreview, LOAD_PLAYLIST);
-			_addTask(SETUP_COMPONENTS, _setupComponents, LOAD_PREVIEW + "," + LOAD_SKIN);
-			_addTask(INIT_PLUGINS, _initPlugins, SETUP_COMPONENTS + "," + LOAD_PLAYLIST);
-			_addTask(SEND_READY, _sendReady, INIT_PLUGINS);
-		}
-		
-		function _addTask(name, method, depends) {
-			_queue.push({name:name, method:method, depends:depends});
-		}
+			_errorState = false;
+
+		// This is higher scope so it can be used in two functions to remove event listeners
+		var _previewImg;
+
+		var _queue = [
+			{name: PARSE_CONFIG,     method:_parseConfig,     depends:false},
+			{name: LOAD_SKIN,        method:_loadSkin,        depends:PARSE_CONFIG},
+			{name: LOAD_PLAYLIST,    method:_loadPlaylist,    depends:PARSE_CONFIG},
+			{name: LOAD_PREVIEW,     method:_loadPreview,     depends:LOAD_PLAYLIST},
+			{name: SETUP_COMPONENTS, method:_setupComponents, depends:LOAD_PREVIEW+","+LOAD_SKIN},
+			{name: INIT_PLUGINS,     method:_initPlugins,     depends:SETUP_COMPONENTS+","+LOAD_PLAYLIST},
+			{name: SEND_READY,       method:_sendReady,       depends:INIT_PLUGINS}
+		];
 
 		function _nextTask() {
 			for (var i=0; i < _queue.length; i++) {
@@ -69,7 +68,7 @@
 				setTimeout(_nextTask, 500);
 			}
 		}
-		
+
 		function _allComplete(dependencies) {
 			if (!dependencies) return true;
 			var split = dependencies.toString().split(",");
@@ -83,7 +82,7 @@
 		function _taskComplete(name) {
 			_completed[name] = true;
 		}
-		
+
 		function _parseConfig() {
 			if (model.edition && model.edition() == "invalid") {
 				_error("Error setting up player: Invalid license key");
@@ -92,12 +91,12 @@
 				_taskComplete(PARSE_CONFIG);
 			}
 		}
-		
+
 		function _loadSkin() {
 			_skin = new html5.skin();
 			_skin.load(_model.config.skin, _skinLoaded, _skinError);
 		}
-		
+
 		function _skinLoaded() {
 			_taskComplete(LOAD_SKIN);
 		}
@@ -107,54 +106,48 @@
 		}
 
 		function _loadPlaylist() {
-			switch(utils.typeOf(_model.config.playlist)) {
-			case "string":
-//				var loader = new html5.playlistloader();
-//				loader.addEventListener(events.JWPLAYER_PLAYLIST_LOADED, _playlistLoaded);
-//				loader.addEventListener(events.JWPLAYER_ERROR, _playlistError);
-//				loader.load(_model.config.playlist);
-//				break;
-				_error("Can't load a playlist as a string anymore");
-				break;
-			case "array":
+			var type = utils.typeOf(_model.config.playlist);
+			if (type === "array") {
 				_completePlaylist(new jwplayer.playlist(_model.config.playlist));
+			} else {
+				_error("Playlist type not supported: "+ type);
 			}
 		}
-		
-		// function _playlistLoaded(evt) {
-		// 	_completePlaylist(evt.playlist);
-		// }
-		
+
 		function _completePlaylist(playlist) {
 			_model.setPlaylist(playlist);
-			// Support Playlist index in config?:
+			// TODO: support playlist index in config
 			// _model.setItem(_model.config.item);
-			if (_model.playlist[0].sources.length === 0) {
+			if (_model.playlist.length === 0 || _model.playlist[0].sources.length === 0) {
 				_error("Error loading playlist: No playable sources found");
 			} else {
 				_taskComplete(LOAD_PLAYLIST);
 			}
 		}
 
-		// function _playlistError(evt) {
-		// 	_error("Error loading playlist: " + evt.message);
-		// }
-		
+		var previewTimeout = -1;
 		function _loadPreview() {
-			var preview = _model.playlist[_model.item].image; 
+			var preview = _model.playlist[_model.item].image;
 			if (preview) {
-				var img = new Image();
-				img.addEventListener('load', _previewLoaded, false);
-				// If there was an error, continue anyway
-				img.addEventListener('error', _previewLoaded, false);
-				img.src = preview;
-				setTimeout(_previewLoaded, 500);
+				_previewImg = new Image();
+				_previewImg.onload = _previewLoaded;
+				_previewImg.onerror = _previewLoaded;
+				_previewImg.src = preview;
+				clearTimeout(previewTimeout);
+				previewTimeout = setTimeout(_previewLoaded, 500);
 			} else {
-				_taskComplete(LOAD_PREVIEW);	
+				_previewLoaded();
 			}
 		}
-		
+
 		function _previewLoaded() {
+			if (_previewImg) {
+				_previewImg.onload = null;
+				_previewImg.onerror = null;
+				_previewImg = null;
+			}
+
+			clearTimeout(previewTimeout);
 			_taskComplete(LOAD_PREVIEW);
 		}
 
@@ -162,7 +155,7 @@
 			_view.setup(_skin);
 			_taskComplete(SETUP_COMPONENTS);
 		}
-		
+
 		function _initPlugins() {
 			_taskComplete(INIT_PLUGINS);
 		}
@@ -171,18 +164,17 @@
 			_eventDispatcher.sendEvent(events.JWPLAYER_READY);
 			_taskComplete(SEND_READY);
 		}
-		
+
 		function _error(message) {
 			_errorState = true;
 			_eventDispatcher.sendEvent(events.JWPLAYER_ERROR, {message: message});
 			_view.setupError(message);
 		}
-		
+
 		utils.extend(this, _eventDispatcher);
 		
 		this.start = _nextTask;
-		
-		_initQueue();
+
 	};
 
 })(jwplayer);

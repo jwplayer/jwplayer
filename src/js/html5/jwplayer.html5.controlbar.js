@@ -13,7 +13,8 @@
 		_css = utils.css,
 		_setTransition = utils.transitionStyle,
 		_isMobile = utils.isMobile(),
-		_nonChromeAndroid = utils.isAndroid(4) && !utils.isChrome(),
+		_nonChromeAndroid = utils.isAndroid(4,true),
+
 		/** Controlbar element types * */
 		CB_BUTTON = "button",
 		CB_TEXT = "text",
@@ -49,7 +50,31 @@
 		
 		WINDOW = window,
 		DOCUMENT = document;
-	
+
+
+	function _removeFromArray(array, item) {
+		var index = array.indexOf(item);
+		if (index > -1) {
+			array.splice(index, 1);
+		}
+	}
+
+	function _addOnceToArray(array, item) {
+		var index = array.indexOf(item);
+		if (index === -1) {
+			array.push(item);
+		}
+	}
+
+	function _createElementId(_id, name) {
+		return _id + "_" + name;
+	}
+
+	function _elementSize(skinElem) {
+		return skinElem ? parseInt(skinElem.width, 10) + "px " + parseInt(skinElem.height, 10) + "px" : "0 0";
+	}
+
+
 	/** HTML5 Controlbar class * */
 	html5.controlbar = function(_api, _config) {
 		var _skin,
@@ -289,10 +314,6 @@
 				}
 				if (_elements.timeRail) {
 					_elements.timeRail.className = "jwrail";
-					setTimeout(function() {
-						// Temporarily disable the buffer animation
-						_elements.timeRail.className += " jwsmooth";
-					}, 100);
 				}
 				_setBuffer(0);
 				_timeUpdated({ position: 0, duration: 0});
@@ -578,6 +599,7 @@
 				buttonTouch.addEventListener(utils.touchEvents.TAP, _buttonClickHandler(name));
 			}
 			button.innerHTML = "&nbsp;";
+			button.tabIndex = -1;
 			_appendChild(span, button);
 
 			var outSkin = _getSkinElement(name + "Button"),
@@ -678,20 +700,6 @@
 			}
 		}
 
-		function _removeFromArray(array, item) {
-			var index = array.indexOf(item);
-			if (index > -1) {
-				array.splice(index, 1);
-			}
-		}
-
-		function _addOnceToArray(array, item) {
-			var index = array.indexOf(item);
-			if (index === -1) {
-				array.push(item);
-			}
-		}
-
 		function _showVolume() {
 			if (_audioMode || _instreamMode) return;
 			_css.block(_id); // unblock on position overlay
@@ -750,18 +758,14 @@
 			}
 			_toggleStates[name] = state;
 		}
-		
-		function _createElementId(name) {
-			return _id + "_" + name;
-		}
-		
+
 		function _buildText(name) {
 			var style = {},
 				skinName = (name == "alt") ? "elapsed" : name,
 				skinElement = _getSkinElement(skinName+"Background");
 			if (skinElement.src) {
 				var element = _createSpan();
-				element.id = _createElementId(name); 
+				element.id = _createElementId(_id, name);
 				if (name == "elapsed" || name == "duration") {
 					element.className = "jwtext jw" + name + " jwhidden";
 					_jwhidden.push(element);
@@ -778,11 +782,7 @@
 			}
 			return null;
 		}
-		
-		function _elementSize(skinElem) {
-			return skinElem ? parseInt(skinElem.width, 10) + "px " + parseInt(skinElem.height, 10) + "px" : "0 0";
-		}
-		
+
 		function _buildDivider(divider) {
 			var element = _buildImage(divider.name);
 			if (!element) {
@@ -918,7 +918,7 @@
 				progressRail,
 				sliderPrefix;
 			
-			rail.className = "jwrail jwsmooth";
+			rail.className = "jwrail";
 
 			for (var i=0; i<railElements.length; i++) {
 				sliderPrefix = (name=="time"?"Slider":EMPTY);
@@ -1050,7 +1050,7 @@
 			}
 			if (evt.type == utils.touchEvents.DRAG_END) {
 				_api.jwSeekDrag(FALSE);
-				_elements.timeRail.className = "jwrail jwsmooth";
+				_elements.timeRail.className = "jwrail";
 				_draggingEnd();
 				_sliderMapping.time(pct);
 				_hideTimeTooltip();
@@ -1120,7 +1120,7 @@
 					_api.jwSeekDrag(FALSE);
 				}
 
-				_elements[name+'Rail'].className = "jwrail jwsmooth";
+				_elements[name+'Rail'].className = "jwrail";
 				_draggingEnd();
 				_sliderMapping[name.replace("H", EMPTY)](pct);
 			} else {
@@ -1472,6 +1472,17 @@
 			_css.style(_elements.volumeH, {
 				display: _audioMode || _instreamMode ? JW_CSS_BLOCK : JW_CSS_NONE
 			});
+			var maxWidth = _settings.maxwidth|0;
+			if (!_audioMode && maxWidth) {
+				if (_controlbar.parentNode && utils.isIE()) {
+					if (_controlbar.parentNode.clientWidth > maxWidth + (_settings.margin|0 * 2)) {
+						_css.style(_controlbar,{width:maxWidth});
+					} else {
+						_css.style(_controlbar,{width:EMPTY});
+					}
+				}
+			}
+			
 			if (_volumeOverlay) {
 				_css.style(_volumeOverlay.element(), {
 					display: !(_audioMode || _instreamMode) ? JW_CSS_BLOCK : JW_CSS_NONE
@@ -1483,6 +1494,8 @@
 			_css.style(_elements.cc, {
 				display: !_audioMode && !casting && _hasCaptions() ? EMPTY : JW_CSS_NONE
 			});
+			
+			
 
 			_drawCues();
 
@@ -1666,18 +1679,6 @@
 			var style = {
 				display: JW_CSS_INLINE_BLOCK
 			};
-
-			// IE applied max-width centering fix
-			var maxWidth = _settings.maxwidth|0;
-			if (!_audioMode && maxWidth) {
-				if (_controlbar.parentNode && utils.isIETrident()) {
-					if (_controlbar.parentNode.clientWidth > maxWidth + (_settings.margin|0 * 2)) {
-						style.width = maxWidth;
-					} else {
-						style.width = EMPTY;
-					}
-				}
-			}
 
 			_css.style(_controlbar, style);
 			_cbBounds = utils.bounds(_controlbar);
@@ -1905,7 +1906,7 @@
 
 	_setTransition(CB_CLASS, JW_CSS_SMOOTH_EASE);
 	_setTransition(CB_CLASS + ' button', JW_CSS_SMOOTH_EASE);
-	_setTransition(CB_CLASS + ' .jwtime .jwsmooth span', JW_CSS_SMOOTH_EASE + ", width .25s linear, left .05s linear");
+	//_setTransition(CB_CLASS + ' .jwtime .jwsmooth span', JW_CSS_SMOOTH_EASE + ", width .25s linear, left .05s linear");
 	_setTransition(CB_CLASS + ' .jwtoggling', JW_CSS_NONE);
 
 })(window.jwplayer);

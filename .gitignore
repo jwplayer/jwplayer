@@ -1,0 +1,6 @@
+.actionScriptProperties
+.idea
+.settings
+.project
+node_modules
+*.iml

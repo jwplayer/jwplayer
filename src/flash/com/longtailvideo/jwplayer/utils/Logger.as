@@ -51,7 +51,7 @@ package com.longtailvideo.jwplayer.utils {
 		/** Explode an object for logging. **/
 		private static function object(message:Object, type:String):void {
 			var txt:String = type.toUpperCase() + ' (';
-			Strings.print_r(message);
+			txt += Strings.print_r(message);
 			txt += ')';
 			Logger.send(txt);
 		}

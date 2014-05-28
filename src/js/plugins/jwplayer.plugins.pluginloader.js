@@ -36,7 +36,8 @@
 		function _complete() {
 			if (_errorState) {
 				_eventDispatcher.sendEvent(events.ERROR, {message: _errorMessage});
-			} else if (!_iscomplete) {
+			}
+			if (!_iscomplete) {
 				_iscomplete = true;
 				_status = utils.loaderstatus.COMPLETE;
 				_eventDispatcher.sendEvent(events.COMPLETE);
@@ -49,7 +50,7 @@
 			if (!_iscomplete && !_errorState) {
 				var incomplete = 0, plugins = model.getPlugins();
 				
-				utils.foreach(_config, function(plugin, val) {
+				utils.foreach(_config, function(plugin) {
 					var pluginName = utils.getPluginName(plugin),
 						pluginObj = plugins[pluginName],
 						js = pluginObj.getJS(),
@@ -65,7 +66,7 @@
 					}
 				});
 				
-				if (incomplete == 0) {
+				if (incomplete === 0) {
 					_complete();
 				}
 			}
@@ -131,7 +132,7 @@
 			_loading = true;
 			
 			/** First pass to create the plugins and add listeners **/
-			_foreach(config, function(plugin, val) {
+			_foreach(config, function(plugin) {
 				if (utils.exists(plugin)) {
 					var pluginObj = model.addPlugin(plugin);
 					pluginObj.addEventListener(events.COMPLETE, _checkComplete);
@@ -151,19 +152,27 @@
 			
 			// Make sure we're not hanging around waiting for plugins that already finished loading
 			_checkComplete();
-		}
-		
-		var _pluginError = this.pluginFailed = function(evt) {
+		};
+
+		this.destroy = function() {
+			if (_eventDispatcher) {
+				_eventDispatcher.resetEventListeners();
+				_eventDispatcher = null;
+			}
+		};
+
+		var _pluginError = this.pluginFailed = function() {
 			if (!_errorState) {
 				_errorState = true;
 				_errorMessage = "File not found";
 				_complete();
 			}
-		}
+		};
 		
 		this.getStatus = function() {
 			return _status;
-		}
+		};
 		
-	}
+	};
+	
 })(jwplayer);

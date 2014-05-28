@@ -10,31 +10,32 @@
 	
 	html5.player = function(config) {
 		var _this = this,
-			_model, 
+			_model,
 			_view, 
 			_controller,
+            _setup,
 			_instreamPlayer;
 
 		function _init() {
-			_model = new html5.model(config); 
-			_this.id = _model.id;
+			_model       = new html5.model(config);
+			_this.id     = _model.id;
+			_this._model = _model;
 
 			utils.css.block(_this.id);
-			
-			_view = new html5.view(_this, _model); 
-			_controller = new html5.controller(_model, _view);
-			
-			_this._model = _model;
+
+			_view        = new html5.view(_this, _model);
+			_controller  = new html5.controller(_model, _view);
+
 
 			_initializeAPI();
 			_this.initializeAPI = _initializeAPI;
 			
-			var setup = new html5.setup(_model, _view);
-			setup.addEventListener(jwplayer.events.JWPLAYER_READY, _readyHandler);
-			setup.addEventListener(jwplayer.events.JWPLAYER_ERROR, _errorHandler);
-			setup.start();
+			_setup = new html5.setup(_model, _view);
+			_setup.addEventListener(jwplayer.events.JWPLAYER_READY, _readyHandler);
+			_setup.addEventListener(jwplayer.events.JWPLAYER_ERROR, _errorHandler);
+			_setup.start();
 		}
-		
+
 		function _readyHandler(evt) {
 			_controller.playerReady(evt);
 			utils.css.unblock(_this.id);
@@ -112,8 +113,7 @@
 			_this.jwSetVolume = _controller.setVolume;
 			_this.jwSetMute = _controller.setMute;
 			_this.jwLoad =  function(item) {
-				_this.jwInstreamDestroy();
-			    _controller.load(item);
+				_controller.load(item);
 			};
 			_this.jwPlaylistNext = _controller.next;
 			_this.jwPlaylistPrev = _controller.prev;
@@ -145,7 +145,6 @@
 			_this.jwGetStretching = _statevarFactory('stretching');
 			_this.jwGetPlaylist = _normalizePlaylist;
 			_this.jwGetControls = _statevarFactory('controls');
-
 			/** InStream API **/
 			_this.jwDetachMedia = _controller.detachMedia;
 			_this.jwAttachMedia = _controller.attachMedia;
@@ -156,17 +155,24 @@
 				var plugins = jwplayer(_this.id).plugins;
 				if (plugins.vast) {
 					plugins.vast.jwPlayAd(ad);
-				}
-				// else if (plugins.googima) {
-				// 	// This needs to be added once the googima Ads API is implemented
-				// 	//plugins.googima.jwPlayAd(ad);
-				// }
+				} //else if (plugins.googima) {
+				// 	// This needs to be added once the googima Ads API is implemented 
+					//plugins.googima.jwPlayAd(ad);
+					//not supporting for now
+				//}
 			};
 
 			_this.jwPauseAd = function () { 
 				var plugins = jwplayer(_this.id).plugins;
 				if (plugins.googima) {
 					plugins.googima.jwPauseAd();
+				}
+			};
+			
+			_this.jwDestroyGoogima = function() {
+				var plugins = jwplayer(_this.id).plugins;
+				if (plugins.googima) {
+					plugins.googima.jwDestroyGoogima();
 				}
 			};
 			
@@ -184,15 +190,15 @@
 			};
 			
 			_this.jwLoadArrayInstream = function(item, options) {
-                if(!_instreamPlayer) {
-                    throw 'Instream player undefined';
-                }
-                _instreamPlayer.load(item, options);
-            };
+				if(!_instreamPlayer) {
+					throw 'Instream player undefined';
+				}
+				_instreamPlayer.load(item, options);
+			};
 			
 			_this.jwSetControls = function(mode) {
-			    _view.setControls(mode);
-			    if(_instreamPlayer) _instreamPlayer.setControls(mode);
+				_view.setControls(mode);
+				if(_instreamPlayer) _instreamPlayer.setControls(mode);
 			};
 
 			_this.jwInstreamPlay = function() {
@@ -229,6 +235,13 @@
 			_this.jwPlayerDestroy = function() {
 				if (_view) {
 					_view.destroy();
+				}
+				if (_model) {
+					_model.destroy();
+				}
+
+				if (_setup) {
+					_setup.resetEventListeners();
 				}
 			};
 			

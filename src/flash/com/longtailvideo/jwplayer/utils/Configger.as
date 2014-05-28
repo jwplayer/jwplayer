@@ -1,7 +1,7 @@
 package com.longtailvideo.jwplayer.utils {
-	import com.longtailvideo.jwplayer.player.PlayerVersion;
-	
-	import flash.events.*;
+	import flash.events.ErrorEvent;
+	import flash.events.Event;
+	import flash.events.EventDispatcher;
 	import flash.external.ExternalInterface;
 	import flash.net.SharedObject;
 	import flash.system.Security;

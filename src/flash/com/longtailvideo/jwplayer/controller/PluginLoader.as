@@ -1,7 +1,5 @@
 package com.longtailvideo.jwplayer.controller {
 	import com.longtailvideo.jwplayer.utils.AssetLoader;
-	import com.longtailvideo.jwplayer.utils.RootReference;
-	import com.longtailvideo.jwplayer.utils.Strings;
 	
 	import flash.display.DisplayObject;
 	import flash.events.ErrorEvent;

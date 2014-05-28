@@ -42,8 +42,8 @@
 						type = source.type ? source.type : utils.extensionmap.extType(utils.extension(source.file));
 					if (source.file) {
 						// TODO: shouldn't be using same variable in nested loop...  Clean up at some point
-						utils.foreach(types, function(i) {
-							if (type == types[i]) {
+						utils.foreach(types, function(j) {
+							if (type == types[j]) {
 								file = source.file;
 								image = item.image;
 							} else if (utils.isYouTube(source.file)) {

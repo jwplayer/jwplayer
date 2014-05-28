@@ -79,9 +79,9 @@ package com.longtailvideo.jwplayer.view.components {
 			
 			//_cookie = SharedObject.getLocal('com.jeroenwijering','/');
 			_loader = new URLLoader();
-			_loader.addEventListener(Event.COMPLETE,_loaderHandler);
-			_loader.addEventListener(IOErrorEvent.IO_ERROR,_errorHandler);
-			_loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR,_errorHandler);
+			_loader.addEventListener(Event.COMPLETE, _loaderHandler);
+			_loader.addEventListener(IOErrorEvent.IO_ERROR, _errorHandler);
+			_loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, _errorHandler);
 			_tracks = new Array();
 			
 			// Connect to the player API.

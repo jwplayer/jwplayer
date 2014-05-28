@@ -1,6 +1,5 @@
 package com.longtailvideo.jwplayer.view.interfaces {
-	import flash.display.DisplayObject;
-	import flash.display.MovieClip;
+	
 
 	/**
 	 * Sent when the user interface requests that the player play the currently loaded media

@@ -1,7 +1,5 @@
 package com.longtailvideo.jwplayer.view.interfaces {
-	import com.longtailvideo.jwplayer.events.IGlobalEventDispatcher;
 	
-
 	/**
 	 * Sent when the user requests the player skip to the given playlist index
 	 *

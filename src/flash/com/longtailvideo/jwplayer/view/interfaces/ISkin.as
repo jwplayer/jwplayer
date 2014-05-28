@@ -2,7 +2,6 @@ package com.longtailvideo.jwplayer.view.interfaces {
 	import com.longtailvideo.jwplayer.view.skins.SkinProperties;
 	
 	import flash.display.DisplayObject;
-	import flash.display.Sprite;
 	import flash.events.IEventDispatcher;
 
 	/**

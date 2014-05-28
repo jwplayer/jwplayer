@@ -238,11 +238,13 @@ package com.longtailvideo.jwplayer.player {
 			else if (evt is PlaylistEvent)
 				args = listenerCallbackPlaylist(evt as PlaylistEvent);
 			else if (evt.type == ViewEvent.JWPLAYER_CONTROLS)
-				args = { controls: (evt as ViewEvent).data };
+				args.controls = (evt as ViewEvent).data;
+			else if (evt.type == ViewEvent.JWPLAYER_VIEW_TAB_FOCUS)
+				args.hasFocus = (evt as ViewEvent).data;
 			else if (evt is ViewEvent && (evt as ViewEvent).data != null)
-				args = { data: JavascriptSerialization.stripDots((evt as ViewEvent).data) };
+				args.data = JavascriptSerialization.stripDots((evt as ViewEvent).data);
 			else if (evt is PlayerEvent) {
-				args = { message: (evt as PlayerEvent).message };
+				args.message = (evt as PlayerEvent).message;
 			}
 			
 			args.type = evt.type;
@@ -470,16 +472,12 @@ package com.longtailvideo.jwplayer.player {
 		protected function js_stop():void {
 			_player.stop();
 		}
-		
+
 		protected function js_seek(position:Number=0):void {
 			_player.seek(position);
 		}
 		
 		protected function js_load(toLoad:*):void {
-			if (_instream) {
-				_instream.destroy();
-				_instream = null;
-			}
 			_player.load(toLoad);
 		}
 		
@@ -625,7 +623,7 @@ package com.longtailvideo.jwplayer.player {
 			return _player.checkBeforeComplete();
 		}
 
-		protected function js_setCues(cues):void {
+		protected function js_setCues(cues:Array):void {
 			_player.setCues(cues);
 		}
 		

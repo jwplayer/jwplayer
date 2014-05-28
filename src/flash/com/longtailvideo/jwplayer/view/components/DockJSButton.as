@@ -3,8 +3,12 @@ package com.longtailvideo.jwplayer.view.components {
 
     import com.longtailvideo.jwplayer.utils.Logger;
     
-    import flash.display.*;
-    import flash.events.*;
+    import flash.display.DisplayObject;
+    import flash.display.Loader;
+    import flash.events.ErrorEvent;
+    import flash.events.Event;
+    import flash.events.IOErrorEvent;
+    import flash.events.MouseEvent;
     import flash.external.ExternalInterface;
     import flash.net.URLRequest;
 
@@ -24,9 +28,9 @@ package com.longtailvideo.jwplayer.view.components {
         public function DockJSButton(name:String, back:DisplayObject, backOver:DisplayObject, tab:Number):void {
             this.name = name;
             setBackground(back);
-			this.tabEnabled = true;
+			this.tabEnabled = false;
 			this.tabChildren = false;
-			this.tabIndex = tab;
+			//this.tabIndex = tab;
 			this.buttonMode = true;
 			_outLoader = new Loader();
             _outLoader.contentLoaderInfo.addEventListener(Event.COMPLETE,_loadOutHandler);

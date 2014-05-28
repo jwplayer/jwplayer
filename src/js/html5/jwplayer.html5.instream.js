@@ -182,9 +182,8 @@
                 }
             });
             
-            
-            // IE 10 and 11?
-            if (_utils.isIE()) {
+
+            if (_utils.isMSIE()) {
                 _video.parentElement.addEventListener('click', _disp.clickHandler);
             }
  
@@ -236,7 +235,9 @@
                 } catch(e) {}
             }
             if (_disp) {
-                if (_video && _video.parentElement) _video.parentElement.removeEventListener('click', _disp.clickHandler);
+                if (_video && _video.parentElement) {
+                    _video.parentElement.removeEventListener('click', _disp.clickHandler);
+                }
                 _disp.revertAlternateClickHandler();
             }
             // Let listeners know the instream player has been destroyed, and why
@@ -308,7 +309,7 @@
         
         function _setupProvider() {
             //if (!_provider) {
-            _provider = new html5.video(_video);
+            _provider = new html5.video(_video, 'instream');
             _provider.addGlobalListener(_forward);
             _provider.addEventListener(_events.JWPLAYER_MEDIA_META, _metaHandler);
             _provider.addEventListener(_events.JWPLAYER_MEDIA_COMPLETE, _completeHandler);
