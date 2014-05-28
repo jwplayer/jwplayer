@@ -1472,6 +1472,16 @@
 			_css.style(_elements.volumeH, {
 				display: _audioMode || _instreamMode ? JW_CSS_BLOCK : JW_CSS_NONE
 			});
+			var maxWidth = _settings.maxwidth|0;
+			if (_instreamMode && maxWidth) {
+				if (_controlbar.parentNode && utils.isIE()) {
+					if (_controlbar.parentNode.clientWidth > maxWidth + (_settings.margin|0 * 2)) {
+						_css.style(_controlbar,{width:maxWidth});
+					} else {
+						_css.style(_controlbar,{width:EMPTY});
+					}
+				}
+			}
 			if (_volumeOverlay) {
 				_css.style(_volumeOverlay.element(), {
 					display: !(_audioMode || _instreamMode) ? JW_CSS_BLOCK : JW_CSS_NONE
@@ -1483,6 +1493,8 @@
 			_css.style(_elements.cc, {
 				display: !_audioMode && !casting && _hasCaptions() ? EMPTY : JW_CSS_NONE
 			});
+			
+			
 
 			_drawCues();
 
