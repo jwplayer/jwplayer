@@ -303,7 +303,7 @@
 
 
 		// given a name "getBuffer", it adds to jwplayer.api a function which internally triggers jwGetBuffer
-		function generateInternalFunction(chainable, index, name) {
+		function generateInternalFunction(chainable, name) {
 			var internalName = 'jw' + name.charAt(0).toUpperCase() + name.slice(1);
 
 			_this[name] = function() {
@@ -311,8 +311,14 @@
 				return (chainable ? _this : value);
 			}
 		};
-		utils.foreach(_internalFuncsToGenerate, generateInternalFunction.bind({}, false));
-		utils.foreach(_chainableInternalFuncs,  generateInternalFunction.bind({}, true));
+		var nonChainingGenerator = function(index, name) {
+			generateInternalFunction(false, name);
+		}
+		var chainingGenerator    = function(index, name) {
+			generateInternalFunction(true, name);
+		}
+		utils.foreach(_internalFuncsToGenerate, nonChainingGenerator);
+		utils.foreach(_chainableInternalFuncs,  chainingGenerator);
 
 
 		_this.remove = function() {
