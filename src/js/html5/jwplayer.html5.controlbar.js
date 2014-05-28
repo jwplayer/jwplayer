@@ -1473,7 +1473,7 @@
 				display: _audioMode || _instreamMode ? JW_CSS_BLOCK : JW_CSS_NONE
 			});
 			var maxWidth = _settings.maxwidth|0;
-			if (_instreamMode && maxWidth) {
+			if (!_audioMode && maxWidth) {
 				if (_controlbar.parentNode && utils.isIE()) {
 					if (_controlbar.parentNode.clientWidth > maxWidth + (_settings.margin|0 * 2)) {
 						_css.style(_controlbar,{width:maxWidth});
@@ -1482,6 +1482,7 @@
 					}
 				}
 			}
+			
 			if (_volumeOverlay) {
 				_css.style(_volumeOverlay.element(), {
 					display: !(_audioMode || _instreamMode) ? JW_CSS_BLOCK : JW_CSS_NONE
@@ -1678,18 +1679,6 @@
 			var style = {
 				display: JW_CSS_INLINE_BLOCK
 			};
-
-			// IE applied max-width centering fix
-			var maxWidth = _settings.maxwidth|0;
-			if (!_audioMode && maxWidth) {
-				if (_controlbar.parentNode && utils.isIE()) {
-					if (_controlbar.parentNode.clientWidth > maxWidth + (_settings.margin|0 * 2)) {
-						style.width = maxWidth;
-					} else {
-						style.width = EMPTY;
-					}
-				}
-			}
 
 			_css.style(_controlbar, style);
 			_cbBounds = utils.bounds(_controlbar);
