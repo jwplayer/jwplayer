@@ -33,20 +33,16 @@
             },
             _skipButton,
             _video,
-            _oldsrc,
-            _oldsources,
             _oldpos,
             _oldstate,
             _olditem,
             _provider,
             _cbar,
             _disp,
-            _dispatcher = new _events.eventdispatcher(),
             _instreamContainer,
             _fakemodel,
-            _this = this,
-            _shouldSeek = true,
-            _completeTimeoutId = -1;
+            _completeTimeoutId = -1,
+            _this = _utils.extend(this, new _events.eventdispatcher());
 
         // Listen for player resize events
         _api.jwAddEventListener(_events.JWPLAYER_RESIZE, _resize);
@@ -74,13 +70,10 @@
             _olditem = _model.playlist[_model.item];
 
             // Keep track of the original player state
-            _oldsrc = _video.src ? _video.src : _video.currentSrc;
-            _oldsources = _video.innerHTML;
             _oldpos = _video.currentTime;
             
             if (_controller.checkBeforePlay() || _oldpos === 0) {
                 _oldstate = _states.PLAYING;
-                _shouldSeek = false;
             } else if (_api.jwGetState() === _states.IDLE || _model.getVideo().checkComplete()) {
                 _oldstate = _states.IDLE;
             } else {
@@ -213,13 +206,16 @@
                         // Re-attach the controller
             _controller.attachMedia();
             // Load the original item into our provider, which sets up the regular player's video tag
-            if (_oldstate != _states.IDLE) {
-                //_provider.load(_olditem, false);
-                _model.getVideo().load(_olditem,false);
+            if (_oldstate !== _states.IDLE) {
+
+                var item = _utils.extend({}, _olditem);
+                item.starttime = _oldpos;
+                _model.getVideo().load(item);
+
             } else {
                _model.getVideo().stop();
             }
-            _dispatcher.resetEventListeners();
+            _this.resetEventListeners();
 
             // We don't want the instream provider to be attached to the video tag anymore
 
@@ -250,10 +246,6 @@
             if (_oldstate == _states.PLAYING) {
                 // Model was already correct; just resume playback
                 _video.play();
-                if (_model.playlist[_model.item] == _olditem) {
-                    // We need to seek using the player's real provider, since the seek may have to be delayed
-                    if (_shouldSeek) _model.getVideo().seek(_oldpos);
-                }
             }
 
                         // Return the view to its normal state
@@ -264,10 +256,10 @@
         /** Forward any calls to add and remove events directly to our event dispatcher **/
         
         _this.jwInstreamAddEventListener = function(type, listener) {
-            _dispatcher.addEventListener(type, listener);
+            _this.addEventListener(type, listener);
         } ;
         _this.jwInstreamRemoveEventListener = function(type, listener) {
-            _dispatcher.removeEventListener(type, listener);
+            _this.removeEventListener(type, listener);
         };
 
         /** Start instream playback **/
@@ -395,7 +387,7 @@
             if (_defaultOptions.tag && !data.tag) {
                 data.tag = _defaultOptions.tag;
             }
-            _dispatcher.sendEvent(type, data);
+            _this.sendEvent(type, data);
         }
         
         // Resize handler; resize the components.
@@ -490,10 +482,10 @@
             return _model.config.stretching;
         };
         _this.jwAddEventListener = function(type, handler) {
-            _dispatcher.addEventListener(type, handler);
+            _this.addEventListener(type, handler);
         };
         _this.jwRemoveEventListener = function(type, handler) {
-            _dispatcher.removeEventListener(type, handler);
+            _this.removeEventListener(type, handler);
         };
         _this.jwSetCurrentQuality = function() {};
         _this.jwGetQualityLevels = function() {

@@ -284,7 +284,7 @@
 			_pickInitialQuality();
 			_sendLevels(_levels);
 			
-			_completeLoad(0, item.duration);
+			_completeLoad(item.starttime||0, item.duration);
 		};
 		
 		function _pickInitialQuality() {
@@ -316,22 +316,27 @@
 			_bufferInterval = setInterval(_sendBufferUpdate, 100);
 
 			_delayedSeek = 0;
-			_position = 0;
 
 			var sourceChanged = _videotag.src !== _source.file;
 			if (sourceChanged) {
 				_duration = duration ? duration : -1;
 				_videotag.src = _source.file;
 				_videotag.load();
-			} else {
+			} else if (startTime === 0) {
 				_videotag.currentTime = 0;
 			}
 			
-			if (utils.isMobile()) {
+			var isMobile = utils.isMobile();
+			if (isMobile) {
 				// always reload on mobile
 				if (!sourceChanged) {
 					_videotag.load();
 				}
+			}
+
+			_position = _videotag.currentTime;
+
+			if (isMobile) {
 				// results in html5.controller calling video.play()
 				_sendBufferFull();
 			}
