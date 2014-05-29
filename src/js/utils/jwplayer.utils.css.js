@@ -6,6 +6,7 @@
  */
 (function(jwplayer) {
 	var utils = jwplayer.utils,
+		MAX_CSS_RULES = 50000,
 		_styleSheets={},
 		_styleSheet,
 		_rules = {},
@@ -56,7 +57,8 @@
 		}
 		if (!_styleSheets[selector]) {
 			// set stylesheet for selector
-			if (!_styleSheet || _styleSheet.sheet.cssRules.length > 50000) {
+			var numberRules = _styleSheet && _styleSheet.sheet && _styleSheet.sheet.cssRules && _styleSheet.sheet.cssRules.length || 0;
+			if (!_styleSheet || numberRules > MAX_CSS_RULES) {
 				_styleSheet = _createStylesheet();
 			}
 			_styleSheets[selector] = _styleSheet;
@@ -243,9 +245,7 @@
 	}
 	
 	
-	/**
-	 * Removes all css elements which match a particular style
-	 */
+	// Removes all css elements which match a particular style
 	utils.clearCss = function(filter) {
 		for (var rule in _rules) {
 			if (rule.indexOf(filter) >= 0) {
