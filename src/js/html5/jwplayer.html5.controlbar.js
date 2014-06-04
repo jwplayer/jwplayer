@@ -879,11 +879,11 @@
 			}
 
 			_css(_internalSelector(".jw" + name + " .jwrail"), {
-				left: vertical ? EMPTY : capLeftSkin.width,
-				right: vertical ? EMPTY : capRightSkin.width,
-				top: vertical ? capLeftSkin.height : EMPTY,
+				left:   vertical ? EMPTY : capLeftSkin.width,
+				right:  vertical ? EMPTY : capRightSkin.width,
+				top:    vertical ? capLeftSkin.height : EMPTY,
 				bottom: vertical ? capRightSkin.height : EMPTY,
-				width: vertical ? JW_CSS_100PCT : EMPTY,
+				width:  vertical ? JW_CSS_100PCT : EMPTY,
 				height: vertical ? "auto" : EMPTY
 			});
 
@@ -1165,34 +1165,40 @@
 			}
 		}
 		
-		function _setTimeOverlay(sec) {
-			var thumbUrl = _timeOverlayThumb.updateTimeline(sec, function(width) {
-				_css.style(_timeOverlay.element(), {
-					'width': width
+		var _setTimeOverlay = (function() {
+			var lastText;
+
+			return function(sec) {
+				var thumbUrl = _timeOverlayThumb.updateTimeline(sec, function(width) {
+					_css.style(_timeOverlay.element(), {
+						'width': width
+					});
+					_positionOverlay('time', _timeOverlay);
 				});
+
+				var text;
+				if (_activeCue) {
+					text = _activeCue.text;
+					if (text && (text !== lastText)) {
+						lastText = text;
+						_css.style(_timeOverlay.element(), {
+							'width': (text.length > 32) ? 160: EMPTY
+						});
+					}
+				} else {
+					text = utils.timeFormat(sec);
+					if (!thumbUrl) {
+						_css.style(_timeOverlay.element(), {
+							'width': EMPTY
+						});
+					}
+				}
+				if (_timeOverlayText.innerHTML !== text) {
+					_timeOverlayText.innerHTML = text;
+				}
 				_positionOverlay('time', _timeOverlay);
-			});
-			var text;
-			if (_activeCue) {
-				text = _activeCue.text;
-				if (text) {
-					_css.style(_timeOverlay.element(), {
-						'width': (text.length > 32) ? 160: EMPTY
-					});
-				}
-			} else {
-				text = utils.timeFormat(sec);
-				if (!thumbUrl) {
-					_css.style(_timeOverlay.element(), {
-						'width': EMPTY
-					});
-				}
 			}
-			if (_timeOverlayText.innerHTML !== text) {
-				_timeOverlayText.innerHTML = text;
-			}
-			_positionOverlay('time', _timeOverlay);
-		}
+		})();
 		
 		function _styleTimeSlider() {
 			if (!_elements.timeSliderRail) {
@@ -1237,7 +1243,7 @@
 				if (cueElem && rail) {
 					rail.appendChild(cueElem);
 					cueElem.addEventListener("mouseover", function() { _activeCue = cue; }, false);
-					cueElem.addEventListener("mouseout", function() { _activeCue = NULL; }, false);
+					cueElem.addEventListener("mouseout",  function() { _activeCue = NULL; }, false);
 					_cues.push(cue);
 				}
 				
