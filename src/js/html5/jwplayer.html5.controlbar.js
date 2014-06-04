@@ -239,12 +239,10 @@
 			if (!_isMobile) {
 				_controlbar.addEventListener('mouseover', function() {
 					// Slider listeners
-					WINDOW.addEventListener('mousemove', _sliderMouseEvent, FALSE);
 					WINDOW.addEventListener('mousedown', _killSelect, FALSE);
 				}, false);
 				_controlbar.addEventListener('mouseout', function(){
 					// Slider listeners
-					WINDOW.removeEventListener('mousemove', _sliderMouseEvent);
 					WINDOW.removeEventListener('mousedown', _killSelect);
 					DOCUMENT.onselectstart = null;
 				}, false);
@@ -283,7 +281,7 @@
 				}
 				_duration = evt.duration;
 				_position = evt.position;
-				if (!_instreamMode) { // TODO: tech dept cleanup
+				if (!_instreamMode) {
 					_this.setText();
 				}
 			}
@@ -993,7 +991,7 @@
 			
 			if (name == "time" && !_isMobile) {
 				rail.addEventListener('mousemove', _showTimeTooltip, FALSE);
-				rail.addEventListener('mouseout', _hideTimeTooltip, FALSE);
+				rail.addEventListener('mouseout',  _hideTimeTooltip, FALSE);
 			}
 			
 			_elements[name+'Rail'] = rail;
@@ -1034,13 +1032,6 @@
 
 		function _sliderDragEvent(evt) {
 			if (!_dragging) return;
-
-			var currentTime = (new Date()).getTime();
-
-			if (currentTime - _lastTooltipPositionTime > 50) {
-				_positionTimeTooltip(evt);
-				_lastTooltipPositionTime = currentTime;
-			}
 
 			var rail = _elements[_dragging].querySelector('.jwrail'),
 				railRect = utils.bounds(rail),
@@ -1086,7 +1077,7 @@
 				
 				_elements[name+'Rail'].className = "jwrail";
 				
-				if (name == "time") {
+				if (name === "time") {
 					if (!_idle()) {
 						_api.jwSeekDrag(TRUE);
 						_draggingStart(name);
@@ -1098,14 +1089,7 @@
 		}
 		
 		function _sliderMouseEvent(evt) {
-			
-			var currentTime = (new Date()).getTime();
-			
-			if (currentTime - _lastTooltipPositionTime > 50) {
-				_positionTimeTooltip(evt);
-				_lastTooltipPositionTime = currentTime;
-			}
-			
+
 			if (!_dragging || evt.button) {
 				return;
 			}
@@ -1113,7 +1097,7 @@
 			var rail = _elements[_dragging].querySelector('.jwrail'),
 				railRect = utils.bounds(rail),
 				name = _dragging,
-				pct = _elements[name].vertical ? (railRect.bottom - evt.pageY) / railRect.height : (evt.pageX - railRect.left) / railRect.width;
+				pct  = _elements[name].vertical ? (railRect.bottom - evt.pageY) / railRect.height : (evt.pageX - railRect.left) / railRect.width;
 			
 			if (evt.type == 'mouseup') {
 				if (name == "time") {
@@ -1137,7 +1121,11 @@
 			return false;
 		}
 
-		function _showTimeTooltip() {
+		function _showTimeTooltip(evt) {
+			if (evt) {
+				_positionTimeTooltip.apply(this, arguments);
+			}
+
 			if (_timeOverlay && _duration && !_audioMode && !_isMobile) {
 				_css.block(_id); // unblock on position overlay
 				_timeOverlay.show();
@@ -1146,35 +1134,39 @@
 		}
 		
 		function _hideTimeTooltip() {
+			WINDOW.removeEventListener('mousemove', _sliderMouseEvent);
+
 			if (_timeOverlay) {
 				_timeOverlay.hide();
 			}
 		}
-		
+
 		function _positionTimeTooltip(evt) {
-			_cbBounds = utils.bounds(_controlbar);
+			_cbBounds   = utils.bounds(_controlbar);
 			_railBounds = utils.bounds(_timeRail);
-			if (!_railBounds || _railBounds.width === 0) return;
-			var position = evt.x;
-			if (evt.pageX) {
-				position = evt.pageX - _railBounds.left;
+
+			if (!_railBounds || _railBounds.width === 0) {
+				return;
 			}
-			if (position >= 0 && position <= _railBounds.width) {
-				_timeOverlay.positionX(Math.round(position));
-				_setTimeOverlay(_duration * position / _railBounds.width);
-			}
+
+			var position = (evt.pageX ? (evt.pageX - _railBounds.left) : evt.x);
+
+			_timeOverlay.positionX(Math.round(position));
+			_setTimeOverlay(_duration * position / _railBounds.width);
 		}
 		
 		var _setTimeOverlay = (function() {
 			var lastText;
 
-			return function(sec) {
-				var thumbUrl = _timeOverlayThumb.updateTimeline(sec, function(width) {
-					_css.style(_timeOverlay.element(), {
-						'width': width
-					});
-					_positionOverlay('time', _timeOverlay);
+			var thumbLoadedCallback = function(width) {
+				_css.style(_timeOverlay.element(), {
+					'width': width
 				});
+				_positionOverlay('time', _timeOverlay);
+			}
+
+			return function(sec) {
+				var thumbUrl = _timeOverlayThumb.updateTimeline(sec, thumbLoadedCallback);
 
 				var text;
 				if (_activeCue) {
