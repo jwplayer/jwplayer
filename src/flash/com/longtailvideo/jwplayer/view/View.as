@@ -118,8 +118,6 @@ package com.longtailvideo.jwplayer.view {
 		// Indicates whether the instream player is being displayed
 		private var _instreamMode:Boolean = false;
 
-		private var _adTag:String = "";
-		
 		public function View(player:IPlayer, model:Model) {
 			_player = player;
 			_model = model;
@@ -819,6 +817,11 @@ package com.longtailvideo.jwplayer.view {
 		}
 		
 		private function keyboardHandler(evt:KeyboardEvent):void {
+			// If controls are disabled don't allow keyboard shortcuts
+			if (! _model.config.controls) {
+				return;
+			}
+
 			showControls();
 			stopFader();
 			startFader();
