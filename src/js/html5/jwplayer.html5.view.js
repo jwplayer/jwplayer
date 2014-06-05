@@ -899,7 +899,7 @@
 			if (_logo && !_audioMode) _logo.show();
 		}
 		function _hideLogo() {
-			if (_logo && !_model.getVideo().audioMode()) _logo.hide(_audioMode);
+			if (_logo && (!_model.getVideo().audioMode() || _audioMode)) _logo.hide(_audioMode);
 		}
 
 		function _showDisplay() {
