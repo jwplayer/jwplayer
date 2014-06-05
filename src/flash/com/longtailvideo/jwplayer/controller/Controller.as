@@ -264,28 +264,29 @@ package com.longtailvideo.jwplayer.controller {
 
 
 		/**
-		 * @private
-		 * @copy com.longtailvideo.jwplayer.player.Player#lockPlayback
-		 */
+		* @private
+		* @copy com.longtailvideo.jwplayer.player.Player#lockPlayback
+		*/
 		public function lockPlayback(plugin:IPlugin, callback:Function):void {
 			var wasLocked:Boolean = locking;
-			if (_lockManager.lock(plugin, callback)) {
-				// If it was playing, pause playback and plan to resume when you're done
-				if (_player.state == PlayerState.PLAYING || _player.state == PlayerState.BUFFERING || _preplay) {
-					if (!_preplay) {
-						_model.media.pause();
-					}
-					_lockingResume = true;
+
+			_lockManager.lock(plugin, callback);
+
+			// If it was playing, pause playback and plan to resume when you're done
+			if (_player.state == PlayerState.PLAYING || _player.state == PlayerState.BUFFERING || _preplay) {
+				if (!_preplay) {
+					_model.media.pause();
 				}
-				_interruptPlay = _preplay;
-				
-				
-				// Tell everyone you're locked
-				if (!wasLocked) {
-					Logger.log(plugin.id + " locking playback", "LOCK");
-					dispatchEvent(new PlayerEvent(PlayerEvent.JWPLAYER_LOCKED));
-					_lockManager.executeCallback();
-				}
+				_lockingResume = true;
+			}
+			_interruptPlay = _preplay;
+
+
+			// Tell everyone you're locked
+			if (!wasLocked) {
+				Logger.log(plugin.id + " locking playback", "LOCK");
+				dispatchEvent(new PlayerEvent(PlayerEvent.JWPLAYER_LOCKED));
+				_lockManager.executeCallback();
 			}
 		}
 

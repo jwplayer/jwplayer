@@ -230,18 +230,30 @@
 			return _this;
 		};
 		_this.play = function(state) {
-			if (state === undefined) {
-				state = _this.getState();
+			if (state !== undefined) {
+				_callInternal("jwPlay", state);
+				return _this;
+			}
+
+			state = _this.getState();
+			var instreamState = _instream && _instream.getState();
+
+			if (instreamState) {
+				if (instreamState === states.IDLE || instreamState === states.PLAYING || instreamState === states.BUFFERING) {
+					_callInternal("jwInstreamPause");
+				} else {
+					_callInternal("jwInstreamPlay");
+				}
+			} else {
 				if (state == states.PLAYING || state == states.BUFFERING) {
 					_callInternal("jwPause");
 				} else {
 					_callInternal("jwPlay");
 				}
-			} else {
-				_callInternal("jwPlay", state);
 			}
 			return _this;
 		};
+
 		_this.pause = function(state) {
 			if (state === undefined) {
 				state = _this.getState();
