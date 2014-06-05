@@ -193,7 +193,6 @@
 				newButton = _createElement("div", "button", _buttonContainer),
 				icon = _createElement("div", null, newButton);
 			
-			newButton.tabIndex = -1;
 			icon.id = _id + "_" + id;
 			icon.innerHTML = "&nbsp;";
 			_css("#"+icon.id, {
