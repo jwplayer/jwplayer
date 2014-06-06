@@ -1258,6 +1258,7 @@
 			if (_castDisplay) {
 				_api.jwRemoveEventListener(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
 				_castDisplay.destroy();
+				_castDisplay = null;
 			}
 			if (_controlsLayer) {
 				_controlsLayer.removeEventListener('mousemove', _startFade);
