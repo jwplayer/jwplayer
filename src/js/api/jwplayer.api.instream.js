@@ -153,7 +153,7 @@
 		_this.onIdle = function(callback) {
 			return _stateListener(states.IDLE, callback);
 		};
-		// // Instream events
+		// Instream events
 		_this.onClick = function(callback) {
 			return _eventListener(events.JWPLAYER_INSTREAM_CLICK, callback);
 		};

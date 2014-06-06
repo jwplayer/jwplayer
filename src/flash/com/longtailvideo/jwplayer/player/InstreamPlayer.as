@@ -420,8 +420,12 @@ package com.longtailvideo.jwplayer.player
 
 		public function play():Boolean {
 			_setupView();
-			if (_provider && _provider.state != PlayerState.PLAYING) {
-				_provider.play();
+			if (_provider) {
+				if (_provider.state == PlayerState.PLAYING || _provider.state == PlayerState.BUFFERING) {
+					_provider.pause();
+				} else {
+					_provider.play();
+				}
 			}
 			return true;
 		}
