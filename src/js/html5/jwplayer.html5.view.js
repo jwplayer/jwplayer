@@ -147,7 +147,24 @@
             this.setVolume(newVol);
         }
 
+		function allowKeyHandling(evt) {
+			// If Meta keys return
+			if (evt.ctrlKey || evt.metaKey) {
+				return false;
+			}
+
+			// Controls may be disabled during share screens, or via API
+			if(! _model.controls) {
+				return false;
+			}
+			return true;
+		}
+
         function handleKeydown(evt) {
+			if (! allowKeyHandling(evt)) {
+				// Let event bubble upwards
+				return true;
+			}
 
             // On keypress show the controlbar for a few seconds
             if (!_controlbar.adMode()) {
