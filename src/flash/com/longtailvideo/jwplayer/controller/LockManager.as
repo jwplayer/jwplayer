@@ -7,16 +7,15 @@ package com.longtailvideo.jwplayer.controller {
 		private var _queue:Array = [];
 
 
-		public function LockManager() {
-		}
+		public function LockManager() { }
 
 
-		public function lock(plugin:IPlugin, callback:Function):Boolean {
-			var pluginLock:Object = {};
-			pluginLock['plugin'] = plugin;
-			pluginLock['callback'] = callback;
+		public function lock(plugin:IPlugin, callback:Function):void {
+			var pluginLock:Object = {
+				plugin   : plugin,
+				callback : callback
+			};
 			_queue.push(pluginLock);
-			return true;
 		}
 
 
