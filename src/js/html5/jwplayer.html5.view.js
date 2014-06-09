@@ -36,10 +36,9 @@
 		 * Player stylesheets - done once on script initialization;  *
 		 * These CSS rules are used for all JW Player instances      *
 		 *************************************************************/
-
 		TRUE = true,
 		FALSE = !TRUE,
-		
+		_canCast = FALSE,
 		JW_CSS_SMOOTH_EASE = "opacity .25s ease",
 		JW_CSS_100PCT = "100%",
 		JW_CSS_ABSOLUTE = "absolute",
@@ -352,10 +351,12 @@
 			_api.jwAddEventListener(events.JWPLAYER_CAST_AVAILABLE, function(evt) {
 				if (evt.available) {
 					_this.forceControls(TRUE);
+					_canCast = TRUE;
 				} else {
 					_this.releaseControls();
 				}
 			});
+			
 			_api.jwAddEventListener(events.JWPLAYER_CAST_SESSION, function(evt) {
 				if (!_castDisplay) {
 					_castDisplay = new jwplayer.html5.castDisplay(_api.id);
@@ -562,6 +563,7 @@
 			_controlsLayer.appendChild(_controlbar.element());
 			
 			if (_isIPod) _hideControlbar();
+			if (_canCast) _this.forceControls(TRUE);
 		}
 
 		function _castAdChanged(evt) {
