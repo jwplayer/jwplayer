@@ -47,7 +47,7 @@
 		
 		CB_CLASS = 'span.jwcontrolbar',
 		TYPEOF_ARRAY = "array",
-		
+		_canCast = FALSE,
 		WINDOW = window,
 		DOCUMENT = document;
 
@@ -158,7 +158,6 @@
 			_lastTooltipPositionTime = 0,
 			_cues = [],
 			_activeCue,
-			
 			_toggles = {
 				play: "pause",
 				mute: "unmute",
@@ -217,6 +216,7 @@
 			setTimeout(_volumeHandler, 0);
 			_playlistHandler();
 			_this.visible = false;
+			_castAvailable({available:_canCast});
 		}
 		
 		function _addEventListeners() {
@@ -233,7 +233,7 @@
 			_api.jwAddEventListener(events.JWPLAYER_CAPTIONS_LIST, _captionsHandler);
 			_api.jwAddEventListener(events.JWPLAYER_CAPTIONS_CHANGED, _captionChanged);
 			_api.jwAddEventListener(events.JWPLAYER_RESIZE, _resizeHandler);
-			_api.jwAddEventListener(events.JWPLAYER_CAST_AVAILABLE, _castAvaiable);
+			_api.jwAddEventListener(events.JWPLAYER_CAST_AVAILABLE, _castAvailable);
 			_api.jwAddEventListener(events.JWPLAYER_CAST_SESSION, _castSession);
 
 			if (!_isMobile) {
@@ -366,9 +366,11 @@
 		function _playlistHandler() {
 			_css.style([
 				_elements.hd,
-				_elements.cc,
-				_elements.cast
+				_elements.cc
 			], HIDDEN);
+			
+			_css.style(_elements.cast,_canCast ? NOT_HIDDEN : HIDDEN);
+			 
 			_updateNextPrev();
 			_redraw();
 		}
@@ -432,9 +434,10 @@
 			}
 		}
 
-		function _castAvaiable(evt) {
+		function _castAvailable(evt) {
 			// chromecast button is displayed after receiving this event
 			if (_elements.cast) {
+				_canCast = evt.available;
 				_css.style(_elements.cast, evt.available ? NOT_HIDDEN : HIDDEN);
 				var className = _elements.cast.className.replace(/\s*jwcancast/, '');
 				if (evt.available) {
@@ -1163,7 +1166,7 @@
 					'width': width
 				});
 				_positionOverlay('time', _timeOverlay);
-			}
+			};
 
 			return function(sec) {
 				var thumbUrl = _timeOverlayThumb.updateTimeline(sec, thumbLoadedCallback);
@@ -1189,7 +1192,7 @@
 					_timeOverlayText.innerHTML = text;
 				}
 				_positionOverlay('time', _timeOverlay);
-			}
+			};
 		})();
 		
 		function _styleTimeSlider() {
