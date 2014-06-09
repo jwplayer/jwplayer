@@ -1516,7 +1516,7 @@
 		};
 		
 		function _updateNextPrev() {
-			if (_api.jwGetPlaylist().length > 1 && !_sidebarShowing()) {
+			if (!_adMode && _api.jwGetPlaylist().length > 1 && !_sidebarShowing()) {
 				_css.style(_elements.next, NOT_HIDDEN);
 				_css.style(_elements.prev, NOT_HIDDEN);
 			} else {
@@ -1563,10 +1563,10 @@
 				_css.style([
 					_elements.cast,
 					_elements.elapsed,
-					_elements.duration,
-					_elements.next,
-					_elements.prev
+					_elements.duration
 				], mode ? HIDDEN : NOT_HIDDEN);
+
+                _updateNextPrev();
 				//_redraw();
 			}
 			return _adMode;
