@@ -1546,6 +1546,7 @@
 			if (mode !== UNDEFINED && mode !== _instreamMode) {
 				_instreamMode = !!mode;
 				// TODO: redraw
+				_css.style(_elements.cast, _instreamMode ? HIDDEN : NOT_HIDDEN);
 			}
 			return _instreamMode;
 		};
