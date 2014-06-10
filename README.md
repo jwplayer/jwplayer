@@ -1,39 +1,32 @@
-The JW Player is free for non-commerical use. To buy a license for commercial use, please visit 
-http://www.jwplayer.com/pricing/
+# JW Player
+
+<img src="http://www.jwplayer.com/wp-content/uploads/social_thumb.png" alt="JW Player Logo" title="JW Player Logo" align="right" width="150" />
+
+JW Player is the world's most popular embeddable media player for websites. It supports video and audio playback on a wide array of desktop browsers and mobile devices across many media formats. It is easy to configure, customize and extend.
+
+For documentation and support, please visit the [JW Player Support Site](http://support.jwplayer.com/).
+
+The JW Player is free for non-commerical use. For commercial uses, users must [purchase a license](http://www.jwplayer.com/pricing/).
+
+## Build Instructions ##
 
 To build the JW Player, you will need the following software:
 
  * Flex SDK 4.1: http://sourceforge.net/adobe/flexsdk/wiki/Downloads/
  * Ant 1.7.0: http://ant.apache.org/bindownload.cgi
 
-### Compiling the Player With the Flex SDK and Ant ###
+To compile with Flex and Ant, you'll first need to modify the `build.properties` file found in the `build` folder:
 
-To compile with Flex and Ant, you'll first need to modify the build.properties file found in the 'build' folder.  
+1. Set `flexsdk` to the install location of the Flex SDK (e.g. `/usr/local/bin/flex/`)
+1. Set `execextension` to `.exe` if you're using Windows; otherwise leave it blank.
+
+You can now compile the player using Ant:
 
 `ant -buildfile build\build.xml`
 
-If the build is successful, the new player assets (jwplayer.js, jwplayer.html5.js, jwplayer.flash.swf) will appear in the base folder (where this README.txt file is located)
+If the build is successful, the new player assets (jwplayer.js, jwplayer.html5.js, jwplayer.flash.swf) will appear in the `bin-release` folder.
 
-### Compiling the flash component with Flash Builder ###
-
-If you're using Flash Builder, you may use the following method to build the Flash player component (jwplayer.flash.swf):
-
-1. Create a new ActionScript project (you can give it any name except "Player").
-2. Under "Project Contents", uncheck "Use default location" and select the checkout tree (the folder where this README file lives).
-3. Click the "Next" button, then type "src/flash" into the "Main Source Folder" field.
-4. Click "Add SWC Folder" button.  Type in "libs" then press the "OK" button. 
-5. Click the "Finish" button
-6. Right-click on your new project, and select "Properties"
-7. Under the "ActionScript Compiler" tab, click the radio button that reads "Use a specific version", and make sure it reads "10.0.0".
-8. Under "Additional compiler arguments" add the following (quotes needed):  -define+=JWPLAYER::version,'"6.0.9999"'   
-9. Click the "OK" button.
-10. In the project source tree, navigate to the foler: src -> flash -> com -> longtailvideo -> jwplayer -> player
-11. Right click on Player.as and select "Set as Default Application"
-12. Under the "Project" menu, choose "Export Release Build".
-13. Make sure "Player.as" is selected as the application, and click "Finish"
-14. The flash component will be compiled as bin-release/Player.swf.
-
-### Software License ###
+## Software License ##
 The use of the JW Player Open Source edition is governed by a [Creative Commons license](http://creativecommons.org/licenses/by-nc-sa/3.0/). You can use, modify, copy, and distribute this edition as long as it’s for non-commercial use, you provide attribution, and share under a similar license.
 http://www.jwplayer.com/license/
 
