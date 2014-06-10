@@ -12,11 +12,11 @@
 		DOCUMENT = document;
 
 	function addFocusBorder(container) {
-		container.className = container.className + ' jw-tab-focus';
+		utils.addClass(container, 'jw-tab-focus');
 	}
 
 	function removeFocusBorder(container) {
-		container.className = container.className.replace(/ *jw-tab-focus */g, ' ');
+		utils.removeClass(container, 'jw-tab-focus');
 	}
 
 	var _internalFuncsToGenerate = [

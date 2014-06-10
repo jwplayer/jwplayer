@@ -849,20 +849,23 @@
 				return;
 			}
 
-			// var element = event.target;
 			var fullscreenState = (event.jwstate !== undefined) ? event.jwstate : _isNativeFullscreen();
 
-			// adjust UI based on player container fullscreen state
-			var className = _playerElement.className.replace(/\s*jwfullscreen/, '');
-			var bodyStyle = {};
+			utils.removeClass(_playerElement, 'jwfullscreen');
 			if (fullscreenState) {
-				className += ' jwfullscreen';
-				bodyStyle['overflow-y'] = JW_CSS_HIDDEN;
+				utils.addClass(_playerElement, 'jwfullscreen');
+				_css.style(DOCUMENT.body, {
+					'overflow-y' : JW_CSS_HIDDEN
+				});
+
+				// On going fullscreen we want the control bar to fade after a few seconds
+				_resetTapTimer();
 			} else {
-				bodyStyle['overflow-y'] = '';
+				_css.style(DOCUMENT.body, {
+					'overflow-y' : ''
+				});
 			}
-			_playerElement.className = className;
-			_css.style(DOCUMENT.body, bodyStyle);
+
 			_redrawComponent(_controlbar);
 			_redrawComponent(_display);
 			_redrawComponent(_dock);
@@ -959,6 +962,8 @@
 				_hideDock();
 				_hideLogo();
 			}
+
+			utils.addClass(_playerElement, 'jw-user-inactive');
 		}
 
 		function _showControls() {
@@ -972,8 +977,11 @@
 					_showDock();
 				}
 			}
-			if (_logoConfig.hide) _showLogo();
+			if (_logoConfig.hide) {
+				_showLogo();
+			}
 
+			utils.removeClass(_playerElement, 'jw-user-inactive');
 		}
 
 		function _showVideo(state) {
@@ -1310,8 +1318,7 @@
 	_css('.' + VIEW_VIDEO_CONTAINER_CLASS, {
 		overflow: JW_CSS_HIDDEN,
 		visibility: JW_CSS_HIDDEN,
-		opacity: 0,
-		cursor: "pointer"
+		opacity: 0
 	});
 
 	_css('.' + VIEW_VIDEO_CONTAINER_CLASS + " video", {
@@ -1364,6 +1371,11 @@
 		margin:0,
 		position: "fixed"
 	}, TRUE);
+
+	_css(FULLSCREEN_SELECTOR + '.jw-user-inactive', {
+		'cursor' : 'none',
+		'-webkit-cursor-visibility': 'auto-hide'
+	});
 
 	_css(FULLSCREEN_SELECTOR + ' .'+ VIEW_MAIN_CONTAINER_CLASS, {
 		left: 0, 

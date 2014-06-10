@@ -746,5 +746,14 @@
 			return Number(val);
 		}
 	};
-	
+
+	utils.addClass = function(element, c) {
+		element.className = element.className + ' ' + c;
+	}
+
+	utils.removeClass = function(element, c) {
+		var regex = new RegExp(' *' + c, 'g');
+		element.className = element.className.replace(regex, ' ');
+	}
+
 })(jwplayer);
