@@ -7,10 +7,7 @@
 (function(jwplayer) {
 	var html5 = jwplayer.html5,
 		utils = jwplayer.utils,
-		events = jwplayer.events,
-		UNDEFINED,
-		TRUE = true,
-		FALSE = !TRUE;
+		events = jwplayer.events;
 
 	html5.model = function(config, _defaultProvider) {
 		var _model = this,
@@ -18,7 +15,7 @@
 			_video,
 			// Providers
 			_providers = {
-				html5: _defaultProvider || new html5.video(UNDEFINED, 'default')
+				html5: _defaultProvider || new html5.video(null, 'default')
 			},
 			// Saved settings
 			_cookies = utils.getCookies(),
@@ -29,19 +26,19 @@
 			},
 			// Defaults
 			_defaults = {
-				autostart: FALSE,
-				controls: TRUE,
-				debug: UNDEFINED,
-				fullscreen: FALSE,
+				autostart: false,
+				controls: true,
+				// debug: undefined,
+				fullscreen: false,
 				height: 320,
-				mobilecontrols: FALSE,
-				mute: FALSE,
+				mobilecontrols: false,
+				mute: false,
 				playlist: [],
 				playlistposition: "none",
 				playlistsize: 180,
 				playlistlayout: "extended",
-				repeat: FALSE,
-				skin: UNDEFINED,
+				repeat: false,
+				// skin: undefined,
 				stretching: utils.stretching.UNIFORM,
 				width: 480,
 				volume: 90
@@ -70,24 +67,25 @@
 		}
 		
 		var _eventMap = {};
-		_eventMap[events.JWPLAYER_MEDIA_MUTE]   = "mute";
-		_eventMap[events.JWPLAYER_MEDIA_VOLUME] = "volume";
-		_eventMap[events.JWPLAYER_PLAYER_STATE] = "newstate->state";
-		_eventMap[events.JWPLAYER_MEDIA_BUFFER] = "bufferPercent->buffer";
-		_eventMap[events.JWPLAYER_MEDIA_TIME]   = "position,duration";
+		_eventMap[events.JWPLAYER_MEDIA_MUTE]   = ["mute"];
+		_eventMap[events.JWPLAYER_MEDIA_VOLUME] = ["volume"];
+		_eventMap[events.JWPLAYER_PLAYER_STATE] = ["newstate->state"];
+		_eventMap[events.JWPLAYER_MEDIA_BUFFER] = ["bufferPercent->buffer"];
+		_eventMap[events.JWPLAYER_MEDIA_TIME]   = ["position", "duration"];
 			
 		function _videoEventHandler(evt) {
-			var mappings = (_eventMap[evt.type] ? _eventMap[evt.type].split(",") : []), i, _sendEvent;
-			if (mappings.length > 0) {
-				for (i=0; i<mappings.length; i++) {
-					var mapping = mappings[i],
-						split = mapping.split("->"),
-						eventProp = split[0],
-						stateProp = split[1] || eventProp;
+			var mappings = _eventMap[evt.type];
+			if (mappings && mappings.length) {
+				var _sendEvent = false;
+				for (var i=0; i<mappings.length; i++) {
+					var mapping = mappings[i];
+					var split = mapping.split("->");
+					var eventProp = split[0];
+					var stateProp = split[1] || eventProp;
 						
-					if (_model[stateProp] != evt[eventProp]) {
+					if (_model[stateProp] !== evt[eventProp]) {
 						_model[stateProp] = evt[eventProp];
-						_sendEvent = TRUE;
+						_sendEvent = true;
 					}
 				}
 				if (_sendEvent) {
@@ -143,7 +141,7 @@
 		
 		// TODO: make this a synchronous action; throw error if playlist is empty
 		_model.setPlaylist = function(playlist) {
-			_model.playlist = utils.filterPlaylist(playlist, FALSE, _model.androidhls);
+			_model.playlist = utils.filterPlaylist(playlist, false, _model.androidhls);
 			if (_model.playlist.length === 0) {
 				_model.sendEvent(events.JWPLAYER_ERROR, { message: "Error loading playlist: No playable sources found" });
 			} else {
@@ -157,10 +155,10 @@
 
 		_model.setItem = function(index) {
             var newItem;
-            var repeat = FALSE;
+            var repeat = false;
             if (index == _model.playlist.length || index < -1) {
                 newItem = 0;
-                repeat = TRUE;
+                repeat = true;
             } else if (index == -1 || index > _model.playlist.length) {
                 newItem = _model.playlist.length - 1;
             } else {
@@ -195,7 +193,7 @@
         };
         
 		_model.setVolume = function(newVol) {
-			if (_model.mute && newVol > 0) _model.setMute(FALSE);
+			if (_model.mute && newVol > 0) _model.setMute(false);
 			newVol = Math.round(newVol);
 			if (!_model.mute) {
 				utils.saveCookie("volume", newVol);

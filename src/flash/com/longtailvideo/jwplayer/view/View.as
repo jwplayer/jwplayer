@@ -118,8 +118,6 @@ package com.longtailvideo.jwplayer.view {
 		// Indicates whether the instream player is being displayed
 		private var _instreamMode:Boolean = false;
 
-		private var _adTag:String = "";
-		
 		public function View(player:IPlayer, model:Model) {
 			_player = player;
 			_model = model;
@@ -819,14 +817,23 @@ package com.longtailvideo.jwplayer.view {
 		}
 		
 		private function keyboardHandler(evt:KeyboardEvent):void {
+			// If controls are disabled don't allow keyboard shortcuts
+			if (! _model.config.controls) {
+				return;
+			}
+
 			showControls();
 			stopFader();
 			startFader();
 			if (evt.keyCode == 32 || evt.keyCode == 13) {
-				if (_player.state == PlayerState.PLAYING || _player.state == PlayerState.BUFFERING) {
-					dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_PAUSE));
+				if (_instreamMode) {
+					_instreamControls.controlbar.dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_PLAY));
 				} else {
-					dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_PLAY));
+					if (_player.state == PlayerState.PLAYING || _player.state == PlayerState.BUFFERING) {
+						dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_PAUSE));
+					} else {
+						dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_PLAY));
+					}
 				}
 			}
 			if (evt.keyCode == 39) {

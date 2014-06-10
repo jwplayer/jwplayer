@@ -71,20 +71,20 @@
 				height: button.height
 			});
 
-			_css(_internalSelector("button"), utils.extend(_formatBackground(button), {
+			_css(_internalSelector("div.button"), utils.extend(_formatBackground(button), {
 				width: button.width,
 				cursor: "pointer",
 				border: JW_CSS_NONE
 			}));
 			
-			_css(_internalSelector("button:hover"), _formatBackground(buttonOver));
-			_css(_internalSelector("button:active"), _formatBackground(buttonActive));
-			_css(_internalSelector("button>div"), { opacity: _config.iconalpha });
-			_css(_internalSelector("button:hover>div"), { opacity: _config.iconalphaover });
-			_css(_internalSelector("button:active>div"), { opacity: _config.iconalphaactive});
+			_css(_internalSelector("div.button:hover"), _formatBackground(buttonOver));
+			_css(_internalSelector("div.button:active"), _formatBackground(buttonActive));
+			_css(_internalSelector("div.button>div"), { opacity: _config.iconalpha });
+			_css(_internalSelector("div.button:hover>div"), { opacity: _config.iconalphaover });
+			_css(_internalSelector("div.button:active>div"), { opacity: _config.iconalphaactive});
 			_css(_internalSelector(".jwoverlay"), { top: _config.margin + button.height });
 			
-			_createImage("capLeft", _buttonContainer);
+			_createImage("capLeft",  _buttonContainer);
 			_createImage("capRight", _buttonContainer);
 			_createImage("divider");
 		}
@@ -190,10 +190,9 @@
 			if (_buttons[id]) return;
 			
 			var divider = _createElement("div", "divider", _buttonContainer),
-				newButton = _createElement("button", null, _buttonContainer),
+				newButton = _createElement("div", "button", _buttonContainer),
 				icon = _createElement("div", null, newButton);
 			
-			newButton.tabIndex = -1;
 			icon.id = _id + "_" + id;
 			icon.innerHTML = "&nbsp;";
 			_css("#"+icon.id, {
@@ -291,7 +290,7 @@
 		'z-index': 99
 	});
 
-	_css(DB_CLASS + " button", {
+	_css(DB_CLASS + " div.button", {
 		position: "relative"
 	});
 	
@@ -304,7 +303,7 @@
 		display: JW_CSS_NONE
 	});
 
-	_css(DB_CLASS + " button ~ .divider", {
+	_css(DB_CLASS + " div.button ~ .divider", {
 		display: JW_CSS_BLOCK
 	});
 
@@ -316,7 +315,7 @@
 		'float': "right"
 	});
 	
-	_css(DB_CLASS + " button > div", {
+	_css(DB_CLASS + " div.button > div", {
 		left: 0,
 		right: 0,
 		top: 0,
@@ -329,6 +328,6 @@
 
 	utils.transitionStyle(D_CLASS, "background .25s, opacity .25s");
 	utils.transitionStyle(D_CLASS + " .jwoverlay", "opacity .25s");
-	utils.transitionStyle(DB_CLASS + " button div", "opacity .25s");
+	utils.transitionStyle(DB_CLASS + " div.button div", "opacity .25s");
 
 })(jwplayer);

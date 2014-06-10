@@ -47,7 +47,7 @@
 		
 		CB_CLASS = 'span.jwcontrolbar',
 		TYPEOF_ARRAY = "array",
-		
+		_canCast = FALSE,
 		WINDOW = window,
 		DOCUMENT = document;
 
@@ -158,7 +158,6 @@
 			_lastTooltipPositionTime = 0,
 			_cues = [],
 			_activeCue,
-			
 			_toggles = {
 				play: "pause",
 				mute: "unmute",
@@ -217,6 +216,7 @@
 			setTimeout(_volumeHandler, 0);
 			_playlistHandler();
 			_this.visible = false;
+			_castAvailable({available:_canCast});
 		}
 		
 		function _addEventListeners() {
@@ -233,18 +233,16 @@
 			_api.jwAddEventListener(events.JWPLAYER_CAPTIONS_LIST, _captionsHandler);
 			_api.jwAddEventListener(events.JWPLAYER_CAPTIONS_CHANGED, _captionChanged);
 			_api.jwAddEventListener(events.JWPLAYER_RESIZE, _resizeHandler);
-			_api.jwAddEventListener(events.JWPLAYER_CAST_AVAILABLE, _castAvaiable);
+			_api.jwAddEventListener(events.JWPLAYER_CAST_AVAILABLE, _castAvailable);
 			_api.jwAddEventListener(events.JWPLAYER_CAST_SESSION, _castSession);
 
 			if (!_isMobile) {
 				_controlbar.addEventListener('mouseover', function() {
 					// Slider listeners
-					WINDOW.addEventListener('mousemove', _sliderMouseEvent, FALSE);
 					WINDOW.addEventListener('mousedown', _killSelect, FALSE);
 				}, false);
 				_controlbar.addEventListener('mouseout', function(){
 					// Slider listeners
-					WINDOW.removeEventListener('mousemove', _sliderMouseEvent);
 					WINDOW.removeEventListener('mousedown', _killSelect);
 					DOCUMENT.onselectstart = null;
 				}, false);
@@ -283,7 +281,7 @@
 				}
 				_duration = evt.duration;
 				_position = evt.position;
-				if (!_instreamMode) { // TODO: tech dept cleanup
+				if (!_instreamMode) {
 					_this.setText();
 				}
 			}
@@ -368,9 +366,11 @@
 		function _playlistHandler() {
 			_css.style([
 				_elements.hd,
-				_elements.cc,
-				_elements.cast
+				_elements.cc
 			], HIDDEN);
+			
+			_css.style(_elements.cast,_canCast ? NOT_HIDDEN : HIDDEN);
+			 
 			_updateNextPrev();
 			_redraw();
 		}
@@ -434,9 +434,10 @@
 			}
 		}
 
-		function _castAvaiable(evt) {
+		function _castAvailable(evt) {
 			// chromecast button is displayed after receiving this event
 			if (_elements.cast) {
+				_canCast = evt.available;
 				_css.style(_elements.cast, evt.available ? NOT_HIDDEN : HIDDEN);
 				var className = _elements.cast.className.replace(/\s*jwcancast/, '');
 				if (evt.available) {
@@ -879,11 +880,11 @@
 			}
 
 			_css(_internalSelector(".jw" + name + " .jwrail"), {
-				left: vertical ? EMPTY : capLeftSkin.width,
-				right: vertical ? EMPTY : capRightSkin.width,
-				top: vertical ? capLeftSkin.height : EMPTY,
+				left:   vertical ? EMPTY : capLeftSkin.width,
+				right:  vertical ? EMPTY : capRightSkin.width,
+				top:    vertical ? capLeftSkin.height : EMPTY,
 				bottom: vertical ? capRightSkin.height : EMPTY,
-				width: vertical ? JW_CSS_100PCT : EMPTY,
+				width:  vertical ? JW_CSS_100PCT : EMPTY,
 				height: vertical ? "auto" : EMPTY
 			});
 
@@ -993,7 +994,7 @@
 			
 			if (name == "time" && !_isMobile) {
 				rail.addEventListener('mousemove', _showTimeTooltip, FALSE);
-				rail.addEventListener('mouseout', _hideTimeTooltip, FALSE);
+				rail.addEventListener('mouseout',  _hideTimeTooltip, FALSE);
 			}
 			
 			_elements[name+'Rail'] = rail;
@@ -1034,13 +1035,6 @@
 
 		function _sliderDragEvent(evt) {
 			if (!_dragging) return;
-
-			var currentTime = (new Date()).getTime();
-
-			if (currentTime - _lastTooltipPositionTime > 50) {
-				_positionTimeTooltip(evt);
-				_lastTooltipPositionTime = currentTime;
-			}
 
 			var rail = _elements[_dragging].querySelector('.jwrail'),
 				railRect = utils.bounds(rail),
@@ -1086,7 +1080,7 @@
 				
 				_elements[name+'Rail'].className = "jwrail";
 				
-				if (name == "time") {
+				if (name === "time") {
 					if (!_idle()) {
 						_api.jwSeekDrag(TRUE);
 						_draggingStart(name);
@@ -1098,14 +1092,7 @@
 		}
 		
 		function _sliderMouseEvent(evt) {
-			
-			var currentTime = (new Date()).getTime();
-			
-			if (currentTime - _lastTooltipPositionTime > 50) {
-				_positionTimeTooltip(evt);
-				_lastTooltipPositionTime = currentTime;
-			}
-			
+
 			if (!_dragging || evt.button) {
 				return;
 			}
@@ -1113,7 +1100,7 @@
 			var rail = _elements[_dragging].querySelector('.jwrail'),
 				railRect = utils.bounds(rail),
 				name = _dragging,
-				pct = _elements[name].vertical ? (railRect.bottom - evt.pageY) / railRect.height : (evt.pageX - railRect.left) / railRect.width;
+				pct  = _elements[name].vertical ? (railRect.bottom - evt.pageY) / railRect.height : (evt.pageX - railRect.left) / railRect.width;
 			
 			if (evt.type == 'mouseup') {
 				if (name == "time") {
@@ -1137,7 +1124,11 @@
 			return false;
 		}
 
-		function _showTimeTooltip() {
+		function _showTimeTooltip(evt) {
+			if (evt) {
+				_positionTimeTooltip.apply(this, arguments);
+			}
+
 			if (_timeOverlay && _duration && !_audioMode && !_isMobile) {
 				_css.block(_id); // unblock on position overlay
 				_timeOverlay.show();
@@ -1146,53 +1137,63 @@
 		}
 		
 		function _hideTimeTooltip() {
+			WINDOW.removeEventListener('mousemove', _sliderMouseEvent);
+
 			if (_timeOverlay) {
 				_timeOverlay.hide();
 			}
 		}
-		
+
 		function _positionTimeTooltip(evt) {
-			_cbBounds = utils.bounds(_controlbar);
+			_cbBounds   = utils.bounds(_controlbar);
 			_railBounds = utils.bounds(_timeRail);
-			if (!_railBounds || _railBounds.width === 0) return;
-			var position = evt.x;
-			if (evt.pageX) {
-				position = evt.pageX - _railBounds.left;
+
+			if (!_railBounds || _railBounds.width === 0) {
+				return;
 			}
-			if (position >= 0 && position <= _railBounds.width) {
-				_timeOverlay.positionX(Math.round(position));
-				_setTimeOverlay(_duration * position / _railBounds.width);
-			}
+
+			var position = (evt.pageX ? (evt.pageX - _railBounds.left) : evt.x);
+
+			_timeOverlay.positionX(Math.round(position));
+			_setTimeOverlay(_duration * position / _railBounds.width);
 		}
 		
-		function _setTimeOverlay(sec) {
-			var thumbUrl = _timeOverlayThumb.updateTimeline(sec, function(width) {
+		var _setTimeOverlay = (function() {
+			var lastText;
+
+			var thumbLoadedCallback = function(width) {
 				_css.style(_timeOverlay.element(), {
 					'width': width
 				});
 				_positionOverlay('time', _timeOverlay);
-			});
-			var text;
-			if (_activeCue) {
-				text = _activeCue.text;
-				if (text) {
-					_css.style(_timeOverlay.element(), {
-						'width': (text.length > 32) ? 160: EMPTY
-					});
+			};
+
+			return function(sec) {
+				var thumbUrl = _timeOverlayThumb.updateTimeline(sec, thumbLoadedCallback);
+
+				var text;
+				if (_activeCue) {
+					text = _activeCue.text;
+					if (text && (text !== lastText)) {
+						lastText = text;
+						_css.style(_timeOverlay.element(), {
+							'width': (text.length > 32) ? 160: EMPTY
+						});
+					}
+				} else {
+					text = utils.timeFormat(sec);
+					if (!thumbUrl) {
+						_css.style(_timeOverlay.element(), {
+							'width': EMPTY
+						});
+					}
 				}
-			} else {
-				text = utils.timeFormat(sec);
-				if (!thumbUrl) {
-					_css.style(_timeOverlay.element(), {
-						'width': EMPTY
-					});
+				if (_timeOverlayText.innerHTML !== text) {
+					_timeOverlayText.innerHTML = text;
 				}
-			}
-			if (_timeOverlayText.innerHTML !== text) {
-				_timeOverlayText.innerHTML = text;
-			}
-			_positionOverlay('time', _timeOverlay);
-		}
+				_positionOverlay('time', _timeOverlay);
+			};
+		})();
 		
 		function _styleTimeSlider() {
 			if (!_elements.timeSliderRail) {
@@ -1237,7 +1238,7 @@
 				if (cueElem && rail) {
 					rail.appendChild(cueElem);
 					cueElem.addEventListener("mouseover", function() { _activeCue = cue; }, false);
-					cueElem.addEventListener("mouseout", function() { _activeCue = NULL; }, false);
+					cueElem.addEventListener("mouseout",  function() { _activeCue = NULL; }, false);
 					_cues.push(cue);
 				}
 				
@@ -1515,7 +1516,7 @@
 		};
 		
 		function _updateNextPrev() {
-			if (_api.jwGetPlaylist().length > 1 && !_sidebarShowing()) {
+			if (!_adMode && _api.jwGetPlaylist().length > 1 && !_sidebarShowing()) {
 				_css.style(_elements.next, NOT_HIDDEN);
 				_css.style(_elements.prev, NOT_HIDDEN);
 			} else {
@@ -1562,10 +1563,10 @@
 				_css.style([
 					_elements.cast,
 					_elements.elapsed,
-					_elements.duration,
-					_elements.next,
-					_elements.prev
+					_elements.duration
 				], mode ? HIDDEN : NOT_HIDDEN);
+
+                _updateNextPrev();
 				//_redraw();
 			}
 			return _adMode;

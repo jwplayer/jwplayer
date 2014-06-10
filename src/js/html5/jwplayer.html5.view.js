@@ -36,10 +36,9 @@
 		 * Player stylesheets - done once on script initialization;  *
 		 * These CSS rules are used for all JW Player instances      *
 		 *************************************************************/
-
 		TRUE = true,
 		FALSE = !TRUE,
-		
+		_canCast = FALSE,
 		JW_CSS_SMOOTH_EASE = "opacity .25s ease",
 		JW_CSS_100PCT = "100%",
 		JW_CSS_ABSOLUTE = "absolute",
@@ -147,7 +146,24 @@
             this.setVolume(newVol);
         }
 
+		function allowKeyHandling(evt) {
+			// If Meta keys return
+			if (evt.ctrlKey || evt.metaKey) {
+				return false;
+			}
+
+			// Controls may be disabled during share screens, or via API
+			if(! _model.controls) {
+				return false;
+			}
+			return true;
+		}
+
         function handleKeydown(evt) {
+			if (! allowKeyHandling(evt)) {
+				// Let event bubble upwards
+				return true;
+			}
 
             // On keypress show the controlbar for a few seconds
             if (!_controlbar.adMode()) {
@@ -335,10 +351,12 @@
 			_api.jwAddEventListener(events.JWPLAYER_CAST_AVAILABLE, function(evt) {
 				if (evt.available) {
 					_this.forceControls(TRUE);
+					_canCast = TRUE;
 				} else {
 					_this.releaseControls();
 				}
 			});
+			
 			_api.jwAddEventListener(events.JWPLAYER_CAST_SESSION, function(evt) {
 				if (!_castDisplay) {
 					_castDisplay = new jwplayer.html5.castDisplay(_api.id);
@@ -545,6 +563,7 @@
 			_controlsLayer.appendChild(_controlbar.element());
 			
 			if (_isIPod) _hideControlbar();
+			if (_canCast) _this.forceControls(TRUE);
 		}
 
 		function _castAdChanged(evt) {
@@ -899,7 +918,7 @@
 			if (_logo && !_audioMode) _logo.show();
 		}
 		function _hideLogo() {
-			if (_logo && !_model.getVideo().audioMode()) _logo.hide(_audioMode);
+			if (_logo && (!_model.getVideo().audioMode() || _audioMode)) _logo.hide(_audioMode);
 		}
 
 		function _showDisplay() {
@@ -1241,6 +1260,7 @@
 			if (_castDisplay) {
 				_api.jwRemoveEventListener(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
 				_castDisplay.destroy();
+				_castDisplay = null;
 			}
 			if (_controlsLayer) {
 				_controlsLayer.removeEventListener('mousemove', _startFade);
