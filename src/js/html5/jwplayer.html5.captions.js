@@ -6,7 +6,7 @@
         states = events.state,
         parsers = jwplayer.parsers,
         _css = utils.css,
-        
+        _nonChromeAndroid = utils.isAndroid(4,true),
         PLAYING = "playing",
 
         DOCUMENT = document,
@@ -156,7 +156,7 @@
             }
 
             _selectedTrack = 0;
-
+			if (_nonChromeAndroid) return;
             for (i = 0; i < captions.length; i++) {
                 file = captions[i].file;
                 if(file) {
@@ -168,7 +168,7 @@
                     _load(_tracks[i].file,i);
                 }
             }
-
+			
             for (i = 0; i < _tracks.length; i++) {
                 if (_tracks[i]["default"]) {
                     defaultTrack = i+1;
