@@ -216,6 +216,16 @@ package com.longtailvideo.jwplayer.media {
 						_keyframes.times[j] = Number(data.seekpoints[j]['time']);
 						_keyframes.filepositions[j] = Number(data.seekpoints[j]['offset']);
 					}
+				} else if (data.hasCuePoints && data.cuePoints is Array) {
+					for (var i:uint=data.cuePoints.length; i--;) {
+						var cue:* = data.cuePoints[i];// this is an array with object props
+						data.cuePoints[i] = {
+							type: cue.type,
+							name: cue.name,
+							time: cue.time,
+							parameters: _extend({}, cue.parameters)
+						};
+					}
 				} else {
 					_keyframes = data.keyframes;
 				}
@@ -225,6 +235,13 @@ package com.longtailvideo.jwplayer.media {
 				}
 			}
 			sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_META, {metadata: data});
+		}
+		
+		private function _extend(newObj:Object, obj:Object):Object {
+			for (var key:String in obj) {
+				newObj[key] = obj[key];
+			}
+			return newObj;
 		}
 
 
