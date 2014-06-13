@@ -155,7 +155,6 @@
 			_hideFullscreen = FALSE,
 			_dragging = NULL,	
 			_lastSeekTime = 0,
-			_lastTooltipPositionTime = 0,
 			_cues = [],
 			_activeCue,
 			_toggles = {
@@ -1052,8 +1051,8 @@
 			}
 			else {
 				_setProgress(pct);
-				if (currentTime - _lastSeekTime > 500) {
-					_lastSeekTime = currentTime;
+				if (_position - _lastSeekTime > 500) {
+					_lastSeekTime = _position;
 					_sliderMapping.time(pct);
 				}
 				_this.sendEvent(events.JWPLAYER_USER_ACTION);
@@ -1116,8 +1115,8 @@
 				} else {
 					_setVolume(pct);
 				}
-				if (currentTime - _lastSeekTime > 500) {
-					_lastSeekTime = currentTime;
+				if (_position - _lastSeekTime > 500) {
+					_lastSeekTime = _position;
 					_sliderMapping[_dragging.replace("H", EMPTY)](pct);
 				}
 			}
