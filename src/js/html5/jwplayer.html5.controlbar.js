@@ -1476,7 +1476,7 @@
 			var maxWidth = _settings.maxwidth|0;
 			if (!_audioMode && maxWidth) {
 				if (_controlbar.parentNode && utils.isIE()) {
-					if ((_controlbar.parentNode.clientWidth > maxWidth + (_settings.margin|0 * 2)) || (_instreamMode && _controlbar.clientWidth > 0)) {
+					if (_controlbar.parentNode.clientWidth > maxWidth + (_settings.margin|0 * 2)) {
 						_css.style(_controlbar,{width:maxWidth});
 					} else {
 						_css.style(_controlbar,{width:EMPTY});

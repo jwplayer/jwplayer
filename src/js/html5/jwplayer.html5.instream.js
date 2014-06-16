@@ -91,6 +91,8 @@
             // Create the container in which the controls will be placed
             _instreamContainer = document.createElement("div");
             _instreamContainer.id = _this.id + "_instream_container";
+            _utils.css.style(_instreamContainer,{width:'100%',height:'100%'});
+           
             _instreamContainer.appendChild(_disp.element());
 
             // Instream controlbar
