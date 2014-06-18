@@ -216,10 +216,12 @@
 		
 		var _hide = this.hide = function() {
 			_container.style.opacity = 0;
+			_container.style.cursor = '';
 		};
 
 		this.show = function() {
 			_container.style.opacity = 1;
+			_container.style.cursor = 'pointer';
 		};
 
 		_init();
@@ -227,7 +229,6 @@
 
 	_css(DI_CLASS, {
 		display : 'table',
-		cursor : 'pointer',
 		position: "relative",
 		'margin-left': "auto",
 		'margin-right': "auto",

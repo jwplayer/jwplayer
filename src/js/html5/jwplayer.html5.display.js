@@ -376,7 +376,6 @@
 	
 	_css(D_CLASS, {
 		position: JW_CSS_ABSOLUTE,
-		cursor: "pointer",
 		width: JW_CSS_100PCT,
 		height: JW_CSS_100PCT,
 		overflow: JW_CSS_HIDDEN
