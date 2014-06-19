@@ -76,6 +76,7 @@
 			_currentQuality = -1,
 			// Whether or not we're on an Android device and Not Chrome
 			_isAndroid = utils.isAndroidNative(),
+			_isAndroid4 = utils.isAndroid(4),
 			// Whether or not we're on an iOS 7 device
 			_isIOS7 = utils.isIOS(7),
 			
@@ -137,7 +138,7 @@
 			if (_duration != newDuration) {
 				_duration = newDuration;
 			}
-			if (_isAndroid && _delayedSeek > 0 && newDuration > _delayedSeek) {
+			if (_isAndroid && !_isAndroid4 && _delayedSeek > 0 && newDuration > _delayedSeek) {
 				_seek(_delayedSeek);
 			}
 			_timeUpdateHandler();
@@ -189,15 +190,20 @@
 		
 		function _progressHandler(evt) {
 			_generalHandler(evt);
-			if (_canSeek && _delayedSeek > 0 && !_isAndroid) {
-				// Need to set a brief timeout before executing delayed seek; IE9 stalls otherwise.
-				if (_isIE) setTimeout(function() {
+
+			if (!_canSeek || _isAndroid || (_delayedSeek === 0)) {
+				return;
+			}
+
+			// Need to set a brief timeout before executing delayed seek; IE9 stalls otherwise.
+			if (_isIE) {
+				setTimeout(function() {
 					if (_delayedSeek > 0) {
 						_seek(_delayedSeek);
 					}
 				}, 200);
-				// Otherwise call it immediately
-				else _seek(_delayedSeek);
+			} else {
+				_seek(_delayedSeek);
 			}
 		}
 		
@@ -406,7 +412,7 @@
 			} else {
 				_delayedSeek = seekPos;
 			}
-			
+
 		};
 		
 		function _sendSeekEvent(evt) {
