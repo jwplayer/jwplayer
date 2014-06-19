@@ -1473,9 +1473,9 @@
 				display: _audioMode || _instreamMode ? JW_CSS_BLOCK : JW_CSS_NONE
 			});
 			var maxWidth = _settings.maxwidth|0;
-			if (!_audioMode && maxWidth) {
+			if (maxWidth) {
 				if (_controlbar.parentNode && utils.isIE()) {
-					if (_controlbar.parentNode.clientWidth > maxWidth + (_settings.margin|0 * 2)) {
+					if (!_audioMode &&  _controlbar.parentNode.clientWidth > maxWidth + (_settings.margin|0 * 2)) {
 						_css.style(_controlbar,{width:maxWidth});
 					} else {
 						_css.style(_controlbar,{width:EMPTY});
