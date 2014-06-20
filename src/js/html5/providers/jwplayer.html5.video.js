@@ -725,7 +725,7 @@
 				return FALSE;
 			}
 			var type = _levels[0].type;
-			return (type == "aac" || type == "mp3" || type == "vorbis");
+			return (type == "oga" || type == "aac" || type == "mp3" || type == "vorbis");
 		};
 
 		_this.setCurrentQuality = function(quality) {
