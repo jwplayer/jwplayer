@@ -319,7 +319,9 @@
 			// adds video tag to video layer
 			_model.getVideo().setContainer(_videoLayer);
 
+			// Native fullscreen
 			_model.addEventListener('fullscreenchange', _fullscreenChangeHandler);
+			// DOM fullscreen
 			for (var i=DOCUMENT_FULLSCREEN_EVENTS.length; i--;) {
 				DOCUMENT.addEventListener(DOCUMENT_FULLSCREEN_EVENTS[i], _fullscreenChangeHandler, FALSE);
 			}
@@ -628,14 +630,33 @@
 		 * Switch fullscreen mode.
 		 **/
 		var _fullscreen = this.fullscreen = function(state) {
+
 			if (!utils.exists(state)) {
 				state = !_model.fullscreen;
 			}
-			_toggleFullscreen(state);
+
+			state = !!state;
+
+			// if state is already correct, return
+			if (state === _model.fullscreen) {
+				return;
+			}
+
+			// If it supports DOM fullscreen
+			if (_elementSupportsFullscreen) {
+				if (state) {
+					_requestFullscreen.apply(_playerElement);
+				} else {
+					_exitFullscreen.apply(DOCUMENT);
+				}
+				_toggleDOMFullscreen(_playerElement, state);
+			} else {
+				// else use native fullscreen
+				_model.getVideo().setFullScreen(state);
+			}
 		};
 		
 
-		
 		function _redrawComponent(comp) {
 			if (comp) comp.redraw();
 		}
@@ -788,42 +809,6 @@
 				}
 			};
 		};
-		
-
-		/**
-		 * False fullscreen mode. This is used for browsers without full support for HTML5 fullscreen.
-		 * This method sets the CSS of the container element to a fixed position with 100% width and height.
-		 */
-		function _toggleFullscreen(state) {
-			state = !!state;
-			// don't go fullscreen in audio mode
-			if (state && _isAudioFile()) {
-				return;
-			}
-			if (state !== _model.fullscreen) {
-				// If a native fullscreen method is available in the browser, use that.
-				if (state) {
-					if (_requestFullscreen) {
-						_requestFullscreen.apply(_playerElement);
-					}
-				} else {
-					if (_exitFullscreen) {
-						_exitFullscreen.apply(DOCUMENT);
-					}
-				}
-				
-				if (_elementSupportsFullscreen) {
-					_fullscreenChangeHandler({
-						type: 'fullscreenrequest',
-						target: _playerElement,
-						jwstate: state
-					});
-				} else {
-					// use video tag fullscreen if container fullscreen is not available
-					_model.getVideo().setFullScreen(state);
-				}
-			}
-		}
 
 		/**
 		 * Return whether or not we're in native fullscreen
@@ -839,10 +824,8 @@
 			// if player element view fullscreen not available, return video fullscreen state
 			return _model.getVideo().getFullScreen();
 		}
-		
-		/**
-		 * If the browser enters or exits fullscreen mode (without the view's knowing about it) update the model.
-		 **/
+
+
 		function _fullscreenChangeHandler(event) {
 			// don't respond to fullscreen change handlers for elements outside the player (other players, etc...)
 			if (event.target !== _playerElement && !_playerElement.contains(event.target)) {
@@ -851,9 +834,18 @@
 
 			var fullscreenState = (event.jwstate !== undefined) ? event.jwstate : _isNativeFullscreen();
 
-			utils.removeClass(_playerElement, 'jwfullscreen');
+			if (_elementSupportsFullscreen) {
+				_toggleDOMFullscreen(_playerElement, fullscreenState);
+			} else {
+				_toggleFullscreen(fullscreenState);
+			}
+		}
+
+		function _toggleDOMFullscreen(playerElement, fullscreenState) {
+
+			utils.removeClass(playerElement, 'jwfullscreen');
 			if (fullscreenState) {
-				utils.addClass(_playerElement, 'jwfullscreen');
+				utils.addClass(playerElement, 'jwfullscreen');
 				_css.style(DOCUMENT.body, {
 					'overflow-y' : JW_CSS_HIDDEN
 				});
@@ -871,6 +863,10 @@
 			_redrawComponent(_dock);
 			_resizeMedia();
 
+			_toggleFullscreen(fullscreenState)
+		}
+
+		function _toggleFullscreen(fullscreenState) {
 			// update model
 			_model.setFullscreen(fullscreenState);
 
