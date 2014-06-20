@@ -25,7 +25,7 @@
 		VIEW_CONTROLS_CONTAINER_CLASS = "jwcontrols",
 		VIEW_ASPECT_CONTAINER_CLASS = "jwaspect",
 		VIEW_PLAYLIST_CONTAINER_CLASS = "jwplaylistcontainer",
-		FULLSCREEN_EVENTS = [
+		DOCUMENT_FULLSCREEN_EVENTS = [
 			'fullscreenchange',
 			'webkitfullscreenchange',
 			'mozfullscreenchange',
@@ -85,7 +85,7 @@
 			// view fullscreen methods and ability
 			_requestFullscreen,
 			_exitFullscreen,
-			_elementFullscreen = false,
+			_elementSupportsFullscreen = false,
 
             // Used to differentiate tab focus events from click events, because when
             //  it is a click, the mouseDown event will occur immediately prior
@@ -121,7 +121,7 @@
 				DOCUMENT.webkitCancelFullScreen ||
 				DOCUMENT.mozCancelFullScreen ||
 				DOCUMENT.msExitFullscreen;
-			_elementFullscreen = _requestFullscreen && _exitFullscreen;
+			_elementSupportsFullscreen = _requestFullscreen && _exitFullscreen;
 
 			if (_model.aspectratio) {
 				_css.style(_playerElement, {
@@ -319,11 +319,9 @@
 			// adds video tag to video layer
 			_model.getVideo().setContainer(_videoLayer);
 
-			// _videoTag.addEventListener('webkitbeginfullscreen', _fullscreenChangeHandler, FALSE);
-			// _videoTag.addEventListener('webkitendfullscreen', _fullscreenChangeHandler, FALSE);
 			_model.addEventListener('fullscreenchange', _fullscreenChangeHandler);
-			for (var i=FULLSCREEN_EVENTS.length; i--;) {
-				DOCUMENT.addEventListener(FULLSCREEN_EVENTS[i], _fullscreenChangeHandler, FALSE);
+			for (var i=DOCUMENT_FULLSCREEN_EVENTS.length; i--;) {
+				DOCUMENT.addEventListener(DOCUMENT_FULLSCREEN_EVENTS[i], _fullscreenChangeHandler, FALSE);
 			}
 
 			window.removeEventListener('resize', _responsiveListener);
@@ -814,7 +812,7 @@
 					}
 				}
 				
-				if (_elementFullscreen) {
+				if (_elementSupportsFullscreen) {
 					_fullscreenChangeHandler({
 						type: 'fullscreenrequest',
 						target: _playerElement,
@@ -824,8 +822,6 @@
 					// use video tag fullscreen if container fullscreen is not available
 					_model.getVideo().setFullScreen(state);
 				}
-
-
 			}
 		}
 
@@ -833,7 +829,7 @@
 		 * Return whether or not we're in native fullscreen
 		 */
 		function _isNativeFullscreen() {
-			if (_elementFullscreen) {
+			if (_elementSupportsFullscreen) {
 				var fsElement = DOCUMENT.currentFullScreenElement ||
 							DOCUMENT.webkitCurrentFullScreenElement ||
 							DOCUMENT.mozFullScreenElement || 
@@ -1261,8 +1257,8 @@
 		this.destroy = function() {
 			window.removeEventListener('resize', _responsiveListener);
 			window.removeEventListener('orientationchange', _responsiveListener);
-			for (var i=FULLSCREEN_EVENTS.length; i--;) {
-				DOCUMENT.removeEventListener(FULLSCREEN_EVENTS[i], _fullscreenChangeHandler, FALSE);
+			for (var i=DOCUMENT_FULLSCREEN_EVENTS.length; i--;) {
+				DOCUMENT.removeEventListener(DOCUMENT_FULLSCREEN_EVENTS[i], _fullscreenChangeHandler, FALSE);
 			}
 			_model.removeEventListener('fullscreenchange', _fullscreenChangeHandler);
 			_playerElement.removeEventListener('keydown', handleKeydown, FALSE);
