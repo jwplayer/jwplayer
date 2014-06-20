@@ -217,7 +217,7 @@
 			_this.visible = false;
 			_castAvailable({available:_canCast});
 		}
-		
+
 		function _addEventListeners() {
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_TIME, _timeUpdated);
 			_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
@@ -247,7 +247,7 @@
 				}, false);
 			}
 		}
-		
+
 		function _resizeHandler() {
 			_cbBounds = utils.bounds(_controlbar);
 			if (_cbBounds.width > 0) {
@@ -255,14 +255,22 @@
 			}
 		}
 
+		function isLiveStream(evt) {
+			var isIpadStream   = (evt.duration == Number.POSITIVE_INFINITY);
+			var isSafariStream = (evt.duration===0 && evt.position!==0 && utils.isSafari() && !_isMobile);
+
+			return isIpadStream || isSafariStream;
+		}
 
 		function _timeUpdated(evt) {
 			_css.block(_id); //unblock on redraw
 
 			// Positive infinity for live streams on iPad, 0 for live streams on Safari (HTML5)
-			if (evt.duration == Number.POSITIVE_INFINITY || (!evt.duration && utils.isSafari() && !_isMobile)) {
+			if (isLiveStream(evt)) {
 				_this.setText(_api.jwGetPlaylist()[_api.jwGetPlaylistIndex()].title || "Live broadcast");
-				
+
+				// so that elapsed time doesn't display for live streams
+				_toggleTimesDisplay(false);
 			} else {
 				var timeString;
 				if (_elements.elapsed) {
@@ -688,15 +696,19 @@
 			});
 		}
 		
-		function _hideTimes() {
-			if(_controlbar) {
-				var jwalt = _elements.alt;
-				if (!jwalt) return;
-				if (_controlbar.parentNode && _controlbar.parentNode.clientWidth >= 320) {
-					_css.style(_jwhidden, NOT_HIDDEN);
-				} else {
-					_css.style(_jwhidden, HIDDEN);
-				}
+		function _toggleTimesDisplay(state) {
+			if (!_controlbar || !_elements.alt) {
+				return;
+			}
+
+			if (state === undefined) {
+				state = (_controlbar.parentNode && _controlbar.parentNode.clientWidth >= 320);
+			}
+
+			if (state) {
+				_css.style(_jwhidden, NOT_HIDDEN);
+			} else {
+				_css.style(_jwhidden, HIDDEN);
 			}
 		}
 
@@ -1684,7 +1696,7 @@
 			_css.style(_controlbar, style);
 			_cbBounds = utils.bounds(_controlbar);
 
-			_hideTimes();
+			_toggleTimesDisplay();
 			
 			_css.block(_id); //unblock on redraw
 
