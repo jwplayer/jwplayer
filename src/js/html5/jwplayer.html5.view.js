@@ -351,7 +351,7 @@
 			_api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
 			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_COMPLETE, _playlistCompleteHandler);
-			// _api.jwAddEventListener(events.JWPLAYER_PLAYLIST_ITEM, _playlistItemHandler);
+			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_ITEM, _playlistItemHandler);
 			_api.jwAddEventListener(events.JWPLAYER_CAST_AVAILABLE, function(evt) {
 				if (evt.available) {
 					_this.forceControls(TRUE);
@@ -621,6 +621,7 @@
 			// cast display reset
 			if (_castDisplay) {
 				_castDisplay.adsEnded();
+				_castDisplay.setState(_api.jwGetState());
 			}
 			// display click reset
 			_display.revertAlternateClickHandler();
@@ -863,7 +864,7 @@
 			_redrawComponent(_dock);
 			_resizeMedia();
 
-			_toggleFullscreen(fullscreenState)
+			_toggleFullscreen(fullscreenState);
 		}
 
 		function _toggleFullscreen(fullscreenState) {
@@ -993,11 +994,12 @@
 			}
 		}
 		
-		
-		// function _playlistItemHandler() {
-			//ios7 captions:
-			//_model.getVideo().resetCaptions();
-		// }
+		function _playlistItemHandler() {
+			// update display title
+			if (_castDisplay) {
+				_castDisplay.setState(_api.jwGetState());
+			}
+		}
 
 		function _readyHandler() {
 			_readyState = TRUE;
