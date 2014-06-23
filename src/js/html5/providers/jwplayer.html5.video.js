@@ -17,6 +17,8 @@
 	jwplayer.html5.video = function(_videotag, _name) {
 		_name = _name || '';
 		var _isIE = utils.isMSIE(),
+			_isMobile = utils.isMobile(),
+			_isSafari = utils.isSafari(),
 			_mediaEvents = {
 				abort : _generalHandler,
 				canplay : _canPlayHandler,
@@ -306,8 +308,14 @@
 			}
 
 		}
-		
+
+		function _forceVideoLoad() {
+			// These browsers will not replay videos without reloading them
+			return (_isMobile || _isSafari);
+		}
+
 		function _completeLoad(startTime, duration) {
+
 			_canSeek = FALSE;
 			_bufferFull = FALSE;
 			_source = _levels[_currentQuality];
@@ -317,26 +325,27 @@
 
 			_delayedSeek = 0;
 
-			var sourceChanged = _videotag.src !== _source.file;
+			var sourceChanged = (_videotag.src !== _source.file);
 			if (sourceChanged) {
 				_duration = duration ? duration : -1;
 				_videotag.src = _source.file;
 				_videotag.load();
-			} else if (startTime === 0) {
-				_videotag.currentTime = 0;
-			}
-			
-			var isMobile = utils.isMobile();
-			if (isMobile) {
-				// always reload on mobile
-				if (!sourceChanged) {
+			} else {
+				// Load event is from the same video as before
+
+				if (startTime === 0) {
+					// We are restarting, as opposed to resuming
+					_videotag.currentTime = 0;
+				}
+
+				if (_forceVideoLoad()) {
 					_videotag.load();
 				}
 			}
 
 			_position = _videotag.currentTime;
 
-			if (isMobile) {
+			if (_isMobile) {
 				// results in html5.controller calling video.play()
 				_sendBufferFull();
 			}
