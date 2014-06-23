@@ -179,7 +179,11 @@
 					var source = item.sources[0];
 					if (source.type === 'youtube' || utils.isYouTube(source.file)) {
 						provider = _providers.youtube;
-						if (!provider) {
+						if (provider !== _video) {
+							// when switching providers always reinstantiate youtube
+							if (provider) {
+								provider.destroy();
+							}
 							provider = _providers.youtube = new html5.youtube(_model.id);
 						}
 					}

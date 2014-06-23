@@ -257,7 +257,11 @@
 			// console.log(_playerId, 'Youtube state change', event, 'state', _getYoutubePlayerStateString(), 'data', _ytPlayer.getVideoData());
 			switch(event.data) {
 			case youtubeStates.UNSTARTED:// -1: //unstarted
-				_setState(states.IDLE);
+				if (_requiresUserInteraction) {
+					_setState(states.IDLE);
+				} else {
+					_setState(states.BUFFERING);
+				}
 				return;
 			case youtubeStates.ENDED:// 0: //ended
 				_ended();
@@ -342,6 +346,16 @@
 			}
 		}
 
+		function _cleanup() {
+			_stopVideo();
+			// remove element
+			if (_element && _container === _element.parentNode) {
+				_container.removeChild(_element);
+			}
+			_ytPlayer =
+			_container = null;
+		}
+
 
 		// Additional Provider Methods (not yet implemented in html5.video)
 
@@ -353,15 +367,10 @@
 
 		_this.destroy = function() {
 			// console.log(_playerId, 'YT destroy');
-			// remove element
-			if (_container === _element.parentNode) {
-				_container.removeChild(_element);
-			}
-			clearInterval(_playingInterval);
-			_this =
+			_cleanup();
+			_element =
 			_youtube =
-			_ytPlayer =
-			_element = null;
+			_this = null;
 		};
 
 
@@ -420,8 +429,13 @@
 				// An exception is thrown by the iframe_api - but the call works
 				// it's trying to access an element of the controls which is not present
 				// because we disabled control in the setup
-				_ytPlayer.loadVideoById(videoId);
-
+				if (_requiresUserInteraction) {
+					_stopVideo();
+					_ytPlayer.cueVideoById(videoId);
+				} else {
+					_ytPlayer.loadVideoById(videoId);
+				}
+				
 				// _ytPlayer.loadVideoByUrl(url);
 				// _ytPlayer.cueVideoById(videoId);
 				// _ytPlayer.nextVideo();
@@ -534,14 +548,8 @@
 		_this.remove = function() {
 			// stop video silently
 			_stopVideo();
-			// don't remove, just hide so we can reuse player
-			utils.css.style(_element, {
-				display: 'none'
-			});
-			// if (_container === _element.parentNode) {
-			// 	// console.log('hide YT in DOM');
-			// 	_container.removeChild(_element);
-			// }
+			// clean everything up (this provider should be destroyed and reinstantaited after being removed)
+			_cleanup();
 		};
 
 		_this.setVisibility = function(state) {
