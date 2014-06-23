@@ -1070,10 +1070,11 @@
 					_showDock();
 				} else {
 					_showVideo(TRUE);
+					
 					_resizeMedia();
 					_display.hidePreview(TRUE);
 					if (_controlbar) {
-						_controlbar.hideFullscreen(FALSE);
+						_controlbar.hideFullscreen(!_model.getVideo().supportsFullscreen());
 					}
 				}
 				break;

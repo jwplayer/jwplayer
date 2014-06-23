@@ -498,6 +498,10 @@
 			return _container;
 		};
 
+		_this.supportsFullscreen = function() {
+			return !utils.isIPad();
+		};
+	
 		_this.remove = function() {
 			// stop video silently
 			_stopVideo();
