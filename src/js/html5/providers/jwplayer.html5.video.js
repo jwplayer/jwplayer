@@ -694,6 +694,10 @@
 			_videotag.controls = !!state;
 		};
 
+		_this.supportsFullscreen = function() {
+			return true;
+		};
+
 		_this.setFullScreen = function(state) {
 			state = !!state;
 
