@@ -44,10 +44,10 @@
 	};
 	
 	_item.defaults = {
-		description: "",
-		image: "",
-		mediaid: "",
-		title: "",
+		description: undefined,
+		image: undefined,
+		mediaid: undefined,
+		title: undefined,
 		sources: [],
 		tracks: []
 	};
