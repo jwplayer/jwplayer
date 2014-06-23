@@ -18,7 +18,7 @@
 			_loadOnPlay = -1,
 			_preplay = FALSE,
 			_actionOnAttach,
-			_stopPlaylist = FALSE,
+			_stopPlaylist = FALSE, // onComplete, should we play next item or not?
 			_interruptPlay,
 			_queuedCalls = [],
 			_this = utils.extend(this, new events.eventdispatcher(_model.id, _model.config.debug));
@@ -156,6 +156,7 @@
 				} else if (!internal) {
 					_stopPlaylist = TRUE;
 				}
+
 				if (_preplay) {
 					_interruptPlay = TRUE;
 				}
@@ -314,7 +315,9 @@
 		this.seek = _waitForReady(_seek);
 		this.stop = function() {
 			// Something has called stop() in an onComplete handler
-			_stopPlaylist = TRUE;
+			if (_isIdle()) {
+				_stopPlaylist = TRUE;
+			}
 			_waitForReady(_stop)();
 		};
 		this.load = _waitForReady(_load);
