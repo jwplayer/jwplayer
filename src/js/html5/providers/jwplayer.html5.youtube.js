@@ -257,7 +257,11 @@
 			// console.log(_playerId, 'Youtube state change', event, 'state', _getYoutubePlayerStateString(), 'data', _ytPlayer.getVideoData());
 			switch(event.data) {
 			case youtubeStates.UNSTARTED:// -1: //unstarted
-				_setState(states.IDLE);
+				if (_requiresUserInteraction) {
+					_setState(states.IDLE);
+				} else {
+					_setState(states.BUFFERING);
+				}
 				return;
 			case youtubeStates.ENDED:// 0: //ended
 				_ended();
@@ -425,8 +429,13 @@
 				// An exception is thrown by the iframe_api - but the call works
 				// it's trying to access an element of the controls which is not present
 				// because we disabled control in the setup
-				_ytPlayer.loadVideoById(videoId);
-
+				if (_requiresUserInteraction) {
+					_stopVideo();
+					_ytPlayer.cueVideoById(videoId);
+				} else {
+					_ytPlayer.loadVideoById(videoId);
+				}
+				
 				// _ytPlayer.loadVideoByUrl(url);
 				// _ytPlayer.cueVideoById(videoId);
 				// _ytPlayer.nextVideo();
