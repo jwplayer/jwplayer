@@ -318,7 +318,8 @@
 			_delayedSeek = 0;
 
 			var sourceChanged = _videotag.src !== _source.file;
-			if (sourceChanged) {
+			// Safari 7.0.4 must reload video instead of seeking to the beginning
+			if (sourceChanged || utils.isSafari()) {
 				_duration = duration ? duration : -1;
 				_videotag.src = _source.file;
 				_videotag.load();
