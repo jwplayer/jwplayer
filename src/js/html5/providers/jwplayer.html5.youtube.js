@@ -342,6 +342,16 @@
 			}
 		}
 
+		function _cleanup() {
+			_stopVideo();
+			// remove element
+			if (_element && _container === _element.parentNode) {
+				_container.removeChild(_element);
+			}
+			_ytPlayer =
+			_container = null;
+		}
+
 
 		// Additional Provider Methods (not yet implemented in html5.video)
 
@@ -353,15 +363,10 @@
 
 		_this.destroy = function() {
 			// console.log(_playerId, 'YT destroy');
-			// remove element
-			if (_container === _element.parentNode) {
-				_container.removeChild(_element);
-			}
-			clearInterval(_playingInterval);
-			_this =
+			_cleanup();
+			_element =
 			_youtube =
-			_ytPlayer =
-			_element = null;
+			_this = null;
 		};
 
 
@@ -530,14 +535,8 @@
 		_this.remove = function() {
 			// stop video silently
 			_stopVideo();
-			// don't remove, just hide so we can reuse player
-			utils.css.style(_element, {
-				display: 'none'
-			});
-			// if (_container === _element.parentNode) {
-			// 	// console.log('hide YT in DOM');
-			// 	_container.removeChild(_element);
-			// }
+			// clean everything up (this provider should be destroyed and reinstantaited after being removed)
+			_cleanup();
 		};
 
 		_this.setVisibility = function(state) {
