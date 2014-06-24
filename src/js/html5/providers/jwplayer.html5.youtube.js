@@ -9,7 +9,6 @@
 		_isSafari = utils.isSafari();
 
 	window.onYouTubeIframeAPIReady = function() {
-		// console.log('onYouTubeIframeAPIReady', window.YT);
 		_scriptLoader = null;
     };
 
@@ -68,9 +67,7 @@
 		function _getVideoLayer() {
 			var videoLayer = _element.parentNode;
 			if (!videoLayer) {
-				// console.log(_playerId, 'YT DOM not ready');
-				// if DOM is not ready do embed on player ready...
-				// TODO: this should happen when container is added and trigger ready when done
+				// if jwplayer DOM is not ready, do Youtube embed on jwplayer ready
 				if (!_listeningForReady) {
 					jwplayer(_playerId).onReady(_readyCheck);
 					_listeningForReady = true;
@@ -81,12 +78,10 @@
 		}
 
 		function _readyCheck() {
-			// console.log(_playerId, 'YT _readyCheck', !!_youtube && !!_getVideoLayer(), event);
 			if (!!_youtube && !!_getVideoLayer()) {
-				// was not able to load item
+				// if setItem cued up a video, this callback will handle it now
 				if (_youtubeEmbedReadyCallback) {
 					_youtubeEmbedReadyCallback.apply(_this);
-					//_youtubeEmbedReadyCallback = null;
 				}
 			}
 		}
@@ -120,7 +115,6 @@
 			if (youtubeState !== null &&
 				youtubeState !== undefined &&
 				youtubeState !== _youtubeState) {
-				// console.log('manual state update', 'state', _getYoutubePlayerStateString());
 				_youtubeState = youtubeState;
 				_onYoutubeStateChange({
 					data: youtubeState
@@ -133,7 +127,6 @@
 			} else if (youtubeState === youtubeStates.BUFFERING) {
 				_bufferUpdate();
 			}
-			
 		}
 
 		// function _getYoutubePlayerStateString() {
@@ -184,8 +177,6 @@
 		}
 
 		function _embedYoutubePlayer(videoId, playerVars) {
-			// console.log(_playerId, 'YT _embedYoutubePlayer');
-
 			if (!videoId) {
 				throw 'invalid Youtube ID';
 			}
@@ -217,10 +208,7 @@
 				}
 			};
 
-			//visibility fix
-			// videoLayer.className = ''; // remove jwvideo
-			// videoLayer.style.visibility = 'visible';
-			// videoLayer.style.opacity = 1;
+			// iFrame must be visible or it will not set up properly
 			_this.setVisibility(true);
 
 			_ytPlayer = new _youtube.Player(_element, ytConfig);
@@ -229,33 +217,19 @@
 			_youtubeEmbedReadyCallback = null;
 
 			_readyViewForMobile();
-
-			// console.log(_playerId, 'YT created player', _ytPlayer, ytConfig);
 		}
 
 		// Youtube Player Event Handlers
 		function _onYoutubePlayerReady() {
-			// console.log(_playerId, 'Youtube ready', event, 'state', _getYoutubePlayerStateString(), 'data', _ytPlayer.getVideoData());
 			_setState(states.IDLE);
-
-			// TODO: get size from event.target or container
-			// _dispatchEvent(events.JWPLAYER_MEDIA_META, {
-			// 	duration: event.target.getDuration(),
-			// 	width: 400,
-			// 	height: 300
-			// });
-
-			// _sendLevels 
-			// _dispatchEvent(events.JWPLAYER_MEDIA_LEVELS, {
-			// 	levels: _this.getQualityLevels(),
-			// 	currentQuality: _this.getCurrentQuality()
-			// });
+			// not much can actually be done on this event, wait until first onPlaybackQualityChange
 		}
 
 		function _onYoutubeStateChange(event) {
 			var youtubeStates = _youtube.PlayerState;
 			// console.log(_playerId, 'Youtube state change', event, 'state', _getYoutubePlayerStateString(), 'data', _ytPlayer.getVideoData());
 			switch(event.data) {
+
 			case youtubeStates.UNSTARTED:// -1: //unstarted
 				if (_requiresUserInteraction) {
 					_setState(states.IDLE);
@@ -263,22 +237,28 @@
 					_setState(states.BUFFERING);
 				}
 				return;
-			case youtubeStates.ENDED:// 0: //ended
+
+			case youtubeStates.ENDED:// 0: //ended (idle after playback)
 				_ended();
 				return;
+
 			case youtubeStates.PLAYING: // 1: playing
+
 				// playback has started so stop blocking api.play()
 				_requiresUserInteraction = false;
 				_playOnQualityChange = false;
 				_setState(states.PLAYING);
 				return;
+
 			case youtubeStates.PAUSED:// 2: //paused
 				_setState(states.PAUSED);
 				return;
+
 			case youtubeStates.BUFFERING:// 3: //buffering
 				_setState(states.BUFFERING);
 				return;
-			case youtubeStates.CUED:// 5: //video cued (5)
+
+			case youtubeStates.CUED:// 5: //video cued (idle before playback)
 				// idle or paused at start
 				if (_requiresUserInteraction) {
 					_setState(states.IDLE);
@@ -291,8 +271,10 @@
 
 		function _onYoutubePlaybackQualityChange() {
 			// console.log(_playerId, 'Youtube quality change', event, event.target.getAvailableQualityLevels());
-			// make sure playback resumes
-			// TODO: if waiting to play
+
+			// This event is where the Youtube player and media is actually ready and can be played
+
+			// make sure playback starts/resumes
 			if (_playOnQualityChange) {
 				_this.play();
 			}
@@ -347,27 +329,26 @@
 		}
 
 		function _cleanup() {
+			// stop video silently
 			_stopVideo();
 			// remove element
 			if (_element && _container === _element.parentNode) {
 				_container.removeChild(_element);
 			}
-			_ytPlayer =
-			_container = null;
+			_ytPlayer = null;
 		}
 
 
 		// Additional Provider Methods (not yet implemented in html5.video)
 
 		_this.init = function(item) {
-			// console.log(_playerId, 'YT init', item);
 			// load item on embed for mobile touch to start
 			_setItem(item);
 		};
 
 		_this.destroy = function() {
-			// console.log(_playerId, 'YT destroy');
 			_cleanup();
+			_container =
 			_element =
 			_youtube =
 			_this = null;
@@ -375,7 +356,6 @@
 
 
 		_this.getElement = function() {
-			// console.log(_playerId, 'YT getElement');
 			return _element; 
 		};
 
@@ -399,7 +379,6 @@
 			_this.setVisibility(true);
 
 			if (!_youtube) {
-				// console.log(_playerId, 'YT load on init');
 				// load item when API is ready
 				_youtubeEmbedReadyCallback = function() {
 					// enabling autoplay here also throws an exception
@@ -410,7 +389,6 @@
 			}
 
 			if (!_ytPlayer) {
-				// console.log(_playerId, 'YT load repeat embed');
 				_embedYoutubePlayer(videoId, {
 					autoplay: _requiresUserInteraction ? 0 : 1
 				});
@@ -435,10 +413,6 @@
 				} else {
 					_ytPlayer.loadVideoById(videoId);
 				}
-				
-				// _ytPlayer.loadVideoByUrl(url);
-				// _ytPlayer.cueVideoById(videoId);
-				// _ytPlayer.nextVideo();
 
 				// if player is unstarted, ready for mobile
 				var youtubeState = _ytPlayer.getPlayerState();
@@ -447,22 +421,20 @@
 					_readyViewForMobile();
 				}
 			} else {
+				// replay current video
 				if (_ytPlayer.getCurrentTime() > 0) {
-					// console.log(_playerId, 'seek first then...');
 					_ytPlayer.seekTo(0);
 				}
-				// console.log(_playerId, 'just play', 'state', _getYoutubePlayerStateString());
+				// TODO: redispatch meta event
 			}
 		}
 		
 		_this.stop = function() {
-			// console.log(_playerId, 'YT stop');
 			_stopVideo();
 			_setState(states.IDLE);
 		};
 				
 		_this.play = function() {
-			// console.log(_playerId, 'YT play', 'state', _getYoutubePlayerStateString());
 			if (_requiresUserInteraction) {
 				return;
 			}
@@ -472,7 +444,6 @@
 		};
 		
 		_this.pause = function() {
-			// console.log(_playerId, 'YT pause', 'state', _getYoutubePlayerStateString());
 			if (_requiresUserInteraction) {
 				return;
 			}
@@ -481,10 +452,7 @@
 			}
 		};
 
-		_this.seekDrag = noop;
-
 		_this.seek = function(position) {
-			// console.log(_playerId, 'YT seek');
 			if (_requiresUserInteraction) {
 				return;
 			}
@@ -499,14 +467,12 @@
 		};
 
 		_this.volume = function(volume) {
-			// console.log(_playerId, 'YT volume', volume);
 			if (!_ytPlayer) return;
 			// TODO: proper volume (controller should handle logic)
 			_ytPlayer.setVolume(volume);
 		};
 
 		_this.mute = function(mute) {
-			// console.log(_playerId, 'YT mute', mute);
 			if (!_ytPlayer) return;
 			// TODO: proper mute (controller should handle logic)
 			if (mute) {
@@ -531,7 +497,6 @@
 		};
 
 		_this.setContainer = function(element) {
-			// console.log('add YT to DOM');
 			_container = element;
 			element.appendChild(_element);
 			_this.setVisibility(true);
@@ -546,8 +511,6 @@
 		};
 	
 		_this.remove = function() {
-			// stop video silently
-			_stopVideo();
 			// clean everything up (this provider should be destroyed and reinstantaited after being removed)
 			_cleanup();
 		};
@@ -576,18 +539,13 @@
 		};
 
 		_this.resize = function(width, height, stretching) {
-			// TODO: look into Youtube resize method
-			//_container
 			utils.stretch(stretching,
 				_element,
 				width, height,
 				_element.clientWidth, _element.clientHeight);
 		};
 
-		_this.setFullScreen =
-		_this.getFullScreen = _alwaysReturn(false);
-
-		this.checkComplete = function() {
+		_this.checkComplete = function() {
 			return _beforecompleted;
 		};
 
@@ -608,16 +566,20 @@
 			return levels;
 		};
 
-		_this.setCurrentQuality = noop;
-
-		_this.setControls = noop;
-		_this.audioMode = _alwaysReturn(false);
 	};
 
-	function _alwaysReturn(val) {
-		return function() {
-			return val;
-		};
+	// unimplemented provider methods
+	jwplayer.html5.youtube.prototype = {
+		seekDrag: noop,
+		setFullScreen: returnFalse,
+		getFullScreen: returnFalse,
+		setCurrentQuality: noop,
+		setControls: noop,
+		audioMode: returnFalse
+	};
+
+	function returnFalse() {
+		return false;
 	}
 	
 	function noop() {}
