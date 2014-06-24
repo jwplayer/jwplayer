@@ -166,6 +166,14 @@
 			return (number * 10|0)/10;
 		}
 
+		function sendMetaEvent(videoElement) {
+			_sendEvent(events.JWPLAYER_MEDIA_META,{
+				duration: _videotag.duration,
+				height: _videotag.videoHeight,
+				width: _videotag.videoWidth
+			});
+		}
+
 		function _canPlayHandler(evt) {
 			_generalHandler(evt);
 			if (!_attached) return;
@@ -179,11 +187,7 @@
 					_videotag.muted = FALSE;
 					_videotag.muted = TRUE;
 				}
-				_sendEvent(events.JWPLAYER_MEDIA_META,{
-					duration: _videotag.duration,
-					height: _videotag.videoHeight,
-					width: _videotag.videoWidth
-				});
+				sendMetaEvent(_videotag);
 			}
 		}
 		
@@ -340,6 +344,9 @@
 
 				if (_forceVideoLoad()) {
 					_videotag.load();
+				} else {
+					// meta event is usually triggered by load, and is needed for googima to work on replay
+					sendMetaEvent(_videotag);
 				}
 			}
 
