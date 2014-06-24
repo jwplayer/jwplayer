@@ -246,7 +246,23 @@
 
 				// playback has started so stop blocking api.play()
 				_requiresUserInteraction = false;
-				_playOnQualityChange = false;
+				if (_playOnQualityChange) {
+					_playOnQualityChange = false;
+
+					// sent meta size and duration
+					_dispatchEvent(events.JWPLAYER_MEDIA_META, {
+						duration: _ytPlayer.getDuration(),
+						width: _element.clientWidth,
+						height: _element.clientHeight
+					});
+
+					// send levels when playback starts
+					_dispatchEvent(events.JWPLAYER_MEDIA_LEVELS, {
+						levels: _this.getQualityLevels(),
+						currentQuality: _this.getCurrentQuality()
+					});
+
+				}
 				_setState(states.PLAYING);
 				return;
 
@@ -550,22 +566,39 @@
 		};
 
 		_this.getCurrentQuality = function() {
-			var ytQuality = _ytPlayer.getPlaybackQuality();
-			var ytLevels = _ytPlayer.getAvailableQualityLevels();
-			return ytLevels.indexOf(ytQuality);
+			if (!_ytPlayer) return;
+			if (_ytPlayer.getAvailableQualityLevels) {
+				var ytQuality = _ytPlayer.getPlaybackQuality();
+				var ytLevels = _ytPlayer.getAvailableQualityLevels();
+				return ytLevels.indexOf(ytQuality);
+			}
+			return -1;
 		};
 
 		_this.getQualityLevels = function() {
+			if (!_ytPlayer) return;
 			var levels = [];
-			var ytLevels = _ytPlayer.getAvailableQualityLevels();
-			for (var i=ytLevels.length; i--;) {
-				levels.push({
-					label: ytLevels[i]
-				});
+			if (_ytPlayer.getAvailableQualityLevels) {
+				var ytLevels = _ytPlayer.getAvailableQualityLevels();
+				for (var i=ytLevels.length; i--;) {
+					levels.push({
+						label: ytLevels[i]
+					});
+				}
 			}
 			return levels;
 		};
 
+		_this.setCurrentQuality = function(quality) {
+			if (!_ytPlayer) return;
+			if (_ytPlayer.getAvailableQualityLevels) {
+				var ytLevels = _ytPlayer.getAvailableQualityLevels();
+				if (ytLevels.length) {
+					var ytQuality = ytLevels[ytLevels.length-quality-1];
+					_ytPlayer.setPlaybackQuality(ytQuality);
+				}
+			}
+		};
 	};
 
 	// unimplemented provider methods
@@ -573,7 +606,6 @@
 		seekDrag: noop,
 		setFullScreen: returnFalse,
 		getFullScreen: returnFalse,
-		setCurrentQuality: noop,
 		setControls: noop,
 		audioMode: returnFalse
 	};
