@@ -174,9 +174,16 @@
                     } else {
                         _this.jwInstreamPause();
                     }
+                } else {
+                    if (_utils.isAndroid()) {
+                        // Android chrome will pause the video even w/out controls,
+                        //   so we pause it beforehand to ensure consistent state.
+                        if (_fakemodel.state !== _states.PAUSED) {
+                            _this.jwInstreamPause();
+                        }
+                    }
                 }
             });
-            
 
             if (_utils.isMSIE()) {
                 _video.parentElement.addEventListener('click', _disp.clickHandler);
