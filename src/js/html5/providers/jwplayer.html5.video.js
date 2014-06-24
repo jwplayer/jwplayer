@@ -691,7 +691,7 @@
 		};
 
 		_this.resize = function(width, height, stretching) {
-			utils.stretch(stretching,
+			return utils.stretch(stretching,
 				_videotag, 
 				width, height, 
 				_videotag.videoWidth, _videotag.videoHeight);
