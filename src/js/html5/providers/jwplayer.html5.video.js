@@ -17,6 +17,8 @@
 	jwplayer.html5.video = function(_videotag, _name) {
 		_name = _name || '';
 		var _isIE = utils.isMSIE(),
+			_isMobile = utils.isMobile(),
+			_isSafari = utils.isSafari(),
 			_mediaEvents = {
 				abort : _generalHandler,
 				canplay : _canPlayHandler,
@@ -164,6 +166,14 @@
 			return (number * 10|0)/10;
 		}
 
+		function sendMetaEvent(videoElement) {
+			_sendEvent(events.JWPLAYER_MEDIA_META,{
+				duration: _videotag.duration,
+				height: _videotag.videoHeight,
+				width: _videotag.videoWidth
+			});
+		}
+
 		function _canPlayHandler(evt) {
 			_generalHandler(evt);
 			if (!_attached) return;
@@ -177,11 +187,7 @@
 					_videotag.muted = FALSE;
 					_videotag.muted = TRUE;
 				}
-				_sendEvent(events.JWPLAYER_MEDIA_META,{
-					duration: _videotag.duration,
-					height: _videotag.videoHeight,
-					width: _videotag.videoWidth
-				});
+				sendMetaEvent(_videotag);
 			}
 		}
 		
@@ -306,8 +312,14 @@
 			}
 
 		}
-		
+
+		function _forceVideoLoad() {
+			// These browsers will not replay videos without reloading them
+			return (_isMobile || _isSafari);
+		}
+
 		function _completeLoad(startTime, duration) {
+
 			_canSeek = FALSE;
 			_bufferFull = FALSE;
 			_source = _levels[_currentQuality];
@@ -317,26 +329,30 @@
 
 			_delayedSeek = 0;
 
-			var sourceChanged = _videotag.src !== _source.file;
+			var sourceChanged = (_videotag.src !== _source.file);
 			if (sourceChanged) {
 				_duration = duration ? duration : -1;
 				_videotag.src = _source.file;
 				_videotag.load();
-			} else if (startTime === 0) {
-				_videotag.currentTime = 0;
-			}
-			
-			var isMobile = utils.isMobile();
-			if (isMobile) {
-				// always reload on mobile
-				if (!sourceChanged) {
+			} else {
+				// Load event is from the same video as before
+
+				if (startTime === 0) {
+					// We are restarting, as opposed to resuming
+					_videotag.currentTime = 0;
+				}
+
+				if (_forceVideoLoad()) {
 					_videotag.load();
+				} else {
+					// meta event is usually triggered by load, and is needed for googima to work on replay
+					sendMetaEvent(_videotag);
 				}
 			}
 
 			_position = _videotag.currentTime;
 
-			if (isMobile) {
+			if (_isMobile) {
 				// results in html5.controller calling video.play()
 				_sendBufferFull();
 			}
@@ -675,7 +691,7 @@
 		};
 
 		_this.resize = function(width, height, stretching) {
-			utils.stretch(stretching,
+			return utils.stretch(stretching,
 				_videotag, 
 				width, height, 
 				_videotag.videoWidth, _videotag.videoHeight);
@@ -683,6 +699,10 @@
 
 		_this.setControls = function(state) {
 			_videotag.controls = !!state;
+		};
+
+		_this.supportsFullscreen = function() {
+			return true;
 		};
 
 		_this.setFullScreen = function(state) {
@@ -725,7 +745,7 @@
 				return FALSE;
 			}
 			var type = _levels[0].type;
-			return (type == "aac" || type == "mp3" || type == "vorbis");
+			return (type == "oga" || type == "aac" || type == "mp3" || type == "vorbis");
 		};
 
 		_this.setCurrentQuality = function(quality) {

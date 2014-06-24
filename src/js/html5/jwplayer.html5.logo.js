@@ -176,11 +176,7 @@
 	
 	_css(LOGO_CLASS, {
 		cursor: "pointer",
-		position: "absolute",
-		'z-index': 100,
-		opacity: 0
+		position: "absolute"
 	});
-
-	utils.transitionStyle(LOGO_CLASS, "visibility .25s, opacity .25s");
 
 })(jwplayer);

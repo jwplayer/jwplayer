@@ -15,7 +15,7 @@
 		FALSE = false;
 	
 	//Declare namespace
-	var utils = jwplayer.utils = function() {};
+	var utils = jwplayer.utils = {};
 
 	/**
 	 * Returns true if the value of the object is null, undefined or the empty
@@ -176,7 +176,7 @@
 
 	utils.isAndroid = function(version, excludeChrome) {
 		//Android Browser appears to include a user-agent string for Chrome/18 
-		if (excludeChrome && _userAgentMatch(/chrome\/[123456789]/i && !_userAgentMatch(/chrome\/18/))) {
+		if (excludeChrome && _userAgentMatch(/chrome\/[123456789]/i) && !_userAgentMatch(/chrome\/18/)) {
 			return false;
 		}
 		if (version) {
@@ -746,5 +746,14 @@
 			return Number(val);
 		}
 	};
-	
+
+	utils.addClass = function(element, c) {
+		element.className = element.className + ' ' + c;
+	};
+
+	utils.removeClass = function(element, c) {
+		var regex = new RegExp(' *' + c, 'g');
+		element.className = element.className.replace(regex, ' ');
+	};
+
 })(jwplayer);
