@@ -29,6 +29,8 @@
 			_listeningForReady = false,
 			// function to call once api and view are ready
 			_youtubeEmbedReadyCallback = null,
+			// function to call once _ytPlayer api is ready
+			_youtubePlayerReadyCallback = null,
 			// update timer
 			_playingInterval = -1,
 			// current Youtube state, tracked because state events fail to fire
@@ -230,7 +232,12 @@
 		// Youtube Player Event Handlers
 		function _onYoutubePlayerReady() {
 			_setState(states.IDLE);
-			// not much can actually be done on this event, wait until first onPlaybackQualityChange
+			
+			// If setItem was called before the player was ready, update the player now
+			if (_youtubePlayerReadyCallback) {
+				_youtubePlayerReadyCallback.apply(_this);
+				_youtubePlayerReadyCallback = null;
+			}
 		}
 
 		function _onYoutubeStateChange(event) {
@@ -351,6 +358,8 @@
 			if (_element && _container && _container === _element.parentNode) {
 				_container.removeChild(_element);
 			}
+			_youtubeEmbedReadyCallback =
+			_youtubePlayerReadyCallback =
 			_ytPlayer = null;
 		}
 
@@ -385,6 +394,7 @@
 		};
 
 		function _setItem(item) {
+			_youtubePlayerReadyCallback = null;
 			var url = item.sources[0].file;
 			var videoId = utils.youTubeID(url);
 
@@ -412,8 +422,9 @@
 			}
 
 			if (!_ytPlayer.getPlayerState) {
-				// Wait for play to be called. 
-				//console.error(_playerId, 'YT player API is not available');
+				_youtubePlayerReadyCallback = function() {
+					_this.load(item);
+				};
 				return;
 			}
 
