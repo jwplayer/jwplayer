@@ -499,14 +499,14 @@
 		};
 
 		_this.supportsFullscreen = function() {
-			return _container.requestFullscreen ||
+			return !!(_container && (_container.requestFullscreen ||
 				_container.requestFullScreen ||
 				_container.webkitRequestFullscreen ||
 				_container.webkitRequestFullScreen ||
 				_container.webkitEnterFullscreen ||
 				_container.webkitEnterFullScreen ||
 				_container.mozRequestFullScreen ||
-				_container.msRequestFullscreen;
+				_container.msRequestFullscreen));
 		};
 	
 		_this.remove = function() {
