@@ -499,7 +499,14 @@
 		};
 
 		_this.supportsFullscreen = function() {
-			return !utils.isIPad();
+			return _container.requestFullscreen ||
+				_container.requestFullScreen ||
+				_container.webkitRequestFullscreen ||
+				_container.webkitRequestFullScreen ||
+				_container.webkitEnterFullscreen ||
+				_container.webkitEnterFullScreen ||
+				_container.mozRequestFullScreen ||
+				_container.msRequestFullscreen;
 		};
 	
 		_this.remove = function() {
