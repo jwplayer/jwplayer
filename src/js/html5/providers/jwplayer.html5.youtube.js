@@ -176,6 +176,14 @@
 			_this.sendEvent(type, data);
 		}
 
+		function _sendMetaEvent() {
+			_dispatchEvent(events.JWPLAYER_MEDIA_META, {
+				duration: _ytPlayer.getDuration(),
+				width: _element.clientWidth,
+				height: _element.clientHeight
+			});
+		}
+
 		function _embedYoutubePlayer(videoId, playerVars) {
 			if (!videoId) {
 				throw 'invalid Youtube ID';
@@ -250,11 +258,7 @@
 					_playOnQualityChange = false;
 
 					// sent meta size and duration
-					_dispatchEvent(events.JWPLAYER_MEDIA_META, {
-						duration: _ytPlayer.getDuration(),
-						width: _element.clientWidth,
-						height: _element.clientHeight
-					});
+					_sendMetaEvent();
 
 					// send levels when playback starts
 					_dispatchEvent(events.JWPLAYER_MEDIA_LEVELS, {
@@ -286,8 +290,6 @@
 		}
 
 		function _onYoutubePlaybackQualityChange() {
-			// console.log(_playerId, 'Youtube quality change', event, event.target.getAvailableQualityLevels());
-
 			// This event is where the Youtube player and media is actually ready and can be played
 
 			// make sure playback starts/resumes
@@ -301,7 +303,6 @@
 		// }
 
 		function _onYoutubePlayerError(event) {
-			// console.error(_playerId, 'Youtube Error', event);
 			_dispatchEvent(events.JWPLAYER_MEDIA_ERROR, {
 				message: 'Youtube Player Error: '+ event.data
 			});
@@ -334,12 +335,11 @@
 		function _stopVideo() {
 			clearInterval(_playingInterval);
 			if (_ytPlayer && _ytPlayer.stopVideo) {
-				// console.log(_playerId, 'YT stop internal', 'state', _getYoutubePlayerStateString(), 'data', _ytPlayer.getVideoData());
 				try {
 					_ytPlayer.stopVideo();
 					_ytPlayer.clearVideo();
 				} catch(e) {
-					console.error('Error stopping YT', e);
+					//console.error('Error stopping YT', e);
 				}
 			}
 		}
@@ -412,7 +412,8 @@
 			}
 
 			if (!_ytPlayer.getPlayerState) {
-				console.error(_playerId, 'YT player API is not available');
+				// Wait for play to be called. 
+				//console.error(_playerId, 'YT player API is not available');
 				return;
 			}
 
@@ -441,7 +442,7 @@
 				if (_ytPlayer.getCurrentTime() > 0) {
 					_ytPlayer.seekTo(0);
 				}
-				// TODO: redispatch meta event
+				_sendMetaEvent();
 			}
 		}
 		
@@ -499,12 +500,10 @@
 		_this.detachMedia = function() {
 			// temp return a video element so instream doesn't break.
 			// FOR VAST: prevent instream from being initialized while casting
-			// console.error(_playerId, 'detachMedia called for Youtube');
 			return document.createElement('video');
 		};
 
 		_this.attachMedia = function() {
-			// console.error(_playerId, 'attachMedia called for Youtube');
 			if (_beforecompleted) {
 				_setState(states.IDLE);
 				_dispatchEvent(events.JWPLAYER_MEDIA_COMPLETE);
