@@ -231,8 +231,6 @@
 
 		// Youtube Player Event Handlers
 		function _onYoutubePlayerReady() {
-			_setState(states.IDLE);
-			
 			// If setItem was called before the player was ready, update the player now
 			if (_youtubePlayerReadyCallback) {
 				_youtubePlayerReadyCallback.apply(_this);
@@ -246,11 +244,7 @@
 			switch(event.data) {
 
 			case youtubeStates.UNSTARTED:// -1: //unstarted
-				if (_requiresUserInteraction) {
-					_setState(states.IDLE);
-				} else {
-					_setState(states.BUFFERING);
-				}
+				_setState(states.BUFFERING);
 				return;
 
 			case youtubeStates.ENDED:// 0: //ended (idle after playback)
@@ -286,12 +280,7 @@
 				return;
 
 			case youtubeStates.CUED:// 5: //video cued (idle before playback)
-				// idle or paused at start
-				if (_requiresUserInteraction) {
-					_setState(states.IDLE);
-				} else {
-					_setState(states.PAUSED);
-				}
+				_setState(states.IDLE);
 				return;
 			}
 		}
