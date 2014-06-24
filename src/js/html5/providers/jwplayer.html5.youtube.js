@@ -29,6 +29,8 @@
 			_listeningForReady = false,
 			// function to call once api and view are ready
 			_youtubeEmbedReadyCallback = null,
+			// function to call once _ytPlayer api is ready
+			_youtubePlayerReadyCallback = null,
 			// update timer
 			_playingInterval = -1,
 			// current Youtube state, tracked because state events fail to fire
@@ -229,8 +231,11 @@
 
 		// Youtube Player Event Handlers
 		function _onYoutubePlayerReady() {
-			_setState(states.IDLE);
-			// not much can actually be done on this event, wait until first onPlaybackQualityChange
+			// If setItem was called before the player was ready, update the player now
+			if (_youtubePlayerReadyCallback) {
+				_youtubePlayerReadyCallback.apply(_this);
+				_youtubePlayerReadyCallback = null;
+			}
 		}
 
 		function _onYoutubeStateChange(event) {
@@ -239,11 +244,7 @@
 			switch(event.data) {
 
 			case youtubeStates.UNSTARTED:// -1: //unstarted
-				if (_requiresUserInteraction) {
-					_setState(states.IDLE);
-				} else {
-					_setState(states.BUFFERING);
-				}
+				_setState(states.BUFFERING);
 				return;
 
 			case youtubeStates.ENDED:// 0: //ended (idle after playback)
@@ -279,12 +280,7 @@
 				return;
 
 			case youtubeStates.CUED:// 5: //video cued (idle before playback)
-				// idle or paused at start
-				if (_requiresUserInteraction) {
-					_setState(states.IDLE);
-				} else {
-					_setState(states.PAUSED);
-				}
+				_setState(states.IDLE);
 				return;
 			}
 		}
@@ -302,9 +298,10 @@
 			// console.log(_playerId, 'Youtube rate change', event);
 		// }
 
-		function _onYoutubePlayerError(event) {
+		function _onYoutubePlayerError() {
+			//console.error('Youtube Player Error:', event.data);
 			_dispatchEvent(events.JWPLAYER_MEDIA_ERROR, {
-				message: 'Youtube Player Error: '+ event.data
+				message: 'Error loading YouTube: Video could not be played'
 			});
 		}
 
@@ -351,6 +348,8 @@
 			if (_element && _container && _container === _element.parentNode) {
 				_container.removeChild(_element);
 			}
+			_youtubeEmbedReadyCallback =
+			_youtubePlayerReadyCallback =
 			_ytPlayer = null;
 		}
 
@@ -385,6 +384,7 @@
 		};
 
 		function _setItem(item) {
+			_youtubePlayerReadyCallback = null;
 			var url = item.sources[0].file;
 			var videoId = utils.youTubeID(url);
 
@@ -412,8 +412,9 @@
 			}
 
 			if (!_ytPlayer.getPlayerState) {
-				// Wait for play to be called. 
-				//console.error(_playerId, 'YT player API is not available');
+				_youtubePlayerReadyCallback = function() {
+					_this.load(item);
+				};
 				return;
 			}
 
