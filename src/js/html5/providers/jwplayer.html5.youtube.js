@@ -554,7 +554,7 @@
 		};
 
 		_this.resize = function(width, height, stretching) {
-			utils.stretch(stretching,
+			return utils.stretch(stretching,
 				_element,
 				width, height,
 				_element.clientWidth, _element.clientHeight);
