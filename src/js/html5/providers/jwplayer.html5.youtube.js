@@ -348,7 +348,7 @@
 			// stop video silently
 			_stopVideo();
 			// remove element
-			if (_element && _container === _element.parentNode) {
+			if (_element && _container && _container === _element.parentNode) {
 				_container.removeChild(_element);
 			}
 			_ytPlayer = null;
