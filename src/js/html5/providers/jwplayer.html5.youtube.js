@@ -309,9 +309,10 @@
 			// console.log(_playerId, 'Youtube rate change', event);
 		// }
 
-		function _onYoutubePlayerError(event) {
+		function _onYoutubePlayerError() {
+			//console.error('Youtube Player Error:', event.data);
 			_dispatchEvent(events.JWPLAYER_MEDIA_ERROR, {
-				message: 'Youtube Player Error: '+ event.data
+				message: 'Error loading YouTube: Video could not be played'
 			});
 		}
 
