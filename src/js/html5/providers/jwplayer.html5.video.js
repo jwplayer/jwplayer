@@ -55,7 +55,7 @@
 			// Current position
 			_position,
 			// Whether seeking is ready yet
-			_canSeek,
+			_canSeek = FALSE,
 			// Whether we have sent out the BUFFER_FULL event
 			_bufferFull,
 			// If we should seek on canplay
@@ -148,9 +148,12 @@
 		function _timeUpdateHandler(evt) {
 			_generalHandler(evt);
 			_progressHandler(evt);
+			
+			
 			if (!_attached) return;
 			if (_state == states.PLAYING && !_dragging) {
 				_position = _round(_videotag.currentTime);
+				_canSeek = TRUE;
 				_sendEvent(events.JWPLAYER_MEDIA_TIME, {
 					position : _position,
 					duration : _duration
@@ -320,8 +323,7 @@
 
 		function _completeLoad(startTime, duration) {
 
-			_canSeek = FALSE;
-			_bufferFull = FALSE;
+
 			_source = _levels[_currentQuality];
 			
 			_setState(states.BUFFERING);
@@ -331,10 +333,13 @@
 
 			var sourceChanged = (_videotag.src !== _source.file);
 			if (sourceChanged) {
+				_canSeek = FALSE;
+				_bufferFull = FALSE;
 				_duration = duration ? duration : -1;
 				_videotag.src = _source.file;
 				_videotag.load();
 			} else {
+				
 				// Load event is from the same video as before
 				if (startTime === 0) {
 					// restart video without dispatching seek event
