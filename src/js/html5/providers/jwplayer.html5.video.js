@@ -166,7 +166,7 @@
 			return (number * 10|0)/10;
 		}
 
-		function sendMetaEvent(videoElement) {
+		function sendMetaEvent() {
 			_sendEvent(events.JWPLAYER_MEDIA_META,{
 				duration: _videotag.duration,
 				height: _videotag.videoHeight,
@@ -187,7 +187,7 @@
 					_videotag.muted = FALSE;
 					_videotag.muted = TRUE;
 				}
-				sendMetaEvent(_videotag);
+				sendMetaEvent();
 			}
 		}
 		
@@ -336,17 +336,17 @@
 				_videotag.load();
 			} else {
 				// Load event is from the same video as before
-
 				if (startTime === 0) {
-					// We are restarting, as opposed to resuming
-					_videotag.currentTime = 0;
+					// restart video without dispatching seek event
+					_delayedSeek = -1;
+					_seek(startTime);
 				}
 
 				if (_forceVideoLoad()) {
 					_videotag.load();
 				} else {
 					// meta event is usually triggered by load, and is needed for googima to work on replay
-					sendMetaEvent(_videotag);
+					sendMetaEvent();
 				}
 			}
 
@@ -418,7 +418,13 @@
 
 			if (_canSeek) {
 				_delayedSeek = 0;
-				_videotag.currentTime = seekPos;
+				// handle readystate issue
+				try {
+					_videotag.currentTime = seekPos;
+				} catch (e) {
+					_delayedSeek = seekPos;
+				}
+				
 			} else {
 				_delayedSeek = seekPos;
 			}
