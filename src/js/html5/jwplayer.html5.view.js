@@ -1130,6 +1130,8 @@
 			_setVisibility(_internalSelector(VIEW_INSTREAM_CONTAINER_CLASS), FALSE);
 			_setVisibility(_internalSelector(VIEW_CONTROLS_CONTAINER_CLASS), TRUE);
 			_instreamLayer.innerHTML = "";
+			_instreamLayer.removeEventListener('mousemove', _startFade);
+			_instreamLayer.removeEventListener('mouseout', _mouseoutHandler)
 			_instreamMode = FALSE;
 		};
 		
@@ -1278,6 +1280,9 @@
 			if (_videoLayer) {
 				_videoLayer.removeEventListener('mousemove', _startFade);
 				_videoLayer.removeEventListener('click', _display.clickHandler);
+			}
+			if (_instreamMode) {
+				this.destroyInstream();
 			}
 		};
 
