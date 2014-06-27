@@ -1121,6 +1121,8 @@
 				newstate: states.PLAYING
 			});
 			_instreamMode = TRUE;
+			_instreamLayer.addEventListener('mousemove', _startFade);
+			_instreamLayer.addEventListener('mouseout', _mouseoutHandler); 
 		};
 		
 		this.destroyInstream = function() {
