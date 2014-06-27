@@ -194,8 +194,6 @@
 			}
 		}
 		
-		
-		
 		function _progressHandler(evt) {
 			_generalHandler(evt);
 			if (_canSeek && _delayedSeek > 0 && !_isAndroid) {
@@ -323,7 +321,6 @@
 
 		function _completeLoad(startTime, duration) {
 
-
 			_source = _levels[_currentQuality];
 			
 			_setState(states.BUFFERING);
@@ -339,18 +336,17 @@
 				_videotag.src = _source.file;
 				_videotag.load();
 			} else {
-									// Load event is from the same video as before
+				// Load event is from the same video as before
 				if (startTime === 0) {
 					// restart video without dispatching seek event
 					_delayedSeek = -1;
-					_seek(startTime);		
+					_seek(startTime);
 				}
-					// meta event is usually triggered by load, and is needed for googima to work on replay
+				// meta event is usually triggered by load, and is needed for googima to work on replay
 				sendMetaEvent();
 				_videotag.play();
 			}
 
-			
 			_position = _videotag.currentTime;
 
 			if (_isMobile) {
