@@ -73,6 +73,8 @@
             _oldpos = _video.currentTime;
             
             if (_controller.checkBeforePlay() || _oldpos === 0) {
+                // make sure video restarts after preroll
+                _oldpos = 0;
                 _oldstate = _states.PLAYING;
             } else if (_api.jwGetState() === _states.IDLE || _model.getVideo().checkComplete()) {
                 _oldstate = _states.IDLE;
@@ -216,7 +218,6 @@
             _controller.attachMedia();
             // Load the original item into our provider, which sets up the regular player's video tag
             if (_oldstate !== _states.IDLE) {
-
                 var item = _utils.extend({}, _olditem);
                 item.starttime = _oldpos;
                 _model.getVideo().load(item);
