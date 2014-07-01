@@ -29,7 +29,17 @@ create an event handler to watch for when someone changes the volume.
 
 Note that we could also use functions **getVolume**, **setVolume** and others which can be found [here](http://support.jwplayer.com/customer/portal/topics/564475-javascript-api/articles).
 
-## Build Instructions
+## Contributing
+
+### Style Guide
+For our javascript code, we follow the [Douglas Crockford Style guide](http://javascript.crockford.com/code.html)
+
+Before submitting a change be sure to verify it follows our guide by using
+```sh
+grunt jshint
+```
+
+### Build Instructions
 
 To build the JW Player, you will need the following software:
 
