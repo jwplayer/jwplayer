@@ -2,7 +2,6 @@ module.exports = function(grunt) {
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
-        
         concat: {
             options: {
                 separator: ''
@@ -49,7 +48,7 @@ module.exports = function(grunt) {
                 overwrite: true,
                 replacements:[{
                     from : /jwplayer\.version = '(.*)'/,
-                    to   : "jwplayer.version = '<%= pkg.version %>'"
+                    to   : 'jwplayer.version = \'<%= pkg.version %>\''
                 }]
             },
             html5 : {
@@ -57,11 +56,20 @@ module.exports = function(grunt) {
                 overwrite: true,
                 replacements:[{
                     from : /jwplayer\.html5\.version = '(.*)'/,
-                    to   : "jwplayer.html5.version = '<%= pkg.version %>'"
+                    to   : 'jwplayer.html5.version = \'<%= pkg.version %>\''
                 }]
             }
         },
 
+        jshint: {
+            all : [
+                'src/js/**/*.js',
+                'Gruntfile.js'
+            ],
+            options: {
+                jshintrc: '.jshintrc'
+            }
+        },
 
         uglify : {
             options: {
@@ -72,18 +80,31 @@ module.exports = function(grunt) {
             my_target : {
                 files: {
                     'bin-release/jwplayer.js' : 'bin-debug/jwplayer.js',
-                    'bin-release/jwplayer.html5.js' : 'bin-debug/jwplayer.html5.js'
+                    'bin-release/jwplayer.html5.js' :
+                        'bin-debug/jwplayer.html5.js'
                 }
+            }
+        },
+
+        watch : {
+            all : {
+                files : [
+                    'src/js/**/*.js',
+                    'Gruntfile.js',
+                    '.jshintrc',
+                    '.jshintignore',
+                    'package.json'
+                ],
+                tasks: ['jshint:all']
             }
         }
     });
 
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-text-replace');
 
-    
-
     grunt.registerTask('default', ['concat', 'replace', 'uglify']);
-
-}
+};
