@@ -1,159 +1,161 @@
 /**
  * jwplayer.html5 model
- * 
+ *
  * @author pablo
  * @version 6.0
  */
 (function(jwplayer) {
-	var html5 = jwplayer.html5,
-		utils = jwplayer.utils,
-		events = jwplayer.events;
+    var html5 = jwplayer.html5,
+        utils = jwplayer.utils,
+        events = jwplayer.events;
 
-	html5.model = function(config, _defaultProvider) {
-		var _model = this,
-			// Video provider
-			_video,
-			// Providers
-			_providers = {
-				html5: _defaultProvider || new html5.video(null, 'default')
-			},
-			// Saved settings
-			_cookies = utils.getCookies(),
-			// Sub-component configurations
-			_componentConfigs = {
-				controlbar: {},
-				display: {}
-			},
-			// Defaults
-			_defaults = {
-				autostart: false,
-				controls: true,
-				// debug: undefined,
-				fullscreen: false,
-				height: 320,
-				mobilecontrols: false,
-				mute: false,
-				playlist: [],
-				playlistposition: "none",
-				playlistsize: 180,
-				playlistlayout: "extended",
-				repeat: false,
-				// skin: undefined,
-				stretching: utils.stretching.UNIFORM,
-				width: 480,
-				volume: 90
-			};
+    html5.model = function(config, _defaultProvider) {
+        var _model = this,
+            // Video provider
+            _video,
+            // Providers
+            _providers = {
+                html5: _defaultProvider || new html5.video(null, 'default')
+            },
+            // Saved settings
+            _cookies = utils.getCookies(),
+            // Sub-component configurations
+            _componentConfigs = {
+                controlbar: {},
+                display: {}
+            },
+            // Defaults
+            _defaults = {
+                autostart: false,
+                controls: true,
+                // debug: undefined,
+                fullscreen: false,
+                height: 320,
+                mobilecontrols: false,
+                mute: false,
+                playlist: [],
+                playlistposition: "none",
+                playlistsize: 180,
+                playlistlayout: "extended",
+                repeat: false,
+                // skin: undefined,
+                stretching: utils.stretching.UNIFORM,
+                width: 480,
+                volume: 90
+            };
 
-		function _parseConfig(config) {
-			utils.foreach(config, function(i, val) {
-				config[i] = utils.serialize(val);
-			});
-			return config;
-		}
+        function _parseConfig(config) {
+            utils.foreach(config, function(i, val) {
+                config[i] = utils.serialize(val);
+            });
+            return config;
+        }
 
-		function _init() {
-			utils.extend(_model, new events.eventdispatcher());
-			_model.config = _parseConfig(utils.extend({}, _defaults, _cookies, config));
-			utils.extend(_model, {
-				id: config.id,
-				state : events.state.IDLE,
-				duration: -1,
-				position: 0,
-				buffer: 0
-			}, _model.config);
-			// This gets added later
-			_model.playlist = [];
-			_model.setItem(0);
-		}
-		
-		var _eventMap = {};
-		_eventMap[events.JWPLAYER_MEDIA_MUTE]   = ["mute"];
-		_eventMap[events.JWPLAYER_MEDIA_VOLUME] = ["volume"];
-		_eventMap[events.JWPLAYER_PLAYER_STATE] = ["newstate->state"];
-		_eventMap[events.JWPLAYER_MEDIA_BUFFER] = ["bufferPercent->buffer"];
-		_eventMap[events.JWPLAYER_MEDIA_TIME]   = ["position", "duration"];
-			
-		function _videoEventHandler(evt) {
-			var mappings = _eventMap[evt.type];
-			if (mappings && mappings.length) {
-				var _sendEvent = false;
-				for (var i=0; i<mappings.length; i++) {
-					var mapping = mappings[i];
-					var split = mapping.split("->");
-					var eventProp = split[0];
-					var stateProp = split[1] || eventProp;
-						
-					if (_model[stateProp] !== evt[eventProp]) {
-						_model[stateProp] = evt[eventProp];
-						_sendEvent = true;
-					}
-				}
-				if (_sendEvent) {
-					_model.sendEvent(evt.type, evt);
-				}
-			} else {
-				_model.sendEvent(evt.type, evt);
-			}
-		}
-		
-		/** Sets the video provider **/
-		_model.setVideo = function(video) {
-			if (video !== _video) {
-				if (_video) {
-					_video.removeGlobalListener(_videoEventHandler);
-					var container = _video.getContainer();
-					if (container) {
-						_video.remove();
-						video.setContainer(container);
-					}
-				}
-				_video = video;
-				_video.volume(_model.volume);
-				_video.mute(_model.mute);
-				_video.addGlobalListener(_videoEventHandler);
-			}
-		};
-		
-		_model.destroy = function() {
-			if (_video) {
-				_video.removeGlobalListener(_videoEventHandler);
-				_video.destroy();
-			}
-		};
-		
-		_model.getVideo = function() {
-			return _video;
-		};
-		
-		_model.seekDrag = function(state) {
-			_video.seekDrag(state);
-		};
-		
-		_model.setFullscreen = function(state) {
-			state = !!state;
-			if (state != _model.fullscreen) {
-				_model.fullscreen = state;
-				_model.sendEvent(events.JWPLAYER_FULLSCREEN, {
-					fullscreen: state
-				});
-			}
-		};
-		
-		// TODO: make this a synchronous action; throw error if playlist is empty
-		_model.setPlaylist = function(playlist) {
-			_model.playlist = utils.filterPlaylist(playlist, false, _model.androidhls);
-			if (_model.playlist.length === 0) {
-				_model.sendEvent(events.JWPLAYER_ERROR, { message: "Error loading playlist: No playable sources found" });
-			} else {
-				_model.sendEvent(events.JWPLAYER_PLAYLIST_LOADED, {
-					playlist: jwplayer(_model.id).getPlaylist()
-				});
-				_model.item = -1;
-				_model.setItem(0);
-			}
-		};
+        function _init() {
+            utils.extend(_model, new events.eventdispatcher());
+            _model.config = _parseConfig(utils.extend({}, _defaults, _cookies, config));
+            utils.extend(_model, {
+                id: config.id,
+                state: events.state.IDLE,
+                duration: -1,
+                position: 0,
+                buffer: 0
+            }, _model.config);
+            // This gets added later
+            _model.playlist = [];
+            _model.setItem(0);
+        }
 
-		_model.setItem = function(index) {
+        var _eventMap = {};
+        _eventMap[events.JWPLAYER_MEDIA_MUTE] = ["mute"];
+        _eventMap[events.JWPLAYER_MEDIA_VOLUME] = ["volume"];
+        _eventMap[events.JWPLAYER_PLAYER_STATE] = ["newstate->state"];
+        _eventMap[events.JWPLAYER_MEDIA_BUFFER] = ["bufferPercent->buffer"];
+        _eventMap[events.JWPLAYER_MEDIA_TIME] = ["position", "duration"];
+
+        function _videoEventHandler(evt) {
+            var mappings = _eventMap[evt.type];
+            if (mappings && mappings.length) {
+                var _sendEvent = false;
+                for (var i = 0; i < mappings.length; i++) {
+                    var mapping = mappings[i];
+                    var split = mapping.split("->");
+                    var eventProp = split[0];
+                    var stateProp = split[1] || eventProp;
+
+                    if (_model[stateProp] !== evt[eventProp]) {
+                        _model[stateProp] = evt[eventProp];
+                        _sendEvent = true;
+                    }
+                }
+                if (_sendEvent) {
+                    _model.sendEvent(evt.type, evt);
+                }
+            } else {
+                _model.sendEvent(evt.type, evt);
+            }
+        }
+
+        /** Sets the video provider **/
+        _model.setVideo = function(video) {
+            if (video !== _video) {
+                if (_video) {
+                    _video.removeGlobalListener(_videoEventHandler);
+                    var container = _video.getContainer();
+                    if (container) {
+                        _video.remove();
+                        video.setContainer(container);
+                    }
+                }
+                _video = video;
+                _video.volume(_model.volume);
+                _video.mute(_model.mute);
+                _video.addGlobalListener(_videoEventHandler);
+            }
+        };
+
+        _model.destroy = function() {
+            if (_video) {
+                _video.removeGlobalListener(_videoEventHandler);
+                _video.destroy();
+            }
+        };
+
+        _model.getVideo = function() {
+            return _video;
+        };
+
+        _model.seekDrag = function(state) {
+            _video.seekDrag(state);
+        };
+
+        _model.setFullscreen = function(state) {
+            state = !!state;
+            if (state != _model.fullscreen) {
+                _model.fullscreen = state;
+                _model.sendEvent(events.JWPLAYER_FULLSCREEN, {
+                    fullscreen: state
+                });
+            }
+        };
+
+        // TODO: make this a synchronous action; throw error if playlist is empty
+        _model.setPlaylist = function(playlist) {
+            _model.playlist = utils.filterPlaylist(playlist, false, _model.androidhls);
+            if (_model.playlist.length === 0) {
+                _model.sendEvent(events.JWPLAYER_ERROR, {
+                    message: "Error loading playlist: No playable sources found"
+                });
+            } else {
+                _model.sendEvent(events.JWPLAYER_PLAYLIST_LOADED, {
+                    playlist: jwplayer(_model.id).getPlaylist()
+                });
+                _model.item = -1;
+                _model.setItem(0);
+            }
+        };
+
+        _model.setItem = function(index) {
             var newItem;
             var repeat = false;
             if (index == _model.playlist.length || index < -1) {
@@ -173,51 +175,57 @@
 
                 var item = _model.playlist[newItem];
 
-	            // select provider based on item source (video, youtube...)
-				var provider = _providers.html5;
-				if (_model.playlist.length) {
-					var source = item.sources[0];
-					if (source.type === 'youtube' || utils.isYouTube(source.file)) {
-						provider = _providers.youtube;
-						if (provider !== _video) {
-							// when switching providers always reinstantiate youtube
-							if (provider) {
-								provider.destroy();
-							}
-							provider = _providers.youtube = new html5.youtube(_model.id);
-						}
-					}
-				}
-				_model.setVideo(provider);
-				// this allows the provider to load preview images (youtube player data)
-				if (provider.init) {
-					provider.init(item);
-				}
+                // select provider based on item source (video, youtube...)
+                var provider = _providers.html5;
+                if (_model.playlist.length) {
+                    var source = item.sources[0];
+                    if (source.type === 'youtube' || utils.isYouTube(source.file)) {
+                        provider = _providers.youtube;
+                        if (provider !== _video) {
+                            // when switching providers always reinstantiate youtube
+                            if (provider) {
+                                provider.destroy();
+                            }
+                            provider = _providers.youtube = new html5.youtube(_model.id);
+                        }
+                    }
+                }
+                _model.setVideo(provider);
+                // this allows the provider to load preview images (youtube player data)
+                if (provider.init) {
+                    provider.init(item);
+                }
             }
         };
-        
-		_model.setVolume = function(newVol) {
-			if (_model.mute && newVol > 0) _model.setMute(false);
-			newVol = Math.round(newVol);
-			if (!_model.mute) {
-				utils.saveCookie("volume", newVol);
-			}
-			_videoEventHandler({type:events.JWPLAYER_MEDIA_VOLUME, volume: newVol});
-			_video.volume(newVol);
-		};
 
-		_model.setMute = function(state) {
-			if (!utils.exists(state)) state = !_model.mute;
-			utils.saveCookie("mute", state);
-			_videoEventHandler({type:events.JWPLAYER_MEDIA_MUTE, mute: state});
-			_video.mute(state);
-		};
+        _model.setVolume = function(newVol) {
+            if (_model.mute && newVol > 0) _model.setMute(false);
+            newVol = Math.round(newVol);
+            if (!_model.mute) {
+                utils.saveCookie("volume", newVol);
+            }
+            _videoEventHandler({
+                type: events.JWPLAYER_MEDIA_VOLUME,
+                volume: newVol
+            });
+            _video.volume(newVol);
+        };
 
-		_model.componentConfig = function(name) {
-			return _componentConfigs[name];
-		};
-		
-		_init();
-	};
+        _model.setMute = function(state) {
+            if (!utils.exists(state)) state = !_model.mute;
+            utils.saveCookie("mute", state);
+            _videoEventHandler({
+                type: events.JWPLAYER_MEDIA_MUTE,
+                mute: state
+            });
+            _video.mute(state);
+        };
+
+        _model.componentConfig = function(name) {
+            return _componentConfigs[name];
+        };
+
+        _init();
+    };
 
 })(jwplayer);

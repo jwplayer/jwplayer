@@ -5,12 +5,12 @@
  * @version 6.0
  */
 (function(jwplayer, undefined) {
-    var html5 = jwplayer.html5, 
-        _utils = jwplayer.utils, 
-        _events = jwplayer.events, 
+    var html5 = jwplayer.html5,
+        _utils = jwplayer.utils,
+        _events = jwplayer.events,
         _states = _events.state,
         _playlist = jwplayer.playlist;
-    
+
     html5.instream = function(_api, _model, _view, _controller) {
         var _defaultOptions = {
             controlbarseekable: 'never',
@@ -21,7 +21,7 @@
             skipoffset: null,
             tag: null
         };
-        
+
         var _item,
             _array,
             _arrayIndex = 0,
@@ -53,9 +53,9 @@
          *****************************************/
 
         _this.init = function() {
-            
+
             /** Blocking playback and show Instream Display **/
-            
+
             // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
             _video = _controller.detachMedia();
 
@@ -71,7 +71,7 @@
 
             // Keep track of the original player state
             _oldpos = _video.currentTime;
-            
+
             if (_controller.checkBeforePlay() || _oldpos === 0) {
                 // make sure video restarts after preroll
                 _oldpos = 0;
@@ -81,7 +81,7 @@
             } else {
                 _oldstate = _states.PLAYING;
             }
-            
+
             // If the player's currently playing, pause the video tag
             if (_oldstate == _states.PLAYING) {
                 _video.pause();
@@ -93,8 +93,11 @@
             // Create the container in which the controls will be placed
             _instreamContainer = document.createElement("div");
             _instreamContainer.id = _this.id + "_instream_container";
-            _utils.css.style(_instreamContainer,{width:'100%',height:'100%'});
-           
+            _utils.css.style(_instreamContainer, {
+                width: '100%',
+                height: '100%'
+            });
+
             _instreamContainer.appendChild(_disp.element());
 
             // Instream controlbar
@@ -109,10 +112,10 @@
                 _cbar.hide();
                 _disp.hide();
             }
-            
+
             // Show the instream layer
             _view.setupInstream(_instreamContainer, _cbar, _disp, _fakemodel);
-            
+
             // Resize the instream components to the proper size
             _resize();
 
@@ -128,11 +131,13 @@
                 });
                 return;
             }
-            _sendEvent(_events.JWPLAYER_PLAYLIST_ITEM, {index:_arrayIndex}, true);
+            _sendEvent(_events.JWPLAYER_PLAYLIST_ITEM, {
+                index: _arrayIndex
+            }, true);
 
             var instreamLayer = _instreamContainer.parentNode;
             var bottom = 10 + _utils.bounds(instreamLayer).bottom - _utils.bounds(_cbar.element()).top;
-            
+
             // Copy the playlist item passed in and make sure it's formatted as a proper playlist item
             if (_utils.typeOf(item) === "array") {
                 if (options) {
@@ -148,14 +153,14 @@
             _skipButton = new html5.adskipbutton(_api.id, bottom, _options.skipMessage, _options.skipText);
             _skipButton.addEventListener(_events.JWPLAYER_AD_SKIPPED, _skipAd);
             _skipButton.reset(_options.skipoffset || -1);
-            
+
 
             if (_api.jwGetControls()) {
                 _skipButton.show();
             } else {
                 _skipButton.hide();
             }
-            
+
 
             var skipElem = _skipButton.element();
             _instreamContainer.appendChild(skipElem);
@@ -166,7 +171,7 @@
             _disp.setAlternateClickHandler(function(evt) {
                 evt = evt || {};
                 evt.hasControls = !!_api.jwGetControls();
-                
+
                 _sendEvent(_events.JWPLAYER_INSTREAM_CLICK, evt);
 
                 // toggle playback after click event
@@ -190,14 +195,14 @@
             if (_utils.isMSIE()) {
                 _video.parentElement.addEventListener('click', _disp.clickHandler);
             }
- 
+
             _view.addEventListener(_events.JWPLAYER_AD_SKIPPED, _skipAd);
-            
+
             // Load the instream item
             _provider.load(_fakemodel.playlist[0]);
             //_fakemodel.getVideo().addEventListener('webkitendfullscreen', _fullscreenChangeHandler, FALSE);
         };
-        
+
         function errorHandler(evt) {
             _sendEvent(evt.type, evt);
 
@@ -205,7 +210,7 @@
                 _api.jwInstreamDestroy(false, _this);
             }
         }
-        
+
         /** Stop the instream playback and revert the main player back to its original state **/
         _this.jwInstreamDestroy = function(complete) {
             if (!_fakemodel) {
@@ -214,7 +219,7 @@
             clearTimeout(_completeTimeoutId);
             _completeTimeoutId = -1;
             _provider.detachMedia();
-                        // Re-attach the controller
+            // Re-attach the controller
             _controller.attachMedia();
             // Load the original item into our provider, which sets up the regular player's video tag
             if (_oldstate !== _states.IDLE) {
@@ -223,7 +228,7 @@
                 _model.getVideo().load(item);
 
             } else {
-               _model.getVideo().stop();
+                _model.getVideo().stop();
             }
             _this.resetEventListeners();
 
@@ -238,7 +243,7 @@
             if (_cbar) {
                 try {
                     _cbar.element().parentNode.removeChild(_cbar.element());
-                } catch(e) {}
+                } catch (e) {}
             }
             if (_disp) {
                 if (_video && _video.parentElement) {
@@ -258,16 +263,16 @@
                 _video.play();
             }
 
-                        // Return the view to its normal state
+            // Return the view to its normal state
             _view.destroyInstream(_provider.audioMode());
             _fakemodel = null;
         };
-        
+
         /** Forward any calls to add and remove events directly to our event dispatcher **/
-        
+
         _this.jwInstreamAddEventListener = function(type, listener) {
             _this.addEventListener(type, listener);
-        } ;
+        };
         _this.jwInstreamRemoveEventListener = function(type, listener) {
             _this.removeEventListener(type, listener);
         };
@@ -286,15 +291,17 @@
             //if (!_item) return;
             _provider.pause(true);
             _model.state = _states.PAUSED;
-            if (_api.jwGetControls()) { _disp.show(); }
+            if (_api.jwGetControls()) {
+                _disp.show();
+            }
         };
-        
+
         /** Seek to a point in instream media **/
         _this.jwInstreamSeek = function(position) {
             //if (!_item) return;
             _provider.seek(position);
         };
-        
+
         /** Set custom text in the controlbar **/
         _this.jwInstreamSetText = function(text) {
             _cbar.setText(text);
@@ -304,11 +311,11 @@
             //if (!_item) return;
             return _model.state;
         };
-        
+
         /*****************************
-         ****** Private methods ****** 
+         ****** Private methods ******
          *****************************/
-        
+
         function _setupProvider() {
             //if (!_provider) {
             _provider = new html5.video(_video, 'instream');
@@ -325,30 +332,29 @@
             _provider.mute(_model.mute);
             _provider.volume(_model.volume);
         }
-        
+
         function _skipAd(evt) {
             _sendEvent(evt.type, evt);
             _completeHandler();
         }
-        /** Forward provider events to listeners **/        
+        /** Forward provider events to listeners **/
         function _forward(evt) {
             _sendEvent(evt.type, evt);
         }
-        
+
         function _fullscreenHandler(evt) {
             //_forward(evt);
             _resize();
             if (!evt.fullscreen && _utils.isIPad()) {
                 if (_fakemodel.state === _states.PAUSED) {
                     _disp.show(true);
-                }
-                else if (_fakemodel.state === _states.PLAYING) {
+                } else if (_fakemodel.state === _states.PLAYING) {
                     _disp.hide();
-                } 
+                }
             }
         }
-        
-        /** Handle the JWPLAYER_MEDIA_BUFFER_FULL event **/     
+
+        /** Handle the JWPLAYER_MEDIA_BUFFER_FULL event **/
         function _bufferFullHandler() {
             if (_disp) {
                 _disp.releaseState(_this.jwGetState());
@@ -356,7 +362,7 @@
             _provider.play();
         }
 
-        /** Handle the JWPLAYER_MEDIA_COMPLETE event **/        
+        /** Handle the JWPLAYER_MEDIA_COMPLETE event **/
         function _completeHandler() {
             if (_array && _arrayIndex + 1 < _array.length) {
                 _arrayIndex++;
@@ -369,9 +375,11 @@
                 }
                 _options = _utils.extend(_defaultOptions, curOpt);
                 _provider.load(_fakemodel.playlist[0]);
-                _skipButton.reset(_options.skipoffset||-1);
+                _skipButton.reset(_options.skipoffset || -1);
                 _completeTimeoutId = setTimeout(function() {
-                    _sendEvent(_events.JWPLAYER_PLAYLIST_ITEM, {index:_arrayIndex}, true);
+                    _sendEvent(_events.JWPLAYER_PLAYLIST_ITEM, {
+                        index: _arrayIndex
+                    }, true);
                 }, 0);
             } else {
                 _completeTimeoutId = setTimeout(function() {
@@ -381,7 +389,7 @@
             }
         }
 
-        /** Handle the JWPLAYER_MEDIA_META event **/        
+        /** Handle the JWPLAYER_MEDIA_META event **/
         function _metaHandler(evt) {
             // If we're getting video dimension metadata from the provider, allow the view to resize the media
             if (evt.width && evt.height) {
@@ -391,7 +399,7 @@
                 _view.resizeMedia();
             }
         }
-        
+
         function _sendEvent(type, data) {
             data = data || {};
             if (_defaultOptions.tag && !data.tag) {
@@ -399,7 +407,7 @@
             }
             _this.sendEvent(type, data);
         }
-        
+
         // Resize handler; resize the components.
         function _resize() {
             if (_cbar) {
@@ -417,47 +425,49 @@
                 _skipButton.hide();
             }
         };
-        
+
         /**************************************
          *****  Duplicate main html5 api  *****
          **************************************/
-        
+
         _this.jwPlay = function() {
-            if (_options.controlbarpausable.toString().toLowerCase()=="true") {
+            if (_options.controlbarpausable.toString().toLowerCase() == "true") {
                 _this.jwInstreamPlay();
             }
         };
-        
+
         _this.jwPause = function() {
-            if (_options.controlbarpausable.toString().toLowerCase()=="true") {
+            if (_options.controlbarpausable.toString().toLowerCase() == "true") {
                 _this.jwInstreamPause();
             }
         };
 
         _this.jwStop = function() {
-            if (_options.controlbarstoppable.toString().toLowerCase()=="true") {
+            if (_options.controlbarstoppable.toString().toLowerCase() == "true") {
                 _api.jwInstreamDestroy(false, _this);
                 _api.jwStop();
             }
         };
 
         _this.jwSeek = function(position) {
-            switch(_options.controlbarseekable.toLowerCase()) {
-            case "never":
-                return;
-            case "always":
-                _this.jwInstreamSeek(position);
-                break;
-            case "backwards":
-                if (_fakemodel.position > position) {
+            switch (_options.controlbarseekable.toLowerCase()) {
+                case "never":
+                    return;
+                case "always":
                     _this.jwInstreamSeek(position);
-                }
-                break;
+                    break;
+                case "backwards":
+                    if (_fakemodel.position > position) {
+                        _this.jwInstreamSeek(position);
+                    }
+                    break;
             }
         };
-        
-        _this.jwSeekDrag = function(state) { _fakemodel.seekDrag(state); };
-        
+
+        _this.jwSeekDrag = function(state) {
+            _fakemodel.seekDrag(state);
+        };
+
         _this.jwGetPosition = function() {};
         _this.jwGetDuration = function() {};
         _this.jwGetWidth = _api.jwGetWidth;
@@ -471,7 +481,9 @@
             _fakemodel.setVolume(vol);
             _api.jwSetVolume(vol);
         };
-        _this.jwGetMute = function() { return _model.mute; };
+        _this.jwGetMute = function() {
+            return _model.mute;
+        };
         _this.jwSetMute = function(state) {
             _fakemodel.setMute(state);
             _api.jwSetMute(state);
