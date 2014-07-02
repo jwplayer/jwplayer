@@ -18,6 +18,7 @@
         'getControls',
         'getCurrentCaptions',
         'getCurrentQuality',
+        'getCurrentAudioTrack',
         'getDuration',
         'getFullscreen',
         'getHeight',
@@ -373,10 +374,6 @@
         
         _this.getAudioTracks = function() {
             return _callInternal('jwGetAudioTracks');
-        };
-
-        _this.getCurrentAudioTracks = function() {
-            return _callInternal('jwGetCurrentAudioTracks');
         };
         
         function _stateListener(state, callback) {

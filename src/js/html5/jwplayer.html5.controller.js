@@ -265,7 +265,24 @@
             }
             return null;
         }
+        
+        function _setCurrentAudioTrack(index) {
+            _video().setCurrentAudioTrack(index);
+        }
 
+        function _getCurrentAudioTrack() {
+            if (_video()) {
+                return _video().getCurrentAudioTrack();
+            }
+            return -1;
+        }
+
+        function _getQualityLevels() {
+            if (_video()) {
+                return _video().getAudioTracks();
+            }
+            return null;
+        }
         function _setCurrentCaptions(caption) {
             _view.setCurrentCaptions(caption);
         }
@@ -341,6 +358,9 @@
         this.setCurrentQuality = _waitForReady(_setCurrentQuality);
         this.getCurrentQuality = _getCurrentQuality;
         this.getQualityLevels = _getQualityLevels;
+        this.setCurrentAudioTrack = _setCurrentAudioTrack;
+        this.getCurrentAudioTrack = _getCurrentAudioTrack;
+        this.getAudioTracks = _getAudioTracks;
         this.setCurrentCaptions = _waitForReady(_setCurrentCaptions);
         this.getCurrentCaptions = _getCurrentCaptions;
         this.getCaptionsList = _getCaptionsList;
