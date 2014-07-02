@@ -1,4 +1,3 @@
-src/js/embed/jwplayer.embed.download.js
 src/js/embed/jwplayer.embed.flash.js
 src/js/embed/jwplayer.embed.html5.js
 src/js/embed/jwplayer.embed.js
