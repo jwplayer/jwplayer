@@ -1,10 +1,3 @@
-/**
- * Event dispatcher for the JW Player
- *
- * @author zach
- * @modified pablo
- * @version 6.0
- */
 (function(jwplayer) {
     var events = jwplayer.events,
         _utils = jwplayer.utils;
@@ -30,7 +23,8 @@
                     _listeners[type] = [];
                 }
 
-                if (_utils.typeOf(listener) == "string") {
+                if (_utils.typeOf(listener) === 'string') {
+                    /*jshint evil:true*/
                     listener = (new Function('return ' + listener))();
                 }
                 _listeners[type].push({
@@ -38,13 +32,14 @@
                     count: count || null
                 });
             } catch (err) {
-                _utils.log("error", err);
+                _utils.log('error', err);
             }
             return false;
         };
 
         /** Remove an event listener for a specific type of event. **/
         this.removeEventListener = function(type, listener) {
+            var listenerIndex;
             if (!_listeners[type]) {
                 return;
             }
@@ -53,14 +48,14 @@
                     _listeners[type] = [];
                     return;
                 }
-                for (var listenerIndex = 0; listenerIndex < _listeners[type].length; listenerIndex++) {
-                    if (_listeners[type][listenerIndex].listener.toString() == listener.toString()) {
+                for (listenerIndex = 0; listenerIndex < _listeners[type].length; listenerIndex++) {
+                    if (_listeners[type][listenerIndex].listener.toString() === listener.toString()) {
                         _listeners[type].splice(listenerIndex, 1);
                         break;
                     }
                 }
             } catch (err) {
-                _utils.log("error", err);
+                _utils.log('error', err);
             }
             return false;
         };
@@ -68,7 +63,8 @@
         /** Add an event listener for all events. **/
         this.addGlobalListener = function(listener, count) {
             try {
-                if (_utils.typeOf(listener) == "string") {
+                if (_utils.typeOf(listener) === 'string') {
+                    /*jshint evil:true*/
                     listener = (new Function('return ' + listener))();
                 }
                 _globallisteners.push({
@@ -76,7 +72,7 @@
                     count: count || null
                 });
             } catch (err) {
-                _utils.log("error", err);
+                _utils.log('error', err);
             }
             return false;
         };
@@ -88,12 +84,12 @@
             }
             try {
                 for (var index = _globallisteners.length; index--;) {
-                    if (_globallisteners[index].listener.toString() == listener.toString()) {
+                    if (_globallisteners[index].listener.toString() === listener.toString()) {
                         _globallisteners.splice(index, 1);
                     }
                 }
             } catch (err) {
-                _utils.log("error", err);
+                _utils.log('error', err);
             }
             return false;
         };
@@ -129,7 +125,8 @@
                     try {
                         listener.listener(data);
                     } catch (err) {
-                        _utils.log('Error handling "' + type + '" event listener [' + index + ']: ' + err.toString(), listener.listener, data);
+                        _utils.log('Error handling "' + type +
+                            '" event listener [' + index + ']: ' + err.toString(), listener.listener, data);
                     }
                 }
             }
