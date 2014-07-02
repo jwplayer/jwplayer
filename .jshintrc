@@ -3,6 +3,7 @@
     "maxlen": 120,
     "trailing": true,
     "eqeqeq": true,
+    "browser": true,
 
     // A function can only take max 3 arguments
     "maxparams": 4,
@@ -21,5 +22,5 @@
     "unused": true,
 
     // These variables are predefined
-    "predef": ["jwplayer", "document", "window", "module", "_"]
+    "predef": ["jwplayer", "module", "_"]
 }

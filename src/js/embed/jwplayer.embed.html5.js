@@ -1,10 +1,5 @@
-/**
- * HTML5 mode embedder for the JW Player
- * @author Zach
- * @modified Pablo
- * @version 6.0
- */
 (function(jwplayer) {
+    /*jshint maxparams:5*/
     var utils = jwplayer.utils,
         extensionmap = utils.extensionmap,
         events = jwplayer.events;
@@ -18,11 +13,11 @@
         function _resizePlugin(plugin, div, onready) {
             return function() {
                 try {
-                    var displayarea = document.querySelector("#" + _container.id + " .jwmain");
+                    var displayarea = document.querySelector('#' + _container.id + ' .jwmain');
                     if (onready) {
                         displayarea.appendChild(div);
                     }
-                    if (typeof plugin.resize == "function") {
+                    if (typeof plugin.resize === 'function') {
                         plugin.resize(displayarea.clientWidth, displayarea.clientHeight);
                         setTimeout(function() {
                             plugin.resize(displayarea.clientWidth, displayarea.clientHeight);
@@ -37,15 +32,15 @@
         _this.embed = function() {
             if (jwplayer.html5) {
                 _loader.setupPlugins(_api, _options, _resizePlugin);
-                _container.innerHTML = "";
+                _container.innerHTML = '';
                 var playerOptions = jwplayer.utils.extend({}, _options);
 
-                // Volume option is tricky to remove, since it needs to be in the HTML5 player model.  So we'll remove it here.
+                // Volume option is tricky to remove, since it needs to be in the HTML5 player model.
                 delete playerOptions.volume;
 
                 var html5player = new jwplayer.html5.player(playerOptions);
                 _api.container = document.getElementById(_api.id);
-                _api.setPlayer(html5player, "html5");
+                _api.setPlayer(html5player, 'html5');
             } else {
                 var scriptLoader = new utils.scriptloader(_player.src);
                 scriptLoader.addEventListener(events.ERROR, _loadError);
@@ -57,7 +52,7 @@
 
         function _loadError(evt) {
             _this.sendEvent(evt.type, {
-                message: "HTML5 player not found"
+                message: 'HTML5 player not found'
             });
         }
 
@@ -69,7 +64,7 @@
         _this.supportsConfig = function() {
             if (!!jwplayer.vid.canPlayType) {
                 try {
-                    if (utils.typeOf(_options.playlist) == "string") {
+                    if (utils.typeOf(_options.playlist) === 'string') {
                         return true;
                     } else {
                         var sources = _options.playlist[0].sources;
@@ -128,7 +123,9 @@
         }
 
         // Ensure RTMP files are not seen as videos
-        if (utils.isRtmp(file, type)) return false;
+        if (utils.isRtmp(file, type)) {
+            return false;
+        }
 
         var mappedType = extensionmap[type] || extensionmap[extension];
 

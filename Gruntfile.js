@@ -95,7 +95,7 @@ module.exports = function(grunt) {
                     '.jshintignore',
                     'package.json'
                 ],
-                tasks: ['jshint:all']
+                tasks: ['jshint:all', 'default']
             }
         }
     });

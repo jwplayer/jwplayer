@@ -1,6 +1,3 @@
-src/js/embed/jwplayer.embed.flash.js
-src/js/embed/jwplayer.embed.html5.js
-src/js/embed/jwplayer.embed.js
 src/js/events/jwplayer.events.eventdispatcher.js
 src/js/events/jwplayer.events.js
 src/js/html5/jwplayer.html5.adskipbutton.js
