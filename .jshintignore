@@ -39,7 +39,6 @@ src/js/plugins/jwplayer.plugins.plugin.js
 src/js/plugins/jwplayer.plugins.pluginloader.js
 src/js/utils/jwplayer.utils.css.js
 src/js/utils/jwplayer.utils.extensionmap.js
-src/js/utils/jwplayer.utils.js
 src/js/utils/jwplayer.utils.scriptloader.js
 src/js/utils/jwplayer.utils.strings.js
 src/js/utils/jwplayer.utils.touch.js

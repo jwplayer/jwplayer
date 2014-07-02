@@ -1,20 +1,6 @@
-/**
- * Utility methods for the JW Player.
- *
- * @author pablo
- * @version 6.0
- */
 (function(jwplayer) {
-    var DOCUMENT = document,
-        WINDOW = window,
-        NAVIGATOR = navigator,
-        UNDEFINED = "undefined",
-        STRING = "string",
-        OBJECT = "object",
-        TRUE = true,
-        FALSE = false;
+    /*jshint maxparams:5*/
 
-    //Declare namespace
     var utils = jwplayer.utils = {};
 
     /**
@@ -25,25 +11,26 @@
      */
     utils.exists = function(item) {
         switch (typeof(item)) {
-            case STRING:
+            case 'string':
                 return (item.length > 0);
-            case OBJECT:
+            case 'object':
                 return (item !== null);
-            case UNDEFINED:
-                return FALSE;
+            case 'undefined':
+                return false;
         }
-        return TRUE;
+        return true;
     };
 
-    /** Used for styling dimensions in CSS -- return the string unchanged if it's a percentage width; add 'px' otherwise **/
+    /** Used for styling dimensions in CSS --
+     * return the string unchanged if it's a percentage width; add 'px' otherwise **/
     utils.styleDimension = function(dimension) {
-        return dimension + (dimension.toString().indexOf("%") > 0 ? "" : "px");
+        return dimension + (dimension.toString().indexOf('%') > 0 ? '' : 'px');
     };
 
     /** Gets an absolute file path based on a relative filepath * */
     utils.getAbsolutePath = function(path, base) {
         if (!utils.exists(base)) {
-            base = DOCUMENT.location.href;
+            base = document.location.href;
         }
         if (!utils.exists(path)) {
             return;
@@ -51,35 +38,35 @@
         if (isAbsolutePath(path)) {
             return path;
         }
-        var protocol = base.substring(0, base.indexOf("://") + 3);
+        var protocol = base.substring(0, base.indexOf('://') + 3);
         var domain = base.substring(protocol.length, base.indexOf('/', protocol.length + 1));
         var patharray;
-        if (path.indexOf("/") === 0) {
-            patharray = path.split("/");
+        if (path.indexOf('/') === 0) {
+            patharray = path.split('/');
         } else {
-            var basepath = base.split("?")[0];
+            var basepath = base.split('?')[0];
             basepath = basepath.substring(protocol.length + domain.length + 1, basepath.lastIndexOf('/'));
-            patharray = basepath.split("/").concat(path.split("/"));
+            patharray = basepath.split('/').concat(path.split('/'));
         }
         var result = [];
         for (var i = 0; i < patharray.length; i++) {
-            if (!patharray[i] || !utils.exists(patharray[i]) || patharray[i] == ".") {
+            if (!patharray[i] || !utils.exists(patharray[i]) || patharray[i] === '.') {
                 continue;
-            } else if (patharray[i] == "..") {
+            } else if (patharray[i] === '..') {
                 result.pop();
             } else {
                 result.push(patharray[i]);
             }
         }
-        return protocol + domain + "/" + result.join("/");
+        return protocol + domain + '/' + result.join('/');
     };
 
     function isAbsolutePath(path) {
         if (!utils.exists(path)) {
             return;
         }
-        var protocol = path.indexOf("://");
-        var queryparams = path.indexOf("?");
+        var protocol = path.indexOf('://');
+        var queryparams = path.indexOf('?');
         return (protocol > 0 && (queryparams < 0 || (queryparams > protocol)));
     }
 
@@ -107,7 +94,7 @@
     };
     utils.log = function() {
         var args = Array.prototype.slice.call(arguments, 0);
-        if (typeof console.log === OBJECT) {
+        if (typeof console.log === 'object') {
             console.log(args);
         } else {
             console.log.apply(console, args);
@@ -115,7 +102,7 @@
     };
 
     var _userAgentMatch = utils.userAgentMatch = function(regex) {
-        var agent = NAVIGATOR.userAgent.toLowerCase();
+        var agent = navigator.userAgent.toLowerCase();
         return (agent.match(regex) !== null);
     };
 
@@ -160,13 +147,14 @@
     };
 
     utils.isSafari = function() {
-        return (_userAgentMatch(/safari/i) && !_userAgentMatch(/chrome/i) && !_userAgentMatch(/chromium/i) && !_userAgentMatch(/android/i));
+        return (_userAgentMatch(/safari/i) && !_userAgentMatch(/chrome/i) &&
+            !_userAgentMatch(/chromium/i) && !_userAgentMatch(/android/i));
     };
 
     /** Matches iOS devices **/
     utils.isIOS = function(version) {
         if (version) {
-            return _userAgentMatch(new RegExp("iP(hone|ad|od).+\\sOS\\s" + version, "i"));
+            return _userAgentMatch(new RegExp('iP(hone|ad|od).+\\sOS\\s' + version, 'i'));
         }
         return _userAgentMatch(/iP(hone|ad|od)/i);
     };
@@ -186,7 +174,7 @@
             if (utils.isInt(version) && !/\./.test(version)) {
                 version = '' + version + '.';
             }
-            return _userAgentMatch(new RegExp("Android\\s*" + version, "i"));
+            return _userAgentMatch(new RegExp('Android\\s*' + version, 'i'));
         }
         return _userAgentMatch(/Android/i);
     };
@@ -198,16 +186,16 @@
 
     /** Save a setting **/
     utils.saveCookie = function(name, value) {
-        DOCUMENT.cookie = "jwplayer." + name + "=" + value + "; path=/";
+        document.cookie = 'jwplayer.' + name + '=' + value + '; path=/';
     };
 
     /** Retrieve saved  player settings **/
     utils.getCookies = function() {
         var jwCookies = {};
-        var cookies = DOCUMENT.cookie.split('; ');
+        var cookies = document.cookie.split('; ');
         for (var i = 0; i < cookies.length; i++) {
             var split = cookies[i].split('=');
-            if (split[0].indexOf("jwplayer.") === 0) {
+            if (split[0].indexOf('jwplayer.') === 0) {
                 jwCookies[split[0].substring(9, split[0].length)] = split[1];
             }
         }
@@ -221,8 +209,10 @@
     /** Returns the true type of an object * */
     utils.typeOf = function(value) {
         var typeofString = typeof value;
-        if (typeofString === OBJECT) {
-            if (!value) return "null";
+        if (typeofString === 'object') {
+            if (!value) {
+                return 'null';
+            }
             return (value instanceof Array) ? 'array' : typeofString;
         }
         return typeofString;
@@ -231,20 +221,21 @@
     /* Normalizes differences between Flash and HTML5 internal players' event responses. */
     utils.translateEventResponse = function(type, eventProperties) {
         var translated = utils.extend({}, eventProperties);
-        if (type == jwplayer.events.JWPLAYER_FULLSCREEN && !translated.fullscreen) {
-            translated.fullscreen = (translated.message === "true");
+        if (type === jwplayer.events.JWPLAYER_FULLSCREEN && !translated.fullscreen) {
+            translated.fullscreen = (translated.message === 'true');
             delete translated.message;
-        } else if (typeof translated.data == OBJECT) {
-            // Takes ViewEvent "data" block and moves it up a level
+        } else if (typeof translated.data === 'object') {
+            // Takes ViewEvent 'data' block and moves it up a level
             var data = translated.data;
             delete translated.data;
             translated = utils.extend(translated, data);
 
-        } else if (typeof translated.metadata == OBJECT) {
-            utils.deepReplaceKeyName(translated.metadata, ["__dot__", "__spc__", "__dsh__", "__default__"], [".", " ", "-", "default"]);
+        } else if (typeof translated.metadata === 'object') {
+            utils.deepReplaceKeyName(translated.metadata,
+                ['__dot__', '__spc__', '__dsh__', '__default__'], ['.', ' ', '-', 'default']);
         }
 
-        var rounders = ["position", "duration", "offset"];
+        var rounders = ['position', 'duration', 'offset'];
         utils.foreach(rounders, function(rounder, val) {
             if (translated[val]) {
                 translated[val] = Math.round(translated[val] * 1000) / 1000;
@@ -258,27 +249,29 @@
      * If the browser has flash capabilities, return the flash version
      */
     utils.flashVersion = function() {
-        if (utils.isAndroid()) return 0;
+        if (utils.isAndroid()) {
+            return 0;
+        }
 
-        var plugins = NAVIGATOR.plugins,
+        var plugins = navigator.plugins,
             flash;
 
         try {
-            if (plugins !== UNDEFINED) {
+            if (plugins !== 'undefined') {
                 flash = plugins['Shockwave Flash'];
                 if (flash) {
-                    return parseInt(flash.description.replace(/\D+(\d+)\..*/, "$1"), 10);
+                    return parseInt(flash.description.replace(/\D+(\d+)\..*/, '$1'), 10);
                 }
             }
         } catch (e) {
             // The above evaluation (plugins != undefined) messes up IE7
         }
 
-        if (typeof WINDOW.ActiveXObject != UNDEFINED) {
+        if (typeof window.ActiveXObject !== 'undefined') {
             try {
-                flash = new WINDOW.ActiveXObject("ShockwaveFlash.ShockwaveFlash");
+                flash = new window.ActiveXObject('ShockwaveFlash.ShockwaveFlash');
                 if (flash) {
-                    return parseInt(flash.GetVariable("$version").split(" ")[1].split(",")[0], 10);
+                    return parseInt(flash.GetVariable('$version').split(' ')[1].split(',')[0], 10);
                 }
             } catch (err) {}
         }
@@ -288,14 +281,14 @@
 
     /** Finds the location of jwplayer.js and returns the path **/
     utils.getScriptPath = function(scriptName) {
-        var scripts = DOCUMENT.getElementsByTagName("script");
+        var scripts = document.getElementsByTagName('script');
         for (var i = 0; i < scripts.length; i++) {
             var src = scripts[i].src;
             if (src && src.indexOf(scriptName) >= 0) {
                 return src.substr(0, src.indexOf(scriptName));
             }
         }
-        return "";
+        return '';
     };
 
     /**
@@ -310,32 +303,30 @@
      */
     utils.deepReplaceKeyName = function(obj, searchString, replaceString) {
         switch (jwplayer.utils.typeOf(obj)) {
-            case "array":
+            case 'array':
                 for (var i = 0; i < obj.length; i++) {
                     obj[i] = jwplayer.utils.deepReplaceKeyName(obj[i],
                         searchString, replaceString);
                 }
                 break;
-            case OBJECT:
+            case 'object':
                 utils.foreach(obj, function(key, val) {
-                    var searches, replacements;
+                    var searches;
                     if (searchString instanceof Array && replaceString instanceof Array) {
-                        if (searchString.length != replaceString.length)
+                        if (searchString.length !== replaceString.length) {
                             return;
-                        else {
+                        } else {
                             searches = searchString;
-                            replacements = replaceString;
                         }
                     } else {
                         searches = [searchString];
-                        replacements = [replaceString];
                     }
                     var newkey = key;
                     for (var i = 0; i < searches.length; i++) {
-                        newkey = newkey.replace(new RegExp(searchString[i], "g"), replaceString[i]);
+                        newkey = newkey.replace(new RegExp(searchString[i], 'g'), replaceString[i]);
                     }
                     obj[newkey] = jwplayer.utils.deepReplaceKeyName(val, searchString, replaceString);
-                    if (key != newkey) {
+                    if (key !== newkey) {
                         delete obj[key];
                     }
                 });
@@ -365,15 +356,15 @@
      * getPathType('./hd-1.4.swf')
      */
     utils.getPluginPathType = function(path) {
-        if (typeof path != STRING) {
+        if (typeof path !== 'string') {
             return;
         }
-        path = path.split("?")[0];
-        var protocol = path.indexOf("://");
+        path = path.split('?')[0];
+        var protocol = path.indexOf('://');
         if (protocol > 0) {
             return _pluginPathType.ABSOLUTE;
         }
-        var folder = path.indexOf("/");
+        var folder = path.indexOf('/');
         var extension = utils.extension(path);
         if (protocol < 0 && folder < 0 && (!extension || !isNaN(extension))) {
             return _pluginPathType.CDN;
@@ -387,14 +378,14 @@
      */
     utils.getPluginName = function(pluginName) {
         /** Regex locates the characters after the last slash, until it encounters a dash. **/
-        return pluginName.replace(/^(.*\/)?([^-]*)-?.*\.(swf|js)$/, "$2");
+        return pluginName.replace(/^(.*\/)?([^-]*)-?.*\.(swf|js)$/, '$2');
     };
 
     /**
      * Extracts a plugin version from a string
      */
     utils.getPluginVersion = function(pluginName) {
-        return pluginName.replace(/[^-]*-?([^\.]*).*$/, "$1");
+        return pluginName.replace(/[^-]*-?([^\.]*).*$/, '$1');
     };
 
     /**
@@ -421,9 +412,9 @@
     utils.youTubeID = function(path) {
         try {
             // Left as a dense regular expression for brevity.  
-            return (/v[=\/]([^?&]*)|youtu\.be\/([^?]*)|^([\w-]*)$/i).exec(path).slice(1).join('').replace("?", "");
+            return (/v[=\/]([^?&]*)|youtu\.be\/([^?]*)|^([\w-]*)$/i).exec(path).slice(1).join('').replace('?', '');
         } catch (e) {
-            return "";
+            return '';
         }
     };
 
@@ -431,7 +422,7 @@
      * Determines if a URL is an RTMP link
      */
     utils.isRtmp = function(file, type) {
-        return (file.indexOf("rtmp") === 0 || type == 'rtmp');
+        return (file.indexOf('rtmp') === 0 || type === 'rtmp');
     };
 
     /**
@@ -441,7 +432,7 @@
     utils.foreach = function(aData, fnEach) {
         var key, val;
         for (key in aData) {
-            if (utils.typeOf(aData.hasOwnProperty) == "function") {
+            if (utils.typeOf(aData.hasOwnProperty) === 'function') {
                 if (aData.hasOwnProperty(key)) {
                     val = aData[key];
                     fnEach(key, val);
@@ -456,16 +447,16 @@
 
     /** Determines if the current page is HTTPS **/
     utils.isHTTPS = function() {
-        return (WINDOW.location.href.indexOf("https") === 0);
+        return (window.location.href.indexOf('https') === 0);
     };
 
     /** Gets the repository location **/
     utils.repo = function() {
-        var repo = "http://p.jwpcdn.com/" + jwplayer.version.split(/\W/).splice(0, 2).join("/") + "/";
+        var repo = 'http://p.jwpcdn.com/' + jwplayer.version.split(/\W/).splice(0, 2).join('/') + '/';
 
         try {
             if (utils.isHTTPS()) {
-                repo = repo.replace("http://", "https://ssl.");
+                repo = repo.replace('http://', 'https://ssl.');
             }
         } catch (e) {}
 
@@ -477,20 +468,25 @@
         var xmlhttp;
         var isError = false;
         // Hash tags should be removed from the URL since they can't be loaded in IE
-        if (xmldocpath.indexOf("#") > 0) xmldocpath = xmldocpath.replace(/#.*$/, "");
+        if (xmldocpath.indexOf('#') > 0) {
+            xmldocpath = xmldocpath.replace(/#.*$/, '');
+        }
 
-        if (_isCrossdomain(xmldocpath) && utils.exists(WINDOW.XDomainRequest)) {
+        if (_isCrossdomain(xmldocpath) && utils.exists(window.XDomainRequest)) {
             // IE8 / 9
-            xmlhttp = new WINDOW.XDomainRequest();
+            xmlhttp = new window.XDomainRequest();
             xmlhttp.onload = _ajaxComplete(xmlhttp, xmldocpath, completecallback, errorcallback, donotparse);
             xmlhttp.ontimeout = xmlhttp.onprogress = function() {};
             xmlhttp.timeout = 5000;
-        } else if (utils.exists(WINDOW.XMLHttpRequest)) {
+        } else if (utils.exists(window.XMLHttpRequest)) {
             // Firefox, Chrome, Opera, Safari
-            xmlhttp = new WINDOW.XMLHttpRequest();
-            xmlhttp.onreadystatechange = _readyStateChangeHandler(xmlhttp, xmldocpath, completecallback, errorcallback, donotparse);
+            xmlhttp = new window.XMLHttpRequest();
+            xmlhttp.onreadystatechange =
+                _readyStateChangeHandler(xmlhttp, xmldocpath, completecallback, errorcallback, donotparse);
         } else {
-            if (errorcallback) errorcallback("", xmldocpath, xmlhttp);
+            if (errorcallback) {
+                errorcallback('', xmldocpath, xmlhttp);
+            }
             return xmlhttp;
         }
         if (xmlhttp.overrideMimeType) {
@@ -499,21 +495,25 @@
 
         xmlhttp.onerror = _ajaxError(errorcallback, xmldocpath, xmlhttp);
         try {
-            xmlhttp.open("GET", xmldocpath, TRUE);
+            xmlhttp.open('GET', xmldocpath, true);
         } catch (error) {
             isError = true;
         }
         // make XDomainRequest asynchronous:
         setTimeout(function() {
             if (isError) {
-                if (errorcallback) errorcallback(xmldocpath, xmldocpath, xmlhttp);
+                if (errorcallback) {
+                    errorcallback(xmldocpath, xmldocpath, xmlhttp);
+                }
                 return;
             }
             try {
 
                 xmlhttp.send();
             } catch (error) {
-                if (errorcallback) errorcallback(xmldocpath, xmldocpath, xmlhttp);
+                if (errorcallback) {
+                    errorcallback(xmldocpath, xmldocpath, xmlhttp);
+                }
             }
         }, 0);
 
@@ -522,12 +522,12 @@
 
     function _isCrossdomain(path) {
         return (path && path.indexOf('://') >= 0) &&
-            (path.split('/')[2] != WINDOW.location.href.split('/')[2]);
+            (path.split('/')[2] !== window.location.href.split('/')[2]);
     }
 
     function _ajaxError(errorcallback, xmldocpath, xmlhttp) {
         return function() {
-            errorcallback("Error loading file", xmldocpath, xmlhttp);
+            errorcallback('Error loading file', xmldocpath, xmlhttp);
         };
     }
 
@@ -539,7 +539,7 @@
                         _ajaxComplete(xmlhttp, xmldocpath, completecallback, errorcallback, donotparse)();
                         break;
                     case 404:
-                        errorcallback("File not found", xmldocpath, xmlhttp);
+                        errorcallback('File not found', xmldocpath, xmlhttp);
                 }
 
             }
@@ -554,14 +554,14 @@
                 completecallback(xmlhttp);
             } else {
                 try {
-                    // This will throw an error on Windows Mobile 7.5.  We want to trigger the error so that we can move 
-                    // down to the next section
+                    // This will throw an error on Windows Mobile 7.5.
+                    // We want to trigger the error so that we can move down to the next section
                     xml = xmlhttp.responseXML;
                     if (xml) {
                         firstChild = xml.firstChild;
                         if (xml.lastChild && xml.lastChild.nodeName === 'parsererror') {
                             if (errorcallback) {
-                                errorcallback("Invalid XML", xmldocpath, xmlhttp);
+                                errorcallback('Invalid XML', xmldocpath, xmlhttp);
                             }
                             return;
                         }
@@ -577,7 +577,7 @@
                     });
                 } else {
                     if (errorcallback) {
-                        errorcallback(xmlhttp.responseText ? "Invalid XML" : xmldocpath, xmldocpath, xmlhttp);
+                        errorcallback(xmlhttp.responseText ? 'Invalid XML' : xmldocpath, xmldocpath, xmlhttp);
                     }
                     return;
                 }
@@ -591,15 +591,16 @@
         var parsedXML;
         try {
             // Parse XML in FF/Chrome/Safari/Opera
-            if (WINDOW.DOMParser) {
-                parsedXML = (new WINDOW.DOMParser()).parseFromString(input, "text/xml");
-                if (parsedXML.childNodes && parsedXML.childNodes.length && parsedXML.childNodes[0].firstChild.nodeName == "parsererror") {
+            if (window.DOMParser) {
+                parsedXML = (new window.DOMParser()).parseFromString(input, 'text/xml');
+                if (parsedXML.childNodes && parsedXML.childNodes.length &&
+                    parsedXML.childNodes[0].firstChild.nodeName === 'parsererror') {
                     return;
                 }
             } else {
                 // Internet Explorer
-                parsedXML = new WINDOW.ActiveXObject("Microsoft.XMLDOM");
-                parsedXML.async = "false";
+                parsedXML = new window.ActiveXObject('Microsoft.XMLDOM');
+                parsedXML.async = 'false';
                 parsedXML.loadXML(input);
             }
         } catch (e) {
@@ -614,11 +615,13 @@
             i, item, j, source;
         for (i = 0; i < playlist.length; i++) {
             item = utils.extend({}, playlist[i]);
-            item.sources = utils.filterSources(item.sources, FALSE, androidhls);
+            item.sources = utils.filterSources(item.sources, false, androidhls);
             if (item.sources.length > 0) {
                 for (j = 0; j < item.sources.length; j++) {
                     source = item.sources[j];
-                    if (!source.label) source.label = j.toString();
+                    if (!source.label) {
+                        source.label = j.toString();
+                    }
                 }
                 pl.push(item);
             }
@@ -628,11 +631,13 @@
         if (checkFlash && pl.length === 0) {
             for (i = 0; i < playlist.length; i++) {
                 item = utils.extend({}, playlist[i]);
-                item.sources = utils.filterSources(item.sources, TRUE, androidhls);
+                item.sources = utils.filterSources(item.sources, true, androidhls);
                 if (item.sources.length > 0) {
                     for (j = 0; j < item.sources.length; j++) {
                         source = item.sources[j];
-                        if (!source.label) source.label = j.toString();
+                        if (!source.label) {
+                            source.label = j.toString();
+                        }
                     }
                     pl.push(item);
                 }
@@ -677,7 +682,7 @@
                         if (!selectedType) {
                             selectedType = type;
                         }
-                        if (type == selectedType) {
+                        if (type === selectedType) {
                             newSources.push(source);
                         }
                     }
@@ -686,7 +691,7 @@
                         if (!selectedType) {
                             selectedType = type;
                         }
-                        if (type == selectedType) {
+                        if (type === selectedType) {
                             newSources.push(source);
                         }
                     }
@@ -712,16 +717,16 @@
         str = str.replace(',', '.');
         var arr = str.split(':');
         var sec = 0;
-        if (str.slice(-1) == 's') {
+        if (str.slice(-1) === 's') {
             sec = parseFloat(str);
-        } else if (str.slice(-1) == 'm') {
+        } else if (str.slice(-1) === 'm') {
             sec = parseFloat(str) * 60;
-        } else if (str.slice(-1) == 'h') {
+        } else if (str.slice(-1) === 'h') {
             sec = parseFloat(str) * 3600;
         } else if (arr.length > 1) {
             sec = parseFloat(arr[arr.length - 1]);
             sec += parseFloat(arr[arr.length - 2]) * 60;
-            if (arr.length == 3) {
+            if (arr.length === 3) {
                 sec += parseFloat(arr[arr.length - 3]) * 3600;
             }
         } else {
@@ -741,10 +746,10 @@
     utils.serialize = function(val) {
         if (val === null) {
             return null;
-        } else if (val.toString().toLowerCase() == 'true') {
-            return TRUE;
-        } else if (val.toString().toLowerCase() == 'false') {
-            return FALSE;
+        } else if (val.toString().toLowerCase() === 'true') {
+            return true;
+        } else if (val.toString().toLowerCase() === 'false') {
+            return false;
         } else if (isNaN(Number(val)) || val.length > 5 || val.length === 0) {
             return val;
         } else {
