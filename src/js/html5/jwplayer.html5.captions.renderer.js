@@ -90,18 +90,18 @@
         function _select() {
             var found = -1;
             for (var i = 0; i < _captions.length; i++) {
-                if (_captions[i]['begin'] <= _position &&
-                    (i == _captions.length - 1 || _captions[i + 1]['begin'] >= _position)) {
+                if (_captions[i].begin <= _position &&
+                    (i === _captions.length - 1 || _captions[i + 1].begin >= _position)) {
                     found = i;
                     break;
                 }
             }
             // If none, empty the text. If not current, re-render.
-            if (found == -1) {
+            if (found === -1) {
                 _render('');
-            } else if (found != _current) {
+            } else if (found !== _current) {
                 _current = found;
-                _render(_captions[i]['text']);
+                _render(_captions[i].text);
             }
         }
 
@@ -137,9 +137,9 @@
                 addEdgeStyle('uniform', textStyle);
             }
 
-            _container = document.createElement("div");
-            _captionsWindow = document.createElement("div");
-            _textContainer = document.createElement("span");
+            _container = document.createElement('div');
+            _captionsWindow = document.createElement('div');
+            _textContainer = document.createElement('span');
 
             _style(_container, {
                 display: 'block',
@@ -168,7 +168,10 @@
             } else if (option === 'depressed') { // top down shadow
                 style.textShadow = '0 -2px 1px ' + color;
             } else if (option === 'uniform') { // outline
-                style.textShadow = '-2px 0 1px ' + color + ',2px 0 1px ' + color + ',0 -2px 1px ' + color + ',0 2px 1px ' + color + ',-1px 1px 1px ' + color + ',1px 1px 1px ' + color + ',1px -1px 1px ' + color + ',1px 1px 1px ' + color;
+                style.textShadow = '-2px 0 1px ' + color + ',2px 0 1px ' + color +
+                    ',0 -2px 1px ' + color + ',0 2px 1px ' + color + ',-1px 1px 1px ' +
+                    color + ',1px 1px 1px ' + color + ',1px -1px 1px ' + color +
+                    ',1px 1px 1px ' + color;
             }
         }
 

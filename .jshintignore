@@ -1,7 +1,3 @@
-src/js/html5/jwplayer.html5.adskipbutton.js
-src/js/html5/jwplayer.html5.captions.js
-src/js/html5/jwplayer.html5.captions.renderer.js
-src/js/html5/jwplayer.html5.controlbar.js
 src/js/html5/jwplayer.html5.controller.js
 src/js/html5/jwplayer.html5.defaultskin.js
 src/js/html5/jwplayer.html5.display.js
