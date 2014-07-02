@@ -1,10 +1,11 @@
 {
     "indent": 4,
-    "maxlen": 80,
+    "maxlen": 120,
     "trailing": true,
+    "eqeqeq": true,
 
     // A function can only take max 3 arguments
-    "maxparams": 3,
+    "maxparams": 4,
 
     // Strings use single quotes instead of double
     "quotmark": "single",
@@ -20,5 +21,5 @@
     "unused": true,
 
     // These variables are predefined
-    "predef": ["jwplayer", "module", "_"]
+    "predef": ["jwplayer", "document", "window", "module", "_"]
 }

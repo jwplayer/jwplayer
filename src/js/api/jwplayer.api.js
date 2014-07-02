@@ -1,15 +1,8 @@
-/**
- * API for the JW Player
- *
- * @author Pablo
- * @version 5.8
- */
 (function(jwplayer, undefined) {
     var _players = [],
         utils = jwplayer.utils,
         events = jwplayer.events,
-        states = events.state,
-        DOCUMENT = document;
+        states = events.state;
 
     function addFocusBorder(container) {
         utils.addClass(container, 'jw-tab-focus');
@@ -119,9 +112,9 @@
         _this.setup = function(options) {
             if (jwplayer.embed) {
                 // Destroy original API on setup() to remove existing listeners
-                var fallbackDiv = DOCUMENT.getElementById(_this.id);
+                var fallbackDiv = document.getElementById(_this.id);
                 if (fallbackDiv) {
-                    options["fallbackDiv"] = fallbackDiv;
+                    options.fallbackDiv = fallbackDiv;
                 }
                 _remove(_this);
                 var newApi = jwplayer(_this.id);
@@ -140,11 +133,11 @@
         _this.addButton = function(icon, label, handler, id) {
             try {
                 _callbacks[id] = handler;
-                var handlerString = "jwplayer('" + _this.id + "').callback('" + id + "')";
+                var handlerString = 'jwplayer("' + _this.id + '").callback("' + id + '")';
                 //_player.jwDockAddButton(icon, label, handlerString, id);
-                _callInternal("jwDockAddButton", icon, label, handlerString, id);
+                _callInternal('jwDockAddButton', icon, label, handlerString, id);
             } catch (e) {
-                utils.log("Could not add dock button" + e.message);
+                utils.log('Could not add dock button' + e.message);
             }
         };
         _this.removeButton = function(id) {
@@ -162,8 +155,9 @@
         };
         _this.getPlaylist = function() {
             var playlist = _callInternal('jwGetPlaylist');
-            if (_this.renderingMode == "flash") {
-                utils.deepReplaceKeyName(playlist, ["__dot__", "__spc__", "__dsh__", "__default__"], [".", " ", "-", "default"]);
+            if (_this.renderingMode === 'flash') {
+                utils.deepReplaceKeyName(playlist,
+                    ['__dot__', '__spc__', '__dsh__', '__default__'], ['.', ' ', '-', 'default']);
             }
             return playlist;
         };
@@ -180,17 +174,17 @@
         // Player Public Methods
         _this.setFullscreen = function(fullscreen) {
             if (!utils.exists(fullscreen)) {
-                _callInternal("jwSetFullscreen", !_callInternal('jwGetFullscreen'));
+                _callInternal('jwSetFullscreen', !_callInternal('jwGetFullscreen'));
             } else {
-                _callInternal("jwSetFullscreen", fullscreen);
+                _callInternal('jwSetFullscreen', fullscreen);
             }
             return _this;
         };
         _this.setMute = function(mute) {
             if (!utils.exists(mute)) {
-                _callInternal("jwSetMute", !_callInternal('jwGetMute'));
+                _callInternal('jwSetMute', !_callInternal('jwGetMute'));
             } else {
-                _callInternal("jwSetMute", mute);
+                _callInternal('jwSetMute', mute);
             }
             return _this;
         };
@@ -201,28 +195,28 @@
             return _this;
         };
         _this.load = function(toLoad) {
-            _callInternal("jwInstreamDestroy");
+            _callInternal('jwInstreamDestroy');
             if (jwplayer(_this.id).plugins.googima) {
-                _callInternal("jwDestroyGoogima");
+                _callInternal('jwDestroyGoogima');
             }
-            _callInternal("jwLoad", toLoad);
+            _callInternal('jwLoad', toLoad);
             return _this;
         };
         _this.playlistItem = function(item) {
-            _callInternal("jwPlaylistItem", parseInt(item, 10));
+            _callInternal('jwPlaylistItem', parseInt(item, 10));
             return _this;
         };
         _this.resize = function(width, height) {
-            if (_this.renderingMode !== "flash") {
-                _callInternal("jwResize", width, height);
+            if (_this.renderingMode !== 'flash') {
+                _callInternal('jwResize', width, height);
             } else {
-                var wrapper = DOCUMENT.getElementById(_this.id + "_wrapper"),
-                    aspect = DOCUMENT.getElementById(_this.id + "_aspect");
+                var wrapper = document.getElementById(_this.id + '_wrapper'),
+                    aspect = document.getElementById(_this.id + '_aspect');
                 if (aspect) {
                     aspect.style.display = 'none';
                 }
                 if (wrapper) {
-                    wrapper.style.display = "block";
+                    wrapper.style.display = 'block';
                     wrapper.style.width = utils.styleDimension(width);
                     wrapper.style.height = utils.styleDimension(height);
                 }
@@ -231,7 +225,7 @@
         };
         _this.play = function(state) {
             if (state !== undefined) {
-                _callInternal("jwPlay", state);
+                _callInternal('jwPlay', state);
                 return _this;
             }
 
@@ -239,16 +233,17 @@
             var instreamState = _instream && _instream.getState();
 
             if (instreamState) {
-                if (instreamState === states.IDLE || instreamState === states.PLAYING || instreamState === states.BUFFERING) {
-                    _callInternal("jwInstreamPause");
+                if (instreamState === states.IDLE || instreamState === states.PLAYING ||
+                    instreamState === states.BUFFERING) {
+                    _callInternal('jwInstreamPause');
                 } else {
-                    _callInternal("jwInstreamPlay");
+                    _callInternal('jwInstreamPlay');
                 }
             } else {
-                if (state == states.PLAYING || state == states.BUFFERING) {
-                    _callInternal("jwPause");
+                if (state === states.PLAYING || state === states.BUFFERING) {
+                    _callInternal('jwPause');
                 } else {
-                    _callInternal("jwPlay");
+                    _callInternal('jwPlay');
                 }
             }
             return _this;
@@ -257,13 +252,13 @@
         _this.pause = function(state) {
             if (state === undefined) {
                 state = _this.getState();
-                if (state == states.PLAYING || state == states.BUFFERING) {
-                    _callInternal("jwPause");
+                if (state === states.PLAYING || state === states.BUFFERING) {
+                    _callInternal('jwPause');
                 } else {
-                    _callInternal("jwPlay");
+                    _callInternal('jwPlay');
                 }
             } else {
-                _callInternal("jwPause", state);
+                _callInternal('jwPause', state);
             }
             return _this;
         };
@@ -280,14 +275,14 @@
             return _instream;
         };
         _this.destroyPlayer = function() {
-            _callInternal("jwPlayerDestroy");
+            _callInternal('jwPlayerDestroy');
         };
         _this.playAd = function(ad) {
             var plugins = jwplayer(_this.id).plugins;
             if (plugins.vast) {
                 plugins.vast.jwPlayAd(ad);
             } else {
-                _callInternal("jwPlayAd", ad);
+                _callInternal('jwPlayAd', ad);
             }
         };
         _this.pauseAd = function() {
@@ -295,7 +290,7 @@
             if (plugins.vast) {
                 plugins.vast.jwPauseAd();
             } else {
-                _callInternal("jwPauseAd");
+                _callInternal('jwPauseAd');
             }
         };
 
@@ -305,7 +300,7 @@
             utils.foreach(mapping, function(name, value) {
                 _this[name] = function(callback) {
                     return listener(value, callback);
-                }
+                };
             });
         }
 
@@ -320,7 +315,7 @@
             _this[name] = function() {
                 var value = _callInternal.apply(this, [internalName].concat(Array.prototype.slice.call(arguments, 0)));
                 return (chainable ? _this : value);
-            }
+            };
         }
         var nonChainingGenerator = function(index, name) {
             generateInternalFunction(false, name);
@@ -334,7 +329,7 @@
 
         _this.remove = function() {
             if (!_playerReady) {
-                throw "Cannot call remove() before player is ready";
+                throw 'Cannot call remove() before player is ready';
             }
             _remove(this);
         };
@@ -353,21 +348,22 @@
             jwplayer.plugins.registerPlugin(id, target, arg1, arg2);
         };
 
-        /** Use this function to set the internal low-level player.  This is a javascript object which contains the low-level API calls. **/
+        /** Use this function to set the internal low-level player.
+         * This is a javascript object which contains the low-level API calls. **/
         _this.setPlayer = function(player, renderingMode) {
             _player = player;
             _this.renderingMode = renderingMode;
         };
 
         _this.detachMedia = function() {
-            if (_this.renderingMode == "html5") {
-                return _callInternal("jwDetachMedia");
+            if (_this.renderingMode === 'html5') {
+                return _callInternal('jwDetachMedia');
             }
         };
 
         _this.attachMedia = function(seekable) {
-            if (_this.renderingMode == "html5") {
-                return _callInternal("jwAttachMedia", seekable);
+            if (_this.renderingMode === 'html5') {
+                return _callInternal('jwAttachMedia', seekable);
             }
         };
 
@@ -384,12 +380,12 @@
             return function(args) {
                 var newstate = args.newstate,
                     oldstate = args.oldstate;
-                if (newstate == state) {
+                if (newstate === state) {
                     var callbacks = _stateListeners[newstate];
                     if (callbacks) {
                         for (var c = 0; c < callbacks.length; c++) {
                             var fn = callbacks[c];
-                            if (typeof fn == 'function') {
+                            if (typeof fn === 'function') {
                                 fn.call(this, {
                                     oldstate: oldstate,
                                     newstate: newstate
@@ -403,9 +399,10 @@
 
         function _addInternalListener(player, type) {
             try {
-                player.jwAddEventListener(type, 'function(dat) { jwplayer("' + _this.id + '").dispatchEvent("' + type + '", dat); }');
+                player.jwAddEventListener(type,
+                        'function(dat) { jwplayer("' + _this.id + '").dispatchEvent("' + type + '", dat); }');
             } catch (e) {
-                utils.log("Could not add internal listener");
+                utils.log('Could not add internal listener');
             }
         }
 
@@ -441,11 +438,12 @@
                     if (typeof fn === 'function') {
                         try {
                             if (type === events.JWPLAYER_PLAYLIST_LOADED) {
-                                utils.deepReplaceKeyName(args.playlist, ["__dot__", "__spc__", "__dsh__", "__default__"], [".", " ", "-", "default"]);
+                                utils.deepReplaceKeyName(args.playlist,
+                                    ['__dot__', '__spc__', '__dsh__', '__default__'], ['.', ' ', '-', 'default']);
                             }
                             fn.call(this, args);
                         } catch (e) {
-                            utils.log("There was an error calling back an event handler");
+                            utils.log('There was an error calling back an event handler');
                         }
                     }
                 }
@@ -494,9 +492,9 @@
             _playerReady = true;
 
             if (!_player) {
-                _this.setPlayer(DOCUMENT.getElementById(obj.id));
+                _this.setPlayer(document.getElementById(obj.id));
             }
-            _this.container = DOCUMENT.getElementById(_this.id);
+            _this.container = document.getElementById(_this.id);
 
             utils.foreach(_listeners, function(eventType) {
                 _addInternalListener(_player, eventType);
@@ -554,9 +552,9 @@
         if (identifier.nodeType) {
             // Handle DOM Element
             _container = identifier;
-        } else if (typeof identifier == 'string') {
+        } else if (typeof identifier === 'string') {
             // Find container by ID
-            _container = DOCUMENT.getElementById(identifier);
+            _container = document.getElementById(identifier);
         }
 
         if (_container) {
@@ -567,7 +565,7 @@
                 // Todo: register new object
                 return jwplayer.api.addPlayer(new jwplayer.api(_container));
             }
-        } else if (typeof identifier == "number") {
+        } else if (typeof identifier === 'number') {
             return _players[identifier];
         }
 
@@ -577,7 +575,7 @@
 
     jwplayer.api.playerById = function(id) {
         for (var p = 0; p < _players.length; p++) {
-            if (_players[p].id == id) {
+            if (_players[p].id === id) {
                 return _players[p];
             }
         }
@@ -586,7 +584,7 @@
 
     jwplayer.api.addPlayer = function(player) {
         for (var p = 0; p < _players.length; p++) {
-            if (_players[p] == player) {
+            if (_players[p] === player) {
                 return player; // Player is already in the list;
             }
         }
@@ -609,16 +607,16 @@
             return null;
         }
 
-        utils.clearCss("#" + player.id);
+        utils.clearCss('#' + player.id);
 
-        toDestroy = DOCUMENT.getElementById(player.id + (player.renderingMode == "flash" ? "_wrapper" : ""));
+        toDestroy = document.getElementById(player.id + (player.renderingMode === 'flash' ? '_wrapper' : ''));
 
         if (toDestroy) {
-            if (player.renderingMode === "html5") {
+            if (player.renderingMode === 'html5') {
                 // calls jwPlayerDestroy()
                 player.destroyPlayer();
             }
-            var replacement = DOCUMENT.createElement('div');
+            var replacement = document.createElement('div');
             replacement.id = player.id;
             toDestroy.parentNode.replaceChild(replacement, toDestroy);
         }

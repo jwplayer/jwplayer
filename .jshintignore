@@ -1,5 +1,3 @@
-src/js/api/jwplayer.api.instream.js
-src/js/api/jwplayer.api.js
 src/js/embed/jwplayer.embed.config.js
 src/js/embed/jwplayer.embed.download.js
 src/js/embed/jwplayer.embed.flash.js
@@ -60,4 +58,4 @@ src/js/utils/jwplayer.utils.scriptloader.js
 src/js/utils/jwplayer.utils.strings.js
 src/js/utils/jwplayer.utils.touch.js
 src/js/utils/jwplayer.utils.touchEvents.js
-src/js/libs/underscore-min-1.6.0.js
+src/js/libs/*

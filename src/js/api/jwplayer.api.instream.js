@@ -1,9 +1,3 @@
-/**
- * InStream API
- *
- * @author Pablo
- * @version 5.9
- */
 (function(jwplayer) {
     var events = jwplayer.events,
         utils = jwplayer.utils,
@@ -18,7 +12,8 @@
             _this = this;
 
         function _addInternalListener(id, type) {
-            _player.jwInstreamAddEventListener(type, 'function(dat) { jwplayer("' + id + '").dispatchInstreamEvent("' + type + '", dat); }');
+            _player.jwInstreamAddEventListener(type,
+                    'function(dat) { jwplayer("' + id + '").dispatchInstreamEvent("' + type + '", dat); }');
         }
 
         function _eventListener(type, callback) {
@@ -43,12 +38,12 @@
             return function(args) {
                 var newstate = args.newstate,
                     oldstate = args.oldstate;
-                if (newstate == state) {
+                if (newstate === state) {
                     var callbacks = _stateListeners[newstate];
                     if (callbacks) {
                         for (var c = 0; c < callbacks.length; c++) {
                             var fn = callbacks[c];
-                            if (typeof fn == 'function') {
+                            if (typeof fn === 'function') {
                                 fn.call(this, {
                                     oldstate: oldstate,
                                     newstate: newstate,
@@ -70,7 +65,7 @@
         _this.loadItem = function(item, options) {
             _item = item;
             _options = options || {};
-            if (utils.typeOf(item) == "array") {
+            if (utils.typeOf(item) === 'array') {
                 _api.callInternal('jwLoadArrayInstream', _item, _options);
             } else {
                 _api.callInternal('jwLoadItemInstream', _item, _options);
@@ -99,7 +94,7 @@
                 var args = utils.translateEventResponse(type, calledArguments[1]);
                 for (var l = 0; l < listeners.length; l++) {
                     var fn = listeners[l];
-                    if (typeof fn == 'function') {
+                    if (typeof fn === 'function') {
                         fn.call(this, args);
                     }
                 }
@@ -191,4 +186,4 @@
         };
     };
 
-})(window.jwplayer);
+})(jwplayer);
