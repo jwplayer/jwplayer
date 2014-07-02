@@ -1,9 +1,3 @@
-/**
- * Configuration for the JW Player Embedder
- * @author Zach
- * @modified Pablo
- * @version 6.0
- */
 (function(jwplayer) {
     var utils = jwplayer.utils,
         embed = jwplayer.embed,
@@ -14,25 +8,25 @@
         var _defaults = {
                 fallback: true,
                 height: 270,
-                primary: "html5",
+                primary: 'html5',
                 width: 480,
-                base: config.base ? config.base : utils.getScriptPath("jwplayer.js"),
-                aspectratio: ""
+                base: config.base ? config.base : utils.getScriptPath('jwplayer.js'),
+                aspectratio: ''
             },
             _config = utils.extend(_defaults, jwplayer.defaults, config),
             _modes = {
                 html5: {
-                    type: "html5",
-                    src: _config.base + "jwplayer.html5.js"
+                    type: 'html5',
+                    src: _config.base + 'jwplayer.html5.js'
                 },
                 flash: {
-                    type: "flash",
-                    src: _config.base + "jwplayer.flash.swf"
+                    type: 'flash',
+                    src: _config.base + 'jwplayer.flash.swf'
                 }
             };
 
         // No longer allowing user-set modes block as of 6.0
-        _config.modes = (_config.primary == "flash") ? [_modes.flash, _modes.html5] : [_modes.html5, _modes.flash];
+        _config.modes = (_config.primary === 'flash') ? [_modes.flash, _modes.html5] : [_modes.html5, _modes.flash];
 
         if (_config.listbar) {
             _config.playlistsize = _config.listbar.size;
@@ -40,8 +34,8 @@
             _config.playlistlayout = _config.listbar.layout;
         }
 
-        if (_config.flashplayer) _modes.flash.src = _config.flashplayer;
-        if (_config.html5player) _modes.html5.src = _config.html5player;
+        if (_config.flashplayer) { _modes.flash.src = _config.flashplayer; }
+        if (_config.html5player) { _modes.html5.src = _config.html5player; }
 
         _normalizePlaylist(_config);
 
@@ -53,7 +47,7 @@
     function evaluateAspectRatio(config) {
         var ar = config.aspectratio,
             ratio = getRatio(ar);
-        if (config.width.toString().indexOf("%") == -1) {
+        if (config.width.toString().indexOf('%') === -1) {
             delete config.aspectratio;
         } else if (!ratio) {
             delete config.aspectratio;
@@ -63,13 +57,19 @@
     }
 
     function getRatio(ar) {
-        if (typeof ar != "string" || !utils.exists(ar)) return 0;
-        var index = ar.indexOf(":");
-        if (index == -1) return 0;
+        if (typeof ar !== 'string' || !utils.exists(ar)) {
+            return 0;
+        }
+        var index = ar.indexOf(':');
+        if (index === -1) {
+            return 0;
+        }
         var w = parseFloat(ar.substr(0, index)),
             h = parseFloat(ar.substr(index + 1));
-        if (w <= 0 || h <= 0) return 0;
-        return (h / w * 100) + "%";
+        if (w <= 0 || h <= 0) {
+            return 0;
+        }
+        return (h / w * 100) + '%';
     }
 
     /** Appends a new configuration onto an old one; used for mode configuration **/
@@ -93,8 +93,8 @@
                     delete config.levels;
                 } else {
                     var singleSource = {};
-                    _moveProperty(config, singleSource, "file");
-                    _moveProperty(config, singleSource, "type");
+                    _moveProperty(config, singleSource, 'file');
+                    _moveProperty(config, singleSource, 'type');
                     singleItem.sources = singleSource.file ? [singleSource] : [];
                 }
             }
