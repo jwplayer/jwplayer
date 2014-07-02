@@ -10,6 +10,7 @@ module.exports = function(grunt) {
                 src: [
                     'src/js/jwplayer.sourcestart.js',
                     'src/js/jwplayer.js',
+                    'src/js/utils/jwplayer.underscore.js',
                     'src/js/utils/jwplayer.utils.js',
                     'src/js/utils/jwplayer.utils.*.js',
                     'src/js/events/jwplayer.events.js',
@@ -73,6 +74,7 @@ module.exports = function(grunt) {
 
         uglify : {
             options: {
+                report: 'gzip',
                 mangle: {
                     except: ['RESERVED_KEYWORDS_TO_PROTECT']
                 }
