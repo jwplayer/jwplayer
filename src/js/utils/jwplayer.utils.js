@@ -2,6 +2,7 @@
     /*jshint maxparams:5*/
 
     var utils = jwplayer.utils = {};
+    var _ = jwplayer._;
 
     /**
      * Returns true if the value of the object is null, undefined or the empty
@@ -88,7 +89,7 @@
         return null;
     };
 
-    /** Logger * */
+    /** Logger */
     var console = window.console = window.console || {
         log: function() {}
     };
@@ -101,10 +102,10 @@
         }
     };
 
-    var _userAgentMatch = utils.userAgentMatch = function(regex) {
+    var _userAgentMatch = _.memoize(function(regex) {
         var agent = navigator.userAgent.toLowerCase();
         return (agent.match(regex) !== null);
-    };
+    });
 
     function _browserCheck(regex) {
         return function() {
@@ -165,7 +166,7 @@
     };
 
     utils.isAndroid = function(version, excludeChrome) {
-        //Android Browser appears to include a user-agent string for Chrome/18 
+        //Android Browser appears to include a user-agent string for Chrome/18
         if (excludeChrome && _userAgentMatch(/chrome\/[123456789]/i) && !_userAgentMatch(/chrome\/18/)) {
             return false;
         }

@@ -44,6 +44,7 @@ src/js/utils/jwplayer.utils.strings.js
 src/js/utils/jwplayer.utils.touch.js
 src/js/utils/jwplayer.utils.touchEvents.js
 src/js/libs/*
+src/js/utils/jwplayer.underscore.js
 src/js/jwplayer.js
 src/js/jwplayer.sourceend.js
 src/js/jwplayer.sourcestart.js

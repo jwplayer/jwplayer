@@ -1,8 +1,3 @@
-/**
- * Download mode embedder for the JW Player
- * @author Zach
- * @version 5.5
- */
 (function(jwplayer) {
     var embed = jwplayer.embed,
         utils = jwplayer.utils,
@@ -50,7 +45,7 @@
 
                 type = source.type || utils.extensionmap.extType(utils.extension(source.file));
 
-                var typeIndex = types.indexOf(type);
+                var typeIndex = utils.indexOf(types, type);
                 if (typeIndex >= 0) {
                     file = source.file;
                     image=item.image;
