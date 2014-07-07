@@ -1,5 +1,5 @@
 {
-    "indent": 4,
+    //"indent": 4,
     "maxlen": 120,
     "trailing": true,
     "eqeqeq": true,

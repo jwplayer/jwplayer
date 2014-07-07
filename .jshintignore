@@ -17,7 +17,6 @@ src/js/html5/jwplayer.html5.setup.js
 src/js/html5/jwplayer.html5.skin.js
 src/js/html5/jwplayer.html5.skinloader.js
 src/js/html5/jwplayer.html5.thumbs.js
-src/js/html5/jwplayer.html5.view.js
 src/js/html5/parsers/jwplayer.html5.parsers.dfxp.js
 src/js/html5/parsers/jwplayer.html5.parsers.srt.js
 src/js/html5/providers/jwplayer.html5.video.js

@@ -2,6 +2,7 @@
 (function(jwplayer) {
     var html5 = jwplayer.html5,
         utils = jwplayer.utils,
+        _     = jwplayer._,
         events = jwplayer.events,
         states = events.state,
         _css = utils.css,
@@ -737,7 +738,7 @@
                 state = (_controlbar.parentNode && _controlbar.parentNode.clientWidth >= 320);
             }
 
-            if (state) {
+            if (state && !_instreamMode) {
                 _css.style(_jwhidden, NOT_HIDDEN);
             } else {
                 _css.style(_jwhidden, HIDDEN);
@@ -1635,8 +1636,9 @@
         };
 
         _this.adMode = function(mode) {
-            if (mode !== UNDEFINED && mode !== _adMode) {
-                _adMode = !!mode;
+            if (_.isBoolean(mode) && mode !== _adMode) {
+                _adMode = mode;
+
                 if (mode) {
                     _removeFromArray(_jwhidden, _elements.elapsed);
                     _removeFromArray(_jwhidden, _elements.duration);
@@ -1644,6 +1646,7 @@
                     _addOnceToArray(_jwhidden, _elements.elapsed);
                     _addOnceToArray(_jwhidden, _elements.duration);
                 }
+
                 _css.style([
                     _elements.cast,
                     _elements.elapsed,
@@ -1651,8 +1654,8 @@
                 ], mode ? HIDDEN : NOT_HIDDEN);
 
                 _updateNextPrev();
-                //_redraw();
             }
+
             return _adMode;
         };
 

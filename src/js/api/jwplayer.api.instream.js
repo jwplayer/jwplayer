@@ -119,7 +119,7 @@
             return _eventListener(events.JWPLAYER_MEDIA_COMPLETE, callback);
         };
         // _this.onSeek = function(callback) {
-        // 	return _eventListener(events.JWPLAYER_MEDIA_SEEK, callback);
+        //    return _eventListener(events.JWPLAYER_MEDIA_SEEK, callback);
         // };
 
         _this.onPlaylistComplete = function(callback) {
@@ -134,7 +134,7 @@
             return _eventListener(events.JWPLAYER_MEDIA_TIME, callback);
         };
         // _this.onVolume = function(callback) {
-        // 	return _eventListener(events.JWPLAYER_MEDIA_VOLUME, callback);
+        // return _eventListener(events.JWPLAYER_MEDIA_VOLUME, callback);
         // };
         // State events
         _this.onBuffer = function(callback) {
