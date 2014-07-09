@@ -715,6 +715,10 @@
      * @return {Number}	The number of seconds.
      */
     utils.seconds = function(str) {
+        if (_.isNumber(str)) {
+            return str;
+        }
+
         str = str.replace(',', '.');
         var arr = str.split(':');
         var sec = 0;
