@@ -235,7 +235,6 @@ package com.longtailvideo.jwplayer.view {
 			dispatchEvent(ev);
 			if (_model.state == PlayerState.PLAYING) {
 				showControls();
-				stopFader();
 				startFader();
 			} else {
 				_components.display.focusHandler(true);
@@ -803,15 +802,14 @@ package com.longtailvideo.jwplayer.view {
 		/** Show controls on mousemove and restart the countdown. **/
 		private function moveHandler(evt:Event=null):void {
 			Mouse.show();
-			if (_player.state != PlayerState.IDLE && _player.state != PlayerState.PAUSED) {
+			if (_instreamMode || _player.state != PlayerState.IDLE && _player.state != PlayerState.PAUSED) {
 				if (evt is MouseEvent) {
 					var mouseEvent:MouseEvent = evt as MouseEvent;
 					if (!(_components.display as DisplayObject).getRect(RootReference.stage).containsPoint(new Point(mouseEvent.stageX, mouseEvent.stageY))) {
 						hideControls();
-						return;	
+						return;
 					}
 				}
-				stopFader();
 				startFader();
 			}
 		}
@@ -823,7 +821,6 @@ package com.longtailvideo.jwplayer.view {
 			}
 
 			showControls();
-			stopFader();
 			startFader();
 			if (evt.keyCode == 32 || evt.keyCode == 13) {
 				if (_instreamMode) {
@@ -872,14 +869,21 @@ package com.longtailvideo.jwplayer.view {
 		
 		/** Hide controls again when move has timed out. **/
 		private function moveTimeout(evt:Event=null):void {
-			clearTimeout(_fadingOut);
-			if (_player.state == PlayerState.PLAYING) Mouse.hide();
-			if (_player.state != PlayerState.PAUSED) hideControls();
+		clearTimeout(_fadingOut);
+			if (_instreamMode || _player.state == PlayerState.PLAYING) Mouse.hide();
+			if (_instreamMode || _player.state != PlayerState.PAUSED) hideControls();
 		}
 		
 		private function hideControls():void {
-			if (_preventFade) return;
+			if (_preventFade) {
+				return;
+			}
+
 			_components.controlbar.hide();
+			if (_instreamControls) {
+				_instreamControls.controlbar.hide();
+			}
+
 			if (_player.state != PlayerState.IDLE) {
 				_components.dock.hide();
 				_components.logo.hide(audioMode);
@@ -890,18 +894,24 @@ package com.longtailvideo.jwplayer.view {
 			if (_model.config.controls || audioMode) {
 				_components.controlbar.show();
 				_components.dock.show();
+
+				if (_instreamControls) {
+					_instreamControls.controlbar.show();
+				}
 			}
 			if (!audioMode) _components.logo.show();
 		}
-		
+
 		/** If the mouse leaves the stage, hide the controlbar if position is 'over' **/
 		private function startFader():void {
+			stopFader();
+
 			if (!isNaN(_fadingOut)) {
 				clearTimeout(_fadingOut);
 			}
 			_fadingOut = setTimeout(moveTimeout, 2000);
 		}
-		
+
 		private function stopFader():void {
 			showControls();
 			if (!isNaN(_fadingOut)) {
