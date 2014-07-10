@@ -47,7 +47,6 @@
 		
 		CB_CLASS = 'span.jwcontrolbar',
 		TYPEOF_ARRAY = "array",
-		_canCast = FALSE,
 		WINDOW = window,
 		DOCUMENT = document;
 
@@ -215,7 +214,7 @@
 			setTimeout(_volumeHandler, 0);
 			_playlistHandler();
 			_this.visible = false;
-			_castAvailable({available:_canCast});
+			_castAvailable();
 		}
 
 		function _addEventListeners() {
@@ -376,7 +375,7 @@
 				_elements.cc
 			], HIDDEN);
 			
-			_css.style(_elements.cast,_canCast ? NOT_HIDDEN : HIDDEN);
+			_css.style(_elements.cast, _canCast() ? NOT_HIDDEN : HIDDEN);
 			 
 			_updateNextPrev();
 			_redraw();
@@ -441,18 +440,23 @@
 			}
 		}
 
+        function _canCast() {
+            var cast = jwplayer.cast;
+            return cast && cast.available && cast.available();
+        }
+
 		function _castAvailable(evt) {
 			// chromecast button is displayed after receiving this event
 			if (_elements.cast) {
-				_canCast = evt.available;
-				_css.style(_elements.cast, evt.available ? NOT_HIDDEN : HIDDEN);
+				var canCast = _canCast();
+				_css.style(_elements.cast, canCast ? NOT_HIDDEN : HIDDEN);
 				var className = _elements.cast.className.replace(/\s*jwcancast/, '');
-				if (evt.available) {
+				if (canCast) {
 					className += ' jwcancast';
 				}
 				_elements.cast.className = className;
 			}
-			_castSession(evt);
+			_castSession(evt || _castState);
 		}
 
 		function _castSession(evt) {

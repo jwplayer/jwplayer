@@ -38,7 +38,6 @@
 		 *************************************************************/
 		TRUE = true,
 		FALSE = !TRUE,
-		_canCast = FALSE,
 		JW_CSS_SMOOTH_EASE = "opacity .25s ease",
 		JW_CSS_100PCT = "100%",
 		JW_CSS_ABSOLUTE = "absolute",
@@ -352,10 +351,9 @@
 			_api.jwAddEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
 			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_COMPLETE, _playlistCompleteHandler);
 			_api.jwAddEventListener(events.JWPLAYER_PLAYLIST_ITEM, _playlistItemHandler);
-			_api.jwAddEventListener(events.JWPLAYER_CAST_AVAILABLE, function(evt) {
-				if (evt.available) {
+			_api.jwAddEventListener(events.JWPLAYER_CAST_AVAILABLE, function() {
+				if (_canCast()) {
 					_this.forceControls(TRUE);
-					_canCast = TRUE;
 				} else {
 					_this.releaseControls();
 				}
@@ -566,9 +564,18 @@
 			_controlbar.addEventListener(events.JWPLAYER_USER_ACTION, _resetTapTimer);
 			_controlsLayer.appendChild(_controlbar.element());
 			
-			if (_isIPod) _hideControlbar();
-			if (_canCast) _this.forceControls(TRUE);
+			if (_isIPod) {
+                _hideControlbar();
+            }
+			if (_canCast()) {
+                _this.forceControls(TRUE);
+            }
 		}
+
+        function _canCast() {
+            var cast = jwplayer.cast;
+            return cast && cast.available && cast.available();
+        }
 
 		function _castAdChanged(evt) {
 			// end ad mode (ad provider removed)
@@ -1131,7 +1138,7 @@
 			_setVisibility(_internalSelector(VIEW_CONTROLS_CONTAINER_CLASS), TRUE);
 			_instreamLayer.innerHTML = "";
 			_instreamLayer.removeEventListener('mousemove', _startFade);
-			_instreamLayer.removeEventListener('mouseout', _mouseoutHandler)
+			_instreamLayer.removeEventListener('mouseout', _mouseoutHandler);
 			_instreamMode = FALSE;
 		};
 		
