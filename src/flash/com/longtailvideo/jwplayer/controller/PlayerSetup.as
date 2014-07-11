@@ -252,7 +252,7 @@ package com.longtailvideo.jwplayer.controller {
 		}
 		
 		protected function loadPreview():void {
-			if (_model.playlist.length > 0 && _model.playlist.currentItem.image) {
+			if (_model.playlist.length > 0 && _model.playlist.currentItem.image && !_model.config.autostart) {
 				imageLoader = new Loader();
 				imageTimeout = new Timer(1000, 1);
 				imageTimeout.addEventListener(TimerEvent.TIMER_COMPLETE, loadPreviewTimeout);

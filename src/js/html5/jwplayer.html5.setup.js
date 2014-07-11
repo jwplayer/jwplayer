@@ -148,7 +148,7 @@
 
         function _loadPreview() {
             var preview = _model.playlist[_model.item].image;
-            if (preview) {
+            if (preview && !_model.config.autostart) {
                 _previewImg = new Image();
                 _previewImg.onload = _previewLoaded;
                 _previewImg.onerror = _previewLoaded;
