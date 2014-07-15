@@ -76,6 +76,7 @@
             _showing = FALSE,
             _forcedControlsState = null,
             _replayState,
+            _readyState,
             _rightClickMenu,
             _resizeMediaTimeout = -1,
             _inCB = FALSE, // in control bar
@@ -347,6 +348,7 @@
             jwplayer(_api.id).onAdError(function() {
                 _controlbar.adMode(false);
             });
+            _api.jwAddEventListener(events.JWPLAYER_PLAYER_READY, _readyHandler);
             _api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
             _api.jwAddEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
             _api.jwAddEventListener(events.JWPLAYER_PLAYLIST_COMPLETE, _playlistCompleteHandler);
@@ -1037,6 +1039,10 @@
             if (_castDisplay) {
                 _castDisplay.setState(_api.jwGetState());
             }
+        }
+
+        function _readyHandler() {
+            _readyState = TRUE;
         }
 
         /**
