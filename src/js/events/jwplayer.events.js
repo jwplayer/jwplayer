@@ -1,6 +1,6 @@
 /**
- * Event namespace defintion for the JW Player
- * 
+ * Event namespace definition for the JW Player
+ *
  * @author pablo
  * @version 6.0
  */

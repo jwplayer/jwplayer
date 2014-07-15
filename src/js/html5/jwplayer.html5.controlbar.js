@@ -1508,7 +1508,7 @@
 				display: !_audioMode && !casting && _hasHD() ? EMPTY : JW_CSS_NONE
 			});
 			_css.style(_elements.cc, {
-				display: !_audioMode && !casting && _hasCaptions() ? EMPTY : JW_CSS_NONE
+				display: !_audioMode && _hasCaptions() ? EMPTY : JW_CSS_NONE
 			});
 			
 			
