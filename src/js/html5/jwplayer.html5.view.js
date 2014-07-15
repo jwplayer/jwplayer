@@ -107,7 +107,6 @@
 
             _requestFullscreen =
                 _playerElement.requestFullscreen ||
-                _playerElement.requestFullScreen ||
                 _playerElement.webkitRequestFullscreen ||
                 _playerElement.webkitRequestFullScreen ||
                 _playerElement.webkitEnterFullscreen ||
@@ -116,7 +115,6 @@
                 _playerElement.msRequestFullscreen;
             _exitFullscreen =
                 DOCUMENT.exitFullscreen ||
-                DOCUMENT.cancelFullScreen ||
                 DOCUMENT.webkitExitFullscreen ||
                 DOCUMENT.webkitCancelFullScreen ||
                 DOCUMENT.mozCancelFullScreen ||
