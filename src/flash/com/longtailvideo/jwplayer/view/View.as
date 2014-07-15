@@ -1,5 +1,6 @@
 package com.longtailvideo.jwplayer.view {
 	import com.longtailvideo.jwplayer.events.CaptionsEvent;
+	import com.longtailvideo.jwplayer.events.CastEvent;
 	import com.longtailvideo.jwplayer.events.GlobalEventDispatcher;
 	import com.longtailvideo.jwplayer.events.IGlobalEventDispatcher;
 	import com.longtailvideo.jwplayer.events.MediaEvent;
@@ -24,7 +25,6 @@ package com.longtailvideo.jwplayer.view {
 	import com.longtailvideo.jwplayer.view.components.PlaylistComponent;
 	import com.longtailvideo.jwplayer.view.interfaces.IPlayerComponent;
 	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
-	
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Loader;
@@ -117,7 +117,8 @@ package com.longtailvideo.jwplayer.view {
 		private var _imageLoaded:Boolean = false;
 		// Indicates whether the instream player is being displayed
 		private var _instreamMode:Boolean = false;
-
+		private var _canCast:Boolean = false;
+		
 		public function View(player:IPlayer, model:Model) {
 			_player = player;
 			_model = model;
@@ -186,6 +187,7 @@ package com.longtailvideo.jwplayer.view {
 			_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_ERROR, errorHandler);
 			_player.addEventListener(MediaEvent.JWPLAYER_MEDIA_BUFFER, mediaHandler);
 			_player.addEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, mediaHandler);
+			_player.addEventListener(CastEvent.JWPLAYER_CAST_AVAILABLE, _castAvailable);
 			layoutManager = new PlayerLayoutManager(_player);
 			setupRightClick();
 
@@ -210,6 +212,13 @@ package com.longtailvideo.jwplayer.view {
 		private function mediaHandler(evt):void {
 			_currPos = evt.position;
 			_duration = evt.duration;
+		}
+		
+		private function _castAvailable(evt:CastEvent):void {
+			_canCast = evt.available;
+			if (_canCast) {
+				showControls();
+			}
 		}
 		
 		protected function preventFade(evt:Event=null):void {
@@ -894,7 +903,6 @@ package com.longtailvideo.jwplayer.view {
 			if (_model.config.controls || audioMode) {
 				_components.controlbar.show();
 				_components.dock.show();
-
 				if (_instreamControls) {
 					_instreamControls.controlbar.show();
 				}

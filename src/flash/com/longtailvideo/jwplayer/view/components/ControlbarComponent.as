@@ -1,5 +1,6 @@
 package com.longtailvideo.jwplayer.view.components {
 	import com.longtailvideo.jwplayer.events.CaptionsEvent;
+	import com.longtailvideo.jwplayer.events.CastEvent;
 	import com.longtailvideo.jwplayer.events.MediaEvent;
 	import com.longtailvideo.jwplayer.events.PlayerEvent;
 	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
@@ -15,7 +16,6 @@ package com.longtailvideo.jwplayer.view.components {
 	import com.longtailvideo.jwplayer.utils.RootReference;
 	import com.longtailvideo.jwplayer.utils.Strings;
 	import com.longtailvideo.jwplayer.view.interfaces.IControlbarComponent;
-	
 	import flash.accessibility.AccessibilityProperties;
 	import flash.display.DisplayObject;
 	import flash.display.MovieClip;
@@ -103,7 +103,7 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _customButtons:Array = [];
 //		protected var _removedButtons:Array = [];
 		protected var _dividers:Array;
-		protected var _defaultLayout:String = "[play prev next elapsed][time alt][duration hd cc mute volumeH fullscreen]";
+		protected var _defaultLayout:String = "[play prev next elapsed][time alt][duration hd cc mute volumeH cast fullscreen]";
 		protected var _defaultButtons:Array;
 		protected var _currentLayout:String;
 		protected var _layoutManager:ControlbarLayoutManager;
@@ -136,6 +136,7 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var animations:Animations;
 		protected var _fadingOut:Number;
 		protected var _instreamMode:Boolean;
+		protected var  _canCast:Boolean = false;
 		
 		public function ControlbarComponent(player:IPlayer) {
 			super(player, "controlbar");
@@ -182,9 +183,18 @@ package com.longtailvideo.jwplayer.view.components {
 			player.addEventListener(CaptionsEvent.JWPLAYER_CAPTIONS_CHANGED, captionChanged);
 			player.addEventListener(PlayerEvent.JWPLAYER_LOCKED, lockHandler);
 			player.addEventListener(PlayerEvent.JWPLAYER_UNLOCKED, lockHandler);
+			player.addEventListener(CastEvent.JWPLAYER_CAST_AVAILABLE, _castAvailable);
 		}
 
 
+		private function _castAvailable(evt:CastEvent):void {
+			_canCast = evt.available;
+			if (_canCast) {
+				updateControlbarState();
+				redraw();
+			}
+		}
+		
 		private function lockHandler(evt:PlayerEvent):void {
 			if (_player.locked) {
 				if (_timeSlider) _timeSlider.lock();
@@ -338,6 +348,11 @@ package com.longtailvideo.jwplayer.view.components {
 				hideButton('cc');
 			}
 
+			if (_instreamMode || !_canCast) {
+				newLayout = newLayout.replace(/cast/g, "");
+				hideButton('cast');
+			}
+			
 			if (_timeSlider) {
 				if (_timeAlt && _timeAlt.text || _liveMode) { //&& !_showTime) {
 					_timeSlider.visible = false;
@@ -544,6 +559,7 @@ package com.longtailvideo.jwplayer.view.components {
 			addComponentButton('normalscreen', ViewEvent.JWPLAYER_VIEW_FULLSCREEN, false);
 			addComponentButton('unmute', ViewEvent.JWPLAYER_VIEW_MUTE, false);
 			addComponentButton('mute', ViewEvent.JWPLAYER_VIEW_MUTE, true);
+			addComponentButton('cast', null);
 			addTextField('elapsed');
 			addTextField('duration');
 			addTextField('alt');

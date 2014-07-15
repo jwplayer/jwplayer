@@ -1,5 +1,6 @@
 package com.longtailvideo.jwplayer.player {
 	import com.longtailvideo.jwplayer.events.CaptionsEvent;
+	import com.longtailvideo.jwplayer.events.CastEvent;
 	import com.longtailvideo.jwplayer.events.InstreamEvent;
 	import com.longtailvideo.jwplayer.events.JWAdEvent;
 	import com.longtailvideo.jwplayer.events.MediaEvent;
@@ -62,9 +63,20 @@ package com.longtailvideo.jwplayer.player {
 					clearQueuedEvents();
 				}
 			});
+			
+			if (_player.config.cast && _player.config.cast.appid) {
+				ExternalInterface.addCallback("jwCastSuccess",_canCast);
+				ExternalInterface.call("jwplayer.cast.loader.addEventListener","availability","function(event) {jwplayer().callInternal(\"jwCastSuccess\",event)}");
+				ExternalInterface.call("jwplayer.cast.loader.initialize");
+			}
 			timer.start();
 		}
 
+		private function _canCast(event):void {
+			var evt:CastEvent = new CastEvent(CastEvent.JWPLAYER_CAST_AVAILABLE);
+			evt.available = event.availability == "available";
+			_player.dispatchEvent(evt);
+		}
 		protected function queueEvents(evt:Event):void {
 			_queuedEvents.push(evt);
 		}
@@ -241,6 +253,8 @@ package com.longtailvideo.jwplayer.player {
 				args.controls = (evt as ViewEvent).data;
 			else if (evt.type == ViewEvent.JWPLAYER_VIEW_TAB_FOCUS)
 				args.hasFocus = (evt as ViewEvent).data;
+			else if (evt.type ==  CastEvent.JWPLAYER_CAST_AVAILABLE) 
+				args.available = (evt as CastEvent).available;
 			else if (evt is ViewEvent && (evt as ViewEvent).data != null)
 				args.data = JavascriptSerialization.stripDots((evt as ViewEvent).data);
 			else if (evt is PlayerEvent) {
@@ -320,7 +334,6 @@ package com.longtailvideo.jwplayer.player {
 	
 			return returnObj;
 		}
-		
 		
 		protected function listenerCallbackAds(evt:JWAdEvent):Object {
 			var returnObj:Object = {};
