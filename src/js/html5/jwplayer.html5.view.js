@@ -826,7 +826,7 @@
          */
         function _isNativeFullscreen() {
             if (_elementSupportsFullscreen) {
-                var fsElement = DOCUMENT.currentFullScreenElement ||
+                var fsElement = DOCUMENT.fullscreenElement ||
                     DOCUMENT.webkitCurrentFullScreenElement ||
                     DOCUMENT.mozFullScreenElement ||
                     DOCUMENT.msFullscreenElement;
