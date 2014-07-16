@@ -334,6 +334,9 @@
             jwplayer(_api.id).onAdPlay(function() {
                 _controlbar.adMode(true);
                 _updateState(states.PLAYING);
+
+                // For Vast to hide controlbar if no mouse movement
+                _resetTapTimer();
             });
             jwplayer(_api.id).onAdSkipped(function() {
                 _controlbar.adMode(false);
@@ -567,6 +570,7 @@
 
             _controlbar = new html5.controlbar(_api, cbSettings);
             _controlbar.addEventListener(events.JWPLAYER_USER_ACTION, _resetTapTimer);
+
             _controlsLayer.appendChild(_controlbar.element());
 
             if (_isIPod)  { _hideControlbar(); }
