@@ -5,6 +5,9 @@
     "eqeqeq": true,
     "browser": true,
 
+    // console, alert
+    "devel": true,
+
     // A function can only take max 3 arguments
     "maxparams": 4,
 
