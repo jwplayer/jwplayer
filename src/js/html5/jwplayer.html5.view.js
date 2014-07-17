@@ -108,8 +108,6 @@
                 _playerElement.requestFullscreen ||
                 _playerElement.webkitRequestFullscreen ||
                 _playerElement.webkitRequestFullScreen ||
-                _playerElement.webkitEnterFullscreen ||
-                _playerElement.webkitEnterFullScreen ||
                 _playerElement.mozRequestFullScreen ||
                 _playerElement.msRequestFullscreen;
             _exitFullscreen =
