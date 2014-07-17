@@ -94,15 +94,18 @@ package com.longtailvideo.jwplayer.controller {
 		protected var _loadOnPlay:Number = -1;
 		/** Whether to stop the playlist onComplete **/
 		protected var _stopPlaylist:Boolean = false;
-
+	
+		protected var _isCasting:Boolean = false;
 		/** Reference to a PlaylistItem which has triggered an external MediaProvider load **/
 		protected var _delayedItem:PlaylistItem;
+
 		
 		public function Controller(player:IPlayer, model:Model, view:View) {
 			_player = player;
 			_model = model;
 			_view = view;
 			_lockManager = new LockManager();
+
 		}
 
 		/**
@@ -119,6 +122,7 @@ package com.longtailvideo.jwplayer.controller {
 			addViewListeners();
 
 			setup.setupPlayer();
+			
 		}
 
 		protected function addViewListeners():void {
@@ -133,7 +137,9 @@ package com.longtailvideo.jwplayer.controller {
 			_view.addEventListener(ViewEvent.JWPLAYER_VIEW_FULLSCREEN, fullscreenHandler);
 			_view.addEventListener(ViewEvent.JWPLAYER_VIEW_LOAD, loadHandler);
 			_view.addEventListener(ViewEvent.JWPLAYER_VIEW_REDRAW, redrawHandler);
+			
 		}
+
 
 		protected function playHandler(evt:ViewEvent):void { play(); }
 		protected function stopHandler(evt:ViewEvent):void { stop(); }
@@ -150,6 +156,7 @@ package com.longtailvideo.jwplayer.controller {
 
 		protected function setupComplete(evt:Event):void {
 			_setupComplete = true;
+
 			RootReference.stage.dispatchEvent(new Event(Event.RESIZE));
 			_view.completeView();
 			finalizeSetup();

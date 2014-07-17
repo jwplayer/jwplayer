@@ -63,20 +63,10 @@ package com.longtailvideo.jwplayer.player {
 					clearQueuedEvents();
 				}
 			});
-			
-			if (_player.config.cast && _player.config.cast.appid) {
-				ExternalInterface.addCallback("jwCastSuccess",_canCast);
-				ExternalInterface.call("jwplayer.cast.loader.addEventListener","availability","function(event) {jwplayer().callInternal(\"jwCastSuccess\",event)}");
-				ExternalInterface.call("jwplayer.cast.loader.initialize");
-			}
 			timer.start();
 		}
 
-		private function _canCast(event):void {
-			var evt:CastEvent = new CastEvent(CastEvent.JWPLAYER_CAST_AVAILABLE);
-			evt.available = event.availability == "available";
-			_player.dispatchEvent(evt);
-		}
+
 		protected function queueEvents(evt:Event):void {
 			_queuedEvents.push(evt);
 		}

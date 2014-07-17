@@ -137,6 +137,7 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _fadingOut:Number;
 		protected var _instreamMode:Boolean;
 		protected var  _canCast:Boolean = false;
+		protected var  _casting:Boolean = false;
 		
 		public function ControlbarComponent(player:IPlayer) {
 			super(player, "controlbar");
@@ -559,7 +560,7 @@ package com.longtailvideo.jwplayer.view.components {
 			addComponentButton('normalscreen', ViewEvent.JWPLAYER_VIEW_FULLSCREEN, false);
 			addComponentButton('unmute', ViewEvent.JWPLAYER_VIEW_MUTE, false);
 			addComponentButton('mute', ViewEvent.JWPLAYER_VIEW_MUTE, true);
-			addComponentButton('cast', null);
+			addComponentButton('cast',ViewEvent.JWPLAYER_VIEW_CAST);
 			addTextField('elapsed');
 			addTextField('duration');
 			addTextField('alt');
@@ -737,8 +738,10 @@ package com.longtailvideo.jwplayer.view.components {
 		private function addComponentButton(name:String, event:String, eventData:*=null):void {
 			var button:ComponentButton = new ComponentButton();
 			button.name = name;
-			button.setOutIcon(getSkinElement(name + "Button"));
-			button.setOverIcon(getSkinElement(name + "ButtonOver"));
+			if (name != "cast") {
+				button.setOutIcon(getSkinElement(name + "Button"));
+				button.setOverIcon(getSkinElement(name + "ButtonOver"));
+			}
 			button.clickFunction = function():void {
 				if (name == "hd") {
 					toggleHD();
@@ -750,7 +753,12 @@ package com.longtailvideo.jwplayer.view.components {
 					forward(new ViewEvent(event, eventData));
 				}
 			}
-			if (getSkinElement(name + "Button") || getSkinElement(name + "ButtonOver")) {
+			if (name == "cast") {
+				getSkinElement(_casting ? name + "Button" : name + "Buttonoff");
+				button.setOutIcon(getSkinElement(_casting ? name + "Button" : name + "Buttonoff"));
+				button.init();
+				addButtonDisplayObject(button, name);
+			} else if (getSkinElement(name + "Button") || getSkinElement(name + "ButtonOver")) {
 				button.init();
 				addButtonDisplayObject(button, name);
 			}
