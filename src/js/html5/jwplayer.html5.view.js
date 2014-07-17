@@ -840,11 +840,6 @@
 
 
         function _fullscreenChangeHandler(event) {
-            // don't respond to fullscreen change handlers for elements outside the player (other players, etc...)
-            if (event.target !== _playerElement && !_playerElement.contains(event.target)) {
-                return;
-            }
-
             var fullscreenState = (event.jwstate !== undefined) ? event.jwstate : _isNativeFullscreen();
 
             if (_elementSupportsFullscreen) {

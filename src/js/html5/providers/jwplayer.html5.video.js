@@ -91,7 +91,7 @@
             // post roll support
             _beforecompleted = FALSE,
 
-            _fullscreenState = null,
+            _fullscreenState = false,
 
             _this = utils.extend(this, new events.eventdispatcher(_name));
 
@@ -741,7 +741,7 @@
         };
 
         _this.getFullScreen = function() {
-            return _fullscreenState || _videotag.webkitDisplayingFullscreen;
+            return _fullscreenState || !!_videotag.webkitDisplayingFullscreen;
         };
 
         _this.audioMode = function() {
