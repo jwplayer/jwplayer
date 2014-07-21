@@ -1,12 +1,12 @@
 {
-  "name": "jwplayer-free",
+  "name": "jwplayer",
   "version": "6.9.0",
   "description": "The JW Player is free for non-commerical use. To buy a license for commercial use, please visit \r http://www.jwplayer.com/pricing/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/JWPlayer/jwplayer-free.git"
+    "url": "https://github.com/JWPlayer/jwplayer.git"
   },
-  "homepage": "https://github.com/JWPlayer/jwplayer-free",
+  "homepage": "https://github.com/JWPlayer/jwplayer",
   "devDependencies": {
     "grunt": "^0.4.4",
     "grunt-cli": "^0.1.13",
