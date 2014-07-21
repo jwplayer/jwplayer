@@ -95,7 +95,7 @@ package com.longtailvideo.jwplayer.controller {
 		/** Whether to stop the playlist onComplete **/
 		protected var _stopPlaylist:Boolean = false;
 	
-		protected var _isCasting:Boolean = false;
+
 		/** Reference to a PlaylistItem which has triggered an external MediaProvider load **/
 		protected var _delayedItem:PlaylistItem;
 
