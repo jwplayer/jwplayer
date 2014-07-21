@@ -188,12 +188,18 @@
 
         function _embedYoutubePlayer(videoId, playerVars) {
             if (!videoId) {
-                throw 'invalid Youtube ID';
+                throw {
+                    name: 'YouTubeID',
+                    message: 'Invalid YouTube ID'
+                };
             }
 
             var videoLayer = _element.parentNode;
             if (!videoLayer) {
-                throw 'Youtube iFrame removed from DOM';
+                throw {
+                    name: 'YouTubeVideoLayer',
+                    message: 'YouTube iFrame removed from DOM'
+                };
             }
 
             var ytConfig = {
@@ -394,20 +400,11 @@
 
             _this.setVisibility(true);
 
-            if (!_youtube) {
-                // load item when API is ready
+            if (!_ytPlayer) {
                 _youtubeEmbedReadyCallback = function() {
-                    // enabling autoplay here also throws an exception
                     _embedYoutubePlayer(videoId);
                 };
                 _readyCheck();
-                return;
-            }
-
-            if (!_ytPlayer) {
-                _embedYoutubePlayer(videoId, {
-                    autoplay: _requiresUserInteraction ? 0 : 1
-                });
                 return;
             }
 
