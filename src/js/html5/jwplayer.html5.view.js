@@ -898,7 +898,6 @@
 		}
 		
 		function _showControlbar() {
-			if (_isIPod && !_audioMode) return; 
 			if (_controlbar && _model.controls ) _controlbar.show();
 		}
 
@@ -976,10 +975,8 @@
 			}
 			_showing = TRUE;
 			if (_model.controls || _audioMode) {
-				if (!(_isIPod && _currentState == states.PAUSED)) {
 					_showControlbar();
 					_showDock();
-				}
 			}
 			if (_logoConfig.hide) {
 				_showLogo();
