@@ -773,4 +773,9 @@
 
     utils.indexOf = _.indexOf;
 
+    utils.canCast = function() {
+        var cast = jwplayer.cast;
+        return cast && _.isFunction(cast.available) && cast.available();
+    };
+
 })(jwplayer);
