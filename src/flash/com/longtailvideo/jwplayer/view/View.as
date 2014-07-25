@@ -207,7 +207,7 @@ package com.longtailvideo.jwplayer.view {
 		
 		protected var _preventFade:Boolean = false;
 		
-		private function mediaHandler(evt):void {
+		private function mediaHandler(evt:MediaEvent):void {
 			_currPos = evt.position;
 			_duration = evt.duration;
 		}
