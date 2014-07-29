@@ -772,6 +772,7 @@
     };
 
     utils.indexOf = _.indexOf;
+    utils.noop = function() {};
 
     utils.canCast = function() {
         var cast = jwplayer.cast;

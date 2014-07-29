@@ -7,7 +7,6 @@ src/js/html5/jwplayer.html5.instream.js
 src/js/html5/jwplayer.html5.js
 src/js/html5/jwplayer.html5.logo.js
 src/js/html5/jwplayer.html5.menu.js
-src/js/html5/jwplayer.html5.model.js
 src/js/html5/jwplayer.html5.overlay.js
 src/js/html5/jwplayer.html5.player.js
 src/js/html5/jwplayer.html5.playlistcomponent.js
@@ -19,8 +18,6 @@ src/js/html5/jwplayer.html5.skinloader.js
 src/js/html5/jwplayer.html5.thumbs.js
 src/js/html5/parsers/jwplayer.html5.parsers.dfxp.js
 src/js/html5/parsers/jwplayer.html5.parsers.srt.js
-src/js/html5/providers/jwplayer.html5.video.js
-src/js/html5/providers/jwplayer.html5.youtube.js
 src/js/html5/utils/jwplayer.html5.utils.js
 src/js/html5/utils/jwplayer.html5.utils.stretching.js
 src/js/parsers/jwplayer.parsers.js

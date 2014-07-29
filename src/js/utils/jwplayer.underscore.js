@@ -22,6 +22,7 @@
     // are declared here.
     var
         nativeForEach      = ArrayProto.forEach,
+        nativeSome         = ArrayProto.some,
         nativeIndexOf      = ArrayProto.indexOf,
         nativeIsArray      = Array.isArray,
         nativeKeys         = Object.keys;
@@ -73,6 +74,32 @@
             iterator.call(context, array[mid]) < value ? low = mid + 1 : high = mid;
         }
         return low;
+    };
+
+    // Return the first value which passes a truth test. Aliased as `detect`.
+    _.find = _.detect = function(obj, predicate, context) {
+        var result;
+        any(obj, function(value, index, list) {
+            if (predicate.call(context, value, index, list)) {
+                result = value;
+                return true;
+            }
+        });
+        return result;
+    };
+
+    // Determine if at least one element in the object matches a truth test.
+    // Delegates to **ECMAScript 5**'s native `some` if available.
+    // Aliased as `any`.
+    var any = _.some = _.any = function(obj, predicate, context) {
+        predicate || (predicate = _.identity);
+        var result = false;
+        if (obj == null) return result;
+        if (nativeSome && obj.some === nativeSome) return obj.some(predicate, context);
+        each(obj, function(value, index, list) {
+            if (result || (result = predicate.call(context, value, index, list))) return breaker;
+        });
+        return !!result;
     };
 
     // If the browser doesn't supply us with indexOf (I'm looking at you, **MSIE**),
@@ -201,4 +228,3 @@
 
     root._ = _;
 }).call(jwplayer);
-
