@@ -890,13 +890,6 @@
             // update model
             _model.setFullscreen(fullscreenState);
 
-            //ios7captions
-            // var curr = _model.getVideo().fsCaptions(fullscreenState, _api.jwGetCurrentCaptions());
-            // if (!fullscreenState) {
-            // if (curr) _api.jwSetCurrentCaptions(curr+1);
-            // else _api.jwSetCurrentCaptions(0);
-            // }
-
             if (fullscreenState) {
                 // Browsers seem to need an extra second to figure out how large they are in fullscreen...
                 clearTimeout(_resizeMediaTimeout);
@@ -927,8 +920,8 @@
             }
 
             // TODO: use _forcedControlsState for audio mode so that we don't need these
-            if (_controlbar && !_audioMode && !_model.getVideo().audioMode()) {
-                if (_instreamMode) {
+            if (_controlbar && !_audioMode && !_model.getVideo().isAudioFile()) {
+                if(_instreamMode) {
                     _instreamControlbar.hide();
                 } else {
                     _controlbar.hide();
@@ -943,7 +936,7 @@
         }
 
         function _hideDock() {
-            if (_dock && !_replayState && !_model.getVideo().audioMode()) {
+            if (_dock && !_replayState && !_model.getVideo().isAudioFile()) {
                 _dock.hide();
             }
         }
@@ -955,7 +948,7 @@
         }
 
         function _hideLogo() {
-            if (_logo && (!_model.getVideo().audioMode() || _audioMode)) {
+            if (_logo && (!_model.getVideo().isAudioFile() || _audioMode)) {
                 _logo.hide(_audioMode);
             }
         }
@@ -967,10 +960,10 @@
                 }
             }
 
+            // debug this, find out why
             if (!(_isMobile && _model.fullscreen)) {
                 _model.getVideo().setControls(FALSE);
             }
-
         }
 
         function _hideDisplay() {
@@ -1060,7 +1053,7 @@
 
         function _isAudioFile() {
             var model = _instreamMode ? _instreamModel : _model;
-            return model.getVideo().audioMode();
+            return model.getVideo().isAudioFile();
         }
 
         function _isCasting() {
