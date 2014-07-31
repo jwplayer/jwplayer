@@ -335,6 +335,9 @@
             jwplayer(_api.id).onAdPlay(function() {
                 _controlbar.adMode(true);
                 _updateState(states.PLAYING);
+
+                // For Vast to hide controlbar if no mouse movement
+                _resetTapTimer();
             });
             jwplayer(_api.id).onAdSkipped(function() {
                 _controlbar.adMode(false);
@@ -500,8 +503,11 @@
 		
 		function _startFade() {
 			clearTimeout(_controlsTimeout);
-			if (_api.jwGetState() == states.PAUSED || _api.jwGetState() == states.PLAYING) {
-				_showControls();
+            var state = _api.jwGetState();
+
+            // We need _instreamMode because the state is IDLE during pre-rolls
+            if (state === states.PLAYING || state === states.PAUSED || _instreamMode) {
+                _showControls();
 				if (!_inCB) {
 					_controlsTimeout = setTimeout(_hideControls, _timeoutDuration);
 				}
@@ -898,8 +904,18 @@
 		}
 		
 		function _showControlbar() {
-			if (_controlbar && _model.controls ) _controlbar.show();
-		}
+            if (_isIPod && !_audioMode) {
+                 return;
+            }
+
+            if (_controlbar && _model.controls) {
+                if(_instreamMode) {
+                    _instreamControlbar.show();
+                } else {
+                    _controlbar.show();
+                }
+            }
+        }
 
 		function _hideControlbar() {
 			if (_forcedControlsState === TRUE) {
@@ -907,7 +923,11 @@
 			}
 			// TODO: use _forcedControlsState for audio mode so that we don't need these
 			if (_controlbar && !_audioMode && !_model.getVideo().audioMode()) {
-				_controlbar.hide();
+                if(_instreamMode) {
+                    _instreamControlbar.hide();
+                } else {
+                    _controlbar.hide();
+                }
 			}
 		}
 		
