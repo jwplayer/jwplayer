@@ -1,9 +1,3 @@
-/**
- * jwplayer.html5 API
- *
- * @author pablo
- * @version 6.0
- */
 (function(jwplayer) {
     var html5 = jwplayer.html5,
         utils = jwplayer.utils,
@@ -89,14 +83,14 @@
             _stop(TRUE);
 
             switch (utils.typeOf(item)) {
-                case "string":
+                case 'string':
                     _loadPlaylist(item);
                     break;
-                case "object":
-                case "array":
+                case 'object':
+                case 'array':
                     _model.setPlaylist(new jwplayer.playlist(item));
                     break;
-                case "number":
+                case 'number':
                     _model.setItem(item);
                     break;
             }
@@ -109,15 +103,19 @@
             });
             loader.addEventListener(events.JWPLAYER_ERROR, function(evt) {
                 _load([]);
-                evt.message = "Could not load playlist: " + evt.message;
+                evt.message = 'Could not load playlist: ' + evt.message;
                 _forward(evt);
             });
             loader.load(toLoad);
         }
 
         function _play(state) {
-            if (!utils.exists(state)) state = TRUE;
-            if (!state) return _pause();
+            if (!utils.exists(state)) {
+                state = TRUE;
+            }
+            if (!state) {
+                return _pause();
+            }
             try {
                 if (_loadOnPlay >= 0) {
                     _load(_loadOnPlay);
@@ -140,7 +138,7 @@
                         return FALSE;
                     }
                     _video().load(_model.playlist[_model.item]);
-                } else if (_model.state == states.PAUSED) {
+                } else if (_model.state === states.PAUSED) {
                     _video().play();
                 }
 
@@ -174,8 +172,8 @@
 
         function _pause(state) {
             _actionOnAttach = null;
-            if (!utils.exists(state)) state = TRUE;
-            if (!state) return _play();
+            if (!utils.exists(state)) { state = TRUE; }
+            if (!state) { return _play(); }
             try {
                 switch (_model.state) {
                     case states.PLAYING:
@@ -196,11 +194,13 @@
         }
 
         function _isIdle() {
-            return (_model.state == states.IDLE);
+            return (_model.state === states.IDLE);
         }
 
         function _seek(pos) {
-            if (_model.state != states.PLAYING) _play(TRUE);
+            if (_model.state !== states.PLAYING) {
+                _play(TRUE);
+            }
             _video().seek(pos);
         }
 
@@ -237,7 +237,7 @@
             if (_model.repeat) {
                 _next();
             } else {
-                if (_model.item == _model.playlist.length - 1) {
+                if (_model.item === _model.playlist.length - 1) {
                     _loadOnPlay = 0;
                     _stop(TRUE);
                     setTimeout(function() {
@@ -254,13 +254,13 @@
         }
 
         function _getCurrentQuality() {
-            if (_video()) return _video().getCurrentQuality();
-            else return -1;
+            if (_video()) { return _video().getCurrentQuality(); }
+            else { return -1; }
         }
 
         function _getQualityLevels() {
-            if (_video()) return _video().getQualityLevels();
-            else return null;
+            if (_video()) { return _video().getQualityLevels(); }
+            else { return null; }
         }
 
         function _setCurrentCaptions(caption) {
@@ -287,7 +287,7 @@
         function _attachMedia(seekable) {
             try {
                 _model.getVideo().attachMedia(seekable);
-                if (typeof _actionOnAttach == "function") {
+                if (typeof _actionOnAttach === 'function') {
                     _actionOnAttach();
                 }
             } catch (err) {

@@ -13,16 +13,16 @@
         _isMobile = utils.isMobile(),
 
         DOCUMENT = document,
-        D_CLASS = ".jwdisplay",
-        D_PREVIEW_CLASS = ".jwpreview",
+        D_CLASS = '.jwdisplay',
+        D_PREVIEW_CLASS = '.jwpreview',
         TRUE = true,
         FALSE = false,
 
         /** Some CSS constants we should use for minimization **/
-        JW_CSS_ABSOLUTE = "absolute",
-        JW_CSS_100PCT = "100%",
-        JW_CSS_HIDDEN = "hidden",
-        JW_CSS_SMOOTH_EASE = "opacity .25s, color .25s";
+        JW_CSS_ABSOLUTE = 'absolute',
+        JW_CSS_100PCT = '100%',
+        JW_CSS_HIDDEN = 'hidden',
+        JW_CSS_SMOOTH_EASE = 'opacity .25s, color .25s';
 
 
     html5.display = function(_api, config) {
@@ -47,7 +47,7 @@
                 fontcolor: '#ccc',
                 overcolor: '#fff',
                 fontsize: 15,
-                fontweight: ""
+                fontweight: ''
             }, _skin.getComponentSettings('display'), config),
             _eventDispatcher = new events.eventdispatcher(),
             _alternateClickHandler,
@@ -56,12 +56,12 @@
         utils.extend(this, _eventDispatcher);
 
         function _init() {
-            _display = DOCUMENT.createElement("div");
-            _display.id = _api.id + "_display";
-            _display.className = "jwdisplay";
+            _display = DOCUMENT.createElement('div');
+            _display.id = _api.id + '_display';
+            _display.className = 'jwdisplay';
 
-            _preview = DOCUMENT.createElement("div");
-            _preview.className = "jwpreview jw" + _api.jwGetStretching();
+            _preview = DOCUMENT.createElement('div');
+            _preview.className = 'jwpreview jw' + _api.jwGetStretching();
             _display.appendChild(_preview);
 
             _api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
@@ -86,7 +86,7 @@
         }
 
         function _clickHandler(evt) {
-            if (_alternateClickHandler && (_api.jwGetControls() || _api.jwGetState() == states.PLAYING)) {
+            if (_alternateClickHandler && (_api.jwGetControls() || _api.jwGetState() === states.PLAYING)) {
                 _alternateClickHandler(evt);
                 return;
             }
@@ -94,7 +94,9 @@
             if (!_isMobile || !_api.jwGetControls()) {
                 _eventDispatcher.sendEvent(events.JWPLAYER_DISPLAY_CLICK);
             }
-            if (!_api.jwGetControls()) return;
+            if (!_api.jwGetControls()) {
+                return;
+            }
 
 
             // Handle double-clicks for fullscreen toggle
@@ -106,7 +108,7 @@
                 _lastClick = _getCurrentTime();
             }
 
-            var cbBounds = utils.bounds(_display.parentNode.querySelector(".jwcontrolbar")),
+            var cbBounds = utils.bounds(_display.parentNode.querySelector('.jwcontrolbar')),
                 displayBounds = utils.bounds(_display),
                 playSquare = {
                     left: cbBounds.left - 10 - displayBounds.left,
@@ -129,7 +131,9 @@
                     return;
                 } else {
                     _eventDispatcher.sendEvent(events.JWPLAYER_DISPLAY_CLICK);
-                    if (_hiding) return;
+                    if (_hiding) {
+                        return;
+                    }
                 }
             }
 
@@ -158,22 +162,26 @@
 
         function _createIcons() {
             var outStyle = {
-                    font: _config.fontweight + " " + _config.fontsize + "px/" + (parseInt(_config.fontsize, 10) + 3) + "px Arial, Helvetica, sans-serif",
+                    font: _config.fontweight + ' ' + _config.fontsize + 'px/' +
+                        (parseInt(_config.fontsize, 10) + 3) + 'px Arial, Helvetica, sans-serif',
                     color: _config.fontcolor
                 },
                 overStyle = {
                     color: _config.overcolor
                 };
-            _button = new html5.displayicon(_display.id + "_button", _api, outStyle, overStyle);
+            _button = new html5.displayicon(_display.id + '_button', _api, outStyle, overStyle);
             _display.appendChild(_button.element());
         }
 
 
         function _setIcon(name, text) {
-            if (!_config.showicons) return;
+            if (!_config.showicons) {
+                return;
+            }
 
             if (name || text) {
-                _button.setRotation(name == "buffer" ? parseInt(_config.bufferrotation, 10) : 0, parseInt(_config.bufferinterval, 10));
+                _button.setRotation(name === 'buffer' ? parseInt(_config.bufferrotation, 10) : 0,
+                    parseInt(_config.bufferinterval, 10));
                 _button.setIcon(name);
                 _button.setText(text);
             } else {
@@ -185,13 +193,13 @@
         function _itemHandler() {
             _clearError();
             _item = _api.jwGetPlaylist()[_api.jwGetPlaylistIndex()];
-            var newImage = _item ? _item.image : "";
+            var newImage = _item ? _item.image : '';
             _previousState = undefined;
             _loadImage(newImage);
         }
 
         function _loadImage(newImage) {
-            if (_image != newImage) {
+            if (_image !== newImage) {
                 if (_image) {
                     _setVisibility(D_PREVIEW_CLASS, FALSE);
                 }
@@ -205,13 +213,12 @@
 
         function _playlistCompleteHandler() {
             _completedState = TRUE;
-            _setIcon("replay");
+            _setIcon('replay');
             var item = _api.jwGetPlaylist()[0];
             _loadImage(item.image);
         }
 
         var _stateTimeout;
-
 
         function _getState() {
             return _forced ? _forced : (_api ? _api.jwGetState() : states.IDLE);
@@ -226,9 +233,11 @@
 
         function _updateDisplay(state) {
             state = _getState();
-            if (state != _previousState) {
+            if (state !== _previousState) {
                 _previousState = state;
-                if (_button) _button.setRotation(0);
+                if (_button) {
+                    _button.setRotation(0);
+                }
                 switch (state) {
                     case states.IDLE:
                         if (!_errorState && !_completedState) {
@@ -239,7 +248,7 @@
                             if (_api._model && _api._model.config.displaytitle === false) {
                                 disp = false;
                             }
-                            _setIcon('play', (_item && disp) ? _item.title : "");
+                            _setIcon('play', (_item && disp) ? _item.title : '');
                         }
                         break;
                     case states.BUFFERING:
@@ -325,13 +334,16 @@
 
         function _clearError() {
             _errorState = FALSE;
-            if (_icons.error) _icons.error.setText();
+            if (_icons.error) {
+                _icons.error.setText();
+            }
         }
 
 
         function _redraw() {
             if (_display.clientWidth * _display.clientHeight > 0) {
-                utils.stretch(_api.jwGetStretching(), _preview, _display.clientWidth, _display.clientHeight, _imageWidth, _imageHeight);
+                utils.stretch(_api.jwGetStretching(),
+                    _preview, _display.clientWidth, _display.clientHeight, _imageWidth, _imageHeight);
             }
         }
 
@@ -340,14 +352,14 @@
         function _setVisibility(selector, state) {
             _css(_internalSelector(selector), {
                 opacity: state ? 1 : 0,
-                visibility: state ? "visible" : "hidden"
+                visibility: state ? 'visible' : 'hidden'
             });
         }
 
         this.show = function(force) {
-            if (_button && (force || _getState() != states.PLAYING)) {
+            if (_button && (force || _getState() !== states.PLAYING)) {
                 _clearHideTimeout();
-                _display.style.display = "block";
+                _display.style.display = 'block';
                 _button.show();
                 _hiding = false;
             }
