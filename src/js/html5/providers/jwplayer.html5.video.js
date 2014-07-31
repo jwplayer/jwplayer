@@ -9,7 +9,7 @@
 	var utils = jwplayer.utils, 
 		events = jwplayer.events, 
 		states = events.state,
-		
+		clearInterval = window.clearInterval,
 		TRUE = true,
 		FALSE = false;
 	
@@ -324,6 +324,7 @@
 			_source = _levels[_currentQuality];
 			
 			_setState(states.BUFFERING);
+			clearInterval(_bufferInterval);
 			_bufferInterval = setInterval(_sendBufferUpdate, 100);
 
 			_delayedSeek = 0;
@@ -366,12 +367,12 @@
 
 		_this.stop = function() {
 			if (!_attached) return;
+			clearInterval(_bufferInterval);
 			_videotag.removeAttribute("src");
 			if (!_isIE) {
 				_videotag.load();
 			}
 			_currentQuality = -1;
-			clearInterval(_bufferInterval);
 			_setState(states.IDLE);
 		};
 
@@ -483,24 +484,25 @@
 		}
 		
 		function _sendBufferUpdate() {
-			if (!_attached) return; 
+			if (!_attached) return;
 			var newBuffer = _getBuffer();
+			if (newBuffer >= 1) {
+				clearInterval(_bufferInterval);
+			}
 			if (newBuffer != _bufferPercent) {
 				_bufferPercent = newBuffer;
 				_sendEvent(events.JWPLAYER_MEDIA_BUFFER, {
 					bufferPercent: Math.round(_bufferPercent * 100)
 				});
 			}
-			if (newBuffer >= 1) {
-				clearInterval(_bufferInterval);
-			}
 		}
 		
 		function _getBuffer() {
-			if (!_videotag.duration || _videotag.buffered.length === 0) {
+			var buffered = _videotag.buffered;
+			if (!buffered || !_videotag.duration || buffered.length === 0) {
 				return 0;
 			}
-			return _videotag.buffered.end(_videotag.buffered.length-1) / _videotag.duration;
+			return buffered.end(buffered.length-1) / _videotag.duration;
 		}
 		
 		function _endedHandler(evt) {
@@ -510,6 +512,7 @@
 		
 		function _complete() {
 			if (_state != states.IDLE) {
+				clearInterval(_bufferInterval);
 				_currentQuality = -1;
 				_beforecompleted = TRUE;
 				_sendEvent(events.JWPLAYER_MEDIA_BEFORECOMPLETE);
@@ -629,6 +632,7 @@
 		 * Return the video tag and stop listening to events  
 		 */
 		_this.detachMedia = function() {
+			clearInterval(_bufferInterval);
 			_attached = FALSE;
 			// _canSeek = FALSE;
 			return _videotag;
