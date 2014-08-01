@@ -4,6 +4,7 @@
         _ = jwplayer._,
         events = jwplayer.events,
         states = events.state,
+        clearInterval = window.clearInterval,
         DefaultProvider = jwplayer.html5.DefaultProvider,
         _isIE = utils.isMSIE(),
         _isMobile = utils.isMobile(),
@@ -318,6 +319,7 @@
             _source = _levels[_currentQuality];
 
             _this.setState(states.BUFFERING);
+            clearInterval(_bufferInterval);
             _bufferInterval = setInterval(_sendBufferUpdate, 100);
 
             _delayedSeek = 0;
@@ -360,12 +362,12 @@
 
         this.stop = function() {
             if (!_attached) { return; }
+            clearInterval(_bufferInterval);
             _videotag.removeAttribute('src');
             if (!_isIE) {
                 _videotag.load();
             }
             _currentQuality = -1;
-            clearInterval(_bufferInterval);
             this.setState(states.IDLE);
         };
 
@@ -489,22 +491,25 @@
         function _sendBufferUpdate() {
             if (!_attached) { return; }
             var newBuffer = _getBuffer();
+
+            if (newBuffer >= 1) {
+                clearInterval(_bufferInterval);
+            }
+
             if (newBuffer !== _bufferPercent) {
                 _bufferPercent = newBuffer;
                 _this.sendEvent(events.JWPLAYER_MEDIA_BUFFER, {
                     bufferPercent: Math.round(_bufferPercent * 100)
                 });
             }
-            if (newBuffer >= 1) {
-                clearInterval(_bufferInterval);
-            }
         }
 
         function _getBuffer() {
-            if (!_videotag.duration || _videotag.buffered.length === 0) {
+            var buffered = _videotag.buffered;
+            if (!buffered || !_videotag.duration || buffered.length === 0) {
                 return 0;
             }
-            return _videotag.buffered.end(_videotag.buffered.length - 1) / _videotag.duration;
+            return buffered.end(buffered.length-1) / _videotag.duration;
         }
 
         function _endedHandler(evt) {
@@ -516,6 +521,7 @@
 
         function _complete() {
             if (_this.state !== states.IDLE) {
+                clearInterval(_bufferInterval);
                 _currentQuality = -1;
                 _beforecompleted = true;
                 _this.sendEvent(events.JWPLAYER_MEDIA_BEFORECOMPLETE);
@@ -561,6 +567,7 @@
          * Return the video tag and stop listening to events
          */
         this.detachMedia = function() {
+            clearInterval(_bufferInterval);
             _attached = false;
             // _canSeek = false;
             return _videotag;
