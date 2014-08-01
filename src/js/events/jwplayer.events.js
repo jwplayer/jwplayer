@@ -55,6 +55,7 @@
 
         // Display CLick
         JWPLAYER_DISPLAY_CLICK: 'jwplayerViewClick',
+        JWPLAYER_PROVIDER_CLICK: 'jwplayerProviderClick',
 
         JWPLAYER_VIEW_TAB_FOCUS: 'jwplayerViewTabFocus',
 

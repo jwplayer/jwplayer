@@ -31,4 +31,24 @@
         'list-style': 'none'
     });
 
+
+    // These rules allow click and hover events to reach the provider, instead
+    //  of being blocked by the controller element
+    //  ** Note : pointer-events will not work on IE < 11
+    _css('.jwplayer .jwcontrols', {
+        'pointer-events': 'none'
+    });
+    _css('.jwplayer.jw-user-inactive .jwcontrols', {
+        'pointer-events': 'all'
+    });
+    var acceptClicks = [
+        '.jwplayer .jwcontrols .jwdockbuttons',
+        '.jwplayer .jwcontrols .jwcontrolbar',
+        '.jwplayer .jwcontrols .jwdisplayIcon',
+        '.jwplayer .jwcontrols .jwlogo'
+    ];
+    _css(acceptClicks.join(', '), {
+        'pointer-events' : 'all'
+    });
+
 })(jwplayer);
