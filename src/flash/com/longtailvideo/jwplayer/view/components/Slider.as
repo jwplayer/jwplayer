@@ -48,8 +48,7 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _dragRect:Rectangle;
 		/** Currently dragging thumb **/
 		protected var _dragging:Boolean;
-		/** Lock state of the slider **/
-		protected var _lock:Boolean;
+
 		/** If the buffer has a percentage offset **/
 		protected var _bufferOffset:Number = 0;
 		/** Name of the slider **/
@@ -329,7 +328,7 @@ package com.longtailvideo.jwplayer.view.components {
 		/** Handle mouse downs. **/
 		private function downHandler(evt:MouseEvent):void {
 			// MonsterDebugger.trace(this, _name +(_vertical?'V':'')+' drag rect='+ _dragRect.toString());
-			if (_thumb && !_lock) {
+			if (_thumb) {
 				_thumb.startDrag(true, _dragRect);
 				_dragging = true;
 				RootReference.stage.addEventListener(MouseEvent.MOUSE_UP, upHandler);
@@ -405,14 +404,7 @@ package com.longtailvideo.jwplayer.view.components {
 			setBuffer(0);
 			setProgress(0);
 		}
-		
-		public function lock():void {
-			_lock = true;
-		} 
-		
-		public function unlock():void{
-			_lock = false;
-		}
+
 		
 		public function get thumbVisible():Boolean {
 			return _thumb.visible;

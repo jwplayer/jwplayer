@@ -184,8 +184,6 @@ package com.longtailvideo.jwplayer.view.components {
 			player.addEventListener(MediaEvent.JWPLAYER_MEDIA_LEVEL_CHANGED, levelChanged);
 			player.addEventListener(CaptionsEvent.JWPLAYER_CAPTIONS_LIST, captionsHandler);
 			player.addEventListener(CaptionsEvent.JWPLAYER_CAPTIONS_CHANGED, captionChanged);
-			player.addEventListener(PlayerEvent.JWPLAYER_LOCKED, lockHandler);
-			player.addEventListener(PlayerEvent.JWPLAYER_UNLOCKED, lockHandler);
 			player.addEventListener(CastEvent.JWPLAYER_CAST_AVAILABLE, _castAvailable);
 		}
 
@@ -197,18 +195,7 @@ package com.longtailvideo.jwplayer.view.components {
 				redraw();
 			//}
 		}
-		
-		private function lockHandler(evt:PlayerEvent):void {
-			if (_player.locked) {
-				if (_timeSlider) _timeSlider.lock();
-				if (_volSliderV) _volSliderV.lock();
-				if (_volSliderH) _volSliderH.lock();
-			} else {
-				if (_timeSlider) _timeSlider.unlock();
-				if (_volSliderV) _volSliderV.unlock();
-				if (_volSliderH) _volSliderH.unlock();
-			}
-		}
+
 
 		private function playlistHandler(evt:PlaylistEvent):void {
 			if (!_instreamMode) {
