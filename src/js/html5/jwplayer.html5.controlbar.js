@@ -709,7 +709,7 @@
 				state = (_controlbar.parentNode && _controlbar.parentNode.clientWidth >= 320);
 			}
 
-			if (state) {
+			if (state && !_instreamMode) {
 				_css.style(_jwhidden, NOT_HIDDEN);
 			} else {
 				_css.style(_jwhidden, HIDDEN);
