@@ -89,7 +89,7 @@ package com.longtailvideo.jwplayer.view {
 		protected var layoutManager:PlayerLayoutManager;
 
 		protected var currentLayer:Number = 0;
-
+		protected var cbLayer:Number = 0;
 
 		// Delay between IDLE state and when the preview image is shown
 		private var imageDelay:Timer = new Timer(100, 1);
@@ -343,6 +343,7 @@ package com.longtailvideo.jwplayer.view {
 			_playlistLayer.addChild(_playlist as DisplayObject);
 			setupComponent(_components.logo, n++);
 			setupComponent(_components.controlbar, n++);
+			cbLayer = n;
 			setupComponent(_components.dock, n++);
 		}
 
