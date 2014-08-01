@@ -92,6 +92,7 @@ package com.longtailvideo.jwplayer.view.components {
 				
 		/** Handles mouse clicks **/
 		protected function clickHandler(event:MouseEvent):void {
+			event.stopPropagation();
 			if (_enabled) {
 				try {
 					if (_clickFunction is Function) {
