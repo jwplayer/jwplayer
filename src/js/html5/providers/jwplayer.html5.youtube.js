@@ -18,7 +18,6 @@
             // Youtube API and Player Instance
             _youtube = window.YT,
             _ytPlayer = null,
-            _videoStopped, // flag to prevent going to buffering after video is stopped
             // iFrame Container (this element will be replaced by iFrame element)
             _element = document.createElement('div'),
             // view container
@@ -217,6 +216,7 @@
                     origin: location.protocol + '//' + location.hostname
                 }, playerVars),
                 events: {
+                    // TODO: create delegates that can be redirected to noop after video is stopped
                     onReady: _onYoutubePlayerReady,
                     onStateChange: _onYoutubeStateChange,
                     onPlaybackQualityChange: _onYoutubePlaybackQualityChange,
@@ -251,12 +251,6 @@
             switch (event.data) {
 
                 case youtubeStates.UNSTARTED: // -1: //unstarted
-                    // Don't go to buffer state if playback stopped
-                    if (_videoStopped === true) {
-                        return;
-                    }
-
-                    _setState(states.BUFFERING);
                     return;
 
                 case youtubeStates.ENDED: // 0: //ended (idle after playback)
@@ -346,6 +340,7 @@
 
             if (_ytPlayer && _ytPlayer.stopVideo) {
                 try {
+                    // TODO: is there a way to remove listeners on _ytPlayer?
                     _ytPlayer.stopVideo();
                     _ytPlayer.clearVideo();
                 } catch (e) {
@@ -452,7 +447,6 @@
         }
 
         _this.stop = function() {
-            _videoStopped = true;
             _stopVideo();
             _setState(states.IDLE);
         };
@@ -462,8 +456,6 @@
             if (_requiresUserInteraction) {
                 return;
             }
-
-            _videoStopped = false;
 
             if (_ytPlayer.playVideo) {
                 _ytPlayer.playVideo();
