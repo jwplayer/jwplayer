@@ -32,6 +32,7 @@
                 abort: _generalHandler,
                 canplay: _canPlayHandler,
                 canplaythrough: _generalHandler,
+                click : _onClickHandler,
                 durationchange: _durationUpdateHandler,
                 emptied: _generalHandler,
                 ended: _endedHandler,
@@ -120,6 +121,10 @@
             //if (evt) {
             //    utils.log('%s %o (%s,%s)', evt.type, evt);
             //}
+        }
+
+        function _onClickHandler() {
+            _this.sendEvent(events.JWPLAYER_PROVIDER_CLICK);
         }
 
         function _durationUpdateHandler(evt) {

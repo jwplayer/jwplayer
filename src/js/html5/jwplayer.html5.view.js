@@ -468,7 +468,7 @@
 
         function _mouseoutHandler() {
             clearTimeout(_controlsTimeout);
-            _controlsTimeout = setTimeout(_hideControls, 10);
+            _controlsTimeout = setTimeout(_hideControls, _timeoutDuration);
         }
 
         function _createElement(elem, className) {
