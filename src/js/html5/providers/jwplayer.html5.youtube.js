@@ -62,8 +62,8 @@
         }
 
         function _onLoadError() {
-            // console.log('Error loading Youtube iFrame API: %o', event);
-            // TODO: dispatch video error
+            //utils.log('Error loading Youtube iFrame API', event);
+            _onYoutubePlayerError();
         }
 
         function _getVideoLayer() {
@@ -250,7 +250,6 @@
             switch (event.data) {
 
                 case youtubeStates.UNSTARTED: // -1: //unstarted
-                    _setState(states.BUFFERING);
                     return;
 
                 case youtubeStates.ENDED: // 0: //ended (idle after playback)
@@ -305,7 +304,7 @@
         // }
 
         function _onYoutubePlayerError() {
-            //console.error('Youtube Player Error:', event.data);
+            //utils.log('Youtube Player Error', event.data);
             _dispatchEvent(events.JWPLAYER_MEDIA_ERROR, {
                 message: 'Error loading YouTube: Video could not be played'
             });
@@ -337,6 +336,7 @@
 
         function _stopVideo() {
             clearInterval(_playingInterval);
+
             if (_ytPlayer && _ytPlayer.stopVideo) {
                 try {
                     _ytPlayer.stopVideo();
@@ -450,9 +450,11 @@
         };
 
         _this.play = function() {
+
             if (_requiresUserInteraction) {
                 return;
             }
+
             if (_ytPlayer.playVideo) {
                 _ytPlayer.playVideo();
             }
