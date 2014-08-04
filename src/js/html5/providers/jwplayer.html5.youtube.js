@@ -62,8 +62,8 @@
         }
 
         function _onLoadError() {
-            // console.log('Error loading Youtube iFrame API: %o', event);
-            // TODO: dispatch video error
+            //utils.log('Error loading Youtube iFrame API', event);
+            _onYoutubePlayerError();
         }
 
         function _getVideoLayer() {
@@ -216,7 +216,6 @@
                     origin: location.protocol + '//' + location.hostname
                 }, playerVars),
                 events: {
-                    // TODO: create delegates that can be redirected to noop after video is stopped
                     onReady: _onYoutubePlayerReady,
                     onStateChange: _onYoutubeStateChange,
                     onPlaybackQualityChange: _onYoutubePlaybackQualityChange,
@@ -305,7 +304,7 @@
         // }
 
         function _onYoutubePlayerError() {
-            //console.error('Youtube Player Error:', event.data);
+            //utils.log('Youtube Player Error', event.data);
             _dispatchEvent(events.JWPLAYER_MEDIA_ERROR, {
                 message: 'Error loading YouTube: Video could not be played'
             });
@@ -340,7 +339,6 @@
 
             if (_ytPlayer && _ytPlayer.stopVideo) {
                 try {
-                    // TODO: is there a way to remove listeners on _ytPlayer?
                     _ytPlayer.stopVideo();
                     _ytPlayer.clearVideo();
                 } catch (e) {
