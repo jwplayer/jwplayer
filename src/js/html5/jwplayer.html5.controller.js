@@ -3,16 +3,14 @@
         utils = jwplayer.utils,
         events = jwplayer.events,
         states = events.state,
-        playlist = jwplayer.playlist,
-        TRUE = true,
-        FALSE = false;
+        playlist = jwplayer.playlist;
 
     html5.controller = function(_model, _view) {
-        var _ready = FALSE,
+        var _ready = false,
             _loadOnPlay = -1,
-            _preplay = FALSE,
+            _preplay = false,
             _actionOnAttach,
-            _stopPlaylist = FALSE, // onComplete, should we play next item or not?
+            _stopPlaylist = false, // onComplete, should we play next item or not?
             _interruptPlay,
             _queuedCalls = [],
             _this = utils.extend(this, new events.eventdispatcher(_model.id, _model.config.debug));
@@ -61,7 +59,7 @@
                     _play();
                 }
 
-                _ready = TRUE;
+                _ready = true;
 
                 while (_queuedCalls.length > 0) {
                     var queuedCall = _queuedCalls.shift();
@@ -80,7 +78,7 @@
         }
 
         function _load(item) {
-            _stop(TRUE);
+            _stop(true);
 
             switch (utils.typeOf(item)) {
                 case 'string':
@@ -111,9 +109,8 @@
 
         function _play(state) {
             if (!utils.exists(state)) {
-                state = TRUE;
-            }
-            if (!state) {
+                state = true;
+            } else if (!state) {
                 return _pause();
             }
             try {
@@ -123,11 +120,11 @@
                 }
                 //_actionOnAttach = _play;
                 if (!_preplay) {
-                    _preplay = TRUE;
+                    _preplay = true;
                     _this.sendEvent(events.JWPLAYER_MEDIA_BEFOREPLAY);
-                    _preplay = FALSE;
+                    _preplay = false;
                     if (_interruptPlay) {
-                        _interruptPlay = FALSE;
+                        _interruptPlay = false;
                         _actionOnAttach = null;
                         return;
                     }
@@ -135,19 +132,19 @@
 
                 if (_isIdle()) {
                     if (_model.playlist.length === 0) {
-                        return FALSE;
+                        return false;
                     }
                     _video().load(_model.playlist[_model.item]);
                 } else if (_model.state === states.PAUSED) {
                     _video().play();
                 }
 
-                return TRUE;
+                return true;
             } catch (err) {
                 _this.sendEvent(events.JWPLAYER_ERROR, err);
                 _actionOnAttach = null;
             }
-            return FALSE;
+            return false;
         }
 
         function _stop(internal) {
@@ -156,41 +153,43 @@
                 if (!_isIdle()) {
                     _video().stop();
                 } else if (!internal) {
-                    _stopPlaylist = TRUE;
+                    _stopPlaylist = true;
                 }
 
                 if (_preplay) {
-                    _interruptPlay = TRUE;
+                    _interruptPlay = true;
                 }
-                return TRUE;
+                return true;
             } catch (err) {
                 _this.sendEvent(events.JWPLAYER_ERROR, err);
             }
-            return FALSE;
+            return false;
 
         }
 
         function _pause(state) {
             _actionOnAttach = null;
-            if (!utils.exists(state)) { state = TRUE; }
-            if (!state) { return _play(); }
-            try {
-                switch (_model.state) {
-                    case states.PLAYING:
-                    case states.BUFFERING:
-                        _video().pause();
-                        break;
-                    default:
-                        if (_preplay) {
-                            _interruptPlay = TRUE;
-                        }
-                }
-                return TRUE;
-            } catch (err) {
-                _this.sendEvent(events.JWPLAYER_ERROR, err);
+            if (!utils.exists(state)) {
+                state = true;
+            } else if (!state) {
+                return _play();
             }
-
-            return FALSE;
+            switch (_model.state) {
+                case states.PLAYING:
+                case states.BUFFERING:
+                    try {
+                        _video().pause();
+                    } catch (err) {
+                        _this.sendEvent(events.JWPLAYER_ERROR, err);
+                        return false;
+                    }
+                    break;
+                default:
+                    if (_preplay) {
+                        _interruptPlay = true;
+                    }
+            }
+            return true;
         }
 
         function _isIdle() {
@@ -199,7 +198,7 @@
 
         function _seek(pos) {
             if (_model.state !== states.PLAYING) {
-                _play(TRUE);
+                _play(true);
             }
             _video().seek(pos);
         }
@@ -229,7 +228,7 @@
                 return;
             } else if (_stopPlaylist) {
                 // Stop called in onComplete event listener
-                _stopPlaylist = FALSE;
+                _stopPlaylist = false;
                 return;
             }
 
@@ -239,7 +238,7 @@
             } else {
                 if (_model.item === _model.playlist.length - 1) {
                     _loadOnPlay = 0;
-                    _stop(TRUE);
+                    _stop(true);
                     setTimeout(function() {
                         _this.sendEvent(events.JWPLAYER_PLAYLIST_COMPLETE);
                     }, 0);
@@ -254,13 +253,17 @@
         }
 
         function _getCurrentQuality() {
-            if (_video()) { return _video().getCurrentQuality(); }
-            else { return -1; }
+            if (_video()) {
+                return _video().getCurrentQuality();
+            }
+            return -1;
         }
 
         function _getQualityLevels() {
-            if (_video()) { return _video().getQualityLevels(); }
-            else { return null; }
+            if (_video()) {
+                return _video().getQualityLevels();
+            }
+            return null;
         }
 
         function _setCurrentCaptions(caption) {
@@ -280,41 +283,39 @@
             try {
                 return _model.getVideo().detachMedia();
             } catch (err) {
-                return null;
+                utils.log('Error calling detachMedia', err);
             }
+            return null;
         }
 
         function _attachMedia(seekable) {
             try {
                 _model.getVideo().attachMedia(seekable);
-                if (typeof _actionOnAttach === 'function') {
-                    _actionOnAttach();
-                }
             } catch (err) {
-                return null;
+                utils.log('Error calling detachMedia', err);
+                return;
+            }
+            if (typeof _actionOnAttach === 'function') {
+                _actionOnAttach();
             }
         }
 
         function _waitForReady(func) {
             return function() {
+                var args = Array.prototype.slice.call(arguments, 0);
                 if (_ready) {
-                    _callMethod(func, arguments);
+                    _callMethod(func, args);
                 } else {
                     _queuedCalls.push({
                         method: func,
-                        arguments: arguments
+                        arguments: args
                     });
                 }
             };
         }
 
         function _callMethod(func, args) {
-            var _args = [],
-                i;
-            for (i = 0; i < args.length; i++) {
-                _args.push(args[i]);
-            }
-            func.apply(this, _args);
+            func.apply(this, args);
         }
 
         /** Controller API / public methods **/
@@ -324,7 +325,7 @@
         this.stop = function() {
             // Something has called stop() in an onComplete handler
             if (_isIdle()) {
-                _stopPlaylist = TRUE;
+                _stopPlaylist = true;
             }
             _waitForReady(_stop)();
         };
