@@ -18,6 +18,7 @@
             // Youtube API and Player Instance
             _youtube = window.YT,
             _ytPlayer = null,
+            _videoStopped, // flag to prevent going to buffering after video is stopped
             // iFrame Container (this element will be replaced by iFrame element)
             _element = document.createElement('div'),
             // view container
@@ -250,6 +251,11 @@
             switch (event.data) {
 
                 case youtubeStates.UNSTARTED: // -1: //unstarted
+                    // Don't go to buffer state if playback stopped
+                    if (_videoStopped === true) {
+                        return;
+                    }
+
                     _setState(states.BUFFERING);
                     return;
 
@@ -337,6 +343,7 @@
 
         function _stopVideo() {
             clearInterval(_playingInterval);
+
             if (_ytPlayer && _ytPlayer.stopVideo) {
                 try {
                     _ytPlayer.stopVideo();
@@ -445,14 +452,19 @@
         }
 
         _this.stop = function() {
+            _videoStopped = true;
             _stopVideo();
             _setState(states.IDLE);
         };
 
         _this.play = function() {
+
             if (_requiresUserInteraction) {
                 return;
             }
+
+            _videoStopped = false;
+
             if (_ytPlayer.playVideo) {
                 _ytPlayer.playVideo();
             }
