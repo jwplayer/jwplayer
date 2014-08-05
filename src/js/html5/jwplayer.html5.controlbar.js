@@ -259,52 +259,68 @@
         }
 
         function _custom10(){
-            _api._model.events.onCustom10();
+            if(_api._model.events.onCustom10)
+                _api._model.events.onCustom10();
         }
         function _custom11(){
-            _api._model.events.onCustom11();
+            if(_api._model.events.onCustom11)
+                _api._model.events.onCustom11();
         }
         function _custom12(){
-            _api._model.events.onCustom12();
+            if(_api._model.events.onCustom12)
+                _api._model.events.onCustom12();
         }
         function _custom13(){
-            _api._model.events.onCustom13();
+            if(_api._model.events.onCustom13)
+                _api._model.events.onCustom13();
         }
         function _custom20(){
-            _api._model.events.onCustom20();
+            if(_api._model.events.onCustom20)
+                _api._model.events.onCustom20();
         }
         function _custom21(){
-            _api._model.events.onCustom21();
+            if(_api._model.events.onCustom21)
+                _api._model.events.onCustom21();
         }
         function _custom22(){
-            _api._model.events.onCustom22();
+            if(_api._model.events.onCustom22)
+                _api._model.events.onCustom22();
         }
         function _custom23(){
-            _api._model.events.onCustom23();
+            if(_api._model.events.onCustom23)
+                _api._model.events.onCustom23();
         }
         function _custom30(){
-            _api._model.events.onCustom30();
+            if(_api._model.events.onCustom30)
+                _api._model.events.onCustom30();
         }
         function _custom31(){
-            _api._model.events.onCustom31();
+            if(_api._model.events.onCustom31)
+                _api._model.events.onCustom31();
         }
         function _custom32(){
-            _api._model.events.onCustom32();
+            if(_api._model.events.onCustom32)
+                _api._model.events.onCustom32();
         }
         function _custom33(){
-            _api._model.events.onCustom33();
+            if(_api._model.events.onCustom33)
+                _api._model.events.onCustom33();
         }
         function _custom40(){
-            _api._model.events.onCustom40();
+            if(_api._model.events.onCustom40)
+                _api._model.events.onCustom40();
         }
         function _custom41(){
-            _api._model.events.onCustom41();
+            if(_api._model.events.onCustom41)
+                _api._model.events.onCustom41();
         }
         function _custom42(){
-            _api._model.events.onCustom42();
+            if(_api._model.events.onCustom42)
+                _api._model.events.onCustom42();
         }
         function _custom43(){
-            _api._model.events.onCustom43();
+            if(_api._model.events.onCustom43)
+                _api._model.events.onCustom43();
         }
 
         function _addEventListeners() {
