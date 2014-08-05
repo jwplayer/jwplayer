@@ -84,7 +84,7 @@
                 /* falls through */
             default:
                 if (xscale > yscale) {
-                    if (elementWidth * yscale / parentWidth > 0.9999) {
+                    if (elementWidth * yscale / parentWidth > 0.95) {
                         scale = true;
                         stretchClass = "jwexactfit";
                     } else {
@@ -92,7 +92,7 @@
                         elementHeight = elementHeight * yscale;
                     }
                 } else {
-                    if (elementHeight * xscale / parentHeight > 0.9999) {
+                    if (elementHeight * xscale / parentHeight > 0.95) {
                         scale = true;
                         stretchClass = "jwexactfit";
                     } else {
