@@ -144,7 +144,7 @@
 
         // TODO: make this a synchronous action; throw error if playlist is empty
         _model.setPlaylist = function(playlist) {
-            _model.playlist = utils.filterPlaylist(playlist, false, _model.androidhls);
+            _model.playlist = jwplayer.playlist.filterPlaylist(playlist, false, _model.androidhls);
             if (_model.playlist.length === 0) {
                 _model.sendEvent(events.JWPLAYER_ERROR, {
                     message: 'Error loading playlist: No playable sources found'

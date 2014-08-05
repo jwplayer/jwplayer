@@ -610,102 +610,12 @@
         return parsedXML;
     };
 
-    /** Go through the playlist and choose a single playable type to play; remove sources of a different type **/
-    utils.filterPlaylist = function(playlist, checkFlash, androidhls) {
-        var pl = [],
-            i, item, j, source;
-        for (i = 0; i < playlist.length; i++) {
-            item = utils.extend({}, playlist[i]);
-            item.sources = utils.filterSources(item.sources, false, androidhls);
-            if (item.sources.length > 0) {
-                for (j = 0; j < item.sources.length; j++) {
-                    source = item.sources[j];
-                    if (!source.label) {
-                        source.label = j.toString();
-                    }
-                }
-                pl.push(item);
-            }
-        }
-
-        // HTML5 filtering failed; try for Flash sources
-        if (checkFlash && pl.length === 0) {
-            for (i = 0; i < playlist.length; i++) {
-                item = utils.extend({}, playlist[i]);
-                item.sources = utils.filterSources(item.sources, true, androidhls);
-                if (item.sources.length > 0) {
-                    for (j = 0; j < item.sources.length; j++) {
-                        source = item.sources[j];
-                        if (!source.label) {
-                            source.label = j.toString();
-                        }
-                    }
-                    pl.push(item);
-                }
-            }
-        }
-        return pl;
-    };
 
     /**
      * Ensure a number is between two bounds
      */
     utils.between = function(num, min, max) {
         return Math.max(Math.min(num, max), min);
-    };
-
-    /** Filters the sources by taking the first playable type and eliminating sources of a different type **/
-    utils.filterSources = function(sources, filterFlash, androidhls) {
-        var selectedType,
-            newSources;
-
-        if (sources) {
-            newSources = [];
-            for (var i = 0; i < sources.length; i++) {
-                var source = utils.extend({}, sources[i]),
-                    file = source.file,
-                    type = source.type;
-
-                if (file) {
-                    source.file = file = utils.trim('' + file);
-                } else {
-                    // source.file is required
-                    continue;
-                }
-
-                if (!type) {
-                    var extension = utils.extension(file);
-                    source.type = type = utils.extensionmap.extType(extension);
-                }
-
-                if (filterFlash) {
-                    if (jwplayer.embed.flashCanPlay(file, type)) {
-                        if (!selectedType) {
-                            selectedType = type;
-                        }
-                        if (type === selectedType) {
-                            newSources.push(source);
-                        }
-                    }
-                } else {
-                    if (jwplayer.embed.html5CanPlay(file, type, androidhls)) {
-                        if (!selectedType) {
-                            selectedType = type;
-                        }
-                        if (type === selectedType) {
-                            newSources.push(source);
-                        }
-                    }
-                }
-            }
-        }
-        return newSources;
-    };
-
-    /** Returns true if the type is playable in HTML5 **/
-    utils.canPlayHTML5 = function(type) {
-        var mime = utils.extensionmap.types[type];
-        return (!!mime && !!jwplayer.vid.canPlayType && !!jwplayer.vid.canPlayType(mime));
     };
 
     /**
