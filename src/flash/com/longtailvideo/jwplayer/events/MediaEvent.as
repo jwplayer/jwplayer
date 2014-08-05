@@ -8,6 +8,23 @@ package com.longtailvideo.jwplayer.events {
 	 */
 	public class MediaEvent extends PlayerEvent {
 
+		public static var JWPLAYER_MEDIA_CUSTOM10:String = "jwplayerMediaCustom10";
+		public static var JWPLAYER_MEDIA_CUSTOM11:String = "jwplayerMediaCustom11";
+		public static var JWPLAYER_MEDIA_CUSTOM12:String = "jwplayerMediaCustom12";
+		public static var JWPLAYER_MEDIA_CUSTOM13:String = "jwplayerMediaCustom13";
+		public static var JWPLAYER_MEDIA_CUSTOM20:String = "jwplayerMediaCustom20";
+		public static var JWPLAYER_MEDIA_CUSTOM21:String = "jwplayerMediaCustom21";
+		public static var JWPLAYER_MEDIA_CUSTOM22:String = "jwplayerMediaCustom22";
+		public static var JWPLAYER_MEDIA_CUSTOM23:String = "jwplayerMediaCustom23";
+		public static var JWPLAYER_MEDIA_CUSTOM30:String = "jwplayerMediaCustom30";
+		public static var JWPLAYER_MEDIA_CUSTOM31:String = "jwplayerMediaCustom31";
+		public static var JWPLAYER_MEDIA_CUSTOM32:String = "jwplayerMediaCustom32";
+		public static var JWPLAYER_MEDIA_CUSTOM33:String = "jwplayerMediaCustom33";
+		public static var JWPLAYER_MEDIA_CUSTOM40:String = "jwplayerMediaCustom40";
+		public static var JWPLAYER_MEDIA_CUSTOM41:String = "jwplayerMediaCustom41";
+		public static var JWPLAYER_MEDIA_CUSTOM42:String = "jwplayerMediaCustom42";
+		public static var JWPLAYER_MEDIA_CUSTOM43:String = "jwplayerMediaCustom43";
+
 		/**
 	     *  The <code>MediaEvent.JWPLAYER_MEDIA_BUFFER</code> constant defines the value of the 
      	 *  <code>type</code> property of the event object for a <code>jwplayerMediaBuffer</code> event.

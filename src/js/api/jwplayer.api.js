@@ -66,6 +66,22 @@
         onSeek: events.JWPLAYER_MEDIA_SEEK,
         onTime: events.JWPLAYER_MEDIA_TIME,
         onVolume: events.JWPLAYER_MEDIA_VOLUME,
+        onCustom10: events.JWPLAYER_MEDIA_CUSTOM10,
+        onCustom11: events.JWPLAYER_MEDIA_CUSTOM11,
+        onCustom12: events.JWPLAYER_MEDIA_CUSTOM12,
+        onCustom13: events.JWPLAYER_MEDIA_CUSTOM13,
+        onCustom20: events.JWPLAYER_MEDIA_CUSTOM20,
+        onCustom21: events.JWPLAYER_MEDIA_CUSTOM21,
+        onCustom22: events.JWPLAYER_MEDIA_CUSTOM22,
+        onCustom23: events.JWPLAYER_MEDIA_CUSTOM23,
+        onCustom30: events.JWPLAYER_MEDIA_CUSTOM30,
+        onCustom31: events.JWPLAYER_MEDIA_CUSTOM31,
+        onCustom32: events.JWPLAYER_MEDIA_CUSTOM32,
+        onCustom33: events.JWPLAYER_MEDIA_CUSTOM33,
+        onCustom40: events.JWPLAYER_MEDIA_CUSTOM40,
+        onCustom41: events.JWPLAYER_MEDIA_CUSTOM41,
+        onCustom42: events.JWPLAYER_MEDIA_CUSTOM42,
+        onCustom43: events.JWPLAYER_MEDIA_CUSTOM43,
         onBeforePlay: events.JWPLAYER_MEDIA_BEFOREPLAY,
         onBeforeComplete: events.JWPLAYER_MEDIA_BEFORECOMPLETE,
         onDisplayClick: events.JWPLAYER_DISPLAY_CLICK,
@@ -292,6 +308,54 @@
             } else {
                 _callInternal('jwPauseAd');
             }
+        };
+        _this.custom10 = function () {
+            return _callInternal('jwCustom10');
+        };
+        _this.custom11 = function () {
+            return _callInternal('jwCustom11');
+        };
+        _this.custom12 = function () {
+            return _callInternal('jwCustom12');
+        };
+        _this.custom13 = function () {
+            return _callInternal('jwCustom13');
+        };
+        _this.custom20 = function () {
+            return _callInternal('jwCustom20');
+        };
+        _this.custom21 = function () {
+            return _callInternal('jwCustom21');
+        };
+        _this.custom22 = function () {
+            return _callInternal('jwCustom22');
+        };
+        _this.custom23 = function () {
+            return _callInternal('jwCustom23');
+        };
+        _this.custom30 = function () {
+            return _callInternal('jwCustom30');
+        };
+        _this.custom31 = function () {
+            return _callInternal('jwCustom31');
+        };
+        _this.custom32 = function () {
+            return _callInternal('jwCustom32');
+        };
+        _this.custom33 = function () {
+            return _callInternal('jwCustom33');
+        };
+        _this.custom40 = function () {
+            return _callInternal('jwCustom40');
+        };
+        _this.custom41 = function () {
+            return _callInternal('jwCustom41');
+        };
+        _this.custom42 = function () {
+            return _callInternal('jwCustom42');
+        };
+        _this.custom43 = function () {
+            return _callInternal('jwCustom43');
         };
 
 
