@@ -11,7 +11,8 @@
         NONE: "none",
         FILL: "fill",
         UNIFORM: "uniform",
-        EXACTFIT: "exactfit"
+        EXACTFIT: "exactfit",
+        UNIFORMSMOOTH: "uniformsmooth"
     };
 
     utils.scale = function(domelement, xscale, yscale, xoffset, yoffset) {
@@ -63,7 +64,8 @@
             yscale = Math.ceil(parentHeight / 2) * 2 / elementHeight,
             video = (domelement.tagName.toLowerCase() === "video"),
             scale = false,
-            stretchClass = "jw" + stretching.toLowerCase();
+            stretchClass = "jw" + stretching.toLowerCase(),
+            snap = 0.95;
 
         switch (stretching.toLowerCase()) {
             case _stretching.FILL:
@@ -80,11 +82,13 @@
             case _stretching.EXACTFIT:
                 scale = true;
                 break;
+            case _stretching.UNIFORMSMOOTH:
+                snap = 0.9999;
             case _stretching.UNIFORM:
                 /* falls through */
             default:
                 if (xscale > yscale) {
-                    if (elementWidth * yscale / parentWidth > 0.95) {
+                    if (elementWidth * yscale / parentWidth > snap) {
                         scale = true;
                         stretchClass = "jwexactfit";
                     } else {
@@ -92,7 +96,7 @@
                         elementHeight = elementHeight * yscale;
                     }
                 } else {
-                    if (elementHeight * xscale / parentHeight > 0.95) {
+                    if (elementHeight * xscale / parentHeight > snap) {
                         scale = true;
                         stretchClass = "jwexactfit";
                     } else {

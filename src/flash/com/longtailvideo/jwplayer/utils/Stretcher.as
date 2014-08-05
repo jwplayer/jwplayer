@@ -15,6 +15,8 @@ package com.longtailvideo.jwplayer.utils {
 		public static var NONE:String = "none";
 		/** Stretches the clip uniform to fit the container, with bars added. **/
 		public static var UNIFORM:String = "uniform";
+		/** Stretches the clip uniform to fit the container, without snapping, with bars added. **/
+		public static var UNIFORMSMOOTH:String = "uniformsmooth";
 
 		/**
 		 * Resize a displayobject to the display, depending on the stretching.
@@ -27,6 +29,7 @@ package com.longtailvideo.jwplayer.utils {
 		public static function stretch(clp:DisplayObject, wid:Number, hei:Number, typ:String='uniform'):void {
 			var xsc:Number = wid / clp.width;
 			var ysc:Number = hei / clp.height;
+			var snap:Number = 0.95;
 			switch (typ.toLowerCase()) {
 				case Stretcher.EXACTFIT:
 					clp.width = wid;
@@ -45,18 +48,20 @@ package com.longtailvideo.jwplayer.utils {
 					clp.scaleX = 1;
 					clp.scaleY = 1;
 					break;
+				case Stretcher.UNIFORMSMOOTH:
+					snap = 0.9999;
 				case Stretcher.UNIFORM:
 				default:
 					if (xsc > ysc) {
 						clp.width *= ysc;
 						clp.height *= ysc;
-						if (clp.width/wid > 0.95) {
+						if (clp.width/wid > snap) {
 							clp.width = wid;
 						}
 					} else {
 						clp.width *= xsc;
 						clp.height *= xsc;
-						if (clp.height/hei > 0.95) {
+						if (clp.height/hei > snap) {
 							clp.height = hei;
 						}
 					}
