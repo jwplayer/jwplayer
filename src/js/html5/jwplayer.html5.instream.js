@@ -83,7 +83,7 @@
             }
 
             // If the player's currently playing, pause the video tag
-            if (_oldstate == _states.PLAYING) {
+            if (_oldstate === _states.PLAYING) {
                 _video.pause();
             }
 
@@ -91,8 +91,8 @@
             _instreamDisplay = new html5.display(_this);
             _instreamDisplay.forceState(_states.BUFFERING);
             // Create the container in which the controls will be placed
-            _instreamContainer = document.createElement("div");
-            _instreamContainer.id = _this.id + "_instream_container";
+            _instreamContainer = document.createElement('div');
+            _instreamContainer.id = _this.id + '_instream_container';
             _utils.css.style(_instreamContainer, {
                 width: '100%',
                 height: '100%'
@@ -139,7 +139,7 @@
             var bottom = 10 + _utils.bounds(instreamLayer).bottom - _utils.bounds(_cbar.element()).top;
 
             // Copy the playlist item passed in and make sure it's formatted as a proper playlist item
-            if (_utils.typeOf(item) === "array") {
+            if (_utils.typeOf(item) === 'array') {
                 if (options) {
                     _optionList = options;
                     options = options[_arrayIndex];
@@ -253,12 +253,12 @@
             }
             // Let listeners know the instream player has been destroyed, and why
             _sendEvent(_events.JWPLAYER_INSTREAM_DESTROYED, {
-                reason: complete ? "complete" : "destroyed"
+                reason: complete ? 'complete' : 'destroyed'
             }, true);
 
 
 
-            if (_oldstate == _states.PLAYING) {
+            if (_oldstate === _states.PLAYING) {
                 // Model was already correct; just resume playback
                 _video.play();
             }
@@ -325,8 +325,9 @@
             _provider.addEventListener(_events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
             _provider.addEventListener(_events.JWPLAYER_MEDIA_ERROR, errorHandler);
             _provider.addEventListener(_events.JWPLAYER_MEDIA_TIME, function(evt) {
-                if (_skipButton)
+                if (_skipButton) {
                     _skipButton.updateSkipTime(evt.position, evt.duration);
+                }
             });
             _provider.attachMedia();
             _provider.mute(_model.mute);
@@ -431,19 +432,19 @@
          **************************************/
 
         _this.jwPlay = function() {
-            if (_options.controlbarpausable.toString().toLowerCase() == "true") {
+            if (_options.controlbarpausable.toString().toLowerCase() === 'true') {
                 _this.jwInstreamPlay();
             }
         };
 
         _this.jwPause = function() {
-            if (_options.controlbarpausable.toString().toLowerCase() == "true") {
+            if (_options.controlbarpausable.toString().toLowerCase() === 'true') {
                 _this.jwInstreamPause();
             }
         };
 
         _this.jwStop = function() {
-            if (_options.controlbarstoppable.toString().toLowerCase() == "true") {
+            if (_options.controlbarstoppable.toString().toLowerCase() === 'true') {
                 _api.jwInstreamDestroy(false, _this);
                 _api.jwStop();
             }
@@ -451,12 +452,12 @@
 
         _this.jwSeek = function(position) {
             switch (_options.controlbarseekable.toLowerCase()) {
-                case "never":
+                case 'never':
                     return;
-                case "always":
+                case 'always':
                     _this.jwInstreamSeek(position);
                     break;
-                case "backwards":
+                case 'backwards':
                     if (_adModel.position > position) {
                         _this.jwInstreamSeek(position);
                     }
@@ -520,7 +521,7 @@
         };
 
         _this.skin = _api.skin;
-        _this.id = _api.id + "_instream";
+        _this.id = _api.id + '_instream';
 
         return _this;
     };
