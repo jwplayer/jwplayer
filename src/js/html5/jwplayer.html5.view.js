@@ -1070,9 +1070,10 @@
                 }
                 // hide video without audio and android checks
                 _css.style(_videoLayer, {
-                    visibility: JW_CSS_HIDDEN,
-                    opacity: 0
+                    visibility: 'visible',
+                    opacity: 1
                 });
+
                 // force control bar without audio check
                 if (_controlbar) {
                     _controlbar.show();
