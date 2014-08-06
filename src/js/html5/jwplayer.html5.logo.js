@@ -11,18 +11,18 @@
         _css = utils.css,
         states = jwplayer.events.state,
 
-        FREE = "free",
-        PRO = "pro",
-        PREMIUM = "premium",
-        ADS = "ads",
+        FREE = 'free',
+        PRO = 'pro',
+        PREMIUM = 'premium',
+        ADS = 'ads',
 
-        LINK_DEFAULT = "http://www.longtailvideo.com/jwpabout/?a=l&v=",
-        LOGO_CLASS = ".jwlogo";
+        LINK_DEFAULT = 'http://www.longtailvideo.com/jwpabout/?a=l&v=',
+        LOGO_CLASS = '.jwlogo';
 
 
     var logo = html5.logo = function(api, logoConfig) {
         var _api = api,
-            _id = _api.id + "_logo",
+            _id = _api.id + '_logo',
             _settings,
             _logo,
             _defaults = logo.defaults,
@@ -34,26 +34,26 @@
         }
 
         function _setupConfig() {
-            var linkFlag = "o";
+            var linkFlag = 'o';
             if (_api.edition) {
                 linkFlag = _getLinkFlag(_api.edition());
             }
 
-            if (linkFlag == "o" || linkFlag == "f") {
+            if (linkFlag === 'o' || linkFlag === 'f') {
                 _defaults.link = LINK_DEFAULT + jwplayer.version + '&m=h&e=' + linkFlag;
             }
 
             _settings = utils.extend({}, _defaults, logoConfig);
-            _settings.hide = (_settings.hide.toString() == "true");
+            _settings.hide = (_settings.hide.toString() === 'true');
         }
 
         function _setupDisplayElements() {
-            _logo = document.createElement("img");
-            _logo.className = "jwlogo";
+            _logo = document.createElement('img');
+            _logo.className = 'jwlogo';
             _logo.id = _id;
 
             if (!_settings.file) {
-                _logo.style.display = "none";
+                _logo.style.display = 'none';
                 return;
             }
 
@@ -61,7 +61,7 @@
                 style = {},
                 margin = _settings.margin;
 
-            if (positions.length == 3) {
+            if (positions.length === 3) {
                 style[positions[1]] = margin;
                 style[positions[2]] = margin;
             } else {
@@ -70,7 +70,7 @@
 
             _css(_internalSelector(), style);
 
-            _logo.src = (_settings.prefix ? _settings.prefix : "") + _settings.file;
+            _logo.src = (_settings.prefix ? _settings.prefix : '') + _settings.file;
             if (!utils.isMobile()) {
                 _logo.onclick = _clickHandler;
             } else {
@@ -96,11 +96,11 @@
         };
 
         this.margin = function() {
-            return parseInt(_settings.margin);
+            return parseInt(_settings.margin, 10);
         };
 
         function _togglePlay() {
-            if (_api.jwGetState() == states.IDLE || _api.jwGetState() == states.PAUSED) {
+            if (_api.jwGetState() === states.IDLE || _api.jwGetState() === states.PAUSED) {
                 _api.jwPlay();
             } else {
                 _api.jwPause();
@@ -125,34 +125,34 @@
         }
 
         function _getLinkFlag(edition) {
-            if (edition == PRO) {
-                return "p";
-            } else if (edition == PREMIUM) {
-                return "r";
-            } else if (edition == ADS) {
-                return "a";
-            } else if (edition == FREE) {
-                return "f";
+            if (edition === PRO) {
+                return 'p';
+            } else if (edition === PREMIUM) {
+                return 'r';
+            } else if (edition === ADS) {
+                return 'a';
+            } else if (edition === FREE) {
+                return 'f';
             } else {
-                return "o";
+                return 'o';
             }
         }
 
         function _internalSelector(selector) {
-            return "#" + _id + " " + (selector ? selector : "");
+            return '#' + _id + ' ' + (selector ? selector : '');
         }
 
         this.hide = function(forced) {
             if (_settings.hide || forced) {
                 _showing = false;
-                _logo.style.visibility = "hidden";
+                _logo.style.visibility = 'hidden';
                 _logo.style.opacity = 0;
             }
         };
 
         this.show = function() {
             _showing = true;
-            _logo.style.visibility = "visible";
+            _logo.style.visibility = 'visible';
             _logo.style.opacity = 1;
         };
 
@@ -163,16 +163,16 @@
 
     logo.defaults = {
         prefix: utils.repo(),
-        file: "logo.png",
-        linktarget: "_top",
+        file: 'logo.png',
+        linktarget: '_top',
         margin: 8,
         hide: false,
-        position: "top-right"
+        position: 'top-right'
     };
 
     _css(LOGO_CLASS, {
-        cursor: "pointer",
-        position: "absolute"
+        cursor: 'pointer',
+        position: 'absolute'
     });
 
 })(jwplayer);

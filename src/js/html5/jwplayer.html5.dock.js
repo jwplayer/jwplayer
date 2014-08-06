@@ -1,23 +1,12 @@
-/**
- * JW Player display component
- *
- * @author pablo
- * @version 6.0
- */
+/*jshint evil:true*/
 (function(jwplayer) {
     var html5 = jwplayer.html5,
         utils = jwplayer.utils,
         _css = utils.css,
         _bounds = utils.bounds,
 
-        D_CLASS = ".jwdock",
-        DB_CLASS = ".jwdockbuttons",
-        DOCUMENT = document,
-
-        /** Some CSS constants we should use for minimization * */
-        JW_CSS_NONE = "none",
-        JW_CSS_BLOCK = "block",
-        JW_CSS_100PCT = "100%";
+        D_CLASS = '.jwdock',
+        DB_CLASS = '.jwdockbuttons';
 
     html5.dock = function(api, config) {
         var _api = api,
@@ -28,7 +17,7 @@
                 margin: 8
             },
             _config = utils.extend({}, _defaults, config),
-            _id = _api.id + "_dock",
+            _id = _api.id + '_dock',
             _skin = _api.skin,
             _buttonCount = 0,
             _buttons = {},
@@ -42,8 +31,8 @@
         function _init() {
             _this.visible = false;
 
-            _container = _createElement("div", "jwdock");
-            _buttonContainer = _createElement("div", "jwdockbuttons");
+            _container = _createElement('div', 'jwdock');
+            _buttonContainer = _createElement('div', 'jwdockbuttons');
             _container.appendChild(_buttonContainer);
             _container.id = _id;
 
@@ -60,7 +49,9 @@
                 buttonOver = _getSkinElement('buttonOver'),
                 buttonActive = _getSkinElement('buttonActive');
 
-            if (!button) return;
+            if (!button) {
+                return;
+            }
 
             _css(_internalSelector(), {
                 height: button.height,
@@ -71,56 +62,62 @@
                 height: button.height
             });
 
-            _css(_internalSelector("div.button"), utils.extend(_formatBackground(button), {
+            _css(_internalSelector('div.button'), utils.extend(_formatBackground(button), {
                 width: button.width,
-                cursor: "pointer",
-                border: JW_CSS_NONE
+                cursor: 'pointer',
+                border: 'none'
             }));
 
-            _css(_internalSelector("div.button:hover"), _formatBackground(buttonOver));
-            _css(_internalSelector("div.button:active"), _formatBackground(buttonActive));
-            _css(_internalSelector("div.button>div"), {
+            _css(_internalSelector('div.button:hover'), _formatBackground(buttonOver));
+            _css(_internalSelector('div.button:active'), _formatBackground(buttonActive));
+            _css(_internalSelector('div.button>div'), {
                 opacity: _config.iconalpha
             });
-            _css(_internalSelector("div.button:hover>div"), {
+            _css(_internalSelector('div.button:hover>div'), {
                 opacity: _config.iconalphaover
             });
-            _css(_internalSelector("div.button:active>div"), {
+            _css(_internalSelector('div.button:active>div'), {
                 opacity: _config.iconalphaactive
             });
-            _css(_internalSelector(".jwoverlay"), {
+            _css(_internalSelector('.jwoverlay'), {
                 top: _config.margin + button.height
             });
 
-            _createImage("capLeft", _buttonContainer);
-            _createImage("capRight", _buttonContainer);
-            _createImage("divider");
+            _createImage('capLeft', _buttonContainer);
+            _createImage('capRight', _buttonContainer);
+            _createImage('divider');
         }
 
         function _formatBackground(elem) {
-            if (!(elem && elem.src)) return {};
+            if (!(elem && elem.src)) {
+                return {};
+            }
             return {
-                background: "url(" + elem.src + ") center",
-                'background-size': elem.width + "px " + elem.height + "px"
+                background: 'url(' + elem.src + ') center',
+                'background-size': elem.width + 'px ' + elem.height + 'px'
             };
         }
 
         function _createImage(className, parent) {
             var skinElem = _getSkinElement(className);
-            _css(_internalSelector("." + className), utils.extend(_formatBackground(skinElem), {
+            _css(_internalSelector('.' + className), utils.extend(_formatBackground(skinElem), {
                 width: skinElem.width
             }));
-            return _createElement("div", className, parent);
+            return _createElement('div', className, parent);
         }
 
         function _internalSelector(selector) {
-            return "#" + _id + " " + (selector ? selector : "");
+            return '#' + _id + ' ' + (selector ? selector : '');
         }
 
         function _createElement(type, name, parent) {
-            var elem = DOCUMENT.createElement(type);
-            if (name) elem.className = name;
-            if (parent) parent.appendChild(elem);
+            var elem = document.createElement(type);
+            if (name) {
+                elem.className = name;
+            }
+            if (parent) {
+                parent.appendChild(elem);
+            }
             return elem;
         }
 
@@ -129,7 +126,7 @@
             return elem ? elem : {
                 width: 0,
                 height: 0,
-                src: ""
+                src: ''
             };
         }
 
@@ -167,32 +164,36 @@
         };
 
         _this.hide = function() {
-            if (!_this.visible) return;
+            if (!_this.visible) {
+                return;
+            }
             _this.visible = false;
             _container.style.opacity = 0;
             clearTimeout(_fadeTimeout);
             _fadeTimeout = setTimeout(function() {
-                _container.style.display = JW_CSS_NONE;
+                _container.style.display = 'none';
             }, 250);
         };
 
         _this.showTemp = function() {
             if (!_this.visible) {
                 _container.style.opacity = 0;
-                _container.style.display = JW_CSS_BLOCK;
+                _container.style.display = 'block';
             }
         };
 
         _this.hideTemp = function() {
             if (!_this.visible) {
-                _container.style.display = JW_CSS_NONE;
+                _container.style.display = 'none';
             }
         };
 
         _this.show = function() {
-            if (_this.visible || !_buttonCount) return;
+            if (_this.visible || !_buttonCount) {
+                return;
+            }
             _this.visible = true;
-            _container.style.display = JW_CSS_BLOCK;
+            _container.style.display = 'block';
             clearTimeout(_fadeTimeout);
             _fadeTimeout = setTimeout(function() {
                 _container.style.opacity = 1;
@@ -201,23 +202,25 @@
 
         _this.addButton = function(url, label, clickHandler, id) {
             // Can't duplicate button ids
-            if (_buttons[id]) return;
+            if (_buttons[id]) {
+                return;
+            }
 
-            var divider = _createElement("div", "divider", _buttonContainer),
-                newButton = _createElement("div", "button", _buttonContainer),
-                icon = _createElement("div", null, newButton);
+            var divider = _createElement('div', 'divider', _buttonContainer),
+                newButton = _createElement('div', 'button', _buttonContainer),
+                icon = _createElement('div', null, newButton);
 
-            icon.id = _id + "_" + id;
-            icon.innerHTML = "&nbsp;";
-            _css("#" + icon.id, {
+            icon.id = _id + '_' + id;
+            icon.innerHTML = '&nbsp;';
+            _css('#' + icon.id, {
                 'background-image': url
             });
 
-            if (typeof clickHandler == "string") {
+            if (typeof clickHandler === 'string') {
                 clickHandler = new Function(clickHandler);
             }
             if (!utils.isMobile()) {
-                newButton.addEventListener("click", function(evt) {
+                newButton.addEventListener('click', function(evt) {
                     clickHandler(evt);
                     evt.preventDefault();
                 });
@@ -236,9 +239,9 @@
             };
 
             if (label) {
-                var tooltip = new html5.overlay(icon.id + "_tooltip", _skin, true),
-                    tipText = _createElement("div");
-                tipText.id = icon.id + "_label";
+                var tooltip = new html5.overlay(icon.id + '_tooltip', _skin, true),
+                    tipText = _createElement('div');
+                tipText.id = icon.id + '_label';
                 tipText.innerHTML = label;
                 _css('#' + tipText.id, {
                     padding: 3
@@ -252,7 +255,9 @@
                         _positionTooltip(id);
                         tooltip.show();
                         utils.foreach(_tooltips, function(i, tooltip) {
-                            if (i != id) tooltip.hide();
+                            if (i !== id) {
+                                tooltip.hide();
+                            }
                         });
                     }, false);
                     newButton.addEventListener('mouseout', function() {
@@ -272,8 +277,10 @@
             if (_buttons[id]) {
                 _buttonContainer.removeChild(_buttons[id].element);
                 _buttonContainer.removeChild(_buttons[id].divider);
-                var tooltip = document.getElementById("" + _id + "_" + id + "_tooltip");
-                if (tooltip) _container.removeChild(tooltip);
+                var tooltip = document.getElementById('' + _id + '_' + id + '_tooltip');
+                if (tooltip) {
+                    _container.removeChild(tooltip);
+                }
                 delete _buttons[id];
                 _buttonCount--;
                 _setCaps();
@@ -285,8 +292,8 @@
         };
 
         function _setCaps() {
-            _css(DB_CLASS + " .capLeft, " + DB_CLASS + " .capRight", {
-                display: _buttonCount ? JW_CSS_BLOCK : JW_CSS_NONE
+            _css(DB_CLASS + ' .capLeft, ' + DB_CLASS + ' .capRight', {
+                display: _buttonCount ? 'block' : 'none'
             });
         }
 
@@ -295,58 +302,58 @@
 
     _css(D_CLASS, {
         opacity: 0,
-        display: JW_CSS_NONE
+        display: 'none'
     });
 
-    _css(D_CLASS + " > *", {
-        height: JW_CSS_100PCT,
-        'float': "left"
+    _css(D_CLASS + ' > *', {
+        height: '100%',
+        'float': 'left'
     });
 
-    _css(D_CLASS + " > .jwoverlay", {
+    _css(D_CLASS + ' > .jwoverlay', {
         height: 'auto',
-        'float': JW_CSS_NONE,
+        'float': 'none',
         'z-index': 99
     });
 
-    _css(DB_CLASS + " div.button", {
-        position: "relative"
+    _css(DB_CLASS + ' div.button', {
+        position: 'relative'
     });
 
-    _css(DB_CLASS + " > *", {
-        height: JW_CSS_100PCT,
-        'float': "left"
+    _css(DB_CLASS + ' > *', {
+        height: '100%',
+        'float': 'left'
     });
 
-    _css(DB_CLASS + " .divider", {
-        display: JW_CSS_NONE
+    _css(DB_CLASS + ' .divider', {
+        display: 'none'
     });
 
-    _css(DB_CLASS + " div.button ~ .divider", {
-        display: JW_CSS_BLOCK
+    _css(DB_CLASS + ' div.button ~ .divider', {
+        display: 'block'
     });
 
-    _css(DB_CLASS + " .capLeft, " + DB_CLASS + " .capRight", {
-        display: JW_CSS_NONE
+    _css(DB_CLASS + ' .capLeft, ' + DB_CLASS + ' .capRight', {
+        display: 'none'
     });
 
-    _css(DB_CLASS + " .capRight", {
-        'float': "right"
+    _css(DB_CLASS + ' .capRight', {
+        'float': 'right'
     });
 
-    _css(DB_CLASS + " div.button > div", {
+    _css(DB_CLASS + ' div.button > div', {
         left: 0,
         right: 0,
         top: 0,
         bottom: 0,
         margin: 5,
-        position: "absolute",
-        'background-position': "center",
-        'background-repeat': "no-repeat"
+        position: 'absolute',
+        'background-position': 'center',
+        'background-repeat': 'no-repeat'
     });
 
-    utils.transitionStyle(D_CLASS, "background .25s, opacity .25s");
-    utils.transitionStyle(D_CLASS + " .jwoverlay", "opacity .25s");
-    utils.transitionStyle(DB_CLASS + " div.button div", "opacity .25s");
+    utils.transitionStyle(D_CLASS, 'background .25s, opacity .25s');
+    utils.transitionStyle(D_CLASS + ' .jwoverlay', 'opacity .25s');
+    utils.transitionStyle(DB_CLASS + ' div.button div', 'opacity .25s');
 
 })(jwplayer);

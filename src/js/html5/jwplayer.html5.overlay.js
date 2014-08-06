@@ -10,36 +10,20 @@
         _css = utils.css,
         _setTransition = utils.transitionStyle,
 
-        /** Some CSS constants we should use for minimization **/
-        JW_CSS_RELATIVE = "relative",
-        JW_CSS_ABSOLUTE = "absolute",
-        //JW_CSS_NONE = "none",
-        //JW_CSS_BLOCK = "block",
-        //JW_CSS_INLINE = "inline",
-        //JW_CSS_INLINE_BLOCK = "inline-block",
-        JW_CSS_HIDDEN = "hidden",
-        //JW_CSS_LEFT = "left",
-        //JW_CSS_RIGHT = "right",
-        JW_CSS_100PCT = "100%",
-        JW_CSS_SMOOTH_EASE = 'opacity .25s, visibility .25s',
-
         OVERLAY_CLASS = '.jwoverlay',
         CONTENTS_CLASS = 'jwcontents',
 
-        TOP = "top",
-        BOTTOM = "bottom",
-        RIGHT = "right",
-        LEFT = "left",
-        WHITE = "#ffffff",
-
-        UNDEFINED,
-        DOCUMENT = document,
+        TOP = 'top',
+        BOTTOM = 'bottom',
+        RIGHT = 'right',
+        LEFT = 'left',
+        WHITE = '#ffffff',
 
         _defaults = {
-            fontcase: UNDEFINED,
+            fontcase: undefined,
             fontcolor: WHITE,
             fontsize: 12,
-            fontweight: UNDEFINED,
+            fontweight: undefined,
             activecolor: WHITE,
             overcolor: WHITE
         };
@@ -58,21 +42,21 @@
             _borderSizes = {};
 
         function _init() {
-            _container = _createElement(OVERLAY_CLASS.replace(".", ""));
+            _container = _createElement(OVERLAY_CLASS.replace('.', ''));
             _container.id = _id;
 
-            var arrow = _createSkinElement("arrow", "jwarrow");
+            var arrow = _createSkinElement('arrow', 'jwarrow');
             _arrowElement = arrow[0];
             _arrow = arrow[1];
 
             _css.style(_arrowElement, {
-                position: JW_CSS_ABSOLUTE,
-                //bottom: _inverted ? UNDEFINED : -1 * _arrow.height,
-                bottom: _inverted ? UNDEFINED : 0,
-                top: _inverted ? 0 : UNDEFINED,
+                position: 'absolute',
+                //bottom: _inverted ? undefined : -1 * _arrow.height,
+                bottom: _inverted ? undefined : 0,
+                top: _inverted ? 0 : undefined,
                 width: _arrow.width,
                 height: _arrow.height,
-                left: "50%"
+                left: '50%'
             });
 
             _createBorderElement(TOP, LEFT);
@@ -84,7 +68,7 @@
             _createBorderElement(TOP);
             _createBorderElement(BOTTOM);
 
-            var back = _createSkinElement("background", "jwback");
+            var back = _createSkinElement('background', 'jwback');
             _css.style(back[0], {
                 left: _borderSizes.left,
                 right: _borderSizes.right,
@@ -93,32 +77,37 @@
             });
 
             _contents = _createElement(CONTENTS_CLASS, _container);
-            _css(_internalSelector(CONTENTS_CLASS) + " *", {
+            _css(_internalSelector(CONTENTS_CLASS) + ' *', {
                 color: _settings.fontcolor,
-                font: _settings.fontweight + " " + (_settings.fontsize) + "px Arial,Helvetica,sans-serif",
-                'text-transform': (_settings.fontcase == "upper") ? "uppercase" : UNDEFINED
+                font: _settings.fontweight + ' ' + (_settings.fontsize) + 'px Arial,Helvetica,sans-serif',
+                'text-transform': (_settings.fontcase === 'upper') ? 'uppercase' : undefined
             });
 
 
             if (_inverted) {
-                utils.transform(_internalSelector("jwarrow"), "rotate(180deg)");
+                utils.transform(_internalSelector('jwarrow'), 'rotate(180deg)');
             }
 
             _css.style(_container, {
-                padding: (_borderSizes.top + 1) + "px " + _borderSizes.right + "px " + (_borderSizes.bottom + 1) + "px " + _borderSizes.left + "px"
+                padding: (_borderSizes.top + 1) + 'px ' + _borderSizes.right +
+                    'px ' + (_borderSizes.bottom + 1) + 'px ' + _borderSizes.left + 'px'
             });
 
             _this.showing = false;
         }
 
         function _internalSelector(name) {
-            return '#' + _id + (name ? " ." + name : "");
+            return '#' + _id + (name ? ' .' + name : '');
         }
 
         function _createElement(className, parent) {
-            var elem = DOCUMENT.createElement("div");
-            if (className) elem.className = className;
-            if (parent) parent.appendChild(elem);
+            var elem = document.createElement('div');
+            if (className) {
+                elem.className = className;
+            }
+            if (parent) {
+                parent.appendChild(elem);
+            }
             return elem;
         }
 
@@ -128,7 +117,7 @@
                 elem = _createElement(className, _container);
 
             _css.style(elem, _formatBackground(skinElem));
-            //_css(_internalSelector(className.replace(" ", ".")), _formatBackground(skinElem));
+            //_css(_internalSelector(className.replace(' ', '.')), _formatBackground(skinElem));
 
             return [elem, skinElem];
 
@@ -136,27 +125,33 @@
 
         function _formatBackground(elem) {
             return {
-                background: "url(" + elem.src + ") center",
-                'background-size': elem.width + "px " + elem.height + "px"
+                background: 'url(' + elem.src + ') center',
+                'background-size': elem.width + 'px ' + elem.height + 'px'
             };
         }
 
         function _createBorderElement(dim1, dim2) {
-            if (!dim2) dim2 = "";
-            var created = _createSkinElement('cap' + dim1 + dim2, "jwborder jw" + dim1 + (dim2 ? dim2 : "")),
+            if (!dim2) {
+                dim2 = '';
+            }
+            var created = _createSkinElement('cap' + dim1 + dim2, 'jwborder jw' + dim1 + (dim2 ? dim2 : '')),
                 elem = created[0],
                 skinElem = created[1],
                 elemStyle = utils.extend(_formatBackground(skinElem), {
-                    width: (dim1 == LEFT || dim2 == LEFT || dim1 == RIGHT || dim2 == RIGHT) ? skinElem.width : UNDEFINED,
-                    height: (dim1 == TOP || dim2 == TOP || dim1 == BOTTOM || dim2 == BOTTOM) ? skinElem.height : UNDEFINED
+                    width: (dim1 === LEFT || dim2 === LEFT || dim1 === RIGHT || dim2 === RIGHT) ?
+                        skinElem.width : undefined,
+                    height: (dim1 === TOP || dim2 === TOP || dim1 === BOTTOM || dim2 === BOTTOM) ?
+                        skinElem.height : undefined
                 });
 
 
-            elemStyle[dim1] = ((dim1 == BOTTOM && !_inverted) || (dim1 == TOP && _inverted)) ? _arrow.height : 0;
-            if (dim2) elemStyle[dim2] = 0;
+            elemStyle[dim1] = ((dim1 === BOTTOM && !_inverted) || (dim1 === TOP && _inverted)) ? _arrow.height : 0;
+            if (dim2) {
+                elemStyle[dim2] = 0;
+            }
 
             _css.style(elem, elemStyle);
-            //_css(_internalSelector(elem.className.replace(/ /g, ".")), elemStyle);
+            //_css(_internalSelector(elem.className.replace(/ /g, '.')), elemStyle);
 
             var dim1style = {},
                 dim2style = {},
@@ -171,8 +166,8 @@
                 dim1style[dim1] = 0;
                 dim2style[dim1] = dims[dim1];
                 dim2style[dim2] = 0;
-                _css(_internalSelector("jw" + dim1), dim1style);
-                _css(_internalSelector("jw" + dim2), dim2style);
+                _css(_internalSelector('jw' + dim1), dim1style);
+                _css(_internalSelector('jw' + dim2), dim2style);
                 _borderSizes[dim1] = dims[dim1];
                 _borderSizes[dim2] = dims[dim2];
             }
@@ -239,8 +234,8 @@
                 return {
                     width: 0,
                     height: 0,
-                    src: "",
-                    image: UNDEFINED,
+                    src: '',
+                    image: undefined,
                     ready: false
                 };
             }
@@ -250,7 +245,7 @@
             _this.showing = true;
             _css.style(_container, {
                 opacity: 1,
-                visibility: "visible"
+                visibility: 'visible'
             });
         };
 
@@ -258,7 +253,7 @@
             _this.showing = false;
             _css.style(_container, {
                 opacity: 0,
-                visibility: JW_CSS_HIDDEN
+                visibility: 'hidden'
             });
         };
 
@@ -273,26 +268,26 @@
      *************************************************************/
 
     _css(OVERLAY_CLASS, {
-        position: JW_CSS_ABSOLUTE,
-        visibility: JW_CSS_HIDDEN,
+        position: 'absolute',
+        visibility: 'hidden',
         opacity: 0
     });
 
-    _css(OVERLAY_CLASS + " .jwcontents", {
-        position: JW_CSS_RELATIVE,
+    _css(OVERLAY_CLASS + ' .jwcontents', {
+        position: 'relative',
         'z-index': 1
     });
 
-    _css(OVERLAY_CLASS + " .jwborder", {
-        position: JW_CSS_ABSOLUTE,
-        'background-size': JW_CSS_100PCT + " " + JW_CSS_100PCT
+    _css(OVERLAY_CLASS + ' .jwborder', {
+        position: 'absolute',
+        'background-size': '100%' + ' ' + '100%'
     }, true);
 
-    _css(OVERLAY_CLASS + " .jwback", {
-        position: JW_CSS_ABSOLUTE,
-        'background-size': JW_CSS_100PCT + " " + JW_CSS_100PCT
+    _css(OVERLAY_CLASS + ' .jwback', {
+        position: 'absolute',
+        'background-size': '100%' + ' ' + '100%'
     });
 
-    _setTransition(OVERLAY_CLASS, JW_CSS_SMOOTH_EASE);
+    _setTransition(OVERLAY_CLASS, 'opacity .25s, visibility .25s');
 
 })(jwplayer);

@@ -1,10 +1,5 @@
 src/js/html5/jwplayer.html5.defaultskin.js
 src/js/html5/jwplayer.html5.displayicon.js
-src/js/html5/jwplayer.html5.dock.js
-src/js/html5/jwplayer.html5.instream.js
-src/js/html5/jwplayer.html5.logo.js
-src/js/html5/jwplayer.html5.menu.js
-src/js/html5/jwplayer.html5.overlay.js
 src/js/html5/jwplayer.html5.player.js
 src/js/html5/jwplayer.html5.playlistcomponent.js
 src/js/html5/jwplayer.html5.playlistslider.js
