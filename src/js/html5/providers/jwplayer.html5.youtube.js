@@ -228,7 +228,6 @@
             switch (event.data) {
 
                 case youtubeStates.UNSTARTED: // -1: //unstarted
-                    _this.setState(states.BUFFERING);
                     return;
 
                 case youtubeStates.ENDED: // 0: //ended (idle after playback)
