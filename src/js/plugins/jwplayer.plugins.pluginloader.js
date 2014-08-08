@@ -1,8 +1,4 @@
-/**
- * Loads plugins for a player
- * @author zach
- * @version 5.6
- */
+
 (function(jwplayer) {
     var utils = jwplayer.utils,
         events = jwplayer.events,
@@ -62,7 +58,7 @@
 
                     if (status == utils.loaderstatus.LOADING || status == utils.loaderstatus.NEW) {
                         incomplete++;
-                    } else if (js && (!target || parseFloat(target) > parseFloat(jwplayer.version))) {
+                    } else if (js && !utils.versionCheck(target)) {
                         _errorState = true;
                         _errorMessage = "Incompatible player version";
                         _complete();

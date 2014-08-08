@@ -1,10 +1,4 @@
-/**
- * JW Player component that loads PNG skins.
- *
- * @author zach
- * @modified pablo
- * @version 6.0
- */
+
 (function(html5) {
     var utils = jwplayer.utils,
         _foreach = utils.foreach,
@@ -38,7 +32,6 @@
 
         }
 
-
         function _defaultLoaded(defaultSkin) {
             _skin = defaultSkin;
             utils.ajax(utils.getAbsolutePath(_skinPath), function(xmlrequest) {
@@ -69,7 +62,7 @@
             // Make sure ratio is set; don't want any divides by zero
             if (ratio > 0) _ratio = ratio;
 
-            if (!target || parseFloat(target) > parseFloat(jwplayer.version)) {
+            if (!utils.versionCheck(target)) {
                 _errorHandler("Incompatible player version");
             }
 
