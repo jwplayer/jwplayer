@@ -469,6 +469,21 @@
 		
 		return repo;
 	};
+
+	utils.versionCheck = function(target) {
+		var tParts = ('0'+target).split(/\W/);
+		var jParts = jwplayer.version.split(/\W/);
+		var tMajor = parseFloat(tParts[0]);
+		var jMajor = parseFloat(jParts[0]);
+		if (tMajor > jMajor) {
+			return false;
+		} else if (tMajor === jMajor) {
+			if (parseFloat('0'+tParts[1]) > parseFloat(jParts[1])) {
+				return false;
+			}
+		}
+		return true;
+	};
 	
 	/** Loads an XML file into a DOM object * */
 	utils.ajax = function(xmldocpath, completecallback, errorcallback, donotparse) {

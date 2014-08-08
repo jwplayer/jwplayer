@@ -59,7 +59,7 @@
 
 					if (status == utils.loaderstatus.LOADING || status == utils.loaderstatus.NEW) {
 						incomplete++;
-					} else if (js && (!target || parseFloat(target) > parseFloat(jwplayer.version))) {
+					} else if (js && !utils.versionCheck(target)) {
 						_errorState = true;
 						_errorMessage = "Incompatible player version";
 						_complete();

@@ -69,7 +69,7 @@
 			// Make sure ratio is set; don't want any divides by zero
 			if (ratio > 0) _ratio = ratio; 
 
-			if (!target || parseFloat(target) > parseFloat(jwplayer.version)) {
+			if (!utils.versionCheck(target)) {
 				_errorHandler("Incompatible player version");
 			}
 
@@ -174,10 +174,10 @@
 				image: img
 			};
 			
-			img.onload = function(evt) {
+			img.onload = function() {
 				_completeImageLoad(img, elementName, component);
 			};
-			img.onerror = function(evt) {
+			img.onerror = function() {
 				_error = true;
 				_resetCompleteIntervalTest();
 				_errorHandler("Skin image not found: " + this.src);
