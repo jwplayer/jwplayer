@@ -284,8 +284,7 @@ package com.longtailvideo.jwplayer.controller {
 			for each (var pluginId:String in _view.loadedPlugins()) {
 				try {
 					var plugin:IPlugin6 = _view.getPlugin(pluginId);
-					var version:String = PlayerVersion.version.replace(/^(\d\.\d+).*/, "$1");
-					if (!plugin['target'] || (Number(plugin['target']) > Number(version))) {
+					if (!(plugin['target'] && PlayerVersion.versionCheck(plugin['target']))) {
 						tasker.failure(new ErrorEvent(ErrorEvent.ERROR, false, false, "Error loading plugin: Incompatible player version"));
 						return;
 					}
