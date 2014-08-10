@@ -4,9 +4,10 @@
   "description": "The JW Player is free for non-commerical use. To buy a license for commercial use, please visit \r http://www.jwplayer.com/pricing/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/JWPlayer/jwplayer.git"
+    "url": "https://github.com/jwplayer/jwplayer.git"
   },
-  "homepage": "https://github.com/JWPlayer/jwplayer",
+  "homepage": "https://github.com/jwplayer/jwplayer",
+  "dependencies": {},
   "devDependencies": {
     "grunt": "^0.4.4",
     "grunt-cli": "^0.1.13",
