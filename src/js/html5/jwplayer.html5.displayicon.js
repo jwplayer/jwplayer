@@ -1,21 +1,16 @@
-/**
- * JW Player display component
- *
- * @author pablo
- * @version 6.0
- */
 (function(jwplayer) {
+    /*jshint maxparams:5*/
     var html5 = jwplayer.html5,
         utils = jwplayer.utils,
         _css = utils.css,
 
-        DI_CLASS = ".jwplayer .jwdisplayIcon",
+        DI_CLASS = '.jwplayer .jwdisplayIcon',
         DOCUMENT = document,
 
-        /** Some CSS constants we should use for minimization * */
-        JW_CSS_NONE = "none",
-        JW_CSS_100PCT = "100%",
-        JW_CSS_CENTER = "center";
+        /** Some CSS constants we should use for minimization */
+        JW_CSS_NONE = 'none',
+        JW_CSS_100PCT = '100%',
+        JW_CSS_CENTER = 'center';
 
     html5.displayicon = function(_id, _api, textStyle, textStyleOver) {
         var _skin = _api.skin,
@@ -33,7 +28,7 @@
             _repeatCount = 0;
 
         function _init() {
-            _container = _createElement("jwdisplayIcon");
+            _container = _createElement('jwdisplayIcon');
             _container.id = _id;
 
             _createBackground();
@@ -47,17 +42,19 @@
         }
 
         function _internalSelector() {
-            return "#" + _id;
+            return '#' + _id;
         }
 
         function _createElement(name, parent, style, overstyle) {
-            var elem = DOCUMENT.createElement("div");
+            var elem = DOCUMENT.createElement('div');
 
             elem.className = name;
-            if (parent) parent.appendChild(elem);
+            if (parent) {
+                parent.appendChild(elem);
+            }
 
             if (_container) {
-                _styleIcon(elem, name, "." + name, style, overstyle);
+                _styleIcon(elem, name, '.' + name, style, overstyle);
             }
             return elem;
         }
@@ -69,10 +66,11 @@
             _hasCaps = (_capLeftSkin.width * _capRightSkin.width > 0);
 
             var style = {
-                'background-image': "url(" + _capLeftSkin.src + "), url(" + _bgSkin.src + "), url(" + _capRightSkin.src + ")",
-                'background-position': "left,center,right",
+                'background-image': 'url(' + _capLeftSkin.src + '), url(' +
+                    _bgSkin.src + '), url(' + _capRightSkin.src + ')',
+                'background-position': 'left,center,right',
                 'background-repeat': 'no-repeat',
-                padding: "0 " + _capRightSkin.width + "px 0 " + _capLeftSkin.width + "px",
+                padding: '0 ' + _capRightSkin.width + 'px 0 ' + _capLeftSkin.width + 'px',
                 height: _bgSkin.height,
                 'margin-top': _bgSkin.height / -2
             };
@@ -80,36 +78,42 @@
 
             if (!utils.isMobile()) {
                 if (_bgSkin.overSrc) {
-                    style['background-image'] = "url(" + _capLeftSkin.overSrc + "), url(" + _bgSkin.overSrc + "), url(" + _capRightSkin.overSrc + ")";
+                    style['background-image'] = 'url(' +
+                        _capLeftSkin.overSrc + '), url(' + _bgSkin.overSrc + '), url(' + _capRightSkin.overSrc + ')';
                 }
-                _css(".jw-tab-focus " + _internalSelector() + ", #" + _api.id + " .jwdisplay:hover " + _internalSelector(), style);
+                _css('.jw-tab-focus ' + _internalSelector() +
+                    ', #' + _api.id + ' .jwdisplay:hover ' + _internalSelector(), style);
             }
         }
 
         function _styleIcon(element, name, selector, style, overstyle) {
             var skinElem = _getSkinElement(name);
-            if (name == "replayIcon" && !skinElem.src) skinElem = _getSkinElement("playIcon");
+            if (name === 'replayIcon' && !skinElem.src) {
+                skinElem = _getSkinElement('playIcon');
+            }
 
             if (skinElem.src) {
                 style = utils.extend({}, style);
-                if (name.indexOf("Icon") > 0) _iconWidth = skinElem.width | 0;
+                if (name.indexOf('Icon') > 0) {
+                    _iconWidth = skinElem.width | 0;
+                }
                 style.width = skinElem.width;
                 style['background-image'] = 'url(' + skinElem.src + ')';
                 style['background-size'] = skinElem.width + 'px ' + skinElem.height + 'px';
-                style['float'] = 'none';
+                style.float = 'none';
                 overstyle = utils.extend({}, overstyle);
                 if (skinElem.overSrc) {
                     overstyle['background-image'] = 'url(' + skinElem.overSrc + ')';
                 }
                 if (!utils.isMobile()) {
-                    _css("#" + _api.id + " .jwdisplay:hover " + selector, overstyle);
+                    _css('#' + _api.id + ' .jwdisplay:hover ' + selector, overstyle);
                 }
                 _css.style(_container, {
-                    display: "table"
+                    display: 'table'
                 });
             } else {
                 _css.style(_container, {
-                    display: "none"
+                    display: 'none'
                 });
             }
             if (style) {
@@ -123,12 +127,12 @@
                 overElem = _skin.getSkinElement('display', name + 'Over');
 
             if (elem) {
-                elem.overSrc = (overElem && overElem.src) ? overElem.src : "";
+                elem.overSrc = (overElem && overElem.src) ? overElem.src : '';
                 return elem;
             }
             return {
-                src: "",
-                overSrc: "",
+                src: '',
+                overSrc: '',
                 width: 0,
                 height: 0
             };
@@ -152,12 +156,18 @@
             }
 
             var px100pct = 'px ' + JW_CSS_100PCT;
-            var contentWidth = Math.ceil(Math.max(_iconElement.width, utils.bounds(_container).width - _capRightSkin.width - _capLeftSkin.width));
+            var contentWidth = Math.ceil(Math.max(_iconElement.width,
+                        utils.bounds(_container).width - _capRightSkin.width - _capLeftSkin.width));
+            var backgroundSize = [
+                    _capLeftSkin.width + px100pct,
+                    contentWidth + px100pct,
+                    _capRightSkin.width + px100pct
+            ].join(', ');
             var style = {
-                'background-size': [_capLeftSkin.width + px100pct, contentWidth + px100pct, _capRightSkin.width + px100pct].join(', ')
+                'background-size': backgroundSize
             };
             if (_container.parentNode) {
-                style.left = (_container.parentNode.clientWidth % 2 == 1) ? '0.5px' : '';
+                style.left = (_container.parentNode.clientWidth % 2 === 1) ? '0.5px' : '';
             }
             _css.style(_container, style);
         }
@@ -168,16 +178,16 @@
 
         this.setText = function(text) {
             var style = _text.style;
-            _text.innerHTML = text ? text.replace(":", ":<br>") : "";
-            style.height = "0";
-            style.display = "block";
+            _text.innerHTML = text ? text.replace(':', ':<br>') : '';
+            style.height = '0';
+            style.display = 'block';
             if (text) {
                 while (numLines(_text) > 2) {
-                    _text.innerHTML = _text.innerHTML.replace(/(.*) .*$/, "$1...");
+                    _text.innerHTML = _text.innerHTML.replace(/(.*) .*$/, '$1...');
                 }
             }
-            style.height = "";
-            style.display = "";
+            style.height = '';
+            style.display = '';
             _redraw();
         };
 
@@ -185,9 +195,9 @@
             var icon = _iconCache[name];
             if (!icon) {
                 icon = _createElement('jwicon');
-                icon.id = _container.id + "_" + name;
+                icon.id = _container.id + '_' + name;
             }
-            _styleIcon(icon, name + "Icon", "#" + icon.id);
+            _styleIcon(icon, name + 'Icon', '#' + icon.id);
             if (_container.contains(_icon)) {
                 _container.replaceChild(icon, _icon);
             } else {
@@ -219,7 +229,8 @@
         this.setRotation = startRotation;
 
         function numLines(element) {
-            return Math.floor(element.scrollHeight / DOCUMENT.defaultView.getComputedStyle(element, null).lineHeight.replace("px", ""));
+            return Math.floor(element.scrollHeight /
+                DOCUMENT.defaultView.getComputedStyle(element, null).lineHeight.replace('px', ''));
         }
 
 
@@ -238,30 +249,30 @@
 
     _css(DI_CLASS, {
         display: 'table',
-        position: "relative",
-        'margin-left': "auto",
-        'margin-right': "auto",
-        top: "50%",
+        position: 'relative',
+        'margin-left': 'auto',
+        'margin-right': 'auto',
+        top: '50%',
         'float': 'none'
     });
 
-    _css(DI_CLASS + " div", {
-        position: "relative",
-        display: "table-cell",
-        'vertical-align': "middle",
-        'background-repeat': "no-repeat",
+    _css(DI_CLASS + ' div', {
+        position: 'relative',
+        display: 'table-cell',
+        'vertical-align': 'middle',
+        'background-repeat': 'no-repeat',
         'background-position': JW_CSS_CENTER
     });
 
-    _css(DI_CLASS + " div", {
-        'vertical-align': "middle"
+    _css(DI_CLASS + ' div', {
+        'vertical-align': 'middle'
     }, true);
 
-    _css(DI_CLASS + " .jwtext", {
-        color: "#fff",
-        padding: "0 1px",
-        'max-width': "300px",
-        'overflow-y': "hidden",
+    _css(DI_CLASS + ' .jwtext', {
+        color: '#fff',
+        padding: '0 1px',
+        'max-width': '300px',
+        'overflow-y': 'hidden',
         'text-align': JW_CSS_CENTER,
         '-webkit-user-select': JW_CSS_NONE,
         '-moz-user-select': JW_CSS_NONE,

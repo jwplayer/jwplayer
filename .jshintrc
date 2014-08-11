@@ -14,9 +14,6 @@
     // Strings use single quotes instead of double
     "quotmark": "single",
 
-    // Error on bitwise javascript operations like | & ^
-    "bitwise": true,
-
     // All conditionals and loops require curly brackets
     "curly": true,
 
