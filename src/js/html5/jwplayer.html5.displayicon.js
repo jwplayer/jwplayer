@@ -100,7 +100,7 @@
                 style.width = skinElem.width;
                 style['background-image'] = 'url(' + skinElem.src + ')';
                 style['background-size'] = skinElem.width + 'px ' + skinElem.height + 'px';
-                style.float = 'none';
+                style['float'] = 'none';
                 overstyle = utils.extend({}, overstyle);
                 if (skinElem.overSrc) {
                     overstyle['background-image'] = 'url(' + skinElem.overSrc + ')';
