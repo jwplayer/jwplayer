@@ -58,11 +58,11 @@
         }, {
             name: SETUP_COMPONENTS,
             method: _setupComponents,
-            depends: LOAD_PREVIEW + "," + LOAD_SKIN
+            depends: LOAD_PREVIEW + ',' + LOAD_SKIN
         }, {
             name: INIT_PLUGINS,
             method: _initPlugins,
-            depends: SETUP_COMPONENTS + "," + LOAD_PLAYLIST
+            depends: SETUP_COMPONENTS + ',' + LOAD_PLAYLIST
         }, {
             name: SEND_READY,
             method: _sendReady,
@@ -90,11 +90,14 @@
         }
 
         function _allComplete(dependencies) {
-            if (!dependencies) return true;
-            var split = dependencies.toString().split(",");
+            if (!dependencies) {
+                return true;
+            }
+            var split = dependencies.toString().split(',');
             for (var i = 0; i < split.length; i++) {
-                if (!_completed[split[i]])
+                if (!_completed[split[i]]) {
                     return false;
+                }
             }
             return true;
         }
@@ -104,8 +107,8 @@
         }
 
         function _parseConfig() {
-            if (model.edition && model.edition() == "invalid") {
-                _error("Error setting up player: Invalid license key");
+            if (model.edition && model.edition() === 'invalid') {
+                _error('Error setting up player: Invalid license key');
             } else {
                 _taskComplete(PARSE_CONFIG);
             }
@@ -121,15 +124,15 @@
         }
 
         function _skinError(message) {
-            _error("Error loading skin: " + message);
+            _error('Error loading skin: ' + message);
         }
 
         function _loadPlaylist() {
             var type = utils.typeOf(_model.config.playlist);
-            if (type === "array") {
+            if (type === 'array') {
                 _completePlaylist(new jwplayer.playlist(_model.config.playlist));
             } else {
-                _error("Playlist type not supported: " + type);
+                _error('Playlist type not supported: ' + type);
             }
         }
 
@@ -138,7 +141,7 @@
             // TODO: support playlist index in config
             // _model.setItem(_model.config.item);
             if (_model.playlist.length === 0 || _model.playlist[0].sources.length === 0) {
-                _error("Error loading playlist: No playable sources found");
+                _error('Error loading playlist: No playable sources found');
             } else {
                 _taskComplete(LOAD_PLAYLIST);
             }
