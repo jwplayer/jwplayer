@@ -44,7 +44,8 @@
     var acceptClicks = [
         '.jwplayer .jwcontrols .jwdockbuttons',
         '.jwplayer .jwcontrols .jwcontrolbar',
-        '.jwplayer .jwcontrols .jwdisplayIcon',
+        '.jwplayer .jwcontrols .jwdisplayIcon', // play and replay button
+        '.jwplayer .jwcontrols .jwpreview', // poster image
         '.jwplayer .jwcontrols .jwlogo'
     ];
     _css(acceptClicks.join(', '), {
