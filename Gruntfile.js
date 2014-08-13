@@ -137,8 +137,6 @@ module.exports = function(grunt) {
         }
     });
 
-    // TODO: minify-skin
-
     grunt.registerTask('flash', function(target) {
         var done = this.async();
 
@@ -206,7 +204,7 @@ module.exports = function(grunt) {
             '-define+=JWPLAYER::version,\''+ buildVersion +'\''
         );
 
-        grunt.log.writeln(command.cmd +' '+ command.args.join(' '));
+        grunt.log.writeln(command.cmd +' '+ command.args.join(' ').replace(/(version,'[^']*')/, '"$1"'));
 
         grunt.util.spawn(command, function(err, result) {
             grunt.log.subhead(result.stdout);
