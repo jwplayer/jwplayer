@@ -1,5 +1,6 @@
 (function(jwplayer) {
     /*jshint maxparams:5*/
+    /*jshint -W069 */
     var html5 = jwplayer.html5,
         utils = jwplayer.utils,
         _css = utils.css,
