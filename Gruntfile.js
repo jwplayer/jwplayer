@@ -176,7 +176,6 @@ module.exports = function(grunt) {
         if (isDebug) {
             command.args.push(
                 '-output=bin-debug/jwplayer.flash.swf',
-                '-size-report=bin-debug/jwplayer.flash.size.xml',
                 '-strict=true',
                 '-debug=true',
                 '-define+=CONFIG::debugging,true'
@@ -184,7 +183,6 @@ module.exports = function(grunt) {
         } else {
             command.args.push(
                 '-output=bin-release/jwplayer.flash.swf',
-                '-size-report=bin-release/jwplayer.flash.size.xml',
                 '-compiler.optimize=true',
                 '-compiler.omit-trace-statements=true',
                 '-warnings=false',
