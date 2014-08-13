@@ -118,7 +118,7 @@ package com.longtailvideo.jwplayer.view {
 		// Indicates whether the instream player is being displayed
 		private var _instreamMode:Boolean = false;
 		private var _canCast:Boolean = false;
-		
+
 		public function View(player:IPlayer, model:Model) {
 			_player = player;
 			_model = model;
@@ -208,7 +208,7 @@ package com.longtailvideo.jwplayer.view {
 		}
 		
 		protected var _preventFade:Boolean = false;
-		
+
 		private function mediaHandler(evt):void {
 			_currPos = evt.position;
 			_duration = evt.duration;
@@ -220,7 +220,7 @@ package com.longtailvideo.jwplayer.view {
 				showControls();
 			}
 		}
-		
+
 		protected function preventFade(evt:Event=null):void {
 			_preventFade = true;
 		}
@@ -885,7 +885,7 @@ package com.longtailvideo.jwplayer.view {
 		}
 		
 		private function hideControls():void {
-			if (_preventFade) {
+			if (_canCast || _preventFade) {
 				return;
 			}
 
@@ -906,9 +906,11 @@ package com.longtailvideo.jwplayer.view {
 				_components.dock.show();
 				if (_instreamControls) {
 					_instreamControls.controlbar.show();
-				}
+	}
 			}
-			if (!audioMode) _components.logo.show();
+			if (!audioMode) {
+				_components.logo.show();
+			}
 		}
 
 		/** If the mouse leaves the stage, hide the controlbar if position is 'over' **/
