@@ -665,8 +665,12 @@
                 }
                 _toggleDOMFullscreen(_playerElement, state);
             } else {
-                // else use native fullscreen
-                _model.getVideo().setFullScreen(state);
+				if(utils.isIE()) {
+					_toggleDOMFullscreen(_playerElement, state);
+				} else {
+					// else use native fullscreen
+					_model.getVideo().setFullScreen(state);
+				}
             }
         };
 
@@ -808,12 +812,22 @@
                 }
                 height = _videoLayer.clientHeight;
             }
-            var transformScale = _model.getVideo().resize(width, height, _model.stretching);
-            // poll resizing if video is transformed
-            if (transformScale) {
-                clearTimeout(_resizeMediaTimeout);
-                _resizeMediaTimeout = setTimeout(_resizeMedia, 250);
-            }
+			//IE9 Fake Full Screen Fix
+			if(utils.isIE() && document.all && !window.atob) {
+				var transformScale = _model.getVideo().resize('100%', '100%', _model.stretching);
+				// poll resizing if video is transformed
+				if (transformScale) {
+					clearTimeout(_resizeMediaTimeout);
+					_resizeMediaTimeout = setTimeout(_resizeMedia, 250);
+				}
+			} else {
+				var transformScale = _model.getVideo().resize(width, height, _model.stretching);
+				// poll resizing if video is transformed
+				if (transformScale) {
+					clearTimeout(_resizeMediaTimeout);
+					_resizeMediaTimeout = setTimeout(_resizeMedia, 250);
+				}
+			}
         }
 
         this.resize = function(width, height) {
@@ -889,6 +903,10 @@
         function _toggleFullscreen(fullscreenState) {
             // update model
             _model.setFullscreen(fullscreenState);
+			
+			//if ( window.location !== window.parent.location ) {
+				//_hideControlbar();
+			//}
 
             if (fullscreenState) {
                 // Browsers seem to need an extra second to figure out how large they are in fullscreen...
