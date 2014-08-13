@@ -859,9 +859,6 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 
 		private function volumeHandler(evt:ViewEvent):void {
-			if (_player.locked) {
-				return;
-			}
 
 			var volume:Number = Math.round(evt.data * 100);
 			volume = volume < 10 ? 0 : volume;
