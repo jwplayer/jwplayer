@@ -562,8 +562,8 @@ package com.longtailvideo.jwplayer.view.components {
 			addComponentButton('normalscreen', ViewEvent.JWPLAYER_VIEW_FULLSCREEN, false);
 			addComponentButton('unmute', ViewEvent.JWPLAYER_VIEW_MUTE, false);
 			addComponentButton('mute', ViewEvent.JWPLAYER_VIEW_MUTE, true);
-			addComponentButton('castoff',ViewEvent.JWPLAYER_VIEW_CAST);
-			addComponentButton('cast',ViewEvent.JWPLAYER_VIEW_CAST);
+			addComponentButton('cast', ViewEvent.JWPLAYER_VIEW_CAST, true);
+			addComponentButton('castoff', ViewEvent.JWPLAYER_VIEW_CAST, false);
 			addTextField('elapsed');
 			addTextField('duration');
 			addTextField('alt');
