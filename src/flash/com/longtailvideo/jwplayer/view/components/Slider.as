@@ -104,6 +104,7 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 
 			_clickArea.addEventListener(MouseEvent.MOUSE_DOWN, downHandler);
+			_clickArea.addEventListener(MouseEvent.CLICK,function(evt:MouseEvent):void { evt.stopPropagation();});
 			_dragRect = new Rectangle(0, 0, 0, 0);
 			
 			if (_vertical) {
@@ -397,6 +398,7 @@ package com.longtailvideo.jwplayer.view.components {
 			RootReference.stage.removeEventListener(MouseEvent.MOUSE_UP, upHandler);
 			RootReference.stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMoveHandler);
 			dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_CLICK, thumbPercent()));
+
 		}
 		
 		/** Reset the slider to its original state**/

@@ -159,6 +159,7 @@ package com.longtailvideo.jwplayer.view.components {
 			_vttLoader = new AssetLoader();
 			_vttLoader.addEventListener(Event.COMPLETE, loadComplete);
 			_vttLoader.addEventListener(ErrorEvent.ERROR, loadError);
+			this.addEventListener(MouseEvent.CLICK,function(evt:MouseEvent):void { evt.stopPropagation();});
 		}
 		
 		public function setText(text:String=""):void {
@@ -873,7 +874,7 @@ package com.longtailvideo.jwplayer.view.components {
 		private function seekHandler(evt:ViewEvent):void {
 			var duration:Number = 0;
 			try {
-				duration = player.playlist.currentItem.duration;
+				duration = _casting ? _lastDur : player.playlist.currentItem.duration;
 			} catch (err:Error) {
 			}
 			var percent:Number = Math.round(duration * evt.data);
@@ -1063,7 +1064,6 @@ package com.longtailvideo.jwplayer.view.components {
 				leftDivide[3] = "cast";
 			}
 			_numDividers = 0;
-			
 			//make sure we don't add dividers a layout that already has dividers
 			var div:RegExp = /\|/g;  
 			_currentLayout = _currentLayout.replace(div,"");
