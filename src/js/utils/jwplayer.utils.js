@@ -204,17 +204,19 @@
     };
 
     utils.isInt = function(value) {
-        return value % 1 === 0;
+        return parseFloat(value) % 1 === 0;
     };
 
     /** Returns the true type of an object * */
     utils.typeOf = function(value) {
+        if (value === null) {
+            return 'null';
+        }
         var typeofString = typeof value;
         if (typeofString === 'object') {
-            if (!value) {
-                return 'null';
+            if (_.isArray(value)) {
+                return 'array';
             }
-            return (value instanceof Array) ? 'array' : typeofString;
         }
         return typeofString;
     };
@@ -346,16 +348,6 @@
         CDN: 2
     };
 
-    /*
-     * Test cases getPathType('hd') getPathType('hd-1') getPathType('hd-1.4')
-     *
-     * getPathType('http://plugins.longtailvideo.com/5/hd/hd.swf')
-     * getPathType('http://plugins.longtailvideo.com/5/hd/hd-1.swf')
-     * getPathType('http://plugins.longtailvideo.com/5/hd/hd-1.4.swf')
-     *
-     * getPathType('./hd.swf') getPathType('./hd-1.swf')
-     * getPathType('./hd-1.4.swf')
-     */
     utils.getPluginPathType = function(path) {
         if (typeof path !== 'string') {
             return;
@@ -688,12 +680,11 @@
     };
 
     utils.addClass = function(element, c) {
-        element.className = element.className + ' ' + c;
+        element.className = utils.trim(element.className + ' ' + c);
     };
 
     utils.removeClass = function(element, c) {
-        var regex = new RegExp(' *' + c, 'g');
-        element.className = element.className.replace(regex, ' ');
+        element.className = utils.trim(element.className.replace(c, '')).replace(/\s+/g, ' ');
     };
 
     utils.indexOf = _.indexOf;
@@ -701,7 +692,7 @@
 
     utils.canCast = function() {
         var cast = jwplayer.cast;
-        return cast && _.isFunction(cast.available) && cast.available();
+        return !!(cast && _.isFunction(cast.available) && cast.available());
     };
 
 })(jwplayer);
