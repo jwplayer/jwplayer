@@ -665,7 +665,7 @@
                 }
                 _toggleDOMFullscreen(_playerElement, state);
             } else {
-                if(utils.isIE()) {
+                if (utils.isIE()) {
                     _toggleDOMFullscreen(_playerElement, state);
                 } else {
                     // else use native fullscreen
@@ -813,18 +813,18 @@
                 height = _videoLayer.clientHeight;
             }
             //IE9 Fake Full Screen Fix
-            if(utils.isIE() && document.all && !window.atob) {
-                var transformScale = _model.getVideo().resize('100%', '100%', _model.stretching);
-            } else {
-                var transformScale = _model.getVideo().resize(width, height, _model.stretching);
+            if (utils.isMSIE(9) && document.all && !window.atob) {
+                width = height = '100%';
             }
-                // poll resizing if video is transformed
-                if (transformScale) {
-                    clearTimeout(_resizeMediaTimeout);
-                    _resizeMediaTimeout = setTimeout(_resizeMedia, 250);
-                }
+
+            var transformScale = _model.getVideo().resize(width, height, _model.stretching);
+            // poll resizing if video is transformed
+            if (transformScale) {
+                clearTimeout(_resizeMediaTimeout);
+                _resizeMediaTimeout = setTimeout(_resizeMedia, 250);
             }
-            
+        }
+
         this.resize = function(width, height) {
             var resetAspectMode = TRUE;
             _resize(width, height, resetAspectMode);
@@ -929,7 +929,7 @@
 
             // TODO: use _forcedControlsState for audio mode so that we don't need these
             if (_controlbar && !_audioMode && !_model.getVideo().isAudioFile()) {
-                if(_instreamMode) {
+                if (_instreamMode) {
                     _instreamControlbar.hide();
                 } else {
                     _controlbar.hide();
