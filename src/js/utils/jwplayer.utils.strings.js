@@ -6,7 +6,7 @@
 (function(utils) {
     /** Removes whitespace from the beginning and end of a string **/
     utils.trim = function(inputString) {
-        return inputString.replace(/^\s*/, '').replace(/\s*$/, '');
+        return inputString.replace(/^\s+|\s+$/g, '');
     };
 
     /**
