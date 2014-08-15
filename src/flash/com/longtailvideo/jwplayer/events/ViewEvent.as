@@ -2,6 +2,22 @@ package com.longtailvideo.jwplayer.events {
 	import flash.events.Event;
 
 	public class ViewEvent extends PlayerEvent {
+		public static var JWPLAYER_VIEW_CUSTOM10:String = "jwplayerViewCustom10";
+		public static var JWPLAYER_VIEW_CUSTOM11:String = "jwplayerViewCustom11";
+		public static var JWPLAYER_VIEW_CUSTOM12:String = "jwplayerViewCustom12";
+		public static var JWPLAYER_VIEW_CUSTOM13:String = "jwplayerViewCustom13";
+		public static var JWPLAYER_VIEW_CUSTOM20:String = "jwplayerViewCustom20";
+		public static var JWPLAYER_VIEW_CUSTOM21:String = "jwplayerViewCustom21";
+		public static var JWPLAYER_VIEW_CUSTOM22:String = "jwplayerViewCustom22";
+		public static var JWPLAYER_VIEW_CUSTOM23:String = "jwplayerViewCustom23";
+		public static var JWPLAYER_VIEW_CUSTOM30:String = "jwplayerViewCustom30";
+		public static var JWPLAYER_VIEW_CUSTOM31:String = "jwplayerViewCustom31";
+		public static var JWPLAYER_VIEW_CUSTOM32:String = "jwplayerViewCustom32";
+		public static var JWPLAYER_VIEW_CUSTOM33:String = "jwplayerViewCustom33";
+		public static var JWPLAYER_VIEW_CUSTOM40:String = "jwplayerViewCustom40";
+		public static var JWPLAYER_VIEW_CUSTOM41:String = "jwplayerViewCustom41";
+		public static var JWPLAYER_VIEW_CUSTOM42:String = "jwplayerViewCustom42";
+		public static var JWPLAYER_VIEW_CUSTOM43:String = "jwplayerViewCustom43";
 		
 		/**
 		 * The ViewEvent.JWPLAYER_RESIZE constant defines the value of the

@@ -189,6 +189,23 @@ package com.longtailvideo.jwplayer.player {
 				ExternalInterface.addCallback("jwIsBeforePlay", js_isBeforePlay);
 				ExternalInterface.addCallback("jwIsBeforeComplete", js_isBeforeComplete);
 				ExternalInterface.addCallback("jwSetCues", js_setCues);
+
+				ExternalInterface.addCallback("jwCustom10", js_custom10);
+				ExternalInterface.addCallback("jwCustom11", js_custom11);
+				ExternalInterface.addCallback("jwCustom12", js_custom12);
+				ExternalInterface.addCallback("jwCustom13", js_custom13);
+				ExternalInterface.addCallback("jwCustom20", js_custom20);
+				ExternalInterface.addCallback("jwCustom21", js_custom21);
+				ExternalInterface.addCallback("jwCustom22", js_custom22);
+				ExternalInterface.addCallback("jwCustom23", js_custom23);
+				ExternalInterface.addCallback("jwCustom30", js_custom30);
+				ExternalInterface.addCallback("jwCustom31", js_custom31);
+				ExternalInterface.addCallback("jwCustom32", js_custom32);
+				ExternalInterface.addCallback("jwCustom33", js_custom33);
+				ExternalInterface.addCallback("jwCustom40", js_custom40);
+				ExternalInterface.addCallback("jwCustom41", js_custom41);
+				ExternalInterface.addCallback("jwCustom42", js_custom42);
+				ExternalInterface.addCallback("jwCustom43", js_custom43);
 				
 				// UNIMPLEMENTED
 				//ExternalInterface.addCallback("jwGetBandwidth", js_getBandwidth); 
@@ -257,6 +274,22 @@ package com.longtailvideo.jwplayer.player {
 					MediaEvent.JWPLAYER_MEDIA_COMPLETE,
 					MediaEvent.JWPLAYER_MEDIA_BEFOREPLAY,
 					MediaEvent.JWPLAYER_MEDIA_BEFORECOMPLETE,
+					MediaEvent.JWPLAYER_MEDIA_CUSTOM10,
+					MediaEvent.JWPLAYER_MEDIA_CUSTOM11,
+					MediaEvent.JWPLAYER_MEDIA_CUSTOM12,
+					MediaEvent.JWPLAYER_MEDIA_CUSTOM13,
+					MediaEvent.JWPLAYER_MEDIA_CUSTOM20,
+					MediaEvent.JWPLAYER_MEDIA_CUSTOM21,
+					MediaEvent.JWPLAYER_MEDIA_CUSTOM22,
+					MediaEvent.JWPLAYER_MEDIA_CUSTOM23,
+					MediaEvent.JWPLAYER_MEDIA_CUSTOM30,
+					MediaEvent.JWPLAYER_MEDIA_CUSTOM31,
+					MediaEvent.JWPLAYER_MEDIA_CUSTOM32,
+					MediaEvent.JWPLAYER_MEDIA_CUSTOM33,
+					MediaEvent.JWPLAYER_MEDIA_CUSTOM40,
+					MediaEvent.JWPLAYER_MEDIA_CUSTOM41,
+					MediaEvent.JWPLAYER_MEDIA_CUSTOM42,
+					MediaEvent.JWPLAYER_MEDIA_CUSTOM43,
 					PlaylistEvent.JWPLAYER_PLAYLIST_LOADED,
 					PlaylistEvent.JWPLAYER_PLAYLIST_ITEM,
 					PlayerStateEvent.JWPLAYER_PLAYER_STATE
@@ -617,6 +650,55 @@ package com.longtailvideo.jwplayer.player {
 		
 		protected function js_isBeforePlay():Boolean {
 			return _player.checkBeforePlay();
+		}
+		
+		protected function js_custom10():Boolean {
+			return _player.custom10();
+		}
+		protected function js_custom11():Boolean {
+			return _player.custom11();
+		}
+		protected function js_custom12():Boolean {
+			return _player.custom12();
+		}
+		protected function js_custom13():Boolean {
+			return _player.custom13();
+		}
+		protected function js_custom20():Boolean {
+			return _player.custom20();
+		}
+		protected function js_custom21():Boolean {
+			return _player.custom21();
+		}
+		protected function js_custom22():Boolean {
+			return _player.custom22();
+		}
+		protected function js_custom23():Boolean {
+			return _player.custom23();
+		}
+		protected function js_custom30():Boolean {
+			return _player.custom30();
+		}
+		protected function js_custom31():Boolean {
+			return _player.custom31();
+		}
+		protected function js_custom32():Boolean {
+			return _player.custom32();
+		}
+		protected function js_custom33():Boolean {
+			return _player.custom33();
+		}
+		protected function js_custom40():Boolean {
+			return _player.custom40();
+		}
+		protected function js_custom41():Boolean {
+			return _player.custom41();
+		}
+		protected function js_custom42():Boolean {
+			return _player.custom42();
+		}
+		protected function js_custom43():Boolean {
+			return _player.custom43();
 		}
 		
 		protected function js_isBeforeComplete():Boolean {

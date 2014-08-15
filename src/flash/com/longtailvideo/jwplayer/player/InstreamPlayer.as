@@ -623,6 +623,55 @@ package com.longtailvideo.jwplayer.player
 			return _view.getSafeRegion();
 		}
 		
+		public function custom10():Boolean {
+			return true;
+		}
+		public function custom11():Boolean {
+			return true;
+		}
+		public function custom12():Boolean {
+			return true;
+		}
+		public function custom13():Boolean {
+			return true;
+		}
+		public function custom20():Boolean {
+			return true;
+		}
+		public function custom21():Boolean {
+			return true;
+		}
+		public function custom22():Boolean {
+			return true;
+		}
+		public function custom23():Boolean {
+			return true;
+		}
+		public function custom30():Boolean {
+			return true;
+		}
+		public function custom31():Boolean {
+			return true;
+		}
+		public function custom32():Boolean {
+			return true;
+		}
+		public function custom33():Boolean {
+			return true;
+		}
+		public function custom40():Boolean {
+			return true;
+		}
+		public function custom41():Boolean {
+			return true;
+		}
+		public function custom42():Boolean {
+			return true;
+		}
+		public function custom43():Boolean {
+			return true;
+		}
+		
 		public function get edition():String {
 			return _model.edition;
 		}

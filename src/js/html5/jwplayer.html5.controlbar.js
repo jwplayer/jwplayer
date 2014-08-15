@@ -89,30 +89,45 @@
                 layout: {
                     left: {
                         position: 'left',
-                        elements: [
-                            _layoutElement('play', CB_BUTTON),
-                            _layoutElement('prev', CB_BUTTON),
-                            _layoutElement('next', CB_BUTTON),
+                        elements: [ 
+                            _layoutElement('play', CB_BUTTON), 
+                            _layoutElement('custom10', CB_BUTTON), 
+                            _layoutElement('custom11', CB_BUTTON), 
+                            _layoutElement('custom12', CB_BUTTON), 
+                            _layoutElement('custom13', CB_BUTTON), 
+                            _layoutElement('prev', CB_BUTTON), 
+                            _layoutElement('next', CB_BUTTON), 
+                            _layoutElement('custom20', CB_BUTTON), 
+                            _layoutElement('custom21', CB_BUTTON), 
+                            _layoutElement('custom22', CB_BUTTON), 
+                            _layoutElement('custom23', CB_BUTTON), 
                             _layoutElement('elapsed', CB_TEXT)
                         ]
                     },
                     center: {
                         position: 'center',
-                        elements: [
+                        elements: [ 
                             _layoutElement('time', CB_SLIDER),
                             _layoutElement('alt', CB_TEXT)
                         ]
                     },
                     right: {
                         position: 'right',
-                        elements: [
-                            _layoutElement('duration', CB_TEXT),
-                            _layoutElement('hd', CB_BUTTON),
-                            _layoutElement('cc', CB_BUTTON),
-                            _layoutElement('mute', CB_BUTTON),
-                            _layoutElement('volume', CB_SLIDER),
-                            _layoutElement('volumeH', CB_SLIDER),
-                            _layoutElement('cast', CB_BUTTON),
+                        elements: [ 
+                            _layoutElement('duration', CB_TEXT), 
+                            _layoutElement('custom30', CB_BUTTON), 
+                            _layoutElement('custom31', CB_BUTTON), 
+                            _layoutElement('custom32', CB_BUTTON), 
+                            _layoutElement('custom33', CB_BUTTON), 
+                            _layoutElement('hd', CB_BUTTON), 
+                            _layoutElement('cc', CB_BUTTON), 
+                            _layoutElement('custom40', CB_BUTTON), 
+                            _layoutElement('custom41', CB_BUTTON), 
+                            _layoutElement('custom42', CB_BUTTON), 
+                            _layoutElement('custom43', CB_BUTTON), 
+                            _layoutElement('mute', CB_BUTTON), 
+                            _layoutElement('volume', CB_SLIDER), 
+                            _layoutElement('volumeH', CB_SLIDER), 
                             _layoutElement('fullscreen', CB_BUTTON)
                         ]
                     }
@@ -177,6 +192,22 @@
                 prev: _prev,
                 hd: _hd,
                 cc: _cc,
+                custom10: _custom10,
+                custom11: _custom11,
+                custom12: _custom12,
+                custom13: _custom13,
+                custom20: _custom20,
+                custom21: _custom21,
+                custom22: _custom22,
+                custom23: _custom23,
+                custom30: _custom30,
+                custom31: _custom31,
+                custom32: _custom32,
+                custom33: _custom33,
+                custom40: _custom40,
+                custom41: _custom41,
+                custom42: _custom42,
+                custom43: _custom43,
                 cast: _cast
             },
 
@@ -222,6 +253,87 @@
             _playlistHandler();
             _this.visible = false;
             _castAvailable();
+        }
+
+        function _custom10(){
+            if(_api._model.events.onCustom10){
+                _api._model.events.onCustom10();
+            }
+        }
+        function _custom11(){
+            if(_api._model.events.onCustom11){
+                _api._model.events.onCustom11();
+            }
+        }
+        function _custom12(){
+            if(_api._model.events.onCustom12){
+                _api._model.events.onCustom12();
+            }
+        }
+        function _custom13(){
+            if(_api._model.events.onCustom13){
+                _api._model.events.onCustom13();
+            }
+        }
+        function _custom20(){
+            if(_api._model.events.onCustom20){
+                _api._model.events.onCustom20();
+            }
+        }
+        function _custom21(){
+            if(_api._model.events.onCustom21){
+                _api._model.events.onCustom21();
+            }
+        }
+        function _custom22(){
+            if(_api._model.events.onCustom22){
+                _api._model.events.onCustom22();
+            }
+        }
+        function _custom23(){
+            if(_api._model.events.onCustom23){
+                _api._model.events.onCustom23();
+            }
+        }
+        function _custom30(){
+            if(_api._model.events.onCustom30){
+                _api._model.events.onCustom30();
+            }
+        }
+        function _custom31(){
+            if(_api._model.events.onCustom31){
+                _api._model.events.onCustom31();
+            }
+        }
+        function _custom32(){
+            if(_api._model.events.onCustom32){
+                _api._model.events.onCustom32();
+            }
+        }
+        function _custom33(){
+            if(_api._model.events.onCustom33){
+                _api._model.events.onCustom33();
+            }
+        }
+        function _custom40(){
+            if(_api._model.events.onCustom40){
+                _api._model.events.onCustom40();
+            }
+        }
+        function _custom41(){
+            if(_api._model.events.onCustom41){
+                _api._model.events.onCustom41();
+            }
+        }
+        function _custom42(){
+            if(_api._model.events.onCustom42){
+                _api._model.events.onCustom42();
+            }
+        }
+        function _custom43(){
+            if(_api._model.events.onCustom43){
+                _api._model.events.onCustom43();
+            }
         }
 
         function _addEventListeners() {

@@ -133,6 +133,22 @@ package com.longtailvideo.jwplayer.controller {
 			_view.addEventListener(ViewEvent.JWPLAYER_VIEW_FULLSCREEN, fullscreenHandler);
 			_view.addEventListener(ViewEvent.JWPLAYER_VIEW_LOAD, loadHandler);
 			_view.addEventListener(ViewEvent.JWPLAYER_VIEW_REDRAW, redrawHandler);
+			_view.addEventListener(ViewEvent.JWPLAYER_VIEW_CUSTOM10, custom10Handler);
+			_view.addEventListener(ViewEvent.JWPLAYER_VIEW_CUSTOM11, custom11Handler);
+			_view.addEventListener(ViewEvent.JWPLAYER_VIEW_CUSTOM12, custom12Handler);
+			_view.addEventListener(ViewEvent.JWPLAYER_VIEW_CUSTOM13, custom13Handler);
+			_view.addEventListener(ViewEvent.JWPLAYER_VIEW_CUSTOM20, custom20Handler);
+			_view.addEventListener(ViewEvent.JWPLAYER_VIEW_CUSTOM21, custom21Handler);
+			_view.addEventListener(ViewEvent.JWPLAYER_VIEW_CUSTOM22, custom22Handler);
+			_view.addEventListener(ViewEvent.JWPLAYER_VIEW_CUSTOM23, custom23Handler);
+			_view.addEventListener(ViewEvent.JWPLAYER_VIEW_CUSTOM30, custom30Handler);
+			_view.addEventListener(ViewEvent.JWPLAYER_VIEW_CUSTOM31, custom31Handler);
+			_view.addEventListener(ViewEvent.JWPLAYER_VIEW_CUSTOM32, custom32Handler);
+			_view.addEventListener(ViewEvent.JWPLAYER_VIEW_CUSTOM33, custom33Handler);
+			_view.addEventListener(ViewEvent.JWPLAYER_VIEW_CUSTOM40, custom40Handler);
+			_view.addEventListener(ViewEvent.JWPLAYER_VIEW_CUSTOM41, custom41Handler);
+			_view.addEventListener(ViewEvent.JWPLAYER_VIEW_CUSTOM42, custom42Handler);
+			_view.addEventListener(ViewEvent.JWPLAYER_VIEW_CUSTOM43, custom43Handler);
 		}
 
 		protected function playHandler(evt:ViewEvent):void { play(); }
@@ -146,7 +162,71 @@ package com.longtailvideo.jwplayer.controller {
 		protected function fullscreenHandler(evt:ViewEvent):void { fullscreen(evt.data); }
 		protected function loadHandler(evt:ViewEvent):void { load(evt.data); }
 		protected function redrawHandler(evt:ViewEvent):void { redraw(); }
+		protected function custom10Handler(evt:ViewEvent):void { custom10(); }
+		protected function custom11Handler(evt:ViewEvent):void { custom11(); }
+		protected function custom12Handler(evt:ViewEvent):void { custom12(); }
+		protected function custom13Handler(evt:ViewEvent):void { custom13(); }
+		protected function custom20Handler(evt:ViewEvent):void { custom20(); }
+		protected function custom21Handler(evt:ViewEvent):void { custom21(); }
+		protected function custom22Handler(evt:ViewEvent):void { custom22(); }
+		protected function custom23Handler(evt:ViewEvent):void { custom23(); }
+		protected function custom30Handler(evt:ViewEvent):void { custom30(); }
+		protected function custom31Handler(evt:ViewEvent):void { custom31(); }
+		protected function custom32Handler(evt:ViewEvent):void { custom32(); }
+		protected function custom33Handler(evt:ViewEvent):void { custom33(); }
+		protected function custom40Handler(evt:ViewEvent):void { custom40(); }
+		protected function custom41Handler(evt:ViewEvent):void { custom41(); }
+		protected function custom42Handler(evt:ViewEvent):void { custom42(); }
+		protected function custom43Handler(evt:ViewEvent):void { custom43(); }
 
+		public function custom10():void {
+			dispatchEvent(new MediaEvent(MediaEvent.JWPLAYER_MEDIA_CUSTOM10));
+		}
+		public function custom11():void {
+			dispatchEvent(new MediaEvent(MediaEvent.JWPLAYER_MEDIA_CUSTOM11));
+		}
+		public function custom12():void {
+			dispatchEvent(new MediaEvent(MediaEvent.JWPLAYER_MEDIA_CUSTOM12));
+		}
+		public function custom13():void {
+			dispatchEvent(new MediaEvent(MediaEvent.JWPLAYER_MEDIA_CUSTOM13));
+		}
+		public function custom20():void {
+			dispatchEvent(new MediaEvent(MediaEvent.JWPLAYER_MEDIA_CUSTOM20));
+		}
+		public function custom21():void {
+			dispatchEvent(new MediaEvent(MediaEvent.JWPLAYER_MEDIA_CUSTOM21));
+		}
+		public function custom22():void {
+			dispatchEvent(new MediaEvent(MediaEvent.JWPLAYER_MEDIA_CUSTOM22));
+		}
+		public function custom23():void {
+			dispatchEvent(new MediaEvent(MediaEvent.JWPLAYER_MEDIA_CUSTOM23));
+		}
+		public function custom30():void {
+			dispatchEvent(new MediaEvent(MediaEvent.JWPLAYER_MEDIA_CUSTOM30));
+		}
+		public function custom31():void {
+			dispatchEvent(new MediaEvent(MediaEvent.JWPLAYER_MEDIA_CUSTOM31));
+		}
+		public function custom32():void {
+			dispatchEvent(new MediaEvent(MediaEvent.JWPLAYER_MEDIA_CUSTOM32));
+		}
+		public function custom33():void {
+			dispatchEvent(new MediaEvent(MediaEvent.JWPLAYER_MEDIA_CUSTOM33));
+		}
+		public function custom40():void {
+			dispatchEvent(new MediaEvent(MediaEvent.JWPLAYER_MEDIA_CUSTOM40));
+		}
+		public function custom41():void {
+			dispatchEvent(new MediaEvent(MediaEvent.JWPLAYER_MEDIA_CUSTOM41));
+		}
+		public function custom42():void {
+			dispatchEvent(new MediaEvent(MediaEvent.JWPLAYER_MEDIA_CUSTOM42));
+		}
+		public function custom43():void {
+			dispatchEvent(new MediaEvent(MediaEvent.JWPLAYER_MEDIA_CUSTOM43));
+		}
 
 		protected function setupComplete(evt:Event):void {
 			_setupComplete = true;
