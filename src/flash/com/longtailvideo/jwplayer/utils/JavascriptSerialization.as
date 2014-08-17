@@ -68,34 +68,35 @@ package com.longtailvideo.jwplayer.utils
 		}
 		
 		public static function stripDots(obj:*):* {
-			var newObj:*;
 			var type:String = getQualifiedClassName(obj); 
-			switch(getQualifiedClassName(obj)) {
+			switch(type) {
 				case "Object":
 				case "com.longtailvideo.jwplayer.model::PlaylistItem":
 				case "com.longtailvideo.jwplayer.model::PlaylistItemLevel":
 				case "com.longtailvideo.jwplayer.plugins::PluginConfig":
-					newObj = {};
+					var newObj:Object = {};
 					for (var key:String in obj) {
 						var newkey:String = key.replace(/\./g, "__dot__");
 						newkey = newkey.replace(/\ /g, "__spc__");
 						newkey = newkey.replace(/\-/g, "__dsh__");
 						newkey = newkey.replace(/[^A-Za-z0-9\_]/g, "");
 						newkey = newkey.replace(/default/g, "__default__");
+						CONFIG::debugging {
+							if (newkey !== key) {
+								trace('converted object key:', key, 'to', newkey);
+							}
+						}			
 						newObj[newkey] = stripDots(obj[key]);
 					}
-					break;
+					return newObj;
 				case "Array":
-					newObj = [];
-					for (var i:Number = 0; i < (obj as Array).length; i++) {
-						newObj[i] = stripDots(obj[i]);
+					var newArr:Array = [];
+					for (var i:uint = 0, l:uint = (obj as Array).length; i < l; i++) {
+						newArr[i] = stripDots(obj[i]);
 					}
-					break;
-				default:
-					newObj = obj;
-					break;
+					return newArr;
 			}
-			return newObj;
+			return obj;
 		}
 		
 		public static function rectangleToObject(rect:Rectangle):Object {

@@ -401,21 +401,19 @@ package com.longtailvideo.jwplayer.player
 			}
 			
 			/* Only accept video, http or rtmp providers for now */
-			switch (item.provider) {
+			_provider = getProvider(item.provider);
+		}
+		
+		private function getProvider(type:String):MediaProvider {
+			switch (type) {
 				case 'rtmp':
-					_provider = new RTMPMediaProvider(false);
-					break;
+					return new RTMPMediaProvider(false);
 				case 'video':
-					_provider = new VideoMediaProvider(false);
-					break;
+					return new VideoMediaProvider(false);
 				case 'sound':
-					_provider = new SoundMediaProvider();
-					break;
-				default:
-					throw new Error("Unsupported Instream Format; only video or rtmp are currently supported");
-					break;
+					return new SoundMediaProvider();
 			}
-			
+			throw new Error("Unsupported Instream Format; only video or rtmp are currently supported");
 		}
 
 		public function play():Boolean {
@@ -637,7 +635,6 @@ package com.longtailvideo.jwplayer.player
 		
 		public function volume(volume:Number):Boolean {
 			throw new Error(UNSUPPORTED_ERROR);
-			return false;
 		}
 		
 		public function mute(state:Boolean):void {
@@ -646,32 +643,26 @@ package com.longtailvideo.jwplayer.player
 		
 		public function stop():Boolean {
 			throw new Error(UNSUPPORTED_ERROR);
-			return false;
 		}
 		
 		public function load(item:*):Boolean {
 			throw new Error(UNSUPPORTED_ERROR);
-			return false;
 		}
 		
 		public function playlistItem(index:Number):Boolean {
 			throw new Error(UNSUPPORTED_ERROR);
-			return false;
 		}
 		
 		public function playlistNext():Boolean {
 			throw new Error(UNSUPPORTED_ERROR);
-			return false;
 		}
 		
 		public function playlistPrev():Boolean {
 			throw new Error(UNSUPPORTED_ERROR);
-			return false;
 		}
 		
 		public function redraw():Boolean {
 			throw new Error(UNSUPPORTED_ERROR);
-			return false;
 		}
 		
 		public function fullscreen(on:Boolean):void {
@@ -680,7 +671,6 @@ package com.longtailvideo.jwplayer.player
 		
 		public function get controls():IPlayerComponents {
 			throw new Error(UNSUPPORTED_ERROR);
-			return null;
 		}
 		
 		public function overrideComponent(plugin:IPlayerComponent):void {
@@ -689,17 +679,14 @@ package com.longtailvideo.jwplayer.player
 		
 		public function setupInstream(target:IPlugin):IInstreamPlayer {
 			throw new Error(UNSUPPORTED_ERROR);
-			return null;
 		}
 		
 		public function getQualityLevels():Array {
 			throw new Error(UNSUPPORTED_ERROR);
-			return null;
 		}
 		
 		public function getCurrentQuality():Number {
 			throw new Error(UNSUPPORTED_ERROR);
-			return null;
 		}
 		
 		public function setCurrentQuality(index:Number):void {
@@ -708,12 +695,10 @@ package com.longtailvideo.jwplayer.player
 		
 		public function getCaptionsList():Array {
 			throw new Error(UNSUPPORTED_ERROR);
-			return null;
 		}
 		
 		public function getCurrentCaptions():Number {
 			throw new Error(UNSUPPORTED_ERROR);
-			return null;
 		}
 		
 		public function setCurrentCaptions(index:Number):void {

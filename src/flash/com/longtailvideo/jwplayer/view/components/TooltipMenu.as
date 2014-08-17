@@ -57,16 +57,13 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 		
 		public function clearOptions():void {
-			var i:TooltipOption;
-			while(i = options.pop()) {
-				removeChild(i);
+			while(options.length > 0) {
+				removeChild(options.pop());
 			}
 			//this.height = menuTop.height;
 		}
 		
 	}
-
-	
 
 }
 
