@@ -128,7 +128,7 @@
 	
 	
 	<target name="build-swf" depends="get-revision">
-		<condition property="debugLine" value="-debug=true" else="">
+		<condition property="debugLine" value="-debug=true -define=CONFIG::debugging,true" else="-define=CONFIG::debugging,false">
 			<isset property="debug" />
 		</condition>
 		<condition property="optimizeLine" value="-optimize=true" else="">
