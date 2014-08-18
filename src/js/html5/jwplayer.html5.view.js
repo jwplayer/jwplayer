@@ -665,8 +665,12 @@
                 }
                 _toggleDOMFullscreen(_playerElement, state);
             } else {
-                // else use native fullscreen
-                _model.getVideo().setFullScreen(state);
+                if (utils.isIE()) {
+                    _toggleDOMFullscreen(_playerElement, state);
+                } else {
+                    // else use native fullscreen
+                    _model.getVideo().setFullScreen(state);
+                }
             }
         };
 
@@ -808,6 +812,11 @@
                 }
                 height = _videoLayer.clientHeight;
             }
+            //IE9 Fake Full Screen Fix
+            if (utils.isMSIE(9) && document.all && !window.atob) {
+                width = height = '100%';
+            }
+
             var transformScale = _model.getVideo().resize(width, height, _model.stretching);
             // poll resizing if video is transformed
             if (transformScale) {
@@ -862,7 +871,6 @@
         }
 
         function _toggleDOMFullscreen(playerElement, fullscreenState) {
-
             utils.removeClass(playerElement, 'jwfullscreen');
             if (fullscreenState) {
                 utils.addClass(playerElement, 'jwfullscreen');
@@ -921,7 +929,7 @@
 
             // TODO: use _forcedControlsState for audio mode so that we don't need these
             if (_controlbar && !_audioMode && !_model.getVideo().isAudioFile()) {
-                if(_instreamMode) {
+                if (_instreamMode) {
                     _instreamControlbar.hide();
                 } else {
                     _controlbar.hide();
