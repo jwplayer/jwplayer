@@ -40,10 +40,12 @@ package com.longtailvideo.jwplayer.view.components
 		protected var _skipArrowHover:Bitmap;
 		protected var _skipTime:Boolean = false;
 		
-		public function AdSkipButton(skipMessage:String,skipText:String)
+		public function AdSkipButton(skipMessage:String, skipText:String, tag:String = null)
 		{
 			_skipMessage = skipMessage;
 			_skipText = skipText;
+			_adTag = tag;
+
 			this.tabEnabled = false;
 			graphics.beginFill(0x000000, .5); 
 			graphics.drawRoundRect(0.5,0.5,_SKIP_WIDTH,_SKIP_HEIGHT,10,10);
@@ -72,6 +74,9 @@ package com.longtailvideo.jwplayer.view.components
 			_skipTextField.height = _SKIP_HEIGHT-_skipTextField.y;
 			addChild(_skipTextField);
 			updateSkipText(0, 0);
+
+			// Prevent clicks from affecting the regular player
+			addEventListener(MouseEvent.CLICK,function(evt:MouseEvent):void { evt.stopPropagation();});
 		}
 		
 
@@ -209,7 +214,6 @@ package com.longtailvideo.jwplayer.view.components
 			if (_skipArrow) _skipArrow.visible = false;
 			if (_skipArrowHover) _skipArrowHover.visible = false;
 			graphics.clear();
-
 		}
 		
 		private function skipAd(evt:Event):void {
