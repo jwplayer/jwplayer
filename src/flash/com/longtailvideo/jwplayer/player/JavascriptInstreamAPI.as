@@ -118,7 +118,8 @@ package com.longtailvideo.jwplayer.player {
 		
 		protected function listenerCallback(evt:Event):void {
 			var args:Object = {};
-			
+			var type:String = evt.type;
+
 			if (evt is MediaEvent)
 				args = listenerCallbackMedia(evt as MediaEvent);
 			else if (evt is JWAdEvent) 
@@ -133,24 +134,9 @@ package com.longtailvideo.jwplayer.player {
 			else if (evt is PlayerEvent) {
 				args = { message: (evt as PlayerEvent).message };
 			} 
-			
-			args.type = evt.type;
-			
-			var callbacks:Array = _isPlayer.jsListeners[evt.type] as Array;
-			
-			if (callbacks) {
-				for each (var call:String in callbacks) {
-					// Not a great workaround, but the JavaScript API competes with the Controller when dealing with certain events
-					if (evt.type == MediaEvent.JWPLAYER_MEDIA_COMPLETE) {
-						ExternalInterface.call(call, args);
-					} else {
-						//asynch callback to allow all Flash listeners to complete before notifying JavaScript
-						setTimeout(function():void {
-							ExternalInterface.call(call, args);
-						}, 0);
-					}
-				}
-			}
+			args.type = type;
+
+			JavascriptAPI.dispatch(type, _isPlayer.jsListeners[type] as Array, args);
 		}
 		
 		protected function listenerCallbackMedia(evt:MediaEvent):Object {

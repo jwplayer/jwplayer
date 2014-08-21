@@ -31,7 +31,34 @@ package com.longtailvideo.jwplayer.player {
 		protected var _lockPlugin:IPlugin;
 		protected var _instream:IInstreamPlayer;
 		protected var _instreamAPI:JavascriptInstreamAPI;
-		protected var _destroyed:Boolean = false;
+
+		// These events should be sent immediately to JavaScript
+		private static const SYNCHRONOUS_EVENTS:Array = [
+			MediaEvent.JWPLAYER_MEDIA_COMPLETE,
+			MediaEvent.JWPLAYER_MEDIA_BEFOREPLAY,
+			MediaEvent.JWPLAYER_MEDIA_BEFORECOMPLETE,
+			PlaylistEvent.JWPLAYER_PLAYLIST_LOADED,
+			PlaylistEvent.JWPLAYER_PLAYLIST_ITEM,
+			PlayerStateEvent.JWPLAYER_PLAYER_STATE
+		];
+		
+		public static var javaScriptEventLoop:String = null;
+		
+		public static function callJS(functionName:String, args:*, eventType:String=null):void {
+			if (ExternalInterface.available) {
+				if (eventType) {
+					javaScriptEventLoop = eventType;
+				}
+				try {
+					ExternalInterface.call(functionName, args);
+				} catch (error:Error) {
+					CONFIG::debugging {
+						trace('js error:', error.message);
+					}
+				}
+				javaScriptEventLoop = null;
+			}
+		}
 		
 		public function JavascriptAPI(player:IPlayer) {
 			_listeners = {};
@@ -49,22 +76,30 @@ package com.longtailvideo.jwplayer.player {
 		
 		/** Delay the response to PlayerReady to allow the external interface to initialize in some browsers **/
 		protected function playerReady(evt:PlayerEvent):void {
-			var timer:Timer = new Timer(50, 1);
-			
-			timer.addEventListener(TimerEvent.TIMER_COMPLETE, function(timerEvent:TimerEvent):void {
-				_player.removeGlobalListener(queueEvents);
+			var type:String = evt.type;
+			var args:Object = {
+				id: evt.id,
+				client: evt.client,
+				version: evt.version
+			};
+			var ready:Function = function(timerEvent:TimerEvent = null):void {
+				if (timerEvent) timerEvent.target.delay = 20;
 				if (ExternalInterface.available) {
-					callJS("jwplayer.playerReady",{
-						id:evt.id,
-						client:evt.client,
-						version:evt.version
-					});
+					if (timerEvent) timerEvent.target.stop();
+					_player.removeGlobalListener(queueEvents);
+					callJS("jwplayer.playerReady", args, type);
 					clearQueuedEvents();
 				}
-			});
-			timer.start();
+			};
+			if (ExternalInterface.available) {
+				ready();
+			} else {
+				var timer:Timer = new Timer(0, 5);
+				timer.addEventListener(TimerEvent.TIMER_COMPLETE, ready);
+				timer.start();
+			}
 		}
-
+		
 		protected function queueEvents(evt:Event):void {
 			_queuedEvents.push(evt);
 		}
@@ -172,9 +207,6 @@ package com.longtailvideo.jwplayer.player {
 				// Instream API
 				ExternalInterface.addCallback("jwInitInstream", js_initInstream);
 				
-				// The player shouldn't send any events if it's been destroyed
-				ExternalInterface.addCallback("jwDestroyAPI", js_destroyAPI);
-
 				// Quality API
 				ExternalInterface.addCallback("jwGetQualityLevels", js_getQualityLevels);
 				ExternalInterface.addCallback("jwGetCurrentQuality", js_getCurrentQuality);
@@ -223,10 +255,10 @@ package com.longtailvideo.jwplayer.player {
 			}
 		}
 		
-		
-		
 		protected function listenerCallback(evt:Event):void {
 			var args:Object = {};
+			var type:String = evt.type;
+
 			if (evt is JWAdEvent)
 				args = listenerCallbackAds(evt as JWAdEvent);
 			else if (evt is CaptionsEvent)
@@ -237,41 +269,39 @@ package com.longtailvideo.jwplayer.player {
 				args = listenerCallbackState(evt as PlayerStateEvent);
 			else if (evt is PlaylistEvent)
 				args = listenerCallbackPlaylist(evt as PlaylistEvent);
-			else if (evt.type == ViewEvent.JWPLAYER_CONTROLS)
+			else if (type == ViewEvent.JWPLAYER_CONTROLS)
 				args.controls = (evt as ViewEvent).data;
-			else if (evt.type == ViewEvent.JWPLAYER_VIEW_TAB_FOCUS)
+			else if (type == ViewEvent.JWPLAYER_VIEW_TAB_FOCUS)
 				args.hasFocus = (evt as ViewEvent).data;
 			else if (evt is ViewEvent && (evt as ViewEvent).data != null)
 				args.data = JavascriptSerialization.stripDots((evt as ViewEvent).data);
 			else if (evt is PlayerEvent) {
 				args.message = (evt as PlayerEvent).message;
 			}
+			args.type = type;
 			
-			args.type = evt.type;
-			var callbacks:Array = _listeners[evt.type] as Array;
-			
-			
+			dispatch(type, _listeners[type] as Array, args);
+		}
+
+		public static function dispatch(type:String, callbacks:Array, args:Object):void {
 			if (callbacks) {
-				// These events should be sent immediately to JavaScript
-				var synchronousEvents:Array = [
-					MediaEvent.JWPLAYER_MEDIA_COMPLETE,
-					MediaEvent.JWPLAYER_MEDIA_BEFOREPLAY,
-					MediaEvent.JWPLAYER_MEDIA_BEFORECOMPLETE,
-					PlaylistEvent.JWPLAYER_PLAYLIST_LOADED,
-					PlaylistEvent.JWPLAYER_PLAYLIST_ITEM,
-					PlayerStateEvent.JWPLAYER_PLAYER_STATE
-				];
-				
+				// Not a great workaround, but the JavaScript API competes with the Controller when dealing with certain events
+				var asyncCallbacks:Array;
 				for each (var call:String in callbacks) {
-					// Not a great workaround, but the JavaScript API competes with the Controller when dealing with certain events
-					if (synchronousEvents.indexOf(evt.type) >= 0) {
-						callJS(call, args);
+					if (javaScriptEventLoop === null || SYNCHRONOUS_EVENTS.indexOf(type) > -1) {
+						callJS(call, args, type);
 					} else {
-						//Insert 1ms delay to allow all Flash listeners to complete before notifying JavaScript
-						setTimeout(function():void {
-							callJS(call, args);
-						}, 0);
+						if (asyncCallbacks === null) asyncCallbacks = [];
+						asyncCallbacks.push(call);
 					}
+				}
+				// delay call to allow all Flash listeners to complete before notifying JavaScript
+				if (asyncCallbacks && asyncCallbacks.length > 0) {
+					setTimeout(function():void {
+						while (asyncCallbacks.length > 0) {
+							callJS(asyncCallbacks.shift(), args, type);
+						}
+					}, 0);
 				}
 			}
 			
@@ -574,10 +604,6 @@ package com.longtailvideo.jwplayer.player {
 			setComponentVisibility(_player.controls.display, false);
 		}
 
-		protected function js_destroyAPI():void {
-			_destroyed = true;
-		}
-		
 		protected function js_getQualityLevels():Array {
 			return _player.getQualityLevels();
 		}
@@ -626,13 +652,6 @@ package com.longtailvideo.jwplayer.player {
 		protected function js_setCues(cues:Array):void {
 			_player.setCues(cues);
 		}
-		
-		protected function callJS(functionName:String, args:*):void {
-			if (!_destroyed && ExternalInterface.available) {
-				ExternalInterface.call(functionName, args);
-			}
-		}
-
 		
 	}
 
