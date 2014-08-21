@@ -30,6 +30,7 @@
         }
 
         _this.embed = function() {
+            // If it has already been loaded
             if (jwplayer.html5) {
                 _loader.setupPlugins(_api, _options, _resizePlugin);
                 _container.innerHTML = '';

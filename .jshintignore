@@ -12,7 +12,6 @@ src/js/parsers/jwplayer.parsers.jwparser.js
 src/js/parsers/jwplayer.parsers.mediaparser.js
 src/js/parsers/jwplayer.parsers.rssparser.js
 src/js/playlist/jwplayer.playlist.item.js
-src/js/playlist/jwplayer.playlist.js
 src/js/playlist/jwplayer.playlist.loader.js
 src/js/playlist/jwplayer.playlist.source.js
 src/js/playlist/jwplayer.playlist.track.js
