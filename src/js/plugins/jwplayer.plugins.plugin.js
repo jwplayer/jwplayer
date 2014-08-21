@@ -1,12 +1,7 @@
-/**
- * Internal plugin model
- * @author zach
- * @version 5.8
- */
 (function(plugins) {
     var utils = jwplayer.utils,
         events = jwplayer.events,
-        UNDEFINED = "undefined";
+        UNDEFINED = 'undefined';
 
     plugins.pluginmodes = {
         FLASH: 0,
@@ -33,33 +28,33 @@
             }
         }
 
-        function completeHandler(evt) {
-            _completeTimeout = setTimeout(function() {
+        function completeHandler() {
+            _completeTimeout = setTimeout(function(){
                 _status = utils.loaderstatus.COMPLETE;
                 _eventDispatcher.sendEvent(events.COMPLETE);
             }, 1000);
         }
 
-        function errorHandler(evt) {
+        function errorHandler() {
             _status = utils.loaderstatus.ERROR;
-            _eventDispatcher.sendEvent(events.ERROR);
+            _eventDispatcher.sendEvent(events.ERROR, {url: url});
         }
 
         this.load = function() {
-            if (_status == utils.loaderstatus.NEW) {
-                if (url.lastIndexOf(".swf") > 0) {
+            if (_status === utils.loaderstatus.NEW) {
+                if (url.lastIndexOf('.swf') > 0) {
                     _flashPath = url;
                     _status = utils.loaderstatus.COMPLETE;
                     _eventDispatcher.sendEvent(events.COMPLETE);
                     return;
-                } else if (utils.getPluginPathType(url) == utils.pluginPathType.CDN) {
+                } else if (utils.getPluginPathType(url) === utils.pluginPathType.CDN) {
                     _status = utils.loaderstatus.COMPLETE;
                     _eventDispatcher.sendEvent(events.COMPLETE);
                     return;
                 }
                 _status = utils.loaderstatus.LOADING;
                 var _loader = new utils.scriptloader(getJSPath());
-                // Complete doesn't matter - we're waiting for registerPlugin 
+                // Complete doesn't matter - we're waiting for registerPlugin
                 _loader.addEventListener(events.COMPLETE, completeHandler);
                 _loader.addEventListener(events.ERROR, errorHandler);
                 _loader.load();
@@ -67,7 +62,7 @@
         };
 
         this.registerPlugin = function(id, target, arg1, arg2) {
-            if (_completeTimeout) {
+            if (_completeTimeout){
                 clearTimeout(_completeTimeout);
                 _completeTimeout = undefined;
             }
@@ -75,9 +70,9 @@
             if (arg1 && arg2) {
                 _flashPath = arg2;
                 _js = arg1;
-            } else if (typeof arg1 == "string") {
+            } else if (typeof arg1 === 'string') {
                 _flashPath = arg1;
-            } else if (typeof arg1 == "function") {
+            } else if (typeof arg1 === 'function') {
                 _js = arg1;
             } else if (!arg1 && !arg2) {
                 _flashPath = id;
@@ -100,15 +95,15 @@
                     case utils.pluginPathType.ABSOLUTE:
                         return _flashPath;
                     case utils.pluginPathType.RELATIVE:
-                        if (url.lastIndexOf(".swf") > 0) {
+                        if (url.lastIndexOf('.swf') > 0) {
                             return utils.getAbsolutePath(_flashPath, window.location.href);
                         }
                         return utils.getAbsolutePath(_flashPath, getJSPath());
-                        //					case utils.pluginPathType.CDN:
-                        //						if (_flashPath.indexOf("-") > -1){
-                        //							return _flashPath+"h";
-                        //						}
-                        //						return _flashPath+"-h";
+//                    case utils.pluginPathType.CDN:
+//                        if (_flashPath.indexOf('-') > -1){
+//                            return _flashPath+'h';
+//                        }
+//                        return _flashPath+'-h';
                 }
             }
             return null;
@@ -123,11 +118,11 @@
         };
 
         this.getPluginmode = function() {
-            if (typeof _flashPath != UNDEFINED && typeof _js != UNDEFINED) {
+            if (typeof _flashPath !== UNDEFINED && typeof _js !== UNDEFINED) {
                 return plugins.pluginmodes.HYBRID;
-            } else if (typeof _flashPath != UNDEFINED) {
+            } else if (typeof _flashPath !== UNDEFINED) {
                 return plugins.pluginmodes.FLASH;
-            } else if (typeof _js != UNDEFINED) {
+            } else if (typeof _js !== UNDEFINED) {
                 return plugins.pluginmodes.JAVASCRIPT;
             }
         };

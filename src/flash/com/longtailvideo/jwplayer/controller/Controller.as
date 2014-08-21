@@ -418,51 +418,33 @@ package com.longtailvideo.jwplayer.controller {
 
 
 		public function pause():Boolean {
-			if (locking) {
-				return false;
+			if (!locking && _model.media) {
+				switch (_model.media.state) {
+					case PlayerState.PLAYING:
+					case PlayerState.BUFFERING:
+						_model.media.pause();
+						return true;
+					default:
+						_interruptPlay = _preplay;
+				}
 			}
-			if (!_model.media)
-				return false;
-
-			switch (_model.media.state) {
-				case PlayerState.PLAYING:
-				case PlayerState.BUFFERING:
-					_model.media.pause();
-					return true;
-					break;
-				default:
-					_interruptPlay = _preplay;
-					break;
-			}
-
 			return false;
 		}
 
 
 		public function stop():Boolean {
-			if (locking) {
-				return false;
+			if (!locking && _model.media) {
+				_interruptPlay = _preplay;
+				switch (_model.media.state) {
+					case PlayerState.PLAYING:
+					case PlayerState.BUFFERING:
+					case PlayerState.PAUSED:
+						_model.media.stop();
+						return true;
+					default:
+						_stopPlaylist = true;
+				}
 			}
-			
-			if (!_model.media) {
-				return false;
-			}
-			
-			_interruptPlay = _preplay;
-
-			switch (_model.media.state) {
-				case PlayerState.PLAYING:
-				case PlayerState.BUFFERING:
-				case PlayerState.PAUSED:
-					_model.media.stop();
-					return true;
-					break;
-				default:
-					_stopPlaylist = true;
-					break;
-			}
-			
-
 			return false;
 		}
 
@@ -526,32 +508,25 @@ package com.longtailvideo.jwplayer.controller {
 		}
 
 		public function seek(pos:Number):Boolean {
-			if (locking) {
-				return false;
-			}
-			if (!_model.media || pos == -1) {
-				// Couldn't seek since media wasn't initialized
-				return false;
-			}
-
-			switch (_model.media.state) {
-				case PlayerState.PAUSED:
-					play();
-				case PlayerState.PLAYING:
-					_model.seek(pos);
-					return true;
-				case PlayerState.IDLE:
-					_model.playlist.currentItem.start = pos;
-					_idleSeek = pos;
-					if (!_preplay) {
+			if (!locking && pos !== -1 && _model.media) {
+				switch (_model.media.state) {
+					case PlayerState.PAUSED:
 						play();
-					}
-					return true;
-				case PlayerState.BUFFERING:
-					_queuedSeek = pos;
-					break;
+						/* fallthrough */
+					case PlayerState.PLAYING:
+						_model.seek(pos);
+						return true;
+					case PlayerState.IDLE:
+						_model.playlist.currentItem.start = pos;
+						_idleSeek = pos;
+						if (!_preplay) {
+							play();
+						}
+						return true;
+					case PlayerState.BUFFERING:
+						_queuedSeek = pos;
+				}
 			}
-
 			return false;
 		}
 

@@ -337,9 +337,8 @@ package com.longtailvideo.jwplayer.media {
 		protected function getConfigProperty(property:String):* {
 			if (item && item.hasOwnProperty(_provider + "." + property)) {
 				return item[_provider + "." + property];
-			} else {
-				return _config.pluginConfig(provider)[property];
 			}
+			return _config.pluginConfig(provider)[property];
 		}
 		
 		/**

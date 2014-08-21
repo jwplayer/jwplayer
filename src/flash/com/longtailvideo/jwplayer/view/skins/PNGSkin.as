@@ -88,9 +88,7 @@ package com.longtailvideo.jwplayer.view.skins {
 				}
 			}
 			
-			var playerVersion:Number = Number(PlayerVersion.version.replace(/^(\d\.\d+).*/, "$1"));
-
-			if (!_props.target || (Number(_props.target) > playerVersion)) {
+			if (!PlayerVersion.versionCheck(_props.target)) {
 				sendError("Error loading skin: Incompatible player version");
 				return;
 			}

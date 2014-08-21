@@ -70,8 +70,8 @@
                 obj[i] = val;
             });
 
-            obj['sources'] = [];
-            obj['tracks'] = [];
+            obj.sources = [];
+            obj.tracks = [];
             if (item.sources.length > 0) {
                 utils.foreach(item.sources, function(i, source) {
                     var sourceCopy = {
@@ -80,7 +80,7 @@
                         label: source.label,
                         'default': source['default'] ? true : false
                     };
-                    obj['sources'].push(sourceCopy);
+                    obj.sources.push(sourceCopy);
                 });
             }
 
@@ -92,7 +92,7 @@
                         label: track.label,
                         'default': track['default'] ? true : false
                     };
-                    obj['tracks'].push(trackCopy);
+                    obj.tracks.push(trackCopy);
                 });
             }
 
@@ -156,7 +156,7 @@
                 if (plugins.vast) {
                     plugins.vast.jwPlayAd(ad);
                 } //else if (plugins.googima) {
-                // 	// This needs to be added once the googima Ads API is implemented 
+                //   // This needs to be added once the googima Ads API is implemented
                 //plugins.googima.jwPlayAd(ad);
                 //not supporting for now
                 //}
@@ -198,19 +198,27 @@
 
             _this.jwSetControls = function(mode) {
                 _view.setControls(mode);
-                if (_instreamPlayer) _instreamPlayer.setControls(mode);
+                if (_instreamPlayer) {
+                    _instreamPlayer.setControls(mode);
+                }
             };
 
             _this.jwInstreamPlay = function() {
-                if (_instreamPlayer) _instreamPlayer.jwInstreamPlay();
+                if (_instreamPlayer) {
+                    _instreamPlayer.jwInstreamPlay();
+                }
             };
 
             _this.jwInstreamPause = function() {
-                if (_instreamPlayer) _instreamPlayer.jwInstreamPause();
+                if (_instreamPlayer) {
+                    _instreamPlayer.jwInstreamPause();
+                }
             };
 
             _this.jwInstreamState = function() {
-                if (_instreamPlayer) return _instreamPlayer.jwInstreamState();
+                if (_instreamPlayer) {
+                    return _instreamPlayer.jwInstreamState();
+                }
                 return '';
             };
 
@@ -225,11 +233,15 @@
             };
 
             _this.jwInstreamAddEventListener = function(type, listener) {
-                if (_instreamPlayer) _instreamPlayer.jwInstreamAddEventListener(type, listener);
+                if (_instreamPlayer) {
+                    _instreamPlayer.jwInstreamAddEventListener(type, listener);
+                }
             };
 
             _this.jwInstreamRemoveEventListener = function(type, listener) {
-                if (_instreamPlayer) _instreamPlayer.jwInstreamRemoveEventListener(type, listener);
+                if (_instreamPlayer) {
+                    _instreamPlayer.jwInstreamRemoveEventListener(type, listener);
+                }
             };
 
             _this.jwPlayerDestroy = function() {
@@ -246,7 +258,9 @@
             };
 
             _this.jwInstreamSetText = function(text) {
-                if (_instreamPlayer) _instreamPlayer.jwInstreamSetText(text);
+                if (_instreamPlayer) {
+                    _instreamPlayer.jwInstreamSetText(text);
+                }
             };
 
             _this.jwIsBeforePlay = function() {

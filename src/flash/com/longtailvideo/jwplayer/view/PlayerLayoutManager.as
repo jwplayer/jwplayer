@@ -79,7 +79,6 @@ package com.longtailvideo.jwplayer.view {
 			switch (testPosition(config['position'])) {
 				case BOTTOM:
 					return (remainingSpace.height > pluginSize(config) > 0);
-					break;
 				case RIGHT:
 					var playlistConfig:PluginConfig = _player.config.pluginConfig('playlist');
 					if (config['id'] != "playlist" && testPosition(playlistConfig['position']) == RIGHT) {
@@ -87,29 +86,26 @@ package com.longtailvideo.jwplayer.view {
 					} else {
 						return (remainingSpace.width > pluginSize(config) > 0);
 					}
-					break;
 			}
 			return false;
 		}
 
 		public static function testPosition(pos:String):String {
-			if (!pos) { return ""; }
-			
-			switch (pos.toLowerCase()) {
-				case BOTTOM:
-				case RIGHT:
-					return pos.toLowerCase();
-					break;
-				default:
-					return "";
-					break;
+			if (pos) {
+				var posLower:String = pos.toLowerCase();
+				switch (posLower) {
+					case BOTTOM:
+					case RIGHT:
+						return posLower;
+				}
 			}
+			return "";
 		}
 
 		protected function generateLayout():void {
 			if (toLayout.length == 0) {
 				for each(var item:PluginConfig in noLayout) {
-					item['visible'] = !(_player.config.fullscreen && testPosition(item['position']));
+					item.visible = !(_player.config.fullscreen && testPosition(item['position']));
 					assignSpace(item, remainingSpace);
 				}
 				_player.config.width = remainingSpace.width;
@@ -155,7 +151,7 @@ package com.longtailvideo.jwplayer.view {
 						break;
 				}
 
-				config['visible'] = true;
+				config.visible = true;
 				assignSpace(config, pluginSpace);
 			} else {
 				noLayout.push(config);
@@ -165,12 +161,10 @@ package com.longtailvideo.jwplayer.view {
 		}
 		
 		protected function assignSpace(cfg:PluginConfig, space:Rectangle):void {
-			cfg['width'] 	= space.width;
-			cfg['height'] 	= space.height;
-			cfg['x'] 		= space.x;
-			cfg['y'] 		= space.y;
+			cfg.width 	= space.width;
+			cfg.height 	= space.height;
+			cfg.x 		= space.x;
+			cfg.y 		= space.y;
 		}
-		
-		
 	}
 }

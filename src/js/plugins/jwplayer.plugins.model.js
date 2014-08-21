@@ -1,8 +1,3 @@
-/**
- * Model that manages all plugins
- * @author zach
- * @version 5.5
- */
 (function(jwplayer) {
     jwplayer.plugins.model = function(plugins) {
         this.addPlugin = function(url) {

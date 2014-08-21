@@ -1,17 +1,12 @@
-/**
- * Utility methods for the JW Player.
- *
- * @author pablo
- * @version 6.0
- */
 (function(utils) {
+    /*jshint maxparams:6*/
 
     /** Stretching options **/
     var _stretching = utils.stretching = {
-        NONE: "none",
-        FILL: "fill",
-        UNIFORM: "uniform",
-        EXACTFIT: "exactfit"
+        NONE: 'none',
+        FILL: 'fill',
+        UNIFORM: 'uniform',
+        EXACTFIT: 'exactfit'
     };
 
     utils.scale = function(domelement, xscale, yscale, xoffset, yoffset) {
@@ -55,15 +50,19 @@
      *            elementHeight
      */
     utils.stretch = function(stretching, domelement, parentWidth, parentHeight, elementWidth, elementHeight) {
-        if (!domelement) return false;
-        if (!parentWidth || !parentHeight || !elementWidth || !elementHeight) return false;
+        if (!domelement) {
+            return false;
+        }
+        if (!parentWidth || !parentHeight || !elementWidth || !elementHeight) {
+            return false;
+        }
         stretching = stretching || _stretching.UNIFORM;
 
         var xscale = Math.ceil(parentWidth / 2) * 2 / elementWidth,
             yscale = Math.ceil(parentHeight / 2) * 2 / elementHeight,
-            video = (domelement.tagName.toLowerCase() === "video"),
+            video = (domelement.tagName.toLowerCase() === 'video'),
             scale = false,
-            stretchClass = "jw" + stretching.toLowerCase();
+            stretchClass = 'jw' + stretching.toLowerCase();
 
         switch (stretching.toLowerCase()) {
             case _stretching.FILL:
@@ -86,7 +85,7 @@
                 if (xscale > yscale) {
                     if (elementWidth * yscale / parentWidth > 0.95) {
                         scale = true;
-                        stretchClass = "jwexactfit";
+                        stretchClass = 'jwexactfit';
                     } else {
                         elementWidth = elementWidth * yscale;
                         elementHeight = elementHeight * yscale;
@@ -94,7 +93,7 @@
                 } else {
                     if (elementHeight * xscale / parentHeight > 0.95) {
                         scale = true;
-                        stretchClass = "jwexactfit";
+                        stretchClass = 'jwexactfit';
                     } else {
                         elementWidth = elementWidth * xscale;
                         elementHeight = elementHeight * xscale;
@@ -131,7 +130,8 @@
             }
             utils.css.style(domelement, style);
         } else {
-            domelement.className = domelement.className.replace(/\s*jw(none|exactfit|uniform|fill)/g, "") + " " + stretchClass;
+            domelement.className = domelement.className.replace(/\s*jw(none|exactfit|uniform|fill)/g, '') +
+                ' ' + stretchClass;
         }
         return scale;
     };

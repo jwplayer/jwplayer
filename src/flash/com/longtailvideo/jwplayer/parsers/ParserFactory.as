@@ -8,25 +8,18 @@ package com.longtailvideo.jwplayer.parsers {
 				switch(list.localName().toString().toLowerCase()) {
 //					case 'asx':
 //						return new ASXParser();
-//						break;
 //					case 'feed':
 //						return new ATOMParser();
-//						break;
 //					case 'playlist':
 //						return new XSPFParser();
-//						break;
 					case 'rss':
 						return new RSSParser();
-						break;
 //					case 'smil':
 //						return new SMILParser();
-//						break;
 				}
 			} catch (e:Error) {
 				Logger.log("ParserFactory: Could not determine playlist type");
-				return null;
 			}
-			
 			return null;
 		}
 		

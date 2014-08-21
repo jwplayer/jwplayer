@@ -1,18 +1,11 @@
-/**
- * JW Player Touch Framework
- *
- * @author sanil
- * @version 6.6
- */
+(function (utils) {
 
-(function(utils) {
+    var TOUCH_MOVE = 'touchmove',
+        TOUCH_START = 'touchstart',
+        TOUCH_END = 'touchend',
+        TOUCH_CANCEL = 'touchcancel';
 
-    var TOUCH_MOVE = "touchmove",
-        TOUCH_START = "touchstart",
-        TOUCH_END = "touchend",
-        TOUCH_CANCEL = "touchcancel";
-
-    utils.touch = function(elem) {
+    utils.touch = function (elem) {
         var _elem = elem,
             _isListening = false,
             _handlers = {},
@@ -38,24 +31,28 @@
         }
 
         function touchHandler(evt) {
-            if (evt.type == TOUCH_START) {
+            if (evt.type === TOUCH_START) {
                 _isListening = true;
                 _startEvent = createEvent(_events.DRAG_START, evt);
-            } else if (evt.type == TOUCH_MOVE) {
+            }
+            else if (evt.type === TOUCH_MOVE) {
                 if (_isListening) {
                     if (_gotMove) {
                         triggerEvent(_events.DRAG, evt);
-                    } else {
+                    }
+                    else {
                         triggerEvent(_events.DRAG_START, evt, _startEvent);
                         _gotMove = true;
                         triggerEvent(_events.DRAG, evt);
                     }
                 }
-            } else {
+            }
+            else {
                 if (_isListening) {
                     if (_gotMove) {
                         triggerEvent(_events.DRAG_END, evt);
-                    } else {
+                    }
+                    else {
                         // This allows the controlbar/dock/logo tap events not to be forwarded to the view
                         evt.cancelBubble = true;
                         triggerEvent(_events.TAP, evt);
@@ -81,7 +78,8 @@
             var touch = null;
             if (srcEvent.touches && srcEvent.touches.length) {
                 touch = srcEvent.touches[0];
-            } else if (srcEvent.changedTouches && srcEvent.changedTouches.length) {
+            }
+            else if (srcEvent.changedTouches && srcEvent.changedTouches.length) {
                 touch = srcEvent.changedTouches[0];
             }
             if (!touch) {
@@ -96,7 +94,7 @@
                 deltaX: 0,
                 deltaY: 0
             };
-            if (type != _events.TAP && _startEvent) {
+            if (type !== _events.TAP && _startEvent) {
                 evt.deltaX = evt.x - _startEvent.x;
                 evt.deltaY = evt.y - _startEvent.y;
             }
@@ -112,11 +110,11 @@
             }
         }
 
-        this.addEventListener = function(type, handler) {
+        this.addEventListener = function (type, handler) {
             _handlers[type] = handler;
         };
 
-        this.removeEventListener = function(type) {
+        this.removeEventListener = function (type) {
             delete _handlers[type];
         };
 

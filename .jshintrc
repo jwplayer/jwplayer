@@ -5,14 +5,14 @@
     "eqeqeq": true,
     "browser": true,
 
+    // console, alert
+    "devel": true,
+
     // A function can only take max 3 arguments
     "maxparams": 4,
 
     // Strings use single quotes instead of double
     "quotmark": "single",
-
-    // Error on bitwise javascript operations like | & ^
-    "bitwise": true,
 
     // All conditionals and loops require curly brackets
     "curly": true,

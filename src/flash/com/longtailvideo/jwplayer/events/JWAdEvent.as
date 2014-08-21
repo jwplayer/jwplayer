@@ -1,5 +1,7 @@
 package com.longtailvideo.jwplayer.events
 {
+	import flash.events.Event;
+
 	public class JWAdEvent extends PlayerEvent
 	{
 		
@@ -25,6 +27,19 @@ package com.longtailvideo.jwplayer.events
 		public function JWAdEvent(type:String, msg:String=undefined)
 		{
 			super(type, msg);
+		}
+		
+		public override function clone():Event {
+			var evt:JWAdEvent = new JWAdEvent(this.type);
+			evt.duration = this.duration;
+			evt.position = this.position;
+			evt.currentAd = this.currentAd;
+			evt.totalAds = this.totalAds;
+			evt.companions = this.companions;
+			evt.tag = this.tag;
+			evt.oldstate = this.oldstate;
+			evt.newstate = this.newstate;
+			return evt;
 		}
 	}
 }

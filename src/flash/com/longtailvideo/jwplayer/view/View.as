@@ -209,7 +209,7 @@ package com.longtailvideo.jwplayer.view {
 		
 		protected var _preventFade:Boolean = false;
 
-		private function mediaHandler(evt):void {
+		private function mediaHandler(evt:MediaEvent):void {
 			_currPos = evt.position;
 			_duration = evt.duration;
 		}
@@ -767,6 +767,9 @@ package com.longtailvideo.jwplayer.view {
 			
 			_instreamAnim.fade(1);
 			_instreamMode = true;
+
+			// For midrolls and postrolls we want to ensure controlbar knows to fadeout
+			setTimeout(moveTimeout, 2000);
 		}
 		
 	

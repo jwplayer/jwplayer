@@ -204,17 +204,19 @@
     };
 
     utils.isInt = function(value) {
-        return value % 1 === 0;
+        return parseFloat(value) % 1 === 0;
     };
 
     /** Returns the true type of an object * */
     utils.typeOf = function(value) {
+        if (value === null) {
+            return 'null';
+        }
         var typeofString = typeof value;
         if (typeofString === 'object') {
-            if (!value) {
-                return 'null';
+            if (_.isArray(value)) {
+                return 'array';
             }
-            return (value instanceof Array) ? 'array' : typeofString;
         }
         return typeofString;
     };
@@ -346,16 +348,6 @@
         CDN: 2
     };
 
-    /*
-     * Test cases getPathType('hd') getPathType('hd-1') getPathType('hd-1.4')
-     *
-     * getPathType('http://plugins.longtailvideo.com/5/hd/hd.swf')
-     * getPathType('http://plugins.longtailvideo.com/5/hd/hd-1.swf')
-     * getPathType('http://plugins.longtailvideo.com/5/hd/hd-1.4.swf')
-     *
-     * getPathType('./hd.swf') getPathType('./hd-1.swf')
-     * getPathType('./hd-1.4.swf')
-     */
     utils.getPluginPathType = function(path) {
         if (typeof path !== 'string') {
             return;
@@ -462,6 +454,21 @@
         } catch (e) {}
 
         return repo;
+    };
+
+    utils.versionCheck = function(target) {
+        var tParts = ('0'+target).split(/\W/);
+        var jParts = jwplayer.version.split(/\W/);
+        var tMajor = parseFloat(tParts[0]);
+        var jMajor = parseFloat(jParts[0]);
+        if (tMajor > jMajor) {
+            return false;
+        } else if (tMajor === jMajor) {
+            if (parseFloat('0'+tParts[1]) > parseFloat(jParts[1])) {
+                return false;
+            }
+        }
+        return true;
     };
 
     /** Loads an XML file into a DOM object * */
@@ -610,102 +617,12 @@
         return parsedXML;
     };
 
-    /** Go through the playlist and choose a single playable type to play; remove sources of a different type **/
-    utils.filterPlaylist = function(playlist, checkFlash, androidhls) {
-        var pl = [],
-            i, item, j, source;
-        for (i = 0; i < playlist.length; i++) {
-            item = utils.extend({}, playlist[i]);
-            item.sources = utils.filterSources(item.sources, false, androidhls);
-            if (item.sources.length > 0) {
-                for (j = 0; j < item.sources.length; j++) {
-                    source = item.sources[j];
-                    if (!source.label) {
-                        source.label = j.toString();
-                    }
-                }
-                pl.push(item);
-            }
-        }
-
-        // HTML5 filtering failed; try for Flash sources
-        if (checkFlash && pl.length === 0) {
-            for (i = 0; i < playlist.length; i++) {
-                item = utils.extend({}, playlist[i]);
-                item.sources = utils.filterSources(item.sources, true, androidhls);
-                if (item.sources.length > 0) {
-                    for (j = 0; j < item.sources.length; j++) {
-                        source = item.sources[j];
-                        if (!source.label) {
-                            source.label = j.toString();
-                        }
-                    }
-                    pl.push(item);
-                }
-            }
-        }
-        return pl;
-    };
 
     /**
      * Ensure a number is between two bounds
      */
     utils.between = function(num, min, max) {
         return Math.max(Math.min(num, max), min);
-    };
-
-    /** Filters the sources by taking the first playable type and eliminating sources of a different type **/
-    utils.filterSources = function(sources, filterFlash, androidhls) {
-        var selectedType,
-            newSources;
-
-        if (sources) {
-            newSources = [];
-            for (var i = 0; i < sources.length; i++) {
-                var source = utils.extend({}, sources[i]),
-                    file = source.file,
-                    type = source.type;
-
-                if (file) {
-                    source.file = file = utils.trim('' + file);
-                } else {
-                    // source.file is required
-                    continue;
-                }
-
-                if (!type) {
-                    var extension = utils.extension(file);
-                    source.type = type = utils.extensionmap.extType(extension);
-                }
-
-                if (filterFlash) {
-                    if (jwplayer.embed.flashCanPlay(file, type)) {
-                        if (!selectedType) {
-                            selectedType = type;
-                        }
-                        if (type === selectedType) {
-                            newSources.push(source);
-                        }
-                    }
-                } else {
-                    if (jwplayer.embed.html5CanPlay(file, type, androidhls)) {
-                        if (!selectedType) {
-                            selectedType = type;
-                        }
-                        if (type === selectedType) {
-                            newSources.push(source);
-                        }
-                    }
-                }
-            }
-        }
-        return newSources;
-    };
-
-    /** Returns true if the type is playable in HTML5 **/
-    utils.canPlayHTML5 = function(type) {
-        var mime = utils.extensionmap.types[type];
-        return (!!mime && !!jwplayer.vid.canPlayType && !!jwplayer.vid.canPlayType(mime));
     };
 
     /**
@@ -763,14 +680,19 @@
     };
 
     utils.addClass = function(element, c) {
-        element.className = element.className + ' ' + c;
+        element.className = utils.trim(element.className + ' ' + c);
     };
 
     utils.removeClass = function(element, c) {
-        var regex = new RegExp(' *' + c, 'g');
-        element.className = element.className.replace(regex, ' ');
+        element.className = utils.trim(element.className.replace(c, '')).replace(/\s+/g, ' ');
     };
 
     utils.indexOf = _.indexOf;
+    utils.noop = function() {};
+
+    utils.canCast = function() {
+        var cast = jwplayer.cast;
+        return !!(cast && _.isFunction(cast.available) && cast.available());
+    };
 
 })(jwplayer);

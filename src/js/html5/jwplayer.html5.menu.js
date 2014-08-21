@@ -11,23 +11,20 @@
         _css = utils.css,
 
         MENU_CLASS = 'jwmenu',
-        OPTION_CLASS = 'jwoption',
-        UNDEFINED,
-        WHITE = '#ffffff',
-        CCC = '#cccccc';
+        OPTION_CLASS = 'jwoption';
 
     /** HTML5 Overlay class **/
     html5.menu = function(name, id, skin, changeHandler) {
         var _id = id,
             _changeHandler = changeHandler,
-            _overlay = new html5.overlay(_id + "_overlay", skin),
+            _overlay = new html5.overlay(_id + '_overlay', skin),
             _settings = utils.extend({
-                fontcase: UNDEFINED,
-                fontcolor: CCC,
+                fontcase: undefined,
+                fontcolor: '#cccccc',
                 fontsize: 11,
-                fontweight: UNDEFINED,
-                activecolor: WHITE,
-                overcolor: WHITE
+                fontweight: undefined,
+                activecolor: '#ffffff',
+                overcolor: '#ffffff'
             }, skin.getComponentSettings('tooltip')),
             _container,
             _options = [];
@@ -56,14 +53,14 @@
                     height: menuOption.height,
                     color: _settings.fontcolor,
                     'padding-left': menuOption.width,
-                    font: _settings.fontweight + " " + _settings.fontsize + "px Arial,Helvetica,sans-serif",
+                    font: _settings.fontweight + ' ' + _settings.fontsize + 'px Arial,Helvetica,sans-serif',
                     'line-height': menuOption.height,
-                    'text-transform': (_settings.fontcase == "upper") ? "uppercase" : UNDEFINED
+                    'text-transform': (_settings.fontcase === 'upper') ? 'uppercase' : undefined
                 }));
-                _css(selector + ":hover", utils.extend(_formatBackground(menuOptionOver), {
+                _css(selector + ':hover', utils.extend(_formatBackground(menuOptionOver), {
                     color: _settings.overcolor
                 }));
-                _css(selector + ".active", utils.extend(_formatBackground(menuOptionActive), {
+                _css(selector + '.active', utils.extend(_formatBackground(menuOptionActive), {
                     color: _settings.activecolor
                 }));
             }
@@ -71,10 +68,12 @@
         }
 
         function _formatBackground(elem) {
-            if (!(elem && elem.src)) return {};
+            if (!(elem && elem.src)) {
+                return {};
+            }
             return {
-                background: "url(" + elem.src + ") no-repeat left",
-                'background-size': elem.width + "px " + elem.height + "px"
+                background: 'url(' + elem.src + ') no-repeat left',
+                'background-size': elem.width + 'px ' + elem.height + 'px'
             };
         }
 
@@ -84,7 +83,7 @@
 
         this.addOption = function(label, value) {
             var option = _createElement(OPTION_CLASS, _container);
-            option.id = _id + "_option_" + value;
+            option.id = _id + '_option_' + value;
             option.innerHTML = label;
             if (!utils.isMobile()) {
                 option.addEventListener('click', _clickHandler(_options.length, value));
@@ -98,7 +97,9 @@
         function _clickHandler(index, value) {
             return function() {
                 _setActive(index);
-                if (_changeHandler) _changeHandler(value);
+                if (_changeHandler) {
+                    _changeHandler(value);
+                }
             };
         }
 
@@ -111,16 +112,22 @@
         var _setActive = this.setActive = function(index) {
             for (var i = 0; i < _options.length; i++) {
                 var option = _options[i];
-                option.className = option.className.replace(" active", "");
-                if (i == index) option.className += " active";
+                option.className = option.className.replace(' active', '');
+                if (i === index) {
+                    option.className += ' active';
+                }
             }
         };
 
 
         function _createElement(className, parent) {
-            var elem = document.createElement("div");
-            if (className) elem.className = className;
-            if (parent) parent.appendChild(elem);
+            var elem = document.createElement('div');
+            if (className) {
+                elem.className = className;
+            }
+            if (parent) {
+                parent.appendChild(elem);
+            }
             return elem;
         }
 
@@ -129,7 +136,7 @@
             return elem ? elem : {
                 width: 0,
                 height: 0,
-                src: UNDEFINED
+                src: undefined
             };
         }
 
@@ -143,13 +150,13 @@
     };
 
     function _class(className) {
-        return "." + className.replace(/ /g, " .");
+        return '.' + className.replace(/ /g, ' .');
     }
 
     _css(_class(MENU_CLASS + ' ' + OPTION_CLASS), {
-        cursor: "pointer",
-        "white-space": "nowrap",
-        position: "relative"
+        cursor: 'pointer',
+        'white-space': 'nowrap',
+        position: 'relative'
     });
 
 })(jwplayer);

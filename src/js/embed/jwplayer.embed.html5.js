@@ -72,7 +72,7 @@
                             var file = sources[i].file,
                                 type = sources[i].type;
 
-                            if (_html5CanPlay(file, type, _options.androidhls)) {
+                            if (jwplayer.embed.html5CanPlay(file, type, _options.androidhls)) {
                                 return true;
                             }
                         }
