@@ -186,6 +186,7 @@ package com.longtailvideo.jwplayer.view.components {
 			player.addEventListener(CaptionsEvent.JWPLAYER_CAPTIONS_LIST, captionsHandler);
 			player.addEventListener(CaptionsEvent.JWPLAYER_CAPTIONS_CHANGED, captionChanged);
 			player.addEventListener(CastEvent.JWPLAYER_CAST_AVAILABLE, _castAvailable);
+
 		}
 
 
@@ -326,6 +327,7 @@ package com.longtailvideo.jwplayer.view.components {
 			
 			if (_casting) {
 				newLayout = newLayout.replace("castoff", "cast");
+				newLayout = newLayout.replace("fullscreen", "");
 				hideButton("castoff");
 				hideButton("fullscreen");
 				hideButton("normalscreen");
@@ -983,7 +985,10 @@ package com.longtailvideo.jwplayer.view.components {
 				_currentLayout = _currentLayout.replace("volumeH", "");
 				hideButton('volumeH', true);
 			}
-			
+			if (_casting) {
+				hideButton('fullscreen', false);
+				
+			}
 			if (_dispWidth > 0 && _dispWidth < 320) {
 				_currentLayout = _currentLayout.replace("duration","");
 				_currentLayout = _currentLayout.replace("elapsed","");
