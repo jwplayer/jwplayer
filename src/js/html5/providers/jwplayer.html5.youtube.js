@@ -32,6 +32,8 @@
             _playingInterval = -1,
             // current Youtube state, tracked because state events fail to fire
             _youtubeState = -1,
+            // this is where we keep track of the volume
+            _lastVolume,
             // post roll support
             _beforecompleted = false,
             // user must click video to initiate playback, gets set to false once playback starts
@@ -369,6 +371,8 @@
 
             _this.setVisibility(true);
 
+            _volumeHandler();
+
             if (!_youtube) {
                 // load item when API is ready
                 _youtubeEmbedReadyCallback = function() {
@@ -457,17 +461,37 @@
             if (!_ytPlayer) {
                 return;
             }
-            // TODO: proper volume (controller should handle logic)
-            _ytPlayer.setVolume(volume);
+            if (utils.exists(volume)) {
+                _ytPlayer.volume = Math.min(Math.max(0, volume / 100), 1);
+                _lastVolume = _ytPlayer.volume * 100;
+                _ytPlayer.setVolume(_lastVolume);
+            }
         };
 
-        this.mute = function(mute) {
+        function _volumeHandler() {
             if (!_ytPlayer) {
                 return;
             }
-            // TODO: proper mute (controller should handle logic)
-            if (mute) {
-                _ytPlayer.setVolume(0);
+            _this.sendEvent(events.JWPLAYER_MEDIA_VOLUME, {
+                volume: Math.round(_ytPlayer.getVolume() * 100)
+            });
+            _this.sendEvent(events.JWPLAYER_MEDIA_MUTE, {
+                mute: _ytPlayer.isMuted()
+            });
+        }
+
+        this.mute = function(state) {
+            if (!_ytPlayer) {
+                return;
+            }
+            if (!utils.exists(state)) { state = !_ytPlayer.muted; }
+            
+            if (state) {
+                _lastVolume = _ytPlayer.volume * 100;
+                _ytPlayer.mute();
+            } else {
+                this.volume(_lastVolume);
+                _ytPlayer.unMute();
             }
         };
 
