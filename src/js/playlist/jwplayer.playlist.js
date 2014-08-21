@@ -8,19 +8,21 @@
 (function(jwplayer) {
 
     var utils = jwplayer.utils;
-
+    var _ = jwplayer._;
 
     jwplayer.playlist = function(playlist) {
         var _playlist = [];
-        if (jwplayer.utils.typeOf(playlist) == "array") {
-            for (var i = 0; i < playlist.length; i++) {
-                _playlist.push(new jwplayer.playlist.item(playlist[i]));
-            }
-        } else {
-            _playlist.push(new jwplayer.playlist.item(playlist));
-        }
+
+        // Can be either an array of items or a single item.
+        playlist = (_.isArray(playlist) ? playlist : [playlist]);
+
+        _.each(playlist, function(item) {
+            _playlist.push(new jwplayer.playlist.item(item));
+        });
+
         return _playlist;
     };
+
 
     /** Go through the playlist and choose a single playable type to play; remove sources of a different type **/
     jwplayer.playlist.filterPlaylist = function(playlist, checkFlash, androidhls) {
