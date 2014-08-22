@@ -3,19 +3,19 @@ package com.longtailvideo.jwplayer.events {
 
 	public class PlayerStateEvent extends PlayerEvent {
 
-		public static var JWPLAYER_PLAYER_STATE:String = "jwplayerPlayerState";
+		public static const JWPLAYER_PLAYER_STATE:String = "jwplayerPlayerState";
 
 		public var newstate:String = "";
 		public var oldstate:String = "";
 
-		public function PlayerStateEvent(type:String, newState:String, oldState:String) {
-			super(type);
+		public function PlayerStateEvent(newState:String, oldState:String) {
+			super(JWPLAYER_PLAYER_STATE);
 			this.newstate = newState;
 			this.oldstate = oldState;
 		}
 		
 		public override function clone():Event {
-			return new PlayerStateEvent(this.type, this.newstate, this.oldstate);
+			return new PlayerStateEvent(newstate, oldstate);
 		}
 		
 		public override function toString():String {

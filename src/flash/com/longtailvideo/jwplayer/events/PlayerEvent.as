@@ -7,17 +7,17 @@ package com.longtailvideo.jwplayer.events {
 
 	public class PlayerEvent extends Event {
 		
-		public static var JWPLAYER_READY:String = "jwplayerReady";
+		public static const JWPLAYER_READY:String = "jwplayerReady";
 
-		public static var JWPLAYER_LOCKED:String = "jwplayerLocked";
+		public static const JWPLAYER_LOCKED:String = "jwplayerLocked";
 
-		public static var JWPLAYER_UNLOCKED:String = "jwplayerUnlocked";
+		public static const JWPLAYER_UNLOCKED:String = "jwplayerUnlocked";
 
-		public static var JWPLAYER_ERROR:String = "jwplayerError";
+		public static const JWPLAYER_ERROR:String = "jwplayerError";
 
-		public static var JWPLAYER_FULLSCREEN:String = "jwplayerFullscreen";
+		public static const JWPLAYER_FULLSCREEN:String = "jwplayerFullscreen";
 		
-		private static var FLASH_VERSION:String = "FLASH " + Capabilities.version;
+		private static var FLASH_VERSION:String;
 		
 		public var id:String;
 		public var client:String;
@@ -32,6 +32,9 @@ package com.longtailvideo.jwplayer.events {
 				try {
 					this.id = ExternalInterface.objectID;
 				} catch(e:Error) {}
+			}
+			if (!FLASH_VERSION) {
+				FLASH_VERSION = Capabilities.version;
 			}
 			this.client  = FLASH_VERSION;
 			this.version = PlayerVersion.version;

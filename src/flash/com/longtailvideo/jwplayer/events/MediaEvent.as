@@ -8,41 +8,41 @@ package com.longtailvideo.jwplayer.events {
 	 */
 	public class MediaEvent extends PlayerEvent {
 		
-		public static var JWPLAYER_MEDIA_ERROR:String = "jwplayerMediaError";
-		public static var JWPLAYER_MEDIA_LOADED:String = "jwplayerMediaLoaded";
-		public static var JWPLAYER_MEDIA_COMPLETE:String = "jwplayerMediaComplete";
-		public static var JWPLAYER_MEDIA_BEFOREPLAY:String = "jwplayerMediaBeforePlay";
-		public static var JWPLAYER_MEDIA_BEFORECOMPLETE:String = "jwplayerMediaBeforeComplete";
+		public static const JWPLAYER_MEDIA_ERROR:String = "jwplayerMediaError";
+		public static const JWPLAYER_MEDIA_LOADED:String = "jwplayerMediaLoaded";
+		public static const JWPLAYER_MEDIA_COMPLETE:String = "jwplayerMediaComplete";
+		public static const JWPLAYER_MEDIA_BEFOREPLAY:String = "jwplayerMediaBeforePlay";
+		public static const JWPLAYER_MEDIA_BEFORECOMPLETE:String = "jwplayerMediaBeforeComplete";
 
-		public static var JWPLAYER_MEDIA_BUFFER:String = "jwplayerMediaBuffer";
-		public static var JWPLAYER_MEDIA_BUFFER_FULL:String = "jwplayerMediaBufferFull";
+		public static const JWPLAYER_MEDIA_BUFFER:String = "jwplayerMediaBuffer";
+		public static const JWPLAYER_MEDIA_BUFFER_FULL:String = "jwplayerMediaBufferFull";
 
 		public var bufferPercent:Number 	= -1;
 		
-		public static var JWPLAYER_MEDIA_SEEK:String = "jwplayerMediaSeek";
+		public static const JWPLAYER_MEDIA_SEEK:String = "jwplayerMediaSeek";
 		
 		// The requested seek offset, in seconds
 		public var offset:Number			= 0;
 		
-		public static var JWPLAYER_MEDIA_TIME:String = "jwplayerMediaTime";
+		public static const JWPLAYER_MEDIA_TIME:String = "jwplayerMediaTime";
 
 		// Number of seconds elapsed since the start of the media playback
 		public var position:Number 			= -1;
 		// Total number of seconds in the currently loaded media
 		public var duration:Number 			= -1;
 
-		public static var JWPLAYER_MEDIA_META:String = "jwplayerMediaMeta";
+		public static const JWPLAYER_MEDIA_META:String = "jwplayerMediaMeta";
 
 		public var metadata:Object 			= null;
 
-		public static var JWPLAYER_MEDIA_VOLUME:String = "jwplayerMediaVolume";
-		public static var JWPLAYER_MEDIA_MUTE:String = "jwplayerMediaMute";
+		public static const JWPLAYER_MEDIA_VOLUME:String = "jwplayerMediaVolume";
+		public static const JWPLAYER_MEDIA_MUTE:String = "jwplayerMediaMute";
 
 		public var volume:Number 			= -1;
 		public var mute:Boolean				= false;
 		
-		public static var JWPLAYER_MEDIA_LEVELS:String = "jwplayerMediaLevels";
-		public static var JWPLAYER_MEDIA_LEVEL_CHANGED:String = "jwplayerMediaLevelChanged";
+		public static const JWPLAYER_MEDIA_LEVELS:String = "jwplayerMediaLevels";
+		public static const JWPLAYER_MEDIA_LEVEL_CHANGED:String = "jwplayerMediaLevelChanged";
 
 		//An array of quality levels
 		public var levels:Array				= null;
