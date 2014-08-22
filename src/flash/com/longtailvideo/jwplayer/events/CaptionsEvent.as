@@ -3,9 +3,9 @@ import flash.events.Event;
 
 public class CaptionsEvent extends PlayerEvent {
 	
-	public static var JWPLAYER_CAPTIONS_LIST:String = "jwplayerCaptionsList";
+	public static const JWPLAYER_CAPTIONS_LIST:String = "jwplayerCaptionsList";
 
-	public static var JWPLAYER_CAPTIONS_CHANGED:String = "jwplayerCaptionsChanged";
+	public static const JWPLAYER_CAPTIONS_CHANGED:String = "jwplayerCaptionsChanged";
 	
 	// An array of caption tracks
 	public var tracks:Array = null;
