@@ -80,12 +80,7 @@ package com.longtailvideo.jwplayer.utils
 						newkey = newkey.replace(/\ /g, "__spc__");
 						newkey = newkey.replace(/\-/g, "__dsh__");
 						newkey = newkey.replace(/[^A-Za-z0-9\_]/g, "");
-						newkey = newkey.replace(/default/g, "__default__");
-						CONFIG::debugging {
-							if (newkey !== key) {
-								trace('converted object key:', key, 'to', newkey);
-							}
-						}			
+						newkey = newkey.replace(/default/g, "__default__");		
 						newObj[newkey] = stripDots(obj[key]);
 					}
 					return newObj;

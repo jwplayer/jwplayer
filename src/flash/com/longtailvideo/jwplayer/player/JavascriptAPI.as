@@ -297,6 +297,8 @@ package com.longtailvideo.jwplayer.player {
 				}
 				// delay call to allow all Flash listeners to complete before notifying JavaScript
 				if (asyncCallbacks && asyncCallbacks.length > 0) {
+					// Identify the event as asynchronous in JavaScript
+					args.async = true;
 					setTimeout(function():void {
 						while (asyncCallbacks.length > 0) {
 							callJS(asyncCallbacks.shift(), args, type);
@@ -333,21 +335,24 @@ package com.longtailvideo.jwplayer.player {
 			if (evt.currentQuality >= 0)		returnObj.currentQuality = evt.currentQuality;
 			if (evt.levels)						returnObj.levels = JavascriptSerialization.stripDots(evt.levels);
 
-			if (evt.type == MediaEvent.JWPLAYER_MEDIA_MUTE)
+			if (evt.type == MediaEvent.JWPLAYER_MEDIA_MUTE) {
 				returnObj.mute = evt.mute;
-			
-			if (evt.type == MediaEvent.JWPLAYER_MEDIA_VOLUME)
+			}
+			if (evt.type == MediaEvent.JWPLAYER_MEDIA_VOLUME) {
 				returnObj.volume = evt.volume;
-
+			}
 			return returnObj;
 		}
 
 		protected function listenerCallbackCaptions(evt:CaptionsEvent):Object {
 			var returnObj:Object = {};
-			
-			if (evt.currentTrack >= 0)		returnObj.track = evt.currentTrack;
-			if (evt.tracks)					returnObj.tracks = JavascriptSerialization.stripDots(evt.tracks);
-	
+
+			if (evt.currentTrack >= 0) {
+				returnObj.track = evt.currentTrack;
+			}
+			if (evt.tracks) {
+				returnObj.tracks = JavascriptSerialization.stripDots(evt.tracks);
+			}
 			return returnObj;
 		}
 		
@@ -355,29 +360,37 @@ package com.longtailvideo.jwplayer.player {
 		protected function listenerCallbackAds(evt:JWAdEvent):Object {
 			var returnObj:Object = {};
 			returnObj.tag = evt.tag;
-			if (evt.message)  returnObj.message = evt.message;
-			if (evt.duration)  returnObj.duration = evt.duration;
-			if (evt.position) returnObj.position = evt.position;
+			if (evt.message)    returnObj.message    = evt.message;
+			if (evt.duration)   returnObj.duration   = evt.duration;
+			if (evt.position)   returnObj.position   = evt.position;
 			if (evt.companions) returnObj.companions = evt.companions;
-			if (evt.newstate) returnObj.newstate = evt.newstate;
-			if (evt.oldstate) returnObj.oldstate = evt.oldstate	;
+			if (evt.newstate)   returnObj.newstate   = evt.newstate;
+			if (evt.oldstate)   returnObj.oldstate   = evt.oldstate;
 			return returnObj;
-			
 		}
 		
 		protected function listenerCallbackState(evt:PlayerStateEvent):Object {
 			if (evt.type == PlayerStateEvent.JWPLAYER_PLAYER_STATE) {
-				return { newstate: evt.newstate, oldstate: evt.oldstate };
-			} else return {};
+				return {
+					newstate: evt.newstate,
+					oldstate: evt.oldstate
+				};
+			}
+			return {};
 		}
 
 		protected function listenerCallbackPlaylist(evt:PlaylistEvent):Object {
 			if (evt.type == PlaylistEvent.JWPLAYER_PLAYLIST_LOADED) {
 				var list:Array = js_getPlaylist();
-				return { playlist: list };
+				return {
+					playlist: list
+				};
 			} else if (evt.type == PlaylistEvent.JWPLAYER_PLAYLIST_ITEM) {
-				return { index: _player.playlist.currentIndex };
-			} else return {};
+				return {
+					index: _player.playlist.currentIndex
+				};
+			}
+			return {};
 		}
 
 
