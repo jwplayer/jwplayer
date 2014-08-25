@@ -904,10 +904,6 @@
 		}
 		
 		function _showControlbar() {
-            if (_isIPod && !_audioMode) {
-                 return;
-            }
-
             if (_controlbar && _model.controls) {
                 if(_instreamMode) {
                     _instreamControlbar.show();
