@@ -392,6 +392,7 @@
 
             if (!_ytPlayer.getPlayerState) {
                 _youtubePlayerReadyCallback = function() {
+                    _volumeHandler();
                     _this.load(item);
                 };
                 return;
@@ -458,7 +459,7 @@
         };
 
         this.volume = function(volume) {
-            if (!_ytPlayer) {
+            if (!_ytPlayer || !_ytPlayer.getVolume) {
                 return;
             }
             if (utils.exists(volume)) {
@@ -468,7 +469,7 @@
         };
 
         function _volumeHandler() {
-            if (!_ytPlayer) {
+            if (!_ytPlayer || !_ytPlayer.getVolume) {
                 return;
             }
             _this.sendEvent(events.JWPLAYER_MEDIA_VOLUME, {
@@ -480,10 +481,12 @@
         }
 
         this.mute = function(state) {
-            if (!_ytPlayer) {
+            if (!_ytPlayer || !_ytPlayer.getVolume) {
                 return;
             }
-            if (!utils.exists(state)) { state = !_ytPlayer.muted; }
+            if (!utils.exists(state)) {
+                state = !_ytPlayer.isMuted();
+            }
             
             if (state) {
                 _lastVolume = _ytPlayer.getVolume();
