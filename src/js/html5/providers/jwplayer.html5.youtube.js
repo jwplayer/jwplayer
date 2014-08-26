@@ -213,6 +213,8 @@
             _youtubeEmbedReadyCallback = null;
 
             _readyViewForMobile();
+
+            _volumeHandler();
         }
 
         // Youtube Player Event Handlers
@@ -370,9 +372,7 @@
             }
 
             _this.setVisibility(true);
-
-            _volumeHandler();
-
+            
             if (!_youtube) {
                 // load item when API is ready
                 _youtubeEmbedReadyCallback = function() {
@@ -462,8 +462,7 @@
                 return;
             }
             if (utils.exists(volume)) {
-                _ytPlayer.volume = Math.min(Math.max(0, volume / 100), 1);
-                _lastVolume = _ytPlayer.volume * 100;
+                _lastVolume = Math.min(Math.max(0, volume), 100);
                 _ytPlayer.setVolume(_lastVolume);
             }
         };
@@ -473,7 +472,7 @@
                 return;
             }
             _this.sendEvent(events.JWPLAYER_MEDIA_VOLUME, {
-                volume: Math.round(_ytPlayer.getVolume() * 100)
+                volume: Math.round(_ytPlayer.getVolume())
             });
             _this.sendEvent(events.JWPLAYER_MEDIA_MUTE, {
                 mute: _ytPlayer.isMuted()
@@ -487,7 +486,7 @@
             if (!utils.exists(state)) { state = !_ytPlayer.muted; }
             
             if (state) {
-                _lastVolume = _ytPlayer.volume * 100;
+                _lastVolume = _ytPlayer.getVolume();
                 _ytPlayer.mute();
             } else {
                 this.volume(_lastVolume);
