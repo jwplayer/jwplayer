@@ -32,6 +32,8 @@
             _playingInterval = -1,
             // current Youtube state, tracked because state events fail to fire
             _youtubeState = -1,
+            // this is where we keep track of the volume
+            _lastVolume,
             // post roll support
             _beforecompleted = false,
             // user must click video to initiate playback, gets set to false once playback starts
@@ -211,6 +213,8 @@
             _youtubeEmbedReadyCallback = null;
 
             _readyViewForMobile();
+
+            _volumeHandler();
         }
 
         // Youtube Player Event Handlers
@@ -368,7 +372,7 @@
             }
 
             _this.setVisibility(true);
-
+            
             if (!_youtube) {
                 // load item when API is ready
                 _youtubeEmbedReadyCallback = function() {
@@ -388,6 +392,7 @@
 
             if (!_ytPlayer.getPlayerState) {
                 _youtubePlayerReadyCallback = function() {
+                    _volumeHandler();
                     _this.load(item);
                 };
                 return;
@@ -454,20 +459,41 @@
         };
 
         this.volume = function(volume) {
-            if (!_ytPlayer) {
+            if (!_ytPlayer || !_ytPlayer.getVolume) {
                 return;
             }
-            // TODO: proper volume (controller should handle logic)
-            _ytPlayer.setVolume(volume);
+            if (utils.exists(volume)) {
+                _lastVolume = Math.min(Math.max(0, volume), 100);
+                _ytPlayer.setVolume(_lastVolume);
+            }
         };
 
-        this.mute = function(mute) {
-            if (!_ytPlayer) {
+        function _volumeHandler() {
+            if (!_ytPlayer || !_ytPlayer.getVolume) {
                 return;
             }
-            // TODO: proper mute (controller should handle logic)
-            if (mute) {
-                _ytPlayer.setVolume(0);
+            _this.sendEvent(events.JWPLAYER_MEDIA_VOLUME, {
+                volume: Math.round(_ytPlayer.getVolume())
+            });
+            _this.sendEvent(events.JWPLAYER_MEDIA_MUTE, {
+                mute: _ytPlayer.isMuted()
+            });
+        }
+
+        this.mute = function(state) {
+            if (!_ytPlayer || !_ytPlayer.getVolume) {
+                return;
+            }
+            if (!utils.exists(state)) {
+                state = !_ytPlayer.isMuted();
+            }
+            
+            if (state) {
+                _lastVolume = _ytPlayer.getVolume();
+                _ytPlayer.mute();
+            } else {
+                this.volume(_lastVolume);
+                _ytPlayer.unMute();
             }
         };
 
