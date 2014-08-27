@@ -1,5 +1,6 @@
 package com.longtailvideo.jwplayer.view.components {
 	import com.longtailvideo.jwplayer.events.CaptionsEvent;
+	import com.longtailvideo.jwplayer.events.CastEvent;
 	import com.longtailvideo.jwplayer.events.MediaEvent;
 	import com.longtailvideo.jwplayer.events.PlayerEvent;
 	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
@@ -103,7 +104,7 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _customButtons:Array = [];
 //		protected var _removedButtons:Array = [];
 		protected var _dividers:Array;
-		protected var _defaultLayout:String = "[play prev next elapsed][time alt][duration hd cc mute volumeH fullscreen]";
+		protected var _defaultLayout:String = "[play prev next elapsed][time alt][duration hd cc mute volumeH castoff fullscreen]";
 		protected var _defaultButtons:Array;
 		protected var _currentLayout:String;
 		protected var _layoutManager:ControlbarLayoutManager;
@@ -136,6 +137,9 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var animations:Animations;
 		protected var _fadingOut:Number;
 		protected var _instreamMode:Boolean;
+		protected var  _canCast:Boolean = false;
+		protected var  _casting:Boolean = false;
+		protected var _currentState:String;
 		
 		public function ControlbarComponent(player:IPlayer) {
 			super(player, "controlbar");
@@ -155,6 +159,7 @@ package com.longtailvideo.jwplayer.view.components {
 			_vttLoader = new AssetLoader();
 			_vttLoader.addEventListener(Event.COMPLETE, loadComplete);
 			_vttLoader.addEventListener(ErrorEvent.ERROR, loadError);
+			this.addEventListener(MouseEvent.CLICK,function(evt:MouseEvent):void { evt.stopPropagation();});
 		}
 		
 		public function setText(text:String=""):void {
@@ -180,22 +185,19 @@ package com.longtailvideo.jwplayer.view.components {
 			player.addEventListener(MediaEvent.JWPLAYER_MEDIA_LEVEL_CHANGED, levelChanged);
 			player.addEventListener(CaptionsEvent.JWPLAYER_CAPTIONS_LIST, captionsHandler);
 			player.addEventListener(CaptionsEvent.JWPLAYER_CAPTIONS_CHANGED, captionChanged);
-			player.addEventListener(PlayerEvent.JWPLAYER_LOCKED, lockHandler);
-			player.addEventListener(PlayerEvent.JWPLAYER_UNLOCKED, lockHandler);
+			player.addEventListener(CastEvent.JWPLAYER_CAST_AVAILABLE, _castAvailable);
+
 		}
 
 
-		private function lockHandler(evt:PlayerEvent):void {
-			if (_player.locked) {
-				if (_timeSlider) _timeSlider.lock();
-				if (_volSliderV) _volSliderV.lock();
-				if (_volSliderH) _volSliderH.lock();
-			} else {
-				if (_timeSlider) _timeSlider.unlock();
-				if (_volSliderV) _volSliderV.unlock();
-				if (_volSliderH) _volSliderH.unlock();
-			}
+		private function _castAvailable(evt:CastEvent):void {
+			_canCast = evt.available;
+			//if (_canCast) {
+				updateControlbarState();
+				redraw();
+			//}
 		}
+
 
 		private function playlistHandler(evt:PlaylistEvent):void {
 			if (!_instreamMode) {
@@ -244,7 +246,7 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 		
 		private function stateHandler(evt:PlayerEvent=null):void {
-			updateControlbarState();
+			updateControlbarState(evt);
 			redraw();
 		}
 
@@ -288,15 +290,15 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 		*/
 
-		private function updateControlbarState():void {
+		private function updateControlbarState(evt:PlayerEvent=null):void {
 			var newLayout:String = _defaultLayout;
 
 			_currentLayout = removeInactive(newLayout);
-
-			if (player.state == PlayerState.PLAYING) {
+			_currentState = (evt && evt is PlayerStateEvent) ? ((evt as PlayerStateEvent).newstate) : _currentState;
+			if (_currentState == PlayerState.PLAYING) {
 				newLayout = newLayout.replace('play', 'pause');
 				hideButton('play');
-			} else if (player.state == PlayerState.IDLE) {
+			} else if (_currentState == PlayerState.IDLE) {
 				if (_timeSlider) {
 					_timeSlider.reset();
 					_timeSlider.thumbVisible = false;
@@ -321,9 +323,23 @@ package com.longtailvideo.jwplayer.view.components {
 			} else {
 				hideButton("unmute");
 			}
+			
+			
+			if (_casting) {
+				newLayout = newLayout.replace("castoff", "cast");
+				newLayout = newLayout.replace("fullscreen", "");
+				hideButton("castoff");
+				hideButton("fullscreen");
+				hideButton("normalscreen");
+			} else {
+
+				hideButton("cast");
+			}
 			if (player.config.fullscreen) {
 				newLayout = newLayout.replace("fullscreen", "normalscreen");
 				hideButton("fullscreen");
+				newLayout = newLayout.replace("castoff", "");
+				hideButton("castoff");
 			} else {
 				hideButton("normalscreen");
 			}
@@ -338,6 +354,13 @@ package com.longtailvideo.jwplayer.view.components {
 				hideButton('cc');
 			}
 
+			if (_instreamMode || !_canCast) {
+				newLayout = newLayout.replace(/cast/g, "");
+				newLayout = newLayout.replace(/castoff/g, "");
+				hideButton('cast');
+				hideButton('castoff');
+			}
+			
 			if (_timeSlider) {
 				if (_timeAlt && _timeAlt.text || _liveMode) { //&& !_showTime) {
 					_timeSlider.visible = false;
@@ -544,6 +567,8 @@ package com.longtailvideo.jwplayer.view.components {
 			addComponentButton('normalscreen', ViewEvent.JWPLAYER_VIEW_FULLSCREEN, false);
 			addComponentButton('unmute', ViewEvent.JWPLAYER_VIEW_MUTE, false);
 			addComponentButton('mute', ViewEvent.JWPLAYER_VIEW_MUTE, true);
+			addComponentButton('cast', ViewEvent.JWPLAYER_VIEW_CAST, true);
+			addComponentButton('castoff', ViewEvent.JWPLAYER_VIEW_CAST, false);
 			addTextField('elapsed');
 			addTextField('duration');
 			addTextField('alt');
@@ -721,8 +746,10 @@ package com.longtailvideo.jwplayer.view.components {
 		private function addComponentButton(name:String, event:String, eventData:*=null):void {
 			var button:ComponentButton = new ComponentButton();
 			button.name = name;
-			button.setOutIcon(getSkinElement(name + "Button"));
-			button.setOverIcon(getSkinElement(name + "ButtonOver"));
+			if (name != "cast" && name != "castoff") {
+				button.setOutIcon(getSkinElement(name + "Button"));
+				button.setOverIcon(getSkinElement(name + "ButtonOver"));
+			}
 			button.clickFunction = function():void {
 				if (name == "hd") {
 					toggleHD();
@@ -734,7 +761,17 @@ package com.longtailvideo.jwplayer.view.components {
 					forward(new ViewEvent(event, eventData));
 				}
 			}
-			if (getSkinElement(name + "Button") || getSkinElement(name + "ButtonOver")) {
+			if (name == "cast") {
+				getSkinElement(name + "Button");
+				button.setOutIcon(getSkinElement(name + "Button"));
+				button.init();
+				addButtonDisplayObject(button, name);
+			} else if (name == "castoff") {
+				getSkinElement("cast" + "Buttonoff");
+				button.setOutIcon(getSkinElement("castButtonOff"));
+				button.init();
+				addButtonDisplayObject(button, name);
+			} else if (getSkinElement(name + "Button") || getSkinElement(name + "ButtonOver")) {
 				button.init();
 				addButtonDisplayObject(button, name);
 			}
@@ -827,9 +864,6 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 
 		private function volumeHandler(evt:ViewEvent):void {
-			if (_player.locked) {
-				return;
-			}
 
 			var volume:Number = Math.round(evt.data * 100);
 			volume = volume < 10 ? 0 : volume;
@@ -844,7 +878,7 @@ package com.longtailvideo.jwplayer.view.components {
 		private function seekHandler(evt:ViewEvent):void {
 			var duration:Number = 0;
 			try {
-				duration = player.playlist.currentItem.duration;
+				duration = _casting ? _lastDur : player.playlist.currentItem.duration;
 			} catch (err:Error) {
 			}
 			var percent:Number = Math.round(duration * evt.data);
@@ -953,7 +987,10 @@ package com.longtailvideo.jwplayer.view.components {
 				_currentLayout = _currentLayout.replace("volumeH", "");
 				hideButton('volumeH', true);
 			}
-			
+			if (_casting) {
+				hideButton('fullscreen', false);
+				
+			}
 			if (_dispWidth > 0 && _dispWidth < 320) {
 				_currentLayout = _currentLayout.replace("duration","");
 				_currentLayout = _currentLayout.replace("elapsed","");
@@ -1029,9 +1066,11 @@ package com.longtailvideo.jwplayer.view.components {
 			var controlbarPattern:RegExp = /\[(.*)\]\[.*\]\[(.*)\]/;
 			var result:Object = controlbarPattern.exec(_currentLayout);
 			var rightDivide:Array = ["play","pause","prev","next"];
-			var leftDivide:Array = isMuted ? ["hd","cc","unmute","fullscreen"] : ["hd","cc","mute","fullscreen"];
+			var leftDivide:Array = isMuted ? ["hd","cc","unmute","castoff","fullscreen",] : ["hd","cc","mute","castoff","fullscreen"];
+			if (_casting) {
+				leftDivide[3] = "cast";
+			}
 			_numDividers = 0;
-			
 			//make sure we don't add dividers a layout that already has dividers
 			var div:RegExp = /\|/g;  
 			_currentLayout = _currentLayout.replace(div,"");
@@ -1082,6 +1121,10 @@ package com.longtailvideo.jwplayer.view.components {
 
 		override public function show():void {
 			animations.fade(1, .5);
+		}
+		
+		public function set casting(state:Boolean):void  {
+			_casting = state;
 		}
 		
 		public function audioMode(state:Boolean):void {

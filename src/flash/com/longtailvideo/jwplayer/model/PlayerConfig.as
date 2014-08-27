@@ -24,7 +24,9 @@ package com.longtailvideo.jwplayer.model {
 		protected var _levels:Array			= null;
 		protected var _mute:Boolean 		= false;
 		protected var _repeat:Boolean 		= false; 
-		protected var _controls:Boolean		= true; 
+		protected var _controls:Boolean		= true;
+		
+		//protected var cast:Object = {};
 		
 		//TODO: Move to ENUM class
 		protected var _stretching:String 	= "uniform"; 
@@ -249,6 +251,10 @@ package com.longtailvideo.jwplayer.model {
 		/** Startup volume of the player. Can be 0 to 100. Is saved in a cookie. @default 90 **/
 		public function get controls():Boolean { return _controls; }
 		public function set controls(x:Boolean):void { _controls =  x; }
+		
+		
+		//public function get appid():String { return cast.appid;}
+		//public function set appid(myappid:String):void { cast.appid = myappid; }
 
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		// PLUGINS

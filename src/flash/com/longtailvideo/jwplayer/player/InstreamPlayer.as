@@ -136,7 +136,7 @@ package com.longtailvideo.jwplayer.player
 		public function loadItem(item:Object, options:Object=null):void {
 			_options.update(options);
 			_skipButton = new AdSkipButton(options.skipMessage,options.skipText);
-			_skipButton.addEventListener(JWAdEvent.JWPLAYER_AD_SKIPPED,skipHandler);
+			_skipButton.addEventListener(JWAdEvent.JWPLAYER_AD_SKIPPED, skipHandler);
 			_instreamDisplay.addChild(_skipButton);
 			var safe:Rectangle = getSafeRegion();
 			if (_skipButton.visible) 
@@ -186,7 +186,6 @@ package com.longtailvideo.jwplayer.player
 			var ev:JWAdEvent = new JWAdEvent(JWAdEvent.JWPLAYER_AD_SKIPPED);
 			ev.tag = _options.tag;
 			if (_items && _items.length > 0) {
-				var medEvent:MediaEvent = evt as MediaEvent;
 				ev.currentAd = _itemNdx + 1;
 				ev.totalAds = _items.length;
 			}
@@ -207,8 +206,7 @@ package com.longtailvideo.jwplayer.player
 			
 			_provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_META,metaHandler);
 		}
-		
-		
+
 		private function bufferFullHandler(evt:MediaEvent):void {
 			_provider.play();
 			if (!_mediaDisplayed && (_isConfig.stretching == Stretcher.EXACTFIT || _provider is SoundMediaProvider)) {

@@ -37,6 +37,16 @@ package com.longtailvideo.jwplayer.events {
 
 		public static const JWPLAYER_VIEW_TAB_FOCUS:String = "jwplayerViewTabFocus";
 		
+		/**
+		 * The ViewEvent.JWPLAYER_VIEW_CAST constant defines the value of the
+		 * <code>type</code> property of the event object
+		 * for a <code>jwplayerViewCast</code> event.
+		 *
+		 * @eventType jwplayerViewTabFocus
+		 */
+		public static var JWPLAYER_VIEW_CAST:String = "jwplayerViewCast";
+		
+		/** Sent along with REQUEST Event types. **/
 		public var data:*;
 		
 		public function ViewEvent(type:String, data:*=null) {

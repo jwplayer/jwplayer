@@ -1,5 +1,6 @@
 package com.longtailvideo.jwplayer.view {
 	import com.longtailvideo.jwplayer.events.CaptionsEvent;
+	import com.longtailvideo.jwplayer.events.CastEvent;
 	import com.longtailvideo.jwplayer.events.GlobalEventDispatcher;
 	import com.longtailvideo.jwplayer.events.IGlobalEventDispatcher;
 	import com.longtailvideo.jwplayer.events.MediaEvent;
@@ -24,7 +25,6 @@ package com.longtailvideo.jwplayer.view {
 	import com.longtailvideo.jwplayer.view.components.PlaylistComponent;
 	import com.longtailvideo.jwplayer.view.interfaces.IPlayerComponent;
 	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
-	
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Loader;
@@ -89,7 +89,7 @@ package com.longtailvideo.jwplayer.view {
 		protected var layoutManager:PlayerLayoutManager;
 
 		protected var currentLayer:Number = 0;
-
+		protected var cbLayer:Number = 0;
 
 		// Delay between IDLE state and when the preview image is shown
 		private var imageDelay:Timer = new Timer(100, 1);
@@ -117,6 +117,7 @@ package com.longtailvideo.jwplayer.view {
 		private var _imageLoaded:Boolean = false;
 		// Indicates whether the instream player is being displayed
 		private var _instreamMode:Boolean = false;
+		private var _canCast:Boolean = false;
 
 		public function View(player:IPlayer, model:Model) {
 			_player = player;
@@ -186,6 +187,7 @@ package com.longtailvideo.jwplayer.view {
 			_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_ERROR, errorHandler);
 			_player.addEventListener(MediaEvent.JWPLAYER_MEDIA_BUFFER, mediaHandler);
 			_player.addEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, mediaHandler);
+			_player.addEventListener(CastEvent.JWPLAYER_CAST_AVAILABLE, _castAvailable);
 			layoutManager = new PlayerLayoutManager(_player);
 			setupRightClick();
 
@@ -206,12 +208,19 @@ package com.longtailvideo.jwplayer.view {
 		}
 		
 		protected var _preventFade:Boolean = false;
-		
+
 		private function mediaHandler(evt:MediaEvent):void {
 			_currPos = evt.position;
 			_duration = evt.duration;
 		}
 		
+		private function _castAvailable(evt:CastEvent):void {
+			_canCast = evt.available;
+			if (_canCast) {
+				showControls();
+			}
+		}
+
 		protected function preventFade(evt:Event=null):void {
 			_preventFade = true;
 		}
@@ -334,6 +343,7 @@ package com.longtailvideo.jwplayer.view {
 			_playlistLayer.addChild(_playlist as DisplayObject);
 			setupComponent(_components.logo, n++);
 			setupComponent(_components.controlbar, n++);
+			cbLayer = n;
 			setupComponent(_components.dock, n++);
 		}
 
@@ -878,7 +888,7 @@ package com.longtailvideo.jwplayer.view {
 		}
 		
 		private function hideControls():void {
-			if (_preventFade) {
+			if (_canCast || _preventFade) {
 				return;
 			}
 
@@ -897,12 +907,13 @@ package com.longtailvideo.jwplayer.view {
 			if (_model.config.controls || audioMode) {
 				_components.controlbar.show();
 				_components.dock.show();
-
 				if (_instreamControls) {
 					_instreamControls.controlbar.show();
-				}
+	}
 			}
-			if (!audioMode) _components.logo.show();
+			if (!audioMode) {
+				_components.logo.show();
+			}
 		}
 
 		/** If the mouse leaves the stage, hide the controlbar if position is 'over' **/

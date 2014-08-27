@@ -15,6 +15,8 @@
 
     // Create quick reference variables for speed access to core prototypes.
     var
+        slice            = ArrayProto.slice,
+        concat           = ArrayProto.concat,
         toString         = ObjProto.toString,
         hasOwnProperty   = ObjProto.hasOwnProperty;
 
@@ -55,6 +57,35 @@
         }
         return obj;
     };
+
+
+    // Return the first value which passes a truth test. Aliased as `detect`.
+    _.find = _.detect = function(obj, predicate, context) {
+        var result;
+        any(obj, function(value, index, list) {
+            if (predicate.call(context, value, index, list)) {
+                result = value;
+                return true;
+            }
+        });
+        return result;
+    };
+
+
+    // Determine if at least one element in the object matches a truth test.
+    // Delegates to **ECMAScript 5**'s native `some` if available.
+    // Aliased as `any`.
+    var any = _.some = _.any = function(obj, predicate, context) {
+        predicate || (predicate = _.identity);
+        var result = false;
+        if (obj == null) return result;
+        if (nativeSome && obj.some === nativeSome) return obj.some(predicate, context);
+        each(obj, function(value, index, list) {
+            if (result || (result = predicate.call(context, value, index, list))) return breaker;
+        });
+        return !!result;
+    };
+
 
     // An internal function to generate lookup iterators.
     var lookupIterator = function(value) {
@@ -144,6 +175,18 @@
         for (var key in obj) if (_.has(obj, key)) keys.push(key);
         return keys;
     };
+
+
+    // Return a copy of the object only containing the whitelisted properties.
+    _.pick = function(obj) {
+        var copy = {};
+        var keys = concat.apply(ArrayProto, slice.call(arguments, 1));
+        each(keys, function(key) {
+            if (key in obj) copy[key] = obj[key];
+        });
+        return copy;
+    };
+
 
     // Is a given value an array?
     // Delegates to ECMA5's native Array.isArray
