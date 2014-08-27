@@ -4,11 +4,11 @@ package com.longtailvideo.jwplayer.events
 
 	public class InstreamEvent extends PlayerEvent
 	{
-		public static var JWPLAYER_INSTREAM_CLICKED:String = "jwplayerInstreamClicked";
+		public static const JWPLAYER_INSTREAM_CLICKED:String = "jwplayerInstreamClicked";
 		
 		public var hasControls:Boolean;
 		
-		public static var JWPLAYER_INSTREAM_DESTROYED:String = "jwplayerInstreamDestroyed";
+		public static const JWPLAYER_INSTREAM_DESTROYED:String = "jwplayerInstreamDestroyed";
 
 		public var destroyedReason:String;
 		

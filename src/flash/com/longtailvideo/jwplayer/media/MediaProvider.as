@@ -277,7 +277,7 @@ package com.longtailvideo.jwplayer.media {
 		 */
 		protected function setState(newState:String):void {
 			if (state != newState) {
-				var evt:PlayerStateEvent = new PlayerStateEvent(PlayerStateEvent.JWPLAYER_PLAYER_STATE, newState, state);
+				var evt:PlayerStateEvent = new PlayerStateEvent(newState, state);
 				_state = newState;
 				dispatchEvent(evt);
 			}

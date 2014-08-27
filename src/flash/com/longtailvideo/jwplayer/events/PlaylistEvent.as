@@ -6,13 +6,13 @@ package com.longtailvideo.jwplayer.events {
 	public class PlaylistEvent extends PlayerEvent {
 		
 
-		public static var JWPLAYER_PLAYLIST_LOADED:String = "jwplayerPlaylistLoaded";
+		public static const JWPLAYER_PLAYLIST_LOADED:String = "jwplayerPlaylistLoaded";
 
-		public static var JWPLAYER_PLAYLIST_UPDATED:String = "jwplayerPlaylistUpdated";
+		public static const JWPLAYER_PLAYLIST_UPDATED:String = "jwplayerPlaylistUpdated";
 
-		public static var JWPLAYER_PLAYLIST_ITEM:String = "jwplayerPlaylistItem";
+		public static const JWPLAYER_PLAYLIST_ITEM:String = "jwplayerPlaylistItem";
 
-		public static var JWPLAYER_PLAYLIST_COMPLETE:String = "jwplayerPlaylistComplete";
+		public static const JWPLAYER_PLAYLIST_COMPLETE:String = "jwplayerPlaylistComplete";
 		
 		private var _playlist:IPlaylist;
 		
