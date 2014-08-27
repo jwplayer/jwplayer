@@ -113,6 +113,8 @@
 
         // Enable AirPlay
         _videotag.setAttribute('x-webkit-airplay', 'allow');
+        _videotag.setAttribute("webkit-playsinline", "");
+
 
         _attached = true;
 
