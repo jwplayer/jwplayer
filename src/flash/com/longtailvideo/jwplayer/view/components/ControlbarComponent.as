@@ -338,6 +338,8 @@ package com.longtailvideo.jwplayer.view.components {
 			if (player.config.fullscreen) {
 				newLayout = newLayout.replace("fullscreen", "normalscreen");
 				hideButton("fullscreen");
+				newLayout = newLayout.replace("castoff", "");
+				hideButton("castoff");
 			} else {
 				hideButton("normalscreen");
 			}
