@@ -90,6 +90,9 @@
 			_connection.addEventListener(IOErrorEvent.IO_ERROR, errorHandler);
 			_connection.addEventListener(AsyncErrorEvent.ASYNC_ERROR, errorHandler);
 			_connection.objectEncoding = ObjectEncoding.AMF0;
+			if (getConfigProperty('proxytype')) {
+				_connection.proxyType = getConfigProperty('proxytype');
+			}
 			_connection.client = new NetClient(this);
 			_loader = new AssetLoader();
 			_loader.addEventListener(Event.COMPLETE, loaderComplete);

@@ -1,5 +1,6 @@
 package com.longtailvideo.jwplayer.player {
 	import com.longtailvideo.jwplayer.events.CaptionsEvent;
+	import com.longtailvideo.jwplayer.events.CastEvent;
 	import com.longtailvideo.jwplayer.events.InstreamEvent;
 	import com.longtailvideo.jwplayer.events.JWAdEvent;
 	import com.longtailvideo.jwplayer.events.MediaEvent;
@@ -99,7 +100,7 @@ package com.longtailvideo.jwplayer.player {
 				timer.start();
 			}
 		}
-		
+
 		protected function queueEvents(evt:Event):void {
 			_queuedEvents.push(evt);
 		}
@@ -273,6 +274,8 @@ package com.longtailvideo.jwplayer.player {
 				args.controls = (evt as ViewEvent).data;
 			else if (type == ViewEvent.JWPLAYER_VIEW_TAB_FOCUS)
 				args.hasFocus = (evt as ViewEvent).data;
+			else if (type ==  CastEvent.JWPLAYER_CAST_AVAILABLE) 
+				args.available = (evt as CastEvent).available;
 			else if (evt is ViewEvent && (evt as ViewEvent).data != null)
 				args.data = JavascriptSerialization.stripDots((evt as ViewEvent).data);
 			else if (evt is PlayerEvent) {
@@ -355,7 +358,6 @@ package com.longtailvideo.jwplayer.player {
 			}
 			return returnObj;
 		}
-		
 		
 		protected function listenerCallbackAds(evt:JWAdEvent):Object {
 			var returnObj:Object = {};
