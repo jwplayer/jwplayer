@@ -35,7 +35,6 @@
 		protected var model:Model;
 		protected var view:View;
 		protected var controller:Controller;
-		protected var _javascriptAPI:JavascriptAPI;
 		protected var _dispatcher:GlobalEventDispatcher;
 		
 		
@@ -80,8 +79,9 @@
 			// Only handle JWPLAYER_READY once
 			controller.removeEventListener(PlayerEvent.JWPLAYER_READY, playerReady);
 			SWFFocus.init(stage);
+			
 			// Initialize Javascript interface
-			_javascriptAPI = new JavascriptAPI(this);
+			JavascriptAPI.setPlayer(this);
 			
 			// Forward all MVC events
 			model.addGlobalListener(forward);

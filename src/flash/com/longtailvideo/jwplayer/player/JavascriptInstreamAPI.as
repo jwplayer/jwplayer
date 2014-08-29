@@ -10,27 +10,22 @@ package com.longtailvideo.jwplayer.player {
 	
 	import flash.events.Event;
 	import flash.external.ExternalInterface;
-	import flash.utils.setTimeout;
 	
 	public class JavascriptInstreamAPI {
 		
-		protected var _isPlayer:InstreamPlayer;
+		private static var _isPlayer:InstreamPlayer;
 		
-		public function JavascriptInstreamAPI() {
-			setupJSListeners();
-		}
-		
-		public function setPlayer(isplayer:InstreamPlayer):void {
+		public static function setPlayer(isplayer:InstreamPlayer):void {
 			_destroyInstreamPlayer(_isPlayer);
 			_isPlayer = isplayer;
 			_isPlayer.addEventListener(InstreamEvent.JWPLAYER_INSTREAM_DESTROYED, instreamDestroyed);
 		}
 		
-		protected function instreamDestroyed(evt:InstreamEvent):void {
+		private static function instreamDestroyed(evt:InstreamEvent):void {
 			_destroyInstreamPlayer(evt.currentTarget as InstreamPlayer);
 		}
 		
-		private function _destroyInstreamPlayer(isplayer:InstreamPlayer):void {
+		private static function _destroyInstreamPlayer(isplayer:InstreamPlayer):void {
 			if (!isplayer) return;
 			isplayer.removeEventListener(InstreamEvent.JWPLAYER_INSTREAM_DESTROYED, instreamDestroyed);
 			for each (var eventType:String in isplayer.jsListeners) {
@@ -42,7 +37,7 @@ package com.longtailvideo.jwplayer.player {
 			}
 		}
 		
-		protected function setupJSListeners():void {
+		public static function setupJSListeners():void {
 			try {
 				ExternalInterface.addCallback("jwLoadItemInstream", js_loadItemInstream);
 				ExternalInterface.addCallback("jwLoadArrayInstream", js_loadArrayInstream);
@@ -79,21 +74,21 @@ package com.longtailvideo.jwplayer.player {
 		 **              EVENT LISTENERS              **
 		 ***********************************************/
 		
-		protected function js_loadItemInstream(item:Object, options:Object):void {
+		private static function js_loadItemInstream(item:Object, options:Object):void {
 			if (!_isPlayer) {
 				throw(new Error('Instream player undefined'));
 			}
 			_isPlayer.loadItem(item, options);
 		}
 		
-		protected function js_loadArrayInstream(items:Array, options:Array):void {
+		private static function js_loadArrayInstream(items:Array, options:Array):void {
 			if (!_isPlayer) {
 				throw(new Error('Instream player undefined'));
 			}
 			_isPlayer.loadArray(items, options);
 		}
 		
-		protected function js_addEventListener(eventType:String, callback:String):void {
+		private static function js_addEventListener(eventType:String, callback:String):void {
 			if (!_isPlayer) return;
 			
 			if (!_isPlayer.jsListeners[eventType]) {
@@ -103,7 +98,7 @@ package com.longtailvideo.jwplayer.player {
 			(_isPlayer.jsListeners[eventType] as Array).push(callback);
 		}
 		
-		protected function js_removeEventListener(eventType:String, callback:String):void {
+		private static function js_removeEventListener(eventType:String, callback:String):void {
 			if (!_isPlayer) return;
 			_isPlayer.removeEventListener(eventType, listenerCallback);
 			
@@ -116,7 +111,7 @@ package com.longtailvideo.jwplayer.player {
 			}
 		}
 		
-		protected function listenerCallback(evt:Event):void {
+		private static function listenerCallback(evt:Event):void {
 			var args:Object = {};
 			var type:String = evt.type;
 
@@ -139,7 +134,7 @@ package com.longtailvideo.jwplayer.player {
 			JavascriptAPI.dispatch(type, _isPlayer.jsListeners[type] as Array, args);
 		}
 		
-		protected function listenerCallbackMedia(evt:MediaEvent):Object {
+		private static function listenerCallbackMedia(evt:MediaEvent):Object {
 			var returnObj:Object = {};
 
 			if (evt.bufferPercent >= 0) 		returnObj.bufferPercent = evt.bufferPercent;
@@ -159,7 +154,7 @@ package com.longtailvideo.jwplayer.player {
 		}
 		
 		
-		protected function listenerCallbackAds(evt:JWAdEvent):Object {
+		private static function listenerCallbackAds(evt:JWAdEvent):Object {
 			var returnObj:Object = {};
 			
 			if (evt.totalAds) 					returnObj.totalAds = evt.totalAds;
@@ -169,13 +164,13 @@ package com.longtailvideo.jwplayer.player {
 		}
 		
 		
-		protected function listenerCallbackState(evt:PlayerStateEvent):Object {
+		private static function listenerCallbackState(evt:PlayerStateEvent):Object {
 			if (evt.type == PlayerStateEvent.JWPLAYER_PLAYER_STATE) {
 				return { newstate: evt.newstate, oldstate: evt.oldstate };
 			} else return {};
 		}
 
-		protected function listenerCallbackInstream(evt:InstreamEvent):Object {
+		private static function listenerCallbackInstream(evt:InstreamEvent):Object {
 			if (evt.type == InstreamEvent.JWPLAYER_INSTREAM_DESTROYED) {
 				return { destroyedReason: evt.destroyedReason };
 			} else if (evt.type == InstreamEvent.JWPLAYER_INSTREAM_CLICKED) {
@@ -184,7 +179,7 @@ package com.longtailvideo.jwplayer.player {
 			return {};
 		}
 
-		protected function listenerCallbackPlaylist(evt:PlaylistEvent):Object {
+		private static function listenerCallbackPlaylist(evt:PlaylistEvent):Object {
 			 if (evt.type == PlaylistEvent.JWPLAYER_PLAYLIST_ITEM) {
 				return { index: _isPlayer.getIndex() };
 			} else return {};
@@ -193,18 +188,18 @@ package com.longtailvideo.jwplayer.player {
 		 **                 GETTERS                   **
 		 ***********************************************/
 		
-		protected function js_getDuration():Number {
+		private static function js_getDuration():Number {
 			if (!_isPlayer) return -1;
 			else return _isPlayer.getPosition();
 		}
 		
 		
-		protected function js_getPosition():Number {
+		private static function js_getPosition():Number {
 			if (!_isPlayer) return -1;
 			else return _isPlayer.getDuration();
 		}
 		
-		protected function js_getState():String {
+		private static function js_getState():String {
 			if (!_isPlayer) return "";
 			else return _isPlayer.getState();
 		}
@@ -213,12 +208,12 @@ package com.longtailvideo.jwplayer.player {
 		 **                 PLAYBACK                  **
 		 ***********************************************/
 
-		protected function js_play(playstate:*=null):void {
+		private static function js_play(playstate:*=null):void {
 			if (!_isPlayer) return;
 			doPlay(playstate);
 		}
 		
-		protected function doPlay(playstate:*=null):void {
+		private static function doPlay(playstate:*=null):void {
 			if (playstate == null){
 				playToggle();
 			} else {
@@ -231,7 +226,7 @@ package com.longtailvideo.jwplayer.player {
 		}
 		
 		
-		protected function js_pause(playstate:*=null):void {
+		private static function js_pause(playstate:*=null):void {
 			if (!_isPlayer) return;
 			
 			if (playstate == null){
@@ -245,7 +240,7 @@ package com.longtailvideo.jwplayer.player {
 			}
 		}
 		
-		protected function playToggle():void {
+		private static function playToggle():void {
 			if (_isPlayer.getState() == PlayerState.IDLE || _isPlayer.getState() == PlayerState.PAUSED) {
 				_isPlayer.play();
 			} else {
@@ -253,38 +248,37 @@ package com.longtailvideo.jwplayer.player {
 			}
 		}
 		
-		protected function js_seek(position:Number=0):void {
+		private static function js_seek(position:Number=0):void {
 			if (!_isPlayer) return;
 			
 			_isPlayer.seek(position);
 		}
 		
-		protected function js_destroyInstream():void {
+		private static function js_destroyInstream():void {
 			if (!_isPlayer) return;
 			_isPlayer.destroy();
 		}
 
-		protected function js_setText(text:String=""):void {
+		private static function js_setText(text:String=""):void {
 			if (!_isPlayer) return;
 			
 			_isPlayer.setText(text);
 		}
 		
-		protected function js_state():String {
+		private static function js_state():String {
 			if (!_isPlayer) return PlayerState.IDLE;
 			return _isPlayer.getState();
 		}
 		
-		protected function js_setClick(url:String):void {
+		private static function js_setClick(url:String):void {
 			if (!_isPlayer) return;
 			_isPlayer.setClick(url);
 		}
 		
-		protected function js_hideInstream():void {
+		private static function js_hideInstream():void {
 			if (!_isPlayer) return;
 			_isPlayer.hide();
 		}
 		
 	}
-
 }
