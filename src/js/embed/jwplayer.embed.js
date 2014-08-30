@@ -72,7 +72,7 @@
 
                 // If single item playlist and it doesn't have any sources
                 if (playlist.length === 1) {
-                    if (playlist[0].sources || playlist[0].sources.length === 0) {
+                    if (!playlist[0].sources || playlist[0].sources.length === 0) {
                         _sourceError();
                         return;
                     }
