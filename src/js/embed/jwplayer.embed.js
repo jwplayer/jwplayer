@@ -1,6 +1,7 @@
 (function(jwplayer) {
     var utils = jwplayer.utils,
-        events = jwplayer.events;
+        events = jwplayer.events,
+        _ = jwplayer._;
 
     var embed = jwplayer.embed = function(playerApi) {
 
@@ -13,7 +14,7 @@
             _loader,
             _playlistLoading = false,
             _errorOccurred = false,
-            _setupErrorTimer = null,
+            _setupErrorTimer = -1,
             _fallbackDiv = null,
             _this = this;
 
@@ -60,11 +61,21 @@
                 return;
             }
 
-            if (utils.typeOf(_config.playlist) === 'array' && _config.playlist.length < 2) {
-                if (_config.playlist.length === 0 || !_config.playlist[0].sources ||
-                    _config.playlist[0].sources.length === 0) {
+            var playlist = _config.playlist;
+
+            // Check for common playlist errors
+            if (_.isArray(playlist)) {
+                if (playlist.length === 0) {
                     _sourceError();
                     return;
+                }
+
+                // If single item playlist and it doesn't have any sources
+                if (playlist.length === 1) {
+                    if (!playlist[0].sources || playlist[0].sources.length === 0) {
+                        _sourceError();
+                        return;
+                    }
                 }
             }
 
@@ -72,7 +83,7 @@
                 return;
             }
 
-            if (utils.typeOf(_config.playlist) === 'string') {
+            if (_.isString(playlist)) {
                 _loader = new jwplayer.playlist.loader();
                 _loader.addEventListener(events.JWPLAYER_PLAYLIST_LOADED, function(evt) {
                     _config.playlist = evt.playlist;
@@ -104,12 +115,11 @@
                         }
                     }
                 }
+
                 var message;
                 if (_config.fallback) {
                     message = 'No suitable players found and fallback enabled';
-                    _setupErrorTimer = setTimeout(function() {
-                        _dispatchSetupError(message, true);
-                    }, 10);
+                    _dispatchSetupError(message, true);
                     utils.log(message);
                     new embed.download(_container, _config, _sourceError);
                 } else {
@@ -118,7 +128,6 @@
                     utils.log(message);
                     _replaceContainer();
                 }
-
             }
         }
 
@@ -146,12 +155,10 @@
         }
 
         function _dispatchSetupError(message, fallback) {
-            if (_setupErrorTimer) {
-                clearTimeout(_setupErrorTimer);
-                _setupErrorTimer = null;
-            }
+            clearTimeout(_setupErrorTimer);
+
+            // Throttle this so that it runs once if called twice in the same callstack
             _setupErrorTimer = setTimeout(function() {
-                _setupErrorTimer = null;
                 playerApi.dispatchEvent(events.JWPLAYER_SETUP_ERROR, {
                     message: message,
                     fallback: fallback

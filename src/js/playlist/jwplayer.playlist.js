@@ -1,10 +1,3 @@
-/**
- * JW Player playlist model
- *
- * @author zach
- * @modified pablo
- * @version 6.0
- */
 (function(jwplayer) {
 
     var utils = jwplayer.utils;
@@ -23,89 +16,70 @@
         return _playlist;
     };
 
-
     /** Go through the playlist and choose a single playable type to play; remove sources of a different type **/
-    jwplayer.playlist.filterPlaylist = function(playlist, checkFlash, androidhls) {
-        var pl = [],
-            i, item, j, source;
-        for (i = 0; i < playlist.length; i++) {
-            item = utils.extend({}, playlist[i]);
-            item.sources = jwplayer.playlist.filterSources(item.sources, false, androidhls);
-            if (item.sources.length > 0) {
-                for (j = 0; j < item.sources.length; j++) {
-                    source = item.sources[j];
-                    if (!source.label) {
-                        source.label = j.toString();
-                    }
-                }
-                pl.push(item);
+    jwplayer.playlist.filterPlaylist = function(playlist, androidhls) {
+        var list = [];
+
+        _.each(playlist, function(item) {
+            item = utils.extend({}, item);
+            item.sources = _filterSources(item.sources, false, androidhls);
+
+            if (!item.sources.length) {
+                return;
             }
+
+            // If the source doesn't have a label, number it
+            for (var j = 0; j < item.sources.length; j++) {
+                item.sources[j].label = item.sources[j].label || j.toString();
+            }
+
+            list.push(item);
+        });
+
+        return list;
+    };
+
+    function _parseSource(source) {
+
+        // file is the only hard requirement
+        if (!source || !source.file) { return; }
+
+        var file = utils.trim('' + source.file);
+        var type = source.type;
+
+        // If type not included, we infer it from extension
+        if (!type) {
+            var extension = utils.extension(file);
+            type = utils.extensionmap.extType(extension);
         }
 
-        // HTML5 filtering failed; try for Flash sources
-        if (checkFlash && pl.length === 0) {
-            for (i = 0; i < playlist.length; i++) {
-                item = utils.extend({}, playlist[i]);
-                item.sources = jwplayer.playlist.filterSources(item.sources, true, androidhls);
-                if (item.sources.length > 0) {
-                    for (j = 0; j < item.sources.length; j++) {
-                        source = item.sources[j];
-                        if (!source.label) {
-                            source.label = j.toString();
-                        }
-                    }
-                    pl.push(item);
-                }
-            }
-        }
-        return pl;
-    };
+        return utils.extend({}, source, { file : file, type : type }) ;
+    }
 
     /** Filters the sources by taking the first playable type and eliminating sources of a different type **/
-    jwplayer.playlist.filterSources = function(sources, filterFlash, androidhls) {
+    var _filterSources = jwplayer.playlist.filterSources = function(sources, filterFlash, androidhls) {
         var selectedType,
-            newSources;
+            newSources = [],
+            canPlay = (filterFlash ? jwplayer.embed.flashCanPlay : jwplayer.embed.html5CanPlay);
 
-        if (sources) {
-            newSources = [];
-            for (var i = 0; i < sources.length; i++) {
-                var source = utils.extend({}, sources[i]),
-                    file = source.file,
-                    type = source.type;
+        if (!sources) { return; }
 
-                if (file) {
-                    source.file = file = utils.trim('' + file);
-                } else {
-                    // source.file is required
-                    continue;
-                }
+        _.each(sources, function(originalSource) {
+            var source = _parseSource(originalSource);
 
-                if (!type) {
-                    var extension = utils.extension(file);
-                    source.type = type = utils.extensionmap.extType(extension);
-                }
+            if (!source) { return; }
 
-                if (filterFlash) {
-                    if (jwplayer.embed.flashCanPlay(file, type)) {
-                        if (!selectedType) {
-                            selectedType = type;
-                        }
-                        if (type === selectedType) {
-                            newSources.push(source);
-                        }
-                    }
-                } else {
-                    if (jwplayer.embed.html5CanPlay(file, type, androidhls)) {
-                        if (!selectedType) {
-                            selectedType = type;
-                        }
-                        if (type === selectedType) {
-                            newSources.push(source);
-                        }
-                    }
+            if (canPlay(source.file, source.type, androidhls)) {
+                // We want sources of all the same type since they may be of different quality levels
+                selectedType = selectedType || source.type;
+
+                if (source.type === selectedType) {
+                    newSources.push(source);
                 }
             }
-        }
+        });
+
         return newSources;
     };
+
 })(jwplayer);
