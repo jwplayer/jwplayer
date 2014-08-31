@@ -18,12 +18,11 @@ package com.longtailvideo.jwplayer.utils {
 		public static const NONE:String = "none";
 		/** Constant defining the Flash tracing output type. **/
 		public static const TRACE:String = "trace";
+		
 		/** Reference to the player config **/
 		private static var _config:PlayerConfig;
-		
 		/** filter stuff **/
-		public static var filter:String = "";
-		
+		private static var _filter:RegExp;
 		
 		/**
 		 * Log a message to the output system.
@@ -32,45 +31,40 @@ package com.longtailvideo.jwplayer.utils {
 		 * @param type		The type of message; is capitalized and encapsulates the message.
 		 **/
 		public static function log(message:*, type:String = "log"):void {
-			try{
-				if (message == undefined) {
-					send(type.toUpperCase());
-				} else if (message is String) {
-					send(type.toUpperCase() + ' (' + message + ')');
-				} else if (message is Boolean || message is Number || message is Array) {
-					send(type.toUpperCase() + ' (' + message.toString() + ')');
-				} else {
-					Logger.object(message, type);
-				}
-			} catch (err:Error){
-				trace(message);
+			type = type.toUpperCase();
+			if (message == undefined) {
+				send(type);
+			} else if (message is String) {
+				send(type + ' (' + message + ')');
+			} else if (message is Boolean || message is Number || message is Array) {
+				send(type + ' (' + message.toString() + ')');
+			} else {
+				send(type + ' (' + Strings.print_r(message) + ')');
 			}
 		}
 		
-		
-		/** Explode an object for logging. **/
-		private static function object(message:Object, type:String):void {
-			var txt:String = type.toUpperCase() + ' (';
-			txt += Strings.print_r(message);
-			txt += ')';
-			Logger.send(txt);
+		public static function set filter(pattern:String):void {
+			if (pattern.length) {
+				_filter = new RegExp(pattern, "ig");
+			} else {
+				_filter = null;
+			}
 		}
 		
 		/** Send the messages to the output system. **/
 		private static function send(text:String):void {
+			if (_filter && !_filter.test(text)) {
+				return;
+			}
 			var debug:String = _config ? _config.debug : TRACE;
-			if (filter && !(new RegExp(filter, "ig")).test(text)) return;
-			switch (debug) {
-				case CONSOLE:
+			if (debug === CONSOLE) {
+				try{
 					if (ExternalInterface.available) {
 						ExternalInterface.call('console.log', text);
 					}
-					break;
-				case TRACE:
-					trace(text);
-					break;
-				case NONE:
-					break;
+				} catch (err:Error){}
+			} else if (debug === TRACE) {
+				trace(text);
 			}
 		}
 		
