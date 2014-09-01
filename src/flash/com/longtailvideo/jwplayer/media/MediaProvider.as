@@ -99,9 +99,10 @@ package com.longtailvideo.jwplayer.media {
 		private var _queuedBufferFull:Boolean;
 		/** Current quality level **/
 		protected var _currentQuality:Number = -1;
-		
+		protected var _currentAudioTrack:Number = -1;
 		protected var _width:Number;
 		protected var _height:Number;
+
 		
 		
 		public function MediaProvider(provider:String) {
@@ -382,23 +383,38 @@ package com.longtailvideo.jwplayer.media {
 
 
 		/** Current quality level getter **/
-		public function get currentQuality():Number {
-			return _currentQuality;
+		public function get currentAudioTrack():Number {
+			return _currentAudioTrack;
 		}
 
 
 		/** Current quality level setter **/
-		public function set currentQuality(quality:Number):void {
-			_currentQuality = quality;
+		public function set currentAudioTrack(audioTrack:Number):void {
+			_currentAudioTrack = audioTrack;
 		}
 
 
 		/** Quality levels (must be overridden by inheritors **/
-		public function get qualityLevels():Array {
+		public function get audioTracks():Array {
 			return null;
 		}
 
-
+		/** Current quality level getter **/
+		public function get currentQuality():Number {
+			return _currentQuality;
+		}
+		
+		
+		/** Current quality level setter **/
+		public function set currentQuality(quality:Number):void {
+			_currentQuality = quality;
+		}
+		
+		
+		/** Quality levels (must be overridden by inheritors **/
+		public function get qualityLevels():Array {
+			return null;
+		}
 		/** Translate sources into quality levels. **/
 		protected function sources2Levels(sources:Array):Array {
 			var levels:Array = new Array();

@@ -691,6 +691,20 @@ package com.longtailvideo.jwplayer.player
 			throw new Error(UNSUPPORTED_ERROR);
 		}
 		
+		public function getAudioTracks():Array {
+			throw new Error(UNSUPPORTED_ERROR);
+		}
+		
+		public function getCurrentAudioTrack():Number {
+			throw new Error(UNSUPPORTED_ERROR);
+		}
+		
+		public function setCurrentAudioTrack(index:Number):void {
+			throw new Error(UNSUPPORTED_ERROR);
+		}
+		
+		
+		
 		public function getCaptionsList():Array {
 			throw new Error(UNSUPPORTED_ERROR);
 		}

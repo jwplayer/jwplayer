@@ -46,7 +46,8 @@
         'setCurrentCaptions',
         'setControls',
         'setCurrentQuality',
-        'setVolume'
+        'setVolume',
+        'setCurrentAudioTrack'
     ];
 
     var _eventMapping = {
@@ -84,7 +85,9 @@
         onAdPlay: events.JWPLAYER_AD_PLAY,
         onAdPause: events.JWPLAYER_AD_PAUSE,
         onAdMeta: events.JWPLAYER_AD_META,
-        onCast: events.JWPLAYER_CAST_SESSION
+        onCast: events.JWPLAYER_CAST_SESSION,
+        onAudioTrackChange: events.JWPLAYER_AUDIO_TRACKS_CHANGED,
+        onAudioTracks: events.JWPLAYER_AUDIO_TRACKS
     };
 
     var _stateMapping = {
@@ -366,7 +369,16 @@
                 return _callInternal('jwAttachMedia', seekable);
             }
         };
+        
+        
+        _this.getAudioTracks = function() {
+            return _callInternal('jwGetAudioTracks');
+        };
 
+        _this.getCurrentAudioTracks = function() {
+            return _callInternal('jwGetCurrentAudioTracks');
+        };
+        
         function _stateListener(state, callback) {
             if (!_stateListeners[state]) {
                 _stateListeners[state] = [];
