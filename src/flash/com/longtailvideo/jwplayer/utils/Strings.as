@@ -126,13 +126,11 @@ package com.longtailvideo.jwplayer.utils {
 		 */
 
         public static function getAzureFileFormat(path:String):String {
-            var match:Array = path.match(/manifest\(format=(.*),audioTrack/);
-            if (!match || !match[1]) {
-                // not an azure file
-                return "";
+            if (path.indexOf('(format=m3u8-') > -1) {
+                return 'm3u8';
+            } else { 
+                return '';
             }
-
-            return match[1].split('-')[0];
         }
 
         public static function extension(filename:String):String {
