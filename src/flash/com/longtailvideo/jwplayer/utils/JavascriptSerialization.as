@@ -67,6 +67,8 @@ package com.longtailvideo.jwplayer.utils
 			return obj;
 		}
 		
+		//function normalizes event data btwn js and as3, having to do with reserved keywords and operators.
+		//an equivalent function in js should translate back after sending through ExternalInterface
 		public static function stripDots(obj:*):* {
 			var type:String = getQualifiedClassName(obj); 
 			switch(type) {
@@ -80,7 +82,7 @@ package com.longtailvideo.jwplayer.utils
 						newkey = newkey.replace(/\ /g, "__spc__");
 						newkey = newkey.replace(/\-/g, "__dsh__");
 						newkey = newkey.replace(/[^A-Za-z0-9\_]/g, "");
-						newkey = newkey.replace(/default/g, "__default__");
+						newkey = newkey.replace(/^default$/g, "__default__");
 						CONFIG::debugging {
 							if (newkey !== key) {
 								trace('converted object key:', key, 'to', newkey);
