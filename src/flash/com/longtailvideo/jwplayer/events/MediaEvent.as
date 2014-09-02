@@ -50,7 +50,7 @@ package com.longtailvideo.jwplayer.events {
 		public var currentQuality:Number	= -1;
 		
 		public static const JWPLAYER_AUDIO_TRACKS:String = "jwplayerAudioTracks";
-		public static const WPLAYER_AUDIO_TRACKS_CHANGED:String = "jwplayerAudioTracksChanged";
+		public static const JWPLAYER_AUDIO_TRACKS_CHANGED:String = "jwplayerAudioTracksChanged";
 		
 		//An array of quality levels
 		public var tracks:Array				= null;
