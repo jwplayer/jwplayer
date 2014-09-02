@@ -334,7 +334,7 @@ package com.longtailvideo.jwplayer.view.components {
 				newLayout = newLayout.replace("cast", "casting");
 				newLayout = newLayout.replace("fullscreen", "");
 				hideButton("cast");
-				hideButton("fullscreen", false);
+				showButton("fullscreen");
 				hideButton("normalscreen");
 			} else {
 				hideButton("casting");
@@ -379,30 +379,30 @@ package com.longtailvideo.jwplayer.view.components {
 			if (_timeSlider) {
 				if (_timeAlt && _timeAlt.text || _liveMode) {
 					_timeSlider.visible = false;
-					hideButton('alt', false);
-					hideButton('elapsed', true);
-					hideButton('duration', true);
+					showButton('alt');
+					hideButton('elapsed');
+					hideButton('duration');
 					newLayout = newLayout.replace("duration","");
 					newLayout = newLayout.replace("elapsed","");
 					_timeSlider.visible = false;
 				} else {
-					hideButton('alt', true);
+					hideButton('alt');
 					_timeSlider.visible = true;
 				}
 			}
 			//  more fullscreen
 			if (_audioMode || _hideFullscreen || _player.config.fullscreen && newLayout) {
 				newLayout = newLayout.replace("fullscreen", "");
-				hideButton('fullscreen', true);
+				hideButton('fullscreen');
 			} else {
-				hideButton('fullscreen', false);
+				showButton('fullscreen');
 			}
 			// volume
 			if (_audioMode || _instreamMode) {
-				hideButton('volumeH', false)
+				showButton('volumeH')
 			} else {
 				newLayout = newLayout.replace("volumeH", "");
-				hideButton('volumeH', true);
+				hideButton('volumeH');
 			}
 
 			_currentLayout = removeInactive(newLayout);
@@ -983,6 +983,10 @@ package com.longtailvideo.jwplayer.view.components {
 
 
 
+        private function showButton(name:String) {
+            hideButton(name, false);
+        }
+
 		private function hideButton(name:String, state:Boolean = true):void {
 			var button:DisplayObject = _buttons[name];
 			if (button && contains(button)) {
@@ -1048,7 +1052,6 @@ package com.longtailvideo.jwplayer.view.components {
 
 			if (_fullscreen != _player.config.fullscreen) {
 				_fullscreen = _player.config.fullscreen;
-				//stopFader();
 			}
 
 			stateHandler();
