@@ -6,8 +6,6 @@ package com.longtailvideo.jwplayer.controller {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.utils.Dictionary;
-	
-//	import mx.core.IFlexDisplayObject;
 
 	/**
 	 * Sent when the plugin loader has loaded all valid plugins.

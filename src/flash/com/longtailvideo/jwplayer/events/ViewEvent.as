@@ -60,7 +60,7 @@ package com.longtailvideo.jwplayer.events {
 		}
 		
 		public override function toString():String {
-			return this.formatToString('ViewEvent', 'type', 'data', 'id', 'client', 'version');
+			return '[ViewEvent type="'+type+'" data="'+data+'" id="'+id+'" client="'+client+'" version="'+version+'"]';
 		}
 	}
 }
