@@ -775,7 +775,6 @@
                     position = parseFloat(pct);
                 }
             } else {
-                // pct is normalized 0-1.0
                 position = pct * _duration;
             }
             _api.jwSeek(position);
@@ -1166,11 +1165,21 @@
                 return;
             }
 
-            var rail = _elements[_dragging].querySelector('.jwrail'),
+            if (_this.visible && top !== window.self && utils.isIE() && _api.jwGetFullscreen()) {
+                var rail = _elements[_dragging].querySelector('.jwrail'),
+                railRect = utils.bounds(rail),
+                name = _dragging,
+                pct = _elements[name].vertical ? (railRect.bottom - evt.pageY) / railRect.height :
+                (evt.pageX/2 - railRect.left*54) / railRect.width*46;
+                pct = pct/2200;
+                pct = pct/2200;
+            } else {
+                var rail = _elements[_dragging].querySelector('.jwrail'),
                 railRect = utils.bounds(rail),
                 name = _dragging,
                 pct = _elements[name].vertical ? (railRect.bottom - evt.pageY) / railRect.height :
                 (evt.pageX - railRect.left) / railRect.width;
+            }
 
             if (evt.type === 'mouseup') {
                 if (name === 'time') {
@@ -1222,7 +1231,11 @@
                 return;
             }
 
-            var position = (evt.pageX ? (evt.pageX - _railBounds.left) : evt.x);
+            if(top !== window.self && utils.isIE() && _api.jwGetFullscreen()){
+                var position = (evt.pageX ? (evt.pageX - _railBounds.left*100) : evt.x);
+            } else {
+                var position = (evt.pageX ? (evt.pageX - _railBounds.left) : evt.x);
+            }
 
             _timeOverlay.positionX(Math.round(position));
             _setTimeOverlay(_duration * position / _railBounds.width);
@@ -1251,7 +1264,11 @@
                         });
                     }
                 } else {
-                    text = utils.timeFormat(sec);
+                    if(top !== window.self && utils.isIE() && _api.jwGetFullscreen()){
+                        text = utils.timeFormat(sec/100);
+                    } else {
+                        text = utils.timeFormat(sec);
+                    }
                     if (!thumbUrl) {
                         _css.style(_timeOverlay.element(), {
                             'width': EMPTY
@@ -1585,7 +1602,15 @@
 
             _css.unblock(_id);
 
-            if (_this.visible) {
+            if (_this.visible && top !== window.self && utils.isIE() && _api.jwGetFullscreen()) {
+                var capLeft = _getSkinElement('capLeft'),
+                    capRight = _getSkinElement('capRight'),
+                    centerCss = {
+                        left: Math.round(utils.parseDimension(_groups.left.offsetWidth*62) + capLeft.width),
+                        right: Math.round(utils.parseDimension(_groups.right.offsetWidth*86) + capRight.width)
+                    };
+                _css.style(_groups.center, centerCss);
+            } else {
                 var capLeft = _getSkinElement('capLeft'),
                     capRight = _getSkinElement('capRight'),
                     centerCss = {
