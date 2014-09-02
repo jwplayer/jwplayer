@@ -382,19 +382,19 @@ package com.longtailvideo.jwplayer.media {
 		}
 
 
-		/** Current quality level getter **/
+		/** Current audio track getter **/
 		public function get currentAudioTrack():Number {
 			return _currentAudioTrack;
 		}
 
 
-		/** Current quality level setter **/
+		/** Current audio track setter **/
 		public function set currentAudioTrack(audioTrack:Number):void {
 			_currentAudioTrack = audioTrack;
 		}
 
 
-		/** Quality levels (must be overridden by inheritors **/
+		/** Audio Tracks (must be overridden by inheritors **/
 		public function get audioTracks():Array {
 			return null;
 		}

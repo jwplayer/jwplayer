@@ -277,7 +277,7 @@
             return -1;
         }
 
-        function _getQualityLevels() {
+        function _getAudioTracks() {
             if (_video()) {
                 return _video().getAudioTracks();
             }

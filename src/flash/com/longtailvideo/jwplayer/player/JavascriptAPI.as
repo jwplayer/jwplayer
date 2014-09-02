@@ -185,7 +185,7 @@ package com.longtailvideo.jwplayer.player {
 				//Audio Track API
 				ExternalInterface.addCallback("jwGetAudioTracks", js_getAudioTracks);
 				ExternalInterface.addCallback("jwGetCurrentAudioTrack", js_getCurrentAudioTrack);
-				ExternalInterface.addCallback("setCurrentAudioTrack", js_setCurrentAudioTrack);
+				ExternalInterface.addCallback("jwSetCurrentAudioTrack", js_setCurrentAudioTrack);
 				
 				// Captions API
 				ExternalInterface.addCallback("jwGetCaptionsList", js_getCaptionsList);
