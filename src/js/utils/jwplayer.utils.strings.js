@@ -44,13 +44,11 @@
      * This does not return the file extension, instead it returns a media type extension
      */
     function getAzureFileFormat(path) {
-        var match = path.match(/manifest\(format=(.*),audioTrack/);
-        if (!match || !match[1]) {
-            // not an azure file
+        if (path.indexOf('(format=m3u8-') > -1) {
+            return 'm3u8';
+        } else { 
             return false;
         }
-
-        return match[1].split('-')[0];
     }
 
     utils.extension = function(path) {
