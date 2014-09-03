@@ -49,6 +49,15 @@ package com.longtailvideo.jwplayer.events {
 		// The current level; A value of -1 means the level is automatically selected
 		public var currentQuality:Number	= -1;
 		
+		public static const JWPLAYER_AUDIO_TRACKS:String = "jwplayerAudioTracks";
+		public static const JWPLAYER_AUDIO_TRACKS_CHANGED:String = "jwplayerAudioTracksChanged";
+		
+		//An array of quality levels
+		public var tracks:Array				= null;
+		// The current level; A value of -1 means the level is automatically selected
+		public var currentAudioTrack:Number	= -1;
+		
+		
 		public function MediaEvent(type:String) {
 			super(type);
 		}

@@ -72,9 +72,12 @@ package com.longtailvideo.jwplayer.player {
 		function fullscreen(on:Boolean):void;
 		function get controls():IPlayerComponents;
 		function setupInstream(target:IPlugin):IInstreamPlayer;
+		function getAudioTracks():Array;
+		function getCurrentAudioTrack():Number;
+		function setCurrentAudioTrack(index:Number):void;
 		function getQualityLevels():Array;
 		function getCurrentQuality():Number;
-		function setCurrentQuality(index:Number):void;
+		function setCurrentQuality(index:Number):void;		
 		function getCaptionsList():Array;
 		function getCurrentCaptions():Number;
 		function setCurrentCaptions(index:Number):void;
