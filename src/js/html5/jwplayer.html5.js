@@ -24,6 +24,7 @@
         'background-color': 'transparent',
         'text-align': 'left',
         'direction': 'ltr',
+        'line-height': 20,
         '-webkit-tap-highlight-color': 'rgba(255, 255, 255, 0)'
     });
 
