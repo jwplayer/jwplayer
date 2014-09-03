@@ -4,13 +4,12 @@
  * @author pablo
  * @version 6.0
  */
-(function(playlist) {
-    var _jw = jwplayer,
-        utils = _jw.utils,
-        events = _jw.events,
-        parsers = _jw.parsers;
+(function(jwplayer) {
+    var utils = jwplayer.utils,
+        events = jwplayer.events,
+        parsers = jwplayer.parsers;
 
-    playlist.loader = function() {
+    jwplayer.playlist.loader = function() {
         var _eventDispatcher = new events.eventdispatcher();
         utils.extend(this, _eventDispatcher);
 
@@ -21,24 +20,24 @@
         function _playlistLoaded(loadedEvent) {
             try {
                 var childNodes = loadedEvent.responseXML.childNodes;
-                var rss = "";
+                var rss = '';
                 for (var i = 0; i < childNodes.length; i++) {
                     rss = childNodes[i];
-                    if (rss.nodeType != 8) { // 8: Node.COMMENT_NODE (IE8 doesn't have the Node.COMMENT_NODE constant)
+                    if (rss.nodeType !== 8) { // 8: Node.COMMENT_NODE (IE8 doesn't have the Node.COMMENT_NODE constant)
                         break;
                     }
                 }
 
-                if (parsers.localName(rss) == "xml") {
+                if (parsers.localName(rss) === 'xml') {
                     rss = rss.nextSibling;
                 }
 
-                if (parsers.localName(rss) != "rss") {
-                    _playlistError("Not a valid RSS feed");
+                if (parsers.localName(rss) !== 'rss') {
+                    _playlistError('Not a valid RSS feed');
                     return;
                 }
 
-                var pl = new playlist(parsers.rssparser.parse(rss));
+                var pl = new jwplayer.playlist(parsers.rssparser.parse(rss));
                 _eventDispatcher.sendEvent(events.JWPLAYER_PLAYLIST_LOADED, {
                     playlist: pl
                 });
@@ -48,7 +47,7 @@
         }
 
         function _playlistLoadError(err) {
-            _playlistError(err.match(/invalid/i) ? "Not a valid RSS feed" : "");
+            _playlistError(err.match(/invalid/i) ? 'Not a valid RSS feed' : '');
         }
 
         function _playlistError(msg) {
@@ -57,4 +56,4 @@
             });
         }
     };
-})(jwplayer.playlist);
+})(jwplayer);

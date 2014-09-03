@@ -281,6 +281,18 @@
 			return new InstreamPlayer(target, model, view, controller);
 		}
 
+		public function getAudioTracks():Array {
+			return model.media ? model.media.audioTracks : null;
+		}
+		
+		public function getCurrentAudioTrack():Number {
+			return model.media ? model.media.currentAudioTrack : NaN;
+		}
+		
+		public function setCurrentAudioTrack(index:Number):void {
+			if (model.media) model.media.currentAudioTrack = index;
+		}
+		
 		public function getQualityLevels():Array {
 			return model.media ? model.media.qualityLevels : null;
 		}

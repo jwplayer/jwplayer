@@ -124,6 +124,9 @@
             _this.jwGetQualityLevels = _controller.getQualityLevels;
             _this.jwGetCurrentQuality = _controller.getCurrentQuality;
             _this.jwSetCurrentQuality = _controller.setCurrentQuality;
+            _this.jwGetAudioTracks = _controller.getAudioTracks;
+            _this.jwGetCurrentAudioTrack = _controller.getCurrentAudioTrack;
+            _this.jwSetCurrentAudioTrack = _controller.setCurrentAudioTrack;
             _this.jwGetCaptionsList = _controller.getCaptionsList;
             _this.jwGetCurrentCaptions = _controller.getCurrentCaptions;
             _this.jwSetCurrentCaptions = _controller.setCurrentCaptions;

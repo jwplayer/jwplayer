@@ -13,7 +13,7 @@
                 base: config.base ? config.base : utils.getScriptPath('jwplayer.js'),
                 aspectratio: ''
             },
-            _config = utils.extend(_defaults, jwplayer.defaults, config),
+            _config = utils.extend({}, _defaults, jwplayer.defaults, config),
             _modes = {
                 html5: {
                     type: 'html5',

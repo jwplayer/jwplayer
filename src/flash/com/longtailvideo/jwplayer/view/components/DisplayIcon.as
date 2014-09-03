@@ -185,7 +185,7 @@ package com.longtailvideo.jwplayer.view.components {
 			if (_textField.numLines > 2) {
 				while(_textField.numLines > 2) {
 					elipses = true;
-					_textField.text = _textField.text.replace(/(.*).$/, "$1");
+					_textField.text = _textField.text.replace(/(.*).\s*$/, "$1");
 				}
 				if (elipses) {
 					newText = _textField.text.substr(0, _textField.text.length-3);

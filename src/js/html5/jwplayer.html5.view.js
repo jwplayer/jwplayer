@@ -451,7 +451,7 @@
                 _resize(_model.width, _model.height);
             }, 0);
         };
-
+                
         function _componentFadeListeners(comp) {
             if (comp) {
                 comp.element().addEventListener('mousemove', _cancelFade, FALSE);
@@ -1274,8 +1274,9 @@
             //_responsiveListener();
             var dispBounds = _bounds(_container),
                 dispOffset = dispBounds.top,
-                cbBounds = _instreamMode ? _bounds(DOCUMENT.getElementById(_api.id + '_instream_controlbar')) :
-                _bounds(_controlbar.element()),
+                cbBounds = _instreamMode ?
+                    _bounds(DOCUMENT.getElementById(_api.id + '_instream_controlbar')) :
+                    _bounds(_controlbar.element()),
                 dockButtons = _instreamMode ? FALSE : (_dock.numButtons() > 0),
                 logoTop = (_logo.position().indexOf('top') === 0),
                 dockBounds,

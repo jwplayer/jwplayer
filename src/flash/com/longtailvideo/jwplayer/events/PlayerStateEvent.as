@@ -19,7 +19,8 @@ package com.longtailvideo.jwplayer.events {
 		}
 		
 		public override function toString():String {
-			return this.formatToString('PlayerStateEvent', 'type', 'oldstate', 'newstate', 'id', 'client', 'version', 'message');
+			return '[PlayerStateEvent type="'+type+'" oldstate="'+oldstate+'" newstate="'+newstate+
+				'" id="'+id+'" client="'+client+'" version="'+version+'" message="'+message+'" ]';
 		}
 	}
 }

@@ -42,7 +42,7 @@ package com.longtailvideo.jwplayer.events {
 		}
 
 		public override function toString():String {
-			return this.formatToString('PlayerEvent', 'type', 'id', 'client', 'version', 'message');
+			return '[PlayerEvent type="'+type+'" id="'+id+'" client="'+client+'" version="'+version+'" message="'+message+'" ]';
 		} 
 		
 		public override function clone():Event {

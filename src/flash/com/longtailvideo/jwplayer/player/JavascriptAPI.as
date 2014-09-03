@@ -212,6 +212,11 @@ package com.longtailvideo.jwplayer.player {
 				ExternalInterface.addCallback("jwGetCurrentQuality", js_getCurrentQuality);
 				ExternalInterface.addCallback("jwSetCurrentQuality", js_setCurrentQuality);
 
+				//Audio Track API
+				ExternalInterface.addCallback("jwGetAudioTracks", js_getAudioTracks);
+				ExternalInterface.addCallback("jwGetCurrentAudioTrack", js_getCurrentAudioTrack);
+				ExternalInterface.addCallback("jwSetCurrentAudioTrack", js_setCurrentAudioTrack);
+				
 				// Captions API
 				ExternalInterface.addCallback("jwGetCaptionsList", js_getCaptionsList);
 				ExternalInterface.addCallback("jwGetCurrentCaptions", js_getCurrentCaptions);
@@ -335,8 +340,9 @@ package com.longtailvideo.jwplayer.player {
 			if (evt.offset > 0)					returnObj.offset = evt.offset;
 			if (evt.position >= 0)				returnObj.position = evt.position;
 			if (evt.currentQuality >= 0)		returnObj.currentQuality = evt.currentQuality;
+			if (evt.currentAudioTrack >= 0)		returnObj.currentAudioTrack = evt.currentAudioTrack;
 			if (evt.levels)						returnObj.levels = JavascriptSerialization.stripDots(evt.levels);
-
+			if (evt.tracks)						returnObj.tracks = JavascriptSerialization.stripDots(evt.tracks);
 			if (evt.type == MediaEvent.JWPLAYER_MEDIA_MUTE) {
 				returnObj.mute = evt.mute;
 			}
@@ -627,6 +633,19 @@ package com.longtailvideo.jwplayer.player {
 		
 		private static function js_setCurrentQuality(index:Number):void {
 			_player.setCurrentQuality(index);	
+		}
+		
+		
+		protected function js_getAudioTracks():Array {
+			return _player.getAudioTracks();
+		}
+		
+		protected function js_getCurrentAudioTrack():Number {
+			return _player.getCurrentAudioTrack();
+		}
+		
+		protected function js_setCurrentAudioTrack(index:Number):void {
+			_player.setCurrentAudioTrack(index);	
 		}
 
 		private static function js_getCaptionsList():Array {

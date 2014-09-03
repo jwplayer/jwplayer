@@ -266,7 +266,10 @@ package com.longtailvideo.jwplayer.media {
 				if(_item.type == 'mp4') {
 					_position += _offset.time;
 				}
-				sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_TIME, {position: _position, duration: item.duration});
+				sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_TIME, {
+					position: _position,
+					duration: item.duration
+				});
 			}
 		}
 
