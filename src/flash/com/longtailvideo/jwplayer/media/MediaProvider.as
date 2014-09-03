@@ -292,15 +292,10 @@ package com.longtailvideo.jwplayer.media {
 		 * @param value
 		 */
 		protected function sendMediaEvent(type:String, properties:Object=null):void {
-			if (type == MediaEvent.JWPLAYER_MEDIA_BUFFER_FULL && state == PlayerState.PAUSED) {
+			if (type === MediaEvent.JWPLAYER_MEDIA_BUFFER_FULL && state === PlayerState.PAUSED) {
 				_queuedBufferFull = true;
 			} else {
-				var newEvent:MediaEvent = new MediaEvent(type);
-				for (var property:String in properties) {
-					if (newEvent.hasOwnProperty(property)) {
-						newEvent[property] = properties[property];
-					}
-				}
+				var newEvent:MediaEvent = new MediaEvent(type, properties);
 				dispatchEvent(newEvent);
 			}
 		}
