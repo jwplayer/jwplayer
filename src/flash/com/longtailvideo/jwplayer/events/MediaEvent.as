@@ -6,7 +6,7 @@ package com.longtailvideo.jwplayer.events {
 	 *  
 	 * @see com.longtailvideo.media.MediaProvider 
 	 */
-	public dynamic class MediaEvent extends PlayerEvent {
+	public class MediaEvent extends PlayerEvent {
 		
 		public static const JWPLAYER_MEDIA_ERROR:String = "jwplayerMediaError";
 		public static const JWPLAYER_MEDIA_LOADED:String = "jwplayerMediaLoaded";
@@ -71,7 +71,19 @@ package com.longtailvideo.jwplayer.events {
 
 		public override function clone():Event {
             // the class must be dynamic to make the properties enumerable
-			return new MediaEvent(this.type, this);
+			return new MediaEvent(this.type, {
+                bufferPercent:     this.bufferPercent,
+                offset:            this.offset,
+                position:          this.position,
+                duration:          this.duration,
+                metadata:          this.metadata,
+                volume:            this.volume,
+                mute:              this.mute,
+                levels:            this.levels,
+                currentQuality:    this.currentQuality,
+                tracks:            this.tracks,
+                currentAudioTrack: this.currentAudioTrack
+            });
 		}
 		
 		public override function toString():String {
