@@ -1154,9 +1154,8 @@
                 pct;
 
             if (_iFramedFullscreenIE()) {
-                pct = _elements[name].vertical ? ((railRect.bottom - evt.pageY) / railRect.height) :
-                ((evt.pageX / 2 - railRect.left * 54) / railRect.width * 46);
-                pct /= 4840000;
+                pct = _elements[name].vertical ? ((railRect.bottom * 100 - evt.pageY) / railRect.height * 100) :
+                ((evt.pageX / 2 - railRect.left * 100) / railRect.width * 100);
             } else {
                 pct = _elements[name].vertical ? ((railRect.bottom - evt.pageY) / railRect.height) :
                     ((evt.pageX - railRect.left) / railRect.width);
