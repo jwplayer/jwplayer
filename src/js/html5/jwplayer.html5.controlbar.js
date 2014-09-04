@@ -1153,11 +1153,9 @@
                 name = _dragging,
                 pct;
 
-            if (_this.visible && _iFramedFullscreenIE()) {
-                pct = _elements[name].vertical ? ((railRect.bottom - evt.pageY) / railRect.height) :
-                ((evt.pageX / 2 - railRect.left * 54) / railRect.width * 46);
-                pct = pct/2200;
-                pct = pct/2200;
+            if (_iFramedFullscreenIE()) {
+                pct = _elements[name].vertical ? ((railRect.bottom * 100 - evt.pageY) / railRect.height * 100) :
+                ((evt.pageX / 2 - railRect.left * 100) / railRect.width * 100);
             } else {
                 pct = _elements[name].vertical ? ((railRect.bottom - evt.pageY) / railRect.height) :
                     ((evt.pageX - railRect.left) / railRect.width);
@@ -1213,15 +1211,18 @@
                 return;
             }
 
-            var position;
+            var position,
+                width;
             if (_iFramedFullscreenIE()) {
                 position = (evt.pageX ? (evt.pageX - _railBounds.left*100) : evt.x);
+                width = _railBounds.width *100;
             } else {
                 position = (evt.pageX ? (evt.pageX - _railBounds.left) : evt.x);
+                width = _railBounds.width;
             }
 
             _timeOverlay.positionX(Math.round(position));
-            _setTimeOverlay(_duration * position / _railBounds.width);
+            _setTimeOverlay(_duration * position / width);
         }
 
         var _setTimeOverlay = (function() {
@@ -1247,11 +1248,7 @@
                         });
                     }
                 } else {
-                    if(top !== window.self && utils.isIE() && _api.jwGetFullscreen()){
-                        text = utils.timeFormat(sec/100);
-                    } else {
-                        text = utils.timeFormat(sec);
-                    }
+                    text = utils.timeFormat(sec);
                     if (!thumbUrl) {
                         _css.style(_timeOverlay.element(), {
                             'width': ''
@@ -1589,24 +1586,21 @@
 
             _css.unblock(_id);
 
-            var capLeft,
-                capRight,
-                centerCss;
-            if (_this.visible && _iFramedFullscreenIE()) {
-                capLeft = _getSkinElement('capLeft');
-                capRight = _getSkinElement('capRight');
-                centerCss = {
+            if (_this.visible) {
+                var capLeft  = _getSkinElement('capLeft'),
+                    capRight = _getSkinElement('capRight'),
+                    centerCss;
+                if (_iFramedFullscreenIE()) {
+                    centerCss = {
                         left: Math.round(utils.parseDimension(_groups.left.offsetWidth*62) + capLeft.width),
                         right: Math.round(utils.parseDimension(_groups.right.offsetWidth*86) + capRight.width)
                     };
-                _css.style(_groups.center, centerCss);
-            } else {
-                capLeft = _getSkinElement('capLeft');
-                capRight = _getSkinElement('capRight');
-                centerCss = {
+                } else {
+                    centerCss = {
                         left: Math.round(utils.parseDimension(_groups.left.offsetWidth) + capLeft.width),
                         right: Math.round(utils.parseDimension(_groups.right.offsetWidth) + capRight.width)
                     };
+                }
                 _css.style(_groups.center, centerCss);
             }
         };
