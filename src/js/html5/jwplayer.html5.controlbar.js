@@ -1,6 +1,7 @@
 /*jshint maxparams:5*/
-(function(jwplayer) {
-    var html5 = jwplayer.html5,
+(function(window, document, undefined) {
+    var jwplayer = window.jwplayer,
+        html5 = jwplayer.html5,
         utils = jwplayer.utils,
         _     = jwplayer._,
         events = jwplayer.events,
@@ -9,6 +10,7 @@
         _setTransition = utils.transitionStyle,
         _isMobile = utils.isMobile(),
         _nonChromeAndroid = utils.isAndroid(4, true),
+        _iFramed = (window.top !== window.self),
 
         /** Controlbar element types * */
         CB_BUTTON = 'button',
@@ -17,24 +19,12 @@
         CB_SLIDER = 'slider',
 
         /** Some CSS constants we should use for minimization * */
-        JW_CSS_RELATIVE = 'relative',
-        JW_CSS_ABSOLUTE = 'absolute',
         JW_CSS_NONE = 'none',
         JW_CSS_BLOCK = 'block',
         JW_CSS_INLINE = 'inline',
         JW_CSS_INLINE_BLOCK = 'inline-block',
-        JW_CSS_HIDDEN = 'hidden',
-        JW_CSS_LEFT = 'left',
-        JW_CSS_RIGHT = 'right',
         JW_CSS_100PCT = '100%',
-        JW_CSS_SMOOTH_EASE = 'opacity .25s, background .25s, visibility .25s',
         JW_VISIBILITY_TIMEOUT = 250,
-
-        FALSE = false,
-        TRUE = true,
-        NULL = null,
-        EMPTY = '',
-        UNDEFINED,
 
         HIDDEN = {
             display: JW_CSS_NONE
@@ -43,24 +33,18 @@
             display: JW_CSS_BLOCK
         },
         NOT_HIDDEN = {
-            display: EMPTY
-        },
-
-        CB_CLASS = 'span.jwcontrolbar',
-        TYPEOF_ARRAY = 'array',
-        WINDOW = window,
-        DOCUMENT = document;
-
+            display: ''
+        };
 
     function _removeFromArray(array, item) {
-        var index = array.indexOf(item);
+        var index = _.indexOf(array, item);
         if (index > -1) {
             array.splice(index, 1);
         }
     }
 
     function _addOnceToArray(array, item) {
-        var index = array.indexOf(item);
+        var index = _.indexOf(array, item);
         if (index === -1) {
             array.push(item);
         }
@@ -149,11 +133,11 @@
             _ccOverlay,
             _redrawTimeout,
             _hideTimeout = -1,
-            _audioMode = FALSE,
-            _instreamMode = FALSE,
-            _adMode = FALSE,
-            _hideFullscreen = FALSE,
-            _dragging = NULL,
+            _audioMode = false,
+            _instreamMode = false,
+            _adMode = false,
+            _hideFullscreen = false,
+            _dragging = null,
             _lastSeekTime = 0,
             _cues = [],
             _activeCue,
@@ -164,9 +148,9 @@
             },
 
             _toggleStates = {
-                play: FALSE,
-                mute: FALSE,
-                fullscreen: FALSE
+                play: false,
+                mute: false,
+                fullscreen: false
             },
 
             _buttonMapping = {
@@ -244,12 +228,12 @@
             if (!_isMobile) {
                 _controlbar.addEventListener('mouseover', function() {
                     // Slider listeners
-                    WINDOW.addEventListener('mousedown', _killSelect, FALSE);
+                    window.addEventListener('mousedown', _killSelect, false);
                 }, false);
                 _controlbar.addEventListener('mouseout', function() {
                     // Slider listeners
-                    WINDOW.removeEventListener('mousedown', _killSelect);
-                    DOCUMENT.onselectstart = null;
+                    window.removeEventListener('mousedown', _killSelect);
+                    document.onselectstart = null;
                 }, false);
             }
         }
@@ -257,7 +241,7 @@
         function _resizeHandler() {
             _cbBounds = utils.bounds(_controlbar);
             if (_cbBounds.width > 0) {
-                _this.show(TRUE);
+                _this.show(true);
             }
         }
 
@@ -309,15 +293,15 @@
                             opacity: 1
                         });
                     }
-                    _toggleButton('play', TRUE);
+                    _toggleButton('play', true);
                     break;
                 case states.PAUSED:
                     if (!_dragging) {
-                        _toggleButton('play', FALSE);
+                        _toggleButton('play', false);
                     }
                     break;
                 case states.IDLE:
-                    _toggleButton('play', FALSE);
+                    _toggleButton('play', false);
                     if (_elements.timeSliderThumb) {
                         _css.style(_elements.timeSliderThumb, {
                             opacity: 0
@@ -338,20 +322,20 @@
         function _itemHandler(evt) {
             if (!_instreamMode) {
                 var tracks = _api.jwGetPlaylist()[evt.index].tracks,
-                    tracksloaded = FALSE,
-                    cuesloaded = FALSE;
+                    tracksloaded = false,
+                    cuesloaded = false;
                 _removeCues();
-                if (utils.typeOf(tracks) === TYPEOF_ARRAY && !_isMobile) {
+                if (_.isArray(tracks) && !_isMobile) {
                     for (var i = 0; i < tracks.length; i++) {
                         if (!tracksloaded && tracks[i].file && tracks[i].kind &&
                             tracks[i].kind.toLowerCase() === 'thumbnails') {
                             _timeOverlayThumb.load(tracks[i].file);
-                            tracksloaded = TRUE;
+                            tracksloaded = true;
                         }
                         if (tracks[i].file && tracks[i].kind &&
                             tracks[i].kind.toLowerCase() === 'chapters') {
                             _loadCues(tracks[i].file);
-                            cuesloaded = TRUE;
+                            cuesloaded = true;
                         }
                     }
                 }
@@ -378,7 +362,7 @@
             _toggleButton('fullscreen', evt.fullscreen);
             _updateNextPrev();
             if (_this.visible) {
-                _this.show(TRUE);
+                _this.show(true);
             }
         }
 
@@ -417,7 +401,7 @@
             _currentQuality = Math.floor(evt.currentQuality);
             if (_elements.hd) {
                 _elements.hd.querySelector('button').className =
-                    (_levels.length === 2 && _currentQuality === 0) ? 'off' : EMPTY;
+                    (_levels.length === 2 && _currentQuality === 0) ? 'off' : '';
             }
             if (_hdOverlay && _currentQuality >= 0) {
                 _hdOverlay.setActive(evt.currentQuality);
@@ -450,7 +434,7 @@
             _currentCaptions = Math.floor(evt.track);
             if (_elements.cc) {
                 _elements.cc.querySelector('button').className =
-                    (_captions.length === 2 && _currentCaptions === 0) ? 'off' : EMPTY;
+                    (_captions.length === 2 && _currentCaptions === 0) ? 'off' : '';
             }
             if (_ccOverlay && _currentCaptions >= 0) {
                 _ccOverlay.setActive(evt.track);
@@ -474,14 +458,14 @@
         function _castSession(evt) {
             _castState = evt;
             if (_elements.cast) {
-                _elements.cast.querySelector('button').className = evt.active ? EMPTY : 'off';
+                _elements.cast.querySelector('button').className = evt.active ? '' : 'off';
             }
             _redraw();
         }
 
         // Bit of a hacky way to determine if the playlist is available
         function _sidebarShowing() {
-            return (!!DOCUMENT.querySelector('#' + _api.id + ' .jwplaylist') && !_api.jwGetFullscreen());
+            return (!!document.querySelector('#' + _api.id + ' .jwplaylist') && !_api.jwGetFullscreen());
         }
 
         /**
@@ -498,7 +482,7 @@
                 bottom: margin,
                 left: margin,
                 right: margin,
-                'max-width': _audioMode ? EMPTY : _settings.maxwidth
+                'max-width': _audioMode ? '' : _settings.maxwidth
             };
             _css.style(_controlbar, styles);
 
@@ -515,7 +499,7 @@
 
 
         function _internalSelector(name) {
-            return '#' + _id + (name ? ' ' + name : EMPTY);
+            return '#' + _id + (name ? ' ' + name : '');
         }
 
         function _createSpan() {
@@ -523,18 +507,18 @@
         }
 
         function _createElement(tagname) {
-            return DOCUMENT.createElement(tagname);
+            return document.createElement(tagname);
         }
 
         function _buildControlbar() {
             var capLeft = _buildImage('capLeft');
             var capRight = _buildImage('capRight');
             var bg = _buildImage('background', {
-                position: JW_CSS_ABSOLUTE,
+                position: 'absolute',
                 left: _getSkinElement('capLeft').width,
                 right: _getSkinElement('capRight').width,
                 'background-repeat': 'repeat-x'
-            }, TRUE);
+            }, true);
 
             if (bg) {
                 _appendChild(_controlbar, bg);
@@ -581,35 +565,35 @@
                 newStyle = {
                     background: 'url("' + skinElem.src + '") repeat-x ' + center,
                     'background-size': size,
-                    height: vertical ? skinElem.height : EMPTY
+                    height: vertical ? skinElem.height : ''
                 };
             } else {
                 newStyle = {
                     background: 'url("' + skinElem.src + '") no-repeat' + center,
                     'background-size': size,
                     width: skinElem.width,
-                    height: vertical ? skinElem.height : EMPTY
+                    height: vertical ? skinElem.height : ''
                 };
             }
             element.skin = skinElem;
-            _css(_internalSelector((vertical ? '.jwvertical ' : EMPTY) + '.jw' + name), utils.extend(newStyle, style));
+            _css(_internalSelector((vertical ? '.jwvertical ' : '') + '.jw' + name), utils.extend(newStyle, style));
             _elements[name] = element;
             return element;
         }
 
         function _buildButton(name, pos) {
             if (!_getSkinElement(name + 'Button').src) {
-                return NULL;
+                return null;
             }
 
             // Don't show volume or mute controls on mobile, since it's not possible to modify audio levels in JS
             if (_isMobile && (name === 'mute' || name.indexOf('volume') === 0)) {
-                return NULL;
+                return null;
             }
             // Having issues with stock (non-chrome) Android browser and showing overlays.
             //  Just remove HD/CC buttons in that case
             if (_nonChromeAndroid && /hd|cc/.test(name)) {
-                return NULL;
+                return null;
             }
 
 
@@ -628,7 +612,7 @@
             }
 
             if (!_isMobile) {
-                button.addEventListener('click', _buttonClickHandler(name), FALSE);
+                button.addEventListener('click', _buttonClickHandler(name), false);
             } else if (name !== 'hd' && name !== 'cc') {
                 var buttonTouch = new utils.touch(button);
                 buttonTouch.addEventListener(utils.touchEvents.TAP, _buttonClickHandler(name));
@@ -775,7 +759,6 @@
                     position = parseFloat(pct);
                 }
             } else {
-                // pct is normalized 0-1.0
                 position = pct * _duration;
             }
             _api.jwSeek(position);
@@ -801,7 +784,7 @@
                 _elements[name].className = 'jw' + name + (state ? ' jwtoggle jwtoggling' : ' jwtoggling');
                 // Use the jwtoggling class to temporarily disable the animation
                 setTimeout(function() {
-                    _elements[name].className = _elements[name].className.replace(' jwtoggling', EMPTY);
+                    _elements[name].className = _elements[name].className.replace(' jwtoggling', '');
                 }, 100);
             }
             _toggleStates[name] = state;
@@ -823,7 +806,7 @@
                 style.background = 'url(' + skinElement.src + ') repeat-x center';
                 style['background-size'] = _elementSize(_getSkinElement('background'));
                 _css.style(element, style);
-                element.innerHTML = (name !== 'alt') ? '00:00' : EMPTY;
+                element.innerHTML = (name !== 'alt') ? '00:00' : '';
 
                 _elements[name] = element;
                 return element;
@@ -847,7 +830,7 @@
             if (_levels && _levels.length > 2) {
                 if (_hdTimer) {
                     clearTimeout(_hdTimer);
-                    _hdTimer = UNDEFINED;
+                    _hdTimer = undefined;
                 }
                 _css.block(_id); // unblock on position overlay
                 _hdOverlay.show();
@@ -860,7 +843,7 @@
             if (_captions && _captions.length > 2) {
                 if (_ccTimer) {
                     clearTimeout(_ccTimer);
-                    _ccTimer = UNDEFINED;
+                    _ccTimer = undefined;
                 }
                 _css.block(_id); // unblock on position overlay
                 _ccOverlay.show();
@@ -914,12 +897,12 @@
 
             var slider = _createSpan(),
                 vertical = name === 'volume',
-                skinPrefix = name + (name === 'time' ? 'Slider' : EMPTY),
+                skinPrefix = name + (name === 'time' ? 'Slider' : ''),
                 capPrefix = skinPrefix + 'Cap',
                 left = vertical ? 'Top' : 'Left',
                 right = vertical ? 'Bottom' : 'Right',
-                capLeft = _buildImage(capPrefix + left, NULL, FALSE, FALSE, vertical),
-                capRight = _buildImage(capPrefix + right, NULL, FALSE, FALSE, vertical),
+                capLeft = _buildImage(capPrefix + left, null, false, false, vertical),
+                capRight = _buildImage(capPrefix + right, null, false, false, vertical),
                 rail = _buildSliderRail(name, vertical, left, right),
                 capLeftSkin = _getSkinElement(capPrefix + left),
                 capRightSkin = _getSkinElement(capPrefix + left);
@@ -939,12 +922,12 @@
             }
 
             _css(_internalSelector('.jw' + name + ' .jwrail'), {
-                left: vertical ? EMPTY : capLeftSkin.width,
-                right: vertical ? EMPTY : capRightSkin.width,
-                top: vertical ? capLeftSkin.height : EMPTY,
-                bottom: vertical ? capRightSkin.height : EMPTY,
-                width: vertical ? JW_CSS_100PCT : EMPTY,
-                height: vertical ? 'auto' : EMPTY
+                left: vertical ? '' : capLeftSkin.width,
+                right: vertical ? '' : capRightSkin.width,
+                top: vertical ? capLeftSkin.height : '',
+                bottom: vertical ? capRightSkin.height : '',
+                width: vertical ? JW_CSS_100PCT : '',
+                height: vertical ? 'auto' : ''
             });
 
             _elements[name] = slider;
@@ -981,11 +964,11 @@
             rail.className = 'jwrail';
 
             for (var i = 0; i < railElements.length; i++) {
-                sliderPrefix = (name === 'time' ? 'Slider' : EMPTY);
+                sliderPrefix = (name === 'time' ? 'Slider' : '');
                 var prefix = name + sliderPrefix + railElements[i],
-                    element = _buildImage(prefix, NULL, !vertical, (name.indexOf('volume') === 0), vertical),
-                    capLeft = _buildImage(prefix + 'Cap' + left, NULL, FALSE, FALSE, vertical),
-                    capRight = _buildImage(prefix + 'Cap' + right, NULL, FALSE, FALSE, vertical),
+                    element = _buildImage(prefix, null, !vertical, (name.indexOf('volume') === 0), vertical),
+                    capLeft = _buildImage(prefix + 'Cap' + left, null, false, false, vertical),
+                    capRight = _buildImage(prefix + 'Cap' + right, null, false, false, vertical),
                     capLeftSkin = _getSkinElement(prefix + 'Cap' + left),
                     capRightSkin = _getSkinElement(prefix + 'Cap' + right);
 
@@ -1002,17 +985,17 @@
                     }
 
                     _css(_internalSelector('.jwrailgroup.' + railElements[i]), {
-                        'min-width': (vertical ? EMPTY : capLeftSkin.width + capRightSkin.width)
+                        'min-width': (vertical ? '' : capLeftSkin.width + capRightSkin.width)
                     });
                     railElement.capSize = vertical ? capLeftSkin.height + capRightSkin.height :
                         capLeftSkin.width + capRightSkin.width;
 
                     _css(_internalSelector('.' + element.className), {
-                        left: vertical ? EMPTY : capLeftSkin.width,
-                        right: vertical ? EMPTY : capRightSkin.width,
-                        top: vertical ? capLeftSkin.height : EMPTY,
-                        bottom: vertical ? capRightSkin.height : EMPTY,
-                        height: vertical ? 'auto' : EMPTY
+                        left: vertical ? '' : capLeftSkin.width,
+                        right: vertical ? '' : capRightSkin.width,
+                        top: vertical ? capLeftSkin.height : '',
+                        bottom: vertical ? capRightSkin.height : '',
+                        height: vertical ? 'auto' : ''
                     });
 
                     if (i === 2) {
@@ -1032,11 +1015,11 @@
                 }
             }
 
-            var thumb = _buildImage(name + sliderPrefix + 'Thumb', NULL, FALSE, FALSE, vertical);
+            var thumb = _buildImage(name + sliderPrefix + 'Thumb', null, false, false, vertical);
             if (thumb) {
                 _css(_internalSelector('.' + thumb.className), {
                     opacity: name === 'time' ? 0 : 1,
-                    'margin-top': vertical ? thumb.skin.height / -2 : EMPTY
+                    'margin-top': vertical ? thumb.skin.height / -2 : ''
                 });
 
                 thumb.className += ' jwthumb';
@@ -1048,7 +1031,7 @@
                 if (sliderName === 'volume' && !vertical) {
                     sliderName += 'H';
                 }
-                rail.addEventListener('mousedown', _sliderMouseDown(sliderName), FALSE);
+                rail.addEventListener('mousedown', _sliderMouseDown(sliderName), false);
             } else {
                 var railTouch = new utils.touch(rail);
                 railTouch.addEventListener(utils.touchEvents.DRAG_START, _sliderDragStart);
@@ -1058,8 +1041,8 @@
             }
 
             if (name === 'time' && !_isMobile) {
-                rail.addEventListener('mousemove', _showTimeTooltip, FALSE);
-                rail.addEventListener('mouseout', _hideTimeTooltip, FALSE);
+                rail.addEventListener('mousemove', _showTimeTooltip, false);
+                rail.addEventListener('mouseout', _hideTimeTooltip, false);
             }
 
             _elements[name + 'Rail'] = rail;
@@ -1074,26 +1057,26 @@
 
         function _killSelect(evt) {
             evt.preventDefault();
-            DOCUMENT.onselectstart = function() {
-                return FALSE;
+            document.onselectstart = function() {
+                return false;
             };
         }
 
         function _draggingStart(name) {
             _draggingEnd();
             _dragging = name;
-            WINDOW.addEventListener('mouseup', _sliderMouseEvent, FALSE);
+            window.addEventListener('mouseup', _sliderMouseEvent, false);
         }
 
         function _draggingEnd() {
-            WINDOW.removeEventListener('mouseup', _sliderMouseEvent);
-            _dragging = NULL;
+            window.removeEventListener('mouseup', _sliderMouseEvent);
+            _dragging = null;
         }
 
         function _sliderDragStart() {
             _elements.timeRail.className = 'jwrail';
             if (!_idle()) {
-                _api.jwSeekDrag(TRUE);
+                _api.jwSeekDrag(true);
                 _draggingStart('time');
                 _showTimeTooltip();
                 _this.sendEvent(events.JWPLAYER_USER_ACTION);
@@ -1112,7 +1095,7 @@
                 pct = 100;
             }
             if (evt.type === utils.touchEvents.DRAG_END) {
-                _api.jwSeekDrag(FALSE);
+                _api.jwSeekDrag(false);
                 _elements.timeRail.className = 'jwrail';
                 _draggingEnd();
                 _sliderMapping.time(pct);
@@ -1151,7 +1134,7 @@
 
                 if (name === 'time') {
                     if (!_idle()) {
-                        _api.jwSeekDrag(TRUE);
+                        _api.jwSeekDrag(true);
                         _draggingStart(name);
                     }
                 } else {
@@ -1161,7 +1144,6 @@
         }
 
         function _sliderMouseEvent(evt) {
-
             if (!_dragging || evt.button) {
                 return;
             }
@@ -1169,17 +1151,26 @@
             var rail = _elements[_dragging].querySelector('.jwrail'),
                 railRect = utils.bounds(rail),
                 name = _dragging,
-                pct = _elements[name].vertical ? (railRect.bottom - evt.pageY) / railRect.height :
-                (evt.pageX - railRect.left) / railRect.width;
+                pct;
+
+            if (_this.visible && _iFramedFullscreenIE()) {
+                pct = _elements[name].vertical ? ((railRect.bottom - evt.pageY) / railRect.height) :
+                ((evt.pageX / 2 - railRect.left * 54) / railRect.width * 46);
+                pct = pct/2200;
+                pct = pct/2200;
+            } else {
+                pct = _elements[name].vertical ? ((railRect.bottom - evt.pageY) / railRect.height) :
+                    ((evt.pageX - railRect.left) / railRect.width);
+            }
 
             if (evt.type === 'mouseup') {
                 if (name === 'time') {
-                    _api.jwSeekDrag(FALSE);
+                    _api.jwSeekDrag(false);
                 }
 
                 _elements[name + 'Rail'].className = 'jwrail';
                 _draggingEnd();
-                _sliderMapping[name.replace('H', EMPTY)](pct);
+                _sliderMapping[name.replace('H', '')](pct);
             } else {
                 if (_dragging === 'time') {
                     _setProgress(pct);
@@ -1188,7 +1179,7 @@
                 }
                 if (_position - _lastSeekTime > 500) {
                     _lastSeekTime = _position;
-                    _sliderMapping[_dragging.replace('H', EMPTY)](pct);
+                    _sliderMapping[_dragging.replace('H', '')](pct);
                 }
             }
             return false;
@@ -1207,7 +1198,7 @@
         }
 
         function _hideTimeTooltip() {
-            WINDOW.removeEventListener('mousemove', _sliderMouseEvent);
+            window.removeEventListener('mousemove', _sliderMouseEvent);
 
             if (_timeOverlay) {
                 _timeOverlay.hide();
@@ -1222,7 +1213,12 @@
                 return;
             }
 
-            var position = (evt.pageX ? (evt.pageX - _railBounds.left) : evt.x);
+            var position;
+            if (_iFramedFullscreenIE()) {
+                position = (evt.pageX ? (evt.pageX - _railBounds.left*100) : evt.x);
+            } else {
+                position = (evt.pageX ? (evt.pageX - _railBounds.left) : evt.x);
+            }
 
             _timeOverlay.positionX(Math.round(position));
             _setTimeOverlay(_duration * position / _railBounds.width);
@@ -1247,14 +1243,18 @@
                     if (text && (text !== lastText)) {
                         lastText = text;
                         _css.style(_timeOverlay.element(), {
-                            'width': (text.length > 32) ? 160 : EMPTY
+                            'width': (text.length > 32) ? 160 : ''
                         });
                     }
                 } else {
-                    text = utils.timeFormat(sec);
+                    if(top !== window.self && utils.isIE() && _api.jwGetFullscreen()){
+                        text = utils.timeFormat(sec/100);
+                    } else {
+                        text = utils.timeFormat(sec);
+                    }
                     if (!thumbUrl) {
                         _css.style(_timeOverlay.element(), {
-                            'width': EMPTY
+                            'width': ''
                         });
                     }
                 }
@@ -1311,7 +1311,7 @@
                         _activeCue = cue;
                     }, false);
                     cueElem.addEventListener('mouseout', function() {
-                        _activeCue = NULL;
+                        _activeCue = null;
                     }, false);
                     _cues.push(cue);
                 }
@@ -1357,13 +1357,13 @@
             }
             if (jwalt) {
                 _css.style(jwalt, text ? SHOWING : HIDDEN);
-                jwalt.innerHTML = text || EMPTY;
+                jwalt.innerHTML = text || '';
             }
             _redraw();
         };
 
         function _styleVolumeSlider(slider, vertical, left, right) {
-            var prefix = 'volume' + (vertical ? EMPTY : 'H'),
+            var prefix = 'volume' + (vertical ? '' : 'H'),
                 direction = vertical ? 'vertical' : 'horizontal';
 
             _css(_internalSelector('.jw' + prefix + '.jw' + direction), {
@@ -1379,7 +1379,7 @@
                     _getSkinElement(prefix + 'RailCap' + left).height +
                     _getSkinElement(prefix + 'RailCap' + right).height +
                     _getSkinElement(prefix + 'Cap' + right).height
-                ) : EMPTY
+                ) : ''
             });
 
             slider.className += ' jw' + direction;
@@ -1442,11 +1442,11 @@
             }
             var element = overlay.element();
             _appendChild(button, element);
-            button.addEventListener('mousemove', hoverAction, FALSE);
+            button.addEventListener('mousemove', hoverAction, false);
             if (timer) {
-                button.addEventListener('mouseout', timer, FALSE);
+                button.addEventListener('mouseout', timer, false);
             } else {
-                button.addEventListener('mouseout', overlay.hide, FALSE);
+                button.addEventListener('mouseout', overlay.hide, false);
             }
             _css.style(element, {
                 left: '50%'
@@ -1476,7 +1476,7 @@
                 } else {
                     _ccTapTimer = setTimeout(function() {
                         overlay.hide();
-                        _ccTapTimer = UNDEFINED;
+                        _ccTapTimer = undefined;
                     }, 4000);
                     tapAction();
                 }
@@ -1491,7 +1491,7 @@
                 } else {
                     _hdTapTimer = setTimeout(function() {
                         overlay.hide();
-                        _hdTapTimer = UNDEFINED;
+                        _hdTapTimer = undefined;
                     }, 4000);
                     tapAction();
                 }
@@ -1524,6 +1524,10 @@
             }
         }
 
+        function _iFramedFullscreenIE() {
+            return (_iFramed && utils.isIE() && _api.jwGetFullscreen());
+        }
+
         function _redraw() {
             clearTimeout(_redrawTimeout);
             _redrawTimeout = setTimeout(_this.redraw, 0);
@@ -1533,15 +1537,15 @@
             _css.block(_id);
 
             if (resize && _this.visible) {
-                _this.show(TRUE);
+                _this.show(true);
             }
             _createStyles();
 
             // ie <= IE10 does not allow fullscreen from inside an iframe. Hide the FS button.
-            var ieIframe = (top !== window.self) && utils.isMSIE();
+            var ieIframe = _iFramed && utils.isMSIE();
             var casting = _castState.active;
             _css.style(_elements.fullscreen, {
-                display: (_audioMode || casting || _hideFullscreen || ieIframe) ? JW_CSS_NONE : EMPTY
+                display: (_audioMode || casting || _hideFullscreen || ieIframe) ? JW_CSS_NONE : ''
             });
 
             // TODO: hide these all by default (global styles at bottom), and update using classes when model changes:
@@ -1559,7 +1563,7 @@
                         });
                     } else {
                         _css.style(_controlbar, {
-                            width: EMPTY
+                            width: ''
                         });
                     }
                 }
@@ -1571,10 +1575,10 @@
                 });
             }
             _css.style(_elements.hd, {
-                display: !_audioMode && !casting && _hasHD() ? EMPTY : JW_CSS_NONE
+                display: !_audioMode && !casting && _hasHD() ? '' : JW_CSS_NONE
             });
             _css.style(_elements.cc, {
-                display: !_audioMode && _hasCaptions() ? EMPTY : JW_CSS_NONE
+                display: !_audioMode && _hasCaptions() ? '' : JW_CSS_NONE
             });
 
 
@@ -1585,10 +1589,21 @@
 
             _css.unblock(_id);
 
-            if (_this.visible) {
-                var capLeft = _getSkinElement('capLeft'),
-                    capRight = _getSkinElement('capRight'),
-                    centerCss = {
+            var capLeft,
+                capRight,
+                centerCss;
+            if (_this.visible && _iFramedFullscreenIE()) {
+                capLeft = _getSkinElement('capLeft');
+                capRight = _getSkinElement('capRight');
+                centerCss = {
+                        left: Math.round(utils.parseDimension(_groups.left.offsetWidth*62) + capLeft.width),
+                        right: Math.round(utils.parseDimension(_groups.right.offsetWidth*86) + capRight.width)
+                    };
+                _css.style(_groups.center, centerCss);
+            } else {
+                capLeft = _getSkinElement('capLeft');
+                capRight = _getSkinElement('capRight');
+                centerCss = {
                         left: Math.round(utils.parseDimension(_groups.left.offsetWidth) + capLeft.width),
                         right: Math.round(utils.parseDimension(_groups.right.offsetWidth) + capRight.width)
                     };
@@ -1616,7 +1631,7 @@
 
 
         _this.audioMode = function(mode) {
-            if (mode !== UNDEFINED && mode !== _audioMode) {
+            if (mode !== undefined && mode !== _audioMode) {
                 _audioMode = !!mode;
                 _redraw();
             }
@@ -1624,7 +1639,7 @@
         };
 
         _this.instreamMode = function(mode) {
-            if (mode !== UNDEFINED && mode !== _instreamMode) {
+            if (mode !== undefined && mode !== _instreamMode) {
                 _instreamMode = !!mode;
                 // TODO: redraw
                 _css.style(_elements.cast, _instreamMode ? HIDDEN : NOT_HIDDEN);
@@ -1658,7 +1673,7 @@
 
         /** Whether or not to show the fullscreen icon - used when an audio file is played **/
         _this.hideFullscreen = function(mode) {
-            if (mode !== UNDEFINED && mode !== _hideFullscreen) {
+            if (mode !== undefined && mode !== _hideFullscreen) {
                 _hideFullscreen = !!mode;
                 _redraw();
             }
@@ -1693,7 +1708,7 @@
                 return;
             }
             var vertical = _elements[name].vertical,
-                prefix = name + (name === 'time' ? 'Slider' : EMPTY),
+                prefix = name + (name === 'time' ? 'Slider' : ''),
                 size = 100 * Math.min(Math.max(0, pct), 1) + '%',
                 progress = _elements[prefix + 'Progress'],
                 thumb = _elements[prefix + 'Thumb'],
@@ -1750,9 +1765,9 @@
                 return {
                     width: 0,
                     height: 0,
-                    src: EMPTY,
-                    image: UNDEFINED,
-                    ready: FALSE
+                    src: '',
+                    image: undefined,
+                    ready: false
                 };
             }
         }
@@ -1813,17 +1828,17 @@
 
         function _clearCcTapTimeout() {
             clearTimeout(_ccTapTimer);
-            _ccTapTimer = UNDEFINED;
+            _ccTapTimer = undefined;
         }
 
         function _clearHdTapTimeout() {
             clearTimeout(_hdTapTimer);
-            _hdTapTimer = UNDEFINED;
+            _hdTapTimer = undefined;
         }
 
         function _loadCues(vttFile) {
             if (vttFile) {
-                utils.ajax(vttFile, _cueLoaded, _cueFailed, TRUE);
+                utils.ajax(vttFile, _cueLoaded, _cueFailed, true);
             } else {
                 _cues.length = 0;
             }
@@ -1831,7 +1846,7 @@
 
         function _cueLoaded(xmlEvent) {
             var data = new jwplayer.parsers.srt().parse(xmlEvent.responseText, true);
-            if (utils.typeOf(data) !== TYPEOF_ARRAY) {
+            if (!_.isArray(data)) {
                 return _cueFailed('Invalid data');
             }
             _this.addCues(data);
@@ -1876,131 +1891,138 @@
      * rules are used for all JW Player instances *
      **************************************************************************/
 
-    _css(CB_CLASS, {
-        position: JW_CSS_ABSOLUTE,
-        margin: 'auto',
-        opacity: 0,
-        display: JW_CSS_NONE
-    });
+    (function() {
+        var JW_CSS_ABSOLUTE = 'absolute',
+            JW_CSS_RELATIVE = 'relative',
+            JW_CSS_SMOOTH_EASE = 'opacity .25s, background .25s, visibility .25s',
+            CB_CLASS = 'span.jwcontrolbar';
 
-    _css(CB_CLASS + ' span', {
-        height: JW_CSS_100PCT
-    });
-    utils.dragStyle(CB_CLASS + ' span', JW_CSS_NONE);
+        _css(CB_CLASS, {
+            position: JW_CSS_ABSOLUTE,
+            margin: 'auto',
+            opacity: 0,
+            display: JW_CSS_NONE
+        });
 
-    _css(CB_CLASS + ' .jwgroup', {
-        display: JW_CSS_INLINE
-    });
+        _css(CB_CLASS + ' span', {
+            height: JW_CSS_100PCT
+        });
+        utils.dragStyle(CB_CLASS + ' span', JW_CSS_NONE);
 
-    _css(CB_CLASS + ' span, ' + CB_CLASS + ' .jwgroup button,' + CB_CLASS + ' .jwleft', {
-        position: JW_CSS_RELATIVE,
-        'float': JW_CSS_LEFT
-    });
+        _css(CB_CLASS + ' .jwgroup', {
+            display: JW_CSS_INLINE
+        });
 
-    _css(CB_CLASS + ' .jwright', {
-        position: JW_CSS_RELATIVE,
-        'float': JW_CSS_RIGHT
-    });
+        _css(CB_CLASS + ' span, ' + CB_CLASS + ' .jwgroup button,' + CB_CLASS + ' .jwleft', {
+            position: JW_CSS_RELATIVE,
+            'float': 'left'
+        });
 
-    _css(CB_CLASS + ' .jwcenter', {
-        position: JW_CSS_ABSOLUTE
-    });
+        _css(CB_CLASS + ' .jwright', {
+            position: JW_CSS_RELATIVE,
+            'float': 'right'
+        });
 
-    _css(CB_CLASS + ' buttoncontainer,' + CB_CLASS + ' button', {
-        display: JW_CSS_INLINE_BLOCK,
-        height: JW_CSS_100PCT,
-        border: JW_CSS_NONE,
-        cursor: 'pointer'
-    });
+        _css(CB_CLASS + ' .jwcenter', {
+            position: JW_CSS_ABSOLUTE
+        });
 
-    _css(CB_CLASS + ' .jwcapRight,' + CB_CLASS + ' .jwtimeSliderCapRight,' + CB_CLASS + ' .jwvolumeCapRight', {
-        right: 0,
-        position: JW_CSS_ABSOLUTE
-    });
+        _css(CB_CLASS + ' buttoncontainer,' + CB_CLASS + ' button', {
+            display: JW_CSS_INLINE_BLOCK,
+            height: JW_CSS_100PCT,
+            border: JW_CSS_NONE,
+            cursor: 'pointer'
+        });
 
-    _css(CB_CLASS + ' .jwcapBottom', {
-        bottom: 0,
-        position: JW_CSS_ABSOLUTE
-    });
+        _css(CB_CLASS + ' .jwcapRight,' + CB_CLASS + ' .jwtimeSliderCapRight,' + CB_CLASS + ' .jwvolumeCapRight', {
+            right: 0,
+            position: JW_CSS_ABSOLUTE
+        });
 
-    _css(CB_CLASS + ' .jwtime', {
-        position: JW_CSS_ABSOLUTE,
-        height: JW_CSS_100PCT,
-        width: JW_CSS_100PCT,
-        left: 0
-    });
+        _css(CB_CLASS + ' .jwcapBottom', {
+            bottom: 0,
+            position: JW_CSS_ABSOLUTE
+        });
 
-    _css(CB_CLASS + ' .jwthumb', {
-        position: JW_CSS_ABSOLUTE,
-        height: JW_CSS_100PCT,
-        cursor: 'pointer'
-    });
+        _css(CB_CLASS + ' .jwtime', {
+            position: JW_CSS_ABSOLUTE,
+            height: JW_CSS_100PCT,
+            width: JW_CSS_100PCT,
+            left: 0
+        });
 
-    _css(CB_CLASS + ' .jwrail', {
-        position: JW_CSS_ABSOLUTE,
-        cursor: 'pointer'
-    });
+        _css(CB_CLASS + ' .jwthumb', {
+            position: JW_CSS_ABSOLUTE,
+            height: JW_CSS_100PCT,
+            cursor: 'pointer'
+        });
 
-    _css(CB_CLASS + ' .jwrailgroup', {
-        position: JW_CSS_ABSOLUTE,
-        width: JW_CSS_100PCT
-    });
+        _css(CB_CLASS + ' .jwrail', {
+            position: JW_CSS_ABSOLUTE,
+            cursor: 'pointer'
+        });
 
-    _css(CB_CLASS + ' .jwrailgroup span', {
-        position: JW_CSS_ABSOLUTE
-    });
+        _css(CB_CLASS + ' .jwrailgroup', {
+            position: JW_CSS_ABSOLUTE,
+            width: JW_CSS_100PCT
+        });
 
-    _css(CB_CLASS + ' .jwdivider+.jwdivider', {
-        display: JW_CSS_NONE
-    });
+        _css(CB_CLASS + ' .jwrailgroup span', {
+            position: JW_CSS_ABSOLUTE
+        });
 
-    _css(CB_CLASS + ' .jwtext', {
-        padding: '0 5px',
-        'text-align': 'center'
-    });
+        _css(CB_CLASS + ' .jwdivider+.jwdivider', {
+            display: JW_CSS_NONE
+        });
 
-    _css(CB_CLASS + ' .jwcast', {
-        display: JW_CSS_NONE
-    });
+        _css(CB_CLASS + ' .jwtext', {
+            padding: '0 5px',
+            'text-align': 'center'
+        });
 
-    _css(CB_CLASS + ' .jwcast.jwcancast', {
-        display: JW_CSS_BLOCK
-    });
+        _css(CB_CLASS + ' .jwcast', {
+            display: JW_CSS_NONE
+        });
 
-    _css(CB_CLASS + ' .jwalt', {
-        display: JW_CSS_NONE,
-        overflow: 'hidden'
-    });
+        _css(CB_CLASS + ' .jwcast.jwcancast', {
+            display: JW_CSS_BLOCK
+        });
 
-    // important
-    _css(CB_CLASS + ' .jwalt', {
-        position: JW_CSS_ABSOLUTE,
-        left: 0,
-        right: 0,
-        'text-align': 'left'
-    }, TRUE);
+        _css(CB_CLASS + ' .jwalt', {
+            display: JW_CSS_NONE,
+            overflow: 'hidden'
+        });
 
-    _css(CB_CLASS + ' .jwoverlaytext', {
-        padding: 3,
-        'text-align': 'center'
-    });
+        // important
+        _css(CB_CLASS + ' .jwalt', {
+            position: JW_CSS_ABSOLUTE,
+            left: 0,
+            right: 0,
+            'text-align': 'left'
+        }, true);
 
-    _css(CB_CLASS + ' .jwvertical *', {
-        display: JW_CSS_BLOCK
-    });
+        _css(CB_CLASS + ' .jwoverlaytext', {
+            padding: 3,
+            'text-align': 'center'
+        });
 
-    // important
-    _css(CB_CLASS + ' .jwvertical .jwvolumeProgress', {
-        height: 'auto'
-    }, TRUE);
+        _css(CB_CLASS + ' .jwvertical *', {
+            display: JW_CSS_BLOCK
+        });
 
-    _css(CB_CLASS + ' .jwprogressOverflow', {
-        position: JW_CSS_ABSOLUTE,
-        overflow: JW_CSS_HIDDEN
-    });
+        // important
+        _css(CB_CLASS + ' .jwvertical .jwvolumeProgress', {
+            height: 'auto'
+        }, true);
 
-    _setTransition(CB_CLASS, JW_CSS_SMOOTH_EASE);
-    _setTransition(CB_CLASS + ' button', JW_CSS_SMOOTH_EASE);
-    _setTransition(CB_CLASS + ' .jwtoggling', JW_CSS_NONE);
+        _css(CB_CLASS + ' .jwprogressOverflow', {
+            position: JW_CSS_ABSOLUTE,
+            overflow: 'hidden'
+        });
 
-})(window.jwplayer);
+        _setTransition(CB_CLASS, JW_CSS_SMOOTH_EASE);
+        _setTransition(CB_CLASS + ' button', JW_CSS_SMOOTH_EASE);
+        _setTransition(CB_CLASS + ' .jwtoggling', JW_CSS_NONE);
+    })();
+
+})(window, document);
