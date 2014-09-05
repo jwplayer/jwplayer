@@ -4,6 +4,7 @@
         utils = jwplayer.utils,
         _css = utils.css,
         _bounds = utils.bounds,
+        _iFramed = (window.top !== window.self),
 
         D_CLASS = '.jwdock',
         DB_CLASS = '.jwdockbuttons';
@@ -134,6 +135,10 @@
             _dockBounds = _bounds(_container);
         };
 
+        function _iFramedFullscreenIE() {
+            return (_iFramed && utils.isIE() && _api.jwGetFullscreen());
+        }
+
         function _positionTooltip(name) {
             var tooltip = _tooltips[name],
                 tipBounds,
@@ -143,9 +148,15 @@
 
             tooltip.offsetX(0);
             dockBounds = _bounds(_container);
-            _css('#' + tooltip.element().id, {
-                left: buttonBounds.left - dockBounds.left + buttonBounds.width / 2
-            });
+            if (_iFramedFullscreenIE()) {
+                _css('#' + tooltip.element().id, {
+                    left: buttonBounds.left*100 + 50 + buttonBounds.width*100 / 2
+                });
+            } else {
+                _css('#' + tooltip.element().id, {
+                    left: buttonBounds.left - dockBounds.left + buttonBounds.width / 2
+                });
+            }
             tipBounds = _bounds(tooltip.element());
             if (dockBounds.left > tipBounds.left) {
                 tooltip.offsetX(dockBounds.left - tipBounds.left + 8);
