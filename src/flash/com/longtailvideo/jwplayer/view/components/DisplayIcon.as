@@ -203,8 +203,8 @@ package com.longtailvideo.jwplayer.view.components {
 		private function positionText():void {
 			if (!_textField.text) return;
 			
-			var maxX:Number = Number.MIN_VALUE;
-			var maxY:Number = Number.MIN_VALUE;
+			var maxX:Number = -Number.MAX_VALUE;
+			var maxY:Number = -Number.MAX_VALUE;
 			var minX:Number = Number.MAX_VALUE;
 			var minY:Number = Number.MAX_VALUE;
 			for (var i:Number = 0; i < _textField.text.length; i++) {
@@ -217,7 +217,7 @@ package com.longtailvideo.jwplayer.view.components {
 				}
 			}
 			
-			if (maxX > Number.MIN_VALUE && maxY > Number.MIN_VALUE) {
+			if (maxX > -Number.MAX_VALUE && maxY > -Number.MAX_VALUE) {
 				_textField.width = Math.round(maxX - minX + 10);
 				_textField.height = Math.round(maxY + 5);
 				_textField.y = Math.round((_background.height - maxY) / 2 - minY);
