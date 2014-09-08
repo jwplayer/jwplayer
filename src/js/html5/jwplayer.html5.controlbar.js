@@ -1093,11 +1093,6 @@
 
             var currentTime = (new Date()).getTime();
 
-            if (currentTime - _lastTooltipPositionTime > 50) {
-                _positionTimeTooltip(evt);
-                _lastTooltipPositionTime = currentTime;
-            }
-
             var rail = _elements[_dragging].querySelector('.jwrail'),
                 railRect = utils.bounds(rail),
                 pct = evt.x / railRect.width;
