@@ -1099,9 +1099,9 @@
             if (pct > 100) {
                 pct = 100;
             }
-            if (evt.type == utils.touchEvents.DRAG_END) {
+            if (evt.type === utils.touchEvents.DRAG_END) {
                 _api.jwSeekDrag(false);
-                _elements.timeRail.className = "jwrail";
+                _elements.timeRail.className = 'jwrail';
                 _draggingEnd();
                 _sliderMapping.time(pct);
                 _hideTimeTooltip();
