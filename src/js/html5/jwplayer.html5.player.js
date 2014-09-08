@@ -43,6 +43,7 @@
 
         function _errorHandler(evt) {
             utils.log('There was a problem setting up the player: ', evt);
+            _controller.playerSetupError(evt);
             utils.css.unblock(_this.id);
         }
 

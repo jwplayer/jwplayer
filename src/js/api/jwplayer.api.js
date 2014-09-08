@@ -533,6 +533,10 @@
             }
         };
 
+        _this.playerSetupError = function(obj) {
+            _this.dispatchEvent(events.JWPLAYER_SETUP_ERROR, obj);
+        };
+
         _this.getItemMeta = function() {
             return _itemMeta;
         };
@@ -550,6 +554,19 @@
 
         api.playerReady(obj);
     };
+
+    jwplayer.playerSetupError = function(obj) {
+        var api = jwplayer.api.playerById(obj.id);
+
+        if (!api) {
+            jwplayer.api.selectPlayer(obj.id).playerSetupError(obj);
+            return;
+        }
+
+        api.playerSetupError(obj);
+    };
+
+
 
     jwplayer.api.selectPlayer = function(identifier) {
         var _container;
