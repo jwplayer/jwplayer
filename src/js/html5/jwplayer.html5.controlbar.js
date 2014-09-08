@@ -139,6 +139,7 @@
             _hideFullscreen = false,
             _dragging = null,
             _lastSeekTime = 0,
+            _lastTooltipPositionTime = 0,
             _cues = [],
             _activeCue,
             _toggles = {
@@ -1090,23 +1091,30 @@
                 return;
             }
 
+            var currentTime = (new Date()).getTime();
+
+            if (currentTime - _lastTooltipPositionTime > 50) {
+                _positionTimeTooltip(evt);
+                _lastTooltipPositionTime = currentTime;
+            }
+
             var rail = _elements[_dragging].querySelector('.jwrail'),
                 railRect = utils.bounds(rail),
                 pct = evt.x / railRect.width;
             if (pct > 100) {
                 pct = 100;
             }
-            if (evt.type === utils.touchEvents.DRAG_END) {
+            if (evt.type == utils.touchEvents.DRAG_END) {
                 _api.jwSeekDrag(false);
-                _elements.timeRail.className = 'jwrail';
+                _elements.timeRail.className = "jwrail";
                 _draggingEnd();
                 _sliderMapping.time(pct);
                 _hideTimeTooltip();
                 _this.sendEvent(events.JWPLAYER_USER_ACTION);
             } else {
                 _setProgress(pct);
-                if (_position - _lastSeekTime > 500) {
-                    _lastSeekTime = _position;
+                if (currentTime - _lastSeekTime > 500) {
+                    _lastSeekTime = currentTime;
                     _sliderMapping.time(pct);
                 }
                 _this.sendEvent(events.JWPLAYER_USER_ACTION);
