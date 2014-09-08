@@ -1097,6 +1097,7 @@ package com.longtailvideo.jwplayer.view.components {
 			hideVolumeOverlay();
 			hideHdOverlay();
 			hideCcOverlay();
+			hideTrackOverlay();
 			if (_timeSlider is TimeSlider) (_timeSlider as TimeSlider).hide();
 		}
 
