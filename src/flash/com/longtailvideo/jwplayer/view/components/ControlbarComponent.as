@@ -1114,35 +1114,42 @@ package com.longtailvideo.jwplayer.view.components {
 			return player.config.mute || (player.config.volume == 0);
 		}
 
+		
 		private function addDividers():void {
-
-			var rightDivide:Array = ["play","pause","prev","next"];
-			var leftDivide:Array = isMuted ? ["hd","cc","unmute","cast","fullscreen"] : ["hd","cc","track", "mute","cast","fullscreen"];
-
+			
 			_numDividers = 0;
 			//make sure we don't add dividers a layout that already has dividers
 			var div:RegExp = /\|/g;
 			_currentLayout = _currentLayout.replace(div,"");
-
+			
+			
+			//clean up extra spaces;
+			_currentLayout = _currentLayout.replace(/\s{2,}/g,' ');
+			_currentLayout = _currentLayout.replace(/\s+]/g,']')
+			
+			//grab the cb parts;
+			_currentLayout = _currentLayout.replace(/\[\s+/g,'[');
+			var controlbarPattern:RegExp = /\[(.*)\]\[(.*)\]\[(.*)\]/;
+			var result:Object = controlbarPattern.exec(_currentLayout);
 			var i:uint;
 			var elem:String;
-			for (i=rightDivide.length; i--;) {
-				elem = rightDivide[i];
-				if (_currentLayout.indexOf(elem) > -1) {
+			var right:Array = result[1].split(" ");
+			for (i = 0; i < right.length - 1; i++) {
+				elem = right[i];
+				if (elem && _currentLayout.indexOf(elem) > -1) {
+					_currentLayout = _currentLayout.replace(elem,elem+"|" );
+					_numDividers++;
+				}
+			}
+			var left:Array = result[3].split(" ");
+			for (i = 0; i < left.length - 1; i++) {
+				elem = left[i];
+				if (elem && _currentLayout.indexOf(elem) > -1) {
 					_currentLayout = _currentLayout.replace(elem, elem+"|");
 					_numDividers++;
 				}
 			}
-
-			for (i=leftDivide.length; i--;) {
-				elem = leftDivide[i];
-				if (_currentLayout.indexOf(elem) > -1) {
-					_currentLayout = _currentLayout.replace(elem, "|" + elem);
-					_numDividers++;
-				}
-			}
 		}
-
 		private function alignTextFields():void {
 			for each(var fieldName:String in ['elapsed', 'duration']) {
 				var textContainer:Sprite = _buttons[fieldName] as Sprite;
