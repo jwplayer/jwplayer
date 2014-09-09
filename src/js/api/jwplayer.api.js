@@ -452,7 +452,7 @@
                             }
                             fn.call(this, args);
                         } catch (e) {
-                            utils.log('There was an error calling back an event handler');
+                            utils.log('There was an error calling back an event handler', e);
                         }
                     }
                 }

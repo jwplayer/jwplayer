@@ -29,6 +29,10 @@
             delete playerApi.config.aspectratio;
         }
 
+        if(_config.events && _config.events.onSetupError) {
+            playerApi.onSetupError(_config.events.onSetupError);
+        }
+
         var _container = document.createElement('div');
         _container.id = _oldContainer.id;
         _container.style.width = _width.toString().indexOf('%') > 0 ? _width : (_width + 'px');
@@ -102,8 +106,11 @@
             if (_pluginloader.getStatus() === utils.loaderstatus.COMPLETE) {
                 for (var mode = 0; mode < _config.modes.length; mode++) {
                     if (_config.modes[mode].type && embed[_config.modes[mode].type]) {
-                        var configClone = utils.extend({}, _config),
-                            embedder = new embed[_config.modes[mode].type](_container, _config.modes[mode],
+                        var configClone = utils.extend({}, _config);
+                        if(configClone.events && configClone.events.onSetupError) {
+                            delete configClone.events.onSetupError;
+                        }
+                        var embedder = new embed[_config.modes[mode].type](_container, _config.modes[mode],
                                 configClone, _pluginloader, playerApi);
 
                         if (embedder.supportsConfig()) {
@@ -144,6 +151,7 @@
             playerApi.dispatchEvent(events.JWPLAYER_ERROR, {
                 message: 'Could not load plugin: ' + evt.message
             });
+            _dispatchSetupError(evt.message, false);
         }
 
         function _sourceError(evt) {
