@@ -17,7 +17,10 @@ package com.longtailvideo.jwplayer.controller {
 	
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
-	import flash.utils.setTimeout;
+import flash.events.TimerEvent;
+import flash.external.ExternalInterface;
+import flash.utils.Timer;
+import flash.utils.setTimeout;
 
 	/**
 	 * Sent when the player has been initialized and skins and plugins have been successfully loaded.
@@ -165,9 +168,33 @@ package com.longtailvideo.jwplayer.controller {
 
 		protected function setupError(evt:ErrorEvent):void {
 			Logger.log("STARTUP: Error occurred during player startup: " + evt.text);
+            playerSetupError(new PlayerEvent(PlayerEvent.JWPLAYER_SETUP_ERROR, evt.text));
 			_view.completeView(true, evt.text);
 		}
 
+        /** Delay the response to SetupError to allow the external interface to initialize in some browsers **/
+        private static function playerSetupError(evt:PlayerEvent):void {
+            var type:String = evt.type;
+            var args:Object = {
+                id: evt.id,
+                client: evt.client,
+                version: evt.version
+            };
+            var setupError:Function = function(timerEvent:TimerEvent = null):void {
+                if (timerEvent) timerEvent.target.delay = 20;
+                if (ExternalInterface.available) {
+                    if (timerEvent) timerEvent.target.stop();
+                    ExternalInterface.call("jwplayer.playerSetupError", args);
+                }
+            };
+            if (ExternalInterface.available) {
+                setupError();
+            } else {
+                var timer:Timer = new Timer(0, 5);
+                timer.addEventListener(TimerEvent.TIMER_COMPLETE, setupError);
+                timer.start();
+            }
+        }
 
 		protected function finalizeSetup():void {
 			if (!locking && _setupComplete && !_setupFinalized) {
