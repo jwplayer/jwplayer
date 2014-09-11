@@ -882,7 +882,7 @@ package com.longtailvideo.jwplayer.view {
 		}
 		
 		private function hideControls():void {
-			if (_canCast || _preventFade) {
+			if ((_canCast &&  _player.state == PlayerState.IDLE)|| _preventFade) {
 				return;
 			}
 
