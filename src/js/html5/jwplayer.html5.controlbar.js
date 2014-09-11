@@ -139,7 +139,6 @@
             _hideFullscreen = false,
             _dragging = null,
             _lastSeekTime = 0,
-            _lastTooltipPositionTime = 0,
             _cues = [],
             _activeCue,
             _toggles = {
