@@ -35,8 +35,8 @@
 		protected var model:Model;
 		protected var view:View;
 		protected var controller:Controller;
-		
 		protected var _dispatcher:GlobalEventDispatcher;
+		
 		
 		/** Player constructor **/
 		public function Player() {
@@ -79,8 +79,9 @@
 			// Only handle JWPLAYER_READY once
 			controller.removeEventListener(PlayerEvent.JWPLAYER_READY, playerReady);
 			SWFFocus.init(stage);
+			
 			// Initialize Javascript interface
-			var jsAPI:JavascriptAPI = new JavascriptAPI(this);
+			JavascriptAPI.setPlayer(this);
 			
 			// Forward all MVC events
 			model.addGlobalListener(forward);
@@ -280,6 +281,18 @@
 			return new InstreamPlayer(target, model, view, controller);
 		}
 
+		public function getAudioTracks():Array {
+			return model.media ? model.media.audioTracks : null;
+		}
+		
+		public function getCurrentAudioTrack():Number {
+			return model.media ? model.media.currentAudioTrack : NaN;
+		}
+		
+		public function setCurrentAudioTrack(index:Number):void {
+			if (model.media) model.media.currentAudioTrack = index;
+		}
+		
 		public function getQualityLevels():Array {
 			return model.media ? model.media.qualityLevels : null;
 		}

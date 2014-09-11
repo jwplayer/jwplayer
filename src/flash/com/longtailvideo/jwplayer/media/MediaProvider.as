@@ -99,9 +99,10 @@ package com.longtailvideo.jwplayer.media {
 		private var _queuedBufferFull:Boolean;
 		/** Current quality level **/
 		protected var _currentQuality:Number = -1;
-		
+		protected var _currentAudioTrack:Number = -1;
 		protected var _width:Number;
 		protected var _height:Number;
+
 		
 		
 		public function MediaProvider(provider:String) {
@@ -291,15 +292,10 @@ package com.longtailvideo.jwplayer.media {
 		 * @param value
 		 */
 		protected function sendMediaEvent(type:String, properties:Object=null):void {
-			if (type == MediaEvent.JWPLAYER_MEDIA_BUFFER_FULL && state == PlayerState.PAUSED) {
+			if (type === MediaEvent.JWPLAYER_MEDIA_BUFFER_FULL && state === PlayerState.PAUSED) {
 				_queuedBufferFull = true;
 			} else {
-				var newEvent:MediaEvent = new MediaEvent(type);
-				for (var property:String in properties) {
-					if (newEvent.hasOwnProperty(property)) {
-						newEvent[property] = properties[property];
-					}
-				}
+				var newEvent:MediaEvent = new MediaEvent(type, properties);
 				dispatchEvent(newEvent);
 			}
 		}
@@ -381,24 +377,39 @@ package com.longtailvideo.jwplayer.media {
 		}
 
 
+		/** Current audio track getter **/
+		public function get currentAudioTrack():Number {
+			return _currentAudioTrack;
+		}
+
+
+		/** Current audio track setter **/
+		public function set currentAudioTrack(audioTrack:Number):void {
+			_currentAudioTrack = audioTrack;
+		}
+
+
+		/** Audio Tracks (must be overridden by inheritors **/
+		public function get audioTracks():Array {
+			return null;
+		}
+
 		/** Current quality level getter **/
 		public function get currentQuality():Number {
 			return _currentQuality;
 		}
-
-
+		
+		
 		/** Current quality level setter **/
 		public function set currentQuality(quality:Number):void {
 			_currentQuality = quality;
 		}
-
-
+		
+		
 		/** Quality levels (must be overridden by inheritors **/
 		public function get qualityLevels():Array {
 			return null;
 		}
-
-
 		/** Translate sources into quality levels. **/
 		protected function sources2Levels(sources:Array):Array {
 			var levels:Array = new Array();

@@ -484,13 +484,6 @@ package com.longtailvideo.jwplayer.player
 		protected function resizeHandler(evt:ViewEvent=null):void {
 			var screenColor:Color;
 			var viewDisplay:IDisplayComponent = _view.components.display;
-			var viewControlbar:IControlbarComponent = _view.components.controlbar;
-			
-			if (_model.config.screencolor) {
-				screenColor = _model.config.screencolor;
-			} else if (_model.config.pluginConfig('display').hasOwnProperty('backgroundcolor')) {
-				screenColor = new Color(String(_model.config.pluginConfig('display')['backgroundcolor']));
-			}
 			
 			_isConfig.width = _model.config.width;
 			_isConfig.height = _model.config.height;
@@ -526,7 +519,6 @@ package com.longtailvideo.jwplayer.player
 				_controls.controlbar.show();
 				_controls.display.show();
 			}
-			
 		}
 		
 		protected function removeEventListeners():void {
@@ -690,6 +682,20 @@ package com.longtailvideo.jwplayer.player
 		public function setCurrentQuality(index:Number):void {
 			throw new Error(UNSUPPORTED_ERROR);
 		}
+		
+		public function getAudioTracks():Array {
+			throw new Error(UNSUPPORTED_ERROR);
+		}
+		
+		public function getCurrentAudioTrack():Number {
+			throw new Error(UNSUPPORTED_ERROR);
+		}
+		
+		public function setCurrentAudioTrack(index:Number):void {
+			throw new Error(UNSUPPORTED_ERROR);
+		}
+		
+		
 		
 		public function getCaptionsList():Array {
 			throw new Error(UNSUPPORTED_ERROR);

@@ -265,8 +265,6 @@ package com.longtailvideo.jwplayer.view {
 					var errorMessage:TextField = new TextField();
 					errorMessage.defaultTextFormat = new TextFormat("_sans", 15, 0xffffff, false, false, false, null, null, TextFormatAlign.CENTER);
 					errorMessage.text = errorMsg.replace(":", ":\n");
-					var stageWidth:Number = RootReference.stage.stageWidth;
-					var stg:Stage = RootReference.stage;
 					errorMessage.width = RootReference.stage.stageWidth - 300;
 					errorMessage.height = errorMessage.textHeight + 10;
 					errorMessage.autoSize = TextFieldAutoSize.CENTER;
@@ -360,9 +358,14 @@ package com.longtailvideo.jwplayer.view {
 			if (_model.fullscreen != _fullscreen) {
 				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_FULLSCREEN, _fullscreen));
 			}
-			redraw();
-			
-			dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_RESIZE, {width: RootReference.stage.stageWidth, height: RootReference.stage.stageHeight}));
+            var size:Object = {
+                width:  RootReference.stage.stageWidth,
+                height: RootReference.stage.stageHeight
+            };
+            if (size.width && size.height) {
+                redraw();
+                dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_RESIZE, size));
+            }
 		}
 
 
@@ -439,17 +442,8 @@ package com.longtailvideo.jwplayer.view {
 			_instreamLayer.graphics.beginFill(0);
 			_instreamLayer.graphics.drawRect(0, 0, _player.config.width, _player.config.height);
 			_instreamLayer.graphics.endFill();
-			
-				
-/*			if (_logo) {
-				_logo.x = _components.display.x;
-				_logo.y = _components.display.y;
-				_logo.resize(_player.config.width, _player.config.height);
-			}
-*/
-//			for (var i:Number = 0; i < _pluginsLayer.numChildren; i++) {
+
 			for each (var plug:IPlugin in _allPlugins) {
-//				var plug:IPlugin = _pluginsLayer.getChildAt(i) as IPlugin;
 				var plugDisplay:DisplayObject = plug as DisplayObject;
 				if (plug && plugDisplay) {
 					var cfg:PluginConfig = _player.config.pluginConfig(plug.id);

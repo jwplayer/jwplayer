@@ -49,22 +49,41 @@ package com.longtailvideo.jwplayer.events {
 		// The current level; A value of -1 means the level is automatically selected
 		public var currentQuality:Number	= -1;
 		
-		public function MediaEvent(type:String) {
-			super(type);
-		}
+		public static const JWPLAYER_AUDIO_TRACKS:String = "jwplayerAudioTracks";
+		public static const JWPLAYER_AUDIO_TRACKS_CHANGED:String = "jwplayerAudioTracksChanged";
 		
+		//An array of quality levels
+		public var tracks:Array				= null;
+		// The current level; A value of -1 means the level is automatically selected
+		public var currentAudioTrack:Number	= -1;
+		
+		
+		public function MediaEvent(type:String, properties:Object=null) {
+			super(type);
+            if (properties !== null) {
+                for (var property:String in properties) {
+                    if (this.hasOwnProperty(property)) {
+                        this[property] = properties[property];
+                    }
+                }
+            }
+		}
+
 		public override function clone():Event {
-			var evt:MediaEvent = new MediaEvent(this.type);
-			evt.bufferPercent = this.bufferPercent;
-			evt.duration = this.duration;
-			evt.metadata = this.metadata;
-			evt.position = this.position;
-			evt.offset = this.offset;
-			evt.volume = this.volume;
-			evt.mute = this.mute;
-			evt.levels = this.levels;
-			evt.currentQuality = this.currentQuality;
-			return evt;
+            // the class must be dynamic to make the properties enumerable
+			return new MediaEvent(this.type, {
+                bufferPercent:     this.bufferPercent,
+                offset:            this.offset,
+                position:          this.position,
+                duration:          this.duration,
+                metadata:          this.metadata,
+                volume:            this.volume,
+                mute:              this.mute,
+                levels:            this.levels,
+                currentQuality:    this.currentQuality,
+                tracks:            this.tracks,
+                currentAudioTrack: this.currentAudioTrack
+            });
 		}
 		
 		public override function toString():String {

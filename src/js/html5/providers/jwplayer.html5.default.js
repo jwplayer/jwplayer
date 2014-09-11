@@ -33,6 +33,10 @@
         getQualityLevels : noop,
         getCurrentQuality : noop,
         setCurrentQuality : noop,
+        
+        getAudioTracks : noop,
+        getCurrentAudioTrack : noop,
+        setCurrentAudioTrack : noop,
 
         // TODO :: The following are targets for removal after refactoring
         checkComplete : noop,
