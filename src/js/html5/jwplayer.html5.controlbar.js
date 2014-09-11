@@ -1109,7 +1109,7 @@
             } else {
                 _setProgress(pct);
                 if (currentTime - _lastSeekTime > 500) {
-                    _lastSeekTime = currentTime;
+                    _lastSeekTime = _position;
                     _sliderMapping.time(pct);
                 }
                 _this.sendEvent(events.JWPLAYER_USER_ACTION);
