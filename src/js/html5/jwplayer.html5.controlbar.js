@@ -228,10 +228,12 @@
             if (!_isMobile) {
                 _controlbar.addEventListener('mouseover', function() {
                     // Slider listeners
+                    window.addEventListener('mousemove', _sliderMouseEvent, false);
                     window.addEventListener('mousedown', _killSelect, false);
                 }, false);
                 _controlbar.addEventListener('mouseout', function() {
                     // Slider listeners
+                    window.removeEventListener('mousemove', _sliderMouseEvent);
                     window.removeEventListener('mousedown', _killSelect);
                     document.onselectstart = null;
                 }, false);
@@ -1088,6 +1090,8 @@
                 return;
             }
 
+            var currentTime = (new Date()).getTime();
+
             var rail = _elements[_dragging].querySelector('.jwrail'),
                 railRect = utils.bounds(rail),
                 pct = evt.x / railRect.width;
@@ -1103,7 +1107,7 @@
                 _this.sendEvent(events.JWPLAYER_USER_ACTION);
             } else {
                 _setProgress(pct);
-                if (_position - _lastSeekTime > 500) {
+                if (currentTime - _lastSeekTime > 500) {
                     _lastSeekTime = _position;
                     _sliderMapping.time(pct);
                 }
@@ -1144,6 +1148,9 @@
         }
 
         function _sliderMouseEvent(evt) {
+
+            var currentTime = (new Date()).getTime();
+
             if (!_dragging || evt.button) {
                 return;
             }
@@ -1175,7 +1182,7 @@
                 } else {
                     _setVolume(pct);
                 }
-                if (_position - _lastSeekTime > 500) {
+                if (currentTime - _lastSeekTime > 500) {
                     _lastSeekTime = _position;
                     _sliderMapping[_dragging.replace('H', '')](pct);
                 }
