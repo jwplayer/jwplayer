@@ -143,11 +143,9 @@
         }
 
         function _pluginError(evt) {
-            //_errorScreen('Could not load plugins: ' + evt.message);
             playerApi.dispatchEvent(events.JWPLAYER_ERROR, {
                 message: 'Could not load plugin: ' + evt.message
             });
-            _dispatchSetupError(evt.message, false);
         }
 
         function _sourceError(evt) {
