@@ -452,7 +452,7 @@
                             }
                             fn.call(this, args);
                         } catch (e) {
-                            utils.log('There was an error calling back an event handler');
+                            utils.log('There was an error calling back an event handler', e);
                         }
                     }
                 }
@@ -542,10 +542,8 @@
 
     jwplayer.playerReady = function(obj) {
         var api = jwplayer.api.playerById(obj.id);
-
         if (!api) {
-            jwplayer.api.selectPlayer(obj.id).playerReady(obj);
-            return;
+            api = jwplayer.api.selectPlayer(obj.id);
         }
 
         api.playerReady(obj);

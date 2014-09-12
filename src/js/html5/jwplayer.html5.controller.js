@@ -68,7 +68,6 @@
             }
         }
 
-
         function _forward(evt) {
             _this.sendEvent(evt.type, evt);
         }
@@ -368,7 +367,6 @@
             return _preplay;
         };
         this.playerReady = _playerReady;
-
         _init();
     };
 

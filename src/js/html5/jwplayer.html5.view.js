@@ -96,12 +96,6 @@
             _playerElement = _createElement('div', PLAYER_CLASS + ' playlist-' + _model.playlistposition);
             _playerElement.id = _api.id;
             _playerElement.tabIndex = 0;
-            _playerElement.onmousedown = handleMouseDown;
-            _playerElement.onfocusin = handleFocus;
-            _playerElement.addEventListener('focus', handleFocus);
-            _playerElement.onfocusout = handleBlur;
-            _playerElement.addEventListener('blur', handleBlur);
-            _playerElement.addEventListener('keydown', handleKeydown);
 
             _requestFullscreen =
                 _playerElement.requestFullscreen ||
@@ -581,6 +575,13 @@
             if (utils.canCast()) {
                 _this.forceControls(TRUE);
             }
+            
+            _playerElement.onmousedown = handleMouseDown;
+            _playerElement.onfocusin = handleFocus;
+            _playerElement.addEventListener('focus', handleFocus);
+            _playerElement.onfocusout = handleBlur;
+            _playerElement.addEventListener('blur', handleBlur);
+            _playerElement.addEventListener('keydown', handleKeydown);
         }
 
         function _castAdChanged(evt) {

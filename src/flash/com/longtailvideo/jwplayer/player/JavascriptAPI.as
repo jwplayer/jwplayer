@@ -73,6 +73,22 @@ package com.longtailvideo.jwplayer.player {
 			
 			_player.addGlobalListener(queueEvents);
 		}
+
+        public static function setupError(evt:PlayerEvent):void {
+            var _setupError:Function = function(timerEvent:TimerEvent):void {
+                timerEvent.target.delay = 20;
+                if (ExternalInterface.available) {
+                    timerEvent.target.stop();
+                    // dispatch the translated event to JavaScript
+                    _listeners = {};
+                    _listeners[evt.type] = ['function(evt){jwplayer("'+evt.id+'").dispatchEvent(evt.type,evt)}'];
+                    listenerCallback(evt);
+                }
+            };
+            var timer:Timer = new Timer(1, 5);
+            timer.addEventListener(TimerEvent.TIMER_COMPLETE, _setupError);
+            timer.start();
+        }
 		
 		/** Delay the response to PlayerReady to allow the external interface to initialize in some browsers **/
 		private static function playerReady(evt:PlayerEvent):void {

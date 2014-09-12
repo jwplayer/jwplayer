@@ -16,6 +16,8 @@ package com.longtailvideo.jwplayer.events {
 		public static const JWPLAYER_ERROR:String = "jwplayerError";
 
 		public static const JWPLAYER_FULLSCREEN:String = "jwplayerFullscreen";
+
+        public static const JWPLAYER_SETUP_ERROR:String = "jwplayerSetupError";
 		
 		private static var FLASH_VERSION:String;
 		
