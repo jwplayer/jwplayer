@@ -60,6 +60,7 @@
 			view = newView(model);
 			controller = newController(model, view);
 			controller.addEventListener(PlayerEvent.JWPLAYER_READY, playerReady, false, -1);
+            controller.addEventListener(PlayerEvent.JWPLAYER_SETUP_ERROR, setupError, false, -1);
 			controller.setupPlayer();
 		}
 		
@@ -76,8 +77,9 @@
 		} 
 		
 		protected function playerReady(evt:PlayerEvent):void {
-			// Only handle JWPLAYER_READY once
+			// Only handle Setup Events once
 			controller.removeEventListener(PlayerEvent.JWPLAYER_READY, playerReady);
+            controller.removeEventListener(PlayerEvent.JWPLAYER_SETUP_ERROR, forward);
 			SWFFocus.init(stage);
 			
 			// Initialize Javascript interface
@@ -90,7 +92,15 @@
 
 			forward(evt);
 		}
-		
+
+        protected function setupError(evt:PlayerEvent):void {
+            // Only handle Setup Events once
+            controller.removeEventListener(PlayerEvent.JWPLAYER_READY, playerReady);
+            controller.removeEventListener(PlayerEvent.JWPLAYER_SETUP_ERROR, forward);
+
+            // Send Setup Error to browser
+            JavascriptAPI.setupError(evt);
+        }
 		
 		/**
 		 * Forwards all MVC events to interested listeners.

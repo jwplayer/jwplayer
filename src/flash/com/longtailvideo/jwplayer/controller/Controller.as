@@ -1,28 +1,25 @@
 package com.longtailvideo.jwplayer.controller {
-	import com.longtailvideo.jwplayer.events.GlobalEventDispatcher;
-	import com.longtailvideo.jwplayer.events.MediaEvent;
-	import com.longtailvideo.jwplayer.events.PlayerEvent;
-	import com.longtailvideo.jwplayer.events.PlaylistEvent;
-	import com.longtailvideo.jwplayer.events.ViewEvent;
-	import com.longtailvideo.jwplayer.model.Model;
-	import com.longtailvideo.jwplayer.model.PlaylistItem;
-	import com.longtailvideo.jwplayer.parsers.JWParser;
-	import com.longtailvideo.jwplayer.player.IPlayer;
-	import com.longtailvideo.jwplayer.player.PlayerState;
-	import com.longtailvideo.jwplayer.plugins.IPlugin;
-	import com.longtailvideo.jwplayer.utils.Configger;
-	import com.longtailvideo.jwplayer.utils.Logger;
-	import com.longtailvideo.jwplayer.utils.RootReference;
-	import com.longtailvideo.jwplayer.view.View;
-	
-	import flash.events.ErrorEvent;
-	import flash.events.Event;
-import flash.events.TimerEvent;
-import flash.external.ExternalInterface;
-import flash.utils.Timer;
+import com.longtailvideo.jwplayer.events.GlobalEventDispatcher;
+import com.longtailvideo.jwplayer.events.MediaEvent;
+import com.longtailvideo.jwplayer.events.PlayerEvent;
+import com.longtailvideo.jwplayer.events.PlaylistEvent;
+import com.longtailvideo.jwplayer.events.ViewEvent;
+import com.longtailvideo.jwplayer.model.Model;
+import com.longtailvideo.jwplayer.model.PlaylistItem;
+import com.longtailvideo.jwplayer.parsers.JWParser;
+import com.longtailvideo.jwplayer.player.IPlayer;
+import com.longtailvideo.jwplayer.player.PlayerState;
+import com.longtailvideo.jwplayer.plugins.IPlugin;
+import com.longtailvideo.jwplayer.utils.Configger;
+import com.longtailvideo.jwplayer.utils.Logger;
+import com.longtailvideo.jwplayer.utils.RootReference;
+import com.longtailvideo.jwplayer.view.View;
+
+import flash.events.ErrorEvent;
+import flash.events.Event;
 import flash.utils.setTimeout;
 
-	/**
+/**
 	 * Sent when the player has been initialized and skins and plugins have been successfully loaded.
 	 *
 	 * @eventType com.longtailvideo.jwplayer.events.PlayerEvent.JWPLAYER_READY
@@ -168,33 +165,9 @@ import flash.utils.setTimeout;
 
 		protected function setupError(evt:ErrorEvent):void {
 			Logger.log("STARTUP: Error occurred during player startup: " + evt.text);
-            playerSetupError(new PlayerEvent(PlayerEvent.JWPLAYER_SETUP_ERROR, evt.text));
 			_view.completeView(true, evt.text);
+			dispatchEvent(new PlayerEvent(PlayerEvent.JWPLAYER_SETUP_ERROR, evt.text));
 		}
-
-        /** Delay the response to SetupError to allow the external interface to initialize in some browsers **/
-        private static function playerSetupError(evt:PlayerEvent):void {
-            var type:String = evt.type;
-            var args:Object = {
-                id: evt.id,
-                client: evt.client,
-                version: evt.version
-            };
-            var setupError:Function = function(timerEvent:TimerEvent = null):void {
-                if (timerEvent) timerEvent.target.delay = 20;
-                if (ExternalInterface.available) {
-                    if (timerEvent) timerEvent.target.stop();
-                    ExternalInterface.call("jwplayer.playerSetupError", args);
-                }
-            };
-            if (ExternalInterface.available) {
-                setupError();
-            } else {
-                var timer:Timer = new Timer(0, 5);
-                timer.addEventListener(TimerEvent.TIMER_COMPLETE, setupError);
-                timer.start();
-            }
-        }
 
 		protected function finalizeSetup():void {
 			if (!locking && _setupComplete && !_setupFinalized) {
@@ -239,15 +212,10 @@ import flash.utils.setTimeout;
 			}
 		}
 
-
 		protected function playlistItemHandler(evt:PlaylistEvent):void {
 			_interruptPlay = false;
 			load(_model.playlist.currentItem);
 		}
-
-
-
-
 
 		protected function errorState(message:String=""):void {
 			dispatchEvent(new PlayerEvent(PlayerEvent.JWPLAYER_ERROR, message));

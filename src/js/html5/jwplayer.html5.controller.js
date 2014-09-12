@@ -68,13 +68,6 @@
             }
         }
 
-        function _playerSetupError(evt) {
-            if (jwplayer.utils.exists(jwplayer.playerSetupError)) {
-                jwplayer.playerSetupError(evt);
-            }
-        }
-
-
         function _forward(evt) {
             _this.sendEvent(evt.type, evt);
         }
@@ -374,7 +367,6 @@
             return _preplay;
         };
         this.playerReady = _playerReady;
-        this.playerSetupError = _playerSetupError;
         _init();
     };
 

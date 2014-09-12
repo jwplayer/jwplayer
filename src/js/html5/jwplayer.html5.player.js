@@ -32,7 +32,7 @@
 
             _setup = new html5.setup(_model, _view);
             _setup.addEventListener(jwplayer.events.JWPLAYER_READY, _readyHandler);
-            _setup.addEventListener(jwplayer.events.JWPLAYER_ERROR, _errorHandler);
+            _setup.addEventListener(jwplayer.events.JWPLAYER_ERROR, _setupErrorHandler);
             _setup.start();
         }
 
@@ -40,11 +40,10 @@
             _controller.playerReady(evt);
             utils.css.unblock(_this.id);
         }
-
-        function _errorHandler(evt) {
-            utils.log('There was a problem setting up the player: ', evt);
-            _controller.playerSetupError(evt);
+        
+        function _setupErrorHandler(evt) {
             utils.css.unblock(_this.id);
+            jwplayer(_this.id).dispatchEvent(jwplayer.events.JWPLAYER_SETUP_ERROR, evt);
         }
 
         function _normalizePlaylist() {
