@@ -29,9 +29,7 @@
             delete playerApi.config.aspectratio;
         }
 
-        if(_config.events && _config.events.onSetupError) {
-            playerApi.onSetupError(_config.events.onSetupError);
-        }
+        _setupEvents(playerApi, _config.events);
 
         var _container = document.createElement('div');
         _container.id = _oldContainer.id;
@@ -104,20 +102,18 @@
             }
 
             if (_pluginloader.getStatus() === utils.loaderstatus.COMPLETE) {
-                for (var mode = 0; mode < _config.modes.length; mode++) {
-                    if (_config.modes[mode].type && embed[_config.modes[mode].type]) {
+                for (var i = 0; i < _config.modes.length; i++) {
+                    var mode = _config.modes[i];
+                    var type = mode.type;
+                    if (type && embed[type]) {
                         var configClone = utils.extend({}, _config);
-                        if(configClone.events && configClone.events.onSetupError) {
-                            delete configClone.events.onSetupError;
-                        }
-                        var embedder = new embed[_config.modes[mode].type](_container, _config.modes[mode],
-                                configClone, _pluginloader, playerApi);
+                        var embedder = new embed[type](_container, mode, configClone,
+                            _pluginloader, playerApi);
 
                         if (embedder.supportsConfig()) {
                             embedder.addEventListener(events.ERROR, _embedError);
                             embedder.embed();
                             _insertCSS();
-                            _setupEvents(playerApi, configClone.events);
                             return playerApi;
                         }
                     }
