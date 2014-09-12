@@ -8,6 +8,8 @@ package com.longtailvideo.jwplayer.events
 		public static var JWPLAYER_CAST_AD_CHANGED:String = 'jwplayerCastAdChanged';
 		
 		public var available:Boolean;
+        public var active:Boolean;
+
 		public function CastEvent(type:String, msg:String=undefined)
 		{
 			super(type, msg);
