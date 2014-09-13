@@ -87,7 +87,7 @@
         onAdPause: events.JWPLAYER_AD_PAUSE,
         onAdMeta: events.JWPLAYER_AD_META,
         onCast: events.JWPLAYER_CAST_SESSION,
-        onAudioTrackChange: events.JWPLAYER_AUDIO_TRACKS_CHANGED,
+        onAudioTrackChange: events.JWPLAYER_AUDIO_TRACK_CHANGED,
         onAudioTracks: events.JWPLAYER_AUDIO_TRACKS
     };
 
