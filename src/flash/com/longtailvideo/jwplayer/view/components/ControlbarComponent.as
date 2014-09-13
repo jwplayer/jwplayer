@@ -188,7 +188,7 @@ package com.longtailvideo.jwplayer.view.components {
 			player.addEventListener(CaptionsEvent.JWPLAYER_CAPTIONS_LIST, captionsHandler);
 			player.addEventListener(CaptionsEvent.JWPLAYER_CAPTIONS_CHANGED, captionChanged);
 			player.addEventListener(MediaEvent.JWPLAYER_AUDIO_TRACKS, tracksHandler);
-			player.addEventListener(MediaEvent.JWPLAYER_AUDIO_TRACKS_CHANGED, tracksChanged);
+			player.addEventListener(MediaEvent.JWPLAYER_AUDIO_TRACK_CHANGED, trackChanged);
 			player.addEventListener(CastEvent.JWPLAYER_CAST_AVAILABLE, _castAvailable);
 
 		}
@@ -814,10 +814,10 @@ package com.longtailvideo.jwplayer.view.components {
 					_trackOverlay.addOption(_tracks[j].name, j);
 				}
 			}
-			tracksChanged(evt);
+			trackChanged(evt);
 		}
 		
-		private function tracksChanged(evt:MediaEvent):void {
+		private function trackChanged(evt:MediaEvent):void {
 			_currentTrack = evt.currentAudioTrack;
 			if (_tracks.length > 1) {
 				_trackOverlay.setActive(evt.currentAudioTrack);

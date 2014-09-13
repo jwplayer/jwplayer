@@ -34,7 +34,7 @@
         JWPLAYER_MEDIA_META: 'jwplayerMediaMeta',
         JWPLAYER_MEDIA_MUTE: 'jwplayerMediaMute',
         JWPLAYER_AUDIO_TRACKS: 'jwplayerAudioTracks',
-        JWPLAYER_AUDIO_TRACKS_CHANGED: 'jwplayerAudioTracksChanged',
+        JWPLAYER_AUDIO_TRACK_CHANGED: 'jwplayerAudioTrackChanged',
         JWPLAYER_MEDIA_LEVELS: 'jwplayerMediaLevels',
         JWPLAYER_MEDIA_LEVEL_CHANGED: 'jwplayerMediaLevelChanged',
         JWPLAYER_CAPTIONS_CHANGED: 'jwplayerCaptionsChanged',
