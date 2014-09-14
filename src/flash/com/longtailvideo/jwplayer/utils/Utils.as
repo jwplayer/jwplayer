@@ -6,9 +6,10 @@ public class Utils {
     public static function extend(obj:Object, ...args):Object {
         for(var i:uint =0; i < args.length; i++) {
             var source:Object = args[i];
-
-            for (var key:String in source) {
-                obj[key] = source[key];
+            if (source) {
+                for (var key:String in source) {
+                    obj[key] = source[key];
+                }
             }
         }
         return obj;

@@ -6,7 +6,7 @@ package com.longtailvideo.jwplayer.media {
 	import com.longtailvideo.jwplayer.model.PlaylistItem;
 	import com.longtailvideo.jwplayer.player.PlayerState;
 	import com.longtailvideo.jwplayer.utils.Stretcher;
-	
+
 	import flash.display.DisplayObject;
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
@@ -83,14 +83,14 @@ package com.longtailvideo.jwplayer.media {
 		protected var _item:PlaylistItem;
 		/** The current position inside the file. **/
 		protected var _position:Number = 0;
-		/** The current volume of the audio output stream **/
+        /** Most recent buffer data **/
+        protected var _bufferPercent:Number;
+        /** The current volume of the audio output stream **/
 		private var _volume:Number;
 		/** The playback state for the currently loaded media.  @see com.longtailvideo.jwplayer.model.ModelStates **/
 		private var _state:String;
 		/** Clip containing graphical representation of the currently playing media **/
 		protected var _media:MovieClip;
-		/** Most recent buffer data **/
-		private var _bufferPercent:Number;
 		/** Handles event dispatching **/
 		private var _dispatcher:GlobalEventDispatcher;
 		/** Whether or not to stretchthe media **/
@@ -102,15 +102,12 @@ package com.longtailvideo.jwplayer.media {
 		protected var _currentAudioTrack:Number = -1;
 		protected var _width:Number;
 		protected var _height:Number;
-
-		
 		
 		public function MediaProvider(provider:String) {
 			_provider = provider;
 			_dispatcher = new GlobalEventDispatcher();
 			_stretch = true;
 		}
-		
 		
 		public function initializeMediaProvider(cfg:PlayerConfig):void {
 			_config = cfg;
@@ -417,15 +414,15 @@ package com.longtailvideo.jwplayer.media {
 				var level:Object = { label: i+" " };
 				if(sources[i].bitrate) {
 					level.bitrate = sources[i].bitrate;
-					level.label = sources[i].bitrate + "kbps";
+					level.label = level.bitrate + "kbps";
 				}
 				if(sources[i].width) {
 					level.width = sources[i].width;
-					level.label = sources[i].width + "px";
+					level.label = level.width + "px";
 				}
 				if(sources[i].height) {
 					level.height = sources[i].height;
-					level.label = sources[i].height + "p";
+					level.label = level.height + "p";
 				}
 				if(sources[i].label) {
 					level.label = sources[i].label;
