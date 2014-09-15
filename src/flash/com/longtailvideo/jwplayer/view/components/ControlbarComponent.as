@@ -155,7 +155,7 @@ package com.longtailvideo.jwplayer.view.components {
 			setupOverlays();
 			addEventListeners();
 			updateVolumeSlider();
-			setTime(0, 0);
+			setTime();
 			_vttLoader = new AssetLoader();
 			_vttLoader.addEventListener(Event.COMPLETE, loadComplete);
 			_vttLoader.addEventListener(ErrorEvent.ERROR, loadError);
@@ -304,7 +304,9 @@ package com.longtailvideo.jwplayer.view.components {
 					_timeSlider.thumbVisible = false;
 				}
 				if (_player.playlist.currentItem) {
-					setTime(0, _player.playlist.currentItem.duration);
+                    _lastPos = 0;
+                    _lastDur = _player.playlist.currentItem.duration;
+					setTime();
 				}
 				hideButton('pause');
 			} else {
@@ -405,6 +407,7 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 
 			_currentLayout = removeInactive(newLayout);
+            setTime();
 			redraw();
 		}
 
@@ -434,12 +437,12 @@ package com.longtailvideo.jwplayer.view.components {
 			_instreamMode = mode;
 		}
 
-        private static function isLive(duration:Number):Boolean {
-            return duration <= 0 && !isDvr(duration);
+        private function get isLive():Boolean {
+            return _lastDur <= 0 && !isDvr;
         }
 
-        private static function isDvr(duration:Number):Boolean {
-            return duration <= -60;
+        private function get isDvr():Boolean {
+            return _lastDur <= -60;
         }
 
 		private function mediaHandler(evt:MediaEvent):void {
@@ -447,31 +450,28 @@ package com.longtailvideo.jwplayer.view.components {
                 _lastPos = evt.position;
             }
             _lastDur = evt.duration;
-            if(evt.duration == -1 && evt.type == MediaEvent.JWPLAYER_MEDIA_TIME) {
+
+            _timeSlider.thumbVisible = isLive;
+            if(isLive) {
                 if(!_instreamMode) {
                     setText(player.playlist.currentItem.title || "Live broadcast");
                 }
             } else {
-                var dvr:Boolean = isDvr(evt.duration);
-                var live:Boolean = isLive(evt.duration);
                 if (_timeSlider) {
-                    if (dvr) {
+                    if (isDvr) {
                         _timeSlider.setProgress((evt.duration - _lastPos) / evt.duration * 100);
                     }
                     else {
                         _timeSlider.setProgress(_lastPos / evt.duration * 100);
                     }
-                    _timeSlider.thumbVisible = !live;
-                    if (evt.bufferPercent > 0) {
+
+                    if (evt.type == MediaEvent.JWPLAYER_MEDIA_BUFFER) {
                         var offsetPercent:Number = (evt.offset / evt.duration) * 100;
                         _timeSlider.setBuffer(evt.bufferPercent / (1-offsetPercent/100), offsetPercent);
                     }
-                    _timeSlider.setDuration(evt.duration);
-                    _timeSlider.live = live;
                 }
-                if (!live) {
-                    setTime(_lastPos, evt.duration);
-                }
+                setTime();
+
                 if (!_instreamMode) {
                     setText();
                 }
@@ -494,14 +494,12 @@ package com.longtailvideo.jwplayer.view.components {
 			updateControlbarState();
 		}
 
-		private function setTime(position:Number, duration:Number):void {
-            if(!isDvr(duration)) {
-                if(position < 0) {
-                    position = 0;
-                }
-                if(duration < 0) {
-                    duration = 0;
-                }
+		private function setTime():void {
+            var position:Number = _lastPos;
+            var duration:Number = _lastDur;
+            if(isLive) {
+                position = 0;
+                duration = 0;
             }
 
 			var redrawNeeded:Boolean = false;
@@ -511,7 +509,7 @@ package com.longtailvideo.jwplayer.view.components {
 			var newDuration:String = Strings.digits(duration);
 			var durationField:TextField = getTextField('duration');
 
-			if (isDvr(duration)) {
+			if (isDvr) {
 				newElapsed = "-"+ Strings.digits((-1*duration));
 				newDuration = "Live";
 			}
@@ -537,7 +535,7 @@ package com.longtailvideo.jwplayer.view.components {
 
 			if (_timeSlider) {
                 _timeSlider.setDuration(duration);
-                _timeSlider.live = isLive(duration);
+                _timeSlider.live = isLive;
 			}
 
 			if (redrawNeeded) {
@@ -1067,7 +1065,6 @@ package com.longtailvideo.jwplayer.view.components {
 			if (smallPlayer) {
 				_currentLayout = _currentLayout.replace(/duration|elapsed/g, '');
 			}
-			setTime(_lastPos, _lastDur);
 
 			clearDividers();
 			addDividers();
