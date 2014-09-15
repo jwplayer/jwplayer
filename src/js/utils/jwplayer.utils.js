@@ -680,11 +680,24 @@
     };
 
     utils.addClass = function(element, c) {
+        if (_.isArray(c)) {
+            c = c.join(' ');
+        }
+
         element.className = utils.trim(element.className + ' ' + c);
     };
 
     utils.removeClass = function(element, c) {
-        element.className = utils.trim(element.className.replace(c, '')).replace(/\s+/g, ' ');
+        if (_.isString(c)) {
+            element.className = utils.trim(element.className.replace(c, '')).replace(/\s+/g, ' ');
+            return;
+        }
+
+        if (_.isArray(c)) {
+            _.each(c, function(c) {
+                utils.removeClass(element, c);
+            });
+        }
     };
 
     utils.indexOf = _.indexOf;
