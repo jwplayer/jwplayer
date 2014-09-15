@@ -8,7 +8,7 @@ package com.longtailvideo.jwplayer.view.components {
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
-	import flash.utils.clearTimeout;
+    import flash.utils.clearTimeout;
 	import flash.utils.setTimeout;
 
 	public class TimeSlider extends Slider {
