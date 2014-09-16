@@ -17,8 +17,6 @@ package com.longtailvideo.jwplayer.events {
 		public static const JWPLAYER_MEDIA_BUFFER:String = "jwplayerMediaBuffer";
 		public static const JWPLAYER_MEDIA_BUFFER_FULL:String = "jwplayerMediaBufferFull";
 
-        public static const JWPLAYER_AUDIO_TRACKS_CHANGED:String = "jwplayerAudioTracksChanged";
-
 		public var bufferPercent:Number 	= -1;
 		
 		public static const JWPLAYER_MEDIA_SEEK:String = "jwplayerMediaSeek";
