@@ -109,7 +109,7 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _layoutManager:ControlbarLayoutManager;
 		protected var _width:Number;
 		protected var _height:Number;
-		protected var _timeSlider:TimeSlider;
+		protected var _timeSlider:Slider;
 		protected var _timeAlt:TextField;
 		protected var _volSliderV:Slider;
 		protected var _volSliderH:Slider;
@@ -125,6 +125,7 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _lastPos:Number = 0;
 		protected var _lastDur:Number = 0;
 		protected var _dispWidth:Number = -1;
+		protected var _smallPlayer:Boolean = false;
 		protected var _mouseOverButton:Boolean = false;
 		protected var _numDividers:Number = -1;
 		protected var _divIndex:Number = 0;
@@ -203,14 +204,14 @@ package com.longtailvideo.jwplayer.view.components {
 			if (!_instreamMode) {
 				_liveMode = false;
 				if (_timeSlider) {
-					_timeSlider.removeCues();
+					(_timeSlider as TimeSlider).removeCues();
 					_timeSlider.reset();
 					var item:PlaylistItem = player.playlist.currentItem;
 					var setThumbs:Boolean = false;
 					if (item.tracks.length > 0) {
 						for each(var track:Object in item.tracks) {
 							if (!setThumbs && track.file && track.kind is String && String(track.kind).toLowerCase() == "thumbnails") {
-								_timeSlider.setThumbs(track.file);
+								(_timeSlider as TimeSlider).setThumbs(track.file);
 								setThumbs = true;
 							}
 							if (track.file && track.kind is String && String(track.kind).toLowerCase() == "chapters") {
@@ -219,7 +220,7 @@ package com.longtailvideo.jwplayer.view.components {
 						}
 					}
 					if (!setThumbs) {
-						_timeSlider.setThumbs();
+						(_timeSlider as TimeSlider).setThumbs();
 					}
 				}
 
@@ -434,48 +435,49 @@ package com.longtailvideo.jwplayer.view.components {
 			_instreamMode = mode;
 		}
 
-        private static function isLive(duration:Number):Boolean {
-            return duration <= 0 && !isDvr(duration);
-        }
-
-        private static function isDvr(duration:Number):Boolean {
-            return duration <= -60;
-        }
 
 		private function mediaHandler(evt:MediaEvent):void {
-            if(evt.type == MediaEvent.JWPLAYER_MEDIA_TIME) {
-                _lastPos = evt.position;
-            }
-            _lastDur = evt.duration;
-            if(evt.duration == -1 && evt.type == MediaEvent.JWPLAYER_MEDIA_TIME) {
-                if(!_instreamMode) {
-                    setText(player.playlist.currentItem.title || "Live broadcast");
-                }
-            } else {
-                var dvr:Boolean = isDvr(evt.duration);
-                var live:Boolean = isLive(evt.duration);
-                if (_timeSlider) {
-                    if (dvr) {
-                        _timeSlider.setProgress((evt.duration - _lastPos) / evt.duration * 100);
-                    }
-                    else {
-                        _timeSlider.setProgress(_lastPos / evt.duration * 100);
-                    }
-                    _timeSlider.thumbVisible = !live;
-                    if (evt.bufferPercent > 0) {
-                        var offsetPercent:Number = (evt.offset / evt.duration) * 100;
-                        _timeSlider.setBuffer(evt.bufferPercent / (1-offsetPercent/100), offsetPercent);
-                    }
-                    _timeSlider.setDuration(evt.duration);
-                    _timeSlider.live = live;
-                }
-                if (!live) {
-                    setTime(_lastPos, evt.duration);
-                }
-                if (!_instreamMode) {
-                    setText();
-                }
-            }
+			var scrubber:Slider = _timeSlider;
+			switch (evt.type) {
+				case MediaEvent.JWPLAYER_MEDIA_BUFFER:
+				case MediaEvent.JWPLAYER_MEDIA_TIME:
+					_lastPos = evt.position;
+					_lastDur = evt.duration;
+					if (evt.duration == -1 && evt.type == MediaEvent.JWPLAYER_MEDIA_TIME) {
+						if (!_instreamMode) {
+							setText(player.playlist.currentItem.title || "Live broadcast");
+						}
+					} else {
+						if (scrubber) {
+							if (evt.duration <= -60) {
+								scrubber.setProgress((evt.duration - evt.position) / evt.duration * 100);
+							}
+							else {
+								scrubber.setProgress(evt.position / evt.duration * 100);
+							}
+							scrubber.thumbVisible = (evt.duration > 0 || evt.duration <= -60);
+							if (evt.bufferPercent > 0) {
+								var offsetPercent:Number = (evt.offset / evt.duration) * 100;
+								scrubber.setBuffer(evt.bufferPercent / (1-offsetPercent/100), offsetPercent);
+							}
+						}
+						var timeSlider:TimeSlider = getSlider('time') as TimeSlider;
+						if (timeSlider) {
+							timeSlider.setDuration(evt.duration);
+							timeSlider.live = (evt.duration <= 0 && evt.duration > -60);
+						}
+						if (evt.position > 0 || evt.duration <= -60) {
+							setTime(evt.position, evt.duration);
+						}
+						if (!_instreamMode) {
+							setText();
+						}
+					}
+					break;
+				default:
+					scrubber.reset();
+					break;
+			}
 		}
 
 		private function updateVolumeSlider(event:Event=null):void {
@@ -494,15 +496,14 @@ package com.longtailvideo.jwplayer.view.components {
 			updateControlbarState();
 		}
 
+
 		private function setTime(position:Number, duration:Number):void {
-            if(!isDvr(duration)) {
-                if(position < 0) {
-                    position = 0;
-                }
-                if(duration < 0) {
-                    duration = 0;
-                }
-            }
+			if (position < 0 && duration > -60) {
+				position = 0;
+			}
+			if (duration < 0 && duration > -60) {
+				duration = 0;
+			}
 
 			var redrawNeeded:Boolean = false;
 
@@ -511,33 +512,30 @@ package com.longtailvideo.jwplayer.view.components {
 			var newDuration:String = Strings.digits(duration);
 			var durationField:TextField = getTextField('duration');
 
-			if (isDvr(duration)) {
+			if (duration <= -60) {
 				newElapsed = "-"+ Strings.digits((-1*duration));
 				newDuration = "Live";
 			}
 
-			if (smallPlayer) {
+			if (_dispWidth > 0 && _dispWidth < 320) {
 				newElapsed = "";
 				newDuration = "";
 			}
 
 			if (elapsedText) {
-				if (newElapsed.length != elapsedText.text.length) {
-                    redrawNeeded = true;
-                }
+				if (newElapsed.length != elapsedText.text.length) redrawNeeded = true;
 				elapsedText.text = newElapsed;
 			}
 
 			if (durationField) {
-				if (newDuration.length != durationField.text.length) {
-                    redrawNeeded = true;
-                }
+				if (newDuration.length != durationField.text.length) redrawNeeded = true;
 				durationField.text = newDuration;
 			}
 
-			if (_timeSlider) {
-                _timeSlider.setDuration(duration);
-                _timeSlider.live = isLive(duration);
+			var timeSlider:TimeSlider = getSlider('time') as TimeSlider;
+			if (timeSlider) {
+				timeSlider.setDuration(duration);
+				timeSlider.live = (duration <= 0 && duration > -60);
 			}
 
 			if (redrawNeeded) {
@@ -611,7 +609,7 @@ package com.longtailvideo.jwplayer.view.components {
 			addTextField('alt');
 			_timeAlt = getTextField('alt');
 			addSlider('time', ViewEvent.JWPLAYER_VIEW_CLICK, seekHandler);
-			_timeSlider = getSlider('time') as TimeSlider;
+			_timeSlider = getSlider('time');
 			addSlider('volumeV', ViewEvent.JWPLAYER_VIEW_CLICK, volumeHandler, true);
 			addSlider('volumeH', ViewEvent.JWPLAYER_VIEW_CLICK, volumeHandler, false);
 			_volSliderV = getSlider('volumeV');
@@ -1059,12 +1057,10 @@ package com.longtailvideo.jwplayer.view.components {
 			stateHandler();
 		}
 
-        private function get smallPlayer():Boolean {
-            return _dispWidth > 0 && _dispWidth < 320;
-        }
 
 		private function redraw():void {
-			if (smallPlayer) {
+			_smallPlayer = (_dispWidth > 0 && _dispWidth < 320);
+			if (_smallPlayer) {
 				_currentLayout = _currentLayout.replace(/duration|elapsed/g, '');
 			}
 			setTime(_lastPos, _lastDur);
