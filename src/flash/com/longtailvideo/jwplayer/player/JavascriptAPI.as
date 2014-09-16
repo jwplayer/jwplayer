@@ -290,12 +290,14 @@ package com.longtailvideo.jwplayer.player {
 				args = listenerCallbackState(evt as PlayerStateEvent);
 			else if (evt is PlaylistEvent)
 				args = listenerCallbackPlaylist(evt as PlaylistEvent);
+			else if (evt is CastEvent) {
+				args.available = (evt as CastEvent).available;
+				args.active = (evt as CastEvent).active;
+			}
 			else if (type == ViewEvent.JWPLAYER_CONTROLS)
 				args.controls = (evt as ViewEvent).data;
 			else if (type == ViewEvent.JWPLAYER_VIEW_TAB_FOCUS)
 				args.hasFocus = (evt as ViewEvent).data;
-			else if (type ==  CastEvent.JWPLAYER_CAST_AVAILABLE) 
-				args.available = (evt as CastEvent).available;
 			else if (evt is ViewEvent && (evt as ViewEvent).data != null)
 				args.data = JavascriptSerialization.stripDots((evt as ViewEvent).data);
 			else if (evt is PlayerEvent) {
