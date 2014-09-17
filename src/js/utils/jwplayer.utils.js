@@ -679,12 +679,26 @@
         }
     };
 
-    utils.addClass = function(element, c) {
-        element.className = utils.trim(element.className + ' ' + c);
+    utils.addClass = function(element, classes) {
+        // TODO:: use _.union on the two arrays
+
+        var originalClasses = _.isString(element.className) ? element.className.split(' ') : [];
+        var addClasses = _.isArray(classes) ? classes : classes.split(' ');
+
+        _.each(addClasses, function(c) {
+            if (! _.contains(originalClasses, c)) {
+                originalClasses.push(c);
+            }
+        });
+
+        element.className = utils.trim(originalClasses.join(' '));
     };
 
     utils.removeClass = function(element, c) {
-        element.className = utils.trim(element.className.replace(c, '')).replace(/\s+/g, ' ');
+        var originalClasses = _.isString(element.className) ? element.className.split(' ') : [];
+        var removeClasses = _.isArray(c) ? c : c.split(' ');
+
+        element.className = utils.trim(_.difference(originalClasses, removeClasses).join(' '));
     };
 
     utils.indexOf = _.indexOf;

@@ -144,12 +144,14 @@
             _toggles = {
                 play: 'pause',
                 mute: 'unmute',
+                cast: 'casting',
                 fullscreen: 'normalscreen'
             },
 
             _toggleStates = {
                 play: false,
                 mute: false,
+                cast: false,
                 fullscreen: false
             },
 
@@ -446,20 +448,22 @@
             if (_elements.cast) {
                 var canCast = utils.canCast();
                 _css.style(_elements.cast, canCast ? NOT_HIDDEN : HIDDEN);
-                var className = _elements.cast.className.replace(/\s*jwcancast/, '');
+
                 if (canCast) {
-                    className += ' jwcancast';
+                    utils.addClass(_elements.cast, 'jwcancast');
+                } else {
+                    utils.removeClass(_elements.cast, 'jwcancast');
                 }
-                _elements.cast.className = className;
             }
+
             _castSession(evt || _castState);
         }
 
         function _castSession(evt) {
             _castState = evt;
-            if (_elements.cast) {
-                _elements.cast.querySelector('button').className = evt.active ? '' : 'off';
-            }
+
+            _toggleButton('cast', evt.active);
+
             _redraw();
         }
 
@@ -617,6 +621,7 @@
                 var buttonTouch = new utils.touch(button);
                 buttonTouch.addEventListener(utils.touchEvents.TAP, _buttonClickHandler(name));
             }
+
             button.innerHTML = '&nbsp;';
             button.tabIndex = -1;
             _appendChild(span, button);
@@ -780,11 +785,18 @@
             if (!utils.exists(state)) {
                 state = !_toggleStates[name];
             }
+
             if (_elements[name]) {
-                _elements[name].className = 'jw' + name + (state ? ' jwtoggle jwtoggling' : ' jwtoggling');
+                var canCast = _elements[name].className.indexOf('jwcancast');
+
+                _elements[name].className = 'jwtoggling ' +
+                    'jw' + name +
+                    (state ? ' jwtoggle' : '') +
+                    (canCast ? ' jwcancast' : '');
+
                 // Use the jwtoggling class to temporarily disable the animation
                 setTimeout(function() {
-                    _elements[name].className = _elements[name].className.replace(' jwtoggling', '');
+                    utils.removeClass(_elements[name], 'jwtoggling');
                 }, 100);
             }
             _toggleStates[name] = state;

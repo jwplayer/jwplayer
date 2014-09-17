@@ -3,6 +3,8 @@
 //     (c) 2009-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 //     Underscore may be freely distributed under the MIT license.
 
+// https://github.com/jashkenas/underscore/blob/1f4bf626f23a99f7a676f5076dc1b1475554c8f7/underscore.js
+
 (function() {
 
     var root = this;
@@ -23,7 +25,9 @@
     // All **ECMAScript 5** native function implementations that we hope to use
     // are declared here.
     var
+        nativeMap          = ArrayProto.map,
         nativeForEach      = ArrayProto.forEach,
+        nativeFilter       = ArrayProto.filter,
         nativeSome         = ArrayProto.some,
         nativeIndexOf      = ArrayProto.indexOf,
         nativeIsArray      = Array.isArray,
@@ -58,6 +62,17 @@
         return obj;
     };
 
+    // Return the results of applying the iterator to each element.
+    // Delegates to **ECMAScript 5**'s native `map` if available.
+    _.map = _.collect = function(obj, iterator, context) {
+        var results = [];
+        if (obj == null) return results;
+        if (nativeMap && obj.map === nativeMap) return obj.map(iterator, context);
+        each(obj, function(value, index, list) {
+            results.push(iterator.call(context, value, index, list));
+        });
+        return results;
+    };
 
     // Return the first value which passes a truth test. Aliased as `detect`.
     _.find = _.detect = function(obj, predicate, context) {
@@ -69,6 +84,20 @@
             }
         });
         return result;
+    };
+
+
+    // Return all the elements that pass a truth test.
+    // Delegates to **ECMAScript 5**'s native `filter` if available.
+    // Aliased as `select`.
+    _.filter = _.select = function(obj, predicate, context) {
+        var results = [];
+        if (obj == null) return results;
+        if (nativeFilter && obj.filter === nativeFilter) return obj.filter(predicate, context);
+        each(obj, function(value, index, list) {
+            if (predicate.call(context, value, index, list)) results.push(value);
+        });
+        return results;
     };
 
 
@@ -131,6 +160,19 @@
             if (result || (result = predicate.call(context, value, index, list))) return breaker;
         });
         return !!result;
+    };
+
+    _.contains = _.include = function(obj, target) {
+        if (obj == null) return false;
+        if (obj.length !== +obj.length) obj = _.values(obj);
+        return _.indexOf(obj, target) >= 0;
+    };
+
+    // Take the difference between one array and a number of other arrays.
+    // Only the elements present in just the first array will remain.
+    _.difference = function(array) {
+        var rest = concat.apply(ArrayProto, slice.call(arguments, 1));
+        return _.filter(array, function(value){ return !_.contains(rest, value); });
     };
 
     // If the browser doesn't supply us with indexOf (I'm looking at you, **MSIE**),
