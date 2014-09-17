@@ -162,6 +162,11 @@
         return !!result;
     };
 
+    _.contains = _.include = function(obj, target) {
+        if (obj == null) return false;
+        if (obj.length !== +obj.length) obj = _.values(obj);
+        return _.indexOf(obj, target) >= 0;
+    };
 
     // Take the difference between one array and a number of other arrays.
     // Only the elements present in just the first array will remain.
