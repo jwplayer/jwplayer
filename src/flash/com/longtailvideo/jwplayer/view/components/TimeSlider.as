@@ -44,7 +44,7 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 		
 		protected function addCue(pos:*, text:String):void {
-			var cueElem:Sprite = addElement("cue", true);
+			var cueElem:Sprite = addElement("cue", _duration > 0);
 			var cue:Object = {
 				position: pos,
 				text: text,
@@ -71,10 +71,12 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 
 		protected function positionCues():void {
+
 			for each (var cue:Object in _cues) {
 				cue.element.x = (cuePosition(cue) / _duration) * _width;
+				cue.element.visible = _duration > 0;
 			}
-			
+
 		}
 		
 		public override function resize(width:Number, height:Number):void {
