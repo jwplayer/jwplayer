@@ -694,9 +694,10 @@
         }
 
         if (_.isArray(c)) {
-            _.each(c, function(c) {
-                utils.removeClass(element, c);
-            });
+            var classes = element.className || '';
+            classes = classes.split(' ');
+            element.className = _.difference(classes, c).join(' ');
+            return;
         }
     };
 
