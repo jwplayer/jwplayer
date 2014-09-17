@@ -315,7 +315,7 @@ package com.longtailvideo.jwplayer.view.components {
 			// handle playlist
 			var multiList:Boolean = player.playlist.length > 1;
 			var playlistShowing:Boolean = (!player.config.fullscreen && player.config.playlistposition.toLowerCase() !== "none");
-			if (playlistShowing || !multiList) {
+			if (playlistShowing || !multiList || _instreamMode) {
 				newLayout = newLayout.replace(/(prev next)/g, "");
 				hideButton('prev');
 				hideButton('next');
@@ -433,6 +433,7 @@ package com.longtailvideo.jwplayer.view.components {
 
 		public function setInstreamMode(mode:Boolean):void {
 			_instreamMode = mode;
+			redraw();
 		}
 
 
