@@ -25,7 +25,6 @@ package com.longtailvideo.jwplayer.media {
 	import flash.utils.setInterval;
 	import flash.utils.setTimeout;
 
-
 	/**
 	 * Wrapper for playback of progressively downloaded MP4, FLV and AAC.
 	 **/
@@ -104,6 +103,7 @@ package com.longtailvideo.jwplayer.media {
 
 		/** Load new media file; only requested once per item. **/
 		override public function load(itm:PlaylistItem):void {
+			clearInterval(_interval);
 			_item = itm;
 			// Set Video or StageVideo
 			if(!_video) {
@@ -320,6 +320,7 @@ package com.longtailvideo.jwplayer.media {
 					_stream.seek(_position);
 				}
 			}
+			clearInterval(_interval);
 			_interval = setInterval(positionHandler, 100);
 		}
 
