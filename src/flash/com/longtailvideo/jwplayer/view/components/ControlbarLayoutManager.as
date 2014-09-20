@@ -31,15 +31,14 @@ package com.longtailvideo.jwplayer.view.components {
 				if (_controlbar.getButton('capRight')){
 					_currentRight -= _controlbar.getButton('capRight').width;
 				}
-				var controlbarPattern:RegExp = /\[(.*)\]\[(.*)\]\[(.*)\]/;
-				var result:Object = controlbarPattern.exec(_controlbar.layout);
+				var result:Object = (/\[(.*)\]\[(.*)\]\[(.*)\]/).exec(_controlbar.layout);
 				
 				_tabLeft = 300;
 				_tabRight = 399;
 				
 				position(result[1], "left");
 				position(result[3], "right");
-				positionCenter(result[2]);
+				positionCenter();
 			}
 		}
 		
@@ -68,8 +67,8 @@ package com.longtailvideo.jwplayer.view.components {
 						if (align == "right") { spacers = spacers.reverse(); }
 						for (var j:Number = 0; j < spacers.length; j++) {
 							var name:String = spacers[j];
-							var button:DisplayObject = _controlbar.getButton(spacers[j]);
-							place(_controlbar.getButton(spacers[j]), align);
+							var button:DisplayObject = _controlbar.getButton(name);
+							place(button, align);
 						}
 					}
 				}
@@ -116,7 +115,6 @@ package com.longtailvideo.jwplayer.view.components {
 				} else if (displayObject is Slider && (displayObject as Slider).capsWidth == 0) {
 					_currentLeft += 5;
 				}
-				
 			}
 		}
 		
@@ -148,7 +146,7 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 		
 		
-		private function positionCenter(center:String):void {
+		private function positionCenter():void {
 			var elementWidth:Number = (_currentRight - _currentLeft);
 
 			var time:Slider = _controlbar.getButton("time") as Slider;
