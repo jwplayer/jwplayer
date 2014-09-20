@@ -127,12 +127,11 @@ package com.longtailvideo.jwplayer.view.components {
 		protected var _dispWidth:Number = -1;
 		protected var _smallPlayer:Boolean = false;
 		protected var _mouseOverButton:Boolean = false;
-		protected var _numDividers:Number = -1;
 		protected var _divIndex:Number = 0;
 		protected var _bgColorSheet:Sprite;
-		public var _altMask:Sprite;
+        protected var _altMask:Sprite;
 		protected var _liveMode:Boolean = false;
-		private var _vttLoader:AssetLoader;
+        protected var _vttLoader:AssetLoader;
 		protected var animations:Animations;
 		protected var _fadingOut:Number;
 		protected var _instreamMode:Boolean;
@@ -251,46 +250,6 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 			updateControlbarState();
 		}
-
-
-		/*
-		private function parseStructuredLayout(structuredLayout:Object):String {
-			var layoutString:String = "";
-			getTextField('elapsed').visible = false;
-			getTextField('duration').visible = false;
-			for each (var position:String in ['left','center','right']) {
-				layoutString += "[";
-				var layout:Array = structuredLayout[position] as Array;
-				if (layout) {
-					var lastWasDivider:Boolean = true;
-					for each (var item:Object in layout) {
-						if (item['type'] == "divider") {
-							if (item['element']) {
-								layoutString += "<" + item['element'] + ">";
-								if (!_dividerElements[item['element']]) {
-									_dividerElements[item['element']] = setupDivider(item['element']);
-								}
-							} else if (item['width'] > 0) {
-								layoutString += "<"+item['width']+">";
-							} else {
-								layoutString += "|";
-							}
-							lastWasDivider = true;
-						} else {
-							if (item['type'] == "text") {
-								getTextField(item['name']).visible = true;
-							}
-							if (!lastWasDivider) layoutString += " ";
-							layoutString += item['name'];
-							lastWasDivider = false;
-						}
-					}
-				}
-				layoutString += "]";
-			}
-			return layoutString;
-		}
-		*/
 
 		private function updateControlbarState():void {
 			var newLayout:String = _defaultLayout;
@@ -970,7 +929,7 @@ package com.longtailvideo.jwplayer.view.components {
 			_timeSlider.live = (duration <= 0);
 		}
 
-		private function addButtonDisplayObject(icon:ComponentButton, name:String, handler:Function=null):MovieClip {
+		private function addButtonDisplayObject(icon:ComponentButton, name:String):MovieClip {
 			var acs:AccessibilityProperties = new AccessibilityProperties();
 			acs.name = name;
 			if (icon) {
@@ -997,8 +956,8 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 
 		public function getButton(buttonName:String):DisplayObject {
-			if (buttonName == "divider") {
-				if (_divIndex + 1> _dividers.length ) {
+			if (buttonName === "divider") {
+				if (_divIndex > _dividers.length - 1) {
 					_dividers.push(getSkinElement(buttonName));
 				}
 				return _dividers[_divIndex++];
@@ -1118,33 +1077,10 @@ package com.longtailvideo.jwplayer.view.components {
 			return player.config.mute || (player.config.volume == 0);
 		}
 
+		
 		private function addDividers():void {
-
-			var rightDivide:Array = ["play","pause","prev","next"];
-			var leftDivide:Array = isMuted ? ["hd","cc","unmute","cast","fullscreen"] : ["hd","cc","track", "mute","cast","fullscreen"];
-
-			_numDividers = 0;
 			//make sure we don't add dividers a layout that already has dividers
-			var div:RegExp = /\|/g;
-			_currentLayout = _currentLayout.replace(div,"");
-
-			var i:uint;
-			var elem:String;
-			for (i=rightDivide.length; i--;) {
-				elem = rightDivide[i];
-				if (_currentLayout.indexOf(elem) > -1) {
-					_currentLayout = _currentLayout.replace(elem, elem+"|");
-					_numDividers++;
-				}
-			}
-
-			for (i=leftDivide.length; i--;) {
-				elem = leftDivide[i];
-				if (_currentLayout.indexOf(elem) > -1) {
-					_currentLayout = _currentLayout.replace(elem, "|" + elem);
-					_numDividers++;
-				}
-			}
+            _currentLayout = _currentLayout.replace(/\|?\s+|\|/g, '|');
 		}
 
 		private function alignTextFields():void {
@@ -1167,7 +1103,7 @@ package com.longtailvideo.jwplayer.view.components {
 
 
 		public function get layout():String {
-			return _currentLayout.replace(/\|/g, "<divider>");
+			return _currentLayout.replace(/\|/g, '<divider>');
 		}
 
 		override public function show():void {
