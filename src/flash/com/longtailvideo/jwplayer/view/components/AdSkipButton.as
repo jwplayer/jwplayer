@@ -12,6 +12,7 @@ package com.longtailvideo.jwplayer.view.components
 	import flash.text.TextFormat;
 	import flash.text.TextFormatAlign;
 	
+	
 	public class AdSkipButton extends Sprite implements IEventDispatcher
 	{
 		
@@ -34,7 +35,6 @@ package com.longtailvideo.jwplayer.view.components
 		protected var _skipOffset:String;
 		protected var _offsetTime:Number = -1;
 		protected var _hidden:Boolean = false;
-		
 		protected var _adTag:String;
 		protected var _skipArrow:Bitmap;
 		protected var _skipArrowHover:Bitmap;
@@ -74,7 +74,7 @@ package com.longtailvideo.jwplayer.view.components
 			_skipTextField.height = _SKIP_HEIGHT-_skipTextField.y;
 			addChild(_skipTextField);
 			updateSkipText(0, 0);
-
+			
 			// Prevent clicks from affecting the regular player
 			addEventListener(MouseEvent.CLICK,function(evt:MouseEvent):void { evt.stopPropagation();});
 		}
@@ -119,8 +119,8 @@ package com.longtailvideo.jwplayer.view.components
 			updateOffset(currTime, duration);
 			var myFormat:TextFormat;
 			if (_offsetTime < 0) return;
-			
-			if (currTime < _offsetTime) {
+			if (currTime <= _offsetTime) {
+
 				graphics.clear();
 				graphics.beginFill(0x000000, .5); 
 				graphics.drawRoundRect(0.5,0.5,_SKIP_WIDTH,_SKIP_HEIGHT,10,10);
@@ -145,6 +145,7 @@ package com.longtailvideo.jwplayer.view.components
 				_skipTextField.text = _skipMessage.replace(re, Math.ceil(_offsetTime - currTime));
 				_skipTextField.textColor= 0x979797;
 			} else if (!_skipTime) {
+
 				_skipTime = true;
 				_skipTextField.text = _skipText; //add the padding to put the skip icon over but keep it centered
 				myFormat = new TextFormat();
@@ -172,36 +173,32 @@ package com.longtailvideo.jwplayer.view.components
 		}
 		
 		private function mouseoverSkipAd(evt:Event):void {
-			if (_skipTime) {
-				_skipArrow.visible = false;
-				_skipArrowHover.visible = true;
-				graphics.clear();
-				graphics.beginFill(0x000000, .5); 
-				graphics.drawRoundRect(0.5,0.5,_SKIP_WIDTH,_SKIP_HEIGHT,10,10);
-				graphics.endFill();
-				graphics.lineStyle(1,0xFFFFFF, 1); 
-				graphics.beginFill(0xFFFFFF, 0);
-				graphics.drawRoundRect(0.5,0.5,_SKIP_WIDTH,_SKIP_HEIGHT,10,10);
-				graphics.endFill();
-				_skipTextField.textColor = 0xE1E1E1;
-				_skipTextField.alpha = 1.0;
-			}
+			_skipArrow.visible = false;
+			_skipArrowHover.visible = true;
+			graphics.clear();
+			graphics.beginFill(0x000000, .5); 
+			graphics.drawRoundRect(0.5,0.5,_SKIP_WIDTH,_SKIP_HEIGHT,10,10);
+			graphics.endFill();
+			graphics.lineStyle(1,0xFFFFFF, 1); 
+			graphics.beginFill(0xFFFFFF, 0);
+			graphics.drawRoundRect(0.5,0.5,_SKIP_WIDTH,_SKIP_HEIGHT,10,10);
+			graphics.endFill();
+			_skipTextField.textColor = 0xE1E1E1;
+			_skipTextField.alpha = 1.0;
 		}
 		
 		private function mouseoutSkipAd(evt:Event):void {
-			if (_skipTime) {
-				_skipArrowHover.visible = false;
-				_skipArrow.visible = true;
-				graphics.clear();
-				graphics.beginFill(0x000000, .5); 
-				graphics.drawRoundRect(0.5,0.5,_SKIP_WIDTH,_SKIP_HEIGHT,10,10);
-				graphics.endFill();
-				graphics.lineStyle(1, 0xFFFFFF,.25);
-				graphics.beginFill(0xFFFFFF, 0);
-				graphics.drawRoundRect(0.5,0.5,_SKIP_WIDTH,_SKIP_HEIGHT,10,10);
-				graphics.endFill();
-				_skipTextField.textColor =  0x979797;
-			}
+			_skipArrowHover.visible = false;
+			_skipArrow.visible = true;
+			graphics.clear();
+			graphics.beginFill(0x000000, .5); 
+			graphics.drawRoundRect(0.5,0.5,_SKIP_WIDTH,_SKIP_HEIGHT,10,10);
+			graphics.endFill();
+			graphics.lineStyle(1, 0xFFFFFF,.25);
+			graphics.beginFill(0xFFFFFF, 0);
+			graphics.drawRoundRect(0.5,0.5,_SKIP_WIDTH,_SKIP_HEIGHT,10,10);
+			graphics.endFill();
+			_skipTextField.textColor =  0x979797;
 		}
 		public function resize(width:Number, height:Number):void
 		{
@@ -211,17 +208,19 @@ package com.longtailvideo.jwplayer.view.components
 			_skipOffset = offSet;
 			updateSkipText(0, 0);
 			_skipTime = false;
+			removeEventListener(MouseEvent.CLICK, skipAd);
+			removeEventListener(MouseEvent.ROLL_OVER, mouseoverSkipAd);
+			removeEventListener(MouseEvent.MOUSE_OUT, mouseoutSkipAd);
 			if (_skipArrow) _skipArrow.visible = false;
 			if (_skipArrowHover) _skipArrowHover.visible = false;
 			graphics.clear();
 		}
 		
 		private function skipAd(evt:Event):void {
-			if (_skipTime) {
-				var adEvent:JWAdEvent = new JWAdEvent(JWAdEvent.JWPLAYER_AD_SKIPPED);
-				adEvent.tag = _adTag;
-				dispatchEvent(adEvent);
-			}
+			var adEvent:JWAdEvent = new JWAdEvent(JWAdEvent.JWPLAYER_AD_SKIPPED);
+			adEvent.tag = _adTag;
+			dispatchEvent(adEvent);
+
 		}
 		
 	}
