@@ -228,12 +228,10 @@
             if (!_isMobile) {
                 _controlbar.addEventListener('mouseover', function() {
                     // Slider listeners
-                    window.addEventListener('mousemove', _sliderMouseEvent, false);
                     window.addEventListener('mousedown', _killSelect, false);
                 }, false);
                 _controlbar.addEventListener('mouseout', function() {
                     // Slider listeners
-                    window.removeEventListener('mousemove', _sliderMouseEvent);
                     window.removeEventListener('mousedown', _killSelect);
                     document.onselectstart = null;
                 }, false);
@@ -1068,10 +1066,12 @@
             _draggingEnd();
             _dragging = name;
             window.addEventListener('mouseup', _sliderMouseEvent, false);
+            window.addEventListener('mousemove', _sliderMouseEvent, false);
         }
 
         function _draggingEnd() {
             window.removeEventListener('mouseup', _sliderMouseEvent);
+            window.removeEventListener('mousemove', _sliderMouseEvent);
             _dragging = null;
         }
 
@@ -1089,9 +1089,6 @@
             if (!_dragging) {
                 return;
             }
-
-            var currentTime = (new Date()).getTime();
-
             var rail = _elements[_dragging].querySelector('.jwrail'),
                 railRect = utils.bounds(rail),
                 pct = evt.x / railRect.width;
@@ -1107,8 +1104,9 @@
                 _this.sendEvent(events.JWPLAYER_USER_ACTION);
             } else {
                 _setProgress(pct);
+                var currentTime = (new Date()).getTime();
                 if (currentTime - _lastSeekTime > 500) {
-                    _lastSeekTime = _position;
+                    _lastSeekTime = currentTime;
                     _sliderMapping.time(pct);
                 }
                 _this.sendEvent(events.JWPLAYER_USER_ACTION);
@@ -1148,13 +1146,9 @@
         }
 
         function _sliderMouseEvent(evt) {
-
-            var currentTime = (new Date()).getTime();
-
             if (!_dragging || evt.button) {
                 return;
             }
-
             var rail = _elements[_dragging].querySelector('.jwrail'),
                 railRect = utils.bounds(rail),
                 name = _dragging,
@@ -1167,7 +1161,6 @@
                 pct = _elements[name].vertical ? ((railRect.bottom - evt.pageY) / railRect.height) :
                 ((evt.pageX - railRect.left) / railRect.width);
             }
-
             if (evt.type === 'mouseup') {
                 if (name === 'time') {
                     _api.jwSeekDrag(false);
@@ -1182,8 +1175,9 @@
                 } else {
                     _setVolume(pct);
                 }
+                var currentTime = (new Date()).getTime();
                 if (currentTime - _lastSeekTime > 500) {
-                    _lastSeekTime = _position;
+                    _lastSeekTime = currentTime;
                     _sliderMapping[_dragging.replace('H', '')](pct);
                 }
             }
@@ -1203,8 +1197,6 @@
         }
 
         function _hideTimeTooltip() {
-            window.removeEventListener('mousemove', _sliderMouseEvent);
-
             if (_timeOverlay) {
                 _timeOverlay.hide();
             }
