@@ -25,6 +25,7 @@
 		<concat destfile="${outputpath}">
 			<fileset dir="${basedir}/src/js" includes="jwplayer.sourcestart.js" />
 			<fileset dir="${basedir}/src/js" includes="jwplayer.js" />
+            <fileset dir="${basedir}/src/js/utils" includes="jwplayer.underscore.js" excludes="" />
 			<fileset dir="${basedir}/src/js/utils" includes="jwplayer.utils.js" excludes="" />
 			<fileset dir="${basedir}/src/js/utils" includes="jwplayer.utils.*.js" excludes="" />
 			<fileset dir="${basedir}/src/js/events" includes="jwplayer.events.js" />
@@ -128,7 +129,7 @@
 	
 	
 	<target name="build-swf" depends="get-revision">
-		<condition property="debugLine" value="-debug=true" else="">
+		<condition property="debugLine" value="-debug=true -define=CONFIG::debugging,true" else="-define=CONFIG::debugging,false">
 			<isset property="debug" />
 		</condition>
 		<condition property="optimizeLine" value="-optimize=true" else="">

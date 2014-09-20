@@ -106,18 +106,24 @@ package com.longtailvideo.jwplayer.utils {
 		}
 		
 		/**
-		 * Add a leading zero to a number.
+		 * Add a leading zeros to a number or string.
 		 *
-		 * @param nbr	The number to convert. Can be 0 to 99.
-		 * @ return		A string representation with possible leading 0.
+		 * @param num		A number or string
+		 * @param length	Length of the target string including leading zeros
+		 * @ return			A string of length 'length' or greater
 		 **/
-		public static function zero(nbr:Number):String {
-			if (nbr < 10) {
-				return '0' + nbr;
-			} else {
-				return '' + nbr;
+		public static function zero(num:*, length:uint = 2):String {
+			var str:String = '' + num;
+			while (str.length < length) {
+				str = '0' + str;
 			}
+			return str;
 		}
+		
+		public static function hex(num:Number, length:uint = 2):String {
+			return '0x' + Strings.zero(num.toString(16).toUpperCase(), length);
+		}
+		
 		/**
 		 * Finds the extension of a filename or URL 
 		 * @param filename 	The string on which to search
@@ -126,13 +132,11 @@ package com.longtailvideo.jwplayer.utils {
 		 */
 
         public static function getAzureFileFormat(path:String):String {
-            var match:Array = path.match(/manifest\(format=(.*),audioTrack/);
-            if (!match || !match[1]) {
-                // not an azure file
-                return "";
+            if (path.indexOf('(format=m3u8-') > -1) {
+                return 'm3u8';
+            } else { 
+                return '';
             }
-
-            return match[1].split('-')[0];
         }
 
         public static function extension(filename:String):String {
@@ -242,16 +246,15 @@ package com.longtailvideo.jwplayer.utils {
 		}
 		
 		public static function isYouTube(file:String):Boolean {
-			if (!file) 
-				return false;
-			else if (file.indexOf('youtube.com/w') > -1)
-				return true;
-			else if (file.indexOf('youtube.com/v') > -1)
-				return true;
-			else if (file.indexOf('youtu.be') > -1)
-				return true;
-			else
-				return false;
+			if (file) {
+				if (file.indexOf('youtube.com/w') > -1)
+					return true;
+				else if (file.indexOf('youtube.com/v') > -1)
+					return true;
+				else if (file.indexOf('youtu.be') > -1)
+					return true;
+			}
+			return false;
 		}
 		
 		/** Capitalizes the first letter of a string; rest is lowercased **/

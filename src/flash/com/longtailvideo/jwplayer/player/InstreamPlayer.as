@@ -136,7 +136,7 @@ package com.longtailvideo.jwplayer.player
 		public function loadItem(item:Object, options:Object=null):void {
 			_options.update(options);
 			_skipButton = new AdSkipButton(options.skipMessage,options.skipText);
-			_skipButton.addEventListener(JWAdEvent.JWPLAYER_AD_SKIPPED,skipHandler);
+			_skipButton.addEventListener(JWAdEvent.JWPLAYER_AD_SKIPPED, skipHandler);
 			_instreamDisplay.addChild(_skipButton);
 			var safe:Rectangle = getSafeRegion();
 			if (_skipButton.visible) 
@@ -186,7 +186,6 @@ package com.longtailvideo.jwplayer.player
 			var ev:JWAdEvent = new JWAdEvent(JWAdEvent.JWPLAYER_AD_SKIPPED);
 			ev.tag = _options.tag;
 			if (_items && _items.length > 0) {
-				var medEvent:MediaEvent = evt as MediaEvent;
 				ev.currentAd = _itemNdx + 1;
 				ev.totalAds = _items.length;
 			}
@@ -207,8 +206,7 @@ package com.longtailvideo.jwplayer.player
 			
 			_provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_META,metaHandler);
 		}
-		
-		
+
 		private function bufferFullHandler(evt:MediaEvent):void {
 			_provider.play();
 			if (!_mediaDisplayed && (_isConfig.stretching == Stretcher.EXACTFIT || _provider is SoundMediaProvider)) {
@@ -401,21 +399,19 @@ package com.longtailvideo.jwplayer.player
 			}
 			
 			/* Only accept video, http or rtmp providers for now */
-			switch (item.provider) {
+			_provider = getProvider(item.provider);
+		}
+		
+		private function getProvider(type:String):MediaProvider {
+			switch (type) {
 				case 'rtmp':
-					_provider = new RTMPMediaProvider(false);
-					break;
+					return new RTMPMediaProvider(false);
 				case 'video':
-					_provider = new VideoMediaProvider(false);
-					break;
+					return new VideoMediaProvider(false);
 				case 'sound':
-					_provider = new SoundMediaProvider();
-					break;
-				default:
-					throw new Error("Unsupported Instream Format; only video or rtmp are currently supported");
-					break;
+					return new SoundMediaProvider();
 			}
-			
+			throw new Error("Unsupported Instream Format; only video or rtmp are currently supported");
 		}
 
 		public function play():Boolean {
@@ -488,13 +484,6 @@ package com.longtailvideo.jwplayer.player
 		protected function resizeHandler(evt:ViewEvent=null):void {
 			var screenColor:Color;
 			var viewDisplay:IDisplayComponent = _view.components.display;
-			var viewControlbar:IControlbarComponent = _view.components.controlbar;
-			
-			if (_model.config.screencolor) {
-				screenColor = _model.config.screencolor;
-			} else if (_model.config.pluginConfig('display').hasOwnProperty('backgroundcolor')) {
-				screenColor = new Color(String(_model.config.pluginConfig('display')['backgroundcolor']));
-			}
 			
 			_isConfig.width = _model.config.width;
 			_isConfig.height = _model.config.height;
@@ -530,7 +519,6 @@ package com.longtailvideo.jwplayer.player
 				_controls.controlbar.show();
 				_controls.display.show();
 			}
-			
 		}
 		
 		protected function removeEventListeners():void {
@@ -637,7 +625,6 @@ package com.longtailvideo.jwplayer.player
 		
 		public function volume(volume:Number):Boolean {
 			throw new Error(UNSUPPORTED_ERROR);
-			return false;
 		}
 		
 		public function mute(state:Boolean):void {
@@ -646,32 +633,26 @@ package com.longtailvideo.jwplayer.player
 		
 		public function stop():Boolean {
 			throw new Error(UNSUPPORTED_ERROR);
-			return false;
 		}
 		
 		public function load(item:*):Boolean {
 			throw new Error(UNSUPPORTED_ERROR);
-			return false;
 		}
 		
 		public function playlistItem(index:Number):Boolean {
 			throw new Error(UNSUPPORTED_ERROR);
-			return false;
 		}
 		
 		public function playlistNext():Boolean {
 			throw new Error(UNSUPPORTED_ERROR);
-			return false;
 		}
 		
 		public function playlistPrev():Boolean {
 			throw new Error(UNSUPPORTED_ERROR);
-			return false;
 		}
 		
 		public function redraw():Boolean {
 			throw new Error(UNSUPPORTED_ERROR);
-			return false;
 		}
 		
 		public function fullscreen(on:Boolean):void {
@@ -680,7 +661,6 @@ package com.longtailvideo.jwplayer.player
 		
 		public function get controls():IPlayerComponents {
 			throw new Error(UNSUPPORTED_ERROR);
-			return null;
 		}
 		
 		public function overrideComponent(plugin:IPlayerComponent):void {
@@ -689,31 +669,40 @@ package com.longtailvideo.jwplayer.player
 		
 		public function setupInstream(target:IPlugin):IInstreamPlayer {
 			throw new Error(UNSUPPORTED_ERROR);
-			return null;
 		}
 		
 		public function getQualityLevels():Array {
 			throw new Error(UNSUPPORTED_ERROR);
-			return null;
 		}
 		
 		public function getCurrentQuality():Number {
 			throw new Error(UNSUPPORTED_ERROR);
-			return null;
 		}
 		
 		public function setCurrentQuality(index:Number):void {
 			throw new Error(UNSUPPORTED_ERROR);
 		}
 		
+		public function getAudioTracks():Array {
+			throw new Error(UNSUPPORTED_ERROR);
+		}
+		
+		public function getCurrentAudioTrack():Number {
+			throw new Error(UNSUPPORTED_ERROR);
+		}
+		
+		public function setCurrentAudioTrack(index:Number):void {
+			throw new Error(UNSUPPORTED_ERROR);
+		}
+		
+		
+		
 		public function getCaptionsList():Array {
 			throw new Error(UNSUPPORTED_ERROR);
-			return null;
 		}
 		
 		public function getCurrentCaptions():Number {
 			throw new Error(UNSUPPORTED_ERROR);
-			return null;
 		}
 		
 		public function setCurrentCaptions(index:Number):void {

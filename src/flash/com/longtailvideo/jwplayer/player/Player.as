@@ -35,8 +35,8 @@
 		protected var model:Model;
 		protected var view:View;
 		protected var controller:Controller;
-		
 		protected var _dispatcher:GlobalEventDispatcher;
+		
 		
 		/** Player constructor **/
 		public function Player() {
@@ -60,6 +60,7 @@
 			view = newView(model);
 			controller = newController(model, view);
 			controller.addEventListener(PlayerEvent.JWPLAYER_READY, playerReady, false, -1);
+            controller.addEventListener(PlayerEvent.JWPLAYER_SETUP_ERROR, setupError, false, -1);
 			controller.setupPlayer();
 		}
 		
@@ -76,11 +77,13 @@
 		} 
 		
 		protected function playerReady(evt:PlayerEvent):void {
-			// Only handle JWPLAYER_READY once
+			// Only handle Setup Events once
 			controller.removeEventListener(PlayerEvent.JWPLAYER_READY, playerReady);
+            controller.removeEventListener(PlayerEvent.JWPLAYER_SETUP_ERROR, forward);
 			SWFFocus.init(stage);
+			
 			// Initialize Javascript interface
-			var jsAPI:JavascriptAPI = new JavascriptAPI(this);
+			JavascriptAPI.setPlayer(this);
 			
 			// Forward all MVC events
 			model.addGlobalListener(forward);
@@ -89,7 +92,15 @@
 
 			forward(evt);
 		}
-		
+
+        protected function setupError(evt:PlayerEvent):void {
+            // Only handle Setup Events once
+            controller.removeEventListener(PlayerEvent.JWPLAYER_READY, playerReady);
+            controller.removeEventListener(PlayerEvent.JWPLAYER_SETUP_ERROR, forward);
+
+            // Send Setup Error to browser
+            JavascriptAPI.setupError(evt);
+        }
 		
 		/**
 		 * Forwards all MVC events to interested listeners.
@@ -280,6 +291,18 @@
 			return new InstreamPlayer(target, model, view, controller);
 		}
 
+		public function getAudioTracks():Array {
+			return model.media ? model.media.audioTracks : null;
+		}
+		
+		public function getCurrentAudioTrack():Number {
+			return model.media ? model.media.currentAudioTrack : NaN;
+		}
+		
+		public function setCurrentAudioTrack(index:Number):void {
+			if (model.media) model.media.currentAudioTrack = index;
+		}
+		
 		public function getQualityLevels():Array {
 			return model.media ? model.media.qualityLevels : null;
 		}

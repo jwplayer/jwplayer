@@ -3,9 +3,9 @@
  * @version 6.0
  */
 jwplayer = function(container) {
-	if (jwplayer.api) {
-		return jwplayer.api.selectPlayer(container);
-	}
+    if (jwplayer.api) {
+        return jwplayer.api.selectPlayer(container);
+    }
 };
 
 jwplayer.version = 'X.Y.ZZZZ';

@@ -1,5 +1,6 @@
 package com.longtailvideo.jwplayer.view {
 	import com.longtailvideo.jwplayer.events.CaptionsEvent;
+	import com.longtailvideo.jwplayer.events.CastEvent;
 	import com.longtailvideo.jwplayer.events.GlobalEventDispatcher;
 	import com.longtailvideo.jwplayer.events.IGlobalEventDispatcher;
 	import com.longtailvideo.jwplayer.events.MediaEvent;
@@ -24,7 +25,6 @@ package com.longtailvideo.jwplayer.view {
 	import com.longtailvideo.jwplayer.view.components.PlaylistComponent;
 	import com.longtailvideo.jwplayer.view.interfaces.IPlayerComponent;
 	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
-	
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Loader;
@@ -89,7 +89,7 @@ package com.longtailvideo.jwplayer.view {
 		protected var layoutManager:PlayerLayoutManager;
 
 		protected var currentLayer:Number = 0;
-
+		protected var cbLayer:Number = 0;
 
 		// Delay between IDLE state and when the preview image is shown
 		private var imageDelay:Timer = new Timer(100, 1);
@@ -117,6 +117,7 @@ package com.longtailvideo.jwplayer.view {
 		private var _imageLoaded:Boolean = false;
 		// Indicates whether the instream player is being displayed
 		private var _instreamMode:Boolean = false;
+		private var _canCast:Boolean = false;
 
 		public function View(player:IPlayer, model:Model) {
 			_player = player;
@@ -186,6 +187,7 @@ package com.longtailvideo.jwplayer.view {
 			_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_ERROR, errorHandler);
 			_player.addEventListener(MediaEvent.JWPLAYER_MEDIA_BUFFER, mediaHandler);
 			_player.addEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, mediaHandler);
+			_player.addEventListener(CastEvent.JWPLAYER_CAST_AVAILABLE, _castAvailable);
 			layoutManager = new PlayerLayoutManager(_player);
 			setupRightClick();
 
@@ -206,12 +208,19 @@ package com.longtailvideo.jwplayer.view {
 		}
 		
 		protected var _preventFade:Boolean = false;
-		
-		private function mediaHandler(evt):void {
+
+		private function mediaHandler(evt:MediaEvent):void {
 			_currPos = evt.position;
 			_duration = evt.duration;
 		}
 		
+		private function _castAvailable(evt:CastEvent):void {
+			_canCast = evt.available;
+			if (_canCast) {
+				showControls();
+			}
+		}
+
 		protected function preventFade(evt:Event=null):void {
 			_preventFade = true;
 		}
@@ -235,7 +244,6 @@ package com.longtailvideo.jwplayer.view {
 			dispatchEvent(ev);
 			if (_model.state == PlayerState.PLAYING) {
 				showControls();
-				stopFader();
 				startFader();
 			} else {
 				_components.display.focusHandler(true);
@@ -257,8 +265,6 @@ package com.longtailvideo.jwplayer.view {
 					var errorMessage:TextField = new TextField();
 					errorMessage.defaultTextFormat = new TextFormat("_sans", 15, 0xffffff, false, false, false, null, null, TextFormatAlign.CENTER);
 					errorMessage.text = errorMsg.replace(":", ":\n");
-					var stageWidth:Number = RootReference.stage.stageWidth;
-					var stg:Stage = RootReference.stage;
 					errorMessage.width = RootReference.stage.stageWidth - 300;
 					errorMessage.height = errorMessage.textHeight + 10;
 					errorMessage.autoSize = TextFieldAutoSize.CENTER;
@@ -335,6 +341,7 @@ package com.longtailvideo.jwplayer.view {
 			_playlistLayer.addChild(_playlist as DisplayObject);
 			setupComponent(_components.logo, n++);
 			setupComponent(_components.controlbar, n++);
+			cbLayer = n;
 			setupComponent(_components.dock, n++);
 		}
 
@@ -351,9 +358,14 @@ package com.longtailvideo.jwplayer.view {
 			if (_model.fullscreen != _fullscreen) {
 				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_FULLSCREEN, _fullscreen));
 			}
-			redraw();
-			
-			dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_RESIZE, {width: RootReference.stage.stageWidth, height: RootReference.stage.stageHeight}));
+            var size:Object = {
+                width:  RootReference.stage.stageWidth,
+                height: RootReference.stage.stageHeight
+            };
+            if (size.width && size.height) {
+                redraw();
+                dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_RESIZE, size));
+            }
 		}
 
 
@@ -430,17 +442,8 @@ package com.longtailvideo.jwplayer.view {
 			_instreamLayer.graphics.beginFill(0);
 			_instreamLayer.graphics.drawRect(0, 0, _player.config.width, _player.config.height);
 			_instreamLayer.graphics.endFill();
-			
-				
-/*			if (_logo) {
-				_logo.x = _components.display.x;
-				_logo.y = _components.display.y;
-				_logo.resize(_player.config.width, _player.config.height);
-			}
-*/
-//			for (var i:Number = 0; i < _pluginsLayer.numChildren; i++) {
+
 			for each (var plug:IPlugin in _allPlugins) {
-//				var plug:IPlugin = _pluginsLayer.getChildAt(i) as IPlugin;
 				var plugDisplay:DisplayObject = plug as DisplayObject;
 				if (plug && plugDisplay) {
 					var cfg:PluginConfig = _player.config.pluginConfig(plug.id);
@@ -758,6 +761,9 @@ package com.longtailvideo.jwplayer.view {
 			
 			_instreamAnim.fade(1);
 			_instreamMode = true;
+
+			// For midrolls and postrolls we want to ensure controlbar knows to fadeout
+			setTimeout(moveTimeout, 2000);
 		}
 		
 	
@@ -803,15 +809,14 @@ package com.longtailvideo.jwplayer.view {
 		/** Show controls on mousemove and restart the countdown. **/
 		private function moveHandler(evt:Event=null):void {
 			Mouse.show();
-			if (_player.state != PlayerState.IDLE && _player.state != PlayerState.PAUSED) {
+			if (_instreamMode || _player.state != PlayerState.IDLE && _player.state != PlayerState.PAUSED) {
 				if (evt is MouseEvent) {
 					var mouseEvent:MouseEvent = evt as MouseEvent;
 					if (!(_components.display as DisplayObject).getRect(RootReference.stage).containsPoint(new Point(mouseEvent.stageX, mouseEvent.stageY))) {
 						hideControls();
-						return;	
+						return;
 					}
 				}
-				stopFader();
 				startFader();
 			}
 		}
@@ -823,7 +828,6 @@ package com.longtailvideo.jwplayer.view {
 			}
 
 			showControls();
-			stopFader();
 			startFader();
 			if (evt.keyCode == 32 || evt.keyCode == 13) {
 				if (_instreamMode) {
@@ -872,14 +876,21 @@ package com.longtailvideo.jwplayer.view {
 		
 		/** Hide controls again when move has timed out. **/
 		private function moveTimeout(evt:Event=null):void {
-			clearTimeout(_fadingOut);
-			if (_player.state == PlayerState.PLAYING) Mouse.hide();
-			if (_player.state != PlayerState.PAUSED) hideControls();
+		clearTimeout(_fadingOut);
+			if (_instreamMode || _player.state == PlayerState.PLAYING) Mouse.hide();
+			if (_instreamMode || _player.state != PlayerState.PAUSED) hideControls();
 		}
 		
 		private function hideControls():void {
-			if (_preventFade) return;
+			if ((_canCast &&  _player.state == PlayerState.IDLE)|| _preventFade) {
+				return;
+			}
+
 			_components.controlbar.hide();
+			if (_instreamControls) {
+				_instreamControls.controlbar.hide();
+			}
+
 			if (_player.state != PlayerState.IDLE) {
 				_components.dock.hide();
 				_components.logo.hide(audioMode);
@@ -890,18 +901,25 @@ package com.longtailvideo.jwplayer.view {
 			if (_model.config.controls || audioMode) {
 				_components.controlbar.show();
 				_components.dock.show();
+				if (_instreamControls) {
+					_instreamControls.controlbar.show();
+	}
 			}
-			if (!audioMode) _components.logo.show();
+			if (!audioMode) {
+				_components.logo.show();
+			}
 		}
-		
+
 		/** If the mouse leaves the stage, hide the controlbar if position is 'over' **/
 		private function startFader():void {
+			stopFader();
+
 			if (!isNaN(_fadingOut)) {
 				clearTimeout(_fadingOut);
 			}
 			_fadingOut = setTimeout(moveTimeout, 2000);
 		}
-		
+
 		private function stopFader():void {
 			showControls();
 			if (!isNaN(_fadingOut)) {

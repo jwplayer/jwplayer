@@ -1,8 +1,3 @@
-/**
- * Loads plugins for a player
- * @author zach
- * @version 5.6
- */
 (function(jwplayer) {
 	var utils = jwplayer.utils, 
 		events = jwplayer.events,
@@ -12,8 +7,6 @@
 		var _status = utils.loaderstatus.NEW,
 			_loading = false,
 			_iscomplete = false,
-			_errorState = false,
-			_errorMessage,
 			_config = config,
 			_eventDispatcher = new events.eventdispatcher();
 		
@@ -33,9 +26,14 @@
 		 * arrive later, retriggering the completeness check and triggering a complete
 		 * to fire, if necessary.
 		 */
-		function _complete() {
-			if (_errorState) {
-				_eventDispatcher.sendEvent(events.ERROR, {message: _errorMessage});
+		function _complete(err) {
+			if (err) {
+				_eventDispatcher.sendEvent(events.ERROR, {
+					message: err.message
+				});
+				if (err.url) {
+					utils.log(err.message, err.url);
+				}
 			}
 			if (!_iscomplete) {
 				_iscomplete = true;
@@ -46,23 +44,26 @@
 		
 		// This is not entirely efficient, but it's simple
 		function _checkComplete() {
-			if (!_config) _complete();
-			if (!_iscomplete && !_errorState) {
-				var incomplete = 0, plugins = model.getPlugins();
+			if (!_config) {
+				_complete();
+			}
+			if (!_iscomplete) {
+				var incomplete = 0,
+					plugins = model.getPlugins();
 				
 				utils.foreach(_config, function(plugin) {
 					var pluginName = utils.getPluginName(plugin),
 						pluginObj = plugins[pluginName],
 						js = pluginObj.getJS(),
 						target = pluginObj.getTarget(),
-						status = pluginObj.getStatus(); 
+						status = pluginObj.getStatus();
 
 					if (status == utils.loaderstatus.LOADING || status == utils.loaderstatus.NEW) {
 						incomplete++;
-					} else if (js && (!target || parseFloat(target) > parseFloat(jwplayer.version))) {
-						_errorState = true;
-						_errorMessage = "Incompatible player version";
-						_complete();
+					} else if (js && !utils.versionCheck(target)) {
+						_complete({
+							message: 'Incompatible player version'
+						});
 					}
 				});
 				
@@ -70,6 +71,13 @@
 					_complete();
 				}
 			}
+		}
+
+		function _pluginError(e) {
+			_complete({
+				message: 'File not found',
+				url: e.url
+			});
 		}
 		
 		this.setupPlugins = function(api, config, resizer) {
@@ -110,9 +118,8 @@
 						api.onReady(resizer(jsplugins.plugins[pluginName], div, true));
 						api.onResize(resizer(jsplugins.plugins[pluginName], div));
 					}
-				}
-				catch (err) {
-					utils.log ("ERROR: Failed to load " + pluginName + ".");
+				} catch (err) {
+					utils.log("ERROR: Failed to load " + pluginName + ".");
 				}
 			});
 			
@@ -161,13 +168,7 @@
 			}
 		};
 
-		var _pluginError = this.pluginFailed = function() {
-			if (!_errorState) {
-				_errorState = true;
-				_errorMessage = "File not found";
-				_complete();
-			}
-		};
+		this.pluginFailed = _pluginError;
 		
 		this.getStatus = function() {
 			return _status;

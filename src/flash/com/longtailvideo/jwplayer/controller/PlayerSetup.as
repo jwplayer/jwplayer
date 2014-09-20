@@ -252,7 +252,7 @@ package com.longtailvideo.jwplayer.controller {
 		}
 		
 		protected function loadPreview():void {
-			if (_model.playlist.length > 0 && _model.playlist.currentItem.image) {
+			if (_model.playlist.length > 0 && _model.playlist.currentItem.image && !_model.config.autostart) {
 				imageLoader = new Loader();
 				imageTimeout = new Timer(1000, 1);
 				imageTimeout.addEventListener(TimerEvent.TIMER_COMPLETE, loadPreviewTimeout);
@@ -284,8 +284,7 @@ package com.longtailvideo.jwplayer.controller {
 			for each (var pluginId:String in _view.loadedPlugins()) {
 				try {
 					var plugin:IPlugin6 = _view.getPlugin(pluginId);
-					var version:String = PlayerVersion.version.replace(/^(\d\.\d+).*/, "$1");
-					if (!plugin['target'] || (Number(plugin['target']) > Number(version))) {
+					if (!PlayerVersion.versionCheck(plugin['target'])) {
 						tasker.failure(new ErrorEvent(ErrorEvent.ERROR, false, false, "Error loading plugin: Incompatible player version"));
 						return;
 					}

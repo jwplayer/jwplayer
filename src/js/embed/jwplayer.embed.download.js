@@ -1,154 +1,143 @@
-/**
- * Download mode embedder for the JW Player
- * @author Zach
- * @version 5.5
- */
 (function(jwplayer) {
-	var embed = jwplayer.embed,
-		utils = jwplayer.utils,
+    var embed = jwplayer.embed,
+        utils = jwplayer.utils,
+        _css  = jwplayer.utils.css,
 
-		DOCUMENT = document,
-		
-		JW_CSS_NONE = "none",
-		JW_CSS_BLOCK = "block",
-		JW_CSS_100PCT = "100%",
-		JW_CSS_RELATIVE = "relative",
-		JW_CSS_ABSOLUTE = "absolute";
-	
-	embed.download = function(_container, _options, _errorCallback) {
-		var params = utils.extend({}, _options),
-			_display,
-			_width = params.width ? params.width : 480,
-			_height = params.height ? params.height : 320,
-			_file, 
-			_image,
-			_logo = _options.logo ? _options.logo : {
-				prefix: utils.repo(),
-				file: 'logo.png',
-				margin: 10
-			};
+        JW_CSS_NONE = 'none',
+        JW_CSS_BLOCK = 'block',
+        JW_CSS_100PCT = '100%',
+        JW_CSS_RELATIVE = 'relative',
+        JW_CSS_ABSOLUTE = 'absolute';
+
+    embed.download = function(_container, _options, _errorCallback) {
+        var params = utils.extend({}, _options),
+            _display,
+            _width = params.width ? params.width : 480,
+            _height = params.height ? params.height : 320,
+            _file,
+            _image,
+            _logo = _options.logo ? _options.logo : {
+                prefix: utils.repo(),
+                file: 'logo.png',
+                margin: 10
+            };
 
 
-		function _embed() {
-			var file, image, youtube, i, playlist = params.playlist, item, sources,
-				types = ["mp4", "aac", "mp3"]; 
-			if (playlist && playlist.length) {
-				item = playlist[0];
-				sources = item.sources;
-				// If no downloadable files, and youtube, display youtube
-				// If nothing, show error message
-				for (i=0; i<sources.length; i++) {
-					var source = sources[i], 
-						type = source.type ? source.type : utils.extensionmap.extType(utils.extension(source.file));
-					if (source.file) {
-						// TODO: shouldn't be using same variable in nested loop...  Clean up at some point
-						utils.foreach(types, function(j) {
-							if (type == types[j]) {
-								file = source.file;
-								image = item.image;
-							} else if (utils.isYouTube(source.file)) {
-								youtube = source.file;
-							}
-						});
+        function _embed() {
+            var file, image, youtube, i, item, sources,
+                source, type,
+                playlist = params.playlist,
+                types = ['mp4', 'aac', 'mp3'];
 
-						if (file || youtube) continue;
-					}
-				}
-			} else {
-				return;
-			}
-			
-			if (file) {
-				_file = file;
-				_image = image;
-				_buildElements();
-				_styleElements();
-			} else if (youtube) {
-				_embedYouTube(youtube);
-			} else {
-				_errorCallback();
-			}
-		}
-		
-		function _buildElements() {
-			if (_container) {
-				_display = _createElement("a", "display", _container);
-				_createElement("div", "icon", _display);
-				_createElement("div", "logo", _display);
-				if (_file) {
-					_display.setAttribute("href", utils.getAbsolutePath(_file));
-				}
-			}
-		}
-		
-		function _css(selector, style) {
-			var elements = DOCUMENT.querySelectorAll(selector);
-			for (var i=0; i<elements.length; i++) {
-				utils.foreach(style, function(prop, val) {
-					elements[i].style[prop] = val;
-				});
-			}
-		}
-		
-		function _styleElements() {
-			var _prefix = "#" + _container.id + " .jwdownload";
+            if (!playlist || !playlist.length) {
+                return;
+            }
 
-			_container.style.width = "";
-			_container.style.height = "";
-			
-			_css(_prefix+"display", {
-				width: utils.styleDimension(Math.max(320, _width)),
-				height: utils.styleDimension(Math.max(180, _height)),
-				background: "black center no-repeat " + (_image ? 'url('+_image+')' : ""),
-				backgroundSize: "contain",
-				position: JW_CSS_RELATIVE,
-				border: JW_CSS_NONE,
-				display: JW_CSS_BLOCK
-			});
+            item = playlist[0];
+            sources = item.sources;
+            // If no downloadable files, and youtube, display youtube
+            // If nothing, show error message
+            for (i = 0; i < sources.length; i++) {
+                source = sources[i];
+                if (!source.file) {
+                    continue;
+                }
 
-			_css(_prefix+"display div", {
-				position: JW_CSS_ABSOLUTE,
-				width: JW_CSS_100PCT,
-				height: JW_CSS_100PCT
-			});
+                type = source.type || utils.extensionmap.extType(utils.extension(source.file));
 
-			_css(_prefix+"logo", {
-				top: _logo.margin + "px",
-				right: _logo.margin + "px",
-				background: "top right no-repeat url(" + _logo.prefix + _logo.file + ")"
-			});
-			
-			_css(_prefix+"icon", {
-				background: "center no-repeat url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAA6/NlyAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAgNJREFUeNrs28lqwkAYB/CZqNVDDj2r6FN41QeIy8Fe+gj6BL275Q08u9FbT8ZdwVfotSBYEPUkxFOoks4EKiJdaDuTjMn3wWBO0V/+sySR8SNSqVRKIR8qaXHkzlqS9jCfzzWcTCYp9hF5o+59sVjsiRzcegSckFzcjT+ruN80TeSlAjCAAXzdJSGPFXRpAAMYwACGZQkSdhG4WCzehMNhqV6vG6vVSrirKVEw66YoSqDb7cqlUilE8JjHd/y1MQefVzqdDmiaJpfLZWHgXMHn8F6vJ1cqlVAkEsGuAn83J4gAd2RZymQygX6/L1erVQt+9ZPWb+CDwcCC2zXGJaewl/DhcHhK3DVj+KfKZrMWvFarcYNLomAv4aPRSFZVlTlcSPA5fDweW/BoNIqFnKV53JvncjkLns/n/cLdS+92O7RYLLgsKfv9/t8XlDn4eDyiw+HA9Jyz2eyt0+kY2+3WFC5hluej0Ha7zQQq9PPwdDq1Et1sNsx/nFBgCqWJ8oAK1aUptNVqcYWewE4nahfU0YQnk4ntUEfGMIU2m01HoLaCKbTRaDgKtaVLk9tBYaBcE/6Artdr4RZ5TB6/dC+9iIe/WgAMYADDpAUJAxjAAAYwgGFZgoS/AtNNTF7Z2bL0BYPBV3Jw5xFwwWcYxgtBP5OkE8i9G7aWGOOCruvauwADALMLMEbKf4SdAAAAAElFTkSuQmCC)"
-			});
-	
-		}
-		
-		function _createElement(tag, className, parent) {
-			var _element = DOCUMENT.createElement(tag);
-			if (className) _element.className = "jwdownload"+className;
-			if (parent) {
-				parent.appendChild(_element);
-			}
-			return _element;
-		}
-		
-		/** 
-		 * Although this function creates a flash embed, the target is iOS, which interprets the embed code as a YouTube video, 
-		 * and plays it using the browser
-		 */
-		function _embedYouTube(path) {
-            var embed = _createElement("iframe", "", _container);
+                var typeIndex = utils.indexOf(types, type);
+                if (typeIndex >= 0) {
+                    file = source.file;
+                    image=item.image;
+                } else if (utils.isYouTube(source.file)) {
+                    youtube = source.file;
+                }
+            }
 
-            embed.src = "http://www.youtube.com/embed/" + utils.youTubeID(path);
+            if (file) {
+                _file = file;
+                _image = image;
+                _buildElements();
+                _styleElements();
+            } else if (youtube) {
+                _embedYouTube(youtube);
+            } else {
+                _errorCallback();
+            }
+        }
+
+        function _buildElements() {
+            if (_container) {
+                _display = _createElement('a', 'display', _container);
+                _createElement('div', 'icon', _display);
+                _createElement('div', 'logo', _display);
+                if (_file) {
+                    _display.setAttribute('href', utils.getAbsolutePath(_file));
+                }
+            }
+        }
+
+        function _styleElements() {
+            var _prefix = '#' + _container.id + ' .jwdownload';
+
+            _container.style.width = '';
+            _container.style.height = '';
+
+            _css(_prefix + 'display', {
+                width: utils.styleDimension(Math.max(320, _width)),
+                height: utils.styleDimension(Math.max(180, _height)),
+                background: 'black center no-repeat ' + (_image ? 'url(' + _image + ')' : ''),
+                backgroundSize: 'contain',
+                position: JW_CSS_RELATIVE,
+                border: JW_CSS_NONE,
+                display: JW_CSS_BLOCK
+            });
+
+            _css(_prefix + 'display div', {
+                position: JW_CSS_ABSOLUTE,
+                width: JW_CSS_100PCT,
+                height: JW_CSS_100PCT
+            });
+
+            _css(_prefix + 'logo', {
+                top: _logo.margin + 'px',
+                right: _logo.margin + 'px',
+                background: 'top right no-repeat url(' + _logo.prefix + _logo.file + ')'
+            });
+
+            _css(_prefix + 'icon', {
+                /*jshint maxlen:9000*/
+                background: 'center no-repeat url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAA6/NlyAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAgNJREFUeNrs28lqwkAYB/CZqNVDDj2r6FN41QeIy8Fe+gj6BL275Q08u9FbT8ZdwVfotSBYEPUkxFOoks4EKiJdaDuTjMn3wWBO0V/+sySR8SNSqVRKIR8qaXHkzlqS9jCfzzWcTCYp9hF5o+59sVjsiRzcegSckFzcjT+ruN80TeSlAjCAAXzdJSGPFXRpAAMYwACGZQkSdhG4WCzehMNhqV6vG6vVSrirKVEw66YoSqDb7cqlUilE8JjHd/y1MQefVzqdDmiaJpfLZWHgXMHn8F6vJ1cqlVAkEsGuAn83J4gAd2RZymQygX6/L1erVQt+9ZPWb+CDwcCC2zXGJaewl/DhcHhK3DVj+KfKZrMWvFarcYNLomAv4aPRSFZVlTlcSPA5fDweW/BoNIqFnKV53JvncjkLns/n/cLdS+92O7RYLLgsKfv9/t8XlDn4eDyiw+HA9Jyz2eyt0+kY2+3WFC5hluej0Ha7zQQq9PPwdDq1Et1sNsx/nFBgCqWJ8oAK1aUptNVqcYWewE4nahfU0YQnk4ntUEfGMIU2m01HoLaCKbTRaDgKtaVLk9tBYaBcE/6Artdr4RZ5TB6/dC+9iIe/WgAMYADDpAUJAxjAAAYwgGFZgoS/AtNNTF7Z2bL0BYPBV3Jw5xFwwWcYxgtBP5OkE8i9G7aWGOOCruvauwADALMLMEbKf4SdAAAAAElFTkSuQmCC)'
+            });
+
+        }
+
+        function _createElement(tag, className, parent) {
+            var _element = document.createElement(tag);
+            if (className) {
+                _element.className = 'jwdownload' + className;
+            }
+            if (parent) {
+                parent.appendChild(_element);
+            }
+            return _element;
+        }
+
+        /** 
+         * Although this function creates a flash embed, the target is iOS,
+         * which interprets the embed code as a YouTube video,
+         * and plays it using the browser
+         */
+        function _embedYouTube(path) {
+            var embed = _createElement('iframe', '', _container);
+
+            embed.src = 'http://www.youtube.com/embed/' + utils.youTubeID(path);
             embed.width = _width;
             embed.height = _height;
-            embed.style.border = "none";
-		}
-		
-		_embed();
-	};
+            embed.style.border = 'none';
+        }
 
+        _embed();
+    };
 
-	
 })(jwplayer);

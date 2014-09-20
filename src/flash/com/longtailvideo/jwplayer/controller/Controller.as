@@ -1,25 +1,25 @@
 package com.longtailvideo.jwplayer.controller {
-	import com.longtailvideo.jwplayer.events.GlobalEventDispatcher;
-	import com.longtailvideo.jwplayer.events.MediaEvent;
-	import com.longtailvideo.jwplayer.events.PlayerEvent;
-	import com.longtailvideo.jwplayer.events.PlaylistEvent;
-	import com.longtailvideo.jwplayer.events.ViewEvent;
-	import com.longtailvideo.jwplayer.model.Model;
-	import com.longtailvideo.jwplayer.model.PlaylistItem;
-	import com.longtailvideo.jwplayer.parsers.JWParser;
-	import com.longtailvideo.jwplayer.player.IPlayer;
-	import com.longtailvideo.jwplayer.player.PlayerState;
-	import com.longtailvideo.jwplayer.plugins.IPlugin;
-	import com.longtailvideo.jwplayer.utils.Configger;
-	import com.longtailvideo.jwplayer.utils.Logger;
-	import com.longtailvideo.jwplayer.utils.RootReference;
-	import com.longtailvideo.jwplayer.view.View;
-	
-	import flash.events.ErrorEvent;
-	import flash.events.Event;
-	import flash.utils.setTimeout;
+import com.longtailvideo.jwplayer.events.GlobalEventDispatcher;
+import com.longtailvideo.jwplayer.events.MediaEvent;
+import com.longtailvideo.jwplayer.events.PlayerEvent;
+import com.longtailvideo.jwplayer.events.PlaylistEvent;
+import com.longtailvideo.jwplayer.events.ViewEvent;
+import com.longtailvideo.jwplayer.model.Model;
+import com.longtailvideo.jwplayer.model.PlaylistItem;
+import com.longtailvideo.jwplayer.parsers.JWParser;
+import com.longtailvideo.jwplayer.player.IPlayer;
+import com.longtailvideo.jwplayer.player.PlayerState;
+import com.longtailvideo.jwplayer.plugins.IPlugin;
+import com.longtailvideo.jwplayer.utils.Configger;
+import com.longtailvideo.jwplayer.utils.Logger;
+import com.longtailvideo.jwplayer.utils.RootReference;
+import com.longtailvideo.jwplayer.view.View;
 
-	/**
+import flash.events.ErrorEvent;
+import flash.events.Event;
+import flash.utils.setTimeout;
+
+/**
 	 * Sent when the player has been initialized and skins and plugins have been successfully loaded.
 	 *
 	 * @eventType com.longtailvideo.jwplayer.events.PlayerEvent.JWPLAYER_READY
@@ -94,15 +94,18 @@ package com.longtailvideo.jwplayer.controller {
 		protected var _loadOnPlay:Number = -1;
 		/** Whether to stop the playlist onComplete **/
 		protected var _stopPlaylist:Boolean = false;
+	
 
 		/** Reference to a PlaylistItem which has triggered an external MediaProvider load **/
 		protected var _delayedItem:PlaylistItem;
+
 		
 		public function Controller(player:IPlayer, model:Model, view:View) {
 			_player = player;
 			_model = model;
 			_view = view;
 			_lockManager = new LockManager();
+
 		}
 
 		/**
@@ -119,6 +122,7 @@ package com.longtailvideo.jwplayer.controller {
 			addViewListeners();
 
 			setup.setupPlayer();
+			
 		}
 
 		protected function addViewListeners():void {
@@ -133,7 +137,9 @@ package com.longtailvideo.jwplayer.controller {
 			_view.addEventListener(ViewEvent.JWPLAYER_VIEW_FULLSCREEN, fullscreenHandler);
 			_view.addEventListener(ViewEvent.JWPLAYER_VIEW_LOAD, loadHandler);
 			_view.addEventListener(ViewEvent.JWPLAYER_VIEW_REDRAW, redrawHandler);
+			
 		}
+
 
 		protected function playHandler(evt:ViewEvent):void { play(); }
 		protected function stopHandler(evt:ViewEvent):void { stop(); }
@@ -150,6 +156,7 @@ package com.longtailvideo.jwplayer.controller {
 
 		protected function setupComplete(evt:Event):void {
 			_setupComplete = true;
+
 			RootReference.stage.dispatchEvent(new Event(Event.RESIZE));
 			_view.completeView();
 			finalizeSetup();
@@ -159,8 +166,8 @@ package com.longtailvideo.jwplayer.controller {
 		protected function setupError(evt:ErrorEvent):void {
 			Logger.log("STARTUP: Error occurred during player startup: " + evt.text);
 			_view.completeView(true, evt.text);
+			dispatchEvent(new PlayerEvent(PlayerEvent.JWPLAYER_SETUP_ERROR, evt.text));
 		}
-
 
 		protected function finalizeSetup():void {
 			if (!locking && _setupComplete && !_setupFinalized) {
@@ -205,15 +212,10 @@ package com.longtailvideo.jwplayer.controller {
 			}
 		}
 
-
 		protected function playlistItemHandler(evt:PlaylistEvent):void {
 			_interruptPlay = false;
 			load(_model.playlist.currentItem);
 		}
-
-
-
-
 
 		protected function errorState(message:String=""):void {
 			dispatchEvent(new PlayerEvent(PlayerEvent.JWPLAYER_ERROR, message));
@@ -411,51 +413,33 @@ package com.longtailvideo.jwplayer.controller {
 
 
 		public function pause():Boolean {
-			if (locking) {
-				return false;
+			if (!locking && _model.media) {
+				switch (_model.media.state) {
+					case PlayerState.PLAYING:
+					case PlayerState.BUFFERING:
+						_model.media.pause();
+						return true;
+					default:
+						_interruptPlay = _preplay;
+				}
 			}
-			if (!_model.media)
-				return false;
-
-			switch (_model.media.state) {
-				case PlayerState.PLAYING:
-				case PlayerState.BUFFERING:
-					_model.media.pause();
-					return true;
-					break;
-				default:
-					_interruptPlay = _preplay;
-					break;
-			}
-
 			return false;
 		}
 
 
 		public function stop():Boolean {
-			if (locking) {
-				return false;
+			if (!locking && _model.media) {
+				_interruptPlay = _preplay;
+				switch (_model.media.state) {
+					case PlayerState.PLAYING:
+					case PlayerState.BUFFERING:
+					case PlayerState.PAUSED:
+						_model.media.stop();
+						return true;
+					default:
+						_stopPlaylist = true;
+				}
 			}
-			
-			if (!_model.media) {
-				return false;
-			}
-			
-			_interruptPlay = _preplay;
-
-			switch (_model.media.state) {
-				case PlayerState.PLAYING:
-				case PlayerState.BUFFERING:
-				case PlayerState.PAUSED:
-					_model.media.stop();
-					return true;
-					break;
-				default:
-					_stopPlaylist = true;
-					break;
-			}
-			
-
 			return false;
 		}
 
@@ -519,32 +503,25 @@ package com.longtailvideo.jwplayer.controller {
 		}
 
 		public function seek(pos:Number):Boolean {
-			if (locking) {
-				return false;
-			}
-			if (!_model.media || pos == -1) {
-				// Couldn't seek since media wasn't initialized
-				return false;
-			}
-
-			switch (_model.media.state) {
-				case PlayerState.PAUSED:
-					play();
-				case PlayerState.PLAYING:
-					_model.seek(pos);
-					return true;
-				case PlayerState.IDLE:
-					_model.playlist.currentItem.start = pos;
-					_idleSeek = pos;
-					if (!_preplay) {
+			if (!locking && pos !== -1 && _model.media) {
+				switch (_model.media.state) {
+					case PlayerState.PAUSED:
 						play();
-					}
-					return true;
-				case PlayerState.BUFFERING:
-					_queuedSeek = pos;
-					break;
+						/* fallthrough */
+					case PlayerState.PLAYING:
+						_model.seek(pos);
+						return true;
+					case PlayerState.IDLE:
+						_model.playlist.currentItem.start = pos;
+						_idleSeek = pos;
+						if (!_preplay) {
+							play();
+						}
+						return true;
+					case PlayerState.BUFFERING:
+						_queuedSeek = pos;
+				}
 			}
-
 			return false;
 		}
 

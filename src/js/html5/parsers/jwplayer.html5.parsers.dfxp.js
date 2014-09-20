@@ -2,14 +2,17 @@
 
     /** Component that loads and parses an DFXP file. **/
     parsers.dfxp = function() {
-        
+
         var _seconds = jwplayer.utils.seconds;
 
         this.parse = function(data) {
-            var _captions = [{begin:0, text:''}];
+            var _captions = [{
+                begin: 0,
+                text: ''
+            }];
             data = data.replace(/^\s+/, '').replace(/\s+$/, '');
             var list = data.split("</p>");
-            var list2 = data.split ("</tt:p>");
+            var list2 = data.split("</tt:p>");
             var newlist = [];
             var i;
             for (i = 0; i < list.length; i++) {
@@ -28,19 +31,24 @@
 
             for (i = 0; i < list.length; i++) {
                 var entry = _entry(list[i]);
-                if(entry['text']) {
+                if (entry['text']) {
                     _captions.push(entry);
                     // Insert empty caption at the end.
-                    if(entry['end']) {
-                        _captions.push({begin:entry['end'],text:''});
+                    if (entry['end']) {
+                        _captions.push({
+                            begin: entry['end'],
+                            text: ''
+                        });
                         delete entry['end'];
                     }
                 }
             }
-            if(_captions.length > 1) {
+            if (_captions.length > 1) {
                 return _captions;
             } else {
-                throw { message:"Invalid DFXP file:"};
+                throw {
+                    message: "Invalid DFXP file:"
+                };
             }
         };
 

@@ -6,7 +6,7 @@ package com.longtailvideo.jwplayer.media {
 	import com.longtailvideo.jwplayer.model.PlaylistItem;
 	import com.longtailvideo.jwplayer.player.PlayerState;
 	import com.longtailvideo.jwplayer.utils.Stretcher;
-	
+
 	import flash.display.DisplayObject;
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
@@ -83,14 +83,14 @@ package com.longtailvideo.jwplayer.media {
 		protected var _item:PlaylistItem;
 		/** The current position inside the file. **/
 		protected var _position:Number = 0;
-		/** The current volume of the audio output stream **/
+        /** Most recent buffer data **/
+        protected var _bufferPercent:Number;
+        /** The current volume of the audio output stream **/
 		private var _volume:Number;
 		/** The playback state for the currently loaded media.  @see com.longtailvideo.jwplayer.model.ModelStates **/
 		private var _state:String;
 		/** Clip containing graphical representation of the currently playing media **/
 		protected var _media:MovieClip;
-		/** Most recent buffer data **/
-		private var _bufferPercent:Number;
 		/** Handles event dispatching **/
 		private var _dispatcher:GlobalEventDispatcher;
 		/** Whether or not to stretchthe media **/
@@ -99,17 +99,15 @@ package com.longtailvideo.jwplayer.media {
 		private var _queuedBufferFull:Boolean;
 		/** Current quality level **/
 		protected var _currentQuality:Number = -1;
-		
+		protected var _currentAudioTrack:Number = -1;
 		protected var _width:Number;
 		protected var _height:Number;
-		
 		
 		public function MediaProvider(provider:String) {
 			_provider = provider;
 			_dispatcher = new GlobalEventDispatcher();
 			_stretch = true;
 		}
-		
 		
 		public function initializeMediaProvider(cfg:PlayerConfig):void {
 			_config = cfg;
@@ -277,7 +275,7 @@ package com.longtailvideo.jwplayer.media {
 		 */
 		protected function setState(newState:String):void {
 			if (state != newState) {
-				var evt:PlayerStateEvent = new PlayerStateEvent(PlayerStateEvent.JWPLAYER_PLAYER_STATE, newState, state);
+				var evt:PlayerStateEvent = new PlayerStateEvent(newState, state);
 				_state = newState;
 				dispatchEvent(evt);
 			}
@@ -291,15 +289,10 @@ package com.longtailvideo.jwplayer.media {
 		 * @param value
 		 */
 		protected function sendMediaEvent(type:String, properties:Object=null):void {
-			if (type == MediaEvent.JWPLAYER_MEDIA_BUFFER_FULL && state == PlayerState.PAUSED) {
+			if (type === MediaEvent.JWPLAYER_MEDIA_BUFFER_FULL && state === PlayerState.PAUSED) {
 				_queuedBufferFull = true;
 			} else {
-				var newEvent:MediaEvent = new MediaEvent(type);
-				for (var property:String in properties) {
-					if (newEvent.hasOwnProperty(property)) {
-						newEvent[property] = properties[property];
-					}
-				}
+				var newEvent:MediaEvent = new MediaEvent(type, properties);
 				dispatchEvent(newEvent);
 			}
 		}
@@ -337,9 +330,8 @@ package com.longtailvideo.jwplayer.media {
 		protected function getConfigProperty(property:String):* {
 			if (item && item.hasOwnProperty(_provider + "." + property)) {
 				return item[_provider + "." + property];
-			} else {
-				return _config.pluginConfig(provider)[property];
 			}
+			return _config.pluginConfig(provider)[property];
 		}
 		
 		/**
@@ -382,24 +374,39 @@ package com.longtailvideo.jwplayer.media {
 		}
 
 
+		/** Current audio track getter **/
+		public function get currentAudioTrack():Number {
+			return _currentAudioTrack;
+		}
+
+
+		/** Current audio track setter **/
+		public function set currentAudioTrack(audioTrack:Number):void {
+			_currentAudioTrack = audioTrack;
+		}
+
+
+		/** Audio Tracks (must be overridden by inheritors **/
+		public function get audioTracks():Array {
+			return null;
+		}
+
 		/** Current quality level getter **/
 		public function get currentQuality():Number {
 			return _currentQuality;
 		}
-
-
+		
+		
 		/** Current quality level setter **/
 		public function set currentQuality(quality:Number):void {
 			_currentQuality = quality;
 		}
-
-
+		
+		
 		/** Quality levels (must be overridden by inheritors **/
 		public function get qualityLevels():Array {
 			return null;
 		}
-
-
 		/** Translate sources into quality levels. **/
 		protected function sources2Levels(sources:Array):Array {
 			var levels:Array = new Array();
@@ -407,15 +414,15 @@ package com.longtailvideo.jwplayer.media {
 				var level:Object = { label: i+" " };
 				if(sources[i].bitrate) {
 					level.bitrate = sources[i].bitrate;
-					level.label = sources[i].bitrate + "kbps";
+					level.label = level.bitrate + "kbps";
 				}
 				if(sources[i].width) {
 					level.width = sources[i].width;
-					level.label = sources[i].width + "px";
+					level.label = level.width + "px";
 				}
 				if(sources[i].height) {
 					level.height = sources[i].height;
-					level.label = sources[i].height + "p";
+					level.label = level.height + "p";
 				}
 				if(sources[i].label) {
 					level.label = sources[i].label;

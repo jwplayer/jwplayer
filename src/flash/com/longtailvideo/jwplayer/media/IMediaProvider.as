@@ -83,6 +83,9 @@ package com.longtailvideo.jwplayer.media
 		function get state():String;
 		function get position():Number;
 		function get stretchMedia():Boolean;
+		function get audioTracks():Array;
+		function get currentAudioTrack():Number;
+		function set currentAudioTrack(audioTrack:Number):void;
 		function get qualityLevels():Array;
 		function get currentQuality():Number;
 		function set currentQuality(quality:Number):void;

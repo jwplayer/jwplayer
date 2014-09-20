@@ -1,23 +1,16 @@
-/**
- * JW Player Touch Framework
- *
- * @author sanil
- * @version 6.6
- */
+(function (utils) {
 
-(function(utils) {
+    var TOUCH_MOVE = 'touchmove',
+        TOUCH_START = 'touchstart',
+        TOUCH_END = 'touchend',
+        TOUCH_CANCEL = 'touchcancel';
 
-    var TOUCH_MOVE = "touchmove",
-        TOUCH_START = "touchstart",
-        TOUCH_END = "touchend",
-        TOUCH_CANCEL = "touchcancel";
-
-    utils.touch = function(elem) {
+    utils.touch = function (elem) {
         var _elem = elem,
             _isListening = false,
             _handlers = {},
             _startEvent = null,
-            _gotMove = false, 
+            _gotMove = false,
             _events = utils.touchEvents;
 
         document.addEventListener(TOUCH_MOVE, touchHandler);
@@ -27,24 +20,24 @@
         elem.addEventListener(TOUCH_END, touchHandler);
 
         function documentEndHandler(evt) {
-            if(_isListening) {
-                if(_gotMove) {
+            if (_isListening) {
+                if (_gotMove) {
                     triggerEvent(_events.DRAG_END, evt);
                 }
             }
             _gotMove = false;
             _isListening = false;
-            _startEvent = null; 
+            _startEvent = null;
         }
 
         function touchHandler(evt) {
-            if(evt.type == TOUCH_START) {
+            if (evt.type === TOUCH_START) {
                 _isListening = true;
                 _startEvent = createEvent(_events.DRAG_START, evt);
             }
-            else if(evt.type == TOUCH_MOVE) {
-                if(_isListening) {
-                    if(_gotMove) {
+            else if (evt.type === TOUCH_MOVE) {
+                if (_isListening) {
+                    if (_gotMove) {
                         triggerEvent(_events.DRAG, evt);
                     }
                     else {
@@ -55,8 +48,8 @@
                 }
             }
             else {
-                if(_isListening) {
-                    if(_gotMove) {
+                if (_isListening) {
+                    if (_gotMove) {
                         triggerEvent(_events.DRAG_END, evt);
                     }
                     else {
@@ -72,7 +65,7 @@
         }
 
         function triggerEvent(type, srcEvent, finalEvt) {
-            if(_handlers[type]) {
+            if (_handlers[type]) {
                 preventDefault(srcEvent);
                 var evt = finalEvt ? finalEvt : createEvent(type, srcEvent);
                 if (evt) {
@@ -83,13 +76,13 @@
 
         function createEvent(type, srcEvent) {
             var touch = null;
-            if(srcEvent.touches && srcEvent.touches.length) {
+            if (srcEvent.touches && srcEvent.touches.length) {
                 touch = srcEvent.touches[0];
             }
-            else if(srcEvent.changedTouches && srcEvent.changedTouches.length) {
-                touch = srcEvent.changedTouches[0];   
+            else if (srcEvent.changedTouches && srcEvent.changedTouches.length) {
+                touch = srcEvent.changedTouches[0];
             }
-            if(!touch) {
+            if (!touch) {
                 return null;
             }
             var rect = _elem.getBoundingClientRect();
@@ -101,27 +94,27 @@
                 deltaX: 0,
                 deltaY: 0
             };
-            if(type != _events.TAP && _startEvent) {
+            if (type !== _events.TAP && _startEvent) {
                 evt.deltaX = evt.x - _startEvent.x;
                 evt.deltaY = evt.y - _startEvent.y;
             }
             return evt;
         }
-        
+
         function preventDefault(evt) {
-             if(evt.preventManipulation) {
+            if (evt.preventManipulation) {
                 evt.preventManipulation();
             }
-            if(evt.preventDefault) {
+            if (evt.preventDefault) {
                 evt.preventDefault();
             }
         }
 
-        this.addEventListener = function(type, handler) {
+        this.addEventListener = function (type, handler) {
             _handlers[type] = handler;
         };
 
-        this.removeEventListener = function(type) {
+        this.removeEventListener = function (type) {
             delete _handlers[type];
         };
 
