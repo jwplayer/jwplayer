@@ -10,7 +10,8 @@ package com.longtailvideo.jwplayer.media {
 	import com.longtailvideo.jwplayer.utils.RootReference;
 	import com.longtailvideo.jwplayer.utils.Stretcher;
 	import com.longtailvideo.jwplayer.utils.Strings;
-	
+	import com.longtailvideo.jwplayer.utils.Utils;
+
 	import flash.events.AsyncErrorEvent;
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
@@ -32,8 +33,6 @@ package com.longtailvideo.jwplayer.media {
 	public class VideoMediaProvider extends MediaProvider {
 		/** Whether the video is fully buffered. **/
 		private var _buffered:Number;
-		/** NetConnection object for setup of the video _stream. **/
-		private var _connection:NetConnection;
 		/** ID for the position interval. **/
 		private var _interval:Number;
 		/** Offset time/byte for http seek. **/
@@ -69,7 +68,7 @@ package com.longtailvideo.jwplayer.media {
 
 			if (_stageEnabled && cfg.hasOwnProperty('stagevideo') && cfg['stagevideo'].toString() == "false") _stageEnabled = false;
 
-			_connection = new NetConnection();
+			var _connection:NetConnection = new NetConnection();
 			_connection.connect(null);
 			_stream = new NetStream(_connection);
 			_stream.addEventListener(NetStatusEvent.NET_STATUS, statusHandler);
@@ -79,7 +78,7 @@ package com.longtailvideo.jwplayer.media {
 			_stream.client = new NetClient(this);
 			_transformer = new SoundTransform();
 			// Set startparam when available
-			if(_config.startparam) {
+			if (_config.startparam) {
 				_startparam = _config.startparam;
 			}
 		}
@@ -88,8 +87,7 @@ package com.longtailvideo.jwplayer.media {
 		/** Catch security errors. **/
 		protected function errorHandler(evt:ErrorEvent):void {
 			error(evt.text);
-		};
-
+		}
 
 		/** Send out renderstates. **/
 		protected function renderHandler(event:Event):void {
@@ -99,8 +97,7 @@ package com.longtailvideo.jwplayer.media {
 				stagevideo: stagevideo,
 				renderstate: event['status']
 			}});
-		};
-
+		}
 
 		/** Load new media file; only requested once per item. **/
 		override public function load(itm:PlaylistItem):void {
@@ -191,8 +188,7 @@ package com.longtailvideo.jwplayer.media {
 			sendBufferEvent(0);
 			clearInterval(_interval);
 			_interval = setInterval(positionHandler, 100);
-		};
-
+		}
 
 		/** Get metadata information from netstream class. **/
 		public function onClientData(data:Object):void {
@@ -209,12 +205,22 @@ package com.longtailvideo.jwplayer.media {
 				if (data.seekpoints) {
 					// Convert seekpoints to keyframes
 					_keyframes = {
-						times: new Array,
-						filepositions: new Array
+						times: [],
+						filepositions: []
 					};
 					for (var j:String in data.seekpoints) {
 						_keyframes.times[j] = Number(data.seekpoints[j]['time']);
 						_keyframes.filepositions[j] = Number(data.seekpoints[j]['offset']);
+					}
+				} else if (data.hasCuePoints && data.cuePoints is Array) {
+					for (var i:uint=data.cuePoints.length; i--;) {
+						var cue:* = data.cuePoints[i];// this is an array with object props
+						data.cuePoints[i] = {
+							type: cue.type,
+							name: cue.name,
+							time: cue.time,
+							parameters: Utils.extend({}, cue.parameters)
+						};
 					}
 				} else {
 					_keyframes = data.keyframes;
@@ -226,7 +232,6 @@ package com.longtailvideo.jwplayer.media {
 			}
 			sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_META, {metadata: data});
 		}
-
 
 		/** Pause playback. **/
 		override public function pause():void {
