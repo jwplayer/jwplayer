@@ -943,7 +943,7 @@ package com.longtailvideo.jwplayer.view.components {
 
 
 
-        private function showButton(name:String) {
+        private function showButton(name:String):void {
             hideButton(name, false);
         }
 
