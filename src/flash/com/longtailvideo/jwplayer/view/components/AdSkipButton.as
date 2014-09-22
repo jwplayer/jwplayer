@@ -204,8 +204,9 @@ package com.longtailvideo.jwplayer.view.components
 		{
 		}
 		
-		public function reset(offSet:String):void {
+		public function reset(offSet:String,tag:String = null):void {
 			_skipOffset = offSet;
+			_adTag = tag;
 			updateSkipText(0, 0);
 			_skipTime = false;
 			removeEventListener(MouseEvent.CLICK, skipAd);
