@@ -20,7 +20,7 @@
                 controlbar: {},
                 display: {}
             },
-            _currentProvider,
+            _currentProvider = utils.noop,
             // Defaults
             _defaults = {
                 autostart: false,
@@ -95,11 +95,6 @@
 
 
         _model.setVideoProvider = function(provider) {
-
-            // Only update on a change to provider
-            if (provider === _video) {
-                return;
-            }
 
             if (_video) {
                 _video.removeGlobalListener(_videoEventHandler);
@@ -181,9 +176,12 @@
                 var source = item && item.sources && item.sources[0];
                 var Provider = html5.chooseProvider(source);
 
-                 _currentProvider = defaultProvider || new Provider(_model.id);
+                // If we are changing video providers
+                if (! (_currentProvider instanceof Provider)) {
+                    _currentProvider = defaultProvider || new Provider(_model.id);
 
-                _model.setVideoProvider(_currentProvider);
+                    _model.setVideoProvider(_currentProvider);
+                }
 
                 // this allows the provider to load preview images (youtube player data)
                 if (_currentProvider.init) {

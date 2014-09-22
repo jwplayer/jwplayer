@@ -3,7 +3,6 @@
     var noop = jwplayer.utils.noop,
         _ = jwplayer._,
         events = jwplayer.events,
-        states = events.state,
         returnFalse = _.constant(false);
 
     var defaultProvider = {
@@ -49,7 +48,7 @@
                 return;
             }
 
-            var oldState = this.state || states.IDLE;
+            var oldState = this.state || events.state.IDLE;
             this.state = state;
 
             this.sendEvent(events.JWPLAYER_PLAYER_STATE, {

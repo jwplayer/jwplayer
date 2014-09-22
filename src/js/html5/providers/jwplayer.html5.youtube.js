@@ -333,24 +333,13 @@
         };
 
         this.destroy = function() {
-            _cleanup();
+            this.remove();
+
             _container =
                 _element =
                 _youtube =
                 _this = null;
         };
-
-        function _cleanup() {
-            // stop video silently
-            _stopVideo();
-            // remove element
-            if (_element && _container && _container === _element.parentNode) {
-                _container.removeChild(_element);
-            }
-            _youtubeEmbedReadyCallback =
-                _youtubePlayerReadyCallback =
-                    _ytPlayer = null;
-        }
 
 
         // Video Provider API
@@ -534,8 +523,16 @@
         };
 
         this.remove = function() {
-            // clean everything up (this provider should be destroyed and reinstantaited after being removed)
-            _cleanup();
+            _stopVideo();
+
+            // remove element
+            if (_element && _container && _container === _element.parentNode) {
+                _container.removeChild(_element);
+            }
+
+            _youtubeEmbedReadyCallback =
+                _youtubePlayerReadyCallback =
+                    _ytPlayer = null;
         };
 
         this.setVisibility = function(state) {
@@ -624,7 +621,9 @@
     }
 
     // Required configs
-    YoutubeProvider.prototype = DefaultProvider;
+    var F = function(){};
+    F.prototype = DefaultProvider;
+    YoutubeProvider.prototype = new F();
     YoutubeProvider.supports = supports;
 
     jwplayer.html5.YoutubeProvider = YoutubeProvider;

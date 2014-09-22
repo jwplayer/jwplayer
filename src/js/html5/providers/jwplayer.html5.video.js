@@ -19,6 +19,11 @@
         });
     }
 
+    function _removeListeners(eventsHash, videoTag) {
+        utils.foreach(eventsHash, function(evt, evtCallback) {
+            videoTag.removeEventListener(evt, evtCallback, false);
+        });
+    }
     function VideoProvider(_playerId) {
 
         // Current media state
@@ -380,7 +385,7 @@
 
 
         this.destroy = function() {
-            clearInterval(_bufferInterval);
+            this.remove();
         };
 
         this.load = function(item) {
@@ -612,7 +617,11 @@
                     _videotag.load();
                 }
             }
+
             clearInterval(_bufferInterval);
+
+            _removeListeners(_mediaEvents, _videotag);
+
             _currentQuality = -1;
             // remove
             if (_container === _videotag.parentNode) {
@@ -729,7 +738,9 @@
     }
 
     // Register provider
-    VideoProvider.prototype = DefaultProvider;
+    var F = function(){};
+    F.prototype = DefaultProvider;
+    VideoProvider.prototype = new F();
     VideoProvider.supports = _.constant(true);
 
     jwplayer.html5.VideoProvider = VideoProvider;
