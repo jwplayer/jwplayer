@@ -28,5 +28,15 @@ public class Utils {
         return copy;
     }
 
+    /**
+     * Note a and b should be arraylike
+     * @param a
+     * @param b
+     */
+    public static function pushAll(a:*,  b:*):void {
+        for(var i:int; i < b.length; i++) {
+            a.push(b[i]);
+        }
+    }
 }
 }
