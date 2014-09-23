@@ -527,7 +527,9 @@ package com.longtailvideo.jwplayer.player
 			_model.removeEventListener(MediaEvent.JWPLAYER_MEDIA_VOLUME, playerVolumeUpdated);
 			_model.removeEventListener(MediaEvent.JWPLAYER_MEDIA_MUTE, playerMuteUpdated);
 			_view.components.playlist.removeEventListener(ViewEvent.JWPLAYER_VIEW_ITEM, playlistClicked);
-			_skipButton.removeEventListener(JWAdEvent.JWPLAYER_AD_SKIPPED, skipHandler);
+            if (_skipButton) {
+                _skipButton.removeEventListener(JWAdEvent.JWPLAYER_AD_SKIPPED, skipHandler);
+            }
 			if (_provider) {
 				_provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_ERROR, _errorHandler);
 				_provider.removeGlobalListener(eventForwarder);
