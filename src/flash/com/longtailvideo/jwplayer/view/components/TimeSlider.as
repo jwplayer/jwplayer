@@ -168,6 +168,17 @@ package com.longtailvideo.jwplayer.view.components {
 		public function hide():void {
 			_tooltip.hide();
 		}
-		
+
+        /**
+         * Reset the TimeSlider to its original state
+         */
+        public override function reset():void {
+            super.reset();
+            thumbVisible = false;
+            setDuration(0);
+            removeCues();
+            setThumbs();
+            _tooltip.text = Strings.digits(0);
+        }
 	}
 }
