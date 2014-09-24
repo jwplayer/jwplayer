@@ -29,14 +29,22 @@ public class Utils {
     }
 
     /**
-     * Note a and b should be arraylike
-     * @param a
-     * @param b
+     * Append the second Vector to the first
+     *   This is an optimization for use cases when we want to
+     *   incrementally build a vector as data comes in
+     *
+     *   Note: This will cause a runtime error if used on vectors of
+     *         different types
+     *
+     * @param originalVector
+     * @param append
      */
-    public static function pushAll(a:*,  b:*):void {
-        for(var i:int; i < b.length; i++) {
+    public static function pushAll(a:Vector.<*>,  b:Vector.<*>):uint {
+        for(var i:uint = 0; i < b.length; i++) {
             a.push(b[i]);
         }
+
+        return a.length;
     }
 }
 }
