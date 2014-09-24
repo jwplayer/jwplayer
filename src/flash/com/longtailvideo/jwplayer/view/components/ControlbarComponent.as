@@ -154,7 +154,7 @@ package com.longtailvideo.jwplayer.view.components {
             setupOverlays();
             addEventListeners();
             updateVolumeSlider();
-            redrawTime();
+            updatePositionAndDurationText();
             _vttLoader = new AssetLoader();
             _vttLoader.addEventListener(Event.COMPLETE, loadComplete);
             _vttLoader.addEventListener(ErrorEvent.ERROR, loadError);
@@ -398,7 +398,9 @@ package com.longtailvideo.jwplayer.view.components {
         }
 
         private function setPositionAndDuration(position:Number, duration:Number) {
-            _lastPos = Math.min(Math.max(position, 0), Math.abs(duration));
+            var min:Number = Math.min(0, duration);
+            var max:Number = Math.max(0, duration);
+            _lastPos = Math.min(Math.max(position, min), max);
             _lastDur = duration;
         }
 
@@ -428,9 +430,7 @@ package com.longtailvideo.jwplayer.view.components {
 
                             _timeSlider.setDuration(_lastDur);
                             _timeSlider.live = isLive;
-                        }
-                        if (_lastPos > 0 || isDvr) {
-                            redrawTime();
+                            updatePositionAndDurationText();
                         }
                         if (!_instreamMode) {
                             setText();
@@ -459,47 +459,47 @@ package com.longtailvideo.jwplayer.view.components {
         }
 
 
-        private function redrawTime():void {
-            var position:Number = _lastPos;
-            var duration:Number = _lastDur;
-            if (position < 0 && !isDvr) {
-                position = 0;
-            }
-            if (duration < 0 && !isDvr) {
-                duration = 0;
+        private function updatePositionAndDurationText():void {
+            var elapsedString:String;
+            var durationString:String;
+
+            if (isSmallPlayer) {
+                elapsedString = "";
+                durationString = "";
+            } else if(isDvr) {
+                elapsedString = "-"+ Strings.digits(-_lastDur);
+                durationString = "Live";
+            } else if (isLive) {
+                elapsedString = Strings.digits(0);
+                durationString = Strings.digits(0);
+            } else {
+                elapsedString = Strings.digits(_lastPos);
+                durationString = Strings.digits(_lastDur);
             }
 
             var redrawNeeded:Boolean = false;
 
-            var newElapsed:String = Strings.digits(position);
-            var elapsedText:TextField = getTextField('elapsed');
-            var newDuration:String = Strings.digits(duration);
-            var durationField:TextField = getTextField('duration');
+            var elapsedTextField:TextField = getTextField('elapsed');
+            var durationTextField:TextField = getTextField('duration');
 
-            if (isDvr) {
-                newElapsed = "-"+ Strings.digits((-1*duration));
-                newDuration = "Live";
+            if (elapsedTextField) {
+                if (elapsedString.length != elapsedTextField.text.length) {
+                    redrawNeeded = true;
+                }
+                elapsedTextField.text = elapsedString;
             }
 
-            if (isSmallPlayer) {
-                newElapsed = "";
-                newDuration = "";
+
+            if (durationTextField) {
+                if (durationString.length != durationTextField.text.length) {
+                    redrawNeeded = true;
+                }
+                durationTextField.text = durationString;
             }
 
-            if (elapsedText) {
-                if (newElapsed.length != elapsedText.text.length) redrawNeeded = true;
-                elapsedText.text = newElapsed;
-            }
-
-            if (durationField) {
-                if (newDuration.length != durationField.text.length) redrawNeeded = true;
-                durationField.text = newDuration;
-            }
-
-            var timeSlider:TimeSlider = getSlider('time') as TimeSlider;
-            if (timeSlider) {
-                timeSlider.setDuration(duration);
-                timeSlider.live = isLive;
+            if (_timeSlider) {
+                _timeSlider.setDuration(_lastDur);
+                _timeSlider.live = isLive;
             }
 
             if (redrawNeeded) {
@@ -1032,7 +1032,7 @@ package com.longtailvideo.jwplayer.view.components {
             if (isSmallPlayer) {
                 _currentLayout = _currentLayout.replace(/duration|elapsed/g, '');
             }
-            redrawTime();
+            updatePositionAndDurationText();
 
             clearDividers();
             addDividers();
