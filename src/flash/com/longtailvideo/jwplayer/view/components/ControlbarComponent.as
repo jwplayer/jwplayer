@@ -154,7 +154,7 @@ package com.longtailvideo.jwplayer.view.components {
             setupOverlays();
             addEventListeners();
             updateVolumeSlider();
-            redrawTime();
+            updatePositionAndDurationText();
             _vttLoader = new AssetLoader();
             _vttLoader.addEventListener(Event.COMPLETE, loadComplete);
             _vttLoader.addEventListener(ErrorEvent.ERROR, loadError);
@@ -202,8 +202,7 @@ package com.longtailvideo.jwplayer.view.components {
             if (!_instreamMode) {
                 _liveMode = false;
                 if (_timeSlider) {
-                    _lastPos = 0;
-                    _lastDur = 0;
+                    setPositionAndDuration(0,0);
                     _timeSlider.reset();
                     var item:PlaylistItem = player.playlist.currentItem;
                     var setThumbs:Boolean = false;
@@ -259,8 +258,7 @@ package com.longtailvideo.jwplayer.view.components {
                 if(_timeSlider) {
                     _timeSlider.reset();
                 }
-                _lastPos = 0;
-                _lastDur = 0;
+                setPositionAndDuration(0,0);
                 if (_player.playlist.currentItem) {
                     _lastDur = _player.playlist.currentItem.duration;
                 }
@@ -399,13 +397,19 @@ package com.longtailvideo.jwplayer.view.components {
             return _lastDur <= -60;
         }
 
+        private function setPositionAndDuration(position:Number, duration:Number) {
+            var min:Number = Math.min(0, duration);
+            var max:Number = Math.max(0, duration);
+            _lastPos = Math.min(Math.max(position, min), max);
+            _lastDur = duration;
+        }
+
 
         private function mediaHandler(evt:MediaEvent):void {
             switch (evt.type) {
                 case MediaEvent.JWPLAYER_MEDIA_BUFFER:
                 case MediaEvent.JWPLAYER_MEDIA_TIME:
-                    _lastPos = evt.position;
-                    _lastDur = evt.duration;
+                    setPositionAndDuration(evt.position, evt.duration);
                     if (isLive && evt.type == MediaEvent.JWPLAYER_MEDIA_TIME) {
                         if (!_instreamMode) {
                             setText(player.playlist.currentItem.title || "Live broadcast");
@@ -413,22 +417,22 @@ package com.longtailvideo.jwplayer.view.components {
                     } else {
                         if (_timeSlider) {
                             if (isDvr) {
-                                _timeSlider.setProgress((evt.duration - evt.position) / evt.duration * 100);
+                                _timeSlider.setProgress((_lastDur - _lastPos) / _lastDur * 100);
                             }
                             else {
-                                _timeSlider.setProgress(evt.position / evt.duration * 100);
+                                _timeSlider.setProgress(_lastPos / _lastDur * 100);
                             }
                             _timeSlider.thumbVisible = !isLive;
                             if (evt.bufferPercent > 0) {
-                                var offsetPercent:Number = (evt.offset / evt.duration) * 100;
+                                var offsetPercent:Number = (evt.offset / _lastDur) * 100;
                                 _timeSlider.setBuffer(evt.bufferPercent / (1-offsetPercent/100), offsetPercent);
                             }
 
-                            _timeSlider.setDuration(evt.duration);
+                            _timeSlider.setDuration(_lastDur);
                             _timeSlider.live = isLive;
                         }
-                        if (evt.position > 0 || isDvr) {
-                            redrawTime();
+                        if(!isLive) {
+                            updatePositionAndDurationText();
                         }
                         if (!_instreamMode) {
                             setText();
@@ -457,47 +461,47 @@ package com.longtailvideo.jwplayer.view.components {
         }
 
 
-        private function redrawTime():void {
-            var position:Number = _lastPos;
-            var duration:Number = _lastDur;
-            if (position < 0 && !isDvr) {
-                position = 0;
-            }
-            if (duration < 0 && !isDvr) {
-                duration = 0;
+        private function updatePositionAndDurationText():void {
+            var elapsedString:String;
+            var durationString:String;
+
+            if (isSmallPlayer) {
+                elapsedString = "";
+                durationString = "";
+            } else if(isDvr) {
+                elapsedString = "-"+ Strings.digits(-_lastDur);
+                durationString = "Live";
+            } else if (isLive) {
+                elapsedString = Strings.digits(0);
+                durationString = Strings.digits(0);
+            } else {
+                elapsedString = Strings.digits(_lastPos);
+                durationString = Strings.digits(_lastDur);
             }
 
             var redrawNeeded:Boolean = false;
 
-            var newElapsed:String = Strings.digits(position);
-            var elapsedText:TextField = getTextField('elapsed');
-            var newDuration:String = Strings.digits(duration);
-            var durationField:TextField = getTextField('duration');
+            var elapsedTextField:TextField = getTextField('elapsed');
+            var durationTextField:TextField = getTextField('duration');
 
-            if (isDvr) {
-                newElapsed = "-"+ Strings.digits((-1*duration));
-                newDuration = "Live";
+            if (elapsedTextField) {
+                if (elapsedString.length != elapsedTextField.text.length) {
+                    redrawNeeded = true;
+                }
+                elapsedTextField.text = elapsedString;
             }
 
-            if (isSmallPlayer) {
-                newElapsed = "";
-                newDuration = "";
+
+            if (durationTextField) {
+                if (durationString.length != durationTextField.text.length) {
+                    redrawNeeded = true;
+                }
+                durationTextField.text = durationString;
             }
 
-            if (elapsedText) {
-                if (newElapsed.length != elapsedText.text.length) redrawNeeded = true;
-                elapsedText.text = newElapsed;
-            }
-
-            if (durationField) {
-                if (newDuration.length != durationField.text.length) redrawNeeded = true;
-                durationField.text = newDuration;
-            }
-
-            var timeSlider:TimeSlider = getSlider('time') as TimeSlider;
-            if (timeSlider) {
-                timeSlider.setDuration(duration);
-                timeSlider.live = isLive;
+            if (_timeSlider) {
+                _timeSlider.setDuration(_lastDur);
+                _timeSlider.live = isLive;
             }
 
             if (redrawNeeded) {
@@ -1030,7 +1034,7 @@ package com.longtailvideo.jwplayer.view.components {
             if (isSmallPlayer) {
                 _currentLayout = _currentLayout.replace(/duration|elapsed/g, '');
             }
-            redrawTime();
+            updatePositionAndDurationText();
 
             clearDividers();
             addDividers();
