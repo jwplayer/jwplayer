@@ -202,8 +202,7 @@ package com.longtailvideo.jwplayer.view.components {
             if (!_instreamMode) {
                 _liveMode = false;
                 if (_timeSlider) {
-                    _lastPos = 0;
-                    _lastDur = 0;
+                    setPositionAndDuration(0,0);
                     _timeSlider.reset();
                     var item:PlaylistItem = player.playlist.currentItem;
                     var setThumbs:Boolean = false;
@@ -259,8 +258,7 @@ package com.longtailvideo.jwplayer.view.components {
                 if(_timeSlider) {
                     _timeSlider.reset();
                 }
-                _lastPos = 0;
-                _lastDur = 0;
+                setPositionAndDuration(0,0);
                 if (_player.playlist.currentItem) {
                     _lastDur = _player.playlist.currentItem.duration;
                 }
@@ -399,13 +397,17 @@ package com.longtailvideo.jwplayer.view.components {
             return _lastDur <= -60;
         }
 
+        private function setPositionAndDuration(position:Number, duration:Number) {
+            _lastPos = Math.min(Math.max(position, 0), Math.abs(duration));
+            _lastDur = duration;
+        }
+
 
         private function mediaHandler(evt:MediaEvent):void {
             switch (evt.type) {
                 case MediaEvent.JWPLAYER_MEDIA_BUFFER:
                 case MediaEvent.JWPLAYER_MEDIA_TIME:
-                    _lastPos = evt.position;
-                    _lastDur = evt.duration;
+                    setPositionAndDuration(evt.position, evt.duration);
                     if (isLive && evt.type == MediaEvent.JWPLAYER_MEDIA_TIME) {
                         if (!_instreamMode) {
                             setText(player.playlist.currentItem.title || "Live broadcast");
@@ -413,21 +415,21 @@ package com.longtailvideo.jwplayer.view.components {
                     } else {
                         if (_timeSlider) {
                             if (isDvr) {
-                                _timeSlider.setProgress((evt.duration - evt.position) / evt.duration * 100);
+                                _timeSlider.setProgress((_lastDur - _lastPos) / _lastDur * 100);
                             }
                             else {
-                                _timeSlider.setProgress(evt.position / evt.duration * 100);
+                                _timeSlider.setProgress(_lastPos / _lastDur * 100);
                             }
                             _timeSlider.thumbVisible = !isLive;
                             if (evt.bufferPercent > 0) {
-                                var offsetPercent:Number = (evt.offset / evt.duration) * 100;
+                                var offsetPercent:Number = (evt.offset / _lastDur) * 100;
                                 _timeSlider.setBuffer(evt.bufferPercent / (1-offsetPercent/100), offsetPercent);
                             }
 
-                            _timeSlider.setDuration(evt.duration);
+                            _timeSlider.setDuration(_lastDur);
                             _timeSlider.live = isLive;
                         }
-                        if (evt.position > 0 || isDvr) {
+                        if (_lastPos > 0 || isDvr) {
                             redrawTime();
                         }
                         if (!_instreamMode) {

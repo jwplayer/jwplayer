@@ -124,6 +124,10 @@ package com.longtailvideo.jwplayer.view.components {
 			element.name = _name + elementName;
 			return element as Sprite;
 		}
+
+        private function percentToFraction(n:Number):Number {
+            return Math.min(Math.max(n, 0), 100) / 100;
+        }
 		
 		public function setProgress(progress:Number):void {
 			// MonsterDebugger.trace(this, _name +(_vertical?'V':'')+' progress: '+ progress);
@@ -131,7 +135,7 @@ package com.longtailvideo.jwplayer.view.components {
 			if (isNaN(progress)) {
 				progress = 0;
 			}
-			_currentProgress = progress / 100;
+			_currentProgress = percentToFraction(progress);
 			if (_progress) {
 				_progress.visible = true;
 			}
@@ -144,10 +148,10 @@ package com.longtailvideo.jwplayer.view.components {
 		 **/
 		public function setBuffer(buffer:Number, offset:Number=NaN):void {
 			if (!isNaN(buffer)) {
-				_currentBuffer = Math.min(Math.max(buffer, 0), 100) / 100;
+				_currentBuffer = percentToFraction(buffer);
 			}
 			if (!isNaN(offset)) { 
-				_bufferOffset = Math.min(Math.max(offset, 0), 100) / 100;
+				_bufferOffset = percentToFraction(offset);
 			}
 			if (_buffer) {
 				_buffer.visible = (_currentBuffer > 0);
