@@ -430,6 +430,8 @@ package com.longtailvideo.jwplayer.view.components {
 
                             _timeSlider.setDuration(_lastDur);
                             _timeSlider.live = isLive;
+                        }
+                        if(!isLive) {
                             updatePositionAndDurationText();
                         }
                         if (!_instreamMode) {
