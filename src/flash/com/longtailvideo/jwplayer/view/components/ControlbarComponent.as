@@ -300,7 +300,7 @@ package com.longtailvideo.jwplayer.view.components {
                 newLayout = newLayout.replace("fullscreen", "normalscreen");
                 hideButton("fullscreen");
                 newLayout = newLayout.replace("cast", "");
-                hideButton("casting");
+                hideButton("cast");
             } else {
                 hideButton("normalscreen");
             }
