@@ -869,7 +869,7 @@ package com.longtailvideo.jwplayer.view {
 				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_FULLSCREEN, !_player.config.fullscreen));
 			}
 			if (evt.keyCode >= 48 && evt.keyCode <= 59) {
-				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_SEEK, Math.round(_duration * ((evt.keyCode - 48)/10))));
+				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_SEEK, _duration * ((evt.keyCode - 48)/10)));
 			}
 
 		}

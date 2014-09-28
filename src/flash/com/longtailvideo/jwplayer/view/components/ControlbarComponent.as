@@ -924,7 +924,7 @@ package com.longtailvideo.jwplayer.view.components {
 				duration = _casting ? _lastDur : player.playlist.currentItem.duration;
 			} catch (err:Error) {
 			}
-			var percent:Number = Math.round(duration * evt.data);
+			var percent:Number = duration * evt.data;
 			dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_SEEK, percent));
 			_timeSlider.live = (duration <= 0);
 		}
