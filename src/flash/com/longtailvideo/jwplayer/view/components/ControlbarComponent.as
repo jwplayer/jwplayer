@@ -397,7 +397,7 @@ package com.longtailvideo.jwplayer.view.components {
             return _lastDur <= -60;
         }
 
-        private function setPositionAndDuration(position:Number, duration:Number) {
+        private function setPositionAndDuration(position:Number, duration:Number):void {
             var min:Number = Math.min(0, duration);
             var max:Number = Math.max(0, duration);
             _lastPos = Math.min(Math.max(position, min), max);
