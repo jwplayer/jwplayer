@@ -14,8 +14,8 @@
 
         var _this = utils.extend(this, new jwplayer.events.eventdispatcher('provider.' + this.name)),
             // Youtube API and Player Instance
-            _youtube = window.YT,
-            _ytPlayer = null,
+            _youtubeAPI = window.YT,
+            _youtubePlayer = null,
             // iFrame Container (this element will be replaced by iFrame element)
             _element = document.createElement('div'),
             // view container
@@ -57,7 +57,7 @@
         };
 
         // Load iFrame API
-        if (!_youtube && _scriptLoader) {
+        if (!_youtubeAPI && _scriptLoader) {
             _scriptLoader.addEventListener(events.COMPLETE, _onLoadSuccess);
             _scriptLoader.addEventListener(events.ERROR, _onLoadError);
             _scriptLoader.load();
@@ -66,10 +66,10 @@
         // setup container
         _element.id = _playerId + '_youtube';
 
-        function _onLoadSuccess(event) {
+        function _onLoadSuccess() {
             if (window.YT && window.YT.loaded) {
-                _youtube = window.YT;
-                _readyCheck(event);
+                _youtubeAPI = window.YT;
+                _readyCheck();
             } else {
                 // poll until Yo API is loaded
                 setTimeout(_onLoadSuccess, 100);
@@ -96,7 +96,7 @@
         }
 
         function _readyCheck() {
-            if (_youtube && _getVideoLayer()) {
+            if (_youtubeAPI && _getVideoLayer()) {
                 // if setItem cued up a video, this callback will handle it now
                 if (_youtubeEmbedReadyCallback) {
                     _youtubeEmbedReadyCallback.apply(_this);
@@ -106,11 +106,11 @@
 
         function _checkPlaybackHandler() {
             // return if player is not initialized and ready
-            if (!_ytPlayer || !_ytPlayer.getPlayerState) {
+            if (!_youtubePlayer || !_youtubePlayer.getPlayerState) {
                 return;
             }
             // manually check for state changes since API fails to do so
-            var youtubeState = _ytPlayer.getPlayerState();
+            var youtubeState = _youtubePlayer.getPlayerState();
             if (youtubeState !== null &&
                 youtubeState !== undefined &&
                 youtubeState !== _youtubeState) {
@@ -120,7 +120,7 @@
                 });
             }
             // handle time and buffer updates
-            var youtubeStates = _youtube.PlayerState;
+            var youtubeStates = _youtubeAPI.PlayerState;
             if (youtubeState === youtubeStates.PLAYING) {
                 _timeUpdateHandler();
             } else if (youtubeState === youtubeStates.BUFFERING) {
@@ -135,15 +135,15 @@
         function _timeUpdateHandler() {
             _bufferUpdate();
             _this.sendEvent(events.JWPLAYER_MEDIA_TIME, {
-                position: _round(_ytPlayer.getCurrentTime()),
-                duration: _ytPlayer.getDuration()
+                position: _round(_youtubePlayer.getCurrentTime()),
+                duration: _youtubePlayer.getDuration()
             });
         }
 
         function _bufferUpdate() {
             var bufferPercent = 0;
-            if (_ytPlayer && _ytPlayer.getVideoLoadedFraction) {
-                bufferPercent = Math.round(_ytPlayer.getVideoLoadedFraction() * 100);
+            if (_youtubePlayer && _youtubePlayer.getVideoLoadedFraction) {
+                bufferPercent = Math.round(_youtubePlayer.getVideoLoadedFraction() * 100);
             }
             if (_bufferPercent !== bufferPercent) {
                 _bufferPercent = bufferPercent;
@@ -166,7 +166,7 @@
 
         function _sendMetaEvent() {
             _this.sendEvent(events.JWPLAYER_MEDIA_META, {
-                duration: _ytPlayer.getDuration(),
+                duration: _youtubePlayer.getDuration(),
                 width: _element.clientWidth,
                 height: _element.clientHeight
             });
@@ -179,7 +179,8 @@
 
             var videoLayer = _element.parentNode;
             if (!videoLayer) {
-                throw 'Youtube iFrame removed from DOM';
+                // setContainer() hasn't been run yet
+                return;
             }
 
             var ytConfig = {
@@ -207,8 +208,8 @@
             // iFrame must be visible or it will not set up properly
             _this.setVisibility(true);
 
-            _ytPlayer = new _youtube.Player(_element, ytConfig);
-            _element = _ytPlayer.getIframe();
+            _youtubePlayer = new _youtubeAPI.Player(_element, ytConfig);
+            _element = _youtubePlayer.getIframe();
 
             _youtubeEmbedReadyCallback = null;
 
@@ -227,7 +228,7 @@
         }
 
         function _onYoutubeStateChange(event) {
-            var youtubeStates = _youtube.PlayerState;
+            var youtubeStates = _youtubeAPI.PlayerState;
 
             switch (event.data) {
 
@@ -313,10 +314,10 @@
 
         function _stopVideo() {
             clearInterval(_playingInterval);
-            if (_ytPlayer && _ytPlayer.stopVideo) {
+            if (_youtubePlayer && _youtubePlayer.stopVideo) {
                 try {
-                    _ytPlayer.stopVideo();
-                    _ytPlayer.clearVideo();
+                    _youtubePlayer.stopVideo();
+                    _youtubePlayer.clearVideo();
                 } catch (e) {
                     //console.error('Error stopping YT', e);
                 }
@@ -337,7 +338,7 @@
 
             _container =
                 _element =
-                _youtube =
+                _youtubeAPI =
                 _this = null;
         };
 
@@ -362,7 +363,7 @@
 
             _this.setVisibility(true);
             
-            if (!_youtube) {
+            if (!_youtubeAPI) {
                 // load item when API is ready
                 _youtubeEmbedReadyCallback = function() {
                     // enabling autoplay here also throws an exception
@@ -372,14 +373,14 @@
                 return;
             }
 
-            if (!_ytPlayer) {
+            if (!_youtubePlayer) {
                 _embedYoutubePlayer(videoId, {
                     autoplay: _requiresUserInteraction ? 0 : 1
                 });
                 return;
             }
 
-            if (!_ytPlayer.getPlayerState) {
+            if (!_youtubePlayer.getPlayerState) {
                 _youtubePlayerReadyCallback = function() {
                     _volumeHandler();
                     _this.load(item);
@@ -387,7 +388,7 @@
                 return;
             }
 
-            var currentVideoId = _ytPlayer.getVideoData().video_id;
+            var currentVideoId = _youtubePlayer.getVideoData().video_id;
 
             if (currentVideoId !== videoId) {
                 // An exception is thrown by the iframe_api - but the call works
@@ -395,21 +396,21 @@
                 // because we disabled control in the setup
                 if (_requiresUserInteraction) {
                     _stopVideo();
-                    _ytPlayer.cueVideoById(videoId);
+                    _youtubePlayer.cueVideoById(videoId);
                 } else {
-                    _ytPlayer.loadVideoById(videoId);
+                    _youtubePlayer.loadVideoById(videoId);
                 }
 
                 // if player is unstarted, ready for mobile
-                var youtubeState = _ytPlayer.getPlayerState();
-                var youtubeStates = _youtube.PlayerState;
+                var youtubeState = _youtubePlayer.getPlayerState();
+                var youtubeStates = _youtubeAPI.PlayerState;
                 if (youtubeState === youtubeStates.UNSTARTED || youtubeState === youtubeStates.CUED) {
                     _readyViewForMobile();
                 }
             } else {
                 // replay current video
-                if (_ytPlayer.getCurrentTime() > 0) {
-                    _ytPlayer.seekTo(0);
+                if (_youtubePlayer.getCurrentTime() > 0) {
+                    _youtubePlayer.seekTo(0);
                 }
                 _sendMetaEvent();
             }
@@ -424,8 +425,8 @@
             if (_requiresUserInteraction) {
                 return;
             }
-            if (_ytPlayer.playVideo) {
-                _ytPlayer.playVideo();
+            if (_youtubePlayer.playVideo) {
+                _youtubePlayer.playVideo();
             }
         };
 
@@ -433,8 +434,8 @@
             if (_requiresUserInteraction) {
                 return;
             }
-            if (_ytPlayer.pauseVideo) {
-                _ytPlayer.pauseVideo();
+            if (_youtubePlayer.pauseVideo) {
+                _youtubePlayer.pauseVideo();
             }
         };
 
@@ -442,47 +443,47 @@
             if (_requiresUserInteraction) {
                 return;
             }
-            if (_ytPlayer.seekTo) {
-                _ytPlayer.seekTo(position);
+            if (_youtubePlayer.seekTo) {
+                _youtubePlayer.seekTo(position);
             }
         };
 
         this.volume = function(volume) {
-            if (!_ytPlayer || !_ytPlayer.getVolume) {
+            if (!_youtubePlayer || !_youtubePlayer.getVolume) {
                 return;
             }
             if (utils.exists(volume)) {
                 _lastVolume = Math.min(Math.max(0, volume), 100);
-                _ytPlayer.setVolume(_lastVolume);
+                _youtubePlayer.setVolume(_lastVolume);
             }
         };
 
         function _volumeHandler() {
-            if (!_ytPlayer || !_ytPlayer.getVolume) {
+            if (!_youtubePlayer || !_youtubePlayer.getVolume) {
                 return;
             }
             _this.sendEvent(events.JWPLAYER_MEDIA_VOLUME, {
-                volume: Math.round(_ytPlayer.getVolume())
+                volume: Math.round(_youtubePlayer.getVolume())
             });
             _this.sendEvent(events.JWPLAYER_MEDIA_MUTE, {
-                mute: _ytPlayer.isMuted()
+                mute: _youtubePlayer.isMuted()
             });
         }
 
         this.mute = function(state) {
-            if (!_ytPlayer || !_ytPlayer.getVolume) {
+            if (!_youtubePlayer || !_youtubePlayer.getVolume) {
                 return;
             }
             if (!utils.exists(state)) {
-                state = !_ytPlayer.isMuted();
+                state = !_youtubePlayer.isMuted();
             }
             
             if (state) {
-                _lastVolume = _ytPlayer.getVolume();
-                _ytPlayer.mute();
+                _lastVolume = _youtubePlayer.getVolume();
+                _youtubePlayer.mute();
             } else {
                 this.volume(_lastVolume);
-                _ytPlayer.unMute();
+                _youtubePlayer.unMute();
             }
         };
 
@@ -501,9 +502,9 @@
             }
         };
 
-        this.setContainer = function(element) {
-            _container = element;
-            element.appendChild(_element);
+        this.setContainer = function(parent) {
+            _container = parent;
+            parent.appendChild(_element);
             this.setVisibility(true);
         };
 
@@ -532,7 +533,7 @@
 
             _youtubeEmbedReadyCallback =
                 _youtubePlayerReadyCallback =
-                    _ytPlayer = null;
+                    _youtubePlayer = null;
         };
 
         this.setVisibility = function(state) {
@@ -570,24 +571,24 @@
         };
 
         this.getCurrentQuality = function() {
-            if (!_ytPlayer) {
+            if (!_youtubePlayer) {
                 return;
             }
-            if (_ytPlayer.getAvailableQualityLevels) {
-                var ytQuality = _ytPlayer.getPlaybackQuality();
-                var ytLevels = _ytPlayer.getAvailableQualityLevels();
+            if (_youtubePlayer.getAvailableQualityLevels) {
+                var ytQuality = _youtubePlayer.getPlaybackQuality();
+                var ytLevels = _youtubePlayer.getAvailableQualityLevels();
                 return ytLevels.indexOf(ytQuality);
             }
             return -1;
         };
 
         this.getQualityLevels = function() {
-            if (!_ytPlayer) {
+            if (!_youtubePlayer) {
                 return;
             }
             var levels = [];
-            if (_ytPlayer.getAvailableQualityLevels) {
-                var ytLevels = _ytPlayer.getAvailableQualityLevels();
+            if (_youtubePlayer.getAvailableQualityLevels) {
+                var ytLevels = _youtubePlayer.getAvailableQualityLevels();
                 for (var i = ytLevels.length; i--;) {
                     levels.push({
                         label: ytLevels[i]
@@ -598,14 +599,14 @@
         };
 
         this.setCurrentQuality = function(quality) {
-            if (!_ytPlayer) {
+            if (!_youtubePlayer) {
                 return;
             }
-            if (_ytPlayer.getAvailableQualityLevels) {
-                var ytLevels = _ytPlayer.getAvailableQualityLevels();
+            if (_youtubePlayer.getAvailableQualityLevels) {
+                var ytLevels = _youtubePlayer.getAvailableQualityLevels();
                 if (ytLevels.length) {
                     var ytQuality = ytLevels[ytLevels.length - quality - 1];
-                    _ytPlayer.setPlaybackQuality(ytQuality);
+                    _youtubePlayer.setPlaybackQuality(ytQuality);
                 }
             }
         };
