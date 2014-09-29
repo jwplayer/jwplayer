@@ -7,7 +7,9 @@
 		var _status = utils.loaderstatus.NEW,
 			_loading = false,
 			_iscomplete = false,
-			_config = config,
+			_completeCount,
+            _config = config,
+			_pluginCount = _config ? Object.keys(_config).length : 0,
 			_eventDispatcher = new events.eventdispatcher();
 		
 		
@@ -26,15 +28,7 @@
 		 * arrive later, retriggering the completeness check and triggering a complete
 		 * to fire, if necessary.
 		 */
-		function _complete(err) {
-			if (err) {
-				_eventDispatcher.sendEvent(events.ERROR, {
-					message: err.message
-				});
-				if (err.url) {
-					utils.log(err.message, err.url);
-				}
-			}
+		function _complete() {
 			if (!_iscomplete) {
 				_iscomplete = true;
 				_status = utils.loaderstatus.COMPLETE;
@@ -48,9 +42,8 @@
 				_complete();
 			}
 			if (!_iscomplete) {
-				var incomplete = 0,
-					plugins = model.getPlugins();
-				
+				var plugins = model.getPlugins();
+				_completeCount = 0;
 				utils.foreach(_config, function(plugin) {
 					var pluginName = utils.getPluginName(plugin),
 						pluginObj = plugins[pluginName],
@@ -59,25 +52,34 @@
 						status = pluginObj.getStatus();
 
 					if (status == utils.loaderstatus.LOADING || status == utils.loaderstatus.NEW) {
-						incomplete++;
+						return;
 					} else if (js && !utils.versionCheck(target)) {
-						_complete({
-							message: 'Incompatible player version'
-						});
+					    _eventDispatcher.sendEvent(events.ERROR, {
+                            message: 'Incompatible player version'
+                        });
 					}
+					_completeCount++;
 				});
 				
-				if (incomplete === 0) {
+				if (_completeCount === _pluginCount) {
 					_complete();
 				}
 			}
 		}
 
 		function _pluginError(e) {
-			_complete({
-				message: 'File not found',
-				url: e.url
-			});
+		    _completeCount++;
+		    
+		    var message = 'File not found';
+            _eventDispatcher.sendEvent(events.ERROR, {
+                 message: message
+            });
+            if (e.url) {
+                utils.log(message, e.url);
+            }
+            if (_completeCount === _pluginCount) {
+                _complete();
+            }
 		}
 		
 		this.setupPlugins = function(api, config, resizer) {
