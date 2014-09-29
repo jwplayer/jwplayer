@@ -37,9 +37,7 @@
             // post roll support
             _beforecompleted = false,
             // user must click video to initiate playback, gets set to false once playback starts
-            _requiresUserInteraction = (_isMobile || _isSafari),
-            // call play when quality changes to avoid video from stalling
-            _playOnQualityChange = true;
+            _requiresUserInteraction = (_isMobile || _isSafari);
 
         this.setState = function(state) {
             clearInterval(_playingInterval);
@@ -114,7 +112,6 @@
             if (youtubeState !== null &&
                 youtubeState !== undefined &&
                 youtubeState !== _youtubeState) {
-                _youtubeState = youtubeState;
                 _onYoutubeStateChange({
                     data: youtubeState
                 });
@@ -229,8 +226,9 @@
 
         function _onYoutubeStateChange(event) {
             var youtubeStates = _youtubeAPI.PlayerState;
+            _youtubeState = event.data;
 
-            switch (event.data) {
+            switch (_youtubeState) {
 
                 case youtubeStates.UNSTARTED: // -1: //unstarted
                     return;
@@ -243,19 +241,16 @@
 
                     // playback has started so stop blocking api.play()
                     _requiresUserInteraction = false;
-                    if (_playOnQualityChange) {
-                        _playOnQualityChange = false;
 
-                        // sent meta size and duration
-                        _sendMetaEvent();
+                    // sent meta size and duration
+                    _sendMetaEvent();
 
-                        // send levels when playback starts
-                        _this.sendEvent(events.JWPLAYER_MEDIA_LEVELS, {
-                            levels: _this.getQualityLevels(),
-                            currentQuality: _this.getCurrentQuality()
-                        });
+                    // send levels when playback starts
+                    _this.sendEvent(events.JWPLAYER_MEDIA_LEVELS, {
+                        levels: _this.getQualityLevels(),
+                        currentQuality: _this.getCurrentQuality()
+                    });
 
-                    }
                     _this.setState(states.PLAYING);
                     return;
 
@@ -277,9 +272,7 @@
             // This event is where the Youtube player and media is actually ready and can be played
 
             // make sure playback starts/resumes
-            if (_playOnQualityChange) {
-                _this.play();
-            }
+            _this.play();
         }
 
         function _onYoutubePlayerError() {
