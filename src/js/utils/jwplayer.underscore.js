@@ -114,8 +114,23 @@
         });
         return !!result;
     };
+    
+    //returns the size of an object
+    _.size = function(obj) {
+        if (obj == null) return 0;
+        return obj.length === +obj.length ? obj.length : _.keys(obj).length;
+    };
 
 
+    // Returns a function that will only be executed after being called N times.
+    _.after = function(times, func) {
+        return function() {
+            if (--times < 1) {
+                return func.apply(this, arguments);
+            }
+        };
+    };
+    
     // An internal function to generate lookup iterators.
     var lookupIterator = function(value) {
         if (value == null) return _.identity;

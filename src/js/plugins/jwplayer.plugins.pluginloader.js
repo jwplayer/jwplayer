@@ -1,15 +1,16 @@
 (function(jwplayer) {
 	var utils = jwplayer.utils, 
 		events = jwplayer.events,
+		_ = jwplayer._,
 		_foreach = utils.foreach;
 
 	jwplayer.plugins.pluginloader = function(model, config) {
 		var _status = utils.loaderstatus.NEW,
 			_loading = false,
 			_iscomplete = false,
-			_completeCount,
             _config = config,
-			_pluginCount = _config ? Object.keys(_config).length : 0,
+			_pluginCount = _.size(_config),
+			_pluginLoaded,
 			_eventDispatcher = new events.eventdispatcher();
 		
 		
@@ -43,7 +44,7 @@
 			}
 			if (!_iscomplete) {
 				var plugins = model.getPlugins();
-				_completeCount = 0;
+				_pluginLoaded = _.after(_pluginCount,_complete);
 				utils.foreach(_config, function(plugin) {
 					var pluginName = utils.getPluginName(plugin),
 						pluginObj = plugins[pluginName],
@@ -51,25 +52,20 @@
 						target = pluginObj.getTarget(),
 						status = pluginObj.getStatus();
 
-					if (status == utils.loaderstatus.LOADING || status == utils.loaderstatus.NEW) {
+					if (status === utils.loaderstatus.LOADING || status === utils.loaderstatus.NEW) {
 						return;
 					} else if (js && !utils.versionCheck(target)) {
 					    _eventDispatcher.sendEvent(events.ERROR, {
                             message: 'Incompatible player version'
                         });
 					}
-					_completeCount++;
+					_pluginLoaded();
 				});
 				
-				if (_completeCount === _pluginCount) {
-					_complete();
-				}
 			}
 		}
 
-		function _pluginError(e) {
-		    _completeCount++;
-		    
+		function _pluginError(e) {  
 		    var message = 'File not found';
             _eventDispatcher.sendEvent(events.ERROR, {
                  message: message
@@ -77,9 +73,7 @@
             if (e.url) {
                 utils.log(message, e.url);
             }
-            if (_completeCount === _pluginCount) {
-                _complete();
-            }
+            _pluginLoaded();
 		}
 		
 		this.setupPlugins = function(api, config, resizer) {
@@ -110,18 +104,19 @@
 
 				try {
 					if (jsPlugin && config.plugins && config.plugins[pluginURL]) {
-						var div = document.createElement("div");
-						div.id = api.id + "_" + pluginName;
-						div.style.position = "absolute";
+						var div = document.createElement('div');
+						div.id = api.id + '_' + pluginName;
+						div.style.position = 'absolute';
 						div.style.top = 0;
 						div.style.zIndex = jsplugins.length + 10;
-						jsplugins.plugins[pluginName] = pluginObj.getNewInstance(api, utils.extend({}, config.plugins[pluginURL]), div);
+						jsplugins.plugins[pluginName] = pluginObj.getNewInstance(api, 
+						                                utils.extend({}, config.plugins[pluginURL]), div);
 						jsplugins.length++;
 						api.onReady(resizer(jsplugins.plugins[pluginName], div, true));
 						api.onResize(resizer(jsplugins.plugins[pluginName], div));
 					}
 				} catch (err) {
-					utils.log("ERROR: Failed to load " + pluginName + ".");
+					utils.log('ERROR: Failed to load '  + pluginName + '.');
 				}
 			});
 			
@@ -132,7 +127,7 @@
 		
 		this.load = function() {
 			// Must be a hash map
-			if (utils.exists(config) && utils.typeOf(config) != "object") {
+			if (utils.exists(config) && utils.typeOf(config) !== 'object') {
 				_checkComplete();
 				return;
 			}
