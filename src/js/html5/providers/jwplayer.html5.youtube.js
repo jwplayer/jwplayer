@@ -1,6 +1,7 @@
 (function(jwplayer) {
 
     var utils = jwplayer.utils,
+        _ = jwplayer._,
         events = jwplayer.events,
         states = events.state,
         DefaultProvider = jwplayer.html5.DefaultProvider,
@@ -273,6 +274,11 @@
 
             // make sure playback starts/resumes
             _this.play();
+
+            _this.sendEvent(events.JWPLAYER_MEDIA_LEVEL_CHANGED, {
+                currentQuality: _this.getCurrentQuality(),
+                levels: _this.getQualityLevels()
+            });
         }
 
         function _onYoutubePlayerError() {
@@ -408,6 +414,7 @@
                 _sendMetaEvent();
             }
         }
+
 
         this.stop = function() {
             _stopVideo();
@@ -579,16 +586,28 @@
             if (!_youtubePlayer) {
                 return;
             }
-            var levels = [];
-            if (_youtubePlayer.getAvailableQualityLevels) {
-                var ytLevels = _youtubePlayer.getAvailableQualityLevels();
-                for (var i = ytLevels.length; i--;) {
-                    levels.push({
-                        label: ytLevels[i]
-                    });
-                }
+
+            if (!_.isFunction(_youtubePlayer.getAvailableQualityLevels)) {
+                return [];
             }
-            return levels;
+
+            var ytLevels = _youtubePlayer.getAvailableQualityLevels();
+
+            // If the result is ['auto', 'low'], we prefer to return ['low']
+            if (ytLevels.length === 2 && _.contains(ytLevels, 'auto')) {
+                return {
+                    label : _.without(ytLevels, 'auto')
+                };
+            }
+
+            var qualityArray = _.map(ytLevels, function(val) {
+                return {
+                    label : val
+                };
+            });
+
+            // We expect them in decreasing order
+            return qualityArray.reverse();
         };
 
         this.setCurrentQuality = function(quality) {
