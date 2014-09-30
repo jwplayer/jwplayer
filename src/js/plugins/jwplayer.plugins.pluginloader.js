@@ -1,13 +1,16 @@
 (function(jwplayer) {
 	var utils = jwplayer.utils, 
 		events = jwplayer.events,
+		_ = jwplayer._,
 		_foreach = utils.foreach;
 
 	jwplayer.plugins.pluginloader = function(model, config) {
 		var _status = utils.loaderstatus.NEW,
 			_loading = false,
 			_iscomplete = false,
-			_config = config,
+            _config = config,
+			_pluginCount = _.size(_config),
+			_pluginLoaded,
 			_eventDispatcher = new events.eventdispatcher();
 		
 		
@@ -26,15 +29,7 @@
 		 * arrive later, retriggering the completeness check and triggering a complete
 		 * to fire, if necessary.
 		 */
-		function _complete(err) {
-			if (err) {
-				_eventDispatcher.sendEvent(events.ERROR, {
-					message: err.message
-				});
-				if (err.url) {
-					utils.log(err.message, err.url);
-				}
-			}
+		function _complete() {
 			if (!_iscomplete) {
 				_iscomplete = true;
 				_status = utils.loaderstatus.COMPLETE;
@@ -48,9 +43,8 @@
 				_complete();
 			}
 			if (!_iscomplete) {
-				var incomplete = 0,
-					plugins = model.getPlugins();
-				
+				var plugins = model.getPlugins();
+				_pluginLoaded = _.after(_pluginCount,_complete);
 				utils.foreach(_config, function(plugin) {
 					var pluginName = utils.getPluginName(plugin),
 						pluginObj = plugins[pluginName],
@@ -58,26 +52,28 @@
 						target = pluginObj.getTarget(),
 						status = pluginObj.getStatus();
 
-					if (status == utils.loaderstatus.LOADING || status == utils.loaderstatus.NEW) {
-						incomplete++;
+					if (status === utils.loaderstatus.LOADING || status === utils.loaderstatus.NEW) {
+						return;
 					} else if (js && !utils.versionCheck(target)) {
-						_complete({
-							message: 'Incompatible player version'
-						});
+					    _eventDispatcher.sendEvent(events.ERROR, {
+                            message: 'Incompatible player version'
+                        });
 					}
+					_pluginLoaded();
 				});
 				
-				if (incomplete === 0) {
-					_complete();
-				}
 			}
 		}
 
-		function _pluginError(e) {
-			_complete({
-				message: 'File not found',
-				url: e.url
-			});
+		function _pluginError(e) {  
+		    var message = 'File not found';
+            _eventDispatcher.sendEvent(events.ERROR, {
+                 message: message
+            });
+            if (e.url) {
+                utils.log(message, e.url);
+            }
+            _pluginLoaded();
 		}
 		
 		this.setupPlugins = function(api, config, resizer) {
@@ -108,18 +104,19 @@
 
 				try {
 					if (jsPlugin && config.plugins && config.plugins[pluginURL]) {
-						var div = document.createElement("div");
-						div.id = api.id + "_" + pluginName;
-						div.style.position = "absolute";
+						var div = document.createElement('div');
+						div.id = api.id + '_' + pluginName;
+						div.style.position = 'absolute';
 						div.style.top = 0;
 						div.style.zIndex = jsplugins.length + 10;
-						jsplugins.plugins[pluginName] = pluginObj.getNewInstance(api, utils.extend({}, config.plugins[pluginURL]), div);
+						jsplugins.plugins[pluginName] = pluginObj.getNewInstance(api, 
+						                                utils.extend({}, config.plugins[pluginURL]), div);
 						jsplugins.length++;
 						api.onReady(resizer(jsplugins.plugins[pluginName], div, true));
 						api.onResize(resizer(jsplugins.plugins[pluginName], div));
 					}
 				} catch (err) {
-					utils.log("ERROR: Failed to load " + pluginName + ".");
+					utils.log('ERROR: Failed to load '  + pluginName + '.');
 				}
 			});
 			
@@ -130,7 +127,7 @@
 		
 		this.load = function() {
 			// Must be a hash map
-			if (utils.exists(config) && utils.typeOf(config) != "object") {
+			if (utils.exists(config) && utils.typeOf(config) !== 'object') {
 				_checkComplete();
 				return;
 			}

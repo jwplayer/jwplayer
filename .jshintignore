@@ -14,7 +14,6 @@ src/js/playlist/jwplayer.playlist.item.js
 src/js/playlist/jwplayer.playlist.loader.js
 src/js/playlist/jwplayer.playlist.source.js
 src/js/playlist/jwplayer.playlist.track.js
-src/js/plugins/jwplayer.plugins.pluginloader.js
 src/js/utils/jwplayer.utils.css.js
 src/js/utils/jwplayer.utils.extensionmap.js
 src/js/utils/jwplayer.utils.scriptloader.js
