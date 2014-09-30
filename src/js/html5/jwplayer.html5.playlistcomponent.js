@@ -1,15 +1,9 @@
-/**
- * jwplayer Playlist component for the JW Player.
- *
- * @author pablo
- * @version 6.0
- */
-(function(html5) {
-    var WHITE = "#FFFFFF",
-        CCC = "#CCCCCC",
-        THREES = "#333333",
-        NINES = "#999999",
-        NORMAL = "normal",
+(function (jwplayer) {
+
+    var WHITE = '#FFFFFF',
+        CCC = '#CCCCCC',
+        THREES = '#333333',
+        NINES = '#999999',
         _defaults = {
             size: 180,
             //position: html5.view.positions.NONE,
@@ -23,30 +17,24 @@
             titleovercolor: WHITE,
             titleactivecolor: WHITE,
 
-            fontweight: NORMAL,
-            titleweight: NORMAL,
+            fontweight: 'normal',
+            titleweight: 'normal',
             fontsize: 11,
             titlesize: 13
         },
 
+        html5 = jwplayer.html5,
         events = jwplayer.events,
         utils = jwplayer.utils,
         _css = utils.css,
         _isMobile = utils.isMobile(),
 
-        PL_CLASS = '.jwplaylist',
-        DOCUMENT = document,
+        PL_CLASS = '.jwplaylist';
 
-        /** Some CSS constants we should use for minimization **/
-        JW_CSS_ABSOLUTE = "absolute",
-        JW_CSS_RELATIVE = "relative",
-        JW_CSS_HIDDEN = "hidden",
-        JW_CSS_100PCT = "100%";
-
-    html5.playlistcomponent = function(api, config) {
+    html5.playlistcomponent = function (api, config) {
         var _api = api,
             _skin = _api.skin,
-            _settings = utils.extend({}, _defaults, _api.skin.getComponentSettings("playlist"), config),
+            _settings = utils.extend({}, _defaults, _api.skin.getComponentSettings('playlist'), config),
             _wrapper,
             _container,
             _playlist,
@@ -66,30 +54,32 @@
             _isBasic,
             _this = this;
 
-        _this.element = function() {
+        _this.element = function () {
             return _wrapper;
         };
 
-        _this.redraw = function() {
-            if (_slider) _slider.redraw();
+        _this.redraw = function () {
+            if (_slider) {
+                _slider.redraw();
+            }
         };
 
-        _this.show = function() {
+        _this.show = function () {
             utils.show(_wrapper);
         };
 
-        _this.hide = function() {
+        _this.hide = function () {
             utils.hide(_wrapper);
         };
 
 
         function _setup() {
-            _wrapper = _createElement("div", "jwplaylist");
-            _wrapper.id = _api.id + "_jwplayer_playlistcomponent";
+            _wrapper = _createElement('div', 'jwplaylist');
+            _wrapper.id = _api.id + '_jwplayer_playlistcomponent';
 
-            _isBasic = (_api._model.playlistlayout == "basic");
+            _isBasic = (_api._model.playlistlayout === 'basic');
 
-            _container = _createElement("div", "jwlistcontainer");
+            _container = _createElement('div', 'jwlistcontainer');
             _appendChild(_wrapper, _container);
 
             _populateSkinElements();
@@ -107,12 +97,12 @@
             _api.jwAddEventListener(events.JWPLAYER_RESIZE, _resizeHandler);
         }
 
-        function _resizeHandler(evt) {
+        function _resizeHandler(/* evt */) {
             _this.redraw();
         }
 
         function _internalSelector(className) {
-            return '#' + _wrapper.id + (className ? ' .' + className : "");
+            return '#' + _wrapper.id + (className ? ' .' + className : '');
         }
 
         function _setupStyles() {
@@ -126,18 +116,18 @@
                 'background-color': _settings.backgroundcolor
             });
 
-            _css(_internalSelector("jwlist"), {
-                'background-image': _elements.background ? " url(" + _elements.background.src + ")" : ""
+            _css(_internalSelector('jwlist'), {
+                'background-image': _elements.background ? ' url(' + _elements.background.src + ')' : ''
             });
 
-            _css(_internalSelector("jwlist" + " *"), {
+            _css(_internalSelector('jwlist' + ' *'), {
                 color: _settings.fontcolor,
-                font: _settings.fontweight + " " + _settings.fontsize + "px Arial, Helvetica, sans-serif"
+                font: _settings.fontweight + ' ' + _settings.fontsize + 'px Arial, Helvetica, sans-serif'
             });
 
 
             if (_elements.itemImage) {
-                imgPos = (_itemheight - _elements.itemImage.height) / 2 + "px ";
+                imgPos = (_itemheight - _elements.itemImage.height) / 2 + 'px ';
                 imgWidth = _elements.itemImage.width;
                 imgHeight = _elements.itemImage.height;
             } else {
@@ -146,65 +136,73 @@
             }
 
             if (_elements.divider) {
-                _css(_internalSelector("jwplaylistdivider"), {
-                    'background-image': "url(" + _elements.divider.src + ")",
-                    'background-size': JW_CSS_100PCT + " " + _elements.divider.height + "px",
-                    width: JW_CSS_100PCT,
+                _css(_internalSelector('jwplaylistdivider'), {
+                    'background-image': 'url(' + _elements.divider.src + ')',
+                    'background-size': '100%' + ' ' + _elements.divider.height + 'px',
+                    width: '100%',
                     height: _elements.divider.height
                 });
             }
 
-            _css(_internalSelector("jwplaylistimg"), {
+            _css(_internalSelector('jwplaylistimg'), {
                 height: imgHeight,
                 width: imgWidth,
-                margin: imgPos ? (imgPos + "0 " + imgPos + imgPos) : "0 5px 0 0"
+                margin: imgPos ? (imgPos + '0 ' + imgPos + imgPos) : '0 5px 0 0'
             });
 
-            _css(_internalSelector("jwlist li"), {
-                'background-image': _elements.item ? "url(" + _elements.item.src + ")" : "",
+            _css(_internalSelector('jwlist li'), {
+                'background-image': _elements.item ? 'url(' + _elements.item.src + ')' : '',
                 height: _itemheight,
                 overflow: 'hidden',
-                'background-size': JW_CSS_100PCT + " " + _itemheight + "px",
+                'background-size': '100%' + ' ' + _itemheight + 'px',
                 cursor: 'pointer'
             });
 
             var activeStyle = {
                 overflow: 'hidden'
             };
-            if (_settings.activecolor !== "") activeStyle.color = _settings.activecolor;
-            if (_elements.itemActive) activeStyle['background-image'] = "url(" + _elements.itemActive.src + ")";
-            _css(_internalSelector("jwlist li.active"), activeStyle);
-            _css(_internalSelector("jwlist li.active .jwtitle"), {
+            if (_settings.activecolor !== '') {
+                activeStyle.color = _settings.activecolor;
+            }
+            if (_elements.itemActive) {
+                activeStyle['background-image'] = 'url(' + _elements.itemActive.src + ')';
+            }
+            _css(_internalSelector('jwlist li.active'), activeStyle);
+            _css(_internalSelector('jwlist li.active .jwtitle'), {
                 color: _settings.titleactivecolor
             });
-            _css(_internalSelector("jwlist li.active .jwdescription"), {
+            _css(_internalSelector('jwlist li.active .jwdescription'), {
                 color: _settings.activecolor
             });
 
             var overStyle = {
                 overflow: 'hidden'
             };
-            if (_settings.overcolor !== "") overStyle.color = _settings.overcolor;
-            if (_elements.itemOver) overStyle['background-image'] = "url(" + _elements.itemOver.src + ")";
+            if (_settings.overcolor !== '') {
+                overStyle.color = _settings.overcolor;
+            }
+            if (_elements.itemOver) {
+                overStyle['background-image'] = 'url(' + _elements.itemOver.src + ')';
+            }
 
             if (!_isMobile) {
-                _css(_internalSelector("jwlist li:hover"), overStyle);
-                _css(_internalSelector("jwlist li:hover .jwtitle"), {
+                _css(_internalSelector('jwlist li:hover'), overStyle);
+                _css(_internalSelector('jwlist li:hover .jwtitle'), {
                     color: _settings.titleovercolor
                 });
-                _css(_internalSelector("jwlist li:hover .jwdescription"), {
+                _css(_internalSelector('jwlist li:hover .jwdescription'), {
                     color: _settings.overcolor
                 });
             }
 
-            _css(_internalSelector("jwtextwrapper"), {
+            _css(_internalSelector('jwtextwrapper'), {
                 height: _itemheight,
-                position: JW_CSS_RELATIVE
+                position: 'relative'
             });
 
-            _css(_internalSelector("jwtitle"), {
+            _css(_internalSelector('jwtitle'), {
                 overflow: 'hidden',
-                display: "inline-block",
+                display: 'inline-block',
                 height: _isBasic ? _itemheight : 20,
                 color: _settings.titlecolor,
                 'font-size': _settings.titlesize,
@@ -215,7 +213,7 @@
                 'line-height': _isBasic ? _itemheight : 20
             });
 
-            _css(_internalSelector("jwdescription"), {
+            _css(_internalSelector('jwdescription'), {
                 display: 'block',
                 'font-size': _settings.fontsize,
                 'line-height': 18,
@@ -223,35 +221,34 @@
                 'margin-right': 10,
                 overflow: 'hidden',
                 height: 36,
-                position: JW_CSS_RELATIVE
+                position: 'relative'
             });
-
         }
 
         function _createList() {
-            var ul = _createElement("ul", "jwlist");
-            ul.id = _wrapper.id + "_ul" + Math.round(Math.random() * 10000000);
+            var ul = _createElement('ul', 'jwlist');
+            ul.id = _wrapper.id + '_ul' + Math.round(Math.random() * 10000000);
             return ul;
         }
 
 
         function _createItem(index) {
             var item = _playlist[index],
-                li = _createElement("li", "jwitem"),
+                li = _createElement('li', 'jwitem'),
                 div;
 
             li.id = _ul.id + '_item_' + index;
 
             if (index > 0) {
-                div = _createElement("div", "jwplaylistdivider");
+                div = _createElement('div', 'jwplaylistdivider');
                 _appendChild(li, div);
             } else {
                 var divHeight = _elements.divider ? _elements.divider.height : 0;
-                li.style.height = (_itemheight - divHeight) + "px";
-                li.style["background-size"] = "100% " + (_itemheight - divHeight) + "px";
+                li.style.height = (_itemheight - divHeight) + 'px';
+                li.style['background-size'] = '100% ' + (_itemheight - divHeight) + 'px';
             }
 
-            var imageWrapper = _createElement("div", "jwplaylistimg jwfill");
+            var imageWrapper = _createElement('div', 'jwplaylistimg jwfill');
 
             var imageSrc;
             if (item['playlist.image'] && _elements.itemImage) {
@@ -268,13 +265,13 @@
                 _appendChild(li, imageWrapper);
             }
 
-            var textWrapper = _createElement("div", "jwtextwrapper");
-            var title = _createElement("span", "jwtitle");
-            title.innerHTML = (item && item.title) ? item.title : "";
+            var textWrapper = _createElement('div', 'jwtextwrapper');
+            var title = _createElement('span', 'jwtitle');
+            title.innerHTML = (item && item.title) ? item.title : '';
             _appendChild(textWrapper, title);
 
             if (item.description && !_isBasic) {
-                var desc = _createElement("span", "jwdescription");
+                var desc = _createElement('span', 'jwdescription');
                 desc.innerHTML = item.description;
                 _appendChild(textWrapper, desc);
             }
@@ -284,8 +281,10 @@
         }
 
         function _createElement(type, className) {
-            var elem = DOCUMENT.createElement(type);
-            if (className) elem.className = className;
+            var elem = document.createElement(type);
+            if (className) {
+                elem.className = className;
+            }
             return elem;
         }
 
@@ -293,8 +292,8 @@
             parent.appendChild(child);
         }
 
-        function _rebuildPlaylist(evt) {
-            _container.innerHTML = "";
+        function _rebuildPlaylist(/* evt */) {
+            _container.innerHTML = '';
 
             _playlist = _getPlaylist();
             if (!_playlist) {
@@ -316,7 +315,7 @@
             _lastCurrent = _api.jwGetPlaylistIndex();
 
             _appendChild(_container, _ul);
-            _slider = new html5.playlistslider(_wrapper.id + "_slider", _api.skin, _wrapper, _ul);
+            _slider = new html5.playlistslider(_wrapper.id + '_slider', _api.skin, _wrapper, _ul);
 
         }
 
@@ -332,7 +331,7 @@
         }
 
         function _clickHandler(index) {
-            return function() {
+            return function () {
                 _clickedIndex = index;
                 _api.jwPlaylistItem(index);
                 _api.jwPlay(true);
@@ -342,7 +341,9 @@
         function _scrollToItem() {
             var idx = _api.jwGetPlaylistIndex();
             // No need to scroll if the user clicked the current item
-            if (idx == _clickedIndex) return;
+            if (idx === _clickedIndex) {
+                return;
+            }
             _clickedIndex = -1;
 
             if (_slider && _slider.visible()) {
@@ -352,17 +353,17 @@
 
         function _itemHandler(evt) {
             if (_lastCurrent >= 0) {
-                DOCUMENT.getElementById(_ul.id + '_item_' + _lastCurrent).className = "jwitem";
+                document.getElementById(_ul.id + '_item_' + _lastCurrent).className = 'jwitem';
                 _lastCurrent = evt.index;
             }
-            DOCUMENT.getElementById(_ul.id + '_item_' + evt.index).className = "jwitem active";
+            document.getElementById(_ul.id + '_item_' + evt.index).className = 'jwitem active';
             _scrollToItem();
         }
 
 
         function _populateSkinElements() {
-            utils.foreach(_elements, function(element) {
-                _elements[element] = _skin.getSkinElement("playlist", element);
+            utils.foreach(_elements, function (element) {
+                _elements[element] = _skin.getSkinElement('playlist', element);
             });
         }
 
@@ -373,52 +374,52 @@
     /** Global playlist styles **/
 
     _css(PL_CLASS, {
-        position: JW_CSS_ABSOLUTE,
-        width: JW_CSS_100PCT,
-        height: JW_CSS_100PCT
+        position: 'absolute',
+        width: '100%',
+        height: '100%'
     });
 
     utils.dragStyle(PL_CLASS, 'none');
 
     _css(PL_CLASS + ' .jwplaylistimg', {
-        position: JW_CSS_RELATIVE,
-        width: JW_CSS_100PCT,
+        position: 'relative',
+        width: '100%',
         'float': 'left',
         margin: '0 5px 0 0',
-        background: "#000",
-        overflow: JW_CSS_HIDDEN
+        background: '#000',
+        overflow: 'hidden'
     });
 
     _css(PL_CLASS + ' .jwlist', {
-        position: JW_CSS_ABSOLUTE,
-        width: JW_CSS_100PCT,
+        position: 'absolute',
+        width: '100%',
         'list-style': 'none',
         margin: 0,
         padding: 0,
-        overflow: JW_CSS_HIDDEN
+        overflow: 'hidden'
     });
 
     _css(PL_CLASS + ' .jwlistcontainer', {
-        position: JW_CSS_ABSOLUTE,
-        overflow: JW_CSS_HIDDEN,
-        width: JW_CSS_100PCT,
-        height: JW_CSS_100PCT
+        position: 'absolute',
+        overflow: 'hidden',
+        width: '100%',
+        height: '100%'
     });
 
     _css(PL_CLASS + ' .jwlist li', {
-        width: JW_CSS_100PCT
+        width: '100%'
     });
 
     _css(PL_CLASS + ' .jwtextwrapper', {
-        overflow: JW_CSS_HIDDEN
+        overflow: 'hidden'
     });
 
     _css(PL_CLASS + ' .jwplaylistdivider', {
-        position: JW_CSS_ABSOLUTE
+        position: 'absolute'
     });
 
-    if (_isMobile) utils.transitionStyle(PL_CLASS + ' .jwlist', "top .35s");
+    if (_isMobile) {
+        utils.transitionStyle(PL_CLASS + ' .jwlist', 'top .35s');
+    }
 
-
-
-})(jwplayer.html5);
+})(jwplayer);
