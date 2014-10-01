@@ -1,6 +1,7 @@
 (function(jwplayer) {
 
     var utils = jwplayer.utils,
+        _ = jwplayer._,
         events = jwplayer.events,
         states = events.state,
         DefaultProvider = jwplayer.html5.DefaultProvider,
@@ -37,9 +38,7 @@
             // post roll support
             _beforecompleted = false,
             // user must click video to initiate playback, gets set to false once playback starts
-            _requiresUserInteraction = (_isMobile || _isSafari),
-            // call play when quality changes to avoid video from stalling
-            _playOnQualityChange = true;
+            _requiresUserInteraction = (_isMobile || _isSafari);
 
         this.setState = function(state) {
             clearInterval(_playingInterval);
@@ -114,7 +113,6 @@
             if (youtubeState !== null &&
                 youtubeState !== undefined &&
                 youtubeState !== _youtubeState) {
-                _youtubeState = youtubeState;
                 _onYoutubeStateChange({
                     data: youtubeState
                 });
@@ -229,8 +227,9 @@
 
         function _onYoutubeStateChange(event) {
             var youtubeStates = _youtubeAPI.PlayerState;
+            _youtubeState = event.data;
 
-            switch (event.data) {
+            switch (_youtubeState) {
 
                 case youtubeStates.UNSTARTED: // -1: //unstarted
                     return;
@@ -243,19 +242,16 @@
 
                     // playback has started so stop blocking api.play()
                     _requiresUserInteraction = false;
-                    if (_playOnQualityChange) {
-                        _playOnQualityChange = false;
 
-                        // sent meta size and duration
-                        _sendMetaEvent();
+                    // sent meta size and duration
+                    _sendMetaEvent();
 
-                        // send levels when playback starts
-                        _this.sendEvent(events.JWPLAYER_MEDIA_LEVELS, {
-                            levels: _this.getQualityLevels(),
-                            currentQuality: _this.getCurrentQuality()
-                        });
+                    // send levels when playback starts
+                    _this.sendEvent(events.JWPLAYER_MEDIA_LEVELS, {
+                        levels: _this.getQualityLevels(),
+                        currentQuality: _this.getCurrentQuality()
+                    });
 
-                    }
                     _this.setState(states.PLAYING);
                     return;
 
@@ -277,9 +273,12 @@
             // This event is where the Youtube player and media is actually ready and can be played
 
             // make sure playback starts/resumes
-            if (_playOnQualityChange) {
-                _this.play();
-            }
+            _this.play();
+
+            _this.sendEvent(events.JWPLAYER_MEDIA_LEVEL_CHANGED, {
+                currentQuality: _this.getCurrentQuality(),
+                levels: _this.getQualityLevels()
+            });
         }
 
         function _onYoutubePlayerError() {
@@ -288,7 +287,7 @@
             });
         }
 
-        // Mobile view helpers
+        // Mobile and Safari require a direct click to start playback
         function _requiresVisibility() {
             //return _requiresUserInteraction;
             return (_isMobile || _isSafari);
@@ -297,7 +296,7 @@
         function _readyViewForMobile() {
             if (_requiresVisibility()) {
                 _this.setVisibility(true);
-                // hide controls so use can click on iFrame
+                // hide controls so user can click on iFrame
                 utils.css('#' + _playerId + ' .jwcontrols', {
                     display: 'none'
                 });
@@ -415,6 +414,7 @@
                 _sendMetaEvent();
             }
         }
+
 
         this.stop = function() {
             _stopVideo();
@@ -539,10 +539,7 @@
         this.setVisibility = function(state) {
             state = !!state;
             if (state) {
-                // Changing visibility to hidden on Android < 4.2 causes 
-                // the pause event to be fired. This causes audio files to 
-                // become unplayable. Hence the video tag is always kept 
-                // visible on Android devices.
+                // show
                 utils.css.style(_element, {
                     display: 'block'
                 });
@@ -551,6 +548,7 @@
                     opacity: 1
                 });
             } else {
+                // hide
                 if (!_requiresVisibility()) {
                     utils.css.style(_container, {
                         opacity: 0
@@ -586,16 +584,28 @@
             if (!_youtubePlayer) {
                 return;
             }
-            var levels = [];
-            if (_youtubePlayer.getAvailableQualityLevels) {
-                var ytLevels = _youtubePlayer.getAvailableQualityLevels();
-                for (var i = ytLevels.length; i--;) {
-                    levels.push({
-                        label: ytLevels[i]
-                    });
-                }
+
+            if (!_.isFunction(_youtubePlayer.getAvailableQualityLevels)) {
+                return [];
             }
-            return levels;
+
+            var ytLevels = _youtubePlayer.getAvailableQualityLevels();
+
+            // If the result is ['auto', 'low'], we prefer to return ['low']
+            if (ytLevels.length === 2 && _.contains(ytLevels, 'auto')) {
+                return {
+                    label : _.without(ytLevels, 'auto')
+                };
+            }
+
+            var qualityArray = _.map(ytLevels, function(val) {
+                return {
+                    label : val
+                };
+            });
+
+            // We expect them in decreasing order
+            return qualityArray.reverse();
         };
 
         this.setCurrentQuality = function(quality) {
@@ -618,7 +628,7 @@
     };
 
     function supports(source) {
-        return (source.type === 'youtube' || utils.isYouTube(source.file));
+        return (utils.isYouTube(source.file, source.type));
     }
 
     // Required configs

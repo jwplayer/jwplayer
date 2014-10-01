@@ -97,7 +97,7 @@
         }
 
         // Youtube JavaScript API Provider
-        if (type === 'youtube' || utils.isYouTube(file)) {
+        if (utils.isYouTube(file, type)) {
             // TODO: check that js api requirements are met first
             // https://developers.google.com/youtube/js_api_reference
             return true;
