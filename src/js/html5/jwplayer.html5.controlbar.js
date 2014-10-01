@@ -18,19 +18,13 @@
         CB_DIVIDER = 'divider',
         CB_SLIDER = 'slider',
 
-        /** Some CSS constants we should use for minimization * */
-        JW_CSS_NONE = 'none',
-        JW_CSS_BLOCK = 'block',
-        JW_CSS_INLINE = 'inline',
-        JW_CSS_INLINE_BLOCK = 'inline-block',
-        JW_CSS_100PCT = '100%',
         JW_VISIBILITY_TIMEOUT = 250,
 
         HIDDEN = {
-            display: JW_CSS_NONE
+            display: 'none'
         },
         SHOWING = {
-            display: JW_CSS_BLOCK
+            display: 'block'
         },
         NOT_HIDDEN = {
             display: ''
@@ -938,7 +932,7 @@
                 right: vertical ? '' : capRightSkin.width,
                 top: vertical ? capLeftSkin.height : '',
                 bottom: vertical ? capRightSkin.height : '',
-                width: vertical ? JW_CSS_100PCT : '',
+                width: vertical ? '100%' : '',
                 height: vertical ? 'auto' : ''
             });
 
@@ -1294,7 +1288,7 @@
                 _buildImage(cueClass);
                 cueStyle['margin-left'] = cue.width / -2;
             } else {
-                cueStyle.display = JW_CSS_NONE;
+                cueStyle.display = 'none';
             }
             _css(_internalSelector('.jw' + cueClass), cueStyle);
 
@@ -1553,13 +1547,13 @@
             var ieIframe = _iFramed && utils.isMSIE();
             var casting = _castState.active;
             _css.style(_elements.fullscreen, {
-                display: (_audioMode || casting || _hideFullscreen || ieIframe) ? JW_CSS_NONE : ''
+                display: (_audioMode || casting || _hideFullscreen || ieIframe) ? 'none' : ''
             });
 
             // TODO: hide these all by default (global styles at bottom), and update using classes when model changes:
             // jwinstream, jwaudio, jwhas-hd, jwhas-cc (see jwcancast)
             _css.style(_elements.volumeH, {
-                display: _audioMode || _instreamMode ? JW_CSS_BLOCK : JW_CSS_NONE
+                display: _audioMode || _instreamMode ? 'block' : 'none'
             });
             var maxWidth = Math.floor(_settings.maxwidth);
             if (maxWidth) {
@@ -1579,14 +1573,14 @@
 
             if (_volumeOverlay) {
                 _css.style(_volumeOverlay.element(), {
-                    display: !(_audioMode || _instreamMode) ? JW_CSS_BLOCK : JW_CSS_NONE
+                    display: !(_audioMode || _instreamMode) ? 'block' : 'none'
                 });
             }
             _css.style(_elements.hd, {
-                display: !_audioMode && !casting && _hasHD() ? '' : JW_CSS_NONE
+                display: !_audioMode && !casting && _hasHD() ? '' : 'none'
             });
             _css.style(_elements.cc, {
-                display: !_audioMode && _hasCaptions() ? '' : JW_CSS_NONE
+                display: !_audioMode && _hasCaptions() ? '' : 'none'
             });
 
 
@@ -1791,7 +1785,7 @@
             _this.visible = true;
 
             var style = {
-                display: JW_CSS_INLINE_BLOCK
+                display: 'inline-block'
             };
 
             _css.style(_controlbar, style);
@@ -1815,13 +1809,13 @@
         _this.showTemp = function() {
             if (!this.visible) {
                 _controlbar.style.opacity = 0;
-                _controlbar.style.display = JW_CSS_INLINE_BLOCK;
+                _controlbar.style.display = 'inline-block';
             }
         };
 
         _this.hideTemp = function() {
             if (!this.visible) {
-                _controlbar.style.display = JW_CSS_NONE;
+                _controlbar.style.display = 'none';
             }
         };
 
@@ -1880,7 +1874,7 @@
             _clearHideTimeout();
             _hideTimeout = setTimeout(function() {
                 _css.style(_controlbar, {
-                    display: JW_CSS_NONE
+                    display: 'none'
                 });
             }, JW_VISIBILITY_TIMEOUT);
         };
@@ -1906,16 +1900,16 @@
             position: JW_CSS_ABSOLUTE,
             margin: 'auto',
             opacity: 0,
-            display: JW_CSS_NONE
+            display: 'none'
         });
 
         _css(CB_CLASS + ' span', {
-            height: JW_CSS_100PCT
+            height: '100%'
         });
-        utils.dragStyle(CB_CLASS + ' span', JW_CSS_NONE);
+        utils.dragStyle(CB_CLASS + ' span', 'none');
 
         _css(CB_CLASS + ' .jwgroup', {
-            display: JW_CSS_INLINE
+            display: 'inline'
         });
 
         _css(CB_CLASS + ' span, ' + CB_CLASS + ' .jwgroup button,' + CB_CLASS + ' .jwleft', {
@@ -1933,9 +1927,9 @@
         });
 
         _css(CB_CLASS + ' buttoncontainer,' + CB_CLASS + ' button', {
-            display: JW_CSS_INLINE_BLOCK,
-            height: JW_CSS_100PCT,
-            border: JW_CSS_NONE,
+            display: 'inline-block',
+            height: '100%',
+            border: 'none',
             cursor: 'pointer'
         });
 
@@ -1951,14 +1945,14 @@
 
         _css(CB_CLASS + ' .jwtime', {
             position: JW_CSS_ABSOLUTE,
-            height: JW_CSS_100PCT,
-            width: JW_CSS_100PCT,
+            height: '100%',
+            width: '100%',
             left: 0
         });
 
         _css(CB_CLASS + ' .jwthumb', {
             position: JW_CSS_ABSOLUTE,
-            height: JW_CSS_100PCT,
+            height: '100%',
             cursor: 'pointer'
         });
 
@@ -1969,7 +1963,7 @@
 
         _css(CB_CLASS + ' .jwrailgroup', {
             position: JW_CSS_ABSOLUTE,
-            width: JW_CSS_100PCT
+            width: '100%'
         });
 
         _css(CB_CLASS + ' .jwrailgroup span', {
@@ -1977,7 +1971,7 @@
         });
 
         _css(CB_CLASS + ' .jwdivider+.jwdivider', {
-            display: JW_CSS_NONE
+            display: 'none'
         });
 
         _css(CB_CLASS + ' .jwtext', {
@@ -1986,15 +1980,15 @@
         });
 
         _css(CB_CLASS + ' .jwcast', {
-            display: JW_CSS_NONE
+            display: 'none'
         });
 
         _css(CB_CLASS + ' .jwcast.jwcancast', {
-            display: JW_CSS_BLOCK
+            display: 'block'
         });
 
         _css(CB_CLASS + ' .jwalt', {
-            display: JW_CSS_NONE,
+            display: 'none',
             overflow: 'hidden'
         });
 
@@ -2012,7 +2006,7 @@
         });
 
         _css(CB_CLASS + ' .jwvertical *', {
-            display: JW_CSS_BLOCK
+            display: 'block'
         });
 
         // important
@@ -2027,7 +2021,7 @@
 
         _setTransition(CB_CLASS, JW_CSS_SMOOTH_EASE);
         _setTransition(CB_CLASS + ' button', JW_CSS_SMOOTH_EASE);
-        _setTransition(CB_CLASS + ' .jwtoggling', JW_CSS_NONE);
+        _setTransition(CB_CLASS + ' .jwtoggling', 'none');
     })();
 
 })(window, document);

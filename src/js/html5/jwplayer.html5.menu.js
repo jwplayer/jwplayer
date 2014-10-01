@@ -96,6 +96,7 @@
 
         function _clickHandler(index, value) {
             return function() {
+                // Note :: for quality levels, this will set it active before it is actually changed
                 _setActive(index);
                 if (_changeHandler) {
                     _changeHandler(value);
