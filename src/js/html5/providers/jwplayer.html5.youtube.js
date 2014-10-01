@@ -287,7 +287,7 @@
             });
         }
 
-        // Mobile view helpers
+        // Mobile and Safari require a direct click to start playback
         function _requiresVisibility() {
             //return _requiresUserInteraction;
             return (_isMobile || _isSafari);
@@ -296,7 +296,7 @@
         function _readyViewForMobile() {
             if (_requiresVisibility()) {
                 _this.setVisibility(true);
-                // hide controls so use can click on iFrame
+                // hide controls so user can click on iFrame
                 utils.css('#' + _playerId + ' .jwcontrols', {
                     display: 'none'
                 });
@@ -539,10 +539,7 @@
         this.setVisibility = function(state) {
             state = !!state;
             if (state) {
-                // Changing visibility to hidden on Android < 4.2 causes 
-                // the pause event to be fired. This causes audio files to 
-                // become unplayable. Hence the video tag is always kept 
-                // visible on Android devices.
+                // show
                 utils.css.style(_element, {
                     display: 'block'
                 });
@@ -551,6 +548,7 @@
                     opacity: 1
                 });
             } else {
+                // hide
                 if (!_requiresVisibility()) {
                     utils.css.style(_container, {
                         opacity: 0
@@ -630,7 +628,7 @@
     };
 
     function supports(source) {
-        return (source.type === 'youtube' || utils.isYouTube(source.file));
+        return (utils.isYouTube(source.file, source.type));
     }
 
     // Required configs

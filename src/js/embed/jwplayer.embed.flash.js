@@ -236,7 +236,7 @@
     var _flashCanPlay = jwplayer.embed.flashCanPlay = function(file, type) {
         // TODO: Return false if isMobile
 
-        if (utils.isYouTube(file)) { return true; }
+        if (utils.isYouTube(file, type)) { return true; }
         if (utils.isRtmp(file, type)) { return true; }
         if (type === 'hls') { return true; }
 
