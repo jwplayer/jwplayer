@@ -628,7 +628,7 @@
     };
 
     function supports(source) {
-        return (source.type === 'youtube' || utils.isYouTube(source.file));
+        return (utils.isYouTube(source.file, source.type));
     }
 
     // Required configs

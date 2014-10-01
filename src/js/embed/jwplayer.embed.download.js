@@ -49,7 +49,7 @@
                 if (typeIndex >= 0) {
                     file = source.file;
                     image=item.image;
-                } else if (utils.isYouTube(source.file)) {
+                } else if (utils.isYouTube(source.file, type)) {
                     youtube = source.file;
                 }
             }
