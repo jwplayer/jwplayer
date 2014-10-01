@@ -48,16 +48,7 @@ package com.longtailvideo.jwplayer.events {
 		public var levels:Array				= null;
 		// The current level; A value of -1 means the level is automatically selected
 		public var currentQuality:Number	= -1;
-		
-		public static const JWPLAYER_AUDIO_TRACKS:String = "jwplayerAudioTracks";
-		public static const JWPLAYER_AUDIO_TRACK_CHANGED:String = "jwplayerAudioTrackChanged";
-		
-		//An array of quality levels
-		public var tracks:Array				= null;
-		// The current level; A value of -1 means the level is automatically selected
-		public var currentAudioTrack:Number	= -1;
-		
-		
+
 		public function MediaEvent(type:String, properties:Object=null) {
 			super(type);
             if (properties !== null) {
@@ -80,9 +71,7 @@ package com.longtailvideo.jwplayer.events {
                 volume:            this.volume,
                 mute:              this.mute,
                 levels:            this.levels,
-                currentQuality:    this.currentQuality,
-                tracks:            this.tracks,
-                currentAudioTrack: this.currentAudioTrack
+                currentQuality:    this.currentQuality
             });
 		}
 		
