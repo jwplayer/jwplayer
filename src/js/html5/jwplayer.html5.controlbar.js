@@ -368,8 +368,6 @@
                 _elements.cc
             ], HIDDEN);
 
-            _css.style(_elements.cast, utils.canCast() ? NOT_HIDDEN : HIDDEN);
-
             _updateNextPrev();
             _redraw();
         }
@@ -440,10 +438,7 @@
         function _castAvailable(evt) {
             // chromecast button is displayed after receiving this event
             if (_elements.cast) {
-                var canCast = utils.canCast();
-                _css.style(_elements.cast, canCast ? NOT_HIDDEN : HIDDEN);
-
-                if (canCast) {
+                if (utils.canCast()) {
                     utils.addClass(_elements.cast, 'jwcancast');
                 } else {
                     utils.removeClass(_elements.cast, 'jwcancast');
@@ -600,7 +595,7 @@
             var divider = _buildDivider(_dividerElement);
             var button = _createElement('button');
             element.style += ' display:inline-block';
-            element.className = 'jw' + name + ' jwbuttoncontainer';
+            element.className = 'jw' + name;
             if (pos === 'left') {
                 _appendChild(element, span);
                 _appendChild(element, divider);
@@ -776,19 +771,19 @@
         }
 
         function _toggleButton(name, state) {
-            if (!utils.exists(state)) {
+            if (!_.isBoolean(state)) {
                 state = !_toggleStates[name];
             }
 
             if (_elements[name]) {
-                var canCast = _elements[name].className.indexOf('jwcancast');
-
-                _elements[name].className = 'jwtoggling ' +
-                    'jw' + name +
-                    (state ? ' jwtoggle' : '') +
-                    (canCast ? ' jwcancast' : '');
+                if (state) {
+                    utils.addClass(_elements[name], 'jwtoggle');
+                } else {
+                    utils.removeClass(_elements[name], 'jwtoggle');
+                }
 
                 // Use the jwtoggling class to temporarily disable the animation
+                utils.addClass(_elements[name], 'jwtoggling');
                 setTimeout(function() {
                     utils.removeClass(_elements[name], 'jwtoggling');
                 }, 100);
@@ -1641,6 +1636,8 @@
             if (mode !== undefined && mode !== _instreamMode) {
                 _instreamMode = !!mode;
                 // TODO: redraw
+
+                // instreamMode is when we add a second cbar overtop the original
                 _css.style(_elements.cast, _instreamMode ? HIDDEN : NOT_HIDDEN);
             }
             return _instreamMode;
@@ -1926,7 +1923,7 @@
             position: JW_CSS_ABSOLUTE
         });
 
-        _css(CB_CLASS + ' buttoncontainer,' + CB_CLASS + ' button', {
+        _css(CB_CLASS + ' button', {
             display: 'inline-block',
             height: '100%',
             border: 'none',
