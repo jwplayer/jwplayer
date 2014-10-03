@@ -161,21 +161,26 @@ package com.longtailvideo.jwplayer.view.components {
             _subtitlesHandler(event);
         }
 
+        /** Handle changed tracks (MediaPlaylist) **/
         private function _subtitlesHandler(event:TrackEvent):void {
             var i:int;
 
             _track = 0;
-            _streamTrack = -1;
+            _streamTrack = 0;
             _tracks = new Array();
             _renderer.setPosition(0);
             _selectedTrack = 0;
 
             if(event.tracks != null) {
                 for(i = 0; i < event.tracks.length; i++) {
-                    _tracks.push({label: event.tracks[i].name});
+                    _tracks.push({
+                        id: i,
+                        label: event.tracks[i].name
+                    });
                 }
             }
-            _setIndex(event.currentTrack);
+            _setIndex(event.currentTrack+1);
+            _renderer.setCaptions('');
             _redraw();
             _sendEvent(CaptionsEvent.JWPLAYER_CAPTIONS_LIST, _getTracks(), _selectedTrack);
         }

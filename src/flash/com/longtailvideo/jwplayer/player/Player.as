@@ -1,6 +1,7 @@
 ﻿package com.longtailvideo.jwplayer.player {
 	import com.longtailvideo.jwplayer.controller.Controller;
-	import com.longtailvideo.jwplayer.events.GlobalEventDispatcher;
+import com.longtailvideo.jwplayer.events.CaptionsEvent;
+import com.longtailvideo.jwplayer.events.GlobalEventDispatcher;
 	import com.longtailvideo.jwplayer.events.IGlobalEventDispatcher;
 	import com.longtailvideo.jwplayer.events.PlayerEvent;
 	import com.longtailvideo.jwplayer.model.IPlaylist;
@@ -58,11 +59,23 @@
 			_dispatcher = new GlobalEventDispatcher();
 			model = newModel();
 			view = newView(model);
+            view.addEventListener(CaptionsEvent.JWPLAYER_CAPTIONS_CHANGED, _captionsChanged);
+            view.addEventListener(CaptionsEvent.JWPLAYER_CAPTIONS_LIST, _captionsList);
 			controller = newController(model, view);
 			controller.addEventListener(PlayerEvent.JWPLAYER_READY, playerReady, false, -1);
             controller.addEventListener(PlayerEvent.JWPLAYER_SETUP_ERROR, setupError, false, -1);
 			controller.setupPlayer();
 		}
+
+        private function _captionsChanged(evt:CaptionsEvent):void {
+            if (model.media) {
+                model.media.currentSubtitlesTrack = evt.currentTrack-1;
+            }
+        }
+
+        private function _captionsList(evt:CaptionsEvent):void {
+
+        }
 		
 		protected function newModel():Model {
 			return new Model();
