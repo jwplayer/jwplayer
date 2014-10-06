@@ -27,5 +27,21 @@ public class Utils {
         }
         return copy;
     }
+    /*
+    private static function merge(obj1:Object, obj2:Object):Object {
+        var newObj:Object = {};
+
+        for (var key:String in obj1) {
+            newObj[key] = obj1[key];
+        }
+
+        for (key in obj2) {
+            newObj[key] = obj2[key];
+        }
+
+        return newObj;
+    }
+    */
+
 }
 }
