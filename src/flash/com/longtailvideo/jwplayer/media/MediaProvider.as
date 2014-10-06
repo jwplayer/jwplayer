@@ -100,6 +100,7 @@ package com.longtailvideo.jwplayer.media {
 		/** Current quality level **/
 		protected var _currentQuality:Number = -1;
 		protected var _currentAudioTrack:Number = -1;
+        protected var _currentSubtitlesTrack:Number = -1;
 		protected var _width:Number;
 		protected var _height:Number;
 		
@@ -386,10 +387,27 @@ package com.longtailvideo.jwplayer.media {
 		}
 
 
-		/** Audio Tracks (must be overridden by inheritors **/
+		/** Audio Tracks (must be overridden by inheritors) **/
 		public function get audioTracks():Array {
 			return null;
 		}
+
+        /** Current subtitles track getter **/
+        public function get currentSubtitlesTrack():Number {
+            return _currentSubtitlesTrack;
+        }
+
+
+        /** Current subtitles track setter **/
+        public function set currentSubtitlesTrack(subtitlesTrack:Number):void {
+            _currentSubtitlesTrack = subtitlesTrack;
+        }
+
+
+        /** Subtitles Tracks (must be overridden by inheritors) **/
+        public function get subtitlesTracks():Array {
+            return null;
+        }
 
 		/** Current quality level getter **/
 		public function get currentQuality():Number {

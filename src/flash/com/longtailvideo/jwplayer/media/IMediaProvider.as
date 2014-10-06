@@ -86,6 +86,9 @@ package com.longtailvideo.jwplayer.media
 		function get audioTracks():Array;
 		function get currentAudioTrack():Number;
 		function set currentAudioTrack(audioTrack:Number):void;
+        function get subtitlesTracks():Array;
+        function get currentSubtitlesTrack():Number;
+        function set currentSubtitlesTrack(subtitlesTrack:Number):void;
 		function get qualityLevels():Array;
 		function get currentQuality():Number;
 		function set currentQuality(quality:Number):void;

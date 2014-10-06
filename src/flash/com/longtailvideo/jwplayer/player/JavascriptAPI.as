@@ -7,7 +7,8 @@ package com.longtailvideo.jwplayer.player {
 	import com.longtailvideo.jwplayer.events.PlayerEvent;
 	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
 	import com.longtailvideo.jwplayer.events.PlaylistEvent;
-	import com.longtailvideo.jwplayer.events.ViewEvent;
+import com.longtailvideo.jwplayer.events.TrackEvent;
+import com.longtailvideo.jwplayer.events.ViewEvent;
 	import com.longtailvideo.jwplayer.plugins.AbstractPlugin;
 	import com.longtailvideo.jwplayer.plugins.IPlugin;
 	import com.longtailvideo.jwplayer.utils.JavascriptSerialization;
@@ -286,6 +287,8 @@ package com.longtailvideo.jwplayer.player {
 				args = listenerCallbackCaptions(evt as CaptionsEvent);
 			else if (evt is MediaEvent)
 				args = listenerCallbackMedia(evt as MediaEvent);
+            else if (evt is TrackEvent)
+                args = listenerCallbackTrack(evt as TrackEvent);
 			else if (evt is PlayerStateEvent)
 				args = listenerCallbackState(evt as PlayerStateEvent);
 			else if (evt is PlaylistEvent)
@@ -358,9 +361,7 @@ package com.longtailvideo.jwplayer.player {
 			if (evt.offset > 0)					returnObj.offset = evt.offset;
 			if (evt.position >= 0)				returnObj.position = evt.position;
 			if (evt.currentQuality >= 0)		returnObj.currentQuality = evt.currentQuality;
-			if (evt.currentAudioTrack >= 0)		returnObj.currentAudioTrack = evt.currentAudioTrack;
 			if (evt.levels)						returnObj.levels = JavascriptSerialization.stripDots(evt.levels);
-			if (evt.tracks)						returnObj.tracks = JavascriptSerialization.stripDots(evt.tracks);
 			if (evt.type == MediaEvent.JWPLAYER_MEDIA_MUTE) {
 				returnObj.mute = evt.mute;
 			}
@@ -369,6 +370,13 @@ package com.longtailvideo.jwplayer.player {
 			}
 			return returnObj;
 		}
+
+        private static function listenerCallbackTrack(evt:TrackEvent):Object {
+            return {
+                tracks: JavascriptSerialization.stripDots(evt.tracks),
+                currentTrack: evt.currentTrack
+            };
+        }
 
 		private static function listenerCallbackCaptions(evt:CaptionsEvent):Object {
 			var returnObj:Object = {};

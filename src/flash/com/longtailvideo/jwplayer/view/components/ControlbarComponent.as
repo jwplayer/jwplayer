@@ -6,6 +6,7 @@ package com.longtailvideo.jwplayer.view.components {
 	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
 	import com.longtailvideo.jwplayer.events.PlaylistEvent;
 	import com.longtailvideo.jwplayer.events.ViewEvent;
+    import com.longtailvideo.jwplayer.events.TrackEvent;
 	import com.longtailvideo.jwplayer.model.PlaylistItem;
 	import com.longtailvideo.jwplayer.parsers.SRT;
 	import com.longtailvideo.jwplayer.player.IPlayer;
@@ -185,8 +186,8 @@ package com.longtailvideo.jwplayer.view.components {
 			player.addEventListener(MediaEvent.JWPLAYER_MEDIA_LEVEL_CHANGED, levelChanged);
 			player.addEventListener(CaptionsEvent.JWPLAYER_CAPTIONS_LIST, captionsHandler);
 			player.addEventListener(CaptionsEvent.JWPLAYER_CAPTIONS_CHANGED, captionChanged);
-			player.addEventListener(MediaEvent.JWPLAYER_AUDIO_TRACKS, tracksHandler);
-			player.addEventListener(MediaEvent.JWPLAYER_AUDIO_TRACK_CHANGED, trackChanged);
+			player.addEventListener(TrackEvent.JWPLAYER_AUDIO_TRACKS, tracksHandler);
+			player.addEventListener(TrackEvent.JWPLAYER_AUDIO_TRACK_CHANGED, trackChanged);
 			player.addEventListener(CastEvent.JWPLAYER_CAST_AVAILABLE, _castAvailable);
 
 		}
@@ -772,7 +773,7 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 			updateControlbarState();
 		}
-		private function tracksHandler(evt:MediaEvent):void {
+		private function tracksHandler(evt:TrackEvent):void {
 			_tracks = evt.tracks;
 			if (_tracks.length > 1) {
 				_trackOverlay.clearOptions();
@@ -783,10 +784,10 @@ package com.longtailvideo.jwplayer.view.components {
 			trackChanged(evt);
 		}
 		
-		private function trackChanged(evt:MediaEvent):void {
-			_currentTrack = evt.currentAudioTrack;
+		private function trackChanged(evt:TrackEvent):void {
+			_currentTrack = evt.currentTrack;
 			if (_tracks.length > 1) {
-				_trackOverlay.setActive(evt.currentAudioTrack);
+				_trackOverlay.setActive(evt.currentTrack);
 			}
 			updateControlbarState();
 		}
