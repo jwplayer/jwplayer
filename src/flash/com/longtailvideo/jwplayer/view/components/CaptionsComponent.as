@@ -25,9 +25,7 @@ package com.longtailvideo.jwplayer.view.components {
 	
 	/** Plugin for playing closed captions with a video. **/
 	public class CaptionsComponent extends Sprite implements IPlayerComponent {
-		
-		/** Cookie object for storing track prefs. **/
-		//private var _cookie:SharedObject;
+
 		/** Default style properties. **/
 		private var _defaults:Object = {
 			color: '#FFFFFF',
@@ -63,8 +61,6 @@ package com.longtailvideo.jwplayer.view.components {
 		private var _renderer:CaptionRenderer;
 		/** Current player state. **/
 		private var _state:String;
-		/** Map with style properties loaded by DFXP. **/
-		private var _styles:Object;
 		/** Currently active track. **/
 		private var _track:Number = 0;
 		/** Current listing of tracks. **/
@@ -77,8 +73,7 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		/** Constructor; inits the parser, selector and renderer. **/
 		public function CaptionsComponent(player:IPlayer) {
-			
-			//_cookie = SharedObject.getLocal('com.jeroenwijering','/');
+
 			_loader = new URLLoader();
 			_loader.addEventListener(Event.COMPLETE, _loaderHandler);
 			_loader.addEventListener(IOErrorEvent.IO_ERROR, _errorHandler);
@@ -166,7 +161,7 @@ package com.longtailvideo.jwplayer.view.components {
             var i:int;
 
             _track = 0;
-            _streamTrack = 0;
+            _streamTrack = -1;
             _tracks = new Array();
             _renderer.setPosition(0);
             _selectedTrack = 0;
