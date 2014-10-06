@@ -31,13 +31,17 @@ package com.longtailvideo.jwplayer.utils {
 	[Event(name="error", type="flash.events.ErrorEvent")]
 
 	public class AssetLoader extends EventDispatcher {
-		private var _loaderExtensions:Array = ["swf", "png", "gif", "jpg", "jpeg"];
+		private const _loaderExtensions:Array = ["swf", "png", "gif", "jpg", "jpeg"];
+        private var _overrideContext:LoaderContext;
 		private var _loader:Loader;
 		private var _urlLoader:URLLoader;
 		private var _errorState:Boolean;
 		private var LoadedClass:Class;
 		public var loadedObject:*;
 
+        public function AssetLoader(loaderContext:LoaderContext = null) {
+            _overrideContext = loaderContext;
+        }
 
 		public function load(location:String, expectedClass:Class=null, forceLoader:Boolean=false):void {
 			_errorState = false;
@@ -52,8 +56,7 @@ package com.longtailvideo.jwplayer.utils {
 				useURLLoader(location);
 			}
 		}
-		
-		
+
 		public function loadBytes(byteArray:ByteArray):void {
 			loader.loadBytes(byteArray);
 		}
@@ -61,7 +64,7 @@ package com.longtailvideo.jwplayer.utils {
 
 		protected function useLoader(location:String):void {
 			if (RootReference.root.loaderInfo.url.indexOf('http') == 0) {
-				var context:LoaderContext = new LoaderContext(true, ApplicationDomain.currentDomain, SecurityDomain.currentDomain);
+				var context:LoaderContext = _overrideContext || new LoaderContext(true, ApplicationDomain.currentDomain, SecurityDomain.currentDomain);
 				loader.load(new URLRequest(location), context);
 			} else {
 				try {
