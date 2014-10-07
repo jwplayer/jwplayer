@@ -27,22 +27,24 @@ public class TrackEvent extends PlayerEvent {
         return new TrackEvent(this.type, this.tracks, this.currentTrack);
     }
 
-    public override function toString():String {
-        if (!type) {
-            return '';
+    CONFIG::debugging {
+        public override function toString():String {
+            if (!type) {
+                return '';
+            }
+            var retString:String = '[TrackEvent type="' + type + '"';
+            retString += ' tracks="' + tracks + '"';
+            retString += ' currentTrack="' + currentTrack + '"';
+
+            if (message) retString += ' message="' + message + '"';
+
+            retString += ' id="' + id + '"'
+            retString += ' client="' + client + '"'
+            retString += ' version="' + version + '"'
+            retString += "]";
+
+            return retString;
         }
-        var retString:String = '[TrackEvent type="' + type + '"';
-        retString += ' tracks="' + tracks + '"';
-        retString += ' currentTrack="' + currentTrack + '"';
-
-        if (message) retString += ' message="' + message + '"';
-
-        retString += ' id="' + id + '"'
-        retString += ' client="' + client + '"'
-        retString += ' version="' + version + '"'
-        retString += "]";
-
-        return retString;
     }
 }
 }
