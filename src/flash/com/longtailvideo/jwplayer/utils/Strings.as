@@ -131,7 +131,7 @@ package com.longtailvideo.jwplayer.utils {
 		 * 
 		 */
 
-        public static function getAzureFileFormat(path:String):String {
+        private static function getAzureFileFormat(path:String):String {
             if (path.indexOf('(format=m3u8-') > -1) {
                 return 'm3u8';
             } else { 
@@ -143,7 +143,7 @@ package com.longtailvideo.jwplayer.utils {
 
             var azureFormat:String = getAzureFileFormat(filename);
             if (azureFormat) {
-                return azureFormat;
+                return azureFormat.toLowerCase();
             }
 
 			if (filename && filename.lastIndexOf(".") > 0) {
