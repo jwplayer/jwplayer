@@ -1,30 +1,29 @@
 package com.longtailvideo.jwplayer.view.components {
 
+
 import com.longtailvideo.jwplayer.events.CaptionsEvent;
-import com.longtailvideo.jwplayer.events.CaptionsEvent;
-	import com.longtailvideo.jwplayer.events.MediaEvent;
-	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
-	import com.longtailvideo.jwplayer.events.PlaylistEvent;
-    import com.longtailvideo.jwplayer.parsers.DFXP;
-    import com.longtailvideo.jwplayer.events.TrackEvent;
-	import com.longtailvideo.jwplayer.parsers.ISO639;
-	import com.longtailvideo.jwplayer.parsers.SRT;
-	import com.longtailvideo.jwplayer.player.IPlayer;
-	import com.longtailvideo.jwplayer.player.PlayerState;
-	import com.longtailvideo.jwplayer.utils.Configger;
-	import com.longtailvideo.jwplayer.utils.Logger;
-	import com.longtailvideo.jwplayer.view.interfaces.IPlayerComponent;
-	
-	import flash.display.Sprite;
-	import flash.events.ErrorEvent;
-	import flash.events.Event;
-	import flash.events.IOErrorEvent;
-	import flash.events.SecurityErrorEvent;
-	import flash.net.URLLoader;
-	import flash.net.URLRequest;
-	
-	
-	/** Plugin for playing closed captions with a video. **/
+import com.longtailvideo.jwplayer.events.MediaEvent;
+import com.longtailvideo.jwplayer.events.PlayerStateEvent;
+import com.longtailvideo.jwplayer.events.PlaylistEvent;
+import com.longtailvideo.jwplayer.events.TrackEvent;
+import com.longtailvideo.jwplayer.parsers.DFXP;
+import com.longtailvideo.jwplayer.parsers.ISO639;
+import com.longtailvideo.jwplayer.parsers.SRT;
+import com.longtailvideo.jwplayer.player.IPlayer;
+import com.longtailvideo.jwplayer.player.PlayerState;
+import com.longtailvideo.jwplayer.utils.Configger;
+import com.longtailvideo.jwplayer.utils.Logger;
+import com.longtailvideo.jwplayer.view.interfaces.IPlayerComponent;
+
+import flash.display.Sprite;
+import flash.events.ErrorEvent;
+import flash.events.Event;
+import flash.events.IOErrorEvent;
+import flash.events.SecurityErrorEvent;
+import flash.net.URLLoader;
+import flash.net.URLRequest;
+
+/** Plugin for playing closed captions with a video. **/
 	public class CaptionsComponent extends Sprite implements IPlayerComponent {
 
         private static var _order:Array = ['playlist', 'subtitles', 'meta'];
