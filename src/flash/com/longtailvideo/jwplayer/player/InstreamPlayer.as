@@ -6,6 +6,7 @@ package com.longtailvideo.jwplayer.player
 	import com.longtailvideo.jwplayer.events.JWAdEvent;
 	import com.longtailvideo.jwplayer.events.MediaEvent;
 	import com.longtailvideo.jwplayer.events.PlayerEvent;
+	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
 	import com.longtailvideo.jwplayer.events.PlaylistEvent;
 	import com.longtailvideo.jwplayer.events.ViewEvent;
 	import com.longtailvideo.jwplayer.media.MediaProvider;
@@ -56,7 +57,7 @@ package com.longtailvideo.jwplayer.player
 		protected var _provider:MediaProvider;
 		protected var _plugin:IPlugin;
 		protected var _skin:ISkin;
-		
+		protected var _state:String;
 		protected var _instreamDisplay:Sprite;
 		protected var _controlsLayer:Sprite;
 		protected var _mediaLayer:Sprite;
@@ -193,6 +194,16 @@ package com.longtailvideo.jwplayer.player
 			_completeHandler(null);
 		}
 		
+		private function stateHandler(evt:PlayerStateEvent):void {
+			_state = evt.newstate;
+			switch (_state) {
+				case PlayerState.PLAYING:
+					break;
+				case PlayerState.PAUSED:
+					_controls.controlbar.show();
+					break;
+			}
+		}
 		protected function setupProvider(item:PlaylistItem):void {
 			setProvider(item);
 			_provider.initializeMediaProvider(_isConfig);
@@ -203,7 +214,7 @@ package com.longtailvideo.jwplayer.player
 			_provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_BUFFER_FULL, bufferFullHandler);
 			_provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, timeHandler);
 			_provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_COMPLETE, _completeHandler);
-			
+			_provider.addEventListener(PlayerStateEvent.JWPLAYER_PLAYER_STATE, stateHandler);
 			_provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_META,metaHandler);
 		}
 
@@ -463,7 +474,7 @@ package com.longtailvideo.jwplayer.player
 		
 		protected function _setupView():void {
 			if (!_viewSetup) {
-				_view.setupInstream(_instreamDisplay, _controls, _plugin);
+				_view.setupInstream(this,_instreamDisplay, _controls, _plugin);
 				_viewSetup = true;
 			}
 		}
@@ -532,6 +543,7 @@ package com.longtailvideo.jwplayer.player
             }
 			if (_provider) {
 				_provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_ERROR, _errorHandler);
+				_provider.removeEventListener(PlayerStateEvent.JWPLAYER_PLAYER_STATE, stateHandler);
 				_provider.removeGlobalListener(eventForwarder);
 				_provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_BUFFER_FULL, bufferFullHandler);
 				_provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, timeHandler);
