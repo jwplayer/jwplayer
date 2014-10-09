@@ -200,7 +200,9 @@ package com.longtailvideo.jwplayer.player
 				case PlayerState.PLAYING:
 					break;
 				case PlayerState.PAUSED:
-					_controls.controlbar.show();
+					if (getControls()) {
+						_controls.controlbar.show();
+					}
 					break;
 			}
 		}
