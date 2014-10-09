@@ -181,14 +181,6 @@
                     } else {
                         _this.jwInstreamPause();
                     }
-                } else {
-                    if (_utils.isAndroid()) {
-                        // Android chrome will pause the video even w/out controls,
-                        //   so we pause it beforehand to ensure consistent state.
-                        if (_adModel.state !== _states.PAUSED) {
-                            _this.jwInstreamPause();
-                        }
-                    }
                 }
             });
 
@@ -319,7 +311,9 @@
          *****************************/
 
         function _setupProvider() {
-            _provider = new jwplayer.html5.VideoProvider(_model.id);
+            var Provider = jwplayer.html5.chooseProvider({});
+            
+            _provider = new Provider(_model.id);
 
             _provider.addGlobalListener(_forward);
             _provider.addEventListener(_events.JWPLAYER_MEDIA_META, _metaHandler);
