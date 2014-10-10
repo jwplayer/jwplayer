@@ -24,6 +24,11 @@
             videoTag.removeEventListener(evt, evtCallback, false);
         });
     }
+
+    function _round(number) {
+        return Math.floor(number*10) / 10;
+    }
+
     function VideoProvider(_playerId) {
 
         // Current media state
@@ -164,10 +169,6 @@
                 //                  _complete();
                 //              }
             }
-        }
-
-        function _round(number) {
-            return Math.floor(number*10) / 10;
         }
 
         function sendMetaEvent() {
@@ -385,6 +386,8 @@
 
 
         this.destroy = function() {
+             _removeListeners(_mediaEvents, _videotag);
+
             this.remove();
         };
 
@@ -619,8 +622,6 @@
             }
 
             clearInterval(_bufferInterval);
-
-            _removeListeners(_mediaEvents, _videotag);
 
             _currentQuality = -1;
             // remove
