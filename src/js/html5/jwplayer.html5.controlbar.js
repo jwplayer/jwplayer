@@ -1486,6 +1486,7 @@
                     _clearHdTapTimeout();
                     overlay.hide();
                 } else {
+                    // TODO:: _.throttle
                     _hdTapTimer = setTimeout(function() {
                         overlay.hide();
                         _hdTapTimer = undefined;
