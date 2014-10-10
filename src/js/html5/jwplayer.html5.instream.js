@@ -181,14 +181,6 @@
                     } else {
                         _this.jwInstreamPause();
                     }
-                } else {
-                    if (_utils.isAndroid()) {
-                        // Android chrome will pause the video even w/out controls,
-                        //   so we pause it beforehand to ensure consistent state.
-                        if (_adModel.state !== _states.PAUSED) {
-                            _this.jwInstreamPause();
-                        }
-                    }
                 }
             });
 
@@ -283,6 +275,7 @@
             _provider.play(true);
             _model.state = _states.PLAYING;
             _instreamDisplay.show();
+            
             // if (_api.jwGetControls()) { _disp.show();  }
         };
 
@@ -293,6 +286,7 @@
             _model.state = _states.PAUSED;
             if (_api.jwGetControls()) {
                 _instreamDisplay.show();
+                _cbar.show();
             }
         };
 
@@ -309,7 +303,7 @@
 
         _this.jwInstreamState = function() {
             //if (!_item) return;
-            return _model.state;
+            return _adModel.state;
         };
 
         /*****************************
@@ -317,13 +311,16 @@
          *****************************/
 
         function _setupProvider() {
-            _provider = new jwplayer.html5.VideoProvider(_model.id);
+            var Provider = jwplayer.html5.chooseProvider({});
+            
+            _provider = new Provider(_model.id);
 
             _provider.addGlobalListener(_forward);
             _provider.addEventListener(_events.JWPLAYER_MEDIA_META, _metaHandler);
             _provider.addEventListener(_events.JWPLAYER_MEDIA_COMPLETE, _completeHandler);
             _provider.addEventListener(_events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
             _provider.addEventListener(_events.JWPLAYER_MEDIA_ERROR, errorHandler);
+            _provider.addEventListener(_events.JWPLAYER_PLAYER_STATE, stateHandler);
             _provider.addEventListener(_events.JWPLAYER_MEDIA_TIME, function(evt) {
                 if (_skipButton) {
                     _skipButton.updateSkipTime(evt.position, evt.duration);
@@ -332,6 +329,22 @@
             _provider.attachMedia();
             _provider.mute(_model.mute);
             _provider.volume(_model.volume);
+        }
+
+        function stateHandler(evt) {
+            if (evt.newstate === _adModel.state) {
+                return;
+            }
+            _adModel.state = evt.newstate;
+            switch(_adModel.state) {
+                case _states.PLAYING:
+                    _this.jwInstreamPlay();
+                    break;
+                case _states.PAUSED:
+                    _this.jwInstreamPause();
+                    break;
+                
+            }
         }
 
         function _skipAd(evt) {
