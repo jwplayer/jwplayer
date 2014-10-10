@@ -505,12 +505,6 @@ import flash.utils.setTimeout;
 		public function seek(pos:Number):Boolean {
 			if (!locking && pos !== -1 && _model.media) {
 				switch (_model.media.state) {
-					case PlayerState.PAUSED:
-						play();
-						/* fallthrough */
-					case PlayerState.PLAYING:
-						_model.seek(pos);
-						return true;
 					case PlayerState.IDLE:
 						_model.playlist.currentItem.start = pos;
 						_idleSeek = pos;
@@ -518,7 +512,15 @@ import flash.utils.setTimeout;
 							play();
 						}
 						return true;
+                    case PlayerState.PAUSED:
+                        play();
+                    /* fallthrough */
+                    case PlayerState.PLAYING:
 					case PlayerState.BUFFERING:
+                        if (_model.media.canSeek) {
+                            _model.seek(pos);
+                            return true;
+                        }
 						_queuedSeek = pos;
 				}
 			}

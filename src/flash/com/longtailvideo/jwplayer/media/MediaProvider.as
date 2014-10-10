@@ -239,6 +239,12 @@ package com.longtailvideo.jwplayer.media {
 		}
 		
 		
+        /** Determine if seek can be called or should be delayed **/
+        public function get canSeek():Boolean {
+            return state !== PlayerState.BUFFERING;
+        }
+
+		
 		/**
 		 * The current volume of the playing media
 		 * <p>Range: 0-100</p>
