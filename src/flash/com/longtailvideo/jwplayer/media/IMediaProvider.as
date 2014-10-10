@@ -92,5 +92,6 @@ package com.longtailvideo.jwplayer.media
 		function get qualityLevels():Array;
 		function get currentQuality():Number;
 		function set currentQuality(quality:Number):void;
+        function get canSeek():Boolean;
 	}
 }
