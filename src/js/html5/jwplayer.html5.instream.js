@@ -66,7 +66,7 @@
             _adModel = new html5.model({}, _provider);
             _adModel.setVolume(_model.volume);
             _adModel.setMute(_model.mute);
-
+            _adModel.addEventListener('fullscreenchange',_nativeFullscreenHandler);
             _olditem = _model.playlist[_model.item];
 
             // Keep track of the original player state
@@ -121,6 +121,9 @@
 
             _this.jwInstreamSetText(_defaultOptions.loadingmessage);
         };
+        
+        
+        
 
         /** Load an instream item and initialize playback **/
         _this.load = function(item, options) {
@@ -356,8 +359,13 @@
             _sendEvent(evt.type, evt);
         }
 
+        //forward native fullscreen back to the regular player to forward the event.
+        function _nativeFullscreenHandler(evt) {
+            _model.sendEvent(evt.type, evt);
+        }
+
         function _fullscreenHandler(evt) {
-            //_forward(evt);
+
             _resize();
             if (!evt.fullscreen && _utils.isIPad()) {
                 if (_adModel.state === _states.PAUSED) {
