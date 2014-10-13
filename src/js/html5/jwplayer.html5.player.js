@@ -112,9 +112,7 @@
             _this.jwSeek = _controller.seek;
             _this.jwSetVolume = _controller.setVolume;
             _this.jwSetMute = _controller.setMute;
-            _this.jwLoad = function(item) {
-                _controller.load(item);
-            };
+            _this.jwLoad = _controller.load;
             _this.jwPlaylistNext = _controller.next;
             _this.jwPlaylistPrev = _controller.prev;
             _this.jwPlaylistItem = _controller.item;
@@ -148,6 +146,7 @@
             _this.jwGetStretching = _statevarFactory('stretching');
             _this.jwGetPlaylist = _normalizePlaylist;
             _this.jwGetControls = _statevarFactory('controls');
+
             /** InStream API **/
             _this.jwDetachMedia = _controller.detachMedia;
             _this.jwAttachMedia = _controller.attachMedia;
