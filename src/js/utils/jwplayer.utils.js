@@ -185,6 +185,10 @@
         return utils.isIOS() || utils.isAndroid();
     };
 
+    utils.isIframe = function() {
+        return (window.frameElement && (window.frameElement.nodeName === 'IFRAME'));
+    };
+
     /** Save a setting **/
     utils.saveCookie = function(name, value) {
         document.cookie = 'jwplayer.' + name + '=' + value + '; path=/';
