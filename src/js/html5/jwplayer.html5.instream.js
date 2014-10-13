@@ -177,7 +177,7 @@
                 // toggle playback after click event
 
                 if (_adModel.state === _states.PAUSED) {
-                    if (!evt.hasControls) {
+                    if (evt.hasControls) {
                         _this.jwInstreamPlay();
                     }
                 } else {
