@@ -175,12 +175,13 @@
                 _sendEvent(_events.JWPLAYER_INSTREAM_CLICK, evt);
 
                 // toggle playback after click event
-                if (evt.hasControls) {
-                    if (_adModel.state === _states.PAUSED) {
+
+                if (_adModel.state === _states.PAUSED) {
+                    if (!evt.hasControls) {
                         _this.jwInstreamPlay();
-                    } else {
-                        _this.jwInstreamPause();
                     }
+                } else {
+                    _this.jwInstreamPause();
                 }
             });
 
