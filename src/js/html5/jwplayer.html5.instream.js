@@ -4,9 +4,10 @@
  * @author pablo
  * @version 6.0
  */
-(function(jwplayer, undefined) {
+(function(jwplayer) {
     var html5 = jwplayer.html5,
         _utils = jwplayer.utils,
+        _ = jwplayer._,
         _events = jwplayer.events,
         _states = _events.state,
         _playlist = jwplayer.playlist;
@@ -23,7 +24,7 @@
         };
 
         var _item,
-            _array,
+            _array, // the copied in playlist
             _arrayIndex = 0,
             _optionList,
             _options = { // these are for before load
@@ -139,7 +140,7 @@
             var bottom = 10 + _utils.bounds(instreamLayer).bottom - _utils.bounds(_cbar.element()).top;
 
             // Copy the playlist item passed in and make sure it's formatted as a proper playlist item
-            if (_utils.typeOf(item) === 'array') {
+            if (_.isArray(item)) {
                 if (options) {
                     _optionList = options;
                     options = options[_arrayIndex];
@@ -397,6 +398,9 @@
                 }, 0);
             } else {
                 _completeTimeoutId = setTimeout(function() {
+                    // this is called on every ad completion of the final video in a playlist
+                    //   1) vast.js (to trigger ad_complete event)
+                    //   2) display.js (to set replay icon and image)
                     _sendEvent(_events.JWPLAYER_PLAYLIST_COMPLETE, {}, true);
                     _api.jwInstreamDestroy(true, _this);
                 }, 0);

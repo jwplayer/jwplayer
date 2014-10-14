@@ -923,9 +923,9 @@
             if (_controlbar && !_audioMode && !_model.getVideo().isAudioFile()) {
                 if (_instreamMode) {
                     _instreamControlbar.hide();
-                } else {
-                    _controlbar.hide();
                 }
+
+                _controlbar.hide();
             }
         }
 
@@ -1193,27 +1193,32 @@
         };
 
         this.setControls = function(state) {
-            var oldstate = _model.controls,
-                newstate = !!state;
-            _model.controls = newstate;
-            if (newstate !== oldstate) {
 
-                if (_instreamMode) {
-                    _hideInstream(!state);
-                } else {
-                    if (newstate) {
-                        _stateHandler({
-                            newstate: _api.jwGetState()
-                        });
-                    } else {
-                        _hideControls();
-                        _hideDisplay();
-                    }
-                }
-                _this.sendEvent(events.JWPLAYER_CONTROLS, {
-                    controls: newstate
-                });
+            var newstate = !!state;
+            if (newstate === _model.controls) {
+                return;
             }
+
+            _model.controls = newstate;
+
+            if (_instreamMode) {
+                _hideInstream(!state);
+            } else {
+                if (newstate) {
+                    _stateHandler({
+                        newstate: _api.jwGetState()
+                    });
+                }
+            }
+
+            if (!newstate) {
+                _hideControls();
+                _hideDisplay();
+            }
+
+            _this.sendEvent(events.JWPLAYER_CONTROLS, {
+                controls: newstate
+            });
         };
 
         this.forceControls = function(state) {
