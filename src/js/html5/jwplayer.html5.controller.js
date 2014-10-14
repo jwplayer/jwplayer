@@ -163,7 +163,6 @@
                 _this.sendEvent(events.JWPLAYER_ERROR, err);
             }
             return false;
-
         }
 
         function _pause(state) {
@@ -305,8 +304,10 @@
         }
 
         function _attachMedia(seekable) {
+            // Called after instream ends
             try {
                 _model.getVideo().attachMedia(seekable);
+
             } catch (err) {
                 utils.log('Error calling detachMedia', err);
                 return;
