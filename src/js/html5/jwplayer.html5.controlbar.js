@@ -1865,6 +1865,10 @@
             if (!_this.visible) {
                 return;
             }
+            // Never hide for mobile ads
+            if (_isMobile && _instreamMode) {
+                return;
+            }
             _this.visible = false;
             _css.style(_controlbar, {
                 opacity: 0
