@@ -36,11 +36,11 @@
             _oldpos,
             _oldstate,
             _olditem,
+            _adModel,
             _provider,
             _cbar,
             _instreamDisplay,
             _instreamContainer,
-            _adModel,
             _completeTimeoutId = -1,
             _this = _utils.extend(this, new _events.eventdispatcher());
 
@@ -66,6 +66,7 @@
             _adModel = new html5.model({}, _provider);
             _adModel.setVolume(_model.volume);
             _adModel.setMute(_model.mute);
+            _adModel.addEventListener('fullscreenchange',_nativeFullscreenHandler);
             _olditem = _model.playlist[_model.item];
 
             // Keep track of the original player state
@@ -120,9 +121,6 @@
 
             _this.jwInstreamSetText(_defaultOptions.loadingmessage);
         };
-        
-        
-        
 
         /** Load an instream item and initialize playback **/
         _this.load = function(item, options) {
@@ -177,12 +175,13 @@
                 _sendEvent(_events.JWPLAYER_INSTREAM_CLICK, evt);
 
                 // toggle playback after click event
-                if (evt.hasControls) {
-                    if (_adModel.state === _states.PAUSED) {
+
+                if (_adModel.state === _states.PAUSED) {
+                    if (evt.hasControls) {
                         _this.jwInstreamPlay();
-                    } else {
-                        _this.jwInstreamPause();
                     }
+                } else {
+                    _this.jwInstreamPause();
                 }
             });
 
@@ -194,6 +193,7 @@
 
             // Load the instream item
             _provider.load(_adModel.playlist[0]);
+            //_fakemodel.getVideo().addEventListener('webkitendfullscreen', _fullscreenChangeHandler, FALSE);
         };
 
         function errorHandler(evt) {
@@ -209,6 +209,7 @@
             if (!_adModel) {
                 return;
             }
+            _adModel.removeEventListener('fullscreenchange',_nativeFullscreenHandler);
             clearTimeout(_completeTimeoutId);
             _completeTimeoutId = -1;
             _provider.detachMedia();
@@ -317,11 +318,11 @@
             _provider = new Provider(_model.id);
 
             _provider.addGlobalListener(_forward);
-            _provider.addEventListener(_events.JWPLAYER_FULLSCREEN,_nativeFullscreenHandler);
             _provider.addEventListener(_events.JWPLAYER_MEDIA_META, _metaHandler);
             _provider.addEventListener(_events.JWPLAYER_MEDIA_COMPLETE, _completeHandler);
             _provider.addEventListener(_events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
             _provider.addEventListener(_events.JWPLAYER_MEDIA_ERROR, errorHandler);
+
             _provider.addEventListener(_events.JWPLAYER_PLAYER_STATE, stateHandler);
             _provider.addEventListener(_events.JWPLAYER_MEDIA_TIME, function(evt) {
                 if (_skipButton) {
@@ -357,13 +358,13 @@
         function _forward(evt) {
             _sendEvent(evt.type, evt);
         }
-
-        //forward native fullscreen back to the regular player to forward the event.
+        
         function _nativeFullscreenHandler(evt) {
-            _model.sendEvent(_events.JWPLAYER_FULLSCREEN);
+            _model.sendEvent(evt.type,evt);
+            _sendEvent(_events.JWPLAYER_FULLSCREEN, {fullscreen:evt.jwstate});
         }
-
         function _fullscreenHandler(evt) {
+            //_forward(evt);
             if (!_adModel) {
                 return;
             }

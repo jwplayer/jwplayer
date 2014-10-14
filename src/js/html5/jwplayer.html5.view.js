@@ -664,8 +664,11 @@
                     _toggleDOMFullscreen(_playerElement, state);
                 } else {
                     // else use native fullscreen
-                    _instreamMode ? _instreamModel.getVideo().setFullScreen(state) :
-                        _model.getVideo().setFullScreen(state);
+                    if (_instreamMode) {
+                       _instreamModel.getVideo().setFullScreen(state); 
+                    } else {
+                       _model.getVideo().setFullScreen(state);
+                    }
                 }
             }
         };
@@ -852,7 +855,8 @@
                 return !!(fsElement && fsElement.id === _api.id);
             }
             // if player element view fullscreen not available, return video fullscreen state
-            return _model.getVideo().getFullScreen();
+            return  _instreamMode ? _instreamModel.getVideo().getFullScreen() :
+                        _model.getVideo().getFullScreen();
         }
 
 
