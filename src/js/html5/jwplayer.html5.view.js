@@ -1268,22 +1268,21 @@
             };
             
             includeCB = includeCB || !utils.exists(includeCB);
-            if (!_model.controls) {
-                return bounds;
-            }
+
+
             _controlbar.showTemp();
             _dock.showTemp();
             //_responsiveListener();
             var dispBounds = _bounds(_container),
                 dispOffset = dispBounds.top,
                 cbBounds = _instreamMode ?
-                    _bounds(document.getElementById(_api.id + '_instream_controlbar')) :
-                    _bounds(_controlbar.element()),
+                _bounds(document.getElementById(_api.id + '_instream_controlbar')) :
+                _bounds(_controlbar.element()),
                 dockButtons = _instreamMode ? false : (_dock.numButtons() > 0),
                 logoTop = (_logo.position().indexOf('top') === 0),
                 dockBounds,
                 logoBounds = _bounds(_logo.element());
-            if (dockButtons) {
+            if (dockButtons && _model.controls) {
                 dockBounds = _bounds(_dock.element());
                 bounds.y = Math.max(0, dockBounds.bottom - dispOffset);
             }
@@ -1291,7 +1290,7 @@
                 bounds.y = Math.max(bounds.y, logoBounds.bottom - dispOffset);
             }
             bounds.width = dispBounds.width;
-            if (cbBounds.height && includeCB) {
+            if (cbBounds.height && includeCB && _model.controls) {
                 bounds.height = (logoTop ? cbBounds.top : logoBounds.top) - dispOffset - bounds.y;
             } else {
                 bounds.height = dispBounds.height - bounds.y;

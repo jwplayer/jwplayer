@@ -963,17 +963,15 @@ package com.longtailvideo.jwplayer.view {
 			var bounds:Rectangle = new Rectangle();
 			var logo:LogoComponent = _components.logo as LogoComponent;
 			var dock:DockComponent = _components.dock as DockComponent;
-			var dockShowing:Boolean = (dock.numButtons > 0);
+			var dockShowing:Boolean = (dock.numButtons > 0) && _model.config.controls;
 			var cb:ControlbarComponent = _components.controlbar as ControlbarComponent;
 			var logoTop:Boolean = (logo.position.indexOf("top") == 0);
 			var logoShowing:Boolean = (logo.height > 0);
+			bounds.x = 0;
+			bounds.y = Math.round(Math.max(dockShowing ? dock.getBounds(_componentsLayer).bottom : 0, (logoTop && logoShowing) ? logo.getBounds(_componentsLayer).bottom : 0));
+			bounds.width = Math.round(_components.display.width);
+			bounds.height = Math.round((logoTop ? (includeCB && _model.config.controls ? cb.getBounds(_componentsLayer).top : _componentsLayer.height) : (logoShowing ? logo.getBounds(_componentsLayer).top : 0) ) - bounds.y);
 			
-			if (_model.config.controls) {
-				bounds.x = 0;
-				bounds.y = Math.round(Math.max(dockShowing ? dock.getBounds(_componentsLayer).bottom : 0, (logoTop && logoShowing) ? logo.getBounds(_componentsLayer).bottom : 0));
-				bounds.width = Math.round(_components.display.width);
-				bounds.height = Math.round((logoTop ? (includeCB ? cb.getBounds(_componentsLayer).top : _componentsLayer.height) : (logoShowing ? logo.getBounds(_componentsLayer).top : 0) ) - bounds.y);
-			}
 			
 			return bounds;
 		}
