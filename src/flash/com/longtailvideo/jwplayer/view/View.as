@@ -959,7 +959,7 @@ package com.longtailvideo.jwplayer.view {
 			}
 		}
 		
-		public function getSafeRegion():Rectangle {
+		public function getSafeRegion(includeCB:Boolean = true):Rectangle {
 			var bounds:Rectangle = new Rectangle();
 			var logo:LogoComponent = _components.logo as LogoComponent;
 			var dock:DockComponent = _components.dock as DockComponent;
@@ -972,7 +972,7 @@ package com.longtailvideo.jwplayer.view {
 				bounds.x = 0;
 				bounds.y = Math.round(Math.max(dockShowing ? dock.getBounds(_componentsLayer).bottom : 0, (logoTop && logoShowing) ? logo.getBounds(_componentsLayer).bottom : 0));
 				bounds.width = Math.round(_components.display.width);
-				bounds.height = Math.round((logoTop ? cb.getBounds(_componentsLayer).top : (logoShowing ? logo.getBounds(_componentsLayer).top : 0) ) - bounds.y);
+				bounds.height = Math.round((logoTop ? (includeCB ? cb.getBounds(_componentsLayer).top : _componentsLayer.height) : (logoShowing ? logo.getBounds(_componentsLayer).top : 0) ) - bounds.y);
 			}
 			
 			return bounds;

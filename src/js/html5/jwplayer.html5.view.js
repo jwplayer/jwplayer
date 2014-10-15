@@ -1259,13 +1259,15 @@
             _display.releaseState(_api.jwGetState());
         };
 
-        this.getSafeRegion = function() {
+        this.getSafeRegion = function(includeCB) {
             var bounds = {
                 x: 0,
                 y: 0,
                 width: 0,
                 height: 0
             };
+            
+            includeCB = includeCB || !utils.exists(includeCB);
             if (!_model.controls) {
                 return bounds;
             }
@@ -1289,7 +1291,7 @@
                 bounds.y = Math.max(bounds.y, logoBounds.bottom - dispOffset);
             }
             bounds.width = dispBounds.width;
-            if (cbBounds.height) {
+            if (cbBounds.height && includeCB) {
                 bounds.height = (logoTop ? cbBounds.top : logoBounds.top) - dispOffset - bounds.y;
             } else {
                 bounds.height = dispBounds.height - bounds.y;

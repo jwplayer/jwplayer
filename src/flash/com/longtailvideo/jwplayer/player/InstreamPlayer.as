@@ -624,8 +624,8 @@ package com.longtailvideo.jwplayer.player
 			}
 		}
 		
-		public function getSafeRegion():Rectangle {
-			return _view.getSafeRegion();
+		public function getSafeRegion(includeCB:Boolean = true):Rectangle {
+			return _view.getSafeRegion(includeCB);
 		}
 		
 		public function get edition():String {
