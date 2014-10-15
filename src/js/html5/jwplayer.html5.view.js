@@ -891,6 +891,9 @@
         function _toggleFullscreen(fullscreenState) {
             // update model
             _model.setFullscreen(fullscreenState);
+            if (_instreamModel) {
+                _instreamModel.setFullscreen(fullscreenState);
+            }
 
             if (fullscreenState) {
                 // Browsers seem to need an extra second to figure out how large they are in fullscreen...
