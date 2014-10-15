@@ -82,7 +82,7 @@ package com.longtailvideo.jwplayer.player {
 		function getCurrentCaptions():Number;
 		function setCurrentCaptions(index:Number):void;
 		function getControls():Boolean;
-		function getSafeRegion():Rectangle;
+		function getSafeRegion(includeCB:Boolean = true):Rectangle;
 		function setControls(state:Boolean):void;
 		function checkBeforePlay():Boolean;
 		function checkBeforeComplete():Boolean;
