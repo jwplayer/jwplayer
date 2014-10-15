@@ -65,6 +65,7 @@
             // Initialize the instream player's model copied from main player's model
             _adModel = new html5.model({}, _provider);
             _adModel.setVolume(_model.volume);
+            //_adModel.setFullscreen(_model.fullscreen); // doesn't seem to work
             _adModel.setMute(_model.mute);
             _adModel.addEventListener('fullscreenchange',_nativeFullscreenHandler);
             _olditem = _model.playlist[_model.item];
@@ -332,6 +333,7 @@
             _provider.attachMedia();
             _provider.mute(_model.mute);
             _provider.volume(_model.volume);
+            // _provider.setFullScreen(_model.fullscreen); // doesn't seem to work
         }
 
         function stateHandler(evt) {
