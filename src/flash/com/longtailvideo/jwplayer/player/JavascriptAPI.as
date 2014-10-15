@@ -7,8 +7,8 @@ package com.longtailvideo.jwplayer.player {
 	import com.longtailvideo.jwplayer.events.PlayerEvent;
 	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
 	import com.longtailvideo.jwplayer.events.PlaylistEvent;
-import com.longtailvideo.jwplayer.events.TrackEvent;
-import com.longtailvideo.jwplayer.events.ViewEvent;
+	import com.longtailvideo.jwplayer.events.TrackEvent;
+	import com.longtailvideo.jwplayer.events.ViewEvent;
 	import com.longtailvideo.jwplayer.plugins.AbstractPlugin;
 	import com.longtailvideo.jwplayer.plugins.IPlugin;
 	import com.longtailvideo.jwplayer.utils.JavascriptSerialization;
@@ -675,8 +675,8 @@ import com.longtailvideo.jwplayer.events.ViewEvent;
 			return _player.getControls();
 		}
 
-		private static function js_getSafeRegion():Object {
-			return JavascriptSerialization.rectangleToObject(_player.getSafeRegion());
+		private static function js_getSafeRegion(includeCB:Boolean = true):Object {
+			return JavascriptSerialization.rectangleToObject(_player.getSafeRegion(includeCB));
 		}
 		
 		private static function js_setControls(state:Boolean):void {

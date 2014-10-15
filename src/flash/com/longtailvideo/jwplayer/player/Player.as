@@ -1,7 +1,7 @@
 ﻿package com.longtailvideo.jwplayer.player {
 	import com.longtailvideo.jwplayer.controller.Controller;
-import com.longtailvideo.jwplayer.events.CaptionsEvent;
-import com.longtailvideo.jwplayer.events.GlobalEventDispatcher;
+	import com.longtailvideo.jwplayer.events.CaptionsEvent;
+	import com.longtailvideo.jwplayer.events.GlobalEventDispatcher;
 	import com.longtailvideo.jwplayer.events.IGlobalEventDispatcher;
 	import com.longtailvideo.jwplayer.events.PlayerEvent;
 	import com.longtailvideo.jwplayer.model.IPlaylist;
@@ -344,8 +344,8 @@ import com.longtailvideo.jwplayer.events.GlobalEventDispatcher;
 			return model.config.controls;
 		}
 
-		public function getSafeRegion():Rectangle {
-			return view.getSafeRegion();
+		public function getSafeRegion(includeCB:Boolean = true):Rectangle {
+			return view.getSafeRegion(includeCB);
 		}
 
 		public function setControls(state:Boolean):void {
