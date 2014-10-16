@@ -203,6 +203,7 @@ package com.longtailvideo.jwplayer.view.components {
 			if (!_instreamMode) {
 				_liveMode = false;
 				if (_timeSlider) {
+					_timeSlider.removeCues();
                     setPositionAndDuration(0,0);
 					_timeSlider.reset();
 					var item:PlaylistItem = player.playlist.currentItem;
@@ -218,9 +219,6 @@ package com.longtailvideo.jwplayer.view.components {
 							}
 						}
 					}
-				}
-				if (_timeSlider) {
-					_timeSlider.removeCues();
 				}
 				updateControlbarState();
 			}
