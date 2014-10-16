@@ -219,7 +219,9 @@ package com.longtailvideo.jwplayer.view.components {
 						}
 					}
 				}
-
+				if (_timeSlider) {
+					_timeSlider.removeCues();
+				}
 				updateControlbarState();
 			}
 		}
