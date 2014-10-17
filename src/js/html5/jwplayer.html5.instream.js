@@ -37,11 +37,11 @@
             _oldpos,
             _oldstate,
             _olditem,
+            _adModel,
             _provider,
             _cbar,
             _instreamDisplay,
             _instreamContainer,
-            _adModel,
             _completeTimeoutId = -1,
             _this = _utils.extend(this, new _events.eventdispatcher());
 
@@ -66,8 +66,9 @@
             // Initialize the instream player's model copied from main player's model
             _adModel = new html5.model({}, _provider);
             _adModel.setVolume(_model.volume);
+            //_adModel.setFullscreen(_model.fullscreen); // doesn't seem to work
             _adModel.setMute(_model.mute);
-
+            _adModel.addEventListener('fullscreenchange',_nativeFullscreenHandler);
             _olditem = _model.playlist[_model.item];
 
             // Keep track of the original player state
@@ -210,6 +211,7 @@
             if (!_adModel) {
                 return;
             }
+            _adModel.removeEventListener('fullscreenchange',_nativeFullscreenHandler);
             clearTimeout(_completeTimeoutId);
             _completeTimeoutId = -1;
             _provider.detachMedia();
@@ -322,6 +324,7 @@
             _provider.addEventListener(_events.JWPLAYER_MEDIA_COMPLETE, _completeHandler);
             _provider.addEventListener(_events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
             _provider.addEventListener(_events.JWPLAYER_MEDIA_ERROR, errorHandler);
+
             _provider.addEventListener(_events.JWPLAYER_PLAYER_STATE, stateHandler);
             _provider.addEventListener(_events.JWPLAYER_MEDIA_TIME, function(evt) {
                 if (_skipButton) {
@@ -331,6 +334,7 @@
             _provider.attachMedia();
             _provider.mute(_model.mute);
             _provider.volume(_model.volume);
+            // _provider.setFullScreen(_model.fullscreen); // doesn't seem to work
         }
 
         function stateHandler(evt) {
@@ -357,9 +361,16 @@
         function _forward(evt) {
             _sendEvent(evt.type, evt);
         }
-
+        
+        function _nativeFullscreenHandler(evt) {
+            _model.sendEvent(evt.type,evt);
+            _sendEvent(_events.JWPLAYER_FULLSCREEN, {fullscreen:evt.jwstate});
+        }
         function _fullscreenHandler(evt) {
             //_forward(evt);
+            if (!_adModel) {
+                return;
+            }
             _resize();
             if (!evt.fullscreen && _utils.isIPad()) {
                 if (_adModel.state === _states.PAUSED) {

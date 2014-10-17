@@ -23,6 +23,7 @@
 
         setVisibility : noop,
         setFullscreen : returnFalse,
+        getFullscreen : noop,
         setContainer : returnFalse,
         getContainer : noop,
 

@@ -664,7 +664,10 @@
                     _toggleDOMFullscreen(_playerElement, state);
                 } else {
                     // else use native fullscreen
-                    _model.getVideo().setFullScreen(state);
+                    if (_instreamModel) {
+                       _instreamModel.getVideo().setFullScreen(state); 
+                    }
+                       _model.getVideo().setFullScreen(state);
                 }
             }
         };
@@ -851,7 +854,8 @@
                 return !!(fsElement && fsElement.id === _api.id);
             }
             // if player element view fullscreen not available, return video fullscreen state
-            return _model.getVideo().getFullScreen();
+            return  _instreamMode ? _instreamModel.getVideo().getFullScreen() :
+                        _model.getVideo().getFullScreen();
         }
 
 
@@ -891,6 +895,9 @@
         function _toggleFullscreen(fullscreenState) {
             // update model
             _model.setFullscreen(fullscreenState);
+            if (_instreamModel) {
+                _instreamModel.setFullscreen(fullscreenState);
+            }
 
             if (fullscreenState) {
                 // Browsers seem to need an extra second to figure out how large they are in fullscreen...
