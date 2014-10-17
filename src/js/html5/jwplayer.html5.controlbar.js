@@ -1865,8 +1865,8 @@
             if (!_this.visible) {
                 return;
             }
-            // Never hide for mobile ads
-            if (_isMobile && _instreamMode) {
+            // Don't hide for mobile ads if controls are enabled
+            if (_instreamMode && _isMobile && _api.jwGetControls()) {
                 return;
             }
             _this.visible = false;
