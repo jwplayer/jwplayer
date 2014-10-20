@@ -90,8 +90,11 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 		
 		public function setDuration(d:Number):void {
-			_duration = d;
-			positionCues();
+			
+			if (_duration != d && d > 0) {
+				_duration = d;
+				positionCues();
+			}
 		}
 		
 		private function overHandler(evt:MouseEvent):void {
@@ -176,7 +179,6 @@ package com.longtailvideo.jwplayer.view.components {
             super.reset();
             thumbVisible = false;
             setDuration(0);
-            removeCues();
             setThumbs();
             _tooltip.text = Strings.digits(0);
         }

@@ -9,7 +9,9 @@ package com.longtailvideo.jwplayer.view {
 	import com.longtailvideo.jwplayer.events.PlaylistEvent;
 	import com.longtailvideo.jwplayer.events.ViewEvent;
 	import com.longtailvideo.jwplayer.model.Model;
+	import com.longtailvideo.jwplayer.player.IInstreamPlayer;
 	import com.longtailvideo.jwplayer.player.IPlayer;
+	import com.longtailvideo.jwplayer.player.InstreamPlayer;
 	import com.longtailvideo.jwplayer.player.PlayerState;
 	import com.longtailvideo.jwplayer.plugins.IPlugin;
 	import com.longtailvideo.jwplayer.plugins.IPlugin6;
@@ -25,6 +27,7 @@ package com.longtailvideo.jwplayer.view {
 	import com.longtailvideo.jwplayer.view.components.PlaylistComponent;
 	import com.longtailvideo.jwplayer.view.interfaces.IPlayerComponent;
 	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
+	
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Loader;
@@ -75,7 +78,7 @@ package com.longtailvideo.jwplayer.view {
 		protected var _pluginsLayer:MovieClip;
 		protected var _plugins:Object;
 		protected var _allPlugins:Vector.<IPlugin>;
-		
+		protected var _instreamPlayer:IInstreamPlayer;
 		protected var _instreamLayer:MovieClip;
 		protected var _instreamPlugin:IPlugin;
 		protected var _instreamAnim:Animations;
@@ -119,6 +122,7 @@ package com.longtailvideo.jwplayer.view {
 		private var _instreamMode:Boolean = false;
 		private var _canCast:Boolean = false;
 
+		
 		public function View(player:IPlayer, model:Model) {
 			_player = player;
 			_model = model;
@@ -242,7 +246,7 @@ package com.longtailvideo.jwplayer.view {
 			}
 			var ev:ViewEvent = new ViewEvent(ViewEvent.JWPLAYER_VIEW_TAB_FOCUS, true);
 			dispatchEvent(ev);
-			if (_model.state == PlayerState.PLAYING) {
+			if (getState() == PlayerState.PLAYING) {
 				showControls();
 				startFader();
 			} else {
@@ -737,9 +741,11 @@ package com.longtailvideo.jwplayer.view {
 				dispatchEvent(evt);
 		}
 		
-		public function setupInstream(instreamDisplay:DisplayObject, controls:IPlayerComponents, plugin:IPlugin):void {
+		public function setupInstream(instreamPlayer:IInstreamPlayer,instreamDisplay:DisplayObject, controls:IPlayerComponents, plugin:IPlugin):void {
 			_instreamAnim.cancelAnimation();
+			_instreamPlayer = instreamPlayer;
 			_instreamPlugin = plugin;
+			
 			_instreamControls = controls;
 			if (instreamDisplay) {
 				_instreamLayer.addChild(instreamDisplay);
@@ -762,8 +768,6 @@ package com.longtailvideo.jwplayer.view {
 			_instreamAnim.fade(1);
 			_instreamMode = true;
 
-			// For midrolls and postrolls we want to ensure controlbar knows to fadeout
-			setTimeout(moveTimeout, 2000);
 		}
 		
 	
@@ -809,7 +813,8 @@ package com.longtailvideo.jwplayer.view {
 		/** Show controls on mousemove and restart the countdown. **/
 		private function moveHandler(evt:Event=null):void {
 			Mouse.show();
-			if (_instreamMode || _player.state != PlayerState.IDLE && _player.state != PlayerState.PAUSED) {
+			var state:String = getState();
+			if (state != PlayerState.IDLE && state != PlayerState.PAUSED) {
 				if (evt is MouseEvent) {
 					var mouseEvent:MouseEvent = evt as MouseEvent;
 					if (!(_components.display as DisplayObject).getRect(RootReference.stage).containsPoint(new Point(mouseEvent.stageX, mouseEvent.stageY))) {
@@ -819,6 +824,10 @@ package com.longtailvideo.jwplayer.view {
 				}
 				startFader();
 			}
+		}
+		
+		private function getState():String {
+			return _instreamMode ? _instreamPlayer.getState() : _player.state;
 		}
 		
 		private function keyboardHandler(evt:KeyboardEvent):void {
@@ -876,9 +885,10 @@ package com.longtailvideo.jwplayer.view {
 		
 		/** Hide controls again when move has timed out. **/
 		private function moveTimeout(evt:Event=null):void {
-		clearTimeout(_fadingOut);
-			if (_instreamMode || _player.state == PlayerState.PLAYING) Mouse.hide();
-			if (_instreamMode || _player.state != PlayerState.PAUSED) hideControls();
+			clearTimeout(_fadingOut);
+			var state:String = getState();
+			if (state == PlayerState.PLAYING) Mouse.hide();
+			if (state != PlayerState.PAUSED) hideControls();
 		}
 		
 		private function hideControls():void {
@@ -949,21 +959,19 @@ package com.longtailvideo.jwplayer.view {
 			}
 		}
 		
-		public function getSafeRegion():Rectangle {
+		public function getSafeRegion(includeCB:Boolean = true):Rectangle {
 			var bounds:Rectangle = new Rectangle();
 			var logo:LogoComponent = _components.logo as LogoComponent;
 			var dock:DockComponent = _components.dock as DockComponent;
-			var dockShowing:Boolean = (dock.numButtons > 0);
+			var dockShowing:Boolean = (dock.numButtons > 0) && _model.config.controls;
 			var cb:ControlbarComponent = _components.controlbar as ControlbarComponent;
 			var logoTop:Boolean = (logo.position.indexOf("top") == 0);
 			var logoShowing:Boolean = (logo.height > 0);
+			bounds.x = 0;
+			bounds.y = Math.round(Math.max(dockShowing ? dock.getBounds(_componentsLayer).bottom : 0, (logoTop && logoShowing) ? logo.getBounds(_componentsLayer).bottom : 0));
+			bounds.width = Math.round(_components.display.width);
+			bounds.height = Math.round((logoTop ? (includeCB && _model.config.controls ? cb.getBounds(_componentsLayer).top : _componentsLayer.height) : (logoShowing ? logo.getBounds(_componentsLayer).top : 0) ) - bounds.y);
 			
-			if (_model.config.controls) {
-				bounds.x = 0;
-				bounds.y = Math.round(Math.max(dockShowing ? dock.getBounds(_componentsLayer).bottom : 0, (logoTop && logoShowing) ? logo.getBounds(_componentsLayer).bottom : 0));
-				bounds.width = Math.round(_components.display.width);
-				bounds.height = Math.round((logoTop ? cb.getBounds(_componentsLayer).top : (logoShowing ? logo.getBounds(_componentsLayer).top : 0) ) - bounds.y);
-			}
 			
 			return bounds;
 		}

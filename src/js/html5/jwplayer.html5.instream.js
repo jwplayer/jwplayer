@@ -4,9 +4,10 @@
  * @author pablo
  * @version 6.0
  */
-(function(jwplayer, undefined) {
+(function(jwplayer) {
     var html5 = jwplayer.html5,
         _utils = jwplayer.utils,
+        _ = jwplayer._,
         _events = jwplayer.events,
         _states = _events.state,
         _playlist = jwplayer.playlist;
@@ -23,7 +24,7 @@
         };
 
         var _item,
-            _array,
+            _array, // the copied in playlist
             _arrayIndex = 0,
             _optionList,
             _options = { // these are for before load
@@ -36,11 +37,11 @@
             _oldpos,
             _oldstate,
             _olditem,
+            _adModel,
             _provider,
             _cbar,
             _instreamDisplay,
             _instreamContainer,
-            _adModel,
             _completeTimeoutId = -1,
             _this = _utils.extend(this, new _events.eventdispatcher());
 
@@ -65,8 +66,9 @@
             // Initialize the instream player's model copied from main player's model
             _adModel = new html5.model({}, _provider);
             _adModel.setVolume(_model.volume);
+            //_adModel.setFullscreen(_model.fullscreen); // doesn't seem to work
             _adModel.setMute(_model.mute);
-
+            _adModel.addEventListener('fullscreenchange',_nativeFullscreenHandler);
             _olditem = _model.playlist[_model.item];
 
             // Keep track of the original player state
@@ -139,7 +141,7 @@
             var bottom = 10 + _utils.bounds(instreamLayer).bottom - _utils.bounds(_cbar.element()).top;
 
             // Copy the playlist item passed in and make sure it's formatted as a proper playlist item
-            if (_utils.typeOf(item) === 'array') {
+            if (_.isArray(item)) {
                 if (options) {
                     _optionList = options;
                     options = options[_arrayIndex];
@@ -175,20 +177,13 @@
                 _sendEvent(_events.JWPLAYER_INSTREAM_CLICK, evt);
 
                 // toggle playback after click event
-                if (evt.hasControls) {
-                    if (_adModel.state === _states.PAUSED) {
+
+                if (_adModel.state === _states.PAUSED) {
+                    if (evt.hasControls) {
                         _this.jwInstreamPlay();
-                    } else {
-                        _this.jwInstreamPause();
                     }
                 } else {
-                    if (_utils.isAndroid()) {
-                        // Android chrome will pause the video even w/out controls,
-                        //   so we pause it beforehand to ensure consistent state.
-                        if (_adModel.state !== _states.PAUSED) {
-                            _this.jwInstreamPause();
-                        }
-                    }
+                    _this.jwInstreamPause();
                 }
             });
 
@@ -216,6 +211,7 @@
             if (!_adModel) {
                 return;
             }
+            _adModel.removeEventListener('fullscreenchange',_nativeFullscreenHandler);
             clearTimeout(_completeTimeoutId);
             _completeTimeoutId = -1;
             _provider.detachMedia();
@@ -283,6 +279,7 @@
             _provider.play(true);
             _model.state = _states.PLAYING;
             _instreamDisplay.show();
+            
             // if (_api.jwGetControls()) { _disp.show();  }
         };
 
@@ -293,6 +290,7 @@
             _model.state = _states.PAUSED;
             if (_api.jwGetControls()) {
                 _instreamDisplay.show();
+                _cbar.show();
             }
         };
 
@@ -309,7 +307,7 @@
 
         _this.jwInstreamState = function() {
             //if (!_item) return;
-            return _model.state;
+            return _adModel.state;
         };
 
         /*****************************
@@ -317,13 +315,17 @@
          *****************************/
 
         function _setupProvider() {
-            _provider = new jwplayer.html5.VideoProvider(_model.id);
+            var Provider = jwplayer.html5.chooseProvider({});
+            
+            _provider = new Provider(_model.id);
 
             _provider.addGlobalListener(_forward);
             _provider.addEventListener(_events.JWPLAYER_MEDIA_META, _metaHandler);
             _provider.addEventListener(_events.JWPLAYER_MEDIA_COMPLETE, _completeHandler);
             _provider.addEventListener(_events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
             _provider.addEventListener(_events.JWPLAYER_MEDIA_ERROR, errorHandler);
+
+            _provider.addEventListener(_events.JWPLAYER_PLAYER_STATE, stateHandler);
             _provider.addEventListener(_events.JWPLAYER_MEDIA_TIME, function(evt) {
                 if (_skipButton) {
                     _skipButton.updateSkipTime(evt.position, evt.duration);
@@ -332,6 +334,23 @@
             _provider.attachMedia();
             _provider.mute(_model.mute);
             _provider.volume(_model.volume);
+            // _provider.setFullScreen(_model.fullscreen); // doesn't seem to work
+        }
+
+        function stateHandler(evt) {
+            if (evt.newstate === _adModel.state) {
+                return;
+            }
+            _adModel.state = evt.newstate;
+            switch(_adModel.state) {
+                case _states.PLAYING:
+                    _this.jwInstreamPlay();
+                    break;
+                case _states.PAUSED:
+                    _this.jwInstreamPause();
+                    break;
+                
+            }
         }
 
         function _skipAd(evt) {
@@ -342,9 +361,16 @@
         function _forward(evt) {
             _sendEvent(evt.type, evt);
         }
-
+        
+        function _nativeFullscreenHandler(evt) {
+            _model.sendEvent(evt.type,evt);
+            _sendEvent(_events.JWPLAYER_FULLSCREEN, {fullscreen:evt.jwstate});
+        }
         function _fullscreenHandler(evt) {
             //_forward(evt);
+            if (!_adModel) {
+                return;
+            }
             _resize();
             if (!evt.fullscreen && _utils.isIPad()) {
                 if (_adModel.state === _states.PAUSED) {
@@ -384,6 +410,9 @@
                 }, 0);
             } else {
                 _completeTimeoutId = setTimeout(function() {
+                    // this is called on every ad completion of the final video in a playlist
+                    //   1) vast.js (to trigger ad_complete event)
+                    //   2) display.js (to set replay icon and image)
                     _sendEvent(_events.JWPLAYER_PLAYLIST_COMPLETE, {}, true);
                     _api.jwInstreamDestroy(true, _this);
                 }, 0);

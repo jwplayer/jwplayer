@@ -62,11 +62,9 @@ package com.longtailvideo.jwplayer.player {
 				ExternalInterface.addCallback("jwInstreamClick", js_setClick);
 				ExternalInterface.addCallback("jwInstreamHide", js_hideInstream);
 				
-				
 			} catch(e:Error) {
 				Logger.log("Could not initialize Instream JavaScript API: "  + e.message);
 			}
-			
 		}
 
 		

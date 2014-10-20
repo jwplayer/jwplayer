@@ -1486,6 +1486,7 @@
                     _clearHdTapTimeout();
                     overlay.hide();
                 } else {
+                    // TODO:: _.throttle
                     _hdTapTimer = setTimeout(function() {
                         overlay.hide();
                         _hdTapTimer = undefined;
@@ -1862,6 +1863,10 @@
 
         _this.hide = function() {
             if (!_this.visible) {
+                return;
+            }
+            // Don't hide for mobile ads if controls are enabled
+            if (_instreamMode && _isMobile && _api.jwGetControls()) {
                 return;
             }
             _this.visible = false;
