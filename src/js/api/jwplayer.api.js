@@ -116,10 +116,6 @@
         _this.setup = function(options) {
             if (jwplayer.embed) {
                 // Destroy original API on setup() to remove existing listeners
-                var fallbackDiv = document.getElementById(_this.id);
-                if (fallbackDiv) {
-                    options.fallbackDiv = fallbackDiv;
-                }
                 _remove(_this);
                 var newApi = jwplayer(_this.id);
                 newApi.config = options;
