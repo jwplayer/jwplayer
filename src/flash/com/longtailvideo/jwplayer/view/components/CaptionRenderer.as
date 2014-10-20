@@ -44,7 +44,6 @@ package com.longtailvideo.jwplayer.view.components {
             _field = new TextField();
             _field.width = 400;
             _field.height = 10;
-            _field.autoSize = TextFieldAutoSize.CENTER;
             _field.multiline = true;
             _field.selectable = false;
             _field.wordWrap = true;
@@ -96,6 +95,7 @@ package com.longtailvideo.jwplayer.view.components {
 			
             // Place the text and align bottom
             _field.htmlText = '<p>'+text+'</p>';
+            _field.height = _field.textHeight + 20;
             _field.y = -_field.height;
 			
 			if (_outline) {

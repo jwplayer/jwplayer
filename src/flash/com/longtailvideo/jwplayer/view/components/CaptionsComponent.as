@@ -1,33 +1,33 @@
 package com.longtailvideo.jwplayer.view.components {
-	
-	import com.longtailvideo.jwplayer.events.CaptionsEvent;
-	import com.longtailvideo.jwplayer.events.MediaEvent;
-	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
-	import com.longtailvideo.jwplayer.events.PlaylistEvent;
-	import com.longtailvideo.jwplayer.parsers.DFXP;
-    import com.longtailvideo.jwplayer.events.TrackEvent;
-	import com.longtailvideo.jwplayer.parsers.ISO639;
-	import com.longtailvideo.jwplayer.parsers.SRT;
-	import com.longtailvideo.jwplayer.player.IPlayer;
-	import com.longtailvideo.jwplayer.player.PlayerState;
-	import com.longtailvideo.jwplayer.utils.Configger;
-	import com.longtailvideo.jwplayer.utils.Logger;
-	import com.longtailvideo.jwplayer.view.interfaces.IPlayerComponent;
-	
-	import flash.display.Sprite;
-	import flash.events.ErrorEvent;
-	import flash.events.Event;
-	import flash.events.IOErrorEvent;
-	import flash.events.SecurityErrorEvent;
-	import flash.net.URLLoader;
-	import flash.net.URLRequest;
-	
-	
-	/** Plugin for playing closed captions with a video. **/
+
+
+import com.longtailvideo.jwplayer.events.CaptionsEvent;
+import com.longtailvideo.jwplayer.events.MediaEvent;
+import com.longtailvideo.jwplayer.events.PlayerStateEvent;
+import com.longtailvideo.jwplayer.events.PlaylistEvent;
+import com.longtailvideo.jwplayer.events.TrackEvent;
+import com.longtailvideo.jwplayer.parsers.DFXP;
+import com.longtailvideo.jwplayer.parsers.ISO639;
+import com.longtailvideo.jwplayer.parsers.SRT;
+import com.longtailvideo.jwplayer.player.IPlayer;
+import com.longtailvideo.jwplayer.player.PlayerState;
+import com.longtailvideo.jwplayer.utils.Configger;
+import com.longtailvideo.jwplayer.utils.Logger;
+import com.longtailvideo.jwplayer.view.interfaces.IPlayerComponent;
+
+import flash.display.Sprite;
+import flash.events.ErrorEvent;
+import flash.events.Event;
+import flash.events.IOErrorEvent;
+import flash.events.SecurityErrorEvent;
+import flash.net.URLLoader;
+import flash.net.URLRequest;
+
+/** Plugin for playing closed captions with a video. **/
 	public class CaptionsComponent extends Sprite implements IPlayerComponent {
-		
-		/** Cookie object for storing track prefs. **/
-		//private var _cookie:SharedObject;
+
+        private static var _order:Array = ['playlist', 'subtitles', 'meta'];
+
 		/** Default style properties. **/
 		private var _defaults:Object = {
 			color: '#FFFFFF',
@@ -51,39 +51,29 @@ package com.longtailvideo.jwplayer.view.components {
 			leading: 5,
 			textAlign: 'center',
 			textDecoration: 'none'
-		}
-		
-		/** Currently active playlist item. **/
-		private var _item:Object;
+		};
+
 		/** XML connect and parse object. **/
 		private var _loader:URLLoader;
 		/* Reference to the JW Player. */
 		private var _player:IPlayer;
 		/** Reference to the captions renderer. **/
 		private var _renderer:CaptionRenderer;
-		/** Current player state. **/
+		/** Player state. **/
 		private var _state:String;
-		/** Map with style properties loaded by DFXP. **/
-		private var _styles:Object;
-		/** Currently active track. **/
-		private var _track:Number = 0;
-		/** Current listing of tracks. **/
+
+		/**  list of tracks with type and unique label **/
 		private var _tracks:Array;
-		/** Currently selected track index. **/
-		private var _selectedTrack:Number;
-		
-		private var _streamTrack:Number = -1;
-		
-		
+        /** the current track type and id **/
+        private var _track:Object;
+
 		/** Constructor; inits the parser, selector and renderer. **/
 		public function CaptionsComponent(player:IPlayer) {
-			
-			//_cookie = SharedObject.getLocal('com.jeroenwijering','/');
+
 			_loader = new URLLoader();
 			_loader.addEventListener(Event.COMPLETE, _loaderHandler);
 			_loader.addEventListener(IOErrorEvent.IO_ERROR, _errorHandler);
 			_loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, _errorHandler);
-			_tracks = new Array();
 			
 			// Connect to the player API.
 			_player = player;
@@ -93,7 +83,9 @@ package com.longtailvideo.jwplayer.view.components {
 			_player.addEventListener(MediaEvent.JWPLAYER_MEDIA_TIME,_timeHandler);
             _player.addEventListener(TrackEvent.JWPLAYER_SUBTITLES_TRACKS, _subtitlesTracksHandler);
             _player.addEventListener(TrackEvent.JWPLAYER_SUBTITLES_TRACK_CHANGED, _subtitlesTrackChangedHandler);
-			
+
+            _tracks = new Array();
+
 			var config:Object = _player.config.captions;
 			
 			_extend(_style, _defaults, config);
@@ -114,7 +106,7 @@ package com.longtailvideo.jwplayer.view.components {
 			_redraw();
 		};
 		
-		private function _extend(target:Object, defaults:Object, options:Object):void {
+		private static function _extend(target:Object, defaults:Object, options:Object):void {
 			for (var rule:String in defaults) {
 				var value:* = defaults[rule];
 				if (options) {
@@ -128,7 +120,7 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 		}
 		
-		private function _rgbHex(color:*):String {
+		private static function _rgbHex(color:*):String {
 			var hex:String = String(color).replace('#','');
 			if (hex.length === 3) {
 				hex = hex.charAt(0)+hex.charAt(0)+hex.charAt(1)+hex.charAt(1)+hex.charAt(2)+hex.charAt(2);
@@ -136,21 +128,72 @@ package com.longtailvideo.jwplayer.view.components {
 			return '#'+hex.substr(-6);
 		};
 		
-		private function _hexToUint(hex:String):uint {
+		private static function _hexToUint(hex:String):uint {
 			return parseInt(hex.substr(-6), 16);
 		}
 		
 		/** The captions loader returns errors (file not found or security error). **/
 		private function _errorHandler(event:ErrorEvent):void {
 			Logger.log(event.text);
-		};
+		}
+
+        /** return the track index at which to insert a new element of type type **/
+        private function getInsertionIndex(type:String):int {
+            var typeFunction:Function = function(item:*, index:int, array:Array):String {
+                return item.type;
+            };
+            var typeArray:Array = _tracks.map(typeFunction);
+
+            if(typeArray.lastIndexOf(type) >= 0) {
+                return typeArray.lastIndexOf(type) + 1;
+            } else {
+                if(_order[0] == type) {
+                    return 0;
+                }
+                var found:Boolean = false;
+                for(var i:int = _order.length; i > 0; i--) {
+                    if (_order[i] == type) {
+                        found = true;
+                        break;
+                    }
+                    if (found) {
+                        if (typeArray.lastIndexOf(_order[i]) >= 0) {
+                            return typeArray.lastIndexOf(_order[i]) + 1;
+                        }
+                    }
+                }
+                return 0;
+            }
+
+        }
 
         /** Handle a list of subtitles tracks */
         private function _subtitlesTracksHandler(event:TrackEvent):void {
             if(event.type != TrackEvent.JWPLAYER_SUBTITLES_TRACKS) {
                 throw new Error("wrong event");
             }
-            _subtitlesHandler(event);
+
+            _removeTrackType("subtitles");
+
+            if(event.tracks != null) {
+                for(var i:int = 0; i < event.tracks.length; i++) {
+                    var obj:Object = {
+                        type: "subtitles",
+                        id: i,
+                        label: event.tracks[i].name
+                    };
+                    _tracks.splice(getInsertionIndex("subtitles"), 0, obj);
+                    if(i == event.currentTrack) {
+                        _track = obj;
+                    }
+                }
+
+            }
+            _setDefaultTrack();
+            _resetRenderer();
+            _renderCaptions();
+            _redraw();
+            _notifyCaptions(CaptionsEvent.JWPLAYER_CAPTIONS_LIST);
         }
 
         /** Handle a subtitle track index change */
@@ -158,164 +201,169 @@ package com.longtailvideo.jwplayer.view.components {
             if (event.type != TrackEvent.JWPLAYER_SUBTITLES_TRACK_CHANGED) {
                 throw new Error("wrong event");
             }
-            _subtitlesHandler(event);
+            if(event.currentTrack < 0) {
+                _track = null;
+            } else {
+                _track = {
+                    type: "subtitles",
+                    id: event.currentTrack,
+                    label: event.tracks[event.currentTrack].name
+                };
+            }
+            _redraw();
+            _notifyCaptions(CaptionsEvent.JWPLAYER_CAPTIONS_CHANGED);
+        }
+
+        private function _resetRenderer():void {
+            _renderer.setPosition(0);
+            _renderer.setCaptions('');
+        }
+
+        private function _notifyCaptions(type:String):void {
+            var captionsEvent:CaptionsEvent = new CaptionsEvent(type);
+            captionsEvent.tracks = getCaptionsList();
+            captionsEvent.currentTrack = getCurrentCaptions();
+            dispatchEvent(captionsEvent);
+        }
+
+        private function _removeTrackType(type:String):void {
+            var newTracks:Array = new Array();
+            for(var i:int = 0; i < _tracks.length; i++) {
+                if(_tracks[i].type != type) {
+                    newTracks.push(_tracks[i]);
+                }
+            }
+            _tracks = newTracks;
+            if(_track != null && _track.type == type) {
+                _track = null;
+            }
+        }
+
+        private function _getTrackType(type:String):Array {
+            var ret:Array = new Array();
+            for(var i:int = 0; i < _tracks.length; i++) {
+                if(_tracks[i].type == type) {
+                    ret.push(_tracks[i]);
+                }
+            }
+            return ret;
+        }
+
+        private function _setDefaultTrack():void {
+            _track = null;
+            if (_player.config.captionlabel) {
+                for (var i:int = 0; i < _tracks.length; i++) {
+                    if (_tracks[i].label == _player.config.captionlabel) {
+                        _track = _tracks[i];
+                        break;
+                    }
+                }
+            }
         }
 
         /** Handle changed tracks (MediaPlaylist) **/
         private function _subtitlesHandler(event:TrackEvent):void {
-            var i:int;
 
-            _track = 0;
-            _streamTrack = 0;
-            _tracks = new Array();
-            _renderer.setPosition(0);
-            _selectedTrack = 0;
-
-            if(event.tracks != null) {
-                for(i = 0; i < event.tracks.length; i++) {
-                    _tracks.push({
-                        id: i,
-                        label: event.tracks[i].name
-                    });
-                }
-            }
-            _setIndex(event.currentTrack+1);
-            _renderer.setCaptions('');
-            _redraw();
-            _sendEvent(CaptionsEvent.JWPLAYER_CAPTIONS_LIST, _getTracks(), _selectedTrack);
         }
 
 		/** Check playlist item for captions. **/
 		private function _itemHandler(event:PlaylistEvent):void {
-			_track = 0;
-			_streamTrack = -1;
-			_tracks = new Array();
-			_renderer.setPosition(0);
-			_item = _player.playlist.currentItem;
-			if (_item)
-				var tracks:Object = _item["tracks"];
-			var caps:Array = [];
-			for (var i:Number = 0; tracks && i < tracks.length; i++) {
-				var kind:String = tracks[i].kind.toLowerCase();
-				if (kind == "captions" || kind == "subtitles") {
-					caps.push(tracks[i]);
-				}
-			}
-			
-			for (i = 0; i < caps.length; i++) {
-				var entry:Object = caps[i];
-				if (entry.file) {
-					if (!entry.label) {
-						entry.label = i.toString();
-					}
-					_tracks.push(entry);
-				}
-			}
-			
-			var defaultTrack:Number = 0;
-			_selectedTrack = 0;
-			
+            var i:int;
+
+            _tracks = new Array();
+            _track = null;
+
+            var item:Object = _player.playlist.currentItem;
+			if (item && item['tracks']) {
+                var itemTracks:Object = item['tracks'];
+
+                for (i = 0; i < itemTracks.length; i++) {
+                    var itemTrack:Object = itemTracks[i];
+                    var kind:String = itemTrack.kind.toLowerCase();
+                    if ((kind == "captions" || kind == "subtitles") && itemTrack.file) {
+                        _tracks.push({
+                            type: "playlist",
+                            id: i,
+                            label: itemTrack.label ? itemTrack.label : i.toString(),
+                            isDefault: itemTrack['default'],
+                            file: itemTrack.file
+                        });
+                    }
+                }
+            }
+
 			for (i = 0; i < _tracks.length; i++) {
-				if (_tracks[i]["default"]) {
-					defaultTrack = i+1;
+				if (_tracks[i].isDefault) {
+					_track = _tracks[i];
 					break;
 				}
 			}
-			
-			if (_player.config.captionlabel) {
-				tracks = _getTracks();
-				for (i = 0; i < tracks.length; i++) {
-					if (tracks[i].label == _player.config.captionlabel) {
-						defaultTrack = i;
-						break;
-					}
-				}
-			}
-			
-			_renderCaptions(defaultTrack);
+
+            _setDefaultTrack();
+            _resetRenderer();
+			_renderCaptions();
 			_redraw();
-			_sendEvent(CaptionsEvent.JWPLAYER_CAPTIONS_LIST, _getTracks(), _selectedTrack);
+            _notifyCaptions(CaptionsEvent.JWPLAYER_CAPTIONS_LIST);
 		};
-		
-		
+
+
 		/** Parse and display external captions. **/
 		private function _loaderHandler(event:Event):void {
-			try {
-				if(XML(event.target.data).localName().toString().toLowerCase() == DFXP.NAME) {
-					_tracks[_track].data = DFXP.parseCaptions(XML(event.target.data),_defaults);
-				} else {
-					_tracks[_track].data = SRT.parseCaptions(String(event.target.data));
-				}
-			} catch (error:Error) {
-				_tracks[_track].data = SRT.parseCaptions(String(event.target.data));
-			}
-			if (!_tracks[_track].data.length) {
-				Logger.log('No captions entries found in file. Probably not a valid SRT or DFXP file?');
-			} else {
-				_renderer.setCaptions(_tracks[_track].data);
-			}
+            if(_track != null) {
+                try {
+                    if (XML(event.target.data).localName().toString().toLowerCase() == DFXP.NAME) {
+                        _track.data = DFXP.parseCaptions(XML(event.target.data), _defaults);
+                    } else {
+                        _track.data = SRT.parseCaptions(String(event.target.data));
+                    }
+                } catch (error:Error) {
+                    _track.data = SRT.parseCaptions(String(event.target.data));
+                }
+                if (!_track.data.length) {
+                    Logger.log('No captions entries found in file. Probably not a valid SRT or DFXP file?');
+                } else {
+                    _renderer.setCaptions(_track.data);
+                }
+            }
 			_redraw();
 		};
-		
-		/** Handle captions which come in from a stream **/
-		private function _streamCaptions(event:MediaEvent):void {
-			if (_state == PlayerState.IDLE) { return; }
-			if (event.metadata.type == "textdata") {
-				if (!_tracks.length) {
-					_tracks.push({
-						data: undefined,
-						file: undefined,
-						id: 0,
-						label: "On"
-					});
-					_initializeCaptions();
-					_streamTrack = event.metadata.trackid;
-					_renderer.setCaptions(event.metadata.text.replace(/\n$/,''));
-				}
-				else if (event.metadata.trackid == _streamTrack) {
-					_renderer.setCaptions(event.metadata.text.replace(/\n$/,''));
-				}
-			}
-		}
-		
-		
+
 		/** Check for captions in metadata. **/
 		private function _metaHandler(event:MediaEvent):void {
 			if(_state == PlayerState.IDLE) { return; }
-			if (event.metadata.provider == "rtmp" || event.metadata.provider == "hls") {
-				_streamCaptions(event);
-				return;
-			}
+            _redraw();
 			if(event.metadata.type == 'textdata') {
-				if(_tracks.length) {
-					if(event.metadata.trackid == _tracks[_track].id) {
-						_renderer.setCaptions(event.metadata.text.replace(/\n$/,''));
-					}
-				} else {
-					// For live streams (no trackinfo); presume only 1 track
-					_tracks.push({
-						data: undefined,
-						file: undefined,
-						id: event.metadata.trackid,
-						label: 'captions'
-					});
-					_redraw();
-					_renderer.setCaptions(event.metadata.text.replace(/\n$/,''));
-				}
+                var label:String = "captions";
+                if (event.metadata.provider == "rtmp" || event.metadata.provider == "hls") {
+                    label = "On";
+                }
+                var obj:Object = {
+                    type: "meta",
+                    id: event.metadata.trackid,
+                    label: label
+                };
+
+                if(_getTrackType("meta").length == 0) {
+                    _tracks.push(obj);
+                    _notifyCaptions(CaptionsEvent.JWPLAYER_CAPTIONS_LIST);
+                }
+
+                if (obj.label == _getTrackType("meta")[0].label) {
+                    _renderer.setCaptions(event.metadata.text.replace(/\n$/,''));
+                }
 			} else if (event.metadata.trackinfo && _tracks.length == 0) {
 				_metaTracks(event.metadata.trackinfo);
 			}
-		};
-		
-		
+		}
+
+
 		/** Parse track info from MP4 metadata. **/
 		private function _metaTracks(info:Object):void {
-			for(var i:Number = 0; i < info.length; i++) {
+			for(var i:int = 0; i < info.length; i++) {
 				try {
 					if(info[i].sampledescription[0].sampletype == 'tx3g') {
 						_tracks.push({
-							data: undefined,
-							file: undefined,
+							type: "meta",
 							id: i,
 							label: ISO639.label(info[i].language)
 						});
@@ -323,83 +371,46 @@ package com.longtailvideo.jwplayer.view.components {
 				} catch (e:Error) {}
 			}
 			_initializeCaptions();
-		};
-		
-		private function _initializeCaptions():void {
-			var defaultTrack:Number = 0;
-			var tracks:Array = _getTracks();
-			
-			if (_player.config.captionlabel) {
-				for (var i:Number = 0; i < tracks.length; i++) {
-					if (tracks[i].label == _player.config.captionlabel) {
-						defaultTrack = i;
-						break;
-					}
-				}
-			}
-			
-			_renderCaptions(defaultTrack);
-			_redraw();
-			_sendEvent(CaptionsEvent.JWPLAYER_CAPTIONS_LIST, tracks, _selectedTrack);
 		}
-		
-		
-		/** Show/hide the captions, update the button, save state in cookie. **/
+
+		private function _initializeCaptions():void {
+            _setDefaultTrack();
+			_renderCaptions();
+			_redraw();
+            _notifyCaptions(CaptionsEvent.JWPLAYER_CAPTIONS_LIST);
+		}
+
+
+		/** Show/hide the captions **/
 		private function _redraw():void {
-			if(!_tracks.length) {
-				_renderer.visible = false;
-			} 
-			else {
-				if(_state == PlayerState.IDLE) {
-					_renderer.visible = false;
-				} else if (_selectedTrack != 0) {
-					_renderer.visible = true;
-				}
-				else {
-					_renderer.visible = false;
-				}
-			}
-		};
-		
-		
+            _renderer.visible = _tracks.length > 0 && _state != PlayerState.IDLE && getCurrentCaptions() > 0;
+		}
+
+
 		/** Resize the captions, relatively smaller as the screen grows */
 		public function resize(width:Number, height:Number):void {
 			_renderer.scaleX = _renderer.scaleY = Math.pow(width/400, 0.6);
 			_renderer.setMaxWidth(width);
 			_renderer.x = Math.round((width -_renderer.width)/2);
 			_renderer.y = Math.round(height * 0.94);
-		};
+		}
 
-        /** set the counters */
-        private function _setIndex(index:Number):void {
-            if(index > 0) {
-                _track = index - 1;
-                _selectedTrack = index;
-            } else {
-                _selectedTrack = 0;
-            }
-        }
-		
 		/** Rendering the captions. **/
-		private function _renderCaptions(index:Number):void {
-            _setIndex(index);
-			
-			if (_track >= _tracks.length) return;
-			
+		private function _renderCaptions():void {
 			// Update UI
-			if(_tracks[_track].file) {
-				if(_tracks[_track].data) {
-					_renderer.setCaptions(_tracks[_track].data);
-				} else { 
-					_loader.load(new URLRequest(_tracks[_track].file));
+			if(_track != null && _track.file) {
+				if(_track.data) {
+					_renderer.setCaptions(_track.data);
+				} else {
+					_loader.load(new URLRequest(_track.file));
 				}
 			} else {
 				_renderer.setCaptions('');
 			}
 			_redraw();
 		};
-		
-		
+
+
 		/** Hide the renderer when idle. **/
 		private function _stateHandler(event:PlayerStateEvent):void {
 			_state = event.newstate;
@@ -408,47 +419,46 @@ package com.longtailvideo.jwplayer.view.components {
 				_renderer.setPosition(0);
 			}
 		};
-		
-		
+
+
 		/** Update the position in the video. **/
 		private function _timeHandler(event:MediaEvent):void {
 			if (event.position >= -1)
 				_renderer.setPosition(event.position);
 		};
-		
-		
-		private function _getTracks():Array {
-			var list:Array = new Array();
-			list.push({label: "Off"});
-			for each (var t:Object in _tracks) {
-				list.push({label: t.label});
-			}
-			return list;
-		}
-		
+
 		public function getCaptionsList():Array {
-			return _getTracks();
+            var list:Array = new Array();
+            list.push({label: "Off"});
+            for (var i:int = 0; i < _tracks.length; i++) {
+                list.push({label: _tracks[i].label});
+            }
+            return list;
 		}
-		
-		public function getCurrentCaptions():Number {
-			return _selectedTrack;
+
+		public function getCurrentCaptions():int {
+            if (_track != null) {
+                for(var i:int = 0; i < _tracks.length; i++) {
+                    if(_tracks[i].type == _track.type && _tracks[i].id == _track.id) {
+                        return i+1;
+                    }
+                }
+            }
+			return 0;
 		}
-		
-		public function setCurrentCaptions(index:Number):void {
-			if (index >= 0 && _selectedTrack != index && index <= _tracks.length) {
-				_renderCaptions(index);
-				var tracks:Array = _getTracks();
-				_player.config.captionlabel = tracks[_selectedTrack].label;
-				Configger.saveCookie("captionLabel", tracks[_selectedTrack].label);
-				_sendEvent(CaptionsEvent.JWPLAYER_CAPTIONS_CHANGED, tracks, _selectedTrack);
+
+		public function setCurrentCaptions(index:int):void {
+			if (index >= 0 && getCurrentCaptions() != index && index <= _tracks.length) {
+				_renderCaptions();
+                if(index == 0) {
+                    _track = null;
+                } else {
+                    _track = _tracks[index - 1];
+                }
+				_player.config.captionlabel = _track == null ? null : _track.label;
+				Configger.saveCookie("captionLabel", _player.config.captionlabel);
+                _notifyCaptions(CaptionsEvent.JWPLAYER_CAPTIONS_CHANGED);
 			}
-		}
-		
-		private function _sendEvent(type:String, tracks:Array, track:Number):void {
-			var captionsEvent:CaptionsEvent = new CaptionsEvent(type);
-			captionsEvent.tracks = tracks;
-			captionsEvent.currentTrack = track;
-			dispatchEvent(captionsEvent);
 		}
 		
 		/**
