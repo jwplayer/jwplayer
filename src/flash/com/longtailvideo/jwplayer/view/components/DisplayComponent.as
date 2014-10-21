@@ -61,7 +61,9 @@
 		}
 		
 		public function focusHandler(state:Boolean):void {
-			_icon.focusHandler(state);
+            if (_icon) {
+                _icon.focusHandler(state);
+            }
 		}
 		
 		private function itemHandler(evt:PlaylistEvent):void {
