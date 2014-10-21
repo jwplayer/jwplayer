@@ -178,7 +178,6 @@ package com.longtailvideo.jwplayer.view.components {
 
             _renderCaptions(event.currentTrack+1);
             _redraw();
-            //_sendEvent(CaptionsEvent.JWPLAYER_CAPTIONS_LIST, _getTracks(), _selectedTrack);
         }
 
         /** Handle captions coming in from external sources **/
