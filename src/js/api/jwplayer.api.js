@@ -239,13 +239,14 @@
                 } else {
                     _callInternal('jwInstreamPlay');
                 }
-            } else {
-                if (state === states.PLAYING || state === states.BUFFERING) {
-                    _callInternal('jwPause');
-                } else {
-                    _callInternal('jwPlay');
-                }
             }
+
+            if (state === states.PLAYING || state === states.BUFFERING) {
+                _callInternal('jwPause');
+            } else {
+                _callInternal('jwPlay');
+            }
+
             return _this;
         };
 
@@ -536,6 +537,11 @@
         return _this;
     };
 
+
+    //
+    // API Static methods
+    //
+
     jwplayer.playerReady = function(obj) {
         var api = jwplayer.api.playerById(obj.id);
         if (!api) {
@@ -629,4 +635,5 @@
 
         return null;
     };
+
 })(window.jwplayer);
