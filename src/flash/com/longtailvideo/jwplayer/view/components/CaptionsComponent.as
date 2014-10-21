@@ -71,7 +71,7 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		private var _streamTrack:Number = -1;
 
-        private var _captionHashes = {};
+        private var _captionHashes:Object = {};
 		
 		/** Constructor; inits the parser, selector and renderer. **/
 		public function CaptionsComponent(player:IPlayer) {
