@@ -7,8 +7,6 @@ package com.longtailvideo.jwplayer.view.components {
     import flash.geom.Rectangle;
     import flash.text.StyleSheet;
     import flash.text.TextField;
-    import flash.text.TextFieldAutoSize;
-    import flash.text.TextFormat;
     import flash.text.TextLineMetrics;
 	
 
@@ -24,12 +22,8 @@ package com.longtailvideo.jwplayer.view.components {
         private var _current:Number;
         /** Textfield that contains the captions. **/
         private var _field:TextField;
-        /** Caption text format. **/
-        private var _format:TextFormat;
         /** Sprite that contains the text outlines. **/
         private var _outline:Sprite;
-        /** The main element with the captions. **/
-        private var _element:Sprite
         /** Current position inside the video. **/
         private var _position:Number;
         /** The default stylesheet. **/
@@ -73,10 +67,10 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 			
 			addChild(_field);
-        };
+        }
 		
 		private function _addEdgeStyle(edgeStyle:String):void {
-			var filters:Array = new Array();
+			var filters:Array = [];
 			if (edgeStyle === 'dropshadow') {       // small drop shadow
 				filters.push(new DropShadowFilter(2,90,0,1,2,2,1,3));
 			} else if (edgeStyle === 'raised') {    // larger drop shadow
@@ -111,7 +105,7 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		private function _renderBackground():void {
 			var i:Number;
-			var lines:Array = new Array();
+			var lines:Array = [];
 			var lineRect:Rectangle;
 			var windowRect:Rectangle = new Rectangle(200, 0, 0, 0);
 			var metrics:TextLineMetrics;
@@ -160,8 +154,9 @@ package com.longtailvideo.jwplayer.view.components {
         private function _selectCaption():void {
             var found:Number = -1;
             // Check which caption to use.
-            for (var i:Number=0; i<_captions.length; i++) {
-                if (_captions[i]['begin'] <= _position && 
+            for (var i:int=0; i<_captions.length; i++) {
+                if (_captions[i]['begin'] <= _position &&
+                        (_captions[i]['end'] == undefined || _captions[i]['end'] >= _position) &&
                     (i == _captions.length-1 || _captions[i+1]['begin'] >= _position)) {
                     found = i;
                     break;
