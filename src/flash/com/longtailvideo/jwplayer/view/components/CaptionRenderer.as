@@ -7,7 +7,6 @@ package com.longtailvideo.jwplayer.view.components {
     import flash.geom.Rectangle;
     import flash.text.StyleSheet;
     import flash.text.TextField;
-    import flash.text.TextFormat;
     import flash.text.TextLineMetrics;
 	
 
@@ -23,8 +22,6 @@ package com.longtailvideo.jwplayer.view.components {
         private var _current:Number;
         /** Textfield that contains the captions. **/
         private var _field:TextField;
-        /** Caption text format. **/
-        private var _format:TextFormat;
         /** Sprite that contains the text outlines. **/
         private var _outline:Sprite;
         /** Current position inside the video. **/
@@ -70,10 +67,10 @@ package com.longtailvideo.jwplayer.view.components {
 			}
 			
 			addChild(_field);
-        };
+        }
 		
 		private function _addEdgeStyle(edgeStyle:String):void {
-			var filters:Array = new Array();
+			var filters:Array = [];
 			if (edgeStyle === 'dropshadow') {       // small drop shadow
 				filters.push(new DropShadowFilter(2,90,0,1,2,2,1,3));
 			} else if (edgeStyle === 'raised') {    // larger drop shadow
@@ -108,7 +105,7 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		private function _renderBackground():void {
 			var i:Number;
-			var lines:Array = new Array();
+			var lines:Array = [];
 			var lineRect:Rectangle;
 			var windowRect:Rectangle = new Rectangle(200, 0, 0, 0);
 			var metrics:TextLineMetrics;
