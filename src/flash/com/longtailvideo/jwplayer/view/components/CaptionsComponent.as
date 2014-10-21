@@ -148,20 +148,6 @@ package com.longtailvideo.jwplayer.view.components {
             if(event.type != TrackEvent.JWPLAYER_SUBTITLES_TRACKS) {
                 throw new Error("wrong event");
             }
-            _subtitlesHandler(event);
-        }
-
-        /** Handle a subtitle track index change */
-        private function _subtitlesTrackChangedHandler(event:TrackEvent):void {
-            if (event.type != TrackEvent.JWPLAYER_SUBTITLES_TRACK_CHANGED) {
-                throw new Error("wrong event");
-            }
-            _subtitlesHandler(event);
-        }
-
-        /** Handle changed tracks (MediaPlaylist) **/
-        private function _subtitlesHandler(event:TrackEvent):void {
-            var i:int;
 
             _track = 0;
             _streamTrack = 0;
@@ -171,7 +157,7 @@ package com.longtailvideo.jwplayer.view.components {
             _captionHashes = {};
 
             if(event.tracks != null) {
-                for(i = 0; i < event.tracks.length; i++) {
+                for(var i:int = 0; i < event.tracks.length; i++) {
                     var name:String = event.tracks[i].name;
                     _tracks.push({
                         data: [],
@@ -181,10 +167,18 @@ package com.longtailvideo.jwplayer.view.components {
                     _captionHashes[name] = {};
                 }
             }
-            _setIndex(event.currentTrack+1);
-            _renderer.setCaptions('');
+            _initializeCaptions();
+        }
+
+        /** Handle a subtitle track index change */
+        private function _subtitlesTrackChangedHandler(event:TrackEvent):void {
+            if (event.type != TrackEvent.JWPLAYER_SUBTITLES_TRACK_CHANGED) {
+                throw new Error("wrong event");
+            }
+
+            _renderCaptions(event.currentTrack+1);
             _redraw();
-            _sendEvent(CaptionsEvent.JWPLAYER_CAPTIONS_LIST, _getTracks(), _selectedTrack);
+            //_sendEvent(CaptionsEvent.JWPLAYER_CAPTIONS_LIST, _getTracks(), _selectedTrack);
         }
 
         /** Handle captions coming in from external sources **/

@@ -74,7 +74,9 @@
         }
 
         private function _captionsList(evt:CaptionsEvent):void {
-
+            if (model.media) {
+                model.media.currentSubtitlesTrack = evt.currentTrack-1;
+            }
         }
 		
 		protected function newModel():Model {
