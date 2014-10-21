@@ -367,7 +367,8 @@
             _sendEvent(_events.JWPLAYER_FULLSCREEN, {fullscreen:evt.jwstate});
         }
         function _fullscreenHandler(evt) {
-            //_forward(evt);
+            // required for updating the controlbars toggle icon
+            _forward(evt);
             if (!_adModel) {
                 return;
             }
