@@ -1,11 +1,8 @@
-/**
- * Created by charles on 10/20/14.
- */
 package com.longtailvideo.jwplayer.events {
 import flash.events.Event;
 
 public class CaptionsParsedEvent extends PlayerEvent {
-    public static const CAPTIONS_PARSED:String = "WebVTTEventCaptionsParsed";
+    public static const CAPTIONS_PARSED:String = "WebVTTParsed";
 
     private var _name:String;
     private var _captions:Array;
@@ -17,8 +14,7 @@ public class CaptionsParsedEvent extends PlayerEvent {
     }
 
     public override function clone():Event {
-        // the class must be dynamic to make the properties enumerable
-        return new CaptionsParsedEvent(this.type, this.name, this.captions);
+        return new CaptionsParsedEvent(type, _name, _captions);
     }
 
     public function get name():String {
