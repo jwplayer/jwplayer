@@ -15,6 +15,9 @@ package com.longtailvideo.jwplayer.view.components {
     /** Captions component that renders the actual lines. **/
     public class CaptionRenderer extends MovieClip {
 
+        /** magic number to work around autoheight issue **/
+        private static const TEXT_PADDING:int = 20;
+
         /** Array with captions. **/
         private var _captions:Array;
         /** Current index in the captions array. **/
@@ -44,7 +47,6 @@ package com.longtailvideo.jwplayer.view.components {
             _field = new TextField();
             _field.width = 400;
             _field.height = 10;
-            _field.autoSize = TextFieldAutoSize.CENTER;
             _field.multiline = true;
             _field.selectable = false;
             _field.wordWrap = true;
@@ -96,6 +98,7 @@ package com.longtailvideo.jwplayer.view.components {
 			
             // Place the text and align bottom
             _field.htmlText = '<p>'+text+'</p>';
+            _field.height = _field.textHeight + TEXT_PADDING;
             _field.y = -_field.height;
 			
 			if (_outline) {
