@@ -120,7 +120,9 @@
 		 * @param evt
 		 */
 		protected function forward(evt:PlayerEvent):void {
-			Logger.log(evt.toString(), evt.type);
+            CONFIG::debugging {
+                Logger.log(evt.toString(), evt.type);
+            }
 			dispatchEvent(evt);
 		}
 		
