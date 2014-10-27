@@ -108,6 +108,9 @@
             _instreamContainer.appendChild(_cbar.element());
 
             if (_api.jwGetControls()) {
+                if (_utils.isIPod() && !_utils.canCast()) {
+                    return;
+                }
                 _cbar.show();
                 _instreamDisplay.show();
             } else {

@@ -912,6 +912,10 @@
         }
 
         function _showControlbar() {
+            if (_isIPod && !utils.canCast()) {
+                return;
+            }
+            
             if (_controlbar && _model.controls) {
                 if (_instreamMode) {
                     _instreamControlbar.show();
