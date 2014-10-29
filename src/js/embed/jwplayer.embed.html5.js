@@ -95,7 +95,10 @@
         if (navigator.userAgent.match(/BlackBerry/i) !== null) {
             return false;
         }
-
+        
+        if (utils.isIE(9)) {
+            return false;
+        }
         // Youtube JavaScript API Provider
         if (utils.isYouTube(file, type)) {
             // TODO: check that js api requirements are met first
