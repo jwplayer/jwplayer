@@ -149,14 +149,13 @@ package com.longtailvideo.jwplayer.view.components {
                 throw new Error("wrong event");
             }
 
-            _track = 0;
-            _streamTrack = 0;
-            _tracks = new Array();
-            _renderer.setPosition(0);
-            _selectedTrack = 0;
-            _captionHashes = {};
-
-            if(event.tracks != null) {
+            if(event.tracks != null && event.tracks.length > 0) {
+                _track = 0;
+                _streamTrack = 0;
+                _tracks = new Array();
+                _renderer.setPosition(0);
+                _selectedTrack = 0;
+                _captionHashes = {};
                 for(var i:int = 0; i < event.tracks.length; i++) {
                     var name:String = event.tracks[i].name;
                     _tracks.push({
@@ -166,8 +165,8 @@ package com.longtailvideo.jwplayer.view.components {
                     });
                     _captionHashes[name] = {};
                 }
+                _initializeCaptions();
             }
-            _initializeCaptions();
         }
 
         /** Handle a subtitle track index change */
