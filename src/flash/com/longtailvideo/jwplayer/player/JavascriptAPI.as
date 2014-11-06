@@ -343,11 +343,13 @@ package com.longtailvideo.jwplayer.player {
 			if (evt.bufferPercent >= 0) 		returnObj.bufferPercent = evt.bufferPercent;
 			if (evt.duration >= 0)		 		returnObj.duration = evt.duration;
 			if (evt.message)					returnObj.message = evt.message;
-			if (evt.metadata != null)	 		returnObj.metadata = JavascriptSerialization.stripDots(evt.metadata);
+			if (evt.metadata != null) {
+                returnObj.metadata = JavascriptSerialization.stripDots(evt.metadata);
+            }
 			if (evt.offset > 0)					returnObj.offset = evt.offset;
 			if (evt.position >= 0)				returnObj.position = evt.position;
 			if (evt.currentQuality >= 0)		returnObj.currentQuality = evt.currentQuality;
-			if (evt.levels)						returnObj.levels = JavascriptSerialization.stripDots(evt.levels);
+			if (evt.levels)						returnObj.levels = evt.levels;
 			if (evt.type == MediaEvent.JWPLAYER_MEDIA_MUTE) {
 				returnObj.mute = evt.mute;
 			}
@@ -359,7 +361,7 @@ package com.longtailvideo.jwplayer.player {
 
         private static function listenerCallbackTrack(evt:TrackEvent):Object {
             return {
-                tracks: JavascriptSerialization.stripDots(evt.tracks),
+                tracks: evt.tracks,
                 currentTrack: evt.currentTrack
             };
         }
@@ -371,7 +373,7 @@ package com.longtailvideo.jwplayer.player {
 				returnObj.track = evt.currentTrack;
 			}
 			if (evt.tracks) {
-				returnObj.tracks = JavascriptSerialization.stripDots(evt.tracks);
+				returnObj.tracks = evt.tracks;
 			}
 			return returnObj;
 		}

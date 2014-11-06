@@ -965,14 +965,28 @@ package com.longtailvideo.jwplayer.view {
 			var dock:DockComponent = _components.dock as DockComponent;
 			var dockShowing:Boolean = (dock.numButtons > 0) && _model.config.controls;
 			var cb:ControlbarComponent = _components.controlbar as ControlbarComponent;
+			var logoBounds:Rectangle = logo.getBounds(_componentsLayer);
 			var logoTop:Boolean = (logo.position.indexOf("top") == 0);
 			var logoShowing:Boolean = (logo.height > 0);
+
+			//safe region starts at the top left
+			
+			var dockLowpoint:Number = dockShowing ? dock.getBounds(_componentsLayer).bottom : 0
+			var logoLowpoint:Number = (logoTop && logoShowing) ? logoBounds.bottom : 0
+			//y is the visually lower (from the top, so the larger number) of the dock or the logo, or zero.
+			bounds.y = Math.floor( Math.max (dockLowpoint, logoLowpoint) );
+			
+			//x i always zero
 			bounds.x = 0;
-			bounds.y = Math.round(Math.max(dockShowing ? dock.getBounds(_componentsLayer).bottom : 0, (logoTop && logoShowing) ? logo.getBounds(_componentsLayer).bottom : 0));
-			bounds.width = Math.round(_components.display.width);
-			bounds.height = Math.round((logoTop ? (includeCB && _model.config.controls ? cb.getBounds(_componentsLayer).top : _componentsLayer.height) : (logoShowing ? logo.getBounds(_componentsLayer).top : 0) ) - bounds.y);
 			
+			//width is always the player width
+			bounds.width = Math.floor(_player.config.width);
 			
+			//height is the either the top of the logo (if its not at the top) or the top of the controlbar (if we are including the cb and controls are set to true), minus the  y.
+			var cbHeight:Number = (includeCB && _model.config.controls) ? cb.getBounds(_componentsLayer).top : _player.config.height;
+			var logoHeight:Number = logo.height > 0 ? logoBounds.top : 0;
+			bounds.height = Math.floor( (logoTop ? cbHeight : logoHeight ) - bounds.y);
+
 			return bounds;
 		}
 		

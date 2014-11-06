@@ -71,7 +71,7 @@ package com.longtailvideo.jwplayer.view.components {
 		
 		private var _streamTrack:Number = -1;
 
-        private var _captionHashes = {};
+        private var _captionHashes:Object = {};
 		
 		/** Constructor; inits the parser, selector and renderer. **/
 		public function CaptionsComponent(player:IPlayer) {
@@ -148,30 +148,11 @@ package com.longtailvideo.jwplayer.view.components {
             if(event.type != TrackEvent.JWPLAYER_SUBTITLES_TRACKS) {
                 throw new Error("wrong event");
             }
-            _subtitlesHandler(event);
-        }
 
-        /** Handle a subtitle track index change */
-        private function _subtitlesTrackChangedHandler(event:TrackEvent):void {
-            if (event.type != TrackEvent.JWPLAYER_SUBTITLES_TRACK_CHANGED) {
-                throw new Error("wrong event");
-            }
-            _subtitlesHandler(event);
-        }
-
-        /** Handle changed tracks (MediaPlaylist) **/
-        private function _subtitlesHandler(event:TrackEvent):void {
-            var i:int;
-
-            _track = 0;
-            _streamTrack = 0;
-            _tracks = new Array();
-            _renderer.setPosition(0);
-            _selectedTrack = 0;
-            _captionHashes = {};
-
-            if(event.tracks != null) {
-                for(i = 0; i < event.tracks.length; i++) {
+            if(event.tracks != null && event.tracks.length > 0) {
+                // clear out sideloaded captions
+                _resetTrackList();
+                for(var i:int = 0; i < event.tracks.length; i++) {
                     var name:String = event.tracks[i].name;
                     _tracks.push({
                         data: [],
@@ -180,11 +161,18 @@ package com.longtailvideo.jwplayer.view.components {
                     });
                     _captionHashes[name] = {};
                 }
+                _initializeCaptions();
             }
-            _setIndex(event.currentTrack+1);
-            _renderer.setCaptions('');
+        }
+
+        /** Handle a subtitle track index change */
+        private function _subtitlesTrackChangedHandler(event:TrackEvent):void {
+            if (event.type != TrackEvent.JWPLAYER_SUBTITLES_TRACK_CHANGED) {
+                throw new Error("wrong event");
+            }
+
+            _renderCaptions(event.currentTrack+1);
             _redraw();
-            _sendEvent(CaptionsEvent.JWPLAYER_CAPTIONS_LIST, _getTracks(), _selectedTrack);
         }
 
         /** Handle captions coming in from external sources **/
@@ -231,13 +219,18 @@ package com.longtailvideo.jwplayer.view.components {
             }
         }
 
+        private function _resetTrackList():void {
+            _track = 0;
+            _selectedTrack = 0;
+            _streamTrack = -1;
+            _tracks = new Array();
+            _renderer.setPosition(0);
+            _captionHashes = {};
+        }
+
 		/** Check playlist item for captions. **/
 		private function _itemHandler(event:PlaylistEvent):void {
-			_track = 0;
-			_streamTrack = -1;
-			_tracks = new Array();
-			_renderer.setPosition(0);
-            _captionHashes = {};
+            _resetTrackList();
 			_item = _player.playlist.currentItem;
 			if (_item)
 				var tracks:Object = _item["tracks"];
