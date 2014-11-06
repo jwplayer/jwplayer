@@ -1,135 +1,52 @@
 (function(jwplayer) {
-    var events = jwplayer.events,
-        _utils = jwplayer.utils;
+    var _ = jwplayer._,
+        _utils = jwplayer.utils,
+        GLOBAL_EVENT = 'GLOBAL_EVENT';
 
-    events.eventdispatcher = function(id, debug) {
-        var _id = id,
-            _debug = debug,
-            _listeners,
-            _globallisteners;
+    jwplayer.events.eventdispatcher = function(_id, _debug) {
+
+        var obj = _utils.extend({}, jwplayer.utils.Events);
 
         /** Clears all event listeners **/
-        this.resetEventListeners = function() {
-            _listeners = {};
-            _globallisteners = [];
-        };
-
-        this.resetEventListeners();
+        this.resetEventListeners = obj.off;
+        this.removeEventListener = obj.off;
 
         /** Add an event listener for a specific type of event. **/
-        this.addEventListener = function(type, listener, count) {
-            try {
-                if (!_utils.exists(_listeners[type])) {
-                    _listeners[type] = [];
-                }
+        this.addEventListener = function(type, callback) {
+            // Legacy support
+            if (_.isString(callback)) {
+                /*jshint evil:true*/
+                callback = (new Function('return ' + callback))();
+            }
 
-                if (_utils.typeOf(listener) === 'string') {
-                    /*jshint evil:true*/
-                    listener = (new Function('return ' + listener))();
-                }
-                _listeners[type].push({
-                    listener: listener,
-                    count: count || null
-                });
-            } catch (err) {
-                _utils.log('error', err);
-            }
-            return false;
-        };
-
-        /** Remove an event listener for a specific type of event. **/
-        this.removeEventListener = function(type, listener) {
-            var listenerIndex;
-            if (!_listeners[type]) {
-                return;
-            }
-            try {
-                if (listener === undefined) {
-                    _listeners[type] = [];
-                    return;
-                }
-                for (listenerIndex = 0; listenerIndex < _listeners[type].length; listenerIndex++) {
-                    if (_listeners[type][listenerIndex].listener.toString() === listener.toString()) {
-                        _listeners[type].splice(listenerIndex, 1);
-                        break;
-                    }
-                }
-            } catch (err) {
-                _utils.log('error', err);
-            }
-            return false;
+            return obj.on(type, callback);
         };
 
         /** Add an event listener for all events. **/
-        this.addGlobalListener = function(listener, count) {
-            try {
-                if (_utils.typeOf(listener) === 'string') {
-                    /*jshint evil:true*/
-                    listener = (new Function('return ' + listener))();
-                }
-                _globallisteners.push({
-                    listener: listener,
-                    count: count || null
-                });
-            } catch (err) {
-                _utils.log('error', err);
-            }
-            return false;
+        this.addGlobalListener = function(listener) {
+            return this.addEventListener(GLOBAL_EVENT, listener);
         };
 
         /** Add an event listener for all events. **/
         this.removeGlobalListener = function(listener) {
-            if (!listener) {
-                return;
-            }
-            try {
-                for (var index = _globallisteners.length; index--;) {
-                    if (_globallisteners[index].listener.toString() === listener.toString()) {
-                        _globallisteners.splice(index, 1);
-                    }
-                }
-            } catch (err) {
-                _utils.log('error', err);
-            }
-            return false;
+            return this.removeEventListener(GLOBAL_EVENT, listener);
         };
 
 
         /** Send an event **/
         this.sendEvent = function(type, data) {
-            if (!_utils.exists(data)) {
-                data = {};
-            }
-            _utils.extend(data, {
+            data = _utils.extend({}, data, {
                 id: _id,
                 version: jwplayer.version,
                 type: type
             });
+
             if (_debug) {
                 _utils.log(type, data);
             }
-            dispatchEvent(_listeners[type], data, type);
-            dispatchEvent(_globallisteners, data, type);
-        };
 
-        function dispatchEvent(listeners, data, type) {
-            if (!listeners) {
-                return;
-            }
-            for (var index = 0; index < listeners.length; index++) {
-                var listener = listeners[index];
-                if (listener) {
-                    if (listener.count !== null && --listener.count === 0) {
-                        delete listeners[index];
-                    }
-                    try {
-                        listener.listener(data);
-                    } catch (err) {
-                        _utils.log('Error handling "' + type +
-                            '" event listener [' + index + ']: ' + err.toString(), listener.listener, data);
-                    }
-                }
-            }
-        }
+            obj.trigger(GLOBAL_EVENT, data);
+            obj.trigger(type, data);
+        };
     };
 })(window.jwplayer);
