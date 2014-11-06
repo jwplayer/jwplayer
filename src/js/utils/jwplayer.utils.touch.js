@@ -8,10 +8,10 @@
     utils.touch = function (elem) {
         var _elem = elem,
             _isListening = false,
-            _handlers = {},
             _startEvent = null,
             _gotMove = false,
-            _events = utils.touchEvents;
+            _events = utils.touchEvents,
+            events = utils.extend({}, jwplayer.utils.Events);
 
         document.addEventListener(TOUCH_MOVE, touchHandler);
         document.addEventListener(TOUCH_END, documentEndHandler);
@@ -64,16 +64,6 @@
             }
         }
 
-        function triggerEvent(type, srcEvent, finalEvt) {
-            if (_handlers[type]) {
-                preventDefault(srcEvent);
-                var evt = finalEvt ? finalEvt : createEvent(type, srcEvent);
-                if (evt) {
-                    _handlers[type](evt);
-                }
-            }
-        }
-
         function createEvent(type, srcEvent) {
             var touch = null;
             if (srcEvent.touches && srcEvent.touches.length) {
@@ -110,13 +100,18 @@
             }
         }
 
-        this.addEventListener = function (type, handler) {
-            _handlers[type] = handler;
-        };
+        this.addEventListener = events.on;
+        this.removeEventListener = events.off;
 
-        this.removeEventListener = function (type) {
-            delete _handlers[type];
-        };
+        function triggerEvent(type, srcEvent, finalEvt) {
+            if (events._events[type]) {
+                preventDefault(srcEvent);
+                var evt = finalEvt ? finalEvt : createEvent(type, srcEvent);
+                if (evt) {
+                    events.trigger(type, evt);
+                }
+            }
+        }
 
         return this;
     };

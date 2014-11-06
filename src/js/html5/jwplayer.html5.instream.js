@@ -267,15 +267,6 @@
             _adModel = null;
         };
 
-        /** Forward any calls to add and remove events directly to our event dispatcher **/
-
-        _this.jwInstreamAddEventListener = function(type, listener) {
-            _this.addEventListener(type, listener);
-        };
-        _this.jwInstreamRemoveEventListener = function(type, listener) {
-            _this.removeEventListener(type, listener);
-        };
-
         /** Start instream playback **/
         _this.jwInstreamPlay = function() {
             //if (!_item) return;
@@ -542,6 +533,7 @@
         _this.jwRemoveEventListener = function(type, handler) {
             _this.removeEventListener(type, handler);
         };
+
         _this.jwSetCurrentQuality = function() {};
         _this.jwGetQualityLevels = function() {
             return [];
