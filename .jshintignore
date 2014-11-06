@@ -17,6 +17,7 @@ src/js/utils/jwplayer.utils.css.js
 src/js/utils/jwplayer.utils.extensionmap.js
 src/js/utils/jwplayer.utils.scriptloader.js
 src/js/utils/jwplayer.underscore.js
+src/js/utils/jwplayer.backbone.js
 src/js/jwplayer.js
 src/js/jwplayer.sourceend.js
 src/js/jwplayer.sourcestart.js
