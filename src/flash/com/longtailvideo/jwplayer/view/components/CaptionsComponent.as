@@ -221,6 +221,7 @@ package com.longtailvideo.jwplayer.view.components {
 
         private function _resetTrackList():void {
             _track = 0;
+            _selectedTrack = 0;
             _streamTrack = -1;
             _tracks = new Array();
             _renderer.setPosition(0);
