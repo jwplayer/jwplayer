@@ -237,13 +237,13 @@
 
             _this.jwInstreamAddEventListener = function(type, listener) {
                 if (_instreamPlayer) {
-                    _instreamPlayer.jwInstreamAddEventListener(type, listener);
+                    _instreamPlayer.jwAddEventListener(type, listener);
                 }
             };
 
             _this.jwInstreamRemoveEventListener = function(type, listener) {
                 if (_instreamPlayer) {
-                    _instreamPlayer.jwInstreamRemoveEventListener(type, listener);
+                    _instreamPlayer.jwRemoveEventListener(type, listener);
                 }
             };
 

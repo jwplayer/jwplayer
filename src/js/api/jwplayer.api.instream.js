@@ -5,56 +5,11 @@
 
     jwplayer.api.instream = function(_api, _player) {
 
+        var events = utils.extend({}, jwplayer.utils.Events);
+
         var _item,
             _options,
-            _listeners = {},
-            _stateListeners = {},
             _this = this;
-
-        function _addInternalListener(id, type) {
-            _player.jwInstreamAddEventListener(type,
-                    'function(dat) { jwplayer("' + id + '").dispatchInstreamEvent("' + type + '", dat); }');
-        }
-
-        function _eventListener(type, callback) {
-            if (!_listeners[type]) {
-                _listeners[type] = [];
-                _addInternalListener(_api.id, type);
-            }
-            _listeners[type].push(callback);
-            return this;
-        }
-
-        function _stateListener(state, callback) {
-            if (!_stateListeners[state]) {
-                _stateListeners[state] = [];
-                _eventListener(events.JWPLAYER_PLAYER_STATE, _stateCallback(state));
-            }
-            _stateListeners[state].push(callback);
-            return this;
-        }
-
-        function _stateCallback(state) {
-            return function(args) {
-                var newstate = args.newstate,
-                    oldstate = args.oldstate;
-                if (newstate === state) {
-                    var callbacks = _stateListeners[newstate];
-                    if (callbacks) {
-                        for (var c = 0; c < callbacks.length; c++) {
-                            var fn = callbacks[c];
-                            if (typeof fn === 'function') {
-                                fn.call(this, {
-                                    oldstate: oldstate,
-                                    newstate: newstate,
-                                    type: args.type
-                                });
-                            }
-                        }
-                    }
-                }
-            };
-        }
 
         _this.type = 'instream';
 
@@ -72,34 +27,6 @@
             }
         };
 
-        _this.removeEvents = function() {
-            _listeners = _stateListeners = {};
-        };
-
-        _this.removeEventListener = function(type, callback) {
-            var listeners = _listeners[type];
-            if (listeners) {
-                for (var l = listeners.length; l--;) {
-                    if (listeners[l] === callback) {
-                        listeners.splice(l, 1);
-                    }
-                }
-            }
-        };
-
-        _this.dispatchEvent = function(type, calledArguments) {
-            var listeners = _listeners[type];
-            if (listeners) {
-                listeners = listeners.slice(0); //copy array
-                var args = utils.translateEventResponse(type, calledArguments[1]);
-                for (var l = 0; l < listeners.length; l++) {
-                    var fn = listeners[l];
-                    if (typeof fn === 'function') {
-                        fn.call(this, args);
-                    }
-                }
-            }
-        };
         _this.onError = function(callback) {
             return _eventListener(events.JWPLAYER_ERROR, callback);
         };
@@ -184,6 +111,32 @@
                 _player.jwInstreamClick(url);
             }
         };
-    };
 
+
+
+
+
+
+    function _eventListener(type, callback) {
+        events.on(type, callback);
+        events.on(type, _player.dispatchInstreamEvent);
+    }
+
+    function _stateListener(state, callback) {
+        events.on(events.JWPLAYER_PLAYER_STATE, function(evt) {
+            if (evt === state) {
+                callback.call(this, {
+                    oldstate: evt.oldstate,
+                    newstate: evt.newstate,
+                    type: evt.type
+                });
+            }
+        });
+    }
+
+    _this.removeEvents = events.off;
+    _this.removeEventListener = events.off;
+    _this.dispatchEvent = events.trigger;
+
+    };
 })(jwplayer);
