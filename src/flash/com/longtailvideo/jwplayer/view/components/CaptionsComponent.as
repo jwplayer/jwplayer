@@ -150,12 +150,8 @@ package com.longtailvideo.jwplayer.view.components {
             }
 
             if(event.tracks != null && event.tracks.length > 0) {
-                _track = 0;
-                _streamTrack = 0;
-                _tracks = new Array();
-                _renderer.setPosition(0);
-                _selectedTrack = 0;
-                _captionHashes = {};
+                // clear out sideloaded captions
+                _resetTrackList();
                 for(var i:int = 0; i < event.tracks.length; i++) {
                     var name:String = event.tracks[i].name;
                     _tracks.push({
@@ -223,13 +219,17 @@ package com.longtailvideo.jwplayer.view.components {
             }
         }
 
+        private function _resetTrackList():void {
+            _track = 0;
+            _streamTrack = -1;
+            _tracks = new Array();
+            _renderer.setPosition(0);
+            _captionHashes = {};
+        }
+
 		/** Check playlist item for captions. **/
 		private function _itemHandler(event:PlaylistEvent):void {
-			_track = 0;
-			_streamTrack = -1;
-			_tracks = new Array();
-			_renderer.setPosition(0);
-            _captionHashes = {};
+            _resetTrackList();
 			_item = _player.playlist.currentItem;
 			if (_item)
 				var tracks:Object = _item["tracks"];
