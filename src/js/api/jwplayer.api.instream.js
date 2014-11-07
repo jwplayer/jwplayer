@@ -1,6 +1,7 @@
 (function(jwplayer) {
     var events = jwplayer.events,
         utils = jwplayer.utils,
+        _ = jwplayer._,
         states = events.state;
 
     jwplayer.api.instream = function(_api, _player) {
@@ -11,11 +12,10 @@
             _options,
             _this = this;
 
-        _this.type = 'instream';
+        this.type = 'instream';
 
         _this.init = function() {
             _api.callInternal('jwInitInstream');
-            return _this;
         };
         _this.loadItem = function(item, options) {
             _item = item;
@@ -25,66 +25,6 @@
             } else {
                 _api.callInternal('jwLoadItemInstream', _item, _options);
             }
-        };
-
-        _this.onError = function(callback) {
-            return _eventListener(events.JWPLAYER_ERROR, callback);
-        };
-        _this.onMediaError = function(callback) {
-            return _eventListener(events.JWPLAYER_MEDIA_ERROR, callback);
-        };
-        _this.onFullscreen = function(callback) {
-            return _eventListener(events.JWPLAYER_FULLSCREEN, callback);
-        };
-        _this.onMeta = function(callback) {
-            return _eventListener(events.JWPLAYER_MEDIA_META, callback);
-        };
-        _this.onMute = function(callback) {
-            return _eventListener(events.JWPLAYER_MEDIA_MUTE, callback);
-        };
-        _this.onComplete = function(callback) {
-            return _eventListener(events.JWPLAYER_MEDIA_COMPLETE, callback);
-        };
-        // _this.onSeek = function(callback) {
-        //    return _eventListener(events.JWPLAYER_MEDIA_SEEK, callback);
-        // };
-
-        _this.onPlaylistComplete = function(callback) {
-            return _eventListener(events.JWPLAYER_PLAYLIST_COMPLETE, callback);
-        };
-
-        _this.onPlaylistItem = function(callback) {
-            return _eventListener(events.JWPLAYER_PLAYLIST_ITEM, callback);
-        };
-
-        _this.onTime = function(callback) {
-            return _eventListener(events.JWPLAYER_MEDIA_TIME, callback);
-        };
-        // _this.onVolume = function(callback) {
-        // return _eventListener(events.JWPLAYER_MEDIA_VOLUME, callback);
-        // };
-        // State events
-        _this.onBuffer = function(callback) {
-            return _stateListener(states.BUFFERING, callback);
-        };
-        _this.onPause = function(callback) {
-            return _stateListener(states.PAUSED, callback);
-        };
-        _this.onPlay = function(callback) {
-            return _stateListener(states.PLAYING, callback);
-        };
-        _this.onIdle = function(callback) {
-            return _stateListener(states.IDLE, callback);
-        };
-        // Instream events
-        _this.onClick = function(callback) {
-            return _eventListener(events.JWPLAYER_INSTREAM_CLICK, callback);
-        };
-        _this.onInstreamDestroyed = function(callback) {
-            return _eventListener(events.JWPLAYER_INSTREAM_DESTROYED, callback);
-        };
-        _this.onAdSkipped = function(callback) {
-            return _eventListener(events.JWPLAYER_AD_SKIPPED, callback);
         };
         _this.play = function(state) {
             _player.jwInstreamPlay(state);
@@ -112,31 +52,41 @@
             }
         };
 
+        // EVENTS
+        var legacyMaps = {
+            onError: events.JWPLAYER_ERROR,
+            onMediaError: events.JWPLAYER_ERROR,
+            onFullscreen: events.JWPLAYER_FULLSCREEN,
+            onMeta: events.JWPLAYER_MEDIA_META,
+            onMute: events.JWPLAYER_MEDIA_MUTE,
+            onComplete: events.JWPLAYER_MEDIA_COMPLETE,
+            onPlaylistComplete: events.JWPLAYER_PLAYLIST_COMPLETE,
+            onPlaylistItem: events.JWPLAYER_PLAYLIST_ITEM,
+            onTime: events.JWPLAYER_MEDIA_TIME,
+            onClick: events.JWPLAYER_INSTREAM_CLICK,
+            onInstreamDesrtoyed: events.JWPLAYER_INSTREAM_DESTROYED,
+            onAdSkipped: events.JWPLAYER_AD_SKIPPED,
 
+            onBuffer : states.BUFFERING,
+            onPlay : states.PLAYING,
+            onPause : states.PAUSED,
+            onIdle : states.IDLE
+        };
 
-
-
-
-    function _eventListener(type, callback) {
-        events.on(type, callback);
-        events.on(type, _player.dispatchInstreamEvent);
-    }
-
-    function _stateListener(state, callback) {
-        events.on(events.JWPLAYER_PLAYER_STATE, function(evt) {
-            if (evt === state) {
-                callback.call(this, {
-                    oldstate: evt.oldstate,
-                    newstate: evt.newstate,
-                    type: evt.type
-                });
-            }
+        _.each(legacyMaps, function(event, api) {
+            _this[api] = function(callback) {
+                events.on(event, callback);
+            };
         });
-    }
 
-    _this.removeEvents = events.off;
-    _this.removeEventListener = events.off;
-    _this.dispatchEvent = events.trigger;
+        // STATE EVENTS
+        events.on(events.JWPLAYER_PLAYER_STATE, function(evt) {
+            events.trigger(evt.newstate, evt);
+        });
+
+        _this.removeEvents = events.off;
+        _this.removeEventListener = events.off;
+        _this.dispatchEvent = events.trigger;
 
     };
 })(jwplayer);

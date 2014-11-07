@@ -93,6 +93,7 @@
             return this;
         },
 
+        /*
         // Tell this object to stop listening to either specific events ... or
         // to every object it's currently listening to.
         stopListening: function(obj, name, callback) {
@@ -108,6 +109,7 @@
             }
             return this;
         }
+        */
 
     };
 
@@ -155,6 +157,7 @@
         }
     };
 
+    /*
     var listenMethods = {listenTo: 'on', listenToOnce: 'once'};
 
     // Inversion-of-control versions of `on` and `once`. Tell *this* object to
@@ -170,6 +173,7 @@
             return this;
         };
     });
+    */
 
     jwplayer.utils.Events = Events;
 }).call(jwplayer);
