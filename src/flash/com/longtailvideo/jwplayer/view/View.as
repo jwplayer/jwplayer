@@ -764,7 +764,8 @@ package com.longtailvideo.jwplayer.view {
 			} catch(e:Error) {
 				Logger.log("Could not add instream plugin to display stack");
 			}
-			
+			showControls();
+			startFader();
 			_instreamAnim.fade(1);
 			_instreamMode = true;
 
