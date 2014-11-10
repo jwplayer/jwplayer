@@ -6,8 +6,7 @@
         states = events.state,
         DefaultProvider = jwplayer.html5.DefaultProvider,
         _scriptLoader = new utils.scriptloader(window.location.protocol + '//www.youtube.com/iframe_api'),
-        _isMobile = utils.isMobile(),
-        _isSafari = utils.isSafari();
+        _isMobile = utils.isMobile();
 
     function YoutubeProvider(_playerId) {
 
@@ -38,7 +37,7 @@
             // post roll support
             _beforecompleted = false,
             // user must click video to initiate playback, gets set to false once playback starts
-            _requiresUserInteraction = (_isMobile || _isSafari);
+            _requiresUserInteraction = _isMobile;
 
         this.setState = function(state) {
             clearInterval(_playingInterval);
@@ -287,14 +286,8 @@
             });
         }
 
-        // Mobile and Safari require a direct click to start playback
-        function _requiresVisibility() {
-            //return _requiresUserInteraction;
-            return (_isMobile || _isSafari);
-        }
-
         function _readyViewForMobile() {
-            if (_requiresVisibility()) {
+            if (_isMobile) {
                 _this.setVisibility(true);
                 // hide controls so user can click on iFrame
                 utils.css('#' + _playerId + ' .jwcontrols', {
@@ -361,21 +354,13 @@
             }
 
             _this.setVisibility(true);
-            
-            if (!_youtubeAPI) {
-                // load item when API is ready
+
+            if (!_youtubeAPI || !_youtubePlayer) {
+                // wait for API to be present and jwplayer DOM to be instantiated
                 _youtubeEmbedReadyCallback = function() {
-                    // enabling autoplay here also throws an exception
                     _embedYoutubePlayer(videoId);
                 };
                 _readyCheck();
-                return;
-            }
-
-            if (!_youtubePlayer) {
-                _embedYoutubePlayer(videoId, {
-                    autoplay: _requiresUserInteraction ? 0 : 1
-                });
                 return;
             }
 
@@ -477,7 +462,7 @@
             if (!utils.exists(state)) {
                 state = !_youtubePlayer.isMuted();
             }
-            
+
             if (state) {
                 _lastVolume = _youtubePlayer.getVolume();
                 _youtubePlayer.mute();
@@ -549,7 +534,7 @@
                 });
             } else {
                 // hide
-                if (!_requiresVisibility()) {
+                if (!_isMobile) {
                     utils.css.style(_container, {
                         opacity: 0
                     });
