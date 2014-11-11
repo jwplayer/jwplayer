@@ -55,6 +55,7 @@
 
     /** HTML5 Controlbar class * */
     html5.controlbar = function(_api, _config) {
+        _config = _config || {};
         var _skin,
             _dividerElement = _layoutElement('divider', CB_DIVIDER),
             _defaults = {
@@ -146,7 +147,7 @@
                 play: false,
                 mute: false,
                 cast: false,
-                fullscreen: false
+                fullscreen: _config.fullscreen || false
             },
 
             _buttonMapping = {
@@ -625,6 +626,12 @@
             if (toggle) {
                 _buttonStyle(_internalSelector('.jw' + name + '.jwtoggle button'), _getSkinElement(toggle + 'Button'),
                     _getSkinElement(toggle + 'ButtonOver'));
+            }
+
+            if (_toggleStates[name]) {
+                utils.addClass(element, 'jwtoggle');
+            } else {
+                utils.removeClass(element, 'jwtoggle');
             }
 
             _elements[name] = element;
