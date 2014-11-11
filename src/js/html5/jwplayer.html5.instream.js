@@ -66,7 +66,7 @@
             // Initialize the instream player's model copied from main player's model
             _adModel = new html5.model({}, _provider);
             _adModel.setVolume(_model.volume);
-            //_adModel.setFullscreen(_model.fullscreen); // doesn't seem to work
+            _adModel.setFullscreen(_model.fullscreen);
             _adModel.setMute(_model.mute);
             _adModel.addEventListener('fullscreenchange',_nativeFullscreenHandler);
             _olditem = _model.playlist[_model.item];
@@ -103,7 +103,10 @@
             _instreamContainer.appendChild(_instreamDisplay.element());
 
             // Instream controlbar
-            _cbar = new html5.controlbar(_this);
+            var cbarConfig = {
+                fullscreen : _model.fullscreen
+            };
+            _cbar = new html5.controlbar(_this, cbarConfig);
             _cbar.instreamMode(true);
             _instreamContainer.appendChild(_cbar.element());
 
@@ -334,7 +337,7 @@
             _provider.attachMedia();
             _provider.mute(_model.mute);
             _provider.volume(_model.volume);
-            // _provider.setFullScreen(_model.fullscreen); // doesn't seem to work
+            _provider.setFullScreen(_model.fullscreen);
         }
 
         function stateHandler(evt) {
