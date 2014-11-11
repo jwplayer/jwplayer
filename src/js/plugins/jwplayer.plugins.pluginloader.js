@@ -39,7 +39,7 @@
 		
 		// This is not entirely efficient, but it's simple
 		function _checkComplete() {
-			if (!_config) {
+			if (!_config || _.keys(_config).length === 0) {
 				_complete();
 			}
 			if (!_iscomplete) {
