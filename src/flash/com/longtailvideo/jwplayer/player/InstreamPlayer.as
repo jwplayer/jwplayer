@@ -517,21 +517,13 @@ package com.longtailvideo.jwplayer.player
 			_mediaLayer.mask = _mediaMask;
 			
 			_controls.controlbar.resize(viewDisplay.width, viewDisplay.height);
-			_controls.controlbar.show();
 			var safe:Rectangle = getSafeRegion();
 			if (_skipButton) {
 				_skipButton.visible = _model.config.controls;
 				_skipButton.x = config.width - (10 + _SKIP_WIDTH);
 				_skipButton.y = safe.y + safe.height - (10 + _SKIP_HEIGHT);
 			}
-			if (!_model.config.controls) {
-				_controls.controlbar.hide();
-				_controls.display.hide();
-			}
-			else {
-				_controls.controlbar.show();
-				_controls.display.show();
-			}
+
 		}
 		
 		protected function removeEventListeners():void {
