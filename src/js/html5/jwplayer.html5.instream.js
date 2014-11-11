@@ -337,7 +337,6 @@
             _provider.attachMedia();
             _provider.mute(_model.mute);
             _provider.volume(_model.volume);
-            _provider.setFullScreen(_model.fullscreen);
         }
 
         function stateHandler(evt) {

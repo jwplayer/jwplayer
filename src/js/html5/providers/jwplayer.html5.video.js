@@ -665,7 +665,7 @@
         this.setFullScreen = function(state) {
             state = !!state;
 
-            // This implementation if for iOS and Android WebKit only
+            // This implementation is for iOS and Android WebKit only
             // This won't get called if the player contain can go fullscreen
             if (state) {
                 try {
