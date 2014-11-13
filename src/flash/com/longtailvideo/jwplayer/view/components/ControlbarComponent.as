@@ -797,6 +797,7 @@ package com.longtailvideo.jwplayer.view.components {
 			var button:ComponentButton = new ComponentButton();
 			button.name = name;
 
+            // If no overIcon is defined, only the outIcon will ever appear.  This allows the CC and HD buttons to be displayed as toggles based on the logic in captionChanged and levelChanged.
 			var outIcon:DisplayObject  = getSkinElement(name + "Button");
 			var overIcon:DisplayObject = getSkinElement(name + "ButtonOver");
 
