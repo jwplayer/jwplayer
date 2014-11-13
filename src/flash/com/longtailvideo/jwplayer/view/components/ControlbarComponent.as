@@ -798,7 +798,7 @@ package com.longtailvideo.jwplayer.view.components {
 			button.name = name;
 
 			var outIcon:DisplayObject  = getSkinElement(name + "Button");
-			var overIcon:DisplayObject = getSkinElement(name + "ButtonOver") || outIcon;
+			var overIcon:DisplayObject = getSkinElement(name + "ButtonOver");
 
 			button.setOutIcon(outIcon);
 			button.setOverIcon(overIcon);
