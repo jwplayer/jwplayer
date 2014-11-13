@@ -408,6 +408,14 @@
                 player.jwAddEventListener(type,
                         'function(dat) { jwplayer("' + _this.id + '").dispatchEvent("' + type + '", dat); }');
             } catch (e) {
+                if (_this.renderingMode === 'flash') {
+                    var anchor = document.createElement('a');
+                    anchor.href = _player.data;
+                    if (anchor.protocol !== location.protocol) {
+                        utils.log('Warning: Your site [' + location.protocol + '] and JWPlayer ['+anchor.protocol +
+                            '] are hosted using different protocols');
+                    }
+                }
                 utils.log('Could not add internal listener');
             }
         }
