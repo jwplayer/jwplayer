@@ -100,6 +100,11 @@ package com.longtailvideo.jwplayer.utils
             }
 			return obj;
 		}
+
+        public static function replaceQuotes(s:String):String {
+            return s.replace(/"/g, "'");
+
+        }
 		
 		public static function rectangleToObject(rect:Rectangle):Object {
 			return {
