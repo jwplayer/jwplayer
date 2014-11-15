@@ -28,11 +28,8 @@ package com.longtailvideo.jwplayer.utils {
 			if (!RootReference.root) {
 				RootReference.root = displayObj.root;
 				RootReference.stage = displayObj.stage;
-				try {
-					Security.allowDomain("*");
-				} catch(e:Error) {
-					// This may not work in the AIR testing suite
-				}
+				Security.allowDomain("*");
+				Security.allowInsecureDomain("*");
 			}
 		}
 	}
