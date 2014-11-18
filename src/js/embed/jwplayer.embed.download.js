@@ -1,13 +1,25 @@
 (function(jwplayer) {
     var embed = jwplayer.embed,
         utils = jwplayer.utils,
-        _css  = jwplayer.utils.css,
 
         JW_CSS_NONE = 'none',
         JW_CSS_BLOCK = 'block',
         JW_CSS_100PCT = '100%',
         JW_CSS_RELATIVE = 'relative',
         JW_CSS_ABSOLUTE = 'absolute';
+
+    // We cannot use jwplayer.utils.css due to an IE8 incompatability
+    function _badCss(selector, style) {
+        var elements = document.querySelectorAll(selector);
+
+        function app(prop, val) {
+            elements[i].style[prop] = val;
+        }
+
+        for (var i = 0; i < elements.length; i++) {
+            utils.foreach(style, app);
+        }
+    }
 
     embed.download = function(_container, _options, _errorCallback) {
         var params = utils.extend({}, _options),
@@ -83,7 +95,7 @@
             _container.style.width = '';
             _container.style.height = '';
 
-            _css(_prefix + 'display', {
+            _badCss(_prefix + 'display', {
                 width: utils.styleDimension(Math.max(320, _width)),
                 height: utils.styleDimension(Math.max(180, _height)),
                 background: 'black center no-repeat ' + (_image ? 'url(' + _image + ')' : ''),
@@ -93,19 +105,19 @@
                 display: JW_CSS_BLOCK
             });
 
-            _css(_prefix + 'display div', {
+            _badCss(_prefix + 'display div', {
                 position: JW_CSS_ABSOLUTE,
                 width: JW_CSS_100PCT,
                 height: JW_CSS_100PCT
             });
 
-            _css(_prefix + 'logo', {
+            _badCss(_prefix + 'logo', {
                 top: _logo.margin + 'px',
                 right: _logo.margin + 'px',
                 background: 'top right no-repeat url(' + _logo.prefix + _logo.file + ')'
             });
 
-            _css(_prefix + 'icon', {
+            _badCss(_prefix + 'icon', {
                 /*jshint maxlen:9000*/
                 background: 'center no-repeat url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAA6/NlyAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAgNJREFUeNrs28lqwkAYB/CZqNVDDj2r6FN41QeIy8Fe+gj6BL275Q08u9FbT8ZdwVfotSBYEPUkxFOoks4EKiJdaDuTjMn3wWBO0V/+sySR8SNSqVRKIR8qaXHkzlqS9jCfzzWcTCYp9hF5o+59sVjsiRzcegSckFzcjT+ruN80TeSlAjCAAXzdJSGPFXRpAAMYwACGZQkSdhG4WCzehMNhqV6vG6vVSrirKVEw66YoSqDb7cqlUilE8JjHd/y1MQefVzqdDmiaJpfLZWHgXMHn8F6vJ1cqlVAkEsGuAn83J4gAd2RZymQygX6/L1erVQt+9ZPWb+CDwcCC2zXGJaewl/DhcHhK3DVj+KfKZrMWvFarcYNLomAv4aPRSFZVlTlcSPA5fDweW/BoNIqFnKV53JvncjkLns/n/cLdS+92O7RYLLgsKfv9/t8XlDn4eDyiw+HA9Jyz2eyt0+kY2+3WFC5hluej0Ha7zQQq9PPwdDq1Et1sNsx/nFBgCqWJ8oAK1aUptNVqcYWewE4nahfU0YQnk4ntUEfGMIU2m01HoLaCKbTRaDgKtaVLk9tBYaBcE/6Artdr4RZ5TB6/dC+9iIe/WgAMYADDpAUJAxjAAAYwgGFZgoS/AtNNTF7Z2bL0BYPBV3Jw5xFwwWcYxgtBP5OkE8i9G7aWGOOCruvauwADALMLMEbKf4SdAAAAAElFTkSuQmCC)'
             });
