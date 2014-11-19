@@ -7,16 +7,14 @@
   <body>
     <p> Audio panning Test </p>
     <div id="playerContainer">Loading the player ...</div>
-    <a onclick="jwplayer().play()">Toggle playback</a> |
     <a onclick="jwplayer().setPan(-100)">Pan left</a> |
     <a onclick="jwplayer().setPan(0)">Pan middle</a> |
-    <a onclick="jwplayer().setPan(100)">Pan right</a> |
-    <a onclick="console.log(jwplayer().getVolume())">Report volume</a>
+    <a onclick="jwplayer().setPan(100)">Pan right</a>
   </body>
 
   <script type='text/javascript'>
     jwplayer("playerContainer").setup({
-      file: "video/cheetah.mp4",
+      file: "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4",
       primary: "flash",
       height: 360,
       width: 640
