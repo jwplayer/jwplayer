@@ -347,6 +347,17 @@ import flash.utils.setTimeout;
 			return false;
 		}
 
+		public function setPan(pan:Number):Boolean {
+			if (_model.media) {
+				setCookie('pan', pan);
+				mute(false);
+				_model.config.pan = pan;
+				_model.media.setPan(pan);
+				return true;
+			}
+			return false;
+		}
+
 		public function myTest():void {
 		        mute(true);
 		}

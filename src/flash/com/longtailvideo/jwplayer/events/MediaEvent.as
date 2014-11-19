@@ -36,6 +36,7 @@ package com.longtailvideo.jwplayer.events {
 		public var metadata:Object 			= null;
 
 		public static const JWPLAYER_MEDIA_VOLUME:String = "jwplayerMediaVolume";
+		public static const JWPLAYER_MEDIA_PAN:String = "jwplayerMediaPan";
 		public static const JWPLAYER_MEDIA_MUTE:String = "jwplayerMediaMute";
 
 		public var volume:Number 			= -1;

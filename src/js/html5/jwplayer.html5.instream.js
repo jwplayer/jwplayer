@@ -514,6 +514,10 @@
             _adModel.setVolume(vol);
             _api.jwSetVolume(vol);
         };
+        _this.jwSetPan = function(pan) {
+            _adModel.setPan(pan);
+            _api.jwSetPan(pan);
+        };
         _this.jwMyTest = function() {
             _adModel.myTest();
             _api.jwMyTest();

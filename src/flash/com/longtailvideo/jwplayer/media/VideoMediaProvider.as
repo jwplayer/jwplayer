@@ -389,6 +389,12 @@ package com.longtailvideo.jwplayer.media {
 			super.setVolume(vol);
 		}
 
+		/** Set the pan level. **/
+		override public function setPan(pan:Number):void {
+			streamPan(pan);
+			super.setPan(pan);
+		}
+
 		override public function myTest():void {
 			super.myTest();
 		}
@@ -397,6 +403,14 @@ package com.longtailvideo.jwplayer.media {
 		/** Set the stream's volume, without sending a volume event **/
 		protected function streamVolume(level:Number):void {
 			_transformer.volume = level / 100;
+			if (_stream) {
+				_stream.soundTransform = _transformer;
+			}
+		}
+
+		/** Set the stream's panning, without sending a pan event **/
+		protected function streamPan(level:Number):void {
+			_transformer.pan = level / 100;
 			if (_stream) {
 				_stream.soundTransform = _transformer;
 			}

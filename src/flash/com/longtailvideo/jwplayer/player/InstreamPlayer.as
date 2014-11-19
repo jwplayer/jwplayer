@@ -93,6 +93,7 @@ package com.longtailvideo.jwplayer.player
 			_isConfig = new PlayerConfig();
 			_isConfig.setConfig({
 				volume: _model.config.volume,
+				pan: _model.config.pan,
 				mute: _model.config.mute,
 				screencolor: _model.config.screencolor,
 				fullscreen: _model.config.fullscreen,
@@ -122,6 +123,7 @@ package com.longtailvideo.jwplayer.player
 			_view.addEventListener(ViewEvent.JWPLAYER_RESIZE, resizeHandler);
 			_view.addEventListener(ViewEvent.JWPLAYER_VIEW_REDRAW, resizeHandler);
 			_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_VOLUME, playerVolumeUpdated);
+			_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_PAN, playerPanUpdated);
 			_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_MUTE, playerMuteUpdated);
 			
 
@@ -385,6 +387,13 @@ package com.longtailvideo.jwplayer.player
 			}
 		}		
 
+		protected function playerPanUpdated(evt:MediaEvent=null):void {
+			_isConfig.pan = _model.config.pan;
+			if (_provider) {
+				_provider.setPan(_model.config.pan);
+			}
+		}		
+
 		protected function playerMuteUpdated(evt:MediaEvent=null):void {
 			_isConfig.mute = _model.config.mute;
 			if (_provider) {
@@ -633,6 +642,10 @@ package com.longtailvideo.jwplayer.player
 		/**********************************************/
 		
 		public function volume(volume:Number):Boolean {
+			throw new Error(UNSUPPORTED_ERROR);
+		}
+
+		public function pan(pan:Number):Boolean {
 			throw new Error(UNSUPPORTED_ERROR);
 		}
 		

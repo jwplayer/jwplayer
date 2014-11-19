@@ -169,6 +169,10 @@ package com.longtailvideo.jwplayer.media {
 		public function setVolume(vol:Number):void {
 			sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_VOLUME, {'volume': vol});
 		}
+
+		public function setPan(pan:Number):void {
+			sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_PAN, {'pan': pan});
+		}
 		
 		public function myTest():void {
 			setVolume(0);

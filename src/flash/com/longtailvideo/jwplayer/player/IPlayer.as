@@ -58,6 +58,7 @@ package com.longtailvideo.jwplayer.player {
 		 */
 		function unlock(target:IPlugin):Boolean;
 		function volume(volume:Number):Boolean;
+		function pan(pan:Number):Boolean;
 		function mute(state:Boolean):void;
 		function play():Boolean;
 		function pause():Boolean;

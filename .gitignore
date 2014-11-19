@@ -8,3 +8,5 @@ bin-debug
 bin-release
 examples/panning/cheetah.mp4
 examples/panning/server.go
+examples/panning/server
+examples/panning/.DS_Store

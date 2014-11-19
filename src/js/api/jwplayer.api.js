@@ -49,6 +49,7 @@
         'setControls',
         'setCurrentQuality',
         'setVolume',
+        'setPan',
         'setCurrentAudioTrack'
     ];
 
