@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>JW Audio Panning</title>
+    <script type="text/javascript" src="../../bin-release/jwplayer.js"></script>
+  </head>
+  <body>
+    <p> Audio panning Test </p>
+    <div id="playerContainer">Loading the player ...</div>
+    <a onclick="jwplayer().play()">Toggle playback</a> |
+    <a onclick="console.log(jwplayer().getVolume())">Report volume</a>
+  </body>
+
+  <script type='text/javascript'>
+    jwplayer("playerContainer").setup({
+      file: "cheetah.mp4",
+      height: 360,
+      width: 640
+    });
+  </script>
+</html>
