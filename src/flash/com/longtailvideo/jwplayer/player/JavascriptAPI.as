@@ -204,7 +204,6 @@ package com.longtailvideo.jwplayer.player {
 				ExternalInterface.addCallback("jwSetMute", js_mute);
 				ExternalInterface.addCallback("jwSetVolume", js_volume);
 				ExternalInterface.addCallback("jwSetPan", js_pan);
-				ExternalInterface.addCallback("jwMyTest", js_mytest);
 				ExternalInterface.addCallback("jwSetFullscreen", js_fullscreen);
 				ExternalInterface.addCallback("jwSetControls", js_setControls);
 				ExternalInterface.addCallback("jwForceState", js_forceState);
@@ -577,10 +576,6 @@ package com.longtailvideo.jwplayer.player {
 
 		private static function js_pan(pan:Number):void {
 			_player.pan(pan);
-		}
-
-		private static function js_mytest():void {
-			_player.mute(true);
 		}
 
 		private static function js_fullscreen(fullscreenstate:*=null):void {
