@@ -5,15 +5,15 @@
 
         // New API - dummy to fallback to old API
         playerInstance.get = function (attr) {
-            attr[0] = attr[0].toUpperCase();
-            playerInstance['get' + attr]();
+            attr = attr[0].toUpperCase() + attr.slice(1);
+            return playerInstance['get' + attr]();
         };
 
         playerInstance.set = function (attr, val) {
             var cased = attr;
-            cased[0] = cased[0].toUpperCase();
+            cased = cased[0].toUpperCase() + cased.slice(1);
             try {
-                playerInstance['set' + cased](val);
+                return playerInstance['set' + cased](val);
             } catch (e) {
                 throw 'Attempt to set ' + attr + ' failed';
             }
@@ -75,7 +75,7 @@
         playerInstance.on = function (event, callback) {
             var oldMethod = mapping[event];
 
-            playerInstance[oldMethod](callback);
+            return playerInstance[oldMethod](callback);
         };
 
         playerInstance.off = function () {
