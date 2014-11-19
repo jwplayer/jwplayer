@@ -77,7 +77,6 @@ package com.longtailvideo.jwplayer.media
 		function stop():void;
 		function setVolume(vol:Number):void;
 		function setPan(pan:Number):void;
-		function myTest():void;
 		function mute(mute:Boolean):void;
 		function resize(width:Number, height:Number):void;
 		

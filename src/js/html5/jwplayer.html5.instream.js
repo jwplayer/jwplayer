@@ -518,10 +518,6 @@
             _adModel.setPan(pan);
             _api.jwSetPan(pan);
         };
-        _this.jwMyTest = function() {
-            _adModel.myTest();
-            _api.jwMyTest();
-        };
         _this.jwGetMute = function() {
             return _model.mute;
         };

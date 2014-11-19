@@ -174,10 +174,6 @@ package com.longtailvideo.jwplayer.media {
 			sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_PAN, {'pan': pan});
 		}
 		
-		public function myTest():void {
-			setVolume(0);
-			sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_MUTE, {'mute': true});
-		}
 		
 		/**
 		 * Changes the mute state of the item.

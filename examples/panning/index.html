@@ -8,7 +8,9 @@
     <p> Audio panning Test </p>
     <div id="playerContainer">Loading the player ...</div>
     <a onclick="jwplayer().play()">Toggle playback</a> |
-    <a onclick="jwplayer().myTest()">My custom mute</a> |
+    <a onclick="jwplayer().setPan(-100)">Pan left</a> |
+    <a onclick="jwplayer().setPan(0)">Pan middle</a> |
+    <a onclick="jwplayer().setPan(100)">Pan right</a> |
     <a onclick="console.log(jwplayer().getVolume())">Report volume</a>
   </body>
 

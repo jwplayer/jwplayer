@@ -33,8 +33,7 @@
         'getWidth',
         'isBeforeComplete',
         'isBeforePlay',
-        'releaseState',
-        'myTest',
+        'releaseState'
     ];
 
     var _chainableInternalFuncs = [

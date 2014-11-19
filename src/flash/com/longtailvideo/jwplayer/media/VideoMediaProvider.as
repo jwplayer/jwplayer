@@ -395,10 +395,6 @@ package com.longtailvideo.jwplayer.media {
 			super.setPan(pan);
 		}
 
-		override public function myTest():void {
-			super.myTest();
-		}
-
 
 		/** Set the stream's volume, without sending a volume event **/
 		protected function streamVolume(level:Number):void {
