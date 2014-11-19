@@ -960,7 +960,7 @@ package com.longtailvideo.jwplayer.view {
 			}
 		}
 		
-		public function getSafeRegion(includeCB:Boolean = true):Rectangle {
+		public function getSafeRegion(includeBottom:Boolean = true):Rectangle {
 			var bounds:Rectangle = new Rectangle();
 			var logo:LogoComponent = _components.logo as LogoComponent;
 			var dock:DockComponent = _components.dock as DockComponent;
@@ -984,8 +984,8 @@ package com.longtailvideo.jwplayer.view {
 			bounds.width = Math.floor(_player.config.width);
 			
 			//height is the either the top of the logo (if its not at the top) or the top of the controlbar (if we are including the cb and controls are set to true), minus the  y.
-			var cbHeight:Number = (includeCB && _model.config.controls) ? cb.getBounds(_componentsLayer).top : _player.config.height;
-			var logoHeight:Number = logo.height > 0 ? logoBounds.top : 0;
+			var cbHeight:Number = (includeBottom && _model.config.controls) ? cb.getBounds(_componentsLayer).top : _player.config.height;
+			var logoHeight:Number = includeBottom ? (logo.height > 0 ? logoBounds.top : 0) : _player.config.height;
 			bounds.height = Math.floor( (logoTop ? cbHeight : logoHeight ) - bounds.y);
 
 			return bounds;
