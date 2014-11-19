@@ -7,3 +7,4 @@ node_modules
 bin-debug
 bin-release
 examples/panning/cheetah.mp4
+examples/panning/server.go

@@ -514,6 +514,10 @@
             _adModel.setVolume(vol);
             _api.jwSetVolume(vol);
         };
+        _this.jwMyTest = function() {
+            _adModel.myTest();
+            _api.jwMyTest();
+        };
         _this.jwGetMute = function() {
             return _model.mute;
         };

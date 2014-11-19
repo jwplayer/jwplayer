@@ -347,6 +347,10 @@ import flash.utils.setTimeout;
 			return false;
 		}
 
+		public function myTest():void {
+		        mute(true);
+		}
+
 
 		public function mute(muted:Boolean):Boolean {
 /*			if (locking) {

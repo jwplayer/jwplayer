@@ -351,6 +351,7 @@
         this.prev = _waitForReady(_prev);
         this.item = _waitForReady(_item);
         this.setVolume = _waitForReady(_model.setVolume);
+        this.myTest = _waitForReady(_model.myTest);
         this.setMute = _waitForReady(_model.setMute);
         this.setFullscreen = _waitForReady(_setFullscreen);
         this.detachMedia = _detachMedia;

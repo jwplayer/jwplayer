@@ -2,18 +2,20 @@
 <html>
   <head>
     <title>JW Audio Panning</title>
-    <script type="text/javascript" src="../../bin-release/jwplayer.js"></script>
+    <script type="text/javascript" src="static/jwplayer.js"></script>
   </head>
   <body>
     <p> Audio panning Test </p>
     <div id="playerContainer">Loading the player ...</div>
     <a onclick="jwplayer().play()">Toggle playback</a> |
+    <a onclick="jwplayer().myTest()">My custom mute</a> |
     <a onclick="console.log(jwplayer().getVolume())">Report volume</a>
   </body>
 
   <script type='text/javascript'>
     jwplayer("playerContainer").setup({
-      file: "cheetah.mp4",
+      file: "video/cheetah.mp4",
+      primary: "flash",
       height: 360,
       width: 640
     });
