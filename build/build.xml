@@ -69,7 +69,7 @@
 	</target>
 
 	<target name="minify-skin">
-        <exec executable="python" outputproperty="minifiedSkin">
+        <exec executable="${python.exe}" outputproperty="minifiedSkin">
             <arg file="${basedir}/build/skin-packer.py" />
             <arg line="assets/six.xml" />
         </exec>
