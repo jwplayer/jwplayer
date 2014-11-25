@@ -52,7 +52,7 @@ To compile with Flex and Ant, you'll first need to modify the `build.properties`
 1. Set `flexsdk` to the install location of the Flex SDK (e.g. `/usr/local/bin/flex/`)
 2. Set `python` to the install location of the Python (e.g. `usr/local/bin/python34`)
 3. Set `execextension` to `.exe` if you're using Windows; otherwise leave it blank.
-4. Fix "load jvm.dll" on Windows 7: set evironment variable `JAVA_HOME` to your JDK x86 (Java SE) install location.
+4. Fix "load jvm.dll" on Windows 7: set evironment variable `JAVA_HOME` to your JDK x86 (Java SE) install location. (e.g `C:\PROGRA~2\Java\jdk1.8.0_25`)
 
 You can now compile the player using Ant:
 
