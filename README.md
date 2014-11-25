@@ -45,11 +45,14 @@ To build the JW Player, you will need the following software:
 
  * Flex SDK 4.1: http://sourceforge.net/adobe/flexsdk/wiki/Downloads/
  * Ant 1.7.0: http://ant.apache.org/bindownload.cgi
+ * Python 3.4.2: https://www.python.org/downloads
 
 To compile with Flex and Ant, you'll first need to modify the `build.properties` file found in the `build` folder:
 
 1. Set `flexsdk` to the install location of the Flex SDK (e.g. `/usr/local/bin/flex/`)
-1. Set `execextension` to `.exe` if you're using Windows; otherwise leave it blank.
+2. Set `python` to the install location of the Python (e.g. `usr/local/bin/python34`)
+3. Set `execextension` to `.exe` if you're using Windows; otherwise leave it blank.
+4. Fix "load jvm.dll": set evironment variable `JAVA_HOME` to your JDK x86 (Java SE) install location.
 
 You can now compile the player using Ant:
 
