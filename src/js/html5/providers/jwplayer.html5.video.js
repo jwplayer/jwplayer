@@ -331,10 +331,10 @@
 
             _source = _levels[_currentQuality];
 
-            if (!utils.isMobile()) {
+            if (!_isMobile) {
                 _this.setState(states.BUFFERING);
             }
-            
+
             clearInterval(_bufferInterval);
             _bufferInterval = setInterval(_sendBufferUpdate, 100);
 
