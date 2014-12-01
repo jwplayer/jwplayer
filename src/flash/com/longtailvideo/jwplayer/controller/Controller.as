@@ -172,10 +172,11 @@ import flash.utils.setTimeout;
 		protected function finalizeSetup():void {
 			if (!locking && _setupComplete && !_setupFinalized) {
 				_setupFinalized = true;
-				
+
 				_player.addEventListener(ErrorEvent.ERROR, errorHandler);
 
 				_model.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_LOADED, playlistLoadHandler, false, -1);
+                _model.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_LOADED, ready, false, -2);
 				_model.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_ITEM, playlistItemHandler, false, 1000);
 				_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_COMPLETE, completeHandler, false);
 				_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, timeHandler);
@@ -184,16 +185,20 @@ import flash.utils.setTimeout;
                 if (_model.playlist.length > 0) {
                     _model.dispatchEvent(new PlaylistEvent(PlaylistEvent.JWPLAYER_PLAYLIST_LOADED, _model.playlist));
                 }
-
-				dispatchEvent(new PlayerEvent(PlayerEvent.JWPLAYER_READY));
 			}
 		}
+
+        protected function ready(evt:PlaylistEvent):void {
+            _model.removeEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_LOADED, ready);
+            dispatchEvent(new PlayerEvent(PlayerEvent.JWPLAYER_READY));
+        }
 
 		protected function errorHandler(evt:ErrorEvent):void {
 			_delayedItem = null;
 			errorState(evt.text);
 		}
-		protected function playlistLoadHandler(evt:PlaylistEvent=null):void {
+
+		protected function playlistLoadHandler(evt:PlaylistEvent):void {
 			if (!_playlistReady) {
 				_playlistReady = true;
 				_model.playlist.currentIndex = 0;
