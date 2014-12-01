@@ -179,17 +179,13 @@ import flash.utils.setTimeout;
 				_model.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_ITEM, playlistItemHandler, false, 1000);
 				_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_COMPLETE, completeHandler, false);
 				_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, timeHandler);
-				
+
+                // Broadcast playlist loaded (which was swallowed during player setup);
+                if (_model.playlist.length > 0) {
+                    _model.dispatchEvent(new PlaylistEvent(PlaylistEvent.JWPLAYER_PLAYLIST_LOADED, _model.playlist));
+                }
+
 				dispatchEvent(new PlayerEvent(PlayerEvent.JWPLAYER_READY));
-
-//				playlistLoadHandler();
-
-				// Broadcast playlist loaded (which was swallowed during player setup);
-				if (_model.playlist.length > 0) {
-					_model.dispatchEvent(new PlaylistEvent(PlaylistEvent.JWPLAYER_PLAYLIST_LOADED, _model.playlist));
-				}
-
-				
 			}
 		}
 
