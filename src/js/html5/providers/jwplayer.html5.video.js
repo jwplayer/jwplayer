@@ -331,7 +331,6 @@
 
             _source = _levels[_currentQuality];
 
-            _this.setState(states.BUFFERING);
             clearInterval(_bufferInterval);
             _bufferInterval = setInterval(_sendBufferUpdate, 100);
 
