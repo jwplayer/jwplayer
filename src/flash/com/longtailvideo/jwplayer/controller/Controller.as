@@ -176,7 +176,7 @@ import flash.utils.setTimeout;
 				_player.addEventListener(ErrorEvent.ERROR, errorHandler);
 
 				_model.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_LOADED, playlistLoadHandler, false, -1);
-                _model.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_LOADED, ready, false, -2);
+                _model.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_LOADED, playlistLoadReadyHandler, false, -2);
 				_model.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_ITEM, playlistItemHandler, false, 1000);
 				_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_COMPLETE, completeHandler, false);
 				_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, timeHandler);
@@ -188,8 +188,8 @@ import flash.utils.setTimeout;
 			}
 		}
 
-        protected function ready(evt:PlaylistEvent):void {
-            _model.removeEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_LOADED, ready);
+        protected function playlistLoadReadyHandler(evt:PlaylistEvent):void {
+            _model.removeEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_LOADED, playlistLoadReadyHandler);
             dispatchEvent(new PlayerEvent(PlayerEvent.JWPLAYER_READY));
         }
 
