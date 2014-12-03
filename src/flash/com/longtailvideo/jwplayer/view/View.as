@@ -707,7 +707,7 @@ package com.longtailvideo.jwplayer.view {
 				case PlayerState.BUFFERING:
 					if (!_model.media.display) {
 						showControls();
-						_preventFade = true;
+						_preventFade = false;
 					}
 					_completeState = false;
 					hideControls();
@@ -718,7 +718,10 @@ package com.longtailvideo.jwplayer.view {
 					break;
 				case PlayerState.PLAYING:
 					hideControls();
-					_preventFade = false;
+					if (!_model.media.display) {
+						showControls();
+						_preventFade = true;
+					}
 					mediaDelay.start();
 					break;
 			}
