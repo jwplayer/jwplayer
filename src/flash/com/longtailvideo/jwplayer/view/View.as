@@ -718,6 +718,7 @@ package com.longtailvideo.jwplayer.view {
 					break;
 				case PlayerState.PLAYING:
 					hideControls();
+					_preventFade = false;
 					mediaDelay.start();
 					break;
 			}
