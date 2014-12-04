@@ -176,21 +176,18 @@ import flash.utils.setTimeout;
 				_player.addEventListener(ErrorEvent.ERROR, errorHandler);
 
 				_model.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_LOADED, playlistLoadHandler, false, -1);
-				_model.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_LOADED, playlistLoadReadyHandler, false, -2);
 				_model.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_ITEM, playlistItemHandler, false, 1000);
 				_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_COMPLETE, completeHandler, false);
 				_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, timeHandler);
+
+				// setup listeners so playlist loaded can be dispatched (ready will be forwarded asynchronously)
+				dispatchEvent(new PlayerEvent(PlayerEvent.JWPLAYER_READY));
 
 				// Broadcast playlist loaded (which was swallowed during player setup);
 				if (_model.playlist.length > 0) {
 					_model.dispatchEvent(new PlaylistEvent(PlaylistEvent.JWPLAYER_PLAYLIST_LOADED, _model.playlist));
 				}
 			}
-		}
-
-		protected function playlistLoadReadyHandler(evt:PlaylistEvent):void {
-			_model.removeEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_LOADED, playlistLoadReadyHandler);
-			dispatchEvent(new PlayerEvent(PlayerEvent.JWPLAYER_READY));
 		}
 
 		protected function errorHandler(evt:ErrorEvent):void {
