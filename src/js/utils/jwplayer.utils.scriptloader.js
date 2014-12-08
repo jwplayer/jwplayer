@@ -11,8 +11,7 @@
             LOADING: 1,
             ERROR: 2,
             COMPLETE: 3
-        },
-        DOCUMENT = document;
+        };
 
 
     utils.scriptloader = function(url) {
@@ -35,27 +34,31 @@
                     // already errored or loaded... keep going?
                 }
 
-                var scriptTag = DOCUMENT.createElement("script");
-                // Most browsers
-                if (scriptTag.addEventListener) {
-                    scriptTag.onload = _sendComplete;
-                    scriptTag.onerror = _sendError;
-                } else if (scriptTag.readyState) {
-                    // IE
-                    scriptTag.onreadystatechange = function(evt) {
-                        if (scriptTag.readyState == 'loaded' || scriptTag.readyState == 'complete') {
-                            _sendComplete(evt);
+                var head = document.getElementsByTagName('head')[0] || document.documentElement;
+                var scriptTag = document.createElement('script');
+
+                var done = false;
+                scriptTag.onload = scriptTag.onreadystatechange = function(evt) {
+                    if (!done &&
+                       (!this.readyState || this.readyState === 'loaded' || this.readyState === 'complete')) {
+                        done = true;
+                        _sendComplete(evt);
+
+                        // Handle memory leak in IE
+                        scriptTag.onload = scriptTag.onreadystatechange = null;
+                        if (head && scriptTag.parentNode) {
+                            head.removeChild(scriptTag);
                         }
-                        // Error?
-                    };
-                }
-                DOCUMENT.getElementsByTagName("head")[0].appendChild(scriptTag);
+                    }
+                };
+                scriptTag.onerror = _sendError;
+
                 scriptTag.src = url;
+                head.appendChild(scriptTag);
 
                 _status = _loaderstatus.LOADING;
                 utils.scriptloader.loaders[url] = this;
             }
-
         };
 
         function _sendError(evt) {
