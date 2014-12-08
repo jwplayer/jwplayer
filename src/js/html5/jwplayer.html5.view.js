@@ -834,12 +834,12 @@
             _css.style(_playerElement, {
                 opacity: 1
             });
-            window.onbeforeunload = function() {
+            window.addEventListener('beforeunload', function() {
                 if (!_isCasting()) { // don't call stop while casting
                     // prevent video error in display on window close
                     _api.jwStop();
                 }
-            };
+            });
         };
 
         /**
