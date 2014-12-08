@@ -85,7 +85,7 @@
 
         if (_cssBlock !== null && !immediate) {
             elements.__cssRules = _extend(elements.__cssRules, cssRules);
-            if (_cssBlock.elements.indexOf(elements) < 0) {
+            if (jwplayer._.indexOf(_cssBlock.elements, elements) < 0) {
                 _cssBlock.elements.push(elements);
             }
             // finish this later
