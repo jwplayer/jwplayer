@@ -595,7 +595,6 @@
             var span = _createSpan();
             var divider = _buildDivider(_dividerElement);
             var button = _createElement('button');
-            element.style += ' display:inline-block';
             element.className = 'jw' + name;
             if (pos === 'left') {
                 _appendChild(element, span);
