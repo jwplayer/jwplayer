@@ -163,7 +163,6 @@
 			} else {
 				_loader.load(_item.file, XML);
 			}
-			setState(PlayerState.BUFFERING);
 		}
 
 
@@ -261,6 +260,10 @@
 			} else if (!media) {
 				media = _video;
 			}
+
+			//If you send buffering events before the provider's media is set
+			//The view will think that the controls should be locked because the provider doesn't have a display.
+			setState(PlayerState.BUFFERING);
 			
 			var level:Number = 0;
 			
