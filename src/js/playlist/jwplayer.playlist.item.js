@@ -1,10 +1,3 @@
-/**
- * JW Player playlist item model
- *
- * @author zach
- * @modified pablo
- * @version 6.0
- */
 (function(playlist) {
     var _item = playlist.item = function(config) {
         var utils = jwplayer.utils,
@@ -19,11 +12,11 @@
 
         /** Each source should be a named object **/
         for (i = 0; i < _playlistitem.sources.length; i++) {
-            def = _playlistitem.sources[i]["default"];
+            def = _playlistitem.sources[i]['default'];
             if (def) {
-                _playlistitem.sources[i]["default"] = (def.toString() == "true");
+                _playlistitem.sources[i]['default'] = (def.toString() === 'true');
             } else {
-                _playlistitem.sources[i]["default"] = false;
+                _playlistitem.sources[i]['default'] = false;
             }
 
             _playlistitem.sources[i] = new playlist.source(_playlistitem.sources[i]);
