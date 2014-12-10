@@ -10,7 +10,6 @@
             _completeHandler = completeHandler,
             _errorHandler = errorHandler,
             _loading = true,
-            _completeInterval,
             _skinPath = skinPath,
             _error = false,
             // Keeping this as 1 for now. Will change if necessary for mobile
@@ -41,7 +40,6 @@
                         return;
                     }
                 } catch (err) {
-                    //_clearSkin();
                     _errorHandler(FORMAT_ERROR);
                 }
             }, function(message) {
@@ -130,20 +128,9 @@
 
                 _loading = false;
 
-                _resetCompleteIntervalTest();
+                _checkComplete();
             }
         }
-
-
-        function _resetCompleteIntervalTest() {
-            clearInterval(_completeInterval);
-            if (!_error) {
-                _completeInterval = setInterval(function() {
-                    _checkComplete();
-                }, 100);
-            }
-        }
-
 
         /** Load the data for a single element. **/
         function _loadImage(element, component) {
@@ -174,42 +161,26 @@
             };
             img.onerror = function(evt) {
                 _error = true;
-                _resetCompleteIntervalTest();
                 _errorHandler("Skin image not found: " + this.src);
             };
 
             img.src = imgUrl;
         }
 
-        // function _clearSkin() {
-        // 	_foreach(_skin, function(componentName, component) {
-        // 		_foreach(component.elements, function(elementName, element) {
-        // 			var img = element.image;
-        // 			img.onload = null;
-        // 			img.onerror = null;
-        // 			delete element.image;
-        // 			delete component.elements[elementName];
-        // 		});
-        // 		delete _skin[componentName];
-        // 	});
-        // }
-
         function _checkComplete() {
             var ready = true;
-            _foreach(_skin, function(componentName, component) {
-                if (componentName != 'properties') {
-                    _foreach(component.elements, function(element) {
-                        if (!_getElement(componentName, element).ready) {
-                            ready = false;
-                        }
-                    });
+            for (var componentName in _skin) {
+                if (componentName !== 'properties') {
+                    var elements = _skin[componentName].elements;
+                    for (var element in elements) {
+                        ready &= _getElement(componentName, element).ready;
+                    }
                 }
-            });
-
-            if (!ready) return;
-
+            }
+            if (!ready) {
+                return;
+            }
             if (!_loading) {
-                clearInterval(_completeInterval);
                 _completeHandler(_skin);
             }
         }
@@ -218,10 +189,10 @@
             var elementObj = _getElement(component, element);
             if (elementObj) {
                 elementObj.height = Math.round((img.height / _ratio) * _mobileMultiplier);
-                elementObj.width = Math.round((img.width / _ratio) * _mobileMultiplier);
+                elementObj.width  = Math.round((img.width  / _ratio) * _mobileMultiplier);
                 elementObj.src = img.src;
                 elementObj.ready = true;
-                _resetCompleteIntervalTest();
+                _checkComplete();
             } else {
                 utils.log("Loaded an image for a missing element: " + component + "." + element);
             }
