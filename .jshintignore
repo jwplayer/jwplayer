@@ -1,6 +1,5 @@
 src/js/html5/jwplayer.html5.playlistslider.js
 src/js/html5/jwplayer.html5.skin.js
-src/js/html5/jwplayer.html5.skinloader.js
 src/js/html5/jwplayer.html5.thumbs.js
 src/js/html5/parsers/jwplayer.html5.parsers.dfxp.js
 src/js/html5/parsers/jwplayer.html5.parsers.srt.js
