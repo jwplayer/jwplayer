@@ -1166,7 +1166,9 @@
             _css.unblock();
             _setVisibility(_internalSelector(VIEW_INSTREAM_CONTAINER_CLASS), false);
             _setVisibility(_internalSelector(VIEW_CONTROLS_CONTAINER_CLASS), true);
-            _instreamLayer.innerHTML = '';
+            while (_instreamLayer.firstChild) {
+                _instreamLayer.removeChild(_instreamLayer.firstChild);
+            }
             _instreamLayer.removeEventListener('mousemove', _startFade);
             _instreamLayer.removeEventListener('mouseout', _mouseoutHandler);
             _instreamMode = false;

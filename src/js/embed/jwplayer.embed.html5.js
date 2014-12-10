@@ -33,7 +33,9 @@
             // If it has already been loaded
             if (jwplayer.html5) {
                 _loader.setupPlugins(_api, _options, _resizePlugin);
-                _container.innerHTML = '';
+                while (_container.firstChild) {
+                    _container.removeChild(_container.firstChild);
+                }
                 var playerOptions = jwplayer.utils.extend({}, _options);
 
                 // Volume option is tricky to remove, since it needs to be in the HTML5 player model.

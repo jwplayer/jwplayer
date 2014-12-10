@@ -549,7 +549,7 @@
                 newStyle;
 
             element.className = 'jw' + name;
-            element.innerHTML = '&nbsp;';
+            element.appendChild(document.createTextNode('\u00A0'));
 
             if (!skinElem || !skinElem.src) {
                 return;
