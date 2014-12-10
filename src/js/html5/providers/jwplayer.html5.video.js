@@ -623,6 +623,7 @@
             clearInterval(_bufferInterval);
 
             _currentQuality = -1;
+
             // remove
             if (_container === _videotag.parentNode) {
                 _container.removeChild(_videotag);

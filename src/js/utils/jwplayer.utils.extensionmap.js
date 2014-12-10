@@ -1,19 +1,13 @@
-/**
- * JW Player Media Extension to Mime Type mapping
- *
- * @author zach
- * @modified pablo
- * @version 6.0
- */
 (function(utils) {
-    var video = "video/",
-        audio = "audio/",
-        mp4 = "mp4",
-        webm = "webm",
-        ogg = "ogg",
-        aac = "aac",
-        mp3 = "mp3",
-        vorbis = "vorbis",
+    var video = 'video/',
+        audio = 'audio/',
+        mp4 = 'mp4',
+        webm = 'webm',
+        ogg = 'ogg',
+        aac = 'aac',
+        mp3 = 'mp3',
+        vorbis = 'vorbis',
+        _ = jwplayer._,
         _foreach = utils.foreach,
 
         mimeMap = {
@@ -23,42 +17,42 @@
             vorbis: audio + ogg,
             webm: video + webm,
             aac: audio + mp4,
-            mp3: audio + "mpeg",
-            hls: "application/vnd.apple.mpegurl"
+            mp3: audio + 'mpeg',
+            hls: 'application/vnd.apple.mpegurl'
         },
 
         html5Extensions = {
-            "mp4": mimeMap[mp4],
-            "f4v": mimeMap[mp4],
-            "m4v": mimeMap[mp4],
-            "mov": mimeMap[mp4],
-            "m4a": mimeMap[aac],
-            "f4a": mimeMap[aac],
-            "aac": mimeMap[aac],
-            "mp3": mimeMap[mp3],
-            "ogv": mimeMap[ogg],
-            "ogg": mimeMap[ogg],
-            "oga": mimeMap[vorbis],
-            "vorbis": mimeMap[vorbis],
-            "webm": mimeMap[webm],
-            "m3u8": mimeMap.hls,
-            "m3u": mimeMap.hls,
-            "hls": mimeMap.hls
+            'mp4': mimeMap[mp4],
+            'f4v': mimeMap[mp4],
+            'm4v': mimeMap[mp4],
+            'mov': mimeMap[mp4],
+            'm4a': mimeMap[aac],
+            'f4a': mimeMap[aac],
+            'aac': mimeMap[aac],
+            'mp3': mimeMap[mp3],
+            'ogv': mimeMap[ogg],
+            'ogg': mimeMap[ogg],
+            'oga': mimeMap[vorbis],
+            'vorbis': mimeMap[vorbis],
+            'webm': mimeMap[webm],
+            'm3u8': mimeMap.hls,
+            'm3u': mimeMap.hls,
+            'hls': mimeMap.hls
         },
-        videoX = "video",
+        videoX = 'video',
         flashExtensions = {
-            "flv": videoX,
-            "f4v": videoX,
-            "mov": videoX,
-            "m4a": videoX,
-            "m4v": videoX,
-            "mp4": videoX,
-            "aac": videoX,
-            "f4a": videoX,
-            "mp3": "sound",
-            "smil": "rtmp",
-            "m3u8": "hls",
-            "hls": "hls"
+            'flv': videoX,
+            'f4v': videoX,
+            'mov': videoX,
+            'm4a': videoX,
+            'm4v': videoX,
+            'mp4': videoX,
+            'aac': videoX,
+            'f4a': videoX,
+            'mp3': 'sound',
+            'smil': 'rtmp',
+            'm3u8': 'hls',
+            'hls': 'hls'
         };
 
     var _extensionmap = utils.extensionmap = {};
@@ -69,16 +63,20 @@
     });
 
     _foreach(flashExtensions, function(ext, val) {
-        if (!_extensionmap[ext]) _extensionmap[ext] = {};
+        if (!_extensionmap[ext]) {
+            _extensionmap[ext] = {};
+        }
         _extensionmap[ext].flash = val;
     });
 
     _extensionmap.types = mimeMap;
 
     _extensionmap.mimeType = function(mime) {
+        // return the first mime that matches
         var returnType;
-        _foreach(mimeMap, function(type, val) {
-            if (!returnType && val == mime) returnType = type;
+        _.find(mimeMap, function(val, key) {
+            returnType = key;
+            return val === mime;
         });
         return returnType;
     };
