@@ -103,8 +103,7 @@
     };
 
     var _userAgentMatch = _.memoize(function(regex) {
-        var agent = navigator.userAgent.toLowerCase();
-        return (agent.match(regex) !== null);
+        return regex.test(navigator.userAgent);
     });
 
     function _browserCheck(regex) {
@@ -119,25 +118,24 @@
     utils.isIPad = _browserCheck(/iPad/i);
     utils.isSafari602 = _browserCheck(/Macintosh.*Mac OS X 10_8.*6\.0\.\d* Safari/i);
 
-    utils.isIETrident = function(version) {
+    utils.isIETrident = _.memoize(function(version) {
         if (version) {
             version = parseFloat(version).toFixed(1);
             return _userAgentMatch(new RegExp('trident/.+rv:\\s*' + version, 'i'));
         }
         return _userAgentMatch(/trident/i);
-    };
+    });
 
-
-    utils.isMSIE = function(version) {
+    utils.isMSIE = _.memoize(function(version) {
         if (version) {
             version = parseFloat(version).toFixed(1);
             return _userAgentMatch(new RegExp('msie\\s*' + version, 'i'));
         }
         return _userAgentMatch(/msie/i);
-    };
+    });
+
     utils.isIE = function(version) {
         if (version) {
-            version = parseFloat(version).toFixed(1);
             if (version >= 11) {
                 return utils.isIETrident(version);
             } else {
@@ -153,21 +151,21 @@
     };
 
     /** Matches iOS devices **/
-    utils.isIOS = function(version) {
+    utils.isIOS = _.memoize(function(version) {
         if (version) {
             return _userAgentMatch(new RegExp('iP(hone|ad|od).+\\sOS\\s' + version, 'i'));
         }
         return _userAgentMatch(/iP(hone|ad|od)/i);
-    };
+    });
 
     /** Matches Android devices **/
     utils.isAndroidNative = function(version) {
         return utils.isAndroid(version, true);
     };
 
-    utils.isAndroid = function(version, excludeChrome) {
+    utils.isAndroid = _.memoize(function(version, excludeChrome) {
         //Android Browser appears to include a user-agent string for Chrome/18
-        if (excludeChrome && _userAgentMatch(/chrome\/[123456789]/i) && !_userAgentMatch(/chrome\/18/)) {
+        if (excludeChrome && _userAgentMatch(/chrome\/[123456789]/i) && !_userAgentMatch(/chrome\/18/i)) {
             return false;
         }
         if (version) {
@@ -178,7 +176,7 @@
             return _userAgentMatch(new RegExp('Android\\s*' + version, 'i'));
         }
         return _userAgentMatch(/Android/i);
-    };
+    });
 
     /** Matches iOS and Android devices **/
     utils.isMobile = function() {

@@ -5,8 +5,7 @@
         events = jwplayer.events,
         states = events.state,
         DefaultProvider = jwplayer.html5.DefaultProvider,
-        _scriptLoader = new utils.scriptloader(window.location.protocol + '//www.youtube.com/iframe_api'),
-        _isMobile = utils.isMobile();
+        _scriptLoader = new utils.scriptloader(window.location.protocol + '//www.youtube.com/iframe_api');
 
     function YoutubeProvider(_playerId) {
 
@@ -36,6 +35,8 @@
             _lastVolume,
             // post roll support
             _beforecompleted = false,
+            // lazy check
+            _isMobile = utils.isMobile(),
             // user must click video to initiate playback, gets set to false once playback starts
             _requiresUserInteraction = _isMobile;
 
