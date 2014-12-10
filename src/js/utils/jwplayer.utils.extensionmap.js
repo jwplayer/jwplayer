@@ -73,9 +73,12 @@
 
     _extensionmap.mimeType = function(mime) {
         // return the first mime that matches
-        return _.find(mimeMap, function(val) {
+        var returnType;
+        _.find(mimeMap, function(val, key) {
+            returnType = key;
             return val === mime;
         });
+        return returnType;
     };
 
     _extensionmap.extType = function(extension) {
