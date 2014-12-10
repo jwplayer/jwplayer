@@ -27,9 +27,6 @@
             _eventDispatcher = new events.eventdispatcher(),
             _errorState = false;
 
-        // This is higher scope so it can be used in two functions to remove event listeners
-        var _previewImg;
-
         var PARSE_CONFIG = {
                 method: _parseConfig,
                 depends: false
