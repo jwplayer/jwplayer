@@ -185,6 +185,7 @@
                 width: '100%',
                 videoId: videoId,
                 playerVars: utils.extend({
+                    html5: 1,
                     autoplay: 0,
                     controls: 0,
                     showinfo: 0,
