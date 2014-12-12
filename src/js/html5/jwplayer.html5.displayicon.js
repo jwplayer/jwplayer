@@ -104,7 +104,7 @@
                 style['float'] = 'none';
                 overstyle = utils.extend({}, overstyle);
                 if (skinElem.overSrc) {
-                    overstyle['background-image'] = 'url(' + skinElem.overSrc + ')';
+                    overstyle['background-image'] = 'url(' + skinElem.overSrc + ')' + '!important';
                 }
                 if (!utils.isMobile()) {
                     _css('#' + _api.id + ' .jwdisplay:hover ' + selector, overstyle);
