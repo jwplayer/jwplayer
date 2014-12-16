@@ -595,6 +595,8 @@
             if (!seekable) {
                 _canSeek = false;
             }
+
+            // This is after a postroll completes
             if (_beforecompleted) {
                 this.setState(states.IDLE);
                 this.sendEvent(events.JWPLAYER_MEDIA_COMPLETE);

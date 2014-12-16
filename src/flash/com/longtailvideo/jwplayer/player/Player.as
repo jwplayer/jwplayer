@@ -52,8 +52,7 @@
 		protected function setupPlayer(event:Event=null):void {
 			try {
 				this.removeEventListener(Event.ADDED_TO_STAGE, setupPlayer);
-			} catch (err:Error) {
-			}
+			} catch (err:Error) { }
 
 			new RootReference(this);
 			_dispatcher = new GlobalEventDispatcher();
@@ -426,6 +425,5 @@
 		public function setCues(cues:Array):void {
 			view.setCues(cues);
 		}
-		
 	}
 }
