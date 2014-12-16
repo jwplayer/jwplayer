@@ -5,12 +5,7 @@
         events = jwplayer.events,
         states = events.state,
         clearInterval = window.clearInterval,
-        DefaultProvider = jwplayer.html5.DefaultProvider,
-        _isIE = utils.isMSIE(),
-        _isMobile = utils.isMobile(),
-        _isSafari = utils.isSafari(),
-        _isAndroid = utils.isAndroidNative(),
-        _isIOS7 = utils.isIOS(7);
+        DefaultProvider = jwplayer.html5.DefaultProvider;
 
 
     function _setupListeners(eventsHash, videoTag) {
@@ -38,6 +33,10 @@
         utils.extend(this, _dispatcher);
 
         var _this = this,
+            _isIE = utils.isMSIE(),
+            _isMobile = utils.isMobile(),
+            _isSafari = utils.isSafari(),
+            _isAndroid = utils.isAndroidNative(),
             _mediaEvents = {
                 abort: _generalHandler,
                 canplay: _canPlayHandler,
@@ -116,7 +115,7 @@
         _setupListeners(_mediaEvents, _videotag);
 
         // Workaround for a Safari bug where video disappears on switch to fullscreen
-        if (!_isIOS7) {
+        if (!utils.isIOS(7)) {
             _videotag.controls = true;
             _videotag.controls = false;
         }

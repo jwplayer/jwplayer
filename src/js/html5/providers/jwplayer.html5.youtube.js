@@ -5,8 +5,7 @@
         events = jwplayer.events,
         states = events.state,
         DefaultProvider = jwplayer.html5.DefaultProvider,
-        _scriptLoader = new utils.scriptloader(window.location.protocol + '//www.youtube.com/iframe_api'),
-        _isMobile = utils.isMobile();
+        _scriptLoader;
 
     function YoutubeProvider(_playerId) {
 
@@ -36,8 +35,12 @@
             _lastVolume,
             // post roll support
             _beforecompleted = false,
+            // lazy check
+            _isMobile = utils.isMobile(),
             // user must click video to initiate playback, gets set to false once playback starts
-            _requiresUserInteraction = _isMobile;
+            _requiresUserInteraction = _isMobile,
+            // poll for API var timeout id
+            _pollReady = -1;
 
         this.setState = function(state) {
             clearInterval(_playingInterval);
@@ -55,10 +58,17 @@
         };
 
         // Load iFrame API
-        if (!_youtubeAPI && _scriptLoader) {
-            _scriptLoader.addEventListener(events.COMPLETE, _onLoadSuccess);
-            _scriptLoader.addEventListener(events.ERROR, _onLoadError);
-            _scriptLoader.load();
+        if (!_youtubeAPI) {
+            if (!_scriptLoader) {
+                _scriptLoader = new utils.scriptloader(window.location.protocol + '//www.youtube.com/iframe_api');
+            }
+            if (_scriptLoader.getStatus() <= utils.loaderstatus.LOADING) {
+                _scriptLoader.addEventListener(events.COMPLETE, _onLoadSuccess);
+                _scriptLoader.addEventListener(events.ERROR, _onLoadError);
+                _scriptLoader.load();
+            } else {
+                _onLoadSuccess();
+            }
         }
 
         // setup container
@@ -70,12 +80,13 @@
                 _readyCheck();
             } else {
                 // poll until Yo API is loaded
-                setTimeout(_onLoadSuccess, 100);
+                clearTimeout(_pollReady);
+                _pollReady = setTimeout(_onLoadSuccess, 100);
             }
         }
 
         function _onLoadError() {
-            _scriptLoader = null;
+            clearTimeout(_pollReady);
             // console.log('Error loading Youtube iFrame API: %o', event);
             // TODO: dispatch video error
         }
@@ -327,7 +338,7 @@
 
         this.destroy = function() {
             this.remove();
-
+            clearTimeout(_pollReady);
             _container =
                 _element =
                 _youtubeAPI =
@@ -606,11 +617,6 @@
             }
         };
     }
-
-    // Clear up the memory, this is called by Google
-    window.onYouTubeIframeAPIReady = function() {
-        _scriptLoader = null;
-    };
 
     function supports(source) {
         return (utils.isYouTube(source.file, source.type));

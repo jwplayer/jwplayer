@@ -6,7 +6,6 @@
         states = events.state,
         parsers = jwplayer.parsers,
         _css = utils.css,
-        _nonChromeAndroid = utils.isAndroid(4, true),
         PLAYING = 'playing',
 
         D_CLASS = '.jwcaptions',
@@ -154,7 +153,7 @@
             }
 
             _selectedTrack = 0;
-            if (_nonChromeAndroid) {
+            if (utils.isAndroid(4, true)) {
                 return;
             }
             for (i = 0; i < captions.length; i++) {
