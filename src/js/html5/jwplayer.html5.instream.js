@@ -68,7 +68,7 @@
             _adModel.setVolume(_model.volume);
             _adModel.setFullscreen(_model.fullscreen);
             _adModel.setMute(_model.mute);
-            _adModel.addEventListener('fullscreenchange',_nativeFullscreenHandler);
+            _adModel.addEventListener('fullscreenchange', _nativeFullscreenHandler);
             _olditem = _model.playlist[_model.item];
 
             // Keep track of the original player state

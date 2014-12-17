@@ -1,8 +1,8 @@
 (function(jwplayer) {
-    var events = jwplayer.events,
+    var EVENTS = jwplayer.events,
         utils = jwplayer.utils,
         _ = jwplayer._,
-        states = events.state;
+        states = EVENTS.state;
 
     jwplayer.api.instream = function(_api, _player) {
 
@@ -16,6 +16,7 @@
 
         _this.init = function() {
             _api.callInternal('jwInitInstream');
+            return _this;
         };
         _this.loadItem = function(item, options) {
             _item = item;
@@ -54,18 +55,18 @@
 
         // EVENTS
         var legacyMaps = {
-            onError: events.JWPLAYER_ERROR,
-            onMediaError: events.JWPLAYER_ERROR,
-            onFullscreen: events.JWPLAYER_FULLSCREEN,
-            onMeta: events.JWPLAYER_MEDIA_META,
-            onMute: events.JWPLAYER_MEDIA_MUTE,
-            onComplete: events.JWPLAYER_MEDIA_COMPLETE,
-            onPlaylistComplete: events.JWPLAYER_PLAYLIST_COMPLETE,
-            onPlaylistItem: events.JWPLAYER_PLAYLIST_ITEM,
-            onTime: events.JWPLAYER_MEDIA_TIME,
-            onClick: events.JWPLAYER_INSTREAM_CLICK,
-            onInstreamDesrtoyed: events.JWPLAYER_INSTREAM_DESTROYED,
-            onAdSkipped: events.JWPLAYER_AD_SKIPPED,
+            onError: EVENTS.JWPLAYER_ERROR,
+            onMediaError: EVENTS.JWPLAYER_ERROR,
+            onFullscreen: EVENTS.JWPLAYER_FULLSCREEN,
+            onMeta: EVENTS.JWPLAYER_MEDIA_META,
+            onMute: EVENTS.JWPLAYER_MEDIA_MUTE,
+            onComplete: EVENTS.JWPLAYER_MEDIA_COMPLETE,
+            onPlaylistComplete: EVENTS.JWPLAYER_PLAYLIST_COMPLETE,
+            onPlaylistItem: EVENTS.JWPLAYER_PLAYLIST_ITEM,
+            onTime: EVENTS.JWPLAYER_MEDIA_TIME,
+            onClick: EVENTS.JWPLAYER_INSTREAM_CLICK,
+            onInstreamDesrtoyed: EVENTS.JWPLAYER_INSTREAM_DESTROYED,
+            onAdSkipped: EVENTS.JWPLAYER_AD_SKIPPED,
 
             onBuffer : states.BUFFERING,
             onPlay : states.PLAYING,
@@ -80,7 +81,7 @@
         });
 
         // STATE EVENTS
-        events.on(events.JWPLAYER_PLAYER_STATE, function(evt) {
+        events.on(EVENTS.JWPLAYER_PLAYER_STATE, function(evt) {
             events.trigger(evt.newstate, evt);
         });
 
