@@ -108,13 +108,9 @@ package com.longtailvideo.jwplayer.player {
 					clearQueuedEvents();
 				}
 			};
-			if (ExternalInterface.available) {
-				ready();
-			} else {
-				var timer:Timer = new Timer(0, 5);
-				timer.addEventListener(TimerEvent.TIMER_COMPLETE, ready);
-				timer.start();
-			}
+			var timer:Timer = new Timer(0, 5);
+			timer.addEventListener(TimerEvent.TIMER_COMPLETE, ready);
+			timer.start();
 		}
 
 		private static function queueEvents(evt:Event):void {

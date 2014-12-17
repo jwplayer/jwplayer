@@ -1,6 +1,5 @@
 src/js/html5/jwplayer.html5.playlistslider.js
 src/js/html5/jwplayer.html5.skin.js
-src/js/html5/jwplayer.html5.skinloader.js
 src/js/html5/jwplayer.html5.thumbs.js
 src/js/html5/parsers/jwplayer.html5.parsers.dfxp.js
 src/js/html5/parsers/jwplayer.html5.parsers.srt.js
@@ -9,12 +8,7 @@ src/js/parsers/jwplayer.parsers.js
 src/js/parsers/jwplayer.parsers.jwparser.js
 src/js/parsers/jwplayer.parsers.mediaparser.js
 src/js/parsers/jwplayer.parsers.rssparser.js
-src/js/playlist/jwplayer.playlist.item.js
-src/js/playlist/jwplayer.playlist.loader.js
-src/js/playlist/jwplayer.playlist.source.js
-src/js/playlist/jwplayer.playlist.track.js
 src/js/utils/jwplayer.utils.css.js
-src/js/utils/jwplayer.utils.extensionmap.js
 src/js/utils/jwplayer.utils.scriptloader.js
 src/js/utils/jwplayer.underscore.js
 src/js/utils/jwplayer.backbone.js

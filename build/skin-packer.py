@@ -9,4 +9,4 @@ skinText = skin.toxml()
 whiteSpace = re.compile('>(.*?)<', re.S)
 skinText = whiteSpace.sub('><', skinText)
 
-print skinText
+print(skinText) # python 3.4.2

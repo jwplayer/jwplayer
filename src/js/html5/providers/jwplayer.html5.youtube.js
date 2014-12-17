@@ -350,7 +350,7 @@
             var videoId = utils.youTubeID(url);
 
             if (!item.image) {
-                item.image = 'http://i.ytimg.com/vi/' + videoId + '/0.jpg';
+                item.image = '//i.ytimg.com/vi/' + videoId + '/0.jpg';
             }
 
             _this.setVisibility(true);

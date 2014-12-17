@@ -331,7 +331,6 @@
 
             _source = _levels[_currentQuality];
 
-            _this.setState(states.BUFFERING);
             clearInterval(_bufferInterval);
             _bufferInterval = setInterval(_sendBufferUpdate, 100);
 
@@ -596,6 +595,8 @@
             if (!seekable) {
                 _canSeek = false;
             }
+
+            // This is after a postroll completes
             if (_beforecompleted) {
                 this.setState(states.IDLE);
                 this.sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
@@ -624,6 +625,7 @@
             clearInterval(_bufferInterval);
 
             _currentQuality = -1;
+
             // remove
             if (_container === _videotag.parentNode) {
                 _container.removeChild(_videotag);

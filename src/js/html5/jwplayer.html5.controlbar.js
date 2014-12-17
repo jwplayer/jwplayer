@@ -595,7 +595,6 @@
             var span = _createSpan();
             var divider = _buildDivider(_dividerElement);
             var button = _createElement('button');
-            element.style += ' display:inline-block';
             element.className = 'jw' + name;
             if (pos === 'left') {
                 _appendChild(element, span);
@@ -614,6 +613,8 @@
 
             button.innerHTML = '&nbsp;';
             button.tabIndex = -1;
+            //fix for postbacks on mobile devices when a <form> is used
+            button.setAttribute('type', 'button');
             _appendChild(span, button);
 
             var outSkin = _getSkinElement(name + 'Button'),
