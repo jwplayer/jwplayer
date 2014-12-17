@@ -65,7 +65,7 @@
             onPlaylistItem: EVENTS.JWPLAYER_PLAYLIST_ITEM,
             onTime: EVENTS.JWPLAYER_MEDIA_TIME,
             onClick: EVENTS.JWPLAYER_INSTREAM_CLICK,
-            onInstreamDesrtoyed: EVENTS.JWPLAYER_INSTREAM_DESTROYED,
+            onInstreamDestroyed: EVENTS.JWPLAYER_INSTREAM_DESTROYED,
             onAdSkipped: EVENTS.JWPLAYER_AD_SKIPPED,
 
             onBuffer : states.BUFFERING,
@@ -76,7 +76,9 @@
 
         _.each(legacyMaps, function(event, api) {
             _this[api] = function(callback) {
+                _player.jwInstreamAddEventListener(event, callback);
                 events.on(event, callback);
+                return _this;
             };
         });
 
