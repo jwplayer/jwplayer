@@ -1,4 +1,4 @@
-(function(jwplayer) {
+/*(function(jwplayer) {
     var _ = jwplayer._;
 
     function addLegacyMapping(playerInstance) {
@@ -86,3 +86,4 @@
     jwplayer.api.addLegacyMapping = addLegacyMapping;
 
 }(window.jwplayer));
+*/

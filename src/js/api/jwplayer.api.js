@@ -545,8 +545,6 @@
             return _itemMeta;
         };
 
-        jwplayer.api.addLegacyMapping(_this);
-
         return _this;
     };
 
