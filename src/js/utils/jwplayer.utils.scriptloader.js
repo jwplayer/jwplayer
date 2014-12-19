@@ -48,7 +48,7 @@
                 scriptTag.onerror = _sendError;
 
                 scriptTag.src = url;
-                head.appendChild(scriptTag);
+                head.insertBefore(scriptTag, head.firstChild);
 
                 _status = _loaderstatus.LOADING;
                 utils.scriptloader.loaders[url] = this;
