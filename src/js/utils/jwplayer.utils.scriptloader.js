@@ -1,9 +1,3 @@
-/**
- * Loads a <script> tag
- * @author zach
- * @modified pablo
- * @version 6.0
- */
 (function(utils) {
 
     var _loaderstatus = utils.loaderstatus = {
@@ -20,7 +14,7 @@
             _status = _loaderstatus.NEW;
 
         this.load = function() {
-            if (_status == _loaderstatus.NEW) {
+            if (_status === _loaderstatus.NEW) {
                 // If we already have a scriptloader loading the same script, don't create a new one;
                 var sameLoader = utils.scriptloader.loaders[url];
                 if (sameLoader) {
