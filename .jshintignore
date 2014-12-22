@@ -9,7 +9,6 @@ src/js/parsers/jwplayer.parsers.jwparser.js
 src/js/parsers/jwplayer.parsers.mediaparser.js
 src/js/parsers/jwplayer.parsers.rssparser.js
 src/js/utils/jwplayer.utils.css.js
-src/js/utils/jwplayer.utils.scriptloader.js
 src/js/utils/jwplayer.underscore.js
 src/js/jwplayer.js
 src/js/jwplayer.sourceend.js
