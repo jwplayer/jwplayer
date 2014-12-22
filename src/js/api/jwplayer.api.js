@@ -122,6 +122,8 @@
                     options.fallbackDiv = fallbackDiv;
                 }
                 _remove(_this);
+                // By passing "true" we ensure it creates a new player, instead
+                //  of returning one that has been created already
                 var newApi = jwplayer(_this.id, true);
                 newApi.config = options;
                 newApi.wasSetup = true;
@@ -645,6 +647,7 @@
             return null;
         }
 
+        // If sharing the DOM element, don't reset CSS
         if (!player.aborted) {
             utils.clearCss('#' + player.id);
         }
