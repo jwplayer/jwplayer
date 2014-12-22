@@ -2,6 +2,7 @@
     var _players = [],
         utils = jwplayer.utils,
         events = jwplayer.events,
+        _uniqueIndex = 0,
         states = events.state;
 
     function addFocusBorder(container) {
@@ -121,8 +122,9 @@
                     options.fallbackDiv = fallbackDiv;
                 }
                 _remove(_this);
-                var newApi = jwplayer(_this.id);
+                var newApi = jwplayer(_this.id, true);
                 newApi.config = options;
+                newApi.wasSetup = true;
                 _embedder = new jwplayer.embed(newApi);
                 _embedder.embed();
                 return newApi;
@@ -340,13 +342,22 @@
         };
 
         function _remove(player) {
+            // When a second setup() occurs before the first one has completed
+            if (player.wasSetup && !player.isPlayerReady()) {
+                player.aborted = true;
+                player.onReady(function() {
+                    _remove(player);
+                });
+                return;
+            }
+
             _queuedCalls = [];
 
             if (_embedder && _embedder.destroy) {
                 _embedder.destroy();
             }
 
-            jwplayer.api.destroyPlayer(player.id);
+            jwplayer.api.destroyPlayer(player.uniqueId);
         }
 
         _this.registerPlugin = function(id, target, arg1, arg2) {
@@ -474,6 +485,10 @@
             }
         };
 
+        _this.isPlayerReady = function() {
+            return _playerReady;
+        };
+
         function _callInternal() {
             if (_playerReady) {
                 if (_player) {
@@ -563,7 +578,7 @@
         api.playerReady(obj);
     };
 
-    jwplayer.api.selectPlayer = function(identifier) {
+    jwplayer.api.selectPlayer = function(identifier, forceNew) {
         var _container;
 
         if (!utils.exists(identifier)) {
@@ -580,7 +595,7 @@
 
         if (_container) {
             var foundPlayer = jwplayer.api.playerById(_container.id);
-            if (foundPlayer) {
+            if (!forceNew && foundPlayer) {
                 return foundPlayer;
             } else {
                 // Todo: register new object
@@ -610,15 +625,17 @@
             }
         }
 
+        _uniqueIndex++;
+        player.uniqueId = _uniqueIndex;
         _players.push(player);
         return player;
     };
 
-    jwplayer.api.destroyPlayer = function(playerId) {
+    jwplayer.api.destroyPlayer = function(uniqueId) {
         var index, player, toDestroy;
 
         utils.foreach(_players, function(idx, value) {
-            if (value.id === playerId) {
+            if (value.uniqueId === uniqueId) {
                 index = idx;
                 player = value;
             }
@@ -628,7 +645,9 @@
             return null;
         }
 
-        utils.clearCss('#' + player.id);
+        if (!player.aborted) {
+            utils.clearCss('#' + player.id);
+        }
 
         toDestroy = document.getElementById(player.id + (player.renderingMode === 'flash' ? '_wrapper' : ''));
 
@@ -637,9 +656,13 @@
                 // calls jwPlayerDestroy()
                 player.destroyPlayer();
             }
-            var replacement = document.createElement('div');
-            replacement.id = player.id;
-            toDestroy.parentNode.replaceChild(replacement, toDestroy);
+
+            // If the tag is reused by another player, do not destroy the div
+            if (! player.aborted) {
+                var replacement = document.createElement('div');
+                replacement.id = player.id;
+                toDestroy.parentNode.replaceChild(replacement, toDestroy);
+            }
         }
 
         // Remove from array of players

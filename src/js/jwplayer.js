@@ -2,9 +2,9 @@
  * JW Player namespace definition
  * @version 6.0
  */
-jwplayer = function(container) {
+jwplayer = function() {
     if (jwplayer.api) {
-        return jwplayer.api.selectPlayer(container);
+        return jwplayer.api.selectPlayer.apply(this, arguments);
     }
 };
 
