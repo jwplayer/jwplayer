@@ -180,16 +180,13 @@ import flash.utils.setTimeout;
 				_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_COMPLETE, completeHandler, false);
 				_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, timeHandler);
 				
+				// setup listeners so playlist loaded can be dispatched (ready will be forwarded asynchronously)
 				dispatchEvent(new PlayerEvent(PlayerEvent.JWPLAYER_READY));
-
-//				playlistLoadHandler();
 
 				// Broadcast playlist loaded (which was swallowed during player setup);
 				if (_model.playlist.length > 0) {
 					_model.dispatchEvent(new PlaylistEvent(PlaylistEvent.JWPLAYER_PLAYLIST_LOADED, _model.playlist));
 				}
-
-				
 			}
 		}
 
