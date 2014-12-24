@@ -183,6 +183,12 @@
         return _.indexOf(obj, target) >= 0;
     };
 
+    // Convenience version of a common use case of `filter`: selecting only objects
+    // containing specific `key:value` pairs.
+    _.where = function(obj, attrs) {
+        return _.filter(obj, _.matches(attrs));
+    };
+
     // Take the difference between one array and a number of other arrays.
     // Only the elements present in just the first array will remain.
     _.difference = function(array) {
@@ -329,6 +335,18 @@
         return function(obj) {
             return obj[key];
         };
+    };
+
+    // Returns a predicate for checking whether an object has a given set of `key:value` pairs.
+    _.matches = function(attrs) {
+        return function(obj) {
+            if (obj === attrs) return true; //avoid comparing an object to itself.
+            for (var key in attrs) {
+                if (attrs[key] !== obj[key])
+                    return false;
+            }
+            return true;
+        }
     };
 
     root._ = _;
