@@ -2,6 +2,7 @@
     var _players = [],
         utils = jwplayer.utils,
         events = jwplayer.events,
+        _ = jwplayer._,
         _uniqueIndex = 0,
         states = events.state;
 
@@ -121,12 +122,18 @@
                 if (fallbackDiv) {
                     options.fallbackDiv = fallbackDiv;
                 }
-                _remove(_this);
-                // By passing "true" we ensure it creates a new player, instead
-                //  of returning one that has been created already
-                var newApi = jwplayer(_this.id, true);
+
+                // If calling setup on a DOM element that already has a player in it
+                var previous = jwplayer.api.playerById(_this.id);
+                if (previous) {
+                    previous.remove();
+                }
+
+                var _container = document.getElementById(_this.id);
+                var newApi = (new jwplayer.api(_container));
+                jwplayer.api.addPlayer(newApi);
+
                 newApi.config = options;
-                newApi.wasSetup = true;
                 _embedder = new jwplayer.embed(newApi);
                 _embedder.embed();
                 return newApi;
@@ -338,17 +345,8 @@
 
         _this.remove = function() {
             if (!_playerReady) {
-                throw 'Cannot call remove() before player is ready';
-            }
-            _remove(this);
-        };
-
-        function _remove(player) {
-            // When a second setup() occurs before the first one has completed
-            if (player.wasSetup && !player.isPlayerReady()) {
-                player.aborted = true;
-                player.onReady(function() {
-                    _remove(player);
+                _this.onReady(function() {
+                    _this.remove.apply(_this, arguments);
                 });
                 return;
             }
@@ -359,8 +357,38 @@
                 _embedder.destroy();
             }
 
-            jwplayer.api.destroyPlayer(player.uniqueId);
-        }
+            // Is there more than one player using the same DIV on the page?
+            var sharedDOM = (_.size(_.where(_players, {id : _this.id})) > 1);
+
+            // If sharing the DOM element, don't reset CSS
+            if (! sharedDOM) {
+                utils.clearCss('#' + _this.id);
+            }
+
+            var toDestroy = document.getElementById(_this.id + (_this.renderingMode === 'flash' ? '_wrapper' : ''));
+
+            if (toDestroy) {
+                if (_this.renderingMode === 'html5') {
+                    // calls jwPlayerDestroy()
+                    _this.destroyPlayer();
+                }
+
+                // If the tag is reused by another player, do not destroy the div
+                if (! sharedDOM) {
+                    var replacement = document.createElement('div');
+                    replacement.id = _this.id;
+                    toDestroy.parentNode.replaceChild(replacement, toDestroy);
+                }
+            }
+
+            // Remove from array of players
+            _players = _.filter(_players, function(p) {
+                return (p.uniqueId !== _this.uniqueId);
+            });
+
+            return null;
+        };
+
 
         _this.registerPlugin = function(id, target, arg1, arg2) {
             jwplayer.plugins.registerPlugin(id, target, arg1, arg2);
@@ -580,7 +608,7 @@
         api.playerReady(obj);
     };
 
-    jwplayer.api.selectPlayer = function(identifier, forceNew) {
+    jwplayer.api.selectPlayer = function(identifier) {
         var _container;
 
         if (!utils.exists(identifier)) {
@@ -597,11 +625,11 @@
 
         if (_container) {
             var foundPlayer = jwplayer.api.playerById(_container.id);
-            if (!forceNew && foundPlayer) {
+            if (foundPlayer) {
                 return foundPlayer;
             } else {
                 // Todo: register new object
-                return jwplayer.api.addPlayer(new jwplayer.api(_container));
+                return (new jwplayer.api(_container));
             }
         } else if (typeof identifier === 'number') {
             return _players[identifier];
@@ -617,6 +645,7 @@
                 return _players[p];
             }
         }
+
         return null;
     };
 
@@ -633,45 +662,27 @@
         return player;
     };
 
-    jwplayer.api.destroyPlayer = function(uniqueId) {
-        var index, player, toDestroy;
 
-        utils.foreach(_players, function(idx, value) {
-            if (value.uniqueId === uniqueId) {
-                index = idx;
-                player = value;
-            }
-        });
+    // Note: This function is legacy and should be avoided in favor of player.remove()
+    jwplayer.api.destroyPlayer = function(player) {
 
-        if (index === undefined || player === undefined) {
+        // Supporting removal by DOM id is a legacy feature
+        if (_.isString(player)) {
+            // If not passed a player, it will find the one that matches the id
+            var id = player;
+            utils.foreach(_players, function (idx, value) {
+                if (value.id === id) {
+                    player = value;
+                }
+            });
+        }
+
+        if (player === undefined || !_.isFunction(player.remove)) {
             return null;
         }
 
-        // If sharing the DOM element, don't reset CSS
-        if (!player.aborted) {
-            utils.clearCss('#' + player.id);
-        }
-
-        toDestroy = document.getElementById(player.id + (player.renderingMode === 'flash' ? '_wrapper' : ''));
-
-        if (toDestroy) {
-            if (player.renderingMode === 'html5') {
-                // calls jwPlayerDestroy()
-                player.destroyPlayer();
-            }
-
-            // If the tag is reused by another player, do not destroy the div
-            if (! player.aborted) {
-                var replacement = document.createElement('div');
-                replacement.id = player.id;
-                toDestroy.parentNode.replaceChild(replacement, toDestroy);
-            }
-        }
-
-        // Remove from array of players
-        _players.splice(index, 1);
-
-        return null;
+        player.remove();
     };
+
 
 })(window.jwplayer);
