@@ -385,8 +385,6 @@
             _players = _.filter(_players, function(p) {
                 return (p.uniqueId !== _this.uniqueId);
             });
-
-            return null;
         };
 
 
@@ -515,10 +513,6 @@
             }
         };
 
-        _this.isPlayerReady = function() {
-            return _playerReady;
-        };
-
         function _callInternal() {
             if (_playerReady) {
                 if (_player) {
@@ -628,7 +622,6 @@
             if (foundPlayer) {
                 return foundPlayer;
             } else {
-                // Todo: register new object
                 return (new jwplayer.api(_container));
             }
         } else if (typeof identifier === 'number') {
@@ -664,21 +657,11 @@
 
 
     // Note: This function is legacy and should be avoided in favor of player.remove()
-    jwplayer.api.destroyPlayer = function(player) {
+    jwplayer.api.destroyPlayer = function(id) {
+        var player = jwplayer.api.playerById(id);
 
-        // Supporting removal by DOM id is a legacy feature
-        if (_.isString(player)) {
-            // If not passed a player, it will find the one that matches the id
-            var id = player;
-            utils.foreach(_players, function (idx, value) {
-                if (value.id === id) {
-                    player = value;
-                }
-            });
-        }
-
-        if (player === undefined || !_.isFunction(player.remove)) {
-            return null;
+        if (!player || !_.isFunction(player.remove)) {
+            return;
         }
 
         player.remove();
