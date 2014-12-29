@@ -123,14 +123,10 @@
                     options.fallbackDiv = fallbackDiv;
                 }
 
-                // If calling setup on a DOM element that already has a player in it
-                var previous = jwplayer.api.playerById(_this.id);
-                if (previous) {
-                    previous.remove();
-                }
+                // Remove any players that may be associated to this DOM element
+                jwplayer.api.destroyPlayer(_this.id);
 
-                var _container = document.getElementById(_this.id);
-                var newApi = (new jwplayer.api(_container));
+                var newApi = (new jwplayer.api(_this.container));
                 jwplayer.api.addPlayer(newApi);
 
                 newApi.config = options;
@@ -344,7 +340,15 @@
 
 
         _this.remove = function() {
+
             if (!_playerReady) {
+
+                // To ensure we don't double delete the player
+                if (_this.aborted) {
+                    return;
+                }
+                _this.aborted = true;
+
                 _this.onReady(function() {
                     _this.remove.apply(_this, arguments);
                 });
@@ -642,6 +646,7 @@
         return null;
     };
 
+
     jwplayer.api.addPlayer = function(player) {
         for (var p = 0; p < _players.length; p++) {
             if (_players[p] === player) {
@@ -656,15 +661,13 @@
     };
 
 
-    // Note: This function is legacy and should be avoided in favor of player.remove()
+    // Destroys all players bound to a specific dom element by ID
     jwplayer.api.destroyPlayer = function(id) {
-        var player = jwplayer.api.playerById(id);
+        // Get all players with matching id
+        var players = _.where(_players, {id : id});
 
-        if (!player || !_.isFunction(player.remove)) {
-            return;
-        }
-
-        player.remove();
+        // Call remove on every player in the array
+        _.each(players, _.partial(_.result, _, 'remove'));
     };
 
 

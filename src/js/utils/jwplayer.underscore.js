@@ -224,6 +224,27 @@
     };
 
 
+
+    // Function (ahem) Functions
+    // ------------------
+
+
+    // Partially apply a function by creating a version that has had some of its
+    // arguments pre-filled, without changing its dynamic `this` context. _ acts
+    // as a placeholder, allowing any combination of arguments to be pre-filled.
+    _.partial = function(func) {
+        var boundArgs = slice.call(arguments, 1);
+        return function() {
+            var position = 0;
+            var args = boundArgs.slice();
+            for (var i = 0, length = args.length; i < length; i++) {
+                if (args[i] === _) args[i] = arguments[position++];
+            }
+            while (position < arguments.length) args.push(arguments[position++]);
+            return func.apply(this, args);
+        };
+    };
+
     // Memoize an expensive function by storing its results.
     _.memoize = function(func, hasher) {
         var memo = {};
@@ -348,6 +369,15 @@
             return true;
         }
     };
+
+    // If the value of the named `property` is a function then invoke it with the
+    // `object` as context; otherwise, return it.
+    _.result = function(object, property) {
+        if (object == null) return void 0;
+        var value = object[property];
+        return _.isFunction(value) ? value.call(object) : value;
+    };
+
 
     root._ = _;
 }).call(jwplayer);
