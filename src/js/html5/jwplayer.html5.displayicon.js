@@ -197,6 +197,7 @@
             if (!icon) {
                 icon = _createElement('jwicon');
                 icon.id = _container.id + '_' + name;
+                _iconCache[name] = icon;
             }
             _styleIcon(icon, name + 'Icon', '#' + icon.id);
             if (_container.contains(_icon)) {
