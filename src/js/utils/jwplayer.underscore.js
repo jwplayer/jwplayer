@@ -183,6 +183,12 @@
         return _.indexOf(obj, target) >= 0;
     };
 
+    // Convenience version of a common use case of `filter`: selecting only objects
+    // containing specific `key:value` pairs.
+    _.where = function(obj, attrs) {
+        return _.filter(obj, _.matches(attrs));
+    };
+
     // Take the difference between one array and a number of other arrays.
     // Only the elements present in just the first array will remain.
     _.difference = function(array) {
@@ -217,6 +223,27 @@
         return -1;
     };
 
+
+
+    // Function (ahem) Functions
+    // ------------------
+
+
+    // Partially apply a function by creating a version that has had some of its
+    // arguments pre-filled, without changing its dynamic `this` context. _ acts
+    // as a placeholder, allowing any combination of arguments to be pre-filled.
+    _.partial = function(func) {
+        var boundArgs = slice.call(arguments, 1);
+        return function() {
+            var position = 0;
+            var args = boundArgs.slice();
+            for (var i = 0, length = args.length; i < length; i++) {
+                if (args[i] === _) args[i] = arguments[position++];
+            }
+            while (position < arguments.length) args.push(arguments[position++]);
+            return func.apply(this, args);
+        };
+    };
 
     // Memoize an expensive function by storing its results.
     _.memoize = function(func, hasher) {
@@ -330,6 +357,27 @@
             return obj[key];
         };
     };
+
+    // Returns a predicate for checking whether an object has a given set of `key:value` pairs.
+    _.matches = function(attrs) {
+        return function(obj) {
+            if (obj === attrs) return true; //avoid comparing an object to itself.
+            for (var key in attrs) {
+                if (attrs[key] !== obj[key])
+                    return false;
+            }
+            return true;
+        }
+    };
+
+    // If the value of the named `property` is a function then invoke it with the
+    // `object` as context; otherwise, return it.
+    _.result = function(object, property) {
+        if (object == null) return void 0;
+        var value = object[property];
+        return _.isFunction(value) ? value.call(object) : value;
+    };
+
 
     root._ = _;
 }).call(jwplayer);
