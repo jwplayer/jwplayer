@@ -16,6 +16,7 @@
             _errorOccurred = false,
             _setupErrorTimer = -1,
             _fallbackDiv = null,
+            _playerEmbedder = null,
             _this = this;
 
         if (_config.fallbackDiv) {
@@ -48,6 +49,15 @@
         };
 
         _this.destroy = function() {
+            // if embed isn't complete, then
+            if (!playerApi.renderingMode) {
+                _embedError({msg:'Destroyed before embed occurred'});
+            }
+
+            if (_playerEmbedder) {
+                _playerEmbedder.destroy();
+                _playerEmbedder = null;
+            }
             if (_pluginloader) {
                 _pluginloader.destroy();
                 _pluginloader = null;
@@ -108,12 +118,12 @@
                     var type = mode.type;
                     if (type && embed[type]) {
                         var configClone = utils.extend({}, _config);
-                        var embedder = new embed[type](_container, mode, configClone,
+                        _playerEmbedder = new embed[type](_container, mode, configClone,
                             _pluginloader, playerApi);
 
-                        if (embedder.supportsConfig()) {
-                            embedder.addEventListener(events.ERROR, _embedError);
-                            embedder.embed();
+                        if (_playerEmbedder.supportsConfig()) {
+                            _playerEmbedder.addEventListener(events.ERROR, _embedError);
+                            _playerEmbedder.embed();
                             _insertCSS();
                             return playerApi;
                         }

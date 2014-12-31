@@ -6,6 +6,7 @@
 
     jwplayer.embed.html5 = function(_container, _player, _options, _loader, _api) {
         var _this = this,
+            scriptLoader,
             _eventdispatcher = new events.eventdispatcher();
 
         utils.extend(_this, _eventdispatcher);
@@ -30,6 +31,10 @@
         }
 
         _this.embed = function() {
+            // temporary stopgap
+            if (_api.aborted) {
+                return;
+            }
             // If it has already been loaded
             if (jwplayer.html5) {
                 _loader.setupPlugins(_api, _options, _resizePlugin);
@@ -40,10 +45,12 @@
                 delete playerOptions.volume;
 
                 var html5player = new jwplayer.html5.player(playerOptions);
+
+                // This next line may be pointless...
                 _api.container = document.getElementById(_api.id);
                 _api.setPlayer(html5player, 'html5');
             } else {
-                var scriptLoader = new utils.scriptloader(_player.src);
+                scriptLoader = new utils.scriptloader(_player.src);
                 scriptLoader.addEventListener(events.ERROR, _loadError);
                 scriptLoader.addEventListener(events.COMPLETE, _this.embed);
                 scriptLoader.load();
@@ -81,6 +88,12 @@
                 } catch (e) {}
             }
             return false;
+        };
+
+        _this.destroy = function() {
+            if (scriptLoader) {
+                scriptLoader.resetEventListeners();
+            }
         };
     };
 

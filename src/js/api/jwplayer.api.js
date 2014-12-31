@@ -108,12 +108,19 @@
             _playerReady = false,
             _queuedCalls = [],
             _instream,
-            _embedder,
             _itemMeta = {},
             _callbacks = {};
 
         _this.container = container;
         _this.id = container.id;
+
+        this.embedFailed = function() {
+            // A failed embed cannot be removed unless playerReady, but it will also never achieve it.
+            _playerReady = true;
+            if (this.aborted) {
+                this.remove();
+            }
+        };
 
         _this.setup = function(options) {
             if (jwplayer.embed) {
@@ -129,9 +136,13 @@
                 var newApi = (new jwplayer.api(_this.container));
                 jwplayer.api.addPlayer(newApi);
 
+                // These two error handlers allow the player to be cleaned up on remove()
+                newApi.onError(newApi.embedFailed);
+                newApi.onSetupError(newApi.embedFailed);
+
                 newApi.config = options;
-                _embedder = new jwplayer.embed(newApi);
-                _embedder.embed();
+                newApi._embedder = new jwplayer.embed(newApi);
+                newApi._embedder.embed();
                 return newApi;
             }
             return _this;
@@ -341,6 +352,11 @@
 
         _this.remove = function() {
 
+            // Should this be done before return?
+            if (this._embedder && this._embedder.destroy) {
+                this._embedder.destroy();
+            }
+
             if (!_playerReady) {
 
                 // To ensure we don't double delete the player
@@ -357,12 +373,13 @@
 
             _queuedCalls = [];
 
-            if (_embedder && _embedder.destroy) {
-                _embedder.destroy();
-            }
 
             // Is there more than one player using the same DIV on the page?
             var sharedDOM = (_.size(_.where(_players, {id : _this.id})) > 1);
+            // Workaround for setup bug which creates a new element instead of using div
+            //if (!_this.container.parentNode) {
+                //sharedDOM = false;
+            //}
 
             // If sharing the DOM element, don't reset CSS
             if (! sharedDOM) {

@@ -17,6 +17,7 @@
 (function(jwplayer) {
     var html5 = jwplayer.html5,
         utils = jwplayer.utils,
+        _ = jwplayer._,
         events = jwplayer.events;
 
 
@@ -29,15 +30,15 @@
 
         var PARSE_CONFIG = {
                 method: _parseConfig,
-                depends: false
+                depends: []
             },
             LOAD_SKIN = {
                 method: _loadSkin,
-                depends: PARSE_CONFIG
+                depends: [PARSE_CONFIG]
             },
             LOAD_PLAYLIST = {
                 method: _loadPlaylist,
-                depends: PARSE_CONFIG
+                depends: [PARSE_CONFIG]
             },
             SETUP_COMPONENTS = {
                 method: _setupComponents,
@@ -55,7 +56,7 @@
             },
             SEND_READY = {
                 method: _sendReady,
-                depends: INIT_PLUGINS
+                depends: [INIT_PLUGINS]
             };
 
         var _queue = [
@@ -83,18 +84,9 @@
         }
 
         function _allComplete(dependencies) {
-            if (!dependencies) {
-                return true;
-            }
-            if (jwplayer._.isArray(dependencies)) {
-                for (var i = 0; i < dependencies.length; i++) {
-                    if (!dependencies[i].complete) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-            return !!dependencies.complete;
+            // return true if empty array,
+            //  or if each object has an attribute 'complete' which is true
+            return _.all(_.map(dependencies, _.property('complete')));
         }
 
         function _taskComplete(task) {

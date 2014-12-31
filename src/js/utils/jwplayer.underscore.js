@@ -28,6 +28,7 @@
         nativeMap          = ArrayProto.map,
         nativeForEach      = ArrayProto.forEach,
         nativeFilter       = ArrayProto.filter,
+        nativeEvery        = ArrayProto.every,
         nativeSome         = ArrayProto.some,
         nativeIndexOf      = ArrayProto.indexOf,
         nativeIsArray      = Array.isArray,
@@ -100,6 +101,20 @@
         return results;
     };
 
+
+    // Determine whether all of the elements match a truth test.
+    // Delegates to **ECMAScript 5**'s native `every` if available.
+    // Aliased as `all`.
+    _.every = _.all = function(obj, predicate, context) {
+        predicate || (predicate = _.identity);
+        var result = true;
+        if (obj == null) return result;
+        if (nativeEvery && obj.every === nativeEvery) return obj.every(predicate, context);
+        each(obj, function(value, index, list) {
+            if (!(result = result && predicate.call(context, value, index, list))) return breaker;
+        });
+        return !!result;
+    };
 
     // Determine if at least one element in the object matches a truth test.
     // Delegates to **ECMAScript 5**'s native `some` if available.
