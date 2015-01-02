@@ -270,6 +270,19 @@
         };
     };
 
+    // Delays a function for the given number of milliseconds, and then calls
+    // it with the arguments supplied.
+    _.delay = function(func, wait) {
+        var args = slice.call(arguments, 2);
+        return setTimeout(function(){ return func.apply(null, args); }, wait);
+    };
+
+    // Defers a function, scheduling it to run after the current call stack has
+    // cleared.
+    _.defer = function(func) {
+        return _.delay.apply(_, [func, 1].concat(slice.call(arguments, 1)));
+    };
+
     // Retrieve the names of an object's properties.
     // Delegates to **ECMAScript 5**'s native `Object.keys`
     _.keys = function(obj) {

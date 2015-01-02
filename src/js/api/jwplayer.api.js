@@ -114,13 +114,6 @@
         _this.container = container;
         _this.id = container.id;
 
-        this.embedFailed = function() {
-            // A failed embed cannot be removed unless playerReady, but it will also never achieve it.
-            _playerReady = true;
-            if (this.aborted) {
-                this.remove();
-            }
-        };
 
         _this.setup = function(options) {
             if (jwplayer.embed) {
@@ -130,10 +123,6 @@
 
                 var newApi = (new jwplayer.api(_this.container));
                 jwplayer.api.addPlayer(newApi);
-
-                // These two error handlers allow the player to be cleaned up on remove()
-                newApi.onError(newApi.embedFailed);
-                newApi.onSetupError(newApi.embedFailed);
 
                 newApi.config = options;
                 newApi._embedder = new jwplayer.embed(newApi);
@@ -293,6 +282,8 @@
             return _instream;
         };
         _this.destroyPlayer = function() {
+            // so players can be removed before loading completes
+            _playerReady = true;
             _callInternal('jwPlayerDestroy');
         };
         _this.playAd = function(ad) {
@@ -347,34 +338,15 @@
 
         _this.remove = function() {
 
-            // Should this be done before return?
+            // Cancel embedding even if it is in progress
             if (this._embedder && this._embedder.destroy) {
                 this._embedder.destroy();
             }
 
-            if (!_playerReady) {
-
-                // To ensure we don't double delete the player
-                if (_this.aborted) {
-                    return;
-                }
-                _this.aborted = true;
-
-                _this.onReady(function() {
-                    _this.remove.apply(_this, arguments);
-                });
-                return;
-            }
-
             _queuedCalls = [];
-
 
             // Is there more than one player using the same DIV on the page?
             var sharedDOM = (_.size(_.where(_players, {id : _this.id})) > 1);
-            // Workaround for setup bug which creates a new element instead of using div
-            //if (!_this.container.parentNode) {
-                //sharedDOM = false;
-            //}
 
             // If sharing the DOM element, don't reset CSS
             if (! sharedDOM) {
@@ -593,7 +565,7 @@
             _this.dispatchEvent(events.API_READY);
 
             while (_queuedCalls.length > 0) {
-                _callInternal.apply(this, _queuedCalls.shift());
+                _callInternal.apply(_this, _queuedCalls.shift());
             }
         };
 

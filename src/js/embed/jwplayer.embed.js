@@ -31,7 +31,6 @@
         _container.id = _oldContainer.id;
         _container.style.width = _width.toString().indexOf('%') > 0 ? _width : (_width + 'px');
         _container.style.height = _height.toString().indexOf('%') > 0 ? _height : (_height + 'px');
-        _oldContainer.parentNode.replaceChild(_container, _oldContainer);
 
         _this.embed = function() {
             if (_errorOccurred) {
@@ -44,11 +43,6 @@
         };
 
         _this.destroy = function() {
-            // if embed isn't complete, then
-            if (!playerApi.renderingMode) {
-                _embedError({msg:'Destroyed before embed occurred'});
-            }
-
             if (_playerEmbedder) {
                 _playerEmbedder.destroy();
                 _playerEmbedder = null;
@@ -161,18 +155,19 @@
             clearTimeout(_setupErrorTimer);
 
             // Throttle this so that it runs once if called twice in the same callstack
-            _setupErrorTimer = setTimeout(function() {
                 playerApi.dispatchEvent(events.JWPLAYER_SETUP_ERROR, {
                     message: message,
                     fallback: fallback
                 });
-            }, 0);
         }
 
         function _errorScreen(message) {
             if (_errorOccurred) {
                 return;
             }
+
+            // Put new container in page
+            _oldContainer.parentNode.replaceChild(_container, _oldContainer);
 
             if (!_config.fallback) {
                 _dispatchSetupError(message, false);

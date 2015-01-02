@@ -68,17 +68,21 @@
             SEND_READY
         ];
 
-        this.start = function() {
-            _nextTask();
+        this.start = function () {
+            _.defer(_nextTask);
         };
 
         function _nextTask() {
+            if (this.cancelled) {
+                return;
+            }
+
             for (var i = 0; i < _queue.length; i++) {
                 var task = _queue[i];
                 if (_allComplete(task.depends)) {
                     _queue.splice(i, 1);
                     task.method();
-                    _nextTask();
+                    _.defer(_nextTask);
                 }
             }
         }
@@ -92,7 +96,7 @@
         function _taskComplete(task) {
             task.complete = true;
             if (_queue.length > 0 && !_errorState) {
-                _nextTask();
+                _.defer(_nextTask);
             }
         }
 
@@ -145,6 +149,9 @@
         }
 
         function _sendReady() {
+            if (this.cancelled) {
+                return;
+            }
             _eventDispatcher.sendEvent(events.JWPLAYER_READY);
             _taskComplete(SEND_READY);
         }
@@ -156,6 +163,10 @@
             });
             _view.setupError(message);
         }
+
+        this.destroy = function() {
+            this.cancelled = true;
+        };
 
         utils.extend(this, _eventDispatcher);
 

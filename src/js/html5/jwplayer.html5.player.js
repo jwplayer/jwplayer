@@ -247,6 +247,7 @@
             };
 
             _this.jwPlayerDestroy = function() {
+
                 if (_controller) {
                     _controller.stop();
                 }
@@ -256,9 +257,9 @@
                 if (_model) {
                     _model.destroy();
                 }
-
                 if (_setup) {
                     _setup.resetEventListeners();
+                    _setup.destroy();
                 }
             };
 
