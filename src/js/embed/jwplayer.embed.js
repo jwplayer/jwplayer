@@ -15,14 +15,9 @@
             _playlistLoading = false,
             _errorOccurred = false,
             _setupErrorTimer = -1,
-            _fallbackDiv = null,
             _playerEmbedder = null,
             _this = this;
 
-        if (_config.fallbackDiv) {
-            _fallbackDiv = _config.fallbackDiv;
-            delete _config.fallbackDiv;
-        }
         _config.id = playerApi.id;
         if (_config.aspectratio) {
             playerApi.config.aspectratio = _config.aspectratio;
@@ -140,13 +135,8 @@
                     message = 'No suitable players found and fallback disabled';
                     _dispatchSetupError(message, false);
                     utils.log(message);
-                    _replaceContainer();
                 }
             }
-        }
-
-        function _replaceContainer() {
-            _container.parentNode.replaceChild(_fallbackDiv, _container);
         }
 
         function _embedError(evt) {

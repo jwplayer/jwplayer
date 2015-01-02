@@ -124,11 +124,6 @@
 
         _this.setup = function(options) {
             if (jwplayer.embed) {
-                // Destroy original API on setup() to remove existing listeners
-                var fallbackDiv = document.getElementById(_this.id);
-                if (fallbackDiv) {
-                    options.fallbackDiv = fallbackDiv;
-                }
 
                 // Remove any players that may be associated to this DOM element
                 jwplayer.api.destroyPlayer(_this.id);
