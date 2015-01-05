@@ -36,11 +36,6 @@
                 return;
             }
 
-            // temporary stopgap
-            if (_api.aborted) {
-                return;
-            }
-
             _loader.setupPlugins(_api, _options, _resizePlugin);
             utils.emptyElement(_container);
             var playerOptions = jwplayer.utils.extend({}, _options);

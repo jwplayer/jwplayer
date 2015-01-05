@@ -70,6 +70,10 @@
 
             var params = utils.extend({}, _options);
 
+            // Put the new container into the page
+            var replace = document.getElementById(_api.id);
+            replace.parentNode.replaceChild(_container, replace);
+
             // Hack for when adding / removing happens too quickly
             if (_container.id + '_wrapper' === _container.parentNode.id) {
                 _wrapper = document.getElementById(_container.id + '_wrapper');
@@ -224,6 +228,10 @@
             }
             return false;
         };
+
+        // Removing the object from the page cleans everything up
+        this.destroy = function() { };
+
     };
 
     _flash.getVars = function(id) {
