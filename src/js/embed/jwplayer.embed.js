@@ -14,7 +14,6 @@
             _loader,
             _playlistLoading = false,
             _errorOccurred = false,
-            _setupErrorTimer = -1,
             _playerEmbedder = null,
             _this = this;
 
@@ -152,13 +151,10 @@
         }
 
         function _dispatchSetupError(message, fallback) {
-            clearTimeout(_setupErrorTimer);
-
-            // Throttle this so that it runs once if called twice in the same callstack
-                playerApi.dispatchEvent(events.JWPLAYER_SETUP_ERROR, {
-                    message: message,
-                    fallback: fallback
-                });
+            playerApi.dispatchEvent(events.JWPLAYER_SETUP_ERROR, {
+                message: message,
+                fallback: fallback
+            });
         }
 
         function _errorScreen(message) {
