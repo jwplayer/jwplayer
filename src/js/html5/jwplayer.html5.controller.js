@@ -149,9 +149,8 @@
         function _stop(internal) {
             _actionOnAttach = null;
             try {
-                if (!_isIdle()) {
-                    _video().stop();
-                } else if (!internal) {
+                _video().stop();
+                if (!internal) {
                     _stopPlaylist = true;
                 }
 

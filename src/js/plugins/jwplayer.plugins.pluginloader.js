@@ -11,6 +11,7 @@
             _config = config,
 			_pluginCount = _.size(_config),
 			_pluginLoaded,
+            _destroyed = false,
 			_eventDispatcher = new events.eventdispatcher();
 		
 		
@@ -39,6 +40,10 @@
 		
 		// This is not entirely efficient, but it's simple
 		function _checkComplete() {
+            // Since we do not remove event listeners on pluginObj when destroying
+            if (_destroyed) {
+                return;
+            }
 			if (!_config || _.keys(_config).length === 0) {
 				_complete();
 			}
@@ -65,7 +70,12 @@
 			}
 		}
 
-		function _pluginError(e) {  
+		function _pluginError(e) {
+            // Since we do not remove event listeners on pluginObj when destroying
+            if (_destroyed) {
+                return;
+            }
+
 		    var message = 'File not found';
             _eventDispatcher.sendEvent(events.ERROR, {
                  message: message
@@ -73,8 +83,8 @@
             if (e.url) {
                 utils.log(message, e.url);
             }
-            _pluginLoaded();
-		}
+            _checkComplete();
+        }
 		
 		this.setupPlugins = function(api, config, resizer) {
 			var flashPlugins = {
@@ -159,6 +169,8 @@
 		};
 
 		this.destroy = function() {
+            _destroyed = true;
+
 			if (_eventDispatcher) {
 				_eventDispatcher.resetEventListeners();
 				_eventDispatcher = null;
