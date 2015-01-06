@@ -262,7 +262,7 @@
             if (!_attached) {
                 return;
             }
-            utils.log('Error playing media: %o', _videotag.error);
+            utils.log('Error playing media: %o %s', _videotag.error, _videotag.src || _source.file);
             _this.sendEvent(events.JWPLAYER_MEDIA_ERROR, {
                 message: 'Error loading media: File could not be played'
             });
