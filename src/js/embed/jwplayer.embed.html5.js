@@ -2,7 +2,8 @@
     /*jshint maxparams:5*/
     var utils = jwplayer.utils,
         extensionmap = utils.extensionmap,
-        events = jwplayer.events;
+        events = jwplayer.events,
+        scriptLoader;
 
     jwplayer.embed.html5 = function(_container, _player, _options, _loader, _api) {
         var _this = this,
@@ -30,32 +31,35 @@
         }
 
         _this.embed = function() {
-            // If it has already been loaded
-            if (jwplayer.html5) {
-                _loader.setupPlugins(_api, _options, _resizePlugin);
-                _container.innerHTML = '';
-                var playerOptions = jwplayer.utils.extend({}, _options);
-
-                // Volume option is tricky to remove, since it needs to be in the HTML5 player model.
-                delete playerOptions.volume;
-
-                var html5player = new jwplayer.html5.player(playerOptions);
-                _api.container = document.getElementById(_api.id);
-                _api.setPlayer(html5player, 'html5');
-            } else {
-                var scriptLoader = new utils.scriptloader(_player.src);
-                scriptLoader.addEventListener(events.ERROR, _loadError);
-                scriptLoader.addEventListener(events.COMPLETE, _this.embed);
-                scriptLoader.load();
+            if (!jwplayer.html5) {
+                this.loadEmbedder();
+                return;
             }
 
+            _loader.setupPlugins(_api, _options, _resizePlugin);
+            utils.emptyElement(_container);
+            var playerOptions = jwplayer.utils.extend({}, _options);
+
+            // Volume option is tricky to remove, since it needs to be in the HTML5 player model.
+            delete playerOptions.volume;
+
+            var html5player = new jwplayer.html5.player(playerOptions);
+
+            _api.setPlayer(html5player, 'html5');
         };
 
-        function _loadError(evt) {
-            _this.sendEvent(evt.type, {
+        this.loadEmbedder = function() {
+            scriptLoader = scriptLoader || new utils.scriptloader(_player.src);
+            scriptLoader.addEventListener(events.ERROR, this.loadError);
+            scriptLoader.addEventListener(events.COMPLETE, this.embed);
+            scriptLoader.load(); // Don't worry, it will only load once
+        };
+
+        this.loadError = function(evt) {
+            this.sendEvent(evt.type, {
                 message: 'HTML5 player not found'
             });
-        }
+        };
 
         /**
          * Detects whether the html5 player supports this configuration.
@@ -81,6 +85,13 @@
                 } catch (e) {}
             }
             return false;
+        };
+
+        _this.destroy = function() {
+            if (scriptLoader) {
+                scriptLoader.resetEventListeners();
+                scriptLoader = null;
+            }
         };
     };
 

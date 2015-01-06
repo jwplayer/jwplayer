@@ -17,6 +17,7 @@
 (function(jwplayer) {
     var html5 = jwplayer.html5,
         utils = jwplayer.utils,
+        _ = jwplayer._,
         events = jwplayer.events;
 
 
@@ -29,15 +30,15 @@
 
         var PARSE_CONFIG = {
                 method: _parseConfig,
-                depends: false
+                depends: []
             },
             LOAD_SKIN = {
                 method: _loadSkin,
-                depends: PARSE_CONFIG
+                depends: [PARSE_CONFIG]
             },
             LOAD_PLAYLIST = {
                 method: _loadPlaylist,
-                depends: PARSE_CONFIG
+                depends: [PARSE_CONFIG]
             },
             SETUP_COMPONENTS = {
                 method: _setupComponents,
@@ -55,7 +56,7 @@
             },
             SEND_READY = {
                 method: _sendReady,
-                depends: INIT_PLUGINS
+                depends: [INIT_PLUGINS]
             };
 
         var _queue = [
@@ -67,40 +68,35 @@
             SEND_READY
         ];
 
-        this.start = function() {
-            _nextTask();
+        this.start = function () {
+            _.defer(_nextTask);
         };
 
         function _nextTask() {
+            if (this.cancelled) {
+                return;
+            }
+
             for (var i = 0; i < _queue.length; i++) {
                 var task = _queue[i];
                 if (_allComplete(task.depends)) {
                     _queue.splice(i, 1);
                     task.method();
-                    _nextTask();
+                    _.defer(_nextTask);
                 }
             }
         }
 
         function _allComplete(dependencies) {
-            if (!dependencies) {
-                return true;
-            }
-            if (jwplayer._.isArray(dependencies)) {
-                for (var i = 0; i < dependencies.length; i++) {
-                    if (!dependencies[i].complete) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-            return !!dependencies.complete;
+            // return true if empty array,
+            //  or if each object has an attribute 'complete' which is true
+            return _.all(_.map(dependencies, _.property('complete')));
         }
 
         function _taskComplete(task) {
             task.complete = true;
             if (_queue.length > 0 && !_errorState) {
-                _nextTask();
+                _.defer(_nextTask);
             }
         }
 
@@ -153,6 +149,9 @@
         }
 
         function _sendReady() {
+            if (this.cancelled) {
+                return;
+            }
             _eventDispatcher.sendEvent(events.JWPLAYER_READY);
             _taskComplete(SEND_READY);
         }
@@ -164,6 +163,10 @@
             });
             _view.setupError(message);
         }
+
+        this.destroy = function() {
+            this.cancelled = true;
+        };
 
         utils.extend(this, _eventDispatcher);
 

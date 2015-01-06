@@ -6,7 +6,7 @@
     var config = embed.config = function(config) {
 
         var _defaults = {
-                fallback: true,
+                fallback: true, // enable download embedder
                 height: 270,
                 primary: 'html5',
                 width: 480,

@@ -705,6 +705,12 @@
         element.className = utils.trim(_.difference(originalClasses, removeClasses).join(' '));
     };
 
+    utils.emptyElement = function(element) {
+        while (element.firstChild) {
+            element.removeChild(element.firstChild);
+        }
+    };
+
     utils.indexOf = _.indexOf;
     utils.noop = function() {};
 

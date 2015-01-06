@@ -14,14 +14,9 @@
             _loader,
             _playlistLoading = false,
             _errorOccurred = false,
-            _setupErrorTimer = -1,
-            _fallbackDiv = null,
+            _playerEmbedder = null,
             _this = this;
 
-        if (_config.fallbackDiv) {
-            _fallbackDiv = _config.fallbackDiv;
-            delete _config.fallbackDiv;
-        }
         _config.id = playerApi.id;
         if (_config.aspectratio) {
             playerApi.config.aspectratio = _config.aspectratio;
@@ -35,7 +30,6 @@
         _container.id = _oldContainer.id;
         _container.style.width = _width.toString().indexOf('%') > 0 ? _width : (_width + 'px');
         _container.style.height = _height.toString().indexOf('%') > 0 ? _height : (_height + 'px');
-        _oldContainer.parentNode.replaceChild(_container, _oldContainer);
 
         _this.embed = function() {
             if (_errorOccurred) {
@@ -48,6 +42,10 @@
         };
 
         _this.destroy = function() {
+            if (_playerEmbedder) {
+                _playerEmbedder.destroy();
+                _playerEmbedder = null;
+            }
             if (_pluginloader) {
                 _pluginloader.destroy();
                 _pluginloader = null;
@@ -108,12 +106,12 @@
                     var type = mode.type;
                     if (type && embed[type]) {
                         var configClone = utils.extend({}, _config);
-                        var embedder = new embed[type](_container, mode, configClone,
+                        _playerEmbedder = new embed[type](_container, mode, configClone,
                             _pluginloader, playerApi);
 
-                        if (embedder.supportsConfig()) {
-                            embedder.addEventListener(events.ERROR, _embedError);
-                            embedder.embed();
+                        if (_playerEmbedder.supportsConfig()) {
+                            _playerEmbedder.addEventListener(events.ERROR, _embedError);
+                            _playerEmbedder.embed();
                             _insertCSS();
                             return playerApi;
                         }
@@ -130,13 +128,8 @@
                     message = 'No suitable players found and fallback disabled';
                     _dispatchSetupError(message, false);
                     utils.log(message);
-                    _replaceContainer();
                 }
             }
-        }
-
-        function _replaceContainer() {
-            _container.parentNode.replaceChild(_fallbackDiv, _container);
         }
 
         function _embedError(evt) {
@@ -158,21 +151,19 @@
         }
 
         function _dispatchSetupError(message, fallback) {
-            clearTimeout(_setupErrorTimer);
-
-            // Throttle this so that it runs once if called twice in the same callstack
-            _setupErrorTimer = setTimeout(function() {
-                playerApi.dispatchEvent(events.JWPLAYER_SETUP_ERROR, {
-                    message: message,
-                    fallback: fallback
-                });
-            }, 0);
+            playerApi.dispatchEvent(events.JWPLAYER_SETUP_ERROR, {
+                message: message,
+                fallback: fallback
+            });
         }
 
         function _errorScreen(message) {
             if (_errorOccurred) {
                 return;
             }
+
+            // Put new container in page
+            _oldContainer.parentNode.replaceChild(_container, _oldContainer);
 
             if (!_config.fallback) {
                 _dispatchSetupError(message, false);
