@@ -30,7 +30,7 @@
 
     // Reset box-sizing to default for player and all sub-elements
     //  Note: If we use pseudo elements we will need to add *:before and *:after
-    _css(JW_CLASS, JW_CLASS + '*', { 'box-sizing': 'content-box'});
+    _css(JW_CLASS + ',' + JW_CLASS + '*', { 'box-sizing': 'content-box'});
 
     _css(JW_CLASS + 'ul', {
         'list-style': 'none'
