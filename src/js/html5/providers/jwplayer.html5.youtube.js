@@ -239,6 +239,11 @@
                     return;
 
                 case youtubeStates.PLAYING: // 1: playing
+                
+                    //prevent duplicate captions when using JW Player captions and YT video has yt:cc=on
+                    if (_.isFunction(_youtubePlayer.unloadModule)) {
+                        _youtubePlayer.unloadModule('captions');
+                    }
 
                     // playback has started so stop blocking api.play()
                     _requiresUserInteraction = false;
