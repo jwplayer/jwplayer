@@ -893,7 +893,7 @@
 
         function _cast() {
             if (_castState.active) {
-                _api.jwStopCasting();
+                _api.jwOpenExtension();
             } else {
                 _api.jwStartCasting();
             }
