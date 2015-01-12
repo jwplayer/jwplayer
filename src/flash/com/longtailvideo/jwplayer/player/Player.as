@@ -122,7 +122,7 @@
 		 */
 		protected function forward(evt:PlayerEvent):void {
             if (model.config.debug) {
-                Logger.log(evt.toString(), evt.type);
+                Logger.logEvent(evt);
             }
 			dispatchEvent(evt);
 		}

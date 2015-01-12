@@ -1,10 +1,11 @@
 package com.longtailvideo.jwplayer.utils {
-	import com.longtailvideo.jwplayer.model.PlayerConfig;
-	
-	import flash.external.ExternalInterface;
-	
-	
-	/**
+import com.longtailvideo.jwplayer.model.PlayerConfig;
+
+import flash.events.Event;
+
+import flash.external.ExternalInterface;
+
+/**
 	 * <p>Utility class for logging debug messages. It supports the following logging systems:</p>
 	 * <ul>
 	 * <li>The Console.log function built into Firefox/Firebug.</li>
@@ -42,7 +43,19 @@ package com.longtailvideo.jwplayer.utils {
 				send(type + ' (' + Strings.print_r(message) + ')');
 			}
 		}
-		
+
+		/**
+		 *
+		 * Only convert event to string if logging is active
+		 * @param event
+		 */
+		public static function logEvent(event:Event):void {
+			var debug:String = mode;
+			if (debug === CONSOLE || debug === TRACE) {
+				log(event.toString(), event.type);
+			}
+		}
+
 		public static function set filter(pattern:String):void {
 			if (pattern.length) {
 				_filter = new RegExp(pattern, "ig");
@@ -56,7 +69,7 @@ package com.longtailvideo.jwplayer.utils {
 			if (_filter && !_filter.test(text)) {
 				return;
 			}
-			var debug:String = _config ? _config.debug : TRACE;
+			var debug:String = mode;
 			if (debug === CONSOLE) {
 				try{
 					if (ExternalInterface.available) {
@@ -70,6 +83,10 @@ package com.longtailvideo.jwplayer.utils {
 		
 		public static function setConfig(config:PlayerConfig):void {
 			_config = config;
+		}
+
+		private static function get mode():String {
+			return _config ? _config.debug : TRACE;
 		}
 	}
 }
