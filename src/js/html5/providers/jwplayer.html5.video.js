@@ -627,8 +627,8 @@
             _currentQuality = -1;
 
             // remove
-            if (_container === _videotag.parentNode) {
-                _container.removeChild(_videotag);
+            if (_videotag.parentNode) {
+                _videotag.parentNode.removeChild(_videotag);
             }
         };
 
