@@ -106,7 +106,7 @@
             _id,
             _duration,
             _position,
-            _levels,
+            _levels = [],
             _currentQuality,
             _captions,
             _currentCaptions,
@@ -374,11 +374,11 @@
         }
 
         function _hasHD() {
-            return (!_instreamMode && _levels && _levels.length > 1 && _hdOverlay);
+            return (!_instreamMode && _levels.length > 1 && _hdOverlay);
         }
 
         function _qualityHandler(evt) {
-            _levels = evt.levels;
+            _levels = evt.levels || [];
             if (_hasHD()) {
                 _css.style(_elements.hd, NOT_HIDDEN);
                 _hdOverlay.clearOptions();
@@ -836,7 +836,7 @@
         }
 
         function _showHd() {
-            if (_levels && _levels.length > 2) {
+            if (_levels.length > 2) {
                 if (_hdTimer) {
                     clearTimeout(_hdTimer);
                     _hdTimer = undefined;
