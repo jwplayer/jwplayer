@@ -31,6 +31,9 @@
     // Reset box-sizing to default for player and all sub-elements
     //  Note: If we use pseudo elements we will need to add *:before and *:after
     _css(JW_CLASS + ',' + JW_CLASS + '*', { 'box-sizing': 'content-box'});
+    // Browsers use border-box as a the default box-sizing for many form elements
+    _css(JW_CLASS + '* button,' + JW_CLASS + '* input,' + JW_CLASS + '* select,' + JW_CLASS + '* textarea', { 'box-sizing': 'border-box'});
+
 
     _css(JW_CLASS + 'ul', {
         'list-style': 'none'
