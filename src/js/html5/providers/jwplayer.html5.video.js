@@ -159,7 +159,10 @@
             if (!_attached) { return; }
             if (_this.state === states.PLAYING && !_dragging) {
                 _position = _round(_videotag.currentTime);
-                _canSeek = true;
+                // do not allow _durationUpdateHandler to update _canSeek before _canPlayHandler does
+                if (evt) {
+                    _canSeek = true;
+                }
                 _this.sendEvent(events.JWPLAYER_MEDIA_TIME, {
                     position: _position,
                     duration: _duration
