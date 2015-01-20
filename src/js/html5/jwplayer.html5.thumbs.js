@@ -20,7 +20,7 @@
 
         utils.extend(this, _eventDispatcher);
 
-        _display = document.createElement("div");
+        _display = document.createElement('div');
         _display.id = _id;
 
         function _loadVTT(vtt) {
@@ -32,7 +32,9 @@
                 _vttRequest.onload = null;
                 _vttRequest.onreadystatechange = null;
                 _vttRequest.onerror = null;
-                if (_vttRequest.abort) _vttRequest.abort();
+                if (_vttRequest.abort) {
+                    _vttRequest.abort();
+                }
                 _vttRequest = null;
             }
             if (_image) {
@@ -40,7 +42,7 @@
             }
 
             if (vtt) {
-                _vttPath = vtt.split("?")[0].split("/").slice(0, -1).join("/");
+                _vttPath = vtt.split('?')[0].split('/').slice(0, -1).join('/');
                 _vttRequest = utils.ajax(vtt, _vttLoaded, _vttFailed, true);
             } else {
                 _cues =
@@ -58,23 +60,23 @@
                 _vttFailed(e.message);
                 return;
             }
-            if (utils.typeOf(data) !== "array") {
-                return _vttFailed("Invalid data");
+            if (utils.typeOf(data) !== 'array') {
+                return _vttFailed('Invalid data');
             }
             _cues = data;
         }
 
         function _vttFailed(error) {
             _vttRequest = null;
-            utils.log("Thumbnails could not be loaded: " + error);
+            utils.log('Thumbnails could not be loaded: ' + error);
         }
 
         function _loadImage(url, callback) {
             // only load image if it's different from the last one
             if (url && url !== _url) {
                 _url = url;
-                if (url.indexOf("://") < 0) {
-                    url = _vttPath ? _vttPath + "/" + url : url;
+                if (url.indexOf('://') < 0) {
+                    url = _vttPath ? _vttPath + '/' + url : url;
                 }
                 var style = {
                     display: 'block',
@@ -83,7 +85,7 @@
                     width: 0,
                     height: 0
                 };
-                var hashIndex = url.indexOf("#xywh");
+                var hashIndex = url.indexOf('#xywh');
                 if (hashIndex > 0) {
                     try {
                         var matched = (/(.+)\#xywh=(\d+),(\d+),(\d+),(\d+)/).exec(url);
@@ -92,7 +94,7 @@
                         style.width = matched[4];
                         style.height = matched[5];
                     } catch (e) {
-                        _vttFailed("Could not parse thumbnail");
+                        _vttFailed('Could not parse thumbnail');
                         return;
                     }
                 }
@@ -139,12 +141,16 @@
 
         // Update display
         this.updateTimeline = function(seconds, callback) {
-            if (!_cues) return;
+            if (!_cues) {
+                return;
+            }
             var i = 0;
             while (i < _cues.length && seconds > _cues[i].end) {
                 i++;
             }
-            if (i === _cues.length) i--;
+            if (i === _cues.length) {
+                i--;
+            }
             var url = _cues[i].text;
             _loadImage(url, callback);
             return url;

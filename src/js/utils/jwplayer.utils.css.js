@@ -1,9 +1,3 @@
-/**
- * CSS utility methods for the JW Player.
- *
- * @author pablo
- * @version 6.0
- */
 (function(jwplayer) {
     var utils = jwplayer.utils,
         MAX_CSS_RULES = 50000,
@@ -25,10 +19,10 @@
     }
 
     utils.cssKeyframes = function(keyframeName, keyframeSteps) {
-        var styleElement = _styleSheets['keyframes'];
+        var styleElement = _styleSheets.keyframes;
         if (!styleElement) {
             styleElement = _createStylesheet();
-            _styleSheets['keyframes'] = styleElement;
+            _styleSheets.keyframes = styleElement;
         }
         var sheet = styleElement.sheet;
         var rulesText = '@keyframes ' + keyframeName + ' { ' + keyframeSteps + ' }';
@@ -57,7 +51,8 @@
         }
         if (!_styleSheets[selector]) {
             // set stylesheet for selector
-            var numberRules = _styleSheet && _styleSheet.sheet && _styleSheet.sheet.cssRules && _styleSheet.sheet.cssRules.length || 0;
+            var numberRules = _styleSheet && _styleSheet.sheet && _styleSheet.sheet.cssRules &&
+                _styleSheet.sheet.cssRules.length || 0;
             if (!_styleSheet || numberRules > MAX_CSS_RULES) {
                 _styleSheet = _createStylesheet();
             }
@@ -172,7 +167,7 @@
         //string
         if (typeof value === 'string' && isNaN(value)) {
             if ((/png|gif|jpe?g/i).test(value) && value.indexOf('url') < 0) {
-                return "url(" + value + ")";
+                return 'url(' + value + ')';
             }
             return value + importantString;
         }
@@ -183,9 +178,9 @@
             return '' + value + importantString;
         }
         if ((/color/i).test(style)) {
-            return "#" + utils.pad(value.toString(16).replace(/^0x/i, ""), 6) + importantString;
+            return '#' + utils.pad(value.toString(16).replace(/^0x/i, ''), 6) + importantString;
         }
-        return Math.ceil(value) + "px" + importantString;
+        return Math.ceil(value) + 'px' + importantString;
     }
 
     function _updateElementsStyle(elements, cssRules) {
@@ -213,7 +208,8 @@
             ruleIndex = _ruleIndexes[selector];
             ruleText = _getRuleText(selector);
 
-            if (ruleIndex !== undefined && ruleIndex < cssRules.length && cssRules[ruleIndex].selectorText === selector) {
+            if (ruleIndex !== undefined && ruleIndex < cssRules.length &&
+                cssRules[ruleIndex].selectorText === selector) {
                 if (ruleText === cssRules[ruleIndex].cssText) {
                     //no update needed
                     return;
@@ -268,7 +264,7 @@
         style['-ms-' + transform] = value;
         style['-moz-' + transform] = value;
         style['-o-' + transform] = value;
-        if (typeof element === "string") {
+        if (typeof element === 'string') {
             _css(element, style);
         } else {
             _css.style(element, style);
@@ -288,7 +284,9 @@
 
     utils.transitionStyle = function(selector, style) {
         // Safari 5 has problems with CSS3 transitions
-        if (navigator.userAgent.match(/5\.\d(\.\d)? safari/i)) return;
+        if (navigator.userAgent.match(/5\.\d(\.\d)? safari/i)) {
+            return;
+        }
 
         _css(selector, {
             '-webkit-transition': style,
@@ -300,7 +298,7 @@
 
 
     utils.rotate = function(domelement, deg) {
-        utils.transform(domelement, "rotate(" + deg + "deg)");
+        utils.transform(domelement, 'rotate(' + deg + 'deg)');
     };
 
     utils.rgbHex = function(color) {

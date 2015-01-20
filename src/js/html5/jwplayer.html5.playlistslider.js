@@ -1,11 +1,3 @@
-/**
- * Playlist slider component for the JW Player.
- *
- * @author pablo
- * @version 6.0
- *
- * TODO: reuse this code for vertical controlbar volume slider
- */
 (function(html5) {
     var utils = jwplayer.utils,
         touchevents = utils.touchEvents,
@@ -28,9 +20,9 @@
         UNDEFINED,
 
         /** Some CSS constants we should use for minimization **/
-        JW_CSS_ABSOLUTE = "absolute",
-        JW_CSS_HIDDEN = "hidden",
-        JW_CSS_100PCT = "100%";
+        JW_CSS_ABSOLUTE = 'absolute',
+        JW_CSS_HIDDEN = 'hidden',
+        JW_CSS_100PCT = '100%';
 
     html5.playlistslider = function(id, skin, parent, pane) {
         var _skin = skin,
@@ -132,29 +124,31 @@
 
             if (_pane) {
                 if (!_isMobile) {
-                    _pane.addEventListener("mousewheel", _scrollHandler, false);
-                    _pane.addEventListener("DOMMouseScroll", _scrollHandler, false);
+                    _pane.addEventListener('mousewheel', _scrollHandler, false);
+                    _pane.addEventListener('DOMMouseScroll', _scrollHandler, false);
                 }
             }
         }
 
         function _internalSelector(className) {
-            return '#' + _wrapper.id + (className ? " ." + className : "");
+            return '#' + _wrapper.id + (className ? ' .' + className : '');
         }
 
         function _createElement(className, skinElement, parent, stretch) {
-            var elem = DOCUMENT.createElement("div");
+            var elem = DOCUMENT.createElement('div');
             if (className) {
                 elem.className = className;
                 if (skinElement) {
                     _css(_internalSelector(className), {
                         'background-image': skinElement.src ? skinElement.src : UNDEFINED,
-                        'background-repeat': stretch ? "repeat-y" : "no-repeat",
+                        'background-repeat': stretch ? 'repeat-y' : 'no-repeat',
                         height: stretch ? UNDEFINED : skinElement.height
                     });
                 }
             }
-            if (parent) parent.appendChild(elem);
+            if (parent) {
+                parent.appendChild(elem);
+            }
             return elem;
         }
 
@@ -170,7 +164,7 @@
         }
 
         function _getElement(name) {
-            var elem = _skin.getSkinElement("playlist", name);
+            var elem = _skin.getSkinElement('playlist', name);
             return elem ? elem : {
                 width: 0,
                 height: 0,
@@ -191,7 +185,9 @@
 
 
         function _scrollHandler(evt) {
-            if (!_visible) return;
+            if (!_visible) {
+                return;
+            }
             evt = evt ? evt : WINDOW.event;
             var wheelData = evt.detail ? evt.detail * -1 : evt.wheelDelta / 40;
             _setThumbPosition(_thumbPercent - wheelData / 10);
@@ -212,7 +208,9 @@
         }
 
         function _setThumbPercent(pct) {
-            if (pct < 0) pct = 0;
+            if (pct < 0) {
+                pct = 0;
+            }
             if (pct > 1) {
                 _visible = false;
             } else {
@@ -222,27 +220,31 @@
                 });
             }
             _css(_internalSelector(), {
-                visibility: _visible ? "visible" : JW_CSS_HIDDEN
+                visibility: _visible ? 'visible' : JW_CSS_HIDDEN
             });
             if (_pane) {
-                _pane.style.width = _visible ? _pane.parentElement.clientWidth - _sliderRail.width + "px" : "";
+                _pane.style.width = _visible ? _pane.parentElement.clientWidth - _sliderRail.width + 'px' : '';
             }
         }
 
         var _setThumbPosition = this.thumbPosition = function(pct) {
-            if (isNaN(pct)) pct = 0;
+            if (isNaN(pct)) {
+                pct = 0;
+            }
             _thumbPercent = Math.max(0, Math.min(1, pct));
             _css(_internalSelector(SLIDER_THUMB_CLASS), {
                 top: _topHeight + (_rail.clientHeight - _thumb.clientHeight) * _thumbPercent
             });
             if (pane) {
-                pane.style.top = Math.min(0, _wrapper.clientHeight - pane.scrollHeight) * _thumbPercent + "px";
+                pane.style.top = Math.min(0, _wrapper.clientHeight - pane.scrollHeight) * _thumbPercent + 'px';
             }
         };
 
 
         function _startDrag(evt) {
-            if (evt.button == 0) _dragging = true;
+            if (evt.button === 0) {
+                _dragging = true;
+            }
             DOCUMENT.onselectstart = function() {
                 return false;
             };
@@ -255,7 +257,7 @@
         }
 
         function _moveThumb(evt) {
-            if (_dragging || evt.type == "click") {
+            if (_dragging || evt.type === 'click') {
                 var railRect = utils.bounds(_rail),
                     rangeTop = _thumb.clientHeight / 2,
                     rangeBottom = railRect.height - rangeTop,
@@ -267,7 +269,9 @@
 
         function _scroll(dir) {
             return function(evt) {
-                if (evt.button > 0) return;
+                if (evt.button > 0) {
+                    return;
+                }
                 _setThumbPosition(_thumbPercent + (dir * 0.05));
                 _dragTimeout = setTimeout(function() {
                     _dragInterval = setInterval(function() {
@@ -294,7 +298,7 @@
         var selector = [],
             i;
         for (i = 0; i < arguments.length; i++) {
-            selector.push(".jwplaylist ." + arguments[i]);
+            selector.push('.jwplaylist .' + arguments[i]);
         }
         return selector.join(',');
     }
@@ -307,7 +311,7 @@
         visibility: JW_CSS_HIDDEN,
         right: 0,
         top: 0,
-        cursor: "pointer",
+        cursor: 'pointer',
         'z-index': 1,
         overflow: JW_CSS_HIDDEN
     });
@@ -315,8 +319,8 @@
     _css(_globalSelector(SLIDER_CLASS) + ' *', {
         position: JW_CSS_ABSOLUTE,
         width: JW_CSS_100PCT,
-        'background-position': "center",
-        'background-size': JW_CSS_100PCT + " " + JW_CSS_100PCT,
+        'background-position': 'center',
+        'background-size': JW_CSS_100PCT + ' ' + JW_CSS_100PCT,
         overflow: JW_CSS_HIDDEN
     });
 

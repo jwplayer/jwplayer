@@ -13,9 +13,13 @@
             new html5.skinloader(path, function(skin) {
                 _loaded = true;
                 _components = skin;
-                if (typeof completeCallback == "function") completeCallback();
+                if (typeof completeCallback === 'function') {
+                    completeCallback();
+                }
             }, function(message) {
-                if (typeof errorCallback == "function") errorCallback(message);
+                if (typeof errorCallback === 'function') {
+                    errorCallback(message);
+                }
             });
 
         };
@@ -27,7 +31,7 @@
                 try {
                     return _components[component].elements[element];
                 } catch (err) {
-                    jwplayer.utils.log("No such skin component / element: ", [component, element]);
+                    jwplayer.utils.log('No such skin component / element: ', [component, element]);
                 }
             }
             return null;
@@ -45,8 +49,9 @@
             component = _lowerCase(component);
             if (_loaded) {
                 var lo = _components[component].layout;
-                if (lo && (lo.left || lo.right || lo.center))
+                if (lo && (lo.left || lo.right || lo.center)) {
                     return _components[component].layout;
+                }
             }
             return null;
         };

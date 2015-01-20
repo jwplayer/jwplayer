@@ -16,25 +16,25 @@
                 text: ''
             }];
             data = _utils.trim(data);
-            var list = data.split("\r\n\r\n");
-            if (list.length == 1) {
-                list = data.split("\n\n");
+            var list = data.split('\r\n\r\n');
+            if (list.length === 1) {
+                list = data.split('\n\n');
             }
             for (var i = 0; i < list.length; i++) {
-                if (list[i] == "WEBVTT") {
+                if (list[i] === 'WEBVTT') {
                     continue;
                 }
                 // Parse each entry
                 var entry = _entry(list[i]);
-                if (entry['text']) {
+                if (entry.text) {
                     _captions.push(entry);
                     // Insert empty caption at the end.
-                    if (entry['end'] && !mergeBeginEnd) {
+                    if (entry.end && !mergeBeginEnd) {
                         _captions.push({
-                            begin: entry['end'],
+                            begin: entry.end,
                             text: ''
                         });
-                        delete entry['end'];
+                        delete entry.end;
                     }
                 }
             }
@@ -42,7 +42,7 @@
                 return _captions;
             } else {
                 throw {
-                    message: "Invalid SRT file"
+                    message: 'Invalid SRT file'
                 };
             }
         };
@@ -51,9 +51,9 @@
         /** Parse a single captions entry. **/
         function _entry(data) {
             var entry = {};
-            var array = data.split("\r\n");
-            if (array.length == 1) {
-                array = data.split("\n");
+            var array = data.split('\r\n');
+            if (array.length === 1) {
+                array = data.split('\n');
             }
             try {
                 // Second line contains the start and end.
@@ -63,15 +63,15 @@
                 }
                 var index = array[idx].indexOf(' --> ');
                 if (index > 0) {
-                    entry['begin'] = _seconds(array[idx].substr(0, index));
-                    entry['end'] = _seconds(array[idx].substr(index + 5));
+                    entry.begin = _seconds(array[idx].substr(0, index));
+                    entry.end = _seconds(array[idx].substr(index + 5));
                 }
                 // Third line starts the text.
                 if (array[idx + 1]) {
-                    entry['text'] = array[idx + 1];
+                    entry.text = array[idx + 1];
                     // Arbitrary number of additional lines.
                     for (var i = idx + 2; i < array.length; i++) {
-                        entry['text'] += '<br/>' + array[i];
+                        entry.text += '<br/>' + array[i];
                     }
                 }
             } catch (error) {}

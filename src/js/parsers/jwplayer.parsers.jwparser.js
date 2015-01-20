@@ -25,33 +25,33 @@
         var sources = [],
             tracks = [],
             _xmlAttribute = jwplayer.utils.xmlAttribute,
-            def = "default",
-            label = "label",
-            file = "file",
-            type = "type";
+            def = 'default',
+            label = 'label',
+            file = 'file',
+            type = 'type';
         for (var i = 0; i < obj.childNodes.length; i++) {
             var node = obj.childNodes[i];
-            if (node.prefix == PREFIX) {
+            if (node.prefix === PREFIX) {
                 var _localName = _parsers.localName(node);
-                if (_localName == "source") {
+                if (_localName === 'source') {
                     delete itm.sources;
                     sources.push({
                         file: _xmlAttribute(node, file),
-                        "default": _xmlAttribute(node, def),
+                        'default': _xmlAttribute(node, def),
                         label: _xmlAttribute(node, label),
                         type: _xmlAttribute(node, type)
                     });
-                } else if (_localName == "track") {
+                } else if (_localName === 'track') {
                     delete itm.tracks;
                     tracks.push({
                         file: _xmlAttribute(node, file),
-                        "default": _xmlAttribute(node, def),
-                        kind: _xmlAttribute(node, "kind"),
+                        'default': _xmlAttribute(node, def),
+                        kind: _xmlAttribute(node, 'kind'),
                         label: _xmlAttribute(node, label)
                     });
                 } else {
                     itm[_localName] = jwplayer.utils.serialize(_parsers.textContent(node));
-                    if (_localName == "file" && itm.sources) {
+                    if (_localName === 'file' && itm.sources) {
                         // jwplayer namespace file should override existing source
                         // (probably set in MediaParser)
                         delete itm.sources;
@@ -60,7 +60,7 @@
 
             }
             if (!itm[file]) {
-                itm[file] = itm['link'];
+                itm[file] = itm.link;
             }
         }
 
@@ -69,7 +69,7 @@
             itm.sources = [];
             for (i = 0; i < sources.length; i++) {
                 if (sources[i].file.length > 0) {
-                    sources[i][def] = (sources[i][def] == "true") ? true : false;
+                    sources[i][def] = (sources[i][def] === 'true') ? true : false;
                     if (!sources[i].label.length) {
                         delete sources[i].label;
                     }
@@ -82,8 +82,8 @@
             itm.tracks = [];
             for (i = 0; i < tracks.length; i++) {
                 if (tracks[i].file.length > 0) {
-                    tracks[i][def] = (tracks[i][def] == "true") ? true : false;
-                    tracks[i].kind = (!tracks[i].kind.length) ? "captions" : tracks[i].kind;
+                    tracks[i][def] = (tracks[i][def] === 'true') ? true : false;
+                    tracks[i].kind = (!tracks[i].kind.length) ? 'captions' : tracks[i].kind;
                     if (!tracks[i].label.length) {
                         delete tracks[i].label;
                     }
@@ -92,5 +92,5 @@
             }
         }
         return itm;
-    }
+    };
 })(jwplayer);
