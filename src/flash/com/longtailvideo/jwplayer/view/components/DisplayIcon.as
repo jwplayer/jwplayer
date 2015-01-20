@@ -121,7 +121,6 @@ package com.longtailvideo.jwplayer.view.components {
 			_container.addChild(_textField);
 			
 			_container.addChild(_iconContainer);
-			_container.cacheAsBitmap = true;
 			addChild(_container);
 			
 			
