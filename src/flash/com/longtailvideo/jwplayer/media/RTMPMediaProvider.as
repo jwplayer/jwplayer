@@ -590,6 +590,21 @@
 			}
 		}
 
+		/** Set the pan level. **/
+		override public function setPan(pan:Number):void {
+			streamPan(pan);
+			super.setPan(pan);
+		}
+
+
+		/** Set the stream's pan, without sending a pan event **/
+		protected function streamPan(level:Number):void {
+			_transformer.pan = level / 100;
+			if (_stream) {
+				_stream.soundTransform = _transformer;
+			}
+		}
+
 
 		/** Return the list of quality levels. **/
 		override public function get qualityLevels():Array {

@@ -36,10 +36,12 @@ package com.longtailvideo.jwplayer.events {
 		public var metadata:Object 			= null;
 
 		public static const JWPLAYER_MEDIA_VOLUME:String = "jwplayerMediaVolume";
+		public static const JWPLAYER_MEDIA_PAN:String = "jwplayerMediaPan";
 		public static const JWPLAYER_MEDIA_MUTE:String = "jwplayerMediaMute";
 
 		public var volume:Number 			= -1;
 		public var mute:Boolean				= false;
+		public var pan:Number				= 0;
 		
 		public static const JWPLAYER_MEDIA_LEVELS:String = "jwplayerMediaLevels";
 		public static const JWPLAYER_MEDIA_LEVEL_CHANGED:String = "jwplayerMediaLevelChanged";
@@ -70,6 +72,7 @@ package com.longtailvideo.jwplayer.events {
                 metadata:          this.metadata,
                 volume:            this.volume,
                 mute:              this.mute,
+                pan:               this.pan,
                 levels:            this.levels,
                 currentQuality:    this.currentQuality
             });
@@ -87,6 +90,7 @@ package com.longtailvideo.jwplayer.events {
 			
 			if (type === JWPLAYER_MEDIA_VOLUME) retString += ' volume="' + volume + '"';
 			if (type === JWPLAYER_MEDIA_MUTE)   retString += ' mute="' + mute + '"';
+			if (type === JWPLAYER_MEDIA_PAN)    retString += ' pan="' + pan + '"';
 			
 			if (bufferPercent > -1) retString += ' bufferPercent="' + bufferPercent + '"';
 			if (duration > -1) retString += ' duration="' + duration + '"';

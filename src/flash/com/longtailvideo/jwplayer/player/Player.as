@@ -198,6 +198,14 @@
 		public function volume(volume:Number):Boolean {
 			return controller.setVolume(volume);
 		}
+
+
+		/**
+		 * @inheritDoc
+		 */
+		public function pan(pan:Number):Boolean {
+			return controller.setPan(pan);
+		}
 		
 		
 		/**

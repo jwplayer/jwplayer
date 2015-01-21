@@ -111,6 +111,7 @@
             _this.jwStop = _controller.stop;
             _this.jwSeek = _controller.seek;
             _this.jwSetVolume = _controller.setVolume;
+            _this.jwSetPan = _controller.setPan;
             _this.jwSetMute = _controller.setMute;
             _this.jwLoad = _controller.load;
             _this.jwPlaylistNext = _controller.next;

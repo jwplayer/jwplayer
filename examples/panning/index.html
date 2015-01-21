@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>JW Audio Panning</title>
+    <script type="text/javascript" src="static/jwplayer.js"></script>
+  </head>
+  <body>
+    <p> Audio panning Test </p>
+    <div id="playerContainer">Loading the player ...</div>
+    <a onclick="jwplayer().setPan(-100)">Pan left</a> |
+    <a onclick="jwplayer().setPan(0)">Pan middle</a> |
+    <a onclick="jwplayer().setPan(100)">Pan right</a>
+  </body>
+
+  <script type='text/javascript'>
+    jwplayer("playerContainer").setup({
+      file: "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4",
+      primary: "flash",
+      height: 360,
+      width: 640
+    });
+  </script>
+</html>

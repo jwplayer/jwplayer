@@ -6,3 +6,4 @@ node_modules
 *.iml
 bin-debug
 bin-release
+examples/panning/.DS_Store
