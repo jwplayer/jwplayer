@@ -9,24 +9,24 @@
     jwplayer.parsers = {
         localName: function(node) {
             if (!node) {
-                return "";
+                return '';
             } else if (node.localName) {
                 return node.localName;
             } else if (node.baseName) {
                 return node.baseName;
             } else {
-                return "";
+                return '';
             }
         },
         textContent: function(node) {
             if (!node) {
-                return "";
+                return '';
             } else if (node.textContent) {
                 return jwplayer.utils.trim(node.textContent);
             } else if (node.text) {
                 return jwplayer.utils.trim(node.text);
             } else {
-                return "";
+                return '';
             }
         },
         getChildNode: function(parent, index) {
