@@ -341,6 +341,7 @@
 
             var sourceChanged = (_videotag.src !== _source.file);
             if (sourceChanged || _forceVideoLoad()) {
+                _this.setState(states.BUFFERING);
                 _canSeek = false;
                 _bufferFull = false;
                 _duration = duration ? duration : -1;
