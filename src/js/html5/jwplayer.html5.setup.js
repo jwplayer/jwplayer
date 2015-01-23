@@ -17,93 +17,87 @@
 (function(jwplayer) {
     var html5 = jwplayer.html5,
         utils = jwplayer.utils,
-        events = jwplayer.events,
-
-        PARSE_CONFIG = 1,
-        LOAD_SKIN = 2,
-        LOAD_PLAYLIST = 3,
-        LOAD_PREVIEW = 4,
-        SETUP_COMPONENTS = 5,
-        INIT_PLUGINS = 6,
-        SEND_READY = 7;
+        _ = jwplayer._,
+        events = jwplayer.events;
 
 
     html5.setup = function(model, view) {
         var _model = model,
             _view = view,
-            _completed = {},
             _skin,
             _eventDispatcher = new events.eventdispatcher(),
             _errorState = false;
 
-        // This is higher scope so it can be used in two functions to remove event listeners
-        var _previewImg;
+        var PARSE_CONFIG = {
+                method: _parseConfig,
+                depends: []
+            },
+            LOAD_SKIN = {
+                method: _loadSkin,
+                depends: [PARSE_CONFIG]
+            },
+            LOAD_PLAYLIST = {
+                method: _loadPlaylist,
+                depends: [PARSE_CONFIG]
+            },
+            SETUP_COMPONENTS = {
+                method: _setupComponents,
+                depends: [
+                    LOAD_PLAYLIST,
+                    LOAD_SKIN
+                ]
+            },
+            INIT_PLUGINS = {
+                method: _initPlugins,
+                depends: [
+                    SETUP_COMPONENTS,
+                    LOAD_PLAYLIST
+                ]
+            },
+            SEND_READY = {
+                method: _sendReady,
+                depends: [INIT_PLUGINS]
+            };
 
-        var _queue = [{
-            name: PARSE_CONFIG,
-            method: _parseConfig,
-            depends: false
-        }, {
-            name: LOAD_SKIN,
-            method: _loadSkin,
-            depends: PARSE_CONFIG
-        }, {
-            name: LOAD_PLAYLIST,
-            method: _loadPlaylist,
-            depends: PARSE_CONFIG
-        }, {
-            name: LOAD_PREVIEW,
-            method: _loadPreview,
-            depends: LOAD_PLAYLIST
-        }, {
-            name: SETUP_COMPONENTS,
-            method: _setupComponents,
-            depends: LOAD_PREVIEW + ',' + LOAD_SKIN
-        }, {
-            name: INIT_PLUGINS,
-            method: _initPlugins,
-            depends: SETUP_COMPONENTS + ',' + LOAD_PLAYLIST
-        }, {
-            name: SEND_READY,
-            method: _sendReady,
-            depends: INIT_PLUGINS
-        }];
+        var _queue = [
+            PARSE_CONFIG,
+            LOAD_SKIN,
+            LOAD_PLAYLIST,
+            SETUP_COMPONENTS,
+            INIT_PLUGINS,
+            SEND_READY
+        ];
+
+        this.start = function () {
+            _.defer(_nextTask);
+        };
 
         function _nextTask() {
+            if (this.cancelled) {
+                return;
+            }
+
             for (var i = 0; i < _queue.length; i++) {
                 var task = _queue[i];
                 if (_allComplete(task.depends)) {
                     _queue.splice(i, 1);
-                    try {
-                        task.method();
-                        _nextTask();
-                    } catch (error) {
-                        _error(error.message);
-                    }
-                    return;
+                    task.method();
+                    _.defer(_nextTask);
                 }
-            }
-            if (_queue.length > 0 && !_errorState) {
-                // Still waiting for a dependency to come through; wait a little while.
-                setTimeout(_nextTask, 500);
             }
         }
 
         function _allComplete(dependencies) {
-            if (!dependencies) {
-                return true;
-            }
-            var split = dependencies.toString().split(',');
-            for (var i = 0; i < split.length; i++) {
-                if (!_completed[split[i]]) {
-                    return false;
-                }
-            }
-            return true;
+            // return true if empty array,
+            //  or if each object has an attribute 'complete' which is true
+            return _.all(_.map(dependencies, _.property('complete')));
         }
 
-        function _taskComplete(name) {
-            _completed[name] = true;
+        function _taskComplete(task) {
+            task.complete = true;
+            if (_queue.length > 0 && !_errorState) {
+                _.defer(_nextTask);
+            }
         }
 
         function _parseConfig() {
@@ -138,40 +132,11 @@
 
         function _completePlaylist(playlist) {
             _model.setPlaylist(playlist);
-            // TODO: support playlist index in config
-            // _model.setItem(_model.config.item);
             if (_model.playlist.length === 0 || _model.playlist[0].sources.length === 0) {
                 _error('Error loading playlist: No playable sources found');
             } else {
                 _taskComplete(LOAD_PLAYLIST);
             }
-        }
-
-        var previewTimeout = -1;
-
-        function _loadPreview() {
-            var preview = _model.playlist[_model.item].image;
-            if (preview && !_model.config.autostart) {
-                _previewImg = new Image();
-                _previewImg.onload = _previewLoaded;
-                _previewImg.onerror = _previewLoaded;
-                _previewImg.src = preview;
-                clearTimeout(previewTimeout);
-                previewTimeout = setTimeout(_previewLoaded, 500);
-            } else {
-                _previewLoaded();
-            }
-        }
-
-        function _previewLoaded() {
-            if (_previewImg) {
-                _previewImg.onload = null;
-                _previewImg.onerror = null;
-                _previewImg = null;
-            }
-
-            clearTimeout(previewTimeout);
-            _taskComplete(LOAD_PREVIEW);
         }
 
         function _setupComponents() {
@@ -184,6 +149,9 @@
         }
 
         function _sendReady() {
+            if (this.cancelled) {
+                return;
+            }
             _eventDispatcher.sendEvent(events.JWPLAYER_READY);
             _taskComplete(SEND_READY);
         }
@@ -196,9 +164,11 @@
             _view.setupError(message);
         }
 
-        utils.extend(this, _eventDispatcher);
+        this.destroy = function() {
+            this.cancelled = true;
+        };
 
-        this.start = _nextTask;
+        utils.extend(this, _eventDispatcher);
 
     };
 

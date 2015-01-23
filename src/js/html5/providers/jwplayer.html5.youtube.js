@@ -185,6 +185,7 @@
                 width: '100%',
                 videoId: videoId,
                 playerVars: utils.extend({
+                    html5: 1,
                     autoplay: 0,
                     controls: 0,
                     showinfo: 0,
@@ -238,6 +239,11 @@
                     return;
 
                 case youtubeStates.PLAYING: // 1: playing
+                
+                    //prevent duplicate captions when using JW Player captions and YT video has yt:cc=on
+                    if (_.isFunction(_youtubePlayer.unloadModule)) {
+                        _youtubePlayer.unloadModule('captions');
+                    }
 
                     // playback has started so stop blocking api.play()
                     _requiresUserInteraction = false;
@@ -350,7 +356,7 @@
             var videoId = utils.youTubeID(url);
 
             if (!item.image) {
-                item.image = 'http://i.ytimg.com/vi/' + videoId + '/0.jpg';
+                item.image = '//i.ytimg.com/vi/' + videoId + '/0.jpg';
             }
 
             _this.setVisibility(true);

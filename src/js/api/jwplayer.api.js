@@ -2,6 +2,8 @@
     var _players = [],
         utils = jwplayer.utils,
         events = jwplayer.events,
+        _ = jwplayer._,
+        _uniqueIndex = 0,
         states = events.state;
 
     function addFocusBorder(container) {
@@ -106,25 +108,25 @@
             _playerReady = false,
             _queuedCalls = [],
             _instream,
-            _embedder,
             _itemMeta = {},
             _callbacks = {};
 
         _this.container = container;
         _this.id = container.id;
 
+
         _this.setup = function(options) {
             if (jwplayer.embed) {
-                // Destroy original API on setup() to remove existing listeners
-                var fallbackDiv = document.getElementById(_this.id);
-                if (fallbackDiv) {
-                    options.fallbackDiv = fallbackDiv;
-                }
-                _remove(_this);
-                var newApi = jwplayer(_this.id);
+
+                // Remove any players that may be associated to this DOM element
+                jwplayer.api.destroyPlayer(_this.id);
+
+                var newApi = (new jwplayer.api(_this.container));
+                jwplayer.api.addPlayer(newApi);
+
                 newApi.config = options;
-                _embedder = new jwplayer.embed(newApi);
-                _embedder.embed();
+                newApi._embedder = new jwplayer.embed(newApi);
+                newApi._embedder.embed();
                 return newApi;
             }
             return _this;
@@ -280,6 +282,8 @@
             return _instream;
         };
         _this.destroyPlayer = function() {
+            // so players can be removed before loading completes
+            _playerReady = true;
             _callInternal('jwPlayerDestroy');
         };
         _this.playAd = function(ad) {
@@ -333,21 +337,44 @@
 
 
         _this.remove = function() {
-            if (!_playerReady) {
-                throw 'Cannot call remove() before player is ready';
-            }
-            _remove(this);
-        };
 
-        function _remove(player) {
+            // Cancel embedding even if it is in progress
+            if (this._embedder && this._embedder.destroy) {
+                this._embedder.destroy();
+            }
+
             _queuedCalls = [];
 
-            if (_embedder && _embedder.destroy) {
-                _embedder.destroy();
+            // Is there more than one player using the same DIV on the page?
+            var sharedDOM = (_.size(_.where(_players, {id : _this.id})) > 1);
+
+            // If sharing the DOM element, don't reset CSS
+            if (! sharedDOM) {
+                utils.clearCss('#' + _this.id);
             }
 
-            jwplayer.api.destroyPlayer(player.id);
-        }
+            var toDestroy = document.getElementById(_this.id + (_this.renderingMode === 'flash' ? '_wrapper' : ''));
+
+            if (toDestroy) {
+                if (_this.renderingMode === 'html5') {
+                    // calls jwPlayerDestroy()
+                    _this.destroyPlayer();
+                }
+
+                // If the tag is reused by another player, do not destroy the div
+                if (! sharedDOM) {
+                    var replacement = document.createElement('div');
+                    replacement.id = _this.id;
+                    toDestroy.parentNode.replaceChild(replacement, toDestroy);
+                }
+            }
+
+            // Remove from array of players
+            _players = _.filter(_players, function(p) {
+                return (p.uniqueId !== _this.uniqueId);
+            });
+        };
+
 
         _this.registerPlugin = function(id, target, arg1, arg2) {
             jwplayer.plugins.registerPlugin(id, target, arg1, arg2);
@@ -538,7 +565,7 @@
             _this.dispatchEvent(events.API_READY);
 
             while (_queuedCalls.length > 0) {
-                _callInternal.apply(this, _queuedCalls.shift());
+                _callInternal.apply(_this, _queuedCalls.shift());
             }
         };
 
@@ -583,8 +610,7 @@
             if (foundPlayer) {
                 return foundPlayer;
             } else {
-                // Todo: register new object
-                return jwplayer.api.addPlayer(new jwplayer.api(_container));
+                return (new jwplayer.api(_container));
             }
         } else if (typeof identifier === 'number') {
             return _players[identifier];
@@ -600,8 +626,10 @@
                 return _players[p];
             }
         }
+
         return null;
     };
+
 
     jwplayer.api.addPlayer = function(player) {
         for (var p = 0; p < _players.length; p++) {
@@ -610,42 +638,21 @@
             }
         }
 
+        _uniqueIndex++;
+        player.uniqueId = _uniqueIndex;
         _players.push(player);
         return player;
     };
 
-    jwplayer.api.destroyPlayer = function(playerId) {
-        var index, player, toDestroy;
 
-        utils.foreach(_players, function(idx, value) {
-            if (value.id === playerId) {
-                index = idx;
-                player = value;
-            }
-        });
+    // Destroys all players bound to a specific dom element by ID
+    jwplayer.api.destroyPlayer = function(id) {
+        // Get all players with matching id
+        var players = _.where(_players, {id : id});
 
-        if (index === undefined || player === undefined) {
-            return null;
-        }
-
-        utils.clearCss('#' + player.id);
-
-        toDestroy = document.getElementById(player.id + (player.renderingMode === 'flash' ? '_wrapper' : ''));
-
-        if (toDestroy) {
-            if (player.renderingMode === 'html5') {
-                // calls jwPlayerDestroy()
-                player.destroyPlayer();
-            }
-            var replacement = document.createElement('div');
-            replacement.id = player.id;
-            toDestroy.parentNode.replaceChild(replacement, toDestroy);
-        }
-
-        // Remove from array of players
-        _players.splice(index, 1);
-
-        return null;
+        // Call remove on every player in the array
+        _.each(players, _.partial(_.result, _, 'remove'));
     };
+
 
 })(window.jwplayer);

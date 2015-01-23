@@ -26,10 +26,10 @@
         for (var i = 0; i < _numChildren(dat); i++) {
             var node = _getChildNode(dat, i),
                 localName = _localName(node).toLowerCase();
-            if (localName == 'channel') {
+            if (localName === 'channel') {
                 for (var j = 0; j < _numChildren(node); j++) {
                     var subNode = _getChildNode(node, j);
-                    if (_localName(subNode).toLowerCase() == 'item') {
+                    if (_localName(subNode).toLowerCase() === 'item') {
                         arr.push(_parseItem(subNode));
                     }
                 }
@@ -55,28 +55,28 @@
             }
             switch (localName.toLowerCase()) {
                 case 'enclosure':
-                    itm['file'] = utils.xmlAttribute(node, 'url');
+                    itm.file = utils.xmlAttribute(node, 'url');
                     break;
                 case 'title':
-                    itm['title'] = _textContent(node);
+                    itm.title = _textContent(node);
                     break;
                 case 'guid':
-                    itm['mediaid'] = _textContent(node);
+                    itm.mediaid = _textContent(node);
                     break;
                 case 'pubdate':
-                    itm['date'] = _textContent(node);
+                    itm.date = _textContent(node);
                     break;
                 case 'description':
-                    itm['description'] = _textContent(node);
+                    itm.description = _textContent(node);
                     break;
                 case 'link':
-                    itm['link'] = _textContent(node);
+                    itm.link = _textContent(node);
                     break;
                 case 'category':
-                    if (itm['tags']) {
-                        itm['tags'] += _textContent(node);
+                    if (itm.tags) {
+                        itm.tags += _textContent(node);
                     } else {
-                        itm['tags'] = _textContent(node);
+                        itm.tags = _textContent(node);
                     }
                     break;
             }

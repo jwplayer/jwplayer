@@ -52,8 +52,7 @@
 		protected function setupPlayer(event:Event=null):void {
 			try {
 				this.removeEventListener(Event.ADDED_TO_STAGE, setupPlayer);
-			} catch (err:Error) {
-			}
+			} catch (err:Error) { }
 
 			new RootReference(this);
 			_dispatcher = new GlobalEventDispatcher();
@@ -123,7 +122,7 @@
 		 */
 		protected function forward(evt:PlayerEvent):void {
             if (model.config.debug) {
-                Logger.log(evt.toString(), evt.type);
+                Logger.logEvent(evt);
             }
 			dispatchEvent(evt);
 		}
@@ -426,6 +425,5 @@
 		public function setCues(cues:Array):void {
 			view.setCues(cues);
 		}
-		
 	}
 }

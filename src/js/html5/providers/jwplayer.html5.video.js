@@ -159,7 +159,10 @@
             if (!_attached) { return; }
             if (_this.state === states.PLAYING && !_dragging) {
                 _position = _round(_videotag.currentTime);
-                _canSeek = true;
+                // do not allow _durationUpdateHandler to update _canSeek before _canPlayHandler does
+                if (evt) {
+                    _canSeek = true;
+                }
                 _this.sendEvent(events.JWPLAYER_MEDIA_TIME, {
                     position: _position,
                     duration: _duration
@@ -262,7 +265,7 @@
             if (!_attached) {
                 return;
             }
-            utils.log('Error playing media: %o', _videotag.error);
+            utils.log('Error playing media: %o %s', _videotag.error, _videotag.src || _source.file);
             _this.sendEvent(events.JWPLAYER_MEDIA_ERROR, {
                 message: 'Error loading media: File could not be played'
             });
@@ -331,7 +334,6 @@
 
             _source = _levels[_currentQuality];
 
-            _this.setState(states.BUFFERING);
             clearInterval(_bufferInterval);
             _bufferInterval = setInterval(_sendBufferUpdate, 100);
 
@@ -339,6 +341,7 @@
 
             var sourceChanged = (_videotag.src !== _source.file);
             if (sourceChanged || _forceVideoLoad()) {
+                _this.setState(states.BUFFERING);
                 _canSeek = false;
                 _bufferFull = false;
                 _duration = duration ? duration : -1;
@@ -596,6 +599,8 @@
             if (!seekable) {
                 _canSeek = false;
             }
+
+            // This is after a postroll completes
             if (_beforecompleted) {
                 this.setState(states.IDLE);
                 this.sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
@@ -624,6 +629,7 @@
             clearInterval(_bufferInterval);
 
             _currentQuality = -1;
+
             // remove
             if (_container === _videotag.parentNode) {
                 _container.removeChild(_videotag);

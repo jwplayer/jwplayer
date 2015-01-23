@@ -1,9 +1,3 @@
-/**
- * JW Player playlist loader
- *
- * @author pablo
- * @version 6.0
- */
 (function(jwplayer) {
     var utils = jwplayer.utils,
         events = jwplayer.events,

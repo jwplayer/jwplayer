@@ -12,8 +12,8 @@
     var _css = jwplayer.utils.css;
     var JW_CLASS = '.jwplayer ';
 
-    var helperString = ['', 'div', 'span', 'a', 'img', 'ul', 'li', 'video'].join(', ' + JW_CLASS);
-    _css(JW_CLASS.slice(0, -1) + helperString + ', .jwclick', {
+    var helperString = [JW_CLASS, 'div', 'span', 'a', 'img', 'ul', 'li', 'video'].join(', ' + JW_CLASS);
+    _css(helperString + ', .jwclick', {
         margin: 0,
         padding: 0,
         border: 0,
@@ -27,6 +27,14 @@
         'line-height': 20,
         '-webkit-tap-highlight-color': 'rgba(255, 255, 255, 0)'
     });
+
+    // Reset box-sizing to default for player and all sub-elements
+    //  Note: If we use pseudo elements we will need to add *:before and *:after
+    _css(JW_CLASS + ',' + JW_CLASS + '*', { 'box-sizing': 'content-box'});
+    // Browsers use border-box as a the default box-sizing for many form elements
+    _css(JW_CLASS + '* button,' + JW_CLASS + '* input,' + JW_CLASS + '* select,' + JW_CLASS + '* textarea',
+        { 'box-sizing': 'border-box'});
+
 
     _css(JW_CLASS + 'ul', {
         'list-style': 'none'

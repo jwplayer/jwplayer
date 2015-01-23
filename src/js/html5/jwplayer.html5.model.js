@@ -183,7 +183,7 @@
                     _model.setVideoProvider(_currentProvider);
                 }
 
-                // this allows the provider to load preview images (youtube player data)
+                // this allows the Youtube provider to load preview images
                 if (_currentProvider.init) {
                     _currentProvider.init(item);
                 }

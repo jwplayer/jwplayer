@@ -24,8 +24,13 @@
         setVisibility : noop,
         setFullscreen : returnFalse,
         getFullscreen : noop,
-        setContainer : returnFalse,
+
+        // If setContainer has been set, this returns the element.
+        //  It's value is used to determine if we should remove the <video> element when setting a new provider.
         getContainer : noop,
+
+        // Sets the parent element, causing provider to append <video> into it
+        setContainer : returnFalse,
 
         isAudioFile : returnFalse,
         supportsFullscreen : returnFalse,

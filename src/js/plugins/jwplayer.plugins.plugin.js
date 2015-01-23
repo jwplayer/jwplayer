@@ -29,7 +29,7 @@
         }
 
         function completeHandler() {
-            _completeTimeout = setTimeout(function(){
+            _completeTimeout = setTimeout(function() {
                 _status = utils.loaderstatus.COMPLETE;
                 _eventDispatcher.sendEvent(events.COMPLETE);
             }, 1000);
@@ -62,7 +62,7 @@
         };
 
         this.registerPlugin = function(id, target, arg1, arg2) {
-            if (_completeTimeout){
+            if (_completeTimeout) {
                 clearTimeout(_completeTimeout);
                 _completeTimeout = undefined;
             }

@@ -172,14 +172,14 @@ import flash.utils.setTimeout;
 		protected function finalizeSetup():void {
 			if (!locking && _setupComplete && !_setupFinalized) {
 				_setupFinalized = true;
-				
+
 				_player.addEventListener(ErrorEvent.ERROR, errorHandler);
 
 				_model.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_LOADED, playlistLoadHandler, false, -1);
 				_model.addEventListener(PlaylistEvent.JWPLAYER_PLAYLIST_ITEM, playlistItemHandler, false, 1000);
 				_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_COMPLETE, completeHandler, false);
 				_model.addEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, timeHandler);
-				
+
 				// setup listeners so playlist loaded can be dispatched (ready will be forwarded asynchronously)
 				dispatchEvent(new PlayerEvent(PlayerEvent.JWPLAYER_READY));
 
@@ -194,7 +194,8 @@ import flash.utils.setTimeout;
 			_delayedItem = null;
 			errorState(evt.text);
 		}
-		protected function playlistLoadHandler(evt:PlaylistEvent=null):void {
+
+		protected function playlistLoadHandler(evt:PlaylistEvent):void {
 			if (!_playlistReady) {
 				_playlistReady = true;
 				_model.playlist.currentIndex = 0;
@@ -509,15 +510,15 @@ import flash.utils.setTimeout;
 							play();
 						}
 						return true;
-                    case PlayerState.PAUSED:
-                        play();
-                    /* fallthrough */
-                    case PlayerState.PLAYING:
+					case PlayerState.PAUSED:
+						play();
+					/* fallthrough */
+					case PlayerState.PLAYING:
 					case PlayerState.BUFFERING:
-                        if (_model.media.canSeek) {
-                            _model.seek(pos);
-                            return true;
-                        }
+						if (_model.media.canSeek) {
+							_model.seek(pos);
+							return true;
+						}
 						_queuedSeek = pos;
 				}
 			}

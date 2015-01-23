@@ -289,6 +289,8 @@ package com.longtailvideo.jwplayer.view.components {
 			if (_casting) {
 				newLayout = newLayout.replace("cast", "casting");
 				newLayout = newLayout.replace("fullscreen", "");
+                newLayout = newLayout.replace(/hd/g, "");
+                hideButton('hd');
 				hideButton("cast");
 				showButton("fullscreen");
 				hideButton("normalscreen");
