@@ -75,8 +75,10 @@
         // return the first mime that matches
         var returnType;
         _.find(mimeMap, function(val, key) {
-            returnType = key;
-            return val === mime;
+            if (val === mime) {
+                returnType = key;
+                return true;
+            }
         });
         return returnType;
     };
