@@ -99,12 +99,16 @@
                     _iconWidth = skinElem.width | 0;
                 }
                 style.width = skinElem.width;
-                style['background-image'] = 'url(' + skinElem.src + ')';
+                
+                _css('#' + _api.id + ' .jwdisplay ' + selector, {
+                    'background-image' : 'url(' + skinElem.src + ')'
+                });
+
                 style['background-size'] = skinElem.width + 'px ' + skinElem.height + 'px';
                 style['float'] = 'none';
                 overstyle = utils.extend({}, overstyle);
                 if (skinElem.overSrc) {
-                    overstyle['background-image'] = 'url(' + skinElem.overSrc + ')' + '!important';
+                    overstyle['background-image'] = 'url(' + skinElem.overSrc + ')';
                 }
                 if (!utils.isMobile()) {
                     _css('#' + _api.id + ' .jwdisplay:hover ' + selector, overstyle);
