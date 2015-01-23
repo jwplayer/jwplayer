@@ -55,7 +55,7 @@
             }
 
             if (_container) {
-                _styleIcon(elem, name, '.' + name, style, overstyle);
+                _styleIcon(name, '.' + name, style, overstyle);
             }
             return elem;
         }
@@ -87,12 +87,15 @@
             }
         }
 
-        function _styleIcon(element, name, selector, style, overstyle) {
+        function _styleIcon(name, selector, style, overstyle) {
             var skinElem = _getSkinElement(name);
             if (name === 'replayIcon' && !skinElem.src) {
                 skinElem = _getSkinElement('playIcon');
             }
-
+            if (skinElem.overSrc) {
+                overstyle = utils.extend({}, overstyle);
+                overstyle['background-image'] = 'url(' + skinElem.overSrc + ')';
+            }
             if (skinElem.src) {
                 style = utils.extend({}, style);
                 if (name.indexOf('Icon') > 0) {
@@ -102,13 +105,7 @@
                 style['background-image'] = 'url(' + skinElem.src + ')';
                 style['background-size'] = skinElem.width + 'px ' + skinElem.height + 'px';
                 style['float'] = 'none';
-                overstyle = utils.extend({}, overstyle);
-                if (skinElem.overSrc) {
-                    overstyle['background-image'] = 'url(' + skinElem.overSrc + ')';
-                }
-                if (!utils.isMobile()) {
-                    _css('#' + _api.id + ' .jwdisplay:hover ' + selector, overstyle);
-                }
+
                 _css.style(_container, {
                     display: 'table'
                 });
@@ -118,7 +115,10 @@
                 });
             }
             if (style) {
-                _css.style(element, style);
+                _css('#' + _api.id + ' .jwdisplay ' + selector, style);
+            }
+            if (overstyle) {
+                _css('#' + _api.id + ' .jwdisplay:hover ' + selector, overstyle);
             }
             _iconElement = skinElem;
         }
@@ -199,7 +199,7 @@
                 icon.id = _container.id + '_' + name;
                 _iconCache[name] = icon;
             }
-            _styleIcon(icon, name + 'Icon', '#' + icon.id);
+            _styleIcon(name + 'Icon', '#' + icon.id);
             if (_container.contains(_icon)) {
                 _container.replaceChild(icon, _icon);
             } else {
