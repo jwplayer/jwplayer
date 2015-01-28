@@ -191,6 +191,7 @@
 
             if (_api.config.aspectratio) {
                 flashPlayer.style.position = 'absolute';
+                flashPlayer.style.left = '0';
             }
             _api.container = flashPlayer;
             _api.setPlayer(flashPlayer, 'flash');
