@@ -40,7 +40,6 @@ package com.longtailvideo.jwplayer.utils
 	public class SWFFocus extends EventDispatcher 
 	{
 		private static var _availability:Boolean = ExternalInterface.available;
-		private static var _dispatcher:EventDispatcher = new EventDispatcher();
 		private static var _instance:SWFFocus = new SWFFocus( SingletonLock );
 		private static var _initialized:Boolean = false;
 		private var _stage:Stage;
@@ -96,7 +95,9 @@ package com.longtailvideo.jwplayer.utils
                 window.blurredSwfId='';
 
                 var i,j,k,oE,o,pE,p,st,ti,a,d,s,t,cN,pId,nId,rpId,rnId;
-                var wk = RegExp(' AppleWebKit/').test(navigator.userAgent) && RegExp('Mac').test(navigator.platform);
+                // The line below has been modified by JWPlayer for chrome 40 on windows bugfix
+                // var wk = RegExp(' AppleWebKit/').test(navigator.userAgent) && RegExp('Mac').test(navigator.platform);
+                var wk = RegExp(' AppleWebKit/').test(navigator.userAgent) && RegExp('Mac|Win').test(navigator.platform);
 
                 if(wk)
                 {
@@ -141,9 +142,7 @@ package com.longtailvideo.jwplayer.utils
                 {
                     o=oE[i];
 
-                    if((o.data||o.src)
-                            && o.type=='application/x-shockwave-flash')
-                    {
+                    if((o.data||o.src) && o.type=='application/x-shockwave-flash') {
                         st=true;
                         pE=o.getElementsByTagName('param');
 
@@ -270,7 +269,7 @@ package com.longtailvideo.jwplayer.utils
 					"window.blurredSwfId='';"+
 					
 					"var i,j,k,oE,o,pE,p,st,ti,a,d,s,t,cN,pId,nId,rpId,rnId;" +
-					"var wk = RegExp(' AppleWebKit/').test(navigator.userAgent) && RegExp('Mac').test(navigator.platform);" +
+					"var wk = RegExp(' AppleWebKit/').test(navigator.userAgent) && RegExp('Mac|Win').test(navigator.platform);" +
 					
 					"if(wk)" +
 					"{" +
@@ -482,6 +481,8 @@ package com.longtailvideo.jwplayer.utils
 			if (newFocus && oldFocus) _lastFocus = e.relatedObject;
 			if (!_flagActivated)
 			{
+                // The line below is from adobe, but has been replaced by us
+                // if (wrapOccurred(oldFocus, newFocus, e.shiftKey)) {
 				if (oldFocus.tabIndex == newFocus.tabIndex) {
 					// eTrace("wrap occurred: " + _idNext);
 					e.preventDefault();
