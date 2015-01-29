@@ -90,184 +90,181 @@ package com.longtailvideo.jwplayer.utils
 				_stage.addEventListener(FocusEvent.KEY_FOCUS_CHANGE, stage_handleKeyFocusChange, false, 0, true);
 				_stage.addEventListener(Event.ACTIVATE, stage_onActivateEvent, false, 1, true);
 				_stage.addEventListener(Event.DEACTIVATE, stage_onActivateEvent, false, 1, true);
-				
-				/*
-				The ExternalInterface call executes the following anonymous javascript function
-				to create links and script functions to handle focus into and out of swf.
-				
-				function()
-				{
-				window.blurredSwfId='';
-				
-				var i,j,k,oE,o,pE,p,st,ti,a,d,s,t,cN,pId,nId,rpId,rnId;
-				var wk = RegExp(' AppleWebKit/').test(navigator.userAgent) && RegExp('Mac').test(navigator.platform);
-				
-				if(wk)
-				{
-				var linkFocusHandler = function(event)
-				{
-				if(!event.target.getAttribute) return;
-				var rs = event.target.getAttribute('data-related-swf');
-				var rl = event.target.getAttribute('data-related-link');
-				if(window.blurredSwfId!=rs)
-				{
-				document.getElementById(rs).focus();
-				}else if(rl)
-				{
-				document.getElementById(rl).focus();
-				}
-				window.blurredSwfId='';
-				};
-				
-				var swfBlurHandler = function(event)
-				{
-				if(!event.target.id) return;
-				window.blurredSwfId=event.target.id;
-				};
-				
-				var swfFocusHandler = function(event)
-				{
-				window.blurredSwfId='';
-				};
-				
-				};
-				
-				oE=document.getElementsByTagName('object');
-				
-				if(oE.length==0)
-				{
-				oE=document.getElementsByTagName('embed');
-				};
-				
-				s='border:0;clip:rect(0 0 0 0);display:block;height:1px;margin:-1px;outline:none;overflow:hidden;padding:0;position:absolute;width:1px;';
-				
-				for(i=0;i<oE.length;i++)
-				{
-				o=oE[i];
-				
-				if((o.data||o.src) 
-				&& o.type=='application/x-shockwave-flash')
-				{
-				st=true;
-				pE=o.getElementsByTagName('param');
-				
-				for(j=0;j<pE.length;j++)
-				{
-				p=pE[j];
-				if(p.name.toLowerCase()=='seamlesstabbing')
-				{
-				if(p.value.toLowerCase()=='false')
-				{
-				st=false;
-				}
-				break;
-				}
-				};
-				
-				if(o.tagName.toLowerCase()=='embed')
-				{
-				if(o.attributes['seamlesstabbing'] 
-				&& o.attributes['seamlesstabbing'].value.toLowerCase()=='false')
-				{
-				st=false;
-				}else
-				{
-				o.setAttribute('seamlesstabbing','true');
-				}
-				};
-				
-				if(st)
-				{
-				if(!o.id || o.id.length<=0)
-				{
-				o.id='SWFFocusTarget'+i;
-				};
-				
-				o.setAttribute('name',o.id);
-				pId=nId='';
-				cN=o.className.split(' ');
-				for(k=0;k<cN.length;k++)
-				{
-				if(cN[k].indexOf('swfNext-')!=-1)
-				{
-				nId=cN[k].substr(8);
-				} else if(cN[k].indexOf('swfPrev-')!=-1)
-				{
-				pId=cN[k].substr(8);
-				}
-				};
-				
-				if(pId==''||(pId!=''&&wk))
-				{
-				o.className=o.className.replace(/(?:\s)?swfPrev-(?:\S+)?(?:\s)?/g,'');
-				rpId=pId;
-				pId='beforeswfanchor'+i;
-				
-				if(!document.getElementById(pId))
-				{
-				a=document.createElement('a');
-				a.id=pId;
-				a.href='#'+o.id;
-				a.setAttribute('tabindex',(wk?0:-1));
-				a.title='Flash start';
-				a.setAttribute('style',s);
-				
-				if(wk)
-				{
-				if(rpId!='') a.setAttribute('data-related-link',rpId);
-				a.setAttribute('data-related-swf',o.id);
-				a.addEventListener('focus',linkFocusHandler);
-				};
-				
-				o.parentNode.insertBefore(a,o);
-				o.className+=' swfPrev-'+pId;
-				}
-				};
-				
-				if(nId==''||(nId!=''&&wk))
-				{
-				o.className=o.className.replace(/(?:\s)?swfNext-(?:\S+)?(?:\s)?/g,'');
-				rnId=nId;
-				nId='afterswfanchor'+i;
-				
-				if(!document.getElementById(nId))
-				{
-				a=document.createElement('a');
-				a.id=nId;
-				a.href='#'+o.id;
-				a.setAttribute('tabindex',(wk?0:-1));
-				a.title='Flash end';
-				a.setAttribute('style',s);
-				
-				if(wk)
-				{
-				if(rnId!='') a.setAttribute('data-related-link',rnId);
-				a.setAttribute('data-related-swf',o.id);
-				a.addEventListener('focus',linkFocusHandler);
-				};
-				
-				o.parentNode.insertBefore(a,o.nextSibling);
-				o.className+=' swfNext-'+nId;
-				}
-				};
-				
-				o.SWFsetFocusIds(pId,nId);
-				
-				if(o.getAttribute('tabindex')<=0)
-				{
-				o.setAttribute('tabindex',0);
-				};
-				
-				if(wk)
-				{
-				o.addEventListener('blur',swfBlurHandler);
-				o.addEventListener('focus',swfFocusHandler);
-				};
-				}
-				}
-				}
-				}
-				*/                
+
+            /*
+            function() {
+                window.blurredSwfId='';
+
+                var i,j,k,oE,o,pE,p,st,ti,a,d,s,t,cN,pId,nId,rpId,rnId;
+                var wk = RegExp(' AppleWebKit/').test(navigator.userAgent) && RegExp('Mac').test(navigator.platform);
+
+                if(wk)
+                {
+                    var linkFocusHandler = function(event)
+                    {
+                        if(!event.target.getAttribute) return;
+                        var rs = event.target.getAttribute('data-related-swf');
+                        var rl = event.target.getAttribute('data-related-link');
+                        if(window.blurredSwfId!=rs)
+                        {
+                            document.getElementById(rs).focus();
+                        }else if(rl)
+                        {
+                            document.getElementById(rl).focus();
+                        }
+                        window.blurredSwfId='';
+                    };
+
+                    var swfBlurHandler = function(event)
+                    {
+                        if(!event.target.id) return;
+                        window.blurredSwfId=event.target.id;
+                    };
+
+                    var swfFocusHandler = function(event)
+                    {
+                        window.blurredSwfId='';
+                    };
+
+                };
+
+                oE=document.getElementsByTagName('object');
+
+                if(oE.length==0)
+                {
+                    oE=document.getElementsByTagName('embed');
+                };
+
+                s='border:0;clip:rect(0 0 0 0);display:block;height:1px;margin:-1px;outline:none;overflow:hidden;padding:0;position:absolute;width:1px;';
+
+                for(i=0;i<oE.length;i++)
+                {
+                    o=oE[i];
+
+                    if((o.data||o.src)
+                            && o.type=='application/x-shockwave-flash')
+                    {
+                        st=true;
+                        pE=o.getElementsByTagName('param');
+
+                        for(j=0;j<pE.length;j++)
+                        {
+                            p=pE[j];
+                            if(p.name.toLowerCase()=='seamlesstabbing')
+                            {
+                                if(p.value.toLowerCase()=='false')
+                                {
+                                    st=false;
+                                }
+                                break;
+                            }
+                        };
+
+                        if(o.tagName.toLowerCase()=='embed')
+                        {
+                            if(o.attributes['seamlesstabbing']
+                                    && o.attributes['seamlesstabbing'].value.toLowerCase()=='false')
+                            {
+                                st=false;
+                            }else
+                            {
+                                o.setAttribute('seamlesstabbing','true');
+                            }
+                        };
+
+                        if(st)
+                        {
+                            if(!o.id || o.id.length<=0)
+                            {
+                                o.id='SWFFocusTarget'+i;
+                            };
+
+                            o.setAttribute('name',o.id);
+                            pId=nId='';
+                            cN=o.className.split(' ');
+                            for(k=0;k<cN.length;k++)
+                            {
+                                if(cN[k].indexOf('swfNext-')!=-1)
+                                {
+                                    nId=cN[k].substr(8);
+                                } else if(cN[k].indexOf('swfPrev-')!=-1)
+                                {
+                                    pId=cN[k].substr(8);
+                                }
+                            };
+
+                            if(pId==''||(pId!=''&&wk))
+                            {
+                                o.className=o.className.replace(/(?:\s)?swfPrev-(?:\S+)?(?:\s)?/g,'');
+                                rpId=pId;
+                                pId='beforeswfanchor'+i;
+
+                                if(!document.getElementById(pId))
+                                {
+                                    a=document.createElement('a');
+                                    a.id=pId;
+                                    a.href='#'+o.id;
+                                    a.setAttribute('tabindex',(wk?0:-1));
+                                    a.title='Flash start';
+                                    a.setAttribute('style',s);
+
+                                    if(wk)
+                                    {
+                                        if(rpId!='') a.setAttribute('data-related-link',rpId);
+                                        a.setAttribute('data-related-swf',o.id);
+                                        a.addEventListener('focus',linkFocusHandler);
+                                    };
+
+                                    o.parentNode.insertBefore(a,o);
+                                    o.className+=' swfPrev-'+pId;
+                                }
+                            };
+
+                            if(nId==''||(nId!=''&&wk))
+                            {
+                                o.className=o.className.replace(/(?:\s)?swfNext-(?:\S+)?(?:\s)?/g,'');
+                                rnId=nId;
+                                nId='afterswfanchor'+i;
+
+                                if(!document.getElementById(nId))
+                                {
+                                    a=document.createElement('a');
+                                    a.id=nId;
+                                    a.href='#'+o.id;
+                                    a.setAttribute('tabindex',(wk?0:-1));
+                                    a.title='Flash end';
+                                    a.setAttribute('style',s);
+
+                                    if(wk)
+                                    {
+                                        if(rnId!='') a.setAttribute('data-related-link',rnId);
+                                        a.setAttribute('data-related-swf',o.id);
+                                        a.addEventListener('focus',linkFocusHandler);
+                                    };
+
+                                    o.parentNode.insertBefore(a,o.nextSibling);
+                                    o.className+=' swfNext-'+nId;
+                                }
+                            };
+
+                            o.SWFsetFocusIds(pId,nId);
+
+                            if(o.getAttribute('tabindex')<=0)
+                            {
+                                o.setAttribute('tabindex',0);
+                            };
+
+                            if(wk)
+                            {
+                                o.addEventListener('blur',swfBlurHandler);
+                                o.addEventListener('focus',swfFocusHandler);
+                            };
+                        }
+                    }
+                }
+            }
+            */
+
 				ExternalInterface.call("function()" +
 					"{" +
 					"window.blurredSwfId='';"+
