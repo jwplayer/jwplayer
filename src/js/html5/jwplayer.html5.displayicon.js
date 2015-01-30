@@ -15,6 +15,7 @@
 
     html5.displayicon = function(_id, _api, textStyle, textStyleOver) {
         var _skin = _api.skin,
+            _playerId = _api.id,
             _container,
             _bgSkin,
             _capLeftSkin,
@@ -27,6 +28,10 @@
             _iconWidth = 0,
             _setWidthTimeout = -1,
             _repeatCount = 0;
+
+        if (_api instanceof jwplayer.html5.instream) {
+            _playerId = _playerId.replace('_instream', '');
+        }
 
         function _init() {
             _container = _createElement('jwdisplayIcon');
@@ -83,7 +88,7 @@
                         _capLeftSkin.overSrc + '), url(' + _bgSkin.overSrc + '), url(' + _capRightSkin.overSrc + ')';
                 }
                 _css('.jw-tab-focus ' + _internalSelector() +
-                    ', #' + _api.id + ' .jwdisplay:hover ' + _internalSelector(), style);
+                    ', #' + _playerId + ' .jwdisplay:hover ' + _internalSelector(), style);
             }
         }
 
@@ -115,10 +120,10 @@
                 });
             }
             if (style) {
-                _css('#' + _api.id + ' .jwdisplay ' + selector, style);
+                _css('#' + _playerId + ' .jwdisplay ' + selector, style);
             }
             if (overstyle) {
-                _css('#' + _api.id + ' .jwdisplay:hover ' + selector, overstyle);
+                _css('#' + _playerId + ' .jwdisplay:hover ' + selector, overstyle);
             }
             _iconElement = skinElem;
         }
