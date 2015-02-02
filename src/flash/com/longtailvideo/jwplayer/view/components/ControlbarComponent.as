@@ -691,7 +691,7 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 		
 		private function showTrackOverlay(evt:MouseEvent):void {
-			if (_trackOverlay && _tracks && _tracks.length > 2) _trackOverlay.show();
+			if (_trackOverlay && _tracks && _tracks.length > 1) _trackOverlay.show();
 			hideHdOverlay();
 			hideVolumeOverlay();
 			hideCcOverlay();
