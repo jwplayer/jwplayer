@@ -169,6 +169,7 @@ package com.longtailvideo.jwplayer.view.components {
 			if (!_text || _noText) {
 				_textField.visible = false;
 				_textField.width = _textField.height = 0;
+				_textField.text = "";
 				redraw();
 				return;
 			}
