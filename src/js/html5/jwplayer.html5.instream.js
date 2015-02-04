@@ -74,11 +74,14 @@
             // Keep track of the original player state
             _oldpos = _video.currentTime;
 
-            if (_controller.checkBeforePlay() || _oldpos === 0) {
+            if (_model.getVideo().checkComplete()) {
+                // AKA postroll
+                _oldstate = _states.IDLE;
+            } else if (_controller.checkBeforePlay() || _oldpos === 0) {
                 // make sure video restarts after preroll
                 _oldpos = 0;
                 _oldstate = _states.PLAYING;
-            } else if (_api.jwGetState() === _states.IDLE || _model.getVideo().checkComplete()) {
+            } else if (_api.jwGetState() === _states.IDLE) {
                 _oldstate = _states.IDLE;
             } else {
                 _oldstate = _states.PLAYING;
