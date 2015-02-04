@@ -490,7 +490,9 @@ package com.longtailvideo.jwplayer.player {
 		 ***********************************************/
 
 		private static function js_dockAddButton(icon:String, label:String, click:String, id:String):void {
-			_player.controls.dock.addButton(icon, label, click, id);
+            try {
+                _player.controls.dock.addButton(icon, label, click, id);
+            } catch(e:Error){}
 		};
 		private static function js_dockRemoveButton(id:String):void {
 			_player.controls.dock.removeButton(id);
