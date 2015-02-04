@@ -10,7 +10,6 @@ package com.longtailvideo.jwplayer.parsers {
         /** Parse SRT captions string into an array. **/
         public static function parseCaptions(dat:String, mergeBeginEnd:Boolean=false, segmentStartTime:Number = Number.NaN):Array {
             var startTime:Number = 0;
-            var relative:Boolean = false;
             var arr:Array = mergeBeginEnd ? [] : [{begin:0,text:''}];
             // Trim whitespace and split the list by returns.
             dat = dat.replace(/^\s+/, '').replace(/\s+$/, '');
@@ -36,28 +35,24 @@ package com.longtailvideo.jwplayer.parsers {
                                         var seconds:Number = Strings.seconds(v);
                                         startTime = segmentStartTime - seconds;
                                     }
-                                } else {
-                                    continue;
                                 }
                             }
-                        } else {
-                            continue;
                         }
                     }
-				}
-
-                var obj:Object = parseCaption(  elt, startTime);
-                if(obj['text']) {
-                    arr.push(obj);
-                    // Insert empty caption at the end.
-                    if(obj['end'] && !mergeBeginEnd) {
-                        arr.push({begin:obj['end'],text:''});
-                        delete obj['end'];
+				} else {
+                    var obj:Object = parseCaption(  elt, startTime);
+                    if(obj['text']) {
+                        arr.push(obj);
+                        // Insert empty caption at the end.
+                        if(obj['end'] && !mergeBeginEnd) {
+                            arr.push({begin:obj['end'],text:''});
+                            delete obj['end'];
+                        }
                     }
                 }
             }
             return arr;
-        };
+        }
 
 
         /** Parse a single captions entry. **/
@@ -86,10 +81,6 @@ package com.longtailvideo.jwplayer.parsers {
                 }
             } catch (err:Error) {}
             return obj;
-        };
-
-
+        }
     }
-
-
 }
