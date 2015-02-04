@@ -177,8 +177,8 @@
             return function() {
                 var i = start;
                 var result = args[start].apply(this, arguments);
-                while (i--) result = args[i].call(this, result);
-                    return result;
+                while (i--) { result = args[i].call(this, result); }
+                return result;
             };
         }
 
@@ -388,7 +388,11 @@
                     _volumeHandler();
                     _this.load(item);
                 };
-                _youtubePlayerReadyCallback = (_youtubePlayerReadyCallback) ? _composeCallbacks(onStart, _youtubePlayerReadyCallback) : onStart;
+                if (_youtubePlayerReadyCallback) {
+                    _youtubePlayerReadyCallback = _composeCallbacks(onStart, _youtubePlayerReadyCallback);
+                } else {
+                    _youtubePlayerReadyCallback = onStart;
+                }
                 return;
             }
 
@@ -433,7 +437,11 @@
             if (_youtubePlayer && _youtubePlayer.playVideo) {
                 _youtubePlayer.playVideo();
             } else {    // If the _youtubePlayer isn't setup, then play when we're ready
-                _youtubePlayerReadyCallback = (_youtubePlayerReadyCallback) ? _composeCallbacks(this.play, _youtubePlayerReadyCallback) : this.play;
+                if (_youtubePlayerReadyCallback) {
+                    _youtubePlayerReadyCallback = _composeCallbacks(this.play, _youtubePlayerReadyCallback);
+                } else {
+                    _youtubePlayerReadyCallback = this.play;
+                }
             }
         };
 
