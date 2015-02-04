@@ -416,8 +416,10 @@
             if (_requiresUserInteraction) {
                 return;
             }
-            if (_youtubePlayer.playVideo) {
+            if (_youtubePlayer && _youtubePlayer.playVideo) {
                 _youtubePlayer.playVideo();
+            } else {    // If the _youtubePlayer isn't setup, then play when we're ready
+                _youtubePlayerReadyCallback = this.play;
             }
         };
 
