@@ -144,6 +144,7 @@ package com.longtailvideo.jwplayer.view.components {
 
 		public function ControlbarComponent(player:IPlayer) {
 			super(player, "controlbar");
+
 			animations = new Animations(this);
 			alpha = 0;
 			_instreamMode = false;
@@ -382,7 +383,6 @@ package com.longtailvideo.jwplayer.view.components {
 			return layout;
 		}
 
-
 		private static function removeButtonFromLayout(button:String, layout:String):String {
 			return layout.replace(button, "");
 		}
@@ -415,7 +415,10 @@ package com.longtailvideo.jwplayer.view.components {
                     setPositionAndDuration(evt.position, evt.duration);
                     if (isLive && evt.type == MediaEvent.JWPLAYER_MEDIA_TIME) {
 						if (!_instreamMode) {
-							setText(player.playlist.currentItem.title || "Live broadcast");
+                            // In between items, the cast plugin sets duration to 0, this does not mean the video
+                            //   is a live broadcast
+                            var backup:String = (_casting ? "" : "Live broadcast");
+							setText(player.playlist.currentItem.title || backup);
 						}
 					} else {
                         if (_timeSlider) {
@@ -429,7 +432,7 @@ package com.longtailvideo.jwplayer.view.components {
 							if (evt.bufferPercent > 0) {
                                 var offsetPercent:Number = (evt.offset / _lastDur) * 100;
                                 _timeSlider.setBuffer(evt.bufferPercent / (1-offsetPercent/100), offsetPercent);
-						}
+                            }
 
                             _timeSlider.setDuration(_lastDur);
                             _timeSlider.live = isLive;
@@ -691,7 +694,7 @@ package com.longtailvideo.jwplayer.view.components {
 		}
 		
 		private function showTrackOverlay(evt:MouseEvent):void {
-			if (_trackOverlay && _tracks && _tracks.length > 2) _trackOverlay.show();
+			if (_trackOverlay && _tracks && _tracks.length > 1) _trackOverlay.show();
 			hideHdOverlay();
 			hideVolumeOverlay();
 			hideCcOverlay();

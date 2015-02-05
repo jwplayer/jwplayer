@@ -19,6 +19,7 @@
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.geom.Rectangle;
+	import flash.system.Security;
 
 
 	/**
@@ -41,6 +42,7 @@
 		
 		/** Player constructor **/
 		public function Player() {
+			Security.allowDomain("*");
 			try {
 				this.addEventListener(Event.ADDED_TO_STAGE, setupPlayer);
 			} catch (err:Error) {

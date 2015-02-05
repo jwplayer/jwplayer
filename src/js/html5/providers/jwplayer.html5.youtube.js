@@ -169,6 +169,19 @@
             });
         }
 
+        // Returns a function that is the composition of a list of functions, each
+        // consuming the return value of the function that follows.
+        function _composeCallbacks() {
+            var args = arguments;
+            var start = args.length - 1;
+            return function() {
+                var i = start;
+                var result = args[start].apply(this, arguments);
+                while (i--) { result = args[i].call(this, result); }
+                return result;
+            };
+        }
+
         function _embedYoutubePlayer(videoId, playerVars) {
             if (!videoId) {
                 throw 'invalid Youtube ID';
@@ -371,10 +384,15 @@
             }
 
             if (!_youtubePlayer.getPlayerState) {
-                _youtubePlayerReadyCallback = function() {
+                var onStart = function() {
                     _volumeHandler();
                     _this.load(item);
                 };
+                if (_youtubePlayerReadyCallback) {
+                    _youtubePlayerReadyCallback = _composeCallbacks(onStart, _youtubePlayerReadyCallback);
+                } else {
+                    _youtubePlayerReadyCallback = onStart;
+                }
                 return;
             }
 
@@ -416,8 +434,14 @@
             if (_requiresUserInteraction) {
                 return;
             }
-            if (_youtubePlayer.playVideo) {
+            if (_youtubePlayer && _youtubePlayer.playVideo) {
                 _youtubePlayer.playVideo();
+            } else {    // If the _youtubePlayer isn't setup, then play when we're ready
+                if (_youtubePlayerReadyCallback) {
+                    _youtubePlayerReadyCallback = _composeCallbacks(this.play, _youtubePlayerReadyCallback);
+                } else {
+                    _youtubePlayerReadyCallback = this.play;
+                }
             }
         };
 
