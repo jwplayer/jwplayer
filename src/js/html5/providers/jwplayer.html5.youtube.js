@@ -291,7 +291,9 @@
             // This event is where the Youtube player and media is actually ready and can be played
 
             // make sure playback starts/resumes
-            _this.play();
+            if (_youtubeState !== _youtubeAPI.PlayerState.ENDED) {
+                _this.play();
+            }
 
             _this.sendEvent(events.JWPLAYER_MEDIA_LEVEL_CHANGED, {
                 currentQuality: _this.getCurrentQuality(),
