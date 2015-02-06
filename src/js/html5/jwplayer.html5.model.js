@@ -146,7 +146,7 @@
                 });
             } else {
                 _model.sendEvent(events.JWPLAYER_PLAYLIST_LOADED, {
-                    playlist: jwplayer(_model.id).getPlaylist()
+                    playlist: jwplayer(_model.id).getPlaylist && jwplayer(_model.id).getPlaylist() || []
                 });
                 _model.item = -1;
                 _model.setItem(0);
