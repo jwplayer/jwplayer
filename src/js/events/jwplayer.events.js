@@ -21,8 +21,6 @@
         // Media Events
         JWPLAYER_MEDIA_BEFOREPLAY: 'jwplayerMediaBeforePlay',
         JWPLAYER_MEDIA_BEFORECOMPLETE: 'jwplayerMediaBeforeComplete',
-        JWPLAYER_COMPONENT_SHOW: 'jwplayerComponentShow',
-        JWPLAYER_COMPONENT_HIDE: 'jwplayerComponentHide',
         JWPLAYER_MEDIA_BUFFER: 'jwplayerMediaBuffer',
         JWPLAYER_MEDIA_BUFFER_FULL: 'jwplayerMediaBufferFull',
         JWPLAYER_MEDIA_ERROR: 'jwplayerMediaError',
