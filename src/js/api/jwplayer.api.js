@@ -359,6 +359,18 @@
                 if (_this.renderingMode === 'html5') {
                     // calls jwPlayerDestroy()
                     _this.destroyPlayer();
+                } else if (utils.isMSIE(8)) {
+                    // remove flash object safely, setting flash external interface methods to null for ie8
+                    var swf = document.getElementById(_this.id);
+                    if (swf && swf.parentNode) {
+                        swf.style.display = 'none';
+                        for (var i in swf) {
+                            if (typeof swf[i] === 'function') {
+                                swf[i] = null;
+                            }
+                        }
+                        swf.parentNode.removeChild(swf);
+                    }
                 }
 
                 // If the tag is reused by another player, do not destroy the div
