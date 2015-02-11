@@ -230,7 +230,7 @@ package com.longtailvideo.jwplayer.utils {
 				}
 			}
 			return protocol + domain + "/" + result.join("/");
-		};
+		}
 		
 		public static function isAbsolutePath(path:String):Boolean {
 			var protocol:int = path.indexOf("://");

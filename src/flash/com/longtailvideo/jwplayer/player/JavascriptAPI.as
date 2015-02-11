@@ -310,12 +310,14 @@ package com.longtailvideo.jwplayer.player {
 		public static function dispatch(type:String, callbacks:Array, args:Object):void {
 			if (callbacks) {
 				// Not a great workaround, but the JavaScript API competes with the Controller when dealing with certain events
-				var asyncCallbacks:Array;
+				var asyncCallbacks:Array = null;
 				for each (var call:String in callbacks) {
 					if (javaScriptEventLoop === null || SYNCHRONOUS_EVENTS.indexOf(type) > -1) {
 						callJS(call, args, type);
 					} else {
-						if (asyncCallbacks === null) asyncCallbacks = [];
+						if (asyncCallbacks === null) {
+							asyncCallbacks = [];
+						}
 						asyncCallbacks.push(call);
 					}
 				}
@@ -415,9 +417,9 @@ package com.longtailvideo.jwplayer.player {
 		 **                 GETTERS                   **
 		 ***********************************************/
 		
-		private static function js_getBandwidth():Number {
-			return _player.config.bandwidth;
-		}
+		// private static function js_getBandwidth():Number {
+		// 	return _player.config.bandwidth;
+		// }
 
 		private static function js_getBuffer():Number {
 			return _playerBuffer;
@@ -435,13 +437,13 @@ package com.longtailvideo.jwplayer.player {
 			return RootReference.stage.stageHeight;
 		}
 		
-		private static function js_getLevel():Number {
-			return _player.playlist.currentItem ? _player.playlist.currentItem.currentLevel : 0;
-		}
+		// private static function js_getLevel():Number {
+		// 	return _player.playlist.currentItem ? _player.playlist.currentItem.currentLevel : 0;
+		// }
 		
-		private static function js_getLockState():Boolean {
-			return _player.locked;
-		}
+		// private static function js_getLockState():Boolean {
+		// 	return _player.locked;
+		// }
 		
 		private static function js_getMute():Boolean {
 			return _player.config.mute;
