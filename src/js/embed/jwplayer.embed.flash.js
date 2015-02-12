@@ -150,14 +150,14 @@
             storedFlashvars[_container.id] = params;
 
             if (utils.isMSIE()) {
-                var html = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" ' +
-                    '" width="100%" height="100%"' +
-                    'id="' +
+                var html = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"' +
+                    ' width="100%" height="100%"' +
+                    ' id="' +
                     _container.id +
                     '" name="' +
                     _container.id +
-                    '" tabindex=0"' +
-                    '">';
+                    '" tabindex="0"' +
+                    '>';
                 html += '<param name="movie" value="' + _player.src + '">';
                 html += '<param name="allowfullscreen" value="true">';
                 html += '<param name="allowscriptaccess" value="always">';
@@ -166,7 +166,7 @@
                 html += '<param name="bgcolor" value="' + bgcolor + '">';
                 html += '</object>';
 
-                _container.outerHTML = html;
+                $(_container).replaceWith(html);
 
                 flashPlayer = document.getElementById(_container.id);
             } else {
