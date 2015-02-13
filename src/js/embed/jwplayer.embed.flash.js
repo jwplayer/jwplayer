@@ -150,43 +150,38 @@
             storedFlashvars[_container.id] = params;
 
             if (utils.isMSIE()) {
-                var html = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" ' +
-                    '" width="100%" height="100%"' +
-                    'id="' +
-                    _container.id +
-                    '" name="' +
-                    _container.id +
-                    '" tabindex=0"' +
-                    '">';
-                html += '<param name="movie" value="' + _player.src + '">';
-                html += '<param name="allowfullscreen" value="true">';
-                html += '<param name="allowscriptaccess" value="always">';
-                html += '<param name="seamlesstabbing" value="true">';
-                html += '<param name="wmode" value="' + wmode + '">';
-                html += '<param name="bgcolor" value="' + bgcolor + '">';
-                html += '</object>';
+                _wrapper.innerHTML = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"' +
+                    ' width="100%" height="100%" id="' + _container.id +
+                    '" name="' + _container.id +
+                    '" tabindex="0">' +
+                    '<param name="movie" value="' + _player.src + '">' +
+                    '<param name="allowfullscreen" value="true">' +
+                    '<param name="allowscriptaccess" value="always">' +
+                    '<param name="seamlesstabbing" value="true">' +
+                    '<param name="wmode" value="' + wmode + '">' +
+                    '<param name="bgcolor" value="' + bgcolor + '">' +
+                    '</object>';
 
-                _container.outerHTML = html;
+                flashPlayer = _wrapper.getElementsByTagName('object')[0];
+                flashPlayer.style.outline = 'none';
 
-                flashPlayer = document.getElementById(_container.id);
             } else {
-                var obj = document.createElement('object');
-                obj.setAttribute('type', 'application/x-shockwave-flash');
-                obj.setAttribute('data', _player.src);
-                obj.setAttribute('width', '100%');
-                obj.setAttribute('height', '100%');
-                obj.setAttribute('bgcolor', bgcolor);
-                obj.setAttribute('id', _container.id);
-                obj.setAttribute('name', _container.id);
-                obj.className = 'jwswf';
+                flashPlayer = document.createElement('object');
+                flashPlayer.setAttribute('type', 'application/x-shockwave-flash');
+                flashPlayer.setAttribute('data', _player.src);
+                flashPlayer.setAttribute('width', '100%');
+                flashPlayer.setAttribute('height', '100%');
+                flashPlayer.setAttribute('bgcolor', bgcolor);
+                flashPlayer.setAttribute('id', _container.id);
+                flashPlayer.setAttribute('name', _container.id);
+                flashPlayer.className = 'jwswf';
                 //obj.setAttribute('tabindex', 0);
-                appendAttribute(obj, 'allowfullscreen', 'true');
-                appendAttribute(obj, 'allowscriptaccess', 'always');
-                appendAttribute(obj, 'seamlesstabbing', 'true');
-                appendAttribute(obj, 'wmode', wmode);
+                appendAttribute(flashPlayer, 'allowfullscreen', 'true');
+                appendAttribute(flashPlayer, 'allowscriptaccess', 'always');
+                appendAttribute(flashPlayer, 'seamlesstabbing', 'true');
+                appendAttribute(flashPlayer, 'wmode', wmode);
 
-                _container.parentNode.replaceChild(obj, _container);
-                flashPlayer = obj;
+                _container.parentNode.replaceChild(flashPlayer, _container);
             }
 
             if (_api.config.aspectratio) {
