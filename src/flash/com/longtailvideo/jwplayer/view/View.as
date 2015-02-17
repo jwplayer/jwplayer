@@ -11,7 +11,6 @@ package com.longtailvideo.jwplayer.view {
 	import com.longtailvideo.jwplayer.model.Model;
 	import com.longtailvideo.jwplayer.player.IInstreamPlayer;
 	import com.longtailvideo.jwplayer.player.IPlayer;
-	import com.longtailvideo.jwplayer.player.InstreamPlayer;
 	import com.longtailvideo.jwplayer.player.PlayerState;
 	import com.longtailvideo.jwplayer.plugins.IPlugin;
 	import com.longtailvideo.jwplayer.plugins.IPlugin6;
@@ -32,7 +31,6 @@ package com.longtailvideo.jwplayer.view {
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Loader;
 	import flash.display.MovieClip;
-	import flash.display.Stage;
 	import flash.display.StageAlign;
 	import flash.display.StageDisplayState;
 	import flash.display.StageScaleMode;
@@ -357,7 +355,7 @@ package com.longtailvideo.jwplayer.view {
 
 
 		protected function resizeHandler(event:Event):void {
-			_fullscreen = (RootReference.stage.displayState == StageDisplayState.FULL_SCREEN);
+			_fullscreen = (RootReference.stage.displayState === StageDisplayState.FULL_SCREEN);
 			if (_model.media.display) _preventFade = false;
 			if (_model.fullscreen != _fullscreen) {
 				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_FULLSCREEN, _fullscreen));
