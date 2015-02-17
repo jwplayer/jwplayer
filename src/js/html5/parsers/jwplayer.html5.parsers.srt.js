@@ -55,26 +55,26 @@
             if (array.length === 1) {
                 array = data.split('\n');
             }
-            try {
+            var idx = 1;
+            if (array[0].indexOf(' --> ') > 0) {
+                idx = 0;
+            }
+            if (array.length > idx + 1 && array[idx + 1]) {
                 // Second line contains the start and end.
-                var idx = 1;
-                if (array[0].indexOf(' --> ') > 0) {
-                    idx = 0;
-                }
-                var index = array[idx].indexOf(' --> ');
+                var line = array[idx];
+                var index = line.indexOf(' --> ');
                 if (index > 0) {
-                    entry.begin = _seconds(array[idx].substr(0, index));
-                    entry.end = _seconds(array[idx].substr(index + 5));
-                }
-                // Third line starts the text.
-                if (array[idx + 1]) {
-                    entry.text = array[idx + 1];
+                    entry.begin = _seconds(line.substr(0, index));
+                    entry.end = _seconds(line.substr(index + 5));
+                    // Third line starts the text.
+                    entry.text = array[++idx];
                     // Arbitrary number of additional lines.
-                    for (var i = idx + 2; i < array.length; i++) {
-                        entry.text += '<br/>' + array[i];
+                    while (++idx < array.length) {
+                        entry.text += '<br/>' + array[idx];
                     }
                 }
-            } catch (error) {}
+
+            }
             return entry;
         }
 
