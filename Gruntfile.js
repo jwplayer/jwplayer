@@ -40,6 +40,7 @@ module.exports = function(grunt) {
                     'src/js/html5/utils/jwplayer.html5.utils.*.js',
                     'src/js/html5/parsers/jwplayer.html5.parsers.js',
                     'src/js/html5/parsers/jwplayer.html5.parsers.*.js',
+                    'src/js/html5/providers/jwplayer.html5.*.js',
                     'src/js/html5/jwplayer.html5.*.js'
                 ],
                 dest: 'bin-debug/jwplayer.html5.js'
