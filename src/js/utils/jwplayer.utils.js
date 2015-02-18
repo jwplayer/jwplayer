@@ -263,22 +263,18 @@
         var plugins = navigator.plugins,
             flash;
 
-        try {
-            if (plugins !== 'undefined') {
-                flash = plugins['Shockwave Flash'];
-                if (flash) {
-                    return parseInt(flash.description.replace(/\D+(\d+)\..*/, '$1'), 10);
-                }
+        if (plugins) {
+            flash = plugins['Shockwave Flash'];
+            if (flash && flash.description) {
+                return parseFloat(flash.description.replace(/\D+(\d+)\..*/, '$1'));
             }
-        } catch (e) {
-            // The above evaluation (plugins != undefined) messes up IE7
         }
 
         if (typeof window.ActiveXObject !== 'undefined') {
             try {
                 flash = new window.ActiveXObject('ShockwaveFlash.ShockwaveFlash');
                 if (flash) {
-                    return parseInt(flash.GetVariable('$version').split(' ')[1].split(',')[0], 10);
+                    return parseFloat(flash.GetVariable('$version').split(' ')[1].replace(/\s*,\s*/, '.'));
                 }
             } catch (err) {}
         }
