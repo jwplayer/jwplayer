@@ -815,7 +815,11 @@
                 width = height = '100%';
             }
 
-            var transformScale = _model.getVideo().resize(width, height, _model.stretching);
+            var provider = _model.getVideo();
+            if (!provider) {
+                return;
+            }
+            var transformScale = provider.resize(width, height, _model.stretching);
             // poll resizing if video is transformed
             if (transformScale) {
                 clearTimeout(_resizeMediaTimeout);

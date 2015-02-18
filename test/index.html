@@ -13,12 +13,17 @@
 <h2>Video Playlist</h2>
 
 <div id="video-container"></div>
-
 <script type="text/javascript">
     jwplayer('video-container').setup({
 
         width: 640,
         height: 360,
+
+        // primary: 'flash',
+
+        listbar: {
+            position: 'right'
+        },
 
         playlist: [
             {
@@ -51,16 +56,27 @@
                     {file: 'http://playertest.longtailvideo.com/captions/bunny-ned.txt', label: 'Dutch'}
                 ],
                 title: 'Big Buck Bunny'
+            },
+            {
+                file: 'http://playertest.longtailvideo.com/flv-cuepoints/honda_accord.flv',
+                title: 'FLV'
+            },
+            {
+                file: 'http://www.youtube.com/watch?v=YE7VzlLtp-4',
+                title: 'YouTube'
+            },
+            {
+                file: 'not a playable option',
+                title: 'Filtered Out of Playlist'
             }
         ]
     });
 </script>
 
-
+<!--
 <h2>Audio Single</h2>
 
 <div id="audio-container"></div>
-
 <script type="text/javascript">
     jwplayer('audio-container').setup({
 
@@ -71,6 +87,41 @@
 
     });
 </script>
+
+
+<h2>FLV Single</h2>
+
+<div id="flv-container"></div>
+<script type="text/javascript">
+    jwplayer('flv-container').setup({
+
+        width: 640,
+        height: 360,
+
+        listbar: {
+            position: 'right'
+        },
+
+        file: 'http://playertest.longtailvideo.com/flv-cuepoints/honda_accord.flv',
+        type: 'flv'
+
+    });
+</script>
+
+<h2>Youtube Single</h2>
+
+<div id="youtube-container"></div>
+<script type="text/javascript">
+    jwplayer('youtube-container').setup({
+
+        width: 640,
+        height: 360,
+
+        file: 'http://www.youtube.com/watch?v=YE7VzlLtp-4'
+
+    });
+</script>
+-->
 
 </body>
 </html>

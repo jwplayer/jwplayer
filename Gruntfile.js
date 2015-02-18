@@ -28,12 +28,21 @@ module.exports = function(grunt) {
                     'src/js/embed/jwplayer.embed.*.js',
                     'src/js/api/jwplayer.api.js',
                     'src/js/api/jwplayer.api.*.js',
+
                     'src/js/html5/jwplayer.html5.js',
+
                     'src/js/html5/utils/jwplayer.html5.utils.js',
                     'src/js/html5/utils/jwplayer.html5.utils.*.js',
+
                     'src/js/html5/parsers/jwplayer.html5.parsers.js',
                     'src/js/html5/parsers/jwplayer.html5.parsers.*.js',
-                    'src/js/html5/providers/jwplayer.html5.*.js',
+
+                    'src/js/html5/providers/jwplayer.html5.default.js',
+                    'src/js/html5/providers/jwplayer.html5.video.js',
+                    'src/js/html5/providers/jwplayer.html5.youtube.js',
+                    'src/js/html5/providers/jwplayer.provider.flash.js',
+                    'src/js/html5/providers/jwplayer.html5.provider.js',
+
                     'src/js/html5/jwplayer.html5.*.js'
                 ],
                 dest: 'bin-debug/jwplayer.js'
