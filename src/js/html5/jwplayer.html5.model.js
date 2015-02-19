@@ -7,6 +7,7 @@
 (function(jwplayer) {
     var html5 = jwplayer.html5,
         utils = jwplayer.utils,
+        _ = jwplayer._,
         events = jwplayer.events;
 
     html5.model = function(config, defaultProvider) {
@@ -63,34 +64,33 @@
             _model.setItem(0);
         }
 
+
+        // Mapping of provider events, to the models attributes which should be updated
         var _eventMap = {};
-        _eventMap[events.JWPLAYER_MEDIA_MUTE] = ['mute'];
+        _eventMap[events.JWPLAYER_MEDIA_MUTE]   = ['mute'];
         _eventMap[events.JWPLAYER_MEDIA_VOLUME] = ['volume'];
-        _eventMap[events.JWPLAYER_PLAYER_STATE] = ['newstate->state'];
-        _eventMap[events.JWPLAYER_MEDIA_BUFFER] = ['bufferPercent->buffer'];
-        _eventMap[events.JWPLAYER_MEDIA_TIME] = ['position', 'duration'];
+        _eventMap[events.JWPLAYER_PLAYER_STATE] = ['state'];
+        _eventMap[events.JWPLAYER_MEDIA_BUFFER] = ['buffer'];
+        _eventMap[events.JWPLAYER_MEDIA_TIME]   = ['position', 'duration'];
+
+        function _getEventValue(evt, modelAttr) {
+            if (modelAttr === 'state') {
+                return evt.newstate;
+            } else if (modelAttr === 'buffer') {
+                return evt.bufferPercent;
+            }
+            return evt[modelAttr];
+        }
 
         function _videoEventHandler(evt) {
             var mappings = _eventMap[evt.type];
-            if (mappings && mappings.length) {
-                var _sendEvent = false;
-                for (var i = 0; i < mappings.length; i++) {
-                    var mapping = mappings[i];
-                    var split = mapping.split('->');
-                    var eventProp = split[0];
-                    var stateProp = split[1] || eventProp;
-
-                    if (_model[stateProp] !== evt[eventProp]) {
-                        _model[stateProp] = evt[eventProp];
-                        _sendEvent = true;
-                    }
-                }
-                if (_sendEvent) {
-                    _model.sendEvent(evt.type, evt);
-                }
-            } else {
-                _model.sendEvent(evt.type, evt);
+            if (mappings) {
+                _.each(mappings, function (attr) {
+                    _model[attr] = _getEventValue(evt, attr);
+                });
             }
+
+            _model.sendEvent(evt.type, evt);
         }
 
 
@@ -198,10 +198,7 @@
             if (!_model.mute) {
                 utils.saveCookie('volume', newVol);
             }
-            _videoEventHandler({
-                type: events.JWPLAYER_MEDIA_VOLUME,
-                volume: newVol
-            });
+            _model.volume = newVol;
             _video.volume(newVol);
         };
 
@@ -210,10 +207,7 @@
                 state = !_model.mute;
             }
             utils.saveCookie('mute', state);
-            _videoEventHandler({
-                type: events.JWPLAYER_MEDIA_MUTE,
-                mute: state
-            });
+            _model.mute = state;
             _video.mute(state);
         };
 
