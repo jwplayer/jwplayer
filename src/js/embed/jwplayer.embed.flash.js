@@ -66,6 +66,7 @@
 
             var _wrapper,
                 _aspect,
+                id = _container.id,
                 lb = _api.config.listbar;
 
             var params = utils.extend({}, _options);
@@ -75,14 +76,14 @@
             replace.parentNode.replaceChild(_container, replace);
 
             // Hack for when adding / removing happens too quickly
-            if (_container.id + '_wrapper' === _container.parentNode.id) {
-                _wrapper = document.getElementById(_container.id + '_wrapper');
+            if (id + '_wrapper' === _container.parentNode.id) {
+                _wrapper = document.getElementById(id + '_wrapper');
             } else {
                 _wrapper = document.createElement('div');
                 _aspect = document.createElement('div');
                 _aspect.style.display = 'none';
-                _aspect.id = _container.id + '_aspect';
-                _wrapper.id = _container.id + '_wrapper';
+                _aspect.id = id + '_aspect';
+                _wrapper.id = id + '_wrapper';
                 _wrapper.style.position = 'relative';
                 _wrapper.style.display = 'block';
                 _wrapper.style.width = utils.styleDimension(params.width);
@@ -147,12 +148,13 @@
             base = base.join('/');
             params.base = base + '/';
 
-            storedFlashvars[_container.id] = params;
+            storedFlashvars[id] = params;
 
             if (utils.isMSIE()) {
-                _wrapper.innerHTML = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"' +
-                    ' width="100%" height="100%" id="' + _container.id +
-                    '" name="' + _container.id +
+
+                _container.outerHTML = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"' +
+                    ' width="100%" height="100%" id="' + id +
+                    '" name="' + id +
                     '" tabindex="0">' +
                     '<param name="movie" value="' + _player.src + '">' +
                     '<param name="allowfullscreen" value="true">' +
@@ -172,8 +174,8 @@
                 flashPlayer.setAttribute('width', '100%');
                 flashPlayer.setAttribute('height', '100%');
                 flashPlayer.setAttribute('bgcolor', bgcolor);
-                flashPlayer.setAttribute('id', _container.id);
-                flashPlayer.setAttribute('name', _container.id);
+                flashPlayer.setAttribute('id', id);
+                flashPlayer.setAttribute('name', id);
                 flashPlayer.className = 'jwswf';
                 //obj.setAttribute('tabindex', 0);
                 appendAttribute(flashPlayer, 'allowfullscreen', 'true');
