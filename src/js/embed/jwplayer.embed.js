@@ -3,9 +3,12 @@
         events = jwplayer.events,
         _ = jwplayer._;
 
+    jwplayer.vid = document.createElement('video');
+
     var embed = jwplayer.embed = function(playerApi) {
 
-        var _config = new embed.config(playerApi.config),
+        var _this = this,
+            _config = new embed.config(playerApi.config),
             _width = _config.width,
             _height = _config.height,
             _errorText = 'Error loading player: ',
@@ -14,9 +17,7 @@
             _loader,
             _playlistLoading = false,
             _errorOccurred = false,
-            _playerEmbedder = null,
-            _setupErrorTimer = -1,
-            _this = this;
+            _setupErrorTimer = -1;
 
         _config.id = playerApi.id;
         if (_config.aspectratio) {
@@ -43,10 +44,6 @@
         };
 
         _this.destroy = function() {
-            if (_playerEmbedder) {
-                _playerEmbedder.destroy();
-                _playerEmbedder = null;
-            }
             if (_pluginloader) {
                 _pluginloader.destroy();
                 _pluginloader = null;
@@ -102,39 +99,41 @@
             }
 
             if (_pluginloader.getStatus() === utils.loaderstatus.COMPLETE) {
-                for (var i = 0; i < _config.modes.length; i++) {
-                    var mode = _config.modes[i];
-                    var type = mode.type;
-                    if (type && embed[type]) {
-                        var configClone = utils.extend({}, _config);
-                        _playerEmbedder = new embed[type](_container, mode, configClone,
-                            _pluginloader, playerApi);
 
-                        if (_playerEmbedder.supportsConfig()) {
-                            _playerEmbedder.addEventListener(events.ERROR, _embedError);
-                            _playerEmbedder.embed();
-                            _insertCSS();
-                            return playerApi;
-                        }
-                    }
-                }
+                var pluginConfigCopy = utils.extend({}, _config);
+                _pluginloader.setupPlugins(playerApi, pluginConfigCopy, _resizePlugin);
 
-                var message;
-                if (_config.fallback) {
-                    message = 'No suitable players found and fallback enabled';
-                    _dispatchSetupError(message, true);
-                    utils.log(message);
-                    new embed.download(_container, _config, _sourceError);
-                } else {
-                    message = 'No suitable players found and fallback disabled';
-                    _dispatchSetupError(message, false);
-                    utils.log(message);
-                }
+                utils.emptyElement(_container);
+
+                // Volume option is tricky to remove, since it needs to be in the HTML5 player model.
+                var playerConfigCopy = jwplayer.utils.extend({}, pluginConfigCopy);
+                delete playerConfigCopy.volume;
+                var html5player = new jwplayer.html5.player(playerConfigCopy);
+                playerApi.setPlayer(html5player, 'html5');
+
+                _insertCSS();
+                return playerApi;
             }
         }
 
-        function _embedError(evt) {
-            _errorScreen(_errorText + evt.message);
+        // TODO: view code
+        function _resizePlugin(plugin, div, onready) {
+            return function() {
+                //try {
+                var displayarea = document.querySelector('#' + _container.id + ' .jwmain');
+                if (displayarea && onready) {
+                    displayarea.appendChild(div);
+                }
+                if (typeof plugin.resize === 'function') {
+                    plugin.resize(displayarea.clientWidth, displayarea.clientHeight);
+                    setTimeout(function() {
+                        plugin.resize(displayarea.clientWidth, displayarea.clientHeight);
+                    }, 400);
+                }
+                div.left = displayarea.style.left;
+                div.top = displayarea.style.top;
+                //} catch (e) {}
+            };
         }
 
         function _pluginError(evt) {

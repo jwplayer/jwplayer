@@ -22,7 +22,7 @@
 
         _.each(playlist, function(item) {
             item = utils.extend({}, item);
-            item.sources = _filterSources(item.sources, false, androidhls);
+            item.sources = _filterSources(item.sources, androidhls);
 
             if (!item.sources.length) {
                 return;
@@ -57,10 +57,9 @@
     }
 
     /** Filters the sources by taking the first playable type and eliminating sources of a different type **/
-    var _filterSources = jwplayer.playlist.filterSources = function(sources, filterFlash, androidhls) {
+    var _filterSources = jwplayer.playlist.filterSources = function(sources, androidhls) {
         var selectedType,
-            newSources = [],
-            canPlay = (filterFlash ? jwplayer.embed.flashCanPlay : jwplayer.embed.html5CanPlay);
+            newSources = [];
 
         if (!sources) { return; }
 
@@ -69,7 +68,11 @@
 
             if (!source) { return; }
 
-            if (canPlay(source.file, source.type, androidhls)) {
+            if (androidhls) {
+                source.androidhls = true;
+            }
+
+            if (jwplayer.html5.chooseProvider(source)) {
                 // We want sources of all the same type since they may be of different quality levels
                 selectedType = selectedType || source.type;
 

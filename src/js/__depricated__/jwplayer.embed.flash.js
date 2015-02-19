@@ -4,7 +4,7 @@
         events = jwplayer.events,
         storedFlashvars = {};
 
-    var _flash = jwplayer.embed.flash = function(_container, _player, _options, _loader, _api) {
+    var _flash = jwplayer.embed.flash = function(_container, _swfUrl, _options, _loader, _api) {
         var _eventDispatcher = new jwplayer.events.eventdispatcher(),
             _flashVersion = utils.flashVersion();
         utils.extend(this, _eventDispatcher);
@@ -150,13 +150,14 @@
 
             storedFlashvars[id] = params;
 
+            // TODO: swf embed
             if (utils.isMSIE()) {
 
                 _container.outerHTML = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"' +
                     ' width="100%" height="100%" id="' + id +
                     '" name="' + id +
                     '" tabindex="0">' +
-                    '<param name="movie" value="' + _player.src + '">' +
+                    '<param name="movie" value="' + _swfUrl + '">' +
                     '<param name="allowfullscreen" value="true">' +
                     '<param name="allowscriptaccess" value="always">' +
                     '<param name="seamlesstabbing" value="true">' +
@@ -170,7 +171,7 @@
             } else {
                 flashPlayer = document.createElement('object');
                 flashPlayer.setAttribute('type', 'application/x-shockwave-flash');
-                flashPlayer.setAttribute('data', _player.src);
+                flashPlayer.setAttribute('data', _swfUrl);
                 flashPlayer.setAttribute('width', '100%');
                 flashPlayer.setAttribute('height', '100%');
                 flashPlayer.setAttribute('bgcolor', bgcolor);
@@ -239,7 +240,7 @@
     /**
      * Determines if a Flash can play a particular file, based on its extension
      */
-    var _flashCanPlay = jwplayer.embed.flashCanPlay = function(file, type) {
+    function _flashCanPlay(file, type) {
         // TODO: Return false if isMobile
 
         if (utils.isYouTube(file, type)) { return true; }
@@ -254,6 +255,8 @@
         }
 
         return !!(mappedType.flash);
-    };
+    }
+
+    jwplayer.embed.flashCanPlay = _flashCanPlay;
 
 })(jwplayer);

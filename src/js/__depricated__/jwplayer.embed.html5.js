@@ -106,7 +106,7 @@
         if (navigator.userAgent.match(/BlackBerry/i) !== null) {
             return false;
         }
-        
+
         if (utils.isIE(9)) {
             return false;
         }

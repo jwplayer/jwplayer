@@ -1,0 +1,70 @@
+body {
+	padding: 50px 100px;
+	width: auto;
+	font: 13px/20px Arial;
+	background: #FFF;
+}
+a, h1, h2 {
+	color: #369;
+}
+h1 {
+	font-size: 32px;
+	line-height: 32px;
+}
+h2 {
+	margin-top: 40px;
+}
+pre {
+	min-width: 520px;
+	min-height: 100px;
+	max-width: 720px;
+	max-height: 500px;
+	overflow: auto;
+	font-size: 12px;
+	background: #E5F3C8;
+	padding:5px 10px;
+	border: 1px solid #D3EAA4;
+}
+dt {
+    padding-left: 20px;
+    font-weight: bold;
+}
+dd {
+    color: #333;
+    font-style: italic;
+}
+table {
+	width: 720px;
+	border-collapse: collapse;
+	margin: 20px 0;
+}
+tr {
+	border-bottom: 1px solid #CCC;
+} 
+tr:nth-child(even) {
+    background: #EEE;
+}
+td,th {
+    padding: 5px;
+    font-size: 12px;
+    text-align: left;
+    vertical-align: top;
+}
+
+.cucumber .kind {
+    color: #555;
+}
+
+.cucumber .comment {
+    color: #888;
+    font-style: italic;
+    font-size: 1em;
+}
+
+.cucumber .tags {
+    color: #0382cf;
+}
+
+.cucumber .scenario {
+    font-weight: bold;
+}

@@ -10,9 +10,8 @@ module.exports = function(grunt) {
             options: {
                 separator: ''
             },
-            embed: {
+            player: {
                 src: [
-                    'src/js/jwplayer.sourcestart.js',
                     'src/js/jwplayer.js',
                     'src/js/utils/jwplayer.underscore.js',
                     'src/js/utils/jwplayer.utils.js',
@@ -29,40 +28,39 @@ module.exports = function(grunt) {
                     'src/js/embed/jwplayer.embed.*.js',
                     'src/js/api/jwplayer.api.js',
                     'src/js/api/jwplayer.api.*.js',
-                    'src/js/jwplayer.sourceend.js'
-                ],
-                dest: 'bin-debug/jwplayer.js'
-            },
-            html5: {
-                src: [
+
                     'src/js/html5/jwplayer.html5.js',
+
                     'src/js/html5/utils/jwplayer.html5.utils.js',
                     'src/js/html5/utils/jwplayer.html5.utils.*.js',
+
                     'src/js/html5/parsers/jwplayer.html5.parsers.js',
                     'src/js/html5/parsers/jwplayer.html5.parsers.*.js',
-                    'src/js/html5/providers/jwplayer.html5.*.js',
+                    'src/js/html5/providers/jwplayer.html5.default.js',
+                    'src/js/html5/providers/jwplayer.html5.video.js',
+                    'src/js/html5/providers/jwplayer.html5.youtube.js',
+                    'src/js/html5/providers/jwplayer.provider.flash.js',
+                    'src/js/html5/providers/jwplayer.html5.provider.js',
                     'src/js/html5/jwplayer.html5.*.js'
                 ],
-                dest: 'bin-debug/jwplayer.html5.js'
+                dest: 'bin-debug/jwplayer.js'
             }
         },
 
         replace : {
-            embed : {
+            player : {
                 src: 'bin-debug/jwplayer.js',
                 overwrite: true,
-                replacements:[{
-                    from : /jwplayer\.version = '(.*)'/,
-                    to   : 'jwplayer.version = \'<%= pkg.version %>\''
-                }]
-            },
-            html5 : {
-                src: 'bin-debug/jwplayer.html5.js',
-                overwrite: true,
-                replacements:[{
-                    from : /jwplayer\.html5\.version = '(.*)'/,
-                    to   : 'jwplayer.html5.version = \'<%= pkg.version %>\''
-                }]
+                replacements:[
+                    {
+                        from : /jwplayer\.version = '(.*)'/,
+                        to   : 'jwplayer.version = \'<%= pkg.version %>\''
+                    },
+                    {
+                        from : /jwplayer\.html5\.version = '(.*)'/,
+                        to   : 'jwplayer.html5.version = \'<%= pkg.version %>\''
+                    }
+                ]
             }
         },
 
@@ -83,15 +81,9 @@ module.exports = function(grunt) {
                     except: ['RESERVED_KEYWORDS_TO_PROTECT']
                 }
             },
-            embed : {
+            player : {
                 files: {
                     'bin-release/jwplayer.js' : 'bin-debug/jwplayer.js'
-                }
-            },
-            html5 : {
-                files: {
-                    'bin-release/jwplayer.html5.js' :
-                        'bin-debug/jwplayer.html5.js'
                 }
             }
         },
@@ -104,13 +96,9 @@ module.exports = function(grunt) {
                 ],
                 tasks: ['jshint:all']
             },
-            embed: {
-                files : '<%= concat.embed.src %>',
-                tasks: ['concat:embed', 'replace:embed', 'uglify:embed']
-            },
-            html5: {
-                files : '<%= concat.html5.src %>',
-                tasks: ['concat:html5', 'replace:html5', 'uglify:html5']
+            player: {
+                files : '<%= concat.player.src %>',
+                tasks: ['concat:player', 'replace:player', 'uglify:player']
             },
             flash: {
                 files : [

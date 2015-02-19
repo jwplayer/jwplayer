@@ -174,7 +174,14 @@
                 // select provider based on item source (video, youtube...)
                 var item = _model.playlist[newItem];
                 var source = item && item.sources && item.sources[0];
+                if (source === undefined) {
+                    // source is undefined when resetting index with empty playlist
+                    return;
+                }
                 var Provider = html5.chooseProvider(source);
+                if (!Provider) {
+                    throw new Error('no suitale provider found');
+                }
 
                 // If we are changing video providers
                 if (! (_currentProvider instanceof Provider)) {
