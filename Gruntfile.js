@@ -27,7 +27,7 @@ module.exports = function(grunt) {
                     'src/js/playlist/jwplayer.playlist.*.js',
                     'src/js/embed/jwplayer.embed.js',
                     'src/js/embed/jwplayer.embed.*.js',
-                    'src/js/api/jwplayer.api.js',
+                    'src/js/api/api.js',
                     'src/js/api/jwplayer.api.*.js',
 
                     'src/js/html5/jwplayer.html5.js',
