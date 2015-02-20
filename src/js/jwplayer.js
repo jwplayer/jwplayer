@@ -1,8 +1,9 @@
 /*global jwplayer:true*/
-jwplayer = function() {
-    if (jwplayer.api) {
-        return jwplayer.api.selectPlayer.apply(this, arguments);
-    }
-};
 
 jwplayer.version = 'X.Y.ZZZZ';
+define(['api/api'], function(Api) {
+    window.jwplayer = function() {
+        return Api.selectPlayer.apply(this, arguments);
+    };
+});
+

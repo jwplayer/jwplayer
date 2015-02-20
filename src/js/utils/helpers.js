@@ -1,7 +1,7 @@
 define(['utils/strings', 'events/events', 'underscore'], function(strings, Events, _) {
 
 
-    var _version = 9000000000;// TOFIX
+    var _version = jwplayer.version;
 
     /*jshint maxparams:5*/
     var utils = {};

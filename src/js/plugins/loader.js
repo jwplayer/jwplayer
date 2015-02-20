@@ -1,4 +1,4 @@
-define(['plugins/plugin_utils', 'utils/helpers', 'events/events', 'underscore', 'utils/scriptloader'], function(pluginUtils, helpers, events, _, scriptloader) {
+define(['plugins/utils', 'utils/helpers', 'events/events', 'underscore', 'utils/scriptloader'], function(pluginUtils, helpers, events, _, scriptloader) {
 
     var _foreach = helpers.foreach;
 

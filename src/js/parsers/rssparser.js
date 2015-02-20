@@ -8,8 +8,8 @@
 define([
     'utils/helpers',
     'parsers/parsers',
-    'parsers/media',
-    'parsers/element',
+    'parsers/jwparser',
+    'parsers/mediaparser',
     'playlist/item'
 ], function(utils, parsers, parseEntry, mediaParser, PlaylistItem) {
     var _textContent = parsers.textContent,

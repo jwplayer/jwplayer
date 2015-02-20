@@ -1,4 +1,4 @@
-define(['plugins/plugin_utils', 'plugins/plugin'], function(pluginUtils, Plugin) {
+define(['plugins/utils', 'plugins/plugin'], function(pluginUtils, Plugin) {
 
     var PluginModel = function (plugins) {
         this.addPlugin = function (url) {

@@ -1,5 +1,5 @@
 define([
-    'loader',
+    'plugins/loader',
     'plugins/model',
     'plugins/plugin',
     'utils/helpers'

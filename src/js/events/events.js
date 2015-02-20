@@ -42,12 +42,6 @@ define([], function() {
 
         // State events
         JWPLAYER_PLAYER_STATE: 'jwplayerPlayerState',
-        state: {
-            BUFFERING: 'BUFFERING',
-            IDLE: 'IDLE',
-            PAUSED: 'PAUSED',
-            PLAYING: 'PLAYING'
-        },
 
         // Playlist Events
         JWPLAYER_PLAYLIST_LOADED: 'jwplayerPlaylistLoaded',
@@ -87,7 +81,6 @@ define([], function() {
         JWPLAYER_CAST_AD_CHANGED: 'jwplayerCastAdChanged'
 
     };
-
 
     return {
         events: events,

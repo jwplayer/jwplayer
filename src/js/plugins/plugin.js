@@ -1,8 +1,8 @@
 define([
     'utils/helpers',
-    'plugins/plugin_utils',
+    'plugins/utils',
     'events/events',
-    'events/eventdispatcher',
+    'utils/eventdispatcher',
     'utils/scriptloader',
     'underscore'
 ], function(utils, pluginUtils, events, eventdispatcher, scriptloader, _) {

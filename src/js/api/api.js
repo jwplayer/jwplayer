@@ -3,9 +3,9 @@ define([
     'events/events',
     'underscore',
     'api/instream',
-    'plugins',
+    'plugins/plugins',
     'embed/embed',
-    'states'
+    'events/states'
 ], function(utils, events, _, Instream, plugins, Embed, states) {
     var _instances = [],
         _uniqueIndex = 0;

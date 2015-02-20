@@ -1,11 +1,14 @@
-(function(jwplayer) {
+define([
+    'utils/helpers',
+    'utils/extensionmap',
+    'underscore',
+    'events/events',
+    'events/states',
+    'utils/eventdispatcher',
+    'providers/default'
+], function(utils, extensionmap, _, events, states, eventdispatcher, DefaultProvider) {
 
-    var utils = jwplayer.utils,
-        _ = jwplayer._,
-        events = jwplayer.events,
-        states = events.state,
-        clearInterval = window.clearInterval,
-        DefaultProvider = jwplayer.html5.DefaultProvider,
+    var clearInterval = window.clearInterval,
         _isIE = utils.isMSIE(),
         _isMobile = utils.isMobile(),
         _isSafari = utils.isSafari(),
@@ -34,8 +37,8 @@
         // Current media state
         this.state = states.IDLE;
 
-        var _dispatcher = new jwplayer.events.eventdispatcher('provider.' + this.name);
-        utils.extend(this, _dispatcher);
+        var _dispatcher = new eventdispatcher('provider.' + this.name);
+        _.extend(this, _dispatcher);
 
         var _this = this,
             _mediaEvents = {
@@ -766,7 +769,7 @@
         }
 
         var extension = utils.extension(file);
-        type = type || utils.extensionmap.extType(extension);
+        type = type || extensionmap.extType(extension);
 
         // HLS not sufficiently supported on Android devices; should fail over automatically.
         if (type === 'hls') {
@@ -791,7 +794,7 @@
             return false;
         }
 
-        var mappedType = utils.extensionmap.getMappedType(type) || utils.extensionmap.getMappedType(extension);
+        var mappedType = extensionmap.getMappedType(type) || extensionmap.getMappedType(extension);
 
         // If no type or unrecognized type, don't allow to play
         if (!mappedType) {
@@ -819,6 +822,6 @@
         return false;
     };
 
-    jwplayer.html5.VideoProvider = VideoProvider;
+    return VideoProvider;
 
-})(jwplayer);
+});

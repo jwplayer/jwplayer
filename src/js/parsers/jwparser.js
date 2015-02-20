@@ -6,7 +6,7 @@
  * @version 6.0
  */
 define([
-    'parsers/parser',
+    'parsers/parsers',
     'utils/helpers'
 ], function(parserUtils, utils) {
 

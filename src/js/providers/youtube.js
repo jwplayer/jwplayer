@@ -1,18 +1,22 @@
-(function(jwplayer) {
+define([
+    'utils/helpers',
+    'utils/extensionmap',
+    'underscore',
+    'events/events',
+    'events/states',
+    'utils/eventdispatcher',
+    'utils/scriptloader',
+    'providers/default'
+], function(utils, extensionmap, _, events, states, eventdispatcher, scriptloader, DefaultProvider) {
 
-    var utils = jwplayer.utils,
-        _ = jwplayer._,
-        events = jwplayer.events,
-        states = events.state,
-        DefaultProvider = jwplayer.html5.DefaultProvider,
-        _scriptLoader = new utils.scriptloader(window.location.protocol + '//www.youtube.com/iframe_api'),
+    var _scriptLoader = new scriptloader(window.location.protocol + '//www.youtube.com/iframe_api'),
         _isMobile = utils.isMobile();
 
     function YoutubeProvider(_playerId) {
 
         this.state = states.IDLE;
 
-        var _this = utils.extend(this, new jwplayer.events.eventdispatcher('provider.' + this.name)),
+        var _this = utils.extend(this, new eventdispatcher('provider.' + this.name)),
             // Youtube API and Player Instance
             _youtubeAPI = window.YT,
             _youtubePlayer = null,
@@ -654,6 +658,6 @@
     YoutubeProvider.prototype = new F();
     YoutubeProvider.supports = supports;
 
-    jwplayer.html5.YoutubeProvider = YoutubeProvider;
+    return YoutubeProvider;
 
 })(jwplayer);

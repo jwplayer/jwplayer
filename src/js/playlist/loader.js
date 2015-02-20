@@ -1,9 +1,9 @@
 define([
-    'playlist',
+    'playlist/playlist',
     'parsers/parsers',
-    'parsers/rss',
+    'parsers/rssparser',
     'utils/helpers',
-    'events/eventdispatcher',
+    'utils/eventdispatcher',
     'events/events'
 ], function(Playlist, parsers, rssParser, utils, eventdispatcher, events) {
 

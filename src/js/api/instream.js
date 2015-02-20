@@ -3,7 +3,7 @@ define([
     'events/events',
     'underscore',
     'utils/helpers',
-    'states'
+    'events/states'
 ], function(Events, EVENTS, _, utils, states) {
 
     var Instream = function(_api, _player) {

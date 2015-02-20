@@ -1,11 +1,14 @@
-(function(jwplayer) {
+define([
+    'utils/helpers',
+    'events/events',
+    'events/states',
+    'underscore'
+], function(utils, events, states, _) {
 
-    var noop = jwplayer.utils.noop,
-        _ = jwplayer._,
-        events = jwplayer.events,
+    var noop = utils.noop,
         returnFalse = _.constant(false);
 
-    var defaultProvider = {
+    var DefaultProvider = {
         // This function is required to determine if a provider can work on a given source
         supports : returnFalse,
 
@@ -54,7 +57,7 @@
                 return;
             }
 
-            var oldState = this.state || events.state.IDLE;
+            var oldState = this.state || states.IDLE;
             this.state = state;
 
             this.sendEvent(events.JWPLAYER_PLAYER_STATE, {
@@ -66,6 +69,6 @@
 
 
     // Make available to other providers for extending
-    jwplayer.html5.DefaultProvider  = defaultProvider;
+    return DefaultProvider;
 
-})(jwplayer);
+});

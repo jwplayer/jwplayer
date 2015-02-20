@@ -37,11 +37,11 @@ module.exports = function(grunt) {
 
                     'src/js/html5/parsers/jwplayer.html5.parsers.js',
                     'src/js/html5/parsers/jwplayer.html5.parsers.*.js',
-                    'src/js/html5/providers/jwplayer.html5.default.js',
+                    'src/js/html5/providers/default.js',
                     'src/js/html5/providers/jwplayer.html5.video.js',
-                    'src/js/html5/providers/jwplayer.html5.youtube.js',
+                    'src/js/html5/providers/youtube.js',
                     'src/js/html5/providers/jwplayer.provider.flash.js',
-                    'src/js/html5/providers/jwplayer.html5.provider.js',
+                    'src/js/html5/providers/chooseprovider.js',
                     'src/js/html5/jwplayer.html5.*.js'
                 ],
                 dest: 'bin-debug/jwplayer.js'
@@ -119,8 +119,7 @@ module.exports = function(grunt) {
                 debug:true,
                 entry: {
                     // use prefix since it has reserved values (for example plugins)
-                    jwutils: './src/js/utils.js',
-                    jwplugins : './src/js/plugins.js'
+                    jwpacked : './src/js/jwplayer.js'
                 },
                 output: {
                     path: 'built/',
