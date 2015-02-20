@@ -1,15 +1,19 @@
-(function(jwplayer) {
-    var utils = jwplayer.utils,
-        events = jwplayer.events,
-        scriptloader = jwplayer.utils.scriptloader,
-        _ = jwplayer._;
+define([
+    'utils/helpers',
+    'events/events',
+    'utils/scriptloader',
+    'playlist/loader',
+    'embed/config',
+    'html5/player',
+    'underscore'
+], function(utils, events, scriptloader, PlaylistLoader, EmbedConfig, Html5Player, _) {
 
     jwplayer.vid = document.createElement('video');
 
-    var embed = jwplayer.embed = function(playerApi) {
+    var Embed = function(playerApi) {
 
         var _this = this,
-            _config = new embed.config(playerApi.config),
+            _config = new EmbedConfig(playerApi.config),
             _width = _config.width,
             _height = _config.height,
             _errorText = 'Error loading player: ',
@@ -84,7 +88,7 @@
             }
 
             if (_.isString(playlist)) {
-                _loader = new jwplayer.playlist.loader();
+                _loader = new PlaylistLoader();
                 _loader.addEventListener(events.JWPLAYER_PLAYLIST_LOADED, function(evt) {
                     _config.playlist = evt.playlist;
                     _playlistLoading = false;
@@ -109,7 +113,7 @@
                 // Volume option is tricky to remove, since it needs to be in the HTML5 player model.
                 var playerConfigCopy = jwplayer.utils.extend({}, pluginConfigCopy);
                 delete playerConfigCopy.volume;
-                var html5player = new jwplayer.html5.player(playerConfigCopy);
+                var html5player = new Html5Player(playerConfigCopy);
                 playerApi.setPlayer(html5player, 'html5');
 
                 _insertCSS();
@@ -225,6 +229,8 @@
     }
 
     // Make this publicly accessible so the HTML5 player can error out on setup using the same code
-    jwplayer.embed.errorScreen = _displayError;
+    Embed.errorScreen = _displayError;
+
+    return Embed;
 
 })(jwplayer);

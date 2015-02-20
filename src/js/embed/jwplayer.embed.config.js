@@ -1,18 +1,20 @@
-(function(jwplayer) {
-    var utils = jwplayer.utils,
-        PlaylistItem = jwplayer.playlist.item;
+define([
+    'utils/helpers',
+    'playlist/item',
+    'underscore'
+], function(utils, PlaylistItem, _) {
 
-    jwplayer.embed.config = function(options) {
+    var config = function (options) {
 
-        var config = utils.extend({}, {
-                fallback: true, // enable download embedder
-                width: 480,
-                height: 270,
-                aspectratio: '',
-                primary: 'html5',
-                base: options.base ? options.base : utils.getScriptPath('jwplayer.js')
-            }, jwplayer.defaults, options);
-        
+        var config = _.extend({}, {
+            fallback: true, // enable download embedder
+            width: 480,
+            height: 270,
+            aspectratio: '',
+            primary: 'html5',
+            base: options.base ? options.base : utils.getScriptPath('jwplayer.js')
+        }, jwplayer.defaults, options);
+
         _normalizePlaylist(config);
 
         _evaluateAspectRatio(config);
@@ -53,7 +55,7 @@
         if (!config.playlist) {
             var singleItem = {};
 
-            utils.foreach(PlaylistItem.defaults, function(itemProp) {
+            utils.foreach(PlaylistItem.defaults, function (itemProp) {
                 _moveProperty(config, singleItem, itemProp);
             });
 
@@ -85,4 +87,5 @@
         }
     }
 
-})(jwplayer);
+    return config;
+});
