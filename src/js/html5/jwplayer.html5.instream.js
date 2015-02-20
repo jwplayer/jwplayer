@@ -68,7 +68,7 @@
             _adModel.setVolume(_model.volume);
             _adModel.setFullscreen(_model.fullscreen);
             _adModel.setMute(_model.mute);
-            _adModel.addEventListener('fullscreenchange',_nativeFullscreenHandler);
+            _adModel.addEventListener('fullscreenchange', _nativeFullscreenHandler);
             _olditem = _model.playlist[_model.item];
 
             // Keep track of the original player state
@@ -268,15 +268,6 @@
             // Return the view to its normal state
             _view.destroyInstream(_provider.isAudioFile());
             _adModel = null;
-        };
-
-        /** Forward any calls to add and remove events directly to our event dispatcher **/
-
-        _this.jwInstreamAddEventListener = function(type, listener) {
-            _this.addEventListener(type, listener);
-        };
-        _this.jwInstreamRemoveEventListener = function(type, listener) {
-            _this.removeEventListener(type, listener);
         };
 
         /** Start instream playback **/
@@ -545,6 +536,7 @@
         _this.jwRemoveEventListener = function(type, handler) {
             _this.removeEventListener(type, handler);
         };
+
         _this.jwSetCurrentQuality = function() {};
         _this.jwGetQualityLevels = function() {
             return [];

@@ -293,6 +293,14 @@
         return keys;
     };
 
+    _.invert = function(obj) {
+        var result = {};
+        var keys = _.keys(obj);
+        for (var i = 0, length = keys.length; i < length; i++) {
+            result[obj[keys[i]]] = keys[i];
+        }
+        return result;
+    };
 
     // Return a copy of the object only containing the whitelisted properties.
     _.pick = function(obj) {
