@@ -1,3 +1,2 @@
 src/js/utils/jwplayer.underscore.js
-src/js/jwplayer.sourceend.js
-src/js/jwplayer.sourcestart.js
+src/js/utils/jwplayer.backbone.js

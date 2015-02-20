@@ -301,22 +301,20 @@
 
 
         // given a name "getBuffer", it adds to jwplayer.api a function which internally triggers jwGetBuffer
-        function generateInternalFunction(chainable, name) {
+        function generateInternalFunction(name) {
             var internalName = 'jw' + name.charAt(0).toUpperCase() + name.slice(1);
 
             _this[name] = function() {
                 var value = _callInternal.apply(this, [internalName].concat(Array.prototype.slice.call(arguments, 0)));
-                return (chainable ? _this : value);
+
+                if (_.has(_chainableInternalFuncs, name)) {
+                    return _this;
+                }
+                return value;
             };
         }
-        var nonChainingGenerator = function(index, name) {
-            generateInternalFunction(false, name);
-        };
-        var chainingGenerator = function(index, name) {
-            generateInternalFunction(true, name);
-        };
-        utils.foreach(_internalFuncsToGenerate, nonChainingGenerator);
-        utils.foreach(_chainableInternalFuncs, chainingGenerator);
+
+        _.each(_internalFuncsToGenerate.concat(_chainableInternalFuncs), generateInternalFunction);
 
 
         _this.remove = function() {
@@ -370,12 +368,12 @@
         _this.attachMedia = function(seekable) {
             return _callInternal('jwAttachMedia', seekable);
         };
-        
-        
+
+
         _this.getAudioTracks = function() {
             return _callInternal('jwGetAudioTracks');
         };
-        
+
         function _stateListener(state, callback) {
             if (!_stateListeners[state]) {
                 _stateListeners[state] = [];
