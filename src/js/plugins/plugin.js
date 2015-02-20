@@ -1,30 +1,33 @@
-(function(plugins) {
-    var utils = jwplayer.utils,
-        events = jwplayer.events,
-        scriptloader = jwplayer.utils.scriptloader,
-        UNDEFINED = 'undefined';
+define([
+    'utils/helpers',
+    'plugins/plugin_utils',
+    'events/events',
+    'events/eventdispatcher',
+    'utils/scriptloader',
+    'underscore'
+], function(utils, pluginUtils, events, eventdispatcher, scriptloader, _) {
 
-    plugins.pluginmodes = {
+    var pluginmodes = {
         FLASH: 0,
         JAVASCRIPT: 1,
         HYBRID: 2
     };
 
-    plugins.plugin = function(url) {
-        var _status =scriptloader.loaderstatus.NEW,
+    var Plugin = function(url) {
+        var _status = scriptloader.loaderstatus.NEW,
             _flashPath,
             _js,
             _target,
             _completeTimeout;
 
-        var _eventDispatcher = new events.eventdispatcher();
-        utils.extend(this, _eventDispatcher);
+        var _eventDispatcher = new eventdispatcher();
+        _.extend(this, _eventDispatcher);
 
         function getJSPath() {
-            switch (utils.getPluginPathType(url)) {
-                case utils.pluginPathType.ABSOLUTE:
+            switch (pluginUtils.getPluginPathType(url)) {
+                case pluginUtils.pluginPathType.ABSOLUTE:
                     return url;
-                case utils.pluginPathType.RELATIVE:
+                case pluginUtils.pluginPathType.RELATIVE:
                     return utils.getAbsolutePath(url, window.location.href);
             }
         }
@@ -48,13 +51,13 @@
                     _status =scriptloader.loaderstatus.COMPLETE;
                     _eventDispatcher.sendEvent(events.COMPLETE);
                     return;
-                } else if (utils.getPluginPathType(url) === utils.pluginPathType.CDN) {
+                } else if (pluginUtils.getPluginPathType(url) === pluginUtils.pluginPathType.CDN) {
                     _status =scriptloader.loaderstatus.COMPLETE;
                     _eventDispatcher.sendEvent(events.COMPLETE);
                     return;
                 }
                 _status =scriptloader.loaderstatus.LOADING;
-                var _loader = new utils.scriptloader(getJSPath());
+                var _loader = new scriptloader(getJSPath());
                 // Complete doesn't matter - we're waiting for registerPlugin
                 _loader.addEventListener(events.COMPLETE, completeHandler);
                 _loader.addEventListener(events.ERROR, errorHandler);
@@ -87,15 +90,15 @@
         };
 
         this.getPluginName = function() {
-            return utils.getPluginName(url);
+            return pluginUtils.getPluginName(url);
         };
 
         this.getFlashPath = function() {
             if (_flashPath) {
-                switch (utils.getPluginPathType(_flashPath)) {
-                    case utils.pluginPathType.ABSOLUTE:
+                switch (pluginUtils.getPluginPathType(_flashPath)) {
+                    case pluginUtils.pluginPathType.ABSOLUTE:
                         return _flashPath;
-                    case utils.pluginPathType.RELATIVE:
+                    case pluginUtils.pluginPathType.RELATIVE:
                         if (url.lastIndexOf('.swf') > 0) {
                             return utils.getAbsolutePath(_flashPath, window.location.href);
                         }
@@ -119,12 +122,12 @@
         };
 
         this.getPluginmode = function() {
-            if (typeof _flashPath !== UNDEFINED && typeof _js !== UNDEFINED) {
-                return plugins.pluginmodes.HYBRID;
-            } else if (typeof _flashPath !== UNDEFINED) {
-                return plugins.pluginmodes.FLASH;
-            } else if (typeof _js !== UNDEFINED) {
-                return plugins.pluginmodes.JAVASCRIPT;
+            if (typeof _flashPath !== undefined && typeof _js !== undefined) {
+                return pluginmodes.HYBRID;
+            } else if (typeof _flashPath !== undefined) {
+                return pluginmodes.FLASH;
+            } else if (typeof _js !== undefined) {
+                return pluginmodes.JAVASCRIPT;
             }
         };
 
@@ -137,4 +140,6 @@
         };
     };
 
-})(jwplayer.plugins);
+    return Plugin;
+
+});

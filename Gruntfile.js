@@ -116,8 +116,11 @@ module.exports = function(grunt) {
 
         webpack : {
             build : {
+                debug:true,
                 entry: {
-                    utils: './src/js/utils.js'
+                    // use prefix since it has reserved values (for example plugins)
+                    jwutils: './src/js/utils.js',
+                    jwplugins : './src/js/plugins.js'
                 },
                 output: {
                     path: 'built/',

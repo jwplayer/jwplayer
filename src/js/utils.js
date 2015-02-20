@@ -7,6 +7,7 @@ define([
     'utils/extensionmap',
     'underscore'
 ], function(helpers, css, strings, scriptloader, touch, extensionmap, _) {
+
     var utils = _.extend(helpers, {
         css : css,
         strings : strings,

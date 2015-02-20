@@ -1,13 +1,9 @@
-(function(jwplayer) {
-    var utils = jwplayer.utils,
-        events = jwplayer.events,
-        _ = jwplayer._,
-        scriptloader = jwplayer.utils.scriptloader,
-        _foreach = utils.foreach;
+define(['plugins/plugin_utils', 'utils/helpers', 'events/events', 'underscore', 'utils/scriptloader'], function(pluginUtils, helpers, events, _, scriptloader) {
 
-    jwplayer.plugins.pluginloader = function(model, config) {
-        var _status =scriptloader.loaderstatus.NEW,
-            _loading = false,
+    var _foreach = helpers.foreach;
+
+    var PluginLoader = function (model, config) {
+        var _status = scriptloader.loaderstatus.NEW,
             _iscomplete = false,
             _config = config,
             _pluginCount = _.size(_config),
@@ -16,7 +12,7 @@
             _eventDispatcher = new events.eventdispatcher();
 
 
-        utils.extend(this, _eventDispatcher);
+        _.extend(this, _eventDispatcher);
 
         /*
          * Plugins can be loaded by multiple players on the page, but all of them use
@@ -34,7 +30,7 @@
         function _complete() {
             if (!_iscomplete) {
                 _iscomplete = true;
-                _status =scriptloader.loaderstatus.COMPLETE;
+                _status = scriptloader.loaderstatus.COMPLETE;
                 _eventDispatcher.sendEvent(events.COMPLETE);
             }
         }
@@ -51,16 +47,16 @@
             if (!_iscomplete) {
                 var plugins = model.getPlugins();
                 _pluginLoaded = _.after(_pluginCount, _complete);
-                utils.foreach(_config, function(plugin) {
-                    var pluginName = utils.getPluginName(plugin),
+                helpers.foreach(_config, function (plugin) {
+                    var pluginName = pluginUtils.getPluginName(plugin),
                         pluginObj = plugins[pluginName],
                         js = pluginObj.getJS(),
                         target = pluginObj.getTarget(),
                         status = pluginObj.getStatus();
 
-                    if (status ===scriptloader.loaderstatus.LOADING || status ===scriptloader.loaderstatus.NEW) {
+                    if (status === scriptloader.loaderstatus.LOADING || status === scriptloader.loaderstatus.NEW) {
                         return;
-                    } else if (js && !utils.versionCheck(target)) {
+                    } else if (js && !helpers.versionCheck(target)) {
                         _eventDispatcher.sendEvent(events.ERROR, {
                             message: 'Incompatible player version'
                         });
@@ -82,12 +78,12 @@
                 message: message
             });
             if (e.url) {
-                utils.log(message, e.url);
+                helpers.log(message, e.url);
             }
             _checkComplete();
         }
 
-        this.setupPlugins = function(api, config, resizer) {
+        this.setupPlugins = function (api, config, resizer) {
             var flashPlugins = {
                     length: 0,
                     plugins: {}
@@ -99,8 +95,8 @@
 
                 plugins = model.getPlugins();
 
-            _foreach(config.plugins, function(plugin, pluginConfig) {
-                var pluginName = utils.getPluginName(plugin),
+            _foreach(config.plugins, function (plugin, pluginConfig) {
+                var pluginName = pluginUtils.getPluginName(plugin),
                     pluginObj = plugins[pluginName],
                     flashPath = pluginObj.getFlashPath(),
                     jsPlugin = pluginObj.getJS(),
@@ -108,7 +104,7 @@
 
 
                 if (flashPath) {
-                    flashPlugins.plugins[flashPath] = utils.extend({}, pluginConfig);
+                    flashPlugins.plugins[flashPath] = _.extend({}, pluginConfig);
                     flashPlugins.plugins[flashPath].pluginmode = pluginObj.getPluginmode();
                     flashPlugins.length++;
                 }
@@ -121,13 +117,13 @@
                         div.style.top = 0;
                         div.style.zIndex = jsplugins.length + 10;
                         jsplugins.plugins[pluginName] = pluginObj.getNewInstance(api,
-                            utils.extend({}, config.plugins[pluginURL]), div);
+                            _.extend({}, config.plugins[pluginURL]), div);
                         jsplugins.length++;
                         api.onReady(resizer(jsplugins.plugins[pluginName], div, true));
                         api.onResize(resizer(jsplugins.plugins[pluginName], div));
                     }
                 } catch (err) {
-                    utils.log('ERROR: Failed to load ' + pluginName + '.');
+                    helpers.log('ERROR: Failed to load ' + pluginName + '.');
                 }
             });
 
@@ -136,19 +132,18 @@
             return flashPlugins;
         };
 
-        this.load = function() {
+        this.load = function () {
             // Must be a hash map
-            if (utils.exists(config) && utils.typeOf(config) !== 'object') {
+            if (helpers.exists(config) && helpers.typeOf(config) !== 'object') {
                 _checkComplete();
                 return;
             }
 
-            _status =scriptloader.loaderstatus.LOADING;
-            _loading = true;
+            _status = scriptloader.loaderstatus.LOADING;
 
             /** First pass to create the plugins and add listeners **/
-            _foreach(config, function(plugin) {
-                if (utils.exists(plugin)) {
+            _foreach(config, function (plugin) {
+                if (helpers.exists(plugin)) {
                     var pluginObj = model.addPlugin(plugin);
                     pluginObj.addEventListener(events.COMPLETE, _checkComplete);
                     pluginObj.addEventListener(events.ERROR, _pluginError);
@@ -158,18 +153,16 @@
             var plugins = model.getPlugins();
 
             /** Second pass to actually load the plugins **/
-            _foreach(plugins, function(plugin, pluginObj) {
+            _foreach(plugins, function (plugin, pluginObj) {
                 // Plugin object ensures that it's only loaded once
                 pluginObj.load();
             });
-
-            _loading = false;
 
             // Make sure we're not hanging around waiting for plugins that already finished loading
             _checkComplete();
         };
 
-        this.destroy = function() {
+        this.destroy = function () {
             _destroyed = true;
 
             if (_eventDispatcher) {
@@ -180,10 +173,11 @@
 
         this.pluginFailed = _pluginError;
 
-        this.getStatus = function() {
+        this.getStatus = function () {
             return _status;
         };
 
     };
 
-})(jwplayer);
+    return PluginLoader;
+});

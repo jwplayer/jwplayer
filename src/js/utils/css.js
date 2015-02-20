@@ -1,4 +1,8 @@
-define(['utils/strings', 'underscore'], function(Strings, _) {
+define([
+    'utils/strings',
+    'underscore'
+], function(Strings, _) {
+
     var MAX_CSS_RULES = 50000,
         _styleSheets = {},
         _styleSheet,
