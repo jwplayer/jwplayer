@@ -40,7 +40,7 @@ define([
         }
 
         function errorHandler() {
-            _status =scriptloader.loaderstatus.ERROR;
+            _status = scriptloader.loaderstatus.ERROR;
             _eventDispatcher.sendEvent(events.ERROR, {url: url});
         }
 
@@ -48,15 +48,15 @@ define([
             if (_status ===scriptloader.loaderstatus.NEW) {
                 if (url.lastIndexOf('.swf') > 0) {
                     _flashPath = url;
-                    _status =scriptloader.loaderstatus.COMPLETE;
+                    _status = scriptloader.loaderstatus.COMPLETE;
                     _eventDispatcher.sendEvent(events.COMPLETE);
                     return;
                 } else if (pluginUtils.getPluginPathType(url) === pluginUtils.pluginPathType.CDN) {
-                    _status =scriptloader.loaderstatus.COMPLETE;
+                    _status = scriptloader.loaderstatus.COMPLETE;
                     _eventDispatcher.sendEvent(events.COMPLETE);
                     return;
                 }
-                _status =scriptloader.loaderstatus.LOADING;
+                _status = scriptloader.loaderstatus.LOADING;
                 var _loader = new scriptloader(getJSPath());
                 // Complete doesn't matter - we're waiting for registerPlugin
                 _loader.addEventListener(events.COMPLETE, completeHandler);

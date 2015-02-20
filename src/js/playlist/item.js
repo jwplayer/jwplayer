@@ -1,13 +1,13 @@
-(function(playlist) {
-    var _item = playlist.item = function(config) {
-        var utils = jwplayer.utils,
-            _playlistitem = utils.extend({}, _item.defaults, config),
+define(['utils/helpers', 'playlist/source', 'playlist/track'], function(utils, Source, Track) {
+
+    var PlaylistItem = function (config) {
+        var _playlistitem = utils.extend({}, PlaylistItem.defaults, config),
             i, j, def;
 
         _playlistitem.tracks = (config && utils.exists(config.tracks)) ? config.tracks : [];
 
         if (_playlistitem.sources.length === 0) {
-            _playlistitem.sources = [new playlist.source(_playlistitem)];
+            _playlistitem.sources = [new Source(_playlistitem)];
         }
 
         /** Each source should be a named object **/
@@ -19,7 +19,7 @@
                 _playlistitem.sources[i]['default'] = false;
             }
 
-            _playlistitem.sources[i] = new playlist.source(_playlistitem.sources[i]);
+            _playlistitem.sources[i] = new Source(_playlistitem.sources[i]);
         }
 
         if (_playlistitem.captions && !utils.exists(config.tracks)) {
@@ -30,12 +30,12 @@
         }
 
         for (i = 0; i < _playlistitem.tracks.length; i++) {
-            _playlistitem.tracks[i] = new playlist.track(_playlistitem.tracks[i]);
+            _playlistitem.tracks[i] = new Track(_playlistitem.tracks[i]);
         }
         return _playlistitem;
     };
 
-    _item.defaults = {
+    PlaylistItem.defaults = {
         description: undefined,
         image: undefined,
         mediaid: undefined,
@@ -44,4 +44,5 @@
         tracks: []
     };
 
-})(jwplayer.playlist);
+    return PlaylistItem;
+});

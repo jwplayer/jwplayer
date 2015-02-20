@@ -1,10 +1,9 @@
-(function(jwplayer) {
-    var utils = jwplayer.utils,
-        events = jwplayer.events,
-        parsers = jwplayer.parsers;
+define(['utils/helpers', 'events/eventdispatcher', 'events/events'], function(utils, eventdispatcher, events) {
 
-    jwplayer.playlist.loader = function() {
-        var _eventDispatcher = new events.eventdispatcher();
+    var parsers = jwplayer.parsers;
+
+    var PlaylistLoader = function() {
+        var _eventDispatcher = new eventdispatcher();
         utils.extend(this, _eventDispatcher);
 
         this.load = function(playlistfile) {
@@ -50,4 +49,6 @@
             });
         }
     };
-})(jwplayer);
+
+    return PlaylistLoader;
+});

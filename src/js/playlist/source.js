@@ -1,16 +1,15 @@
-(function(playlist) {
-    var utils = jwplayer.utils,
-        defaults = {
-            file: undefined,
-            label: undefined,
-            type: undefined,
-            'default': undefined
-        };
+define(['utils/helpers', 'utils/extensionmap'], function(utils, extensionmap) {
+    var defaults = {
+        file: undefined,
+        label: undefined,
+        type: undefined,
+        'default': undefined
+    };
 
-    playlist.source = function(config) {
+    var Source = function (config) {
         var _source = utils.extend({}, defaults);
 
-        utils.foreach(defaults, function(property) {
+        utils.foreach(defaults, function (property) {
             if (utils.exists(config[property])) {
                 _source[property] = config[property];
                 // Actively move from config to source
@@ -19,7 +18,7 @@
         });
 
         if (_source.type && _source.type.indexOf('/') > 0) {
-            _source.type = utils.extensionmap.mimeType(_source.type);
+            _source.type = extensionmap.mimeType(_source.type);
         }
         if (_source.type === 'm3u8') {
             _source.type = 'hls';
@@ -30,4 +29,5 @@
         return _source;
     };
 
-})(jwplayer.playlist);
+    return Source;
+});
