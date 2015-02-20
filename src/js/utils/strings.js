@@ -1,11 +1,6 @@
-/**
- * String utilities for the JW Player.
- *
- * @version 6.0
- */
-(function(utils) {
+define(function() {
     /** Removes whitespace from the beginning and end of a string **/
-    utils.trim = function(inputString) {
+    var trim = function (inputString) {
         return inputString.replace(/^\s+|\s+$/g, '');
     };
 
@@ -15,7 +10,7 @@
      * @param {Number} length
      * @param {String} padder
      */
-    utils.pad = function(str, length, padder) {
+    var pad = function (str, length, padder) {
         if (!padder) {
             padder = '0';
         }
@@ -31,7 +26,7 @@
      * @param {String} attribute
      * @return {String} Value
      */
-    utils.xmlAttribute = function(xml, attribute) {
+    var xmlAttribute = function (xml, attribute) {
         for (var attrib = 0; attrib < xml.attributes.length; attrib++) {
             if (xml.attributes[attrib].name && xml.attributes[attrib].name.toLowerCase() === attribute.toLowerCase()) {
                 return xml.attributes[attrib].value.toString();
@@ -46,12 +41,12 @@
     function getAzureFileFormat(path) {
         if (path.indexOf('(format=m3u8-') > -1) {
             return 'm3u8';
-        } else { 
+        } else {
             return false;
         }
     }
 
-    utils.extension = function(path) {
+    var extension = function (path) {
         if (!path || path.substr(0, 4) === 'rtmp') {
             return '';
         }
@@ -68,7 +63,7 @@
     };
 
     /** Convert a string representation of a string to an integer **/
-    utils.stringToColor = function(value) {
+    var stringToColor = function (value) {
         value = value.replace(/(#|0x)?([0-9A-F]{3,6})$/gi, '$2');
         if (value.length === 3) {
             value = value.charAt(0) + value.charAt(0) + value.charAt(1) +
@@ -77,5 +72,11 @@
         return parseInt(value, 16);
     };
 
-
-})(jwplayer.utils);
+    return {
+        trim : trim,
+        pad : pad,
+        xmlAttribute : xmlAttribute,
+        extension : extension,
+        stringToColor : stringToColor
+    };
+});

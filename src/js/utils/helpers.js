@@ -1,8 +1,6 @@
-(function(jwplayer) {
+define('build_info', 'utils/strings', 'events', 'underscore', function(BuildInfo, strings, Events, _) {
     /*jshint maxparams:5*/
-
-    var utils = jwplayer.utils = {};
-    var _ = jwplayer._;
+    var utils = {};
 
     /**
      * Returns true if the value of the object is null, undefined or the empty
@@ -10,7 +8,7 @@
      *
      * @param a The variable to inspect
      */
-    utils.exists = function(item) {
+    var _exists = utils.exists = function (item) {
         switch (typeof(item)) {
             case 'string':
                 return (item.length > 0);
@@ -24,16 +22,16 @@
 
     /** Used for styling dimensions in CSS --
      * return the string unchanged if it's a percentage width; add 'px' otherwise **/
-    utils.styleDimension = function(dimension) {
+    utils.styleDimension = function (dimension) {
         return dimension + (dimension.toString().indexOf('%') > 0 ? '' : 'px');
     };
 
     /** Gets an absolute file path based on a relative filepath * */
-    utils.getAbsolutePath = function(path, base) {
-        if (!utils.exists(base)) {
+    utils.getAbsolutePath = function (path, base) {
+        if (!_exists(base)) {
             base = document.location.href;
         }
-        if (!utils.exists(path)) {
+        if (!_exists(path)) {
             return;
         }
         if (isAbsolutePath(path)) {
@@ -51,7 +49,7 @@
         }
         var result = [];
         for (var i = 0; i < patharray.length; i++) {
-            if (!patharray[i] || !utils.exists(patharray[i]) || patharray[i] === '.') {
+            if (!patharray[i] || !_exists(patharray[i]) || patharray[i] === '.') {
                 continue;
             } else if (patharray[i] === '..') {
                 result.pop();
@@ -63,7 +61,7 @@
     };
 
     function isAbsolutePath(path) {
-        if (!utils.exists(path)) {
+        if (!_exists(path)) {
             return;
         }
         var protocol = path.indexOf('://');
@@ -72,17 +70,17 @@
     }
 
     /** Merges a list of objects **/
-    utils.extend = function() {
+    var _extend = utils.extend = function () {
         var args = Array.prototype.slice.call(arguments, 0);
         if (args.length > 1) {
             var objectToExtend = args[0],
-                extendEach = function(element, arg) {
+                extendEach = function (element, arg) {
                     if (arg !== undefined && arg !== null) {
                         objectToExtend[element] = arg;
                     }
                 };
             for (var i = 1; i < args.length; i++) {
-                utils.foreach(args[i], extendEach);
+                _foreach(args[i], extendEach);
             }
             return objectToExtend;
         }
@@ -91,9 +89,10 @@
 
     /** Logger */
     var console = window.console = window.console || {
-        log: function() {}
+        log: function () {
+        }
     };
-    utils.log = function() {
+    utils.log = function () {
         var args = Array.prototype.slice.call(arguments, 0);
         if (typeof console.log === 'object') {
             console.log(args);
@@ -102,13 +101,13 @@
         }
     };
 
-    var _userAgentMatch = _.memoize(function(regex) {
+    var _userAgentMatch = _.memoize(function (regex) {
         var agent = navigator.userAgent.toLowerCase();
         return (agent.match(regex) !== null);
     });
 
     function _browserCheck(regex) {
-        return function() {
+        return function () {
             return _userAgentMatch(regex);
         };
     }
@@ -119,7 +118,7 @@
     utils.isIPad = _browserCheck(/iPad/i);
     utils.isSafari602 = _browserCheck(/Macintosh.*Mac OS X 10_8.*6\.0\.\d* Safari/i);
 
-    utils.isIETrident = function(version) {
+    var _isIETrident = utils.isIETrident = function (version) {
         if (version) {
             version = parseFloat(version).toFixed(1);
             return _userAgentMatch(new RegExp('trident/.+rv:\\s*' + version, 'i'));
@@ -128,32 +127,32 @@
     };
 
 
-    utils.isMSIE = function(version) {
+    var _isMSIE = utils.isMSIE = function (version) {
         if (version) {
             version = parseFloat(version).toFixed(1);
             return _userAgentMatch(new RegExp('msie\\s*' + version, 'i'));
         }
         return _userAgentMatch(/msie/i);
     };
-    utils.isIE = function(version) {
+    utils.isIE = function (version) {
         if (version) {
             version = parseFloat(version).toFixed(1);
             if (version >= 11) {
-                return utils.isIETrident(version);
+                return _isIETrident(version);
             } else {
-                return utils.isMSIE(version);
+                return _isMSIE(version);
             }
         }
-        return utils.isMSIE() || utils.isIETrident();
+        return _isMSIE() || _isIETrident();
     };
 
-    utils.isSafari = function() {
+    utils.isSafari = function () {
         return (_userAgentMatch(/safari/i) && !_userAgentMatch(/chrome/i) &&
             !_userAgentMatch(/chromium/i) && !_userAgentMatch(/android/i));
     };
 
     /** Matches iOS devices **/
-    utils.isIOS = function(version) {
+    var _isIOS = utils.isIOS = function (version) {
         if (version) {
             return _userAgentMatch(new RegExp('iP(hone|ad|od).+\\sOS\\s' + version, 'i'));
         }
@@ -161,18 +160,18 @@
     };
 
     /** Matches Android devices **/
-    utils.isAndroidNative = function(version) {
-        return utils.isAndroid(version, true);
+    utils.isAndroidNative = function (version) {
+        return _isAndroid(version, true);
     };
 
-    utils.isAndroid = function(version, excludeChrome) {
+    var _isAndroid = utils.isAndroid = function (version, excludeChrome) {
         //Android Browser appears to include a user-agent string for Chrome/18
         if (excludeChrome && _userAgentMatch(/chrome\/[123456789]/i) && !_userAgentMatch(/chrome\/18/)) {
             return false;
         }
         if (version) {
             // make sure whole number version check ends with point '.'
-            if (utils.isInt(version) && !/\./.test(version)) {
+            if (_isInt(version) && !/\./.test(version)) {
                 version = '' + version + '.';
             }
             return _userAgentMatch(new RegExp('Android\\s*' + version, 'i'));
@@ -181,21 +180,21 @@
     };
 
     /** Matches iOS and Android devices **/
-    utils.isMobile = function() {
-        return utils.isIOS() || utils.isAndroid();
+    utils.isMobile = function () {
+        return _isIOS() || _isAndroid();
     };
 
-    utils.isIframe = function() {
+    utils.isIframe = function () {
         return (window.frameElement && (window.frameElement.nodeName === 'IFRAME'));
     };
 
     /** Save a setting **/
-    utils.saveCookie = function(name, value) {
+    utils.saveCookie = function (name, value) {
         document.cookie = 'jwplayer.' + name + '=' + value + '; path=/';
     };
 
     /** Retrieve saved  player settings **/
-    utils.getCookies = function() {
+    utils.getCookies = function () {
         var jwCookies = {};
         var cookies = document.cookie.split('; ');
         for (var i = 0; i < cookies.length; i++) {
@@ -207,12 +206,12 @@
         return jwCookies;
     };
 
-    utils.isInt = function(value) {
+    var _isInt = utils.isInt = function (value) {
         return parseFloat(value) % 1 === 0;
     };
 
     /** Returns the true type of an object * */
-    utils.typeOf = function(value) {
+    var _typeOf = utils.typeOf = function (value) {
         if (value === null) {
             return 'null';
         }
@@ -226,24 +225,24 @@
     };
 
     /* Normalizes differences between Flash and HTML5 internal players' event responses. */
-    utils.translateEventResponse = function(type, eventProperties) {
-        var translated = utils.extend({}, eventProperties);
-        if (type === jwplayer.events.JWPLAYER_FULLSCREEN && !translated.fullscreen) {
+    utils.translateEventResponse = function (type, eventProperties) {
+        var translated = _extend({}, eventProperties);
+        if (type === Events.JWPLAYER_FULLSCREEN && !translated.fullscreen) {
             translated.fullscreen = (translated.message === 'true');
             delete translated.message;
         } else if (typeof translated.data === 'object') {
             // Takes ViewEvent 'data' block and moves it up a level
             var data = translated.data;
             delete translated.data;
-            translated = utils.extend(translated, data);
+            translated = _extend(translated, data);
 
         } else if (typeof translated.metadata === 'object') {
-            utils.deepReplaceKeyName(translated.metadata,
+            _deepReplaceKeyName(translated.metadata,
                 ['__dot__', '__spc__', '__dsh__', '__default__'], ['.', ' ', '-', 'default']);
         }
 
         var rounders = ['position', 'duration', 'offset'];
-        utils.foreach(rounders, function(rounder, val) {
+        _foreach(rounders, function (rounder, val) {
             if (translated[val]) {
                 translated[val] = Math.round(translated[val] * 1000) / 1000;
             }
@@ -255,8 +254,8 @@
     /**
      * If the browser has flash capabilities, return the flash version
      */
-    utils.flashVersion = function() {
-        if (utils.isAndroid()) {
+    utils.flashVersion = function () {
+        if (_isAndroid()) {
             return 0;
         }
 
@@ -276,14 +275,15 @@
                 if (flash) {
                     return parseFloat(flash.GetVariable('$version').split(' ')[1].replace(/\s*,\s*/, '.'));
                 }
-            } catch (err) {}
+            } catch (err) {
+            }
         }
         return 0;
     };
 
 
     /** Finds the location of jwplayer.js and returns the path **/
-    utils.getScriptPath = function(scriptName) {
+    utils.getScriptPath = function (scriptName) {
         var scripts = document.getElementsByTagName('script');
         for (var i = 0; i < scripts.length; i++) {
             var src = scripts[i].src;
@@ -304,16 +304,16 @@
      *            The string to replace in the object's key names
      * @returns The modified object.
      */
-    utils.deepReplaceKeyName = function(obj, searchString, replaceString) {
-        switch (jwplayer.utils.typeOf(obj)) {
+    var _deepReplaceKeyName = utils.deepReplaceKeyName = function (obj, searchString, replaceString) {
+        switch (_typeOf(obj)) {
             case 'array':
                 for (var i = 0; i < obj.length; i++) {
-                    obj[i] = jwplayer.utils.deepReplaceKeyName(obj[i],
+                    obj[i] = _deepReplaceKeyName(obj[i],
                         searchString, replaceString);
                 }
                 break;
             case 'object':
-                utils.foreach(obj, function(key, val) {
+                _foreach(obj, function (key, val) {
                     var searches;
                     if (searchString instanceof Array && replaceString instanceof Array) {
                         if (searchString.length !== replaceString.length) {
@@ -328,7 +328,7 @@
                     for (var i = 0; i < searches.length; i++) {
                         newkey = newkey.replace(new RegExp(searchString[i], 'g'), replaceString[i]);
                     }
-                    obj[newkey] = jwplayer.utils.deepReplaceKeyName(val, searchString, replaceString);
+                    obj[newkey] = _deepReplaceKeyName(val, searchString, replaceString);
                     if (key !== newkey) {
                         delete obj[key];
                     }
@@ -348,7 +348,7 @@
         CDN: 2
     };
 
-    utils.getPluginPathType = function(path) {
+    utils.getPluginPathType = function (path) {
         if (typeof path !== 'string') {
             return;
         }
@@ -369,7 +369,7 @@
     /**
      * Extracts a plugin name from a string
      */
-    utils.getPluginName = function(pluginName) {
+    utils.getPluginName = function (pluginName) {
         /** Regex locates the characters after the last slash, until it encounters a dash. **/
         return pluginName.replace(/^(.*\/)?([^-]*)-?.*\.(swf|js)$/, '$2');
     };
@@ -377,18 +377,18 @@
     /**
      * Extracts a plugin version from a string
      */
-    utils.getPluginVersion = function(pluginName) {
+    utils.getPluginVersion = function (pluginName) {
         return pluginName.replace(/[^-]*-?([^\.]*).*$/, '$1');
     };
 
     /**
      * Determines if a URL is a YouTube link
      */
-    utils.isYouTube = function(path, type) {
+    utils.isYouTube = function (path, type) {
         return (type === 'youtube') || (/^(http|\/\/).*(youtube\.com|youtu\.be)\/.+/).test(path);
     };
 
-    /** 
+    /**
      * Returns a YouTube ID from a number of YouTube URL formats:
      *
      * Matches the following YouTube URL types:
@@ -402,7 +402,7 @@
      *  - http://youtu.be/YE7VzlLtp-4?extra_param=123&another_param=456
      *  - YE7VzlLtp-4
      **/
-    utils.youTubeID = function(path) {
+    utils.youTubeID = function (path) {
         try {
             // Left as a dense regular expression for brevity.  
             return (/v[=\/]([^?&]*)|youtu\.be\/([^?]*)|^([\w-]*)$/i).exec(path).slice(1).join('').replace('?', '');
@@ -414,7 +414,7 @@
     /**
      * Determines if a URL is an RTMP link
      */
-    utils.isRtmp = function(file, type) {
+    utils.isRtmp = function (file, type) {
         return (file.indexOf('rtmp') === 0 || type === 'rtmp');
     };
 
@@ -422,10 +422,10 @@
      * Iterates over an object and executes a callback function for each property (if it exists)
      * This is a safe way to iterate over objects if another script has modified the object prototype
      */
-    utils.foreach = function(aData, fnEach) {
+    var _foreach = utils.foreach = function (aData, fnEach) {
         var key, val;
         for (key in aData) {
-            if (utils.typeOf(aData.hasOwnProperty) === 'function') {
+            if (_typeOf(aData.hasOwnProperty) === 'function') {
                 if (aData.hasOwnProperty(key)) {
                     val = aData[key];
                     fnEach(key, val);
@@ -439,32 +439,33 @@
     };
 
     /** Determines if the current page is HTTPS **/
-    utils.isHTTPS = function() {
+    var _isHTTPS = utils.isHTTPS = function () {
         return (window.location.href.indexOf('https') === 0);
     };
 
     /** Gets the repository location **/
-    utils.repo = function() {
-        var repo = 'http://p.jwpcdn.com/' + jwplayer.version.split(/\W/).splice(0, 2).join('/') + '/';
+    utils.repo = function () {
+        var repo = 'http://p.jwpcdn.com/' + BuildInfo.version.split(/\W/).splice(0, 2).join('/') + '/';
 
         try {
-            if (utils.isHTTPS()) {
+            if (_isHTTPS()) {
                 repo = repo.replace('http://', 'https://ssl.');
             }
-        } catch (e) {}
+        } catch (e) {
+        }
 
         return repo;
     };
 
-    utils.versionCheck = function(target) {
-        var tParts = ('0'+target).split(/\W/);
-        var jParts = jwplayer.version.split(/\W/);
+    utils.versionCheck = function (target) {
+        var tParts = ('0' + target).split(/\W/);
+        var jParts = BuildInfo.version.split(/\W/);
         var tMajor = parseFloat(tParts[0]);
         var jMajor = parseFloat(jParts[0]);
         if (tMajor > jMajor) {
             return false;
         } else if (tMajor === jMajor) {
-            if (parseFloat('0'+tParts[1]) > parseFloat(jParts[1])) {
+            if (parseFloat('0' + tParts[1]) > parseFloat(jParts[1])) {
                 return false;
             }
         }
@@ -472,7 +473,7 @@
     };
 
     /** Loads an XML file into a DOM object * */
-    utils.ajax = function(xmldocpath, completecallback, errorcallback, donotparse) {
+    utils.ajax = function (xmldocpath, completecallback, errorcallback, donotparse) {
         var xmlhttp;
         var isError = false;
         // Hash tags should be removed from the URL since they can't be loaded in IE
@@ -480,13 +481,14 @@
             xmldocpath = xmldocpath.replace(/#.*$/, '');
         }
 
-        if (_isCrossdomain(xmldocpath) && utils.exists(window.XDomainRequest)) {
+        if (_isCrossdomain(xmldocpath) && _exists(window.XDomainRequest)) {
             // IE8 / 9
             xmlhttp = new window.XDomainRequest();
             xmlhttp.onload = _ajaxComplete(xmlhttp, xmldocpath, completecallback, errorcallback, donotparse);
-            xmlhttp.ontimeout = xmlhttp.onprogress = function() {};
+            xmlhttp.ontimeout = xmlhttp.onprogress = function () {
+            };
             xmlhttp.timeout = 5000;
-        } else if (utils.exists(window.XMLHttpRequest)) {
+        } else if (_exists(window.XMLHttpRequest)) {
             // Firefox, Chrome, Opera, Safari
             xmlhttp = new window.XMLHttpRequest();
             xmlhttp.onreadystatechange =
@@ -508,7 +510,7 @@
             isError = true;
         }
         // make XDomainRequest asynchronous:
-        setTimeout(function() {
+        setTimeout(function () {
             if (isError) {
                 if (errorcallback) {
                     errorcallback(xmldocpath, xmldocpath, xmlhttp);
@@ -534,13 +536,13 @@
     }
 
     function _ajaxError(errorcallback, xmldocpath, xmlhttp) {
-        return function() {
+        return function () {
             errorcallback('Error loading file', xmldocpath, xmlhttp);
         };
     }
 
     function _readyStateChangeHandler(xmlhttp, xmldocpath, completecallback, errorcallback, donotparse) {
-        return function() {
+        return function () {
             if (xmlhttp.readyState === 4) {
                 switch (xmlhttp.status) {
                     case 200:
@@ -555,7 +557,7 @@
     }
 
     function _ajaxComplete(xmlhttp, xmldocpath, completecallback, errorcallback, donotparse) {
-        return function() {
+        return function () {
             // Handle the case where an XML document was returned with an incorrect MIME type.
             var xml, firstChild;
             if (donotparse) {
@@ -574,13 +576,14 @@
                             return;
                         }
                     }
-                } catch (e) {}
+                } catch (e) {
+                }
                 if (xml && firstChild) {
                     return completecallback(xmlhttp);
                 }
-                var parsedXML = utils.parseXML(xmlhttp.responseText);
+                var parsedXML = _parseXML(xmlhttp.responseText);
                 if (parsedXML && parsedXML.firstChild) {
-                    xmlhttp = utils.extend({}, xmlhttp, {
+                    xmlhttp = _extend({}, xmlhttp, {
                         responseXML: parsedXML
                     });
                 } else {
@@ -595,7 +598,7 @@
     }
 
     /** Takes an XML string and returns an XML object **/
-    utils.parseXML = function(input) {
+    var _parseXML = utils.parseXML = function (input) {
         var parsedXML;
         try {
             // Parse XML in FF/Chrome/Safari/Opera
@@ -621,17 +624,17 @@
     /**
      * Ensure a number is between two bounds
      */
-    utils.between = function(num, min, max) {
+    utils.between = function (num, min, max) {
         return Math.max(Math.min(num, max), min);
     };
 
     /**
      * Convert a time-representing string to a number.
      *
-     * @param {String}	The input string. Supported are 00:03:00.1 / 03:00.1 / 180.1s / 3.2m / 3.2h
-     * @return {Number}	The number of seconds.
+     * @param {String}    The input string. Supported are 00:03:00.1 / 03:00.1 / 180.1s / 3.2m / 3.2h
+     * @return {Number}    The number of seconds.
      */
-    utils.seconds = function(str) {
+    utils.seconds = function (str) {
         if (_.isNumber(str)) {
             return str;
         }
@@ -665,7 +668,7 @@
      *            val String value to serialize.
      * @return {Object} The original value in the correct primitive type.
      */
-    utils.serialize = function(val) {
+    utils.serialize = function (val) {
         if (val === null) {
             return null;
         } else if (val.toString().toLowerCase() === 'true') {
@@ -679,40 +682,43 @@
         }
     };
 
-    utils.addClass = function(element, classes) {
+    utils.addClass = function (element, classes) {
         // TODO:: use _.union on the two arrays
 
         var originalClasses = _.isString(element.className) ? element.className.split(' ') : [];
         var addClasses = _.isArray(classes) ? classes : classes.split(' ');
 
-        _.each(addClasses, function(c) {
-            if (! _.contains(originalClasses, c)) {
+        _.each(addClasses, function (c) {
+            if (!_.contains(originalClasses, c)) {
                 originalClasses.push(c);
             }
         });
 
-        element.className = utils.trim(originalClasses.join(' '));
+        element.className = strings.trim(originalClasses.join(' '));
     };
 
-    utils.removeClass = function(element, c) {
+    utils.removeClass = function (element, c) {
         var originalClasses = _.isString(element.className) ? element.className.split(' ') : [];
         var removeClasses = _.isArray(c) ? c : c.split(' ');
 
-        element.className = utils.trim(_.difference(originalClasses, removeClasses).join(' '));
+        element.className = strings.trim(_.difference(originalClasses, removeClasses).join(' '));
     };
 
-    utils.emptyElement = function(element) {
+    utils.emptyElement = function (element) {
         while (element.firstChild) {
             element.removeChild(element.firstChild);
         }
     };
 
     utils.indexOf = _.indexOf;
-    utils.noop = function() {};
+    utils.noop = function () {
+    };
 
-    utils.canCast = function() {
+    utils.canCast = function () {
         var cast = jwplayer.cast;
         return !!(cast && _.isFunction(cast.available) && cast.available());
     };
 
-})(jwplayer);
+    return utils;
+});
+

@@ -791,7 +791,7 @@
             return false;
         }
 
-        var mappedType = utils.extensionmap[type] || utils.extensionmap[extension];
+        var mappedType = utils.extensionmap.getMappedType(type) || utils.extensionmap.getMappedType(extension);
 
         // If no type or unrecognized type, don't allow to play
         if (!mappedType) {

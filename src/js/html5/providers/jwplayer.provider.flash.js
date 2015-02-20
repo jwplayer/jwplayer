@@ -120,7 +120,7 @@
         if (utils.isRtmp(file, type)) { return true; }
         if (type === 'hls') { return true; }
 
-        var mappedType = utils.extensionmap[type ? type : utils.extension(file)];
+        var mappedType = utils.extensionmap.getMappedType(type ? type : utils.extension(file));
 
         // If no type or unrecognized type, don't allow to play
         if (!mappedType) {

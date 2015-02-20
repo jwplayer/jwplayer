@@ -15,8 +15,7 @@
         this.addEventListener = function(type, callback) {
             // Legacy support
             if (_.isString(callback)) {
-                /*jshint evil:true*/
-                callback = (new Function('return ' + callback))();
+                console.log('Error, please fix this callback', _id, type, callback);
             }
 
             return obj.on(type, callback);

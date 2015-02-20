@@ -2,10 +2,11 @@
     var utils = jwplayer.utils,
         events = jwplayer.events,
         _ = jwplayer._,
+        scriptloader = jwplayer.utils.scriptloader,
         _foreach = utils.foreach;
 
     jwplayer.plugins.pluginloader = function(model, config) {
-        var _status = utils.loaderstatus.NEW,
+        var _status =scriptloader.loaderstatus.NEW,
             _loading = false,
             _iscomplete = false,
             _config = config,
@@ -33,7 +34,7 @@
         function _complete() {
             if (!_iscomplete) {
                 _iscomplete = true;
-                _status = utils.loaderstatus.COMPLETE;
+                _status =scriptloader.loaderstatus.COMPLETE;
                 _eventDispatcher.sendEvent(events.COMPLETE);
             }
         }
@@ -57,7 +58,7 @@
                         target = pluginObj.getTarget(),
                         status = pluginObj.getStatus();
 
-                    if (status === utils.loaderstatus.LOADING || status === utils.loaderstatus.NEW) {
+                    if (status ===scriptloader.loaderstatus.LOADING || status ===scriptloader.loaderstatus.NEW) {
                         return;
                     } else if (js && !utils.versionCheck(target)) {
                         _eventDispatcher.sendEvent(events.ERROR, {
@@ -142,7 +143,7 @@
                 return;
             }
 
-            _status = utils.loaderstatus.LOADING;
+            _status =scriptloader.loaderstatus.LOADING;
             _loading = true;
 
             /** First pass to create the plugins and add listeners **/

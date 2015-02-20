@@ -1,6 +1,7 @@
 (function(plugins) {
     var utils = jwplayer.utils,
         events = jwplayer.events,
+        scriptloader = jwplayer.utils.scriptloader,
         UNDEFINED = 'undefined';
 
     plugins.pluginmodes = {
@@ -10,7 +11,7 @@
     };
 
     plugins.plugin = function(url) {
-        var _status = utils.loaderstatus.NEW,
+        var _status =scriptloader.loaderstatus.NEW,
             _flashPath,
             _js,
             _target,
@@ -30,29 +31,29 @@
 
         function completeHandler() {
             _completeTimeout = setTimeout(function() {
-                _status = utils.loaderstatus.COMPLETE;
+                _status = scriptloader.loaderstatus.COMPLETE;
                 _eventDispatcher.sendEvent(events.COMPLETE);
             }, 1000);
         }
 
         function errorHandler() {
-            _status = utils.loaderstatus.ERROR;
+            _status =scriptloader.loaderstatus.ERROR;
             _eventDispatcher.sendEvent(events.ERROR, {url: url});
         }
 
         this.load = function() {
-            if (_status === utils.loaderstatus.NEW) {
+            if (_status ===scriptloader.loaderstatus.NEW) {
                 if (url.lastIndexOf('.swf') > 0) {
                     _flashPath = url;
-                    _status = utils.loaderstatus.COMPLETE;
+                    _status =scriptloader.loaderstatus.COMPLETE;
                     _eventDispatcher.sendEvent(events.COMPLETE);
                     return;
                 } else if (utils.getPluginPathType(url) === utils.pluginPathType.CDN) {
-                    _status = utils.loaderstatus.COMPLETE;
+                    _status =scriptloader.loaderstatus.COMPLETE;
                     _eventDispatcher.sendEvent(events.COMPLETE);
                     return;
                 }
-                _status = utils.loaderstatus.LOADING;
+                _status =scriptloader.loaderstatus.LOADING;
                 var _loader = new utils.scriptloader(getJSPath());
                 // Complete doesn't matter - we're waiting for registerPlugin
                 _loader.addEventListener(events.COMPLETE, completeHandler);
@@ -77,7 +78,7 @@
             } else if (!arg1 && !arg2) {
                 _flashPath = id;
             }
-            _status = utils.loaderstatus.COMPLETE;
+            _status =scriptloader.loaderstatus.COMPLETE;
             _eventDispatcher.sendEvent(events.COMPLETE);
         };
 

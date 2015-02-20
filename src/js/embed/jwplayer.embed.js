@@ -1,6 +1,7 @@
 (function(jwplayer) {
     var utils = jwplayer.utils,
         events = jwplayer.events,
+        scriptloader = jwplayer.utils.scriptloader,
         _ = jwplayer._;
 
     jwplayer.vid = document.createElement('video');
@@ -98,7 +99,7 @@
                 return;
             }
 
-            if (_pluginloader.getStatus() === utils.loaderstatus.COMPLETE) {
+            if (_pluginloader.getStatus() === scriptloader.loaderstatus.COMPLETE) {
 
                 var pluginConfigCopy = utils.extend({}, _config);
                 _pluginloader.setupPlugins(playerApi, pluginConfigCopy, _resizePlugin);

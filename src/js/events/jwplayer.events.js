@@ -5,6 +5,14 @@
  * @version 6.0
  */
 (function(jwplayer) {
+
+    jwplayer.utils.touchEvents = {
+        DRAG: 'jwplayerDrag',
+        DRAG_START: 'jwplayerDragStart',
+        DRAG_END: 'jwplayerDragEnd',
+        TAP: 'jwplayerTap'
+    };
+
     jwplayer.events = {
         // General Events
         COMPLETE: 'COMPLETE',

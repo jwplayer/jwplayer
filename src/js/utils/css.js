@@ -1,12 +1,24 @@
-(function(jwplayer) {
-    var utils = jwplayer.utils,
-        MAX_CSS_RULES = 50000,
+define(['utils/strings', 'underscore'], function(Strings, _) {
+    var MAX_CSS_RULES = 50000,
         _styleSheets = {},
         _styleSheet,
         _rules = {},
         _cssBlock = null,
         _ruleIndexes = {},
         _debug = false;
+
+    // Copied into this file to remove circular dependency
+    var _exists = function (item) {
+        switch (typeof(item)) {
+            case 'string':
+                return (item.length > 0);
+            case 'object':
+                return (item !== null);
+            case 'undefined':
+                return false;
+        }
+        return true;
+    };
 
     function _createStylesheet(debugText) {
         var styleSheet = document.createElement('style');
@@ -18,7 +30,7 @@
         return styleSheet;
     }
 
-    utils.cssKeyframes = function(keyframeName, keyframeSteps) {
+    var _cssKeyframes = function (keyframeName, keyframeSteps) {
         var styleElement = _styleSheets.keyframes;
         if (!styleElement) {
             styleElement = _createStylesheet();
@@ -30,7 +42,7 @@
         _insertRule(sheet, rulesText.replace(/(keyframes|transform)/g, '-webkit-$1'), sheet.cssRules.length);
     };
 
-    var _css = utils.css = function(selector, styles, important) {
+    var _css = function (selector, styles, important) {
         important = important || false;
 
         if (!_rules[selector]) {
@@ -66,7 +78,7 @@
         _updateStylesheet(selector);
     };
 
-    _css.style = function(elements, styles, immediate) {
+    var _style = function (elements, styles, immediate) {
         if (elements === undefined || elements === null) {
             //utils.log('css.style invalid elements: '+ elements +' '+ JSON.stringify(styles) +' '+ immediate);
             return;
@@ -79,8 +91,8 @@
         _updateStyleAttributes(cssRules, styles);
 
         if (_cssBlock !== null && !immediate) {
-            elements.__cssRules = _extend(elements.__cssRules, cssRules);
-            if (jwplayer._.indexOf(_cssBlock.elements, elements) < 0) {
+            elements.__cssRules = _.extend(elements.__cssRules, cssRules);
+            if (_.indexOf(_cssBlock.elements, elements) < 0) {
                 _cssBlock.elements.push(elements);
             }
             // finish this later
@@ -89,7 +101,7 @@
         _updateElementsStyle(elements, cssRules);
     };
 
-    _css.block = function(id) {
+    var _block = function (id) {
         // use id so that the first blocker gets to unblock
         if (_cssBlock === null) {
             // console.time('block_'+id);
@@ -101,7 +113,7 @@
         }
     };
 
-    _css.unblock = function(id) {
+    var _unblock = function (id) {
         if (_cssBlock && (!id || _cssBlock.id === id)) {
             // IE9 limits the number of style tags in the head, so we need to update the entire stylesheet each time
             for (var selector in _cssBlock.styleSheets) {
@@ -117,14 +129,6 @@
             // console.timeEnd('block_'+id);
         }
     };
-
-    function _extend(target, source) {
-        target = target || {};
-        for (var prop in source) {
-            target[prop] = source[prop];
-        }
-        return target;
-    }
 
     function _updateStyles(cssRules, styles, important) {
         var dirty = false,
@@ -159,7 +163,7 @@
     }
 
     function _styleValue(style, value, important) {
-        if (!utils.exists(value)) {
+        if (!_exists(value)) {
             return '';
         }
         var importantString = important ? ' !important' : '';
@@ -178,7 +182,7 @@
             return '' + value + importantString;
         }
         if ((/color/i).test(style)) {
-            return '#' + utils.pad(value.toString(16).replace(/^0x/i, ''), 6) + importantString;
+            return '#' + Strings.pad(value.toString(16).replace(/^0x/i, ''), 6) + importantString;
         }
         return Math.ceil(value) + 'px' + importantString;
     }
@@ -242,7 +246,7 @@
 
 
     // Removes all css elements which match a particular style
-    utils.clearCss = function(filter) {
+    var _clearCss = function (filter) {
         for (var rule in _rules) {
             if (rule.indexOf(filter) >= 0) {
                 delete _rules[rule];
@@ -255,7 +259,7 @@
         }
     };
 
-    utils.transform = function(element, value) {
+    var transform = function (element, value) {
         var transform = 'transform',
             style = {};
         value = value || '';
@@ -271,7 +275,7 @@
         }
     };
 
-    utils.dragStyle = function(selector, style) {
+    var dragStyle = function (selector, style) {
         _css(selector, {
             '-webkit-user-select': style,
             '-moz-user-select': style,
@@ -282,7 +286,7 @@
         });
     };
 
-    utils.transitionStyle = function(selector, style) {
+    var transitionStyle = function (selector, style) {
         // Safari 5 has problems with CSS3 transitions
         if (navigator.userAgent.match(/5\.\d(\.\d)? safari/i)) {
             return;
@@ -297,11 +301,11 @@
     };
 
 
-    utils.rotate = function(domelement, deg) {
-        utils.transform(domelement, 'rotate(' + deg + 'deg)');
+    var rotate = function (domelement, deg) {
+        transform(domelement, 'rotate(' + deg + 'deg)');
     };
 
-    utils.rgbHex = function(color) {
+    var rgbHex = function (color) {
         var hex = String(color).replace('#', '');
         if (hex.length === 3) {
             hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
@@ -309,7 +313,7 @@
         return '#' + hex.substr(-6);
     };
 
-    utils.hexToRgba = function(hexColor, opacity) {
+    var hexToRgba = function (hexColor, opacity) {
         var style = 'rgb';
         var channels = [
             parseInt(hexColor.substr(1, 2), 16),
@@ -323,4 +327,19 @@
         return style + '(' + channels.join(',') + ')';
     };
 
-})(jwplayer);
+
+    return {
+        cssKeyframes : _cssKeyframes,
+        css : _css,
+        style : _style,
+        block : _block,
+        unblock : _unblock,
+        clearCss : _clearCss,
+        transform : transform,
+        dragStyle : dragStyle,
+        transitionStyle : transitionStyle,
+        rotate : rotate,
+        rgbHex : rgbHex,
+        hexToRgba : hexToRgba
+    };
+});

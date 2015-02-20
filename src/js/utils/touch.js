@@ -1,17 +1,17 @@
-(function (utils) {
+define(['events', 'underscore'], function(Events, _) {
 
     var TOUCH_MOVE = 'touchmove',
         TOUCH_START = 'touchstart',
         TOUCH_END = 'touchend',
         TOUCH_CANCEL = 'touchcancel';
 
-    utils.touch = function (elem) {
+    var touch = function (elem) {
         var _elem = elem,
             _isListening = false,
             _startEvent = null,
             _gotMove = false,
-            _events = utils.touchEvents,
-            events = utils.extend({}, jwplayer.utils.Events);
+            _events = Events.touchEvents,
+            events = _.extend({}, Events.eventdispatcher());
 
         document.addEventListener(TOUCH_MOVE, touchHandler);
         document.addEventListener(TOUCH_END, documentEndHandler);
@@ -116,4 +116,5 @@
         return this;
     };
 
-})(jwplayer.utils);
+    return touch;
+});
