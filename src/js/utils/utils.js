@@ -1,5 +1,5 @@
 define([
-    'utils/helpers',
+    'helpers',
     'utils/css',
     'utils/strings',
     'utils/scriptloader',
@@ -15,9 +15,6 @@ define([
         touch : touch,
         extensionmap : extensionmap
     });
-
-    // For testing
-    // window.jwplayer = {utils : utils};
 
     return utils;
 });

@@ -13,7 +13,7 @@ module.exports = function(grunt) {
             player: {
                 src: [
                     'src/js/jwplayer.js',
-                    'src/js/utils/jwplayer.underscore.js',
+                    'src/js/utils/underscore.js',
                     'src/js/utils/jwplayer.utils.js',
                     'src/js/utils/backbone.events.js',
                     'src/js/utils/jwplayer.utils.*.js',
@@ -25,7 +25,7 @@ module.exports = function(grunt) {
                     'src/js/parsers/jwplayer.parsers.*.js',
                     'src/js/playlist/playlist.js',
                     'src/js/playlist/jwplayer.playlist.*.js',
-                    'src/js/embed/jwplayer.embed.js',
+                    'src/js/embed/embed.js',
                     'src/js/embed/jwplayer.embed.*.js',
                     'src/js/api/api.js',
                     'src/js/api/jwplayer.api.*.js',
@@ -131,7 +131,7 @@ module.exports = function(grunt) {
                         'src/js/'
                     ],
                     alias: {
-                        'underscore': 'utils/jwplayer.underscore'
+                        'underscore': 'utils/underscore'
                     }
                 },
                 devtool: 'source-map'

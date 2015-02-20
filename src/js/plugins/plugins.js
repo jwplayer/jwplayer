@@ -1,6 +1,6 @@
 define([
-    'plugins/plugin_loader',
-    'plugins/plugin_model.js',
+    'loader',
+    'plugins/model',
     'plugins/plugin',
     'utils/helpers'
 ], function(PluginLoader, PluginModel, Plugin, helper) {
