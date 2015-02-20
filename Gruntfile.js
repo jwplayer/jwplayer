@@ -114,6 +114,27 @@ module.exports = function(grunt) {
             }
         },
 
+        webpack : {
+            build : {
+                entry: {
+                    utils: './src/js/utils.js'
+                },
+                output: {
+                    path: 'built/',
+                    filename: '[name].built.js'
+                },
+                resolve: {
+                    modulesDirectories: [
+                        'src/js/'
+                    ],
+                    alias: {
+                        'underscore': 'utils/jwplayer.underscore'
+                    }
+                },
+                devtool: 'source-map'
+            }
+        },
+
         clean: {
             dist: {
                 files: [{

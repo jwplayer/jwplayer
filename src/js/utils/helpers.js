@@ -1,4 +1,8 @@
-define('build_info', 'utils/strings', 'events', 'underscore', function(BuildInfo, strings, Events, _) {
+define(['utils/strings', 'events/events', 'underscore'], function(strings, Events, _) {
+
+
+    var _version = 9000000000;// TOFIX
+
     /*jshint maxparams:5*/
     var utils = {};
 
@@ -445,7 +449,7 @@ define('build_info', 'utils/strings', 'events', 'underscore', function(BuildInfo
 
     /** Gets the repository location **/
     utils.repo = function () {
-        var repo = 'http://p.jwpcdn.com/' + BuildInfo.version.split(/\W/).splice(0, 2).join('/') + '/';
+        var repo = 'http://p.jwpcdn.com/' + _version.split(/\W/).splice(0, 2).join('/') + '/';
 
         try {
             if (_isHTTPS()) {
@@ -459,7 +463,7 @@ define('build_info', 'utils/strings', 'events', 'underscore', function(BuildInfo
 
     utils.versionCheck = function (target) {
         var tParts = ('0' + target).split(/\W/);
-        var jParts = BuildInfo.version.split(/\W/);
+        var jParts = _version.split(/\W/);
         var tMajor = parseFloat(tParts[0]);
         var jMajor = parseFloat(jParts[0]);
         if (tMajor > jMajor) {

@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>MP4 video file</title>
-    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
+    <script type="text/javascript" src="../src/js/utils.built.js"></script>
     <link type="text/css" rel="stylesheet" href="styles/tests.css"  media="all" />
 </head>
 <body>
@@ -13,115 +13,6 @@
 <h2>Video Playlist</h2>
 
 <div id="video-container"></div>
-<script type="text/javascript">
-    jwplayer('video-container').setup({
-
-        width: 640,
-        height: 360,
-
-        // primary: 'flash',
-
-        listbar: {
-            position: 'right'
-        },
-
-        playlist: [
-            {
-                sources: [
-                    {file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4'},
-                    {file: 'http://content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm'}
-                ],
-                tracks: [
-                    {file: 'http://playertest.longtailvideo.com/chapters/sintel-chapters.vtt', kind: 'chapters'},
-                    {file: 'http://playertest.longtailvideo.com/captions/sintel-ch.srt', label: 'Chinese'},
-                    {file: 'http://playertest.longtailvideo.com/captions/sintel-fa.srt', label: 'Farsi'},
-                    {file: 'http://playertest.longtailvideo.com/captions/sintel-gr.srt', label: 'Greek'},
-                    {file: 'http://playertest.longtailvideo.com/captions/sintel-jp.srt', label: 'Japanese'},
-                    {file: 'http://playertest.longtailvideo.com/captions/sintel-ko.srt', label: 'Korean'},
-                    {file: 'http://playertest.longtailvideo.com/captions/sintel-pl.srt', label: 'Polish'},
-                    {file: 'http://playertest.longtailvideo.com/captions/sintel-ru.srt', label: 'Russian'},
-                    {file: 'http://playertest.longtailvideo.com/captions/sintel-sp.srt', label: 'Spanish'},
-                    {file: 'http://playertest.longtailvideo.com/captions/sintel-tr.srt', label: 'Turkish'}
-                ],
-                title: 'Sintel'
-            },
-            {
-                sources: [
-                    {file: 'http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4'},
-                    {file: 'http://content.bitsontherun.com/videos/bkaovAYt-27m5HpIu.webm'}
-                ],
-                tracks: [
-                    {file: 'http://playertest.longtailvideo.com/chapters/bunny-chapters.vtt', kind: 'chapters'},
-                    {file: 'http://playertest.longtailvideo.com/captions/bunny-en.srt', label: 'English'},
-                    {file: 'http://playertest.longtailvideo.com/captions/bunny-ned.txt', label: 'Dutch'}
-                ],
-                title: 'Big Buck Bunny'
-            },
-            {
-                file: 'http://playertest.longtailvideo.com/flv-cuepoints/honda_accord.flv',
-                title: 'FLV'
-            },
-            {
-                file: 'http://www.youtube.com/watch?v=YE7VzlLtp-4',
-                title: 'YouTube'
-            },
-            {
-                file: 'not a playable option',
-                title: 'Filtered Out of Playlist'
-            }
-        ]
-    });
-</script>
-
-<!--
-<h2>Audio Single</h2>
-
-<div id="audio-container"></div>
-<script type="text/javascript">
-    jwplayer('audio-container').setup({
-
-        width: 640,
-        height: 30,
-
-        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-I3ZmuSFT.m4a'
-
-    });
-</script>
-
-
-<h2>FLV Single</h2>
-
-<div id="flv-container"></div>
-<script type="text/javascript">
-    jwplayer('flv-container').setup({
-
-        width: 640,
-        height: 360,
-
-        listbar: {
-            position: 'right'
-        },
-
-        file: 'http://playertest.longtailvideo.com/flv-cuepoints/honda_accord.flv',
-        type: 'flv'
-
-    });
-</script>
-
-<h2>Youtube Single</h2>
-
-<div id="youtube-container"></div>
-<script type="text/javascript">
-    jwplayer('youtube-container').setup({
-
-        width: 640,
-        height: 360,
-
-        file: 'http://www.youtube.com/watch?v=YE7VzlLtp-4'
-
-    });
-</script>
--->
 
 </body>
 </html>

@@ -1,4 +1,4 @@
-define(function() {
+define([], function() {
     /** Removes whitespace from the beginning and end of a string **/
     var trim = function (inputString) {
         return inputString.replace(/^\s+|\s+$/g, '');

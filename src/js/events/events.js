@@ -1,19 +1,12 @@
-/**
- * Event namespace definition for the JW Player
- *
- * @author pablo
- * @version 6.0
- */
-(function(jwplayer) {
-
-    jwplayer.utils.touchEvents = {
+define([], function() {
+    var touchEvents = {
         DRAG: 'jwplayerDrag',
         DRAG_START: 'jwplayerDragStart',
         DRAG_END: 'jwplayerDragEnd',
         TAP: 'jwplayerTap'
     };
 
-    jwplayer.events = {
+    var events = {
         // General Events
         COMPLETE: 'COMPLETE',
         ERROR: 'ERROR',
@@ -95,4 +88,9 @@
 
     };
 
-})(jwplayer);
+
+    return {
+        events: events,
+        touchEvents: touchEvents
+    };
+});

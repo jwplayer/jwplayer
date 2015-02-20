@@ -7,11 +7,16 @@ define([
     'utils/extensionmap',
     'underscore'
 ], function(helpers, css, strings, scriptloader, touch, extensionmap, _) {
-    return _.extend(helpers, {
+    var utils = _.extend(helpers, {
         css : css,
         strings : strings,
         scriptloader : scriptloader,
         touch : touch,
         extensionmap : extensionmap
     });
+
+    // For testing
+    // window.jwplayer = {utils : utils};
+
+    return utils;
 });

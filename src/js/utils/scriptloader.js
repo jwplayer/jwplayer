@@ -1,9 +1,9 @@
-define(['Events', 'underscore'], function(Events, _) {
+define(['events/events', 'events/eventdispatcher', 'underscore'], function(events, eventdispatcher, _) {
 
     var _loaders = {};
 
     var scriptloader = function (url) {
-        var _this = _.extend(this, new Events.eventdispatcher()),
+        var _this = _.extend(this, new eventdispatcher()),
             _status = _loaderstatus.NEW;
 
         this.load = function () {
@@ -18,8 +18,8 @@ define(['Events', 'underscore'], function(Events, _) {
                 _status = sameLoader.getStatus();
                 if (_status < 2) {
                     // dispatch to this instances listeners when the first loader gets updates
-                    sameLoader.addEventListener(Events.ERROR, _sendError);
-                    sameLoader.addEventListener(Events.COMPLETE, _sendComplete);
+                    sameLoader.addEventListener(events.ERROR, _sendError);
+                    sameLoader.addEventListener(events.COMPLETE, _sendComplete);
                     return;
                 }
                 // already errored or loaded... keep going?
@@ -53,12 +53,12 @@ define(['Events', 'underscore'], function(Events, _) {
 
         function _sendError(evt) {
             _status = _loaderstatus.ERROR;
-            _this.sendEvent(Events.ERROR, evt);
+            _this.sendEvent(events.ERROR, evt);
         }
 
         function _sendComplete(evt) {
             _status = _loaderstatus.COMPLETE;
-            _this.sendEvent(Events.COMPLETE, evt);
+            _this.sendEvent(events.COMPLETE, evt);
         }
 
 
