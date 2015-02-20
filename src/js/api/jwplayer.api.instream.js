@@ -1,12 +1,14 @@
-(function(jwplayer) {
-    var EVENTS = jwplayer.events,
-        utils = jwplayer.utils,
-        _ = jwplayer._,
-        states = EVENTS.state;
+define([
+    'utils/backbone.events',
+    'events/events',
+    'underscore',
+    'utils/helpers',
+    'states'
+], function(Events, EVENTS, _, utils, states) {
 
-    jwplayer.api.instream = function(_api, _player) {
+    var Instream = function(_api, _player) {
 
-        var events = utils.extend({}, jwplayer.utils.Events);
+        var events = utils.extend({}, Events);
 
         var _item,
             _options,
@@ -90,6 +92,7 @@
         _this.removeEvents = events.off;
         _this.removeEventListener = events.off;
         _this.dispatchEvent = events.trigger;
-
     };
-})(jwplayer);
+
+    return Instream;
+});

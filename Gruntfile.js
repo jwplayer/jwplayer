@@ -15,7 +15,7 @@ module.exports = function(grunt) {
                     'src/js/jwplayer.js',
                     'src/js/utils/jwplayer.underscore.js',
                     'src/js/utils/jwplayer.utils.js',
-                    'src/js/utils/jwplayer.backbone.js',
+                    'src/js/utils/backbone.events.js',
                     'src/js/utils/jwplayer.utils.*.js',
                     'src/js/events/jwplayer.events.js',
                     'src/js/events/jwplayer.events.*.js',

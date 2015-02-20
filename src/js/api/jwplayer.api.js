@@ -1,10 +1,14 @@
-(function(jwplayer, undefined) {
+define([
+    'utils/helpers',
+    'events/events',
+    'underscore',
+    'api/instream',
+    'plugins',
+    'embed/embed',
+    'states'
+], function(utils, events, _, Instream, plugins, Embed, states) {
     var _instances = [],
-        utils = jwplayer.utils,
-        events = jwplayer.events,
-        _ = jwplayer._,
-        _uniqueIndex = 0,
-        states = events.state;
+        _uniqueIndex = 0;
 
     function addFocusBorder(container) {
         utils.addClass(container, 'jw-tab-focus');
@@ -100,7 +104,7 @@
         onIdle: states.IDLE
     };
 
-    jwplayer.api = function(container) {
+    var Api = function (container) {
         var _this = this,
             _originalContainer = container,
             _listeners = {},
@@ -115,27 +119,23 @@
         _this.container = container;
         _this.id = container.id;
 
-        _this.setup = function(options) {
-            if (jwplayer.embed) {
-
+        _this.setup = function (options) {
                 // Remove any players that may be associated to this DOM element
                 _this.remove();
 
-                jwplayer.api.addPlayer(_this);
+                Api.addPlayer(_this);
 
                 _this.config = options;
-                _this._embedder = new jwplayer.embed(_this);
+                _this._embedder = new Embed(_this);
                 _this._embedder.embed();
                 return _this;
-            }
-            return _this;
         };
 
-        _this.getContainer = function() {
+        _this.getContainer = function () {
             return _this.container;
         };
 
-        _this.addButton = function(icon, label, handler, id) {
+        _this.addButton = function (icon, label, handler, id) {
             try {
                 _callbacks[id] = handler;
                 var handlerString = 'jwplayer("' + _this.id + '").callback("' + id + '")';
@@ -144,35 +144,34 @@
                 utils.log('Could not add dock button' + e.message);
             }
         };
-        _this.removeButton = function(id) {
+        _this.removeButton = function (id) {
             _callInternal('jwDockRemoveButton', id);
         };
 
-        _this.callback = function(id) {
+        _this.callback = function (id) {
             if (_callbacks[id]) {
                 _callbacks[id]();
             }
         };
 
-        _this.getMeta = function() {
+        _this.getMeta = function () {
             return _this.getItemMeta();
         };
-        _this.getPlaylist = function() {
-            var playlist = _callInternal('jwGetPlaylist');
-            return playlist;
+        _this.getPlaylist = function () {
+            return _callInternal('jwGetPlaylist');
         };
-        _this.getPlaylistItem = function(item) {
+        _this.getPlaylistItem = function (item) {
             if (!utils.exists(item)) {
                 item = _this.getPlaylistIndex();
             }
             return _this.getPlaylist()[item];
         };
-        _this.getRenderingMode = function() {
+        _this.getRenderingMode = function () {
             return 'html5';
         };
 
         // Player Public Methods
-        _this.setFullscreen = function(fullscreen) {
+        _this.setFullscreen = function (fullscreen) {
             if (!utils.exists(fullscreen)) {
                 _callInternal('jwSetFullscreen', !_callInternal('jwGetFullscreen'));
             } else {
@@ -180,7 +179,7 @@
             }
             return _this;
         };
-        _this.setMute = function(mute) {
+        _this.setMute = function (mute) {
             if (!utils.exists(mute)) {
                 _callInternal('jwSetMute', !_callInternal('jwGetMute'));
             } else {
@@ -188,13 +187,13 @@
             }
             return _this;
         };
-        _this.lock = function() {
+        _this.lock = function () {
             return _this;
         };
-        _this.unlock = function() {
+        _this.unlock = function () {
             return _this;
         };
-        _this.load = function(toLoad) {
+        _this.load = function (toLoad) {
             _callInternal('jwInstreamDestroy');
             if (jwplayer(_this.id).plugins.googima) {
                 _callInternal('jwDestroyGoogima');
@@ -202,15 +201,15 @@
             _callInternal('jwLoad', toLoad);
             return _this;
         };
-        _this.playlistItem = function(item) {
+        _this.playlistItem = function (item) {
             _callInternal('jwPlaylistItem', parseInt(item, 10));
             return _this;
         };
-        _this.resize = function(width, height) {
+        _this.resize = function (width, height) {
             _callInternal('jwResize', width, height);
             return _this;
         };
-        _this.play = function(state) {
+        _this.play = function (state) {
             if (state !== undefined) {
                 _callInternal('jwPlay', state);
                 return _this;
@@ -237,7 +236,7 @@
             return _this;
         };
 
-        _this.pause = function(state) {
+        _this.pause = function (state) {
             if (state === undefined) {
                 state = _this.getState();
                 if (state === states.PLAYING || state === states.BUFFERING) {
@@ -250,26 +249,26 @@
             }
             return _this;
         };
-        _this.createInstream = function() {
-            return new jwplayer.api.instream(this, _player);
+        _this.createInstream = function () {
+            return new Instream(this, _player);
         };
-        _this.setInstream = function(instream) {
+        _this.setInstream = function (instream) {
             _instream = instream;
             return instream;
         };
-        _this.loadInstream = function(item, options) {
+        _this.loadInstream = function (item, options) {
             _instream = _this.setInstream(_this.createInstream()).init(options);
             _instream.loadItem(item);
             return _instream;
         };
-        _this.destroyPlayer = function() {
+        _this.destroyPlayer = function () {
             // so players can be removed before loading completes
             _playerReady = true;
             _callInternal('jwPlayerDestroy');
             _playerReady = false;
             _player = null;
         };
-        _this.playAd = function(ad) {
+        _this.playAd = function (ad) {
             var plugins = jwplayer(_this.id).plugins;
             if (plugins.vast) {
                 plugins.vast.jwPlayAd(ad);
@@ -277,7 +276,7 @@
                 _callInternal('jwPlayAd', ad);
             }
         };
-        _this.pauseAd = function() {
+        _this.pauseAd = function () {
             var plugins = jwplayer(_this.id).plugins;
             if (plugins.vast) {
                 plugins.vast.jwPauseAd();
@@ -289,8 +288,8 @@
 
         // Take a mapping of function names to event names and setup listeners
         function initializeMapping(mapping, listener) {
-            utils.foreach(mapping, function(name, value) {
-                _this[name] = function(callback) {
+            utils.foreach(mapping, function (name, value) {
+                _this[name] = function (callback) {
                     return listener(value, callback);
                 };
             });
@@ -304,7 +303,7 @@
         function generateInternalFunction(name) {
             var internalName = 'jw' + name.charAt(0).toUpperCase() + name.slice(1);
 
-            _this[name] = function() {
+            _this[name] = function () {
                 var value = _callInternal.apply(this, [internalName].concat(Array.prototype.slice.call(arguments, 0)));
 
                 if (_.has(_chainableInternalFuncs, name)) {
@@ -317,7 +316,7 @@
         _.each(_internalFuncsToGenerate.concat(_chainableInternalFuncs), generateInternalFunction);
 
 
-        _this.remove = function() {
+        _this.remove = function () {
 
             // Cancel embedding even if it is in progress
             if (_this._embedder && _this._embedder.destroy) {
@@ -327,10 +326,10 @@
             _queuedCalls = [];
 
             // Is there more than one player using the same DIV on the page?
-            var sharedDOM = (_.size(_.where(_instances, {id : _this.id})) > 1);
+            var sharedDOM = (_.size(_.where(_instances, {id: _this.id})) > 1);
 
             // If sharing the DOM element, don't reset CSS
-            if (! sharedDOM) {
+            if (!sharedDOM) {
                 utils.clearCss('#' + _this.id);
             }
 
@@ -347,30 +346,30 @@
             }
 
             // Remove from array of players
-            _instances = _.filter(_instances, function(p) {
+            _instances = _.filter(_instances, function (p) {
                 return (p.uniqueId !== _this.uniqueId);
             });
         };
 
 
-        _this.registerPlugin = function(id, target, arg1, arg2) {
-            jwplayer.plugins.registerPlugin(id, target, arg1, arg2);
+        _this.registerPlugin = function (id, target, arg1, arg2) {
+            plugins.registerPlugin(id, target, arg1, arg2);
         };
 
-        _this.setPlayer = function(player) {
+        _this.setPlayer = function (player) {
             _player = player;
         };
 
-        _this.detachMedia = function() {
+        _this.detachMedia = function () {
             return _callInternal('jwDetachMedia');
         };
 
-        _this.attachMedia = function(seekable) {
+        _this.attachMedia = function (seekable) {
             return _callInternal('jwAttachMedia', seekable);
         };
 
 
-        _this.getAudioTracks = function() {
+        _this.getAudioTracks = function () {
             return _callInternal('jwGetAudioTracks');
         };
 
@@ -384,7 +383,7 @@
         }
 
         function _stateCallback(state) {
-            return function(args) {
+            return function (args) {
                 var newstate = args.newstate,
                     oldstate = args.oldstate;
                 if (newstate === state) {
@@ -405,7 +404,7 @@
         }
 
         function _addInternalListener(player, type) {
-            player.jwAddEventListener(type, function(dat) {
+            player.jwAddEventListener(type, function (dat) {
                 jwplayer(player.id).dispatchEvent(type, dat);
             });
         }
@@ -421,7 +420,7 @@
             return _this;
         }
 
-        _this.removeEventListener = function(type, callback) {
+        _this.removeEventListener = function (type, callback) {
             var listeners = _listeners[type];
             if (listeners) {
                 for (var l = listeners.length; l--;) {
@@ -432,7 +431,7 @@
             }
         };
 
-        _this.dispatchEvent = function(type) {
+        _this.dispatchEvent = function (type) {
             var listeners = _listeners[type];
             if (listeners) {
                 listeners = listeners.slice(0); //copy array
@@ -454,7 +453,7 @@
             }
         };
 
-        _this.dispatchInstreamEvent = function(type) {
+        _this.dispatchInstreamEvent = function (type) {
             if (_instream) {
                 _instream.dispatchEvent(type, arguments);
             }
@@ -474,7 +473,7 @@
 
         _this.callInternal = _callInternal;
 
-        _this.playerReady = function(obj) {
+        _this.playerReady = function (obj) {
             _playerReady = true;
 
             if (!_player) {
@@ -482,19 +481,19 @@
             }
             _this.container = document.getElementById(_this.id);
 
-            utils.foreach(_listeners, function(eventType) {
+            utils.foreach(_listeners, function (eventType) {
                 _addInternalListener(_player, eventType);
             });
 
-            _eventListener(events.JWPLAYER_PLAYLIST_ITEM, function() {
+            _eventListener(events.JWPLAYER_PLAYLIST_ITEM, function () {
                 _itemMeta = {};
             });
 
-            _eventListener(events.JWPLAYER_MEDIA_META, function(data) {
+            _eventListener(events.JWPLAYER_MEDIA_META, function (data) {
                 utils.extend(_itemMeta, data.metadata);
             });
 
-            _eventListener(events.JWPLAYER_VIEW_TAB_FOCUS, function(data) {
+            _eventListener(events.JWPLAYER_VIEW_TAB_FOCUS, function (data) {
                 var container = _this.getContainer();
                 if (data.hasFocus === true) {
                     addFocusBorder(container);
@@ -510,7 +509,7 @@
             }
         };
 
-        _this.getItemMeta = function() {
+        _this.getItemMeta = function () {
             return _itemMeta;
         };
 
@@ -522,16 +521,16 @@
     // API Static methods
     //
 
-    jwplayer.playerReady = function(obj) {
-        var api = jwplayer.api.playerById(obj.id);
-        if (!api) {
-            api = jwplayer.api.selectPlayer(obj.id);
-        }
+    // TODO : Fix from amd-ification
+    // jwplayer.playerReady = function (obj) {
+        // var api = Api.playerById(obj.id);
+        // if (!api) {
+            // api = Api.selectPlayer(obj.id);
+        // }
+        // api.playerReady(obj);
+    // };
 
-        api.playerReady(obj);
-    };
-
-    jwplayer.api.selectPlayer = function(identifier) {
+    Api.selectPlayer = function (identifier) {
         var _container;
 
         if (!utils.exists(identifier)) {
@@ -547,11 +546,11 @@
         }
 
         if (_container) {
-            var foundPlayer = jwplayer.api.playerById(_container.id);
+            var foundPlayer = Api.playerById(_container.id);
             if (foundPlayer) {
                 return foundPlayer;
             } else {
-                return (new jwplayer.api(_container));
+                return (new Api(_container));
             }
         } else if (typeof identifier === 'number') {
             return _instances[identifier];
@@ -561,7 +560,7 @@
     };
 
 
-    jwplayer.api.playerById = function(id) {
+    Api.playerById = function (id) {
         for (var p = 0; p < _instances.length; p++) {
             if (_instances[p].id === id) {
                 return _instances[p];
@@ -571,7 +570,7 @@
         return null;
     };
 
-    jwplayer.api.addPlayer = function(api) {
+    Api.addPlayer = function (api) {
         for (var p = 0; p < _instances.length; p++) {
             if (_instances[p] === api) {
                 return api; // Player is already in the list;
@@ -584,5 +583,5 @@
         return api;
     };
 
-
-})(window.jwplayer);
+    return Api;
+});
