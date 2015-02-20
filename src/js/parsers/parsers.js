@@ -1,13 +1,6 @@
-/**
- * Parsers namespace declaration
- *
- * @author pablo
- * @version 6.0
- */
-(function(jwplayer) {
-
-    jwplayer.parsers = {
-        localName: function(node) {
+define(['utils/strings'], function(stringUtils) {
+    return {
+        localName: function (node) {
             if (!node) {
                 return '';
             } else if (node.localName) {
@@ -18,21 +11,21 @@
                 return '';
             }
         },
-        textContent: function(node) {
+        textContent: function (node) {
             if (!node) {
                 return '';
             } else if (node.textContent) {
-                return jwplayer.utils.trim(node.textContent);
+                return stringUtils.trim(node.textContent);
             } else if (node.text) {
-                return jwplayer.utils.trim(node.text);
+                return stringUtils.trim(node.text);
             } else {
                 return '';
             }
         },
-        getChildNode: function(parent, index) {
+        getChildNode: function (parent, index) {
             return parent.childNodes[index];
         },
-        numChildren: function(parent) {
+        numChildren: function (parent) {
             if (parent.childNodes) {
                 return parent.childNodes.length;
             } else {
@@ -41,4 +34,4 @@
         }
 
     };
-})(jwplayer);
+});

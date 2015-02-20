@@ -21,7 +21,7 @@ module.exports = function(grunt) {
                     'src/js/events/jwplayer.events.*.js',
                     'src/js/plugins/jwplayer.plugins.js',
                     'src/js/plugins/jwplayer.plugins.*.js',
-                    'src/js/parsers/jwplayer.parsers.js',
+                    'src/js/parsers/parsers.js',
                     'src/js/parsers/jwplayer.parsers.*.js',
                     'src/js/playlist/playlist.js',
                     'src/js/playlist/jwplayer.playlist.*.js',

@@ -5,10 +5,10 @@
  * @modified pablo
  * @version 6.0
  */
-(function(jwplayer) {
-    var _parsers = jwplayer.parsers;
-
-    var jwparser = _parsers.jwparser = function() {};
+define([
+    'parsers/parser',
+    'utils/helpers'
+], function(parserUtils, utils) {
 
     var PREFIX = 'jwplayer';
 
@@ -21,10 +21,10 @@
      *            itm The playlistentry to amend the object to.
      * @return {Object} The playlistentry, amended with the JWPlayer info.
      */
-    jwparser.parseEntry = function(obj, itm) {
+    var parseEntry = function (obj, itm) {
         var sources = [],
             tracks = [],
-            _xmlAttribute = jwplayer.utils.xmlAttribute,
+            _xmlAttribute = utils.xmlAttribute,
             def = 'default',
             label = 'label',
             file = 'file',
@@ -32,7 +32,7 @@
         for (var i = 0; i < obj.childNodes.length; i++) {
             var node = obj.childNodes[i];
             if (node.prefix === PREFIX) {
-                var _localName = _parsers.localName(node);
+                var _localName = parserUtils.localName(node);
                 if (_localName === 'source') {
                     delete itm.sources;
                     sources.push({
@@ -50,7 +50,7 @@
                         label: _xmlAttribute(node, label)
                     });
                 } else {
-                    itm[_localName] = jwplayer.utils.serialize(_parsers.textContent(node));
+                    itm[_localName] = utils.serialize(parserUtils.textContent(node));
                     if (_localName === 'file' && itm.sources) {
                         // jwplayer namespace file should override existing source
                         // (probably set in MediaParser)
@@ -93,4 +93,6 @@
         }
         return itm;
     };
-})(jwplayer);
+
+    return parseEntry;
+});

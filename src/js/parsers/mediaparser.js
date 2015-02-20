@@ -5,15 +5,16 @@
  * modified pablo
  * version 6.0
  */
-(function(parsers) {
-    var utils = jwplayer.utils,
-        _xmlAttribute = utils.xmlAttribute,
+define([
+    'utils/helpers',
+    'parsers/parsers'
+], function(utils, parsers) {
+
+    var _xmlAttribute = utils.xmlAttribute,
         _localName = parsers.localName,
         _textContent = parsers.textContent,
         _numChildren = parsers.numChildren;
 
-
-    var mediaparser = parsers.mediaparser = function() {};
 
     /** Prefix for the MRSS namespace. **/
     var PREFIX = 'media';
@@ -21,11 +22,12 @@
     /**
      * Parse a feeditem for Yahoo MediaRSS extensions.
      * The 'content' and 'group' elements can nest other MediaRSS elements.
-     * @param	{XML}		obj		The entire MRSS XML object.
-     * @param	{Object}	itm		The playlistentry to amend the object to.
-     * @return	{Object}			The playlistentry, amended with the MRSS info.
+     * @param    {XML}        obj        The entire MRSS XML object.
+     * @param    {Object}    itm        The playlistentry to amend the object to.
+     * @return    {Object}            The playlistentry, amended with the MRSS info.
      **/
-    mediaparser.parseGroup = function(obj, itm) {
+    // formally known as parseGroup
+    var mediaparser = function (obj, itm) {
         var node,
             i,
             tracks = 'tracks',
@@ -64,7 +66,7 @@
                             itm.duration = utils.seconds(_xmlAttribute(node, 'duration'));
                         }
                         if (_numChildren(node) > 0) {
-                            itm = mediaparser.parseGroup(node, itm);
+                            itm = mediaparser(node, itm);
                         }
                         if (_xmlAttribute(node, 'url')) {
                             if (!itm.sources) {
@@ -96,7 +98,7 @@
                         // var url = node.url;
                         break;
                     case 'group':
-                        mediaparser.parseGroup(node, itm);
+                        mediaparser(node, itm);
                         break;
                     case 'subtitle':
                         var entry = {};
@@ -121,4 +123,5 @@
         return itm;
     };
 
-})(jwplayer.parsers);
+    return mediaparser;
+});

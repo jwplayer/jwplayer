@@ -5,14 +5,19 @@
  * @modified pablo
  * @version 6.0
  */
-(function(parsers) {
-    var utils = jwplayer.utils,
-        _textContent = parsers.textContent,
+define([
+    'utils/helpers',
+    'parsers/parsers',
+    'parsers/media',
+    'parsers/element',
+    'playlist/item'
+], function(utils, parsers, parseEntry, mediaParser, PlaylistItem) {
+    var _textContent = parsers.textContent,
         _getChildNode = parsers.getChildNode,
         _numChildren = parsers.numChildren,
         _localName = parsers.localName;
 
-    parsers.rssparser = {};
+    var rssparser = {};
 
 
     /**
@@ -21,7 +26,7 @@
      * @param {XML} dat
      * @reuturn {Array} playlistarray
      */
-    parsers.rssparser.parse = function(dat) {
+    rssparser.parse = function (dat) {
         var arr = [];
         for (var i = 0; i < _numChildren(dat); i++) {
             var node = _getChildNode(dat, i),
@@ -39,7 +44,7 @@
     };
 
 
-    /** 
+    /**
      * Translate RSS item to playlist item.
      *
      * @param {XML} obj
@@ -81,13 +86,12 @@
                     break;
             }
         }
-        itm = parsers.mediaparser.parseGroup(obj, itm);
-        itm = parsers.jwparser.parseEntry(obj, itm);
+        itm = mediaParser(obj, itm);
+        itm = parseEntry(obj, itm);
 
-        return new jwplayer.playlist.item(itm);
+        return new PlaylistItem(itm);
     }
 
+    return rssparser;
 
-
-
-})(jwplayer.parsers);
+});

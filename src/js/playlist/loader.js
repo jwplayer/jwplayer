@@ -1,6 +1,11 @@
-define(['utils/helpers', 'events/eventdispatcher', 'events/events'], function(utils, eventdispatcher, events) {
-
-    var parsers = jwplayer.parsers;
+define([
+    'playlist',
+    'parsers/parsers',
+    'parsers/rss',
+    'utils/helpers',
+    'events/eventdispatcher',
+    'events/events'
+], function(Playlist, parsers, rssParser, utils, eventdispatcher, events) {
 
     var PlaylistLoader = function() {
         var _eventDispatcher = new eventdispatcher();
@@ -30,7 +35,7 @@ define(['utils/helpers', 'events/eventdispatcher', 'events/events'], function(ut
                     return;
                 }
 
-                var pl = new jwplayer.playlist(parsers.rssparser.parse(rss));
+                var pl = new Playlist(rssParser.parse(rss));
                 _eventDispatcher.sendEvent(events.JWPLAYER_PLAYLIST_LOADED, {
                     playlist: pl
                 });
