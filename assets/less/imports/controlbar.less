@@ -1,0 +1,246 @@
+@import "vars.less";
+
+span.jwcontrolbar {
+	position:absolute;
+	margin:auto;
+	height: @controlbar-height;
+	-webkit-transition:opacity .25s background .25s visibility .25s;
+	transition:opacity .25s background .25s visibility .25s;
+	left: @ui-margin;
+	right: @ui-margin;
+	bottom: @ui-margin;
+}
+
+span.jwcontrolbar span {
+height:100%;
+-webkit-user-select:none;
+-webkit-user-drag:none;
+}
+
+span.jwcontrolbar .jwgroup {
+display:table-cell;
+}
+
+// control bar content (icons/text)
+span.jwcontrolbar .jwgroup > span {
+	padding: 0 0.20em;
+	display: inline-block;
+	font-size:1em;
+	line-height: @controlbar-height;
+	height: @controlbar-height;
+}
+
+span.jwcontrolbar .jwgroup .jwslider.jwtime {
+	margin: @time-rail-width/2 0;
+	height: @time-rail-width;
+}
+
+.jwplayer .jwcontrols .jwicon button {
+	color: @inactive-color;
+}
+
+span.jwcontrolbar span,span.jwcontrolbar .jwgroup button,span.jwcontrolbar .jwleft {
+	position:relative;
+	float:left;
+}
+
+span.jwcontrolbar .jwright {
+	position:relative;
+	float:right;
+}
+
+span.jwcontrolbar .jwcenter {
+position:absolute;
+}
+
+span.jwcontrolbar button {
+display:inline-block;
+height:100%;
+border:none;
+cursor:pointer;
+-webkit-transition:opacity .25s background .25s visibility .25s;
+transition:opacity .25s background .25s visibility .25s;
+}
+
+span.jwcontrolbar .jwtime {
+position:absolute;
+height:100%;
+width:100%;
+left:0;
+height: @inactive-color;
+}
+
+span.jwcontrolbar .jwthumb {
+position:absolute;
+height:100%;
+cursor:pointer;
+}
+
+span.jwcontrolbar .jwrail {
+position:absolute;
+cursor:pointer;
+}
+
+span.jwcontrolbar .jwrailgroup {
+position:absolute;
+width:100%;
+border-radius: 0.5em
+}
+
+span.jwcontrolbar .jwrailgroup span {
+position:absolute;
+}
+
+span.jwcontrolbar .jwdivider + .jwdivider {
+display:none;
+}
+
+span.jwcontrolbar .jwtext {
+	text-align:center;
+	font-style:normal;
+	font-variant:normal;
+	font-stretch:normal;
+	
+	font-family:Arial, sans-serif;
+	color:rgb(0,0,210);
+	font-weight:normal;
+}
+
+span.jwcontrolbar .jwcast {
+display:none;
+}
+
+span.jwcontrolbar .jwcast.jwcancast {
+display:block;
+}
+
+span.jwcontrolbar .jwalt {
+display:none;
+overflow:hidden;
+position:absolute!important;
+left:0!important;
+right:0!important;
+text-align:left!important;
+}
+
+span.jwcontrolbar .jwvertical * {
+display:block;
+}
+
+span.jwcontrolbar .jwvertical .jwvolumeProgress {
+height:auto!important;
+}
+
+span.jwcontrolbar .jwprogressOverflow {
+position:absolute;
+overflow:hidden;
+}
+
+span.jwcontrolbar .jwtoggling {
+-webkit-transition:none;
+transition:none;
+}
+
+#container_controlbar {
+	background: @def-background-style;
+	left: @ui-margin;
+	right: @ui-margin;
+	bottom: @ui-margin;
+	max-width: @max-width;
+}
+
+#container_controlbar .jwrailgroup.Rail {
+	background-color: @rail-color;
+}
+
+#container_controlbar .jwtimeSliderBuffer {
+	background-color: @buffer-color;
+}
+
+#container_controlbar .jwrailgroup.Buffer {
+	background-color: @buffer-color;
+}
+
+#container_controlbar .jwrailgroup.Progress {
+	background-color: @progress-color;
+}
+
+#container_controlbar .jwtimeSliderThumb button {
+	font-size: @time-rail-width;
+	margin-left: -0.5em;
+	color: #0f0;
+}
+
+#container_controlbar .jwslider.jwvolume button {
+	font-size: @volume-rail-width;
+	color: #0f0;
+}
+
+#container_controlbar .jwslider.jwvertical button {
+	margin-bottom: 1em;
+}
+
+#container_controlbar .jwslider.jwhorizontal button {
+	margin-right: 1em;
+}
+
+#container_controlbar .jwtime .jwrail {
+	left:0;
+	right:0;
+}
+
+#container_controlbar_timetooltip .jwcontents * {
+color:rgb(172,172,172);
+font-style:normal;
+font-variant:normal;
+font-weight:normal;
+font-stretch:normal;
+font-size:11px;
+line-height:normal;
+font-family:Arial, Helvetica, sans-serif;
+}
+
+#container_controlbar .jwtimeSliderCue {
+width:16px;
+z-index:1;
+margin-left:-8px;
+}
+
+#container_controlbar .jwvertical .jwvolumeRail {
+width:14px;
+height:52px;
+}
+
+#container_controlbar .jwvolumeRail {
+top:4px;
+bottom:4px;
+height:auto;
+}
+
+#container_controlbar .jwvertical .jwvolumeProgress {
+width:14px;
+height:52px;
+}
+
+#container_controlbar .jwvolumeProgress {
+top:4px;
+bottom:4px;
+height:auto;
+}
+
+#container_controlbar .jwvertical .jwvolumeThumb {
+width:14px;
+height:16px;
+}
+
+#container_controlbar .jwvolumeThumb {
+opacity:1;
+margin-top:-8px;
+}
+
+#container_controlbar .jwvolume .jwrail {
+top:5px;
+bottom:5px;
+width:100%;
+height:auto;
+}

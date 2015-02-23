@@ -75,6 +75,33 @@ module.exports = function(grunt) {
             }
         },
 
+        // Compiles and lints Less/CSS to CSS
+        recess: {
+            dist: {
+                options: {
+                    compile: true,
+                    compress: true,
+                    paths: ['assets/less', 'assets/less/*'],
+                    ieCompat: false
+                },
+                files: {
+                    'bin-debug/css/jwplayer.css' : 'assets/less/*.less'
+                }
+            }
+		},
+
+
+		autoprefixer: {
+            options: {
+	            browsers: ['chrome 32']
+	        },
+	        dist: {
+	            src: 'bin-debug/css/jwplayer.css',
+	            dest: 'bin-debug/css/jwplayer.css'
+	        }
+	    },
+
+
         uglify : {
             options: {
                 report: 'gzip',
@@ -107,6 +134,12 @@ module.exports = function(grunt) {
                     'src/flash/com/wowsa/{,*/}*.as'
                 ],
                 tasks: ['flash:debug']
+            },
+			css: {
+                files: [
+                    'assets/less/*.less',
+                    'assets/less/imports/*.less'],
+                tasks: ['build-css']
             },
             grunt: {
                 files: ['.jshintrc', 'Gruntfile.js'],
@@ -201,6 +234,14 @@ module.exports = function(grunt) {
             }
             done(!err);
         });
+    });
+
+    grunt.registerTask('build-css', function() {
+        grunt.task.run([
+            //'clean:css',
+            'recess',
+            'autoprefixer'
+        ]);
     });
 
     grunt.registerTask('default', [

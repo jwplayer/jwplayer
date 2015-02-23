@@ -1,0 +1,73 @@
+@import "vars.less";
+
+@font-face {
+	font-family: 'IcoMoon-Free';
+	src: url('../fonts/IcoMoon-Free.eot'); /* IE9 Compat Modes */
+	src: url('../fonts/IcoMoon-Free.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+		url('../fonts/IcoMoon-Free.woff') format('woff'), /* Pretty Modern Browsers */
+		url('../fonts/IcoMoon-Free.ttf')  format('truetype'), /* Safari, Android, iOS */
+		url('../fonts/IcoMoon-Free.svg#svgFontName') format('svg'); /* Legacy iOS */
+	font-weight: normal;
+	font-style: normal;
+}
+
+.jwplayer .jwicon button, .jwcontrolbar .jwoverlay .jwoption:before {
+	background-color: transparent;
+	font-family: 'IcoMoon-Free';
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+	
+	/* Enable Ligatures ================ */
+	-webkit-font-feature-settings: "liga";
+	-moz-font-feature-settings: "liga=1";
+	-moz-font-feature-settings: "liga";
+	-ms-font-feature-settings: "liga" 1;
+	-o-font-feature-settings: "liga";
+	font-feature-settings: "liga";
+
+	/* Better Font Rendering =========== */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+/*** ICONS ***/
+#container_controlbar .jwplay button:after {
+	content: "\ea1c";
+}
+
+#container_controlbar .jwprev button:after {
+	content: "\ea23";
+}
+
+#container_controlbar .jwnext button:after {
+	content: "\ea24";
+}
+
+#container_controlbar .jwmute button:after {
+	content: "\ea26";
+}
+
+#container_controlbar .jwfullscreen button:after {
+	content: "\e98b";
+}
+
+#container_controlbar .jwcast button:after {
+	content: "\e95b";
+}
+
+#container_controlbar .jwcc button:after {
+	content: "\ea6d";
+}
+
+#container_controlbar .jwhd button:after {
+	content: "\e994";
+}
+
+#container_controlbar .jwthumb button:after {
+	content: "\ea55";
+}
+

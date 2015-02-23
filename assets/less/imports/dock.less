@@ -1,0 +1,60 @@
+.jwdock {
+opacity:0;
+display:none;
+-webkit-transition:background .25s opacity .25s;
+transition:background .25s opacity .25s;
+}
+
+.jwdock > * {
+height:100%;
+float:left;
+}
+
+.jwdock > .jwoverlay {
+height:auto;
+float:none;
+z-index:99;
+}
+
+.jwdockbuttons {
+	height: 2em;
+}
+
+.jwdockbuttons div.button {
+position:relative;
+}
+
+.jwdockbuttons > * {
+height:100%;
+float:left;
+}
+
+.jwdockbuttons .divider {
+display:none;
+}
+
+.jwdockbuttons div.button ~ .divider {
+display:block;
+}
+
+
+.jwdockbuttons div.button > div {
+left:0;
+right:0;
+top:0;
+bottom:0;
+margin:5px;
+position:absolute;
+background-position:50% 50%;
+background-repeat:no-repeat;
+}
+
+.jwdock .jwoverlay {
+-webkit-transition:opacity .25s;
+transition:opacity .25s;
+}
+
+.jwdockbuttons div.button div {
+-webkit-transition:opacity .25s;
+transition:opacity .25s;
+}
