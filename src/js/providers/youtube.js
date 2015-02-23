@@ -477,6 +477,10 @@ define([
                 _lastVolume = Math.min(Math.max(0, volume), 100);
                 _youtubePlayer.setVolume(_lastVolume);
             }
+
+            _this.sendEvent(events.JWPLAYER_MEDIA_VOLUME, {
+                volume: _lastVolume
+            });
         };
 
         function _volumeHandler() {
@@ -506,6 +510,9 @@ define([
                 this.volume(_lastVolume);
                 _youtubePlayer.unMute();
             }
+            _this.sendEvent(events.JWPLAYER_MEDIA_MUTE, {
+                mute: state
+            });
         };
 
         this.detachMedia = function() {
