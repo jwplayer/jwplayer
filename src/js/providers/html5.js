@@ -1,12 +1,15 @@
 define([
+    'utils/css',
     'utils/helpers',
     'utils/extensionmap',
+    'utils/strings',
+    'utils/stretching',
     'underscore',
     'events/events',
     'events/states',
     'utils/eventdispatcher',
     'providers/default'
-], function(utils, extensionmap, _, events, states, eventdispatcher, DefaultProvider) {
+], function(cssUtils, utils, extensionmap, strings, stretchUtils, _, events, states, eventdispatcher, DefaultProvider) {
 
     var clearInterval = window.clearInterval,
         _isIE = utils.isMSIE(),
@@ -649,12 +652,12 @@ define([
                 // the pause event to be fired. This causes audio files to 
                 // become unplayable. Hence the video tag is always kept 
                 // visible on Android devices.
-                utils.css.style(_container, {
+                cssUtils.style(_container, {
                     visibility: 'visible',
                     opacity: 1
                 });
             } else {
-                utils.css.style(_container, {
+                cssUtils.style(_container, {
                     visibility: '',
                     opacity: 0
                 });
@@ -662,7 +665,7 @@ define([
         };
 
         this.resize = function(width, height, stretching) {
-            return utils.stretch(stretching,
+            return stretchUtils.stretch(stretching,
                 _videotag,
                 width, height,
                 _videotag.videoWidth, _videotag.videoHeight);
@@ -768,7 +771,7 @@ define([
             return false;
         }
 
-        var extension = utils.extension(file);
+        var extension = strings.extension(file);
         type = type || extensionmap.extType(extension);
 
         // HLS not sufficiently supported on Android devices; should fail over automatically.

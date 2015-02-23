@@ -6,6 +6,8 @@ define([
 
     var config = function (options) {
 
+        options = options || {};
+
         var config = _.extend({}, {
             fallback: true, // enable download embedder
             width: 480,

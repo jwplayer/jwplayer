@@ -1,11 +1,12 @@
 define([
     'utils/helpers',
     'utils/css'
-], function(utils, _css) {
+], function(utils, cssUtils) {
 
     var _version = jwplayer.version;
 
-    var ABOUT_DEFAULT = 'About JW Player ',
+    var _css = cssUtils.css,
+        ABOUT_DEFAULT = 'About JW Player ',
         LINK_DEFAULT = 'http://www.longtailvideo.com/jwpabout/?a=r&v=',
 
         DOCUMENT = document,

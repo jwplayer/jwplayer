@@ -1,4 +1,11 @@
-define(['plugins/utils', 'utils/helpers', 'events/events', 'underscore', 'utils/scriptloader'], function(pluginUtils, helpers, events, _, scriptloader) {
+define([
+    'plugins/utils',
+    'utils/helpers',
+    'events/events',
+    'underscore',
+    'utils/eventdispatcher',
+    'utils/scriptloader'
+], function(pluginUtils, helpers, events, _, eventdispatcher, scriptloader) {
 
     var _foreach = helpers.foreach;
 
@@ -9,7 +16,7 @@ define(['plugins/utils', 'utils/helpers', 'events/events', 'underscore', 'utils/
             _pluginCount = _.size(_config),
             _pluginLoaded,
             _destroyed = false,
-            _eventDispatcher = new events.eventdispatcher();
+            _eventDispatcher = new eventdispatcher();
 
 
         _.extend(this, _eventDispatcher);

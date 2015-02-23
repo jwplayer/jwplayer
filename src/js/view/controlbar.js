@@ -1,21 +1,22 @@
-/*jshint maxparams:10*/
 define([
     'utils/helpers',
     'parsers/captions/parsers.srt',
     'underscore',
     'events/events',
     'events/states',
+    'utils/eventdispatcher',
     'view/touch',
     'view/thumbs',
     'view/menu',
     'view/overlay',
     'utils/css'
-], function(utils, SrtParser, _, events, states, Touch, Thumbs, Menu, Overlay, _css) {
+], function(utils, SrtParser, _, events, states, eventdispatcher, Touch, Thumbs, Menu, Overlay, cssUtils) {
 
-    var _setTransition = utils.transitionStyle,
+    var _setTransition = cssUtils.transitionStyle,
         _isMobile = utils.isMobile(),
         _nonChromeAndroid = utils.isAndroid(4, true),
         _iFramed = (window.top !== window.self),
+        _css = cssUtils.css,
 
         /** Controlbar element types * */
         CB_BUTTON = 'button',
@@ -173,7 +174,7 @@ define([
 
             _overlays = {},
             _jwhidden = [],
-            _this = utils.extend(this, new events.eventdispatcher());
+            _this = utils.extend(this, new eventdispatcher());
 
         function _layoutElement(name, type, className) {
             return {
@@ -198,11 +199,11 @@ define([
             if (!_layout) {
                 _layout = _defaults.layout;
             }
-            utils.clearCss(_internalSelector());
-            _css.block(_id + 'build');
+            cssUtils.clearCss(_internalSelector());
+            cssUtils.block(_id + 'build');
             _createStyles();
             _buildControlbar();
-            _css.unblock(_id + 'build');
+            cssUtils.unblock(_id + 'build');
             _addEventListeners();
             setTimeout(_volumeHandler, 0);
             _playlistHandler();
@@ -255,7 +256,7 @@ define([
         }
 
         function _timeUpdated(evt) {
-            _css.block(_id); //unblock on redraw
+            cssUtils.block(_id); //unblock on redraw
 
             // Positive infinity for live streams on iPad, 0 for live streams on Safari (HTML5)
             if (isLiveStream(evt)) {
@@ -291,7 +292,7 @@ define([
                 case states.BUFFERING:
                 case states.PLAYING:
                     if (_elements.timeSliderThumb) {
-                        _css.style(_elements.timeSliderThumb, {
+                        cssUtils.style(_elements.timeSliderThumb, {
                             opacity: 1
                         });
                     }
@@ -305,7 +306,7 @@ define([
                 case states.IDLE:
                     _toggleButton('play', false);
                     if (_elements.timeSliderThumb) {
-                        _css.style(_elements.timeSliderThumb, {
+                        cssUtils.style(_elements.timeSliderThumb, {
                             opacity: 0
                         });
                     }
@@ -369,7 +370,7 @@ define([
         }
 
         function _playlistHandler() {
-            _css.style([
+            cssUtils.style([
                 _elements.hd,
                 _elements.cc
             ], HIDDEN);
@@ -385,14 +386,14 @@ define([
         function _qualityHandler(evt) {
             _levels = evt.levels || [];
             if (_hasHD()) {
-                _css.style(_elements.hd, NOT_HIDDEN);
+                cssUtils.style(_elements.hd, NOT_HIDDEN);
                 _hdOverlay.clearOptions();
                 for (var i = 0; i < _levels.length; i++) {
                     _hdOverlay.addOption(_levels[i].label, i);
                 }
                 _qualityLevelChanged(evt);
             } else {
-                _css.style(_elements.hd, HIDDEN);
+                cssUtils.style(_elements.hd, HIDDEN);
             }
             _redraw();
         }
@@ -415,14 +416,14 @@ define([
         function _captionsHandler(evt) {
             _captions = evt.tracks;
             if (_hasCaptions()) {
-                _css.style(_elements.cc, NOT_HIDDEN);
+                cssUtils.style(_elements.cc, NOT_HIDDEN);
                 _ccOverlay.clearOptions();
                 for (var i = 0; i < _captions.length; i++) {
                     _ccOverlay.addOption(_captions[i].label, i);
                 }
                 _captionChanged(evt);
             } else {
-                _css.style(_elements.cc, HIDDEN);
+                cssUtils.style(_elements.cc, HIDDEN);
             }
             _redraw();
         }
@@ -483,7 +484,7 @@ define([
                 right: margin,
                 'max-width': _audioMode ? '' : _settings.maxwidth
             };
-            _css.style(_controlbar, styles);
+            cssUtils.style(_controlbar, styles);
 
             _css(_internalSelector('.jwtext'), {
                 font: _settings.fontsize + 'px/' + _getSkinElement('background').height + 'px ' + _settings.font,
@@ -727,9 +728,9 @@ define([
             }
 
             if (state && !_instreamMode) {
-                _css.style(_jwhidden, NOT_HIDDEN);
+                cssUtils.style(_jwhidden, NOT_HIDDEN);
             } else {
-                _css.style(_jwhidden, HIDDEN);
+                cssUtils.style(_jwhidden, HIDDEN);
             }
         }
 
@@ -737,7 +738,7 @@ define([
             if (_audioMode || _instreamMode) {
                 return;
             }
-            _css.block(_id); // unblock on position overlay
+            cssUtils.block(_id); // unblock on position overlay
             _volumeOverlay.show();
             _positionOverlay('volume', _volumeOverlay);
             _hideOverlays('volume');
@@ -819,7 +820,7 @@ define([
                 }
                 style.background = 'url(' + skinElement.src + ') repeat-x center';
                 style['background-size'] = _elementSize(_getSkinElement('background'));
-                _css.style(element, style);
+                cssUtils.style(element, style);
                 element.innerHTML = (name !== 'alt') ? '00:00' : '';
 
                 _elements[name] = element;
@@ -846,7 +847,7 @@ define([
                     clearTimeout(_hdTimer);
                     _hdTimer = undefined;
                 }
-                _css.block(_id); // unblock on position overlay
+                cssUtils.block(_id); // unblock on position overlay
                 _hdOverlay.show();
                 _positionOverlay('hd', _hdOverlay);
                 _hideOverlays('hd');
@@ -859,7 +860,7 @@ define([
                     clearTimeout(_ccTimer);
                     _ccTimer = undefined;
                 }
-                _css.block(_id); // unblock on position overlay
+                cssUtils.block(_id); // unblock on position overlay
                 _ccOverlay.show();
                 _positionOverlay('cc', _ccOverlay);
                 _hideOverlays('cc');
@@ -1204,7 +1205,7 @@ define([
             }
 
             if (_timeOverlay && _duration && !_audioMode && !_isMobile) {
-                _css.block(_id); // unblock on position overlay
+                cssUtils.block(_id); // unblock on position overlay
                 _timeOverlay.show();
                 _positionOverlay('time', _timeOverlay);
             }
@@ -1242,7 +1243,7 @@ define([
             var lastText;
 
             var thumbLoadedCallback = function(width) {
-                _css.style(_timeOverlay.element(), {
+                cssUtils.style(_timeOverlay.element(), {
                     'width': width
                 });
                 _positionOverlay('time', _timeOverlay);
@@ -1256,14 +1257,14 @@ define([
                     text = _activeCue.text;
                     if (text && (text !== lastText)) {
                         lastText = text;
-                        _css.style(_timeOverlay.element(), {
+                        cssUtils.style(_timeOverlay.element(), {
                             'width': (text.length > 32) ? 160 : ''
                         });
                     }
                 } else {
                     text = utils.timeFormat(sec);
                     if (!thumbUrl) {
-                        _css.style(_timeOverlay.element(), {
+                        cssUtils.style(_timeOverlay.element(), {
                             'width': ''
                         });
                     }
@@ -1277,11 +1278,11 @@ define([
 
         function _styleTimeSlider() {
             if (!_elements.timeSliderRail) {
-                _css.style(_elements.time, HIDDEN);
+                cssUtils.style(_elements.time, HIDDEN);
             }
 
             if (_elements.timeSliderThumb) {
-                _css.style(_elements.timeSliderThumb, {
+                cssUtils.style(_elements.timeSliderThumb, {
                     'margin-left': (_getSkinElement('timeSliderThumb').width / -2)
                 });
             }
@@ -1344,7 +1345,7 @@ define([
                         style.display = 'none';
                     }
                 }
-                _css.style(cue.element, style);
+                cssUtils.style(cue.element, style);
             });
         }
 
@@ -1357,16 +1358,16 @@ define([
         }
 
         _this.setText = function(text) {
-            _css.block(_id); //unblock on redraw
+            cssUtils.block(_id); //unblock on redraw
             var jwalt = _elements.alt,
                 jwtime = _elements.time;
             if (!_elements.timeSliderRail) {
-                _css.style(jwtime, HIDDEN);
+                cssUtils.style(jwtime, HIDDEN);
             } else {
-                _css.style(jwtime, text ? HIDDEN : SHOWING);
+                cssUtils.style(jwtime, text ? HIDDEN : SHOWING);
             }
             if (jwalt) {
-                _css.style(jwalt, text ? SHOWING : HIDDEN);
+                cssUtils.style(jwalt, text ? SHOWING : HIDDEN);
                 jwalt.innerHTML = text || '';
             }
             _redraw();
@@ -1406,7 +1407,7 @@ define([
             _appendChild(_controlbar, _groups.right);
             _buildOverlays();
 
-            _css.style(_groups.right, {
+            cssUtils.style(_groups.right, {
                 right: _getSkinElement('capRight').width
             });
         }
@@ -1458,7 +1459,7 @@ define([
             } else {
                 button.addEventListener('mouseout', overlay.hide, false);
             }
-            _css.style(element, {
+            cssUtils.style(element, {
                 left: '50%'
             });
         }
@@ -1545,7 +1546,7 @@ define([
         }
 
         _this.redraw = function(resize) {
-            _css.block(_id);
+            cssUtils.block(_id);
 
             if (resize && _this.visible) {
                 _this.show(true);
@@ -1555,13 +1556,13 @@ define([
             // ie <= IE10 does not allow fullscreen from inside an iframe. Hide the FS button.
             var ieIframe = _iFramed && utils.isMSIE();
             var casting = _castState.active;
-            _css.style(_elements.fullscreen, {
+            cssUtils.style(_elements.fullscreen, {
                 display: (_audioMode || casting || _hideFullscreen || ieIframe) ? 'none' : ''
             });
 
             // TODO: hide these all by default (global styles at bottom), and update using classes when model changes:
             // jwinstream, jwaudio, jwhas-hd, jwhas-cc (see jwcancast)
-            _css.style(_elements.volumeH, {
+            cssUtils.style(_elements.volumeH, {
                 display: _audioMode || _instreamMode ? 'block' : 'none'
             });
             var maxWidth = Math.floor(_settings.maxwidth);
@@ -1569,11 +1570,11 @@ define([
                 if (_controlbar.parentNode && utils.isIE()) {
                     if (!_audioMode &&
                         _controlbar.parentNode.clientWidth > maxWidth + (Math.floor(_settings.margin) * 2)) {
-                        _css.style(_controlbar, {
+                        cssUtils.style(_controlbar, {
                             width: maxWidth
                         });
                     } else {
-                        _css.style(_controlbar, {
+                        cssUtils.style(_controlbar, {
                             width: ''
                         });
                     }
@@ -1581,14 +1582,14 @@ define([
             }
 
             if (_volumeOverlay) {
-                _css.style(_volumeOverlay.element(), {
+                cssUtils.style(_volumeOverlay.element(), {
                     display: !(_audioMode || _instreamMode) ? 'block' : 'none'
                 });
             }
-            _css.style(_elements.hd, {
+            cssUtils.style(_elements.hd, {
                 display: !_audioMode && !casting && _hasHD() ? '' : 'none'
             });
-            _css.style(_elements.cc, {
+            cssUtils.style(_elements.cc, {
                 display: !_audioMode && _hasCaptions() ? '' : 'none'
             });
 
@@ -1598,7 +1599,7 @@ define([
 
             // utils.foreach(_overlays, _positionOverlay);
 
-            _css.unblock(_id);
+            cssUtils.unblock(_id);
 
             if (_this.visible) {
                 var capLeft  = _getSkinElement('capLeft'),
@@ -1615,17 +1616,17 @@ define([
                         right: Math.round(utils.parseDimension(_groups.right.offsetWidth) + capRight.width)
                     };
                 }
-                _css.style(_groups.center, centerCss);
+                cssUtils.style(_groups.center, centerCss);
             }
         };
 
         function _updateNextPrev() {
             if (!_adMode && _api.jwGetPlaylist().length > 1 && !_sidebarShowing()) {
-                _css.style(_elements.next, NOT_HIDDEN);
-                _css.style(_elements.prev, NOT_HIDDEN);
+                cssUtils.style(_elements.next, NOT_HIDDEN);
+                cssUtils.style(_elements.prev, NOT_HIDDEN);
             } else {
-                _css.style(_elements.next, HIDDEN);
-                _css.style(_elements.prev, HIDDEN);
+                cssUtils.style(_elements.next, HIDDEN);
+                cssUtils.style(_elements.prev, HIDDEN);
             }
         }
 
@@ -1652,7 +1653,7 @@ define([
                 // TODO: redraw
 
                 // instreamMode is when we add a second cbar overtop the original
-                _css.style(_elements.cast, _instreamMode ? HIDDEN : NOT_HIDDEN);
+                cssUtils.style(_elements.cast, _instreamMode ? HIDDEN : NOT_HIDDEN);
             }
             return _instreamMode;
         };
@@ -1669,7 +1670,7 @@ define([
                     _addOnceToArray(_jwhidden, _elements.duration);
                 }
 
-                _css.style([
+                cssUtils.style([
                     _elements.cast,
                     _elements.elapsed,
                     _elements.duration
@@ -1706,7 +1707,7 @@ define([
         function _setBuffer(pct) {
             if (_elements.timeSliderBuffer) {
                 pct = Math.min(Math.max(0, pct), 1);
-                _css.style(_elements.timeSliderBuffer, {
+                cssUtils.style(_elements.timeSliderBuffer, {
                     width: (pct * 100).toFixed(1) + '%',
                     opacity: pct > 0 ? 1 : 0
                 });
@@ -1735,7 +1736,7 @@ define([
                 if (name !== 'volume') {
                     style.opacity = (pct > 0 || _dragging) ? 1 : 0;
                 }
-                _css.style(progress, style);
+                cssUtils.style(progress, style);
             }
 
             if (thumb) {
@@ -1745,7 +1746,7 @@ define([
                 } else {
                     style.left = size;
                 }
-                _css.style(thumb, style);
+                cssUtils.style(thumb, style);
             }
         }
 
@@ -1799,19 +1800,19 @@ define([
                 display: 'inline-block'
             };
 
-            _css.style(_controlbar, style);
+            cssUtils.style(_controlbar, style);
             _cbBounds = utils.bounds(_controlbar);
 
             _toggleTimesDisplay();
 
-            _css.block(_id); //unblock on redraw
+            cssUtils.block(_id); //unblock on redraw
 
             _volumeHandler();
             _redraw();
 
             _clearHideTimeout();
             _hideTimeout = setTimeout(function() {
-                _css.style(_controlbar, {
+                cssUtils.style(_controlbar, {
                     opacity: 1
                 });
             }, 0);
@@ -1884,12 +1885,12 @@ define([
                 return;
             }
             _this.visible = false;
-            _css.style(_controlbar, {
+            cssUtils.style(_controlbar, {
                 opacity: 0
             });
             _clearHideTimeout();
             _hideTimeout = setTimeout(function() {
-                _css.style(_controlbar, {
+                cssUtils.style(_controlbar, {
                     display: 'none'
                 });
             }, JW_VISIBILITY_TIMEOUT);
@@ -1922,7 +1923,7 @@ define([
         _css(CB_CLASS + ' span', {
             height: '100%'
         });
-        utils.dragStyle(CB_CLASS + ' span', 'none');
+        cssUtils.dragStyle(CB_CLASS + ' span', 'none');
 
         _css(CB_CLASS + ' .jwgroup', {
             display: 'inline'

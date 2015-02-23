@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>MP4 video file</title>
-    <script type="text/javascript" src="../src/js/utils.built.js"></script>
+    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
     <link type="text/css" rel="stylesheet" href="styles/tests.css"  media="all" />
 </head>
 <body>
@@ -14,5 +14,11 @@
 
 <div id="video-container"></div>
 
+<script>
+    jwplayer('video-container').setup({
+        file: 'http://content.bitsontherun.com/videos/q1fx20VZ-52qL9xLP.mp4',
+        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg'
+    });
+</script>
 </body>
 </html>

@@ -1,7 +1,8 @@
 define([
     'utils/helpers',
+    'utils/strings',
     'utils/css'
-], function(utils, cssUtils) {
+], function(utils, stringUtils, cssUtils) {
     var _style = cssUtils.style;
 
     /** Component that renders the actual captions on screen. **/
@@ -116,7 +117,7 @@ define([
                     display: 'inline-block'
                 },
                 textStyle = {
-                    color: utils.hexToRgba(utils.rgbHex(_options.color), fontOpacity),
+                    color: cssUtils.hexToRgba(cssUtils.rgbHex(_options.color), fontOpacity),
                     display: 'inline-block',
                     fontFamily: _options.fontFamily,
                     fontStyle: _options.fontStyle,
@@ -127,13 +128,13 @@ define([
                 };
 
             if (windowOpacity) {
-                windowStyle.backgroundColor = utils.hexToRgba(utils.rgbHex(_options.windowColor), windowOpacity);
+                windowStyle.backgroundColor = cssUtils.hexToRgba(cssUtils.rgbHex(_options.windowColor), windowOpacity);
             }
 
             addEdgeStyle(edgeStyle, textStyle, fontOpacity);
 
             if (_options.back) {
-                textStyle.backgroundColor = utils.hexToRgba(utils.rgbHex(bgColor), _options.backgroundOpacity);
+                textStyle.backgroundColor = cssUtils.hexToRgba(cssUtils.rgbHex(bgColor), _options.backgroundOpacity);
             } else if (edgeStyle === null) {
                 addEdgeStyle('uniform', textStyle);
             }
@@ -161,7 +162,7 @@ define([
         }
 
         function addEdgeStyle(option, style, fontOpacity) {
-            var color = utils.hexToRgba('#000000', fontOpacity);
+            var color = cssUtils.hexToRgba('#000000', fontOpacity);
             if (option === 'dropshadow') { // small drop shadow
                 style.textShadow = '0 2px 1px ' + color;
             } else if (option === 'raised') { // larger drop shadow

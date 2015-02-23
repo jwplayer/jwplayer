@@ -3,10 +3,11 @@ define([
     'view/overlay',
     'utils/helpers',
     'utils/css'
-], function(Overlay, utils, _css) {
+], function(Overlay, utils, cssUtils) {
 
     var _bounds = utils.bounds,
         _iFramed = (window.top !== window.self),
+        _css = cssUtils.css,
 
         D_CLASS = '.jwdock',
         DB_CLASS = '.jwdockbuttons';
@@ -365,9 +366,9 @@ define([
         'background-repeat': 'no-repeat'
     });
 
-    utils.transitionStyle(D_CLASS, 'background .25s, opacity .25s');
-    utils.transitionStyle(D_CLASS + ' .jwoverlay', 'opacity .25s');
-    utils.transitionStyle(DB_CLASS + ' div.button div', 'opacity .25s');
+    cssUtils.transitionStyle(D_CLASS, 'background .25s, opacity .25s');
+    cssUtils.transitionStyle(D_CLASS + ' .jwoverlay', 'opacity .25s');
+    cssUtils.transitionStyle(DB_CLASS + ' div.button div', 'opacity .25s');
 
     return Dock;
 });

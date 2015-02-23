@@ -3,9 +3,11 @@ define([
     'utils/stretching',
     'playlist/playlist',
     'providers/chooseprovider',
+    'underscore',
     'utils/eventdispatcher',
-    'events/events'
-], function(utils, stretchingUtils, Playlist, chooseProvider, eventdispatcher, events) {
+    'events/events',
+    'events/states'
+], function(utils, stretchingUtils, Playlist, chooseProvider, _, eventdispatcher, events, states) {
 
     var Model = function(config, defaultProvider) {
         var _model = this,
@@ -51,7 +53,7 @@ define([
             _model.config = _parseConfig(utils.extend({}, _defaults, _cookies, config));
             utils.extend(_model, {
                 id: config.id,
-                state: events.state.IDLE,
+                state: states.IDLE,
                 duration: -1,
                 position: 0,
                 buffer: 0

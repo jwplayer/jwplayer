@@ -11,9 +11,11 @@ define([
     'view/controlbar',
     'view/rightclick',
     'utils/css'
-    ], function(utils, Embed, events, eventdispatcher, states, Captions, Display, Dock, Logo, Controlbar, RightClick, _css) {
+    ], function(utils, Embed, events, eventdispatcher, states,
+                Captions, Display, Dock, Logo, Controlbar, RightClick, cssUtils) {
 
-    var _bounds = utils.bounds,
+    var _css = cssUtils.css,
+        _bounds = utils.bounds,
         _isMobile = utils.isMobile(),
         _isIPad = utils.isIPad(),
         _isIPod = utils.isIPod(),
@@ -111,7 +113,7 @@ define([
             _elementSupportsFullscreen = _requestFullscreen && _exitFullscreen;
 
             if (_model.aspectratio) {
-                _css.style(_playerElement, {
+                cssUtils.style(_playerElement, {
                     display: 'inline-block'
                 });
                 _playerElement.className = _playerElement.className.replace(PLAYER_CLASS,
@@ -360,7 +362,7 @@ define([
                     };
                 }
                 if (evt.active) {
-                    _css.style(_captions.element(), {
+                    cssUtils.style(_captions.element(), {
                         display: 'none'
                     });
                     _this.forceControls(true);
@@ -374,7 +376,7 @@ define([
                     if (_controlbar.adMode()) {
                         _castAdsEnded();
                     }
-                    _css.style(_captions.element(), {
+                    cssUtils.style(_captions.element(), {
                         display: null
                     });
                     // redraw displayicon
@@ -698,7 +700,7 @@ define([
                 playlistSize,
                 playlistPos,
                 id = _api.id + '_view';
-            _css.block(id);
+            cssUtils.block(id);
 
             // when jwResize is called remove aspectMode and force layout
             resetAspectMode = !!resetAspectMode;
@@ -707,7 +709,7 @@ define([
                 if (_playerElement.className !== className) {
                     _playerElement.className = className;
                 }
-                _css.style(_playerElement, {
+                cssUtils.style(_playerElement, {
                     display: JW_CSS_BLOCK
                 }, resetAspectMode);
             }
@@ -723,7 +725,7 @@ define([
             if (className.indexOf(ASPECT_MODE) === -1) {
                 playerStyle.height = height;
             }
-            _css.style(_playerElement, playerStyle, true);
+            cssUtils.style(_playerElement, playerStyle, true);
 
             if (_display) {
                 _display.redraw();
@@ -763,14 +765,14 @@ define([
                     playlistStyle.height = playlistSize;
                 }
 
-                _css.style(_playlistLayer, playlistStyle);
-                _css.style(_container, containerStyle);
+                cssUtils.style(_playlistLayer, playlistStyle);
+                cssUtils.style(_container, containerStyle);
             }
 
             // pass width, height from jwResize if present 
             _resizeMedia(width, height);
 
-            _css.unblock(id);
+            cssUtils.unblock(id);
         }
 
         function _checkAudioMode(height) {
@@ -843,7 +845,7 @@ define([
         this.resizeMedia = _resizeMedia;
 
         var _completeSetup = this.completeSetup = function() {
-            _css.style(_playerElement, {
+            cssUtils.style(_playerElement, {
                 opacity: 1
             });
             window.addEventListener('beforeunload', function() {
@@ -884,14 +886,14 @@ define([
             utils.removeClass(playerElement, 'jwfullscreen');
             if (fullscreenState) {
                 utils.addClass(playerElement, 'jwfullscreen');
-                _css.style(document.body, {
+                cssUtils.style(document.body, {
                     'overflow-y': JW_CSS_HIDDEN
                 });
 
                 // On going fullscreen we want the control bar to fade after a few seconds
                 _resetTapTimer();
             } else {
-                _css.style(document.body, {
+                cssUtils.style(document.body, {
                     'overflow-y': ''
                 });
             }
@@ -1088,7 +1090,7 @@ define([
                     _display.hidePreview(false);
                 }
                 // hide video without audio and android checks
-                _css.style(_videoLayer, {
+                cssUtils.style(_videoLayer, {
                     visibility: 'visible',
                     opacity: 1
                 });
@@ -1159,7 +1161,7 @@ define([
         }
 
         this.setupInstream = function(instreamContainer, instreamControlbar, instreamDisplay, instreamModel) {
-            _css.unblock();
+            cssUtils.unblock();
             _setVisibility(_internalSelector(VIEW_INSTREAM_CONTAINER_CLASS), true);
             _setVisibility(_internalSelector(VIEW_CONTROLS_CONTAINER_CLASS), false);
             _instreamLayer.appendChild(instreamContainer);
@@ -1175,7 +1177,7 @@ define([
         };
 
         this.destroyInstream = function() {
-            _css.unblock();
+            cssUtils.unblock();
             _setVisibility(_internalSelector(VIEW_INSTREAM_CONTAINER_CLASS), false);
             _setVisibility(_internalSelector(VIEW_CONTROLS_CONTAINER_CLASS), true);
             _instreamLayer.innerHTML = '';
@@ -1469,7 +1471,6 @@ define([
     _css('.' + PLAYER_CLASS + ' .jwexactfit', {
         'background-size': JW_CSS_100PCT + ' ' + JW_CSS_100PCT + JW_CSS_IMPORTANT
     });
-
 
     return View;
 });

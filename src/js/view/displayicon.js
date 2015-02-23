@@ -3,11 +3,12 @@ define([
     'utils/css',
     'controller/instream',
     'events/events'
-], function(utils, _css, Instream, events) {
+], function(utils, cssUtils, Instream, events) {
     /*jshint maxparams:5*/
     /*jshint -W069 */
 
-    var DI_CLASS = '.jwplayer .jwdisplayIcon',
+    var _css = cssUtils.css,
+        DI_CLASS = '.jwplayer .jwdisplayIcon',
         DOCUMENT = document,
 
         /** Some CSS constants we should use for minimization */
@@ -113,11 +114,11 @@ define([
                 style['background-size'] = skinElem.width + 'px ' + skinElem.height + 'px';
                 style['float'] = 'none';
 
-                _css.style(_container, {
+                cssUtils.style(_container, {
                     display: 'table'
                 });
             } else {
-                _css.style(_container, {
+                cssUtils.style(_container, {
                     display: 'none'
                 });
             }
@@ -149,7 +150,7 @@ define([
         function _redraw() {
             var showText = _hasCaps || (_iconWidth === 0);
 
-            _css.style(_text, {
+            cssUtils.style(_text, {
                 display: (_text.innerHTML && showText) ? '' : JW_CSS_NONE
             });
 
@@ -177,7 +178,7 @@ define([
             if (_container.parentNode) {
                 style.left = (_container.parentNode.clientWidth % 2 === 1) ? '0.5px' : '';
             }
-            _css.style(_container, style);
+            cssUtils.style(_container, style);
         }
 
         this.element = function() {
@@ -232,7 +233,7 @@ define([
 
         function rotateIcon() {
             _currentAngle = (_currentAngle + _bufferAngle) % 360;
-            utils.rotate(_icon, _currentAngle);
+            cssUtils.rotate(_icon, _currentAngle);
         }
 
         this.setRotation = startRotation;

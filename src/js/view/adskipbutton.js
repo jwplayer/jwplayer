@@ -5,9 +5,10 @@ define([
     'view/touch',
     'events/events',
     'utils/eventdispatcher'
-], function(_utils, _css, Touch, events, eventdispatcher) {
+], function(_utils, cssUtils, Touch, events, eventdispatcher) {
 
-    var VIEW_INSTREAM_SKIP_CLASS = 'jwskip',
+    var _css = cssUtils.css,
+        VIEW_INSTREAM_SKIP_CLASS = 'jwskip',
         VIEW_INSTREAM_IMAGE = 'jwskipimage',
         VIEW_INSTREAM_OVER = 'jwskipover',
         VIEW_INSTREAM_OUT = 'jwskipout',

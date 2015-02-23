@@ -1,14 +1,17 @@
 define([
     'view/displayicon',
+    'view/touch',
     'utils/helpers',
     'events/events',
     'utils/eventdispatcher',
     'events/states',
+    'utils/stretching',
     'utils/css'
-], function(DisplayIcon, utils, events, eventdispatcher, states, _css) {
+], function(DisplayIcon, Touch, utils, events, eventdispatcher, states, stretchUtils, cssUtils) {
 
 
     var _isMobile = utils.isMobile(),
+        _css = cssUtils.css,
 
         D_CLASS = '.jwdisplay',
         D_PREVIEW_CLASS = '.jwpreview';
@@ -66,8 +69,8 @@ define([
             if (!_isMobile) {
                 _display.addEventListener('click', _clickHandler, false);
             } else {
-                _displayTouch = new utils.touch(_display);
-                _displayTouch.addEventListener(utils.touchEvents.TAP, _clickHandler);
+                _displayTouch = new Touch(_display);
+                _displayTouch.addEventListener(events.touchEvents.TAP, _clickHandler);
             }
 
             _createIcons();
@@ -336,7 +339,7 @@ define([
 
         function _redraw() {
             if (_display.clientWidth * _display.clientHeight > 0) {
-                utils.stretch(_api.jwGetStretching(),
+                stretchUtils.stretch(_api.jwGetStretching(),
                     _preview, _display.clientWidth, _display.clientHeight, _imageWidth, _imageHeight);
             }
         }
@@ -450,7 +453,7 @@ define([
     _css(acceptClicks.join(', '), {
         'pointer-events' : 'all'
     });
-    utils.transitionStyle(D_CLASS + ', ' + D_CLASS + ' *', 'opacity .25s, color .25s');
+    cssUtils.transitionStyle(D_CLASS + ', ' + D_CLASS + ' *', 'opacity .25s, color .25s');
 
     return Display;
 });

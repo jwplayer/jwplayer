@@ -2,9 +2,10 @@ define([
     'view/overlay',
     'utils/helpers',
     'utils/css'
-], function(Overlay, utils, _css) {
+], function(Overlay, utils, cssUtils) {
 
-    var MENU_CLASS = 'jwmenu',
+    var _css = cssUtils.css,
+        MENU_CLASS = 'jwmenu',
         OPTION_CLASS = 'jwoption';
 
     /** HTML5 Overlay class **/

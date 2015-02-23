@@ -1,2 +1,3 @@
-src/js/utils/jwplayer.underscore.js
-src/js/utils/jwplayer.backbone.js
+src/js/utils/backbone.events.js
+src/js/utils/underscore.js
+src/js/__*/*.js

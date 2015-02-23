@@ -1,14 +1,16 @@
 define([
     'utils/helpers',
+    'utils/css',
     'events/events',
     'utils/scriptloader',
     'playlist/loader',
     'embed/config',
+    'plugins/plugins',
     'controller/player',
     'underscore'
-], function(utils, events, scriptloader, PlaylistLoader, EmbedConfig, Html5Player, _) {
+], function(utils, cssUtils, events, scriptloader, PlaylistLoader, EmbedConfig, plugins, Html5Player, _) {
 
-    jwplayer.vid = document.createElement('video');
+    var _css = cssUtils.css;
 
     var Embed = function(playerApi) {
 
@@ -18,7 +20,7 @@ define([
             _height = _config.height,
             _errorText = 'Error loading player: ',
             _oldContainer = document.getElementById(playerApi.id),
-            _pluginloader = jwplayer.plugins.loadPlugins(playerApi.id, _config.plugins),
+            _pluginloader = plugins.loadPlugins(playerApi.id, _config.plugins),
             _loader,
             _playlistLoading = false,
             _errorOccurred = false,
@@ -111,7 +113,7 @@ define([
                 utils.emptyElement(_container);
 
                 // Volume option is tricky to remove, since it needs to be in the HTML5 player model.
-                var playerConfigCopy = jwplayer.utils.extend({}, pluginConfigCopy);
+                var playerConfigCopy = utils.extend({}, pluginConfigCopy);
                 delete playerConfigCopy.volume;
                 var html5player = new Html5Player(playerConfigCopy);
                 playerApi.setPlayer(html5player, 'html5');
@@ -199,10 +201,10 @@ define([
     }
 
     function _insertCSS() {
-        utils.css('object.jwswf, .jwplayer:focus', {
+        _css('object.jwswf, .jwplayer:focus', {
             outline: 'none'
         });
-        utils.css('.jw-tab-focus:focus', {
+        _css('.jw-tab-focus:focus', {
             outline: 'solid 2px #0B7EF4'
         });
     }
@@ -233,4 +235,4 @@ define([
 
     return Embed;
 
-})(jwplayer);
+});

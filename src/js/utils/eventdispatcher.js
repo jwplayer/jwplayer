@@ -1,10 +1,10 @@
-define(['underscore'], function(_) {
+define(['utils/backbone.events', 'underscore'], function(Events, _) {
 
     var GLOBAL_EVENT = 'GLOBAL_EVENT';
 
     var eventdispatcher = function (_id, _debug) {
 
-        var obj = _.extend({}, jwplayer.utils.Events);
+        var obj = _.extend({}, Events);
 
         /** Clears all event listeners **/
         this.resetEventListeners = obj.off;

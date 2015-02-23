@@ -1,4 +1,4 @@
-define(['utils/css'], function(utils) {
+define(['utils/css'], function(cssUtils) {
     /*jshint maxparams:6*/
 
     /** Stretching options **/
@@ -27,7 +27,7 @@ define(['utils/css'], function(utils) {
             }
             value = 'translate(' + xoffset + 'px, ' + yoffset + 'px)';
         }
-        utils.transform(domelement, value);
+        cssUtils.transform(domelement, value);
     };
 
     /**
@@ -123,12 +123,12 @@ define(['utils/css'], function(utils) {
                 }
                 style.width = elementWidth;
                 style.height = elementHeight;
-                utils.scale(domelement, xscale, yscale, 0, 0);
+                scale(domelement, xscale, yscale, 0, 0);
             } else {
                 scale = false;
-                utils.transform(domelement);
+                cssUtils.transform(domelement);
             }
-            utils.css.style(domelement, style);
+            cssUtils.style(domelement, style);
         } else {
             domelement.className = domelement.className.replace(/\s*jw(none|exactfit|uniform|fill)/g, '') +
                 ' ' + stretchClass;

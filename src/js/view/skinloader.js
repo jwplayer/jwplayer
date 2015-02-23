@@ -1,7 +1,8 @@
 define([
     'view/defaultskin',
+    'utils/strings',
     'utils/helpers'
-], function(DefaultSkin, utils) {
+], function(DefaultSkin, strings, utils) {
     var FORMAT_ERROR = 'Skin formatting error';
 
     /** Constructor **/
@@ -21,7 +22,7 @@ define([
             if (typeof _skinPath !== 'string' || _skinPath === '') {
                 _loadSkin(DefaultSkin());
             } else {
-                if (utils.extension(_skinPath) !== 'xml') {
+                if (strings.extension(_skinPath) !== 'xml') {
                     _errorHandler('Skin not a valid file type');
                     return;
                 }
@@ -94,7 +95,7 @@ define([
                         var name = settings[settingIndex].getAttribute('name');
                         var value = settings[settingIndex].getAttribute('value');
                         if (/color$/.test(name)) {
-                            value = utils.stringToColor(value);
+                            value = strings.stringToColor(value);
                         }
                         component.settings[_lowerCase(name)] = value;
                     }

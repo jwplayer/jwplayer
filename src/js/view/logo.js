@@ -2,11 +2,11 @@ define([
     'utils/helpers',
     'utils/css',
     'events/states'
-], function(utils, _css, states) {
+], function(utils, cssUtils, states) {
 
-    var _version = jwplayer.version;
+    var _css = cssUtils.css,
 
-    var FREE = 'free',
+        FREE = 'free',
         PRO = 'pro',
         PREMIUM = 'premium',
         ADS = 'ads',
@@ -35,7 +35,7 @@ define([
             }
 
             if (linkFlag === 'o' || linkFlag === 'f') {
-                _defaults.link = LINK_DEFAULT + _version + '&m=h&e=' + linkFlag;
+                _defaults.link = LINK_DEFAULT + jwplayer.version + '&m=h&e=' + linkFlag;
             }
 
             _settings = utils.extend({}, _defaults, logoConfig);

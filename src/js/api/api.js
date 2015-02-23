@@ -5,8 +5,9 @@ define([
     'events/events',
     'events/states',
     'utils/helpers',
+    'utils/css',
     'underscore'
-], function(Embed, plugins, Instream, events, states, utils, _) {
+], function(Embed, plugins, Instream, events, states, utils, cssUtils, _) {
     var _instances = [],
         _uniqueIndex = 0;
 
@@ -330,7 +331,7 @@ define([
 
             // If sharing the DOM element, don't reset CSS
             if (!sharedDOM) {
-                utils.clearCss('#' + _this.id);
+                cssUtils.clearCss('#' + _this.id);
             }
 
             var toDestroy = document.getElementById(_this.id);

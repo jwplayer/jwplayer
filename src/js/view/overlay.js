@@ -1,10 +1,11 @@
 define([
     'utils/helpers',
     'utils/css'
-], function(utils, _css) {
+], function(utils, cssUtils) {
 
-    var _setTransition = utils.transitionStyle,
+    var _setTransition = cssUtils.transitionStyle,
 
+        _css = cssUtils.css,
         OVERLAY_CLASS = '.jwoverlay',
         CONTENTS_CLASS = 'jwcontents',
 
@@ -44,7 +45,7 @@ define([
             _arrowElement = arrow[0];
             _arrow = arrow[1];
 
-            _css.style(_arrowElement, {
+            cssUtils.style(_arrowElement, {
                 position: 'absolute',
                 //bottom: _inverted ? undefined : -1 * _arrow.height,
                 bottom: _inverted ? undefined : 0,
@@ -64,7 +65,7 @@ define([
             _createBorderElement(BOTTOM);
 
             var back = _createSkinElement('background', 'jwback');
-            _css.style(back[0], {
+            cssUtils.style(back[0], {
                 left: _borderSizes.left,
                 right: _borderSizes.right,
                 top: _borderSizes.top,
@@ -83,7 +84,7 @@ define([
                 utils.transform(_internalSelector('jwarrow'), 'rotate(180deg)');
             }
 
-            _css.style(_container, {
+            cssUtils.style(_container, {
                 padding: (_borderSizes.top + 1) + 'px ' + _borderSizes.right +
                     'px ' + (_borderSizes.bottom + 1) + 'px ' + _borderSizes.left + 'px'
             });
@@ -111,7 +112,7 @@ define([
             var skinElem = _getSkinElement(name),
                 elem = _createElement(className, _container);
 
-            _css.style(elem, _formatBackground(skinElem));
+            cssUtils.style(elem, _formatBackground(skinElem));
             //_css(_internalSelector(className.replace(' ', '.')), _formatBackground(skinElem));
 
             return [elem, skinElem];
@@ -145,7 +146,7 @@ define([
                 elemStyle[dim2] = 0;
             }
 
-            _css.style(elem, elemStyle);
+            cssUtils.style(elem, elemStyle);
             //_css(_internalSelector(elem.className.replace(/ /g, '.')), elemStyle);
 
             var dim1style = {},
@@ -178,7 +179,7 @@ define([
         };
 
         _this.positionX = function(x) {
-            _css.style(_container, {
+            cssUtils.style(_container, {
                 left: Math.round(x)
             });
         };
@@ -189,7 +190,7 @@ define([
                 var width = _this.offsetX(0);
                 if (width) {
                     if (forceRedraw) {
-                        _css.unblock();
+                        cssUtils.unblock();
                     }
                     var bounds = utils.bounds(_container);
                     if (bounds.width !== 0) {
@@ -207,10 +208,10 @@ define([
             offset = Math.round(offset);
             var width = _container.clientWidth;
             if (width !== 0) {
-                _css.style(_container, {
+                cssUtils.style(_container, {
                     'margin-left': Math.round(-width / 2) + offset
                 });
-                _css.style(_arrowElement, {
+                cssUtils.style(_arrowElement, {
                     'margin-left': Math.round(-_arrow.width / 2) - offset
                 });
             }
@@ -238,7 +239,7 @@ define([
 
         _this.show = function() {
             _this.showing = true;
-            _css.style(_container, {
+            cssUtils.style(_container, {
                 opacity: 1,
                 visibility: 'visible'
             });
@@ -246,7 +247,7 @@ define([
 
         _this.hide = function() {
             _this.showing = false;
-            _css.style(_container, {
+            cssUtils.style(_container, {
                 opacity: 0,
                 visibility: 'hidden'
             });

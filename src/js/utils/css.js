@@ -95,7 +95,10 @@ define([
         _updateStyleAttributes(cssRules, styles);
 
         if (_cssBlock !== null && !immediate) {
-            elements.__cssRules = _.extend(elements.__cssRules, cssRules);
+            if (!elements.__cssRules) {
+                elements.__cssRules = {};
+            }
+            _.extend(elements.__cssRules, cssRules);
             if (_.indexOf(_cssBlock.elements, elements) < 0) {
                 _cssBlock.elements.push(elements);
             }
@@ -275,7 +278,7 @@ define([
         if (typeof element === 'string') {
             _css(element, style);
         } else {
-            _css.style(element, style);
+            _style(element, style);
         }
     };
 

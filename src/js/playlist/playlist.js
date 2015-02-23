@@ -1,5 +1,11 @@
-define(['utils/helpers', 'utils/strings', 'utils/extensionmap', 'playlist/item', 'underscore'],
-function(utils, strings, extensionmap, PlaylistItem, _) {
+define([
+        'providers/chooseprovider',
+        'utils/helpers',
+        'utils/strings',
+        'utils/extensionmap',
+        'playlist/item',
+        'underscore'
+], function(chooseProvider, utils, strings, extensionmap, PlaylistItem, _) {
 
     var Playlist = function (playlist) {
         var _playlist = [];
@@ -49,7 +55,7 @@ function(utils, strings, extensionmap, PlaylistItem, _) {
 
         // If type not included, we infer it from extension
         if (!type) {
-            var extension = utils.extension(file);
+            var extension = strings.extension(file);
             type = extensionmap.extType(extension);
         }
 
@@ -76,7 +82,7 @@ function(utils, strings, extensionmap, PlaylistItem, _) {
                 source.androidhls = true;
             }
 
-            if (jwplayer.html5.chooseProvider(source)) {
+            if (chooseProvider(source)) {
                 // We want sources of all the same type since they may be of different quality levels
                 selectedType = selectedType || source.type;
 

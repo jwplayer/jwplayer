@@ -1,6 +1,6 @@
 define(['utils/strings', 'events/events', 'underscore'], function(strings, Events, _) {
 
-    var _version = jwplayer.version;
+    var _version = window.jwplayer.version;
 
     /*jshint maxparams:5*/
     var utils = {};
@@ -717,7 +717,7 @@ define(['utils/strings', 'events/events', 'underscore'], function(strings, Event
             top: 0,
             bottom: 0
         };
-        if (!element || !DOCUMENT.body.contains(element)) {
+        if (!element || !document.body.contains(element)) {
             return bounds;
         }
         if (element.getBoundingClientRect) {

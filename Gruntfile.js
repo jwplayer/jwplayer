@@ -54,12 +54,8 @@ module.exports = function(grunt) {
                 overwrite: true,
                 replacements:[
                     {
-                        from : /jwplayer\.version = '(.*)'/,
-                        to   : 'jwplayer.version = \'<%= pkg.version %>\''
-                    },
-                    {
-                        from : /jwplayer\.html5\.version = '(.*)'/,
-                        to   : 'jwplayer.html5.version = \'<%= pkg.version %>\''
+                        from : /window.jwplayer\.version = '(.*)'/,
+                        to   : 'window.jwplayer.version = \'<%= pkg.version %>\''
                     }
                 ]
             }
@@ -98,8 +94,8 @@ module.exports = function(grunt) {
                 tasks: ['jshint:all']
             },
             player: {
-                files : '<%= concat.player.src %>',
-                tasks: ['concat:player', 'replace:player', 'uglify:player']
+                files : ['src/js/**/*.js', 'src/js/*.js'],
+                tasks: ['build-js']
             },
             flash: {
                 files : [
@@ -119,11 +115,11 @@ module.exports = function(grunt) {
                 debug:true,
                 entry: {
                     // use prefix since it has reserved values (for example plugins)
-                    jwpacked : './src/js/jwplayer.js'
+                    jwplayer : './src/js/jwplayer.js'
                 },
                 output: {
-                    path: 'built/',
-                    filename: '[name].built.js'
+                    path: 'bin-debug/',
+                    filename: '[name].js'
                 },
                 resolve: {
                     modulesDirectories: [
@@ -226,11 +222,15 @@ module.exports = function(grunt) {
         });
     });
 
+    grunt.registerTask('build-js', [
+        'webpack',
+        'replace',
+        'uglify'
+    ]);
+
     grunt.registerTask('default', [
         'clean',
-        'concat',
-        'replace',
-        'uglify',
+        'build-js',
         'flash:debug',
         'flash:release'
     ]);
