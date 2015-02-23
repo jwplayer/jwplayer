@@ -1,14 +1,15 @@
-/**
- * Main HTML5 player class
- *
- * @author pablo
- * @version 6.0
- */
-(function(jwplayer) {
-    var html5 = jwplayer.html5,
-        utils = jwplayer.utils;
+define([
+    'utils/css',
+    'controller/setup',
+    'controller/model',
+    'controller/controller',
+    'api/instream',
+    'utils/helpers',
+    'view/view',
+    'events/events'
+], function(cssUtils, Setup, Model, Controller, Instream, utils, View, events) {
 
-    html5.player = function(config) {
+    var Player = function(config) {
         var _this = this,
             _model,
             _view,
@@ -17,33 +18,33 @@
             _instreamPlayer;
 
         function _init() {
-            _model = new html5.model(config);
+            _model = new Model(config);
             _this.id = _model.id;
             _this._model = _model;
 
-            utils.css.block(_this.id);
+            cssUtils.block(_this.id);
 
-            _view = new html5.view(_this, _model);
-            _controller = new html5.controller(_model, _view);
+            _view = new View(_this, _model);
+            _controller = new Controller(_model, _view);
 
 
             _initializeAPI();
             _this.initializeAPI = _initializeAPI;
 
-            _setup = new html5.setup(_model, _view);
-            _setup.addEventListener(jwplayer.events.JWPLAYER_READY, _readyHandler);
-            _setup.addEventListener(jwplayer.events.JWPLAYER_ERROR, _setupErrorHandler);
+            _setup = new Setup(_model, _view);
+            _setup.addEventListener(events.JWPLAYER_READY, _readyHandler);
+            _setup.addEventListener(events.JWPLAYER_ERROR, _setupErrorHandler);
             _setup.start();
         }
 
         function _readyHandler(evt) {
             _controller.playerReady(evt);
-            utils.css.unblock(_this.id);
+            cssUtils.unblock(_this.id);
         }
         
         function _setupErrorHandler(evt) {
-            utils.css.unblock(_this.id);
-            jwplayer(_this.id).dispatchEvent(jwplayer.events.JWPLAYER_SETUP_ERROR, evt);
+            cssUtils.unblock(_this.id);
+            jwplayer(_this.id).dispatchEvent(events.JWPLAYER_SETUP_ERROR, evt);
         }
 
         function _normalizePlaylist() {
@@ -180,7 +181,7 @@
 
             _this.jwInitInstream = function() {
                 _this.jwInstreamDestroy();
-                _instreamPlayer = new html5.instream(_this, _model, _view, _controller);
+                _instreamPlayer = new Instream(_this, _model, _view, _controller);
                 _instreamPlayer.init();
             };
 
@@ -300,4 +301,6 @@
         _init();
     };
 
-})(window.jwplayer);
+    return Player;
+
+});

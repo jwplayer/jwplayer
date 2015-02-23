@@ -14,18 +14,20 @@
  * @author pablo
  * @version 6.0
  */
-(function(jwplayer) {
-    var html5 = jwplayer.html5,
-        utils = jwplayer.utils,
-        _ = jwplayer._,
-        events = jwplayer.events;
+define([
+    'utils/helpers',
+    'playlist/playlist',
+    'view/skin',
+    'events/eventdispatcher',
+    'underscore',
+    'events/events'
+], function( utils, Playlist, Skin, eventdispatcher, _, events) {
 
-
-    html5.setup = function(model, view) {
+    var Setup = function(model, view) {
         var _model = model,
             _view = view,
             _skin,
-            _eventDispatcher = new events.eventdispatcher(),
+            _eventDispatcher = new eventdispatcher(),
             _errorState = false;
 
         var PARSE_CONFIG = {
@@ -109,7 +111,7 @@
         }
 
         function _loadSkin() {
-            _skin = new html5.skin();
+            _skin = new Skin();
             _skin.load(_model.config.skin, _skinLoaded, _skinError);
         }
 
@@ -124,7 +126,7 @@
         function _loadPlaylist() {
             var type = utils.typeOf(_model.config.playlist);
             if (type === 'array') {
-                _completePlaylist(new jwplayer.playlist(_model.config.playlist));
+                _completePlaylist(new Playlist(_model.config.playlist));
             } else {
                 _error('Playlist type not supported: ' + type);
             }
@@ -172,4 +174,5 @@
 
     };
 
-})(jwplayer);
+    return Setup;
+});

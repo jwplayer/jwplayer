@@ -1,9 +1,11 @@
 define([
     'utils/helpers',
     'utils/stretching',
+    'playlist/playlist',
+    'providers/chooseprovider',
     'events/eventdispatcher',
     'events/events'
-], function(utils, stretchingUtils, eventdispatcher, events) {
+], function(utils, stretchingUtils, Playlist, chooseProvider, eventdispatcher, events) {
 
     var Model = function(config, defaultProvider) {
         var _model = this,
@@ -134,7 +136,7 @@ define([
 
         // TODO: make this a synchronous action; throw error if playlist is empty
         _model.setPlaylist = function(playlist) {
-            _model.playlist = jwplayer.playlist.filterPlaylist(playlist, _model.androidhls);
+            _model.playlist = Playlist.filterPlaylist(playlist, _model.androidhls);
             if (_model.playlist.length === 0) {
                 _model.sendEvent(events.JWPLAYER_ERROR, {
                     message: 'Error loading playlist: No playable sources found'
@@ -173,7 +175,7 @@ define([
                     // source is undefined when resetting index with empty playlist
                     return;
                 }
-                var Provider = html5.chooseProvider(source);
+                var Provider = chooseProvider(source);
                 if (!Provider) {
                     throw new Error('no suitale provider found');
                 }
@@ -220,4 +222,6 @@ define([
         _init();
     };
 
-})(jwplayer);
+    return Model;
+
+});
