@@ -2,7 +2,7 @@ define([
     'view/displayicon',
     'utils/helpers',
     'events/events',
-    'events/eventdispatcher',
+    'utils/eventdispatcher',
     'events/states',
     'utils/css'
 ], function(DisplayIcon, utils, events, eventdispatcher, states, _css) {

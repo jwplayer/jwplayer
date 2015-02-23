@@ -18,7 +18,7 @@ define([
     'utils/helpers',
     'playlist/playlist',
     'view/skin',
-    'events/eventdispatcher',
+    'utils/eventdispatcher',
     'underscore',
     'events/events'
 ], function( utils, Playlist, Skin, eventdispatcher, _, events) {

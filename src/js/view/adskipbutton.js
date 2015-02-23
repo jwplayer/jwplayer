@@ -2,9 +2,9 @@
 define([
     'utils/helpers',
     'utils/css',
-    'utils/touch',
+    'view/touch',
     'events/events',
-    'events/eventdispatcher'
+    'utils/eventdispatcher'
 ], function(_utils, _css, Touch, events, eventdispatcher) {
 
     var VIEW_INSTREAM_SKIP_CLASS = 'jwskip',

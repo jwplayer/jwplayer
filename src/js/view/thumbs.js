@@ -1,5 +1,5 @@
 define([
-    'parsers/captsion/parsers.srt',
+    'parsers/captions/parsers.srt',
     'utils/helpers',
     'events/events',
     'utils/css'

@@ -4,7 +4,7 @@ define([
     'utils/scriptloader',
     'playlist/loader',
     'embed/config',
-    'html5/player',
+    'controller/player',
     'underscore'
 ], function(utils, events, scriptloader, PlaylistLoader, EmbedConfig, Html5Player, _) {
 

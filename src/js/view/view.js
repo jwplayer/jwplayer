@@ -2,7 +2,7 @@ define([
     'utils/helpers',
     'embed/embed',
     'events/events',
-    'events/eventdispatcher',
+    'utils/eventdispatcher',
     'events/states',
     'view/captions',
     'view/display',

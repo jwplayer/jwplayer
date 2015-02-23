@@ -3,7 +3,7 @@ define([
     'utils/stretching',
     'playlist/playlist',
     'providers/chooseprovider',
-    'events/eventdispatcher',
+    'utils/eventdispatcher',
     'events/events'
 ], function(utils, stretchingUtils, Playlist, chooseProvider, eventdispatcher, events) {
 

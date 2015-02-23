@@ -7,7 +7,7 @@ define([
     'events/events',
     'events/states',
     'utils/css',
-    'events/eventdispatcher'
+    'utils/eventdispatcher'
 ], function(parsers, CaptionsRenderer, SrtParser, DfxpParser, utils, events, states, cssUtils, eventdispatcher) {
 
     var _nonChromeAndroid = utils.isAndroid(4, true),
