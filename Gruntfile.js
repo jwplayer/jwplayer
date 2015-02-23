@@ -6,47 +6,6 @@ module.exports = function(grunt) {
     grunt.initConfig({
         starttime: new Date(),
         pkg: grunt.file.readJSON('package.json'),
-        concat: {
-            options: {
-                separator: ''
-            },
-            player: {
-                src: [
-                    'src/js/jwplayer.js',
-                    'src/js/utils/underscore.js',
-                    'src/js/utils/jwplayer.utils.js',
-                    'src/js/utils/backbone.events.js',
-                    'src/js/utils/jwplayer.utils.*.js',
-                    'src/js/events/jwplayer.events.js',
-                    'src/js/events/jwplayer.events.*.js',
-                    'src/js/plugins/jwplayer.plugins.js',
-                    'src/js/plugins/jwplayer.plugins.*.js',
-                    'src/js/parsers/parsers.js',
-                    'src/js/parsers/jwplayer.parsers.*.js',
-                    'src/js/playlist/playlist.js',
-                    'src/js/playlist/jwplayer.playlist.*.js',
-                    'src/js/embed/embed.js',
-                    'src/js/embed/jwplayer.embed.*.js',
-                    'src/js/api/api.js',
-                    'src/js/api/jwplayer.api.*.js',
-
-                    'src/js/html5/jwplayer.html5.js',
-
-                    'src/js/html5/utils/jwplayer.html5.utils.js',
-                    'src/js/html5/utils/jwplayer.html5.utils.*.js',
-
-                    'src/js/html5/parsers/jwplayer.html5.parsers.js',
-                    'src/js/html5/parsers/jwplayer.html5.parsers.*.js',
-                    'src/js/html5/providers/default.js',
-                    'src/js/html5/providers/jwplayer.html5.video.js',
-                    'src/js/html5/providers/youtube.js',
-                    'src/js/html5/providers/jwplayer.provider.flash.js',
-                    'src/js/html5/providers/chooseprovider.js',
-                    'src/js/html5/jwplayer.html5.*.js'
-                ],
-                dest: 'bin-debug/jwplayer.js'
-            }
-        },
 
         replace : {
             player : {
@@ -91,7 +50,7 @@ module.exports = function(grunt) {
                     '.jshintrc',
                     '.jshintignore'
                 ],
-                tasks: ['jshint:all']
+                tasks: ['jshint']
             },
             player: {
                 files : ['src/js/**/*.js', 'src/js/*.js'],
@@ -105,16 +64,14 @@ module.exports = function(grunt) {
                 tasks: ['flash:debug']
             },
             grunt: {
-                files: ['.jshintrc', 'Gruntfile.js'],
+                files: ['Gruntfile.js'],
                 tasks: ['jshint']
             }
         },
 
         webpack : {
             build : {
-                debug:true,
                 entry: {
-                    // use prefix since it has reserved values (for example plugins)
                     jwplayer : './src/js/jwplayer.js'
                 },
                 output: {
