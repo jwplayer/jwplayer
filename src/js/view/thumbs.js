@@ -1,13 +1,12 @@
-(function(jwplayer) {
-
-    var html5 = jwplayer.html5,
-        utils = jwplayer.utils,
-        events = jwplayer.events,
-        _css = utils.css;
-
+define([
+    'parsers/captsion/parsers.srt',
+    'utils/helpers',
+    'events/events',
+    'utils/css'
+], function (SrtParser, utils, events, _css) {
 
     /** Displays thumbnails over the controlbar **/
-    html5.thumbs = function(id) {
+    var Thumbs = function (id) {
         var _display,
             _cues,
             _vttPath,
@@ -47,7 +46,7 @@
             } else {
                 _cues =
                     _url =
-                    _image = null;
+                        _image = null;
                 _images = {};
             }
         }
@@ -55,7 +54,7 @@
         function _vttLoaded(data) {
             _vttRequest = null;
             try {
-                data = new jwplayer.parsers.srt().parse(data.responseText, true);
+                data = new SrtParser().parse(data.responseText, true);
             } catch (e) {
                 _vttFailed(e.message);
                 return;
@@ -102,7 +101,7 @@
                 var image = _images[url];
                 if (!image) {
                     image = new Image();
-                    image.onload = function() {
+                    image.onload = function () {
                         _updateSprite(image, style, callback);
                     };
                     _images[url] = image;
@@ -131,16 +130,16 @@
             }
         }
 
-        this.load = function(thumbsVTT) {
+        this.load = function (thumbsVTT) {
             _loadVTT(thumbsVTT);
         };
 
-        this.element = function() {
+        this.element = function () {
             return _display;
         };
 
         // Update display
-        this.updateTimeline = function(seconds, callback) {
+        this.updateTimeline = function (seconds, callback) {
             if (!_cues) {
                 return;
             }
@@ -158,4 +157,5 @@
     };
 
 
-})(jwplayer);
+    return Thumbs;
+});

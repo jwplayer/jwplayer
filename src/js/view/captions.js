@@ -1,12 +1,16 @@
-(function(jwplayer) {
+define([
+    'parsers/parsers',
+    'view/captionsrenderer',
+    'parsers/captions/parsers.srt',
+    'parsers/captions/parsers.dfxp',
+    'utils/helpers',
+    'events/events',
+    'events/states',
+    'utils/css',
+    'events/eventdispatcher'
+], function(parsers, CaptionsRenderer, SrtParser, DfxpParser, utils, events, states, cssUtils, eventdispatcher) {
 
-    var html5 = jwplayer.html5,
-        utils = jwplayer.utils,
-        events = jwplayer.events,
-        states = events.state,
-        parsers = jwplayer.parsers,
-        _css = utils.css,
-        _nonChromeAndroid = utils.isAndroid(4, true),
+    var _nonChromeAndroid = utils.isAndroid(4, true),
         PLAYING = 'playing',
 
         D_CLASS = '.jwcaptions',
@@ -20,7 +24,7 @@
         JW_CSS_WHITE = '#FFFFFF';
 
     /** Displays closed captions or subtitles on top of the video. **/
-    html5.captions = function(api, options) {
+    var Captions = function(api, options) {
 
         var _api = api,
             _display,
@@ -63,7 +67,7 @@
             /** Flag to remember fullscreen state. **/
             _fullscreen = false,
             /** Event dispatcher for captions events. **/
-            _eventDispatcher = new events.eventdispatcher();
+            _eventDispatcher = new eventdispatcher();
 
         utils.extend(this, _eventDispatcher);
 
@@ -218,9 +222,9 @@
                 }
             }
             if (rss && parsers.localName(rss) === 'tt') {
-                parser = new jwplayer.parsers.dfxp();
+                parser = new DfxpParser();
             } else {
-                parser = new jwplayer.parsers.srt();
+                parser = new SrtParser();
             }
             try {
                 var data = parser.parse(xmlEvent.responseText);
@@ -312,7 +316,7 @@
             });
 
             // Place renderer and selector.
-            _renderer = new jwplayer.html5.captions.renderer(_options, _display);
+            _renderer = new CaptionsRenderer(_options, _display);
             _redraw(false);
         }
 
@@ -399,7 +403,7 @@
         _init();
     };
 
-    _css(D_CLASS, {
+    cssUtils(D_CLASS, {
         position: JW_CSS_ABSOLUTE,
         cursor: 'pointer',
         width: JW_CSS_100PCT,
@@ -407,4 +411,5 @@
         overflow: JW_CSS_HIDDEN
     });
 
-})(jwplayer);
+    return Captions;
+});

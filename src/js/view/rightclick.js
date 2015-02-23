@@ -1,14 +1,11 @@
-/**
- * JW Player html5 right-click
- *
- * @author pablo
- * @version 6.0
- */
-(function(html5) {
-    var utils = jwplayer.utils,
-        _css = utils.css,
+define([
+    'utils/helpers',
+    'utils/css'
+], function(utils, _css) {
 
-        ABOUT_DEFAULT = 'About JW Player ',
+    var _version = jwplayer.version;
+
+    var ABOUT_DEFAULT = 'About JW Player ',
         LINK_DEFAULT = 'http://www.longtailvideo.com/jwpabout/?a=r&v=',
 
         DOCUMENT = document,
@@ -21,12 +18,12 @@
         JW_CSS_NONE = 'none',
         JW_CSS_WHITE = '#FFF';
 
-    html5.rightclick = function(api, config) {
+    var Rightclick = function(api, config) {
         var _api = api,
             _container, // = DOCUMENT.getElementById(_api.id),
             _config = utils.extend({
-                aboutlink: LINK_DEFAULT + html5.version + '&m=h&e=o',
-                abouttext: ABOUT_DEFAULT + html5.version + '...'
+                aboutlink: LINK_DEFAULT + _version + '&m=h&e=o',
+                abouttext: ABOUT_DEFAULT + _version + '...'
             }, config),
             _mouseOverContext = false,
             _menu,
@@ -157,4 +154,5 @@
         border: '1px #e9e9e9 solid'
     }, true);
 
-})(jwplayer.html5);
+    return Rightclick;
+});

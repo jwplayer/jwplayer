@@ -1,4 +1,4 @@
-define(['events', 'underscore'], function(Events, _) {
+define(['events/eventdispatcher', 'events/events', 'underscore'], function(eventdispatcher, events, _) {
 
     var TOUCH_MOVE = 'touchmove',
         TOUCH_START = 'touchstart',
@@ -10,8 +10,8 @@ define(['events', 'underscore'], function(Events, _) {
             _isListening = false,
             _startEvent = null,
             _gotMove = false,
-            _events = Events.touchEvents,
-            events = _.extend({}, Events.eventdispatcher());
+            _events = events.touchEvents,
+            events = _.extend({}, eventdispatcher());
 
         document.addEventListener(TOUCH_MOVE, touchHandler);
         document.addEventListener(TOUCH_END, documentEndHandler);

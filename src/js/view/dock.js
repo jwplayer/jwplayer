@@ -1,15 +1,17 @@
 /*jshint evil:true*/
-(function(jwplayer) {
-    var html5 = jwplayer.html5,
-        utils = jwplayer.utils,
-        _css = utils.css,
-        _bounds = utils.bounds,
+define([
+    'view/overlay',
+    'utils/helpers',
+    'utils/css'
+], function(Overlay, utils, _css) {
+
+    var _bounds = utils.bounds,
         _iFramed = (window.top !== window.self),
 
         D_CLASS = '.jwdock',
         DB_CLASS = '.jwdockbuttons';
 
-    html5.dock = function(api, config) {
+    var Dock = function(api, config) {
         var _api = api,
             _defaults = {
                 iconalpha: 0.75,
@@ -250,7 +252,7 @@
             };
 
             if (label) {
-                var tooltip = new html5.overlay(icon.id + '_tooltip', _skin, true),
+                var tooltip = new Overlay(icon.id + '_tooltip', _skin, true),
                     tipText = _createElement('div');
                 tipText.id = icon.id + '_label';
                 tipText.innerHTML = label;
@@ -367,4 +369,5 @@
     utils.transitionStyle(D_CLASS + ' .jwoverlay', 'opacity .25s');
     utils.transitionStyle(DB_CLASS + ' div.button div', 'opacity .25s');
 
-})(jwplayer);
+    return Dock;
+});

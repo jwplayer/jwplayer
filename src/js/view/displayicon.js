@@ -1,11 +1,13 @@
-(function(jwplayer) {
+define([
+    'utils/helpers',
+    'utils/css',
+    'controller/instream',
+    'events/events'
+], function(utils, _css, Instream, events) {
     /*jshint maxparams:5*/
     /*jshint -W069 */
-    var html5 = jwplayer.html5,
-        utils = jwplayer.utils,
-        _css = utils.css,
 
-        DI_CLASS = '.jwplayer .jwdisplayIcon',
+    var DI_CLASS = '.jwplayer .jwdisplayIcon',
         DOCUMENT = document,
 
         /** Some CSS constants we should use for minimization */
@@ -13,7 +15,7 @@
         JW_CSS_100PCT = '100%',
         JW_CSS_CENTER = 'center';
 
-    html5.displayicon = function(_id, _api, textStyle, textStyleOver) {
+    var DisplayIcon = function(_id, _api, textStyle, textStyleOver) {
         var _skin = _api.skin,
             _playerId = _api.id,
             _container,
@@ -29,7 +31,7 @@
             _setWidthTimeout = -1,
             _repeatCount = 0;
 
-        if (_api instanceof jwplayer.html5.instream) {
+        if (_api instanceof Instream) {
             _playerId = _playerId.replace('_instream', '');
         }
 
@@ -41,7 +43,7 @@
             _text = _createElement('jwtext', _container, textStyle, textStyleOver);
             _icon = _createElement('jwicon', _container);
 
-            _api.jwAddEventListener(jwplayer.events.JWPLAYER_RESIZE, _setWidth);
+            _api.jwAddEventListener(events.JWPLAYER_RESIZE, _setWidth);
 
             _hide();
             _redraw();
@@ -287,4 +289,5 @@
         'user-select': JW_CSS_NONE
     });
 
-})(jwplayer);
+    return DisplayIcon;
+});

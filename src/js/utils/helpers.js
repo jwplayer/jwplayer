@@ -1,6 +1,5 @@
 define(['utils/strings', 'events/events', 'underscore'], function(strings, Events, _) {
 
-
     var _version = jwplayer.version;
 
     /*jshint maxparams:5*/

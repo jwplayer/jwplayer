@@ -1,10 +1,11 @@
-
-(function(html5) {
-    var utils = jwplayer.utils,
-        FORMAT_ERROR = 'Skin formatting error';
+define([
+    'view/defaultskin',
+    'utils/helpers'
+], function(DefaultSkin, utils) {
+    var FORMAT_ERROR = 'Skin formatting error';
 
     /** Constructor **/
-    html5.skinloader = function(skinPath, completeHandler, errorHandler) {
+    var SkinLoader = function(skinPath, completeHandler, errorHandler) {
         var _skin = {},
             _completeHandler = completeHandler,
             _errorHandler = errorHandler,
@@ -12,13 +13,13 @@
             _skinPath = skinPath,
             _error = false,
             // Keeping this as 1 for now. Will change if necessary for mobile
-            _mobileMultiplier = jwplayer.utils.isMobile() ? 1 : 1,
+            _mobileMultiplier = utils.isMobile() ? 1 : 1,
             _ratio = 1;
 
         /** Load the skin **/
         function _load() {
             if (typeof _skinPath !== 'string' || _skinPath === '') {
-                _loadSkin(html5.defaultskin());
+                _loadSkin(DefaultSkin());
             } else {
                 if (utils.extension(_skinPath) !== 'xml') {
                     _errorHandler('Skin not a valid file type');
@@ -26,7 +27,7 @@
                 }
                 // Load the default skin first; if any components are defined in the loaded skin,
                 // they will overwrite the default
-                new html5.skinloader('', _defaultLoaded, _errorHandler);
+                new SkinLoader('', _defaultLoaded, _errorHandler);
             }
 
         }
@@ -212,4 +213,6 @@
         }
         _load();
     };
-})(jwplayer.html5);
+
+    return SkinLoader;
+});

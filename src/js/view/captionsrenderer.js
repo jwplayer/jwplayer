@@ -1,10 +1,11 @@
-(function(jwplayer) {
-    var html5 = jwplayer.html5,
-        utils = jwplayer.utils,
-        _style = utils.css.style;
+define([
+    'utils/helpers',
+    'utils/css'
+], function(utils, cssUtils) {
+    var _style = cssUtils.style;
 
     /** Component that renders the actual captions on screen. **/
-    html5.captions.renderer = function(_options, _div) {
+    var CaptionsRenderer = function (_options, _div) {
 
         /** Current list with captions. **/
         var _captions,
@@ -25,7 +26,7 @@
 
 
         /** Hide the rendering component. **/
-        this.hide = function() {
+        this.hide = function () {
             clearInterval(_interval);
             _style(_container, {
                 display: 'none'
@@ -33,7 +34,7 @@
         };
 
         /** Assign list of captions to the renderer. **/
-        this.populate = function(captions) {
+        this.populate = function (captions) {
             _current = -1;
             _captions = captions;
             _select();
@@ -56,7 +57,7 @@
         }
 
         /** Store new dimensions. **/
-        this.resize = function() {
+        this.resize = function () {
             _resize();
         };
 
@@ -176,7 +177,7 @@
         }
 
         /** Show the rendering component. **/
-        this.show = function() {
+        this.show = function () {
             _style(_container, {
                 display: 'block'
             });
@@ -186,7 +187,7 @@
         };
 
         /** Update the video position. **/
-        this.update = function(position) {
+        this.update = function (position) {
             _position = position;
             if (_captions) {
                 _select();
@@ -196,4 +197,5 @@
         _setup();
     };
 
-})(jwplayer);
+    return CaptionsRenderer;
+});

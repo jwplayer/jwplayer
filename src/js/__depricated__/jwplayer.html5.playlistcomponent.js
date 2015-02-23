@@ -1,4 +1,8 @@
-(function (jwplayer) {
+define([
+    'utils/helpers',
+    '../../../../jwplayer-analytics/node_modules/webpack/node_modules/node-libs-browser/node_modules/events/events',
+    'utils/css'
+], function(utils, events, _css) {
 
     var WHITE = '#FFFFFF',
         CCC = '#CCCCCC',
@@ -23,15 +27,11 @@
             titlesize: 13
         },
 
-        html5 = jwplayer.html5,
-        events = jwplayer.events,
-        utils = jwplayer.utils,
-        _css = utils.css,
         _isMobile = utils.isMobile(),
 
         PL_CLASS = '.jwplaylist';
 
-    html5.playlistcomponent = function (api, config) {
+    var PlaylistComponent = function (api, config) {
         var _api = api,
             _skin = _api.skin,
             _settings = utils.extend({}, _defaults, _api.skin.getComponentSettings('playlist'), config),
@@ -315,7 +315,7 @@
             _lastCurrent = _api.jwGetPlaylistIndex();
 
             _appendChild(_container, _ul);
-            _slider = new html5.playlistslider(_wrapper.id + '_slider', _api.skin, _wrapper, _ul);
+            _slider = new PlaylistSlider(_wrapper.id + '_slider', _api.skin, _wrapper, _ul);
 
         }
 
@@ -422,4 +422,5 @@
         utils.transitionStyle(PL_CLASS + ' .jwlist', 'top .35s');
     }
 
-})(jwplayer);
+    return PlaylistComponent;
+});

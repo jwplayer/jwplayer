@@ -1,10 +1,14 @@
-(function(jwplayer) {
-    var html5 = jwplayer.html5,
-        utils = jwplayer.utils,
-        events = jwplayer.events,
-        states = events.state,
-        _css = utils.css,
-        _isMobile = utils.isMobile(),
+define([
+    'view/displayicon',
+    'utils/helpers',
+    'events/events',
+    'events/eventdispatcher',
+    'events/states',
+    'utils/css'
+], function(DisplayIcon, utils, events, eventdispatcher, states, _css) {
+
+
+    var _isMobile = utils.isMobile(),
 
         D_CLASS = '.jwdisplay',
         D_PREVIEW_CLASS = '.jwpreview';
@@ -19,7 +23,7 @@
         fontweight: ''
     };
 
-    html5.display = function(_api, config) {
+    var Display = function(_api, config) {
         var _skin = _api.skin,
             _display, _preview,
             _displayTouch,
@@ -37,7 +41,7 @@
             _config = utils.extend({}, DEFAULT_SETTINGS,
                 _skin.getComponentSettings('display'), config
             ),
-            _eventDispatcher = new events.eventdispatcher(),
+            _eventDispatcher = new eventdispatcher(),
             _alternateClickHandler,
             _lastClick;
 
@@ -159,7 +163,7 @@
                 overStyle = {
                     color: _config.overcolor
                 };
-            _button = new html5.displayicon(_display.id + '_button', _api, outStyle, overStyle);
+            _button = new DisplayIcon(_display.id + '_button', _api, outStyle, overStyle);
             _display.appendChild(_button.element());
         }
 
@@ -395,6 +399,58 @@
         opacity: 0
     });
 
+    var JW_CLASS = '.jwplayer ';
+
+    var helperString = [JW_CLASS, 'div', 'span', 'a', 'img', 'ul', 'li', 'video'].join(', ' + JW_CLASS);
+    _css(helperString + ', .jwclick', {
+        margin: 0,
+        padding: 0,
+        border: 0,
+        color: '#000000',
+        'font-size': '100%',
+        font: 'inherit',
+        'vertical-align': 'baseline',
+        'background-color': 'transparent',
+        'text-align': 'left',
+        'direction': 'ltr',
+        'line-height': 20,
+        '-webkit-tap-highlight-color': 'rgba(255, 255, 255, 0)'
+    });
+
+    // Reset box-sizing to default for player and all sub-elements
+    //  Note: If we use pseudo elements we will need to add *:before and *:after
+    _css(JW_CLASS + ',' + JW_CLASS + '*', { 'box-sizing': 'content-box'});
+    // Browsers use border-box as a the default box-sizing for many form elements
+    _css(JW_CLASS + '* button,' + JW_CLASS + '* input,' + JW_CLASS + '* select,' + JW_CLASS + '* textarea',
+        { 'box-sizing': 'border-box'});
+
+
+    _css(JW_CLASS + 'ul', {
+        'list-style': 'none'
+    });
+
+
+    // These rules allow click and hover events to reach the provider, instead
+    //  of being blocked by the controller element
+    //  ** Note : pointer-events will not work on IE < 11
+    _css('.jwplayer .jwcontrols', {
+        'pointer-events': 'none'
+    });
+    _css('.jwplayer.jw-user-inactive .jwcontrols', {
+        'pointer-events': 'all'
+    });
+    var acceptClicks = [
+        '.jwplayer .jwcontrols .jwdockbuttons',
+        '.jwplayer .jwcontrols .jwcontrolbar',
+        '.jwplayer .jwcontrols .jwskip',
+        '.jwplayer .jwcontrols .jwdisplayIcon', // play and replay button
+        '.jwplayer .jwcontrols .jwpreview', // poster image
+        '.jwplayer .jwcontrols .jwlogo'
+    ];
+    _css(acceptClicks.join(', '), {
+        'pointer-events' : 'all'
+    });
     utils.transitionStyle(D_CLASS + ', ' + D_CLASS + ' *', 'opacity .25s, color .25s');
 
-})(jwplayer);
+    return Display;
+});

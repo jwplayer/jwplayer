@@ -82,8 +82,6 @@ define([], function() {
 
     };
 
-    return {
-        events: events,
-        touchEvents: touchEvents
-    };
+    events.touchEvents = touchEvents;
+    return events;
 });

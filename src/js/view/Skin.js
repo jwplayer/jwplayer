@@ -1,16 +1,10 @@
-/**
- * JW Player component that loads PNG skins.
- *
- * @author zach
- * @version 5.4
- */
-(function(html5) {
-    html5.skin = function() {
+define(['utils/helpers', 'view/skinloader'], function(utils, SkinLoader) {
+    var Skin = function() {
         var _components = {};
         var _loaded = false;
 
         this.load = function(path, completeCallback, errorCallback) {
-            new html5.skinloader(path, function(skin) {
+            new SkinLoader(path, function(skin) {
                 _loaded = true;
                 _components = skin;
                 if (typeof completeCallback === 'function') {
@@ -31,7 +25,7 @@
                 try {
                     return _components[component].elements[element];
                 } catch (err) {
-                    jwplayer.utils.log('No such skin component / element: ', [component, element]);
+                    utils.log('No such skin component / element: ', [component, element]);
                 }
             }
             return null;
@@ -61,4 +55,6 @@
         }
 
     };
-})(jwplayer.html5);
+
+    return Skin;
+});

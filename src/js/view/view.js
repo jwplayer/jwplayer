@@ -1,11 +1,19 @@
-(function(window) {
-    var jwplayer = window.jwplayer,
-        html5 = jwplayer.html5,
-        utils = jwplayer.utils,
-        events = jwplayer.events,
-        states = events.state,
-        _css = utils.css,
-        _bounds = utils.bounds,
+define([
+    'utils/helpers',
+    'embed/embed',
+    'events/events',
+    'events/eventdispatcher',
+    'events/states',
+    'view/captions',
+    'view/display',
+    'view/dock',
+    'view/logo',
+    'view/controlbar',
+    'view/rightclick',
+    'utils/css'
+    ], function(utils, Embed, events, eventdispatcher, states, Captions, Display, Dock, Logo, Controlbar, RightClick, _css) {
+
+    var _bounds = utils.bounds,
         _isMobile = utils.isMobile(),
         _isIPad = utils.isIPad(),
         _isIPod = utils.isIPod(),
@@ -37,7 +45,7 @@
         JW_CSS_NONE = 'none',
         JW_CSS_BLOCK = 'block';
 
-    html5.view = function(_api, _model) {
+    var View = function(_api, _model) {
         var _playerElement,
             _container,
             _controlsLayer,
@@ -80,7 +88,7 @@
             //  it is a click, the mouseDown event will occur immediately prior
             _focusFromClick = false,
 
-            _this = utils.extend(this, new events.eventdispatcher());
+            _this = utils.extend(this, new eventdispatcher());
 
         function _init() {
 
@@ -521,13 +529,13 @@
 
             _checkAudioMode(height);
 
-            _captions = new html5.captions(_api, _model.captions);
+            _captions = new Captions(_api, _model.captions);
             _captions.addEventListener(events.JWPLAYER_CAPTIONS_LIST, forward);
             _captions.addEventListener(events.JWPLAYER_CAPTIONS_CHANGED, forward);
             _captions.addEventListener(events.JWPLAYER_CAPTIONS_LOADED, _captionsLoadedHandler);
             _controlsLayer.appendChild(_captions.element());
 
-            _display = new html5.display(_api, displaySettings);
+            _display = new Display(_api, displaySettings);
             _display.addEventListener(events.JWPLAYER_DISPLAY_CLICK, function(evt) {
                 forward(evt);
                 _touchHandler();
@@ -538,27 +546,27 @@
             }
             _controlsLayer.appendChild(_display.element());
 
-            _logo = new html5.logo(_api, _logoConfig);
+            _logo = new Logo(_api, _logoConfig);
             _controlsLayer.appendChild(_logo.element());
 
-            _dock = new html5.dock(_api, _model.componentConfig('dock'));
+            _dock = new Dock(_api, _model.componentConfig('dock'));
             _controlsLayer.appendChild(_dock.element());
 
             if (_api.edition && !_isMobile) {
-                _rightClickMenu = new html5.rightclick(_api, {
+                _rightClickMenu = new RightClick(_api, {
                     abouttext: _model.abouttext,
                     aboutlink: _model.aboutlink
                 });
             } else if (!_isMobile) {
-                _rightClickMenu = new html5.rightclick(_api, {});
+                _rightClickMenu = new RightClick(_api, {});
             }
 
-            if (_model.playlistsize && _model.playlistposition && _model.playlistposition !== JW_CSS_NONE) {
-                _playlist = new html5.playlistcomponent(_api, {});
-                _playlistLayer.appendChild(_playlist.element());
-            }
+            //if (_model.playlistsize && _model.playlistposition && _model.playlistposition !== JW_CSS_NONE) {
+                //_playlist = new html5.playlistcomponent(_api, {});
+                //_playlistLayer.appendChild(_playlist.element());
+            //}
 
-            _controlbar = new html5.controlbar(_api, cbSettings);
+            _controlbar = new Controlbar(_api, cbSettings);
             _controlbar.addEventListener(events.JWPLAYER_USER_ACTION, _resetTapTimer);
 
             _controlsLayer.appendChild(_controlbar.element());
@@ -665,7 +673,7 @@
                 } else {
                     // else use native fullscreen
                     if (_instreamModel) {
-                       _instreamModel.getVideo().setFullScreen(state); 
+                       _instreamModel.getVideo().setFullScreen(state);
                     }
                        _model.getVideo().setFullScreen(state);
                 }
@@ -1178,7 +1186,7 @@
 
         this.setupError = function(message) {
             _errorState = true;
-            jwplayer.embed.errorScreen(_playerElement, message, _model);
+            Embed.errorScreen(_playerElement, message, _model);
             _completeSetup();
         };
 
@@ -1461,4 +1469,7 @@
     _css('.' + PLAYER_CLASS + ' .jwexactfit', {
         'background-size': JW_CSS_100PCT + ' ' + JW_CSS_100PCT + JW_CSS_IMPORTANT
     });
-})(window);
+
+
+    return View;
+});

@@ -1,17 +1,12 @@
-/**
- * JW Player logo component
- *
- * @author zach
- * @modified pablo
- * @version 6.0
- */
-(function(jwplayer) {
-    var utils = jwplayer.utils,
-        html5 = jwplayer.html5,
-        _css = utils.css,
-        states = jwplayer.events.state,
+define([
+    'utils/helpers',
+    'utils/css',
+    'events/states'
+], function(utils, _css, states) {
 
-        FREE = 'free',
+    var _version = jwplayer.version;
+
+    var FREE = 'free',
         PRO = 'pro',
         PREMIUM = 'premium',
         ADS = 'ads',
@@ -20,12 +15,12 @@
         LOGO_CLASS = '.jwlogo';
 
 
-    var logo = html5.logo = function(api, logoConfig) {
+    var Logo = function(api, logoConfig) {
         var _api = api,
             _id = _api.id + '_logo',
             _settings,
             _logo,
-            _defaults = logo.defaults,
+            _defaults = Logo.defaults,
             _showing = false;
 
         function _setup() {
@@ -40,7 +35,7 @@
             }
 
             if (linkFlag === 'o' || linkFlag === 'f') {
-                _defaults.link = LINK_DEFAULT + jwplayer.version + '&m=h&e=' + linkFlag;
+                _defaults.link = LINK_DEFAULT + _version + '&m=h&e=' + linkFlag;
             }
 
             _settings = utils.extend({}, _defaults, logoConfig);
@@ -161,7 +156,7 @@
         return this;
     };
 
-    logo.defaults = {
+    Logo.defaults = {
         prefix: utils.repo(),
         file: 'logo.png',
         linktarget: '_top',
@@ -175,4 +170,6 @@
         position: 'absolute'
     });
 
-})(jwplayer);
+    return Logo;
+
+});

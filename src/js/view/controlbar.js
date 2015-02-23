@@ -1,13 +1,18 @@
-/*jshint maxparams:5*/
-(function(window, document, undefined) {
-    var jwplayer = window.jwplayer,
-        html5 = jwplayer.html5,
-        utils = jwplayer.utils,
-        _     = jwplayer._,
-        events = jwplayer.events,
-        states = events.state,
-        _css = utils.css,
-        _setTransition = utils.transitionStyle,
+/*jshint maxparams:10*/
+define([
+    'utils/helpers',
+    'parsers/captions/parsers.srt',
+    'underscore',
+    'events/events',
+    'events/states',
+    'view/touch',
+    'view/thumbs',
+    'view/menu',
+    'view/overlay',
+    'utils/css'
+], function(utils, SrtParser, _, events, states, Touch, Thumbs, Menu, Overlay, _css) {
+
+    var _setTransition = utils.transitionStyle,
         _isMobile = utils.isMobile(),
         _nonChromeAndroid = utils.isAndroid(4, true),
         _iFramed = (window.top !== window.self),
@@ -54,7 +59,7 @@
 
 
     /** HTML5 Controlbar class * */
-    html5.controlbar = function(_api, _config) {
+    var Controlbar = function(_api, _config) {
         _config = _config || {};
         var _skin,
             _dividerElement = _layoutElement('divider', CB_DIVIDER),
@@ -943,8 +948,8 @@
             slider.vertical = vertical;
 
             if (name === 'time') {
-                _timeOverlay = new html5.overlay(_id + '_timetooltip', _skin);
-                _timeOverlayThumb = new html5.thumbs(_id + '_thumb');
+                _timeOverlay = new Overlay(_id + '_timetooltip', _skin);
+                _timeOverlayThumb = new Thumbs(_id + '_thumb');
                 _timeOverlayText = _createElement('div');
                 _timeOverlayText.className = 'jwoverlaytext';
                 _timeOverlayContainer = _createElement('div');
@@ -1408,7 +1413,7 @@
 
         function _buildOverlays() {
             if (_elements.hd) {
-                _hdOverlay = new html5.menu('hd', _id + '_hd', _skin, _switchLevel);
+                _hdOverlay = new Menu('hd', _id + '_hd', _skin, _switchLevel);
                 if (!_isMobile) {
                     _addOverlay(_hdOverlay, _elements.hd, _showHd, _setHdTimer);
                 } else {
@@ -1417,7 +1422,7 @@
                 _overlays.hd = _hdOverlay;
             }
             if (_elements.cc) {
-                _ccOverlay = new html5.menu('cc', _id + '_cc', _skin, _switchCaption);
+                _ccOverlay = new Menu('cc', _id + '_cc', _skin, _switchCaption);
                 if (!_isMobile) {
                     _addOverlay(_ccOverlay, _elements.cc, _showCc, _setCcTimer);
                 } else {
@@ -1426,7 +1431,7 @@
                 _overlays.cc = _ccOverlay;
             }
             if (_elements.mute && _elements.volume && _elements.volume.vertical) {
-                _volumeOverlay = new html5.overlay(_id + '_volumeoverlay', _skin);
+                _volumeOverlay = new Overlay(_id + '_volumeoverlay', _skin);
                 _volumeOverlay.setContents(_elements.volume);
                 _addOverlay(_volumeOverlay, _elements.mute, _showVolume);
                 _overlays.volume = _volumeOverlay;
@@ -1464,7 +1469,7 @@
             }
             var element = overlay.element();
             _appendChild(button, element);
-            var buttonTouch = new utils.touch(button);
+            var buttonTouch = new Touch(button);
             buttonTouch.addEventListener(utils.touchEvents.TAP, function() {
                 _overlayTapHandler(overlay, tapAction, name);
             });
@@ -1520,7 +1525,7 @@
                     var element = _buildElement(group.elements[i], pos);
                     if (element) {
                         if (group.elements[i].name === 'volume' && element.vertical) {
-                            _volumeOverlay = new html5.overlay(_id + '_volumeOverlay', _skin);
+                            _volumeOverlay = new Overlay(_id + '_volumeOverlay', _skin);
                             _volumeOverlay.setContents(element);
                         } else {
                             _appendChild(container, element);
@@ -1850,7 +1855,8 @@
         }
 
         function _cueLoaded(xmlEvent) {
-            var data = new jwplayer.parsers.srt().parse(xmlEvent.responseText, true);
+            var parser = new SrtParser();
+            var data = parser.parse(xmlEvent.responseText, true);
             if (!_.isArray(data)) {
                 return _cueFailed('Invalid data');
             }
@@ -2034,4 +2040,5 @@
         _setTransition(CB_CLASS + ' .jwtoggling', 'none');
     })();
 
-})(window, document);
+    return Controlbar;
+});

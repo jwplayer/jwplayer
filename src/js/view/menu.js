@@ -1,23 +1,17 @@
-/**
- * JW Player HTML5 overlay component
- *
- * @author pablo
- * @version 6.0
- */
-(function(jwplayer) {
+define([
+    'view/overlay',
+    'utils/helpers',
+    'utils/css'
+], function(Overlay, utils, _css) {
 
-    var html5 = jwplayer.html5,
-        utils = jwplayer.utils,
-        _css = utils.css,
-
-        MENU_CLASS = 'jwmenu',
+    var MENU_CLASS = 'jwmenu',
         OPTION_CLASS = 'jwoption';
 
     /** HTML5 Overlay class **/
-    html5.menu = function(name, id, skin, changeHandler) {
+    var Menu = function(name, id, skin, changeHandler) {
         var _id = id,
             _changeHandler = changeHandler,
-            _overlay = new html5.overlay(_id + '_overlay', skin),
+            _overlay = new Overlay(_id + '_overlay', skin),
             _settings = utils.extend({
                 fontcase: undefined,
                 fontcolor: '#cccccc',
@@ -160,4 +154,5 @@
         position: 'relative'
     });
 
-})(jwplayer);
+    return Menu;
+});
