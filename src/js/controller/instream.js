@@ -1,18 +1,19 @@
-/** 
- * API to control instream playback without interrupting currently playing video
- *
- * @author pablo
- * @version 6.0
- */
-(function(jwplayer) {
-    var html5 = jwplayer.html5,
-        _utils = jwplayer.utils,
-        _ = jwplayer._,
-        _events = jwplayer.events,
-        _states = _events.state,
-        _playlist = jwplayer.playlist;
+define([
+    'providers/chooseprovider',
+    'utils/helpers',
+    'underscore',
+    'utils/eventdispatcher',
+    'events/events',
+    'events/states',
+    'controller/model',
+    'view/display',
+    'view/controlbar',
+    'view/adskipbutton',
+    'playlist/item'
+], function(chooseProvider, _utils, _, eventdispatcher,
+            _events, _states, Model, Display, Controlbar, Adskipbutton, PlaylistItem) {
 
-    html5.instream = function(_api, _model, _view, _controller) {
+    var Instream = function(_api, _model, _view, _controller) {
         var _defaultOptions = {
             controlbarseekable: 'never',
             controlbarpausable: true,
@@ -43,7 +44,7 @@
             _instreamDisplay,
             _instreamContainer,
             _completeTimeoutId = -1,
-            _this = _utils.extend(this, new _events.eventdispatcher());
+            _this = _utils.extend(this, new eventdispatcher());
 
         // Listen for player resize events
         _api.jwAddEventListener(_events.JWPLAYER_RESIZE, _resize);
@@ -64,7 +65,7 @@
             _setupProvider();
 
             // Initialize the instream player's model copied from main player's model
-            _adModel = new html5.model({}, _provider);
+            _adModel = new Model({}, _provider);
             _adModel.setVolume(_model.volume);
             _adModel.setFullscreen(_model.fullscreen);
             _adModel.setMute(_model.mute);
@@ -93,7 +94,7 @@
             }
 
             // Instream display
-            _instreamDisplay = new html5.display(_this);
+            _instreamDisplay = new Display(_this);
             _instreamDisplay.forceState(_states.BUFFERING);
             // Create the container in which the controls will be placed
             _instreamContainer = document.createElement('div');
@@ -109,7 +110,7 @@
             var cbarConfig = {
                 fullscreen : _model.fullscreen
             };
-            _cbar = new html5.controlbar(_this, cbarConfig);
+            _cbar = new Controlbar(_this, cbarConfig);
             _cbar.instreamMode(true);
             _instreamContainer.appendChild(_cbar.element());
 
@@ -156,9 +157,9 @@
                 item = _array[_arrayIndex];
             }
             _options = _utils.extend(_defaultOptions, options);
-            _item = new _playlist.item(item);
+            _item = new PlaylistItem(item);
             _adModel.setPlaylist([item]);
-            _skipButton = new html5.adskipbutton(_api.id, bottom, _options.skipMessage, _options.skipText);
+            _skipButton = new Adskipbutton(_api.id, bottom, _options.skipMessage, _options.skipText);
             _skipButton.addEventListener(_events.JWPLAYER_AD_SKIPPED, _skipAd);
             _skipButton.reset(_options.skipoffset || -1);
 
@@ -312,7 +313,7 @@
          *****************************/
 
         function _setupProvider() {
-            var Provider = jwplayer.html5.chooseProvider({});
+            var Provider = chooseProvider({});
             
             _provider = new Provider(_model.id);
 
@@ -391,7 +392,7 @@
             if (_array && _arrayIndex + 1 < _array.length) {
                 _arrayIndex++;
                 var item = _array[_arrayIndex];
-                _item = new _playlist.item(item);
+                _item = new PlaylistItem(item);
                 _adModel.setPlaylist([item]);
                 var curOpt;
                 if (_optionList) {
@@ -552,4 +553,6 @@
 
         return _this;
     };
-})(window.jwplayer);
+
+    return Instream;
+});

@@ -1,15 +1,15 @@
-(function(utils) {
+define(['utils/css'], function(utils) {
     /*jshint maxparams:6*/
 
     /** Stretching options **/
-    var _stretching = utils.stretching = {
+    var _stretching = {
         NONE: 'none',
         FILL: 'fill',
         UNIFORM: 'uniform',
         EXACTFIT: 'exactfit'
     };
 
-    utils.scale = function(domelement, xscale, yscale, xoffset, yoffset) {
+    var scale = function(domelement, xscale, yscale, xoffset, yoffset) {
         var value = '';
 
         // Set defaults
@@ -49,7 +49,7 @@
      * @param {Number}
      *            elementHeight
      */
-    utils.stretch = function(stretching, domelement, parentWidth, parentHeight, elementWidth, elementHeight) {
+    var stretch = function(stretching, domelement, parentWidth, parentHeight, elementWidth, elementHeight) {
         if (!domelement) {
             return false;
         }
@@ -136,4 +136,9 @@
         return scale;
     };
 
-})(jwplayer.utils);
+    return {
+        scale : scale,
+        stretching : _stretching,
+        stretch : stretch
+    };
+});

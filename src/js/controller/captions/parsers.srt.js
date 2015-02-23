@@ -1,21 +1,23 @@
-(function(parsers) {
-
+define([
+    'utils/helpers',
+    'utils/strings'
+], function(utils, string) {
 
     /** Component that loads and parses an SRT file. **/
-    parsers.srt = function() {
-
+    var srt = function () {
 
         /** XMLHTTP Object. **/
-        var _utils = jwplayer.utils,
-            _seconds = _utils.seconds;
+        var _seconds = utils.seconds;
 
-        this.parse = function(data, mergeBeginEnd) {
+        this.parse = function (data, mergeBeginEnd) {
             // Trim whitespace and split the list by returns.
-            var _captions = mergeBeginEnd ? [] : [{
-                begin: 0,
-                text: ''
-            }];
-            data = _utils.trim(data);
+            var _captions = mergeBeginEnd ? [] : [
+                {
+                    begin: 0,
+                    text: ''
+                }
+            ];
+            data = string.trim(data);
             var list = data.split('\r\n\r\n');
             if (list.length === 1) {
                 list = data.split('\n\n');
@@ -80,5 +82,5 @@
 
     };
 
-
-})(jwplayer.parsers);
+    return srt;
+});

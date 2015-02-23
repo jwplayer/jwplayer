@@ -1,11 +1,13 @@
-(function(jwplayer) {
-    var html5 = jwplayer.html5,
-        utils = jwplayer.utils,
-        events = jwplayer.events,
-        states = events.state,
-        playlist = jwplayer.playlist;
+define([
+    'utils/helpers',
+    'events/events',
+    'events/states',
+    'utils/eventdispatcher',
+    'playlist/playlist',
+    'playlist/loader'
+], function(utils, events, states, eventdispatcher, Playlist, PlaylistLoader){
 
-    html5.controller = function(_model, _view) {
+    var Controller = function(_model, _view) {
         var _ready = false,
             _loadOnPlay = -1,
             _preplay = false,
@@ -13,7 +15,7 @@
             _stopPlaylist = false, // onComplete, should we play next item or not?
             _interruptPlay,
             _queuedCalls = [],
-            _this = utils.extend(this, new events.eventdispatcher(_model.id, _model.config.debug));
+            _this = utils.extend(this, new eventdispatcher(_model.id, _model.config.debug));
 
         function _init() {
             _model.addEventListener(events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
@@ -39,17 +41,17 @@
                 _view.completeSetup();
                 _this.sendEvent(evt.type, evt);
 
-                if (jwplayer.utils.exists(jwplayer.playerReady)) {
+                if (utils.exists(jwplayer.playerReady)) {
                     jwplayer.playerReady(evt);
                 }
 
                 _model.addGlobalListener(_forward);
                 _view.addGlobalListener(_forward);
 
-                _this.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_LOADED, {
+                _this.sendEvent(events.JWPLAYER_PLAYLIST_LOADED, {
                     playlist: jwplayer(_model.id).getPlaylist()
                 });
-                _this.sendEvent(jwplayer.events.JWPLAYER_PLAYLIST_ITEM, {
+                _this.sendEvent(events.JWPLAYER_PLAYLIST_ITEM, {
                     index: _model.item
                 });
 
@@ -85,7 +87,7 @@
                     break;
                 case 'object':
                 case 'array':
-                    _model.setPlaylist(new jwplayer.playlist(item));
+                    _model.setPlaylist(new Playlist(item));
                     break;
                 case 'number':
                     _model.setItem(item);
@@ -94,7 +96,7 @@
         }
 
         function _loadPlaylist(toLoad) {
-            var loader = new playlist.loader();
+            var loader = new PlaylistLoader();
             loader.addEventListener(events.JWPLAYER_PLAYLIST_LOADED, function(evt) {
                 _load(evt.playlist);
             });
@@ -370,4 +372,6 @@
         _init();
     };
 
-})(jwplayer);
+    return Controller;
+
+});

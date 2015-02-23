@@ -1,15 +1,11 @@
-/**
- * jwplayer.html5 model
- *
- * @author pablo
- * @version 6.0
- */
-(function(jwplayer) {
-    var html5 = jwplayer.html5,
-        utils = jwplayer.utils,
-        events = jwplayer.events;
+define([
+    'utils/helpers',
+    'utils/stretching',
+    'events/eventdispatcher',
+    'events/events'
+], function(utils, stretchingUtils, eventdispatcher, events) {
 
-    html5.model = function(config, defaultProvider) {
+    var Model = function(config, defaultProvider) {
         var _model = this,
             // Video provider
             _video,
@@ -36,7 +32,7 @@
                 playlistlayout: 'extended',
                 repeat: false,
                 // skin: undefined,
-                stretching: utils.stretching.UNIFORM,
+                stretching: stretchingUtils.UNIFORM,
                 width: 480,
                 volume: 90
             };
@@ -49,7 +45,7 @@
         }
 
         function _init() {
-            utils.extend(_model, new events.eventdispatcher());
+            utils.extend(_model, new eventdispatcher());
             _model.config = _parseConfig(utils.extend({}, _defaults, _cookies, config));
             utils.extend(_model, {
                 id: config.id,

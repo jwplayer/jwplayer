@@ -1,15 +1,18 @@
-(function(parsers) {
+define([
+    'utils/helpers'
+], function(utils) {
 
     /** Component that loads and parses an DFXP file. **/
-    parsers.dfxp = function() {
+    var dfxp = function () {
+        var _seconds = utils.seconds;
 
-        var _seconds = jwplayer.utils.seconds;
-
-        this.parse = function(data) {
-            var _captions = [{
-                begin: 0,
-                text: ''
-            }];
+        this.parse = function (data) {
+            var _captions = [
+                {
+                    begin: 0,
+                    text: ''
+                }
+            ];
             data = data.replace(/^\s+/, '').replace(/\s+$/, '');
             var list = data.split('</p>');
             var list2 = data.split('</tt:p>');
@@ -67,11 +70,12 @@
                 idx = data.indexOf('\">');
                 data = data.substr(idx + 2);
                 entry.text = data;
-            } catch (error) {}
+            } catch (error) {
+            }
             return entry;
         }
 
     };
 
-
-})(jwplayer.parsers);
+    return dfxp;
+});

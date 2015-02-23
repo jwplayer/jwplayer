@@ -660,4 +660,4 @@ define([
 
     return YoutubeProvider;
 
-})(jwplayer);
+});
