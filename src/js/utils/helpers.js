@@ -1,7 +1,7 @@
 define(['utils/strings', 'events/events', 'underscore'], function(strings, Events, _) {
 
     // This is replaced by compiler
-    var _version = '/*BUILD_VERSION*/';
+    var _version = __BUILD_VERSION__;
 
     /*jshint maxparams:5*/
     var utils = {};

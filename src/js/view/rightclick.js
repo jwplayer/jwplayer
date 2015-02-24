@@ -4,7 +4,7 @@ define([
 ], function(utils, cssUtils) {
 
     // This is replaced by compiler
-    var _version = '/*BUILD_VERSION*/';
+    var _version = __BUILD_VERSION__;
 
     var _css = cssUtils.css,
         ABOUT_DEFAULT = 'About JW Player ',

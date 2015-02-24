@@ -6,7 +6,7 @@ if (!window.jwplayer) {
         };
 
         // This is replaced by compiler
-        jwplayer.version = '/*BUILD_VERSION*/';
+        jwplayer.version = __BUILD_VERSION__;
         jwplayer.api = Api;
         jwplayer.vid = document.createElement('video');
 
