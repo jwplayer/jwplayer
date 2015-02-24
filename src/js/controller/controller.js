@@ -1,11 +1,12 @@
 define([
     'utils/helpers',
+    'utils/css',
     'events/events',
     'events/states',
     'utils/eventdispatcher',
     'playlist/playlist',
     'playlist/loader'
-], function(utils, events, states, eventdispatcher, Playlist, PlaylistLoader){
+], function(utils, cssUtils, events, states, eventdispatcher, Playlist, PlaylistLoader){
 
     var Controller = function(_model, _view) {
         var _ready = false,
@@ -207,10 +208,10 @@ define([
         }
 
         function _item(index) {
-            utils.css.block(_model.id + '_next');
+            cssUtils.block(_model.id + '_next');
             _load(index);
             _play();
-            utils.css.unblock(_model.id + '_next');
+            cssUtils.unblock(_model.id + '_next');
         }
 
         function _prev() {

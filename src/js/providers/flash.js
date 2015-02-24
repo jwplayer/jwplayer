@@ -64,7 +64,7 @@ define([
 
     function FlashProvider(/* _playerId */) {
         utils.extend(this,
-            new events.eventdispatcher('flash.provider'),
+            new eventdispatcher('flash.provider'),
             // properties
             {
                 position: 0,

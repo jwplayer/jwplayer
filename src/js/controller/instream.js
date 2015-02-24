@@ -1,6 +1,7 @@
 define([
     'providers/chooseprovider',
     'utils/helpers',
+    'utils/css',
     'underscore',
     'utils/eventdispatcher',
     'events/events',
@@ -10,7 +11,7 @@ define([
     'view/controlbar',
     'view/adskipbutton',
     'playlist/item'
-], function(chooseProvider, _utils, _, eventdispatcher,
+], function(chooseProvider, _utils, _cssUtils, _, eventdispatcher,
             _events, _states, Model, Display, Controlbar, Adskipbutton, PlaylistItem) {
 
     var Instream = function(_api, _model, _view, _controller) {
@@ -99,7 +100,7 @@ define([
             // Create the container in which the controls will be placed
             _instreamContainer = document.createElement('div');
             _instreamContainer.id = _this.id + '_instream_container';
-            _utils.css.style(_instreamContainer, {
+            _cssUtils.style(_instreamContainer, {
                 width: '100%',
                 height: '100%'
             });
