@@ -3,7 +3,8 @@ define([
     'utils/css'
 ], function(utils, cssUtils) {
 
-    var _version = jwplayer.version;
+    // This is replaced by compiler
+    var _version = '/*BUILD_VERSION*/';
 
     var _css = cssUtils.css,
         ABOUT_DEFAULT = 'About JW Player ',
@@ -20,6 +21,7 @@ define([
         JW_CSS_WHITE = '#FFF';
 
     var Rightclick = function(api, config) {
+
         var _api = api,
             _container, // = DOCUMENT.getElementById(_api.id),
             _config = utils.extend({

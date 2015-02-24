@@ -47,7 +47,7 @@ define([
         JW_CSS_NONE = 'none',
         JW_CSS_BLOCK = 'block';
 
-    var View = function(_api, _model) {
+    var View = function(_player, _model) {
         var _playerElement,
             _container,
             _controlsLayer,
@@ -95,7 +95,7 @@ define([
         function _init() {
 
             _playerElement = _createElement('div', PLAYER_CLASS + ' playlist-' + _model.playlistposition);
-            _playerElement.id = _api.id;
+            _playerElement.id = _player.id;
             _playerElement.tabIndex = 0;
 
             _requestFullscreen =
@@ -122,7 +122,7 @@ define([
 
             _resize(_model.width, _model.height);
 
-            var replace = document.getElementById(_api.id);
+            var replace = document.getElementById(_player.id);
             replace.parentNode.replaceChild(_playerElement, replace);
         }
 
@@ -161,7 +161,7 @@ define([
                 _resetTapTimer();
             }
 
-            var jw = jwplayer(_api.id);
+            var jw = jwplayer(_player.id);
             switch (evt.keyCode) {
                 case 27: // Esc
                     jw.setFullscreen(false);
@@ -286,12 +286,12 @@ define([
             if (_errorState) {
                 return;
             }
-            _api.skin = skin;
+            _player.skin = skin;
 
             _container = _createElement('span', VIEW_MAIN_CONTAINER_CLASS);
-            _container.id = _api.id + '_view';
+            _container.id = _player.id + '_view';
             _videoLayer = _createElement('span', VIEW_VIDEO_CONTAINER_CLASS);
-            _videoLayer.id = _api.id + '_media';
+            _videoLayer.id = _player.id + '_media';
 
             _controlsLayer = _createElement('span', VIEW_CONTROLS_CONTAINER_CLASS);
             _instreamLayer = _createElement('span', VIEW_INSTREAM_CONTAINER_CLASS);
@@ -325,28 +325,28 @@ define([
                 window.addEventListener('orientationchange', _responsiveListener, false);
             }
             //this for googima, after casting, to get the state right.
-            jwplayer(_api.id).onAdPlay(function() {
+            jwplayer(_player.id).onAdPlay(function() {
                 _controlbar.adMode(true);
                 _updateState(states.PLAYING);
 
                 // For Vast to hide controlbar if no mouse movement
                 _resetTapTimer();
             });
-            jwplayer(_api.id).onAdSkipped(function() {
+            jwplayer(_player.id).onAdSkipped(function() {
                 _controlbar.adMode(false);
             });
-            jwplayer(_api.id).onAdComplete(function() {
+            jwplayer(_player.id).onAdComplete(function() {
                 _controlbar.adMode(false);
             });
             // So VAST will be in correct state when ad errors out from unknown filetype
-            jwplayer(_api.id).onAdError(function() {
+            jwplayer(_player.id).onAdError(function() {
                 _controlbar.adMode(false);
             });
-            _api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
-            _api.jwAddEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
-            _api.jwAddEventListener(events.JWPLAYER_PLAYLIST_COMPLETE, _playlistCompleteHandler);
-            _api.jwAddEventListener(events.JWPLAYER_PLAYLIST_ITEM, _playlistItemHandler);
-            _api.jwAddEventListener(events.JWPLAYER_CAST_AVAILABLE, function() {
+            _player.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
+            _player.jwAddEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
+            _player.jwAddEventListener(events.JWPLAYER_PLAYLIST_COMPLETE, _playlistCompleteHandler);
+            _player.jwAddEventListener(events.JWPLAYER_PLAYLIST_ITEM, _playlistItemHandler);
+            _player.jwAddEventListener(events.JWPLAYER_CAST_AVAILABLE, function() {
                 if (utils.canCast()) {
                     _this.forceControls(true);
                 } else {
@@ -354,9 +354,9 @@ define([
                 }
             });
 
-            _api.jwAddEventListener(events.JWPLAYER_CAST_SESSION, function(evt) {
+            _player.jwAddEventListener(events.JWPLAYER_CAST_SESSION, function(evt) {
                 if (!_castDisplay) {
-                    _castDisplay = new jwplayer.html5.castDisplay(_api.id);
+                    _castDisplay = new jwplayer.html5.castDisplay(_player.id);
                     _castDisplay.statusDelegate = function(evt) {
                         _castDisplay.setState(evt.newstate);
                     };
@@ -367,11 +367,11 @@ define([
                     });
                     _this.forceControls(true);
                     _castDisplay.setState('connecting').setName(evt.deviceName).show();
-                    _api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
-                    _api.jwAddEventListener(events.JWPLAYER_CAST_AD_CHANGED, _castAdChanged);
+                    _player.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
+                    _player.jwAddEventListener(events.JWPLAYER_CAST_AD_CHANGED, _castAdChanged);
                 } else {
-                    _api.jwRemoveEventListener(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
-                    _api.jwRemoveEventListener(events.JWPLAYER_CAST_AD_CHANGED, _castAdChanged);
+                    _player.jwRemoveEventListener(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
+                    _player.jwRemoveEventListener(events.JWPLAYER_CAST_AD_CHANGED, _castAdChanged);
                     _castDisplay.hide();
                     if (_controlbar.adMode()) {
                         _castAdsEnded();
@@ -381,7 +381,7 @@ define([
                     });
                     // redraw displayicon
                     _stateHandler({
-                        newstate: _api.jwGetState()
+                        newstate: _player.jwGetState()
                     });
                     _responsiveListener();
                 }
@@ -457,7 +457,7 @@ define([
         function _captionsLoadedHandler() { //evt) {
             //ios7captions
             //_model.getVideo().addCaptions(evt.captionData);
-            // set current captions evt.captionData[_api.jwGetCurrentCaptions()]
+            // set current captions evt.captionData[_player.jwGetCurrentCaptions()]
         }
 
 
@@ -484,7 +484,7 @@ define([
                 }
             } else {
                 _stateHandler({
-                    newstate: _api.jwGetState()
+                    newstate: _player.jwGetState()
                 });
             }
             if (_showing) {
@@ -499,7 +499,7 @@ define([
 
         function _startFade() {
             clearTimeout(_controlsTimeout);
-            var state = _api.jwGetState();
+            var state = _player.jwGetState();
 
             // We need _instreamMode because the state is IDLE during pre-rolls
             if (state === states.PLAYING || state === states.PAUSED || _instreamMode) {
@@ -531,13 +531,13 @@ define([
 
             _checkAudioMode(height);
 
-            _captions = new Captions(_api, _model.captions);
+            _captions = new Captions(_player, _model.captions);
             _captions.addEventListener(events.JWPLAYER_CAPTIONS_LIST, forward);
             _captions.addEventListener(events.JWPLAYER_CAPTIONS_CHANGED, forward);
             _captions.addEventListener(events.JWPLAYER_CAPTIONS_LOADED, _captionsLoadedHandler);
             _controlsLayer.appendChild(_captions.element());
 
-            _display = new Display(_api, displaySettings);
+            _display = new Display(_player, displaySettings);
             _display.addEventListener(events.JWPLAYER_DISPLAY_CLICK, function(evt) {
                 forward(evt);
                 _touchHandler();
@@ -548,27 +548,27 @@ define([
             }
             _controlsLayer.appendChild(_display.element());
 
-            _logo = new Logo(_api, _logoConfig);
+            _logo = new Logo(_player, _logoConfig);
             _controlsLayer.appendChild(_logo.element());
 
-            _dock = new Dock(_api, _model.componentConfig('dock'));
+            _dock = new Dock(_player, _model.componentConfig('dock'));
             _controlsLayer.appendChild(_dock.element());
 
-            if (_api.edition && !_isMobile) {
-                _rightClickMenu = new RightClick(_api, {
+            if (_player.edition && !_isMobile) {
+                _rightClickMenu = new RightClick(_player, {
                     abouttext: _model.abouttext,
                     aboutlink: _model.aboutlink
                 });
             } else if (!_isMobile) {
-                _rightClickMenu = new RightClick(_api, {});
+                _rightClickMenu = new RightClick(_player, {});
             }
 
             //if (_model.playlistsize && _model.playlistposition && _model.playlistposition !== JW_CSS_NONE) {
-                //_playlist = new html5.playlistcomponent(_api, {});
+                //_playlist = new html5.playlistcomponent(_player, {});
                 //_playlistLayer.appendChild(_playlist.element());
             //}
 
-            _controlbar = new Controlbar(_api, cbSettings);
+            _controlbar = new Controlbar(_player, cbSettings);
             _controlbar.addEventListener(events.JWPLAYER_USER_ACTION, _resetTapTimer);
 
             _controlsLayer.appendChild(_controlbar.element());
@@ -639,7 +639,7 @@ define([
             // cast display reset
             if (_castDisplay) {
                 _castDisplay.adsEnded();
-                _castDisplay.setState(_api.jwGetState());
+                _castDisplay.setState(_player.jwGetState());
             }
             // display click reset
             _display.revertAlternateClickHandler();
@@ -699,7 +699,7 @@ define([
                 containerStyle,
                 playlistSize,
                 playlistPos,
-                id = _api.id + '_view';
+                id = _player.id + '_view';
             cssUtils.block(id);
 
             // when jwResize is called remove aspectMode and force layout
@@ -786,7 +786,7 @@ define([
                     _showVideo(false);
                 } else {
                     _controlbar.audioMode(false);
-                    _updateState(_api.jwGetState());
+                    _updateState(_player.jwGetState());
                 }
             }
             if (_logo && _audioMode) {
@@ -851,7 +851,7 @@ define([
             window.addEventListener('beforeunload', function() {
                 if (!_isCasting()) { // don't call stop while casting
                     // prevent video error in display on window close
-                    _api.jwStop();
+                    _player.jwStop();
                 }
             });
         };
@@ -865,7 +865,7 @@ define([
                     document.webkitCurrentFullScreenElement ||
                     document.mozFullScreenElement ||
                     document.msFullscreenElement;
-                return !!(fsElement && fsElement.id === _api.id);
+                return !!(fsElement && fsElement.id === _player.id);
             }
             // if player element view fullscreen not available, return video fullscreen state
             return  _instreamMode ? _instreamModel.getVideo().getFullScreen() :
@@ -918,7 +918,7 @@ define([
                 clearTimeout(_resizeMediaTimeout);
                 _resizeMediaTimeout = setTimeout(_resizeMedia, 200);
 
-            } else if (_isIPad && _api.jwGetState() === states.PAUSED) {
+            } else if (_isIPad && _player.jwGetState() === states.PAUSED) {
                 // delay refresh on iPad when exiting fullscreen
                 // TODO: cancel this if fullscreen or player state changes
                 setTimeout(_showDisplay, 500);
@@ -976,7 +976,7 @@ define([
 
         function _showDisplay() {
             if (_display && _model.controls && !_audioMode) {
-                if (!_isIPod || _api.jwGetState() === states.IDLE) {
+                if (!_isIPod || _player.jwGetState() === states.IDLE) {
                     _display.show();
                 }
             }
@@ -1000,7 +1000,7 @@ define([
             }
             _showing = false;
 
-            var state = _api.jwGetState();
+            var state = _player.jwGetState();
 
             if (!_model.controls || state !== states.PAUSED) {
                 _hideControlbar();
@@ -1051,7 +1051,7 @@ define([
         function _playlistItemHandler() {
             // update display title
             if (_castDisplay) {
-                _castDisplay.setState(_api.jwGetState());
+                _castDisplay.setState(_player.jwGetState());
             }
         }
 
@@ -1157,7 +1157,7 @@ define([
         }
 
         function _internalSelector(className) {
-            return '#' + _api.id + (className ? ' .' + className : '');
+            return '#' + _player.id + (className ? ' .' + className : '');
         }
 
         this.setupInstream = function(instreamContainer, instreamControlbar, instreamDisplay, instreamModel) {
@@ -1201,7 +1201,7 @@ define([
         this.addButton = function(icon, label, handler, id) {
             if (_dock) {
                 _dock.addButton(icon, label, handler, id);
-                if (_api.jwGetState() === states.IDLE) {
+                if (_player.jwGetState() === states.IDLE) {
                     _showDock();
                 }
             }
@@ -1227,7 +1227,7 @@ define([
             } else {
                 if (newstate) {
                     _stateHandler({
-                        newstate: _api.jwGetState()
+                        newstate: _player.jwGetState()
                     });
                 }
             }
@@ -1253,7 +1253,7 @@ define([
 
         this.releaseControls = function() {
             _forcedControlsState = null;
-            _updateState(_api.jwGetState());
+            _updateState(_player.jwGetState());
         };
 
         function _hideInstream(hidden) {
@@ -1277,7 +1277,7 @@ define([
         };
 
         this.releaseState = function() {
-            _display.releaseState(_api.jwGetState());
+            _display.releaseState(_player.jwGetState());
         };
 
         this.getSafeRegion = function(includeCB) {
@@ -1297,7 +1297,7 @@ define([
             var dispBounds = _bounds(_container),
                 dispOffset = dispBounds.top,
                 cbBounds = _instreamMode ?
-                _bounds(document.getElementById(_api.id + '_instream_controlbar')) :
+                _bounds(document.getElementById(_player.id + '_instream_controlbar')) :
                 _bounds(_controlbar.element()),
                 dockButtons = _instreamMode ? false : (_dock.numButtons() > 0),
                 logoTop = (_logo.position().indexOf('top') === 0),
@@ -1333,7 +1333,7 @@ define([
                 _rightClickMenu.destroy();
             }
             if (_castDisplay) {
-                _api.jwRemoveEventListener(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
+                _player.jwRemoveEventListener(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
                 _castDisplay.destroy();
                 _castDisplay = null;
             }

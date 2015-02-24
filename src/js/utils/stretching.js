@@ -29,6 +29,7 @@ define(['utils/css'], function(cssUtils) {
         }
         cssUtils.transform(domelement, value);
     };
+    var _scale = scale;
 
     /**
      * Stretches domelement based on stretching. parentWidth, parentHeight,
@@ -123,7 +124,7 @@ define(['utils/css'], function(cssUtils) {
                 }
                 style.width = elementWidth;
                 style.height = elementHeight;
-                scale(domelement, xscale, yscale, 0, 0);
+                _scale(domelement, xscale, yscale, 0, 0);
             } else {
                 scale = false;
                 cssUtils.transform(domelement);

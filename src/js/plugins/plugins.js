@@ -2,8 +2,9 @@ define([
     'plugins/loader',
     'plugins/model',
     'plugins/plugin',
+    'plugins/utils',
     'utils/helpers'
-], function(PluginLoader, PluginModel, Plugin, helper) {
+], function(PluginLoader, PluginModel, Plugin, pluginUtils, utils) {
 
     var _plugins = {},
         _pluginLoaders = {};
@@ -14,7 +15,7 @@ define([
     };
 
     var registerPlugin = function(id, target, arg1, arg2) {
-        var pluginId = helper.getPluginName(id);
+        var pluginId = pluginUtils.getPluginName(id);
         if (!_plugins[pluginId]) {
             _plugins[pluginId] = new Plugin(id);
         }

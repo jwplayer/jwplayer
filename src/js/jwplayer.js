@@ -1,14 +1,15 @@
 if (!window.jwplayer) {
 
-    window.jwplayer = {};
-    window.jwplayer.version = 'X.Y.ZZZZ';
-
     define(['api/api'], function (Api) {
-        window.jwplayer = function () {
+        var jwplayer = function () {
             return Api.selectPlayer.apply(this, arguments);
         };
 
-        window.jwplayer.version = 'X.Y.ZZZZ';
-        window.jwplayer.vid = document.createElement('video');
+        // This is replaced by compiler
+        jwplayer.version = '/*BUILD_VERSION*/';
+        jwplayer.api = Api;
+        jwplayer.vid = document.createElement('video');
+
+        window.jwplayer = jwplayer;
     });
 }

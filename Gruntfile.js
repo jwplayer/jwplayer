@@ -13,8 +13,8 @@ module.exports = function(grunt) {
                 overwrite: true,
                 replacements:[
                     {
-                        from : /window.jwplayer\.version = '(.*)'/,
-                        to   : 'window.jwplayer.version = \'<%= pkg.version %>\''
+                        from : '\'/*BUILD_VERSION*/\'',
+                        to   : '\'<%= pkg.version %>\''
                     }
                 ]
             }

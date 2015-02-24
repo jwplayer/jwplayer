@@ -12,28 +12,28 @@ define([
 
     var _css = cssUtils.css;
 
-    var Embed = function(playerApi) {
+    var Embed = function(api) {
 
         var _this = this,
-            _config = new EmbedConfig(playerApi.config),
+            _config = new EmbedConfig(api.config),
             _width = _config.width,
             _height = _config.height,
             _errorText = 'Error loading player: ',
-            _oldContainer = document.getElementById(playerApi.id),
-            _pluginloader = plugins.loadPlugins(playerApi.id, _config.plugins),
+            _oldContainer = document.getElementById(api.id),
+            _pluginloader = plugins.loadPlugins(api.id, _config.plugins),
             _loader,
             _playlistLoading = false,
             _errorOccurred = false,
             _setupErrorTimer = -1;
 
-        _config.id = playerApi.id;
+        _config.id = api.id;
         if (_config.aspectratio) {
-            playerApi.config.aspectratio = _config.aspectratio;
+            api.config.aspectratio = _config.aspectratio;
         } else {
-            delete playerApi.config.aspectratio;
+            delete api.config.aspectratio;
         }
 
-        _setupEvents(playerApi, _config.events);
+        _setupEvents(api, _config.events);
 
         var _container = document.createElement('div');
         _container.id = _oldContainer.id;
@@ -108,7 +108,7 @@ define([
             if (_pluginloader.getStatus() === scriptloader.loaderstatus.COMPLETE) {
 
                 var pluginConfigCopy = utils.extend({}, _config);
-                _pluginloader.setupPlugins(playerApi, pluginConfigCopy, _resizePlugin);
+                _pluginloader.setupPlugins(api, pluginConfigCopy, _resizePlugin);
 
                 utils.emptyElement(_container);
 
@@ -116,10 +116,10 @@ define([
                 var playerConfigCopy = utils.extend({}, pluginConfigCopy);
                 delete playerConfigCopy.volume;
                 var html5player = new Html5Player(playerConfigCopy);
-                playerApi.setPlayer(html5player, 'html5');
+                api.setPlayer(html5player, 'html5');
 
                 _insertCSS();
-                return playerApi;
+                return api;
             }
         }
 
@@ -144,7 +144,7 @@ define([
         }
 
         function _pluginError(evt) {
-            playerApi.dispatchEvent(events.JWPLAYER_ERROR, {
+            api.dispatchEvent(events.JWPLAYER_ERROR, {
                 message: 'Could not load plugin: ' + evt.message
             });
         }
@@ -161,7 +161,7 @@ define([
             // Throttle this so that it runs once if called twice in the same callstack
             clearTimeout(_setupErrorTimer);
             _setupErrorTimer = setTimeout(function() {
-                playerApi.dispatchEvent(events.JWPLAYER_SETUP_ERROR, {
+                api.dispatchEvent(events.JWPLAYER_SETUP_ERROR, {
                     message: message,
                     fallback: fallback
                 });

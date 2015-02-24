@@ -1,6 +1,7 @@
 define(['utils/strings', 'events/events', 'underscore'], function(strings, Events, _) {
 
-    var _version = window.jwplayer.version;
+    // This is replaced by compiler
+    var _version = '/*BUILD_VERSION*/';
 
     /*jshint maxparams:5*/
     var utils = {};

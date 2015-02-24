@@ -5,8 +5,9 @@ define([
     'events/events',
     'events/states',
     'utils/eventdispatcher',
+    'utils/strings',
     'providers/default'
-], function(utils, extensionmap, _, events, states, eventdispatcher, DefaultProvider) {
+], function(utils, extensionmap, _, events, states, eventdispatcher, strings, DefaultProvider) {
 
     /****************************************************************************
      *
@@ -126,7 +127,7 @@ define([
             return true;
         }
 
-        var mappedType = extensionmap.getMappedType(type ? type : utils.extension(file));
+        var mappedType = extensionmap.getMappedType(type ? type : strings.extension(file));
 
         // If no type or unrecognized type, don't allow to play
         if (!mappedType) {
