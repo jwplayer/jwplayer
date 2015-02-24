@@ -38,12 +38,13 @@
 	}
 }
 
-.jw-slider.jw-hori {
+.jwplayer .jw-slider.jw-hori {
 	width: @volume-rail-length;
 	height: @volume-rail-width;
-	top: 0.5em;
+	top: @def-rail-width-padding;
 
 	.rail, .buffer, .progress, .thumb {
+		width: 100%;
 	}
 
 	.progress {
@@ -53,9 +54,8 @@
 		border-bottom-right-radius: 0;
 	}
 
-	.jw-rail-group, .rail {
+	.jw-rail-group, .rail, .progress {
 		width: 100%;
-		height: 1em;
 	}
 
 	.jwthumb button {
@@ -63,11 +63,12 @@
 	}
 }
 
-.jw-slider.jw-vert {
+.jwplayer .jw-slider.jw-vert {
 	height: @volume-rail-length;
-	width: @volume-rail-width;
+	width: @controlbar-height;
 
 	.rail, .buffer, .progress, .thumb {
+		height: 100%;
 		bottom: 0;
 	}
 
@@ -78,8 +79,8 @@
 		border-bottom-right-radius: 0.5em;
 	}
 
-	.jw-rail-group, .rail {
-		width: 1em;
+	.jw-rail-group, .rail, .progress {
+		width: @volume-rail-width;
 		height: 100%;
 		bottom: 0;
 	}
@@ -89,65 +90,21 @@
 	}
 }
 
-
-.volumeOverlay .jwcontents * {
-	color:rgb(172,172,172);
-	font-style:normal;
-	font-variant:normal;
-	font-weight:normal;
-	font-stretch:normal;
-	font-size:11px;
-	line-height:normal;
-	font-family:Arial, Helvetica, sans-serif;
+.jwplayer .jwtime.jw-slider.jw-hori {
+	left:0;
+	right:0;
+	width: 100%;
 }
 
-span.jwcontrolbar .jwrailgroup {
-position:absolute;
-width:100%;
-border-radius: 0.5em
-}
-
-#container_controlbar .jwvolume .jwrail {
-	top:0px;
-	bottom:0px;
-	width:100%;
-	height:auto;
-}
-
-#container_controlbar .jwvolumeProgress {
-	top: 0px;
-	bottom: 0px;
-	height: auto;
-}
-
-span.jwcontrolbar .jwgroup .jwslider.jwtime {
-	margin: @time-rail-width/2 0;
-	height: @time-rail-width;
-}
-
-#container_controlbar .jwslider.jwvolume button {
+#container_controlbar .jw-slider.jwvolume button {
 	font-size: @volume-rail-width;
 	color: #0f0;
 }
 
-#container_controlbar .jwslider.jwvertical button {
+.jw-slider.jw-vert button {
 	margin-bottom: 1em;
 }
 
-#container_controlbar .jwslider.jwhorizontal button {
+.jw-slider.jw-hori button {
 	margin-right: 1em;
 }
-
-#container_controlbar .jwtime .jwrail {
-	left:0;
-	right:0;
-}
-
-span.jwcontrolbar .jwvertical * {
-display:block;
-}
-
-span.jwcontrolbar .jwvertical .jwvolumeProgress {
-height:auto!important;
-}
-

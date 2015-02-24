@@ -11,7 +11,7 @@
 	bottom: @ui-margin;
 
 	background: @def-background-style;
-	background-size: 100% 100%;
+	background-size: @def-background-size;
 	left: @ui-margin;
 	right: @ui-margin;
 	bottom: @ui-margin;
@@ -35,7 +35,7 @@ display:table-cell;
 .jwcontrolbar .jwgroup > span {
 	padding: 0 0.20em;
 	display: inline-block;
-	font-size:1em;
+	
 	line-height: @controlbar-height;
 	height: @controlbar-height;
 }
@@ -80,9 +80,11 @@ span.jwcontrolbar .jwdivider + .jwdivider {
 display:none;
 }
 
-span.jwcontrolbar .jwtext {
+.jwcontrolbar .jwtext {
 	color:@font-color;
-
+	font-size: @font-size;
+	line-height: @font-size;;
+	height: @font-size;
 	text-align:center;
 	font-style:normal;
 	font-variant:normal;

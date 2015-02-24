@@ -6,7 +6,7 @@
 
 @text-transform: normal;
 @font-weight: normal;
-@font-size: 1em;
+@font-size: 0.75em;
 @max-width: 600px;
 
 @ui-corner-round: 0.5em;
@@ -17,15 +17,21 @@
 
 @font-color: @active-color;
 @def-background-style: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAeCAYAAADtlXTHAAAANklEQVR4AWMUFRW/x2RiYqLI9O3bNwam////MzAxAAGcAImBWf9RuRAxnFyEUQgDCLKATLCDAFb+JfgLDLOxAAAAAElFTkSuQmCC) repeat-x;
+@def-background-size: 100% 100%;
+@def-stroke: 1px solid #333;
 //@def-background-style: rgba(128,0,128, 0.75);
 
 @controlbar-height: 2em;
+@controlbar-icon-size: 1.25em;
 @progress-color: @active-color;
 @buffer-color: @inactive-color;
 @rail-color: #666;
 
-@time-rail-width: 1em;
-@volume-rail-width: 1em;
+@def-rail-width: 0.7em;
+@def-rail-width-padding: 0.65em;
+
+@time-rail-width: @def-rail-width;
+@volume-rail-width: @def-rail-width;
 @volume-rail-length: 4em;
 
 @test-color: #f0f;
