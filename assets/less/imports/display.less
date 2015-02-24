@@ -1,94 +1,90 @@
 .jwdisplay {
-position:absolute;
-width:100%;
-height:100%;
-overflow:hidden;
+	position:absolute;
+	width:100%;
+	height:100%;
+	overflow:hidden;
 }
 
 .jwdisplay .jwpreview {
-position:absolute;
-width:100%;
-height:100%;
-overflow:hidden;
-opacity:0;
-background:50% 50% no-repeat rgb(0,0,0);
+	position:absolute;
+	width:100%;
+	height:100%;
+	overflow:hidden;
+	opacity:0;
+	background:50% 50% no-repeat rgb(0,0,0);
 }
 
-.jwdisplay,.jwdisplay * {
--webkit-transition:opacity .25s color .25s;
-transition:opacity .25s color .25s;
+.jwdisplay, .jwdisplay * {
+	-webkit-transition:opacity .25s color .25s;
+	transition:opacity .25s color .25s;
 }
 
 .jwplayer .jwdisplayIcon {
-display:table;
-position:relative;
-margin-left:auto;
-margin-right:auto;
-top:50%;
-float:none;
+	padding:0 1em;
+	margin-top: -1.75em;
+
+	background: @def-background-style;
+	background-size: 100% 100%;
+	border-radius: @ui-corner-round;
+	display:table;
+	cursor: pointer;
+	position: relative;
+	margin-left:auto;
+	margin-right:auto;
+	top:50%;
+	float:none;
 }
 
 .jwplayer .jwdisplayIcon div {
-position:relative;
-display:table-cell;
-vertical-align:middle!important;
-background-position:50% 50%;
-background-repeat:no-repeat;
+	padding: 0.25em;
+	position:relative;
+	display:table-cell;
+	vertical-align:middle!important;
+	background-position:50% 50%;
+	background-repeat:no-repeat;
 }
 
 .jwplayer .jwdisplayIcon .jwtext {
-color:rgb(255,255,255);
-padding:0 1px;
-max-width:300px;
-overflow-y:hidden;
-text-align:center;
--webkit-user-select:none;
+	color: @font-color;
+	font-size:0.75em;
+	line-height:1em;
+	padding: 0;
+	max-width:300px;
+	overflow-y:hidden;
+	text-align:center;
+	-webkit-user-select:none;
+	font-style:normal;
+	font-variant:normal;
+	font-weight:normal;
+	font-stretch:normal;
+	font-family:Arial, Helvetica, sans-serif;
 }
 
-
-#container_display_button {
-padding:0 18px;
-height:52px;
-margin-top:-26px;
-background-position:0 50% 50% 50% 100% 50%;
-background-repeat:no-repeat;
+.jwplayer .jwdisplayIcon .jwtext:hover {
+	color: @font-color;
+	font-size:0.75em;
+	line-height:1em;
+	padding: 0;
+	max-width:300px;
+	overflow-y:hidden;
+	text-align:center;
+	-webkit-user-select:none;
+	font-style:normal;
+	font-variant:normal;
+	font-weight:normal;
+	font-stretch:normal;
+	font-family:Arial, Helvetica, sans-serif;
 }
 
-.jw-tab-focus #container_display_button,#container .jwdisplay:hover #container_display_button {
-padding:0 18px;
-height:52px;
-margin-top:-26px;
-
-background-position:0 50% 50% 50% 100% 50%;
-background-repeat:no-repeat;
+.jwplayer .jwdisplayIcon .jwicon button {
+	font-size: 3em;
 }
 
-#container .jwdisplay #container_display_button_play {
-width:36px;
-float:none;
-background-size:36px 52px;
+.jwplayer .jwpreview {
+	opacity:1;
+	visibility:visible;
 }
 
-#container .jwdisplay:hover #container_display_button_play {
-}
-
-#container_display .jwpreview {
-opacity:1;
-visibility:visible;
-background-image:url(http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg);
-}
-
-#container .jwdisplay .jwtext {
-font-style:normal;
-font-variant:normal;
-font-weight:normal;
-font-stretch:normal;
-font-size:11px;
-line-height:14px;
-font-family:Arial, Helvetica, sans-serif;
-color:rgb(255,255,255);
-}
-
-#container .jwdisplay:hover .jwtext {
-color:rgb(255,255,255);
+.jwplayer .jwdisplay:hover .jwtext {
+	color: @display-hover-color;
 }

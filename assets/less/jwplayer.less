@@ -1,35 +1,47 @@
 @import "imports/vars.less";
 @import "imports/icons.less";
 
-@import "imports/display.less";
-@import "imports/controlbar.less";
-@import "imports/dock.less";
-@import "imports/tooltip.less";
+.jwplayer {
+	font-size: @default-em-size;
+}
 
-button {
+.jwplayer * {
+	box-sizing: border-box;
+}
+
+.jwplayer button {
+	border: 0;
 	padding: 0;
 }
 
-.jwplayer {
-	font-size: @default-em-size;
-
-}
 .jwplayer .jwcontrolbar .jwicon button {
 	font-size: 1.5em;
-	box-sizing: border-box;
 }
 
 .jwplayer .jwicon button:hover {
 	color: @active-color;
 }
 
+.jwplayer .jwicon.tooltip-icon.open button {
+	color: @active-color;
+}
+
+@import "imports/display.less";
+@import "imports/controlbar.less";
+@import "imports/dock.less";
+@import "imports/tooltip.less";
+@import "imports/slider.less";
+
+
+/*
 object.jwswf,.jwplayer:focus {
-outline:none;
+	outline:none;
 }
 
 .jw-tab-focus:focus {
-outline:rgb(11,126,244) solid 2px;
+	outline:rgb(11,126,244) solid 0.1em;
 }
+*/
 
 .jwplayer,.jwplayer div,.jwplayer span,.jwplayer a,.jwplayer img,.jwplayer ul,.jwplayer li,.jwplayer video,.jwclick {
 margin:0;
@@ -50,13 +62,13 @@ line-height:1em;
 background-color:transparent;
 }
 
-.jwplayer,.jwplayer * {
+/*.jwplayer,.jwplayer * {
 box-sizing:content-box;
 }
 
 .jwplayer * button,.jwplayer * input,.jwplayer * select,.jwplayer * textarea {
 box-sizing:border-box;
-}
+}*/
 
 .jwplayer ul {
 list-style:none;
@@ -75,12 +87,12 @@ pointer-events:all;
 }
 
 .jwskip {
-position:absolute;
-float:right;
-display:inline-block;
-width:80px;
-height:30px;
-right:10px;
+	position:absolute;
+	float:right;
+	display:inline-block;
+	width: 7em;
+	height: 2em;
+	right: 1em;
 }
 
 .jwskipimage {
@@ -96,14 +108,10 @@ height:100%;
 overflow:hidden;
 }
 
-
-
-
 .jwlogo {
 cursor:pointer;
 position:absolute;
 }
-
 
 .jwclick {
 border-radius:5px!important;
