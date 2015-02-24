@@ -23,14 +23,28 @@ module.exports = function(grunt) {
 
         uglify : {
             options: {
-                report: 'gzip',
-                mangle: {
-                    except: ['RESERVED_KEYWORDS_TO_PROTECT']
+                // fails with node 0.12.0 and grunt-contrib-uglify 0.4.1
+                // https://github.com/gruntjs/grunt-contrib-uglify/issues/302
+                // report: 'gzip',
+                mangle: true,
+                compress: {
+                    booleans: true,
+                    cascade :true,
+                    conditionals: true,
+                    dead_code: true,
+                    drop_console: true,
+                    evaluate: true,
+                    if_return: true,
+                    join_vars: true,
+                    pure_getters: true,
+                    sequences: true,
+                    unused: true,
+                    warnings: false
                 }
             },
             player : {
                 files: {
-                    'bin-release/jwplayer.js' : 'bin-debug/jwplayer.js'
+                    'bin-release/jwplayer.js': 'bin-debug/jwplayer.js'
                 }
             }
         },
