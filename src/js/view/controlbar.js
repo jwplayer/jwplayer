@@ -613,8 +613,8 @@ define([
             if (!_isMobile) {
                 button.addEventListener('click', _buttonClickHandler(name), false);
             } else if (name !== 'hd' && name !== 'cc') {
-                var buttonTouch = new utils.touch(button);
-                buttonTouch.addEventListener(utils.touchEvents.TAP, _buttonClickHandler(name));
+                var buttonTouch = new Touch(button);
+                buttonTouch.addEventListener(events.touchEvents.TAP, _buttonClickHandler(name));
             }
 
             button.innerHTML = '&nbsp;';
@@ -1048,11 +1048,11 @@ define([
                 }
                 rail.addEventListener('mousedown', _sliderMouseDown(sliderName), false);
             } else {
-                var railTouch = new utils.touch(rail);
-                railTouch.addEventListener(utils.touchEvents.DRAG_START, _sliderDragStart);
-                railTouch.addEventListener(utils.touchEvents.DRAG, _sliderDragEvent);
-                railTouch.addEventListener(utils.touchEvents.DRAG_END, _sliderDragEvent);
-                railTouch.addEventListener(utils.touchEvents.TAP, _sliderTapEvent);
+                var railTouch = new Touch(rail);
+                railTouch.addEventListener(events.touchEvents.DRAG_START, _sliderDragStart);
+                railTouch.addEventListener(events.touchEvents.DRAG, _sliderDragEvent);
+                railTouch.addEventListener(events.touchEvents.DRAG_END, _sliderDragEvent);
+                railTouch.addEventListener(events.touchEvents.TAP, _sliderTapEvent);
             }
 
             if (name === 'time' && !_isMobile) {
@@ -1110,7 +1110,7 @@ define([
             if (pct > 100) {
                 pct = 100;
             }
-            if (evt.type === utils.touchEvents.DRAG_END) {
+            if (evt.type === events.touchEvents.DRAG_END) {
                 _api.jwSeekDrag(false);
                 _elements.timeRail.className = 'jwrail';
                 _draggingEnd();
@@ -1471,7 +1471,7 @@ define([
             var element = overlay.element();
             _appendChild(button, element);
             var buttonTouch = new Touch(button);
-            buttonTouch.addEventListener(utils.touchEvents.TAP, function() {
+            buttonTouch.addEventListener(events.touchEvents.TAP, function() {
                 _overlayTapHandler(overlay, tapAction, name);
             });
         }

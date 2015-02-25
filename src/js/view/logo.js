@@ -1,8 +1,10 @@
 define([
+    'view/touch',
     'utils/helpers',
     'utils/css',
+    'events/events',
     'events/states'
-], function(utils, cssUtils, states) {
+], function(Touch, utils, cssUtils, events, states) {
 
     var _css = cssUtils.css,
 
@@ -69,8 +71,8 @@ define([
             if (!utils.isMobile()) {
                 _logo.onclick = _clickHandler;
             } else {
-                var logoTouch = new utils.touch(_logo);
-                logoTouch.addEventListener(utils.touchEvents.TAP, _clickHandler);
+                var logoTouch = new Touch(_logo);
+                logoTouch.addEventListener(events.touchEvents.TAP, _clickHandler);
             }
         }
 

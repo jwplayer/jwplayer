@@ -1,9 +1,11 @@
 /*jshint evil:true*/
 define([
     'view/overlay',
+    'view/touch',
+    'events/events',
     'utils/helpers',
     'utils/css'
-], function(Overlay, utils, cssUtils) {
+], function(Overlay, Touch, events, utils, cssUtils) {
 
     var _bounds = utils.bounds,
         _iFramed = (window.top !== window.self),
@@ -239,8 +241,8 @@ define([
                     evt.preventDefault();
                 });
             } else {
-                var buttonTouch = new utils.touch(newButton);
-                buttonTouch.addEventListener(utils.touchEvents.TAP, function(evt) {
+                var buttonTouch = new Touch(newButton);
+                buttonTouch.addEventListener(events.touchEvents.TAP, function(evt) {
                     clickHandler(evt);
                 });
             }

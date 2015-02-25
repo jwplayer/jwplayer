@@ -1,8 +1,10 @@
 define([
     'view/overlay',
+    'view/touch',
+    'events/events',
     'utils/helpers',
     'utils/css'
-], function(Overlay, utils, cssUtils) {
+], function(Overlay, Touch, events, utils, cssUtils) {
 
     var _css = cssUtils.css,
         MENU_CLASS = 'jwmenu',
@@ -83,8 +85,8 @@ define([
             if (!utils.isMobile()) {
                 option.addEventListener('click', _clickHandler(_options.length, value));
             } else {
-                var optionTouch = new utils.touch(option);
-                optionTouch.addEventListener(utils.touchEvents.TAP, _clickHandler(_options.length, value));
+                var optionTouch = new Touch(option);
+                optionTouch.addEventListener(events.touchEvents.TAP, _clickHandler(_options.length, value));
             }
             _options.push(option);
         };

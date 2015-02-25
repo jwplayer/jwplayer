@@ -1,4 +1,8 @@
-define(['utils/eventdispatcher', 'events/events', 'underscore'], function(eventdispatcher, events1, _) {
+define([
+    'utils/backbone.events',
+    'events/events',
+    'underscore'
+], function(Events, events, _) {
 
     var TOUCH_MOVE = 'touchmove',
         TOUCH_START = 'touchstart',
@@ -10,8 +14,9 @@ define(['utils/eventdispatcher', 'events/events', 'underscore'], function(eventd
             _isListening = false,
             _startEvent = null,
             _gotMove = false,
-            _events = events1.touchEvents,
-            events = _.extend({}, eventdispatcher());
+            touchEvents = events.touchEvents;
+
+        _.extend(this, Events);
 
         document.addEventListener(TOUCH_MOVE, touchHandler);
         document.addEventListener(TOUCH_END, documentEndHandler);
@@ -22,7 +27,7 @@ define(['utils/eventdispatcher', 'events/events', 'underscore'], function(eventd
         function documentEndHandler(evt) {
             if (_isListening) {
                 if (_gotMove) {
-                    triggerEvent(_events.DRAG_END, evt);
+                    triggerEvent(touchEvents.DRAG_END, evt);
                 }
             }
             _gotMove = false;
@@ -33,29 +38,29 @@ define(['utils/eventdispatcher', 'events/events', 'underscore'], function(eventd
         function touchHandler(evt) {
             if (evt.type === TOUCH_START) {
                 _isListening = true;
-                _startEvent = createEvent(_events.DRAG_START, evt);
+                _startEvent = createEvent(touchEvents.DRAG_START, evt);
             }
             else if (evt.type === TOUCH_MOVE) {
                 if (_isListening) {
                     if (_gotMove) {
-                        triggerEvent(_events.DRAG, evt);
+                        triggerEvent(touchEvents.DRAG, evt);
                     }
                     else {
-                        triggerEvent(_events.DRAG_START, evt, _startEvent);
+                        triggerEvent(touchEvents.DRAG_START, evt, _startEvent);
                         _gotMove = true;
-                        triggerEvent(_events.DRAG, evt);
+                        triggerEvent(touchEvents.DRAG, evt);
                     }
                 }
             }
             else {
                 if (_isListening) {
                     if (_gotMove) {
-                        triggerEvent(_events.DRAG_END, evt);
+                        triggerEvent(touchEvents.DRAG_END, evt);
                     }
                     else {
                         // This allows the controlbar/dock/logo tap events not to be forwarded to the view
                         evt.cancelBubble = true;
-                        triggerEvent(_events.TAP, evt);
+                        triggerEvent(touchEvents.TAP, evt);
                     }
                 }
                 _gotMove = false;
@@ -84,7 +89,7 @@ define(['utils/eventdispatcher', 'events/events', 'underscore'], function(eventd
                 deltaX: 0,
                 deltaY: 0
             };
-            if (type !== _events.TAP && _startEvent) {
+            if (type !== touchEvents.TAP && _startEvent) {
                 evt.deltaX = evt.x - _startEvent.x;
                 evt.deltaY = evt.y - _startEvent.y;
             }
@@ -100,15 +105,16 @@ define(['utils/eventdispatcher', 'events/events', 'underscore'], function(eventd
             }
         }
 
-        this.addEventListener = events.on;
-        this.removeEventListener = events.off;
+        this.addEventListener = this.on;
+        this.removeEventListener = this.off;
 
+        var self = this;
         function triggerEvent(type, srcEvent, finalEvt) {
-            if (events._events[type]) {
+            if (self._events[type]) {
                 preventDefault(srcEvent);
                 var evt = finalEvt ? finalEvt : createEvent(type, srcEvent);
                 if (evt) {
-                    events.trigger(type, evt);
+                    self.trigger(type, evt);
                 }
             }
         }
