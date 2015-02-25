@@ -7,10 +7,11 @@
  */
 define([
     'parsers/parsers',
+    'utils/strings',
     'utils/helpers'
-], function(parsers, utils) {
+], function(parsers, strings, utils) {
 
-    var _xmlAttribute = utils.xmlAttribute,
+    var _xmlAttribute = strings.xmlAttribute,
         _localName = parsers.localName,
         _textContent = parsers.textContent,
         _numChildren = parsers.numChildren;

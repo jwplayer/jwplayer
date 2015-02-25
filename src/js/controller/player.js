@@ -1,13 +1,15 @@
 define([
     'utils/css',
+    'utils/underscore',
     'controller/setup',
     'controller/model',
     'controller/controller',
+    'playlist/playlist',
     'api/instream',
     'utils/helpers',
     'view/view',
     'events/events'
-], function(cssUtils, Setup, Model, Controller, Instream, utils, View, events) {
+], function(cssUtils, _, Setup, Model, Controller, Playlist, Instream, utils, View, events) {
 
     var Player = function(config) {
         var _this = this,
@@ -15,10 +17,17 @@ define([
             _view,
             _controller,
             _setup,
+            // Return property of model
+            _statevarFactory,
             _instreamPlayer;
 
         function _init() {
             _model = new Model(config);
+            _statevarFactory = function(ar) {
+                return function() {
+                    return _model[ar];
+                }
+            };
             _this.id = _model.id;
             _this._model = _model;
 
@@ -48,60 +57,7 @@ define([
         }
 
         function _normalizePlaylist() {
-            var list = _model.playlist,
-                arr = [];
-
-            for (var i = 0; i < list.length; i++) {
-                arr.push(_normalizePlaylistItem(list[i]));
-            }
-
-            return arr;
-        }
-
-        function _normalizePlaylistItem(item) {
-            var obj = {
-                'description': item.description,
-                'file': item.file,
-                'image': item.image,
-                'mediaid': item.mediaid,
-                'title': item.title
-            };
-
-            utils.foreach(item, function(i, val) {
-                obj[i] = val;
-            });
-
-            obj.sources = [];
-            obj.tracks = [];
-            if (item.sources.length > 0) {
-                utils.foreach(item.sources, function(i, source) {
-                    var sourceCopy = {
-                        file: source.file,
-                        type: source.type ? source.type : undefined,
-                        label: source.label,
-                        'default': source['default'] ? true : false
-                    };
-                    obj.sources.push(sourceCopy);
-                });
-            }
-
-            if (item.tracks.length > 0) {
-                utils.foreach(item.tracks, function(i, track) {
-                    var trackCopy = {
-                        file: track.file,
-                        kind: track.kind ? track.kind : undefined,
-                        label: track.label,
-                        'default': track['default'] ? true : false
-                    };
-                    obj.tracks.push(trackCopy);
-                });
-            }
-
-            if (!item.file && item.sources.length > 0) {
-                obj.file = item.sources[0].file;
-            }
-
-            return obj;
+            return _model.playlist;
         }
 
         function _initializeAPI() {
@@ -145,8 +101,8 @@ define([
             _this.jwGetMute = _statevarFactory('mute');
             _this.jwGetState = _statevarFactory('state');
             _this.jwGetStretching = _statevarFactory('stretching');
-            _this.jwGetPlaylist = _normalizePlaylist;
             _this.jwGetControls = _statevarFactory('controls');
+            _this.jwGetPlaylist = _normalizePlaylist;
 
             /** InStream API **/
             _this.jwDetachMedia = _controller.detachMedia;
@@ -288,14 +244,6 @@ define([
             /** Dock **/
             _this.jwDockAddButton = _view.addButton;
             _this.jwDockRemoveButton = _view.removeButton;
-        }
-
-        /** Getters **/
-
-        function _statevarFactory(statevar) {
-            return function() {
-                return _model[statevar];
-            };
         }
 
         _init();
