@@ -3,67 +3,13 @@ module.exports = function(grunt) {
 
     require('load-grunt-tasks')(grunt);
 
+    var webpack = require('webpack');
+
+    var pkg = grunt.file.readJSON('package.json');
+
     grunt.initConfig({
         starttime: new Date(),
-        pkg: grunt.file.readJSON('package.json'),
-        concat: {
-            options: {
-                separator: ''
-            },
-            player: {
-                src: [
-                    'src/js/jwplayer.js',
-                    'src/js/utils/jwplayer.underscore.js',
-                    'src/js/utils/jwplayer.utils.js',
-                    'src/js/utils/jwplayer.backbone.js',
-                    'src/js/utils/jwplayer.utils.*.js',
-                    'src/js/events/jwplayer.events.js',
-                    'src/js/events/jwplayer.events.*.js',
-                    'src/js/plugins/jwplayer.plugins.js',
-                    'src/js/plugins/jwplayer.plugins.*.js',
-                    'src/js/parsers/jwplayer.parsers.js',
-                    'src/js/parsers/jwplayer.parsers.*.js',
-                    'src/js/playlist/jwplayer.playlist.js',
-                    'src/js/playlist/jwplayer.playlist.*.js',
-                    'src/js/embed/jwplayer.embed.js',
-                    'src/js/embed/jwplayer.embed.*.js',
-                    'src/js/api/jwplayer.api.js',
-                    'src/js/api/jwplayer.api.*.js',
-
-                    'src/js/html5/jwplayer.html5.js',
-
-                    'src/js/html5/utils/jwplayer.html5.utils.js',
-                    'src/js/html5/utils/jwplayer.html5.utils.*.js',
-
-                    'src/js/html5/parsers/jwplayer.html5.parsers.js',
-                    'src/js/html5/parsers/jwplayer.html5.parsers.*.js',
-                    'src/js/html5/providers/jwplayer.html5.default.js',
-                    'src/js/html5/providers/jwplayer.html5.video.js',
-                    'src/js/html5/providers/jwplayer.html5.youtube.js',
-                    'src/js/html5/providers/jwplayer.provider.flash.js',
-                    'src/js/html5/providers/jwplayer.html5.provider.js',
-                    'src/js/html5/jwplayer.html5.*.js'
-                ],
-                dest: 'bin-debug/jwplayer.js'
-            }
-        },
-
-        replace : {
-            player : {
-                src: 'bin-debug/jwplayer.js',
-                overwrite: true,
-                replacements:[
-                    {
-                        from : /jwplayer\.version = '(.*)'/,
-                        to   : 'jwplayer.version = \'<%= pkg.version %>\''
-                    },
-                    {
-                        from : /jwplayer\.html5\.version = '(.*)'/,
-                        to   : 'jwplayer.html5.version = \'<%= pkg.version %>\''
-                    }
-                ]
-            }
-        },
+        pkg: pkg,
 
         jshint: {
             all : [
@@ -77,14 +23,28 @@ module.exports = function(grunt) {
 
         uglify : {
             options: {
-                report: 'gzip',
-                mangle: {
-                    except: ['RESERVED_KEYWORDS_TO_PROTECT']
+                // fails with node 0.12.0 and grunt-contrib-uglify 0.4.1
+                // https://github.com/gruntjs/grunt-contrib-uglify/issues/302
+                // report: 'gzip',
+                mangle: true,
+                compress: {
+                    booleans: true,
+                    cascade :true,
+                    conditionals: true,
+                    dead_code: true,
+                    drop_console: true,
+                    evaluate: true,
+                    if_return: true,
+                    join_vars: true,
+                    pure_getters: true,
+                    sequences: true,
+                    unused: true,
+                    warnings: false
                 }
             },
             player : {
                 files: {
-                    'bin-release/jwplayer.js' : 'bin-debug/jwplayer.js'
+                    'bin-release/jwplayer.js': 'bin-debug/jwplayer.js'
                 }
             }
         },
@@ -95,11 +55,11 @@ module.exports = function(grunt) {
                     '.jshintrc',
                     '.jshintignore'
                 ],
-                tasks: ['jshint:all']
+                tasks: ['jshint']
             },
             player: {
-                files : '<%= concat.player.src %>',
-                tasks: ['concat:player', 'replace:player', 'uglify:player']
+                files : ['src/js/**/*.js', 'src/js/*.js'],
+                tasks: ['build-js']
             },
             flash: {
                 files : [
@@ -109,8 +69,34 @@ module.exports = function(grunt) {
                 tasks: ['flash:debug']
             },
             grunt: {
-                files: ['.jshintrc', 'Gruntfile.js'],
+                files: ['Gruntfile.js'],
                 tasks: ['jshint']
+            }
+        },
+
+        webpack : {
+            build : {
+                entry: {
+                    jwplayer : './src/js/jwplayer.js'
+                },
+                output: {
+                    path: 'bin-debug/',
+                    filename: '[name].js'
+                },
+                resolve: {
+                    modulesDirectories: [
+                        'src/js/'
+                    ],
+                    alias: {
+                        'underscore': 'utils/underscore'
+                    }
+                },
+                devtool: 'source-map',
+                plugins: [
+                    new webpack.DefinePlugin({
+                        __BUILD_VERSION__: '\'' + pkg.version + '\''
+                    })
+                ]
             }
         },
 
@@ -187,7 +173,7 @@ module.exports = function(grunt) {
             now.setTime(now.getTime()-now.getTimezoneOffset()*60000);
             revision = now.toISOString().replace(/[\.\-:Z]/g, '').replace(/T/g, '');
         }
-        var buildVersion = grunt.config('pkg').version.replace(/\.\d*$/, '.' + revision);
+        var buildVersion = pkg.version.replace(/\.\d*$/, '.' + revision);
         command.args.push(
             '-define+=JWPLAYER::version,\''+ buildVersion +'\''
         );
@@ -203,11 +189,14 @@ module.exports = function(grunt) {
         });
     });
 
+    grunt.registerTask('build-js', [
+        'webpack',
+        'uglify'
+    ]);
+
     grunt.registerTask('default', [
         'clean',
-        'concat',
-        'replace',
-        'uglify',
+        'build-js',
         'flash:debug',
         'flash:release'
     ]);

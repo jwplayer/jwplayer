@@ -1,8 +1,15 @@
-/*global jwplayer:true*/
-jwplayer = function() {
-    if (jwplayer.api) {
-        return jwplayer.api.selectPlayer.apply(this, arguments);
-    }
-};
+if (!window.jwplayer) {
 
-jwplayer.version = 'X.Y.ZZZZ';
+    define(['api/api'], function (Api) {
+        var jwplayer = function () {
+            return Api.selectPlayer.apply(this, arguments);
+        };
+
+        // This is replaced by compiler
+        jwplayer.version = __BUILD_VERSION__;
+        jwplayer.api = Api;
+        jwplayer.vid = document.createElement('video');
+
+        window.jwplayer = jwplayer;
+    });
+}
