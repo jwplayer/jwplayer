@@ -1,3 +1,5 @@
+@import "vars.less";
+
 .jwdisplay {
 	position:absolute;
 	width:100%;
@@ -23,7 +25,7 @@
 	padding:0 1em;
 	margin-top: -1.75em;
 
-	background: @def-background-style;
+	background: @def-transparent-background-style;
 	background-size: @def-background-size;
 	border-radius: @ui-corner-round;
 	display:table;
@@ -33,6 +35,15 @@
 	margin-right:auto;
 	top:50%;
 	float:none;
+}
+
+.jwplayer:hover .jwdisplay .jwdisplayIcon {
+	background: @def-background-style;
+	background-size: @def-background-size
+}
+
+.jwplayer:hover .jwdisplay .jwtext {
+	color: @display-hover-color;
 }
 
 .jwplayer .jwdisplayIcon div {
@@ -60,22 +71,6 @@
 	font-family:Arial, Helvetica, sans-serif;
 }
 
-.jwplayer .jwdisplayIcon .jwtext:hover {
-	color: @font-color;
-	font-size:0.75em;
-	line-height:1em;
-	padding: 0;
-	max-width:300px;
-	overflow-y:hidden;
-	text-align:center;
-	-webkit-user-select:none;
-	font-style:normal;
-	font-variant:normal;
-	font-weight:normal;
-	font-stretch:normal;
-	font-family:Arial, Helvetica, sans-serif;
-}
-
 .jwplayer .jwdisplayIcon .jwicon button {
 	font-size: 3em;
 }
@@ -85,6 +80,3 @@
 	visibility:visible;
 }
 
-.jwplayer .jwdisplay:hover .jwtext {
-	color: @display-hover-color;
-}

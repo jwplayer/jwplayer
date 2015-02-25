@@ -1,19 +1,23 @@
 .jwdock {
-opacity:0;
-display:none;
--webkit-transition:background .25s opacity .25s;
-transition:background .25s opacity .25s;
+	position: relative;
+	right: @ui-margin;
+	top: @ui-margin;
+	left: @ui-margin;
+	opacity:1;
+	display:block;
+	-webkit-transition:background .25s opacity .25s;
+	transition:background .25s opacity .25s;
 }
 
 .jwdock > * {
-height:100%;
-float:left;
+	height:100%;
+	float:left;
 }
 
 .jwdock > .jwoverlay {
-height:auto;
-float:none;
-z-index:99;
+	height:auto;
+	float:none;
+	z-index:99;
 }
 
 .jwdockbuttons {
@@ -21,7 +25,16 @@ z-index:99;
 }
 
 .jwdockbuttons div.button {
-position:relative;
+	position:relative;
+	width: 2.5em;
+	height: 2em;
+	background: @def-transparent-background-style;
+	background-size: @def-background-size;
+	border-radius: @ui-corner-round;
+}
+
+.jwdockbuttons div.button:hover {
+	background: @def-background-style;
 }
 
 .jwdockbuttons > * {
@@ -30,31 +43,38 @@ float:left;
 }
 
 .jwdockbuttons .divider {
-display:none;
+	width: @ui-margin;
+	display:none;
 }
 
 .jwdockbuttons div.button ~ .divider {
-display:block;
+	display:block;
 }
 
 
-.jwdockbuttons div.button > div {
-left:0;
-right:0;
-top:0;
-bottom:0;
-margin:5px;
-position:absolute;
-background-position:50% 50%;
-background-repeat:no-repeat;
+.jwdock .button:hover .jwoverlay {
+	display: block;
 }
 
-.jwdock .jwoverlay {
--webkit-transition:opacity .25s;
-transition:opacity .25s;
+.jwdock .button .jwoverlay {
+	background: @def-background-style;
+	background-size: @def-background-size;
+	border-radius: @ui-corner-round;
+	display: none;
+	-webkit-transition:opacity .25s;
+	transition:opacity .25s;
+	position: absolute;
+	top: 2em;
+	width: auto;
+	white-space: nowrap;
+	padding: 0.5em;
+}
+
+.jwdock .button .button-label {
+	text-color: @active-color;
 }
 
 .jwdockbuttons div.button div {
--webkit-transition:opacity .25s;
-transition:opacity .25s;
+	-webkit-transition:opacity .25s;
+	transition:opacity .25s;
 }
