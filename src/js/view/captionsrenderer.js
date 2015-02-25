@@ -1,8 +1,6 @@
 define([
-    'utils/helpers',
-    'utils/strings',
     'utils/css'
-], function(utils, stringUtils, cssUtils) {
+], function(cssUtils) {
     var _style = cssUtils.style;
 
     /** Component that renders the actual captions on screen. **/

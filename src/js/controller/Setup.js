@@ -21,7 +21,7 @@ define([
     'utils/eventdispatcher',
     'underscore',
     'events/events'
-], function( utils, Playlist, Skin, eventdispatcher, _, events) {
+], function(utils, Playlist, Skin, eventdispatcher, _, events) {
 
     var Setup = function(model, view) {
         var _model = model,

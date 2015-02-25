@@ -1,10 +1,9 @@
 define([
     'parsers/captions/parsers.srt',
     'utils/helpers',
-    'events/events',
     'utils/eventdispatcher',
     'utils/css'
-], function (SrtParser, utils, events, eventdispatcher, _css) {
+], function (SrtParser, utils, eventdispatcher, cssUtils) {
 
     /** Displays thumbnails over the controlbar **/
     var Thumbs = function (id) {
@@ -24,7 +23,7 @@ define([
         _display.id = _id;
 
         function _loadVTT(vtt) {
-            _css.style(_display, {
+            cssUtils.style(_display, {
                 display: 'none'
             });
 
@@ -125,7 +124,7 @@ define([
                 style.height = image.height;
             }
             style['background-image'] = image.src;
-            _css.style(_display, style);
+            cssUtils.style(_display, style);
             if (callback) {
                 callback(style.width);
             }

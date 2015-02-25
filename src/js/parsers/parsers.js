@@ -1,4 +1,4 @@
-define(['utils/strings'], function(stringUtils) {
+define(['utils/strings'], function(strings) {
     return {
         localName: function (node) {
             if (!node) {
@@ -15,9 +15,9 @@ define(['utils/strings'], function(stringUtils) {
             if (!node) {
                 return '';
             } else if (node.textContent) {
-                return stringUtils.trim(node.textContent);
+                return strings.trim(node.textContent);
             } else if (node.text) {
-                return stringUtils.trim(node.text);
+                return strings.trim(node.text);
             } else {
                 return '';
             }

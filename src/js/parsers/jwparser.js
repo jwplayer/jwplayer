@@ -8,7 +8,7 @@
 define([
     'parsers/parsers',
     'utils/helpers'
-], function(parserUtils, utils) {
+], function(parsers, utils) {
 
     var PREFIX = 'jwplayer';
 
@@ -32,7 +32,7 @@ define([
         for (var i = 0; i < obj.childNodes.length; i++) {
             var node = obj.childNodes[i];
             if (node.prefix === PREFIX) {
-                var _localName = parserUtils.localName(node);
+                var _localName = parsers.localName(node);
                 if (_localName === 'source') {
                     delete itm.sources;
                     sources.push({
@@ -50,7 +50,7 @@ define([
                         label: _xmlAttribute(node, label)
                     });
                 } else {
-                    itm[_localName] = utils.serialize(parserUtils.textContent(node));
+                    itm[_localName] = utils.serialize(parsers.textContent(node));
                     if (_localName === 'file' && itm.sources) {
                         // jwplayer namespace file should override existing source
                         // (probably set in MediaParser)

@@ -2,14 +2,13 @@ define([
     'utils/helpers',
     'utils/css',
     'utils/stretching',
-    'utils/extensionmap',
     'underscore',
     'events/events',
     'events/states',
     'utils/eventdispatcher',
     'utils/scriptloader',
     'providers/default'
-], function(utils, cssUtils, stretchUtils, extensionmap, _, events, states, eventdispatcher, scriptloader, DefaultProvider) {
+], function(utils, cssUtils, stretchUtils, _, events, states, eventdispatcher, scriptloader, DefaultProvider) {
 
     var _scriptLoader = new scriptloader(window.location.protocol + '//www.youtube.com/iframe_api'),
         _isMobile = utils.isMobile();

@@ -1,4 +1,7 @@
-define(['utils/helpers', 'utils/extensionmap'], function(utils, extensionmap) {
+define([
+    'utils/helpers',
+    'utils/extensionmap'
+], function(utils, extensionmap) {
     var defaults = {
         file: undefined,
         label: undefined,

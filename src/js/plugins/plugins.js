@@ -2,9 +2,8 @@ define([
     'plugins/loader',
     'plugins/model',
     'plugins/plugin',
-    'plugins/utils',
-    'utils/helpers'
-], function(PluginLoader, PluginModel, Plugin, pluginUtils, utils) {
+    'plugins/utils'
+], function(PluginLoader, PluginModel, Plugin, pluginUtils) {
 
     var _plugins = {},
         _pluginLoaders = {};

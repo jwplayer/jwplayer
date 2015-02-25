@@ -5,7 +5,7 @@ define([
     'view/touch',
     'events/events',
     'utils/eventdispatcher'
-], function(_utils, cssUtils, Touch, events, eventdispatcher) {
+], function(utils, cssUtils, Touch, events, eventdispatcher) {
 
     var _css = cssUtils.css,
         VIEW_INSTREAM_SKIP_CLASS = 'jwskip',
@@ -27,7 +27,7 @@ define([
             _skip_image,
             _skip_image_over,
             _mouseOver = false,
-            _this = _utils.extend(this, new eventdispatcher());
+            _this = utils.extend(this, new eventdispatcher());
 
         function _init() {
             _skip_image = new Image();
@@ -51,7 +51,7 @@ define([
             // add event listeners once, exit with !_instreamSkipSet
             _instreamSkipContainer.addEventListener('mouseover', onMouseOver);
             _instreamSkipContainer.addEventListener('mouseout', onMouseOut);
-            if (_utils.isMobile()) {
+            if (utils.isMobile()) {
                 var skipTouch = new Touch(_instreamSkipContainer);
                 skipTouch.addEventListener(events.touchEvents.TAP, skipAd);
             } else {
@@ -69,15 +69,15 @@ define([
         }
 
         function _updateOffset(pos, duration) {
-            if (_utils.typeOf(_skipOffset) === 'number') {
+            if (utils.typeOf(_skipOffset) === 'number') {
                 _offsetTime = _skipOffset;
             } else if (_skipOffset.slice(-1) === '%') {
                 var percent = parseFloat(_skipOffset.slice(0, -1));
                 if (duration && !isNaN(percent)) {
                     _offsetTime = duration * percent / 100;
                 }
-            } else if (_utils.typeOf(_skipOffset) === 'string') {
-                _offsetTime = _utils.seconds(_skipOffset);
+            } else if (utils.typeOf(_skipOffset) === 'string') {
+                _offsetTime = utils.seconds(_skipOffset);
             } else if (!isNaN(_skipOffset)) {
                 _offsetTime = _skipOffset;
             }

@@ -1,4 +1,8 @@
-define(['utils/helpers', 'playlist/source', 'playlist/track'], function(utils, Source, Track) {
+define([
+    'utils/helpers',
+    'playlist/source',
+    'playlist/track'
+], function(utils, Source, Track) {
 
     var PlaylistItem = function (config) {
         var _playlistitem = utils.extend({}, PlaylistItem.defaults, config),

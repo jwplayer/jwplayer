@@ -1,10 +1,10 @@
 define([
-        'providers/chooseprovider',
-        'utils/helpers',
-        'utils/strings',
-        'utils/extensionmap',
-        'playlist/item',
-        'underscore'
+    'providers/chooseprovider',
+    'utils/helpers',
+    'utils/strings',
+    'utils/extensionmap',
+    'playlist/item',
+    'underscore'
 ], function(chooseProvider, utils, strings, extensionmap, PlaylistItem, _) {
 
     var Playlist = function (playlist) {

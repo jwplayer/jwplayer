@@ -1,7 +1,7 @@
 define([
     'utils/helpers',
     'utils/strings'
-], function(utils, string) {
+], function(utils, strings) {
 
     /** Component that loads and parses an SRT file. **/
     var srt = function () {
@@ -17,7 +17,7 @@ define([
                     text: ''
                 }
             ];
-            data = string.trim(data);
+            data = strings.trim(data);
             var list = data.split('\r\n\r\n');
             if (list.length === 1) {
                 list = data.split('\n\n');

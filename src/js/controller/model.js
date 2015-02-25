@@ -7,7 +7,7 @@ define([
     'utils/eventdispatcher',
     'events/events',
     'events/states'
-], function(utils, stretchingUtils, Playlist, chooseProvider, _, eventdispatcher, events, states) {
+], function(utils, stretchUtils, Playlist, chooseProvider, _, eventdispatcher, events, states) {
 
     var Model = function(config, defaultProvider) {
         var _model = this,
@@ -36,7 +36,7 @@ define([
                 playlistlayout: 'extended',
                 repeat: false,
                 // skin: undefined,
-                stretching: stretchingUtils.UNIFORM,
+                stretching: stretchUtils.UNIFORM,
                 width: 480,
                 volume: 90
             };

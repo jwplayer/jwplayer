@@ -1,4 +1,7 @@
-define(['utils/helpers', 'view/skinloader'], function(utils, SkinLoader) {
+define([
+    'utils/helpers',
+    'view/skinloader'
+], function(utils, SkinLoader) {
     var Skin = function() {
         var _components = {};
         var _loaded = false;

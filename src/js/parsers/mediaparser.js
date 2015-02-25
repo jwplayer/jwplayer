@@ -6,9 +6,9 @@
  * version 6.0
  */
 define([
-    'utils/helpers',
-    'parsers/parsers'
-], function(utils, parsers) {
+    'parsers/parsers',
+    'utils/helpers'
+], function(parsers, utils) {
 
     var _xmlAttribute = utils.xmlAttribute,
         _localName = parsers.localName,
