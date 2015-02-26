@@ -1,4 +1,6 @@
-define([], function() {
+define([
+    'utils/strings'
+], function(strings) {
 
     var utils = {};
 
@@ -21,7 +23,7 @@ define([], function() {
             return _pluginPathType.ABSOLUTE;
         }
         var folder = path.indexOf('/');
-        var extension = utils.extension(path);
+        var extension = strings.extension(path);
         if (protocol < 0 && folder < 0 && (!extension || !isNaN(extension))) {
             return _pluginPathType.CDN;
         }
