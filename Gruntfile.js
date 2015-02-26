@@ -79,13 +79,20 @@ module.exports = function(grunt) {
         recess: {
             dist: {
                 options: {
-                    compile: true,
-                    compress: true,
-                    paths: ['assets/less', 'assets/less/*'],
-                    ieCompat: false
+                    compile: false,
+                    compress: false,
+                    noIDs: true,
+                    noJSPrefix: true,
+                    noOverqualifying: true,
+                    noUnderscores: true,
+                    noUniversalSelectors: true,
+                    prefixWhitespace: true,
+                    strictPropertyOrder: true,
+                    zeroUnits: true,
+                    includePaths: ['assets/less', 'assets/less/*']
                 },
                 files: {
-                    'bin-debug/css/jwplayer.css' : 'assets/less/*.less'
+                    'bin-debug/css/jwplayer.css' : 'assets/less/jwplayer.less'
                 }
             }
 		},
