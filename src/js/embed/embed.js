@@ -6,9 +6,9 @@ define([
     'playlist/loader',
     'embed/config',
     'plugins/plugins',
-    'controller/player',
+    'controller/controller',
     'underscore'
-], function(utils, cssUtils, events, scriptloader, PlaylistLoader, EmbedConfig, plugins, Html5Player, _) {
+], function(utils, cssUtils, events, scriptloader, PlaylistLoader, EmbedConfig, plugins, Controller, _) {
 
     var _css = cssUtils.css;
 
@@ -115,8 +115,8 @@ define([
                 // Volume option is tricky to remove, since it needs to be in the HTML5 player model.
                 var playerConfigCopy = utils.extend({}, pluginConfigCopy);
                 delete playerConfigCopy.volume;
-                var html5player = new Html5Player(playerConfigCopy);
-                api.setPlayer(html5player, 'html5');
+                var controller = new Controller(playerConfigCopy, api);
+                api.setController(controller);
 
                 _insertCSS();
                 return api;
