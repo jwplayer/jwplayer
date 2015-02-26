@@ -1,4 +1,8 @@
-define(['utils/strings', 'events/events', 'underscore'], function(strings, Events, _) {
+define([
+    'utils/strings',
+    'events/events',
+    'underscore'
+], function(strings, Events, _) {
 
     // This is replaced by compiler
     var _version = __BUILD_VERSION__;
