@@ -6,7 +6,6 @@
 // https://github.com/jashkenas/underscore/blob/1f4bf626f23a99f7a676f5076dc1b1475554c8f7/underscore.js
 
 define([], function() {
-    var root = this;
 
     // Establish the object that gets returned to break out of a loop iteration.
     var breaker = {};
@@ -433,9 +432,6 @@ define([], function() {
         var value = object[property];
         return _.isFunction(value) ? value.call(object) : value;
     };
-
-
-    root._ = _;
 
     return _;
 });
