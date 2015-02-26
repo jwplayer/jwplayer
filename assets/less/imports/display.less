@@ -21,19 +21,19 @@
 }
 
 .jwplayer .jw-display-icon {
+	position: relative;
+	top:50%;
+	display:table;
+	float:none;
 	padding:0 1em;
 	margin-top: -1.75em;
+	margin-right:auto;
+	margin-left:auto;
+	cursor: pointer;
 
 	background: @def-transparent-background-style;
 	background-size: @def-background-size;
 	border-radius: @ui-corner-round;
-	display:table;
-	cursor: pointer;
-	position: relative;
-	margin-left:auto;
-	margin-right:auto;
-	top:50%;
-	float:none;
 }
 
 .jwplayer:hover .jw-display-icon {
@@ -42,19 +42,19 @@
 }
 
 .jwplayer .jw-display-icon div {
-	padding: 0.25em;
 	position:relative;
 	display:table-cell;
+	padding: 0.25em;
 	vertical-align:middle!important;
 	background-position:50% 50%;
 	background-repeat:no-repeat;
 }
 
 .jwplayer .jw-display-icon .jw-text {
-	font-size:0.75em;
-	padding: 0;
 	max-width:300px;
+	padding: 0;
 	overflow-y:hidden;
+	font-size:0.75em;
 }
 
 .jwplayer .jw-display-icon .jw-icon button {

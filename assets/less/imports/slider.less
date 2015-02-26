@@ -9,6 +9,7 @@
 	}
 
 	.jw-rail, .jw-buffer {
+		height: @def-rail-width-padding;
 		border-radius: 0.5em;
 	}
 
@@ -17,8 +18,9 @@
 	}
 
 	.jw-progress {
-		background-color: @progress-color;
+		height: @def-rail-width-padding;
 		background: @def-progress-color;
+		background-color: @progress-color;
 	}
 
 	.jw-buffer {
@@ -34,13 +36,13 @@
 		border: @def-border;
 	}
 
-	.jw-cue, .jw-icon.jw-thumb button {	
+	.jw-cue, .jw-thumb button {	
 		position: absolute;
-		cursor:pointer;
 		z-index:1;
-		font-size: @volume-rail-width;
-		height: 1em;
 		width: 1em;
+		height: 1em;
+		font-size: @volume-rail-width;
+		cursor:pointer;
 	}
 
 	.jw-cue {
@@ -48,20 +50,20 @@
 	}
 }
 
-.jwplayer .jw-slider.jw-hori {
+.jwplayer .jw-hori-slider {
+	top: @def-rail-width-padding;
 	width: @volume-rail-length;
 	height: @volume-rail-width;
-	top: @def-rail-width-padding;
 
 	.jw-rail, .jw-buffer, .jw-progress {
 		width: 100%;
 	}
 
 	.jw-progress {
-		border-top-left-radius: 0.5em;
 		border-top-right-radius: 0;
-		border-bottom-left-radius: 0.5em;
 		border-bottom-right-radius: 0;
+		border-bottom-left-radius: 0.5em;
+		border-top-left-radius: 0.5em;
 	}
 
 	.jw-progress, .jw-buffer {
@@ -78,20 +80,20 @@
 	}
 }
 
-.jwplayer .jw-slider.jw-vert {
-	height: @volume-rail-length;
+.jwplayer .jw-vert-slider {
 	width: @def-rail-width;
+	height: @volume-rail-length;
 
 	.jw-rail, .jw-buffer, .jw-progress {
-		height: 100%;
 		bottom: 0;
+		height: 100%;
 	}
 
 	.jw-progress {
-		border-top-left-radius: 0;
 		border-top-right-radius: 0;
-		border-bottom-left-radius: 0.5em;
 		border-bottom-right-radius: 0.5em;
+		border-bottom-left-radius: 0.5em;
+		border-top-left-radius: 0;
 	}
 
 	.jw-progress, .jw-buffer {
@@ -99,9 +101,9 @@
 	}
 
 	.jw-rail-group, .jw-rail, .jw-progress {
+		bottom: 0;
 		width: @volume-rail-width;
 		height: 100%;
-		bottom: 0;
 	}
 
 	.jw-thumb {
@@ -111,15 +113,10 @@
 	}
 }
 
-.jwplayer .jw-time.jw-slider.jw-hori {
-	left:0;
+.jwplayer .jw-time{
 	right:0;
+	left:0;
 	width: 100%;
-}
-
-.jw-controlbar .jw-slider.jwvolume button {
-	font-size: @volume-rail-width;
-	color: #0f0;
 }
 
 .jw-slider.jw-hori button {

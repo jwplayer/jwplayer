@@ -12,14 +12,15 @@
 }
 
 .jwplayer .jw-icon button, .jw-controlbar .jw-overlay .jw-option:before {
-	background-color: transparent;
 	font-family: 'IcoMoon-Free';
-	speak: none;
+	-webkit-font-smoothing: antialiased;
 	font-style: normal;
 	font-weight: normal;
-	font-variant: normal;
-	text-transform: none;
 	line-height: 1;
+	text-transform: none;
+	background-color: transparent;
+	speak: none;
+	font-variant: normal;
 	
 	/* Enable Ligatures ================ */
 	-webkit-font-feature-settings: "liga";
@@ -28,9 +29,6 @@
 	-ms-font-feature-settings: "liga" 1;
 	-o-font-feature-settings: "liga";
 	font-feature-settings: "liga";
-
-	/* Better Font Rendering =========== */
-	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
 

@@ -2,96 +2,85 @@
 
 .jwplayer .jw-controlbar {
 	position:absolute;
-	margin: 0 auto;
+	right: @ui-margin;
+	bottom: @ui-margin;
+	left: @ui-margin;
 	height: @controlbar-height;
-	-webkit-transition:opacity .25s background .25s visibility .25s;
-	transition:opacity .25s background .25s visibility .25s;
-	left: @ui-margin;
-	right: @ui-margin;
-	bottom: @ui-margin;
-
-	background: @def-background-style;
-	background-size: @def-background-size;
-	left: @ui-margin;
-	right: @ui-margin;
-	bottom: @ui-margin;
 	max-width: @max-width;
 
 	padding: 0 @ui-padding;
-	border-radius: @ui-corner-round;
+	margin: 0 auto;
+	
+	background: @def-background-style;
+	background-size: @def-background-size;
+	
 	border: @def-border;
-
+	border-radius: @ui-corner-round;
 	box-sizing: content-box;
+	
+	-webkit-transition:opacity .25s background .25s visibility .25s;
+	transition:opacity .25s background .25s visibility .25s;
 }
 
-span.jw-controlbar span {
-height:100%;
--webkit-user-select:none;
--webkit-user-drag:none;
+.jw-controlbar span {
+	height:100%;
+	-webkit-user-select:none;
+	-webkit-user-drag:none;
 }
 
-span.jw-controlbar .jw-group {
+.jw-controlbar .jw-group {
 display:table-cell;
 }
 
 // control bar content (icons/text)
 .jw-controlbar .jw-group > span {
-	padding: 0 0.20em;
 	display: inline-block;
-	
-	line-height: @controlbar-height;
 	height: @controlbar-height;
+	padding: 0 0.20em;
+	line-height: @controlbar-height;
 }
 
 .jwplayer .jw-controls .jw-icon button {
 	color: @inactive-color;
 }
 
-span.jw-controlbar span,span.jw-controlbar .jw-group button,span.jw-controlbar .jw-left {
+.jw-controlbar span, .jw-controlbar .jw-group button, .jw-controlbar .jw-left {
 	position:relative;
 	float:left;
 }
 
-span.jw-controlbar .jw-right {
+.jw-controlbar .jw-right {
 	position:relative;
 	float:right;
 }
 
-span.jw-controlbar .jw-center {
-position:absolute;
+.jw-controlbar .jw-center {
+	position:absolute;
 }
 
-span.jw-controlbar button {
-display:inline-block;
-height:100%;
-cursor:pointer;
--webkit-transition:opacity .25s background .25s visibility .25s;
-transition:opacity .25s background .25s visibility .25s;
-}
-
-span.jw-controlbar .jw-time {
-position:absolute;
-height:100%;
-width:100%;
-left:0;
-height: @inactive-color;
+.jw-controlbar button {
+	display: inline-block;
+	height: inherit;
+	cursor:pointer;
+	-webkit-transition:opacity .25s background .25s visibility .25s;
+	transition:opacity .25s background .25s visibility .25s;
 }
 
 .jw-controlbar .jw-text {
+	height: 1em;
 	font-size: @font-size;
 	line-height: 1em;
-	height: 1em;
 }
 
 .jw-controlbar .jw-elapsed .jw-text, .jw-controlbar .jw-duration .jw-text {
 	line-height: inherit;
 }
 
-span.jw-controlbar .jw-cast {
-display:none;
+.jw-controlbar .jw-cast {
+	display:none;
 }
 
-span.jw-controlbar .jw-cast.jw-can-cast {
-display:block;
+.jw-controlbar .jw-cast.jw-can-cast {
+	display:block;
 }
 

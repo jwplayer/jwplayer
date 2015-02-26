@@ -2,24 +2,24 @@
 
 .jw-dock {
 	position: relative;
-	right: @ui-margin;
 	top: @ui-margin;
+	right: @ui-margin;
 	left: @ui-margin;
-	opacity:1;
 	display:block;
+	opacity:1;
 	-webkit-transition:background .25s opacity .25s;
 	transition:background .25s opacity .25s;
 }
 
 .jw-dock > * {
-	height:100%;
 	float:left;
+	height:100%;
 }
 
 .jw-dock > .jw-overlay {
-	height:auto;
-	float:none;
 	z-index:99;
+	float:none;
+	height:auto;
 }
 
 .jw-dock-buttons {
@@ -40,13 +40,13 @@
 }
 
 .jw-dock-buttons > * {
-height:100%;
-float:left;
+	float:left;
+	height:100%;
 }
 
 .jw-dock-buttons .jw-divider {
+	display: none;
 	width: 0.5em;
-	display:none;
 }
 
 .jw-dock-buttons div.button ~ .jw-divider {
@@ -59,29 +59,28 @@ float:left;
 }
 
 .jw-dock .button .jw-dock-icon {
-	background-position: 50% 50%;
-	height: 100%;
 	width: 100%;
+	height: 100%;
+	background-position: 50% 50%;
 	background-repeat: no-repeat;
 	opacity: 0.75;
 }
 
 .jw-dock .button .jw-overlay {
-	background: @def-background-style;
-	background-size: @def-background-size;
-	border-radius: @ui-corner-round;
-	display: none;
-	-webkit-transition:opacity .25s;
-	transition:opacity .25s;
 	position: absolute;
 	top: 2em;
+	display: none;
 	width: auto;
-	white-space: nowrap;
 	padding: 0.5em;
+	white-space: nowrap;
+	background: @def-background-style;
+	background-size: @def-background-size;
 	border-radius: @dock-corner-radius;
+	-webkit-transition:opacity .25s;
+	transition:opacity .25s;
 }
 
-.jw-dock-buttons div.button div {
+.jw-dock-buttons .button div {
 	-webkit-transition:opacity .25s;
 	transition:opacity .25s;
 }

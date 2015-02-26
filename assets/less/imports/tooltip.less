@@ -8,23 +8,22 @@
 
 .jw-controlbar {
 	.jw-menu .jw-option {
-		cursor:pointer;
-		white-space:nowrap;
 		position:relative;
+		white-space:nowrap;
+		cursor:pointer;
 	}
 
 	.jw-overlay {
 		position:absolute;
-		visibility:hidden;
-		opacity:0;
-		-webkit-transition:opacity .25s visibility .25s;
-		transition:opacity .25s visibility .25s;
-
 		bottom: 2em;
+		padding: 0.25em 0.5em;
 		background: @def-background-style;
 		background-size: @def-background-size;
-		padding: 0.25em 0.5em;
 		border-radius: 0.25em;
+		opacity:0;
+		visibility:hidden;
+		-webkit-transition:opacity .25s visibility .25s;
+		transition:opacity .25s visibility .25s;
 	}
 
 	.jw-overlay .jw-contents {
@@ -34,10 +33,10 @@
 
 	.jw-overlay .jw-option {
 		height: 1.5em;
-		color: @inactive-color;
-		font-size: 0.75em;
 		font-family: Arial, Helvetica, sans-serif;
+		font-size: 0.75em;
 		line-height: 1.5em;
+		color: @inactive-color;
 	}
 
 	.jw-overlay .jw-option:hover, .jw-overlay .jw-option.jw-active {
@@ -45,8 +44,8 @@
 	}
 
 	.jw-overlay .jw-option:before {
-		content: "\ea56";
 		padding-right: 0.25em;
+		content: "\ea56";
 	}
 
 	.jw-overlay .jw-option.jw-active:before {

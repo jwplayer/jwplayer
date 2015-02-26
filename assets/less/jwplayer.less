@@ -10,8 +10,8 @@
 }
 
 .jwplayer button {
-	border: 0;
 	padding: 0;
+	border: 0;
 }
 
 .jwplayer .jw-controlbar .jw-icon button {
@@ -27,16 +27,16 @@
 }
 
 .jwplayer .jw-text {
-	color:@font-color;
-	font-size: @font-size;
-	line-height: 1em;
 	height: 1em;
-	text-align:center;
-	font-style:normal;
-	font-variant:normal;
-	font-weight:normal;
-	font-stretch:normal;
 	font-family:Arial, sans-serif;
+	font-size: @font-size;
+	font-style:normal;
+	font-weight:normal;
+	line-height: 1em;
+	color:@font-color;
+	text-align:center;
+	font-variant:normal;
+	font-stretch:normal;
 }
 
 @import "imports/display.less";
@@ -47,22 +47,22 @@
 
 
 .jwplayer,.jwplayer div,.jwplayer span,.jwplayer a,.jwplayer img,.jwplayer ul,.jwplayer li,.jwplayer video,.jwclick {
-margin:0;
 padding:0;
-border:0;
-color:rgb(0,0,0);
+margin:0;
 font-family:inherit;
 font-size:inherit;
 font-style:inherit;
-font-variant:inherit;
 font-weight:inherit;
-font-stretch:inherit;
-vertical-align:baseline;
-text-align:left;
-direction:ltr;
 line-height:1em;
--webkit-tap-highlight-color:rgba(255,255,255,0);
+color:rgb(0,0,0);
+text-align:left;
+vertical-align:baseline;
 background-color:transparent;
+border:0;
+direction:ltr;
+font-variant:inherit;
+font-stretch:inherit;
+-webkit-tap-highlight-color:rgba(255,255,255,0);
 }
 
 .jwplayer ul {
@@ -70,24 +70,24 @@ list-style:none;
 }
 
 .jwplayer .jw-controls {
-pointer-events:none;
+	pointer-events:none;
 }
 
 .jwplayer.jw-user-inactive .jwcontrols {
-pointer-events:all;
+	pointer-events:all;
 }
 
 .jwplayer .jw-controls .jw-dock-buttons,.jwplayer .jw-controls .jw-controlbar,.jwplayer .jw-controls .jw-skip,.jwplayer .jw-controls .jw-display-icon,.jwplayer .jw-controls .jw-preview,.jwplayer .jw-controls .jw-logo {
-pointer-events:all;
+	pointer-events:all;
 }
 
 .jw-skip {
 	position:absolute;
-	float:right;
+	right: 1em;
 	display:inline-block;
+	float:right;
 	width: 7em;
 	height: 2em;
-	right: 1em;
 }
 
 .jw-skip-image {
@@ -96,44 +96,44 @@ display:none;
 }
 
 .jw-captions {
-position:absolute;
-cursor:pointer;
-width:100%;
-height:100%;
-overflow:hidden;
+	position:absolute;
+	width:100%;
+	height:100%;
+	overflow:hidden;
+	cursor:pointer;
 }
 
 .jw-logo {
-	cursor:pointer;
 	position:absolute;
 	top:8px;
 	right:8px;
 	margin-bottom:0;
+	cursor:pointer;
 }
 
 /***** Start Right Click *****/
 .jw-click {
-	border-radius:5px!important;
-	height:auto!important;
-	border:1px solid rgb(188,188,188)!important;
-	font-family:'MS Sans Serif', Geneva, sans-serif!important;
-	font-size:10px!important;
-	width:320px!important;
-	-webkit-box-shadow:rgba(0,0,0,0.0980392) 5px 5px 7px rgba(255,255,255,0.298039) 0 1px 0 inset!important;
-	box-shadow:rgba(0,0,0,0.0980392) 5px 5px 7px rgba(255,255,255,0.298039) 0 1px 0 inset!important;
 	position:absolute!important;
 	z-index:999!important;
+	width:320px!important;
+	height:auto!important;
+	font-family:'MS Sans Serif', Geneva, sans-serif!important;
+	font-size:10px!important;
 	background-color:rgb(255,255,255)!important;
+	border:1px solid rgb(188,188,188)!important;
+	border-radius:5px!important;
+	-webkit-box-shadow:rgba(0,0,0,0.0980392) 5px 5px 7px rgba(255,255,255,0.298039) 0 1px 0 inset!important;
+	box-shadow:rgba(0,0,0,0.0980392) 5px 5px 7px rgba(255,255,255,0.298039) 0 1px 0 inset!important;
 }
 
 .jw-click div {
 	padding:8px 21px!important;
 	margin:0!important;
-	border:none!important;
 	font-family:'MS Sans Serif', Geneva, sans-serif!important;
 	font-size:10px!important;
 	color:inherit!important;
 	background-color:rgb(255,255,255)!important;
+	border:none!important;
 }
 
 .jw-click-item {
@@ -143,76 +143,76 @@ overflow:hidden;
 }
 
 .jw-click-item:hover {
-color:rgb(255,255,255)!important;
-background-color:rgb(89,89,89)!important;
+	color:rgb(255,255,255)!important;
+	background-color:rgb(89,89,89)!important;
 }
 
 .jw-click-item a {
-text-decoration:none!important;
-color:rgb(0,0,0)!important;
+	color:rgb(0,0,0)!important;
+	text-decoration:none!important;
 }
 
 .jw-click hr {
-width:100%!important;
-padding:0!important;
-margin:0!important;
-border:1px solid rgb(233,233,233)!important;
+	width:100%!important;
+	padding:0!important;
+	margin:0!important;
+	border:1px solid rgb(233,233,233)!important;
 }
 /**** END RIGHT CLICK ****/
 
 
 .jwplayer {
-position:relative;
-display:block;
-opacity:0;
-min-height:0;
-transition:opacity .25s ease;
--webkit-transition:opacity .25s ease;
+	position:relative;
+	display:block;
+	min-height:0;
+	opacity:0;
+	-webkit-transition:opacity .25s ease;
+	transition:opacity .25s ease;
 }
 
 .jw-main {
 	position:absolute;
-	left:0;
-	right:0;
 	top:0;
+	right:0;
 	bottom:0;
-	transition:opacity .25s ease;
+	left:0;
 	-webkit-transition:opacity .25s ease;
+	transition:opacity .25s ease;
 }
 
 .jw-video,.jw-controls {
 	position:absolute;
-	height:100%;
 	width:100%;
-	transition:opacity .25s ease;
+	height:100%;
 	-webkit-transition:opacity .25s ease;
+	transition:opacity .25s ease;
 }
 
 .jw-video {
 	overflow:hidden;
-	visibility:hidden;
 	opacity:0;
+	visibility:hidden;
 }
 
 .jw-video video {
-height:100%;
-width:100%;
-position:absolute;
-margin:auto;
-right:0;
-left:0;
-top:0;
-bottom:0;
-background:transparent;
+	position:absolute;
+	top:0;
+	right:0;
+	bottom:0;
+	left:0;
+	width:100%;
+	height:100%;
+	margin:auto;
+	background:transparent;
 }
 
 .jw-instream {
-position:absolute;
-top:0;
-left:0;
-bottom:0;
-right:0;
-display:none;
+	position:absolute;
+	top:0;
+	right:0;
+	bottom:0;
+	left:0;
+	display:none;
 }
 
 .jw-aspect {
@@ -224,26 +224,26 @@ height:auto;
 }
 
 .jwplayer.jw-fullscreen {
-width:100%!important;
-height:100%!important;
-left:0!important;
-right:0!important;
-top:0!important;
-bottom:0!important;
-z-index:1000!important;
-margin:0!important;
-position:fixed!important;
+	position:fixed!important;
+	top:0!important;
+	right:0!important;
+	bottom:0!important;
+	left:0!important;
+	z-index:1000!important;
+	width:100%!important;
+	height:100%!important;
+	margin:0!important;
 }
 
 .jwplayer.jw-fullscreen.jw-user-inactive {
-cursor:none;
+	cursor:none;
 }
 
 .jwplayer.jw-fullscreen .jw-main {
-left:0!important;
-right:0!important;
-top:0!important;
-bottom:0!important;
+	top:0!important;
+	right:0!important;
+	bottom:0!important;
+	left:0!important;
 }
 
 .jwplayer .jw-uniform {
@@ -251,8 +251,8 @@ background-size:contain!important;
 }
 
 .jwplayer .jw-fill {
-background-size:cover!important;
 background-position:50% 50%;
+background-size:cover!important;
 }
 
 .jwplayer .jw-exact-fit {
