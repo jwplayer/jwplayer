@@ -16,6 +16,9 @@
 	
 	border: @def-border;
 	border-radius: @ui-corner-round;
+
+	filter: @def-ie8-background-filter;
+	
 	box-sizing: content-box;
 	
 	-webkit-transition:opacity .25s background .25s visibility .25s;
@@ -40,8 +43,9 @@ display:table-cell;
 	line-height: @controlbar-height;
 }
 
-.jwplayer .jw-controls .jw-icon button {
-	color: @inactive-color;
+.jwplayer .jw-controlbar .jw-icon button {
+	height: 100%;
+	font-size: @controlbar-icon-size;
 }
 
 .jw-controlbar span, .jw-controlbar .jw-group button, .jw-controlbar .jw-left {

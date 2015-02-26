@@ -26,17 +26,19 @@
 	height: 2em;
 }
 
-.jw-dock-buttons div.button {
+.jw-dock-buttons .button {
 	position:relative;
 	width: 2.5em;
 	height: 2em;
 	background: @def-transparent-background-style;
 	background-size: @def-background-size;
 	border-radius: @dock-corner-radius;
+	filter: @def-ie8-background-filter;
 }
 
-.jw-dock-buttons div.button:hover {
+.jw-dock-buttons .button:hover {
 	background: @def-background-style;
+	filter: @def-ie8-background-filter;
 }
 
 .jw-dock-buttons > * {
@@ -76,6 +78,7 @@
 	background: @def-background-style;
 	background-size: @def-background-size;
 	border-radius: @dock-corner-radius;
+	filter: @def-ie8-background-filter;
 	-webkit-transition:opacity .25s;
 	transition:opacity .25s;
 }

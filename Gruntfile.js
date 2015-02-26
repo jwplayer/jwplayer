@@ -79,8 +79,8 @@ module.exports = function(grunt) {
         recess: {
             dist: {
                 options: {
-                    compile: false,
-                    compress: false,
+                    compile: true,
+                    compress: true,
                     noIDs: true,
                     noJSPrefix: true,
                     noOverqualifying: true,
