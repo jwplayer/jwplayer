@@ -7,8 +7,9 @@
  */
 define([
     'parsers/parsers',
+    'utils/strings',
     'utils/helpers'
-], function(parsers, utils) {
+], function(parsers, strings, utils) {
 
     var PREFIX = 'jwplayer';
 
@@ -24,7 +25,7 @@ define([
     var parseEntry = function (obj, itm) {
         var sources = [],
             tracks = [],
-            _xmlAttribute = utils.xmlAttribute,
+            _xmlAttribute = strings.xmlAttribute,
             def = 'default',
             label = 'label',
             file = 'file',

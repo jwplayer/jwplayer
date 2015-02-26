@@ -408,6 +408,12 @@ define([], function() {
         };
     };
 
+    _.propertyOf = function(obj) {
+        return obj == null ? function(){} : function(key) {
+            return obj[key];
+        };
+    };
+
     // Returns a predicate for checking whether an object has a given set of `key:value` pairs.
     _.matches = function (attrs) {
         return function (obj) {

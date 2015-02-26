@@ -1,42 +1,56 @@
 define([
+    'utils/underscore',
     'utils/helpers',
     'playlist/source',
     'playlist/track'
-], function(utils, Source, Track) {
+], function(_, utils, Source, Track) {
 
     var PlaylistItem = function (config) {
-        var _playlistitem = utils.extend({}, PlaylistItem.defaults, config),
-            i, j, def;
 
-        _playlistitem.tracks = (config && utils.exists(config.tracks)) ? config.tracks : [];
+        var _playlistItem = {};
+        _.each(PlaylistItem.defaults, function(val, key) {
+            _playlistItem[key] = config[key] || val;
+        });
 
-        if (_playlistitem.sources.length === 0) {
-            _playlistitem.sources = [new Source(_playlistitem)];
+        //utils.extend({}, PlaylistItem.defaults, config),
+        _playlistItem.tracks = (config && utils.exists(config.tracks)) ? config.tracks : [];
+
+        if (_playlistItem.sources.length === 0) {
+            if (config.levels) {
+                _playlistItem.sources = config.levels;
+            } else {
+                _playlistItem.sources = [new Source(config)];
+            }
         }
 
         /** Each source should be a named object **/
-        for (i = 0; i < _playlistitem.sources.length; i++) {
-            def = _playlistitem.sources[i]['default'];
+        for (var i = 0; i < _playlistItem.sources.length; i++) {
+            var def = _playlistItem.sources[i]['default'];
             if (def) {
-                _playlistitem.sources[i]['default'] = (def.toString() === 'true');
+                _playlistItem.sources[i]['default'] = (def.toString() === 'true');
             } else {
-                _playlistitem.sources[i]['default'] = false;
+                _playlistItem.sources[i]['default'] = false;
             }
 
-            _playlistitem.sources[i] = new Source(_playlistitem.sources[i]);
-        }
-
-        if (_playlistitem.captions && !utils.exists(config.tracks)) {
-            for (j = 0; j < _playlistitem.captions.length; j++) {
-                _playlistitem.tracks.push(_playlistitem.captions[j]);
+            // If the source doesn't have a label, number it
+            if (! _playlistItem.sources[i].label) {
+                _playlistItem.sources[i].label = i.toString();
             }
-            delete _playlistitem.captions;
+
+            _playlistItem.sources[i] = new Source(_playlistItem.sources[i]);
         }
 
-        for (i = 0; i < _playlistitem.tracks.length; i++) {
-            _playlistitem.tracks[i] = new Track(_playlistitem.tracks[i]);
+        if (_playlistItem.captions && !utils.exists(config.tracks)) {
+            for (var j = 0; j < _playlistItem.captions.length; j++) {
+                _playlistItem.tracks.push(_playlistItem.captions[j]);
+            }
+            delete _playlistItem.captions;
         }
-        return _playlistitem;
+
+        for (i = 0; i < _playlistItem.tracks.length; i++) {
+            _playlistItem.tracks[i] = new Track(_playlistItem.tracks[i]);
+        }
+        return _playlistItem;
     };
 
     PlaylistItem.defaults = {

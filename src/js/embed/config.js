@@ -1,8 +1,8 @@
 define([
     'utils/helpers',
-    'playlist/item',
+    'playlist/playlist',
     'underscore'
-], function(utils, PlaylistItem, _) {
+], function(utils, Playlist, _) {
 
     var config = function (options) {
 
@@ -17,9 +17,16 @@ define([
             base: options.base ? options.base : utils.getScriptPath('jwplayer.js')
         }, jwplayer.defaults, options);
 
-        _normalizePlaylist(config);
-
         _evaluateAspectRatio(config);
+
+
+        // If playlist is a string, then it's an RSS feed, let it be
+        if (_.isString(config.playlist)) {
+            return config;
+        }
+
+        // Else use the playlist obj/array or generate it from config
+        config.playlist = Playlist(config.playlist || config);
 
         return config;
     };
@@ -52,42 +59,6 @@ define([
         return (h / w * 100) + '%';
     }
 
-    /** Construct a playlist from base-level config elements **/
-    function _normalizePlaylist(config) {
-        if (!config.playlist) {
-            var singleItem = {};
-
-            utils.foreach(PlaylistItem.defaults, function (itemProp) {
-                _moveProperty(config, singleItem, itemProp);
-            });
-
-            if (!singleItem.sources) {
-                if (config.levels) {
-                    singleItem.sources = config.levels;
-                    delete config.levels;
-                } else {
-                    var singleSource = {};
-                    _moveProperty(config, singleSource, 'file');
-                    _moveProperty(config, singleSource, 'type');
-                    singleItem.sources = singleSource.file ? [singleSource] : [];
-                }
-            }
-
-            config.playlist = [new PlaylistItem(singleItem)];
-        } else {
-            // Use JW Player playlist items to normalize sources of existing playlist items
-            for (var i = 0; i < config.playlist.length; i++) {
-                config.playlist[i] = new PlaylistItem(config.playlist[i]);
-            }
-        }
-    }
-
-    function _moveProperty(sourceObj, destObj, property) {
-        if (utils.exists(sourceObj[property])) {
-            destObj[property] = sourceObj[property];
-            delete sourceObj[property];
-        }
-    }
 
     return config;
 });

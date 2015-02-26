@@ -7,11 +7,12 @@
  */
 define([
     'utils/helpers',
+    'utils/strings',
     'parsers/parsers',
     'parsers/jwparser',
     'parsers/mediaparser',
     'playlist/item'
-], function(utils, parsers, parseEntry, mediaParser, PlaylistItem) {
+], function(utils, strings, parsers, parseEntry, mediaParser, PlaylistItem) {
     var _textContent = parsers.textContent,
         _getChildNode = parsers.getChildNode,
         _numChildren = parsers.numChildren,
@@ -60,7 +61,7 @@ define([
             }
             switch (localName.toLowerCase()) {
                 case 'enclosure':
-                    itm.file = utils.xmlAttribute(node, 'url');
+                    itm.file = strings.xmlAttribute(node, 'url');
                     break;
                 case 'title':
                     itm.title = _textContent(node);
