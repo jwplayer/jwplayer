@@ -79,8 +79,8 @@ module.exports = function(grunt) {
         recess: {
             dist: {
                 options: {
-                    compile: true,
-                    compress: true,
+                    compile: true,     // Set to false to lint
+                    compress: true,    // Set to false to lint
                     noIDs: true,
                     noJSPrefix: true,
                     noOverqualifying: true,
@@ -88,7 +88,7 @@ module.exports = function(grunt) {
                     noUniversalSelectors: true,
                     prefixWhitespace: true,
                     strictPropertyOrder: true,
-                    zeroUnits: true,
+                    zeroUnits: false,   // Occasionally set this to true, but it will misinterpret some values.
                     includePaths: ['assets/less', 'assets/less/*']
                 },
                 files: {
