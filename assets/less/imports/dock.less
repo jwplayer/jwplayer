@@ -1,4 +1,6 @@
-.jwdock {
+@dock-corner-radius: 0.25em;
+
+.jw-dock {
 	position: relative;
 	right: @ui-margin;
 	top: @ui-margin;
@@ -9,54 +11,62 @@
 	transition:background .25s opacity .25s;
 }
 
-.jwdock > * {
+.jw-dock > * {
 	height:100%;
 	float:left;
 }
 
-.jwdock > .jwoverlay {
+.jw-dock > .jw-overlay {
 	height:auto;
 	float:none;
 	z-index:99;
 }
 
-.jwdockbuttons {
+.jw-dock-buttons {
 	height: 2em;
 }
 
-.jwdockbuttons div.button {
+.jw-dock-buttons div.button {
 	position:relative;
 	width: 2.5em;
 	height: 2em;
 	background: @def-transparent-background-style;
 	background-size: @def-background-size;
-	border-radius: @ui-corner-round;
+	border-radius: @dock-corner-radius;
 }
 
-.jwdockbuttons div.button:hover {
+.jw-dock-buttons div.button:hover {
 	background: @def-background-style;
 }
 
-.jwdockbuttons > * {
+.jw-dock-buttons > * {
 height:100%;
 float:left;
 }
 
-.jwdockbuttons .divider {
-	width: @ui-margin;
+.jw-dock-buttons .jw-divider {
+	width: 0.5em;
 	display:none;
 }
 
-.jwdockbuttons div.button ~ .divider {
+.jw-dock-buttons div.button ~ .jw-divider {
 	display:block;
 }
 
 
-.jwdock .button:hover .jwoverlay {
+.jw-dock .button:hover .jw-overlay {
 	display: block;
 }
 
-.jwdock .button .jwoverlay {
+.jw-dock .button .jw-dock-icon {
+	background-position: 50% 50%;
+	height: 100%;
+	width: 100%;
+	background-repeat: no-repeat;
+	opacity: 0.75;
+}
+
+.jw-dock .button .jw-overlay {
 	background: @def-background-style;
 	background-size: @def-background-size;
 	border-radius: @ui-corner-round;
@@ -68,13 +78,59 @@ float:left;
 	width: auto;
 	white-space: nowrap;
 	padding: 0.5em;
+	border-radius: @dock-corner-radius;
 }
 
-.jwdock .button .button-label {
-	text-color: @active-color;
-}
-
-.jwdockbuttons div.button div {
+.jw-dock-buttons div.button div {
 	-webkit-transition:opacity .25s;
 	transition:opacity .25s;
 }
+
+/*
+#container_dock {
+height:32px;
+padding:8px;
+}
+
+#container_dock div.button {
+width:44px;
+cursor:pointer;
+border:none;
+}
+
+#container_dock div.button:hover {
+}
+
+#container_dock div.button:active {
+}
+
+#container_dock div.button > div {
+	opacity:0.75;
+}
+
+#container_dock div.button:hover > div {
+	opacity:1;
+}
+
+#container_dock div.button:active > div {
+	opacity:0.5;
+}
+
+#container_dock .jwoverlay {
+	top:40px;
+}
+
+#container_dock .divider {
+	width:4px;
+}
+
+#container.aspectMode .jw-aspect {
+display:block;
+}
+
+#container_dock {
+height:32px;
+padding:8px;
+margin-left:0;
+}
+*/

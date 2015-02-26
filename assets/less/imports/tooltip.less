@@ -1,19 +1,19 @@
 @import "vars.less";
 
-.jwplayer .tooltip-icon:hover .jwoverlay, .jwplayer .tooltip-icon.open .jwoverlay {
+.jwplayer .tooltip-icon:hover .jw-overlay, .jwplayer .tooltip-icon.open .jw-overlay {
 	opacity: 1;
 	visibility: visible;
 }
 
 
-.jwcontrolbar {
-	.jwmenu .jwoption {
+.jw-controlbar {
+	.jw-menu .jw-option {
 		cursor:pointer;
 		white-space:nowrap;
 		position:relative;
 	}
 
-	.jwoverlay {
+	.jw-overlay {
 		position:absolute;
 		visibility:hidden;
 		opacity:0;
@@ -23,41 +23,33 @@
 		bottom: 2em;
 		background: @def-background-style;
 		background-size: @def-background-size;
-		padding:0.25em;
+		padding: 0.25em 0.5em;
 		border-radius: 0.25em;
 	}
 
-	.jwoverlay .jwcontents {
+	.jw-overlay .jw-contents {
 		position:relative;
 		z-index:1;
 	}
 
-	.jwoverlay .jwborder {
-		position:absolute!important;
-	}
-
-	.jwoverlay .jwoption {
-		height: 1.25em;
+	.jw-overlay .jw-option {
+		height: 1.5em;
 		color: @inactive-color;
 		font-size: 0.75em;
 		font-family: Arial, Helvetica, sans-serif;
-		line-height: 1.25em;
+		line-height: 1.5em;
 	}
 
-	.jwoverlay .jwoption:hover {
+	.jw-overlay .jw-option:hover, .jw-overlay .jw-option.jw-active {
 		color: @hover-color;
 	}
 
-	.jwoverlay .jwoption.active {
-		color: @active-color;
-	}
-
-	.jwoverlay .jwoption:before {
+	.jw-overlay .jw-option:before {
 		content: "\ea56";
 		padding-right: 0.25em;
 	}
 
-	.jwoverlay .jwoption.active:before {
+	.jw-overlay .jw-option.jw-active:before {
 		content: "\ea55";
 	}
 }

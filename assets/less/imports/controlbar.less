@@ -1,6 +1,6 @@
 @import "vars.less";
 
-.jwplayer .jwcontrolbar {
+.jwplayer .jw-controlbar {
 	position:absolute;
 	margin: 0 auto;
 	height: @controlbar-height;
@@ -19,20 +19,23 @@
 
 	padding: 0 @ui-padding;
 	border-radius: @ui-corner-round;
+	border: @def-border;
+
+	box-sizing: content-box;
 }
 
-span.jwcontrolbar span {
+span.jw-controlbar span {
 height:100%;
 -webkit-user-select:none;
 -webkit-user-drag:none;
 }
 
-span.jwcontrolbar .jwgroup {
+span.jw-controlbar .jw-group {
 display:table-cell;
 }
 
 // control bar content (icons/text)
-.jwcontrolbar .jwgroup > span {
+.jw-controlbar .jw-group > span {
 	padding: 0 0.20em;
 	display: inline-block;
 	
@@ -40,25 +43,25 @@ display:table-cell;
 	height: @controlbar-height;
 }
 
-.jwplayer .jwcontrols .jwicon button {
+.jwplayer .jw-controls .jw-icon button {
 	color: @inactive-color;
 }
 
-span.jwcontrolbar span,span.jwcontrolbar .jwgroup button,span.jwcontrolbar .jwleft {
+span.jw-controlbar span,span.jw-controlbar .jw-group button,span.jw-controlbar .jw-left {
 	position:relative;
 	float:left;
 }
 
-span.jwcontrolbar .jwright {
+span.jw-controlbar .jw-right {
 	position:relative;
 	float:right;
 }
 
-span.jwcontrolbar .jwcenter {
+span.jw-controlbar .jw-center {
 position:absolute;
 }
 
-span.jwcontrolbar button {
+span.jw-controlbar button {
 display:inline-block;
 height:100%;
 cursor:pointer;
@@ -66,7 +69,7 @@ cursor:pointer;
 transition:opacity .25s background .25s visibility .25s;
 }
 
-span.jwcontrolbar .jwtime {
+span.jw-controlbar .jw-time {
 position:absolute;
 height:100%;
 width:100%;
@@ -74,54 +77,21 @@ left:0;
 height: @inactive-color;
 }
 
+.jw-controlbar .jw-text {
+	font-size: @font-size;
+	line-height: 1em;
+	height: 1em;
+}
 
+.jw-controlbar .jw-elapsed .jw-text, .jw-controlbar .jw-duration .jw-text {
+	line-height: inherit;
+}
 
-span.jwcontrolbar .jwdivider + .jwdivider {
+span.jw-controlbar .jw-cast {
 display:none;
 }
 
-.jwcontrolbar .jwtext {
-	color:@font-color;
-	//font-size: @font-size;
-	line-height: @font-size;;
-	height: @font-size;
-	text-align:center;
-	font-style:normal;
-	font-variant:normal;
-	font-stretch:normal;
-	font-family:Arial, sans-serif;
-	font-weight:normal;
-}
-
-span.jwcontrolbar .jwcast {
-display:none;
-}
-
-span.jwcontrolbar .jwcast.jwcancast {
+span.jw-controlbar .jw-cast.jw-can-cast {
 display:block;
 }
 
-span.jwcontrolbar .jwalt {
-display:none;
-overflow:hidden;
-position:absolute!important;
-left:0!important;
-right:0!important;
-text-align:left!important;
-}
-
-span.jwcontrolbar .jwtoggling {
--webkit-transition:none;
-transition:none;
-}
-
-#container_controlbar_timetooltip .jwcontents * {
-color:rgb(172,172,172);
-font-style:normal;
-font-variant:normal;
-font-weight:normal;
-font-stretch:normal;
-font-size:11px;
-line-height:normal;
-font-family:Arial, Helvetica, sans-serif;
-}

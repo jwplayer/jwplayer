@@ -2,35 +2,45 @@
 
 
 .jwplayer .jw-slider {
-	.rail, .buffer, .progress, .thumb {
+	.jw-rail, .jw-buffer, .jw-progress, .jw-thumb {
 		position:absolute;
 		cursor:pointer;
 		border-radius: 0.5em;
 	}
 
-	.rail, .buffer {
+	.jw-rail, .jw-buffer {
 		border-radius: 0.5em;
 	}
 
-	.progress {
-		background-color: @progress-color;
+	.jw-rail {
+		box-shadow: @rail-glow;
 	}
 
-	.buffer {
+	.jw-progress {
+		background-color: @progress-color;
+		background: @def-progress-color;
+	}
+
+	.jw-buffer {
 		background-color: @buffer-color;
 	}
 
-	.rail {
-		background-color: @rail-color;
+	.jw-progress, .jw-buffer {
+		border: @def-border;
 	}
 
-	.jw-cue, .jwicon.jwthumb button {	
+	.jw-rail {
+		background-color: @rail-color;
+		border: @def-border;
+	}
+
+	.jw-cue, .jw-icon.jw-thumb button {	
 		position: absolute;
 		cursor:pointer;
 		z-index:1;
 		font-size: @volume-rail-width;
-		height: @volume-rail-width;
-		width: @volume-rail-width;
+		height: 1em;
+		width: 1em;
 	}
 
 	.jw-cue {
@@ -43,22 +53,27 @@
 	height: @volume-rail-width;
 	top: @def-rail-width-padding;
 
-	.rail, .buffer, .progress, .thumb {
+	.jw-rail, .jw-buffer, .jw-progress {
 		width: 100%;
 	}
 
-	.progress {
+	.jw-progress {
 		border-top-left-radius: 0.5em;
 		border-top-right-radius: 0;
 		border-bottom-left-radius: 0.5em;
 		border-bottom-right-radius: 0;
 	}
 
+	.jw-progress, .jw-buffer {
+		border: @def-border;
+		border-style: solid none solid;
+	}
+
 	.jw-rail-group, .rail, .progress {
 		width: 100%;
 	}
 
-	.jwthumb button {
+	.jw-thumb button {
 		margin-left: -0.5em;
 	}
 }
@@ -67,42 +82,44 @@
 	height: @volume-rail-length;
 	width: @def-rail-width;
 
-	.rail, .buffer, .progress, .thumb {
+	.jw-rail, .jw-buffer, .jw-progress {
 		height: 100%;
 		bottom: 0;
 	}
 
-	.progress {
+	.jw-progress {
 		border-top-left-radius: 0;
 		border-top-right-radius: 0;
 		border-bottom-left-radius: 0.5em;
 		border-bottom-right-radius: 0.5em;
 	}
 
-	.jw-rail-group, .rail, .progress {
+	.jw-progress, .jw-buffer {
+		border-style: none solid solid solid;
+	}
+
+	.jw-rail-group, .jw-rail, .jw-progress {
 		width: @volume-rail-width;
 		height: 100%;
 		bottom: 0;
 	}
 
-	.jwthumb button {
-		margin-top: -0.5em;
+	.jw-thumb {
+		width: @volume-rail-width;
+		height: @volume-rail-width;
+		margin-bottom: @volume-rail-width/-2;
 	}
 }
 
-.jwplayer .jwtime.jw-slider.jw-hori {
+.jwplayer .jw-time.jw-slider.jw-hori {
 	left:0;
 	right:0;
 	width: 100%;
 }
 
-#container_controlbar .jw-slider.jwvolume button {
+.jw-controlbar .jw-slider.jwvolume button {
 	font-size: @volume-rail-width;
 	color: #0f0;
-}
-
-.jw-slider.jw-vert button {
-	margin-bottom: 1em;
 }
 
 .jw-slider.jw-hori button {

@@ -14,16 +14,29 @@
 	padding: 0;
 }
 
-.jwplayer .jwcontrolbar .jwicon button {
+.jwplayer .jw-controlbar .jw-icon button {
 	font-size: @controlbar-icon-size;
 }
 
-.jwplayer .jwicon button:hover {
+.jwplayer .jw-icon button:hover {
 	color: @active-color;
 }
 
-.jwplayer .jwicon.tooltip-icon.open button {
+.jwplayer .jw-icon.tooltip-icon.open button {
 	color: @active-color;
+}
+
+.jwplayer .jw-text {
+	color:@font-color;
+	font-size: @font-size;
+	line-height: 1em;
+	height: 1em;
+	text-align:center;
+	font-style:normal;
+	font-variant:normal;
+	font-weight:normal;
+	font-stretch:normal;
+	font-family:Arial, sans-serif;
 }
 
 @import "imports/display.less";
@@ -32,16 +45,6 @@
 @import "imports/tooltip.less";
 @import "imports/slider.less";
 
-
-/*
-object.jwswf,.jwplayer:focus {
-	outline:none;
-}
-
-.jw-tab-focus:focus {
-	outline:rgb(11,126,244) solid 0.1em;
-}
-*/
 
 .jwplayer,.jwplayer div,.jwplayer span,.jwplayer a,.jwplayer img,.jwplayer ul,.jwplayer li,.jwplayer video,.jwclick {
 margin:0;
@@ -62,19 +65,11 @@ line-height:1em;
 background-color:transparent;
 }
 
-/*.jwplayer,.jwplayer * {
-box-sizing:content-box;
-}
-
-.jwplayer * button,.jwplayer * input,.jwplayer * select,.jwplayer * textarea {
-box-sizing:border-box;
-}*/
-
 .jwplayer ul {
 list-style:none;
 }
 
-.jwplayer .jwcontrols {
+.jwplayer .jw-controls {
 pointer-events:none;
 }
 
@@ -82,11 +77,11 @@ pointer-events:none;
 pointer-events:all;
 }
 
-.jwplayer .jwcontrols .jwdockbuttons,.jwplayer .jwcontrols .jwcontrolbar,.jwplayer .jwcontrols .jwskip,.jwplayer .jwcontrols .jwdisplayIcon,.jwplayer .jwcontrols .jwpreview,.jwplayer .jwcontrols .jwlogo {
+.jwplayer .jw-controls .jw-dock-buttons,.jwplayer .jw-controls .jw-controlbar,.jwplayer .jw-controls .jw-skip,.jwplayer .jw-controls .jw-display-icon,.jwplayer .jw-controls .jw-preview,.jwplayer .jw-controls .jw-logo {
 pointer-events:all;
 }
 
-.jwskip {
+.jw-skip {
 	position:absolute;
 	float:right;
 	display:inline-block;
@@ -95,12 +90,12 @@ pointer-events:all;
 	right: 1em;
 }
 
-.jwskipimage {
+.jw-skip-image {
 position:relative;
 display:none;
 }
 
-.jwcaptions {
+.jw-captions {
 position:absolute;
 cursor:pointer;
 width:100%;
@@ -108,57 +103,63 @@ height:100%;
 overflow:hidden;
 }
 
-.jwlogo {
-cursor:pointer;
-position:absolute;
+.jw-logo {
+	cursor:pointer;
+	position:absolute;
+	top:8px;
+	right:8px;
+	margin-bottom:0;
 }
 
-.jwclick {
-border-radius:5px!important;
-height:auto!important;
-border:1px solid rgb(188,188,188)!important;
-font-family:'MS Sans Serif', Geneva, sans-serif!important;
-font-size:10px!important;
-width:320px!important;
--webkit-box-shadow:rgba(0,0,0,0.0980392) 5px 5px 7px rgba(255,255,255,0.298039) 0 1px 0 inset!important;
-box-shadow:rgba(0,0,0,0.0980392) 5px 5px 7px rgba(255,255,255,0.298039) 0 1px 0 inset!important;
-position:absolute!important;
-z-index:999!important;
-background-color:rgb(255,255,255)!important;
+/***** Start Right Click *****/
+.jw-click {
+	border-radius:5px!important;
+	height:auto!important;
+	border:1px solid rgb(188,188,188)!important;
+	font-family:'MS Sans Serif', Geneva, sans-serif!important;
+	font-size:10px!important;
+	width:320px!important;
+	-webkit-box-shadow:rgba(0,0,0,0.0980392) 5px 5px 7px rgba(255,255,255,0.298039) 0 1px 0 inset!important;
+	box-shadow:rgba(0,0,0,0.0980392) 5px 5px 7px rgba(255,255,255,0.298039) 0 1px 0 inset!important;
+	position:absolute!important;
+	z-index:999!important;
+	background-color:rgb(255,255,255)!important;
 }
 
-.jwclick div {
-padding:8px 21px!important;
-margin:0!important;
-border:none!important;
-font-family:'MS Sans Serif', Geneva, sans-serif!important;
-font-size:10px!important;
-color:inherit!important;
-background-color:rgb(255,255,255)!important;
+.jw-click div {
+	padding:8px 21px!important;
+	margin:0!important;
+	border:none!important;
+	font-family:'MS Sans Serif', Geneva, sans-serif!important;
+	font-size:10px!important;
+	color:inherit!important;
+	background-color:rgb(255,255,255)!important;
 }
 
-.jwclick_item {
-padding:8px 21px!important;
-text-align:left!important;
-cursor:pointer!important;
+.jw-click-item {
+	padding:8px 21px!important;
+	text-align:left!important;
+	cursor:pointer!important;
 }
 
-.jwclick_item:hover {
+.jw-click-item:hover {
 color:rgb(255,255,255)!important;
 background-color:rgb(89,89,89)!important;
 }
 
-.jwclick_item a {
+.jw-click-item a {
 text-decoration:none!important;
 color:rgb(0,0,0)!important;
 }
 
-.jwclick hr {
+.jw-click hr {
 width:100%!important;
 padding:0!important;
 margin:0!important;
 border:1px solid rgb(233,233,233)!important;
 }
+/**** END RIGHT CLICK ****/
+
 
 .jwplayer {
 position:relative;
@@ -169,31 +170,31 @@ transition:opacity .25s ease;
 -webkit-transition:opacity .25s ease;
 }
 
-.jwmain {
-position:absolute;
-left:0;
-right:0;
-top:0;
-bottom:0;
-transition:opacity .25s ease;
--webkit-transition:opacity .25s ease;
+.jw-main {
+	position:absolute;
+	left:0;
+	right:0;
+	top:0;
+	bottom:0;
+	transition:opacity .25s ease;
+	-webkit-transition:opacity .25s ease;
 }
 
-.jwvideo,.jwcontrols {
-position:absolute;
-height:100%;
-width:100%;
-transition:opacity .25s ease;
--webkit-transition:opacity .25s ease;
+.jw-video,.jw-controls {
+	position:absolute;
+	height:100%;
+	width:100%;
+	transition:opacity .25s ease;
+	-webkit-transition:opacity .25s ease;
 }
 
-.jwvideo {
-overflow:hidden;
-visibility:hidden;
-opacity:0;
+.jw-video {
+	overflow:hidden;
+	visibility:hidden;
+	opacity:0;
 }
 
-.jwvideo video {
+.jw-video video {
 height:100%;
 width:100%;
 position:absolute;
@@ -205,14 +206,7 @@ bottom:0;
 background:transparent;
 }
 
-.jwplaylistcontainer {
-position:absolute;
-height:100%;
-width:100%;
-display:none;
-}
-
-.jwinstream {
+.jw-instream {
 position:absolute;
 top:0;
 left:0;
@@ -221,15 +215,15 @@ right:0;
 display:none;
 }
 
-.jwaspect {
+.jw-aspect {
 display:none;
 }
 
-.jwplayer.aspectMode {
+.jwplayer.aspect-mode {
 height:auto;
 }
 
-.jwplayer.jwfullscreen {
+.jwplayer.jw-fullscreen {
 width:100%!important;
 height:100%!important;
 left:0!important;
@@ -241,97 +235,31 @@ margin:0!important;
 position:fixed!important;
 }
 
-.jwplayer.jwfullscreen.jw-user-inactive {
+.jwplayer.jw-fullscreen.jw-user-inactive {
 cursor:none;
 }
 
-.jwplayer.jwfullscreen .jwmain {
+.jwplayer.jw-fullscreen .jw-main {
 left:0!important;
 right:0!important;
 top:0!important;
 bottom:0!important;
 }
 
-.jwplayer.jwfullscreen .jwplaylistcontainer {
-display:none!important;
-}
-
-.jwplayer .jwuniform {
+.jwplayer .jw-uniform {
 background-size:contain!important;
 }
 
-.jwplayer .jwfill {
+.jwplayer .jw-fill {
 background-size:cover!important;
 background-position:50% 50%;
 }
 
-.jwplayer .jwexactfit {
+.jwplayer .jw-exact-fit {
 background-size:100% 100%!important;
 }
 
-.jwplayer .jwcast-screen {
+.jwplayer .jw-cast-screen {
 width:100%;
 height:100%;
-}
-
-
-
-
-
-#container_logo {
-top:8px;
-right:8px;
-margin-bottom:0;
-}
-
-#container_dock {
-height:32px;
-padding:8px;
-}
-
-
-
-
-#container_dock div.button {
-width:44px;
-cursor:pointer;
-border:none;
-}
-
-#container_dock div.button:hover {
-}
-
-#container_dock div.button:active {
-}
-
-#container_dock div.button > div {
-	opacity:0.75;
-}
-
-#container_dock div.button:hover > div {
-	opacity:1;
-}
-
-#container_dock div.button:active > div {
-	opacity:0.5;
-}
-
-#container_dock .jwoverlay {
-	top:40px;
-}
-
-#container_dock .divider {
-	width:4px;
-}
-
-#container.aspectMode .jwaspect {
-display:block;
-}
-
-
-
-#container_dock {
-height:32px;
-padding:8px;
-margin-left:0;
 }
