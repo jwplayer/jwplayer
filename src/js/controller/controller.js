@@ -1,58 +1,82 @@
 define([
-    'utils/helpers',
-    'utils/css',
-    'events/events',
-    'events/states',
-    'utils/eventdispatcher',
+    'api/internal-api',
+    'utils/underscore',
+    'controller/setup',
+    'controller/model',
     'playlist/playlist',
-    'playlist/loader'
-], function(utils, cssUtils, events, states, eventdispatcher, Playlist, PlaylistLoader){
+    'playlist/loader',
+    'utils/helpers',
+    'view/view',
+    'utils/backbone.events',
+    'events/states',
+    'events/events'
+], function(setupInternalApi, _, Setup, Model, Playlist, PlaylistLoader, utils, View, Events, states, events) {
 
-    var Controller = function(_model, _view) {
+    var Controller = function(config, _api) {
+
         var _ready = false,
+            _model,
+            _view,
+            _setup,
             _loadOnPlay = -1,
             _preplay = false,
             _actionOnAttach,
             _stopPlaylist = false, // onComplete, should we play next item or not?
             _interruptPlay,
             _queuedCalls = [],
-            _this = utils.extend(this, new eventdispatcher(_model.id, _model.config.debug));
+            _this = utils.extend(this, Events);
 
-        function _init() {
-            _model.addEventListener(events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
-            _model.addEventListener(events.JWPLAYER_MEDIA_COMPLETE, function() {
-                // Insert a small delay here so that other complete handlers can execute
-                setTimeout(_completeHandler, 25);
-            });
-            _model.addEventListener(events.JWPLAYER_MEDIA_ERROR, function(evt) {
-                // Re-dispatch media errors as general error
-                var evtClone = utils.extend({}, evt);
-                evtClone.type = events.JWPLAYER_ERROR;
-                _this.sendEvent(evtClone.type, evtClone);
-            });
+        _model = this._model = new Model(config);
+        _view  = this._view  = new View(_this, _model);
+        _setup = this._setup = new Setup(_model, _view);
+
+        // Legacy, should be removed
+        _this.id = this._model.id;
+
+        _setup.addEventListener(events.JWPLAYER_READY, _readyHandler);
+        _setup.addEventListener(events.JWPLAYER_ERROR, _setupErrorHandler);
+        _setup.start();
+
+        // Helper function
+        var _video = this._model.getVideo;
+
+        _model.addEventListener(events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
+        _model.addEventListener(events.JWPLAYER_MEDIA_COMPLETE, function() {
+            // Insert a small delay here so that other complete handlers can execute
+            setTimeout(_completeHandler, 25);
+        });
+        _model.addEventListener(events.JWPLAYER_MEDIA_ERROR, function(evt) {
+            // Re-dispatch media errors as general error
+            var evtClone = utils.extend({}, evt);
+            evtClone.type = events.JWPLAYER_ERROR;
+            _this.trigger(evtClone.type, evtClone);
+        });
+
+
+        function _readyHandler(evt) {
+            _playerReady(evt);
         }
 
-        function _video() {
-            return _model.getVideo();
+        function _setupErrorHandler(evt) {
+            _this.trigger(events.JWPLAYER_SETUP_ERROR, evt);
         }
 
         function _playerReady(evt) {
             if (!_ready) {
 
                 _view.completeSetup();
-                _this.sendEvent(evt.type, evt);
+                _this.trigger(evt.type, evt);
 
-                if (utils.exists(jwplayer.playerReady)) {
-                    jwplayer.playerReady(evt);
-                }
+                // Tell the api that we are loaded
+                _api.playerReady(evt);
 
                 _model.addGlobalListener(_forward);
                 _view.addGlobalListener(_forward);
 
-                _this.sendEvent(events.JWPLAYER_PLAYLIST_LOADED, {
-                    playlist: jwplayer(_model.id).getPlaylist()
+                _this.trigger(events.JWPLAYER_PLAYLIST_LOADED, {
+                    playlist: _this.jwGetPlaylist()
                 });
-                _this.sendEvent(events.JWPLAYER_PLAYLIST_ITEM, {
+                _this.trigger(events.JWPLAYER_PLAYLIST_ITEM, {
                     index: _model.item
                 });
 
@@ -72,7 +96,7 @@ define([
         }
 
         function _forward(evt) {
-            _this.sendEvent(evt.type, evt);
+            _this.trigger(evt.type, evt);
         }
 
         function _bufferFullHandler() {
@@ -110,11 +134,10 @@ define([
         }
 
         function _play(state) {
-            if (!utils.exists(state)) {
-                state = true;
-            } else if (!state) {
+            if (state === false) {
                 return _pause();
             }
+
             try {
                 if (_loadOnPlay >= 0) {
                     _load(_loadOnPlay);
@@ -123,7 +146,7 @@ define([
                 //_actionOnAttach = _play;
                 if (!_preplay) {
                     _preplay = true;
-                    _this.sendEvent(events.JWPLAYER_MEDIA_BEFOREPLAY);
+                    _this.trigger(events.JWPLAYER_MEDIA_BEFOREPLAY);
                     _preplay = false;
                     if (_interruptPlay) {
                         _interruptPlay = false;
@@ -143,7 +166,7 @@ define([
 
                 return true;
             } catch (err) {
-                _this.sendEvent(events.JWPLAYER_ERROR, err);
+                _this.trigger(events.JWPLAYER_ERROR, err);
                 _actionOnAttach = null;
             }
             return false;
@@ -162,7 +185,7 @@ define([
                 }
                 return true;
             } catch (err) {
-                _this.sendEvent(events.JWPLAYER_ERROR, err);
+                _this.trigger(events.JWPLAYER_ERROR, err);
             }
             return false;
         }
@@ -180,7 +203,7 @@ define([
                     try {
                         _video().pause();
                     } catch (err) {
-                        _this.sendEvent(events.JWPLAYER_ERROR, err);
+                        _this.trigger(events.JWPLAYER_ERROR, err);
                         return false;
                     }
                     break;
@@ -208,10 +231,8 @@ define([
         }
 
         function _item(index) {
-            cssUtils.block(_model.id + '_next');
             _load(index);
             _play();
-            cssUtils.unblock(_model.id + '_next');
         }
 
         function _prev() {
@@ -240,7 +261,7 @@ define([
                     _loadOnPlay = 0;
                     _stop(true);
                     setTimeout(function() {
-                        _this.sendEvent(events.JWPLAYER_PLAYLIST_COMPLETE);
+                        _this.trigger(events.JWPLAYER_PLAYLIST_COMPLETE);
                     }, 0);
                 } else {
                     _next();
@@ -265,7 +286,7 @@ define([
             }
             return null;
         }
-        
+
         function _setCurrentAudioTrack(index) {
             _video().setCurrentAudioTrack(index);
         }
@@ -337,6 +358,8 @@ define([
             func.apply(this, args);
         }
 
+
+
         /** Controller API / public methods **/
         this.play = _waitForReady(_play);
         this.pause = _waitForReady(_pause);
@@ -369,9 +392,13 @@ define([
         this.checkBeforePlay = function() {
             return _preplay;
         };
+
         this.playerReady = _playerReady;
-        _init();
+
+        // Add in all the jwGet____ methods
+        setupInternalApi(this, _model, _view);
     };
+
 
     return Controller;
 

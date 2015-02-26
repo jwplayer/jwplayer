@@ -8,8 +8,6 @@ define([
     'utils/css',
     'underscore'
 ], function(Embed, plugins, Instream, events, states, utils, cssUtils, _) {
-    var _instances = [],
-        _uniqueIndex = 0;
 
     function addFocusBorder(container) {
         utils.addClass(container, 'jw-tab-focus');
@@ -110,7 +108,7 @@ define([
             _originalContainer = container,
             _listeners = {},
             _stateListeners = {},
-            _player = null,
+            _controller = null,
             _playerReady = false,
             _queuedCalls = [],
             _instream,
@@ -124,7 +122,7 @@ define([
                 // Remove any players that may be associated to this DOM element
                 _this.remove();
 
-                Api.addPlayer(_this);
+                jwplayer.api.addPlayer(_this);
 
                 _this.config = options;
                 _this._embedder = new Embed(_this);
@@ -140,7 +138,7 @@ define([
             try {
                 _callbacks[id] = handler;
                 var handlerString = 'jwplayer("' + _this.id + '").callback("' + id + '")';
-                _player.jwDockAddButton(icon, label, handlerString, id);
+                _controller.jwDockAddButton(icon, label, handlerString, id);
             } catch (e) {
                 utils.log('Could not add dock button' + e.message);
             }
@@ -251,7 +249,7 @@ define([
             return _this;
         };
         _this.createInstream = function () {
-            return new Instream(this, _player);
+            return new Instream(this, _controller);
         };
         _this.setInstream = function (instream) {
             _instream = instream;
@@ -267,7 +265,7 @@ define([
             _playerReady = true;
             _callInternal('jwPlayerDestroy');
             _playerReady = false;
-            _player = null;
+            _controller = null;
         };
         _this.playAd = function (ad) {
             var plugins = jwplayer(_this.id).plugins;
@@ -327,7 +325,7 @@ define([
             _queuedCalls = [];
 
             // Is there more than one player using the same DIV on the page?
-            var sharedDOM = (_.size(_.where(_instances, {id: _this.id})) > 1);
+            var sharedDOM = (_.size(_.where(jwplayer.api._instances, {id: _this.id})) > 1);
 
             // If sharing the DOM element, don't reset CSS
             if (!sharedDOM) {
@@ -347,7 +345,7 @@ define([
             }
 
             // Remove from array of players
-            _instances = _.filter(_instances, function (p) {
+            jwplayer.api._instances = _.filter(jwplayer.api._instances, function (p) {
                 return (p.uniqueId !== _this.uniqueId);
             });
         };
@@ -357,8 +355,8 @@ define([
             plugins.registerPlugin(id, target, arg1, arg2);
         };
 
-        _this.setPlayer = function (player) {
-            _player = player;
+        _this.setController = function (player) {
+            _controller = player;
         };
 
         _this.detachMedia = function () {
@@ -413,8 +411,8 @@ define([
         function _eventListener(type, callback) {
             if (!_listeners[type]) {
                 _listeners[type] = [];
-                if (_player && _playerReady) {
-                    _addInternalListener(_player, type);
+                if (_controller && _playerReady) {
+                    _addInternalListener(_controller, type);
                 }
             }
             _listeners[type].push(callback);
@@ -464,10 +462,10 @@ define([
             if (_playerReady) {
                 var args = Array.prototype.slice.call(arguments, 0),
                     funcName = args.shift();
-                if (!_player || !_.isFunction(_player[funcName])) {
+                if (!_controller || !_.isFunction(_controller[funcName])) {
                     return null;
                 }
-                return _player[funcName].apply(_player, args);
+                return _controller[funcName].apply(_controller, args);
             }
             _queuedCalls.push(arguments);
         }
@@ -477,13 +475,10 @@ define([
         _this.playerReady = function (obj) {
             _playerReady = true;
 
-            if (!_player) {
-                _this.setPlayer(document.getElementById(obj.id));
-            }
             _this.container = document.getElementById(_this.id);
 
             utils.foreach(_listeners, function (eventType) {
-                _addInternalListener(_player, eventType);
+                _addInternalListener(_controller, eventType);
             });
 
             _eventListener(events.JWPLAYER_PLAYLIST_ITEM, function () {
@@ -517,72 +512,6 @@ define([
         return _this;
     };
 
-
-    //
-    // API Static methods
-    //
-
-    // TODO : Fix from amd-ification
-    // jwplayer.playerReady = function (obj) {
-        // var api = Api.playerById(obj.id);
-        // if (!api) {
-            // api = Api.selectPlayer(obj.id);
-        // }
-        // api.playerReady(obj);
-    // };
-
-    Api.selectPlayer = function (identifier) {
-        var _container;
-
-        if (!utils.exists(identifier)) {
-            identifier = 0;
-        }
-
-        if (identifier.nodeType) {
-            // Handle DOM Element
-            _container = identifier;
-        } else if (typeof identifier === 'string') {
-            // Find container by ID
-            _container = document.getElementById(identifier);
-        }
-
-        if (_container) {
-            var foundPlayer = Api.playerById(_container.id);
-            if (foundPlayer) {
-                return foundPlayer;
-            } else {
-                return (new Api(_container));
-            }
-        } else if (typeof identifier === 'number') {
-            return _instances[identifier];
-        }
-
-        return null;
-    };
-
-
-    Api.playerById = function (id) {
-        for (var p = 0; p < _instances.length; p++) {
-            if (_instances[p].id === id) {
-                return _instances[p];
-            }
-        }
-
-        return null;
-    };
-
-    Api.addPlayer = function (api) {
-        for (var p = 0; p < _instances.length; p++) {
-            if (_instances[p] === api) {
-                return api; // Player is already in the list;
-            }
-        }
-
-        _uniqueIndex++;
-        api.uniqueId = _uniqueIndex;
-        _instances.push(api);
-        return api;
-    };
 
     return Api;
 });

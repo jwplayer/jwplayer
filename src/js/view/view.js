@@ -95,7 +95,7 @@ define([
         function _init() {
 
             _playerElement = _createElement('div', PLAYER_CLASS + ' playlist-' + _model.playlistposition);
-            _playerElement.id = _player.id;
+            _playerElement.id = _model.id;
             _playerElement.tabIndex = 0;
 
             _requestFullscreen =
@@ -122,7 +122,7 @@ define([
 
             _resize(_model.width, _model.height);
 
-            var replace = document.getElementById(_player.id);
+            var replace = document.getElementById(_model.id);
             replace.parentNode.replaceChild(_playerElement, replace);
         }
 
@@ -161,7 +161,7 @@ define([
                 _resetTapTimer();
             }
 
-            var jw = jwplayer(_player.id);
+            var jw = jwplayer(_model.id);
             switch (evt.keyCode) {
                 case 27: // Esc
                     jw.setFullscreen(false);
@@ -289,9 +289,9 @@ define([
             _player.skin = skin;
 
             _container = _createElement('span', VIEW_MAIN_CONTAINER_CLASS);
-            _container.id = _player.id + '_view';
+            _container.id = _model.id + '_view';
             _videoLayer = _createElement('span', VIEW_VIDEO_CONTAINER_CLASS);
-            _videoLayer.id = _player.id + '_media';
+            _videoLayer.id = _model.id + '_media';
 
             _controlsLayer = _createElement('span', VIEW_CONTROLS_CONTAINER_CLASS);
             _instreamLayer = _createElement('span', VIEW_INSTREAM_CONTAINER_CLASS);
@@ -325,21 +325,21 @@ define([
                 window.addEventListener('orientationchange', _responsiveListener, false);
             }
             //this for googima, after casting, to get the state right.
-            jwplayer(_player.id).onAdPlay(function() {
+            jwplayer(_model.id).onAdPlay(function() {
                 _controlbar.adMode(true);
                 _updateState(states.PLAYING);
 
                 // For Vast to hide controlbar if no mouse movement
                 _resetTapTimer();
             });
-            jwplayer(_player.id).onAdSkipped(function() {
+            jwplayer(_model.id).onAdSkipped(function() {
                 _controlbar.adMode(false);
             });
-            jwplayer(_player.id).onAdComplete(function() {
+            jwplayer(_model.id).onAdComplete(function() {
                 _controlbar.adMode(false);
             });
             // So VAST will be in correct state when ad errors out from unknown filetype
-            jwplayer(_player.id).onAdError(function() {
+            jwplayer(_model.id).onAdError(function() {
                 _controlbar.adMode(false);
             });
             _player.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
@@ -356,7 +356,7 @@ define([
 
             _player.jwAddEventListener(events.JWPLAYER_CAST_SESSION, function(evt) {
                 if (!_castDisplay) {
-                    _castDisplay = new jwplayer.html5.castDisplay(_player.id);
+                    _castDisplay = new jwplayer.html5.castDisplay(_model.id);
                     _castDisplay.statusDelegate = function(evt) {
                         _castDisplay.setState(evt.newstate);
                     };
@@ -699,7 +699,7 @@ define([
                 containerStyle,
                 playlistSize,
                 playlistPos,
-                id = _player.id + '_view';
+                id = _model.id + '_view';
             cssUtils.block(id);
 
             // when jwResize is called remove aspectMode and force layout
@@ -865,7 +865,7 @@ define([
                     document.webkitCurrentFullScreenElement ||
                     document.mozFullScreenElement ||
                     document.msFullscreenElement;
-                return !!(fsElement && fsElement.id === _player.id);
+                return !!(fsElement && fsElement.id === _model.id);
             }
             // if player element view fullscreen not available, return video fullscreen state
             return  _instreamMode ? _instreamModel.getVideo().getFullScreen() :
@@ -1157,7 +1157,7 @@ define([
         }
 
         function _internalSelector(className) {
-            return '#' + _player.id + (className ? ' .' + className : '');
+            return '#' + _model.id + (className ? ' .' + className : '');
         }
 
         this.setupInstream = function(instreamContainer, instreamControlbar, instreamDisplay, instreamModel) {
@@ -1297,7 +1297,7 @@ define([
             var dispBounds = _bounds(_container),
                 dispOffset = dispBounds.top,
                 cbBounds = _instreamMode ?
-                _bounds(document.getElementById(_player.id + '_instream_controlbar')) :
+                _bounds(document.getElementById(_model.id + '_instream_controlbar')) :
                 _bounds(_controlbar.element()),
                 dockButtons = _instreamMode ? false : (_dock.numButtons() > 0),
                 logoTop = (_logo.position().indexOf('top') === 0),

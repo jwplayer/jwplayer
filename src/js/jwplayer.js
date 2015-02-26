@@ -1,4 +1,4 @@
-define(['api/api'], function (Api) {
+define(['api/global-api'], function (Api) {
     var jwplayer = function () {
         return Api.selectPlayer.apply(this, arguments);
     };
