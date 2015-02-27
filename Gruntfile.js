@@ -1,15 +1,15 @@
+var webpack = require('webpack');
+
 module.exports = function(grunt) {
     /* jshint node: true */
 
     require('load-grunt-tasks')(grunt);
 
-    var webpack = require('webpack');
-
-    var pkg = grunt.file.readJSON('package.json');
+    var packageInfo = grunt.file.readJSON('package.json');
 
     grunt.initConfig({
         starttime: new Date(),
-        pkg: pkg,
+        pkg: packageInfo,
 
         jshint: {
             all : [
@@ -94,7 +94,7 @@ module.exports = function(grunt) {
                 devtool: 'source-map',
                 plugins: [
                     new webpack.DefinePlugin({
-                        __BUILD_VERSION__: '\'' + pkg.version + '\''
+                        __BUILD_VERSION__: '\'' + packageInfo.version + '\''
                     })
                 ]
             }
@@ -173,7 +173,7 @@ module.exports = function(grunt) {
             now.setTime(now.getTime()-now.getTimezoneOffset()*60000);
             revision = now.toISOString().replace(/[\.\-:Z]/g, '').replace(/T/g, '');
         }
-        var buildVersion = pkg.version.replace(/\.\d*$/, '.' + revision);
+        var buildVersion = packageInfo.version.replace(/\.\d*$/, '.' + revision);
         command.args.push(
             '-define+=JWPLAYER::version,\''+ buildVersion +'\''
         );
