@@ -3,8 +3,9 @@ define([
     'utils/helpers',
     'utils/css',
     'events/events',
-    'events/states'
-], function(Touch, utils, cssUtils, events, states) {
+    'events/states',
+    'underscore'
+], function(Touch, utils, cssUtils, events, states, _) {
 
     var _css = cssUtils.css,
 
@@ -40,7 +41,7 @@ define([
                 _defaults.link = LINK_DEFAULT + jwplayer.version + '&m=h&e=' + linkFlag;
             }
 
-            _settings = utils.extend({}, _defaults, logoConfig);
+            _settings = _.extend({}, _defaults, logoConfig);
             _settings.hide = (_settings.hide.toString() === 'true');
         }
 

@@ -6,8 +6,9 @@ define([
     'utils/eventdispatcher',
     'events/states',
     'utils/stretching',
-    'utils/css'
-], function(DisplayIcon, Touch, utils, events, eventdispatcher, states, stretchUtils, cssUtils) {
+    'utils/css',
+    'underscore'
+], function(DisplayIcon, Touch, utils, events, eventdispatcher, states, stretchUtils, cssUtils, _) {
 
 
     var _isMobile = utils.isMobile(),
@@ -41,14 +42,14 @@ define([
             _button,
             _forced,
             _previousState,
-            _config = utils.extend({}, DEFAULT_SETTINGS,
+            _config = _.extend({}, DEFAULT_SETTINGS,
                 _skin.getComponentSettings('display'), config
             ),
             _eventDispatcher = new eventdispatcher(),
             _alternateClickHandler,
             _lastClick;
 
-        utils.extend(this, _eventDispatcher);
+        _.extend(this, _eventDispatcher);
 
         function _init() {
             _display = document.createElement('div');

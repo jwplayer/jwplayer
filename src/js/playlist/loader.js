@@ -4,12 +4,13 @@ define([
     'parsers/rssparser',
     'utils/helpers',
     'utils/eventdispatcher',
-    'events/events'
-], function(Playlist, parsers, rssParser, utils, eventdispatcher, events) {
+    'events/events',
+    'underscore'
+], function(Playlist, parsers, rssParser, utils, eventdispatcher, events, _) {
 
     var PlaylistLoader = function() {
         var _eventDispatcher = new eventdispatcher();
-        utils.extend(this, _eventDispatcher);
+        _.extend(this, _eventDispatcher);
 
         this.load = function(playlistfile) {
             utils.ajax(playlistfile, _playlistLoaded, _playlistLoadError);

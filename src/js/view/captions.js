@@ -7,8 +7,9 @@ define([
     'events/events',
     'events/states',
     'utils/css',
-    'utils/eventdispatcher'
-], function(parsers, CaptionsRenderer, SrtParser, DfxpParser, utils, events, states, cssUtils, eventdispatcher) {
+    'utils/eventdispatcher',
+    'underscore'
+], function(parsers, CaptionsRenderer, SrtParser, DfxpParser, utils, events, states, cssUtils, eventdispatcher, _) {
 
     var _nonChromeAndroid = utils.isAndroid(4, true),
         PLAYING = 'playing',
@@ -69,7 +70,7 @@ define([
             /** Event dispatcher for captions events. **/
             _eventDispatcher = new eventdispatcher();
 
-        utils.extend(this, _eventDispatcher);
+        _.extend(this, _eventDispatcher);
 
         function _init() {
 

@@ -5,7 +5,7 @@ define([
     'underscore',
     'utils/eventdispatcher',
     'utils/scriptloader'
-], function(pluginUtils, helpers, events, _, eventdispatcher, scriptloader) {
+], function(pluginsUtils, helpers, events, _, eventdispatcher, scriptloader) {
 
     var _foreach = helpers.foreach;
 
@@ -55,7 +55,7 @@ define([
                 var plugins = model.getPlugins();
                 _pluginLoaded = _.after(_pluginCount, _complete);
                 helpers.foreach(_config, function (plugin) {
-                    var pluginName = pluginUtils.getPluginName(plugin),
+                    var pluginName = pluginsUtils.getPluginName(plugin),
                         pluginObj = plugins[pluginName],
                         js = pluginObj.getJS(),
                         target = pluginObj.getTarget(),
@@ -103,7 +103,7 @@ define([
                 plugins = model.getPlugins();
 
             _foreach(config.plugins, function (plugin, pluginConfig) {
-                var pluginName = pluginUtils.getPluginName(plugin),
+                var pluginName = pluginsUtils.getPluginName(plugin),
                     pluginObj = plugins[pluginName],
                     flashPath = pluginObj.getFlashPath(),
                     jsPlugin = pluginObj.getJS(),

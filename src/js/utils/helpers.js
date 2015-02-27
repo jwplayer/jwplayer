@@ -77,24 +77,6 @@ define([
         return (protocol > 0 && (queryparams < 0 || (queryparams > protocol)));
     }
 
-    /** Merges a list of objects **/
-    var _extend = utils.extend = function () {
-        var args = Array.prototype.slice.call(arguments, 0);
-        if (args.length > 1) {
-            var objectToExtend = args[0],
-                extendEach = function (element, arg) {
-                    if (arg !== undefined && arg !== null) {
-                        objectToExtend[element] = arg;
-                    }
-                };
-            for (var i = 1; i < args.length; i++) {
-                _foreach(args[i], extendEach);
-            }
-            return objectToExtend;
-        }
-        return null;
-    };
-
     /** Logger */
     var console = window.console = window.console || {
         log: function () {
@@ -234,7 +216,7 @@ define([
 
     /* Normalizes differences between Flash and HTML5 internal players' event responses. */
     utils.translateEventResponse = function (type, eventProperties) {
-        var translated = _extend({}, eventProperties);
+        var translated = _.extend({}, eventProperties);
         if (type === Events.JWPLAYER_FULLSCREEN && !translated.fullscreen) {
             translated.fullscreen = (translated.message === 'true');
             delete translated.message;
@@ -242,7 +224,7 @@ define([
             // Takes ViewEvent 'data' block and moves it up a level
             var data = translated.data;
             delete translated.data;
-            translated = _extend(translated, data);
+            translated = _.extend(translated, data);
 
         } else if (typeof translated.metadata === 'object') {
             _deepReplaceKeyName(translated.metadata,
@@ -549,7 +531,7 @@ define([
                 }
                 var parsedXML = _parseXML(xmlhttp.responseText);
                 if (parsedXML && parsedXML.firstChild) {
-                    xmlhttp = _extend({}, xmlhttp, {
+                    xmlhttp = _.extend({}, xmlhttp, {
                         responseXML: parsedXML
                     });
                 } else {
@@ -635,7 +617,7 @@ define([
      * @return {Object} The original value in the correct primitive type.
      */
     utils.serialize = function (val) {
-        if (val === null) {
+        if (val === null || val === undefined) {
             return null;
         } else if (val.toString().toLowerCase() === 'true') {
             return true;

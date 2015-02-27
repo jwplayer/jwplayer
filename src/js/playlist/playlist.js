@@ -1,10 +1,9 @@
 define([
     'providers/chooseprovider',
-    'utils/helpers',
     'playlist/item',
     'playlist/source',
-    'utils/underscore'
-], function(chooseProvider, utils, PlaylistItem, Source, _) {
+    'underscore'
+], function(chooseProvider, PlaylistItem, Source, _) {
 
     var Playlist = function (playlist) {
         // Can be either an array of items or a single item.
@@ -18,7 +17,7 @@ define([
         var list = [];
 
         _.each(playlist, function (item) {
-            item = utils.extend({}, item);
+            item = _.extend({}, item);
             item.sources = _filterSources(item.sources, androidhls);
 
             if (!item.sources.length) {

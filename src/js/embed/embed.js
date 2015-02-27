@@ -107,13 +107,13 @@ define([
 
             if (_pluginloader.getStatus() === scriptloader.loaderstatus.COMPLETE) {
 
-                var pluginConfigCopy = utils.extend({}, _config);
+                var pluginConfigCopy = _.extend({}, _config);
                 _pluginloader.setupPlugins(api, pluginConfigCopy, _resizePlugin);
 
                 utils.emptyElement(_container);
 
                 // Volume option is tricky to remove, since it needs to be in the HTML5 player model.
-                var playerConfigCopy = utils.extend({}, pluginConfigCopy);
+                var playerConfigCopy = _.extend({}, pluginConfigCopy);
                 delete playerConfigCopy.volume;
                 var controller = new Controller(playerConfigCopy, api);
                 api.setController(controller);

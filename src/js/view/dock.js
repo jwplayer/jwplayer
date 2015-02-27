@@ -4,8 +4,9 @@ define([
     'view/touch',
     'events/events',
     'utils/helpers',
-    'utils/css'
-], function(Overlay, Touch, events, utils, cssUtils) {
+    'utils/css',
+    'underscore'
+], function(Overlay, Touch, events, utils, cssUtils, _) {
 
     var _bounds = utils.bounds,
         _iFramed = (window.top !== window.self),
@@ -22,7 +23,7 @@ define([
                 iconalphaover: 1,
                 margin: 8
             },
-            _config = utils.extend({}, _defaults, config),
+            _config = _.extend({}, _defaults, config),
             _id = _api.id + '_dock',
             _skin = _api.skin,
             _buttonCount = 0,
@@ -68,7 +69,7 @@ define([
                 height: button.height
             });
 
-            _css(_internalSelector('div.button'), utils.extend(_formatBackground(button), {
+            _css(_internalSelector('div.button'), _.extend(_formatBackground(button), {
                 width: button.width,
                 cursor: 'pointer',
                 border: 'none'
@@ -106,7 +107,7 @@ define([
 
         function _createImage(className, parent) {
             var skinElem = _getSkinElement(className);
-            _css(_internalSelector('.' + className), utils.extend(_formatBackground(skinElem), {
+            _css(_internalSelector('.' + className), _.extend(_formatBackground(skinElem), {
                 width: skinElem.width
             }));
             return _createElement('div', className, parent);

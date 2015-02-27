@@ -3,8 +3,9 @@ define([
     'view/touch',
     'events/events',
     'utils/helpers',
-    'utils/css'
-], function(Overlay, Touch, events, utils, cssUtils) {
+    'utils/css',
+    'underscore'
+], function(Overlay, Touch, events, utils, cssUtils, _) {
 
     var _css = cssUtils.css,
         MENU_CLASS = 'jwmenu',
@@ -15,7 +16,7 @@ define([
         var _id = id,
             _changeHandler = changeHandler,
             _overlay = new Overlay(_id + '_overlay', skin),
-            _settings = utils.extend({
+            _settings = _.extend({
                 fontcase: undefined,
                 fontcolor: '#cccccc',
                 fontsize: 11,
@@ -46,7 +47,7 @@ define([
             if (menuOption) {
                 var selector = '#' + id + ' .' + OPTION_CLASS;
 
-                _css(selector, utils.extend(_formatBackground(menuOption), {
+                _css(selector, _.extend(_formatBackground(menuOption), {
                     height: menuOption.height,
                     color: _settings.fontcolor,
                     'padding-left': menuOption.width,
@@ -54,10 +55,10 @@ define([
                     'line-height': menuOption.height,
                     'text-transform': (_settings.fontcase === 'upper') ? 'uppercase' : undefined
                 }));
-                _css(selector + ':hover', utils.extend(_formatBackground(menuOptionOver), {
+                _css(selector + ':hover', _.extend(_formatBackground(menuOptionOver), {
                     color: _settings.overcolor
                 }));
-                _css(selector + '.active', utils.extend(_formatBackground(menuOptionActive), {
+                _css(selector + '.active', _.extend(_formatBackground(menuOptionActive), {
                     color: _settings.activecolor
                 }));
             }

@@ -1,9 +1,8 @@
 define([
-    'utils/helpers',
     'utils/strings',
-    'utils/underscore',
-    'utils/extensionmap'
-], function(utils, strings, _, extensionmap) {
+    'utils/extensionmap',
+    'underscore'
+], function(strings, extensionmap, _) {
 
     var Defaults = {
         file: undefined,

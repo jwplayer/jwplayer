@@ -174,7 +174,7 @@ define([
 
             _overlays = {},
             _jwhidden = [],
-            _this = utils.extend(this, new eventdispatcher());
+            _this = _.extend(this, new eventdispatcher());
 
         function _layoutElement(name, type, className) {
             return {
@@ -472,7 +472,7 @@ define([
          * Styles specific to this controlbar/skin
          */
         function _createStyles() {
-            _settings = utils.extend({}, _defaults, _skin.getComponentSettings('controlbar'), _config);
+            _settings = _.extend({}, _defaults, _skin.getComponentSettings('controlbar'), _config);
 
             _bgHeight = _getSkinElement('background').height;
 
@@ -576,7 +576,7 @@ define([
                 };
             }
             element.skin = skinElem;
-            _css(_internalSelector((vertical ? '.jwvertical ' : '') + '.jw' + name), utils.extend(newStyle, style));
+            _css(_internalSelector((vertical ? '.jwvertical ' : '') + '.jw' + name), _.extend(newStyle, style));
             _elements[name] = element;
             return element;
         }

@@ -4,8 +4,9 @@ define([
     'utils/css',
     'view/touch',
     'events/events',
-    'utils/eventdispatcher'
-], function(utils, cssUtils, Touch, events, eventdispatcher) {
+    'utils/eventdispatcher',
+    'underscore'
+], function(utils, cssUtils, Touch, events, eventdispatcher, _) {
 
     var VIEW_INSTREAM_SKIP_CLASS = 'jwskip',
         VIEW_INSTREAM_IMAGE = 'jwskipimage',
@@ -26,7 +27,7 @@ define([
             _skip_image,
             _skip_image_over,
             _mouseOver = false,
-            _this = utils.extend(this, new eventdispatcher());
+            _this = _.extend(this, new eventdispatcher());
 
         function _init() {
             _skip_image = new Image();

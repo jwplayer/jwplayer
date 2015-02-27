@@ -6,13 +6,12 @@
  * @version 6.0
  */
 define([
-    'utils/helpers',
     'utils/strings',
     'parsers/parsers',
     'parsers/jwparser',
     'parsers/mediaparser',
     'playlist/item'
-], function(utils, strings, parsers, parseEntry, mediaParser, PlaylistItem) {
+], function(strings, parsers, parseEntry, mediaParser, PlaylistItem) {
     var _textContent = parsers.textContent,
         _getChildNode = parsers.getChildNode,
         _numChildren = parsers.numChildren,

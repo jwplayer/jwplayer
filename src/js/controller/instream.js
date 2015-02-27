@@ -44,7 +44,7 @@ define([
             _instreamDisplay,
             _instreamContainer,
             _completeTimeoutId = -1,
-            _this = utils.extend(this, new eventdispatcher());
+            _this = _.extend(this, new eventdispatcher());
 
         // Listen for player resize events
         _controller.jwAddEventListener(events.JWPLAYER_RESIZE, _resize);
@@ -157,7 +157,7 @@ define([
                 _array = item;
                 item = _array[_arrayIndex];
             }
-            _options = utils.extend(_defaultOptions, options);
+            _options = _.extend(_defaultOptions, options);
             _item = new PlaylistItem(item);
 
             _adModel.setPlaylist([item]);
@@ -231,7 +231,7 @@ define([
             _controller.attachMedia();
             // Load the original item into our provider, which sets up the regular player's video tag
             if (_oldstate !== states.IDLE) {
-                var item = utils.extend({}, _olditem);
+                var item = _.extend({}, _olditem);
                 item.starttime = _oldpos;
                 _model.getVideo().load(item);
 
@@ -407,7 +407,7 @@ define([
                 if (_optionList) {
                     curOpt = _optionList[_arrayIndex];
                 }
-                _options = utils.extend(_defaultOptions, curOpt);
+                _options = _.extend(_defaultOptions, curOpt);
                 _adModel.getVideo().load(_adModel.playlist[0]);
                 _skipButton.reset(_options.skipoffset || -1);
                 _completeTimeoutId = setTimeout(function() {

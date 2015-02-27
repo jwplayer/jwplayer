@@ -170,7 +170,7 @@ define([
             this.cancelled = true;
         };
 
-        utils.extend(this, _eventDispatcher);
+        _.extend(this, _eventDispatcher);
 
     };
 

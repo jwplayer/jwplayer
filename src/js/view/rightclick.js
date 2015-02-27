@@ -1,7 +1,8 @@
 define([
     'utils/helpers',
-    'utils/css'
-], function(utils, cssUtils) {
+    'utils/css',
+    'underscore'
+], function(utils, cssUtils, _) {
 
     // This is replaced by compiler
     var _version = __BUILD_VERSION__;
@@ -24,7 +25,7 @@ define([
 
         var _api = api,
             _container, // = DOCUMENT.getElementById(_api.id),
-            _config = utils.extend({
+            _config = _.extend({
                 aboutlink: LINK_DEFAULT + _version + '&m=h&e=o',
                 abouttext: ABOUT_DEFAULT + _version + '...'
             }, config),

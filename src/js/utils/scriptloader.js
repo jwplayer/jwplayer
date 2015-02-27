@@ -1,4 +1,8 @@
-define(['events/events', 'utils/eventdispatcher', 'underscore'], function(events, eventdispatcher, _) {
+define([
+    'events/events',
+    'utils/eventdispatcher',
+    'underscore'
+], function(events, eventdispatcher, _) {
 
     var _loaders = {};
 

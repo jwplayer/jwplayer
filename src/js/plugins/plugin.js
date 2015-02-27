@@ -5,7 +5,7 @@ define([
     'utils/eventdispatcher',
     'utils/scriptloader',
     'underscore'
-], function(utils, pluginUtils, events, eventdispatcher, scriptloader, _) {
+], function(utils, pluginsUtils, events, eventdispatcher, scriptloader, _) {
 
     var pluginmodes = {
         FLASH: 0,
@@ -24,10 +24,10 @@ define([
         _.extend(this, _eventDispatcher);
 
         function getJSPath() {
-            switch (pluginUtils.getPluginPathType(url)) {
-                case pluginUtils.pluginPathType.ABSOLUTE:
+            switch (pluginsUtils.getPluginPathType(url)) {
+                case pluginsUtils.pluginPathType.ABSOLUTE:
                     return url;
-                case pluginUtils.pluginPathType.RELATIVE:
+                case pluginsUtils.pluginPathType.RELATIVE:
                     return utils.getAbsolutePath(url, window.location.href);
             }
         }
@@ -51,7 +51,7 @@ define([
                     _status = scriptloader.loaderstatus.COMPLETE;
                     _eventDispatcher.sendEvent(events.COMPLETE);
                     return;
-                } else if (pluginUtils.getPluginPathType(url) === pluginUtils.pluginPathType.CDN) {
+                } else if (pluginsUtils.getPluginPathType(url) === pluginsUtils.pluginPathType.CDN) {
                     _status = scriptloader.loaderstatus.COMPLETE;
                     _eventDispatcher.sendEvent(events.COMPLETE);
                     return;
@@ -90,15 +90,15 @@ define([
         };
 
         this.getPluginName = function() {
-            return pluginUtils.getPluginName(url);
+            return pluginsUtils.getPluginName(url);
         };
 
         this.getFlashPath = function() {
             if (_flashPath) {
-                switch (pluginUtils.getPluginPathType(_flashPath)) {
-                    case pluginUtils.pluginPathType.ABSOLUTE:
+                switch (pluginsUtils.getPluginPathType(_flashPath)) {
+                    case pluginsUtils.pluginPathType.ABSOLUTE:
                         return _flashPath;
-                    case pluginUtils.pluginPathType.RELATIVE:
+                    case pluginsUtils.pluginPathType.RELATIVE:
                         if (url.lastIndexOf('.swf') > 0) {
                             return utils.getAbsolutePath(_flashPath, window.location.href);
                         }

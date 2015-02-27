@@ -49,9 +49,9 @@ define([
         }
 
         function _init() {
-            utils.extend(_this, new eventdispatcher());
-            _this.config = _parseConfig(utils.extend({}, _defaults, _cookies, config));
-            utils.extend(_this, {
+            _.extend(_this, new eventdispatcher());
+            _this.config = _parseConfig(_.extend({}, _defaults, _cookies, config));
+            _.extend(_this, {
                 id: config.id,
                 state: states.IDLE,
                 duration: -1,

@@ -10,9 +10,10 @@ define([
     'view/logo',
     'view/controlbar',
     'view/rightclick',
-    'utils/css'
-    ], function(utils, Embed, events, eventdispatcher, states,
-                Captions, Display, Dock, Logo, Controlbar, RightClick, cssUtils) {
+    'utils/css',
+    'underscore'
+], function(utils, Embed, events, eventdispatcher, states,
+                Captions, Display, Dock, Logo, Controlbar, RightClick, cssUtils, _) {
 
     var _css = cssUtils.css,
         _bounds = utils.bounds,
@@ -68,7 +69,7 @@ define([
             _castDisplay,
             _dock,
             _logo,
-            _logoConfig = utils.extend({}, _model.componentConfig('logo')),
+            _logoConfig = _.extend({}, _model.componentConfig('logo')),
             _captions,
             _playlist,
             _audioMode,
@@ -90,7 +91,7 @@ define([
             //  it is a click, the mouseDown event will occur immediately prior
             _focusFromClick = false,
 
-            _this = utils.extend(this, new eventdispatcher());
+            _this = _.extend(this, new eventdispatcher());
 
         function _init() {
 

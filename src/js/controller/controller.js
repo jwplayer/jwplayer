@@ -1,6 +1,6 @@
 define([
     'api/internal-api',
-    'utils/underscore',
+    'underscore',
     'controller/setup',
     'controller/model',
     'playlist/playlist',
@@ -24,7 +24,7 @@ define([
             _stopPlaylist = false, // onComplete, should we play next item or not?
             _interruptPlay,
             _queuedCalls = [],
-            _this = utils.extend(this, Events);
+            _this = _.extend(this, Events);
 
         _model = this._model = new Model(config);
         _view  = this._view  = new View(_this, _model);
@@ -47,7 +47,7 @@ define([
         });
         _model.addEventListener(events.JWPLAYER_MEDIA_ERROR, function(evt) {
             // Re-dispatch media errors as general error
-            var evtClone = utils.extend({}, evt);
+            var evtClone = _.extend({}, evt);
             evtClone.type = events.JWPLAYER_ERROR;
             _this.trigger(evtClone.type, evtClone);
         });

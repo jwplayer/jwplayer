@@ -8,7 +8,7 @@ define([
 
     var Instream = function(_controller) {
 
-        var events = utils.extend({}, Events);
+        var events = _.extend({}, Events);
 
         var _item,
             _options,

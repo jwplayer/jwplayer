@@ -486,7 +486,7 @@ define([
             });
 
             _eventListener(events.JWPLAYER_MEDIA_META, function (data) {
-                utils.extend(_itemMeta, data.metadata);
+                _.extend(_itemMeta, data.metadata);
             });
 
             _eventListener(events.JWPLAYER_VIEW_TAB_FOCUS, function (data) {

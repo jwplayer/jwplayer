@@ -1,4 +1,7 @@
-define(['utils/helpers'], function(utils) {
+define([
+    'utils/helpers',
+    'underscore'
+], function(utils, _) {
 
     var defaults = {
         file: undefined,
@@ -8,7 +11,7 @@ define(['utils/helpers'], function(utils) {
     };
 
     var Track = function (config) {
-        var _track = utils.extend({}, defaults);
+        var _track = _.extend({}, defaults);
         if (!config) {
             config = {};
         }

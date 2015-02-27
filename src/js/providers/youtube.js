@@ -17,7 +17,7 @@ define([
 
         this.state = states.IDLE;
 
-        var _this = utils.extend(this, new eventdispatcher('provider.' + this.name)),
+        var _this = _.extend(this, new eventdispatcher('provider.' + this.name)),
             // Youtube API and Player Instance
             _youtubeAPI = window.YT,
             _youtubePlayer = null,
@@ -202,7 +202,7 @@ define([
                 height: '100%',
                 width: '100%',
                 videoId: videoId,
-                playerVars: utils.extend({
+                playerVars: _.extend({
                     html5: 1,
                     autoplay: 0,
                     controls: 0,

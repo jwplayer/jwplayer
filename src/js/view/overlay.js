@@ -1,7 +1,8 @@
 define([
     'utils/helpers',
-    'utils/css'
-], function(utils, cssUtils) {
+    'utils/css',
+    'underscore'
+], function(utils, cssUtils, _) {
 
     var _setTransition = cssUtils.transitionStyle,
 
@@ -34,7 +35,7 @@ define([
             _contents,
             _arrow,
             _arrowElement,
-            _settings = utils.extend({}, _defaults, _skin.getComponentSettings('tooltip')),
+            _settings = _.extend({}, _defaults, _skin.getComponentSettings('tooltip')),
             _borderSizes = {};
 
         function _init() {
@@ -81,7 +82,7 @@ define([
 
 
             if (_inverted) {
-                utils.transform(_internalSelector('jwarrow'), 'rotate(180deg)');
+                cssUtils.transform(_internalSelector('jwarrow'), 'rotate(180deg)');
             }
 
             cssUtils.style(_container, {
@@ -133,7 +134,7 @@ define([
             var created = _createSkinElement('cap' + dim1 + dim2, 'jwborder jw' + dim1 + (dim2 ? dim2 : '')),
                 elem = created[0],
                 skinElem = created[1],
-                elemStyle = utils.extend(_formatBackground(skinElem), {
+                elemStyle = _.extend(_formatBackground(skinElem), {
                     width: (dim1 === LEFT || dim2 === LEFT || dim1 === RIGHT || dim2 === RIGHT) ?
                         skinElem.width : undefined,
                     height: (dim1 === TOP || dim2 === TOP || dim1 === BOTTOM || dim2 === BOTTOM) ?

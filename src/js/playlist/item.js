@@ -1,5 +1,5 @@
 define([
-    'utils/underscore',
+    'underscore',
     'utils/helpers',
     'playlist/source',
     'playlist/track'

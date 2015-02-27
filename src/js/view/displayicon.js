@@ -1,8 +1,9 @@
 define([
     'utils/helpers',
     'utils/css',
-    'events/events'
-], function(utils, cssUtils, events) {
+    'events/events',
+    'underscore'
+], function(utils, cssUtils, events, _) {
     /*jshint -W069 */
 
     var _css = cssUtils.css,
@@ -95,11 +96,11 @@ define([
                 skinElem = _getSkinElement('playIcon');
             }
             if (skinElem.overSrc) {
-                overstyle = utils.extend({}, overstyle);
+                overstyle = _.extend({}, overstyle);
                 overstyle['background-image'] = 'url(' + skinElem.overSrc + ')';
             }
             if (skinElem.src) {
-                style = utils.extend({}, style);
+                style = _.extend({}, style);
                 if (name.indexOf('Icon') > 0) {
                     _iconWidth = skinElem.width | 0;
                 }

@@ -1,11 +1,11 @@
 define([
     'plugins/utils',
     'plugins/plugin'
-], function(pluginUtils, Plugin) {
+], function(pluginsUtils, Plugin) {
 
     var PluginModel = function (plugins) {
         this.addPlugin = function (url) {
-            var pluginName = pluginUtils.getPluginName(url);
+            var pluginName = pluginsUtils.getPluginName(url);
             if (!plugins[pluginName]) {
                 plugins[pluginName] = new Plugin(url);
             }
