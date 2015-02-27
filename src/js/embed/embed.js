@@ -7,8 +7,9 @@ define([
     'embed/config',
     'plugins/plugins',
     'controller/controller',
+    'view/errorScreen',
     'underscore'
-], function(utils, cssUtils, events, scriptloader, PlaylistLoader, EmbedConfig, plugins, Controller, _) {
+], function(utils, cssUtils, events, scriptloader, PlaylistLoader, EmbedConfig, plugins, Controller, errorScreen, _) {
 
     var _css = cssUtils.css;
 
@@ -182,7 +183,7 @@ define([
             }
 
             _errorOccurred = true;
-            _displayError(_container, message, _config);
+            errorScreen(_container, message, _config);
             _dispatchSetupError(message, true);
         }
 
@@ -208,30 +209,6 @@ define([
             outline: 'solid 2px #0B7EF4'
         });
     }
-
-    function _displayError(container, message, config) {
-        var style = container.style;
-        style.backgroundColor = '#000';
-        style.color = '#FFF';
-        style.width = utils.styleDimension(config.width);
-        style.height = utils.styleDimension(config.height);
-        style.display = 'table';
-        style.opacity = 1;
-
-        var text = document.createElement('p'),
-            textStyle = text.style;
-        textStyle.verticalAlign = 'middle';
-        textStyle.textAlign = 'center';
-        textStyle.display = 'table-cell';
-        textStyle.font = '15px/20px Arial, Helvetica, sans-serif';
-        text.innerHTML = message.replace(':', ':<br>');
-
-        container.innerHTML = '';
-        container.appendChild(text);
-    }
-
-    // Make this publicly accessible so the HTML5 player can error out on setup using the same code
-    Embed.errorScreen = _displayError;
 
     return Embed;
 

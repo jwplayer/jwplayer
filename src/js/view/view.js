@@ -1,19 +1,19 @@
 define([
     'utils/helpers',
-    'embed/embed',
     'events/events',
     'utils/eventdispatcher',
     'events/states',
     'view/captions',
     'view/display',
     'view/dock',
+    'view/errorScreen',
     'view/logo',
     'view/controlbar',
     'view/rightclick',
     'utils/css',
     'underscore'
-], function(utils, Embed, events, eventdispatcher, states,
-                Captions, Display, Dock, Logo, Controlbar, RightClick, cssUtils, _) {
+], function(utils, events, eventdispatcher, states,
+                Captions, Display, Dock, errorScreen, Logo, Controlbar, RightClick, cssUtils, _) {
 
     var _css = cssUtils.css,
         _bounds = utils.bounds,
@@ -1193,7 +1193,7 @@ define([
 
         this.setupError = function(message) {
             _errorState = true;
-            Embed.errorScreen(_playerElement, message, _model);
+            errorScreen(_playerElement, message, _model);
             _completeSetup();
         };
 
