@@ -1,7 +1,7 @@
 define([
     'api/internal-api',
     'underscore',
-    'controller/setup',
+    'controller/Setup',
     'controller/model',
     'playlist/playlist',
     'playlist/loader',
