@@ -17,7 +17,7 @@
 define([
     'utils/helpers',
     'playlist/playlist',
-    'view/skin',
+    'view/Skin',
     'utils/eventdispatcher',
     'underscore',
     'events/events'
