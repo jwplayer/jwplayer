@@ -3,6 +3,7 @@ define([
     'events/events',
     'utils/eventdispatcher',
     'events/states',
+    'cast/display', // moved to commercial
     'view/captions',
     'view/display',
     'view/dock',
@@ -12,8 +13,8 @@ define([
     'view/rightclick',
     'utils/css',
     'underscore'
-], function(utils, events, eventdispatcher, states,
-                Captions, Display, Dock, errorScreen, Logo, Controlbar, RightClick, cssUtils, _) {
+], function(utils, events, eventdispatcher, states, CastDisplay,
+            Captions, Display, Dock, errorScreen, Logo, Controlbar, RightClick, cssUtils, _) {
 
     var _css = cssUtils.css,
         _bounds = utils.bounds,
@@ -357,7 +358,7 @@ define([
 
             _player.jwAddEventListener(events.JWPLAYER_CAST_SESSION, function(evt) {
                 if (!_castDisplay) {
-                    _castDisplay = new jwplayer.html5.castDisplay(_model.id);
+                    _castDisplay = new CastDisplay(_model.id);
                     _castDisplay.statusDelegate = function(evt) {
                         _castDisplay.setState(evt.newstate);
                     };
@@ -1079,7 +1080,11 @@ define([
         }
 
         function _isCasting() {
-            return _model.getVideo().isCaster;
+            var provider = _model.getVideo();
+            if (provider) {
+                return provider.isCaster;
+            }
+            return false;
         }
 
         function _updateState(state) {
