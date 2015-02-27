@@ -6,8 +6,9 @@ define([
     'events/states',
     'utils/eventdispatcher',
     'utils/strings',
+    'utils/embedswf',
     'providers/default'
-], function(utils, extensionmap, _, events, states, eventdispatcher, strings, DefaultProvider) {
+], function(utils, extensionmap, _, events, states, eventdispatcher, strings, EmbedSwf, DefaultProvider) {
 
     /****************************************************************************
      *
@@ -63,6 +64,7 @@ define([
 
 
     function FlashProvider(/* _playerId */) {
+
         _.extend(this,
             new eventdispatcher('flash.provider'),
             // properties
@@ -77,8 +79,19 @@ define([
                 play: Router.play.bind(Router),
                 pause: Router.pause.bind(Router),
                 stop: Router.stop.bind(Router),
-                seek: Router.seek.bind(Router)
+                seek: Router.seek.bind(Router),
                 // see DefaultProvider
+
+                setContainer: function(parent) {
+                    this.container = parent;
+                    this.swf = EmbedSwf.embed('../bin-debug/jwplayer.flash.swf', parent);
+                },
+                getContainer: function() {
+                    return this.container;
+                },
+                remove: function() {
+                    this.container.removeChild(this.swf);
+                }
             },
             // callbacks
             {
