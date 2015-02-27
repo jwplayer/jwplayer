@@ -4,7 +4,7 @@ define([
     'playlist/item',
     'playlist/source',
     'utils/underscore'
-], function(chooseProvider, utils, PlaylistItem, Source,  _) {
+], function(chooseProvider, utils, PlaylistItem, Source, _) {
 
     var Playlist = function (playlist) {
         // Can be either an array of items or a single item.

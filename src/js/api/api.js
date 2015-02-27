@@ -249,7 +249,7 @@ define([
             return _this;
         };
         _this.createInstream = function () {
-            return new Instream(this, _controller);
+            return new Instream(_controller);
         };
         _this.setInstream = function (instream) {
             _instream = instream;

@@ -1,5 +1,4 @@
 define([
-    'providers/chooseprovider',
     'utils/helpers',
     'utils/css',
     'underscore',
@@ -11,10 +10,10 @@ define([
     'view/controlbar',
     'view/adskipbutton',
     'playlist/item'
-], function(chooseProvider, utils, cssUtils, _, eventdispatcher,
+], function(utils, cssUtils, _, eventdispatcher,
             events, states, Model, Display, Controlbar, Adskipbutton, PlaylistItem) {
 
-    var Instream = function(_api, _model, _view, _controller) {
+    var Instream = function(_controller, _model, _view) {
         var _defaultOptions = {
             controlbarseekable: 'never',
             controlbarpausable: true,
@@ -35,12 +34,12 @@ define([
                 controlbarstoppable: false
             },
             _skipButton,
-            _video,
+            _oldProvider,
             _oldpos,
             _oldstate,
             _olditem,
             _adModel,
-            _provider,
+            _currentProvider,
             _cbar,
             _instreamDisplay,
             _instreamContainer,
@@ -48,8 +47,8 @@ define([
             _this = utils.extend(this, new eventdispatcher());
 
         // Listen for player resize events
-        _api.jwAddEventListener(events.JWPLAYER_RESIZE, _resize);
-        _api.jwAddEventListener(events.JWPLAYER_FULLSCREEN, _fullscreenHandler);
+        _controller.jwAddEventListener(events.JWPLAYER_RESIZE, _resize);
+        _controller.jwAddEventListener(events.JWPLAYER_FULLSCREEN, _fullscreenHandler);
 
         /*****************************************
          *****  Public instream API methods  *****
@@ -60,30 +59,31 @@ define([
             /** Blocking playback and show Instream Display **/
 
             // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
-            _video = _controller.detachMedia();
+            _oldProvider = _controller.detachMedia();
 
-            // Create (or reuse) video media provider
-            _setupProvider();
 
             // Initialize the instream player's model copied from main player's model
-            _adModel = new Model({}, _provider);
-            _adModel.setVolume(_model.volume);
-            _adModel.setFullscreen(_model.fullscreen);
-            _adModel.setMute(_model.mute);
+            _adModel = new Model({
+                id: _model.id,
+                volume: _model.volume,
+                fullscreen: _model.fullscreen,
+                mute: _model.mute
+            });
+            _checkProvider();
             _adModel.addEventListener('fullscreenchange', _nativeFullscreenHandler);
             _olditem = _model.playlist[_model.item];
 
             // Keep track of the original player state
-            _oldpos = _video.currentTime;
+            _oldpos = _oldProvider.currentTime;
 
             if (_controller.checkBeforePlay() || _oldpos === 0) {
                 // make sure video restarts after preroll
                 _oldpos = 0;
                 _oldstate = states.PLAYING;
-            } else if (_model.getVideo().checkComplete()) {
+            } else if (_model.getVideo() && _model.getVideo().checkComplete()) {
                  // AKA  postroll
                  _oldstate = states.IDLE;
-             }  else if (_api.jwGetState() === states.IDLE) {
+             }  else if (_controller.jwGetState() === states.IDLE) {
                 _oldstate = states.IDLE;
             } else {
                 _oldstate = states.PLAYING;
@@ -91,7 +91,7 @@ define([
 
             // If the player's currently playing, pause the video tag
             if (_oldstate === states.PLAYING) {
-                _video.pause();
+                _oldProvider.pause();
             }
 
             // Instream display
@@ -115,7 +115,7 @@ define([
             _cbar.instreamMode(true);
             _instreamContainer.appendChild(_cbar.element());
 
-            if (_api.jwGetControls()) {
+            if (_controller.jwGetControls()) {
                 _cbar.show();
                 _instreamDisplay.show();
             } else {
@@ -159,13 +159,17 @@ define([
             }
             _options = utils.extend(_defaultOptions, options);
             _item = new PlaylistItem(item);
+
             _adModel.setPlaylist([item]);
-            _skipButton = new Adskipbutton(_api.id, bottom, _options.skipMessage, _options.skipText);
+            // check provider after item change
+            _checkProvider();
+
+            _skipButton = new Adskipbutton(_controller.id, bottom, _options.skipMessage, _options.skipText);
             _skipButton.addEventListener(events.JWPLAYER_AD_SKIPPED, _skipAd);
             _skipButton.reset(_options.skipoffset || -1);
 
 
-            if (_api.jwGetControls()) {
+            if (_controller.jwGetControls()) {
                 _skipButton.show();
             } else {
                 _skipButton.hide();
@@ -180,7 +184,7 @@ define([
             // start listening for ad click
             _instreamDisplay.setAlternateClickHandler(function(evt) {
                 evt = evt || {};
-                evt.hasControls = !!_api.jwGetControls();
+                evt.hasControls = !!_controller.jwGetControls();
 
                 _sendEvent(events.JWPLAYER_INSTREAM_CLICK, evt);
 
@@ -196,13 +200,13 @@ define([
             });
 
             if (utils.isMSIE()) {
-                _video.parentElement.addEventListener('click', _instreamDisplay.clickHandler);
+                _oldProvider.parentElement.addEventListener('click', _instreamDisplay.clickHandler);
             }
 
             _view.addEventListener(events.JWPLAYER_AD_SKIPPED, _skipAd);
 
             // Load the instream item
-            _provider.load(_adModel.playlist[0]);
+            _adModel.getVideo().load(_adModel.playlist[0]);
             //_fakemodel.getVideo().addEventListener('webkitendfullscreen', _fullscreenChangeHandler, FALSE);
         };
 
@@ -210,7 +214,7 @@ define([
             _sendEvent(evt.type, evt);
 
             if (_adModel) {
-                _api.jwInstreamDestroy(false, _this);
+                _controller.jwInstreamDestroy(false, _this);
             }
         }
 
@@ -222,7 +226,7 @@ define([
             _adModel.removeEventListener('fullscreenchange',_nativeFullscreenHandler);
             clearTimeout(_completeTimeoutId);
             _completeTimeoutId = -1;
-            _provider.detachMedia();
+            _adModel.getVideo().detachMedia();
             // Re-attach the controller
             _controller.attachMedia();
             // Load the original item into our provider, which sets up the regular player's video tag
@@ -238,7 +242,7 @@ define([
 
             // We don't want the instream provider to be attached to the video tag anymore
 
-            _provider.resetEventListeners();
+            _adModel.getVideo().resetEventListeners();
             _adModel.resetEventListeners();
 
 
@@ -250,8 +254,8 @@ define([
                 } catch (e) {}
             }
             if (_instreamDisplay) {
-                if (_video && _video.parentElement) {
-                    _video.parentElement.removeEventListener('click', _instreamDisplay.clickHandler);
+                if (_oldProvider && _oldProvider.parentElement) {
+                    _oldProvider.parentElement.removeEventListener('click', _instreamDisplay.clickHandler);
                 }
                 _instreamDisplay.revertAlternateClickHandler();
             }
@@ -264,30 +268,28 @@ define([
 
             if (_oldstate === states.PLAYING) {
                 // Model was already correct; just resume playback
-                _video.play();
+                _oldProvider.play();
             }
 
             // Return the view to its normal state
-            _view.destroyInstream(_provider.isAudioFile());
+            _view.destroyInstream(_adModel.getVideo().isAudioFile());
             _adModel = null;
         };
 
         /** Start instream playback **/
         _this.jwInstreamPlay = function() {
             //if (!_item) return;
-            _provider.play(true);
-            _model.state = states.PLAYING;
-            _instreamDisplay.show();
-            
-            // if (_api.jwGetControls()) { _disp.show();  }
+            _adModel.getVideo().play(true);
+
+            // Show the instream layer
+            _view.showInstream();
         };
 
         /** Pause instream playback **/
         _this.jwInstreamPause = function() {
             //if (!_item) return;
-            _provider.pause(true);
-            _model.state = states.PAUSED;
-            if (_api.jwGetControls()) {
+            _adModel.getVideo().pause(true);
+            if (_controller.jwGetControls()) {
                 _instreamDisplay.show();
                 _cbar.show();
             }
@@ -296,7 +298,7 @@ define([
         /** Seek to a point in instream media **/
         _this.jwInstreamSeek = function(position) {
             //if (!_item) return;
-            _provider.seek(position);
+            _adModel.getVideo().seek(position);
         };
 
         /** Set custom text in the controlbar **/
@@ -313,41 +315,44 @@ define([
          ****** Private methods ******
          *****************************/
 
-        function _setupProvider() {
-            var Provider = chooseProvider({});
-            
-            _provider = new Provider(_model.id);
+        function _checkProvider() {
+            var provider = _adModel.getVideo();
 
-            _provider.addGlobalListener(_forward);
-            _provider.addEventListener(events.JWPLAYER_MEDIA_META, _metaHandler);
-            _provider.addEventListener(events.JWPLAYER_MEDIA_COMPLETE, _completeHandler);
-            _provider.addEventListener(events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
-            _provider.addEventListener(events.JWPLAYER_MEDIA_ERROR, errorHandler);
+            if (_currentProvider !== provider) {
+                _currentProvider = provider;
 
-            _provider.addEventListener(events.JWPLAYER_PLAYER_STATE, stateHandler);
-            _provider.addEventListener(events.JWPLAYER_MEDIA_TIME, function(evt) {
-                if (_skipButton) {
-                    _skipButton.updateSkipTime(evt.position, evt.duration);
+                if (!provider) {
+                    return;
                 }
-            });
-            _provider.attachMedia();
-            _provider.mute(_model.mute);
-            _provider.volume(_model.volume);
+
+                provider.resetEventListeners();
+
+                provider.addGlobalListener(_forward);
+                provider.addEventListener(events.JWPLAYER_MEDIA_META, _metaHandler);
+                provider.addEventListener(events.JWPLAYER_MEDIA_COMPLETE, _completeHandler);
+                provider.addEventListener(events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
+                provider.addEventListener(events.JWPLAYER_MEDIA_ERROR, errorHandler);
+
+                provider.addEventListener(events.JWPLAYER_PLAYER_STATE, stateHandler);
+                provider.addEventListener(events.JWPLAYER_MEDIA_TIME, function(evt) {
+                    if (_skipButton) {
+                        _skipButton.updateSkipTime(evt.position, evt.duration);
+                    }
+                });
+                provider.attachMedia();
+                provider.mute(_model.mute);
+                provider.volume(_model.volume);
+            }
         }
 
         function stateHandler(evt) {
-            if (evt.newstate === _adModel.state) {
-                return;
-            }
-            _adModel.state = evt.newstate;
-            switch(_adModel.state) {
+            switch(evt.newstate) {
                 case states.PLAYING:
                     _this.jwInstreamPlay();
                     break;
                 case states.PAUSED:
                     _this.jwInstreamPause();
                     break;
-                
             }
         }
 
@@ -385,7 +390,7 @@ define([
             if (_instreamDisplay) {
                 _instreamDisplay.releaseState(_this.jwGetState());
             }
-            _provider.play();
+            _adModel.getVideo().play();
         }
 
         /** Handle the JWPLAYER_MEDIA_COMPLETE event **/
@@ -395,12 +400,15 @@ define([
                 var item = _array[_arrayIndex];
                 _item = new PlaylistItem(item);
                 _adModel.setPlaylist([item]);
+                // check provider after item change
+                _checkProvider();
+
                 var curOpt;
                 if (_optionList) {
                     curOpt = _optionList[_arrayIndex];
                 }
                 _options = utils.extend(_defaultOptions, curOpt);
-                _provider.load(_adModel.playlist[0]);
+                _adModel.getVideo().load(_adModel.playlist[0]);
                 _skipButton.reset(_options.skipoffset || -1);
                 _completeTimeoutId = setTimeout(function() {
                     _sendEvent(events.JWPLAYER_PLAYLIST_ITEM, {
@@ -413,7 +421,7 @@ define([
                     //   1) vast.js (to trigger ad_complete event)
                     //   2) display.js (to set replay icon and image)
                     _sendEvent(events.JWPLAYER_PLAYLIST_COMPLETE, {}, true);
-                    _api.jwInstreamDestroy(true, _this);
+                    _controller.jwInstreamDestroy(true, _this);
                 }, 0);
             }
         }
@@ -473,8 +481,8 @@ define([
 
         _this.jwStop = function() {
             if (_options.controlbarstoppable.toString().toLowerCase() === 'true') {
-                _api.jwInstreamDestroy(false, _this);
-                _api.jwStop();
+                _controller.jwInstreamDestroy(false, _this);
+                _controller.jwStop();
             }
         };
 
@@ -499,23 +507,23 @@ define([
 
         _this.jwGetPosition = function() {};
         _this.jwGetDuration = function() {};
-        _this.jwGetWidth = _api.jwGetWidth;
-        _this.jwGetHeight = _api.jwGetHeight;
-        _this.jwGetFullscreen = _api.jwGetFullscreen;
-        _this.jwSetFullscreen = _api.jwSetFullscreen;
+        _this.jwGetWidth = _controller.jwGetWidth;
+        _this.jwGetHeight = _controller.jwGetHeight;
+        _this.jwGetFullscreen = _controller.jwGetFullscreen;
+        _this.jwSetFullscreen = _controller.jwSetFullscreen;
         _this.jwGetVolume = function() {
             return _model.volume;
         };
         _this.jwSetVolume = function(vol) {
             _adModel.setVolume(vol);
-            _api.jwSetVolume(vol);
+            _controller.jwSetVolume(vol);
         };
         _this.jwGetMute = function() {
             return _model.mute;
         };
         _this.jwSetMute = function(state) {
             _adModel.setMute(state);
-            _api.jwSetMute(state);
+            _controller.jwSetMute(state);
         };
         _this.jwGetState = function() {
             if (!_adModel) {
@@ -546,11 +554,11 @@ define([
 
         // for supporting api interface in html5 display
         _this.jwGetControls = function() {
-            return _api.jwGetControls();
+            return _controller.jwGetControls();
         };
 
-        _this.skin = _api.skin;
-        _this.id = _api.id + '_instream';
+        _this.skin = _controller.skin;
+        _this.id = _controller.id + '_instream';
 
         return _this;
     };

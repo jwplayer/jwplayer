@@ -26,8 +26,8 @@ define([
         fontweight: ''
     };
 
-    var Display = function(_api, config) {
-        var _skin = _api.skin,
+    var Display = function(_controller, config) {
+        var _skin = _controller.skin,
             _display, _preview,
             _displayTouch,
             _item,
@@ -52,19 +52,19 @@ define([
 
         function _init() {
             _display = document.createElement('div');
-            _display.id = _api.id + '_display';
+            _display.id = _controller.id + '_display';
             _display.className = 'jwdisplay';
 
             _preview = document.createElement('div');
-            _preview.className = 'jwpreview jw' + _api.jwGetStretching();
+            _preview.className = 'jwpreview jw' + _controller.jwGetStretching();
             _display.appendChild(_preview);
 
-            _api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
-            _api.jwAddEventListener(events.JWPLAYER_PLAYLIST_ITEM, _itemHandler);
-            _api.jwAddEventListener(events.JWPLAYER_PLAYLIST_COMPLETE, _playlistCompleteHandler);
-            _api.jwAddEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
-            _api.jwAddEventListener(events.JWPLAYER_ERROR, _errorHandler);
-            _api.jwAddEventListener(events.JWPLAYER_PROVIDER_CLICK, _clickHandler);
+            _controller.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
+            _controller.jwAddEventListener(events.JWPLAYER_PLAYLIST_ITEM, _itemHandler);
+            _controller.jwAddEventListener(events.JWPLAYER_PLAYLIST_COMPLETE, _playlistCompleteHandler);
+            _controller.jwAddEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
+            _controller.jwAddEventListener(events.JWPLAYER_ERROR, _errorHandler);
+            _controller.jwAddEventListener(events.JWPLAYER_PROVIDER_CLICK, _clickHandler);
 
             if (!_isMobile) {
                 _display.addEventListener('click', _clickHandler, false);
@@ -82,16 +82,17 @@ define([
 
         function _clickHandler(evt) {
 
-            if (_alternateClickHandler && (_api.jwGetControls() || _api.jwGetState() === states.PLAYING)) {
+            if (_alternateClickHandler &&
+                    (_controller.jwGetControls() || _controller.jwGetState() === states.PLAYING)) {
                 _alternateClickHandler(evt);
                 return;
             }
 
-            if (!_isMobile || !_api.jwGetControls()) {
+            if (!_isMobile || !_controller.jwGetControls()) {
                 _eventDispatcher.sendEvent(events.JWPLAYER_DISPLAY_CLICK);
             }
 
-            if (!_api.jwGetControls()) {
+            if (!_controller.jwGetControls()) {
                 return;
             }
 
@@ -99,7 +100,7 @@ define([
             // Handle double-clicks for fullscreen toggle
             var currentClick = _getCurrentTime();
             if (_lastClick && currentClick - _lastClick < 500) {
-                _api.jwSetFullscreen();
+                _controller.jwSetFullscreen();
                 _lastClick = undefined;
             } else {
                 _lastClick = _getCurrentTime();
@@ -124,7 +125,7 @@ define([
                 if (_inside(playSquare, evt.x, evt.y)) {
                     // Perform play/pause toggle below
                 } else if (_inside(fsSquare, evt.x, evt.y)) {
-                    _api.jwSetFullscreen();
+                    _controller.jwSetFullscreen();
                     return;
                 } else {
                     _eventDispatcher.sendEvent(events.JWPLAYER_DISPLAY_CLICK);
@@ -134,13 +135,13 @@ define([
                 }
             }
 
-            switch (_api.jwGetState()) {
+            switch (_controller.jwGetState()) {
                 case states.PLAYING:
                 case states.BUFFERING:
-                    _api.jwPause();
+                    _controller.jwPause();
                     break;
                 default:
-                    _api.jwPlay();
+                    _controller.jwPlay();
                     break;
             }
 
@@ -166,7 +167,7 @@ define([
                 overStyle = {
                     color: _config.overcolor
                 };
-            _button = new DisplayIcon(_display.id + '_button', _api, outStyle, overStyle);
+            _button = new DisplayIcon(_display.id + '_button', _controller, outStyle, overStyle);
             _display.appendChild(_button.element());
         }
 
@@ -189,7 +190,7 @@ define([
 
         function _itemHandler() {
             _clearError();
-            _item = _api.jwGetPlaylist()[_api.jwGetPlaylistIndex()];
+            _item = _controller.jwGetPlaylist()[_controller.jwGetPlaylistIndex()];
             var newImage = _item ? _item.image : '';
             _previousState = undefined;
             _loadImage(newImage);
@@ -205,20 +206,20 @@ define([
             } else if (_image && !_hiding) {
                 _setVisibility(D_PREVIEW_CLASS, true);
             }
-            _updateDisplay(_api.jwGetState());
+            _updateDisplay(_controller.jwGetState());
         }
 
         function _playlistCompleteHandler() {
             _completedState = true;
             _setIcon('replay');
-            var item = _api.jwGetPlaylist()[0];
+            var item = _controller.jwGetPlaylist()[0];
             _loadImage(item.image);
         }
 
         var _stateTimeout;
 
         function _getState() {
-            return _forced ? _forced : (_api ? _api.jwGetState() : states.IDLE);
+            return _forced ? _forced : (_controller ? _controller.jwGetState() : states.IDLE);
         }
 
         function _stateHandler(evt) {
@@ -242,7 +243,7 @@ define([
                                 _setVisibility(D_PREVIEW_CLASS, true);
                             }
                             var disp = true;
-                            if (_api._model && _api._model.config.displaytitle === false) {
+                            if (_controller._model && _controller._model.config.displaytitle === false) {
                                 disp = false;
                             }
                             _setIcon('play', (_item && disp) ? _item.title : '');
@@ -315,7 +316,7 @@ define([
         function _imageLoaded() {
             _imageWidth = this.width;
             _imageHeight = this.height;
-            _updateDisplay(_api.jwGetState());
+            _updateDisplay(_controller.jwGetState());
             _redraw();
             if (_image) {
                 _css(_internalSelector(D_PREVIEW_CLASS), {
@@ -339,7 +340,7 @@ define([
 
         function _redraw() {
             if (_display.clientWidth * _display.clientHeight > 0) {
-                stretchUtils.stretch(_api.jwGetStretching(),
+                stretchUtils.stretch(_controller.jwGetStretching(),
                     _preview, _display.clientWidth, _display.clientHeight, _imageWidth, _imageHeight);
             }
         }

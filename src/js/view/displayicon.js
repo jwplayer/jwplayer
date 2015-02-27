@@ -1,10 +1,8 @@
 define([
     'utils/helpers',
     'utils/css',
-    'controller/instream',
     'events/events'
-], function(utils, cssUtils, Instream, events) {
-    /*jshint maxparams:5*/
+], function(utils, cssUtils, events) {
     /*jshint -W069 */
 
     var _css = cssUtils.css,
@@ -16,9 +14,9 @@ define([
         JW_CSS_100PCT = '100%',
         JW_CSS_CENTER = 'center';
 
-    var DisplayIcon = function(_id, _api, textStyle, textStyleOver) {
-        var _skin = _api.skin,
-            _playerId = _api.id,
+    var DisplayIcon = function(_id, _controller, textStyle, textStyleOver) {
+        var _skin = _controller.skin,
+            _playerId = _controller.id.replace(/_instream$/, ''),
             _container,
             _bgSkin,
             _capLeftSkin,
@@ -32,10 +30,6 @@ define([
             _setWidthTimeout = -1,
             _repeatCount = 0;
 
-        if (_api instanceof Instream) {
-            _playerId = _playerId.replace('_instream', '');
-        }
-
         function _init() {
             _container = _createElement('jwdisplayIcon');
             _container.id = _id;
@@ -44,7 +38,7 @@ define([
             _text = _createElement('jwtext', _container, textStyle, textStyleOver);
             _icon = _createElement('jwicon', _container);
 
-            _api.jwAddEventListener(events.JWPLAYER_RESIZE, _setWidth);
+            _controller.jwAddEventListener(events.JWPLAYER_RESIZE, _setWidth);
 
             _hide();
             _redraw();

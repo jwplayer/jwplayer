@@ -6,7 +6,7 @@ define([
     'events/states'
 ], function(Events, EVENTS, _, utils, states) {
 
-    var Instream = function(_api, _player) {
+    var Instream = function(_controller) {
 
         var events = utils.extend({}, Events);
 
@@ -17,41 +17,41 @@ define([
         this.type = 'instream';
 
         _this.init = function() {
-            _api.callInternal('jwInitInstream');
+            _controller.jwInitInstream();
             return _this;
         };
         _this.loadItem = function(item, options) {
             _item = item;
             _options = options || {};
             if (utils.typeOf(item) === 'array') {
-                _api.callInternal('jwLoadArrayInstream', _item, _options);
+                _controller.jwLoadArrayInstream(_item, _options);
             } else {
-                _api.callInternal('jwLoadItemInstream', _item, _options);
+                _controller.jwLoadItemInstream(_item, _options);
             }
         };
         _this.play = function(state) {
-            _player.jwInstreamPlay(state);
+            _controller.jwInstreamPlay(state);
         };
         _this.pause = function(state) {
-            _player.jwInstreamPause(state);
+            _controller.jwInstreamPause(state);
         };
         _this.hide = function() {
-            _api.callInternal('jwInstreamHide');
+            _controller.jwInstreamHide();
         };
         _this.destroy = function() {
             _this.removeEvents();
-            _api.callInternal('jwInstreamDestroy');
+            _controller.jwInstreamDestroy();
         };
         _this.setText = function(text) {
-            _player.jwInstreamSetText(text ? text : '');
+            _controller.jwInstreamSetText(text ? text : '');
         };
         _this.getState = function() {
-            return _player.jwInstreamState();
+            return _controller.jwInstreamState();
         };
         _this.setClick = function(url) {
             //only present in flashMode
-            if (_player.jwInstreamClick) {
-                _player.jwInstreamClick(url);
+            if (_controller.jwInstreamClick) {
+                _controller.jwInstreamClick(url);
             }
         };
 
@@ -78,7 +78,7 @@ define([
 
         _.each(legacyMaps, function(event, api) {
             _this[api] = function(callback) {
-                _player.jwInstreamAddEventListener(event, callback);
+                _controller.jwInstreamAddEventListener(event, callback);
                 events.on(event, callback);
                 return _this;
             };

@@ -9,10 +9,10 @@ define([
     'events/states'
 ], function(utils, stretchUtils, Playlist, chooseProvider, _, eventdispatcher, events, states) {
 
-    var Model = function(config, defaultProvider) {
-        var _model = this,
+    var Model = function(config) {
+        var _this = this,
             // Video provider
-            _video,
+            _provider,
             // Saved settings
             _cookies = utils.getCookies(),
             // Sub-component configurations
@@ -49,18 +49,18 @@ define([
         }
 
         function _init() {
-            utils.extend(_model, new eventdispatcher());
-            _model.config = _parseConfig(utils.extend({}, _defaults, _cookies, config));
-            utils.extend(_model, {
+            utils.extend(_this, new eventdispatcher());
+            _this.config = _parseConfig(utils.extend({}, _defaults, _cookies, config));
+            utils.extend(_this, {
                 id: config.id,
                 state: states.IDLE,
                 duration: -1,
                 position: 0,
                 buffer: 0
-            }, _model.config);
+            }, _this.config);
             // This gets added later
-            _model.playlist = [];
-            _model.setItem(0);
+            _this.playlist = [];
+            _this.setItem(0);
         }
 
 
@@ -85,93 +85,93 @@ define([
             var mappings = _eventMap[evt.type];
             if (mappings) {
                 _.each(mappings, function (attr) {
-                    _model[attr] = _getEventValue(evt, attr);
+                    _this[attr] = _getEventValue(evt, attr);
                 });
             }
 
-            _model.sendEvent(evt.type, evt);
+            _this.sendEvent(evt.type, evt);
         }
 
 
-        _model.setVideoProvider = function(provider) {
+        _this.setVideoProvider = function(provider) {
 
-            if (_video) {
-                _video.removeGlobalListener(_videoEventHandler);
-                var container = _video.getContainer();
+            if (_provider) {
+                _provider.removeGlobalListener(_videoEventHandler);
+                var container = _provider.getContainer();
                 if (container) {
-                    _video.remove();
+                    _provider.remove();
                     provider.setContainer(container);
                 }
             }
 
-            _video = provider;
-            _video.volume(_model.volume);
-            _video.mute(_model.mute);
-            _video.addGlobalListener(_videoEventHandler);
+            _provider = provider;
+            _provider.volume(_this.volume);
+            _provider.mute(_this.mute);
+            _provider.addGlobalListener(_videoEventHandler);
         };
 
-        _model.destroy = function() {
-            if (_video) {
-                _video.removeGlobalListener(_videoEventHandler);
-                _video.destroy();
+        _this.destroy = function() {
+            if (_provider) {
+                _provider.removeGlobalListener(_videoEventHandler);
+                _provider.destroy();
             }
         };
 
-        _model.getVideo = function() {
-            return _video;
+        _this.getVideo = function() {
+            return _provider;
         };
 
 
-        _model.seekDrag = function(state) {
-            _video.seekDrag(state);
+        _this.seekDrag = function(state) {
+            _provider.seekDrag(state);
         };
 
-        _model.setFullscreen = function(state) {
+        _this.setFullscreen = function(state) {
             state = !!state;
-            if (state !== _model.fullscreen) {
-                _model.fullscreen = state;
-                _model.sendEvent(events.JWPLAYER_FULLSCREEN, {
+            if (state !== _this.fullscreen) {
+                _this.fullscreen = state;
+                _this.sendEvent(events.JWPLAYER_FULLSCREEN, {
                     fullscreen: state
                 });
             }
         };
 
         // TODO: make this a synchronous action; throw error if playlist is empty
-        _model.setPlaylist = function(playlist) {
-            _model.playlist = Playlist.filterPlaylist(playlist, _model.androidhls);
-            if (_model.playlist.length === 0) {
-                _model.sendEvent(events.JWPLAYER_ERROR, {
+        _this.setPlaylist = function(playlist) {
+            _this.playlist = Playlist.filterPlaylist(playlist, _this.androidhls);
+            if (_this.playlist.length === 0) {
+                _this.sendEvent(events.JWPLAYER_ERROR, {
                     message: 'Error loading playlist: No playable sources found'
                 });
             } else {
-                _model.sendEvent(events.JWPLAYER_PLAYLIST_LOADED, {
-                    playlist: jwplayer(_model.id).getPlaylist()
+                _this.sendEvent(events.JWPLAYER_PLAYLIST_LOADED, {
+                    playlist: jwplayer(_this.id).getPlaylist()
                 });
-                _model.item = -1;
-                _model.setItem(0);
+                _this.item = -1;
+                _this.setItem(0);
             }
         };
 
-        _model.setItem = function(index) {
+        _this.setItem = function(index) {
             var newItem;
             var repeat = false;
-            if (index === _model.playlist.length || index < -1) {
+            if (index === _this.playlist.length || index < -1) {
                 newItem = 0;
                 repeat = true;
-            } else if (index === -1 || index > _model.playlist.length) {
-                newItem = _model.playlist.length - 1;
+            } else if (index === -1 || index > _this.playlist.length) {
+                newItem = _this.playlist.length - 1;
             } else {
                 newItem = index;
             }
 
-            if (repeat || newItem !== _model.item) {
-                _model.item = newItem;
-                _model.sendEvent(events.JWPLAYER_PLAYLIST_ITEM, {
-                    index: _model.item
+            if (repeat || newItem !== _this.item) {
+                _this.item = newItem;
+                _this.sendEvent(events.JWPLAYER_PLAYLIST_ITEM, {
+                    index: _this.item
                 });
 
                 // select provider based on item source (video, youtube...)
-                var item = _model.playlist[newItem];
+                var item = _this.playlist[newItem];
                 var source = item && item.sources && item.sources[0];
                 if (source === undefined) {
                     // source is undefined when resetting index with empty playlist
@@ -183,10 +183,10 @@ define([
                 }
 
                 // If we are changing video providers
-                if (! (_currentProvider instanceof Provider)) {
-                    _currentProvider = defaultProvider || new Provider(_model.id);
+                if (!(_currentProvider instanceof Provider)) {
+                    _currentProvider = new Provider(_this.id);
 
-                    _model.setVideoProvider(_currentProvider);
+                    _this.setVideoProvider(_currentProvider);
                 }
 
                 // this allows the Youtube provider to load preview images
@@ -196,28 +196,32 @@ define([
             }
         };
 
-        _model.setVolume = function(newVol) {
-            if (_model.mute && newVol > 0) {
-                _model.setMute(false);
+        _this.setVolume = function(newVol) {
+            if (_this.mute && newVol > 0) {
+                _this.setMute(false);
             }
             newVol = Math.round(newVol);
-            if (!_model.mute) {
+            if (!_this.mute) {
                 utils.saveCookie('volume', newVol);
             }
-            _model.volume = newVol;
-            _video.volume(newVol);
+            _this.volume = newVol;
+            if (_provider) {
+                _provider.volume(newVol);
+            }
         };
 
-        _model.setMute = function(state) {
+        _this.setMute = function(state) {
             if (!utils.exists(state)) {
-                state = !_model.mute;
+                state = !_this.mute;
             }
             utils.saveCookie('mute', state);
-            _model.mute = state;
-            _video.mute(state);
+            _this.mute = state;
+            if (_provider) {
+                _provider.mute(state);
+            }
         };
 
-        _model.componentConfig = function(name) {
+        _this.componentConfig = function(name) {
             return _componentConfigs[name];
         };
 

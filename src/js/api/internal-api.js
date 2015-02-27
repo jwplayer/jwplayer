@@ -1,5 +1,5 @@
 define([
-    'api/instream'
+    'controller/instream'
 ], function(Instream) {
 
     return function (_controller, _model, _view) {
@@ -10,6 +10,17 @@ define([
             };
         };
 
+        // add to controller
+        _controller.jwResize = _view.resize;
+        _controller.jwSeekDrag = _model.seekDrag;
+        _controller.jwGetSafeRegion = _view.getSafeRegion;
+        _controller.jwForceState = _view.forceState;
+        _controller.jwReleaseState = _view.releaseState;
+        _controller.jwSetCues = _view.addCues;
+        _controller.jwDockAddButton = _view.addButton;
+        _controller.jwDockRemoveButton = _view.removeButton;
+
+        // // TODO: remove redundancies
         _controller.jwPlay = _controller.play;
         _controller.jwPause = _controller.pause;
         _controller.jwStop = _controller.stop;
@@ -21,8 +32,6 @@ define([
         _controller.jwPlaylistPrev = _controller.prev;
         _controller.jwPlaylistItem = _controller.item;
         _controller.jwSetFullscreen = _controller.setFullscreen;
-        _controller.jwResize = _view.resize;
-        _controller.jwSeekDrag = _model.seekDrag;
         _controller.jwGetQualityLevels = _controller.getQualityLevels;
         _controller.jwGetCurrentQuality = _controller.getCurrentQuality;
         _controller.jwSetCurrentQuality = _controller.setCurrentQuality;
@@ -32,11 +41,12 @@ define([
         _controller.jwGetCaptionsList = _controller.getCaptionsList;
         _controller.jwGetCurrentCaptions = _controller.getCurrentCaptions;
         _controller.jwSetCurrentCaptions = _controller.setCurrentCaptions;
+        _controller.jwDetachMedia = _controller.detachMedia;
+        _controller.jwAttachMedia = _controller.attachMedia;
+        _controller.jwAddEventListener = _controller.on;
+        _controller.jwRemoveEventListener = _controller.off;
 
-        _controller.jwGetSafeRegion = _view.getSafeRegion;
-        _controller.jwForceState = _view.forceState;
-        _controller.jwReleaseState = _view.releaseState;
-
+        // getters
         _controller.jwGetPlaylistIndex = _statevarFactory('item');
         _controller.jwGetPosition = _statevarFactory('position');
         _controller.jwGetDuration = _statevarFactory('duration');
@@ -51,9 +61,7 @@ define([
         _controller.jwGetControls = _statevarFactory('controls');
         _controller.jwGetPlaylist = _statevarFactory('playlist');
 
-        _controller.jwDetachMedia = _controller.detachMedia;
-        _controller.jwAttachMedia = _controller.attachMedia;
-
+        // TODO: move to commercial controller
         _controller.jwPlayAd = function (ad) {
             // THIS SHOULD NOT BE USED!
             var plugins = jwplayer(_controller.id).plugins;
@@ -82,7 +90,7 @@ define([
 
         _controller.jwInitInstream = function () {
             _controller.jwInstreamDestroy();
-            _controller._instreamPlayer = new Instream(_controller, _model, _view, _controller);
+            _controller._instreamPlayer = new Instream(_controller, _model, _view);
             _controller._instreamPlayer.init();
         };
 
@@ -178,13 +186,5 @@ define([
         _controller.jwIsBeforeComplete = function () {
             return _model.getVideo().checkComplete();
         };
-
-        _controller.jwSetCues = _view.addCues;
-
-        _controller.jwAddEventListener = _controller.on;
-        _controller.jwRemoveEventListener = _controller.off;
-
-        _controller.jwDockAddButton = _view.addButton;
-        _controller.jwDockRemoveButton = _view.removeButton;
     };
 });
