@@ -7,7 +7,7 @@ define([
     'embed/config',
     'plugins/plugins',
     'controller/controller',
-    'view/errorScreen',
+    'view/errorscreen',
     'underscore'
 ], function(utils, cssUtils, events, scriptloader, PlaylistLoader, EmbedConfig, plugins, Controller, errorScreen, _) {
 

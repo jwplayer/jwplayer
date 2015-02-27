@@ -7,7 +7,7 @@ define([
     'view/captions',
     'view/display',
     'view/dock',
-    'view/errorScreen',
+    'view/errorscreen',
     'view/logo',
     'view/controlbar',
     'view/rightclick',
