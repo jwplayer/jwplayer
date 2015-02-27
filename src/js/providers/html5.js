@@ -762,15 +762,6 @@ define([
         var file = source.file;
         var type = source.type;
 
-        // HTML5 playback is not sufficiently supported on Blackberry devices; should fail over automatically.
-        if (navigator.userAgent.match(/BlackBerry/i) !== null) {
-            return false;
-        }
-
-        if (utils.isIE(9)) {
-            return false;
-        }
-
         var extension = strings.extension(file);
         type = type || extensionmap.extType(extension);
 
