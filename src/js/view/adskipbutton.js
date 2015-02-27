@@ -7,8 +7,7 @@ define([
     'utils/eventdispatcher'
 ], function(utils, cssUtils, Touch, events, eventdispatcher) {
 
-    var _css = cssUtils.css,
-        VIEW_INSTREAM_SKIP_CLASS = 'jwskip',
+    var VIEW_INSTREAM_SKIP_CLASS = 'jwskip',
         VIEW_INSTREAM_IMAGE = 'jwskipimage',
         VIEW_INSTREAM_OVER = 'jwskipover',
         VIEW_INSTREAM_OUT = 'jwskipout',
@@ -44,7 +43,7 @@ define([
             _this.height = _instreamSkip.height = _SKIP_HEIGHT;
             _instreamSkipContainer.appendChild(_skip_image_over);
             _instreamSkipContainer.appendChild(_skip_image);
-            _css.style(_instreamSkipContainer, {
+            cssUtils.style(_instreamSkipContainer, {
                 'visibility': 'hidden',
                 'bottom': _bottom
             });
@@ -86,7 +85,7 @@ define([
         _this.updateSkipTime = function(time, duration) {
             _updateOffset(time, duration);
             if (_offsetTime >= 0) {
-                _css.style(_instreamSkipContainer, {
+                cssUtils.style(_instreamSkipContainer, {
                     'visibility': _controls ? 'visible' : 'hidden'
                 });
                 if (_offsetTime - time > 0) {
@@ -209,7 +208,7 @@ define([
         _this.show = function() {
             _controls = true;
             if (_offsetTime > 0) {
-                _css.style(_instreamSkipContainer, {
+                cssUtils.style(_instreamSkipContainer, {
                     'visibility': 'visible'
                 });
             }
@@ -217,7 +216,7 @@ define([
 
         _this.hide = function() {
             _controls = false;
-            _css.style(_instreamSkipContainer, {
+            cssUtils.style(_instreamSkipContainer, {
                 'visibility': 'hidden'
             });
         };
@@ -237,7 +236,7 @@ define([
         _init();
     };
 
-    _css('.' + VIEW_INSTREAM_SKIP_CLASS, {
+    cssUtils.css('.' + VIEW_INSTREAM_SKIP_CLASS, {
         'position': 'absolute',
         'float': 'right',
         'display': 'inline-block',
@@ -246,7 +245,7 @@ define([
         'right': 10
     });
 
-    _css('.' + VIEW_INSTREAM_IMAGE, {
+    cssUtils.css('.' + VIEW_INSTREAM_IMAGE, {
         'position': 'relative',
         'display': 'none'
     });

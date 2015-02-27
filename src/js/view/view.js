@@ -1168,12 +1168,16 @@ define([
             _instreamControlbar = instreamControlbar;
             _instreamDisplay = instreamDisplay;
             _instreamModel = instreamModel;
-            _stateHandler({
-                newstate: states.PLAYING
-            });
             _instreamMode = true;
             _instreamLayer.addEventListener('mousemove', _startFade);
             _instreamLayer.addEventListener('mouseout', _mouseoutHandler);
+        };
+
+        this.showInstream = function() {
+            // adds video tag to video layer
+            _instreamModel.getVideo().setContainer(_videoLayer);
+            _instreamModel.getVideo().setVisibility(true);
+            _instreamDisplay.show();
         };
 
         this.destroyInstream = function() {
