@@ -5,6 +5,15 @@
 	visibility: visible;
 }
 
+.jwplayer .jw-overlay:after {
+	position: absolute;
+	bottom: -0.5em;
+	left: 0;
+	width: 100%;
+	height: .5em;
+	background-color: rgba(0,0,0,0);
+	content: " ";
+}
 
 .jw-controlbar {
 	.jw-menu .jw-option {
@@ -15,16 +24,23 @@
 
 	.jw-overlay {
 		position:absolute;
-		bottom: 2em;
-		padding: 0.25em 0.5em;
-		background: @def-background-style;
-		background-size: @def-background-size;
-		border-radius: 0.25em;
+		bottom: 2.25em;
+		left: 50%;
 		opacity:0;
-		filter: @def-ie8-background-filter;
 		visibility:hidden;
 		-webkit-transition:opacity .25s visibility .25s;
 		transition:opacity .25s visibility .25s;
+	}
+
+	.jw-menu {
+		position: relative;
+		left: -50%;
+		padding: 0.5em;
+		background: @def-background-style;
+		background-size: @def-background-size;
+		border: @def-border;
+		border-radius: 0.25em;
+		filter: @def-ie8-background-filter;
 	}
 
 	.jw-overlay .jw-contents {
