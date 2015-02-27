@@ -17,6 +17,7 @@
     "grunt-contrib-watch": "^0.6.1",
     "grunt-webpack": "^1.0.8",
     "load-grunt-tasks": "~2.0.0",
+    "lodash": "^2.4.1",
     "webpack": "^1.6.0"
   }
 }
