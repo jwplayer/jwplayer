@@ -222,6 +222,7 @@ protected var _plugins:String = "";
     }
 
     public function setConfig(config:Object):void {
+        // TODO: copy supported properties
     }
 
     /** Returns a PluginConfig containing plugin configuration information **/

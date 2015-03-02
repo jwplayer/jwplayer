@@ -177,6 +177,10 @@ public class Model extends GlobalEventDispatcher {
         _config.stretching = stretch;
     }
 
+    public function setConfig(config:Object):void {
+        _config.setConfig(config);
+    }
+
     public function get pluginIds():Array {
         return _config.pluginIds;
     }

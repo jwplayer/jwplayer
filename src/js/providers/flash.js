@@ -121,6 +121,11 @@ define([
 
                         // adjust volume and mute
                         // TODO: have one call to initialize state (vol, mute, item, playback)
+                        var config = _.extend({
+                            key: jwplayer.key
+                        }, jwplayer(_playerId).config);
+
+                        _flashCommand('config', config);
                         this.volume(_volume);
                         this.mute(_muted);
                         // load was called before swf was ready
@@ -185,6 +190,9 @@ define([
                         this.setState(states.IDLE);
                         this.sendEvent(e.type);
 
+                    }, this).on(events.JWPLAYER_MEDIA_ERROR, function(e) {
+                        this.sendEvent(e.type, e);
+
                     }, this).on('click', function() {
                         this.sendEvent(events.JWPLAYER_PROVIDER_CLICK);
 
@@ -218,6 +226,9 @@ define([
                                 break;
                             case events.JWPLAYER_MEDIA_SEEK:
                                 console.log(name, data.offset);
+                                break;
+                            case 'resize':
+                                console.log(name, data.width, data.height, data.fullscreen);
                                 break;
                             default:
                                 console.log(name, data);
@@ -263,7 +274,7 @@ define([
                     // TODO: _getPublicLevels
                     return _item.sources;
                 },
-                supportsFullscreen: _.constant(false),
+                supportsFullscreen: _.constant(true),
                 destroy: function() {
                     if (_swf) {
                         _swf.off();

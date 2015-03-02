@@ -132,6 +132,14 @@ public class Player extends Sprite implements IPlayer {
         _controller.play();
     }
 
+    protected function setConfig(config:Object):void {
+        _model.setConfig(config);
+    }
+
+    protected function stretching(stretch:String = null):void {
+        _model.stretching = stretch;
+    }
+
     protected function setupPlayer(event:Event = null):void {
         this.removeEventListener(Event.ADDED_TO_STAGE, setupPlayer);
 
@@ -139,17 +147,29 @@ public class Player extends Sprite implements IPlayer {
 
         _config = new PlayerConfig();
 
-        _model = new Model(_config);
+        _model = newModel(_config);
 
-        _view = new View(_model);
+        _view = newView(_model);
         _view.addEventListener(CaptionsEvent.JWPLAYER_CAPTIONS_CHANGED, _captionsChanged);
         _view.addEventListener(CaptionsEvent.JWPLAYER_CAPTIONS_LIST, _captionsList);
 
-        _controller = new Controller(this, _model, _view);
+        _controller = newController(_model, _view);
         _controller.addEventListener(PlayerEvent.JWPLAYER_READY, playerReady, false, -1);
         _controller.addEventListener(PlayerEvent.JWPLAYER_SETUP_ERROR, setupError, false, -1);
 
         _controller.setupPlayer();
+    }
+
+    protected function newModel(config:PlayerConfig):Model {
+        return new Model(config);
+    }
+
+    protected function newView(model:Model):View {
+        return new View(model);
+    }
+
+    protected function newController(model:Model, view:View):Controller {
+        return new Controller(this, model, view);
     }
 
     protected function playerReady(evt:PlayerEvent):void {
@@ -172,9 +192,8 @@ public class Player extends Sprite implements IPlayer {
                 .on('fullscreen', fullscreen)
                 .on('mute', mute)
                 .on('volume', volume)
-                .on('stretch', function(stretch:String = null):void {
-                    _model.stretching = stretch;
-                });
+                .on('config', setConfig)
+                .on('stretch', stretching);
 
 
         this.mouseEnabled = true;
@@ -187,6 +206,7 @@ public class Player extends Sprite implements IPlayer {
         // Send ready event to browser
         SwfEventRouter.triggerJsEvent('ready');
     }
+
 
     protected function globalHandler(event:Event):void {
         // forward event to JavaScript
