@@ -512,6 +512,5 @@ define([
         return _this;
     };
 
-
     return Api;
 });

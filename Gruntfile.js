@@ -100,7 +100,8 @@ module.exports = function(grunt) {
                 },
                 resolve: {
                     modulesDirectories: [
-                        'src/js/'
+                        'src/js/',
+                        'src'
                     ],
                     alias: {
                         'underscore': 'utils/underscore'
@@ -111,7 +112,16 @@ module.exports = function(grunt) {
                     new webpack.DefinePlugin({
                         __BUILD_VERSION__: '\'' + buildVersion + '\''
                     })
-                ]
+                ],
+                module: {
+                    loaders: [
+                        {
+
+                            test: /\.less$/,
+                            loader: 'style-loader!css-loader!less-loader'
+                        }
+                    ]
+                }
             }
         },
 
