@@ -338,7 +338,13 @@ public class VideoMediaProvider extends MediaProvider {
 
     /** Load the actual stream; requested with every HTTP seek. **/
     private function loadStream():void {
-        var url:String = Strings.getAbsolutePath(item.levels[_currentQuality].file, config.base);
+        var levels:Array = item.levels;
+        if (_currentQuality >= levels.length) {
+            error('no playable source');
+            return;
+        }
+
+        var url:String = Strings.getAbsolutePath(levels[_currentQuality].file, config.base);
         var prm:Number = _offset.byte;
         if (_item.type == 'mp4') {
             prm = _offset.time;

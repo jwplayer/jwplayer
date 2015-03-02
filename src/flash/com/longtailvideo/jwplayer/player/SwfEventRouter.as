@@ -85,6 +85,12 @@ public class SwfEventRouter {
             var json:String;
             if (data !== null) {
                 try {
+                    if (data.clone is Function) {
+                        // event object targets often have Cyclic structure
+                        data = data.clone();
+                        delete data.target;
+                        delete data.currentTarget;
+                    }
                     json = JSON.stringify(data);
                 } catch(err:Error) {
                     trace('json encoding error', err);
