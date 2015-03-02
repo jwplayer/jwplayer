@@ -287,7 +287,7 @@
 			
 			var currentTime:Date = new Date();
 			if (_lastClick && currentTime.getTime() - _lastClick.getTime() < 500) {
-				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_VIEW_FULLSCREEN, !_player.config.fullscreen));
+				dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_FULLSCREEN, !_player.config.fullscreen));
 				_lastClick = null;
 			} else {
 				_lastClick = new Date();

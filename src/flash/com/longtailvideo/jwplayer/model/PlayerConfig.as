@@ -1,331 +1,252 @@
 package com.longtailvideo.jwplayer.model {
-	import com.longtailvideo.jwplayer.player.PlayerVersion;
-	import com.longtailvideo.jwplayer.plugins.PluginConfig;
-	import com.longtailvideo.jwplayer.utils.Logger;
-	import com.longtailvideo.jwplayer.utils.Strings;
-	import com.longtailvideo.jwplayer.utils.TypeChecker;
-	
-	import flash.events.EventDispatcher;
-	import flash.utils.getQualifiedClassName;
+import com.longtailvideo.jwplayer.player.PlayerVersion;
+import com.longtailvideo.jwplayer.plugins.PluginConfig;
+import com.longtailvideo.jwplayer.utils.Logger;
 
-	/**
-	 * Configuration data for the player
-	 *
-	 * @author Pablo Schklowsky
-	 */
-	public dynamic class PlayerConfig extends EventDispatcher {
-		protected var _singleItem:PlaylistItem = new PlaylistItem();
+import flash.events.EventDispatcher;
+import flash.utils.getQualifiedClassName;
 
-		protected var _playlistfile:String	= null;
+public dynamic class PlayerConfig extends EventDispatcher {
 
-		protected var _autostart:Boolean 	= false; 
-		protected var _bandwidth:Number		= 1500;
-		protected var _fullscreen:Boolean 	= false;
-		protected var _levels:Array			= null;
-		protected var _mute:Boolean 		= false;
-		protected var _repeat:Boolean 		= false; 
-		protected var _controls:Boolean		= true;
-		
-		//protected var cast:Object = {};
-		
-		//TODO: Move to ENUM class
-		protected var _stretching:String 	= "uniform"; 
-		protected var _volume:Number 		= 90;
+    public function PlayerConfig():void {
+    }
+    protected var _pluginConfig:Object = {};
 
-		//TODO: Move to ENUM class
-		protected var _height:Number 		= 400;
-		protected var _playlistpos:String	= "none";
-		protected var _playlistsize:String 	= "180";
-		protected var _playlistlayout:String = "extended";
-		protected var _skin:String 			= null;
-		protected var _width:Number 		= 280;
-		
-		protected var _plugins:String   = ""; //plugins initial string
-		protected var _pluginConfig:Object 	= {};
-		
-		protected var _id:String			= "";
-		protected var _debug:String			= Logger.NONE;
-		
-		public function PlayerConfig():void {
-			playlistposition = _playlistpos;
-			playlistsize = _playlistsize;
-			playlistlayout = _playlistlayout
-		}
-		
-		public function setConfig(config:Object):void {
-			for (var item:String in config) {
-				if (item.indexOf(".") > 0) {
-					setPluginProperty(item, config[item]);
-					_singleItem[item.toLowerCase()] = config[item];
-				} else if (_singleItem.hasOwnProperty(item)) {
-					if (item == "file" && Strings.extension(config[item]) == "xml" && !(config['provider'])) {
-						setProperty("playlistfile", config[item]);
-					} else if (item == "levels") {
-						if (config[item] is Array) {
-							for (var i:Number = 0; i < (config[item] as Array).length; i++) {
-								var level:Object = config[item][i];
-								_singleItem.addLevel(new PlaylistItemLevel(level.file, level.type, level["default"], level.streamer));
-							}
-						}
-					} else {
-						_singleItem[item.toLowerCase()] = config[item];
-					}
-				} else if (config[item.toLowerCase()] != null) {
-					setProperty(item, config[item]);
-				}
-			}
-		}
-		
-		protected function setProperty(name:String, value:*):void {
-			if (hasOwnProperty(name) && value is String) {
-				try {
-					this[name] = TypeChecker.fromString(value, TypeChecker.getType(this, name));
-				} catch (e:Error) {
-					// 'name' was a read-only property
-				}
-			} else {
-				this[name] = value;
-			}
-		}
+    protected var _volume:Number = 90;
 
-		/**
-		 * Sets the value of a plugin config property 
-		 * @param name The parameter name in the form "pluginId.propertyname"
-		 * @param value The value to set.
-		 */
-		protected function setPluginProperty(name:String, value:*):void {
-			var pluginId:String = name.substring(0, name.indexOf(".")).toLowerCase();
-			var pluginProperty:String = name.substring(name.indexOf(".") + 1, name.length).toLowerCase();
+    public function get volume():Number {
+        return _volume;
+    }
 
-			if (pluginId && pluginProperty) {
-				if (!_pluginConfig.hasOwnProperty(pluginId)) {
-					_pluginConfig[pluginId] = new PluginConfig(pluginId);
-				}
-				if (value is String) {
-					_pluginConfig[pluginId][pluginProperty] = TypeChecker.fromString(value);
-				} else {
-					_pluginConfig[pluginId][pluginProperty] = value;
-				}
-			}
-		}
+    public function set volume(x:Number):void {
+        _volume = x;
+    }
 
-		/**
-		 * Returns a string representation of the playlist's current PlaylistItem property.
-		 * @param key The requested PlaylistItem property
-		 */
-		protected function playlistItem(key:String):String {
-			try {
-				return _singleItem[key].toString();
-			} catch (e:Error) {
-			}
+    protected var _mute:Boolean = false;
 
-			return "";
-		}
+        public function get mute():Boolean {
+        return _mute;
+    } //plugins initial string
 
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		// PLAYLIST PROPERTIES
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		
-		/** Location of xml playlist file to load **/
-		public function get playlist():String { return _playlistfile; }
-		public function set playlist(x:String):void { 
-			_playlistfile = x; 
-		}
+    public function set mute(x:Boolean):void {
+        _mute = x;
+    }
 
-		/** Text description of the file. **/
-		public function get description():String { return playlistItem('description'); }
+    protected var _fullscreen:Boolean = false;
 
-		/** Duration of the file in seconds. **/
-		public function get duration():String { return playlistItem('duration'); }
+    public function get fullscreen():Boolean {
+        return _fullscreen;
+    }
 
-		/** Location of the mediafile or playlist to play. **/
-		public function get file():String { return playlistItem('file'); }
+    public function set fullscreen(x:Boolean):void {
+        _fullscreen = x;
+    }
 
-		/** Location of a preview image; shown in display and playlist. **/
-		public function get image():String { return playlistItem('image'); }
+    protected var _width:Number = 400;
 
-		/** Unique identifier for media content. **/		
-		public function get mediaid():String { return playlistItem('mediaid'); }		
-		
-		/** Position in seconds where playback has to start. Won't work for regular (progressive) videos, but only for streaming (HTTP / RTMP). **/
-		public function get start():String { return playlistItem('start'); }
-		
-		/** Location of an rtmp/http server instance to use for streaming. Can be an RTMP application or external PHP/ASP file. **/
-		public function get streamer():String { return playlistItem('streamer'); }
-		
-		/** Title of the video, shown in the display or playlist. **/
-		public function get title():String { return playlistItem('title'); }
+    public function get width():Number {
+        return _width;
+    }
 
-		/**
-		 * By default, the type is detected by the player based upon the file extension. If there's no suitable
-		 * extension or the player detects the type wrong, it can be manually set. The following default types are
-		 * supported:
-		 * <ul>
-		 * <li>video: progressively downloaded FLV / MP4 video, but also AAC audio.</li>
-		 * <li>sound: progressively downloaded MP3 files.</li>
-		 * <li>image: JPG/GIF/PNG images.</li>
-		 * <li>youtube: videos from Youtube.</li>
-		 * <li>http: FLV/MP4 videos played as http speudo-streaming.</li>
-		 * <li>rtmp: FLV/MP4/MP3 files played from an RTMP server.</li>
-		 * </ul>
-		 **/
-		public function get provider():String { return playlistItem('provider'); }
+    public function set width(x:Number):void {
+        _width = x;
+    }
 
-		/** Deprecated.  Use "provider" flashvar. **/
-		public function get type():String { return playlistItem('provider'); }
+    protected var _height:Number = 280;
 
-		/** PlaylistItem representing single-item playlist based on flashvars (e.g. config[file], config[image], etc. **/
-		public function get singleItem():PlaylistItem { return _singleItem; }
+    public function get height():Number {
+        return _height;
+    }
 
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		// LAYOUT PROPERTIES
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public function set height(x:Number):void {
+        _height = x;
+    }
 
-		/** Height of the display in pixels. @default 280 **/
-		public function get height():Number { return _height; }
-		public function set height(x:Number):void { _height = x; }
+    protected var _stretching:String = "uniform";
 
-		/** Position of the playlist. Can be set to bottom, over, right or none. @default none **/
-		public function get playlistposition():String { 
-			if (_pluginConfig['playlist'] && _pluginConfig['playlist'].hasOwnProperty('position'))
-				return _pluginConfig['playlist']['position'];
-			else return _playlistpos;
-		}
-		public function set playlistposition(x:String):void { 
-			setPluginProperty('playlist.position', x.toLowerCase()); 
-		}
+    public function get stretching():String {
+        return _stretching;
+    }
 
-		/** When below this refers to the height, when right this refers to the width of the playlist. @default 180 **/
-		public function get playlistsize():String { return _playlistsize; }
-		public function set playlistsize(x:String):void {
-			_playlistsize = x;
-			setPluginProperty('playlist.size', x.toString());
-		}
-		
-		/** When below this refers to the playlist layout. Can be extended or basic @default extended **/
-		public function get playlistlayout():String { return _playlistlayout; }
-		public function set playlistlayout(x:String):void {
-			_playlistlayout = x;
-			setPluginProperty('playlist.layout', x.toString());
-		}
+    public function set stretching(x:String):void {
+        _stretching = x ? x.toLowerCase() : "";
+    }
 
-		/** 
-		 * Location of a SWF or ZIP file with the player graphics. The player skinning documentation gives more info on this.  
-		 * SVN contains a couple of example skins. 
-		 **/
-		public function get skin():String { return _skin; }
-		public function set skin(x:String):void { _skin = x; }
+protected var _plugins:String = "";
 
-		/** Width of the display in pixels. @default 400 **/
-		public function get width():Number { return _width; }
-		public function set width(x:Number):void { _width = x; }
+    public function get plugins():String {
+        return _plugins;
+    }
 
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		// BEHAVIOR PROPERTIES
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public function set plugins(x:String):void {
+        _plugins = x;
+    }
 
-		/** Automatically start the player on load. @default false **/
-		public function get autostart():Boolean { return _autostart; }
-		public function set autostart(x:Boolean):void { _autostart = x; }
+    protected var _id:String = "";
 
-		/** Current fullscreen state **/		
-		public function get fullscreen():Boolean { return _fullscreen; }
-		public function set fullscreen(x:Boolean):void { _fullscreen = x; }		
-		
-		/** Mute all sounds on startup. This value is set in a user cookie, and is retrieved the next time the player loads. **/
-		public function get mute():Boolean { return _mute; }
-		public function set mute(x:Boolean):void { _mute = x;}
+    public function get id():String {
+        return _id;
+    }
 
-		/** Set to list to play the entire playlist once, to always to continously play the song/video/playlist and to single to continue repeating the selected file in a playlist. @default none **/
-		public function get repeat():Boolean { return _repeat; }
-		public function set repeat(x:*):void { _repeat = (x.toString().toLowerCase() != "false"); }
+    public function set id(x:String):void {
+        PlayerVersion.id = _id = x;
+    }
 
-		/** Defines how to resize images in the display. Can be none (no stretching), exactfit (disproportionate), uniform (stretch with black borders) or fill (uniform, but completely fill the display). @default uniform **/
-		public function get stretching():String{ return _stretching; }
-		public function set stretching(x:String):void { _stretching = x ? x.toLowerCase() : ""; }
+    protected var _debug:String = Logger.NONE;
 
-		/** Startup volume of the player. Can be 0 to 100. Is saved in a cookie. @default 90 **/
-		public function get volume():Number { return _volume; }
-		public function set volume(x:Number):void { _volume = x; }
+    public function get debug():String {
+        return _debug;
+    }
 
-		/** Startup volume of the player. Can be 0 to 100. Is saved in a cookie. @default 90 **/
-		public function get controls():Boolean { return _controls; }
-		public function set controls(x:Boolean):void { _controls =  x; }
-		
-		
-		//public function get appid():String { return cast.appid;}
-		//public function set appid(myappid:String):void { cast.appid = myappid; }
+    public function set debug(x:String):void {
+        if (x != "0") {
+            _debug = x;
+        }
+    }
 
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		// PLUGINS
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /** A list of available pluginConfig keys. **/
+    public function get pluginIds():Array {
+        var names:Array = [];
 
-		/** Which plugins to load **/		
-		public function get plugins():String { return _plugins; }
-		public function set plugins(x:String):void { _plugins = x; }
+        // Only include loaded plugins
+        for each (var lp:String in _plugins.split(",")) {
+            var plugName:String = (lp.substr(lp.lastIndexOf("/") + 1).replace(/(.*)\.swf$/i, "$1").split("-")[0] as String).toLowerCase();
+            if (plugName) {
+                names.push(plugName);
+            }
+        }
 
-		/** The current debugging mode. **/		
-		public function get debug():String {
-			return _debug;
-		}
+        return names;
+    }
 
-		public function set debug(x:String):void {
-			if (x != "0"){
-				_debug = x; 
-			}
-		}
-		
-		/**
-		 * Returns a PluginConfig containing plugin configuration information
-		 * 
-		 * @param pluginId Name of the plugin whose config to return.
-		 */
-		public function pluginConfig(pluginId:String):PluginConfig {
-			pluginId = pluginId.toLowerCase();
-			if (_pluginConfig.hasOwnProperty(pluginId)) {
-				return _pluginConfig[pluginId] as PluginConfig;
-			} else if (this[pluginId] && getQualifiedClassName(this[pluginId]) == "Object") {
-				var duplicatedConfig:PluginConfig = new PluginConfig(pluginId, this[pluginId]);
-				_pluginConfig[pluginId] = duplicatedConfig;
-				return duplicatedConfig;
-			} else {
-				var newConfig:PluginConfig = new PluginConfig(pluginId);
-				_pluginConfig[pluginId] = newConfig;
-				return newConfig;
-			}
-		}
-		
-		/**
-		 * Overwrites a plugin's configuration.  Use with caution.
-		 **/
-		public function setPluginConfig(pluginId:String, pluginConfig:PluginConfig):void {
-			if (pluginId && pluginConfig) {
-				_pluginConfig[pluginId] = pluginConfig;
-			}
-		}
-		
-		/** A list of available pluginConfig keys. **/
-		public function get pluginIds():Array {
-			var names:Array = [];
+    /** DEPRICATED METHODS - KEEPING FOR LEGACY PROVIDER SUPPORT **/
 
-			// Only include loaded plugins
-			for each (var lp:String in _plugins.split(",")) {
-				var plugName:String = (lp.substr(lp.lastIndexOf("/")+1).replace(/(.*)\.swf$/i, "$1").split("-")[0] as String).toLowerCase();
-				if (plugName) {
-					names.push(plugName);
-				}
-			}
-			
-			return names;
-		}
+    public function get singleItem():PlaylistItem {
+        return new PlaylistItem();
+    }
 
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		// JAVASCRIPT INTERACTION
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		
-		/** The player's Javascript objectID. Auto-detected, but should be set manually for Linux Javascript support. **/
-		public function get id():String { return _id; }
-		public function set id(x:String):void { PlayerVersion.id = _id = x; }
-		
-	}
+    public function get playlist():String {
+        return '';
+    }
+
+    public function set playlist(x:String):void {
+    }
+
+    public function get description():String {
+        return '';
+    }
+
+    public function get duration():String {
+        return '';
+    }
+
+    public function get file():String {
+        return '';
+    }
+
+    public function get image():String {
+        return '';
+    }
+
+    public function get mediaid():String {
+        return '';
+    }
+
+    public function get start():String {
+        return '';
+    }
+
+    public function get streamer():String {
+        return '';
+    }
+
+    public function get title():String {
+        return '';
+    }
+
+    public function get provider():String {
+        return '';
+    }
+
+    public function get type():String {
+        return '';
+    }
+
+    public function get playlistposition():String {
+        return 'none';
+    }
+
+    public function set playlistposition(x:String):void {
+    }
+
+    public function get playlistsize():String {
+        return '0';
+    }
+
+    public function set playlistsize(x:String):void {
+    }
+
+    public function get playlistlayout():String {
+        return '';
+    }
+
+    public function set playlistlayout(x:String):void {
+    }
+
+    public function get skin():String {
+        return '';
+    }
+
+    public function set skin(x:String):void {
+    }
+
+    public function get autostart():Boolean {
+        return false;
+    }
+
+    public function set autostart(x:Boolean):void {
+    }
+
+    public function get repeat():Boolean {
+        return false;
+    }
+
+    public function set repeat(x:*):void {
+    }
+
+    public function get controls():Boolean {
+        return true;
+    }
+
+    public function set controls(x:Boolean):void {
+    }
+
+    public function setConfig(config:Object):void {
+        // TODO: copy supported properties
+    }
+
+    /** Returns a PluginConfig containing plugin configuration information **/
+    public function pluginConfig(pluginId:String):PluginConfig {
+        pluginId = pluginId.toLowerCase();
+        if (_pluginConfig.hasOwnProperty(pluginId)) {
+            return _pluginConfig[pluginId] as PluginConfig;
+        } else if (this[pluginId] && getQualifiedClassName(this[pluginId]) == "Object") {
+            var duplicatedConfig:PluginConfig = new PluginConfig(pluginId, this[pluginId]);
+            _pluginConfig[pluginId] = duplicatedConfig;
+            return duplicatedConfig;
+        } else {
+            var newConfig:PluginConfig = new PluginConfig(pluginId);
+            _pluginConfig[pluginId] = newConfig;
+            return newConfig;
+        }
+    }
+
+    /** Overwrites a plugin's configuration. Use with caution. **/
+    public function setPluginConfig(pluginId:String, pluginConfig:PluginConfig):void {
+        if (pluginId && pluginConfig) {
+            _pluginConfig[pluginId] = pluginConfig;
+        }
+    }
+
+}
 }

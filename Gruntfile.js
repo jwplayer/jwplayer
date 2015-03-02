@@ -1,4 +1,18 @@
+var fs = require('fs');
 var webpack = require('webpack');
+var env = process.env;
+
+function getBuildVersion(packageInfo) {
+    // Build Version: {major.minor.revision}
+    var revision = env.BUILD_NUMBER;
+    if (revision === undefined) {
+        var now = new Date();
+        now.setTime(now.getTime()-now.getTimezoneOffset()*60000);
+        revision = now.toISOString().replace(/[\.\-:Z]/g, '').replace(/T/g, '');
+    }
+
+    return packageInfo.version.replace(/\.\d*$/, '.' + revision);
+}
 
 module.exports = function(grunt) {
     /* jshint node: true */
@@ -6,6 +20,7 @@ module.exports = function(grunt) {
     require('load-grunt-tasks')(grunt);
 
     var packageInfo = grunt.file.readJSON('package.json');
+    var buildVersion = getBuildVersion(packageInfo);
 
     grunt.initConfig({
         starttime: new Date(),
@@ -66,7 +81,7 @@ module.exports = function(grunt) {
                     'src/flash/com/longtailvideo/jwplayer/{,*/}*.as',
                     'src/flash/com/wowsa/{,*/}*.as'
                 ],
-                tasks: ['flash:debug']
+                tasks: ['flash:player:debug']
             },
             grunt: {
                 files: ['Gruntfile.js'],
@@ -94,9 +109,16 @@ module.exports = function(grunt) {
                 devtool: 'source-map',
                 plugins: [
                     new webpack.DefinePlugin({
-                        __BUILD_VERSION__: '\'' + packageInfo.version + '\''
+                        __BUILD_VERSION__: '\'' + buildVersion + '\''
                     })
                 ]
+            }
+        },
+
+        flash: {
+            player: {
+                dest: 'jwplayer.flash.swf',
+                main: 'src/flash/com/longtailvideo/jwplayer/player/Player.as'
             }
         },
 
@@ -113,29 +135,41 @@ module.exports = function(grunt) {
         }
     });
 
-    grunt.registerTask('flash', function(target) {
+    grunt.registerMultiTask('flash', 'Compile Flash SWF files. Usage `grunt flash:*|player|vast:debug|release|swc:air|flex`', function() {
         var done = this.async();
 
-        var flashAirOrFlexSdk = process.env.AIR_HOME || process.env.FLEX_HOME;
+        var data = this.data;
+
+        var flags = this.flags;
+        var isDebug   = !!flags.debug;
+        var isLibrary = !!flags.swc;
+
+        var flashAirOrFlexSdk = (!flags.flex && env.AIR_HOME) || env.FLEX_HOME;
         if (!flashAirOrFlexSdk) {
             grunt.fail.warn('To compile ActionScript, you must set environment '+
-                'variable $AIR_HOME or $FLEX_HOME for this task to locate mxmlc.');
+            'variable $AIR_HOME or $FLEX_HOME for this task to locate mxmlc.');
         }
-        var isDebug = target === 'debug';
         var isFlex = /flex/.test(flashAirOrFlexSdk);
 
         var command = {
-            cmd: flashAirOrFlexSdk + '/bin/mxmlc',
-            args: [
-                'src/flash/com/longtailvideo/jwplayer/player/Player.as',
-                '-compiler.source-path=src/flash',
-                '-compiler.library-path=' + flashAirOrFlexSdk + '/frameworks/libs',
-                '-default-background-color=0x000000',
-                '-default-frame-rate=30',
-                '-target-player=10.1.0',
-                '-use-network=false'
-            ]
+            cmd: flashAirOrFlexSdk + '/bin/'+ (isLibrary ? 'compc' : 'mxmlc'),
+            args: []
         };
+
+        if (isLibrary) {
+            command.args.push('-include-sources='+data.main);
+        } else {
+            command.args.push(data.main);
+        }
+
+        command.args.push(
+            '-compiler.source-path=src/flash',
+            '-compiler.library-path+=' + flashAirOrFlexSdk + '/frameworks/libs',
+            '-default-background-color=0x000000',
+            '-default-frame-rate=30',
+            '-target-player=11.0.0',
+            '-use-network=false'
+        );
 
         // Framework specific optimizations
         if (isFlex) {
@@ -144,49 +178,83 @@ module.exports = function(grunt) {
             );
         } else {
             command.args.push(
-               '-compiler.inline=true',
-               '-compiler.remove-dead-code=true'
+                '-show-multiple-definition-warnings=true',
+                '-compiler.inline=true',
+                '-compiler.remove-dead-code=true'
             );
+
+            if (!isLibrary) {
+                // ActionScript Compiler 2.0 Shell https://github.com/jcward/ascsh
+                var ascshd = fs.existsSync(flashAirOrFlexSdk + '/bin/ascshd');
+                if (ascshd) {
+                    command.cmd = command.cmd.replace('bin/mxmlc', 'bin/ascshd');
+                    command.args.unshift(
+                        '-p', 11122 + (isDebug?100:0),
+                        'mxmlc'
+                    );
+                }
+            }
         }
 
+        var extension = 'swf';
+        var outputFolder = isDebug ? 'bin-debug' : 'bin-release';
+        if (isLibrary) {
+            extension = 'swc';
+            outputFolder = 'libs-external';
+        }
         if (isDebug) {
             command.args.push(
-                '-output=bin-debug/jwplayer.flash.swf',
+                '-output='     + outputFolder +'/' + data.dest.replace('swf', extension),
+                '-link-report='+ outputFolder +'/' + data.dest.replace('swf', 'link.xml'),
+                '-size-report='+ outputFolder +'/' + data.dest.replace('swf', 'size.xml'),
                 '-strict=true',
                 '-debug=true',
-                '-define+=CONFIG::debugging,true'
+                '-define+=CONFIG::debugging,true',
+                '-define+=CONFIG::staging,true'
             );
         } else {
             command.args.push(
-                '-output=bin-release/jwplayer.flash.swf',
-                '-compiler.optimize=true',
-                '-compiler.omit-trace-statements=true',
+                '-output='+ outputFolder +'/' + data.dest.replace('swf', extension),
+                '-optimize=true',
+                '-omit-trace-statements=true',
                 '-warnings=false',
-                '-define+=CONFIG::debugging,false'
+                '-define+=CONFIG::debugging,false',
+                '-define+=CONFIG::staging,false'
             );
         }
 
-        // Build Version: {major.minor.revision}
-        var revision = process.env.BUILD_NUMBER;
-        if (revision === undefined) {
-            var now = grunt.config('starttime');
-            now.setTime(now.getTime()-now.getTimezoneOffset()*60000);
-            revision = now.toISOString().replace(/[\.\-:Z]/g, '').replace(/T/g, '');
-        }
-        var buildVersion = packageInfo.version.replace(/\.\d*$/, '.' + revision);
         command.args.push(
             '-define+=JWPLAYER::version,\''+ buildVersion +'\''
         );
 
+        // Print the mxmlc / ascshd command. Formatted to run in bash.
         grunt.log.writeln(command.cmd +' '+ command.args.join(' ').replace(/(version,'[^']*')/, '"$1"'));
 
-        grunt.util.spawn(command, function(err, result) {
+        var stdout = [];
+        var proc = grunt.util.spawn(command, function(error, result, code) {
             grunt.log.subhead(result.stdout);
-            if (err) {
-                grunt.log.error(err.message);
+
+            if (error) {
+                grunt.log.error(error.message, code);
             }
-            done(!err);
+            done(!error);
         });
+
+        proc.stdout.setEncoding('utf-8');
+        proc.stdout.on('data', function(data) {
+            stdout.push(data);
+        });
+
+        var checkIntervalHandle = setInterval(function() {
+            if (/Starting aschd server/.test(stdout.join())) {
+                clearInterval(checkIntervalHandle);
+                grunt.log.ok(command.cmd);
+
+                grunt.log.subhead(stdout.join());
+
+                done();
+            }
+        }, 500);
     });
 
     grunt.registerTask('build-js', [
@@ -197,7 +265,7 @@ module.exports = function(grunt) {
     grunt.registerTask('default', [
         'clean',
         'build-js',
-        'flash:debug',
-        'flash:release'
+        'flash:player:debug',
+        'flash:player:release'
     ]);
 };

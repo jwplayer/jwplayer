@@ -144,6 +144,18 @@ define([], function() {
         };
     };
 
+    // Returns a function that will only be executed up to (but not including) the Nth call.
+    _.before = function(times, func) {
+        var memo;
+        return function() {
+            if (--times > 0) {
+                memo = func.apply(this, arguments);
+            }
+            if (times <= 1) func = null;
+            return memo;
+        };
+    };
+
     // An internal function to generate lookup iterators.
     var lookupIterator = function (value) {
         if (value == null) return _.identity;
@@ -258,6 +270,10 @@ define([], function() {
             return func.apply(this, args);
         };
     };
+
+    // Returns a function that will be executed at most one time, no matter how
+    // often you call it. Useful for lazy initialization.
+    _.once = _.partial(_.before, 2);
 
     // Memoize an expensive function by storing its results.
     _.memoize = function (func, hasher) {

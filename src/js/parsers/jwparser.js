@@ -1,9 +1,5 @@
 /**
  * Parse a feed item for JWPlayer content.
- *
- * @author zach
- * @modified pablo
- * @version 6.0
  */
 define([
     'parsers/parsers',

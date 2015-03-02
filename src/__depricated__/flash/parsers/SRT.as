@@ -1,9 +1,9 @@
 package com.longtailvideo.jwplayer.parsers {
 
 
-    import com.longtailvideo.jwplayer.utils.Strings;
+import com.longtailvideo.jwplayer.utils.Strings;
 
-    /** Parse an Subrip caption file and return an array of captions. **/
+/** Parse an Subrip caption file and return an array of captions. **/
     public class SRT {
 		
 

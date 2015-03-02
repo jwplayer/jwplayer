@@ -1,7 +1,7 @@
 package com.longtailvideo.jwplayer.parsers {
-	import com.longtailvideo.jwplayer.utils.Logger;
+import com.longtailvideo.jwplayer.utils.Logger;
 
-	public class ParserFactory {
+public class ParserFactory {
 		
 		public static function getParser(list:XML):IPlaylistParser {
 			try {

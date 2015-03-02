@@ -1,9 +1,9 @@
 package com.longtailvideo.jwplayer.utils {
-    import flash.display.DisplayObject;
-    import flash.display.InteractiveObject;
-    import flash.display.MovieClip;
+import flash.display.DisplayObject;
+import flash.display.InteractiveObject;
+import flash.display.MovieClip;
 
-    public class Stacker {
+public class Stacker {
         /** Reference to the clip to stack. **/
         public var clip:MovieClip;
         /** SWF skin loader reference **/

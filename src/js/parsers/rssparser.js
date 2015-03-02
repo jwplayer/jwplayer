@@ -1,9 +1,5 @@
 /**
  * Parse an RSS feed and translate it to a playlist.
- *
- * @author zach
- * @modified pablo
- * @version 6.0
  */
 define([
     'utils/strings',

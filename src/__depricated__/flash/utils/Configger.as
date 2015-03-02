@@ -1,12 +1,12 @@
 package com.longtailvideo.jwplayer.utils {
-	import flash.events.ErrorEvent;
-	import flash.events.Event;
-	import flash.events.EventDispatcher;
-	import flash.external.ExternalInterface;
-	import flash.net.SharedObject;
-	import flash.system.Security;
+import flash.events.ErrorEvent;
+import flash.events.Event;
+import flash.events.EventDispatcher;
+import flash.external.ExternalInterface;
+import flash.net.SharedObject;
+import flash.system.Security;
 
-	/**
+/**
 	 * Sent when the configuration block has been successfully retrieved
 	 *
 	 * @eventType flash.events.Event.COMPLETE
@@ -34,6 +34,7 @@ package com.longtailvideo.jwplayer.utils {
 		 */
 		public function loadConfig():void {
 			loadCookies();
+            // TODO: loaderInfo.parameters would be faster
 			//loadFlashvars(RootReference.root.loaderInfo.parameters);
 			loadExternal();
 		}
@@ -62,7 +63,7 @@ package com.longtailvideo.jwplayer.utils {
 		private function loadExternal():void {
 			if (ExternalInterface.available) {
 				try {
-					var flashvars:Object = ExternalInterface.call("jwplayer.embed.flash.getVars", ExternalInterface.objectID);
+					var flashvars:Object = ExternalInterface.call("jwplayer('"+ ExternalInterface.objectID +"').config;");
 					if (flashvars !== null) {
 						for (var param:String in flashvars) {
 							setConfigParam(param, flashvars[param]);
@@ -72,11 +73,15 @@ package com.longtailvideo.jwplayer.utils {
 					}
 				} catch (e:Error) {}
 			}
-			if (Security.sandboxType == Security.LOCAL_WITH_FILE) {
-				dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, "Error loading player: Offline playback not supported"));
+
+            var message:String = "Error loading player: ";
+			if (Security.sandboxType === Security.LOCAL_WITH_FILE) {
+                message += "Offline playback not supported";
 			} else {
-				dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, "Error loading player: Could not load player configuration"));
+                message += "Could not load player configuration";
 			}
+
+            dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, message));
 		}
 
 		public static function saveCookie(param:String, value:*):void {
