@@ -1,17 +1,17 @@
 package com.longtailvideo.jwplayer.player {
-	import com.longtailvideo.jwplayer.events.InstreamEvent;
-	import com.longtailvideo.jwplayer.events.JWAdEvent;
-	import com.longtailvideo.jwplayer.events.MediaEvent;
-	import com.longtailvideo.jwplayer.events.PlayerEvent;
-	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
-	import com.longtailvideo.jwplayer.events.PlaylistEvent;
-	import com.longtailvideo.jwplayer.utils.JavascriptSerialization;
-	import com.longtailvideo.jwplayer.utils.Logger;
-	
-	import flash.events.Event;
-	import flash.external.ExternalInterface;
-	
-	public class JavascriptInstreamAPI {
+import com.longtailvideo.jwplayer.events.InstreamEvent;
+import com.longtailvideo.jwplayer.events.JWAdEvent;
+import com.longtailvideo.jwplayer.events.MediaEvent;
+import com.longtailvideo.jwplayer.events.PlayerEvent;
+import com.longtailvideo.jwplayer.events.PlayerStateEvent;
+import com.longtailvideo.jwplayer.events.PlaylistEvent;
+import com.longtailvideo.jwplayer.utils.JavascriptSerialization;
+import com.longtailvideo.jwplayer.utils.Logger;
+
+import flash.events.Event;
+import flash.external.ExternalInterface;
+
+public class JavascriptInstreamAPI {
 		
 		private static var _isPlayer:InstreamPlayer;
 		

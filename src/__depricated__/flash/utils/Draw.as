@@ -1,9 +1,9 @@
 package com.longtailvideo.jwplayer.utils {
-	import flash.display.Bitmap;
-	import flash.display.Loader;
-	import flash.display.Sprite;
-	
-	public class Draw {
+import flash.display.Bitmap;
+import flash.display.Loader;
+import flash.display.Sprite;
+
+public class Draw {
 		
 		
 		/**

@@ -14,17 +14,16 @@
 
 package com.longtailvideo.jwplayer.utils
 {
-	import flash.display.DisplayObject;
-	import flash.display.InteractiveObject;
-	import flash.display.Stage;
-	import flash.events.Event;
-	import flash.events.EventDispatcher;
-	import flash.events.FocusEvent;
-	import flash.external.ExternalInterface;
-	import flash.system.Capabilities;
-	
-	
-	/**
+import flash.display.DisplayObject;
+import flash.display.InteractiveObject;
+import flash.display.Stage;
+import flash.events.Event;
+import flash.events.EventDispatcher;
+import flash.events.FocusEvent;
+import flash.external.ExternalInterface;
+import flash.system.Capabilities;
+
+/**
 	 *  SWFFocus intends to solve a keyboard accessibility related problem that 
 	 *  occurs on browsers other than Internet Explorer. 
 	 

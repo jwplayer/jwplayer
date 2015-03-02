@@ -1,13 +1,12 @@
 package com.longtailvideo.jwplayer.utils
 {
-	import com.longtailvideo.jwplayer.model.IPlaylist;
-	import com.longtailvideo.jwplayer.model.PlaylistItem;
-	import com.longtailvideo.jwplayer.model.PlaylistItemLevel;
-	
-	import flash.geom.Rectangle;
-	import flash.utils.getQualifiedClassName;
+import com.longtailvideo.jwplayer.model.PlaylistItem;
+import com.longtailvideo.jwplayer.model.PlaylistItemLevel;
 
-	public class JavascriptSerialization
+import flash.geom.Rectangle;
+import flash.utils.getQualifiedClassName;
+
+public class JavascriptSerialization
 	{
 
 		public static function playlistToArray(list:IPlaylist):Array {

@@ -1,28 +1,25 @@
 package com.longtailvideo.jwplayer.player {
-	import com.longtailvideo.jwplayer.events.CaptionsEvent;
-	import com.longtailvideo.jwplayer.events.CastEvent;
-	import com.longtailvideo.jwplayer.events.InstreamEvent;
-	import com.longtailvideo.jwplayer.events.JWAdEvent;
-	import com.longtailvideo.jwplayer.events.MediaEvent;
-	import com.longtailvideo.jwplayer.events.PlayerEvent;
-	import com.longtailvideo.jwplayer.events.PlayerStateEvent;
-	import com.longtailvideo.jwplayer.events.PlaylistEvent;
-	import com.longtailvideo.jwplayer.events.TrackEvent;
-	import com.longtailvideo.jwplayer.events.ViewEvent;
-	import com.longtailvideo.jwplayer.plugins.AbstractPlugin;
-	import com.longtailvideo.jwplayer.plugins.IPlugin;
-	import com.longtailvideo.jwplayer.utils.JavascriptSerialization;
-	import com.longtailvideo.jwplayer.utils.Logger;
-	import com.longtailvideo.jwplayer.utils.RootReference;
-	import com.longtailvideo.jwplayer.view.interfaces.IPlayerComponent;
-	
-	import flash.events.Event;
-	import flash.events.TimerEvent;
-	import flash.external.ExternalInterface;
-	import flash.utils.Timer;
-	import flash.utils.setTimeout;
-	
-	public class JavascriptAPI {
+import com.longtailvideo.jwplayer.events.CaptionsEvent;
+import com.longtailvideo.jwplayer.events.InstreamEvent;
+import com.longtailvideo.jwplayer.events.JWAdEvent;
+import com.longtailvideo.jwplayer.events.MediaEvent;
+import com.longtailvideo.jwplayer.events.PlayerEvent;
+import com.longtailvideo.jwplayer.events.PlayerStateEvent;
+import com.longtailvideo.jwplayer.events.PlaylistEvent;
+import com.longtailvideo.jwplayer.events.TrackEvent;
+import com.longtailvideo.jwplayer.plugins.AbstractPlugin;
+import com.longtailvideo.jwplayer.plugins.IPlugin;
+import com.longtailvideo.jwplayer.utils.JavascriptSerialization;
+import com.longtailvideo.jwplayer.utils.Logger;
+import com.longtailvideo.jwplayer.utils.RootReference;
+
+import flash.events.Event;
+import flash.events.TimerEvent;
+import flash.external.ExternalInterface;
+import flash.utils.Timer;
+import flash.utils.setTimeout;
+
+public class JavascriptAPI {
 		private static var _player:IPlayer;
 		private static var _playerBuffer:Number = 0;
 		private static var _playerPosition:Number = 0;

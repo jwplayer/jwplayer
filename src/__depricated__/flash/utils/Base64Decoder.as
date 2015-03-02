@@ -1,7 +1,7 @@
 package com.longtailvideo.jwplayer.utils {
-	import flash.utils.ByteArray;
-	
-	public class Base64Decoder
+import flash.utils.ByteArray;
+
+public class Base64Decoder
 	{
 		private static const _decodeChars:Vector.<int> = InitDecodeChar();
 		

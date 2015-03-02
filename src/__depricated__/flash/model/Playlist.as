@@ -10,32 +10,32 @@ package com.longtailvideo.jwplayer.model {
 	
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
-	
-	
+
+
 	/**
 	 * Sent when a playlist has been loaded.
 	 *
 	 * @eventType com.longtailvideo.jwplayer.events.PlaylistEvent.JWPLAYER_PLAYLIST_LOADED
 	 */
 	[Event(name="jwplayerPlaylistLoaded", type="com.longtailvideo.jwplayer.events.PlaylistEvent")]
-	
-	
+
+
 	/**
 	 * Sent when the playlist has been updated.
 	 *
 	 * @eventType com.longtailvideo.jwplayer.events.PlaylistEvent.JWPLAYER_PLAYLIST_UPDATED
 	 */
 	[Event(name="jwplayerPlaylistUpdated", type="com.longtailvideo.jwplayer.events.PlaylistEvent")]
-	
-	
+
+
 	/**
 	 * Sent when the playlist's current item has changed.
 	 *
 	 * @eventType com.longtailvideo.jwplayer.events.PlaylistEvent.JWPLAYER_PLAYLIST_ITEM
 	 */
 	[Event(name="jwplayerPlaylistItem", type="com.longtailvideo.jwplayer.events.PlaylistEvent")]
-	
-	
+
+
 	/**
 	 * Sent when an error ocurred when loading or parsing the playlist
 	 *

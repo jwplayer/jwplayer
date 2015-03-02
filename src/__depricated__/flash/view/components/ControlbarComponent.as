@@ -570,8 +570,8 @@ package com.longtailvideo.jwplayer.view.components {
 			addComponentButton('hd', null);
 			addComponentButton('cc', null);
 			addComponentButton('track', null);
-			addComponentButton('fullscreen', ViewEvent.JWPLAYER_VIEW_FULLSCREEN, true);
-			addComponentButton('normalscreen', ViewEvent.JWPLAYER_VIEW_FULLSCREEN, false);
+			addComponentButton('fullscreen', ViewEvent.JWPLAYER_FULLSCREEN, true);
+			addComponentButton('normalscreen', ViewEvent.JWPLAYER_FULLSCREEN, false);
 			addComponentButton('unmute', ViewEvent.JWPLAYER_VIEW_MUTE, false);
 			addComponentButton('mute', ViewEvent.JWPLAYER_VIEW_MUTE, true);
 			addComponentButton('cast', ViewEvent.JWPLAYER_VIEW_CAST, true);
