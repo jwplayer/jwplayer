@@ -1198,7 +1198,8 @@ define([
 
         this.setupError = function(message) {
             _errorState = true;
-            errorScreen(_playerElement, message, _model);
+            message = message.split(':');
+            errorScreen(_playerElement, message[0], message[1]);
             _completeSetup();
         };
 
@@ -1364,17 +1365,6 @@ define([
     };
 
     // Container styles
-    _css('.' + PLAYER_CLASS, {
-        position: 'relative',
-        // overflow: 'hidden',
-        display: 'block',
-        opacity: 0,
-        'min-height': 0,
-        '-webkit-transition': JW_CSS_SMOOTH_EASE,
-        '-moz-transition': JW_CSS_SMOOTH_EASE,
-        '-o-transition': JW_CSS_SMOOTH_EASE
-    });
-
     _css('.' + VIEW_MAIN_CONTAINER_CLASS, {
         position: JW_CSS_ABSOLUTE,
         left: 0,
