@@ -1,4 +1,7 @@
-define(['utils/backbone.events', 'underscore'], function(Events, _) {
+define([
+    'utils/backbone.events',
+    'underscore'
+], function(Events, _) {
 
     var GLOBAL_EVENT = 'GLOBAL_EVENT';
 

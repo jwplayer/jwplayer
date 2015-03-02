@@ -92,7 +92,7 @@ define([
             if (events) triggerEvents(events, args);
             if (allEvents) triggerEvents(allEvents, arguments);
             return this;
-        },
+        }
 
         /*
          // Tell this object to stop listening to either specific events ... or
