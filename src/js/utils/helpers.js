@@ -28,6 +28,13 @@ define([
         return true;
     };
 
+    // Given a string, convert to element and return
+    utils.createElement = function(html) {
+        var newElement = document.createElement('div');
+        newElement.innerHTML = html;
+        return newElement.firstChild;
+    };
+
     /** Used for styling dimensions in CSS --
      * return the string unchanged if it's a percentage width; add 'px' otherwise **/
     utils.styleDimension = function (dimension) {

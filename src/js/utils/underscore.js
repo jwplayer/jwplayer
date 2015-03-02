@@ -460,7 +460,7 @@ define([], function() {
     // following template settings to use alternative delimiters.
     _.templateSettings = {
         evaluate    : /<%([\s\S]+?)%>/g,
-        interpolate : /\{\{\{([\s\S]+?)\}\}\}/g,
+        interpolate : /<%=([\s\S]+?)%>/g,
         escape      : /\{\{([\s\S]+?)\}\}/g
     };
 
@@ -542,6 +542,34 @@ define([], function() {
 
         return template;
     };
+
+    // List of HTML entities for escaping.
+    var entityMap = {
+        escape: {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#x27;'
+        }
+    };
+    entityMap.unescape = _.invert(entityMap.escape);
+
+    // Regexes containing the keys and values listed immediately above.
+    var entityRegexes = {
+        escape:   new RegExp('[' + _.keys(entityMap.escape).join('') + ']', 'g'),
+        unescape: new RegExp('(' + _.keys(entityMap.unescape).join('|') + ')', 'g')
+    };
+
+    // Functions for escaping and unescaping strings to/from HTML interpolation.
+    _.each(['escape', 'unescape'], function(method) {
+        _[method] = function(string) {
+            if (string == null) return '';
+            return ('' + string).replace(entityRegexes[method], function(match) {
+                return entityMap[method][match];
+            });
+        };
+    });
 
 
     // If the value of the named `property` is a function then invoke it with the
