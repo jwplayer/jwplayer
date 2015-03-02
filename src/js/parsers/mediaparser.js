@@ -1,9 +1,5 @@
 /**
  * Parse a MRSS group into a playlistitem (used in RSS and ATOM).
- *
- * author zach
- * modified pablo
- * version 6.0
  */
 define([
     'parsers/parsers',

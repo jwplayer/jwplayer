@@ -767,7 +767,6 @@ define([
 
         // HLS not sufficiently supported on Android devices; should fail over automatically.
         if (type === 'hls') {
-            // TODO: android HLS rules go in video provider
             //when androidhls is set to true, allow HLS playback on Android 4.1 and up
             if (source.androidhls) {
                 var isAndroidNative = utils.isAndroidNative;

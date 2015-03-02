@@ -6,13 +6,9 @@
  * 1. parse config
  * 2. load skin (async)
  * 3. load external playlist (async)
- * 4. load preview image (requires 3)
- * 5. initialize components (requires 2)
- * 6. initialize plugins (requires 5)
- * 7. ready
- *
- * @author pablo
- * @version 6.0
+ * 4. initialize components (requires 2)
+ * 5. initialize plugins (requires 5)
+ * 6. ready
  */
 define([
     'utils/helpers',
