@@ -20,7 +20,7 @@ define([
 
     var Logo = function(api, logoConfig) {
         var _api = api,
-            _id = _api.id + '_logo',
+            _id = _api.getContainer().id + '_logo',
             _settings,
             _logo,
             _defaults = Logo.defaults,
@@ -33,7 +33,7 @@ define([
 
         function _setupConfig() {
             var linkFlag = 'o';
-            if (_api.edition) {
+            if (_api.edition) { // TODO: Figure out how to determine edition from the model.
                 linkFlag = _getLinkFlag(_api.edition());
             }
 
@@ -97,26 +97,19 @@ define([
             return parseInt(_settings.margin, 10);
         };
 
-        function _togglePlay() {
-            if (_api.jwGetState() === states.IDLE || _api.jwGetState() === states.PAUSED) {
-                _api.jwPlay();
-            } else {
-                _api.jwPause();
-            }
-        }
-
         function _clickHandler(evt) {
             if (utils.exists(evt) && evt.stopPropagation) {
                 evt.stopPropagation();
             }
 
             if (!_showing || !_settings.link) {
-                _togglePlay();
+                //_togglePlay();
+                _api.play();
             }
 
             if (_showing && _settings.link) {
-                _api.jwPause();
-                _api.jwSetFullscreen(false);
+                _api.pause(true);
+                _api.setFullscreen(false);
                 window.open(_settings.link, _settings.linktarget);
             }
             return;

@@ -27,7 +27,7 @@ define([
             _this = _.extend(this, Events);
 
         _model = this._model = new Model(config);
-        _view  = this._view  = new View(_this, _model);
+        _view  = this._view  = new View(_this, _api, _model);
         _setup = this._setup = new Setup(_model, _view);
 
         // Legacy, should be removed

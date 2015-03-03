@@ -49,7 +49,7 @@ define([
         JW_CSS_NONE = 'none',
         JW_CSS_BLOCK = 'block';
 
-    var View = function(_player, _model) {
+    var View = function(_player, _api, _model) {
         var _playerElement,
             _container,
             _controlsLayer,
@@ -550,7 +550,7 @@ define([
             }
             _controlsLayer.appendChild(_display.element());
 
-            _logo = new Logo(_player, _logoConfig);
+            _logo = new Logo(_api, _logoConfig);
             _controlsLayer.appendChild(_logo.element());
 
             _dock = new Dock(_player, _model.componentConfig('dock'));
