@@ -7,6 +7,7 @@ define([
 
     var PlaylistItem = function (config) {
 
+        config = config || {};
         var _playlistItem = {};
         _.each(PlaylistItem.defaults, function(val, key) {
             _playlistItem[key] = config[key] || val;
