@@ -553,7 +553,7 @@ define([
             _logo = new Logo(_api, _logoConfig);
             _controlsLayer.appendChild(_logo.element());
 
-            _dock = new Dock(_player, _model.componentConfig('dock'));
+            _dock = new Dock(_player.skin, _api, _model);
             _controlsLayer.appendChild(_dock.element());
 
             if (_player.edition && !_isMobile) {

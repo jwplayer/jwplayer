@@ -15,17 +15,17 @@ define([
         D_CLASS = '.jwdock',
         DB_CLASS = '.jwdockbuttons';
 
-    var Dock = function(api, config) {
-        var _api = api,
+    var Dock = function(skin, api, model) {
+        var _skin = skin,
+            _api = api,
             _defaults = {
                 iconalpha: 0.75,
                 iconalphaactive: 0.5,
                 iconalphaover: 1,
                 margin: 8
             },
-            _config = _.extend({}, _defaults, config),
-            _id = _api.id + '_dock',
-            _skin = _api.skin,
+            _config = _.extend({}, _defaults, model.componentConfig('dock')),
+            _id = _api.getContainer().id + '_dock',
             _buttonCount = 0,
             _buttons = {},
             _tooltips = {},
@@ -142,7 +142,7 @@ define([
         };
 
         function _iFramedFullscreenIE() {
-            return (_iFramed && utils.isIE() && _api.jwGetFullscreen());
+            return (_iFramed && utils.isIE() && _api.getFullscreen());
         }
 
         function _positionTooltip(name) {
