@@ -59,18 +59,13 @@ define([
             _preview.className = 'jwpreview jw' + _model.stretching;
             _display.appendChild(_preview);
 
-            //_api.addEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
-            _api.onBuffer(_stateHandler);
-            _api.onPlay(_stateHandler);
-            _api.onPause(_stateHandler);
-            _api.onIdle(_stateHandler);
-
 			_api.onPlaylistItem(_itemHandler);
 			_api.onPlaylistComplete(_playlistCompleteHandler);
             _api.onError(_errorHandler);
 
-			_model.addEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler); // TODO: is there a more up-to-date event to listen to?  Do we listen to the provider via the model?
-            _model.addEventListener(events.JWPLAYER_PROVIDER_CLICK, _clickHandler);   // TODO: Who sends this event?  Do we listen to the provider via the model?
+            _model.addEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
+			_model.addEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
+            _model.addEventListener(events.JWPLAYER_PROVIDER_CLICK, _clickHandler);
 
             if (!_isMobile) {
                 _display.addEventListener('click', _clickHandler, false);
