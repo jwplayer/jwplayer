@@ -25,9 +25,10 @@ define([
         JW_CSS_WHITE = '#FFFFFF';
 
     /** Displays closed captions or subtitles on top of the video. **/
-    var Captions = function(api, options) {
-
+    var Captions = function(api, model) {
         var _api = api,
+            _model = model,
+            options = _model.captions,
             _display,
             _defaults = {
                 back: true,
@@ -75,17 +76,18 @@ define([
         function _init() {
 
             _display = document.createElement('div');
-            _display.id = _api.id + '_caption';
+            _display.id = _api.getContainer().id + '_caption';
             _display.className = 'jwcaptions';
 
-            _api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
-            _api.jwAddEventListener(events.JWPLAYER_PLAYLIST_ITEM, _itemHandler);
-            _api.jwAddEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
-            _api.jwAddEventListener(events.JWPLAYER_ERROR, _errorHandler);
-            _api.jwAddEventListener(events.JWPLAYER_READY, _setup);
-            _api.jwAddEventListener(events.JWPLAYER_MEDIA_TIME, _timeHandler);
-            _api.jwAddEventListener(events.JWPLAYER_FULLSCREEN, _fullscreenHandler);
-            _api.jwAddEventListener(events.JWPLAYER_RESIZE, _resizeHandler);
+            _api.onReady(_setup);
+            _api.onPlaylistItem(_itemHandler);
+            _api.onFullscreen(_fullscreenHandler);
+            _api.onResize(_resizeHandler);
+            _api.onError(_errorHandler);
+
+            _model.addEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
+            _model.addEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
+            _model.addEventListener(events.JWPLAYER_MEDIA_TIME, _timeHandler);
         }
 
         function _resizeHandler() {
@@ -124,7 +126,6 @@ define([
             } else {
                 _redraw(true);
             }
-
         }
 
         function _fullscreenResize() {
@@ -142,7 +143,7 @@ define([
             _renderer.update(0);
             _dlCount = 0;
 
-            var item = _api.jwGetPlaylist()[_api.jwGetPlaylistIndex()],
+            var item = _model.playlist[_model.item],
                 tracks = item.tracks,
                 captions = [],
                 i = 0,

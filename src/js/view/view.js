@@ -533,7 +533,7 @@ define([
 
             _checkAudioMode(height);
 
-            _captions = new Captions(_player, _model.captions);
+            _captions = new Captions(_api, _model);
             _captions.addEventListener(events.JWPLAYER_CAPTIONS_LIST, forward);
             _captions.addEventListener(events.JWPLAYER_CAPTIONS_CHANGED, forward);
             _captions.addEventListener(events.JWPLAYER_CAPTIONS_LOADED, _captionsLoadedHandler);
