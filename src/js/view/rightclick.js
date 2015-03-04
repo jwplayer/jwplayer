@@ -34,9 +34,9 @@ define([
             _about;
 
         function _init() {
-            _container = DOCUMENT.getElementById(_api.id);
+            _container = document.getElementById(_api.getContainer().id);   // TODO: _api.getContainer() does not return an element that is on the page.  Likely an issue with our replacing the old container on the page after the player is removed.
             _menu = _createElement(RC_CLASS);
-            _menu.id = _api.id + '_menu';
+            _menu.id = _container.id + '_menu';
             _menu.style.display = JW_CSS_NONE;
             _container.oncontextmenu = _showContext;
             _menu.onmouseover = function() {

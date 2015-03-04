@@ -557,12 +557,12 @@ define([
             _controlsLayer.appendChild(_dock.element());
 
             if (_player.edition && !_isMobile) {
-                _rightClickMenu = new RightClick(_player, {
+                _rightClickMenu = new RightClick(_api, {
                     abouttext: _model.abouttext,
                     aboutlink: _model.aboutlink
                 });
             } else if (!_isMobile) {
-                _rightClickMenu = new RightClick(_player, {});
+                _rightClickMenu = new RightClick(_api, {});
             }
 
             //if (_model.playlistsize && _model.playlistposition && _model.playlistposition !== JW_CSS_NONE) {
