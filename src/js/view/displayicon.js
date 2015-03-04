@@ -15,9 +15,8 @@ define([
         JW_CSS_100PCT = '100%',
         JW_CSS_CENTER = 'center';
 
-    var DisplayIcon = function(_id, _controller, textStyle, textStyleOver) {
-        var _skin = _controller.skin,
-            _playerId = _controller.id.replace(/_instream$/, ''),
+    var DisplayIcon = function(_id, _skin, _api, textStyle, textStyleOver) {
+        var _playerId = _api.getContainer().id,
             _container,
             _bgSkin,
             _capLeftSkin,
@@ -39,7 +38,7 @@ define([
             _text = _createElement('jwtext', _container, textStyle, textStyleOver);
             _icon = _createElement('jwicon', _container);
 
-            _controller.jwAddEventListener(events.JWPLAYER_RESIZE, _setWidth);
+            _api.onResize(_setWidth);
 
             _hide();
             _redraw();

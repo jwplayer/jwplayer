@@ -27,9 +27,8 @@ define([
         fontweight: ''
     };
 
-    var Display = function(_controller, config) {
-        var _skin = _controller.skin,
-            _display, _preview,
+    var Display = function(_skin, _api, config, _model) { // TODO: Make this only _api and _model as config and _skin are stripped out
+        var _display, _preview,
             _displayTouch,
             _item,
             _image, _imageWidth, _imageHeight,
@@ -53,19 +52,25 @@ define([
 
         function _init() {
             _display = document.createElement('div');
-            _display.id = _controller.id + '_display';
+            _display.id = _api.getContainer().id;
             _display.className = 'jwdisplay';
 
             _preview = document.createElement('div');
-            _preview.className = 'jwpreview jw' + _controller.jwGetStretching();
+            _preview.className = 'jwpreview jw' + _model.stretching;
             _display.appendChild(_preview);
 
-            _controller.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
-            _controller.jwAddEventListener(events.JWPLAYER_PLAYLIST_ITEM, _itemHandler);
-            _controller.jwAddEventListener(events.JWPLAYER_PLAYLIST_COMPLETE, _playlistCompleteHandler);
-            _controller.jwAddEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
-            _controller.jwAddEventListener(events.JWPLAYER_ERROR, _errorHandler);
-            _controller.jwAddEventListener(events.JWPLAYER_PROVIDER_CLICK, _clickHandler);
+            //_api.addEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
+            _api.onBuffer(_stateHandler);
+            _api.onPlay(_stateHandler);
+            _api.onPause(_stateHandler);
+            _api.onIdle(_stateHandler);
+
+			_api.onPlaylistItem(_itemHandler);
+			_api.onPlaylistComplete(_playlistCompleteHandler);
+            _api.onError(_errorHandler);
+
+			_model.addEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler); // TODO: is there a more up-to-date event to listen to?  Do we listen to the provider via the model?
+            _model.addEventListener(events.JWPLAYER_PROVIDER_CLICK, _clickHandler);   // TODO: Who sends this event?  Do we listen to the provider via the model?
 
             if (!_isMobile) {
                 _display.addEventListener('click', _clickHandler, false);
@@ -84,16 +89,16 @@ define([
         function _clickHandler(evt) {
 
             if (_alternateClickHandler &&
-                    (_controller.jwGetControls() || _controller.jwGetState() === states.PLAYING)) {
+                    (_model.controls || _model.state === states.PLAYING)) {
                 _alternateClickHandler(evt);
                 return;
             }
 
-            if (!_isMobile || !_controller.jwGetControls()) {
+            if (!_isMobile || !_model.controls) {
                 _eventDispatcher.sendEvent(events.JWPLAYER_DISPLAY_CLICK);
             }
 
-            if (!_controller.jwGetControls()) {
+            if (!_model.controls) {
                 return;
             }
 
@@ -101,7 +106,7 @@ define([
             // Handle double-clicks for fullscreen toggle
             var currentClick = _getCurrentTime();
             if (_lastClick && currentClick - _lastClick < 500) {
-                _controller.jwSetFullscreen();
+                _api.setFullscreen();
                 _lastClick = undefined;
             } else {
                 _lastClick = _getCurrentTime();
@@ -126,7 +131,7 @@ define([
                 if (_inside(playSquare, evt.x, evt.y)) {
                     // Perform play/pause toggle below
                 } else if (_inside(fsSquare, evt.x, evt.y)) {
-                    _controller.jwSetFullscreen();
+                    _api.setFullscreen();
                     return;
                 } else {
                     _eventDispatcher.sendEvent(events.JWPLAYER_DISPLAY_CLICK);
@@ -136,13 +141,13 @@ define([
                 }
             }
 
-            switch (_controller.jwGetState()) {
+            switch (_model.state) {
                 case states.PLAYING:
                 case states.BUFFERING:
-                    _controller.jwPause();
+                    _api.pause(true);
                     break;
                 default:
-                    _controller.jwPlay();
+                    _api.play(true);
                     break;
             }
 
@@ -168,7 +173,7 @@ define([
                 overStyle = {
                     color: _config.overcolor
                 };
-            _button = new DisplayIcon(_display.id + '_button', _controller, outStyle, overStyle);
+            _button = new DisplayIcon(_display.id + '_button', _skin, _api, outStyle, overStyle);
             _display.appendChild(_button.element());
         }
 
@@ -191,7 +196,7 @@ define([
 
         function _itemHandler() {
             _clearError();
-            _item = _controller.jwGetPlaylist()[_controller.jwGetPlaylistIndex()];
+            _item = _model.playlist[_model.item];
             var newImage = _item ? _item.image : '';
             _previousState = undefined;
             _loadImage(newImage);
@@ -207,20 +212,20 @@ define([
             } else if (_image && !_hiding) {
                 _setVisibility(D_PREVIEW_CLASS, true);
             }
-            _updateDisplay(_controller.jwGetState());
+            _updateDisplay(_model.state);
         }
 
         function _playlistCompleteHandler() {
             _completedState = true;
             _setIcon('replay');
-            var item = _controller.jwGetPlaylist()[0];
+            var item = _model.playlist[0];
             _loadImage(item.image);
         }
 
         var _stateTimeout;
 
         function _getState() {
-            return _forced ? _forced : (_controller ? _controller.jwGetState() : states.IDLE);
+            return _forced ? _forced : (_model ? _model.state : states.IDLE);
         }
 
         function _stateHandler(evt) {
@@ -244,7 +249,7 @@ define([
                                 _setVisibility(D_PREVIEW_CLASS, true);
                             }
                             var disp = true;
-                            if (_controller._model && _controller._model.config.displaytitle === false) {
+                            if (_model && _model.config.displaytitle === false) {
                                 disp = false;
                             }
                             _setIcon('play', (_item && disp) ? _item.title : '');
@@ -317,7 +322,7 @@ define([
         function _imageLoaded() {
             _imageWidth = this.width;
             _imageHeight = this.height;
-            _updateDisplay(_controller.jwGetState());
+            _updateDisplay(_model.state);
             _redraw();
             if (_image) {
                 _css(_internalSelector(D_PREVIEW_CLASS), {
@@ -341,7 +346,7 @@ define([
 
         function _redraw() {
             if (_display.clientWidth * _display.clientHeight > 0) {
-                stretchUtils.stretch(_controller.jwGetStretching(),
+                stretchUtils.stretch(_model.stretching,
                     _preview, _display.clientWidth, _display.clientHeight, _imageWidth, _imageHeight);
             }
         }

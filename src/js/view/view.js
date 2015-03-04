@@ -539,7 +539,7 @@ define([
             _captions.addEventListener(events.JWPLAYER_CAPTIONS_LOADED, _captionsLoadedHandler);
             _controlsLayer.appendChild(_captions.element());
 
-            _display = new Display(_player, displaySettings);
+            _display = new Display(_player.skin, _api, displaySettings, _model);
             _display.addEventListener(events.JWPLAYER_DISPLAY_CLICK, function(evt) {
                 forward(evt);
                 _touchHandler();
