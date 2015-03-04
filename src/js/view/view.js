@@ -570,7 +570,7 @@ define([
                 //_playlistLayer.appendChild(_playlist.element());
             //}
 
-            _controlbar = new Controlbar(_player, cbSettings);
+            _controlbar = new Controlbar(_player.skin, _api, _model);
             _controlbar.addEventListener(events.JWPLAYER_USER_ACTION, _resetTapTimer);
 
             _controlsLayer.appendChild(_controlbar.element());

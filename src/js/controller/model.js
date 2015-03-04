@@ -216,6 +216,12 @@ define([
             }
             utils.saveCookie('mute', state);
             _this.mute = state;
+
+			// pulled in from the control bar
+            if (_this.mute && _this.volume === 0) {
+				_this.setVolume(20);
+            }
+
             if (_provider) {
                 _provider.mute(state);
             }
