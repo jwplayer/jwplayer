@@ -1,9 +1,9 @@
 define([
-    'providers/chooseprovider',
+    'providers/providers',
     'playlist/item',
     'playlist/source',
     'underscore'
-], function(chooseProvider, PlaylistItem, Source, _) {
+], function(Providers, PlaylistItem, Source, _) {
 
     var Playlist = function (playlist) {
         // Can be either an array of items or a single item.
@@ -30,34 +30,38 @@ define([
         return list;
     };
 
-    /** Filters the sources by taking the first playable type and eliminating sources of a different type **/
+    //  Choose from the sources a type which matches our most preferred provider
+    function _chooseType(sources) {
+        var m = _.map(sources, function(s) {
+            var provider = Providers.choose(s);
+            var priority = Providers.priority(provider);
+
+            return {
+                priority : priority,
+                type : s.type
+            };
+        });
+
+        var best = _.max(m, _.property('priority'));
+
+        return best.type;
+    }
+
+
+    // A playlist item may have multiple different sources, but we want to stick with one.
     var _filterSources = Playlist.filterSources = function (sources, androidhls) {
-        var selectedType,
-            newSources = [];
-
-        if (!sources) {
-            return;
-        }
-
-        _.each(sources, function (originalSource) {
-            originalSource.androidhls =  androidhls;
-            var source = Source(originalSource);
-
-            if (!source) {
+        sources = _.compact(_.map(sources, function(originalSource) {
+            if (! _.isObject(originalSource)) {
                 return;
             }
 
-            if (chooseProvider(source)) {
-                // We want sources of all the same type since they may be of different quality levels
-                selectedType = selectedType || source.type;
+            originalSource.androidhls =  androidhls;
+            return Source(originalSource);
+        }));
 
-                if (source.type === selectedType) {
-                    newSources.push(source);
-                }
-            }
-        });
+        var bestType = _chooseType(sources);
 
-        return newSources;
+        return _.where(sources, {type : bestType});
     };
 
     return Playlist;

@@ -2,12 +2,12 @@ define([
     'utils/helpers',
     'utils/stretching',
     'playlist/playlist',
-    'providers/chooseprovider',
+    'providers/providers',
     'underscore',
     'utils/eventdispatcher',
     'events/events',
     'events/states'
-], function(utils, stretchUtils, Playlist, chooseProvider, _, eventdispatcher, events, states) {
+], function(utils, stretchUtils, Playlist, Providers, _, eventdispatcher, events, states) {
 
     var Model = function(config) {
         var _this = this,
@@ -177,7 +177,7 @@ define([
                     // source is undefined when resetting index with empty playlist
                     return;
                 }
-                var Provider = chooseProvider(source);
+                var Provider = Providers.choose(source);
                 if (!Provider) {
                     throw new Error('no suitale provider found');
                 }
