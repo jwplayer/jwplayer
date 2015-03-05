@@ -18,8 +18,14 @@ define([
     }
 
     var priority = function(p) {
+        var idx = _.indexOf(providers, p);
+        if (idx < 0) {
+            // No provider matched
+            return Number.MIN_VALUE;
+        }
+
         // prefer earlier providers
-        return providers.length - _.indexOf(providers, p) - 1;
+        return providers.length - idx;
     };
 
     // When choosing a provider, go through this array and select the first that works for the source
