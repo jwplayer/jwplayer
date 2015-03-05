@@ -33,6 +33,10 @@ define([
             _source.type = extensionmap.extType(extension);
         }
 
+        if (!_source.type) {
+            return;
+        }
+
         // normalize types
         if (_source.type && _source.type.indexOf('/') > 0) {
             _source.type = extensionmap.mimeType(_source.type);

@@ -19,7 +19,6 @@ define([
             _config = new EmbedConfig(api.config),
             _width = _config.width,
             _height = _config.height,
-            _errorText = 'Error loading player: ',
             _oldContainer = document.getElementById(api.id),
             _pluginloader = plugins.loadPlugins(api.id, _config.plugins),
             _loader,
@@ -152,9 +151,9 @@ define([
 
         function _sourceError(evt) {
             if (evt && evt.message) {
-                _errorScreen('Error loading playlist: ' + evt.message);
+                _errorScreen('Error loading playlist', evt.message);
             } else {
-                _errorScreen(_errorText + 'No playable sources found');
+                _errorScreen('Error loading player: ', 'No playable sources found');
             }
         }
 
@@ -169,7 +168,7 @@ define([
             }, 0);
         }
 
-        function _errorScreen(message) {
+        function _errorScreen(message, body) {
             if (_errorOccurred) {
                 return;
             }
@@ -178,16 +177,14 @@ define([
             _oldContainer.parentNode.replaceChild(_container, _oldContainer);
 
             if (!_config.fallback) {
-                _dispatchSetupError(message, false);
+                _dispatchSetupError(message + body, false);
                 return;
             }
 
             _errorOccurred = true;
-            errorScreen(_container, message, _config);
-            _dispatchSetupError(message, true);
+            errorScreen(_container, message, body);
+            _dispatchSetupError(message + body, true);
         }
-
-        _this.errorScreen = _errorScreen;
 
         return _this;
     };
