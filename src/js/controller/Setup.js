@@ -122,7 +122,7 @@ define([
         function _loadPlaylist() {
             var type = utils.typeOf(_model.config.playlist);
             if (type === 'array') {
-                _completePlaylist(new Playlist(_model.config.playlist));
+                _completePlaylist(Playlist(_model.config.playlist));
             } else {
                 _error('Playlist type not supported: ' + type);
             }
