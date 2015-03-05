@@ -27,7 +27,7 @@ define([
         fontweight: ''
     };
 
-    var Display = function(_skin, _api, config, _model) { // TODO: Make this only _api and _model as config and _skin are stripped out
+    var Display = function(_skin, _api, _model) { // TODO: Make this only _api and _model as config and _skin are stripped out
         var _display, _preview,
             _displayTouch,
             _item,
@@ -42,7 +42,7 @@ define([
             _forced,
             _previousState,
             _config = _.extend({}, DEFAULT_SETTINGS,
-                _skin.getComponentSettings('display'), config
+                _skin.getComponentSettings('display'), _model.componentConfig('display')
             ),
             _eventDispatcher = new eventdispatcher(),
             _alternateClickHandler,
@@ -64,8 +64,8 @@ define([
             _api.onError(_errorHandler);
 
             _model.addEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
-			_model.addEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
-            _model.addEventListener(events.JWPLAYER_PROVIDER_CLICK, _clickHandler);
+			_model.addEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler); // TODO: is there a more up-to-date event to listen to?  Do we listen to the provider via the model?
+            _model.addEventListener(events.JWPLAYER_PROVIDER_CLICK, _clickHandler);   // TODO: Who sends this event?  Do we listen to the provider via the model?
 
             if (!_isMobile) {
                 _display.addEventListener('click', _clickHandler, false);
