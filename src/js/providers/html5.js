@@ -57,7 +57,6 @@ define([
                 loadedmetadata: _canPlayHandler,
                 loadstart: _generalHandler,
                 pause: _playHandler,
-                play: _playHandler,
                 playing: _playHandler,
                 progress: _progressHandler,
                 ratechange: _generalHandler,
@@ -71,6 +70,9 @@ define([
                 waiting: _bufferStateHandler,
                 webkitbeginfullscreen: _fullscreenBeginHandler,
                 webkitendfullscreen: _fullscreenEndHandler
+
+                // This is triggered when play is attempted, not when it start
+                //play: _playHandler,
             },
             // DOM container
             _container,
