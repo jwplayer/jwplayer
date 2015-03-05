@@ -551,7 +551,7 @@ define([
             }
             _controlsLayer.appendChild(_display.element());
 
-            _logo = new Logo(_api, _logoConfig);
+            _logo = new Logo(_api, _model);
             _controlsLayer.appendChild(_logo.element());
 
             _dock = new Dock(_skin, _api, _model);

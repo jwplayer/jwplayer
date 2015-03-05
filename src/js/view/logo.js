@@ -18,11 +18,12 @@ define([
         LOGO_CLASS = '.jwlogo';
 
 
-    var Logo = function(api, logoConfig) {
+    var Logo = function(api, _model) {
         var _api = api,
             _id = _api.getContainer().id + '_logo',
             _settings,
             _logo,
+            _logoConfig = _.extend({}, _model.componentConfig('logo')),
             _defaults = Logo.defaults,
             _showing = false;
 
@@ -41,7 +42,7 @@ define([
                 _defaults.link = LINK_DEFAULT + jwplayer.version + '&m=h&e=' + linkFlag;
             }
 
-            _settings = _.extend({}, _defaults, logoConfig);
+            _settings = _.extend({}, _defaults, _logoConfig);
             _settings.hide = (_settings.hide.toString() === 'true');
         }
 
