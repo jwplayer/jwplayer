@@ -14,6 +14,7 @@ package com.longtailvideo.jwplayer.model {
 		public var title:String			= "";
 		
 		protected var _duration:Number		= -1;
+		protected var _len:Number		    = -1;
 		protected var _provider:String		= "";
 		protected var _start:Number			= 0;
 		protected var _streamer:String		= "";
@@ -239,17 +240,16 @@ package com.longtailvideo.jwplayer.model {
 		public function get start():Number { return _start; }
 		public function set start(s:*):void { 
 			_start = Strings.seconds(String(s));
-			if (_start > _duration && _duration > 0) {
-				_duration += _start;
-			}
 		}
 
 		public function get duration():Number { return _duration; }
 		public function set duration(d:*):void { 
 			_duration = Strings.seconds(String(d));
-			if (_start > _duration && _duration > 0) {
-				_duration += _start;
-			}
+		}
+		
+		public function get len():Number { return _len; }
+		public function set len(l:*):void { 
+			_len = Strings.seconds(String(l));
 		}
 
 		private function levelType(level:Object):String {

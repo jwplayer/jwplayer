@@ -315,9 +315,18 @@
 						// Only send initial metadata
 						_metadata = true;
 						if (data.duration) {
+							
+							if(data.duration != _item.len && _item.len > -1)
+							{
+								data.duration = _item.len;
+							}
+							
 							_item.duration = data.duration;
+							
 							// Support old item.start call
-							if(_item.start) { seek(_item.start); }
+							// I'm removing this feature in place of the clipping to the start because they can do this 
+							// By listening to the Player's events per the API docs
+							//if(_item.start) { seek(_item.start); }
 						}
 						if (data.width) {
 							_video.width = data.width;
@@ -381,12 +390,12 @@
 				if(_item.duration > 0) {
 					_stream.resume();
 				} else {
-					_stream.play(_levels[_level].id);
+					_stream.play(_levels[_level].id, _item.start, _item.len );
 					setState(PlayerState.BUFFERING);
 				}
 			} else {
 				// Start stream.
-				_stream.play(_levels[_level].id);
+				_stream.play(_levels[_level].id, _item.start, _item.len);
 			}
 			clearInterval(_interval);
 			_interval = setInterval(positionInterval, 100);
@@ -664,7 +673,7 @@
 				_interval = setInterval(positionInterval, 100);
 				_transition = false;
 				_stream.close();
-				_stream.play(_levels[index].id);
+				_stream.play(_levels[index].id, _item.start, _item.len);
 				_stream.seek(_position);
 				setState(PlayerState.BUFFERING);
 			 } else {
@@ -673,6 +682,9 @@
 				var nso:NetStreamPlayOptions = new NetStreamPlayOptions();
 				nso.streamName = _levels[_level].id;
 				nso.transition = NetStreamPlayTransitions.SWITCH;
+				nso.offset = _item.start;
+				nso.len = _item.len;//_item.len;
+				
 				_stream.play2(nso);
 			}
 		}

@@ -137,6 +137,9 @@ package com.longtailvideo.jwplayer.model {
 
 		/** Duration of the file in seconds. **/
 		public function get duration():String { return playlistItem('duration'); }
+		
+		/** Duration of the file in seconds. **/
+		public function get len():String { return playlistItem('len'); }
 
 		/** Location of the mediafile or playlist to play. **/
 		public function get file():String { return playlistItem('file'); }
