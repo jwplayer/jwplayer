@@ -766,7 +766,7 @@ define([
         }
 
         function _fullscreen() {
-            _model.setFullscreen(); // TODO: NOT WORKING
+            _api.setFullscreen();
         }
 
         function _next() {
