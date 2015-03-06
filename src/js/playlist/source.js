@@ -51,7 +51,5 @@ define([
         return _source;
     };
 
-    Source.defaults = Defaults;
-
     return Source;
 });

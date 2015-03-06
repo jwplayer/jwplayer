@@ -30,7 +30,7 @@ define([
     };
 
     // A playlist item may have multiple different sources, but we want to stick with one.
-    var _filterSources = function(sources, providers, androidhls) {
+    var _filterSources = Playlist.filterSources = function(sources, providers, androidhls) {
         sources = _.compact(_.map(sources, function(originalSource) {
             if (! _.isObject(originalSource)) {
                 return;
