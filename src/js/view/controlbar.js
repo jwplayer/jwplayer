@@ -60,10 +60,9 @@ define([
 
 
     /** HTML5 Controlbar class * */
-    var Controlbar = function(_api, _config) {
-        _config = _config || {};
-        var _skin,
-            _dividerElement = _layoutElement('divider', CB_DIVIDER),
+    var Controlbar = function(_skin, _api, _model) {
+        _config = _model.componentConfig('controlbar') || {};
+        var _dividerElement = _layoutElement('divider', CB_DIVIDER),
             _defaults = {
                 margin: 8,
                 maxwidth: 800,
@@ -187,14 +186,13 @@ define([
         function _init() {
             _elements = {};
 
-            _id = _api.id + '_controlbar';
+            _id = _api.getContainer().id + '_controlbar';
             _duration = _position = 0;
 
             _controlbar = _createSpan();
             _controlbar.id = _id;
             _controlbar.className = 'jwcontrolbar';
 
-            _skin = _api.skin;
             _layout = _skin.getComponentLayout('controlbar');
             if (!_layout) {
                 _layout = _defaults.layout;
@@ -212,21 +210,23 @@ define([
         }
 
         function _addEventListeners() {
-            _api.jwAddEventListener(events.JWPLAYER_MEDIA_TIME, _timeUpdated);
-            _api.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
-            _api.jwAddEventListener(events.JWPLAYER_PLAYLIST_ITEM, _itemHandler);
-            _api.jwAddEventListener(events.JWPLAYER_MEDIA_MUTE, _volumeHandler);
-            _api.jwAddEventListener(events.JWPLAYER_MEDIA_VOLUME, _volumeHandler);
-            _api.jwAddEventListener(events.JWPLAYER_MEDIA_BUFFER, _bufferHandler);
-            _api.jwAddEventListener(events.JWPLAYER_FULLSCREEN, _fullscreenHandler);
-            _api.jwAddEventListener(events.JWPLAYER_PLAYLIST_LOADED, _playlistHandler);
-            _api.jwAddEventListener(events.JWPLAYER_MEDIA_LEVELS, _qualityHandler);
-            _api.jwAddEventListener(events.JWPLAYER_MEDIA_LEVEL_CHANGED, _qualityLevelChanged);
-            _api.jwAddEventListener(events.JWPLAYER_CAPTIONS_LIST, _captionsHandler);
-            _api.jwAddEventListener(events.JWPLAYER_CAPTIONS_CHANGED, _captionChanged);
-            _api.jwAddEventListener(events.JWPLAYER_RESIZE, _resizeHandler);
-            _api.jwAddEventListener(events.JWPLAYER_CAST_AVAILABLE, _castAvailable);
-            _api.jwAddEventListener(events.JWPLAYER_CAST_SESSION, _castSession);
+            _api.onFullscreen(_fullscreenHandler);
+            _api.onResize(_resizeHandler);
+            _api.onCaptionsList(_captionsHandler);
+            _api.onCaptionsChange(_captionChanged);
+
+            _model.addEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
+            _model.addEventListener(events.JWPLAYER_PLAYLIST_ITEM, _itemHandler);
+            _model.addEventListener(events.JWPLAYER_PLAYLIST_LOADED, _playlistHandler);
+            _model.addEventListener(events.JWPLAYER_MEDIA_BUFFER, _bufferHandler);
+            _model.addEventListener(events.JWPLAYER_MEDIA_TIME, _timeUpdated);
+            _model.addEventListener(events.JWPLAYER_MEDIA_MUTE, _volumeHandler);
+            _model.addEventListener(events.JWPLAYER_MEDIA_VOLUME, _volumeHandler);
+            _model.addEventListener(events.JWPLAYER_MEDIA_LEVELS, _qualityHandler);             // TODO: Unconfirmed
+            _model.addEventListener(events.JWPLAYER_MEDIA_LEVEL_CHANGED, _qualityLevelChanged); // TODO: Unconfirmed
+            _model.addEventListener(events.JWPLAYER_CAST_AVAILABLE, _castAvailable);            // TODO: Unconfirmed
+            _model.addEventListener(events.JWPLAYER_CAST_SESSION, _castSession);                // TODO: Unconfirmed
+
 
             if (!_isMobile) {
                 _controlbar.addEventListener('mouseover', function() {
@@ -260,7 +260,7 @@ define([
 
             // Positive infinity for live streams on iPad, 0 for live streams on Safari (HTML5)
             if (isLiveStream(evt)) {
-                _this.setText(_api.jwGetPlaylist()[_api.jwGetPlaylistIndex()].title || 'Live broadcast');
+                _this.setText(_model.playlist[_model.item].title || 'Live broadcast');  // TODO: Unconfirmed
 
                 // so that elapsed time doesn't display for live streams
                 _toggleTimesDisplay(false);
@@ -324,7 +324,7 @@ define([
 
         function _itemHandler(evt) {
             if (!_instreamMode) {
-                var tracks = _api.jwGetPlaylist()[evt.index].tracks,
+                var tracks = _model.playlist[evt.index].tracks,
                     tracksloaded = false,
                     cuesloaded = false;
                 _removeCues();
@@ -351,8 +351,8 @@ define([
         }
 
         function _volumeHandler() {
-            var muted = _api.jwGetMute();
-            _currentVolume = _api.jwGetVolume() / 100;
+            var muted = _model.mute;
+            _currentVolume = _model.volume / 100;
             _toggleButton('mute', muted || _currentVolume === 0);
             _setVolume(muted ? 0 : _currentVolume);
         }
@@ -465,7 +465,7 @@ define([
 
         // Bit of a hacky way to determine if the playlist is available
         function _sidebarShowing() {
-            return (!!document.querySelector('#' + _api.id + ' .jwplaylist') && !_api.jwGetFullscreen());
+            return (!!document.querySelector('#' + _api.getContainer().id + ' .jwplaylist') && !_model.fullscreen);
         }
 
         /**
@@ -688,19 +688,12 @@ define([
 
 
         function _play() {
-            if (_toggleStates.play) {
-                _api.jwPause();
-            } else {
-                _api.jwPlay();
-            }
+            _api.play();    // TODO: How does this change interact with buffering
         }
 
         function _mute() {
-            var muted = !_toggleStates.mute;
-            _api.jwSetMute(muted);
-            if (!muted && _currentVolume === 0) {
-                _api.jwSetVolume(20);
-            }
+            _model.setMute();
+
             _volumeHandler();
         }
 
@@ -752,7 +745,7 @@ define([
             if (pct > 0.9) {
                 pct = 1;
             }
-            _api.jwSetVolume(pct * 100);
+            _model.setVolume(pct * 100);
         }
 
         function _seek(pct) {
@@ -769,19 +762,19 @@ define([
             } else {
                 position = pct * _duration;
             }
-            _api.jwSeek(position);
+            _api.seek(position);
         }
 
         function _fullscreen() {
-            _api.jwSetFullscreen();
+            _api.setFullscreen();
         }
 
         function _next() {
-            _api.jwPlaylistNext();
+            _api.playlistNext();
         }
 
         function _prev() {
-            _api.jwPlaylistPrev();
+            _api.playlistPrev();
         }
 
         function _toggleButton(name, state) {
@@ -869,7 +862,7 @@ define([
 
         function _switchLevel(newlevel) {
             if (newlevel >= 0 && newlevel < _levels.length) {
-                _api.jwSetCurrentQuality(newlevel);
+                _api.setCurrentQuality(newlevel);
                 _clearHdTapTimeout();
                 _hdOverlay.hide();
             }
@@ -877,7 +870,7 @@ define([
 
         function _switchCaption(newcaption) {
             if (newcaption >= 0 && newcaption < _captions.length) {
-                _api.jwSetCurrentCaptions(newcaption);
+                _api.setCurrentCaptions(newcaption);
                 _clearCcTapTimeout();
                 _ccOverlay.hide();
             }
@@ -899,9 +892,9 @@ define([
 
         function _cast() {
             if (_castState.active) {
-                _api.jwOpenExtension();
+                _api.openExtension();   // TODO: Need to set up this so that we can cast
             } else {
-                _api.jwStartCasting();
+                _api.startCasting();    // TODO: Need to set up this so that we can cast
             }
         }
 
@@ -1066,7 +1059,7 @@ define([
         }
 
         function _idle() {
-            var currentState = _api.jwGetState();
+            var currentState = _model.state;
             return (currentState === states.IDLE);
         }
 
@@ -1093,7 +1086,7 @@ define([
         function _sliderDragStart() {
             _elements.timeRail.className = 'jwrail';
             if (!_idle()) {
-                _api.jwSeekDrag(true);
+                _model.seekDrag(true);
                 _draggingStart('time');
                 _showTimeTooltip();
                 _this.sendEvent(events.JWPLAYER_USER_ACTION);
@@ -1111,7 +1104,7 @@ define([
                 pct = 100;
             }
             if (evt.type === events.touchEvents.DRAG_END) {
-                _api.jwSeekDrag(false);
+                _model.seekDrag(false);
                 _elements.timeRail.className = 'jwrail';
                 _draggingEnd();
                 _sliderMapping.time(pct);
@@ -1151,7 +1144,7 @@ define([
 
                 if (name === 'time') {
                     if (!_idle()) {
-                        _api.jwSeekDrag(true);
+                        _model.seekDrag(true);
                         _draggingStart(name);
                     }
                 } else {
@@ -1178,7 +1171,7 @@ define([
             }
             if (evt.type === 'mouseup') {
                 if (name === 'time') {
-                    _api.jwSeekDrag(false);
+                    _model.seekDrag(false);
                 }
 
                 _elements[name + 'Rail'].className = 'jwrail';
@@ -1537,7 +1530,7 @@ define([
         }
 
         function _iFramedFullscreenIE() {
-            return (_iFramed && utils.isIE() && _api.jwGetFullscreen());
+            return (_iFramed && utils.isIE() && _seek.jwGetFullscreen());
         }
 
         function _redraw() {
@@ -1621,7 +1614,7 @@ define([
         };
 
         function _updateNextPrev() {
-            if (!_adMode && _api.jwGetPlaylist().length > 1 && !_sidebarShowing()) {
+            if (!_adMode && _model.playlist.length > 1 && !_sidebarShowing()) {
                 cssUtils.style(_elements.next, NOT_HIDDEN);
                 cssUtils.style(_elements.prev, NOT_HIDDEN);
             } else {
@@ -1881,7 +1874,7 @@ define([
                 return;
             }
             // Don't hide for mobile ads if controls are enabled
-            if (_instreamMode && _isMobile && _api.jwGetControls()) {
+            if (_instreamMode && _isMobile && _model.controls) {
                 return;
             }
             _this.visible = false;
