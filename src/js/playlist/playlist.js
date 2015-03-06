@@ -1,9 +1,8 @@
 define([
-    'providers/providers',
     'playlist/item',
     'playlist/source',
     'underscore'
-], function(Providers, PlaylistItem, Source, _) {
+], function(PlaylistItem, Source, _) {
 
     var Playlist = function (playlist) {
         // Can be either an array of items or a single item.
@@ -13,12 +12,12 @@ define([
     };
 
     /** Go through the playlist and choose a single playable type to play; remove sources of a different type **/
-    Playlist.filterPlaylist = function (playlist, androidhls) {
+    Playlist.filterPlaylist = function(playlist, providers, androidhls) {
         var list = [];
 
-        _.each(playlist, function (item) {
+        _.each(playlist, function(item) {
             item = _.extend({}, item);
-            item.sources = _filterSources(item.sources, androidhls);
+            item.sources = _filterSources(item.sources, providers, androidhls);
 
             if (!item.sources.length) {
                 return;
@@ -30,11 +29,27 @@ define([
         return list;
     };
 
+    // A playlist item may have multiple different sources, but we want to stick with one.
+    var _filterSources = function(sources, providers, androidhls) {
+        sources = _.compact(_.map(sources, function(originalSource) {
+            if (! _.isObject(originalSource)) {
+                return;
+            }
+
+            originalSource.androidhls =  androidhls;
+            return Source(originalSource);
+        }));
+
+        var bestType = _chooseType(sources, providers);
+
+        return _.where(sources, {type : bestType});
+    };
+
     //  Choose from the sources a type which matches our most preferred provider
-    function _chooseType(sources) {
+    function _chooseType(sources, providers) {
         var m = _.map(sources, function(s) {
-            var provider = Providers.choose(s);
-            var priority = Providers.priority(provider);
+            var provider = providers.choose(s);
+            var priority = providers.priority(provider);
 
             return {
                 priority : priority,
@@ -46,23 +61,6 @@ define([
 
         return best.type;
     }
-
-
-    // A playlist item may have multiple different sources, but we want to stick with one.
-    var _filterSources = Playlist.filterSources = function (sources, androidhls) {
-        sources = _.compact(_.map(sources, function(originalSource) {
-            if (! _.isObject(originalSource)) {
-                return;
-            }
-
-            originalSource.androidhls =  androidhls;
-            return Source(originalSource);
-        }));
-
-        var bestType = _chooseType(sources);
-
-        return _.where(sources, {type : bestType});
-    };
 
     return Playlist;
 });
