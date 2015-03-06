@@ -114,7 +114,7 @@ define([
                     break;
                 case 'object':
                 case 'array':
-                    _model.setPlaylist(new Playlist(item));
+                    _model.setPlaylist(Playlist(item));
                     break;
                 case 'number':
                     _model.setItem(item);

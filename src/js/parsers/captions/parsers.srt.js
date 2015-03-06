@@ -62,20 +62,15 @@ define([
                 idx = 0;
             }
             if (array.length > idx + 1 && array[idx + 1]) {
-                // Second line contains the start and end.
+                // This line contains the start and end.
                 var line = array[idx];
                 var index = line.indexOf(' --> ');
                 if (index > 0) {
                     entry.begin = _seconds(line.substr(0, index));
-                    entry.end = _seconds(line.substr(index + 5));
-                    // Third line starts the text.
-                    entry.text = array[++idx];
-                    // Arbitrary number of additional lines.
-                    while (++idx < array.length) {
-                        entry.text += '<br/>' + array[idx];
-                    }
+                    entry.end   = _seconds(line.substr(index + 5));
+                    // Remaining lines contain the text
+                    entry.text = array.slice(idx + 1).join('<br/>');
                 }
-
             }
             return entry;
         }

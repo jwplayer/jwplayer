@@ -177,7 +177,7 @@ module.exports = function(grunt) {
             '-compiler.library-path+=' + flashAirOrFlexSdk + '/frameworks/libs',
             '-default-background-color=0x000000',
             '-default-frame-rate=30',
-            '-target-player=11.0.0',
+            '-target-player=11.1.0',
             '-use-network=false'
         );
 

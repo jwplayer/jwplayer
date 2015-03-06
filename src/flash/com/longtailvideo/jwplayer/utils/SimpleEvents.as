@@ -41,7 +41,7 @@ public class SimpleEvents {
         if (!_events) {
             return this;
         }
-        if (!name && !callback) {
+        if (!name && callback === null) {
             _events = null;
             return this;
         }
@@ -49,7 +49,7 @@ public class SimpleEvents {
         var retain:Vector.<Function>;
         if (events) {
             _events[name] = retain = new <Function>[];
-            if (callback) {
+            if (callback is Function) {
                 for (var i:uint = 0, len:uint = events.length; i < len; i++) {
                     var handler:Function = events[i];
                     if (callback !== handler) {

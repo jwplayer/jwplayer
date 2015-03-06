@@ -1,9 +1,8 @@
 define([
-    'providers/chooseprovider',
     'playlist/item',
     'playlist/source',
     'underscore'
-], function(chooseProvider, PlaylistItem, Source, _) {
+], function(PlaylistItem, Source, _) {
 
     var Playlist = function (playlist) {
         // Can be either an array of items or a single item.
@@ -13,12 +12,12 @@ define([
     };
 
     /** Go through the playlist and choose a single playable type to play; remove sources of a different type **/
-    Playlist.filterPlaylist = function (playlist, androidhls) {
+    Playlist.filterPlaylist = function(playlist, providers, androidhls) {
         var list = [];
 
-        _.each(playlist, function (item) {
+        _.each(playlist, function(item) {
             item = _.extend({}, item);
-            item.sources = _filterSources(item.sources, androidhls);
+            item.sources = _filterSources(item.sources, providers, androidhls);
 
             if (!item.sources.length) {
                 return;
@@ -30,35 +29,38 @@ define([
         return list;
     };
 
-    /** Filters the sources by taking the first playable type and eliminating sources of a different type **/
-    var _filterSources = Playlist.filterSources = function (sources, androidhls) {
-        var selectedType,
-            newSources = [];
-
-        if (!sources) {
-            return;
-        }
-
-        _.each(sources, function (originalSource) {
-            originalSource.androidhls =  androidhls;
-            var source = Source(originalSource);
-
-            if (!source) {
+    // A playlist item may have multiple different sources, but we want to stick with one.
+    var _filterSources = function(sources, providers, androidhls) {
+        sources = _.compact(_.map(sources, function(originalSource) {
+            if (! _.isObject(originalSource)) {
                 return;
             }
 
-            if (chooseProvider(source)) {
-                // We want sources of all the same type since they may be of different quality levels
-                selectedType = selectedType || source.type;
+            originalSource.androidhls =  androidhls;
+            return Source(originalSource);
+        }));
 
-                if (source.type === selectedType) {
-                    newSources.push(source);
-                }
-            }
+        var bestType = _chooseType(sources, providers);
+
+        return _.where(sources, {type : bestType});
+    };
+
+    //  Choose from the sources a type which matches our most preferred provider
+    function _chooseType(sources, providers) {
+        var m = _.map(sources, function(s) {
+            var provider = providers.choose(s);
+            var priority = providers.priority(provider);
+
+            return {
+                priority : priority,
+                type : s.type
+            };
         });
 
-        return newSources;
-    };
+        var best = _.max(m, _.property('priority'));
+
+        return best.type;
+    }
 
     return Playlist;
 });

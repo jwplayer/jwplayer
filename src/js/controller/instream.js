@@ -76,7 +76,7 @@ define([
             // Keep track of the original player state
             _oldpos = _oldProvider.currentTime;
 
-            if (_controller.checkBeforePlay() || _oldpos === 0) {
+            if ( _controller.checkBeforePlay() || (_oldpos === 0 && !_model.getVideo().checkComplete()) ) {
                 // make sure video restarts after preroll
                 _oldpos = 0;
                 _oldstate = states.PLAYING;

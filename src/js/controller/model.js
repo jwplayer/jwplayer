@@ -2,16 +2,17 @@ define([
     'utils/helpers',
     'utils/stretching',
     'playlist/playlist',
-    'providers/chooseprovider',
+    'providers/providers',
     'underscore',
     'utils/eventdispatcher',
     'events/events',
     'events/states'
-], function(utils, stretchUtils, Playlist, chooseProvider, _, eventdispatcher, events, states) {
+], function(utils, stretchUtils, Playlist, Providers, _, eventdispatcher, events, states) {
 
     var Model = function(config) {
         var _this = this,
             // Video provider
+            _providers,
             _provider,
             // Saved settings
             _cookies = utils.getCookies(),
@@ -61,6 +62,8 @@ define([
             // This gets added later
             _this.playlist = [];
             _this.setItem(0);
+
+            _providers = new Providers(_this.config.primary);
         }
 
 
@@ -138,7 +141,8 @@ define([
 
         // TODO: make this a synchronous action; throw error if playlist is empty
         _this.setPlaylist = function(playlist) {
-            _this.playlist = Playlist.filterPlaylist(playlist, _this.androidhls);
+
+            _this.playlist = Playlist.filterPlaylist(playlist, _providers, _this.androidhls);
             if (_this.playlist.length === 0) {
                 _this.sendEvent(events.JWPLAYER_ERROR, {
                     message: 'Error loading playlist: No playable sources found'
@@ -177,9 +181,9 @@ define([
                     // source is undefined when resetting index with empty playlist
                     return;
                 }
-                var Provider = chooseProvider(source);
+                var Provider = _providers.choose(source);
                 if (!Provider) {
-                    throw new Error('no suitale provider found');
+                    throw new Error('No suitable provider found');
                 }
 
                 // If we are changing video providers
