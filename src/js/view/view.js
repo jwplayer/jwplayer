@@ -489,7 +489,7 @@ define([
                 }
             } else {
                 _stateHandler({
-                    newstate: _model.state     // TODO: MOBILE CURRENTLY UNTESTED
+                    newstate: _model.state
                 });
             }
             if (_showing) {

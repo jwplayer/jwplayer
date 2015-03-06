@@ -1086,7 +1086,7 @@ define([
         function _sliderDragStart() {
             _elements.timeRail.className = 'jwrail';
             if (!_idle()) {
-                _model.seekDrag(true);      // TODO: TEST, NEEDS MOBILE
+                _model.seekDrag(true);
                 _draggingStart('time');
                 _showTimeTooltip();
                 _this.sendEvent(events.JWPLAYER_USER_ACTION);
@@ -1104,7 +1104,7 @@ define([
                 pct = 100;
             }
             if (evt.type === events.touchEvents.DRAG_END) {
-                _model.seekDrag(false); // TODO: TEST, NEEDS MOBILE
+                _model.seekDrag(false);
                 _elements.timeRail.className = 'jwrail';
                 _draggingEnd();
                 _sliderMapping.time(pct);
@@ -1144,7 +1144,7 @@ define([
 
                 if (name === 'time') {
                     if (!_idle()) {
-                        _model.seekDrag(true); // TODO: TEST, NEEDS MOBILE
+                        _model.seekDrag(true);
                         _draggingStart(name);
                     }
                 } else {
