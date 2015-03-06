@@ -472,7 +472,7 @@ define([
 
         _this.callInternal = _callInternal;
 
-        _this.playerReady = function (obj) {
+        _this.playerReady = function () {
             _playerReady = true;
 
             _this.container = document.getElementById(_this.id);

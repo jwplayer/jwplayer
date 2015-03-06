@@ -50,10 +50,10 @@ module.exports = function(grunt) {
                     prefixWhitespace: true,
                     strictPropertyOrder: true,
                     zeroUnits: false,   // Occasionally set this to true, but it will misinterpret some values.
-                    includePaths: ['assets/less', 'assets/less/*']
+                    includePaths: ['styles/less', 'styles/less/*']
                 },
                 files: {
-                    'bin-debug/css/jwplayer.css' : 'assets/less/jwplayer.less'
+                    'bin-debug/css/jwplayer.css' : 'styles/less/jwplayer.less'
                 }
             }
 		},
@@ -119,8 +119,8 @@ module.exports = function(grunt) {
             },
 			css: {
                 files: [
-                    'assets/less/*.less',
-                    'assets/less/imports/*.less'],
+                    'styles/less/*.less',
+                    'styles/less/imports/*.less'],
                 tasks: ['build-css']
             },
             grunt: {
