@@ -34,8 +34,8 @@ define([
 
         function _setupConfig() {
             var linkFlag = 'o';
-            if (_api.edition) { // TODO: Figure out how to determine edition from the model.
-                linkFlag = _getLinkFlag(_api.edition());
+            if ( _model.edition && _model.edition() ) { // TODO: Figure out how to determine edition from the model.
+                linkFlag = _getLinkFlag(_model.edition());
             }
 
             if (linkFlag === 'o' || linkFlag === 'f') {

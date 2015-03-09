@@ -557,13 +557,13 @@ define([
             _dock = new Dock(_skin, _api, _model);
             _controlsLayer.appendChild(_dock.element());
 
-            if (_model.edition && !_isMobile) {        // TODO: figure out where to get edition.
-                _rightClickMenu = new RightClick(_api, {
+            if (_model.edition && !_isMobile) {
+                _rightClickMenu = new RightClick(_api, _model, {
                     abouttext: _model.abouttext,
                     aboutlink: _model.aboutlink
                 });
             } else if (!_isMobile) {
-                _rightClickMenu = new RightClick(_api, {});
+                _rightClickMenu = new RightClick(_api, _model, {});
             }
 
             //if (_model.playlistsize && _model.playlistposition && _model.playlistposition !== JW_CSS_NONE) {

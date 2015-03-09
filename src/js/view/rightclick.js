@@ -21,7 +21,7 @@ define([
         JW_CSS_NONE = 'none',
         JW_CSS_WHITE = '#FFF';
 
-    var Rightclick = function(api, config) {
+    var Rightclick = function(api, model, config) {
 
         var _api = api,
             _container, // = DOCUMENT.getElementById(_api.id),
