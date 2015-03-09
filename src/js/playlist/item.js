@@ -27,7 +27,7 @@ define([
         //utils.extend({}, PlaylistItem.defaults, config),
         _playlistItem.tracks = (config && utils.exists(config.tracks)) ? config.tracks : [];
 
-        if (_playlistItem.sources.length === 0) {
+        if (!_playlistItem.sources.length || _playlistItem.sources.length === 0) {
             if (config.levels) {
                 _playlistItem.sources = config.levels;
             } else {
