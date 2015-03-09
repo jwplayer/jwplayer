@@ -1,8 +1,9 @@
 define([
+    'utils/helpers',
     'utils/strings',
     'utils/extensionmap',
     'underscore'
-], function(strings, extensionmap, _) {
+], function(utils, strings, extensionmap, _) {
 
     var Defaults = {
         file: undefined,
@@ -27,10 +28,21 @@ define([
         // normalize for odd strings
         _source.file = strings.trim('' + _source.file);
 
+        // if type is given as a mimetype
+        if (_source.type && _source.type.indexOf('/') > 0) {
+            _source.type = extensionmap.mimeType(_source.type);
+        }
+
         // If type not included, we infer it from extension
         if (! _source.type) {
-            var extension = strings.extension(_source.file);
-            _source.type = extensionmap.extType(extension);
+            if (utils.isYouTube(_source.file, _source.type)) {
+                _source.type = 'youtube';
+            } else if (utils.isRtmp(_source.file, _source.type)) {
+                _source.type = 'rtmp';
+            } else {
+                var extension = strings.extension(_source.file);
+                _source.type = extensionmap.extType(extension);
+            }
         }
 
         if (!_source.type) {
@@ -38,9 +50,6 @@ define([
         }
 
         // normalize types
-        if (_source.type && _source.type.indexOf('/') > 0) {
-            _source.type = extensionmap.mimeType(_source.type);
-        }
         if (_source.type === 'm3u8') {
             _source.type = 'hls';
         }
