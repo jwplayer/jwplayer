@@ -1,8 +1,9 @@
 define([
+    'utils/helpers',
     'utils/strings',
     'utils/extensionmap',
     'underscore'
-], function(strings, extensionmap, _) {
+], function(utils, strings, extensionmap, _) {
 
     var Defaults = {
         file: undefined,
@@ -31,6 +32,13 @@ define([
         if (! _source.type) {
             var extension = strings.extension(_source.file);
             _source.type = extensionmap.extType(extension);
+
+            if (utils.isYouTube(_source.file, _source.type)) {
+                _source.type = 'youtube';
+            }
+            if (utils.isRtmp(_source.file, _source.type)) {
+                _source.type = 'rtmp';
+            }
         }
 
         if (!_source.type) {

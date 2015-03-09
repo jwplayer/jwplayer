@@ -8,7 +8,7 @@ define([
         // Can be either an array of items or a single item.
         playlist = (_.isArray(playlist) ? playlist : [playlist]);
 
-        return _.map(playlist, PlaylistItem);
+        return _.compact(_.map(playlist, PlaylistItem));
     };
 
     /** Go through the playlist and choose a single playable type to play; remove sources of a different type **/
