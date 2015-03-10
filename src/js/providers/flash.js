@@ -159,11 +159,16 @@ define([
 
                     }, this).on(events.JWPLAYER_MEDIA_META, function(e) {
                         // width and height are not always sent with duration
-                        if (e.metadta.duration > 0) {
+                        var metadata = e.metadata;
+                        if (metadata && metadata.duration > 0) {
+                            if (!metadata.width || !metadata.height) {
+                                // FIXME: HTML5 player needs these three properties in the first meta event
+                                console.error('invalid html5 meta event');
+                            }
                             this.sendEvent(e.type, {
-                                duration: e.metadta.duration,
-                                height:   e.metadta.height,
-                                width:    e.metadta.width
+                                duration: metadata.duration,
+                                height:   metadata.height,
+                                width:    metadata.width
                             });
                         }
                         // TODO: html5 player doesn't know what to do with custom metadata
