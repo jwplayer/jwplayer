@@ -1,8 +1,9 @@
 define([
     'playlist/item',
     'playlist/source',
-    'underscore'
-], function(PlaylistItem, Source, _) {
+    'underscore',
+    'providers/providers'
+], function(PlaylistItem, Source, _, Providers) {
 
     var Playlist = function (playlist) {
         // Can be either an array of items or a single item.
@@ -31,6 +32,12 @@ define([
 
     // A playlist item may have multiple different sources, but we want to stick with one.
     var _filterSources = Playlist.filterSources = function(sources, providers, androidhls) {
+
+        // legacy plugin support
+        if (!providers || !providers.choose) {
+            providers = new Providers(providers ? 'flash' : null);
+        }
+
         sources = _.compact(_.map(sources, function(originalSource) {
             if (! _.isObject(originalSource)) {
                 return;
