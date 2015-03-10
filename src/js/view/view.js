@@ -3,7 +3,7 @@ define([
     'events/events',
     'utils/eventdispatcher',
     'events/states',
-    'cast/display', // moved to commercial
+    'cast/display',
     'view/captions',
     'view/display',
     'view/dock',
@@ -95,39 +95,36 @@ define([
 
             _this = _.extend(this, new eventdispatcher());
 
-        function _init() {
+        _playerElement = _createElement('div', PLAYER_CLASS + ' playlist-' + _model.playlistposition);
+        _playerElement.id = _model.id;
+        _playerElement.tabIndex = 0;
 
-            _playerElement = _createElement('div', PLAYER_CLASS + ' playlist-' + _model.playlistposition);
-            _playerElement.id = _model.id;
-            _playerElement.tabIndex = 0;
+        _requestFullscreen =
+            _playerElement.requestFullscreen ||
+            _playerElement.webkitRequestFullscreen ||
+            _playerElement.webkitRequestFullScreen ||
+            _playerElement.mozRequestFullScreen ||
+            _playerElement.msRequestFullscreen;
+        _exitFullscreen =
+            document.exitFullscreen ||
+            document.webkitExitFullscreen ||
+            document.webkitCancelFullScreen ||
+            document.mozCancelFullScreen ||
+            document.msExitFullscreen;
+        _elementSupportsFullscreen = _requestFullscreen && _exitFullscreen;
 
-            _requestFullscreen =
-                _playerElement.requestFullscreen ||
-                _playerElement.webkitRequestFullscreen ||
-                _playerElement.webkitRequestFullScreen ||
-                _playerElement.mozRequestFullScreen ||
-                _playerElement.msRequestFullscreen;
-            _exitFullscreen =
-                document.exitFullscreen ||
-                document.webkitExitFullscreen ||
-                document.webkitCancelFullScreen ||
-                document.mozCancelFullScreen ||
-                document.msExitFullscreen;
-            _elementSupportsFullscreen = _requestFullscreen && _exitFullscreen;
-
-            if (_model.aspectratio) {
-                cssUtils.style(_playerElement, {
-                    display: 'inline-block'
-                });
-                _playerElement.className = _playerElement.className.replace(PLAYER_CLASS,
-                    PLAYER_CLASS + ' ' + ASPECT_MODE);
-            }
-
-            _resize(_model.width, _model.height);
-
-            var replace = document.getElementById(_model.id);
-            replace.parentNode.replaceChild(_playerElement, replace);
+        if (_model.aspectratio) {
+            cssUtils.style(_playerElement, {
+                display: 'inline-block'
+            });
+            _playerElement.className = _playerElement.className.replace(PLAYER_CLASS,
+                PLAYER_CLASS + ' ' + ASPECT_MODE);
         }
+
+        _resize(_model.width, _model.height);
+
+        var replace = document.getElementById(_model.id);
+        replace.parentNode.replaceChild(_playerElement, replace);
 
         function adjustSeek(amount) {
             var newSeek = utils.between(_model.position + amount, 0, this.getDuration());
@@ -289,7 +286,9 @@ define([
             if (_errorState) {
                 return;
             }
-            this._skin = _skin = skin;  // TODO: remove when adding in templates.  exposed so that controller can pull it off and make it acessable for instream
+
+            // TODO: remove when adding in templates. exposed for controller/instream
+            this._skin = _skin = skin;
 
             _container = _createElement('span', VIEW_MAIN_CONTAINER_CLASS);
             _container.id = _model.id + '_view';
@@ -372,11 +371,17 @@ define([
                     });
                     _this.forceControls(true);
                     _castDisplay.setState('connecting').setName(evt.deviceName).show();
-                    _model.addEventListener(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate); // TODO: CURRENTLY UNTESTED
-                    _model.addEventListener(events.JWPLAYER_CAST_AD_CHANGED, _castAdChanged);           // TODO: CURRENTLY UNTESTED
+
+                    // TODO: CURRENTLY UNTESTED
+                    _model.addEventListener(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
+                    _model.addEventListener(events.JWPLAYER_CAST_AD_CHANGED, _castAdChanged);
+
                 } else {
-                    _model.removeEventListener(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);  // TODO: CURRENTLY UNTESTED
-                    _model.removeEventListener(events.JWPLAYER_CAST_AD_CHANGED, _castAdChanged);            // TODO: CURRENTLY UNTESTED
+
+                    // TODO: CURRENTLY UNTESTED
+                    _model.removeEventListener(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
+                    _model.removeEventListener(events.JWPLAYER_CAST_AD_CHANGED, _castAdChanged);
+
                     _castDisplay.hide();
                     if (_controlbar.adMode()) {
                         _castAdsEnded();
@@ -385,7 +390,7 @@ define([
                         display: null
                     });
                     // redraw displayicon
-                    _stateHandler({     // TODO: CURRENTLY UNTESTED
+                    _stateHandler({
                         newstate: _model.state
                     });
                     _responsiveListener();
@@ -393,7 +398,7 @@ define([
 
             });
 
-            _stateHandler({     // TODO: CURRENTLY UNTESTED
+            _stateHandler({
                 newstate: states.IDLE
             });
 
@@ -554,22 +559,12 @@ define([
             _logo = new Logo(_api, _model);
             _controlsLayer.appendChild(_logo.element());
 
-            _dock = new Dock(_skin, _api, _model);
+            _dock = new Dock(_model.id + '_dock', _model.componentConfig('dock'), _api, _skin);
             _controlsLayer.appendChild(_dock.element());
 
-            if (_model.edition && !_isMobile) {
-                _rightClickMenu = new RightClick(_api, _model, {
-                    abouttext: _model.abouttext,
-                    aboutlink: _model.aboutlink
-                });
-            } else if (!_isMobile) {
-                _rightClickMenu = new RightClick(_api, _model, {});
+            if (!_isMobile) {
+                _rightClickMenu = new RightClick(_playerElement, _model);
             }
-
-            //if (_model.playlistsize && _model.playlistposition && _model.playlistposition !== JW_CSS_NONE) {
-                //_playlist = new html5.playlistcomponent(_player, {});
-                //_playlistLayer.appendChild(_playlist.element());
-            //}
 
             _controlbar = new Controlbar(_skin, _api, _model);
             _controlbar.addEventListener(events.JWPLAYER_USER_ACTION, _resetTapTimer);
@@ -1361,8 +1356,6 @@ define([
                 this.destroyInstream();
             }
         };
-
-        _init();
     };
 
     // Container styles

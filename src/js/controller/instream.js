@@ -95,7 +95,7 @@ define([
             }
 
             // Instream display
-            _instreamDisplay = new Display(_this);
+            _instreamDisplay = new Display(_view._skin, jwplayer(_controller.id), _adModel);
             _instreamDisplay.forceState(states.BUFFERING);
             // Create the container in which the controls will be placed
             _instreamContainer = document.createElement('div');
@@ -108,10 +108,7 @@ define([
             _instreamContainer.appendChild(_instreamDisplay.element());
 
             // Instream controlbar
-            var cbarConfig = {
-                fullscreen : _model.fullscreen
-            };
-            _cbar = new Controlbar(_this, cbarConfig);
+            _cbar = new Controlbar(_view._skin, jwplayer(_controller.id), _adModel);
             _cbar.instreamMode(true);
             _instreamContainer.appendChild(_cbar.element());
 
@@ -557,7 +554,7 @@ define([
             return _controller.jwGetControls();
         };
 
-        _this.skin = _controller.skin;
+        _this.skin = _view._skin;
         _this.id = _controller.id + '_instream';
 
         return _this;
