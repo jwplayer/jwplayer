@@ -12,9 +12,8 @@ define([
         OPTION_CLASS = 'jwoption';
 
     /** HTML5 Overlay class **/
-    var Menu = function(name, id, skin, changeHandler) {
-        var _id = id,
-            _changeHandler = changeHandler,
+    var Menu = function(name, _id, skin, changeHandler) {
+        var _changeHandler = changeHandler,
             _overlay = new Overlay(_id + '_overlay', skin),
             _settings = _.extend({
                 fontcase: undefined,
@@ -24,46 +23,43 @@ define([
                 activecolor: '#ffffff',
                 overcolor: '#ffffff'
             }, skin.getComponentSettings('tooltip')),
-            _container,
+            _container = _createElement(MENU_CLASS),
             _options = [];
 
-        function _init() {
-            _container = _createElement(MENU_CLASS);
-            _container.id = _id;
+        _container.id = _id;
 
-            var top = _getSkinElement('menuTop' + name),
-                menuOption = _getSkinElement('menuOption'),
-                menuOptionOver = _getSkinElement('menuOptionOver'),
-                menuOptionActive = _getSkinElement('menuOptionActive');
+        var top = _getSkinElement('menuTop' + name),
+            menuOption = _getSkinElement('menuOption'),
+            menuOptionOver = _getSkinElement('menuOptionOver'),
+            menuOptionActive = _getSkinElement('menuOptionActive');
 
-            if (top && top.image) {
-                var topImage = new Image();
-                topImage.src = top.src;
-                topImage.width = top.width;
-                topImage.height = top.height;
-                _container.appendChild(topImage);
-            }
-
-            if (menuOption) {
-                var selector = '#' + id + ' .' + OPTION_CLASS;
-
-                _css(selector, _.extend(_formatBackground(menuOption), {
-                    height: menuOption.height,
-                    color: _settings.fontcolor,
-                    'padding-left': menuOption.width,
-                    font: _settings.fontweight + ' ' + _settings.fontsize + 'px Arial,Helvetica,sans-serif',
-                    'line-height': menuOption.height,
-                    'text-transform': (_settings.fontcase === 'upper') ? 'uppercase' : undefined
-                }));
-                _css(selector + ':hover', _.extend(_formatBackground(menuOptionOver), {
-                    color: _settings.overcolor
-                }));
-                _css(selector + '.active', _.extend(_formatBackground(menuOptionActive), {
-                    color: _settings.activecolor
-                }));
-            }
-            _overlay.setContents(_container);
+        if (top && top.image) {
+            var topImage = new Image();
+            topImage.src = top.src;
+            topImage.width = top.width;
+            topImage.height = top.height;
+            _container.appendChild(topImage);
         }
+
+        if (menuOption) {
+            var selector = '#' + _id + ' .' + OPTION_CLASS;
+
+            _css(selector, _.extend(_formatBackground(menuOption), {
+                height: menuOption.height,
+                color: _settings.fontcolor,
+                'padding-left': menuOption.width,
+                font: _settings.fontweight + ' ' + _settings.fontsize + 'px Arial,Helvetica,sans-serif',
+                'line-height': menuOption.height,
+                'text-transform': (_settings.fontcase === 'upper') ? 'uppercase' : undefined
+            }));
+            _css(selector + ':hover', _.extend(_formatBackground(menuOptionOver), {
+                color: _settings.overcolor
+            }));
+            _css(selector + '.active', _.extend(_formatBackground(menuOptionActive), {
+                color: _settings.activecolor
+            }));
+        }
+        _overlay.setContents(_container);
 
         function _formatBackground(elem) {
             if (!(elem && elem.src)) {
@@ -144,8 +140,6 @@ define([
         this.offsetX = _overlay.offsetX;
         this.positionX = _overlay.positionX;
         this.constrainX = _overlay.constrainX;
-
-        _init();
     };
 
     function _class(className) {

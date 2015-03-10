@@ -61,8 +61,8 @@ define([
 
     /** HTML5 Controlbar class * */
     var Controlbar = function(_skin, _api, _model) {
-        _config = _model.componentConfig('controlbar') || {};
-        var _dividerElement = _layoutElement('divider', CB_DIVIDER),
+        var _config = _model.componentConfig('controlbar') || {},
+            _dividerElement = _layoutElement('divider', CB_DIVIDER),
             _defaults = {
                 margin: 8,
                 maxwidth: 800,
@@ -104,13 +104,13 @@ define([
             },
 
             _settings,
-            _layout,
-            _elements,
+            _layout = _skin.getComponentLayout('controlbar') || _defaults.layout,
+            _elements = {},
             _bgHeight,
-            _controlbar,
-            _id,
-            _duration,
-            _position,
+            _controlbar = _createSpan(),
+            _id = _api.getContainer().id + '_controlbar',
+            _duration = 0,
+            _position = 0,
             _levels = [],
             _currentQuality,
             _captions,
@@ -170,10 +170,63 @@ define([
                 time: _seek,
                 volume: _volume
             },
-
+            _groups = {},
             _overlays = {},
             _jwhidden = [],
             _this = _.extend(this, new eventdispatcher());
+
+        var _setTimeOverlay = (function() {
+            var lastText;
+
+            var thumbLoadedCallback = function(width) {
+                cssUtils.style(_timeOverlay.element(), {
+                    'width': width
+                });
+                _positionOverlay('time', _timeOverlay);
+            };
+
+            return function(sec) {
+                var thumbUrl = _timeOverlayThumb.updateTimeline(sec, thumbLoadedCallback);
+
+                var text;
+                if (_activeCue) {
+                    text = _activeCue.text;
+                    if (text && (text !== lastText)) {
+                        lastText = text;
+                        cssUtils.style(_timeOverlay.element(), {
+                            'width': (text.length > 32) ? 160 : ''
+                        });
+                    }
+                } else {
+                    text = utils.timeFormat(sec);
+                    if (!thumbUrl) {
+                        cssUtils.style(_timeOverlay.element(), {
+                            'width': ''
+                        });
+                    }
+                }
+                if (_timeOverlayText.innerHTML !== text) {
+                    _timeOverlayText.innerHTML = text;
+                }
+                _positionOverlay('time', _timeOverlay);
+            };
+        })();
+
+        _controlbar.id = _id;
+        _controlbar.className = 'jwcontrolbar';
+
+        cssUtils.clearCss(_internalSelector());
+        cssUtils.block(_id + 'build');
+        _createStyles();
+        _buildControlbar();
+        cssUtils.unblock(_id + 'build');
+        _addEventListeners();
+        _playlistHandler();
+        _castAvailable();
+
+        _this.visible = false;
+
+        setTimeout(_volumeHandler, 0);
 
         function _layoutElement(name, type, className) {
             return {
@@ -181,32 +234,6 @@ define([
                 type: type,
                 className: className
             };
-        }
-
-        function _init() {
-            _elements = {};
-
-            _id = _api.getContainer().id + '_controlbar';
-            _duration = _position = 0;
-
-            _controlbar = _createSpan();
-            _controlbar.id = _id;
-            _controlbar.className = 'jwcontrolbar';
-
-            _layout = _skin.getComponentLayout('controlbar');
-            if (!_layout) {
-                _layout = _defaults.layout;
-            }
-            cssUtils.clearCss(_internalSelector());
-            cssUtils.block(_id + 'build');
-            _createStyles();
-            _buildControlbar();
-            cssUtils.unblock(_id + 'build');
-            _addEventListeners();
-            setTimeout(_volumeHandler, 0);
-            _playlistHandler();
-            _this.visible = false;
-            _castAvailable();
         }
 
         function _addEventListeners() {
@@ -461,11 +488,6 @@ define([
             _toggleButton('cast', evt.active);
 
             _redraw();
-        }
-
-        // Bit of a hacky way to determine if the playlist is available
-        function _sidebarShowing() {
-            return (!!document.querySelector('#' + _api.getContainer().id + ' .jwplaylist') && !_model.fullscreen);
         }
 
         /**
@@ -1232,43 +1254,6 @@ define([
             _setTimeOverlay(_duration * position / width);
         }
 
-        var _setTimeOverlay = (function() {
-            var lastText;
-
-            var thumbLoadedCallback = function(width) {
-                cssUtils.style(_timeOverlay.element(), {
-                    'width': width
-                });
-                _positionOverlay('time', _timeOverlay);
-            };
-
-            return function(sec) {
-                var thumbUrl = _timeOverlayThumb.updateTimeline(sec, thumbLoadedCallback);
-
-                var text;
-                if (_activeCue) {
-                    text = _activeCue.text;
-                    if (text && (text !== lastText)) {
-                        lastText = text;
-                        cssUtils.style(_timeOverlay.element(), {
-                            'width': (text.length > 32) ? 160 : ''
-                        });
-                    }
-                } else {
-                    text = utils.timeFormat(sec);
-                    if (!thumbUrl) {
-                        cssUtils.style(_timeOverlay.element(), {
-                            'width': ''
-                        });
-                    }
-                }
-                if (_timeOverlayText.innerHTML !== text) {
-                    _timeOverlayText.innerHTML = text;
-                }
-                _positionOverlay('time', _timeOverlay);
-            };
-        })();
-
         function _styleTimeSlider() {
             if (!_elements.timeSliderRail) {
                 cssUtils.style(_elements.time, HIDDEN);
@@ -1388,8 +1373,6 @@ define([
 
             slider.className += ' jw' + direction;
         }
-
-        var _groups = {};
 
         function _buildLayout() {
             _buildGroup('left');
@@ -1614,7 +1597,7 @@ define([
         };
 
         function _updateNextPrev() {
-            if (!_adMode && _model.playlist.length > 1 && !_sidebarShowing()) {
+            if (!_adMode && _model.playlist.length > 1) {
                 cssUtils.style(_elements.next, NOT_HIDDEN);
                 cssUtils.style(_elements.prev, NOT_HIDDEN);
             } else {
@@ -1888,11 +1871,6 @@ define([
                 });
             }, JW_VISIBILITY_TIMEOUT);
         };
-
-
-        // Call constructor
-        _init();
-
     };
 
     /***************************************************************************

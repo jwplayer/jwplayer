@@ -26,72 +26,66 @@ define([
         };
 
     /** HTML5 Overlay class **/
-    var Overlay = function(id, skin, inverted) {
+    var Overlay = function(_id, _skin, _inverted) {
         var _this = this,
-            _id = id,
-            _skin = skin,
-            _inverted = inverted,
-            _container,
+            _container = _createElement(OVERLAY_CLASS.replace('.', '')),
             _contents,
             _arrow,
             _arrowElement,
             _settings = _.extend({}, _defaults, _skin.getComponentSettings('tooltip')),
             _borderSizes = {};
 
-        function _init() {
-            _container = _createElement(OVERLAY_CLASS.replace('.', ''));
-            _container.id = _id;
+        _container.id = _id;
 
-            var arrow = _createSkinElement('arrow', 'jwarrow');
-            _arrowElement = arrow[0];
-            _arrow = arrow[1];
+        var arrow = _createSkinElement('arrow', 'jwarrow');
+        _arrowElement = arrow[0];
+        _arrow = arrow[1];
 
-            cssUtils.style(_arrowElement, {
-                position: 'absolute',
-                //bottom: _inverted ? undefined : -1 * _arrow.height,
-                bottom: _inverted ? undefined : 0,
-                top: _inverted ? 0 : undefined,
-                width: _arrow.width,
-                height: _arrow.height,
-                left: '50%'
-            });
+        cssUtils.style(_arrowElement, {
+            position: 'absolute',
+            //bottom: _inverted ? undefined : -1 * _arrow.height,
+            bottom: _inverted ? undefined : 0,
+            top: _inverted ? 0 : undefined,
+            width: _arrow.width,
+            height: _arrow.height,
+            left: '50%'
+        });
 
-            _createBorderElement(TOP, LEFT);
-            _createBorderElement(BOTTOM, LEFT);
-            _createBorderElement(TOP, RIGHT);
-            _createBorderElement(BOTTOM, RIGHT);
-            _createBorderElement(LEFT);
-            _createBorderElement(RIGHT);
-            _createBorderElement(TOP);
-            _createBorderElement(BOTTOM);
+        _createBorderElement(TOP, LEFT);
+        _createBorderElement(BOTTOM, LEFT);
+        _createBorderElement(TOP, RIGHT);
+        _createBorderElement(BOTTOM, RIGHT);
+        _createBorderElement(LEFT);
+        _createBorderElement(RIGHT);
+        _createBorderElement(TOP);
+        _createBorderElement(BOTTOM);
 
-            var back = _createSkinElement('background', 'jwback');
-            cssUtils.style(back[0], {
-                left: _borderSizes.left,
-                right: _borderSizes.right,
-                top: _borderSizes.top,
-                bottom: _borderSizes.bottom
-            });
+        var back = _createSkinElement('background', 'jwback');
+        cssUtils.style(back[0], {
+            left: _borderSizes.left,
+            right: _borderSizes.right,
+            top: _borderSizes.top,
+            bottom: _borderSizes.bottom
+        });
 
-            _contents = _createElement(CONTENTS_CLASS, _container);
-            _css(_internalSelector(CONTENTS_CLASS) + ' *', {
-                color: _settings.fontcolor,
-                font: _settings.fontweight + ' ' + (_settings.fontsize) + 'px Arial,Helvetica,sans-serif',
-                'text-transform': (_settings.fontcase === 'upper') ? 'uppercase' : undefined
-            });
+        _contents = _createElement(CONTENTS_CLASS, _container);
+        _css(_internalSelector(CONTENTS_CLASS) + ' *', {
+            color: _settings.fontcolor,
+            font: _settings.fontweight + ' ' + (_settings.fontsize) + 'px Arial,Helvetica,sans-serif',
+            'text-transform': (_settings.fontcase === 'upper') ? 'uppercase' : undefined
+        });
 
 
-            if (_inverted) {
-                cssUtils.transform(_internalSelector('jwarrow'), 'rotate(180deg)');
-            }
-
-            cssUtils.style(_container, {
-                padding: (_borderSizes.top + 1) + 'px ' + _borderSizes.right +
-                    'px ' + (_borderSizes.bottom + 1) + 'px ' + _borderSizes.left + 'px'
-            });
-
-            _this.showing = false;
+        if (_inverted) {
+            cssUtils.transform(_internalSelector('jwarrow'), 'rotate(180deg)');
         }
+
+        cssUtils.style(_container, {
+            padding: (_borderSizes.top + 1) + 'px ' + _borderSizes.right +
+                'px ' + (_borderSizes.bottom + 1) + 'px ' + _borderSizes.left + 'px'
+        });
+
+        _this.showing = false;
 
         function _internalSelector(name) {
             return '#' + _id + (name ? ' .' + name : '');
@@ -253,10 +247,6 @@ define([
                 visibility: 'hidden'
             });
         };
-
-        // Call constructor
-        _init();
-
     };
 
     /*************************************************************

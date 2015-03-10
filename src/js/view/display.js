@@ -27,7 +27,8 @@ define([
         fontweight: ''
     };
 
-    var Display = function(_skin, _api, _model) { // TODO: Make this only _api and _model as config and _skin are stripped out
+    // TODO: Make this only _api and _model as config and _skin are stripped out
+    var Display = function(_skin, _api, _model) {
         var _display, _preview,
             _displayTouch,
             _item,
@@ -50,36 +51,44 @@ define([
 
         _.extend(this, _eventDispatcher);
 
-        function _init() {
-            _display = document.createElement('div');
-            _display.id = _api.getContainer().id;
-            _display.className = 'jwdisplay';
+        _display = document.createElement('div');
+        _display.id = _model.id + '_display';
+        _display.className = 'jwdisplay';
 
-            _preview = document.createElement('div');
-            _preview.className = 'jwpreview jw' + _model.stretching;
-            _display.appendChild(_preview);
+        _preview = document.createElement('div');
+        _preview.className = 'jwpreview jw' + _model.stretching;
+        _display.appendChild(_preview);
 
-			_api.onPlaylistItem(_itemHandler);
-			_api.onPlaylistComplete(_playlistCompleteHandler);
-            _api.onError(_errorHandler);
+        _api.onPlaylistItem(_itemHandler);
+        _api.onPlaylistComplete(_playlistCompleteHandler);
+        _api.onError(_errorHandler);
 
-            _model.addEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
-			_model.addEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler); // TODO: is there a more up-to-date event to listen to?  Do we listen to the provider via the model?
-            _model.addEventListener(events.JWPLAYER_PROVIDER_CLICK, _clickHandler);   // TODO: Who sends this event?  Do we listen to the provider via the model?
+        _model.addEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
+        // ???: is there a more up-to-date event to listen to?  Do we listen to the provider via the model?
+        _model.addEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
+        // Kyle: Who sends this event?  Do we listen to the provider via the model?
+        // Rob: Yes the provider.
+        _model.addEventListener(events.JWPLAYER_PROVIDER_CLICK, _clickHandler);
 
-            if (!_isMobile) {
-                _display.addEventListener('click', _clickHandler, false);
-            } else {
-                _displayTouch = new Touch(_display);
-                _displayTouch.addEventListener(events.touchEvents.TAP, _clickHandler);
-            }
-
-            _createIcons();
-
-            _stateHandler({
-                newstate: states.IDLE
-            });
+        if (!_isMobile) {
+            _display.addEventListener('click', _clickHandler, false);
+        } else {
+            _displayTouch = new Touch(_display);
+            _displayTouch.addEventListener(events.touchEvents.TAP, _clickHandler);
         }
+
+        _button = new DisplayIcon(_model.id, _display.id + '_button', _skin, _api, {
+            font: _config.fontweight + ' ' + _config.fontsize + 'px/' +
+                (parseInt(_config.fontsize, 10) + 3) + 'px Arial, Helvetica, sans-serif',
+            color: _config.fontcolor
+        }, {
+            color: _config.overcolor
+        });
+        _display.appendChild(_button.element());
+
+        _stateHandler({
+            newstate: states.IDLE
+        });
 
         function _clickHandler(evt) {
 
@@ -158,20 +167,6 @@ define([
         }
 
         this.clickHandler = _clickHandler;
-
-        function _createIcons() {
-            var outStyle = {
-                    font: _config.fontweight + ' ' + _config.fontsize + 'px/' +
-                        (parseInt(_config.fontsize, 10) + 3) + 'px Arial, Helvetica, sans-serif',
-                    color: _config.fontcolor
-                },
-                overStyle = {
-                    color: _config.overcolor
-                };
-            _button = new DisplayIcon(_display.id + '_button', _skin, _api, outStyle, overStyle);
-            _display.appendChild(_button.element());
-        }
-
 
         function _setIcon(name, text) {
             if (!_config.showicons) {
@@ -384,8 +379,6 @@ define([
         this.revertAlternateClickHandler = function() {
             _alternateClickHandler = null;
         };
-
-        _init();
     };
 
     _css(D_CLASS, {

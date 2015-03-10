@@ -25,11 +25,18 @@ define([
         JW_CSS_WHITE = '#FFFFFF';
 
     /** Displays closed captions or subtitles on top of the video. **/
-    var Captions = function(api, model) {
-        var _api = api,
-            _model = model,
-            options = _model.captions,
-            _display,
+    var Captions = function(_api, _model) {
+        _api.onReady(_setup);
+        _api.onPlaylistItem(_itemHandler);
+        _api.onFullscreen(_fullscreenHandler);
+        _api.onResize(_resizeHandler);
+        _api.onError(_errorHandler);
+
+        _model.addEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
+        _model.addEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
+        _model.addEventListener(events.JWPLAYER_MEDIA_TIME, _timeHandler);
+
+        var _display,
             _defaults = {
                 back: true,
                 color: JW_CSS_WHITE,
@@ -73,22 +80,9 @@ define([
 
         _.extend(this, _eventDispatcher);
 
-        function _init() {
-
-            _display = document.createElement('div');
-            _display.id = _api.getContainer().id + '_caption';
-            _display.className = 'jwcaptions';
-
-            _api.onReady(_setup);
-            _api.onPlaylistItem(_itemHandler);
-            _api.onFullscreen(_fullscreenHandler);
-            _api.onResize(_resizeHandler);
-            _api.onError(_errorHandler);
-
-            _model.addEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
-            _model.addEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
-            _model.addEventListener(events.JWPLAYER_MEDIA_TIME, _timeHandler);
-        }
+        _display = document.createElement('div');
+        _display.id = _model.id + '_caption';
+        _display.className = 'jwcaptions';
 
         function _resizeHandler() {
             _redraw(false);
@@ -146,8 +140,8 @@ define([
             var item = _model.playlist[_model.item],
                 tracks = item.tracks,
                 captions = [],
-                i = 0,
-                label = '',
+                i,
+                label,
                 defaultTrack = 0,
                 file = '',
                 cookies;
@@ -306,12 +300,13 @@ define([
 
         /** Setup captions when player is ready. **/
         function _setup() {
+            var captions = _model.captions;
             utils.foreach(_defaults, function(rule, val) {
-                if (options) {
-                    if (options[rule] !== undefined) {
-                        val = options[rule];
-                    } else if (options[rule.toLowerCase()] !== undefined) {
-                        val = options[rule.toLowerCase()];
+                if (captions) {
+                    if (captions[rule] !== undefined) {
+                        val = captions[rule];
+                    } else if (captions[rule.toLowerCase()] !== undefined) {
+                        val = captions[rule.toLowerCase()];
                     }
                 }
                 _options[rule] = val;
@@ -401,8 +396,6 @@ define([
                 _sendEvent(events.JWPLAYER_CAPTIONS_CHANGED, tracks, _selectedTrack);
             }
         };
-
-        _init();
     };
 
     cssUtils.css(D_CLASS, {

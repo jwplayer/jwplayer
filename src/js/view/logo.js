@@ -3,9 +3,8 @@ define([
     'utils/helpers',
     'utils/css',
     'events/events',
-    'events/states',
     'underscore'
-], function(Touch, utils, cssUtils, events, states, _) {
+], function(Touch, utils, cssUtils, events, _) {
 
     var _css = cssUtils.css,
 
@@ -18,9 +17,8 @@ define([
         LOGO_CLASS = '.jwlogo';
 
 
-    var Logo = function(api, _model) {
-        var _api = api,
-            _id = _api.getContainer().id + '_logo',
+    var Logo = function(_api, _model) {
+        var _id = _model.id + '_logo',
             _settings,
             _logo,
             _logoConfig = _.extend({}, _model.componentConfig('logo')),
@@ -34,7 +32,7 @@ define([
 
         function _setupConfig() {
             var linkFlag = 'o';
-            if ( _model.edition && _model.edition() ) { // TODO: Figure out how to determine edition from the model.
+            if ( _model.edition && _model.edition() ) {
                 linkFlag = _getLinkFlag(_model.edition());
             }
 
