@@ -19,12 +19,8 @@ define([
         config = config || {};
 
         var _playlistItem = {};
+        _.extend(_playlistItem, Defaults, config);
 
-        _.each(Defaults, function(val, key) {
-            _playlistItem[key] = config[key] || val;
-        });
-
-        //utils.extend({}, PlaylistItem.defaults, config),
         _playlistItem.tracks = (config && utils.exists(config.tracks)) ? config.tracks : [];
 
         if (_.isObject(_playlistItem.sources) && !_.isArray(_playlistItem.sources)) {
