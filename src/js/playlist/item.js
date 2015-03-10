@@ -58,6 +58,8 @@ define([
             _playlistItem.sources[i] = Source(_playlistItem.sources[i]);
         }
 
+        _playlistItem.sources = _.compact(_playlistItem.sources);
+
         if (_playlistItem.captions && !utils.exists(config.tracks)) {
             for (var j = 0; j < _playlistItem.captions.length; j++) {
                 _playlistItem.tracks.push(_playlistItem.captions[j]);
