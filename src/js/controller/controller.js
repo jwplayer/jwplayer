@@ -35,7 +35,7 @@ define([
         // Should be removed when we replace skins.  Should be necessary for instream (_controller.skin is called)
         this.skin = _view._skin;
 
-        _setup.addEventListener(events.JWPLAYER_READY, _readyHandler);
+        _setup.addEventListener(events.JWPLAYER_READY, _playerReady);
         _setup.addEventListener(events.JWPLAYER_ERROR, _setupErrorHandler);
         _setup.start();
 
@@ -55,45 +55,42 @@ define([
         });
 
 
-        function _readyHandler(evt) {
-            _playerReady(evt);
-        }
-
         function _setupErrorHandler(evt) {
             _this.trigger(events.JWPLAYER_SETUP_ERROR, evt);
         }
 
         function _playerReady(evt) {
-            if (!_ready) {
+            if (_ready) {
+                return;
+            }
 
-                _view.completeSetup();
-                _this.trigger(evt.type, evt);
+            _view.completeSetup();
+            _this.trigger(evt.type, evt);
 
-                // Tell the api that we are loaded
-                _api.playerReady(evt);
+            // Tell the api that we are loaded
+            _api.playerReady(evt);
 
-                _model.addGlobalListener(_forward);
-                _view.addGlobalListener(_forward);
+            _model.addGlobalListener(_forward);
+            _view.addGlobalListener(_forward);
 
-                _this.trigger(events.JWPLAYER_PLAYLIST_LOADED, {
-                    playlist: _this.jwGetPlaylist()
-                });
-                _this.trigger(events.JWPLAYER_PLAYLIST_ITEM, {
-                    index: _model.item
-                });
+            _this.trigger(events.JWPLAYER_PLAYLIST_LOADED, {
+                playlist: _this.jwGetPlaylist()
+            });
+            _this.trigger(events.JWPLAYER_PLAYLIST_ITEM, {
+                index: _model.item
+            });
 
-                _load();
+            _load();
 
-                if (_model.autostart && !utils.isMobile()) {
-                    _play();
-                }
+            if (_model.autostart && !utils.isMobile()) {
+                _play();
+            }
 
-                _ready = true;
+            _ready = true;
 
-                while (_queuedCalls.length > 0) {
-                    var queuedCall = _queuedCalls.shift();
-                    _callMethod(queuedCall.method, queuedCall.arguments);
-                }
+            while (_queuedCalls.length > 0) {
+                var queuedCall = _queuedCalls.shift();
+                _callMethod(queuedCall.method, queuedCall.arguments);
             }
         }
 
