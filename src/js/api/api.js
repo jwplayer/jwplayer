@@ -115,8 +115,8 @@ define([
             _itemMeta = {},
             _callbacks = {};
 
-        _this.container = container;
-        _this.id = container.id;
+        _this.container = document.createElement('div');
+        _this.id = _this.container.id = container.id;
 
         _this.setup = function (options) {
                 // Remove any players that may be associated to this DOM element
@@ -475,8 +475,6 @@ define([
         _this.playerReady = function (obj) {
             _playerReady = true;
 
-            _this.container = document.getElementById(_this.id);
-
             utils.foreach(_listeners, function (eventType) {
                 _addInternalListener(_controller, eventType);
             });
@@ -490,11 +488,10 @@ define([
             });
 
             _eventListener(events.JWPLAYER_VIEW_TAB_FOCUS, function (data) {
-                var container = _this.getContainer();
                 if (data.hasFocus === true) {
-                    addFocusBorder(container);
+                    addFocusBorder(_this.container);
                 } else {
-                    removeFocusBorder(container);
+                    removeFocusBorder(_this.container);
                 }
             });
 
