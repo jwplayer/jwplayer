@@ -4,29 +4,38 @@ define([
     'underscore'
 ], function(utils, Playlist, _) {
 
+    var Defaults = {
+        width: 480,
+        height: 270,
+        aspectratio: '',
+        //primary: 'html5',
+        base: utils.getScriptPath('jwplayer.js')
+    };
+
+    function normalizeSize(val) {
+        if (val.slice && val.slice(-2) === 'px') {
+            val = val.slice(0,-2);
+        }
+        return val;
+    }
+
     var config = function (options) {
 
         options = options || {};
 
-        var config = _.extend({}, {
-            fallback: true, // enable download embedder
-            width: 480,
-            height: 270,
-            aspectratio: '',
-            primary: 'html5',
-            base: options.base ? options.base : utils.getScriptPath('jwplayer.js')
-        }, jwplayer.defaults, options);
+        var config = _.extend({}, Defaults, jwplayer.defaults, options);
+        config.width = normalizeSize(config.width);
+        config.height = normalizeSize(config.height);
+
 
         _evaluateAspectRatio(config);
 
-
-        // If playlist is a string, then it's an RSS feed, let it be
         if (_.isString(config.playlist)) {
-            return config;
+            // If playlist is a string, then it's an RSS feed, let it be
+        } else {
+            // Else use the playlist obj/array or generate it from config
+            config.playlist = Playlist(config.playlist || config);
         }
-
-        // Else use the playlist obj/array or generate it from config
-        config.playlist = Playlist(config.playlist || config);
 
         return config;
     };
