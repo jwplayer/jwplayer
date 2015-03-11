@@ -1,138 +1,88 @@
 @dock-corner-radius: 0.25em;
 
 .jw-dock {
-	position: relative;
-	top: @ui-margin;
-	right: @ui-margin;
-	left: @ui-margin;
-	display:block;
-	opacity:1;
-	-webkit-transition:background .25s opacity .25s;
-	transition:background .25s opacity .25s;
+    position: relative;
+    top: @ui-margin;
+    right: @ui-margin;
+    left: @ui-margin;
+    display: block;
+    opacity: 1;
+    -webkit-transition: background .25s opacity .25s;
+    transition: background .25s opacity .25s;
 }
 
 .jw-dock > * {
-	float:left;
-	height:100%;
+    float: left;
+    height: 100%;
 }
 
 .jw-dock > .jw-overlay {
-	z-index:99;
-	float:none;
-	height:auto;
+    z-index: 99;
+    float: none;
+    height: auto;
 }
 
 .jw-dock-buttons {
-	height: 2em;
+    height: 2em;
 }
 
 .jw-dock-buttons .button {
-	position:relative;
-	width: 2.5em;
-	height: 2em;
-	background: @def-transparent-background-style;
-	background-size: @def-background-size;
-	border-radius: @dock-corner-radius;
-	filter: @def-ie8-background-filter;
+    position: relative;
+    width: 2.5em;
+    height: 2em;
+    background: @def-transparent-background-style;
+    background-size: @def-background-size;
+    border-radius: @dock-corner-radius;
+    filter: @def-ie8-background-filter;
 }
 
 .jw-dock-buttons .button:hover {
-	background: @def-background-style;
-	filter: @def-ie8-background-filter;
+    background: @def-background-style;
+    filter: @def-ie8-background-filter;
 }
 
 .jw-dock-buttons > * {
-	float:left;
-	height:100%;
+    float: left;
+    height: 100%;
 }
 
 .jw-dock-buttons .jw-divider {
-	display: none;
-	width: 0.5em;
+    display: none;
+    width: 0.5em;
 }
 
 .jw-dock-buttons .button ~ .jw-divider {
-	display:block;
+    display: block;
 }
 
-
 .jw-dock .button:hover .jw-overlay {
-	display: block;
+    display: block;
 }
 
 .jw-dock .button .jw-dock-icon {
-	width: 100%;
-	height: 100%;
-	background-position: 50% 50%;
-	background-repeat: no-repeat;
-	opacity: 0.75;
+    width: 100%;
+    height: 100%;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    opacity: 0.75;
 }
 
 .jw-dock .button .jw-overlay {
-	position: absolute;
-	top: 2em;
-	display: none;
-	width: auto;
-	padding: 0.5em;
-	white-space: nowrap;
-	background: @def-background-style;
-	background-size: @def-background-size;
-	border-radius: @dock-corner-radius;
-	filter: @def-ie8-background-filter;
-	-webkit-transition:opacity .25s;
-	transition:opacity .25s;
+    position: absolute;
+    top: 2em;
+    display: none;
+    width: auto;
+    padding: 0.5em;
+    white-space: nowrap;
+    background: @def-background-style;
+    background-size: @def-background-size;
+    border-radius: @dock-corner-radius;
+    filter: @def-ie8-background-filter;
+    -webkit-transition: opacity .25s;
+    transition: opacity .25s;
 }
 
 .jw-dock-buttons .button div {
-	-webkit-transition:opacity .25s;
-	transition:opacity .25s;
+    -webkit-transition: opacity .25s;
+    transition: opacity .25s;
 }
-
-/*
-#container_dock {
-height:32px;
-padding:8px;
-}
-
-#container_dock div.button {
-width:44px;
-cursor:pointer;
-border:none;
-}
-
-#container_dock div.button:hover {
-}
-
-#container_dock div.button:active {
-}
-
-#container_dock div.button > div {
-	opacity:0.75;
-}
-
-#container_dock div.button:hover > div {
-	opacity:1;
-}
-
-#container_dock div.button:active > div {
-	opacity:0.5;
-}
-
-#container_dock .jwoverlay {
-	top:40px;
-}
-
-#container_dock .divider {
-	width:4px;
-}
-
-#container.aspectMode .jw-aspect {
-display:block;
-}
-
-#container_dock {
-height:32px;
-padding:8px;
-margin-left:0;
-}
-*/

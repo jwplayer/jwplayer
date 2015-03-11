@@ -1,121 +1,120 @@
 @import "vars.less";
 
-
 .jwplayer .jw-slider {
-	.jw-rail, .jw-buffer, .jw-progress, .jw-thumb {
-		position:absolute;
-		cursor:pointer;
-		border-radius: 0.5em;
-	}
+    .jw-rail, .jw-buffer, .jw-progress, .jw-thumb {
+        position: absolute;
+        cursor: pointer;
+        border-radius: 0.5em;
+    }
 
-	.jw-rail, .jw-buffer {
-		height: @def-rail-width-padding;
-		border-radius: 0.5em;
-	}
+    .jw-rail, .jw-buffer {
+        height: @def-rail-width-padding;
+        border-radius: 0.5em;
+    }
 
-	.jw-rail {
-		box-shadow: @rail-glow;
-	}
+    .jw-rail {
+        box-shadow: @rail-glow;
+    }
 
-	.jw-progress {
-		height: @def-rail-width-padding;
-		background: @def-progress-color;
-		background-color: @progress-color;
-	}
+    .jw-progress {
+        height: @def-rail-width-padding;
+        background: @def-progress-color;
+        background-color: @progress-color;
+    }
 
-	.jw-buffer {
-		background-color: @buffer-color;
-	}
+    .jw-buffer {
+        background-color: @buffer-color;
+    }
 
-	.jw-progress, .jw-buffer {
-		border: @def-border;
-	}
+    .jw-progress, .jw-buffer {
+        border: @def-border;
+    }
 
-	.jw-rail {
-		background-color: @rail-color;
-		border: @def-border;
-	}
+    .jw-rail {
+        background-color: @rail-color;
+        border: @def-border;
+    }
 
-	.jw-cue, .jw-thumb button {	
-		position: absolute;
-		z-index:1;
-		width: 1em;
-		height: 1em;
-		font-size: @volume-rail-width;
-		color: @thumb-color;
-		cursor:pointer;
-	}
+    .jw-cue, .jw-thumb button {
+        position: absolute;
+        z-index: 1;
+        width: 1em;
+        height: 1em;
+        font-size: @volume-rail-width;
+        color: @thumb-color;
+        cursor: pointer;
+    }
 
-	.jw-cue {
-		font-size: 0.5em;
-	}
+    .jw-cue {
+        font-size: 0.5em;
+    }
 }
 
 .jwplayer .jw-hori-slider {
-	top: @def-rail-width-padding;
-	width: @volume-rail-length;
-	height: @volume-rail-width;
+    top: @def-rail-width-padding;
+    width: @volume-rail-length;
+    height: @volume-rail-width;
 
-	.jw-rail, .jw-buffer, .jw-progress {
-		width: 100%;
-	}
+    .jw-rail, .jw-buffer, .jw-progress {
+        width: 100%;
+    }
 
-	.jw-progress {
-		border-top-right-radius: 0;
-		border-bottom-right-radius: 0;
-		border-bottom-left-radius: 0.5em;
-		border-top-left-radius: 0.5em;
-	}
+    .jw-progress {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0.5em;
+        border-top-left-radius: 0.5em;
+    }
 
-	.jw-progress, .jw-buffer {
-		border: @def-border;
-		border-style: solid none solid;
-	}
+    .jw-progress, .jw-buffer {
+        border: @def-border;
+        border-style: solid none solid;
+    }
 
-	.jw-rail-group, .rail, .progress {
-		width: 100%;
-	}
+    .jw-rail-group, .rail, .progress {
+        width: 100%;
+    }
 
-	.jw-thumb button {
-		margin-left: -0.5em;
-	}
+    .jw-thumb button {
+        margin-left: -0.5em;
+    }
 }
 
 .jwplayer .jw-vert-slider {
-	width: @def-rail-width;
-	height: @volume-rail-length;
+    width: @def-rail-width;
+    height: @volume-rail-length;
 
-	.jw-rail, .jw-buffer, .jw-progress {
-		bottom: 0;
-		height: 100%;
-	}
+    .jw-rail, .jw-buffer, .jw-progress {
+        bottom: 0;
+        height: 100%;
+    }
 
-	.jw-progress {
-		border-top-right-radius: 0;
-		border-bottom-right-radius: 0.5em;
-		border-bottom-left-radius: 0.5em;
-		border-top-left-radius: 0;
-	}
+    .jw-progress {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0.5em;
+        border-bottom-left-radius: 0.5em;
+        border-top-left-radius: 0;
+    }
 
-	.jw-progress, .jw-buffer {
-		border-style: none solid solid solid;
-	}
+    .jw-progress, .jw-buffer {
+        border-style: none solid solid solid;
+    }
 
-	.jw-rail-group, .jw-rail, .jw-progress {
-		bottom: 0;
-		width: @volume-rail-width;
-		height: 100%;
-	}
+    .jw-rail-group, .jw-rail, .jw-progress {
+        bottom: 0;
+        width: @volume-rail-width;
+        height: 100%;
+    }
 
-	.jw-thumb {
-		width: @volume-rail-width;
-		height: @volume-rail-width;
-		margin-bottom: @volume-rail-width/-2;
-	}
+    .jw-thumb {
+        width: @volume-rail-width;
+        height: @volume-rail-width;
+        margin-bottom: @volume-rail-width/-2;
+    }
 }
 
-.jwplayer .jw-time{
-	right:0;
-	left:0;
-	width: 100%;
+.jwplayer .jw-time {
+    right: 0;
+    left: 0;
+    width: 100%;
 }

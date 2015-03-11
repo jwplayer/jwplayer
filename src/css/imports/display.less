@@ -1,73 +1,72 @@
 @import "vars.less";
 
 .jw-display {
-	position:absolute;
-	width:100%;
-	height:100%;
-	overflow:hidden;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
 }
 
 .jw-display .jw-preview {
-	position:absolute;
-	width:100%;
-	height:100%;
-	overflow:hidden;
-	background:50% 50% no-repeat rgb(0,0,0);
-	background-size: contain;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: 50% 50% no-repeat rgb(0, 0, 0);
+    background-size: contain;
 }
 
 .jw-display, .jw-display * {
-	-webkit-transition:opacity .25s color .25s;
-	transition:opacity .25s color .25s;
+    -webkit-transition: opacity .25s color .25s;
+    transition: opacity .25s color .25s;
 }
 
 .jwplayer .jw-display-icon {
-	position: relative;
-	top:50%;
-	display:table;
-	float:none;
-	height: 3.5em;
-	padding:0 1em;
-	margin-top: -1.75em;
-	margin-right:auto;
-	margin-left:auto;
-	cursor: pointer;
+    position: relative;
+    top: 50%;
+    display: table;
+    float: none;
+    height: 3.5em;
+    padding: 0 1em;
+    margin-top: -1.75em;
+    margin-right: auto;
+    margin-left: auto;
+    cursor: pointer;
 
-	background: @def-transparent-background-style;
-	background-size: @def-background-size;
-	border-radius: @ui-corner-round;
+    background: @def-transparent-background-style;
+    background-size: @def-background-size;
+    border-radius: @ui-corner-round;
 
-	filter: @def-ie8-background-filter;
+    filter: @def-ie8-background-filter;
 }
 
 .jwplayer:hover .jw-display-icon {
-	background: @def-background-style;
-	background-size: @def-background-size;
-	filter: @def-ie8-background-filter;
+    background: @def-background-style;
+    background-size: @def-background-size;
+    filter: @def-ie8-background-filter;
 }
 
 .jwplayer .jw-display-icon div {
-	position:relative;
-	display:table-cell;
-	padding: 0.25em;
-	vertical-align:middle!important;
-	background-position:50% 50%;
-	background-repeat:no-repeat;
+    position: relative;
+    display: table-cell;
+    padding: 0.25em;
+    vertical-align: middle !important;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
 }
 
 .jwplayer .jw-display-icon .jw-text {
-	max-width:300px;
-	padding: 0;
-	overflow-y:hidden;
-	font-size:0.75em;
+    max-width: 300px;
+    padding: 0;
+    overflow-y: hidden;
+    font-size: 0.75em;
 }
 
 .jwplayer .jw-display-icon .jw-icon button {
-	font-size: 2em;
+    font-size: 2em;
 }
 
 .jwplayer .jwpreview {
-	opacity:1;
-	visibility:visible;
+    opacity: 1;
+    visibility: visible;
 }
-
