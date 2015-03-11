@@ -307,7 +307,7 @@ define([
      * Iterates over an object and executes a callback function for each property (if it exists)
      * This is a safe way to iterate over objects if another script has modified the object prototype
      */
-    var _foreach = utils.foreach = function (aData, fnEach) {
+    utils.foreach = function (aData, fnEach) {
         var key, val;
         for (key in aData) {
             if (_typeOf(aData.hasOwnProperty) === 'function') {
