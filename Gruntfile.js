@@ -44,28 +44,19 @@ module.exports = function(grunt) {
                     compress: false,    // Set to false to lint
                     noIDs: true,
                     noJSPrefix: true,
-                    noOverqualifying: true,
+                    noOverqualifying: false,
                     noUnderscores: true,
                     noUniversalSelectors: true,
                     prefixWhitespace: true,
                     strictPropertyOrder: true,
                     zeroUnits: false,   // Occasionally set this to true, but it will misinterpret some values.
                     includePaths: ['src/less', 'src/less/*']
+                },
+                files: {
+					'bin-debug/jwplayer.css' : 'src/less/jwplayer.less'
                 }
             }
 		},
-
-
-		autoprefixer: {
-            options: {
-	            browsers: ['chrome 32']
-	        },
-	        dist: {
-	            src: 'bin-debug/css/jwplayer.css',
-	            dest: 'bin-debug/css/jwplayer.css'
-	        }
-	    },
-
 
         uglify : {
             options: {
