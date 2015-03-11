@@ -221,32 +221,6 @@ define([
         return typeofString;
     };
 
-    /* Normalizes differences between Flash and HTML5 internal players' event responses. */
-    utils.translateEventResponse = function (type, eventProperties) {
-        var translated = _.extend({}, eventProperties);
-        if (type === Events.JWPLAYER_FULLSCREEN && !translated.fullscreen) {
-            translated.fullscreen = (translated.message === 'true');
-            delete translated.message;
-        } else if (typeof translated.data === 'object') {
-            // Takes ViewEvent 'data' block and moves it up a level
-            var data = translated.data;
-            delete translated.data;
-            translated = _.extend(translated, data);
-
-        } else if (typeof translated.metadata === 'object') {
-            _deepReplaceKeyName(translated.metadata,
-                ['__dot__', '__spc__', '__dsh__', '__default__'], ['.', ' ', '-', 'default']);
-        }
-
-        var rounders = ['position', 'duration', 'offset'];
-        _foreach(rounders, function (rounder, val) {
-            if (translated[val]) {
-                translated[val] = Math.round(translated[val] * 1000) / 1000;
-            }
-        });
-
-        return translated;
-    };
 
     /**
      * If the browser has flash capabilities, return the flash version
@@ -289,50 +263,6 @@ define([
             }
         }
         return '';
-    };
-
-    /**
-     * Recursively traverses nested object, replacing key names containing a
-     * search string with a replacement string.
-     *
-     * @param searchString
-     *            The string to search for in the object's key names
-     * @param replaceString
-     *            The string to replace in the object's key names
-     * @returns The modified object.
-     */
-    var _deepReplaceKeyName = utils.deepReplaceKeyName = function (obj, searchString, replaceString) {
-        switch (_typeOf(obj)) {
-            case 'array':
-                for (var i = 0; i < obj.length; i++) {
-                    obj[i] = _deepReplaceKeyName(obj[i],
-                        searchString, replaceString);
-                }
-                break;
-            case 'object':
-                _foreach(obj, function (key, val) {
-                    var searches;
-                    if (searchString instanceof Array && replaceString instanceof Array) {
-                        if (searchString.length !== replaceString.length) {
-                            return;
-                        } else {
-                            searches = searchString;
-                        }
-                    } else {
-                        searches = [searchString];
-                    }
-                    var newkey = key;
-                    for (var i = 0; i < searches.length; i++) {
-                        newkey = newkey.replace(new RegExp(searchString[i], 'g'), replaceString[i]);
-                    }
-                    obj[newkey] = _deepReplaceKeyName(val, searchString, replaceString);
-                    if (key !== newkey) {
-                        delete obj[key];
-                    }
-                });
-                break;
-        }
-        return obj;
     };
 
 

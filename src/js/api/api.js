@@ -17,6 +17,22 @@ define([
         utils.removeClass(container, 'jw-tab-focus');
     }
 
+    var normalizeOutput = function() {
+        var rounders = ['position', 'duration', 'offset'];
+
+        function round(val) {
+            if (this[val]) {
+                this[val] = Math.round(this[val] * 1000) / 1000;
+            }
+        }
+
+        return function (obj) {
+            _.each(rounders, round, obj);
+            return obj;
+        };
+    }();
+
+
     var _internalFuncsToGenerate = [
         'getBuffer',
         'getCaptionsList',
@@ -434,7 +450,7 @@ define([
             var listeners = _listeners[type];
             if (listeners) {
                 listeners = listeners.slice(0); //copy array
-                var args = utils.translateEventResponse(type, arguments[1]);
+                var args = normalizeOutput(arguments[1]);
                 for (var l = 0; l < listeners.length; l++) {
                     var fn = listeners[l];
                     if (typeof fn === 'function') {
