@@ -3,7 +3,7 @@ define([
     'events/events',
     'utils/eventdispatcher',
     'events/states',
-    'cast/display', // moved to commercial
+    'cast/display',
     'view/captions',
     'view/display',
     'view/dock',
@@ -49,9 +49,10 @@ define([
         JW_CSS_NONE = 'none',
         JW_CSS_BLOCK = 'block';
 
-    var View = function(_player, _model) {
+    var View = function(_api, _model) {
         var _playerElement,
             _container,
+            _skin,
             _controlsLayer,
             _aspectLayer,
             _playlistLayer,
@@ -94,39 +95,36 @@ define([
 
             _this = _.extend(this, new eventdispatcher());
 
-        function _init() {
+        _playerElement = _createElement('div', PLAYER_CLASS + ' playlist-' + _model.playlistposition);
+        _playerElement.id = _model.id;
+        _playerElement.tabIndex = 0;
 
-            _playerElement = _createElement('div', PLAYER_CLASS + ' playlist-' + _model.playlistposition);
-            _playerElement.id = _model.id;
-            _playerElement.tabIndex = 0;
+        _requestFullscreen =
+            _playerElement.requestFullscreen ||
+            _playerElement.webkitRequestFullscreen ||
+            _playerElement.webkitRequestFullScreen ||
+            _playerElement.mozRequestFullScreen ||
+            _playerElement.msRequestFullscreen;
+        _exitFullscreen =
+            document.exitFullscreen ||
+            document.webkitExitFullscreen ||
+            document.webkitCancelFullScreen ||
+            document.mozCancelFullScreen ||
+            document.msExitFullscreen;
+        _elementSupportsFullscreen = _requestFullscreen && _exitFullscreen;
 
-            _requestFullscreen =
-                _playerElement.requestFullscreen ||
-                _playerElement.webkitRequestFullscreen ||
-                _playerElement.webkitRequestFullScreen ||
-                _playerElement.mozRequestFullScreen ||
-                _playerElement.msRequestFullscreen;
-            _exitFullscreen =
-                document.exitFullscreen ||
-                document.webkitExitFullscreen ||
-                document.webkitCancelFullScreen ||
-                document.mozCancelFullScreen ||
-                document.msExitFullscreen;
-            _elementSupportsFullscreen = _requestFullscreen && _exitFullscreen;
-
-            if (_model.aspectratio) {
-                cssUtils.style(_playerElement, {
-                    display: 'inline-block'
-                });
-                _playerElement.className = _playerElement.className.replace(PLAYER_CLASS,
-                    PLAYER_CLASS + ' ' + ASPECT_MODE);
-            }
-
-            _resize(_model.width, _model.height);
-
-            var replace = document.getElementById(_model.id);
-            replace.parentNode.replaceChild(_playerElement, replace);
+        if (_model.aspectratio) {
+            cssUtils.style(_playerElement, {
+                display: 'inline-block'
+            });
+            _playerElement.className = _playerElement.className.replace(PLAYER_CLASS,
+                PLAYER_CLASS + ' ' + ASPECT_MODE);
         }
+
+        _resize(_model.width, _model.height);
+
+        var replace = document.getElementById(_model.id);
+        replace.parentNode.replaceChild(_playerElement, replace);
 
         function adjustSeek(amount) {
             var newSeek = utils.between(_model.position + amount, 0, this.getDuration());
@@ -288,7 +286,9 @@ define([
             if (_errorState) {
                 return;
             }
-            _player.skin = skin;
+
+            // TODO: remove when adding in templates. exposed for controller/instream
+            this._skin = _skin = skin;
 
             _container = _createElement('span', VIEW_MAIN_CONTAINER_CLASS);
             _container.id = _model.id + '_view';
@@ -344,11 +344,13 @@ define([
             jwplayer(_model.id).onAdError(function() {
                 _controlbar.adMode(false);
             });
-            _player.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
-            _player.jwAddEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
-            _player.jwAddEventListener(events.JWPLAYER_PLAYLIST_COMPLETE, _playlistCompleteHandler);
-            _player.jwAddEventListener(events.JWPLAYER_PLAYLIST_ITEM, _playlistItemHandler);
-            _player.jwAddEventListener(events.JWPLAYER_CAST_AVAILABLE, function() {
+
+            _model.addEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
+            _model.addEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
+            _api.onPlaylistComplete(_playlistCompleteHandler);
+            _api.onPlaylistItem(_playlistItemHandler);
+
+            _model.addEventListener(events.JWPLAYER_CAST_AVAILABLE, function() {    // TODO: CURRENTLY UNTESTED
                 if (utils.canCast()) {
                     _this.forceControls(true);
                 } else {
@@ -356,7 +358,7 @@ define([
                 }
             });
 
-            _player.jwAddEventListener(events.JWPLAYER_CAST_SESSION, function(evt) {
+            _model.addEventListener(events.JWPLAYER_CAST_SESSION, function(evt) {   // TODO: CURRENTLY UNTESTED
                 if (!_castDisplay) {
                     _castDisplay = new CastDisplay(_model.id);
                     _castDisplay.statusDelegate = function(evt) {
@@ -369,11 +371,17 @@ define([
                     });
                     _this.forceControls(true);
                     _castDisplay.setState('connecting').setName(evt.deviceName).show();
-                    _player.jwAddEventListener(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
-                    _player.jwAddEventListener(events.JWPLAYER_CAST_AD_CHANGED, _castAdChanged);
+
+                    // TODO: CURRENTLY UNTESTED
+                    _model.addEventListener(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
+                    _model.addEventListener(events.JWPLAYER_CAST_AD_CHANGED, _castAdChanged);
+
                 } else {
-                    _player.jwRemoveEventListener(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
-                    _player.jwRemoveEventListener(events.JWPLAYER_CAST_AD_CHANGED, _castAdChanged);
+
+                    // TODO: CURRENTLY UNTESTED
+                    _model.removeEventListener(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
+                    _model.removeEventListener(events.JWPLAYER_CAST_AD_CHANGED, _castAdChanged);
+
                     _castDisplay.hide();
                     if (_controlbar.adMode()) {
                         _castAdsEnded();
@@ -383,7 +391,7 @@ define([
                     });
                     // redraw displayicon
                     _stateHandler({
-                        newstate: _player.jwGetState()
+                        newstate: _model.state
                     });
                     _responsiveListener();
                 }
@@ -486,7 +494,7 @@ define([
                 }
             } else {
                 _stateHandler({
-                    newstate: _player.jwGetState()
+                    newstate: _model.state
                 });
             }
             if (_showing) {
@@ -501,7 +509,7 @@ define([
 
         function _startFade() {
             clearTimeout(_controlsTimeout);
-            var state = _player.jwGetState();
+            var state = _model.state;
 
             // We need _instreamMode because the state is IDLE during pre-rolls
             if (state === states.PLAYING || state === states.PAUSED || _instreamMode) {
@@ -527,19 +535,17 @@ define([
         }
 
         function _setupControls() {
-            var height = _model.height,
-                cbSettings = _model.componentConfig('controlbar'),
-                displaySettings = _model.componentConfig('display');
+            var height = _model.height;
 
             _checkAudioMode(height);
 
-            _captions = new Captions(_player, _model.captions);
+            _captions = new Captions(_api, _model);
             _captions.addEventListener(events.JWPLAYER_CAPTIONS_LIST, forward);
             _captions.addEventListener(events.JWPLAYER_CAPTIONS_CHANGED, forward);
             _captions.addEventListener(events.JWPLAYER_CAPTIONS_LOADED, _captionsLoadedHandler);
             _controlsLayer.appendChild(_captions.element());
 
-            _display = new Display(_player, displaySettings);
+            _display = new Display(_skin, _api, _model);
             _display.addEventListener(events.JWPLAYER_DISPLAY_CLICK, function(evt) {
                 forward(evt);
                 _touchHandler();
@@ -550,27 +556,17 @@ define([
             }
             _controlsLayer.appendChild(_display.element());
 
-            _logo = new Logo(_player, _logoConfig);
+            _logo = new Logo(_api, _model);
             _controlsLayer.appendChild(_logo.element());
 
-            _dock = new Dock(_player, _model.componentConfig('dock'));
+            _dock = new Dock(_model.id + '_dock', _model.componentConfig('dock'), _api, _skin);
             _controlsLayer.appendChild(_dock.element());
 
-            if (_player.edition && !_isMobile) {
-                _rightClickMenu = new RightClick(_player, {
-                    abouttext: _model.abouttext,
-                    aboutlink: _model.aboutlink
-                });
-            } else if (!_isMobile) {
-                _rightClickMenu = new RightClick(_player, {});
+            if (!_isMobile) {
+                _rightClickMenu = new RightClick(_playerElement, _model);
             }
 
-            //if (_model.playlistsize && _model.playlistposition && _model.playlistposition !== JW_CSS_NONE) {
-                //_playlist = new html5.playlistcomponent(_player, {});
-                //_playlistLayer.appendChild(_playlist.element());
-            //}
-
-            _controlbar = new Controlbar(_player, cbSettings);
+            _controlbar = new Controlbar(_skin, _api, _model);
             _controlbar.addEventListener(events.JWPLAYER_USER_ACTION, _resetTapTimer);
 
             _controlsLayer.appendChild(_controlbar.element());
@@ -641,7 +637,7 @@ define([
             // cast display reset
             if (_castDisplay) {
                 _castDisplay.adsEnded();
-                _castDisplay.setState(_player.jwGetState());
+                _castDisplay.setState(_model.state);
             }
             // display click reset
             _display.revertAlternateClickHandler();
@@ -788,7 +784,7 @@ define([
                     _showVideo(false);
                 } else {
                     _controlbar.audioMode(false);
-                    _updateState(_player.jwGetState());
+                    _updateState(_model.state);
                 }
             }
             if (_logo && _audioMode) {
@@ -853,7 +849,7 @@ define([
             window.addEventListener('beforeunload', function() {
                 if (!_isCasting()) { // don't call stop while casting
                     // prevent video error in display on window close
-                    _player.jwStop();
+                    _api.stop();
                 }
             });
         };
@@ -920,7 +916,7 @@ define([
                 clearTimeout(_resizeMediaTimeout);
                 _resizeMediaTimeout = setTimeout(_resizeMedia, 200);
 
-            } else if (_isIPad && _player.jwGetState() === states.PAUSED) {
+            } else if (_isIPad && _model.state === states.PAUSED) {
                 // delay refresh on iPad when exiting fullscreen
                 // TODO: cancel this if fullscreen or player state changes
                 setTimeout(_showDisplay, 500);
@@ -978,7 +974,7 @@ define([
 
         function _showDisplay() {
             if (_display && _model.controls && !_audioMode) {
-                if (!_isIPod || _player.jwGetState() === states.IDLE) {
+                if (!_isIPod || _model.state === states.IDLE) {
                     _display.show();
                 }
             }
@@ -1002,7 +998,7 @@ define([
             }
             _showing = false;
 
-            var state = _player.jwGetState();
+            var state = _model.state;
 
             if (!_model.controls || state !== states.PAUSED) {
                 _hideControlbar();
@@ -1053,7 +1049,7 @@ define([
         function _playlistItemHandler() {
             // update display title
             if (_castDisplay) {
-                _castDisplay.setState(_player.jwGetState());
+                _castDisplay.setState(_model.state);
             }
         }
 
@@ -1212,7 +1208,7 @@ define([
         this.addButton = function(icon, label, handler, id) {
             if (_dock) {
                 _dock.addButton(icon, label, handler, id);
-                if (_player.jwGetState() === states.IDLE) {
+                if (_model.state === states.IDLE) {
                     _showDock();
                 }
             }
@@ -1238,7 +1234,7 @@ define([
             } else {
                 if (newstate) {
                     _stateHandler({
-                        newstate: _player.jwGetState()
+                        newstate: _model.state
                     });
                 }
             }
@@ -1264,7 +1260,7 @@ define([
 
         this.releaseControls = function() {
             _forcedControlsState = null;
-            _updateState(_player.jwGetState());
+            _updateState(_model.state);
         };
 
         function _hideInstream(hidden) {
@@ -1288,7 +1284,7 @@ define([
         };
 
         this.releaseState = function() {
-            _display.releaseState(_player.jwGetState());
+            _display.releaseState(_model.state);
         };
 
         this.getSafeRegion = function(includeCB) {
@@ -1344,7 +1340,7 @@ define([
                 _rightClickMenu.destroy();
             }
             if (_castDisplay) {
-                _player.jwRemoveEventListener(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
+                _model.removeEventListener(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
                 _castDisplay.destroy();
                 _castDisplay = null;
             }
@@ -1360,8 +1356,6 @@ define([
                 this.destroyInstream();
             }
         };
-
-        _init();
     };
 
     // Container styles

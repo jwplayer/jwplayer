@@ -5,31 +5,45 @@ define([
     'playlist/track'
 ], function(_, utils, Source, Track) {
 
+    var Defaults = {
+        description: undefined,
+        image: undefined,
+        mediaid: undefined,
+        title: undefined,
+        sources: [],
+        tracks: []
+    };
+
     var PlaylistItem = function (config) {
 
-        var _playlistItem = {};
-        _.each(PlaylistItem.defaults, function(val, key) {
-            _playlistItem[key] = config[key] || val;
-        });
+        config = config || {};
 
-        //utils.extend({}, PlaylistItem.defaults, config),
+        var _playlistItem = {};
+        _.extend(_playlistItem, Defaults, config);
+
         _playlistItem.tracks = (config && utils.exists(config.tracks)) ? config.tracks : [];
 
-        if (_playlistItem.sources.length === 0) {
+        if (_.isObject(_playlistItem.sources) && !_.isArray(_playlistItem.sources)) {
+            _playlistItem.sources = [Source(_playlistItem.sources)];
+        }
+
+        if (!_.isArray(_playlistItem.sources) || _playlistItem.sources.length === 0) {
             if (config.levels) {
                 _playlistItem.sources = config.levels;
             } else {
-                _playlistItem.sources = [new Source(config)];
+                _playlistItem.sources = [Source(config)];
             }
         }
 
         /** Each source should be a named object **/
         for (var i = 0; i < _playlistItem.sources.length; i++) {
-            var def = _playlistItem.sources[i]['default'];
+            var s = _playlistItem.sources[i];
+            if (!s) { continue; }
+            var def = s['default'];
             if (def) {
-                _playlistItem.sources[i]['default'] = (def.toString() === 'true');
+                s['default'] = (def.toString() === 'true');
             } else {
-                _playlistItem.sources[i]['default'] = false;
+                s['default'] = false;
             }
 
             // If the source doesn't have a label, number it
@@ -37,8 +51,10 @@ define([
                 _playlistItem.sources[i].label = i.toString();
             }
 
-            _playlistItem.sources[i] = new Source(_playlistItem.sources[i]);
+            _playlistItem.sources[i] = Source(_playlistItem.sources[i]);
         }
+
+        _playlistItem.sources = _.compact(_playlistItem.sources);
 
         if (_playlistItem.captions && !utils.exists(config.tracks)) {
             for (var j = 0; j < _playlistItem.captions.length; j++) {
@@ -48,18 +64,9 @@ define([
         }
 
         for (i = 0; i < _playlistItem.tracks.length; i++) {
-            _playlistItem.tracks[i] = new Track(_playlistItem.tracks[i]);
+            _playlistItem.tracks[i] = Track(_playlistItem.tracks[i]);
         }
         return _playlistItem;
-    };
-
-    PlaylistItem.defaults = {
-        description: undefined,
-        image: undefined,
-        mediaid: undefined,
-        title: undefined,
-        sources: [],
-        tracks: []
     };
 
     return PlaylistItem;

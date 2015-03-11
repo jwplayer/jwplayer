@@ -21,37 +21,38 @@ define([
         JW_CSS_NONE = 'none',
         JW_CSS_WHITE = '#FFF';
 
-    var Rightclick = function(api, config) {
+    var Rightclick = function(_playerElement, _model) {
 
-        var _api = api,
-            _container, // = DOCUMENT.getElementById(_api.id),
-            _config = _.extend({
+        var _config = {
                 aboutlink: LINK_DEFAULT + _version + '&m=h&e=o',
                 abouttext: ABOUT_DEFAULT + _version + '...'
-            }, config),
+            },
             _mouseOverContext = false,
-            _menu,
-            _about;
-
-        function _init() {
-            _container = DOCUMENT.getElementById(_api.id);
-            _menu = _createElement(RC_CLASS);
-            _menu.id = _api.id + '_menu';
-            _menu.style.display = JW_CSS_NONE;
-            _container.oncontextmenu = _showContext;
-            _menu.onmouseover = function() {
-                _mouseOverContext = true;
-            };
-            _menu.onmouseout = function() {
-                _mouseOverContext = false;
-            };
-            DOCUMENT.addEventListener('mousedown', _hideContext, false);
+            _menu = _createElement(RC_CLASS),
             _about = _createElement(RC_ITEM_CLASS);
-            _about.innerHTML = _config.abouttext;
-            _about.onclick = _clickHandler;
-            _menu.appendChild(_about);
-            _container.appendChild(_menu);
+
+        if (_model.edition) {
+            _.extend(_config, {
+                abouttext: _model.abouttext,
+                aboutlink: _model.aboutlink
+            });
         }
+
+        _menu.id = _playerElement.id + '_menu';
+        _menu.style.display = JW_CSS_NONE;
+        _playerElement.oncontextmenu = _showContext;
+        _menu.onmouseover = function() {
+            _mouseOverContext = true;
+        };
+        _menu.onmouseout = function() {
+            _mouseOverContext = false;
+        };
+        DOCUMENT.addEventListener('mousedown', _hideContext, false);
+
+        _about.innerHTML = _config.abouttext;
+        _about.onclick = _clickHandler;
+        _menu.appendChild(_about);
+        _playerElement.appendChild(_menu);
 
         function _createElement(className) {
             var elem = DOCUMENT.createElement('div');
@@ -77,7 +78,7 @@ define([
             target = evt.target || evt.srcElement;
 
 
-            containerBounds = utils.bounds(_container);
+            containerBounds = utils.bounds(_playerElement);
             bounds = utils.bounds(target);
 
             // hide the menu first to avoid an 'up-then-over' visual effect
@@ -104,8 +105,6 @@ define([
         this.destroy = function() {
             DOCUMENT.removeEventListener('mousedown', _hideContext, false);
         };
-
-        _init();
     };
 
     _css(RC_CLASS, {

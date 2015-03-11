@@ -1,9 +1,8 @@
 define([
     'utils/helpers',
     'utils/css',
-    'events/events',
     'underscore'
-], function(utils, cssUtils, events, _) {
+], function(utils, cssUtils, _) {
     /*jshint -W069 */
 
     var _css = cssUtils.css,
@@ -15,35 +14,25 @@ define([
         JW_CSS_100PCT = '100%',
         JW_CSS_CENTER = 'center';
 
-    var DisplayIcon = function(_id, _controller, textStyle, textStyleOver) {
-        var _skin = _controller.skin,
-            _playerId = _controller.id.replace(/_instream$/, ''),
-            _container,
+    var DisplayIcon = function(_playerId, _id, _skin, _api, textStyle, textStyleOver) {
+        _api.onResize(_setWidth);
+
+        var _container = _createElement('jwdisplayIcon'),
             _bgSkin,
             _capLeftSkin,
             _capRightSkin,
             _hasCaps,
-            _text,
-            _icon,
+            _text = _createElement('jwtext', _container, textStyle, textStyleOver),
+            _icon = _createElement('jwicon', _container),
             _iconCache = {},
             _iconElement,
             _iconWidth = 0,
             _setWidthTimeout = -1,
             _repeatCount = 0;
 
-        function _init() {
-            _container = _createElement('jwdisplayIcon');
-            _container.id = _id;
+        _container.id = _id;
 
-            _createBackground();
-            _text = _createElement('jwtext', _container, textStyle, textStyleOver);
-            _icon = _createElement('jwicon', _container);
-
-            _controller.jwAddEventListener(events.JWPLAYER_RESIZE, _setWidth);
-
-            _hide();
-            _redraw();
-        }
+        _createBackground();
 
         function _internalSelector() {
             return '#' + _id;
@@ -249,7 +238,8 @@ define([
             _container.style.cursor = 'pointer';
         };
 
-        _init();
+        _hide();
+        _redraw();
     };
 
     _css(DI_CLASS, {

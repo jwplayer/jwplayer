@@ -5,6 +5,16 @@ define([
 ], function(DefaultSkin, strings, utils) {
     var FORMAT_ERROR = 'Skin formatting error';
 
+    /** Convert a string representation of a string to an integer **/
+    var _stringToColor = function (value) {
+        value = value.replace(/(#|0x)?([0-9A-F]{3,6})$/gi, '$2');
+        if (value.length === 3) {
+            value = value.charAt(0) + value.charAt(0) + value.charAt(1) +
+                value.charAt(1) + value.charAt(2) + value.charAt(2);
+        }
+        return parseInt(value, 16);
+    };
+
     /** Constructor **/
     var SkinLoader = function(skinPath, completeHandler, errorHandler) {
         var _skin = {},
@@ -95,7 +105,7 @@ define([
                         var name = settings[settingIndex].getAttribute('name');
                         var value = settings[settingIndex].getAttribute('value');
                         if (/color$/.test(name)) {
-                            value = strings.stringToColor(value);
+                            value = _stringToColor(value);
                         }
                         component.settings[_lowerCase(name)] = value;
                     }

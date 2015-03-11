@@ -27,11 +27,13 @@ define([
             _this = _.extend(this, Events);
 
         _model = this._model = new Model(config);
-        _view  = this._view  = new View(_this, _model);
+        _view  = this._view  = new View(_api, _model);
         _setup = this._setup = new Setup(_model, _view);
 
         // Legacy, should be removed
         _this.id = this._model.id;
+        // Should be removed when we replace skins.  Should be necessary for instream (_controller.skin is called)
+        this.skin = _view._skin;
 
         _setup.addEventListener(events.JWPLAYER_READY, _readyHandler);
         _setup.addEventListener(events.JWPLAYER_ERROR, _setupErrorHandler);
@@ -112,7 +114,7 @@ define([
                     break;
                 case 'object':
                 case 'array':
-                    _model.setPlaylist(new Playlist(item));
+                    _model.setPlaylist(Playlist(item));
                     break;
                 case 'number':
                     _model.setItem(item);

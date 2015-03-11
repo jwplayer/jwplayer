@@ -99,6 +99,11 @@ define([], function() {
         return results;
     };
 
+    // Trim out all falsy values from an array.
+    _.compact = function(array) {
+        return _.filter(array, _.identity);
+    };
+
 
     // Determine whether all of the elements match a truth test.
     // Delegates to **ECMAScript 5**'s native `every` if available.
@@ -212,6 +217,24 @@ define([], function() {
     // containing specific `key:value` pairs.
     _.where = function (obj, attrs) {
         return _.filter(obj, _.matches(attrs));
+    };
+
+    // Return the maximum element or (element-based computation).
+    // Can't optimize arrays of integers longer than 65,535 elements.
+    // See [WebKit Bug 80797](https://bugs.webkit.org/show_bug.cgi?id=80797)
+    _.max = function(obj, iterator, context) {
+        if (!iterator && _.isArray(obj) && obj[0] === +obj[0] && obj.length < 65535) {
+            return Math.max.apply(Math, obj);
+        }
+        var result = -Infinity, lastComputed = -Infinity;
+        each(obj, function(value, index, list) {
+            var computed = iterator ? iterator.call(context, value, index, list) : value;
+            if (computed > lastComputed) {
+                result = value;
+                lastComputed = computed;
+            }
+        });
+        return result;
     };
 
     // Take the difference between one array and a number of other arrays.

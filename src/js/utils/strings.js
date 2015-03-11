@@ -62,21 +62,10 @@ define([], function() {
         }
     };
 
-    /** Convert a string representation of a string to an integer **/
-    var stringToColor = function (value) {
-        value = value.replace(/(#|0x)?([0-9A-F]{3,6})$/gi, '$2');
-        if (value.length === 3) {
-            value = value.charAt(0) + value.charAt(0) + value.charAt(1) +
-                value.charAt(1) + value.charAt(2) + value.charAt(2);
-        }
-        return parseInt(value, 16);
-    };
-
     return {
         trim : trim,
         pad : pad,
         xmlAttribute : xmlAttribute,
-        extension : extension,
-        stringToColor : stringToColor
+        extension : extension
     };
 });

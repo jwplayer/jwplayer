@@ -3,9 +3,8 @@ define([
     'utils/helpers',
     'utils/css',
     'events/events',
-    'events/states',
     'underscore'
-], function(Touch, utils, cssUtils, events, states, _) {
+], function(Touch, utils, cssUtils, events, _) {
 
     var _css = cssUtils.css,
 
@@ -18,11 +17,11 @@ define([
         LOGO_CLASS = '.jwlogo';
 
 
-    var Logo = function(api, logoConfig) {
-        var _api = api,
-            _id = _api.id + '_logo',
+    var Logo = function(_api, _model) {
+        var _id = _model.id + '_logo',
             _settings,
             _logo,
+            _logoConfig = _.extend({}, _model.componentConfig('logo')),
             _defaults = Logo.defaults,
             _showing = false;
 
@@ -33,15 +32,15 @@ define([
 
         function _setupConfig() {
             var linkFlag = 'o';
-            if (_api.edition) {
-                linkFlag = _getLinkFlag(_api.edition());
+            if ( _model.edition && _model.edition() ) {
+                linkFlag = _getLinkFlag(_model.edition());
             }
 
             if (linkFlag === 'o' || linkFlag === 'f') {
                 _defaults.link = LINK_DEFAULT + jwplayer.version + '&m=h&e=' + linkFlag;
             }
 
-            _settings = _.extend({}, _defaults, logoConfig);
+            _settings = _.extend({}, _defaults, _logoConfig);
             _settings.hide = (_settings.hide.toString() === 'true');
         }
 
@@ -97,26 +96,19 @@ define([
             return parseInt(_settings.margin, 10);
         };
 
-        function _togglePlay() {
-            if (_api.jwGetState() === states.IDLE || _api.jwGetState() === states.PAUSED) {
-                _api.jwPlay();
-            } else {
-                _api.jwPause();
-            }
-        }
-
         function _clickHandler(evt) {
             if (utils.exists(evt) && evt.stopPropagation) {
                 evt.stopPropagation();
             }
 
             if (!_showing || !_settings.link) {
-                _togglePlay();
+                //_togglePlay();
+                _api.play();
             }
 
             if (_showing && _settings.link) {
-                _api.jwPause();
-                _api.jwSetFullscreen(false);
+                _api.pause(true);
+                _api.setFullscreen(false);
                 window.open(_settings.link, _settings.linktarget);
             }
             return;

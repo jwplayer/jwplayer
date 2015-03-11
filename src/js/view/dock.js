@@ -15,17 +15,13 @@ define([
         D_CLASS = '.jwdock',
         DB_CLASS = '.jwdockbuttons';
 
-    var Dock = function(api, config) {
-        var _api = api,
-            _defaults = {
+    var Dock = function(_id, config, _api, _skin) {
+        var _config = _.extend({
                 iconalpha: 0.75,
                 iconalphaactive: 0.5,
                 iconalphaover: 1,
                 margin: 8
-            },
-            _config = _.extend({}, _defaults, config),
-            _id = _api.id + '_dock',
-            _skin = _api.skin,
+            }, config),
             _buttonCount = 0,
             _buttons = {},
             _tooltips = {},
@@ -35,30 +31,27 @@ define([
             _fadeTimeout,
             _this = this;
 
-        function _init() {
-            _this.visible = false;
+        _this.visible = false;
 
-            _container = _createElement('div', 'jwdock');
-            _buttonContainer = _createElement('div', 'jwdockbuttons');
-            _container.appendChild(_buttonContainer);
-            _container.id = _id;
+        _container = _createElement('div', 'jwdock');
+        _buttonContainer = _createElement('div', 'jwdockbuttons');
+        _container.appendChild(_buttonContainer);
+        _container.id = _id;
 
-            _setupElements();
+        _setupElements();
 
-            setTimeout(function() {
-                _dockBounds = _bounds(_container);
-            });
-
-        }
+        setTimeout(function() {
+            _dockBounds = _bounds(_container);
+        });
 
         function _setupElements() {
-            var button = _getSkinElement('button'),
-                buttonOver = _getSkinElement('buttonOver'),
-                buttonActive = _getSkinElement('buttonActive');
-
+            var button = _getSkinElement('button');
             if (!button) {
                 return;
             }
+
+            var buttonOver = _getSkinElement('buttonOver'),
+                buttonActive = _getSkinElement('buttonActive');
 
             _css(_internalSelector(), {
                 height: button.height,
@@ -142,7 +135,7 @@ define([
         };
 
         function _iFramedFullscreenIE() {
-            return (_iFramed && utils.isIE() && _api.jwGetFullscreen());
+            return (_iFramed && utils.isIE() && _api.getFullscreen());
         }
 
         function _positionTooltip(name) {
@@ -313,8 +306,6 @@ define([
                 display: _buttonCount ? 'block' : 'none'
             });
         }
-
-        _init();
     };
 
     _css(D_CLASS, {
