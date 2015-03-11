@@ -2,8 +2,8 @@
 <html>
 <head>
 	<title>UI Test</title>
-	<link type="text/css" rel="stylesheet" href="../bin-debug/css/jwplayer.css"  media="all" />
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+	<script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
 </head>
 <body style="width: 100%; height: 2000px">
 	<div class="jwplayer playlist-none jw-user-inactive" tabindex="0" style="width: 854px; height: 480px; opacity: 1; background-color: rgb(0, 0, 0);">
@@ -24,7 +24,7 @@
 					<div class="jw-preview" style="background-image:url(http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg)"></div>
 					<div class="jw-display-icon">
 						<div class="jw-text">TEST TEXT</div>
-						<div class="jw-icon jw-play">
+						<div class="jw-icon jw-icon-play">
 							<button></button>
 						</div>
 					</div>
@@ -54,20 +54,20 @@
 				</div>
 				<span class="jw-controlbar">
 					<span class="jw-group jw-left">
-						<span class="jw-icon inline-icon jw-play"><button tabindex="-1" type="button"></button></span>
-						<span class="jw-icon inline-icon jw-prev"><button tabindex="-1" type="button"></button></span>
-						<span class="jw-icon inline-icon jw-next"><button tabindex="-1" type="button"></button></span>
+						<span class="jw-icon inline-icon jw-icon-play"><button tabindex="-1" type="button"></button></span>
+						<span class="jw-icon inline-icon jw-icon-prev"><button tabindex="-1" type="button"></button></span>
+						<span class="jw-icon inline-icon jw-icon-next"><button tabindex="-1" type="button"></button></span>
 						<span class="jw-elapsed">
 							<span class="jw-text">0:08</span>
 						</span>
 					</span>
-					<span class="jw-group jw-center" style="left: 17%; right: 36%;">
+					<span class="jw-group jw-center" style="left: 17%; right: 33%;">
 						<span class="jw-slider jw-time jw-hori-slider">
 							<span class="jw-rail-group">
 								<span class="jw-rail"></span>
 								<span class="jw-buffer" style="width: 60%;"></span>
 								<span class="jw-progress" style="width: 40%;"></span>
-								<span class="jw-icon jw-thumb" style="left: 40%;">
+								<span class="jw-icon jw-icon-thumb jw-thumb" style="left: 40%;">
 									<button tabindex="-1" type="button"></button>
 								</span>
 								<div class="jw-overlay jw-time-tooltip" style="left: 159px; opacity: 0; visibility: hidden; margin-left: -23px;">
@@ -86,7 +86,7 @@
 						<span class="jw-duration">
 							<span class="jw-text">14:48</span>
 						</span>
-						<span class="jw-icon inline-icon tooltip-icon jw-hd" style="display: inline-block;">
+						<span class="jw-icon inline-icon tooltip-icon jw-icon-hd-on" style="display: inline-block;">
 							<button tabindex="-1" type="button"></button>
 							<div class="jw-overlay hd_overlay">
 								<div class="jw-menu">
@@ -97,7 +97,7 @@
 								</div>
 							</div>
 						</span>
-						<span class="jw-icon inline-icon tooltip-icon jw-cc" style="display: inline-block;">
+						<span class="jw-icon inline-icon tooltip-icon jw-icon-cc-on" style="display: inline-block;">
 							<button tabindex="-1" type="button"></button>
 							<div class="jw-overlay cc_overlay">
 								<div class="jw-menu">
@@ -111,14 +111,14 @@
 								</div>
 							</div>
 						</span>
-						<span class="jw-icon inline-icon tooltip-icon jw-mute">
+						<span class="jw-icon inline-icon tooltip-icon jw-icon-volume-unmute">
 							<button tabindex="-1" type="button"></button>
 							<div class="jw-overlay volumeoverlay">
 								<span class="jw-slider jw-vert-slider">
 									<span class="jw-rail-group">
 										<span class="jw-rail"></span>
 										<span class="jw-progress" style="height: 50%;"></span>
-										<span class="jw-volume-thumb jw-icon jw-thumb" style="bottom: 50%;">
+										<span class="jw-icon-volume-thumb jw-icon jw-thumb" style="bottom: 50%;">
 											<button tabindex="-1" type="button"></button>
 										</span>
 									</span>
@@ -129,7 +129,7 @@
 							<span class="jw-rail-group">
 								<span class="jw-rail"></span>
 								<span class="jw-progress" style="width: 50%;"></span>
-								<span class="jw-volume-thumb jw-icon jw-thumb" style="left: 50%;">
+								<span class="jw-icon-volume-thumb jw-icon jw-thumb" style="left: 50%;">
 									<button tabindex="-1" type="button"></button>
 								</span>
 							</span>

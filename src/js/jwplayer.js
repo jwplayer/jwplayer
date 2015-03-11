@@ -1,6 +1,7 @@
 define([
     'api/global-api',
-    '../css/styles.less'
+    '../css/styles.less',
+    '../less/jwplayer.less'
 ], function (Api) {
     var jwplayer = function () {
         return Api.selectPlayer.apply(this, arguments);

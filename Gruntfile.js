@@ -40,8 +40,8 @@ module.exports = function(grunt) {
         recess: {
             dist: {
                 options: {
-                    compile: true,     // Set to false to lint
-                    compress: true,    // Set to false to lint
+                    compile: false,     // Set to false to lint
+                    compress: false,    // Set to false to lint
                     noIDs: true,
                     noJSPrefix: true,
                     noOverqualifying: true,
@@ -50,10 +50,7 @@ module.exports = function(grunt) {
                     prefixWhitespace: true,
                     strictPropertyOrder: true,
                     zeroUnits: false,   // Occasionally set this to true, but it will misinterpret some values.
-                    includePaths: ['styles/less', 'styles/less/*']
-                },
-                files: {
-                    'bin-debug/css/jwplayer.css' : 'styles/less/jwplayer.less'
+                    includePaths: ['src/less', 'src/less/*']
                 }
             }
 		},
@@ -119,9 +116,9 @@ module.exports = function(grunt) {
             },
 			css: {
                 files: [
-                    'styles/less/*.less',
-                    'styles/less/imports/*.less'],
-                tasks: ['build-css']
+                    'src/less/*.less',
+                    'src/less/imports/*.less'],
+                tasks: ['webpack']
             },
             grunt: {
                 files: ['Gruntfile.js'],
@@ -155,11 +152,26 @@ module.exports = function(grunt) {
                 ],
                 module: {
                     loaders: [
-                        {
-
-                            test: /\.less$/,
-                            loader: 'style-loader!css-loader!less-loader'
-                        }
+						{
+							test: /\.less$/,
+							loader: 'style-loader!css-loader!less-loader'
+						},
+						{
+							test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
+							loader: 'url?limit=10000&minetype=application/font-woff'
+						},
+						{
+							test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
+							loader: 'url?limit=10000&minetype=application/octet-stream'
+						},
+						{
+							test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
+							loader: 'file'
+						},
+						{
+							test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
+							loader: 'url?limit=10000&minetype=image/svg+xml'
+						}
                     ]
                 }
             }
