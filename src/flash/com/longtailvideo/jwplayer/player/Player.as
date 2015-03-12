@@ -199,7 +199,7 @@ public class Player extends Sprite implements IPlayer {
         this.mouseEnabled = true;
         this.mouseChildren = false;
         this.buttonMode = true;
-        this.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
+        this.stage.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
             SwfEventRouter.triggerJsEvent('click', e);
         });
 
