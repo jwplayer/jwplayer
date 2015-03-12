@@ -21,6 +21,53 @@ define([
     ];
     */
 
+
+    /**
+     * Recursively traverses nested object, replacing key names containing a
+     * search string with a replacement string.
+     *
+     * @param searchString
+     *            The string to search for in the object's key names
+     * @param replaceString
+     *            The string to replace in the object's key names
+     * @returns Object.
+     */
+    /*
+    var _deepReplaceKeyName = function (obj, searchString, replaceString) {
+        switch (utils.typeOf(obj)) {
+            case 'array':
+                for (var i = 0; i < obj.length; i++) {
+                    obj[i] = _deepReplaceKeyName(obj[i],
+                        searchString, replaceString);
+                }
+                break;
+            case 'object':
+                _.each(obj, function (val, key) {
+                    var searches;
+                    if (searchString instanceof Array && replaceString instanceof Array) {
+                        if (searchString.length !== replaceString.length) {
+                            return;
+                        } else {
+                            searches = searchString;
+                        }
+                    } else {
+                        searches = [searchString];
+                    }
+                    var newkey = key;
+                    for (var i = 0; i < searches.length; i++) {
+                        newkey = newkey.replace(new RegExp(searchString[i], 'g'), replaceString[i]);
+                    }
+                    obj[newkey] = _deepReplaceKeyName(val, searchString, replaceString);
+                    if (key !== newkey) {
+                        delete obj[key];
+                    }
+                });
+                break;
+        }
+        return obj;
+    };
+    */
+
     function appendParam(object, name, value) {
         var param = document.createElement('param');
         param.setAttribute('name', name);
@@ -78,6 +125,13 @@ define([
 
         // flash can trigger events
         _.extend(swf, Events);
+
+        /*
+        // Intercept trigger events, normalize them, then send along
+        swf.trigger = function() {
+            return Events.trigger.apply(this, _deepReplaceKeyName(arguments));
+        };
+        */
 
         // javascript can trigger SwfEventRouter callbacks
         swf.triggerFlash = function(name) {

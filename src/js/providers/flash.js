@@ -11,7 +11,6 @@ define([
 ], function(utils, extensionmap, _, events, states, eventdispatcher, strings, EmbedSwf, DefaultProvider) {
 
 
-
     var _providerId = 0;
     function getObjectId(playerId) {
         return playerId + '_swf_' + (_providerId++);
