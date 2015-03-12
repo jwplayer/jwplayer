@@ -35,8 +35,7 @@ define([
 
         _setupEvents(api, _config.events);
 
-        var _container = document.createElement('div');
-        _container.id = _oldContainer.id;
+        var _container = api.getContainer();
         _container.style.width = _width.toString().indexOf('%') > 0 ? _width : (_width + 'px');
         _container.style.height = _height.toString().indexOf('%') > 0 ? _height : (_height + 'px');
 
