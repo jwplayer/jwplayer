@@ -17,7 +17,7 @@ define([
         };
 
         function _playlistLoaded(loadedEvent) {
-            try {
+            var status = utils.tryCatch(function() {
                 var childNodes = loadedEvent.responseXML.childNodes;
                 var rss = '';
                 for (var i = 0; i < childNodes.length; i++) {
@@ -40,7 +40,9 @@ define([
                 _eventDispatcher.sendEvent(events.JWPLAYER_PLAYLIST_LOADED, {
                     playlist: pl
                 });
-            } catch (e) {
+            });
+
+            if (status instanceof utils.Error) {
                 _playlistError();
             }
         }

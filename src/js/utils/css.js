@@ -235,11 +235,9 @@ define([
     }
 
     function _insertRule(sheet, text, index) {
-        try {
+        utils.tryCatch(function() {
             sheet.insertRule(text, index);
-        } catch (e) {
-            //console.log(e.message, text);
-        }
+        });
     }
 
     function _getRuleText(selector) {

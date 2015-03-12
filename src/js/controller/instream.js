@@ -246,9 +246,9 @@ define([
 
             // If we added the controlbar anywhere, let's get rid of it
             if (_cbar) {
-                try {
+                utils.tryCatch(function() {
                     _cbar.element().parentNode.removeChild(_cbar.element());
-                } catch (e) {}
+                });
             }
             if (_instreamDisplay) {
                 if (_oldProvider && _oldProvider.parentElement) {

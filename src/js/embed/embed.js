@@ -125,7 +125,6 @@ define([
         // TODO: view code
         function _resizePlugin(plugin, div, onready) {
             return function() {
-                //try {
                 var displayarea = document.querySelector('#' + _container.id + ' .jwmain');
                 if (displayarea && onready) {
                     displayarea.appendChild(div);
@@ -138,7 +137,6 @@ define([
                 }
                 div.left = displayarea.style.left;
                 div.top = displayarea.style.top;
-                //} catch (e) {}
             };
         }
 
