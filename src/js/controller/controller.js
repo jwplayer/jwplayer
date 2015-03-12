@@ -169,7 +169,7 @@ define([
             }
 
             if (status instanceof utils.Error) {
-                _this.trigger(events.JWPLAYER_ERROR, err);
+                _this.trigger(events.JWPLAYER_ERROR, status);
                 _actionOnAttach = null;
                 return false;
             }

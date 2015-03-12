@@ -700,7 +700,7 @@ define([
 
     utils.tryCatch = function(fn, ctx, args) {
         // if in debug mode, let 'er blow!
-        if (jwplayer.debug) {
+        if (window.jwplayer && window.jwplayer.debug) {
             return fn.apply(ctx, args);
         }
 
