@@ -2,7 +2,7 @@ define([
     'utils/strings',
     'events/events',
     'underscore'
-], function(strings, Events, _) {
+], function(strings, events, _) {
 
     // This is replaced by compiler
     var _version = __BUILD_VERSION__;
@@ -678,6 +678,25 @@ define([
         }
         while (element.childElementCount > 0) {
             element.removeChild(element.children[0]);
+        }
+    };
+
+    var Error = utils.Error = function(name, msg) {
+        this.name = name;
+        this.msg = msg;
+    };
+
+    utils.tryCatch = function(fn, ctx, args) {
+        try {
+            return fn.apply(ctx, args);
+        }
+        catch(e) {
+            if (jwplayer.debug) {
+                throw e;
+            }
+
+
+            return new Error(fn.name, e);
         }
     };
 
