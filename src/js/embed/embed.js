@@ -157,13 +157,12 @@ define([
             }
         }
 
-        function _dispatchSetupError(message, fallback) {
+        function _dispatchSetupError(message) {
             // Throttle this so that it runs once if called twice in the same callstack
             clearTimeout(_setupErrorTimer);
             _setupErrorTimer = setTimeout(function() {
                 api.dispatchEvent(events.JWPLAYER_SETUP_ERROR, {
-                    message: message,
-                    fallback: fallback
+                    message: message
                 });
             }, 0);
         }
@@ -175,11 +174,6 @@ define([
 
             // Put new container in page
             _oldContainer.parentNode.replaceChild(_container, _oldContainer);
-
-            if (!_config.fallback) {
-                _dispatchSetupError(message + body, false);
-                return;
-            }
 
             _errorOccurred = true;
             errorScreen(_container, message, body);

@@ -116,9 +116,12 @@ module.exports = function(grunt) {
                 module: {
                     loaders: [
                         {
-
                             test: /\.less$/,
                             loader: 'style-loader!css-loader!less-loader'
+                        },
+                        {
+                            test: /\.html$/,
+                            loader: 'handlebars-loader'
                         }
                     ]
                 }
