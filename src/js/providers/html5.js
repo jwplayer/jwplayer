@@ -455,9 +455,10 @@ define([
             if (_canSeek) {
                 _delayedSeek = 0;
                 // handle readystate issue
-                try {
+                var status = utils.tryCatch(function() {
                     _videotag.currentTime = seekPos;
-                } catch (e) {
+                });
+                if (status instanceof utils.Error) {
                     _delayedSeek = seekPos;
                 }
 
@@ -683,17 +684,21 @@ define([
             // This implementation is for iOS and Android WebKit only
             // This won't get called if the player contain can go fullscreen
             if (state) {
-                try {
+                var status = utils.tryCatch(function() {
                     var enterFullscreen =
                         _videotag.webkitEnterFullscreen ||
                         _videotag.webkitEnterFullScreen;
                     if (enterFullscreen) {
                         enterFullscreen.apply(_videotag);
                     }
-                } catch (e) {
+
+                });
+
+                if (status instanceof utils.Error) {
                     //object can't go fullscreen
                     return false;
                 }
+
                 return _this.getFullScreen();
 
             } else {

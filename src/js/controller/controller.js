@@ -133,60 +133,70 @@ define([
         }
 
         function _play(state) {
+            var status;
             if (state === false) {
                 return _pause();
             }
 
-            try {
-                if (_loadOnPlay >= 0) {
-                    _load(_loadOnPlay);
-                    _loadOnPlay = -1;
-                }
-                //_actionOnAttach = _play;
-                if (!_preplay) {
-                    _preplay = true;
-                    _this.trigger(events.JWPLAYER_MEDIA_BEFOREPLAY);
-                    _preplay = false;
-                    if (_interruptPlay) {
-                        _interruptPlay = false;
-                        _actionOnAttach = null;
-                        return;
-                    }
-                }
-
-                if (_isIdle()) {
-                    if (_model.playlist.length === 0) {
-                        return false;
-                    }
-                    _video().load(_model.playlist[_model.item]);
-                } else if (_model.state === states.PAUSED) {
-                    _video().play();
-                }
-
-                return true;
-            } catch (err) {
-                _this.trigger(events.JWPLAYER_ERROR, err);
-                _actionOnAttach = null;
+            if (_loadOnPlay >= 0) {
+                _load(_loadOnPlay);
+                _loadOnPlay = -1;
             }
-            return false;
+            //_actionOnAttach = _play;
+            if (!_preplay) {
+                _preplay = true;
+                _this.trigger(events.JWPLAYER_MEDIA_BEFOREPLAY);
+                _preplay = false;
+                if (_interruptPlay) {
+                    _interruptPlay = false;
+                    _actionOnAttach = null;
+                    return;
+                }
+            }
+
+            if (_isIdle()) {
+                if (_model.playlist.length === 0) {
+                    return false;
+                }
+
+                status = utils.tryCatch(function() {
+                    _video().load(_model.playlist[_model.item]);
+                });
+            } else if (_model.state === states.PAUSED) {
+                status = utils.tryCatch(function() {
+                    _video().play();
+                });
+            }
+
+            if (status instanceof utils.Error) {
+                _this.trigger(events.JWPLAYER_ERROR, status);
+                _actionOnAttach = null;
+                return false;
+            }
+            return true;
         }
 
         function _stop(internal) {
             _actionOnAttach = null;
-            try {
-                _video().stop();
-                if (!internal) {
-                    _stopPlaylist = true;
-                }
 
-                if (_preplay) {
-                    _interruptPlay = true;
-                }
-                return true;
-            } catch (err) {
-                _this.trigger(events.JWPLAYER_ERROR, err);
+            var status = utils.tryCatch(function() {
+                _video().stop();
+            }, _this);
+
+            if (status instanceof utils.Error) {
+                this.trigger(events.JWPLAYER_ERROR, status);
+                return false;
             }
-            return false;
+
+            if (!internal) {
+                _stopPlaylist = true;
+            }
+
+            if (_preplay) {
+                _interruptPlay = true;
+            }
+
+            return true;
         }
 
         function _pause(state) {
@@ -199,10 +209,12 @@ define([
             switch (_model.state) {
                 case states.PLAYING:
                 case states.BUFFERING:
-                    try {
+                    var status = utils.tryCatch(function(){
                         _video().pause();
-                    } catch (err) {
-                        _this.trigger(events.JWPLAYER_ERROR, err);
+                    }, this);
+
+                    if (status instanceof utils.Error) {
+                        _this.trigger(events.JWPLAYER_ERROR, status);
                         return false;
                     }
                     break;
@@ -317,23 +329,28 @@ define([
 
         /** Used for the InStream API **/
         function _detachMedia() {
-            try {
+            var status = utils.tryCatch(function() {
                 return _model.getVideo().detachMedia();
-            } catch (err) {
-                utils.log('Error calling detachMedia', err);
+            }, this);
+
+            if (status instanceof utils.Error) {
+                utils.log('Error calling detachMedia', status);
             }
+
             return null;
         }
 
         function _attachMedia(seekable) {
             // Called after instream ends
-            try {
+            var status = utils.tryCatch(function() {
                 _model.getVideo().attachMedia(seekable);
+            });
 
-            } catch (err) {
-                utils.log('Error calling detachMedia', err);
+            if (status instanceof utils.Error) {
+                utils.log('Error calling detachMedia', status);
                 return;
             }
+
             if (typeof _actionOnAttach === 'function') {
                 _actionOnAttach();
             }

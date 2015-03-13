@@ -2,7 +2,7 @@ define([
     'utils/strings',
     'events/events',
     'underscore'
-], function(strings, Events, _) {
+], function(strings, events, _) {
 
     // This is replaced by compiler
     var _version = __BUILD_VERSION__;
@@ -241,13 +241,18 @@ define([
         }
 
         if (typeof window.ActiveXObject !== 'undefined') {
-            try {
+            var status = utils.tryCatch(function() {
                 flash = new window.ActiveXObject('ShockwaveFlash.ShockwaveFlash');
                 if (flash) {
                     return parseFloat(flash.GetVariable('$version').split(' ')[1].replace(/\s*,\s*/, '.'));
                 }
-            } catch (err) {
+            });
+
+            if (status instanceof utils.Error) {
+                return 0;
             }
+
+            return status;
         }
         return 0;
     };
@@ -288,12 +293,16 @@ define([
      *  - YE7VzlLtp-4
      **/
     utils.youTubeID = function (path) {
-        try {
-            // Left as a dense regular expression for brevity.  
+        var status = utils.tryCatch(function() {
+            // Left as a dense regular expression for brevity.
             return (/v[=\/]([^?&]*)|youtu\.be\/([^?]*)|^([\w-]*)$/i).exec(path).slice(1).join('').replace('?', '');
-        } catch (e) {
+        });
+
+        if (status instanceof utils.Error) {
             return '';
         }
+
+        return status;
     };
 
     /**
@@ -332,12 +341,11 @@ define([
     utils.repo = function () {
         var repo = 'http://p.jwpcdn.com/' + _version.split(/\W/).splice(0, 2).join('/') + '/';
 
-        try {
+        utils.tryCatch(function() {
             if (_isHTTPS()) {
                 repo = repo.replace('http://', 'https://ssl.');
             }
-        } catch (e) {
-        }
+        });
 
         return repo;
     };
@@ -389,11 +397,14 @@ define([
         }
 
         xmlhttp.onerror = _ajaxError(errorcallback, xmldocpath, xmlhttp);
-        try {
+        var status = utils.tryCatch(function() {
             xmlhttp.open('GET', xmldocpath, true);
-        } catch (error) {
+        });
+
+        if (status instanceof utils.Error) {
             isError = true;
         }
+
         // make XDomainRequest asynchronous:
         setTimeout(function () {
             if (isError) {
@@ -402,14 +413,16 @@ define([
                 }
                 return;
             }
-            try {
-
+            var status = utils.tryCatch(function() {
                 xmlhttp.send();
-            } catch (error) {
+            });
+
+            if (status instanceof utils.Error) {
                 if (errorcallback) {
                     errorcallback(xmldocpath, xmldocpath, xmlhttp);
                 }
             }
+
         }, 0);
 
         return xmlhttp;
@@ -485,7 +498,7 @@ define([
     /** Takes an XML string and returns an XML object **/
     var _parseXML = utils.parseXML = function (input) {
         var parsedXML;
-        try {
+        utils.tryCatch(function() {
             // Parse XML in FF/Chrome/Safari/Opera
             if (window.DOMParser) {
                 parsedXML = (new window.DOMParser()).parseFromString(input, 'text/xml');
@@ -499,9 +512,8 @@ define([
                 parsedXML.async = 'false';
                 parsedXML.loadXML(input);
             }
-        } catch (e) {
-            return;
-        }
+        });
+
         return parsedXML;
     };
 
@@ -678,6 +690,26 @@ define([
         }
         while (element.childElementCount > 0) {
             element.removeChild(element.children[0]);
+        }
+    };
+
+    var Error = utils.Error = function(name, msg) {
+        this.name = name;
+        this.msg = msg;
+    };
+
+    utils.tryCatch = function(fn, ctx, args) {
+        // if in debug mode, let 'er blow!
+        if (window.jwplayer && window.jwplayer.debug) {
+            return fn.apply(ctx, args);
+        }
+
+        // else be careful
+        try {
+            return fn.apply(ctx, args);
+        }
+        catch(e) {
+            return new Error(fn.name, e);
         }
     };
 

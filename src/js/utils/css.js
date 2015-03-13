@@ -1,7 +1,8 @@
 define([
+    'utils/helpers',
     'utils/strings',
     'underscore'
-], function(Strings, _) {
+], function(utils, Strings, _) {
 
     var MAX_CSS_RULES = 50000,
         _styleSheets = {},
@@ -235,11 +236,9 @@ define([
     }
 
     function _insertRule(sheet, text, index) {
-        try {
+        utils.tryCatch(function() {
             sheet.insertRule(text, index);
-        } catch (e) {
-            //console.log(e.message, text);
-        }
+        });
     }
 
     function _getRuleText(selector) {
