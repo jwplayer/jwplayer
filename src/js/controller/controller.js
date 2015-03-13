@@ -329,11 +329,13 @@ define([
 
         /** Used for the InStream API **/
         function _detachMedia() {
-            var status = utils.tryCatch(function() {
+            var video = utils.tryCatch(function() {
                 return _model.getVideo().detachMedia();
             }, this);
 
-            if (status instanceof utils.Error) {
+            if(video instanceof HTMLVideoElement) {
+                return video;
+            } else if (video instanceof utils.Error) {
                 utils.log('Error calling detachMedia', status);
             }
 

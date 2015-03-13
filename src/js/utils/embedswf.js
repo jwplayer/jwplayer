@@ -135,9 +135,10 @@ define([
 
         // javascript can trigger SwfEventRouter callbacks
         swf.triggerFlash = function(name) {
+            var params = arguments;
             var status = utils.tryCatch(function() {
-                if (arguments.length > 1) {
-                    var args = Array.prototype.slice.call(arguments, 1);
+                if (params.length > 1) {
+                    var args = Array.prototype.slice.call(params, 1);
                     var json = JSON.stringify(args);
                     swf.__externalCall(name, json);
                 } else {
