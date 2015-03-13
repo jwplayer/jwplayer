@@ -2,7 +2,7 @@ define([
     'utils/strings',
     'events/events',
     'underscore'
-], function(strings, Events, _) {
+], function(strings, events, _) {
 
     // This is replaced by compiler
     var _version = __BUILD_VERSION__;
@@ -221,32 +221,6 @@ define([
         return typeofString;
     };
 
-    /* Normalizes differences between Flash and HTML5 internal players' event responses. */
-    utils.translateEventResponse = function (type, eventProperties) {
-        var translated = _.extend({}, eventProperties);
-        if (type === Events.JWPLAYER_FULLSCREEN && !translated.fullscreen) {
-            translated.fullscreen = (translated.message === 'true');
-            delete translated.message;
-        } else if (typeof translated.data === 'object') {
-            // Takes ViewEvent 'data' block and moves it up a level
-            var data = translated.data;
-            delete translated.data;
-            translated = _.extend(translated, data);
-
-        } else if (typeof translated.metadata === 'object') {
-            _deepReplaceKeyName(translated.metadata,
-                ['__dot__', '__spc__', '__dsh__', '__default__'], ['.', ' ', '-', 'default']);
-        }
-
-        var rounders = ['position', 'duration', 'offset'];
-        _foreach(rounders, function (rounder, val) {
-            if (translated[val]) {
-                translated[val] = Math.round(translated[val] * 1000) / 1000;
-            }
-        });
-
-        return translated;
-    };
 
     /**
      * If the browser has flash capabilities, return the flash version
@@ -267,13 +241,18 @@ define([
         }
 
         if (typeof window.ActiveXObject !== 'undefined') {
-            try {
+            var status = utils.tryCatch(function() {
                 flash = new window.ActiveXObject('ShockwaveFlash.ShockwaveFlash');
                 if (flash) {
                     return parseFloat(flash.GetVariable('$version').split(' ')[1].replace(/\s*,\s*/, '.'));
                 }
-            } catch (err) {
+            });
+
+            if (status instanceof utils.Error) {
+                return 0;
             }
+
+            return status;
         }
         return 0;
     };
@@ -289,50 +268,6 @@ define([
             }
         }
         return '';
-    };
-
-    /**
-     * Recursively traverses nested object, replacing key names containing a
-     * search string with a replacement string.
-     *
-     * @param searchString
-     *            The string to search for in the object's key names
-     * @param replaceString
-     *            The string to replace in the object's key names
-     * @returns The modified object.
-     */
-    var _deepReplaceKeyName = utils.deepReplaceKeyName = function (obj, searchString, replaceString) {
-        switch (_typeOf(obj)) {
-            case 'array':
-                for (var i = 0; i < obj.length; i++) {
-                    obj[i] = _deepReplaceKeyName(obj[i],
-                        searchString, replaceString);
-                }
-                break;
-            case 'object':
-                _foreach(obj, function (key, val) {
-                    var searches;
-                    if (searchString instanceof Array && replaceString instanceof Array) {
-                        if (searchString.length !== replaceString.length) {
-                            return;
-                        } else {
-                            searches = searchString;
-                        }
-                    } else {
-                        searches = [searchString];
-                    }
-                    var newkey = key;
-                    for (var i = 0; i < searches.length; i++) {
-                        newkey = newkey.replace(new RegExp(searchString[i], 'g'), replaceString[i]);
-                    }
-                    obj[newkey] = _deepReplaceKeyName(val, searchString, replaceString);
-                    if (key !== newkey) {
-                        delete obj[key];
-                    }
-                });
-                break;
-        }
-        return obj;
     };
 
 
@@ -358,12 +293,16 @@ define([
      *  - YE7VzlLtp-4
      **/
     utils.youTubeID = function (path) {
-        try {
-            // Left as a dense regular expression for brevity.  
+        var status = utils.tryCatch(function() {
+            // Left as a dense regular expression for brevity.
             return (/v[=\/]([^?&]*)|youtu\.be\/([^?]*)|^([\w-]*)$/i).exec(path).slice(1).join('').replace('?', '');
-        } catch (e) {
+        });
+
+        if (status instanceof utils.Error) {
             return '';
         }
+
+        return status;
     };
 
     /**
@@ -377,7 +316,7 @@ define([
      * Iterates over an object and executes a callback function for each property (if it exists)
      * This is a safe way to iterate over objects if another script has modified the object prototype
      */
-    var _foreach = utils.foreach = function (aData, fnEach) {
+    utils.foreach = function (aData, fnEach) {
         var key, val;
         for (key in aData) {
             if (_typeOf(aData.hasOwnProperty) === 'function') {
@@ -402,12 +341,11 @@ define([
     utils.repo = function () {
         var repo = 'http://p.jwpcdn.com/' + _version.split(/\W/).splice(0, 2).join('/') + '/';
 
-        try {
+        utils.tryCatch(function() {
             if (_isHTTPS()) {
                 repo = repo.replace('http://', 'https://ssl.');
             }
-        } catch (e) {
-        }
+        });
 
         return repo;
     };
@@ -459,11 +397,14 @@ define([
         }
 
         xmlhttp.onerror = _ajaxError(errorcallback, xmldocpath, xmlhttp);
-        try {
+        var status = utils.tryCatch(function() {
             xmlhttp.open('GET', xmldocpath, true);
-        } catch (error) {
+        });
+
+        if (status instanceof utils.Error) {
             isError = true;
         }
+
         // make XDomainRequest asynchronous:
         setTimeout(function () {
             if (isError) {
@@ -472,14 +413,16 @@ define([
                 }
                 return;
             }
-            try {
-
+            var status = utils.tryCatch(function() {
                 xmlhttp.send();
-            } catch (error) {
+            });
+
+            if (status instanceof utils.Error) {
                 if (errorcallback) {
                     errorcallback(xmldocpath, xmldocpath, xmlhttp);
                 }
             }
+
         }, 0);
 
         return xmlhttp;
@@ -555,7 +498,7 @@ define([
     /** Takes an XML string and returns an XML object **/
     var _parseXML = utils.parseXML = function (input) {
         var parsedXML;
-        try {
+        utils.tryCatch(function() {
             // Parse XML in FF/Chrome/Safari/Opera
             if (window.DOMParser) {
                 parsedXML = (new window.DOMParser()).parseFromString(input, 'text/xml');
@@ -569,9 +512,8 @@ define([
                 parsedXML.async = 'false';
                 parsedXML.loadXML(input);
             }
-        } catch (e) {
-            return;
-        }
+        });
+
         return parsedXML;
     };
 
@@ -748,6 +690,26 @@ define([
         }
         while (element.childElementCount > 0) {
             element.removeChild(element.children[0]);
+        }
+    };
+
+    var Error = utils.Error = function(name, msg) {
+        this.name = name;
+        this.msg = msg;
+    };
+
+    utils.tryCatch = function(fn, ctx, args) {
+        // if in debug mode, let 'er blow!
+        if (window.jwplayer && window.jwplayer.debug) {
+            return fn.apply(ctx, args);
+        }
+
+        // else be careful
+        try {
+            return fn.apply(ctx, args);
+        }
+        catch(e) {
+            return new Error(fn.name, e);
         }
     };
 

@@ -17,6 +17,22 @@ define([
         utils.removeClass(container, 'jw-tab-focus');
     }
 
+    var normalizeOutput = function() {
+        var rounders = ['position', 'duration', 'offset'];
+
+        function round(val) {
+            if (this[val]) {
+                this[val] = Math.round(this[val] * 1000) / 1000;
+            }
+        }
+
+        return function (obj) {
+            _.each(rounders, round, obj);
+            return obj;
+        };
+    }();
+
+
     var _internalFuncsToGenerate = [
         'getBuffer',
         'getCaptionsList',
@@ -115,8 +131,8 @@ define([
             _itemMeta = {},
             _callbacks = {};
 
-        _this.container = container;
-        _this.id = container.id;
+        _this.container = document.createElement('div');
+        _this.id = _this.container.id = container.id;
 
         _this.setup = function (options) {
                 // Remove any players that may be associated to this DOM element
@@ -434,15 +450,11 @@ define([
             var listeners = _listeners[type];
             if (listeners) {
                 listeners = listeners.slice(0); //copy array
-                var args = utils.translateEventResponse(type, arguments[1]);
+                var args = normalizeOutput(arguments[1]);
                 for (var l = 0; l < listeners.length; l++) {
                     var fn = listeners[l];
                     if (typeof fn === 'function') {
                         try {
-                            if (type === events.JWPLAYER_PLAYLIST_LOADED) {
-                                utils.deepReplaceKeyName(args.playlist,
-                                    ['__dot__', '__spc__', '__dsh__', '__default__'], ['.', ' ', '-', 'default']);
-                            }
                             fn.call(this, args);
                         } catch (e) {
                             utils.log('There was an error calling back an event handler', e);
@@ -475,8 +487,6 @@ define([
         _this.playerReady = function () {
             _playerReady = true;
 
-            _this.container = document.getElementById(_this.id);
-
             utils.foreach(_listeners, function (eventType) {
                 _addInternalListener(_controller, eventType);
             });
@@ -490,11 +500,10 @@ define([
             });
 
             _eventListener(events.JWPLAYER_VIEW_TAB_FOCUS, function (data) {
-                var container = _this.getContainer();
                 if (data.hasFocus === true) {
-                    addFocusBorder(container);
+                    addFocusBorder(_this.container);
                 } else {
-                    removeFocusBorder(container);
+                    removeFocusBorder(_this.container);
                 }
             });
 

@@ -1,9 +1,8 @@
 define([
     'utils/helpers',
     'utils/strings',
-    'utils/extensionmap',
     'underscore'
-], function(utils, strings, extensionmap, _) {
+], function(utils, strings, _) {
 
     var Defaults = {
         file: undefined,
@@ -12,6 +11,7 @@ define([
         androidhls : undefined,
         'default': undefined
     };
+
 
     var Source = function (config) {
 
@@ -30,7 +30,7 @@ define([
 
         // if type is given as a mimetype
         if (_source.type && _source.type.indexOf('/') > 0) {
-            _source.type = extensionmap.mimeType(_source.type);
+            _source.type = _source.type.split('/')[1];
         }
 
         // If type not included, we infer it from extension
@@ -41,7 +41,7 @@ define([
                 _source.type = 'rtmp';
             } else {
                 var extension = strings.extension(_source.file);
-                _source.type = extensionmap.extType(extension);
+                _source.type = extension;
             }
         }
 

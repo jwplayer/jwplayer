@@ -59,7 +59,8 @@ define([
         /** Parse a single captions entry. **/
         function _entry(data) {
             var entry = {};
-            try {
+
+            utils.tryCatch(function() {
                 var idx = data.indexOf('begin=\"');
                 data = data.substr(idx + 7);
                 idx = data.indexOf('\" end=\"');
@@ -70,8 +71,8 @@ define([
                 idx = data.indexOf('\">');
                 data = data.substr(idx + 2);
                 entry.text = data;
-            } catch (error) {
-            }
+            });
+
             return entry;
         }
 

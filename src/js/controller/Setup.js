@@ -45,16 +45,12 @@ define([
                     LOAD_SKIN
                 ]
             },
-            INIT_PLUGINS = {
-                method: _initPlugins,
+            SEND_READY = {
+                method: _sendReady,
                 depends: [
                     SETUP_COMPONENTS,
                     LOAD_PLAYLIST
                 ]
-            },
-            SEND_READY = {
-                method: _sendReady,
-                depends: [INIT_PLUGINS]
             };
 
         var _queue = [
@@ -62,7 +58,6 @@ define([
             LOAD_SKIN,
             LOAD_PLAYLIST,
             SETUP_COMPONENTS,
-            INIT_PLUGINS,
             SEND_READY
         ];
 
@@ -140,10 +135,6 @@ define([
         function _setupComponents() {
             _view.setup(_skin);
             _taskComplete(SETUP_COMPONENTS);
-        }
-
-        function _initPlugins() {
-            _taskComplete(INIT_PLUGINS);
         }
 
         function _sendReady() {

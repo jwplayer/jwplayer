@@ -17,6 +17,7 @@
     "grunt-contrib-uglify": "^0.7.0",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-webpack": "^1.0.8",
+    "handlebars-loader": "^0.1.8",
     "less-loader": "^2.0.0",
     "load-grunt-tasks": "~2.0.0",
     "raw-loader": "^0.5.1",

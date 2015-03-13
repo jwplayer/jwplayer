@@ -1,13 +1,11 @@
 define([
     'utils/helpers',
     'underscore',
-    'raw!templates/errorscreen.html'
-], function(utils, _, errorscreen) {
-
-    var template = _.template(errorscreen);
+    'templates/errorscreen.html'
+], function(utils,  _, errorscreen) {
 
     function make(container, title, body) {
-        var html = template({
+        var html = errorscreen({
             title: title,
             body: body
         });

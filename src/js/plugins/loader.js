@@ -8,6 +8,7 @@ define([
 ], function(pluginsUtils, helpers, events, _, eventdispatcher, scriptloader) {
 
     var _foreach = helpers.foreach;
+    var utils = helpers;
 
     var PluginLoader = function (model, config) {
         var _status = scriptloader.loaderstatus.NEW,
@@ -116,7 +117,7 @@ define([
                     flashPlugins.length++;
                 }
 
-                try {
+                var status = utils.tryCatch(function() {
                     if (jsPlugin && config.plugins && config.plugins[pluginURL]) {
                         var div = document.createElement('div');
                         div.id = api.id + '_' + pluginName;
@@ -129,7 +130,10 @@ define([
                         api.onReady(resizer(jsplugins.plugins[pluginName], div, true));
                         api.onResize(resizer(jsplugins.plugins[pluginName], div));
                     }
-                } catch (err) {
+
+                });
+
+                if (status instanceof utils.Error) {
                     helpers.log('ERROR: Failed to load ' + pluginName + '.');
                 }
             });

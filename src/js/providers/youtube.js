@@ -333,12 +333,10 @@ define([
         function _stopVideo() {
             clearInterval(_playingInterval);
             if (_youtubePlayer && _youtubePlayer.stopVideo) {
-                try {
+                utils.tryCatch(function() {
                     _youtubePlayer.stopVideo();
                     _youtubePlayer.clearVideo();
-                } catch (e) {
-                    //console.error('Error stopping YT', e);
-                }
+                });
             }
         }
         // Additional Provider Methods (not yet implemented in html5.video)

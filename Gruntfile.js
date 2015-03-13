@@ -163,6 +163,9 @@ module.exports = function(grunt) {
                         {
                             test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
                             loader: 'url?limit=10000&minetype=image/svg+xml'
+                        }, {
+                            test: /\.html$/,
+                            loader: 'handlebars-loader'
                         }
                     ]
                 }

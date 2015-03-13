@@ -95,7 +95,8 @@ define([
 
             _this = _.extend(this, new eventdispatcher());
 
-        _playerElement = _createElement('div', PLAYER_CLASS + ' playlist-' + _model.playlistposition);
+        _playerElement = _api.getContainer();
+        _playerElement.className = PLAYER_CLASS + ' playlist-' + _model.playlistposition;
         _playerElement.id = _model.id;
         _playerElement.tabIndex = 0;
 

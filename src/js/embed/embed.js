@@ -35,8 +35,7 @@ define([
 
         _setupEvents(api, _config.events);
 
-        var _container = document.createElement('div');
-        _container.id = _oldContainer.id;
+        var _container = api.getContainer();
         _container.style.width = _width.toString().indexOf('%') > 0 ? _width : (_width + 'px');
         _container.style.height = _height.toString().indexOf('%') > 0 ? _height : (_height + 'px');
 
@@ -126,7 +125,6 @@ define([
         // TODO: view code
         function _resizePlugin(plugin, div, onready) {
             return function() {
-                //try {
                 var displayarea = document.querySelector('#' + _container.id + ' .jwmain');
                 if (displayarea && onready) {
                     displayarea.appendChild(div);
@@ -139,7 +137,6 @@ define([
                 }
                 div.left = displayarea.style.left;
                 div.top = displayarea.style.top;
-                //} catch (e) {}
             };
         }
 
@@ -157,13 +154,12 @@ define([
             }
         }
 
-        function _dispatchSetupError(message, fallback) {
+        function _dispatchSetupError(message) {
             // Throttle this so that it runs once if called twice in the same callstack
             clearTimeout(_setupErrorTimer);
             _setupErrorTimer = setTimeout(function() {
                 api.dispatchEvent(events.JWPLAYER_SETUP_ERROR, {
-                    message: message,
-                    fallback: fallback
+                    message: message
                 });
             }, 0);
         }
@@ -175,11 +171,6 @@ define([
 
             // Put new container in page
             _oldContainer.parentNode.replaceChild(_container, _oldContainer);
-
-            if (!_config.fallback) {
-                _dispatchSetupError(message + body, false);
-                return;
-            }
 
             _errorOccurred = true;
             errorScreen(_container, message, body);

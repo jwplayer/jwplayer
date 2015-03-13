@@ -1,15 +1,13 @@
 define([
     'utils/css',
     'utils/helpers',
-    'utils/extensionmap',
-    'utils/strings',
     'utils/stretching',
     'underscore',
     'events/events',
     'events/states',
     'utils/eventdispatcher',
     'providers/default'
-], function(cssUtils, utils, extensionmap, strings, stretchUtils, _, events, states, eventdispatcher, DefaultProvider) {
+], function(cssUtils, utils, stretchUtils, _, events, states, eventdispatcher, DefaultProvider) {
 
     var clearInterval = window.clearInterval,
         _isIE = utils.isMSIE(),
@@ -457,9 +455,10 @@ define([
             if (_canSeek) {
                 _delayedSeek = 0;
                 // handle readystate issue
-                try {
+                var status = utils.tryCatch(function() {
                     _videotag.currentTime = seekPos;
-                } catch (e) {
+                });
+                if (status instanceof utils.Error) {
                     _delayedSeek = seekPos;
                 }
 
@@ -685,17 +684,21 @@ define([
             // This implementation is for iOS and Android WebKit only
             // This won't get called if the player contain can go fullscreen
             if (state) {
-                try {
+                var status = utils.tryCatch(function() {
                     var enterFullscreen =
                         _videotag.webkitEnterFullscreen ||
                         _videotag.webkitEnterFullScreen;
                     if (enterFullscreen) {
                         enterFullscreen.apply(_videotag);
                     }
-                } catch (e) {
+
+                });
+
+                if (status instanceof utils.Error) {
                     //object can't go fullscreen
                     return false;
                 }
+
                 return _this.getFullScreen();
 
             } else {
@@ -755,6 +758,26 @@ define([
 
     }
 
+    var MimeTypes = {
+        'mp4': 'video/mp4',
+        'f4v': 'video/mp4',
+        'm4v': 'video/mp4',
+        'mov': 'video/mp4',
+        'm4a': 'video/aac',
+        'f4a': 'video/aac',
+        'aac': 'video/aac',
+        'mp3': 'video/mp3',
+        'ogv': 'video/ogg',
+        'ogg': 'video/ogg',
+        'oga': 'video/ogg',
+        'vorbis': 'video/ogg',
+        'webm': 'video/webm',
+        'm3u8': 'application/vnd.apple.mpegurl',
+        'm3u': 'application/vnd.apple.mpegurl',
+        'hls': 'application/vnd.apple.mpegurl'
+    };
+
+
     // Register provider
     var F = function(){};
     F.prototype = DefaultProvider;
@@ -763,9 +786,6 @@ define([
 
         var file = source.file;
         var type = source.type;
-
-        var extension = strings.extension(file);
-        type = type || extensionmap.extType(extension);
 
         // HLS not sufficiently supported on Android devices; should fail over automatically.
         if (type === 'hls') {
@@ -789,29 +809,15 @@ define([
             return false;
         }
 
-        var mappedType = extensionmap.getMappedType(type) || extensionmap.getMappedType(extension);
-
-        // If no type or unrecognized type, don't allow to play
-        if (!mappedType) {
-            return false;
-        }
-
-        // Extension is recognized as a format Flash can play, but no HTML5 support is listed
-        var mimetype = mappedType.html5;
-        if (mappedType.flash && !mimetype) {
+        // Not OK to use HTML5 with no extension
+        if (!MimeTypes[type]) {
             return false;
         }
 
         // Last, but not least, we ask the browser
         // (But only if it's a video with an extension known to work in HTML5)
-
-
-        // OK to use HTML5 with no extension
-        if (!mimetype) {
-            return true;
-        }
         if (jwplayer.vid.canPlayType) {
-            var result = jwplayer.vid.canPlayType(mimetype);
+            var result = jwplayer.vid.canPlayType(MimeTypes[type]);
             return !!result;
         }
         return false;

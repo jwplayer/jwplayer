@@ -35,7 +35,7 @@ define([
         // Should be removed when we replace skins.  Should be necessary for instream (_controller.skin is called)
         this.skin = _view._skin;
 
-        _setup.addEventListener(events.JWPLAYER_READY, _readyHandler);
+        _setup.addEventListener(events.JWPLAYER_READY, _playerReady);
         _setup.addEventListener(events.JWPLAYER_ERROR, _setupErrorHandler);
         _setup.start();
 
@@ -55,45 +55,42 @@ define([
         });
 
 
-        function _readyHandler(evt) {
-            _playerReady(evt);
-        }
-
         function _setupErrorHandler(evt) {
             _this.trigger(events.JWPLAYER_SETUP_ERROR, evt);
         }
 
         function _playerReady(evt) {
-            if (!_ready) {
+            if (_ready) {
+                return;
+            }
 
-                _view.completeSetup();
-                _this.trigger(evt.type, evt);
+            _view.completeSetup();
+            _this.trigger(evt.type, evt);
 
-                // Tell the api that we are loaded
-                _api.playerReady(evt);
+            // Tell the api that we are loaded
+            _api.playerReady(evt);
 
-                _model.addGlobalListener(_forward);
-                _view.addGlobalListener(_forward);
+            _model.addGlobalListener(_forward);
+            _view.addGlobalListener(_forward);
 
-                _this.trigger(events.JWPLAYER_PLAYLIST_LOADED, {
-                    playlist: _this.jwGetPlaylist()
-                });
-                _this.trigger(events.JWPLAYER_PLAYLIST_ITEM, {
-                    index: _model.item
-                });
+            _this.trigger(events.JWPLAYER_PLAYLIST_LOADED, {
+                playlist: _this.jwGetPlaylist()
+            });
+            _this.trigger(events.JWPLAYER_PLAYLIST_ITEM, {
+                index: _model.item
+            });
 
-                _load();
+            _load();
 
-                if (_model.autostart && !utils.isMobile()) {
-                    _play();
-                }
+            if (_model.autostart && !utils.isMobile()) {
+                _play();
+            }
 
-                _ready = true;
+            _ready = true;
 
-                while (_queuedCalls.length > 0) {
-                    var queuedCall = _queuedCalls.shift();
-                    _callMethod(queuedCall.method, queuedCall.arguments);
-                }
+            while (_queuedCalls.length > 0) {
+                var queuedCall = _queuedCalls.shift();
+                _callMethod(queuedCall.method, queuedCall.arguments);
             }
         }
 
@@ -136,60 +133,70 @@ define([
         }
 
         function _play(state) {
+            var status;
             if (state === false) {
                 return _pause();
             }
 
-            try {
-                if (_loadOnPlay >= 0) {
-                    _load(_loadOnPlay);
-                    _loadOnPlay = -1;
-                }
-                //_actionOnAttach = _play;
-                if (!_preplay) {
-                    _preplay = true;
-                    _this.trigger(events.JWPLAYER_MEDIA_BEFOREPLAY);
-                    _preplay = false;
-                    if (_interruptPlay) {
-                        _interruptPlay = false;
-                        _actionOnAttach = null;
-                        return;
-                    }
-                }
-
-                if (_isIdle()) {
-                    if (_model.playlist.length === 0) {
-                        return false;
-                    }
-                    _video().load(_model.playlist[_model.item]);
-                } else if (_model.state === states.PAUSED) {
-                    _video().play();
-                }
-
-                return true;
-            } catch (err) {
-                _this.trigger(events.JWPLAYER_ERROR, err);
-                _actionOnAttach = null;
+            if (_loadOnPlay >= 0) {
+                _load(_loadOnPlay);
+                _loadOnPlay = -1;
             }
-            return false;
+            //_actionOnAttach = _play;
+            if (!_preplay) {
+                _preplay = true;
+                _this.trigger(events.JWPLAYER_MEDIA_BEFOREPLAY);
+                _preplay = false;
+                if (_interruptPlay) {
+                    _interruptPlay = false;
+                    _actionOnAttach = null;
+                    return;
+                }
+            }
+
+            if (_isIdle()) {
+                if (_model.playlist.length === 0) {
+                    return false;
+                }
+
+                status = utils.tryCatch(function() {
+                    _video().load(_model.playlist[_model.item]);
+                });
+            } else if (_model.state === states.PAUSED) {
+                status = utils.tryCatch(function() {
+                    _video().play();
+                });
+            }
+
+            if (status instanceof utils.Error) {
+                _this.trigger(events.JWPLAYER_ERROR, status);
+                _actionOnAttach = null;
+                return false;
+            }
+            return true;
         }
 
         function _stop(internal) {
             _actionOnAttach = null;
-            try {
-                _video().stop();
-                if (!internal) {
-                    _stopPlaylist = true;
-                }
 
-                if (_preplay) {
-                    _interruptPlay = true;
-                }
-                return true;
-            } catch (err) {
-                _this.trigger(events.JWPLAYER_ERROR, err);
+            var status = utils.tryCatch(function() {
+                _video().stop();
+            }, _this);
+
+            if (status instanceof utils.Error) {
+                this.trigger(events.JWPLAYER_ERROR, status);
+                return false;
             }
-            return false;
+
+            if (!internal) {
+                _stopPlaylist = true;
+            }
+
+            if (_preplay) {
+                _interruptPlay = true;
+            }
+
+            return true;
         }
 
         function _pause(state) {
@@ -202,10 +209,12 @@ define([
             switch (_model.state) {
                 case states.PLAYING:
                 case states.BUFFERING:
-                    try {
+                    var status = utils.tryCatch(function(){
                         _video().pause();
-                    } catch (err) {
-                        _this.trigger(events.JWPLAYER_ERROR, err);
+                    }, this);
+
+                    if (status instanceof utils.Error) {
+                        _this.trigger(events.JWPLAYER_ERROR, status);
                         return false;
                     }
                     break;
@@ -320,23 +329,28 @@ define([
 
         /** Used for the InStream API **/
         function _detachMedia() {
-            try {
+            var status = utils.tryCatch(function() {
                 return _model.getVideo().detachMedia();
-            } catch (err) {
-                utils.log('Error calling detachMedia', err);
+            }, this);
+
+            if (status instanceof utils.Error) {
+                utils.log('Error calling detachMedia', status);
             }
+
             return null;
         }
 
         function _attachMedia(seekable) {
             // Called after instream ends
-            try {
+            var status = utils.tryCatch(function() {
                 _model.getVideo().attachMedia(seekable);
+            });
 
-            } catch (err) {
-                utils.log('Error calling detachMedia', err);
+            if (status instanceof utils.Error) {
+                utils.log('Error calling detachMedia', status);
                 return;
             }
+
             if (typeof _actionOnAttach === 'function') {
                 _actionOnAttach();
             }
