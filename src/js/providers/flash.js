@@ -313,7 +313,7 @@ define([
     FlashProvider.prototype = new F();
     FlashProvider.supports = function (source) {
         var flashVersion = utils.flashVersion();
-        if (!flashVersion || flashVersion < 10.1) {
+        if (!flashVersion || flashVersion < __FLASH_VERSION__) {
             return false;
         }
 

@@ -22,5 +22,12 @@
     "unused": true,
 
     // These variables are predefined
-    "predef": ["jwplayer", "require", "define", "module", "__BUILD_VERSION__"]
+    "predef": [
+      "jwplayer",
+      "require",
+      "define",
+      "module",
+      "__BUILD_VERSION__",
+      "__FLASH_VERSION__"
+    ]
 }

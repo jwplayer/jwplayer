@@ -1,3 +1,5 @@
+/* jshint node: true */
+
 var fs = require('fs');
 var webpack = require('webpack');
 var env = process.env;
@@ -15,12 +17,12 @@ function getBuildVersion(packageInfo) {
 }
 
 module.exports = function(grunt) {
-    /* jshint node: true */
 
     require('load-grunt-tasks')(grunt);
 
     var packageInfo = grunt.file.readJSON('package.json');
     var buildVersion = getBuildVersion(packageInfo);
+    var flashVersion = 11.1;
 
     grunt.initConfig({
         starttime: new Date(),
@@ -110,7 +112,8 @@ module.exports = function(grunt) {
                 devtool: 'source-map',
                 plugins: [
                     new webpack.DefinePlugin({
-                        __BUILD_VERSION__: '\'' + buildVersion + '\''
+                        __BUILD_VERSION__: '\'' + buildVersion + '\'',
+                        __FLASH_VERSION__: flashVersion
                     })
                 ],
                 module: {
@@ -148,7 +151,8 @@ module.exports = function(grunt) {
         }
     });
 
-    grunt.registerMultiTask('flash', 'Compile Flash SWF files. Usage `grunt flash:*|player|vast:debug|release|swc:air|flex`', function() {
+    grunt.registerMultiTask('flash',
+            'Compile Flash SWF files. Usage `grunt flash:*|player|vast:debug|release|swc:air|flex`', function() {
         var done = this.async();
 
         var data = this.data;
@@ -180,7 +184,7 @@ module.exports = function(grunt) {
             '-compiler.library-path+=' + flashAirOrFlexSdk + '/frameworks/libs',
             '-default-background-color=0x000000',
             '-default-frame-rate=30',
-            '-target-player=11.1.0',
+            '-target-player=' + flashVersion,
             '-use-network=false'
         );
 
@@ -272,7 +276,8 @@ module.exports = function(grunt) {
 
     grunt.registerTask('build-js', [
         'webpack',
-        'uglify'
+        'uglify',
+        'jshint'
     ]);
 
     grunt.registerTask('default', [
