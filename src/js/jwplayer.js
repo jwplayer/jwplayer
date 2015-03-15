@@ -1,5 +1,6 @@
 define([
     'api/global-api',
+    'polyfill/bind',
     '../css/styles.less'
 ], function (Api) {
     var jwplayer = function () {
