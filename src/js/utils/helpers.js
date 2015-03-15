@@ -699,6 +699,10 @@ define([
     };
 
     utils.tryCatch = function(fn, ctx, args) {
+        // some browsers require these not be undefined
+        ctx = ctx || this;
+        args = args || [];
+        
         // if in debug mode, let 'er blow!
         if (window.jwplayer && window.jwplayer.debug) {
             return fn.apply(ctx, args);
