@@ -1,0 +1,259 @@
+@import "imports/vars.less";
+@import "imports/icons.less";
+
+@import "imports/display.less";
+@import "imports/controlbar.less";
+@import "imports/dock.less";
+@import "imports/tooltip.less";
+@import "imports/slider.less";
+@import "imports/errorscreen.less";
+
+.jwplayer {
+    font-size: @default-em-size;
+    position: relative;
+    display: block;
+    min-height: 0;
+    opacity: 0;
+    -webkit-transition: opacity .25s ease;
+    transition: opacity .25s ease;
+
+    * {
+        box-sizing: border-box;
+    }
+
+    button {
+        padding: 0;
+        border: 0;
+    }
+
+    &, div, span, a, img, ul, li, video {
+        padding: 0;
+        margin: 0;
+        font-family: inherit;
+        font-size: inherit;
+        font-style: inherit;
+        font-weight: inherit;
+        line-height: 1em;
+        color: rgb(0, 0, 0);
+        text-align: left;
+        vertical-align: baseline;
+        background-color: transparent;
+        border: 0;
+        direction: ltr;
+        font-variant: inherit;
+        font-stretch: inherit;
+        -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+    }
+
+    ul {
+        list-style: none;
+    }
+
+    .jw-controls {
+        pointer-events: none;
+
+        .jw-icon button {
+            color: @active-color;
+        }
+
+        .jw-dock-buttons, .jw-controlbar, .jw-skip, .jw-display-icon, .jw-preview, .jw-logo {
+            pointer-events: all;
+        }
+    }
+
+
+    .tooltip-icon.open button, .jw-icon button:hover {
+        color: @active-color;
+    }
+
+    .jw-text {
+        height: 1em;
+        font-family: Arial, sans-serif;
+        font-size: @font-size;
+        font-style: normal;
+        font-weight: normal;
+        line-height: 1em;
+        color: @font-color;
+        text-align: center;
+        font-variant: normal;
+        font-stretch: normal;
+    }
+
+    &.jw-aspect-mode {
+        height: auto;
+    }
+
+    &.jw-fullscreen {
+        position: fixed !important;
+        top: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        z-index: 1000 !important;
+        width: 100% !important;
+        height: 100% !important;
+        margin: 0 !important;
+    }
+
+    &.jw-fullscreen.jw-user-inactive {
+        cursor: none;
+    }
+
+    &.jw-fullscreen .jw-main {
+        top: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        left: 0 !important;
+    }
+
+    .jw-uniform {
+        background-size: contain !important;
+    }
+
+    .jw-fill {
+        background-position: 50% 50%;
+        background-size: cover !important;
+    }
+
+    .jw-exact-fit {
+        background-size: 100% 100% !important;
+    }
+
+    .jw-cast-screen {
+        width: 100%;
+        height: 100%;
+    }
+
+    &.jw-user-inactive .jw-controls {
+        pointer-events: all;
+    }
+}
+
+.jw-skip {
+    position: absolute;
+    right: 1em;
+    display: inline-block;
+    float: right;
+    width: 7em;
+    height: 2em;
+}
+
+.jw-skip-image {
+    position: relative;
+    display: none;
+}
+
+.jw-captions {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.jw-logo {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    margin-bottom: 0;
+    cursor: pointer;
+}
+
+/***** Start Right Click *****/
+.jw-click {
+    position: absolute !important;
+    z-index: 999 !important;
+    width: 320px !important;
+    height: auto !important;
+    font-family: 'MS Sans Serif', Geneva, sans-serif !important;
+    font-size: 10px !important;
+    background-color: rgb(255, 255, 255) !important;
+    border: 1px solid rgb(188, 188, 188) !important;
+    border-radius: 5px !important;
+    -webkit-box-shadow: rgba(0, 0, 0, 0.1) 5px 5px 7px rgba(255, 255, 255, 0.3) 0 1px 0 inset !important;
+    box-shadow: rgba(0, 0, 0, 0.1) 5px 5px 7px rgba(255, 255, 255, 0.3) 0 1px 0 inset !important;
+}
+
+.jw-click div {
+    padding: 8px 21px !important;
+    margin: 0 !important;
+    font-family: 'MS Sans Serif', Geneva, sans-serif !important;
+    font-size: 10px !important;
+    color: inherit !important;
+    background-color: rgb(255, 255, 255) !important;
+    border: none !important;
+}
+
+.jw-click hr {
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 1px solid rgb(233, 233, 233) !important;
+}
+
+.jw-click-item {
+    padding: 8px 21px !important;
+    text-align: left !important;
+    cursor: pointer !important;
+}
+
+.jw-click-item:hover {
+    color: rgb(255, 255, 255) !important;
+    background-color: rgb(89, 89, 89) !important;
+}
+
+.jw-click-item a {
+    color: rgb(0, 0, 0) !important;
+    text-decoration: none !important;
+}
+
+/**** END RIGHT CLICK ****/
+
+.jw-main {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    -webkit-transition: opacity .25s ease;
+    transition: opacity .25s ease;
+}
+
+.jw-video, .jw-controls {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-transition: opacity .25s ease;
+    transition: opacity .25s ease;
+}
+
+.jw-video {
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.jw-video video {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: auto;
+    background: transparent;
+}
+
+.jw-instream {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: none;
+}
+
+.jw-aspect {
+    display: none;
+}
