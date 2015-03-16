@@ -264,8 +264,14 @@ public class Controller extends GlobalEventDispatcher {
             return false;
         }
 
-        Logger.log("Loading PlaylistItem: " + item.toString(), "LOAD");
+        if (_model.item && _model.item.file === item.file) {
+            // resume current item
+            _model.item.start = item.start;
+            _model.item.starttime = item.starttime;
+            return false;
+        }
 
+        // new item to load
         _model.item = item;
 
         return true;

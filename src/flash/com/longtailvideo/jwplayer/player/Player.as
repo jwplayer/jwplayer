@@ -12,7 +12,6 @@ import com.longtailvideo.jwplayer.view.View;
 import flash.display.Sprite;
 import flash.events.ErrorEvent;
 import flash.events.Event;
-import flash.events.MouseEvent;
 import flash.geom.Rectangle;
 import flash.system.Security;
 
@@ -157,6 +156,7 @@ public class Player extends Sprite implements IPlayer {
     public function load(item:*):Boolean {
         _controller.load(new PlaylistItem(item));
         _controller.play();
+
         return true;
     }
 
