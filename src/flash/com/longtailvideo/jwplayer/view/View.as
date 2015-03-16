@@ -211,9 +211,6 @@ public class View extends Sprite {
         _plugins = {};
         _allPlugins = new Vector.<IPlugin>;
 
-        _mediaLayer.alpha = 0;
-
-        _instreamLayer.alpha = 0;
         _instreamLayer.visible = false;
     }
 
