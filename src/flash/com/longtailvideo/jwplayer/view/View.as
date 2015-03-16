@@ -1,8 +1,5 @@
 package com.longtailvideo.jwplayer.view {
-import com.longtailvideo.jwplayer.events.GlobalEventDispatcher;
 import com.longtailvideo.jwplayer.events.MediaEvent;
-import com.longtailvideo.jwplayer.events.PlayerEvent;
-import com.longtailvideo.jwplayer.events.ViewEvent;
 import com.longtailvideo.jwplayer.model.Model;
 import com.longtailvideo.jwplayer.player.IInstreamPlayer;
 import com.longtailvideo.jwplayer.plugins.IPlugin;
@@ -13,84 +10,54 @@ import com.longtailvideo.jwplayer.utils.RootReference;
 import com.longtailvideo.jwplayer.utils.Stretcher;
 
 import flash.display.DisplayObject;
-import flash.display.MovieClip;
+import flash.display.Sprite;
 import flash.display.StageAlign;
 import flash.display.StageDisplayState;
 import flash.display.StageScaleMode;
 import flash.events.ErrorEvent;
 import flash.events.Event;
 import flash.geom.Rectangle;
-import flash.text.TextField;
-import flash.text.TextFieldAutoSize;
-import flash.text.TextFormat;
-import flash.text.TextFormatAlign;
-import flash.utils.setTimeout;
 
-public class View extends GlobalEventDispatcher {
-    public function View(model:Model) {
-        _model = model;
+public class View extends Sprite {
 
-        RootReference.stage.scaleMode = StageScaleMode.NO_SCALE;
-        RootReference.stage.stage.align = StageAlign.TOP_LEFT;
-
-        _root = new MovieClip();
-        _root.tabIndex = 0;
-        _root.focusRect = false;
-        _normalScreen = new Rectangle(
-                0,
-                0,
-                _model.width,
-                _model.height
-        );
-    }
-    protected var _root:MovieClip;
     protected var _model:Model;
     protected var _preserveAspect:Boolean = false;
     protected var _normalScreen:Rectangle;
-    protected var _mediaLayer:MovieClip;
-    protected var _componentsLayer:MovieClip;
-    protected var _pluginsLayer:MovieClip;
+    protected var _mediaLayer:Sprite;
+    protected var _componentsLayer:Sprite;
+    protected var _pluginsLayer:Sprite;
     protected var _plugins:Object;
 
     // Indicates whether the instream player is being displayed
     protected var _allPlugins:Vector.<IPlugin>;
     protected var _instreamMode:Boolean = false;
     protected var _instreamPlayer:IInstreamPlayer;
-    protected var _instreamLayer:MovieClip;
+    protected var _instreamLayer:Sprite;
     protected var _instreamPlugin:IPlugin;
 
-    public function setupView():void {
-        RootReference.stage.addChildAt(_root, 0);
+    public function View(model:Model) {
+        _model = model;
+        _model.addEventListener(MediaEvent.JWPLAYER_MEDIA_LOADED, mediaLoaded);
 
-        _root.visible = false;
+        _normalScreen = new Rectangle(
+                0,
+                0,
+                _model.width,
+                _model.height
+        );
 
         setupLayers();
+    }
+
+    public function setupView():void {
+        RootReference.stage.scaleMode = StageScaleMode.NO_SCALE;
+        RootReference.stage.stage.align = StageAlign.TOP_LEFT;
+
+        RootReference.stage.addChildAt(this, 0);
 
         RootReference.stage.addEventListener(Event.RESIZE, resizeHandler);
 
-        _model.addEventListener(MediaEvent.JWPLAYER_MEDIA_LOADED, mediaLoaded);
-
         redraw();
-    }
-
-    public function completeView(isError:Boolean = false, errorMsg:String = ""):void {
-        if (!isError) {
-            _root.visible = true;
-        } else {
-            // Make this asynchronous; fixes an issue in IE9/Flash 11.4+
-            setTimeout(function ():void {
-                var errorMessage:TextField = new TextField();
-                errorMessage.defaultTextFormat = new TextFormat("_sans", 15, 0xffffff, false, false, false, null, null, TextFormatAlign.CENTER);
-                errorMessage.text = errorMsg.replace(":", ":\n");
-                errorMessage.width = RootReference.stage.stageWidth - 300;
-                errorMessage.height = errorMessage.textHeight + 10;
-                errorMessage.autoSize = TextFieldAutoSize.CENTER;
-
-                errorMessage.x = (RootReference.stage.stageWidth - errorMessage.textWidth) / 2;
-                errorMessage.y = (RootReference.stage.stageHeight - errorMessage.textHeight) / 2;
-                RootReference.stage.addChild(errorMessage);
-            }, 0);
-        }
     }
 
     public function fullscreen(mode:Boolean = true):void {
@@ -233,15 +200,6 @@ public class View extends GlobalEventDispatcher {
 
     }
 
-    public function getSafeRegion():Rectangle {
-        return new Rectangle(
-                0,
-                0,
-                _model.width,
-                _model.height
-        );
-    }
-
     protected function setupLayers():void {
         var currentLayer:uint = 0;
 
@@ -259,10 +217,10 @@ public class View extends GlobalEventDispatcher {
         _instreamLayer.visible = false;
     }
 
-    protected function setupLayer(name:String, index:Number):MovieClip {
-        var layer:MovieClip = new MovieClip();
+    protected function setupLayer(name:String, index:Number):Sprite {
+        var layer:Sprite = new Sprite();
         layer.name = name;
-        _root.addChildAt(layer, index);
+        this.addChildAt(layer, index);
         return layer;
     }
 
@@ -295,11 +253,9 @@ public class View extends GlobalEventDispatcher {
 
         if (_model.fullscreen !== fullscreen) {
             _model.fullscreen = fullscreen;
-            dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_FULLSCREEN, width, height, fullscreen));
         }
         if (width && height) {
             redraw();
-            dispatchEvent(new ViewEvent(ViewEvent.JWPLAYER_RESIZE, width, height, fullscreen));
         }
     }
 
@@ -314,11 +270,6 @@ public class View extends GlobalEventDispatcher {
                 resizeMedia(_model.width, _model.height);
             }
         }
-    }
-
-    protected function forward(evt:Event):void {
-        if (evt is PlayerEvent)
-            dispatchEvent(evt);
     }
 
 }

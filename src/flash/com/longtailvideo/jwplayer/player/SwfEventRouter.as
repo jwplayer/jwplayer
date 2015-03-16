@@ -60,30 +60,28 @@ public class SwfEventRouter {
      * Any instance in the Flash app can fire an event
      */
 
-    static private var _sendScript:XML =
-    <script>
-    <![CDATA[
-        function(id, name, json) {
-            var swf = document.getElementById(id);
-            if (swf && typeof swf.trigger === 'function') {
-                if (json) {
-                    var data = JSON.parse(json);
-                    swf.trigger(name, data);
-                } else {
-                    swf.trigger(name);
-                }
-                return;
+    static private var _sendScript:XML = <script><![CDATA[
+function(id, name, json) {
+    return setTimeout(function() {
+        var swf = document.getElementById(id);
+        if (swf && typeof swf.trigger === 'function') {
+            if (json) {
+                var data = JSON.parse(decodeURIComponent(json));
+                return swf.trigger(name, data);
+            } else {
+                return swf.trigger(name);
             }
-            console.log('Unhandled event from "' + id +'":', name, json);
         }
-    ]]>
-    </script>;
+        console.log('Unhandled event from "' + id +'":', name, json);
+    }, 0);
+}]]></script>;
 
     static public function triggerJsEvent(name:String, data:Object = null):void {
         var id:String = ExternalInterface.objectID;
         if (ExternalInterface.available) {
-            var json:String;
+            var jsTimeout:Number = -1;
             if (data !== null) {
+                var json:String;
                 try {
                     if (data.clone is Function) {
                         // event object targets often have Cyclic structure
@@ -91,12 +89,14 @@ public class SwfEventRouter {
                         delete data.target;
                         delete data.currentTarget;
                     }
-                    json = JSON.stringify(data);
+                    json = encodeURIComponent(JSON.stringify(data));
                 } catch(err:Error) {
                     trace('json encoding error', err);
                 }
+                jsTimeout = ExternalInterface.call(_sendScript, id, name, json);
+            } else {
+                jsTimeout = ExternalInterface.call(_sendScript, id, name);
             }
-            ExternalInterface.call(_sendScript, id, name, json);
             return;
         }
         trace('Could not dispatch event "' + id + '":', name, json);

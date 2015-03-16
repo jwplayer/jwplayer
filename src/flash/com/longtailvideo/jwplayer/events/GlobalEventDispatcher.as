@@ -8,8 +8,6 @@ public class GlobalEventDispatcher extends EventDispatcher implements IGlobalEve
 
     private var _globalListeners:Dictionary = new Dictionary();
 
-    private var _dispatcher:IEventDispatcher;
-
     public function addGlobalListener(listener:Function):void {
         _globalListeners[listener] = true;
     }

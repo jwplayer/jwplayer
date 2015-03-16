@@ -19,7 +19,7 @@ public class PlayerStateEvent extends PlayerEvent {
 
     public override function toString():String {
         return '[PlayerStateEvent type="' + type + '" oldstate="' + oldstate + '" newstate="' + newstate +
-                '" id="' + id + '" client="' + client + '" version="' + version + '" message="' + message + '" ]';
+                '" message="' + message + '" ]';
     }
 }
 }

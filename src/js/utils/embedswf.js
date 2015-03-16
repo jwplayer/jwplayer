@@ -53,7 +53,6 @@ define([
             swf.setAttribute('id', id);
             swf.setAttribute('name', id);
 
-            //obj.setAttribute('tabindex', 0);
             appendParam(swf, 'allowfullscreen', 'true');
             appendParam(swf, 'allowscriptaccess', 'always');
             appendParam(swf, 'wmode', wmode);
@@ -75,10 +74,9 @@ define([
 
         // javascript can trigger SwfEventRouter callbacks
         swf.triggerFlash = function(name) {
-            var params = arguments;
+            var args = Array.prototype.slice.call(arguments, 1);
             var status = utils.tryCatch(function() {
-                if (params.length > 1) {
-                    var args = Array.prototype.slice.call(params, 1);
+                if (args.length) {
                     var json = JSON.stringify(args);
                     swf.__externalCall(name, json);
                 } else {

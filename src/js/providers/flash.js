@@ -31,13 +31,21 @@ define([
             return _swf && _swf.__ready;
         };
 
+        var _queuedCommands = [];
+
         var _flashCommand = function(name) {
             var args = Array.prototype.slice.call(arguments);
             if (_ready()) {
                 _swf.triggerFlash.apply(_swf, args);
                 return;
             }
-            console.log('swf is not ready to receive command', name, args);
+            // remove any earlier commands with the same name
+            for (var i = _queuedCommands.length; i--;) {
+                if (_queuedCommands[i][0] === name) {
+                    _queuedCommands.splice(i, 1);
+                }
+            }
+            _queuedCommands.push(args);
         };
 
         var _eventDispatcher = new eventdispatcher('flash.provider');
@@ -131,24 +139,18 @@ define([
                     _swf.off();
 
                     _swf.once('ready', function() {
-                        console.log('ready');
                         _swf.__ready = true;
-                        // TODO: setTimeout - async
 
-                        // adjust volume and mute
-                        // TODO: have one call to initialize state (vol, mute, item, playback)
+                        // setup flash player
                         var config = _.extend({
-                            key: jwplayer.key
+                            key: jwplayer.key,
+                            commands: _queuedCommands
                         }, jwplayer(_playerId).config);
 
-                        _flashCommand('config', config);
-                        this.volume(_volume);
-                        this.mute(_muted);
-                        // load was called before swf was ready
-                        if (_item) {
-                            // TODO: check desired state or queued commands
-                            this.load(_item);
-                        }
+                        _queuedCommands = [];
+
+                        _flashCommand('setup', config);
+
                     }, this);
 
                     _swf.on('error', function(event) {
@@ -222,6 +224,7 @@ define([
                     // catch all events for dev / debug
                     _swf.on('all', function(name, data) {
                         switch (name) {
+                            case 'ready':
                             case events.JWPLAYER_MEDIA_TIME:
                             case events.JWPLAYER_MEDIA_BUFFER:
                                 break;
