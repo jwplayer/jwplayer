@@ -7,67 +7,6 @@ define([
     // Defaults
     var BGCOLOR = '#000000';
 
-    // Only html5 compatible attr
-    //  http://www.w3schools.com/tags/tag_object.asp
-    /*
-    var validObjectAttr = [
-        'data',
-        'form',
-        'height',
-        'name',
-        'type',
-        'usemap',
-        'width'
-    ];
-    */
-
-
-    /**
-     * Recursively traverses nested object, replacing key names containing a
-     * search string with a replacement string.
-     *
-     * @param searchString
-     *            The string to search for in the object's key names
-     * @param replaceString
-     *            The string to replace in the object's key names
-     * @returns Object.
-     */
-    /*
-    var _deepReplaceKeyName = function (obj, searchString, replaceString) {
-        switch (utils.typeOf(obj)) {
-            case 'array':
-                for (var i = 0; i < obj.length; i++) {
-                    obj[i] = _deepReplaceKeyName(obj[i],
-                        searchString, replaceString);
-                }
-                break;
-            case 'object':
-                _.each(obj, function (val, key) {
-                    var searches;
-                    if (searchString instanceof Array && replaceString instanceof Array) {
-                        if (searchString.length !== replaceString.length) {
-                            return;
-                        } else {
-                            searches = searchString;
-                        }
-                    } else {
-                        searches = [searchString];
-                    }
-                    var newkey = key;
-                    for (var i = 0; i < searches.length; i++) {
-                        newkey = newkey.replace(new RegExp(searchString[i], 'g'), replaceString[i]);
-                    }
-                    obj[newkey] = _deepReplaceKeyName(val, searchString, replaceString);
-                    if (key !== newkey) {
-                        delete obj[key];
-                    }
-                });
-                break;
-        }
-        return obj;
-    };
-    */
-
     function appendParam(object, name, value) {
         var param = document.createElement('param');
         param.setAttribute('name', name);
@@ -94,10 +33,15 @@ define([
                 '<param name="allowscriptaccess" value="always">' +
                 '<param name="wmode" value="' + wmode + '">' +
                 '<param name="bgcolor" value="' + BGCOLOR + '">' +
+                '<param name="menu" value="false">' +
                 '</object>';
 
-            // TODO: check id
-            swf = container.getElementsByTagName('object')[0];
+            var objectElements = container.getElementsByTagName('object');
+            for (var i = objectElements.length; i--;) {
+                if (objectElements[i].id === id) {
+                    swf = objectElements[i];
+                }
+            }
 
         } else {
             swf = document.createElement('object');
@@ -112,23 +56,21 @@ define([
             appendParam(swf, 'allowfullscreen', 'true');
             appendParam(swf, 'allowscriptaccess', 'always');
             appendParam(swf, 'wmode', wmode);
+            appendParam(swf, 'menu', 'false');
 
             container.appendChild(swf, container);
         }
 
         swf.className = 'jwswf';
-        swf.style.position = 'relative';
         swf.style.display = 'block';
+        swf.style.position = 'absolute';
+        swf.style.left = 0;
+        swf.style.right = 0;
+        swf.style.top = 0;
+        swf.style.bottom = 0;
 
         // flash can trigger events
         _.extend(swf, Events);
-
-        /*
-        // Intercept trigger events, normalize them, then send along
-        swf.trigger = function() {
-            return Events.trigger.apply(this, _deepReplaceKeyName(arguments));
-        };
-        */
 
         // javascript can trigger SwfEventRouter callbacks
         swf.triggerFlash = function(name) {

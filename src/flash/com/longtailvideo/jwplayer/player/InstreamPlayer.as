@@ -160,7 +160,7 @@ public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPl
     }
 
     public function getSafeRegion():Rectangle {
-        return _view.getSafeRegion();
+        return _view.getBounds(RootReference.root);
     }
 
     public function volume(volume:Number):Boolean {

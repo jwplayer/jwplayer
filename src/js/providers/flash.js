@@ -19,6 +19,7 @@ define([
         // private properties
         var _container;
         var _swf;
+        var _clickOverlay;
         var _item = null;
         var _dragging = false;
         var _volume;
@@ -47,7 +48,9 @@ define([
             _queuedCommands.push(args);
         };
 
-        _.extend(this, new eventdispatcher('flash.provider'),
+        var _eventDispatcher = new eventdispatcher('flash.provider');
+
+        _.extend(this, _eventDispatcher,
             {
                 load: function(item) {
                     _item = item;
@@ -114,6 +117,22 @@ define([
                     _container = parent;
 
                     _swf = _swf || EmbedSwf.embed('../bin-debug/jwplayer.flash.swf', parent, getObjectId(_playerId));
+
+                    // place div on top of swf to capture clicks
+                    if (!_clickOverlay) {
+                        _clickOverlay = document.createElement('div');
+                        _clickOverlay.style.background = 'transparent';
+                        _clickOverlay.style.position = 'absolute';
+                        _clickOverlay.style.left = 0;
+                        _clickOverlay.style.right = 0;
+                        _clickOverlay.style.top = 0;
+                        _clickOverlay.style.bottom = 0;
+                        _clickOverlay.addEventListener('click', function() {
+                            _eventDispatcher.sendEvent(events.JWPLAYER_PROVIDER_CLICK);
+                        });
+                    }
+                    _container.appendChild(_clickOverlay);
+
 
                     // listen to events triggered from flash
 
@@ -197,9 +216,6 @@ define([
                     }, this).on(events.JWPLAYER_MEDIA_ERROR, function(e) {
                         this.sendEvent(e.type, e);
 
-                    }, this).on('click', function() {
-                        this.sendEvent(events.JWPLAYER_PROVIDER_CLICK);
-
                     }, this);
 
                     // ignoring:
@@ -243,6 +259,9 @@ define([
                 remove: function() {
                     _currentQuality = -1;
                     EmbedSwf.remove(_swf);
+                    if (_clickOverlay && _container && _clickOverlay.parentNode === _container) {
+                        _container.removeChild(_clickOverlay);
+                    }
                 },
                 setVisibility: function(visible) {
                     visible = !!visible;
@@ -281,13 +300,16 @@ define([
                 },
                 supportsFullscreen: _.constant(true),
                 destroy: function() {
+                    this.remove();
                     if (_swf) {
                         _swf.off();
-                        this.remove(_swf);
                         _swf = null;
                     }
+                    _clickOverlay = null;
                     _container = null;
                     _item = null;
+                    _eventDispatcher.resetEventListeners();
+                    _eventDispatcher = null;
                 }
             }
         );

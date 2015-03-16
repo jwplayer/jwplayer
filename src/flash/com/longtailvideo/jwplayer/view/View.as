@@ -47,7 +47,6 @@ public class View extends Sprite {
         );
 
         setupLayers();
-        setupRightClick();
     }
 
     public function setupView():void {
@@ -199,20 +198,6 @@ public class View extends Sprite {
 
     public function hideInstream():void {
 
-    }
-
-    public function getSafeRegion():Rectangle {
-        return new Rectangle(
-                0,
-                0,
-                _model.width,
-                _model.height
-        );
-    }
-
-    protected function setupRightClick():void {
-        var menu:RightclickMenu = new RightclickMenu();
-        this.contextMenu = menu.context;
     }
 
     protected function setupLayers():void {

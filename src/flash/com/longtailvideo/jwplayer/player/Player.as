@@ -34,6 +34,8 @@ public class Player extends Sprite implements IPlayer {
         this.tabEnabled = false;
         this.tabChildren = false;
         this.focusRect = false;
+        this.mouseEnabled = false;
+        this.mouseChildren = false;
 
         _config = new PlayerConfig();
 
@@ -149,7 +151,7 @@ public class Player extends Sprite implements IPlayer {
     }
 
     public function getSafeRegion():Rectangle {
-        return _view.getSafeRegion();
+        return _view.getBounds(RootReference.root);
     }
 
     public function load(item:*):Boolean {
@@ -213,13 +215,6 @@ public class Player extends Sprite implements IPlayer {
                 .on('mute', mute)
                 .on('volume', volume)
                 .on('stretch', stretch);
-
-        this.mouseEnabled = true;
-        this.mouseChildren = false;
-        this.buttonMode = true;
-        this.stage.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
-            SwfEventRouter.triggerJsEvent('click', e);
-        });
 
         // Send ready event to browser
         SwfEventRouter.triggerJsEvent('ready');

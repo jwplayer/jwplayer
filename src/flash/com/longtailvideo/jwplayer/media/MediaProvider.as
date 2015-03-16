@@ -401,11 +401,11 @@ public class MediaProvider extends Sprite implements IMediaProvider {
         if ((_bufferPercent != bufferPercent || bufferPercent == 0) && 0 <= bufferPercent < 100) {
             _bufferPercent = bufferPercent;
             var obj:Object = {
-                'bufferPercent': _bufferPercent,
-                'offset': offset,
-                'duration': _item.duration,
-                'position': Math.max(0, _position),
-                'metadata': metadata
+                bufferPercent: _bufferPercent,
+                offset: offset,
+                duration: _item.duration,
+                position: Math.max(0, _position),
+                metadata: metadata
             };
             sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_BUFFER, obj);
         }
