@@ -515,10 +515,7 @@ define([
         };
 
         this.detachMedia = function() {
-            // temp return a video element so instream doesn't break.
-            // FOR VAST: prevent instream from being initialized while casting
-
-            return document.createElement('video');
+            return null;
         };
 
         this.attachMedia = function() {

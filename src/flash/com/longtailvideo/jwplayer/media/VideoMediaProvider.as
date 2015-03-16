@@ -108,8 +108,8 @@ public class VideoMediaProvider extends MediaProvider {
             _video = new Video(320, 240);
             _video.smoothing = true;
             // Use stageVideo when available
-            if (_stageEnabled && RootReference.stage['stageVideos'].length > 0) {
-                _stage = RootReference.stage['stageVideos'][0];
+            if (_stageEnabled && RootReference.stage && RootReference.stage.stageVideos.length > 0) {
+                _stage = RootReference.stage.stageVideos[0];
                 _stage.viewPort = new Rectangle(0, 0, 320, 240);
                 _stage.addEventListener('renderState', renderHandler);
             } else {
@@ -146,7 +146,7 @@ public class VideoMediaProvider extends MediaProvider {
         streamVolume(config.mute ? 0 : config.volume);
         // Get item start (should remove this someday)
         if (_startparam && _item.start) {
-            _starttime = item.start;
+            _starttime = _item.start;
         } else {
             _starttime = 0;
         }

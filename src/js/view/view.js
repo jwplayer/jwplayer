@@ -25,7 +25,6 @@ define([
         ASPECT_MODE = 'aspectMode',
         FULLSCREEN_SELECTOR = '.' + PLAYER_CLASS + '.jwfullscreen',
         VIEW_MAIN_CONTAINER_CLASS = 'jwmain',
-        VIEW_INSTREAM_CONTAINER_CLASS = 'jwinstream',
         VIEW_VIDEO_CONTAINER_CLASS = 'jwvideo',
         VIEW_CONTROLS_CONTAINER_CLASS = 'jwcontrols',
         VIEW_ASPECT_CONTAINER_CLASS = 'jwaspect',
@@ -61,9 +60,6 @@ define([
             _videoLayer,
             _lastWidth,
             _lastHeight,
-            _instreamLayer,
-            _instreamControlbar,
-            _instreamDisplay,
             _instreamModel,
             _instreamMode = false,
             _controlbar,
@@ -297,7 +293,6 @@ define([
             _videoLayer.id = _model.id + '_media';
 
             _controlsLayer = _createElement('span', VIEW_CONTROLS_CONTAINER_CLASS);
-            _instreamLayer = _createElement('span', VIEW_INSTREAM_CONTAINER_CLASS);
             _playlistLayer = _createElement('span', VIEW_PLAYLIST_CONTAINER_CLASS);
             _aspectLayer = _createElement('span', VIEW_ASPECT_CONTAINER_CLASS);
 
@@ -305,7 +300,6 @@ define([
 
             _container.appendChild(_videoLayer);
             _container.appendChild(_controlsLayer);
-            _container.appendChild(_instreamLayer);
 
             _playerElement.appendChild(_container);
             _playerElement.appendChild(_aspectLayer);
@@ -493,10 +487,6 @@ define([
                 } else {
                     _showControls();
                 }
-            } else {
-                _stateHandler({
-                    newstate: _model.state
-                });
             }
             if (_showing) {
                 _resetTapTimer();
@@ -510,7 +500,8 @@ define([
 
         function _startFade() {
             clearTimeout(_controlsTimeout);
-            var state = _model.state;
+            var model = _instreamMode ? _instreamModel : _model;
+            var state = model.state;
 
             // We need _instreamMode because the state is IDLE during pre-rolls
             if (state === states.PLAYING || state === states.PAUSED || _instreamMode) {
@@ -785,7 +776,8 @@ define([
                     _showVideo(false);
                 } else {
                     _controlbar.audioMode(false);
-                    _updateState(_model.state);
+                    var model = _instreamMode ? _instreamModel : _model;
+                    _updateState(model.state);
                 }
             }
             if (_logo && _audioMode) {
@@ -912,12 +904,13 @@ define([
                 _instreamModel.setFullscreen(fullscreenState);
             }
 
+            var model = _instreamMode ? _instreamModel : _model;
             if (fullscreenState) {
                 // Browsers seem to need an extra second to figure out how large they are in fullscreen...
                 clearTimeout(_resizeMediaTimeout);
                 _resizeMediaTimeout = setTimeout(_resizeMedia, 200);
 
-            } else if (_isIPad && _model.state === states.PAUSED) {
+            } else if (_isIPad && model.state === states.PAUSED) {
                 // delay refresh on iPad when exiting fullscreen
                 // TODO: cancel this if fullscreen or player state changes
                 setTimeout(_showDisplay, 500);
@@ -926,11 +919,7 @@ define([
 
         function _showControlbar() {
             if (_controlbar && _model.controls) {
-                if (_instreamMode) {
-                    _instreamControlbar.show();
-                } else {
-                    _controlbar.show();
-                }
+                _controlbar.show();
             }
         }
 
@@ -941,10 +930,6 @@ define([
 
             // TODO: use _forcedControlsState for audio mode so that we don't need these
             if (_controlbar && !_audioMode && !_model.getVideo().isAudioFile()) {
-                if (_instreamMode) {
-                    _instreamControlbar.hide();
-                }
-
                 _controlbar.hide();
             }
         }
@@ -974,8 +959,9 @@ define([
         }
 
         function _showDisplay() {
+            var model = _instreamMode ? _instreamModel : _model;
             if (_display && _model.controls && !_audioMode) {
-                if (!_isIPod || _model.state === states.IDLE) {
+                if (!_isIPod || model.state === states.IDLE) {
                     _display.show();
                 }
             }
@@ -999,7 +985,8 @@ define([
             }
             _showing = false;
 
-            var state = _model.state;
+            var model = _instreamMode ? _instreamModel : _model;
+            var state = model.state;
 
             if (!_model.controls || state !== states.PAUSED) {
                 _hideControlbar();
@@ -1073,7 +1060,11 @@ define([
 
         function _isAudioFile() {
             var model = _instreamMode ? _instreamModel : _model;
-            return model.getVideo().isAudioFile();
+            var provider = model.getVideo();
+            if (provider) {
+                return provider.isAudioFile();
+            }
+            return false;
         }
 
         function _isCasting() {
@@ -1159,38 +1150,39 @@ define([
             _showLogo();
         }
 
-        function _internalSelector(className) {
-            return '#' + _model.id + (className ? ' .' + className : '');
-        }
-
-        this.setupInstream = function(instreamContainer, instreamControlbar, instreamDisplay, instreamModel) {
-            cssUtils.unblock();
-            _setVisibility(_internalSelector(VIEW_INSTREAM_CONTAINER_CLASS), true);
-            _setVisibility(_internalSelector(VIEW_CONTROLS_CONTAINER_CLASS), false);
-            _instreamLayer.appendChild(instreamContainer);
-            _instreamControlbar = instreamControlbar;
-            _instreamDisplay = instreamDisplay;
+        this.setupInstream = function(instreamModel) {
             _instreamModel = instreamModel;
             _instreamMode = true;
-            _instreamLayer.addEventListener('mousemove', _startFade);
-            _instreamLayer.addEventListener('mouseout', _mouseoutHandler);
+            _controlbar.instreamMode(true);
+            _controlbar.adMode(true);
+            _controlbar.show(true);
+            _dock.hide();
+        };
+
+        this.setInstreamText = function(text) {
+            _controlbar.setText(text);
         };
 
         this.showInstream = function() {
             // adds video tag to video layer
-            _instreamModel.getVideo().setContainer(_videoLayer);
-            _instreamModel.getVideo().setVisibility(true);
-            _instreamDisplay.show();
+            var provider = _instreamModel.getVideo();
+            provider.setContainer(_videoLayer);
+            provider.setVisibility(true);
+            _controlbar.show(true);
         };
 
         this.destroyInstream = function() {
-            cssUtils.unblock();
-            _setVisibility(_internalSelector(VIEW_INSTREAM_CONTAINER_CLASS), false);
-            _setVisibility(_internalSelector(VIEW_CONTROLS_CONTAINER_CLASS), true);
-            _instreamLayer.innerHTML = '';
-            _instreamLayer.removeEventListener('mousemove', _startFade);
-            _instreamLayer.removeEventListener('mouseout', _mouseoutHandler);
             _instreamMode = false;
+            _controlbar.setText('');
+            _controlbar.adMode(false);
+            _controlbar.instreamMode(false);
+            _controlbar.show(true);
+            _dock.show();
+            _this.releaseState();
+            _forcedControlsState = null;
+            var provider = _model.getVideo();
+            provider.setContainer(_videoLayer);
+            provider.setVisibility(true);
         };
 
         this.setupError = function(message) {
@@ -1199,12 +1191,6 @@ define([
             errorScreen(_playerElement, message[0], message[1]);
             _completeSetup();
         };
-
-        function _setVisibility(selector, state) {
-            _css(selector, {
-                display: state ? JW_CSS_BLOCK : JW_CSS_NONE
-            });
-        }
 
         this.addButton = function(icon, label, handler, id) {
             if (_dock) {
@@ -1230,19 +1216,14 @@ define([
 
             _model.controls = newstate;
 
-            if (_instreamMode) {
-                _hideInstream(!state);
-            } else {
-                if (newstate) {
-                    _stateHandler({
-                        newstate: _model.state
-                    });
-                }
-            }
-
             if (!newstate) {
                 _hideControls();
                 _hideDisplay();
+            } else {
+                var model = _instreamMode ? _instreamModel : _model;
+                _stateHandler({
+                    newstate: model.state
+                });
             }
 
             _this.sendEvent(events.JWPLAYER_CONTROLS, {
@@ -1261,18 +1242,9 @@ define([
 
         this.releaseControls = function() {
             _forcedControlsState = null;
-            _updateState(_model.state);
+            var model = _instreamMode ? _instreamModel : _model;
+            _updateState(model.state);
         };
-
-        function _hideInstream(hidden) {
-            if (hidden) {
-                _instreamControlbar.hide();
-                _instreamDisplay.hide();
-            } else {
-                _instreamControlbar.show();
-                _instreamDisplay.show();
-            }
-        }
 
         this.addCues = function(cues) {
             if (_controlbar) {
@@ -1285,7 +1257,16 @@ define([
         };
 
         this.releaseState = function() {
-            _display.releaseState(_model.state);
+            var model = _instreamMode ? _instreamModel : _model;
+            _display.releaseState(model.state);
+        };
+
+        this.displayComp = function() {
+            return _display;
+        };
+
+        this.controlsContainer = function() {
+            return _controlsLayer;
         };
 
         this.getSafeRegion = function(includeCB) {
@@ -1300,13 +1281,13 @@ define([
 
 
             _controlbar.showTemp();
-            _dock.showTemp();
+            if (!_instreamMode) {
+                _dock.showTemp();
+            }
             //_responsiveListener();
             var dispBounds = _bounds(_container),
                 dispOffset = dispBounds.top,
-                cbBounds = _instreamMode ?
-                _bounds(document.getElementById(_model.id + '_instream_controlbar')) :
-                _bounds(_controlbar.element()),
+                cbBounds = _bounds(_controlbar.element()),
                 dockButtons = _instreamMode ? false : (_dock.numButtons() > 0),
                 logoTop = (_logo.position().indexOf('top') === 0),
                 dockBounds,
@@ -1404,16 +1385,6 @@ define([
         width: JW_CSS_100PCT,
         display: JW_CSS_NONE
     });
-
-    _css('.' + VIEW_INSTREAM_CONTAINER_CLASS, {
-        position: JW_CSS_ABSOLUTE,
-        top: 0,
-        left: 0,
-        bottom: 0,
-        right: 0,
-        display: 'none'
-    });
-
 
     _css('.' + VIEW_ASPECT_CONTAINER_CLASS, {
         display: 'none'
