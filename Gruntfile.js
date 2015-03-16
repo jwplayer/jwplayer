@@ -123,7 +123,8 @@ module.exports = function(grunt) {
         webpack : {
             build : {
                 entry: {
-                    jwplayer : './src/js/jwplayer.js'
+                    jwplayer : './src/js/jwplayer.js',
+                    demostyles : './src/js/demostyles.js'
                 },
                 output: {
                     path: 'bin-debug/',
