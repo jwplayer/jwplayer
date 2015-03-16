@@ -108,7 +108,7 @@ define([
                     }
                 },
                 detachMedia: function() {
-                    return _swf;
+                    return null;
                 },
                 getContainer: function() {
                     return _container;

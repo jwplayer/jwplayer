@@ -59,8 +59,16 @@ define([
             /** Blocking playback and show Instream Display **/
 
             // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
-            _oldProvider = _controller.detachMedia();
+            _oldProvider = _model.getVideo();
 
+            var _video = _oldProvider.detachMedia();
+
+            // Keep track of the original player state
+            if (_video) {
+                _oldpos = _oldProvider.currentTime;
+            } else {
+                _oldpos = _model.position;
+            }
 
             // Initialize the instream player's model copied from main player's model
             _adModel = new Model({
@@ -73,14 +81,11 @@ define([
             _adModel.addEventListener('fullscreenchange', _nativeFullscreenHandler);
             _olditem = _model.playlist[_model.item];
 
-            // Keep track of the original player state
-            _oldpos = _oldProvider.currentTime;
-
-            if ( _controller.checkBeforePlay() || (_oldpos === 0 && !_model.getVideo().checkComplete()) ) {
+            if ( _controller.checkBeforePlay() || (_oldpos === 0 && !_oldProvider.checkComplete()) ) {
                 // make sure video restarts after preroll
                 _oldpos = 0;
                 _oldstate = states.PLAYING;
-            } else if (_model.getVideo() && _model.getVideo().checkComplete()) {
+            } else if (_oldProvider && _oldProvider.checkComplete()) {
                  // AKA  postroll
                  _oldstate = states.IDLE;
              }  else if (_controller.jwGetState() === states.IDLE) {
@@ -220,20 +225,21 @@ define([
             if (!_adModel) {
                 return;
             }
-            _adModel.removeEventListener('fullscreenchange',_nativeFullscreenHandler);
+            _adModel.removeEventListener('fullscreenchange', _nativeFullscreenHandler);
             clearTimeout(_completeTimeoutId);
             _completeTimeoutId = -1;
             _adModel.getVideo().detachMedia();
             // Re-attach the controller
             _controller.attachMedia();
             // Load the original item into our provider, which sets up the regular player's video tag
+            _oldProvider = _model.getVideo();
             if (_oldstate !== states.IDLE) {
                 var item = _.extend({}, _olditem);
                 item.starttime = _oldpos;
-                _model.getVideo().load(item);
+                _oldProvider.load(item);
 
             } else {
-                _model.getVideo().stop();
+                _oldProvider.stop();
             }
             _this.resetEventListeners();
 

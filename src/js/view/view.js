@@ -1073,7 +1073,11 @@ define([
 
         function _isAudioFile() {
             var model = _instreamMode ? _instreamModel : _model;
-            return model.getVideo().isAudioFile();
+            var provider = model.getVideo();
+            if (provider) {
+                return provider.isAudioFile();
+            }
+            return false;
         }
 
         function _isCasting() {
