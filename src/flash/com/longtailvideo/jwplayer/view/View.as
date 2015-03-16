@@ -70,8 +70,6 @@ public class View extends GlobalEventDispatcher {
 
         _model.addEventListener(MediaEvent.JWPLAYER_MEDIA_LOADED, mediaLoaded);
 
-        setupRightClick();
-
         redraw();
     }
 
@@ -242,11 +240,6 @@ public class View extends GlobalEventDispatcher {
                 _model.width,
                 _model.height
         );
-    }
-
-    protected function setupRightClick():void {
-        var menu:RightclickMenu = new RightclickMenu();
-        _root.contextMenu = menu.context;
     }
 
     protected function setupLayers():void {
