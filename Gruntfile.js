@@ -38,6 +38,29 @@ module.exports = function(grunt) {
             }
         },
 
+        // lints Less
+        recess: {
+            dist: {
+                options: {
+                    // Set compile and compress to false to lint
+                    compile: false,
+                    compress: false,
+                    noIDs: true,
+                    noJSPrefix: true,
+                    noOverqualifying: false,
+                    noUnderscores: true,
+                    noUniversalSelectors: true,
+                    prefixWhitespace: true,
+                    strictPropertyOrder: true,
+                    zeroUnits: false,
+                    includePaths: ['src/css', 'src/css/*']
+                },
+                files: {
+                    'test/css-skins/jwplayer.css': 'src/css/jwplayer.less'
+                }
+            }
+        },
+
         uglify : {
             options: {
                 // fails with node 0.12.0 and grunt-contrib-uglify 0.4.1
@@ -85,6 +108,12 @@ module.exports = function(grunt) {
                 ],
                 tasks: ['flash:player:debug']
             },
+            css: {
+                files: [
+                    'src/css/*.less',
+                    'src/css/imports/*.less'],
+                tasks: ['webpack']
+            },
             grunt: {
                 files: ['Gruntfile.js'],
                 tasks: ['jshint']
@@ -94,7 +123,8 @@ module.exports = function(grunt) {
         webpack : {
             build : {
                 entry: {
-                    jwplayer : './src/js/jwplayer.js'
+                    jwplayer : './src/js/jwplayer.js',
+                    demostyles : './src/js/demostyles.js'
                 },
                 output: {
                     path: 'bin-debug/',
@@ -121,6 +151,22 @@ module.exports = function(grunt) {
                         {
                             test: /\.less$/,
                             loader: 'style-loader!css-loader!less-loader'
+                        },
+                        {
+                            test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
+                            loader: 'url?limit=10000&minetype=application/font-woff'
+                        },
+                        {
+                            test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
+                            loader: 'url?limit=10000&minetype=application/octet-stream'
+                        },
+                        {
+                            test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
+                            loader: 'file'
+                        },
+                        {
+                            test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
+                            loader: 'url?limit=10000&minetype=image/svg+xml'
                         },
                         {
                             test: /\.html$/,
