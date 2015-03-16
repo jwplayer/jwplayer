@@ -5,7 +5,6 @@ import com.longtailvideo.jwplayer.events.InstreamEvent;
 import com.longtailvideo.jwplayer.events.MediaEvent;
 import com.longtailvideo.jwplayer.events.PlayerEvent;
 import com.longtailvideo.jwplayer.events.PlayerStateEvent;
-import com.longtailvideo.jwplayer.events.ViewEvent;
 import com.longtailvideo.jwplayer.media.MediaProvider;
 import com.longtailvideo.jwplayer.media.RTMPMediaProvider;
 import com.longtailvideo.jwplayer.media.SoundMediaProvider;
@@ -17,6 +16,7 @@ import com.longtailvideo.jwplayer.model.PlayerConfig;
 import com.longtailvideo.jwplayer.model.PlaylistItem;
 import com.longtailvideo.jwplayer.parsers.JWParser;
 import com.longtailvideo.jwplayer.plugins.IPlugin;
+import com.longtailvideo.jwplayer.utils.RootReference;
 import com.longtailvideo.jwplayer.utils.Stretcher;
 import com.longtailvideo.jwplayer.view.View;
 
@@ -47,7 +47,7 @@ public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPl
 
         initializeLayers();
 
-        _view.addEventListener(ViewEvent.JWPLAYER_RESIZE, resizeHandler);
+        RootReference.stage.addEventListener(Event.RESIZE, resizeHandler);
         _model.addEventListener(MediaEvent.JWPLAYER_MEDIA_VOLUME, playerVolumeUpdated);
         _model.addEventListener(MediaEvent.JWPLAYER_MEDIA_MUTE, playerMuteUpdated);
 
@@ -299,7 +299,7 @@ public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPl
     }
 
     protected function removeEventListeners():void {
-        _view.removeEventListener(ViewEvent.JWPLAYER_RESIZE, resizeHandler);
+        RootReference.stage.removeEventListener(Event.RESIZE, resizeHandler);
         _model.removeEventListener(MediaEvent.JWPLAYER_MEDIA_VOLUME, playerVolumeUpdated);
         _model.removeEventListener(MediaEvent.JWPLAYER_MEDIA_MUTE, playerMuteUpdated);
 
@@ -348,13 +348,15 @@ public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPl
         }
     }
 
-    protected function resizeHandler(evt:ViewEvent):void {
+    protected function resizeHandler(event:Event):void {
+        var width:Number = RootReference.stage.stageWidth;
+        var height:Number = RootReference.stage.stageHeight;
         _instreamDisplay.graphics.clear();
         _instreamDisplay.graphics.beginFill(0, 0);
-        _instreamDisplay.graphics.drawRect(0, 0, evt.width, evt.height);
+        _instreamDisplay.graphics.drawRect(0, 0, width, height);
         _instreamDisplay.graphics.endFill();
         if (_provider) {
-            _provider.resize(evt.width, evt.height);
+            _provider.resize(width, height);
         }
     }
 

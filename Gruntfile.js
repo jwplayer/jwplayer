@@ -182,8 +182,6 @@ module.exports = function(grunt) {
         command.args.push(
             '-compiler.source-path=src/flash',
             '-compiler.library-path+=' + flashAirOrFlexSdk + '/frameworks/libs',
-            '-default-background-color=0x000000',
-            '-default-frame-rate=30',
             '-target-player=' + flashVersion,
             '-use-network=false'
         );
