@@ -35,18 +35,17 @@ import flash.utils.setTimeout;
  */
 public class PlayerSetup extends EventDispatcher {
 
+    protected var _player:IPlayer;
+    protected var _model:Model;
+    protected var _view:View;
+
+    protected var tasker:TaskQueue;
+
     public function PlayerSetup(player:IPlayer, model:Model, view:View) {
         _player = player;
         _model = model;
         _view = view;
     }
-    /** MVC references **/
-    protected var _player:IPlayer;
-    protected var _model:Model;
-    protected var _view:View;
-
-    /** TaskQueue **/
-    protected var tasker:TaskQueue;
 
     public function setupPlayer():void {
         tasker = new TaskQueue(false);
@@ -59,20 +58,9 @@ public class PlayerSetup extends EventDispatcher {
     }
 
     protected function setupTasks():void {
-        tasker.queueTask(setupView);
         tasker.queueTask(loadPlugins, loadPluginsComplete);
         tasker.queueTask(initPlugins);
         tasker.queueTask(waitForSwfEventsRouter);
-    }
-
-    protected function setupView():void {
-        try {
-            _view.setupView();
-        } catch (e:Error) {
-            tasker.failure(new ErrorEvent(ErrorEvent.ERROR, false, false, "Error: " + e.message));
-            return;
-        }
-        tasker.success();
     }
 
     protected function loadPlugins():void {

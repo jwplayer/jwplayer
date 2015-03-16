@@ -90,9 +90,6 @@ public class MediaEvent extends PlayerEvent {
         if (offset)  retString += ' offset="' + offset + '"';
         if (message) retString += ' message="' + message + '"';
 
-        retString += ' id="' + id + '"'
-        retString += ' client="' + client + '"'
-        retString += ' version="' + version + '"'
         retString += "]";
 
         return retString;

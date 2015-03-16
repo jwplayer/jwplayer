@@ -19,33 +19,15 @@ public class PlayerEvent extends Event {
 
     public static const JWPLAYER_SETUP_ERROR:String = "jwplayerSetupError";
 
-    private static var FLASH_VERSION:String;
-
     public function PlayerEvent(type:String, msg:String = undefined) {
         super(type, false, false);
-
-        this.id = PlayerVersion.id;
-        if (!this.id) {
-            try {
-                this.id = ExternalInterface.objectID;
-            } catch (e:Error) {
-                trace(e, this);
-            }
-        }
-        if (!FLASH_VERSION) {
-            FLASH_VERSION = Capabilities.version;
-        }
-        this.client = FLASH_VERSION;
-        this.version = PlayerVersion.version;
         this.message = msg;
     }
-    public var id:String;
-    public var client:String;
-    public var version:String;
+
     public var message:String;
 
     public override function toString():String {
-        return '[PlayerEvent type="' + type + '" id="' + id + '" client="' + client + '" version="' + version + '" message="' + message + '" ]';
+        return '[PlayerEvent type="' + type + '" message="' + message + '" ]';
     }
 
     public override function clone():Event {

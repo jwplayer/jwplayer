@@ -30,9 +30,6 @@ public class CaptionsEvent extends PlayerEvent {
         if (tracks !== null) retString += ' tracks="' + tracks + '"';
         if (currentTrack > -1) retString += ' currentTrack="' + currentTrack + '"';
 
-        retString += ' id="' + id + '"'
-        retString += ' client="' + client + '"'
-        retString += ' version="' + version + '"'
         retString += "]";
 
         return retString;

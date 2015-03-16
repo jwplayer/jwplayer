@@ -8,7 +8,6 @@ import com.longtailvideo.jwplayer.player.IPlayer;
 import com.longtailvideo.jwplayer.player.PlayerState;
 import com.longtailvideo.jwplayer.plugins.IPlugin;
 import com.longtailvideo.jwplayer.utils.Logger;
-import com.longtailvideo.jwplayer.utils.RootReference;
 import com.longtailvideo.jwplayer.view.View;
 
 import flash.events.ErrorEvent;
@@ -315,21 +314,17 @@ public class Controller extends GlobalEventDispatcher {
 
     protected function setupComplete(evt:Event):void {
         _setupComplete = true;
-
-        RootReference.stage.dispatchEvent(new Event(Event.RESIZE));
-        _view.completeView();
         finalizeSetup();
     }
 
     protected function setupError(evt:ErrorEvent):void {
         Logger.log("STARTUP: Error occurred during player startup: " + evt.text);
-        _view.completeView(true, evt.text);
         dispatchEvent(new PlayerEvent(PlayerEvent.JWPLAYER_SETUP_ERROR, evt.text));
     }
 
     protected function errorHandler(evt:ErrorEvent):void {
         errorState(evt.text);
-    };
+    }
 
     protected function completeHandler(evt:MediaEvent = null):void {
         if (locking) {

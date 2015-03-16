@@ -28,9 +28,6 @@ public class InstreamEvent extends PlayerEvent {
         if (destroyedReason) {
             retString += ' destroyedReason="' + destroyedReason + '"';
         }
-        retString += ' id="' + id + '"'
-        retString += ' client="' + client + '"'
-        retString += ' version="' + version + '"]';
         return retString;
     }
 }
