@@ -56,6 +56,11 @@ define([
         if (_source.type === 'smil') {
             _source.type = 'rtmp';
         }
+        // Although m4a is a container format, it is most often used for aac files
+        // http://en.wikipedia.org/w/index.php?title=MPEG-4_Part_14
+        if (_source.type === 'm4a') {
+            _source.type = 'aac';
+        }
 
         return _source;
     };
