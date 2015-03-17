@@ -1518,7 +1518,7 @@ define([
 
         function _redraw() {
             clearTimeout(_redrawTimeout);
-            _redrawTimeout = setTimeout(_this.redraw, 0);
+            _redrawTimeout = setTimeout(_redraw, 0);
         }
 
         _this.redraw = function(resize) {
