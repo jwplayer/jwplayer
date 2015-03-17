@@ -19,7 +19,6 @@ define([
         volume : noop,
         mute : noop,
         seek : noop,
-        seekDrag : noop, // only for html5 ?
         resize : noop,
         remove : noop,  // removes from page
         destroy : noop, // frees memory

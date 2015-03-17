@@ -560,6 +560,7 @@ define([
 
             _controlbar = new Controlbar(_skin, _api, _model);
             _controlbar.addEventListener(events.JWPLAYER_USER_ACTION, _resetTapTimer);
+            _controlbar.addEventListener(events.JWPLAYER_CONTROLBAR_DRAGGING, _dragging);
 
             _controlsLayer.appendChild(_controlbar.element());
 
@@ -576,6 +577,14 @@ define([
             _playerElement.onfocusout = handleBlur;
             _playerElement.addEventListener('blur', handleBlur);
             _playerElement.addEventListener('keydown', handleKeydown);
+        }
+
+        function _dragging(evt) {
+            if (evt.dragging) {
+                utils.addClass(_playerElement, 'jw-flag-dragging');
+            } else {
+                utils.removeClass(_playerElement, 'jw-flag-dragging');
+            }
         }
 
         function _castAdChanged(evt) {

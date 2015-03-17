@@ -13,6 +13,7 @@ define([
     var _defaults = {
         autostart: false,
         controls: true,
+        dragging : false,
         // debug: undefined,
         fullscreen: false,
         height: 320,
@@ -122,7 +123,12 @@ define([
         };
 
         _this.seekDrag = function(state) {
-            _provider.seekDrag(state);
+            _this.dragging = state;
+            if (state) {
+                _provider.pause();
+            } else {
+                _provider.play();
+            }
         };
 
         _this.setFullscreen = function(state) {
