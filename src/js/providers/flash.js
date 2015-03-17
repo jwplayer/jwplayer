@@ -206,16 +206,26 @@ define([
                             duration: e.duration
                         });
 
-                    }, this).on(events.JWPLAYER_MEDIA_BEFORECOMPLETE, function(e) {
+                    }, this)
+                    .on(events.JWPLAYER_MEDIA_BEFORECOMPLETE, function(e) {
                         this.sendEvent(e.type);
-
                     }, this).on(events.JWPLAYER_MEDIA_COMPLETE, function(e) {
                         this.setState(states.IDLE);
                         this.sendEvent(e.type);
-
                     }, this).on(events.JWPLAYER_MEDIA_ERROR, function(e) {
                         this.sendEvent(e.type, e);
+                    }, this);
 
+                    _swf.on(events.JWPLAYER_MEDIA_MUTE, function(data) {
+                        this.sendEvent(events.JWPLAYER_MEDIA_MUTE, {
+                            mute: data.mute
+                        });
+                    }, this);
+
+                    _swf.on(events.JWPLAYER_MEDIA_VOLUME, function(data) {
+                        this.sendEvent(events.JWPLAYER_MEDIA_VOLUME, {
+                            volume: data.volume
+                        });
                     }, this);
 
                     // ignoring:
