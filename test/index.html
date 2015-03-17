@@ -13,7 +13,8 @@
 
 <div id="video-container"></div>
 <script type="text/javascript">
-    jwplayer('video-container').setup({
+(function() {
+    var config = {
 
         width: 640,
         height: 360,
@@ -69,7 +70,39 @@
                 title: 'Filtered Out of Playlist'
             }
         ]
-    });
+    };
+
+    var jwEvents = [
+        'Ready', 'SetupError',
+        'Playlist', 'PlaylistItem', 'PlaylistComplete',
+        'BeforePlay', 'BeforeComplete',
+        'QualityLevels', 'QualityChange',
+        'CaptionsList', 'CaptionsChange',
+        'Buffer', 'Play', 'Pause', 'Idle',
+        'Meta',
+        'BufferChange',
+        'BufferFull',
+        'Time',
+        'Seek', 'Complete', 'Error',
+        'Mute', 'Volume',
+        'Controls', 'Cast', 'DisplayClick', 'Fullscreen', 'Resize',
+        'AdClick', 'AdCompanions', 'AdImpression', 'AdSkipped',
+        'AdPause', 'AdPlay', 'AdMeta', 'AdTime', 'AdComplete', 'AdError'
+    ];
+    config.events = [];
+    for (var i=0; i<jwEvents.length; i++) {
+        var onName = jwEvents[i];
+        var simpleName = onName.toLowerCase();
+        config.events['on' + onName] = (function(name) {
+            return function(e) {
+                console.log(name, e);
+            };
+        })(simpleName);
+    }
+
+    jwplayer('video-container').setup(config);
+
+})();
 </script>
 
 <h2>Audio Single</h2>

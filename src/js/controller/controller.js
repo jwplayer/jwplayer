@@ -73,11 +73,15 @@ define([
             _model.addGlobalListener(_forward);
             _view.addGlobalListener(_forward);
 
+            // TODO: send copies of these objects to public listeners
+            var playlist = _model.playlist;
+            var item = _model.item;
+
             _this.trigger(events.JWPLAYER_PLAYLIST_LOADED, {
-                playlist: _this.jwGetPlaylist()
+                playlist: playlist
             });
             _this.trigger(events.JWPLAYER_PLAYLIST_ITEM, {
-                index: _model.item
+                index: item
             });
 
             _load();
