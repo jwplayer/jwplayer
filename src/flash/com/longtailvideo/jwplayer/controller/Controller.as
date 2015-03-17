@@ -239,13 +239,8 @@ public class Controller extends GlobalEventDispatcher {
                 case PlayerState.IDLE:
                     _model.item.start = pos;
                     _idleSeek = pos;
-                    if (!_preplay) {
-                        play();
-                    }
                     return true;
                 case PlayerState.PAUSED:
-                    play();
-                /* fallthrough */
                 case PlayerState.PLAYING:
                 case PlayerState.BUFFERING:
                     if (_model.media.canSeek) {

@@ -231,7 +231,7 @@ define([
         }
 
         function _seek(pos) {
-            if (_model.state !== states.PLAYING) {
+            if (!_model.dragging && _model.state !== states.PLAYING) {
                 _play(true);
             }
             _video().seek(pos);

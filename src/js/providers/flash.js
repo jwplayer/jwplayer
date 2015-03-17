@@ -21,7 +21,6 @@ define([
         var _swf;
         var _clickOverlay;
         var _item = null;
-        var _dragging = false;
         var _volume;
         var _muted = false;
         var _beforecompleted = false;
@@ -50,8 +49,7 @@ define([
 
         var _eventDispatcher = new eventdispatcher('flash.provider');
 
-        _.extend(this, _eventDispatcher,
-            {
+        _.extend(this, _eventDispatcher, {
                 load: function(item) {
                     _item = item;
                     this.setState(states.BUFFERING);
@@ -69,10 +67,6 @@ define([
                     _currentQuality = -1;
                     _item = null;
                     this.setState(states.IDLE);
-                },
-                seekDrag: function(state) {
-                    // toggle scrubbing state
-                    _dragging = state;
                 },
                 seek: function(seekPos) {
                     /*
@@ -93,8 +87,8 @@ define([
                     _muted = utils.exists(muted) ? muted : !_muted;
                     _flashCommand('mute', muted);
                 },
-                setState: function(/* state */) {
-                    DefaultProvider.setState.apply(this, arguments);
+                setState: function() {
+                    return DefaultProvider.setState.apply(this, arguments);
                 },
                 checkComplete: function() {
                     return _beforecompleted;
@@ -311,10 +305,9 @@ define([
                     _eventDispatcher.resetEventListeners();
                     _eventDispatcher = null;
                 }
-            }
-        );
-
+        });
     }
+
 
     var flashExtensions = {
         'flv': 'video',

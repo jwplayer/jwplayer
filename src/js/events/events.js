@@ -57,6 +57,7 @@ define([], function() {
         // Controls show/hide 
         JWPLAYER_CONTROLS: 'jwplayerViewControls',
         JWPLAYER_USER_ACTION: 'jwplayerUserAction',
+        JWPLAYER_CONTROLBAR_DRAGGING: 'jwplayerControlbarDragging',
 
         // Instream events
         JWPLAYER_INSTREAM_CLICK: 'jwplayerInstreamClicked',

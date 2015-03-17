@@ -138,7 +138,6 @@ define([
             _adMode = false,
             _hideFullscreen = false,
             _dragging = null,
-            _lastSeekTime = 0,
             _cues = [],
             _activeCue,
             _toggles = {
@@ -167,7 +166,7 @@ define([
             },
 
             _sliderMapping = {
-                time: _seek,
+                time: _.throttle(_seek, 500),
                 volume: _volume
             },
             _groups = {},
@@ -1108,17 +1107,23 @@ define([
         function _sliderDragStart() {
             _elements.timeRail.className = 'jwrail';
             if (!_idle()) {
-                _model.seekDrag(true);
+                _seekDrag(true);
                 _draggingStart('time');
                 _showTimeTooltip();
                 _this.sendEvent(events.JWPLAYER_USER_ACTION);
             }
         }
 
-        function _sliderDragEvent(evt) {
+        function _seekDrag(bool) {
+            _model.seekDrag(bool);
+            _this.sendEvent(events.JWPLAYER_CONTROLBAR_DRAGGING, {dragging : bool});
+        }
+
+        var _sliderDragEvent = function(evt) {
             if (!_dragging) {
                 return;
             }
+
             var rail = _elements[_dragging].querySelector('.jwrail'),
                 railRect = utils.bounds(rail),
                 pct = evt.x / railRect.width;
@@ -1126,7 +1131,7 @@ define([
                 pct = 100;
             }
             if (evt.type === events.touchEvents.DRAG_END) {
-                _model.seekDrag(false);
+                _seekDrag(false);
                 _elements.timeRail.className = 'jwrail';
                 _draggingEnd();
                 _sliderMapping.time(pct);
@@ -1134,14 +1139,10 @@ define([
                 _this.sendEvent(events.JWPLAYER_USER_ACTION);
             } else {
                 _setProgress(pct);
-                var currentTime = (new Date()).getTime();
-                if (currentTime - _lastSeekTime > 500) {
-                    _lastSeekTime = currentTime;
-                    _sliderMapping.time(pct);
-                }
+                _sliderMapping.time(pct);
                 _this.sendEvent(events.JWPLAYER_USER_ACTION);
             }
-        }
+        };
 
         function _sliderTapEvent(evt) {
             var rail = _elements.time.querySelector('.jwrail'),
@@ -1166,7 +1167,7 @@ define([
 
                 if (name === 'time') {
                     if (!_idle()) {
-                        _model.seekDrag(true);
+                        _seekDrag(true);
                         _draggingStart(name);
                     }
                 } else {
@@ -1175,10 +1176,11 @@ define([
             };
         }
 
-        function _sliderMouseEvent(evt) {
+        var _sliderMouseEvent = function(evt) {
             if (!_dragging || evt.button) {
                 return;
             }
+
             var rail = _elements[_dragging].querySelector('.jwrail'),
                 railRect = utils.bounds(rail),
                 name = _dragging,
@@ -1193,7 +1195,7 @@ define([
             }
             if (evt.type === 'mouseup') {
                 if (name === 'time') {
-                    _model.seekDrag(false);
+                    _seekDrag(false);
                 }
 
                 _elements[name + 'Rail'].className = 'jwrail';
@@ -1205,14 +1207,11 @@ define([
                 } else {
                     _setVolume(pct);
                 }
-                var currentTime = (new Date()).getTime();
-                if (currentTime - _lastSeekTime > 500) {
-                    _lastSeekTime = currentTime;
-                    _sliderMapping[_dragging.replace('H', '')](pct);
-                }
+
+                _sliderMapping[_dragging.replace('H', '')](pct);
             }
             return false;
-        }
+        };
 
         function _showTimeTooltip(evt) {
             if (evt) {

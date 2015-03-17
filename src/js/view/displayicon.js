@@ -99,7 +99,7 @@ define([
                 style['float'] = 'none';
 
                 cssUtils.style(_container, {
-                    display: 'table'
+                    display: ''
                 });
             } else {
                 cssUtils.style(_container, {
@@ -262,6 +262,10 @@ define([
     _css(DI_CLASS + ' div', {
         'vertical-align': 'middle'
     }, true);
+
+    _css('.jwplayer.jw-flag-dragging .jwdisplayIcon', {
+        'display':'none'
+    });
 
     _css(DI_CLASS + ' .jwtext', {
         color: '#fff',

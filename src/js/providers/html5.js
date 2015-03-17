@@ -86,8 +86,6 @@ define([
             _bufferFull,
             // If we should seek on canplay
             _delayedSeek = 0,
-            // If we're currently dragging the seek bar
-            _dragging = false,
             // Save the volume state before muting
             _lastVolume,
             // Using setInterval to check buffered ranges
@@ -163,7 +161,8 @@ define([
             _progressHandler(evt);
 
             if (!_attached) { return; }
-            if (_this.state === states.PLAYING && !_dragging) {
+
+            if (_this.state === states.PLAYING) {
                 _position = _round(_videotag.currentTime);
                 // do not allow _durationUpdateHandler to update _canSeek before _canPlayHandler does
                 if (evt) {
@@ -235,7 +234,7 @@ define([
 
         function _playHandler(evt) {
             _generalHandler(evt);
-            if (!_attached || _dragging) {
+            if (!_attached) {
                 return;
             }
 
@@ -262,9 +261,7 @@ define([
             if (!_attached) {
                 return;
             }
-            if (!_dragging) {
-                _this.setState(states.BUFFERING);
-            }
+            _this.setState(states.BUFFERING);
         }
 
         function _errorHandler() { //evt) {
@@ -416,7 +413,7 @@ define([
         };
 
         this.play = function() {
-            if (_attached && !_dragging) {
+            if (_attached) {
                 _videotag.play();
             }
         };
@@ -428,24 +425,12 @@ define([
             }
         };
 
-        this.seekDrag = function(state) {
-            if (!_attached) {
-                return;
-            }
-            _dragging = state;
-            if (state) {
-                _videotag.pause();
-            } else {
-                _videotag.play();
-            }
-        };
-
         this.seek = function(seekPos) {
             if (!_attached) {
                 return;
             }
 
-            if (!_dragging && _delayedSeek === 0) {
+            if (_delayedSeek === 0) {
                 this.sendEvent(events.JWPLAYER_MEDIA_SEEK, {
                     position: _position,
                     offset: seekPos
@@ -455,24 +440,19 @@ define([
             if (_canSeek) {
                 _delayedSeek = 0;
                 // handle readystate issue
+                console.log('seek ' + seekPos, new Date());
                 var status = utils.tryCatch(function() {
                     _videotag.currentTime = seekPos;
                 });
                 if (status instanceof utils.Error) {
                     _delayedSeek = seekPos;
                 }
-
             } else {
                 _delayedSeek = seekPos;
             }
-
         };
 
-        function _sendSeekEvent(evt) {
-            _generalHandler(evt);
-            if (!_dragging && _this.state !== states.PAUSED) {
-                _this.setState(states.PLAYING);
-            }
+        function _sendSeekEvent() {
         }
 
         this.volume = function(vol) {
@@ -509,9 +489,6 @@ define([
             if (newstate === states.PAUSED && this.state === states.IDLE) {
                 return;
             }
-
-            // Ignore state changes while dragging the seekbar
-            if (_dragging) { return; }
 
             DefaultProvider.setState.apply(this, arguments);
         };
