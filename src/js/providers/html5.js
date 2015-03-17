@@ -759,19 +759,21 @@ define([
     }
 
     var MimeTypes = {
+        'aac': 'audio/mp4',
         'mp4': 'video/mp4',
         'f4v': 'video/mp4',
         'm4v': 'video/mp4',
         'mov': 'video/mp4',
-        'm4a': 'video/aac',
-        'f4a': 'video/aac',
-        'aac': 'video/aac',
-        'mp3': 'video/mp3',
+        //'m4a': 'audio/x-m4a', // converted to aac by source.js
+        'mp3': 'audio/mp3',
         'ogv': 'video/ogg',
         'ogg': 'video/ogg',
         'oga': 'video/ogg',
         'vorbis': 'video/ogg',
         'webm': 'video/webm',
+
+        // The following are not expected to work in Chrome
+        'f4a': 'video/aac',
         'm3u8': 'application/vnd.apple.mpegurl',
         'm3u': 'application/vnd.apple.mpegurl',
         'hls': 'application/vnd.apple.mpegurl'
