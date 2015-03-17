@@ -4,10 +4,11 @@ define([
     'api/instream',
     'events/events',
     'events/states',
+    'utils/backbone.events',
     'utils/helpers',
     'utils/css',
     'underscore'
-], function(Embed, plugins, Instream, events, states, utils, cssUtils, _) {
+], function(Embed, plugins, Instream, events, states, Events, utils, cssUtils, _) {
 
     function addFocusBorder(container) {
         utils.addClass(container, 'jw-tab-focus');
@@ -122,14 +123,16 @@ define([
     var Api = function (container) {
         var _this = this,
             _originalContainer = container,
-            _listeners = {},
             _stateListeners = {},
             _controller = null,
             _playerReady = false,
             _queuedCalls = [],
             _instream,
             _itemMeta = {},
+            _eventQueue = [],
             _callbacks = {};
+
+        _.extend(this, Events);
 
         _this.container = document.createElement('div');
         _this.id = _this.container.id = container.id;
@@ -418,51 +421,34 @@ define([
             };
         }
 
-        function _addInternalListener(player, type) {
-            player.jwAddEventListener(type, function (dat) {
-                jwplayer(player.id).dispatchEvent(type, dat);
-            });
-        }
-
         function _eventListener(type, callback) {
-            if (!_listeners[type]) {
-                _listeners[type] = [];
-                if (_controller && _playerReady) {
-                    _addInternalListener(_controller, type);
-                }
+            // If we aren't ready to add the event, store it until playerReady
+            if (!_controller || !_playerReady) {
+                _eventQueue.push([type, callback]);
+                return;
             }
-            _listeners[type].push(callback);
-            return _this;
+
+            // Pass along event, but only once
+            _controller.off(type);
+            _controller.on(type, function(args) {
+                _this.trigger(type, args);
+            });
+
+            // Now add the callback to API
+            _this.on(type, callback);
         }
 
-        _this.removeEventListener = function (type, callback) {
-            var listeners = _listeners[type];
-            if (listeners) {
-                for (var l = listeners.length; l--;) {
-                    if (listeners[l] === callback) {
-                        listeners.splice(l, 1);
-                    }
-                }
-            }
+        _this.removeEventListener = _this.off;
+
+        _this.trigger = function(type, args) {
+            args.type = args.type || type;
+            args = normalizeOutput(args);
+
+            return Events.trigger.call(_this, type, args);
         };
 
-        _this.dispatchEvent = function (type) {
-            var listeners = _listeners[type];
-            if (listeners) {
-                listeners = listeners.slice(0); //copy array
-                var args = normalizeOutput(arguments[1]);
-                for (var l = 0; l < listeners.length; l++) {
-                    var fn = listeners[l];
-                    if (typeof fn === 'function') {
-                        try {
-                            fn.call(this, args);
-                        } catch (e) {
-                            utils.log('There was an error calling back an event handler', e);
-                        }
-                    }
-                }
-            }
-        };
+        // Required by vast, but should be deprecated
+        _this.dispatchEvent = _this.trigger;
 
         _this.dispatchInstreamEvent = function (type) {
             if (_instream) {
@@ -487,9 +473,10 @@ define([
         _this.playerReady = function () {
             _playerReady = true;
 
-            utils.foreach(_listeners, function (eventType) {
-                _addInternalListener(_controller, eventType);
-            });
+            while(_eventQueue.length) {
+                var val = _eventQueue.shift();
+                _eventListener(val[0], val[1]);
+            }
 
             _eventListener(events.JWPLAYER_PLAYLIST_ITEM, function () {
                 _itemMeta = {};
@@ -507,7 +494,7 @@ define([
                 }
             });
 
-            _this.dispatchEvent(events.API_READY);
+            _this.trigger(events.API_READY, {});
 
             while (_queuedCalls.length > 0) {
                 _callInternal.apply(_this, _queuedCalls.shift());

@@ -141,7 +141,7 @@ define([
         }
 
         function _pluginError(evt) {
-            api.dispatchEvent(events.JWPLAYER_ERROR, {
+            api.trigger(events.JWPLAYER_ERROR, {
                 message: 'Could not load plugin: ' + evt.message
             });
         }
@@ -158,7 +158,7 @@ define([
             // Throttle this so that it runs once if called twice in the same callstack
             clearTimeout(_setupErrorTimer);
             _setupErrorTimer = setTimeout(function() {
-                api.dispatchEvent(events.JWPLAYER_SETUP_ERROR, {
+                api.trigger(events.JWPLAYER_SETUP_ERROR, {
                     message: message
                 });
             }, 0);
