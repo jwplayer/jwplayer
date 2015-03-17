@@ -149,7 +149,7 @@ define([
             //_actionOnAttach = _play;
             if (!_preplay) {
                 _preplay = true;
-                _this.trigger(events.JWPLAYER_MEDIA_BEFOREPLAY);
+                _this.trigger(events.JWPLAYER_MEDIA_BEFOREPLAY, {});
                 _preplay = false;
                 if (_interruptPlay) {
                     _interruptPlay = false;
@@ -276,7 +276,7 @@ define([
                     _loadOnPlay = 0;
                     _stop(true);
                     setTimeout(function() {
-                        _this.trigger(events.JWPLAYER_PLAYLIST_COMPLETE);
+                        _this.trigger(events.JWPLAYER_PLAYLIST_COMPLETE, {});
                     }, 0);
                 } else {
                     _next();
