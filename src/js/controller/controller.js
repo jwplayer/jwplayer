@@ -73,11 +73,15 @@ define([
             _model.addGlobalListener(_forward);
             _view.addGlobalListener(_forward);
 
+            // TODO: send copies of these objects to public listeners
+            var playlist = _model.playlist;
+            var item = _model.item;
+
             _this.trigger(events.JWPLAYER_PLAYLIST_LOADED, {
-                playlist: _this.jwGetPlaylist()
+                playlist: playlist
             });
             _this.trigger(events.JWPLAYER_PLAYLIST_ITEM, {
-                index: _model.item
+                index: item
             });
 
             _load();
@@ -329,16 +333,13 @@ define([
 
         /** Used for the InStream API **/
         function _detachMedia() {
-            var video = utils.tryCatch(function() {
-                return _model.getVideo().detachMedia();
-            }, this);
-
-            if(video instanceof HTMLVideoElement) {
-                return video;
-            } else if (video instanceof utils.Error) {
-                utils.log('Error calling detachMedia', status);
+            var provider = _model.getVideo();
+            if (provider) {
+                var video = provider.detachMedia();
+                if (video instanceof HTMLVideoElement) {
+                    return video;
+                }
             }
-
             return null;
         }
 

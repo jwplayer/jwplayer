@@ -8,7 +8,6 @@ import com.longtailvideo.jwplayer.player.PlayerState;
 import com.longtailvideo.jwplayer.utils.Stretcher;
 
 import flash.display.DisplayObject;
-import flash.display.MovieClip;
 import flash.display.Sprite;
 import flash.events.Event;
 
@@ -214,7 +213,7 @@ public class MediaProvider extends Sprite implements IMediaProvider {
     }
 
     /** Clip containing graphical representation of the currently playing media **/
-    protected var _media:MovieClip;
+    protected var _media:Sprite;
 
     /**
      * Gets the graphical representation of the media.
@@ -230,7 +229,7 @@ public class MediaProvider extends Sprite implements IMediaProvider {
      */
     protected function set media(m:DisplayObject):void {
         if (m) {
-            _media = new MovieClip();
+            _media = new Sprite();
             _media.addChild(m);
             if (_width * _height > 0) {
                 Stretcher.stretch(_media, _width, _height, _config.stretching);
@@ -402,11 +401,11 @@ public class MediaProvider extends Sprite implements IMediaProvider {
         if ((_bufferPercent != bufferPercent || bufferPercent == 0) && 0 <= bufferPercent < 100) {
             _bufferPercent = bufferPercent;
             var obj:Object = {
-                'bufferPercent': _bufferPercent,
-                'offset': offset,
-                'duration': _item.duration,
-                'position': Math.max(0, _position),
-                'metadata': metadata
+                bufferPercent: _bufferPercent,
+                offset: offset,
+                duration: _item.duration,
+                position: Math.max(0, _position),
+                metadata: metadata
             };
             sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_BUFFER, obj);
         }

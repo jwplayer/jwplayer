@@ -9,6 +9,26 @@ define([
     'events/states'
 ], function(utils, stretchUtils, Playlist, Providers, _, eventdispatcher, events, states) {
 
+    // Defaults
+    var _defaults = {
+        autostart: false,
+        controls: true,
+        // debug: undefined,
+        fullscreen: false,
+        height: 320,
+        mobilecontrols: false,
+        mute: false,
+        playlist: [],
+        playlistposition: 'none',
+        playlistsize: 180,
+        playlistlayout: 'extended',
+        repeat: false,
+        // skin: undefined,
+        stretching: stretchUtils.UNIFORM,
+        width: 480,
+        volume: 90
+    };
+
     var Model = function(config) {
         var _this = this,
             // Video provider
@@ -21,26 +41,7 @@ define([
                 controlbar: {},
                 display: {}
             },
-            _currentProvider = utils.noop,
-            // Defaults
-            _defaults = {
-                autostart: false,
-                controls: true,
-                // debug: undefined,
-                fullscreen: false,
-                height: 320,
-                mobilecontrols: false,
-                mute: false,
-                playlist: [],
-                playlistposition: 'none',
-                playlistsize: 180,
-                playlistlayout: 'extended',
-                repeat: false,
-                // skin: undefined,
-                stretching: stretchUtils.UNIFORM,
-                width: 480,
-                volume: 90
-            };
+            _currentProvider = utils.noop;
 
         function _parseConfig(config) {
             utils.foreach(config, function(i, val) {
@@ -49,23 +50,20 @@ define([
             return config;
         }
 
-        function _init() {
-            _.extend(_this, new eventdispatcher());
-            _this.config = _parseConfig(_.extend({}, _defaults, _cookies, config));
-            _.extend(_this, {
-                id: config.id,
-                state: states.IDLE,
-                duration: -1,
-                position: 0,
-                buffer: 0
-            }, _this.config);
-            // This gets added later
-            _this.playlist = [];
-            _this.setItem(0);
+        _.extend(_this, new eventdispatcher());
 
-            _providers = new Providers(_this.config.primary);
-        }
+        _this.config = _parseConfig(_.extend({}, _defaults, _cookies, config));
 
+        _.extend(_this, _this.config, {
+            state: states.IDLE,
+            duration: -1,
+            position: 0,
+            buffer: 0
+        });
+        // This gets added later
+        _this.playlist = [];
+
+        _providers = new Providers(_this.config.primary);
 
         // Mapping of provider events, to the models attributes which should be updated
         var _eventMap = {};
@@ -95,7 +93,6 @@ define([
             _this.sendEvent(evt.type, evt);
         }
 
-
         _this.setVideoProvider = function(provider) {
 
             if (_provider) {
@@ -123,7 +120,6 @@ define([
         _this.getVideo = function() {
             return _provider;
         };
-
 
         _this.seekDrag = function(state) {
             _provider.seekDrag(state);
@@ -234,8 +230,6 @@ define([
         _this.componentConfig = function(name) {
             return _componentConfigs[name];
         };
-
-        _init();
     };
 
     return Model;

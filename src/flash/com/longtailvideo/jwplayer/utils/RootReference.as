@@ -8,24 +8,22 @@ import flash.display.Stage;
 public class RootReference {
 
     /** The root DisplayObject of the application.  **/
-    public static var root:DisplayObject;
+    private static var _root:DisplayObject;
 
     /** A reference to the stage. **/
     private static var _stage:Stage;
+
+    public static function get root():DisplayObject {
+        return _root;
+    }
 
     public static function get stage():Stage {
         return _stage;
     }
 
-    public static function set stage(s:Stage):void {
-        _stage = s;
-    }
-
-    public function RootReference(displayObj:DisplayObject) {
-        if (!RootReference.root) {
-            RootReference.root = displayObj.root;
-            RootReference.stage = displayObj.stage;
-        }
+    public static function init(displayObj:DisplayObject):void {
+        _root  = displayObj.root;
+        _stage = displayObj.stage;
     }
 }
 }

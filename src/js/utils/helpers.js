@@ -693,9 +693,9 @@ define([
         }
     };
 
-    var Error = utils.Error = function(name, msg) {
+    var Error = utils.Error = function(name, message) {
         this.name = name;
-        this.msg = msg;
+        this.message = message;
     };
 
     utils.tryCatch = function(fn, ctx, args) {

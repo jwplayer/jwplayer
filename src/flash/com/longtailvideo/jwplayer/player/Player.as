@@ -10,22 +10,52 @@ import com.longtailvideo.jwplayer.utils.RootReference;
 import com.longtailvideo.jwplayer.view.View;
 
 import flash.display.Sprite;
+import flash.events.ErrorEvent;
 import flash.events.Event;
-import flash.events.MouseEvent;
 import flash.geom.Rectangle;
 import flash.system.Security;
 
+[SWF(width="640", height="360", frameRate="60", backgroundColor="#000000")]
+
 // TODO: extend BasePlayer which implements IPlayer, so main class just does Setup
 public class Player extends Sprite implements IPlayer {
-    /** Player constructor **/
-    public function Player() {
-        Security.allowDomain("*");
-        this.addEventListener(Event.ADDED_TO_STAGE, setupPlayer);
-    }
+
     protected var _config:PlayerConfig;
     protected var _model:Model;
     protected var _view:View;
     protected var _controller:Controller;
+
+    public function Player() {
+        Security.allowDomain("*");
+
+        RootReference.init(this);
+        this.addEventListener(Event.ADDED_TO_STAGE, stageReady);
+        this.tabEnabled = false;
+        this.tabChildren = false;
+        this.focusRect = false;
+        this.mouseEnabled = false;
+        this.mouseChildren = false;
+
+        _config = new PlayerConfig();
+
+        _model = newModel(_config);
+
+        _view = newView(_model);
+        _view.addEventListener(CaptionsEvent.JWPLAYER_CAPTIONS_CHANGED, _captionsChanged);
+        _view.addEventListener(CaptionsEvent.JWPLAYER_CAPTIONS_LIST, _captionsList);
+
+        _controller = newController(_model, _view);
+        _controller.addEventListener(PlayerEvent.JWPLAYER_READY, playerReady, false, -1);
+        _controller.addEventListener(PlayerEvent.JWPLAYER_SETUP_ERROR, setupError, false, -1);
+
+        _controller.setupPlayer();
+    }
+
+    private function stageReady(e:Event):void {
+        this.removeEventListener(Event.ADDED_TO_STAGE, stageReady);
+        RootReference.init(this);
+        _view.setupView();
+    }
 
     public function get version():String {
         return PlayerVersion.version;
@@ -69,10 +99,6 @@ public class Player extends Sprite implements IPlayer {
 
     public function seek(position:Number):Boolean {
         return _controller.seek(position);
-    }
-
-    public function load(item:*):Boolean {
-        return _controller.load(new PlaylistItem(item));
     }
 
     public function redraw():Boolean {
@@ -124,40 +150,35 @@ public class Player extends Sprite implements IPlayer {
     }
 
     public function getSafeRegion():Rectangle {
-        return _view.getSafeRegion();
+        return _view.getBounds(RootReference.root);
     }
 
-    protected function loadAndPlay(item:*):void {
+    public function load(item:*):Boolean {
         _controller.load(new PlaylistItem(item));
         _controller.play();
+
+        return true;
     }
 
-    protected function setConfig(config:Object):void {
+    protected function setupPlayer(config:Object):void {
+        var commands:Array = config.commands as Array;
+        delete config.commands;
+
         _model.setConfig(config);
+
+        for (var i:uint = 0; i < commands.length; i++) {
+            var args:Array = commands[i] as Array;
+            var name:String = args.shift() as String;
+            var fn:Function = this[name] as Function;
+            if (!fn) {
+                throw new Error('unknown command:', name);
+            }
+            fn.apply(this, args);
+        }
     }
 
-    protected function stretching(stretch:String = null):void {
+    protected function stretch(stretch:String = null):void {
         _model.stretching = stretch;
-    }
-
-    protected function setupPlayer(event:Event = null):void {
-        this.removeEventListener(Event.ADDED_TO_STAGE, setupPlayer);
-
-        new RootReference(this);
-
-        _config = new PlayerConfig();
-
-        _model = newModel(_config);
-
-        _view = newView(_model);
-        _view.addEventListener(CaptionsEvent.JWPLAYER_CAPTIONS_CHANGED, _captionsChanged);
-        _view.addEventListener(CaptionsEvent.JWPLAYER_CAPTIONS_LIST, _captionsList);
-
-        _controller = newController(_model, _view);
-        _controller.addEventListener(PlayerEvent.JWPLAYER_READY, playerReady, false, -1);
-        _controller.addEventListener(PlayerEvent.JWPLAYER_SETUP_ERROR, setupError, false, -1);
-
-        _controller.setupPlayer();
     }
 
     protected function newModel(config:PlayerConfig):Model {
@@ -179,12 +200,13 @@ public class Player extends Sprite implements IPlayer {
 
         // Forward all MVC events
         _model.addGlobalListener(globalHandler);
-        _view.addGlobalListener(globalHandler);
         _controller.addGlobalListener(globalHandler);
+        _view.addEventListener(ErrorEvent.ERROR, globalHandler);
 
         // listen to JavaScript for player commands
         SwfEventRouter
-                .on('load', loadAndPlay)
+                .on('setup', setupPlayer)
+                .on('load', load)
                 .on('play', play)
                 .on('pause', pause)
                 .on('stop', stop)
@@ -192,16 +214,7 @@ public class Player extends Sprite implements IPlayer {
                 .on('fullscreen', fullscreen)
                 .on('mute', mute)
                 .on('volume', volume)
-                .on('config', setConfig)
-                .on('stretch', stretching);
-
-
-        this.mouseEnabled = true;
-        this.mouseChildren = false;
-        this.buttonMode = true;
-        this.stage.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
-            SwfEventRouter.triggerJsEvent('click', e);
-        });
+                .on('stretch', stretch);
 
         // Send ready event to browser
         SwfEventRouter.triggerJsEvent('ready');

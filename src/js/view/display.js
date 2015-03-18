@@ -93,16 +93,16 @@ define([
         function _clickHandler(evt) {
 
             if (_alternateClickHandler &&
-                    (_model.controls || _model.state === states.PLAYING)) {
+                    (_api.getControls() || _api.getState() === states.PLAYING)) {
                 _alternateClickHandler(evt);
                 return;
             }
 
-            if (!_isMobile || !_model.controls) {
+            if (!_isMobile || !_api.getControls()) {
                 _eventDispatcher.sendEvent(events.JWPLAYER_DISPLAY_CLICK);
             }
 
-            if (!_model.controls) {
+            if (!_api.getControls()) {
                 return;
             }
 
@@ -145,7 +145,7 @@ define([
                 }
             }
 
-            switch (_model.state) {
+            switch (_api.getState()) {
                 case states.PLAYING:
                 case states.BUFFERING:
                     _api.pause(true);
@@ -202,7 +202,7 @@ define([
             } else if (_image && !_hiding) {
                 _setVisibility(D_PREVIEW_CLASS, true);
             }
-            _updateDisplay(_model.state);
+            _updateDisplay(_api.getState());
         }
 
         function _playlistCompleteHandler() {
@@ -215,7 +215,7 @@ define([
         var _stateTimeout;
 
         function _getState() {
-            return _forced ? _forced : (_model ? _model.state : states.IDLE);
+            return _forced ? _forced : _api.getState();
         }
 
         function _stateHandler(evt) {
@@ -226,7 +226,7 @@ define([
         }
 
         function _updateDisplay(state) {
-            state = _getState();
+            state = state || _getState();
             if (state !== _previousState) {
                 _previousState = state;
                 if (_button) {
@@ -269,8 +269,8 @@ define([
 
         this.releaseState = function(state) {
             _forced = null;
-            _updateDisplay(state);
             this.show();
+            _updateDisplay(state);
         };
 
         this.hidePreview = function(state) {
@@ -278,7 +278,6 @@ define([
             _setVisibility(D_PREVIEW_CLASS, !state);
             if (state) {
                 _hiding = true;
-                //_hideDisplay();
             }
         };
 
@@ -312,7 +311,7 @@ define([
         function _imageLoaded() {
             _imageWidth = this.width;
             _imageHeight = this.height;
-            _updateDisplay(_model.state);
+            _updateDisplay(_api.getState());
             _redraw();
             if (_image) {
                 _css(_internalSelector(D_PREVIEW_CLASS), {

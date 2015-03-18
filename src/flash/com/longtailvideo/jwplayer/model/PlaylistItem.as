@@ -33,11 +33,11 @@ public dynamic class PlaylistItem {
                 var levels:Array = obj[itm] as Array;
                 for (var i:uint = 0; i < levels.length; i++) {
                     var level:Object = levels[i];
-                    if (level['file']) {
-                        var newLevel:PlaylistItemLevel = new PlaylistItemLevel(level['file'],
-                                level['type'],
+                    if (level.file) {
+                        var newLevel:PlaylistItemLevel = new PlaylistItemLevel(level.file,
+                                level.type,
                                 level['default'],
-                                level['streamer']);
+                                level.streamer);
                         for (var otherProp:String in level) {
                             switch (otherProp) {
                                 case "file":
@@ -66,11 +66,11 @@ public dynamic class PlaylistItem {
                 var tracks:Array = obj[itm] as Array;
                 for (i = 0; i < tracks.length; i++) {
                     var track:Object = tracks[i];
-                    if (track['file']) {
-                        var newTrack:PlaylistItemTrack = new PlaylistItemTrack(track['file'],
-                                track['kind'],
+                    if (track.file) {
+                        var newTrack:PlaylistItemTrack = new PlaylistItemTrack(track.file,
+                                track.kind,
                                 track['default'],
-                                track['label']);
+                                track.label);
 
                         if (!newTrack.kind || !newTrack.kind.length) {
                             newTrack.kind = "captions";
@@ -88,16 +88,16 @@ public dynamic class PlaylistItem {
             }
         }
 
-        for (i = 0; i < this["levels"].length; i++) {
-            level = this["levels"][i];
+        for (i = 0; i < this.levels.length; i++) {
+            level = this.levels[i];
             if (!level.hasOwnProperty("label")) {
                 level.label = i.toString();
             }
         }
 
         var captionsCount:Number = 0;
-        for (i = 0; i < this["tracks"].length; i++) {
-            track = this["tracks"][i];
+        for (i = 0; i < this.tracks.length; i++) {
+            track = this.tracks[i];
             if (track.kind == "captions") {
                 if (!track.hasOwnProperty("label")) {
                     track.label = captionsCount.toString();
