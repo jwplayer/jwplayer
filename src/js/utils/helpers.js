@@ -8,7 +8,7 @@ define([
     // TODO:: the next lines are a holdover until we update our CDN w/ plugins for 7.0
     // This is replaced by compiler
     //var _version = __BUILD_VERSION__;
-    var _version = 6.12;
+    var _version = '6.12.0';
 
     var utils = {};
 
