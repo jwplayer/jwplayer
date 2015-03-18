@@ -223,8 +223,14 @@ define([
         this.setRotation = startRotation;
 
         function numLines(element) {
-            return Math.floor(element.scrollHeight /
-                DOCUMENT.defaultView.getComputedStyle(element, null).lineHeight.replace('px', ''));
+            // Checks if this is IE8.  the equality check for typeof is required else there will be an error.
+            if(typeof getComputedStyle === 'undefined') {
+                return Math.floor(element.scrollHeight /
+                        parseInt(element.currentStyle.lineHeight.replace('px', '')));
+            } else {
+                return Math.floor(element.scrollHeight /
+                        DOCUMENT.defaultView.getComputedStyle(element, null).lineHeight.replace('px', ''));
+            }
         }
 
 
