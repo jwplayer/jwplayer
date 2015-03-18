@@ -20,15 +20,14 @@ define([
 ], function(utils, Playlist, Skin, eventdispatcher, _, events) {
 
     var Setup = function(model, view) {
-        var _this = this,
-            _model = model,
+        var _model = model,
             _view = view,
             _skin,
             _cancelled = false,
             _eventDispatcher = new eventdispatcher(),
             _errorState = false,
             _setupFailureTimeout,
-            _errorTimeoutDelay = 10;
+            _errorTimeoutDelay = 10 * 1000;
 
         var PARSE_CONFIG = {
                 method: _parseConfig,
@@ -66,13 +65,13 @@ define([
         ];
 
         this.start = function () {
-            _setupFailureTimeout = setTimeout(_setupTimeoutHandler, _errorTimeoutDelay * 1000);
+            _setupFailureTimeout = setTimeout(_setupTimeoutHandler.bind(this), _errorTimeoutDelay);
 
             _.defer(_nextTask);
         };
 
         function _setupTimeoutHandler(){
-            _this.destroy();
+            this.destroy();
             _error('Setup Timeout Error: Setup took longer than '+_errorTimeoutDelay+' seconds to complete.');
         }
 
