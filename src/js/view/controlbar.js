@@ -1518,7 +1518,10 @@ define([
 
         function _redraw() {
             clearTimeout(_redrawTimeout);
-            _redrawTimeout = setTimeout(_redraw, 0);
+            // Scoping issue in IE8.  _this.redraw isn't always defined.
+            if(_this.redraw) {
+                _redrawTimeout = setTimeout(_this.redraw , 0);
+            }
         }
 
         _this.redraw = function(resize) {
