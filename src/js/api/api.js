@@ -7,8 +7,9 @@ define([
     'utils/backbone.events',
     'utils/helpers',
     'utils/css',
+    'utils/timer',
     'underscore'
-], function(Embed, plugins, Instream, events, states, Events, utils, cssUtils, _) {
+], function(Embed, plugins, Instream, events, states, Events, utils, cssUtils, Timer, _) {
 
     function addFocusBorder(container) {
         utils.addClass(container, 'jw-tab-focus');
@@ -137,7 +138,13 @@ define([
         _this.container = document.createElement('div');
         _this.id = _this.container.id = container.id;
 
+        // Intialize QOE timer
+        var _qoe = _this._qoe = new Timer(_this.id);
+        _qoe.tick(events.API_INITIALIZED);
+
+
         _this.setup = function (options) {
+                _qoe.tick(events.API_SETUP);
                 // Remove any players that may be associated to this DOM element
                 _this.remove();
 
@@ -494,7 +501,12 @@ define([
                 }
             });
 
-            _this.trigger(events.API_READY, {});
+            _qoe.tick(events.API_READY);
+
+            _this.trigger(events.API_READY, {
+                initTime  : _qoe.between(events.API_INITIALIZED, events.API_SETUP),
+                setupTime : _qoe.between(events.API_SETUP, events.API_READY)
+            });
 
             while (_queuedCalls.length > 0) {
                 _callInternal.apply(_this, _queuedCalls.shift());
