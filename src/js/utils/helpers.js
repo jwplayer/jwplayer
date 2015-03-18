@@ -3,11 +3,13 @@ define([
     'events/events',
     'underscore'
 ], function(strings, events, _) {
-
-    // This is replaced by compiler
-    var _version = __BUILD_VERSION__;
-
     /*jshint maxparams:5*/
+
+    // TODO:: the next lines are a holdover until we update our CDN w/ plugins for 7.0
+    // This is replaced by compiler
+    //var _version = __BUILD_VERSION__;
+    var _version = 6.12;
+
     var utils = {};
 
     /**
@@ -350,6 +352,7 @@ define([
         return repo;
     };
 
+    // Return true:Boolean if major and minor version of target is less than current version
     utils.versionCheck = function (target) {
         var tParts = ('0' + target).split(/\W/);
         var jParts = _version.split(/\W/);
