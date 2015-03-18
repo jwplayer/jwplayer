@@ -699,7 +699,7 @@ define([
     };
 
     utils.tryCatch = function(fn, ctx, args) {
-        // some browsers require these not be undefined
+        // IE8 requires these not be undefined
         ctx = ctx || this;
         args = args || [];
         
