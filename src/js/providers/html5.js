@@ -742,7 +742,7 @@ define([
         'm4v': 'video/mp4',
         'mov': 'video/mp4',
         //'m4a': 'audio/x-m4a', // converted to aac by source.js
-        'mp3': 'audio/mp3',
+        'mp3': 'audio/mpeg',
         'ogv': 'video/ogg',
         'ogg': 'video/ogg',
         'oga': 'video/ogg',
