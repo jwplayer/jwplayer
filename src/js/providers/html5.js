@@ -462,7 +462,7 @@ define([
 
         function _sendSeekEvent() {
             _this.seeking = false;
-            //_this.sendEvent(events.JWPLAYER_MEDIA_SEEKED);
+            _this.sendEvent(events.JWPLAYER_MEDIA_SEEKED);
         }
 
         this.volume = function(vol) {
