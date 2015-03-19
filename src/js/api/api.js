@@ -6,7 +6,7 @@ define([
     'events/states',
     'utils/backbone.events',
     'utils/helpers',
-    'utils/css',i
+    'utils/css',
     'utils/timer',
     'underscore'
 ], function(Embed, plugins, Instream, events, states, Events, utils, cssUtils, Timer, _) {
