@@ -23,8 +23,11 @@ define([
         var _model = model,
             _view = view,
             _skin,
+            _cancelled = false,
             _eventDispatcher = new eventdispatcher(),
-            _errorState = false;
+            _errorState = false,
+            _setupFailureTimeout,
+            _errorTimeoutSeconds = 10;
 
         var PARSE_CONFIG = {
                 method: _parseConfig,
@@ -62,11 +65,18 @@ define([
         ];
 
         this.start = function () {
+            _setupFailureTimeout = setTimeout(_setupTimeoutHandler.bind(this), _errorTimeoutSeconds * 1000);
+
             _.defer(_nextTask);
         };
 
+        function _setupTimeoutHandler(){
+            this.destroy();
+            _error('Setup Timeout Error: Setup took longer than '+(_errorTimeoutSeconds)+' seconds to complete.');
+        }
+
         function _nextTask() {
-            if (this.cancelled) {
+            if (_cancelled) {
                 return;
             }
 
@@ -138,9 +148,11 @@ define([
         }
 
         function _sendReady() {
-            if (this.cancelled) {
+            if (_cancelled) {
                 return;
             }
+            clearTimeout(_setupFailureTimeout);
+
             _eventDispatcher.sendEvent(events.JWPLAYER_READY);
             _taskComplete(SEND_READY);
         }
@@ -154,7 +166,7 @@ define([
         }
 
         this.destroy = function() {
-            this.cancelled = true;
+            _cancelled = true;
         };
 
         _.extend(this, _eventDispatcher);
