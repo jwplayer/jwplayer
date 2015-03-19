@@ -27,7 +27,7 @@ define([
             _eventDispatcher = new eventdispatcher(),
             _errorState = false,
             _setupFailureTimeout,
-            _errorTimeoutDelay = 10 * 1000;
+            _errorTimeoutSeconds = 10;
 
         var PARSE_CONFIG = {
                 method: _parseConfig,
@@ -65,14 +65,14 @@ define([
         ];
 
         this.start = function () {
-            _setupFailureTimeout = setTimeout(_setupTimeoutHandler.bind(this), _errorTimeoutDelay);
+            _setupFailureTimeout = setTimeout(_setupTimeoutHandler.bind(this), _errorTimeoutSeconds * 1000);
 
             _.defer(_nextTask);
         };
 
         function _setupTimeoutHandler(){
             this.destroy();
-            _error('Setup Timeout Error: Setup took longer than '+_errorTimeoutDelay+' seconds to complete.');
+            _error('Setup Timeout Error: Setup took longer than '+(_errorTimeoutSeconds)+' seconds to complete.');
         }
 
         function _nextTask() {
