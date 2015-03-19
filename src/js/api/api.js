@@ -6,7 +6,7 @@ define([
     'events/states',
     'utils/backbone.events',
     'utils/helpers',
-    'utils/css',
+    'utils/css',i
     'utils/timer',
     'underscore'
 ], function(Embed, plugins, Instream, events, states, Events, utils, cssUtils, Timer, _) {
@@ -504,7 +504,6 @@ define([
             _qoe.tick(events.API_READY);
 
             _this.trigger(events.API_READY, {
-                initTime  : _qoe.between(events.API_INITIALIZED, events.API_SETUP),
                 setupTime : _qoe.between(events.API_SETUP, events.API_READY)
             });
 
