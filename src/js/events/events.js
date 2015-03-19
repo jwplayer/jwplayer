@@ -12,6 +12,8 @@ define([], function() {
         ERROR: 'ERROR',
 
         // API Events
+        API_INITIALIZED: 'jwplayerAPIInitialized',
+        API_SETUP: 'jwplayerAPISetup',
         API_READY: 'jwplayerAPIReady',
         JWPLAYER_READY: 'jwplayerReady',
         JWPLAYER_FULLSCREEN: 'jwplayerFullscreen',
