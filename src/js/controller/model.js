@@ -66,29 +66,29 @@ define([
 
         _providers = new Providers(_this.config.primary);
 
-        // Mapping of provider events, to the models attributes which should be updated
-        var _eventMap = {};
-        _eventMap[events.JWPLAYER_MEDIA_MUTE]   = ['mute'];
-        _eventMap[events.JWPLAYER_MEDIA_VOLUME] = ['volume'];
-        _eventMap[events.JWPLAYER_PLAYER_STATE] = ['state'];
-        _eventMap[events.JWPLAYER_MEDIA_BUFFER] = ['buffer'];
-        _eventMap[events.JWPLAYER_MEDIA_TIME]   = ['position', 'duration'];
-
-        function _getEventValue(evt, modelAttr) {
-            if (modelAttr === 'state') {
-                return evt.newstate;
-            } else if (modelAttr === 'buffer') {
-                return evt.bufferPercent;
-            }
-            return evt[modelAttr];
-        }
-
         function _videoEventHandler(evt) {
-            var mappings = _eventMap[evt.type];
-            if (mappings) {
-                _.each(mappings, function (attr) {
-                    _this[attr] = _getEventValue(evt, attr);
-                });
+            switch (evt.type) {
+                case events.JWPLAYER_MEDIA_MUTE:
+                    _this.mute = evt.mute;
+                    break;
+                case events.JWPLAYER_MEDIA_VOLUME:
+                    _this.volume = evt.volume;
+                    break;
+                case events.JWPLAYER_PLAYER_STATE:
+                    // These two states exist at a provider level, but the player itself expects BUFFERING
+                    if (evt.newstate === states.LOADING || evt.newstate === states.STALLED) {
+                        evt.newstate = states.BUFFERING;
+                    }
+
+                    _this.state = evt.newstate;
+                    break;
+                case events.JWPLAYER_MEDIA_BUFFER:
+                    _this.buffer = evt.bufferPercent; // note value change
+                    break;
+                case events.JWPLAYER_MEDIA_TIME:
+                    _this.position = evt.position;
+                    _this.duration = evt.duration;
+                    break;
             }
 
             _this.sendEvent(evt.type, evt);

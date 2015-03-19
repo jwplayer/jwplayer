@@ -30,6 +30,7 @@ define([], function() {
         JWPLAYER_MEDIA_LOADED: 'jwplayerMediaLoaded',
         JWPLAYER_MEDIA_COMPLETE: 'jwplayerMediaComplete',
         JWPLAYER_MEDIA_SEEK: 'jwplayerMediaSeek',
+        JWPLAYER_MEDIA_SEEKED: 'jwplayerMediaSeeked',
         JWPLAYER_MEDIA_TIME: 'jwplayerMediaTime',
         JWPLAYER_MEDIA_VOLUME: 'jwplayerMediaVolume',
         JWPLAYER_MEDIA_META: 'jwplayerMediaMeta',
