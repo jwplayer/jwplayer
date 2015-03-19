@@ -162,9 +162,11 @@ public class Controller extends GlobalEventDispatcher {
     }
 
     public function mute(muted:Boolean):Boolean {
-        if (muted !== _model.mute) {
-            _model.mute = muted;
-            return true;
+        if (_model.media) {
+            if (muted !== _model.mute) {
+                _model.mute = muted;
+                return true;
+            }
         }
         return false;
     }
