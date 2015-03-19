@@ -75,7 +75,12 @@ define([
                     _this.volume = evt.volume;
                     break;
                 case events.JWPLAYER_PLAYER_STATE:
-                    _this.state = evt.newstate; // note value change
+                    // These two states exist at a provider level, but the player itself expects BUFFERING
+                    if (evt.newstate === states.LOADING || evt.newstate === states.STALLED) {
+                        evt.newstate = states.BUFFERING;
+                    }
+
+                    _this.state = evt.newstate;
                     break;
                 case events.JWPLAYER_MEDIA_BUFFER:
                     _this.buffer = evt.bufferPercent; // note value change

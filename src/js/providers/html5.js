@@ -38,6 +38,9 @@ define([
         // Current media state
         this.state = states.IDLE;
 
+        // Are we buffering due to seek, or due to playback?
+        this.seeking = false;
+
         var _dispatcher = new eventdispatcher('provider.' + this.name);
         _.extend(this, _dispatcher);
 
@@ -246,13 +249,7 @@ define([
                     _this.pause();
                 }
             } else {
-                if (utils.isFF() && evt.type === 'play' && _this.state === states.BUFFERING) {
-                    // In FF, we get an extra "play" event on startup - we need to wait for "playing",
-                    // which is also handled by this function
-                    return;
-                } else {
-                    _this.setState(states.PLAYING);
-                }
+                _this.setState(states.PLAYING);
             }
         }
 
@@ -261,7 +258,18 @@ define([
             if (!_attached) {
                 return;
             }
-            _this.setState(states.BUFFERING);
+
+            // A stall after loading, should just stay loading
+            if (_this.state === states.LOADING) {
+                return;
+            }
+
+            // If we just triggered a seek, it is not a video stall
+            if (_this.seeking) {
+                _this.setState(states.LOADING);
+            } else {
+                _this.setState(states.STALLED);
+            }
         }
 
         function _errorHandler() { //evt) {
@@ -346,7 +354,7 @@ define([
             if (sourceChanged || _forceVideoLoad()) {
                 if (!_isMobile) {
                     // don't change state on mobile because a touch event may be required to start playback
-                    _this.setState(states.BUFFERING);
+                    _this.setState(states.LOADING);
                 }
                 _canSeek = false;
                 _bufferFull = false;
@@ -440,8 +448,8 @@ define([
             if (_canSeek) {
                 _delayedSeek = 0;
                 // handle readystate issue
-                console.log('seek ' + seekPos, new Date());
                 var status = utils.tryCatch(function() {
+                    _this.seeking = true;
                     _videotag.currentTime = seekPos;
                 });
                 if (status instanceof utils.Error) {
@@ -453,6 +461,8 @@ define([
         };
 
         function _sendSeekEvent() {
+            _this.seeking = false;
+            //_this.sendEvent(events.JWPLAYER_MEDIA_SEEKED);
         }
 
         this.volume = function(vol) {
