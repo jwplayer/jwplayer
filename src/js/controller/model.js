@@ -238,6 +238,15 @@ define([
         };
     };
 
+    _.extend(Model.prototype, {
+        'get' : function(attr) {
+            return this[attr];
+        },
+        'set' : function(attr, val) {
+            this[attr] = val;
+        }
+    });
+
     return Model;
 
 });

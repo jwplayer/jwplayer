@@ -110,7 +110,7 @@ define([
             document.msExitFullscreen;
         _elementSupportsFullscreen = _requestFullscreen && _exitFullscreen;
 
-        if (_model.aspectratio) {
+        if (_model.get('aspectratio')) {
             cssUtils.style(_playerElement, {
                 display: 'inline-block'
             });
