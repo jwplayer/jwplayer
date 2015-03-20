@@ -16,27 +16,28 @@ The example below will find the element with an id of *my_video* and render a vi
 
 ```js
     // Create a jwplayer instance
-	jwplayer('my_video').setup({
-		file: '/uploads/example.mp4',
-	});
+    jwplayer('my_video').setup({
+        file: '/uploads/example.mp4',
+    });
 
     // Add a custom callback for when user pauses playback
-	jwplayer('my_video').onPause(function(event) {
+    jwplayer('my_video').on('pause', function(event) {
         alert('Why did my user pause their video instead of watching it?');
-	});
+    });
 ```
 
 Other callbacks that we provide include
-* **onComplete**
-* **onSeek**
-* **onVolume**
+* **play / complete**
+* **seek / pause**
+* **volume / mute**
 * **[and more](http://support.jwplayer.com/customer/portal/topics/564475-javascript-api/articles)**
 
 You also have the power to programatically set any configuration within the player. 
 
 ```js
     function bumpIt() {
-        player.setVolume( player.getVolume() + 10 );
+    	var vol = player.get('volume');
+        player.set('volume', vol + 10 );
     }
 ```
 
@@ -47,8 +48,7 @@ You also have the power to programatically set any configuration within the play
  1. Install [Node.js](https://nodejs.org/download)
  1. Install [Adobe AIR SDK](http://www.adobe.com/devnet/air/air-sdk-download.html)
  1. Download [player.swc 11.1](http://fpdownload.macromedia.com/get/flashplayer/installers/archive/playerglobal/playerglobal11_1.swc)
- 1. Place the player.swc file into ```{AIRSDK_Compiler}/frameworks/libs/player/11.1/playerglobal.swc```
- 1. Modify your flex-config.xml file to use target player 11.1
+ 1. Rename and move the .swc file to ```{AIRSDK_Compiler}/frameworks/libs/player/11.1/playerglobal.swc```
 
 ```sh
     # First time set up
