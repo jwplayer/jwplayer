@@ -46,29 +46,29 @@ define([
 
         var _this = this,
             _mediaEvents = {
-                abort: _generalHandler,
+                //abort: _generalHandler,
                 canplay: _canPlayHandler,
-                canplaythrough: _generalHandler,
+                //canplaythrough: _generalHandler,
                 click : _onClickHandler,
                 durationchange: _durationUpdateHandler,
-                emptied: _generalHandler,
+                //emptied: _generalHandler,
                 ended: _endedHandler,
                 error: _errorHandler,
-                loadeddata: _generalHandler,
+                //loadeddata: _generalHandler,
                 loadedmetadata: _canPlayHandler,
-                loadstart: _generalHandler,
+                //loadstart: _generalHandler,
                 pause: _playHandler,
                 playing: _playHandler,
                 progress: _progressHandler,
-                ratechange: _generalHandler,
-                readystatechange: _generalHandler,
+                //ratechange: _generalHandler,
+                //readystatechange: _generalHandler,
                 seeked: _sendSeekEvent,
-                seeking: _isIE ? _bufferStateHandler : _generalHandler,
-                stalled: _generalHandler,
-                suspend: _generalHandler,
+                seeking: _seekingHandler,
+                stalled: _stalledHandler,
+                //suspend: _generalHandler,
                 timeupdate: _timeUpdateHandler,
                 volumechange: _volumeHandler,
-                waiting: _bufferStateHandler,
+                waiting: _waitingHandler,
                 webkitbeginfullscreen: _fullscreenBeginHandler,
                 webkitendfullscreen: _fullscreenEndHandler
 
@@ -135,19 +135,11 @@ define([
 
         _attached = true;
 
-
-        function _generalHandler() {
-            //if (evt) {
-            //    utils.log('%s %o (%s,%s)', evt.type, evt);
-            //}
-        }
-
         function _onClickHandler() {
             _this.sendEvent(events.JWPLAYER_PROVIDER_CLICK);
         }
 
-        function _durationUpdateHandler(evt) {
-            _generalHandler(evt);
+        function _durationUpdateHandler() {
             if (!_attached) { return; }
             var newDuration = _round(_videotag.duration);
             if (_duration !== newDuration) {
@@ -160,7 +152,6 @@ define([
         }
 
         function _timeUpdateHandler(evt) {
-            _generalHandler(evt);
             _progressHandler(evt);
 
             if (!_attached) { return; }
@@ -180,6 +171,11 @@ define([
                 //                  _complete();
                 //              }
             }
+
+
+            if (_this.state === states.STALLED) {
+                _this.setState(states.PLAYING);
+            }
         }
 
         function sendMetaEvent() {
@@ -191,7 +187,6 @@ define([
         }
 
         function _canPlayHandler(evt) {
-            _generalHandler(evt);
 
             if (!_attached) {
                 return;
@@ -211,8 +206,7 @@ define([
             }
         }
 
-        function _progressHandler(evt) {
-            _generalHandler(evt);
+        function _progressHandler() {
             if (_canSeek && _delayedSeek > 0 && !_isAndroid) {
                 // Need to set a brief timeout before executing delayed seek; IE9 stalls otherwise.
                 if (_isIE) {
@@ -235,8 +229,7 @@ define([
             }
         }
 
-        function _playHandler(evt) {
-            _generalHandler(evt);
+        function _playHandler() {
             if (!_attached) {
                 return;
             }
@@ -253,8 +246,14 @@ define([
             }
         }
 
-        function _bufferStateHandler(evt) {
-            _generalHandler(evt);
+        function _seekingHandler() {
+            if (!_attached) {
+                return;
+            }
+            _this.setState(states.LOADING);
+        }
+
+        function _stalledHandler() {
             if (!_attached) {
                 return;
             }
@@ -263,14 +262,18 @@ define([
             if (_this.state === states.LOADING) {
                 return;
             }
+            _this.setState(states.STALLED);
+        }
 
+        function _waitingHandler() {
             // If we just triggered a seek, it is not a video stall
             if (_this.seeking) {
-                _this.setState(states.LOADING);
+                _seekingHandler.apply(this, arguments);
             } else {
-                _this.setState(states.STALLED);
+                _stalledHandler.apply(this, arguments);
             }
         }
+
 
         function _errorHandler() { //evt) {
             if (!_attached) {
@@ -527,8 +530,7 @@ define([
             return buffered.end(buffered.length-1) / _videotag.duration;
         }
 
-        function _endedHandler(evt) {
-            _generalHandler(evt);
+        function _endedHandler() {
             if (_attached) {
                 _complete();
             }

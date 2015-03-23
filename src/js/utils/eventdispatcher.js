@@ -10,8 +10,8 @@ define([
         var obj = _.extend({}, Events);
 
         /** Clears all event listeners **/
-        this.resetEventListeners = obj.off;
-        this.removeEventListener = obj.off;
+        this.resetEventListeners = obj.off.bind(obj);
+        this.removeEventListener = obj.off.bind(obj);
 
         /** Add an event listener for a specific type of event. **/
         this.addEventListener = function (type, callback) {

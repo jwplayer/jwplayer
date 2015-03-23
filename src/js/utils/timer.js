@@ -1,7 +1,7 @@
 define([
     'utils/underscore'
 ], function(_) {
-    var Timer = function(id) {
+    var Timer = function() {
         var _startTimes = {};
         var _sum = {};
         var _counts = {};
@@ -12,19 +12,22 @@ define([
             // Profile methods
             start : function(methodName) {
                 _startTimes[methodName] = _.now();
-                _counts[methodName]++;
+                _counts[methodName] = _counts[methodName]+1 || 1;
             },
             end : function(methodName) {
+                if (!_startTimes[methodName]) {
+                    return;
+                }
+
                 var e = _.now() - _startTimes[methodName];
-                _sum[methodName] += e;
+                _sum[methodName] = _sum[methodName] + e || e;
             },
             dump : function() {
-                console.log('Player : ' + id);
-
-                _.each(_counts, function(count, method) {
-                    console.log(method, ' was called ', count, ' times');
-                    console.log('\tTotal time: ', _sum[method], ' Avg time: ', _sum[method]/count);
-                });
+                return {
+                    counts : _counts,
+                    sums : _sum,
+                    events : _ticks
+                };
             },
 
             // Profile events

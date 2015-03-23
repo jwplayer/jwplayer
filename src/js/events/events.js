@@ -53,7 +53,10 @@ define([], function() {
 
         // Display CLick
         JWPLAYER_DISPLAY_CLICK: 'jwplayerViewClick',
+
         JWPLAYER_PROVIDER_CLICK: 'jwplayerProviderClick',
+        JWPLAYER_PROVIDER_LOADING: 'jwplayerProviderLoading',
+        JWPLAYER_PROVIDER_STALLED: 'jwplayerProviderStalled',
 
         JWPLAYER_VIEW_TAB_FOCUS: 'jwplayerViewTabFocus',
 
