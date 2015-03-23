@@ -439,7 +439,7 @@ define([
             // If we aren't ready to add the event, store it until playerReady
             if (!_controller || !_playerReady) {
                 _eventQueue.push([type, callback]);
-                return;
+                return _this;
             }
 
             // Pass along event, but only once
