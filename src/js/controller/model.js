@@ -5,9 +5,10 @@ define([
     'providers/providers',
     'underscore',
     'utils/eventdispatcher',
+    'utils/timer',
     'events/events',
     'events/states'
-], function(utils, stretchUtils, Playlist, Providers, _, eventdispatcher, events, states) {
+], function(utils, stretchUtils, Playlist, Providers, _, eventdispatcher, Timer, events, states) {
 
     // Defaults
     var _defaults = {
@@ -30,6 +31,7 @@ define([
         volume: 90
     };
 
+
     var Model = function(config) {
         var _this = this,
             // Video provider
@@ -51,50 +53,60 @@ define([
             return config;
         }
 
-        _.extend(_this, new eventdispatcher());
+        _.extend(this, new eventdispatcher());
 
-        _this.config = _parseConfig(_.extend({}, _defaults, _cookies, config));
+        this.config = _parseConfig(_.extend({}, _defaults, _cookies, config));
 
-        _.extend(_this, _this.config, {
+        this.trigger = this.sendEvent;
+
+        _.extend(this, this.config, {
             state: states.IDLE,
             duration: -1,
             position: 0,
             buffer: 0
         });
         // This gets added later
-        _this.playlist = [];
+        this.playlist = [];
 
         _providers = new Providers(_this.config.primary);
 
         function _videoEventHandler(evt) {
             switch (evt.type) {
                 case events.JWPLAYER_MEDIA_MUTE:
-                    _this.mute = evt.mute;
+                    this.mute = evt.mute;
                     break;
                 case events.JWPLAYER_MEDIA_VOLUME:
-                    _this.volume = evt.volume;
+                    this.volume = evt.volume;
                     break;
                 case events.JWPLAYER_PLAYER_STATE:
                     // These two states exist at a provider level, but the player itself expects BUFFERING
-                    if (evt.newstate === states.LOADING || evt.newstate === states.STALLED) {
+                    if (evt.newstate === states.LOADING) {
+                        this._qoeItem.start(evt.newstate);
+                        this.trigger(events.JWPLAYER_PROVIDER_LOADING, evt);
                         evt.newstate = states.BUFFERING;
+                    } else if (evt.newstate === states.STALLED) {
+                        this._qoeItem.start(evt.newstate);
+                        this.trigger(events.JWPLAYER_PROVIDER_STALLED, evt);
+                        evt.newstate = states.BUFFERING;
+                    } else {
+                        this._qoeItem.end(evt.oldstate);
                     }
 
-                    _this.state = evt.newstate;
+                    this.state = evt.newstate;
                     break;
                 case events.JWPLAYER_MEDIA_BUFFER:
-                    _this.buffer = evt.bufferPercent; // note value change
+                    this.buffer = evt.bufferPercent; // note value change
                     break;
                 case events.JWPLAYER_MEDIA_TIME:
-                    _this.position = evt.position;
-                    _this.duration = evt.duration;
+                    this.position = evt.position;
+                    this.duration = evt.duration;
                     break;
             }
 
-            _this.sendEvent(evt.type, evt);
+            this.trigger(evt.type, evt);
         }
 
-        _this.setVideoProvider = function(provider) {
+        this.setVideoProvider = function(provider) {
 
             if (_provider) {
                 _provider.removeGlobalListener(_videoEventHandler);
@@ -108,21 +120,21 @@ define([
             _provider = provider;
             _provider.volume(_this.volume);
             _provider.mute(_this.mute);
-            _provider.addGlobalListener(_videoEventHandler);
+            _provider.addGlobalListener(_videoEventHandler.bind(this));
         };
 
-        _this.destroy = function() {
+        this.destroy = function() {
             if (_provider) {
                 _provider.removeGlobalListener(_videoEventHandler);
                 _provider.destroy();
             }
         };
 
-        _this.getVideo = function() {
+        this.getVideo = function() {
             return _provider;
         };
 
-        _this.seekDrag = function(state) {
+        this.seekDrag = function(state) {
             _this.dragging = state;
             if (state) {
                 _provider.pause();
@@ -131,34 +143,34 @@ define([
             }
         };
 
-        _this.setFullscreen = function(state) {
+        this.setFullscreen = function(state) {
             state = !!state;
             if (state !== _this.fullscreen) {
                 _this.fullscreen = state;
-                _this.sendEvent(events.JWPLAYER_FULLSCREEN, {
+                _this.trigger(events.JWPLAYER_FULLSCREEN, {
                     fullscreen: state
                 });
             }
         };
 
         // TODO: make this a synchronous action; throw error if playlist is empty
-        _this.setPlaylist = function(playlist) {
+        this.setPlaylist = function(playlist) {
 
             _this.playlist = Playlist.filterPlaylist(playlist, _providers, _this.androidhls);
             if (_this.playlist.length === 0) {
-                _this.sendEvent(events.JWPLAYER_ERROR, {
+                _this.trigger(events.JWPLAYER_ERROR, {
                     message: 'Error loading playlist: No playable sources found'
                 });
             } else {
-                _this.sendEvent(events.JWPLAYER_PLAYLIST_LOADED, {
+                _this.trigger(events.JWPLAYER_PLAYLIST_LOADED, {
                     playlist: jwplayer(_this.id).getPlaylist()
                 });
                 _this.item = -1;
-                _this.setItem(0);
+                this.setItem(0);
             }
         };
 
-        _this.setItem = function(index) {
+        this.setItem = function(index) {
             var newItem;
             var repeat = false;
             if (index === _this.playlist.length || index < -1) {
@@ -170,39 +182,43 @@ define([
                 newItem = index;
             }
 
-            if (repeat || newItem !== _this.item) {
-                _this.item = newItem;
-                _this.sendEvent(events.JWPLAYER_PLAYLIST_ITEM, {
-                    index: _this.item
-                });
+            if (newItem === this.item && !repeat) {
+                return;
+            }
 
-                // select provider based on item source (video, youtube...)
-                var item = _this.playlist[newItem];
-                var source = item && item.sources && item.sources[0];
-                if (source === undefined) {
-                    // source is undefined when resetting index with empty playlist
-                    return;
-                }
-                var Provider = _providers.choose(source);
-                if (!Provider) {
-                    throw new Error('No suitable provider found');
-                }
+            this.item = newItem;
+            this._qoeItem = new Timer();
+            this.trigger(events.JWPLAYER_PLAYLIST_ITEM, {
+                index: this.item
+            });
 
-                // If we are changing video providers
-                if (!(_currentProvider instanceof Provider)) {
-                    _currentProvider = new Provider(_this.id);
+            // select provider based on item source (video, youtube...)
+            var item = this.playlist[newItem];
+            var source = item && item.sources && item.sources[0];
+            if (source === undefined) {
+                // source is undefined when resetting index with empty playlist
+                return;
+            }
 
-                    _this.setVideoProvider(_currentProvider);
-                }
+            var Provider = _providers.choose(source);
+            if (!Provider) {
+                throw new Error('No suitable provider found');
+            }
 
-                // this allows the Youtube provider to load preview images
-                if (_currentProvider.init) {
-                    _currentProvider.init(item);
-                }
+            // If we are changing video providers
+            if (!(_currentProvider instanceof Provider)) {
+                _currentProvider = new Provider(_this.id);
+
+                _this.setVideoProvider(_currentProvider);
+            }
+
+            // this allows the Youtube provider to load preview images
+            if (_currentProvider.init) {
+                _currentProvider.init(item);
             }
         };
 
-        _this.setVolume = function(newVol) {
+        this.setVolume = function(newVol) {
             if (_this.mute && newVol > 0) {
                 _this.setMute(false);
             }
@@ -216,7 +232,7 @@ define([
             }
         };
 
-        _this.setMute = function(state) {
+        this.setMute = function(state) {
             if (!utils.exists(state)) {
                 state = !_this.mute;
             }
@@ -233,7 +249,7 @@ define([
             }
         };
 
-        _this.componentConfig = function(name) {
+        this.componentConfig = function(name) {
             return _componentConfigs[name];
         };
     };

@@ -139,7 +139,7 @@ define([
         _this.id = _this.container.id = container.id;
 
         // Intialize QOE timer
-        var _qoe = _this._qoe = new Timer(_this.id);
+        var _qoe = _this._qoe = new Timer();
         _qoe.tick(events.API_INITIALIZED);
 
 
@@ -154,6 +154,13 @@ define([
                 _this._embedder = new Embed(_this);
                 _this._embedder.embed();
                 return _this;
+        };
+
+        this.qoe = function() {
+            return {
+                player : _qoe.dump(),
+                item : _controller.getItemQoe()
+            };
         };
 
         _this.getContainer = function () {

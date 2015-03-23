@@ -54,7 +54,6 @@ define([
             _this.trigger(evtClone.type, evtClone);
         });
 
-
         function _setupErrorHandler(evt) {
             _this.trigger(events.JWPLAYER_SETUP_ERROR, evt);
         }
@@ -412,12 +411,15 @@ define([
             return _preplay;
         };
 
+        this.getItemQoe = function() {
+            return _model._qoeItem.dump();
+        };
+
         this.playerReady = _playerReady;
 
         // Add in all the jwGet____ methods
         setupInternalApi(this, _model, _view);
     };
-
 
     return Controller;
 
