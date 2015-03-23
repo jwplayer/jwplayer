@@ -57,7 +57,7 @@ public class SoundMediaProvider extends MediaProvider {
         _sound.addEventListener(ProgressEvent.PROGRESS, positionHandler);
         _sound.load(new URLRequest(itm.file), _context);
         sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_LOADED);
-        setState(PlayerState.BUFFERING);
+        setState(PlayerState.LOADING);
         sendBufferEvent(0);
         streamVolume(config.mute ? 0 : config.volume);
     }
@@ -150,11 +150,11 @@ public class SoundMediaProvider extends MediaProvider {
             }
         }
         // Switch between playback and buffering state.
-        if (state == PlayerState.BUFFERING && !_sound.isBuffering) {
+        if (PlayerState.isBuffering(state) && !_sound.isBuffering) {
             sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_BUFFER_FULL);
             setState(PlayerState.PLAYING);
         } else if (state == PlayerState.PLAYING && _sound.isBuffering) {
-            setState(PlayerState.BUFFERING);
+            setState(PlayerState.STALLED);
         }
         // Send time ticks when playing
         if (state == PlayerState.PLAYING && _item.duration > 0) {

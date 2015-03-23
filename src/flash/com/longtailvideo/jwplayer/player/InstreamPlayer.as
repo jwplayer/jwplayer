@@ -102,7 +102,7 @@ public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPl
     public function play():Boolean {
         _setupView();
         if (_provider) {
-            if (_provider.state == PlayerState.PLAYING || _provider.state == PlayerState.BUFFERING) {
+            if (_provider.state == PlayerState.PLAYING || PlayerState.isBuffering(_provider.state)) {
                 _provider.pause();
             } else {
                 _provider.play();
@@ -112,7 +112,7 @@ public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPl
     }
 
     public function pause():Boolean {
-        if (_provider && _provider.state == PlayerState.PLAYING || PlayerState.BUFFERING) {
+        if (_provider && _provider.state == PlayerState.PLAYING || PlayerState.isBuffering(_provider.state)) {
             _provider.pause();
         }
         return true;

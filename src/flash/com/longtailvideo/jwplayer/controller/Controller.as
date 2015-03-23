@@ -103,7 +103,7 @@ public class Controller extends GlobalEventDispatcher {
         _lockManager.lock(plugin, callback);
 
         // If it was playing, pause playback and plan to resume when you're done
-        if (_player.state == PlayerState.PLAYING || _player.state == PlayerState.BUFFERING || _preplay) {
+        if (_player.state == PlayerState.PLAYING || PlayerState.isBuffering(_player.state) || _preplay) {
             if (!_preplay) {
                 _model.media.pause();
             }
@@ -170,7 +170,7 @@ public class Controller extends GlobalEventDispatcher {
     }
 
     public function play():Boolean {
-        if (locking || _player.state == PlayerState.PLAYING || _player.state == PlayerState.BUFFERING) {
+        if (locking || _player.state == PlayerState.PLAYING || PlayerState.isBuffering(_player.state)) {
             return false;
         }
 
@@ -210,6 +210,8 @@ public class Controller extends GlobalEventDispatcher {
             switch (_model.media.state) {
                 case PlayerState.PLAYING:
                 case PlayerState.BUFFERING:
+                case PlayerState.STALLED:
+                case PlayerState.LOADING:
                     _model.media.pause();
                     return true;
                 default:
@@ -225,6 +227,8 @@ public class Controller extends GlobalEventDispatcher {
             switch (_model.media.state) {
                 case PlayerState.PLAYING:
                 case PlayerState.BUFFERING:
+                case PlayerState.STALLED:
+                case PlayerState.LOADING:
                 case PlayerState.PAUSED:
                     _model.media.stop();
                     return true;
@@ -243,6 +247,8 @@ public class Controller extends GlobalEventDispatcher {
                 case PlayerState.PAUSED:
                 case PlayerState.PLAYING:
                 case PlayerState.BUFFERING:
+                case PlayerState.STALLED:
+                case PlayerState.LOADING:
                     if (_model.media.canSeek) {
                         _model.seek(pos);
                         return true;

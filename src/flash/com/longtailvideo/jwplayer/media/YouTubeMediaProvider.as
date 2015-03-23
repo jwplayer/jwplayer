@@ -85,6 +85,8 @@ public class YouTubeMediaProvider extends MediaProvider {
     /** Array of YouTube quality levels **/
     private var _qualityLevels:Array;
 
+    private var seeking:Boolean = false;
+
     /** Return the list of quality levels. **/
     override public function get qualityLevels():Array {
         return _qualityLevels;
@@ -111,7 +113,7 @@ public class YouTubeMediaProvider extends MediaProvider {
         _currentQuality = 0;
         _videoId = getID(_item.file);
         _position = _offset = 0;
-        setState(PlayerState.BUFFERING);
+        setState(PlayerState.LOADING);
         sendBufferEvent(0);
         sendQualityEvent(MediaEvent.JWPLAYER_MEDIA_LEVELS, [], -1);
         if (_ready) {
@@ -125,7 +127,7 @@ public class YouTubeMediaProvider extends MediaProvider {
 
     /** Pause the YouTube movie. **/
     public override function pause():void {
-        if (state == PlayerState.PLAYING || state == PlayerState.BUFFERING) {
+        if (state == PlayerState.PLAYING || state == PlayerState.STALLED || state == PlayerState.LOADING) {
             if (_ready) {
                 _ytAPI.pauseVideo();
             }
@@ -136,6 +138,7 @@ public class YouTubeMediaProvider extends MediaProvider {
     /** Play or pause the video. **/
     public override function play():void {
         if (_ready) {
+            this.seeking = false;
             _ytAPI.playVideo();
             //super.play();
         }
@@ -161,6 +164,7 @@ public class YouTubeMediaProvider extends MediaProvider {
              */
             _ytAPI.seekTo(pos, true);
             _offset = pos;
+            this.seeking = true;
             super.seek(pos);
             play();
         }
@@ -203,7 +207,7 @@ public class YouTubeMediaProvider extends MediaProvider {
         switch (Number(Object(evt).data)) {
             case 0:
                 // "ended"
-                if (state != PlayerState.BUFFERING && state != PlayerState.IDLE) {
+                if (state != PlayerState.LOADING && state != PlayerState.STALLED && state != PlayerState.IDLE) {
                     complete();
                     _offset = 0;
                 }
@@ -218,7 +222,11 @@ public class YouTubeMediaProvider extends MediaProvider {
                 break;
             case 3:
                 // "buffering"
-                setState(PlayerState.BUFFERING);
+                if (this.seeking) {
+                    setState(PlayerState.LOADING);
+                } else {
+                    setState(PlayerState.STALLED);
+                }
                 break;
         }
     }

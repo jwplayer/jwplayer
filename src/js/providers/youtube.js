@@ -50,8 +50,9 @@ define([
                 // always run this interval when not idle because we can't trust events from iFrame
                 _playingInterval = setInterval(_checkPlaybackHandler, 250);
                 if (state === states.PLAYING) {
+                    this.seeking = false;
                     _resetViewForMobile();
-                } else if (state === states.BUFFERING) {
+                } else if (state === states.LOADING || state === states.STALLED) {
                     _bufferUpdate();
                 }
             }
@@ -283,7 +284,11 @@ define([
                     return;
 
                 case youtubeStates.BUFFERING: // 3: //buffering
-                    _this.setState(states.BUFFERING);
+                    if (_this.seeking) {
+                        _this.setState(states.LOADING);
+                    } else {
+                        _this.setState(states.STALLED);
+                    }
                     return;
 
                 case youtubeStates.CUED: // 5: //video cued (idle before playback)
@@ -361,7 +366,7 @@ define([
 
         // Video Provider API
         this.load = function(item) {
-            this.setState(states.BUFFERING);
+            this.setState(states.LOADING);
 
             _setItem(item);
             // start playback if api is ready
@@ -464,6 +469,7 @@ define([
                 return;
             }
             if (_youtubePlayer.seekTo) {
+                this.seeking = true;
                 _youtubePlayer.seekTo(position);
             }
         };

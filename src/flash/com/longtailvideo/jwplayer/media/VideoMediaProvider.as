@@ -57,6 +57,8 @@ public class VideoMediaProvider extends MediaProvider {
     private var _keyframes:Object;
     /** Video object to be instantiated. **/
     private var _video:Video;
+    /** Is buffering due to load/seek or underflow? **/
+    private var seeking:Boolean;
 
     /** Set the current quality level. **/
     override public function set currentQuality(quality:Number):void {
@@ -162,6 +164,7 @@ public class VideoMediaProvider extends MediaProvider {
     /** Resume playing. **/
     override public function play():void {
         clearInterval(_interval);
+        this.seeking = false;
         _interval = setInterval(positionHandler, 100);
         attachNetStream(_stream);
         _stream.resume();
@@ -214,6 +217,7 @@ public class VideoMediaProvider extends MediaProvider {
             }
         }
         clearInterval(_interval);
+        this.seeking = true;
         _interval = setInterval(positionHandler, 100);
     }
 
@@ -290,8 +294,12 @@ public class VideoMediaProvider extends MediaProvider {
         var pos:Number = Math.round(Math.min(_stream.time, Math.max(item.duration, 0)) * 100) / 100;
         // Toggle state between buffering and playing.
         if (_stream.bufferLength < 1 && state == PlayerState.PLAYING && _buffered < 100) {
-            setState(PlayerState.BUFFERING);
-        } else if (_stream.bufferLength > 1 && state == PlayerState.BUFFERING) {
+            if (this.seeking) {
+                setState(PlayerState.LOADING)
+            } else {
+                setState(PlayerState.STALLED);
+            }
+        } else if (_stream.bufferLength > 1 && (state == PlayerState.LOADING || state == PlayerState.STALLED)) {
             sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_BUFFER_FULL);
             setState(PlayerState.PLAYING);
         }
@@ -358,11 +366,12 @@ public class VideoMediaProvider extends MediaProvider {
             _stream.play(url + '?' + _startparam + '=' + prm);
         }
         _buffered = 0;
-        setState(PlayerState.BUFFERING);
+        setState(PlayerState.LOADING);
         sendBufferEvent(0);
 
         // TODO: do this on enter frame like HLS
         clearInterval(_interval);
+        this.seeking = true;
         _interval = setInterval(positionHandler, 100);
     }
 
