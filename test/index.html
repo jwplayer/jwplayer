@@ -11,6 +11,7 @@
 
 <h2>Video Playlist</h2>
 
+<button id='play-btn'>PLAY</button>
 <div id="video-container"></div>
 <script type="text/javascript">
 (function() {
@@ -102,66 +103,10 @@
 
     jwplayer('video-container').setup(config);
 
+    document.getElementById('play-btn').onclick =function(){
+        jwplayer().play();
+    };
 })();
-</script>
-
-<h2>Audio Single</h2>
-
-<div id="audio-container"></div>
-<script type="text/javascript">
-    jwplayer('audio-container').setup({
-
-        width: 640,
-        height: 30,
-
-        file: '//content.bitsontherun.com/videos/3XnJSIm4-I3ZmuSFT.m4a'
-
-    });
-</script>
-
-<h2>FLV Single</h2>
-
-<div id="flv-container"></div>
-<script type="text/javascript">
-    jwplayer('flv-container').setup({
-        autostart: true,
-
-        width: 640,
-        height: 360,
-
-        listbar: {
-            position: 'right'
-        },
-
-        file: '//playertest.longtailvideo.com/flv-cuepoints/honda_accord.flv',
-        type: 'flv'
-    });
-</script>
-
-<h2>Youtube Single</h2>
-
-<div id="youtube-container"></div>
-<script type="text/javascript">
-    jwplayer('youtube-container').setup({
-
-        width: 640,
-        height: 360,
-
-        file: '//www.youtube.com/watch?v=YE7VzlLtp-4'
-
-    });
-</script>
-
-
-<h2>Error screen</h2>
-
-<div id="error-container"></div>
-<script type="text/javascript">
-    jwplayer('error-container').setup({
-
-        playlist: 'failure'
-
-    });
 </script>
 </body>
 </html>
