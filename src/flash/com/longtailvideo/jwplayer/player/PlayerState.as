@@ -15,5 +15,15 @@ public class PlayerState {
     public static var PLAYING:String = "PLAYING";
     /** Playback is paused. **/
     public static var PAUSED:String = "PAUSED";
+
+
+    // These are specific types of buffering which a provider may use for
+    //  better QOE introspection
+    public static const STALLED:String = "STALLED";
+    public static const LOADING:String = "LOADING";
+
+    public static function isBuffering(state:String):Boolean {
+        return (state === LOADING || state === STALLED || state === BUFFERING);
+    }
 }
 }

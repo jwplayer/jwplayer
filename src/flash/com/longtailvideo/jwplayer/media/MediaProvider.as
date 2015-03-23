@@ -177,7 +177,7 @@ public class MediaProvider extends Sprite implements IMediaProvider {
 
     /** Determine if seek can be called or should be delayed **/
     public function get canSeek():Boolean {
-        return state !== PlayerState.BUFFERING;
+        return !PlayerState.isBuffering(state);
     }
 
     /**
@@ -266,8 +266,9 @@ public class MediaProvider extends Sprite implements IMediaProvider {
     /** Resume playback of the item. **/
     public function play():void {
         if (_queuedBufferFull) {
+            // This path of execution implies we were in a paused state
             _queuedBufferFull = false;
-            setState(PlayerState.BUFFERING);
+            setState(PlayerState.LOADING);
             sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_BUFFER_FULL);
         } else {
             setState(PlayerState.PLAYING);
