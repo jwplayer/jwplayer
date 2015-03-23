@@ -299,7 +299,7 @@ public class VideoMediaProvider extends MediaProvider {
             } else {
                 setState(PlayerState.STALLED);
             }
-        } else if (_stream.bufferLength > 1 && (state == PlayerState.LOADING || state == PlayerState.STALLED)) {
+        } else if (_stream.bufferLength >= 1 && PlayerState.isBuffering(state)) {
             sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_BUFFER_FULL);
             setState(PlayerState.PLAYING);
         }

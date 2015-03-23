@@ -23,7 +23,7 @@ public class PlayerState {
     public static const LOADING:String = "LOADING";
 
     public static function isBuffering(state:String):Boolean {
-        return (state === BUFFERING || state === STALLED || state === LOADING);
+        return (state === LOADING || state === STALLED || state === BUFFERING);
     }
 }
 }

@@ -127,7 +127,7 @@ public class YouTubeMediaProvider extends MediaProvider {
 
     /** Pause the YouTube movie. **/
     public override function pause():void {
-        if (state == PlayerState.PLAYING || state == PlayerState.STALLED || state == PlayerState.LOADING) {
+        if (state == PlayerState.PLAYING || PlayerState.isBuffering(state)) {
             if (_ready) {
                 _ytAPI.pauseVideo();
             }
@@ -207,7 +207,7 @@ public class YouTubeMediaProvider extends MediaProvider {
         switch (Number(Object(evt).data)) {
             case 0:
                 // "ended"
-                if (state != PlayerState.LOADING && state != PlayerState.STALLED && state != PlayerState.IDLE) {
+                if (state != PlayerState.LOADING && !PlayerState.isBuffering(state)) {
                     complete();
                     _offset = 0;
                 }
