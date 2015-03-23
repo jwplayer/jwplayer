@@ -128,6 +128,7 @@ module.exports = function(grunt) {
                 },
                 output: {
                     path: 'bin-debug/',
+                    publicPath: '/jwplayer/bin-debug/',
                     filename: '[name].js'
                 },
                 resolve: {
@@ -153,16 +154,16 @@ module.exports = function(grunt) {
                             loader: 'style-loader!css-loader!less-loader'
                         },
                         {
+                            test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
+                            loader: 'file'
+                        },
+                        {
                             test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
                             loader: 'url?limit=10000&minetype=application/font-woff'
                         },
                         {
                             test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
                             loader: 'url?limit=10000&minetype=application/octet-stream'
-                        },
-                        {
-                            test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
-                            loader: 'file'
                         },
                         {
                             test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
