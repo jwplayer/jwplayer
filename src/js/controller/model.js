@@ -187,6 +187,7 @@ define([
             }
 
             this.item = newItem;
+            this._qoeItem = new Timer();
             this.trigger(events.JWPLAYER_PLAYLIST_ITEM, {
                 index: this.item
             });
@@ -215,8 +216,6 @@ define([
             if (_currentProvider.init) {
                 _currentProvider.init(item);
             }
-
-            this._qoeItem = new Timer();
         };
 
         this.setVolume = function(newVol) {
