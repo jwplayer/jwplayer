@@ -71,7 +71,6 @@ define([
         };
 
         function _setupTimeoutHandler(){
-            this.destroy();
             _error('Setup Timeout Error: Setup took longer than '+(_errorTimeoutSeconds)+' seconds to complete.');
         }
 
@@ -163,6 +162,8 @@ define([
                 message: message
             });
             _view.setupError(message);
+            clearTimeout(_setupFailureTimeout);
+            this.destroy();
         }
 
         this.destroy = function() {
