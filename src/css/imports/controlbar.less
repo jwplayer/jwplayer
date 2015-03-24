@@ -2,9 +2,11 @@
 
 .jwplayer .jw-controlbar {
     position: absolute;
-    right: @ui-margin;
+    //right: @ui-margin;
+    right: 0;
     bottom: @ui-margin;
-    left: @ui-margin;
+    left: 0;
+    //left: @ui-margin;
     height: @controlbar-height;
     max-width: @controlbar-max-width;
 
@@ -25,6 +27,10 @@
     transition: opacity .25s background .25s visibility .25s;
 }
 
+.jwplayer .jw-controlbar{
+    display: table;
+}
+
 .jw-controlbar span {
     height: 100%;
     -webkit-user-select: none;
@@ -39,8 +45,10 @@
 .jw-controlbar .jw-group > span {
     display: inline-block;
     height: @controlbar-height;
+    position: relative;
     padding: 0 0.20em;
     line-height: @controlbar-height;
+    vertical-align: middle;
 }
 
 .jwplayer .jw-controlbar .jw-icon button {
@@ -50,17 +58,23 @@
 }
 
 .jw-controlbar span, .jw-controlbar .jw-group button, .jw-controlbar .jw-left {
-    position: relative;
-    float: left;
+    //position: relative;
+    //float: left;
+}
+.jw-controlbar .jw-left {
+    display: table-cell;
+    //position: relative;
+    //float: left;
 }
 
 .jw-controlbar .jw-right {
-    position: relative;
-    float: right;
+    display: table-cell;
+    //position: relative;
+    //float: right;
 }
 
-.jw-controlbar .jw-center {
-    position: absolute;
+.jw-controlbar .jw-left, .jw-controlbar .jw-right {
+    white-space: nowrap;
 }
 
 .jw-controlbar button {
