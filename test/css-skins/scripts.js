@@ -1,5 +1,3 @@
-
-
 $(document).ready(function(){
     $('.jwplayer').css('width', '100%');
 
