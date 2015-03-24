@@ -65,7 +65,7 @@ module.exports = function(grunt) {
             options: {
                 // fails with node 0.12.0 and grunt-contrib-uglify 0.4.1
                 // https://github.com/gruntjs/grunt-contrib-uglify/issues/302
-                // report: 'gzip',
+                report: 'gzip',
                 mangle: true,
                 compress: {
                     booleans: true,

@@ -13,18 +13,18 @@
     "grunt": "^0.4.5",
     "grunt-cli": "^0.1.13",
     "grunt-contrib-clean": "^0.6.0",
-    "grunt-contrib-jshint": "^0.10.0",
-    "grunt-contrib-uglify": "^0.7.0",
+    "grunt-contrib-jshint": "^0.11.1",
+    "grunt-contrib-uglify": "^0.8.0",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-webpack": "^1.0.8",
     "handlebars-loader": "^0.1.8",
-    "less-loader": "^2.0.0",
-    "load-grunt-tasks": "~2.0.0",
+    "less-loader": "^2.2.0",
+    "load-grunt-tasks": "^3.1.0",
     "raw-loader": "^0.5.1",
-    "style-loader": "^0.8.3",
+    "style-loader": "^0.9.0",
     "file-loader": "^0.8.0",
     "url-loader": "^0.5.0",
     "grunt-recess": "^1.0.0",
-    "webpack": "^1.6.0"
+    "webpack": "^1.7.3"
   }
 }
