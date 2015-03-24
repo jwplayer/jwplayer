@@ -1,7 +1,6 @@
 define([
-    '../css/jwplayer.less',
     'polyfill/bind',
-    'polyfill/eventlisteners'/*,
-    '../../test/css-skins/scripts'*/
+    'polyfill/eventlisteners',
+    '../css/jwplayer.less'
 ], function () {
 });
