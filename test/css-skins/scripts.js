@@ -106,10 +106,6 @@ $(document).ready(function(){
     $('#aspect-ratio-4-3').on('click', aspect43);
     if(document.attachEvent) document.getElementById('aspect-ratio-4-3').attachEvent('onclick', aspect43);
 
-
-
-
-
     var idlestate = function(e) {
         $('.jwplayer').removeClass('play-state');
         $('.jwplayer').removeClass('pause-state');
