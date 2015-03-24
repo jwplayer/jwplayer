@@ -492,6 +492,9 @@ define([
                 _eventListener(val[0], val[1]);
             }
 
+            // Required to force api to forward events from the controller
+            _eventListener(events.JWPLAYER_MEDIA_SEEKED, utils.noop);
+
             _eventListener(events.JWPLAYER_PLAYLIST_ITEM, function () {
                 _itemMeta = {};
             });
