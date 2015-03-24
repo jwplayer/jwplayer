@@ -324,10 +324,12 @@ module.exports = function(grunt) {
         'jshint'
     ]);
 
-    grunt.registerTask('default', [
+    grunt.registerTask('build', [
         'clean',
         'build-js',
         'flash:player:debug',
         'flash:player:release'
     ]);
+
+    grunt.registerTask('default', 'build');
 };
