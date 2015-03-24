@@ -8,8 +8,10 @@ define([
     'utils/helpers',
     'utils/css',
     'utils/timer',
-    'underscore'
-], function(Embed, plugins, Instream, events, states, Events, utils, cssUtils, Timer, _) {
+    'utils/underscore',
+    'api/mutators',
+    'api/callbacks-deprecate'
+], function(Embed, plugins, Instream, events, states, Events, utils, cssUtils, Timer, _, mutatorsInit, legacyInit) {
 
     function addFocusBorder(container) {
         utils.addClass(container, 'jw-tab-focus');
@@ -34,97 +36,9 @@ define([
         };
     }();
 
-
-    var _internalFuncsToGenerate = [
-        'getBuffer',
-        'getCaptionsList',
-        'getControls',
-        'getCurrentCaptions',
-        'getCurrentQuality',
-        'getCurrentAudioTrack',
-        'getDuration',
-        'getFullscreen',
-        'getHeight',
-        'getLockState',
-        'getMute',
-        'getPlaylistIndex',
-        'getSafeRegion',
-        'getPosition',
-        'getQualityLevels',
-        'getState',
-        'getVolume',
-        'getWidth',
-        'isBeforeComplete',
-        'isBeforePlay',
-        'releaseState'
-    ];
-
-    var _chainableInternalFuncs = [
-        'playlistNext',
-        'stop',
-
-        // The following pass an argument to function
-        'forceState',
-        'playlistPrev',
-        'seek',
-        'setCurrentCaptions',
-        'setControls',
-        'setCurrentQuality',
-        'setVolume',
-        'setCurrentAudioTrack'
-    ];
-
-    var _eventMapping = {
-        onBufferChange: events.JWPLAYER_MEDIA_BUFFER,
-        onBufferFull: events.JWPLAYER_MEDIA_BUFFER_FULL,
-        onError: events.JWPLAYER_ERROR,
-        onSetupError: events.JWPLAYER_SETUP_ERROR,
-        onFullscreen: events.JWPLAYER_FULLSCREEN,
-        onMeta: events.JWPLAYER_MEDIA_META,
-        onMute: events.JWPLAYER_MEDIA_MUTE,
-        onPlaylist: events.JWPLAYER_PLAYLIST_LOADED,
-        onPlaylistItem: events.JWPLAYER_PLAYLIST_ITEM,
-        onPlaylistComplete: events.JWPLAYER_PLAYLIST_COMPLETE,
-        onReady: events.API_READY,
-        onResize: events.JWPLAYER_RESIZE,
-        onComplete: events.JWPLAYER_MEDIA_COMPLETE,
-        onSeek: events.JWPLAYER_MEDIA_SEEK,
-        onTime: events.JWPLAYER_MEDIA_TIME,
-        onVolume: events.JWPLAYER_MEDIA_VOLUME,
-        onBeforePlay: events.JWPLAYER_MEDIA_BEFOREPLAY,
-        onBeforeComplete: events.JWPLAYER_MEDIA_BEFORECOMPLETE,
-        onDisplayClick: events.JWPLAYER_DISPLAY_CLICK,
-        onControls: events.JWPLAYER_CONTROLS,
-        onQualityLevels: events.JWPLAYER_MEDIA_LEVELS,
-        onQualityChange: events.JWPLAYER_MEDIA_LEVEL_CHANGED,
-        onCaptionsList: events.JWPLAYER_CAPTIONS_LIST,
-        onCaptionsChange: events.JWPLAYER_CAPTIONS_CHANGED,
-        onAdError: events.JWPLAYER_AD_ERROR,
-        onAdClick: events.JWPLAYER_AD_CLICK,
-        onAdImpression: events.JWPLAYER_AD_IMPRESSION,
-        onAdTime: events.JWPLAYER_AD_TIME,
-        onAdComplete: events.JWPLAYER_AD_COMPLETE,
-        onAdCompanions: events.JWPLAYER_AD_COMPANIONS,
-        onAdSkipped: events.JWPLAYER_AD_SKIPPED,
-        onAdPlay: events.JWPLAYER_AD_PLAY,
-        onAdPause: events.JWPLAYER_AD_PAUSE,
-        onAdMeta: events.JWPLAYER_AD_META,
-        onCast: events.JWPLAYER_CAST_SESSION,
-        onAudioTrackChange: events.JWPLAYER_AUDIO_TRACK_CHANGED,
-        onAudioTracks: events.JWPLAYER_AUDIO_TRACKS
-    };
-
-    var _stateMapping = {
-        onBuffer: states.BUFFERING,
-        onPause: states.PAUSED,
-        onPlay: states.PLAYING,
-        onIdle: states.IDLE
-    };
-
     var Api = function (container) {
         var _this = this,
             _originalContainer = container,
-            _stateListeners = {},
             _controller = null,
             _playerReady = false,
             _queuedCalls = [],
@@ -133,7 +47,35 @@ define([
             _eventQueue = [],
             _callbacks = {};
 
+        // Set up event handling
         _.extend(this, Events);
+
+
+        this.trigger = function(type, args) {
+            args.type = args.type || type;
+            args = normalizeOutput(args);
+
+            return Events.trigger.call(_this, type, args);
+        };
+
+        this.on = function(name, callback, context) {
+            if (!_controller || !_playerReady) {
+                _eventQueue.push([name, callback, context]);
+                return this;
+            }
+
+            return Events.on.apply(_this, arguments);
+        };
+
+        // Required by vast
+        // <deprecate>
+        this.dispatchEvent = this.trigger;
+        this.removeEventListener = this.off.bind(this);
+        // </deprecate>
+
+        // Add a bunch of methods
+        mutatorsInit(this);
+        legacyInit(this);
 
         _this.container = document.createElement('div');
         _this.id = _this.container.id = container.id;
@@ -142,8 +84,7 @@ define([
         var _qoe = _this._qoe = new Timer();
         _qoe.tick(events.API_INITIALIZED);
 
-
-        _this.setup = function (options) {
+        this.setup = function (options) {
                 _qoe.tick(events.API_SETUP);
                 // Remove any players that may be associated to this DOM element
                 _this.remove();
@@ -318,34 +259,7 @@ define([
         };
 
 
-        // Take a mapping of function names to event names and setup listeners
-        function initializeMapping(mapping, listener) {
-            utils.foreach(mapping, function (name, value) {
-                _this[name] = function (callback) {
-                    return listener(value, callback);
-                };
-            });
-        }
 
-        initializeMapping(_stateMapping, _stateListener);
-        initializeMapping(_eventMapping, _eventListener);
-
-
-        // given a name "getBuffer", it adds to jwplayer.api a function which internally triggers jwGetBuffer
-        function generateInternalFunction(name) {
-            var internalName = 'jw' + name.charAt(0).toUpperCase() + name.slice(1);
-
-            _this[name] = function () {
-                var value = _callInternal.apply(this, [internalName].concat(Array.prototype.slice.call(arguments, 0)));
-
-                if (_.has(_chainableInternalFuncs, name)) {
-                    return _this;
-                }
-                return value;
-            };
-        }
-
-        _.each(_internalFuncsToGenerate.concat(_chainableInternalFuncs), generateInternalFunction);
 
 
         _this.remove = function () {
@@ -388,8 +302,17 @@ define([
             plugins.registerPlugin(id, target, arg1, arg2);
         };
 
+        function _forwardStateEvent(evt) {
+            _this.trigger(evt.newstate, evt);
+        }
         _this.setController = function (player) {
+            if (_controller) {
+                _controller.off('all', _this.trigger);
+                _controller.off(events.JWPLAYER_PLAYER_STATE, _forwardStateEvent);
+            }
             _controller = player;
+            _controller.on('all', _this.trigger);
+            _controller.on(events.JWPLAYER_PLAYER_STATE, _forwardStateEvent);
         };
 
         _this.detachMedia = function () {
@@ -403,71 +326,6 @@ define([
 
         _this.getAudioTracks = function () {
             return _callInternal('jwGetAudioTracks');
-        };
-
-        function _stateListener(state, callback) {
-            if (!_stateListeners[state]) {
-                _stateListeners[state] = [];
-                _eventListener(events.JWPLAYER_PLAYER_STATE, _stateCallback(state));
-            }
-            _stateListeners[state].push(callback);
-            return _this;
-        }
-
-        function _stateCallback(state) {
-            return function (args) {
-                var newstate = args.newstate,
-                    oldstate = args.oldstate;
-                if (newstate === state) {
-                    var callbacks = _stateListeners[newstate];
-                    if (callbacks) {
-                        for (var c = 0; c < callbacks.length; c++) {
-                            var fn = callbacks[c];
-                            if (typeof fn === 'function') {
-                                fn.call(this, {
-                                    oldstate: oldstate,
-                                    newstate: newstate
-                                });
-                            }
-                        }
-                    }
-                }
-            };
-        }
-
-        function _eventListener(type, callback) {
-            // If we aren't ready to add the event, store it until playerReady
-            if (!_controller || !_playerReady) {
-                _eventQueue.push([type, callback]);
-                return _this;
-            }
-
-            // Pass along event, but only once
-            _controller.off(type);
-            _controller.on(type, function(args) {
-                _this.trigger(type, args);
-            });
-
-            // Now add the callback to API
-            _this.on(type, callback);
-        }
-
-        _this.removeEventListener = _this.off;
-
-        _this.trigger = function(type, args) {
-            args.type = args.type || type;
-            args = normalizeOutput(args);
-
-            return Events.trigger.call(_this, type, args);
-        };
-
-        // Required by vast, but should be deprecated
-        _this.dispatchEvent = _this.trigger;
-
-        _this.dispatchInstreamEvent = function (type) {
-            if (_instream) {
-                _instream.dispatchEvent(type, arguments);
-            }
         };
 
         function _callInternal() {
@@ -489,21 +347,18 @@ define([
 
             while(_eventQueue.length) {
                 var val = _eventQueue.shift();
-                _eventListener(val[0], val[1]);
+                this.on(val[0], val[1], val[2]);
             }
 
-            // Required to force api to forward events from the controller
-            _eventListener(events.JWPLAYER_MEDIA_SEEKED, utils.noop);
-
-            _eventListener(events.JWPLAYER_PLAYLIST_ITEM, function () {
+            this.on(events.JWPLAYER_PLAYLIST_ITEM, function () {
                 _itemMeta = {};
             });
 
-            _eventListener(events.JWPLAYER_MEDIA_META, function (data) {
+            this.on(events.JWPLAYER_MEDIA_META, function (data) {
                 _.extend(_itemMeta, data.metadata);
             });
 
-            _eventListener(events.JWPLAYER_VIEW_TAB_FOCUS, function (data) {
+            this.on(events.JWPLAYER_VIEW_TAB_FOCUS, function (data) {
                 if (data.hasFocus === true) {
                     addFocusBorder(_this.container);
                 } else {
