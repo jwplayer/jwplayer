@@ -63,12 +63,12 @@ define([
                 //ratechange: _generalHandler,
                 //readystatechange: _generalHandler,
                 seeked: _sendSeekEvent,
-                seeking: _seekingHandler,
+                //seeking: _seekingHandler,
                 stalled: _stalledHandler,
                 //suspend: _generalHandler,
                 timeupdate: _timeUpdateHandler,
                 volumechange: _volumeHandler,
-                waiting: _waitingHandler,
+                waiting: _stalledHandler,
                 webkitbeginfullscreen: _fullscreenBeginHandler,
                 webkitendfullscreen: _fullscreenEndHandler
 
@@ -246,13 +246,6 @@ define([
             }
         }
 
-        function _seekingHandler() {
-            if (!_attached) {
-                return;
-            }
-            _this.setState(states.LOADING);
-        }
-
         function _stalledHandler() {
             if (!_attached) {
                 return;
@@ -262,18 +255,14 @@ define([
             if (_this.state === states.LOADING) {
                 return;
             }
+
+            // During seek we stay in paused state
+            if (_this.seeking) {
+                return;
+            }
+
             _this.setState(states.STALLED);
         }
-
-        function _waitingHandler() {
-            // If we just triggered a seek, it is not a video stall
-            if (_this.seeking) {
-                _seekingHandler.apply(this, arguments);
-            } else {
-                _stalledHandler.apply(this, arguments);
-            }
-        }
-
 
         function _errorHandler() { //evt) {
             if (!_attached) {
