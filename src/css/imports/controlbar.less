@@ -1,6 +1,7 @@
 @import "vars.less";
 
 .jwplayer .jw-controlbar {
+    display: table;
     position: absolute;
     //right: @ui-margin;
     right: 0;
@@ -22,15 +23,9 @@
     filter: @def-ie8-background-filter;
 
     box-sizing: content-box;
-
-    -webkit-transition: opacity .25s background .25s visibility .25s;
-    transition: opacity .25s background .25s visibility .25s;
 }
 
-.jwplayer .jw-controlbar{
-    display: table;
-}
-
+// TODO: no 'span'
 .jw-controlbar span {
     height: 100%;
     -webkit-user-select: none;
@@ -42,6 +37,7 @@
 }
 
 // control bar content (icons/text)
+// TODO: no '>'
 .jw-controlbar .jw-group > span {
     display: inline-block;
     height: @controlbar-height;
@@ -51,38 +47,23 @@
     vertical-align: middle;
 }
 
+.jw-controlbar .jw-left,
+.jw-controlbar .jw-right {
+    white-space: nowrap;
+}
+
 .jwplayer .jw-controlbar .jw-icon button {
     width: 100%;
     height: 100%;
     font-size: @controlbar-icon-size;
 }
 
-.jw-controlbar span, .jw-controlbar .jw-group button, .jw-controlbar .jw-left {
-    //position: relative;
-    //float: left;
-}
-.jw-controlbar .jw-left {
-    display: table-cell;
-    //position: relative;
-    //float: left;
-}
-
-.jw-controlbar .jw-right {
-    display: table-cell;
-    //position: relative;
-    //float: right;
-}
-
-.jw-controlbar .jw-left, .jw-controlbar .jw-right {
-    white-space: nowrap;
-}
-
 .jw-controlbar button {
     display: inline-block;
     height: inherit;
     cursor: pointer;
-    -webkit-transition: opacity .25s background .25s visibility .25s;
-    transition: opacity .25s background .25s visibility .25s;
+    -webkit-transition: opacity .25s, background .25s, visibility .25s;
+    transition: opacity .25s, background .25s, visibility .25s;
 }
 
 .jw-controlbar .jw-text {
@@ -91,7 +72,8 @@
     line-height: 1em;
 }
 
-.jw-controlbar .jw-elapsed .jw-text, .jw-controlbar .jw-duration .jw-text {
+.jw-controlbar .jw-elapsed .jw-text,
+.jw-controlbar .jw-duration .jw-text {
     line-height: inherit;
 }
 
