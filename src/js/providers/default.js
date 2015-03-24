@@ -52,12 +52,12 @@ define([
         detachMedia : noop,
 
         setState: function(state) {
-            if (state === this.state) {
-                return;
-            }
-
             var oldState = this.state || states.IDLE;
             this.state = state;
+
+            if (state === oldState) {
+                return;
+            }
 
             this.sendEvent(events.JWPLAYER_PLAYER_STATE, {
                 oldstate: oldState,
