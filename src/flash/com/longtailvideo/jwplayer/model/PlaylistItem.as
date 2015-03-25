@@ -281,20 +281,15 @@ package com.longtailvideo.jwplayer.model {
 				case "aac":
 				case "f4a":
 					return "aac";
-					break;
 				case "mp3":
 					return "mp3";
-					break;
 				case "smil":
 					return "rtmp";
-					break;
 				case "webm":
 					return "webm";
-					break;
 				case "ogg":
 				case "oga":
 					return "vorbis";
-					break;
 			}
 			return null;
 		}
@@ -306,17 +301,13 @@ package com.longtailvideo.jwplayer.model {
 				case "aac":
 				case "video":
 					return "video";
-					break;
 				case "mp3": 
 				case "sound": 
 					return "sound";
-					break;
 				case "rtmp":
 					return "rtmp";
-					break;
 				case "youtube":
 					return "youtube";
-					break;
 			}
 			return null;
 		}

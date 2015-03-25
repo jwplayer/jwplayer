@@ -316,9 +316,7 @@ import flash.utils.setTimeout;
 					if (_lockingResume || _unlockAutostart) {
 						_lockingResume = false;
 						play();
-						if (_unlockAutostart) {
-							_unlockAutostart = false;
-						}
+						_unlockAutostart = false;
 					}
 					_interruptPlay = false;
 					return true;
@@ -373,7 +371,7 @@ import flash.utils.setTimeout;
 			
 			if (locking || _player.state == PlayerState.PLAYING || _player.state == PlayerState.BUFFERING) {
 				return false;
-			}
+		}
 
 			if (_loadOnPlay >= 0) {
 				_model.playlist.currentIndex = _loadOnPlay;

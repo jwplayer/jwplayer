@@ -281,7 +281,7 @@ package com.longtailvideo.jwplayer.media {
 		 * @param newState A state from ModelStates.
 		 */
 		protected function setState(newState:String):void {
-			if (state != newState) {
+			if (state !== newState) {
 				var evt:PlayerStateEvent = new PlayerStateEvent(newState, state);
 				_state = newState;
 				dispatchEvent(evt);
