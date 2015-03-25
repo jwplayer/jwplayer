@@ -26,7 +26,7 @@ define([
         var lastChecked = 0;
         return function() {
             if (videotag.paused) { return; }
-            var t = videotag.currentTime / 1000; // secs to ms
+            var t = videotag.currentTime * 1000; // secs to ms
             if (t - lastChecked < STALL_TOLERANCE) {
                 stalledHandler();
             }
