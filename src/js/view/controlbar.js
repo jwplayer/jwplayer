@@ -1149,10 +1149,13 @@ define([
                 pct = 100;
             }
             if (evt.type === events.touchEvents.DRAG_END) {
-                _seekDrag(false);
                 _elements.timeRail.className = 'jwrail';
                 _draggingEnd();
+
+                // Send seek event, *then* set seekdrag false
                 _sliderMapping.time(pct);
+                _seekDrag(false);
+
                 _hideTimeTooltip();
                 _this.sendEvent(events.JWPLAYER_USER_ACTION);
             } else {
@@ -1212,13 +1215,15 @@ define([
                 ((evt.pageX - railRect.left) / railRect.width);
             }
             if (evt.type === 'mouseup') {
-                if (name === 'time') {
-                    _seekDrag(false);
-                }
 
                 _elements[name + 'Rail'].className = 'jwrail';
                 _draggingEnd();
+
+                // Send seek event, *then* set seekdrag false
                 _sliderMapping[name.replace('H', '')](pct);
+                if (name === 'time') {
+                    _seekDrag(false);
+                }
             } else {
                 if (_dragging === 'time') {
                     _setProgress(pct);
