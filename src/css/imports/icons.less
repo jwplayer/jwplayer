@@ -1,12 +1,13 @@
 @import "vars.less";
 
-
+// This is IE8 only
 @font-face {
     font-family: 'jw-six-icons';
     src: url('../../../assets/fonts/jw-six-icons.eot');
     font-weight: normal;
     font-style: normal;
 }
+// This cascades and overwrites for non IE8 browsers
 @font-face {
     font-family: 'jw-six-icons';
     src: url('../../../assets/fonts/jw-six-icons.eot') format('embedded-opentype'),
