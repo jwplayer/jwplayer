@@ -14,6 +14,8 @@ define([
         this.resetEventListeners =
             this.removeEventListener = obj.off.bind(obj);
 
+        this.once = obj.once.bind(obj);
+
         /** Add an event listener for a specific type of event. **/
         this.addEventListener = function (type, callback) {
             // Legacy support
@@ -23,6 +25,8 @@ define([
 
             return obj.on(type, callback);
         };
+
+
 
         /** Add an event listener for all events. **/
         this.addGlobalListener = function (listener) {
