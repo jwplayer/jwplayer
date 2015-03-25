@@ -1,70 +1,32 @@
+/* jshint node: true */
+
+var fs = require('fs');
+var webpack = require('webpack');
+var env = process.env;
+
+function getBuildVersion(packageInfo) {
+    // Build Version: {major.minor.revision}
+    var revision = env.BUILD_NUMBER;
+    if (revision === undefined) {
+        var now = new Date();
+        now.setTime(now.getTime()-now.getTimezoneOffset()*60000);
+        revision = now.toISOString().replace(/[\.\-:Z]/g, '').replace(/T/g, '');
+    }
+
+    return packageInfo.version.replace(/\.\d*$/, '.' + revision);
+}
+
 module.exports = function(grunt) {
-    /* jshint node: true */
 
     require('load-grunt-tasks')(grunt);
 
+    var packageInfo = grunt.file.readJSON('package.json');
+    var buildVersion = getBuildVersion(packageInfo);
+    var flashVersion = 11.1;
+
     grunt.initConfig({
         starttime: new Date(),
-        pkg: grunt.file.readJSON('package.json'),
-        concat: {
-            options: {
-                separator: ''
-            },
-            embed: {
-                src: [
-                    'src/js/jwplayer.sourcestart.js',
-                    'src/js/jwplayer.js',
-                    'src/js/utils/jwplayer.underscore.js',
-                    'src/js/utils/jwplayer.utils.js',
-                    'src/js/utils/jwplayer.utils.*.js',
-                    'src/js/events/jwplayer.events.js',
-                    'src/js/events/jwplayer.events.*.js',
-                    'src/js/plugins/jwplayer.plugins.js',
-                    'src/js/plugins/jwplayer.plugins.*.js',
-                    'src/js/parsers/jwplayer.parsers.js',
-                    'src/js/parsers/jwplayer.parsers.*.js',
-                    'src/js/playlist/jwplayer.playlist.js',
-                    'src/js/playlist/jwplayer.playlist.*.js',
-                    'src/js/embed/jwplayer.embed.js',
-                    'src/js/embed/jwplayer.embed.*.js',
-                    'src/js/api/jwplayer.api.js',
-                    'src/js/api/jwplayer.api.*.js',
-                    'src/js/jwplayer.sourceend.js'
-                ],
-                dest: 'bin-debug/jwplayer.js'
-            },
-            html5: {
-                src: [
-                    'src/js/html5/jwplayer.html5.js',
-                    'src/js/html5/utils/jwplayer.html5.utils.js',
-                    'src/js/html5/utils/jwplayer.html5.utils.*.js',
-                    'src/js/html5/parsers/jwplayer.html5.parsers.js',
-                    'src/js/html5/parsers/jwplayer.html5.parsers.*.js',
-                    'src/js/html5/providers/jwplayer.html5.*.js',
-                    'src/js/html5/jwplayer.html5.*.js'
-                ],
-                dest: 'bin-debug/jwplayer.html5.js'
-            }
-        },
-
-        replace : {
-            embed : {
-                src: 'bin-debug/jwplayer.js',
-                overwrite: true,
-                replacements:[{
-                    from : /jwplayer\.version = '(.*)'/,
-                    to   : 'jwplayer.version = \'<%= pkg.version %>\''
-                }]
-            },
-            html5 : {
-                src: 'bin-debug/jwplayer.html5.js',
-                overwrite: true,
-                replacements:[{
-                    from : /jwplayer\.html5\.version = '(.*)'/,
-                    to   : 'jwplayer.html5.version = \'<%= pkg.version %>\''
-                }]
-            }
-        },
+        pkg: packageInfo,
 
         jshint: {
             all : [
@@ -76,22 +38,53 @@ module.exports = function(grunt) {
             }
         },
 
+        // lints Less
+        recess: {
+            dist: {
+                options: {
+                    // Set compile and compress to false to lint
+                    compile: false,
+                    compress: false,
+                    noIDs: true,
+                    noJSPrefix: true,
+                    noOverqualifying: false,
+                    noUnderscores: true,
+                    noUniversalSelectors: true,
+                    prefixWhitespace: true,
+                    strictPropertyOrder: true,
+                    zeroUnits: false,
+                    includePaths: ['src/css', 'src/css/*']
+                },
+                files: {
+                    'test/css-skins/jwplayer.css': 'src/css/jwplayer.less'
+                }
+            }
+        },
+
         uglify : {
             options: {
+                // fails with node 0.12.0 and grunt-contrib-uglify 0.4.1
+                // https://github.com/gruntjs/grunt-contrib-uglify/issues/302
                 report: 'gzip',
-                mangle: {
-                    except: ['RESERVED_KEYWORDS_TO_PROTECT']
+                mangle: true,
+                compress: {
+                    booleans: true,
+                    cascade :true,
+                    conditionals: true,
+                    dead_code: true,
+                    drop_console: true,
+                    evaluate: true,
+                    if_return: true,
+                    join_vars: true,
+                    pure_getters: true,
+                    sequences: true,
+                    unused: true,
+                    warnings: false
                 }
             },
-            embed : {
+            player : {
                 files: {
-                    'bin-release/jwplayer.js' : 'bin-debug/jwplayer.js'
-                }
-            },
-            html5 : {
-                files: {
-                    'bin-release/jwplayer.html5.js' :
-                        'bin-debug/jwplayer.html5.js'
+                    'bin-release/jwplayer.js': 'bin-debug/jwplayer.js'
                 }
             }
         },
@@ -102,26 +95,93 @@ module.exports = function(grunt) {
                     '.jshintrc',
                     '.jshintignore'
                 ],
-                tasks: ['jshint:all']
+                tasks: ['jshint']
             },
-            embed: {
-                files : '<%= concat.embed.src %>',
-                tasks: ['concat:embed', 'replace:embed', 'uglify:embed']
-            },
-            html5: {
-                files : '<%= concat.html5.src %>',
-                tasks: ['concat:html5', 'replace:html5', 'uglify:html5']
+            player: {
+                files : ['src/js/**/*.js', 'src/js/*.js'],
+                tasks: ['build-js']
             },
             flash: {
                 files : [
                     'src/flash/com/longtailvideo/jwplayer/{,*/}*.as',
                     'src/flash/com/wowsa/{,*/}*.as'
                 ],
-                tasks: ['flash:debug']
+                tasks: ['flash:player:debug']
+            },
+            css: {
+                files: [
+                    'src/css/*.less',
+                    'src/css/imports/*.less'],
+                tasks: ['webpack']
             },
             grunt: {
-                files: ['.jshintrc', 'Gruntfile.js'],
+                files: ['Gruntfile.js'],
                 tasks: ['jshint']
+            }
+        },
+
+        webpack : {
+            build : {
+                entry: {
+                    jwplayer : './src/js/jwplayer.js',
+                    demostyles : './src/js/demostyles.js'
+                },
+                output: {
+                    path: 'bin-debug/',
+                    publicPath: '/jwplayer/bin-debug/',
+                    filename: '[name].js'
+                },
+                resolve: {
+                    modulesDirectories: [
+                        'src/js/',
+                        'src'
+                    ],
+                    alias: {
+                        'underscore': 'utils/underscore'
+                    }
+                },
+                devtool: 'source-map',
+                plugins: [
+                    new webpack.DefinePlugin({
+                        __BUILD_VERSION__: '\'' + buildVersion + '\'',
+                        __FLASH_VERSION__: flashVersion
+                    })
+                ],
+                module: {
+                    loaders: [
+                        {
+                            test: /\.less$/,
+                            loader: 'style-loader!css-loader!less-loader'
+                        },
+                        {
+                            test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
+                            loader: 'file'
+                        },
+                        {
+                            test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
+                            loader: 'url?limit=10000&minetype=application/font-woff'
+                        },
+                        {
+                            test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
+                            loader: 'url?limit=10000&minetype=application/octet-stream'
+                        },
+                        {
+                            test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
+                            loader: 'url?limit=10000&minetype=image/svg+xml'
+                        },
+                        {
+                            test: /\.html$/,
+                            loader: 'handlebars-loader'
+                        }
+                    ]
+                }
+            }
+        },
+
+        flash: {
+            player: {
+                dest: 'jwplayer.flash.swf',
+                main: 'src/flash/com/longtailvideo/jwplayer/player/Player.as'
             }
         },
 
@@ -138,29 +198,40 @@ module.exports = function(grunt) {
         }
     });
 
-    grunt.registerTask('flash', function(target) {
+    grunt.registerMultiTask('flash',
+            'Compile Flash SWF files. Usage `grunt flash:*|player|vast:debug|release|swc:air|flex`', function() {
         var done = this.async();
 
-        var flashAirOrFlexSdk = process.env.AIR_HOME || process.env.FLEX_HOME;
+        var data = this.data;
+
+        var flags = this.flags;
+        var isDebug   = !!flags.debug;
+        var isLibrary = !!flags.swc;
+
+        var flashAirOrFlexSdk = (!flags.flex && env.AIR_HOME) || env.FLEX_HOME;
         if (!flashAirOrFlexSdk) {
             grunt.fail.warn('To compile ActionScript, you must set environment '+
-                'variable $AIR_HOME or $FLEX_HOME for this task to locate mxmlc.');
+            'variable $AIR_HOME or $FLEX_HOME for this task to locate mxmlc.');
         }
-        var isDebug = target === 'debug';
         var isFlex = /flex/.test(flashAirOrFlexSdk);
 
         var command = {
-            cmd: flashAirOrFlexSdk + '/bin/mxmlc',
-            args: [
-                'src/flash/com/longtailvideo/jwplayer/player/Player.as',
-                '-compiler.source-path=src/flash',
-                '-compiler.library-path=' + flashAirOrFlexSdk + '/frameworks/libs',
-                '-default-background-color=0x000000',
-                '-default-frame-rate=30',
-                '-target-player=10.1.0',
-                '-use-network=false'
-            ]
+            cmd: flashAirOrFlexSdk + '/bin/'+ (isLibrary ? 'compc' : 'mxmlc'),
+            args: []
         };
+
+        if (isLibrary) {
+            command.args.push('-include-sources='+data.main);
+        } else {
+            command.args.push(data.main);
+        }
+
+        command.args.push(
+            '-compiler.source-path=src/flash',
+            '-compiler.library-path+=' + flashAirOrFlexSdk + '/frameworks/libs',
+            '-target-player=' + flashVersion,
+            '-use-network=false'
+        );
 
         // Framework specific optimizations
         if (isFlex) {
@@ -169,57 +240,97 @@ module.exports = function(grunt) {
             );
         } else {
             command.args.push(
-               '-compiler.inline=true',
-               '-compiler.remove-dead-code=true'
+                '-show-multiple-definition-warnings=true',
+                '-compiler.inline=true',
+                '-compiler.remove-dead-code=true'
             );
+
+            if (!isLibrary) {
+                // ActionScript Compiler 2.0 Shell https://github.com/jcward/ascsh
+                var ascshd = fs.existsSync(flashAirOrFlexSdk + '/bin/ascshd');
+                if (ascshd) {
+                    command.cmd = command.cmd.replace('bin/mxmlc', 'bin/ascshd');
+                    command.args.unshift(
+                        '-p', 11122 + (isDebug?100:0),
+                        'mxmlc'
+                    );
+                }
+            }
         }
 
+        var extension = 'swf';
+        var outputFolder = isDebug ? 'bin-debug' : 'bin-release';
+        if (isLibrary) {
+            extension = 'swc';
+            outputFolder = 'libs-external';
+        }
         if (isDebug) {
             command.args.push(
-                '-output=bin-debug/jwplayer.flash.swf',
+                '-output='     + outputFolder +'/' + data.dest.replace('swf', extension),
+                '-link-report='+ outputFolder +'/' + data.dest.replace('swf', 'link.xml'),
+                '-size-report='+ outputFolder +'/' + data.dest.replace('swf', 'size.xml'),
                 '-strict=true',
                 '-debug=true',
-                '-define+=CONFIG::debugging,true'
+                '-define+=CONFIG::debugging,true',
+                '-define+=CONFIG::staging,true'
             );
         } else {
             command.args.push(
-                '-output=bin-release/jwplayer.flash.swf',
-                '-compiler.optimize=true',
-                '-compiler.omit-trace-statements=true',
+                '-output='+ outputFolder +'/' + data.dest.replace('swf', extension),
+                '-optimize=true',
+                '-omit-trace-statements=true',
                 '-warnings=false',
-                '-define+=CONFIG::debugging,false'
+                '-define+=CONFIG::debugging,false',
+                '-define+=CONFIG::staging,false'
             );
         }
 
-        // Build Version: {major.minor.revision}
-        var revision = process.env.BUILD_NUMBER;
-        if (revision === undefined) {
-            var now = grunt.config('starttime');
-            now.setTime(now.getTime()-now.getTimezoneOffset()*60000);
-            revision = now.toISOString().replace(/[\.\-:Z]/g, '').replace(/T/g, '');
-        }
-        var buildVersion = grunt.config('pkg').version.replace(/\.\d*$/, '.' + revision);
         command.args.push(
             '-define+=JWPLAYER::version,\''+ buildVersion +'\''
         );
 
+        // Print the mxmlc / ascshd command. Formatted to run in bash.
         grunt.log.writeln(command.cmd +' '+ command.args.join(' ').replace(/(version,'[^']*')/, '"$1"'));
 
-        grunt.util.spawn(command, function(err, result) {
+        var stdout = [];
+        var proc = grunt.util.spawn(command, function(error, result, code) {
             grunt.log.subhead(result.stdout);
-            if (err) {
-                grunt.log.error(err.message);
+
+            if (error) {
+                grunt.log.error(error.message, code);
             }
-            done(!err);
+            done(!error);
         });
+
+        proc.stdout.setEncoding('utf-8');
+        proc.stdout.on('data', function(data) {
+            stdout.push(data);
+        });
+
+        var checkIntervalHandle = setInterval(function() {
+            if (/Starting aschd server/.test(stdout.join())) {
+                clearInterval(checkIntervalHandle);
+                grunt.log.ok(command.cmd);
+
+                grunt.log.subhead(stdout.join());
+
+                done();
+            }
+        }, 500);
     });
 
-    grunt.registerTask('default', [
-        'clean',
-        'concat',
-        'replace',
+    grunt.registerTask('build-js', [
+        'webpack',
         'uglify',
-        'flash:debug',
-        'flash:release'
+        'jshint'
     ]);
+
+    grunt.registerTask('build', [
+        'clean',
+        'build-js',
+        'flash:player:debug',
+        'flash:player:release'
+    ]);
+
+    grunt.registerTask('default', 'build');
 };

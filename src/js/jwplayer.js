@@ -1,18 +1,21 @@
-/**
- * JW Player namespace definition
- * @version 6.0
- */
+define([
+    'api/global-api',
+    'polyfill/bind',
+    'polyfill/eventlisteners',
+    '../css/styles.less'
+], function (Api) {
+    var jwplayer = function () {
+        return Api.selectPlayer.apply(this, arguments);
+    };
 
-/*global jwplayer:true*/
-jwplayer = function() {
-    if (jwplayer.api) {
-        return jwplayer.api.selectPlayer.apply(this, arguments);
+    // This is replaced by compiler
+    jwplayer.version = __BUILD_VERSION__;
+    jwplayer.api = Api;
+    jwplayer.vid = document.createElement('video');
+
+    if (!window.jwplayer) {
+        window.jwplayer = jwplayer;
     }
-};
 
-jwplayer.version = 'X.Y.ZZZZ';
-
-// "Shiv" method for older IE browsers; required for parsing media tags
-jwplayer.vid = document.createElement('video');
-jwplayer.audio = document.createElement('audio');
-jwplayer.source = document.createElement('source');
+    return jwplayer;
+});

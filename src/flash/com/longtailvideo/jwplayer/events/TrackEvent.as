@@ -12,15 +12,15 @@ public class TrackEvent extends PlayerEvent {
     public static const JWPLAYER_SUBTITLES_TRACK_CHANGED:String = "jwplayerSubtitlesTrackChanged";
 
     //An array of tracks not including the "off" track
-    public var tracks:Array = null;
-    // The current tracks; A value of -1 means the track is off
-    public var currentTrack:int	= -1;
 
     public function TrackEvent(type:String, tracks:Array, currentTrack:int) {
         super(type);
         this.tracks = tracks;
         this.currentTrack = currentTrack;
     }
+    // The current tracks; A value of -1 means the track is off
+    public var tracks:Array = null;
+    public var currentTrack:int = -1;
 
     public override function clone():Event {
         // the class must be dynamic to make the properties enumerable
@@ -37,9 +37,6 @@ public class TrackEvent extends PlayerEvent {
 
         if (message) retString += ' message="' + message + '"';
 
-        retString += ' id="' + id + '"'
-        retString += ' client="' + client + '"'
-        retString += ' version="' + version + '"'
         retString += "]";
 
         return retString;

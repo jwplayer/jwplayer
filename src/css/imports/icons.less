@@ -1,0 +1,112 @@
+@import "vars.less";
+
+
+@font-face {
+    font-family: 'jw-six-icons';
+    src: url('../../../assets/fonts/jw-six-icons.eot');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'jw-six-icons';
+    src: url('../../../assets/fonts/jw-six-icons.eot') format('embedded-opentype'),
+    url('../../../assets/fonts/jw-six-icons.woff') format('woff'),
+    url('../../../assets/fonts/jw-six-icons.ttf') format('truetype'),
+    url('../../../assets/fonts/jw-six-icons.svg') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.jwplayer .jw-icon button, .jw-controlbar .jw-menu .jw-option:before {
+    font-family: 'jw-six-icons';
+    -webkit-font-smoothing: antialiased;
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+    text-transform: none;
+    background-color: transparent;
+    speak: none;
+    font-variant: normal;
+
+    /* Enable Ligatures ================ */
+    -webkit-font-feature-settings: "liga";
+    -moz-font-feature-settings: "liga=1";
+    -moz-font-feature-settings: "liga";
+    -ms-font-feature-settings: "liga" 1;
+    -o-font-feature-settings: "liga";
+    font-feature-settings: "liga";
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/*** ICONS ***/
+.jwplayer .icon-audio-tracks button:after {
+    content: "\e600";
+}
+
+.jwplayer .jw-icon-buffer button:after {
+    content: "\e601";
+}
+
+.jwplayer .jw-icon-cast-off button:after {
+    content: "\e602";
+}
+
+.jwplayer .jw-icon-cast-on button:after {
+    content: "\e603";
+}
+
+.jwplayer .jw-icon-cc-off button:after {
+    content: "\e604";
+}
+
+.jwplayer .jw-icon-cc-on button:after {
+    content: "\e605";
+}
+
+.jwplayer .jw-icon-cue button:after, .jwplayer .jw-menu .jw-option:before {
+    content: "\e606";
+}
+
+.jwplayer .jw-icon-error button:after {
+    content: "\e607";
+}
+
+.jwplayer .jw-icon-fullscreen button:after {
+    content: "\e608";
+}
+
+.jwplayer .jw-icon-hd-off button:after {
+    content: "\e609";
+}
+
+.jwplayer .jw-icon-hd-on button:after {
+    content: "\e60a";
+}
+
+.jwplayer .jw-icon-next button:after, .jwplayer .jw-icon-prev button:after {
+    content: "\e60b";
+}
+
+.jwplayer .jw-icon-pause button:after {
+    content: "\e60c";
+}
+
+.jwplayer .jw-icon-play button:after {
+    content: "\e60d";
+}
+
+.jwplayer .jw-icon-replay button:after {
+    content: "\e60e";
+}
+
+.jwplayer .jw-slider .jw-icon-thumb button:after, .jwplayer .jw-slider .jw-icon-volume-thumb button:after {
+    content: "\e60f";
+}
+
+.jwplayer .jw-icon-volume-mute button:after {
+    content: "\e611";
+}
+
+.jwplayer .jw-icon-volume-unmute button:after {
+    content: "\e612";
+}

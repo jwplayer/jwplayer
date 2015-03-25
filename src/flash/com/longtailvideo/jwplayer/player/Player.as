@@ -1,431 +1,252 @@
 ﻿package com.longtailvideo.jwplayer.player {
-	import com.longtailvideo.jwplayer.controller.Controller;
-	import com.longtailvideo.jwplayer.events.CaptionsEvent;
-	import com.longtailvideo.jwplayer.events.GlobalEventDispatcher;
-	import com.longtailvideo.jwplayer.events.IGlobalEventDispatcher;
-	import com.longtailvideo.jwplayer.events.PlayerEvent;
-	import com.longtailvideo.jwplayer.model.IPlaylist;
-	import com.longtailvideo.jwplayer.model.Model;
-	import com.longtailvideo.jwplayer.model.PlayerConfig;
-	import com.longtailvideo.jwplayer.plugins.IPlugin;
-	import com.longtailvideo.jwplayer.utils.Logger;
-	import com.longtailvideo.jwplayer.utils.RootReference;
-	import com.longtailvideo.jwplayer.utils.SWFFocus;
-	import com.longtailvideo.jwplayer.view.IPlayerComponents;
-	import com.longtailvideo.jwplayer.view.View;
-	import com.longtailvideo.jwplayer.view.interfaces.ISkin;
-	
-	import flash.display.DisplayObject;
-	import flash.display.Sprite;
-	import flash.events.Event;
-	import flash.geom.Rectangle;
-	import flash.system.Security;
+import com.longtailvideo.jwplayer.controller.Controller;
+import com.longtailvideo.jwplayer.events.CaptionsEvent;
+import com.longtailvideo.jwplayer.events.PlayerEvent;
+import com.longtailvideo.jwplayer.model.Model;
+import com.longtailvideo.jwplayer.model.PlayerConfig;
+import com.longtailvideo.jwplayer.model.PlaylistItem;
+import com.longtailvideo.jwplayer.plugins.IPlugin;
+import com.longtailvideo.jwplayer.utils.RootReference;
+import com.longtailvideo.jwplayer.view.View;
 
+import flash.display.Sprite;
+import flash.events.ErrorEvent;
+import flash.events.Event;
+import flash.geom.Rectangle;
+import flash.system.Security;
 
-	/**
-	 * Sent when the player has been initialized and skins and plugins have been successfully loaded.
-	 *
-	 * @eventType com.longtailvideo.jwplayer.events.PlayerEvent.JWPLAYER_READY
-	 */
-	[Event(name="jwplayerReady", type="com.longtailvideo.jwplayer.events.PlayerEvent")]
-	/**
-	 * Main class for JW Flash Media Player
-	 *
-	 * @author Pablo Schklowsky
-	 */
-	public class Player extends Sprite implements IPlayer, IGlobalEventDispatcher {
-		protected var model:Model;
-		protected var view:View;
-		protected var controller:Controller;
-		protected var _dispatcher:GlobalEventDispatcher;
-		
-		
-		/** Player constructor **/
-		public function Player() {
-			Security.allowDomain("*");
-			try {
-				this.addEventListener(Event.ADDED_TO_STAGE, setupPlayer);
-			} catch (err:Error) {
-				setupPlayer();
-			}
-		}
-		
-		
-		protected function setupPlayer(event:Event=null):void {
-			try {
-				this.removeEventListener(Event.ADDED_TO_STAGE, setupPlayer);
-			} catch (err:Error) { }
+[SWF(width="640", height="360", frameRate="60", backgroundColor="#000000")]
 
-			new RootReference(this);
-			_dispatcher = new GlobalEventDispatcher();
-			model = newModel();
-			view = newView(model);
-            view.addEventListener(CaptionsEvent.JWPLAYER_CAPTIONS_CHANGED, _captionsChanged);
-            view.addEventListener(CaptionsEvent.JWPLAYER_CAPTIONS_LIST, _captionsList);
-			controller = newController(model, view);
-			controller.addEventListener(PlayerEvent.JWPLAYER_READY, playerReady, false, -1);
-            controller.addEventListener(PlayerEvent.JWPLAYER_SETUP_ERROR, setupError, false, -1);
-			controller.setupPlayer();
-		}
+// TODO: extend BasePlayer which implements IPlayer, so main class just does Setup
+public class Player extends Sprite implements IPlayer {
 
-        private function _captionsChanged(evt:CaptionsEvent):void {
-            if (model.media) {
-                model.media.currentSubtitlesTrack = evt.currentTrack-1;
+    protected var _config:PlayerConfig;
+    protected var _model:Model;
+    protected var _view:View;
+    protected var _controller:Controller;
+
+    public function Player() {
+        Security.allowDomain("*");
+
+        RootReference.init(this);
+        this.addEventListener(Event.ADDED_TO_STAGE, stageReady);
+        this.tabEnabled = false;
+        this.tabChildren = false;
+        this.focusRect = false;
+        this.mouseEnabled = false;
+        this.mouseChildren = false;
+
+        _config = new PlayerConfig();
+
+        _model = newModel(_config);
+
+        _view = newView(_model);
+        _view.addEventListener(CaptionsEvent.JWPLAYER_CAPTIONS_CHANGED, _captionsChanged);
+        _view.addEventListener(CaptionsEvent.JWPLAYER_CAPTIONS_LIST, _captionsList);
+
+        _controller = newController(_model, _view);
+        _controller.addEventListener(PlayerEvent.JWPLAYER_READY, playerReady, false, -1);
+        _controller.addEventListener(PlayerEvent.JWPLAYER_SETUP_ERROR, setupError, false, -1);
+
+        _controller.setupPlayer();
+    }
+
+    private function stageReady(e:Event):void {
+        this.removeEventListener(Event.ADDED_TO_STAGE, stageReady);
+        RootReference.init(this);
+        _view.setupView();
+    }
+
+    public function get version():String {
+        return PlayerVersion.version;
+    }
+
+    public function get state():String {
+        return _model.state;
+    }
+
+    public function get locked():Boolean {
+        return _controller.locking;
+    }
+
+    public function lock(target:IPlugin, callback:Function):void {
+        _controller.lockPlayback(target, callback);
+    }
+
+    public function unlock(target:IPlugin):Boolean {
+        return _controller.unlockPlayback(target);
+    }
+
+    public function volume(volume:Number):Boolean {
+        return _controller.setVolume(volume);
+    }
+
+    public function mute(state:Boolean):void {
+        _controller.mute(state);
+    }
+
+    public function play():Boolean {
+        return _controller.play();
+    }
+
+    public function pause():Boolean {
+        return _controller.pause();
+    }
+
+    public function stop():Boolean {
+        return _controller.stop();
+    }
+
+    public function seek(position:Number):Boolean {
+        return _controller.seek(position);
+    }
+
+    public function redraw():Boolean {
+        return _controller.redraw();
+    }
+
+    public function fullscreen(on:Boolean):void {
+        _controller.fullscreen(on);
+    }
+
+    public function setupInstream(target:IPlugin):IInstreamPlayer {
+        return new InstreamPlayer(target, _model, _view, _controller);
+    }
+
+    public function getAudioTracks():Array {
+        return _model.media ? _model.media.audioTracks : null;
+    }
+
+    public function getCurrentAudioTrack():Number {
+        return _model.media ? _model.media.currentAudioTrack : NaN;
+    }
+
+    public function setCurrentAudioTrack(index:Number):void {
+        if (_model.media) _model.media.currentAudioTrack = index;
+    }
+
+    public function getQualityLevels():Array {
+        return _model.media ? _model.media.qualityLevels : null;
+    }
+
+    public function getCurrentQuality():Number {
+        return _model.media ? _model.media.currentQuality : NaN;
+    }
+
+    public function setCurrentQuality(index:Number):void {
+        if (_model.media) _model.media.currentQuality = index;
+    }
+
+    public function getCaptionsList():Array {
+        return [];
+    }
+
+    public function getCurrentCaptions():Number {
+        return 0;
+    }
+
+    public function setCurrentCaptions(index:Number):void {
+
+    }
+
+    public function getSafeRegion():Rectangle {
+        return _view.getBounds(RootReference.root);
+    }
+
+    public function load(item:*):Boolean {
+        _controller.load(new PlaylistItem(item));
+        _controller.play();
+
+        return true;
+    }
+
+    protected function setupPlayer(config:Object):void {
+        var commands:Array = config.commands as Array;
+        delete config.commands;
+
+        _model.setConfig(config);
+
+        for (var i:uint = 0; i < commands.length; i++) {
+            var args:Array = commands[i] as Array;
+            var name:String = args.shift() as String;
+            var fn:Function = this[name] as Function;
+            if (!fn) {
+                throw new Error('unknown command:', name);
             }
+            fn.apply(this, args);
         }
+    }
 
-        private function _captionsList(evt:CaptionsEvent):void {
-            if (model.media) {
-                model.media.currentSubtitlesTrack = evt.currentTrack-1;
-            }
+    protected function stretch(stretch:String = null):void {
+        _model.stretching = stretch;
+    }
+
+    protected function newModel(config:PlayerConfig):Model {
+        return new Model(config);
+    }
+
+    protected function newView(model:Model):View {
+        return new View(model);
+    }
+
+    protected function newController(model:Model, view:View):Controller {
+        return new Controller(this, model, view);
+    }
+
+    protected function playerReady(evt:PlayerEvent):void {
+        // Only handle Setup Events once
+        _controller.removeEventListener(PlayerEvent.JWPLAYER_READY, playerReady);
+        _controller.removeEventListener(PlayerEvent.JWPLAYER_SETUP_ERROR, setupError);
+
+        // Forward all MVC events
+        _model.addGlobalListener(globalHandler);
+        _controller.addGlobalListener(globalHandler);
+        _view.addEventListener(ErrorEvent.ERROR, globalHandler);
+
+        // listen to JavaScript for player commands
+        SwfEventRouter
+                .on('setup', setupPlayer)
+                .on('load', load)
+                .on('play', play)
+                .on('pause', pause)
+                .on('stop', stop)
+                .on('seek', seek)
+                .on('fullscreen', fullscreen)
+                .on('mute', mute)
+                .on('volume', volume)
+                .on('stretch', stretch);
+
+        // Send ready event to browser
+        SwfEventRouter.triggerJsEvent('ready');
+    }
+
+
+    protected function globalHandler(event:Event):void {
+        // forward event to JavaScript
+        SwfEventRouter.triggerJsEvent(event.type, event);
+        // forward event to Flash plugins
+        dispatchEvent(event);
+    }
+
+    protected function setupError(evt:PlayerEvent):void {
+        // Only handle Setup Events once
+        _controller.removeEventListener(PlayerEvent.JWPLAYER_READY, playerReady);
+        _controller.removeEventListener(PlayerEvent.JWPLAYER_SETUP_ERROR, setupError);
+
+        // Send Setup Error to browser
+        SwfEventRouter.error(0, evt.message);
+    }
+
+    protected function _captionsChanged(evt:CaptionsEvent):void {
+        if (_model.media) {
+            _model.media.currentSubtitlesTrack = evt.currentTrack - 1;
         }
-		
-		protected function newModel():Model {
-			return new Model();
-		}
-		
-		protected function newView(mod:Model):View {
-			return new View(this, mod);
-		}
-		
-		protected function newController(mod:Model, vw:View):Controller {
-			return new Controller(this, mod, vw);
-		} 
-		
-		protected function playerReady(evt:PlayerEvent):void {
-			// Only handle Setup Events once
-			controller.removeEventListener(PlayerEvent.JWPLAYER_READY, playerReady);
-            controller.removeEventListener(PlayerEvent.JWPLAYER_SETUP_ERROR, forward);
-			SWFFocus.init(stage);
-			
-			// Initialize Javascript interface
-			JavascriptAPI.setPlayer(this);
-			
-			// Forward all MVC events
-			model.addGlobalListener(forward);
-			view.addGlobalListener(forward);
-			controller.addGlobalListener(forward);
+    }
 
-			forward(evt);
-		}
-
-        protected function setupError(evt:PlayerEvent):void {
-            // Only handle Setup Events once
-            controller.removeEventListener(PlayerEvent.JWPLAYER_READY, playerReady);
-            controller.removeEventListener(PlayerEvent.JWPLAYER_SETUP_ERROR, forward);
-
-            // Send Setup Error to browser
-            JavascriptAPI.setupError(evt);
+    protected function _captionsList(evt:CaptionsEvent):void {
+        if (_model.media) {
+            _model.media.currentSubtitlesTrack = evt.currentTrack - 1;
         }
-		
-		/**
-		 * Forwards all MVC events to interested listeners.
-		 * @param evt
-		 */
-		protected function forward(evt:PlayerEvent):void {
-            if (model.config.debug) {
-                Logger.logEvent(evt);
-            }
-			dispatchEvent(evt);
-		}
-		
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function get config():PlayerConfig {
-			return model.config;
-		}
-		
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function get version():String {
-			return PlayerVersion.version;
-		}
-		
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function get skin():ISkin {
-			return view.skin;
-		}
-		
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function get state():String {
-			return model.state;
-		}
-		
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function get playlist():IPlaylist {
-			return model.playlist;
-		}
-		
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function get locked():Boolean {
-			return controller.locking;
-		}
-		
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function lock(target:IPlugin, callback:Function):void {
-			controller.lockPlayback(target, callback);
-		}
-		
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function unlock(target:IPlugin):Boolean {
-			return controller.unlockPlayback(target);
-		}
-		
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function volume(volume:Number):Boolean {
-			return controller.setVolume(volume);
-		}
-		
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function mute(state:Boolean):void {
-			controller.mute(state);
-		}
-		
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function play():Boolean {
-			return controller.play();
-		}
-		
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function pause():Boolean {
-			return controller.pause();
-		}
-		
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function stop():Boolean {
-			return controller.stop();
-		}
-		
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function seek(position:Number):Boolean {
-			return controller.seek(position);
-		}
-		
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function load(item:*):Boolean {
-			return controller.load(item);
-		}
-		
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function playlistItem(index:Number):Boolean {
-			return controller.setPlaylistIndex(index);
-		}
-
-		/**
-		 * @inheritDoc
-		 */
-		public function playlistNext():Boolean {
-			return controller.next();
-		}
-
-		/**
-		 * @inheritDoc
-		 */
-		public function playlistPrev():Boolean {
-			return controller.previous();
-		}
-
-		/**
-		 * @inheritDoc
-		 */
-		public function redraw():Boolean {
-			return controller.redraw();
-		}
-
-		/**
-		 * @inheritDoc
-		 */
-		public function fullscreen(on:Boolean):void {
-			controller.fullscreen(on);
-		}
-
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function get controls():IPlayerComponents {
-			return view.components;
-		}
-
-		/** 
-		 * @private
-		 * 
-		 * This method is deprecated, and is used for backwards compatibility only.
-		 */
-		public function getPlugin(id:String):Object {
-			return view.getPlugin(id);
-		} 
-		
-		/**
-		 * @inheritDoc
-		 **/
-		public function setupInstream(target:IPlugin):IInstreamPlayer {
-			return new InstreamPlayer(target, model, view, controller);
-		}
-
-		public function getAudioTracks():Array {
-			return model.media ? model.media.audioTracks : null;
-		}
-		
-		public function getCurrentAudioTrack():Number {
-			return model.media ? model.media.currentAudioTrack : NaN;
-		}
-		
-		public function setCurrentAudioTrack(index:Number):void {
-			if (model.media) model.media.currentAudioTrack = index;
-		}
-		
-		public function getQualityLevels():Array {
-			return model.media ? model.media.qualityLevels : null;
-		}
-		
-		public function getCurrentQuality():Number {
-			return model.media ? model.media.currentQuality : NaN;
-		}
-		
-		public function setCurrentQuality(index:Number):void {
-			if (model.media) model.media.currentQuality = index;
-		}
-
-		public function getCaptionsList():Array {
-			return view.components.captions.getCaptionsList();
-		}
-		
-		public function getCurrentCaptions():Number {
-			return view.components.captions.getCurrentCaptions();
-		}
-		
-		public function setCurrentCaptions(index:Number):void {
-			view.components.captions.setCurrentCaptions(index);
-		}
-		
-		public function getControls():Boolean {
-			return model.config.controls;
-		}
-
-		public function getSafeRegion(includeCB:Boolean = true):Rectangle {
-			return view.getSafeRegion(includeCB);
-		}
-
-		public function setControls(state:Boolean):void {
-			view.setControls(state);
-		}
-		
-		///////////////////////////////////////////		
-		///      Disallowed Sprite methods       //
-		///////////////////////////////////////////		
-		
-		/** The player should not accept any calls referencing its display stack **/
-		public override function addChild(child:DisplayObject):DisplayObject {
-			return null;
-		}
-
-		/** The player should not accept any calls referencing its display stack **/
-		public override function addChildAt(child:DisplayObject, index:int):DisplayObject {
-			return null;
-		}
-
-		/** The player should not accept any calls referencing its display stack **/
-		public override function removeChild(child:DisplayObject):DisplayObject {
-			return null;
-		}
-
-		/** The player should not accept any calls referencing its display stack **/
-		public override function removeChildAt(index:int):DisplayObject {
-			return null;
-		}
-		
-		///////////////////////////////////////////		
-		/// IGlobalEventDispatcher implementation
-		///////////////////////////////////////////		
-		/**
-		 * @inheritDoc
-		 */
-		public function addGlobalListener(listener:Function):void {
-			_dispatcher.addGlobalListener(listener);
-		}
-		
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function removeGlobalListener(listener:Function):void {
-			_dispatcher.removeGlobalListener(listener);
-		}
-		
-		
-		/**
-		 * @inheritDoc
-		 */
-		public override function dispatchEvent(event:Event):Boolean {
-			_dispatcher.dispatchEvent(event);
-			return super.dispatchEvent(event);
-		}
-		
-		public function get edition():String {
-			return model.edition;
-		}
-		
-		public function get token():String {
-			return model.token;
-		}
-		
-		public function checkBeforePlay():Boolean {
-			return controller.checkBeforePlay();
-		}
-		
-		public function checkBeforeComplete():Boolean {
-			return model.checkBeforeComplete();
-		}
-		
-		public function setCues(cues:Array):void {
-			view.setCues(cues);
-		}
-	}
+    }
+}
 }
