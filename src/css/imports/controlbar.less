@@ -1,41 +1,32 @@
 @import "vars.less";
 
 .jwplayer .jw-controlbar {
+    display: table;
     position: absolute;
-    //right: @ui-margin;
     right: 0;
     bottom: @ui-margin;
     left: 0;
-    //left: @ui-margin;
     height: @controlbar-height;
     max-width: @controlbar-max-width;
 
     padding: 0 @ui-padding;
     margin: 0 auto;
 
+    background-color: @def-background-color;
     background: @def-background-style;
     background-size: @def-background-size;
 
     border: @def-border;
     border-radius: @ui-corner-round;
 
-    filter: @def-ie8-background-filter;
-
     box-sizing: content-box;
-
-    -webkit-transition: opacity .25s background .25s visibility .25s;
-    transition: opacity .25s background .25s visibility .25s;
 }
 
-.jwplayer .jw-controlbar{
-    display: table;
-}
-
-.jw-controlbar span {
-    height: 100%;
+/*.jw-controlbar span {
+    height: 2em;    //    height: 100%;
     -webkit-user-select: none;
     -webkit-user-drag: none;
-}
+}*/
 
 .jw-controlbar .jw-group {
     display: table-cell;
@@ -67,8 +58,6 @@
     display: inline-block;
     height: inherit;
     cursor: pointer;
-    -webkit-transition: opacity .25s background .25s visibility .25s;
-    transition: opacity .25s background .25s visibility .25s;
 }
 
 .jw-controlbar .jw-text {
@@ -77,7 +66,8 @@
     line-height: 1em;
 }
 
-.jw-controlbar .jw-elapsed .jw-text, .jw-controlbar .jw-duration .jw-text {
+.jw-controlbar .jw-elapsed .jw-text,
+.jw-controlbar .jw-duration .jw-text {
     line-height: inherit;
 }
 

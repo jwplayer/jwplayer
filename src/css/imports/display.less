@@ -4,21 +4,16 @@
     position: absolute;
     width: 100%;
     height: 100%;
-    overflow: hidden;
+    //overflow: hidden;
 }
 
 .jw-display .jw-preview {
     position: absolute;
     width: 100%;
     height: 100%;
-    overflow: hidden;
+    //overflow: hidden;
     background: 50% 50% no-repeat rgb(0, 0, 0);
     background-size: contain;
-}
-
-.jw-display, .jw-display * {
-    -webkit-transition: opacity .25s color .25s;
-    transition: opacity .25s color .25s;
 }
 
 .jwplayer .jw-display-icon {
@@ -33,17 +28,16 @@
     margin-left: auto;
     cursor: pointer;
 
+    background-color: @def-background-color;
     background: @def-transparent-background-style;
     background-size: @def-background-size;
     border-radius: @ui-corner-round;
-
-    filter: @def-ie8-background-filter;
 }
 
 .jwplayer:hover .jw-display-icon {
+    background-color: @def-background-color;
     background: @def-background-style;
     background-size: @def-background-size;
-    filter: @def-ie8-background-filter;
 }
 
 .jwplayer .jw-display-icon div {
@@ -58,7 +52,7 @@
 .jwplayer .jw-display-icon .jw-text {
     max-width: 300px;
     padding: 0;
-    overflow-y: hidden;
+    //overflow-y: hidden;
     font-size: 0.75em;
 }
 
