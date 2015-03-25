@@ -8,93 +8,78 @@ $(document).ready(function(){
     });
 
     var uniform = function(e){
-        //document.getElementById('100pct_300px_uniform').attachEvent('click', function(e){
-        $('.jwplayer').css('width', '100%');
-        $('.jwplayer').css('height', '300px');
-        $('.jw-preview').css('background-size', 'contain');
-        $('.jwplayer').css('position', 'relative');
-        $('.jwplayer').css('top', 'auto');
-        $('.jwplayer').css('right', 'auto');
-        $('.jwplayer').css('bottom', 'auto');
-        $('.jwplayer').css('left', 'auto');
-        $('.button-cont-top').css('position', 'relative');
+        $('.jwplayer').addClass('player-size');
+        $('.jwplayer').removeClass('window-size aspect-size');
+
+        $('.jwplayer').addClass('uniform-stretching');
+        $('.jwplayer').removeClass('fill-stretching exactfit-stretching none-stretching');
+
+        $('.button-cont-top').addClass('fixed-buttons');
     };
 
     $('#100pct_300px_uniform').on('click', uniform);
     if(document.attachEvent) document.getElementById('100pct_300px_uniform').attachEvent('onclick', uniform);
 
     var none = function(e){
-        $('.jwplayer').css('width', '100%');
-        $('.jwplayer').css('height', '300px');
-        $('.jw-preview').css('background-size', 'auto auto');
-        $('.jwplayer').css('position', 'relative');
-        $('.jwplayer').css('top', 'auto');
-        $('.jwplayer').css('right', 'auto');
-        $('.jwplayer').css('bottom', 'auto');
-        $('.jwplayer').css('left', 'auto');
-        $('.button-cont-top').css('position', 'relative');
+        $('.jwplayer').addClass('player-size');
+        $('.jwplayer').removeClass('window-size aspect-size');
+
+        $('.jwplayer').addClass('none-stretching');
+        $('.jwplayer').removeClass('fill-stretching exactfit-stretching uniform-stretching');
+
+        $('.button-cont-top').addClass('fixed-buttons');
     };
 
     $('#100pct_300px_none').on('click', none);
     if(document.attachEvent) document.getElementById('100pct_300px_uniform').attachEvent('onclick', none);
 
     var fill = function(e){
-        $('.jwplayer').css('width', '100%');
-        $('.jwplayer').css('height', '300px');
-        $('.jw-preview').css('background-size', 'cover');
-        $('.jwplayer').css('position', 'relative');
-        $('.jwplayer').css('top', 'auto');
-        $('.jwplayer').css('right', 'auto');
-        $('.jwplayer').css('bottom', 'auto');
-        $('.jwplayer').css('left', 'auto');
-        $('.button-cont-top').css('position', 'relative');
+        $('.jwplayer').addClass('player-size');
+        $('.jwplayer').removeClass('window-size aspect-size');
+
+        $('.jwplayer').addClass('fill-stretching');
+        $('.jwplayer').removeClass('none-stretching exactfit-stretching uniform-stretching');
+
+        $('.button-cont-top').addClass('fixed-buttons');
     };
 
     $('#100pct_300px_fill').on('click', fill);
     if(document.attachEvent) document.getElementById('100pct_300px_fill').attachEvent('onclick', fill);
 
     var exactfit = function(e){
-        $('.jwplayer').css('width', '100%');
-        $('.jwplayer').css('height', '300px');
-        $('.jw-preview').css('background-size', '100% 100%');
-        $('.jwplayer').css('position', 'relative');
-        $('.jwplayer').css('top', 'auto');
-        $('.jwplayer').css('right', 'auto');
-        $('.jwplayer').css('bottom', 'auto');
-        $('.jwplayer').css('left', 'auto');
-        $('.button-cont-top').css('position', 'relative');
+        $('.jwplayer').addClass('player-size');
+        $('.jwplayer').removeClass('window-size aspect-size');
+
+        $('.jwplayer').addClass('exactfit-stretching');
+        $('.jwplayer').removeClass('none-stretching fill-stretching uniform-stretching');
+
+        $('.button-cont-top').addClass('fixed-buttons');
     };
 
     $('#100pct_300px_exactfit').on('click', exactfit);
     if(document.attachEvent) document.getElementById('100pct_300px_exactfit').attachEvent('onclick', exactfit);
 
     var windowsize = function(e){
-        $('.jwplayer').css('width', '100%');
-        $('.jwplayer').css('height', '100%');
-        $('.jw-preview').css('background-size', 'contain');
+        $('.jwplayer').addClass('window-size');
+        $('.jwplayer').removeClass('player-size aspect-size');
 
-        $('.jwplayer').css('position', 'fixed');
-        $('.jwplayer').css('top', '0');
-        $('.jwplayer').css('right', '0');
-        $('.jwplayer').css('bottom', '0');
-        $('.jwplayer').css('left', '0');
-        $('.button-cont-top').css('position', 'absolute');
+        $('.jwplayer').addClass('uniform-stretching');
+        $('.jwplayer').removeClass('none-stretching fill-stretching exactfit-stretching');
+
+        $('.button-cont-top').addClass('fixed-buttons');
     };
 
     $('#window-size').on('click', windowsize);
     if(document.attachEvent) document.getElementById('window-size').attachEvent('onclick', windowsize);
 
     var aspect169 = function(e){
-        $('.jwplayer').css('width', '100%');
-        $('.jwplayer').css('height', 'auto');
-        $('.jw-preview').css('background-size', 'contain');
+        $('.jwplayer').addClass('aspect-size');
+        $('.jwplayer').removeClass('player-size window-size');
 
-        $('.jwplayer').css('position', 'relative');
-        $('.jwplayer').css('top', 'auto');
-        $('.jwplayer').css('right', 'auto');
-        $('.jwplayer').css('bottom', 'auto');
-        $('.jwplayer').css('left', 'auto');
-        $('.button-cont-top').css('position', 'relative');
+        $('.jwplayer').addClass('uniform-stretching');
+        $('.jwplayer').removeClass('none-stretching fill-stretching exactfit-stretching');
+
+        $('.button-cont-top').removeClass('fixed-buttons');
 
         document.styleSheets[0].addRule('.jwplayer:before','padding-top: ' + Math.round(9/16 * 100) + '%');
         if(document.attachEvent)document.styleSheets[0].addRule('.jwplayer:before','content: ' + Math.round(Math.random()*1000));
@@ -106,16 +91,13 @@ $(document).ready(function(){
     if(document.attachEvent) document.getElementById('aspect-ratio-16-9').attachEvent('onclick', aspect169);
 
     var aspect43 = function(e){
-        $('.jwplayer').css('width', '100%');
-        $('.jwplayer').css('height', 'auto');
-        $('.jw-preview').css('background-size', 'contain');
+        $('.jwplayer').addClass('aspect-size');
+        $('.jwplayer').removeClass('player-size window-size');
 
-        $('.jwplayer').css('position', 'relative');
-        $('.jwplayer').css('top', 'auto');
-        $('.jwplayer').css('right', 'auto');
-        $('.jwplayer').css('bottom', 'auto');
-        $('.jwplayer').css('left', 'auto');
-        $('.button-cont-top').css('position', 'relative');
+        $('.jwplayer').addClass('uniform-stretching');
+        $('.jwplayer').removeClass('none-stretching fill-stretching exactfit-stretching');
+
+        $('.button-cont-top').removeClass('fixed-buttons');
 
         document.styleSheets[0].addRule('.jwplayer:before','padding-top: ' + Math.round(3/4 * 100) + '%');
         if(document.attachEvent)document.styleSheets[0].addRule('.jwplayer:before','content: ' + Math.round(Math.random()*1000));

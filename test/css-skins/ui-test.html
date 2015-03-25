@@ -71,6 +71,61 @@
                 margin: 0px;
             }
         }
+
+        /* Sizing and stretch styles */
+       .player-size {
+           width: 100%;
+           height: 300px;
+           position: relative;
+           top: auto;
+           right: auto;
+           bottom: auto;
+           left: auto;
+       }
+
+        .window-size {
+            width: 100%;
+            height: 100%;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            position: fixed;
+        }
+
+        .aspect-size {
+            width: 100%;
+            height: auto;
+            top: auto;
+            right: auto;
+            bottom: auto;
+            left: auto;
+            position: relative;
+        }
+
+        .uniform-stretching .jw-preview {
+            background-size: contain;
+        }
+
+        .none-stretching .jw-preview {
+            background-size: auto auto;
+        }
+
+        .fill-stretching .jw-preview {
+            background-size: cover;
+        }
+
+        .exactfit-stretching .jw-preview {
+            background-size: 100% 100%;
+        }
+
+        .button-cont-top {
+            position: relative;
+        }
+
+        .button-cont-top .fixed-buttons {
+            position: fixed;
+        }
     </style>
 </head>
 <body>
