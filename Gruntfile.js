@@ -159,15 +159,15 @@ module.exports = function(grunt) {
                         },
                         {
                             test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
-                            loader: 'url?limit=10000&minetype=application/font-woff'
+                            loader: 'url?limit=10000&mimetype=application/font-woff'
                         },
                         {
                             test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
-                            loader: 'url?limit=10000&minetype=application/octet-stream'
+                            loader: 'url?limit=10000&mimetype=application/octet-stream'
                         },
                         {
                             test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
-                            loader: 'url?limit=10000&minetype=image/svg+xml'
+                            loader: 'url?limit=10000&mimetype=image/svg+xml'
                         },
                         {
                             test: /\.html$/,
