@@ -22,18 +22,27 @@
     box-sizing: content-box;
 }
 
-/*.jw-controlbar span {
-    height: 2em;    //    height: 100%;
-    -webkit-user-select: none;
-    -webkit-user-drag: none;
-}*/
-
-.jw-controlbar .jw-group {
+.jw-controlbar .jw-controlbar--left-group,
+.jw-controlbar .jw-controlbar--right-group,
+.jw-controlbar .jw-controlbar--center-group{
     display: table-cell;
 }
 
+.jw-controlbar .jw-controlbar--center-group {
+    width: 100%;
+}
+
+.jw-controlbar .jw-controlbar--left-group,
+.jw-controlbar .jw-controlbar--right-group {
+    white-space: nowrap;
+}
+
 // control bar content (icons/text)
-.jw-controlbar .jw-group > span {
+.jw-controlbar .jw-icon-inline,
+.jw-controlbar .jw-icon-tooltip,
+.jw-controlbar .jw-slider-horizontal,
+.jw-controlbar .jw-elapsed,
+.jw-controlbar .jw-duration {
     display: inline-block;
     height: @controlbar-height;
     position: relative;
@@ -42,16 +51,11 @@
     vertical-align: middle;
 }
 
-.jwplayer .jw-controlbar .jw-icon button {
+.jwplayer .jw-controlbar .jw-icon-inline button,
+.jwplayer .jw-controlbar .jw-icon-tooltip button {
     width: 100%;
     height: 100%;
     font-size: @controlbar-icon-size;
-}
-
-.jw-controlbar .jw-left,
-.jw-controlbar .jw-right{
-    display: table-cell;
-    white-space: nowrap;
 }
 
 .jw-controlbar button {

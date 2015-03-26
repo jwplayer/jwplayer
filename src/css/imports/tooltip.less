@@ -1,6 +1,7 @@
 @import "vars.less";
 
-.jwplayer .tooltip-icon:hover .jw-overlay, .jwplayer .tooltip-icon.open .jw-overlay {
+.jwplayer .jw-tooltip-icon:hover .jw-overlay,
+.jwplayer .jw-tooltip-icon.jw-open .jw-overlay {
     opacity: 1;
     visibility: visible;
 }
@@ -48,13 +49,14 @@
 
     .jw-overlay .jw-option {
         height: 1.5em;
-        font-family: Arial, Helvetica, sans-serif;
+        font-family: inherit;
         font-size: 0.75em;
         line-height: 1.5em;
         color: @inactive-color;
     }
 
-    .jw-overlay .jw-option:hover, .jw-overlay .jw-option.jw-active {
+    .jw-overlay .jw-option:hover,
+    .jw-overlay .jw-option.jw-active-option {
         color: @hover-color;
     }
 

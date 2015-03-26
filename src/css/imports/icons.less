@@ -19,6 +19,10 @@
 }
 
 .jwplayer .jw-icon button,
+.jwplayer .jw-thumb button,
+.jwplayer .jw-icon-inline button,
+.jwplayer .jw-icon-tooltip button,
+.jwplayer .jw-icon-display button,
 .jw-controlbar .jw-menu .jw-option:before {
     font-family: 'jw-six-icons';
     -webkit-font-smoothing: antialiased;
@@ -37,6 +41,19 @@
     -o-font-feature-settings: "liga";
     font-feature-settings: "liga";
     -moz-osx-font-smoothing: grayscale;
+}
+
+.jw-icon-display button,
+.jw-icon button,
+.jw-thumb button,
+.jw-icon-inline button,
+.jw-icon-tooltip button,
+.jw-icon-dock button {
+    color: @active-color;
+
+    &:hover,  {
+        color: @active-color;
+    }
 }
 
 /*** ICONS ***/
@@ -64,7 +81,8 @@
     content: "\e605";
 }
 
-.jwplayer .jw-icon-cue button:after, .jwplayer .jw-menu .jw-option:before {
+.jwplayer .jw-icon-cue button:after,
+.jwplayer .jw-menu .jw-option:before {
     content: "\e606";
 }
 
@@ -84,7 +102,8 @@
     content: "\e60a";
 }
 
-.jwplayer .jw-icon-next button:after, .jwplayer .jw-icon-prev button:after {
+.jwplayer .jw-icon-next button:after,
+.jwplayer .jw-icon-prev button:after {
     content: "\e60b";
 }
 
@@ -100,7 +119,8 @@
     content: "\e60e";
 }
 
-.jwplayer .jw-slider .jw-icon-thumb button:after, .jwplayer .jw-slider .jw-icon-volume-thumb button:after {
+.jwplayer .jw-slider-horizontal .jw-thumb button:after,
+.jwplayer .jw-slider-vertical .jw-thumb button:after {
     content: "\e60f";
 }
 

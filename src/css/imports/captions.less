@@ -1,0 +1,34 @@
+@import "vars.less";
+
+.jw-controlbar {
+    //display: none !important;
+}
+
+.jwplayer {
+    .jw-captions {
+        position: absolute;
+        display: none;
+        margin: 0 auto;
+        left: 0;
+        bottom: 10%;
+        right: 0;
+
+        &.jw-captions-enabled {
+            display: block;
+        }
+    }
+
+    .jw-captions-text {
+        color: @active-color;
+        background-color: black;
+        padding: 0.25em;
+        word-wrap: break-word;
+        display: inline-block;
+        font-style: normal;
+        font-weight: normal;
+        text-align: center;
+        text-decoration: none;
+        line-height: 1.3em;
+    }
+}
+
