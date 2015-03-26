@@ -2,13 +2,17 @@
 
 .jwplayer .jw-slider-horizontal,
 .jwplayer .jw-slider-vertical {
-    .jw-rail, .jw-buffer, .jw-progress, .jw-thumb {
+    .jw-rail,
+    .jw-buffer,
+    .jw-progress,
+    .jw-thumb {
         position: absolute;
         cursor: pointer;
         border-radius: 0.5em;
     }
 
-    .jw-rail, .jw-buffer {
+    .jw-rail,
+    .jw-buffer {
         height: @def-rail-width-padding;
         border-radius: 0.5em;
     }
@@ -27,7 +31,8 @@
         background-color: @buffer-color;
     }
 
-    .jw-progress, .jw-buffer {
+    .jw-progress,
+    .jw-buffer {
         border: @def-border;
     }
 
@@ -36,7 +41,8 @@
         border: @def-border;
     }
 
-    .jw-cue, .jw-thumb button {
+    .jw-cue,
+    .jw-thumb button {
         position: absolute;
         z-index: 1;
         width: 1em;
@@ -56,12 +62,10 @@
     width: @volume-rail-length;
     height: @volume-rail-width;
 
-    .jw-rail {
+    .jw-rail,
+    .jw-buffer,
+    .jw-progress {
         width: 100%;
-    }
-
-    .jw-rail, .jw-buffer, .jw-progress {
-        //width: 100%;
     }
 
     .jw-progress {
@@ -71,12 +75,15 @@
         border-top-left-radius: 0.5em;
     }
 
-    .jw-progress, .jw-buffer {
+    .jw-progress,
+    .jw-buffer {
         border: @def-border;
         border-style: solid none solid;
     }
 
-    .jw-rail-group, .rail, .progress {
+    .rail,
+    .progress,
+    .jw-rail-group {
         width: 100%;
     }
 
@@ -89,7 +96,8 @@
     width: @def-rail-width;
     height: @volume-rail-length;
 
-    .jw-rail, .jw-buffer, .jw-progress {
+    .jw-rail, .jw-buffer,
+    .jw-progress {
         bottom: 0;
         height: 100%;
     }

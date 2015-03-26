@@ -1,7 +1,7 @@
 @import "vars.less";
 
-.jwplayer .jw-tooltip-icon:hover .jw-overlay,
-.jwplayer .jw-tooltip-icon.jw-open .jw-overlay {
+.jwplayer .jw-icon-tooltip:hover .jw-overlay,
+.jwplayer .jw-icon-tooltip.jw-open .jw-overlay {
     opacity: 1;
     visibility: visible;
 }
@@ -39,7 +39,7 @@
         background: @def-background-style;
         background-size: @def-background-size;
         border: @def-border;
-        border-radius: 0.25em;
+        border-radius: @ui-padding;
     }
 
     .jw-overlay .jw-contents {

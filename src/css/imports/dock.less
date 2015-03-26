@@ -7,82 +7,59 @@
     left: @ui-margin;
     display: block;
     opacity: 1;
+
+    .jw-dock-button {
+        float: left;
+        position: relative;
+        width: 2.5em;
+        height: 2em;
+        margin-right: 0.5em;
+        background-color: @def-background-color;
+        background: @def-transparent-background-style;
+        background-size: @def-background-size;
+        border-radius: @dock-corner-radius;
+    }
+
+    .jw-dock-button:hover {
+        background-color: @def-background-color;
+        background: @def-background-style;
+    }
+
+    .jw-dock-button .jw-dock-image {
+        width: 100%;
+        height: 100%;
+        background-position: 50% 50%;
+        background-repeat: no-repeat;
+        opacity: 0.75;
+    }
+
+    .jw-dock-button .jw-arrow {
+        display: none;
+        position: absolute;
+        bottom: -0.2em;
+        width: 0.5em;
+        height: 0.2em;
+        left: 50%;
+        background-color: #0f0;
+        margin-left: -0.25em;
+    }
+
+    .jw-dock-button .jw-overlay {
+        display: none;
+        position: absolute;
+        top: 2em;
+        margin-top: 0.25em;
+        padding: 0.5em;
+        white-space: nowrap;
+        background-color: @def-background-color;
+        background: @def-background-style;
+        background-size: @def-background-size;
+        border-radius: @dock-corner-radius;
+    }
+
+    .jw-dock-button:hover .jw-overlay,
+    .jw-dock-button:hover .jw-arrow {
+        display: block;
+    }
 }
 
-.jw-dock > * {
-    float: left;
-    height: 100%;
-}
-
-.jw-dock > .jw-overlay {
-    z-index: 99;
-    float: none;
-    height: auto;
-}
-
-.jw-dock-buttons {
-    height: 2em;
-}
-
-.jw-dock-buttons .jw-button {
-    position: relative;
-    width: 2.5em;
-    height: 2em;
-    background-color: @def-background-color;
-    background: @def-transparent-background-style;
-    background-size: @def-background-size;
-    border-radius: @dock-corner-radius;
-}
-
-.jw-dock-buttons .jw-button:hover {
-    background-color: @def-background-color;
-    background: @def-background-style;
-}
-
-.jw-dock-buttons > * {
-    float: left;
-    height: 100%;
-}
-
-.jw-dock-buttons .jw-divider {
-    display: none;
-    width: 0.5em;
-}
-
-.jw-dock-buttons .jw-button ~ .jw-divider {
-    display: block;
-}
-
-.jw-dock .jw-button:hover .jw-overlay {
-    display: block;
-}
-
-.jw-dock .jw-button .jw-arrow {
-    position: absolute;
-    top: 0px;
-    width: 12px;
-    height: 3px;
-    left: 50%; margin-left: -55px;
-    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAADCAYAAACnI+4yAAAAEklEQVR42mP4//8/AymYgeYaABssa5WUTzsyAAAAAElFTkSuQmCC) 50% 50% / 12px 3px;
-}
-
-.jw-dock .jw-button .jw-icon-dock {
-    width: 100%;
-    height: 100%;
-    background-position: 50% 50%;
-    background-repeat: no-repeat;
-    opacity: 0.75;
-}
-
-.jw-dock .jw-button .jw-overlay {
-    position: absolute;
-    top: 2em;
-    display: none;
-    width: auto;
-    padding: 0.5em;
-    white-space: nowrap;
-    background-color: @def-background-color;
-    background: @def-background-style;
-    background-size: @def-background-size;
-    border-radius: @dock-corner-radius;
-}

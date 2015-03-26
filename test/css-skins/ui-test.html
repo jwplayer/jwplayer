@@ -7,7 +7,6 @@
     <script type="text/javascript" src="scripts.js"></script>
     <script type="text/javascript" src="../../bin-debug/demostyles.js"></script>
 
-
     <style>
         .button-cont-top, .button-cont-bottom {
             z-index: 100;
@@ -140,7 +139,7 @@
 
 
     <div class="vid-cont">
-        <div class="jwplayer jw-user-inactive" tabindex="0" style="width: 100%;">
+        <div class="jwplayer jw-state-idle" tabindex="0">
             <div class="jw-click">
                 <div class="jw-click-item">About JW Player 6.12.20150218175242765...</div>
             </div>
@@ -160,38 +159,34 @@
                     </div>
                     <img class="jw-logo" src="data:image/png;base64,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">
                     <div class="jw-dock">
-                        <div class="jw-dock-buttons">
-                            <div class="jw-divider"></div>
-                            <div class="jw-button">
-                                <div class="jw-icon-dock" style="background-image: url(../../../jwplayer-commercial/test/assets/os/both.png)"></div>
-                                <div class="jw-overlay">
-                                    <div class="jw-arrow"></div>
-                                    <div class="jw-text">Button sucessfully added</div>
-                                </div>
-                            </div>
-                            <div class="jw-divider"></div>
-                            <div class="jw-button">
-                                <div class="jw-icon-dock" style="background-image: url(../../../jwplayer-commercial/test/assets/smiley.png)"></div>
-                                <div class="jw-overlay">
-                                    <div class="jw-arrow"></div>
-                                    <div class="jw-text">Small smiley button</div>
-                                </div>
+                        <div class="jw-dock-button">
+                            <div class="jw-dock-image" style="background-image: url(../../../jwplayer-commercial/test/assets/os/both.png)"></div>
+                            <div class="jw-arrow"></div>
+                            <div class="jw-overlay">
+                                <span class="jw-text">Button sucessfully added</span>
                             </div>
                         </div>
+                        <span class="jw-dock-button">
+                            <div class="jw-dock-image" style="background-image: url(../../../jwplayer-commercial/test/assets/smiley.png)"></div>
+                            <div class="jw-arrow"></div>
+                            <div class="jw-overlay">
+                                <span class="jw-text">Small smiley button</span>
+                            </div>
+                        </span>
                     </div>
                     <div class="jw-captions jw-captions-enabled">
-                        <span class="jw-captions-text">The quick brown fox jumps over the lazy dog.  Pack my box with five dozen liquor jugs.  The quick brown fox jumps over the lazy dog.  Pack my box with five dozen liquor jugs.  The quick brown fox jumps over the lazy dog.  Pack my box with five dozen liquor jugs.  The quick brown fox jumps over the lazy dog.  Pack my box with five dozen liquor jugs.  The quick brown fox jumps over the lazy dog.  Pack my box with five dozen liquor jugs.</span>
+                        <span class="jw-captions-text">The quick brown fox jumps over the lazy dog.  Pack my box with five dozen liquor jugs.  The quick brown fox jumps over the lazy dog.</span>
                     </div>
-                    <span class="jw-controlbar">
-                        <span class="jw-controlbar--left-group">
+                    <div class="jw-controlbar">
+                        <div class="jw-controlbar--left-group">
                             <span class="jw-icon-inline jw-icon-play"><button tabindex="-1" type="button"></button></span>
                             <span class="jw-icon-inline jw-icon-prev"><button tabindex="-1" type="button"></button></span>
                             <span class="jw-icon-inline jw-icon-next"><button tabindex="-1" type="button"></button></span>
                             <span class="jw-elapsed">
                                 <span class="jw-text">0:08</span>
                             </span>
-                        </span>
-                        <span class="jw-controlbar--center-group">
+                        </div>
+                        <div class="jw-controlbar--center-group">
                             <span class="jw-time jw-slider-horizontal">
                                 <span class="jw-rail-group">
                                     <span class="jw-rail"></span>
@@ -202,8 +197,8 @@
                                     </span>
                                 </span>
                             </span>
-                        </span>
-                        <span class="jw-controlbar--right-group">
+                        </div>
+                        <div class="jw-controlbar--right-group">
                             <span class="jw-duration">
                                 <span class="jw-text">14:48</span>
                             </span>
@@ -211,10 +206,12 @@
                                 <button tabindex="-1" type="button"></button>
                                 <div class="jw-overlay jw-hd-overlay">
                                     <div class="jw-menu">
-                                        <div class="jw-option">auto</div>
-                                        <div class="jw-option">480p</div>
-                                        <div class="jw-option">720p</div>
-                                        <div class="jw-option jw-active-option">1080p</div>
+                                        <ul>
+                                            <li class="jw-option">auto</li>
+                                            <li class="jw-option">480p</li>
+                                            <li class="jw-option">720p</li>
+                                            <li class="jw-option jw-active-option">1080p</li>
+                                        </ul>
                                     </div>
                                 </div>
                             </span>
@@ -222,13 +219,15 @@
                                 <button tabindex="-1" type="button"></button>
                                 <div class="jw-overlay jw-cc-overlay">
                                     <div class="jw-menu">
-                                        <div class="jw-option">Off</div>
-                                        <div class="jw-option">Chinese</div>
-                                        <div class="jw-option">Korean</div>
-                                        <div class="jw-option jw-active-option">Polish</div>
-                                        <div class="jw-option">Russian</div>
-                                        <div class="jw-option">Spanish</div>
-                                        <div class="jw-option">Turkish</div>
+                                        <ul>
+                                            <li class="jw-option">Off</li>
+                                            <li class="jw-option">Chinese</li>
+                                            <li class="jw-option">Korean</li>
+                                            <li class="jw-option jw-active-option">Polish</li>
+                                            <li class="jw-option">Russian</li>
+                                            <li class="jw-option">Spanish</li>
+                                            <li class="jw-option">Turkish</li>
+                                        </ul>
                                     </div>
                                 </div>
                             </span>
@@ -255,14 +254,14 @@
                                     </span>
                                 </span>
                             </span>
-                            <span class="jw-icon-inline jw-cast jw-icon-cast-off">
+                            <span class="jw-icon-inline jw-cast jw-can-cast jw-icon-cast-off">
                                 <button tabindex="-1" type="button"></button>
                             </span>
                             <span class="jw-icon-inline jw-icon-fullscreen">
                                 <button tabindex="-1" type="button"></button>
                             </span>
-                        </span>
-                    </span>
+                        </div>
+                    </div>
                 </div>
                 <div class="jw-instream"></div>
             </div>

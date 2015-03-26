@@ -30,6 +30,11 @@
 
 .jw-controlbar .jw-controlbar--center-group {
     width: 100%;
+    padding: 0 @ui-padding;
+
+    .jw-time {
+        padding: 0;
+    }
 }
 
 .jw-controlbar .jw-controlbar--left-group,
@@ -46,7 +51,7 @@
     display: inline-block;
     height: @controlbar-height;
     position: relative;
-    padding: 0 0.20em;
+    padding: 0 @ui-padding;
     line-height: @controlbar-height;
     vertical-align: middle;
 }
@@ -80,6 +85,6 @@
 }
 
 .jw-controlbar .jw-cast.jw-can-cast {
-    display: block;
+    display: inline-block;
 }
 

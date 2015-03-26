@@ -42,7 +42,7 @@
 .jwplayer .jw-display-icon-cont .jw-text {
     position: relative;
     display: table-cell;
-    padding: 0.25em;
+    padding: @ui-padding;
     vertical-align: middle !important;
     background-position: 50% 50%;
     background-repeat: no-repeat;
@@ -52,6 +52,9 @@
     max-width: 300px;
     padding: 0;
     font-size: 0.75em;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow-x: hidden;
 }
 
 .jwplayer .jw-display-icon-cont .jw-icon-display button {
@@ -61,6 +64,7 @@
 .jwplayer.jw-flag-dragging .jw-display-icon-cont {
     display:none;
 }
+
 .jwplayer .jw-preview {
     opacity: 1;
     visibility: visible;
