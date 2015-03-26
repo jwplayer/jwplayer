@@ -110,8 +110,6 @@
                     PLAYER_CLASS + ' ' + ASPECT_MODE);
             }
 
-            _resize(_model.width, _model.height);
-
             var replace = document.getElementById(_api.id);
             replace.parentNode.replaceChild(_playerElement, replace);
         }
@@ -515,11 +513,8 @@
         }
 
         function _setupControls() {
-            var height = _model.height,
-                cbSettings = _model.componentConfig('controlbar'),
+            var cbSettings = _model.componentConfig('controlbar'),
                 displaySettings = _model.componentConfig('display');
-
-            _checkAudioMode(height);
 
             _captions = new html5.captions(_api, _model.captions);
             _captions.addEventListener(events.JWPLAYER_CAPTIONS_LIST, forward);
@@ -533,9 +528,6 @@
                 _touchHandler();
             });
 
-            if (_audioMode) {
-                _display.hidePreview(true);
-            }
             _controlsLayer.appendChild(_display.element());
 
             _logo = new html5.logo(_api, _logoConfig);
@@ -786,15 +778,23 @@
         }
 
         function _isAudioMode(height) {
-            var bounds = _bounds(_playerElement);
-            if (height.toString().indexOf('%') > 0) {
+            if (jwplayer._.isNumber(height)) {
+                return _isControlBarOnly(height);
+            }
+            if (jwplayer._.isString(height) && height.indexOf('%') > -1) {
                 return false;
-            } else if (bounds.height === 0) {
+            }
+            var bounds = _bounds(_playerElement);
+            return _isControlBarOnly(bounds.height);
+        }
+
+        function _isControlBarOnly(verticalPixels) {
+            if (!verticalPixels) {
                 return false;
             } else if (_model.playlistposition === 'bottom') {
-                return bounds.height <= 40 + _model.playlistsize;
+                verticalPixels -= _model.playlistsize;
             }
-            return bounds.height <= 40;
+            return verticalPixels <= 40;
         }
 
         function _resizeMedia(width, height) {
