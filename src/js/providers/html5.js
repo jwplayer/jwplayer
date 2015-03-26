@@ -11,7 +11,7 @@ define([
 
     var clearInterval = window.clearInterval,
         stallInterval,
-        STALL_DELAY = 100,
+        STALL_DELAY = 125, // 1/8th of a second
         STALL_TOLERANCE = STALL_DELAY/2,
         _isIE = utils.isMSIE(),
         _isMobile = utils.isMobile(),
