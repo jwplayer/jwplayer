@@ -3,12 +3,13 @@ define([
     'utils/stretching',
     'playlist/playlist',
     'providers/providers',
+    'controller/qoe',
     'underscore',
     'utils/eventdispatcher',
     'utils/timer',
     'events/events',
     'events/states'
-], function(utils, stretchUtils, Playlist, Providers, _, eventdispatcher, Timer, events, states) {
+], function(utils, stretchUtils, Playlist, Providers, QOE, _, eventdispatcher, Timer, events, states) {
 
     // Defaults
     var _defaults = {
@@ -30,7 +31,6 @@ define([
         width: 480,
         volume: 90
     };
-
 
     var Model = function(config) {
         var _this = this,
@@ -54,6 +54,8 @@ define([
         }
 
         _.extend(this, new eventdispatcher());
+
+        QOE.model(this);
 
         this.config = _parseConfig(_.extend({}, _defaults, _cookies, config));
 
@@ -81,15 +83,11 @@ define([
                 case events.JWPLAYER_PLAYER_STATE:
                     // These two states exist at a provider level, but the player itself expects BUFFERING
                     if (evt.newstate === states.LOADING) {
-                        this._qoeItem.start(evt.newstate);
                         this.trigger(events.JWPLAYER_PROVIDER_LOADING, evt);
                         evt.newstate = states.BUFFERING;
                     } else if (evt.newstate === states.STALLED) {
-                        this._qoeItem.start(evt.newstate);
                         this.trigger(events.JWPLAYER_PROVIDER_STALLED, evt);
                         evt.newstate = states.BUFFERING;
-                    } else {
-                        this._qoeItem.end(evt.oldstate);
                     }
 
                     this.set('state', evt.newstate);
@@ -154,9 +152,9 @@ define([
         };
 
         // TODO: make this a synchronous action; throw error if playlist is empty
-        this.setPlaylist = function(playlist) {
+        this.setPlaylist = function(p) {
 
-            var playlist = Playlist.filterPlaylist(playlist, _providers, _this.androidhls);
+            var playlist = Playlist.filterPlaylist(p, _providers, _this.androidhls);
             _this.set('playlist', playlist);
             if (playlist.length === 0) {
                 _this.trigger(events.JWPLAYER_ERROR, {
@@ -188,11 +186,13 @@ define([
                 return;
             }
 
+            // Item is actually changing
             this.set('item', newItem);
-            this._qoeItem = new Timer();
+
             this.trigger(events.JWPLAYER_PLAYLIST_ITEM, {
                 index: this.get('item')
             });
+
 
             // select provider based on item source (video, youtube...)
             var item = this.get('playlist')[newItem];

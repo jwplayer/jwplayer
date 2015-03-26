@@ -14,7 +14,9 @@ define([
         this.resetEventListeners =
             this.removeEventListener = obj.off.bind(obj);
 
+        this.on = obj.on.bind(obj);
         this.once = obj.once.bind(obj);
+        this.off = obj.off.bind(obj);
 
         /** Add an event listener for a specific type of event. **/
         this.addEventListener = function (type, callback) {
