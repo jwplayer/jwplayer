@@ -785,14 +785,15 @@
                 return false;
             }
             var bounds = _bounds(_playerElement);
+            if (_model.playlistposition === 'bottom') {
+                bounds.height -= _model.playlistsize;
+            }
             return _isControlBarOnly(bounds.height);
         }
 
         function _isControlBarOnly(verticalPixels) {
             if (!verticalPixels) {
                 return false;
-            } else if (_model.playlistposition === 'bottom') {
-                verticalPixels -= _model.playlistsize;
             }
             return verticalPixels <= 40;
         }
