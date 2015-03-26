@@ -504,7 +504,7 @@ define([
             var state = model.state;
 
             // We need _instreamMode because the state is IDLE during pre-rolls
-            if (state === states.PLAYING || state === states.PAUSED || _instreamMode) {
+            if (state === states.PLAYING || state === states.PAUSED || state === states.BUFFERING || _instreamMode) {
                 _showControls();
                 if (!_inCB) {
                     _controlsTimeout = setTimeout(_hideControls, _timeoutDuration);

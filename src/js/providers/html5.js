@@ -10,6 +10,9 @@ define([
 ], function(cssUtils, utils, stretchUtils, _, events, states, eventdispatcher, DefaultProvider) {
 
     var clearInterval = window.clearInterval,
+        stallInterval,
+        STALL_DELAY = 125, // 1/8th of a second
+        STALL_TOLERANCE = STALL_DELAY/2,
         _isIE = utils.isMSIE(),
         _isMobile = utils.isMobile(),
         _isSafari = utils.isSafari(),
@@ -17,16 +20,37 @@ define([
         _isIOS7 = utils.isIOS(7);
 
 
+
+    // Browsers, including latest chrome, do not always report Stalled events in a timely fashion
+    var stallCheckGenerator = function(videotag, stalledHandler) {
+        var lastChecked = 0;
+        return function() {
+            if (videotag.paused) { return; }
+            var t = videotag.currentTime * 1000; // secs to ms
+            if (t - lastChecked < STALL_TOLERANCE) {
+                stalledHandler();
+            }
+            lastChecked = t;
+        };
+    };
+
     function _setupListeners(eventsHash, videoTag) {
         utils.foreach(eventsHash, function(evt, evtCallback) {
             videoTag.addEventListener(evt, evtCallback, false);
         });
+
+        var checker = stallCheckGenerator(videoTag, eventsHash.stalled);
+        stallInterval = setInterval(checker, STALL_DELAY);
     }
 
     function _removeListeners(eventsHash, videoTag) {
         utils.foreach(eventsHash, function(evt, evtCallback) {
             videoTag.removeEventListener(evt, evtCallback, false);
         });
+
+        if (stallInterval) {
+            clearInterval(stallInterval);
+        }
     }
 
     function _round(number) {
@@ -57,12 +81,12 @@ define([
                 //loadeddata: _generalHandler,
                 loadedmetadata: _canPlayHandler,
                 //loadstart: _generalHandler,
-                pause: _playHandler,
-                playing: _playHandler,
+                //pause: _pauseHandler,
+                playing: _playingHandler,
                 progress: _progressHandler,
                 //ratechange: _generalHandler,
                 //readystatechange: _generalHandler,
-                seeked: _sendSeekEvent,
+                seeked: _sendSeekedEvent,
                 //seeking: _seekingHandler,
                 stalled: _stalledHandler,
                 //suspend: _generalHandler,
@@ -121,6 +145,7 @@ define([
         _videotag = _videotag || document.createElement('video');
 
         _setupListeners(_mediaEvents, _videotag);
+
 
         // Workaround for a Safari bug where video disappears on switch to fullscreen
         if (!_isIOS7) {
@@ -229,21 +254,12 @@ define([
             }
         }
 
-        function _playHandler() {
+        function _playingHandler() {
             if (!_attached) {
                 return;
             }
 
-            if (_videotag.paused) {
-                if (_videotag.currentTime === _videotag.duration && _videotag.duration > 3) {
-                    // Needed as of Chrome 20
-                    //_complete();
-                } else {
-                    _this.pause();
-                }
-            } else {
-                _this.setState(states.PLAYING);
-            }
+            _this.setState(states.PLAYING);
         }
 
         function _stalledHandler() {
@@ -414,6 +430,11 @@ define([
 
         this.play = function() {
             if (_attached) {
+                if (_this.seeking) {
+                    _this.setState(states.LOADING);
+                    _this.once(events.JWPLAYER_MEDIA_SEEKED, _this.play);
+                    return;
+                }
                 _videotag.play();
             }
         };
@@ -452,7 +473,7 @@ define([
             }
         };
 
-        function _sendSeekEvent() {
+        function _sendSeekedEvent() {
             _this.seeking = false;
             _this.sendEvent(events.JWPLAYER_MEDIA_SEEKED);
         }
