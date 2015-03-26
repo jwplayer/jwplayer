@@ -169,7 +169,6 @@
 			_ytAPI.cueVideoById(_videoId, _item.start, "default");
 			_currentQuality = 0;
 			media = _loader;
-			sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_LOADED);
 			sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_BUFFER_FULL);
 			setVolume(config.mute ? 0 : config.volume);
 			_statusTimer.start();
