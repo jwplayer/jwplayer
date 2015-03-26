@@ -364,6 +364,8 @@ package com.longtailvideo.jwplayer.media {
 			} else {
 				_media = null;
 			}
+			// update the model/view
+			sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_LOADED);
 		}
 		
 		/**
