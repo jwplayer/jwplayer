@@ -42,7 +42,7 @@
     }
 
     .jw-cue,
-    .jw-thumb button {
+    .jw-thumb {
         position: absolute;
         z-index: 1;
         width: 1em;
@@ -87,7 +87,7 @@
         width: 100%;
     }
 
-    .jw-thumb button {
+    .jw-thumb {
         margin-left: -0.5em;
     }
 }
@@ -95,6 +95,8 @@
 .jwplayer .jw-slider-vertical {
     width: @def-rail-width;
     height: @volume-rail-length;
+    bottom: 0em;
+    position: absolute;
 
     .jw-rail, .jw-buffer,
     .jw-progress {

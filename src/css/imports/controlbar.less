@@ -54,19 +54,14 @@
     padding: 0 @ui-padding;
     line-height: @controlbar-height;
     vertical-align: middle;
+    cursor: pointer;
 }
 
-.jwplayer .jw-controlbar .jw-icon-inline button,
-.jwplayer .jw-controlbar .jw-icon-tooltip button {
+.jwplayer .jw-controlbar .jw-icon-inline:after,
+.jwplayer .jw-controlbar .jw-icon-tooltip:after {
     width: 100%;
     height: 100%;
     font-size: @controlbar-icon-size;
-}
-
-.jw-controlbar button {
-    display: inline-block;
-    height: inherit;
-    cursor: pointer;
 }
 
 .jw-controlbar .jw-text {
