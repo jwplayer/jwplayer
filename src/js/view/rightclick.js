@@ -21,7 +21,7 @@ define([
         JW_CSS_NONE = 'none',
         JW_CSS_WHITE = '#FFF';
 
-    var Rightclick = function(_playerElement, _model) {
+    var Rightclick = function(_playerElement, _api, _model) {
 
         var _config = {
                 aboutlink: LINK_DEFAULT + _version + '&m=h&e=o',
@@ -76,7 +76,8 @@ define([
             // https://developer.mozilla.org/en-US/docs/Web/API/event.target
             evt = evt || window.event;
             target = evt.target || evt.srcElement;
-
+            var providerInfo = _api.getProvider();
+            _about.innerHTML = _config.abouttext + ((providerInfo) ? ('  Provided by ' + providerInfo.name) : '');
 
             containerBounds = utils.bounds(_playerElement);
             bounds = utils.bounds(target);

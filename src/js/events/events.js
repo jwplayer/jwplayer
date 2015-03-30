@@ -20,6 +20,7 @@ define([], function() {
         JWPLAYER_RESIZE: 'jwplayerResize',
         JWPLAYER_ERROR: 'jwplayerError',
         JWPLAYER_SETUP_ERROR: 'jwplayerSetupError',
+        JWPLAYER_PROVIDER_CHANGED: 'jwplayerProviderChanged',
 
         // Media Events
         JWPLAYER_MEDIA_BEFOREPLAY: 'jwplayerMediaBeforePlay',

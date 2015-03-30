@@ -25,6 +25,7 @@ define([
         var _muted = false;
         var _beforecompleted = false;
         var _currentQuality = -1;
+        var _flashProviderType;
 
         var _ready = function() {
             return _swf && _swf.__ready;
@@ -222,6 +223,10 @@ define([
                         });
                     }, this);
 
+                    _swf.on(events.JWPLAYER_PROVIDER_CHANGED, function(data) {
+                        _flashProviderType = data.message;
+                    }, this);
+
                     // ignoring:
                     // jwplayerMediaLoaded, jwplayerMediaBeforePlay, ...
 
@@ -297,6 +302,14 @@ define([
                 },
                 getCurrentQuality: function() {
                     return _currentQuality;
+                },
+                getProvider: function() {
+                    if(_flashProviderType){
+                        var returnObj = { name : 'flash_' + _flashProviderType };
+
+                        return returnObj;
+                    }
+                    return { name : 'flash' };
                 },
                 getQualityLevels: function() {
                     // TODO: _getPublicLevels
