@@ -778,6 +778,9 @@
         }
 
         function _isAudioMode(height) {
+            if (_model.aspectratio) {
+                return false;
+            }
             if (jwplayer._.isNumber(height)) {
                 return _isControlBarOnly(height);
             }
@@ -785,15 +788,15 @@
                 return false;
             }
             var bounds = _bounds(_playerElement);
-            if (_model.playlistposition === 'bottom') {
-                bounds.height -= _model.playlistsize;
-            }
             return _isControlBarOnly(bounds.height);
         }
 
         function _isControlBarOnly(verticalPixels) {
             if (!verticalPixels) {
                 return false;
+            }
+            if (_model.playlistposition === 'bottom') {
+                verticalPixels -= _model.playlistsize;
             }
             return verticalPixels <= 40;
         }
