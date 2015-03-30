@@ -31,8 +31,9 @@ define([
             },
 
             // Profile events
-            tick : function(event) {
-                _ticks[event] = _.now();
+            tick : function(event, time) {
+                // If a time is given, use that instead of now()
+                _ticks[event] = time || _.now();
             },
             between : function(left, right) {
                 return _ticks[right] - _ticks[left];

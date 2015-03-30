@@ -27,6 +27,8 @@ define([], function() {
         JWPLAYER_MEDIA_BUFFER: 'jwplayerMediaBuffer',
         JWPLAYER_MEDIA_BUFFER_FULL: 'jwplayerMediaBufferFull',
         JWPLAYER_MEDIA_ERROR: 'jwplayerMediaError',
+        JWPLAYER_MEDIA_FIRST_FRAME: 'jwplayerMediaFirstFrame',
+        JWPLAYER_MEDIA_PLAY_ATTEMPT: 'jwplayerMediaPlayAttempt',
         JWPLAYER_MEDIA_LOADED: 'jwplayerMediaLoaded',
         JWPLAYER_MEDIA_COMPLETE: 'jwplayerMediaComplete',
         JWPLAYER_MEDIA_SEEK: 'jwplayerMediaSeek',
@@ -57,6 +59,7 @@ define([], function() {
         JWPLAYER_PROVIDER_CLICK: 'jwplayerProviderClick',
         JWPLAYER_PROVIDER_LOADING: 'jwplayerProviderLoading',
         JWPLAYER_PROVIDER_STALLED: 'jwplayerProviderStalled',
+        JWPLAYER_PROVIDER_FIRST_FRAME: 'jwplayerProviderFirstFrame',
 
         JWPLAYER_VIEW_TAB_FOCUS: 'jwplayerViewTabFocus',
 

@@ -71,19 +71,22 @@ define([
         var _this = this,
             _mediaEvents = {
                 //abort: _generalHandler,
-                canplay: _canPlayHandler,
-                //canplaythrough: _generalHandler,
                 click : _onClickHandler,
                 durationchange: _durationUpdateHandler,
                 //emptied: _generalHandler,
                 ended: _endedHandler,
                 error: _errorHandler,
-                //loadeddata: _generalHandler,
-                loadedmetadata: _canPlayHandler,
+
+                play: _onPlayHandler, // play is attempted, but hasn't necessarily started
                 //loadstart: _generalHandler,
-                //pause: _pauseHandler,
+                //loadeddata: _onLoadedData, // we have duration
+                loadedmetadata: _onLoadedMetaData, // we have video dimensions
+                canplay: _canPlayHandler,
                 playing: _playingHandler,
-                progress: _progressHandler,
+                progress: _progressHandler, // status of video data download
+                //canplaythrough: _generalHandler,
+
+                //pause: _pauseHandler,
                 //ratechange: _generalHandler,
                 //readystatechange: _generalHandler,
                 seeked: _sendSeekedEvent,
@@ -93,11 +96,9 @@ define([
                 timeupdate: _timeUpdateHandler,
                 volumechange: _volumeHandler,
                 waiting: _stalledHandler,
+
                 webkitbeginfullscreen: _fullscreenBeginHandler,
                 webkitendfullscreen: _fullscreenEndHandler
-
-                // This is triggered when play is attempted, not when it start
-                //play: _playHandler,
             },
             // DOM container
             _container,
@@ -211,8 +212,11 @@ define([
             });
         }
 
-        function _canPlayHandler(evt) {
+        function _onPlayHandler() {
+            _this.sendEvent(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
+        }
 
+        function _canPlayHandler() {
             if (!_attached) {
                 return;
             }
@@ -221,14 +225,21 @@ define([
                 _canSeek = true;
                 _sendBufferFull();
             }
-            if (evt.type === 'loadedmetadata') {
-                //fixes Chrome bug where it doesn't like being muted before video is loaded
-                if (_videotag.muted) {
-                    _videotag.muted = false;
-                    _videotag.muted = true;
-                }
-                sendMetaEvent();
+        }
+
+        function _onLoadedMetaData() {
+            if (!_attached) {
+                return;
             }
+
+            _canPlayHandler();
+
+            //fixes Chrome bug where it doesn't like being muted before video is loaded
+            if (_videotag.muted) {
+                _videotag.muted = false;
+                _videotag.muted = true;
+            }
+            sendMetaEvent();
         }
 
         function _progressHandler() {
@@ -260,6 +271,7 @@ define([
             }
 
             _this.setState(states.PLAYING);
+            _this.sendEvent(events.JWPLAYER_PROVIDER_FIRST_FRAME, { time : _.now() });
         }
 
         function _stalledHandler() {
