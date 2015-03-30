@@ -115,7 +115,7 @@
 				stagevideo: stagevideo,
 				renderstate: event['status']
 			}});
-		};
+		}
 
 
 		/** Load content. **/
@@ -136,8 +136,14 @@
 				}
 				attachNetStream(_stream);
 			}
+
+			media = _video;
+			//If you send buffering events before the provider's media is set
+			//The view will think that the controls should be locked because the provider doesn't have a display.
+			setState(PlayerState.BUFFERING);
+
 			// Load either file, streamer or manifest
-			if (_item.file.substr(0,4) == 'rtmp') {
+			if (_item.file.substr(0, 4) === 'rtmp') {
 				// Split application and stream
 				var definst:Number = _item.file.indexOf('_definst_');
 				var prefix:Number = Math.max(_item.file.indexOf('mp4:'),
@@ -196,7 +202,7 @@
 			} else {
 				error("Error loading stream: Manifest not found or invalid");
 			}
-		};
+		}
 
 
 		/** Error handler for manifest loader. **/
@@ -253,18 +259,10 @@
 
 		/** Finalizes the loading process **/
 		private function loadWrap():void {
-
-			// Do not set media object for audio streams
-			if (_type == 'aac' || _type == 'mp3') {
+			if (_type === 'aac' || _type === 'mp3') {
 				media = null;
-			} else if (!media) {
-				media = _video;
 			}
 
-			//If you send buffering events before the provider's media is set
-			//The view will think that the controls should be locked because the provider doesn't have a display.
-			setState(PlayerState.BUFFERING);
-			
 			var level:Number = 0;
 			
 			if (_config.qualitylabel) {
@@ -295,10 +293,13 @@
 			event.currentQuality = level;
 			event.levels = qualityLevels;
 			dispatchEvent(event);
+			// make sure stop was not just called
+			if (state === PlayerState.IDLE) {
+				return
+			}
 			// Connect to RTMP server
 			try {
 				_connection.connect(_application);
-				sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_LOADED);
 			} catch(e:Error) {
 				error("Error loading stream: Could not connect to server");
 			}
@@ -363,15 +364,13 @@
 				}
 			}
 			clearInterval(_interval);
-			setState(PlayerState.PAUSED);
-		};
-
+			super.pause();
+		}
 
 		/** Resume playing. **/
 		override public function play():void {
 
 			if (_loading) {
-				
 				setTimeout(play,250);
 				return;
 			}
@@ -481,8 +480,7 @@
 			streamVolume(config.mute ? 0 : config.volume);
 			// This will trigger a play() of the video.
 			sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_BUFFER_FULL);
-		};
-
+		}
 
 		/** Receive NetStream status updates. **/
 		private function statusHandler(evt:NetStatusEvent):void {
@@ -557,9 +555,12 @@
 				_stream.close();
 			}
 			_stream = null;
+			if (_video) {
+				_video.clear();
+			}
 			attachNetStream(null);
 			_levels = [];
-			_application = _type = undefined;
+			_application = _type = null;
 			_metadata = _transition = _auto = false;
 			_connection.close();
 			clearInterval(_interval);

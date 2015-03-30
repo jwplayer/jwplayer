@@ -140,7 +140,6 @@ package com.longtailvideo.jwplayer.media {
 			sendQualityEvent(MediaEvent.JWPLAYER_MEDIA_LEVELS, _item.levels, _currentQuality);
 			// Do not set a stretchable media for AAC files.
 			_item.type == "aac" ? media = null: media = _video;
-			dispatchEvent(new MediaEvent(MediaEvent.JWPLAYER_MEDIA_LOADED));
 			// Initialize volume
 			streamVolume(config.mute ? 0 : config.volume);
 			// Get item start (should remove this someday)
