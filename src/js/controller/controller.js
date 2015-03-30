@@ -412,7 +412,7 @@ define([
         };
 
         this.getItemQoe = function() {
-            return _model._qoeItem.dump();
+            return _model._qoeItem;
         };
 
         this.playerReady = _playerReady;

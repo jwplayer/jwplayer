@@ -6,10 +6,9 @@ define([
     'controller/qoe',
     'underscore',
     'utils/eventdispatcher',
-    'utils/timer',
     'events/events',
     'events/states'
-], function(utils, stretchUtils, Playlist, Providers, QOE, _, eventdispatcher, Timer, events, states) {
+], function(utils, stretchUtils, Playlist, Providers, QOE, _, eventdispatcher, events, states) {
 
     // Defaults
     var _defaults = {

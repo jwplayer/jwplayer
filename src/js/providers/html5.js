@@ -77,7 +77,7 @@ define([
                 ended: _endedHandler,
                 error: _errorHandler,
 
-                //play: _playHandler, // play is attempted, but hasn't necessarily started
+                play: _onPlayHandler, // play is attempted, but hasn't necessarily started
                 //loadstart: _generalHandler,
                 //loadeddata: _onLoadedData, // we have duration
                 loadedmetadata: _onLoadedMetaData, // we have video dimensions
@@ -210,6 +210,10 @@ define([
                 height: _videotag.videoHeight,
                 width: _videotag.videoWidth
             });
+        }
+
+        function _onPlayHandler() {
+            _this.sendEvent(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
         }
 
         function _canPlayHandler() {

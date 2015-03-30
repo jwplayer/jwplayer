@@ -28,6 +28,7 @@ define([], function() {
         JWPLAYER_MEDIA_BUFFER_FULL: 'jwplayerMediaBufferFull',
         JWPLAYER_MEDIA_ERROR: 'jwplayerMediaError',
         JWPLAYER_MEDIA_FIRST_FRAME: 'jwplayerMediaFirstFrame',
+        JWPLAYER_MEDIA_PLAY_ATTEMPT: 'jwplayerMediaPlayAttempt',
         JWPLAYER_MEDIA_LOADED: 'jwplayerMediaLoaded',
         JWPLAYER_MEDIA_COMPLETE: 'jwplayerMediaComplete',
         JWPLAYER_MEDIA_SEEK: 'jwplayerMediaSeek',
