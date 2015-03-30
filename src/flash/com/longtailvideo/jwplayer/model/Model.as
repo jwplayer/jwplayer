@@ -242,6 +242,8 @@ public class Model extends GlobalEventDispatcher {
             }
             newMedia.addGlobalListener(forwardEvents);
             _currentMedia = newMedia;
+
+            dispatchEvent(new PlayerEvent(PlayerEvent.JWPLAYER_PROVIDER_CHANGED, _currentMedia.provider));
         }
     }
 
