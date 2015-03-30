@@ -1,74 +1,67 @@
 @import "vars.less";
 
 .jwplayer .jw-controlbar {
+    display: table;
     position: absolute;
-    //right: @ui-margin;
     right: 0;
     bottom: @ui-margin;
     left: 0;
-    //left: @ui-margin;
     height: @controlbar-height;
     max-width: @controlbar-max-width;
 
     padding: 0 @ui-padding;
     margin: 0 auto;
 
+    background-color: @def-background-color;
     background: @def-background-style;
     background-size: @def-background-size;
 
     border: @def-border;
     border-radius: @ui-corner-round;
 
-    filter: @def-ie8-background-filter;
-
     box-sizing: content-box;
-
-    -webkit-transition: opacity .25s background .25s visibility .25s;
-    transition: opacity .25s background .25s visibility .25s;
 }
 
-.jwplayer .jw-controlbar{
-    display: table;
-}
-
-.jw-controlbar span {
-    height: 100%;
-    -webkit-user-select: none;
-    -webkit-user-drag: none;
-}
-
-.jw-controlbar .jw-group {
+.jw-controlbar .jw-controlbar--left-group,
+.jw-controlbar .jw-controlbar--right-group,
+.jw-controlbar .jw-controlbar--center-group{
     display: table-cell;
 }
 
-// control bar content (icons/text)
-.jw-controlbar .jw-group > span {
-    display: inline-block;
-    height: @controlbar-height;
-    position: relative;
-    padding: 0 0.20em;
-    line-height: @controlbar-height;
-    vertical-align: middle;
-}
-
-.jwplayer .jw-controlbar .jw-icon button {
+.jw-controlbar .jw-controlbar--center-group {
     width: 100%;
-    height: 100%;
-    font-size: @controlbar-icon-size;
+    padding: 0 @ui-padding;
+
+    .jw-time {
+        padding: 0;
+    }
 }
 
-.jw-controlbar .jw-left,
-.jw-controlbar .jw-right{
-    display: table-cell;
+.jw-controlbar .jw-controlbar--left-group,
+.jw-controlbar .jw-controlbar--right-group {
     white-space: nowrap;
 }
 
-.jw-controlbar button {
+// control bar content (icons/text)
+.jw-controlbar .jw-icon-inline,
+.jw-controlbar .jw-icon-tooltip,
+.jw-controlbar .jw-slider-horizontal,
+.jw-controlbar .jw-elapsed,
+.jw-controlbar .jw-duration {
     display: inline-block;
-    height: inherit;
+    height: @controlbar-height;
+    position: relative;
+    padding: 0 @ui-padding;
+    line-height: @controlbar-height;
+    vertical-align: middle;
     cursor: pointer;
-    -webkit-transition: opacity .25s background .25s visibility .25s;
-    transition: opacity .25s background .25s visibility .25s;
+}
+
+.jwplayer .jw-controlbar .jw-icon-inline:after,
+.jwplayer .jw-controlbar .jw-icon-tooltip:after {
+    width: 100%;
+    height: 100%;
+    font-size: @controlbar-icon-size;
 }
 
 .jw-controlbar .jw-text {
@@ -77,7 +70,8 @@
     line-height: 1em;
 }
 
-.jw-controlbar .jw-elapsed .jw-text, .jw-controlbar .jw-duration .jw-text {
+.jw-controlbar .jw-elapsed .jw-text,
+.jw-controlbar .jw-duration .jw-text {
     line-height: inherit;
 }
 
@@ -86,6 +80,6 @@
 }
 
 .jw-controlbar .jw-cast.jw-can-cast {
-    display: block;
+    display: inline-block;
 }
 
