@@ -118,8 +118,6 @@ define([
                 PLAYER_CLASS + ' ' + ASPECT_MODE);
         }
 
-        _resize(_model.width, _model.height);
-
         var replace = document.getElementById(_model.id);
         replace.parentNode.replaceChild(_playerElement, replace);
 
@@ -527,10 +525,6 @@ define([
         }
 
         function _setupControls() {
-            var height = _model.height;
-
-            _checkAudioMode(height);
-
             _captions = new Captions(_api, _model);
             _captions.addEventListener(events.JWPLAYER_CAPTIONS_LIST, forward);
             _captions.addEventListener(events.JWPLAYER_CAPTIONS_CHANGED, forward);
@@ -543,9 +537,6 @@ define([
                 _touchHandler();
             });
 
-            if (_audioMode) {
-                _display.hidePreview(true);
-            }
             _controlsLayer.appendChild(_display.element());
 
             _logo = new Logo(_api, _model);
@@ -796,15 +787,20 @@ define([
         }
 
         function _isAudioMode(height) {
-            var bounds = _bounds(_playerElement);
-            if (height.toString().indexOf('%') > 0) {
+            if (_model.aspectratio) {
                 return false;
-            } else if (bounds.height === 0) {
-                return false;
-            } else if (_model.playlistposition === 'bottom') {
-                return bounds.height <= 40 + _model.playlistsize;
             }
-            return bounds.height <= 40;
+            if (_.isNumber(height)) {
+                return _isControlBarOnly(height);
+            }
+            if (_.isString(height) && height.indexOf('%') > -1) {
+                return false;
+            }
+            return _isControlBarOnly(_bounds(_container).height);
+        }
+
+        function _isControlBarOnly(verticalPixels) {
+            return verticalPixels && verticalPixels <= 40;
         }
 
         function _resizeMedia(width, height) {

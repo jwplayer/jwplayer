@@ -73,6 +73,7 @@ public class RTMPMediaProvider extends MediaProvider {
     /** Video object to be instantiated. **/
     private var _video:Video;
     private var _loading:Boolean = false;
+    private var _afterLoading:Function = null;
 
     /** Return the list of quality levels. **/
     override public function get qualityLevels():Array {
@@ -125,7 +126,7 @@ public class RTMPMediaProvider extends MediaProvider {
             event.currentQuality = quality;
             dispatchEvent(event);
         }
-    };
+    }
 
     /** Constructor; sets up the connection and loader. **/
     public override function initializeMediaProvider(cfg:PlayerConfig):void {
@@ -168,8 +169,14 @@ public class RTMPMediaProvider extends MediaProvider {
             }
             attachNetStream(_stream);
         }
+
+        media = _video;
+        //If you send buffering events before the provider's media is set
+        // The view will think that the controls should be locked because the provider doesn't have a display.
+        setState(PlayerState.BUFFERING);
+
         // Load either file, streamer or manifest
-        if (_item.file.substr(0, 4) == 'rtmp') {
+        if (_item.file.substr(0, 4) === 'rtmp') {
             // Split application and stream
             var definst:Number = _item.file.indexOf('_definst_');
             var prefix:Number = Math.max(_item.file.indexOf('mp4:'),
@@ -208,15 +215,13 @@ public class RTMPMediaProvider extends MediaProvider {
             }
         }
         clearInterval(_interval);
-        setState(PlayerState.PAUSED);
-    };
+        super.pause();
+    }
 
     /** Resume playing. **/
     override public function play():void {
-
         if (_loading) {
-
-            setTimeout(play, 250);
+            _afterLoading = play;
             return;
         }
         attachNetStream(_stream);
@@ -273,9 +278,12 @@ public class RTMPMediaProvider extends MediaProvider {
             _stream.close();
         }
         _stream = null;
+        if (_video) {
+            _video.clear();
+        }
         attachNetStream(null);
         _levels = [];
-        _application = _type = undefined;
+        _application = _type = null;
         _metadata = _transition = _auto = false;
         _connection.close();
         clearInterval(_interval);
@@ -287,7 +295,7 @@ public class RTMPMediaProvider extends MediaProvider {
     override public function setVolume(vol:Number):void {
         streamVolume(vol);
         super.setVolume(vol);
-    };
+    }
 
     /** Get metadata information from netstream class. **/
     public function onClientData(data:Object):void {
@@ -404,13 +412,7 @@ public class RTMPMediaProvider extends MediaProvider {
         // Do not set media object for audio streams
         if (_type == 'aac' || _type == 'mp3') {
             media = null;
-        } else if (!media) {
-            media = _video;
         }
-
-        //If you send buffering events before the provider's media is set
-        //The view will think that the controls should be locked because the provider doesn't have a display.
-        setState(PlayerState.BUFFERING);
 
         var level:Number = 0;
 
@@ -437,11 +439,7 @@ public class RTMPMediaProvider extends MediaProvider {
         else {
             _level = level - 1;
         }
-        // Dispatch quality levels event
-        var event:MediaEvent = new MediaEvent(MediaEvent.JWPLAYER_MEDIA_LEVELS);
-        event.currentQuality = level;
-        event.levels = qualityLevels;
-        dispatchEvent(event);
+
         // Connect to RTMP server
         try {
             _connection.connect(_application);
@@ -449,7 +447,13 @@ public class RTMPMediaProvider extends MediaProvider {
         } catch (e:Error) {
             error("Error loading stream: Could not connect to server");
         }
-    };
+
+        // Dispatch quality levels event
+        var event:MediaEvent = new MediaEvent(MediaEvent.JWPLAYER_MEDIA_LEVELS);
+        event.currentQuality = level;
+        event.levels = qualityLevels;
+        dispatchEvent(event);
+    }
 
     /** Interval for the position progress. **/
     private function positionInterval():void {
@@ -505,8 +509,14 @@ public class RTMPMediaProvider extends MediaProvider {
             _video.attachNetStream(_stream);
         }
         streamVolume(config.mute ? 0 : config.volume);
-        // This will trigger a play() of the video.
+        // JWPLAYER_MEDIA_BUFFER_FULL will trigger a play() of the video...?
+        if (_afterLoading !== null) {
+            // set to this.play if play was called while loading
+            _afterLoading();
+            _afterLoading = null;
+        }
         sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_BUFFER_FULL);
+
     }
 
     /** Get the streamlength returned from the connection. **/

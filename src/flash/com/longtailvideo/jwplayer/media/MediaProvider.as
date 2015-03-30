@@ -237,6 +237,8 @@ public class MediaProvider extends Sprite implements IMediaProvider {
         } else {
             _media = null;
         }
+        // update the model/view
+        sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_LOADED);
     }
 
     /** Whether or not to stretchthe media **/
@@ -375,7 +377,7 @@ public class MediaProvider extends Sprite implements IMediaProvider {
      * @param newState A state from ModelStates.
      */
     protected function setState(newState:String):void {
-        if (state != newState) {
+        if (state !== newState) {
             var evt:PlayerStateEvent = new PlayerStateEvent(newState, state);
             _state = newState;
             dispatchEvent(evt);

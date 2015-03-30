@@ -141,9 +141,7 @@ public class Controller extends GlobalEventDispatcher {
                 if (_lockingResume || _unlockAutostart) {
                     _lockingResume = false;
                     play();
-                    if (_unlockAutostart) {
-                        _unlockAutostart = false;
-                    }
+                    _unlockAutostart = false;
                 }
                 _interruptPlay = false;
                 return true;
