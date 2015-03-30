@@ -305,11 +305,11 @@ define([
                 },
                 getProvider: function() {
                     if(_flashProviderType){
-                        var returnObj = { name : 'flash ' + _flashProviderType };
+                        var returnObj = { name : 'flash_' + _flashProviderType };
 
                         return returnObj;
                     }
-                    return undefined;
+                    return { name : 'flash' };
                 },
                 getQualityLevels: function() {
                     // TODO: _getPublicLevels
