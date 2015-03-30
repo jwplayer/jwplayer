@@ -69,10 +69,6 @@ define([
             trackFirstFrame(model);
             trackStalledTime(model);
 
-            model.getFirstFrameTime = function() {
-                var t = model._qoeItem.between(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, events.JWPLAYER_MEDIA_FIRST_FRAME);
-                return t;
-            };
         });
     }
 
