@@ -555,7 +555,7 @@ define([
             _controlsLayer.appendChild(_dock.element());
 
             if (!_isMobile) {
-                _rightClickMenu = new RightClick(_playerElement, _model);
+                _rightClickMenu = new RightClick(_playerElement, _api, _model);
             }
 
             _controlbar = new Controlbar(_skin, _api, _model);

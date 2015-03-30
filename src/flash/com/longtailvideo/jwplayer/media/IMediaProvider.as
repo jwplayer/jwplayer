@@ -96,6 +96,8 @@ public interface IMediaProvider extends IGlobalEventDispatcher {
 
     function get canSeek():Boolean;
 
+    function get provider():String;
+
     function initializeMediaProvider(cfg:PlayerConfig):void;
 
     function load(itm:PlaylistItem):void;

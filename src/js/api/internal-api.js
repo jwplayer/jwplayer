@@ -46,6 +46,7 @@ define([
             _controller.jwAttachMedia = _controller.attachMedia;
             _controller.jwAddEventListener = _controller.on;
             _controller.jwRemoveEventListener = _controller.off;
+            _controller.jwGetProvider = _controller.getProvider;
 
             // getters
             _controller.jwGetPlaylistIndex = _statevarFactory('item');
