@@ -330,14 +330,6 @@ define([
             return _view.getCaptionsList();
         }
 
-        function _getProvider() {
-            var provider = _model.getVideo();
-            if (provider) {
-                return provider.getProvider();
-            }
-            return undefined;
-        }
-
         /** Used for the InStream API **/
         function _detachMedia() {
             var provider = _model.getVideo();
@@ -415,7 +407,7 @@ define([
         this.setCurrentCaptions = _waitForReady(_setCurrentCaptions);
         this.getCurrentCaptions = _getCurrentCaptions;
         this.getCaptionsList = _getCaptionsList;
-        this.getProvider = _getProvider;
+        this.getProvider = function(){ return _model.get('provider'); };
         this.checkBeforePlay = function() {
             return _preplay;
         };

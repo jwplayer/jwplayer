@@ -101,6 +101,9 @@ define([
                     this.position = evt.position;
                     this.duration = evt.duration;
                     break;
+                case events.JWPLAYER_PROVIDER_CHANGED:
+                    this.set('provider', _provider.getName());
+                    break;
             }
 
             this.trigger(evt.type, evt);
@@ -116,6 +119,8 @@ define([
                     provider.setContainer(container);
                 }
             }
+
+            this.set('provider', provider.getName());
 
             _provider = provider;
             _provider.volume(_this.volume);
@@ -239,9 +244,9 @@ define([
             utils.saveCookie('mute', state);
             _this.mute = state;
 
-			// pulled in from the control bar
+            // pulled in from the control bar
             if (_this.mute && _this.volume === 0) {
-				_this.setVolume(20);
+              _this.setVolume(20);
             }
 
             if (_provider) {

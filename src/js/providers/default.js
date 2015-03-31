@@ -37,7 +37,7 @@ define([
         isAudioFile : returnFalse,
         supportsFullscreen : returnFalse,
 
-        getProvider: noop,
+        getName: noop,
         getQualityLevels : noop,
         getCurrentQuality : noop,
         setCurrentQuality : noop,

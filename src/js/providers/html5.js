@@ -755,7 +755,7 @@ define([
             return _getPublicLevels(_levels);
         };
 
-        this.getProvider = function() {
+        this.getName = function() {
             return { name : 'html5' };
         };
     }
