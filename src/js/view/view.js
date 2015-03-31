@@ -338,7 +338,7 @@ define([
                 _controlbar.adMode(false);
             });
 
-            _model.on('change:controls', _onChangeControls);
+            _model.on('controls', _onChangeControls);
 
             _model.addEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
             _model.addEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
@@ -1172,7 +1172,7 @@ define([
 
         this.setupInstream = function(instreamModel) {
             _instreamModel = instreamModel;
-            _instreamModel.on('change:controls', _onChangeControls);
+            _instreamModel.on('controls', _onChangeControls);
             _instreamMode = true;
             _controlbar.instreamMode(true);
             _controlbar.adMode(true);

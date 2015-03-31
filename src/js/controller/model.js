@@ -264,8 +264,7 @@ define([
                 return;
             }
             this[attr] = val;
-            this.trigger('change:'+attr, this, val);
-            this.trigger('change', this);
+            this.trigger(attr, this, val);
         }
     });
 
