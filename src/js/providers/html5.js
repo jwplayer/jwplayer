@@ -767,6 +767,9 @@ define([
             return _getPublicLevels(_levels);
         };
 
+        this.getName = function() {
+            return { name : 'html5' };
+        };
     }
 
     var MimeTypes = {

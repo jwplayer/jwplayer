@@ -650,6 +650,10 @@ define([
                 }
             }
         };
+
+        this.getName = function() {
+            return { name: 'youtube' };
+        };
     }
 
     // Clear up the memory, this is called by Google

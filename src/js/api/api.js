@@ -148,6 +148,10 @@ define([
             return 'html5';
         };
 
+        _this.getProvider = function () {
+            return _controller.getProvider();
+        };
+
         // Player Public Methods
         _this.setFullscreen = function (fullscreen) {
             if (!utils.exists(fullscreen)) {

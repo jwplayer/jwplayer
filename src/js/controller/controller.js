@@ -407,6 +407,7 @@ define([
         this.setCurrentCaptions = _waitForReady(_setCurrentCaptions);
         this.getCurrentCaptions = _getCurrentCaptions;
         this.getCaptionsList = _getCaptionsList;
+        this.getProvider = function(){ return _model.get('provider'); };
         this.checkBeforePlay = function() {
             return _preplay;
         };

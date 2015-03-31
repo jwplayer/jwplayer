@@ -19,6 +19,9 @@ public class PlayerEvent extends Event {
 
     public static const JWPLAYER_SETUP_ERROR:String = "jwplayerSetupError";
 
+    // MediaProvider
+    public static const JWPLAYER_PROVIDER_CHANGED:String = "jwplayerProviderChanged";
+
     public function PlayerEvent(type:String, msg:String = undefined) {
         super(type, false, false);
         this.message = msg;
