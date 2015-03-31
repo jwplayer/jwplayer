@@ -41,7 +41,7 @@ define([
         };
 
         /** Send an event **/
-        this.sendEvent = function (type, data) {
+        this.sendEvent = function (type, data, val) {
             data = _.extend({}, data, {
                 id: _id,
                 version: jwplayer.version,
@@ -52,8 +52,8 @@ define([
                 //_utils.log(type, data);
             }
 
-            obj.trigger(GLOBAL_EVENT, data);
-            obj.trigger(type, data);
+            obj.trigger(GLOBAL_EVENT, data, val);
+            obj.trigger(type, data, val);
         };
     };
 
