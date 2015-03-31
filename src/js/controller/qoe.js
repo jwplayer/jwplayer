@@ -29,9 +29,11 @@ define([
 
         // When it occurs, send the event, and unbind all listeners
         model._triggerFirstFrame = _.once(function() {
-            model._qoeItem.tick(events.JWPLAYER_MEDIA_FIRST_FRAME);
+            var qoeItem = model._qoeItem;
+            qoeItem.tick(events.JWPLAYER_MEDIA_FIRST_FRAME);
 
-            model.trigger(events.JWPLAYER_MEDIA_FIRST_FRAME);
+            var time = qoeItem.between(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, events.JWPLAYER_MEDIA_FIRST_FRAME);
+            model.trigger(events.JWPLAYER_MEDIA_FIRST_FRAME, {loadtime : time});
             unbindFirstFrameEvents(model);
         });
 
@@ -68,7 +70,6 @@ define([
 
             trackFirstFrame(model);
             trackStalledTime(model);
-
         });
     }
 

@@ -77,7 +77,7 @@ define([
                 ended: _endedHandler,
                 error: _errorHandler,
 
-                play: _onPlayHandler, // play is attempted, but hasn't necessarily started
+                //play: _onPlayHandler, // play is attempted, but hasn't necessarily started
                 //loadstart: _generalHandler,
                 //loadeddata: _onLoadedData, // we have duration
                 loadedmetadata: _onLoadedMetaData, // we have video dimensions
@@ -212,10 +212,6 @@ define([
             });
         }
 
-        function _onPlayHandler() {
-            _this.sendEvent(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
-        }
-
         function _canPlayHandler() {
             if (!_attached) {
                 return;
@@ -271,7 +267,7 @@ define([
             }
 
             _this.setState(states.PLAYING);
-            _this.sendEvent(events.JWPLAYER_PROVIDER_FIRST_FRAME, { time : _.now() });
+            _this.sendEvent(events.JWPLAYER_PROVIDER_FIRST_FRAME, {});
         }
 
         function _stalledHandler() {

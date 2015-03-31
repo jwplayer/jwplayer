@@ -253,6 +253,16 @@ define([
         this.componentConfig = function(name) {
             return _componentConfigs[name];
         };
+
+        // The model is also the mediaController for now
+        this.playVideo = function() {
+            this.getVideo().play();
+        };
+        this.loadVideo = function() {
+            this.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
+            var idx = this.get('item');
+            this.getVideo().load(this.get('playlist')[idx]);
+        };
     };
 
     _.extend(Model.prototype, {
