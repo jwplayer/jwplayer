@@ -149,7 +149,7 @@ define([
         };
 
         _this.getProvider = function () {
-            return _callInternal('jwGetProvider');
+            return _controller.getProvider();
         };
 
         // Player Public Methods

@@ -225,6 +225,7 @@ define([
 
                     _swf.on(events.JWPLAYER_PROVIDER_CHANGED, function(data) {
                         _flashProviderType = data.message;
+                        this.sendEvent(events.JWPLAYER_PROVIDER_CHANGED, data);
                     }, this);
 
                     // ignoring:
@@ -303,7 +304,7 @@ define([
                 getCurrentQuality: function() {
                     return _currentQuality;
                 },
-                getProvider: function() {
+                getName: function() {
                     if(_flashProviderType){
                         var returnObj = { name : 'flash_' + _flashProviderType };
 

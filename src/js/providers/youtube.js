@@ -651,7 +651,7 @@ define([
             }
         };
 
-        this.getProvider = function() {
+        this.getName = function() {
             return { name: 'youtube' };
         };
     }
