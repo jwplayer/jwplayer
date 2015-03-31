@@ -100,7 +100,7 @@ define([
         this.qoe = function() {
             var item = _controller.getItemQoe();
 
-            var firstFrame = item.between(events.JWPLAYER_PLAYLIST_ITEM, events.JWPLAYER_MEDIA_FIRST_FRAME);
+            var firstFrame = item.between(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, events.JWPLAYER_MEDIA_FIRST_FRAME);
 
             return {
                 firstFrame : firstFrame,
