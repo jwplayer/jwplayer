@@ -13,6 +13,7 @@ define([
 ], function(setupInternalApi, _, Setup, Model, Playlist, PlaylistLoader, utils, View, Events, states, events) {
 
     var Controller = function() {
+        _.extend(this, Events);
     };
 
     _.extend(Controller.prototype, {
@@ -27,7 +28,7 @@ define([
                 _stopPlaylist = false, // onComplete, should we play next item or not?
                 _interruptPlay,
                 _queuedCalls = [],
-                _this = _.extend(this, Events);
+                _this = this;
 
             _model = this._model = new Model(config);
             _view  = this._view  = new View(_api, _model);

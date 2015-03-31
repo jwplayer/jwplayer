@@ -9,9 +9,11 @@ define([
     'utils/css',
     'utils/timer',
     'utils/underscore',
+    'controller/controller',
     'api/mutators',
     'api/callbacks-deprecate'
-], function(Embed, plugins, Instream, events, states, Events, utils, cssUtils, Timer, _, mutatorsInit, legacyInit) {
+], function(Embed, plugins, Instream, events, states,
+            Events, utils, cssUtils, Timer, _, Controller, mutatorsInit, legacyInit) {
 
     function addFocusBorder(container) {
         utils.addClass(container, 'jw-tab-focus');
@@ -59,7 +61,7 @@ define([
         };
 
         this.on = function(name, callback, context) {
-            if (!_controller || !_playerReady) {
+            if (!_playerReady) {
                 _eventQueue.push([name, callback, context]);
                 return this;
             }
@@ -91,8 +93,12 @@ define([
 
                 jwplayer.api.addPlayer(_this);
 
+                _controller = new Controller();
+                _controller.on('all', _this.trigger);
+                _controller.on(events.JWPLAYER_PLAYER_STATE, _forwardStateEvent);
+
                 _this.config = options;
-                _this._embedder = new Embed(_this);
+                _this._embedder = new Embed(_this, _controller);
                 _this._embedder.embed();
                 return _this;
         };
@@ -268,9 +274,6 @@ define([
         };
 
 
-
-
-
         _this.remove = function () {
 
             // Cancel embedding even if it is in progress
@@ -314,15 +317,6 @@ define([
         function _forwardStateEvent(evt) {
             _this.trigger(evt.newstate, evt);
         }
-        _this.setController = function (player) {
-            if (_controller) {
-                _controller.off('all', _this.trigger);
-                _controller.off(events.JWPLAYER_PLAYER_STATE, _forwardStateEvent);
-            }
-            _controller = player;
-            _controller.on('all', _this.trigger);
-            _controller.on(events.JWPLAYER_PLAYER_STATE, _forwardStateEvent);
-        };
 
         _this.detachMedia = function () {
             return _callInternal('jwDetachMedia');
@@ -341,7 +335,7 @@ define([
             if (_playerReady) {
                 var args = Array.prototype.slice.call(arguments, 0),
                     funcName = args.shift();
-                if (!_controller || !_.isFunction(_controller[funcName])) {
+                if (!_.isFunction(_controller[funcName])) {
                     return null;
                 }
                 return _controller[funcName].apply(_controller, args);
