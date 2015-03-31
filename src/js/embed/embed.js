@@ -114,7 +114,8 @@ define([
                 // Volume option is tricky to remove, since it needs to be in the HTML5 player model.
                 var playerConfigCopy = _.extend({}, pluginConfigCopy);
                 delete playerConfigCopy.volume;
-                var controller = new Controller(playerConfigCopy, api);
+                var controller = new Controller();
+                controller.setup(playerConfigCopy, api);
                 api.setController(controller);
 
                 _insertCSS();

@@ -63,8 +63,8 @@ define([], function() {
 
         JWPLAYER_VIEW_TAB_FOCUS: 'jwplayerViewTabFocus',
 
-        // Controls show/hide 
-        JWPLAYER_CONTROLS: 'jwplayerViewControls',
+        // Controls show/hide
+        JWPLAYER_CONTROLS: 'controls',
         JWPLAYER_USER_ACTION: 'jwplayerUserAction',
         JWPLAYER_CONTROLBAR_DRAGGING: 'jwplayerControlbarDragging',
 
