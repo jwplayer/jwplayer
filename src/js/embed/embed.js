@@ -13,7 +13,7 @@ define([
 
     var _css = cssUtils.css;
 
-    var Embed = function(api) {
+    var Embed = function(api, controller) {
 
         var _this = this,
             _config = new EmbedConfig(api.config),
@@ -114,9 +114,8 @@ define([
                 // Volume option is tricky to remove, since it needs to be in the HTML5 player model.
                 var playerConfigCopy = _.extend({}, pluginConfigCopy);
                 delete playerConfigCopy.volume;
-                var controller = new Controller();
+
                 controller.setup(playerConfigCopy, api);
-                api.setController(controller);
 
                 _insertCSS();
                 return api;
