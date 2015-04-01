@@ -138,7 +138,7 @@ define([
             }
 
             // Controls may be disabled during share screens, or via API
-            if (!_model.controls) {
+            if (!_model.get('controls')) {
                 return false;
             }
             return true;
@@ -337,6 +337,8 @@ define([
             jwplayer(_model.id).onAdError(function() {
                 _controlbar.adMode(false);
             });
+
+            _model.on('controls', _onChangeControls);
 
             _model.addEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
             _model.addEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
@@ -568,6 +570,19 @@ define([
             _playerElement.onfocusout = handleBlur;
             _playerElement.addEventListener('blur', handleBlur);
             _playerElement.addEventListener('keydown', handleKeydown);
+        }
+
+        function _onChangeControls(model, bool) {
+            if (!bool) {
+                _hideControls();
+                _hideDisplay();
+            }
+            else {
+                // model may be instream or normal depending on who triggers this
+                _stateHandler({
+                    newstate: model.state
+                });
+            }
         }
 
         function _dragging(evt) {
@@ -923,7 +938,7 @@ define([
         }
 
         function _showControlbar() {
-            if (_controlbar && _model.controls) {
+            if (_controlbar && _model.get('controls')) {
                 _controlbar.show();
             }
         }
@@ -940,7 +955,7 @@ define([
         }
 
         function _showDock() {
-            if (_dock && !_audioMode && _model.controls) {
+            if (_dock && !_audioMode && _model.get('controls')) {
                 _dock.show();
             }
         }
@@ -965,7 +980,7 @@ define([
 
         function _showDisplay() {
             var model = _instreamMode ? _instreamModel : _model;
-            if (_display && _model.controls && !_audioMode) {
+            if (_display && _model.get('controls') && !_audioMode) {
                 if (!_isIPod || model.state === states.IDLE) {
                     _display.show();
                 }
@@ -993,11 +1008,11 @@ define([
             var model = _instreamMode ? _instreamModel : _model;
             var state = model.state;
 
-            if (!_model.controls || state !== states.PAUSED) {
+            if (!_model.get('controls') || state !== states.PAUSED) {
                 _hideControlbar();
             }
 
-            if (!_model.controls) {
+            if (!_model.get('controls')) {
                 _hideDock();
             }
 
@@ -1015,7 +1030,7 @@ define([
             }
 
             _showing = true;
-            if (_model.controls || _audioMode) {
+            if (_model.get('controls') || _audioMode) {
                 _showControlbar();
                 _showDock();
             }
@@ -1034,7 +1049,7 @@ define([
         function _playlistCompleteHandler() {
             _replayState = true;
             _fullscreen(false);
-            if (_model.controls) {
+            if (_model.get('controls')) {
                 _showDock();
             }
         }
@@ -1157,6 +1172,7 @@ define([
 
         this.setupInstream = function(instreamModel) {
             _instreamModel = instreamModel;
+            _instreamModel.on('controls', _onChangeControls);
             _instreamMode = true;
             _controlbar.instreamMode(true);
             _controlbar.adMode(true);
@@ -1210,30 +1226,6 @@ define([
             if (_dock) {
                 _dock.removeButton(id);
             }
-        };
-
-        this.setControls = function(state) {
-
-            var newstate = !!state;
-            if (newstate === _model.controls) {
-                return;
-            }
-
-            _model.controls = newstate;
-
-            if (!newstate) {
-                _hideControls();
-                _hideDisplay();
-            } else {
-                var model = _instreamMode ? _instreamModel : _model;
-                _stateHandler({
-                    newstate: model.state
-                });
-            }
-
-            _this.sendEvent(events.JWPLAYER_CONTROLS, {
-                controls: newstate
-            });
         };
 
         this.forceControls = function(state) {
@@ -1297,7 +1289,7 @@ define([
                 logoTop = (_logo.position().indexOf('top') === 0),
                 dockBounds,
                 logoBounds = _bounds(_logo.element());
-            if (dockButtons && _model.controls) {
+            if (dockButtons && _model.get('controls')) {
                 dockBounds = _bounds(_dock.element());
                 bounds.y = Math.max(0, dockBounds.bottom - dispOffset);
             }
@@ -1305,7 +1297,7 @@ define([
                 bounds.y = Math.max(bounds.y, logoBounds.bottom - dispOffset);
             }
             bounds.width = dispBounds.width;
-            if (cbBounds.height && includeCB && _model.controls) {
+            if (cbBounds.height && includeCB && _model.get('controls')) {
                 bounds.height = (logoTop ? cbBounds.top : logoBounds.top) - dispOffset - bounds.y;
             } else {
                 bounds.height = dispBounds.height - bounds.y;

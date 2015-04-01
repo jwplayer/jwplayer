@@ -110,7 +110,9 @@ define([
             };
 
             _controller.jwSetControls = function (mode) {
-                _view.setControls(mode);
+                _model.set('controls', mode);
+
+                // Tell instream to show/hide the skip button
                 if (_controller._instreamPlayer) {
                     _controller._instreamPlayer.setControls(mode);
                 }

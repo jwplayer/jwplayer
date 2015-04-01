@@ -98,6 +98,9 @@ define([
                     this.set('position', evt.position);
                     this.set('duration', evt.duration);
                     break;
+                case events.JWPLAYER_PROVIDER_CHANGED:
+                    this.set('provider', _provider.getName());
+                    break;
             }
 
             this.trigger(evt.type, evt);
@@ -113,6 +116,8 @@ define([
                     provider.setContainer(container);
                 }
             }
+
+            this.set('provider', provider.getName());
 
             _provider = provider;
             _provider.volume(_this.volume);
@@ -253,6 +258,16 @@ define([
         this.componentConfig = function(name) {
             return _componentConfigs[name];
         };
+
+        // The model is also the mediaController for now
+        this.playVideo = function() {
+            this.getVideo().play();
+        };
+        this.loadVideo = function() {
+            this.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
+            var idx = this.get('item');
+            this.getVideo().load(this.get('playlist')[idx]);
+        };
     };
 
     _.extend(Model.prototype, {
@@ -260,7 +275,11 @@ define([
             return this[attr];
         },
         'set' : function(attr, val) {
+            if (this[attr] === val) {
+                return;
+            }
             this[attr] = val;
+            this.trigger(attr, this, val);
         }
     });
 
