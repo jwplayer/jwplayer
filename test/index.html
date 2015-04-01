@@ -100,7 +100,9 @@
         })(simpleName);
     }
 
-    jwplayer('video-container').setup(config);
+    var jwp = jwplayer('video-container');
+    jwp.setVolume('40');
+    jwp.setup(config);
 
 })();
 </script>
