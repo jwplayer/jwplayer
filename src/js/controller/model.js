@@ -275,7 +275,11 @@ define([
             return this[attr];
         },
         'set' : function(attr, val) {
+            if (this[attr] === val) {
+                return;
+            }
             this[attr] = val;
+            this.trigger(attr, this, val);
         }
     });
 
