@@ -2,9 +2,9 @@ define([
     'utils/timer',
     'events/events',
     'events/states',
-    'utils/underscore'
-], function(Timer, events, states, _) {
-
+    'utils/underscore',
+    'utils/eventdispatcher'
+], function(Timer, events, states, _, eventdispatcher) {
     // This is to provide a first frame event even when
     //  a provider does not give us one.
     var onTimeIncreasesGenerator = (function(callback) {
@@ -18,6 +18,24 @@ define([
             lastVal = evt.position;
         };
     });
+
+    function qualitySwitchHandler (evt) {
+        console.log('*********************** quality swithed', evt);
+        this.set('visualQuality', {
+            bitrate: evt.rate,
+            label: evt.label,
+            width: evt.width,
+            height: evt.height
+        });
+
+        this.sendEvent( 'visualQuality', {
+            type: 'visualQuality',
+            levelIndex: evt.index,
+            level: this.get('visualQuality'),
+            mode: (evt.autoSwitch) ? 'auto' : 'manual',
+            reason: evt.reason
+        } );
+    }
 
     function unbindFirstFrameEvents(model) {
         model.off(events.JWPLAYER_PROVIDER_FIRST_FRAME, model._triggerFirstFrame);
@@ -57,6 +75,7 @@ define([
     }
 
     function initModel(model) {
+        this.set('model', model);
         model.on(events.JWPLAYER_PLAYLIST_ITEM, function() {
             // reset item level qoe
             model._qoeItem = new Timer();
@@ -68,11 +87,22 @@ define([
 
             trackFirstFrame(model);
             trackStalledTime(model);
-
         });
+        model.on('qualityChange', qualitySwitchHandler.bind(this));
     }
 
-    return {
-        model : initModel
-    };
+
+    this.model = initModel.bind(this);
+
+    _.extend(this, new eventdispatcher());
+    _.extend(this, {
+        'get' : function(attr) {
+            return this[attr];
+        },
+        'set' : function(attr, val) {
+            this[attr] = val;
+        }
+    });
+
+    return this;
 });

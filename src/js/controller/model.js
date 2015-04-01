@@ -56,6 +56,8 @@ define([
 
         QOE.model(this);
 
+        //QOE.on('visualQuality', function(){ console.log('VISUAL QUALITY LISTENED TO'); });
+
         this.config = _parseConfig(_.extend({}, _defaults, _cookies, config));
 
         this.trigger = this.sendEvent;

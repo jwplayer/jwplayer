@@ -161,7 +161,12 @@ define([
                             levels: e.levels,
                             currentQuality: e.currentQuality
                         });
-
+                    }, this).on(events.JWPLAYER_MEDIA_LEVEL_CHANGED, function(e) {
+                        //console.log('       JWPLAYER_MEDIA_LEVEL_CHANGED        ', e);
+                        this.sendEvent(events.JWPLAYER_MEDIA_LEVEL_CHANGED, {
+                            currentQuality: e.currentQuality,
+                            levels: e.levels
+                        });
                     }, this).on(events.JWPLAYER_PLAYER_STATE, function(e) {
                         if (e.newstate === states.IDLE) {
                             return;
@@ -221,6 +226,13 @@ define([
                             volume: data.volume
                         });
                     }, this);
+
+                    _swf.on('qualityChange', function(data) {
+                        data.index = _currentQuality;
+                        data.autoSwitch = _currentQuality === -1;
+                        this.sendEvent('qualityChange', data);
+                    }, this);
+
 
                     // ignoring:
                     // jwplayerMediaLoaded, jwplayerMediaBeforePlay, ...
@@ -292,8 +304,10 @@ define([
                     }
                     return false;
                 },
-                setCurrentQuality: function(/* quality */) {
+                setCurrentQuality: function(quality) {
                     // TODO: setCurrentQuality
+                    _flashCommand('quality', quality);
+                    //console.log('DO QUALITY', quality);
                 },
                 getCurrentQuality: function() {
                     return _currentQuality;
