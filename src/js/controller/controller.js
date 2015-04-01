@@ -1,5 +1,6 @@
 define([
-    'api/internal-api',
+    'controller/internal-controller',
+    'plugins/plugins',
     'underscore',
     'controller/Setup',
     'controller/model',
@@ -10,13 +11,36 @@ define([
     'utils/backbone.events',
     'events/states',
     'events/events'
-], function(setupInternalApi, _, Setup, Model, Playlist, PlaylistLoader, utils, View, Events, states, events) {
+], function(setupInternalApi, plugins, _, Setup, Model, Playlist, PlaylistLoader, utils, View, Events, states, events) {
+
+    function _queue(command) {
+        return function() {
+            var args = Array.prototype.slice.call(arguments, 0);
+            this.eventsQueue.push([command, args]);
+        };
+    }
 
     var Controller = function() {
+        this.eventsQueue = [];
         _.extend(this, Events);
     };
 
-    _.extend(Controller.prototype, {
+    Controller.prototype = {
+        play : _queue('play'),
+        pause : _queue('pause'),
+        setVolume : _queue('setVolume'),
+        setMute : _queue('setMute'),
+        seek : _queue('seek'),
+        stop : _queue('stop'),
+        load : _queue('load'),
+        playlistNext : _queue('playlistNext'),
+        playlistPrev : _queue('playlistPrev'),
+        playlistItem : _queue('playlistItem'),
+        setFullscreen : _queue('setFullscreen'),
+        setCurrentCaptions : _queue('setCurrentCaptions'),
+        setCurrentQuality : _queue('setCurrentQuality'),
+        registerPlugin : _queue('registerPlugin'),
+
         setup : function(config, _api) {
             var _ready = false,
                 _model,
@@ -27,7 +51,6 @@ define([
                 _actionOnAttach,
                 _stopPlaylist = false, // onComplete, should we play next item or not?
                 _interruptPlay,
-                _queuedCalls = [],
                 _this = this;
 
             _model = this._model = new Model(config);
@@ -95,9 +118,11 @@ define([
 
                 _ready = true;
 
-                while (_queuedCalls.length > 0) {
-                    var queuedCall = _queuedCalls.shift();
-                    queuedCall.method.apply(this, queuedCall.arguments);
+                while (_this.eventsQueue.length > 0) {
+                    var q = _this.eventsQueue.shift();
+                    var method = q[0];
+                    var args = q[1];
+                    _this[method].apply(this, args);
                 }
             }
 
@@ -184,6 +209,11 @@ define([
             }
 
             function _stop(internal) {
+                // Something has called stop() in an onComplete handler
+                if (_isIdle()) {
+                    _stopPlaylist = true;
+                }
+
                 _actionOnAttach = null;
 
                 var status = utils.tryCatch(function() {
@@ -362,50 +392,28 @@ define([
                 }
             }
 
-            function _waitForReady(func) {
-                return function() {
-                    var args = Array.prototype.slice.call(arguments, 0);
-                    if (_ready) {
-                        func.apply(this, args);
-                    } else {
-                        _queuedCalls.push({
-                            method: func,
-                            arguments: args
-                        });
-                    }
-                };
-            }
-
-
-
-
             /** Controller API / public methods **/
-            this.play = _waitForReady(_play);
-            this.pause = _waitForReady(_pause);
-            this.seek = _waitForReady(_seek);
-            this.stop = function() {
-                // Something has called stop() in an onComplete handler
-                if (_isIdle()) {
-                    _stopPlaylist = true;
-                }
-                _waitForReady(_stop)();
-            };
-            this.load = _waitForReady(_load);
-            this.next = _waitForReady(_next);
-            this.prev = _waitForReady(_prev);
-            this.item = _waitForReady(_item);
-            this.setVolume = _waitForReady(_model.setVolume);
-            this.setMute = _waitForReady(_model.setMute);
-            this.setFullscreen = _waitForReady(_setFullscreen);
+            this.play = _play;
+            this.pause = _pause;
+            this.seek = _seek;
+            this.stop = _stop;
+            this.load = _load;
+            this.playlistNext = _next;
+            this.playlistPrev = _prev;
+            this.playlistItem = _item;
+            this.setVolume = _model.setVolume;
+            this.setMute = _model.setMute;
+            this.setFullscreen = _setFullscreen;
+            this.setCurrentCaptions = _setCurrentCaptions;
+            this.setCurrentQuality = _setCurrentQuality;
+
             this.detachMedia = _detachMedia;
             this.attachMedia = _attachMedia;
-            this.setCurrentQuality = _waitForReady(_setCurrentQuality);
             this.getCurrentQuality = _getCurrentQuality;
             this.getQualityLevels = _getQualityLevels;
             this.setCurrentAudioTrack = _setCurrentAudioTrack;
             this.getCurrentAudioTrack = _getCurrentAudioTrack;
             this.getAudioTracks = _getAudioTracks;
-            this.setCurrentCaptions = _waitForReady(_setCurrentCaptions);
             this.getCurrentCaptions = _getCurrentCaptions;
             this.getCaptionsList = _getCaptionsList;
         this.getProvider = function(){ return _model.get('provider'); };
@@ -417,14 +425,14 @@ define([
                 return _model._qoeItem;
             };
 
+            this.registerPlugin = plugins.registerPlugin;
+
             this.playerReady = _playerReady;
 
             // Add in all the jwGet____ methods
             setupInternalApi(this, _model, _view);
         }
-    });
-
+    };
 
     return Controller;
-
 });
