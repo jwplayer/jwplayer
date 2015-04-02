@@ -11,6 +11,15 @@ define([
             events, states, Model, Adskipbutton, PlaylistItem) {
 
     var Instream = function(_controller, _model, _view) {
+        function modelGet(attr) {
+            return _model.get(attr);
+        }
+        function modelGetter(attr) {
+            return function() {
+                return _model.get(attr);
+            }
+        }
+
         var _defaultOptions = {
             controlbarseekable: 'never',
             controlbarpausable: true,
@@ -41,7 +50,7 @@ define([
             _this = _.extend(this, new eventdispatcher());
 
         // Listen for player resize events
-        _controller.jwAddEventListener(events.JWPLAYER_FULLSCREEN, _fullscreenHandler);
+        _controller.on(events.JWPLAYER_FULLSCREEN, _fullscreenHandler);
 
         /*****************************************
          *****  Public instream API methods  *****
@@ -78,7 +87,7 @@ define([
             } else if (_oldProvider && _oldProvider.checkComplete()) {
                  // AKA  postroll
                  _oldstate = states.IDLE;
-             }  else if (_controller.jwGetState() === states.IDLE) {
+             }  else if (modelGet('state') === states.IDLE) {
                 _oldstate = states.IDLE;
             } else {
                 _oldstate = states.PLAYING;
@@ -93,7 +102,7 @@ define([
             _view.setupInstream(_adModel);
             _view.forceState(states.BUFFERING);
 
-            _this.jwInstreamSetText(_defaultOptions.loadingmessage);
+            _this.instreamSetText(_defaultOptions.loadingmessage);
         };
 
         /** Load an instream item and initialize playback **/
@@ -136,7 +145,7 @@ define([
             _skipButton.reset(_options.skipoffset || -1);
 
 
-            if (_controller.jwGetControls()) {
+            if (modelGet('controls')) {
                 _skipButton.show();
             } else {
                 _skipButton.hide();
@@ -151,7 +160,7 @@ define([
             // start listening for ad click
             _view.displayComp().setAlternateClickHandler(function(evt) {
                 evt = evt || {};
-                evt.hasControls = !!_controller.jwGetControls();
+                evt.hasControls = !!modelGet('controls');
 
                 _sendEvent(events.JWPLAYER_INSTREAM_CLICK, evt);
 
@@ -159,10 +168,10 @@ define([
 
                 if (_adModel.state === states.PAUSED) {
                     if (evt.hasControls) {
-                        _this.jwInstreamPlay();
+                        _this.instreamPlay();
                     }
                 } else {
-                    _this.jwInstreamPause();
+                    _this.instreamPause();
                 }
             });
 
@@ -181,12 +190,12 @@ define([
             _sendEvent(evt.type, evt);
 
             if (_adModel) {
-                _controller.jwInstreamDestroy(false, _this);
+                _controller.instreamDestroy(false, _this);
             }
         }
 
         /** Stop the instream playback and revert the main player back to its original state **/
-        _this.jwInstreamDestroy = function(complete) {
+        _this.instreamDestroy = function(complete) {
             if (!_adModel) {
                 return;
             }
@@ -243,7 +252,7 @@ define([
         };
 
         /** Start instream playback **/
-        _this.jwInstreamPlay = function() {
+        _this.instreamPlay = function() {
             //if (!_item) return;
             _adModel.getVideo().play(true);
             _view.releaseControls();
@@ -251,24 +260,24 @@ define([
         };
 
         /** Pause instream playback **/
-        _this.jwInstreamPause = function() {
+        _this.instreamPause = function() {
             //if (!_item) return;
             _adModel.getVideo().pause(true);
             _view.forceState(states.PAUSED);
         };
 
         /** Seek to a point in instream media **/
-        _this.jwInstreamSeek = function(position) {
+        _this.instreamSeek = function(position) {
             //if (!_item) return;
             _adModel.getVideo().seek(position);
         };
 
         /** Set custom text in the controlbar **/
-        _this.jwInstreamSetText = function(text) {
+        _this.instreamSetText = function(text) {
             _view.setInstreamText(text);
         };
 
-        _this.jwInstreamState = function() {
+        _this.instreamState = function() {
             //if (!_item) return;
             return _adModel.state;
         };
@@ -310,10 +319,10 @@ define([
         function stateHandler(evt) {
             switch(evt.newstate) {
                 case states.PLAYING:
-                    _this.jwInstreamPlay();
+                    _this.instreamPlay();
                     break;
                 case states.PAUSED:
-                    _this.jwInstreamPause();
+                    _this.instreamPause();
                     break;
             }
         }
@@ -372,7 +381,7 @@ define([
                     //   1) vast.js (to trigger ad_complete event)
                     //   2) display.js (to set replay icon and image)
                     _sendEvent(events.JWPLAYER_PLAYLIST_COMPLETE, {}, true);
-                    _controller.jwInstreamDestroy(true, _this);
+                    _controller.instreamDestroy(true, _this);
                 }, 0);
             }
         }
@@ -406,95 +415,88 @@ define([
          *****  Duplicate main html5 api  *****
          **************************************/
 
-        _this.jwPlay = function() {
+        _this.play = function() {
             if (_options.controlbarpausable.toString().toLowerCase() === 'true') {
-                _this.jwInstreamPlay();
+                _this.instreamPlay();
             }
         };
 
-        _this.jwPause = function() {
+        _this.pause = function() {
             if (_options.controlbarpausable.toString().toLowerCase() === 'true') {
-                _this.jwInstreamPause();
+                _this.instreamPause();
             }
         };
 
-        _this.jwStop = function() {
+        _this.stop = function() {
             if (_options.controlbarstoppable.toString().toLowerCase() === 'true') {
-                _controller.jwInstreamDestroy(false, _this);
-                _controller.jwStop();
+                _controller.instreamDestroy(false, _this);
+                _controller.stop();
             }
         };
 
-        _this.jwSeek = function(position) {
+        _this.seek = function(position) {
             switch (_options.controlbarseekable.toLowerCase()) {
                 case 'never':
                     return;
                 case 'always':
-                    _this.jwInstreamSeek(position);
+                    _this.instreamSeek(position);
                     break;
                 case 'backwards':
                     if (_adModel.position > position) {
-                        _this.jwInstreamSeek(position);
+                        _this.instreamSeek(position);
                     }
                     break;
             }
         };
 
-        _this.jwSeekDrag = function(state) {
+        _this.seekDrag = function(state) {
             _adModel.seekDrag(state);
         };
 
-        _this.jwGetPosition = function() {};
-        _this.jwGetDuration = function() {};
-        _this.jwGetWidth = _controller.jwGetWidth;
-        _this.jwGetHeight = _controller.jwGetHeight;
-        _this.jwGetFullscreen = _controller.jwGetFullscreen;
-        _this.jwSetFullscreen = _controller.jwSetFullscreen;
-        _this.jwGetVolume = function() {
+        _this.getPosition = function() {};
+        _this.getDuration = function() {};
+        _this.getWidth = modelGetter('width');
+        _this.getHeight = modelGetter('height');
+        _this.getFullscreen = modelGetter('fullscreen');
+        _this.setFullscreen = _controller.setFullscreen;
+        _this.getVolume = function() {
             return _model.volume;
         };
-        _this.jwSetVolume = function(vol) {
+        _this.setVolume = function(vol) {
             _adModel.setVolume(vol);
-            _controller.jwSetVolume(vol);
+            _controller.setVolume(vol);
         };
-        _this.jwGetMute = function() {
+        _this.getMute = function() {
             return _model.mute;
         };
-        _this.jwSetMute = function(state) {
+        _this.setMute = function(state) {
             _adModel.setMute(state);
-            _controller.jwSetMute(state);
+            _controller.setMute(state);
         };
-        _this.jwGetState = function() {
+        _this.getState = function() {
             if (!_adModel) {
                 return states.IDLE;
             }
             return _adModel.state;
         };
-        _this.jwGetPlaylist = function() {
+        _this.getPlaylist = function() {
             return [_item];
         };
-        _this.jwGetPlaylistIndex = function() {
+        _this.getPlaylistIndex = function() {
             return 0;
         };
-        _this.jwGetStretching = function() {
+
+        _this.getStretching = function() {
             return _model.config.stretching;
         };
-        _this.jwAddEventListener = function(type, handler) {
-            _this.addEventListener(type, handler);
-        };
-        _this.jwRemoveEventListener = function(type, handler) {
-            _this.removeEventListener(type, handler);
-        };
 
-        _this.jwSetCurrentQuality = function() {};
-        _this.jwGetQualityLevels = function() {
+        _this.setCurrentQuality = function() {};
+        _this.getQualityLevels = function() {
             return [];
         };
 
         // for supporting api interface in html5 display
-        _this.jwGetControls = function() {
-            return _controller.jwGetControls();
-        };
+        _this.getControls = modelGetter('controls');
 
         _this.skin = _view._skin;
         _this.id = _controller.id + '_instream';
