@@ -8,14 +8,5 @@ define([
     var jwplayer = function () {
         return GlobalApi.selectPlayer.apply(GlobalApi, arguments);
     };
-
-    // This is replaced by compiler
-    jwplayer.version = __BUILD_VERSION__;
-    jwplayer.vid = document.createElement('video');
-
-    if (!window.jwplayer) {
-        window.jwplayer = jwplayer;
-    }
-
     return jwplayer;
 });

@@ -61,6 +61,9 @@ define([
         };
 
         this.on = function(name, callback, context) {
+            if (!_.isFunction(callback)) {
+                throw new Error(callback + ' is not a function');
+            }
             if (!_playerReady) {
                 _eventQueue.push([name, callback, context]);
                 return this;
@@ -111,9 +114,17 @@ define([
             _controller.on('all', _this.trigger);
             _controller.on(events.JWPLAYER_PLAYER_STATE, _forwardStateEvent);
 
-            _this.config = options;
-            _this._embedder = new Embed(_this, _controller);
+            // TODO: normalize event names and call this.on(events)
+            utils.foreach(options.events, function(evt, val) {
+                var fn = _this[evt];
+                if (typeof fn === 'function') {
+                    fn.call(_this, val);
+                }
+            });
+
+            _this._embedder = new Embed(options, _this, _controller);
             _this._embedder.embed();
+
             return _this;
         };
 
@@ -197,7 +208,7 @@ define([
         };
         _this.load = function (toLoad) {
             _callInternal('jwInstreamDestroy');
-            if (jwplayer(_this.id).plugins.googima) {
+            if (_this.plugins.googima) {
                 _callInternal('jwDestroyGoogima');
             }
             _callInternal('jwLoad', toLoad);
@@ -280,19 +291,15 @@ define([
         };
 
         _this.playAd = function (ad) {
-            var plugins = jwplayer(_this.id).plugins;
+            var plugins = _this.plugins;
             if (plugins.vast) {
                 plugins.vast.jwPlayAd(ad);
-            } else {
-                _callInternal('jwPlayAd', ad);
             }
         };
         _this.pauseAd = function () {
-            var plugins = jwplayer(_this.id).plugins;
+            var plugins = _this.plugins;
             if (plugins.vast) {
                 plugins.vast.jwPauseAd();
-            } else {
-                _callInternal('jwPauseAd');
             }
         };
 

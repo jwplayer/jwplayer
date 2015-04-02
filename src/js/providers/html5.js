@@ -6,8 +6,9 @@ define([
     'events/events',
     'events/states',
     'utils/eventdispatcher',
-    'providers/default'
-], function(cssUtils, utils, stretchUtils, _, events, states, eventdispatcher, DefaultProvider) {
+    'providers/default',
+    'utils/video'
+], function(cssUtils, utils, stretchUtils, _, events, states, eventdispatcher, DefaultProvider, video) {
 
     var clearInterval = window.clearInterval,
         stallInterval,
@@ -828,8 +829,8 @@ define([
 
         // Last, but not least, we ask the browser
         // (But only if it's a video with an extension known to work in HTML5)
-        if (jwplayer.vid.canPlayType) {
-            var result = jwplayer.vid.canPlayType(MimeTypes[type]);
+        if (video.canPlayType) {
+            var result = video.canPlayType(MimeTypes[type]);
             return !!result;
         }
         return false;

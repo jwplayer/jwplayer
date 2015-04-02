@@ -166,7 +166,7 @@ define([
                 });
             } else {
                 _this.trigger(events.JWPLAYER_PLAYLIST_LOADED, {
-                    playlist: jwplayer(_this.id).getPlaylist()
+                    playlist: playlist
                 });
                 _this.set('item', -1);
                 this.setItem(0);
@@ -213,7 +213,7 @@ define([
 
             // If we are changing video providers
             if (!(_currentProvider instanceof Provider)) {
-                _currentProvider = new Provider(_this.id);
+                _currentProvider = new Provider(_this.id, _this.config);
 
                 _this.setVideoProvider(_currentProvider);
             }

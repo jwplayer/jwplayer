@@ -23,7 +23,7 @@
 
     // These variables are predefined
     "predef": [
-      "jwplayer",
+      //"jwplayer",
       "require",
       "define",
       "module",

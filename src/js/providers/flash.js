@@ -8,13 +8,12 @@ define([
     'providers/default'
 ], function(utils, _, events, states, eventdispatcher, EmbedSwf, DefaultProvider) {
 
-
     var _providerId = 0;
     function getObjectId(playerId) {
         return playerId + '_swf_' + (_providerId++);
     }
 
-    function FlashProvider(_playerId) {
+    function FlashProvider(_playerId, _playerConfig) {
 
         // private properties
         var _container;
@@ -111,7 +110,9 @@ define([
                 setContainer: function(parent) {
                     _container = parent;
 
-                    _swf = _swf || EmbedSwf.embed('../bin-debug/jwplayer.flash.swf', parent, getObjectId(_playerId));
+                    if (!_swf) {
+                        _swf = EmbedSwf.embed(_playerConfig.flashplayer, parent, getObjectId(_playerId));
+                    }
 
                     // place div on top of swf to capture clicks
                     if (!_clickOverlay) {
@@ -138,9 +139,8 @@ define([
 
                         // setup flash player
                         var config = _.extend({
-                            key: jwplayer.key,
                             commands: _queuedCommands
-                        }, jwplayer(_playerId).config);
+                        }, _playerConfig);
 
                         _queuedCommands = [];
 
