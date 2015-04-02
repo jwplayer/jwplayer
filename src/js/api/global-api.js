@@ -14,7 +14,7 @@ define([
         if (!query) {
             player = _instances[0];
         } else if (typeof query === 'string') {
-            player = playerById(query);
+            player = _playerById(query);
             if (!player) {
                 domElement = document.getElementById(query);
             }
@@ -22,7 +22,7 @@ define([
             player = _instances[query];
         } else if (query.nodeType) {
             domElement = query;
-            player = playerById(domElement.id);
+            player = _playerById(domElement.id);
         }
         // found player
         if (player) {
@@ -36,8 +36,7 @@ define([
         return null;
     };
 
-
-    var playerById = function (id) {
+    var _playerById = function (id) {
         for (var p = 0; p < _instances.length; p++) {
             if (_instances[p].id === id) {
                 return _instances[p];
@@ -65,8 +64,6 @@ define([
     };
 
     return {
-        _instances : _instances,
-        selectPlayer : selectPlayer,
-        playerById : playerById
+        selectPlayer : selectPlayer
     };
 });
