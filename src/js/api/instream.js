@@ -17,41 +17,42 @@ define([
         this.type = 'instream';
 
         _this.init = function() {
-            _controller.jwInitInstream();
+            _controller.initInstream();
             return _this;
         };
         _this.loadItem = function(item, options) {
             _item = item;
             _options = options || {};
             if (utils.typeOf(item) === 'array') {
-                _controller.jwLoadArrayInstream(_item, _options);
+                _controller.loadArrayInstream(_item, _options);
             } else {
-                _controller.jwLoadItemInstream(_item, _options);
+                _controller.loadItemInstream(_item, _options);
             }
         };
         _this.play = function(state) {
-            _controller.jwInstreamPlay(state);
+            _controller.instreamPlay(state);
         };
         _this.pause = function(state) {
-            _controller.jwInstreamPause(state);
+            _controller.instreamPause(state);
         };
         _this.hide = function() {
-            _controller.jwInstreamHide();
+            //??
+            // _controller.instreamHide();
         };
         _this.destroy = function() {
             _this.removeEvents();
-            _controller.jwInstreamDestroy();
+            _controller.instreamDestroy();
         };
         _this.setText = function(text) {
-            _controller.jwInstreamSetText(text ? text : '');
+            _controller.instreamSetText(text ? text : '');
         };
         _this.getState = function() {
-            return _controller.jwInstreamState();
+            return _controller.instreamState();
         };
         _this.setClick = function(url) {
             //only present in flashMode
-            if (_controller.jwInstreamClick) {
-                _controller.jwInstreamClick(url);
+            if (_controller.instreamClick) {
+                _controller.instreamClick(url);
             }
         };
 
@@ -78,7 +79,7 @@ define([
 
         _.each(legacyMaps, function(event, api) {
             _this[api] = function(callback) {
-                _controller.jwInstreamAddEventListener(event, callback);
+                _controller.instreamAddEventListener(event, callback);
                 events.on(event, callback);
                 return _this;
             };

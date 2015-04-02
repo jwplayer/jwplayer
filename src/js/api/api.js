@@ -1,6 +1,5 @@
 define([
     'embed/embed',
-    'plugins/plugins',
     'api/instream',
     'events/events',
     'events/states',
@@ -10,10 +9,11 @@ define([
     'utils/timer',
     'utils/underscore',
     'controller/controller',
-    'api/mutators',
+    'api/api-actions',
+    'api/api-mutators',
     'api/callbacks-deprecate'
-], function(Embed, plugins, Instream, events, states,
-            Events, utils, cssUtils, Timer, _, Controller, mutatorsInit, legacyInit) {
+], function(Embed, Instream, events, states,
+            Events, utils, cssUtils, Timer, _, Controller, actionsInit, mutatorsInit, legacyInit) {
 
     function addFocusBorder(container) {
         utils.addClass(container, 'jw-tab-focus');
@@ -79,7 +79,9 @@ define([
         // </deprecate>
 
         // Add a bunch of methods
-        mutatorsInit(this);
+        _controller = new Controller();
+        actionsInit(this, _controller);
+        mutatorsInit(this, _controller);
         legacyInit(this);
 
         // These should be read-only model properties
@@ -114,8 +116,9 @@ define([
             _controller.on('all', _this.trigger);
             _controller.on(events.JWPLAYER_PLAYER_STATE, _forwardStateEvent);
 
-            // TODO: normalize event names and call this.on(events)
+            // bind event listeners passed in to the config
             utils.foreach(options.events, function(evt, val) {
+                // TODO: normalize event names and call this.on(events)
                 var fn = _this[evt];
                 if (typeof fn === 'function') {
                     fn.call(_this, val);
@@ -140,7 +143,7 @@ define([
             };
         };
 
-        _this.getContainer = function () {
+        this.getContainer = function () {
             return _this.container;
         };
 
@@ -153,9 +156,6 @@ define([
                 utils.log('Could not add dock button' + e.message);
             }
         };
-        _this.removeButton = function (id) {
-            _callInternal('jwDockRemoveButton', id);
-        };
 
         _this.callback = function (id) {
             if (_callbacks[id]) {
@@ -163,12 +163,11 @@ define([
             }
         };
 
-        _this.getMeta = function () {
-            return _this.getItemMeta();
+        this.getMeta = this.getItemMeta = function () {
+            return _itemMeta;
         };
-        _this.getPlaylist = function () {
-            return _callInternal('jwGetPlaylist');
-        };
+
+
         _this.getPlaylistItem = function (item) {
             if (!utils.exists(item)) {
                 item = _this.getPlaylistIndex();
@@ -183,23 +182,6 @@ define([
             return _controller.getProvider();
         };
 
-        // Player Public Methods
-        _this.setFullscreen = function (fullscreen) {
-            if (!utils.exists(fullscreen)) {
-                _callInternal('jwSetFullscreen', !_callInternal('jwGetFullscreen'));
-            } else {
-                _callInternal('jwSetFullscreen', fullscreen);
-            }
-            return _this;
-        };
-        _this.setMute = function (mute) {
-            if (!utils.exists(mute)) {
-                _callInternal('jwSetMute', !_callInternal('jwGetMute'));
-            } else {
-                _callInternal('jwSetMute', mute);
-            }
-            return _this;
-        };
         _this.lock = function () {
             return _this;
         };
@@ -207,24 +189,17 @@ define([
             return _this;
         };
         _this.load = function (toLoad) {
-            _callInternal('jwInstreamDestroy');
+            _controller.instreamDestroy();
             if (_this.plugins.googima) {
-                _callInternal('jwDestroyGoogima');
+                _controller.destroyGoogima();
             }
-            _callInternal('jwLoad', toLoad);
+            _controller.load(toLoad);
             return _this;
         };
-        _this.playlistItem = function (item) {
-            _callInternal('jwPlaylistItem', parseInt(item, 10));
-            return _this;
-        };
-        _this.resize = function (width, height) {
-            _callInternal('jwResize', width, height);
-            return _this;
-        };
+
         _this.play = function (state) {
             if (state !== undefined) {
-                _callInternal('jwPlay', state);
+                _controller.play(state);
                 return _this;
             }
 
@@ -234,16 +209,16 @@ define([
             if (instreamState) {
                 if (instreamState === states.IDLE || instreamState === states.PLAYING ||
                     instreamState === states.BUFFERING) {
-                    _callInternal('jwInstreamPause');
+                    _controller.instreamPause();
                 } else {
-                    _callInternal('jwInstreamPlay');
+                    _controller.instreamPlay();
                 }
             }
 
             if (state === states.PLAYING || state === states.BUFFERING) {
-                _callInternal('jwPause');
+                _controller.pause();
             } else {
-                _callInternal('jwPlay');
+                _controller.play();
             }
 
             return _this;
@@ -253,12 +228,12 @@ define([
             if (state === undefined) {
                 state = _this.getState();
                 if (state === states.PLAYING || state === states.BUFFERING) {
-                    _callInternal('jwPause');
+                    _controller.pause();
                 } else {
-                    _callInternal('jwPlay');
+                    _controller.play();
                 }
             } else {
-                _callInternal('jwPause', state);
+                _controller.pause(state);
             }
             return _this;
         };
@@ -279,7 +254,7 @@ define([
 
             // so players can be removed before loading completes
             _playerReady = true;
-            _callInternal('jwPlayerDestroy');
+            _controller.playerDestroy();
 
             // terminate state
             _playerReady = false;
@@ -309,42 +284,11 @@ define([
             globalRemovePlayer(_this);
         };
 
-        _this.registerPlugin = function (id, target, arg1, arg2) {
-            plugins.registerPlugin(id, target, arg1, arg2);
-        };
-
         function _forwardStateEvent(evt) {
             _this.trigger(evt.newstate, evt);
         }
 
-        _this.detachMedia = function () {
-            return _callInternal('jwDetachMedia');
-        };
-
-        _this.attachMedia = function (seekable) {
-            return _callInternal('jwAttachMedia', seekable);
-        };
-
-
-        _this.getAudioTracks = function () {
-            return _callInternal('jwGetAudioTracks');
-        };
-
-        function _callInternal() {
-            if (_playerReady) {
-                var args = Array.prototype.slice.call(arguments, 0),
-                    funcName = args.shift();
-                if (!_.isFunction(_controller[funcName])) {
-                    return null;
-                }
-                return _controller[funcName].apply(_controller, args);
-            }
-            _queuedCalls.push(arguments);
-        }
-
-        _this.callInternal = _callInternal;
-
-        _this.playerReady = function () {
+        this.playerReady = function () {
             _playerReady = true;
 
             while(_eventQueue.length) {
@@ -373,14 +317,6 @@ define([
             _this.trigger(events.API_READY, {
                 setupTime : _qoe.between(events.API_SETUP, events.API_READY)
             });
-
-            while (_queuedCalls.length > 0) {
-                _callInternal.apply(_this, _queuedCalls.shift());
-            }
-        };
-
-        _this.getItemMeta = function () {
-            return _itemMeta;
         };
 
         return _this;
