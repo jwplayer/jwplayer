@@ -1,8 +1,9 @@
 define([
     'utils/backbone.events',
     'underscore',
+    'version',
     'polyfill/bind'
-], function(Events, _) {
+], function(Events, _, version) {
 
     var GLOBAL_EVENT = 'GLOBAL_EVENT';
 
@@ -44,7 +45,7 @@ define([
         this.sendEvent = function (type, data, val) {
             data = _.extend({}, data, {
                 id: _id,
-                version: jwplayer.version,
+                version: version,
                 type: type
             });
 

@@ -1,6 +1,4 @@
 define([
-    'utils/helpers',
-    'utils/css',
     'events/events',
     'utils/scriptloader',
     'playlist/loader',
@@ -8,32 +6,28 @@ define([
     'plugins/plugins',
     'view/errorscreen',
     'underscore'
-], function(utils, cssUtils, events, scriptloader, PlaylistLoader, EmbedConfig, plugins, errorScreen, _) {
+], function(events, scriptloader, PlaylistLoader, EmbedConfig, plugins, errorScreen, _) {
 
-    var _css = cssUtils.css;
-
-    var Embed = function(api, controller) {
+    var Embed = function(_options, _api, _controller) {
 
         var _this = this,
-            _config = new EmbedConfig(api.config),
+            _config = new EmbedConfig(_options),
             _width = _config.width,
             _height = _config.height,
-            _pluginloader = plugins.loadPlugins(api.id, _config.plugins),
+            _pluginloader = plugins.loadPlugins(_api.id, _config.plugins),
             _loader,
             _playlistLoading = false,
             _errorOccurred = false,
             _setupErrorTimer = -1;
 
-        _config.id = api.id;
+        _config.id = _api.id;
         if (_config.aspectratio) {
-            api.config.aspectratio = _config.aspectratio;
+            _options.aspectratio = _config.aspectratio;
         } else {
-            delete api.config.aspectratio;
+            delete _options.aspectratio;
         }
 
-        _setupEvents(api, _config.events);
-
-        var _container = api.getContainer();
+        var _container = _api.getContainer();
         _container.style.width = _width.toString().indexOf('%') > 0 ? _width : (_width + 'px');
         _container.style.height = _height.toString().indexOf('%') > 0 ? _height : (_height + 'px');
 
@@ -105,23 +99,22 @@ define([
             if (_pluginloader.getStatus() === scriptloader.loaderstatus.COMPLETE) {
 
                 var pluginConfigCopy = _.extend({}, _config);
-                _pluginloader.setupPlugins(api, pluginConfigCopy, _resizePlugin);
+
+                // TODO: flatten flashPlugins and pass to flash provider
+                pluginConfigCopy.flashPlugins = _pluginloader.setupPlugins(_api, pluginConfigCopy, _resizePlugin);
 
                 // Volume option is tricky to remove, since it needs to be in the HTML5 player model.
                 var playerConfigCopy = _.extend({}, pluginConfigCopy);
                 delete playerConfigCopy.volume;
 
-                controller.setup(playerConfigCopy, api);
-
-                _insertCSS();
-                return api;
+                _controller.setup(playerConfigCopy, _api);
             }
         }
 
         // TODO: view code
         function _resizePlugin(plugin, div, onready) {
             return function() {
-                var displayarea = document.querySelector('#' + _container.id + ' .jwmain');
+                var displayarea = document.querySelector('#' + _api.id + ' .jwmain');
                 if (displayarea && onready) {
                     displayarea.appendChild(div);
                 }
@@ -137,7 +130,7 @@ define([
         }
 
         function _pluginError(evt) {
-            api.trigger(events.JWPLAYER_ERROR, {
+            _api.trigger(events.JWPLAYER_ERROR, {
                 message: 'Could not load plugin: ' + evt.message
             });
         }
@@ -154,7 +147,7 @@ define([
             // Throttle this so that it runs once if called twice in the same callstack
             clearTimeout(_setupErrorTimer);
             _setupErrorTimer = setTimeout(function() {
-                api.trigger(events.JWPLAYER_SETUP_ERROR, {
+                _api.trigger(events.JWPLAYER_SETUP_ERROR, {
                     message: message
                 });
             }, 0);
@@ -166,7 +159,7 @@ define([
             }
 
             // Put new container in page
-            var container = document.getElementById(_container.id);
+            var container = document.getElementById(_api.id);
             if (container !== _container) {
                 container.parentNode.replaceChild(_container, container);
             }
@@ -178,24 +171,6 @@ define([
 
         return _this;
     };
-
-    function _setupEvents(api, events) {
-        utils.foreach(events, function(evt, val) {
-            var fn = api[evt];
-            if (typeof fn === 'function') {
-                fn.call(api, val);
-            }
-        });
-    }
-
-    function _insertCSS() {
-        _css('object.jwswf, .jwplayer:focus', {
-            outline: 'none'
-        });
-        _css('.jw-tab-focus:focus', {
-            outline: 'solid 2px #0B7EF4'
-        });
-    }
 
     return Embed;
 

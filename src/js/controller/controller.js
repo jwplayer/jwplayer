@@ -417,8 +417,6 @@ define([
                 return _model._qoeItem;
             };
 
-            this.playerReady = _playerReady;
-
             // Add in all the jwGet____ methods
             setupInternalApi(this, _model, _view);
         }

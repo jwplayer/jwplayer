@@ -62,32 +62,6 @@ define([
             _controller.jwGetControls = _statevarFactory('controls');
             _controller.jwGetPlaylist = _statevarFactory('playlist');
 
-            // TODO: move to commercial controller
-            _controller.jwPlayAd = function (ad) {
-                // THIS SHOULD NOT BE USED!
-                var plugins = jwplayer(_controller.id).plugins;
-                if (plugins.vast) {
-                    plugins.vast.jwPlayAd(ad);
-                } //else if (plugins.googima) {
-                //   // This needs to be added once the googima Ads API is implemented
-                //plugins.googima.jwPlayAd(ad);
-                //not supporting for now
-                //}
-            };
-
-            _controller.jwPauseAd = function () {
-                var plugins = jwplayer(_controller.id).plugins;
-                if (plugins.googima) {
-                    plugins.googima.jwPauseAd();
-                }
-            };
-
-            _controller.jwDestroyGoogima = function () {
-                var plugins = jwplayer(_controller.id).plugins;
-                if (plugins.googima) {
-                    plugins.googima.jwDestroyGoogima();
-                }
-            };
 
             _controller.jwInitInstream = function () {
                 _controller.jwInstreamDestroy();

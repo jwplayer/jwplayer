@@ -1,11 +1,9 @@
 define([
     'utils/helpers',
     'utils/css',
-    'underscore'
-], function(utils, cssUtils, _) {
-
-    // This is replaced by compiler
-    var _version = __BUILD_VERSION__;
+    'underscore',
+    'version'
+], function(utils, cssUtils, _, version) {
 
     var _css = cssUtils.css,
         ABOUT_DEFAULT = 'About JW Player ',
@@ -24,18 +22,16 @@ define([
     var Rightclick = function(_playerElement, _model) {
 
         var _config = {
-                aboutlink: LINK_DEFAULT + _version + '&m=h&e=o',
-                abouttext: ABOUT_DEFAULT + _version + '...'
+                aboutlink: LINK_DEFAULT + version + '&m=h&e=o',
+                abouttext: ABOUT_DEFAULT + version + '...'
             },
             _mouseOverContext = false,
             _menu = _createElement(RC_CLASS),
             _about = _createElement(RC_ITEM_CLASS);
 
         if (_model.edition) {
-            _.extend(_config, {
-                abouttext: _model.abouttext,
-                aboutlink: _model.aboutlink
-            });
+            _config.abouttext = _config.abouttext || _model.abouttext;
+            _config.aboutlink = _config.aboutlink || _model.aboutlink;
         }
 
         _menu.id = _playerElement.id + '_menu';

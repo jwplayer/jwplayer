@@ -156,7 +156,7 @@ define([
                 _resetTapTimer();
             }
 
-            var jw = jwplayer(_model.id);
+            var jw = window.jwplayer(_model.id);
             switch (evt.keyCode) {
                 case 27: // Esc
                     jw.setFullscreen(false);
@@ -320,21 +320,21 @@ define([
                 window.addEventListener('orientationchange', _responsiveListener, false);
             }
             //this for googima, after casting, to get the state right.
-            jwplayer(_model.id).onAdPlay(function() {
+            window.jwplayer(_model.id).onAdPlay(function() {
                 _controlbar.adMode(true);
                 _updateState(states.PLAYING);
 
                 // For Vast to hide controlbar if no mouse movement
                 _resetTapTimer();
             });
-            jwplayer(_model.id).onAdSkipped(function() {
+            window.jwplayer(_model.id).onAdSkipped(function() {
                 _controlbar.adMode(false);
             });
-            jwplayer(_model.id).onAdComplete(function() {
+            window.jwplayer(_model.id).onAdComplete(function() {
                 _controlbar.adMode(false);
             });
             // So VAST will be in correct state when ad errors out from unknown filetype
-            jwplayer(_model.id).onAdError(function() {
+            window.jwplayer(_model.id).onAdError(function() {
                 _controlbar.adMode(false);
             });
 
@@ -1433,6 +1433,13 @@ define([
 
     _css('.' + PLAYER_CLASS + ' .jwexactfit', {
         'background-size': JW_CSS_100PCT + ' ' + JW_CSS_100PCT + JW_CSS_IMPORTANT
+    });
+
+    _css('object.jwswf, .jwplayer:focus', {
+        outline: 'none'
+    });
+    _css('.jw-tab-focus:focus', {
+        outline: 'solid 2px #0B7EF4'
     });
 
     return View;
