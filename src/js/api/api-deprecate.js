@@ -9,35 +9,38 @@ define([
         _api.getPlaylistIndex = _api.getIndex;
 
         // jwNames
-        _api.jwPlay = _controller.play;
-        _api.jwPause = _controller.pause;
-        _api.jwSetMute = _controller.setMute;
-        _api.jwLoad = _controller.load;
-        _api.jwPlaylistItem = _controller.item;
-        _api.jwGetAudioTracks = _controller.getAudioTracks;
-        _api.jwDetachMedia = _controller.detachMedia;
-        _api.jwAttachMedia = _controller.attachMedia;
-        _api.jwAddEventListener = _controller.on;
-        _api.jwRemoveEventListener = _controller.off;
-
-        _api.jwStop = _controller.stop;
-        _api.jwSeek = _controller.seek;
-        _api.jwSetVolume = _controller.setVolume;
-        _api.jwPlaylistNext = _controller.next;
-        _api.jwPlaylistPrev = _controller.prev;
-        _api.jwSetFullscreen = _controller.setFullscreen;
-        _api.jwGetQualityLevels = _controller.getQualityLevels;
-        _api.jwGetCurrentQuality = _controller.getCurrentQuality;
-        _api.jwSetCurrentQuality = _controller.setCurrentQuality;
-        _api.jwSetCurrentAudioTrack = _controller.setCurrentAudioTrack;
-        _api.jwGetCurrentAudioTrack = _controller.getCurrentAudioTrack;
-        _api.jwGetCaptionsList = _controller.getCaptionsList;
-        _api.jwGetCurrentCaptions = _controller.getCurrentCaptions;
-        _api.jwSetCurrentCaptions = _controller.setCurrentCaptions;
-        _api.jwSetCues = _controller.setCues;
+        var legacy = {
+            jwPlay : _controller.play,
+            jwPause : _controller.pause,
+            jwSetMute : _controller.setMute,
+            jwLoad : _controller.load,
+            jwPlaylistItem : _controller.item,
+            jwGetAudioTracks : _controller.getAudioTracks,
+            jwDetachMedia : _controller.detachMedia,
+            jwAttachMedia : _controller.attachMedia,
+            jwAddEventListener : _controller.on,
+            jwRemoveEventListener : _controller.off,
+            jwStop : _controller.stop,
+            jwSeek : _controller.seek,
+            jwSetVolume : _controller.setVolume,
+            jwPlaylistNext : _controller.next,
+            jwPlaylistPrev : _controller.prev,
+            jwSetFullscreen : _controller.setFullscreen,
+            jwGetQualityLevels : _controller.getQualityLevels,
+            jwGetCurrentQuality : _controller.getCurrentQuality,
+            jwSetCurrentQuality : _controller.setCurrentQuality,
+            jwSetCurrentAudioTrack : _controller.setCurrentAudioTrack,
+            jwGetCurrentAudioTrack : _controller.getCurrentAudioTrack,
+            jwGetCaptionsList : _controller.getCaptionsList,
+            jwGetCurrentCaptions : _controller.getCurrentCaptions,
+            jwSetCurrentCaptions : _controller.setCurrentCaptions,
+            jwSetCues : _controller.setCues
+        };
 
         _api.callInternal = function(method) {
-            _api[method]();
+            console.log('You are using the deprecated callInternal method for ' + method);
+            var args = Array.prototype.slice.call(arguments, 1);
+            legacy[method].apply(_controller, args);
         };
     };
 });
