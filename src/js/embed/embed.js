@@ -6,10 +6,9 @@ define([
     'playlist/loader',
     'embed/config',
     'plugins/plugins',
-    'controller/controller',
     'view/errorscreen',
     'underscore'
-], function(utils, cssUtils, events, scriptloader, PlaylistLoader, EmbedConfig, plugins, Controller, errorScreen, _) {
+], function(utils, cssUtils, events, scriptloader, PlaylistLoader, EmbedConfig, plugins, errorScreen, _) {
 
     var _css = cssUtils.css;
 
@@ -19,7 +18,6 @@ define([
             _config = new EmbedConfig(api.config),
             _width = _config.width,
             _height = _config.height,
-            _oldContainer = document.getElementById(api.id),
             _pluginloader = plugins.loadPlugins(api.id, _config.plugins),
             _loader,
             _playlistLoading = false,
@@ -109,8 +107,6 @@ define([
                 var pluginConfigCopy = _.extend({}, _config);
                 _pluginloader.setupPlugins(api, pluginConfigCopy, _resizePlugin);
 
-                utils.emptyElement(_container);
-
                 // Volume option is tricky to remove, since it needs to be in the HTML5 player model.
                 var playerConfigCopy = _.extend({}, pluginConfigCopy);
                 delete playerConfigCopy.volume;
@@ -170,7 +166,10 @@ define([
             }
 
             // Put new container in page
-            _oldContainer.parentNode.replaceChild(_container, _oldContainer);
+            var container = document.getElementById(_container.id);
+            if (container !== _container) {
+                container.parentNode.replaceChild(_container, container);
+            }
 
             _errorOccurred = true;
             errorScreen(_container, message, body);
