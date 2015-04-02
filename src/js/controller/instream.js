@@ -17,7 +17,7 @@ define([
         function modelGetter(attr) {
             return function() {
                 return _model.get(attr);
-            }
+            };
         }
 
         var _defaultOptions = {

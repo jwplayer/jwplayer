@@ -12,7 +12,8 @@ define([
     'utils/backbone.events',
     'events/states',
     'events/events'
-], function(setupInternalApi, deprecateInit, plugins, _, Setup, Model, Playlist, PlaylistLoader, utils, View, Events, states, events) {
+], function(setupInternalApi, deprecateInit, plugins, _, Setup,
+            Model, Playlist, PlaylistLoader, utils, View, Events, states, events) {
 
     function _queue(command) {
         return function() {
