@@ -38,13 +38,13 @@ define([
         };
     }();
 
-    var Api = function (container) {
+    var Api = function (container, globalRemovePlayer) {
         var _this = this,
+            _instream,
             _originalContainer = container,
-            _controller = null,
+            _controller = new Controller(),
             _playerReady = false,
             _queuedCalls = [],
-            _instream,
             _itemMeta = {},
             _eventQueue = [],
             _callbacks = {};
@@ -79,6 +79,7 @@ define([
         mutatorsInit(this);
         legacyInit(this);
 
+        // These should be read-only model properties
         _this.container = document.createElement('div');
         _this.id = _this.container.id = container.id;
 
@@ -86,21 +87,34 @@ define([
         var _qoe = _this._qoe = new Timer();
         _qoe.tick(events.API_INITIALIZED);
 
+        var _reset = function() {
+            // Cancel embedding even if it is in progress
+            if (_this._embedder && _this._embedder.destroy) {
+                _this._embedder.destroy();
+            }
+
+            // Reset DOM
+            var id = _this.id;
+            cssUtils.clearCss('#' + id);
+            var toReset = _this.container;
+            if (toReset.parentNode) {
+                toReset.parentNode.replaceChild(_originalContainer, toReset);
+            }
+            utils.emptyElement(toReset);
+        };
+
         this.setup = function (options) {
-                _qoe.tick(events.API_SETUP);
-                // Remove any players that may be associated to this DOM element
-                _this.remove();
+            _qoe.tick(events.API_SETUP);
 
-                jwplayer.api.addPlayer(_this);
+            _reset();
 
-                _controller = new Controller();
-                _controller.on('all', _this.trigger);
-                _controller.on(events.JWPLAYER_PLAYER_STATE, _forwardStateEvent);
+            _controller.on('all', _this.trigger);
+            _controller.on(events.JWPLAYER_PLAYER_STATE, _forwardStateEvent);
 
-                _this.config = options;
-                _this._embedder = new Embed(_this, _controller);
-                _this._embedder.embed();
-                return _this;
+            _this.config = options;
+            _this._embedder = new Embed(_this, _controller);
+            _this._embedder.embed();
+            return _this;
         };
 
         this.qoe = function() {
@@ -250,12 +264,21 @@ define([
             return _instream;
         };
         _this.destroyPlayer = function () {
+            _reset();
+
             // so players can be removed before loading completes
             _playerReady = true;
             _callInternal('jwPlayerDestroy');
+
+            // terminate state
             _playerReady = false;
             _controller = null;
+            _queuedCalls = [];
+            _eventQueue = [];
+            _itemMeta = {};
+            _callbacks = {};
         };
+
         _this.playAd = function (ad) {
             var plugins = jwplayer(_this.id).plugins;
             if (plugins.vast) {
@@ -275,40 +298,9 @@ define([
 
 
         _this.remove = function () {
-
-            // Cancel embedding even if it is in progress
-            if (_this._embedder && _this._embedder.destroy) {
-                _this._embedder.destroy();
-            }
-
-            _queuedCalls = [];
-
-            // Is there more than one player using the same DIV on the page?
-            var sharedDOM = (_.size(_.where(jwplayer.api._instances, {id: _this.id})) > 1);
-
-            // If sharing the DOM element, don't reset CSS
-            if (!sharedDOM) {
-                cssUtils.clearCss('#' + _this.id);
-            }
-
-            var toDestroy = document.getElementById(_this.id);
-
-            if (toDestroy) {
-                // calls jwPlayerDestroy()
-                _this.destroyPlayer();
-
-                // If the tag is reused by another player, do not destroy the div
-                if (!sharedDOM) {
-                    toDestroy.parentNode.replaceChild(_originalContainer, toDestroy);
-                }
-            }
-
-            // Remove from array of players
-            jwplayer.api._instances = _.filter(jwplayer.api._instances, function (p) {
-                return (p.uniqueId !== _this.uniqueId);
-            });
+            // Remove from array of players. this calls this.destroyPlayer()
+            globalRemovePlayer(_this);
         };
-
 
         _this.registerPlugin = function (id, target, arg1, arg2) {
             plugins.registerPlugin(id, target, arg1, arg2);
