@@ -12,8 +12,7 @@ define([
 
     var clearInterval = window.clearInterval,
         stallInterval,
-        STALL_DELAY = 125, // 1/8th of a second
-        STALL_TOLERANCE = STALL_DELAY/2,
+        STALL_DELAY = 256,
         _isIE = utils.isMSIE(),
         _isMobile = utils.isMobile(),
         _isSafari = utils.isSafari(),
@@ -24,14 +23,13 @@ define([
 
     // Browsers, including latest chrome, do not always report Stalled events in a timely fashion
     var stallCheckGenerator = function(videotag, stalledHandler) {
-        var lastChecked = 0;
+        var lastChecked = -1;
         return function() {
             if (videotag.paused) { return; }
-            var t = videotag.currentTime * 1000; // secs to ms
-            if (t - lastChecked < STALL_TOLERANCE) {
+            if (videotag.currentTime === lastChecked) {
                 stalledHandler();
             }
-            lastChecked = t;
+            lastChecked = videotag.currentTime;
         };
     };
 
@@ -513,16 +511,6 @@ define([
                 this.volume(_lastVolume);
                 _videotag.muted = false;
             }
-        };
-
-        /** Set the current player state * */
-        this.setState = function(newstate) {
-            // Handles a FF 3.5 issue
-            if (newstate === states.PAUSED && this.state === states.IDLE) {
-                return;
-            }
-
-            DefaultProvider.setState.apply(this, arguments);
         };
 
         function _sendBufferUpdate() {
