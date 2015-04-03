@@ -54,6 +54,8 @@ define([
 
 
         this.trigger = function(type, args) {
+            args = (_.isObject(args) ? args : {});
+
             args.type = args.type || type;
             args = normalizeOutput(args);
 
