@@ -1,5 +1,5 @@
 define([
-    'controller/internal-controller',
+    'controller/controller-instream',
     'api/api-deprecate',
     'plugins/plugins',
     'underscore',
@@ -12,7 +12,7 @@ define([
     'utils/backbone.events',
     'events/states',
     'events/events'
-], function(setupInternalApi, deprecateInit, plugins, _, Setup,
+], function(setupInstreamMethods, deprecateInit, plugins, _, Setup,
             Model, Playlist, PlaylistLoader, utils, View, Events, states, events) {
 
     function _queue(command) {
@@ -121,7 +121,7 @@ define([
                 while (_this.eventsQueue.length > 0) {
                     var q = _this.eventsQueue.shift();
                     var method = q[0];
-                    var args = q[1];
+                    var args = q[1] || [];
                     _this[method].apply(_this, args);
                 }
             }
@@ -401,8 +401,6 @@ define([
             this.playlistNext = _next;
             this.playlistPrev = _prev;
             this.playlistItem = _item;
-            this.setVolume = _model.setVolume;
-            this.setMute = _model.setMute;
             this.setFullscreen = _setFullscreen;
             this.setCurrentCaptions = _setCurrentCaptions;
             this.setCurrentQuality = _setCurrentQuality;
@@ -416,7 +414,22 @@ define([
             this.getAudioTracks = _getAudioTracks;
             this.getCurrentCaptions = _getCurrentCaptions;
             this.getCaptionsList = _getCaptionsList;
+
+            // Model passthroughs
+            this.setVolume = _model.setVolume;
+            this.setMute = _model.setMute;
+            this.seekDrag = _model.seekDrag;
             this.getProvider = function(){ return _model.get('provider'); };
+
+            // View passthroughs
+            this.resize = _view.resize;
+            this.getSafeRegion = _view.getSafeRegion;
+            this.forceState = _view.forceState;
+            this.releaseState = _view.releaseState;
+            this.setCues = _view.addCues;
+            this.dockAddButton = _view.addButton;
+            this.dockRemoveButton = _view.removeButton;
+
             this.checkBeforePlay = function() {
                 return _preplay;
             };
@@ -425,8 +438,36 @@ define([
                 return _model._qoeItem;
             };
 
-            // Add in all the jwGet____ methods
-            setupInternalApi(this, _model, _view);
+            this.setControls = function (mode) {
+                _view.setControls(mode);
+                if (this._instreamPlayer) {
+                    this._instreamPlayer.setControls(mode);
+                }
+            };
+
+            this.playerDestroy = function () {
+                this.stop();
+                if (_view) {
+                    _view.destroy();
+                }
+                if (_model) {
+                    _model.destroy();
+                }
+                if (_setup) {
+                    _setup.resetEventListeners();
+                    _setup.destroy();
+                }
+            };
+
+            this.isBeforePlay = this.checkBeforePlay;
+
+            this.isBeforeComplete = function () {
+                return _model.getVideo().checkComplete();
+            };
+
+
+            // Add in all the instream methods
+            setupInstreamMethods(this, _model, _view);
 
             // This is here because it binds to the methods declared above
             deprecateInit(_api, this);
