@@ -100,8 +100,8 @@ define([
                 _view.addGlobalListener(_forward);
 
                 // TODO: send copies of these objects to public listeners
-            var playlist = _model.get('playlist');
-            var item = _model.get('item');
+                var playlist = _model.get('playlist');
+                var item = _model.get('item');
 
                 _this.trigger(events.JWPLAYER_PLAYLIST_LOADED, {
                     playlist: playlist
@@ -112,7 +112,7 @@ define([
 
                 _load();
 
-            if (_model.get('autostart') && !utils.isMobile()) {
+                if (_model.get('autostart') && !utils.isMobile()) {
                     _play();
                 }
 
@@ -131,7 +131,7 @@ define([
             }
 
             function _bufferFullHandler() {
-            _model.playVideo();
+                _model.playVideo();
             }
 
             function _load(item) {
@@ -187,16 +187,16 @@ define([
                 }
 
                 if (_isIdle()) {
-                if (_model.get('playlist').length === 0) {
+                    if (_model.get('playlist').length === 0) {
                         return false;
                     }
 
                     status = utils.tryCatch(function() {
-                    _model.loadVideo();
+                        _model.loadVideo();
                     });
-            } else if (_model.get('state') === states.PAUSED) {
+                } else if (_model.get('state') === states.PAUSED) {
                     status = utils.tryCatch(function() {
-                    _model.playVideo();
+                        _model.playVideo();
                     });
                 }
 
@@ -243,7 +243,7 @@ define([
                 } else if (!state) {
                     return _play();
                 }
-            switch (_model.get('state')) {
+                switch (_model.get('state')) {
                     case states.PLAYING:
                     case states.BUFFERING:
                         var status = utils.tryCatch(function(){
@@ -264,11 +264,11 @@ define([
             }
 
             function _isIdle() {
-            return (_model.get('state') === states.IDLE);
+                return (_model.get('state') === states.IDLE);
             }
 
             function _seek(pos) {
-            if (!_model.get('dragging') && _model.get('state') !== states.PLAYING) {
+                if (!_model.get('dragging') && _model.get('state') !== states.PLAYING) {
                     _play(true);
                 }
                 _video().seek(pos);
@@ -284,11 +284,11 @@ define([
             }
 
             function _prev() {
-            _item(_model.get('item') - 1);
+                _item(_model.get('item') - 1);
             }
 
             function _next() {
-            _item(_model.get('item') + 1);
+                _item(_model.get('item') + 1);
             }
 
             function _completeHandler() {
@@ -302,10 +302,10 @@ define([
                 }
 
                 _actionOnAttach = _completeHandler;
-            if (_model.get('repeat')) {
+                if (_model.get('repeat')) {
                     _next();
                 } else {
-                if (_model.get('item') === _model.get('playlist').length - 1) {
+                    if (_model.get('item') === _model.get('playlist').length - 1) {
                         _loadOnPlay = 0;
                         _stop(true);
                         setTimeout(function() {
