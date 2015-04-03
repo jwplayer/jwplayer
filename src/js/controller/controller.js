@@ -1,5 +1,5 @@
 define([
-    'controller/internal-controller',
+    'controller/controller-instream',
     'api/api-deprecate',
     'plugins/plugins',
     'underscore',
@@ -12,7 +12,7 @@ define([
     'utils/backbone.events',
     'events/states',
     'events/events'
-], function(setupInternalApi, deprecateInit, plugins, _, Setup,
+], function(setupInstreamMethods, deprecateInit, plugins, _, Setup,
             Model, Playlist, PlaylistLoader, utils, View, Events, states, events) {
 
     function _queue(command) {
@@ -92,17 +92,16 @@ define([
                 }
 
                 _view.completeSetup();
-                _this.trigger(evt.type, evt);
 
                 // Tell the api that we are loaded
-                _api.playerReady(evt);
+                _this.trigger(evt.type, evt);
 
                 _model.addGlobalListener(_forward);
                 _view.addGlobalListener(_forward);
 
                 // TODO: send copies of these objects to public listeners
-            var playlist = _model.get('playlist');
-            var item = _model.get('item');
+                var playlist = _model.get('playlist');
+                var item = _model.get('item');
 
                 _this.trigger(events.JWPLAYER_PLAYLIST_LOADED, {
                     playlist: playlist
@@ -113,7 +112,7 @@ define([
 
                 _load();
 
-            if (_model.get('autostart') && !utils.isMobile()) {
+                if (_model.get('autostart') && !utils.isMobile()) {
                     _play();
                 }
 
@@ -122,7 +121,7 @@ define([
                 while (_this.eventsQueue.length > 0) {
                     var q = _this.eventsQueue.shift();
                     var method = q[0];
-                    var args = q[1];
+                    var args = q[1] || [];
                     _this[method].apply(_this, args);
                 }
             }
@@ -132,7 +131,7 @@ define([
             }
 
             function _bufferFullHandler() {
-            _model.playVideo();
+                _model.playVideo();
             }
 
             function _load(item) {
@@ -188,16 +187,16 @@ define([
                 }
 
                 if (_isIdle()) {
-                if (_model.get('playlist').length === 0) {
+                    if (_model.get('playlist').length === 0) {
                         return false;
                     }
 
                     status = utils.tryCatch(function() {
-                    _model.loadVideo();
+                        _model.loadVideo();
                     });
-            } else if (_model.get('state') === states.PAUSED) {
+                } else if (_model.get('state') === states.PAUSED) {
                     status = utils.tryCatch(function() {
-                    _model.playVideo();
+                        _model.playVideo();
                     });
                 }
 
@@ -244,7 +243,7 @@ define([
                 } else if (!state) {
                     return _play();
                 }
-            switch (_model.get('state')) {
+                switch (_model.get('state')) {
                     case states.PLAYING:
                     case states.BUFFERING:
                         var status = utils.tryCatch(function(){
@@ -265,11 +264,11 @@ define([
             }
 
             function _isIdle() {
-            return (_model.get('state') === states.IDLE);
+                return (_model.get('state') === states.IDLE);
             }
 
             function _seek(pos) {
-            if (!_model.get('dragging') && _model.get('state') !== states.PLAYING) {
+                if (!_model.get('dragging') && _model.get('state') !== states.PLAYING) {
                     _play(true);
                 }
                 _video().seek(pos);
@@ -285,11 +284,11 @@ define([
             }
 
             function _prev() {
-            _item(_model.get('item') - 1);
+                _item(_model.get('item') - 1);
             }
 
             function _next() {
-            _item(_model.get('item') + 1);
+                _item(_model.get('item') + 1);
             }
 
             function _completeHandler() {
@@ -303,10 +302,10 @@ define([
                 }
 
                 _actionOnAttach = _completeHandler;
-            if (_model.get('repeat')) {
+                if (_model.get('repeat')) {
                     _next();
                 } else {
-                if (_model.get('item') === _model.get('playlist').length - 1) {
+                    if (_model.get('item') === _model.get('playlist').length - 1) {
                         _loadOnPlay = 0;
                         _stop(true);
                         setTimeout(function() {
@@ -402,8 +401,6 @@ define([
             this.playlistNext = _next;
             this.playlistPrev = _prev;
             this.playlistItem = _item;
-            this.setVolume = _model.setVolume;
-            this.setMute = _model.setMute;
             this.setFullscreen = _setFullscreen;
             this.setCurrentCaptions = _setCurrentCaptions;
             this.setCurrentQuality = _setCurrentQuality;
@@ -417,7 +414,22 @@ define([
             this.getAudioTracks = _getAudioTracks;
             this.getCurrentCaptions = _getCurrentCaptions;
             this.getCaptionsList = _getCaptionsList;
+
+            // Model passthroughs
+            this.setVolume = _model.setVolume;
+            this.setMute = _model.setMute;
+            this.seekDrag = _model.seekDrag;
             this.getProvider = function(){ return _model.get('provider'); };
+
+            // View passthroughs
+            this.resize = _view.resize;
+            this.getSafeRegion = _view.getSafeRegion;
+            this.forceState = _view.forceState;
+            this.releaseState = _view.releaseState;
+            this.setCues = _view.addCues;
+            this.dockAddButton = _view.addButton;
+            this.dockRemoveButton = _view.removeButton;
+
             this.checkBeforePlay = function() {
                 return _preplay;
             };
@@ -426,8 +438,36 @@ define([
                 return _model._qoeItem;
             };
 
-            // Add in all the jwGet____ methods
-            setupInternalApi(this, _model, _view);
+            this.setControls = function (mode) {
+                _view.setControls(mode);
+                if (this._instreamPlayer) {
+                    this._instreamPlayer.setControls(mode);
+                }
+            };
+
+            this.playerDestroy = function () {
+                this.stop();
+                if (_view) {
+                    _view.destroy();
+                }
+                if (_model) {
+                    _model.destroy();
+                }
+                if (_setup) {
+                    _setup.resetEventListeners();
+                    _setup.destroy();
+                }
+            };
+
+            this.isBeforePlay = this.checkBeforePlay;
+
+            this.isBeforeComplete = function () {
+                return _model.getVideo().checkComplete();
+            };
+
+
+            // Add in all the instream methods
+            setupInstreamMethods(this, _model, _view);
 
             // This is here because it binds to the methods declared above
             deprecateInit(_api, this);

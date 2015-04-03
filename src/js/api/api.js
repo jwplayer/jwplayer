@@ -44,7 +44,6 @@ define([
             _originalContainer = container,
             _controller = new Controller(),
             _playerReady = false,
-            _queuedCalls = [],
             _itemMeta = {},
             _eventQueue = [],
             _callbacks = {};
@@ -62,17 +61,17 @@ define([
             return Events.trigger.call(_this, type, args);
         };
 
-        this.on = function(name, callback, context) {
+        this.on = function(name, callback) {
             if (!_.isFunction(callback)) {
                 throw new Error(callback + ' is not a function');
-            }
-            if (!_playerReady) {
-                _eventQueue.push([name, callback, context]);
-                return this;
             }
 
             return Events.on.apply(_this, arguments);
         };
+
+        function _forwardStateEvent(evt) {
+            _this.trigger(evt.newstate, evt);
+        }
 
         // Required by vast
         // <deprecate>
@@ -87,11 +86,11 @@ define([
         legacyInit(this);
 
         // These should be read-only model properties
-        _this.container = document.createElement('div');
-        _this.id = _this.container.id = container.id;
+        this.container = document.createElement('div');
+        this.id = this.container.id = container.id;
 
         // Intialize QOE timer
-        var _qoe = _this._qoe = new Timer();
+        var _qoe = this._qoe = new Timer();
         _qoe.tick(events.API_INITIALIZED);
 
         var _reset = function() {
@@ -115,7 +114,7 @@ define([
 
             _reset();
 
-            _controller.on('all', _this.trigger);
+            _controller.on('all', this.trigger);
             _controller.on(events.JWPLAYER_PLAYER_STATE, _forwardStateEvent);
 
             // bind event listeners passed in to the config
@@ -127,10 +126,10 @@ define([
                 }
             });
 
-            _this._embedder = new Embed(options, _this, _controller);
-            _this._embedder.embed();
+            this._embedder = new Embed(options, this, _controller);
+            this._embedder.embed();
 
-            return _this;
+            return this;
         };
 
         this.qoe = function() {
@@ -146,10 +145,10 @@ define([
         };
 
         this.getContainer = function () {
-            return _this.container;
+            return this.container;
         };
 
-        _this.addButton = function (icon, label, handler, id) {
+        this.addButton = function (icon, label, handler, id) {
             try {
                 _callbacks[id] = handler;
                 var handlerString = 'jwplayer("' + _this.id + '").callback("' + id + '")';
@@ -159,7 +158,7 @@ define([
             }
         };
 
-        _this.callback = function (id) {
+        this.callback = function (id) {
             if (_callbacks[id]) {
                 _callbacks[id]();
             }
@@ -170,42 +169,42 @@ define([
         };
 
 
-        _this.getPlaylistItem = function (item) {
+        this.getPlaylistItem = function (item) {
             if (!utils.exists(item)) {
-                item = _this.getPlaylistIndex();
+                item = this.getPlaylistIndex();
             }
-            return _this.getPlaylist()[item];
+            return this.getPlaylist()[item];
         };
-        _this.getRenderingMode = function () {
+        this.getRenderingMode = function () {
             return 'html5';
         };
 
-        _this.getProvider = function () {
+        this.getProvider = function () {
             return _controller.getProvider();
         };
 
-        _this.lock = function () {
-            return _this;
+        this.lock = function () {
+            return this;
         };
-        _this.unlock = function () {
-            return _this;
+        this.unlock = function () {
+            return this;
         };
-        _this.load = function (toLoad) {
+        this.load = function (toLoad) {
             _controller.instreamDestroy();
-            if (_this.plugins.googima) {
+            if (this.plugins.googima) {
                 _controller.destroyGoogima();
             }
             _controller.load(toLoad);
-            return _this;
+            return this;
         };
 
-        _this.play = function (state) {
+        this.play = function (state) {
             if (state !== undefined) {
                 _controller.play(state);
-                return _this;
+                return this;
             }
 
-            state = _this.getState();
+            state = this.getState();
             var instreamState = _instream && _instream.getState();
 
             if (instreamState) {
@@ -223,12 +222,12 @@ define([
                 _controller.play();
             }
 
-            return _this;
+            return this;
         };
 
-        _this.pause = function (state) {
+        this.pause = function (state) {
             if (state === undefined) {
-                state = _this.getState();
+                state = this.getState();
                 if (state === states.PLAYING || state === states.BUFFERING) {
                     _controller.pause();
                 } else {
@@ -237,21 +236,21 @@ define([
             } else {
                 _controller.pause(state);
             }
-            return _this;
+            return this;
         };
-        _this.createInstream = function () {
+        this.createInstream = function () {
             return new Instream(_controller);
         };
-        _this.setInstream = function (instream) {
+        this.setInstream = function (instream) {
             _instream = instream;
             return instream;
         };
-        _this.loadInstream = function (item, options) {
-            _instream = _this.setInstream(_this.createInstream()).init(options);
+        this.loadInstream = function (item, options) {
+            _instream = this.setInstream(this.createInstream()).init(options);
             _instream.loadItem(item);
             return _instream;
         };
-        _this.destroyPlayer = function () {
+        this.destroyPlayer = function () {
             _reset();
 
             // so players can be removed before loading completes
@@ -261,58 +260,32 @@ define([
             // terminate state
             _playerReady = false;
             _controller = null;
-            _queuedCalls = [];
             _eventQueue = [];
             _itemMeta = {};
             _callbacks = {};
         };
 
-        _this.playAd = function (ad) {
-            var plugins = _this.plugins;
+        this.playAd = function (ad) {
+            var plugins = this.plugins;
             if (plugins.vast) {
                 plugins.vast.jwPlayAd(ad);
             }
         };
-        _this.pauseAd = function () {
-            var plugins = _this.plugins;
+        this.pauseAd = function () {
+            var plugins = this.plugins;
             if (plugins.vast) {
                 plugins.vast.jwPauseAd();
             }
         };
 
 
-        _this.remove = function () {
+        this.remove = function () {
             // Remove from array of players. this calls this.destroyPlayer()
-            globalRemovePlayer(_this);
+            globalRemovePlayer(this);
         };
 
-        function _forwardStateEvent(evt) {
-            _this.trigger(evt.newstate, evt);
-        }
-
-        this.playerReady = function () {
+        var _onPlayerReady = function () {
             _playerReady = true;
-
-            while(_eventQueue.length) {
-                var val = _eventQueue.shift();
-                this.on(val[0], val[1], val[2]);
-            }
-
-            this.on(events.JWPLAYER_PLAYLIST_ITEM, function () {
-                _itemMeta = {};
-            });
-
-            this.on(events.JWPLAYER_MEDIA_META, function (data) {
-                _.extend(_itemMeta, data.metadata);
-            });
-
-            this.on(events.JWPLAYER_VIEW_TAB_FOCUS, function (data) {
-                if (data.hasFocus === true) {
-                    addFocusBorder(_this.container);
-                } else {
-                    removeFocusBorder(_this.container);
-                }
-            });
 
             _qoe.tick(events.API_READY);
 
@@ -320,8 +293,25 @@ define([
                 setupTime : _qoe.between(events.API_SETUP, events.API_READY)
             });
         };
+        _controller.on(events.JWPLAYER_READY, _onPlayerReady);
 
-        return _this;
+        this.on(events.JWPLAYER_PLAYLIST_ITEM, function () {
+            _itemMeta = {};
+        });
+
+        this.on(events.JWPLAYER_MEDIA_META, function (data) {
+            _.extend(_itemMeta, data.metadata);
+        });
+
+        this.on(events.JWPLAYER_VIEW_TAB_FOCUS, function (data) {
+            if (data.hasFocus === true) {
+                addFocusBorder(_this.container);
+            } else {
+                removeFocusBorder(_this.container);
+            }
+        });
+
+        return this;
     };
 
     return Api;
