@@ -69,6 +69,10 @@ define([
             return Events.on.apply(_this, arguments);
         };
 
+        function _forwardStateEvent(evt) {
+            _this.trigger(evt.newstate, evt);
+        }
+
         // Required by vast
         // <deprecate>
         this.dispatchEvent = this.trigger;
@@ -280,28 +284,8 @@ define([
             globalRemovePlayer(_this);
         };
 
-        function _forwardStateEvent(evt) {
-            _this.trigger(evt.newstate, evt);
-        }
-
-        this.playerReady = function () {
+        var _onPlayerReady = function () {
             _playerReady = true;
-
-            this.on(events.JWPLAYER_PLAYLIST_ITEM, function () {
-                _itemMeta = {};
-            });
-
-            this.on(events.JWPLAYER_MEDIA_META, function (data) {
-                _.extend(_itemMeta, data.metadata);
-            });
-
-            this.on(events.JWPLAYER_VIEW_TAB_FOCUS, function (data) {
-                if (data.hasFocus === true) {
-                    addFocusBorder(_this.container);
-                } else {
-                    removeFocusBorder(_this.container);
-                }
-            });
 
             _qoe.tick(events.API_READY);
 
@@ -309,6 +293,23 @@ define([
                 setupTime : _qoe.between(events.API_SETUP, events.API_READY)
             });
         };
+        _controller.on(events.JWPLAYER_READY, _onPlayerReady);
+
+        this.on(events.JWPLAYER_PLAYLIST_ITEM, function () {
+            _itemMeta = {};
+        });
+
+        this.on(events.JWPLAYER_MEDIA_META, function (data) {
+            _.extend(_itemMeta, data.metadata);
+        });
+
+        this.on(events.JWPLAYER_VIEW_TAB_FOCUS, function (data) {
+            if (data.hasFocus === true) {
+                addFocusBorder(_this.container);
+            } else {
+                removeFocusBorder(_this.container);
+            }
+        });
 
         return _this;
     };

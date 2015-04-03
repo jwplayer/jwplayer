@@ -92,10 +92,9 @@ define([
                 }
 
                 _view.completeSetup();
-                _this.trigger(evt.type, evt);
 
                 // Tell the api that we are loaded
-                _api.playerReady(evt);
+                _this.trigger(evt.type, evt);
 
                 _model.addGlobalListener(_forward);
                 _view.addGlobalListener(_forward);

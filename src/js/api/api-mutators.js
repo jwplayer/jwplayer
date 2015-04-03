@@ -62,7 +62,6 @@ define([
             //'getItemMeta',
             //'getMeta',
             //'getPlaylistItem',
-            //'getLockState', //?
             //'getContainer',
             //'playlistItem',
         ];
@@ -71,8 +70,5 @@ define([
                 return _controller[func].apply(_controller, arguments);
             };
         });
-
-
-        // One additional for legacy
     };
 });
