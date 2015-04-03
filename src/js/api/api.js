@@ -44,7 +44,6 @@ define([
             _originalContainer = container,
             _controller = new Controller(),
             _playerReady = false,
-            _queuedCalls = [],
             _itemMeta = {},
             _eventQueue = [],
             _callbacks = {};
@@ -62,13 +61,9 @@ define([
             return Events.trigger.call(_this, type, args);
         };
 
-        this.on = function(name, callback, context) {
+        this.on = function(name, callback) {
             if (!_.isFunction(callback)) {
                 throw new Error(callback + ' is not a function');
-            }
-            if (!_playerReady) {
-                _eventQueue.push([name, callback, context]);
-                return this;
             }
 
             return Events.on.apply(_this, arguments);
@@ -261,7 +256,6 @@ define([
             // terminate state
             _playerReady = false;
             _controller = null;
-            _queuedCalls = [];
             _eventQueue = [];
             _itemMeta = {};
             _callbacks = {};
@@ -292,11 +286,6 @@ define([
 
         this.playerReady = function () {
             _playerReady = true;
-
-            while(_eventQueue.length) {
-                var val = _eventQueue.shift();
-                this.on(val[0], val[1], val[2]);
-            }
 
             this.on(events.JWPLAYER_PLAYLIST_ITEM, function () {
                 _itemMeta = {};
