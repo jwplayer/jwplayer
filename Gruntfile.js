@@ -185,6 +185,15 @@ module.exports = function(grunt) {
             }
         },
 
+        karma: {
+            local : {
+                configFile: './test/karma/karma.conf.js'
+            },
+            browserstack : {
+                configFile: './test/karma/karma.conf.js'
+            }
+        },
+
         clean: {
             dist: {
                 files: [{
@@ -319,6 +328,10 @@ module.exports = function(grunt) {
         }, 500);
     });
 
+    grunt.registerTask('test', [
+        'karma'
+    ]);
+
     grunt.registerTask('build-js', [
         'webpack',
         'uglify',
@@ -329,7 +342,8 @@ module.exports = function(grunt) {
         'clean',
         'build-js',
         'flash:player:debug',
-        'flash:player:release'
+        'flash:player:release',
+        'karma:local'
     ]);
 
     grunt.registerTask('default', 'build');
