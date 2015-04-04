@@ -7,7 +7,7 @@ define([
     'utils/helpers',
     'utils/css',
     'utils/timer',
-    'utils/underscore',
+    'underscore',
     'controller/controller',
     'api/api-actions',
     'api/api-mutators',

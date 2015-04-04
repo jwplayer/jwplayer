@@ -2,7 +2,7 @@ define([
     'utils/timer',
     'events/events',
     'events/states',
-    'utils/underscore'
+    'underscore'
 ], function(Timer, events, states, _) {
 
     // This is to provide a first frame event even when
