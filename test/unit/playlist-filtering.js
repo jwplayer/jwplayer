@@ -1,6 +1,6 @@
 // jshint ignore: start
 define([
-    'underscore',
+    'test/underscore',
     'utils/helpers',
     'data/aac',
     'data/flv',

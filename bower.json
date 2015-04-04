@@ -10,6 +10,7 @@
     "qunit": "~1.18.0",
     "requirejs-text": "~2.0.14",
     "handlebars": "~3.0.0",
-    "requirejs-handlebars": "~0.1.1"
+    "requirejs-handlebars": "~0.1.1",
+    "underscore": "~1.8.3"
   }
 }

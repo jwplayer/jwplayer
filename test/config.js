@@ -43,9 +43,17 @@ require.config({
         'hbars':      components + '/requirejs-handlebars/hb',
         'jquery':     components + '/jquery/dist/jquery',
 
+        // always use test/underscore in test scripts
+        'test/underscore': components + '/underscore/underscore',
+
         'data' : data,
         'mock' : mock,
         'unit' : unit
+    },
+    shim: {
+        'test/underscore': {
+            exports: '_'
+        }
     },
     map: {
         // make sure the text plugin is used to load templates

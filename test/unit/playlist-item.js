@@ -1,5 +1,5 @@
 define([
-    'underscore',
+    'test/underscore',
     'playlist/item'
 ], function (_, item) {
     /* jshint qunit: true */

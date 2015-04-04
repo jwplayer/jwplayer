@@ -1,5 +1,5 @@
 define([
-    'underscore',
+    'test/underscore',
     'data/mp4',
     'playlist/playlist',
     'playlist/source',
