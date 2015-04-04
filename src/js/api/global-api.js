@@ -34,7 +34,9 @@ define([
             return _addPlayer(new Api(domElement, _removePlayer));
         }
         // invalid query
-        return null;
+        return {
+            registerPlugin: plugins.registerPlugin
+        };
     };
 
     var _playerById = function (id) {
