@@ -90,25 +90,25 @@ define([
             width : '200',
             aspectratio : '4:3'
         });
-        equal(x.aspectratio, undefined, 'When width isn\'t a percentage, there is no aspect ratio');
+        strictEqual(x.aspectratio, undefined, 'When width isn\'t a percentage, there is no aspect ratio');
 
         // TODO: Why not support a numeric value of width/height?
         x = testConfig({
             width : '100%',
             aspectratio : 1.2
         });
-        equal(x.aspectratio, undefined, 'Numeric aspectratio values are not supported');
+        strictEqual(x.aspectratio, undefined, 'Numeric aspectratio values are not supported');
 
         x = testConfig({
             width : '100%',
             aspectratio : '1'
         });
-        equal(x.aspectratio, undefined, 'aspectratio must be in the format "n:n"');
+        strictEqual(x.aspectratio, undefined, 'aspectratio must be in the format "n:n"');
 
         x = testConfig({
             width : '100%',
             aspectratio : ':0'
         });
-        equal(x.aspectratio, undefined, 'aspectratio must contain positive numbers');
+        strictEqual(x.aspectratio, undefined, 'aspectratio must contain positive numbers');
     });
 });
