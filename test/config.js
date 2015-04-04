@@ -1,5 +1,4 @@
 // This allows us to test modules without loading full player
-window.jwplayer = {};
 window.__BUILD_VERSION__ = 0;
 window.__FLASH_VERSION__ = 11.1;
 

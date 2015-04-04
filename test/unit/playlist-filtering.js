@@ -14,12 +14,6 @@ define([
 ], function (_, helpers, aac, flv, mp4, playlists, playlist, Providers, source, track, item) {
     /* jshint qunit: true */
 
-    jwplayer.vid = {
-        canPlayType : function (type) {
-            return _.contains(['video/mp4','audio/mp4','video/webm'],type);
-        }
-    };
-
     function sourcesMatch(arr) {
         var type;
 
