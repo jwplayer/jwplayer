@@ -1,7 +1,6 @@
 define([
     'controller/controller-instream',
     'api/api-deprecate',
-    'plugins/plugins',
     'underscore',
     'controller/Setup',
     'controller/model',
@@ -12,7 +11,7 @@ define([
     'utils/backbone.events',
     'events/states',
     'events/events'
-], function(setupInstreamMethods, deprecateInit, plugins, _, Setup,
+], function(setupInstreamMethods, deprecateInit, _, Setup,
             Model, Playlist, PlaylistLoader, utils, View, Events, states, events) {
 
     function _queue(command) {

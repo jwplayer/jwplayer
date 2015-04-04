@@ -1,6 +1,7 @@
 define([
-    'api/api'
-], function(Api) {
+    'api/api',
+    'plugins/plugins'
+], function(Api, plugins) {
 
     var _instances = [],
         _uniqueIndex = 0;
@@ -57,7 +58,6 @@ define([
         for (var i=_instances.length; i--;) {
             if (_instances[i].uniqueId === api.uniqueId) {
                 _instances.splice(i, 1);
-                api.destroyPlayer();
                 break;
             }
         }
