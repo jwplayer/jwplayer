@@ -37,6 +37,8 @@ define([
         testItem(false);
         testItem({title : 'hi', sources: false});
         testItem({title : 'hi', sources: {}});
+        testItem({tracks: [{}, null]});
+        testItem({tracks: 1});
     });
 
     test('input with multiple sources, a default and captions track', function() {
