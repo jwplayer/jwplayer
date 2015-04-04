@@ -35,9 +35,9 @@ define([
 
         // If type not included, we infer it from extension
         if (! _source.type) {
-            if (utils.isYouTube(_source.file, _source.type)) {
+            if (utils.isYouTube(_source.file)) {
                 _source.type = 'youtube';
-            } else if (utils.isRtmp(_source.file, _source.type)) {
+            } else if (utils.isRtmp(_source.file)) {
                 _source.type = 'rtmp';
             } else {
                 var extension = strings.extension(_source.file);
