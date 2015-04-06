@@ -18,113 +18,152 @@
     font-style: normal;
 }
 
-.jwplayer .jw-thumb,
-.jwplayer .jw-icon-inline,
-.jwplayer .jw-icon-tooltip,
-.jwplayer .jw-icon-display,
-.jw-controlbar .jw-menu .jw-option:before {
-    font-family: 'jw-six-icons';
-    -webkit-font-smoothing: antialiased;
-    font-style: normal;
-    font-weight: normal;
-    line-height: 1;
-    text-transform: none;
-    background-color: transparent;
-    font-variant: normal;
 
-    /* Enable Ligatures ================ */
-    -webkit-font-feature-settings: "liga";
-    -moz-font-feature-settings: "liga=1";
-    -moz-font-feature-settings: "liga";
-    -ms-font-feature-settings: "liga" 1;
-    -o-font-feature-settings: "liga";
-    font-feature-settings: "liga";
-    -moz-osx-font-smoothing: grayscale;
-}
 
-.jw-icon-display,
-.jw-thumb,
-.jw-icon-inline,
-.jw-icon-tooltip {
-    color: @active-color;
+.jwplayer {
+    .jw-thumb,
+    .jw-icon-inline,
+    .jw-icon-tooltip,
+    .jw-icon-display,
+    .jw-controlbar .jw-menu .jw-option:before {
+        color: @inactive-color;
+        font-family: 'jw-six-icons';
+        -webkit-font-smoothing: antialiased;
+        font-style: normal;
+        font-weight: normal;
+        line-height: 1;
+        text-transform: none;
+        background-color: transparent;
+        font-variant: normal;
 
-    &:hover,  {
-        color: @active-color;
+        /* Enable Ligatures ================ */
+        -webkit-font-feature-settings: "liga";
+        -moz-font-feature-settings: "liga=1";
+        -moz-font-feature-settings: "liga";
+        -ms-font-feature-settings: "liga" 1;
+        -o-font-feature-settings: "liga";
+        font-feature-settings: "liga";
+        -moz-osx-font-smoothing: grayscale;
+
+        &:hover,  {
+            color: @active-color;
+        }
     }
-}
 
-/*** ICONS ***/
-.jwplayer .icon-audio-tracks:after {
-    content: "\e600";
-}
+    /*** ICONS ***/
+    .icon-audio-tracks {
+        &:after {
+            content: "\e600";
+        }
+    }
 
-.jwplayer .jw-icon-buffer:after {
-    content: "\e601";
-}
+    .jw-icon-buffer{
+        &:after {
+            content: "\e601";
+        }
+    }
 
-.jwplayer .jw-icon-cast-off:after {
-    content: "\e602";
-}
+    .jw-icon-cast-off {
+        &:after {
+            content: "\e602";
+        }
+    }
 
-.jwplayer .jw-icon-cast-on:after {
-    content: "\e603";
-}
+    .jw-icon-cast-on {
+        &:after {
+            content: "\e603";
+        }
+    }
 
-.jwplayer .jw-icon-cc-off:after {
-    content: "\e604";
-}
+    .jw-icon-cc-off{
+        &:after {
+            content: "\e604";
+        }
+    }
 
-.jwplayer .jw-icon-cc-on:after {
-    content: "\e605";
-}
+    .jw-icon-cc-on {
+        &:after {
+            content: "\e605";
+        }
+    }
 
-.jwplayer .jw-icon-cue:after,
-.jwplayer .jw-menu .jw-option:before {
-    content: "\e606";
-}
+    .jw-icon-cue {
+        &:after {
+            content: "\e606";
+        }
+    }
 
-.jwplayer .jw-icon-error:after {
-    content: "\e607";
-}
+    .jw-icon-menu-bullet {
+        &:before {
+            content: "\e606";
+        }
+    }
 
-.jwplayer .jw-icon-fullscreen:after {
-    content: "\e608";
-}
+    .jw-icon-error {
+        &:after {
+            content: "\e607";
+        }
+    }
 
-.jwplayer .jw-icon-hd-off:after {
-    content: "\e609";
-}
+    .jw-icon-fullscreen{
+        &:after {
+            content: "\e608";
+        }
+    }
 
-.jwplayer .jw-icon-hd-on:after {
-    content: "\e60a";
-}
+    .jw-icon-hd-off {
+        &:after {
+            content: "\e609";
+        }
+    }
 
-.jwplayer .jw-icon-next:after,
-.jwplayer .jw-icon-prev:after {
-    content: "\e60b";
-}
+    .jw-icon-hd-on {
+        &:after {
+            content: "\e60a";
+        }
+    }
 
-.jwplayer .jw-icon-pause:after {
-    content: "\e60c";
-}
+    .jw-icon-next,
+    .jw-icon-prev {
+        &:after {
+            content: "\e60b";
+        }
+    }
 
-.jwplayer .jw-icon-play:after {
-    content: "\e60d";
-}
+    .jw-icon-pause {
+        &:after {
+            content: "\e60c";
+        }
+    }
 
-.jwplayer .jw-icon-replay:after {
-    content: "\e60e";
-}
+    .jw-icon-play {
+        &:after {
+            content: "\e60d";
+        }
+    }
 
-.jwplayer .jw-slider-horizontal .jw-thumb:after,
-.jwplayer .jw-slider-vertical .jw-thumb:after {
-    content: "\e60f";
-}
+    .jw-icon-replay {
+        &:after {
+            content: "\e60e";
+        }
+    }
 
-.jwplayer .jw-icon-volume-mute:after {
-    content: "\e611";
-}
+    .jw-slider-horizontal .jw-thumb,
+    .jw-slider-vertical .jw-thumb {
+        &:after {
+            content: "\e60f";
+        }
+    }
 
-.jwplayer .jw-icon-volume-unmute:after {
-    content: "\e612";
+    .jw-icon-volume-mute {
+        &:after {
+            content: "\e611";
+        }
+    }
+
+    .jw-icon-volume-unmute{
+        &:after {
+            content: "\e612";
+        }
+    }
 }
