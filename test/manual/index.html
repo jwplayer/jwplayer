@@ -11,7 +11,7 @@
 
 <h2>Video Playlist</h2>
 
-<div id="video-container"></div>
+<div id="video-container">before set up</div>
 <script type="text/javascript">
 (function() {
     var config = {
@@ -100,7 +100,12 @@
         })(simpleName);
     }
 
-    jwplayer('video-container').setup(config);
+    var jwp = jwplayer('video-container').setup(config);
+
+    // Test the remove event, triggered after jwplayer().remove();
+    jwp.on('remove', function(_api) {
+        console.log(_api)
+    })
 
 })();
 </script>
