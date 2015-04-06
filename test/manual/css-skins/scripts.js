@@ -5,12 +5,13 @@ $(document).ready(function(){
         $(this).toggleClass('jw-open');
     });
 
-    var uniform = function(e){
-        $('.jwplayer').addClass('player-size');
-        $('.jwplayer').removeClass('window-size aspect-size');
+    var stateStyles = 'jw-state-paused jw-state-playing jw-state-idle jw-state-buffering jw-state-complete';
+    var sizingStyles = 'player-size window-size aspect-size';
+    var stretchingStyles = 'uniform-stretching fill-stretching exactfit-stretching none-stretching';
 
-        $('.jwplayer').addClass('uniform-stretching');
-        $('.jwplayer').removeClass('fill-stretching exactfit-stretching none-stretching');
+    var uniform = function(e){
+        activateStyles('player-size', sizingStyles);
+        activateStyles('uniform-stretching', stretchingStyles);
 
         $('.button-cont-top').addClass('fixed-buttons');
     };
@@ -19,11 +20,8 @@ $(document).ready(function(){
     if(document.attachEvent) document.getElementById('100pct_300px_uniform').attachEvent('onclick', uniform);
 
     var none = function(e){
-        $('.jwplayer').addClass('player-size');
-        $('.jwplayer').removeClass('window-size aspect-size');
-
-        $('.jwplayer').addClass('none-stretching');
-        $('.jwplayer').removeClass('fill-stretching exactfit-stretching uniform-stretching');
+        activateStyles('player-size', sizingStyles);
+        activateStyles('none-stretching', stretchingStyles);
 
         $('.button-cont-top').addClass('fixed-buttons');
     };
@@ -32,11 +30,8 @@ $(document).ready(function(){
     if(document.attachEvent) document.getElementById('100pct_300px_uniform').attachEvent('onclick', none);
 
     var fill = function(e){
-        $('.jwplayer').addClass('player-size');
-        $('.jwplayer').removeClass('window-size aspect-size');
-
-        $('.jwplayer').addClass('fill-stretching');
-        $('.jwplayer').removeClass('none-stretching exactfit-stretching uniform-stretching');
+        activateStyles('player-size', sizingStyles);
+        activateStyles('fill-stretching', stretchingStyles);
 
         $('.button-cont-top').addClass('fixed-buttons');
     };
@@ -45,11 +40,8 @@ $(document).ready(function(){
     if(document.attachEvent) document.getElementById('100pct_300px_fill').attachEvent('onclick', fill);
 
     var exactfit = function(e){
-        $('.jwplayer').addClass('player-size');
-        $('.jwplayer').removeClass('window-size aspect-size');
-
-        $('.jwplayer').addClass('exactfit-stretching');
-        $('.jwplayer').removeClass('none-stretching fill-stretching uniform-stretching');
+        activateStyles('exactfit-size', sizingStyles);
+        activateStyles('none-stretching', stretchingStyles);
 
         $('.button-cont-top').addClass('fixed-buttons');
     };
@@ -58,11 +50,8 @@ $(document).ready(function(){
     if(document.attachEvent) document.getElementById('100pct_300px_exactfit').attachEvent('onclick', exactfit);
 
     var windowsize = function(e){
-        $('.jwplayer').addClass('window-size');
-        $('.jwplayer').removeClass('player-size aspect-size');
-
-        $('.jwplayer').addClass('uniform-stretching');
-        $('.jwplayer').removeClass('none-stretching fill-stretching exactfit-stretching');
+        activateStyles('window-size', sizingStyles);
+        activateStyles('uniform-stretching', stretchingStyles);
 
         $('.button-cont-top').addClass('fixed-buttons');
     };
@@ -71,11 +60,8 @@ $(document).ready(function(){
     if(document.attachEvent) document.getElementById('window-size').attachEvent('onclick', windowsize);
 
     var aspect169 = function(e){
-        $('.jwplayer').addClass('aspect-size');
-        $('.jwplayer').removeClass('player-size window-size');
-
-        $('.jwplayer').addClass('uniform-stretching');
-        $('.jwplayer').removeClass('none-stretching fill-stretching exactfit-stretching');
+        activateStyles('aspect-size', sizingStyles);
+        activateStyles('uniform-stretching', stretchingStyles);
 
         $('.button-cont-top').removeClass('fixed-buttons');
 
@@ -88,11 +74,8 @@ $(document).ready(function(){
     if(document.attachEvent) document.getElementById('aspect-ratio-16-9').attachEvent('onclick', aspect169);
 
     var aspect43 = function(e){
-        $('.jwplayer').addClass('aspect-size');
-        $('.jwplayer').removeClass('player-size window-size');
-
-        $('.jwplayer').addClass('uniform-stretching');
-        $('.jwplayer').removeClass('none-stretching fill-stretching exactfit-stretching');
+        activateStyles('aspect-size', sizingStyles);
+        activateStyles('uniform-stretching', stretchingStyles);
 
         $('.button-cont-top').removeClass('fixed-buttons');
 
@@ -106,8 +89,7 @@ $(document).ready(function(){
 
 
     var idlestate = function(e) {
-        $('.jwplayer').addClass('jw-state-idle');
-        $('.jwplayer').removeClass('jw-state-play jw-state-pause jw-state-buffer jw-state-replay');
+        activateStyles('jw-state-idle', stateStyles);
     };
 
     $('#idle-state').on('click', idlestate);
@@ -115,35 +97,40 @@ $(document).ready(function(){
 
 
     var playstate = function(e){
-        $('.jwplayer').addClass('jw-state-play');
-        $('.jwplayer').removeClass('jw-state-idle jw-state-pause jw-state-buffer jw-state-replay');
+        activateStyles('jw-state-playing', stateStyles);
     };
 
-    $('#play-state').on('click', playstate);
-    if(document.attachEvent) document.getElementById('play-state').attachEvent('onclick', playstate);
+    $('#playing-state').on('click', playstate);
+    if(document.attachEvent) document.getElementById('playing-state').attachEvent('onclick', playstate);
 
 
     var pausestate = function(e){
-        $('.jwplayer').addClass('jw-state-pause');
-        $('.jwplayer').removeClass('jw-state-play jw-state-idle jw-state-buffer jw-state-replay');
+        activateStyles('jw-state-paused', stateStyles);
     };
 
-    $('#pause-state').on('click', pausestate);
-    if(document.attachEvent) document.getElementById('pause-state').attachEvent('onclick', pausestate);
+    $('#paused-state').on('click', pausestate);
+    if(document.attachEvent) document.getElementById('paused-state').attachEvent('onclick', pausestate);
+
 
     var bufferingstate = function(e){
-        $('.jwplayer').addClass('jw-state-buffer');
-        $('.jwplayer').removeClass('jw-state-play jw-state-pause jw-state-idle jw-state-replay');
+        activateStyles('jw-state-buffering', stateStyles);
     };
 
     $('#buffering-state').on('click', bufferingstate);
     if(document.attachEvent) document.getElementById('buffering-state').attachEvent('onclick', bufferingstate);
 
-    var replaystate = function(e){
-        $('.jwplayer').addClass('jw-state-replay');
-        $('.jwplayer').removeClass('jw-state-play jw-state-pause jw-state-buffer jw-state-idle');
+
+    var completestate = function(e){
+        activateStyles('jw-state-complete', stateStyles);
     };
 
-    $('#replay-state').on('click', replaystate);
-    if(document.attachEvent) document.getElementById('replay-state').attachEvent('onclick', replaystate);
+    $('#complete-state').on('click', completestate);
+    if(document.attachEvent) document.getElementById('complete-state').attachEvent('onclick', completestate);
+
+    var activateStyles = function (addStyle, removeStyles){
+        var classesToRemove = removeStyles.replace(addStyle, '');
+
+        $('.jwplayer').removeClass(classesToRemove);
+        $('.jwplayer').addClass(addStyle);
+    };
 });
