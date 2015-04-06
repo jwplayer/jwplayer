@@ -7,20 +7,20 @@ import flash.system.Capabilities;
 
 public class PlayerEvent extends Event {
 
-    public static const JWPLAYER_READY:String = "jwplayerReady";
+    public static const JWPLAYER_READY:String = "ready";
 
-    public static const JWPLAYER_LOCKED:String = "jwplayerLocked";
+    public static const JWPLAYER_LOCKED:String = "locked";
 
-    public static const JWPLAYER_UNLOCKED:String = "jwplayerUnlocked";
+    public static const JWPLAYER_UNLOCKED:String = "unlocked";
 
-    public static const JWPLAYER_ERROR:String = "jwplayerError";
+    public static const JWPLAYER_ERROR:String = "error";
 
-    public static const JWPLAYER_FULLSCREEN:String = "jwplayerFullscreen";
+    public static const JWPLAYER_FULLSCREEN:String = "fullscreen";
 
-    public static const JWPLAYER_SETUP_ERROR:String = "jwplayerSetupError";
+    public static const JWPLAYER_SETUP_ERROR:String = "setupError";
 
     // MediaProvider
-    public static const JWPLAYER_PROVIDER_CHANGED:String = "jwplayerProviderChanged";
+    public static const JWPLAYER_PROVIDER_CHANGED:String = "providerChanged";
 
     public function PlayerEvent(type:String, msg:String = undefined) {
         super(type, false, false);

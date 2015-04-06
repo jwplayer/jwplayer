@@ -1,12 +1,13 @@
-define(['utils/keymirror'], function(keyMirror) {
-    return keyMirror({
-        BUFFERING : null,
-        IDLE      : null,
-        PAUSED    : null,
-        PLAYING   : null,
+define([], function() {
+    return {
+        BUFFERING : 'buffering',
+        IDLE      : 'idle',
+        COMPLETE  : 'complete',
+        PAUSED    : 'paused',
+        PLAYING   : 'playing',
 
         // These exist at the provider level, but are converted to BUFFERING at higher levels
-        LOADING   : null,
-        STALLED   : null
-    });
+        LOADING   : 'loading',
+        STALLED   : 'stalled'
+    };
 });
