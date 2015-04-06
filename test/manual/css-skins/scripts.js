@@ -82,7 +82,6 @@ $(document).ready(function(){
         document.styleSheets[0].addRule('.jwplayer:before','padding-top: ' + Math.round(9/16 * 100) + '%');
         if(document.attachEvent)document.styleSheets[0].addRule('.jwplayer:before','content: ' + Math.round(Math.random()*1000));
         if(!document.attachEvent) document.styleSheets[0].insertRule('.jwplayer:before { padding-top: ' + Math.round(9/16 * 100) + '%; }', 0);
-        //$('.jwplayer:before').css('padding-top', Math.round(9/16 * 100) + '%');
     };
 
     $('#aspect-ratio-16-9').on('click', aspect169);
@@ -100,7 +99,6 @@ $(document).ready(function(){
         document.styleSheets[0].addRule('.jwplayer:before','padding-top: ' + Math.round(3/4 * 100) + '%');
         if(document.attachEvent)document.styleSheets[0].addRule('.jwplayer:before','content: ' + Math.round(Math.random()*1000));
         if(!document.attachEvent) document.styleSheets[0].insertRule('.jwplayer:before { padding-top: ' + Math.round(3/4 * 100) + '%; }', 0);
-        //$('.jwplayer:before').css('padding-top', Math.round(3/4 * 100) + '%');
     };
 
     $('#aspect-ratio-4-3').on('click', aspect43);
@@ -110,14 +108,6 @@ $(document).ready(function(){
     var idlestate = function(e) {
         $('.jwplayer').addClass('jw-state-idle');
         $('.jwplayer').removeClass('jw-state-play jw-state-pause jw-state-buffer jw-state-replay');
-
-        //$('.jwplayer').removeClass('pause-state');
-        //$('.jwplayer').removeClass('buffering-state');
-        //$('.jwplayer .jw-display-icon-cont .jw-icon-display').addClass('jw-icon-play');
-        //$('.jwplayer .jw-display-icon-cont .jw-icon-display').removeClass('jw-icon-buffer');
-        //
-        //$($('.jwplayer .jw-left .jw-icon')[0]).addClass('jw-icon-play');
-        //$($('.jwplayer .jw-left .jw-icon')[0]).removeClass('jw-icon-pause');
     };
 
     $('#idle-state').on('click', idlestate);
