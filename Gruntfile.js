@@ -29,8 +29,10 @@ module.exports = function(grunt) {
         pkg: packageInfo,
 
         jshint: {
-            all : [
-                'src/js/**/*.js',
+            player : [
+                'src/js/**/*.js'
+            ],
+            grunt : [
                 'Gruntfile.js'
             ],
             options: {
@@ -98,8 +100,8 @@ module.exports = function(grunt) {
                 tasks: ['jshint']
             },
             player: {
-                files : ['src/js/**/*.js', 'src/js/*.js'],
-                tasks: ['build-js']
+                files : ['src/js/{,*/}*.js'],
+                tasks: ['build-js', 'karma:local']
             },
             flash: {
                 files : [
@@ -109,19 +111,23 @@ module.exports = function(grunt) {
                 tasks: ['flash:player:debug']
             },
             css: {
-                files: [
-                    'src/css/*.less',
-                    'src/css/imports/*.less'],
-                tasks: ['webpack']
+                files: ['src/css/{,*/}*.less'],
+                tasks: ['webpack', 'uglify']
+            },
+            tests: {
+                files : ['test/{,*/}*.js'],
+                tasks: ['karma:local']
             },
             grunt: {
                 files: ['Gruntfile.js'],
-                tasks: ['jshint']
+                tasks: ['jshint:grunt']
             }
         },
 
         webpack : {
             build : {
+                watch: false,
+                progress: false,
                 entry: {
                     jwplayer : './src/js/main.js',
                     demostyles : './src/js/demostyles.js'
@@ -335,7 +341,7 @@ module.exports = function(grunt) {
     grunt.registerTask('build-js', [
         'webpack',
         'uglify',
-        'jshint'
+        'jshint:player'
     ]);
 
     grunt.registerTask('build', [
