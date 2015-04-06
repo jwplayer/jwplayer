@@ -125,8 +125,8 @@ define([
                 }
             });
 
-            this._embedder = new Embed(options, this, _controller);
-            this._embedder.embed();
+            this._embedder = new Embed(this, _controller);
+            this._embedder.embed(options);
 
             return this;
         };
