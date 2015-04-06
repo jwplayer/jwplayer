@@ -1,11 +1,12 @@
 @import "vars.less";
 
+@thumb-size: @volume-rail-width * 1.10;
+
 .jwplayer .jw-slider-horizontal,
 .jwplayer .jw-slider-vertical {
     .jw-rail,
     .jw-buffer,
-    .jw-progress,
-    .jw-thumb {
+    .jw-progress {
         position: absolute;
         cursor: pointer;
         border-radius: 0.5em;
@@ -47,9 +48,18 @@
         z-index: 1;
         width: 1em;
         height: 1em;
-        font-size: @volume-rail-width;
+        font-size: @thumb-size;
         color: @thumb-color;
         cursor: pointer;
+
+        &:after {
+            content: "";
+            display: block;
+            width: 1em;
+            height: 1em;
+            border-radius: 1em;
+            background-color: @thumb-color;
+        }
     }
 
     .jw-cue {
@@ -88,7 +98,7 @@
     }
 
     .jw-thumb {
-        margin-left: -0.5em;
+        margin-left: @thumb-size/-2;
     }
 }
 
@@ -122,9 +132,7 @@
     }
 
     .jw-thumb {
-        width: @volume-rail-width;
-        height: @volume-rail-width;
-        margin-bottom: @volume-rail-width/-2;
+        margin-bottom: @thumb-size/-2;
     }
 }
 
