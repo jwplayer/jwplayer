@@ -7,7 +7,7 @@ define([
     'utils/helpers',
     'utils/css',
     'utils/timer',
-    'utils/underscore',
+    'underscore',
     'controller/controller',
     'api/api-actions',
     'api/api-mutators',
@@ -45,7 +45,6 @@ define([
             _controller = new Controller(),
             _playerReady = false,
             _itemMeta = {},
-            _eventQueue = [],
             _callbacks = {};
 
         // Set up event handling
@@ -126,8 +125,8 @@ define([
                 }
             });
 
-            this._embedder = new Embed(options, this, _controller);
-            this._embedder.embed();
+            this._embedder = new Embed(this, _controller);
+            this._embedder.embed(options);
 
             return this;
         };
@@ -250,20 +249,6 @@ define([
             _instream.loadItem(item);
             return _instream;
         };
-        this.destroyPlayer = function () {
-            _reset();
-
-            // so players can be removed before loading completes
-            _playerReady = true;
-            _controller.playerDestroy();
-
-            // terminate state
-            _playerReady = false;
-            _controller = null;
-            _eventQueue = [];
-            _itemMeta = {};
-            _callbacks = {};
-        };
 
         this.playAd = function (ad) {
             var plugins = this.plugins;
@@ -282,6 +267,18 @@ define([
         this.remove = function () {
             // Remove from array of players. this calls this.destroyPlayer()
             globalRemovePlayer(this);
+
+            // so players can be removed before loading completes
+            if (_controller.playerDestroy) {
+                _controller.playerDestroy();
+            }
+
+            // terminate state
+            _reset();
+            _playerReady = false;
+            _controller = null;
+            _itemMeta = {};
+            _callbacks = {};
         };
 
         var _onPlayerReady = function () {

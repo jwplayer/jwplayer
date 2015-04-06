@@ -1,6 +1,7 @@
 define([
-    'api/api'
-], function(Api) {
+    'api/api',
+    'plugins/plugins'
+], function(Api, plugins) {
 
     var _instances = [],
         _uniqueIndex = 0;
@@ -33,7 +34,9 @@ define([
             return _addPlayer(new Api(domElement, _removePlayer));
         }
         // invalid query
-        return null;
+        return {
+            registerPlugin: plugins.registerPlugin
+        };
     };
 
     var _playerById = function (id) {
@@ -57,7 +60,6 @@ define([
         for (var i=_instances.length; i--;) {
             if (_instances[i].uniqueId === api.uniqueId) {
                 _instances.splice(i, 1);
-                api.destroyPlayer();
                 break;
             }
         }

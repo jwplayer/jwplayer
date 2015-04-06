@@ -8,47 +8,41 @@ define([
     'underscore'
 ], function(events, scriptloader, PlaylistLoader, EmbedConfig, plugins, errorScreen, _) {
 
-    var Embed = function(_options, _api, _controller) {
+    var Embed = function(_api, _controller) {
 
         var _this = this,
-            _config = new EmbedConfig(_options),
-            _width = _config.width,
-            _height = _config.height,
-            _pluginloader = plugins.loadPlugins(_api.id, _config.plugins),
-            _loader,
+            _config,
+            _pluginLoader,
+            _playlistLoader,
             _playlistLoading = false,
             _errorOccurred = false,
             _setupErrorTimer = -1;
 
-        _config.id = _api.id;
-        if (_config.aspectratio) {
-            _options.aspectratio = _config.aspectratio;
-        } else {
-            delete _options.aspectratio;
-        }
+        _this.embed = function(options) {
+            _config = new EmbedConfig(options);
+            _config.id = _api.id;
 
-        var _container = _api.getContainer();
-        _container.style.width = _width.toString().indexOf('%') > 0 ? _width : (_width + 'px');
-        _container.style.height = _height.toString().indexOf('%') > 0 ? _height : (_height + 'px');
+            var _container = _api.getContainer(),
+                width = _config.width,
+                height = _config.height;
 
-        _this.embed = function() {
-            if (_errorOccurred) {
-                return;
-            }
+            _container.style.width = width.toString().indexOf('%') > 0 ? width : (width + 'px');
+            _container.style.height = height.toString().indexOf('%') > 0 ? height : (height + 'px');
 
-            _pluginloader.addEventListener(events.COMPLETE, _doEmbed);
-            _pluginloader.addEventListener(events.ERROR, _pluginError);
-            _pluginloader.load();
+            _pluginLoader = plugins.loadPlugins(_api.id, _config.plugins);
+            _pluginLoader.addEventListener(events.COMPLETE, _doEmbed);
+            _pluginLoader.addEventListener(events.ERROR, _pluginError);
+            _pluginLoader.load();
         };
 
         _this.destroy = function() {
-            if (_pluginloader) {
-                _pluginloader.destroy();
-                _pluginloader = null;
+            if (_pluginLoader) {
+                _pluginLoader.destroy();
+                _pluginLoader = null;
             }
-            if (_loader) {
-                _loader.resetEventListeners();
-                _loader = null;
+            if (_playlistLoader) {
+                _playlistLoader.resetEventListeners();
+                _playlistLoader = null;
             }
         };
 
@@ -81,27 +75,27 @@ define([
             }
 
             if (_.isString(playlist)) {
-                _loader = new PlaylistLoader();
-                _loader.addEventListener(events.JWPLAYER_PLAYLIST_LOADED, function(evt) {
+                _playlistLoader = new PlaylistLoader();
+                _playlistLoader.addEventListener(events.JWPLAYER_PLAYLIST_LOADED, function(evt) {
                     _config.playlist = evt.playlist;
                     _playlistLoading = false;
                     _doEmbed();
                 });
-                _loader.addEventListener(events.JWPLAYER_ERROR, function(evt) {
+                _playlistLoader.addEventListener(events.JWPLAYER_ERROR, function(evt) {
                     _playlistLoading = false;
                     _sourceError(evt);
                 });
                 _playlistLoading = true;
-                _loader.load(_config.playlist);
+                _playlistLoader.load(_config.playlist);
                 return;
             }
 
-            if (_pluginloader.getStatus() === scriptloader.loaderstatus.COMPLETE) {
+            if (_pluginLoader.getStatus() === scriptloader.loaderstatus.COMPLETE) {
 
                 var pluginConfigCopy = _.extend({}, _config);
 
                 // TODO: flatten flashPlugins and pass to flash provider
-                pluginConfigCopy.flashPlugins = _pluginloader.setupPlugins(_api, pluginConfigCopy, _resizePlugin);
+                pluginConfigCopy.flashPlugins = _pluginLoader.setupPlugins(_api, pluginConfigCopy, _resizePlugin);
 
                 // Volume option is tricky to remove, since it needs to be in the HTML5 player model.
                 var playerConfigCopy = _.extend({}, pluginConfigCopy);
@@ -111,7 +105,6 @@ define([
             }
         }
 
-        // TODO: view code
         function _resizePlugin(plugin, div, onready) {
             return function() {
                 var displayarea = document.querySelector('#' + _api.id + ' .jwmain');
@@ -159,7 +152,9 @@ define([
             }
 
             // Put new container in page
+            // TODO: don't assume element with id is in DOM
             var container = document.getElementById(_api.id);
+            var _container = _api.getContainer();
             if (container !== _container) {
                 container.parentNode.replaceChild(_container, container);
             }

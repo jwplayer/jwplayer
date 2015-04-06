@@ -29,6 +29,8 @@ define([
             _setupFailureTimeout,
             _errorTimeoutSeconds = 10;
 
+        _.extend(this, _eventDispatcher);
+
         var PARSE_CONFIG = {
                 method: _parseConfig,
                 depends: []
@@ -65,9 +67,13 @@ define([
         ];
 
         this.start = function () {
-            _setupFailureTimeout = setTimeout(_setupTimeoutHandler.bind(this), _errorTimeoutSeconds * 1000);
+            _setupFailureTimeout = setTimeout(_setupTimeoutHandler, _errorTimeoutSeconds * 1000);
 
             _.defer(_nextTask);
+        };
+
+        this.destroy = function() {
+            _cancelled = true;
         };
 
         function _setupTimeoutHandler(){
@@ -163,14 +169,8 @@ define([
             });
             _view.setupError(message);
             clearTimeout(_setupFailureTimeout);
-            this.destroy();
-        }
-
-        this.destroy = function() {
             _cancelled = true;
-        };
-
-        _.extend(this, _eventDispatcher);
+        }
 
     };
 

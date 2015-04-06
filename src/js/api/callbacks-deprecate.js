@@ -1,5 +1,5 @@
 define([
-    'utils/underscore',
+    'underscore',
     'events/states',
     'events/events'
 ], function(_, states, events) {

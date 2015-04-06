@@ -1,27 +1,26 @@
 define([
     'underscore',
-    'utils/helpers',
     'playlist/source',
     'playlist/track'
-], function(_, utils, Source, Track) {
-
-    var Defaults = {
-        description: undefined,
-        image: undefined,
-        mediaid: undefined,
-        title: undefined,
-        sources: [],
-        tracks: []
-    };
+], function(_, Source, Track) {
 
     var PlaylistItem = function (config) {
 
+        var _playlistItem = {
+            description: undefined,
+            image: undefined,
+            mediaid: undefined,
+            title: undefined,
+            sources: [],
+            tracks: []
+        };
+
         config = config || {};
+        if (!_.isArray(config.tracks)) {
+            delete config.tracks;
+        }
 
-        var _playlistItem = {};
-        _.extend(_playlistItem, Defaults, config);
-
-        _playlistItem.tracks = (config && utils.exists(config.tracks)) ? config.tracks : [];
+        _.extend(_playlistItem, config);
 
         if (_.isObject(_playlistItem.sources) && !_.isArray(_playlistItem.sources)) {
             _playlistItem.sources = [Source(_playlistItem.sources)];
@@ -56,7 +55,9 @@ define([
 
         _playlistItem.sources = _.compact(_playlistItem.sources);
 
-        if (_playlistItem.captions && !utils.exists(config.tracks)) {
+        if (config.tracks) {
+            _playlistItem.tracks = config.tracks;
+        } else if (_playlistItem.captions) {
             for (var j = 0; j < _playlistItem.captions.length; j++) {
                 _playlistItem.tracks.push(_playlistItem.captions[j]);
             }

@@ -1,5 +1,5 @@
 define([
-    'underscore',
+    'test/underscore',
     'utils/helpers'
 ], function ( _, utils) {
     /* jshint qunit: true */

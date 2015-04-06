@@ -1,5 +1,4 @@
 // This allows us to test modules without loading full player
-window.jwplayer = {};
 window.__BUILD_VERSION__ = 0;
 window.__FLASH_VERSION__ = 11.1;
 
@@ -22,6 +21,13 @@ if (!window.__karma__) {
     callback = window.__karma__.start;
 }
 
+// Add qunit-fixture to page if not present
+if (!document.getElementById('qunit-fixture')) {
+    var qunitFixture = document.createElement('div');
+    qunitFixture.id = 'qunit-fixture';
+    document.body.appendChild(qunitFixture);
+}
+
 var components = base + 'bower_components';
 var data       = base + 'test/data';
 var mock       = base + 'test/mock';
@@ -37,21 +43,34 @@ require.config({
 
     paths: {
         'templates':     '../' + 'templates',
+        'css':           '../' + 'css',
         'underscore': 'utils/' + 'underscore',
 
         'handlebars': components + '/handlebars/handlebars.amd',
         'text':       components + '/requirejs-text/text',
         'hbars':      components + '/requirejs-handlebars/hb',
+        'less':       components + '/require-less/less',
+        'lessc':      components + '/require-less/lessc',
+        'normalize':  components + '/require-less/normalize',
         'jquery':     components + '/jquery/dist/jquery',
+
+        // always use test/underscore in test scripts
+        'test/underscore': components + '/underscore/underscore',
 
         'data' : data,
         'mock' : mock,
         'unit' : unit
     },
+    shim: {
+        'test/underscore': {
+            exports: '_'
+        }
+    },
     map: {
         // make sure the text plugin is used to load templates
         '*' : {
-            'templates/errorscreen.html': 'hbars!templates/errorscreen.html'
+            'templates/errorscreen.html': 'hbars!templates/errorscreen.html',
+            '../css/styles.less': 'less!css/styles'
         },
         'providers/html5' : {
             'utils/video': mock + '/video.js'

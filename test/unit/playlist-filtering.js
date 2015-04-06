@@ -1,24 +1,15 @@
 // jshint ignore: start
 define([
-    'underscore',
+    'test/underscore',
     'utils/helpers',
     'data/aac',
     'data/flv',
     'data/mp4',
     'data/playlists',
     'playlist/playlist',
-    'providers/providers',
-    'playlist/source',
-    'playlist/track',
-    'playlist/item'
-], function (_, helpers, aac, flv, mp4, playlists, playlist, Providers, source, track, item) {
+    'providers/providers'
+], function (_, helpers, aac, flv, mp4, playlists, playlist, Providers) {
     /* jshint qunit: true */
-
-    jwplayer.vid = {
-        canPlayType : function (type) {
-            return _.contains(['video/mp4','audio/mp4','video/webm'],type);
-        }
-    };
 
     function sourcesMatch(arr) {
         var type;
@@ -91,6 +82,23 @@ define([
         pl = playlist.filterPlaylist(playlists['mp4_webm'], new Providers());
         equal(sourcesMatch(pl[0].sources), 'mp4', 'Mp4 webm, first source is mp4');
         equal(sourcesMatch(pl[1].sources), 'webm', 'mp4 webm, second source is webm');
+
+        var androidhls = true;
+        pl = playlist.filterPlaylist(playlists['mp4_webm'], new Providers(), androidhls);
+        equal(pl[0].sources[0].androidhls, androidhls, 'androidhls is copied to sources');
+
+        var empty = [];
+        pl = playlist.filterPlaylist(empty, new Providers());
+        equal(pl.length, 0, 'returns an empty array when playlist is empty');
+
+        pl = playlist.filterPlaylist([{sources:[]}], new Providers());
+        equal(pl.length, 0, 'filters items with empty sources');
+
+        pl = playlist.filterPlaylist(playlists['mp4_webm']);
+        equal(pl.length, 2, 'supports legacy plugins with providers not set');
+
+        pl = playlist.filterPlaylist(playlists['mp4_webm'], {no: 'choose'});
+        equal(pl.length, 2, 'supports legacy plugins with providers.choose not available');
     });
 
 
