@@ -5,10 +5,10 @@ define([
     'providers/providers',
     'controller/qoe',
     'underscore',
-    'utils/eventdispatcher',
+    'utils/backbone.events',
     'events/events',
     'events/states'
-], function(utils, stretchUtils, Playlist, Providers, QOE, _, eventdispatcher, events, states) {
+], function(utils, stretchUtils, Playlist, Providers, QOE, _, Events, events, states) {
 
     // Defaults
     var _defaults = {
@@ -52,20 +52,17 @@ define([
             return config;
         }
 
-        _.extend(this, new eventdispatcher());
-
-        QOE.model(this);
-
         this.config = _parseConfig(_.extend({}, _defaults, _cookies, config));
-
-        this.trigger = this.sendEvent;
 
         _.extend(this, this.config, {
             state: states.IDLE,
             duration: -1,
             position: 0,
             buffer: 0
-        });
+        }, Events);
+
+        QOE.model(this);
+
         // This gets added later
         this.set('playlist', []);
 

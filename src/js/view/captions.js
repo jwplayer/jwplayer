@@ -32,9 +32,9 @@ define([
         _api.onResize(_resizeHandler);
         _api.onError(_errorHandler);
 
-        _model.addEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
-        _model.addEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
-        _model.addEventListener(events.JWPLAYER_MEDIA_TIME, _timeHandler);
+        _model.on(events.JWPLAYER_PLAYER_STATE, _stateHandler);
+        _model.on(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
+        _model.on(events.JWPLAYER_MEDIA_TIME, _timeHandler);
 
         var _display,
             _defaults = {

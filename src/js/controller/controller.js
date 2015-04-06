@@ -69,12 +69,12 @@ define([
             // Helper function
             var _video = this._model.getVideo;
 
-            _model.addEventListener(events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
-            _model.addEventListener(events.JWPLAYER_MEDIA_COMPLETE, function() {
+            _model.on(events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
+            _model.on(events.JWPLAYER_MEDIA_COMPLETE, function() {
                 // Insert a small delay here so that other complete handlers can execute
                 setTimeout(_completeHandler, 25);
             });
-            _model.addEventListener(events.JWPLAYER_MEDIA_ERROR, function(evt) {
+            _model.on(events.JWPLAYER_MEDIA_ERROR, function(evt) {
                 // Re-dispatch media errors as general error
                 var evtClone = _.extend({}, evt);
                 evtClone.type = events.JWPLAYER_ERROR;
@@ -95,7 +95,7 @@ define([
                 // Tell the api that we are loaded
                 _this.trigger(evt.type, evt);
 
-                _model.addGlobalListener(_forward);
+                _model.on('all', _forward);
                 _view.addGlobalListener(_forward);
 
                 // TODO: send copies of these objects to public listeners
