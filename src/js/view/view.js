@@ -307,7 +307,7 @@ define([
             _model.getVideo().setContainer(_videoLayer);
 
             // Native fullscreen
-            _model.addEventListener('fullscreenchange', _fullscreenChangeHandler);
+            _model.on('fullscreenchange', _fullscreenChangeHandler);
             // DOM fullscreen
             for (var i = DOCUMENT_FULLSCREEN_EVENTS.length; i--;) {
                 document.addEventListener(DOCUMENT_FULLSCREEN_EVENTS[i], _fullscreenChangeHandler, false);
@@ -340,12 +340,12 @@ define([
 
             _model.on('controls', _onChangeControls);
 
-            _model.addEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
-            _model.addEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
+            _model.on(events.JWPLAYER_PLAYER_STATE, _stateHandler);
+            _model.on(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
             _api.onPlaylistComplete(_playlistCompleteHandler);
             _api.onPlaylistItem(_playlistItemHandler);
 
-            _model.addEventListener(events.JWPLAYER_CAST_AVAILABLE, function() {    // TODO: CURRENTLY UNTESTED
+            _model.on(events.JWPLAYER_CAST_AVAILABLE, function() {    // TODO: CURRENTLY UNTESTED
                 if (utils.canCast()) {
                     _this.forceControls(true);
                 } else {
@@ -353,7 +353,7 @@ define([
                 }
             });
 
-            _model.addEventListener(events.JWPLAYER_CAST_SESSION, function(evt) {   // TODO: CURRENTLY UNTESTED
+            _model.on(events.JWPLAYER_CAST_SESSION, function(evt) {   // TODO: CURRENTLY UNTESTED
                 if (!_castDisplay) {
                     _castDisplay = new CastDisplay(_model.id);
                     _castDisplay.statusDelegate = function(evt) {
@@ -368,14 +368,14 @@ define([
                     _castDisplay.setState('connecting').setName(evt.deviceName).show();
 
                     // TODO: CURRENTLY UNTESTED
-                    _model.addEventListener(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
-                    _model.addEventListener(events.JWPLAYER_CAST_AD_CHANGED, _castAdChanged);
+                    _model.on(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
+                    _model.on(events.JWPLAYER_CAST_AD_CHANGED, _castAdChanged);
 
                 } else {
 
                     // TODO: CURRENTLY UNTESTED
-                    _model.removeEventListener(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
-                    _model.removeEventListener(events.JWPLAYER_CAST_AD_CHANGED, _castAdChanged);
+                    _model.off(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
+                    _model.off(events.JWPLAYER_CAST_AD_CHANGED, _castAdChanged);
 
                     _castDisplay.hide();
                     if (_controlbar.adMode()) {
@@ -1313,13 +1313,13 @@ define([
             for (var i = DOCUMENT_FULLSCREEN_EVENTS.length; i--;) {
                 document.removeEventListener(DOCUMENT_FULLSCREEN_EVENTS[i], _fullscreenChangeHandler, false);
             }
-            _model.removeEventListener('fullscreenchange', _fullscreenChangeHandler);
+            _model.off('fullscreenchange', _fullscreenChangeHandler);
             _playerElement.removeEventListener('keydown', handleKeydown, false);
             if (_rightClickMenu) {
                 _rightClickMenu.destroy();
             }
             if (_castDisplay) {
-                _model.removeEventListener(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
+                _model.off(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
                 _castDisplay.destroy();
                 _castDisplay = null;
             }

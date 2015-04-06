@@ -246,17 +246,17 @@ define([
             _api.onCaptionsChange(_captionChanged);
             _api.on(events.JWPLAYER_MEDIA_SEEKED, _onSeeked);
 
-            _model.addEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
-            _model.addEventListener(events.JWPLAYER_PLAYLIST_ITEM, _itemHandler);
-            _model.addEventListener(events.JWPLAYER_PLAYLIST_LOADED, _playlistHandler);
-            _model.addEventListener(events.JWPLAYER_MEDIA_BUFFER, _bufferHandler);
-            _model.addEventListener(events.JWPLAYER_MEDIA_TIME, _timeUpdated);
-            _model.addEventListener(events.JWPLAYER_MEDIA_MUTE, _volumeHandler);
-            _model.addEventListener(events.JWPLAYER_MEDIA_VOLUME, _volumeHandler);
-            _model.addEventListener(events.JWPLAYER_MEDIA_LEVELS, _qualityHandler);             // TODO: Unconfirmed
-            _model.addEventListener(events.JWPLAYER_MEDIA_LEVEL_CHANGED, _qualityLevelChanged); // TODO: Unconfirmed
-            _model.addEventListener(events.JWPLAYER_CAST_AVAILABLE, _castAvailable);            // TODO: Unconfirmed
-            _model.addEventListener(events.JWPLAYER_CAST_SESSION, _castSession);                // TODO: Unconfirmed
+            _model.on(events.JWPLAYER_PLAYER_STATE, _stateHandler);
+            _model.on(events.JWPLAYER_PLAYLIST_ITEM, _itemHandler);
+            _model.on(events.JWPLAYER_PLAYLIST_LOADED, _playlistHandler);
+            _model.on(events.JWPLAYER_MEDIA_BUFFER, _bufferHandler);
+            _model.on(events.JWPLAYER_MEDIA_TIME, _timeUpdated);
+            _model.on(events.JWPLAYER_MEDIA_MUTE, _volumeHandler);
+            _model.on(events.JWPLAYER_MEDIA_VOLUME, _volumeHandler);
+            _model.on(events.JWPLAYER_MEDIA_LEVELS, _qualityHandler);             // TODO: Unconfirmed
+            _model.on(events.JWPLAYER_MEDIA_LEVEL_CHANGED, _qualityLevelChanged); // TODO: Unconfirmed
+            _model.on(events.JWPLAYER_CAST_AVAILABLE, _castAvailable);            // TODO: Unconfirmed
+            _model.on(events.JWPLAYER_CAST_SESSION, _castSession);                // TODO: Unconfirmed
 
 
             if (!_isMobile) {
