@@ -76,6 +76,7 @@ module.exports = function( config ) {
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
         preprocessors: {
             // source files, that you want to generate coverage for
+            'src/js/*.js': ['coverage'],
             'src/js/!(polyfill)/*.js': ['coverage']
         },
 

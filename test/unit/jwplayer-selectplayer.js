@@ -1,16 +1,12 @@
 define([
     'test/underscore',
     'jquery',
-    //'jwplayer',
+    'jwplayer',
     'api/global-api'
-], function (_, $, globalApi) {
+], function (_, $, jwplayer, globalApi) {
     /* jshint qunit: true */
 
     module('jwplayer function');
-
-    // TODO: require-less so that jwplayer can be loaded
-    // FIXME: for now cheat jwplayer definition:
-    var jwplayer = globalApi.selectPlayer;
 
     var append = function(html) {
         var $element = $(html);

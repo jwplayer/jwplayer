@@ -43,11 +43,15 @@ require.config({
 
     paths: {
         'templates':     '../' + 'templates',
+        'css':           '../' + 'css',
         'underscore': 'utils/' + 'underscore',
 
         'handlebars': components + '/handlebars/handlebars.amd',
         'text':       components + '/requirejs-text/text',
         'hbars':      components + '/requirejs-handlebars/hb',
+        'less':       components + '/require-less/less',
+        'lessc':      components + '/require-less/lessc',
+        'normalize':  components + '/require-less/normalize',
         'jquery':     components + '/jquery/dist/jquery',
 
         // always use test/underscore in test scripts
@@ -65,7 +69,8 @@ require.config({
     map: {
         // make sure the text plugin is used to load templates
         '*' : {
-            'templates/errorscreen.html': 'hbars!templates/errorscreen.html'
+            'templates/errorscreen.html': 'hbars!templates/errorscreen.html',
+            '../css/styles.less': 'less!css/styles'
         },
         'providers/html5' : {
             'utils/video': mock + '/video.js'
