@@ -8,7 +8,7 @@ import flash.events.Event;
  */
 public class MediaEvent extends PlayerEvent {
 
-    public static const JWPLAYER_MEDIA_ERROR:String = "error";
+    public static const JWPLAYER_MEDIA_ERROR:String = "mediaError";
     public static const JWPLAYER_MEDIA_LOADED:String = "loaded";
     public static const JWPLAYER_MEDIA_COMPLETE:String = "complete";
     public static const JWPLAYER_MEDIA_BEFOREPLAY:String = "beforePlay";
