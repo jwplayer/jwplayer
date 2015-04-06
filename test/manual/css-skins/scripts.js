@@ -82,7 +82,6 @@ $(document).ready(function(){
         document.styleSheets[0].addRule('.jwplayer:before','padding-top: ' + Math.round(9/16 * 100) + '%');
         if(document.attachEvent)document.styleSheets[0].addRule('.jwplayer:before','content: ' + Math.round(Math.random()*1000));
         if(!document.attachEvent) document.styleSheets[0].insertRule('.jwplayer:before { padding-top: ' + Math.round(9/16 * 100) + '%; }', 0);
-        //$('.jwplayer:before').css('padding-top', Math.round(9/16 * 100) + '%');
     };
 
     $('#aspect-ratio-16-9').on('click', aspect169);
@@ -100,7 +99,6 @@ $(document).ready(function(){
         document.styleSheets[0].addRule('.jwplayer:before','padding-top: ' + Math.round(3/4 * 100) + '%');
         if(document.attachEvent)document.styleSheets[0].addRule('.jwplayer:before','content: ' + Math.round(Math.random()*1000));
         if(!document.attachEvent) document.styleSheets[0].insertRule('.jwplayer:before { padding-top: ' + Math.round(3/4 * 100) + '%; }', 0);
-        //$('.jwplayer:before').css('padding-top', Math.round(3/4 * 100) + '%');
     };
 
     $('#aspect-ratio-4-3').on('click', aspect43);
@@ -108,14 +106,8 @@ $(document).ready(function(){
 
 
     var idlestate = function(e) {
-        $('.jwplayer').removeClass('play-state');
-        $('.jwplayer').removeClass('pause-state');
-        $('.jwplayer').removeClass('buffering-state');
-        $('.jwplayer .jw-display-icon-cont .jw-icon-display').addClass('jw-icon-play');
-        $('.jwplayer .jw-display-icon-cont .jw-icon-display').removeClass('jw-icon-buffer');
-
-        $($('.jwplayer .jw-left .jw-icon')[0]).addClass('jw-icon-play');
-        $($('.jwplayer .jw-left .jw-icon')[0]).removeClass('jw-icon-pause');
+        $('.jwplayer').addClass('jw-state-idle');
+        $('.jwplayer').removeClass('jw-state-play jw-state-pause jw-state-buffer jw-state-replay');
     };
 
     $('#idle-state').on('click', idlestate);
@@ -123,14 +115,8 @@ $(document).ready(function(){
 
 
     var playstate = function(e){
-        $('.jwplayer').addClass('play-state');
-        $('.jwplayer').removeClass('pause-state');
-        $('.jwplayer').removeClass('buffering-state');
-        $('.jwplayer .jw-display-icon-cont .jw-icon-display').addClass('jw-icon-play');
-        $('.jwplayer .jw-display-icon-cont .jw-icon-display').removeClass('jw-icon-buffer');
-
-        $($('.jwplayer .jw-controlbar--center-group .jw-icon-inline')[0]).removeClass('jw-icon-play');
-        $($('.jwplayer .jw-controlbar--center-group .jw-icon-inline')[0]).addClass('jw-icon-pause');
+        $('.jwplayer').addClass('jw-state-play');
+        $('.jwplayer').removeClass('jw-state-idle jw-state-pause jw-state-buffer jw-state-replay');
     };
 
     $('#play-state').on('click', playstate);
@@ -138,30 +124,26 @@ $(document).ready(function(){
 
 
     var pausestate = function(e){
-        $('.jwplayer').removeClass('play-state');
-        $('.jwplayer').addClass('pause-state');
-        $('.jwplayer').removeClass('buffering-state');
-        $('.jwplayer .jw-display-icon-cont .jw-icon-display').addClass('jw-icon-play');
-        $('.jwplayer .jw-display-icon-cont .jw-icon-display').removeClass('jw-icon-buffer');
-
-        $($('.jwplayer .jw-controlbar--center-group .jw-icon-inline')[0]).addClass('jw-icon-play');
-        $($('.jwplayer .jw-controlbar--center-group .jw-icon-inline')[0]).removeClass('jw-icon-pause');
+        $('.jwplayer').addClass('jw-state-pause');
+        $('.jwplayer').removeClass('jw-state-play jw-state-idle jw-state-buffer jw-state-replay');
     };
 
     $('#pause-state').on('click', pausestate);
     if(document.attachEvent) document.getElementById('pause-state').attachEvent('onclick', pausestate);
 
     var bufferingstate = function(e){
-        $('.jwplayer').removeClass('play-state');
-        $('.jwplayer').removeClass('pause-state');
-        $('.jwplayer').addClass('buffering-state');
-        $('.jwplayer .jw-display-icon-cont .jw-icon-display').removeClass('jw-icon-play');
-        $('.jwplayer .jw-display-icon-cont .jw-icon-display').addClass('jw-icon-buffer');
-
-        $($('.jwplayer .jw-controlbar--center-group .jw-icon-inline')[0]).addClass('jw-icon-play');
-        $($('.jwplayer .jw-controlbar--center-group .jw-icon-inline')[0]).removeClass('jw-icon-pause');
+        $('.jwplayer').addClass('jw-state-buffer');
+        $('.jwplayer').removeClass('jw-state-play jw-state-pause jw-state-idle jw-state-replay');
     };
 
     $('#buffering-state').on('click', bufferingstate);
     if(document.attachEvent) document.getElementById('buffering-state').attachEvent('onclick', bufferingstate);
+
+    var replaystate = function(e){
+        $('.jwplayer').addClass('jw-state-replay');
+        $('.jwplayer').removeClass('jw-state-play jw-state-pause jw-state-buffer jw-state-idle');
+    };
+
+    $('#replay-state').on('click', replaystate);
+    if(document.attachEvent) document.getElementById('replay-state').attachEvent('onclick', replaystate);
 });
