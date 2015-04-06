@@ -4,9 +4,8 @@
     }
 
     .jw-display-icon-cont {
-        .jw-icon-display:after {
-            // EXTEND .jw-icon-replay:after {
-            content: "\e60e";
+        .jw-icon-display {
+            .jwplayer .jw-icon-replay;
         }
 
         .jw-text {
@@ -15,7 +14,10 @@
     }
 
     .jw-controlbar--left-group .jw-play-state-icon:after {
-        // EXTEND .jw-icon-play:after
-        content: "\e60d";
+        .jwplayer .jw-icon-play;
+    }
+
+    .jw-captions {
+        display: none;
     }
 }

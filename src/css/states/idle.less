@@ -2,14 +2,16 @@
     .jw-display {
         display: block;
 
-        .jw-icon-display:after {
-            // EXTEND .jw-icon-play:after
-            content: "\e60d";
+        .jw-icon-display {
+            .jwplayer .jw-icon-replay;
         }
     }
 
     .jw-controlbar--left-group .jw-play-state-icon:after {
-        // EXTEND .jw-icon-play:after
-        content: "\e60d";
+        .jwplayer .jw-icon-play;
+    }
+
+    .jw-captions {
+        display: none;
     }
 }
