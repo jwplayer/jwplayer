@@ -69,7 +69,6 @@ public class VideoMediaProvider extends MediaProvider {
             _starttime = _position;
             _config.qualitylabel = _item.levels[_currentQuality].label;
             sendQualityEvent(MediaEvent.JWPLAYER_MEDIA_LEVEL_CHANGED, _item.levels, _currentQuality);
-            // Configger.saveCookie("qualityLabel", _item.levels[_currentQuality].label);
             loadQuality();
         }
     }
