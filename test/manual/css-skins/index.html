@@ -34,18 +34,6 @@
             margin: 0;
         }
 
-        .play-state .jw-display-icon-cont {
-            display: none;
-        }
-
-        .pause-state .jw-display-icon-cont .jw-text {
-            display: none;
-        }
-
-        .buffering-state .jw-display-icon-cont .jw-text {
-            display: none;
-        }
-
         @media all and (min-width: 1024px) {
             .vid-cont {
                 margin: 100px 20% 100px 20%;
@@ -152,7 +140,7 @@
                         <div class="jw-preview" style="background-image:url(http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg)"></div>
                         <div class="jw-display-icon-cont">
                             <div class="jw-text">TEST TEXT</div>
-                            <div class="jw-icon-display jw-icon-play"></div>
+                            <div class="jw-icon-display"></div>
                         </div>
                     </div>
                     <img class="jw-logo">
@@ -177,7 +165,7 @@
                     </div>
                     <div class="jw-controlbar">
                         <div class="jw-controlbar--left-group">
-                            <span class="jw-icon-inline jw-icon-play"></span>
+                            <span class="jw-icon-inline jw-play-state-icon"></span>
                             <span class="jw-icon-inline jw-icon-prev"></span>
                             <span class="jw-icon-inline jw-icon-next"></span>
                             <span class="jw-elapsed">
@@ -258,6 +246,7 @@
         <button id='play-state'>Play</button>
         <button id='pause-state'>Pause</button>
         <button id='buffering-state'>Buffering</button>
+        <button id='replay-state'>Replay</button>
     </div>
 </body>
 </html>

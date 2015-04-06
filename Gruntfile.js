@@ -111,7 +111,8 @@ module.exports = function(grunt) {
             css: {
                 files: [
                     'src/css/*.less',
-                    'src/css/imports/*.less'],
+                    'src/css/imports/*.less',
+                    'src/css/states/*.less'],
                 tasks: ['webpack']
             },
             grunt: {
