@@ -13,41 +13,6 @@ import com.longtailvideo.jwplayer.view.View;
 import flash.events.ErrorEvent;
 import flash.events.Event;
 
-/**
- * Sent when the player has been initialized and skins and plugins have been successfully loaded.
- *
- * @eventType com.longtailvideo.jwplayer.events.PlayerEvent.JWPLAYER_READY
- */
-[Event(name="jwplayerReady", type="com.longtailvideo.jwplayer.events.PlayerEvent")]
-
-/**
- * Sent when the player has entered the ERROR state
- *
- * @eventType com.longtailvideo.jwplayer.events.PlayerEvent.JWPLAYER_ERROR
- */
-[Event(name="jwplayerError", type="com.longtailvideo.jwplayer.events.PlayerEvent")]
-
-/**
- * Sent when the player has been locked
- *
- * @eventType com.longtailvideo.jwplayer.events.PlayerEvent.JWPLAYER_LOCKED
- */
-[Event(name="jwplayerLocked", type="com.longtailvideo.jwplayer.events.PlayerEvent")]
-
-/**
- * Sent when the player has been unlocked
- *
- * @eventType com.longtailvideo.jwplayer.events.PlayerEvent.JWPLAYER_UNLOCKED
- */
-[Event(name="jwplayerUnlocked", type="com.longtailvideo.jwplayer.events.PlayerEvent")]
-
-/**
- * Sent when the player has gone into or out of fullscreen mode
- *
- * @eventType com.longtailvideo.jwplayer.events.PlayerEvent.JWPLAYER_FULLSCREEN
- */
-[Event(name="jwplayerFullscreen", type="com.longtailvideo.jwplayer.events.PlayerEvent")]
-
 public class Controller extends GlobalEventDispatcher {
 
     /** MVC References **/

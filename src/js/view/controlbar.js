@@ -244,7 +244,6 @@ define([
             _api.onResize(_resizeHandler);
             _api.onCaptionsList(_captionsHandler);
             _api.onCaptionsChange(_captionChanged);
-            _api.on(events.JWPLAYER_MEDIA_SEEKED, _onSeeked);
 
             _model.addEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
             _model.addEventListener(events.JWPLAYER_PLAYLIST_ITEM, _itemHandler);
@@ -470,14 +469,6 @@ define([
             }
             if (_ccOverlay && _currentCaptions >= 0) {
                 _ccOverlay.setActive(evt.track);
-            }
-        }
-
-        function _onSeeked() {
-            // When we are done scrubbing there will be a final seeked event
-            //  which should not trigger another seek
-            if (_model.get('dragging')) {
-                _seek(_seekTo);
             }
         }
 

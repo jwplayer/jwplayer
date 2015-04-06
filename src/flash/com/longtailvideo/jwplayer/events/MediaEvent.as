@@ -8,26 +8,26 @@ import flash.events.Event;
  */
 public class MediaEvent extends PlayerEvent {
 
-    public static const JWPLAYER_MEDIA_ERROR:String = "jwplayerMediaError";
-    public static const JWPLAYER_MEDIA_LOADED:String = "jwplayerMediaLoaded";
-    public static const JWPLAYER_MEDIA_COMPLETE:String = "jwplayerMediaComplete";
-    public static const JWPLAYER_MEDIA_BEFOREPLAY:String = "jwplayerMediaBeforePlay";
-    public static const JWPLAYER_MEDIA_BEFORECOMPLETE:String = "jwplayerMediaBeforeComplete";
+    public static const JWPLAYER_MEDIA_ERROR:String = "error";
+    public static const JWPLAYER_MEDIA_LOADED:String = "loaded";
+    public static const JWPLAYER_MEDIA_COMPLETE:String = "complete";
+    public static const JWPLAYER_MEDIA_BEFOREPLAY:String = "beforePlay";
+    public static const JWPLAYER_MEDIA_BEFORECOMPLETE:String = "beforeComplete";
 
-    public static const JWPLAYER_MEDIA_BUFFER:String = "jwplayerMediaBuffer";
-    public static const JWPLAYER_MEDIA_BUFFER_FULL:String = "jwplayerMediaBufferFull";
-    public static const JWPLAYER_MEDIA_SEEK:String = "jwplayerMediaSeek";
-    public static const JWPLAYER_MEDIA_TIME:String = "jwplayerMediaTime";
+    public static const JWPLAYER_MEDIA_BUFFER:String = "buffer";
+    public static const JWPLAYER_MEDIA_BUFFER_FULL:String = "bufferFull";
+    public static const JWPLAYER_MEDIA_SEEK:String = "seek";
+    public static const JWPLAYER_MEDIA_TIME:String = "time";
 
     // The requested seek offset, in seconds
-    public static const JWPLAYER_MEDIA_META:String = "jwplayerMediaMeta";
-    public static const JWPLAYER_MEDIA_VOLUME:String = "jwplayerMediaVolume";
+    public static const JWPLAYER_MEDIA_META:String = "meta";
+    public static const JWPLAYER_MEDIA_VOLUME:String = "volume";
 
     // Number of seconds elapsed since the start of the media playback
-    public static const JWPLAYER_MEDIA_MUTE:String = "jwplayerMediaMute";
+    public static const JWPLAYER_MEDIA_MUTE:String = "mute";
     // Total number of seconds in the currently loaded media
-    public static const JWPLAYER_MEDIA_LEVELS:String = "jwplayerMediaLevels";
-    public static const JWPLAYER_MEDIA_LEVEL_CHANGED:String = "jwplayerMediaLevelChanged";
+    public static const JWPLAYER_MEDIA_LEVELS:String = "levels";
+    public static const JWPLAYER_MEDIA_LEVEL_CHANGED:String = "levelsChanged";
 
     public function MediaEvent(type:String, properties:Object = null) {
         super(type);

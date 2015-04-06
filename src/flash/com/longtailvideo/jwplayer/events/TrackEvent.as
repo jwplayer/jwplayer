@@ -5,11 +5,11 @@ import flash.events.Event;
  * represents a track associated to media
  */
 public class TrackEvent extends PlayerEvent {
-    public static const JWPLAYER_AUDIO_TRACKS:String = "jwplayerAudioTracks";
-    public static const JWPLAYER_AUDIO_TRACK_CHANGED:String = "jwplayerAudioTrackChanged";
+    public static const JWPLAYER_AUDIO_TRACKS:String = "audioTracks";
+    public static const JWPLAYER_AUDIO_TRACK_CHANGED:String = "audioTrackChanged";
 
-    public static const JWPLAYER_SUBTITLES_TRACKS:String = "jwplayerSubtitlesTracks";
-    public static const JWPLAYER_SUBTITLES_TRACK_CHANGED:String = "jwplayerSubtitlesTrackChanged";
+    public static const JWPLAYER_SUBTITLES_TRACKS:String = "subtitlesTracks";
+    public static const JWPLAYER_SUBTITLES_TRACK_CHANGED:String = "subtitlesTrackChanged";
 
     //An array of tracks not including the "off" track
 

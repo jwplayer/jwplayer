@@ -2,6 +2,7 @@ define(['utils/keymirror'], function(keyMirror) {
     return keyMirror({
         BUFFERING : null,
         IDLE      : null,
+        COMPLETE  : null,
         PAUSED    : null,
         PLAYING   : null,
 

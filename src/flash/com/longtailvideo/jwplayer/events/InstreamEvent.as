@@ -2,8 +2,8 @@ package com.longtailvideo.jwplayer.events {
 import flash.events.Event;
 
 public class InstreamEvent extends PlayerEvent {
-    public static const JWPLAYER_INSTREAM_CLICKED:String = "jwplayerInstreamClicked";
-    public static const JWPLAYER_INSTREAM_DESTROYED:String = "jwplayerInstreamDestroyed";
+    public static const JWPLAYER_INSTREAM_CLICKED:String = "instreamClicked";
+    public static const JWPLAYER_INSTREAM_DESTROYED:String = "instreamDestroyed";
 
     public function InstreamEvent(type:String, reason:String = null) {
         super(type);
