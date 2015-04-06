@@ -279,6 +279,7 @@ define([
             _controller = null;
             _itemMeta = {};
             _callbacks = {};
+            this.trigger('remove', this);
         };
 
         var _onPlayerReady = function () {
