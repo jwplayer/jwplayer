@@ -12,11 +12,6 @@ define([
     // FIXME: for now cheat jwplayer definition:
     var jwplayer = globalApi.selectPlayer;
 
-    // Add qunit-fixture to page if not present (for karma)
-    if (!$('#qunit-fixture')[0]) {
-        $('body').append('<div id="qunit-fixture"></div>');
-    }
-
     var append = function(html) {
         var $element = $(html);
         $('#qunit-fixture').append($element);

@@ -21,6 +21,13 @@ if (!window.__karma__) {
     callback = window.__karma__.start;
 }
 
+// Add qunit-fixture to page if not present
+if (!document.getElementById('qunit-fixture')) {
+    var qunitFixture = document.createElement('div');
+    qunitFixture.id = 'qunit-fixture';
+    document.body.appendChild(qunitFixture);
+}
+
 var components = base + 'bower_components';
 var data       = base + 'test/data';
 var mock       = base + 'test/mock';
