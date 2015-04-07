@@ -254,12 +254,12 @@ define([
             _model.on('change:duration', _timeUpdated);
             _model.on('change:mute', _volumeHandler);
             _model.on('change:volume', _volumeHandler);
+            _model.on('change:castAvailable', _castAvailable);      // TODO: Unconfirmed
+            _model.on('change:castState', _onCastState);            // TODO: Unconfirmed
+            _model.on('change:playlist', _playlistHandler);
 
-            _model.mediaController.on(events.JWPLAYER_PLAYLIST_LOADED, _playlistHandler);
             _model.mediaController.on(events.JWPLAYER_MEDIA_LEVELS, _qualityHandler);             // TODO: Unconfirmed
             _model.mediaController.on(events.JWPLAYER_MEDIA_LEVEL_CHANGED, _qualityLevelChanged); // TODO: Unconfirmed
-            _model.mediaController.on(events.JWPLAYER_CAST_AVAILABLE, _castAvailable);            // TODO: Unconfirmed
-            _model.on('change:castState', _onCastState);                // TODO: Unconfirmed
 
 
             if (!_isMobile) {
@@ -354,10 +354,8 @@ define([
                         _elements.timeRail.className = 'jwrail';
                     }
                     _setBuffer(0);
-                    _updateSeekbar({
-                        position: 0,
-                        duration: 0
-                    });
+                    _updateSeekbar(0,0);
+
                     break;
             }
         }
@@ -410,6 +408,7 @@ define([
         }
 
         function _playlistHandler() {
+
             cssUtils.style([
                 _elements.hd,
                 _elements.cc
@@ -492,7 +491,7 @@ define([
                 }
             }
 
-            _onCastState(null, evt || _castState);
+            _onCastState(_model, evt || _castState);
         }
 
         function _onCastState(model, evt) {

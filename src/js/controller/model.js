@@ -152,18 +152,18 @@ define([
         this.setPlaylist = function(p) {
 
             var playlist = Playlist.filterPlaylist(p, _providers, _this.androidhls);
-            _this.set('playlist', playlist);
+
+            this.set('playlist', playlist);
+
             if (playlist.length === 0) {
-                _this.mediaController.trigger(events.JWPLAYER_ERROR, {
+                this.mediaController.trigger(events.JWPLAYER_ERROR, {
                     message: 'Error loading playlist: No playable sources found'
                 });
-            } else {
-                _this.mediaController.trigger(events.JWPLAYER_PLAYLIST_LOADED, {
-                    playlist: playlist
-                });
-                _this.set('item', -1);
-                this.setItem(0);
+                return;
             }
+
+            this.set('item', -1);
+            this.setItem(0);
         };
 
         this.setItem = function(index) {

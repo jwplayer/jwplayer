@@ -112,6 +112,15 @@ define([
                         index: idx
                     });
                 });
+                // For onPlaylist callback
+                _model.on('change:playlist', function(model, playlist) {
+                    if (playlist.length) {
+                        _this.trigger(events.JWPLAYER_PLAYLIST_LOADED, {
+                            playlist: playlist
+                        });
+                    }
+                });
+
 
 
                 _model.mediaController.on('all', _this.trigger.bind(_this));
