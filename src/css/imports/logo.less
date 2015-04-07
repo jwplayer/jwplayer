@@ -1,0 +1,19 @@
+.jwplayer .jw-logo {
+    position: absolute;
+    margin-bottom: 0;
+    cursor: pointer;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: all;
+
+    &.jw-logo--visible {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    // Default config.  Other values are handled in the constructor.
+    &.jw-logo--top-right {
+        top: 0.5em;
+        right: 0.5em;
+    }
+}

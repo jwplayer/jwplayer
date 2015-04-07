@@ -4,24 +4,19 @@ define([
     'utils/css',
     'events/events',
     'underscore',
-    'version'
-], function(Touch, utils, cssUtils, events, _, version) {
-
-    var _css = cssUtils.css,
-
+    'version',
+    'templates/logo.html'
+], function(Touch, utils, cssUtils, events, _, version, logoTemplate) {
+    var _styles = cssUtils.style,
         FREE = 'free',
         PRO = 'pro',
         PREMIUM = 'premium',
         ADS = 'ads',
-
-        LINK_DEFAULT = 'http://www.longtailvideo.com/jwpabout/?a=l&v=',
-        LOGO_CLASS = '.jwlogo';
-
+        LINK_DEFAULT = 'http://www.longtailvideo.com/jwpabout/?a=l&v=';
 
     var Logo = function(_api, _model) {
-        var _id = _model.id + '_logo',
+        var _logo,
             _settings,
-            _logo,
             _logoConfig = _.extend({}, _model.componentConfig('logo')),
             _defaults = Logo.defaults,
             _showing = false;
@@ -46,29 +41,27 @@ define([
         }
 
         function _setupDisplayElements() {
-            _logo = document.createElement('img');
-            _logo.className = 'jwlogo';
-            _logo.id = _id;
+            _logo = utils.createElement(logoTemplate({
+                file: (_settings.prefix ? _settings.prefix : '') + _settings.file
+            }));
 
             if (!_settings.file) {
-                _logo.style.display = 'none';
+                _styles(_logo, {display: 'none'}, false);
                 return;
             }
 
             var positions = (/(\w+)-(\w+)/).exec(_settings.position),
-                style = {},
-                margin = _settings.margin;
+                style = {};
 
-            if (positions.length === 3) {
-                style[positions[1]] = margin;
-                style[positions[2]] = margin;
+            if (positions.length === 3 && _settings.position !== 'top-right'){
+                style[positions[1]] = _settings.margin;
+                style[positions[2]] = _settings.margin;
+
+                _styles(_logo, style);
             } else {
-                style.top = style.right = margin;
+                utils.addClass(_logo, 'jw-logo--top-right');
             }
 
-            _css(_internalSelector(), style);
-
-            _logo.src = (_settings.prefix ? _settings.prefix : '') + _settings.file;
             if (!utils.isMobile()) {
                 _logo.onclick = _clickHandler;
             } else {
@@ -83,8 +76,9 @@ define([
             return _logo;
         };
 
+        // TODO: Remove this via placing it in the DOM in a place that will make it posiition itself without needing the offset
         this.offset = function(offset) {
-            _css(_internalSelector(), {
+            _styles(_logo, {
                 'margin-bottom': offset
             });
         };
@@ -97,6 +91,8 @@ define([
             return parseInt(_settings.margin, 10);
         };
 
+
+        //TODO: Remove API by sending events instead
         function _clickHandler(evt) {
             if (utils.exists(evt) && evt.stopPropagation) {
                 evt.stopPropagation();
@@ -112,6 +108,7 @@ define([
                 _api.setFullscreen(false);
                 window.open(_settings.link, _settings.linktarget);
             }
+
             return;
         }
 
@@ -129,22 +126,16 @@ define([
             }
         }
 
-        function _internalSelector(selector) {
-            return '#' + _id + ' ' + (selector ? selector : '');
-        }
-
         this.hide = function(forced) {
             if (_settings.hide || forced) {
                 _showing = false;
-                _logo.style.visibility = 'hidden';
-                _logo.style.opacity = 0;
+                utils.removeClass(_logo, 'jw-logo--visible');
             }
         };
 
         this.show = function() {
             _showing = true;
-            _logo.style.visibility = 'visible';
-            _logo.style.opacity = 1;
+            utils.addClass(_logo, 'jw-logo--visible');
         };
 
         _setup();
@@ -156,16 +147,10 @@ define([
         prefix: utils.repo(),
         file: 'logo.png',
         linktarget: '_top',
-        margin: 8,
+        margin: '0.5em',
         hide: false,
         position: 'top-right'
     };
 
-    _css(LOGO_CLASS, {
-        cursor: 'pointer',
-        position: 'absolute'
-    });
-
     return Logo;
-
 });
