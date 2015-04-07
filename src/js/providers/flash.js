@@ -134,7 +134,7 @@ define([
 
                     _swf.off();
 
-                    _swf.once('ready', function() {
+                    _swf.once(events.JWPLAYER_READY, function() {
                         _swf.__ready = true;
 
                         // setup flash player
@@ -148,7 +148,7 @@ define([
 
                     }, this);
 
-                    _swf.on('error', function(event) {
+                    _swf.on(events.JWPLAYER_ERROR, function(event) {
                         console.error(event.code, event.message, event, this);
                         this.sendEvent(events.JWPLAYER_MEDIA_ERROR, {
                             message: 'Error loading media: File could not be played'
@@ -164,10 +164,10 @@ define([
                         });
 
                     }, this).on(events.JWPLAYER_PLAYER_STATE, function(e) {
-                        if (e.newstate === states.IDLE) {
+                        var state = e.newstate;
+                        if (state === states.IDLE) {
                             return;
                         }
-                        var state = e.newstate;
                         this.setState(state);
 
                     }, this).on(events.JWPLAYER_MEDIA_META, function(e) {
@@ -234,7 +234,7 @@ define([
                     // catch all events for dev / debug
                     _swf.on('all', function(name, data) {
                         switch (name) {
-                            case 'ready':
+                            case events.JWPLAYER_READY:
                             case events.JWPLAYER_MEDIA_TIME:
                             case events.JWPLAYER_MEDIA_BUFFER:
                                 break;
@@ -258,7 +258,7 @@ define([
                             case events.JWPLAYER_MEDIA_SEEK:
                                 console.log(name, data.offset);
                                 break;
-                            case 'resize':
+                            case events.JWPLAYER_RESIZE:
                                 console.log(name, data.width, data.height, data.fullscreen);
                                 break;
                             default:
