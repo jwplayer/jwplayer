@@ -1,7 +1,7 @@
 define([
     'utils/helpers',
     'events/events',
-    'utils/eventdispatcher',
+    'utils/backbone.events',
     'events/states',
     'cast/display',
     'view/captions',
@@ -13,7 +13,7 @@ define([
     'view/rightclick',
     'utils/css',
     'underscore'
-], function(utils, events, eventdispatcher, states, CastDisplay,
+], function(utils, events, Events, states, CastDisplay,
             Captions, Display, Dock, errorScreen, Logo, Controlbar, RightClick, cssUtils, _) {
 
     var _css = cssUtils.css,
@@ -85,7 +85,7 @@ define([
             //  it is a click, the mouseDown event will occur immediately prior
             _focusFromClick = false,
 
-            _this = _.extend(this, new eventdispatcher());
+            _this = _.extend(this, Events);
 
         _playerElement = _api.getContainer();
         _playerElement.className = PLAYER_CLASS;
@@ -204,7 +204,7 @@ define([
             _focusFromClick = true;
 
             // After a click it no longer has 'tab-focus'
-            _this.sendEvent(events.JWPLAYER_VIEW_TAB_FOCUS, {
+            _this.trigger(events.JWPLAYER_VIEW_TAB_FOCUS, {
                 hasFocus: false
             });
         }
@@ -214,7 +214,7 @@ define([
             _focusFromClick = false;
 
             if (wasTabEvent) {
-                _this.sendEvent(events.JWPLAYER_VIEW_TAB_FOCUS, {
+                _this.trigger(events.JWPLAYER_VIEW_TAB_FOCUS, {
                     hasFocus: true
                 });
             }
@@ -228,7 +228,7 @@ define([
 
         function handleBlur() {
             _focusFromClick = false;
-            _this.sendEvent(events.JWPLAYER_VIEW_TAB_FOCUS, {
+            _this.trigger(events.JWPLAYER_VIEW_TAB_FOCUS, {
                 hasFocus: false
             });
         }
@@ -263,7 +263,7 @@ define([
                     }
                     clearTimeout(_resizeMediaTimeout);
                     _resizeMediaTimeout = setTimeout(_resizeMedia, 50);
-                    _this.sendEvent(events.JWPLAYER_RESIZE, {
+                    _this.trigger(events.JWPLAYER_RESIZE, {
                         width: containerWidth,
                         height: containerHeight
                     });
@@ -486,7 +486,7 @@ define([
         }
 
         function forward(evt) {
-            _this.sendEvent(evt.type, evt);
+            _this.trigger(evt.type, evt);
         }
 
         function _setupControls() {

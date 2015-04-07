@@ -124,7 +124,7 @@ define([
 
 
                 _model.mediaController.on('all', _this.trigger.bind(_this));
-                _view.addGlobalListener(_forward);
+                _view.on('all', _this.trigger.bind(_this));
 
                 // TODO: send copies of these objects to public listeners
                 var playlist = _model.get('playlist');
@@ -151,10 +151,6 @@ define([
                     var args = q[1] || [];
                     _this[method].apply(_this, args);
                 }
-            }
-
-            function _forward(evt) {
-                _this.trigger(evt.type, evt);
             }
 
             function _bufferFullHandler() {
@@ -186,7 +182,7 @@ define([
                 loader.addEventListener(events.JWPLAYER_ERROR, function(evt) {
                     _load([]);
                     evt.message = 'Could not load playlist: ' + evt.message;
-                    _forward(evt);
+                    _this.trigger.call(_this, evt.type, evt);
                 });
                 loader.load(toLoad);
             }
