@@ -301,10 +301,6 @@ define([
                 _video().seek(pos);
             }
 
-            function _setFullscreen(state) {
-                _view.fullscreen(state);
-            }
-
             function _item(index) {
                 _load(index);
                 _play();
@@ -428,7 +424,6 @@ define([
             this.playlistNext = _next;
             this.playlistPrev = _prev;
             this.playlistItem = _item;
-            this.setFullscreen = _setFullscreen;
             this.setCurrentCaptions = _setCurrentCaptions;
             this.setCurrentQuality = _setCurrentQuality;
 
@@ -454,6 +449,7 @@ define([
             this.forceState = _view.forceState;
             this.releaseState = _view.releaseState;
             this.setCues = _view.addCues;
+            this.setFullscreen = _view.fullscreen;
             this.dockAddButton = _view.addButton;
             this.dockRemoveButton = _view.removeButton;
 
