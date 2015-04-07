@@ -229,7 +229,9 @@ define([
 
         _this.visible = false;
 
-        setTimeout(_volumeHandler, 0);
+        _.defer(function() {
+            _volumeHandler(_model);
+        });
 
         function _layoutElement(name, type, className) {
             return {
@@ -245,17 +247,19 @@ define([
             _api.onCaptionsList(_captionsHandler);
             _api.onCaptionsChange(_captionChanged);
 
-            _model.on(events.JWPLAYER_PLAYER_STATE, _stateHandler);
-            _model.on(events.JWPLAYER_PLAYLIST_ITEM, _itemHandler);
-            _model.on(events.JWPLAYER_PLAYLIST_LOADED, _playlistHandler);
-            _model.on(events.JWPLAYER_MEDIA_BUFFER, _bufferHandler);
-            _model.on(events.JWPLAYER_MEDIA_TIME, _timeUpdated);
-            _model.on(events.JWPLAYER_MEDIA_MUTE, _volumeHandler);
-            _model.on(events.JWPLAYER_MEDIA_VOLUME, _volumeHandler);
-            _model.on(events.JWPLAYER_MEDIA_LEVELS, _qualityHandler);             // TODO: Unconfirmed
-            _model.on(events.JWPLAYER_MEDIA_LEVEL_CHANGED, _qualityLevelChanged); // TODO: Unconfirmed
-            _model.on(events.JWPLAYER_CAST_AVAILABLE, _castAvailable);            // TODO: Unconfirmed
-            _model.on(events.JWPLAYER_CAST_SESSION, _castSession);                // TODO: Unconfirmed
+            _model.on('change:state', _stateHandler);
+            _model.on('change:item', _itemHandler);
+            _model.on('change:buffer', _bufferHandler);
+            _model.on('change:position', _timeUpdated); // pos and dur come together from time event
+            _model.on('change:duration', _timeUpdated);
+            _model.on('change:mute', _volumeHandler);
+            _model.on('change:volume', _volumeHandler);
+            _model.on('change:castAvailable', _castAvailable);      // TODO: Unconfirmed
+            _model.on('change:castState', _onCastState);            // TODO: Unconfirmed
+            _model.on('change:playlist', _playlistHandler);
+
+            _model.mediaController.on(events.JWPLAYER_MEDIA_LEVELS, _qualityHandler);             // TODO: Unconfirmed
+            _model.mediaController.on(events.JWPLAYER_MEDIA_LEVEL_CHANGED, _qualityLevelChanged); // TODO: Unconfirmed
 
 
             if (!_isMobile) {
@@ -278,18 +282,24 @@ define([
             }
         }
 
-        function isLiveStream(evt) {
-            var isIpadStream = (evt.duration === Number.POSITIVE_INFINITY);
-            var isSafariStream = (evt.duration === 0 && evt.position !== 0 && utils.isSafari() && !_isMobile);
+        function isLiveStream(position, duration) {
+            var isIpadStream = (duration === Number.POSITIVE_INFINITY);
+            var isSafariStream = (duration === 0 && position !== 0 && utils.isSafari() && !_isMobile);
 
             return isIpadStream || isSafariStream;
         }
 
-        function _timeUpdated(evt) {
+        function _timeUpdated(model) {
             cssUtils.block(_id); //unblock on redraw
+            var position = model.get('position');
+            var duration = model.get('duration');
 
+            _updateSeekbar(position, duration);
+        }
+
+        function _updateSeekbar(position, duration) {
             // Positive infinity for live streams on iPad, 0 for live streams on Safari (HTML5)
-            if (isLiveStream(evt)) {
+            if (isLiveStream(position, duration)) {
                 _this.setText(_model.playlist[_model.item].title || 'Live broadcast');  // TODO: Unconfirmed
 
                 // so that elapsed time doesn't display for live streams
@@ -297,28 +307,28 @@ define([
             } else {
                 var timeString;
                 if (_elements.elapsed) {
-                    timeString = utils.timeFormat(evt.position);
+                    timeString = utils.timeFormat(position);
                     _elements.elapsed.innerHTML = timeString;
                 }
                 if (_elements.duration) {
-                    timeString = utils.timeFormat(evt.duration);
+                    timeString = utils.timeFormat(duration);
                     _elements.duration.innerHTML = timeString;
                 }
-                if (evt.duration > 0) {
-                    _setProgress(evt.position / evt.duration);
+                if (duration > 0) {
+                    _setProgress(position / duration);
                 } else {
                     _setProgress(0);
                 }
-                _duration = evt.duration;
-                _position = evt.position;
+                _duration = duration;
+                _position = position;
                 if (!_instreamMode) {
                     _this.setText();
                 }
             }
         }
 
-        function _stateHandler(evt) {
-            switch (evt.newstate) {
+        function _stateHandler(model, state) {
+            switch (state) {
                 case states.BUFFERING:
                 case states.PLAYING:
                     if (_elements.timeSliderThumb) {
@@ -344,17 +354,15 @@ define([
                         _elements.timeRail.className = 'jwrail';
                     }
                     _setBuffer(0);
-                    _timeUpdated({
-                        position: 0,
-                        duration: 0
-                    });
+                    _updateSeekbar(0,0);
+
                     break;
             }
         }
 
-        function _itemHandler(evt) {
+        function _itemHandler(model, index) {
             if (!_instreamMode) {
-                var tracks = _model.playlist[evt.index].tracks,
+                var tracks = _model.playlist[index].tracks,
                     tracksloaded = false,
                     cuesloaded = false;
                 _removeCues();
@@ -380,15 +388,15 @@ define([
             }
         }
 
-        function _volumeHandler() {
-            var muted = _model.mute;
-            _currentVolume = _model.volume / 100;
+        function _volumeHandler(model) {
+            var muted = model.get('mute');
+            _currentVolume = model.get('volume') / 100;
             _toggleButton('mute', muted || _currentVolume === 0);
             _setVolume(muted ? 0 : _currentVolume);
         }
 
-        function _bufferHandler(evt) {
-            _setBuffer(evt.bufferPercent / 100);
+        function _bufferHandler(model, buffer) {
+            _setBuffer(buffer / 100);
         }
 
         function _fullscreenHandler(evt) {
@@ -400,6 +408,7 @@ define([
         }
 
         function _playlistHandler() {
+
             cssUtils.style([
                 _elements.hd,
                 _elements.cc
@@ -482,10 +491,10 @@ define([
                 }
             }
 
-            _castSession(evt || _castState);
+            _onCastState(_model, evt || _castState);
         }
 
-        function _castSession(evt) {
+        function _onCastState(model, evt) {
             _castState = evt;
 
             _toggleButton('cast', evt.active);
@@ -719,7 +728,7 @@ define([
         function _mute() {
             _model.setMute();
 
-            _volumeHandler();
+            _volumeHandler(_model);
         }
 
         function _hideOverlays(exception) {
@@ -1799,7 +1808,7 @@ define([
 
             cssUtils.block(_id); //unblock on redraw
 
-            _volumeHandler();
+            _volumeHandler(_model);
             _redraw();
 
             _clearHideTimeout();

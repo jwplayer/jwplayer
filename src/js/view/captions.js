@@ -32,9 +32,9 @@ define([
         _api.onResize(_resizeHandler);
         _api.onError(_errorHandler);
 
-        _model.on(events.JWPLAYER_PLAYER_STATE, _stateHandler);
-        _model.on(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
-        _model.on(events.JWPLAYER_MEDIA_TIME, _timeHandler);
+        _model.on('change:state', _stateHandler);
+        _model.on('change:position', _timeHandler);
+        _model.mediaController.on(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
 
         var _display,
             _defaults = {
@@ -100,8 +100,8 @@ define([
             //_renderer.update(0);
         }
 
-        function _stateHandler(evt) {
-            switch (evt.newstate) {
+        function _stateHandler(model, state) {
+            switch (state) {
                 case states.IDLE:
                     _idleHandler();
                     break;
@@ -351,8 +351,8 @@ define([
 
 
         /** Listen to player time updates. **/
-        function _timeHandler(event) {
-            _renderer.update(event.position);
+        function _timeHandler(model, pos) {
+            _renderer.update(pos);
         }
 
         function _sendEvent(type, tracks, track) {

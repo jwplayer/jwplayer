@@ -63,12 +63,12 @@ define([
         _api.onPlaylistComplete(_playlistCompleteHandler);
         _api.onError(_errorHandler);
 
-        _model.on(events.JWPLAYER_PLAYER_STATE, _stateHandler);
+        _model.on('change:state', _stateHandler);
         // ???: is there a more up-to-date event to listen to?  Do we listen to the provider via the model?
-        _model.on(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
+        _model.mediaController.on(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
         // Kyle: Who sends this event?  Do we listen to the provider via the model?
         // Rob: Yes the provider.
-        _model.on(events.JWPLAYER_PROVIDER_CLICK, _clickHandler);
+        _model.mediaController.on(events.JWPLAYER_PROVIDER_CLICK, _clickHandler);
 
         if (!_isMobile) {
             _display.addEventListener('click', _clickHandler, false);
@@ -218,10 +218,10 @@ define([
             return _forced ? _forced : _api.getState();
         }
 
-        function _stateHandler(evt) {
+        function _stateHandler(model, state) {
             clearTimeout(_stateTimeout);
             _stateTimeout = setTimeout(function() {
-                _updateDisplay(evt.newstate);
+                _updateDisplay(state);
             }, 100);
         }
 
