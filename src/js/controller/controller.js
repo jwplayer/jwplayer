@@ -69,17 +69,18 @@ define([
             // Helper function
             var _video = this._model.getVideo;
 
-            _model.on(events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
-            _model.on(events.JWPLAYER_MEDIA_COMPLETE, function() {
+            _model.mediaController.on(events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
+            _model.mediaController.on(events.JWPLAYER_MEDIA_COMPLETE, function() {
                 // Insert a small delay here so that other complete handlers can execute
                 setTimeout(_completeHandler, 25);
             });
-            _model.on(events.JWPLAYER_MEDIA_ERROR, function(evt) {
+            _model.mediaController.on(events.JWPLAYER_MEDIA_ERROR, function(evt) {
                 // Re-dispatch media errors as general error
                 var evtClone = _.extend({}, evt);
                 evtClone.type = events.JWPLAYER_ERROR;
                 _this.trigger(evtClone.type, evtClone);
             });
+
 
             function _setupErrorHandler(evt) {
                 _this.trigger(events.JWPLAYER_SETUP_ERROR, evt);
@@ -95,7 +96,25 @@ define([
                 // Tell the api that we are loaded
                 _this.trigger(evt.type, evt);
 
-                _model.on('all', _forward);
+                // For 'onCast' callback
+                _model.on('change:castState', function(model, evt) {
+                    _this.trigger(events.JWPLAYER_CAST_SESSION, evt);
+                });
+                // For 'onFullscreen' callback
+                _model.on('change:fullscreen', function(model, bool) {
+                    _this.trigger(events.JWPLAYER_FULLSCREEN, {
+                        fullscreen: bool
+                    });
+                });
+                // For onItem callback
+                _model.on('change:item', function(model, idx) {
+                    _this.trigger(events.JWPLAYER_PLAYLIST_ITEM, {
+                        index: idx
+                    });
+                });
+
+
+                _model.mediaController.on('all', _this.trigger.bind(_this));
                 _view.addGlobalListener(_forward);
 
                 // TODO: send copies of these objects to public listeners

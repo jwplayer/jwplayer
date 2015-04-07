@@ -300,8 +300,8 @@ define([
             // adds video tag to video layer
             _model.getVideo().setContainer(_videoLayer);
 
-            // Native fullscreen
-            _model.on('fullscreenchange', _fullscreenChangeHandler);
+            // Native fullscreen (coming through from the provider)
+            _model.mediaController.on('fullscreenchange', _fullscreenChangeHandler);
             // DOM fullscreen
             for (var i = DOCUMENT_FULLSCREEN_EVENTS.length; i--;) {
                 document.addEventListener(DOCUMENT_FULLSCREEN_EVENTS[i], _fullscreenChangeHandler, false);
@@ -332,26 +332,26 @@ define([
                 _controlbar.adMode(false);
             });
 
-            _model.on('controls', _onChangeControls);
+            _model.on('change:controls', _onChangeControls);
 
-            _model.on(events.JWPLAYER_PLAYER_STATE, _stateHandler);
-            _model.on(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
+            _model.on('change:state', _stateHandler);
+            _model.mediaController.on(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
             _api.onPlaylistComplete(_playlistCompleteHandler);
             _api.onPlaylistItem(_playlistItemHandler);
 
-            _model.on(events.JWPLAYER_CAST_AVAILABLE, function() {    // TODO: CURRENTLY UNTESTED
-                if (utils.canCast()) {
+            _model.on('change:castAvailable', function(model, val) {    // TODO: CURRENTLY UNTESTED
+                if (val) {
                     _this.forceControls(true);
                 } else {
                     _this.releaseControls();
                 }
             });
 
-            _model.on(events.JWPLAYER_CAST_SESSION, function(evt) {   // TODO: CURRENTLY UNTESTED
+            _model.on('change:castState', function(evt) {   // TODO: CURRENTLY UNTESTED
                 if (!_castDisplay) {
                     _castDisplay = new CastDisplay(_model.id);
-                    _castDisplay.statusDelegate = function(evt) {
-                        _castDisplay.setState(evt.newstate);
+                    _castDisplay.statusDelegate = function(model, state) {
+                        _castDisplay.setState(state);
                     };
                 }
                 if (evt.active) {
@@ -362,14 +362,14 @@ define([
                     _castDisplay.setState('connecting').setName(evt.deviceName).show();
 
                     // TODO: CURRENTLY UNTESTED
-                    _model.on(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
-                    _model.on(events.JWPLAYER_CAST_AD_CHANGED, _castAdChanged);
+                    _model.on('change:state', _castDisplay.statusDelegate);
+                    _model.mediaController.on(events.JWPLAYER_CAST_AD_CHANGED, _castAdChanged);
 
                 } else {
 
                     // TODO: CURRENTLY UNTESTED
-                    _model.off(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
-                    _model.off(events.JWPLAYER_CAST_AD_CHANGED, _castAdChanged);
+                    _model.off('change:state', _castDisplay.statusDelegate);
+                    _model.mediaController.off(events.JWPLAYER_CAST_AD_CHANGED, _castAdChanged);
 
                     _castDisplay.hide();
                     if (_controlbar.adMode()) {
@@ -1002,11 +1002,11 @@ define([
          */
         var _stateTimeout;
 
-        function _stateHandler(evt) {
+        function _stateHandler(model, state) {
             _replayState = false;
             clearTimeout(_stateTimeout);
             _stateTimeout = setTimeout(function() {
-                _updateState(evt.newstate);
+                _updateState(state);
             }, 100);
         }
 
@@ -1108,7 +1108,7 @@ define([
 
         this.setupInstream = function(instreamModel) {
             _instreamModel = instreamModel;
-            _instreamModel.on('controls', _onChangeControls);
+            _instreamModel.on('change:controls', _onChangeControls);
             _instreamMode = true;
             _controlbar.instreamMode(true);
             _controlbar.adMode(true);

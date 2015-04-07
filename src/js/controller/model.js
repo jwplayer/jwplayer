@@ -58,6 +58,8 @@ define([
             buffer: 0
         }, Events);
 
+        this.mediaController = _.extend({}, Events);
+
         QOE.model(this);
 
         // This gets added later
@@ -76,10 +78,10 @@ define([
                 case events.JWPLAYER_PLAYER_STATE:
                     // These two states exist at a provider level, but the player itself expects BUFFERING
                     if (evt.newstate === states.LOADING) {
-                        this.trigger(events.JWPLAYER_PROVIDER_LOADING, evt);
+                        this.mediaController.trigger(events.JWPLAYER_PROVIDER_LOADING, evt);
                         evt.newstate = states.BUFFERING;
                     } else if (evt.newstate === states.STALLED) {
-                        this.trigger(events.JWPLAYER_PROVIDER_STALLED, evt);
+                        this.mediaController.trigger(events.JWPLAYER_PROVIDER_STALLED, evt);
                         evt.newstate = states.BUFFERING;
                     }
 
@@ -97,7 +99,7 @@ define([
                     break;
             }
 
-            this.trigger(evt.type, evt);
+            this.mediaController.trigger(evt.type, evt);
         }
 
         this.setVideoProvider = function(provider) {
@@ -142,10 +144,7 @@ define([
         this.setFullscreen = function(state) {
             state = !!state;
             if (state !== _this.fullscreen) {
-                _this.fullscreen = state;
-                _this.trigger(events.JWPLAYER_FULLSCREEN, {
-                    fullscreen: state
-                });
+                _this.set('fullscreen', state);
             }
         };
 
@@ -155,11 +154,11 @@ define([
             var playlist = Playlist.filterPlaylist(p, _providers, _this.androidhls);
             _this.set('playlist', playlist);
             if (playlist.length === 0) {
-                _this.trigger(events.JWPLAYER_ERROR, {
+                _this.mediaController.trigger(events.JWPLAYER_ERROR, {
                     message: 'Error loading playlist: No playable sources found'
                 });
             } else {
-                _this.trigger(events.JWPLAYER_PLAYLIST_LOADED, {
+                _this.mediaController.trigger(events.JWPLAYER_PLAYLIST_LOADED, {
                     playlist: playlist
                 });
                 _this.set('item', -1);
@@ -186,11 +185,6 @@ define([
 
             // Item is actually changing
             this.set('item', newItem);
-
-            this.trigger(events.JWPLAYER_PLAYLIST_ITEM, {
-                index: this.get('item')
-            });
-
 
             // select provider based on item source (video, youtube...)
             var item = this.get('playlist')[newItem];
@@ -258,7 +252,7 @@ define([
             this.getVideo().play();
         };
         this.loadVideo = function() {
-            this.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
+            this.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
             var idx = this.get('item');
             this.getVideo().load(this.get('playlist')[idx]);
         };
@@ -273,7 +267,7 @@ define([
                 return;
             }
             this[attr] = val;
-            this.trigger(attr, this, val);
+            this.trigger('change:' + attr, this, val);
         }
     });
 
