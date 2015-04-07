@@ -4,6 +4,7 @@ define([
     'unit/provider',
     'unit/embed',
     'unit/embed-config',
+    'unit/embed-swf',
     'unit/utils',
     'unit/playlist',
     'unit/playlist-item',

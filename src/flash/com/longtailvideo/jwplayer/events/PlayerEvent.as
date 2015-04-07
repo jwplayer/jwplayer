@@ -13,7 +13,7 @@ public class PlayerEvent extends Event {
 
     public static const JWPLAYER_UNLOCKED:String = "unlocked";
 
-    public static const JWPLAYER_ERROR:String = "error";
+    public static const JWPLAYER_ERROR:String = "jw-error";
 
     public static const JWPLAYER_FULLSCREEN:String = "fullscreen";
 

@@ -74,19 +74,25 @@ define([
 
         // javascript can trigger SwfEventRouter callbacks
         swf.triggerFlash = function(name) {
+            var swfInstance = this;
+            if (!swfInstance.__externalCall) {
+                console.error('swf is not initialized');
+                return swfInstance;
+            }
             var args = Array.prototype.slice.call(arguments, 1);
             var status = utils.tryCatch(function() {
                 if (args.length) {
                     var json = JSON.stringify(args);
-                    swf.__externalCall(name, json);
+                    swfInstance.__externalCall(name, json);
                 } else {
-                    swf.__externalCall(name);
+                    swfInstance.__externalCall(name);
                 }
             });
 
             if (status instanceof utils.Error) {
                 console.error(status);
             }
+            return swfInstance;
         };
 
         return swf;

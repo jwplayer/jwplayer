@@ -58,6 +58,9 @@ public class SwfEventRouter {
     /**
      * SwfEventRouter.triggerJsEvent() will fire a backbone event on the swf element
      * Any instance in the Flash app can fire an event
+     *
+     * Since Sprites cannot dispatch events of the same type as native events, we need
+     * to prefix some events like "error" with "jw-". These are renamed before triggering.
      */
 
     static private var _sendScript:XML = <script><![CDATA[
@@ -65,8 +68,14 @@ function(id, name, json) {
     return setTimeout(function() {
         var swf = document.getElementById(id);
         if (swf && typeof swf.trigger === 'function') {
+            name = name.replace(/^jw\-/, '');
             if (json) {
                 var data = JSON.parse(decodeURIComponent(json));
+                delete data.target;
+                delete data.currentTarget;
+                delete data.bubbles;
+                delete data.cancelable;
+                delete data.eventPhase;
                 return swf.trigger(name, data);
             } else {
                 return swf.trigger(name);
