@@ -2,9 +2,8 @@ define([
     'utils/timer',
     'events/events',
     'events/states',
-    'utils/underscore',
-    'utils/eventdispatcher'
-], function(Timer, events, states, _, eventdispatcher) {
+    'underscore'
+], function(Timer, events, states, _) {
     // This is to provide a first frame event even when
     //  a provider does not give us one.
     var onTimeIncreasesGenerator = (function(callback) {
@@ -38,8 +37,8 @@ define([
     }
 
     function unbindFirstFrameEvents(model) {
-        model.off(events.JWPLAYER_PROVIDER_FIRST_FRAME, model._triggerFirstFrame);
-        model.off(events.JWPLAYER_MEDIA_TIME, model._onTime);
+        model.mediaController.off(events.JWPLAYER_PROVIDER_FIRST_FRAME, model._triggerFirstFrame);
+        model.mediaController.off(events.JWPLAYER_MEDIA_TIME, model._onTime);
     }
 
     function trackFirstFrame(model) {
@@ -47,27 +46,29 @@ define([
 
         // When it occurs, send the event, and unbind all listeners
         model._triggerFirstFrame = _.once(function() {
-            model._qoeItem.tick(events.JWPLAYER_MEDIA_FIRST_FRAME);
+            var qoeItem = model._qoeItem;
+            qoeItem.tick(events.JWPLAYER_MEDIA_FIRST_FRAME);
 
-            model.trigger(events.JWPLAYER_MEDIA_FIRST_FRAME);
+            var time = qoeItem.between(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, events.JWPLAYER_MEDIA_FIRST_FRAME);
+            model.mediaController.trigger(events.JWPLAYER_MEDIA_FIRST_FRAME, {loadtime : time});
             unbindFirstFrameEvents(model);
         });
 
         model._onTime = onTimeIncreasesGenerator(model._triggerFirstFrame);
 
-        model.once(events.JWPLAYER_PROVIDER_FIRST_FRAME, model._triggerFirstFrame);
-        model.on(events.JWPLAYER_MEDIA_TIME, model._onTime);
+        model.mediaController.once(events.JWPLAYER_PROVIDER_FIRST_FRAME, model._triggerFirstFrame);
+        model.mediaController.on(events.JWPLAYER_MEDIA_TIME, model._onTime);
     }
 
 
     function trackStalledTime(model) {
-        model.on(events.JWPLAYER_PROVIDER_LOADING, function(evt) {
+        model.mediaController.on(events.JWPLAYER_PROVIDER_LOADING, function(evt) {
             model._qoeItem.start(evt.newstate);
         });
-        model.on(events.JWPLAYER_PROVIDER_STALLED, function(evt) {
+        model.mediaController.on(events.JWPLAYER_PROVIDER_STALLED, function(evt) {
             model._qoeItem.start(evt.newstate);
         });
-        model.on(events.JWPLAYER_PLAYER_STATE, function(evt) {
+        model.mediaController.on(events.JWPLAYER_PLAYER_STATE, function(evt) {
             if (evt.newstate !== states.BUFFERING) {
                 model._qoeItem.end(evt.oldstate);
             }
@@ -81,7 +82,7 @@ define([
             model._qoeItem = new Timer();
             model._qoeItem.tick(events.JWPLAYER_PLAYLIST_ITEM);
 
-            model.once(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, function() {
+            model.mediaController.once(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, function() {
                 model._qoeItem.tick(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
             });
 
@@ -94,7 +95,6 @@ define([
 
     this.model = initModel.bind(this);
 
-    _.extend(this, new eventdispatcher());
     _.extend(this, {
         'get' : function(attr) {
             return this[attr];

@@ -6,13 +6,13 @@ define([
     'events/events',
     'events/states',
     'utils/eventdispatcher',
-    'providers/default'
-], function(cssUtils, utils, stretchUtils, _, events, states, eventdispatcher, DefaultProvider) {
+    'providers/default',
+    'utils/video'
+], function(cssUtils, utils, stretchUtils, _, events, states, eventdispatcher, DefaultProvider, video) {
 
     var clearInterval = window.clearInterval,
         stallInterval,
-        STALL_DELAY = 125, // 1/8th of a second
-        STALL_TOLERANCE = STALL_DELAY/2,
+        STALL_DELAY = 256,
         _isIE = utils.isMSIE(),
         _isMobile = utils.isMobile(),
         _isSafari = utils.isSafari(),
@@ -23,14 +23,13 @@ define([
 
     // Browsers, including latest chrome, do not always report Stalled events in a timely fashion
     var stallCheckGenerator = function(videotag, stalledHandler) {
-        var lastChecked = 0;
+        var lastChecked = -1;
         return function() {
             if (videotag.paused) { return; }
-            var t = videotag.currentTime * 1000; // secs to ms
-            if (t - lastChecked < STALL_TOLERANCE) {
+            if (videotag.currentTime === lastChecked) {
                 stalledHandler();
             }
-            lastChecked = t;
+            lastChecked = videotag.currentTime;
         };
     };
 
@@ -77,7 +76,7 @@ define([
                 ended: _endedHandler,
                 error: _errorHandler,
 
-                play: _onPlayHandler, // play is attempted, but hasn't necessarily started
+                //play: _onPlayHandler, // play is attempted, but hasn't necessarily started
                 //loadstart: _generalHandler,
                 //loadeddata: _onLoadedData, // we have duration
                 loadedmetadata: _onLoadedMetaData, // we have video dimensions
@@ -212,10 +211,6 @@ define([
             });
         }
 
-        function _onPlayHandler() {
-            _this.sendEvent(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
-        }
-
         function _canPlayHandler() {
             if (!_attached) {
                 return;
@@ -271,7 +266,7 @@ define([
             }
 
             _this.setState(states.PLAYING);
-            _this.sendEvent(events.JWPLAYER_PROVIDER_FIRST_FRAME, { time : _.now() });
+            _this.sendEvent(events.JWPLAYER_PROVIDER_FIRST_FRAME, {});
         }
 
         function _stalledHandler() {
@@ -518,16 +513,6 @@ define([
             }
         };
 
-        /** Set the current player state * */
-        this.setState = function(newstate) {
-            // Handles a FF 3.5 issue
-            if (newstate === states.PAUSED && this.state === states.IDLE) {
-                return;
-            }
-
-            DefaultProvider.setState.apply(this, arguments);
-        };
-
         function _sendBufferUpdate() {
             if (!_attached) { return; }
             var newBuffer = _getBuffer();
@@ -767,6 +752,9 @@ define([
             return _getPublicLevels(_levels);
         };
 
+        this.getName = function() {
+            return { name : 'html5' };
+        };
     }
 
     var MimeTypes = {
@@ -829,8 +817,8 @@ define([
 
         // Last, but not least, we ask the browser
         // (But only if it's a video with an extension known to work in HTML5)
-        if (jwplayer.vid.canPlayType) {
-            var result = jwplayer.vid.canPlayType(MimeTypes[type]);
+        if (video.canPlayType) {
+            var result = video.canPlayType(MimeTypes[type]);
             return !!result;
         }
         return false;

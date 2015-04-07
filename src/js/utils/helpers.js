@@ -261,7 +261,7 @@ define([
 
 
     /** Finds the location of jwplayer.js and returns the path **/
-    utils.getScriptPath = function (scriptName) {
+    utils.getScriptPath = _.memoize(function(scriptName) {
         var scripts = document.getElementsByTagName('script');
         for (var i = 0; i < scripts.length; i++) {
             var src = scripts[i].src;
@@ -270,7 +270,7 @@ define([
             }
         }
         return '';
-    };
+    });
 
 
     /**
@@ -615,7 +615,7 @@ define([
     };
 
     utils.canCast = function () {
-        var cast = jwplayer.cast;
+        var cast = window.jwplayer.cast;
         return !!(cast && _.isFunction(cast.available) && cast.available());
     };
 

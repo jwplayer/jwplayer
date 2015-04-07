@@ -121,7 +121,6 @@ public class RTMPMediaProvider extends MediaProvider {
         if (level > -1) {
             _config.qualitylabel = qualityLevels[quality].label;
             var event:MediaEvent = new MediaEvent(MediaEvent.JWPLAYER_MEDIA_LEVEL_CHANGED);
-            // Configger.saveCookie("qualityLabel", _config.qualitylabel);
             event.levels = qualityLevels;
             event.currentQuality = quality;
             dispatchEvent(event);

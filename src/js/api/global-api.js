@@ -1,43 +1,45 @@
 define([
-    'utils/helpers',
-    'api/api'
-], function(utils, Api) {
+    'api/api',
+    'plugins/plugins'
+], function(Api, plugins) {
 
     var _instances = [],
         _uniqueIndex = 0;
 
 
-    var selectPlayer = function (identifier) {
-        var _container;
+    var selectPlayer = function (query) {
+        var player;
+        var domElement;
 
-        if (!utils.exists(identifier)) {
-            identifier = 0;
-        }
-
-        if (identifier.nodeType) {
-            // Handle DOM Element
-            _container = identifier;
-        } else if (typeof identifier === 'string') {
-            // Find container by ID
-            _container = document.getElementById(identifier);
-        }
-
-        if (_container) {
-            var foundPlayer = playerById(_container.id);
-            if (foundPlayer) {
-                return foundPlayer;
-            } else {
-                return (new Api(_container));
+        // prioritize getting a player over querying an element
+        if (!query) {
+            player = _instances[0];
+        } else if (typeof query === 'string') {
+            player = _playerById(query);
+            if (!player) {
+                domElement = document.getElementById(query);
             }
-        } else if (typeof identifier === 'number') {
-            return _instances[identifier];
+        } else if (typeof query === 'number') {
+            player = _instances[query];
+        } else if (query.nodeType) {
+            domElement = query;
+            player = _playerById(domElement.id);
         }
-
-        return null;
+        // found player
+        if (player) {
+            return player;
+        }
+        // create player
+        if (domElement) {
+            return _addPlayer(new Api(domElement, _removePlayer));
+        }
+        // invalid query
+        return {
+            registerPlugin: plugins.registerPlugin
+        };
     };
 
-
-    var playerById = function (id) {
+    var _playerById = function (id) {
         for (var p = 0; p < _instances.length; p++) {
             if (_instances[p].id === id) {
                 return _instances[p];
@@ -47,23 +49,23 @@ define([
         return null;
     };
 
-     var addPlayer = function (api) {
-        for (var p = 0; p < _instances.length; p++) {
-            if (_instances[p] === api) {
-                return api; // Player is already in the list;
-            }
-        }
-
+    var _addPlayer = function (api) {
         _uniqueIndex++;
         api.uniqueId = _uniqueIndex;
         _instances.push(api);
         return api;
     };
 
+    var _removePlayer = function (api) {
+        for (var i=_instances.length; i--;) {
+            if (_instances[i].uniqueId === api.uniqueId) {
+                _instances.splice(i, 1);
+                break;
+            }
+        }
+    };
+
     return {
-        _instances : _instances,
-        selectPlayer : selectPlayer,
-        playerById : playerById,
-        addPlayer : addPlayer
+        selectPlayer : selectPlayer
     };
 });

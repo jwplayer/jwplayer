@@ -3,7 +3,7 @@ import flash.events.Event;
 
 public class PlayerStateEvent extends PlayerEvent {
 
-    public static const JWPLAYER_PLAYER_STATE:String = "jwplayerPlayerState";
+    public static const JWPLAYER_PLAYER_STATE:String = "state";
 
     public function PlayerStateEvent(newState:String, oldState:String) {
         super(JWPLAYER_PLAYER_STATE);

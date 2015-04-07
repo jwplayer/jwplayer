@@ -29,8 +29,10 @@ module.exports = function(grunt) {
         pkg: packageInfo,
 
         jshint: {
-            all : [
-                'src/js/**/*.js',
+            player : [
+                'src/js/**/*.js'
+            ],
+            grunt : [
                 'Gruntfile.js'
             ],
             options: {
@@ -98,8 +100,8 @@ module.exports = function(grunt) {
                 tasks: ['jshint']
             },
             player: {
-                files : ['src/js/**/*.js', 'src/js/*.js'],
-                tasks: ['build-js']
+                files : ['src/js/{,*/}*.js'],
+                tasks: ['build-js', 'karma:local']
             },
             flash: {
                 files : [
@@ -109,21 +111,25 @@ module.exports = function(grunt) {
                 tasks: ['flash:player:debug']
             },
             css: {
-                files: [
-                    'src/css/*.less',
-                    'src/css/imports/*.less'],
-                tasks: ['webpack']
+                files: ['src/css/{,*/}*.less'],
+                tasks: ['webpack', 'uglify']
+            },
+            tests: {
+                files : ['test/{,*/}*.js'],
+                tasks: ['karma:local']
             },
             grunt: {
                 files: ['Gruntfile.js'],
-                tasks: ['jshint']
+                tasks: ['jshint:grunt']
             }
         },
 
         webpack : {
             build : {
+                watch: false,
+                progress: false,
                 entry: {
-                    jwplayer : './src/js/jwplayer.js',
+                    jwplayer : './src/js/main.js',
                     demostyles : './src/js/demostyles.js'
                 },
                 output: {
@@ -182,6 +188,15 @@ module.exports = function(grunt) {
             player: {
                 dest: 'jwplayer.flash.swf',
                 main: 'src/flash/com/longtailvideo/jwplayer/player/Player.as'
+            }
+        },
+
+        karma: {
+            local : {
+                configFile: './test/karma/karma.conf.js'
+            },
+            browserstack : {
+                configFile: './test/karma/karma.conf.js'
             }
         },
 
@@ -319,17 +334,22 @@ module.exports = function(grunt) {
         }, 500);
     });
 
+    grunt.registerTask('test', [
+        'karma'
+    ]);
+
     grunt.registerTask('build-js', [
         'webpack',
         'uglify',
-        'jshint'
+        'jshint:player'
     ]);
 
     grunt.registerTask('build', [
         'clean',
         'build-js',
         'flash:player:debug',
-        'flash:player:release'
+        'flash:player:release',
+        'karma:local'
     ]);
 
     grunt.registerTask('default', 'build');

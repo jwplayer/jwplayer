@@ -6,29 +6,22 @@ define([
 
     var Defaults = {
         width: 480,
-        height: 270,
-        aspectratio: '',
-        //primary: 'html5',
-        base: utils.getScriptPath('jwplayer.js')
+        height: 270
     };
 
-    function normalizeSize(val) {
-        if (val.slice && val.slice(-2) === 'px') {
-            val = val.slice(0,-2);
+    var config = function(options) {
+
+        var customDefaults = (window.jwplayer || {}).defaults;
+
+        var config = _.extend({}, Defaults, customDefaults, options);
+        config.width  = _normalizeSize(config.width);
+        config.height = _normalizeSize(config.height);
+        config.base = config.base || utils.getScriptPath('jwplayer.js');
+        config.flashplayer = config.flashplayer || config.base + 'jwplayer.flash.swf';
+        config.aspectratio = _evaluateAspectRatio(config.aspectratio, config.width);
+        if (!config.aspectratio) {
+            delete config.aspectratio;
         }
-        return val;
-    }
-
-    var config = function (options) {
-
-        options = options || {};
-
-        var config = _.extend({}, Defaults, jwplayer.defaults, options);
-        config.width = normalizeSize(config.width);
-        config.height = normalizeSize(config.height);
-
-
-        _evaluateAspectRatio(config);
 
         if (_.isString(config.playlist)) {
             // If playlist is a string, then it's an RSS feed, let it be
@@ -40,19 +33,17 @@ define([
         return config;
     };
 
-    function _evaluateAspectRatio(config) {
-        var ar = config.aspectratio,
-            ratio = _getRatio(ar);
-        if (config.width.toString().indexOf('%') === -1) {
-            delete config.aspectratio;
-        } else if (!ratio) {
-            delete config.aspectratio;
-        } else {
-            config.aspectratio = ratio;
+    function _normalizeSize(val) {
+        if (val.slice && val.slice(-2) === 'px') {
+            val = val.slice(0,-2);
         }
+        return val;
     }
 
-    function _getRatio(ar) {
+    function _evaluateAspectRatio(ar, width) {
+        if (width.toString().indexOf('%') === -1) {
+            return 0;
+        }
         if (typeof ar !== 'string' || !utils.exists(ar)) {
             return 0;
         }

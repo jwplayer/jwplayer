@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MP4 video file</title>
+    <script type="text/javascript" src="../../bin-debug/jwplayer.js"></script>
+    <link type="text/css" rel="stylesheet" href="styles/tests.css"  media="all" />
+</head>
+<body>
+
+<h1>Setup Examples</h1>
+
+<h2>Video Playlist</h2>
+
+<div id="video-container">before set up</div>
+<script type="text/javascript">
+(function() {
+    var config = {
+
+        width: 640,
+        height: 360,
+
+        // primary: 'flash',
+
+        listbar: {
+            position: 'right'
+        },
+
+        playlist: [
+            {
+                sources: [
+                    {file: '//content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4'},
+                    {file: '//content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm'}
+                ],
+                tracks: [
+                    {file: '//playertest.longtailvideo.com/chapters/sintel-chapters.vtt', kind: 'chapters'},
+                    {file: '//playertest.longtailvideo.com/captions/sintel-ch.srt', label: 'Chinese'},
+                    {file: '//playertest.longtailvideo.com/captions/sintel-fa.srt', label: 'Farsi'},
+                    {file: '//playertest.longtailvideo.com/captions/sintel-gr.srt', label: 'Greek'},
+                    {file: '//playertest.longtailvideo.com/captions/sintel-jp.srt', label: 'Japanese'},
+                    {file: '//playertest.longtailvideo.com/captions/sintel-ko.srt', label: 'Korean'},
+                    {file: '//playertest.longtailvideo.com/captions/sintel-pl.srt', label: 'Polish'},
+                    {file: '//playertest.longtailvideo.com/captions/sintel-ru.srt', label: 'Russian'},
+                    {file: '//playertest.longtailvideo.com/captions/sintel-sp.srt', label: 'Spanish'},
+                    {file: '//playertest.longtailvideo.com/captions/sintel-tr.srt', label: 'Turkish'}
+                ],
+                title: 'Sintel'
+            },
+            {
+                sources: [
+                    {file: '//content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4'},
+                    {file: '//content.bitsontherun.com/videos/bkaovAYt-27m5HpIu.webm'}
+                ],
+                tracks: [
+                    {file: '//playertest.longtailvideo.com/chapters/bunny-chapters.vtt', kind: 'chapters'},
+                    {file: '//playertest.longtailvideo.com/captions/bunny-en.srt', label: 'English'},
+                    {file: '//playertest.longtailvideo.com/captions/bunny-ned.txt', label: 'Dutch'}
+                ],
+                title: 'Big Buck Bunny'
+            },
+            {
+                file: '//playertest.longtailvideo.com/flv-cuepoints/honda_accord.flv',
+                title: 'FLV'
+            },
+            {
+                file: '//www.youtube.com/watch?v=YE7VzlLtp-4',
+                title: 'YouTube'
+            },
+            {
+                file: 'not a playable option',
+                title: 'Filtered Out of Playlist'
+            }
+        ]
+    };
+
+    var jwEvents = [
+        'Ready', 'SetupError',
+        'Playlist', 'PlaylistItem', 'PlaylistComplete',
+        'BeforePlay', 'BeforeComplete',
+        'QualityLevels', 'QualityChange',
+        'CaptionsList', 'CaptionsChange',
+        'Buffer', 'Play', 'Pause', 'Idle',
+        'Meta',
+        'BufferChange',
+        'BufferFull',
+        'Time',
+        'Seek', 'Complete', 'Error',
+        'Mute', 'Volume',
+        'Controls', 'Cast', 'DisplayClick', 'Fullscreen', 'Resize',
+        'AdClick', 'AdCompanions', 'AdImpression', 'AdSkipped',
+        'AdPause', 'AdPlay', 'AdMeta', 'AdTime', 'AdComplete', 'AdError'
+    ];
+    config.events = [];
+    for (var i=0; i<jwEvents.length; i++) {
+        var onName = jwEvents[i];
+        var simpleName = onName.toLowerCase();
+        config.events['on' + onName] = (function(name) {
+            return function(e) {
+                console.log(name, e);
+            };
+        })(simpleName);
+    }
+
+    var jwp = jwplayer('video-container').setup(config);
+
+    // Test the remove event, triggered after jwplayer().remove();
+    jwp.on('remove', function(_api) {
+        console.log(_api)
+    })
+
+})();
+</script>
+
+<h2>Audio Single</h2>
+
+<div id="audio-container"></div>
+<script type="text/javascript">
+    jwplayer('audio-container').setup({
+
+        width: 640,
+        height: 30,
+
+        file: '//content.bitsontherun.com/videos/3XnJSIm4-I3ZmuSFT.m4a'
+
+    });
+</script>
+
+<h2>FLV Single</h2>
+
+<div id="flv-container"></div>
+<script type="text/javascript">
+    jwplayer('flv-container').setup({
+        autostart: true,
+
+        width: 640,
+        height: 360,
+
+        listbar: {
+            position: 'right'
+        },
+
+        file: '//playertest.longtailvideo.com/flv-cuepoints/honda_accord.flv',
+        type: 'flv'
+    });
+</script>
+
+<h2>Youtube Single</h2>
+
+<div id="youtube-container"></div>
+<script type="text/javascript">
+    jwplayer('youtube-container').setup({
+
+        width: 640,
+        height: 360,
+
+        file: '//www.youtube.com/watch?v=YE7VzlLtp-4'
+
+    });
+</script>
+
+
+<h2>Error screen</h2>
+
+<div id="error-container"></div>
+<script type="text/javascript">
+    jwplayer('error-container').setup({
+
+        playlist: 'failure'
+
+    });
+</script>
+</body>
+</html>

@@ -7,3 +7,5 @@ node_modules
 bin-debug
 bin-release
 built
+bower_components
+reports

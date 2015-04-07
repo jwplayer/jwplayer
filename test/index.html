@@ -1,167 +1,38 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>MP4 video file</title>
-    <script type="text/javascript" src="../bin-debug/jwplayer.js"></script>
-    <link type="text/css" rel="stylesheet" href="styles/tests.css"  media="all" />
+    <meta charset="utf-8">
+    <title>Test Suite</title>
+
+    <style>
+        .menu {
+            font-family: "Helvetica Neue Light", "HelveticaNeue-Light", "Helvetica Neue", Calibri, Helvetica, Arial, sans-serif;
+            list-style-type: none;
+        }
+        .menu li {
+            display: inline;
+            padding: 0.2em;
+        }
+    </style>
+
+    <!-- Load local QUnit. -->
+    <link rel="stylesheet" href="../bower_components/qunit/qunit/qunit.css" media="screen">
+    <script src="../bower_components/qunit/qunit/qunit.js"></script>
+
+    <script>
+        QUnit.config.autostart = false;
+    </script>
+
+    <!-- load requirejs library and run config.js -->
+    <script data-main="config" src="../bower_components/requirejs/require.js"></script>
 </head>
+
 <body>
+    <ul class="menu">
+        <li><a href="manual">manual tests</a></li>
+        <li><a href="manual/css-skins">css skins</a></li>
+    </ul>
 
-<h1>Setup Examples</h1>
-
-<h2>Video Playlist</h2>
-
-<div id="video-container"></div>
-<script type="text/javascript">
-(function() {
-    var config = {
-
-        width: 640,
-        height: 360,
-
-        // primary: 'flash',
-
-        listbar: {
-            position: 'right'
-        },
-
-        playlist: [
-            {
-                sources: [
-                    {file: '//content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4'},
-                    {file: '//content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm'}
-                ],
-                tracks: [
-                    {file: '//playertest.longtailvideo.com/chapters/sintel-chapters.vtt', kind: 'chapters'},
-                    {file: '//playertest.longtailvideo.com/captions/sintel-ch.srt', label: 'Chinese'},
-                    {file: '//playertest.longtailvideo.com/captions/sintel-fa.srt', label: 'Farsi'},
-                    {file: '//playertest.longtailvideo.com/captions/sintel-gr.srt', label: 'Greek'},
-                    {file: '//playertest.longtailvideo.com/captions/sintel-jp.srt', label: 'Japanese'},
-                    {file: '//playertest.longtailvideo.com/captions/sintel-ko.srt', label: 'Korean'},
-                    {file: '//playertest.longtailvideo.com/captions/sintel-pl.srt', label: 'Polish'},
-                    {file: '//playertest.longtailvideo.com/captions/sintel-ru.srt', label: 'Russian'},
-                    {file: '//playertest.longtailvideo.com/captions/sintel-sp.srt', label: 'Spanish'},
-                    {file: '//playertest.longtailvideo.com/captions/sintel-tr.srt', label: 'Turkish'}
-                ],
-                title: 'Sintel'
-            },
-            {
-                sources: [
-                    {file: '//content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4'},
-                    {file: '//content.bitsontherun.com/videos/bkaovAYt-27m5HpIu.webm'}
-                ],
-                tracks: [
-                    {file: '//playertest.longtailvideo.com/chapters/bunny-chapters.vtt', kind: 'chapters'},
-                    {file: '//playertest.longtailvideo.com/captions/bunny-en.srt', label: 'English'},
-                    {file: '//playertest.longtailvideo.com/captions/bunny-ned.txt', label: 'Dutch'}
-                ],
-                title: 'Big Buck Bunny'
-            },
-            {
-                file: '//playertest.longtailvideo.com/flv-cuepoints/honda_accord.flv',
-                title: 'FLV'
-            },
-            {
-                file: '//www.youtube.com/watch?v=YE7VzlLtp-4',
-                title: 'YouTube'
-            },
-            {
-                file: 'not a playable option',
-                title: 'Filtered Out of Playlist'
-            }
-        ]
-    };
-
-    var jwEvents = [
-        'Ready', 'SetupError',
-        'Playlist', 'PlaylistItem', 'PlaylistComplete',
-        'BeforePlay', 'BeforeComplete',
-        'QualityLevels', 'QualityChange',
-        'CaptionsList', 'CaptionsChange',
-        'Buffer', 'Play', 'Pause', 'Idle',
-        'Meta',
-        'BufferChange',
-        'BufferFull',
-        'Time',
-        'Seek', 'Complete', 'Error',
-        'Mute', 'Volume',
-        'Controls', 'Cast', 'DisplayClick', 'Fullscreen', 'Resize',
-        'AdClick', 'AdCompanions', 'AdImpression', 'AdSkipped',
-        'AdPause', 'AdPlay', 'AdMeta', 'AdTime', 'AdComplete', 'AdError'
-    ];
-    config.events = [];
-    for (var i=0; i<jwEvents.length; i++) {
-        var onName = jwEvents[i];
-        var simpleName = onName.toLowerCase();
-        config.events['on' + onName] = (function(name) {
-            return function(e) {
-                console.log(name, e);
-            };
-        })(simpleName);
-    }
-
-    jwplayer('video-container').setup(config);
-
-})();
-</script>
-
-<h2>Audio Single</h2>
-
-<div id="audio-container"></div>
-<script type="text/javascript">
-    jwplayer('audio-container').setup({
-
-        width: 640,
-        height: 30,
-
-        file: '//content.bitsontherun.com/videos/3XnJSIm4-I3ZmuSFT.m4a'
-
-    });
-</script>
-
-<h2>FLV Single</h2>
-
-<div id="flv-container"></div>
-<script type="text/javascript">
-    jwplayer('flv-container').setup({
-        autostart: true,
-
-        width: 640,
-        height: 360,
-
-        listbar: {
-            position: 'right'
-        },
-
-        file: '//playertest.longtailvideo.com/flv-cuepoints/honda_accord.flv',
-        type: 'flv'
-    });
-</script>
-
-<h2>Youtube Single</h2>
-
-<div id="youtube-container"></div>
-<script type="text/javascript">
-    jwplayer('youtube-container').setup({
-
-        width: 640,
-        height: 360,
-
-        file: '//www.youtube.com/watch?v=YE7VzlLtp-4'
-
-    });
-</script>
-
-
-<h2>Error screen</h2>
-
-<div id="error-container"></div>
-<script type="text/javascript">
-    jwplayer('error-container').setup({
-
-        playlist: 'failure'
-
-    });
-</script>
+    <div id="qunit"></div>
 </body>
 </html>

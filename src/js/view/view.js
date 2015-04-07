@@ -28,7 +28,6 @@ define([
         VIEW_VIDEO_CONTAINER_CLASS = 'jwvideo',
         VIEW_CONTROLS_CONTAINER_CLASS = 'jwcontrols',
         VIEW_ASPECT_CONTAINER_CLASS = 'jwaspect',
-        VIEW_PLAYLIST_CONTAINER_CLASS = 'jwplaylistcontainer',
         DOCUMENT_FULLSCREEN_EVENTS = [
             'fullscreenchange',
             'webkitfullscreenchange',
@@ -45,7 +44,6 @@ define([
         JW_CSS_ABSOLUTE = 'absolute',
         JW_CSS_IMPORTANT = ' !important',
         JW_CSS_HIDDEN = 'hidden',
-        JW_CSS_NONE = 'none',
         JW_CSS_BLOCK = 'block';
 
     var View = function(_api, _model) {
@@ -54,7 +52,6 @@ define([
             _skin,
             _controlsLayer,
             _aspectLayer,
-            _playlistLayer,
             _controlsTimeout = -1,
             _timeoutDuration = _isMobile ? 4000 : 2000,
             _videoLayer,
@@ -69,7 +66,6 @@ define([
             _logo,
             _logoConfig = _.extend({}, _model.componentConfig('logo')),
             _captions,
-            _playlist,
             _audioMode,
             _errorState = false,
             _showing = false,
@@ -92,7 +88,7 @@ define([
             _this = _.extend(this, new eventdispatcher());
 
         _playerElement = _api.getContainer();
-        _playerElement.className = PLAYER_CLASS + ' playlist-' + _model.playlistposition;
+        _playerElement.className = PLAYER_CLASS;
         _playerElement.id = _model.id;
         _playerElement.tabIndex = 0;
 
@@ -138,7 +134,7 @@ define([
             }
 
             // Controls may be disabled during share screens, or via API
-            if (!_model.controls) {
+            if (!_model.get('controls')) {
                 return false;
             }
             return true;
@@ -156,7 +152,7 @@ define([
                 _resetTapTimer();
             }
 
-            var jw = jwplayer(_model.id);
+            var jw = window.jwplayer(_model.id);
             switch (evt.keyCode) {
                 case 27: // Esc
                     jw.setFullscreen(false);
@@ -291,7 +287,6 @@ define([
             _videoLayer.id = _model.id + '_media';
 
             _controlsLayer = _createElement('span', VIEW_CONTROLS_CONTAINER_CLASS);
-            _playlistLayer = _createElement('span', VIEW_PLAYLIST_CONTAINER_CLASS);
             _aspectLayer = _createElement('span', VIEW_ASPECT_CONTAINER_CLASS);
 
             _setupControls();
@@ -301,13 +296,12 @@ define([
 
             _playerElement.appendChild(_container);
             _playerElement.appendChild(_aspectLayer);
-            _playerElement.appendChild(_playlistLayer);
 
             // adds video tag to video layer
             _model.getVideo().setContainer(_videoLayer);
 
-            // Native fullscreen
-            _model.addEventListener('fullscreenchange', _fullscreenChangeHandler);
+            // Native fullscreen (coming through from the provider)
+            _model.mediaController.on('fullscreenchange', _fullscreenChangeHandler);
             // DOM fullscreen
             for (var i = DOCUMENT_FULLSCREEN_EVENTS.length; i--;) {
                 document.addEventListener(DOCUMENT_FULLSCREEN_EVENTS[i], _fullscreenChangeHandler, false);
@@ -320,42 +314,44 @@ define([
                 window.addEventListener('orientationchange', _responsiveListener, false);
             }
             //this for googima, after casting, to get the state right.
-            jwplayer(_model.id).onAdPlay(function() {
+            window.jwplayer(_model.id).onAdPlay(function() {
                 _controlbar.adMode(true);
                 _updateState(states.PLAYING);
 
                 // For Vast to hide controlbar if no mouse movement
                 _resetTapTimer();
             });
-            jwplayer(_model.id).onAdSkipped(function() {
+            window.jwplayer(_model.id).onAdSkipped(function() {
                 _controlbar.adMode(false);
             });
-            jwplayer(_model.id).onAdComplete(function() {
+            window.jwplayer(_model.id).onAdComplete(function() {
                 _controlbar.adMode(false);
             });
             // So VAST will be in correct state when ad errors out from unknown filetype
-            jwplayer(_model.id).onAdError(function() {
+            window.jwplayer(_model.id).onAdError(function() {
                 _controlbar.adMode(false);
             });
 
-            _model.addEventListener(events.JWPLAYER_PLAYER_STATE, _stateHandler);
-            _model.addEventListener(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
+            _model.on('change:controls', _onChangeControls);
+
+            _model.on('change:state', _stateHandler);
+            _model.mediaController.on(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
             _api.onPlaylistComplete(_playlistCompleteHandler);
             _api.onPlaylistItem(_playlistItemHandler);
 
-            _model.addEventListener(events.JWPLAYER_CAST_AVAILABLE, function() {    // TODO: CURRENTLY UNTESTED
-                if (utils.canCast()) {
+            _model.on('change:castAvailable', function(model, val) {    // TODO: CURRENTLY UNTESTED
+                if (val) {
                     _this.forceControls(true);
                 } else {
                     _this.releaseControls();
                 }
             });
 
-            _model.addEventListener(events.JWPLAYER_CAST_SESSION, function(evt) {   // TODO: CURRENTLY UNTESTED
+            _model.on('change:castState', function(evt) {   // TODO: CURRENTLY UNTESTED
                 if (!_castDisplay) {
                     _castDisplay = new CastDisplay(_model.id);
-                    _castDisplay.statusDelegate = function(evt) {
-                        _castDisplay.setState(evt.newstate);
+                    _castDisplay.statusDelegate = function(model, state) {
+                        _castDisplay.setState(state);
                     };
                 }
                 if (evt.active) {
@@ -366,14 +362,14 @@ define([
                     _castDisplay.setState('connecting').setName(evt.deviceName).show();
 
                     // TODO: CURRENTLY UNTESTED
-                    _model.addEventListener(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
-                    _model.addEventListener(events.JWPLAYER_CAST_AD_CHANGED, _castAdChanged);
+                    _model.on('change:state', _castDisplay.statusDelegate);
+                    _model.mediaController.on(events.JWPLAYER_CAST_AD_CHANGED, _castAdChanged);
 
                 } else {
 
                     // TODO: CURRENTLY UNTESTED
-                    _model.removeEventListener(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
-                    _model.removeEventListener(events.JWPLAYER_CAST_AD_CHANGED, _castAdChanged);
+                    _model.off('change:state', _castDisplay.statusDelegate);
+                    _model.mediaController.off(events.JWPLAYER_CAST_AD_CHANGED, _castAdChanged);
 
                     _castDisplay.hide();
                     if (_controlbar.adMode()) {
@@ -412,37 +408,6 @@ define([
             _css('#' + _playerElement.id + '.' + ASPECT_MODE + ' .' + VIEW_ASPECT_CONTAINER_CLASS, {
                 'margin-top': _model.aspectratio,
                 display: JW_CSS_BLOCK
-            });
-
-            var ar = utils.exists(_model.aspectratio) ? parseFloat(_model.aspectratio) : 100,
-                size = _model.playlistsize;
-            _css('#' + _playerElement.id + '.playlist-right .' + VIEW_ASPECT_CONTAINER_CLASS, {
-                'margin-bottom': -1 * size * (ar / 100) + 'px'
-            });
-
-            _css('#' + _playerElement.id + '.playlist-right .' + VIEW_PLAYLIST_CONTAINER_CLASS, {
-                width: size + 'px',
-                right: 0,
-                top: 0,
-                height: '100%'
-            });
-
-            _css('#' + _playerElement.id + '.playlist-bottom .' + VIEW_ASPECT_CONTAINER_CLASS, {
-                'padding-bottom': size + 'px'
-            });
-
-            _css('#' + _playerElement.id + '.playlist-bottom .' + VIEW_PLAYLIST_CONTAINER_CLASS, {
-                width: '100%',
-                height: size + 'px',
-                bottom: 0
-            });
-
-            _css('#' + _playerElement.id + '.playlist-right .' + VIEW_MAIN_CONTAINER_CLASS, {
-                right: size + 'px'
-            });
-
-            _css('#' + _playerElement.id + '.playlist-bottom .' + VIEW_MAIN_CONTAINER_CLASS, {
-                bottom: size + 'px'
             });
 
             setTimeout(function() {
@@ -570,6 +535,19 @@ define([
             _playerElement.addEventListener('keydown', handleKeydown);
         }
 
+        function _onChangeControls(model, bool) {
+            if (!bool) {
+                _hideControls();
+                _hideDisplay();
+            }
+            else {
+                // model may be instream or normal depending on who triggers this
+                _stateHandler({
+                    newstate: model.state
+                });
+            }
+        }
+
         function _dragging(evt) {
             if (evt.dragging) {
                 utils.addClass(_playerElement, 'jw-flag-dragging');
@@ -685,10 +663,6 @@ define([
         function _resize(width, height, resetAspectMode) {
             var className = _playerElement.className,
                 playerStyle,
-                playlistStyle,
-                containerStyle,
-                playlistSize,
-                playlistPos,
                 id = _model.id + '_view';
             cssUtils.block(id);
 
@@ -735,29 +709,6 @@ define([
             }
 
             _checkAudioMode(height);
-
-            playlistSize = _model.playlistsize;
-            playlistPos = _model.playlistposition;
-            if (_playlist && playlistSize && (playlistPos === 'right' || playlistPos === 'bottom')) {
-                _playlist.redraw();
-
-                playlistStyle = {
-                    display: JW_CSS_BLOCK
-                };
-                containerStyle = {};
-
-                playlistStyle[playlistPos] = 0;
-                containerStyle[playlistPos] = playlistSize;
-
-                if (playlistPos === 'right') {
-                    playlistStyle.width = playlistSize;
-                } else {
-                    playlistStyle.height = playlistSize;
-                }
-
-                cssUtils.style(_playlistLayer, playlistStyle);
-                cssUtils.style(_container, containerStyle);
-            }
 
             // pass width, height from jwResize if present 
             _resizeMedia(width, height);
@@ -923,7 +874,7 @@ define([
         }
 
         function _showControlbar() {
-            if (_controlbar && _model.controls) {
+            if (_controlbar && _model.get('controls')) {
                 _controlbar.show();
             }
         }
@@ -940,7 +891,7 @@ define([
         }
 
         function _showDock() {
-            if (_dock && !_audioMode && _model.controls) {
+            if (_dock && !_audioMode && _model.get('controls')) {
                 _dock.show();
             }
         }
@@ -965,7 +916,7 @@ define([
 
         function _showDisplay() {
             var model = _instreamMode ? _instreamModel : _model;
-            if (_display && _model.controls && !_audioMode) {
+            if (_display && _model.get('controls') && !_audioMode) {
                 if (!_isIPod || model.state === states.IDLE) {
                     _display.show();
                 }
@@ -993,11 +944,11 @@ define([
             var model = _instreamMode ? _instreamModel : _model;
             var state = model.state;
 
-            if (!_model.controls || state !== states.PAUSED) {
+            if (!_model.get('controls') || state !== states.PAUSED) {
                 _hideControlbar();
             }
 
-            if (!_model.controls) {
+            if (!_model.get('controls')) {
                 _hideDock();
             }
 
@@ -1015,7 +966,7 @@ define([
             }
 
             _showing = true;
-            if (_model.controls || _audioMode) {
+            if (_model.get('controls') || _audioMode) {
                 _showControlbar();
                 _showDock();
             }
@@ -1034,7 +985,7 @@ define([
         function _playlistCompleteHandler() {
             _replayState = true;
             _fullscreen(false);
-            if (_model.controls) {
+            if (_model.get('controls')) {
                 _showDock();
             }
         }
@@ -1051,11 +1002,11 @@ define([
          */
         var _stateTimeout;
 
-        function _stateHandler(evt) {
+        function _stateHandler(model, state) {
             _replayState = false;
             clearTimeout(_stateTimeout);
             _stateTimeout = setTimeout(function() {
-                _updateState(evt.newstate);
+                _updateState(state);
             }, 100);
         }
 
@@ -1157,6 +1108,7 @@ define([
 
         this.setupInstream = function(instreamModel) {
             _instreamModel = instreamModel;
+            _instreamModel.on('change:controls', _onChangeControls);
             _instreamMode = true;
             _controlbar.instreamMode(true);
             _controlbar.adMode(true);
@@ -1210,30 +1162,6 @@ define([
             if (_dock) {
                 _dock.removeButton(id);
             }
-        };
-
-        this.setControls = function(state) {
-
-            var newstate = !!state;
-            if (newstate === _model.controls) {
-                return;
-            }
-
-            _model.controls = newstate;
-
-            if (!newstate) {
-                _hideControls();
-                _hideDisplay();
-            } else {
-                var model = _instreamMode ? _instreamModel : _model;
-                _stateHandler({
-                    newstate: model.state
-                });
-            }
-
-            _this.sendEvent(events.JWPLAYER_CONTROLS, {
-                controls: newstate
-            });
         };
 
         this.forceControls = function(state) {
@@ -1297,7 +1225,7 @@ define([
                 logoTop = (_logo.position().indexOf('top') === 0),
                 dockBounds,
                 logoBounds = _bounds(_logo.element());
-            if (dockButtons && _model.controls) {
+            if (dockButtons && _model.get('controls')) {
                 dockBounds = _bounds(_dock.element());
                 bounds.y = Math.max(0, dockBounds.bottom - dispOffset);
             }
@@ -1305,7 +1233,7 @@ define([
                 bounds.y = Math.max(bounds.y, logoBounds.bottom - dispOffset);
             }
             bounds.width = dispBounds.width;
-            if (cbBounds.height && includeCB && _model.controls) {
+            if (cbBounds.height && includeCB && _model.get('controls')) {
                 bounds.height = (logoTop ? cbBounds.top : logoBounds.top) - dispOffset - bounds.y;
             } else {
                 bounds.height = dispBounds.height - bounds.y;
@@ -1321,13 +1249,13 @@ define([
             for (var i = DOCUMENT_FULLSCREEN_EVENTS.length; i--;) {
                 document.removeEventListener(DOCUMENT_FULLSCREEN_EVENTS[i], _fullscreenChangeHandler, false);
             }
-            _model.removeEventListener('fullscreenchange', _fullscreenChangeHandler);
+            _model.off('fullscreenchange', _fullscreenChangeHandler);
             _playerElement.removeEventListener('keydown', handleKeydown, false);
             if (_rightClickMenu) {
                 _rightClickMenu.destroy();
             }
             if (_castDisplay) {
-                _model.removeEventListener(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
+                _model.off(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
                 _castDisplay.destroy();
                 _castDisplay = null;
             }
@@ -1384,13 +1312,6 @@ define([
         bottom: 0
     });
 
-    _css('.' + VIEW_PLAYLIST_CONTAINER_CLASS, {
-        position: JW_CSS_ABSOLUTE,
-        height: JW_CSS_100PCT,
-        width: JW_CSS_100PCT,
-        display: JW_CSS_NONE
-    });
-
     _css('.' + VIEW_ASPECT_CONTAINER_CLASS, {
         display: 'none'
     });
@@ -1426,10 +1347,6 @@ define([
         bottom: 0
     }, true);
 
-    _css(FULLSCREEN_SELECTOR + ' .' + VIEW_PLAYLIST_CONTAINER_CLASS, {
-        display: JW_CSS_NONE
-    }, true);
-
     _css('.' + PLAYER_CLASS + ' .jwuniform', {
         'background-size': 'contain' + JW_CSS_IMPORTANT
     });
@@ -1441,6 +1358,13 @@ define([
 
     _css('.' + PLAYER_CLASS + ' .jwexactfit', {
         'background-size': JW_CSS_100PCT + ' ' + JW_CSS_100PCT + JW_CSS_IMPORTANT
+    });
+
+    _css('object.jwswf, .jwplayer:focus', {
+        outline: 'none'
+    });
+    _css('.jw-tab-focus:focus', {
+        outline: 'solid 2px #0B7EF4'
     });
 
     return View;

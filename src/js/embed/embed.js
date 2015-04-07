@@ -1,62 +1,48 @@
 define([
-    'utils/helpers',
-    'utils/css',
     'events/events',
     'utils/scriptloader',
     'playlist/loader',
     'embed/config',
     'plugins/plugins',
-    'controller/controller',
     'view/errorscreen',
     'underscore'
-], function(utils, cssUtils, events, scriptloader, PlaylistLoader, EmbedConfig, plugins, Controller, errorScreen, _) {
+], function(events, scriptloader, PlaylistLoader, EmbedConfig, plugins, errorScreen, _) {
 
-    var _css = cssUtils.css;
-
-    var Embed = function(api) {
+    var Embed = function(_api, _controller) {
 
         var _this = this,
-            _config = new EmbedConfig(api.config),
-            _width = _config.width,
-            _height = _config.height,
-            _oldContainer = document.getElementById(api.id),
-            _pluginloader = plugins.loadPlugins(api.id, _config.plugins),
-            _loader,
+            _config,
+            _pluginLoader,
+            _playlistLoader,
             _playlistLoading = false,
             _errorOccurred = false,
             _setupErrorTimer = -1;
 
-        _config.id = api.id;
-        if (_config.aspectratio) {
-            api.config.aspectratio = _config.aspectratio;
-        } else {
-            delete api.config.aspectratio;
-        }
+        _this.embed = function(options) {
+            _config = new EmbedConfig(options);
+            _config.id = _api.id;
 
-        _setupEvents(api, _config.events);
+            var _container = _api.getContainer(),
+                width = _config.width,
+                height = _config.height;
 
-        var _container = api.getContainer();
-        _container.style.width = _width.toString().indexOf('%') > 0 ? _width : (_width + 'px');
-        _container.style.height = _height.toString().indexOf('%') > 0 ? _height : (_height + 'px');
+            _container.style.width = width.toString().indexOf('%') > 0 ? width : (width + 'px');
+            _container.style.height = height.toString().indexOf('%') > 0 ? height : (height + 'px');
 
-        _this.embed = function() {
-            if (_errorOccurred) {
-                return;
-            }
-
-            _pluginloader.addEventListener(events.COMPLETE, _doEmbed);
-            _pluginloader.addEventListener(events.ERROR, _pluginError);
-            _pluginloader.load();
+            _pluginLoader = plugins.loadPlugins(_api.id, _config.plugins);
+            _pluginLoader.addEventListener(events.COMPLETE, _doEmbed);
+            _pluginLoader.addEventListener(events.ERROR, _pluginError);
+            _pluginLoader.load();
         };
 
         _this.destroy = function() {
-            if (_pluginloader) {
-                _pluginloader.destroy();
-                _pluginloader = null;
+            if (_pluginLoader) {
+                _pluginLoader.destroy();
+                _pluginLoader = null;
             }
-            if (_loader) {
-                _loader.resetEventListeners();
-                _loader = null;
+            if (_playlistLoader) {
+                _playlistLoader.resetEventListeners();
+                _playlistLoader = null;
             }
         };
 
@@ -89,43 +75,39 @@ define([
             }
 
             if (_.isString(playlist)) {
-                _loader = new PlaylistLoader();
-                _loader.addEventListener(events.JWPLAYER_PLAYLIST_LOADED, function(evt) {
+                _playlistLoader = new PlaylistLoader();
+                _playlistLoader.addEventListener(events.JWPLAYER_PLAYLIST_LOADED, function(evt) {
                     _config.playlist = evt.playlist;
                     _playlistLoading = false;
                     _doEmbed();
                 });
-                _loader.addEventListener(events.JWPLAYER_ERROR, function(evt) {
+                _playlistLoader.addEventListener(events.JWPLAYER_ERROR, function(evt) {
                     _playlistLoading = false;
                     _sourceError(evt);
                 });
                 _playlistLoading = true;
-                _loader.load(_config.playlist);
+                _playlistLoader.load(_config.playlist);
                 return;
             }
 
-            if (_pluginloader.getStatus() === scriptloader.loaderstatus.COMPLETE) {
+            if (_pluginLoader.getStatus() === scriptloader.loaderstatus.COMPLETE) {
 
                 var pluginConfigCopy = _.extend({}, _config);
-                _pluginloader.setupPlugins(api, pluginConfigCopy, _resizePlugin);
 
-                utils.emptyElement(_container);
+                // TODO: flatten flashPlugins and pass to flash provider
+                pluginConfigCopy.flashPlugins = _pluginLoader.setupPlugins(_api, pluginConfigCopy, _resizePlugin);
 
                 // Volume option is tricky to remove, since it needs to be in the HTML5 player model.
                 var playerConfigCopy = _.extend({}, pluginConfigCopy);
                 delete playerConfigCopy.volume;
-                var controller = new Controller(playerConfigCopy, api);
-                api.setController(controller);
 
-                _insertCSS();
-                return api;
+                _controller.setup(playerConfigCopy, _api);
             }
         }
 
-        // TODO: view code
         function _resizePlugin(plugin, div, onready) {
             return function() {
-                var displayarea = document.querySelector('#' + _container.id + ' .jwmain');
+                var displayarea = document.querySelector('#' + _api.id + ' .jwmain');
                 if (displayarea && onready) {
                     displayarea.appendChild(div);
                 }
@@ -141,7 +123,7 @@ define([
         }
 
         function _pluginError(evt) {
-            api.trigger(events.JWPLAYER_ERROR, {
+            _api.trigger(events.JWPLAYER_ERROR, {
                 message: 'Could not load plugin: ' + evt.message
             });
         }
@@ -158,7 +140,7 @@ define([
             // Throttle this so that it runs once if called twice in the same callstack
             clearTimeout(_setupErrorTimer);
             _setupErrorTimer = setTimeout(function() {
-                api.trigger(events.JWPLAYER_SETUP_ERROR, {
+                _api.trigger(events.JWPLAYER_SETUP_ERROR, {
                     message: message
                 });
             }, 0);
@@ -170,7 +152,12 @@ define([
             }
 
             // Put new container in page
-            _oldContainer.parentNode.replaceChild(_container, _oldContainer);
+            // TODO: don't assume element with id is in DOM
+            var container = document.getElementById(_api.id);
+            var _container = _api.getContainer();
+            if (container !== _container) {
+                container.parentNode.replaceChild(_container, container);
+            }
 
             _errorOccurred = true;
             errorScreen(_container, message, body);
@@ -179,24 +166,6 @@ define([
 
         return _this;
     };
-
-    function _setupEvents(api, events) {
-        utils.foreach(events, function(evt, val) {
-            var fn = api[evt];
-            if (typeof fn === 'function') {
-                fn.call(api, val);
-            }
-        });
-    }
-
-    function _insertCSS() {
-        _css('object.jwswf, .jwplayer:focus', {
-            outline: 'none'
-        });
-        _css('.jw-tab-focus:focus', {
-            outline: 'solid 2px #0B7EF4'
-        });
-    }
 
     return Embed;
 

@@ -3,8 +3,9 @@ define([
     'utils/helpers',
     'utils/css',
     'events/events',
-    'underscore'
-], function(Touch, utils, cssUtils, events, _) {
+    'underscore',
+    'version'
+], function(Touch, utils, cssUtils, events, _, version) {
 
     var _css = cssUtils.css,
 
@@ -37,7 +38,7 @@ define([
             }
 
             if (linkFlag === 'o' || linkFlag === 'f') {
-                _defaults.link = LINK_DEFAULT + jwplayer.version + '&m=h&e=' + linkFlag;
+                _defaults.link = LINK_DEFAULT + version + '&m=h&e=' + linkFlag;
             }
 
             _settings = _.extend({}, _defaults, _logoConfig);

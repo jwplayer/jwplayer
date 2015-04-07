@@ -8,13 +8,12 @@ define([
     'providers/default'
 ], function(utils, _, events, states, eventdispatcher, EmbedSwf, DefaultProvider) {
 
-
     var _providerId = 0;
     function getObjectId(playerId) {
         return playerId + '_swf_' + (_providerId++);
     }
 
-    function FlashProvider(_playerId) {
+    function FlashProvider(_playerId, _playerConfig) {
 
         // private properties
         var _container;
@@ -25,6 +24,7 @@ define([
         var _muted = false;
         var _beforecompleted = false;
         var _currentQuality = -1;
+        var _flashProviderType;
 
         var _ready = function() {
             return _swf && _swf.__ready;
@@ -110,7 +110,9 @@ define([
                 setContainer: function(parent) {
                     _container = parent;
 
-                    _swf = _swf || EmbedSwf.embed('../bin-debug/jwplayer.flash.swf', parent, getObjectId(_playerId));
+                    if (!_swf) {
+                        _swf = EmbedSwf.embed(_playerConfig.flashplayer, parent, getObjectId(_playerId));
+                    }
 
                     // place div on top of swf to capture clicks
                     if (!_clickOverlay) {
@@ -132,14 +134,13 @@ define([
 
                     _swf.off();
 
-                    _swf.once('ready', function() {
+                    _swf.once(events.JWPLAYER_READY, function() {
                         _swf.__ready = true;
 
                         // setup flash player
                         var config = _.extend({
-                            key: jwplayer.key,
                             commands: _queuedCommands
-                        }, jwplayer(_playerId).config);
+                        }, _playerConfig);
 
                         _queuedCommands = [];
 
@@ -147,7 +148,7 @@ define([
 
                     }, this);
 
-                    _swf.on('error', function(event) {
+                    _swf.on(events.JWPLAYER_ERROR, function(event) {
                         console.error(event.code, event.message, event, this);
                         this.sendEvent(events.JWPLAYER_MEDIA_ERROR, {
                             message: 'Error loading media: File could not be played'
@@ -168,10 +169,10 @@ define([
                             levels: e.levels
                         });
                     }, this).on(events.JWPLAYER_PLAYER_STATE, function(e) {
-                        if (e.newstate === states.IDLE) {
+                        var state = e.newstate;
+                        if (state === states.IDLE) {
                             return;
                         }
-                        var state = e.newstate;
                         this.setState(state);
 
                     }, this).on(events.JWPLAYER_MEDIA_META, function(e) {
@@ -227,12 +228,16 @@ define([
                         });
                     }, this);
 
-                    _swf.on('qualityChange', function(data) {
-                        data.index = _currentQuality;
-                        data.autoSwitch = _currentQuality === -1;
-                        this.sendEvent('qualityChange', data);
+                    _swf.on('visualQuality', function(data) {
+                        //data.index = _currentQuality;
+                        //data.autoSwitch = _currentQuality === -1;
+                        this.sendEvent('visualQuality', data);
                     }, this);
 
+                    _swf.on(events.JWPLAYER_PROVIDER_CHANGED, function(data) {
+                        _flashProviderType = data.message;
+                        this.sendEvent(events.JWPLAYER_PROVIDER_CHANGED, data);
+                    }, this);
 
                     // ignoring:
                     // jwplayerMediaLoaded, jwplayerMediaBeforePlay, ...
@@ -240,7 +245,7 @@ define([
                     // catch all events for dev / debug
                     _swf.on('all', function(name, data) {
                         switch (name) {
-                            case 'ready':
+                            case events.JWPLAYER_READY:
                             case events.JWPLAYER_MEDIA_TIME:
                             case events.JWPLAYER_MEDIA_BUFFER:
                                 break;
@@ -264,7 +269,7 @@ define([
                             case events.JWPLAYER_MEDIA_SEEK:
                                 console.log(name, data.offset);
                                 break;
-                            case 'resize':
+                            case events.JWPLAYER_RESIZE:
                                 console.log(name, data.width, data.height, data.fullscreen);
                                 break;
                             default:
@@ -311,6 +316,14 @@ define([
                 },
                 getCurrentQuality: function() {
                     return _currentQuality;
+                },
+                getName: function() {
+                    if(_flashProviderType){
+                        var returnObj = { name : 'flash_' + _flashProviderType };
+
+                        return returnObj;
+                    }
+                    return { name : 'flash' };
                 },
                 getQualityLevels: function() {
                     // TODO: _getPublicLevels

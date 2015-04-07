@@ -61,7 +61,7 @@ define([
         };
 
         // Load iFrame API
-        if (!_youtubeAPI && _scriptLoader) {
+        if (!_youtubeAPI && _scriptLoader && _scriptLoader.getStatus() === scriptloader.loaderstatus.NEW) {
             _scriptLoader.addEventListener(events.COMPLETE, _onLoadSuccess);
             _scriptLoader.addEventListener(events.ERROR, _onLoadError);
             _scriptLoader.load();
@@ -91,7 +91,7 @@ define([
             if (!videoLayer) {
                 // if jwplayer DOM is not ready, do Youtube embed on jwplayer ready
                 if (!_listeningForReady) {
-                    jwplayer(_playerId).onReady(_readyCheck);
+                    window.jwplayer(_playerId).onReady(_readyCheck);
                     _listeningForReady = true;
                 }
                 return false;
@@ -650,12 +650,11 @@ define([
                 }
             }
         };
-    }
 
-    // Clear up the memory, this is called by Google
-    window.onYouTubeIframeAPIReady = function() {
-        _scriptLoader = null;
-    };
+        this.getName = function() {
+            return { name: 'youtube' };
+        };
+    }
 
     function supports(source) {
         return (utils.isYouTube(source.file, source.type));

@@ -1,5 +1,5 @@
 define([
-    'utils/underscore',
+    'underscore',
     'events/states',
     'events/events'
 ], function(_, states, events) {
@@ -62,6 +62,5 @@ define([
         _.each(_eventMapping, function (value, name) {
             _api[name] = _.partial(_api.on, value, _);
         });
-
     };
 });
