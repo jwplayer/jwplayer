@@ -28,7 +28,6 @@ define([
         VIEW_VIDEO_CONTAINER_CLASS = 'jwvideo',
         VIEW_CONTROLS_CONTAINER_CLASS = 'jwcontrols',
         VIEW_ASPECT_CONTAINER_CLASS = 'jwaspect',
-        VIEW_PLAYLIST_CONTAINER_CLASS = 'jwplaylistcontainer',
         DOCUMENT_FULLSCREEN_EVENTS = [
             'fullscreenchange',
             'webkitfullscreenchange',
@@ -45,7 +44,6 @@ define([
         JW_CSS_ABSOLUTE = 'absolute',
         JW_CSS_IMPORTANT = ' !important',
         JW_CSS_HIDDEN = 'hidden',
-        JW_CSS_NONE = 'none',
         JW_CSS_BLOCK = 'block';
 
     var View = function(_api, _model) {
@@ -54,7 +52,6 @@ define([
             _skin,
             _controlsLayer,
             _aspectLayer,
-            _playlistLayer,
             _controlsTimeout = -1,
             _timeoutDuration = _isMobile ? 4000 : 2000,
             _videoLayer,
@@ -69,7 +66,6 @@ define([
             _logo,
             _logoConfig = _.extend({}, _model.componentConfig('logo')),
             _captions,
-            _playlist,
             _audioMode,
             _errorState = false,
             _showing = false,
@@ -92,7 +88,7 @@ define([
             _this = _.extend(this, new eventdispatcher());
 
         _playerElement = _api.getContainer();
-        _playerElement.className = PLAYER_CLASS + ' playlist-' + _model.playlistposition;
+        _playerElement.className = PLAYER_CLASS;
         _playerElement.id = _model.id;
         _playerElement.tabIndex = 0;
 
@@ -291,7 +287,6 @@ define([
             _videoLayer.id = _model.id + '_media';
 
             _controlsLayer = _createElement('span', VIEW_CONTROLS_CONTAINER_CLASS);
-            _playlistLayer = _createElement('span', VIEW_PLAYLIST_CONTAINER_CLASS);
             _aspectLayer = _createElement('span', VIEW_ASPECT_CONTAINER_CLASS);
 
             _setupControls();
@@ -301,7 +296,6 @@ define([
 
             _playerElement.appendChild(_container);
             _playerElement.appendChild(_aspectLayer);
-            _playerElement.appendChild(_playlistLayer);
 
             // adds video tag to video layer
             _model.getVideo().setContainer(_videoLayer);
@@ -414,37 +408,6 @@ define([
             _css('#' + _playerElement.id + '.' + ASPECT_MODE + ' .' + VIEW_ASPECT_CONTAINER_CLASS, {
                 'margin-top': _model.aspectratio,
                 display: JW_CSS_BLOCK
-            });
-
-            var ar = utils.exists(_model.aspectratio) ? parseFloat(_model.aspectratio) : 100,
-                size = _model.playlistsize;
-            _css('#' + _playerElement.id + '.playlist-right .' + VIEW_ASPECT_CONTAINER_CLASS, {
-                'margin-bottom': -1 * size * (ar / 100) + 'px'
-            });
-
-            _css('#' + _playerElement.id + '.playlist-right .' + VIEW_PLAYLIST_CONTAINER_CLASS, {
-                width: size + 'px',
-                right: 0,
-                top: 0,
-                height: '100%'
-            });
-
-            _css('#' + _playerElement.id + '.playlist-bottom .' + VIEW_ASPECT_CONTAINER_CLASS, {
-                'padding-bottom': size + 'px'
-            });
-
-            _css('#' + _playerElement.id + '.playlist-bottom .' + VIEW_PLAYLIST_CONTAINER_CLASS, {
-                width: '100%',
-                height: size + 'px',
-                bottom: 0
-            });
-
-            _css('#' + _playerElement.id + '.playlist-right .' + VIEW_MAIN_CONTAINER_CLASS, {
-                right: size + 'px'
-            });
-
-            _css('#' + _playerElement.id + '.playlist-bottom .' + VIEW_MAIN_CONTAINER_CLASS, {
-                bottom: size + 'px'
             });
 
             setTimeout(function() {
@@ -700,10 +663,6 @@ define([
         function _resize(width, height, resetAspectMode) {
             var className = _playerElement.className,
                 playerStyle,
-                playlistStyle,
-                containerStyle,
-                playlistSize,
-                playlistPos,
                 id = _model.id + '_view';
             cssUtils.block(id);
 
@@ -750,29 +709,6 @@ define([
             }
 
             _checkAudioMode(height);
-
-            playlistSize = _model.playlistsize;
-            playlistPos = _model.playlistposition;
-            if (_playlist && playlistSize && (playlistPos === 'right' || playlistPos === 'bottom')) {
-                _playlist.redraw();
-
-                playlistStyle = {
-                    display: JW_CSS_BLOCK
-                };
-                containerStyle = {};
-
-                playlistStyle[playlistPos] = 0;
-                containerStyle[playlistPos] = playlistSize;
-
-                if (playlistPos === 'right') {
-                    playlistStyle.width = playlistSize;
-                } else {
-                    playlistStyle.height = playlistSize;
-                }
-
-                cssUtils.style(_playlistLayer, playlistStyle);
-                cssUtils.style(_container, containerStyle);
-            }
 
             // pass width, height from jwResize if present 
             _resizeMedia(width, height);
@@ -1376,13 +1312,6 @@ define([
         bottom: 0
     });
 
-    _css('.' + VIEW_PLAYLIST_CONTAINER_CLASS, {
-        position: JW_CSS_ABSOLUTE,
-        height: JW_CSS_100PCT,
-        width: JW_CSS_100PCT,
-        display: JW_CSS_NONE
-    });
-
     _css('.' + VIEW_ASPECT_CONTAINER_CLASS, {
         display: 'none'
     });
@@ -1416,10 +1345,6 @@ define([
         right: 0,
         top: 0,
         bottom: 0
-    }, true);
-
-    _css(FULLSCREEN_SELECTOR + ' .' + VIEW_PLAYLIST_CONTAINER_CLASS, {
-        display: JW_CSS_NONE
     }, true);
 
     _css('.' + PLAYER_CLASS + ' .jwuniform', {
