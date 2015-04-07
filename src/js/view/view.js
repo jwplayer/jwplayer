@@ -1249,7 +1249,7 @@ define([
             for (var i = DOCUMENT_FULLSCREEN_EVENTS.length; i--;) {
                 document.removeEventListener(DOCUMENT_FULLSCREEN_EVENTS[i], _fullscreenChangeHandler, false);
             }
-            _model.off('fullscreenchange', _fullscreenChangeHandler);
+            _model.mediacontroller.off('fullscreenchange', _fullscreenChangeHandler);
             _playerElement.removeEventListener('keydown', handleKeydown, false);
             if (_rightClickMenu) {
                 _rightClickMenu.destroy();
