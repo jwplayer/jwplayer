@@ -491,13 +491,13 @@ define([
 
         function _setupControls() {
             _captions = new Captions(_api, _model);
-            _captions.addEventListener(events.JWPLAYER_CAPTIONS_LIST, forward);
-            _captions.addEventListener(events.JWPLAYER_CAPTIONS_CHANGED, forward);
-            _captions.addEventListener(events.JWPLAYER_CAPTIONS_LOADED, _captionsLoadedHandler);
+            _captions.on(events.JWPLAYER_CAPTIONS_LIST, forward);
+            _captions.on(events.JWPLAYER_CAPTIONS_CHANGED, forward);
+            _captions.on(events.JWPLAYER_CAPTIONS_LOADED, _captionsLoadedHandler);
             _controlsLayer.appendChild(_captions.element());
 
             _display = new Display(_skin, _api, _model);
-            _display.addEventListener(events.JWPLAYER_DISPLAY_CLICK, function(evt) {
+            _display.on(events.JWPLAYER_DISPLAY_CLICK, function(evt) {
                 forward(evt);
                 _touchHandler();
             });
@@ -515,8 +515,8 @@ define([
             }
 
             _controlbar = new Controlbar(_skin, _api, _model);
-            _controlbar.addEventListener(events.JWPLAYER_USER_ACTION, _resetTapTimer);
-            _controlbar.addEventListener(events.JWPLAYER_CONTROLBAR_DRAGGING, _dragging);
+            _controlbar.on(events.JWPLAYER_USER_ACTION, _resetTapTimer);
+            _controlbar.on(events.JWPLAYER_CONTROLBAR_DRAGGING, _dragging);
 
             _controlsLayer.appendChild(_controlbar.element());
 

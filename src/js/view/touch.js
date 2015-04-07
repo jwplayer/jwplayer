@@ -105,9 +105,6 @@ define([
             }
         }
 
-        this.addEventListener = this.on;
-        this.removeEventListener = this.off;
-
         var self = this;
         function triggerEvent(type, srcEvent, finalEvt) {
             if (self._events[type]) {
