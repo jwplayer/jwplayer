@@ -36,7 +36,8 @@ define([
         test(['../', 'https://example.com/alpha/beta/gamma'], 'https://example.com/alpha');
 
         test(['./hello/', 'https://example.com/'], 'https://example.com/hello', 'Testing with adding a directory');
-        test(['/',   'https://example.com/alpha/beta/gamma?x=1&y=2'], 'https://example.com/', 'Testing with GET arguments');
+        test(['/',   'https://example.com/alpha/beta/gamma?x=1&y=2'], 'https://example.com/',
+            'Testing with GET arguments');
         test(['../../../../../', 'https://example.com/'], 'https://example.com/', 'Testing with extraneous ../');
 
         test(['hello.mp4', 'https://example.com/oh/hi.html'], 'https://example.com/oh/hello.mp4');

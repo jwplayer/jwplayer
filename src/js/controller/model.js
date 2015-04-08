@@ -78,10 +78,10 @@ define([
                 case events.JWPLAYER_PLAYER_STATE:
                     // These two states exist at a provider level, but the player itself expects BUFFERING
                     if (evt.newstate === states.LOADING) {
-                        this.mediaController.trigger(events.JWPLAYER_PROVIDER_LOADING, evt);
+                        this.mediaController.trigger(events.JWPLAYER_PROVIDER_LOADING);
                         evt.newstate = states.BUFFERING;
                     } else if (evt.newstate === states.STALLED) {
-                        this.mediaController.trigger(events.JWPLAYER_PROVIDER_STALLED, evt);
+                        this.mediaController.trigger(events.JWPLAYER_PROVIDER_STALLED);
                         evt.newstate = states.BUFFERING;
                     }
 

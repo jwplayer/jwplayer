@@ -45,11 +45,11 @@ define([
 
 
     function trackStalledTime(model) {
-        model.mediaController.on(events.JWPLAYER_PROVIDER_LOADING, function(evt) {
-            model._qoeItem.start(evt.newstate);
+        model.mediaController.on(events.JWPLAYER_PROVIDER_LOADING, function() {
+            model._qoeItem.start(states.LOADING);
         });
-        model.mediaController.on(events.JWPLAYER_PROVIDER_STALLED, function(evt) {
-            model._qoeItem.start(evt.newstate);
+        model.mediaController.on(events.JWPLAYER_PROVIDER_STALLED, function() {
+            model._qoeItem.start(states.STALLED);
         });
         model.mediaController.on(events.JWPLAYER_PLAYER_STATE, function(evt) {
             if (evt.newstate !== states.BUFFERING) {

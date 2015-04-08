@@ -32,6 +32,9 @@ module.exports = function(grunt) {
             player : [
                 'src/js/**/*.js'
             ],
+            tests : [
+                'test/{,*/}*.js'
+            ],
             grunt : [
                 'Gruntfile.js'
             ],
@@ -116,7 +119,7 @@ module.exports = function(grunt) {
             },
             tests: {
                 files : ['test/{,*/}*.js'],
-                tasks: ['karma:local']
+                tasks: ['jshint:tests', 'karma:local']
             },
             grunt: {
                 files: ['Gruntfile.js'],
