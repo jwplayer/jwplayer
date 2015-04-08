@@ -42,9 +42,6 @@ define([], function() {
         JWPLAYER_MEDIA_SEEKED: 'seeked',
 
         // Setup Events
-        API_SETUP: 'apiSetup',
-        API_READY: 'apiReady',
-        API_INITIALIZED: 'apiInitialized',
         JWPLAYER_SETUP_ERROR: 'setupError',
 
         // Utility

@@ -17,7 +17,8 @@ define([
         _isMobile = utils.isMobile(),
         _isSafari = utils.isSafari(),
         _isAndroid = utils.isAndroidNative(),
-        _isIOS7 = utils.isIOS(7);
+        _isIOS7 = utils.isIOS(7),
+        _name = 'html5';
 
 
 
@@ -64,7 +65,7 @@ define([
         // Are we buffering due to seek, or due to playback?
         this.seeking = false;
 
-        var _dispatcher = new eventdispatcher('provider.' + this.name);
+        var _dispatcher = new eventdispatcher('provider.' + _name);
         _.extend(this, _dispatcher);
 
         var _this = this,
@@ -753,7 +754,7 @@ define([
         };
 
         this.getName = function() {
-            return { name : 'html5' };
+            return { name : _name };
         };
     }
 
