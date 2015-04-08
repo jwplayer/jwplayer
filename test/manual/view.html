@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MP4 video file</title>
+    <script type="text/javascript" src="../../bin-debug/jwplayer.js"></script>
+    <link type="text/css" rel="stylesheet" href="styles/tests.css"  media="all" />
+</head>
+<body>
+
+<h1>Setup Examples</h1>
+
+<h2>Video Playlist</h2>
+
+<div id="video-container">before set up</div>
+<script type="text/javascript">
+(function() {
+    var mockApi = {
+        getContainer : function() {
+            return document.createElement('div');
+        }
+    };
+
+    var mockModel = {
+        attrs : {
+            aspectratio : 1,
+            mute : false,
+            volume : 1
+        },
+        components : {
+            logo : {},
+            display : {},
+            dock : {},
+            controlbar : {}
+        },
+        events : {},
+
+        componentConfig : function(a) {
+            return this.components[a];
+        },
+        get : function(attr) {
+            return this.attrs[attr];
+        },
+        on : function(ev, cb) {
+            this.events[ev] = cb;
+        },
+        trigger : function(ev, a) {
+            this.events[ev](this, a);
+        },
+        mediaController : {
+            on : function() {}
+        },
+        playlist : [],
+        getVideo : function() {
+            return {
+                setContainer : function(){},
+                resize : function(){},
+                setVisibility: function() {},
+                isAudioFile : function() { return true; }
+            }
+        }
+    };
+    mockModel.id = 'video-container';
+
+    /*
+    var mockSkin = {
+        getSkinElement : function (a, b){
+            var span = document.createElement('span');
+            span.innerHTML = a +' elephant~: ' + b;
+            return {
+                height:30,
+                width: 20,
+                image : span,
+                ready : true
+            };
+        },
+        getComponentLayout: function() {},
+        getComponentSettings: function() {}
+    };
+    */
+
+    var v = new jwplayer.View(mockApi, mockModel) ;
+    var s = new jwplayer.View.Skin();
+    s.load(null, function() {
+        v.setup(s);
+        v.completeSetup();
+        v.resize(400, 300);
+        mockModel.trigger('change:state', 'playing');
+    });
+})();
+</script>
+
+</body>
+</html>
