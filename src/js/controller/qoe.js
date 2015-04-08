@@ -71,9 +71,6 @@ define([
             trackFirstFrame(model);
             trackStalledTime(model);
         });
-        model.mediaController.on(events.JWPLAYER_VISUAL_QUALITY, function(evt){
-            model.set('visualQuality', evt.level);
-        });
     }
 
     return {
