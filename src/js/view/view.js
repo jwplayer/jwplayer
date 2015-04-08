@@ -336,10 +336,8 @@ define([
 
             _model.on('change:state', _stateHandler);
             _model.mediaController.on(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
-            try {
-                _api.onPlaylistComplete(_playlistCompleteHandler);
-                _api.onPlaylistItem(_playlistItemHandler);
-            } catch(e) {}
+            _api.onPlaylistComplete(_playlistCompleteHandler);
+            _api.onPlaylistItem(_playlistItemHandler);
 
             _model.on('change:castAvailable', function(model, val) {    // TODO: CURRENTLY UNTESTED
                 if (val) {
@@ -488,23 +486,18 @@ define([
         }
 
         function _setupControls() {
-            try {
-                _captions = new Captions(_api, _model);
-                _captions.on(events.JWPLAYER_CAPTIONS_LIST, forward);
-                _captions.on(events.JWPLAYER_CAPTIONS_CHANGED, forward);
-                _captions.on(events.JWPLAYER_CAPTIONS_LOADED, _captionsLoadedHandler);
-                _controlsLayer.appendChild(_captions.element());
-            } catch(e) {}
+            _captions = new Captions(_api, _model);
+            _captions.on(events.JWPLAYER_CAPTIONS_LIST, forward);
+            _captions.on(events.JWPLAYER_CAPTIONS_CHANGED, forward);
+            _captions.on(events.JWPLAYER_CAPTIONS_LOADED, _captionsLoadedHandler);
+            _controlsLayer.appendChild(_captions.element());
 
-            try {
-                _display = new Display(_skin, _api, _model);
-                _display.on(events.JWPLAYER_DISPLAY_CLICK, function (evt) {
-                    forward(evt);
-                    _touchHandler();
-                });
-                _controlsLayer.appendChild(_display.element());
-            } catch(e) {}
-
+            _display = new Display(_skin, _api, _model);
+            _display.on(events.JWPLAYER_DISPLAY_CLICK, function (evt) {
+                forward(evt);
+                _touchHandler();
+            });
+            _controlsLayer.appendChild(_display.element());
 
             _logo = new Logo(_api, _model);
             _controlsLayer.appendChild(_logo.element());

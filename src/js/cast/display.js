@@ -1,1 +1,1 @@
-module.exports = function(){};
+define([], function() {});
