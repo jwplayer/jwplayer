@@ -105,6 +105,9 @@ define([
                 case events.JWPLAYER_PROVIDER_CHANGED:
                     this.set('provider', _provider.getName());
                     break;
+                case events.JWPLAYER_VISUAL_QUALITY:
+                    this.set('visualQuality', evt.level);
+                    break;
             }
 
             this.mediaController.trigger(evt.type, evt);

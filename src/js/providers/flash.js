@@ -228,6 +228,10 @@ define([
                         this.sendEvent(events.JWPLAYER_PROVIDER_CHANGED, data);
                     }, this);
 
+                    _swf.on(events.JWPLAYER_VISUAL_QUALITY, function(data) {
+                        this.sendEvent(events.JWPLAYER_VISUAL_QUALITY, data);
+                    }, this);
+
                     // ignoring:
                     // jwplayerMediaLoaded, jwplayerMediaBeforePlay, ...
 
