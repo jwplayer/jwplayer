@@ -3,12 +3,12 @@ define([
     'view/touch',
     'utils/helpers',
     'events/events',
-    'utils/eventdispatcher',
+    'utils/backbone.events',
     'events/states',
     'utils/stretching',
     'utils/css',
     'underscore'
-], function(DisplayIcon, Touch, utils, events, eventdispatcher, states, stretchUtils, cssUtils, _) {
+], function(DisplayIcon, Touch, utils, events, Events, states, stretchUtils, cssUtils, _) {
 
 
     var _isMobile = utils.isMobile(),
@@ -45,7 +45,7 @@ define([
             _config = _.extend({}, DEFAULT_SETTINGS,
                 _skin.getComponentSettings('display'), _model.componentConfig('display')
             ),
-            _eventDispatcher = new eventdispatcher(),
+            _eventDispatcher = _.extend({}, Events),
             _alternateClickHandler,
             _lastClick;
 
@@ -74,7 +74,7 @@ define([
             _display.addEventListener('click', _clickHandler, false);
         } else {
             _displayTouch = new Touch(_display);
-            _displayTouch.addEventListener(events.touchEvents.TAP, _clickHandler);
+            _displayTouch.on(events.touchEvents.TAP, _clickHandler);
         }
 
         _button = new DisplayIcon(_model.id, _display.id + '_button', _skin, _api, {
@@ -99,7 +99,7 @@ define([
             }
 
             if (!_isMobile || !_api.getControls()) {
-                _eventDispatcher.sendEvent(events.JWPLAYER_DISPLAY_CLICK);
+                _eventDispatcher.trigger(events.JWPLAYER_DISPLAY_CLICK);
             }
 
             if (!_api.getControls()) {
@@ -138,7 +138,7 @@ define([
                     _api.setFullscreen();
                     return;
                 } else {
-                    _eventDispatcher.sendEvent(events.JWPLAYER_DISPLAY_CLICK);
+                    _eventDispatcher.trigger(events.JWPLAYER_DISPLAY_CLICK);
                     if (_hiding) {
                         return;
                     }

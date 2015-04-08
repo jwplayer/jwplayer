@@ -16,7 +16,7 @@ define([
             'volume',
             'mute',
             'state',
-            'index', // this was playlistindex
+            'item', // this was playlistindex
             'stretching',
             'playlist'
         ];

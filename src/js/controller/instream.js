@@ -77,7 +77,7 @@ define([
                 mute: _model.mute
             });
             _checkProvider();
-            _adModel.addEventListener('fullscreenchange', _nativeFullscreenHandler);
+            _adModel.on('fullscreenchange', _nativeFullscreenHandler);
             _olditem = _model.playlist[_model.item];
 
             if ( _controller.checkBeforePlay() || (_oldpos === 0 && !_oldProvider.checkComplete()) ) {
@@ -155,7 +155,7 @@ define([
             _view.controlsContainer().appendChild(skipElem);
 
             // Match the main player's controls state
-            _adModel.addEventListener(events.JWPLAYER_ERROR, errorHandler);
+            _adModel.on(events.JWPLAYER_ERROR, errorHandler);
 
             // start listening for ad click
             _view.displayComp().setAlternateClickHandler(function(evt) {
@@ -203,7 +203,7 @@ define([
             var skipElem = _skipButton.element();
             _view.controlsContainer().removeChild(skipElem);
 
-            _adModel.removeEventListener('fullscreenchange', _nativeFullscreenHandler);
+            _adModel.off('fullscreenchange', _nativeFullscreenHandler);
             clearTimeout(_completeTimeoutId);
             _completeTimeoutId = -1;
 
@@ -214,7 +214,7 @@ define([
                 _currentProvider.resetEventListeners();
                 _currentProvider.destroy();
             }
-            _adModel.resetEventListeners();
+            _adModel.off();
 
             // Return the view to its normal state
             _view.destroyInstream(_adModel.getVideo().isAudioFile());

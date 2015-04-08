@@ -4,15 +4,13 @@ define([
     'underscore',
     'utils/helpers',
     'events/states'
-], function(Events, EVENTS, _, utils, states) {
+], function(Events, events, _, utils, states) {
 
     var Instream = function(_controller) {
 
-        var events = _.extend({}, Events);
-
         var _item,
             _options,
-            _this = this;
+            _this = _.extend(this, Events);
 
         this.type = 'instream';
 
@@ -58,18 +56,18 @@ define([
 
         // EVENTS
         var legacyMaps = {
-            onError: EVENTS.JWPLAYER_ERROR,
-            onMediaError: EVENTS.JWPLAYER_ERROR,
-            onFullscreen: EVENTS.JWPLAYER_FULLSCREEN,
-            onMeta: EVENTS.JWPLAYER_MEDIA_META,
-            onMute: EVENTS.JWPLAYER_MEDIA_MUTE,
-            onComplete: EVENTS.JWPLAYER_MEDIA_COMPLETE,
-            onPlaylistComplete: EVENTS.JWPLAYER_PLAYLIST_COMPLETE,
-            onPlaylistItem: EVENTS.JWPLAYER_PLAYLIST_ITEM,
-            onTime: EVENTS.JWPLAYER_MEDIA_TIME,
-            onClick: EVENTS.JWPLAYER_INSTREAM_CLICK,
-            onInstreamDestroyed: EVENTS.JWPLAYER_INSTREAM_DESTROYED,
-            onAdSkipped: EVENTS.JWPLAYER_AD_SKIPPED,
+            onError: events.JWPLAYER_ERROR,
+            onMediaError: events.JWPLAYER_ERROR,
+            onFullscreen: events.JWPLAYER_FULLSCREEN,
+            onMeta: events.JWPLAYER_MEDIA_META,
+            onMute: events.JWPLAYER_MEDIA_MUTE,
+            onComplete: events.JWPLAYER_MEDIA_COMPLETE,
+            onPlaylistComplete: events.JWPLAYER_PLAYLIST_COMPLETE,
+            onPlaylistItem: events.JWPLAYER_PLAYLIST_ITEM,
+            onTime: events.JWPLAYER_MEDIA_TIME,
+            onClick: events.JWPLAYER_INSTREAM_CLICK,
+            onInstreamDestroyed: events.JWPLAYER_INSTREAM_DESTROYED,
+            onAdSkipped: events.JWPLAYER_AD_SKIPPED,
 
             onBuffer : states.BUFFERING,
             onPlay : states.PLAYING,
@@ -80,19 +78,19 @@ define([
         _.each(legacyMaps, function(event, api) {
             _this[api] = function(callback) {
                 _controller.instreamAddEventListener(event, callback);
-                events.on(event, callback);
+                _this.on(event, callback);
                 return _this;
             };
         });
 
         // STATE EVENTS
-        events.on(EVENTS.JWPLAYER_PLAYER_STATE, function(evt) {
-            events.trigger(evt.newstate, evt);
+        _this.on(events.JWPLAYER_PLAYER_STATE, function(evt) {
+            _this.trigger(evt.newstate, evt);
         });
 
-        _this.removeEvents = events.off;
-        _this.removeEventListener = events.off;
-        _this.dispatchEvent = events.trigger;
+        _this.removeEvents = _this.off;
+        _this.removeEventListener = _this.off;
+        _this.dispatchEvent = _this.trigger;
     };
 
     return Instream;

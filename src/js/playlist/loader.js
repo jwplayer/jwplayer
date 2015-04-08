@@ -3,14 +3,13 @@ define([
     'parsers/parsers',
     'parsers/rssparser',
     'utils/helpers',
-    'utils/eventdispatcher',
     'events/events',
+    'utils/backbone.events',
     'underscore'
-], function(Playlist, parsers, rssParser, utils, eventdispatcher, events, _) {
+], function(Playlist, parsers, rssParser, utils, events, Events, _) {
 
     var PlaylistLoader = function() {
-        var _eventDispatcher = new eventdispatcher();
-        _.extend(this, _eventDispatcher);
+        var _this = _.extend(this, Events);
 
         this.load = function(playlistfile) {
             utils.ajax(playlistfile, _playlistLoaded, _playlistLoadError);
@@ -37,7 +36,7 @@ define([
                 }
 
                 var pl = new Playlist(rssParser.parse(rss));
-                _eventDispatcher.sendEvent(events.JWPLAYER_PLAYLIST_LOADED, {
+                _this.trigger(events.JWPLAYER_PLAYLIST_LOADED, {
                     playlist: pl
                 });
             });
@@ -52,7 +51,7 @@ define([
         }
 
         function _playlistError(msg) {
-            _eventDispatcher.sendEvent(events.JWPLAYER_ERROR, {
+            _this.trigger(events.JWPLAYER_ERROR, {
                 message: msg ? msg : 'Error loading file'
             });
         }

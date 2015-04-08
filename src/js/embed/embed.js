@@ -1,16 +1,17 @@
 define([
     'events/events',
+    'utils/backbone.events',
     'utils/scriptloader',
     'playlist/loader',
     'embed/config',
     'plugins/plugins',
     'view/errorscreen',
     'underscore'
-], function(events, scriptloader, PlaylistLoader, EmbedConfig, plugins, errorScreen, _) {
+], function(events, Events, scriptloader, PlaylistLoader, EmbedConfig, plugins, errorScreen, _) {
 
-    var Embed = function(_api, _controller) {
+    var Embed = function(_api) {
 
-        var _this = this,
+        var _this = _.extend(this, Events),
             _config,
             _pluginLoader,
             _playlistLoader,
@@ -18,7 +19,7 @@ define([
             _errorOccurred = false,
             _setupErrorTimer = -1;
 
-        _this.embed = function(options) {
+        this.embed = function(options) {
             _config = new EmbedConfig(options);
             _config.id = _api.id;
 
@@ -30,12 +31,12 @@ define([
             _container.style.height = height.toString().indexOf('%') > 0 ? height : (height + 'px');
 
             _pluginLoader = plugins.loadPlugins(_api.id, _config.plugins);
-            _pluginLoader.addEventListener(events.COMPLETE, _doEmbed);
-            _pluginLoader.addEventListener(events.ERROR, _pluginError);
+            _pluginLoader.on(events.COMPLETE, _doEmbed);
+            _pluginLoader.on(events.ERROR, _pluginError);
             _pluginLoader.load();
         };
 
-        _this.destroy = function() {
+        this.destroy = function() {
             if (_pluginLoader) {
                 _pluginLoader.destroy();
                 _pluginLoader = null;
@@ -76,12 +77,12 @@ define([
 
             if (_.isString(playlist)) {
                 _playlistLoader = new PlaylistLoader();
-                _playlistLoader.addEventListener(events.JWPLAYER_PLAYLIST_LOADED, function(evt) {
+                _playlistLoader.on(events.JWPLAYER_PLAYLIST_LOADED, function(evt) {
                     _config.playlist = evt.playlist;
                     _playlistLoading = false;
                     _doEmbed();
                 });
-                _playlistLoader.addEventListener(events.JWPLAYER_ERROR, function(evt) {
+                _playlistLoader.on(events.JWPLAYER_ERROR, function(evt) {
                     _playlistLoading = false;
                     _sourceError(evt);
                 });
@@ -101,7 +102,7 @@ define([
                 var playerConfigCopy = _.extend({}, pluginConfigCopy);
                 delete playerConfigCopy.volume;
 
-                _controller.setup(playerConfigCopy, _api);
+                _this.trigger(events.JWPLAYER_READY, playerConfigCopy);
             }
         }
 
@@ -164,7 +165,7 @@ define([
             _dispatchSetupError(message + body, true);
         }
 
-        return _this;
+        return this;
     };
 
     return Embed;

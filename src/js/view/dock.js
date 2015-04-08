@@ -226,9 +226,6 @@ define([
                 'background-image': url
             });
 
-            if (typeof clickHandler === 'string') {
-                clickHandler = new Function(clickHandler);
-            }
             if (!utils.isMobile()) {
                 newButton.addEventListener('click', function(evt) {
                     clickHandler(evt);

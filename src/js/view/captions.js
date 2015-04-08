@@ -7,9 +7,9 @@ define([
     'events/events',
     'events/states',
     'utils/css',
-    'utils/eventdispatcher',
+    'utils/backbone.events',
     'underscore'
-], function(parsers, CaptionsRenderer, SrtParser, DfxpParser, utils, events, states, cssUtils, eventdispatcher, _) {
+], function(parsers, CaptionsRenderer, SrtParser, DfxpParser, utils, events, states, cssUtils, Events, _) {
 
     var _nonChromeAndroid = utils.isAndroid(4, true),
         PLAYING = 'playing',
@@ -76,7 +76,7 @@ define([
             /** Flag to remember fullscreen state. **/
             _fullscreen = false,
             /** Event dispatcher for captions events. **/
-            _eventDispatcher = new eventdispatcher();
+            _eventDispatcher = _.extend({}, Events);
 
         _.extend(this, _eventDispatcher);
 
@@ -260,7 +260,7 @@ define([
             for (var i = 0; i < _tracks.length; i++) {
                 data.push(_tracks[i]);
             }
-            _eventDispatcher.sendEvent(events.JWPLAYER_CAPTIONS_LOADED, {
+            _eventDispatcher.trigger(events.JWPLAYER_CAPTIONS_LOADED, {
                 captionData: data
             });
         }
@@ -361,7 +361,7 @@ define([
                 tracks: tracks,
                 track: track
             };
-            _eventDispatcher.sendEvent(type, captionsEvent);
+            _eventDispatcher.trigger(type, captionsEvent);
         }
 
         function _getTracks() {

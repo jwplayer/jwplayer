@@ -13,8 +13,9 @@
 
 <div id="video-container">before set up</div>
 <script type="text/javascript">
-(function() {
+(function(jwplayer) {
     var config = {
+        // autostart: true,
 
         width: 640,
         height: 360,
@@ -72,42 +73,14 @@
         ]
     };
 
-    var jwEvents = [
-        'Ready', 'SetupError',
-        'Playlist', 'PlaylistItem', 'PlaylistComplete',
-        'BeforePlay', 'BeforeComplete',
-        'QualityLevels', 'QualityChange',
-        'CaptionsList', 'CaptionsChange',
-        'Buffer', 'Play', 'Pause', 'Idle',
-        'Meta',
-        'BufferChange',
-        'BufferFull',
-        'Time',
-        'Seek', 'Complete', 'Error',
-        'Mute', 'Volume',
-        'Controls', 'Cast', 'DisplayClick', 'Fullscreen', 'Resize',
-        'AdClick', 'AdCompanions', 'AdImpression', 'AdSkipped',
-        'AdPause', 'AdPlay', 'AdMeta', 'AdTime', 'AdComplete', 'AdError'
-    ];
-    config.events = [];
-    for (var i=0; i<jwEvents.length; i++) {
-        var onName = jwEvents[i];
-        var simpleName = onName.toLowerCase();
-        config.events['on' + onName] = (function(name) {
-            return function(e) {
-                console.log(name, e);
-            };
-        })(simpleName);
-    }
+    jwplayer('video-container').setup(config).on('all', function(name, e) {
+        console.log('Event:', name, e);
+        if (name !== e.type) {
+            console.error('Event name "'+name+'" does not match event.type "'+e.type+'"');
+        }
+    });
 
-    var jwp = jwplayer('video-container').setup(config);
-
-    // Test the remove event, triggered after jwplayer().remove();
-    jwp.on('remove', function(_api) {
-        console.log(_api)
-    })
-
-})();
+})(window.jwplayer);
 </script>
 
 <h2>Audio Single</h2>
@@ -129,7 +102,7 @@
 <div id="flv-container"></div>
 <script type="text/javascript">
     jwplayer('flv-container').setup({
-        autostart: true,
+        // autostart: true,
 
         width: 640,
         height: 360,
