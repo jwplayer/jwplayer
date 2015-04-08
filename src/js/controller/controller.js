@@ -435,8 +435,8 @@ define([
             this.releaseState = _view.releaseState;
             this.setCues = _view.addCues;
             this.setFullscreen = _view.fullscreen;
-            this.dockAddButton = _view.addButton;
-            this.dockRemoveButton = _view.removeButton;
+            this.addButton = _view.addButton;
+            this.removeButton = _view.removeButton;
 
             this.checkBeforePlay = function() {
                 return _preplay;
