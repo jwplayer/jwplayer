@@ -40,6 +40,7 @@ define([], function() {
         JWPLAYER_MEDIA_PLAY_ATTEMPT: 'playAttempt',
         JWPLAYER_MEDIA_LOADED: 'loaded',
         JWPLAYER_MEDIA_SEEKED: 'seeked',
+        JWPLAYER_VISUAL_QUALITY: 'visualQuality',
 
         // Setup Events
         API_SETUP: 'apiSetup',
