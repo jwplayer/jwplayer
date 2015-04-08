@@ -4,9 +4,9 @@ define([
     'utils/css',
     'view/touch',
     'events/events',
-    'utils/eventdispatcher',
+    'utils/backbone.events',
     'underscore'
-], function(utils, cssUtils, Touch, events, eventdispatcher, _) {
+], function(utils, cssUtils, Touch, events, Events, _) {
 
     var VIEW_INSTREAM_SKIP_CLASS = 'jwskip',
         VIEW_INSTREAM_IMAGE = 'jwskipimage',
@@ -27,7 +27,7 @@ define([
             _skip_image,
             _skip_image_over,
             _mouseOver = false,
-            _this = _.extend(this, new eventdispatcher());
+            _this = _.extend(this, Events);
 
         function _init() {
             _skip_image = new Image();
@@ -53,7 +53,7 @@ define([
             _instreamSkipContainer.addEventListener('mouseout', onMouseOut);
             if (utils.isMobile()) {
                 var skipTouch = new Touch(_instreamSkipContainer);
-                skipTouch.addEventListener(events.touchEvents.TAP, skipAd);
+                skipTouch.on(events.touchEvents.TAP, skipAd);
             } else {
                 _instreamSkipContainer.addEventListener('click', skipAd);
             }
@@ -111,7 +111,7 @@ define([
 
         function skipAd() {
             if (_instreamSkipSet) {
-                _this.sendEvent(events.JWPLAYER_AD_SKIPPED);
+                _this.trigger(events.JWPLAYER_AD_SKIPPED);
             }
         }
 

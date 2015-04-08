@@ -4,13 +4,13 @@ define([
     'underscore',
     'events/events',
     'events/states',
-    'utils/eventdispatcher',
+    'utils/backbone.events',
     'view/touch',
     'view/thumbs',
     'view/menu',
     'view/overlay',
     'utils/css'
-], function(utils, SrtParser, _, events, states, eventdispatcher, Touch, Thumbs, Menu, Overlay, cssUtils) {
+], function(utils, SrtParser, _, events, states, Events, Touch, Thumbs, Menu, Overlay, cssUtils) {
 
     var _setTransition = cssUtils.transitionStyle,
         _isMobile = utils.isMobile(),
@@ -172,7 +172,7 @@ define([
             _groups = {},
             _overlays = {},
             _jwhidden = [],
-            _this = _.extend(this, new eventdispatcher());
+            _this = _.extend(this, Events);
 
         // Store the attempted seek, until the previous one completes
         var _seekTo;
@@ -648,7 +648,7 @@ define([
                 button.addEventListener('click', _buttonClickHandler(name), false);
             } else if (name !== 'hd' && name !== 'cc') {
                 var buttonTouch = new Touch(button);
-                buttonTouch.addEventListener(events.touchEvents.TAP, _buttonClickHandler(name));
+                buttonTouch.on(events.touchEvents.TAP, _buttonClickHandler(name));
             }
 
             button.innerHTML = '&nbsp;';
@@ -711,7 +711,7 @@ define([
                 if (_buttonMapping[name]) {
                     _buttonMapping[name]();
                     if (_isMobile) {
-                        _this.sendEvent(events.JWPLAYER_USER_ACTION);
+                        _this.trigger(events.JWPLAYER_USER_ACTION);
                     }
                 }
                 if (evt.preventDefault) {
@@ -1081,10 +1081,10 @@ define([
                 rail.addEventListener('mousedown', _sliderMouseDown(sliderName), false);
             } else {
                 var railTouch = new Touch(rail);
-                railTouch.addEventListener(events.touchEvents.DRAG_START, _sliderDragStart);
-                railTouch.addEventListener(events.touchEvents.DRAG, _sliderDragEvent);
-                railTouch.addEventListener(events.touchEvents.DRAG_END, _sliderDragEvent);
-                railTouch.addEventListener(events.touchEvents.TAP, _sliderTapEvent);
+                railTouch.on(events.touchEvents.DRAG_START, _sliderDragStart);
+                railTouch.on(events.touchEvents.DRAG, _sliderDragEvent);
+                railTouch.on(events.touchEvents.DRAG_END, _sliderDragEvent);
+                railTouch.on(events.touchEvents.TAP, _sliderTapEvent);
             }
 
             if (name === 'time' && !_isMobile) {
@@ -1128,13 +1128,13 @@ define([
                 _seekDrag(true);
                 _draggingStart('time');
                 _showTimeTooltip();
-                _this.sendEvent(events.JWPLAYER_USER_ACTION);
+                _this.trigger(events.JWPLAYER_USER_ACTION);
             }
         }
 
         function _seekDrag(bool) {
             _model.seekDrag(bool);
-            _this.sendEvent(events.JWPLAYER_CONTROLBAR_DRAGGING, {dragging : bool});
+            _this.trigger(events.JWPLAYER_CONTROLBAR_DRAGGING, {dragging : bool});
         }
 
         var _sliderDragEvent = function(evt) {
@@ -1157,11 +1157,11 @@ define([
                 _seekDrag(false);
 
                 _hideTimeTooltip();
-                _this.sendEvent(events.JWPLAYER_USER_ACTION);
+                _this.trigger(events.JWPLAYER_USER_ACTION);
             } else {
                 _setProgress(pct);
                 _sliderMapping.time(pct);
-                _this.sendEvent(events.JWPLAYER_USER_ACTION);
+                _this.trigger(events.JWPLAYER_USER_ACTION);
             }
         };
 
@@ -1174,7 +1174,7 @@ define([
             }
             if (!_idle()) {
                 _sliderMapping.time(pct);
-                _this.sendEvent(events.JWPLAYER_USER_ACTION);
+                _this.trigger(events.JWPLAYER_USER_ACTION);
             }
         }
 
@@ -1469,7 +1469,7 @@ define([
             var element = overlay.element();
             _appendChild(button, element);
             var buttonTouch = new Touch(button);
-            buttonTouch.addEventListener(events.touchEvents.TAP, function() {
+            buttonTouch.on(events.touchEvents.TAP, function() {
                 _overlayTapHandler(overlay, tapAction, name);
             });
         }
@@ -1489,7 +1489,7 @@ define([
                     }, 4000);
                     tapAction();
                 }
-                _this.sendEvent(events.JWPLAYER_USER_ACTION);
+                _this.trigger(events.JWPLAYER_USER_ACTION);
             } else if (name === 'hd') {
                 if (_levels.length === 2) {
                     tapAction = _hd;
@@ -1505,7 +1505,7 @@ define([
                     }, 4000);
                     tapAction();
                 }
-                _this.sendEvent(events.JWPLAYER_USER_ACTION);
+                _this.trigger(events.JWPLAYER_USER_ACTION);
             }
         }
 
