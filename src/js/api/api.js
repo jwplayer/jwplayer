@@ -44,6 +44,7 @@ define([
             _instream,
             _originalContainer = container,
             _controller,
+            _embedder,
             _playerReady = false,
             _itemMeta = {};
 
@@ -56,15 +57,6 @@ define([
                 args = normalizeOutput(args);
             } else {
                 args = {};
-            }
-
-            // map events
-            if (type === 'ready') {
-                _playerReady = true;
-                _qoe.tick('ready');
-                args.setupTime = _qoe.between('setup', 'ready');
-            } else if (type === events.JWPLAYER_PLAYER_STATE) {
-                type = args.newstate;
             }
             args.type = type;
 
@@ -87,6 +79,9 @@ define([
 
         // Add a bunch of methods
         var _resetController = function() {
+            if (_controller) {
+                _controller.off();
+            }
             _controller = new Controller();
             actionsInit(_this, _controller);
             mutatorsInit(_this, _controller);
@@ -103,6 +98,12 @@ define([
                     removeFocusBorder(_this.container);
                 }
             });
+            // capture the ready event and add setup time to it
+            _controller.on(events.JWPLAYER_READY, function(event) {
+                _playerReady = true;
+                _qoe.tick('ready');
+                event.setupTime = _qoe.between('setup', 'ready');
+            });
             _controller.on('all', _this.trigger);
         };
         _resetController();
@@ -116,10 +117,11 @@ define([
         var _qoe = this._qoe = new Timer();
         _qoe.tick('init');
 
+
         var _reset = function() {
             // Cancel embedding even if it is in progress
-            if (_this._embedder && _this._embedder.destroy) {
-                _this._embedder.destroy();
+            if (_embedder && _embedder.destroy) {
+                _embedder.destroy();
             }
             _playerReady = false;
             _itemMeta = {};
@@ -155,8 +157,11 @@ define([
                 }
             });
 
-            this._embedder = new Embed(this, _controller);
-            this._embedder.embed(options);
+            _embedder = new Embed(this);
+            _embedder.on(events.JWPLAYER_READY, function(config) {
+                _controller.setup(config, this);
+            }, this);
+            _embedder.embed(options);
 
             return this;
         };

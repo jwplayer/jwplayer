@@ -1255,7 +1255,7 @@ define([
                 _rightClickMenu.destroy();
             }
             if (_castDisplay) {
-                _model.off(events.JWPLAYER_PLAYER_STATE, _castDisplay.statusDelegate);
+                _model.off('change:state', _castDisplay.statusDelegate);
                 _castDisplay.destroy();
                 _castDisplay = null;
             }

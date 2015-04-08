@@ -2,25 +2,22 @@ define([
     'plugins/utils',
     'utils/helpers',
     'events/events',
+    'utils/backbone.events',
     'underscore',
-    'utils/eventdispatcher',
     'utils/scriptloader'
-], function(pluginsUtils, helpers, events, _, eventdispatcher, scriptloader) {
+], function(pluginsUtils, helpers, events, Events, _, scriptloader) {
 
     var _foreach = helpers.foreach;
     var utils = helpers;
 
     var PluginLoader = function (model, config) {
-        var _status = scriptloader.loaderstatus.NEW,
+        var _this = _.extend(this, Events),
+            _status = scriptloader.loaderstatus.NEW,
             _iscomplete = false,
             _config = config,
             _pluginCount = _.size(_config),
             _pluginLoaded,
-            _destroyed = false,
-            _eventDispatcher = new eventdispatcher();
-
-
-        _.extend(this, _eventDispatcher);
+            _destroyed = false;
 
         /*
          * Plugins can be loaded by multiple players on the page, but all of them use
@@ -39,7 +36,7 @@ define([
             if (!_iscomplete) {
                 _iscomplete = true;
                 _status = scriptloader.loaderstatus.COMPLETE;
-                _eventDispatcher.sendEvent(events.COMPLETE);
+                _this.trigger(events.COMPLETE);
             }
         }
 
@@ -65,7 +62,7 @@ define([
                     if (status === scriptloader.loaderstatus.LOADING || status === scriptloader.loaderstatus.NEW) {
                         return;
                     } else if (js && !helpers.versionCheck(target)) {
-                        _eventDispatcher.sendEvent(events.ERROR, {
+                        this.trigger(events.ERROR, {
                             message: 'Incompatible player version'
                         });
                     }
@@ -82,7 +79,7 @@ define([
             }
 
             var message = 'File not found';
-            _eventDispatcher.sendEvent(events.ERROR, {
+            this.trigger(events.ERROR, {
                 message: message
             });
             if (e.url) {
@@ -156,8 +153,8 @@ define([
             _foreach(config, function (plugin) {
                 if (helpers.exists(plugin)) {
                     var pluginObj = model.addPlugin(plugin);
-                    pluginObj.addEventListener(events.COMPLETE, _checkComplete);
-                    pluginObj.addEventListener(events.ERROR, _pluginError);
+                    pluginObj.on(events.COMPLETE, _checkComplete);
+                    pluginObj.on(events.ERROR, _pluginError);
                 }
             });
 
@@ -175,11 +172,7 @@ define([
 
         this.destroy = function () {
             _destroyed = true;
-
-            if (_eventDispatcher) {
-                _eventDispatcher.resetEventListeners();
-                _eventDispatcher = null;
-            }
+            this.off();
         };
 
         this.pluginFailed = _pluginError;

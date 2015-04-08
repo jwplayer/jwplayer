@@ -51,9 +51,9 @@ define([
         model.mediaController.on(events.JWPLAYER_PROVIDER_STALLED, function() {
             model._qoeItem.start(states.STALLED);
         });
-        model.mediaController.on(events.JWPLAYER_PLAYER_STATE, function(evt) {
-            if (evt.newstate !== states.BUFFERING) {
-                model._qoeItem.end(evt.oldstate);
+        model.on('change:state', function(mod, newstate, oldstate) {
+            if (newstate !== states.BUFFERING) {
+                model._qoeItem.end(oldstate);
             }
         });
     }

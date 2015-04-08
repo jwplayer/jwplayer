@@ -107,24 +107,6 @@ define([
         api.trigger('test', originalEvent);
 
         equal(originalEvent.type, 'original', 'original event.type is not modified');
-
-
-        api.on('state', function() {
-            ok(false, 'api should not dispatch events of type "state"');
-        });
-        api.on('buffering', function(event) {
-            assert.equal(event.type, 'buffering', 'state events are mapped to the new state');
-        });
-        api.trigger('state', {
-            newstate: 'buffering'
-        });
-
-        api.on('ready', function(event) {
-            assert.equal(event.type, 'ready', '"ready" event type matches event name');
-            assert.ok(_.isNumber(event.setupTime), '"ready" event contains setupTime');
-        });
-        api._qoe.tick('setup');
-        api.trigger('ready');
     });
 
     test('has chainable methods', function(assert) {
