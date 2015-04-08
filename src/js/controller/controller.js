@@ -447,7 +447,7 @@ define([
             };
 
             this.setControls = function (mode) {
-                _view.setControls(mode);
+                _model.set('controls', mode);
                 if (this._instreamPlayer) {
                     this._instreamPlayer.setControls(mode);
                 }
