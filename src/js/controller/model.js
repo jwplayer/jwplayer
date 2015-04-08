@@ -77,19 +77,27 @@ define([
                     break;
                 case events.JWPLAYER_PLAYER_STATE:
                     // These two states exist at a provider level, but the player itself expects BUFFERING
+                    evt = _.extend({}, evt);
                     if (evt.newstate === states.LOADING) {
-                        this.mediaController.trigger(events.JWPLAYER_PROVIDER_LOADING, evt);
+                        this.mediaController.trigger(events.JWPLAYER_PROVIDER_LOADING);
                         evt.newstate = states.BUFFERING;
                     } else if (evt.newstate === states.STALLED) {
-                        this.mediaController.trigger(events.JWPLAYER_PROVIDER_STALLED, evt);
+                        this.mediaController.trigger(events.JWPLAYER_PROVIDER_STALLED);
                         evt.newstate = states.BUFFERING;
                     }
+                    evt.type = evt.newstate;
 
                     this.set('state', evt.newstate);
                     break;
                 case events.JWPLAYER_MEDIA_BUFFER:
                     this.set('buffer', evt.bufferPercent); // note value change
                     break;
+
+                case events.JWPLAYER_MEDIA_BUFFER_FULL:
+                    // media controller
+                    this.getVideo().play();
+                    break;
+
                 case events.JWPLAYER_MEDIA_TIME:
                     this.set('position', evt.position);
                     this.set('duration', evt.duration);
@@ -248,9 +256,6 @@ define([
         };
 
         // The model is also the mediaController for now
-        this.playVideo = function() {
-            this.getVideo().play();
-        };
         this.loadVideo = function() {
             this.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
             var idx = this.get('item');
@@ -266,8 +271,9 @@ define([
             if (this[attr] === val) {
                 return;
             }
+            var oldVal = this[attr];
             this[attr] = val;
-            this.trigger('change:' + attr, this, val);
+            this.trigger('change:' + attr, this, val, oldVal);
         }
     });
 

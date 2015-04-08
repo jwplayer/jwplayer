@@ -1,14 +1,18 @@
 define([
     'events/events',
-    'utils/eventdispatcher',
+    'utils/backbone.events',
     'underscore'
-], function(events, eventdispatcher, _) {
+], function(events, Events, _) {
 
     var _loaders = {};
 
     var scriptloader = function (url) {
-        var _this = _.extend(this, new eventdispatcher()),
+        var _this = _.extend(this, Events),
             _status = _loaderstatus.NEW;
+
+        // legacy support
+        this.addEventListener = this.on;
+        this.removeEventListener = this.off;
 
         this.load = function () {
             // Only execute on the first run
@@ -22,8 +26,8 @@ define([
                 _status = sameLoader.getStatus();
                 if (_status < 2) {
                     // dispatch to this instances listeners when the first loader gets updates
-                    sameLoader.addEventListener(events.ERROR, _sendError);
-                    sameLoader.addEventListener(events.COMPLETE, _sendComplete);
+                    sameLoader.on(events.ERROR, _sendError);
+                    sameLoader.on(events.COMPLETE, _sendComplete);
                     return;
                 }
                 // already errored or loaded... keep going?
@@ -57,12 +61,12 @@ define([
 
         function _sendError(evt) {
             _status = _loaderstatus.ERROR;
-            _this.sendEvent(events.ERROR, evt);
+            _this.trigger(events.ERROR, evt);
         }
 
         function _sendComplete(evt) {
             _status = _loaderstatus.COMPLETE;
-            _this.sendEvent(events.COMPLETE, evt);
+            _this.trigger(events.COMPLETE, evt);
         }
 
 

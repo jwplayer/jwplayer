@@ -14,22 +14,18 @@ define([
     'utils/helpers',
     'playlist/playlist',
     'view/Skin',
-    'utils/eventdispatcher',
+    'utils/backbone.events',
     'underscore',
     'events/events'
-], function(utils, Playlist, Skin, eventdispatcher, _, events) {
+], function(utils, Playlist, Skin, Events, _, events) {
 
-    var Setup = function(model, view) {
-        var _model = model,
-            _view = view,
+    var Setup = function(_model, _view) {
+        var _this = _.extend(this, Events),
             _skin,
             _cancelled = false,
-            _eventDispatcher = new eventdispatcher(),
             _errorState = false,
             _setupFailureTimeout,
             _errorTimeoutSeconds = 10;
-
-        _.extend(this, _eventDispatcher);
 
         var PARSE_CONFIG = {
                 method: _parseConfig,
@@ -73,6 +69,8 @@ define([
         };
 
         this.destroy = function() {
+            this.off();
+            clearTimeout(_setupFailureTimeout);
             _cancelled = true;
         };
 
@@ -109,7 +107,7 @@ define([
         }
 
         function _parseConfig() {
-            if (model.edition && model.edition() === 'invalid') {
+            if (_model.edition && _model.edition() === 'invalid') {
                 _error('Error setting up player: Invalid license key');
             } else {
                 _taskComplete(PARSE_CONFIG);
@@ -158,13 +156,13 @@ define([
             }
             clearTimeout(_setupFailureTimeout);
 
-            _eventDispatcher.sendEvent(events.JWPLAYER_READY);
+            _this.trigger(events.JWPLAYER_READY);
             _taskComplete(SEND_READY);
         }
 
         function _error(message) {
             _errorState = true;
-            _eventDispatcher.sendEvent(events.JWPLAYER_ERROR, {
+            _this.trigger(events.JWPLAYER_SETUP_ERROR, {
                 message: message
             });
             _view.setupError(message);

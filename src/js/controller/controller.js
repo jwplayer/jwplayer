@@ -42,8 +42,7 @@ define([
         setCurrentQuality : _queue('setCurrentQuality'),
 
         setup : function(config, _api) {
-            var _ready = false,
-                _model,
+            var _model,
                 _view,
                 _setup,
                 _loadOnPlay = -1,
@@ -62,14 +61,13 @@ define([
             // Should be removed when we replace skins.  Should be necessary for instream (_controller.skin is called)
             this.skin = _view._skin;
 
-            _setup.addEventListener(events.JWPLAYER_READY, _playerReady);
-            _setup.addEventListener(events.JWPLAYER_ERROR, _setupErrorHandler);
+            _setup.on(events.JWPLAYER_READY, _playerReady, this);
+            _setup.on(events.JWPLAYER_SETUP_ERROR, this.trigger);
             _setup.start();
 
             // Helper function
             var _video = this._model.getVideo;
 
-            _model.mediaController.on(events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
             _model.mediaController.on(events.JWPLAYER_MEDIA_COMPLETE, function() {
                 // Insert a small delay here so that other complete handlers can execute
                 setTimeout(_completeHandler, 25);
@@ -78,23 +76,14 @@ define([
                 // Re-dispatch media errors as general error
                 var evtClone = _.extend({}, evt);
                 evtClone.type = events.JWPLAYER_ERROR;
-                _this.trigger(evtClone.type, evtClone);
-            });
+                this.trigger(evtClone.type, evtClone);
+            }, this);
 
-
-            function _setupErrorHandler(evt) {
-                _this.trigger(events.JWPLAYER_SETUP_ERROR, evt);
-            }
-
-            function _playerReady(evt) {
-                if (_ready) {
-                    return;
-                }
+            function _playerReady() {
+                _setup.off().destroy();
+                _setup = null;
 
                 _view.completeSetup();
-
-                // Tell the api that we are loaded
-                _this.trigger(evt.type, evt);
 
                 // For 'onCast' callback
                 _model.on('change:castState', function(model, evt) {
@@ -121,10 +110,14 @@ define([
                     }
                 });
 
-
-
                 _model.mediaController.on('all', _this.trigger.bind(_this));
                 _view.on('all', _this.trigger.bind(_this));
+
+                // Tell the api that we are loaded
+                _this.trigger(events.JWPLAYER_READY, {
+                    // this will be updated by Api
+                    setupTime: 0
+                });
 
                 // TODO: send copies of these objects to public listeners
                 var playlist = _model.get('playlist');
@@ -143,7 +136,7 @@ define([
                     _play();
                 }
 
-                _ready = true;
+
 
                 while (_this.eventsQueue.length > 0) {
                     var q = _this.eventsQueue.shift();
@@ -151,10 +144,6 @@ define([
                     var args = q[1] || [];
                     _this[method].apply(_this, args);
                 }
-            }
-
-            function _bufferFullHandler() {
-                _model.playVideo();
             }
 
             function _load(item) {
@@ -473,8 +462,8 @@ define([
                     _model.destroy();
                 }
                 if (_setup) {
-                    _setup.resetEventListeners();
-                    _setup.destroy();
+                    _setup.off().destroy();
+                    _setup = null;
                 }
             };
 
