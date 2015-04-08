@@ -111,7 +111,7 @@ define([
                 });
 
                 _model.mediaController.on('all', _this.trigger.bind(_this));
-                _view.addGlobalListener(_forward);
+                _view.on('all', _this.trigger.bind(_this));
 
                 // Tell the api that we are loaded
                 _this.trigger(events.JWPLAYER_READY, {
@@ -146,10 +146,6 @@ define([
                 }
             }
 
-            function _forward(evt) {
-                _this.trigger(evt.type, evt);
-            }
-
             function _load(item) {
                 _stop(true);
 
@@ -175,7 +171,7 @@ define([
                 loader.addEventListener(events.JWPLAYER_ERROR, function(evt) {
                     _load([]);
                     evt.message = 'Could not load playlist: ' + evt.message;
-                    _forward(evt);
+                    _this.trigger.call(_this, evt.type, evt);
                 });
                 loader.load(toLoad);
             }
@@ -288,10 +284,6 @@ define([
                     _play(true);
                 }
                 _video().seek(pos);
-            }
-
-            function _setFullscreen(state) {
-                _view.fullscreen(state);
             }
 
             function _item(index) {
@@ -417,7 +409,6 @@ define([
             this.playlistNext = _next;
             this.playlistPrev = _prev;
             this.playlistItem = _item;
-            this.setFullscreen = _setFullscreen;
             this.setCurrentCaptions = _setCurrentCaptions;
             this.setCurrentQuality = _setCurrentQuality;
 
@@ -443,6 +434,7 @@ define([
             this.forceState = _view.forceState;
             this.releaseState = _view.releaseState;
             this.setCues = _view.addCues;
+            this.setFullscreen = _view.fullscreen;
             this.dockAddButton = _view.addButton;
             this.dockRemoveButton = _view.removeButton;
 

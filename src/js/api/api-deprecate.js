@@ -6,7 +6,7 @@ define([
         // This file is only required for legacy support of JWPlayer 6
 
         // Rename
-        _api.getPlaylistIndex = _api.getIndex;
+        _api.getPlaylistIndex = _api.getItem;
 
         // jwNames
         var legacy = {

@@ -1,10 +1,8 @@
 define([
     'parsers/captions/parsers.srt',
     'utils/helpers',
-    'utils/eventdispatcher',
-    'utils/css',
-    'underscore'
-], function (SrtParser, utils, eventdispatcher, cssUtils, _) {
+    'utils/css'
+], function (SrtParser, utils, cssUtils) {
 
     /** Displays thumbnails over the controlbar **/
     var Thumbs = function (id) {
@@ -15,10 +13,7 @@ define([
             _id = id,
             _url,
             _images = {},
-            _image,
-            _eventDispatcher = new eventdispatcher();
-
-        _.extend(this, _eventDispatcher);
+            _image;
 
         _display = document.createElement('div');
         _display.id = _id;
