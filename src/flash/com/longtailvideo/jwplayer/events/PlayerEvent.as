@@ -37,5 +37,16 @@ public class PlayerEvent extends Event {
         return new PlayerEvent(this.type, this.message);
     }
 
+    public function toJsObject():Object {
+        if (message) {
+            return {
+                type: (type === 'jw-error' ? 'error' : type),
+                message: message
+            };
+        }
+        return {
+            type: type
+        };
+    }
 }
 }
