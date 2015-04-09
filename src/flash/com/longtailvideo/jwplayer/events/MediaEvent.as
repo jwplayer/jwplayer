@@ -29,6 +29,18 @@ public class MediaEvent extends PlayerEvent {
     public static const JWPLAYER_MEDIA_LEVELS:String = "levels";
     public static const JWPLAYER_MEDIA_LEVEL_CHANGED:String = "levelsChanged";
 
+    private var _currentQuality:Number;
+    private var _bufferPercent:Number;
+    private var _position:Number;
+    private var _duration:Number;
+    private var _volume:Number;
+
+    public var levels:Array = null;
+    public var metadata:Object = null;
+    public var offset:Number = 0;
+    public var mute:Boolean = false;
+
+
     public function MediaEvent(type:String, properties:Object = null) {
         super(type);
         if (properties !== null) {
@@ -39,32 +51,115 @@ public class MediaEvent extends PlayerEvent {
             }
         }
     }
-    public var bufferPercent:Number = -1;
-    public var offset:Number = 0;
-    public var position:Number = -1;
-    public var duration:Number = -1;
-    public var metadata:Object = null;
-    public var volume:Number = -1;
 
-    //An array of quality levels
-    public var mute:Boolean = false;
-    // The current level; A value of -1 means the level is automatically selected
-    public var levels:Array = null;
-    public var currentQuality:Number = -1;
+    public function get currentQuality():Number {
+        if (isNaN(_currentQuality)) {
+            return -1;
+        }
+        return _currentQuality;
+    }
+
+    public function set currentQuality(value:Number):void {
+        _currentQuality = value;
+    }
+
+    public function get bufferPercent():Number {
+        if (isNaN(_bufferPercent)) {
+            return -1;
+        }
+        return _bufferPercent;
+    }
+
+    public function set bufferPercent(value:Number):void {
+        _bufferPercent = value;
+    }
+
+    public function get position():Number {
+        if (isNaN(_position)) {
+            return -1;
+        }
+        return _position;
+    }
+
+    public function set position(value:Number):void {
+        _position = value;
+    }
+
+    public function get duration():Number {
+        if (isNaN(_duration)) {
+            return -1;
+        }
+        return _duration;
+    }
+
+    public function set duration(value:Number):void {
+        _duration = value;
+    }
+
+    public function get volume():Number {
+        if (isNaN(_volume)) {
+            return -1;
+        }
+        return _volume;
+    }
+
+    public function set volume(value:Number):void {
+        _volume = value;
+    }
 
     public override function clone():Event {
         // the class must be dynamic to make the properties enumerable
-        return new MediaEvent(this.type, {
-            bufferPercent: this.bufferPercent,
-            offset: this.offset,
-            position: this.position,
-            duration: this.duration,
-            metadata: this.metadata,
-            volume: this.volume,
-            mute: this.mute,
-            levels: this.levels,
-            currentQuality: this.currentQuality
+        return new MediaEvent(type, {
+            bufferPercent: _bufferPercent,
+            offset: offset,
+            position: _position,
+            duration: _duration,
+            metadata: metadata,
+            volume: _volume,
+            mute: mute,
+            levels: levels,
+            currentQuality: _currentQuality
         });
+    }
+
+    override public function toJsObject():Object {
+        var js:Object = super.toJsObject();
+        switch (type) {
+            case JWPLAYER_MEDIA_TIME:
+            case JWPLAYER_MEDIA_BUFFER:
+                if (!isNaN(_bufferPercent)) {
+                    js.bufferPercent = _bufferPercent;
+                }
+                if (!isNaN(_position)) {
+                    js.position = Math.round(_position * 1000) / 1000;
+                }
+                if (!isNaN(_duration)) {
+                    js.duration = Math.round(_duration * 1000) / 1000;
+                }
+                break;
+            case JWPLAYER_MEDIA_LEVEL_CHANGED:
+            case JWPLAYER_MEDIA_LEVELS:
+                js.levels = levels;
+                js.currentQuality = currentQuality;
+                break;
+            case JWPLAYER_MEDIA_SEEK:
+                js.position = _position;
+                js.offset = offset;
+                break;
+            case JWPLAYER_MEDIA_VOLUME:
+                js.volume = _volume;
+                break;
+            case JWPLAYER_MEDIA_MUTE:
+                js.mute = mute;
+                break;
+        }
+
+        // any event may supply additional properties as metadata
+        if (metadata) {
+            js.metaType = metadata;
+        }
+
+        return js;
     }
 
     public override function toString():String {
@@ -77,15 +172,15 @@ public class MediaEvent extends PlayerEvent {
             retString += ' ' + s + '="' + metadata[s] + '"';
         }
 
-        if (type === JWPLAYER_MEDIA_VOLUME) retString += ' volume="' + volume + '"';
+        if (type === JWPLAYER_MEDIA_VOLUME) retString += ' volume="' + _volume + '"';
         if (type === JWPLAYER_MEDIA_MUTE)   retString += ' mute="' + mute + '"';
 
-        if (bufferPercent > -1) retString += ' bufferPercent="' + bufferPercent + '"';
-        if (duration > -1) retString += ' duration="' + duration + '"';
-        if (position > -1) retString += ' position="' + position + '"';
+        if (_bufferPercent > -1) retString += ' bufferPercent="' + _bufferPercent + '"';
+        if (_duration > -1) retString += ' duration="' + _duration + '"';
+        if (_position > -1) retString += ' position="' + _position + '"';
 
         if (levels !== null) retString += ' levels="' + levels + '"';
-        if (currentQuality > -1) retString += ' currentQuality="' + currentQuality + '"';
+        if (_currentQuality > -1) retString += ' currentQuality="' + _currentQuality + '"';
 
         if (offset)  retString += ' offset="' + offset + '"';
         if (message) retString += ' message="' + message + '"';

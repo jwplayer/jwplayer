@@ -17,6 +17,14 @@ public class PlayerStateEvent extends PlayerEvent {
         return new PlayerStateEvent(newstate, oldstate);
     }
 
+    override public function toJsObject():Object {
+        return {
+            type: JWPLAYER_PLAYER_STATE,
+            newstate: newstate,
+            oldstate: oldstate
+        };
+    }
+
     public override function toString():String {
         return '[PlayerStateEvent type="' + type + '" oldstate="' + oldstate + '" newstate="' + newstate +
                 '" message="' + message + '" ]';

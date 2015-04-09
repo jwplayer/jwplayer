@@ -25,5 +25,13 @@ public class CaptionsParsedEvent extends PlayerEvent {
     public override function clone():Event {
         return new CaptionsParsedEvent(type, _name, _captions);
     }
+
+    override public function toJsObject():Object {
+        return {
+            type: CAPTIONS_PARSED,
+            name: name,
+            captions: captions
+        };
+    }
 }
 }
