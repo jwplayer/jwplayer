@@ -18,24 +18,6 @@ define([
         };
     });
 
-    function qualitySwitchHandler (evt) {
-        console.log('*********************** quality swithed', evt);
-        this.set('visualQuality', {
-            bitrate: evt.rate,
-            label: evt.label,
-            width: evt.width,
-            height: evt.height
-        });
-
-        this.sendEvent( 'visualQuality', {
-            type: 'visualQuality',
-            levelIndex: evt.index,
-            level: this.get('visualQuality'),
-            mode: (evt.autoSwitch) ? 'auto' : 'manual',
-            reason: evt.reason
-        } );
-    }
-
     function unbindFirstFrameEvents(model) {
         model.mediaController.off(events.JWPLAYER_PROVIDER_FIRST_FRAME, model._triggerFirstFrame);
         model.mediaController.off(events.JWPLAYER_MEDIA_TIME, model._onTime);
@@ -77,7 +59,7 @@ define([
 
     function initModel(model) {
         this.set('model', model);
-        model.on(events.JWPLAYER_PLAYLIST_ITEM, function() {
+        model.on('change:item', function() {
             // reset item level qoe
             model._qoeItem = new Timer();
             model._qoeItem.tick(events.JWPLAYER_PLAYLIST_ITEM);
@@ -89,7 +71,6 @@ define([
             trackFirstFrame(model);
             trackStalledTime(model);
         });
-        model.on('qualityChange', qualitySwitchHandler.bind(this));
     }
 
 
