@@ -24,6 +24,14 @@ public class CaptionsEvent extends PlayerEvent {
         return evt;
     }
 
+    override public function toJsObject():Object {
+        return {
+            type: type,
+            currentTrack: currentTrack,
+            tracks: tracks
+        };
+    }
+
     public override function toString():String {
         var retString:String = '[CaptionsEvent type="' + type + '"';
 

@@ -95,7 +95,7 @@ define([
 
                 case events.JWPLAYER_MEDIA_BUFFER_FULL:
                     // media controller
-                    this.getVideo().play();
+                    this.playVideo();
                     break;
 
                 case events.JWPLAYER_MEDIA_TIME:
@@ -260,6 +260,10 @@ define([
             this.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
             var idx = this.get('item');
             this.getVideo().load(this.get('playlist')[idx]);
+        };
+
+        this.playVideo = function() {
+            this.getVideo().play();
         };
     };
 

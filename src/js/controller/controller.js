@@ -202,14 +202,11 @@ define([
                     if (_model.get('playlist').length === 0) {
                         return false;
                     }
+                    _model.loadVideo();
 
-                    status = utils.tryCatch(function() {
-                        _model.loadVideo();
-                    });
                 } else if (_model.get('state') === states.PAUSED) {
-                    status = utils.tryCatch(function() {
-                        _model.playVideo();
-                    });
+                    _model.playVideo();
+
                 }
 
                 if (status instanceof utils.Error) {
