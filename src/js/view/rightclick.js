@@ -48,13 +48,25 @@ define([
             return false;
         },
 
+        getOffset: function(evt) {
+            var target = evt.target;
+            var x = evt.offsetX;
+            var y = evt.offsetY;
+            while (target !== this.parent) {
+                x += target.offsetLeft;
+                y += target.offsetTop;
+
+                target = target.parentNode;
+            }
+
+            return { x : x, y : y};
+        },
         showMenu : function(evt) {
             // Offset relative to player element
-            var x = evt.x - (this.parent.offsetLeft - window.scrollX);
-            var y = evt.y - (this.parent.offsetTop - window.scrollY);
+            var off = this.getOffset(evt);
 
-            this.el.style.left = x+'px';
-            this.el.style.top  = y+'px';
+            this.el.style.left = off.x+'px';
+            this.el.style.top  = off.y+'px';
 
             utils.addClass(this.el, 'open');
             return false;
