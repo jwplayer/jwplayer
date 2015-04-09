@@ -182,10 +182,6 @@ define([
             return this.container;
         };
 
-        this.addButton = function (icon, label, handler, id) {
-            _controller.dockAddButton(icon, label, handler, id);
-        };
-
         this.getMeta = this.getItemMeta = function () {
             return _itemMeta;
         };

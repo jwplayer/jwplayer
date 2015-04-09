@@ -34,7 +34,6 @@ define([
         });
 
 
-
         var passthroughs = [
             'getAudioTracks',
             'getCaptionsList',
@@ -52,14 +51,7 @@ define([
 
             'getSafeRegion',
             'isBeforeComplete',
-            'isBeforePlay',
-
-
-            // Sisters of the model getters
-            'setControls',
-            'setFullscreen',
-            'setVolume',
-            'setMute'
+            'isBeforePlay'
 
             // These are implemented in api.js, but should be here
             //'getItemMeta',
@@ -68,9 +60,26 @@ define([
             //'getContainer',
             //'playlistItem',
         ];
+
+        var passthroughsChain = [
+            // Sisters of the model getters
+            'setControls',
+            'setFullscreen',
+            'setVolume',
+            'setMute'
+        ];
+
+        // getters
         _.each(passthroughs, function(func) {
             _api[func] = function() {
                 return _controller[func].apply(_controller, arguments);
+            };
+        });
+        // setters (chainable)
+        _.each(passthroughsChain, function(func) {
+            _api[func] = function() {
+                _controller[func].apply(_controller, arguments);
+                return _api;
             };
         });
     };

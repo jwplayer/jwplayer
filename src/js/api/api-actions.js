@@ -21,22 +21,26 @@ define([
             'playlistItem',
             'resize',
 
-            //'addButton',
+            'addButton',
             'removeButton',
 
             'registerPlugin',
 
-            'attachMedia',
-            'detachMedia'
+            'attachMedia'
+            //'detachMedia' // not chainable
         ];
 
 
         _.each(passthroughs, function(func) {
             _api[func] = function() {
-                //return _controller[func].bind(_controller);
-                return _controller[func].apply(_controller, arguments);
+                _controller[func].apply(_controller, arguments);
+                return _api;
             };
         });
+
+        _api.detachMedia = function() {
+            return _controller.detachMedia.apply(_controller, arguments);
+        };
 
         _api.registerPlugin = plugins.registerPlugin;
     };
