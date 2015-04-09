@@ -217,8 +217,8 @@ public class Model extends GlobalEventDispatcher {
                     return;
                 }
             }
-            dispatchEvent(evt);
         }
+        dispatchEvent(evt);
     }
 
 }

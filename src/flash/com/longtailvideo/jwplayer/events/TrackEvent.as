@@ -27,6 +27,14 @@ public class TrackEvent extends PlayerEvent {
         return new TrackEvent(this.type, this.tracks, this.currentTrack);
     }
 
+    override public function toJsObject():Object {
+        return {
+            type: type,
+            currentTrack: currentTrack,
+            tracks: tracks
+        };
+    }
+
     public override function toString():String {
         if (!type) {
             return '';

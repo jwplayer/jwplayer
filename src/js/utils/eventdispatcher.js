@@ -1,13 +1,12 @@
 define([
     'utils/backbone.events',
     'underscore',
-    'version',
     'polyfill/bind'
-], function(Events, _, version) {
+], function(Events, _) {
 
     var GLOBAL_EVENT = 'GLOBAL_EVENT';
 
-    var eventdispatcher = function (_id, _debug) {
+    var eventdispatcher = function (_id) {
 
         var obj = _.extend({}, Events);
 
@@ -44,14 +43,8 @@ define([
         /** Send an event **/
         this.sendEvent = function (type, data, val) {
             data = _.extend({}, data, {
-                id: _id,
-                version: version,
                 type: type
             });
-
-            if (_debug) {
-                //_utils.log(type, data);
-            }
 
             obj.trigger(GLOBAL_EVENT, data, val);
             obj.trigger(type, data, val);

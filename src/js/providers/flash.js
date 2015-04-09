@@ -24,6 +24,7 @@ define([
         var _muted = false;
         var _beforecompleted = false;
         var _currentQuality = -1;
+        var _qualityLevels = null;
         var _flashProviderType;
 
         var _ready = function() {
@@ -158,10 +159,14 @@ define([
 
                     // jwplayer 6 flash player events (forwarded from AS3 Player, Controller, Model)
                     _swf.on(events.JWPLAYER_MEDIA_LEVELS, function(e) {
-                        this.sendEvent(e.type, {
-                            levels: e.levels,
-                            currentQuality: e.currentQuality
-                        });
+                        _currentQuality = e.currentQuality;
+                        _qualityLevels = e.levels;
+                        this.sendEvent(e.type, e);
+
+                    }, this).on(events.JWPLAYER_MEDIA_LEVEL_CHANGED, function(e) {
+                        _currentQuality = e.currentQuality;
+                        _qualityLevels = e.levels;
+                        this.sendEvent(e.type, e);
 
                     }, this).on(events.JWPLAYER_PLAYER_STATE, function(e) {
                         var state = e.newstate;
@@ -171,103 +176,73 @@ define([
                         this.setState(state);
 
                     }, this).on(events.JWPLAYER_MEDIA_META, function(e) {
-                        // width and height are not always sent with duration
-                        var metadata = e.metadata;
-                        if (metadata && metadata.duration > 0) {
-                            if (!metadata.width || !metadata.height) {
-                                // FIXME: HTML5 player needs these three properties in the first meta event
-                                console.error('invalid html5 meta event');
-                            }
-                            this.sendEvent(e.type, {
-                                duration: metadata.duration,
-                                height:   metadata.height,
-                                width:    metadata.width
-                            });
-                        }
-                        // TODO: html5 player doesn't know what to do with custom metadata
-                        // else this.sendEvent(e.type, e.metadata);
+                        this.sendEvent(e.type, e);
 
                     }, this).on(events.JWPLAYER_MEDIA_BUFFER_FULL, function(e) {
                         this.sendEvent(e.type);
 
                     }, this).on(events.JWPLAYER_MEDIA_BUFFER, function(e) {
-                        this.sendEvent(e.type, {
-                            bufferPercent: e.bufferPercent
-                        });
+                        this.sendEvent(e.type, e);
 
                     }, this).on(events.JWPLAYER_MEDIA_TIME, function(e) {
-                        this.sendEvent(e.type, {
-                            position: e.position,
-                            duration: e.duration
-                        });
+                        this.sendEvent(e.type, e);
 
                     }, this)
                     .on(events.JWPLAYER_MEDIA_BEFORECOMPLETE, function(e) {
                         this.sendEvent(e.type);
+
                     }, this).on(events.JWPLAYER_MEDIA_COMPLETE, function(e) {
                         this.setState(states.IDLE);
                         this.sendEvent(e.type);
+
                     }, this).on(events.JWPLAYER_MEDIA_ERROR, function(e) {
                         this.sendEvent(e.type, e);
                     }, this);
 
-                    _swf.on(events.JWPLAYER_MEDIA_MUTE, function(data) {
-                        this.sendEvent(events.JWPLAYER_MEDIA_MUTE, {
-                            mute: data.mute
-                        });
+                    _swf.on(events.JWPLAYER_MEDIA_MUTE, function(e) {
+                        this.sendEvent(events.JWPLAYER_MEDIA_MUTE, e);
                     }, this);
 
-                    _swf.on(events.JWPLAYER_MEDIA_VOLUME, function(data) {
-                        this.sendEvent(events.JWPLAYER_MEDIA_VOLUME, {
-                            volume: data.volume
-                        });
+                    _swf.on(events.JWPLAYER_MEDIA_VOLUME, function(e) {
+                        this.sendEvent(events.JWPLAYER_MEDIA_VOLUME, e);
                     }, this);
 
-                    _swf.on(events.JWPLAYER_PROVIDER_CHANGED, function(data) {
-                        _flashProviderType = data.message;
-                        this.sendEvent(events.JWPLAYER_PROVIDER_CHANGED, data);
+                    _swf.on('visualQuality', function(e) {
+                        this.sendEvent('visualQuality', e);
                     }, this);
 
-                    // ignoring:
-                    // jwplayerMediaLoaded, jwplayerMediaBeforePlay, ...
+                    _swf.on(events.JWPLAYER_PROVIDER_CHANGED, function(e) {
+                        _flashProviderType = e.message;
+                        this.sendEvent(events.JWPLAYER_PROVIDER_CHANGED, e);
+                    }, this);
 
                     // catch all events for dev / debug
                     _swf.on('all', function(name, data) {
                         switch (name) {
-                            case events.JWPLAYER_READY:
                             case events.JWPLAYER_MEDIA_TIME:
                             case events.JWPLAYER_MEDIA_BUFFER:
                                 break;
+                            case events.JWPLAYER_READY:
                             case events.JWPLAYER_MEDIA_BEFOREPLAY:
                             case events.JWPLAYER_MEDIA_LOADED:
                             case events.JWPLAYER_MEDIA_BUFFER_FULL:
                             case events.JWPLAYER_MEDIA_BEFORECOMPLETE:
                             case events.JWPLAYER_MEDIA_COMPLETE:
-                                console.log(name);
-                                break;
                             case events.JWPLAYER_MEDIA_META:
-                                // duration, size, stage video or something else...
-                                console.log(name);
-                                break;
                             case events.JWPLAYER_MEDIA_LEVELS:
-                                console.log(name, data.currentQuality, data.levels);
-                                break;
                             case events.JWPLAYER_PLAYER_STATE:
-                                console.log(name, data.newstate);
-                                break;
                             case events.JWPLAYER_MEDIA_SEEK:
-                                console.log(name, data.offset);
-                                break;
                             case events.JWPLAYER_RESIZE:
-                                console.log(name, data.width, data.height, data.fullscreen);
+                                console.log('SWF Event:', name, data);
                                 break;
                             default:
-                                console.log(name, data);
+                                console.log('SWF Event:', name, data);
                         }
                     }, this);
                 },
                 remove: function() {
                     _currentQuality = -1;
+                    _qualityLevels = null;
                     EmbedSwf.remove(_swf);
                     if (_clickOverlay && _container && _clickOverlay.parentNode === _container) {
                         _container.removeChild(_clickOverlay);
@@ -291,21 +266,20 @@ define([
                     return false;
                 },
                 isAudioFile: function() {
-                    // TODO: controller could do this
                     if (_item) {
                         var type = _item.sources[0].type;
                         return (type === 'oga' || type === 'aac' || type === 'mp3' || type === 'vorbis');
                     }
                     return false;
                 },
-                setCurrentQuality: function(/* quality */) {
-                    // TODO: setCurrentQuality
+                setCurrentQuality: function(quality) {
+                    _flashCommand('quality', quality);
                 },
                 getCurrentQuality: function() {
                     return _currentQuality;
                 },
                 getName: function() {
-                    if(_flashProviderType){
+                    if (_flashProviderType) {
                         var returnObj = { name : 'flash_' + _flashProviderType };
 
                         return returnObj;
@@ -313,8 +287,7 @@ define([
                     return { name : 'flash' };
                 },
                 getQualityLevels: function() {
-                    // TODO: _getPublicLevels
-                    return _item.sources;
+                    return _qualityLevels || _item.sources;
                 },
                 supportsFullscreen: _.constant(true),
                 destroy: function() {

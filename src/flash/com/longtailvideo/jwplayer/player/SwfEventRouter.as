@@ -68,14 +68,8 @@ function(id, name, json) {
     return setTimeout(function() {
         var swf = document.getElementById(id);
         if (swf && typeof swf.trigger === 'function') {
-            name = name.replace(/^jw\-/, '');
             if (json) {
                 var data = JSON.parse(decodeURIComponent(json));
-                delete data.target;
-                delete data.currentTarget;
-                delete data.bubbles;
-                delete data.cancelable;
-                delete data.eventPhase;
                 return swf.trigger(name, data);
             } else {
                 return swf.trigger(name);
@@ -92,7 +86,9 @@ function(id, name, json) {
             if (data !== null) {
                 var json:String;
                 try {
-                    if (data.clone is Function) {
+                    if (data.toJsObject is Function) {
+                        data = data.toJsObject();
+                    } else if (data.clone is Function) {
                         // event object targets often have Cyclic structure
                         data = data.clone();
                         delete data.target;

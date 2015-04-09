@@ -95,7 +95,7 @@ define([
 
                 case events.JWPLAYER_MEDIA_BUFFER_FULL:
                     // media controller
-                    this.getVideo().play();
+                    this.playVideo();
                     break;
 
                 case events.JWPLAYER_MEDIA_TIME:
@@ -104,6 +104,11 @@ define([
                     break;
                 case events.JWPLAYER_PROVIDER_CHANGED:
                     this.set('provider', _provider.getName());
+                    break;
+                case 'visualQuality':
+                    var visualQuality = _.extend({}, evt);
+                    delete visualQuality.type;
+                    this.set('visualQuality', visualQuality);
                     break;
             }
 
@@ -260,6 +265,10 @@ define([
             this.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
             var idx = this.get('item');
             this.getVideo().load(this.get('playlist')[idx]);
+        };
+
+        this.playVideo = function() {
+            this.getVideo().play();
         };
     };
 

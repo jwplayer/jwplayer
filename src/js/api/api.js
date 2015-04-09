@@ -89,7 +89,7 @@ define([
                 _itemMeta = {};
             });
             _controller.on(events.JWPLAYER_MEDIA_META, function (data) {
-                _.extend(_itemMeta, data.metadata);
+                _.extend(_itemMeta, data);
             });
             _controller.on(events.JWPLAYER_VIEW_TAB_FOCUS, function (data) {
                 if (data.hasFocus === true) {
@@ -107,6 +107,7 @@ define([
             _controller.on('all', _this.trigger);
         };
         _resetController();
+
         legacyInit(this);
 
         // These should be read-only model properties

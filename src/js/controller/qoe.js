@@ -4,7 +4,6 @@ define([
     'events/states',
     'underscore'
 ], function(Timer, events, states, _) {
-
     // This is to provide a first frame event even when
     //  a provider does not give us one.
     var onTimeIncreasesGenerator = (function(callback) {
@@ -59,7 +58,8 @@ define([
     }
 
     function initModel(model) {
-        model.on(events.JWPLAYER_PLAYLIST_ITEM, function() {
+        this.set('model', model);
+        model.on('change:item', function() {
             // reset item level qoe
             model._qoeItem = new Timer();
             model._qoeItem.tick(events.JWPLAYER_PLAYLIST_ITEM);
@@ -73,7 +73,17 @@ define([
         });
     }
 
-    return {
-        model : initModel
-    };
+
+    this.model = initModel.bind(this);
+
+    _.extend(this, {
+        'get' : function(attr) {
+            return this[attr];
+        },
+        'set' : function(attr, val) {
+            this[attr] = val;
+        }
+    });
+
+    return this;
 });
