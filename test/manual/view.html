@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JW7 View Demo</title>
+    <script type="text/javascript" src="../../bin-debug/jwplayer.js"></script>
+    <link type="text/css" rel="stylesheet" href="styles/tests.css"  media="all" />
+
+    <script src="../../bower_components/requirejs/require.js"></script>
+</head>
+<body>
+
+<div id="video-container"></div>
+
+<script type="text/javascript">
+    window.__BUILD_VERSION__ = 0;
+    window.__FLASH_VERSION__ = 11.1;
+    var base = '../../';
+
+    var components = base + 'bower_components';
+    var data       = base + 'test/data';
+    var mock       = base + 'test/mock';
+    var unit       = base + 'test/unit';
+
+    require.config({
+
+        // Go to open source root url
+        baseUrl : base + 'src/js',
+
+        paths: {
+            'templates':     '../' + 'templates',
+            'css':           '../' + 'css',
+            'underscore': 'utils/' + 'underscore',
+
+            'handlebars': components + '/handlebars/handlebars.amd',
+            'text':       components + '/requirejs-text/text',
+            'hbars':      components + '/requirejs-handlebars/hb',
+            'less':       components + '/require-less/less',
+            'lessc':      components + '/require-less/lessc',
+            'normalize':  components + '/require-less/normalize',
+            'jquery':     components + '/jquery/dist/jquery',
+
+            // always use test/underscore in test scripts
+            'test/underscore': components + '/underscore/underscore',
+
+            'data' : data,
+            'mock' : mock,
+            'unit' : unit
+        },
+        shim: {
+            'test/underscore': {
+                exports: '_'
+            }
+        },
+        map: {
+            // make sure the text plugin is used to load templates
+            '*' : {
+                'templates/errorscreen.html': 'hbars!templates/errorscreen.html',
+                '../css/styles.less': 'less!css/styles'
+            },
+            'providers/html5' : {
+                'utils/video': mock + '/video.js'
+            }
+        }
+    });
+</script>
+
+<script type="text/javascript">
+require([
+    'mock/mock-api',
+    'mock/mock-model',
+    'view/view',
+    'view/skin'
+], function (mockApi, mockModel, View, Skin) {
+
+    mockModel.id = 'video-container';
+
+    var view = new View(mockApi, mockModel) ;
+    var skin = new Skin();
+
+    skin.load(null, function() {
+        view.setup(skin);
+        view.completeSetup();
+        view.resize(400, 300);
+        mockModel.trigger('change:state', 'playing');
+    });
+
+});
+</script>
+
+</body>
+</html>

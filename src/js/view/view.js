@@ -379,17 +379,13 @@ define([
                         display: null
                     });
                     // redraw displayicon
-                    _stateHandler({
-                        newstate: _model.state
-                    });
+                    _stateHandler(null, _model.get('state'));
                     _responsiveListener();
                 }
 
             });
 
-            _stateHandler({
-                newstate: states.IDLE
-            });
+            _stateHandler(null, states.IDLE);
 
             if (!_isMobile) {
                 _controlsLayer.addEventListener('mouseout', _mouseoutHandler, false);
@@ -497,11 +493,10 @@ define([
             _controlsLayer.appendChild(_captions.element());
 
             _display = new Display(_skin, _api, _model);
-            _display.on(events.JWPLAYER_DISPLAY_CLICK, function(evt) {
+            _display.on(events.JWPLAYER_DISPLAY_CLICK, function (evt) {
                 forward(evt);
                 _touchHandler();
             });
-
             _controlsLayer.appendChild(_display.element());
 
             _logo = new Logo(_api, _model);
