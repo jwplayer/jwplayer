@@ -4,9 +4,8 @@ define([
     'utils/css',
     'events/events',
     'underscore',
-    'version',
     'templates/logo.html'
-], function(Touch, utils, cssUtils, events, _, version, logoTemplate) {
+], function(Touch, utils, cssUtils, events, _, logoTemplate) {
     var _styles = cssUtils.style;
 
     var Logo = function(_api, _model) {

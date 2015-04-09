@@ -70,6 +70,7 @@ require.config({
         // make sure the text plugin is used to load templates
         '*' : {
             'templates/errorscreen.html': 'hbars!templates/errorscreen.html',
+            'templates/logo.html': 'hbars!templates/logo.html',
             '../css/styles.less': 'less!css/styles'
         },
         'providers/html5' : {
