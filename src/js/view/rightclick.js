@@ -50,8 +50,8 @@ define([
 
         showMenu : function(evt) {
             // Offset relative to player element
-            var x = evt.x - this.parent.offsetLeft;
-            var y = evt.y - this.parent.offsetTop;
+            var x = evt.x - (this.parent.offsetLeft - window.scrollX);
+            var y = evt.y - (this.parent.offsetTop - window.scrollY);
 
             this.el.style.left = x+'px';
             this.el.style.top  = y+'px';
