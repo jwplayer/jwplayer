@@ -40,7 +40,7 @@ public class PlayerEvent extends Event {
     public function toJsObject():Object {
         if (message) {
             return {
-                type: type.replace(/^jw\-/, ''),
+                type: (type === 'jw-error' ? 'error' : type),
                 message: message
             };
         }
