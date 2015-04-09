@@ -7,12 +7,7 @@ define([
     'version',
     'templates/logo.html'
 ], function(Touch, utils, cssUtils, events, _, version, logoTemplate) {
-    var _styles = cssUtils.style,
-        FREE = 'free',
-        PRO = 'pro',
-        PREMIUM = 'premium',
-        ADS = 'ads',
-        LINK_DEFAULT = 'http://www.longtailvideo.com/jwpabout/?a=l&v=';
+    var _styles = cssUtils.style;
 
     var Logo = function(_api, _model) {
         var _logo,
@@ -27,33 +22,23 @@ define([
         }
 
         function _setupConfig() {
-            var linkFlag = 'o';
-            if ( _model.edition && _model.edition() ) {
-                linkFlag = _getLinkFlag(_model.edition());
-            }
-
-            if (linkFlag === 'o' || linkFlag === 'f') {
-                _defaults.link = LINK_DEFAULT + version + '&m=h&e=' + linkFlag;
-            }
-
             _settings = _.extend({}, _defaults, _logoConfig);
             _settings.hide = (_settings.hide.toString() === 'true');
         }
 
         function _setupDisplayElements() {
             _logo = utils.createElement(logoTemplate({
-                file: (_settings.prefix ? _settings.prefix : '') + _settings.file
+                file: _settings.file
             }));
 
             if (!_settings.file) {
-                _styles(_logo, {display: 'none'}, false);
                 return;
             }
 
             var positions = (/(\w+)-(\w+)/).exec(_settings.position),
                 style = {};
 
-            if (positions.length === 3 && _settings.position !== 'top-right'){
+            if (positions.length === 3){
                 style[positions[1]] = _settings.margin;
                 style[positions[2]] = _settings.margin;
 
@@ -76,7 +61,6 @@ define([
             return _logo;
         };
 
-        // TODO: Remove this via placing it in the DOM in a place that will make it posiition itself without needing the offset
         this.offset = function(offset) {
             _styles(_logo, {
                 'margin-bottom': offset
@@ -91,8 +75,6 @@ define([
             return parseInt(_settings.margin, 10);
         };
 
-
-        //TODO: Remove API by sending events instead
         function _clickHandler(evt) {
             if (utils.exists(evt) && evt.stopPropagation) {
                 evt.stopPropagation();
@@ -110,20 +92,6 @@ define([
             }
 
             return;
-        }
-
-        function _getLinkFlag(edition) {
-            if (edition === PRO) {
-                return 'p';
-            } else if (edition === PREMIUM) {
-                return 'r';
-            } else if (edition === ADS) {
-                return 'a';
-            } else if (edition === FREE) {
-                return 'f';
-            } else {
-                return 'o';
-            }
         }
 
         this.hide = function(forced) {
@@ -144,8 +112,6 @@ define([
     };
 
     Logo.defaults = {
-        prefix: utils.repo(),
-        file: 'logo.png',
         linktarget: '_top',
         margin: '0.5em',
         hide: false,
