@@ -5,14 +5,15 @@ define([
     'version'
 ], function(utils, rightclickTemplate, _, version) {
 
-    var Rightclick = {
-        buildArray : function() {
+    var RightClick = function() {};
 
+    _.extend(RightClick.prototype, {
+
+        buildArray : function() {
             var obj = {
                 items : [{
                     title: 'About JW Player ' + version,
-                    img: 'http://design.longtailvideo.com/img/jw-logo-red.svg',
-                    'class': 'featured',
+                    feature : 'jw-logo', // we can use any webfont icon here
                     link: '//jwplayer.com/learn-more/?m=h&e=o&v=' + version
                 }]
             };
@@ -37,6 +38,8 @@ define([
         },
 
         rightClick : function(evt) {
+            this.lazySetup();
+
             if (this.mouseOverContext) {
                 // right click on menu item should execute it
                 return false;
@@ -52,7 +55,7 @@ define([
             var target = evt.target;
             var x = evt.offsetX;
             var y = evt.offsetY;
-            while (target !== this.parent) {
+            while (target !== this.playerElement) {
                 x += target.offsetLeft;
                 y += target.offsetTop;
 
@@ -80,37 +83,48 @@ define([
             utils.removeClass(this.el, 'open');
         },
 
-        setup : function(_model, _playerElement) {
-            this.parent = _playerElement;
-            this.model = _model;
-            this.mouseOverContext = false;
+        lazySetup : function() {
+            if (this.el) {
+                return;
+            }
+
             this.el = this.buildMenu();
 
+            this.layer.appendChild(this.el);
+
+            this.playerElement.onclick = this.hideMenu.bind(this);
+            document.addEventListener('mousedown', this.hideMenu.bind(this), false);
+
+            // Update the menu if the provider changes
             this.model.on('change:provider', this.updateHtml, this);
 
-
-            // Add event listeners to document and player
-            _playerElement.oncontextmenu = this.rightClick.bind(this);
-            _playerElement.onclick = this.hideMenu.bind(this);
-
+            // Track if the mouse is above the menu or not
             this.el.onmouseover = function() {
                 this.mouseOverContext = true;
             }.bind(this);
             this.el.onmouseout = function() {
                 this.mouseOverContext = false;
             }.bind(this);
+        },
 
-            document.addEventListener('mousedown', this.hideMenu.bind(this), false);
+        setup : function(_model, _playerElement, layer) {
+            this.playerElement = _playerElement;
+            this.model = _model;
+            this.mouseOverContext = false;
+            this.layer = layer;
+
+            // Defer the rest of setup until the first click
+            _playerElement.oncontextmenu = this.rightClick.bind(this);
         },
 
         destroy : function() {
             this.model = null;
-            this.parent = null;
+            this.playerElement = null;
             this.el = null;
             this.model.off('change:provider', this.updateHtml);
             document.removeEventListener('mousedown', this.hideMenu);
         }
-    };
+    });
 
-    return Rightclick;
+    return RightClick;
 });
