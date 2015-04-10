@@ -104,12 +104,12 @@ package com.longtailvideo.jwplayer.media {
 			_item = itm;
 			// Set Video or StageVideo
 			if(!_video) {
-				_video = new Video(320, 240);
+				_video = new Video(320, 180);
 				_video.smoothing = true;
 				// Use stageVideo when available
 				if (_stageEnabled && RootReference.stage['stageVideos'].length > 0) {
 					_stage = RootReference.stage['stageVideos'][0];
-					_stage.viewPort = new Rectangle(0,0,320,240);
+					_stage.viewPort = new Rectangle(0,0,320,180);
 					_stage.addEventListener('renderState', renderHandler);
 				} else {
 					_video.addEventListener('renderState', renderHandler);
