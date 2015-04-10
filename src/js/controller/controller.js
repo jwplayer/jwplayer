@@ -336,6 +336,29 @@ define([
                 return -1;
             }
 
+            function _getVisualQuality() {
+                if (this._model.mediaModel) {
+                    return this._model.mediaModel.visualQuality;
+                }
+                // if quality is not implemented in the provider,
+                // return quality info based on current level
+                var qualityLevels = _getQualityLevels();
+                if (qualityLevels) {
+                    var levelIndex = _getCurrentQuality();
+                    var level = qualityLevels[levelIndex];
+                    if (level) {
+                        return {
+                            level: _.extend({
+                                index: levelIndex
+                            }, level),
+                            mode: '',
+                            reason: ''
+                        };
+                    }
+                }
+                return null;
+            }
+
             function _getQualityLevels() {
                 if (_video()) {
                     return _video().getQualityLevels();
@@ -421,6 +444,7 @@ define([
             this.getAudioTracks = _getAudioTracks;
             this.getCurrentCaptions = _getCurrentCaptions;
             this.getCaptionsList = _getCaptionsList;
+            this.getVisualQuality = _getVisualQuality;
 
             // Model passthroughs
             this.setVolume = _model.setVolume;

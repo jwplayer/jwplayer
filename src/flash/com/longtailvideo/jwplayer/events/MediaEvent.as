@@ -156,7 +156,7 @@ public class MediaEvent extends PlayerEvent {
 
         // any event may supply additional properties as metadata
         if (metadata) {
-            js.metaType = metadata;
+            js.metadata = metadata;
         }
 
         return js;

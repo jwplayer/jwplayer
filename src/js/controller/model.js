@@ -59,6 +59,7 @@ define([
         }, Events);
 
         this.mediaController = _.extend({}, Events);
+        this.mediaModel = {};
 
         QOE.model(this);
 
@@ -104,6 +105,11 @@ define([
                     break;
                 case events.JWPLAYER_PROVIDER_CHANGED:
                     this.set('provider', _provider.getName());
+                    break;
+                case 'visualQuality':
+                    var visualQuality = _.extend({}, evt);
+                    delete visualQuality.type;
+                    this.mediaModel.visualQuality =  visualQuality;
                     break;
             }
 
@@ -192,8 +198,8 @@ define([
             }
 
             // Item is actually changing
+            this.mediaModel = {};
             this.set('item', newItem);
-
             // select provider based on item source (video, youtube...)
             var item = this.get('playlist')[newItem];
             var source = item && item.sources && item.sources[0];
