@@ -439,6 +439,7 @@ define([
     var acceptClicks = [
         '.jwplayer .jwcontrols .jwdockbuttons',
         '.jwplayer .jwcontrols .jwcontrolbar',
+        '.jwplayer .jwcontrols .jw-rightclick',
         '.jwplayer .jwcontrols .jwskip',
         '.jwplayer .jwcontrols .jwdisplayIcon', // play and replay button
         '.jwplayer .jwcontrols .jwpreview', // poster image

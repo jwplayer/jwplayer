@@ -1,49 +1,68 @@
-/***** Start Right Click *****/
-.jw-click {
-    display: none;
-    position: absolute !important;
-    z-index: 999 !important;
-    width: 320px !important;
-    height: auto !important;
-    font-family: 'MS Sans Serif', Geneva, sans-serif !important;
-    font-size: 10px !important;
-    background-color: rgb(255, 255, 255) !important;
-    border: 1px solid rgb(188, 188, 188) !important;
-    border-radius: 5px !important;
-    -webkit-box-shadow: rgba(0, 0, 0, 0.1) 5px 5px 7px rgba(255, 255, 255, 0.3) 0 1px 0 inset !important;
-    box-shadow: rgba(0, 0, 0, 0.1) 5px 5px 7px rgba(255, 255, 255, 0.3) 0 1px 0 inset !important;
+.jw-rightclick {
+  display: none;
+}
+.jw-rightclick.open {
+  display: block;
 }
 
-.jw-click div {
-    padding: 8px 21px !important;
-    margin: 0 !important;
-    font-family: 'MS Sans Serif', Geneva, sans-serif !important;
-    font-size: 10px !important;
-    color: inherit !important;
-    background-color: rgb(255, 255, 255) !important;
-    border: none !important;
-}
+.jw-rightclick {
+  position: absolute;
+  white-space: nowrap;
+  z-index:10;
 
-.jw-click hr {
-    width: 100% !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    border: 1px solid rgb(233, 233, 233) !important;
-}
+  ul {
+    list-style: none;
+    font-family: Arial, sans-serif;
+    font-size: 1em;
+    font-weight: bold;
+    margin: 0;
+    -webkit-padding-start: 0;
+    color: #000;
+    border-radius: 3px;
+    border: 1px solid #d9dde6;
+  }
 
-.jw-click-item {
-    padding: 8px 21px !important;
-    text-align: left !important;
-    cursor: pointer !important;
-}
+  .jw-icon {
+    font-size: 1.8em;
+    padding: 0;
+    vertical-align: middle;
+    padding-right: .5em;
+    margin-right: .4em;
+    border-right: 1px solid #d9dde6;
+    color : #ff0147;
+  }
 
-.jw-click-item:hover {
-    color: rgb(255, 255, 255) !important;
-    background-color: rgb(89, 89, 89) !important;
-}
+  a {
+    color: #000;
+    text-decoration: none;
 
-.jw-click-item a {
-    color: rgb(0, 0, 0) !important;
-    text-decoration: none !important;
+    // padding comes from the anchor, so that the whole item is clickable
+    padding: .4em .5em;
+    display: block;
+  }
+
+  li {
+    background-color: #f2f3f6;
+    border-bottom: 1px solid #d9dde6;
+  }
+
+  li:last-child {
+    border-bottom: none;
+  }
+
+  li:hover,
+  li.featured:hover {
+    background-color: #e4e6ed;
+    cursor: pointer;
+    color: #ff0046;
+  }
+
+  li.featured {
+    background-color: #fff;
+    vertical-align: middle;
+  }
+
+  li.featured a {
+    color: #aab4c8;
+  }
 }
-/**** END RIGHT CLICK ****/

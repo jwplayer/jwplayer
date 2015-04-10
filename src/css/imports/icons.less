@@ -19,11 +19,7 @@
 }
 
 .jwplayer {
-    .jw-thumb,
-    .jw-icon-inline,
-    .jw-icon-tooltip,
-    .jw-icon-display,
-    .jw-controlbar .jw-menu .jw-option:before {
+    .jw-icon {
         color: @inactive-color;
         font-family: 'jw-six-icons';
         -webkit-font-smoothing: antialiased;
@@ -43,8 +39,19 @@
         font-feature-settings: "liga";
         -moz-osx-font-smoothing: grayscale;
 
-        &:hover,  {
-            color: @active-color;
+    }
+
+    .jw-thumb,
+    .jw-icon-inline,
+    .jw-icon-tooltip,
+    .jw-icon-display,
+    .jw-controlbar .jw-menu .jw-option:before {
+
+        // Mixin all default formatting
+        .jw-icon;
+
+        &:hover, {
+          color: @active-color;
         }
     }
 
