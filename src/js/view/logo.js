@@ -1,19 +1,22 @@
 define([
     'view/touch',
     'utils/helpers',
-    'utils/css',
     'events/events',
     'underscore',
+    'utils/backbone.events',
     'templates/logo.html'
-], function(Touch, utils, cssUtils, events, _, logoTemplate) {
-    var _styles = cssUtils.style;
+], function(Touch, utils, events, _, Events, logoTemplate) {
+    var _styles = utils.style;
 
-    var Logo = function(_api, _model) {
-        var _logo,
+    var Logo = function(_model) {
+        var _this = this,
+            _logo,
             _settings,
             _logoConfig = _.extend({}, _model.componentConfig('logo')),
             _defaults = Logo.defaults,
             _showing = false;
+
+        _.extend(this, Events);
 
         function _setup() {
             _setupConfig();
@@ -34,16 +37,17 @@ define([
                 return;
             }
 
-            var positions = (/(\w+)-(\w+)/).exec(_settings.position),
-                style = {};
 
-            if (positions.length === 3){
-                style[positions[1]] = _settings.margin;
-                style[positions[2]] = _settings.margin;
+            if(_settings.position !== Logo.defaults.position || _settings.margin !== Logo.defaults.margin){
+                var positions = (/(\w+)-(\w+)/).exec(_settings.position),
+                    style = { top: 'auto', right: 'auto', bottom: 'auto', left: 'auto' };
 
-                _styles(_logo, style);
-            } else {
-                utils.addClass(_logo, 'jw-logo--top-right');
+                if (positions.length === 3){
+                    style[positions[1]] = _settings.margin;
+                    style[positions[2]] = _settings.margin;
+
+                    _styles(_logo, style);
+                }
             }
 
             if (!utils.isMobile()) {
@@ -79,16 +83,11 @@ define([
                 evt.stopPropagation();
             }
 
-            if (!_showing || !_settings.link) {
-                //_togglePlay();
-                _api.play();
-            }
-
-            if (_showing && _settings.link) {
-                _api.pause(true);
-                _api.setFullscreen(false);
-                window.open(_settings.link, _settings.linktarget);
-            }
+            _this.trigger(events.JWPLAYER_LOGO_CLICK, {
+                showing: _showing,
+                link: _settings.link,
+                linktarget: _settings.linktarget
+            });
 
             return;
         }
@@ -111,8 +110,8 @@ define([
     };
 
     Logo.defaults = {
-        linktarget: '_top',
-        margin: '0.5em',
+        linktarget: '_blank',
+        margin: 8,
         hide: false,
         position: 'top-right'
     };

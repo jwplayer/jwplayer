@@ -471,6 +471,19 @@ define([
             }
         }
 
+        function _logoClickHandler(evt){
+            if (!evt.showing || !evt.link) {
+                //_togglePlay();
+                _api.play();
+            }
+
+            if (evt.showing && evt.link) {
+                _api.pause(true);
+                _api.setFullscreen(false);
+                window.open(evt.link, evt.linktarget);
+            }
+        }
+
         // Over controlbar don't fade
         function _cancelFade() {
             clearTimeout(_controlsTimeout);
@@ -499,7 +512,8 @@ define([
             });
             _controlsLayer.appendChild(_display.element());
 
-            _logo = new Logo(_api, _model);
+            _logo = new Logo(_model);
+            _logo.on(events.JWPLAYER_LOGO_CLICK, _logoClickHandler);
             _controlsLayer.appendChild(_logo.element());
 
             _dock = new Dock(_model.id + '_dock', _model.componentConfig('dock'), _api, _skin);
