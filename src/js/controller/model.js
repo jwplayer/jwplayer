@@ -185,7 +185,7 @@ define([
             var repeat = false;
             var playlist = _this.get('playlist');
             if (index === playlist.length || index < -1) {
-                newItem = 0;m
+                newItem = 0;
                 repeat = true;
             } else if (index === -1 || index > playlist.length) {
                 newItem = playlist.length - 1;
