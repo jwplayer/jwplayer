@@ -1,0 +1,14 @@
+<div class="jw-rightclick">
+    <ul>
+    {{#each items}}
+        <li{{#if class}} class="{{class}}"{{/if}}>
+            <a href="{{link}}">
+                {{#if img}}
+                <img src="{{img}}" width="20">
+                {{/if}}
+                {{title}}
+            </a>
+        </li>
+    {{/each}}
+    </ul>
+</div>
