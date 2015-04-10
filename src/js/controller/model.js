@@ -258,7 +258,11 @@ define([
         };
 
         this.componentConfig = function(name) {
-            return _componentConfigs[name];
+            if (name === 'logo') {
+                return this.config.logo;
+            } else {
+                return _componentConfigs[name];
+            }
         };
 
         // The model is also the mediaController for now

@@ -65,6 +65,9 @@ define([], function() {
         JWPLAYER_AUDIO_TRACKS: 'audioTracks',
         JWPLAYER_AUDIO_TRACK_CHANGED: 'audioTracksChanged',
 
+        // View Component Actions
+        JWPLAYER_LOGO_CLICK: 'logoClick',
+
         // Model - Captions
         JWPLAYER_CAPTIONS_LIST: 'captions',
         JWPLAYER_CAPTIONS_CHANGED: 'captionsChanged',

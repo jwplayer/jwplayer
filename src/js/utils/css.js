@@ -333,6 +333,7 @@ define([
         return style + '(' + channels.join(',') + ')';
     };
 
+    utils.style = _style;
 
     return {
         cssKeyframes : _cssKeyframes,

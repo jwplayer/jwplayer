@@ -1,30 +1,22 @@
 define([
     'view/touch',
     'utils/helpers',
-    'utils/css',
     'events/events',
     'underscore',
-    'version'
-], function(Touch, utils, cssUtils, events, _, version) {
+    'utils/backbone.events',
+    'templates/logo.html'
+], function(Touch, utils, events, _, Events, logoTemplate) {
+    var _styles = utils.style;
 
-    var _css = cssUtils.css,
-
-        FREE = 'free',
-        PRO = 'pro',
-        PREMIUM = 'premium',
-        ADS = 'ads',
-
-        LINK_DEFAULT = 'http://www.longtailvideo.com/jwpabout/?a=l&v=',
-        LOGO_CLASS = '.jwlogo';
-
-
-    var Logo = function(_api, _model) {
-        var _id = _model.id + '_logo',
-            _settings,
+    var Logo = function(_model) {
+        var _this = this,
             _logo,
+            _settings,
             _logoConfig = _.extend({}, _model.componentConfig('logo')),
             _defaults = Logo.defaults,
             _showing = false;
+
+        _.extend(this, Events);
 
         function _setup() {
             _setupConfig();
@@ -32,43 +24,32 @@ define([
         }
 
         function _setupConfig() {
-            var linkFlag = 'o';
-            if ( _model.edition && _model.edition() ) {
-                linkFlag = _getLinkFlag(_model.edition());
-            }
-
-            if (linkFlag === 'o' || linkFlag === 'f') {
-                _defaults.link = LINK_DEFAULT + version + '&m=h&e=' + linkFlag;
-            }
-
             _settings = _.extend({}, _defaults, _logoConfig);
             _settings.hide = (_settings.hide.toString() === 'true');
         }
 
         function _setupDisplayElements() {
-            _logo = document.createElement('img');
-            _logo.className = 'jwlogo';
-            _logo.id = _id;
+            _logo = utils.createElement(logoTemplate({
+                file: _settings.file
+            }));
 
             if (!_settings.file) {
-                _logo.style.display = 'none';
                 return;
             }
 
-            var positions = (/(\w+)-(\w+)/).exec(_settings.position),
-                style = {},
-                margin = _settings.margin;
 
-            if (positions.length === 3) {
-                style[positions[1]] = margin;
-                style[positions[2]] = margin;
-            } else {
-                style.top = style.right = margin;
+            if(_settings.position !== Logo.defaults.position || _settings.margin !== Logo.defaults.margin){
+                var positions = (/(\w+)-(\w+)/).exec(_settings.position),
+                    style = { top: 'auto', right: 'auto', bottom: 'auto', left: 'auto' };
+
+                if (positions.length === 3){
+                    style[positions[1]] = _settings.margin;
+                    style[positions[2]] = _settings.margin;
+
+                    _styles(_logo, style);
+                }
             }
 
-            _css(_internalSelector(), style);
-
-            _logo.src = (_settings.prefix ? _settings.prefix : '') + _settings.file;
             if (!utils.isMobile()) {
                 _logo.onclick = _clickHandler;
             } else {
@@ -84,7 +65,7 @@ define([
         };
 
         this.offset = function(offset) {
-            _css(_internalSelector(), {
+            _styles(_logo, {
                 'margin-bottom': offset
             });
         };
@@ -102,49 +83,25 @@ define([
                 evt.stopPropagation();
             }
 
-            if (!_showing || !_settings.link) {
-                //_togglePlay();
-                _api.play();
-            }
+            _this.trigger(events.JWPLAYER_LOGO_CLICK, {
+                showing: _showing,
+                link: _settings.link,
+                linktarget: _settings.linktarget
+            });
 
-            if (_showing && _settings.link) {
-                _api.pause(true);
-                _api.setFullscreen(false);
-                window.open(_settings.link, _settings.linktarget);
-            }
             return;
-        }
-
-        function _getLinkFlag(edition) {
-            if (edition === PRO) {
-                return 'p';
-            } else if (edition === PREMIUM) {
-                return 'r';
-            } else if (edition === ADS) {
-                return 'a';
-            } else if (edition === FREE) {
-                return 'f';
-            } else {
-                return 'o';
-            }
-        }
-
-        function _internalSelector(selector) {
-            return '#' + _id + ' ' + (selector ? selector : '');
         }
 
         this.hide = function(forced) {
             if (_settings.hide || forced) {
                 _showing = false;
-                _logo.style.visibility = 'hidden';
-                _logo.style.opacity = 0;
+                utils.removeClass(_logo, 'jw-logo--visible');
             }
         };
 
         this.show = function() {
             _showing = true;
-            _logo.style.visibility = 'visible';
-            _logo.style.opacity = 1;
+            utils.addClass(_logo, 'jw-logo--visible');
         };
 
         _setup();
@@ -153,19 +110,11 @@ define([
     };
 
     Logo.defaults = {
-        prefix: utils.repo(),
-        file: 'logo.png',
-        linktarget: '_top',
+        linktarget: '_blank',
         margin: 8,
         hide: false,
         position: 'top-right'
     };
 
-    _css(LOGO_CLASS, {
-        cursor: 'pointer',
-        position: 'absolute'
-    });
-
     return Logo;
-
 });
