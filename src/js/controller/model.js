@@ -185,7 +185,7 @@ define([
             var repeat = false;
             var playlist = _this.get('playlist');
             if (index === playlist.length || index < -1) {
-                newItem = 0;
+                newItem = 0;m
                 repeat = true;
             } else if (index === -1 || index > playlist.length) {
                 newItem = playlist.length - 1;
@@ -198,8 +198,8 @@ define([
             }
 
             // Item is actually changing
+            this.mediaModel = {};
             this.set('item', newItem);
-
             // select provider based on item source (video, youtube...)
             var item = this.get('playlist')[newItem];
             var source = item && item.sources && item.sources[0];
