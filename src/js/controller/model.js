@@ -59,6 +59,7 @@ define([
         }, Events);
 
         this.mediaController = _.extend({}, Events);
+        this.mediaModel = {};
 
         QOE.model(this);
 
@@ -104,6 +105,11 @@ define([
                     break;
                 case events.JWPLAYER_PROVIDER_CHANGED:
                     this.set('provider', _provider.getName());
+                    break;
+                case 'visualQuality':
+                    var visualQuality = _.extend({}, evt);
+                    delete visualQuality.type;
+                    this.mediaModel.visualQuality =  visualQuality;
                     break;
             }
 

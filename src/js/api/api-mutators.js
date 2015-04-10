@@ -49,6 +49,8 @@ define([
 
             'getQualityLevels',
 
+            'getVisualQuality',
+
             'getSafeRegion',
             'isBeforeComplete',
             'isBeforePlay'

@@ -38,7 +38,6 @@ public class SwfEventRouter {
         if (json) {
             args = JSON.parse(json) as Array;
         }
-        trace('externalJsEvent', name, json, args);
         if (args && args.length) {
             args.unshift(name);
             _jsEvents.trigger.apply(_jsEvents, args);
