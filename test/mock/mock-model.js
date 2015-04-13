@@ -35,7 +35,7 @@ define([], function() {
                 resize : function(){},
                 setVisibility: function() {},
                 isAudioFile : function() { return true; }
-            }
+            };
         }
     };
     return mockModel;

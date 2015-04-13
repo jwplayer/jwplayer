@@ -1,5 +1,5 @@
 define([
-    'underscore'
+    'test/underscore'
 ], function (_) {
     return {
         canPlayType: function(type) {
