@@ -1,6 +1,6 @@
 define([
     'utils/helpers',
-    'templates/rightclick.html',
+    'handlebars-loader!templates/rightclick.html',
     'underscore',
     'version'
 ], function(utils, rightclickTemplate, _, version) {

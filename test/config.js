@@ -46,13 +46,13 @@ require.config({
         'css':           '../' + 'css',
         'underscore': 'utils/' + 'underscore',
 
-        'handlebars': components + '/handlebars/handlebars.amd',
-        'text':       components + '/requirejs-text/text',
-        'hbars':      components + '/requirejs-handlebars/hb',
-        'less':       components + '/require-less/less',
-        'lessc':      components + '/require-less/lessc',
-        'normalize':  components + '/require-less/normalize',
-        'jquery':     components + '/jquery/dist/jquery',
+        'handlebars':        components + '/handlebars/handlebars.amd',
+        'text':              components + '/requirejs-text/text',
+        'handlebars-loader': components + '/requirejs-handlebars/hb',
+        'less':              components + '/require-less/less',
+        'lessc':             components + '/require-less/lessc',
+        'normalize':         components + '/require-less/normalize',
+        'jquery':            components + '/jquery/dist/jquery',
 
         // always use test/underscore in test scripts
         'test/underscore': components + '/underscore/underscore',
@@ -69,9 +69,6 @@ require.config({
     map: {
         // make sure the text plugin is used to load templates
         '*' : {
-            'templates/errorscreen.html': 'hbars!templates/errorscreen.html',
-            'templates/rightclick.html': 'hbars!templates/rightclick.html',
-            'templates/logo.html': 'hbars!templates/logo.html',
             '../css/styles.less': 'less!css/styles'
         },
         'providers/html5' : {
