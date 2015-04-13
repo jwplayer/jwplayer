@@ -157,13 +157,13 @@ define([
                 }
             });
 
-            _embedder = new Embed(this);
+            _embedder = new Embed(_this);
             _embedder.on(events.JWPLAYER_READY, function(config) {
                 _controller.setup(config, this);
-            }, this);
+            }, _this);
             _embedder.embed(options);
 
-            return this;
+            return _this;
         };
 
         this.qoe = function() {
@@ -179,7 +179,7 @@ define([
         };
 
         this.getContainer = function () {
-            return this.container;
+            return _this.container;
         };
 
         this.getMeta = this.getItemMeta = function () {
@@ -188,9 +188,9 @@ define([
 
         this.getPlaylistItem = function (item) {
             if (!utils.exists(item)) {
-                item = this.getPlaylistIndex();
+                item = _this.getPlaylistIndex();
             }
-            return this.getPlaylist()[item];
+            return _this.getPlaylist()[item];
         };
 
         this.getRenderingMode = function () {
@@ -209,16 +209,16 @@ define([
                 _controller.destroyGoogima();
             }
             _controller.load(toLoad);
-            return this;
+            return _this;
         };
 
         this.play = function (state) {
             if (state !== undefined) {
                 _controller.play(state);
-                return this;
+                return _this;
             }
 
-            state = this.getState();
+            state = _this.getState();
             var instreamState = _instream && _instream.getState();
 
             if (instreamState) {
@@ -236,12 +236,12 @@ define([
                 _controller.play();
             }
 
-            return this;
+            return _this;
         };
 
         this.pause = function (state) {
             if (state === undefined) {
-                state = this.getState();
+                state = _this.getState();
                 if (state === states.PLAYING || state === states.BUFFERING) {
                     _controller.pause();
                 } else {
@@ -250,7 +250,7 @@ define([
             } else {
                 _controller.pause(state);
             }
-            return this;
+            return _this;
         };
         this.createInstream = function () {
             return new Instream(_controller);
@@ -260,8 +260,8 @@ define([
             return instream;
         };
         this.loadInstream = function (item, options) {
-            var instream = this.createInstream();
-            this.setInstream(instream);
+            var instream = _this.createInstream();
+            _this.setInstream(instream);
             instream.init(options).loadItem(item);
             return instream;
         };
@@ -281,7 +281,7 @@ define([
 
         this.remove = function () {
             // Remove from array of players. this calls this.destroyPlayer()
-            globalRemovePlayer(this);
+            globalRemovePlayer(_this);
 
             // so players can be removed before loading completes
             if (_controller.playerDestroy) {
@@ -290,7 +290,7 @@ define([
 
             // terminate state
             _reset();
-            return this.trigger('remove');
+            return _this.trigger('remove');
         };
 
         return this;
