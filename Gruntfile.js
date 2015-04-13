@@ -29,18 +29,18 @@ module.exports = function(grunt) {
         pkg: packageInfo,
 
         jshint: {
+            options: {
+                jshintrc: '.jshintrc'
+            },
             player : [
-                'src/js/**/*.js'
+                'src/js/{,*/}*.js'
             ],
             tests : [
                 'test/{,*/}*.js'
             ],
             grunt : [
                 'Gruntfile.js'
-            ],
-            options: {
-                jshintrc: '.jshintrc'
-            }
+            ]
         },
 
         // lints Less
@@ -195,12 +195,11 @@ module.exports = function(grunt) {
         },
 
         karma: {
-            local : {
+            options: {
                 configFile: './test/karma/karma.conf.js'
             },
-            browserstack : {
-                configFile: './test/karma/karma.conf.js'
-            }
+            local : {},
+            browserstack : {}
         },
 
         clean: {
