@@ -11,10 +11,11 @@ define([
     'view/logo',
     'view/controlbar',
     'view/rightclick',
+    'view/title',
     'utils/css',
     'underscore'
 ], function(utils, events, Events, states, CastDisplay,
-            Captions, Display, Dock, errorScreen, Logo, Controlbar, RightClick, cssUtils, _) {
+            Captions, Display, Dock, errorScreen, Logo, Controlbar, RightClick, Title, cssUtils, _) {
 
     var _css = cssUtils.css,
         _bounds = utils.bounds,
@@ -64,6 +65,7 @@ define([
             _castDisplay,
             _dock,
             _logo,
+            _title,
             _logoConfig = _.extend({}, _model.componentConfig('logo')),
             _captions,
             _audioMode,
@@ -505,12 +507,18 @@ define([
             _captions.on(events.JWPLAYER_CAPTIONS_LOADED, _captionsLoadedHandler);
             _controlsLayer.appendChild(_captions.element());
 
+
             _display = new Display(_skin, _api, _model);
             _display.on(events.JWPLAYER_DISPLAY_CLICK, function (evt) {
                 forward(evt);
                 _touchHandler();
             });
             _controlsLayer.appendChild(_display.element());
+
+            if (! _model.get('hidetitle')) {
+                _title = new Title(_model);
+                _controlsLayer.appendChild(_title.element());
+            }
 
             _logo = new Logo(_model);
             _logo.on(events.JWPLAYER_LOGO_CLICK, _logoClickHandler);
@@ -1043,6 +1051,8 @@ define([
         }
 
         function _updateState(state) {
+            utils.removeClass(_playerElement, 'jw-state-' + _currentState);
+            utils.addClass(_playerElement, 'jw-state-' + state);
             _currentState = state;
             // cast.display
             if (_isCasting()) {

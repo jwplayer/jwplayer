@@ -77,13 +77,7 @@ define([
             _displayTouch.on(events.touchEvents.TAP, _clickHandler);
         }
 
-        _button = new DisplayIcon(_model.id, _display.id + '_button', _skin, _api, {
-            font: _config.fontweight + ' ' + _config.fontsize + 'px/' +
-                (parseInt(_config.fontsize, 10) + 3) + 'px Arial, Helvetica, sans-serif',
-            color: _config.fontcolor
-        }, {
-            color: _config.overcolor
-        });
+        _button = new DisplayIcon(_model.id, _display.id + '_button', _skin, _api);
         _display.appendChild(_button.element());
 
         _stateHandler({
@@ -168,16 +162,15 @@ define([
 
         this.clickHandler = _clickHandler;
 
-        function _setIcon(name, text) {
+        function _setIcon(name) {
             if (!_config.showicons) {
                 return;
             }
 
-            if (name || text) {
+            if (name) {
                 _button.setRotation(name === 'buffer' ? parseInt(_config.bufferrotation, 10) : 0,
                     parseInt(_config.bufferinterval, 10));
                 _button.setIcon(name);
-                _button.setText(text);
             } else {
                 _button.hide();
             }
@@ -242,7 +235,7 @@ define([
                             if (_model && _model.config.displaytitle === false) {
                                 disp = false;
                             }
-                            _setIcon('play', (_item && disp) ? _item.title : '');
+                            _setIcon('play');
                         }
                         break;
                     case states.BUFFERING:
@@ -322,6 +315,7 @@ define([
 
         function _errorHandler(evt) {
             _errorState = true;
+            // TODO : revisit, it no longer accepts a message
             _setIcon('error', evt.message);
         }
 
