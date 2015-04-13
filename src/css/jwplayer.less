@@ -3,6 +3,7 @@
 @import "imports/reset.less";
 @import "imports/icons.less";
 
+@import "imports/view.less";
 @import "imports/display.less";
 @import "imports/controlbar.less";
 @import "imports/dock.less";
@@ -21,20 +22,6 @@
 @import "states/complete.less";
 
 .jwplayer {
-    width: 100%;
-    font-size: @default-em-size;
-    position: relative;
-    display: block;
-    min-height: 0;
-    overflow: hidden;
-    box-sizing: border-box;
-    font-family: Arial, Helvetica, sans-serif;
-    background-color: #000;
-
-    * {
-        box-sizing: inherit;
-    }
-
     .jw-controls {
         pointer-events: none;
 
@@ -120,32 +107,6 @@
     display: none;
 }
 
-.jw-main {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-}
-
-.jw-video, .jw-controls {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-}
-
-.jw-video video {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    margin: auto;
-    background: transparent;
-}
-
 .jw-instream {
     position: absolute;
     top: 0;
@@ -154,28 +115,3 @@
     left: 0;
     display: none;
 }
-
-.jw-aspect {
-    display: none;
-}
-
-
-// Aspect Ratio styles
-.jwplayer:before{
-    content: "";
-    display: block;
-    padding-top: 56.25%; // 16:9 Ratio (9/16)
-}
-
-.jwplayer .jw-main {
-    position:  absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-}
-
-.jwplayer.jw-aspect-mode {
-    height: auto;
-}
-

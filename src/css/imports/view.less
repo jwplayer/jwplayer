@@ -1,0 +1,109 @@
+.jwplayer {
+    width: 100%;
+    font-size: @default-em-size;
+    position: relative;
+    display: block;
+    min-height: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #000;
+
+    * {
+        box-sizing: inherit;
+    }
+
+    &.jw-setup-hide {
+        opacity: 0;
+    }
+
+    .jw-main {
+        position:  absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+    }
+
+    .jw-video, .jw-controls {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+    }
+
+    .jw-video {
+        overflow: hidden;
+        visibility: hidden;
+        opacity: 0;
+    }
+
+    .jw-video.jw-show-video {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .jw-video video {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        margin: auto;
+        background: transparent;
+    }
+
+
+
+    // Aspect Ratio styles
+    &.jw-aspect-mode:before{
+        content: "";
+        display: block;
+        padding-top: 56.25%; // 16:9 Ratio (9/16)
+    }
+
+    &.jw-aspect-mode {
+        height: auto;
+    }
+
+    &:focus, .jw-swf {
+        outline: none;
+    }
+
+    &.jw-fullscreen {
+        width: 100%;
+        height: 100%;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 1000;
+        margin: 0;
+        position: fixed;
+
+        &.jw-user-inactive {
+            cursor: none;
+            -webkit-cursor-visibility: auto-hide;
+        }
+
+        & .jw-main {
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+        }
+    }
+
+    &.jw-audio-mode {
+        background-color: transparent;
+    }
+
+    &.jw-is-casting .jw-captions {
+        display: none;
+    }
+}
+
+.jw-tab-focus:focus {
+    outline: solid 2px #0b7ef4;
+}

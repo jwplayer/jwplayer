@@ -19,18 +19,11 @@ define([
             Captions, Display, DisplayIcon, Dock, errorScreen, Logo,
             Controlbar, RightClick, Title, cssUtils, _) {
 
-    var _css = cssUtils.css,
+    var _styles = utils.style,
         _bounds = utils.bounds,
         _isMobile = utils.isMobile(),
         _isIPad = utils.isIPad(),
         _isIPod = utils.isIPod(),
-        PLAYER_CLASS = 'jwplayer',
-        ASPECT_MODE = 'aspectMode',
-        FULLSCREEN_SELECTOR = '.' + PLAYER_CLASS + '.jwfullscreen',
-        VIEW_MAIN_CONTAINER_CLASS = 'jwmain',
-        VIEW_VIDEO_CONTAINER_CLASS = 'jwvideo',
-        VIEW_CONTROLS_CONTAINER_CLASS = 'jwcontrols',
-        VIEW_ASPECT_CONTAINER_CLASS = 'jwaspect',
         DOCUMENT_FULLSCREEN_EVENTS = [
             'fullscreenchange',
             'webkitfullscreenchange',
@@ -42,11 +35,6 @@ define([
          * Player stylesheets - done once on script initialization;  *
          * These CSS rules are used for all JW Player instances      *
          *************************************************************/
-        JW_CSS_SMOOTH_EASE = 'opacity .25s ease',
-        JW_CSS_100PCT = '100%',
-        JW_CSS_ABSOLUTE = 'absolute',
-        JW_CSS_IMPORTANT = ' !important',
-        JW_CSS_HIDDEN = 'hidden',
         JW_CSS_BLOCK = 'block';
 
     var View = function(_api, _model) {
@@ -54,7 +42,6 @@ define([
             _container,
             _skin,
             _controlsLayer,
-            _aspectLayer,
             _controlsTimeout = -1,
             _timeoutDuration = _isMobile ? 4000 : 2000,
             _videoLayer,
@@ -92,7 +79,6 @@ define([
             _this = _.extend(this, Events);
 
         _playerElement = _api.getContainer();
-        _playerElement.className = PLAYER_CLASS;
         _playerElement.id = _model.id;
         _playerElement.tabIndex = 0;
 
@@ -111,11 +97,7 @@ define([
         _elementSupportsFullscreen = _requestFullscreen && _exitFullscreen;
 
         if (_model.get('aspectratio')) {
-            cssUtils.style(_playerElement, {
-                display: 'inline-block'
-            });
-            _playerElement.className = _playerElement.className.replace(PLAYER_CLASS,
-                PLAYER_CLASS + ' ' + ASPECT_MODE);
+            utils.addClass(_playerElement, 'jw-aspect-mode');
         }
 
         var replace = document.getElementById(_model.id);
@@ -285,21 +267,12 @@ define([
             // TODO: remove when adding in templates. exposed for controller/instream
             this._skin = _skin = skin;
 
-            _container = _createElement('span', VIEW_MAIN_CONTAINER_CLASS);
-            _container.id = _model.id + '_view';
-            _videoLayer = _createElement('span', VIEW_VIDEO_CONTAINER_CLASS);
-            _videoLayer.id = _model.id + '_media';
+            _container = _playerElement.getElementsByClassName('jw-main')[0];
+            _videoLayer = _playerElement.getElementsByClassName('jw-video')[0];
 
-            _controlsLayer = _createElement('span', VIEW_CONTROLS_CONTAINER_CLASS);
-            _aspectLayer = _createElement('span', VIEW_ASPECT_CONTAINER_CLASS);
+            _controlsLayer = _playerElement.getElementsByClassName('jw-controls')[0];
 
             _setupControls();
-
-            _container.appendChild(_videoLayer);
-            _container.appendChild(_controlsLayer);
-
-            _playerElement.appendChild(_container);
-            _playerElement.appendChild(_aspectLayer);
 
             // adds video tag to video layer
             _model.getVideo().setContainer(_videoLayer);
@@ -359,19 +332,13 @@ define([
                     };
                 }
                 if (evt.active) {
-                    cssUtils.style(_captions.element(), {
-                        display: 'none'
-                    });
+                    utils.addClass(_playerElement, 'jw-is-casting');
                     _this.forceControls(true);
                     _castDisplay.setState('connecting').setName(evt.deviceName).show();
 
-                    // TODO: CURRENTLY UNTESTED
                     _model.on('change:state', _castDisplay.statusDelegate);
                     _model.mediaController.on(events.JWPLAYER_CAST_AD_CHANGED, _castAdChanged);
-
                 } else {
-
-                    // TODO: CURRENTLY UNTESTED
                     _model.off('change:state', _castDisplay.statusDelegate);
                     _model.mediaController.off(events.JWPLAYER_CAST_AD_CHANGED, _castAdChanged);
 
@@ -379,9 +346,7 @@ define([
                     if (_controlbar.adMode()) {
                         _castAdsEnded();
                     }
-                    cssUtils.style(_captions.element(), {
-                        display: null
-                    });
+                    utils.removeClass(_playerElement, 'jw-is-casting');
                     // redraw displayicon
                     _stateHandler(null, _model.get('state'));
                     _responsiveListener();
@@ -404,16 +369,27 @@ define([
             _componentFadeListeners(_controlbar);
             _componentFadeListeners(_logo);
 
-            _css('#' + _playerElement.id + '.' + ASPECT_MODE + ' .' + VIEW_ASPECT_CONTAINER_CLASS, {
-                'margin-top': _model.aspectratio,
-                display: JW_CSS_BLOCK
-            });
+            // TODO: ASPECT RATIO SETTING HERE
+            //_style(_playerElement'.' + ASPECT_MODE + ' .' + VIEW_ASPECT_CONTAINER_CLASS, {
+            //    'margin-top': _model.aspectratio,
+            //    display: JW_CSS_BLOCK
+            //});
+
+            var styleTarget = '#'+_playerElement.id+'.jw-aspect-mode:before';
+            document.styleSheets[0].addRule(styleTarget, 'padding-top: ' + _model.aspectratio + '%');
+            if(document.attachEvent) {
+                document.styleSheets[0].addRule(styleTarget,
+                    'content: ' + Math.round(Math.random()*1000000) );
+            }
+            if(!document.attachEvent) {
+                document.styleSheets[0].insertRule(styleTarget +
+                    ' { padding-top: ' + Math.round(9/16 * 100) + '%; }', 0);
+            }
 
             setTimeout(function() {
                 _resize(_model.width, _model.height);
             }, 0);
         };
-                
         function _componentFadeListeners(comp) {
             if (comp) {
                 comp.element().addEventListener('mousemove', _cancelFade, false);
@@ -427,19 +403,9 @@ define([
             // set current captions evt.captionData[_player.jwGetCurrentCaptions()]
         }
 
-
-
         function _mouseoutHandler() {
             clearTimeout(_controlsTimeout);
             _controlsTimeout = setTimeout(_hideControls, _timeoutDuration);
-        }
-
-        function _createElement(elem, className) {
-            var newElement = document.createElement(elem);
-            if (className) {
-                newElement.className = className;
-            }
-            return newElement;
         }
 
         function _touchHandler() {
@@ -613,7 +579,6 @@ define([
             if (_castDisplay) {
                 _castDisplay.adChanged(evt);
             }
-
         }
 
         function _castAdsStarted() {
@@ -669,7 +634,7 @@ define([
                     if (_instreamModel) {
                        _instreamModel.getVideo().setFullScreen(state);
                     }
-                       _model.getVideo().setFullScreen(state);
+                   _model.getVideo().setFullScreen(state);
                 }
             }
         };
@@ -684,13 +649,14 @@ define([
         /**
          * Resize the player
          */
+        // TODO: ANALYSE WHICH PARTS STAY AND GO BASED ON CSS CHANGES
         function _resize(width, height, resetAspectMode) {
             var className = _playerElement.className,
                 playerStyle,
                 id = _model.id + '_view';
             cssUtils.block(id);
 
-            // when jwResize is called remove aspectMode and force layout
+            // when jwResize is caandlled remove aspectMode and force layout
             resetAspectMode = !!resetAspectMode;
             if (resetAspectMode) {
                 className = className.replace(/\s*aspectMode/, '');
@@ -710,10 +676,10 @@ define([
             playerStyle = {
                 width: width
             };
-            if (className.indexOf(ASPECT_MODE) === -1) {
+            if (!utils.hasClass(_playerElement, 'jw-aspect-mode')) {
                 playerStyle.height = height;
             }
-            cssUtils.style(_playerElement, playerStyle, true);
+            _styles(_playerElement, playerStyle, true);
 
             if (_display) {
                 _display.redraw();
@@ -816,9 +782,8 @@ define([
         this.resizeMedia = _resizeMedia;
 
         var _completeSetup = this.completeSetup = function() {
-            cssUtils.style(_playerElement, {
-                opacity: 1
-            });
+            utils.removeClass(_playerElement, 'jw-setup-hide');
+
             window.addEventListener('beforeunload', function() {
                 if (!_isCasting()) { // don't call stop while casting
                     // prevent video error in display on window close
@@ -857,14 +822,14 @@ define([
             utils.removeClass(playerElement, 'jwfullscreen');
             if (fullscreenState) {
                 utils.addClass(playerElement, 'jwfullscreen');
-                cssUtils.style(document.body, {
-                    'overflow-y': JW_CSS_HIDDEN
+                _styles(document.body, {
+                    'overflow-y': 'hidden'
                 });
 
                 // On going fullscreen we want the control bar to fade after a few seconds
                 _resetTapTimer();
             } else {
-                cssUtils.style(document.body, {
+                _styles(document.body, {
                     'overflow-y': ''
                 });
             }
@@ -1045,11 +1010,10 @@ define([
                     _display.show();
                     _display.hidePreview(false);
                 }
-                // hide video without audio and android checks
-                cssUtils.style(_videoLayer, {
-                    visibility: 'visible',
-                    opacity: 1
-                });
+
+                // TODO: jw-show-video should be used in providers to set visibility
+                //          Likely merits renaming
+                utils.addClass(_videoLayer, 'jw-show-video');
 
                 // force control bar without audio check
                 if (_controlbar) {
@@ -1255,99 +1219,53 @@ define([
         };
     };
 
-    // Container styles
-    _css('.' + VIEW_MAIN_CONTAINER_CLASS, {
-        position: JW_CSS_ABSOLUTE,
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        '-webkit-transition': JW_CSS_SMOOTH_EASE,
-        '-moz-transition': JW_CSS_SMOOTH_EASE,
-        '-o-transition': JW_CSS_SMOOTH_EASE
-    });
+    //_css('.' + VIEW_ASPECT_CONTAINER_CLASS, {
+    //    display: 'none'
+    //});
 
-    _css('.' + VIEW_VIDEO_CONTAINER_CLASS + ', .' + VIEW_CONTROLS_CONTAINER_CLASS, {
-        position: JW_CSS_ABSOLUTE,
-        height: JW_CSS_100PCT,
-        width: JW_CSS_100PCT,
-        '-webkit-transition': JW_CSS_SMOOTH_EASE,
-        '-moz-transition': JW_CSS_SMOOTH_EASE,
-        '-o-transition': JW_CSS_SMOOTH_EASE
-    });
+    //_css('.' + PLAYER_CLASS + '.' + ASPECT_MODE, {
+    //    height: 'auto'
+    //});
 
-    _css('.' + VIEW_VIDEO_CONTAINER_CLASS, {
-        overflow: JW_CSS_HIDDEN,
-        visibility: JW_CSS_HIDDEN,
-        opacity: 0
-    });
-
-    _css('.' + VIEW_VIDEO_CONTAINER_CLASS + ' video', {
-        background: 'transparent',
-        height: JW_CSS_100PCT,
-        width: JW_CSS_100PCT,
-        position: 'absolute',
-        margin: 'auto',
-        right: 0,
-        left: 0,
-        top: 0,
-        bottom: 0
-    });
-
-    _css('.' + VIEW_ASPECT_CONTAINER_CLASS, {
-        display: 'none'
-    });
-
-    _css('.' + PLAYER_CLASS + '.' + ASPECT_MODE, {
-        height: 'auto'
-    });
+    //_css('.' + PLAYER_CLASS + ' .jwuniform', {
+    //    'background-size': 'contain' + JW_CSS_IMPORTANT
+    //});
+    //
+    //_css('.' + PLAYER_CLASS + ' .jwfill', {
+    //    'background-size': 'cover' + JW_CSS_IMPORTANT,
+    //    'background-position': 'center'
+    //});
+    //
+    //_css('.' + PLAYER_CLASS + ' .jwexactfit', {
+    //    'background-size': JW_CSS_100PCT + ' ' + JW_CSS_100PCT + JW_CSS_IMPORTANT
+    //});
 
     // Fullscreen styles
-
-    _css(FULLSCREEN_SELECTOR, {
-        width: JW_CSS_100PCT,
-        height: JW_CSS_100PCT,
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        'z-index': 1000,
-        margin: 0,
-        position: 'fixed'
-    }, true);
+    // TODO: Strategy for Fullscreen?
+    //_css(FULLSCREEN_SELECTOR, {
+    //    width: JW_CSS_100PCT,
+    //    height: JW_CSS_100PCT,
+    //    left: 0,
+    //    right: 0,
+    //    top: 0,
+    //    bottom: 0,
+    //    'z-index': 1000,
+    //    margin: 0,
+    //    position: 'fixed'
+    //}, true);
 
     // hide cursor in fullscreen
-    _css(FULLSCREEN_SELECTOR + '.jw-user-inactive', {
-        'cursor': 'none',
-        '-webkit-cursor-visibility': 'auto-hide'
-    });
+    //_css(FULLSCREEN_SELECTOR + '.jw-user-inactive', {
+    //    'cursor': 'none',
+    //    '-webkit-cursor-visibility': 'auto-hide'
+    //});
 
-    _css(FULLSCREEN_SELECTOR + ' .' + VIEW_MAIN_CONTAINER_CLASS, {
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0
-    }, true);
-
-    _css('.' + PLAYER_CLASS + ' .jwuniform', {
-        'background-size': 'contain' + JW_CSS_IMPORTANT
-    });
-
-    _css('.' + PLAYER_CLASS + ' .jwfill', {
-        'background-size': 'cover' + JW_CSS_IMPORTANT,
-        'background-position': 'center'
-    });
-
-    _css('.' + PLAYER_CLASS + ' .jwexactfit', {
-        'background-size': JW_CSS_100PCT + ' ' + JW_CSS_100PCT + JW_CSS_IMPORTANT
-    });
-
-    _css('object.jwswf, .jwplayer:focus', {
-        outline: 'none'
-    });
-    _css('.jw-tab-focus:focus', {
-        outline: 'solid 2px #0B7EF4'
-    });
+    //_css(FULLSCREEN_SELECTOR + ' .jw-main', {
+    //    left: 0,
+    //    right: 0,
+    //    top: 0,
+    //    bottom: 0
+    //}, true);
 
     return View;
 });

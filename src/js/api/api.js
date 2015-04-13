@@ -11,9 +11,10 @@ define([
     'controller/controller',
     'api/api-actions',
     'api/api-mutators',
-    'api/callbacks-deprecate'
+    'api/callbacks-deprecate',
+    'templates/view.html'
 ], function(Embed, Instream, events, states,
-            Events, utils, cssUtils, Timer, _, Controller, actionsInit, mutatorsInit, legacyInit) {
+            Events, utils, cssUtils, Timer, _, Controller, actionsInit, mutatorsInit, legacyInit, viewTemplate) {
 
     function addFocusBorder(container) {
         utils.addClass(container, 'jw-tab-focus');
@@ -110,7 +111,9 @@ define([
         legacyInit(this);
 
         // These should be read-only model properties
-        this.container = document.createElement('div');
+        //this.container = document.createElement('div');
+        this.container = utils.createElement(viewTemplate({}));
+        this.container = this.container.parentElement.removeChild(this.container);
         this.id = this.container.id = container.id;
 
         // Intialize QOE timer
@@ -134,7 +137,7 @@ define([
             if (toReset.parentNode) {
                 toReset.parentNode.replaceChild(_originalContainer, toReset);
             }
-            utils.emptyElement(toReset);
+            //utils.emptyElement(toReset);  // TODO: FIGURE OUT A BETTER WAY TO CREATE AN PLACE THE ELEMENT
         };
 
         var _getPlugin = function(name) {
