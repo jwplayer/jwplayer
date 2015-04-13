@@ -10,11 +10,10 @@ define([
         DOCUMENT = document,
 
         /** Some CSS constants we should use for minimization */
-        JW_CSS_NONE = 'none',
         JW_CSS_100PCT = '100%',
         JW_CSS_CENTER = 'center';
 
-    var DisplayIcon = function(_playerId, _id, _skin, _api, textStyle, textStyleOver) {
+    var DisplayIcon = function(_playerId, _id, _skin, _api) {
         _api.onResize(_setWidth);
 
         var _container = _createElement('jwdisplayIcon'),
@@ -22,13 +21,10 @@ define([
             _capLeftSkin,
             _capRightSkin,
             _hasCaps,
-            _text = _createElement('jwtext', _container, textStyle, textStyleOver),
             _icon = _createElement('jwicon', _container),
             _iconCache = {},
             _iconElement,
-            _iconWidth = 0,
-            _setWidthTimeout = -1,
-            _repeatCount = 0;
+            _iconWidth = 0;
 
         _container.id = _id;
 
@@ -132,21 +128,10 @@ define([
         }
 
         function _redraw() {
-            var showText = _hasCaps || (_iconWidth === 0);
-
-            cssUtils.style(_text, {
-                display: (_text.innerHTML && showText) ? '' : JW_CSS_NONE
-            });
-
-            _repeatCount = showText ? 30 : 0;
             _setWidth();
         }
 
         function _setWidth() {
-            clearTimeout(_setWidthTimeout);
-            if (_repeatCount-- > 0) {
-                _setWidthTimeout = setTimeout(_setWidth, 33);
-            }
 
             var px100pct = 'px ' + JW_CSS_100PCT;
             var contentWidth = Math.ceil(Math.max(_iconElement.width,
@@ -167,21 +152,6 @@ define([
 
         this.element = function() {
             return _container;
-        };
-
-        this.setText = function(text) {
-            var style = _text.style;
-            _text.innerHTML = text ? text.replace(':', ':<br>') : '';
-            style.height = '0';
-            style.display = 'block';
-            if (text) {
-                while (numLines(_text) > 2) {
-                    _text.innerHTML = _text.innerHTML.replace(/(.*) .*$/, '$1...');
-                }
-            }
-            style.height = '';
-            style.display = '';
-            _redraw();
         };
 
         this.setIcon = function(name) {
@@ -222,17 +192,6 @@ define([
 
         this.setRotation = startRotation;
 
-        function numLines(element) {
-            // Checks if this is IE8.  the equality check for typeof is required else there will be an error.
-            if(typeof getComputedStyle === 'undefined') {
-                return Math.floor(element.scrollHeight /
-                        parseInt(element.currentStyle.lineHeight.replace('px', '')));
-            } else {
-                return Math.floor(element.scrollHeight /
-                        DOCUMENT.defaultView.getComputedStyle(element, null).lineHeight.replace('px', ''));
-            }
-        }
-
 
         var _hide = this.hide = function() {
             _container.style.opacity = 0;
@@ -271,18 +230,6 @@ define([
 
     _css('.jwplayer.jw-flag-dragging .jwdisplayIcon', {
         'display':'none'
-    });
-
-    _css(DI_CLASS + ' .jwtext', {
-        color: '#fff',
-        padding: '0 1px',
-        'max-width': '300px',
-        'overflow-y': 'hidden',
-        'text-align': JW_CSS_CENTER,
-        '-webkit-user-select': JW_CSS_NONE,
-        '-moz-user-select': JW_CSS_NONE,
-        '-ms-user-select': JW_CSS_NONE,
-        'user-select': JW_CSS_NONE
     });
 
     return DisplayIcon;

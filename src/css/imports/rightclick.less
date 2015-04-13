@@ -1,7 +1,7 @@
 .jw-rightclick {
   display: none;
 }
-.jw-rightclick.open {
+.jw-rightclick.jw-open {
   display: block;
 }
 
@@ -12,24 +12,19 @@
 
   ul {
     list-style: none;
-    font-family: Arial, sans-serif;
-    font-size: 1em;
     font-weight: bold;
-    margin: 0;
-    -webkit-padding-start: 0;
-    color: #000;
-    border-radius: 3px;
+    border-radius: 0.15em;
     border: 1px solid #d9dde6;
   }
 
   .jw-icon {
     font-size: 1.8em;
-    padding: 0;
-    vertical-align: middle;
-    padding-right: .5em;
-    margin-right: .4em;
-    border-right: 1px solid #d9dde6;
     color : #ff0147;
+    vertical-align: middle;
+
+    padding-right: .3em;
+    margin-right: .3em;
+    border-right: 1px solid #d9dde6;
   }
 
   a {
@@ -37,7 +32,7 @@
     text-decoration: none;
 
     // padding comes from the anchor, so that the whole item is clickable
-    padding: .4em .5em;
+    padding: .7em;
     display: block;
   }
 
@@ -51,18 +46,18 @@
   }
 
   li:hover,
-  li.featured:hover {
+  li.jw-featured:hover {
     background-color: #e4e6ed;
     cursor: pointer;
     color: #ff0046;
   }
 
-  li.featured {
+  li.jw-featured {
     background-color: #fff;
     vertical-align: middle;
   }
 
-  li.featured a {
+  li.jw-featured a {
     color: #aab4c8;
   }
 }
