@@ -72,7 +72,7 @@ define([
             this.el.style.left = off.x+'px';
             this.el.style.top  = off.y+'px';
 
-            utils.addClass(this.el, 'open');
+            utils.addClass(this.el, 'jw-open');
             return false;
         },
 
@@ -81,7 +81,7 @@ define([
                 // If mouse is over the menu, do nothing
                 return;
             }
-            utils.removeClass(this.el, 'open');
+            utils.removeClass(this.el, 'jw-open');
         },
 
         lazySetup : function() {
