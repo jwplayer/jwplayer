@@ -1,5 +1,4 @@
 define([
-    'view/displayicon',
     'view/touch',
     'utils/helpers',
     'events/events',
@@ -8,7 +7,7 @@ define([
     'utils/stretching',
     'utils/css',
     'underscore'
-], function(DisplayIcon, Touch, utils, events, Events, states, stretchUtils, cssUtils, _) {
+], function(Touch, utils, events, Events, states, stretchUtils, cssUtils, _) {
 
 
     var _isMobile = utils.isMobile(),
@@ -16,16 +15,6 @@ define([
 
         D_CLASS = '.jwdisplay',
         D_PREVIEW_CLASS = '.jwpreview';
-
-    var DEFAULT_SETTINGS = {
-        showicons: true,
-        bufferrotation: 45,
-        bufferinterval: 100,
-        fontcolor: '#ccc',
-        overcolor: '#fff',
-        fontsize: 15,
-        fontweight: ''
-    };
 
     // TODO: Make this only _api and _model as config and _skin are stripped out
     var Display = function(_skin, _api, _model) {
@@ -38,13 +27,8 @@ define([
             _errorState = false,
             _completedState = false,
             _hiding,
-            _hideTimeout,
-            _button,
             _forced,
             _previousState,
-            _config = _.extend({}, DEFAULT_SETTINGS,
-                _skin.getComponentSettings('display'), _model.componentConfig('display')
-            ),
             _eventDispatcher = _.extend({}, Events),
             _alternateClickHandler,
             _lastClick;
@@ -76,9 +60,6 @@ define([
             _displayTouch = new Touch(_display);
             _displayTouch.on(events.touchEvents.TAP, _clickHandler);
         }
-
-        _button = new DisplayIcon(_model.id, _display.id + '_button', _skin, _api);
-        _display.appendChild(_button.element());
 
         _stateHandler({
             newstate: states.IDLE
@@ -162,21 +143,6 @@ define([
 
         this.clickHandler = _clickHandler;
 
-        function _setIcon(name) {
-            if (!_config.showicons) {
-                return;
-            }
-
-            if (name) {
-                _button.setRotation(name === 'buffer' ? parseInt(_config.bufferrotation, 10) : 0,
-                    parseInt(_config.bufferinterval, 10));
-                _button.setIcon(name);
-            } else {
-                _button.hide();
-            }
-
-        }
-
         function _itemHandler() {
             _clearError();
             _item = _model.playlist[_model.item];
@@ -200,7 +166,6 @@ define([
 
         function _playlistCompleteHandler() {
             _completedState = true;
-            _setIcon('replay');
             var item = _model.playlist[0];
             _loadImage(item.image);
         }
@@ -222,9 +187,6 @@ define([
             state = state || _getState();
             if (state !== _previousState) {
                 _previousState = state;
-                if (_button) {
-                    _button.setRotation(0);
-                }
                 switch (state) {
                     case states.IDLE:
                         if (!_errorState && !_completedState) {
@@ -235,19 +197,15 @@ define([
                             if (_model && _model.config.displaytitle === false) {
                                 disp = false;
                             }
-                            _setIcon('play');
                         }
                         break;
                     case states.BUFFERING:
                         _clearError();
                         _completedState = false;
-                        _setIcon('buffer');
                         break;
                     case states.PLAYING:
-                        _setIcon();
                         break;
                     case states.PAUSED:
-                        _setIcon('play');
                         break;
                 }
             }
@@ -313,10 +271,10 @@ define([
             }
         }
 
-        function _errorHandler(evt) {
+        function _errorHandler(/*evt*/) {
             _errorState = true;
             // TODO : revisit, it no longer accepts a message
-            _setIcon('error', evt.message);
+            //_setIcon('error', evt.message);
         }
 
         function _clearError() {
@@ -343,26 +301,12 @@ define([
             });
         }
 
-        this.show = function(force) {
-            if (_button && (force || _getState() !== states.PLAYING)) {
-                _clearHideTimeout();
-                _display.style.display = 'block';
-                _button.show();
-                _hiding = false;
-            }
+        this.show = function() {
         };
 
         this.hide = function() {
-            if (_button) {
-                _button.hide();
-                _hiding = true;
-            }
         };
 
-        function _clearHideTimeout() {
-            clearTimeout(_hideTimeout);
-            _hideTimeout = undefined;
-        }
 
         /** NOT SUPPORTED : Using this for now to hack around instream API **/
         this.setAlternateClickHandler = function(handler) {
