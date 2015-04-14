@@ -402,7 +402,6 @@ define([
                 }
             }
             _componentFadeListeners(_controlbar);
-            _componentFadeListeners(_dock);
             _componentFadeListeners(_logo);
 
             _css('#' + _playerElement.id + '.' + ASPECT_MODE + ' .' + VIEW_ASPECT_CONTAINER_CLASS, {
@@ -522,6 +521,9 @@ define([
                 _controlsLayer.appendChild(_title.element());
             }
 
+            _dock = new Dock(_model);
+            _controlsLayer.appendChild(_dock.element());
+
             var displayIcon = new DisplayIcon(_model);
             _controlsLayer.appendChild(displayIcon.element());
 
@@ -529,13 +531,9 @@ define([
             _logo.on(events.JWPLAYER_LOGO_CLICK, _logoClickHandler);
             _controlsLayer.appendChild(_logo.element());
 
-            _dock = new Dock(_model.id + '_dock', _model.componentConfig('dock'), _api, _skin);
-            _controlsLayer.appendChild(_dock.element());
-
             if (!_isMobile) {
                 _rightClickMenu = new RightClick();
                 _rightClickMenu.setup(_model, _playerElement, _controlsLayer);
-                //_controlsLayer.appendChild(_rightClickMenu.el);
             }
 
             _controlbar = new Controlbar(_skin, _api, _model);
@@ -724,12 +722,6 @@ define([
             if (_logo) {
                 _logo.offset(_controlbar && _logo.position().indexOf('bottom') >= 0 ?
                     _controlbar.height() + _controlbar.margin() : 0);
-                setTimeout(function() {
-                    if (_dock) {
-                        _dock.offset(_logo.position() === 'top-left' ?
-                            _logo.element().clientWidth + _logo.margin() : 0);
-                    }
-                }, 500);
             }
 
             _checkAudioMode(height);
@@ -877,7 +869,6 @@ define([
 
             _redrawComponent(_controlbar);
             _redrawComponent(_display);
-            _redrawComponent(_dock);
             _resizeMedia();
 
             _toggleFullscreen(fullscreenState);
@@ -917,18 +908,6 @@ define([
             // TODO: use _forcedControlsState for audio mode so that we don't need these
             if (_controlbar && !_audioMode && !_model.getVideo().isAudioFile()) {
                 _controlbar.hide();
-            }
-        }
-
-        function _showDock() {
-            if (_dock && !_audioMode && _model.get('controls')) {
-                _dock.show();
-            }
-        }
-
-        function _hideDock() {
-            if (_dock && !_replayState && !_model.getVideo().isAudioFile()) {
-                _dock.hide();
             }
         }
 
@@ -978,12 +957,7 @@ define([
                 _hideControlbar();
             }
 
-            if (!_model.get('controls')) {
-                _hideDock();
-            }
-
             if (state !== states.IDLE && state !== states.PAUSED) {
-                _hideDock();
                 _hideLogo();
             }
 
@@ -998,7 +972,6 @@ define([
             _showing = true;
             if (_model.get('controls') || _audioMode) {
                 _showControlbar();
-                _showDock();
             }
             if (_logoConfig.hide) {
                 _showLogo();
@@ -1016,7 +989,6 @@ define([
             _replayState = true;
             _fullscreen(false);
             if (_model.get('controls')) {
-                _showDock();
             }
         }
 
@@ -1100,7 +1072,6 @@ define([
                             _showControls();
                             _controlbar.hideFullscreen(true);
                         }
-                        _showDock();
                     } else {
                         _showVideo(true);
 
@@ -1116,7 +1087,6 @@ define([
                     if (!_audioMode) {
                         _display.hidePreview(false);
                         _showDisplay();
-                        _showDock();
                         if (_controlbar) {
                             _controlbar.hideFullscreen(false);
                         }
@@ -1145,7 +1115,6 @@ define([
             _controlbar.instreamMode(true);
             _controlbar.adMode(true);
             _controlbar.show(true);
-            _dock.hide();
         };
 
         this.setInstreamText = function(text) {
@@ -1166,7 +1135,6 @@ define([
             _controlbar.adMode(false);
             _controlbar.instreamMode(false);
             _controlbar.show(true);
-            _dock.show();
             _this.releaseState();
             _forcedControlsState = null;
             var provider = _model.getVideo();
@@ -1179,21 +1147,6 @@ define([
             message = message.split(':');
             errorScreen(_playerElement, message[0], message[1]);
             _completeSetup();
-        };
-
-        this.addButton = function(icon, label, handler, id) {
-            if (_dock) {
-                _dock.addButton(icon, label, handler, id);
-                if (_model.state === states.IDLE) {
-                    _showDock();
-                }
-            }
-        };
-
-        this.removeButton = function(id) {
-            if (_dock) {
-                _dock.removeButton(id);
-            }
         };
 
         this.forceControls = function(state) {
@@ -1246,14 +1199,10 @@ define([
 
 
             _controlbar.showTemp();
-            if (!_instreamMode) {
-                _dock.showTemp();
-            }
-            //_responsiveListener();
             var dispBounds = _bounds(_container),
                 dispOffset = dispBounds.top,
                 cbBounds = _bounds(_controlbar.element()),
-                dockButtons = _instreamMode ? false : (_dock.numButtons() > 0),
+                dockButtons = _model.get('dock').length,
                 logoTop = (_logo.position().indexOf('top') === 0),
                 dockBounds,
                 logoBounds = _bounds(_logo.element());
@@ -1271,7 +1220,6 @@ define([
                 bounds.height = dispBounds.height - bounds.y;
             }
             _controlbar.hideTemp();
-            _dock.hideTemp();
             return bounds;
         };
 

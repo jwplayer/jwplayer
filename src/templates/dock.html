@@ -1,0 +1,11 @@
+<div class="jw-dock">
+    {{#each this}}
+    <div class="jw-dock-button">
+        <div class="jw-dock-image" button="{{id}}" style="background-image: url({{img}})"></div>
+        <div class="jw-arrow"></div>
+        <div class="jw-overlay">
+            <span class="jw-text">{{tooltip}}</span>
+        </div>
+    </div>
+    {{/each}}
+</div>

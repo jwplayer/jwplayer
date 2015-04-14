@@ -74,12 +74,31 @@
         ]
     };
 
-    jwplayer('video-container').setup(config).on('all', function(name, e) {
+    var jwp = jwplayer('video-container').setup(config);
+    jwp.on('all', function(name, e) {
         console.log('Event:', name, e);
         if (name !== e.type) {
             console.error('Event name "'+name+'" does not match event.type "'+e.type+'"');
         }
     });
+
+    jwp.addButton(
+        'css-skins/icons/both.png',
+        'Tooltip text',
+        function() {
+            console.log('first');
+        },
+        'first'
+    );
+
+    jwp.addButton(
+        'css-skins/icons/both.png',
+        'Click to delete me!',
+        function() {
+            jwp.removeButton('second');
+        },
+        'second'
+    );
 
 })(window.jwplayer);
 </script>

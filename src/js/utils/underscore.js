@@ -99,6 +99,13 @@ define([], function() {
         return results;
     };
 
+    // Return all the elements for which a truth test fails.
+    _.reject = function(obj, predicate, context) {
+        return _.filter(obj, function(value, index, list) {
+            return !predicate.call(context, value, index, list);
+        }, context);
+    };
+
     // Trim out all falsy values from an array.
     _.compact = function(array) {
         return _.filter(array, _.identity);
@@ -181,18 +188,6 @@ define([], function() {
         return low;
     };
 
-    // Return the first value which passes a truth test. Aliased as `detect`.
-    _.find = _.detect = function (obj, predicate, context) {
-        var result;
-        any(obj, function (value, index, list) {
-            if (predicate.call(context, value, index, list)) {
-                result = value;
-                return true;
-            }
-        });
-        return result;
-    };
-
     // Determine if at least one element in the object matches a truth test.
     // Delegates to **ECMAScript 5**'s native `some` if available.
     // Aliased as `any`.
@@ -217,6 +212,12 @@ define([], function() {
     // containing specific `key:value` pairs.
     _.where = function (obj, attrs) {
         return _.filter(obj, _.matches(attrs));
+    };
+
+    // Convenience version of a common use case of `find`: getting the first object
+    // containing specific `key:value` pairs.
+    _.findWhere = function(obj, attrs) {
+        return _.find(obj, _.matches(attrs));
     };
 
     // Return the maximum element or (element-based computation).
@@ -524,6 +525,15 @@ define([], function() {
         if (object == null) return void 0;
         var value = object[property];
         return _.isFunction(value) ? value.call(object) : value;
+    };
+
+
+    // Generate a unique integer id (unique within the entire client session).
+    // Useful for temporary DOM ids.
+    var idCounter = 0;
+    _.uniqueId = function(prefix) {
+        var id = ++idCounter + '';
+        return prefix ? prefix + id : id;
     };
 
     return _;
