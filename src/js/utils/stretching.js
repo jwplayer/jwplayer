@@ -63,7 +63,7 @@ define(['utils/css'], function(cssUtils) {
             yscale = Math.ceil(parentHeight / 2) * 2 / elementHeight,
             video = (domelement.tagName.toLowerCase() === 'video'),
             scale = false,
-            stretchClass = 'jw' + stretching.toLowerCase();
+            stretchClass = 'jw-stretch-' + stretching.toLowerCase();
 
         switch (stretching.toLowerCase()) {
             case _stretching.FILL:
@@ -86,7 +86,7 @@ define(['utils/css'], function(cssUtils) {
                 if (xscale > yscale) {
                     if (elementWidth * yscale / parentWidth > 0.95) {
                         scale = true;
-                        stretchClass = 'jwexactfit';
+                        stretchClass = 'jw-stretch-exactfit';
                     } else {
                         elementWidth = elementWidth * yscale;
                         elementHeight = elementHeight * yscale;
@@ -94,7 +94,7 @@ define(['utils/css'], function(cssUtils) {
                 } else {
                     if (elementHeight * xscale / parentHeight > 0.95) {
                         scale = true;
-                        stretchClass = 'jwexactfit';
+                        stretchClass = 'jw-stretch-exactfit';
                     } else {
                         elementWidth = elementWidth * xscale;
                         elementHeight = elementHeight * xscale;
@@ -131,7 +131,7 @@ define(['utils/css'], function(cssUtils) {
             }
             cssUtils.style(domelement, style);
         } else {
-            domelement.className = domelement.className.replace(/\s*jw(none|exactfit|uniform|fill)/g, '') +
+            domelement.className = domelement.className.replace(/\s*jw\-stretch\-(none|exactfit|uniform|fill)/g, '') +
                 ' ' + stretchClass;
         }
         return scale;

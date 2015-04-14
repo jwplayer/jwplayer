@@ -14,10 +14,11 @@ define([
     'view/rightclick',
     'view/title',
     'utils/css',
-    'utils/underscore'
+    'underscore',
+    'handlebars-loader!templates/view.html'
 ], function(utils, events, Events, states, CastDisplay,
             Captions, Display, DisplayIcon, Dock, errorScreen, Logo,
-            Controlbar, RightClick, Title, cssUtils, _) {
+            Controlbar, RightClick, Title, cssUtils, _, viewTemplate) {
 
     var _styles = utils.style,
         _bounds = utils.bounds,
@@ -262,6 +263,8 @@ define([
             // TODO: remove when adding in templates. exposed for controller/instream
             this._skin = _skin = skin;
 
+            _playerElement.appendChild(utils.createElement(viewTemplate({})));
+
             _container = _playerElement.getElementsByClassName('jw-main')[0];
             _videoLayer = _playerElement.getElementsByClassName('jw-video')[0];
 
@@ -363,12 +366,6 @@ define([
             }
             _componentFadeListeners(_controlbar);
             _componentFadeListeners(_logo);
-
-            // TODO: ASPECT RATIO SETTING HERE
-            //_style(_playerElement'.' + ASPECT_MODE + ' .' + VIEW_ASPECT_CONTAINER_CLASS, {
-            //    'margin-top': _model.aspectratio,
-            //    display: JW_CSS_BLOCK
-            //});
 
             if (_model.get('aspectratio')) {
                 utils.addClass(_playerElement, 'jw-aspect-mode');
@@ -644,7 +641,6 @@ define([
         /**
          * Resize the player
          */
-        // TODO: ANALYSE WHICH PARTS STAY AND GO BASED ON CSS CHANGES
         function _resize(width, height, resetAspectMode) {
             var className = _playerElement.className,
                 playerStyle,
@@ -713,7 +709,6 @@ define([
             if (_logo && _audioMode) {
                 _hideLogo();
             }
-            _playerElement.style.backgroundColor = _audioMode ? 'transparent' : '#000';
 
             utils.toggleClass(_playerElement, 'jw-flag-audio-player', _audioMode);
         }
@@ -1002,9 +997,8 @@ define([
                     _display.hidePreview(false);
                 }
 
-                // TODO: jw-show-video should be used in providers to set visibility
-                //          Likely merits renaming
-                utils.addClass(_videoLayer, 'jw-show-video');
+                // TODO: needs to be done in the provider
+                utils.addClass(_videoLayer, 'jw-video-show');
 
                 // force control bar without audio check
                 if (_controlbar) {
