@@ -6,6 +6,7 @@ define([
     'cast/display',
     'view/captions',
     'view/display',
+    'view/displayicon',
     'view/dock',
     'view/errorscreen',
     'view/logo',
@@ -15,7 +16,8 @@ define([
     'utils/css',
     'underscore'
 ], function(utils, events, Events, states, CastDisplay,
-            Captions, Display, Dock, errorScreen, Logo, Controlbar, RightClick, Title, cssUtils, _) {
+            Captions, Display, DisplayIcon, Dock, errorScreen, Logo,
+            Controlbar, RightClick, Title, cssUtils, _) {
 
     var _css = cssUtils.css,
         _bounds = utils.bounds,
@@ -520,6 +522,9 @@ define([
                 _controlsLayer.appendChild(_title.element());
             }
 
+            var displayIcon = new DisplayIcon(_model);
+            _controlsLayer.appendChild(displayIcon.element());
+
             _logo = new Logo(_model);
             _logo.on(events.JWPLAYER_LOGO_CLICK, _logoClickHandler);
             _controlsLayer.appendChild(_logo.element());
@@ -754,6 +759,12 @@ define([
                 _hideLogo();
             }
             _playerElement.style.backgroundColor = _audioMode ? 'transparent' : '#000';
+
+            if (_audioMode) {
+                utils.addClass(_playerElement, 'jw-flag-audio-player');
+            } else {
+                utils.removeClass(_playerElement, 'jw-flag-audio-player');
+            }
         }
 
         function _isAudioMode(height) {
