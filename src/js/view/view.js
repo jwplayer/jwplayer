@@ -525,6 +525,8 @@ define([
             _controlsLayer.appendChild(_dock.element());
 
             var displayIcon = new DisplayIcon(_model);
+            //toggle playback
+            displayIcon.on('click', _api.play);
             _controlsLayer.appendChild(displayIcon.element());
 
             _logo = new Logo(_model);
