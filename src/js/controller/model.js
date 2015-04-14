@@ -63,9 +63,6 @@ define([
 
         QOE.model(this);
 
-        // This gets added later
-        this.set('playlist', []);
-
         _providers = new Providers(_this.config.primary);
 
         function _videoEventHandler(evt) {
@@ -176,7 +173,6 @@ define([
                 return;
             }
 
-            this.set('item', -1);
             this.setItem(0);
         };
 
@@ -202,6 +198,7 @@ define([
             this.set('item', newItem);
             // select provider based on item source (video, youtube...)
             var item = this.get('playlist')[newItem];
+            this.set('playlistItem', item);
             var source = item && item.sources && item.sources[0];
             if (source === undefined) {
                 // source is undefined when resetting index with empty playlist

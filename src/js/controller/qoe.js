@@ -59,7 +59,7 @@ define([
     }
 
     function initModel(model) {
-        model.on(events.JWPLAYER_PLAYLIST_ITEM, function() {
+        model.on('change:playlistItem', function() {
             // reset item level qoe
             model._qoeItem = new Timer();
             model._qoeItem.tick(events.JWPLAYER_PLAYLIST_ITEM);
