@@ -96,10 +96,6 @@ define([
             document.msExitFullscreen;
         _elementSupportsFullscreen = _requestFullscreen && _exitFullscreen;
 
-        if (_model.get('aspectratio')) {
-            utils.addClass(_playerElement, 'jw-aspect-mode');
-        }
-
         var replace = document.getElementById(_model.id);
         replace.parentNode.replaceChild(_playerElement, replace);
 
@@ -138,43 +134,42 @@ define([
                 _resetTapTimer();
             }
 
-            var jw = window.jwplayer(_model.id);
             switch (evt.keyCode) {
                 case 27: // Esc
-                    jw.setFullscreen(false);
+                    _api.setFullscreen(false);
                     break;
                 case 13: // enter
                 case 32: // space
-                    jw.play();
+                    _api.play();
                     break;
                 case 37: // left-arrow, if not adMode
                     if (!_controlbar.adMode()) {
-                        adjustSeek.call(jw, -5);
+                        adjustSeek.call(_api, -5);
                     }
                     break;
                 case 39: // right-arrow, if not adMode
                     if (!_controlbar.adMode()) {
-                        adjustSeek.call(jw, 5);
+                        adjustSeek.call(_api, 5);
                     }
                     break;
                 case 38: // up-arrow
-                    adjustVolume.call(jw, 10);
+                    adjustVolume.call(_api, 10);
                     break;
                 case 40: // down-arrow
-                    adjustVolume.call(jw, -10);
+                    adjustVolume.call(_api, -10);
                     break;
                 case 77: // m-key
-                    jw.setMute();
+                    _api.setMute();
                     break;
                 case 70: // f-key
-                    jw.setFullscreen();
+                    _api.setFullscreen();
                     break;
                 default:
                     if (evt.keyCode >= 48 && evt.keyCode <= 59) {
                         // if 0-9 number key, move to n/10 of the percentage of the video
                         var number = evt.keyCode - 48;
-                        var newSeek = (number / 10) * jw.getDuration();
-                        jw.seek(newSeek);
+                        var newSeek = (number / 10) * _api.getDuration();
+                        _api.seek(newSeek);
                     }
                     break;
             }
@@ -291,21 +286,21 @@ define([
                 window.addEventListener('orientationchange', _responsiveListener, false);
             }
             //this for googima, after casting, to get the state right.
-            window.jwplayer(_model.id).onAdPlay(function() {
+            _api.onAdPlay(function() {
                 _controlbar.adMode(true);
                 _updateState(states.PLAYING);
 
                 // For Vast to hide controlbar if no mouse movement
                 _resetTapTimer();
             });
-            window.jwplayer(_model.id).onAdSkipped(function() {
+            _api.onAdSkipped(function() {
                 _controlbar.adMode(false);
             });
-            window.jwplayer(_model.id).onAdComplete(function() {
+            _api.onAdComplete(function() {
                 _controlbar.adMode(false);
             });
             // So VAST will be in correct state when ad errors out from unknown filetype
-            window.jwplayer(_model.id).onAdError(function() {
+            _api.onAdError(function() {
                 _controlbar.adMode(false);
             });
 
@@ -316,7 +311,7 @@ define([
             _api.onPlaylistComplete(_playlistCompleteHandler);
             _api.onPlaylistItem(_playlistItemHandler);
 
-            _model.on('change:castAvailable', function(model, val) {    // TODO: CURRENTLY UNTESTED
+            _model.on('change:castAvailable', function(model, val) {
                 if (val) {
                     _this.forceControls(true);
                 } else {
@@ -324,7 +319,7 @@ define([
                 }
             });
 
-            _model.on('change:castState', function(evt) {   // TODO: CURRENTLY UNTESTED
+            _model.on('change:castState', function(evt) {
                 if (!_castDisplay) {
                     _castDisplay = new CastDisplay(_model.id);
                     _castDisplay.statusDelegate = function(model, state) {
@@ -332,7 +327,7 @@ define([
                     };
                 }
                 if (evt.active) {
-                    utils.addClass(_playerElement, 'jw-is-casting');
+                    utils.addClass(_captions, 'jw-captions-disabled');
                     _this.forceControls(true);
                     _castDisplay.setState('connecting').setName(evt.deviceName).show();
 
@@ -346,7 +341,7 @@ define([
                     if (_controlbar.adMode()) {
                         _castAdsEnded();
                     }
-                    utils.removeClass(_playerElement, 'jw-is-casting');
+                    utils.removeClass(_captions, 'jw-captions-disable');
                     // redraw displayicon
                     _stateHandler(null, _model.get('state'));
                     _responsiveListener();
@@ -375,21 +370,21 @@ define([
             //    display: JW_CSS_BLOCK
             //});
 
-            var styleTarget = '#'+_playerElement.id+'.jw-aspect-mode:before';
-            document.styleSheets[0].addRule(styleTarget, 'padding-top: ' + _model.aspectratio + '%');
-            if(document.attachEvent) {
-                document.styleSheets[0].addRule(styleTarget,
-                    'content: ' + Math.round(Math.random()*1000000) );
-            }
-            if(!document.attachEvent) {
-                document.styleSheets[0].insertRule(styleTarget +
-                    ' { padding-top: ' + Math.round(9/16 * 100) + '%; }', 0);
+            if (_model.get('aspectratio')) {
+                utils.addClass(_playerElement, 'jw-aspect-mode');
+                _setAspectRatio();
             }
 
             setTimeout(function() {
                 _resize(_model.width, _model.height);
             }, 0);
         };
+
+        function _setAspectRatio(){
+            var styleTarget = '#'+_playerElement.id+'.jw-aspect-mode:before';
+            document.styleSheets[0].addRule(styleTarget, 'padding-top: ' + _model.aspectratio + '%');
+        }
+
         function _componentFadeListeners(comp) {
             if (comp) {
                 comp.element().addEventListener('mousemove', _cancelFade, false);
@@ -720,11 +715,7 @@ define([
             }
             _playerElement.style.backgroundColor = _audioMode ? 'transparent' : '#000';
 
-            if (_audioMode) {
-                utils.addClass(_playerElement, 'jw-flag-audio-player');
-            } else {
-                utils.removeClass(_playerElement, 'jw-flag-audio-player');
-            }
+            utils.toggleClass(_playerElement, 'jw-flag-audio-player', _audioMode);
         }
 
         function _isAudioMode(height) {
@@ -819,9 +810,9 @@ define([
         }
 
         function _toggleDOMFullscreen(playerElement, fullscreenState) {
-            utils.removeClass(playerElement, 'jwfullscreen');
+            utils.removeClass(playerElement, 'jw-flag-fullscreen');
             if (fullscreenState) {
-                utils.addClass(playerElement, 'jwfullscreen');
+                utils.addClass(playerElement, 'jw-flag-fullscreen');
                 _styles(document.body, {
                     'overflow-y': 'hidden'
                 });
@@ -1160,7 +1151,7 @@ define([
                 width: 0,
                 height: 0
             };
-            
+
             includeCB = includeCB || !utils.exists(includeCB);
 
 
@@ -1218,54 +1209,6 @@ define([
             }
         };
     };
-
-    //_css('.' + VIEW_ASPECT_CONTAINER_CLASS, {
-    //    display: 'none'
-    //});
-
-    //_css('.' + PLAYER_CLASS + '.' + ASPECT_MODE, {
-    //    height: 'auto'
-    //});
-
-    //_css('.' + PLAYER_CLASS + ' .jwuniform', {
-    //    'background-size': 'contain' + JW_CSS_IMPORTANT
-    //});
-    //
-    //_css('.' + PLAYER_CLASS + ' .jwfill', {
-    //    'background-size': 'cover' + JW_CSS_IMPORTANT,
-    //    'background-position': 'center'
-    //});
-    //
-    //_css('.' + PLAYER_CLASS + ' .jwexactfit', {
-    //    'background-size': JW_CSS_100PCT + ' ' + JW_CSS_100PCT + JW_CSS_IMPORTANT
-    //});
-
-    // Fullscreen styles
-    // TODO: Strategy for Fullscreen?
-    //_css(FULLSCREEN_SELECTOR, {
-    //    width: JW_CSS_100PCT,
-    //    height: JW_CSS_100PCT,
-    //    left: 0,
-    //    right: 0,
-    //    top: 0,
-    //    bottom: 0,
-    //    'z-index': 1000,
-    //    margin: 0,
-    //    position: 'fixed'
-    //}, true);
-
-    // hide cursor in fullscreen
-    //_css(FULLSCREEN_SELECTOR + '.jw-user-inactive', {
-    //    'cursor': 'none',
-    //    '-webkit-cursor-visibility': 'auto-hide'
-    //});
-
-    //_css(FULLSCREEN_SELECTOR + ' .jw-main', {
-    //    left: 0,
-    //    right: 0,
-    //    top: 0,
-    //    bottom: 0
-    //}, true);
 
     return View;
 });
