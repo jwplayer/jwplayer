@@ -1,7 +1,7 @@
 @dock-corner-radius: 0.25em;
 
 .jw-dock {
-    position: relative;
+    position: absolute;
     top: @ui-margin;
     right: @ui-margin;
     left: @ui-margin;
@@ -9,6 +9,7 @@
     opacity: 1;
 
     .jw-dock-button {
+        cursor:pointer;
         float: left;
         position: relative;
         width: 2.5em;

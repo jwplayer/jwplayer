@@ -375,11 +375,11 @@ define([
         'pointer-events': 'all'
     });
     var acceptClicks = [
-        '.jwplayer .jwcontrols .jwdockbuttons',
+        '.jwplayer .jwcontrols .jw-dock-button',
         '.jwplayer .jwcontrols .jwcontrolbar',
         '.jwplayer .jwcontrols .jw-rightclick',
         '.jwplayer .jwcontrols .jwskip',
-        '.jwplayer .jwcontrols .jwdisplayIcon', // play and replay button
+        '.jwplayer .jwcontrols .jw-display-icon-container', // play and replay button
         '.jwplayer .jwcontrols .jwpreview', // poster image
         '.jwplayer .jwcontrols .jwlogo'
     ];

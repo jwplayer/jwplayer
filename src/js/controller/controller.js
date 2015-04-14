@@ -459,8 +459,32 @@ define([
             this.releaseState = _view.releaseState;
             this.setCues = _view.addCues;
             this.setFullscreen = _view.fullscreen;
-            this.addButton = _view.addButton;
-            this.removeButton = _view.removeButton;
+            this.addButton = function(img, tooltip, callback, id) {
+                var btn;
+                if (_.isObject(img)) {
+                    // Handle passing in an object
+                    btn = img;
+                    btn.id = _.uniqueId();
+                } else {
+                    // Handle legacy setup
+                    btn = {
+                        img : img,
+                        tooltip : tooltip,
+                        callback : callback,
+                        id : id
+                    };
+                }
+
+                var dock = _model.get('dock') || [];
+                dock.push(btn);
+                _model.set('dock', dock);
+            };
+
+            this.removeButton = function(id) {
+                var dock = _model.get('dock') || [];
+                dock = _.reject(dock, _.matches({id : id}));
+                _model.set('dock', dock);
+            };
 
             this.checkBeforePlay = function() {
                 return _preplay;
