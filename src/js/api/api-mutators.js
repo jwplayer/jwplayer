@@ -1,6 +1,6 @@
 
 define([
-    'underscore',
+    'utils/underscore',
 ], function(_) {
 
     return function(_api, _controller) {

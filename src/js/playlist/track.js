@@ -1,6 +1,6 @@
 define([
     'utils/helpers',
-    'underscore'
+    'utils/underscore'
 ], function(utils, _) {
 
     var defaults = {

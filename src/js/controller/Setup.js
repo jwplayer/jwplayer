@@ -15,7 +15,7 @@ define([
     'playlist/playlist',
     'view/Skin',
     'utils/backbone.events',
-    'underscore',
+    'utils/underscore',
     'events/events'
 ], function(utils, Playlist, Skin, Events, _, events) {
 

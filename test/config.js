@@ -44,7 +44,6 @@ require.config({
     paths: {
         'templates':     '../' + 'templates',
         'css':           '../' + 'css',
-        'underscore': 'utils/' + 'underscore',
 
         'handlebars':        components + '/handlebars/handlebars.amd',
         'text':              components + '/requirejs-text/text',

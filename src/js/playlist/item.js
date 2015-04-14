@@ -1,5 +1,5 @@
 define([
-    'underscore',
+    'utils/underscore',
     'playlist/source',
     'playlist/track'
 ], function(_, Source, Track) {

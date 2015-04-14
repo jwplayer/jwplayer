@@ -1,7 +1,7 @@
 define([
     'events/events',
     'utils/backbone.events',
-    'underscore'
+    'utils/underscore'
 ], function(events, Events, _) {
 
     var _loaders = {};

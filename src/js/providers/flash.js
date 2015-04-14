@@ -1,6 +1,6 @@
 define([
     'utils/helpers',
-    'underscore',
+    'utils/underscore',
     'events/events',
     'events/states',
     'utils/eventdispatcher',

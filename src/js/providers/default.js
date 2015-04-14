@@ -2,7 +2,7 @@ define([
     'utils/helpers',
     'events/events',
     'events/states',
-    'underscore'
+    'utils/underscore'
 ], function(utils, events, states, _) {
 
     var noop = utils.noop,

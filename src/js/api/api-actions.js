@@ -1,6 +1,6 @@
 define([
     'plugins/plugins',
-    'underscore',
+    'utils/underscore',
 ], function(plugins, _) {
 
     return function(_api, _controller) {

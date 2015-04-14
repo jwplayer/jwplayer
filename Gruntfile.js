@@ -144,10 +144,7 @@ module.exports = function(grunt) {
                     modulesDirectories: [
                         'src/js/',
                         'src'
-                    ],
-                    alias: {
-                        'underscore': 'utils/underscore'
-                    }
+                    ]
                 },
                 devtool: 'source-map',
                 plugins: [

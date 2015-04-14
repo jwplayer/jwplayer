@@ -3,7 +3,7 @@ define([
     'utils/helpers',
     'events/events',
     'utils/backbone.events',
-    'underscore',
+    'utils/underscore',
     'utils/scriptloader'
 ], function(pluginsUtils, helpers, events, Events, _, scriptloader) {
 

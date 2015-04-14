@@ -1,7 +1,7 @@
 define([
     'utils/backbone.events',
     'events/events',
-    'underscore',
+    'utils/underscore',
     'utils/helpers',
     'events/states'
 ], function(Events, events, _, utils, states) {

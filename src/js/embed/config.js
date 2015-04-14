@@ -1,7 +1,7 @@
 define([
     'utils/helpers',
     'playlist/playlist',
-    'underscore'
+    'utils/underscore'
 ], function(utils, Playlist, _) {
 
     var Defaults = {

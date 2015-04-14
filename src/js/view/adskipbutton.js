@@ -5,7 +5,7 @@ define([
     'view/touch',
     'events/events',
     'utils/backbone.events',
-    'underscore'
+    'utils/underscore'
 ], function(utils, cssUtils, Touch, events, Events, _) {
 
     var VIEW_INSTREAM_SKIP_CLASS = 'jwskip',

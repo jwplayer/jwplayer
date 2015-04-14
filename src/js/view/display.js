@@ -6,7 +6,7 @@ define([
     'events/states',
     'utils/stretching',
     'utils/css',
-    'underscore'
+    'utils/underscore'
 ], function(Touch, utils, events, Events, states, stretchUtils, cssUtils, _) {
 
 

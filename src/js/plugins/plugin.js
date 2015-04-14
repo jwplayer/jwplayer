@@ -4,7 +4,7 @@ define([
     'events/events',
     'utils/backbone.events',
     'utils/scriptloader',
-    'underscore'
+    'utils/underscore'
 ], function(utils, pluginsUtils, events, Events, scriptloader, _) {
 
     var pluginmodes = {

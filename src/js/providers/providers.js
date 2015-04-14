@@ -2,7 +2,7 @@ define([
     'providers/html5',
     'providers/flash',
     'providers/youtube',
-    'underscore'
+    'utils/underscore'
     ], function(html5, flash, youtube, _) {
 
 

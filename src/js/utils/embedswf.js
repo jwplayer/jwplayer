@@ -1,7 +1,7 @@
 define([
     'utils/helpers',
     'utils/backbone.events',
-    'underscore'
+    'utils/underscore'
 ], function(utils, Events, _) {
 
     // Defaults

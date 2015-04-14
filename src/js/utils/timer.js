@@ -1,5 +1,5 @@
 define([
-    'underscore'
+    'utils/underscore'
 ], function(_) {
     var Timer = function() {
         var _startTimes = {};

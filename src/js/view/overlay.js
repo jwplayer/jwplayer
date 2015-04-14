@@ -1,7 +1,7 @@
 define([
     'utils/helpers',
     'utils/css',
-    'underscore'
+    'utils/underscore'
 ], function(utils, cssUtils, _) {
 
     var _setTransition = cssUtils.transitionStyle,

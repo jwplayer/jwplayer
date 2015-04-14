@@ -1,7 +1,7 @@
 define([
     'utils/helpers',
     'utils/strings',
-    'underscore'
+    'utils/underscore'
 ], function(utils, strings, _) {
 
     var Defaults = {

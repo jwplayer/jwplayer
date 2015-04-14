@@ -6,7 +6,7 @@ define([
     'embed/config',
     'plugins/plugins',
     'view/errorscreen',
-    'underscore'
+    'utils/underscore'
 ], function(events, Events, scriptloader, PlaylistLoader, EmbedConfig, plugins, errorScreen, _) {
 
     var Embed = function(_api) {

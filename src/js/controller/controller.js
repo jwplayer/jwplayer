@@ -1,7 +1,7 @@
 define([
     'controller/controller-instream',
     'api/api-deprecate',
-    'underscore',
+    'utils/underscore',
     'controller/Setup',
     'controller/model',
     'playlist/playlist',

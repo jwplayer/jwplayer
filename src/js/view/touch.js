@@ -1,7 +1,7 @@
 define([
     'utils/backbone.events',
     'events/events',
-    'underscore'
+    'utils/underscore'
 ], function(Events, events, _) {
 
     var TOUCH_MOVE = 'touchmove',

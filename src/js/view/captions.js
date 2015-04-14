@@ -8,7 +8,7 @@ define([
     'events/states',
     'utils/css',
     'utils/backbone.events',
-    'underscore'
+    'utils/underscore'
 ], function(parsers, CaptionsRenderer, SrtParser, DfxpParser, utils, events, states, cssUtils, Events, _) {
 
     var _nonChromeAndroid = utils.isAndroid(4, true),

@@ -1,7 +1,7 @@
 define([
     'utils/helpers',
     'utils/strings',
-    'underscore'
+    'utils/underscore'
 ], function(utils, Strings, _) {
 
     var MAX_CSS_RULES = 50000,

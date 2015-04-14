@@ -4,7 +4,7 @@ define([
     'events/events',
     'utils/helpers',
     'utils/css',
-    'underscore'
+    'utils/underscore'
 ], function(Overlay, Touch, events, utils, cssUtils, _) {
 
     var _css = cssUtils.css,

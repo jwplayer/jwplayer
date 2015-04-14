@@ -14,7 +14,7 @@ define([
     'view/rightclick',
     'view/title',
     'utils/css',
-    'underscore'
+    'utils/underscore'
 ], function(utils, events, Events, states, CastDisplay,
             Captions, Display, DisplayIcon, Dock, errorScreen, Logo,
             Controlbar, RightClick, Title, cssUtils, _) {

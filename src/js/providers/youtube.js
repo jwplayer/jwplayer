@@ -2,7 +2,7 @@ define([
     'utils/helpers',
     'utils/css',
     'utils/stretching',
-    'underscore',
+    'utils/underscore',
     'events/events',
     'events/states',
     'utils/eventdispatcher',

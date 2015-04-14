@@ -1,7 +1,7 @@
 define([
     'playlist/item',
     'playlist/source',
-    'underscore',
+    'utils/underscore',
     'providers/providers'
 ], function(PlaylistItem, Source, _, Providers) {
 

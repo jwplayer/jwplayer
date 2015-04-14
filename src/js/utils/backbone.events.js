@@ -14,7 +14,7 @@
     //     object.trigger('expand');
     //
 define([
-    'underscore'
+    'utils/underscore'
 ], function(_) {
 
     var array = [];

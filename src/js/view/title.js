@@ -1,7 +1,7 @@
 define([
     'utils/helpers',
     'handlebars-loader!templates/title.html',
-    'underscore'
+    'utils/underscore'
 ], function(utils, titleTemplate, _) {
 
     var Title = function(_model) {

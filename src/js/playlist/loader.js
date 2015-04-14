@@ -5,7 +5,7 @@ define([
     'utils/helpers',
     'events/events',
     'utils/backbone.events',
-    'underscore'
+    'utils/underscore'
 ], function(Playlist, parsers, rssParser, utils, events, Events, _) {
 
     var PlaylistLoader = function() {

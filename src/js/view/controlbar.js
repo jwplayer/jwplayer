@@ -1,7 +1,7 @@
 define([
     'utils/helpers',
     'parsers/captions/parsers.srt',
-    'underscore',
+    'utils/underscore',
     'events/events',
     'events/states',
     'utils/backbone.events',

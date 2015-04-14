@@ -2,7 +2,7 @@ define([
     'view/touch',
     'utils/helpers',
     'events/events',
-    'underscore',
+    'utils/underscore',
     'utils/backbone.events',
     'handlebars-loader!templates/logo.html'
 ], function(Touch, utils, events, _, Events, logoTemplate) {

@@ -1,6 +1,6 @@
 define([
     'utils/backbone.events',
-    'underscore',
+    'utils/underscore',
     'polyfill/bind'
 ], function(Events, _) {
 

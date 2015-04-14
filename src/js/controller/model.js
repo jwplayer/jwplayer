@@ -4,7 +4,7 @@ define([
     'playlist/playlist',
     'providers/providers',
     'controller/qoe',
-    'underscore',
+    'utils/underscore',
     'utils/backbone.events',
     'events/events',
     'events/states'

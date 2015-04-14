@@ -1,7 +1,7 @@
 define([
     'utils/strings',
     'events/events',
-    'underscore'
+    'utils/underscore'
 ], function(strings, events, _) {
     /*jshint maxparams:5*/
 
