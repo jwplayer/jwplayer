@@ -225,8 +225,6 @@ define([
                 switch (instreamState) {
                     case states.IDLE:
                     case states.PLAYING:
-                    case states.LOADING:
-                    case states.STALLED:
                     case states.BUFFERING:
                         _controller.instreamPause();
                         break;
@@ -237,8 +235,6 @@ define([
 
             switch (state) {
                 case states.PLAYING:
-                case states.LOADING:
-                case states.STALLED:
                 case states.BUFFERING:
                     _controller.pause();
                     break;
@@ -254,8 +250,6 @@ define([
                 state = _this.getState();
                 switch (state) {
                     case states.PLAYING:
-                    case states.LOADING:
-                    case states.STALLED:
                     case states.BUFFERING:
                         _controller.pause();
                         break;

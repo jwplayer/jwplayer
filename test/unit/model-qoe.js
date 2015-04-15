@@ -15,8 +15,8 @@ define([
         model.set('playlistItem', {});
 
         model.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
-        model.set('state', states.LOADING);
-        model.set('state', states.PLAYING);
+        model.mediaModel.set('state', states.LOADING);
+        model.mediaModel.set('state', states.PLAYING);
 
         // FIXME: JWPLAYER_PROVIDER_FIRST_FRAME triggers JWPLAYER_MEDIA_FIRST_FRAME : we only need one event
         model.mediaController.trigger(events.JWPLAYER_PROVIDER_FIRST_FRAME);
@@ -31,8 +31,8 @@ define([
         model.set('playlistItem', {});
 
         model.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
-        model.set('state', states.LOADING);
-        model.set('state', states.PLAYING);
+        model.mediaModel.set('state', states.LOADING);
+        model.mediaModel.set('state', states.PLAYING);
         model.mediaController.trigger(events.JWPLAYER_MEDIA_TIME, {
             position: 0
         });
@@ -75,10 +75,10 @@ define([
 
         model.set('playlistItem', {});
 
-        model.set('state', states.LOADING);
-        model.set('state', states.PLAYING);
-        model.set('state', states.STALLED);
-        model.set('state', states.PLAYING);
+        model.mediaModel.set('state', states.LOADING);
+        model.mediaModel.set('state', states.PLAYING);
+        model.mediaModel.set('state', states.STALLED);
+        model.mediaModel.set('state', states.PLAYING);
 
         var qoeDump = model._qoeItem.dump();
         ok(validateMeasurement(qoeDump.sums.stalled), 'stalled sum is a valid number');
@@ -97,7 +97,7 @@ define([
         var secondQoeItem = model._qoeItem;
 
         model.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
-        model.set('state', states.LOADING);
+        model.mediaModel.set('state', states.LOADING);
 
         ok(firstQoeItem !== secondQoeItem, 'qoe items are unique between playlistItem changes');
 

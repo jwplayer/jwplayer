@@ -51,7 +51,8 @@ define([
     function initModel(model) {
 
         model.on('change:playlistItem', function(model /*, playlistItem */) {
-            var state = model.get('state');
+            //var state = model.mediaModel.get('state');
+            var state = model.mediaModel.state;
             // finish previous item
             if (model._qoeItem) {
                 model._qoeItem.end(state);
@@ -64,7 +65,7 @@ define([
             trackFirstFrame(model);
         });
 
-        model.on('change:state', function(model, newstate, oldstate) {
+        model.mediaModel.on('change:state', function(mediaModel, newstate, oldstate) {
             model._qoeItem.end(oldstate);
             model._qoeItem.start(newstate);
         });

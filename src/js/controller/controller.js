@@ -258,8 +258,6 @@ define([
                 }
                 switch (_model.get('state')) {
                     case states.PLAYING:
-                    case states.LOADING:
-                    case states.STALLED:
                     case states.BUFFERING:
                         var status = utils.tryCatch(function(){
                             _video().pause();
