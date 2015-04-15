@@ -75,8 +75,6 @@ define([], function() {
 
         // Provider Communication
         JWPLAYER_PROVIDER_CHANGED: 'providerChanged',
-        JWPLAYER_PROVIDER_LOADING: 'providerLoading',
-        JWPLAYER_PROVIDER_STALLED: 'providerStalled',
         JWPLAYER_PROVIDER_FIRST_FRAME: 'providerFirstFrame',
 
         // UI Events

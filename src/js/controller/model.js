@@ -67,18 +67,18 @@ define([
                     this.set('volume', evt.volume);
                     break;
                 case events.JWPLAYER_PLAYER_STATE:
-                    // These two states exist at a provider level, but the player itself expects BUFFERING
+                    // model uses all states
+                    this.set('state', evt.newstate);
+                    // These two states exist at a provider>model level, but the player itself expects BUFFERING
                     evt = _.extend({}, evt);
-                    if (evt.newstate === states.LOADING) {
-                        this.mediaController.trigger(events.JWPLAYER_PROVIDER_LOADING);
-                        evt.newstate = states.BUFFERING;
-                    } else if (evt.newstate === states.STALLED) {
-                        this.mediaController.trigger(events.JWPLAYER_PROVIDER_STALLED);
+                    if (evt.newstate === states.LOADING || evt.newstate === states.STALLED) {
+                        evt.reason = evt.newstate;
                         evt.newstate = states.BUFFERING;
                     }
+                    if (evt.oldstate === states.LOADING || evt.oldstate === states.STALLED) {
+                        evt.oldstate = states.BUFFERING;
+                    }
                     evt.type = evt.newstate;
-
-                    this.set('state', evt.newstate);
                     break;
                 case events.JWPLAYER_MEDIA_BUFFER:
                     this.set('buffer', evt.bufferPercent); // note value change

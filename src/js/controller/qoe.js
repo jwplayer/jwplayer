@@ -1,9 +1,8 @@
 define([
     'utils/timer',
     'events/events',
-    'events/states',
     'utils/underscore'
-], function(Timer, events, states, _) {
+], function(Timer, events, _) {
 
     // This is to provide a first frame event even when
     //  a provider does not give us one.
@@ -20,6 +19,7 @@ define([
     });
 
     function unbindFirstFrameEvents(model) {
+        model.mediaController.off(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, model._onPlayAttempt);
         model.mediaController.off(events.JWPLAYER_PROVIDER_FIRST_FRAME, model._triggerFirstFrame);
         model.mediaController.off(events.JWPLAYER_MEDIA_TIME, model._onTime);
     }
@@ -39,37 +39,34 @@ define([
 
         model._onTime = onTimeIncreasesGenerator(model._triggerFirstFrame);
 
+        model._onPlayAttempt = function() {
+            model._qoeItem.tick(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
+        };
+
+        model.mediaController.once(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, model._onPlayAttempt);
         model.mediaController.once(events.JWPLAYER_PROVIDER_FIRST_FRAME, model._triggerFirstFrame);
         model.mediaController.on(events.JWPLAYER_MEDIA_TIME, model._onTime);
     }
 
-
-    function trackStalledTime(model) {
-        model.mediaController.on(events.JWPLAYER_PROVIDER_LOADING, function() {
-            model._qoeItem.start(states.LOADING);
-        });
-        model.mediaController.on(events.JWPLAYER_PROVIDER_STALLED, function() {
-            model._qoeItem.start(states.STALLED);
-        });
-        model.on('change:state', function(mod, newstate, oldstate) {
-            if (newstate !== states.BUFFERING) {
-                model._qoeItem.end(oldstate);
-            }
-        });
-    }
-
     function initModel(model) {
-        model.on('change:playlistItem', function() {
+
+        model.on('change:playlistItem', function(model /*, playlistItem */) {
+            var state = model.get('state');
+            // finish previous item
+            if (model._qoeItem) {
+                model._qoeItem.end(state);
+            }
             // reset item level qoe
             model._qoeItem = new Timer();
             model._qoeItem.tick(events.JWPLAYER_PLAYLIST_ITEM);
-
-            model.mediaController.once(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, function() {
-                model._qoeItem.tick(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
-            });
+            model._qoeItem.start(state);
 
             trackFirstFrame(model);
-            trackStalledTime(model);
+        });
+
+        model.on('change:state', function(model, newstate, oldstate) {
+            model._qoeItem.end(oldstate);
+            model._qoeItem.start(newstate);
         });
     }
 
