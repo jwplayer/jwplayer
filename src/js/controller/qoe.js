@@ -51,8 +51,7 @@ define([
     function initModel(model) {
 
         model.on('change:playlistItem', function(model /*, playlistItem */) {
-            //var state = model.mediaModel.get('state');
-            var state = model.mediaModel.state;
+            var state = model.mediaModel.get('state');
             // finish previous item
             if (model._qoeItem) {
                 model._qoeItem.end(state);
