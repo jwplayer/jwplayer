@@ -1,4 +1,3 @@
-/*jshint evil:true*/
 define([
     'handlebars-loader!templates/dock.html',
     'utils/helpers',
