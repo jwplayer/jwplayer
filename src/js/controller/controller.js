@@ -96,9 +96,10 @@ define([
                     });
                 });
                 // For onItem callback
-                _model.on('change:item', function(model, idx) {
+                _model.on('change:playlistItem', function(model, playlistItem) {
                     _this.trigger(events.JWPLAYER_PLAYLIST_ITEM, {
-                        index: idx
+                        index: model.get('item'),
+                        item: playlistItem
                     });
                 });
                 // For onPlaylist callback

@@ -222,18 +222,24 @@ define([
             var instreamState = _instream && _instream.getState();
 
             if (instreamState) {
-                if (instreamState === states.IDLE || instreamState === states.PLAYING ||
-                    instreamState === states.BUFFERING) {
-                    _controller.instreamPause();
-                } else {
-                    _controller.instreamPlay();
+                switch (instreamState) {
+                    case states.IDLE:
+                    case states.PLAYING:
+                    case states.BUFFERING:
+                        _controller.instreamPause();
+                        break;
+                    default:
+                        _controller.instreamPlay();
                 }
             }
 
-            if (state === states.PLAYING || state === states.BUFFERING) {
-                _controller.pause();
-            } else {
-                _controller.play();
+            switch (state) {
+                case states.PLAYING:
+                case states.BUFFERING:
+                    _controller.pause();
+                    break;
+                default:
+                    _controller.play();
             }
 
             return _this;
@@ -242,10 +248,13 @@ define([
         this.pause = function (state) {
             if (state === undefined) {
                 state = _this.getState();
-                if (state === states.PLAYING || state === states.BUFFERING) {
-                    _controller.pause();
-                } else {
-                    _controller.play();
+                switch (state) {
+                    case states.PLAYING:
+                    case states.BUFFERING:
+                        _controller.pause();
+                        break;
+                    default:
+                        _controller.play();
                 }
             } else {
                 _controller.pause(state);

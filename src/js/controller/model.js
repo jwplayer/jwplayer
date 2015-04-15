@@ -28,6 +28,18 @@ define([
         volume: 90
     };
 
+    // The model stores a different state than the provider
+    function normalizeState(newstate) {
+        if (newstate === states.LOADING || newstate === states.STALLED) {
+            return states.BUFFERING;
+        }
+        return newstate;
+    }
+
+    // Represents the state of the provider/media element
+    var MediaModel = function() {};
+
+    // Represents the state of the player
     var Model = function(config) {
         var _this = this,
             // Video provider
@@ -49,10 +61,11 @@ define([
             duration: -1,
             position: 0,
             buffer: 0
-        }, Events);
+        });
 
         this.mediaController = _.extend({}, Events);
-        this.mediaModel = {};
+        this.mediaModel = new MediaModel();
+        this.mediaModel.set('state', states.IDLE);
 
         QOE.model(this);
 
@@ -66,20 +79,20 @@ define([
                 case events.JWPLAYER_MEDIA_VOLUME:
                     this.set('volume', evt.volume);
                     break;
-                case events.JWPLAYER_PLAYER_STATE:
-                    // These two states exist at a provider level, but the player itself expects BUFFERING
-                    evt = _.extend({}, evt);
-                    if (evt.newstate === states.LOADING) {
-                        this.mediaController.trigger(events.JWPLAYER_PROVIDER_LOADING);
-                        evt.newstate = states.BUFFERING;
-                    } else if (evt.newstate === states.STALLED) {
-                        this.mediaController.trigger(events.JWPLAYER_PROVIDER_STALLED);
-                        evt.newstate = states.BUFFERING;
-                    }
-                    evt.type = evt.newstate;
 
-                    this.set('state', evt.newstate);
+                case events.JWPLAYER_PLAYER_STATE:
+                    var providerState = evt.newstate;
+                    var modelState = normalizeState(evt.newstate);
+
+                    evt.oldstate = this.get('state');
+                    evt.reason   = providerState;
+                    evt.newstate = modelState;
+                    evt.type     = modelState;
+
+                    this.mediaModel.set('state', providerState);
+                    this.set('state', modelState);
                     break;
+
                 case events.JWPLAYER_MEDIA_BUFFER:
                     this.set('buffer', evt.bufferPercent); // note value change
                     break;
@@ -99,7 +112,7 @@ define([
                 case 'visualQuality':
                     var visualQuality = _.extend({}, evt);
                     delete visualQuality.type;
-                    this.mediaModel.visualQuality =  visualQuality;
+                    this.mediaModel.set('visualQuality', visualQuality);
                     break;
             }
 
@@ -187,7 +200,7 @@ define([
             }
 
             // Item is actually changing
-            this.mediaModel = {};
+            this.mediaModel = new MediaModel();
             this.set('item', newItem);
             // select provider based on item source (video, youtube...)
             var item = this.get('playlist')[newItem];
@@ -267,11 +280,11 @@ define([
         };
     };
 
-    _.extend(Model.prototype, {
-        'get' : function(attr) {
+    var SimpleModel = _.extend({
+        'get' : function (attr) {
             return this[attr];
         },
-        'set' : function(attr, val) {
+        'set' : function (attr, val) {
             if (this[attr] === val) {
                 return;
             }
@@ -279,8 +292,10 @@ define([
             this[attr] = val;
             this.trigger('change:' + attr, this, val, oldVal);
         }
-    });
+    }, Events);
+
+    _.extend(Model.prototype, SimpleModel);
+    _.extend(MediaModel.prototype, SimpleModel);
 
     return Model;
-
 });

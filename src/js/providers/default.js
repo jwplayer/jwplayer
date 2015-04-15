@@ -61,7 +61,6 @@ define([
             }
 
             this.sendEvent(events.JWPLAYER_PLAYER_STATE, {
-                oldstate: oldState,
                 newstate: state
             });
         }
