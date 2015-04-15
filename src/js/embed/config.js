@@ -11,9 +11,11 @@ define([
 
     var config = function(options) {
 
-        var customDefaults = (window.jwplayer || {}).defaults;
+        var allOptions = _.extend({}, (window.jwplayer || {}).defaults, options);
 
-        var config = _.extend({}, Defaults, customDefaults, options);
+        _deserialize(allOptions);
+
+        var config = _.extend({}, Defaults, allOptions);
         config.width  = _normalizeSize(config.width);
         config.height = _normalizeSize(config.height);
         config.base = config.base || utils.getScriptPath('jwplayer.js');
@@ -32,6 +34,12 @@ define([
 
         return config;
     };
+
+    function _deserialize(options) {
+        _.each(options, function(val, key) {
+            options[key] = utils.serialize(val);
+        });
+    }
 
     function _normalizeSize(val) {
         if (val.slice && val.slice(-2) === 'px') {

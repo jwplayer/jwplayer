@@ -1,9 +1,7 @@
 define([
     'utils/strings',
-    'events/events',
     'utils/underscore'
-], function(strings, events, _) {
-    /*jshint maxparams:5*/
+], function(strings, _) {
 
     // TODO:: the next lines are a holdover until we update our CDN w/ plugins for 7.0
     // This is replaced by compiler
@@ -561,25 +559,26 @@ define([
     };
 
     /**
-     * Basic serialization: string representations of booleans and numbers are
-     * returned typed
-     *
-     * @param {String}
-     *            val String value to serialize.
-     * @return {Object} The original value in the correct primitive type.
+     * String representations of booleans and numbers that are 5 characters in length or less
+     * are returned typed
      */
     utils.serialize = function (val) {
-        if (val === null || val === undefined) {
+        if (val === undefined) {
             return null;
-        } else if (val.toString().toLowerCase() === 'true') {
-            return true;
-        } else if (val.toString().toLowerCase() === 'false') {
-            return false;
-        } else if (isNaN(Number(val)) || val.length > 5 || val.length === 0) {
-            return val;
-        } else {
-            return Number(val);
         }
+        if (typeof val === 'string' && val.length < 6) {
+            var lowercaseVal = val.toLowerCase();
+            if (lowercaseVal === 'true') {
+                return true;
+            }
+            if (lowercaseVal === 'false') {
+                return false;
+            }
+            if (!isNaN(Number(val)) && !isNaN(parseFloat(val))) {
+                return Number(val);
+            }
+        }
+        return val;
     };
 
     utils.addClass = function (element, classes) {

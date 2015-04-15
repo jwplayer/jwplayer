@@ -42,14 +42,7 @@ define([
             },
             _currentProvider = utils.noop;
 
-        function _parseConfig(config) {
-            utils.foreach(config, function(i, val) {
-                config[i] = utils.serialize(val);
-            });
-            return config;
-        }
-
-        this.config = _parseConfig(_.extend({}, _defaults, _cookies, config));
+        this.config = _.extend({}, _defaults, _cookies, config);
 
         _.extend(this, this.config, {
             state: states.IDLE,

@@ -235,4 +235,28 @@ define([
         // provided by underscore 1.6
     });
 
+    test('utils.serialize', function () {
+        equal(typeof utils.serialize, 'function', 'utils.serialize is defined');
+
+        var array = [];
+        var object = {};
+
+        var test = testerGenerator(utils.serialize);
+        test([undefined], null, 'undefined returns null');
+        test([null], null, 'null is passed through');
+        test([array], array, 'arrays are passed through');
+        test([object], object, 'objects are passed through');
+        test([1], 1, 'numbers are passed through');
+        test([true], true, 'booleans (true) are passed through');
+        test([false], false, 'booleans (false) are passed through');
+        test(['true'], true, 'string "true" returns true');
+        test(['false'], false, 'string "false" returns false');
+        test(['TRUE'], true, 'string "TRUE" returns true');
+        test(['FALSE'], false, 'string "FALSE" returns false');
+        test(['100.0'], 100, 'strings of 5 chars or less that can be coerced into a number are converted');
+        test(['1000.0'], '1000.0', 'strings of 6 chars or more that can be coerced into a number are not converted');
+        test(['1px'], '1px', 'css px values are not changed');
+        test(['100%'], '100%', 'percentage values are not changed');
+    });
+
 });

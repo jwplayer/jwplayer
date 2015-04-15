@@ -64,24 +64,26 @@ public class Strings {
     }
 
     /**
-     * Basic serialization: string representations of booleans and numbers are returned typed;
-     * strings are returned urldecoded.
-     *
-     * @param val    String value to serialize.
-     * @return        The original value in the correct primitive type.
-     **/
-    public static function serialize(val:String):Object {
-        if (val == null) {
+     * String representations of booleans and numbers that are 5 characters in length or less
+     * are returned typed
+     */
+    public static function serialize(val:*=null):Object {
+        if (val === undefined) {
             return null;
-        } else if (val == 'true') {
-            return true;
-        } else if (val == 'false') {
-            return false;
-        } else if (isNaN(Number(val)) || val.length > 5 || val.length == 0) {
-            return val;
-        } else {
-            return Number(val);
         }
+        if (val is String && val.length < 6) {
+            var lowercaseVal:String = (val as String).toLowerCase();
+            if (lowercaseVal === 'true') {
+                return true;
+            }
+            if (lowercaseVal === 'false') {
+                return false;
+            }
+            if (!isNaN(Number(lowercaseVal)) && !isNaN(parseFloat(lowercaseVal))) {
+                return Number(lowercaseVal);
+            }
+        }
+        return val;
     }
 
     /**
