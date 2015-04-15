@@ -224,13 +224,13 @@ define([
         _buildControlbar();
         cssUtils.unblock(_id + 'build');
         _addEventListeners();
-        _playlistHandler();
-        _castAvailable();
-
         _this.visible = false;
 
         _.defer(function() {
             _volumeHandler(_model);
+            _playlistHandler();
+            _itemHandler(_model, _model.get('playlistItem'));
+            _castAvailable();
         });
 
         function _layoutElement(name, type, className) {
@@ -248,7 +248,7 @@ define([
             _api.onCaptionsChange(_captionChanged);
 
             _model.on('change:state', _stateHandler);
-            _model.on('change:item', _itemHandler);
+            _model.on('change:playlistItem', _itemHandler);
             _model.on('change:buffer', _bufferHandler);
             _model.on('change:position', _timeUpdated); // pos and dur come together from time event
             _model.on('change:duration', _timeUpdated);
@@ -360,9 +360,9 @@ define([
             }
         }
 
-        function _itemHandler(model, index) {
+        function _itemHandler(model, playlistItem) {
             if (!_instreamMode) {
-                var tracks = _model.playlist[index].tracks,
+                var tracks = playlistItem.tracks,
                     tracksloaded = false,
                     cuesloaded = false;
                 _removeCues();
