@@ -141,7 +141,7 @@ define([
             _view.showInstream();
 
             _skipButton = new Adskipbutton(_controller.id, bottom, _options.skipMessage, _options.skipText);
-            _skipButton.addEventListener(events.JWPLAYER_AD_SKIPPED, _skipAd);
+            _skipButton.on(events.JWPLAYER_AD_SKIPPED, _skipAd);
             _skipButton.reset(_options.skipoffset || -1);
 
 
@@ -179,7 +179,7 @@ define([
                 _oldProvider.parentElement.addEventListener('click', _view.displayComp().clickHandler);
             }
 
-            _view.addEventListener(events.JWPLAYER_AD_SKIPPED, _skipAd);
+            _view.on(events.JWPLAYER_AD_SKIPPED, _skipAd);
 
             // Load the instream item
             _adModel.getVideo().load(_adModel.playlist[0]);
@@ -327,8 +327,8 @@ define([
             }
         }
 
-        function _skipAd(evt) {
-            _sendEvent(evt.type, evt);
+        function _skipAd() {
+            _sendEvent(events.JWPLAYER_AD_SKIPPED);
             _completeHandler();
         }
         /** Forward provider events to listeners **/
