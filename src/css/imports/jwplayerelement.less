@@ -84,35 +84,52 @@
         outline: none;
     }
 
-    &.jw-flag-fullscreen {
-        width: 100% !important;
-        height: 100% !important;
+    .jw-controls {
+        pointer-events: none;
+
+        .jw-dock-button, .jw-controlbar, .jw-skip, .jw-display-icon-container, .jw-preview, .jw-logo {
+            pointer-events: all;
+        }
+    }
+
+    .jw-text {
+        height: 1em;
+        font-family: inherit;
+        font-size: @font-size;
+        font-style: normal;
+        font-weight: normal;
+        line-height: 1em;
+        color: @font-color;
+        text-align: center;
+        font-variant: normal;
+        font-stretch: normal;
+    }
+
+    .jw-cast-screen {
+        width: 100%;
+        height: 100%;
+    }
+
+    .jw-skip {
+        position: absolute;
+        right: 1em;
+        display: inline-block;
+        float: right;
+        width: 7em;
+        height: 2em;
+    }
+
+    .jw-skip-image {
+        position: relative;
+        display: none;
+    }
+
+    .jw-instream {
+        position: absolute;
         top: 0;
         right: 0;
         bottom: 0;
         left: 0;
-        z-index: 1000;
-        margin: 0;
-        position: fixed;
-
-        &.jw-user-inactive {
-            cursor: none;
-            -webkit-cursor-visibility: auto-hide;
-        }
-
-        & .jw-main {
-            left: 0;
-            right: 0;
-            top: 0;
-            bottom: 0;
-        }
-    }
-
-    &.jw-flag-audio-player {
-        background-color: transparent;
-    }
-
-    &.jw-flag-casting .jw-captions {
         display: none;
     }
 }

@@ -5,6 +5,10 @@ $(document).ready(function(){
         $(this).toggleClass('jw-open');
     });
 
+    $('.jw-icon-fullscreen').on('click', function(e){
+        $('.jwplayer').toggleClass('jw-flag-fullscreen');
+    });
+
     var stateStyles = 'jw-state-paused jw-state-playing jw-state-idle jw-state-buffering jw-state-complete';
     var sizingStyles = 'player-size window-size jw-aspect-mode';
     var stretchingStyles = 'uniform-stretching fill-stretching exactfit-stretching none-stretching';

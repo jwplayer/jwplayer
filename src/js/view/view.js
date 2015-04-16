@@ -14,7 +14,7 @@ define([
     'view/rightclick',
     'view/title',
     'utils/css',
-    'underscore',
+    'utils/underscore',
     'handlebars-loader!templates/view.html'
 ], function(utils, events, Events, states, CastDisplay,
             Captions, Display, DisplayIcon, Dock, errorScreen, Logo,
