@@ -33,7 +33,7 @@ define([
             qoeItem.tick(events.JWPLAYER_MEDIA_FIRST_FRAME);
 
             var time = qoeItem.between(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, events.JWPLAYER_MEDIA_FIRST_FRAME);
-            model.mediaController.trigger(events.JWPLAYER_MEDIA_FIRST_FRAME, {loadtime : time});
+            model.mediaController.trigger(events.JWPLAYER_MEDIA_FIRST_FRAME, {loadTime : time});
             unbindFirstFrameEvents(model);
         });
 
