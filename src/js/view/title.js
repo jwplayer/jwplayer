@@ -15,7 +15,7 @@ define([
         this.description = arr[1];
 
         this.model.on('change:playlistItem', this.updateText, this);
-        this.updateText(this.model, 0);
+        this.updateText(this.model, this.model.get('playlistItem'));
     };
 
     _.extend(Title.prototype, {
