@@ -877,9 +877,12 @@ define([
         }
 
         function _showDisplay() {
+            var hasControls = _model.get('controls');
+            var state = _model.get('state');
+
             var model = _instreamMode ? _instreamModel : _model;
-            if (_display && _model.get('controls') && !_audioMode) {
-                if (!_isIPod || model.state === states.IDLE) {
+            if (_display && hasControls && !_audioMode) {
+                if (!_isIPod || state === states.IDLE || state === states.COMPLETE) {
                     _display.show();
                 }
             }
@@ -910,7 +913,7 @@ define([
                 _hideControlbar();
             }
 
-            if (state !== states.IDLE && state !== states.PAUSED) {
+            if (state !== states.COMPLETE && state !== states.IDLE && state !== states.PAUSED) {
                 _hideLogo();
             }
 
@@ -1034,6 +1037,7 @@ define([
                     }
                     break;
                 case states.IDLE:
+                case states.COMPLETE:
                     _showVideo(false);
                     if (!_audioMode) {
                         _display.hidePreview(false);

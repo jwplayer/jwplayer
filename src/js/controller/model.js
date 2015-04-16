@@ -81,10 +81,11 @@ define([
                     break;
 
                 case events.JWPLAYER_PLAYER_STATE:
+                    var oldState = this.get('state');
                     var providerState = evt.newstate;
-                    var modelState = normalizeState(evt.newstate);
+                    var modelState = normalizeState(providerState);
 
-                    evt.oldstate = this.get('state');
+                    evt.oldstate = oldState;
                     evt.reason   = providerState;
                     evt.newstate = modelState;
                     evt.type     = modelState;

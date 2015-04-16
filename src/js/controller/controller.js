@@ -222,6 +222,8 @@ define([
             }
 
             function _stop(internal) {
+                var fromApi = !internal;
+
                 // Something has called stop() in an onComplete handler
                 if (_isIdle()) {
                     _stopPlaylist = true;
@@ -238,7 +240,7 @@ define([
                     return false;
                 }
 
-                if (!internal) {
+                if (fromApi) {
                     _stopPlaylist = true;
                 }
 
@@ -277,7 +279,8 @@ define([
             }
 
             function _isIdle() {
-                return (_model.get('state') === states.IDLE);
+                var state = _model.get('state');
+                return (state === states.IDLE || state === states.COMPLETE);
             }
 
             function _seek(pos) {
@@ -311,19 +314,24 @@ define([
                 }
 
                 _actionOnAttach = _completeHandler;
-                if (_model.get('repeat')) {
-                    _next();
-                } else {
-                    if (_model.get('item') === _model.get('playlist').length - 1) {
+
+                var idx = _model.get('item');
+                if (idx === _model.get('playlist').length - 1) {
+                    // If it's the last item in the playlist
+                    if (_model.get('repeat')) {
+                        _next();
+                    } else {
                         _loadOnPlay = 0;
-                        _stop(true);
                         setTimeout(function() {
                             _this.trigger(events.JWPLAYER_PLAYLIST_COMPLETE, {});
                         }, 0);
-                    } else {
-                        _next();
                     }
+                    return;
                 }
+
+                // It wasn't the last item in the playlist,
+                //  so go to the next one
+                _next();
             }
 
             function _setCurrentQuality(quality) {

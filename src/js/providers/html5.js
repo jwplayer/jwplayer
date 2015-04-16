@@ -540,24 +540,27 @@ define([
 
         function _endedHandler() {
             if (_attached) {
-                _complete();
+                if (_this.state !== states.IDLE && _this.state !== states.COMPLETE) {
+                    clearInterval(_bufferInterval);
+                    _currentQuality = -1;
+                    _beforecompleted = true;
+
+                    _this.sendEvent(events.JWPLAYER_MEDIA_BEFORECOMPLETE);
+                    // This event may trigger the detaching of the player
+                    //  In that case, playback isn't complete until the player is re-attached
+                    if (!_attached) {
+                        return;
+                    }
+
+                    _playbackComplete();
+                }
             }
         }
 
-        function _complete() {
-            if (_this.state !== states.IDLE) {
-                clearInterval(_bufferInterval);
-                _currentQuality = -1;
-                _beforecompleted = true;
-                _this.sendEvent(events.JWPLAYER_MEDIA_BEFORECOMPLETE);
-
-
-                if (_attached) {
-                    _this.setState(states.IDLE);
-                    _beforecompleted = false;
-                    _this.sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
-                }
-            }
+        function _playbackComplete() {
+            _this.setState(states.COMPLETE);
+            _beforecompleted = false;
+            _this.sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
         }
 
         function _fullscreenBeginHandler(e) {
@@ -609,9 +612,7 @@ define([
 
             // This is after a postroll completes
             if (_beforecompleted) {
-                this.setState(states.IDLE);
-                this.sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
-                _beforecompleted = false;
+                _playbackComplete();
             }
         };
 

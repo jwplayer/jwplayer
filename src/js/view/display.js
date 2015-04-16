@@ -189,6 +189,7 @@ define([
                 _previousState = state;
                 switch (state) {
                     case states.IDLE:
+                    case states.COMPLETE:
                         if (!_errorState && !_completedState) {
                             if (_image && !_imageHidden) {
                                 _setVisibility(D_PREVIEW_CLASS, true);
