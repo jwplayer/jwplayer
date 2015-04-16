@@ -461,9 +461,9 @@ define([
 
         var toggleControls = function() {
             if (_model.get('controls')) {
-                utils.removeClass(_controlsLayer, 'disabled');
+                utils.removeClass(_controlsLayer, 'jw-controls-disabled');
             } else {
-                utils.addClass(_controlsLayer, 'disabled');
+                utils.addClass(_controlsLayer, 'jw-controls-disabled');
             }
         };
 
