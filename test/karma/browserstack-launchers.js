@@ -203,12 +203,12 @@ module.exports = {
     },
 
     // Android
-    droid_razr: {
-        base: 'BrowserStack',
-        device: 'Motorola Droid Razr',
-        os: 'android',
-        os_version: '2.3'
-    },
+    /* droid_razr: {
+         base: 'BrowserStack',
+         device: 'Motorola Droid Razr',
+         os: 'android',
+         os_version: '2.3'
+     }, */
     moto_razr: {
         base: 'BrowserStack',
         device: 'Motorola Razr',
