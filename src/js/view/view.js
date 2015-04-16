@@ -461,9 +461,9 @@ define([
 
         var toggleControls = function() {
             if (_model.get('controls')) {
-                _controlsLayer.style.display = '';
+                utils.removeClass(_controlsLayer, 'disabled');
             } else {
-                _controlsLayer.style.display = 'none';
+                utils.addClass(_controlsLayer, 'disabled');
             }
         };
 
