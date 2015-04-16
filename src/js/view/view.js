@@ -647,7 +647,7 @@ define([
                 id = _model.id + '_view';
             cssUtils.block(id);
 
-            // when jwResize is caandlled remove aspectMode and force layout
+            // when jwResize is called remove aspectMode and force layout
             resetAspectMode = !!resetAspectMode;
             if (resetAspectMode) {
                 className = className.replace(/\s*aspectMode/, '');
