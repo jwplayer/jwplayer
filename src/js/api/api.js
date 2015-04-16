@@ -11,9 +11,10 @@ define([
     'controller/controller',
     'api/api-actions',
     'api/api-mutators',
-    'api/callbacks-deprecate'
+    'api/callbacks-deprecate',
+    'handlebars-loader!templates/player.html'
 ], function(Embed, Instream, events, states,
-            Events, utils, cssUtils, Timer, _, Controller, actionsInit, mutatorsInit, legacyInit) {
+            Events, utils, cssUtils, Timer, _, Controller, actionsInit, mutatorsInit, legacyInit, playerTemplate) {
 
     function addFocusBorder(container) {
         utils.addClass(container, 'jw-tab-focus');
@@ -110,7 +111,8 @@ define([
         legacyInit(this);
 
         // These should be read-only model properties
-        this.container = document.createElement('div');
+        this.container = utils.createElement(playerTemplate({}));
+        this.container = this.container.parentElement.removeChild(this.container);
         this.id = this.container.id = container.id;
 
         // Intialize QOE timer

@@ -133,7 +133,7 @@ module.exports = function(grunt) {
                 progress: false,
                 entry: {
                     jwplayer : './src/js/main.js',
-                    demostyles : './src/js/demostyles.js'
+                    'skin-demo-styles' : './src/js/skin-demo-styles.js'
                 },
                 output: {
                     path: 'bin-debug/',

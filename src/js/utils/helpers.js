@@ -581,6 +581,20 @@ define([
         return val;
     };
 
+    utils.hasClass = function (element, searchClass) {
+        var className = ' ' + searchClass + ' ',
+            i = 0,
+            l = this.length;
+        for (; i < l; i++) {
+            if (this[i].nodeType === 1 && (' ' + this[i].className + ' ')
+                    .replace(/[\t\r\n\f]/g, ' ').indexOf(className) >= 0) {
+                return true;
+            }
+        }
+
+        return false;
+    };
+
     utils.addClass = function (element, classes) {
         // TODO:: use _.union on the two arrays
 
@@ -601,6 +615,22 @@ define([
         var removeClasses = _.isArray(c) ? c : c.split(' ');
 
         element.className = strings.trim(_.difference(originalClasses, removeClasses).join(' '));
+    };
+
+    utils.toggleClass = function (element, c, toggleTo) {
+        if(_exists(toggleTo)) {
+            if(toggleTo === false){
+                utils.removeClass(element, c);
+            } else {
+                utils.addClass(element, c);
+            }
+        } else {
+            if(utils.hasClass(element, c)){
+                utils.removeClass(element, c);
+            } else  {
+                utils.addClass(element, c);
+            }
+        }
     };
 
     utils.emptyElement = function (element) {

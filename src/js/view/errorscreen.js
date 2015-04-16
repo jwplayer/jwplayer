@@ -9,6 +9,7 @@ define([
             body: body
         });
 
+        utils.removeClass(container, 'jw-setup-hide');
         container.appendChild(utils.createElement(html));
     }
 

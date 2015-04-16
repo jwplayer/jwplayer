@@ -108,7 +108,7 @@ define([
 
         function _resizePlugin(plugin, div, onready) {
             return function() {
-                var displayarea = document.querySelector('#' + _api.id + ' .jwmain');
+                var displayarea = document.querySelector('#' + _api.id + ' .jw-main');
                 if (displayarea && onready) {
                     displayarea.appendChild(div);
                 }

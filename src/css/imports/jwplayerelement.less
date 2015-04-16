@@ -1,0 +1,139 @@
+.jwplayer {
+    width: 100%;
+    font-size: @default-em-size;
+    position: relative;
+    display: block;
+    min-height: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #000;
+
+    * {
+        box-sizing: inherit;
+    }
+
+    &.jw-setup-hide {
+        opacity: 0;
+    }
+
+    .jw-main {
+        position:  absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+    }
+
+    .jw-video, .jw-controls {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+    }
+
+    .jw-video {
+        overflow: hidden;
+        visibility: hidden;
+        opacity: 0;
+    }
+
+    .jw-video.jw-video-show {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .jw-video video {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        margin: auto;
+        background: transparent;
+    }
+
+    /// Scale modes START
+    .jw-stretch-uniform {
+        background-size: contain !important;
+    }
+
+    .jw-stretch-fill {
+        background-position: 50% 50%;
+        background-size: cover !important;
+    }
+
+    .jw-stretch-exactfit {
+        background-size: 100% 100% !important;
+    }
+    /// Scale modes END
+
+
+    // Aspect Ratio styles
+    &.jw-aspect-mode:before{
+        content: "";
+        display: block;
+    }
+
+    &.jw-aspect-mode {
+        height: auto !important;
+    }
+
+    &:focus, .jw-swf {
+        outline: none;
+    }
+
+    .jw-controls {
+        pointer-events: none;
+
+        .jw-dock-button, .jw-controlbar, .jw-skip, .jw-display-icon-container, .jw-preview, .jw-logo {
+            pointer-events: all;
+        }
+    }
+
+    .jw-text {
+        height: 1em;
+        font-family: inherit;
+        font-size: @font-size;
+        font-style: normal;
+        font-weight: normal;
+        line-height: 1em;
+        color: @font-color;
+        text-align: center;
+        font-variant: normal;
+        font-stretch: normal;
+    }
+
+    .jw-cast-screen {
+        width: 100%;
+        height: 100%;
+    }
+
+    .jw-skip {
+        position: absolute;
+        right: 1em;
+        display: inline-block;
+        float: right;
+        width: 7em;
+        height: 2em;
+    }
+
+    .jw-skip-image {
+        position: relative;
+        display: none;
+    }
+
+    .jw-instream {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        display: none;
+    }
+}
+
+.jw-tab-focus:focus {
+    outline: solid 2px #0b7ef4;
+}
