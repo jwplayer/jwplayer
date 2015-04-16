@@ -103,6 +103,7 @@ define([
         function _stateHandler(model, state) {
             switch (state) {
                 case states.IDLE:
+                case states.COMPLETE:
                     _idleHandler();
                     break;
                 case states.PLAYING:

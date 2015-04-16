@@ -97,7 +97,7 @@ define([
                 attachMedia: function() {
                     // This is after a postroll completes
                     if (_beforecompleted) {
-                        this.setState(states.IDLE);
+                        this.setState(states.COMPLETE);
                         this.sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
                         _beforecompleted = false;
                     }
@@ -170,6 +170,7 @@ define([
 
                     }, this).on(events.JWPLAYER_PLAYER_STATE, function(e) {
                         var state = e.newstate;
+                        // TODO:: What is this for?
                         if (state === states.IDLE) {
                             return;
                         }
@@ -191,7 +192,7 @@ define([
                         this.sendEvent(e.type);
 
                     }, this).on(events.JWPLAYER_MEDIA_COMPLETE, function(e) {
-                        this.setState(states.IDLE);
+                        this.setState(states.COMPLETE);
                         this.sendEvent(e.type);
 
                     }, this).on(events.JWPLAYER_MEDIA_ERROR, function(e) {
