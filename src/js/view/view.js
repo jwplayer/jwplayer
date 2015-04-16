@@ -501,7 +501,17 @@ define([
             _this.trigger(evt.type, evt);
         }
 
+        var toggleControls = function() {
+            if (_model.get('controls')) {
+                utils.removeClass(_controlsLayer, 'disabled');
+            } else {
+                utils.addClass(_controlsLayer, 'disabled');
+            }
+        };
+
         function _setupControls() {
+            toggleControls();
+            _model.on('change:controls', toggleControls);
             _captions = new Captions(_api, _model);
             _captions.on(events.JWPLAYER_CAPTIONS_LIST, forward);
             _captions.on(events.JWPLAYER_CAPTIONS_CHANGED, forward);
@@ -566,9 +576,7 @@ define([
             }
             else {
                 // model may be instream or normal depending on who triggers this
-                _stateHandler({
-                    newstate: model.state
-                });
+                _stateHandler(model, model.get('state'));
             }
         }
 
