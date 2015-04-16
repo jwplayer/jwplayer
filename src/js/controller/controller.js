@@ -322,9 +322,7 @@ define([
                         _next();
                     } else {
                         _loadOnPlay = 0;
-                        setTimeout(function() {
-                            _this.trigger(events.JWPLAYER_PLAYLIST_COMPLETE, {});
-                        }, 0);
+                        _this.trigger(events.JWPLAYER_PLAYLIST_COMPLETE, {});
                     }
                     return;
                 }
