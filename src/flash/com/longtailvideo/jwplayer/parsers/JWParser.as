@@ -36,19 +36,17 @@ public class JWParser {
     public static function getProvider(item:Object):String {
         if (item['type']) {
             return item['type'];
-        } else if (Strings.isYouTube(item['file'])) {
-            return "youtube";
-        } else if (item['streamer'] && item['streamer'].indexOf('rtmp') == 0) {
-            return "rtmp";
-        } else if (item['streamer'] && item['streamer'].indexOf('http') == 0) {
-            return "http";
-        } else {
-            var ext:String = Strings.extension(item['file']);
-            if (extensions.hasOwnProperty(ext)) {
-                return extensions[ext];
-            }
         }
-
+        if (item['streamer'] && item['streamer'].indexOf('rtmp') == 0) {
+            return "rtmp";
+        }
+        if (item['streamer'] && item['streamer'].indexOf('http') == 0) {
+            return "http";
+        }
+        var ext:String = Strings.extension(item['file']);
+        if (extensions.hasOwnProperty(ext)) {
+            return extensions[ext];
+        }
         return "";
     }
 

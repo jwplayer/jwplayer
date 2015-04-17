@@ -7,7 +7,6 @@ import com.longtailvideo.jwplayer.media.MediaProvider;
 import com.longtailvideo.jwplayer.media.RTMPMediaProvider;
 import com.longtailvideo.jwplayer.media.SoundMediaProvider;
 import com.longtailvideo.jwplayer.media.VideoMediaProvider;
-import com.longtailvideo.jwplayer.media.YouTubeMediaProvider;
 import com.longtailvideo.jwplayer.parsers.JWParser;
 import com.longtailvideo.jwplayer.player.PlayerState;
 import com.longtailvideo.jwplayer.plugins.PluginConfig;
@@ -189,7 +188,6 @@ public class Model extends GlobalEventDispatcher {
         setMediaProvider('video', new VideoMediaProvider());
         setMediaProvider('rtmp', new RTMPMediaProvider());
         setMediaProvider('sound', new SoundMediaProvider());
-        setMediaProvider('youtube', new YouTubeMediaProvider());
         // setActiveMediaProvider('default');
     }
 
