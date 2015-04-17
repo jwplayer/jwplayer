@@ -12,7 +12,7 @@ define([
         var startTime = _.now();
         var model = new Model({});
 
-        model.set('playlistItem', {});
+        model.set('mediaModel', new MediaModel());
 
         model.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
         model.mediaModel.set('state', states.LOADING);
@@ -28,7 +28,7 @@ define([
         var startTime = _.now();
         var model = new Model({});
 
-        model.set('playlistItem', {});
+        model.set('mediaModel', new MediaModel());
 
         model.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
         model.mediaModel.set('state', states.LOADING);
@@ -47,7 +47,7 @@ define([
         var startTime = _.now();
         var model = new Model({});
 
-        model.set('playlistItem', {});
+        model.set('mediaModel', new MediaModel());
         model.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
         model.mediaController.trigger(events.JWPLAYER_PROVIDER_FIRST_FRAME);
         var qoeItem = model._qoeItem;
@@ -73,7 +73,7 @@ define([
     test('tracks stalled time', function() {
         var model = new Model({});
 
-        model.set('playlistItem', {});
+        model.set('mediaModel', new MediaModel());
 
         model.mediaModel.set('state', states.LOADING);
         model.mediaModel.set('state', states.PLAYING);
@@ -88,21 +88,18 @@ define([
         // Test qoe model observation
         var model = new Model({});
 
-        model.set('playlistItem', {});
+        model.set('mediaModel', new MediaModel());
         var firstQoeItem = model._qoeItem;
 
         // no state changes, play attempt or first frame events
 
-        model.set('playlistItem', {});
+        model.set('mediaModel', new MediaModel());
         var secondQoeItem = model._qoeItem;
 
         model.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
         model.mediaModel.set('state', states.LOADING);
 
         ok(firstQoeItem !== secondQoeItem, 'qoe items are unique between playlistItem changes');
-
-        console.log('firstQoeItem', firstQoeItem.dump());
-        console.log('secondQoeItem', secondQoeItem.dump());
 
         var firstQoeDump = firstQoeItem.dump();
         var secondQoeDump = secondQoeItem.dump();
@@ -115,11 +112,17 @@ define([
 
     });
 
+    // mock MediaModel
+    var MediaModel = function() {
+        this.state = states.IDLE;
+    };
+    _.extend(MediaModel.prototype, Model.prototype);
+
     function validateQoeFirstFrame(qoeItem, startTime) {
         ok(!!qoeItem, 'qoeItem is defined');
 
-        var loadtime = qoeItem.between(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, events.JWPLAYER_MEDIA_FIRST_FRAME);
-        ok(validateMeasurement(loadtime), 'time to first frame is a valid number');
+        var loadTime = qoeItem.between(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, events.JWPLAYER_MEDIA_FIRST_FRAME);
+        ok(validateMeasurement(loadTime), 'time to first frame is a valid number');
 
         var qoeDump = qoeItem.dump();
         equal(qoeDump.counts.idle, 1,       'one idle event');

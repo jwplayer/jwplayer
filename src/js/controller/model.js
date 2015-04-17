@@ -37,7 +37,9 @@ define([
     }
 
     // Represents the state of the provider/media element
-    var MediaModel = function() {};
+    var MediaModel = function() {
+        this.state = states.IDLE;
+    };
 
     // Represents the state of the player
     var Model = function(config) {
@@ -65,7 +67,6 @@ define([
 
         this.mediaController = _.extend({}, Events);
         this.mediaModel = new MediaModel();
-        this.mediaModel.set('state', states.IDLE);
 
         QOE.model(this);
 
@@ -200,7 +201,9 @@ define([
             }
 
             // Item is actually changing
-            this.mediaModel = new MediaModel();
+            this.mediaModel.off();
+            this.set('mediaModel', new MediaModel());
+
             this.set('item', newItem);
             // select provider based on item source (video, youtube...)
             var item = this.get('playlist')[newItem];

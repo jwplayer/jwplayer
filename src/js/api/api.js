@@ -169,14 +169,16 @@ define([
         };
 
         this.qoe = function() {
-            var item = _controller.getItemQoe();
+            var qoeItem = _controller.getItemQoe();
 
-            var firstFrame = item.between(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, events.JWPLAYER_MEDIA_FIRST_FRAME);
+            var setupTime = _qoe.between('setup', 'ready');
+            var firstFrame = qoeItem.between(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, events.JWPLAYER_MEDIA_FIRST_FRAME);
 
             return {
+                setupTime : setupTime,
                 firstFrame : firstFrame,
                 player : _qoe.dump(),
-                item : item.dump()
+                item : qoeItem.dump()
             };
         };
 
