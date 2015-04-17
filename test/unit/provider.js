@@ -143,8 +143,8 @@ define([
         runTest(videoSources.hls, 'FlashProvider');
         runTest(videoSources.flv, 'FlashProvider');
         runTest(videoSources.smil,'FlashProvider');
-        runTest(videoSources.youtube, 'FlashProvider');
         runTest(videoSources.hls_androidhls_false, 'FlashProvider');
+        runTest(videoSources.youtube, 'YoutubeProvider');
 
         // our android androidhls logic in the video provider circumvents the canPlayType check
         runTest(videoSources.hls_androidhls_true,  isAndroidWithHls ? 'VideoProvider' : 'FlashProvider');
@@ -169,11 +169,11 @@ define([
         runTest(videoSources.hls_androidhls_true,  'FlashProvider');
         runTest(videoSources.hls_androidhls_false, 'FlashProvider');
         runTest(videoSources.mov, 'FlashProvider');
-        runTest(videoSources.youtube, 'FlashProvider');
 
         // The Flash provider cannot play these types
         runTest(videoSources.ogg, 'VideoProvider');
         runTest(videoSources.oga, 'VideoProvider');
         runTest(videoSources.webm,'VideoProvider');
+        runTest(videoSources.youtube, 'YoutubeProvider');
     });
 });
