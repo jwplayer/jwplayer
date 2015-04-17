@@ -231,6 +231,7 @@ define([
                     default:
                         _controller.instreamPlay();
                 }
+                return _this;
             }
 
             switch (state) {
