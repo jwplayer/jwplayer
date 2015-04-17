@@ -166,10 +166,10 @@ define([
 
             function _loadPlaylist(toLoad) {
                 var loader = new PlaylistLoader();
-                loader.addEventListener(events.JWPLAYER_PLAYLIST_LOADED, function(evt) {
+                loader.on(events.JWPLAYER_PLAYLIST_LOADED, function(evt) {
                     _load(evt.playlist);
                 });
-                loader.addEventListener(events.JWPLAYER_ERROR, function(evt) {
+                loader.on(events.JWPLAYER_ERROR, function(evt) {
                     _load([]);
                     evt.message = 'Could not load playlist: ' + evt.message;
                     _this.trigger.call(_this, evt.type, evt);
