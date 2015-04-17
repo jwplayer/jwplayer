@@ -69,7 +69,7 @@ define([
         });
 
         var best = _.max(m, _.property('priority'));
-        if (best.priority > 0) {
+        if (best.priority > -1) {
             return best.type;
         }
         return null;

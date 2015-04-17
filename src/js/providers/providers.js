@@ -35,11 +35,11 @@ define([
             var idx = _.indexOf(this.providers, p);
             if (idx < 0) {
                 // No provider matched
-                return 0;
+                return idx;
             }
 
             // prefer earlier providers
-            return this.providers.length - idx;
+            return this.providers.length - idx -1;
         }
     });
 
