@@ -232,18 +232,6 @@ public class Strings {
         else return link;
     }
 
-    public static function isYouTube(file:String):Boolean {
-        if (file) {
-            if (file.indexOf('youtube.com/w') > -1)
-                return true;
-            else if (file.indexOf('youtube.com/v') > -1)
-                return true;
-            else if (file.indexOf('youtu.be') > -1)
-                return true;
-        }
-        return false;
-    }
-
     /** Capitalizes the first letter of a string; rest is lowercased **/
     public static function capitalizeFirst(s:String):String {
         var firstChar:String = s.charAt(0);

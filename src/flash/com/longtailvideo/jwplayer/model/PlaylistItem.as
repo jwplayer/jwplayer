@@ -267,15 +267,14 @@ public dynamic class PlaylistItem {
 
     private function levelType(level:Object):String {
         if (level) {
-            if (level.type) return level.type;
-            else {
-                if (level.streamer || level.file.substr(0, 4) == 'rtmp') return "rtmp";
-                else if (level.file) {
-                    if (Strings.isYouTube(level.file)) return "youtube";
-                    else {
-                        return extensionMap(Strings.extension(level.file));
-                    }
-                }
+            if (level.type) {
+                return level.type;
+            }
+            if (level.streamer || level.file.substr(0, 4) === 'rtmp') {
+                return "rtmp";
+            }
+            if (level.file) {
+                return extensionMap(Strings.extension(level.file));
             }
         }
         return null;
@@ -319,8 +318,6 @@ public dynamic class PlaylistItem {
                 return "sound";
             case "rtmp":
                 return "rtmp";
-            case "youtube":
-                return "youtube";
         }
         return null;
     }

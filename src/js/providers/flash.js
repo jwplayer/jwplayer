@@ -319,9 +319,6 @@ define([
         if (utils.isRtmp(file, type)) {
             return true;
         }
-        if (utils.isYouTube(file, type)) {
-            return true;
-        }
 
         return _.contains(PLAYABLE, type);
     };
