@@ -35,7 +35,7 @@ define([
             var idx = _.indexOf(this.providers, p);
             if (idx < 0) {
                 // No provider matched
-                return Number.MIN_VALUE;
+                return 0;
             }
 
             // prefer earlier providers
