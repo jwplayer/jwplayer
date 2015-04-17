@@ -79,7 +79,7 @@ define([
         equal(x.sources[1].file, 'rtmp://f2', 'Second source file set properly');
         equal(x.sources[2].file, 'https://www.youtube.com/watch?v=zKtAuflyc5w', 'Third source file set properly');
         equal(x.sources.length, 3, 'Sources whose types cannot be determined are removed');
-        equal(x.sources[0]['default'], undefined, 'First source was not set to default');
+        ok(!x.sources[0]['default'], 'First source was not set to default');
         equal(x.sources[1]['default'], true, 'Second source was set to default');
         equal(x.sources[0].label, 'f1 label', 'First source label matches input.source[0].label');
         equal(x.sources[1].label, '1', 'Second source label is assigned 1');

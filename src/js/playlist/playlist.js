@@ -24,6 +24,9 @@ define([
                 return;
             }
 
+            // include selected file in item for backwards compatibility
+            item.file = item.sources[0].file;
+
             list.push(item);
         });
 

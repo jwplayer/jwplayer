@@ -9,7 +9,7 @@ define([
         label: undefined,
         type: undefined,
         androidhls : undefined,
-        'default': undefined
+        'default': false
     };
 
 

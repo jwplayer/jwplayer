@@ -4,23 +4,23 @@ define([
     'playlist/track'
 ], function(_, Source, Track) {
 
-    var PlaylistItem = function (config) {
+    var Defaults = {
+        description: undefined,
+        image: undefined,
+        mediaid: undefined,
+        title: undefined,
+        sources: [],
+        tracks: []
+    };
 
-        var _playlistItem = {
-            description: undefined,
-            image: undefined,
-            mediaid: undefined,
-            title: undefined,
-            sources: [],
-            tracks: []
-        };
+    var PlaylistItem = function (config) {
 
         config = config || {};
         if (!_.isArray(config.tracks)) {
             delete config.tracks;
         }
 
-        _.extend(_playlistItem, config);
+        var _playlistItem = _.extend({}, Defaults, config);
 
         if (_.isObject(_playlistItem.sources) && !_.isArray(_playlistItem.sources)) {
             _playlistItem.sources = [Source(_playlistItem.sources)];
