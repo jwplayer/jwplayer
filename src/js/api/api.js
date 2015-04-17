@@ -1,6 +1,6 @@
 define([
     'embed/embed',
-    'api/instream',
+    'api/instreamPlayer',
     'events/events',
     'events/states',
     'utils/backbone.events',
