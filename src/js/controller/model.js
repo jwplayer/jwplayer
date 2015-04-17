@@ -172,7 +172,7 @@ define([
             var playlist = Playlist.filterPlaylist(p, _providers, _this.androidhls);
 
             if (playlist.length === 0) {
-                this.playlist = playlist;
+                this.playlist = [];
                 this.mediaController.trigger(events.JWPLAYER_ERROR, {
                     message: 'Error loading playlist: No playable sources found'
                 });
