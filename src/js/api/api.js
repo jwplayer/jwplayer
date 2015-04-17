@@ -199,10 +199,6 @@ define([
             return 'html5';
         };
 
-        this.getProvider = function () {
-            return _controller.getProvider();
-        };
-
         this.load = function (toLoad) {
             if (_controller._instreamPlayer) {
                 _controller.instreamDestroy();

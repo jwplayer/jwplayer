@@ -53,7 +53,10 @@ define([
 
             'getSafeRegion',
             'isBeforeComplete',
-            'isBeforePlay'
+            'isBeforePlay',
+
+            'getProvider',
+            'detachMedia'
 
             // These are implemented in api.js, but should be here
             //'getItemMeta',

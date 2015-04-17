@@ -27,7 +27,6 @@ define([
             'registerPlugin',
 
             'attachMedia'
-            //'detachMedia' // not chainable
         ];
 
 
@@ -37,10 +36,6 @@ define([
                 return _api;
             };
         });
-
-        _api.detachMedia = function() {
-            return _controller.detachMedia.apply(_controller, arguments);
-        };
 
         _api.registerPlugin = plugins.registerPlugin;
     };
