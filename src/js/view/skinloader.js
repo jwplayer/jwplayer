@@ -23,8 +23,6 @@ define([
             _loading = true,
             _skinPath = skinPath,
             _error = false,
-            // Keeping this as 1 for now. Will change if necessary for mobile
-            _mobileMultiplier = utils.isMobile() ? 1 : 1,
             _ratio = 1;
 
         /** Load the skin **/
@@ -204,8 +202,8 @@ define([
         function _completeImageLoad(img, element, component) {
             var elementObj = _getElement(component, element);
             if (elementObj) {
-                elementObj.height = Math.round((img.height / _ratio) * _mobileMultiplier);
-                elementObj.width  = Math.round((img.width  / _ratio) * _mobileMultiplier);
+                elementObj.height = Math.round((img.height / _ratio));
+                elementObj.width  = Math.round((img.width  / _ratio));
                 elementObj.src = img.src;
                 elementObj.ready = true;
                 _checkComplete();
