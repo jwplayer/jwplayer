@@ -19,30 +19,28 @@ define([
     'events/events'
 ], function(utils, Playlist, Skin, Events, _, events) {
 
-    var Setup = function(_model, _view) {
-        var _this = _.extend(this, Events),
+    var Setup = function(_model, _view, _errorTimeoutSeconds) {
+        var _this = this,
             _skin,
-            _cancelled = false,
-            _errorState = false,
-            _setupFailureTimeout,
-            _errorTimeoutSeconds = 10;
+            _setupFailureTimeout;
+
+        _errorTimeoutSeconds = _errorTimeoutSeconds || 10;
 
         var PARSE_CONFIG = {
                 method: _parseConfig,
                 depends: []
             },
-            LOAD_SKIN = {
-                method: _loadSkin,
-                depends: [PARSE_CONFIG]
-            },
             LOAD_PLAYLIST = {
                 method: _loadPlaylist,
+                depends: [PARSE_CONFIG]
+            },
+            LOAD_SKIN = {
+                method: _loadSkin,
                 depends: [PARSE_CONFIG]
             },
             SETUP_COMPONENTS = {
                 method: _setupComponents,
                 depends: [
-                    LOAD_PLAYLIST,
                     LOAD_SKIN
                 ]
             },
@@ -56,22 +54,21 @@ define([
 
         var _queue = [
             PARSE_CONFIG,
-            LOAD_SKIN,
             LOAD_PLAYLIST,
+            LOAD_SKIN,
             SETUP_COMPONENTS,
             SEND_READY
         ];
 
         this.start = function () {
             _setupFailureTimeout = setTimeout(_setupTimeoutHandler, _errorTimeoutSeconds * 1000);
-
-            _.defer(_nextTask);
+            _nextTask();
         };
 
         this.destroy = function() {
             this.off();
+            _queue.length = 0;
             clearTimeout(_setupFailureTimeout);
-            _cancelled = true;
         };
 
         function _setupTimeoutHandler(){
@@ -79,16 +76,11 @@ define([
         }
 
         function _nextTask() {
-            if (_cancelled) {
-                return;
-            }
-
             for (var i = 0; i < _queue.length; i++) {
                 var task = _queue[i];
                 if (_allComplete(task.depends)) {
-                    _queue.splice(i, 1);
+                    _queue.splice(i--, 1);
                     task.method();
-                    _.defer(_nextTask);
                 }
             }
         }
@@ -101,9 +93,7 @@ define([
 
         function _taskComplete(task) {
             task.complete = true;
-            if (_queue.length > 0 && !_errorState) {
-                _.defer(_nextTask);
-            }
+            _nextTask();
         }
 
         function _parseConfig() {
@@ -151,26 +141,21 @@ define([
         }
 
         function _sendReady() {
-            if (_cancelled) {
-                return;
-            }
-            clearTimeout(_setupFailureTimeout);
-
             _this.trigger(events.JWPLAYER_READY);
-            _taskComplete(SEND_READY);
+            _this.destroy();
         }
 
         function _error(message) {
-            _errorState = true;
+            _view.setupError(message);
             _this.trigger(events.JWPLAYER_SETUP_ERROR, {
                 message: message
             });
-            _view.setupError(message);
-            clearTimeout(_setupFailureTimeout);
-            _cancelled = true;
+            _this.destroy();
         }
 
     };
+
+    Setup.prototype = Events;
 
     return Setup;
 });

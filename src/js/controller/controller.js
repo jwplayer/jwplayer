@@ -80,7 +80,7 @@ define([
             }, this);
 
             function _playerReady() {
-                _setup.off().destroy();
+                _setup.destroy();
                 _setup = null;
 
                 _view.completeSetup();
@@ -511,7 +511,7 @@ define([
                     _model.destroy();
                 }
                 if (_setup) {
-                    _setup.off().destroy();
+                    _setup.destroy();
                     _setup = null;
                 }
             };
