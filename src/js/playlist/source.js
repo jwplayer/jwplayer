@@ -9,7 +9,7 @@ define([
         label: undefined,
         type: undefined,
         androidhls : undefined,
-        'default': undefined
+        'default': false
     };
 
 
@@ -22,7 +22,10 @@ define([
 
         var _source = {};
         _.each(Defaults, function(val, key) {
-            _source[key] = config[key] || val;
+            var value = config[key] || val;
+            if (value !== undefined) {
+                _source[key] = value;
+            }
         });
 
         // normalize for odd strings

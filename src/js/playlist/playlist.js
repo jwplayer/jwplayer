@@ -24,6 +24,9 @@ define([
                 return;
             }
 
+            // include selected file in item for backwards compatibility
+            item.file = item.sources[0].file;
+
             list.push(item);
         });
 
@@ -42,8 +45,9 @@ define([
             if (! _.isObject(originalSource)) {
                 return;
             }
-
-            originalSource.androidhls =  androidhls;
+            if (androidhls) {
+                originalSource.androidhls =  androidhls;
+            }
             return Source(originalSource);
         }));
 
@@ -65,8 +69,10 @@ define([
         });
 
         var best = _.max(m, _.property('priority'));
-
-        return best.type;
+        if (best.priority > -1) {
+            return best.type;
+        }
+        return null;
     }
 
     return Playlist;

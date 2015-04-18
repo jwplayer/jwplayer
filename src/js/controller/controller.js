@@ -165,12 +165,11 @@ define([
             function _load(item) {
                 _stop(true);
 
-                switch (utils.typeOf(item)) {
+                switch (typeof item) {
                     case 'string':
                         _loadPlaylist(item);
                         break;
                     case 'object':
-                    case 'array':
                         _model.setPlaylist(Playlist(item));
                         break;
                     case 'number':
