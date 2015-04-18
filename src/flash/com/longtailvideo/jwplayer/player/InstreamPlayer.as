@@ -41,15 +41,11 @@ public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPl
             throw new ArgumentError("InstreamPlayer must be initialized with non-null arguments");
         }
 
-        _instreamConfig = new PlayerConfig();
-
         lock(_plugin, _lockCallback);
 
         initializeLayers();
 
         RootReference.stage.addEventListener(Event.RESIZE, resizeHandler);
-        _model.addEventListener(MediaEvent.JWPLAYER_MEDIA_VOLUME, playerVolumeUpdated);
-        _model.addEventListener(MediaEvent.JWPLAYER_MEDIA_MUTE, playerMuteUpdated);
 
         _setupView();
 
@@ -62,7 +58,6 @@ public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPl
     protected var _controller:Controller;
     protected var _item:PlaylistItem;
     protected var _options:IInstreamOptions;
-    protected var _instreamConfig:PlayerConfig;
     protected var _provider:MediaProvider;
     protected var _plugin:IPlugin;
     protected var _instreamDisplay:Sprite;
@@ -230,7 +225,7 @@ public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPl
 
     protected function setupProvider(item:PlaylistItem):void {
         setProvider(item);
-        _provider.initializeMediaProvider(_instreamConfig);
+        _provider.initializeMediaProvider(_model.config);
         _provider.addGlobalListener(eventForwarder);
         _provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_ERROR, _errorHandler);
         _provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_BUFFER_FULL, bufferFullHandler);
@@ -300,8 +295,6 @@ public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPl
 
     protected function removeEventListeners():void {
         RootReference.stage.removeEventListener(Event.RESIZE, resizeHandler);
-        _model.removeEventListener(MediaEvent.JWPLAYER_MEDIA_VOLUME, playerVolumeUpdated);
-        _model.removeEventListener(MediaEvent.JWPLAYER_MEDIA_MUTE, playerMuteUpdated);
 
         if (_provider) {
             _provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_ERROR, _errorHandler);
@@ -334,18 +327,6 @@ public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPl
         setTimeout(function ():void {
             _destroy(evt ? true : false);
         }, 0);
-    }
-
-    protected function playerVolumeUpdated(evt:MediaEvent = null):void {
-        if (_provider) {
-            _provider.setVolume(_model.volume);
-        }
-    }
-
-    protected function playerMuteUpdated(evt:MediaEvent = null):void {
-        if (_provider) {
-            _provider.mute(_model.mute);
-        }
     }
 
     protected function resizeHandler(event:Event):void {

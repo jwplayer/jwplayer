@@ -16,7 +16,6 @@ public class MediaProvider extends Sprite implements IMediaProvider {
     public function MediaProvider(provider:String) {
         _provider = provider;
         _dispatcher = new GlobalEventDispatcher();
-        _stretch = true;
     }
     /** Most recent buffer data **/
     protected var _bufferPercent:Number;
@@ -120,13 +119,6 @@ public class MediaProvider extends Sprite implements IMediaProvider {
         return !PlayerState.isBuffering(state);
     }
 
-    /**
-     * Whether or not the media should be streched by the player on resize()
-     **/
-    public function get stretchMedia():Boolean {
-        return _stretch;
-    }
-
     /** Audio Tracks (must be overridden by inheritors) **/
     public function get audioTracks():Array {
         return null;
@@ -181,16 +173,6 @@ public class MediaProvider extends Sprite implements IMediaProvider {
         sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_LOADED);
     }
 
-    /** Whether or not to stretchthe media **/
-    protected var _stretch:Boolean;
-
-    /**
-     * Allows MediaProviders to specify whether or not super.resize() should stretch the media
-     **/
-    protected function set stretch(stretch:Boolean):void {
-        _stretch = stretch;
-    }
-
     public function initializeMediaProvider(cfg:PlayerConfig):void {
         _config = cfg;
         _state = PlayerState.IDLE;
@@ -242,40 +224,32 @@ public class MediaProvider extends Sprite implements IMediaProvider {
      *
      * @param vol    The new volume (0 to 100).
      **/
-    public function setVolume(vol:Number):void {
-        sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_VOLUME, {'volume': vol});
-    }
+    public function setVolume(vol:Number):void {}
 
     /**
      * Changes the mute state of the item.
      *
-     * @param mute    The new mute state.
+     * @param muted    The new mute state.
      **/
-    public function mute(mute:Boolean):void {
-        mute == true ? setVolume(0) : setVolume(_config.volume);
-        sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_MUTE, {'mute': mute});
-    }
+    public function mute(muted:Boolean):void {}
 
     /**
      * Resizes the display.
      *
      * @param width        The new width of the display.
      * @param height    The new height of the display.
-     * @param stretch    Whether or not to stretch the media
      **/
     public function resize(width:Number, height:Number):void {
-        if (_stretch) {
-            _width = width;
-            _height = height;
+        _width = width;
+        _height = height;
 
-            if (_media) {
-                // Fix some rounding errors by resetting the media container size before stretching
-                if (_media.numChildren > 0) {
-                    _media.width = _media.getChildAt(0).width;
-                    _media.height = _media.getChildAt(0).height;
-                }
-                Stretcher.stretch(_media, width, height, _config.stretching);
+        if (_media) {
+            // Fix some rounding errors by resetting the media container size before stretching
+            if (_media.numChildren > 0) {
+                _media.width = _media.getChildAt(0).width;
+                _media.height = _media.getChildAt(0).height;
             }
+            Stretcher.stretch(_media, width, height, _config.stretching);
         }
     }
 

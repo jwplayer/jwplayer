@@ -57,7 +57,7 @@ define([
         return Math.floor(number*10) / 10;
     }
 
-    function VideoProvider(_playerId) {
+    function VideoProvider(_playerId, _playerConfig) {
 
         // Current media state
         this.state = states.IDLE;
@@ -114,8 +114,6 @@ define([
             _bufferFull,
             // If we should seek on canplay
             _delayedSeek = 0,
-            // Save the volume state before muting
-            _lastVolume,
             // Using setInterval to check buffered ranges
             _bufferInterval = -1,
             // Last sent buffer amount
@@ -337,8 +335,7 @@ define([
                 _currentQuality = 0;
             }
             if (_levels) {
-                var cookies = utils.getCookies(),
-                    label = cookies.qualityLabel;
+                var label = _playerConfig.qualityLabel;
                 for (var i = 0; i < _levels.length; i++) {
                     if (_levels[i]['default']) {
                         _currentQuality = i;
@@ -487,31 +484,20 @@ define([
         }
 
         this.volume = function(vol) {
-            if (utils.exists(vol)) {
-                _videotag.volume = Math.min(Math.max(0, vol / 100), 1);
-                _lastVolume = _videotag.volume * 100;
-            }
+            _videotag.volume = Math.min(Math.max(0, vol / 100), 1);
         };
 
         function _volumeHandler() {
-            _this.sendEvent(events.JWPLAYER_MEDIA_VOLUME, {
+            _this.sendEvent('volume', {
                 volume: Math.round(_videotag.volume * 100)
             });
-            _this.sendEvent(events.JWPLAYER_MEDIA_MUTE, {
+            _this.sendEvent('mute', {
                 mute: _videotag.muted
             });
         }
 
         this.mute = function(state) {
-            if (!utils.exists(state)) { state = !_videotag.muted; }
-
-            if (state) {
-                _lastVolume = _videotag.volume * 100;
-                _videotag.muted = true;
-            } else {
-                this.volume(_lastVolume);
-                _videotag.muted = false;
-            }
+            _videotag.muted = !!state;
         };
 
         function _sendBufferUpdate() {
@@ -730,7 +716,6 @@ define([
             if (quality >= 0) {
                 if (_levels && _levels.length > quality) {
                     _currentQuality = quality;
-                    utils.saveCookie('qualityLabel', _levels[quality].label);
                     this.sendEvent(events.JWPLAYER_MEDIA_LEVEL_CHANGED, {
                         currentQuality: quality,
                         levels: _getPublicLevels(_levels)

@@ -37,8 +37,6 @@ define([
             _playingInterval = -1,
             // current Youtube state, tracked because state events fail to fire
             _youtubeState = -1,
-            // this is where we keep track of the volume
-            _lastVolume,
             // post roll support
             _beforecompleted = false,
             // user must click video to initiate playback, gets set to false once playback starts
@@ -478,24 +476,18 @@ define([
             if (!_youtubePlayer || !_youtubePlayer.getVolume) {
                 return;
             }
-            if (utils.exists(volume)) {
-                _lastVolume = Math.min(Math.max(0, volume), 100);
-                _youtubePlayer.setVolume(_lastVolume);
-            }
-
-            _this.sendEvent(events.JWPLAYER_MEDIA_VOLUME, {
-                volume: _lastVolume
-            });
+            volume = Math.min(Math.max(0, volume), 100);
+            _youtubePlayer.setVolume(volume);
         };
 
         function _volumeHandler() {
             if (!_youtubePlayer || !_youtubePlayer.getVolume) {
                 return;
             }
-            _this.sendEvent(events.JWPLAYER_MEDIA_VOLUME, {
+            _this.sendEvent('volume', {
                 volume: Math.round(_youtubePlayer.getVolume())
             });
-            _this.sendEvent(events.JWPLAYER_MEDIA_MUTE, {
+            _this.sendEvent('mute', {
                 mute: _youtubePlayer.isMuted()
             });
         }
@@ -504,20 +496,11 @@ define([
             if (!_youtubePlayer || !_youtubePlayer.getVolume) {
                 return;
             }
-            if (!utils.exists(state)) {
-                state = !_youtubePlayer.isMuted();
-            }
-
             if (state) {
-                _lastVolume = _youtubePlayer.getVolume();
                 _youtubePlayer.mute();
             } else {
-                this.volume(_lastVolume);
                 _youtubePlayer.unMute();
             }
-            _this.sendEvent(events.JWPLAYER_MEDIA_MUTE, {
-                mute: state
-            });
         };
 
         this.detachMedia = function() {

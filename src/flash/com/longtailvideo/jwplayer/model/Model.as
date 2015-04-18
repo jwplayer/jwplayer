@@ -10,8 +10,10 @@ import com.longtailvideo.jwplayer.media.VideoMediaProvider;
 import com.longtailvideo.jwplayer.parsers.JWParser;
 import com.longtailvideo.jwplayer.player.PlayerState;
 import com.longtailvideo.jwplayer.plugins.PluginConfig;
+import com.longtailvideo.jwplayer.utils.RootReference;
 
 import flash.events.Event;
+import flash.media.SoundTransform;
 
 public class Model extends GlobalEventDispatcher {
     /** Constructor **/
@@ -47,6 +49,10 @@ public class Model extends GlobalEventDispatcher {
         setActiveMediaProvider(JWParser.getProvider(playItem));
     }
 
+    public function get config():PlayerConfig {
+        return _config;
+    }
+
     /** The currently loaded MediaProvider **/
     public function get media():IMediaProvider {
         return _currentMedia;
@@ -67,39 +73,49 @@ public class Model extends GlobalEventDispatcher {
         _config.fullscreen = b;
     }
 
+    public function get soundTransform():SoundTransform {
+        return _config.soundTransform;
+    }
+
     public function get mute():Boolean {
         return _config.mute;
     }
 
-    public function set mute(b:Boolean):void {
-        _config.mute = b;
-        _currentMedia.mute(b);
+    public function set mute(muted:Boolean):void {
+        _config.mute = muted;
+        if (_currentMedia) {
+            _currentMedia.setVolume(0);
+        }
     }
 
     public function get volume():Number {
         return _config.volume;
     }
 
-    public function set volume(n:Number):void {
-        _config.volume = n;
-        _currentMedia.setVolume(n);
+    public function set volume(vol:Number):void {
+        _config.volume = vol;
+        if (_currentMedia) {
+            _currentMedia.setVolume(vol);
+        }
     }
 
     public function get width():Number {
-        return _config.width;
+        if (RootReference.stage) {
+            return RootReference.stage.stageWidth;
+        }
+        return 0;
     }
 
     public function get height():Number {
-        return _config.height;
+        if (RootReference.stage) {
+            return RootReference.stage.stageHeight;
+        }
+        return 0;
     }
 
-    public function set width(n:Number):void {
-        _config.width = n;
-    }
+    public function set width(n:Number):void {}
 
-    public function set height(n:Number):void {
-        _config.height = n;
-    }
+    public function set height(n:Number):void {}
 
     public function get stretching():String {
         return _config.stretching;

@@ -116,22 +116,13 @@ public class Controller extends GlobalEventDispatcher {
     }
 
     public function setVolume(vol:Number):Boolean {
-        if (_model.media) {
-            mute(false);
-            _model.volume = vol;
-            return true;
-        }
-        return false;
+        _model.volume = vol;
+        return true;
     }
 
     public function mute(muted:Boolean):Boolean {
-        if (_model.media) {
-            if (muted !== _model.mute) {
-                _model.mute = muted;
-                return true;
-            }
-        }
-        return false;
+        _model.mute = muted;
+        return true;
     }
 
     public function play():Boolean {
