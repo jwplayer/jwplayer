@@ -77,12 +77,7 @@ define([
     };
 
     function isAbsolutePath(path) {
-        if (!_exists(path)) {
-            return;
-        }
-        var protocol = path.indexOf('://');
-        var queryparams = path.indexOf('?');
-        return (protocol > 0 && (queryparams < 0 || (queryparams > protocol)));
+        return /^(?:(?:https?|file)\:)?\/\//.test(path);
     }
 
     /** Logger */
@@ -198,7 +193,7 @@ define([
         for (var i = 0; i < cookies.length; i++) {
             var split = cookies[i].split('=');
             if (split[0].indexOf('jwplayer.') === 0) {
-                jwCookies[split[0].substring(9, split[0].length)] = split[1];
+                jwCookies[split[0].substring(9, split[0].length)] = utils.serialize(split[1]);
             }
         }
         return jwCookies;

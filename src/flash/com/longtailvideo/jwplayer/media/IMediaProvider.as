@@ -13,8 +13,6 @@ public interface IMediaProvider extends IGlobalEventDispatcher {
 
     function get position():Number;
 
-    function get stretchMedia():Boolean;
-
     function get audioTracks():Array;
 
     function get currentAudioTrack():Number;
@@ -51,7 +49,7 @@ public interface IMediaProvider extends IGlobalEventDispatcher {
 
     function setVolume(vol:Number):void;
 
-    function mute(mute:Boolean):void;
+    function mute(muted:Boolean):void;
 
     function resize(width:Number, height:Number):void;
 }

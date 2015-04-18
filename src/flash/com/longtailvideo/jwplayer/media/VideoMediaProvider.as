@@ -7,7 +7,6 @@ import com.longtailvideo.jwplayer.model.PlaylistItem;
 import com.longtailvideo.jwplayer.player.PlayerState;
 import com.longtailvideo.jwplayer.utils.NetClient;
 import com.longtailvideo.jwplayer.utils.RootReference;
-import com.longtailvideo.jwplayer.utils.Stretcher;
 import com.longtailvideo.jwplayer.utils.Strings;
 import com.longtailvideo.jwplayer.utils.Utils;
 
@@ -17,7 +16,6 @@ import flash.events.Event;
 import flash.events.IOErrorEvent;
 import flash.events.NetStatusEvent;
 import flash.geom.Rectangle;
-import flash.media.SoundTransform;
 import flash.media.Video;
 import flash.net.NetConnection;
 import flash.net.NetStream;
@@ -33,7 +31,6 @@ public class VideoMediaProvider extends MediaProvider {
     public function VideoMediaProvider(stageVideoEnabled:Boolean = true) {
         _stageEnabled = stageVideoEnabled;
         super('video');
-        _stretch = false;
     }
     /** Whether the video is fully buffered. **/
     private var _buffered:Number;
@@ -47,8 +44,6 @@ public class VideoMediaProvider extends MediaProvider {
     private var _stageEnabled:Boolean;
     /** NetStream instance that handles the stream IO. **/
     private var _stream:NetStream;
-    /** Sound control object. **/
-    private var _transformer:SoundTransform;
     /** Start parameter for HTTP pseudostreaming. **/
     private var _startparam:String;
     /** Starttime for pre-keyframe seek. **/
@@ -93,7 +88,7 @@ public class VideoMediaProvider extends MediaProvider {
         _stream.addEventListener(AsyncErrorEvent.ASYNC_ERROR, errorHandler);
         _stream.bufferTime = 1;
         _stream.client = new NetClient(this);
-        _transformer = new SoundTransform();
+        _stream.soundTransform = cfg.soundTransform;
         // Set startparam when available
         if (_config.startparam) {
             _startparam = _config.startparam;
@@ -106,12 +101,12 @@ public class VideoMediaProvider extends MediaProvider {
         _item = itm;
         // Set Video or StageVideo
         if (!_video) {
-            _video = new Video(320, 240);
+            _video = new Video();
             _video.smoothing = true;
             // Use stageVideo when available
             if (_stageEnabled && RootReference.stage && RootReference.stage.stageVideos.length > 0) {
                 _stage = RootReference.stage.stageVideos[0];
-                _stage.viewPort = new Rectangle(0, 0, 320, 240);
+                _stage.viewPort = new Rectangle(0, 0, _video.width, _video.height);
                 _stage.addEventListener('renderState', renderHandler);
             } else {
                 _video.addEventListener('renderState', renderHandler);
@@ -142,8 +137,6 @@ public class VideoMediaProvider extends MediaProvider {
         sendQualityEvent(MediaEvent.JWPLAYER_MEDIA_LEVELS, _item.levels, _currentQuality);
         // Do not set a stretchable media for AAC files.
         _item.type == "aac" ? media = null : media = _video;
-        // Initialize volume
-        streamVolume(config.mute ? 0 : config.volume);
         // Get item start (should remove this someday)
         if (_startparam && _item.start) {
             _starttime = _item.start;
@@ -167,19 +160,13 @@ public class VideoMediaProvider extends MediaProvider {
         attachNetStream(_stream);
         _stream.resume();
         super.play();
-    };
+    }
 
     /** Resize the video or stage.**/
     override public function resize(width:Number, height:Number):void {
-        if (_media) {
-            if (_media.numChildren > 0) {
-                _media.width = _media.getChildAt(0).width;
-                _media.height = _media.getChildAt(0).height;
-            }
-            Stretcher.stretch(_media, width, height, _config.stretching);
-            if (_stage) {
-                _stage.viewPort = new Rectangle(_media.x, _media.y, _media.width, _media.height);
-            }
+        super.resize(width, height);
+        if (_stage && _media) {
+            _stage.viewPort = _media.getRect(RootReference.root);
         }
     }
 
@@ -240,7 +227,9 @@ public class VideoMediaProvider extends MediaProvider {
 
     /** Set the volume level. **/
     override public function setVolume(vol:Number):void {
-        streamVolume(vol);
+        if (_stream) {
+            _stream.soundTransform = _config.soundTransform;
+        }
         super.setVolume(vol);
     }
 
@@ -316,14 +305,6 @@ public class VideoMediaProvider extends MediaProvider {
                 position: _position,
                 duration: item.duration
             });
-        }
-    }
-
-    /** Set the stream's volume, without sending a volume event **/
-    protected function streamVolume(level:Number):void {
-        _transformer.volume = level / 100;
-        if (_stream) {
-            _stream.soundTransform = _transformer;
         }
     }
 

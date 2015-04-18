@@ -187,7 +187,7 @@ public class Strings {
 
     /** Gets an absolute file path based on a relative filepath **/
     public static function getAbsolutePath(path:String, basepath:String = null):String {
-        if (basepath == null) {
+        if (!basepath) {
             return path;
         }
         if (isAbsolutePath(path)) {
@@ -220,9 +220,7 @@ public class Strings {
     }
 
     public static function isAbsolutePath(path:String):Boolean {
-        var protocol:int = path.indexOf("://");
-        var queryparams:int = path.indexOf("?");
-        return ((protocol > 0 && (queryparams < 0 || (queryparams > protocol))));
+        return /^(?:(?:https?|file)\:)?\/\//.test(path);
     }
 
     /** Removes potentially harmful string headers from a link **/

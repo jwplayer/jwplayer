@@ -20,8 +20,6 @@ define([
         var _swf;
         var _clickOverlay;
         var _item = null;
-        var _volume;
-        var _muted = false;
         var _beforecompleted = false;
         var _currentQuality = -1;
         var _qualityLevels = null;
@@ -79,14 +77,21 @@ define([
                     _flashCommand('seek', seekPos);
                 },
                 volume: function(vol) {
-                    if (utils.exists(vol)) {
-                        _volume = Math.min(Math.max(0, vol), 100);
-                        _flashCommand('volume', _volume);
+                    if (!_.isNumber(vol)) {
+                        return;
+                    }
+                    var volume = Math.min(Math.max(0, vol), 100);
+                    _playerConfig.volume = volume;
+                    if (_ready()) {
+                        _flashCommand('volume', volume);
                     }
                 },
-                mute: function(muted) {
-                    _muted = utils.exists(muted) ? muted : !_muted;
-                    _flashCommand('mute', muted);
+                mute: function(mute) {
+                    var muted = utils.exists(mute) ? !!mute : !_playerConfig.mute;
+                    _playerConfig.mute = muted;
+                    if (_ready()) {
+                        _flashCommand('mute', muted);
+                    }
                 },
                 setState: function() {
                     return DefaultProvider.setState.apply(this, arguments);
@@ -129,7 +134,6 @@ define([
                         });
                     }
                     _container.appendChild(_clickOverlay);
-
 
                     // listen to events triggered from flash
 
@@ -196,14 +200,6 @@ define([
 
                     }, this).on(events.JWPLAYER_MEDIA_ERROR, function(e) {
                         this.sendEvent(e.type, e);
-                    }, this);
-
-                    _swf.on(events.JWPLAYER_MEDIA_MUTE, function(e) {
-                        this.sendEvent(events.JWPLAYER_MEDIA_MUTE, e);
-                    }, this);
-
-                    _swf.on(events.JWPLAYER_MEDIA_VOLUME, function(e) {
-                        this.sendEvent(events.JWPLAYER_MEDIA_VOLUME, e);
                     }, this);
 
                     _swf.on('visualQuality', function(e) {

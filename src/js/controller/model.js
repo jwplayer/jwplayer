@@ -74,12 +74,10 @@ define([
 
         function _videoEventHandler(evt) {
             switch (evt.type) {
-                case events.JWPLAYER_MEDIA_MUTE:
-                    this.set('mute', evt.mute);
-                    break;
-                case events.JWPLAYER_MEDIA_VOLUME:
-                    this.set('volume', evt.volume);
-                    break;
+                case 'volume':
+                case 'mute':
+                    this.set(evt.type, evt[evt.type]);
+                    return;
 
                 case events.JWPLAYER_PLAYER_STATE:
                     var providerState = evt.newstate;
@@ -110,6 +108,18 @@ define([
                 case events.JWPLAYER_PROVIDER_CHANGED:
                     this.set('provider', _provider.getName());
                     break;
+
+                case events.JWPLAYER_MEDIA_LEVEL_CHANGED:
+                    var quality = evt.currentQuality;
+                    var levels = evt.levels;
+
+                    var qualityLabel = levels[quality].label;
+                    this.set('qualityLabel', qualityLabel);
+                    utils.saveCookie('qualityLabel', qualityLabel);
+                    _this.config.qualityLabel = qualityLabel;
+
+                    break;
+
                 case 'visualQuality':
                     var visualQuality = _.extend({}, evt);
                     delete visualQuality.type;
@@ -232,17 +242,16 @@ define([
             }
         };
 
-        this.setVolume = function(newVol) {
-            if (_this.mute && newVol > 0) {
-                _this.setMute(false);
-            }
-            newVol = Math.round(newVol);
-            if (!_this.mute) {
-                utils.saveCookie('volume', newVol);
-            }
-            _this.volume = newVol;
+        this.setVolume = function(vol) {
+            vol = Math.round(vol);
+            _this.set('volume', vol);
+            utils.saveCookie('volume', vol);
             if (_provider) {
-                _provider.volume(newVol);
+                _provider.volume(vol);
+            }
+            var muted = (vol === 0);
+            if (muted !== _this.get('mute')) {
+                _this.setMute(muted);
             }
         };
 
@@ -250,16 +259,14 @@ define([
             if (!utils.exists(state)) {
                 state = !_this.mute;
             }
-            utils.saveCookie('mute', state);
             _this.set('mute', state);
-
-            // pulled in from the control bar
-            if (_this.get('mute') && _this.get('volume') === 0) {
-                _this.setVolume(20);
-            }
-
+            utils.saveCookie('mute', state);
             if (_provider) {
                 _provider.mute(state);
+            }
+            if (!state) {
+                var volume = Math.max(20, _this.get('volume'));
+                this.setVolume(volume);
             }
         };
 

@@ -110,9 +110,24 @@ define([
                         });
                     }
                 });
+                _model.on('change:volume', function(model, vol) {
+                    _this.trigger(events.JWPLAYER_MEDIA_VOLUME, {
+                        volume: vol
+                    });
+                });
+                _model.on('change:mute', function(model, mute) {
+                    _this.trigger(events.JWPLAYER_MEDIA_MUTE, {
+                        mute: mute
+                    });
+                });
 
                 _model.mediaController.on('all', _this.trigger.bind(_this));
                 _view.on('all', _this.trigger.bind(_this));
+
+
+                _view.on(events.JWPLAYER_CAPTIONS_CHANGED, function(e) {
+                    utils.saveCookie('captionLabel', e.tracks[e.track].label);
+                });
 
                 // Tell the api that we are loaded
                 _this.trigger(events.JWPLAYER_READY, {
