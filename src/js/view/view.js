@@ -379,7 +379,9 @@ define([
 
         function _setAspectRatio(){
             var styleTarget = '#'+_playerElement.id+'.jw-aspect-mode:before';
-            document.styleSheets[0].addRule(styleTarget, 'padding-top: ' + _model.aspectratio + '%');
+            var targetStylesheet = document.styleSheets[0];
+            targetStylesheet.insertRule(styleTarget + ' { padding-top: ' + _model.aspectratio + '; }',
+                targetStylesheet.cssRules.length);
         }
 
         function _componentFadeListeners(comp) {
