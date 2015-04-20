@@ -263,11 +263,6 @@ define([
             function _stop(internal) {
                 var fromApi = !internal;
 
-                // Something has called stop() in an onComplete handler
-                if (_isIdle()) {
-                    _stopPlaylist = true;
-                }
-
                 _actionOnAttach = null;
 
                 var status = utils.tryCatch(function() {
@@ -360,6 +355,7 @@ define([
                     if (_model.get('repeat')) {
                         _next();
                     } else {
+                        _model.set('state', states.COMPLETE);
                         _loadOnPlay = 0;
                         _this.trigger(events.JWPLAYER_PLAYLIST_COMPLETE, {});
                     }
