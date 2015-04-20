@@ -344,6 +344,7 @@ define([
                     }
                     break;
                 case states.IDLE:
+                case states.COMPLETE:
                     _toggleButton('play', false);
                     if (_elements.timeSliderThumb) {
                         cssUtils.style(_elements.timeSliderThumb, {
@@ -1099,7 +1100,7 @@ define([
 
         function _idle() {
             var currentState = _model.state;
-            return (currentState === states.IDLE);
+            return (currentState === states.IDLE || currentState === states.COMPLETE);
         }
 
         function _killSelect(evt) {
