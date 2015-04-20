@@ -183,7 +183,7 @@ define([
             }
 
             // Item is actually changing
-            //this.mediaModel.off();
+            this.mediaModel.off();
             this.set('mediaModel', new MediaModel());
 
             this.set('item', newItem);
