@@ -68,12 +68,6 @@ define([
                     this.setState(states.IDLE);
                 },
                 seek: function(seekPos) {
-                    /*
-                     this.sendEvent(events.JWPLAYER_MEDIA_SEEK, {
-                         position: _position,
-                         offset: seekPos
-                     });
-                     */
                     _flashCommand('seek', seekPos);
                 },
                 volume: function(vol) {
@@ -201,6 +195,10 @@ define([
 
                     }, this).on(events.JWPLAYER_MEDIA_ERROR, function(e) {
                         this.sendEvent(e.type, e);
+                    }, this);
+
+                    _swf.on(events.JWPLAYER_MEDIA_SEEK, function(e) {
+                        this.sendEvent(events.JWPLAYER_MEDIA_SEEK, e);
                     }, this);
 
                     _swf.on('visualQuality', function(e) {
