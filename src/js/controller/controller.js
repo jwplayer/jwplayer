@@ -87,7 +87,7 @@ define([
                 this.trigger(evtClone.type, evtClone);
             }, this);
 
-            _model.on('change:mediaModel', function() {
+            function initMediaModel() {
                 _model.mediaModel.on('change:state', function(mediaModel, state){
                     var modelState = normalizeState(state);
 
@@ -101,7 +101,9 @@ define([
                     _model.set('state', modelState);
                     _model.trigger(evt.type, evt);
                 });
-            });
+            }
+            initMediaModel();
+            _model.on('change:mediaModel', initMediaModel);
 
             function _playerReady() {
                 _setup.destroy();
