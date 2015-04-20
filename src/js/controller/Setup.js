@@ -75,7 +75,7 @@ define([
         };
 
         function _setupTimeoutHandler(){
-            _error('Setup Timeout Error: Setup took longer than '+(_errorTimeoutSeconds)+' seconds to complete.');
+            _error('Setup Timeout Error',  'Setup took longer than '+(_errorTimeoutSeconds)+' seconds to complete.');
         }
 
         function _nextTask() {
@@ -108,7 +108,7 @@ define([
 
         function _parseConfig() {
             if (_model.edition && _model.edition() === 'invalid') {
-                _error('Error setting up player: Invalid license key');
+                _error('Error setting up player', 'Invalid license key');
             } else {
                 _taskComplete(PARSE_CONFIG);
             }
@@ -124,7 +124,7 @@ define([
         }
 
         function _skinError(message) {
-            _error('Error loading skin: ' + message);
+            _error('Error loading skin', message);
         }
 
         function _loadPlaylist() {
@@ -132,14 +132,14 @@ define([
             if (type === 'array') {
                 _completePlaylist(Playlist(_model.config.playlist));
             } else {
-                _error('Playlist type not supported: ' + type);
+                _error('Playlist type not supported', type);
             }
         }
 
         function _completePlaylist(playlist) {
             _model.setPlaylist(playlist);
             if (_model.playlist.length === 0 || _model.playlist[0].sources.length === 0) {
-                _error('Error loading playlist: No playable sources found');
+                _error('Error loading playlist', 'No playable sources found');
             } else {
                 _taskComplete(LOAD_PLAYLIST);
             }
@@ -160,16 +160,21 @@ define([
             _taskComplete(SEND_READY);
         }
 
-        function _error(message) {
-            _errorState = true;
+        function _error(message, body) {
+            var width = _model.get('width'),
+                height = _model.get('height');
+
             _this.trigger(events.JWPLAYER_SETUP_ERROR, {
-                message: message
+                message: message,
+                body: body,
+                width: width.toString().indexOf('%') > 0 ? width : (width + 'px'),
+                height: height.toString().indexOf('%') > 0 ? height : (height + 'px')
             });
-            _view.setupError(message);
+
+            _errorState = true;
             clearTimeout(_setupFailureTimeout);
             _cancelled = true;
         }
-
     };
 
     return Setup;

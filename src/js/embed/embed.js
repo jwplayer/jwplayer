@@ -5,9 +5,8 @@ define([
     'playlist/loader',
     'embed/config',
     'plugins/plugins',
-    'view/errorscreen',
     'utils/underscore'
-], function(events, Events, scriptloader, PlaylistLoader, EmbedConfig, plugins, errorScreen, _) {
+], function(events, Events, scriptloader, PlaylistLoader, EmbedConfig, plugins, _) {
 
     var Embed = function(_api) {
 
@@ -23,13 +22,6 @@ define([
             _config = new EmbedConfig(options);
             _config.id = _api.id;
 
-            var _container = _api.getContainer(),
-                width = _config.width,
-                height = _config.height;
-
-            _container.style.width = width.toString().indexOf('%') > 0 ? width : (width + 'px');
-            _container.style.height = height.toString().indexOf('%') > 0 ? height : (height + 'px');
-
             _pluginLoader = plugins.loadPlugins(_api.id, _config.plugins);
             _pluginLoader.on(events.COMPLETE, _doEmbed);
             _pluginLoader.on(events.ERROR, _pluginError);
@@ -41,8 +33,11 @@ define([
                 _pluginLoader.destroy();
                 _pluginLoader = null;
             }
-            if (_playlistLoader) {
-                _playlistLoader.resetEventListeners();
+            if (_playlistLoader && _playlistLoader.resetEventListeners) {
+                if(_playlistLoader.resetEventListeners) {
+                    // resetEventListeners does not exist if it is removed via an error on setup
+                    _playlistLoader.resetEventListeners();
+                }
                 _playlistLoader = null;
             }
         };
@@ -131,38 +126,32 @@ define([
 
         function _sourceError(evt) {
             if (evt && evt.message) {
-                _errorScreen('Error loading playlist', evt.message);
+                _dispatchSetupError('Error loading playlist', evt.message);
             } else {
-                _errorScreen('Error loading player: ', 'No playable sources found');
+                _dispatchSetupError('Error loading player: ', 'No playable sources found');
             }
         }
 
-        function _dispatchSetupError(message) {
+        function _dispatchSetupError(message, body) {
             // Throttle this so that it runs once if called twice in the same callstack
-            clearTimeout(_setupErrorTimer);
-            _setupErrorTimer = setTimeout(function() {
-                _api.trigger(events.JWPLAYER_SETUP_ERROR, {
-                    message: message
-                });
-            }, 0);
-        }
-
-        function _errorScreen(message, body) {
             if (_errorOccurred) {
                 return;
             }
 
-            // Put new container in page
-            // TODO: don't assume element with id is in DOM
-            var container = document.getElementById(_api.id);
-            var _container = _api.getContainer();
-            if (container !== _container) {
-                container.parentNode.replaceChild(_container, container);
-            }
-
             _errorOccurred = true;
-            errorScreen(_container, message, body);
-            _dispatchSetupError(message + body, true);
+
+            var width = _config.width,
+                height = _config.height;
+
+            clearTimeout(_setupErrorTimer);
+            _setupErrorTimer = setTimeout(function() {
+                _this.trigger(events.JWPLAYER_SETUP_ERROR, {
+                    message: message,
+                    body: body,
+                    width: width.toString().indexOf('%') > 0 ? width : (width + 'px'),
+                    height: height.toString().indexOf('%') > 0 ? height : (height + 'px')
+                });
+            }, 0);
         }
 
         return this;

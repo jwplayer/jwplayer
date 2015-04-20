@@ -8,17 +8,16 @@ define([
     'view/display',
     'view/displayicon',
     'view/dock',
-    'view/errorscreen',
     'view/logo',
     'view/controlbar',
     'view/rightclick',
     'view/title',
     'utils/css',
     'utils/underscore',
-    'handlebars-loader!templates/view.html'
+    'handlebars-loader!templates/player.html'
 ], function(utils, events, Events, states, CastDisplay,
-            Captions, Display, DisplayIcon, Dock, errorScreen, Logo,
-            Controlbar, RightClick, Title, cssUtils, _, viewTemplate) {
+            Captions, Display, DisplayIcon, Dock, Logo,
+            Controlbar, RightClick, Title, cssUtils, _, playerTemplate) {
 
     var _styles = utils.style,
         _bounds = utils.bounds,
@@ -46,6 +45,7 @@ define([
             _controlsTimeout = -1,
             _timeoutDuration = _isMobile ? 4000 : 2000,
             _videoLayer,
+            _aspectRatioContainer,
             _lastWidth,
             _lastHeight,
             _instreamModel,
@@ -67,6 +67,7 @@ define([
             _resizeMediaTimeout = -1,
             _inCB = false, // in control bar
             _currentState,
+            _originalContainer,
 
             // view fullscreen methods and ability
             _requestFullscreen,
@@ -79,9 +80,15 @@ define([
 
             _this = _.extend(this, Events);
 
-        _playerElement = _api.getContainer();
-        _playerElement.id = _model.id;
-        _playerElement.tabIndex = 0;
+        _playerElement = utils.createElement(playerTemplate({id: _model.id}));
+
+        var width = _model.get('width'),
+            height = _model.get('height');
+
+        _styles(_playerElement, {
+            width: width.toString().indexOf('%') > 0 ? width : (width+ 'px'),
+            height: height.toString().indexOf('%') > 0 ? height : (height + 'px')
+        });
 
         _requestFullscreen =
             _playerElement.requestFullscreen ||
@@ -96,9 +103,6 @@ define([
             document.mozCancelFullScreen ||
             document.msExitFullscreen;
         _elementSupportsFullscreen = _requestFullscreen && _exitFullscreen;
-
-        var replace = document.getElementById(_model.id);
-        replace.parentNode.replaceChild(_playerElement, replace);
 
         function adjustSeek(amount) {
             var newSeek = utils.between(_model.position + amount, 0, this.getDuration());
@@ -263,12 +267,11 @@ define([
             // TODO: remove when adding in templates. exposed for controller/instream
             this._skin = _skin = skin;
 
-            _playerElement.appendChild(utils.createElement(viewTemplate({})));
-
             _container = _playerElement.getElementsByClassName('jw-main')[0];
             _videoLayer = _playerElement.getElementsByClassName('jw-video')[0];
 
             _controlsLayer = _playerElement.getElementsByClassName('jw-controls')[0];
+            _aspectRatioContainer = _playerElement.getElementsByClassName('jw-aspect')[0];
 
             _setupControls();
 
@@ -369,20 +372,13 @@ define([
 
             if (_model.get('aspectratio')) {
                 utils.addClass(_playerElement, 'jw-aspect-mode');
-                _setAspectRatio();
+                utils.style(_aspectRatioContainer, { 'padding-top': _model.aspectratio });
             }
 
             setTimeout(function() {
                 _resize(_model.width, _model.height);
             }, 0);
         };
-
-        function _setAspectRatio(){
-            var styleTarget = '#'+_playerElement.id+'.jw-aspect-mode:before';
-            var targetStylesheet = document.styleSheets[0];
-            targetStylesheet.insertRule(styleTarget + ' { padding-top: ' + _model.aspectratio + '; }',
-                targetStylesheet.cssRules.length);
-        }
 
         function _componentFadeListeners(comp) {
             if (comp) {
@@ -777,9 +773,14 @@ define([
         };
         this.resizeMedia = _resizeMedia;
 
-        var _completeSetup = this.completeSetup = function() {
-            utils.removeClass(_playerElement, 'jw-setup-hide');
+        this.reset = function(){
+            if (document.contains(_playerElement)) {
+                _playerElement.parentNode.replaceChild(_originalContainer, _playerElement);
+            }
+            utils.emptyElement(_playerElement);
+        };
 
+        this.completeSetup = function() {
             window.addEventListener('beforeunload', function() {
                 if (!_isCasting()) { // don't call stop while casting
                     // prevent video error in display on window close
@@ -1007,7 +1008,7 @@ define([
                     _display.hidePreview(false);
                 }
 
-                // TODO: needs to be done in the provider
+                // TODO: needs to be done in the provider.setVisibility
                 utils.addClass(_videoLayer, 'jw-video-show');
 
                 // force control bar without audio check
@@ -1103,13 +1104,6 @@ define([
             provider.setVisibility(true);
         };
 
-        this.setupError = function(message) {
-            _errorState = true;
-            message = message.split(':');
-            errorScreen(_playerElement, message[0], message[1]);
-            _completeSetup();
-        };
-
         this.forceControls = function(state) {
             _forcedControlsState = !!state;
             if (state) {
@@ -1146,6 +1140,10 @@ define([
 
         this.controlsContainer = function() {
             return _controlsLayer;
+        };
+
+        this.getContainer = this.element = function() {
+            return _playerElement;
         };
 
         this.getSafeRegion = function(includeCB) {
@@ -1190,7 +1188,7 @@ define([
             for (var i = DOCUMENT_FULLSCREEN_EVENTS.length; i--;) {
                 document.removeEventListener(DOCUMENT_FULLSCREEN_EVENTS[i], _fullscreenChangeHandler, false);
             }
-            _model.mediacontroller.off('fullscreenchange', _fullscreenChangeHandler);
+            _model.mediaController.off('fullscreenchange', _fullscreenChangeHandler);
             _playerElement.removeEventListener('keydown', handleKeydown, false);
             if (_rightClickMenu) {
                 _rightClickMenu.destroy();

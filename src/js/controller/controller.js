@@ -10,9 +10,10 @@ define([
     'view/view',
     'utils/backbone.events',
     'events/states',
-    'events/events'
+    'events/events',
+    'view/errorscreen'
 ], function(setupInstreamMethods, deprecateInit, _, Setup,
-            Model, Playlist, PlaylistLoader, utils, View, Events, states, events) {
+            Model, Playlist, PlaylistLoader, utils, View, Events, states, events, errorScreen) {
 
     function _queue(command) {
         return function() {
@@ -21,7 +22,8 @@ define([
         };
     }
 
-    var Controller = function() {
+    var Controller = function(originalContainer) {
+        this.originalContainer = this.currentContainer = originalContainer;
         this.eventsQueue = [];
         _.extend(this, Events);
     };
@@ -62,7 +64,12 @@ define([
             this.skin = _view._skin;
 
             _setup.on(events.JWPLAYER_READY, _playerReady, this);
-            _setup.on(events.JWPLAYER_SETUP_ERROR, this.trigger);
+            _setup.on(events.JWPLAYER_SETUP_ERROR, function(evt) {
+                if (_view) {
+                    _view.completeSetup();
+                }
+                _this.setupError(evt.message, evt.body, evt.width, evt.height);
+            });
             _setup.start();
 
             // Helper function
@@ -83,6 +90,7 @@ define([
                 _setup.off().destroy();
                 _setup = null;
 
+                this.showView(_view.element());
                 _view.completeSetup();
 
                 // For 'onCast' callback
@@ -454,6 +462,7 @@ define([
             this.getProvider = function(){ return _model.get('provider'); };
 
             // View passthroughs
+            this.getContainer = function(){ return this.currentContainer; };
             this.resize = _view.resize;
             this.getSafeRegion = _view.getSafeRegion;
             this.forceState = _view.forceState;
@@ -528,6 +537,25 @@ define([
 
             // This is here because it binds to the methods declared above
             deprecateInit(_api, this);
+        },
+
+        showView: function(viewElement){
+            if(this.currentContainer.parentElement) {
+                this.currentContainer.parentElement.replaceChild(viewElement, this.currentContainer);
+            }
+            this.currentContainer = viewElement;
+        },
+
+        setupError: function(message, body, width, height){
+            var errorScreenElement = utils.createElement(errorScreen(message, body));
+
+            utils.style(errorScreenElement, { 'width': width, 'height': height } );
+
+            this.showView(errorScreenElement);
+        },
+
+        reset: function() {
+            this.showView(this.originalContainer);
         }
     };
 

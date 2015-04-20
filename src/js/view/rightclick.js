@@ -119,10 +119,10 @@ define([
         },
 
         destroy : function() {
+            this.model.off('change:provider', this.updateHtml);
             this.model = null;
             this.playerElement = null;
             this.el = null;
-            this.model.off('change:provider', this.updateHtml);
             document.removeEventListener('mousedown', this.hideMenu);
         }
     });
