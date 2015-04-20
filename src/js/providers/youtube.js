@@ -13,7 +13,7 @@ define([
     var _scriptLoader = new scriptloader(window.location.protocol + '//www.youtube.com/iframe_api'),
         _isMobile = utils.isMobile();
 
-    function YoutubeProvider(_playerId) {
+    function YoutubeProvider(_playerId, _playerConfig) {
 
         this.state = states.IDLE;
 
@@ -229,8 +229,6 @@ define([
             _youtubeEmbedReadyCallback = null;
 
             _readyViewForMobile();
-
-            _volumeHandler();
         }
 
         // Youtube Player Event Handlers
@@ -380,6 +378,8 @@ define([
                 item.image = '//i.ytimg.com/vi/' + videoId + '/0.jpg';
             }
 
+            _this.volume(_playerConfig.volume);
+            _this.mute(_playerConfig.mute);
             _this.setVisibility(true);
 
             if (!_youtubeAPI || !_youtubePlayer) {
@@ -393,7 +393,6 @@ define([
 
             if (!_youtubePlayer.getPlayerState) {
                 var onStart = function() {
-                    _volumeHandler();
                     _this.load(item);
                 };
                 if (_youtubePlayerReadyCallback) {
@@ -472,34 +471,27 @@ define([
             }
         };
 
-        this.volume = function(volume) {
-            if (!_youtubePlayer || !_youtubePlayer.getVolume) {
+        this.volume = function(vol) {
+            if (!_.isNumber(vol)) {
                 return;
             }
-            volume = Math.min(Math.max(0, volume), 100);
-            _youtubePlayer.setVolume(volume);
+            var volume = Math.min(Math.max(0, vol), 100);
+            _playerConfig.volume = volume;
+            if (_youtubePlayer && _youtubePlayer.getVolume) {
+                _youtubePlayer.setVolume(volume);
+            }
+
         };
 
-        function _volumeHandler() {
-            if (!_youtubePlayer || !_youtubePlayer.getVolume) {
-                return;
-            }
-            _this.sendEvent('volume', {
-                volume: Math.round(_youtubePlayer.getVolume())
-            });
-            _this.sendEvent('mute', {
-                mute: _youtubePlayer.isMuted()
-            });
-        }
-
-        this.mute = function(state) {
-            if (!_youtubePlayer || !_youtubePlayer.getVolume) {
-                return;
-            }
-            if (state) {
-                _youtubePlayer.mute();
-            } else {
-                _youtubePlayer.unMute();
+        this.mute = function(mute) {
+            var muted = utils.exists(mute) ? !!mute : !_playerConfig.mute;
+            _playerConfig.mute = muted;
+            if (_youtubePlayer  && _youtubePlayer.mute) {
+                if (muted) {
+                    _youtubePlayer.mute();
+                } else {
+                    _youtubePlayer.unMute();
+                }
             }
         };
 
