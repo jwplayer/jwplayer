@@ -300,7 +300,6 @@ define([
                 provider.addEventListener(events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
                 provider.addEventListener(events.JWPLAYER_MEDIA_ERROR, errorHandler);
 
-                //adModel.mediaModel.otat('change:state')
                 provider.addEventListener(events.JWPLAYER_PLAYER_STATE, stateHandler);
                 provider.addEventListener(events.JWPLAYER_MEDIA_TIME, function(evt) {
                     if (_skipButton) {
@@ -475,7 +474,6 @@ define([
             _controller.setMute(state);
         };
         _this.getState = function() {
-            console.log('test');
             if (!_adModel) {
                 return states.IDLE;
             }
