@@ -44,7 +44,7 @@ define([
 
         this.setState = function(state) {
             clearInterval(_playingInterval);
-            if (state !== states.IDLE) {
+            if (state !== states.IDLE && state !== states.COMPLETE) {
                 // always run this interval when not idle because we can't trust events from iFrame
                 _playingInterval = setInterval(_checkPlaybackHandler, 250);
                 if (state === states.PLAYING) {
@@ -156,10 +156,10 @@ define([
         }
 
         function _ended() {
-            if (_this.state !== states.IDLE) {
+            if (_this.state !== states.IDLE && _this.state !== states.COMPLETE) {
                 _beforecompleted = true;
                 _this.sendEvent(events.JWPLAYER_MEDIA_BEFORECOMPLETE);
-                _this.setState(states.IDLE);
+                _this.setState(states.COMPLETE);
                 _beforecompleted = false;
                 _this.sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
             }
@@ -509,7 +509,7 @@ define([
 
         this.attachMedia = function() {
             if (_beforecompleted) {
-                this.setState(states.IDLE);
+                this.setState(states.COMPLETE);
                 this.sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
                 _beforecompleted = false;
             }
