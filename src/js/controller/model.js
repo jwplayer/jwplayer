@@ -57,7 +57,7 @@ define([
 
         QOE.model(this);
 
-        _providers = new Providers(_this.config.primary);
+        _providers = new Providers(_this.config);
 
         function _videoEventHandler(evt) {
             switch (evt.type) {

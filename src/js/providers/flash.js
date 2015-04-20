@@ -147,8 +147,6 @@ define([
                             commands: _queuedCommands
                         }, _playerConfig);
 
-                        this.config = config;
-
                         _queuedCommands = [];
 
                         _flashCommand('setup', config);
