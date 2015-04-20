@@ -74,30 +74,6 @@ define([
         equal(typeof utils.isMobile(), 'boolean');
     });
 
-    test('Cookie tools', function() {
-        expect(3);
-
-        function deleteCookie(name) {
-            document.cookie = name+'=; expires=Tue, 05 Feb 2013 21:05:35 GMT; path=/';
-        }
-
-        var resetCookies = function() {
-            _.each(utils.getCookies(), function(val, name) {
-                deleteCookie('jwplayer.' + name);
-            });
-        };
-
-        resetCookies();
-        var cooks = utils.getCookies();
-        strictEqual(_.size(utils.getCookies()), 0, 'We start with no cookies');
-
-        utils.saveCookie('alpha', 'beta');
-        cooks = utils.getCookies();
-        strictEqual(_.size(cooks), 1, 'We added 1 cookie');
-        strictEqual(cooks.alpha, 'beta', 'Cookie value stored and retrieved properly');
-
-    });
-
     test('utils.isInt', function() {
         expect(10);
 

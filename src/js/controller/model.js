@@ -3,12 +3,13 @@ define([
     'utils/stretching',
     'playlist/playlist',
     'providers/providers',
+    'controller/storage',
     'controller/qoe',
     'utils/underscore',
     'utils/backbone.events',
     'events/events',
     'events/states'
-], function(utils, stretchUtils, Playlist, Providers, QOE, _, Events, events, states) {
+], function(utils, stretchUtils, Playlist, Providers, storage, QOE, _, Events, events, states) {
 
     // Defaults
     var _defaults = {
@@ -35,13 +36,18 @@ define([
             _providers,
             _provider,
             // Saved settings
-            _cookies = utils.getCookies(),
+            _cookies = {},
             // Sub-component configurations
             _componentConfigs = {
                 controlbar: {},
                 display: {}
             },
             _currentProvider = utils.noop;
+
+        if (config.cookies) {
+            storage.model(this);
+            _cookies = storage.getAllItems();
+        }
 
         this.config = _.extend({}, _defaults, _cookies, config);
 
@@ -94,12 +100,11 @@ define([
                 case events.JWPLAYER_MEDIA_LEVEL_CHANGED:
                     var quality = evt.currentQuality;
                     var levels = evt.levels;
-
-                    var qualityLabel = levels[quality].label;
-                    this.set('qualityLabel', qualityLabel);
-                    utils.saveCookie('qualityLabel', qualityLabel);
-                    _this.config.qualityLabel = qualityLabel;
-
+                    if (quality > -1 && levels.length) {
+                        var qualityLabel = levels[quality].label;
+                        this.set('qualityLabel', qualityLabel);
+                        _this.config.qualityLabel = qualityLabel;
+                    }
                     break;
 
                 case 'visualQuality':
@@ -227,7 +232,6 @@ define([
         this.setVolume = function(vol) {
             vol = Math.round(vol);
             _this.set('volume', vol);
-            utils.saveCookie('volume', vol);
             if (_provider) {
                 _provider.volume(vol);
             }
@@ -242,7 +246,6 @@ define([
                 state = !_this.mute;
             }
             _this.set('mute', state);
-            utils.saveCookie('mute', state);
             if (_provider) {
                 _provider.mute(state);
             }

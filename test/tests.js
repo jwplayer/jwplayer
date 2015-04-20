@@ -9,6 +9,7 @@ define([
     'unit/embed-config',
     'unit/embed-swf',
     'unit/utils',
+    'unit/storage',
     'unit/playlist',
     'unit/playlist-item',
     'unit/playlist-filtering'

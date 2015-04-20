@@ -6,7 +6,8 @@ define([
 
     var Defaults = {
         width: 480,
-        height: 270
+        height: 270,
+        cookies: true
     };
 
     var config = function(options) {
