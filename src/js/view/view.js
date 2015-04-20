@@ -61,7 +61,6 @@ define([
             _audioMode,
             _errorState = false,
             _showing = false,
-            _forcedControlsState = null,
             _replayState,
             _rightClickMenu,
             _resizeMediaTimeout = -1,
@@ -315,11 +314,7 @@ define([
             _api.onPlaylistItem(_playlistItemHandler);
 
             _model.on('change:castAvailable', function(model, val) {
-                if (val) {
-                    _this.forceControls(true);
-                } else {
-                    _this.releaseControls();
-                }
+                utils.toggleClass(_controlsLayer, 'jw-cast-available', val);
             });
 
             _model.on('change:castState', function(evt) {
@@ -331,7 +326,6 @@ define([
                 }
                 if (evt.active) {
                     utils.addClass(_captions, 'jw-captions-disabled');
-                    _this.forceControls(true);
                     _castDisplay.setState('connecting').setName(evt.deviceName).show();
 
                     _model.on('change:state', _castDisplay.statusDelegate);
@@ -862,7 +856,7 @@ define([
         }
 
         function _hideControlbar() {
-            if (_forcedControlsState === true) {
+            if (utils.hasClass(_controlsLayer), 'jw-casting') {
                 return;
             }
 
@@ -906,9 +900,6 @@ define([
 
         function _hideControls() {
             clearTimeout(_controlsTimeout);
-            if (_forcedControlsState === true) {
-                return;
-            }
             _showing = false;
 
             var model = _instreamMode ? _instreamModel : _model;
@@ -926,10 +917,6 @@ define([
         }
 
         function _showControls() {
-            if (_forcedControlsState === false) {
-                return;
-            }
-
             _showing = true;
             if (_model.get('controls') || _audioMode) {
                 _showControlbar();
@@ -1018,11 +1005,6 @@ define([
             // player display
             switch (state) {
                 case states.PLAYING:
-                    if (_model.getVideo().isCaster !== true) {
-                        _forcedControlsState = null;
-                    } else {
-                        _forcedControlsState = true;
-                    }
                     if (_isAudioFile()) {
                         _showVideo(false);
                         _display.hidePreview(_audioMode);
@@ -1095,7 +1077,6 @@ define([
             _controlbar.instreamMode(false);
             _controlbar.show(true);
             _this.releaseState();
-            _forcedControlsState = null;
             var provider = _model.getVideo();
             provider.setContainer(_videoLayer);
             provider.setVisibility(true);
@@ -1106,21 +1087,6 @@ define([
             message = message.split(':');
             errorScreen(_playerElement, message[0], message[1]);
             _completeSetup();
-        };
-
-        this.forceControls = function(state) {
-            _forcedControlsState = !!state;
-            if (state) {
-                _showControls();
-            } else {
-                _hideControls();
-            }
-        };
-
-        this.releaseControls = function() {
-            _forcedControlsState = null;
-            var model = _instreamMode ? _instreamModel : _model;
-            _updateState(model.state);
         };
 
         this.addCues = function(cues) {

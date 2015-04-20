@@ -28,19 +28,6 @@ define([
         volume: 90
     };
 
-    // The model stores a different state than the provider
-    function normalizeState(newstate) {
-        if (newstate === states.LOADING || newstate === states.STALLED) {
-            return states.BUFFERING;
-        }
-        return newstate;
-    }
-
-    // Represents the state of the provider/media element
-    var MediaModel = function() {
-        this.state = states.IDLE;
-    };
-
     // Represents the state of the player
     var Model = function(config) {
         var _this = this,
@@ -80,17 +67,12 @@ define([
                     return;
 
                 case events.JWPLAYER_PLAYER_STATE:
-                    var providerState = evt.newstate;
-                    var modelState = normalizeState(evt.newstate);
+                    this.mediaModel.set('state', evt.newstate);
 
-                    evt.oldstate = this.get('state');
-                    evt.reason   = providerState;
-                    evt.newstate = modelState;
-                    evt.type     = modelState;
-
-                    this.mediaModel.set('state', providerState);
-                    this.set('state', modelState);
-                    break;
+                    // This "return" is important because
+                    //  we are choosing to not propagate this event.
+                    //  Instead letting the master controller do so
+                    return;
 
                 case events.JWPLAYER_MEDIA_BUFFER:
                     this.set('buffer', evt.bufferPercent); // note value change
@@ -289,6 +271,12 @@ define([
             this.getVideo().play();
         };
     };
+
+    // Represents the state of the provider/media element
+    var MediaModel = Model.MediaModel = function() {
+        this.state = states.IDLE;
+    };
+
 
     var SimpleModel = _.extend({
         'get' : function (attr) {

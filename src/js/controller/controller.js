@@ -21,6 +21,14 @@ define([
         };
     }
 
+    // The model stores a different state than the provider
+    function normalizeState(newstate) {
+        if (newstate === states.LOADING || newstate === states.STALLED) {
+            return states.BUFFERING;
+        }
+        return newstate;
+    }
+
     var Controller = function() {
         this.eventsQueue = [];
         _.extend(this, Events);
@@ -78,6 +86,22 @@ define([
                 evtClone.type = events.JWPLAYER_ERROR;
                 this.trigger(evtClone.type, evtClone);
             }, this);
+
+            _model.on('change:mediaModel', function() {
+                _model.mediaModel.on('change:state', function(mediaModel, state){
+                    var modelState = normalizeState(state);
+
+                    var evt = {
+                        oldstate: this.get('state'),
+                        reason: state,
+                        newstate: modelState,
+                        type: modelState
+                    };
+
+                    _model.set('state', modelState);
+                    _model.trigger(evt.type, evt);
+                });
+            });
 
             function _playerReady() {
                 _setup.destroy();
@@ -201,7 +225,6 @@ define([
                     _load(_loadOnPlay);
                     _loadOnPlay = -1;
                 }
-                //_actionOnAttach = _play;
                 if (!_preplay) {
                     _preplay = true;
                     _this.trigger(events.JWPLAYER_MEDIA_BEFOREPLAY, {});
