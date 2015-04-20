@@ -42,7 +42,7 @@ define([
             return;
         }
 
-        var filtered = playlist.filterSources(source, new Providers(primary), !!isAndroidHls);
+        var filtered = playlist.filterSources(source, new Providers({primary:primary}), !!isAndroidHls);
 
         var title = isFlash ? 'Flash only with ' : 'Html5 only with ';
         equal(sourcesMatch(filtered), desiredType, title + sourceName + ' results in ' + desiredType);

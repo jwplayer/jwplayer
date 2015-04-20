@@ -61,7 +61,7 @@ define([
     }
 
     function getProvidersTestRunner(primary) {
-        var providers = new Providers(primary);
+        var providers = new Providers({primary: primary});
 
         return function testChosenProvider(file, providerName, message) {
             var chosenProvider = providers.choose(source(file));
@@ -86,7 +86,7 @@ define([
     });
 
     test('html5 primary requested', function () {
-		var providerList = new Providers('html5').providers;
+		var providerList = new Providers({primary: 'html5'}).providers;
         expect(4);
 
         equal(providerList.length, 3, 'There are 3 providers listed');
@@ -97,7 +97,7 @@ define([
 
 
     test('flash primary requested', function () {
-		var providerList = new Providers('flash').providers;
+		var providerList = new Providers({primary: 'flash'}).providers;
         expect(4);
 
         equal(providerList.length, 3, 'There are 3 providers listed');
@@ -107,7 +107,7 @@ define([
     });
 
 	test('invalid primary requested', function () {
-		var providerList = new Providers('invalid primary value').providers;
+		var providerList = new Providers({primary:'invalid primary value'}).providers;
         expect(4);
 
         equal(providerList.length, 3, 'There are 3 providers listed');

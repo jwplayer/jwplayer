@@ -8,9 +8,9 @@ define([
 
     function Providers(config) {
         this.providers = Providers.defaultList.slice();
-        this.config = config;
+        this.config = config || {};
 
-        if (config.primary === 'flash') {
+        if (this.config.primary === 'flash') {
             swap(this.providers, html5, flash);
         }
     }
