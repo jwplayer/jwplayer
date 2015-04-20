@@ -61,7 +61,7 @@ define([
     }
 
     function getProvidersTestRunner(primary) {
-        var providers = new Providers(primary);
+        var providers = new Providers({primary: primary});
 
         return function testChosenProvider(file, providerName, message) {
             var chosenProvider = providers.choose(source(file));
@@ -86,7 +86,7 @@ define([
     });
 
     test('html5 primary requested', function () {
-		var providerList = new Providers('html5').providers;
+		var providerList = new Providers({primary: 'html5'}).providers;
         expect(4);
 
         equal(providerList.length, 3, 'There are 3 providers listed');
@@ -97,7 +97,7 @@ define([
 
 
     test('flash primary requested', function () {
-		var providerList = new Providers('flash').providers;
+		var providerList = new Providers({primary: 'flash'}).providers;
         expect(4);
 
         equal(providerList.length, 3, 'There are 3 providers listed');
@@ -107,7 +107,7 @@ define([
     });
 
 	test('invalid primary requested', function () {
-		var providerList = new Providers('invalid primary value').providers;
+		var providerList = new Providers({primary:'invalid primary value'}).providers;
         expect(4);
 
         equal(providerList.length, 3, 'There are 3 providers listed');
@@ -139,15 +139,15 @@ define([
         runTest(videoSources.mov, 'VideoProvider');
 
         // The video stub defined in this test cannot handle these types
-        runTest(videoSources.m3u8,'FlashProvider');
-        runTest(videoSources.hls, 'FlashProvider');
+        runTest(videoSources.m3u8,'None chosen');
+        runTest(videoSources.hls, 'None chosen');
         runTest(videoSources.flv, 'FlashProvider');
         runTest(videoSources.smil,'FlashProvider');
-        runTest(videoSources.hls_androidhls_false, 'FlashProvider');
+        runTest(videoSources.hls_androidhls_false, 'None chosen');
         runTest(videoSources.youtube, 'YoutubeProvider');
 
         // our android androidhls logic in the video provider circumvents the canPlayType check
-        runTest(videoSources.hls_androidhls_true,  isAndroidWithHls ? 'VideoProvider' : 'FlashProvider');
+        runTest(videoSources.hls_androidhls_true,  isAndroidWithHls ? 'None chosen' : 'None chosen');
     });
 
 	// Flash Primary
@@ -164,10 +164,10 @@ define([
         runTest(videoSources.m4a, 'FlashProvider');
         runTest(videoSources.aac, 'FlashProvider');
         runTest(videoSources.mp3, 'FlashProvider');
-        runTest(videoSources.m3u8,'FlashProvider');
-        runTest(videoSources.hls, 'FlashProvider');
-        runTest(videoSources.hls_androidhls_true,  'FlashProvider');
-        runTest(videoSources.hls_androidhls_false, 'FlashProvider');
+        runTest(videoSources.m3u8,'None chosen');
+        runTest(videoSources.hls, 'None chosen');
+        runTest(videoSources.hls_androidhls_true,  'None chosen');
+        runTest(videoSources.hls_androidhls_false, 'None chosen');
         runTest(videoSources.mov, 'FlashProvider');
 
         // The Flash provider cannot play these types

@@ -290,9 +290,7 @@ define([
         'aac': 'video',
         'f4a': 'video',
         'mp3': 'sound',
-        'smil': 'rtmp',
-        'm3u8': 'hls',
-        'hls': 'hls'
+        'smil': 'rtmp'
     };
     var PLAYABLE = _.keys(flashExtensions);
 
@@ -309,9 +307,6 @@ define([
         var file = source.file;
         var type = source.type;
 
-        if (type === 'hls') {
-            return true;
-        }
         if (utils.isRtmp(file, type)) {
             return true;
         }
