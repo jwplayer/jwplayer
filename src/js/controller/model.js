@@ -97,10 +97,11 @@ define([
                     this.set('provider', _provider.getName());
                     break;
 
+                case events.JWPLAYER_MEDIA_LEVELS:
                 case events.JWPLAYER_MEDIA_LEVEL_CHANGED:
                     var quality = evt.currentQuality;
                     var levels = evt.levels;
-                    if (quality > -1 && levels.length) {
+                    if (quality > -1 && levels.length > 1 && _provider.getName().name !== 'youtube') {
                         var qualityLabel = levels[quality].label;
                         this.set('qualityLabel', qualityLabel);
                         _this.config.qualityLabel = qualityLabel;
@@ -267,11 +268,11 @@ define([
         this.loadVideo = function() {
             this.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
             var idx = this.get('item');
-            this.getVideo().load(this.get('playlist')[idx]);
+            _provider.load(this.get('playlist')[idx]);
         };
 
         this.playVideo = function() {
-            this.getVideo().play();
+            _provider.play();
         };
     };
 

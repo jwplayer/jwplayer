@@ -11,7 +11,6 @@ import flash.display.DisplayObject;
 import flash.display.Sprite;
 import flash.events.Event;
 
-
 public class MediaProvider extends Sprite implements IMediaProvider {
     public function MediaProvider(provider:String) {
         _provider = provider;

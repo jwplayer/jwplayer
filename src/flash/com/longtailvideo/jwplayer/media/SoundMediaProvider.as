@@ -13,7 +13,6 @@ import flash.events.ProgressEvent;
 import flash.media.Sound;
 import flash.media.SoundChannel;
 import flash.media.SoundLoaderContext;
-import flash.media.SoundTransform;
 import flash.net.URLRequest;
 import flash.utils.clearInterval;
 import flash.utils.setInterval;

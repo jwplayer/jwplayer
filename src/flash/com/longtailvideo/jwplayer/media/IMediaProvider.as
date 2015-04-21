@@ -5,7 +5,6 @@ import com.longtailvideo.jwplayer.model.PlaylistItem;
 
 import flash.display.DisplayObject;
 
-
 public interface IMediaProvider extends IGlobalEventDispatcher {
     function get display():DisplayObject;
 

@@ -111,27 +111,27 @@ public class Player extends Sprite implements IPlayer {
     }
 
     public function getAudioTracks():Array {
-        return _model.media ? _model.media.audioTracks : null;
+        return _model.audioTracks;
     }
 
     public function getCurrentAudioTrack():Number {
-        return _model.media ? _model.media.currentAudioTrack : NaN;
+        return _model.currentAudioTrack;
     }
 
     public function setCurrentAudioTrack(index:Number):void {
-        if (_model.media) _model.media.currentAudioTrack = index;
+        _model.currentAudioTrack = index;
     }
 
     public function getQualityLevels():Array {
-        return _model.media ? _model.media.qualityLevels : null;
+        return _model.qualityLevels;
     }
 
     public function getCurrentQuality():Number {
-        return _model.media ? _model.media.currentQuality : NaN;
+        return _model.currentQuality;
     }
 
     public function setCurrentQuality(index:Number):void {
-        if (_model.media) _model.media.currentQuality = index;
+        _model.currentQuality = index;
     }
 
     public function getCaptionsList():Array {
