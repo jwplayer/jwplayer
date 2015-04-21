@@ -6,10 +6,11 @@ define([
     ], function(html5, flash, youtube, _) {
 
 
-    function Providers(primary) {
+    function Providers(config) {
         this.providers = Providers.defaultList.slice();
+        this.config = config || {};
 
-        if (primary === 'flash') {
+        if (this.config.primary === 'flash') {
             swap(this.providers, html5, flash);
         }
     }
@@ -20,13 +21,17 @@ define([
 
     _.extend(Providers.prototype, {
 
+        providerSupports : function(provider, source) {
+            return provider.supports(source);
+        },
+
         choose : function(source) {
             // prevent throw on missing source
             source = _.isObject(source) ? source : {};
 
             var chosen = _.find(this.providers, function (provider) {
-                return provider.supports(source);
-            });
+                return this.providerSupports(provider, source);
+            }, this);
 
             return chosen;
         },

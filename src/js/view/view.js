@@ -900,7 +900,7 @@ define([
                 _hideControlbar();
             }
 
-            if (state !== states.IDLE && state !== states.PAUSED) {
+            if (state !== states.COMPLETE && state !== states.IDLE && state !== states.PAUSED) {
                 _hideLogo();
             }
 
@@ -1008,6 +1008,7 @@ define([
                     }
                     break;
                 case states.IDLE:
+                case states.COMPLETE:
                     _showVideo(false);
                     if (!_audioMode) {
                         _showDisplay();
@@ -1127,7 +1128,9 @@ define([
             for (var i = DOCUMENT_FULLSCREEN_EVENTS.length; i--;) {
                 document.removeEventListener(DOCUMENT_FULLSCREEN_EVENTS[i], _fullscreenChangeHandler, false);
             }
-            _model.mediacontroller.off('fullscreenchange', _fullscreenChangeHandler);
+            if (_model.mediacontroller) {
+                _model.mediacontroller.off('fullscreenchange', _fullscreenChangeHandler);
+            }
             _playerElement.removeEventListener('keydown', handleKeydown, false);
             if (_rightClickMenu) {
                 _rightClickMenu.destroy();

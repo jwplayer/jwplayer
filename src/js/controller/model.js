@@ -57,7 +57,7 @@ define([
 
         QOE.model(this);
 
-        _providers = new Providers(_this.config.primary);
+        _providers = new Providers(_this.config);
 
         function _videoEventHandler(evt) {
             switch (evt.type) {
@@ -176,21 +176,10 @@ define([
         };
 
         this.setItem = function(index) {
-            var newItem;
-            var repeat = false;
             var playlist = _this.get('playlist');
-            if (index === playlist.length || index < -1) {
-                newItem = 0;
-                repeat = true;
-            } else if (index === -1 || index > playlist.length) {
-                newItem = playlist.length - 1;
-            } else {
-                newItem = index;
-            }
 
-            if (newItem === this.get('item') && !repeat) {
-                return;
-            }
+            // If looping past the end, or before the beginning
+            var newItem = (index + playlist.length) % playlist.length;
 
             // Item is actually changing
             this.mediaModel.off();

@@ -68,12 +68,6 @@ define([
                     this.setState(states.IDLE);
                 },
                 seek: function(seekPos) {
-                    /*
-                     this.sendEvent(events.JWPLAYER_MEDIA_SEEK, {
-                         position: _position,
-                         offset: seekPos
-                     });
-                     */
                     _flashCommand('seek', seekPos);
                 },
                 volume: function(vol) {
@@ -102,7 +96,7 @@ define([
                 attachMedia: function() {
                     // This is after a postroll completes
                     if (_beforecompleted) {
-                        this.setState(states.IDLE);
+                        this.setState(states.COMPLETE);
                         this.sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
                         _beforecompleted = false;
                     }
@@ -174,6 +168,7 @@ define([
 
                     }, this).on(events.JWPLAYER_PLAYER_STATE, function(e) {
                         var state = e.newstate;
+                        // TODO:: What is this for?
                         if (state === states.IDLE) {
                             return;
                         }
@@ -195,11 +190,15 @@ define([
                         this.sendEvent(e.type);
 
                     }, this).on(events.JWPLAYER_MEDIA_COMPLETE, function(e) {
-                        this.setState(states.IDLE);
+                        this.setState(states.COMPLETE);
                         this.sendEvent(e.type);
 
                     }, this).on(events.JWPLAYER_MEDIA_ERROR, function(e) {
                         this.sendEvent(e.type, e);
+                    }, this);
+
+                    _swf.on(events.JWPLAYER_MEDIA_SEEK, function(e) {
+                        this.sendEvent(events.JWPLAYER_MEDIA_SEEK, e);
                     }, this);
 
                     _swf.on('visualQuality', function(e) {
@@ -290,9 +289,7 @@ define([
         'aac': 'video',
         'f4a': 'video',
         'mp3': 'sound',
-        'smil': 'rtmp',
-        'm3u8': 'hls',
-        'hls': 'hls'
+        'smil': 'rtmp'
     };
     var PLAYABLE = _.keys(flashExtensions);
 
@@ -309,9 +306,6 @@ define([
         var file = source.file;
         var type = source.type;
 
-        if (type === 'hls') {
-            return true;
-        }
         if (utils.isRtmp(file, type)) {
             return true;
         }

@@ -38,7 +38,7 @@ define([
 
         // legacy plugin support
         if (!providers || !providers.choose) {
-            providers = new Providers(providers ? 'flash' : null);
+            providers = new Providers({primary : providers ? 'flash' : null});
         }
 
         sources = _.compact(_.map(sources, function(originalSource) {

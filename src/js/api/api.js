@@ -299,8 +299,9 @@ define([
             }
 
             // terminate state
+            _this.trigger('remove');
             _reset();
-            return _this.trigger('remove');
+            return _this;
         };
 
         return this;
