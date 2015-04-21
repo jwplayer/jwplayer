@@ -4,7 +4,6 @@ import com.longtailvideo.jwplayer.events.PlayerEvent;
 import flash.events.ErrorEvent;
 import flash.events.Event;
 import flash.events.EventDispatcher;
-import flash.utils.Dictionary;
 
 /**
  * Sent when the all of the tasks have completed successfully

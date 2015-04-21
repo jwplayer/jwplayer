@@ -22,10 +22,23 @@ define([
         };
     }
 
+    // The model stores a different state than the provider
+    function normalizeState(newstate) {
+        if (newstate === states.LOADING || newstate === states.STALLED) {
+            return states.BUFFERING;
+        }
+        return newstate;
+    }
+
     var Controller = function(originalContainer) {
         this.originalContainer = this.currentContainer = originalContainer;
         this.eventsQueue = [];
         _.extend(this, Events);
+
+        // TODO: instantiate model here and reset/update it in setup()
+        this._model = {
+            'get': function() {}
+        };
     };
 
     Controller.prototype = {
@@ -86,8 +99,26 @@ define([
                 this.trigger(evtClone.type, evtClone);
             }, this);
 
+            function initMediaModel() {
+                _model.mediaModel.on('change:state', function(mediaModel, state){
+                    var modelState = normalizeState(state);
+
+                    var evt = {
+                        oldstate: this.get('state'),
+                        reason: state,
+                        newstate: modelState,
+                        type: modelState
+                    };
+
+                    _model.set('state', modelState);
+                    _model.trigger(evt.type, evt);
+                });
+            }
+            initMediaModel();
+            _model.on('change:mediaModel', initMediaModel);
+
             function _playerReady() {
-                _setup.off().destroy();
+                _setup.destroy();
                 _setup = null;
 
                 this.showView(_view.element());
@@ -118,9 +149,25 @@ define([
                         });
                     }
                 });
+                _model.on('change:volume', function(model, vol) {
+                    _this.trigger(events.JWPLAYER_MEDIA_VOLUME, {
+                        volume: vol
+                    });
+                });
+                _model.on('change:mute', function(model, mute) {
+                    _this.trigger(events.JWPLAYER_MEDIA_MUTE, {
+                        mute: mute
+                    });
+                });
 
                 _model.mediaController.on('all', _this.trigger.bind(_this));
                 _view.on('all', _this.trigger.bind(_this));
+
+
+                // TODO: this should come from the media controller, not the view
+                _view.on(events.JWPLAYER_CAPTIONS_CHANGED, function(e) {
+                    _model.set('captionLabel', e.tracks[e.track].label);
+                });
 
                 // Tell the api that we are loaded
                 _this.trigger(events.JWPLAYER_READY, {
@@ -158,12 +205,11 @@ define([
             function _load(item) {
                 _stop(true);
 
-                switch (utils.typeOf(item)) {
+                switch (typeof item) {
                     case 'string':
                         _loadPlaylist(item);
                         break;
                     case 'object':
-                    case 'array':
                         _model.setPlaylist(Playlist(item));
                         break;
                     case 'number':
@@ -174,10 +220,10 @@ define([
 
             function _loadPlaylist(toLoad) {
                 var loader = new PlaylistLoader();
-                loader.addEventListener(events.JWPLAYER_PLAYLIST_LOADED, function(evt) {
+                loader.on(events.JWPLAYER_PLAYLIST_LOADED, function(evt) {
                     _load(evt.playlist);
                 });
-                loader.addEventListener(events.JWPLAYER_ERROR, function(evt) {
+                loader.on(events.JWPLAYER_ERROR, function(evt) {
                     _load([]);
                     evt.message = 'Could not load playlist: ' + evt.message;
                     _this.trigger.call(_this, evt.type, evt);
@@ -195,7 +241,6 @@ define([
                     _load(_loadOnPlay);
                     _loadOnPlay = -1;
                 }
-                //_actionOnAttach = _play;
                 if (!_preplay) {
                     _preplay = true;
                     _this.trigger(events.JWPLAYER_MEDIA_BEFOREPLAY, {});
@@ -230,10 +275,7 @@ define([
             }
 
             function _stop(internal) {
-                // Something has called stop() in an onComplete handler
-                if (_isIdle()) {
-                    _stopPlaylist = true;
-                }
+                var fromApi = !internal;
 
                 _actionOnAttach = null;
 
@@ -246,7 +288,7 @@ define([
                     return false;
                 }
 
-                if (!internal) {
+                if (fromApi) {
                     _stopPlaylist = true;
                 }
 
@@ -285,7 +327,8 @@ define([
             }
 
             function _isIdle() {
-                return (_model.get('state') === states.IDLE);
+                var state = _model.get('state');
+                return (state === states.IDLE || state === states.COMPLETE);
             }
 
             function _seek(pos) {
@@ -319,19 +362,23 @@ define([
                 }
 
                 _actionOnAttach = _completeHandler;
-                if (_model.get('repeat')) {
-                    _next();
-                } else {
-                    if (_model.get('item') === _model.get('playlist').length - 1) {
-                        _loadOnPlay = 0;
-                        _stop(true);
-                        setTimeout(function() {
-                            _this.trigger(events.JWPLAYER_PLAYLIST_COMPLETE, {});
-                        }, 0);
-                    } else {
+
+                var idx = _model.get('item');
+                if (idx === _model.get('playlist').length - 1) {
+                    // If it's the last item in the playlist
+                    if (_model.get('repeat')) {
                         _next();
+                    } else {
+                        _model.set('state', states.COMPLETE);
+                        _loadOnPlay = 0;
+                        _this.trigger(events.JWPLAYER_PLAYLIST_COMPLETE, {});
                     }
+                    return;
                 }
+
+                // It wasn't the last item in the playlist,
+                //  so go to the next one
+                _next();
             }
 
             function _setCurrentQuality(quality) {
@@ -520,7 +567,7 @@ define([
                     _model.destroy();
                 }
                 if (_setup) {
-                    _setup.off().destroy();
+                    _setup.destroy();
                     _setup = null;
                 }
             };

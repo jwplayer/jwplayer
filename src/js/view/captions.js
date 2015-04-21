@@ -103,6 +103,7 @@ define([
         function _stateHandler(model, state) {
             switch (state) {
                 case states.IDLE:
+                case states.COMPLETE:
                     _idleHandler();
                     break;
                 case states.PLAYING:
@@ -143,8 +144,7 @@ define([
                 i,
                 label,
                 defaultTrack = 0,
-                file = '',
-                cookies;
+                file = '';
 
             for (i = 0; i < tracks.length; i++) {
                 var kind = tracks[i].kind.toLowerCase();
@@ -176,8 +176,7 @@ define([
                 }
             }
 
-            cookies = utils.getCookies();
-            label = cookies.captionLabel;
+            label = _model.captionLabel;
 
             if (label) {
                 tracks = _getTracks();
@@ -392,7 +391,6 @@ define([
             if (index >= 0 && _selectedTrack !== index && index <= _tracks.length) {
                 _renderCaptions(index);
                 var tracks = _getTracks();
-                utils.saveCookie('captionLabel', tracks[_selectedTrack].label);
                 _sendEvent(events.JWPLAYER_CAPTIONS_CHANGED, tracks, _selectedTrack);
             }
         };

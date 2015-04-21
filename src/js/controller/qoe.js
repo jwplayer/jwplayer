@@ -50,23 +50,22 @@ define([
 
     function initModel(model) {
 
-        model.on('change:playlistItem', function(model /*, playlistItem */) {
-            var state = model.mediaModel.get('state');
+        model.on('change:mediaModel', function(model, mediaModel, oldMediaModel) {
             // finish previous item
             if (model._qoeItem) {
-                model._qoeItem.end(state);
+                model._qoeItem.end(oldMediaModel.get('state'));
             }
             // reset item level qoe
             model._qoeItem = new Timer();
             model._qoeItem.tick(events.JWPLAYER_PLAYLIST_ITEM);
-            model._qoeItem.start(state);
+            model._qoeItem.start(mediaModel.get('state'));
 
             trackFirstFrame(model);
-        });
 
-        model.mediaModel.on('change:state', function(mediaModel, newstate, oldstate) {
-            model._qoeItem.end(oldstate);
-            model._qoeItem.start(newstate);
+            mediaModel.on('change:state', function(mediaModel, newstate, oldstate) {
+                model._qoeItem.end(oldstate);
+                model._qoeItem.start(newstate);
+            });
         });
     }
 

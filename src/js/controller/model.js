@@ -3,12 +3,13 @@ define([
     'utils/stretching',
     'playlist/playlist',
     'providers/providers',
+    'controller/storage',
     'controller/qoe',
     'utils/underscore',
     'utils/backbone.events',
     'events/events',
     'events/states'
-], function(utils, stretchUtils, Playlist, Providers, QOE, _, Events, events, states) {
+], function(utils, stretchUtils, Playlist, Providers, storage, QOE, _, Events, events, states) {
 
     // Defaults
     var _defaults = {
@@ -28,17 +29,6 @@ define([
         volume: 90
     };
 
-    // The model stores a different state than the provider
-    function normalizeState(newstate) {
-        if (newstate === states.LOADING || newstate === states.STALLED) {
-            return states.BUFFERING;
-        }
-        return newstate;
-    }
-
-    // Represents the state of the provider/media element
-    var MediaModel = function() {};
-
     // Represents the state of the player
     var Model = function(config) {
         var _this = this,
@@ -46,13 +36,18 @@ define([
             _providers,
             _provider,
             // Saved settings
-            _cookies = utils.getCookies(),
+            _cookies = {},
             // Sub-component configurations
             _componentConfigs = {
                 controlbar: {},
                 display: {}
             },
             _currentProvider = utils.noop;
+
+        if (config.cookies) {
+            storage.model(this);
+            _cookies = storage.getAllItems();
+        }
 
         this.config = _.extend({}, _defaults, _cookies, config);
 
@@ -65,33 +60,25 @@ define([
 
         this.mediaController = _.extend({}, Events);
         this.mediaModel = new MediaModel();
-        this.mediaModel.set('state', states.IDLE);
 
         QOE.model(this);
 
-        _providers = new Providers(_this.config.primary);
+        _providers = new Providers(_this.config);
 
         function _videoEventHandler(evt) {
             switch (evt.type) {
-                case events.JWPLAYER_MEDIA_MUTE:
-                    this.set('mute', evt.mute);
-                    break;
-                case events.JWPLAYER_MEDIA_VOLUME:
-                    this.set('volume', evt.volume);
-                    break;
+                case 'volume':
+                case 'mute':
+                    this.set(evt.type, evt[evt.type]);
+                    return;
 
                 case events.JWPLAYER_PLAYER_STATE:
-                    var providerState = evt.newstate;
-                    var modelState = normalizeState(evt.newstate);
+                    this.mediaModel.set('state', evt.newstate);
 
-                    evt.oldstate = this.get('state');
-                    evt.reason   = providerState;
-                    evt.newstate = modelState;
-                    evt.type     = modelState;
-
-                    this.mediaModel.set('state', providerState);
-                    this.set('state', modelState);
-                    break;
+                    // This "return" is important because
+                    //  we are choosing to not propagate this event.
+                    //  Instead letting the master controller do so
+                    return;
 
                 case events.JWPLAYER_MEDIA_BUFFER:
                     this.set('buffer', evt.bufferPercent); // note value change
@@ -109,6 +96,18 @@ define([
                 case events.JWPLAYER_PROVIDER_CHANGED:
                     this.set('provider', _provider.getName());
                     break;
+
+                case events.JWPLAYER_MEDIA_LEVELS:
+                case events.JWPLAYER_MEDIA_LEVEL_CHANGED:
+                    var quality = evt.currentQuality;
+                    var levels = evt.levels;
+                    if (quality > -1 && levels.length > 1 && _provider.getName().name !== 'youtube') {
+                        var qualityLabel = levels[quality].label;
+                        this.set('qualityLabel', qualityLabel);
+                        _this.config.qualityLabel = qualityLabel;
+                    }
+                    break;
+
                 case 'visualQuality':
                     var visualQuality = _.extend({}, evt);
                     delete visualQuality.type;
@@ -170,37 +169,28 @@ define([
 
             var playlist = Playlist.filterPlaylist(p, _providers, _this.androidhls);
 
-            this.set('playlist', playlist);
-
             if (playlist.length === 0) {
+                this.playlist = [];
                 this.mediaController.trigger(events.JWPLAYER_ERROR, {
                     message: 'Error loading playlist: No playable sources found'
                 });
                 return;
             }
 
+            this.set('playlist', playlist);
             this.setItem(0);
         };
 
         this.setItem = function(index) {
-            var newItem;
-            var repeat = false;
             var playlist = _this.get('playlist');
-            if (index === playlist.length || index < -1) {
-                newItem = 0;
-                repeat = true;
-            } else if (index === -1 || index > playlist.length) {
-                newItem = playlist.length - 1;
-            } else {
-                newItem = index;
-            }
 
-            if (newItem === this.get('item') && !repeat) {
-                return;
-            }
+            // If looping past the end, or before the beginning
+            var newItem = (index + playlist.length) % playlist.length;
 
             // Item is actually changing
-            this.mediaModel = new MediaModel();
+            this.mediaModel.off();
+            this.set('mediaModel', new MediaModel());
+
             this.set('item', newItem);
             // select provider based on item source (video, youtube...)
             var item = this.get('playlist')[newItem];
@@ -229,17 +219,15 @@ define([
             }
         };
 
-        this.setVolume = function(newVol) {
-            if (_this.mute && newVol > 0) {
-                _this.setMute(false);
-            }
-            newVol = Math.round(newVol);
-            if (!_this.mute) {
-                utils.saveCookie('volume', newVol);
-            }
-            _this.volume = newVol;
+        this.setVolume = function(vol) {
+            vol = Math.round(vol);
+            _this.set('volume', vol);
             if (_provider) {
-                _provider.volume(newVol);
+                _provider.volume(vol);
+            }
+            var muted = (vol === 0);
+            if (muted !== _this.get('mute')) {
+                _this.setMute(muted);
             }
         };
 
@@ -247,16 +235,13 @@ define([
             if (!utils.exists(state)) {
                 state = !_this.mute;
             }
-            utils.saveCookie('mute', state);
             _this.set('mute', state);
-
-            // pulled in from the control bar
-            if (_this.get('mute') && _this.get('volume') === 0) {
-                _this.setVolume(20);
-            }
-
             if (_provider) {
                 _provider.mute(state);
+            }
+            if (!state) {
+                var volume = Math.max(20, _this.get('volume'));
+                this.setVolume(volume);
             }
         };
 
@@ -272,13 +257,19 @@ define([
         this.loadVideo = function() {
             this.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
             var idx = this.get('item');
-            this.getVideo().load(this.get('playlist')[idx]);
+            _provider.load(this.get('playlist')[idx]);
         };
 
         this.playVideo = function() {
-            this.getVideo().play();
+            _provider.play();
         };
     };
+
+    // Represents the state of the provider/media element
+    var MediaModel = Model.MediaModel = function() {
+        this.state = states.IDLE;
+    };
+
 
     var SimpleModel = _.extend({
         'get' : function (attr) {

@@ -77,12 +77,7 @@ define([
     };
 
     function isAbsolutePath(path) {
-        if (!_exists(path)) {
-            return;
-        }
-        var protocol = path.indexOf('://');
-        var queryparams = path.indexOf('?');
-        return (protocol > 0 && (queryparams < 0 || (queryparams > protocol)));
+        return /^(?:(?:https?|file)\:)?\/\//.test(path);
     }
 
     /** Logger */
@@ -184,24 +179,6 @@ define([
 
     utils.isIframe = function () {
         return (window.frameElement && (window.frameElement.nodeName === 'IFRAME'));
-    };
-
-    /** Save a setting **/
-    utils.saveCookie = function (name, value) {
-        document.cookie = 'jwplayer.' + name + '=' + value + '; path=/';
-    };
-
-    /** Retrieve saved  player settings **/
-    utils.getCookies = function () {
-        var jwCookies = {};
-        var cookies = document.cookie.split('; ');
-        for (var i = 0; i < cookies.length; i++) {
-            var split = cookies[i].split('=');
-            if (split[0].indexOf('jwplayer.') === 0) {
-                jwCookies[split[0].substring(9, split[0].length)] = split[1];
-            }
-        }
-        return jwCookies;
     };
 
     var _isInt = utils.isInt = function (value) {

@@ -122,7 +122,8 @@ define([
                     fontWeight: _options.fontWeight,
                     textAlign: 'center',
                     textDecoration: _options.textDecoration,
-                    wordWrap: 'break-word'
+                    wordWrap: 'break-word',
+                    whiteSpace: 'pre-line'
                 };
 
             if (windowOpacity) {

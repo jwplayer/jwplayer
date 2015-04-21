@@ -13,7 +13,6 @@ import flash.events.ProgressEvent;
 import flash.media.Sound;
 import flash.media.SoundChannel;
 import flash.media.SoundLoaderContext;
-import flash.media.SoundTransform;
 import flash.net.URLRequest;
 import flash.utils.clearInterval;
 import flash.utils.setInterval;
@@ -28,8 +27,6 @@ public class SoundMediaProvider extends MediaProvider {
     }
     /** _sound object to be instantiated. **/
     private var _sound:Sound;
-    /** Sound control object. **/
-    private var _transformer:SoundTransform;
     /** Sound _channel object. **/
     private var _channel:SoundChannel;
     /** Sound _context object. **/
@@ -43,7 +40,6 @@ public class SoundMediaProvider extends MediaProvider {
 
     public override function initializeMediaProvider(cfg:PlayerConfig):void {
         super.initializeMediaProvider(cfg);
-        _transformer = new SoundTransform();
         _context = new SoundLoaderContext(0, true);
     }
 
@@ -59,7 +55,6 @@ public class SoundMediaProvider extends MediaProvider {
         sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_LOADED);
         setState(PlayerState.LOADING);
         sendBufferEvent(0);
-        streamVolume(config.mute ? 0 : config.volume);
     }
 
     /** Pause the _sound. **/
@@ -87,7 +82,7 @@ public class SoundMediaProvider extends MediaProvider {
             _channel.stop();
             _channel = null;
         }
-        _channel = _sound.play(_position * 1000, 0, _transformer);
+        _channel = _sound.play(_position * 1000, 0, config.soundTransform);
         _channel.addEventListener(Event.SOUND_COMPLETE, completeHandler);
         super.play();
     }
@@ -123,16 +118,10 @@ public class SoundMediaProvider extends MediaProvider {
 
     /** Set the volume level. **/
     override public function setVolume(vol:Number):void {
-        streamVolume(vol);
-        super.setVolume(vol);
-    }
-
-    /** Set the stream's volume, without sending a volume event **/
-    protected function streamVolume(level:Number):void {
-        _transformer.volume = level / 100;
         if (_channel) {
-            _channel.soundTransform = _transformer;
+            _channel.soundTransform = _config.soundTransform;
         }
+        super.setVolume(vol);
     }
 
     /** Interval for the _position progress **/

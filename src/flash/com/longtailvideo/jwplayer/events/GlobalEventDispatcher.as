@@ -1,7 +1,6 @@
 package com.longtailvideo.jwplayer.events {
 import flash.events.Event;
 import flash.events.EventDispatcher;
-import flash.events.IEventDispatcher;
 import flash.utils.Dictionary;
 
 public class GlobalEventDispatcher extends EventDispatcher implements IGlobalEventDispatcher {

@@ -7,7 +7,6 @@ import com.longtailvideo.jwplayer.player.PlayerState;
 import com.longtailvideo.jwplayer.utils.AssetLoader;
 import com.longtailvideo.jwplayer.utils.NetClient;
 import com.longtailvideo.jwplayer.utils.RootReference;
-import com.longtailvideo.jwplayer.utils.Stretcher;
 import com.wowza.encryptionAS3.TEA;
 
 import flash.events.AsyncErrorEvent;
@@ -17,7 +16,6 @@ import flash.events.IOErrorEvent;
 import flash.events.NetStatusEvent;
 import flash.events.SecurityErrorEvent;
 import flash.geom.Rectangle;
-import flash.media.SoundTransform;
 import flash.media.Video;
 import flash.net.NetConnection;
 import flash.net.NetStream;
@@ -37,7 +35,6 @@ public class RTMPMediaProvider extends MediaProvider {
     public function RTMPMediaProvider(stageVideoEnabled:Boolean = true) {
         _stageEnabled = stageVideoEnabled;
         super('rtmp');
-        _stretch = false;
         _bandwidth = Number.MAX_VALUE;
     }
     /** The RTMP application URL. **/
@@ -64,8 +61,6 @@ public class RTMPMediaProvider extends MediaProvider {
     private var _stageEnabled:Boolean;
     /** NetStream instance that handles playback. **/
     private var _stream:NetStream;
-    /** Sound control object. **/
-    private var _transformer:SoundTransform;
     /** Level to transition to. **/
     private var _transition:Boolean;
     /** Video type that's detected. **/
@@ -104,7 +99,7 @@ public class RTMPMediaProvider extends MediaProvider {
     /** Change the current quality. **/
     override public function set currentQuality(quality:Number):void {
         var level:Number = -1;
-        // Ignore when single level, when transtioning or when out of bounds
+        // Ignore when single level, when transitioning or when out of bounds
         if (_levels.length > 1 && !_transition && quality > -1 && quality < _levels.length + 1) {
             // Switch to auto
             if (quality == 0 && !_auto) {
@@ -119,7 +114,7 @@ public class RTMPMediaProvider extends MediaProvider {
             }
         }
         if (level > -1) {
-            _config.qualitylabel = qualityLevels[quality].label;
+            _config.qualityLabel = qualityLevels[quality].label;
             var event:MediaEvent = new MediaEvent(MediaEvent.JWPLAYER_MEDIA_LEVEL_CHANGED);
             event.levels = qualityLevels;
             event.currentQuality = quality;
@@ -147,7 +142,6 @@ public class RTMPMediaProvider extends MediaProvider {
         _loader = new AssetLoader();
         _loader.addEventListener(Event.COMPLETE, loaderComplete);
         _loader.addEventListener(ErrorEvent.ERROR, loaderError);
-        _transformer = new SoundTransform();
     }
 
     /** Load content. **/
@@ -242,15 +236,9 @@ public class RTMPMediaProvider extends MediaProvider {
 
     /** Resize the Video and possible StageVideo. **/
     override public function resize(width:Number, height:Number):void {
-        if (_media) {
-            if (_media.numChildren > 0) {
-                _media.width = _media.getChildAt(0).width;
-                _media.height = _media.getChildAt(0).height;
-            }
-            Stretcher.stretch(_media, width, height, _config.stretching);
-            if (_stage) {
-                _stage.viewPort = new Rectangle(_media.x, _media.y, _media.width, _media.height);
-            }
+        super.resize(width, height);
+        if (_stage && _media) {
+            _stage.viewPort = _media.getRect(RootReference.root);
         }
         if (_auto) {
             swapLevel(autoLevel());
@@ -292,7 +280,9 @@ public class RTMPMediaProvider extends MediaProvider {
 
     /** Set the volume level. **/
     override public function setVolume(vol:Number):void {
-        streamVolume(vol);
+        if (_stream) {
+            _stream.soundTransform = _config.soundTransform;
+        }
         super.setVolume(vol);
     }
 
@@ -341,14 +331,6 @@ public class RTMPMediaProvider extends MediaProvider {
                     sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_COMPLETE);
                 }
                 break;
-        }
-    }
-
-    /** Set the stream's volume, without sending a volume event **/
-    protected function streamVolume(level:Number):void {
-        _transformer.volume = level / 100;
-        if (_stream) {
-            _stream.soundTransform = _transformer;
         }
     }
 
@@ -415,10 +397,10 @@ public class RTMPMediaProvider extends MediaProvider {
 
         var level:Number = 0;
 
-        if (_config.qualitylabel) {
+        if (_config.qualityLabel) {
             var levels:Array = qualityLevels;
             for (var i:Number = 0; i < levels.length; i++) {
-                if (_config.qualitylabel == levels[i].label) {
+                if (_config.qualityLabel == levels[i].label) {
                     level = i;
                     break;
                 }
@@ -507,7 +489,7 @@ public class RTMPMediaProvider extends MediaProvider {
         } else {
             _video.attachNetStream(_stream);
         }
-        streamVolume(config.mute ? 0 : config.volume);
+        _stream.soundTransform = config.soundTransform;
         // JWPLAYER_MEDIA_BUFFER_FULL will trigger a play() of the video...?
         if (_afterLoading !== null) {
             // set to this.play if play was called while loading

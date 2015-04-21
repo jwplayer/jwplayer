@@ -1,6 +1,6 @@
 define([
     'embed/embed',
-    'api/instream',
+    'api/instreamPlayer',
     'events/events',
     'events/states',
     'utils/backbone.events',
@@ -164,14 +164,16 @@ define([
         };
 
         this.qoe = function() {
-            var item = _controller.getItemQoe();
+            var qoeItem = _controller.getItemQoe();
 
-            var firstFrame = item.between(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, events.JWPLAYER_MEDIA_FIRST_FRAME);
+            var setupTime = _qoe.between('setup', 'ready');
+            var firstFrame = qoeItem.between(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, events.JWPLAYER_MEDIA_FIRST_FRAME);
 
             return {
+                setupTime : setupTime,
                 firstFrame : firstFrame,
                 player : _qoe.dump(),
-                item : item.dump()
+                item : qoeItem.dump()
             };
         };
 
@@ -199,10 +201,6 @@ define([
 
         this.getRenderingMode = function () {
             return 'html5';
-        };
-
-        this.getProvider = function () {
-            return _controller.getProvider();
         };
 
         this.load = function (toLoad) {
@@ -235,6 +233,7 @@ define([
                     default:
                         _controller.instreamPlay();
                 }
+                return _this;
             }
 
             switch (state) {
@@ -302,8 +301,9 @@ define([
             }
 
             // terminate state
+            _this.trigger('remove');
             _reset();
-            return _this.trigger('remove');
+            return _this;
         };
 
         return this;

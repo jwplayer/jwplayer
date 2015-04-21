@@ -20,7 +20,6 @@ import flash.system.Security;
 // TODO: extend BasePlayer which implements IPlayer, so main class just does Setup
 public class Player extends Sprite implements IPlayer {
 
-    protected var _config:PlayerConfig;
     protected var _model:Model;
     protected var _view:View;
     protected var _controller:Controller;
@@ -36,9 +35,7 @@ public class Player extends Sprite implements IPlayer {
         this.mouseEnabled = false;
         this.mouseChildren = false;
 
-        _config = new PlayerConfig();
-
-        _model = newModel(_config);
+        _model = newModel(new PlayerConfig(this.soundTransform));
 
         _view = newView(_model);
         _view.addEventListener(CaptionsEvent.JWPLAYER_CAPTIONS_CHANGED, _captionsChanged);
@@ -81,8 +78,8 @@ public class Player extends Sprite implements IPlayer {
         return _controller.setVolume(volume);
     }
 
-    public function mute(state:Boolean):void {
-        _controller.mute(state);
+    public function mute(muted:Boolean):void {
+        _controller.mute(muted);
     }
 
     public function play():Boolean {
@@ -114,27 +111,27 @@ public class Player extends Sprite implements IPlayer {
     }
 
     public function getAudioTracks():Array {
-        return _model.media ? _model.media.audioTracks : null;
+        return _model.audioTracks;
     }
 
     public function getCurrentAudioTrack():Number {
-        return _model.media ? _model.media.currentAudioTrack : NaN;
+        return _model.currentAudioTrack;
     }
 
     public function setCurrentAudioTrack(index:Number):void {
-        if (_model.media) _model.media.currentAudioTrack = index;
+        _model.currentAudioTrack = index;
     }
 
     public function getQualityLevels():Array {
-        return _model.media ? _model.media.qualityLevels : null;
+        return _model.qualityLevels;
     }
 
     public function getCurrentQuality():Number {
-        return _model.media ? _model.media.currentQuality : NaN;
+        return _model.currentQuality;
     }
 
     public function setCurrentQuality(index:Number):void {
-        if (_model.media) _model.media.currentQuality = index;
+        _model.currentQuality = index;
     }
 
     public function getCaptionsList():Array {
@@ -163,6 +160,7 @@ public class Player extends Sprite implements IPlayer {
     protected function setupPlayer(config:Object):void {
         var commands:Array = config.commands as Array;
         delete config.commands;
+        delete config.playlist;
 
         _model.setConfig(config);
 

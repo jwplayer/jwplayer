@@ -13,7 +13,7 @@ define([
     var _scriptLoader = new scriptloader(window.location.protocol + '//www.youtube.com/iframe_api'),
         _isMobile = utils.isMobile();
 
-    function YoutubeProvider(_playerId) {
+    function YoutubeProvider(_playerId, _playerConfig) {
 
         this.state = states.IDLE;
 
@@ -37,8 +37,6 @@ define([
             _playingInterval = -1,
             // current Youtube state, tracked because state events fail to fire
             _youtubeState = -1,
-            // this is where we keep track of the volume
-            _lastVolume,
             // post roll support
             _beforecompleted = false,
             // user must click video to initiate playback, gets set to false once playback starts
@@ -46,7 +44,7 @@ define([
 
         this.setState = function(state) {
             clearInterval(_playingInterval);
-            if (state !== states.IDLE) {
+            if (state !== states.IDLE && state !== states.COMPLETE) {
                 // always run this interval when not idle because we can't trust events from iFrame
                 _playingInterval = setInterval(_checkPlaybackHandler, 250);
                 if (state === states.PLAYING) {
@@ -158,10 +156,10 @@ define([
         }
 
         function _ended() {
-            if (_this.state !== states.IDLE) {
+            if (_this.state !== states.IDLE && _this.state !== states.COMPLETE) {
                 _beforecompleted = true;
                 _this.sendEvent(events.JWPLAYER_MEDIA_BEFORECOMPLETE);
-                _this.setState(states.IDLE);
+                _this.setState(states.COMPLETE);
                 _beforecompleted = false;
                 _this.sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
             }
@@ -231,8 +229,6 @@ define([
             _youtubeEmbedReadyCallback = null;
 
             _readyViewForMobile();
-
-            _volumeHandler();
         }
 
         // Youtube Player Event Handlers
@@ -382,6 +378,8 @@ define([
                 item.image = '//i.ytimg.com/vi/' + videoId + '/0.jpg';
             }
 
+            _this.volume(_playerConfig.volume);
+            _this.mute(_playerConfig.mute);
             _this.setVisibility(true);
 
             if (!_youtubeAPI || !_youtubePlayer) {
@@ -395,7 +393,6 @@ define([
 
             if (!_youtubePlayer.getPlayerState) {
                 var onStart = function() {
-                    _volumeHandler();
                     _this.load(item);
                 };
                 if (_youtubePlayerReadyCallback) {
@@ -474,50 +471,28 @@ define([
             }
         };
 
-        this.volume = function(volume) {
-            if (!_youtubePlayer || !_youtubePlayer.getVolume) {
+        this.volume = function(vol) {
+            if (!_.isNumber(vol)) {
                 return;
             }
-            if (utils.exists(volume)) {
-                _lastVolume = Math.min(Math.max(0, volume), 100);
-                _youtubePlayer.setVolume(_lastVolume);
+            var volume = Math.min(Math.max(0, vol), 100);
+            _playerConfig.volume = volume;
+            if (_youtubePlayer && _youtubePlayer.getVolume) {
+                _youtubePlayer.setVolume(volume);
             }
 
-            _this.sendEvent(events.JWPLAYER_MEDIA_VOLUME, {
-                volume: _lastVolume
-            });
         };
 
-        function _volumeHandler() {
-            if (!_youtubePlayer || !_youtubePlayer.getVolume) {
-                return;
+        this.mute = function(mute) {
+            var muted = utils.exists(mute) ? !!mute : !_playerConfig.mute;
+            _playerConfig.mute = muted;
+            if (_youtubePlayer  && _youtubePlayer.mute) {
+                if (muted) {
+                    _youtubePlayer.mute();
+                } else {
+                    _youtubePlayer.unMute();
+                }
             }
-            _this.sendEvent(events.JWPLAYER_MEDIA_VOLUME, {
-                volume: Math.round(_youtubePlayer.getVolume())
-            });
-            _this.sendEvent(events.JWPLAYER_MEDIA_MUTE, {
-                mute: _youtubePlayer.isMuted()
-            });
-        }
-
-        this.mute = function(state) {
-            if (!_youtubePlayer || !_youtubePlayer.getVolume) {
-                return;
-            }
-            if (!utils.exists(state)) {
-                state = !_youtubePlayer.isMuted();
-            }
-
-            if (state) {
-                _lastVolume = _youtubePlayer.getVolume();
-                _youtubePlayer.mute();
-            } else {
-                this.volume(_lastVolume);
-                _youtubePlayer.unMute();
-            }
-            _this.sendEvent(events.JWPLAYER_MEDIA_MUTE, {
-                mute: state
-            });
         };
 
         this.detachMedia = function() {
@@ -526,7 +501,7 @@ define([
 
         this.attachMedia = function() {
             if (_beforecompleted) {
-                this.setState(states.IDLE);
+                this.setState(states.COMPLETE);
                 this.sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
                 _beforecompleted = false;
             }
@@ -600,7 +575,7 @@ define([
 
         this.getCurrentQuality = function() {
             if (!_youtubePlayer) {
-                return;
+                return -1;
             }
             if (_youtubePlayer.getAvailableQualityLevels) {
                 var ytQuality = _youtubePlayer.getPlaybackQuality();

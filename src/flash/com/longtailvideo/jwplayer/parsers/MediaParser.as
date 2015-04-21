@@ -54,7 +54,7 @@ public class MediaParser {
                         }
                         if (i.@width.length() > 0 || i.@bitrate.length() > 0 || i.@url.length() > 0 || i.@height.length() > 0 || i.@type.length() > 0) {
                             if (!itm.levels) {
-                                itm.levels = new Array();
+                                itm.levels = [];
                             }
                             var level:Object = {
                                 width: Strings.xmlAttribute(i, 'width'),
@@ -63,7 +63,6 @@ public class MediaParser {
                                 height: Strings.xmlAttribute(i, 'height'),
                                 type: getType(Strings.xmlAttribute(i, 'type'))
                             };
-                            if (Strings.isYouTube(level.file)) level.type = "youtube";
                             itm.levels.push(level);
                         }
                         break;

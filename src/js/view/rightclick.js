@@ -120,10 +120,10 @@ define([
 
         destroy : function() {
             this.model.off('change:provider', this.updateHtml);
+            document.removeEventListener('mousedown', this.hideMenu);
             this.model = null;
             this.playerElement = null;
             this.el = null;
-            document.removeEventListener('mousedown', this.hideMenu);
         }
     });
 

@@ -3,9 +3,11 @@
     <div class="jw-dock-button">
         <div class="jw-dock-image" button="{{id}}" style="background-image: url({{img}})"></div>
         <div class="jw-arrow"></div>
+        {{#if tooltip}}
         <div class="jw-overlay">
             <span class="jw-text">{{tooltip}}</span>
         </div>
+        {{/if}}
     </div>
     {{/each}}
 </div>

@@ -20,8 +20,6 @@ define([
         var _swf;
         var _clickOverlay;
         var _item = null;
-        var _volume;
-        var _muted = false;
         var _beforecompleted = false;
         var _currentQuality = -1;
         var _qualityLevels = null;
@@ -70,23 +68,24 @@ define([
                     this.setState(states.IDLE);
                 },
                 seek: function(seekPos) {
-                    /*
-                     this.sendEvent(events.JWPLAYER_MEDIA_SEEK, {
-                         position: _position,
-                         offset: seekPos
-                     });
-                     */
                     _flashCommand('seek', seekPos);
                 },
                 volume: function(vol) {
-                    if (utils.exists(vol)) {
-                        _volume = Math.min(Math.max(0, vol), 100);
-                        _flashCommand('volume', _volume);
+                    if (!_.isNumber(vol)) {
+                        return;
+                    }
+                    var volume = Math.min(Math.max(0, vol), 100);
+                    _playerConfig.volume = volume;
+                    if (_ready()) {
+                        _flashCommand('volume', volume);
                     }
                 },
-                mute: function(muted) {
-                    _muted = utils.exists(muted) ? muted : !_muted;
-                    _flashCommand('mute', muted);
+                mute: function(mute) {
+                    var muted = utils.exists(mute) ? !!mute : !_playerConfig.mute;
+                    _playerConfig.mute = muted;
+                    if (_ready()) {
+                        _flashCommand('mute', muted);
+                    }
                 },
                 setState: function() {
                     return DefaultProvider.setState.apply(this, arguments);
@@ -97,7 +96,7 @@ define([
                 attachMedia: function() {
                     // This is after a postroll completes
                     if (_beforecompleted) {
-                        this.setState(states.IDLE);
+                        this.setState(states.COMPLETE);
                         this.sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
                         _beforecompleted = false;
                     }
@@ -129,7 +128,6 @@ define([
                         });
                     }
                     _container.appendChild(_clickOverlay);
-
 
                     // listen to events triggered from flash
 
@@ -170,6 +168,7 @@ define([
 
                     }, this).on(events.JWPLAYER_PLAYER_STATE, function(e) {
                         var state = e.newstate;
+                        // TODO:: What is this for?
                         if (state === states.IDLE) {
                             return;
                         }
@@ -191,19 +190,15 @@ define([
                         this.sendEvent(e.type);
 
                     }, this).on(events.JWPLAYER_MEDIA_COMPLETE, function(e) {
-                        this.setState(states.IDLE);
+                        this.setState(states.COMPLETE);
                         this.sendEvent(e.type);
 
                     }, this).on(events.JWPLAYER_MEDIA_ERROR, function(e) {
                         this.sendEvent(e.type, e);
                     }, this);
 
-                    _swf.on(events.JWPLAYER_MEDIA_MUTE, function(e) {
-                        this.sendEvent(events.JWPLAYER_MEDIA_MUTE, e);
-                    }, this);
-
-                    _swf.on(events.JWPLAYER_MEDIA_VOLUME, function(e) {
-                        this.sendEvent(events.JWPLAYER_MEDIA_VOLUME, e);
+                    _swf.on(events.JWPLAYER_MEDIA_SEEK, function(e) {
+                        this.sendEvent(events.JWPLAYER_MEDIA_SEEK, e);
                     }, this);
 
                     _swf.on('visualQuality', function(e) {
@@ -294,9 +289,7 @@ define([
         'aac': 'video',
         'f4a': 'video',
         'mp3': 'sound',
-        'smil': 'rtmp',
-        'm3u8': 'hls',
-        'hls': 'hls'
+        'smil': 'rtmp'
     };
     var PLAYABLE = _.keys(flashExtensions);
 
@@ -313,13 +306,7 @@ define([
         var file = source.file;
         var type = source.type;
 
-        if (type === 'hls') {
-            return true;
-        }
         if (utils.isRtmp(file, type)) {
-            return true;
-        }
-        if (utils.isYouTube(file, type)) {
             return true;
         }
 

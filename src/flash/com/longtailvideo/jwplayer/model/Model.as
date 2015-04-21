@@ -7,12 +7,13 @@ import com.longtailvideo.jwplayer.media.MediaProvider;
 import com.longtailvideo.jwplayer.media.RTMPMediaProvider;
 import com.longtailvideo.jwplayer.media.SoundMediaProvider;
 import com.longtailvideo.jwplayer.media.VideoMediaProvider;
-import com.longtailvideo.jwplayer.media.YouTubeMediaProvider;
 import com.longtailvideo.jwplayer.parsers.JWParser;
 import com.longtailvideo.jwplayer.player.PlayerState;
 import com.longtailvideo.jwplayer.plugins.PluginConfig;
+import com.longtailvideo.jwplayer.utils.RootReference;
 
 import flash.events.Event;
+import flash.media.SoundTransform;
 
 public class Model extends GlobalEventDispatcher {
     /** Constructor **/
@@ -48,9 +49,53 @@ public class Model extends GlobalEventDispatcher {
         setActiveMediaProvider(JWParser.getProvider(playItem));
     }
 
+    public function get config():PlayerConfig {
+        return _config;
+    }
+
     /** The currently loaded MediaProvider **/
     public function get media():IMediaProvider {
         return _currentMedia;
+    }
+
+    public function get currentQuality():Number {
+        if (_currentMedia) {
+            return _currentMedia.currentQuality;
+        }
+        return -1;
+    }
+
+    public function set currentQuality(index:Number):void {
+        if (_currentMedia) {
+            _currentMedia.currentQuality = index
+        }
+    }
+
+    public function get qualityLevels():Array {
+        if (_currentMedia) {
+            return _currentMedia.qualityLevels;
+        }
+        return null;
+    }
+
+    public function get currentAudioTrack():Number {
+        if (_currentMedia) {
+            return _currentMedia.currentAudioTrack;
+        }
+        return -1;
+    }
+
+    public function set currentAudioTrack(index:Number):void {
+        if (_currentMedia) {
+            _currentMedia.currentAudioTrack = index
+        }
+    }
+
+    public function get audioTracks():Array {
+        if (_currentMedia) {
+            return _currentMedia.audioTracks;
+        }
+        return null;
     }
 
     /**
@@ -68,39 +113,49 @@ public class Model extends GlobalEventDispatcher {
         _config.fullscreen = b;
     }
 
+    public function get soundTransform():SoundTransform {
+        return _config.soundTransform;
+    }
+
     public function get mute():Boolean {
         return _config.mute;
     }
 
-    public function set mute(b:Boolean):void {
-        _config.mute = b;
-        _currentMedia.mute(b);
+    public function set mute(muted:Boolean):void {
+        _config.mute = muted;
+        if (_currentMedia) {
+            _currentMedia.setVolume(0);
+        }
     }
 
     public function get volume():Number {
         return _config.volume;
     }
 
-    public function set volume(n:Number):void {
-        _config.volume = n;
-        _currentMedia.setVolume(n);
+    public function set volume(vol:Number):void {
+        _config.volume = vol;
+        if (_currentMedia) {
+            _currentMedia.setVolume(vol);
+        }
     }
 
     public function get width():Number {
-        return _config.width;
+        if (RootReference.stage) {
+            return RootReference.stage.stageWidth;
+        }
+        return 0;
     }
 
     public function get height():Number {
-        return _config.height;
+        if (RootReference.stage) {
+            return RootReference.stage.stageHeight;
+        }
+        return 0;
     }
 
-    public function set width(n:Number):void {
-        _config.width = n;
-    }
+    public function set width(n:Number):void {}
 
-    public function set height(n:Number):void {
-        _config.height = n;
-    }
+    public function set height(n:Number):void {}
 
     public function get stretching():String {
         return _config.stretching;
@@ -133,11 +188,11 @@ public class Model extends GlobalEventDispatcher {
     /** Instruct the currently playing media to seek to the specified position. **/
     public function seek(pos:Number):void {
         var newEvent:MediaEvent = new MediaEvent(MediaEvent.JWPLAYER_MEDIA_SEEK);
-        newEvent.position = media.position;
+        newEvent.position = _currentMedia.position;
         newEvent.offset = pos;
         dispatchEvent(newEvent);
 
-        media.seek(pos);
+        _currentMedia.seek(pos);
     }
 
     /**
@@ -189,7 +244,6 @@ public class Model extends GlobalEventDispatcher {
         setMediaProvider('video', new VideoMediaProvider());
         setMediaProvider('rtmp', new RTMPMediaProvider());
         setMediaProvider('sound', new SoundMediaProvider());
-        setMediaProvider('youtube', new YouTubeMediaProvider());
         // setActiveMediaProvider('default');
     }
 

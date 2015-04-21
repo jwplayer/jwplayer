@@ -57,7 +57,7 @@ define([
         return Math.floor(number*10) / 10;
     }
 
-    function VideoProvider(_playerId) {
+    function VideoProvider(_playerId, _playerConfig) {
 
         // Current media state
         this.state = states.IDLE;
@@ -114,8 +114,6 @@ define([
             _bufferFull,
             // If we should seek on canplay
             _delayedSeek = 0,
-            // Save the volume state before muting
-            _lastVolume,
             // Using setInterval to check buffered ranges
             _bufferInterval = -1,
             // Last sent buffer amount
@@ -313,7 +311,9 @@ define([
             return publicLevels;
         }
 
-        function _sendLevels(levels) {
+        function _setLevels(levels) {
+            _levels = levels;
+            _currentQuality = _pickInitialQuality(levels);
             var publicLevels = _getPublicLevels(levels);
             if (publicLevels) {
                 //_sendEvent?
@@ -332,24 +332,20 @@ define([
             return 0;
         }
 
-        function _pickInitialQuality() {
-            if (_currentQuality < 0) {
-                _currentQuality = 0;
-            }
-            if (_levels) {
-                var cookies = utils.getCookies(),
-                    label = cookies.qualityLabel;
-                for (var i = 0; i < _levels.length; i++) {
-                    if (_levels[i]['default']) {
-                        _currentQuality = i;
+        function _pickInitialQuality(levels) {
+            var currentQuality = Math.max(0, _currentQuality);
+            var label = _playerConfig.qualityLabel;
+            if (levels) {
+                for (var i = 0; i < levels.length; i++) {
+                    if (levels[i]['default']) {
+                        currentQuality = i;
                     }
-                    if (label && _levels[i].label === label) {
-                        _currentQuality = i;
-                        break;
+                    if (label && levels[i].label === label) {
+                        return i;
                     }
                 }
             }
-
+            return currentQuality;
         }
 
         function _forceVideoLoad() {
@@ -429,9 +425,7 @@ define([
                 return;
             }
 
-            _levels = item.sources;
-            _pickInitialQuality();
-            _sendLevels(_levels);
+            _setLevels(item.sources);
 
             _completeLoad(item.starttime || 0, item.duration);
         };
@@ -487,31 +481,20 @@ define([
         }
 
         this.volume = function(vol) {
-            if (utils.exists(vol)) {
-                _videotag.volume = Math.min(Math.max(0, vol / 100), 1);
-                _lastVolume = _videotag.volume * 100;
-            }
+            _videotag.volume = Math.min(Math.max(0, vol / 100), 1);
         };
 
         function _volumeHandler() {
-            _this.sendEvent(events.JWPLAYER_MEDIA_VOLUME, {
+            _this.sendEvent('volume', {
                 volume: Math.round(_videotag.volume * 100)
             });
-            _this.sendEvent(events.JWPLAYER_MEDIA_MUTE, {
+            _this.sendEvent('mute', {
                 mute: _videotag.muted
             });
         }
 
         this.mute = function(state) {
-            if (!utils.exists(state)) { state = !_videotag.muted; }
-
-            if (state) {
-                _lastVolume = _videotag.volume * 100;
-                _videotag.muted = true;
-            } else {
-                this.volume(_lastVolume);
-                _videotag.muted = false;
-            }
+            _videotag.muted = !!state;
         };
 
         function _sendBufferUpdate() {
@@ -540,24 +523,27 @@ define([
 
         function _endedHandler() {
             if (_attached) {
-                _complete();
+                if (_this.state !== states.IDLE && _this.state !== states.COMPLETE) {
+                    clearInterval(_bufferInterval);
+                    _currentQuality = -1;
+                    _beforecompleted = true;
+
+                    _this.sendEvent(events.JWPLAYER_MEDIA_BEFORECOMPLETE);
+                    // This event may trigger the detaching of the player
+                    //  In that case, playback isn't complete until the player is re-attached
+                    if (!_attached) {
+                        return;
+                    }
+
+                    _playbackComplete();
+                }
             }
         }
 
-        function _complete() {
-            if (_this.state !== states.IDLE) {
-                clearInterval(_bufferInterval);
-                _currentQuality = -1;
-                _beforecompleted = true;
-                _this.sendEvent(events.JWPLAYER_MEDIA_BEFORECOMPLETE);
-
-
-                if (_attached) {
-                    _this.setState(states.IDLE);
-                    _beforecompleted = false;
-                    _this.sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
-                }
-            }
+        function _playbackComplete() {
+            _this.setState(states.COMPLETE);
+            _beforecompleted = false;
+            _this.sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
         }
 
         function _fullscreenBeginHandler(e) {
@@ -609,9 +595,7 @@ define([
 
             // This is after a postroll completes
             if (_beforecompleted) {
-                this.setState(states.IDLE);
-                this.sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
-                _beforecompleted = false;
+                _playbackComplete();
             }
         };
 
@@ -730,7 +714,6 @@ define([
             if (quality >= 0) {
                 if (_levels && _levels.length > quality) {
                     _currentQuality = quality;
-                    utils.saveCookie('qualityLabel', _levels[quality].label);
                     this.sendEvent(events.JWPLAYER_MEDIA_LEVEL_CHANGED, {
                         currentQuality: quality,
                         levels: _getPublicLevels(_levels)

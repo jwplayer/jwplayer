@@ -71,8 +71,8 @@ public class View extends Sprite {
     /** Redraws the plugins and player components **/
     public function redraw():void {
         if (!_model.fullscreen) {
-            _normalScreen.width  = _model.width  = RootReference.stage.stageWidth;
-            _normalScreen.height = _model.height = RootReference.stage.stageHeight;
+            _normalScreen.width  = RootReference.stage.stageWidth;
+            _normalScreen.height = RootReference.stage.stageHeight;
         }
 
         if (_preserveAspect) {
@@ -227,7 +227,7 @@ public class View extends Sprite {
             return;
         }
         if (_mediaLayer.numChildren > 0 && _model.media.display) {
-            if (_preserveAspect && _model.media.stretchMedia) {
+            if (_preserveAspect) {
                 if (_model.fullscreen && _model.stretching === Stretcher.EXACTFIT) {
                     _model.media.resize(_normalScreen.width, _normalScreen.height);
                     Stretcher.stretch(_mediaLayer, width, height, Stretcher.UNIFORM);
@@ -258,7 +258,7 @@ public class View extends Sprite {
 
     protected function mediaLoaded(evt:MediaEvent):void {
         var disp:DisplayObject = _model.media.display;
-        if (!disp || disp.parent != _mediaLayer) {
+        if (!disp || disp.parent !== _mediaLayer) {
             while (_mediaLayer.numChildren) {
                 _mediaLayer.removeChildAt(0);
             }

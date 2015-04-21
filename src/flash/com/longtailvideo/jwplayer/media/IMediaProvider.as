@@ -5,15 +5,12 @@ import com.longtailvideo.jwplayer.model.PlaylistItem;
 
 import flash.display.DisplayObject;
 
-
 public interface IMediaProvider extends IGlobalEventDispatcher {
     function get display():DisplayObject;
 
     function get state():String;
 
     function get position():Number;
-
-    function get stretchMedia():Boolean;
 
     function get audioTracks():Array;
 
@@ -51,7 +48,7 @@ public interface IMediaProvider extends IGlobalEventDispatcher {
 
     function setVolume(vol:Number):void;
 
-    function mute(mute:Boolean):void;
+    function mute(muted:Boolean):void;
 
     function resize(width:Number, height:Number):void;
 }

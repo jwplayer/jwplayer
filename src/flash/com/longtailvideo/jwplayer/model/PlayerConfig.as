@@ -2,77 +2,87 @@ package com.longtailvideo.jwplayer.model {
 import com.longtailvideo.jwplayer.player.PlayerVersion;
 import com.longtailvideo.jwplayer.plugins.PluginConfig;
 import com.longtailvideo.jwplayer.utils.Logger;
+import com.longtailvideo.jwplayer.utils.RootReference;
 
 import flash.events.EventDispatcher;
+import flash.media.SoundTransform;
 import flash.utils.getQualifiedClassName;
 
 public dynamic class PlayerConfig extends EventDispatcher {
 
-    public function PlayerConfig():void {
-    }
+    protected var _debug:String = Logger.NONE;
+    protected var _id:String = "";
+    protected var _stretching:String = "uniform";
+    protected var _fullscreen:Boolean = false;
+    protected var _plugins:String = "";
     protected var _pluginConfig:Object = {};
 
-    protected var _volume:Number = 90;
+    protected var _soundTransform:SoundTransform;
+    protected var _volume:Number = 0.9;
+
+    public var captionLabel:String;
+    public var qualityLabel:String;
+
+    public function PlayerConfig(soundTransform:SoundTransform) {
+        _soundTransform = soundTransform;
+        _soundTransform.volume = _volume;
+    }
+
+    public function get soundTransform():SoundTransform {
+        return _soundTransform;
+    }
 
     public function get volume():Number {
-        return _volume;
+        return _soundTransform.volume * 100;
     }
 
-    public function set volume(x:Number):void {
-        _volume = x;
+    public function set volume(vol:Number):void {
+        vol /= 100;
+        _volume = vol;
+        _soundTransform.volume = vol;
     }
 
-    protected var _mute:Boolean = false;
-
-        public function get mute():Boolean {
-        return _mute;
-    } //plugins initial string
-
-    public function set mute(x:Boolean):void {
-        _mute = x;
+    public function get mute():Boolean {
+        return _soundTransform.volume === 0;
     }
 
-    protected var _fullscreen:Boolean = false;
+    public function set mute(muted:Boolean):void {
+        _soundTransform.volume = muted ? 0 : _volume;
+    }
 
     public function get fullscreen():Boolean {
         return _fullscreen;
     }
 
-    public function set fullscreen(x:Boolean):void {
-        _fullscreen = x;
+    public function set fullscreen(fs:Boolean):void {
+        _fullscreen = fs;
     }
-
-    protected var _width:Number = 400;
 
     public function get width():Number {
-        return _width;
+        if (RootReference.stage) {
+            return RootReference.stage.stageWidth;
+        }
+        return 0;
     }
-
-    public function set width(x:Number):void {
-        _width = x;
-    }
-
-    protected var _height:Number = 280;
 
     public function get height():Number {
-        return _height;
+        if (RootReference.stage) {
+            return RootReference.stage.stageHeight;
+        }
+        return 0;
     }
 
-    public function set height(x:Number):void {
-        _height = x;
-    }
+    public function set width(w:Number):void {}
 
-    protected var _stretching:String = "uniform";
+    public function set height(h:Number):void {}
 
     public function get stretching():String {
         return _stretching;
     }
 
-    public function set stretching(x:String):void {
-        _stretching = x ? x.toLowerCase() : "";
+    public function set stretching(mode:String):void {
+        _stretching = mode ? mode.toLowerCase() : "";
     }
-
-protected var _plugins:String = "";
 
     public function get plugins():String {
         return _plugins;
@@ -82,25 +92,21 @@ protected var _plugins:String = "";
         _plugins = x;
     }
 
-    protected var _id:String = "";
-
     public function get id():String {
         return _id;
     }
 
-    public function set id(x:String):void {
-        PlayerVersion.id = _id = x;
+    public function set id(playerId:String):void {
+        PlayerVersion.id = _id = playerId;
     }
-
-    protected var _debug:String = Logger.NONE;
 
     public function get debug():String {
         return _debug;
     }
 
-    public function set debug(x:String):void {
-        if (x != "0") {
-            _debug = x;
+    public function set debug(value:String):void {
+        if (value != "0") {
+            _debug = value;
         }
     }
 
@@ -222,7 +228,20 @@ protected var _plugins:String = "";
     }
 
     public function setConfig(config:Object):void {
-        // TODO: copy supported properties
+        this.id    = config.id;
+        this.debug = config.debug;
+        if (config.stretching) {
+            this.stretching = config.stretching;
+        }
+
+        this.volume = config.volume;
+        this.mute   = config.mute;
+
+        // this.fullscreen = config.fullscreen;
+        // this.plugins    = config.plugins;
+
+        this.captionLabel = config.captionLabel;
+        this.qualityLabel = config.qualityLabel;
     }
 
     /** Returns a PluginConfig containing plugin configuration information **/

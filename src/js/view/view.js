@@ -61,7 +61,6 @@ define([
             _audioMode,
             _errorState = false,
             _showing = false,
-            _forcedControlsState = null,
             _replayState,
             _rightClickMenu,
             _resizeMediaTimeout = -1,
@@ -318,11 +317,7 @@ define([
             _api.onPlaylistItem(_playlistItemHandler);
 
             _model.on('change:castAvailable', function(model, val) {
-                if (val) {
-                    _this.forceControls(true);
-                } else {
-                    _this.releaseControls();
-                }
+                utils.toggleClass(_controlsLayer, 'jw-cast-available', val);
             });
 
             _model.on('change:castState', function(evt) {
@@ -334,7 +329,6 @@ define([
                 }
                 if (evt.active) {
                     utils.addClass(_captions, 'jw-captions-disabled');
-                    _this.forceControls(true);
                     _castDisplay.setState('connecting').setName(evt.deviceName).show();
 
                     _model.on('change:state', _castDisplay.statusDelegate);
@@ -865,7 +859,7 @@ define([
         }
 
         function _hideControlbar() {
-            if (_forcedControlsState === true) {
+            if (utils.hasClass(_controlsLayer), 'jw-casting') {
                 return;
             }
 
@@ -889,15 +883,18 @@ define([
 
         function _showDisplay() {
             var model = _instreamMode ? _instreamModel : _model;
-            if (_display && _model.get('controls') && !_audioMode) {
-                if (!_isIPod || model.state === states.IDLE) {
+
+            var hasControls = _model.get('controls');
+            var state = model.get('state');
+            if (_display && hasControls && !_audioMode) {
+                if (!_isIPod || state === states.IDLE || state === states.COMPLETE) {
                     _display.show();
                 }
             }
 
             // debug this, find out why
-            if (!(_isMobile && _model.fullscreen)) {
-                _model.getVideo().setControls(false);
+            if (!(_isMobile && model.fullscreen)) {
+                model.getVideo().setControls(false);
             }
         }
 
@@ -909,9 +906,6 @@ define([
 
         function _hideControls() {
             clearTimeout(_controlsTimeout);
-            if (_forcedControlsState === true) {
-                return;
-            }
             _showing = false;
 
             var model = _instreamMode ? _instreamModel : _model;
@@ -921,7 +915,7 @@ define([
                 _hideControlbar();
             }
 
-            if (state !== states.IDLE && state !== states.PAUSED) {
+            if (state !== states.COMPLETE && state !== states.IDLE && state !== states.PAUSED) {
                 _hideLogo();
             }
 
@@ -929,10 +923,6 @@ define([
         }
 
         function _showControls() {
-            if (_forcedControlsState === false) {
-                return;
-            }
-
             _showing = true;
             if (_model.get('controls') || _audioMode) {
                 _showControlbar();
@@ -1021,11 +1011,6 @@ define([
             // player display
             switch (state) {
                 case states.PLAYING:
-                    if (_model.getVideo().isCaster !== true) {
-                        _forcedControlsState = null;
-                    } else {
-                        _forcedControlsState = true;
-                    }
                     if (_isAudioFile()) {
                         _showVideo(false);
                         _display.hidePreview(_audioMode);
@@ -1045,6 +1030,7 @@ define([
                     }
                     break;
                 case states.IDLE:
+                case states.COMPLETE:
                     _showVideo(false);
                     if (!_audioMode) {
                         _display.hidePreview(false);
@@ -1098,25 +1084,9 @@ define([
             _controlbar.instreamMode(false);
             _controlbar.show(true);
             _this.releaseState();
-            _forcedControlsState = null;
             var provider = _model.getVideo();
             provider.setContainer(_videoLayer);
             provider.setVisibility(true);
-        };
-
-        this.forceControls = function(state) {
-            _forcedControlsState = !!state;
-            if (state) {
-                _showControls();
-            } else {
-                _hideControls();
-            }
-        };
-
-        this.releaseControls = function() {
-            _forcedControlsState = null;
-            var model = _instreamMode ? _instreamModel : _model;
-            _updateState(model.state);
         };
 
         this.addCues = function(cues) {
@@ -1188,7 +1158,9 @@ define([
             for (var i = DOCUMENT_FULLSCREEN_EVENTS.length; i--;) {
                 document.removeEventListener(DOCUMENT_FULLSCREEN_EVENTS[i], _fullscreenChangeHandler, false);
             }
-            _model.mediaController.off('fullscreenchange', _fullscreenChangeHandler);
+            if (_model.mediaController) {
+                _model.mediaController.off('fullscreenchange', _fullscreenChangeHandler);
+            }
             _playerElement.removeEventListener('keydown', handleKeydown, false);
             if (_rightClickMenu) {
                 _rightClickMenu.destroy();

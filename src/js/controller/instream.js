@@ -76,7 +76,7 @@ define([
                 fullscreen: _model.fullscreen,
                 mute: _model.mute
             });
-            _checkProvider();
+
             _adModel.on('fullscreenchange', _nativeFullscreenHandler);
             _olditem = _model.playlist[_model.item];
 
@@ -100,7 +100,6 @@ define([
 
             // Show the instream layer
             _view.setupInstream(_adModel);
-            _view.forceState(states.BUFFERING);
 
             _this.instreamSetText(_defaultOptions.loadingmessage);
         };
@@ -255,15 +254,12 @@ define([
         _this.instreamPlay = function() {
             //if (!_item) return;
             _adModel.getVideo().play(true);
-            _view.releaseControls();
-            _view.forceState(states.PLAYING);
         };
 
         /** Pause instream playback **/
         _this.instreamPause = function() {
             //if (!_item) return;
             _adModel.getVideo().pause(true);
-            _view.forceState(states.PAUSED);
         };
 
         /** Seek to a point in instream media **/
@@ -319,9 +315,13 @@ define([
         function stateHandler(evt) {
             switch(evt.newstate) {
                 case states.PLAYING:
+                    _model.set('state', evt.newstate);
+                    _adModel.set('state', evt.newstate);
                     _this.instreamPlay();
                     break;
                 case states.PAUSED:
+                    _model.set('state', evt.newstate);
+                    _adModel.set('state', evt.newstate);
                     _this.instreamPause();
                     break;
             }

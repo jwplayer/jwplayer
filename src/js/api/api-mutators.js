@@ -26,9 +26,6 @@ define([
             var format = attr.slice(0,1).toUpperCase() + attr.slice(1);
 
             _api['get' + format] = function() {
-                if (!_controller._model) {
-                    return null;
-                }
                 return _controller._model.get(attr);
             };
         });
@@ -53,7 +50,10 @@ define([
 
             'getSafeRegion',
             'isBeforeComplete',
-            'isBeforePlay'
+            'isBeforePlay',
+
+            'getProvider',
+            'detachMedia'
 
             // These are implemented in api.js, but should be here
             //'getItemMeta',

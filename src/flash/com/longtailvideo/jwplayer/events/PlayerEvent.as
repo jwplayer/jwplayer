@@ -1,9 +1,5 @@
 package com.longtailvideo.jwplayer.events {
-import com.longtailvideo.jwplayer.player.PlayerVersion;
-
 import flash.events.Event;
-import flash.external.ExternalInterface;
-import flash.system.Capabilities;
 
 public class PlayerEvent extends Event {
 

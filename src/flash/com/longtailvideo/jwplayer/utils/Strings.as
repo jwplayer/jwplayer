@@ -187,7 +187,7 @@ public class Strings {
 
     /** Gets an absolute file path based on a relative filepath **/
     public static function getAbsolutePath(path:String, basepath:String = null):String {
-        if (basepath == null) {
+        if (!basepath) {
             return path;
         }
         if (isAbsolutePath(path)) {
@@ -220,9 +220,7 @@ public class Strings {
     }
 
     public static function isAbsolutePath(path:String):Boolean {
-        var protocol:int = path.indexOf("://");
-        var queryparams:int = path.indexOf("?");
-        return ((protocol > 0 && (queryparams < 0 || (queryparams > protocol))));
+        return /^(?:(?:https?|file)\:)?\/\//.test(path);
     }
 
     /** Removes potentially harmful string headers from a link **/
@@ -230,18 +228,6 @@ public class Strings {
         // Only match http: and https:
         if (link.indexOf(":") > 0 && link.indexOf("http") != 0) return "";
         else return link;
-    }
-
-    public static function isYouTube(file:String):Boolean {
-        if (file) {
-            if (file.indexOf('youtube.com/w') > -1)
-                return true;
-            else if (file.indexOf('youtube.com/v') > -1)
-                return true;
-            else if (file.indexOf('youtu.be') > -1)
-                return true;
-        }
-        return false;
     }
 
     /** Capitalizes the first letter of a string; rest is lowercased **/
