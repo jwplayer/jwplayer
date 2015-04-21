@@ -311,7 +311,9 @@ define([
             return publicLevels;
         }
 
-        function _sendLevels(levels) {
+        function _setLevels(levels) {
+            _levels = levels;
+            _currentQuality = _pickInitialQuality(levels);
             var publicLevels = _getPublicLevels(levels);
             if (publicLevels) {
                 //_sendEvent?
@@ -330,23 +332,20 @@ define([
             return 0;
         }
 
-        function _pickInitialQuality() {
-            if (_currentQuality < 0) {
-                _currentQuality = 0;
-            }
-            if (_levels) {
-                var label = _playerConfig.qualityLabel;
-                for (var i = 0; i < _levels.length; i++) {
-                    if (_levels[i]['default']) {
-                        _currentQuality = i;
+        function _pickInitialQuality(levels) {
+            var currentQuality = Math.max(0, _currentQuality);
+            var label = _playerConfig.qualityLabel;
+            if (levels) {
+                for (var i = 0; i < levels.length; i++) {
+                    if (levels[i]['default']) {
+                        currentQuality = i;
                     }
-                    if (label && _levels[i].label === label) {
-                        _currentQuality = i;
-                        break;
+                    if (label && levels[i].label === label) {
+                        return i;
                     }
                 }
             }
-
+            return currentQuality;
         }
 
         function _forceVideoLoad() {
@@ -426,9 +425,7 @@ define([
                 return;
             }
 
-            _levels = item.sources;
-            _pickInitialQuality();
-            _sendLevels(_levels);
+            _setLevels(item.sources);
 
             _completeLoad(item.starttime || 0, item.duration);
         };

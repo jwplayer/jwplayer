@@ -58,6 +58,46 @@ public class Model extends GlobalEventDispatcher {
         return _currentMedia;
     }
 
+    public function get currentQuality():Number {
+        if (_currentMedia) {
+            return _currentMedia.currentQuality;
+        }
+        return -1;
+    }
+
+    public function set currentQuality(index:Number):void {
+        if (_currentMedia) {
+            _currentMedia.currentQuality = index
+        }
+    }
+
+    public function get qualityLevels():Array {
+        if (_currentMedia) {
+            return _currentMedia.qualityLevels;
+        }
+        return null;
+    }
+
+    public function get currentAudioTrack():Number {
+        if (_currentMedia) {
+            return _currentMedia.currentAudioTrack;
+        }
+        return -1;
+    }
+
+    public function set currentAudioTrack(index:Number):void {
+        if (_currentMedia) {
+            _currentMedia.currentAudioTrack = index
+        }
+    }
+
+    public function get audioTracks():Array {
+        if (_currentMedia) {
+            return _currentMedia.audioTracks;
+        }
+        return null;
+    }
+
     /**
      * The current player state
      */
@@ -148,11 +188,11 @@ public class Model extends GlobalEventDispatcher {
     /** Instruct the currently playing media to seek to the specified position. **/
     public function seek(pos:Number):void {
         var newEvent:MediaEvent = new MediaEvent(MediaEvent.JWPLAYER_MEDIA_SEEK);
-        newEvent.position = media.position;
+        newEvent.position = _currentMedia.position;
         newEvent.offset = pos;
         dispatchEvent(newEvent);
 
-        media.seek(pos);
+        _currentMedia.seek(pos);
     }
 
     /**

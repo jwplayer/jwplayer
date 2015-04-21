@@ -32,6 +32,11 @@ define([
     var Controller = function() {
         this.eventsQueue = [];
         _.extend(this, Events);
+
+        // TODO: instantiate model here and reset/update it in setup()
+        this._model = {
+            'get': function() {}
+        };
     };
 
     Controller.prototype = {
@@ -151,8 +156,9 @@ define([
                 _view.on('all', _this.trigger.bind(_this));
 
 
+                // TODO: this should come from the media controller, not the view
                 _view.on(events.JWPLAYER_CAPTIONS_CHANGED, function(e) {
-                    utils.saveCookie('captionLabel', e.tracks[e.track].label);
+                    _model.set('captionLabel', e.tracks[e.track].label);
                 });
 
                 // Tell the api that we are loaded

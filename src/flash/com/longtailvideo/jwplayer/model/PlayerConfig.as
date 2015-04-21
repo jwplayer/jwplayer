@@ -3,7 +3,6 @@ import com.longtailvideo.jwplayer.player.PlayerVersion;
 import com.longtailvideo.jwplayer.plugins.PluginConfig;
 import com.longtailvideo.jwplayer.utils.Logger;
 import com.longtailvideo.jwplayer.utils.RootReference;
-import com.longtailvideo.jwplayer.utils.Utils;
 
 import flash.events.EventDispatcher;
 import flash.media.SoundTransform;
@@ -20,6 +19,9 @@ public dynamic class PlayerConfig extends EventDispatcher {
 
     protected var _soundTransform:SoundTransform;
     protected var _volume:Number = 0.9;
+
+    public var captionLabel:String;
+    public var qualityLabel:String;
 
     public function PlayerConfig(soundTransform:SoundTransform) {
         _soundTransform = soundTransform;
@@ -226,15 +228,20 @@ public dynamic class PlayerConfig extends EventDispatcher {
     }
 
     public function setConfig(config:Object):void {
-        this.id = config.id;
+        this.id    = config.id;
         this.debug = config.debug;
         if (config.stretching) {
             this.stretching = config.stretching;
         }
-        //this.fullscreen = config.fullscreen;
+
         this.volume = config.volume;
-        this.mute = config.mute;
-        //this.plugins = config.plugins;
+        this.mute   = config.mute;
+
+        // this.fullscreen = config.fullscreen;
+        // this.plugins    = config.plugins;
+
+        this.captionLabel = config.captionLabel;
+        this.qualityLabel = config.qualityLabel;
     }
 
     /** Returns a PluginConfig containing plugin configuration information **/

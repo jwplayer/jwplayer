@@ -99,7 +99,7 @@ public class RTMPMediaProvider extends MediaProvider {
     /** Change the current quality. **/
     override public function set currentQuality(quality:Number):void {
         var level:Number = -1;
-        // Ignore when single level, when transtioning or when out of bounds
+        // Ignore when single level, when transitioning or when out of bounds
         if (_levels.length > 1 && !_transition && quality > -1 && quality < _levels.length + 1) {
             // Switch to auto
             if (quality == 0 && !_auto) {
@@ -114,7 +114,7 @@ public class RTMPMediaProvider extends MediaProvider {
             }
         }
         if (level > -1) {
-            _config.qualitylabel = qualityLevels[quality].label;
+            _config.qualityLabel = qualityLevels[quality].label;
             var event:MediaEvent = new MediaEvent(MediaEvent.JWPLAYER_MEDIA_LEVEL_CHANGED);
             event.levels = qualityLevels;
             event.currentQuality = quality;
@@ -397,10 +397,10 @@ public class RTMPMediaProvider extends MediaProvider {
 
         var level:Number = 0;
 
-        if (_config.qualitylabel) {
+        if (_config.qualityLabel) {
             var levels:Array = qualityLevels;
             for (var i:Number = 0; i < levels.length; i++) {
-                if (_config.qualitylabel == levels[i].label) {
+                if (_config.qualityLabel == levels[i].label) {
                     level = i;
                     break;
                 }

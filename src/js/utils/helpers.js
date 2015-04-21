@@ -181,24 +181,6 @@ define([
         return (window.frameElement && (window.frameElement.nodeName === 'IFRAME'));
     };
 
-    /** Save a setting **/
-    utils.saveCookie = function (name, value) {
-        document.cookie = 'jwplayer.' + name + '=' + value + '; path=/';
-    };
-
-    /** Retrieve saved  player settings **/
-    utils.getCookies = function () {
-        var jwCookies = {};
-        var cookies = document.cookie.split('; ');
-        for (var i = 0; i < cookies.length; i++) {
-            var split = cookies[i].split('=');
-            if (split[0].indexOf('jwplayer.') === 0) {
-                jwCookies[split[0].substring(9, split[0].length)] = utils.serialize(split[1]);
-            }
-        }
-        return jwCookies;
-    };
-
     var _isInt = utils.isInt = function (value) {
         return parseFloat(value) % 1 === 0;
     };

@@ -575,7 +575,7 @@ define([
 
         this.getCurrentQuality = function() {
             if (!_youtubePlayer) {
-                return;
+                return -1;
             }
             if (_youtubePlayer.getAvailableQualityLevels) {
                 var ytQuality = _youtubePlayer.getPlaybackQuality();
