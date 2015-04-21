@@ -96,15 +96,19 @@ define([
                 _model.mediaModel.on('change:state', function(mediaModel, state){
                     var modelState = normalizeState(state);
 
+                    // buffering, playing and paused states become:
+                    // buffer, play and pause events
+                    var apiEventType = modelState.replace(/(?:ing|d)$/, '');
+
                     var evt = {
-                        oldstate: this.get('state'),
-                        reason: state,
+                        type: apiEventType,
                         newstate: modelState,
-                        type: modelState
+                        oldstate: _model.get('state'),
+                        reason: state
                     };
 
                     _model.set('state', modelState);
-                    _model.trigger(evt.type, evt);
+                    _this.trigger(apiEventType, evt);
                 });
             }
             initMediaModel();
