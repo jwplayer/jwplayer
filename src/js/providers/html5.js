@@ -138,9 +138,9 @@ define([
         };
 
 
-        // Find video tag, or create it if it doesn't exist
+        // Find video tag, or create it if it doesn't exist.  View may not be built yet.
         var element = document.getElementById(_playerId);
-        var _videotag = element.querySelector('video');
+        var _videotag = (element) ? element.querySelector('video') : undefined;
         _videotag = _videotag || document.createElement('video');
 
         _setupListeners(_mediaEvents, _videotag);
