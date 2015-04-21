@@ -9,11 +9,12 @@ define([
     'view/thumbs',
     'view/menu',
     'view/overlay',
+    'view/components/slider',
     'utils/css'
-], function(utils, SrtParser, _, events, states, Events, Touch, Thumbs, Menu, Overlay, cssUtils) {
+], function(utils, SrtParser, _, events, states,
+            Events, Touch, Thumbs, Menu, Overlay, Slider, cssUtils) {
 
-    var _setTransition = cssUtils.transitionStyle,
-        _isMobile = utils.isMobile(),
+    var _isMobile = utils.isMobile(),
         _nonChromeAndroid = utils.isAndroid(4, true),
         _iFramed = (window.top !== window.self),
         _css = cssUtils.css,
@@ -21,8 +22,8 @@ define([
         /** Controlbar element types * */
         CB_BUTTON = 'button',
         CB_TEXT = 'text',
-        CB_DIVIDER = 'divider',
         CB_SLIDER = 'slider',
+        CB_SLIDER_VERTICAL = 'slidervertical',
 
         JW_VISIBILITY_TIMEOUT = 250,
 
@@ -62,7 +63,6 @@ define([
     /** HTML5 Controlbar class * */
     var Controlbar = function(_skin, _api, _model) {
         var _config = _model.componentConfig('controlbar') || {},
-            _dividerElement = _layoutElement('divider', CB_DIVIDER),
             _defaults = {
                 margin: 8,
                 maxwidth: 800,
@@ -94,7 +94,7 @@ define([
                             _layoutElement('hd', CB_BUTTON),
                             _layoutElement('cc', CB_BUTTON),
                             _layoutElement('mute', CB_BUTTON),
-                            _layoutElement('volume', CB_SLIDER),
+                            _layoutElement('volume', CB_SLIDER_VERTICAL),
                             _layoutElement('volumeH', CB_SLIDER),
                             _layoutElement('cast', CB_BUTTON),
                             _layoutElement('fullscreen', CB_BUTTON)
@@ -104,7 +104,6 @@ define([
             },
 
             _settings,
-            _layout = _skin.getComponentLayout('controlbar') || _defaults.layout,
             _elements = {},
             _bgHeight,
             _controlbar = _createSpan(),
@@ -119,12 +118,12 @@ define([
             _castState = {},
             _volumeOverlay,
             _cbBounds,
-            _timeRail,
-            _railBounds,
-            _timeOverlay,
-            _timeOverlayContainer,
+            //_timeRail,
+            //_railBounds,
+            //_timeOverlay,
+            //_timeOverlayContainer,
             _timeOverlayThumb,
-            _timeOverlayText,
+            //_timeOverlayText,
             _hdTimer,
             _hdTapTimer,
             _hdOverlay,
@@ -140,12 +139,6 @@ define([
             _dragging = null,
             _cues = [],
             _activeCue,
-            _toggles = {
-                play: 'pause',
-                mute: 'unmute',
-                cast: 'casting',
-                fullscreen: 'normalscreen'
-            },
 
             _toggleStates = {
                 play: false,
@@ -165,15 +158,17 @@ define([
                 cast: _cast
             },
 
+            /*
             _sliderMapping = {
                 time: _seekThrottled,
                 volume: _volume
             },
-            _groups = {},
+            */
             _overlays = {},
             _jwhidden = [],
             _this = _.extend(this, Events);
 
+        /*
         // Store the attempted seek, until the previous one completes
         var _seekTo;
         var _seekThrottler = _.throttle(_seek, 400);
@@ -214,14 +209,15 @@ define([
                 _positionOverlay('time', _timeOverlay);
             };
         })();
+        */
 
         _controlbar.id = _id;
-        _controlbar.className = 'jwcontrolbar';
+        _controlbar.className = 'jw-controlbar';
 
         cssUtils.clearCss(_internalSelector());
         cssUtils.block(_id + 'build');
         _createStyles();
-        _buildControlbar();
+        _buildLayout();
         cssUtils.unblock(_id + 'build');
         _addEventListeners();
         _this.visible = false;
@@ -545,42 +541,6 @@ define([
             return document.createElement(tagname);
         }
 
-        function _buildControlbar() {
-            var capLeft = _buildImage('capLeft');
-            var capRight = _buildImage('capRight');
-            var bg = _buildImage('background', {
-                position: 'absolute',
-                left: _getSkinElement('capLeft').width,
-                right: _getSkinElement('capRight').width,
-                'background-repeat': 'repeat-x'
-            }, true);
-
-            if (bg) {
-                _appendChild(_controlbar, bg);
-            }
-            if (capLeft) {
-                _appendChild(_controlbar, capLeft);
-            }
-            _buildLayout();
-            if (capRight) {
-                _appendChild(_controlbar, capRight);
-            }
-        }
-
-        function _buildElement(element, pos) {
-            switch (element.type) {
-                case CB_TEXT:
-                    return _buildText(element.name);
-                case CB_BUTTON:
-                    if (element.name !== 'blank') {
-                        return _buildButton(element.name, pos);
-                    }
-                    break;
-                case CB_SLIDER:
-                    return _buildSlider(element.name);
-            }
-        }
-
         /*jshint maxparams:5*/
         function _buildImage(name, style, stretch, nocenter, vertical) {
             var element = _createSpan(),
@@ -589,7 +549,7 @@ define([
                 size = _elementSize(skinElem),
                 newStyle;
 
-            element.className = 'jw' + name;
+            element.className = 'jw-' + name;
             element.innerHTML = '&nbsp;';
 
             if (!skinElem || !skinElem.src) {
@@ -616,7 +576,7 @@ define([
             return element;
         }
 
-        function _buildButton(name, pos) {
+        function _buildButton(name) {
             if (!_getSkinElement(name + 'Button').src) {
                 return null;
             }
@@ -633,47 +593,13 @@ define([
 
 
             var element = _createSpan();
-            var span = _createSpan();
-            var divider = _buildDivider(_dividerElement);
-            var button = _createElement('button');
-            element.className = 'jw' + name;
-            if (pos === 'left') {
-                _appendChild(element, span);
-                _appendChild(element, divider);
-            } else {
-                _appendChild(element, divider);
-                _appendChild(element, span);
-            }
-
-            if (!_isMobile) {
-                button.addEventListener('click', _buttonClickHandler(name), false);
-            } else if (name !== 'hd' && name !== 'cc') {
-                var buttonTouch = new Touch(button);
-                buttonTouch.on(events.touchEvents.TAP, _buttonClickHandler(name));
-            }
-
-            button.innerHTML = '&nbsp;';
-            button.tabIndex = -1;
-            //fix for postbacks on mobile devices when a <form> is used
-            button.setAttribute('type', 'button');
-            _appendChild(span, button);
-
-            var outSkin = _getSkinElement(name + 'Button'),
-                overSkin = _getSkinElement(name + 'ButtonOver'),
-                offSkin = _getSkinElement(name + 'ButtonOff');
-
-
-            _buttonStyle(_internalSelector('.jw' + name + ' button'), outSkin, overSkin, offSkin);
-            var toggle = _toggles[name];
-            if (toggle) {
-                _buttonStyle(_internalSelector('.jw' + name + '.jwtoggle button'), _getSkinElement(toggle + 'Button'),
-                    _getSkinElement(toggle + 'ButtonOver'));
-            }
+            element.className = 'jw-icon-inline jw-icon-' + name;
+            element.onclick = _buttonClickHandler(name);
 
             if (_toggleStates[name]) {
-                utils.addClass(element, 'jwtoggle');
+                utils.addClass(element, 'jw-toggle');
             } else {
-                utils.removeClass(element, 'jwtoggle');
+                utils.removeClass(element, 'jw-toggle');
             }
 
             _elements[name] = element;
@@ -681,31 +607,6 @@ define([
             return element;
         }
 
-        function _buttonStyle(selector, out, over, off) {
-            if (!out || !out.src) {
-                return;
-            }
-
-            _css(selector, {
-                width: out.width,
-                background: 'url(' + out.src + ') no-repeat center',
-                'background-size': _elementSize(out)
-            });
-
-            if (over.src && !_isMobile) {
-                _css(selector + ':hover,' + selector + '.off:hover', {
-                    background: 'url(' + over.src + ') no-repeat center',
-                    'background-size': _elementSize(over)
-                });
-            }
-
-            if (off && off.src) {
-                _css(selector + '.off', {
-                    background: 'url(' + off.src + ') no-repeat center',
-                    'background-size': _elementSize(off)
-                });
-            }
-        }
 
         function _buttonClickHandler(name) {
             return function(evt) {
@@ -772,6 +673,7 @@ define([
             _hideOverlays('volume');
         }
 
+        /*
         function _volume(pct) {
             _setVolume(pct);
             if (pct < 0.1) {
@@ -787,6 +689,7 @@ define([
             _seekTo = pct;
             _seekThrottler(pct);
         }
+        */
 
         function _seek(pct) {
             var position;
@@ -862,18 +765,6 @@ define([
             return null;
         }
 
-        function _buildDivider(divider) {
-            var element = _buildImage(divider.name);
-            if (!element) {
-                element = _createSpan();
-                element.className = 'jwblankDivider';
-            }
-            if (divider.className) {
-                element.className += ' ' + divider.className;
-            }
-            return element;
-        }
-
         function _showHd() {
             if (_levels.length > 2) {
                 if (_hdTimer) {
@@ -938,169 +829,11 @@ define([
             }
         }
 
-        function _buildSlider(name) {
-            if (_isMobile && name.indexOf('volume') === 0) {
-                return;
-            }
-
-            var slider = _createSpan(),
-                vertical = name === 'volume',
-                skinPrefix = name + (name === 'time' ? 'Slider' : ''),
-                capPrefix = skinPrefix + 'Cap',
-                left = vertical ? 'Top' : 'Left',
-                right = vertical ? 'Bottom' : 'Right',
-                capLeft = _buildImage(capPrefix + left, null, false, false, vertical),
-                capRight = _buildImage(capPrefix + right, null, false, false, vertical),
-                rail = _buildSliderRail(name, vertical, left, right),
-                capLeftSkin = _getSkinElement(capPrefix + left),
-                capRightSkin = _getSkinElement(capPrefix + left);
-            //railSkin = _getSkinElement(name+'SliderRail');
-
-            slider.className = 'jwslider jw' + name;
-
-            if (capLeft) {
-                _appendChild(slider, capLeft);
-            }
-            _appendChild(slider, rail);
-            if (capRight) {
-                if (vertical) {
-                    capRight.className += ' jwcapBottom';
-                }
-                _appendChild(slider, capRight);
-            }
-
-            _css(_internalSelector('.jw' + name + ' .jwrail'), {
-                left: vertical ? '' : capLeftSkin.width,
-                right: vertical ? '' : capRightSkin.width,
-                top: vertical ? capLeftSkin.height : '',
-                bottom: vertical ? capRightSkin.height : '',
-                width: vertical ? '100%' : '',
-                height: vertical ? 'auto' : ''
-            });
-
+        function _buildSlider(name, vert) {
+            var orientation = vert ? 'vertical' : 'horizontal';
+            var slider = new Slider(name, orientation);
             _elements[name] = slider;
-            slider.vertical = vertical;
-
-            if (name === 'time') {
-                _timeOverlay = new Overlay(_id + '_timetooltip', _skin);
-                _timeOverlayThumb = new Thumbs(_id + '_thumb');
-                _timeOverlayText = _createElement('div');
-                _timeOverlayText.className = 'jwoverlaytext';
-                _timeOverlayContainer = _createElement('div');
-                _appendChild(_timeOverlayContainer, _timeOverlayThumb.element());
-                _appendChild(_timeOverlayContainer, _timeOverlayText);
-                _timeOverlay.setContents(_timeOverlayContainer);
-                _timeRail = rail;
-                _setTimeOverlay(0);
-                _appendChild(rail, _timeOverlay.element());
-                _styleTimeSlider(slider);
-                _setProgress(0);
-                _setBuffer(0);
-            } else if (name.indexOf('volume') === 0) {
-                _styleVolumeSlider(slider, vertical, left, right);
-            }
-
-            return slider;
-        }
-
-        function _buildSliderRail(name, vertical, left, right) {
-            var rail = _createSpan(),
-                railElements = ['Rail', 'Buffer', 'Progress'],
-                progressRail,
-                sliderPrefix;
-
-            rail.className = 'jwrail';
-
-            for (var i = 0; i < railElements.length; i++) {
-                sliderPrefix = (name === 'time' ? 'Slider' : '');
-                var prefix = name + sliderPrefix + railElements[i],
-                    element = _buildImage(prefix, null, !vertical, (name.indexOf('volume') === 0), vertical),
-                    capLeft = _buildImage(prefix + 'Cap' + left, null, false, false, vertical),
-                    capRight = _buildImage(prefix + 'Cap' + right, null, false, false, vertical),
-                    capLeftSkin = _getSkinElement(prefix + 'Cap' + left),
-                    capRightSkin = _getSkinElement(prefix + 'Cap' + right);
-
-                if (element) {
-                    var railElement = _createSpan();
-                    railElement.className = 'jwrailgroup ' + railElements[i];
-                    if (capLeft) {
-                        _appendChild(railElement, capLeft);
-                    }
-                    _appendChild(railElement, element);
-                    if (capRight) {
-                        _appendChild(railElement, capRight);
-                        capRight.className += ' jwcap' + (vertical ? 'Bottom' : 'Right');
-                    }
-
-                    _css(_internalSelector('.jwrailgroup.' + railElements[i]), {
-                        'min-width': (vertical ? '' : capLeftSkin.width + capRightSkin.width)
-                    });
-                    railElement.capSize = vertical ? capLeftSkin.height + capRightSkin.height :
-                        capLeftSkin.width + capRightSkin.width;
-
-                    _css(_internalSelector('.' + element.className), {
-                        left: vertical ? '' : capLeftSkin.width,
-                        right: vertical ? '' : capRightSkin.width,
-                        top: vertical ? capLeftSkin.height : '',
-                        bottom: vertical ? capRightSkin.height : '',
-                        height: vertical ? 'auto' : ''
-                    });
-
-                    if (i === 2) {
-                        progressRail = railElement;
-                    }
-
-                    if (i === 2 && !vertical) {
-                        var progressContainer = _createSpan();
-                        progressContainer.className = 'jwprogressOverflow';
-                        _appendChild(progressContainer, railElement);
-                        _elements[prefix] = progressContainer;
-                        _appendChild(rail, progressContainer);
-                    } else {
-                        _elements[prefix] = railElement;
-                        _appendChild(rail, railElement);
-                    }
-                }
-            }
-
-            var thumb = _buildImage(name + sliderPrefix + 'Thumb', null, false, false, vertical);
-            if (thumb) {
-                _css(_internalSelector('.' + thumb.className), {
-                    opacity: name === 'time' ? 0 : 1,
-                    'margin-top': vertical ? thumb.skin.height / -2 : ''
-                });
-
-                thumb.className += ' jwthumb';
-                _appendChild(vertical && progressRail ? progressRail : rail, thumb);
-            }
-
-            if (!_isMobile) {
-                var sliderName = name;
-                if (sliderName === 'volume' && !vertical) {
-                    sliderName += 'H';
-                }
-                rail.addEventListener('mousedown', _sliderMouseDown(sliderName), false);
-            } else {
-                var railTouch = new Touch(rail);
-                railTouch.on(events.touchEvents.DRAG_START, _sliderDragStart);
-                railTouch.on(events.touchEvents.DRAG, _sliderDragEvent);
-                railTouch.on(events.touchEvents.DRAG_END, _sliderDragEvent);
-                railTouch.on(events.touchEvents.TAP, _sliderTapEvent);
-            }
-
-            if (name === 'time' && !_isMobile) {
-                rail.addEventListener('mousemove', _showTimeTooltip, false);
-                rail.addEventListener('mouseout', _hideTimeTooltip, false);
-            }
-
-            _elements[name + 'Rail'] = rail;
-
-            return rail;
-        }
-
-        function _idle() {
-            var currentState = _model.state;
-            return (currentState === states.IDLE || currentState === states.COMPLETE);
+            return slider.element();
         }
 
         function _killSelect(evt) {
@@ -1108,202 +841,6 @@ define([
             document.onselectstart = function() {
                 return false;
             };
-        }
-
-        function _draggingStart(name) {
-            _draggingEnd();
-            _dragging = name;
-            window.addEventListener('mouseup', _sliderMouseEvent, false);
-            window.addEventListener('mousemove', _sliderMouseEvent, false);
-        }
-
-        function _draggingEnd() {
-            window.removeEventListener('mouseup', _sliderMouseEvent);
-            window.removeEventListener('mousemove', _sliderMouseEvent);
-            _dragging = null;
-        }
-
-        function _sliderDragStart() {
-            _elements.timeRail.className = 'jwrail';
-            if (!_idle()) {
-                _seekDrag(true);
-                _draggingStart('time');
-                _showTimeTooltip();
-                _this.trigger(events.JWPLAYER_USER_ACTION);
-            }
-        }
-
-        function _seekDrag(bool) {
-            _model.seekDrag(bool);
-            _this.trigger(events.JWPLAYER_CONTROLBAR_DRAGGING, {dragging : bool});
-        }
-
-        var _sliderDragEvent = function(evt) {
-            if (!_dragging) {
-                return;
-            }
-
-            var rail = _elements[_dragging].querySelector('.jwrail'),
-                railRect = utils.bounds(rail),
-                pct = evt.x / railRect.width;
-            if (pct > 100) {
-                pct = 100;
-            }
-            if (evt.type === events.touchEvents.DRAG_END) {
-                _elements.timeRail.className = 'jwrail';
-                _draggingEnd();
-
-                // Send seek event, *then* set seekdrag false
-                _sliderMapping.time(pct);
-                _seekDrag(false);
-
-                _hideTimeTooltip();
-                _this.trigger(events.JWPLAYER_USER_ACTION);
-            } else {
-                _setProgress(pct);
-                _sliderMapping.time(pct);
-                _this.trigger(events.JWPLAYER_USER_ACTION);
-            }
-        };
-
-        function _sliderTapEvent(evt) {
-            var rail = _elements.time.querySelector('.jwrail'),
-                railRect = utils.bounds(rail),
-                pct = evt.x / railRect.width;
-            if (pct > 100) {
-                pct = 100;
-            }
-            if (!_idle()) {
-                _sliderMapping.time(pct);
-                _this.trigger(events.JWPLAYER_USER_ACTION);
-            }
-        }
-
-        function _sliderMouseDown(name) {
-            return function(evt) {
-                if (evt.button) {
-                    return;
-                }
-
-                _elements[name + 'Rail'].className = 'jwrail';
-
-                if (name === 'time') {
-                    if (!_idle()) {
-                        _seekDrag(true);
-                        _draggingStart(name);
-                    }
-                } else {
-                    _draggingStart(name);
-                }
-            };
-        }
-
-        var _sliderMouseEvent = function(evt) {
-            if (!_dragging || evt.button) {
-                return;
-            }
-
-            var rail = _elements[_dragging].querySelector('.jwrail'),
-                railRect = utils.bounds(rail),
-                name = _dragging,
-                pct;
-
-            if (_iFramedFullscreenIE()) {
-                pct = _elements[name].vertical ? ((railRect.bottom * 100 - evt.pageY) / (railRect.height * 100)) :
-                ((evt.pageX - (railRect.left * 100)) / (railRect.width * 100));
-            } else {
-                pct = _elements[name].vertical ? ((railRect.bottom - evt.pageY) / railRect.height) :
-                ((evt.pageX - railRect.left) / railRect.width);
-            }
-            if (evt.type === 'mouseup') {
-
-                _elements[name + 'Rail'].className = 'jwrail';
-                _draggingEnd();
-
-                // Send seek event, *then* set seekdrag false
-                _sliderMapping[name.replace('H', '')](pct);
-                if (name === 'time') {
-                    _seekDrag(false);
-                }
-            } else {
-                if (_dragging === 'time') {
-                    _setProgress(pct);
-                } else {
-                    _setVolume(pct);
-                }
-
-                _sliderMapping[_dragging.replace('H', '')](pct);
-            }
-            return false;
-        };
-
-        function _showTimeTooltip(evt) {
-            if (evt) {
-                _positionTimeTooltip.apply(this, arguments);
-            }
-
-            if (_timeOverlay && _duration && !_audioMode && !_isMobile) {
-                cssUtils.block(_id); // unblock on position overlay
-                _timeOverlay.show();
-                _positionOverlay('time', _timeOverlay);
-            }
-        }
-
-        function _hideTimeTooltip() {
-            if (_timeOverlay) {
-                _timeOverlay.hide();
-            }
-        }
-
-        function _positionTimeTooltip(evt) {
-            _cbBounds = utils.bounds(_controlbar);
-            _railBounds = utils.bounds(_timeRail);
-
-            if (!_railBounds || _railBounds.width === 0) {
-                return;
-            }
-
-            var position,
-                width;
-            if (_iFramedFullscreenIE()) {
-                position = (evt.pageX ? (evt.pageX - _railBounds.left*100) : evt.x);
-                width = _railBounds.width *100;
-            } else {
-                position = (evt.pageX ? (evt.pageX - _railBounds.left) : evt.x);
-                width = _railBounds.width;
-            }
-
-            _timeOverlay.positionX(Math.round(position));
-            _setTimeOverlay(_duration * position / width);
-        }
-
-        function _styleTimeSlider() {
-            if (!_elements.timeSliderRail) {
-                cssUtils.style(_elements.time, HIDDEN);
-            }
-
-            if (_elements.timeSliderThumb) {
-                cssUtils.style(_elements.timeSliderThumb, {
-                    'margin-left': (_getSkinElement('timeSliderThumb').width / -2)
-                });
-            }
-
-            var cueClass = 'timeSliderCue',
-                cue = _getSkinElement(cueClass),
-                cueStyle = {
-                    'z-index': 1
-                };
-
-            if (cue && cue.src) {
-                _buildImage(cueClass);
-                cueStyle['margin-left'] = cue.width / -2;
-            } else {
-                cueStyle.display = 'none';
-            }
-            _css(_internalSelector('.jw' + cueClass), cueStyle);
-
-            _setBuffer(0);
-            _setProgress(0);
         }
 
         function _addCue(timePos, text) {
@@ -1373,43 +910,6 @@ define([
             }
             _redraw();
         };
-
-        function _styleVolumeSlider(slider, vertical, left, right) {
-            var prefix = 'volume' + (vertical ? '' : 'H'),
-                direction = vertical ? 'vertical' : 'horizontal';
-
-            _css(_internalSelector('.jw' + prefix + '.jw' + direction), {
-                width: _getSkinElement(prefix + 'Rail', vertical).width + (vertical ? 0 :
-                    (_getSkinElement(prefix + 'Cap' + left).width +
-                        _getSkinElement(prefix + 'RailCap' + left).width +
-                        _getSkinElement(prefix + 'RailCap' + right).width +
-                        _getSkinElement(prefix + 'Cap' + right).width)
-                ),
-                height: vertical ? (
-                    _getSkinElement(prefix + 'Cap' + left).height +
-                    _getSkinElement(prefix + 'Rail').height +
-                    _getSkinElement(prefix + 'RailCap' + left).height +
-                    _getSkinElement(prefix + 'RailCap' + right).height +
-                    _getSkinElement(prefix + 'Cap' + right).height
-                ) : ''
-            });
-
-            slider.className += ' jw' + direction;
-        }
-
-        function _buildLayout() {
-            _buildGroup('left');
-            _buildGroup('center');
-            _buildGroup('right');
-            _appendChild(_controlbar, _groups.left);
-            _appendChild(_controlbar, _groups.center);
-            _appendChild(_controlbar, _groups.right);
-            _buildOverlays();
-
-            cssUtils.style(_groups.right, {
-                right: _getSkinElement('capRight').width
-            });
-        }
 
         function _buildOverlays() {
             if (_elements.hd) {
@@ -1510,28 +1010,43 @@ define([
             }
         }
 
-        function _buildGroup(pos) {
-            var elem = _createSpan();
-            elem.className = 'jwgroup jw' + pos;
-            _groups[pos] = elem;
-            if (_layout[pos]) {
-                _buildElements(_layout[pos], _groups[pos], pos);
-            }
+        function _buildLayout() {
+            var gl = _buildGroup('left');
+            var gc = _buildGroup('center');
+            var gr = _buildGroup('right');
+            _appendChild(_controlbar, gl);
+            _appendChild(_controlbar, gc);
+            _appendChild(_controlbar, gr);
+
+            _buildOverlays();
         }
 
-        function _buildElements(group, container, pos) {
-            if (group && group.elements.length > 0) {
-                for (var i = 0; i < group.elements.length; i++) {
-                    var element = _buildElement(group.elements[i], pos);
-                    if (element) {
-                        if (group.elements[i].name === 'volume' && element.vertical) {
-                            _volumeOverlay = new Overlay(_id + '_volumeOverlay', _skin);
-                            _volumeOverlay.setContents(element);
-                        } else {
-                            _appendChild(container, element);
-                        }
+        function _buildGroup(pos) {
+            var elem = document.createElement('span');
+            elem.className = 'jw-group jw-controlbar--' + pos+'-group';
+
+            var btns = _defaults.layout[pos].elements;
+            var elems = _.map(btns, _buildElement);
+            _.each(elems, function(e) {
+                elem.appendChild(e);
+            });
+
+            return elem;
+        }
+
+        function _buildElement(element, pos) {
+            switch (element.type) {
+                case CB_TEXT:
+                    return _buildText(element.name);
+                case CB_BUTTON:
+                    if (element.name !== 'blank') {
+                        return _buildButton(element.name, pos);
                     }
-                }
+                    break;
+                case CB_SLIDER:
+                    return _buildSlider(element.name);
+                case CB_SLIDER_VERTICAL:
+                    return _buildSlider(element.name);
             }
         }
 
@@ -1599,8 +1114,6 @@ define([
 
             _drawCues();
 
-            // utils.foreach(_overlays, _positionOverlay);
-
             cssUtils.unblock(_id);
 
             if (_this.visible) {
@@ -1609,16 +1122,16 @@ define([
                     centerCss;
                 if (_iFramedFullscreenIE()) {
                     centerCss = {
-                        left: Math.round(utils.parseDimension(_groups.left.offsetWidth*62) + capLeft.width),
-                        right: Math.round(utils.parseDimension(_groups.right.offsetWidth*86) + capRight.width)
+                        //left: Math.round(utils.parseDimension(_groups.left.offsetWidth*62) + capLeft.width),
+                        //right: Math.round(utils.parseDimension(_groups.right.offsetWidth*86) + capRight.width)
                     };
                 } else {
                     centerCss = {
-                        left: Math.round(utils.parseDimension(_groups.left.offsetWidth) + capLeft.width),
-                        right: Math.round(utils.parseDimension(_groups.right.offsetWidth) + capRight.width)
+                        //left: Math.round(utils.parseDimension(_groups.left.offsetWidth) + capLeft.width),
+                        //right: Math.round(utils.parseDimension(_groups.right.offsetWidth) + capRight.width)
                     };
                 }
-                cssUtils.style(_groups.center, centerCss);
+                //cssUtils.style(_groups.center, centerCss);
             }
         };
 
@@ -1903,140 +1416,6 @@ define([
      * Player stylesheets - done once on script initialization; * These CSS
      * rules are used for all JW Player instances *
      **************************************************************************/
-
-    (function() {
-        var JW_CSS_ABSOLUTE = 'absolute',
-            JW_CSS_RELATIVE = 'relative',
-            JW_CSS_SMOOTH_EASE = 'opacity .25s, background .25s, visibility .25s',
-            CB_CLASS = 'span.jwcontrolbar';
-
-        _css(CB_CLASS, {
-            position: JW_CSS_ABSOLUTE,
-            margin: 'auto',
-            opacity: 0,
-            display: 'none'
-        });
-
-        _css(CB_CLASS + ' span', {
-            height: '100%'
-        });
-        cssUtils.dragStyle(CB_CLASS + ' span', 'none');
-
-        _css(CB_CLASS + ' .jwgroup', {
-            display: 'inline'
-        });
-
-        _css(CB_CLASS + ' span, ' + CB_CLASS + ' .jwgroup button,' + CB_CLASS + ' .jwleft', {
-            position: JW_CSS_RELATIVE,
-            'float': 'left'
-        });
-
-        _css(CB_CLASS + ' .jwright', {
-            position: JW_CSS_RELATIVE,
-            'float': 'right'
-        });
-
-        _css(CB_CLASS + ' .jwcenter', {
-            position: JW_CSS_ABSOLUTE
-        });
-
-        _css(CB_CLASS + ' button', {
-            display: 'inline-block',
-            height: '100%',
-            border: 'none',
-            cursor: 'pointer'
-        });
-
-        _css(CB_CLASS + ' .jwcapRight,' + CB_CLASS + ' .jwtimeSliderCapRight,' + CB_CLASS + ' .jwvolumeCapRight', {
-            right: 0,
-            position: JW_CSS_ABSOLUTE
-        });
-
-        _css(CB_CLASS + ' .jwcapBottom', {
-            bottom: 0,
-            position: JW_CSS_ABSOLUTE
-        });
-
-        _css(CB_CLASS + ' .jwtime', {
-            position: JW_CSS_ABSOLUTE,
-            height: '100%',
-            width: '100%',
-            left: 0
-        });
-
-        _css(CB_CLASS + ' .jwthumb', {
-            position: JW_CSS_ABSOLUTE,
-            height: '100%',
-            cursor: 'pointer'
-        });
-
-        _css(CB_CLASS + ' .jwrail', {
-            position: JW_CSS_ABSOLUTE,
-            cursor: 'pointer'
-        });
-
-        _css(CB_CLASS + ' .jwrailgroup', {
-            position: JW_CSS_ABSOLUTE,
-            width: '100%'
-        });
-
-        _css(CB_CLASS + ' .jwrailgroup span', {
-            position: JW_CSS_ABSOLUTE
-        });
-
-        _css(CB_CLASS + ' .jwdivider+.jwdivider', {
-            display: 'none'
-        });
-
-        _css(CB_CLASS + ' .jwtext', {
-            padding: '0 5px',
-            'text-align': 'center'
-        });
-
-        _css(CB_CLASS + ' .jwcast', {
-            display: 'none'
-        });
-
-        _css(CB_CLASS + ' .jwcast.jwcancast', {
-            display: 'block'
-        });
-
-        _css(CB_CLASS + ' .jwalt', {
-            display: 'none',
-            overflow: 'hidden'
-        });
-
-        // important
-        _css(CB_CLASS + ' .jwalt', {
-            position: JW_CSS_ABSOLUTE,
-            left: 0,
-            right: 0,
-            'text-align': 'left'
-        }, true);
-
-        _css(CB_CLASS + ' .jwoverlaytext', {
-            padding: 3,
-            'text-align': 'center'
-        });
-
-        _css(CB_CLASS + ' .jwvertical *', {
-            display: 'block'
-        });
-
-        // important
-        _css(CB_CLASS + ' .jwvertical .jwvolumeProgress', {
-            height: 'auto'
-        }, true);
-
-        _css(CB_CLASS + ' .jwprogressOverflow', {
-            position: JW_CSS_ABSOLUTE,
-            overflow: 'hidden'
-        });
-
-        _setTransition(CB_CLASS, JW_CSS_SMOOTH_EASE);
-        _setTransition(CB_CLASS + ' button', JW_CSS_SMOOTH_EASE);
-        _setTransition(CB_CLASS + ' .jwtoggling', 'none');
-    })();
 
     return Controlbar;
 });
