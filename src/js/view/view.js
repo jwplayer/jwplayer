@@ -11,6 +11,7 @@ define([
     'view/errorscreen',
     'view/logo',
     'view/controlbar',
+    'view/preview',
     'view/rightclick',
     'view/title',
     'utils/css',
@@ -18,7 +19,7 @@ define([
     'handlebars-loader!templates/view.html'
 ], function(utils, events, Events, states, CastDisplay,
             Captions, Display, DisplayIcon, Dock, errorScreen, Logo,
-            Controlbar, RightClick, Title, cssUtils, _, viewTemplate) {
+            Controlbar, Preview, RightClick, Title, cssUtils, _, viewTemplate) {
 
     var _styles = utils.style,
         _bounds = utils.bounds,
@@ -51,6 +52,7 @@ define([
             _instreamModel,
             _instreamMode = false,
             _controlbar,
+            _preview,
             _display,
             _castDisplay,
             _dock,
@@ -239,9 +241,6 @@ define([
                 if (containerWidth !== _lastWidth || containerHeight !== _lastHeight) {
                     _lastWidth = containerWidth;
                     _lastHeight = containerHeight;
-                    if (_display) {
-                        _display.redraw();
-                    }
                     clearTimeout(_resizeMediaTimeout);
                     _resizeMediaTimeout = setTimeout(_resizeMedia, 50);
                     _this.trigger(events.JWPLAYER_RESIZE, {
@@ -471,10 +470,17 @@ define([
             _controlsLayer.appendChild(_captions.element());
 
 
-            _display = new Display(_skin, _api, _model);
-            _display.on(events.JWPLAYER_DISPLAY_CLICK, function (evt) {
-                forward(evt);
+            _preview = new Preview(_model);
+            _controlsLayer.appendChild(_preview.element());
+
+            _display = new Display(_model);
+            _display.on('click', function() {
+                forward({type : events.JWPLAYER_DISPLAY_CLICK});
                 _touchHandler();
+                _api.play();
+            });
+            _display.on('doubleClick', function() {
+                _api.setFullscreen();
             });
             _controlsLayer.appendChild(_display.element());
 
@@ -674,9 +680,6 @@ define([
             }
             _styles(_playerElement, playerStyle, true);
 
-            if (_display) {
-                _display.redraw();
-            }
             if (_controlbar) {
                 _controlbar.redraw(true);
             }
@@ -699,7 +702,6 @@ define([
                 if (_audioMode) {
                     _controlbar.audioMode(true);
                     _showControls();
-                    _display.hidePreview(true);
                     _hideDisplay();
                     _showVideo(false);
                 } else {
@@ -823,7 +825,6 @@ define([
             }
 
             _redrawComponent(_controlbar);
-            _redrawComponent(_display);
             _resizeMedia();
 
             _toggleFullscreen(fullscreenState);
@@ -879,26 +880,13 @@ define([
         }
 
         function _showDisplay() {
-            var model = _instreamMode ? _instreamModel : _model;
-
-            var hasControls = _model.get('controls');
-            var state = model.get('state');
-            if (_display && hasControls && !_audioMode) {
-                if (!_isIPod || state === states.IDLE || state === states.COMPLETE) {
-                    _display.show();
-                }
-            }
-
             // debug this, find out why
-            if (!(_isMobile && model.fullscreen)) {
-                model.getVideo().setControls(false);
+            if (!(_isMobile && _model.fullscreen)) {
+                _model.getVideo().setControls(false);
             }
         }
 
         function _hideDisplay() {
-            if (_display) {
-                _display.hide();
-            }
         }
 
         function _hideControls() {
@@ -990,10 +978,6 @@ define([
             _currentState = state;
             // cast.display
             if (_isCasting()) {
-                if (_display) {
-                    _display.show();
-                    _display.hidePreview(false);
-                }
 
                 // TODO: needs to be done in the provider
                 utils.addClass(_videoLayer, 'jw-video-show');
@@ -1010,8 +994,6 @@ define([
                 case states.PLAYING:
                     if (_isAudioFile()) {
                         _showVideo(false);
-                        _display.hidePreview(_audioMode);
-                        _display.setHiding(true);
                         if (_controlbar) {
                             _showControls();
                             _controlbar.hideFullscreen(true);
@@ -1020,7 +1002,6 @@ define([
                         _showVideo(true);
 
                         _resizeMedia();
-                        _display.hidePreview(true);
                         if (_controlbar) {
                             _controlbar.hideFullscreen(!_model.getVideo().supportsFullscreen());
                         }
@@ -1030,7 +1011,6 @@ define([
                 case states.COMPLETE:
                     _showVideo(false);
                     if (!_audioMode) {
-                        _display.hidePreview(false);
                         _showDisplay();
                         if (_controlbar) {
                             _controlbar.hideFullscreen(false);
@@ -1080,7 +1060,6 @@ define([
             _controlbar.adMode(false);
             _controlbar.instreamMode(false);
             _controlbar.show(true);
-            _this.releaseState();
             var provider = _model.getVideo();
             provider.setContainer(_videoLayer);
             provider.setVisibility(true);
@@ -1097,15 +1076,6 @@ define([
             if (_controlbar) {
                 _controlbar.addCues(cues);
             }
-        };
-
-        this.forceState = function(state) {
-            _display.forceState(state);
-        };
-
-        this.releaseState = function() {
-            var model = _instreamMode ? _instreamModel : _model;
-            _display.releaseState(model.state);
         };
 
         this.displayComp = function() {
