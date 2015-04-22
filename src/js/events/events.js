@@ -50,7 +50,7 @@ define([], function() {
         JWPLAYER_CAST_AVAILABLE: 'castAvailable',
 
         // Model Changes
-        JWPLAYER_MEDIA_BUFFER: 'buffer',
+        JWPLAYER_MEDIA_BUFFER: 'bufferChange',
         JWPLAYER_MEDIA_TIME: 'time',
         JWPLAYER_MEDIA_VOLUME: 'volume',
         JWPLAYER_MEDIA_MUTE: 'mute',

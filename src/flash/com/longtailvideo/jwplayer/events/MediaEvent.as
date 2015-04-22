@@ -14,7 +14,7 @@ public class MediaEvent extends PlayerEvent {
     public static const JWPLAYER_MEDIA_BEFOREPLAY:String = "beforePlay";
     public static const JWPLAYER_MEDIA_BEFORECOMPLETE:String = "beforeComplete";
 
-    public static const JWPLAYER_MEDIA_BUFFER:String = "buffer";
+    public static const JWPLAYER_MEDIA_BUFFER:String = "bufferChange";
     public static const JWPLAYER_MEDIA_BUFFER_FULL:String = "bufferFull";
     public static const JWPLAYER_MEDIA_SEEK:String = "seek";
     public static const JWPLAYER_MEDIA_TIME:String = "time";

@@ -1,8 +1,7 @@
 define([
     'utils/underscore',
-    'events/states',
     'events/events'
-], function(_, states, events) {
+], function(_, events) {
 
     return function init(_api) {
 
@@ -47,10 +46,10 @@ define([
         };
 
         var _stateMapping = {
-            onBuffer: states.BUFFERING,
-            onPause: states.PAUSED,
-            onPlay: states.PLAYING,
-            onIdle: states.IDLE
+            onBuffer: 'buffer',
+            onPause: 'pause',
+            onPlay: 'play',
+            onIdle: 'idle'
         };
 
         // Add state callbacks

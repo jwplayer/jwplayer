@@ -29,6 +29,15 @@ define([
         return newstate;
     }
 
+    // The api should dispatch an idle event when the model's state changes to complete
+    // This is to avoid conflicts with the complete event and to maintain legacy event flow
+    function normalizeApiState(newstate) {
+        if (newstate === states.COMPLETE) {
+            return states.IDLE;
+        }
+        return newstate;
+    }
+
     var Controller = function() {
         this.eventsQueue = [];
         _.extend(this, Events);
@@ -83,7 +92,7 @@ define([
 
             _model.mediaController.on(events.JWPLAYER_MEDIA_COMPLETE, function() {
                 // Insert a small delay here so that other complete handlers can execute
-                setTimeout(_completeHandler, 25);
+                _.defer(_completeHandler);
             });
             _model.mediaController.on(events.JWPLAYER_MEDIA_ERROR, function(evt) {
                 // Re-dispatch media errors as general error
@@ -93,18 +102,9 @@ define([
             }, this);
 
             function initMediaModel() {
-                _model.mediaModel.on('change:state', function(mediaModel, state){
+                _model.mediaModel.on('change:state', function(mediaModel, state) {
                     var modelState = normalizeState(state);
-
-                    var evt = {
-                        oldstate: this.get('state'),
-                        reason: state,
-                        newstate: modelState,
-                        type: modelState
-                    };
-
                     _model.set('state', modelState);
-                    _model.trigger(evt.type, evt);
                 });
             }
             initMediaModel();
@@ -115,6 +115,24 @@ define([
                 _setup = null;
 
                 _view.completeSetup();
+
+                _model.on('change:state', function(model, newstate, oldstate) {
+                    newstate = normalizeApiState(newstate);
+                    oldstate = normalizeApiState(oldstate);
+                    // do not dispatch idle a second time after complete
+                    if (newstate !== oldstate) {
+                        // buffering, playing and paused states become:
+                        // buffer, play and pause events
+                        var eventType = newstate.replace(/(?:ing|d)$/, '');
+                        var evt = {
+                            type: eventType,
+                            newstate: newstate,
+                            oldstate: oldstate,
+                            reason: model.mediaModel.get('state')
+                        };
+                        _this.trigger(eventType, evt);
+                    }
+                });
 
                 // For 'onCast' callback
                 _model.on('change:castState', function(model, evt) {
