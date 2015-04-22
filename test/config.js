@@ -8,7 +8,8 @@ var callback;
 
 if (!window.__karma__) {
     base = document.location.href.replace(/[^\/]+\/[^\/]*$/, '');
-    tests = [base + 'test/tests'];
+    // this path is relative to the baseUrl src/js folder
+    tests = ['../../test/tests'];
     callback = window.QUnit.start;
 
 } else {
