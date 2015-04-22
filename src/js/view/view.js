@@ -528,7 +528,6 @@ define([
         function _onChangeControls(model, bool) {
             if (!bool) {
                 _hideControls();
-                _hideDisplay();
             }
             else {
                 // model may be instream or normal depending on who triggers this
@@ -700,7 +699,6 @@ define([
                 if (_audioMode) {
                     _controlbar.audioMode(true);
                     _showControls();
-                    _hideDisplay();
                     _showVideo(false);
                 } else {
                     _controlbar.audioMode(false);
@@ -884,12 +882,9 @@ define([
 
         function _showDisplay() {
             // debug this, find out why
-            if (!(_isMobile && model.fullscreen)) {
-                model.getVideo().setControls(false);
+            if (!(_isMobile && _model.fullscreen)) {
+                _model.getVideo().setControls(false);
             }
-        }
-
-        function _hideDisplay() {
         }
 
         function _hideControls() {

@@ -7,7 +7,7 @@ define([
         this.model = _model;
 
         this.setup();
-        this.model.on('change:playlistItem', this.loadImage);
+        this.model.on('change:playlistItem', this.loadImage, this);
     };
 
     _.extend(Preview.prototype, {
