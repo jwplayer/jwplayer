@@ -77,20 +77,36 @@ define([
         }).remove();
     });
 
-    test('replaces and restores container', function() {
+    test('replaces and restores container', function(assert) {
         var originalContainer = createContainer('player');
+        var done = assert.async();
         var api = new Api(originalContainer, noop);
+
+        //This is to fix an issue in helpers.js where canCast is called and breaks due to no window.jwplayer.cast value
+        window.jwplayer = {
+            cast: true
+        };
 
         var elementInDom = document.getElementById('player');
         strictEqual(elementInDom, originalContainer, 'container is not replaced before setup');
 
-        api.setup({});
-        elementInDom = document.getElementById('player');
-        ok(elementInDom !== originalContainer, 'container is replaced after setup');
+        api.setup({
+            sources: [
+                {file: '//content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4'},
+            ],
+            title: 'Big Buck Bunny'
+        });
 
-        api.remove();
-        elementInDom = document.getElementById('player');
-        strictEqual(elementInDom, originalContainer, 'container is restored after remove');
+        api.on('ready', function(){
+            elementInDom = document.getElementById('player');
+            ok(elementInDom !== originalContainer, 'container is replaced after ready is called');
+            api.remove();
+
+            elementInDom = document.getElementById('player');
+            strictEqual(elementInDom, originalContainer, 'container is restored after remove');
+
+            done();
+        });
     });
 
     test('event dispatching', function(assert) {

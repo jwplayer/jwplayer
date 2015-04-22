@@ -146,6 +146,16 @@ define([
     function getModel(config) {
         return {
             config: config,
+            get: function(type) {
+                switch(type) {
+                    case 'width':
+                        return 480;
+                    case 'height':
+                        return 270;
+                    default:
+                        return 270;
+                }
+            },
             setPlaylist: function(p) {
                 this.playlist = p;
             }

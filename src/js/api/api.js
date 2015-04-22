@@ -11,10 +11,9 @@ define([
     'controller/controller',
     'api/api-actions',
     'api/api-mutators',
-    'api/callbacks-deprecate',
-    'handlebars-loader!templates/player.html'
+    'api/callbacks-deprecate'
 ], function(Embed, Instream, events, states,
-            Events, utils, cssUtils, Timer, _, Controller, actionsInit, mutatorsInit, legacyInit, playerTemplate) {
+            Events, utils, cssUtils, Timer, _, Controller, actionsInit, mutatorsInit, legacyInit) {
 
     function addFocusBorder(container) {
         utils.addClass(container, 'jw-tab-focus');
@@ -43,7 +42,6 @@ define([
     var Api = function (container, globalRemovePlayer) {
         var _this = this,
             _instream,
-            _originalContainer = container,
             _controller,
             _embedder,
             _playerReady = false,
@@ -82,8 +80,9 @@ define([
         var _resetController = function() {
             if (_controller) {
                 _controller.off();
+                _controller.reset();
             }
-            _controller = new Controller();
+            _controller = new Controller(container);
             actionsInit(_this, _controller);
             mutatorsInit(_this, _controller);
             _controller.on(events.JWPLAYER_PLAYLIST_ITEM, function () {
@@ -94,9 +93,9 @@ define([
             });
             _controller.on(events.JWPLAYER_VIEW_TAB_FOCUS, function (data) {
                 if (data.hasFocus === true) {
-                    addFocusBorder(_this.container);
+                    addFocusBorder(this.getContainer());
                 } else {
-                    removeFocusBorder(_this.container);
+                    removeFocusBorder(this.getContainer());
                 }
             });
             // capture the ready event and add setup time to it
@@ -111,9 +110,7 @@ define([
         legacyInit(this);
 
         // These should be read-only model properties
-        this.container = utils.createElement(playerTemplate({}));
-        this.container = this.container.parentElement.removeChild(this.container);
-        this.id = this.container.id = container.id;
+        this.id = container.id;
 
         // Intialize QOE timer
         var _qoe = this._qoe = new Timer();
@@ -130,13 +127,6 @@ define([
             // Reset DOM
             _this.off();
             _resetController();
-            var id = _this.id;
-            cssUtils.clearCss('#' + id);
-            var toReset = _this.container;
-            if (toReset.parentNode) {
-                toReset.parentNode.replaceChild(_originalContainer, toReset);
-            }
-            utils.emptyElement(toReset);
         };
 
         var _getPlugin = function(name) {
@@ -163,6 +153,11 @@ define([
             _embedder.on(events.JWPLAYER_READY, function(config) {
                 _controller.setup(config, this);
             }, _this);
+
+            _embedder.on(events.JWPLAYER_SETUP_ERROR, function(evt) {
+                _controller.setupError(evt.message, evt.body, evt.width, evt.height);
+            }, this);
+
             _embedder.embed(options);
 
             return _this;
@@ -182,8 +177,15 @@ define([
             };
         };
 
+        // Request this from the view/controller
         this.getContainer = function () {
-            return _this.container;
+            if(_controller.getContainer) {
+                // If the controller has fully set up...
+                return _controller.getContainer();
+            } else {
+                // If the controller hasn't set up yet, and we need this (due a setup to error), send the container
+                return container;
+            }
         };
 
         this.getMeta = this.getItemMeta = function () {

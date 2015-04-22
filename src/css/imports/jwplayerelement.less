@@ -13,10 +13,6 @@
         box-sizing: inherit;
     }
 
-    &.jw-setup-hide {
-        opacity: 0;
-    }
-
     .jw-main {
         position:  absolute;
         top: 0;
@@ -69,15 +65,17 @@
     }
     /// Scale modes END
 
-
     // Aspect Ratio styles
-    &.jw-aspect-mode:before{
-        content: "";
-        display: block;
-    }
-
     &.jw-aspect-mode {
         height: auto !important;
+
+        & .jw-aspect{
+            display: block;
+        }
+    }
+
+    .jw-aspect{
+        display: none;
     }
 
     &:focus, .jw-swf {
