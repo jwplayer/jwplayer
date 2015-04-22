@@ -178,6 +178,14 @@ define([
                     });
                 });
 
+                _model.on('change:scrubbing', function(model, state) {
+                    if (state) {
+                        _pause();
+                    } else {
+                        _play();
+                    }
+                });
+
                 _model.mediaController.on('all', _this.trigger.bind(_this));
                 _view.on('all', _this.trigger.bind(_this));
 
@@ -350,7 +358,7 @@ define([
             }
 
             function _seek(pos) {
-                if (!_model.get('dragging') && _model.get('state') !== states.PLAYING) {
+                if (!_model.get('scrubbing') && _model.get('state') !== states.PLAYING) {
                     _play(true);
                 }
                 _video().seek(pos);

@@ -5,11 +5,10 @@ define([
     'utils/helpers'
 ], function(SliderTemplate, Events, _, utils) {
 
-    function Slider(className, orientation, callback) {
+    function Slider(className, orientation) {
         this.name = className;
         this.className = className;
         this.orientation = orientation;
-        this.callback = callback;
 
         this.mousedownlistener = this.mouseDown.bind(this);
         this.mouseuplistener   = this.mouseUp.bind(this);
@@ -21,8 +20,8 @@ define([
     _.extend(Slider.prototype, Events, {
         setup : function() {
             var obj = {
-                className : 'jw-time',
-                orientation : 'jw-slider-horizontal'
+                className : this.className,
+                orientation : 'jw-slider-' + this.orientation
             };
             this.el = utils.createElement(SliderTemplate(obj));
 
@@ -45,8 +44,9 @@ define([
             return { x : x, y : y};
         },
         mouseDown : function(evt) {
-            this.dragEnd(evt);
+            //this.dragEnd(evt);
             this.dragStart(evt);
+
         },
         mouseUp : function(evt) {
             this.dragEnd(evt);
@@ -73,9 +73,12 @@ define([
         update : function(percentage) {
             this.elementThumb.style.left = percentage + '%';
             this.elementProgress.style.width = percentage + '%';
+        },
+        updateBuffer : function(percentage) {
             this.elementBuffer.style.width = percentage + '%';
         },
         dragStart : function() {
+            this.trigger('dragStart');
             window.addEventListener('mouseup', this.mouseuplistener, false);
             window.addEventListener('mousemove', this.mousemovelistener, false);
         },
@@ -83,7 +86,9 @@ define([
             window.removeEventListener('mouseup', this.mouseuplistener);
             window.removeEventListener('mousemove', this.mousemovelistener);
             this.mouseMove(evt);
+            this.trigger('dragEnd');
         },
+
         element : function() {
             return this.el;
         }

@@ -498,9 +498,9 @@ define([
                 _rightClickMenu.setup(_model, _playerElement, _controlsLayer);
             }
 
-            _controlbar = new Controlbar(_skin, _api, _model);
+            _controlbar = new Controlbar(_api, _model);
             _controlbar.on(events.JWPLAYER_USER_ACTION, _resetTapTimer);
-            _controlbar.on(events.JWPLAYER_CONTROLBAR_DRAGGING, _dragging);
+            _model.on('change:scrubbing', _dragging);
 
             _controlsLayer.appendChild(_controlbar.element());
 
@@ -530,8 +530,8 @@ define([
             }
         }
 
-        function _dragging(evt) {
-            if (evt.dragging) {
+        function _dragging(model, val) {
+            if (val) {
                 utils.addClass(_playerElement, 'jw-flag-dragging');
             } else {
                 utils.removeClass(_playerElement, 'jw-flag-dragging');

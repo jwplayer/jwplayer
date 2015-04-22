@@ -377,7 +377,7 @@ define([
     });
     var acceptClicks = [
         '.jwplayer .jw-controls .jw-dock-buttons',
-        '.jwplayer .jw-controls .jwcontrolbar',
+        '.jwplayer .jw-controls .jw-controlbar',
         '.jwplayer .jw-controls .jw-rightclick',
         '.jwplayer .jw-controls .jwskip',
         '.jwplayer .jw-controls .jw-display-icon-container', // play and replay button
