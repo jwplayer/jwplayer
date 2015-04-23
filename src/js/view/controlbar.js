@@ -1,19 +1,12 @@
 define([
     'utils/helpers',
-    'parsers/captions/parsers.srt',
     'utils/underscore',
-    'events/events',
-    'events/states',
     'utils/backbone.events',
-    'view/touch',
     'view/thumbs',
-    'view/menu',
-    'view/overlay',
     'view/components/slider',
     'view/components/timeslider',
     'view/components/newmenu'
-], function(utils, SrtParser, _, events, states,
-            Events, Touch, Thumbs, Menu, Overlay, Slider, TimeSlider, NewMenu) {
+], function(utils, _, Events, Thumbs, Slider, TimeSlider, NewMenu) {
 
     function button(icon, click) {
         var element = document.createElement('span');
@@ -26,7 +19,13 @@ define([
 
         return {
             element : function() { return element; },
-            toggle : function(m) { m ? this.show() : this.hide(); },
+            toggle : function(m) {
+                if (m) {
+                    this.show();
+                } else {
+                    this.hide();
+                }
+            },
             show : function() { element.style.display = '';},
             hide : function() { element.style.display = 'none';}
         };
@@ -36,12 +35,6 @@ define([
         var element = document.createElement('span');
         element.className = 'jw-text ' + name;
         return element;
-    }
-
-    function slider(name, vert) {
-        var orientation = vert ? 'vertical' : 'horizontal';
-        var sl = new Slider(name, orientation);
-        return sl;
     }
 
     function menu(name) {
@@ -92,10 +85,10 @@ define([
                 duration: text('jw-duration'),
                 hd: menu('jw-icon-hd-on'),
                 cc: button('jw-icon-cc-on'),
-                mute: button('jw-icon-volume-mute', this._api.setMute),
+                mute: button('jw-icon-volume', this._api.setMute),
                 volume: volumeSlider,
                 cast: button('jw-icon-cast-on'),
-                fullscreen: button('jw-icon-fullscreen')
+                fullscreen: button('jw-icon-fullscreen', this._api.setFullscreen)
             };
 
             this.layout = {
@@ -122,7 +115,6 @@ define([
             this.el = document.createElement('span');
             this.el.className = 'jw-controlbar';
 
-
             var leftGroup = buildGroup('left', this.layout.left);
             var centerGroup = buildGroup('center', this.layout.center);
             var rightGroup = buildGroup('right', this.layout.right);
@@ -131,6 +123,7 @@ define([
             this.el.appendChild(centerGroup);
             this.el.appendChild(rightGroup);
         },
+
         initialize : function() {
             // Initial State
             this.elements.play.show();
@@ -146,14 +139,10 @@ define([
             this._model.on('change:playlist', this.onPlaylist, this);
             this._model.on('change:playlistItem', this.onPlaylistItem, this);
             this._model.on('change:volume', this.onVolume, this);
+            this._model.on('change:mute', this.onMute, this);
             this._model.on('change:castAvailable', this.onCastAvailable, this);
-
-            this._model.on('change:duration', function(model, val) {
-                this.elements.duration.innerHTML = utils.timeFormat(val);
-            }, this);
-            this._model.on('change:position', function(model, val) {
-                this.elements.elapsed.innerHTML = utils.timeFormat(val);
-            }, this);
+            this._model.on('change:duration', this.onDuration, this);
+            this._model.on('change:position', this.onElapsed, this);
 
             // Event listeners
             this.elements.volume.on('update', function(pct) {
@@ -182,10 +171,23 @@ define([
             this.elements.elapsed.innerHTML = '';
         },
         onVolume : function(model, pct) {
-            this.elements.volume.render(pct);
+            this.renderVolume(model.get('mute'), pct);
+        },
+        onMute : function(model, muted) {
+            this.renderVolume(muted, model.get('volume'));
+        },
+        renderVolume : function(muted, vol) {
+            utils.toggleClass(this.elements.mute.element(), 'mute', muted);
+            this.elements.volume.render(muted ? 0 : vol);
         },
         onCastAvailable : function(model, val) {
             this.elements.cast.toggle(val);
+        },
+        onElapsed : function(model, val) {
+            this.elements.elapsed.innerHTML = utils.timeFormat(val);
+        },
+        onDuration : function(model, val) {
+            this.elements.duration.innerHTML = utils.timeFormat(val);
         },
 
         element: function() {
@@ -199,7 +201,6 @@ define([
         audioMode : utils.noop,
         hideFullscreen : utils.noop
     });
-
 
     return Controlbar;
 });
