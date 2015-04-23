@@ -4,14 +4,11 @@
 define([], function() {
     var jqObj = {
         hasClass : function (element, searchClass) {
-            var className = ' ' + searchClass + ' ',
-                i = 0,
-                l = this.length;
-            for (; i < l; i++) {
-                if (this[i].nodeType === 1 && (' ' + this[i].className + ' ')
-                        .replace(/[\t\r\n\f]/g, ' ').indexOf(className) >= 0) {
-                    return true;
-                }
+            var className = ' ' + searchClass + ' ';
+
+            if (element.nodeType === 1 && (' ' + element.className + ' ')
+                    .replace(/[\t\r\n\f]/g, ' ').indexOf(className) >= 0) {
+                return true;
             }
 
             return false;
