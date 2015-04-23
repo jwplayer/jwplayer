@@ -30,7 +30,7 @@ define([
     };
 
     // Represents the state of the player
-    var Model = function(config) {
+    var Model = function() {
         var _this = this,
             // Video provider
             _providers,
@@ -44,26 +44,30 @@ define([
             },
             _currentProvider = utils.noop;
 
-        if (config.cookies) {
-            storage.model(this);
-            _cookies = storage.getAllItems();
-        }
-
-        this.config = _.extend({}, _defaults, _cookies, config);
-
-        _.extend(this, this.config, {
-            state: states.IDLE,
-            duration: -1,
-            position: 0,
-            buffer: 0
-        });
-
         this.mediaController = _.extend({}, Events);
         this.mediaModel = new MediaModel();
 
         QOE.model(this);
 
-        _providers = new Providers(_this.config);
+        this.setup = function(config) {
+            if (config.cookies) {
+                storage.model(this);
+                _cookies = storage.getAllItems();
+            }
+
+            this.config = _.extend({}, _defaults, _cookies, config);
+
+            _.extend(this, this.config, {
+                state: states.IDLE,
+                duration: -1,
+                position: 0,
+                buffer: 0
+            });
+
+            _providers = new Providers(_this.config);
+
+            return this;
+        };
 
         function _videoEventHandler(evt) {
             switch (evt.type) {

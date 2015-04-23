@@ -11,49 +11,54 @@
  * 6. ready
  */
 define([
-    'utils/helpers',
+    'plugins/plugins',
+    'playlist/loader',
     'playlist/playlist',
     'view/Skin',
     'utils/backbone.events',
     'utils/underscore',
     'events/events'
-], function(utils, Playlist, Skin, Events, _, events) {
+], function(plugins, PlaylistLoader, Playlist, Skin, Events, _, events) {
 
-    var Setup = function(_model, _view, _errorTimeoutSeconds) {
+    var Setup = function(_api, _model, _view, _errorTimeoutSeconds) {
         var _this = this,
             _skin,
+            _pluginLoader,
+            _playlistLoader,
             _setupFailureTimeout;
 
         _errorTimeoutSeconds = _errorTimeoutSeconds || 10;
 
-        var PARSE_CONFIG = {
-                method: _parseConfig,
+        var LOAD_PLUGINS = {
+                method: _loadPlugins,
                 depends: []
             },
             LOAD_PLAYLIST = {
                 method: _loadPlaylist,
-                depends: [PARSE_CONFIG]
+                depends: []
             },
             LOAD_SKIN = {
                 method: _loadSkin,
-                depends: [PARSE_CONFIG]
+                depends: []
             },
             SETUP_COMPONENTS = {
                 method: _setupComponents,
                 depends: [
+                    // view controls require that a playlist item be set
+                    LOAD_PLAYLIST,
                     LOAD_SKIN
                 ]
             },
             SEND_READY = {
                 method: _sendReady,
                 depends: [
-                    SETUP_COMPONENTS,
-                    LOAD_PLAYLIST
+                    LOAD_PLUGINS,
+                    SETUP_COMPONENTS
                 ]
             };
 
         var _queue = [
-            PARSE_CONFIG,
+            LOAD_PLUGINS,
             LOAD_PLAYLIST,
             LOAD_SKIN,
             SETUP_COMPONENTS,
@@ -69,10 +74,21 @@ define([
             this.off();
             _queue.length = 0;
             clearTimeout(_setupFailureTimeout);
+            if (_pluginLoader) {
+                _pluginLoader.destroy();
+                _pluginLoader = null;
+            }
+            if (_playlistLoader) {
+                _playlistLoader.destroy();
+                _playlistLoader = null;
+            }
+            _api = null;
+            _model = null;
+            _view = null;
         };
 
         function _setupTimeoutHandler(){
-            _error('Setup Timeout Error',  'Setup took longer than '+(_errorTimeoutSeconds)+' seconds to complete.');
+            _error('Setup Timeout Error', 'Setup took longer than ' + _errorTimeoutSeconds + ' seconds to complete.');
         }
 
         function _nextTask() {
@@ -96,11 +112,77 @@ define([
             _nextTask();
         }
 
-        function _parseConfig() {
-            if (_model.edition && _model.edition() === 'invalid') {
-                _error('Error setting up player', 'Invalid license key');
+        function _loadPlugins() {
+            _pluginLoader = plugins.loadPlugins(_model.config.id, _model.config.plugins);
+            _pluginLoader.on(events.COMPLETE, _completePlugins);
+            _pluginLoader.on(events.ERROR, _pluginsError);
+            _pluginLoader.load();
+        }
+
+        function _completePlugins() {
+            // TODO: flatten flashPlugins and pass to flash provider
+            _model.config.flashPlugins = _pluginLoader.setupPlugins(_api, _model.config, _resizePlugin);
+
+            // Volume option is tricky to remove, since it needs to be in the HTML5 player model.
+            delete _model.config.volume;
+
+            _taskComplete(LOAD_PLUGINS);
+        }
+
+        function _resizePlugin(plugin, div, onready) {
+            var id = _api.id;
+            return function() {
+                var displayarea = document.querySelector('#' + id + ' .jw-main');
+                if (displayarea && onready) {
+                    displayarea.appendChild(div);
+                }
+                if (typeof plugin.resize === 'function') {
+                    plugin.resize(displayarea.clientWidth, displayarea.clientHeight);
+                    setTimeout(function() {
+                        plugin.resize(displayarea.clientWidth, displayarea.clientHeight);
+                    }, 400);
+                }
+                div.left = displayarea.style.left;
+                div.top = displayarea.style.top;
+            };
+        }
+
+        function _pluginsError(evt) {
+            _error('Could not load plugin', evt.message);
+        }
+
+        function _loadPlaylist() {
+            var playlist = _model.config.playlist;
+            if (_.isString(playlist)) {
+                _playlistLoader = new PlaylistLoader();
+                _playlistLoader.on(events.JWPLAYER_PLAYLIST_LOADED, _completePlaylist);
+                _playlistLoader.on(events.JWPLAYER_ERROR, _playlistError);
+                _playlistLoader.load(playlist);
             } else {
-                _taskComplete(PARSE_CONFIG);
+                _completePlaylist(_model.config);
+            }
+        }
+
+        function _completePlaylist(data) {
+            var playlist = data.playlist;
+            if (_.isArray(playlist)) {
+                playlist = Playlist(playlist);
+                _model.setPlaylist(playlist);
+                if (_model.playlist.length === 0) {
+                    _playlistError();
+                    return;
+                }
+                _taskComplete(LOAD_PLAYLIST);
+            } else {
+                _error('Playlist type not supported', typeof playlist);
+            }
+        }
+
+        function _playlistError(evt) {
+            if (evt && evt.message) {
+                _error('Error loading playlist', evt.message);
+            } else {
+                _error('Error loading player', 'No playable sources found');
             }
         }
 
@@ -117,24 +199,6 @@ define([
             _error('Error loading skin', message);
         }
 
-        function _loadPlaylist() {
-            var type = utils.typeOf(_model.config.playlist);
-            if (type === 'array') {
-                _completePlaylist(Playlist(_model.config.playlist));
-            } else {
-                _error('Playlist type not supported', type);
-            }
-        }
-
-        function _completePlaylist(playlist) {
-            _model.setPlaylist(playlist);
-            if (_model.playlist.length === 0 || _model.playlist[0].sources.length === 0) {
-                _error('Error loading playlist', 'No playable sources found');
-            } else {
-                _taskComplete(LOAD_PLAYLIST);
-            }
-        }
-
         function _setupComponents() {
             _view.setup(_skin);
             _taskComplete(SETUP_COMPONENTS);
@@ -145,15 +209,9 @@ define([
             _this.destroy();
         }
 
-        function _error(message, body) {
-            var width = _model.get('width'),
-                height = _model.get('height');
-
+        function _error(message, reason) {
             _this.trigger(events.JWPLAYER_SETUP_ERROR, {
-                message: message,
-                body: body,
-                width: width.toString().indexOf('%') > 0 ? width : (width + 'px'),
-                height: height.toString().indexOf('%') > 0 ? height : (height + 'px')
+                message: message + ': ' + reason
             });
             clearTimeout(_setupFailureTimeout);
             _this.destroy();

@@ -1,6 +1,6 @@
 define([
     'test/underscore',
-    'embed/config'
+    'api/config'
 ], function (_, config) {
     /* jshint qunit: true */
     module('Embed Config');
