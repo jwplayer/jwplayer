@@ -1,25 +1,25 @@
 define([
+    'view/components/extendable',
     'handlebars-loader!templates/slider.html',
     'utils/backbone.events',
     'utils/underscore',
     'utils/helpers'
-], function(SliderTemplate, Events, _, utils) {
+], function(Extendable, SliderTemplate, Events, _, utils) {
 
-    function Slider(className, orientation) {
-        this.name = className;
-        this.className = className;
-        this.orientation = orientation;
+    var Slider = Extendable.extend({
+        constructor : function(className, orientation) {
+            this.className = className;
+            this.orientation = orientation;
 
-        this.mousedownlistener = this.mouseDown.bind(this);
-        this.mouseuplistener   = this.mouseUp.bind(this);
-        this.mousemovelistener = this.mouseMove.bind(this);
+            this.mousedownlistener = this.dragStart.bind(this);
+            this.mouseuplistener = this.dragEnd.bind(this);
+            this.mousemovelistener = this.mouseMove.bind(this);
 
-        this.setup();
-    }
-
-    _.extend(Slider.prototype, Events, {
+            this.setup();
+        },
         setup : function() {
             var obj = {
+                'default' : this.default,
                 className : this.className,
                 orientation : 'jw-slider-' + this.orientation
             };
@@ -43,13 +43,16 @@ define([
 
             return { x : x, y : y};
         },
-        mouseDown : function(evt) {
-            //this.dragEnd(evt);
-            this.dragStart(evt);
-
+        dragStart : function(evt) {
+            this.trigger('dragStart');
+            window.addEventListener('mouseup', this.mouseuplistener, false);
+            window.addEventListener('mousemove', this.mousemovelistener, false);
         },
-        mouseUp : function(evt) {
-            this.dragEnd(evt);
+        dragEnd : function(evt) {
+            window.removeEventListener('mouseup', this.mouseuplistener);
+            window.removeEventListener('mousemove', this.mousemovelistener);
+            this.mouseMove(evt);
+            this.trigger('dragEnd');
         },
         mouseMove : function(evt) {
 
@@ -65,28 +68,20 @@ define([
                 percentage = utils.between(offset.x/bounds.width, 0, 1) * 100;
             }
 
+            this.render(percentage);
             this.update(percentage);
-            this.trigger('update', { percentage : percentage });
 
             return false;
         },
         update : function(percentage) {
+            this.trigger('update', { percentage : percentage });
+        },
+        render : function(percentage) {
             this.elementThumb.style.left = percentage + '%';
             this.elementProgress.style.width = percentage + '%';
         },
         updateBuffer : function(percentage) {
             this.elementBuffer.style.width = percentage + '%';
-        },
-        dragStart : function() {
-            this.trigger('dragStart');
-            window.addEventListener('mouseup', this.mouseuplistener, false);
-            window.addEventListener('mousemove', this.mousemovelistener, false);
-        },
-        dragEnd : function(evt) {
-            window.removeEventListener('mouseup', this.mouseuplistener);
-            window.removeEventListener('mousemove', this.mousemovelistener);
-            this.mouseMove(evt);
-            this.trigger('dragEnd');
         },
 
         element : function() {

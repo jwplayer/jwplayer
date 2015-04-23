@@ -634,3 +634,4 @@ define([
 
     return Controller;
 });
+

@@ -90,6 +90,8 @@ define([
                     break;
 
                 case events.JWPLAYER_MEDIA_TIME:
+                    this.mediaModel.set('position', evt.position);
+                    this.mediaModel.set('duration', evt.duration);
                     this.set('position', evt.position);
                     this.set('duration', evt.duration);
                     break;

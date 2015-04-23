@@ -1,59 +1,141 @@
 define([
     'utils/underscore',
     'view/components/slider',
-    'utils/helpers'
-], function(_, Slider, utils) {
+    'utils/helpers',
+    'parsers/captions/parsers.srt',
+], function(_, Slider, utils, SrtParser) {
 
-    function TimeSlider(_model, _api) {
-        var timeSlider = new Slider('jw-time', 'horizontal');
+    function Cue(time, text) {
+        this.time = time;
+        this.text = text;
+        this.el = document.createElement('span');
 
-        // Store the attempted seek, until the previous one completes
-        var _seekTo, _duration;
-        var _seekThrottler = _.throttle(_seek, 400);
+        this.el.className = 'jw-cue';
+    }
 
-        function _seekThrottled(pct) {
-            _seekTo = pct;
-            _seekThrottler(pct);
-        }
-
-        function _onSeeked() {
-            // When we are done scrubbing there will be a final seeked event
-            //  which should not trigger another seek
-            if (_model.get('scrubbing')) {
-                _seek(_seekTo);
+    _.extend(Cue.prototype, {
+        align : function(duration) {
+            // If a percentage, use it, else calculate the percentage
+            if (this.time.toString().slice(-1) === '%') {
+                this.el.style.left = this.time;
+            } else {
+                var pct = (this.time/duration) * 100;
+                this.el.style.left = pct + '%';
             }
         }
+    });
 
-        function _seek(pct) {
-            var position = pct/100 * _api.getDuration();
-            _api.seek(position);
+    var TimeSlider = Slider.extend({
+        constructor : function(_model, _api) {
+            this._model = _model;
+            this._api = _api;
+
+            // Store the attempted seek, until the previous one completes
+            this.seekThrottled = _.throttle(this.performSeek, 400);
+
+            this._model
+                .on('change:playlistItem', this.onPlaylistItem, this)
+                .on('change:position', this.onPosition, this)
+                .on('change:buffer', this.onBuffer, this);
+
+            _api.on('seeked', this.onSeeked, this);
+
+            // Call "super"
+            Slider.call(this, 'jw-time', 'horizontal');
+        },
+
+        // These overwrite Slider methods
+        update: function(pct) {
+            this.seekTo = pct;
+            this.seekThrottled();
+            Slider.prototype.update.apply(this, arguments);
+        },
+        dragStart : function() {
+            this._model.set('scrubbing', true);
+            Slider.prototype.dragStart.apply(this, arguments);
+        },
+        dragEnd : function() {
+            this._model.set('scrubbing', false);
+            Slider.prototype.dragEnd.apply(this, arguments);
+        },
+
+        onSeeked : function () {
+            // When we are done scrubbing there will be a final seeked event
+            if (this._model.get('scrubbing')) {
+                this.performSeek();
+            }
+        },
+        onBuffer : function (model, pct) {
+            this.updateBuffer(pct);
+        },
+        onPosition : function(model, pos) {
+            var pct = pos / this._api.getDuration() * 100;
+            this.render(pct);
+        },
+        onPlaylistItem : function (model, playlistItem) {
+            this.reset();
+            var tracks = playlistItem.tracks;
+            _.each(tracks, function (track) {
+                if (track && track.kind && track.kind.toLowerCase() === 'thumbnails') {
+                    this.loadThumbnails(track.file);
+                }
+                else if (track && track.kind && track.kind.toLowerCase() === 'chapters') {
+                    this.loadChapters(track.file);
+                }
+            }, this);
+        },
+
+        // These are new methods
+        performSeek : function () {
+            var duration = this._model.get('duration');
+            if (duration <= 0) {
+                this._api.play();
+            } else {
+                var position = this.seekTo / 100 * this._api.getDuration();
+                this._api.seek(position);
+            }
+        },
+
+        loadChapters : function(file) {
+            utils.ajax(file, this.chaptersLoaded.bind(this), this.chaptersFailed, true);
+        },
+        chaptersLoaded : function(evt) {
+            var Srt = new SrtParser();
+            var data = Srt.parse(evt.responseText, true);
+            if (_.isArray(data)) {
+                _.each(data, this.addCue, this);
+                this.drawCues();
+            }
+        },
+        chaptersFailed : function() {},
+        addCue : function(obj) {
+            // Obj { begin, end, text }
+            this.cues.push(new Cue(obj.begin, obj.text));
+
+        },
+        drawCues : function() {
+            // We won't want to draw them until we have a duration
+            var duration = this._model.mediaModel.get('duration');
+            if (!duration || duration <= 0) {
+                this._model.mediaModel.once('change:duration', this.drawCues, this);
+                return;
+            }
+
+            _.each(this.cues, function(cue) {
+                cue.align(duration);
+                this.elementRail.appendChild(cue.el);
+            }, this);
+        },
+        reset : function() {
+            _.each(this.cues, function(cue) {
+                this.elementRail.removeChild(cue.el);
+            }, this);
+            this.cues = [];
         }
 
-        timeSlider
-            .on('update', function(event) {
-                _seekThrottled(event.percentage);
-            })
-            .on('dragStart', function() {
-                _duration = _model.get('duration');
-                _model.set('scrubbing', true);
-            })
-            .on('dragEnd', function() {
-                _model.set('scrubbing', false);
-            });
+        //loadThumbnails : function(file) {},
+    });
 
-        _model
-            .on('change:position', function(model, pos) {
-                var pct = pos / _api.getDuration() * 100;
-                timeSlider.update(pct);
-            })
-            .on('change:buffer', function(model, pct) {
-                timeSlider.updateBuffer(pct);
-            });
-
-        _api.on('seeked', _onSeeked);
-
-        return timeSlider;
-    }
 
     return TimeSlider;
 });
