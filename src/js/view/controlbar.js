@@ -10,11 +10,10 @@ define([
     'view/menu',
     'view/overlay',
     'view/components/slider',
-    'view/components/timeslider'
+    'view/components/timeslider',
+    'view/components/newmenu'
 ], function(utils, SrtParser, _, events, states,
-            Events, Touch, Thumbs, Menu, Overlay, Slider, TimeSlider) {
-
-
+            Events, Touch, Thumbs, Menu, Overlay, Slider, TimeSlider, NewMenu) {
 
     function button(icon, click) {
         var element = document.createElement('span');
@@ -37,6 +36,18 @@ define([
         var element = document.createElement('span');
         element.className = 'jw-text ' + name;
         return element;
+    }
+
+    function slider(name, vert) {
+        var orientation = vert ? 'vertical' : 'horizontal';
+        var sl = new Slider(name, orientation);
+        return sl;
+    }
+
+    function menu(name) {
+        var newmenu = new NewMenu(name);
+
+        return newmenu;
     }
 
     function buildGroup(group, elements) {
@@ -79,7 +90,7 @@ define([
                 elapsed: text('jw-elapsed'),
                 time: timeSlider,
                 duration: text('jw-duration'),
-                hd: button('jw-icon-hd-on'),
+                hd: menu('jw-icon-hd-on'),
                 cc: button('jw-icon-cc-on'),
                 mute: button('jw-icon-volume-mute', this._api.setMute),
                 volume: volumeSlider,
@@ -150,6 +161,13 @@ define([
                 this._api.setVolume(val);
             }, this);
 
+            this._model.on('change:qualityLabel', function(model, val) {
+                console.log('mediaModel output', model, val);
+                this.elements.hd.setup(this._api.getQualityLevels());
+            }, this);
+            this.elements.hd.on('select', function(value){
+                this._model.getVideo().setCurrentQuality(value);
+            }, this);
         },
 
         onPlaylist : function(model, playlist) {
