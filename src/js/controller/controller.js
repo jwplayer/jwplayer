@@ -44,10 +44,7 @@ define([
         this.eventsQueue = [];
         _.extend(this, Events);
 
-        // TODO: instantiate model here and reset/update it in setup()
-        this._model = {
-            'get': function() {}
-        };
+        this._model = new Model();
     };
 
     Controller.prototype = {
@@ -76,9 +73,9 @@ define([
                 _interruptPlay,
                 _this = this;
 
-            _model = this._model = new Model(config);
+            _model = this._model.setup(config);
             _view  = this._view  = new View(_api, _model);
-            _setup = this._setup = new Setup(_model, _view);
+            _setup = this._setup = new Setup(_api, _model, _view);
 
             // Legacy, should be removed
             _this.id = this._model.id;
@@ -90,7 +87,7 @@ define([
                 if (_view) {
                     _view.completeSetup();
                 }
-                _this.setupError(evt.message, evt.body, evt.width, evt.height);
+                _this.setupError(evt.message);
             });
             _setup.start();
 
@@ -538,8 +535,8 @@ define([
             this.getContainer = function(){ return this.currentContainer; };
             this.resize = _view.resize;
             this.getSafeRegion = _view.getSafeRegion;
-            this.forceState = _view.forceState;
-            this.releaseState = _view.releaseState;
+            //this.forceState = _view.forceState;
+            //this.releaseState = _view.releaseState;
             this.setCues = _view.addCues;
             this.setFullscreen = _view.fullscreen;
             this.addButton = function(img, tooltip, callback, id) {
@@ -619,10 +616,16 @@ define([
             this.currentContainer = viewElement;
         },
 
-        setupError: function(message, body, width, height){
-            var errorScreenElement = utils.createElement(errorScreen(message, body));
+        setupError: function(message){
+            var errorScreenElement = utils.createElement(errorScreen(message));
 
-            utils.style(errorScreenElement, { 'width': width, 'height': height } );
+            var width = this._model.get('width'),
+                height = this._model.get('height');
+
+            utils.style(errorScreenElement, {
+                    width: width.toString().indexOf('%') > 0 ? width : (width+ 'px'),
+                    height: height.toString().indexOf('%') > 0 ? height : (height + 'px')
+            });
 
             this.showView(errorScreenElement);
         },

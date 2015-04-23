@@ -1,19 +1,18 @@
 define([
-    'embed/embed',
+    'api/config',
     'api/instreamPlayer',
     'events/events',
     'events/states',
     'utils/backbone.events',
     'utils/helpers',
-    'utils/css',
     'utils/timer',
     'utils/underscore',
     'controller/controller',
     'api/api-actions',
     'api/api-mutators',
     'api/callbacks-deprecate'
-], function(Embed, Instream, events, states,
-            Events, utils, cssUtils, Timer, _, Controller, actionsInit, mutatorsInit, legacyInit) {
+], function(Config, InstreamPlayer, events, states,
+            Events, utils, Timer, _, Controller, actionsInit, mutatorsInit, legacyInit) {
 
     function addFocusBorder(container) {
         utils.addClass(container, 'jw-tab-focus');
@@ -43,7 +42,6 @@ define([
         var _this = this,
             _instream,
             _controller,
-            _embedder,
             _playerReady = false,
             _itemMeta = {};
 
@@ -118,10 +116,6 @@ define([
 
 
         var _reset = function() {
-            // Cancel embedding even if it is in progress
-            if (_embedder && _embedder.destroy) {
-                _embedder.destroy();
-            }
             _playerReady = false;
             _itemMeta = {};
             // Reset DOM
@@ -142,23 +136,15 @@ define([
 
             // bind event listeners passed in to the config
             utils.foreach(options.events, function(evt, val) {
-                // TODO: normalize event names and call this.on(events)
                 var fn = _this[evt];
                 if (typeof fn === 'function') {
                     fn.call(_this, val);
                 }
             });
 
-            _embedder = new Embed(_this);
-            _embedder.on(events.JWPLAYER_READY, function(config) {
-                _controller.setup(config, this);
-            }, _this);
-
-            _embedder.on(events.JWPLAYER_SETUP_ERROR, function(evt) {
-                _controller.setupError(evt.message, evt.body, evt.width, evt.height);
-            }, this);
-
-            _embedder.embed(options);
+            var config = new Config(options);
+            config.id = _this.id;
+            _controller.setup(config, this);
 
             return _this;
         };
@@ -265,7 +251,7 @@ define([
             return _this;
         };
         this.createInstream = function () {
-            return new Instream(_controller);
+            return new InstreamPlayer(_controller);
         };
         this.setInstream = function (instream) {
             _instream = instream;

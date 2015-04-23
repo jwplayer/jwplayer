@@ -10,7 +10,7 @@
   "dependencies": {},
   "devDependencies": {
     "bower": "^1.4.0",
-    "css-loader": "^0.10.1",
+    "css-loader": "^0.11.0",
     "file-loader": "^0.8.0",
     "grunt": "^0.4.5",
     "grunt-cli": "^0.1.13",
@@ -24,7 +24,8 @@
     "handlebars-loader": "^1.0.2",
     "karma": "^0.12.31",
     "karma-browserstack-launcher": "^0.1.2",
-    "karma-coverage": "^0.3.0",
+    "karma-coverage": "^0.3.1",
+    "karma-jenkins-reporter": "0.0.2",
     "karma-phantomjs-launcher": "^0.1.4",
     "karma-qunit": "^0.1.4",
     "karma-requirejs": "^0.2.2",
@@ -32,9 +33,9 @@
     "load-grunt-tasks": "^3.1.0",
     "raw-loader": "^0.5.1",
     "requirejs": "^2.1.17",
-    "style-loader": "^0.10.2",
+    "style-loader": "^0.11.0",
     "url-loader": "^0.5.0",
-    "webpack": "^1.8.4"
+    "webpack": "^1.8.9"
   },
   "scripts": {
     "postinstall": "bower install"

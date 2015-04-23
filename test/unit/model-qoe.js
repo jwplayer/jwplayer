@@ -10,7 +10,7 @@ define([
 
     test('tracks first frame with provider first frame event', function() {
         var startTime = _.now();
-        var model = new Model({});
+        var model = new Model().setup({});
 
         model.set('mediaModel', new MediaModel());
 
@@ -26,7 +26,7 @@ define([
 
     test('tracks first frame with first increasing time event', function() {
         var startTime = _.now();
-        var model = new Model({});
+        var model = new Model().setup({});
 
         model.set('mediaModel', new MediaModel());
 
@@ -45,7 +45,7 @@ define([
 
     test('removes media controller event listeners', function() {
         var startTime = _.now();
-        var model = new Model({});
+        var model = new Model().setup({});
 
         model.set('mediaModel', new MediaModel());
         model.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
@@ -71,7 +71,7 @@ define([
     });
 
     test('tracks stalled time', function() {
-        var model = new Model({});
+        var model = new Model().setup({});
 
         model.set('mediaModel', new MediaModel());
 
@@ -86,7 +86,7 @@ define([
 
     test('uses one qoe item per playlist item', function() {
         // Test qoe model observation
-        var model = new Model({});
+        var model = new Model().setup({});
 
         model.set('mediaModel', new MediaModel());
         var firstQoeItem = model._qoeItem;

@@ -17,17 +17,22 @@ module.exports = function( config ) {
             'karma-requirejs',
             'karma-qunit',
             'karma-phantomjs-launcher',
-            'karma-browserstack-launcher'
+            'karma-browserstack-launcher',
+            'karma-jenkins-reporter'
         ],
         frameworks: ['requirejs', 'qunit'],
         reporters: [
-            // Make jenkins output less verbose
-            isJenkins ? 'dots' : 'progress',
+            'dots',
             'coverage'
         ],
         port: 9876, // web server port
-        colors: true, // colors in the output (reporters and logs)
+        colors: !isJenkins, // colors in the output (reporters and logs)
         autoWatch: false, // watch file and execute tests whenever any file changes
+        singleRun: true, // if true, Karma captures browsers, runs the tests and exits
+
+        client: {
+            useIframe: false // use a new window for each test
+        },
 
         // Possible values:
         // config.LOG_DISABLE
@@ -72,6 +77,12 @@ module.exports = function( config ) {
             }
         },
 
+        jenkinsReporter: {
+            outputFile: 'reports/' + gruntTarget + '/junit.xml',
+            suite: gruntTarget,
+            classnameSuffix: 'unit'
+        },
+
         // preprocess matching files before serving them to the browser
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
         preprocessors: {
@@ -89,11 +100,7 @@ module.exports = function( config ) {
             timeout: 600 // 10 min
         },
 
-        customLaunchers: require( './browserstack-launchers' ),
-
-        // Continuous Integration mode
-        // if true, Karma captures browsers, runs the tests and exits
-        singleRun: true
+        customLaunchers: require( './browserstack-launchers' )
     });
 
     // Run on BrowserStack
@@ -106,4 +113,9 @@ module.exports = function( config ) {
     }
     // Run local with PhantomJS
     config.browsers.push( 'PhantomJS' );
+
+    // Jenkins JUnit report
+    if (isJenkins) {
+        config.reporters.push( 'jenkins' );
+    }
 };
