@@ -70,7 +70,7 @@ define([
             _oldpos = _model.position;
 
             // Initialize the instream player's model copied from main player's model
-            _adModel = new Model({
+            _adModel = new Model().setup({
                 id: _model.id,
                 volume: _model.volume,
                 fullscreen: _model.fullscreen,
@@ -390,7 +390,7 @@ define([
         function _metaHandler(evt) {
             // If we're getting video dimension metadata from the provider, allow the view to resize the media
             if (evt.width && evt.height) {
-                _view.releaseState();
+                //_view.releaseState();
                 _view.resizeMedia();
             }
         }

@@ -9,10 +9,16 @@ define([
 ], function(Playlist, parsers, rssParser, utils, events, Events, _) {
 
     var PlaylistLoader = function() {
-        var _this = _.extend(this, Events);
+        var _this = _.extend(this, Events),
+            _xhr;
 
         this.load = function(playlistfile) {
-            utils.ajax(playlistfile, _playlistLoaded, _playlistLoadError);
+            _xhr = utils.ajax(playlistfile, _playlistLoaded, _playlistLoadError);
+        };
+
+        this.destroy = function() {
+            this.off();
+            _xhr = null;
         };
 
         function _playlistLoaded(loadedEvent) {

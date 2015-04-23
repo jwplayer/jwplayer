@@ -45,26 +45,11 @@ define([
         }, assert.async());
     });
 
-    test('fails if edition is invalid', function(assert) {
-        var model = getModel({
-            playlist: [{sources:[{file:'file.mp4'}]}]
-        });
-
-        model.edition = function() {
-            return 'invalid';
-        };
-
-        testSetup(model, function() {
-            assert.ok(false, 'setup should not succeed');
-        }, function(message) {
-            assert.ok(message, 'setup failed with message: ' + message);
-        }, assert.async());
-    });
-
     test('fails after timeout', function(assert) {
         var model = getModel({
             setupTimeout: 0.001,
-            playlist: [{sources:[{file:'file.mp4'}]}]
+            playlist: [{sources:[{file:'file.mp4'}]}],
+            skin: '//p.jwpcdn.com/6/12/skins/bekle.xml'
         });
 
         testSetup(model, function() {
@@ -121,8 +106,27 @@ define([
         }, 0);
     });
 
+    test('modifies config', function(assert) {
+        var options = {
+            file: 'file.mp4',
+            aspectratio: '4:3',
+            width: '100%'
+        };
+        var optionsOrig = _.extend({}, options);
+
+        var model = getModel(options);
+
+        testSetup(model, function() {
+            assert.ok(true, 'setup ok');
+            notEqual(options, optionsOrig, 'config was modified');
+        }, function(message) {
+            assert.ok(true, 'setup failed with message: ' + message);
+            notEqual(options, optionsOrig, 'config was modified');
+        }, assert.async());
+    });
+
     function testSetup(model, success, error, done) {
-        var setup = new Setup(model, view, model.config.setupTimeout);
+        var setup = new Setup(api, model, view, model.config.setupTimeout);
         setup.on(events.JWPLAYER_READY, function() {
             success.call(setup);
             done();
@@ -138,6 +142,10 @@ define([
     }
 
     // mock objects
+    var api = {
+        id: 'player'
+    };
+
     var view = {
         setup: _.noop,
         setupError: _.noop
@@ -146,16 +154,6 @@ define([
     function getModel(config) {
         return {
             config: config,
-            get: function(type) {
-                switch(type) {
-                    case 'width':
-                        return 480;
-                    case 'height':
-                        return 270;
-                    default:
-                        return 270;
-                }
-            },
             setPlaylist: function(p) {
                 this.playlist = p;
             }
