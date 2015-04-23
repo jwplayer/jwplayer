@@ -5,7 +5,7 @@ define([
     'view/thumbs',
     'view/components/slider',
     'view/components/timeslider',
-    'view/components/newmenu'
+    'view/components/menu'
 ], function(utils, _, Events, Thumbs, Slider, TimeSlider, NewMenu) {
 
     function button(icon, click) {

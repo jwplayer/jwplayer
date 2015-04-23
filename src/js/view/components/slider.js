@@ -1,10 +1,9 @@
 define([
     'view/components/extendable',
     'handlebars-loader!templates/slider.html',
-    'utils/backbone.events',
     'utils/underscore',
     'utils/helpers'
-], function(Extendable, SliderTemplate, Events, _, utils) {
+], function(Extendable, SliderTemplate, _, utils) {
 
     var Slider = Extendable.extend({
         constructor : function(className, orientation) {

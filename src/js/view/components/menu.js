@@ -3,14 +3,9 @@ define([
     'utils/helpers',
     'handlebars-loader!templates/menu.html'
 ], function(Tooltip, utils, menuTemplate) {
-    var NewMenu = function(name) {
-        this.el = document.createElement('span');
-        this.el.className = 'jw-icon-tooltip ' + name;
-        this.container = document.createElement('div');
-        this.container.className = 'jw-overlay';
-        this.el.appendChild(this.container);
 
-        this.setup = function (list) {
+    var Menu = Tooltip.extend({
+        setup : function (list) {
             if(this.content){
                 this.content.removeEventListener('click');
                 this.container.removeChild(this.content);
@@ -28,10 +23,8 @@ define([
             }.bind(this));
 
             this.addContent(elem);
-        };
-    };
+        }
+    });
 
-    Tooltip.prototype.extend(NewMenu);
-
-    return NewMenu;
+    return Menu;
 });
