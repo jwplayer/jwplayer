@@ -83,11 +83,11 @@ define([
                 elapsed: text('jw-elapsed'),
                 time: timeSlider,
                 duration: text('jw-duration'),
-                hd: menu('jw-icon-hd-on'),
-                cc: button('jw-icon-cc-on'),
-                mute: button('jw-icon-volume', this._api.setMute),
+                hd: menu('jw-icon-hd'),
+                cc: button('jw-icon-cc'),
+                mute: button('jw-icon-mute', this._api.setMute),
                 volume: volumeSlider,
-                cast: button('jw-icon-cast-on'),
+                cast: button('jw-icon-cast'),
                 fullscreen: button('jw-icon-fullscreen', this._api.setFullscreen)
             };
 
@@ -150,12 +150,11 @@ define([
                 this._api.setVolume(val);
             }, this);
 
-            this._model.on('change:qualityLabel', function(model, val) {
-                console.log('mediaModel output', model, val);
-                this.elements.hd.setup(this._api.getQualityLevels());
-            }, this);
             this.elements.hd.on('select', function(value){
                 this._model.getVideo().setCurrentQuality(value);
+            }, this);
+            this.elements.hd.on('toggle', function(){
+                this._model.getVideo().setCurrentQuality((this._model.getVideo().getCurrentQuality() === 0) ? 1 : 0);
             }, this);
         },
 
@@ -169,6 +168,13 @@ define([
             this.elements.time.render(0);
             this.elements.duration.innerHTML = '';
             this.elements.elapsed.innerHTML = '';
+
+            this._model.get('mediaModel').on('change:levels', function(model, levels) {
+                this.elements.hd.setup(levels, model.currentLevel);
+            }, this);
+            this._model.get('mediaModel').on('change:currentLevel', function(model, level) {
+                this.elements.hd.selectItem(level);
+            }, this);
         },
         onVolume : function(model, pct) {
             this.renderVolume(model.get('mute'), pct);

@@ -6,6 +6,10 @@
     visibility: visible;
 }
 
+.jwplayer .jw-icon-tooltip.jw-hidden {
+    display: none;
+}
+
 .jwplayer .jw-overlay:after {
     position: absolute;
     bottom: -0.5em;
@@ -62,7 +66,9 @@
     }
 
     .jw-overlay .jw-option:hover,
-    .jw-overlay .jw-option.jw-active-option {
+    .jw-overlay .jw-option:before:hover,
+    .jw-overlay .jw-option.jw-active-option,
+    .jw-overlay .jw-option.jw-active-option:before{
         color: @hover-color;
     }
 

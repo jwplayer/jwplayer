@@ -68,27 +68,21 @@
         }
     }
 
-    .jw-icon-cast-off {
-        &:before {
-            content: "\e602";
-        }
-    }
-
     .jw-icon-cast-on {
         &:before {
             content: "\e603";
         }
-    }
-
-    .jw-icon-cc-off{
-        &:before {
-            content: "\e604";
+        &.jw-off:before {
+            content: "\e602";
         }
     }
 
     .jw-icon-cc-on {
         &:before {
             content: "\e605";
+        }
+        &.jw-off:before {
+            content: "\e604";
         }
     }
 
@@ -122,15 +116,13 @@
         }
     }
 
-    .jw-icon-hd-off {
-        &:before {
-            content: "\e609";
-        }
-    }
-
-    .jw-icon-hd-on {
+    .jw-icon-hd {
         &:before {
             content: "\e60a";
+        }
+
+        &.jw-off:before {
+            content: "\e609";
         }
     }
 
@@ -170,14 +162,12 @@
         }
     }
 
-    .jw-icon-volume.mute {
+    .jw-icon-mute {
         &:before {
             content: "\e611";
         }
-    }
 
-    .jw-icon-volume {
-        &:before {
+        &.jw-off:before {
             content: "\e612";
         }
     }

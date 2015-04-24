@@ -104,14 +104,11 @@ define([
                     break;
 
                 case events.JWPLAYER_MEDIA_LEVELS:
+                    this.setQualityLevel(evt.currentQuality, evt.levels);
+                    this.mediaModel.set('levels', evt.levels);
+                    break;
                 case events.JWPLAYER_MEDIA_LEVEL_CHANGED:
-                    var quality = evt.currentQuality;
-                    var levels = evt.levels;
-                    if (quality > -1 && levels.length > 1 && _provider.getName().name !== 'youtube') {
-                        var qualityLabel = levels[quality].label;
-                        this.set('qualityLabel', qualityLabel);
-                        _this.config.qualityLabel = qualityLabel;
-                    }
+                    this.setQualityLevel(evt.currentQuality, evt.levels);
                     break;
 
                 case 'visualQuality':
@@ -123,6 +120,12 @@ define([
 
             this.mediaController.trigger(evt.type, evt);
         }
+
+        this.setQualityLevel = function(quality, levels){
+            if (quality > -1 && levels.length > 1 && _provider.getName().name !== 'youtube') {
+                this.mediaModel.set('currentLevel', parseInt(quality));
+            }
+        };
 
         this.setVideoProvider = function(provider) {
 
