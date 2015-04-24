@@ -3,7 +3,7 @@ define([
     'api/api-deprecate',
     'utils/underscore',
     'controller/Setup',
-    'view/captions',
+    'controller/captions',
     'controller/model',
     'playlist/playlist',
     'playlist/loader',
