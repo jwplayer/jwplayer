@@ -9,9 +9,22 @@ define([
 
     var TimeTip = Tooltip.extend({
         setup : function() {
+            var wrapper = document.createElement('div');
+            wrapper.className = 'jw-time-tip';
+
             this.text = document.createElement('span');
-            this.text.className = 'jw-time-tip';
-            this.addContent(this.text);
+
+            this.img = document.createElement('span');
+
+            wrapper.appendChild(this.img);
+            wrapper.appendChild(this.text);
+
+            utils.removeClass(this.el, 'jw-hidden');
+            this.addContent(wrapper);
+        },
+
+        image : function(style) {
+            utils.style(this.img, style);
         },
 
         update : function(txt) {
@@ -26,6 +39,7 @@ define([
 
             this.timeTip = new TimeTip();
             this.timeTip.setup();
+
 
 
             // Store the attempted seek, until the previous one completes
@@ -116,8 +130,16 @@ define([
             var position = (evt.pageX ? (evt.pageX - _railBounds.left) : evt.x);
             position = utils.between(position, 0, _railBounds.width);
             var pct = position / _railBounds.width;
+            var time = duration * pct;
 
-            this.timeTip.update(utils.timeFormat(duration * pct));
+            var timetipText;
+            if (this.activeCue) {
+                timetipText = this.activeCue.text;
+            } else {
+                timetipText = utils.timeFormat(time);
+            }
+            this.timeTip.update(timetipText);
+            this.showThumbnail(time);
 
             utils.addClass(this.timeTip.el, 'jw-open');
             this.timeTip.el.style.left = (pct*100) + '%';

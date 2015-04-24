@@ -13,9 +13,6 @@ define([
     var ThumbnailsMixin = {
 
         loadThumbnails: function (file) {
-            // hide
-            // reset or cancel requests
-
             if (!file) {
                 return;
             }
@@ -34,19 +31,59 @@ define([
             }
         },
 
-        thumbnailsFailed: function () {
-        },
+        thumbnailsFailed: function () { },
 
         chooseThumbnail : function(seconds) {
-            var idx = _.sortedIndex(this.thumbnails, {start : seconds}, _.property('start'));
-            return this.thumbnails[idx].img;
+
+            var idx = _.sortedIndex(this.thumbnails, {begin: seconds}, _.property('begin'));
+
+            var url = this.thumbnails[idx].img;
+            if (url.indexOf('://') < 0) {
+                url = this.vttPath ? this.vttPath + '/' + url : url;
+            }
+
+            return url;
+        },
+
+        loadThumbnail : function(seconds) {
+            var url = this.chooseThumbnail(seconds);
+            var style = {
+                display: 'block',
+                margin: '0 auto',
+                'background-position': '0 0',
+                width: 0,
+                height: 0
+            };
+
+            var hashIndex = url.indexOf('#xywh');
+            if (hashIndex > 0) {
+                try {
+                    var matched = (/(.+)\#xywh=(\d+),(\d+),(\d+),(\d+)/).exec(url);
+                    url = matched[1];
+                    style['background-position'] = (matched[2] * -1) + 'px ' + (matched[3] * -1) + 'px';
+                    style.width = matched[4];
+                    style.height = matched[5];
+                } catch (e) {
+                    //this.vttFailed('Could not parse thumbnail');
+                    return;
+                }
+            }
+
+            style['background-image'] = url;
+
+            return style;
+        },
+
+        showThumbnail : function(seconds) {
+            if (this.thumbnails.length < 1) {
+                return;
+            }
+            this.timeTip.image(this.loadThumbnail(seconds));
         },
 
         resetThumbnails : function() {
             this.thumbnails = [];
         }
-
-
     };
 
     return ThumbnailsMixin;
