@@ -68,7 +68,7 @@ define([
             });
         },
 
-        reset: function () {
+        resetChapters : function() {
             _.each(this.cues, function (cue) {
                 this.elementRail.removeChild(cue.el);
             }, this);

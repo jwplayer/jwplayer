@@ -11,6 +11,7 @@ define([
             this.container.className ='jw-overlay';
             this.el.appendChild(this.container);
         },
+
         addContent: function (elem) {
             this.content = elem;
             this.container.appendChild(elem);
