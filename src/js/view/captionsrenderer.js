@@ -1,13 +1,43 @@
 define([
-    'utils/css'
-], function(cssUtils) {
+    'utils/css',
+    'utils/underscore'
+], function(cssUtils, _) {
     var _style = cssUtils.style;
 
-    /** Component that renders the actual captions on screen. **/
-    var CaptionsRenderer = function (_options, _div) {
+    cssUtils.css('.jw-captions', {
+        position: 'absolute',
+        cursor: 'pointer',
+        width: '100%',
+        height: '100%',
+        overflow: 'hidden'
+    });
 
-        /** Current list with captions. **/
-        var _captions,
+    var _defaults = {
+        back: true,
+        color: '#FFF',
+        fontStyle: 'normal',
+        fontWeight: 'normal',
+        textDecoration: 'none',
+        fontSize: 15,
+        fontFamily: 'Arial,sans-serif',
+        fontOpacity: 100,
+        backgroundColor: '#000',
+        backgroundOpacity: 100,
+        // if back == false edgeStyle defaults to 'uniform',
+        // otherwise it's 'none'
+        edgeStyle: null,
+        windowColor: '#FFF',
+        windowOpacity: 0
+    };
+
+    /** Component that renders the actual captions on screen. **/
+    var CaptionsRenderer = function () {
+
+        var _options = {},
+            /** Current list with captions. **/
+            _captions,
+            /** Captions view layer **/
+            _display,
             /** Container of captions window. **/
             _container,
             /** Container of captions text. **/
@@ -23,6 +53,8 @@ define([
             /** Interval for resize. **/
             _interval = -1;
 
+        _display = document.createElement('div');
+        _display.className = 'jw-captions';
 
         /** Hide the rendering component. **/
         this.hide = function () {
@@ -33,12 +65,16 @@ define([
         };
 
         /** Assign list of captions to the renderer. **/
-        this.populate = function (captions) {
+        this.populate = function(captions) {
             _current = -1;
             _captions = captions;
+            if (!captions) {
+                _render('');
+                return;
+            }
             _select();
         };
-
+        
         /** Render the active caption. **/
         function _render(html) {
             html = html || '';
@@ -106,7 +142,9 @@ define([
         }
 
         /** Constructor for the renderer. **/
-        function _setup() {
+        this.setup = function(options) {
+            _options = _.extend({}, _defaults, options);
+
             var fontOpacity = _options.fontOpacity,
                 windowOpacity = _options.windowOpacity,
                 edgeStyle = _options.edgeStyle,
@@ -157,8 +195,8 @@ define([
 
             _captionsWindow.appendChild(_textContainer);
             _container.appendChild(_captionsWindow);
-            _div.appendChild(_container);
-        }
+            _display.appendChild(_container);
+        };
 
         function addEdgeStyle(option, style, fontOpacity) {
             var color = cssUtils.hexToRgba('#000000', fontOpacity);
@@ -194,7 +232,9 @@ define([
             }
         };
 
-        _setup();
+        this.element = function() {
+          return _display;
+        };
     };
 
     return CaptionsRenderer;

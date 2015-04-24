@@ -69,9 +69,8 @@ define([], function() {
         JWPLAYER_LOGO_CLICK: 'logoClick',
 
         // Model - Captions
-        JWPLAYER_CAPTIONS_LIST: 'captions',
+        JWPLAYER_CAPTIONS_LIST: 'captionsList',
         JWPLAYER_CAPTIONS_CHANGED: 'captionsChanged',
-        JWPLAYER_CAPTIONS_LOADED: 'captionsLoaded',
 
         // Provider Communication
         JWPLAYER_PROVIDER_CHANGED: 'providerChanged',

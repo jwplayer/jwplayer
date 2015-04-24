@@ -3,6 +3,7 @@ define([
     'api/api-deprecate',
     'utils/underscore',
     'controller/Setup',
+    'view/captions',
     'controller/model',
     'playlist/playlist',
     'playlist/loader',
@@ -12,7 +13,7 @@ define([
     'events/states',
     'events/events',
     'view/errorscreen'
-], function(setupInstreamMethods, deprecateInit, _, Setup,
+], function(setupInstreamMethods, deprecateInit, _, Setup, Captions,
             Model, Playlist, PlaylistLoader, utils, View, Events, states, events, errorScreen) {
 
     function _queue(command) {
@@ -65,6 +66,7 @@ define([
         setup : function(config, _api) {
             var _model,
                 _view,
+                _captions,
                 _setup,
                 _loadOnPlay = -1,
                 _preplay = false,
@@ -75,7 +77,8 @@ define([
 
             _model = this._model.setup(config);
             _view  = this._view  = new View(_api, _model);
-            _setup = this._setup = new Setup(_api, _model, _view);
+            _captions = new Captions(_model);
+            _setup = new Setup(_api, _model, _view);
 
             // Legacy, should be removed
             _this.id = this._model.id;
@@ -84,9 +87,6 @@ define([
 
             _setup.on(events.JWPLAYER_READY, _playerReady, this);
             _setup.on(events.JWPLAYER_SETUP_ERROR, function(evt) {
-                if (_view) {
-                    _view.completeSetup();
-                }
                 _this.setupError(evt.message);
             });
             _setup.start();
@@ -117,9 +117,6 @@ define([
             function _playerReady() {
                 _setup.destroy();
                 _setup = null;
-
-                this.showView(_view.element());
-                _view.completeSetup();
 
                 _model.on('change:state', function(model, newstate, oldstate) {
                     newstate = normalizeApiState(newstate);
@@ -183,13 +180,30 @@ define([
                     }
                 });
 
+                // For onCaptionsList and onCaptionsChange
+                _model.on('change:captions', function(model, captions) {
+                    _this.trigger(events.JWPLAYER_CAPTIONS_LIST, {
+                        tracks: captions,
+                        track: model.get('captionsIndex')
+                    });
+                });
+                _model.on('change:captionsIndex', function(model, captionsIndex) {
+                    _this.trigger(events.JWPLAYER_CAPTIONS_CHANGED, {
+                        tracks: model.get('captions'),
+                        track: captionsIndex
+                    });
+                });
+
                 _model.mediaController.on('all', _this.trigger.bind(_this));
                 _view.on('all', _this.trigger.bind(_this));
 
+                this.showView(_view.element());
 
-                // TODO: this should come from the media controller, not the view
-                _view.on(events.JWPLAYER_CAPTIONS_CHANGED, function(e) {
-                    _model.set('captionLabel', e.tracks[e.track].label);
+                // prevent video error in display on window close
+                window.addEventListener('beforeunload', function() {
+                    if (!_isCasting()) { // don't call stop while casting
+                        _stop(true);
+                    }
                 });
 
                 // Tell the api that we are loaded
@@ -198,15 +212,16 @@ define([
                     setupTime: 0
                 });
 
-                // TODO: send copies of these objects to public listeners
-                var playlist = _model.get('playlist');
-                var item = _model.get('item');
-
                 _this.trigger(events.JWPLAYER_PLAYLIST_LOADED, {
-                    playlist: playlist
+                    playlist: _model.get('playlist')
                 });
                 _this.trigger(events.JWPLAYER_PLAYLIST_ITEM, {
-                    index: item
+                    index: _model.get('item'),
+                    item: _model.get('playlistItem')
+                });
+                _this.trigger(events.JWPLAYER_CAPTIONS_LIST, {
+                    tracks: _model.get('captions'),
+                    track: _model.get('captionsIndex')
                 });
 
                 _load();
@@ -214,8 +229,6 @@ define([
                 if (_model.get('autostart') && !utils.isMobile()) {
                     _play();
                 }
-
-
 
                 while (_this.eventsQueue.length > 0) {
                     var q = _this.eventsQueue.shift();
@@ -463,15 +476,15 @@ define([
                 return null;
             }
             function _setCurrentCaptions(caption) {
-                _view.setCurrentCaptions(caption);
+                _captions.setCurrentCaptions(caption);
             }
 
             function _getCurrentCaptions() {
-                return _view.getCurrentCaptions();
+                return _captions.getCurrentCaptions();
             }
 
             function _getCaptionsList() {
-                return _view.getCaptionsList();
+                return _captions.getCaptionsList();
             }
 
             /** Used for the InStream API **/
@@ -484,6 +497,14 @@ define([
                     }
                 }
                 return null;
+            }
+
+            function _isCasting() {
+                var provider = _model.getVideo();
+                if (provider) {
+                    return provider.isCaster;
+                }
+                return false;
             }
 
             function _attachMedia(seekable) {
