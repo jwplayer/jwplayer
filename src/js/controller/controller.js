@@ -181,9 +181,9 @@ define([
                 });
 
                 // For onCaptionsList and onCaptionsChange
-                _model.on('change:captions', function(model, captions) {
+                _model.on('change:captionsList', function(model, captionsList) {
                     _this.trigger(events.JWPLAYER_CAPTIONS_LIST, {
-                        tracks: captions,
+                        tracks: captionsList,
                         track: model.get('captionsIndex')
                     });
                 });

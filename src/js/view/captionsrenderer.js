@@ -23,20 +23,22 @@ define([
     var CaptionsRenderer = function (_model) {
 
         var _options = {},
-            /** Current list with captions. **/
-            _captions,
-            /** Captions view layer **/
-            _display,
-            /** Container of captions text. **/
-            _captionsWindow,
-            /** Text container of captions. **/
-            _textContainer,
-            /** Current actie captions entry. **/
+            // array of cues
+            _captionsTrack,
+
+            // current cue
             _current,
-            /** Current video position. **/
-            _position;
+
+            //video position
+            _position = 0,
+
+            // display hierarchy
+            _display,
+            _captionsWindow,
+            _textContainer;
 
         _display = document.createElement('div');
+
 
         this.show = function () {
             _display.className = 'jw-captions jw-captions-enabled';
@@ -49,7 +51,7 @@ define([
         /** Assign list of captions to the renderer. **/
         this.populate = function(captions) {
             _current = -1;
-            _captions = captions;
+            _captionsTrack = captions;
             if (!captions) {
                 _render('');
                 return;
@@ -90,7 +92,7 @@ define([
                 // no change
                 return;
             }
-            for (var i = 0; i < _captions.length; i++) {
+            for (var i = 0; i < _captionsTrack.length; i++) {
                 if (_intersects(i)) {
                     found = i;
                     break;
@@ -101,13 +103,13 @@ define([
                 _render('');
             } else if (found !== _current) {
                 _current = found;
-                _render(_captions[_current].text);
+                _render(_captionsTrack[_current].text);
             }
         }
 
         function _intersects(i) {
-            return (_captions[i].begin <= _position &&
-                (i === _captions.length - 1 || _captions[i + 1].begin >= _position));
+            return (_captionsTrack[i].begin <= _position &&
+                (i === _captionsTrack.length - 1 || _captionsTrack[i + 1].begin >= _position));
         }
 
         /** Constructor for the renderer. **/
@@ -172,7 +174,7 @@ define([
         /** Update the video position. **/
         this.update = function (position) {
             _position = position;
-            if (_captions) {
+            if (_captionsTrack) {
                 _select();
             }
         };
@@ -184,9 +186,6 @@ define([
         _model.on('change:captionsTrack', function(model, captionsTrack) {
             this.populate(captionsTrack);
         }, this);
-        _model.on('change:captions', function() {
-            this.update(0);
-        }, this);
         _model.on('change:position', function(model, pos) {
             this.update(pos);
         }, this);
@@ -194,16 +193,13 @@ define([
             this.update(e.position);
         }, this);
         _model.on('change:state', function(model, state) {
-            var captions = model.get('captions');
             switch (state) {
                 case states.IDLE:
                 case states.COMPLETE:
                     this.hide();
                     break;
                 default:
-                    if (captions.length && _model.get('captionsIndex') > 0) {
-                        this.show();
-                    }
+                    this.show();
                     break;
             }
         }, this);

@@ -71,7 +71,7 @@ define([
                 }
             }
 
-            _model.set('captions', captionsMenu);
+            _model.set('captionsList', captionsMenu);
             _setCurrentCaptions(defaultTrack);
         }
 
@@ -192,7 +192,7 @@ define([
         };
 
         this.getCaptionsList = function() {
-            return _model.get('captions');
+            return _model.get('captionsList');
         };
     };
 
