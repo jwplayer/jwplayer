@@ -444,36 +444,6 @@ define([
             toggleControls();
             _model.on('change:controls', toggleControls);
 
-            // captions rendering
-            _captionsRenderer = new CaptionsRenderer();
-            _captionsRenderer.setup(_model.config.captions);
-            _captionsRenderer.populate(_model.get('captionsTrack'));
-            _controlsLayer.appendChild(_captionsRenderer.element());
-
-            _model.on('change:captionsTrack', function(model, captionsTrack) {
-                _captionsRenderer.populate(captionsTrack);
-            });
-            _model.on('change:captions', function() {
-                _captionsRenderer.update(0);
-            });
-            _model.on('change:position', function(model, pos) {
-                _captionsRenderer.update(pos);
-            });
-            _model.on('change:state', function(model, state) {
-                var captions = model.get('captions');
-                switch (state) {
-                    case states.IDLE:
-                    case states.COMPLETE:
-                        _captionsRenderer.hide();
-                        break;
-                    default:
-                        if (captions.length && _model.get('captionsIndex') > 0) {
-                            _captionsRenderer.show();
-                        }
-                        break;
-                }
-            });
-
             _preview = new Preview(_model);
             _controlsLayer.appendChild(_preview.element());
 
@@ -495,6 +465,13 @@ define([
 
             _dock = new Dock(_model);
             _controlsLayer.appendChild(_dock.element());
+
+            // captions rendering
+            _captionsRenderer = new CaptionsRenderer(_model);
+            _captionsRenderer.setup(_model.config.captions);
+
+            // captions should be place behind controls, and not hidden when controls are hidden
+            _controlsLayer.parentNode.insertBefore(_captionsRenderer.element(), _controlsLayer);
 
             var displayIcon = new DisplayIcon(_model);
             //toggle playback
@@ -764,6 +741,7 @@ define([
                 clearTimeout(_resizeMediaTimeout);
                 _resizeMediaTimeout = setTimeout(_resizeMedia, 250);
             }
+            _captionsRenderer.resize();
         }
 
         this.resize = function(width, height) {

@@ -5,32 +5,41 @@
         position: absolute;
         display: none;
         margin: 0 auto;
+        width: 100%;
         left: 0;
         bottom: 10%;
         right: 0;
-        max-width: @controlbar-max-width;
+        max-width: 90%;
+        text-align: center;
 
         &.jw-captions-enabled {
             display: block;
         }
+    }
 
-        &.jw-captions-disabled {
-            display: none;
+    .jw-captions-window {
+        display: none;
+        padding: 0.25em;
+        border-radius: 0.25em;
+
+        &.jw-captions-window-active {
+            display: inline-block;
         }
     }
 
     .jw-captions-text {
+        display: inline-block;
         color: @active-color;
         background-color: black;
-        padding: @ui-padding;
         word-wrap: break-word;
-        display: inline-block;
+        white-space: pre-line;
         font-style: normal;
         font-weight: normal;
         text-align: center;
         text-decoration: none;
         line-height: 1.3em;
-        margin: 0 7.5%;
+        padding: 0.1em 0.8em;
     }
+
 }
 

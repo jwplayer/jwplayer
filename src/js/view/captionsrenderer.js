@@ -1,23 +1,12 @@
 define([
     'utils/css',
+    'events/states',
     'utils/underscore'
-], function(cssUtils, _) {
+], function(cssUtils, states, _) {
     var _style = cssUtils.style;
-
-    cssUtils.css('.jw-captions', {
-        position: 'absolute',
-        cursor: 'pointer',
-        width: '100%',
-        height: '100%',
-        overflow: 'hidden'
-    });
 
     var _defaults = {
         back: true,
-        color: '#FFF',
-        fontStyle: 'normal',
-        fontWeight: 'normal',
-        textDecoration: 'none',
         fontSize: 15,
         fontFamily: 'Arial,sans-serif',
         fontOpacity: 100,
@@ -31,15 +20,13 @@ define([
     };
 
     /** Component that renders the actual captions on screen. **/
-    var CaptionsRenderer = function () {
+    var CaptionsRenderer = function (_model) {
 
         var _options = {},
             /** Current list with captions. **/
             _captions,
             /** Captions view layer **/
             _display,
-            /** Container of captions window. **/
-            _container,
             /** Container of captions text. **/
             _captionsWindow,
             /** Text container of captions. **/
@@ -47,21 +34,16 @@ define([
             /** Current actie captions entry. **/
             _current,
             /** Current video position. **/
-            _position,
-            /** Should the captions be visible or not. **/
-            _visible = 'visible',
-            /** Interval for resize. **/
-            _interval = -1;
+            _position;
 
         _display = document.createElement('div');
-        _display.className = 'jw-captions';
 
-        /** Hide the rendering component. **/
+        this.show = function () {
+            _display.className = 'jw-captions jw-captions-enabled';
+        };
+
         this.hide = function () {
-            clearInterval(_interval);
-            _style(_container, {
-                display: 'none'
-            });
+            _display.className = 'jw-captions';
         };
 
         /** Assign list of captions to the renderer. **/
@@ -78,56 +60,38 @@ define([
         /** Render the active caption. **/
         function _render(html) {
             html = html || '';
-            //hide containers before resizing
-            _visible = 'hidden';
-            _style(_container, {
-                visibility: _visible
-            });
-            //update text and resize after delay
-            _textContainer.innerHTML = html;
-            if (html.length) {
-                _visible = 'visible';
-                setTimeout(_resize, 16);
-            }
-        }
-
-        /** Store new dimensions. **/
-        this.resize = function () {
-            _resize();
-        };
-
-        /** Resize the captions. **/
-        function _resize() {
-            // only resize if visible
-            if (_visible === 'visible') {
-                var width = _container.clientWidth,
-                    scale = Math.pow(width / 400, 0.6);
-
-                var size = _options.fontSize * scale;
-                _style(_textContainer, {
-                    maxWidth: width + 'px',
-                    fontSize: Math.round(size) + 'px',
-                    lineHeight: Math.round(size * 1.4) + 'px',
-                    padding: Math.round(1 * scale) + 'px ' + Math.round(8 * scale) + 'px'
-                });
-                if (_options.windowOpacity) {
-                    _style(_captionsWindow, {
-                        padding: Math.round(5 * scale) + 'px',
-                        borderRadius: Math.round(5 * scale) + 'px'
-                    });
+            var windowClassName = 'jw-captions-window';
+            if (html) {
+                _textContainer.innerHTML = html;
+                windowClassName += ' jw-captions-window-active';
+            } else {
+                if (_textContainer.firstChild) {
+                    _textContainer.removeChild(_textContainer.firstChild);
                 }
-                _style(_container, {
-                    visibility: _visible
+            }
+            _captionsWindow.className = windowClassName;
+        }
+
+        this.resize = function () {
+            var width = _display.clientWidth,
+                scale = Math.pow(width / 400, 0.6);
+            if (scale) {
+                var size = _options.fontSize * scale;
+                _style(_display, {
+                    fontSize: Math.round(size) + 'px'
                 });
             }
-        }
+        };
 
         /** Select a caption for rendering. **/
         function _select() {
             var found = -1;
+            if (_current >= 0 && _intersects(_current)) {
+                // no change
+                return;
+            }
             for (var i = 0; i < _captions.length; i++) {
-                if (_captions[i].begin <= _position &&
-                    (i === _captions.length - 1 || _captions[i + 1].begin >= _position)) {
+                if (_intersects(i)) {
                     found = i;
                     break;
                 }
@@ -137,8 +101,13 @@ define([
                 _render('');
             } else if (found !== _current) {
                 _current = found;
-                _render(_captions[i].text);
+                _render(_captions[_current].text);
             }
+        }
+
+        function _intersects(i) {
+            return (_captions[i].begin <= _position &&
+                (i === _captions.length - 1 || _captions[i + 1].begin >= _position));
         }
 
         /** Constructor for the renderer. **/
@@ -149,19 +118,13 @@ define([
                 windowOpacity = _options.windowOpacity,
                 edgeStyle = _options.edgeStyle,
                 bgColor = _options.backgroundColor,
-                windowStyle = {
-                    display: 'inline-block'
-                },
+                windowStyle = {},
                 textStyle = {
                     color: cssUtils.hexToRgba(cssUtils.rgbHex(_options.color), fontOpacity),
-                    display: 'inline-block',
                     fontFamily: _options.fontFamily,
                     fontStyle: _options.fontStyle,
                     fontWeight: _options.fontWeight,
-                    textAlign: 'center',
-                    textDecoration: _options.textDecoration,
-                    wordWrap: 'break-word',
-                    whiteSpace: 'pre-line'
+                    textDecoration: _options.textDecoration
                 };
 
             if (windowOpacity) {
@@ -176,26 +139,18 @@ define([
                 addEdgeStyle('uniform', textStyle);
             }
 
-            _container = document.createElement('div');
             _captionsWindow = document.createElement('div');
             _textContainer = document.createElement('span');
-
-            _style(_container, {
-                display: 'block',
-                height: 'auto',
-                position: 'absolute',
-                bottom: '20px',
-                textAlign: 'center',
-                width: '100%'
-            });
+            _captionsWindow.className = 'jw-captions-window';
+            _textContainer.className = 'jw-captions-text';
 
             _style(_captionsWindow, windowStyle);
-
             _style(_textContainer, textStyle);
 
             _captionsWindow.appendChild(_textContainer);
-            _container.appendChild(_captionsWindow);
-            _display.appendChild(_container);
+            _display.appendChild(_captionsWindow);
+
+            this.populate(_model.get('captionsTrack'));
         };
 
         function addEdgeStyle(option, style, fontOpacity) {
@@ -214,16 +169,6 @@ define([
             }
         }
 
-        /** Show the rendering component. **/
-        this.show = function () {
-            _style(_container, {
-                display: 'block'
-            });
-            _resize();
-            clearInterval(_interval);
-            _interval = setInterval(_resize, 250);
-        };
-
         /** Update the video position. **/
         this.update = function (position) {
             _position = position;
@@ -235,6 +180,33 @@ define([
         this.element = function() {
           return _display;
         };
+
+        _model.on('change:captionsTrack', function(model, captionsTrack) {
+            this.populate(captionsTrack);
+        }, this);
+        _model.on('change:captions', function() {
+            this.update(0);
+        }, this);
+        _model.on('change:position', function(model, pos) {
+            this.update(pos);
+        }, this);
+        _model.mediaController.on('seek', function(e) {
+            this.update(e.position);
+        }, this);
+        _model.on('change:state', function(model, state) {
+            var captions = model.get('captions');
+            switch (state) {
+                case states.IDLE:
+                case states.COMPLETE:
+                    this.hide();
+                    break;
+                default:
+                    if (captions.length && _model.get('captionsIndex') > 0) {
+                        this.show();
+                    }
+                    break;
+            }
+        }, this);
     };
 
     return CaptionsRenderer;
