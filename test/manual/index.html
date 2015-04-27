@@ -105,8 +105,6 @@
 })(window.jwplayer);
 </script>
 
-<h2>Audio Single</h2>
-
 <h2>HD Menu Setup</h2>
 <div id="hd-container">before set up</div>
 <script type="text/javascript">
@@ -162,6 +160,19 @@
                         width: 1280
                     }
                 ],
+                tracks: [
+                    { file: "assets/thumbs.vtt", kind: "thumbnails" },
+                    {file: '//playertest.longtailvideo.com/chapters/sintel-chapters.vtt', kind: 'chapters'},
+                    {file: '//playertest.longtailvideo.com/captions/sintel-ch.srt', label: 'Chinese'},
+                    {file: '//playertest.longtailvideo.com/captions/sintel-fa.srt', label: 'Farsi'},
+                    {file: '//playertest.longtailvideo.com/captions/sintel-gr.srt', label: 'Greek'},
+                    {file: '//playertest.longtailvideo.com/captions/sintel-jp.srt', label: 'Japanese'},
+                    {file: '//playertest.longtailvideo.com/captions/sintel-ko.srt', label: 'Korean'},
+                    {file: '//playertest.longtailvideo.com/captions/sintel-pl.srt', label: 'Polish'},
+                    {file: '//playertest.longtailvideo.com/captions/sintel-ru.srt', label: 'Russian'},
+                    {file: '//playertest.longtailvideo.com/captions/sintel-sp.srt', label: 'Spanish'},
+                    {file: '//playertest.longtailvideo.com/captions/sintel-tr.srt', label: 'Turkish'}
+                ],
                 title: "4 quality levels"
             },
             {
@@ -176,6 +187,11 @@
                         width: 640
                     }
                 ],
+                tracks: [
+                    { file: "assets/thumbs.vtt", kind: "thumbnails" },
+                    {file: '//playertest.longtailvideo.com/chapters/sintel-chapters.vtt', kind: 'chapters'},
+                    {file: '//playertest.longtailvideo.com/captions/sintel-ch.srt', label: 'Chinese'}
+                ],
                 title: "2 quality toggle"
             },
             {
@@ -186,6 +202,7 @@
     });
 </script>
 
+<h2>Audio Single</h2>
 <div id="audio-container"></div>
 <script type="text/javascript">
     jwplayer('audio-container').setup({

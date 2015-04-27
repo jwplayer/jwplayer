@@ -223,6 +223,8 @@ define([
                     tracks: _model.get('captions'),
                     track: _model.get('captionsIndex')
                 });
+                // TODO: Fix for first item in a playlist not necessarily showing CC if it has it
+                _this._model.trigger('change:captionsList', _this._model, _this._model.get('captionsList'));
 
                 _load();
 

@@ -84,8 +84,8 @@ define([
                 time: timeSlider,
                 duration: text('jw-duration'),
                 hd: menu('jw-icon-hd'),
-                cc: button('jw-icon-cc'),
-                mute: button('jw-icon-mute', this._api.setMute),
+                cc: menu('jw-icon-cc'),
+                mute: button('jw-icon-volume', this._api.setMute),
                 volume: volumeSlider,
                 cast: button('jw-icon-cast'),
                 fullscreen: button('jw-icon-fullscreen', this._api.setFullscreen)
@@ -155,6 +155,23 @@ define([
             }, this);
             this.elements.hd.on('toggle', function(){
                 this._model.getVideo().setCurrentQuality((this._model.getVideo().getCurrentQuality() === 0) ? 1 : 0);
+            }, this);
+
+            this.elements.cc.on('select', function(value){
+                this._api.setCurrentCaptions(value);
+            }, this);
+            this.elements.cc.on('toggle', function(){
+                this._api.setCurrentCaptions((this._api.getCurrentCaptions()=== 0)? 1 : 0);
+            }, this);
+            this._model.on('change:captionsList', function(model, tracks) {
+                this.elements.cc.setup(tracks, model.captionsIndex);
+            }, this);
+            this._model.on('change:captionsIndex', function(model) {
+                this.elements.cc.selectItem(model.captionsIndex);
+            }, this);
+
+            this.elements.volumetooltip.on('toggle', function(){
+                this._api.setMute();
             }, this);
         },
 
