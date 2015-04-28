@@ -152,6 +152,7 @@ define([
             this._model.on('change:castAvailable', this.onCastAvailable, this);
             this._model.on('change:duration', this.onDuration, this);
             this._model.on('change:position', this.onElapsed, this);
+            this._model.on('change:fullscreen', this.onFullscreen, this);
 
             // Event listeners
             this.elements.volume.on('update', function(pct) {
@@ -226,6 +227,9 @@ define([
         },
         onDuration : function(model, val) {
             this.elements.duration.innerHTML = utils.timeFormat(val);
+        },
+        onFullscreen : function(model, val) {
+            utils.toggleClass(this.elements.fullscreen.element(), 'jw-off', val);
         },
 
         element: function() {
