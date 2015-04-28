@@ -55,7 +55,6 @@ define([
             this.trigger('dragEnd');
         },
         mouseMove : function(evt) {
-            console.log('dragin');
             var offset = this.getOffset(evt);
             var bounds = this.railBounds;
             var percentage;
