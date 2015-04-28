@@ -5,8 +5,9 @@ define([
     'view/thumbs',
     'view/components/slider',
     'view/components/timeslider',
-    'view/components/menu'
-], function(utils, _, Events, Thumbs, Slider, TimeSlider, NewMenu) {
+    'view/components/menu',
+    'view/components/volumetooltip'
+], function(utils, _, Events, Thumbs, Slider, TimeSlider, Menu, VolumeTooltip) {
 
     function button(icon, click) {
         var element = document.createElement('span');
@@ -38,9 +39,15 @@ define([
     }
 
     function menu(name) {
-        var newmenu = new NewMenu(name);
+        var createdMenu = new Menu(name);
 
-        return newmenu;
+        return createdMenu;
+    }
+
+    function tooltip(model, api, name){
+        var tp = new VolumeTooltip(model, api, name);
+
+        return tp;
     }
 
     function buildGroup(group, elements) {
@@ -87,6 +94,7 @@ define([
                 cc: menu('jw-icon-cc'),
                 mute: button('jw-icon-volume', this._api.setMute),
                 volume: volumeSlider,
+                volumetooltip: tooltip(this._model, this._api, 'jw-icon-volume'),
                 cast: button('jw-icon-cast'),
                 fullscreen: button('jw-icon-fullscreen', this._api.setFullscreen)
             };
@@ -103,6 +111,7 @@ define([
                 ],
                 right: [
                     this.elements.duration,
+                    this.elements.volumetooltip,
                     this.elements.hd,
                     this.elements.cc,
                     this.elements.mute,
@@ -146,6 +155,10 @@ define([
 
             // Event listeners
             this.elements.volume.on('update', function(pct) {
+                var val = pct.percentage;
+                this._api.setVolume(val);
+            }, this);
+            this.elements.volumetooltip.on('update', function(pct) {
                 var val = pct.percentage;
                 this._api.setVolume(val);
             }, this);
@@ -200,8 +213,10 @@ define([
             this.renderVolume(muted, model.get('volume'));
         },
         renderVolume : function(muted, vol) {
-            utils.toggleClass(this.elements.mute.element(), 'mute', muted);
+            utils.toggleClass(this.elements.mute.element(), 'jw-off', muted);
+            utils.toggleClass(this.elements.volumetooltip.element(), 'jw-off', muted);
             this.elements.volume.render(muted ? 0 : vol);
+            this.elements.volumetooltip.volumeSlider.render(muted ? 0 : vol);
         },
         onCastAvailable : function(model, val) {
             this.elements.cast.toggle(val);
