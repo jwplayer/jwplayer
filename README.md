@@ -1,5 +1,7 @@
 # <img height="70px" src="http://www.jwplayer.com/wp-content/uploads/JWP-GitHub-Banner-1.png" alt="JW Player Logo" title="JW Player Logo"/>
 
+[![Join the chat at https://gitter.im/jwplayer/jwplayer](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/jwplayer/jwplayer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 > Plays everywhere, every time.
 > 
 > JW Player is -the- open source solution for making video playback seamless across browsers and file types. 
