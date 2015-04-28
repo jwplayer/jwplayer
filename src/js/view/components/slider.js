@@ -44,6 +44,7 @@ define([
         },
         dragStart : function(evt) {
             this.trigger('dragStart');
+            this.railBounds = utils.bounds(this.elementRail);
             window.addEventListener('mouseup', this.mouseuplistener, false);
             window.addEventListener('mousemove', this.mousemovelistener, false);
         },
@@ -54,17 +55,27 @@ define([
             this.trigger('dragEnd');
         },
         mouseMove : function(evt) {
-
+            console.log('dragin');
             var offset = this.getOffset(evt);
-            var bounds = utils.bounds(this.elementRail);
+            var bounds = this.railBounds;
             var percentage;
 
-            if (evt.x < bounds.left) {
-                percentage = 0;
-            } else if (evt.x > bounds.right) {
-                percentage = 100;
+            if (this.orientation === 'horizontal'){
+                if (evt.x < bounds.left) {
+                    percentage = 0;
+                } else if (evt.x > bounds.right) {
+                    percentage = 100;
+                } else {
+                    percentage = utils.between(offset.x/bounds.width, 0, 1) * 100;
+                }
             } else {
-                percentage = utils.between(offset.x/bounds.width, 0, 1) * 100;
+                if (offset > bounds.height) {
+                    percentage = 0;
+                } else if (offset < 0) {
+                    percentage = 100;
+                } else {
+                    percentage = utils.between((bounds.height-offset.y)/bounds.height, 0, 1) * 100;
+                }
             }
 
             this.render(percentage);
@@ -72,12 +83,18 @@ define([
 
             return false;
         },
+
         update : function(percentage) {
             this.trigger('update', { percentage : percentage });
         },
         render : function(percentage) {
-            this.elementThumb.style.left = percentage + '%';
-            this.elementProgress.style.width = percentage + '%';
+            if(this.orientation === 'horizontal'){
+                this.elementThumb.style.left = percentage + '%';
+                this.elementProgress.style.width = percentage + '%';
+            } else {
+                this.elementThumb.style.bottom = percentage + '%';
+                this.elementProgress.style.height = percentage + '%';
+            }
         },
         updateBuffer : function(percentage) {
             this.elementBuffer.style.width = percentage + '%';

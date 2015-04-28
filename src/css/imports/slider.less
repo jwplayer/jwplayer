@@ -75,7 +75,7 @@
 .jwplayer .jw-slider-horizontal {
     //top: @def-rail-width-padding;
     width: @volume-rail-length;
-    height: @volume-rail-width;
+    height: @def-rail-width-padding;
 
     .jw-rail,
     .jw-buffer,
@@ -92,6 +92,7 @@
 
     .jw-progress,
     .jw-buffer {
+        width: 0;   // Default width, overridden by player.
         border: @def-border;
         border-style: solid none solid;
     }
@@ -103,17 +104,19 @@
     }
 
     .jw-thumb {
+        left: 0;    // Default position, overridden by player.
         margin-left: @thumb-size/-2;
     }
 }
 
 .jwplayer .jw-slider-vertical {
-    width: @def-rail-width;
+    width: @def-rail-width-padding;
     height: @volume-rail-length;
     bottom: 0em;
     position: absolute;
 
-    .jw-rail, .jw-buffer,
+    .jw-rail,
+    .jw-buffer,
     .jw-progress {
         bottom: 0;
         height: 100%;
@@ -126,17 +129,27 @@
         border-top-left-radius: 0;
     }
 
-    .jw-progress, .jw-buffer {
+    .jw-progress,
+    .jw-buffer {
+        height: 0;   // Default height, overridden by player.
         border-style: none solid solid solid;
     }
 
-    .jw-rail-group, .jw-rail, .jw-progress {
+    .jw-rail-group,
+    .jw-rail,
+    .jw-progress {
         bottom: 0;
-        width: @volume-rail-width;
+        width: @def-rail-width-padding;
         height: 100%;
     }
 
+    .jw-rail-group {
+        height: 4em;
+        position: relative;
+    }
+
     .jw-thumb {
+        bottom: 0;  // Default position, overridden by player.
         margin-bottom: @thumb-size/-2;
     }
 }
