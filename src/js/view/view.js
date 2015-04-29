@@ -736,8 +736,11 @@ define([
                 return;
             }
             var transformScale = provider.resize(width, height, _model.stretching);
-            utils.removeClass(_playerElement, 'jw-stretch-none jw-stretch-uniform jw-stretch-fill jw-stretch-exactfit');
-            utils.addClass(_playerElement, 'jw-stretch-' + _model.stretching);
+            if(_model.stretching && !utils.hasClass(_playerElement, 'jw-stretch-' + _model.stretching)) {
+                utils.removeClass(_playerElement,
+                    'jw-stretch-none jw-stretch-uniform jw-stretch-fill jw-stretch-exactfit');
+                utils.addClass(_playerElement, 'jw-stretch-' + _model.stretching);
+            }
 
             // poll resizing if video is transformed
             if (transformScale) {
