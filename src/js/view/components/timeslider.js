@@ -9,17 +9,17 @@ define([
 
     var TimeTip = Tooltip.extend({
         setup : function() {
-            var wrapper = document.createElement('div');
-            wrapper.className = 'jw-time-tip';
 
             this.text = document.createElement('span');
+            this.img  = document.createElement('span');
 
-            this.img = document.createElement('span');
-
+            var wrapper = document.createElement('div');
+            wrapper.className = 'jw-time-tip';
             wrapper.appendChild(this.img);
             wrapper.appendChild(this.text);
 
             utils.removeClass(this.el, 'jw-hidden');
+
             this.addContent(wrapper);
         },
 
@@ -41,11 +41,8 @@ define([
             this.timeTip.setup();
 
 
-
             // Store the attempted seek, until the previous one completes
             this.seekThrottled = _.throttle(this.performSeek, 400);
-
-            this.onPlaylistItem(this._model, this._model.get('playlistItem'));
 
             this._model
                 .on('change:playlistItem', this.onPlaylistItem, this)
@@ -60,6 +57,8 @@ define([
         // These overwrite Slider methods
         setup : function() {
             Slider.prototype.setup.apply(this, arguments);
+
+            this.onPlaylistItem(this._model, this._model.get('playlistItem'));
 
             this.elementRail.appendChild(this.timeTip.element());
             this.elementRail.addEventListener('mousemove', this.showTimeTooltip.bind(this), false);
@@ -99,6 +98,7 @@ define([
         },
         onPlaylistItem : function (model, playlistItem) {
             this.reset();
+
             var tracks = playlistItem.tracks;
             _.each(tracks, function (track) {
                 if (track && track.kind && track.kind.toLowerCase() === 'thumbnails') {

@@ -42,7 +42,7 @@ define([
 
             return { x : x, y : y};
         },
-        dragStart : function(evt) {
+        dragStart : function() {
             this.trigger('dragStart');
             this.railBounds = utils.bounds(this.elementRail);
             window.addEventListener('mouseup', this.mouseuplistener, false);

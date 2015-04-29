@@ -44,12 +44,6 @@ define([
         return createdMenu;
     }
 
-    function tooltip(model, api, name){
-        var tp = new VolumeTooltip(model, api, name);
-
-        return tp;
-    }
-
     function buildGroup(group, elements) {
         var elem = document.createElement('span');
         elem.className = 'jw-group jw-controlbar--' + group+'-group';
@@ -82,8 +76,10 @@ define([
 
             var timeSlider = new TimeSlider(this._model, this._api);
             var volumeSlider = new Slider('jw-volume', 'horizontal');
+            var volumeTooltip = new VolumeTooltip(this._model, 'jw-icon-volume');
 
             this.elements = {
+                alt: text('jw-alttext'),
                 play: button('jw-playback-toggle-icon', this._api.play),
                 prev: button('jw-icon-prev', this._api.playlistPrev),
                 next: button('jw-icon-next', this._api.playlistNext),
@@ -94,7 +90,7 @@ define([
                 cc: menu('jw-icon-cc'),
                 mute: button('jw-icon-volume', this._api.setMute),
                 volume: volumeSlider,
-                volumetooltip: tooltip(this._model, this._api, 'jw-icon-volume'),
+                volumetooltip: volumeTooltip,
                 cast: button('jw-icon-cast'),
                 fullscreen: button('jw-icon-fullscreen', this._api.setFullscreen)
             };
@@ -107,7 +103,8 @@ define([
                     this.elements.elapsed
                 ],
                 center: [
-                    this.elements.time
+                    this.elements.time,
+                    this.elements.alt
                 ],
                 right: [
                     this.elements.duration,
@@ -145,10 +142,10 @@ define([
 
 
             // Listen for model changes
-            this._model.on('change:playlist', this.onPlaylist, this);
-            this._model.on('change:playlistItem', this.onPlaylistItem, this);
             this._model.on('change:volume', this.onVolume, this);
             this._model.on('change:mute', this.onMute, this);
+            this._model.on('change:playlist', this.onPlaylist, this);
+            this._model.on('change:playlistItem', this.onPlaylistItem, this);
             this._model.on('change:castAvailable', this.onCastAvailable, this);
             this._model.on('change:duration', this.onDuration, this);
             this._model.on('change:position', this.onElapsed, this);
@@ -200,10 +197,16 @@ define([
             this.elements.duration.innerHTML = '';
             this.elements.elapsed.innerHTML = '';
 
-            this._model.get('mediaModel').on('change:levels', function(model, levels) {
-                this.elements.hd.setup(levels, model.currentLevel);
+            // Hide the time slider until we know if it is live or not
+            utils.addClass(this.elements.time.element(), 'jw-hidden');
+            utils.addClass(this.elements.alt, 'jw-hidden');
+
+            this._model.mediaModel.on('change:isLive', this.onLiveChange, this);
+
+            this._model.mediaModel.on('change:levels', function(model, levels) {
+                this.elements.hd.setup(levels, model.get('currentLevel'));
             }, this);
-            this._model.get('mediaModel').on('change:currentLevel', function(model, level) {
+            this._model.mediaModel.on('change:currentLevel', function(model, level) {
                 this.elements.hd.selectItem(level);
             }, this);
         },
@@ -230,6 +233,12 @@ define([
         },
         onFullscreen : function(model, val) {
             utils.toggleClass(this.elements.fullscreen.element(), 'jw-off', val);
+        },
+        onLiveChange : function(model, isLive) {
+            this.elements.alt.innerHTML = 'Live Broadcast';
+
+            utils.toggleClass(this.elements.time.element(), 'jw-hidden', isLive);
+            utils.toggleClass(this.elements.alt, 'jw-hidden', !isLive);
         },
 
         element: function() {
