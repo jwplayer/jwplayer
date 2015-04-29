@@ -153,6 +153,8 @@ define([
             this._model.on('change:duration', this.onDuration, this);
             this._model.on('change:position', this.onElapsed, this);
             this._model.on('change:fullscreen', this.onFullscreen, this);
+            this._model.on('change:captionsList', this.onCaptionsList, this);
+            this._model.on('change:captionsIndex', this.onCaptionsIndex, this);
 
             // Event listeners
             this.elements.volume.on('update', function(pct) {
@@ -171,17 +173,12 @@ define([
                 this._model.getVideo().setCurrentQuality((this._model.getVideo().getCurrentQuality() === 0) ? 1 : 0);
             }, this);
 
-            this.elements.cc.on('select', function(value){
-                this._api.setCurrentCaptions(value);
+            this.elements.cc.on('select', function(value) {
+                this._model.set('captionsIndex', value);
             }, this);
-            this.elements.cc.on('toggle', function(){
-                this._api.setCurrentCaptions((this._api.getCurrentCaptions()=== 0)? 1 : 0);
-            }, this);
-            this._model.on('change:captionsList', function(model, tracks) {
-                this.elements.cc.setup(tracks, model.captionsIndex);
-            }, this);
-            this._model.on('change:captionsIndex', function(model) {
-                this.elements.cc.selectItem(model.captionsIndex);
+            this.elements.cc.on('toggle', function() {
+                var index = this._model.get('captionsIndex');
+                this._model.set('captionsIndex', index ? 0 : 1);
             }, this);
 
             this.elements.volumetooltip.on('toggle', function(){
@@ -189,6 +186,13 @@ define([
             }, this);
         },
 
+        onCaptionsList: function(model, tracks) {
+            var index = model.get('captionsIndex');
+            this.elements.cc.setup(tracks, index);
+        },
+        onCaptionsIndex: function(model, index) {
+            this.elements.cc.selectItem(index);
+        },
         onPlaylist : function(model, playlist) {
             var display = (playlist.length > 1);
             this.elements.next.toggle(display);

@@ -1,11 +1,11 @@
 package com.longtailvideo.jwplayer.events {
 import flash.events.Event;
 
-public class CaptionsParsedEvent extends PlayerEvent {
-    public static const CAPTIONS_PARSED:String = "WebVTTParsed";
+public class SubtitlesTrackDataEvent extends PlayerEvent {
+    public static const TYPE:String = "subtitlesTrackData";
 
-    public function CaptionsParsedEvent(type:String, name:String, captions:Array) {
-        super(type);
+    public function SubtitlesTrackDataEvent(name:String, captions:Array) {
+        super(TYPE);
         _name = name;
         _captions = captions;
     }
@@ -23,12 +23,12 @@ public class CaptionsParsedEvent extends PlayerEvent {
     }
 
     public override function clone():Event {
-        return new CaptionsParsedEvent(type, _name, _captions);
+        return new SubtitlesTrackDataEvent(_name, _captions);
     }
 
     override public function toJsObject():Object {
         return {
-            type: CAPTIONS_PARSED,
+            type: TYPE,
             name: name,
             captions: captions
         };

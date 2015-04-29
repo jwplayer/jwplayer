@@ -8,14 +8,97 @@ define([
     /** Displays closed captions or subtitles on top of the video. **/
     var Captions = function(_model) {
 
+        // Reset and load external captions on playlist item
         _model.on('change:playlistItem', _itemHandler, this);
 
-        var _tracks = [],
+        // Listen for captions menu index changes from the view
+        _model.on('change:captionsIndex', _captionsIndexHandler, this);
 
-            /** Counter for downloading all the tracks **/
-            _dlCount = 0,
-            /** Selected track still loading **/
-            _waiting = -1;
+        // Listen for provider subtitle tracks
+        //   ignoring provider "subtitlesTrackChanged" since index should be managed here
+        _model.mediaController.on('subtitlesTracks', function(e) {
+            _tracks = [];
+            _tracksById = {};
+            _metaCuesByTextTime = {};
+            _unknownCount = 0;
+            var tracks = e.tracks || [];
+            for (var i = 0; i < tracks.length; i++) {
+                var track = tracks[i];
+                track.id = track.name;
+                track.label = track.name || track.language;
+                _addTrack(track);
+            }
+
+            var captionsMenu = _captionsMenu();
+            this.setCaptionsList(captionsMenu);
+            _selectDefaultIndex();
+
+        }, this);
+
+        // Append data to subtitle tracks
+        _model.mediaController.on('subtitlesTrackData', function(e) {
+            var track = _tracksById[e.name];
+            if (!track) {
+                // Player expects that tracks were received in 'subtitlesTracks' event
+                return;
+            }
+            var cues = e.captions || [];
+            var sort = false;
+            for (var i=0; i<cues.length; i++) {
+                var cue = cues[i];
+                var cueId = e.name +'_'+ cue.begin +'_'+ cue.end;
+                if (!_metaCuesByTextTime[cueId]) {
+                    _metaCuesByTextTime[cueId] = cue;
+                    track.data.push(cue);
+                    sort = true;
+                }
+            }
+            if (sort) {
+                track.data.sort(function(a, b) {
+                    return a.begin - b.begin;
+                });
+            }
+        }, this);
+
+        // Listen for legacy Flash RTMP/MP4/608 metadata closed captions
+        _model.mediaController.on('meta', function(e) {
+            var metadata = e.metadata;
+            if (!metadata) {
+                return;
+            }
+            if (metadata.provider) {
+                console.log(metadata.provider, metadata);
+            }
+            if (metadata.type === 'textdata') {
+                var track = _tracksById[metadata.trackid];
+                if (!track) {
+                    track = {
+                        kind: 'captions',
+                        id: metadata.trackid,
+                        data: []
+                    };
+                    _addTrack(track);
+                    var captionsMenu = _captionsMenu();
+                    this.setCaptionsList(captionsMenu);
+                }
+                var time = e.position || _model.get('position');
+                var cueId = '' + Math.round(time * 10) + '_' + metadata.text;
+                var cue = _metaCuesByTextTime[cueId];
+                if (!cue) {
+                    cue = {
+                        begin: time,
+                        text: metadata.text
+                    };
+                    _metaCuesByTextTime[cueId] = cue;
+                    track.data.push(cue);
+                }
+            }
+        }, this);
+
+        var _tracks = [],
+            _tracksById = {},
+            _metaCuesByTextTime = {},
+            _unknownCount = 0;
 
         function _errorHandler(error) {
             utils.log('CAPTIONS(' + error + ')');
@@ -24,70 +107,64 @@ define([
         /** Listen to playlist item updates. **/
         function _itemHandler(model, item) {
             _tracks = [];
-            _dlCount = 0;
+            _tracksById = {};
+            _metaCuesByTextTime = {};
+            _unknownCount = 0;
 
             var tracks = item.tracks,
-                captions = [],
-                i,
-                label,
-                defaultTrack = 0,
-                file = '';
+                track, kind, i;
 
             for (i = 0; i < tracks.length; i++) {
-                var kind = tracks[i].kind.toLowerCase();
+                track = tracks[i];
+                kind = track.kind.toLowerCase();
                 if (kind === 'captions' || kind === 'subtitles') {
-                    captions.push(tracks[i]);
-                }
-            }
-
-            for (i = 0; i < captions.length; i++) {
-                file = captions[i].file;
-                if (file) {
-                    if (!captions[i].label) {
-                        captions[i].label = i.toString();
-
+                    if (track.file) {
+                        _addTrack(track);
+                        _load(track);
+                    } else if (track.data) {
+                        _addTrack(track);
                     }
-                    _tracks.push(captions[i]);
-                    _load(_tracks[i].file, i);
                 }
             }
-
-            for (i = 0; i < _tracks.length; i++) {
-                if (_tracks[i]['default']) {
-                    defaultTrack = i + 1;
-                    break;
-                }
-            }
-
-            label = _model.get('captionLabel');
 
             var captionsMenu = _captionsMenu();
-            if (label) {
-                for (i = 0; i < captionsMenu.length; i++) {
-                    if (label === captionsMenu[i].label) {
-                        defaultTrack = i;
-                        break;
-                    }
-                }
-            }
-
-            _model.set('captionsList', captionsMenu);
-            _setCurrentCaptions(defaultTrack);
+            this.setCaptionsList(captionsMenu);
+            _selectDefaultIndex();
         }
 
-        /** Load captions. **/
-        function _load(file, index) {
-            utils.ajax(file, function(xmlEvent) {
-                _xmlReadHandler(xmlEvent, index);
+        function _captionsIndexHandler(model, captionsMenuIndex) {
+            if (captionsMenuIndex === 0) {
+                _setCaptionsTrack(model, null);
+                return;
+            }
+            _setCaptionsTrack(model, _tracks[captionsMenuIndex-1]);
+        }
+
+        function _addTrack(track) {
+            track.id = track.id || track.name || track.file || ('cc' + _tracks.length);
+            track.data = track.data || [];
+            if (!track.label) {
+                track.label = 'Unknown CC';
+                _unknownCount++;
+                if (_unknownCount > 1) {
+                    track.label += ' (' + _unknownCount + ')';
+                }
+            }
+            _tracks.push(track);
+            _tracksById[track.id] = track;
+        }
+
+        function _load(track) {
+            utils.ajax(track.file, function(xmlEvent) {
+                _xmlReadHandler(xmlEvent, track);
             }, _xmlFailedHandler, true);
         }
 
-        function _xmlReadHandler(xmlEvent, index) {
+        function _xmlReadHandler(xmlEvent, track) {
             var rss = xmlEvent.responseXML ? xmlEvent.responseXML.firstChild : null,
                 parser;
-            _dlCount++;
-            // IE9 sets the firstChild element to the root <xml> tag
 
+            // IE9 sets the firstChild element to the root <xml> tag
             if (rss) {
                 if (parsers.localName(rss) === 'xml') {
                     rss = rss.nextSibling;
@@ -103,96 +180,81 @@ define([
                 parser = new SrtParser();
             }
             try {
-                var data = parser.parse(xmlEvent.responseText);
-                if (index < _tracks.length) {
-                    _tracks[index].data = data;
-                }
+                track.data = parser.parse(xmlEvent.responseText);
             } catch (e) {
-                _errorHandler(e.message + ': ' + _tracks[index].file);
-            }
-
-            if (_dlCount === _tracks.length) {
-                if (_waiting > 0) {
-                    _setCurrentCaptions(_waiting);
-                    _waiting = -1;
-                }
+                _errorHandler(e.message + ': ' + track.file);
             }
         }
 
         function _xmlFailedHandler(message) {
-            _dlCount++;
             _errorHandler(message);
-            if (_dlCount === _tracks.length) {
-                if (_waiting > 0) {
-                    _setCurrentCaptions(_waiting);
-                    _waiting = -1;
-                }
+        }
+
+        function _setCaptionsTrack(model, track) {
+            model.set('captionsTrack', track);
+            if (track) {
+                // update preference if an option was selected
+                model.set('captionLabel', track.label);
             }
         }
 
-        function _setCurrentCaptions(index) {
-            var captionsIndex = _selectCaptions(Math.floor(index));
-            _model.set('captionsIndex', captionsIndex);
-            if (captionsIndex === 0) {
-                _model.set('captionsTrack', null);
+        function _selectCaptions(captionsMenuIndex) {
+            if (captionsMenuIndex === 0 || captionsMenuIndex > _tracks.length) {
+                // API/User selected Off
+                _model.set('captionLabel', 'Off');
+                return 0;
             }
-        }
-
-        function _selectCaptions(index) {
-            var captionsIndex = 0;
-            var trackIndex = 0;
-            if (index > 0) {
-                captionsIndex = index;
-                trackIndex = index - 1;
-                if (trackIndex >= _tracks.length) {
-                    captionsIndex = 0;
-                }
-            }
-            if (captionsIndex === 0) {
-                return captionsIndex;
-            }
-
-            // Load new captions
-            if (_tracks[trackIndex].data) {
-                _model.set('captionLabel', _tracks[trackIndex].label);
-                _model.set('captionsTrack', _tracks[trackIndex].data);
-
-            } else if (_dlCount === _tracks.length) {
-                // selected captions file cannot be selected
-                _errorHandler('file not loaded: ' + _tracks[trackIndex].file);
-                if (captionsIndex !== 0) {
-                    // turn captions off
-                    captionsIndex = 0;
-                }
-            } else {
-                _waiting = index;
-            }
-
-            return captionsIndex;
+            return Math.floor(captionsMenuIndex);
         }
 
         function _captionsMenu() {
             var list = [{
+                id: 'off',
                 label: 'Off'
             }];
             for (var i = 0; i < _tracks.length; i++) {
                 list.push({
+                    id: _tracks[i].id,
                     label: _tracks[i].label
                 });
             }
             return list;
         }
 
-        this.getCurrentCaptions = function() {
+        function _selectDefaultIndex() {
+            var captionsMenuIndex = 0;
+            var label = _model.get('captionLabel');
+            for (var i = 0; i < _tracks.length; i++) {
+                var track = _tracks[i];
+                if (label && label === track.label) {
+                    captionsMenuIndex = i + 1;
+                    break;
+                } else if (track['default'] || track.defaulttrack) {
+                    captionsMenuIndex = i + 1;
+                } else if (track.autoselect) {
+                    // TODO: auto select track by comparing track.language to system lang
+                }
+            }
+
+            // set the index without the side effect of storing the Off label in _selectCaptions
+            _model.set('captionsIndex', captionsMenuIndex);
+        }
+
+        this.getCurrentIndex = function() {
             return _model.get('captionsIndex');
         };
 
-        this.setCurrentCaptions = function(index) {
-            _setCurrentCaptions(index);
+        this.setCurrentIndex = function(captionsMenuIndex) {
+            captionsMenuIndex = _selectCaptions(captionsMenuIndex);
+            _model.set('captionsIndex', captionsMenuIndex);
         };
 
         this.getCaptionsList = function() {
             return _model.get('captionsList');
+        };
+
+        this.setCaptionsList = function(captionsMenu) {
+            _model.set('captionsList', captionsMenu);
         };
     };
 

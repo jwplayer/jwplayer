@@ -38,8 +38,6 @@ public class Player extends Sprite implements IPlayer {
         _model = newModel(new PlayerConfig(this.soundTransform));
 
         _view = newView(_model);
-        _view.addEventListener(CaptionsEvent.JWPLAYER_CAPTIONS_CHANGED, _captionsChanged);
-        _view.addEventListener(CaptionsEvent.JWPLAYER_CAPTIONS_LIST, _captionsList);
 
         _controller = newController(_model, _view);
         _controller.addEventListener(PlayerEvent.JWPLAYER_READY, playerReady, false, -1);
@@ -142,8 +140,10 @@ public class Player extends Sprite implements IPlayer {
         return 0;
     }
 
-    public function setCurrentCaptions(index:Number):void {
+    public function setCurrentCaptions(index:Number):void {}
 
+    public function setSubtitlesTrack(index:Number):void {
+        _model.currentSubtitlesTrack = index - 1;
     }
 
     public function getSafeRegion():Rectangle {
@@ -213,7 +213,8 @@ public class Player extends Sprite implements IPlayer {
                 .on('mute', mute)
                 .on('volume', volume)
                 .on('stretch', stretch)
-                .on('setCurrentQuality', setCurrentQuality);
+                .on('setCurrentQuality', setCurrentQuality)
+                .on('setSubtitlesTrack', setSubtitlesTrack);
 
         // Send ready event to browser
         SwfEventRouter.triggerJsEvent('ready');
@@ -234,18 +235,6 @@ public class Player extends Sprite implements IPlayer {
 
         // Send Setup Error to browser
         SwfEventRouter.error(0, evt.message);
-    }
-
-    protected function _captionsChanged(evt:CaptionsEvent):void {
-        if (_model.media) {
-            _model.media.currentSubtitlesTrack = evt.currentTrack - 1;
-        }
-    }
-
-    protected function _captionsList(evt:CaptionsEvent):void {
-        if (_model.media) {
-            _model.media.currentSubtitlesTrack = evt.currentTrack - 1;
-        }
     }
 }
 }

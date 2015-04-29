@@ -264,6 +264,12 @@ define([
         this.playVideo = function() {
             _provider.play();
         };
+
+        this.setVideoSubtitleTrack = function(trackIndex) {
+            if (_provider.setSubtitlesTrack) {
+                _provider.setSubtitlesTrack(trackIndex);
+            }
+        }
     };
 
     // Represents the state of the provider/media element

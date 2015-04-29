@@ -98,6 +98,19 @@ public class Model extends GlobalEventDispatcher {
         return null;
     }
 
+    public function get currentSubtitlesTrack():Number {
+        if (_currentMedia) {
+            return _currentMedia.currentSubtitlesTrack;
+        }
+        return -1;
+    }
+
+    public function set currentSubtitlesTrack(index:Number):void {
+        if (_currentMedia) {
+            _currentMedia.currentSubtitlesTrack = index;
+        }
+    }
+
     /**
      * The current player state
      */
