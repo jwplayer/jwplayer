@@ -307,6 +307,13 @@ define([
                 utils.toggleClass(_controlsLayer, 'jw-cast-available', val);
             });
 
+            // set initial state
+            if(_model.get('stretching')){
+                _onStretchChange(_model, _model.get('stretching'));
+            }
+            // watch for changes
+            _model.on('change:stretching', _onStretchChange);
+
             _model.on('change:castState', function(evt) {
                 if (!_castDisplay) {
                     _castDisplay = new CastDisplay(_model.id);
@@ -360,6 +367,13 @@ define([
                 _resize(_model.width, _model.height);
             }, 0);
         };
+
+        function _onStretchChange (model, newVal, oldVal) {
+            if(oldVal){
+                utils.removeClass(_playerElement, 'jw-stretch-' + oldVal);
+            }
+            utils.addClass(_playerElement, 'jw-stretch-' + newVal);
+        }
 
         function _componentFadeListeners(comp) {
             if (comp) {
@@ -736,6 +750,7 @@ define([
                 return;
             }
             var transformScale = provider.resize(width, height, _model.stretching);
+
             // poll resizing if video is transformed
             if (transformScale) {
                 clearTimeout(_resizeMediaTimeout);
