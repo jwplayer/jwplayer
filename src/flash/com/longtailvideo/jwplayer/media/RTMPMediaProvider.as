@@ -7,6 +7,7 @@ import com.longtailvideo.jwplayer.player.PlayerState;
 import com.longtailvideo.jwplayer.utils.AssetLoader;
 import com.longtailvideo.jwplayer.utils.NetClient;
 import com.longtailvideo.jwplayer.utils.RootReference;
+import com.longtailvideo.jwplayer.utils.Utils;
 import com.wowza.encryptionAS3.TEA;
 
 import flash.events.AsyncErrorEvent;
@@ -288,24 +289,31 @@ public class RTMPMediaProvider extends MediaProvider {
 
     /** Get metadata information from netstream class. **/
     public function onClientData(data:Object):void {
-
         switch (data.type) {
             // Stream metadata received
             case 'metadata':
-                if (!_metadata) {
-                    // Only send initial metadata
-                    _metadata = true;
-                    if (data.duration) {
-                        _item.duration = data.duration;
-                        // Support old item.start call
-                        if (_item.start) {
-                            seek(_item.start);
-                        }
+                if (data.width && data.height) {
+                    _video.width = data.width;
+                    _video.height = data.height;
+                    resize(_config.width, _config.height);
+                }
+                if (data.duration && _item.duration < 1) {
+                    _item.duration = data.duration;
+                    // Support old item.start call
+                    if (_item.start && !_metadata) {
+                        _metadata = true;
+                        seek(_item.start);
                     }
-                    if (data.width) {
-                        _video.width = data.width;
-                        _video.height = data.height;
-                        resize(_config.width, _config.height);
+                }
+                if (data.hasCuePoints && data.cuePoints is Array) {
+                    for (var i:uint = data.cuePoints.length; i--;) {
+                        var cue:* = data.cuePoints[i];// this is an array with object props
+                        data.cuePoints[i] = {
+                            type: cue.type,
+                            name: cue.name,
+                            time: cue.time,
+                            parameters: Utils.extend({}, cue.parameters)
+                        };
                     }
                 }
                 data.provider = "rtmp";
