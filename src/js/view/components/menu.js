@@ -25,7 +25,7 @@ define([
                 var elem = utils.createElement(innerHtml);
                 this.addContent(elem);
 
-                this.selectListener = this.select.bind(this)
+                this.selectListener = this.select.bind(this);
                 this.content.addEventListener('click', this.selectListener);
             }
 

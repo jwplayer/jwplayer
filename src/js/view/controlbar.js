@@ -142,7 +142,7 @@ define([
             this.onPlaylist(this._model, this._model.get('playlist'));
             this.onPlaylistItem(this._model, this._model.get('playlistItem'));
             this.onCastAvailable(this._model, this._model.get('castAvailable'));
-
+            this.onCaptionsList(this._model, this._model.get('captionsList'));
 
             // Listen for model changes
             this._model.on('change:playlist', this.onPlaylist, this);

@@ -269,7 +269,7 @@ define([
             if (_provider.setSubtitlesTrack) {
                 _provider.setSubtitlesTrack(trackIndex);
             }
-        }
+        };
     };
 
     // Represents the state of the provider/media element

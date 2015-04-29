@@ -222,7 +222,10 @@ define([
                     index: _model.get('item'),
                     item: _model.get('playlistItem')
                 });
-                _this._model.trigger('change:captionsList', _this._model, _this._model.get('captionsList'));
+                _this.trigger(events.JWPLAYER_CAPTIONS_LIST, {
+                    tracks: _model.get('captions'),
+                    track: _model.get('captionsIndex')
+                });
 
                 _load();
 
