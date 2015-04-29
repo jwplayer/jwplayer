@@ -4,9 +4,8 @@ define([
     'utils/helpers'
 ], function(Tooltip, Slider, utils) {
     var VolumeTooltip = Tooltip.extend({
-        'constructor' : function(_model, _api, name) {
+        'constructor' : function(_model, name) {
             this._model = _model;
-            this._api = _api;
 
             Tooltip.call(this, name);
 
