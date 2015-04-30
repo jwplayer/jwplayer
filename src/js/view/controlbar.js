@@ -174,11 +174,11 @@ define([
             }, this);
 
             this.elements.cc.on('select', function(value) {
-                this._model.set('captionsIndex', value);
+                this._api.setCurrentCaptions(value);
             }, this);
             this.elements.cc.on('toggle', function() {
                 var index = this._model.get('captionsIndex');
-                this._model.set('captionsIndex', index ? 0 : 1);
+                this._api.setCurrentCaptions(index ? 0 : 1);
             }, this);
 
             this.elements.volumetooltip.on('toggle', function(){

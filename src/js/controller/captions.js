@@ -6,7 +6,7 @@ define([
 ], function(parsers, SrtParser, DfxpParser, utils) {
 
     /** Displays closed captions or subtitles on top of the video. **/
-    var Captions = function(_model) {
+    var Captions = function(_api, _model) {
 
         // Reset and load external captions on playlist item
         _model.on('change:playlistItem', _itemHandler, this);
@@ -192,19 +192,13 @@ define([
 
         function _setCaptionsTrack(model, track) {
             model.set('captionsTrack', track);
+
             if (track) {
                 // update preference if an option was selected
                 model.set('captionLabel', track.label);
+            } else {
+                model.set('captionLabel', 'Off');
             }
-        }
-
-        function _selectCaptions(captionsMenuIndex) {
-            if (captionsMenuIndex === 0 || captionsMenuIndex > _tracks.length) {
-                // API/User selected Off
-                _model.set('captionLabel', 'Off');
-                return 0;
-            }
-            return Math.floor(captionsMenuIndex);
         }
 
         function _captionsMenu() {
@@ -244,13 +238,12 @@ define([
             return _model.get('captionsIndex');
         };
 
-        this.setCurrentIndex = function(captionsMenuIndex) {
-            captionsMenuIndex = _selectCaptions(captionsMenuIndex);
-            _model.set('captionsIndex', captionsMenuIndex);
-        };
-
         this.getCaptionsList = function() {
             return _model.get('captionsList');
+        };
+
+        this.setCurrentIndex = function(captionsMenuIndex) {
+            _api.setCurrentCaptions(captionsMenuIndex);
         };
 
         this.setCaptionsList = function(captionsMenu) {

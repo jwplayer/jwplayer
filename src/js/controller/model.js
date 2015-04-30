@@ -266,6 +266,8 @@ define([
         };
 
         this.setVideoSubtitleTrack = function(trackIndex) {
+            this.set('captionsIndex', trackIndex);
+
             if (_provider.setSubtitlesTrack) {
                 _provider.setSubtitlesTrack(trackIndex);
             }

@@ -77,7 +77,7 @@ define([
 
             _model = this._model.setup(config);
             _view  = this._view  = new View(_api, _model);
-            _captions = new Captions(_model);
+            _captions = new Captions(_api, _model);
             _setup = new Setup(_api, _model, _view);
 
             // Legacy, should be removed
@@ -185,15 +185,6 @@ define([
                     _this.trigger(events.JWPLAYER_CAPTIONS_LIST, {
                         tracks: captionsList,
                         track: _getCurrentCaptions()
-                    });
-                });
-                _model.on('change:captionsIndex', function(model, captionsMenuIndex) {
-                    // update provider subtitle track
-                    _model.setVideoSubtitleTrack(captionsMenuIndex);
-
-                    _this.trigger(events.JWPLAYER_CAPTIONS_CHANGED, {
-                        tracks: _getCaptionsList(),
-                        track: captionsMenuIndex
                     });
                 });
 
@@ -478,8 +469,16 @@ define([
                 }
                 return null;
             }
+
             function _setCurrentCaptions(index) {
-                _captions.setCurrentIndex(index);
+                // update provider subtitle track
+                _model.setVideoSubtitleTrack(index);
+
+                _this.trigger(events.JWPLAYER_CAPTIONS_CHANGED, {
+                    tracks: _getCaptionsList(),
+                    track: index
+                });
+
             }
 
             function _getCurrentCaptions() {
