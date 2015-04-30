@@ -14,15 +14,13 @@ define([
     'plugins/plugins',
     'playlist/loader',
     'playlist/playlist',
-    'view/Skin',
     'utils/backbone.events',
     'utils/underscore',
     'events/events'
-], function(plugins, PlaylistLoader, Playlist, Skin, Events, _, events) {
+], function(plugins, PlaylistLoader, Playlist, Events, _, events) {
 
     var Setup = function(_api, _model, _view, _errorTimeoutSeconds) {
         var _this = this,
-            _skin,
             _pluginLoader,
             _playlistLoader,
             _setupFailureTimeout;
@@ -187,20 +185,14 @@ define([
         }
 
         function _loadSkin() {
-            _skin = new Skin();
-            _skin.load(_model.config.skin, _skinLoaded, _skinError);
-        }
-
-        function _skinLoaded() {
-            _taskComplete(LOAD_SKIN);
-        }
-
-        function _skinError(message) {
-            _error('Error loading skin', message);
+            // TODO : load CSS file if needed
+            _.defer(function() {
+                _taskComplete(LOAD_SKIN);
+            });
         }
 
         function _setupComponents() {
-            _view.setup(_skin);
+            _view.setup();
             _taskComplete(SETUP_COMPONENTS);
         }
 

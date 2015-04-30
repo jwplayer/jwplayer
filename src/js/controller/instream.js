@@ -498,7 +498,6 @@ define([
         // for supporting api interface in html5 display
         _this.getControls = modelGetter('controls');
 
-        _this.skin = _view._skin;
         _this.id = _controller.id + '_instream';
 
         return _this;

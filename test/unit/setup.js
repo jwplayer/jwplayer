@@ -59,6 +59,7 @@ define([
         }, assert.async());
     });
 
+    /*
     test('fails - skin error', function(assert) {
         var model = getModel({
             playlist: [{sources:[{file:'file.mp4'}]}],
@@ -71,6 +72,7 @@ define([
             assert.ok(message, 'setup failed with message: ' + message);
         }, assert.async());
     });
+    */
 
     test('succeeds when model.playlist.sources is valid', function(assert) {
         var model = getModel({

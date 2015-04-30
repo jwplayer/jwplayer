@@ -75,6 +75,8 @@ define([
                 _interruptPlay,
                 _this = this;
 
+            var _video = function() { return _model.getVideo(); };
+
             _model = this._model.setup(config);
             _view  = this._view  = new View(_api, _model);
             _captions = new Captions(_api, _model);
@@ -82,17 +84,12 @@ define([
 
             // Legacy, should be removed
             _this.id = this._model.id;
-            // Should be removed when we replace skins.  Should be necessary for instream (_controller.skin is called)
-            this.skin = _view._skin;
 
             _setup.on(events.JWPLAYER_READY, _playerReady, this);
             _setup.on(events.JWPLAYER_SETUP_ERROR, function(evt) {
                 _this.setupError(evt.message);
             });
             _setup.start();
-
-            // Helper function
-            var _video = this._model.getVideo;
 
             _model.mediaController.on(events.JWPLAYER_MEDIA_COMPLETE, function() {
                 // Insert a small delay here so that other complete handlers can execute
