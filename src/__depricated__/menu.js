@@ -1,7 +1,7 @@
 define([
     'view/overlay',
     'view/touch',
-    'events/events',
+    '../../../chromecast/node_modules/grunt-browserify/node_modules/watchify/node_modules/browserify/node_modules/events/events',
     'utils/helpers',
     'utils/css',
     'utils/underscore'
