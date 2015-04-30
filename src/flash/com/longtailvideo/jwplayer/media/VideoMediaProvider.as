@@ -235,8 +235,10 @@ public class VideoMediaProvider extends MediaProvider {
 
     /** Get metadata information from netstream class. **/
     public function onClientData(data:Object):void {
-        if (!data) return;
-        if (data.width) {
+        if (!data) {
+            return;
+        }
+        if (data.width && data.height) {
             _video.width = data.width;
             _video.height = data.height;
             resize(_config.width, _config.height);

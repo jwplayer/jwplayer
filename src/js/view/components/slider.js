@@ -34,8 +34,8 @@ define([
         getOffset : function(evt) {
             var target = evt.target;
             // offsetX is from the W3C standard, layerX is how Firefox does it
-            var x = evt.offsetX || evt.layerX;
-            var y = evt.offsetY || evt.layerY;
+            var x = _.isUndefined(evt.offsetX) ? evt.layerX : evt.offsetX;
+            var y = _.isUndefined(evt.offsetY) ? evt.layerY : evt.offsetY;
 
             x += target.offsetLeft;
             y += target.offsetTop;

@@ -77,7 +77,7 @@ define([
 
             _model = this._model.setup(config);
             _view  = this._view  = new View(_api, _model);
-            _captions = new Captions(_model);
+            _captions = new Captions(_api, _model);
             _setup = new Setup(_api, _model, _view);
 
             // Legacy, should be removed
@@ -184,13 +184,7 @@ define([
                 _model.on('change:captionsList', function(model, captionsList) {
                     _this.trigger(events.JWPLAYER_CAPTIONS_LIST, {
                         tracks: captionsList,
-                        track: model.get('captionsIndex')
-                    });
-                });
-                _model.on('change:captionsIndex', function(model, captionsIndex) {
-                    _this.trigger(events.JWPLAYER_CAPTIONS_CHANGED, {
-                        tracks: model.get('captions'),
-                        track: captionsIndex
+                        track: _getCurrentCaptions()
                     });
                 });
 
@@ -223,8 +217,6 @@ define([
                     tracks: _model.get('captions'),
                     track: _model.get('captionsIndex')
                 });
-                // TODO: Fix for first item in a playlist not necessarily showing CC if it has it
-                _this._model.trigger('change:captionsList', _this._model, _this._model.get('captionsList'));
 
                 _load();
 
@@ -477,12 +469,20 @@ define([
                 }
                 return null;
             }
-            function _setCurrentCaptions(caption) {
-                _captions.setCurrentCaptions(caption);
+
+            function _setCurrentCaptions(index) {
+                // update provider subtitle track
+                _model.setVideoSubtitleTrack(index);
+
+                _this.trigger(events.JWPLAYER_CAPTIONS_CHANGED, {
+                    tracks: _getCaptionsList(),
+                    track: index
+                });
+
             }
 
             function _getCurrentCaptions() {
-                return _captions.getCurrentCaptions();
+                return _captions.getCurrentIndex();
             }
 
             function _getCaptionsList() {

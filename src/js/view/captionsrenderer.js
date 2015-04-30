@@ -1,8 +1,9 @@
 define([
+    'utils/helpers',
     'utils/css',
     'events/states',
     'utils/underscore'
-], function(cssUtils, states, _) {
+], function(utils, cssUtils, states, _) {
     var _style = cssUtils.style;
 
     var _defaults = {
@@ -56,7 +57,7 @@ define([
                 _render('');
                 return;
             }
-            _select();
+            _select(captions.data);
         };
         
         /** Render the active caption. **/
@@ -65,13 +66,11 @@ define([
             var windowClassName = 'jw-captions-window';
             if (html) {
                 _textContainer.innerHTML = html;
-                windowClassName += ' jw-captions-window-active';
+                _captionsWindow.className = windowClassName + ' jw-captions-window-active';
             } else {
-                if (_textContainer.firstChild) {
-                    _textContainer.removeChild(_textContainer.firstChild);
-                }
+                _captionsWindow.className = windowClassName;
+                utils.empty(_textContainer);
             }
-            _captionsWindow.className = windowClassName;
         }
 
         this.resize = function () {
@@ -86,14 +85,17 @@ define([
         };
 
         /** Select a caption for rendering. **/
-        function _select() {
+        function _select(data) {
+            if (!data) {
+                return;
+            }
             var found = -1;
-            if (_current >= 0 && _intersects(_current)) {
+            if (_current >= 0 && _intersects(data, _position, _current)) {
                 // no change
                 return;
             }
-            for (var i = 0; i < _captionsTrack.length; i++) {
-                if (_intersects(i)) {
+            for (var i = 0; i < data.length; i++) {
+                if (_intersects(data, _position, i)) {
                     found = i;
                     break;
                 }
@@ -103,13 +105,13 @@ define([
                 _render('');
             } else if (found !== _current) {
                 _current = found;
-                _render(_captionsTrack[_current].text);
+                _render(data[_current].text);
             }
         }
 
-        function _intersects(i) {
-            return (_captionsTrack[i].begin <= _position &&
-                (i === _captionsTrack.length - 1 || _captionsTrack[i + 1].begin >= _position));
+        function _intersects(data, pos, i) {
+            return (data[i].begin <= pos &&
+                (i === data.length - 1 || data[i + 1].begin >= pos));
         }
 
         /** Constructor for the renderer. **/
@@ -175,7 +177,7 @@ define([
         this.update = function (position) {
             _position = position;
             if (_captionsTrack) {
-                _select();
+                _select(_captionsTrack.data);
             }
         };
 
@@ -190,7 +192,14 @@ define([
             this.update(pos);
         }, this);
         _model.mediaController.on('seek', function(e) {
+            // update captions while scrubbing
             this.update(e.position);
+        }, this);
+        _model.mediaController.on('subtitlesTrackData', function() {
+            // update captions after a provider's subtitle track changes
+            if (_captionsTrack) {
+                _select(_captionsTrack.data);
+            }
         }, this);
         _model.on('change:state', function(model, state) {
             switch (state) {

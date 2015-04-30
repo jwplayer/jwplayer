@@ -147,13 +147,20 @@ define([
 
                     }, this);
 
-                    _swf.on(events.JWPLAYER_ERROR, function(event) {
-                        console.error(event.code, event.message, event, this);
-                        this.sendEvent(events.JWPLAYER_MEDIA_ERROR, {
-                            message: 'Error loading media: File could not be played'
-                        });
-                        this.setState(states.IDLE);
-                    }, this);
+                    var forwardEventsWithData = [
+                        events.JWPLAYER_MEDIA_META,
+                        events.JWPLAYER_MEDIA_BUFFER,
+                        events.JWPLAYER_MEDIA_TIME,
+                        events.JWPLAYER_MEDIA_ERROR,
+                        'subtitlesTracks',
+                        'subtitlesTrackChanged',
+                        'subtitlesTrackData'
+                    ];
+
+                    var forwardEvents = [
+                        events.JWPLAYER_MEDIA_BUFFER_FULL,
+                        events.JWPLAYER_MEDIA_BEFORECOMPLETE
+                    ];
 
                     // jwplayer 6 flash player events (forwarded from AS3 Player, Controller, Model)
                     _swf.on(events.JWPLAYER_MEDIA_LEVELS, function(e) {
@@ -168,33 +175,21 @@ define([
 
                     }, this).on(events.JWPLAYER_PLAYER_STATE, function(e) {
                         var state = e.newstate;
-                        // TODO:: What is this for?
                         if (state === states.IDLE) {
                             return;
                         }
                         this.setState(state);
 
-                    }, this).on(events.JWPLAYER_MEDIA_META, function(e) {
+                    }, this).on(forwardEventsWithData.join(' '), function(e) {
                         this.sendEvent(e.type, e);
 
-                    }, this).on(events.JWPLAYER_MEDIA_BUFFER_FULL, function(e) {
-                        this.sendEvent(e.type);
-
-                    }, this).on(events.JWPLAYER_MEDIA_BUFFER, function(e) {
-                        this.sendEvent(e.type, e);
-
-                    }, this).on(events.JWPLAYER_MEDIA_TIME, function(e) {
-                        this.sendEvent(e.type, e);
-
-                    }, this).on(events.JWPLAYER_MEDIA_BEFORECOMPLETE, function(e) {
+                    }, this).on(forwardEvents.join(' '), function(e) {
                         this.sendEvent(e.type);
 
                     }, this).on(events.JWPLAYER_MEDIA_COMPLETE, function(e) {
                         this.setState(states.COMPLETE);
                         this.sendEvent(e.type);
 
-                    }, this).on(events.JWPLAYER_MEDIA_ERROR, function(e) {
-                        this.sendEvent(e.type, e);
                     }, this);
 
                     _swf.on(events.JWPLAYER_MEDIA_SEEK, function(e) {
@@ -212,6 +207,13 @@ define([
                         this.sendEvent(events.JWPLAYER_PROVIDER_CHANGED, e);
                     }, this);
 
+                    _swf.on(events.JWPLAYER_ERROR, function(event) {
+                        console.error(event.code, event.message, event, this);
+                        this.sendEvent(events.JWPLAYER_MEDIA_ERROR, {
+                            message: 'Error loading media: File could not be played'
+                        });
+                        this.setState(states.IDLE);
+                    }, this);
                 },
                 remove: function() {
                     _currentQuality = -1;
@@ -250,6 +252,9 @@ define([
                 },
                 getCurrentQuality: function() {
                     return _currentQuality;
+                },
+                setSubtitlesTrack: function(index) {
+                    _flashCommand('setSubtitlesTrack', index);
                 },
                 getName: function() {
                     if (_flashProviderType) {
