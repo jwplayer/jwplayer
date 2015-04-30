@@ -4,7 +4,7 @@ define([
     'utils/backbone.events',
     'events/states',
     'cast/display',
-    'view/captions',
+    'view/captionsrenderer',
     'view/display',
     'view/displayicon',
     'view/dock',
@@ -17,7 +17,7 @@ define([
     'utils/underscore',
     'handlebars-loader!templates/player.html'
 ], function(utils, events, Events, states, CastDisplay,
-            Captions, Display, DisplayIcon, Dock, Logo,
+            CaptionsRenderer, Display, DisplayIcon, Dock, Logo,
             Controlbar, Preview, RightClick, Title, cssUtils, _, playerTemplate) {
 
     var _styles = utils.style,
@@ -59,7 +59,7 @@ define([
             _logo,
             _title,
             _logoConfig = _.extend({}, _model.componentConfig('logo')),
-            _captions,
+            _captionsRenderer,
             _audioMode,
             _errorState = false,
             _showing = false,
@@ -220,18 +220,6 @@ define([
             });
         }
 
-        this.getCurrentCaptions = function() {
-            return _captions.getCurrentCaptions();
-        };
-
-        this.setCurrentCaptions = function(caption) {
-            _captions.setCurrentCaptions(caption);
-        };
-
-        this.getCaptionsList = function() {
-            return _captions.getCaptionsList();
-        };
-
         function _responsiveListener() {
             var bounds = _bounds(_playerElement),
                 containerWidth = Math.round(bounds.width),
@@ -319,6 +307,13 @@ define([
                 utils.toggleClass(_controlsLayer, 'jw-cast-available', val);
             });
 
+            // set initial state
+            if(_model.get('stretching')){
+                _onStretchChange(_model, _model.get('stretching'));
+            }
+            // watch for changes
+            _model.on('change:stretching', _onStretchChange);
+
             _model.on('change:castState', function(evt) {
                 if (!_castDisplay) {
                     _castDisplay = new CastDisplay(_model.id);
@@ -327,7 +322,7 @@ define([
                     };
                 }
                 if (evt.active) {
-                    utils.addClass(_captions, 'jw-captions-disabled');
+                    //utils.addClass(_captions, 'jw-captions-disabled');
                     _castDisplay.setState('connecting').setName(evt.deviceName).show();
 
                     _model.on('change:state', _castDisplay.statusDelegate);
@@ -340,7 +335,7 @@ define([
                     if (_controlbar.adMode()) {
                         _castAdsEnded();
                     }
-                    utils.removeClass(_captions, 'jw-captions-disable');
+                    //utils.removeClass(_captions, 'jw-captions-disable');
                     // redraw displayicon
                     _stateHandler(null, _model.get('state'));
                     _responsiveListener();
@@ -373,17 +368,18 @@ define([
             }, 0);
         };
 
+        function _onStretchChange (model, newVal, oldVal) {
+            if(oldVal){
+                utils.removeClass(_playerElement, 'jw-stretch-' + oldVal);
+            }
+            utils.addClass(_playerElement, 'jw-stretch-' + newVal);
+        }
+
         function _componentFadeListeners(comp) {
             if (comp) {
                 comp.element().addEventListener('mousemove', _cancelFade, false);
                 comp.element().addEventListener('mouseout', _resumeFade, false);
             }
-        }
-
-        function _captionsLoadedHandler() { //evt) {
-            //ios7captions
-            //_model.getVideo().addCaptions(evt.captionData);
-            // set current captions evt.captionData[_player.jwGetCurrentCaptions()]
         }
 
         function _mouseoutHandler() {
@@ -461,12 +457,6 @@ define([
         function _setupControls() {
             toggleControls();
             _model.on('change:controls', toggleControls);
-            _captions = new Captions(_api, _model);
-            _captions.on(events.JWPLAYER_CAPTIONS_LIST, forward);
-            _captions.on(events.JWPLAYER_CAPTIONS_CHANGED, forward);
-            _captions.on(events.JWPLAYER_CAPTIONS_LOADED, _captionsLoadedHandler);
-            _controlsLayer.appendChild(_captions.element());
-
 
             _preview = new Preview(_model);
             _controlsLayer.appendChild(_preview.element());
@@ -490,6 +480,13 @@ define([
             _dock = new Dock(_model);
             _controlsLayer.appendChild(_dock.element());
 
+            // captions rendering
+            _captionsRenderer = new CaptionsRenderer(_model);
+            _captionsRenderer.setup(_model.config.captions);
+
+            // captions should be place behind controls, and not hidden when controls are hidden
+            _controlsLayer.parentNode.insertBefore(_captionsRenderer.element(), _controlsLayer);
+
             var displayIcon = new DisplayIcon(_model);
             //toggle playback
             displayIcon.on('click', _api.play);
@@ -504,9 +501,9 @@ define([
                 _rightClickMenu.setup(_model, _playerElement, _controlsLayer);
             }
 
-            _controlbar = new Controlbar(_skin, _api, _model);
+            _controlbar = new Controlbar(_api, _model);
             _controlbar.on(events.JWPLAYER_USER_ACTION, _resetTapTimer);
-            _controlbar.on(events.JWPLAYER_CONTROLBAR_DRAGGING, _dragging);
+            _model.on('change:scrubbing', _dragging);
 
             _controlsLayer.appendChild(_controlbar.element());
 
@@ -535,8 +532,8 @@ define([
             }
         }
 
-        function _dragging(evt) {
-            if (evt.dragging) {
+        function _dragging(model, val) {
+            if (val) {
                 utils.addClass(_playerElement, 'jw-flag-dragging');
             } else {
                 utils.removeClass(_playerElement, 'jw-flag-dragging');
@@ -753,11 +750,13 @@ define([
                 return;
             }
             var transformScale = provider.resize(width, height, _model.stretching);
+
             // poll resizing if video is transformed
             if (transformScale) {
                 clearTimeout(_resizeMediaTimeout);
                 _resizeMediaTimeout = setTimeout(_resizeMedia, 250);
             }
+            _captionsRenderer.resize();
         }
 
         this.resize = function(width, height) {
@@ -772,15 +771,6 @@ define([
                 _playerElement.parentNode.replaceChild(_originalContainer, _playerElement);
             }
             utils.emptyElement(_playerElement);
-        };
-
-        this.completeSetup = function() {
-            window.addEventListener('beforeunload', function() {
-                if (!_isCasting()) { // don't call stop while casting
-                    // prevent video error in display on window close
-                    _api.stop();
-                }
-            });
         };
 
         /**

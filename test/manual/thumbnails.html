@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MP4 video file</title>
+    <script type="text/javascript" src="../../bin-debug/jwplayer.js"></script>
+    <link type="text/css" rel="stylesheet" href="styles/tests.css"  media="all" />
+</head>
+<body>
+
+<h2>Thumbnails</h2>
+
+<div id="container">before set up</div>
+<script type="text/javascript">
+    jwplayer("container").setup({
+        playlist: [
+            {
+                sources: [
+                    { file: "http://content.bitsontherun.com/videos/q1fx20VZ-52qL9xLP.mp4" },
+                    { file: "http://content.bitsontherun.com/videos/q1fx20VZ-27m5HpIu.webm" }
+                ],
+                image: "http://content.bitsontherun.com/thumbs/q1fx20VZ-480.jpg",
+                tracks: [
+                    { file: "assets/thumbs.vtt", kind: "thumbnails" },
+                    {file: 'assets/os/chapters/sintel-long-chapters.vtt', kind: 'chapters'}
+                ]
+            },
+            {
+                sources: [
+                    { file: "http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4" },
+                    { file: "http://content.bitsontherun.com/videos/bkaovAYt-27m5HpIu.webm" }
+                ],
+                image: "http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg"
+            }
+        ]
+    });
+</script>
+</body>
+</html>

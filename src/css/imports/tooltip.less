@@ -6,6 +6,10 @@
     visibility: visible;
 }
 
+.jwplayer .jw-icon-tooltip.jw-hidden {
+    display: none;
+}
+
 .jwplayer .jw-overlay:after {
     position: absolute;
     bottom: -0.5em;
@@ -33,6 +37,8 @@
         visibility: hidden;
     }
 
+    .jw-time-tip,
+    .jw-volume-tip,
     .jw-menu {
         position: relative;
         left: -50%;
@@ -42,6 +48,13 @@
         background-size: @def-background-size;
         border: @def-border;
         border-radius: @ui-padding;
+        margin: 0;
+    }
+
+    .jw-volume-tip {
+        height: 4em;
+        width: 0.7em;
+        display: block;
     }
 
     .jw-overlay .jw-contents {
@@ -49,7 +62,15 @@
         z-index: 1;
     }
 
+    .jw-time-tip {
+        text-align:center;
+        font-family: inherit;
+        font-size: 0.75em;
+        color: @inactive-color;
+    }
+
     .jw-overlay .jw-option {
+        list-style: none;
         height: 1.5em;
         font-family: inherit;
         font-size: 0.75em;
@@ -58,7 +79,9 @@
     }
 
     .jw-overlay .jw-option:hover,
-    .jw-overlay .jw-option.jw-active-option {
+    .jw-overlay .jw-option:before:hover,
+    .jw-overlay .jw-option.jw-active-option,
+    .jw-overlay .jw-option.jw-active-option:before{
         color: @hover-color;
     }
 

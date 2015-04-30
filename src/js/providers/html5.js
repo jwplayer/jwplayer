@@ -53,10 +53,6 @@ define([
         }
     }
 
-    function _round(number) {
-        return Math.floor(number*10) / 10;
-    }
-
     function VideoProvider(_playerId, _playerConfig) {
 
         // Current media state
@@ -165,7 +161,7 @@ define([
 
         function _durationUpdateHandler() {
             if (!_attached) { return; }
-            var newDuration = _round(_videotag.duration);
+            var newDuration = _videotag.duration;
             if (_duration !== newDuration) {
                 _duration = newDuration;
             }
@@ -181,7 +177,7 @@ define([
             if (!_attached) { return; }
 
             if (_this.state === states.PLAYING) {
-                _position = _round(_videotag.currentTime);
+                _position = _videotag.currentTime;
                 // do not allow _durationUpdateHandler to update _canSeek before _canPlayHandler does
                 if (evt) {
                     _canSeek = true;
@@ -455,7 +451,7 @@ define([
 
             if (_delayedSeek === 0) {
                 this.sendEvent(events.JWPLAYER_MEDIA_SEEK, {
-                    position: _position,
+                    position: _videotag.currentTime,
                     offset: seekPos
                 });
             }
@@ -718,8 +714,8 @@ define([
                         currentQuality: quality,
                         levels: _getPublicLevels(_levels)
                     });
-                    var time = _round(_videotag.currentTime);
-                    var duration = _round(_videotag.duration);
+                    var time = _videotag.currentTime;
+                    var duration = _videotag.duration;
                     if (duration <= 0) {
                         duration = _duration;
                     }

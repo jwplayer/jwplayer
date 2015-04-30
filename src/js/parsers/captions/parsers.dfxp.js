@@ -1,6 +1,7 @@
 define([
-    'utils/helpers'
-], function(utils) {
+    'utils/helpers',
+    'utils/strings'
+], function(utils, strings) {
 
     /** Component that loads and parses an DFXP file. **/
     var dfxp = function () {
@@ -13,21 +14,13 @@ define([
                     text: ''
                 }
             ];
-            data = data.replace(/^\s+/, '').replace(/\s+$/, '');
+            data = strings.trim(data).replace(/tts?:/g, '');
             var list = data.split('</p>');
-            var list2 = data.split('</tt:p>');
             var newlist = [];
-            var i;
-            for (i = 0; i < list.length; i++) {
+            for (var i = 0; i < list.length; i++) {
                 if (list[i].indexOf('<p') >= 0) {
-                    list[i] = list[i].substr(list[i].indexOf('<p') + 2).replace(/^\s+/, '').replace(/\s+$/, '');
+                    list[i] = strings.trim(list[i].substr(list[i].indexOf('<p') + 2));
                     newlist.push(list[i]);
-                }
-            }
-            for (i = 0; i < list2.length; i++) {
-                if (list2[i].indexOf('<tt:p') >= 0) {
-                    list2[i] = list2[i].substr(list2[i].indexOf('<tt:p') + 5).replace(/^\s+/, '').replace(/\s+$/, '');
-                    newlist.push(list2[i]);
                 }
             }
             list = newlist;
@@ -70,7 +63,7 @@ define([
                 entry.end = _seconds(data.substr(0, idx));
                 idx = data.indexOf('\">');
                 data = data.substr(idx + 2);
-                entry.text = data;
+                entry.text = strings.trim(data).replace(/>\s+</g, '><');
             });
 
             return entry;

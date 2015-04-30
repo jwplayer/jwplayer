@@ -15,7 +15,7 @@ define([
     var _defaults = {
         autostart: false,
         controls: true,
-        dragging : false,
+        scrubbing : false,
         // debug: undefined,
         fullscreen: false,
         height: 320,
@@ -94,6 +94,11 @@ define([
                     break;
 
                 case events.JWPLAYER_MEDIA_TIME:
+                    var isLive = (evt.duration === -1);
+
+                    this.mediaModel.set('isLive', isLive);
+                    this.mediaModel.set('position', evt.position);
+                    this.mediaModel.set('duration', evt.duration);
                     this.set('position', evt.position);
                     this.set('duration', evt.duration);
                     break;
@@ -102,14 +107,11 @@ define([
                     break;
 
                 case events.JWPLAYER_MEDIA_LEVELS:
+                    this.setQualityLevel(evt.currentQuality, evt.levels);
+                    this.mediaModel.set('levels', evt.levels);
+                    break;
                 case events.JWPLAYER_MEDIA_LEVEL_CHANGED:
-                    var quality = evt.currentQuality;
-                    var levels = evt.levels;
-                    if (quality > -1 && levels.length > 1 && _provider.getName().name !== 'youtube') {
-                        var qualityLabel = levels[quality].label;
-                        this.set('qualityLabel', qualityLabel);
-                        _this.config.qualityLabel = qualityLabel;
-                    }
+                    this.setQualityLevel(evt.currentQuality, evt.levels);
                     break;
 
                 case 'visualQuality':
@@ -121,6 +123,12 @@ define([
 
             this.mediaController.trigger(evt.type, evt);
         }
+
+        this.setQualityLevel = function(quality, levels){
+            if (quality > -1 && levels.length > 1 && _provider.getName().name !== 'youtube') {
+                this.mediaModel.set('currentLevel', parseInt(quality));
+            }
+        };
 
         this.setVideoProvider = function(provider) {
 
@@ -152,14 +160,6 @@ define([
             return _provider;
         };
 
-        this.seekDrag = function(state) {
-            _this.set('dragging', state);
-            if (state) {
-                _provider.pause();
-            } else {
-                _provider.play();
-            }
-        };
 
         this.setFullscreen = function(state) {
             state = !!state;
@@ -266,6 +266,14 @@ define([
 
         this.playVideo = function() {
             _provider.play();
+        };
+
+        this.setVideoSubtitleTrack = function(trackIndex) {
+            this.set('captionsIndex', trackIndex);
+
+            if (_provider.setSubtitlesTrack) {
+                _provider.setSubtitlesTrack(trackIndex);
+            }
         };
     };
 
