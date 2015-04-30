@@ -1,42 +1,53 @@
-define([], function() {
+define([
+    'utils/underscore',
+    'utils/backbone.events'
+], function(_, Events) {
     var mockModel = {
         attrs : {
-            aspectratio : 1,
+            state : 'idle',
             mute : false,
-            volume : 1
+            volume : 50,
+            controls : true,
+            stretching : 'uniform',
+            width : 400,
+            height : 400,
+            aspectratio : '75%',
+            playlist : [],
+            config : {},
+            playlistItem : {},
+            provider : { name : 'Demo' }
         },
-        components : {
-            logo : {},
-            display : {},
-            dock : {},
-            controlbar : {}
-        },
-        events : {},
 
-        componentConfig : function(a) {
-            return this.components[a];
-        },
-        get : function(attr) {
-            return this.attrs[attr];
-        },
-        on : function(ev, cb) {
-            this.events[ev] = cb;
-        },
-        trigger : function(ev, a) {
-            this.events[ev](this, a);
-        },
-        mediaController : {
-            on : function() {}
-        },
-        playlist : [],
         getVideo : function() {
             return {
+                setControls : function() {},
                 setContainer : function(){},
                 resize : function(){},
                 setVisibility: function() {},
                 isAudioFile : function() { return true; }
             };
+        },
+
+        mediaController : {
+            on : function() {}
+        },
+        mediaModel : {
+            on : function() {}
+        },
+
+
+        // SimpleModel
+        'get' : function(attr) {
+            return this.attrs[attr];
+        },
+        'set' : function(attr, val) {
+            var oldVal = this.attrs[attr];
+            if (oldVal === val) { return; }
+            this.attrs[attr] = val;
+            this.trigger('change:' + attr, this, val, oldVal);
         }
     };
+
+    _.extend(mockModel, Events);
     return mockModel;
 });

@@ -12,7 +12,7 @@ define([
         var _this = this,
             _logo,
             _settings,
-            _logoConfig = _.extend({}, _model.componentConfig('logo')),
+            _logoConfig = _.extend({}, _model.get('config').logo),
             _defaults = Logo.defaults,
             _showing = false;
 

@@ -1,17 +1,31 @@
 define([], function() {
+    function noop() {
+        console.log('I shouldn\'t exist.');
+    }
     var mockApi = {
         getContainer : function() {
             return document.createElement('div');
         },
-        onCaptionsList : function() {},
-        onCaptionsChange: function() {},
-        onPlaylistItem : function() {},
-        onPlaylistComplete : function() {},
-        onError : function() {},
-        onResize: function() {},
-        onReady: function() {},
-        onFullscreen: function() {},
-        getState : function() {}
+
+        on : noop,
+
+        onAdPlay : noop,
+        onAdSkipped : noop,
+        onAdComplete : noop,
+        onAdError : noop,
+        onCaptionsList : noop,
+        onCaptionsChange: noop,
+        onPlaylistItem : noop,
+        onPlaylistComplete : noop,
+        onError : noop,
+        onResize: noop,
+        onReady: noop,
+        onFullscreen: noop,
+        getState : noop,
+        setVolume : noop,
+        setMute : noop,
+        play : noop,
+        pause : noop,
     };
     return mockApi;
 });

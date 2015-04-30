@@ -7,9 +7,10 @@ define([
     'controller/qoe',
     'utils/underscore',
     'utils/backbone.events',
+    'utils/simplemodel',
     'events/events',
     'events/states'
-], function(utils, stretchUtils, Playlist, Providers, storage, QOE, _, Events, events, states) {
+], function(utils, stretchUtils, Playlist, Providers, storage, QOE, _, Events, SimpleModel, events, states) {
 
     // Defaults
     var _defaults = {
@@ -283,19 +284,6 @@ define([
     };
 
 
-    var SimpleModel = _.extend({
-        'get' : function (attr) {
-            return this[attr];
-        },
-        'set' : function (attr, val) {
-            if (this[attr] === val) {
-                return;
-            }
-            var oldVal = this[attr];
-            this[attr] = val;
-            this.trigger('change:' + attr, this, val, oldVal);
-        }
-    }, Events);
 
     _.extend(Model.prototype, SimpleModel);
     _.extend(MediaModel.prototype, SimpleModel);

@@ -41,7 +41,6 @@ define([
     var View = function(_api, _model) {
         var _playerElement,
             _container,
-            _skin,
             _controlsLayer,
             _controlsTimeout = -1,
             _timeoutDuration = _isMobile ? 4000 : 2000,
@@ -58,8 +57,8 @@ define([
             _dock,
             _logo,
             _title,
-            _logoConfig = _.extend({}, _model.componentConfig('logo')),
             _captionsRenderer,
+            _logoConfig = _.extend({}, _model.get('config').logo),
             _audioMode,
             _errorState = false,
             _showing = false,
@@ -245,13 +244,10 @@ define([
         }
 
 
-        this.setup = function(skin) {
+        this.setup = function() {
             if (_errorState) {
                 return;
             }
-
-            // TODO: remove when adding in templates. exposed for controller/instream
-            this._skin = _skin = skin;
 
             _container = _playerElement.getElementsByClassName('jw-main')[0];
             _videoLayer = _playerElement.getElementsByClassName('jw-video')[0];
@@ -360,7 +356,7 @@ define([
 
             if (_model.get('aspectratio')) {
                 utils.addClass(_playerElement, 'jw-aspect-mode');
-                utils.style(_aspectRatioContainer, { 'padding-top': _model.aspectratio });
+                utils.style(_aspectRatioContainer, { 'padding-top': _model.get('aspectratio') });
             }
 
             setTimeout(function() {
@@ -482,7 +478,7 @@ define([
 
             // captions rendering
             _captionsRenderer = new CaptionsRenderer(_model);
-            _captionsRenderer.setup(_model.config.captions);
+            _captionsRenderer.setup(_model.get('config').captions);
 
             // captions should be place behind controls, and not hidden when controls are hidden
             _controlsLayer.parentNode.insertBefore(_captionsRenderer.element(), _controlsLayer);
