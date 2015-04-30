@@ -275,6 +275,7 @@ define([
             }
             //this for googima, after casting, to get the state right.
             _api.onAdPlay(function() {
+                utils.addClass(_playerElement, 'jw-flag-ads');
                 _controlbar.adMode(true);
                 _updateState(states.PLAYING);
 
@@ -282,13 +283,16 @@ define([
                 _resetTapTimer();
             });
             _api.onAdSkipped(function() {
+                utils.removeClass(_playerElement, 'jw-flag-ads');
                 _controlbar.adMode(false);
             });
             _api.onAdComplete(function() {
+                utils.removeClass(_playerElement, 'jw-flag-ads');
                 _controlbar.adMode(false);
             });
             // So VAST will be in correct state when ad errors out from unknown filetype
             _api.onAdError(function() {
+                utils.removeClass(_playerElement, 'jw-flag-ads');
                 _controlbar.adMode(false);
             });
 
@@ -549,7 +553,7 @@ define([
                     _castAdsStarted();
                 }
 
-                _controlbar.setText(evt.message);
+                this.setAltText(evt.message);
 
                 // clickthrough callback
                 var clickAd = evt.onClick;
@@ -573,13 +577,15 @@ define([
 
         function _castAdsStarted() {
             _controlbar.instreamMode(true);
+            utils.addClass(_playerElement, 'jw-flag-ads');
             _controlbar.adMode(true);
             _controlbar.show(true);
         }
 
         function _castAdsEnded() {
             // controlbar reset
-            _controlbar.setText('');
+            this.setAltText('');
+            utils.removeClass(_playerElement, 'jw-flag-ads');
             _controlbar.adMode(false);
             _controlbar.instreamMode(false);
             _controlbar.show(true);
@@ -675,7 +681,7 @@ define([
             }
             if (_logo) {
                 _logo.offset(_controlbar && _logo.position().indexOf('bottom') >= 0 ?
-                    _controlbar.height() + _controlbar.margin() : 0);
+                    _controlbar.element().clientHeight : 0);
             }
 
             _checkAudioMode(height);
@@ -920,6 +926,10 @@ define([
             if (_castDisplay) {
                 _castDisplay.setState(_model.state);
             }
+            _model.mediaModel.on('change:isLive', function(model, isLive){
+                utils.toggleClass(_playerElement, 'jw-flag-live', isLive);
+                _this.setAltText((isLive) ? 'Live Broadcast' : '');
+            }, this);
         }
 
         /**
@@ -1022,12 +1032,13 @@ define([
             _instreamModel.on('change:controls', _onChangeControls);
             _instreamMode = true;
             _controlbar.instreamMode(true);
+            utils.addClass(_playerElement, 'jw-flag-ads');
             _controlbar.adMode(true);
             _controlbar.show(true);
         };
 
-        this.setInstreamText = function(text) {
-            _controlbar.setText(text);
+        this.setAltText = function(text) {
+            _controlbar.setAltText(text);
         };
 
         this.showInstream = function() {
@@ -1040,7 +1051,8 @@ define([
 
         this.destroyInstream = function() {
             _instreamMode = false;
-            _controlbar.setText('');
+            this.setAltText('');
+            utils.removeClass(_playerElement, 'jw-flag-ads');
             _controlbar.adMode(false);
             _controlbar.instreamMode(false);
             _controlbar.show(true);

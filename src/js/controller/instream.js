@@ -117,7 +117,7 @@ define([
                 index: _arrayIndex
             }, true);
 
-            var controlbar = document.getElementById(_model.id + '_controlbar');
+            var controlbar = _view.element().getElementsByClassName('jw-controlbar')[0];
             var bottom = 10 + utils.bounds(_view.controlsContainer()).bottom - utils.bounds(controlbar).top;
 
             // Copy the playlist item passed in and make sure it's formatted as a proper playlist item
@@ -199,8 +199,10 @@ define([
                 return;
             }
 
-            var skipElem = _skipButton.element();
-            _view.controlsContainer().removeChild(skipElem);
+            if(_skipButton){
+                var skipElem = _skipButton.element();
+                _view.controlsContainer().removeChild(skipElem);
+            }
 
             _adModel.off('fullscreenchange', _nativeFullscreenHandler);
             clearTimeout(_completeTimeoutId);
@@ -216,7 +218,8 @@ define([
             _adModel.off();
 
             // Return the view to its normal state
-            _view.destroyInstream(_adModel.getVideo().isAudioFile());
+            var adsVideo = _adModel.getVideo();
+            _view.destroyInstream((adsVideo) ? adsVideo.isAudioFile() : false);
             if (_view.displayComp()) {
                 if (_oldProvider && _oldProvider.parentElement) {
                     _oldProvider.parentElement.removeEventListener('click', _view.displayComp().clickHandler);
@@ -270,7 +273,7 @@ define([
 
         /** Set custom text in the controlbar **/
         _this.instreamSetText = function(text) {
-            _view.setInstreamText(text);
+            _view.setAltText(text);
         };
 
         _this.instreamState = function() {
