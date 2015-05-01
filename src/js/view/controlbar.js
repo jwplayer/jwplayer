@@ -197,8 +197,8 @@ define([
         onPlaylistItem : function(/*model, item*/) {
             this.elements.time.updateBuffer(0);
             this.elements.time.render(0);
-            this.elements.duration.innerHTML = '';
-            this.elements.elapsed.innerHTML = '';
+            this.elements.duration.innerHTML = '00:00';
+            this.elements.elapsed.innerHTML = '00:00';
 
             this._model.mediaModel.on('change:levels', function(model, levels) {
                 this.elements.hd.setup(levels, model.get('currentLevel'));

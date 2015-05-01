@@ -1,5 +1,28 @@
-.jwplayer {
-    &.jw-flag-audio-player {
+.jwplayer.jw-flag-audio-player {
+    background-color: transparent;
+
+    .jw-preview {
         background-color: transparent;
+    }
+    .jw-controlbar {
+        display: table;
+        bottom: 0;
+        margin: 0;
+        width: 100%;
+        min-width: 100%;
+
+        .jw-icon-fullscreen {
+            display: none;
+        }
+
+        .jw-icon-tooltip {
+            display: none;
+        }
+    }
+
+    &.jw-state-idle {
+        .jw-playback-toggle-icon {
+            .jwplayer .jw-icon-play;
+        }
     }
 }
