@@ -575,7 +575,8 @@ define([
                     };
                 }
 
-                var dock = _model.get('dock') || [];
+                var dock = _model.get('dock');
+                dock = (dock) ? dock.slice(0) : [];
                 dock.push(btn);
                 _model.set('dock', dock);
             };
