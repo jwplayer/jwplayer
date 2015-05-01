@@ -79,7 +79,7 @@ define([
             var volumeTooltip = new VolumeTooltip(this._model, 'jw-icon-volume');
 
             this.elements = {
-                alt: text('jw-alttext'),
+                alt: text('jw-alt-text'),
                 play: button('jw-playback-toggle-icon', this._api.play),
                 prev: button('jw-icon-prev', this._api.playlistPrev),
                 next: button('jw-icon-next', this._api.playlistNext),
@@ -108,7 +108,6 @@ define([
                 ],
                 right: [
                     this.elements.duration,
-                    this.elements.volumetooltip,
                     this.elements.hd,
                     this.elements.cc,
                     this.elements.mute,
@@ -201,12 +200,6 @@ define([
             this.elements.duration.innerHTML = '';
             this.elements.elapsed.innerHTML = '';
 
-            // Hide the time slider until we know if it is live or not
-            utils.addClass(this.elements.time.element(), 'jw-hidden');
-            utils.addClass(this.elements.alt, 'jw-hidden');
-
-            this._model.mediaModel.on('change:isLive', this.onLiveChange, this);
-
             this._model.mediaModel.on('change:levels', function(model, levels) {
                 this.elements.hd.setup(levels, model.get('currentLevel'));
             }, this);
@@ -238,23 +231,29 @@ define([
         onFullscreen : function(model, val) {
             utils.toggleClass(this.elements.fullscreen.element(), 'jw-off', val);
         },
-        onLiveChange : function(model, isLive) {
-            this.elements.alt.innerHTML = 'Live Broadcast';
-
-            utils.toggleClass(this.elements.time.element(), 'jw-hidden', isLive);
-            utils.toggleClass(this.elements.alt, 'jw-hidden', !isLive);
-        },
 
         element: function() {
             return this.el;
         },
 
         redraw : utils.noop,
+        instreamMode: utils.noop,
         adMode : utils.noop,
         hide : utils.noop,
         show : utils.noop,
         audioMode : utils.noop,
-        hideFullscreen : utils.noop
+        hideFullscreen : utils.noop,
+        setAltText : function(altText) {
+            this.elements.alt.innerHTML = altText;
+        },
+        addCues : function(cues) {
+            if (this.elements.time) {
+                _.each(cues, function(ele){
+                    this.elements.time.addCue(ele);
+                }, this);
+                this.elements.time.drawCues();
+            }
+        }
     });
 
     return Controlbar;
