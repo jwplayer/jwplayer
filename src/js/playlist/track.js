@@ -4,27 +4,19 @@ define([
 ], function(utils, _) {
 
     var defaults = {
-        file: undefined,
-        label: undefined,
+        //file: undefined,
+        //label: undefined,
         kind: 'captions',
         'default': false
     };
 
     var Track = function (config) {
-        var _track = _.extend({}, defaults);
-        if (!config) {
-            config = {};
+        // File is the only required attr
+        if (!config || !config.file) {
+            return;
         }
 
-        utils.foreach(defaults, function (property) {
-            if (utils.exists(config[property])) {
-                _track[property] = config[property];
-                // Actively move from config to track
-                delete config[property];
-            }
-        });
-
-        return _track;
+        return _.extend({}, defaults, config);
     };
 
     return Track;
