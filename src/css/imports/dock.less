@@ -1,10 +1,7 @@
 @dock-corner-radius: 0.25em;
 
 .jw-dock {
-    position: absolute;
-    top: @ui-margin;
-    right: @ui-margin;
-    left: @ui-margin;
+    margin: @ui-margin/2;
     display: block;
     opacity: 1;
 
@@ -12,15 +9,21 @@
         cursor:pointer;
         float: left;
         position: relative;
+
+        // This allows it to be positioned beneath the logo
+        clear : right;
+
         width: 2.5em;
         height: 2em;
-        margin-right: 0.5em;
+        margin: 0.5em;
         background-color: @def-background-color;
         background: @def-transparent-background-style;
         background-size: @def-background-size;
         border-radius: @dock-corner-radius;
     }
 
+    .jw-dock-button:first-child {
+    }
     .jw-dock-button:hover {
         background-color: @def-background-color;
         background: @def-background-style;
@@ -49,6 +52,7 @@
         display: none;
         position: absolute;
         top: 2em;
+        right: 0em;
         margin-top: 0.25em;
         padding: 0.5em;
         white-space: nowrap;
