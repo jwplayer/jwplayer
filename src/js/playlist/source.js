@@ -5,28 +5,21 @@ define([
 ], function(utils, strings, _) {
 
     var Defaults = {
-        file: undefined,
-        label: undefined,
-        type: undefined,
-        androidhls : undefined,
+        //file: undefined,
+        //label: undefined,
+        //type: undefined,
+        //androidhls : undefined,
         'default': false
     };
 
 
     var Source = function (config) {
-
         // file is the only hard requirement
         if (!config || !config.file) {
             return;
         }
 
-        var _source = {};
-        _.each(Defaults, function(val, key) {
-            var value = config[key] || val;
-            if (value !== undefined) {
-                _source[key] = value;
-            }
-        });
+        var _source = _.extend({}, Defaults, config);
 
         // normalize for odd strings
         _source.file = strings.trim('' + _source.file);

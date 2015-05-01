@@ -5,10 +5,10 @@ define([
 ], function(_, Source, Track) {
 
     var Defaults = {
-        description: undefined,
-        image: undefined,
-        mediaid: undefined,
-        title: undefined,
+        //description: undefined,
+        //image: undefined,
+        //mediaid: undefined,
+        //title: undefined,
         sources: [],
         tracks: []
     };
@@ -55,18 +55,18 @@ define([
 
         _playlistItem.sources = _.compact(_playlistItem.sources);
 
-        if (config.tracks) {
-            _playlistItem.tracks = config.tracks;
-        } else if (_playlistItem.captions) {
-            for (var j = 0; j < _playlistItem.captions.length; j++) {
-                _playlistItem.tracks.push(_playlistItem.captions[j]);
-            }
+
+        if (!_.isArray(_playlistItem.tracks)) {
+            _playlistItem.tracks = [];
+        }
+
+        if (_.isArray(_playlistItem.captions)) {
+            _playlistItem.tracks = _playlistItem.tracks.concat(_playlistItem.captions);
             delete _playlistItem.captions;
         }
 
-        for (i = 0; i < _playlistItem.tracks.length; i++) {
-            _playlistItem.tracks[i] = Track(_playlistItem.tracks[i]);
-        }
+        _playlistItem.tracks = _.compact(_.map(_playlistItem.tracks, Track));
+
         return _playlistItem;
     };
 

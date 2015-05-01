@@ -92,7 +92,7 @@ define([
     });
 
     test('input source type normalization', function() {
-        var x = testItemComplete({
+        var x = testItem({
             sources: [
                 {
                     file: 'f1.mp4'
@@ -131,7 +131,7 @@ define([
     });
 
     test('input.levels are converted to sources', function() {
-        var x = testItemComplete({
+        var x = testItem({
             levels: [{
                 file: 'f1.mp4',
                 label : 'f1 label',
@@ -144,7 +144,7 @@ define([
     });
 
     test('input.captions are converted to tracks', function() {
-        var x = testItemComplete({
+        var x = testItem({
             file: 'x',
             captions: [
                 {
@@ -158,7 +158,7 @@ define([
     });
 
     test('property passthrough of unknown values', function() {
-        var x = testItemComplete({
+        var x = testItem({
             file: 'x',
             randomStr : 'rrr',
             adSchedule: {
@@ -173,7 +173,7 @@ define([
     });
 
     test('input.sources may contain one source object instead of array', function() {
-        var x = testItemComplete({
+        var x = testItem({
             sources: {
                 file: 'f1.mp4',
                 label : 'f1 label',
