@@ -46,7 +46,7 @@ define([
 
     function buildGroup(group, elements) {
         var elem = document.createElement('span');
-        elem.className = 'jw-group jw-controlbar--' + group+'-group';
+        elem.className = 'jw-group jw-controlbar-' + group+'-group';
 
         _.each(elements, function(e) {
             if (e.element) {
@@ -75,17 +75,17 @@ define([
         build : function() {
 
             var timeSlider = new TimeSlider(this._model, this._api);
-            var volumeSlider = new Slider('jw-volume', 'horizontal');
+            var volumeSlider = new Slider('jw-slider-volume', 'horizontal');
             var volumeTooltip = new VolumeTooltip(this._model, 'jw-icon-volume');
 
             this.elements = {
-                alt: text('jw-alt-text'),
-                play: button('jw-playback-toggle-icon', this._api.play),
+                alt: text('jw-text-alt'),
+                play: button('jw-icon-playback', this._api.play),
                 prev: button('jw-icon-prev', this._api.playlistPrev),
                 next: button('jw-icon-next', this._api.playlistNext),
-                elapsed: text('jw-elapsed'),
+                elapsed: text('jw-text-elapsed'),
                 time: timeSlider,
-                duration: text('jw-duration'),
+                duration: text('jw-text-duration'),
                 hd: menu('jw-icon-hd'),
                 cc: menu('jw-icon-cc'),
                 mute: button('jw-icon-volume', this._api.setMute),

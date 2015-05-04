@@ -9,7 +9,7 @@ define([
 
             Tooltip.call(this, name);
 
-            this.volumeSlider = new Slider('jw-volume jw-volume-tip', 'vertical');
+            this.volumeSlider = new Slider('jw-slider-volume jw-volume-tip', 'vertical');
             this.addContent(this.volumeSlider.element());
 
             this.volumeSlider.on('update', function (evt) {
