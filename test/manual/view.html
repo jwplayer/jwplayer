@@ -6,68 +6,35 @@
     <link type="text/css" rel="stylesheet" href="styles/tests.css"  media="all" />
 
     <script src="../../bower_components/jquery/dist/jquery.js"></script>
+    <script src="../../bower_components/underscore/underscore.js"></script>
     <script src="../../bower_components/requirejs/require.js"></script>
+
+    <script src="manual-config.js"></script>
 </head>
 <body>
 
-<h1>Show the View with various states</h1>
+<h1>JW Player Style Guide</h1>
 
-<div id="video-container"></div>
+<h2> Flags </h2>
+<div id="flagButtons"></div>
+<ul id="flags"></ul>
 
-<textarea style="width:400px; height:200px" id="modeljson"></textarea>
+<h2> Stretch Mode </h2>
+<div id="stretchButtons"></div>
 
-<script type="text/javascript">
-    window.__BUILD_VERSION__ = 0;
-    window.__FLASH_VERSION__ = 11.1;
-    var base = '../../';
+<style>
+    .wrapper {
+        float:left;
+        width: 450px;
+    }
 
-    var components = base + 'bower_components';
-    var data       = base + 'test/data';
-    var mock       = base + 'test/mock';
-    var unit       = base + 'test/unit';
-
-    require.config({
-
-        // Go to open source root url
-        baseUrl : base + 'src/js',
-
-        paths: {
-            'templates':     '../' + 'templates',
-            'css':           '../' + 'css',
-            'underscore': 'utils/' + 'underscore',
-
-            'handlebars': components + '/handlebars/handlebars.amd',
-            'text':       components + '/requirejs-text/text',
-            'handlebars-loader': components + '/requirejs-handlebars/hb',
-            'less':       components + '/require-less/less',
-            'lessc':      components + '/require-less/lessc',
-            'normalize':  components + '/require-less/normalize',
-            'jquery':     components + '/jquery/dist/jquery',
-
-            // always use test/underscore in test scripts
-            'test/underscore': components + '/underscore/underscore',
-
-            'data' : data,
-            'mock' : mock,
-            'unit' : unit
-        },
-        shim: {
-            'test/underscore': {
-                exports: '_'
-            }
-        },
-        map: {
-            // make sure the text plugin is used to load templates
-            '*' : {
-                'templates/errorscreen.html': 'hbars!templates/errorscreen.html',
-                '../css/styles.less': 'less!css/styles'
-            },
-            'providers/html5' : {
-                'utils/video': mock + '/video.js'
-            }
-        }
-    });
-</script>
+    .jwplayer .jw-preview {
+        background-color: aquamarine;
+    }
+    .jwplayer .jw-video {
+        background-color: blueviolet;
+    }
+</style>
 
 <script type="text/javascript">
 require([
@@ -76,36 +43,78 @@ require([
     'view/view'
 ], function (mockApi, mockModel, View) {
 
-    var $textarea = $('#modeljson');
-    mockModel.id = 'video-container';
+    function makePlayer(state) {
+        var m = _.extend({}, mockModel);
 
-    var view = new View(mockApi, mockModel) ;
+        var view = new View(mockApi, m) ;
+        view.setup();
+        m.set('state', state);
+        view.resize(400, 300);
 
-    view.setup();
-    view.resize(400, 300);
+        window[state] = m;
 
-    mockModel.on('all', updateJson);
-    updateJson();
-
-
-    function updateJson() {
-        if ($textarea.is(':focus')) { return; }
-        $textarea.val(JSON.stringify(mockModel.attrs, null, 4));
+        var $wrapper = $('<div class="wrapper"></div>')
+                .append('<h2>' + state + '</h3>')
+                .append(view.element());
+        $('body').append($wrapper);
     }
 
-    $textarea.keyup(function() {
-        try {
-            var js = JSON.parse($(this).val());
-            $.each(js, function (key, val) {
-                mockModel.set(key, val);
-            });
-        } catch(e) {
-            console.log('invalid json');
-        }
+    function updateFlagList() {
+        var classList = $('.jwplayer').first()[0].className.split(' ');
+
+        // remove the leading 'jwplayer' class
+        classList.shift();
+        $('#flags').html('<li>' + classList.join('</li><li>') + '</li>');
+    }
+
+    _.each([
+            'idle',
+            'playing',
+            'paused',
+            'buffering',
+            'complete'
+    ], makePlayer);
+
+
+    _.each([
+        'jw-flag-ads',
+        'jw-flag-live',
+        'jw-flag-user-inactive',
+        'jw-flag-controlbar-only',
+        'jw-flag-media-audio',
+        'jw-flag-dragging',
+        'jw-flag-aspect-mode',
+        // 'jw-flag-fullscreen' // cannot escape!
+    ], function(val) {
+        var $btn = $('<input>', {
+                type: "button",
+                value: val
+                });
+        $btn.click(function() {
+            $('.jwplayer').toggleClass(val);
+            updateFlagList();
+        });
+        $('#flagButtons').append($btn);
     });
 
-    window.mockModel = mockModel;
-    document.getElementById('video-container').appendChild(view.element());
+    var StretchButtons = [
+        'jw-stretch-none',
+        'jw-stretch-exactfit',
+        'jw-stretch-uniform',
+        'jw-stretch-fill'
+    ]
+    _.each(StretchButtons, function(val) {
+        var $btn = $('<input>', {
+            type: "button",
+            value: val
+        });
+        $btn.click(function() {
+            $('.jwplayer').removeClass(StretchButtons.join(' '));
+            $('.jwplayer').addClass(val);
+        });
+        $('#stretchButtons').append($btn);
+    });
+    _.delay(updateFlagList, 100);
 });
 
 </script>

@@ -29,24 +29,22 @@
         right: 0;
     }
 
-    .jw-video, .jw-controls {
+    .jw-media, .jw-controls {
         position: absolute;
         width: 100%;
         height: 100%;
     }
 
-    .jw-video {
+    .jw-media {
         overflow: hidden;
-        visibility: hidden;
-        opacity: 0;
     }
 
-    .jw-video.jw-video-show {
+    .jw-media.jw-media-show {
         visibility: visible;
         opacity: 1;
     }
 
-    .jw-video video {
+    .jw-media video {
         position: absolute;
         top: 0;
         right: 0;
@@ -59,7 +57,7 @@
     }
 
     // Aspect Ratio styles
-    &.jw-aspect-mode {
+    &.jw-flag-aspect-mode {
         height: auto !important;
 
         & .jw-aspect{
