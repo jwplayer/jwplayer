@@ -7,11 +7,11 @@
 
     .jw-dock-button {
         cursor:pointer;
-        float: left;
+        float: right;
         position: relative;
 
         // This allows it to be positioned beneath the logo
-        clear : right;
+        clear : left;
 
         width: 2.5em;
         height: 2em;
@@ -22,8 +22,6 @@
         border-radius: @dock-corner-radius;
     }
 
-    .jw-dock-button:first-child {
-    }
     .jw-dock-button:hover {
         background-color: @def-background-color;
         background: @def-background-style;
