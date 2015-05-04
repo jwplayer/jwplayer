@@ -58,7 +58,6 @@ define([
             _logo,
             _title,
             _captionsRenderer,
-            _logoConfig = _.extend({}, _model.get('config').logo),
             _audioMode,
             _errorState = false,
             _showing = false,
@@ -478,7 +477,15 @@ define([
             }
 
             _dock = new Dock(_model);
-            _controlsLayer.appendChild(_dock.element());
+
+            _logo = new Logo(_model);
+            _logo.on(events.JWPLAYER_LOGO_CLICK, _logoClickHandler);
+
+            var rightside = document.createElement('div');
+            rightside.className = 'jw-controls-right';
+            rightside.appendChild(_logo.element());
+            rightside.appendChild(_dock.element());
+            _controlsLayer.appendChild(rightside);
 
             // captions rendering
             _captionsRenderer = new CaptionsRenderer(_model);
@@ -491,10 +498,6 @@ define([
             //toggle playback
             displayIcon.on('click', _api.play);
             _controlsLayer.appendChild(displayIcon.element());
-
-            _logo = new Logo(_model);
-            _logo.on(events.JWPLAYER_LOGO_CLICK, _logoClickHandler);
-            _controlsLayer.appendChild(_logo.element());
 
             if (!_isMobile) {
                 _rightClickMenu = new RightClick();
@@ -705,9 +708,6 @@ define([
                     _updateState(model.state);
                 }
             }
-            if (_logo && _audioMode) {
-                _hideLogo();
-            }
 
             utils.toggleClass(_playerElement, 'jw-flag-audio-player', _audioMode);
         }
@@ -860,18 +860,6 @@ define([
             }
         }
 
-        function _showLogo() {
-            if (_logo && !_audioMode) {
-                _logo.show();
-            }
-        }
-
-        function _hideLogo() {
-            if (_logo && (!_model.getVideo().isAudioFile() || _audioMode)) {
-                _logo.hide(_audioMode);
-            }
-        }
-
         function _showDisplay() {
             // debug this, find out why
             if (!(_isMobile && _model.fullscreen)) {
@@ -890,10 +878,6 @@ define([
                 _hideControlbar();
             }
 
-            if (state !== states.COMPLETE && state !== states.IDLE && state !== states.PAUSED) {
-                _hideLogo();
-            }
-
             utils.addClass(_playerElement, 'jw-user-inactive');
         }
 
@@ -901,9 +885,6 @@ define([
             _showing = true;
             if (_model.get('controls') || _audioMode) {
                 _showControlbar();
-            }
-            if (_logoConfig.hide) {
-                _showLogo();
             }
 
             utils.removeClass(_playerElement, 'jw-user-inactive');
@@ -1023,8 +1004,6 @@ define([
                     _showControls();
                     break;
             }
-
-            _showLogo();
         }
 
         this.setupInstream = function(instreamModel) {
