@@ -158,8 +158,7 @@ define([
                     ];
 
                     var forwardEvents = [
-                        events.JWPLAYER_MEDIA_BUFFER_FULL,
-                        events.JWPLAYER_MEDIA_BEFORECOMPLETE
+                        events.JWPLAYER_MEDIA_BUFFER_FULL
                     ];
 
                     // jwplayer 6 flash player events (forwarded from AS3 Player, Controller, Model)
@@ -186,10 +185,14 @@ define([
                     }, this).on(forwardEvents.join(' '), function(e) {
                         this.sendEvent(e.type);
 
-                    }, this).on(events.JWPLAYER_MEDIA_COMPLETE, function(e) {
-                        this.setState(states.COMPLETE);
+                    }, this).on(events.JWPLAYER_MEDIA_BEFORECOMPLETE, function(e){
+                        _beforecompleted = true;
                         this.sendEvent(e.type);
-
+                    }, this).on(events.JWPLAYER_MEDIA_COMPLETE, function(e) {
+                        if(!_beforecompleted){
+                            this.setState(states.COMPLETE);
+                            this.sendEvent(e.type);
+                        }
                     }, this);
 
                     _swf.on(events.JWPLAYER_MEDIA_SEEK, function(e) {

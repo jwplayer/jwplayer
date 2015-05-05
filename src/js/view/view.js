@@ -282,23 +282,6 @@ define([
                 window.removeEventListener('orientationchange', _responsiveListener);
                 window.addEventListener('orientationchange', _responsiveListener, false);
             }
-            //this for googima, after casting, to get the state right.
-            _api.onAdPlay(function() {
-                utils.addClass(_playerElement, 'jw-flag-ads');
-                _controlbar.adMode(true);
-                _updateState(states.PLAYING);
-
-                // For Vast to hide controlbar if no mouse movement
-                _resetTapTimer();
-            });
-            _api.onAdSkipped(function() {
-                utils.removeClass(_playerElement, 'jw-flag-ads');
-                _controlbar.adMode(false);
-            });
-            _api.onAdComplete(function() {
-                utils.removeClass(_playerElement, 'jw-flag-ads');
-                _controlbar.adMode(false);
-            });
             // So VAST will be in correct state when ad errors out from unknown filetype
             _api.onAdError(function() {
                 utils.removeClass(_playerElement, 'jw-flag-ads');
