@@ -259,8 +259,9 @@ define([
             _preview.setup(previewElem);
 
             if (! _model.get('hidetitle')) {
+                var _titleElement = _playerElement.getElementsByClassName('jw-title')[0];
                 _title = new Title(_model);
-                _playerElement.appendChild(_title.element());
+                _title.setup(_titleElement);
             }
 
             _setupControls();
@@ -518,7 +519,7 @@ define([
             if (utils.canCast()) {
                 _this.forceControls(true);
             }
-            
+
             _playerElement.onmousedown = handleMouseDown;
             _playerElement.onfocusin = handleFocus;
             _playerElement.addEventListener('focus', handleFocus);
@@ -603,7 +604,7 @@ define([
             _display.revertAlternateClickHandler();
         }
 
-        /** 
+        /**
          * Switch fullscreen mode.
          **/
         var _fullscreen = this.fullscreen = function(state) {
@@ -691,7 +692,7 @@ define([
 
             _checkAudioMode(height);
 
-            // pass width, height from jwResize if present 
+            // pass width, height from jwResize if present
             _resizeMedia(width, height);
 
             cssUtils.unblock(id);

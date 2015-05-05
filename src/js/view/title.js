@@ -1,21 +1,10 @@
 define([
     'utils/helpers',
-    'handlebars-loader!templates/title.html',
     'utils/underscore'
-], function(utils, titleTemplate, _) {
+], function(utils, _) {
 
     var Title = function(_model) {
         this.model = _model;
-
-        this.el = utils.createElement(titleTemplate());
-
-        // Perform the DOM search only once
-        var arr = this.el.getElementsByTagName('div');
-        this.title = arr[0];
-        this.description = arr[1];
-
-        this.model.on('change:playlistItem', this.updateText, this);
-        this.updateText(this.model, this.model.get('playlistItem'));
     };
 
     _.extend(Title.prototype, {
@@ -26,6 +15,18 @@ define([
         },
         show : function() {
             this.el.style.display = '';
+        },
+
+        setup : function(titleEl) {
+            this.el = titleEl;
+
+            // Perform the DOM search only once
+            var arr = this.el.getElementsByTagName('div');
+            this.title = arr[0];
+            this.description = arr[1];
+
+            this.model.on('change:playlistItem', this.updateText, this);
+            this.updateText(this.model, this.model.get('playlistItem'));
         },
 
         updateText: function(model, playlistItem) {
