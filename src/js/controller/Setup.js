@@ -1,23 +1,14 @@
-/**
- * This class is responsible for setting up the player and triggering the PLAYER_READY event, or an JWPLAYER_ERROR event
- *
- * The order of the player setup is as follows:
- *
- * 1. parse config
- * 2. load skin (async)
- * 3. load external playlist (async)
- * 4. initialize components (requires 2)
- * 5. initialize plugins (requires 5)
- * 6. ready
- */
 define([
     'plugins/plugins',
     'playlist/loader',
     'playlist/playlist',
+    'utils/scriptloader',
+    'utils/helpers',
     'utils/backbone.events',
+    'utils/constants',
     'utils/underscore',
     'events/events'
-], function(plugins, PlaylistLoader, Playlist, Events, _, events) {
+], function(plugins, PlaylistLoader, Playlist, ScriptLoader, utils, Events, Constants, _, events) {
 
     var Setup = function(_api, _model, _view, _errorTimeoutSeconds) {
         var _this = this,
@@ -184,8 +175,48 @@ define([
             }
         }
 
+        function skinToLoad(skin) {
+            if(_.contains(Constants.Skins, skin)) {
+                return utils.getSkinUrl(skin);
+            } else {
+                console.log('The skin parameter does not match any of our skins : ' + skin);
+            }
+        }
+
+        function isSkinLoaded(skinPath) {
+            var ss = document.styleSheets;
+            for (var i = 0, max = ss.length; i < max; i++) {
+                if (ss[i].href === skinPath) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         function _loadSkin() {
-            // TODO : load CSS file if needed
+            var skinName = _model.get('skin');
+            var skinUrl = _model.get('skinUrl');
+
+
+            if (skinName && !skinUrl) {
+                // if a skin name is defined, but there is no URL, load from CDN
+                skinUrl = skinToLoad(skinName);
+            }
+
+            // seven is built into the player
+            if (skinName !== 'seven' && _.isString(skinUrl) && !isSkinLoaded(skinUrl)) {
+                _model.set('skin-loading', true);
+
+                var isStylesheet = true;
+                var loader = new ScriptLoader(skinUrl, isStylesheet);
+
+                loader.addEventListener(events.COMPLETE, function() {
+                    _model.set('skin-loading', false);
+                });
+                loader.load();
+            }
+
+            // Control elements are hidden by the loading flag until it is ready
             _.defer(function() {
                 _taskComplete(LOAD_SKIN);
             });
@@ -198,7 +229,7 @@ define([
 
         function _sendReady() {
             _this.trigger(events.JWPLAYER_READY);
-            _this.destroy();
+            clearTimeout(_setupFailureTimeout);
         }
 
         function _error(message, reason) {

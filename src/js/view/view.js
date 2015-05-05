@@ -243,10 +243,26 @@ define([
         }
 
 
+        this.onChangeSkin = function(model, newSkin, oldSkin) {
+            utils.removeClass(_playerElement, 'jw-skin-'+oldSkin);
+            utils.addClass(_playerElement, 'jw-skin-'+newSkin);
+        };
+
         this.setup = function() {
             if (_errorState) {
                 return;
             }
+
+            // Hide control elements until skin is loaded
+            if (_model.get('skin-loading') === true) {
+                utils.addClass(_playerElement, 'jw-flag-skin-loading');
+                _model.once('change:skin-loading', function() {
+                    utils.removeClass(_playerElement, 'jw-flag-skin-loading');
+                });
+            }
+
+            this.onChangeSkin(_model, _model.get('skin'), '');
+            _model.on('change:skin', this.onChangeSkin, this);
 
             _container = _playerElement;
             _videoLayer = _playerElement.getElementsByClassName('jw-media')[0];

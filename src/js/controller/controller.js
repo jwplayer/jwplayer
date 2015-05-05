@@ -112,7 +112,6 @@ define([
             _model.on('change:mediaModel', initMediaModel);
 
             function _playerReady() {
-                _setup.destroy();
                 _setup = null;
 
                 _model.on('change:state', function(model, newstate, oldstate) {

@@ -1,7 +1,6 @@
 define([
-    'view/components/extendable',
-    'utils/underscore'
-], function(Extendable, _) {
+    'view/components/extendable'
+], function(Extendable) {
 
     var Tooltip = Extendable.extend({
         'constructor' : function(name) {

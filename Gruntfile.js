@@ -36,7 +36,7 @@ module.exports = function(grunt) {
                 jshintrc: '.jshintrc'
             },
             player : [
-                'src/js/{,*/}*.js'
+                'src/js/**/*.js'
             ],
             tests : [
                 'test/{,*/}*.js'
@@ -373,7 +373,8 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask('build-js', [
-        'webpack',
+        'webpack:debug',
+        'webpack:release',
         'jshint:player',
         'recess'
     ]);
