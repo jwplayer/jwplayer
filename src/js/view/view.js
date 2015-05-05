@@ -257,7 +257,6 @@ define([
             var previewElem = _playerElement.getElementsByClassName('jw-preview')[0];
             _preview = new Preview(_model);
             _preview.setup(previewElem);
-            //_playerElement.appendChild(_preview.element());
 
             if (! _model.get('hidetitle')) {
                 _title = new Title(_model);
