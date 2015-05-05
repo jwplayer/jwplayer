@@ -32,9 +32,8 @@ define([
         var _queuedCommands = [];
 
         var _flashCommand = function(name) {
-            var args = Array.prototype.slice.call(arguments);
             if (_ready()) {
-                _swf.triggerFlash.apply(_swf, args);
+                _swf.triggerFlash.apply(_swf, arguments);
                 return;
             }
             // remove any earlier commands with the same name
@@ -43,6 +42,7 @@ define([
                     _queuedCommands.splice(i, 1);
                 }
             }
+            var args = Array.prototype.slice.call(arguments);
             _queuedCommands.push(args);
         };
 
