@@ -248,7 +248,7 @@ define([
                 return;
             }
 
-            _container = _playerElement.getElementsByClassName('jw-main')[0];
+            _container = _playerElement;
             _videoLayer = _playerElement.getElementsByClassName('jw-media')[0];
 
             _controlsLayer = _playerElement.getElementsByClassName('jw-controls')[0];
