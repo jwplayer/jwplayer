@@ -248,11 +248,20 @@ define([
                 return;
             }
 
-            _container = _playerElement.getElementsByClassName('jw-main')[0];
-            _videoLayer = _playerElement.getElementsByClassName('jw-video')[0];
+            _container = _playerElement;
+            _videoLayer = _playerElement.getElementsByClassName('jw-media')[0];
 
             _controlsLayer = _playerElement.getElementsByClassName('jw-controls')[0];
             _aspectRatioContainer = _playerElement.getElementsByClassName('jw-aspect')[0];
+
+            var previewElem = _playerElement.getElementsByClassName('jw-preview')[0];
+            _preview = new Preview(_model);
+            _preview.setup(previewElem);
+
+            if (! _model.get('hidetitle')) {
+                _title = new Title(_model);
+                _playerElement.appendChild(_title.element());
+            }
 
             _setupControls();
 
@@ -358,7 +367,7 @@ define([
             _componentFadeListeners(_logo);
 
             if (_model.get('aspectratio')) {
-                utils.addClass(_playerElement, 'jw-aspect-mode');
+                utils.addClass(_playerElement, 'jw-flag-aspect-mode');
                 utils.style(_aspectRatioContainer, { 'padding-top': _model.get('aspectratio') });
             }
 
@@ -457,9 +466,6 @@ define([
             toggleControls();
             _model.on('change:controls', toggleControls);
 
-            _preview = new Preview(_model);
-            _controlsLayer.appendChild(_preview.element());
-
             _display = new Display(_model);
             _display.on('click', function() {
                 forward({type : events.JWPLAYER_DISPLAY_CLICK});
@@ -471,10 +477,10 @@ define([
             });
             _controlsLayer.appendChild(_display.element());
 
-            if (! _model.get('hidetitle')) {
-                _title = new Title(_model);
-                _controlsLayer.appendChild(_title.element());
-            }
+            var displayIcon = new DisplayIcon(_model);
+            //toggle playback
+            displayIcon.on('click', _api.play);
+            _controlsLayer.appendChild(displayIcon.element());
 
             _dock = new Dock(_model);
 
@@ -494,14 +500,10 @@ define([
             // captions should be place behind controls, and not hidden when controls are hidden
             _controlsLayer.parentNode.insertBefore(_captionsRenderer.element(), _controlsLayer);
 
-            var displayIcon = new DisplayIcon(_model);
-            //toggle playback
-            displayIcon.on('click', _api.play);
-            _controlsLayer.appendChild(displayIcon.element());
 
             if (!_isMobile) {
                 _rightClickMenu = new RightClick();
-                _rightClickMenu.setup(_model, _playerElement, _controlsLayer);
+                _rightClickMenu.setup(_model, _playerElement, _playerElement);
             }
 
             _controlbar = new Controlbar(_api, _model);
@@ -674,7 +676,7 @@ define([
             playerStyle = {
                 width: width
             };
-            if (!utils.hasClass(_playerElement, 'jw-aspect-mode')) {
+            if (!utils.hasClass(_playerElement, 'jw-flag-aspect-mode')) {
                 playerStyle.height = height;
             }
             _styles(_playerElement, playerStyle, true);
@@ -878,7 +880,7 @@ define([
                 _hideControlbar();
             }
 
-            utils.addClass(_playerElement, 'jw-user-inactive');
+            utils.addClass(_playerElement, 'jw-flag-user-inactive');
         }
 
         function _showControls() {
@@ -887,7 +889,7 @@ define([
                 _showControlbar();
             }
 
-            utils.removeClass(_playerElement, 'jw-user-inactive');
+            utils.removeClass(_playerElement, 'jw-flag-user-inactive');
         }
 
         function _showVideo(state) {
@@ -955,7 +957,7 @@ define([
             if (_isCasting()) {
 
                 // TODO: needs to be done in the provider.setVisibility
-                utils.addClass(_videoLayer, 'jw-video-show');
+                utils.addClass(_videoLayer, 'jw-media-show');
 
                 // force control bar without audio check
                 if (_controlbar) {

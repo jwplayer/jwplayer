@@ -39,6 +39,7 @@ define([
             _textContainer;
 
         _display = document.createElement('div');
+        _display.className = 'jw-captions';
 
 
         this.show = function () {

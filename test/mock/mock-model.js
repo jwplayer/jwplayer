@@ -15,7 +15,14 @@ define([
             playlist : [],
             config : {},
             playlistItem : {},
-            provider : { name : 'Demo' }
+            provider : { name : 'Demo' },
+
+            dock : [
+                {
+                    'id': 'abc',
+                    img: 'css-skins/icons/both.png',
+                    tooltip: 'sample tooltip text'
+                }]
         },
 
         getVideo : function() {

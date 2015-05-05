@@ -15,7 +15,7 @@ define([
         _.extend(this, Events);
 
         _display = document.createElement('div');
-        _display.className = 'jw-display';
+        _display.className = 'jw-click';
 
         _display.addEventListener('click', _clickHandler, false);
         _model.mediaController.on(events.JWPLAYER_PROVIDER_CLICK, _clickHandler);

@@ -1,8 +1,9 @@
 define([
     'view/components/tooltip',
     'utils/helpers',
+    'utils/underscore',
     'handlebars-loader!templates/menu.html'
-], function(Tooltip, utils, menuTemplate) {
+], function(Tooltip, utils, _, menuTemplate) {
 
     var Menu = Tooltip.extend({
         setup : function (list, selectedIndex) {
@@ -10,6 +11,8 @@ define([
                 this.content.removeEventListener('click', this.selectListener);
                 this.removeContent();
             }
+
+            list = _.isArray(list) ? list : [];
 
             this.el.removeEventListener('click', this.toggleListener);
 

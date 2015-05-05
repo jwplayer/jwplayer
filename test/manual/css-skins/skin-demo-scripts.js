@@ -10,7 +10,7 @@ $(document).ready(function(){
     });
 
     var stateStyles = 'jw-state-paused jw-state-playing jw-state-idle jw-state-buffering jw-state-complete';
-    var sizingStyles = 'player-size window-size jw-aspect-mode';
+    var sizingStyles = 'player-size window-size jw-flag-aspect-mode';
     var stretchingStyles = 'uniform-stretching fill-stretching exactfit-stretching none-stretching';
 
     var uniform = function(e){
@@ -64,12 +64,12 @@ $(document).ready(function(){
     if(document.attachEvent) document.getElementById('window-size').attachEvent('onclick', windowsize);
 
     var aspect169 = function(e){
-        activateStyles('jw-aspect-mode', sizingStyles);
+        activateStyles('jw-flag-aspect-mode', sizingStyles);
         activateStyles('uniform-stretching', stretchingStyles);
 
         $('.button-cont-top').removeClass('fixed-buttons');
 
-        var styleTarget = '.jwplayer.jw-aspect-mode:before';
+        var styleTarget = '.jwplayer.jw-flag-aspect-mode:before';
         document.styleSheets[0].addRule(styleTarget,'padding-top: ' + Math.round(9/16 * 100) + '%');
         if(document.attachEvent)document.styleSheets[0].addRule(styleTarget,'content: ' + Math.round(Math.random()*1000));
         if(!document.attachEvent) document.styleSheets[0].insertRule(styleTarget + ' { padding-top: ' + Math.round(9/16 * 100) + '%; }', 0);
@@ -79,12 +79,12 @@ $(document).ready(function(){
     if(document.attachEvent) document.getElementById('aspect-ratio-16-9').attachEvent('onclick', aspect169);
 
     var aspect43 = function(e){
-        activateStyles('jw-aspect-mode', sizingStyles);
+        activateStyles('jw-flag-aspect-mode', sizingStyles);
         activateStyles('uniform-stretching', stretchingStyles);
 
         $('.button-cont-top').removeClass('fixed-buttons');
 
-        var styleTarget = '.jwplayer.jw-aspect-mode:before';
+        var styleTarget = '.jwplayer.jw-flag-aspect-mode:before';
         document.styleSheets[0].addRule(styleTarget,'padding-top: ' + Math.round(3/4 * 100) + '%');
         if(document.attachEvent)document.styleSheets[0].addRule(styleTarget,'content: ' + Math.round(Math.random()*1000));
         if(!document.attachEvent) document.styleSheets[0].insertRule(styleTarget + ' { padding-top: ' + Math.round(3/4 * 100) + '%; }', 0);
