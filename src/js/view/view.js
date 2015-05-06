@@ -490,7 +490,9 @@ define([
 
             var rightside = document.createElement('div');
             rightside.className = 'jw-controls-right';
-            rightside.appendChild(_logo.element());
+            if (_model.get('config').logo) {
+                rightside.appendChild(_logo.element());
+            }
             rightside.appendChild(_dock.element());
             _controlsLayer.appendChild(rightside);
 
