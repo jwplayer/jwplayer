@@ -499,7 +499,7 @@ define([
             _captionsRenderer.setup(_model.get('config').captions);
 
             // captions should be place behind controls, and not hidden when controls are hidden
-            _controlsLayer.parentNode.insertBefore(_captionsRenderer.element(), _controlsLayer);
+            _controlsLayer.parentNode.insertBefore(_captionsRenderer.element(), _title.element());
 
 
             if (!_isMobile) {

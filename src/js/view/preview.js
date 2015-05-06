@@ -10,13 +10,10 @@ define([
     };
 
     _.extend(Preview.prototype, {
-        setup: function(parent) {
-            this.el = document.createElement('div');
-            this.el.className = 'jw-preview';
+        setup: function(element) {
+            this.el = element;
 
             this.loadImage(this.model, this.model.get('playlistItem'));
-
-            parent.appendChild(this.el);
         },
         loadImage: function(model, playlistItem) {
             var img = playlistItem.image;
