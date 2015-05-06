@@ -24,6 +24,9 @@ module.exports = function(grunt) {
     var buildVersion = getBuildVersion(packageInfo);
     var flashVersion = 11.1;
 
+    var webpackCompilers = {};
+    var autoprefixBrowsers = encodeURIComponent('> 1%');
+
     grunt.initConfig({
         starttime: new Date(),
         pkg: packageInfo,
@@ -45,7 +48,7 @@ module.exports = function(grunt) {
 
         // lints Less
         recess: {
-            dist: {
+            lint: {
                 options: {
                     // Set compile and compress to false to lint
                     compile: false,
@@ -54,42 +57,13 @@ module.exports = function(grunt) {
                     noJSPrefix: true,
                     noOverqualifying: false,
                     noUnderscores: true,
-                    noUniversalSelectors: true,
-                    prefixWhitespace: true,
-                    strictPropertyOrder: true,
+                    noUniversalSelectors: false,// true,
+                    strictPropertyOrder: false, // true,
                     zeroUnits: false,
                     includePaths: ['src/css', 'src/css/*']
                 },
                 files: {
                     'test/css-skins/jwplayer.css': 'src/css/jwplayer.less'
-                }
-            }
-        },
-
-        uglify : {
-            options: {
-                // fails with node 0.12.0 and grunt-contrib-uglify 0.4.1
-                // https://github.com/gruntjs/grunt-contrib-uglify/issues/302
-                report: 'gzip',
-                mangle: true,
-                compress: {
-                    booleans: true,
-                    cascade :true,
-                    conditionals: true,
-                    dead_code: true,
-                    drop_console: true,
-                    evaluate: true,
-                    if_return: true,
-                    join_vars: true,
-                    pure_getters: true,
-                    sequences: true,
-                    unused: true,
-                    warnings: false
-                }
-            },
-            player : {
-                files: {
-                    'bin-release/jwplayer.js': 'bin-debug/jwplayer.js'
                 }
             }
         },
@@ -104,7 +78,21 @@ module.exports = function(grunt) {
             },
             player: {
                 files : ['src/js/{,*/}*.js'],
-                tasks: ['build-js', 'karma:local']
+                tasks: ['webpack:debug', 'jshint:player', 'karma:local'],
+                options: {
+                    spawn: false
+                }
+            },
+            css: {
+                files: ['src/css/{,*/}*.less'],
+                tasks: ['webpack:debug', 'recess'],
+                options: {
+                    spawn: false
+                }
+            },
+            tests: {
+                files : ['test/{,*/}*.js'],
+                tasks: ['jshint:tests', 'karma:local']
             },
             flash: {
                 files : [
@@ -113,14 +101,6 @@ module.exports = function(grunt) {
                 ],
                 tasks: ['flash:player:debug']
             },
-            css: {
-                files: ['src/css/{,*/}*.less'],
-                tasks: ['webpack', 'uglify']
-            },
-            tests: {
-                files : ['test/{,*/}*.js'],
-                tasks: ['jshint:tests', 'karma:local']
-            },
             grunt: {
                 files: ['Gruntfile.js'],
                 tasks: ['jshint:grunt']
@@ -128,17 +108,9 @@ module.exports = function(grunt) {
         },
 
         webpack : {
-            build : {
-                watch: false,
-                progress: false,
-                entry: {
-                    jwplayer : './src/js/main.js',
-                    'skin-demo-styles' : './src/js/skin-demo-styles.js'
-                },
-                output: {
-                    path: 'bin-debug/',
-                    publicPath: '/jwplayer/bin-debug/',
-                    filename: '[name].js'
+            options: {
+                stats: {
+                    timings: true
                 },
                 resolve: {
                     modulesDirectories: [
@@ -146,18 +118,13 @@ module.exports = function(grunt) {
                         'src'
                     ]
                 },
-                devtool: 'source-map',
-                plugins: [
-                    new webpack.DefinePlugin({
-                        __BUILD_VERSION__: '\'' + buildVersion + '\'',
-                        __FLASH_VERSION__: flashVersion
-                    })
-                ],
+                devtool: 'cheap-source-map',
                 module: {
                     loaders: [
                         {
                             test: /\.less$/,
-                            loader: 'style-loader!css-loader!less-loader'
+                            loader: 'style!css?sourceMap!autoprefixer?browsers=' + autoprefixBrowsers +
+                                    '!less?sourceMap&compress'
                         },
                         {
                             test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
@@ -176,6 +143,57 @@ module.exports = function(grunt) {
                             loader: 'url?limit=10000&mimetype=image/svg+xml'
                         }
                     ]
+                }
+            },
+            debug : {
+                options: {
+                    entry: {
+                        jwplayer : './src/js/jwplayer.js'
+                    },
+                    output: {
+                        path: 'bin-debug/',
+                        filename: 'jwplayer.js',
+                        library: 'jwplayer',
+                        libraryTarget: 'umd',
+                        pathinfo: true
+                    },
+                    plugins: [
+                        new webpack.DefinePlugin({
+                            __BUILD_VERSION__: '\'' + buildVersion + '\'',
+                            __FLASH_VERSION__: flashVersion
+                        })
+                    ]
+                }
+            },
+            release : {
+                options: {
+                    entry: {
+                        jwplayer: './src/js/jwplayer.js'
+                    },
+                    output: {
+                        path: 'bin-release/',
+                        filename: 'jwplayer.js',
+                        library: 'jwplayer',
+                        libraryTarget: 'umd'
+                    },
+                    plugins: [
+                        new webpack.DefinePlugin({
+                            __BUILD_VERSION__: '\'' + buildVersion + '\'',
+                            __FLASH_VERSION__: flashVersion
+                        }),
+                        new webpack.optimize.UglifyJsPlugin()
+                    ]
+                }
+            },
+            'skin-demo' : {
+                options: {
+                    entry: {
+                        'skin-demo-styles' : './src/js/skin-demo-styles.js'
+                    },
+                    output: {
+                        path: 'test/manual/css-skins/bin-output/',
+                        filename: '[name].js'
+                    }
                 }
             }
         },
@@ -209,7 +227,7 @@ module.exports = function(grunt) {
     });
 
     grunt.registerMultiTask('flash',
-            'Compile Flash SWF files. Usage `grunt flash:*|player|vast:debug|release|swc:air|flex`', function() {
+            'Compile Flash SWF files. Usage `grunt flash:player:debug|release|swc:air|flex`', function() {
         var done = this.async();
 
         var data = this.data;
@@ -329,21 +347,46 @@ module.exports = function(grunt) {
         }, 500);
     });
 
+    grunt.registerMultiTask('webpack', 'Spawn a webpack compiler', function() {
+        var done = this.async();
+        var target = this.target;
+        var compiler = webpackCompilers[target];
+        if (!compiler) {
+            compiler = webpackCompilers[target] = webpack(this.options());
+        }
+        compiler.run(function(err, stats) {
+            if (err) {
+                webpackCompilers[target] = null;
+                grunt.log.error(err.toString());
+                done(false);
+            } else {
+                grunt.log.writeln(stats.toString({
+                    chunks: false
+                }));
+                done();
+            }
+        });
+    });
+
     grunt.registerTask('test', [
         'karma'
     ]);
 
     grunt.registerTask('build-js', [
         'webpack',
-        'uglify',
-        'jshint:player'
+        'jshint:player',
+        'recess'
+    ]);
+
+    grunt.registerTask('build-flash', [
+        'flash:player:debug',
+        'flash:player:release'
     ]);
 
     grunt.registerTask('build', [
         'clean',
         'build-js',
-        'flash:player:debug',
-        'flash:player:release',
+        'build-flash',
         'karma:local'
     ]);
 

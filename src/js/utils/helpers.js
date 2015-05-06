@@ -80,17 +80,14 @@ define([
         return /^(?:(?:https?|file)\:)?\/\//.test(path);
     }
 
-    /** Logger */
-    var console = window.console = window.console || {
-        log: function () {
-        }
-    };
     utils.log = function () {
-        var args = Array.prototype.slice.call(arguments, 0);
+        if (!window.console) {
+            return;
+        }
         if (typeof console.log === 'object') {
-            console.log(args);
+            console.log(Array.prototype.slice.call(arguments, 0));
         } else {
-            console.log.apply(console, args);
+            console.log.apply(console, arguments);
         }
     };
 
