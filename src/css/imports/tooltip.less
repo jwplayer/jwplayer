@@ -13,7 +13,7 @@
 .jwplayer .jw-overlay:after {
     position: absolute;
     bottom: -0.5em;
-    left: 0;
+    left: -50%;
     width: 100%;
     height: .5em;
     background-color: rgba(0, 0, 0, 0);
@@ -21,13 +21,13 @@
 }
 
 .jw-controlbar {
-    .jw-menu .jw-option {
-        position: relative;
-        white-space: nowrap;
-        cursor: pointer;
-
-        .jwplayer .jw-icon-menu-bullet;
-    }
+//    .jw-menu .jw-option {
+//        position: relative;
+//        white-space: nowrap;
+//        cursor: pointer;
+//
+//        .jwplayer .jw-icon-menu-bullet;
+//    }
 
     .jw-overlay {
         position: absolute;
@@ -52,8 +52,8 @@
     }
 
     .jw-volume-tip {
-        height: 4em;
-        width: 0.7em;
+        width: 100%;
+        height: 100%;
         display: block;
     }
 
@@ -65,11 +65,16 @@
     .jw-time-tip {
         text-align:center;
         font-family: inherit;
-        font-size: 0.75em;
         color: @inactive-color;
     }
 
     .jw-overlay .jw-option {
+        .jwplayer .jw-icon-menu-bullet;
+
+        text-align: left;
+        position: relative;
+        white-space: nowrap;
+        cursor: pointer;
         list-style: none;
         height: 1.5em;
         font-family: inherit;
@@ -86,7 +91,6 @@
     }
 
     .jw-overlay .jw-option:before {
-        padding-right: 0.5em;
-        font-size: 0.5em;
+        padding-right: 0.125em;
     }
 }

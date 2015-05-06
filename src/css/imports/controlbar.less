@@ -32,14 +32,12 @@
 
 .jw-controlbar .jw-controlbar-center-group {
     width: 100%;
-    padding: 0 @ui-padding;
-
-    .jw-slider-time, .jw-text-alt {
-        padding: 0;
-    }
+    margin: 0 @ui-padding;
 
     .jw-text-alt {
         display: none;
+        padding: 0;
+        margin: 0;
     }
 }
 
@@ -48,17 +46,36 @@
     white-space: nowrap;
 }
 
+.jw-controlbar .jw-controlbar-left-group {
+    .jw-icon-inline,
+    .jw-icon-tooltip,
+    .jw-slider-horizontal,
+    .jw-text-elapsed,
+    .jw-text-duration {
+        margin-right: 0.3em
+    }
+}
+
+.jw-controlbar .jw-controlbar-right-group {
+    .jw-icon-inline,
+    .jw-icon-tooltip,
+    .jw-slider-horizontal,
+    .jw-text-elapsed,
+    .jw-text-duration {
+        margin-left: 0.3em;
+    }
+}
+
 // control bar content (icons/text)
 .jw-controlbar {
     .jw-icon-inline,
     .jw-icon-tooltip,
     .jw-slider-horizontal,
-    .jw-elapsed,
-    .jw-duration {
+    .jw-text-elapsed,
+    .jw-text-duration {
         display: inline-block;
         height: @controlbar-height;
         position: relative;
-        padding: 0 @control-padding;
         line-height: @controlbar-height;
         vertical-align: middle;
         cursor: pointer;

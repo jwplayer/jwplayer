@@ -90,7 +90,7 @@ define([
                 mute: button('jw-icon-volume', this._api.setMute),
                 volume: volumeSlider,
                 volumetooltip: volumeTooltip,
-                cast: button('jw-icon-cast'),
+                cast: button('jw-icon-cast jw-off'),
                 fullscreen: button('jw-icon-fullscreen', this._api.setFullscreen)
             };
 

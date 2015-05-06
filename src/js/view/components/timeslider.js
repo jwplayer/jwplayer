@@ -38,7 +38,7 @@ define([
             this._model = _model;
             this._api = _api;
 
-            this.timeTip = new TimeTip();
+            this.timeTip = new TimeTip('jw-tooltip-time');
             this.timeTip.setup();
 
 
