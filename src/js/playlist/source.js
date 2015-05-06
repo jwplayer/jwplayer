@@ -58,6 +58,13 @@ define([
             _source.type = 'aac';
         }
 
+        // remove empty strings
+        _.each(_source, function(val, key) {
+            if (val === '') {
+                delete _source[key];
+            }
+        });
+
         return _source;
     };
 
