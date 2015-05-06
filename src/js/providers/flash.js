@@ -24,6 +24,7 @@ define([
         var _currentQuality = -1;
         var _qualityLevels = null;
         var _flashProviderType;
+        var _attached = true;
 
         var _ready = function() {
             return _swf && _swf.__ready;
@@ -94,6 +95,7 @@ define([
                     return _beforecompleted;
                 },
                 attachMedia: function() {
+                    _attached = true;
                     // This is after a postroll completes
                     if (_beforecompleted) {
                         this.setState(states.COMPLETE);
@@ -102,6 +104,7 @@ define([
                     }
                 },
                 detachMedia: function() {
+                    _attached = false;
                     return null;
                 },
                 getContainer: function() {
@@ -188,6 +191,9 @@ define([
                     }, this).on(events.JWPLAYER_MEDIA_BEFORECOMPLETE, function(e){
                         _beforecompleted = true;
                         this.sendEvent(e.type);
+                        if(_attached === true) {
+                            _beforecompleted = false;
+                        }
                     }, this).on(events.JWPLAYER_MEDIA_COMPLETE, function(e) {
                         if(!_beforecompleted){
                             this.setState(states.COMPLETE);
