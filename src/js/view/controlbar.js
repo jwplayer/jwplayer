@@ -237,8 +237,6 @@ define([
         },
 
         redraw : utils.noop,
-        instreamMode: utils.noop,
-        adMode : utils.noop,
         hide : utils.noop,
         show : utils.noop,
         audioMode : utils.noop,
