@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JW7 View Demo</title>
+    <script type="text/javascript" src="../../bin-debug/jwplayer.js"></script>
+    <link type="text/css" rel="stylesheet" href="styles/tests.css"  media="all" />
+
+    <script src="../../bower_components/jquery/dist/jquery.js"></script>
+    <script src="../../bower_components/requirejs/require.js"></script>
+</head>
+<body>
+
+<h1>Show the View with various states</h1>
+
+<div id="video-container"></div>
+
+<textarea style="width:400px; height:200px" id="modeljson"></textarea>
+
+<script src="manual-config.js"></script>
+
+<script type="text/javascript">
+require([
+    'mock/mock-api',
+    'mock/mock-model',
+    'view/view'
+], function (mockApi, mockModel, View) {
+
+    var $textarea = $('#modeljson');
+    mockModel.id = 'video-container';
+
+    var view = new View(mockApi, mockModel) ;
+
+    view.setup();
+    view.resize(400, 300);
+
+    mockModel.on('all', updateJson);
+    updateJson();
+
+
+    function updateJson() {
+        if ($textarea.is(':focus')) { return; }
+        $textarea.val(JSON.stringify(mockModel.attrs, null, 4));
+    }
+
+    $textarea.keyup(function() {
+        try {
+            var js = JSON.parse($(this).val());
+            $.each(js, function (key, val) {
+                mockModel.set(key, val);
+            });
+        } catch(e) {
+            console.log('invalid json');
+        }
+    });
+
+    window.mockModel = mockModel;
+    document.getElementById('video-container').appendChild(view.element());
+});
+
+</script>
+
+</body>
+</html>

@@ -51,7 +51,7 @@ define([
 
             _api.on('seeked', this.onSeeked, this);
 
-            Slider.call(this, 'jw-time', 'horizontal');
+            Slider.call(this, 'jw-slider-time', 'horizontal');
         },
 
         // These overwrite Slider methods

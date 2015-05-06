@@ -6,14 +6,12 @@ define([
     var Preview = function(_model) {
         this.model = _model;
 
-        this.setup();
         this.model.on('change:playlistItem', this.loadImage, this);
     };
 
     _.extend(Preview.prototype, {
-        setup: function() {
-            this.el = document.createElement('div');
-            this.el.className = 'jw-preview';
+        setup: function(element) {
+            this.el = element;
 
             this.loadImage(this.model, this.model.get('playlistItem'));
         },
