@@ -2,12 +2,11 @@ define([
     'utils/helpers',
     'utils/underscore',
     'utils/backbone.events',
-    'view/thumbs',
     'view/components/slider',
     'view/components/timeslider',
     'view/components/menu',
     'view/components/volumetooltip'
-], function(utils, _, Events, Thumbs, Slider, TimeSlider, Menu, VolumeTooltip) {
+], function(utils, _, Events, Slider, TimeSlider, Menu, VolumeTooltip) {
 
     function button(icon, click) {
         var element = document.createElement('span');
