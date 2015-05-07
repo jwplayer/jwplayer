@@ -244,8 +244,12 @@ define([
 
 
         this.onChangeSkin = function(model, newSkin, oldSkin) {
-            utils.removeClass(_playerElement, 'jw-skin-'+oldSkin);
-            utils.addClass(_playerElement, 'jw-skin-'+newSkin);
+            if (oldSkin) {
+                utils.removeClass(_playerElement, 'jw-skin-'+oldSkin);
+            }
+            if (newSkin) {
+                utils.addClass(_playerElement, 'jw-skin-'+newSkin);
+            }
         };
 
         this.setup = function() {

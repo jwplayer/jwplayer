@@ -211,8 +211,14 @@ define([
                 var loader = new ScriptLoader(skinUrl, isStylesheet);
 
                 loader.addEventListener(events.COMPLETE, function() {
-                    _model.set('skin-loading', false);
-                });
+                        _model.set('skin-loading', false);
+                    })
+                    .addEventListener(events.ERROR, function() {
+                        console.log('The given skin failed to load : ', skinUrl);
+                        _model.set('skin', null);
+                        _model.set('skin-loading', false);
+                    });
+
                 loader.load();
             }
 

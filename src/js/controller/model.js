@@ -24,7 +24,7 @@ define([
         mute: false,
         playlist: [],
         repeat: false,
-        skin: 'seven',
+        //skin: '',
         stretching: stretchUtils.UNIFORM,
         width: 480,
         volume: 90
