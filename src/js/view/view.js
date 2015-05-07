@@ -252,10 +252,46 @@ define([
             }
         };
 
+
+        this.handleColorOverrides = function() {
+            var id = _model.get('id');
+            function addStyle(attr, elements, color) {
+                if (!color) { return; }
+
+                elements = utils.prefix(elements, '#' + id + ' ');
+
+                var o = {};
+                o[attr] = color;
+                cssUtils.css(elements.join(', '), o);
+            }
+
+            var icons = [
+                '.jw-icon',
+                '.jw-text'
+            ];
+
+            var cues = [
+                '.jw-cue:after',
+                '.jw-thumb:after'
+            ];
+
+            var iconHovers = ['.jw-icon:hover'];
+            var sliders = ['.jw-progress'];
+            var containers = ['.jw-container'];
+
+            addStyle('color', iconHovers, _model.get('skinColorActive'));
+            addStyle('color', icons, _model.get('skinColorInactive'));
+            addStyle('background', cues, _model.get('skinColorInactive'));
+            addStyle('background', sliders, _model.get('skinColorActive'));
+            addStyle('background', containers, _model.get('skinColorBackground'));
+        };
+
         this.setup = function() {
             if (_errorState) {
                 return;
             }
+
+            this.handleColorOverrides();
 
             // Hide control elements until skin is loaded
             if (_model.get('skin-loading') === true) {

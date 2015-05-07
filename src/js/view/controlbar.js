@@ -2,16 +2,15 @@ define([
     'utils/helpers',
     'utils/underscore',
     'utils/backbone.events',
-    'view/thumbs',
     'view/components/slider',
     'view/components/timeslider',
     'view/components/menu',
     'view/components/volumetooltip'
-], function(utils, _, Events, Thumbs, Slider, TimeSlider, Menu, VolumeTooltip) {
+], function(utils, _, Events, Slider, TimeSlider, Menu, VolumeTooltip) {
 
     function button(icon, click) {
         var element = document.createElement('span');
-        element.className = 'jw-icon-inline ' + icon;
+        element.className = 'jw-icon jw-icon-inline ' + icon;
         element.style.display = 'none';
 
         if (click) {
@@ -118,7 +117,7 @@ define([
             };
 
             this.el = document.createElement('span');
-            this.el.className = 'jw-controlbar';
+            this.el.className = 'jw-container jw-controlbar';
 
             var leftGroup = buildGroup('left', this.layout.left);
             var centerGroup = buildGroup('center', this.layout.center);
