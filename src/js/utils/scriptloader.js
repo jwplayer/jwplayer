@@ -6,13 +6,29 @@ define([
 
     var _loaders = {};
 
-    var scriptloader = function (url) {
+    var scriptloader = function (url, isStyle) {
         var _this = _.extend(this, Events),
             _status = _loaderstatus.NEW;
 
         // legacy support
         this.addEventListener = this.on;
         this.removeEventListener = this.off;
+
+
+        this.makeStyleLink = function(url) {
+            var link = document.createElement('link');
+            link.type = 'text/css';
+            link.rel = 'stylesheet';
+            link.href = url;
+            return link;
+        };
+        this.makeScriptTag = function(url) {
+            var scriptTag = document.createElement('script');
+            scriptTag.src = url;
+            return scriptTag;
+        };
+
+        this.makeTag = (isStyle ? this.makeStyleLink : this.makeScriptTag);
 
         this.load = function () {
             // Only execute on the first run
@@ -34,7 +50,7 @@ define([
             }
 
             var head = document.getElementsByTagName('head')[0] || document.documentElement;
-            var scriptTag = document.createElement('script');
+            var scriptTag = this.makeTag(url);
 
             var done = false;
             scriptTag.onload = scriptTag.onreadystatechange = function (evt) {
@@ -45,14 +61,13 @@ define([
 
                     // Handle memory leak in IE
                     scriptTag.onload = scriptTag.onreadystatechange = null;
-                    if (head && scriptTag.parentNode) {
+                    if (head && scriptTag.parentNode && !isStyle) {
                         head.removeChild(scriptTag);
                     }
                 }
             };
             scriptTag.onerror = _sendError;
 
-            scriptTag.src = url;
             head.insertBefore(scriptTag, head.firstChild);
 
             _status = _loaderstatus.LOADING;

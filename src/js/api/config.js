@@ -22,6 +22,12 @@ define([
         config.base = config.base || utils.getScriptPath('jwplayer.js');
         config.flashplayer = config.flashplayer || config.base + 'jwplayer.flash.swf';
         config.aspectratio = _evaluateAspectRatio(config.aspectratio, config.width);
+
+        if (_.isObject(config.skin)) {
+            config.skinUrl = config.skin.url;
+            config.skin = config.skin.name;
+        }
+
         if (!config.aspectratio) {
             delete config.aspectratio;
         }

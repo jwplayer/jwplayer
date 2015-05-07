@@ -156,6 +156,9 @@ define([
     function getModel(config) {
         return {
             config: config,
+            'get' : function(a) {
+                return this[a];
+            },
             setPlaylist: function(p) {
                 this.playlist = p;
             }

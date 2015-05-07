@@ -1,8 +1,9 @@
 define([
+    'utils/constants',
     'utils/strings',
     'utils/underscore',
     'utils/jqueryfuncs'
-], function(strings, _, jqfns) {
+], function(Constants, strings, _, jqfns) {
 
     // TODO:: the next lines are a holdover until we update our CDN w/ plugins for 7.0
     // This is replaced by compiler
@@ -323,6 +324,17 @@ define([
         });
 
         return repo;
+    };
+
+    utils.getSkinUrl = function(skin) {
+        return Constants.repo + 'skins/' + Constants.skinsVersion + '/' + skin + '.css';
+    };
+
+    utils.addStyleSheet = function(url) {
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = url;
+        document.getElementsByTagName('head')[0].appendChild(link);
     };
 
     // Return true:Boolean if major and minor version of target is less than current version
