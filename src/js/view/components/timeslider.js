@@ -79,9 +79,10 @@ define([
             Slider.prototype.dragStart.apply(this, arguments);
         },
         dragEnd : function() {
-            this._model.set('scrubbing', false);
             Slider.prototype.dragEnd.apply(this, arguments);
+            this._model.set('scrubbing', false);
         },
+
 
         // Event Listeners
         onSeeked : function () {

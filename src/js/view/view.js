@@ -578,11 +578,25 @@ define([
             }
         }
 
+        function stopDragging(model) {
+            if (model.get('state') === states.PAUSED) {
+                model.once('change:state', stopDragging);
+                return;
+            }
+
+            // Handle the case where they begin seeking again before the last seek completes
+            if (model.get('scrubbing') === false) {
+                utils.removeClass(_playerElement, 'jw-flag-dragging');
+            }
+        }
+
         function _dragging(model, val) {
+            model.off('change:state', stopDragging);
+
             if (val) {
                 utils.addClass(_playerElement, 'jw-flag-dragging');
             } else {
-                utils.removeClass(_playerElement, 'jw-flag-dragging');
+                stopDragging(model);
             }
         }
 
@@ -952,17 +966,9 @@ define([
             }, this);
         }
 
-        /**
-         * Player state handler
-         */
-        var _stateTimeout;
-
         function _stateHandler(model, state) {
             _replayState = false;
-            clearTimeout(_stateTimeout);
-            _stateTimeout = setTimeout(function() {
-                _updateState(state);
-            }, 100);
+            _updateState(state);
         }
 
         function _errorHandler() {
