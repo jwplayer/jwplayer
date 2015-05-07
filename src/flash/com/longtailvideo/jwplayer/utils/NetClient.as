@@ -49,6 +49,15 @@ package com.longtailvideo.jwplayer.utils {
 			}
 		}
 
+		public function onCuePoint(obj:Object, ...rest):void {
+			if (rest && rest.length > 0) {
+				rest.splice(0, 0, obj);
+				forward({ arguments: rest }, 'metadata');
+			} else {
+				forward(obj, 'metadata');
+			}
+		}
+
 
 		/** Receive NetStream playback codes. **/
 		public function onPlayStatus(... rest):void {
