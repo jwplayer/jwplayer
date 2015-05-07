@@ -52,6 +52,7 @@ define([
         _.extend(this, _eventDispatcher, {
                 load: function(item) {
                     _item = item;
+                    _beforecompleted = false;
                     this.setState(states.LOADING);
                     _flashCommand('load', item);
                 },
