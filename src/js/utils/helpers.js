@@ -513,6 +513,17 @@ define([
         return Math.max(Math.min(num, max), min);
     };
 
+    utils.prefix = function(arr, add) {
+        return _.map(arr, function(val) {
+            return add + val;
+        });
+    };
+
+    utils.suffix = function(arr, add) {
+        return _.map(arr, function(val) {
+            return val + add;
+        });
+    };
     /**
      * Convert a time-representing string to a number.
      *

@@ -5,7 +5,7 @@ define([
     var Tooltip = Extendable.extend({
         'constructor' : function(name) {
             this.el = document.createElement('span');
-            this.el.className = 'jw-icon-tooltip ' + name + ' jw-hidden';
+            this.el.className = 'jw-icon jw-icon-tooltip ' + name + ' jw-hidden';
             this.container = document.createElement('div');
             this.container.className ='jw-overlay';
             this.el.appendChild(this.container);

@@ -25,6 +25,9 @@ define([
 
         if (_.isObject(config.skin)) {
             config.skinUrl = config.skin.url;
+            config.skinColorInactive = config.skin.inactive; // default icon color
+            config.skinColorActive = config.skin.active;  // icon hover, on, slider color
+            config.skinColorBackground = config.skin.background; // control elements background
             config.skin = config.skin.name;
         }
 
@@ -41,6 +44,7 @@ define([
 
         return config;
     };
+
 
     function _deserialize(options) {
         _.each(options, function(val, key) {
