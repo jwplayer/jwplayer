@@ -63,7 +63,24 @@ module.exports = function(grunt) {
                     includePaths: ['src/css', 'src/css/*']
                 },
                 files: {
-                    'test/css-skins/jwplayer.css': 'src/css/jwplayer.less'
+                    'bin-debug/jwplayer.css': 'src/css/jwplayer.less'
+                }
+            },
+            'generate-test-css': {
+                options: {
+                    compile: true,
+                    compress: false,
+                    noIDs: true,
+                    noJSPrefix: true,
+                    noOverqualifying: false,
+                    noUnderscores: true,
+                    noUniversalSelectors: false,// true,
+                    strictPropertyOrder: false, // true,
+                    zeroUnits: false,
+                    includePaths: ['src/css', 'src/css/*']
+                },
+                files: {
+                    'bin-debug/jwplayer.css': 'src/css/jwplayer.less'
                 }
             }
         },
@@ -183,17 +200,6 @@ module.exports = function(grunt) {
                         }),
                         new webpack.optimize.UglifyJsPlugin()
                     ]
-                }
-            },
-            'skin-demo' : {
-                options: {
-                    entry: {
-                        'skin-demo-styles' : './src/js/skin-demo-styles.js'
-                    },
-                    output: {
-                        path: 'test/manual/css-skins/bin-output/',
-                        filename: '[name].js'
-                    }
                 }
             }
         },

@@ -3,9 +3,8 @@
 <head>
     <title>UI Test</title>
 
-    <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.js"></script>
-    <script type="text/javascript" src="skin-demo-scripts.js"></script>
-    <script type="text/javascript" src="../../../bin-debug/skin-demo-styles.js"></script>
+    <link type="text/css" rel="stylesheet" href="/jwplayer/bin-debug/jwplayer.css"  media="all" />
+    <link type="text/css" rel="stylesheet" href="../styles/font-location.css"  media="all" />
 
     <style>
         .button-cont-top, .button-cont-bottom {
@@ -128,120 +127,91 @@
 
     <div class="vid-cont">
         <div class="jwplayer jw-state-idle player-size" tabindex="0">
-            <div class="jw-click">
-                <div class="jw-click-item">About JW Player 6.12.20150218175242765...</div>
+            <div class="jw-aspect"></div>
+            <div class="jw-media">
+                <video x-webkit-airplay="allow" webkit-playsinline="" src="http://content.bitsontherun.com/videos/q1fx20VZ-52qL9xLP.mp4"></video>
             </div>
-            <div class="jw-main">
-                <div class="jw-video">
-                    <video x-webkit-airplay="allow" webkit-playsinline="" src="http://content.bitsontherun.com/videos/q1fx20VZ-52qL9xLP.mp4"></video>
+            <div class="jw-captions jw-captions-enabled">
+                <div class="jw-captions-window jw-captions-window-active">
+                    <span class="jw-captions-text" style="font-family: Arial, sans-serif; background-color: rgb(0, 0, 0);">The quick brown fox jumps over the lazy dog.  Pack my box with five dozen liquor jugs.  The quick brown fox jumps over the lazy dog.</span>
                 </div>
-                <div class="jw-controls">
-                    <div class="jw-display">
-                        <div class="jw-preview" style="background-image:url(http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg)"></div>
-                    </div>
-                    <div class="jw-title">
-                        <div class="jw-title-primary">Big Buck Bunny</div>
-                        <div class="jw-title-secondary"></div>
-                    </div>
-                    <div class="jw-display-icon-container">
-                        <div class="jw-icon-display"></div>
-                    </div>
-                    <img class="jw-logo">
+            </div>
+            <div class="jw-preview" style="background-image:url(http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg)"></div>
+            <div class="jw-title">
+                <div class="jw-title-primary">Sintel</div>
+                <div class="jw-title-secondary">Scales!</div>
+            </div>
+            <div class="jw-overlays"></div>
+            <div class="jw-controls">
+                <div class="jw-click"></div>
+                <div class="jw-display-icon-container">
+                    <div class="jw-icon-display"></div>
+                </div>
+                <div class="jw-controls-right">
+                    <img class="jw-logo" src="icons/logo.png" style="margin-bottom: 0px;">
                     <div class="jw-dock">
                         <div class="jw-dock-button">
-                            <div class="jw-dock-image" style="background-image: url(icons/both.png)"></div>
+                            <div class="jw-dock-image" button="abc" style="background-image: url(icons/both.png)"></div>
                             <div class="jw-arrow"></div>
                             <div class="jw-overlay">
-                                <span class="jw-text">Button sucessfully added</span>
+                                <span class="jw-text">sample tooltip text</span>
                             </div>
-                        </div>
-                        <span class="jw-dock-button">
-                            <div class="jw-dock-image" style="background-image: url(icons/smiley.png)"></div>
-                            <div class="jw-arrow"></div>
-                            <div class="jw-overlay">
-                                <span class="jw-text">Small smiley button</span>
-                            </div>
-                        </span>
-                    </div>
-                    <div class="jw-captions jw-captions-enabled">
-                        <span class="jw-captions-text">The quick brown fox jumps over the lazy dog.  Pack my box with five dozen liquor jugs.  The quick brown fox jumps over the lazy dog.</span>
-                    </div>
-                    <div class="jw-controlbar">
-                        <div class="jw-controlbar--left-group">
-                            <span class="jw-icon-inline jw-playback-toggle-icon"></span>
-                            <span class="jw-icon-inline jw-icon-prev"></span>
-                            <span class="jw-icon-inline jw-icon-next"></span>
-                            <span class="jw-elapsed">
-                                <span class="jw-text">0:08</span>
-                            </span>
-                        </div>
-                        <div class="jw-controlbar--center-group">
-                            <span class="jw-time jw-slider-horizontal">
-                                <span class="jw-rail-group">
-                                    <span class="jw-rail"></span>
-                                    <span class="jw-buffer" style="width: 60%;"></span>
-                                    <span class="jw-progress" style="width: 40%"></span>
-                                    <span class="jw-thumb" style="left: 40%;"></span>
-                                </span>
-                            </span>
-                        </div>
-                        <div class="jw-controlbar--right-group">
-                            <span class="jw-duration">
-                                <span class="jw-text">14:48</span>
-                            </span>
-                            <span class="jw-icon-tooltip jw-icon-hd-on">
-                                <div class="jw-overlay jw-hd-overlay">
-                                    <div class="jw-menu">
-                                        <ul>
-                                            <li class="jw-option">auto</li>
-                                            <li class="jw-option">480p</li>
-                                            <li class="jw-option">720p</li>
-                                            <li class="jw-option jw-active-option">1080p</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </span>
-                            <span class="jw-icon-tooltip jw-icon-cc-on">
-                                <div class="jw-overlay jw-cc-overlay">
-                                    <div class="jw-menu">
-                                        <ul>
-                                            <li class="jw-option">Off</li>
-                                            <li class="jw-option">Chinese</li>
-                                            <li class="jw-option">Korean</li>
-                                            <li class="jw-option jw-active-option">Polish</li>
-                                            <li class="jw-option">Russian</li>
-                                            <li class="jw-option">Spanish</li>
-                                            <li class="jw-option">Turkish</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </span>
-                            <span class="jw-icon-tooltip jw-icon-volume-unmute">
-                                <div class="jw-overlay jw-volume-overlay">
-                                    <span class="jw-volume jw-slider-vertical">
-                                        <span class="jw-rail-group">
-                                            <span class="jw-rail"></span>
-                                            <span class="jw-progress" style="height: 50%;"></span>
-                                            <span class="jw-thumb" style="bottom: 50%;"></span>
-                                        </span>
-                                    </span>
-                                </div>
-                            </span>
-                            <span class="jw-volume jw-slider-horizontal">
-                                <span class="jw-rail-group">
-                                    <span class="jw-rail"></span>
-                                    <span class="jw-progress" style="width: 50%;"></span>
-                                    <span class="jw-thumb" style="left: 50%;"></span>
-                                </span>
-                            </span>
-                            <span class="jw-icon-inline jw-cast jw-can-cast jw-icon-cast-off"></span>
-                            <span class="jw-icon-inline jw-icon-fullscreen"></span>
                         </div>
                     </div>
                 </div>
-                <div class="jw-instream"></div>
+                <span class="jw-controlbar">
+                    <span class="jw-group jw-controlbar-left-group"><span class="jw-icon-inline jw-icon-playback"></span><span class="jw-icon-inline jw-icon-prev" style="display: none;"></span><span class="jw-icon-inline jw-icon-next" style="display: none;"></span><span class="jw-text jw-text-elapsed">00:00</span></span>
+                    <span class="jw-group jw-controlbar-center-group">
+                        <span class="jw-slider-time jw-slider-horizontal">
+                            <span class="jw-rail-group">
+                                <span class="jw-rail"></span>
+                                <span class="jw-buffer" style="width: 75%;"></span>
+                                <span class="jw-progress" style="width: 50%;"></span>
+                                <span class="jw-thumb" style="left: 50%;"></span>
+                                <span class="jw-icon-tooltip undefined">
+                                    <div class="jw-overlay">
+                                        <div class="jw-time-tip"><span style="width: 0px; height: 0px;"></span><span></span></div>
+                                    </div>
+                                </span>
+                                <span class="jw-cue" style="left: 30%;"></span>
+                                <span class="jw-cue" style="left: 60%;"></span>
+                                <span class="jw-cue" style="left: 80%;"></span>
+                            </span>
+                        </span>
+                        <span class="jw-text jw-text-alt"></span>
+                    </span>
+                    <span class="jw-group jw-controlbar-right-group">
+                        <span class="jw-text jw-text-duration">00:00</span>
+                        <span class="jw-icon-tooltip jw-icon-hd jw-hidden">
+                            <div class="jw-overlay"></div>
+                        </span>
+                        <span class="jw-icon-tooltip jw-icon-cc">
+                            <div class="jw-overlay">
+                                <ul class="jw-menu">
+                                    <li class="jw-option item-0 jw-active-option">Off</li>
+                                    <li class="jw-option item-1">Chinese</li>
+                                    <li class="jw-option item-2">Farsi</li>
+                                    <li class="jw-option item-3">Greek</li>
+                                    <li class="jw-option item-4">Japanese</li>
+                                    <li class="jw-option item-5">Korean</li>
+                                    <li class="jw-option item-6">Polish</li>
+                                    <li class="jw-option item-7">Russian</li>
+                                    <li class="jw-option item-8">Spanish</li>
+                                    <li class="jw-option item-9">Turkish</li>
+                                </ul>
+                            </div>
+                        </span>
+                        <span class="jw-icon-inline jw-icon-volume"></span><span class="jw-slider-volume jw-slider-horizontal">
+                        <span class="jw-rail-group">
+                        <span class="jw-rail"></span>
+                        <span class="jw-buffer"></span>
+                        <span class="jw-progress" style="width: 50%;"></span>
+                        <span class="jw-thumb" style="left: 50%;"></span>
+                        </span>
+                        </span><span class="jw-icon-inline jw-icon-cast" style="display: none;"></span><span class="jw-icon-inline jw-icon-fullscreen"></span>
+                    </span>
+                </span>
             </div>
-            <div class="jw-aspect"></div>
         </div>
     </div>
     <div class="button-cont-bottom">
@@ -251,5 +221,8 @@
         <button id='buffering-state'>Buffering</button>
         <button id='complete-state'>Complete</button>
     </div>
+
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script type="text/javascript" src="skin-demo-scripts.js"></script>
 </body>
 </html>

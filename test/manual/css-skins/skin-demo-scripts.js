@@ -69,10 +69,7 @@ $(document).ready(function(){
 
         $('.button-cont-top').removeClass('fixed-buttons');
 
-        var styleTarget = '.jwplayer.jw-flag-aspect-mode:before';
-        document.styleSheets[0].addRule(styleTarget,'padding-top: ' + Math.round(9/16 * 100) + '%');
-        if(document.attachEvent)document.styleSheets[0].addRule(styleTarget,'content: ' + Math.round(Math.random()*1000));
-        if(!document.attachEvent) document.styleSheets[0].insertRule(styleTarget + ' { padding-top: ' + Math.round(9/16 * 100) + '%; }', 0);
+        $('.jw-aspect').css({ 'padding-top': Math.round(9/16 * 100) + '%' });
     };
 
     $('#aspect-ratio-16-9').on('click', aspect169);
@@ -84,10 +81,7 @@ $(document).ready(function(){
 
         $('.button-cont-top').removeClass('fixed-buttons');
 
-        var styleTarget = '.jwplayer.jw-flag-aspect-mode:before';
-        document.styleSheets[0].addRule(styleTarget,'padding-top: ' + Math.round(3/4 * 100) + '%');
-        if(document.attachEvent)document.styleSheets[0].addRule(styleTarget,'content: ' + Math.round(Math.random()*1000));
-        if(!document.attachEvent) document.styleSheets[0].insertRule(styleTarget + ' { padding-top: ' + Math.round(3/4 * 100) + '%; }', 0);
+        $('.jw-aspect').css({ 'padding-top': Math.round(3/4 * 100) + '%' });
     };
 
     $('#aspect-ratio-4-3').on('click', aspect43);
