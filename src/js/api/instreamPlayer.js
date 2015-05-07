@@ -16,6 +16,10 @@ define([
 
         _this.init = function() {
             _controller.initInstream();
+            // TODO: This triggers 'playing', 'paused', events VAST expects.  It VAST should listen to state instead.
+            _controller._instreamPlayer.on('state', function(evt) {
+                _this.trigger(evt.newstate, evt);
+            });
             return _this;
         };
         _this.loadItem = function(item, options) {

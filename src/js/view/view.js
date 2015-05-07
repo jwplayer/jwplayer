@@ -133,7 +133,7 @@ define([
             }
 
             // On keypress show the controlbar for a few seconds
-            if (!_controlbar.adMode()) {
+            if (!_instreamMode) {
                 _showControlbar();
                 _resetTapTimer();
             }
@@ -147,12 +147,12 @@ define([
                     _api.play();
                     break;
                 case 37: // left-arrow, if not adMode
-                    if (!_controlbar.adMode()) {
+                    if (!_instreamMode) {
                         adjustSeek.call(_api, -5);
                     }
                     break;
                 case 39: // right-arrow, if not adMode
-                    if (!_controlbar.adMode()) {
+                    if (!_instreamMode) {
                         adjustSeek.call(_api, 5);
                     }
                     break;
@@ -205,7 +205,7 @@ define([
             }
 
             // On tab-focus, show the control bar for a few seconds
-            if (!_controlbar.adMode()) {
+            if (!_instreamMode) {
                 _showControlbar();
                 _resetTapTimer();
             }
@@ -302,27 +302,9 @@ define([
                 window.removeEventListener('orientationchange', _responsiveListener);
                 window.addEventListener('orientationchange', _responsiveListener, false);
             }
-            //this for googima, after casting, to get the state right.
-            _api.onAdPlay(function() {
-                utils.addClass(_playerElement, 'jw-flag-ads');
-                _controlbar.adMode(true);
-                _updateState(states.PLAYING);
-
-                // For Vast to hide controlbar if no mouse movement
-                _resetTapTimer();
-            });
-            _api.onAdSkipped(function() {
-                utils.removeClass(_playerElement, 'jw-flag-ads');
-                _controlbar.adMode(false);
-            });
-            _api.onAdComplete(function() {
-                utils.removeClass(_playerElement, 'jw-flag-ads');
-                _controlbar.adMode(false);
-            });
             // So VAST will be in correct state when ad errors out from unknown filetype
             _api.onAdError(function() {
                 utils.removeClass(_playerElement, 'jw-flag-ads');
-                _controlbar.adMode(false);
             });
 
             _model.on('change:controls', _onChangeControls);
@@ -361,7 +343,7 @@ define([
                     _model.mediaController.off(events.JWPLAYER_CAST_AD_CHANGED, _castAdChanged);
 
                     _castDisplay.hide();
-                    if (_controlbar.adMode()) {
+                    if (!_instreamMode) {
                         _castAdsEnded();
                     }
                     //utils.removeClass(_captions, 'jw-captions-disable');
@@ -577,7 +559,7 @@ define([
 
             if (!evt.complete) {
                 // start ad mode
-                if (!_controlbar.adMode()) {
+                if (!_instreamMode) {
                     _castAdsStarted();
                 }
 
@@ -604,9 +586,7 @@ define([
         }
 
         function _castAdsStarted() {
-            _controlbar.instreamMode(true);
             utils.addClass(_playerElement, 'jw-flag-ads');
-            _controlbar.adMode(true);
             _controlbar.show(true);
         }
 
@@ -614,8 +594,6 @@ define([
             // controlbar reset
             this.setAltText('');
             utils.removeClass(_playerElement, 'jw-flag-ads');
-            _controlbar.adMode(false);
-            _controlbar.instreamMode(false);
             _controlbar.show(true);
             // cast display reset
             if (_castDisplay) {
@@ -1035,9 +1013,7 @@ define([
             _instreamModel = instreamModel;
             _instreamModel.on('change:controls', _onChangeControls);
             _instreamMode = true;
-            _controlbar.instreamMode(true);
             utils.addClass(_playerElement, 'jw-flag-ads');
-            _controlbar.adMode(true);
             _controlbar.show(true);
         };
 
@@ -1057,8 +1033,6 @@ define([
             _instreamMode = false;
             this.setAltText('');
             utils.removeClass(_playerElement, 'jw-flag-ads');
-            _controlbar.adMode(false);
-            _controlbar.instreamMode(false);
             _controlbar.show(true);
             var provider = _model.getVideo();
             provider.setContainer(_videoLayer);

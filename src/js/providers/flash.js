@@ -24,6 +24,7 @@ define([
         var _currentQuality = -1;
         var _qualityLevels = null;
         var _flashProviderType;
+        var _attached = true;
 
         var _ready = function() {
             return _swf && _swf.__ready;
@@ -51,6 +52,7 @@ define([
         _.extend(this, _eventDispatcher, {
                 load: function(item) {
                     _item = item;
+                    _beforecompleted = false;
                     this.setState(states.LOADING);
                     _flashCommand('load', item);
                 },
@@ -94,6 +96,7 @@ define([
                     return _beforecompleted;
                 },
                 attachMedia: function() {
+                    _attached = true;
                     // This is after a postroll completes
                     if (_beforecompleted) {
                         this.setState(states.COMPLETE);
@@ -102,6 +105,7 @@ define([
                     }
                 },
                 detachMedia: function() {
+                    _attached = false;
                     return null;
                 },
                 getContainer: function() {
@@ -158,8 +162,7 @@ define([
                     ];
 
                     var forwardEvents = [
-                        events.JWPLAYER_MEDIA_BUFFER_FULL,
-                        events.JWPLAYER_MEDIA_BEFORECOMPLETE
+                        events.JWPLAYER_MEDIA_BUFFER_FULL
                     ];
 
                     // jwplayer 6 flash player events (forwarded from AS3 Player, Controller, Model)
@@ -186,10 +189,17 @@ define([
                     }, this).on(forwardEvents.join(' '), function(e) {
                         this.sendEvent(e.type);
 
-                    }, this).on(events.JWPLAYER_MEDIA_COMPLETE, function(e) {
-                        this.setState(states.COMPLETE);
+                    }, this).on(events.JWPLAYER_MEDIA_BEFORECOMPLETE, function(e){
+                        _beforecompleted = true;
                         this.sendEvent(e.type);
-
+                        if(_attached === true) {
+                            _beforecompleted = false;
+                        }
+                    }, this).on(events.JWPLAYER_MEDIA_COMPLETE, function(e) {
+                        if(!_beforecompleted){
+                            this.setState(states.COMPLETE);
+                            this.sendEvent(e.type);
+                        }
                     }, this);
 
                     _swf.on(events.JWPLAYER_MEDIA_SEEK, function(e) {
