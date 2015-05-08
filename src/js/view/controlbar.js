@@ -240,6 +240,22 @@ define([
         show : utils.noop,
         audioMode : utils.noop,
         hideFullscreen : utils.noop,
+        getVisibleBounds : function (){
+            var el = this.el,
+                originalVisibility = el.style.visibility,
+                originalDisplay = el.style.display,
+                bounds;
+
+            el.style.visibility = 'visible';
+            el.style.display = 'table';
+
+            bounds = utils.bounds(el);
+
+            el.style.visibility = originalVisibility;
+            el.style.display = originalDisplay;
+
+            return bounds;
+        },
         setAltText : function(altText) {
             this.elements.alt.innerHTML = altText;
         },
