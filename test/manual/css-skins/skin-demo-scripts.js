@@ -9,7 +9,7 @@ $(document).ready(function(){
         $('.jwplayer').toggleClass('jw-flag-fullscreen');
     });
 
-    var stateStyles = 'jw-state-paused jw-state-playing jw-state-idle jw-state-buffering jw-state-complete';
+    var stateStyles = 'jw-state-paused jw-state-playing jw-state-idle jw-state-buffering jw-state-complete jw-state-error';
     var sizingStyles = 'player-size window-size jw-flag-aspect-mode';
     var stretchingStyles = 'uniform-stretching fill-stretching exactfit-stretching none-stretching';
 
@@ -126,6 +126,15 @@ $(document).ready(function(){
 
     $('#complete-state').on('click', completestate);
     if(document.attachEvent) document.getElementById('complete-state').attachEvent('onclick', completestate);
+
+
+    var errorstate = function(e){
+        activateStyles('jw-state-error', stateStyles);
+    };
+
+    $('#error-state').on('click', errorstate);
+    if(document.attachEvent) document.getElementById('error-state').attachEvent('onclick', errorstate);
+
 
     var activateStyles = function (addStyle, removeStyles){
         var classesToRemove = removeStyles.replace(addStyle, '');

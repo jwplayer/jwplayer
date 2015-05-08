@@ -1,7 +1,8 @@
 @import "vars.less";
 
 // Preview Image
-.jwplayer {
+.jwplayer,
+.jw-error {
     .jw-click {
         position: absolute;
         width: 100%;
@@ -70,7 +71,9 @@
             font-size: 2em;
         }
     }
+}
 
+.jwplayer {
     &:hover .jw-display-icon-container {
         background-color: @def-background-color;
         background: @def-background-style;

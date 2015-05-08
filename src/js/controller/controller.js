@@ -12,9 +12,9 @@ define([
     'utils/backbone.events',
     'events/states',
     'events/events',
-    'view/errorscreen'
+    'view/error'
 ], function(setupInstreamMethods, deprecateInit, _, Setup, Captions,
-            Model, Playlist, PlaylistLoader, utils, View, Events, states, events, errorScreen) {
+            Model, Playlist, PlaylistLoader, utils, View, Events, states, events, error) {
 
     function _queue(command) {
         return function() {
@@ -34,7 +34,7 @@ define([
     // The api should dispatch an idle event when the model's state changes to complete
     // This is to avoid conflicts with the complete event and to maintain legacy event flow
     function normalizeApiState(newstate) {
-        if (newstate === states.COMPLETE) {
+        if (newstate === states.COMPLETE || newstate === states.ERROR) {
             return states.IDLE;
         }
         return newstate;
@@ -97,6 +97,7 @@ define([
             });
             _model.mediaController.on(events.JWPLAYER_MEDIA_ERROR, function(evt) {
                 // Re-dispatch media errors as general error
+                _model.set('state', states.ERROR);
                 var evtClone = _.extend({}, evt);
                 evtClone.type = events.JWPLAYER_ERROR;
                 this.trigger(evtClone.type, evtClone);
@@ -250,6 +251,7 @@ define([
                     _load(evt.playlist);
                 });
                 loader.on(events.JWPLAYER_ERROR, function(evt) {
+                    _model.set('state', states.ERROR);
                     _load([]);
                     evt.message = 'Could not load playlist: ' + evt.message;
                     _this.trigger.call(_this, evt.type, evt);
@@ -263,6 +265,9 @@ define([
                     return _pause();
                 }
 
+                if(_model.get('state') === states.ERROR) {
+                    return;
+                }
                 if (_loadOnPlay >= 0) {
                     _load(_loadOnPlay);
                     _loadOnPlay = -1;
@@ -333,6 +338,8 @@ define([
                     return _play();
                 }
                 switch (_model.get('state')) {
+                    case states.ERROR:
+                        return false;
                     case states.PLAYING:
                     case states.BUFFERING:
                         var status = utils.tryCatch(function(){
@@ -354,10 +361,13 @@ define([
 
             function _isIdle() {
                 var state = _model.get('state');
-                return (state === states.IDLE || state === states.COMPLETE);
+                return (state === states.IDLE || state === states.COMPLETE || state === states.ERROR);
             }
 
             function _seek(pos) {
+                if(_model.get('state') === states.ERROR) {
+                    return;
+                }
                 if (!_model.get('scrubbing') && _model.get('state') !== states.PLAYING) {
                     _play(true);
                 }
@@ -637,17 +647,17 @@ define([
         },
 
         setupError: function(message){
-            var errorScreenElement = utils.createElement(errorScreen(message));
+            var errorElement = utils.createElement(error(message));
 
             var width = this._model.get('width'),
                 height = this._model.get('height');
 
-            utils.style(errorScreenElement, {
-                    width: width.toString().indexOf('%') > 0 ? width : (width+ 'px'),
-                    height: height.toString().indexOf('%') > 0 ? height : (height + 'px')
+            utils.style(errorElement, {
+                width: width.toString().indexOf('%') > 0 ? width : (width+ 'px'),
+                height: height.toString().indexOf('%') > 0 ? height : (height + 'px')
             });
 
-            this.showView(errorScreenElement);
+            this.showView(errorElement);
         },
 
         reset: function() {

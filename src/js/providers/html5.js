@@ -290,7 +290,6 @@ define([
             _this.sendEvent(events.JWPLAYER_MEDIA_ERROR, {
                 message: 'Error loading media: File could not be played'
             });
-            _this.setState(states.IDLE);
         }
 
         function _getPublicLevels(levels) {
