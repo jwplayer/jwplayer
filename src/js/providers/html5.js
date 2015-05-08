@@ -296,13 +296,11 @@ define([
         function _getPublicLevels(levels) {
             var publicLevels;
             if (utils.typeOf(levels) === 'array' && levels.length > 0) {
-                publicLevels = [];
-                for (var i = 0; i < levels.length; i++) {
-                    var level = levels[i],
-                        publicLevel = {};
-                    publicLevel.label = _levelLabel(level) ? _levelLabel(level) : i;
-                    publicLevels[i] = publicLevel;
-                }
+                publicLevels = _.map(levels, function(level) {
+                    return {
+                        label: level.label || i
+                    };
+                });
             }
             return publicLevels;
         }
@@ -318,14 +316,6 @@ define([
                     currentQuality: _currentQuality
                 });
             }
-        }
-
-        function _levelLabel(level) {
-            if (level.label) {
-                return level.label;
-            }
-
-            return 0;
         }
 
         function _pickInitialQuality(levels) {
