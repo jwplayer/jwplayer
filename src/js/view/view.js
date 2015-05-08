@@ -974,8 +974,9 @@ define([
             _updateState(state);
         }
 
-        function _errorHandler() {
-            _hideControlbar();
+        function _errorHandler(evt) {
+            _stateHandler(_model, states.ERROR);
+            _title.updateText(_model, {'title': evt.message});
         }
 
         function _isAudioFile() {
@@ -1031,6 +1032,7 @@ define([
                     }
                     break;
                 case states.IDLE:
+                case states.ERROR:
                 case states.COMPLETE:
                     _showVideo(false);
                     if (!_audioMode) {
