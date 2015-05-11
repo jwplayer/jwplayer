@@ -242,19 +242,18 @@ define([
         hideFullscreen : utils.noop,
         getVisibleBounds : function (){
             var el = this.el,
-                originalVisibility = el.style.visibility,
-                originalDisplay = el.style.display,
+                curStyle = (getComputedStyle) ? getComputedStyle(el) : el.currentStyle,
                 bounds;
 
-            el.style.visibility = 'visible';
-            el.style.display = 'table';
-
-            bounds = utils.bounds(el);
-
-            el.style.visibility = originalVisibility;
-            el.style.display = originalDisplay;
-
-            return bounds;
+            if(curStyle.display === 'table'){
+                return utils.bounds(el);
+            } else {
+                el.style.visibility = 'hidden';
+                el.style.display = 'table';
+                bounds = utils.bounds(el);
+                el.style.opacity = el.style.display = '';
+                return bounds;
+            }
         },
         setAltText : function(altText) {
             this.elements.alt.innerHTML = altText;
