@@ -242,6 +242,7 @@ define([
         hideFullscreen : utils.noop,
         getVisibleBounds : function (){
             var el = this.el,
+                // getComputedStyle for modern browsers, currentStyle is for IE8
                 curStyle = (getComputedStyle) ? getComputedStyle(el) : el.currentStyle,
                 bounds;
 
