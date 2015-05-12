@@ -45,6 +45,7 @@ require([
 
     function makePlayer(state) {
         var m = _.extend({}, mockModel);
+        m.setup();
 
         var view = new View(mockApi, m) ;
         view.setup();
@@ -83,7 +84,7 @@ require([
         'jw-flag-controlbar-only',
         'jw-flag-media-audio',
         'jw-flag-dragging',
-        'jw-flag-aspect-mode',
+        'jw-flag-aspect-mode'
         // 'jw-flag-fullscreen' // cannot escape!
     ], function(val) {
         var $btn = $('<input>', {
@@ -102,7 +103,7 @@ require([
         'jw-stretch-exactfit',
         'jw-stretch-uniform',
         'jw-stretch-fill'
-    ]
+    ];
     _.each(StretchButtons, function(val) {
         var $btn = $('<input>', {
             type: "button",

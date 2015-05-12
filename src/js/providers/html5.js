@@ -296,7 +296,7 @@ define([
         function _getPublicLevels(levels) {
             var publicLevels;
             if (utils.typeOf(levels) === 'array' && levels.length > 0) {
-                publicLevels = _.map(levels, function(level) {
+                publicLevels = _.map(levels, function(level, i) {
                     return {
                         label: level.label || i
                     };

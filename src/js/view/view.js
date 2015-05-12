@@ -79,7 +79,7 @@ define([
 
             _this = _.extend(this, Events);
 
-        _playerElement = utils.createElement(playerTemplate({id: _model.id}));
+        _playerElement = utils.createElement(playerTemplate({id: _model.get('id')}));
 
         var width = _model.get('width'),
             height = _model.get('height');
@@ -104,7 +104,7 @@ define([
         _elementSupportsFullscreen = _requestFullscreen && _exitFullscreen;
 
         function adjustSeek(amount) {
-            var newSeek = utils.between(_model.position + amount, 0, this.getDuration());
+            var newSeek = utils.between(_model.get('position') + amount, 0, this.getDuration());
             this.seek(newSeek);
         }
 
@@ -363,7 +363,7 @@ define([
 
             _model.on('change:castState', function(evt) {
                 if (!_castDisplay) {
-                    _castDisplay = new CastDisplay(_model.id);
+                    _castDisplay = new CastDisplay(_model.get('id'));
                     _castDisplay.statusDelegate = function(model, state) {
                         _castDisplay.setState(state);
                     };
@@ -411,7 +411,7 @@ define([
             }
 
             setTimeout(function() {
-                _resize(_model.width, _model.height);
+                _resize(_model.get('width'), _model.get('height'));
             }, 0);
         };
 
@@ -455,7 +455,7 @@ define([
         function _startFade() {
             clearTimeout(_controlsTimeout);
             var model = _instreamMode ? _instreamModel : _model;
-            var state = model.state;
+            var state = model.get('state');
 
             // We need _instreamMode because the state is IDLE during pre-rolls
             if (state === states.PLAYING || state === states.PAUSED || state === states.BUFFERING || _instreamMode) {
@@ -648,7 +648,7 @@ define([
             // cast display reset
             if (_castDisplay) {
                 _castDisplay.adsEnded();
-                _castDisplay.setState(_model.state);
+                _castDisplay.setState(_model.get('state'));
             }
             // display click reset
             _display.revertAlternateClickHandler();
@@ -660,13 +660,13 @@ define([
         var _fullscreen = this.fullscreen = function(state) {
 
             if (!utils.exists(state)) {
-                state = !_model.fullscreen;
+                state = !_model.get('fullscreen');
             }
 
             state = !!state;
 
             // if state is already correct, return
-            if (state === _model.fullscreen) {
+            if (state === _model.get('fullscreen')) {
                 return;
             }
 
@@ -704,7 +704,7 @@ define([
         function _resize(width, height, resetAspectMode) {
             var className = _playerElement.className,
                 playerStyle,
-                id = _model.id + '_view';
+                id = _model.get('id') + '_view';
             cssUtils.block(id);
 
             // when jwResize is called remove aspectMode and force layout
@@ -720,8 +720,8 @@ define([
             }
 
             if (utils.exists(width) && utils.exists(height)) {
-                _model.width = width;
-                _model.height = height;
+                _model.set('width', width);
+                _model.set('height', height);
             }
 
             playerStyle = {
@@ -758,7 +758,7 @@ define([
                 } else {
                     _controlbar.audioMode(false);
                     var model = _instreamMode ? _instreamModel : _model;
-                    _updateState(model.state);
+                    _updateState(model.get('state'));
                 }
             }
 
@@ -766,7 +766,7 @@ define([
         }
 
         function _isAudioMode(height) {
-            if (_model.aspectratio) {
+            if (_model.get('aspectratio')) {
                 return false;
             }
             if (_.isNumber(height)) {
@@ -804,7 +804,7 @@ define([
             if (!provider) {
                 return;
             }
-            var transformScale = provider.resize(width, height, _model.stretching);
+            var transformScale = provider.resize(width, height, _model.get('stretching'));
 
             // poll resizing if video is transformed
             if (transformScale) {
@@ -837,7 +837,7 @@ define([
                     document.webkitCurrentFullScreenElement ||
                     document.mozFullScreenElement ||
                     document.msFullscreenElement;
-                return !!(fsElement && fsElement.id === _model.id);
+                return !!(fsElement && fsElement.id === _model.get('id'));
             }
             // if player element view fullscreen not available, return video fullscreen state
             return  _instreamMode ? _instreamModel.getVideo().getFullScreen() :
@@ -889,7 +889,7 @@ define([
                 clearTimeout(_resizeMediaTimeout);
                 _resizeMediaTimeout = setTimeout(_resizeMedia, 200);
 
-            } else if (_isIPad && model.state === states.PAUSED) {
+            } else if (_isIPad && model.get('state') === states.PAUSED) {
                 // delay refresh on iPad when exiting fullscreen
                 // TODO: cancel this if fullscreen or player state changes
                 setTimeout(_showDisplay, 500);
@@ -915,7 +915,7 @@ define([
 
         function _showDisplay() {
             // debug this, find out why
-            if (!(_isMobile && _model.fullscreen)) {
+            if (!(_isMobile && _model.get('fullscreen'))) {
                 _model.getVideo().setControls(false);
             }
         }
@@ -925,7 +925,7 @@ define([
             _showing = false;
 
             var model = _instreamMode ? _instreamModel : _model;
-            var state = model.state;
+            var state = model.get('state');
 
             if (!_model.get('controls') || state !== states.PAUSED) {
                 _hideControlbar();
@@ -958,7 +958,7 @@ define([
         function _playlistItemHandler() {
             // update display title
             if (_castDisplay) {
-                _castDisplay.setState(_model.state);
+                _castDisplay.setState(_model.get('state'));
             }
             _model.mediaModel.on('change:isLive', function(model, isLive){
                 utils.toggleClass(_playerElement, 'jw-flag-live', isLive);
