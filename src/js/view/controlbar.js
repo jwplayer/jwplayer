@@ -90,7 +90,7 @@ define([
                 mute: button('jw-icon-volume', this._api.setMute),
                 volume: volumeSlider,
                 volumetooltip: volumeTooltip,
-                cast: button('jw-icon-cast'),
+                cast: button('jw-icon-cast jw-off'),
                 fullscreen: button('jw-icon-fullscreen', this._api.setFullscreen)
             };
 
@@ -240,6 +240,22 @@ define([
         show : utils.noop,
         audioMode : utils.noop,
         hideFullscreen : utils.noop,
+        getVisibleBounds : function (){
+            var el = this.el,
+                // getComputedStyle for modern browsers, currentStyle is for IE8
+                curStyle = (getComputedStyle) ? getComputedStyle(el) : el.currentStyle,
+                bounds;
+
+            if(curStyle.display === 'table'){
+                return utils.bounds(el);
+            } else {
+                el.style.visibility = 'hidden';
+                el.style.display = 'table';
+                bounds = utils.bounds(el);
+                el.style.opacity = el.style.display = '';
+                return bounds;
+            }
+        },
         setAltText : function(altText) {
             this.elements.alt.innerHTML = altText;
         },

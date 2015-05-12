@@ -87,6 +87,8 @@ define([
             this.trigger('update', { percentage : percentage });
         },
         render : function(percentage) {
+            percentage = Math.max(0, Math.min(percentage, 100));
+
             if(this.orientation === 'horizontal'){
                 this.elementThumb.style.left = percentage + '%';
                 this.elementProgress.style.width = percentage + '%';
