@@ -3,8 +3,11 @@ define([
     'utils/backbone.events'
 ], function(_, Events) {
     var mockModel = {
-        attrs : {
-            state : 'idle',
+        setup : function() {
+            this.attrs = _.extend({}, this.default_attrs);
+        },
+        default_attrs : {
+            state : '',
             mute : false,
             volume : 50,
             controls : true,
