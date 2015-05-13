@@ -1,6 +1,6 @@
 @import "vars.less";
 
-@thumb-size: 1.0em;
+@thumb-size: 1em;
 
 .jwplayer .jw-slider-horizontal,
 .jwplayer .jw-slider-vertical {
@@ -27,11 +27,6 @@
         box-shadow: @rail-glow;
     }
 
-    .jw-progress {
-        background: @def-progress-color;
-        background-color: @progress-color;
-    }
-
     .jw-buffer {
         background-color: @buffer-color;
     }
@@ -50,6 +45,9 @@
     .jw-thumb {
         position: absolute;
         z-index: 1;
+        width: 1em;
+        height: 1em;
+        font-size: @thumb-size;
         color: @thumb-color;
         cursor: pointer;
 
@@ -63,31 +61,25 @@
         }
     }
 
-    .jw-thumb:after {
-        font-size: @thumb-size;
-        margin-top: (1em - @thumb-size)/2;
-    }
-
-    .jw-cue:after {
+    .jw-cue {
         font-size: 0.5em;
-        margin-top: 0.5em;
+        top : 0.25em
     }
 }
 
 .jwplayer .jw-slider-horizontal {
     //top: @def-rail-width-padding;
-    font-size: @def-rail-width;
     width: @volume-rail-length;
-    height: 1em;
+    height: @def-rail-width-padding;
 
-    padding: 0 @thumb-size * 0.5;
-    margin: 0;
+    &.jw-slider-volume {
+        margin-right: 5px;
+    }
 
     .jw-rail,
     .jw-buffer,
     .jw-progress {
         width: 100%;
-        height: 1em;
     }
 
     .jw-progress {
@@ -112,18 +104,13 @@
 
     .jw-thumb {
         left: 0;    // Default position, overridden by player.
-
-        &:after {
-            margin-left: -0.5em;
-        }
+        margin-left: @thumb-size/-2;
     }
 }
 
 .jwplayer .jw-slider-vertical {
-    font-size: @def-rail-width;
-    width: 1em;
+    width: @def-rail-width-padding;
     height: @volume-rail-length;
-    padding: @thumb-size * 0.5 0.5em;
     bottom: 0em;
     position: absolute;
 
@@ -151,21 +138,18 @@
     .jw-rail,
     .jw-progress {
         bottom: 0;
-        width: 1em;
+        width: @def-rail-width-padding;
         height: 100%;
     }
 
     .jw-rail-group {
         height: 4em;
+        position: relative;
     }
 
     .jw-thumb {
         bottom: 0;  // Default position, overridden by player.
-
-        &:after {
-            margin-left: (1em - @thumb-size)/2;
-            margin-bottom: -0.5em;
-        }
+        margin-bottom: @thumb-size/-2;
     }
 }
 
