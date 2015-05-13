@@ -22,13 +22,17 @@ define([
                 method: _loadPlugins,
                 depends: []
             },
-            LOAD_PLAYLIST = {
-                method: _loadPlaylist,
-                depends: []
+            LOAD_PROVIDERS = {
+                method: _loadProviders,
+                depends : []
             },
             LOAD_SKIN = {
                 method: _loadSkin,
                 depends: []
+            },
+            LOAD_PLAYLIST = {
+                method: _loadPlaylist,
+                depends: [LOAD_PROVIDERS]
             },
             SETUP_COMPONENTS = {
                 method: _setupComponents,
@@ -48,6 +52,7 @@ define([
 
         var _queue = [
             LOAD_PLUGINS,
+            LOAD_PROVIDERS,
             LOAD_PLAYLIST,
             LOAD_SKIN,
             SETUP_COMPONENTS,
@@ -106,6 +111,28 @@ define([
             _pluginLoader.on(events.COMPLETE, _completePlugins);
             _pluginLoader.on(events.ERROR, _pluginsError);
             _pluginLoader.load();
+        }
+
+        function _loadProviders() {
+            var config = _model.get('config');
+
+            if (config.dash === 'dashjs') {
+                require.ensure(['providers/dashjs'], function (require) {
+                    var dashjs = require('providers/dashjs');
+                    dashjs.register(window.jwplayer);
+                    _model.updateProviders();
+                    _taskComplete(LOAD_PROVIDERS);
+                }, 'provider.dashjs');
+            } else if (config.dash) {
+                require.ensure(['providers/shaka'], function(require) {
+                    var shaka = require('providers/shaka');
+                    shaka.register(window.jwplayer);
+                    _model.updateProviders();
+                    _taskComplete(LOAD_PROVIDERS);
+                }, 'provider.shaka');
+            } else {
+                _taskComplete(LOAD_PROVIDERS);
+            }
         }
 
         function _completePlugins() {

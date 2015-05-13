@@ -65,9 +65,13 @@ define([
                 buffer: 0
             });
 
-            _providers = new Providers(_this.config);
+            this.updateProviders();
 
             return this;
+        };
+
+        this.updateProviders = function() {
+            _providers = new Providers(_this.config);
         };
 
         function _videoEventHandler(evt) {
