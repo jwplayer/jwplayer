@@ -77,6 +77,7 @@ define([
 
             var _video = function() { return _model.getVideo(); };
 
+
             _model = this._model.setup(config);
             _view  = this._view  = new View(_api, _model);
             _captions = new Captions(_api, _model);
