@@ -54,7 +54,7 @@ define([
                 _logo.onclick = _clickHandler;
             } else {
                 var logoTouch = new Touch(_logo);
-                logoTouch.addEventListener(events.touchEvents.TAP, _clickHandler);
+                logoTouch.on(events.touchEvents.TAP, _clickHandler);
             }
         }
 
