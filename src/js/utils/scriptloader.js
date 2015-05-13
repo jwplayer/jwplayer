@@ -6,14 +6,31 @@ define([
 
     var _loaders = {};
 
+    var STATUS = {
+        NEW: 0,
+        LOADING: 1,
+        ERROR: 2,
+        COMPLETE: 3
+    };
+
     var scriptloader = function (url, isStyle) {
         var _this = _.extend(this, Events),
-            _status = _loaderstatus.NEW;
+            _status = STATUS.NEW;
 
         // legacy support
         this.addEventListener = this.on;
         this.removeEventListener = this.off;
 
+
+        function _sendError(evt) {
+            _status = STATUS.ERROR;
+            _this.trigger(events.ERROR, evt);
+        }
+
+        function _sendComplete(evt) {
+            _status = STATUS.COMPLETE;
+            _this.trigger(events.COMPLETE, evt);
+        }
 
         this.makeStyleLink = function(url) {
             var link = document.createElement('link');
@@ -32,7 +49,7 @@ define([
 
         this.load = function () {
             // Only execute on the first run
-            if (_status !== _loaderstatus.NEW) {
+            if (_status !== STATUS.NEW) {
                 return;
             }
 
@@ -70,32 +87,16 @@ define([
 
             head.insertBefore(scriptTag, head.firstChild);
 
-            _status = _loaderstatus.LOADING;
+            _status = STATUS.LOADING;
             _loaders[url] = this;
         };
-
-        function _sendError(evt) {
-            _status = _loaderstatus.ERROR;
-            _this.trigger(events.ERROR, evt);
-        }
-
-        function _sendComplete(evt) {
-            _status = _loaderstatus.COMPLETE;
-            _this.trigger(events.COMPLETE, evt);
-        }
-
 
         this.getStatus = function () {
             return _status;
         };
     };
 
-    var _loaderstatus = scriptloader.loaderstatus = {
-        NEW: 0,
-        LOADING: 1,
-        ERROR: 2,
-        COMPLETE: 3
-    };
+    scriptloader.loaderstatus = STATUS;
 
     return scriptloader;
 });

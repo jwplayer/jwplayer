@@ -10,6 +10,19 @@ define([
         cookies: true
     };
 
+    function _deserialize(options) {
+        _.each(options, function(val, key) {
+            options[key] = utils.serialize(val);
+        });
+    }
+
+    function _normalizeSize(val) {
+        if (val.slice && val.slice(-2) === 'px') {
+            val = val.slice(0,-2);
+        }
+        return val;
+    }
+
     var config = function(options) {
 
         var allOptions = _.extend({}, (window.jwplayer || {}).defaults, options);
@@ -45,19 +58,6 @@ define([
         return config;
     };
 
-
-    function _deserialize(options) {
-        _.each(options, function(val, key) {
-            options[key] = utils.serialize(val);
-        });
-    }
-
-    function _normalizeSize(val) {
-        if (val.slice && val.slice(-2) === 'px') {
-            val = val.slice(0,-2);
-        }
-        return val;
-    }
 
     function _evaluateAspectRatio(ar, width) {
         if (width.toString().indexOf('%') === -1) {
