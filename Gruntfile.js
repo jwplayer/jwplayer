@@ -86,6 +86,9 @@ module.exports = function(grunt) {
         },
 
         watch : {
+            options: {
+                livereload: true
+            },
             jshint: {
                 files: [
                     '.jshintrc',
@@ -121,6 +124,24 @@ module.exports = function(grunt) {
             grunt: {
                 files: ['Gruntfile.js'],
                 tasks: ['jshint:grunt']
+            }
+        },
+
+        connect: {
+            options: {
+                port: 3000,
+                // change this to '0.0.0.0' to access the server from outside
+                // change this to 'localhost' to restrict access to the server from outside
+                hostname: 'localhost'
+            },
+            livereload: {
+                options: {
+                    open: true,
+                    livereload: true,
+                    base: [
+                        '.'
+                    ]
+                }
             }
         },
 
@@ -395,6 +416,11 @@ module.exports = function(grunt) {
         'build-js',
         'build-flash',
         'karma:local'
+    ]);
+
+    grunt.registerTask('serve', [
+        'connect:livereload',
+        'watch'
     ]);
 
     grunt.registerTask('default', 'build');
