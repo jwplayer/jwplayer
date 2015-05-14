@@ -415,6 +415,11 @@ define([], function() {
         return copy;
     };
 
+    // Create a (shallow-cloned) duplicate of an object.
+    _.clone = function(obj) {
+        if (!_.isObject(obj)) return obj;
+        return _.isArray(obj) ? obj.slice() : _.extend({}, obj);
+    };
 
     // Is a given value an array?
     // Delegates to ECMA5's native Array.isArray
