@@ -39,7 +39,10 @@ define([
         },
         select: function (evt) {
             if(evt.target.parentElement === this.content) {
-                this.trigger('select', parseInt(evt.target.classList[1].split('-')[1]));
+                var classes = evt.target.classList;
+                // find the class with a name of the form 'item-1'
+                var item = _.find(classes, function(c) { return c.indexOf('item') === 0;});
+                this.trigger('select', parseInt(item.split('-')[1]));
             }
         },
         selectItem : function(selectedIndex) {
