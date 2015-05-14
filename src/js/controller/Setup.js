@@ -42,11 +42,12 @@ define([
         function _nextTask() {
             _.each(_queue, function(c) {
                 // If task completed, or destroy was called
-                if (c.complete === true || _api === null) {
+                if (c.complete === true || c.running === true || _api === null) {
                     return;
                 }
 
                 if (_allComplete(c.depends)) {
+                    c.running = true;
                     callTask(c);
                 }
             });
