@@ -222,7 +222,6 @@ define([
                         this.sendEvent(events.JWPLAYER_MEDIA_ERROR, {
                             message: 'Error loading media: File could not be played'
                         });
-                        this.setState(states.IDLE);
                     }, this);
                 },
                 remove: function() {

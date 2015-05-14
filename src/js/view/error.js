@@ -1,10 +1,10 @@
 define([
     'utils/helpers',
-    'handlebars-loader!templates/errorscreen.html'
-], function(utils, errorscreen) {
+    'handlebars-loader!templates/error.html'
+], function(utils, error) {
 
     function make(title, body) {
-        return errorscreen({
+        return error({
             title: title,
             body: body
         });

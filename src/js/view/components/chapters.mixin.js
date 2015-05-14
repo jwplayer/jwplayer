@@ -70,7 +70,9 @@ define([
 
         resetChapters : function() {
             _.each(this.cues, function (cue) {
-                this.elementRail.removeChild(cue.el);
+                if(this.elementRail.contains(cue.el)) {
+                    this.elementRail.removeChild(cue.el);
+                }
             }, this);
             this.cues = [];
         }
