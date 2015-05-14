@@ -1,0 +1,23 @@
+.inset-controlbar() {
+	margin: 0 auto;
+    max-width: @controlbar-max-width;
+    bottom: @ui-margin;
+}
+
+.jw-thumbs(@size:@thumb-size, @color:@thumb-color) {
+    width: 1em;
+    height: 1em;
+    font-size: @size;
+    color: @color;
+
+    &:after {
+	    width: 1em;
+	    height: 1em;
+	    border-radius: 1em;
+	    background-color: @thumb-color;
+	}
+}
+
+.centered-rail(@rail-width:@time-rail-width, @thumb:@thumb-size) {
+	left: -(@rail-width - @thumb)/2;
+}

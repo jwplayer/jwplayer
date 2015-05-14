@@ -5,19 +5,11 @@
     display: table;
     position: absolute;
     right: 0;
-    bottom: @ui-margin;
     left: 0;
+    bottom: 0;
     height: @controlbar-height;
-    max-width: @controlbar-max-width;
-
     padding: 0 @ui-padding;
-    margin: 0 auto;
-
-    background: @def-background-style;
-    background-size: @def-background-size;
-
-    border: @def-border;
-    border-radius: @ui-corner-round;
+    background-color: rgb(65, 64, 64);
 
     .jw-hidden {
         display: none;
@@ -32,38 +24,20 @@
 
 .jw-controlbar .jw-controlbar-center-group {
     width: 100%;
-    margin: 0 @ui-padding;
+    padding: 0 @ui-padding;
+
+    .jw-slider-time, .jw-text-alt {
+        padding: 0;
+    }
 
     .jw-text-alt {
         display: none;
-        padding: 0;
-        margin: 0;
     }
 }
 
 .jw-controlbar .jw-controlbar-left-group,
 .jw-controlbar .jw-controlbar-right-group {
     white-space: nowrap;
-}
-
-.jw-controlbar .jw-controlbar-left-group {
-    .jw-icon-inline,
-    .jw-icon-tooltip,
-    .jw-slider-horizontal,
-    .jw-text-elapsed,
-    .jw-text-duration {
-        margin-right: 0.3em
-    }
-}
-
-.jw-controlbar .jw-controlbar-right-group {
-    .jw-icon-inline,
-    .jw-icon-tooltip,
-    .jw-slider-horizontal,
-    .jw-text-elapsed,
-    .jw-text-duration {
-        margin-left: 0.3em;
-    }
 }
 
 // control bar content (icons/text)
@@ -118,4 +92,3 @@
 .jw-controlbar .jw-cast.jw-can-cast {
     display: inline-block;
 }
-

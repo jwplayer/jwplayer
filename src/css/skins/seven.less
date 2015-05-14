@@ -1,0 +1,135 @@
+@active-color: #FF0046;
+
+.jw-skin-seven {
+	.jw-controlbar {
+		background: #000;
+		border-top: #333 1px solid;
+	}
+
+	.jw-text,
+	.jw-icon-inline,
+	.jw-icon-tooltip {
+		color: #fff;
+		padding: 0 5px 3px 5px;
+	}
+
+	.jw-icon-inline,
+	.jw-icon-tooltip {
+		&:hover {
+			color: @active-color;
+		}
+	}
+
+	.jw-icon-inline:before,
+	.jw-icon-tooltip:before {
+		padding-left: 10px;
+
+		&:hover {
+			color: @active-color;
+		}
+	}
+
+	.jw-icon-display {
+		color: #fff;
+	}
+
+	.jw-display-icon-container {
+		background: #000;
+		border-radius: 50%;
+		padding: 0 .4em;
+	}
+
+	.jw-slider-horizontal,
+	.jw-slider-vertical {
+
+		.jw-rail {
+			background-color: #384154;
+			box-shadow: none;
+		}
+
+		.jw-buffer {
+			background-color: #666F82;
+		}
+
+		.jw-progress {
+			background: @active-color;
+		}
+
+		.jw-thumb {
+			.jw-thumbs(.5em);
+			.centered-rail();
+
+			&:after {
+				background-color: #fff;
+				box-shadow: 0px 0px 0px 1px rgba(0,0,0,1);
+			}
+		}		
+	}
+
+	.jw-slider-horizontal {
+
+		.jw-rail-group {
+			height: 0.95em;
+		}
+
+		.jw-rail,
+		.jw-buffer,
+		.jw-progress {
+			height: .2em;
+			border-radius: 0;
+		}
+
+		.jw-thumb {
+			top: -15%;
+		}
+
+		.jw-cue {
+
+			&:after {
+				width: .2em;
+				height: .2em;
+				background-color: #fff;
+				border-radius: 50%;
+			}
+		}
+	}
+
+	.jw-slider-vertical {
+
+		.jw-rail,
+		.jw-buffer,
+		.jw-progress {
+			width: .2em;
+		}
+	}
+
+	.jw-text-duration {
+		color: #666F82;
+	}
+
+	.jw-controlbar-right-group {
+		.jw-icon-tooltip:before,
+		.jw-icon-inline:before {
+			border-left: 1px solid #666F82;
+		}
+
+		.jw-icon-inline:first-child:before {
+			border: none;
+		}
+	}
+
+	.jw-dock {
+		.jw-dock-button {
+			background: #000;
+			border-radius: 50%;
+		}
+
+	}
+
+	.jw-overlay .jw-option.jw-active-option {
+        background-color: @active-color;
+        color: #fff;
+    }
+
+}
+

@@ -1,0 +1,114 @@
+@active-color: #eee;
+@inactive-color: #aaa;
+@buffer-color: #202020;
+@hover-color: @active-color;
+@thumb-color: #999;
+
+.jw-skin-six {
+	.jw-controlbar {
+        .inset-controlbar;
+	    border: @def-border;
+	    border-radius: @ui-corner-round;
+	    background: @def-background-style;
+    	background-size: @def-background-size;
+
+        .jw-overlay {
+            bottom: 2.25em;
+        }
+	}
+
+	.jw-display-icon-container {
+        background-color: @def-background-color;
+        background: @def-transparent-background-style;
+        background-size: @def-background-size;
+        border-radius: @ui-corner-round;
+        padding: 0 1em;
+    }
+
+    &:hover .jw-display-icon-container {
+        background-color: @def-background-color;
+        background: @def-background-style;
+        background-size: @def-background-size;
+    }
+
+    .jw-rail,
+    .jw-buffer,
+    .jw-progress {
+        border-radius: 0.5em;
+        height: .75em;
+    }
+
+    .jw-rail,
+    .jw-buffer {
+        border-radius: 0.5em;
+    }
+
+    .jw-rail {
+        box-shadow: @rail-glow;
+    }
+
+    .jw-buffer {
+        background-color: @buffer-color;
+    }
+
+    .jw-progress,
+    .jw-buffer {
+        border: @def-border;
+    }
+
+    .jw-rail {
+        background-color: @rail-color;
+        border: @def-border;
+    }
+
+    .jw-cue,
+    .jw-thumb {
+    	.jw-thumbs;
+    }
+
+    .jw-cue {
+        font-size: 0.2em;
+        top : 0.25em
+    }
+
+    .jw-slider-horizontal {
+        .jw-progress {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0.5em;
+            border-top-left-radius: 0.5em;
+        }
+    }
+
+    .jw-slider-vertical {
+        .jw-progress {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0.5em;
+            border-bottom-left-radius: 0.5em;
+            border-top-left-radius: 0;
+        }
+    }
+
+    .jw-progress,
+    .jw-buffer {
+        border: @def-border;
+        border-style: solid none #000;
+    }
+
+    .jw-overlay .jw-option {
+        .jwplayer .jw-icon-menu-bullet;
+
+        text-align: left;
+    }
+
+    .jw-time-tip,
+    .jw-volume-tip,
+    .jw-menu {
+        padding: 0.5em;
+        background-color: @def-background-color;
+        background: @def-background-style;
+        background-size: @def-background-size;
+        border: @def-border;
+        border-radius: @ui-padding;
+    }
+}
