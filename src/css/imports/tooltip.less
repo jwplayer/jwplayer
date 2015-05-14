@@ -23,7 +23,7 @@
 .jw-controlbar {
     .jw-overlay {
         position: absolute;
-        bottom: 2.25em;
+        bottom: 2em;
         left: 50%;
         opacity: 0;
         visibility: hidden;
@@ -34,12 +34,8 @@
     .jw-menu {
         position: relative;
         left: -50%;
-        padding: 0.5em;
-        background-color: @def-background-color;
-        background: @def-background-style;
-        background-size: @def-background-size;
-        border: @def-border;
-        border-radius: @ui-padding;
+        background-color: #000;
+        border: solid 4px #000;
         margin: 0;
     }
 
@@ -47,6 +43,7 @@
         width: 100%;
         height: 100%;
         display: block;
+        left: -35%;
     }
 
     .jw-overlay .jw-contents {
@@ -57,23 +54,26 @@
     .jw-time-tip {
         text-align:center;
         font-family: inherit;
-        font-size: @font-size;
+        font-size: 1em;
         color: @inactive-color;
+        bottom: 2em;
+
+        .jw-text {
+            line-height: 2em;
+        }
     }
 
     .jw-overlay .jw-option {
-        .jwplayer .jw-icon-menu-bullet;
-
-        text-align: left;
         position: relative;
         white-space: nowrap;
         cursor: pointer;
         list-style: none;
         height: 1.5em;
         font-family: inherit;
-        font-size: @font-size;
+        font-size: .75em;
         line-height: 1.5em;
         color: @inactive-color;
+        padding: 0 .5em;
     }
 
     .jw-overlay .jw-option:hover,

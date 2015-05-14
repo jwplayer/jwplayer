@@ -1,7 +1,8 @@
-.jw-seven {
+@active-color: #FF0046;
+
+.jw-skin-seven {
 	.jw-controlbar {
 		background: #000;
-		bottom: 0;
 		border-top: #333 1px solid;
 	}
 
@@ -15,7 +16,7 @@
 	.jw-icon-inline,
 	.jw-icon-tooltip {
 		&:hover {
-			color: #FF0046;
+			color: @active-color;
 		}
 	}
 
@@ -24,7 +25,7 @@
 		padding-left: 10px;
 
 		&:hover {
-			color: #FF0046;
+			color: @active-color;
 		}
 	}
 
@@ -38,16 +39,8 @@
 		padding: 0 .4em;
 	}
 
-	.jw-slider-horizontal {
-		//width: 23em;
-
-		.jw-rail,
-		.jw-buffer,
-		.jw-progress {
-			height: .4em;
-			border-radius: 0;
-			margin-top: 1px;
-		}
+	.jw-slider-horizontal,
+	.jw-slider-vertical {
 
 		.jw-rail {
 			background-color: #384154;
@@ -59,27 +52,54 @@
 		}
 
 		.jw-progress {
-			background: #FF0046;
+			background: @active-color;
 		}
 
 		.jw-thumb {
-			top: -1px;
-			font-size: .65em;
+			.jw-thumbs(.5em);
+			.centered-rail();
 
 			&:after {
 				background-color: #fff;
 				box-shadow: 0px 0px 0px 1px rgba(0,0,0,1);
 			}
+		}		
+	}
+
+	.jw-slider-horizontal {
+
+		.jw-rail-group {
+			height: 0.95em;
+		}
+
+		.jw-rail,
+		.jw-buffer,
+		.jw-progress {
+			height: .2em;
+			border-radius: 0;
+		}
+
+		.jw-thumb {
+			top: -15%;
 		}
 
 		.jw-cue {
-			top: .4em;
 
 			&:after {
-				width: .5em;
-				height: .5em;
+				width: .2em;
+				height: .2em;
 				background-color: #fff;
+				border-radius: 50%;
 			}
+		}
+	}
+
+	.jw-slider-vertical {
+
+		.jw-rail,
+		.jw-buffer,
+		.jw-progress {
+			width: .2em;
 		}
 	}
 
@@ -105,6 +125,11 @@
 		}
 
 	}
+
+	.jw-overlay .jw-option.jw-active-option {
+        background-color: @active-color;
+        color: #fff;
+    }
 
 }
 
