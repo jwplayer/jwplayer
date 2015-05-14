@@ -80,6 +80,9 @@ define([
             _this = _.extend(this, Events);
 
         _playerElement = utils.createElement(playerTemplate({id: _model.get('id')}));
+        _playerElement.addEventListener('click', function() {
+            _this.trigger(events.JWPLAYER_DISPLAY_CLICK);
+        });
 
         var width = _model.get('width'),
             height = _model.get('height');
