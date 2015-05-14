@@ -8,24 +8,28 @@ define([
 ], function(Touch, utils, events, _, Events, logoTemplate) {
     var _styles = utils.style;
 
+
+    var LogoDefaults = {
+        linktarget: '_blank',
+        margin: 8,
+        hide: false,
+        position: 'top-right'
+    };
+
     var Logo = function(_model) {
         var _this = this,
             _logo,
             _settings,
             _logoConfig = _.extend({}, _model.get('config').logo),
-            _defaults = Logo.defaults,
             _showing = false;
 
         _.extend(this, Events);
 
         function _setup() {
-            _setupConfig();
-            _setupDisplayElements();
-        }
-
-        function _setupConfig() {
-            _settings = _.extend({}, _defaults, _logoConfig);
+            _settings = _.extend({}, LogoDefaults, _logoConfig);
             _settings.hide = (_settings.hide.toString() === 'true');
+
+            _setupDisplayElements();
         }
 
         function _setupDisplayElements() {
@@ -37,8 +41,12 @@ define([
                 return;
             }
 
+            if (_settings.hide) {
+                // This causes it to fade out when jw-flag-user-inactive
+                utils.addClass(_logo, 'jw-hide');
+            }
 
-            if(_settings.position !== Logo.defaults.position || _settings.margin !== Logo.defaults.margin){
+            if(_settings.position !== LogoDefaults.position || _settings.margin !== LogoDefaults.margin){
                 var positions = (/(\w+)-(\w+)/).exec(_settings.position),
                     style = { top: 'auto', right: 'auto', bottom: 'auto', left: 'auto' };
 
@@ -57,8 +65,6 @@ define([
                 logoTouch.on(events.touchEvents.TAP, _clickHandler);
             }
         }
-
-        this.resize = function() {};
 
         this.element = function() {
             return _logo;
@@ -92,6 +98,9 @@ define([
             return;
         }
 
+        /*
+        this.resize = function() {};
+
         this.hide = function(forced) {
             if (_settings.hide || forced) {
                 _showing = false;
@@ -103,17 +112,11 @@ define([
             _showing = true;
             utils.addClass(_logo, 'jw-logo--visible');
         };
+        */
 
         _setup();
 
         return this;
-    };
-
-    Logo.defaults = {
-        linktarget: '_blank',
-        margin: 8,
-        hide: false,
-        position: 'top-right'
     };
 
     return Logo;
