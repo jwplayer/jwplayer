@@ -1,0 +1,53 @@
+.jw-beelden {
+
+	.jw-controlbar {
+		background: #6c6c6c; /* Old browsers */
+		background: -moz-linear-gradient(top,  #6c6c6c 0%, #444444 100%); /* FF3.6+ */
+		background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#6c6c6c), color-stop(100%,#444444)); /* Chrome,Safari4+ */
+		background: -webkit-linear-gradient(top,  #6c6c6c 0%,#444444 100%); /* Chrome10+,Safari5.1+ */
+		background: -o-linear-gradient(top,  #6c6c6c 0%,#444444 100%); /* Opera 11.10+ */
+		background: -ms-linear-gradient(top,  #6c6c6c 0%,#444444 100%); /* IE10+ */
+		background: linear-gradient(to bottom,  #6c6c6c 0%,#444444 100%); /* W3C */
+		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#6c6c6c', endColorstr='#444444',GradientType=0 ); /* IE6-9 */
+
+		-webkit-box-shadow: inset 0px 7px 1px -5px rgba(128,128,128,1);
+		-moz-box-shadow: inset 0px 7px 1px -5px rgba(128,128,128,1);
+		box-shadow: inset 0px 7px 1px -5px rgba(128,128,128,1);
+
+		border-radius: @ui-corner-round;
+		bottom: @ui-margin;
+		max-width: @controlbar-max-width;
+		margin: 0 auto;
+	}
+
+	.jw-progress {
+		background: linear-gradient(to bottom, rgb(201, 56, 53) 0, rgb(178, 32, 33) 50%, rgb(128, 54, 55) 100%);;
+		background-color: #c93835;
+	}
+
+	.jw-buffer {
+		background: linear-gradient(to bottom, #7d7d7d 0%, #868686 100%);
+		background-color: #7d7d7d;
+		box-shadow: inset 0 -2px 4px -1px rgba(255,255,255,0.5);
+	}
+
+	.jw-thumb {
+		top: -1px;
+
+		&:after {
+			background-color: #bbb5b7;
+			box-shadow: inset 0 0px 5px 0px rgba(255,255,255,0.5);
+			border: 1px solid #000;
+
+		}
+	}
+
+	.jw-slider-horizontal {
+
+		.jw-cue {
+			&:after {
+				background-color: #fff;
+			}
+		}
+	}
+}
