@@ -60,10 +60,7 @@ define([
     function _completePlugins(resolve, _model, _api) {
         // TODO: flatten flashPlugins and pass to flash provider
         _model.config.flashPlugins = _pluginLoader.setupPlugins(_api, _model.config, _.partial(_resizePlugin, _api));
-
-        // Volume option is tricky to remove, since it needs to be in the HTML5 player model.
-        delete _model.config.volume;
-
+        
         resolve();
     }
 
