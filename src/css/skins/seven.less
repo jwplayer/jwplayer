@@ -153,5 +153,27 @@
         background-color: @active-color;
         color: #fff;
     }
+
+    .jw-icon-playback {
+        min-width: 2.25em;
+    }
+
+    .jw-icon-hd:before,
+    .jw-icon-cc:before {
+        color: @active-color;
+    }
+
+    .jw-icon-hd.jw-off:before,
+    .jw-icon-cc.jw-off:before {
+        color: white;
+    }
+
+    .jw-icon-hd.jw-off:before {
+        content: "\e60a";
+    }
+
+    .jw-icon-cc.jw-off:before {
+        content: "\e605";
+    }
 }
 
