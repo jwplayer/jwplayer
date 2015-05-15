@@ -7,13 +7,17 @@ var env = process.env;
 function getBuildVersion(packageInfo) {
     // Build Version: {major.minor.revision}
     var revision = env.BUILD_NUMBER;
-    if (revision === undefined) {
+    if (revision) {
+        var branch = env.GIT_BRANCH;
+        if (branch) {
+            revision = branch.replace(/^origin\//, '') + '.' + revision;
+        }
+    } else {
         var now = new Date();
         now.setTime(now.getTime()-now.getTimezoneOffset()*60000);
-        revision = now.toISOString().replace(/[\.\-:Z]/g, '').replace(/T/g, '');
+        revision = 'local.' + now.toISOString().replace(/[\.\-:T]/g, '-').replace(/Z|\.\d/g, '');
     }
-
-    return packageInfo.version.replace(/\.\d*$/, '.' + revision);
+    return packageInfo.version +'+'+ revision;
 }
 
 module.exports = function(grunt) {
