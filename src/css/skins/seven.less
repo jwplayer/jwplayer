@@ -9,7 +9,6 @@
 	.jw-text,
 	.jw-icon-inline,
 	.jw-icon-tooltip {
-		color: #fff;
 		padding: 0 5px 3px 5px;
 	}
 
@@ -28,6 +27,16 @@
 			color: @active-color;
 		}
 	}
+
+    .jw-icon-prev,
+    .jw-icon-next {
+        font-size: .7em;
+        padding: 0 0.2em;
+    }
+
+    .jw-icon-next:before {
+        padding: 0;
+    }
 
 	.jw-icon-display {
 		color: #fff;
@@ -127,13 +136,15 @@
 			background: #000;
 			border-radius: 50%;
 		}
-
+        .jw-overlay {
+            background: #000;
+            border-radius: 2.5em;
+        }
 	}
 
 	.jw-overlay .jw-option.jw-active-option {
         background-color: @active-color;
         color: #fff;
     }
-
 }
 
