@@ -29,7 +29,7 @@ define([
             this.elementProgress = this.el.getElementsByClassName('jw-progress')[0];
             this.elementThumb = this.el.getElementsByClassName('jw-thumb')[0];
 
-            this.elementRail.onmousedown = this.mousedownlistener;
+            this.el.onmousedown = this.mousedownlistener;
         },
         dragStart : function() {
             this.trigger('dragStart');

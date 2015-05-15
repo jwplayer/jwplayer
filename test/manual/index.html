@@ -18,7 +18,7 @@
         // autostart: true,
 
         width: 640,
-        height: 360,
+        height: 280,
 
         // primary: 'flash',
         logo: {
@@ -88,6 +88,15 @@
             console.error('Event name "'+name+'" does not match event.type "'+e.type+'"');
         }
     });
+
+    jwp.addButton(
+            'css-skins/icons/both.png',
+            'TEST',
+            function() {
+                console.log('first');
+            },
+            'first'
+    );
 
     jwp.addButton(
         'css-skins/icons/both.png',

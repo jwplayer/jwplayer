@@ -253,7 +253,7 @@ define([
                 el.style.visibility = 'hidden';
                 el.style.display = 'table';
                 bounds = utils.bounds(el);
-                el.style.opacity = el.style.display = '';
+                el.style.visibility = el.style.display = '';
                 return bounds;
             }
         },
