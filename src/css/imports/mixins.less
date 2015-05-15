@@ -18,6 +18,10 @@
 	}
 }
 
-.centered-rail(@rail-width:@time-rail-width, @thumb:@thumb-size) {
+.centered-thumb(@rail-width:@time-rail-width, @thumb:@thumb-size) {
 	left: -(@rail-width - @thumb)/2;
+}
+
+.centered-cue(@rail-width:@time-rail-width, @cue-size) {
+	top: (@rail-width - @cue-size)/2;
 }

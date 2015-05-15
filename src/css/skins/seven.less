@@ -36,7 +36,7 @@
 	.jw-display-icon-container {
 		background: #000;
 		border-radius: 50%;
-		padding: 0 .4em;
+		padding-left: .5em;
 	}
 
 	.jw-slider-horizontal,
@@ -57,7 +57,6 @@
 
 		.jw-thumb {
 			.jw-thumbs(.5em);
-			.centered-rail();
 
 			&:after {
 				background-color: #fff;
@@ -84,10 +83,11 @@
 		}
 
 		.jw-cue {
+			.centered-cue(.2em, .3em);
 
 			&:after {
-				width: .2em;
-				height: .2em;
+				width: .3em;
+				height: .3em;
 				background-color: #fff;
 				border-radius: 50%;
 			}
@@ -101,6 +101,10 @@
 		.jw-progress {
 			width: .2em;
 		}
+	}
+
+	.jw-thumb {
+		.centered-thumb();
 	}
 
 	.jw-text-duration {
