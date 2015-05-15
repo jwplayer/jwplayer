@@ -6,12 +6,13 @@ var env = process.env;
 
 function getBuildVersion(packageInfo) {
     // Build Version: {major.minor.revision}
-    var revision = env.BUILD_NUMBER;
-    if (revision) {
+    var revision = '';
+    if (env.BUILD_NUMBER) {
         var branch = env.GIT_BRANCH;
         if (branch) {
-            revision = branch.replace(/^origin\//, '') + '.' + revision;
+            revision = branch.replace(/^origin\//, '').replace(/[^0-9A-Za-z-]/g, '-') + '.';
         }
+        revision += 'build.' + env.BUILD_NUMBER;
     } else {
         var now = new Date();
         now.setTime(now.getTime()-now.getTimezoneOffset()*60000);
