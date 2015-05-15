@@ -111,6 +111,7 @@ define([
                     this.elements.cc,
                     this.elements.mute,
                     this.elements.volume,
+                    this.elements.volumetooltip,
                     this.elements.cast,
                     this.elements.fullscreen
                 ]
