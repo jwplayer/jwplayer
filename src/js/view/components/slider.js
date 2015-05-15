@@ -31,17 +31,6 @@ define([
 
             this.elementRail.onmousedown = this.mousedownlistener;
         },
-        getOffset : function(evt) {
-            var target = evt.target;
-            // offsetX is from the W3C standard, layerX is how Firefox does it
-            var x = _.isUndefined(evt.offsetX) ? evt.layerX : evt.offsetX;
-            var y = _.isUndefined(evt.offsetY) ? evt.layerY : evt.offsetY;
-
-            x += target.offsetLeft;
-            y += target.offsetTop;
-
-            return { x : x, y : y};
-        },
         dragStart : function() {
             this.trigger('dragStart');
             this.railBounds = utils.bounds(this.elementRail);
@@ -55,25 +44,27 @@ define([
             this.trigger('dragEnd');
         },
         mouseMove : function(evt) {
-            var offset = this.getOffset(evt);
-            var bounds = this.railBounds;
-            var percentage;
+            var dimension,
+                bounds = this.railBounds,
+                percentage;
 
             if (this.orientation === 'horizontal'){
-                if (evt.x < bounds.left) {
+                dimension = evt.pageX;
+                if (dimension < bounds.left) {
                     percentage = 0;
-                } else if (evt.x > bounds.right) {
+                } else if (dimension > bounds.right) {
                     percentage = 100;
                 } else {
-                    percentage = utils.between(offset.x/bounds.width, 0, 1) * 100;
+                    percentage = utils.between((dimension-bounds.left)/bounds.width, 0, 1) * 100;
                 }
             } else {
-                if (offset > bounds.height) {
+                dimension = evt.pageY;
+                if (dimension >= bounds.bottom) {
                     percentage = 0;
-                } else if (offset < 0) {
+                } else if (dimension <= bounds.top) {
                     percentage = 100;
                 } else {
-                    percentage = utils.between((bounds.height-offset.y)/bounds.height, 0, 1) * 100;
+                    percentage = utils.between((bounds.height-(dimension-bounds.top))/bounds.height, 0, 1) * 100;
                 }
             }
 
