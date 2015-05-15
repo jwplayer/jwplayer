@@ -37,6 +37,9 @@ public dynamic class PlayerConfig extends EventDispatcher {
     }
 
     public function set volume(vol:Number):void {
+        if (isNaN(vol)) {
+            return;
+        }
         vol /= 100;
         _volume = vol;
         _soundTransform.volume = vol;
