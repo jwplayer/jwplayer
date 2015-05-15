@@ -10,13 +10,25 @@ define([
     _.extend(RightClick.prototype, {
 
         buildArray : function() {
+
+            var semverParts = version.split('+');
+            var majorMinorPatchPre = semverParts[0];
+
             var obj = {
                 items : [{
-                    title: 'About JW Player ' + version,
+                    title: 'About JW Player ' + majorMinorPatchPre,
                     feature : 'jw-logo', // we can use any webfont icon here
                     link: '//jwplayer.com/learn-more/?m=h&e=o&v=' + version
                 }]
             };
+
+            var versionMeta = semverParts[1];
+            if (versionMeta) {
+                obj.items.push({
+                    title : 'build: (' + versionMeta + ')',
+                    link : '#'
+                });
+            }
 
             var _provider = this.model.get('provider').name;
             if (_provider.indexOf('flash') >= 0) {
