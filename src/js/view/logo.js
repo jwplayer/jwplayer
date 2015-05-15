@@ -8,7 +8,6 @@ define([
 ], function(Touch, utils, events, _, Events, logoTemplate) {
     var _styles = utils.style;
 
-
     var LogoDefaults = {
         linktarget: '_blank',
         margin: 8,
@@ -97,22 +96,6 @@ define([
 
             return;
         }
-
-        /*
-        this.resize = function() {};
-
-        this.hide = function(forced) {
-            if (_settings.hide || forced) {
-                _showing = false;
-                utils.removeClass(_logo, 'jw-logo--visible');
-            }
-        };
-
-        this.show = function() {
-            _showing = true;
-            utils.addClass(_logo, 'jw-logo--visible');
-        };
-        */
 
         _setup();
 
