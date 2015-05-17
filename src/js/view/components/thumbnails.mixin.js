@@ -36,7 +36,9 @@ define([
         chooseThumbnail : function(seconds) {
 
             var idx = _.sortedIndex(this.thumbnails, {begin: seconds}, _.property('begin'));
-
+            if (idx >= this.thumbnails.length) {
+                idx = this.thumbnails.length-1;
+            }
             var url = this.thumbnails[idx].img;
             if (url.indexOf('://') < 0) {
                 url = this.vttPath ? this.vttPath + '/' + url : url;
