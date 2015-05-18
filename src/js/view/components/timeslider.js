@@ -119,7 +119,7 @@ define([
                 this._api.play();
             } else {
                 var position = this.seekTo / 100 * this._api.getDuration();
-                this._api.seek(position);
+                this._api.seek(Math.min(position, duration - 0.25));
             }
         },
         showTimeTooltip: function(evt) {
