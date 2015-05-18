@@ -41,7 +41,13 @@ define([
             config.skinColorInactive = config.skin.inactive; // default icon color
             config.skinColorActive = config.skin.active;  // icon hover, on, slider color
             config.skinColorBackground = config.skin.background; // control elements background
-            config.skin = config.skin.name;
+
+            if (config.skin.name) {
+                config.skin = config.skin.name;
+            } else {
+                // we actively delete the value so it won't overwrite the model's default
+                delete config.skin;
+            }
         }
 
         if (!config.aspectratio) {

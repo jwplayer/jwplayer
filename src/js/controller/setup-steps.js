@@ -123,7 +123,7 @@ define([
     }
 
     function skinToLoad(skin) {
-        if(_.contains(Constants.Skins, skin)) {
+        if(_.contains(Constants.SkinsLoadable, skin)) {
             return utils.getSkinUrl(skin);
         } else {
             console.log('The skin parameter does not match any of our skins : ' + skin);
@@ -144,14 +144,18 @@ define([
         var skinName = _model.get('skin');
         var skinUrl = _model.get('skinUrl');
 
+        // If skin is built into player, there is nothing to load
+        if (_.contains(Constants.SkinsIncluded, skinName)) {
+            resolve();
+            return;
+        }
 
-        if (skinName && !skinUrl) {
-            // if a skin name is defined, but there is no URL, load from CDN
+        if (!skinUrl) {
+            // if a user doesn't specify a url, we assume it comes from our CDN
             skinUrl = skinToLoad(skinName);
         }
 
-        // seven is built into the player
-        if (skinName !== 'seven' && _.isString(skinUrl) && !isSkinLoaded(skinUrl)) {
+        if (_.isString(skinUrl) && !isSkinLoaded(skinUrl)) {
             _model.set('skin-loading', true);
 
             var isStylesheet = true;
@@ -159,12 +163,12 @@ define([
 
             loader.addEventListener(events.COMPLETE, function() {
                 _model.set('skin-loading', false);
-            })
-                .addEventListener(events.ERROR, function() {
-                    console.log('The given skin failed to load : ', skinUrl);
-                    _model.set('skin', null);
-                    _model.set('skin-loading', false);
-                });
+            });
+            loader.addEventListener(events.ERROR, function() {
+                console.log('The given skin failed to load : ', skinUrl);
+                _model.set('skin', 'seven'); // fall back to seven skin
+                _model.set('skin-loading', false);
+            });
 
             loader.load();
         }
