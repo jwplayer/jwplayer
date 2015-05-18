@@ -102,7 +102,8 @@ define([
 
     function _completePlaylist(resolve, _model, playlist) {
         _model.setPlaylist(playlist);
-        if (_model.get('playlist').length === 0) {
+        var p = _model.get('playlist');
+        if (!_.isArray(p) || p.length === 0) {
             _playlistError(resolve, 'Playlist type not supported');
             return;
         }
