@@ -147,6 +147,7 @@ define([
         // If skin is built into player, there is nothing to load
         if (_.contains(Constants.SkinsIncluded, skinName)) {
             resolve();
+            return;
         }
 
         if (!skinUrl) {
