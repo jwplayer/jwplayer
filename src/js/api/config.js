@@ -48,11 +48,9 @@ define([
             delete config.aspectratio;
         }
 
-        if (_.isString(config.playlist)) {
-            // If playlist is a string, then it's an RSS feed, let it be
-        } else {
-            // Else use the playlist obj/array or generate it from config
-            config.playlist = Playlist(config.playlist || config);
+        if (!config.playlist) {
+            // This is a legacy fallback, assuming a playlist item has been flattened into the config
+            config.playlist = config;
         }
 
         return config;

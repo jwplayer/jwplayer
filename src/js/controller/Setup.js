@@ -1,15 +1,10 @@
 define([
     'controller/setup-steps',
-    'plugins/plugins',
-    'playlist/loader',
-    'playlist/playlist',
-    'utils/scriptloader',
     'utils/helpers',
     'utils/backbone.events',
-    'utils/constants',
     'utils/underscore',
     'events/events'
-], function(SetupSteps, plugins, PlaylistLoader, Playlist, ScriptLoader, utils, Events, Constants, _, events) {
+], function(SetupSteps, utils, Events, _, events) {
 
 
     var Setup = function(_api, _model, _view, _errorTimeoutSeconds) {

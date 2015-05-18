@@ -175,8 +175,9 @@ define([
 
         // TODO: make this a synchronous action; throw error if playlist is empty
         this.setPlaylist = function(p) {
+            var playlist = Playlist(p);
 
-            var playlist = Playlist.filterPlaylist(p, _providers, _this.androidhls);
+            playlist = Playlist.filterPlaylist(playlist, _providers, _this.androidhls);
 
             if (playlist.length === 0) {
                 this.playlist = [];
