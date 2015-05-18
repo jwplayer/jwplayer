@@ -1,3 +1,6 @@
+@import "../imports/vars";
+@import "../imports/icons";
+
 body .jw-error, .jwplayer.jw-state-error {
     .jw-title {
         display: block;
@@ -20,6 +23,7 @@ body .jw-error, .jwplayer.jw-state-error {
         background-color: @def-background-color;
         background: @def-background-style;
     }
+
     .jw-icon-display {
         .jwplayer .jw-icon;
         .jwplayer .jw-icon-error;
@@ -49,5 +53,14 @@ body .jw-error {
         left: 0;
         bottom: 0;
         right: 0;
+    }
+}
+
+
+.jwplayer {
+    &:hover .jw-display-icon-container {
+        background-color: @def-background-color;
+        background: @def-background-style;
+        background-size: @def-background-size;
     }
 }
