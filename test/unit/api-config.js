@@ -73,7 +73,7 @@ define([
         x = testConfig({
             file:'abc.mp4'
         });
-        equal(x.playlist[0].sources[0].file, 'abc.mp4', 'Passing a file attr works');
+        equal(x.playlist.file, 'abc.mp4', 'Passing a file attr works');
     });
 
     test('Testing aspect ratio', function() {
