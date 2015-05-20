@@ -5,7 +5,6 @@ define([
     'controller/Setup',
     'controller/captions',
     'controller/model',
-    'playlist/playlist',
     'playlist/loader',
     'utils/helpers',
     'view/view',
@@ -14,7 +13,7 @@ define([
     'events/events',
     'view/errorscreen'
 ], function(setupInstreamMethods, deprecateInit, _, Setup, Captions,
-            Model, Playlist, PlaylistLoader, utils, View, Events, states, events, errorScreen) {
+            Model, PlaylistLoader, utils, View, Events, states, events, errorScreen) {
 
     function _queue(command) {
         return function() {
@@ -215,8 +214,6 @@ define([
                     track: _model.get('captionsIndex')
                 });
 
-                _load();
-
                 if (_model.get('autostart') && !utils.isMobile()) {
                     _play();
                 }
@@ -237,7 +234,7 @@ define([
                         _loadPlaylist(item);
                         break;
                     case 'object':
-                        _model.setPlaylist(Playlist(item));
+                        _model.setPlaylist(item);
                         break;
                     case 'number':
                         _model.setItem(item);

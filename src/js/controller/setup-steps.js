@@ -90,28 +90,24 @@ define([
         var playlist = _model.config.playlist;
         if (_.isString(playlist)) {
             _playlistLoader = new PlaylistLoader();
-            _playlistLoader.on(events.JWPLAYER_PLAYLIST_LOADED, _.partial(_completePlaylist, resolve));
+            _playlistLoader.on(events.JWPLAYER_PLAYLIST_LOADED, function(data) {
+                _completePlaylist(resolve, _model, data.playlist);
+            });
             _playlistLoader.on(events.JWPLAYER_ERROR, _.partial(_playlistError, resolve));
             _playlistLoader.load(playlist);
         } else {
-            _completePlaylist(resolve, _model);
+            _completePlaylist(resolve, _model, playlist);
         }
     }
 
-    function _completePlaylist(resolve, _model) {
-        var data = _model.config;
-        var playlist = data.playlist;
-        if (_.isArray(playlist)) {
-            playlist = Playlist(playlist);
-            _model.setPlaylist(playlist);
-            if (_model.playlist.length === 0) {
-                _playlistError(resolve);
-                return;
-            }
-            resolve();
-        } else {
-            _error(resolve, 'Playlist type not supported', typeof playlist);
+    function _completePlaylist(resolve, _model, playlist) {
+        _model.setPlaylist(playlist);
+        var p = _model.get('playlist');
+        if (!_.isArray(p) || p.length === 0) {
+            _playlistError(resolve, 'Playlist type not supported');
+            return;
         }
+        resolve();
     }
 
     function _playlistError(resolve, evt) {

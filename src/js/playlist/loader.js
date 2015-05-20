@@ -41,7 +41,7 @@ define([
                     return;
                 }
 
-                var pl = new Playlist(rssParser.parse(rss));
+                var pl = rssParser.parse(rss);
                 _this.trigger(events.JWPLAYER_PLAYLIST_LOADED, {
                     playlist: pl
                 });
