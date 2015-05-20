@@ -1,11 +1,11 @@
 define([
-    'view/touch',
+    'utils/ui',
     'utils/helpers',
     'events/events',
     'utils/underscore',
     'utils/backbone.events',
     'handlebars-loader!templates/logo.html'
-], function(Touch, utils, events, _, Events, logoTemplate) {
+], function(UI, utils, events, _, Events, logoTemplate) {
     var _styles = utils.style;
 
     var LogoDefaults = {
@@ -57,12 +57,8 @@ define([
                 }
             }
 
-            if (!utils.isMobile()) {
-                _logo.onclick = _clickHandler;
-            } else {
-                var logoTouch = new Touch(_logo);
-                logoTouch.on(events.touchEvents.TAP, _clickHandler);
-            }
+            var logoInteractHandler = new UI(_logo);
+            logoInteractHandler.on(events.touchEvents.CLICK, _clickHandler);
         }
 
         this.element = function() {

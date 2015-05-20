@@ -3,7 +3,10 @@ define([], function() {
         DRAG: 'jwplayerDrag',
         DRAG_START: 'jwplayerDragStart',
         DRAG_END: 'jwplayerDragEnd',
-        TAP: 'jwplayerTap'
+        CLICK: 'jwplayerClick',
+        DOUBLE_CLICK: 'jwplayerDoubleClick',
+        TAP: 'jwplayerTap',
+        DOUBLE_TAP: 'jwplayerDoubleTap'
     };
 
     var events = {

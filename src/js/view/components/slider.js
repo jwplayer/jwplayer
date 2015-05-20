@@ -1,18 +1,20 @@
 define([
     'view/components/extendable',
+    'utils/ui',
     'handlebars-loader!templates/slider.html',
     'utils/underscore',
-    'utils/helpers'
-], function(Extendable, SliderTemplate, _, utils) {
+    'utils/helpers',
+    'events/events'
+], function(Extendable, UI, SliderTemplate, _, utils, events) {
 
     var Slider = Extendable.extend({
         constructor : function(className, orientation) {
             this.className = className;
             this.orientation = orientation;
 
-            this.mousedownlistener = this.dragStart.bind(this);
-            this.mouseuplistener = this.dragEnd.bind(this);
-            this.mousemovelistener = this.mouseMove.bind(this);
+            this.dragStartListener = this.dragStart.bind(this);
+            this.dragMoveListener = this.dragMove.bind(this);
+            this.dragEndListener = this.dragEnd.bind(this);
 
             this.setup();
         },
@@ -29,23 +31,26 @@ define([
             this.elementProgress = this.el.getElementsByClassName('jw-progress')[0];
             this.elementThumb = this.el.getElementsByClassName('jw-thumb')[0];
 
-            this.el.onmousedown = this.mousedownlistener;
+            this.userInteract = new UI(this.element());
+
+            this.userInteract.on(events.touchEvents.DRAG_START, this.dragStartListener);
+            this.userInteract.on(events.touchEvents.DRAG, this.dragMoveListener);
+            this.userInteract.on(events.touchEvents.DRAG_END, this.dragEndListener);
+
+            this.userInteract.on(events.touchEvents.TAP, this.dragMoveListener);
+            this.userInteract.on(events.touchEvents.CLICK, this.dragMoveListener);
         },
         dragStart : function() {
             this.trigger('dragStart');
             this.railBounds = utils.bounds(this.elementRail);
-            window.addEventListener('mouseup', this.mouseuplistener, false);
-            window.addEventListener('mousemove', this.mousemovelistener, false);
         },
         dragEnd : function(evt) {
-            window.removeEventListener('mouseup', this.mouseuplistener);
-            window.removeEventListener('mousemove', this.mousemovelistener);
-            this.mouseMove(evt);
+            this.dragMove(evt);
             this.trigger('dragEnd');
         },
-        mouseMove : function(evt) {
+        dragMove : function(evt) {
             var dimension,
-                bounds = this.railBounds,
+                bounds = (!this.railBounds) ? utils.bounds(this.elementRail) : bounds,
                 percentage;
 
             if (this.orientation === 'horizontal'){
