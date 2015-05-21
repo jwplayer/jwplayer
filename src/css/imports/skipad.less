@@ -6,21 +6,10 @@
         display: inline-block;
         right: 0.75em;
 
-        background-color: @def-background-color;
-        background: @def-transparent-background-style;
-        background-size: @def-background-size;
-        border-radius: @ui-corner-round;
-        padding: @ui-padding @ui-corner-round;
-
         &.jw-hidden {
             visibility: hidden;
         }
 
-        &:hover {
-            background-color: @def-background-color;
-            background: @def-background-style;
-            background-size: @def-background-size;
-        }
 
         .jw-skip-icon {
             .jwplayer .jw-icon-next;
@@ -35,7 +24,9 @@
 
         &.jw-skippable:hover {
             cursor: pointer;
-            .jw-text, .jw-skip-icon {
+            
+            .jw-text, 
+            .jw-skip-icon {
                 color: @active-color;
             }
         }
