@@ -1,16 +1,46 @@
 .jw-skin-glow {
+	@active-color: #fff;
+    @inactive-color: #fff;
+   	@hover-color: @active-color;
+	@progress-color: #fff;
+    @buffer-color: #3c3d41;
+    @rail-color: #9c9a9d;
+    @controlbar-background: #000;
+
+    #namespace > .basic-skin-styles(); // Using the above local variables
+    .skin-element-padding();
+
 	.jw-controlbar {
-		background: #000;
 		opacity: 0.8;
-		bottom: 0;
 	}
 
-	.jw-text,
-	.jw-icon-inline {
-		color: #fff;
-	}
+	.jw-rail,
+    .jw-buffer,
+    .jw-progress {
+    	border-radius: @ui-corner-round;
+    }
 
-	.jw-icon-inline:hover {
-		color: #f15173;
-	}
+    .jw-thumb {
+    	display: none;
+    }
+
+    .jw-slider-vertical {
+        bottom: 5px;
+
+        .jw-rail,
+        .jw-progress {
+            width: .4em;
+        }
+    }
+
+    .jw-time-tip,
+    .jw-volume-tip,
+    .jw-menu {
+        border-radius: @ui-padding;
+    }
+
+    .jw-volume-tip,
+    .jw-menu {
+        bottom: .3em;
+    }
 }
