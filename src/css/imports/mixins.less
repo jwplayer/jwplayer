@@ -24,6 +24,101 @@
 	left: -(@rail-width - @thumb)/2;
 }
 
+.centered-vert-thumb(@rail-height, @vert-thumb-size) {
+	top: -(@rail-height - @vert-thumb-size)/2;
+}
+
 .centered-cue(@rail-width:@time-rail-width, @cue-size) {
 	top: (@rail-width - @cue-size)/2;
+}
+
+.hover(@color:@hover-color) {
+	&:hover {
+		color: @color;
+	}
+}
+
+.skin-element-padding() {
+	.jw-icon-inline,
+    .jw-icon-tooltip,
+    .jw-text {
+        padding: 0 @ui-padding;
+    }
+}
+
+// Less requires namespaced variables/mixins to overwrite globals - https://github.com/less/less.js/issues/1316
+#namespace() {
+	.basic-skin-styles() {
+
+		.jw-controlbar,
+		.jw-volume-tip {
+			background: @controlbar-background;
+		}
+
+	    .jw-icon,
+		.jw-text,
+		.jw-icon-inline {
+			color: @inactive-color;
+		}
+
+		.jw-thumb,
+	    .jw-icon-inline,
+	    .jw-icon-tooltip,
+	    .jw-icon-display,
+	    .jw-option:before {
+	        .hover(@hover-color);
+	    }
+
+	    .jw-icon-display {
+			color: @display-icon-color;
+		}
+
+		.jw-display-icon-container {
+			background: @display-bkgd-color;
+			border-radius: @ui-corner-round;
+			padding: 0.5em .75em;
+
+			&:hover {
+				background: @display-bkgd-hover-color;
+
+				.jw-icon-display {
+					color: @display-icon-hover-color;
+				}
+			}
+		}
+
+		.jw-rail {
+			background: @rail-color;
+		}
+
+		.jw-buffer {
+			background: @buffer-color;
+		}
+
+		.jw-progress {
+			background: @progress-color;
+		}
+
+		.jw-slider-horizontal {
+			.jw-thumb {
+				margin-left: @thumb-size/-2;
+			}
+		}
+	
+		.jw-time-tip,
+	    .jw-volume-tip,
+	    .jw-menu {
+	        padding: @volume-padding;
+	        background: @volume-background;
+	        border: @volume-border;
+	    }
+
+	    .jw-time-tip {
+	        bottom: 1em;
+
+	        .jw-text {
+	            color: #bbb;
+	        }
+	    }
+	}
 }
