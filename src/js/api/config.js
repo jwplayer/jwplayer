@@ -56,7 +56,8 @@ define([
 
         if (!config.playlist) {
             // This is a legacy fallback, assuming a playlist item has been flattened into the config
-            config.playlist = config;
+            //  we clone it to avoid circular dependences
+            config.playlist = _.clone(config);
         }
 
         return config;
