@@ -6,9 +6,6 @@ define([
 ], function(utils, _, Tooltip, PlaylistTemplate) {
 
     var Playlist = Tooltip.extend({
-        getList : function() {
-            return this.content.getElementsByClassName('jw-playlist')[0].children;
-        },
 
         setup : function (list, selectedIndex) {
             if(this.content){
@@ -70,18 +67,6 @@ define([
         selectItem : function(item) {
             this.setup(this.originalList, item);
         }
-        /*
-        selectItem : function(selectedIndex) {
-            if(this.content){
-                var list = this.getList();
-                for(var i=0; i<list.length; i++ ){
-                    utils.toggleClass(list[i], 'jw-active-option', (selectedIndex === i));
-                }
-            } else {
-                utils.toggleClass(this.el, 'jw-off', (selectedIndex === 0));
-            }
-        }
-        */
     });
 
     return Playlist;
