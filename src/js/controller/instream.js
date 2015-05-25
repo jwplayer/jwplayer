@@ -63,9 +63,6 @@ define([
             // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
             _oldProvider = _model.getVideo();
 
-            // Was used to get video tag and store media state
-            _oldProvider.detachMedia();
-
             // Keep track of the original player state
             _oldpos = _model.position;
 
@@ -95,8 +92,12 @@ define([
 
             // If the player's currently playing, pause the video tag
             if (_oldstate === states.PLAYING) {
+                // pause must be called before detachMedia
                 _oldProvider.pause();
             }
+
+            // Was used to get video tag and store media state
+            _oldProvider.detachMedia();
 
             // Show the instream layer
             _view.setupInstream(_adModel);
@@ -129,7 +130,7 @@ define([
                 _array = item;
                 item = _array[_arrayIndex];
             }
-            _options = _.extend(_defaultOptions, options);
+            _options = _.extend({}, _defaultOptions, options);
             _item = new PlaylistItem(item);
 
             _adModel.setPlaylist([item]);
@@ -370,7 +371,7 @@ define([
                 if (_optionList) {
                     curOpt = _optionList[_arrayIndex];
                 }
-                _options = _.extend(_defaultOptions, curOpt);
+                _options = _.extend({}, _defaultOptions, curOpt);
                 _adModel.getVideo().load(_adModel.playlist[0]);
                 _skipButton.reset(_options.skipoffset || -1);
                 _completeTimeoutId = setTimeout(function() {
@@ -400,8 +401,8 @@ define([
 
         function _sendEvent(type, data) {
             data = data || {};
-            if (_defaultOptions.tag && !data.tag) {
-                data.tag = _defaultOptions.tag;
+            if (_options.tag && !data.tag) {
+                data.tag = _options.tag;
             }
             _this.sendEvent(type, data);
         }
