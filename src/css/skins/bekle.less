@@ -1,3 +1,6 @@
+@import "../imports/vars";
+@import "../imports/mixins";
+
 .jw-skin-bekle {
     @active-color: #139ed5;
     @inactive-color: #fff;
@@ -14,7 +17,7 @@
     @rail-color: @rail-gradient;
     @thumb-color: @progress-color;
     @controlbar-background: #182335;
-    
+
     @display-icon-color: @inactive-color;
     @display-icon-hover-color: @inactive-color;
     @display-bkgd-color: @rail-color;
@@ -25,69 +28,69 @@
     #namespace > .basic-skin-styles(); // Using the above local variables
     .skin-element-padding();
 
-	.jw-controlbar {
-		.inset-controlbar;
-		opacity: 0.8;
-		border-radius: @ui-corner-round;
-	}
+    .jw-controlbar {
+        .inset-controlbar;
+        opacity: 0.8;
+        border-radius: @ui-corner-round;
+    }
 
-	.jw-slider-horizontal,
-	.jw-slider-vertical {
+    .jw-slider-horizontal,
+    .jw-slider-vertical {
 
-		.jw-rail,
-		.jw-progress,
-		.jw-buffer {
-			border-radius: @ui-corner-round;
-		}
+        .jw-rail,
+        .jw-progress,
+        .jw-buffer {
+            border-radius: @ui-corner-round;
+        }
 
-		.jw-thumb {
+        .jw-thumb {
 
-			&:after {
-				background-color: #fff;
-				width: .7em;
-	  			height: .7em;
-				border-radius: 50%;
-			}
-		}
-	}
-	.jw-slider-horizontal {
-		.jw-rail,
-		.jw-progress,
-		.jw-buffer {
-			height: .2em;
-		}
+            &:after {
+                background-color: #fff;
+                width: .7em;
+                height: .7em;
+                border-radius: 50%;
+            }
+        }
+    }
+    .jw-slider-horizontal {
+        .jw-rail,
+        .jw-progress,
+        .jw-buffer {
+            height: .2em;
+        }
 
-		.jw-cue {
-			&:after {
-				background-color: #fff;
-				height: .2em;
-			}
-		}
+        .jw-cue {
+            &:after {
+                background-color: #fff;
+                height: .2em;
+            }
+        }
 
-		.jw-thumb {
-			.centered-cue(.2em, .7em);
-		}
-	}
+        .jw-thumb {
+            .centered-cue(.2em, .7em);
+        }
+    }
 
-	.jw-slider-vertical {
-		bottom: 5px;
+    .jw-slider-vertical {
+        bottom: 5px;
 
-		.jw-rail,
-		.jw-progress {
-			width: .2em;
-		}
+        .jw-rail,
+        .jw-progress {
+            width: .2em;
+        }
 
-		.jw-rail {
-			background: @rail-vert-gradient;
-		}
+        .jw-rail {
+            background: @rail-vert-gradient;
+        }
 
-		.jw-progress {
-			background: @progress-vert-gradient;
-		}
+        .jw-progress {
+            background: @progress-vert-gradient;
+        }
 
-	}
+    }
 
-	.jw-time-tip,
+    .jw-time-tip,
     .jw-volume-tip,
     .jw-menu {
         border-radius: @volume-border-radius;

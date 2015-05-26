@@ -1,8 +1,11 @@
+@import "../imports/vars";
+@import "../imports/mixins";
+
 .jw-skin-glow {
-	@active-color: #fff;
+    @active-color: #fff;
     @inactive-color: #fff;
-   	@hover-color: @active-color;
-	@progress-color: #fff;
+    @hover-color: @active-color;
+    @progress-color: #fff;
     @buffer-color: #3c3d41;
     @rail-color: #9c9a9d;
     @controlbar-background: #000;
@@ -10,18 +13,18 @@
     #namespace > .basic-skin-styles(); // Using the above local variables
     .skin-element-padding();
 
-	.jw-controlbar {
-		opacity: 0.8;
-	}
+    .jw-controlbar {
+        opacity: 0.8;
+    }
 
-	.jw-rail,
+    .jw-rail,
     .jw-buffer,
     .jw-progress {
-    	border-radius: @ui-corner-round;
+        border-radius: @ui-corner-round;
     }
 
     .jw-thumb {
-    	display: none;
+        display: none;
     }
 
     .jw-slider-vertical {

@@ -1,4 +1,6 @@
-
+@import "../imports/vars";
+@import "../imports/icons";
+@import "../imports/mixins";
 
 .jw-skin-six {
     @active-color: #eee;
@@ -9,7 +11,6 @@
     @progress-color: @active-color;
     @rail-color: #666;
     @font-color: @active-color;
-    
 
     @def-border: 1px solid black;
     @def-background-size: 100% 100%;
@@ -30,19 +31,19 @@
     @volume-border: @def-border;
 
     #namespace > .basic-skin-styles(); // Using the above local variables
-    
-	.jw-controlbar {
+
+    .jw-controlbar {
         .inset-controlbar;
-	    border: @def-border;
-	    border-radius: @ui-corner-round;
-    	background-size: @def-background-size;
+        border: @def-border;
+        border-radius: @ui-corner-round;
+        background-size: @def-background-size;
 
         .jw-overlay {
             bottom: 2.25em;
         }
-	}
+    }
 
-	.jw-display-icon-container {
+    .jw-display-icon-container {
         background-color: @def-background-color;
         background: @def-transparent-background-style;
         background-size: @def-background-size;

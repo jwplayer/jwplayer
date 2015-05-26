@@ -1,12 +1,15 @@
+@import "../imports/vars";
+@import "../imports/mixins";
+
 .jw-skin-five {
-	@active-color: #000;
+    @active-color: #000;
     @inactive-color: #464646;
-   	@hover-color: @active-color;
-    
+    @hover-color: @active-color;
+
     @controlbar-background: #eee;
     @controlbar-height: 2em;
-	@controlbar-icon-size: 1em;
-	@progress-color: @active-color;
+    @controlbar-icon-size: 1em;
+    @progress-color: @active-color;
     @buffer-color: #9c9a9d;
     @rail-color: #b8b6b7;
     @thumb-color: @progress-color;
@@ -19,70 +22,70 @@
     @rail-vert-gradient: linear-gradient(to bottom, #fff 0, #fff 30%, #333 100%);
 
     #namespace > .basic-skin-styles(); // Using the above local variables
-	.skin-element-padding();
+    .skin-element-padding();
 
-	// Additional custom styles
-	.jw-controlbar {
-		opacity: 0.8;
-	}
+    // Additional custom styles
+    .jw-controlbar {
+        opacity: 0.8;
+    }
 
-	.jw-slider-horizontal {
+    .jw-slider-horizontal {
 
-		.jw-rail,
-		.jw-buffer,
-		.jw-progress {
-			height: .3em;
-			border-radius: 0;
-		}
+        .jw-rail,
+        .jw-buffer,
+        .jw-progress {
+            height: .3em;
+            border-radius: 0;
+        }
 
-		.jw-rail {
-			box-shadow: none;
-		}
+        .jw-rail {
+            box-shadow: none;
+        }
 
-		.jw-thumb {
+        .jw-thumb {
             .centered-vert-thumb(.3em, 1em);
-  			margin: 0;
+            margin: 0;
 
-			&:after {
-				background-color: #000;
-				border-radius: 0;
-				width: 1px;
-				height: 1em;
-			}
-		}
+            &:after {
+                background-color: #000;
+                border-radius: 0;
+                width: 1px;
+                height: 1em;
+            }
+        }
 
-		.jw-cue {
+        .jw-cue {
 
-			&:after {
-				width: .2em;
-				height: .4em;
-				background-color: #fff;
-			}
-		}
-	}
+            &:after {
+                width: .2em;
+                height: .4em;
+                background-color: #fff;
+            }
+        }
+    }
 
-	.jw-slider-vertical {
-		.jw-rail,
-		.jw-progress {
-			width: .2em;
-		}
+    .jw-slider-vertical {
+        .jw-rail,
+        .jw-progress {
+            width: .2em;
+        }
 
-		.jw-progress {
-			background: #fff;
-		}
+        .jw-progress {
+            background: #fff;
+        }
 
-		.jw-rail {
-			background: #737373;
-		}
+        .jw-rail {
+            background: #737373;
+        }
 
-		.jw-thumb {
+        .jw-thumb {
 
-			&:after {
-				background: @rail-vert-gradient;
-				border-radius: 0;
-				height: 2px;
-			}
-		}
-	}
+            &:after {
+                background: @rail-vert-gradient;
+                border-radius: 0;
+                height: 2px;
+            }
+        }
+    }
 }
 
