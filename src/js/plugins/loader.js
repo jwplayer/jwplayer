@@ -77,14 +77,14 @@ define([
             if (_destroyed) {
                 return;
             }
-
             var message = 'File not found';
-            this.trigger(events.ERROR, {
-                message: message
-            });
             if (e.url) {
                 helpers.log(message, e.url);
             }
+            this.off();
+            this.trigger(events.ERROR, {
+                message: message
+            });
             _checkComplete();
         }
 
