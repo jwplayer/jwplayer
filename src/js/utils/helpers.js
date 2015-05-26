@@ -629,11 +629,6 @@ define([
     utils.noop = function () {
     };
 
-    utils.canCast = function () {
-        var cast = window.jwplayer.cast;
-        return !!(cast && _.isFunction(cast.available) && cast.available());
-    };
-
     /**
      * Cleans up a css dimension (e.g. '420px') and returns an integer.
      */
