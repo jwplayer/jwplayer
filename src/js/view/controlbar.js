@@ -2,20 +2,24 @@ define([
     'utils/helpers',
     'utils/underscore',
     'utils/backbone.events',
+    'utils/ui',
+    'events/events',
     'view/components/slider',
     'view/components/timeslider',
     'view/components/menu',
     'view/components/playlist',
     'view/components/volumetooltip'
-], function(utils, _, Events, Slider, TimeSlider, Menu, Playlist, VolumeTooltip) {
+], function(utils, _, Events, UI, events, Slider, TimeSlider, Menu, Playlist, VolumeTooltip) {
 
     function button(icon, click) {
-        var element = document.createElement('span');
+        var element = document.createElement('span'),
+            handler;
         element.className = 'jw-icon jw-icon-inline ' + icon;
         element.style.display = 'none';
 
         if (click) {
-            element.onclick = function() { click(); };
+            handler = function() { click(); };
+            new UI(element).on(events.touchEvents.TAP, handler).on(events.touchEvents.CLICK, handler);
         }
 
         return {

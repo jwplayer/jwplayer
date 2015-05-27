@@ -438,12 +438,10 @@ define([
         }
 
         function _touchHandler() {
-            if (_isMobile) {
-                if (_showing) {
-                    _hideControls();
-                } else {
-                    _showControls();
-                }
+            if (_showing) {
+                _hideControls();
+            } else {
+                _showControls();
             }
             if (_showing) {
                 _resetTapTimer();
@@ -511,8 +509,11 @@ define([
             _display = new Display(_model);
             _display.on('click', function() {
                 forward({type : events.JWPLAYER_DISPLAY_CLICK});
-                _touchHandler();
                 _api.play();
+            });
+            _display.on('tap', function() {
+                forward({type : events.JWPLAYER_DISPLAY_CLICK});
+                _touchHandler();
             });
             _display.on('doubleClick', function() {
                 _api.setFullscreen();

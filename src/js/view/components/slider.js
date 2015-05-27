@@ -50,7 +50,7 @@ define([
         },
         dragMove : function(evt) {
             var dimension,
-                bounds = (!this.railBounds) ? utils.bounds(this.elementRail) : bounds,
+                bounds = (this.railBounds) ? this.railBounds : utils.bounds(this.elementRail),
                 percentage;
 
             if (this.orientation === 'horizontal'){

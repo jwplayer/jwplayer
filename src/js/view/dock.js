@@ -1,8 +1,10 @@
 define([
     'handlebars-loader!templates/dock.html',
     'utils/helpers',
-    'utils/underscore'
-], function(dockTemplate, utils, _) {
+    'utils/underscore',
+    'utils/ui',
+    'events/events'
+], function(dockTemplate, utils, _, UI, events) {
 
     var Dock = function(_model) {
         this.model = _model;
@@ -14,10 +16,11 @@ define([
     _.extend(Dock.prototype, {
         setup : function() {
             var buttons = this.model.get('dock');
-            var html = dockTemplate(buttons);
+            var clickHandler = this.click.bind(this);
 
+            var html = dockTemplate(buttons);
             this.el = utils.createElement(html);
-            this.el.onclick = this.click.bind(this);
+            new UI (this.el).on(events.touchEvents.TAP, clickHandler).on(events.touchEvents.CLICK, clickHandler);
         },
         click : function(evt) {
             var btnId = evt.target.getAttribute('button');
