@@ -30,8 +30,6 @@ define([
                     this.skipAdOnce();
                 }
             }, this));
-
-            // ?? this.updateCountdown(0);
         },
 
         updateMessage: function(message) {
