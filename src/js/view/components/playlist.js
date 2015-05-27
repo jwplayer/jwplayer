@@ -19,7 +19,7 @@ define([
 
             utils.toggleClass(this.el, 'jw-hidden', (list.length < 2));
 
-            if (list.length > 2) {
+            if (list.length >= 2) {
                 utils.removeClass(this.el, 'jw-off');
 
                 var innerHtml = this.menuTemplate(list, selectedIndex);
