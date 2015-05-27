@@ -119,7 +119,6 @@ define([
             }, true);
 
             var controlbar = _view.element().getElementsByClassName('jw-controlbar')[0];
-            var bottom = 10 + utils.bounds(_view.controlsContainer()).bottom - utils.bounds(controlbar).top;
 
             // Copy the playlist item passed in and make sure it's formatted as a proper playlist item
             if (_.isArray(item)) {
@@ -140,19 +139,13 @@ define([
             // Show the instream layer
             _view.showInstream();
 
-            _skipButton = new Adskipbutton(_controller.id, bottom, _options.skipMessage, _options.skipText);
-            _skipButton.on(events.JWPLAYER_AD_SKIPPED, _skipAd);
-            _skipButton.reset(_options.skipoffset || -1);
+            if (_options.skipoffset) {
+                _skipButton = new Adskipbutton(_options.skipMessage, _options.skipText);
+                _skipButton.on(events.JWPLAYER_AD_SKIPPED, _skipAd);
+                _skipButton.setWaitTime(_options.skipoffset);
 
-
-            if (modelGet('controls')) {
-                _skipButton.show();
-            } else {
-                _skipButton.hide();
+                _view.controlsContainer().appendChild(_skipButton.element());
             }
-
-            var skipElem = _skipButton.element();
-            _view.controlsContainer().appendChild(skipElem);
 
             // Match the main player's controls state
             _adModel.on(events.JWPLAYER_ERROR, errorHandler);
@@ -201,8 +194,7 @@ define([
             }
 
             if(_skipButton){
-                var skipElem = _skipButton.element();
-                _view.controlsContainer().removeChild(skipElem);
+                _view.controlsContainer().removeChild(_skipButton.element());
             }
 
             _adModel.off('fullscreenchange', _nativeFullscreenHandler);
@@ -307,7 +299,7 @@ define([
                 provider.addEventListener(events.JWPLAYER_PLAYER_STATE, stateHandler);
                 provider.addEventListener(events.JWPLAYER_MEDIA_TIME, function(evt) {
                     if (_skipButton) {
-                        _skipButton.updateSkipTime(evt.position, evt.duration);
+                        _skipButton.updateMediaTime(evt.position, evt.duration);
                     }
                 });
                 provider.attachMedia();
@@ -373,7 +365,9 @@ define([
                 }
                 _options = _.extend({}, _defaultOptions, curOpt);
                 _adModel.getVideo().load(_adModel.playlist[0]);
-                _skipButton.reset(_options.skipoffset || -1);
+                if (_skipButton) {
+                    _skipButton.destroy();
+                }
                 _completeTimeoutId = setTimeout(function() {
                     _sendEvent(events.JWPLAYER_PLAYLIST_ITEM, {
                         index: _arrayIndex
@@ -407,13 +401,7 @@ define([
             _this.sendEvent(type, data);
         }
 
-        _this.setControls = function(mode) {
-            if (mode) {
-                _skipButton.show();
-            } else {
-                _skipButton.hide();
-            }
-        };
+        _this.setControls = function() {};
 
         /**************************************
          *****  Duplicate main html5 api  *****
