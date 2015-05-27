@@ -1,39 +1,90 @@
 @import "../imports/vars";
+@import "../imports/mixins";
 
 .jw-skin-roundster {
-	.jw-controlbar {
-		background: #dfe2e9;
-		border-radius: 16px;
-		bottom: @ui-margin;
-	}
+    @active-color: #f15173;
+    @inactive-color: #8490a0;
+    @hover-color: @active-color;
 
-	.jw-text,
-	.jw-icon-inline {
-		color: #8490a0;
-	}
+    @display-icon-color: rgba(255, 255, 255, 0.5);
+    @display-icon-hover-color: rgb(255, 255, 255);
+    @display-bkgd-color: @inactive-color;
+    @display-bkgd-hover-color: @hover-color;
 
-	.jw-icon-inline:hover {
-		color: #f15173;
-	}
+    @progress-color: @active-color;
+    @buffer-color: #9c9a9d;
+    @rail-color: #b8b6b7;
+    @thumb-color: @progress-color;
+    @controlbar-background: #dfe2e9;
 
-	.jw-icon-display {
-		color: #dfe2e9;
-	}
+    @roundster-corners: 1em;
 
-	.jw-display-icon-container {
-		background-color: #878fa2;
-		border-radius: 13px;
+    @volume-background: #5c6373;
 
-		&:hover {
-			background-color: #f15173;
+    #namespace > .basic-skin-styles(); // Using the above local variables
+    .skin-element-padding();
 
-			.jw-icon-display {
-				color: #fff;
-			}
-		}
-	}
+    .jw-controlbar {
+        .inset-controlbar;
+        border-radius: @roundster-corners;
+        padding: 0 @roundster-corners;
+    }
 
-	// .jw-slider-horizontal {
-	// 	background-color: ;
-	// }
+    .jw-slider-horizontal,
+    .jw-slider-vertical {
+
+        .jw-rail,
+        .jw-progress,
+        .jw-buffer {
+            border-radius: @roundster-corners;
+        }
+
+        .jw-thumb {
+
+            &:after {
+                background-color: #fff;
+                width: .7em;
+                height: .7em;
+                border-radius: 50%;
+                box-shadow: 0px 1px 5px 1px rgba(134,142,163,1);
+            }
+        }
+    }
+
+    .jw-slider-horizontal {
+
+        .jw-cue {
+            &:after {
+                background-color: #fff;
+                height: .4em;
+            }
+        }
+
+        .jw-thumb {
+            .centered-cue(.4em, .7em);
+        }
+    }
+
+    .jw-slider-vertical {
+        .jw-rail {
+            background-color: #434853;
+        }
+
+        .jw-rail,
+        .jw-progress {
+            width: .4em;
+        }
+
+    }
+
+    .jw-time-tip,
+    .jw-volume-tip,
+    .jw-menu {
+        border-radius: @ui-padding;
+    }
+
+    .jw-volume-tip,
+    .jw-menu {
+        bottom: .3em;
+    }
 }

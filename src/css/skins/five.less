@@ -1,62 +1,91 @@
+@import "../imports/vars";
+@import "../imports/mixins";
+
 .jw-skin-five {
-	.jw-controlbar {
-		background: #eee;
-		opacity: 0.8;
-		bottom: 0;
-	}
+    @active-color: #000;
+    @inactive-color: #464646;
+    @hover-color: @active-color;
 
-	.jw-text,
-	.jw-icon-inline {
-		color: #464646;
-	}
+    @controlbar-background: #eee;
+    @controlbar-height: 2em;
+    @controlbar-icon-size: 1em;
+    @progress-color: @active-color;
+    @buffer-color: #9c9a9d;
+    @rail-color: #b8b6b7;
+    @thumb-color: @progress-color;
 
-	.jw-icon-inline:hover {
-		color: #000;
-	}
+    @display-icon-color: @controlbar-background;
+    @display-icon-hover-color: #fff;
+    @display-bkgd-color: rgba(51, 51, 51, 0.7);
+    @display-bkgd-hover-color: #333;
 
-	.jw-slider-horizontal {
+    @rail-vert-gradient: linear-gradient(to bottom, #fff 0, #fff 30%, #333 100%);
 
-		.jw-rail,
-		.jw-buffer,
-		.jw-progress {
-			height: .3em;
-			border-radius: 0;
-			margin-top: 1px;
-		}
+    #namespace > .basic-skin-styles(); // Using the above local variables
+    .skin-element-padding();
 
-		.jw-rail {
-			background-color: #b8b6b7;
-			box-shadow: none;
-		}
+    // Additional custom styles
+    .jw-controlbar {
+        opacity: 0.8;
+    }
 
-		.jw-buffer {
-			background-color: #9c9a9d;
-		}
+    .jw-slider-horizontal {
 
-		.jw-progress {
-			background: #000;
-		}
+        .jw-rail,
+        .jw-buffer,
+        .jw-progress {
+            height: .3em;
+            border-radius: 0;
+        }
 
-		.jw-thumb {
-			top: -1px;
-			font-size: .65em;
+        .jw-rail {
+            box-shadow: none;
+        }
 
-			&:after {
-				background-color: #000;
-				border-radius: 0;
-				width: 1px;
-			}
-		}
+        .jw-thumb {
+            .centered-vert-thumb(.3em, 1em);
+            margin: 0;
 
-		.jw-cue {
-			top: .4em;
+            &:after {
+                background-color: #000;
+                border-radius: 0;
+                width: 1px;
+                height: 1em;
+            }
+        }
 
-			&:after {
-				width: .5em;
-				height: .5em;
-				background-color: #fff;
-			}
-		}
-	}
+        .jw-cue {
+
+            &:after {
+                width: .2em;
+                height: .4em;
+                background-color: #fff;
+            }
+        }
+    }
+
+    .jw-slider-vertical {
+        .jw-rail,
+        .jw-progress {
+            width: .2em;
+        }
+
+        .jw-progress {
+            background: #fff;
+        }
+
+        .jw-rail {
+            background: #737373;
+        }
+
+        .jw-thumb {
+
+            &:after {
+                background: @rail-vert-gradient;
+                border-radius: 0;
+                height: 2px;
+            }
+        }
+    }
 }
 
