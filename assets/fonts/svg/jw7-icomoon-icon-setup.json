@@ -1,6 +1,11 @@
 {
 	"selection": [
 		{
+			"order": 3,
+			"id": 23,
+			"name": "playlist"
+		},
+		{
 			"order": 21,
 			"id": 22,
 			"name": "more",
@@ -181,14 +186,37 @@
 	"metadata": {
 		"name": "jw7-icomoon-icon-setup",
 		"importSize": {
-			"width": 1501,
-			"height": 1024
+			"width": 30,
+			"height": 30
 		},
-		"iconsHash": -1317785672
+		"iconsHash": -360073970
 	},
 	"height": 1024,
 	"prevSize": 32,
 	"icons": [
+		{
+			"paths": [
+				"M423.253 68.267h532.48v88.747h-532.48v-88.747z",
+				"M423.253 423.253h532.48v88.747h-532.48v-88.747z",
+				"M423.253 778.24h532.48v88.747h-532.48v-88.747z",
+				"M68.267 68.267h177.493v177.493h-177.493v-177.493z",
+				"M68.267 423.253h177.493v177.493h-177.493v-177.493z",
+				"M68.267 778.24h177.493v177.493h-177.493v-177.493z"
+			],
+			"attrs": [
+				{},
+				{},
+				{},
+				{},
+				{},
+				{}
+			],
+			"isMulticolor": false,
+			"grid": 16,
+			"tags": [
+				"playlist"
+			]
+		},
 		{
 			"paths": [
 				"M1264.632 346.988c84.486 0 147.851 68.644 147.851 158.413s-63.365 158.413-147.851 158.413c-79.206 0-147.851-68.644-147.851-158.413s68.644-158.413 147.851-158.413zM752.434 346.988c79.206 0 147.851 68.644 147.851 158.413s-68.644 158.413-147.851 158.413c-79.206 0-147.851-68.644-147.851-158.413s68.644-158.413 147.851-158.413zM240.236 346.988c79.206 0 147.851 68.644 147.851 158.413s-68.644 158.413-147.851 158.413-147.851-68.644-147.851-158.413 63.365-158.413 147.851-158.413z"
@@ -530,46 +558,25 @@
 		"showQuickUse2": true,
 		"showSVGs": true,
 		"fontPref": {
-			"prefix": "jw-icon-",
-			"metadata": {
-				"fontFamily": "jw-six-icons",
-				"majorVersion": 1,
-				"minorVersion": 1
-			},
+			"prefix": "icon-",
+			"metadata": {},
 			"metrics": {
 				"emSize": 1024,
 				"baseline": 6.25,
 				"whitespace": 50
-			},
-			"showSelector": true,
-			"showMetrics": true,
-			"showMetadata": true,
-			"showVersion": true,
-			"embed": false,
-			"selector": "",
-			"classSelector": ".jwplayerjw-iconbutton",
-			"autoHost": true,
-			"resetPoint": 58880
+			}
 		},
 		"imagePref": {
 			"prefix": "icon-",
 			"png": true,
 			"useClassSelector": true,
 			"color": 4473924,
-			"bgColor": 16777215,
-			"classSelector": ".icon",
-			"autoHost": true
+			"bgColor": 16777215
 		},
 		"historySize": 100,
-		"showCodes": true,
+		"showCodes": false,
 		"gridSize": 16,
-		"showGrid": false,
-		"quickUsageToken": {
-			"UntitledProject": "MzllMWIwMzIzYmE5ODI2ZTZmMzg4Y2EwOTc0MDUxNGIjMSMxNDI5MDQ4MzU5IyMj"
-		},
-		"imageHostingName": false,
-		"fontHostingName": false,
-		"showLiga": true
+		"showGrid": false
 	},
 	"IcoMoonType": "icon-set"
 }

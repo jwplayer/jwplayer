@@ -15,7 +15,11 @@ define([
             width : 400,
             height : 400,
             aspectratio : '75%',
-            playlist : [],
+            playlist : [{
+                description : 'abc'
+            }, {
+                description : 'cde'
+            }],
             config : {},
             playlistItem : {},
             provider : { name : 'Demo' },

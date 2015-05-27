@@ -5,8 +5,9 @@ define([
     'view/components/slider',
     'view/components/timeslider',
     'view/components/menu',
+    'view/components/playlist',
     'view/components/volumetooltip'
-], function(utils, _, Events, Slider, TimeSlider, Menu, VolumeTooltip) {
+], function(utils, _, Events, Slider, TimeSlider, Menu, Playlist, VolumeTooltip) {
 
     function button(icon, click) {
         var element = document.createElement('span');
@@ -76,12 +77,14 @@ define([
             var timeSlider = new TimeSlider(this._model, this._api);
             var volumeSlider = new Slider('jw-slider-volume', 'horizontal');
             var volumeTooltip = new VolumeTooltip(this._model, 'jw-icon-volume');
+            var playlistTooltip = new Playlist('jw-icon-playlist');
 
             this.elements = {
                 alt: text('jw-text-alt'),
                 play: button('jw-icon-playback', this._api.play),
                 prev: button('jw-icon-prev', this._api.playlistPrev),
                 next: button('jw-icon-next', this._api.playlistNext),
+                playlist : playlistTooltip,
                 elapsed: text('jw-text-elapsed'),
                 time: timeSlider,
                 duration: text('jw-text-duration'),
@@ -98,6 +101,7 @@ define([
                 left: [
                     this.elements.play,
                     this.elements.prev,
+                    this.elements.playlist,
                     this.elements.next,
                     this.elements.elapsed
                 ],
@@ -162,6 +166,13 @@ define([
                 this._api.setVolume(val);
             }, this);
 
+            this.elements.playlist.on('select', function(value) {
+                this._model.once('setItem', function() {
+                    this._api.play();
+                }, this);
+                this._api.load(value);
+            }, this);
+
             this.elements.hd.on('select', function(value){
                 this._model.getVideo().setCurrentQuality(value);
             }, this);
@@ -193,12 +204,17 @@ define([
             var display = (playlist.length > 1);
             this.elements.next.toggle(display);
             this.elements.prev.toggle(display);
+
+            this.elements.playlist.setup(playlist, model.get('item'));
         },
-        onPlaylistItem : function(/*model, item*/) {
+        onPlaylistItem : function(model/*, item*/) {
             this.elements.time.updateBuffer(0);
             this.elements.time.render(0);
             this.elements.duration.innerHTML = '00:00';
             this.elements.elapsed.innerHTML = '00:00';
+
+            var itemIdx = model.get('item');
+            this.elements.playlist.selectItem(itemIdx);
 
             this._model.mediaModel.on('change:levels', function(model, levels) {
                 this.elements.hd.setup(levels, model.get('currentLevel'));
