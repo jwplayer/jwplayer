@@ -30,7 +30,9 @@ define([], function() {
         nativeSome = ArrayProto.some,
         nativeIndexOf = ArrayProto.indexOf,
         nativeIsArray = Array.isArray,
-        nativeKeys = Object.keys;
+        nativeKeys = Object.keys,
+        nativeBind = FuncProto.bind;
+
 
     // Create a safe reference to the Underscore object for use below.
     var _ = function (obj) {
@@ -278,6 +280,28 @@ define([], function() {
     // Function (ahem) Functions
     // ------------------
 
+
+    // Reusable constructor function for prototype setting.
+    var ctor = function(){};
+
+    // Create a function bound to a given object (assigning `this`, and arguments,
+    // optionally). Delegates to **ECMAScript 5**'s native `Function.bind` if
+    // available.
+    _.bind = function(func, context) {
+        var args, bound;
+        if (nativeBind && func.bind === nativeBind) return nativeBind.apply(func, slice.call(arguments, 1));
+        if (!_.isFunction(func)) throw new TypeError;
+        args = slice.call(arguments, 2);
+        return bound = function() {
+            if (!(this instanceof bound)) return func.apply(context, args.concat(slice.call(arguments)));
+            ctor.prototype = func.prototype;
+            var self = new ctor;
+            ctor.prototype = null;
+            var result = func.apply(self, args.concat(slice.call(arguments)));
+            if (Object(result) === result) return result;
+            return self;
+        };
+    };
 
     // Partially apply a function by creating a version that has had some of its
     // arguments pre-filled, without changing its dynamic `this` context. _ acts
