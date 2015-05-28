@@ -3,7 +3,7 @@
 
 .jw-skin-beelden {
     @active-color: #fff;
-    @inactive-color: #c3c3c3;
+    @inactive-color: #c7c7c7;
     @hover-color: @active-color;
 
     @progress-horz-gradient: linear-gradient(to bottom, rgb(201, 56, 53) 0, rgb(178, 32, 33) 50%, rgb(128, 54, 55) 100%);
@@ -29,7 +29,7 @@
     @display-bkgd-color: @volume-background;
     @display-bkgd-hover-color: @controlbar-background-color;
 
-    @rail-height: .4em;
+    @rail-height: .6em;
 
     #namespace > .basic-skin-styles(); // Using the above local variables
     .skin-element-padding();
@@ -38,7 +38,27 @@
         .inset-controlbar();
         background-color: @controlbar-background-color; /* Old browsers */
         box-shadow: inset 0px 7px 1px -5px rgba(128,128,128,1);
-        border-radius: @ui-corner-round;
+        border-radius: .3em;
+    }
+
+    .jw-icon-playback {
+        padding-left: 0;
+        
+        &:before {
+            background-color: #333;
+            background: linear-gradient(
+            to bottom,
+            #333,
+            #333 50%,
+            #2e2e2e 50%,
+            #2e2e2e
+            );
+            background-size: 100% 2px;
+            border-radius: .3em;
+            padding: .2em .8em;
+            box-shadow: inset 0 0 1px 0px rgba(0,0,0,0.6);
+            border: 1px solid #000;
+        }
     }
 
     .jw-rail,
@@ -77,14 +97,26 @@
     }
 
     .jw-slider-horizontal {
+        .jw-rail,
+        .jw-progress,
+        .jw-buffer {
+            height: @rail-height;
+        }
+
         .jw-cue {
+            .vertically-centered-rail-element(@rail-height, .2em);
+
             &:after {
                 background-color: #fff;
+                width: .2em;
+                height: .2em;
+                border-radius: 50%;
             }
         }
 
         .jw-thumb {
-            .vertically-centered-rail-element(.4em, .7em);
+            .vertically-centered-rail-element(@rail-height, .7em);
+
             &:after {
                 box-sizing: border-box;
             }
@@ -120,7 +152,8 @@
 
     .jw-time-tip,
     .jw-volume-tip,
-    .jw-menu {
+    .jw-menu,
+    .jw-dock-button {
         border-radius: @ui-padding;
     }
 
@@ -129,3 +162,4 @@
         bottom: .3em;
     }
 }
+
