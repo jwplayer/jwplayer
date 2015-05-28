@@ -5,6 +5,8 @@
     @active-color: #FF0046;
     @inactive-color: #fff;
 
+    @rail-height: .2em;
+
     .jw-controlbar {
         background: #000;
         border-top: #333 1px solid;
@@ -92,7 +94,7 @@
         }
 
         .jw-thumb {
-            .centered-vert-thumb(.2em, .6em);
+            .vertically-centered-rail-element(.2em, .6em);
 
             &:after {
                 background-color: #fff;
@@ -122,7 +124,7 @@
         }
 
         .jw-cue {
-            .centered-cue(.2em, .3em);
+            .vertically-centered-rail-element(.2em, .3em);
 
             &:after {
                 width: .3em;
@@ -142,7 +144,7 @@
     }
 
     .jw-thumb {
-        .centered-thumb();
+        .horizontally-centered-thumb();
     }
 
     .jw-volume-tip {

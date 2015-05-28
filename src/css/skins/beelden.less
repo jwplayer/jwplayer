@@ -29,6 +29,8 @@
     @display-bkgd-color: @volume-background;
     @display-bkgd-hover-color: @controlbar-background-color;
 
+    @rail-height: .4em;
+
     #namespace > .basic-skin-styles(); // Using the above local variables
     .skin-element-padding();
 
@@ -82,7 +84,7 @@
         }
 
         .jw-thumb {
-            .centered-vert-thumb(.4em, .7em);
+            .vertically-centered-rail-element(.4em, .7em);
             &:after {
                 box-sizing: border-box;
             }
@@ -106,7 +108,7 @@
         }
 
         .jw-thumb {
-            .centered-thumb(.75em, .7em);
+            .horizontally-centered-thumb(.75em, .7em);
         }
     }
 

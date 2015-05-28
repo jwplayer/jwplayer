@@ -30,6 +30,8 @@
     @volume-background: @def-background-style;
     @volume-border: @def-border;
 
+    @rail-height: .75em;
+
     #namespace > .basic-skin-styles(); // Using the above local variables
 
     .jw-controlbar {
@@ -74,7 +76,7 @@
         }
 
         .jw-cue {
-            .centered-cue(.75em,.4em);
+            .vertically-centered-rail-element(.75em,.4em);
         }
 
 
@@ -91,7 +93,7 @@
 
         .jw-thumb {
             .jw-thumbs(1em);
-            .centered-vert-thumb(1em, 1.2em);
+            .vertically-centered-rail-element(1em, 1.2em);
         }
 
 

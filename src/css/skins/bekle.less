@@ -12,6 +12,8 @@
     @rail-gradient: linear-gradient(to bottom, #323b4c, #2f3847 50%, #323b4c 100%);
     @rail-vert-gradient: linear-gradient(to right, #323b4c, #2f3847 50%, #323b4c 100%);
 
+    @rail-height: .2em;
+
     @progress-color: @progress-horz-gradient;
     @buffer-color: @buffer-gradient;
     @rail-color: @rail-gradient;
@@ -53,7 +55,9 @@
             }
         }
     }
+
     .jw-slider-horizontal {
+
         .jw-rail,
         .jw-progress,
         .jw-buffer {
@@ -68,7 +72,7 @@
         }
 
         .jw-thumb {
-            .centered-cue(.2em, .7em);
+            .vertically-centered-rail-element(.2em, .7em);
         }
     }
 
