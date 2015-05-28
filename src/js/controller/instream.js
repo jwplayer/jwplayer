@@ -118,8 +118,6 @@ define([
                 index: _arrayIndex
             }, true);
 
-            var controlbar = _view.element().getElementsByClassName('jw-controlbar')[0];
-
             // Copy the playlist item passed in and make sure it's formatted as a proper playlist item
             if (_.isArray(item)) {
                 if (options) {
