@@ -205,7 +205,8 @@
 
     .jw-time-tip,
     .jw-menu,
-    .jw-volume-tip {
+    .jw-volume-tip,
+    .jw-skip {
         border: 1px solid #333;
         
     }
@@ -219,5 +220,15 @@
     .jw-volume-tip {
         bottom: .15em;
     }
+    
+    .jw-skip {
+        background: #000;
+        padding: 0.4em;
+        border-radius: 1em;
 
+        .jw-text, .jw-icon-inline {
+            color: @inactive-color;
+            font-size: 0.7em;
+        }
+    }
 }

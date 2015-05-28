@@ -1,112 +1,113 @@
-/* jshint maxparams:9, maxlen:9000 */
 define([
     'utils/helpers',
     'utils/css',
-    'view/touch',
     'events/events',
     'utils/backbone.events',
-    'utils/underscore'
-], function(utils, cssUtils, Touch, events, Events, _) {
-    var Adskipbutton = function(_playerId, _bottom, _skipMessage, _skipText) {
-        var _instreamSkipContainer,
-            _instreamSkipText,
-            _offsetTime = -1,
-            _instreamSkipSet = false,
-            _controls,
-            _skipOffset = 0,
-            _this = _.extend(this, Events);
+    'utils/underscore',
+    'handlebars-loader!templates/adskipbutton.html'
+], function(utils, cssUtils, events, Events, _, AdSkipTemplate) {
 
-        function _init() {
-            _instreamSkipContainer = utils.createElement('<div class="jw-skip jw-hidden"></div>');
-            _instreamSkipText = utils.createElement('<span class="jw-text"></span>');
-            _instreamSkipContainer.appendChild(_instreamSkipText);
-            _instreamSkipContainer.appendChild(
-                    utils.createElement('<span class="jw-icon-inline jw-skip-icon"></span>'));
-            cssUtils.style(_instreamSkipContainer, {
-                'bottom': _bottom
-            });
+    var AdSkipButton = function(skipMessageCountdown, skipMessage) {
+        this.skipMessage = skipMessage;
+        this.skipMessageCountdown = skipMessageCountdown;
+        this.skipMessage = skipMessage;
 
-            if (utils.isMobile()) {
-                var skipTouch = new Touch(_instreamSkipContainer);
-                skipTouch.on(events.touchEvents.TAP, skipAd);
-            } else {
-                _instreamSkipContainer.addEventListener('click', skipAd);
-            }
-        }
-
-        function _updateTime(currTime) {
-            if(_offsetTime > 0 ){
-                updateMessage(_skipMessage.replace(/xx/gi, Math.ceil(_offsetTime - currTime)));
-            }
-        }
-
-        function _updateOffset(pos, duration) {
-            if (utils.typeOf(_skipOffset) === 'number') {
-                _offsetTime = _skipOffset;
-            } else if (_skipOffset.slice(-1) === '%') {
-                var percent = parseFloat(_skipOffset.slice(0, -1));
-                if (duration && !isNaN(percent)) {
-                    _offsetTime = duration * percent / 100;
-                }
-            } else if (utils.typeOf(_skipOffset) === 'string') {
-                _offsetTime = utils.seconds(_skipOffset);
-            } else if (!isNaN(_skipOffset)) {
-                _offsetTime = _skipOffset;
-            }
-        }
-
-        _this.updateSkipTime = function(time, duration) {
-            _updateOffset(time, duration);
-            if (_offsetTime >= 0) {
-                utils.removeClass(_instreamSkipContainer, 'jw-hidden', _controls);
-                if (_offsetTime - time > 0) {
-                    _updateTime(time);
-                    if (_instreamSkipSet) {
-                        _instreamSkipSet = false;
-                        utils.removeClass(_instreamSkipContainer, 'jw-skippable');
-                    }
-                } else if (!_instreamSkipSet) {
-                    _instreamSkipSet = true;
-                    updateMessage(_skipText);
-                    utils.addClass(_instreamSkipContainer, 'jw-skippable');
-                }
-            }
-        };
-
-        function updateMessage(message) {
-            _instreamSkipText.innerHTML = message;
-        }
-
-        function skipAd() {
-            if (_instreamSkipSet) {
-                _this.trigger(events.JWPLAYER_AD_SKIPPED);
-            }
-        }
-
-        this.reset = function(offset) {
-            utils.removeClass(_instreamSkipContainer, 'jw-skippable');
-            _instreamSkipSet = false;
-            _skipOffset = offset;
-            _updateOffset(0, 0);
-            _updateTime(0);
-        };
-
-        _this.show = function() {
-            _controls = true;
-            utils.toggleClass(_instreamSkipContainer, 'jw-hidden', _offsetTime < 0);
-        };
-
-        _this.hide = function() {
-            _controls = false;
-            utils.addClass(_instreamSkipContainer, 'jw-hidden');
-        };
-
-        this.element = function() {
-            return _instreamSkipContainer;
-        };
-
-        _init();
+        this.setup();
     };
 
-    return Adskipbutton;
+    _.extend(AdSkipButton.prototype, Events, {
+
+        setup : function() {
+            this.destroy();
+
+            var html = AdSkipTemplate();
+            this.el = utils.createElement(html);
+            this.skiptext = this.el.getElementsByClassName('jw-skiptext')[0];
+
+            this.skipAdOnce = _.once(this.skipAd);
+            this.el.addEventListener('click', _.bind(function() {
+                if (this.skippable) {
+                    this.skipAdOnce();
+                }
+            }, this));
+        },
+
+        updateMessage: function(message) {
+            this.skiptext.innerHTML = message;
+        },
+
+        updateCountdown: function(currTime) {
+            this.updateMessage(this.skipMessageCountdown.replace(/xx/gi, Math.ceil(this.waitTime - currTime)));
+        },
+
+        updateMediaTime : function(position, duration) {
+            // If given a percentage, we want to set the waitTime before continuing
+            if (this.waitPercentage) {
+                if (duration) {
+                    this.itemDuration = duration;
+                    this.setWaitTime(this.waitPercentage);
+                    delete this.waitPercentage;
+                } else {
+                    // Not ready to continue until a duration exists
+                    return;
+                }
+            }
+
+            utils.removeClass(this.el, 'jw-hidden');
+
+            if (this.waitTime - position > 0) {
+                this.updateCountdown(position);
+            } else {
+                this.updateMessage(this.skipMessage);
+                this.skippable = true;
+                utils.addClass(this.el, 'jw-skippable');
+            }
+        },
+
+        element : function() {
+            return this.el;
+        },
+
+        setWaitTime: function(offset) {
+
+            // There is a special case of using a %, since it cannot be set until a duration exists
+            //  It is not supported in our documentation.
+            if (_.isString(offset) && offset.slice(-1) === '%') {
+                var percent = parseFloat(offset);
+                if (this.itemDuration && !isNaN(percent)) {
+                    this.waitTime = this.itemDuration * percent / 100;
+                } else {
+                    this.waitPercentage = offset;
+                }
+                return;
+            }
+
+            if (_.isNumber(offset)) {
+                this.waitTime = offset;
+            } else if (utils.typeOf(offset) === 'string') {
+                this.waitTime = utils.seconds(offset);
+            } else if (!isNaN(Number(offset))) {
+                this.waitTime = Number(offset);
+            } else {
+                this.waitTime = 0;
+            }
+        },
+
+        skipAd : function() {
+            this.trigger(events.JWPLAYER_AD_SKIPPED);
+        },
+
+        destroy : function() {
+            if (this.el) {
+                this.el.removeEventListener('click', this.skipAdOnce);
+                this.el.parentElement.removeChild(this.el);
+            }
+
+            delete this.skippable;
+            delete this.itemDuration;
+            delete this.waitPercentage;
+        }
+    });
+
+    return AdSkipButton;
 });
