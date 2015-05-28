@@ -11,20 +11,20 @@
         background-color: transparent;
 
         ::-webkit-scrollbar-track {
-            background-color: @blueish;
-            box-shadow: inset 0 0 0 6px black;
+            background-color: #333;
             border-radius: 10px;
         }
 
         ::-webkit-scrollbar {
-            width: 16px;
-            background-color: black;
+            width: 5px;
+            border: 10px solid black;
+            background-clip: padding-box;
         }
 
         ::-webkit-scrollbar-thumb {
             background-color: white;
-            border-left: 6px solid black;
-            border-right: 6px solid black;
+            border-radius: 5px;
+
         }
 
         .jw-icon-playlist {
@@ -40,12 +40,13 @@
         max-height: 11em;
         min-height: 4.5em;
         overflow-y: scroll;
+        width: ~"calc(100% - 4px)";
 
         li.jw-option {
             height: 3em;
             border-bottom: 1px solid @grayish;
             background-color: black;
-
+            margin-right: 5px;
             opacity : 0.8;
         }
 
