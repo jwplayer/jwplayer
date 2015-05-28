@@ -523,6 +523,7 @@ define([
             var displayIcon = new DisplayIcon(_model);
             //toggle playback
             displayIcon.on('click', _api.play);
+            displayIcon.on('tap', _api.play);
             _controlsLayer.appendChild(displayIcon.element());
 
             _dock = new Dock(_model);

@@ -16,8 +16,7 @@ define([
             _isListening = false,
             _startEvent = null,
             _gotMove = false,
-            _lastClickTime = 0,
-            touchEvents = events.touchEvents;
+            _lastClickTime = 0;
 
         _.extend(this, Events);
 

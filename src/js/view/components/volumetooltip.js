@@ -1,8 +1,10 @@
 define([
     'view/components/tooltip',
     'view/components/slider',
+    'events/events',
+    'utils/ui',
     'utils/helpers'
-], function(Tooltip, Slider, utils) {
+], function(Tooltip, Slider, events, UI, utils) {
     var VolumeTooltip = Tooltip.extend({
         'constructor' : function(_model, name) {
             this._model = _model;
@@ -18,7 +20,7 @@ define([
 
             utils.toggleClass(this.el, 'jw-hidden', false);
 
-            this.el.addEventListener('click', this.toggle.bind(this));
+            new UI(this.el).on(events.touchEvents.CLICK, this.toggle.bind(this)).on(events.touchEvents.TAP, utils.noop);
 
             this._model.on('change:volume', this.onVolume, this);
         },

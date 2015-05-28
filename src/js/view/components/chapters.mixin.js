@@ -58,6 +58,7 @@ define([
             var _this = this;
             _.each(this.cues, function (cue) {
                 cue.align(duration);
+                // mousemove/mouseout because this currently mouse specific functionality.
                 cue.el.addEventListener('mouseover', function () {
                     _this.activeCue = cue;
                 });
