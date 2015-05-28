@@ -1,6 +1,7 @@
 define([
-    'view/components/extendable'
-], function(Extendable) {
+    'view/components/extendable',
+    'utils/helpers'
+], function(Extendable, utils) {
 
     var Tooltip = Extendable.extend({
         'constructor' : function(name) {
@@ -21,6 +22,13 @@ define([
         },
         element: function(){
             return this.el;
+        },
+        toggleOpen: function(toOpen) {
+            if( typeof toOpen === 'undefined') {
+                utils.toggleClass(this.el, 'jw-open');
+            } else {
+                utils.toggleClass(this.el, 'jw-open', toOpen);
+            }
         }
     });
 

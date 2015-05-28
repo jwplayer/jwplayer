@@ -20,7 +20,10 @@ define([
 
             utils.toggleClass(this.el, 'jw-hidden', false);
 
-            new UI(this.el).on(events.touchEvents.CLICK, this.toggle.bind(this)).on(events.touchEvents.TAP, utils.noop);
+            new UI(this.el).on(events.touchEvents.CLICK, this.toggle.bind(this))
+                .on(events.touchEvents.TAP, this.toggleOpen.bind(this));
+            this.el.addEventListener('mouseover', this.toggleOpen.bind(this, true));
+            this.el.addEventListener('mouseout', this.toggleOpen.bind(this, false));
 
             this._model.on('change:volume', this.onVolume, this);
         },

@@ -1,6 +1,7 @@
 define([
     'utils/helpers',
     'events/events',
+    'utils/ui',
     'utils/backbone.events',
     'events/states',
     'cast/display',
@@ -16,7 +17,7 @@ define([
     'utils/css',
     'utils/underscore',
     'handlebars-loader!templates/player.html'
-], function(utils, events, Events, states, CastDisplay,
+], function(utils, events, UI, Events, states, CastDisplay,
             CaptionsRenderer, Display, DisplayIcon, Dock, Logo,
             Controlbar, Preview, RightClick, Title, cssUtils, _, playerTemplate) {
 
@@ -80,7 +81,7 @@ define([
             _this = _.extend(this, Events);
 
         _playerElement = utils.createElement(playerTemplate({id: _model.get('id')}));
-        _playerElement.addEventListener('click', function() {
+        new UI(_playerElement).on(events.touchEvents.CLICK, function() {
             _this.trigger(events.JWPLAYER_DISPLAY_CLICK);
         });
 
@@ -399,11 +400,6 @@ define([
                 _controlsLayer.addEventListener('mouseout', _mouseoutHandler, false);
 
                 _controlsLayer.addEventListener('mousemove', _startFade, false);
-                if (utils.isMSIE()) {
-                    // Not sure why this is needed
-                    _videoLayer.addEventListener('mousemove', _startFade, false);
-                    _videoLayer.addEventListener('click', _display.clickHandler);
-                }
             }
             _componentFadeListeners(_controlbar);
             _componentFadeListeners(_logo);
@@ -522,8 +518,16 @@ define([
 
             var displayIcon = new DisplayIcon(_model);
             //toggle playback
-            displayIcon.on('click', _api.play);
-            displayIcon.on('tap', _api.play);
+            displayIcon.on('click', function() {
+                forward({type : events.JWPLAYER_DISPLAY_CLICK});
+                console.log('ckick');
+                _api.play();
+            });
+            displayIcon.on('tap', function() {
+                forward({type : events.JWPLAYER_DISPLAY_CLICK});
+                console.log('tap');
+                _api.play();
+            });
             _controlsLayer.appendChild(displayIcon.element());
 
             _dock = new Dock(_model);
@@ -1158,10 +1162,6 @@ define([
             if (_controlsLayer) {
                 _controlsLayer.removeEventListener('mousemove', _startFade);
                 _controlsLayer.removeEventListener('mouseout', _mouseoutHandler);
-            }
-            if (_videoLayer) {
-                _videoLayer.removeEventListener('mousemove', _startFade);
-                _videoLayer.removeEventListener('click', _display.clickHandler);
             }
             if (_instreamMode) {
                 this.destroyInstream();

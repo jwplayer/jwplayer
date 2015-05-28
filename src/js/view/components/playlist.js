@@ -2,20 +2,28 @@ define([
     'utils/helpers',
     'utils/underscore',
     'view/components/tooltip',
+    'events/events',
+    'utils/ui',
     'handlebars-loader!templates/playlist.html'
-], function(utils, _, Tooltip, PlaylistTemplate) {
+], function(utils, _, Tooltip, events, UI, PlaylistTemplate) {
 
     var Playlist = Tooltip.extend({
+        'constructor' : function(name) {
+            Tooltip.call(this, name);
+            this.toggleOpenListener = this.toggleOpen.bind(this);
+            this.iconUI = new UI(this.el).on(events.touchEvents.TAP, this.toggleOpenListener);
 
+            this.el.addEventListener('mouseover', this.toggleOpen.bind(this, true));
+            this.el.addEventListener('mouseout', this.toggleOpen.bind(this, false));
+        },
         setup : function (list, selectedIndex) {
             if(this.content){
-                this.content.removeEventListener('click', this.selectListener);
+                this.contentUI.off(events.touchEvents.CLICK)
+                    .off(events.touchEvents.TAP);
                 this.removeContent();
             }
 
             list = _.isArray(list) ? list : [];
-
-            this.el.removeEventListener('click', this.toggleListener);
 
             utils.toggleClass(this.el, 'jw-hidden', (list.length < 2));
 
@@ -25,9 +33,11 @@ define([
                 var innerHtml = this.menuTemplate(list, selectedIndex);
                 var elem = utils.createElement(innerHtml);
                 this.addContent(elem);
+                this.contentUI = new UI(this.content);
 
                 this.selectListener = this.onSelect.bind(this);
-                this.content.addEventListener('click', this.selectListener);
+                this.contentUI.on(events.touchEvents.CLICK, this.selectListener)
+                    .on(events.touchEvents.TAP, this.selectListener);
             }
 
             this.originalList = list;
@@ -62,6 +72,8 @@ define([
             if (item) {
                 this.trigger('select', parseInt(item.split('-')[1]));
             }
+
+            this.toggleOpen(false);
         },
 
         selectItem : function(item) {

@@ -13,88 +13,73 @@ define([
 
     var ui = function (elem) {
         var _elem = elem,
-            _isListening = false,
+            _isPressed = false,
             _startEvent = null,
-            _gotMove = false,
+            _hasMoved = false,
             _lastClickTime = 0;
 
         _.extend(this, Events);
 
-        elem.addEventListener(TOUCH_START, touchHandler);
-        document.addEventListener(TOUCH_MOVE, touchHandler);
-        document.addEventListener(TOUCH_CANCEL, touchHandler);
-        document.addEventListener(TOUCH_END, documentEndHandler);
-        elem.addEventListener(TOUCH_END, documentEndHandler);
+        elem.addEventListener(TOUCH_START, interactStartHandler);
 
-        elem.addEventListener(MOUSE_DOWN, touchHandler);
-        elem.addEventListener(MOUSE_MOVE, touchHandler);
-        elem.addEventListener(MOUSE_UP, documentEndHandler);
+        elem.addEventListener(MOUSE_DOWN, interactStartHandler);
 
-        elem.addEventListener('click', clickHandler);
+        function interactStartHandler() {
+            _isPressed = true;
 
-        function clickHandler(evt){
-            triggerEvent(events.touchEvents.CLICK, evt);
+            elem.addEventListener(TOUCH_MOVE, interactDragHandler);
+            elem.addEventListener(TOUCH_CANCEL, interactEndHandler);
+            elem.addEventListener(TOUCH_END, interactEndHandler);
+
+            document.addEventListener(MOUSE_MOVE, interactDragHandler);
+            document.addEventListener(MOUSE_UP, interactEndHandler);
         }
 
-        function documentEndHandler(evt) {
-            console.log('End Handler');
-            if (_isListening) {
-                if (_gotMove) {
-                    triggerEvent(events.touchEvents.DRAG_END, evt);
-                } else {
-                    if(!(evt instanceof MouseEvent)){
-                        triggerEvent(events.touchEvents.TAP, evt);
-                    }
-                }
-            }
-            _gotMove = false;
-            _isListening = false;
-            _startEvent = null;
-        }
-
-        function touchHandler(evt) {
+        function interactDragHandler(evt) {
             var touchEvents = events.touchEvents;
-            console.log('evt', evt.type);
 
-            if (evt.type === TOUCH_START || evt.type === MOUSE_DOWN) {
-                _isListening = true;
-                _startEvent = createEvent(touchEvents.DRAG_START, evt);
+            if (_hasMoved) {
+                triggerEvent(touchEvents.DRAG, evt);
+            } else {
+                triggerEvent(touchEvents.DRAG_START, evt, _startEvent);
+                _hasMoved = true;
+                triggerEvent(touchEvents.DRAG, evt);
             }
-            else if (evt.type === TOUCH_MOVE || evt.type === MOUSE_MOVE) {
-                if (_isListening) {
-                    if (_gotMove) {
-                        triggerEvent(touchEvents.DRAG, evt);
-                    }
-                    else {
-                        triggerEvent(touchEvents.DRAG_START, evt, _startEvent);
-                        _gotMove = true;
-                        triggerEvent(touchEvents.DRAG, evt);
-                    }
-                }
-            }
-            else {
-                if (_isListening) {
-                    if (_gotMove) {
-                        triggerEvent(touchEvents.DRAG_END, evt);
+        }
+
+        function interactEndHandler(evt) {
+            var touchEvents = events.touchEvents;
+
+            if (_isPressed) {
+                if (_hasMoved) {
+                    triggerEvent(touchEvents.DRAG_END, evt);
+                } else {
+                    // This allows the controlbar/dock/logo click events not to be forwarded to the view
+                    evt.cancelBubble = true;
+                    if(evt instanceof MouseEvent) {
+                        triggerEvent(touchEvents.CLICK, evt);
                     } else {
-                        // This allows the controlbar/dock/logo click events not to be forwarded to the view
-                        evt.cancelBubble = true;
-                        if(!(evt instanceof MouseEvent)){
-                            triggerEvent(touchEvents.TAP, evt);
-                        }
+                        triggerEvent(touchEvents.TAP, evt);
                     }
                 }
-                _gotMove = false;
-                _isListening = false;
-                _startEvent = null;
             }
+
+            elem.removeEventListener(TOUCH_MOVE, interactDragHandler);
+            elem.removeEventListener(TOUCH_CANCEL, interactEndHandler);
+            elem.removeEventListener(TOUCH_END, interactEndHandler);
+
+            document.removeEventListener(MOUSE_MOVE, interactDragHandler);
+            document.removeEventListener(MOUSE_UP, interactEndHandler);
+
+            _hasMoved = false;
+            _isPressed = false;
+            _startEvent = null;
         }
 
         function createEvent(type, srcEvent) {
             var source;
             if(srcEvent instanceof MouseEvent) {
                 source = srcEvent;
-                //return srcEvent;
             } else {
                 if (srcEvent.touches && srcEvent.touches.length) {
                     source = srcEvent.touches[0];
@@ -106,21 +91,13 @@ define([
             if (!source) {
                 return null;
             }
-            //var rect = _elem.getBoundingClientRect();
             var evt = {
                 type: type,
                 target: srcEvent.target,
                 currentTarget: _elem,
-                pageX: source.pageX, //((touch.pageX - window.pageXOffset) - rect.left),
+                pageX: source.pageX,
                 pageY: source.pageY
-                /*,
-                deltaX: 0,
-                deltaY: 0*/
             };
-            /*if (type !== touchEvents.CLICK && _startEvent) {
-                evt.deltaX = evt.x - _startEvent.x;
-                evt.deltaY = evt.y - _startEvent.y;
-            }*/
             return evt;
         }
 
@@ -138,9 +115,7 @@ define([
             if (self._events[type]) {
                 preventDefault(srcEvent);
                 if(type === events.touchEvents.CLICK || type === events.touchEvents.TAP){
-                    console.log('Attempting tapclick!', type);
                     if(Date.now() - _lastClickTime < 500) {
-                        console.log('double tap!', Date.now(), _lastClickTime, (Date.now() - _lastClickTime), type);
                         type = (type === events.touchEvents.CLICK) ?
                             events.touchEvents.DOUBLE_CLICK : events.touchEvents.DOUBLE_TAP;
                         _lastClickTime = 0;

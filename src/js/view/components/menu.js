@@ -10,11 +10,15 @@ define([
     var Menu = Tooltip.extend({
         'constructor' : function(name) {
             Tooltip.call(this, name);
-            this.iconUI = new UI(this.el).on(events.touchEvents.CLICK, utils.noop);
+            this.iconUI = new UI(this.el).on(events.touchEvents.TAP, utils.noop);
+            this.toggleListener = this.toggle.bind(this);
+            this.toggleOpenListener = this.toggleOpen.bind(this);
+
+            this.el.addEventListener('mouseover', this.toggleOpen.bind(this, true));
+            this.el.addEventListener('mouseout', this.toggleOpen.bind(this, false));
         },
         setup : function (list, selectedIndex) {
             if(this.content){
-                //this.contentUI.removeEventListener('click', this.selectListener);
                 this.contentUI.off(events.touchEvents.CLICK)
                     .off(events.touchEvents.TAP);
                 this.removeContent();
@@ -22,19 +26,18 @@ define([
 
             list = _.isArray(list) ? list : [];
 
-            //this.el.removeEventListener('click', this.toggleListener);
             this.iconUI.off(events.touchEvents.CLICK)
                 .off(events.touchEvents.TAP);
 
             utils.toggleClass(this.el, 'jw-hidden', (list.length < 2));
 
             if (list.length === 2) {
-                this.toggleListener = this.toggle.bind(this);
-                //this.el.addEventListener('click', this.toggleListener);
                 this.iconUI.on(events.touchEvents.CLICK, this.toggleListener)
                     .on(events.touchEvents.TAP, this.toggleListener);
             } else if (list.length > 2) {
                 utils.removeClass(this.el, 'jw-off');
+
+                this.iconUI.on(events.touchEvents.TAP, this.toggleOpenListener);
 
                 var innerHtml = menuTemplate(list);
                 var elem = utils.createElement(innerHtml);
@@ -42,7 +45,6 @@ define([
                 this.contentUI = new UI(this.content);
 
                 this.selectListener = this.select.bind(this);
-                //this.content.addEventListener('click', this.selectListener);
                 this.contentUI.on(events.touchEvents.CLICK, this.selectListener)
                     .on(events.touchEvents.TAP, this.selectListener);
             }
@@ -58,6 +60,7 @@ define([
                 // find the class with a name of the form 'item-1'
                 var item = _.find(classes, function(c) { return c.indexOf('item') === 0;});
                 this.trigger('select', parseInt(item.split('-')[1]));
+                this.toggleOpen(false);
             }
         },
         selectItem : function(selectedIndex) {
