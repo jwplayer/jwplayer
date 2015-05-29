@@ -518,14 +518,8 @@ define([
 
             var displayIcon = new DisplayIcon(_model);
             //toggle playback
-            displayIcon.on('click', function() {
+            displayIcon.on('click tap', function() {
                 forward({type : events.JWPLAYER_DISPLAY_CLICK});
-                console.log('ckick');
-                _api.play();
-            });
-            displayIcon.on('tap', function() {
-                forward({type : events.JWPLAYER_DISPLAY_CLICK});
-                console.log('tap');
                 _api.play();
             });
             _controlsLayer.appendChild(displayIcon.element());
