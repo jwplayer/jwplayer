@@ -69,9 +69,12 @@
         }
 
         .jw-cue {
+            .vertically-centered-rail-element(.3em,.4em);
             &:after {
-                height: .3em;
+                background-color: @inactive-color;
+                border: 1px solid #000;
             }
+            
         }
     }
 
@@ -86,11 +89,13 @@
         }
 
         .jw-thumb {
-            .horizontally-centered-thumb(@rail-height,.1em);
+            .horizontally-centered-thumb(@rail-height,.5em);
 
             &:after {
                 background: @horiz-rail-gradient;
-                height: .1em;
+                height: .2em;
+                width: .5em;
+                border-width: 1px;
             }
         }
     }

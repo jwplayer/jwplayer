@@ -18,6 +18,7 @@
     @thumb-color: @progress-color;
     
     @rail-height: 100%;
+    @cue-size: .66em;
 
     @volume-background: @inactive-color;
 
@@ -54,8 +55,11 @@
 		}
 
 		.jw-cue {
+			.vertically-centered-rail-element(2em, @cue-size);
+
 			&:after {
-				background: #aaa;
+				background: @display-icon-color;
+				height: @cue-size;
 			}
 		}
 	}

@@ -12,7 +12,8 @@
     @rail-gradient: linear-gradient(to bottom, #323b4c, #2f3847 50%, #323b4c 100%);
     @rail-vert-gradient: linear-gradient(to right, #323b4c, #2f3847 50%, #323b4c 100%);
 
-    @rail-height: .2em;
+    @rail-height: .3em;
+    @cue-size: .2em;
 
     @progress-color: @progress-horz-gradient;
     @buffer-color: @buffer-gradient;
@@ -61,18 +62,22 @@
         .jw-rail,
         .jw-progress,
         .jw-buffer {
-            height: .2em;
+            height: @rail-height;
         }
 
         .jw-cue {
+            .vertically-centered-rail-element(@rail-height, @cue-size);
+
             &:after {
                 background-color: #fff;
-                height: .2em;
+                width: .3em;
+                height: @cue-size;
+                border-radius: 1em;
             }
         }
 
         .jw-thumb {
-            .vertically-centered-rail-element(.2em, .7em);
+            .vertically-centered-rail-element(@rail-height, .7em);
         }
     }
 
@@ -81,7 +86,7 @@
 
         .jw-rail,
         .jw-progress {
-            width: .2em;
+            width: @rail-height;
         }
 
         .jw-rail {

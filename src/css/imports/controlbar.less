@@ -1,4 +1,5 @@
 @import "vars";
+@import "mixins";
 
 .jwplayer .jw-controlbar {
     display: table;
@@ -40,6 +41,15 @@
 }
 
 // control bar content (icons/text)
+
+.jw-thumb,
+.jw-icon-inline,
+.jw-icon-tooltip,
+.jw-icon-display,
+.jw-option:before {
+    .hover(@hover-color);
+}
+
 .jw-controlbar {
     .jw-icon-inline,
     .jw-icon-tooltip,

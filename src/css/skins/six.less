@@ -7,7 +7,7 @@
     @inactive-color: #aaa;
     @buffer-color: #202020;
     @hover-color: @active-color;
-    @thumb-color: #999;
+    @thumb-color: radial-gradient(ellipse at center, #f3f3f3 0%, #d2d2d2 90%, #b0b0b0 100%);
     @progress-color: @active-color;
     @rail-color: #666;
     @font-color: @active-color;
@@ -30,7 +30,9 @@
     @volume-background: @def-background-style;
     @volume-border: @def-border;
 
-    @rail-height: .75em;
+    @rail-height: .65em;
+    @thumb-size: .8em;
+    @cue-size: .25em;
 
     #namespace > .basic-skin-styles(); // Using the above local variables
 
@@ -49,8 +51,9 @@
         background-color: @def-background-color;
         background: @def-transparent-background-style;
         background-size: @def-background-size;
-        border-radius: @ui-corner-round;
+        border-radius: .3em;
         padding: 0 1em;
+        border: 1px solid #000;
     }
 
     &:hover .jw-display-icon-container {
@@ -59,26 +62,37 @@
         background-size: @def-background-size;
     }
 
-        .jw-rail,
-        .jw-buffer,
-        .jw-progress {
-            border-radius: 0.5em;
-        }
+    .jw-rail,
+    .jw-buffer,
+    .jw-progress {
+        border-radius: 0.5em;
+    }
 
-        .jw-progress,
-        .jw-buffer {
-            border: @def-border;
-        }
+    .jw-progress,
+    .jw-buffer {
+        border: @def-border;
+    }
 
-        .jw-rail {
-            border: @def-border;
-            box-shadow: @rail-glow;
-        }
+    .jw-progress {
+        background: @def-progress-color;
+    }
 
-        .jw-cue {
-            .vertically-centered-rail-element(.75em,.4em);
-        }
+    .jw-rail {
+        border: @def-border;
+        box-shadow: @rail-glow;
+    }
 
+    .jw-slider-horizontal,
+    .jw-slider-vertical {
+
+        .jw-thumb:after {
+            width: @thumb-size;
+            height: @thumb-size;
+            border-radius: 1em;
+            background: @thumb-color;
+            box-shadow: 0px 1px 10px 1px rgba(0,0,0,0.75);
+        }
+    }
 
     .jw-slider-horizontal {
         .jw-rail-group {
@@ -88,12 +102,11 @@
         .jw-rail,
         .jw-buffer,
         .jw-progress {
-            height: .75em;
+            height: @rail-height;
         }
 
         .jw-thumb {
-            .jw-thumbs(1em);
-            .vertically-centered-rail-element(1em, 1.2em);
+            .vertically-centered-rail-element(@rail-height, @thumb-size);
         }
 
 
@@ -109,10 +122,30 @@
             border: @def-border;
             border-style: solid none #000;
         }
+
+
+        .jw-cue {
+            .vertically-centered-rail-element(@rail-height, @cue-size);
+
+            &:after {
+                width: @cue-size;
+                height: @cue-size;
+                background-color: #616164;
+                border-radius: 50%;
+                box-shadow: 0px 0px 0px 1px rgba(0,0,0,0.75);
+
+            }
+        }
     }
 
     .jw-slider-vertical {
+        .jw-rail,
         .jw-progress {
+            width: @rail-height;
+        }
+
+        .jw-progress {
+            background: linear-gradient(to right, rgba(255, 255, 255, 1) 0, rgba(204, 204, 204, 1) 50%, rgba(255, 255, 255, 1) 100%);
             border-top-right-radius: 0;
             border-bottom-right-radius: 0.5em;
             border-bottom-left-radius: 0.5em;
@@ -175,4 +208,5 @@
             background-size: @def-background-size;
         }
     }
+
 }

@@ -11,6 +11,7 @@
     @controlbar-background: #000;
 
     @rail-height: .4em;
+    @cue-size: .25em;
 
     #namespace > .basic-skin-styles(); // Using the above local variables
     .skin-element-padding();
@@ -27,6 +28,19 @@
 
     .jw-thumb {
         display: none;
+    }
+    
+    .jw-slider-horizontal {
+        .jw-cue {
+            .vertically-centered-rail-element(@rail-height, @cue-size);
+
+            &:after {
+                background-color: #000;
+                width: @cue-size;
+                height: @cue-size;
+                border-radius: 1em;
+            }
+        }
     }
 
     .jw-slider-vertical {

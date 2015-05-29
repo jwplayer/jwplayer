@@ -20,7 +20,7 @@
     @display-bkgd-hover-color: #333;
     
     @rail-height: .2em;
-    @thumb-height: 1em;
+    @thumb-size: 1em;
     @cue-height: .4em;
     @rail-vert-gradient: linear-gradient(to bottom, #fff 0, #fff 30%, #333 100%);
 
@@ -50,14 +50,14 @@
         }
 
         .jw-thumb {
-            .vertically-centered-rail-element(@rail-height, @thumb-height);
+            .vertically-centered-rail-element(@rail-height, @thumb-size);
             margin: 0;
 
             &:after {
                 background-color: #000;
                 border-radius: 0;
                 width: 1px;
-                height: @thumb-height;
+                height: @thumb-size;
             }
         }
 
@@ -89,6 +89,7 @@
         }
 
         .jw-thumb {
+            margin-bottom: 2px/-2;
 
             &:after {
                 background: @rail-vert-gradient;
