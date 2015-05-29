@@ -4,7 +4,6 @@ define([
     'events/events',
     'utils/ui',
     'utils/backbone.events',
-    'utils/underscore'
     'utils/underscore',
     'handlebars-loader!templates/adskipbutton.html'
 ], function(utils, cssUtils, events, UI, Events, _, AdSkipTemplate) {
