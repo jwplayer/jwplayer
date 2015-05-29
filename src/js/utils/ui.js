@@ -21,17 +21,19 @@ define([
         _.extend(this, Events);
 
         elem.addEventListener(TOUCH_START, interactStartHandler);
-
         elem.addEventListener(MOUSE_DOWN, interactStartHandler);
 
         function interactStartHandler() {
             _isPressed = true;
 
-            elem.addEventListener(TOUCH_MOVE, interactDragHandler);
-            elem.addEventListener(TOUCH_CANCEL, interactEndHandler);
-            elem.addEventListener(TOUCH_END, interactEndHandler);
+            if(self._events[events.touchEvents.DRAG]){
+                elem.addEventListener(TOUCH_MOVE, interactDragHandler);
+                elem.addEventListener(TOUCH_CANCEL, interactEndHandler);
 
-            document.addEventListener(MOUSE_MOVE, interactDragHandler);
+                document.addEventListener(MOUSE_MOVE, interactDragHandler);
+            }
+
+            elem.addEventListener(TOUCH_END, interactEndHandler);
             document.addEventListener(MOUSE_UP, interactEndHandler);
         }
 
@@ -114,7 +116,8 @@ define([
         function triggerEvent(type, srcEvent, finalEvt) {
             if (self._events[type]) {
                 preventDefault(srcEvent);
-                if(type === events.touchEvents.CLICK || type === events.touchEvents.TAP){
+                if( (type === events.touchEvents.CLICK || type === events.touchEvents.TAP) &&
+                    (self._events[events.touchEvents.DOUBLE_CLICK] || self._events[events.touchEvents.DOUBLE_TAP]) ){
                     if(Date.now() - _lastClickTime < 500) {
                         type = (type === events.touchEvents.CLICK) ?
                             events.touchEvents.DOUBLE_CLICK : events.touchEvents.DOUBLE_TAP;

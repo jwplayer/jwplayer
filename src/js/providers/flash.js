@@ -2,11 +2,12 @@ define([
     'utils/helpers',
     'utils/underscore',
     'events/events',
+    'utils/ui',
     'events/states',
     'utils/eventdispatcher',
     'utils/embedswf',
     'providers/default'
-], function(utils, _, events, states, eventdispatcher, EmbedSwf, DefaultProvider) {
+], function(utils, _, events, UI, states, eventdispatcher, EmbedSwf, DefaultProvider) {
 
     var _providerId = 0;
     function getObjectId(playerId) {
@@ -19,6 +20,7 @@ define([
         var _container;
         var _swf;
         var _clickOverlay;
+        var _clickOverlayUI;
         var _item = null;
         var _beforecompleted = false;
         var _currentQuality = -1;
@@ -127,9 +129,12 @@ define([
                         _clickOverlay.style.right = 0;
                         _clickOverlay.style.top = 0;
                         _clickOverlay.style.bottom = 0;
-                        _clickOverlay.addEventListener('click', function() {
+                        var interactCallback = function() {
                             _eventDispatcher.sendEvent(events.JWPLAYER_PROVIDER_CLICK);
-                        });
+                        };
+
+                        _clickOverlayUI = new UI(_clickOverlay).on(events.touchEvents.CLICK, interactCallback)
+                            .on(events.touchEvents.TAP, interactCallback);
                     }
                     _container.appendChild(_clickOverlay);
 
@@ -285,6 +290,8 @@ define([
                         _swf = null;
                     }
                     _clickOverlay = null;
+                    _clickOverlayUI.off();
+                    _clickOverlayUI = null;
                     _container = null;
                     _item = null;
                     _eventDispatcher.resetEventListeners();
