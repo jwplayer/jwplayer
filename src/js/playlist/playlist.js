@@ -13,12 +13,12 @@ define([
     };
 
     /** Go through the playlist and choose a single playable type to play; remove sources of a different type **/
-    Playlist.filterPlaylist = function(playlist, providers, androidhls, configProtection) {
+    Playlist.filterPlaylist = function(playlist, providers, androidhls, configDrm) {
         var list = [];
 
         _.each(playlist, function(item) {
             item = _.extend({}, item);
-            item.sources = _filterSources(item.sources, providers, androidhls, item.protection || configProtection);
+            item.sources = _filterSources(item.sources, providers, androidhls, item.drm || configDrm);
 
             if (!item.sources.length) {
                 return;
@@ -34,7 +34,7 @@ define([
     };
 
     // A playlist item may have multiple different sources, but we want to stick with one.
-    var _filterSources = Playlist.filterSources = function(sources, providers, androidhls, itemProtection) {
+    var _filterSources = Playlist.filterSources = function(sources, providers, androidhls, itemDrm) {
 
         // legacy plugin support
         if (!providers || !providers.choose) {
@@ -49,8 +49,8 @@ define([
                 originalSource.androidhls =  androidhls;
             }
 
-            if (originalSource.protection || itemProtection) {
-                originalSource.protection = originalSource.protection || itemProtection;
+            if (originalSource.drm || itemDrm) {
+                originalSource.drm = originalSource.drm || itemDrm;
             }
 
             return Source(originalSource);
