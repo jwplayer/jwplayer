@@ -111,7 +111,7 @@ define([
         }
 
         function _intersects(data, pos, i) {
-            return (data[i].begin <= pos && data[i].end >= pos &&
+            return (data[i].begin <= pos && (!data[i].end || data[i].end >= pos) &&
                 (i === data.length - 1 || data[i + 1].begin >= pos));
         }
 

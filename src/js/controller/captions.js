@@ -141,7 +141,9 @@ define([
         }
 
         function _addTrack(track) {
-            track.id = track.id || track.name || track.file || ('cc' + _tracks.length);
+            if(typeof track.id !== 'number') {
+                track.id = track.name || track.file || ('cc' + _tracks.length);
+            }
             track.data = track.data || [];
             if (!track.label) {
                 track.label = 'Unknown CC';
