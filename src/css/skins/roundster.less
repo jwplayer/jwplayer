@@ -13,7 +13,7 @@
 
     @progress-color: @active-color;
     @buffer-color: #9c9a9d;
-    @rail-color: #b8b6b7;
+    @rail-color: #878fa2;
     @thumb-color: @progress-color;
     @controlbar-background: #dfe2e9;
 
@@ -22,6 +22,8 @@
     @volume-background: #5c6373;
 
     @rail-height: .4em;
+    @cue-size: .25em;
+    @thumb-size: .9em;
 
     #namespace > .basic-skin-styles(); // Using the above local variables
     .skin-element-padding();
@@ -45,8 +47,8 @@
 
             &:after {
                 background-color: #fff;
-                width: .7em;
-                height: .7em;
+                width: @thumb-size;
+                height: @thumb-size;
                 border-radius: 50%;
                 box-shadow: 0px 1px 5px 1px rgba(134,142,163,1);
             }
@@ -56,14 +58,18 @@
     .jw-slider-horizontal {
 
         .jw-cue {
+            .vertically-centered-rail-element(@rail-height, @cue-size);
+
             &:after {
+                width: @cue-size;
+                height: @cue-size;
+                border-radius: 50%;
                 background-color: #fff;
-                height: .4em;
             }
         }
 
         .jw-thumb {
-            .vertically-centered-rail-element(.4em, .7em);
+            .vertically-centered-rail-element(@rail-height, @thumb-size);
         }
     }
 
