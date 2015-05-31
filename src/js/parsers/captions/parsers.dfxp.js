@@ -56,9 +56,10 @@ define([
             utils.tryCatch(function() {
                 var idx = data.indexOf('begin=\"');
                 data = data.substr(idx + 7);
-                idx = data.indexOf('\" end=\"');
+                idx = data.indexOf('\"');
                 entry.begin = _seconds(data.substr(0, idx));
-                data = data.substr(idx + 7);
+                idx = data.indexOf('end=\"');
+                data = data.substr(idx + 5);
                 idx = data.indexOf('\"');
                 entry.end = _seconds(data.substr(0, idx));
                 idx = data.indexOf('\">');
