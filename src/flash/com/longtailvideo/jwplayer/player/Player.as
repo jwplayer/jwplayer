@@ -214,7 +214,8 @@ public class Player extends Sprite implements IPlayer {
                 .on('volume', volume)
                 .on('stretch', stretch)
                 .on('setCurrentQuality', setCurrentQuality)
-                .on('setSubtitlesTrack', setSubtitlesTrack);
+                .on('setSubtitlesTrack', setSubtitlesTrack)
+                .on('setCurrentAudioTrack', setCurrentAudioTrack);
 
         // Send ready event to browser
         SwfEventRouter.triggerJsEvent('ready');

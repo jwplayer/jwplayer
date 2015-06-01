@@ -48,7 +48,7 @@ public class SimpleEvents {
             _events = null;
             return this;
         }
-        var events:Vector.<Function> = _events[name]
+        var events:Vector.<Function> = _events[name];
         var retain:Vector.<Function>;
         if (events) {
             _events[name] = retain = new <Function>[];
