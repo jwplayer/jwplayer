@@ -23,6 +23,8 @@ define([
         var _beforecompleted = false;
         var _currentQuality = -1;
         var _qualityLevels = null;
+        var _currentAudioTrack = -1;
+        var _audioTracks = null;
         var _flashProviderType;
         var _attached = true;
 
@@ -176,6 +178,16 @@ define([
                         _qualityLevels = e.levels;
                         this.sendEvent(e.type, e);
 
+                    }, this).on(events.JWPLAYER_AUDIO_TRACKS, function(e) {
+                        _currentAudioTrack = e.currentTrack;
+                        _audioTracks = e.tracks;
+                        this.sendEvent(e.type, e);
+
+                    }, this).on(events.JWPLAYER_AUDIO_TRACK_CHANGED, function(e) {
+                        _currentAudioTrack = e.currentTrack;
+                        _audioTracks = e.tracks;
+                        this.sendEvent(e.type, e);
+
                     }, this).on(events.JWPLAYER_PLAYER_STATE, function(e) {
                         var state = e.newstate;
                         if (state === states.IDLE) {
@@ -276,6 +288,15 @@ define([
                 },
                 getQualityLevels: function() {
                     return _qualityLevels || _item.sources;
+                },
+                getAudioTracks: function() {
+                    return _audioTracks;
+                },
+                getCurrentAudioTrack : function () {
+                    return _currentAudioTrack;
+                },
+                setCurrentAudioTrack : function(audioTrack) {
+                    _flashCommand('setCurrentAudioTrack', audioTrack);
                 },
                 supportsFullscreen: _.constant(true),
                 destroy: function() {
