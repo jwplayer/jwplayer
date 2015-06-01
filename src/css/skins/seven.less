@@ -4,6 +4,9 @@
 .jw-skin-seven {
     @active-color: #FF0046;
     @inactive-color: #fff;
+    
+    @cc-inactive: @inactive-color;
+    @cc-active: @active-color;
 
     @rail-height: .2em;
 
@@ -231,6 +234,14 @@
         .jw-text, .jw-icon-inline {
             color: @inactive-color;
             font-size: 0.7em;
+        }
+    }
+
+    .jw-icon-cc {
+        color: @cc-active;
+
+        &.jw-off {
+            color: @cc-inactive;           
         }
     }
 }
