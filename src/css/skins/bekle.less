@@ -12,6 +12,9 @@
     @rail-gradient: linear-gradient(to bottom, #323b4c, #2f3847 50%, #323b4c 100%);
     @rail-vert-gradient: linear-gradient(to right, #323b4c, #2f3847 50%, #323b4c 100%);
 
+    @rail-height: .3em;
+    @cue-size: .2em;
+
     @progress-color: @progress-horz-gradient;
     @buffer-color: @buffer-gradient;
     @rail-color: @rail-gradient;
@@ -23,6 +26,9 @@
     @display-bkgd-color: @rail-color;
     @display-bkgd-hover-color: @active-color;
 
+    @cc-inactive: #5e6575;
+    @cc-active: @active-color;
+
     @volume-background: #505863;
 
     #namespace > .basic-skin-styles(); // Using the above local variables
@@ -31,7 +37,7 @@
     .jw-controlbar {
         .inset-controlbar;
         opacity: 0.8;
-        border-radius: @ui-corner-round;
+        border-radius: .3em;
     }
 
     .jw-slider-horizontal,
@@ -53,22 +59,28 @@
             }
         }
     }
+
     .jw-slider-horizontal {
+
         .jw-rail,
         .jw-progress,
         .jw-buffer {
-            height: .2em;
+            height: @rail-height;
         }
 
         .jw-cue {
+            .vertically-centered-rail-element(@rail-height, @cue-size);
+
             &:after {
                 background-color: #fff;
-                height: .2em;
+                width: .3em;
+                height: @cue-size;
+                border-radius: 1em;
             }
         }
 
         .jw-thumb {
-            .centered-cue(.2em, .7em);
+            .vertically-centered-rail-element(@rail-height, .7em);
         }
     }
 
@@ -77,7 +89,7 @@
 
         .jw-rail,
         .jw-progress {
-            width: .2em;
+            width: @rail-height;
         }
 
         .jw-rail {
@@ -94,5 +106,17 @@
     .jw-volume-tip,
     .jw-menu {
         border-radius: @volume-border-radius;
+    }
+
+    .jw-icon-cc {
+        color: @cc-active;
+
+        &.jw-off {
+            color: @cc-inactive;   
+
+            &:before {
+                content: "\e605";
+            }        
+        }
     }
 }

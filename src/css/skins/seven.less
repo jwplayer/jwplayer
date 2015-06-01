@@ -4,6 +4,11 @@
 .jw-skin-seven {
     @active-color: #FF0046;
     @inactive-color: #fff;
+    
+    @cc-inactive: @inactive-color;
+    @cc-active: @active-color;
+
+    @rail-height: .2em;
 
     .jw-controlbar {
         background: #000;
@@ -92,7 +97,7 @@
         }
 
         .jw-thumb {
-            .centered-vert-thumb(.2em, .6em);
+            .vertically-centered-rail-element(.2em, .6em);
 
             &:after {
                 background-color: #fff;
@@ -122,7 +127,7 @@
         }
 
         .jw-cue {
-            .centered-cue(.2em, .3em);
+            .vertically-centered-rail-element(.2em, .3em);
 
             &:after {
                 width: .3em;
@@ -142,7 +147,7 @@
     }
 
     .jw-thumb {
-        .centered-thumb();
+        .horizontally-centered-thumb();
     }
 
     .jw-volume-tip {
@@ -179,10 +184,6 @@
     .jw-overlay .jw-option.jw-active-option {
         background-color: @active-color;
         color: #fff;
-    }
-
-    .jw-icon-playback {
-        min-width: 2.25em;
     }
 
     .jw-icon-hd,
@@ -229,6 +230,14 @@
         .jw-text, .jw-icon-inline {
             color: @inactive-color;
             font-size: 0.7em;
+        }
+    }
+
+    .jw-icon-cc {
+        color: @cc-active;
+
+        &.jw-off {
+            color: @cc-inactive;           
         }
     }
 }

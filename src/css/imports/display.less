@@ -1,7 +1,8 @@
 @import "vars";
 
 // Preview Image
-.jwplayer {
+.jwplayer,
+.jw-error {
     .jw-click {
         position: absolute;
         width: 100%;
@@ -62,6 +63,14 @@
             background-repeat: no-repeat;
             font-size: 2em;
         }
+    }
+}
+
+.jwplayer {
+    &:hover .jw-display-icon-container {
+        background-color: @display-bkgd-color;
+        background: @display-bkgd-color;
+        background-size: @display-bkgd-color
     }
 }
 
