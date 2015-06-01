@@ -559,7 +559,7 @@ define([
             if (_isIPod) {
                 _hideControlbar();
             }
-            if (utils.canCast()) {
+            if (_model.get('castAvailable')) {
                 _this.forceControls(true);
             }
 

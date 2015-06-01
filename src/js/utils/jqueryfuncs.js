@@ -2,18 +2,12 @@
 // jQuery v1.11.2 | (c) 2005, 2014 jQuery Foundation, Inc. | Released under the MIT license | jquery.org/license
 
 define([], function() {
-    var jqObj = {
+    return {
         hasClass : function (element, searchClass) {
             var className = ' ' + searchClass + ' ';
 
-            if (element.nodeType === 1 && (' ' + element.className + ' ')
-                    .replace(/[\t\r\n\f]/g, ' ').indexOf(className) >= 0) {
-                return true;
-            }
-
-            return false;
+            return (element.nodeType === 1 && (' ' + element.className + ' ')
+                    .replace(/[\t\r\n\f]/g, ' ').indexOf(className) >= 0);
         }
     };
-
-    return jqObj;
 });

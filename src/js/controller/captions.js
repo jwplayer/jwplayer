@@ -1,9 +1,9 @@
 define([
     'parsers/parsers',
-    'parsers/captions/parsers.srt',
-    'parsers/captions/parsers.dfxp',
+    'parsers/captions/srt',
+    'parsers/captions/dfxp',
     'utils/helpers'
-], function(parsers, SrtParser, DfxpParser, utils) {
+], function(parsers, srt, dfxp, utils) {
 
     /** Displays closed captions or subtitles on top of the video. **/
     var Captions = function(_api, _model) {
@@ -141,7 +141,9 @@ define([
         }
 
         function _addTrack(track) {
-            track.id = track.id || track.name || track.file || ('cc' + _tracks.length);
+            if(typeof track.id !== 'number') {
+                track.id = track.name || track.file || ('cc' + _tracks.length);
+            }
             track.data = track.data || [];
             if (!track.label) {
                 track.label = 'Unknown CC';
@@ -162,7 +164,7 @@ define([
 
         function _xmlReadHandler(xmlEvent, track) {
             var rss = xmlEvent.responseXML ? xmlEvent.responseXML.firstChild : null,
-                parser;
+                status;
 
             // IE9 sets the firstChild element to the root <xml> tag
             if (rss) {
@@ -175,14 +177,16 @@ define([
                 }
             }
             if (rss && parsers.localName(rss) === 'tt') {
-                parser = new DfxpParser();
+                status = utils.tryCatch(function() {
+                    track.data = dfxp(xmlEvent.responseXML);
+                });
             } else {
-                parser = new SrtParser();
+                status = utils.tryCatch(function() {
+                    track.data = srt(xmlEvent.responseText);
+                });
             }
-            try {
-                track.data = parser.parse(xmlEvent.responseText);
-            } catch (e) {
-                _errorHandler(e.message + ': ' + track.file);
+            if (status instanceof utils.Error) {
+                _errorHandler(status.message + ': ' + track.file);
             }
         }
 

@@ -63,9 +63,6 @@ define([
             // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
             _oldProvider = _model.getVideo();
 
-            // Was used to get video tag and store media state
-            _oldProvider.detachMedia();
-
             // Keep track of the original player state
             _oldpos = _model.position;
 
@@ -95,8 +92,12 @@ define([
 
             // If the player's currently playing, pause the video tag
             if (_oldstate === states.PLAYING) {
+                // pause must be called before detachMedia
                 _oldProvider.pause();
             }
+
+            // Was used to get video tag and store media state
+            _oldProvider.detachMedia();
 
             // Show the instream layer
             _view.setupInstream(_adModel);
@@ -117,9 +118,6 @@ define([
                 index: _arrayIndex
             }, true);
 
-            var controlbar = _view.element().getElementsByClassName('jw-controlbar')[0];
-            var bottom = 10 + utils.bounds(_view.controlsContainer()).bottom - utils.bounds(controlbar).top;
-
             // Copy the playlist item passed in and make sure it's formatted as a proper playlist item
             if (_.isArray(item)) {
                 if (options) {
@@ -129,7 +127,7 @@ define([
                 _array = item;
                 item = _array[_arrayIndex];
             }
-            _options = _.extend(_defaultOptions, options);
+            _options = _.extend({}, _defaultOptions, options);
             _item = new PlaylistItem(item);
 
             _adModel.setPlaylist([item]);
@@ -139,19 +137,13 @@ define([
             // Show the instream layer
             _view.showInstream();
 
-            _skipButton = new Adskipbutton(_controller.id, bottom, _options.skipMessage, _options.skipText);
-            _skipButton.on(events.JWPLAYER_AD_SKIPPED, _skipAd);
-            _skipButton.reset(_options.skipoffset || -1);
+            if (_options.skipoffset) {
+                _skipButton = new Adskipbutton(_options.skipMessage, _options.skipText);
+                _skipButton.on(events.JWPLAYER_AD_SKIPPED, _skipAd);
+                _skipButton.setWaitTime(_options.skipoffset);
 
-
-            if (modelGet('controls')) {
-                _skipButton.show();
-            } else {
-                _skipButton.hide();
+                _view.controlsContainer().appendChild(_skipButton.element());
             }
-
-            var skipElem = _skipButton.element();
-            _view.controlsContainer().appendChild(skipElem);
 
             // Match the main player's controls state
             _adModel.on(events.JWPLAYER_ERROR, errorHandler);
@@ -200,8 +192,7 @@ define([
             }
 
             if(_skipButton){
-                var skipElem = _skipButton.element();
-                _view.controlsContainer().removeChild(skipElem);
+                _view.controlsContainer().removeChild(_skipButton.element());
             }
 
             _adModel.off('fullscreenchange', _nativeFullscreenHandler);
@@ -306,7 +297,7 @@ define([
                 provider.addEventListener(events.JWPLAYER_PLAYER_STATE, stateHandler);
                 provider.addEventListener(events.JWPLAYER_MEDIA_TIME, function(evt) {
                     if (_skipButton) {
-                        _skipButton.updateSkipTime(evt.position, evt.duration);
+                        _skipButton.updateMediaTime(evt.position, evt.duration);
                     }
                 });
                 provider.attachMedia();
@@ -370,9 +361,11 @@ define([
                 if (_optionList) {
                     curOpt = _optionList[_arrayIndex];
                 }
-                _options = _.extend(_defaultOptions, curOpt);
+                _options = _.extend({}, _defaultOptions, curOpt);
                 _adModel.getVideo().load(_adModel.playlist[0]);
-                _skipButton.reset(_options.skipoffset || -1);
+                if (_skipButton) {
+                    _skipButton.destroy();
+                }
                 _completeTimeoutId = setTimeout(function() {
                     _sendEvent(events.JWPLAYER_PLAYLIST_ITEM, {
                         index: _arrayIndex
@@ -400,19 +393,13 @@ define([
 
         function _sendEvent(type, data) {
             data = data || {};
-            if (_defaultOptions.tag && !data.tag) {
-                data.tag = _defaultOptions.tag;
+            if (_options.tag && !data.tag) {
+                data.tag = _options.tag;
             }
             _this.sendEvent(type, data);
         }
 
-        _this.setControls = function(mode) {
-            if (mode) {
-                _skipButton.show();
-            } else {
-                _skipButton.hide();
-            }
-        };
+        _this.setControls = function() {};
 
         /**************************************
          *****  Duplicate main html5 api  *****

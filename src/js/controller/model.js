@@ -177,7 +177,7 @@ define([
         this.setPlaylist = function(p) {
             var playlist = Playlist(p);
 
-            playlist = Playlist.filterPlaylist(playlist, _providers, _this.get('androidhls'), this.get('protection'));
+            playlist = Playlist.filterPlaylist(playlist, _providers, _this.get('androidhls'), this.get('drm'));
 
             if (playlist.length === 0) {
                 this.playlist = [];

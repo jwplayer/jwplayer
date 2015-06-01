@@ -3,7 +3,7 @@ define([
     'utils/strings',
     'utils/underscore',
     'utils/jqueryfuncs'
-], function(Constants, strings, _, jqfns) {
+], function(Constants, strings, _, jqueryfuncs) {
 
     // TODO:: the next lines are a holdover until we update our CDN w/ plugins for 7.0
     // This is replaced by compiler
@@ -485,14 +485,15 @@ define([
 
     /** Takes an XML string and returns an XML object **/
     var _parseXML = utils.parseXML = function (input) {
-        var parsedXML;
+        var parsedXML = null;
         utils.tryCatch(function() {
             // Parse XML in FF/Chrome/Safari/Opera
             if (window.DOMParser) {
                 parsedXML = (new window.DOMParser()).parseFromString(input, 'text/xml');
-                if (parsedXML.childNodes && parsedXML.childNodes.length &&
-                    parsedXML.childNodes[0].firstChild.nodeName === 'parsererror') {
-                    return;
+                var childNodes = parsedXML.childNodes;
+                if (childNodes && childNodes.length && childNodes[0].firstChild &&
+                    childNodes[0].firstChild.nodeName === 'parsererror') {
+                    parsedXML = null;
                 }
             } else {
                 // Internet Explorer
@@ -579,7 +580,7 @@ define([
         return val;
     };
 
-    utils.hasClass = jqfns.hasClass;
+    utils.hasClass = jqueryfuncs.hasClass;
 
     utils.addClass = function (element, classes) {
         // TODO:: use _.union on the two arrays
@@ -627,11 +628,6 @@ define([
 
     utils.indexOf = _.indexOf;
     utils.noop = function () {
-    };
-
-    utils.canCast = function () {
-        var cast = window.jwplayer.cast;
-        return !!(cast && _.isFunction(cast.available) && cast.available());
     };
 
     /**

@@ -8,27 +8,21 @@
         float: right;
         display: inline-block;
         right: 0.75em;
+        bottom : 3em;
 
-        background-color: @def-background-color;
-        background: @def-transparent-background-style;
-        background-size: @def-background-size;
-        border-radius: @ui-corner-round;
-        padding: @ui-padding @ui-corner-round;
+        &.jw-skippable {
+          cursor: pointer;
+        }
 
         &.jw-hidden {
             visibility: hidden;
         }
 
-        &:hover {
-            background-color: @def-background-color;
-            background: @def-background-style;
-            background-size: @def-background-size;
-        }
 
         .jw-skip-icon {
             .jwplayer .jw-icon-next;
             display: none;
-            margin-left: 0.125em;
+            margin-left: -.75em;
         }
 
         .jw-text, .jw-skip-icon {
@@ -38,7 +32,9 @@
 
         &.jw-skippable:hover {
             cursor: pointer;
-            .jw-text, .jw-skip-icon {
+            
+            .jw-text, 
+            .jw-skip-icon {
                 color: @active-color;
             }
         }

@@ -50,6 +50,11 @@ define([
             }
         }
 
+        if (_.isString(config.skin) && config.skin.indexOf('.xml') > 0) {
+            console.log('JW Player does not support XML skins, please update your config');
+            config.skin = config.skin.replace('.xml', '');
+        }
+
         if (!config.aspectratio) {
             delete config.aspectratio;
         }
