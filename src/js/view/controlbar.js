@@ -38,7 +38,8 @@ define([
         return element;
     }
 
-    function menu(name) {
+    function menu(name, isAlwaysList) {
+        // TODO use isAlwaysList
         var createdMenu = new Menu(name);
 
         return createdMenu;
@@ -90,6 +91,7 @@ define([
                 duration: text('jw-text-duration'),
                 hd: menu('jw-icon-hd'),
                 cc: menu('jw-icon-cc'),
+                audiotracks: menu('jw-icon-audio-tracks'),
                 mute: button('jw-icon-volume', this._api.setMute),
                 volume: volumeSlider,
                 volumetooltip: volumeTooltip,
@@ -113,6 +115,7 @@ define([
                     this.elements.duration,
                     this.elements.hd,
                     this.elements.cc,
+                    this.elements.audiotracks,
                     this.elements.mute,
                     this.elements.volume,
                     this.elements.volumetooltip,
@@ -188,6 +191,10 @@ define([
                 this._api.setCurrentCaptions(index ? 0 : 1);
             }, this);
 
+            this.elements.audiotracks.on('select', function(value){
+                this._model.getVideo().setCurrentAudioTrack(value);
+            }, this);
+
             this.elements.volumetooltip.on('toggle', function(){
                 this._api.setMute();
             }, this);
@@ -221,6 +228,18 @@ define([
             }, this);
             this._model.mediaModel.on('change:currentLevel', function(model, level) {
                 this.elements.hd.selectItem(level);
+            }, this);
+            this._model.mediaModel.on('change:audioTracks', function(model, audioTracks) {
+                var list = [];
+                for(var i = 0; i < audioTracks.length; i++) {
+                    list.push({
+                        label: audioTracks[i].name
+                    });
+                }
+                this.elements.audiotracks.setup(list, model.get('currentAudioTrack'));
+            }, this);
+            this._model.mediaModel.on('change:currentAudioTrack', function(model, currentAudioTrack) {
+                this.elements.audiotracks.selectItem(currentAudioTrack);
             }, this);
         },
         onVolume : function(model, pct) {
