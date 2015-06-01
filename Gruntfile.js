@@ -127,7 +127,7 @@ module.exports = function(grunt) {
                 tasks: ['jshint']
             },
             player: {
-                files : ['src/js/{,*/}*.js'],
+                files : ['src/js/**/*.js'],
                 tasks: ['webpack:debug', 'jshint:player', 'karma:local'],
                 options: {
                     spawn: false
