@@ -205,6 +205,7 @@ define([
         _model.on('change:state', function(model, state) {
             switch (state) {
                 case states.IDLE:
+                case states.ERROR:
                 case states.COMPLETE:
                     this.hide();
                     break;
