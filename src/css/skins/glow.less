@@ -6,9 +6,15 @@
     @inactive-color: #fff;
     @hover-color: @active-color;
     @progress-color: #fff;
-    @buffer-color: #3c3d41;
-    @rail-color: #9c9a9d;
-    @controlbar-background: #000;
+    @buffer-color: #3B3D41;
+    @rail-color: #2A2C2E;
+    @controlbar-background: #131415;
+
+    @cc-inactive: @buffer-color;
+    @cc-active: @active-color;
+
+    @rail-height: .4em;
+    @cue-size: .25em;
 
     #namespace > .basic-skin-styles(); // Using the above local variables
     .skin-element-padding();
@@ -25,6 +31,19 @@
 
     .jw-thumb {
         display: none;
+    }
+    
+    .jw-slider-horizontal {
+        .jw-cue {
+            .vertically-centered-rail-element(@rail-height, @cue-size);
+
+            &:after {
+                background-color: #000;
+                width: @cue-size;
+                height: @cue-size;
+                border-radius: 1em;
+            }
+        }
     }
 
     .jw-slider-vertical {
@@ -45,5 +64,17 @@
     .jw-volume-tip,
     .jw-menu {
         bottom: .3em;
+    }
+
+    .jw-icon-cc {
+        color: @cc-active;
+
+        &.jw-off {
+            color: @cc-inactive;   
+
+            &:before {
+                content: "\e605";
+            }        
+        }
     }
 }
