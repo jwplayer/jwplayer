@@ -278,15 +278,22 @@ define([
                 '.jw-thumb:after'
             ];
 
-            var iconHovers = ['.jw-icon:hover'];
+            var iconHovers = ['.jw-icon:hover', '.jw-option:hover'];
             var sliders = ['.jw-progress'];
             var containers = ['.jw-container'];
+
 
             addStyle('color', iconHovers, _model.get('skinColorActive'));
             addStyle('color', icons, _model.get('skinColorInactive'));
             addStyle('background', cues, _model.get('skinColorInactive'));
             addStyle('background', sliders, _model.get('skinColorActive'));
             addStyle('background', containers, _model.get('skinColorBackground'));
+
+            addStyle('color', ['.jw-active-option'], _model.get('skinColorActive'));
+            addStyle('background', ['.jw-active-option'], _model.get('skinColorInactive'));
+
+            addStyle('color', ['.jw-icon-hd', '.jw-icon-cc'], _model.get('skinColorActive'));
+            addStyle('color', ['.jw-icon-hd.jw-off', '.jw-icon-cc.jw-off'], _model.get('skinColorInactive'));
         };
 
         this.setup = function() {
