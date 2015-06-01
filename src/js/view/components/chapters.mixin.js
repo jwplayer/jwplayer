@@ -2,7 +2,7 @@ define([
     'utils/underscore',
     'utils/helpers',
     'parsers/captions/parsers.srt',
-], function(_, utils, SrtParser) {
+], function(_, utils, srt) {
 
     function Cue(time, text) {
         this.time = time;
@@ -32,8 +32,7 @@ define([
         },
 
         chaptersLoaded: function (evt) {
-            var Srt = new SrtParser();
-            var data = Srt.parse(evt.responseText, true);
+            var data = srt(evt.responseText);
             if (_.isArray(data)) {
                 _.each(data, this.addCue, this);
                 this.drawCues();

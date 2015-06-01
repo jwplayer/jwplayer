@@ -2,7 +2,7 @@ define([
     'utils/underscore',
     'utils/helpers',
     'parsers/captions/parsers.srt',
-], function(_, utils, SrtParser) {
+], function(_, utils, srt) {
 
     function Thumbnail(obj) {
         this.begin = obj.begin;
@@ -21,8 +21,7 @@ define([
         },
 
         thumbnailsLoaded: function (evt) {
-            var Srt = new SrtParser();
-            var data = Srt.parse(evt.responseText, true);
+            var data = srt(evt.responseText);
             if (_.isArray(data)) {
                 _.each(data, function(obj) {
                     this.thumbnails.push( new Thumbnail(obj) );
