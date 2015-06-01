@@ -1,9 +1,10 @@
 @import "vars";
 
 .inset-controlbar() {
+    display: block;
     margin: 0 auto;
-    max-width: @controlbar-max-width;
-    bottom: @ui-margin;
+    max-width: 96%;
+    bottom: .7em;
 }
 
 .jw-thumbs(@size:@thumb-size, @color:@thumb-color) {
@@ -20,16 +21,12 @@
     }
 }
 
-.centered-thumb(@rail-width:@time-rail-width, @thumb:@thumb-size) {
-    left: -(@rail-width - @thumb)/2;
+.vertically-centered-rail-element(@rail-height, @element-height) {
+    top: (@rail-height - @element-height)/2;
 }
 
-.centered-vert-thumb(@rail-height, @vert-thumb-size) {
-    top: (@rail-height - @vert-thumb-size)/2;
-}
-
-.centered-cue(@rail-width:@time-rail-width, @cue-size) {
-    top: (@rail-width - @cue-size)/2;
+.horizontally-centered-thumb(@rail-width:@time-rail-width, @element-width:@thumb-size) {
+    left: -(@rail-width - @element-width)/2;
 }
 
 .hover(@color:@hover-color) {
@@ -100,17 +97,25 @@
         }
 
         .jw-slider-horizontal {
+
             .jw-thumb {
                 margin-left: @thumb-size/-2;
             }
         }
 
+        .jw-slider-vertical {
+
+            .jw-thumb {
+                margin-bottom: @thumb-size/-2;
+            }
+        }
+        
         .jw-time-tip,
         .jw-volume-tip,
         .jw-menu {
-            padding: @volume-padding;
             background: @volume-background;
             border: @volume-border;
+            padding: @volume-padding;
         }
 
         .jw-time-tip {
@@ -118,6 +123,15 @@
 
             .jw-text {
                 color: #bbb;
+            }
+        }
+
+        .jw-dock-button {
+            background: @display-bkgd-color;
+            border-radius: @ui-corner-round;
+
+            &:hover {
+                background: @display-bkgd-hover-color;
             }
         }
     }
