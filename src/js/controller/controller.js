@@ -13,7 +13,7 @@ define([
     'events/events',
     'view/error'
 ], function(setupInstreamMethods, deprecateInit, _, Setup, Captions,
-            Model, Playlist, PlaylistLoader, utils, View, Events, states, events, error) {
+            Model, PlaylistLoader, utils, View, Events, states, events, error) {
 
     function _queue(command) {
         return function() {
@@ -113,6 +113,10 @@ define([
             _model.on('change:mediaModel', initMediaModel);
 
             function _playerReady() {
+                if(_model.get('setupError') === true){
+                    return false;
+                }
+
                 _setup = null;
 
                 _model.on('change:state', function(model, newstate, oldstate) {
@@ -645,7 +649,7 @@ define([
         },
 
         setupError: function(message){
-            var errorElement = utils.createElement(error(message));
+            var errorElement = utils.createElement(error(this._model.get('id'), this._model.get('skin'), message));
 
             var width = this._model.get('width'),
                 height = this._model.get('height');
@@ -656,6 +660,8 @@ define([
             });
 
             this.showView(errorElement);
+
+            this._model.set('setupError', true);
         },
 
         reset: function() {

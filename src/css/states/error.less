@@ -20,17 +20,18 @@ body .jw-error, .jwplayer.jw-state-error {
 
     &:hover .jw-display-icon-container {
         cursor: default;
-        background-color: @def-background-color;
-        background: @def-background-style;
+        color: #fff;
+        background-color: #000;
+        background: #000;
     }
 
     .jw-icon-display {
+        cursor: default;
         .jwplayer .jw-icon;
         .jwplayer .jw-icon-error;
-        cursor: default;
 
         &:hover {
-            color: @inactive-color;
+            color: #fff;
         }
     }
 }
@@ -53,14 +54,5 @@ body .jw-error {
         left: 0;
         bottom: 0;
         right: 0;
-    }
-}
-
-
-.jwplayer {
-    &:hover .jw-display-icon-container {
-        background-color: @def-background-color;
-        background: @def-background-style;
-        background-size: @def-background-size;
     }
 }
