@@ -29,6 +29,9 @@
     @display-bkgd-color: @volume-background;
     @display-bkgd-hover-color: @controlbar-background-color;
 
+    @cc-inactive: #7d7d7d;
+    @cc-active: @active-color;
+
     @rail-height: .6em;
 
     #namespace > .basic-skin-styles(); // Using the above local variables
@@ -165,6 +168,18 @@
     .jw-volume-tip,
     .jw-menu {
         bottom: .3em;
+    }
+
+    .jw-icon-cc {
+        color: @cc-active;
+
+        &.jw-off {
+            color: @cc-inactive;   
+
+            &:before {
+                content: "\e605";
+            }        
+        }
     }
 }
 

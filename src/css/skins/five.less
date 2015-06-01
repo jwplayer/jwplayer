@@ -18,6 +18,9 @@
     @display-icon-hover-color: #fff;
     @display-bkgd-color: rgba(51, 51, 51, 0.7);
     @display-bkgd-hover-color: #333;
+
+    @cc-inactive: @rail-color;
+    @cc-active: @active-color;
     
     @rail-height: .2em;
     @thumb-size: 1em;
@@ -96,6 +99,18 @@
                 border-radius: 0;
                 height: 2px;
             }
+        }
+    }
+
+    .jw-icon-cc {
+        color: @cc-active;
+
+        &.jw-off {
+            color: @cc-inactive;   
+
+            &:before {
+                content: "\e605";
+            }        
         }
     }
 }

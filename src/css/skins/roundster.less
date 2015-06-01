@@ -16,6 +16,8 @@
     @rail-color: #878fa2;
     @thumb-color: @progress-color;
     @controlbar-background: #dfe2e9;
+    @cc-inactive: @rail-color;
+    @cc-active: @active-color;
 
     @roundster-corners: 1em;
 
@@ -94,5 +96,17 @@
     .jw-volume-tip,
     .jw-menu {
         bottom: .3em;
+    }
+
+    .jw-icon-cc {
+        color: @cc-active;
+
+        &.jw-off {
+            color: @cc-inactive;
+
+            &:before {
+                content: "\e605";
+            }
+        }
     }
 }

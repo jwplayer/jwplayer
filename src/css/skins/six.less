@@ -25,6 +25,9 @@
     @def-progress-color: linear-gradient(to bottom, rgba(255, 255, 255, 1) 0, rgba(204, 204, 204, 1) 50%, rgba(255, 255, 255, 1) 100%);
     @rail-glow: inset 0 3px 10px 1px rgba(51, 51, 51, 0.85);
 
+    @cc-inactive: @buffer-color;
+    @cc-active: @active-color;
+
     @dock-corner-radius: 0.25em;
 
     @volume-background: @def-background-style;
@@ -72,11 +75,11 @@
     .jw-buffer {
         border: @def-border;
     }
-
+    
     .jw-progress {
         background: @def-progress-color;
     }
-
+    
     .jw-rail {
         border: @def-border;
         box-shadow: @rail-glow;
@@ -208,5 +211,17 @@
             background-size: @def-background-size;
         }
     }
+    
 
+    .jw-icon-cc {
+        color: @cc-active;
+
+        &.jw-off {
+            color: @cc-inactive;   
+
+            &:before {
+                content: "\e605";
+            }        
+        }
+    }
 }

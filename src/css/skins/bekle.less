@@ -26,6 +26,9 @@
     @display-bkgd-color: @rail-color;
     @display-bkgd-hover-color: @active-color;
 
+    @cc-inactive: #5e6575;
+    @cc-active: @active-color;
+
     @volume-background: #505863;
 
     #namespace > .basic-skin-styles(); // Using the above local variables
@@ -103,5 +106,17 @@
     .jw-volume-tip,
     .jw-menu {
         border-radius: @volume-border-radius;
+    }
+
+    .jw-icon-cc {
+        color: @cc-active;
+
+        &.jw-off {
+            color: @cc-inactive;   
+
+            &:before {
+                content: "\e605";
+            }        
+        }
     }
 }

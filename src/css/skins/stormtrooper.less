@@ -18,6 +18,8 @@
     @vertical-rail-gradient: linear-gradient(to right, rgba(19,137,175,1) 0%, rgba(54,228,252,1) 50%, rgba(19,137,175,1) 100%);
     @thumb-color: @progress-color;
     @controlbar-background: @rail-color;
+    @cc-inactive: @buffer-color;
+    @cc-active: @active-color;
 
     @rail-height: .3em;
     @thumb-size: .1em;
@@ -109,6 +111,18 @@
     .jw-volume-tip,
     .jw-menu {
         bottom: .3em;
+    }
+
+    .jw-icon-cc {
+        color: @cc-active;
+
+        &:before {
+            content: "\e604";
+        }
+
+        &.jw-off {
+            color: @cc-inactive;           
+        }
     }
 }
 
