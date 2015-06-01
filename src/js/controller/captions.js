@@ -1,7 +1,7 @@
 define([
     'parsers/parsers',
-    'parsers/captions/parsers.srt',
-    'parsers/captions/parsers.dfxp',
+    'parsers/captions/srt',
+    'parsers/captions/dfxp',
     'utils/helpers'
 ], function(parsers, srt, dfxp, utils) {
 

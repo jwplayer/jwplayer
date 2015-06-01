@@ -1,7 +1,7 @@
 define([
     'utils/underscore',
     'utils/helpers',
-    'parsers/captions/parsers.srt',
+    'parsers/captions/srt',
 ], function(_, utils, srt) {
 
     function Cue(time, text) {

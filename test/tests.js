@@ -11,5 +11,6 @@ define([
     'unit/storage',
     'unit/playlist',
     'unit/playlist-item',
-    'unit/playlist-filtering'
+    'unit/playlist-filtering',
+    'unit/dxfp',
 ]);
