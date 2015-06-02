@@ -2,10 +2,11 @@ define([
     'utils/helpers',
     'utils/css',
     'events/events',
+    'utils/ui',
     'utils/backbone.events',
     'utils/underscore',
     'handlebars-loader!templates/adskipbutton.html'
-], function(utils, cssUtils, events, Events, _, AdSkipTemplate) {
+], function(utils, cssUtils, events, UI, Events, _, AdSkipTemplate) {
 
     var AdSkipButton = function(skipMessageCountdown, skipMessage) {
         this.skipMessage = skipMessage;
@@ -16,7 +17,6 @@ define([
     };
 
     _.extend(AdSkipButton.prototype, Events, {
-
         setup : function() {
             this.destroy();
 
@@ -25,7 +25,7 @@ define([
             this.skiptext = this.el.getElementsByClassName('jw-skiptext')[0];
 
             this.skipAdOnce = _.once(this.skipAd);
-            this.el.addEventListener('click', _.bind(function() {
+            new UI(this.el).on('click tap', _.bind(function() {
                 if (this.skippable) {
                     this.skipAdOnce();
                 }
