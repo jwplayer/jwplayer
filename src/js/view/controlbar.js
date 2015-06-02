@@ -233,12 +233,7 @@ define([
                 this.elements.hd.selectItem(level);
             }, this);
             this._model.mediaModel.on('change:audioTracks', function(model, audioTracks) {
-                var list = [];
-                for(var i = 0; i < audioTracks.length; i++) {
-                    list.push({
-                        label: audioTracks[i].name
-                    });
-                }
+                var list = _.map(audioTracks, function(track) { return { label : track.name }; });
                 this.elements.audiotracks.setup(list, model.get('currentAudioTrack'), {toggle: false});
             }, this);
             this._model.mediaModel.on('change:currentAudioTrack', function(model, currentAudioTrack) {
