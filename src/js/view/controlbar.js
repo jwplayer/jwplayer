@@ -3,23 +3,22 @@ define([
     'utils/underscore',
     'utils/backbone.events',
     'utils/ui',
-    'events/events',
     'view/components/slider',
     'view/components/timeslider',
     'view/components/menu',
     'view/components/playlist',
     'view/components/volumetooltip'
-], function(utils, _, Events, UI, events, Slider, TimeSlider, Menu, Playlist, VolumeTooltip) {
+], function(utils, _, Events, UI, Slider, TimeSlider, Menu, Playlist, VolumeTooltip) {
 
     function button(icon, click) {
-        var element = document.createElement('span'),
-            handler;
+        var element = document.createElement('span');
         element.className = 'jw-icon jw-icon-inline ' + icon;
         element.style.display = 'none';
 
         if (click) {
-            handler = function() { click(); };
-            new UI(element).on(events.touchEvents.TAP, handler).on(events.touchEvents.CLICK, handler);
+            // Some actions receive parameters which change functionality based on their presence (E.G. play)
+            // Don't send the event to the handler so we don't have unexpected results.
+            new UI(element).on('click tap', function() { click(); });
         }
 
         return {
@@ -180,19 +179,19 @@ define([
             this.elements.hd.on('select', function(value){
                 this._model.getVideo().setCurrentQuality(value);
             }, this);
-            this.elements.hd.on('toggle', function(){
+            this.elements.hd.on('toggleValue', function(){
                 this._model.getVideo().setCurrentQuality((this._model.getVideo().getCurrentQuality() === 0) ? 1 : 0);
             }, this);
 
             this.elements.cc.on('select', function(value) {
                 this._api.setCurrentCaptions(value);
             }, this);
-            this.elements.cc.on('toggle', function() {
+            this.elements.cc.on('toggleValue', function() {
                 var index = this._model.get('captionsIndex');
                 this._api.setCurrentCaptions(index ? 0 : 1);
             }, this);
 
-            this.elements.volumetooltip.on('toggle', function(){
+            this.elements.volumetooltip.on('toggleValue', function(){
                 this._api.setMute();
             }, this);
         },

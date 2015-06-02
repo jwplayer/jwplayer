@@ -3,38 +3,23 @@ define([
     'events/events',
     'utils/underscore'
 ], function(Events, events, _) {
-    var TOUCH_MOVE = 'touchmove',
-        TOUCH_START = 'touchstart',
-        TOUCH_END = 'touchend',
-        TOUCH_CANCEL = 'touchcancel',
-        MOUSE_DOWN = 'mousedown',
-        MOUSE_MOVE = 'mousemove',
-        MOUSE_UP = 'mouseup';
-
-    var ui = function (elem) {
+    var ui = function (elem, options) {
         var _elem = elem,
-            _isPressed = false,
-            _startEvent = null,
+            _enableDoubleTap = (options && options.enableDoubleTap),
             _hasMoved = false,
-            _lastClickTime = 0;
+            _lastClickTime = 0,
+            _doubleClickDelay = 300;
 
-        _.extend(this, Events);
-
-        elem.addEventListener(TOUCH_START, interactStartHandler);
-        elem.addEventListener(MOUSE_DOWN, interactStartHandler);
+        elem.addEventListener('touchstart', interactStartHandler);
+        elem.addEventListener('mousedown', interactStartHandler);
 
         function interactStartHandler() {
-            _isPressed = true;
+            elem.addEventListener('touchmove', interactDragHandler);
+            elem.addEventListener('touchcancel', interactEndHandler);
+            elem.addEventListener('touchend', interactEndHandler);
 
-            if(self._events[events.touchEvents.DRAG]){
-                elem.addEventListener(TOUCH_MOVE, interactDragHandler);
-                elem.addEventListener(TOUCH_CANCEL, interactEndHandler);
-
-                document.addEventListener(MOUSE_MOVE, interactDragHandler);
-            }
-
-            elem.addEventListener(TOUCH_END, interactEndHandler);
-            document.addEventListener(MOUSE_UP, interactEndHandler);
+            document.addEventListener('mousemove', interactDragHandler);
+            document.addEventListener('mouseup', interactEndHandler);
         }
 
         function interactDragHandler(evt) {
@@ -43,7 +28,7 @@ define([
             if (_hasMoved) {
                 triggerEvent(touchEvents.DRAG, evt);
             } else {
-                triggerEvent(touchEvents.DRAG_START, evt, _startEvent);
+                triggerEvent(touchEvents.DRAG_START, evt);
                 _hasMoved = true;
                 triggerEvent(touchEvents.DRAG, evt);
             }
@@ -52,57 +37,49 @@ define([
         function interactEndHandler(evt) {
             var touchEvents = events.touchEvents;
 
-            if (_isPressed) {
-                if (_hasMoved) {
-                    triggerEvent(touchEvents.DRAG_END, evt);
+            elem.removeEventListener('touchmove', interactDragHandler);
+            elem.removeEventListener('touchcancel', interactEndHandler);
+            elem.removeEventListener('touchend', interactEndHandler);
+
+            document.removeEventListener('mousemove', interactDragHandler);
+            document.removeEventListener('mouseup', interactEndHandler);
+
+            if (_hasMoved) {
+                triggerEvent(touchEvents.DRAG_END, evt);
+            } else {
+                // This allows the controlbar/dock/logo click events not to be forwarded to the view
+                evt.cancelBubble = true;
+                if(evt instanceof MouseEvent) {
+                    triggerEvent(touchEvents.CLICK, evt);
                 } else {
-                    // This allows the controlbar/dock/logo click events not to be forwarded to the view
-                    evt.cancelBubble = true;
-                    if(evt instanceof MouseEvent) {
-                        triggerEvent(touchEvents.CLICK, evt);
-                    } else {
-                        triggerEvent(touchEvents.TAP, evt);
-                    }
+                    triggerEvent(touchEvents.TAP, evt);
                 }
             }
 
-            elem.removeEventListener(TOUCH_MOVE, interactDragHandler);
-            elem.removeEventListener(TOUCH_CANCEL, interactEndHandler);
-            elem.removeEventListener(TOUCH_END, interactEndHandler);
-
-            document.removeEventListener(MOUSE_MOVE, interactDragHandler);
-            document.removeEventListener(MOUSE_UP, interactEndHandler);
-
             _hasMoved = false;
-            _isPressed = false;
-            _startEvent = null;
         }
 
-        function createEvent(type, srcEvent) {
+        function normalizeUIEvent(type, srcEvent) {
             var source;
             if(srcEvent instanceof MouseEvent) {
                 source = srcEvent;
             } else {
                 if (srcEvent.touches && srcEvent.touches.length) {
                     source = srcEvent.touches[0];
-                }
-                else if (srcEvent.changedTouches && srcEvent.changedTouches.length) {
+                } else {
                     source = srcEvent.changedTouches[0];
                 }
             }
-            if (!source) {
-                return null;
-            }
-            var evt = {
+            return {
                 type: type,
                 target: srcEvent.target,
                 currentTarget: _elem,
                 pageX: source.pageX,
                 pageY: source.pageY
             };
-            return evt;
         }
 
+        // Preventdefault to prevent click events
         function preventDefault(evt) {
             if (evt.preventManipulation) {
                 evt.preventManipulation();
@@ -113,30 +90,39 @@ define([
         }
 
         var self = this;
-        function triggerEvent(type, srcEvent, finalEvt) {
-            if (self._events[type]) {
-                preventDefault(srcEvent);
-                if( (type === events.touchEvents.CLICK || type === events.touchEvents.TAP) &&
-                    (self._events[events.touchEvents.DOUBLE_CLICK] || self._events[events.touchEvents.DOUBLE_TAP]) ){
-                    if(Date.now() - _lastClickTime < 500) {
-                        type = (type === events.touchEvents.CLICK) ?
-                            events.touchEvents.DOUBLE_CLICK : events.touchEvents.DOUBLE_TAP;
-                        _lastClickTime = 0;
-                    } else {
-                        _lastClickTime = Date.now();
-                    }
-                }
-                var evt = finalEvt ? finalEvt : createEvent(type, srcEvent);
-                if (evt) {
-                    self.trigger(type, evt);
+        function triggerEvent(type, srcEvent) {
+            preventDefault(srcEvent);
+            if( _enableDoubleTap && (type === events.touchEvents.CLICK || type === events.touchEvents.TAP)){
+                if(Date.now() - _lastClickTime < _doubleClickDelay) {
+                    type = (type === events.touchEvents.CLICK) ?
+                        events.touchEvents.DOUBLE_CLICK : events.touchEvents.DOUBLE_TAP;
+                    _lastClickTime = 0;
+                } else {
+                    _lastClickTime = Date.now();
                 }
             }
+            var evt = normalizeUIEvent(type, srcEvent);
+            self.trigger(type, evt);
 
             return false;
         }
 
+        this.destroy = function() {
+            elem.removeEventListener('touchstart', interactStartHandler);
+            elem.removeEventListener('mousedown', interactStartHandler);
+
+            elem.removeEventListener('touchmove', interactDragHandler);
+            elem.removeEventListener('touchcancel', interactEndHandler);
+            elem.removeEventListener('touchend', interactEndHandler);
+
+            document.removeEventListener('mousemove', interactDragHandler);
+            document.removeEventListener('mouseup', interactEndHandler);
+        };
+
         return this;
     };
+
+    _.extend(ui.prototype, Events);
 
     return ui;
 });

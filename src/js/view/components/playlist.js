@@ -2,26 +2,23 @@ define([
     'utils/helpers',
     'utils/underscore',
     'view/components/tooltip',
-    'events/events',
     'utils/ui',
     'handlebars-loader!templates/playlist.html'
-], function(utils, _, Tooltip, events, UI, PlaylistTemplate) {
+], function(utils, _, Tooltip, UI, PlaylistTemplate) {
 
     var Playlist = Tooltip.extend({
-        'constructor' : function(name) {
-            Tooltip.call(this, name);
-            this.toggleOpenListener = this.toggleOpen.bind(this);
-            this.iconUI = new UI(this.el).on(events.touchEvents.TAP, this.toggleOpenListener);
-
-            this.el.addEventListener('mouseover', this.toggleOpen.bind(this, true));
-            this.el.addEventListener('mouseout', this.toggleOpen.bind(this, false));
-        },
         setup : function (list, selectedIndex) {
-            if(this.content){
-                this.contentUI.off(events.touchEvents.CLICK)
-                    .off(events.touchEvents.TAP);
-                this.removeContent();
+            if(!this.iconUI){
+                this.iconUI = new UI(this.el).on('tap', utils.noop);
+
+                this.toggleOpenStateListener = this.toggleOpenState.bind(this);
+                this.openTooltipListener = this.openTooltip.bind(this);
+                this.closeTooltipListener = this.closeTooltip.bind(this);
+
+                this.selectListener = this.onSelect.bind(this);
             }
+
+            this.reset();
 
             list = _.isArray(list) ? list : [];
 
@@ -30,21 +27,23 @@ define([
             if (list.length >= 2) {
                 utils.removeClass(this.el, 'jw-off');
 
+                this.iconUI = new UI(this.el).on('tap', this.toggleOpenStateListener);
+
+                this.el.addEventListener('mouseover', this.openTooltipListener);
+                this.el.addEventListener('mouseout', this.closeTooltipListener);
+
                 var innerHtml = this.menuTemplate(list, selectedIndex);
                 var elem = utils.createElement(innerHtml);
                 this.addContent(elem);
                 this.contentUI = new UI(this.content);
 
-                this.selectListener = this.onSelect.bind(this);
-                this.contentUI.on(events.touchEvents.CLICK, this.selectListener)
-                    .on(events.touchEvents.TAP, this.selectListener);
+                this.contentUI.on('click tap', this.selectListener);
             }
 
             this.originalList = list;
         },
 
         menuTemplate : function(list, selectedIndex) {
-
             var newList = _.map(list, function(item, idx) {
                 return {
                     active : (idx === selectedIndex),
@@ -53,10 +52,6 @@ define([
                 };
             });
             return PlaylistTemplate(newList);
-        },
-
-        toggle: function(){
-            this.trigger('toggle');
         },
 
         onSelect: function(evt) {
@@ -73,11 +68,21 @@ define([
                 this.trigger('select', parseInt(item.split('-')[1]));
             }
 
-            this.toggleOpen(false);
+            this.closeTooltip();
         },
 
         selectItem : function(item) {
             this.setup(this.originalList, item);
+        },
+
+        reset : function() {
+            this.iconUI.off();
+            if(this.contentUI){
+                this.contentUI.off().destroy();
+            }
+            this.el.removeEventListener('mouseover', this.openTooltipListener);
+            this.el.removeEventListener('mouseout', this.closeTooltipListener);
+            this.removeContent();
         }
     });
 

@@ -58,7 +58,7 @@ define([
             }
 
             var logoInteractHandler = new UI(_logo);
-            logoInteractHandler.on(events.touchEvents.CLICK, _clickHandler);
+            logoInteractHandler.on('click tap', _clickHandler);
         }
 
         this.element = function() {

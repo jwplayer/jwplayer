@@ -15,8 +15,7 @@ define([
         this.el = utils.createElement(Template({}));
 
         var _this = this;
-        this.iconUI = new UI (this.el).on(events.touchEvents.CLICK, function(){_this.trigger('click');})
-            .on(events.touchEvents.TAP, function(){_this.trigger('tap');});
+        this.iconUI = new UI (this.el).on('click tap', function(evt){_this.trigger(evt.type);});
     };
 
     _.extend(DisplayIcon.prototype, {

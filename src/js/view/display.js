@@ -20,13 +20,10 @@ define([
         this.element = function() { return _display; };
 
         //_display.addEventListener('click', _clickHandler, false);
-        var userInteract = new UI(this.element());
-        userInteract.on(events.touchEvents.CLICK, _clickHandler);
-        userInteract.on(events.touchEvents.DOUBLE_CLICK, _doubleClickHandler);
-        userInteract.on(events.touchEvents.TAP, _clickHandler);
-        userInteract.on(events.touchEvents.DOUBLE_TAP, _doubleClickHandler);
+        var userInteract = new UI(this.element(), {'enableDoubleTap': true});
+        userInteract.on('click tap', _clickHandler);
+        userInteract.on('doubleClick doubleTap', _doubleClickHandler);
 
-        //TODO: Figure out if/when this breaks double clicking
         _model.mediaController.on(events.JWPLAYER_PROVIDER_CLICK, _clickHandler);
 
         this.clickHandler = _clickHandler;

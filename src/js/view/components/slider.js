@@ -3,9 +3,8 @@ define([
     'utils/ui',
     'handlebars-loader!templates/slider.html',
     'utils/underscore',
-    'utils/helpers',
-    'events/events'
-], function(Extendable, UI, SliderTemplate, _, utils, events) {
+    'utils/helpers'
+], function(Extendable, UI, SliderTemplate, _, utils) {
 
     var Slider = Extendable.extend({
         constructor : function(className, orientation) {
@@ -33,12 +32,12 @@ define([
 
             this.userInteract = new UI(this.element());
 
-            this.userInteract.on(events.touchEvents.DRAG_START, this.dragStartListener);
-            this.userInteract.on(events.touchEvents.DRAG, this.dragMoveListener);
-            this.userInteract.on(events.touchEvents.DRAG_END, this.dragEndListener);
+            this.userInteract.on('dragStart', this.dragStartListener);
+            this.userInteract.on('drag', this.dragMoveListener);
+            this.userInteract.on('dragEnd', this.dragEndListener);
 
-            this.userInteract.on(events.touchEvents.TAP, this.dragMoveListener);
-            this.userInteract.on(events.touchEvents.CLICK, this.dragMoveListener);
+            this.userInteract.on('tap', this.dragMoveListener);
+            this.userInteract.on('click', this.dragMoveListener);
         },
         dragStart : function() {
             this.trigger('dragStart');

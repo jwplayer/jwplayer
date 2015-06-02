@@ -6,53 +6,46 @@ define([
     'utils/ui',
     'handlebars-loader!templates/menu.html'
 ], function(Tooltip, utils, _, events, UI, menuTemplate) {
-
     var Menu = Tooltip.extend({
-        'constructor' : function(name) {
-            Tooltip.call(this, name);
-            this.iconUI = new UI(this.el).on(events.touchEvents.TAP, utils.noop);
-            this.toggleListener = this.toggle.bind(this);
-            this.toggleOpenListener = this.toggleOpen.bind(this);
-
-            this.el.addEventListener('mouseover', this.toggleOpen.bind(this, true));
-            this.el.addEventListener('mouseout', this.toggleOpen.bind(this, false));
-        },
         setup : function (list, selectedIndex) {
-            if(this.content){
-                this.contentUI.off(events.touchEvents.CLICK)
-                    .off(events.touchEvents.TAP);
-                this.removeContent();
+            if(!this.iconUI){
+                this.iconUI = new UI(this.el).on('tap', utils.noop);
+
+                this.toggleValueListener= this.toggleValue.bind(this);
+
+                this.toggleOpenStateListener = this.toggleOpenState.bind(this);
+                this.openTooltipListener = this.openTooltip.bind(this);
+                this.closeTooltipListener = this.closeTooltip.bind(this);
+
+                this.selectListener = this.select.bind(this);
             }
 
-            list = _.isArray(list) ? list : [];
+            this.reset();
 
-            this.iconUI.off(events.touchEvents.CLICK)
-                .off(events.touchEvents.TAP);
+            list = _.isArray(list) ? list : [];
 
             utils.toggleClass(this.el, 'jw-hidden', (list.length < 2));
 
             if (list.length === 2) {
-                this.iconUI.on(events.touchEvents.CLICK, this.toggleListener)
-                    .on(events.touchEvents.TAP, this.toggleListener);
+               this.iconUI('click tap', this.toggleValueListener);
             } else if (list.length > 2) {
                 utils.removeClass(this.el, 'jw-off');
 
-                this.iconUI.on(events.touchEvents.TAP, this.toggleOpenListener);
+                this.iconUI.on('tap', this.toggleOpenStateListener);
+
+                this.el.addEventListener('mouseover', this.openTooltipListener);
+                this.el.addEventListener('mouseout', this.closeTooltipListener);
 
                 var innerHtml = menuTemplate(list);
                 var elem = utils.createElement(innerHtml);
                 this.addContent(elem);
-                this.contentUI = new UI(this.content);
-
-                this.selectListener = this.select.bind(this);
-                this.contentUI.on(events.touchEvents.CLICK, this.selectListener)
-                    .on(events.touchEvents.TAP, this.selectListener);
+                this.contentUI = new UI(this.content).on('click tap', this.selectListener);
             }
 
             this.selectItem(selectedIndex);
         },
-        toggle: function(){
-            this.trigger('toggle');
+        toggleValue: function(){
+            this.trigger('toggleValue');
         },
         select: function (evt) {
             if(evt.target.parentElement === this.content) {
@@ -60,7 +53,7 @@ define([
                 // find the class with a name of the form 'item-1'
                 var item = _.find(classes, function(c) { return c.indexOf('item') === 0;});
                 this.trigger('select', parseInt(item.split('-')[1]));
-                this.toggleOpen(false);
+                this.closeTooltipListener();
             }
         },
         selectItem : function(selectedIndex) {
@@ -71,6 +64,17 @@ define([
             } else {
                 utils.toggleClass(this.el, 'jw-off', (selectedIndex === 0));
             }
+        },
+        reset : function() {
+            utils.addClass(this.el, 'jw-off');
+            this.iconUI.off();
+            if(this.contentUI) {
+                this.contentUI.off().destroy();
+            }
+            this.removeContent();
+
+            this.el.removeEventListener('mouseover', this.openTooltipListener);
+            this.el.removeEventListener('mouseout', this.closeTooltipListener);
         }
     });
 

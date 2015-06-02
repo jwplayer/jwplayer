@@ -13,13 +13,10 @@ define([
         this.skipMessageCountdown = skipMessageCountdown;
         this.skipMessage = skipMessage;
 
-        new UI (_instreamSkipContainer).on(events.touchEvents.CLICK, skipAd).on(events.touchEvents.TAP, skipAd);
-
         this.setup();
     };
 
     _.extend(AdSkipButton.prototype, Events, {
-
         setup : function() {
             this.destroy();
 
@@ -28,7 +25,7 @@ define([
             this.skiptext = this.el.getElementsByClassName('jw-skiptext')[0];
 
             this.skipAdOnce = _.once(this.skipAd);
-            this.el.addEventListener('click', _.bind(function() {
+            new UI(this.el).on('click tap', _.bind(function() {
                 if (this.skippable) {
                     this.skipAdOnce();
                 }

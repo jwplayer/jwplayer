@@ -133,8 +133,7 @@ define([
                             _eventDispatcher.sendEvent(events.JWPLAYER_PROVIDER_CLICK);
                         };
 
-                        _clickOverlayUI = new UI(_clickOverlay).on(events.touchEvents.CLICK, interactCallback)
-                            .on(events.touchEvents.TAP, interactCallback);
+                        _clickOverlayUI = new UI(_clickOverlay).on('click tap', interactCallback);
                     }
                     _container.appendChild(_clickOverlay);
 
