@@ -75,11 +75,16 @@ define([
         },
 
         build : function() {
+            var timeSlider = new TimeSlider(this._model, this._api),
+                playlistTooltip = new Playlist('jw-icon-playlist'),
+                volumeSlider,
+                volumeTooltip;
 
-            var timeSlider = new TimeSlider(this._model, this._api);
-            var volumeSlider = new Slider('jw-slider-volume', 'horizontal');
-            var volumeTooltip = new VolumeTooltip(this._model, 'jw-icon-volume');
-            var playlistTooltip = new Playlist('jw-icon-playlist');
+            // Do not initialize volume sliders on mobile.
+            if(!utils.isMobile()){
+                volumeSlider = new Slider('jw-slider-volume', 'horizontal');
+                volumeTooltip = new VolumeTooltip(this._model, 'jw-icon-volume');
+            }
 
             this.elements = {
                 alt: text('jw-text-alt'),
@@ -125,6 +130,12 @@ define([
                 ]
             };
 
+            // Remove undefined layout elements.  They are invalid for the current platform.
+            // (e.g. volume and volumetooltip on mobile)
+            this.layout.right = _.reject(this.layout.right, function(ele){
+                return _.isUndefined(ele);
+            });
+
             this.el = document.createElement('span');
             this.el.className = 'jw-container jw-controlbar';
 
@@ -161,14 +172,23 @@ define([
             this._model.on('change:captionsIndex', this.onCaptionsIndex, this);
 
             // Event listeners
-            this.elements.volume.on('update', function(pct) {
-                var val = pct.percentage;
-                this._api.setVolume(val);
-            }, this);
-            this.elements.volumetooltip.on('update', function(pct) {
-                var val = pct.percentage;
-                this._api.setVolume(val);
-            }, this);
+
+            // Volume sliders do not exist on mobile so don't assign listeners to them.
+            if(this.elements.volume) {
+                this.elements.volume.on('update', function (pct) {
+                    var val = pct.percentage;
+                    this._api.setVolume(val);
+                }, this);
+            }
+            if(this.elements.volumetooltip) {
+                this.elements.volumetooltip.on('update', function(pct) {
+                    var val = pct.percentage;
+                    this._api.setVolume(val);
+                }, this);
+                this.elements.volumetooltip.on('toggleValue', function(){
+                    this._api.setMute();
+                }, this);
+            }
 
             this.elements.playlist.on('select', function(value) {
                 this._model.once('setItem', function() {
@@ -194,10 +214,6 @@ define([
 
             this.elements.audiotracks.on('select', function(value){
                 this._model.getVideo().setCurrentAudioTrack(value);
-            }, this);
-
-            this.elements.volumetooltip.on('toggleValue', function(){
-                this._api.setMute();
             }, this);
         },
 
@@ -248,9 +264,14 @@ define([
         },
         renderVolume : function(muted, vol) {
             utils.toggleClass(this.elements.mute.element(), 'jw-off', muted);
-            utils.toggleClass(this.elements.volumetooltip.element(), 'jw-off', muted);
-            this.elements.volume.render(muted ? 0 : vol);
-            this.elements.volumetooltip.volumeSlider.render(muted ? 0 : vol);
+            // volume and volumetooltip do not exist on mobile devices.
+            if(this.elements.volume) {
+                this.elements.volume.render(muted ? 0 : vol);
+            }
+            if(this.elements.volumetooltip){
+                this.elements.volumetooltip.volumeSlider.render(muted ? 0 : vol);
+                utils.toggleClass(this.elements.volumetooltip.element(), 'jw-off', muted);
+            }
         },
         onCastAvailable : function(model, val) {
             this.elements.cast.toggle(val);
