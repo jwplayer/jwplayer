@@ -92,6 +92,7 @@ define([
                 duration: text('jw-text-duration'),
                 hd: menu('jw-icon-hd'),
                 cc: menu('jw-icon-cc'),
+                audiotracks: menu('jw-icon-audio-tracks'),
                 mute: button('jw-icon-volume', this._api.setMute),
                 volume: volumeSlider,
                 volumetooltip: volumeTooltip,
@@ -115,6 +116,7 @@ define([
                     this.elements.duration,
                     this.elements.hd,
                     this.elements.cc,
+                    this.elements.audiotracks,
                     this.elements.mute,
                     this.elements.volume,
                     this.elements.volumetooltip,
@@ -190,6 +192,10 @@ define([
                 this._api.setCurrentCaptions(index ? 0 : 1);
             }, this);
 
+            this.elements.audiotracks.on('select', function(value){
+                this._model.getVideo().setCurrentAudioTrack(value);
+            }, this);
+
             this.elements.volumetooltip.on('toggleValue', function(){
                 this._api.setMute();
             }, this);
@@ -218,11 +224,20 @@ define([
             var itemIdx = model.get('item');
             this.elements.playlist.selectItem(itemIdx);
 
+            this.elements.audiotracks.setup();
+
             this._model.mediaModel.on('change:levels', function(model, levels) {
                 this.elements.hd.setup(levels, model.get('currentLevel'));
             }, this);
             this._model.mediaModel.on('change:currentLevel', function(model, level) {
                 this.elements.hd.selectItem(level);
+            }, this);
+            this._model.mediaModel.on('change:audioTracks', function(model, audioTracks) {
+                var list = _.map(audioTracks, function(track) { return { label : track.name }; });
+                this.elements.audiotracks.setup(list, model.get('currentAudioTrack'), {toggle: false});
+            }, this);
+            this._model.mediaModel.on('change:currentAudioTrack', function(model, currentAudioTrack) {
+                this.elements.audiotracks.selectItem(currentAudioTrack);
             }, this);
         },
         onVolume : function(model, pct) {

@@ -118,6 +118,13 @@ define([
                 case events.JWPLAYER_MEDIA_LEVEL_CHANGED:
                     this.setQualityLevel(evt.currentQuality, evt.levels);
                     break;
+                case events.JWPLAYER_AUDIO_TRACKS:
+                    this.setCurrentAudioTrack(evt.currentTrack, evt.tracks);
+                    this.mediaModel.set('audioTracks', evt.tracks);
+                    break;
+                case events.JWPLAYER_AUDIO_TRACK_CHANGED:
+                    this.setCurrentAudioTrack(evt.currentTrack, evt.tracks);
+                    break;
 
                 case 'visualQuality':
                     var visualQuality = _.extend({}, evt);
@@ -132,6 +139,12 @@ define([
         this.setQualityLevel = function(quality, levels){
             if (quality > -1 && levels.length > 1 && _provider.getName().name !== 'youtube') {
                 this.mediaModel.set('currentLevel', parseInt(quality));
+            }
+        };
+
+        this.setCurrentAudioTrack = function(currentTrack, tracks) {
+            if (currentTrack > -1 && tracks.length > 1) {
+                this.mediaModel.set('currentAudioTrack', parseInt(currentTrack));
             }
         };
 

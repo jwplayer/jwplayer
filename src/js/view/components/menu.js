@@ -7,7 +7,7 @@ define([
     'handlebars-loader!templates/menu.html'
 ], function(Tooltip, utils, _, events, UI, menuTemplate) {
     var Menu = Tooltip.extend({
-        setup : function (list, selectedIndex) {
+        setup : function (list, selectedIndex, options) {
             if(!this.iconUI){
                 this.iconUI = new UI(this.el);
 
@@ -26,9 +26,7 @@ define([
 
             utils.toggleClass(this.el, 'jw-hidden', (list.length < 2));
 
-            if (list.length === 2) {
-               this.iconUI('click tap', this.toggleValueListener);
-            } else if (list.length > 2) {
+            if (list.length > 2 || (list.length === 2 && options && options.toggle === false)) {
                 utils.removeClass(this.el, 'jw-off');
 
                 this.iconUI.on('tap', this.toggleOpenStateListener);
@@ -40,6 +38,8 @@ define([
                 var elem = utils.createElement(innerHtml);
                 this.addContent(elem);
                 this.contentUI = new UI(this.content).on('click tap', this.selectListener);
+            } else if (list.length === 2) {
+                this.iconUI.on('click tap', this.toggleValueListener);
             }
 
             this.selectItem(selectedIndex);
