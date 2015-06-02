@@ -7,7 +7,6 @@
     @jwred: @active-color;
 
     .jw-playlist-container {
-        left: -5em;
         background-color: transparent;
 
         ::-webkit-scrollbar-track {
@@ -44,34 +43,15 @@
 
         li.jw-option {
             height: 3em;
-            border-bottom: 1px solid @grayish;
-            background-color: black;
             margin-right: 5px;
-            opacity : 0.8;
         }
 
-        // Menu items are black when active, or hovered
-        li.jw-option:hover,
-        li.jw-option.jw-active-option {
-            background-color: black;
-            opacity : 1;
-        }
-
-        // Number turn red when li is hovered
-        li:hover .jw-label {
-            color: @jwred;
-        }
-
-        // play icon is always red
-        .jw-label .jw-icon-play {
-            color: @jwred;
-        }
 
         .jw-label, .jw-name {
             display: inline-block;
             line-height: 3em;
             color: white;
-            text-align:left;
+            text-align: left;
             overflow: hidden; // required for vertical alignment
             white-space: nowrap;
         }

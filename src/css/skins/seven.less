@@ -20,6 +20,33 @@
         vertical-align: middle;
     }
 
+    .jw-playlist-container {
+        left: -46%;
+    }
+    
+    .jw-option {
+        opacity : 0.8;
+        border-bottom: 1px solid #444;
+        background-color: black;
+
+        // Number turn red when li is hovered
+        &:hover .jw-label {
+            color: @active-color;
+        }
+    }
+
+    // Menu items are black when active, or hovered
+    .jw-option:hover,
+    .jw-option.jw-active-option {
+        background-color: black;
+        opacity : 1;
+    }
+
+    // play icon is always red
+    .jw-label .jw-icon-play {
+        color: @active-color;
+    }
+
     .jw-icon,
     .jw-text,
     .jw-icon-inline {
