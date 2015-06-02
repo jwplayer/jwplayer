@@ -9,7 +9,7 @@ define([
     var Menu = Tooltip.extend({
         setup : function (list, selectedIndex) {
             if(!this.iconUI){
-                this.iconUI = new UI(this.el).on('tap', utils.noop);
+                this.iconUI = new UI(this.el);
 
                 this.toggleValueListener= this.toggleValue.bind(this);
 

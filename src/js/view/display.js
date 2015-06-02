@@ -10,7 +10,6 @@ define([
     var Display = function(_model) {
         var _display,
             _alternateClickHandler;
-            //_lastClick;
 
         _.extend(this, Events);
 

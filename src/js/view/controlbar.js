@@ -10,15 +10,14 @@ define([
     'view/components/volumetooltip'
 ], function(utils, _, Events, UI, Slider, TimeSlider, Menu, Playlist, VolumeTooltip) {
 
-    function button(icon, click) {
+    function button(icon, apiAction) {
         var element = document.createElement('span');
         element.className = 'jw-icon jw-icon-inline ' + icon;
         element.style.display = 'none';
 
-        if (click) {
-            // Some actions receive parameters which change functionality based on their presence (E.G. play)
-            // Don't send the event to the handler so we don't have unexpected results.
-            new UI(element).on('click tap', function() { click(); });
+        if (apiAction) {
+            // Don't send the event to the handler so we don't have unexpected results. (e.g. play)
+            new UI(element).on('click tap', function() { apiAction(); });
         }
 
         return {

@@ -3,7 +3,7 @@ define([
     'events/events',
     'utils/underscore'
 ], function(Events, events, _) {
-    var ui = function (elem, options) {
+    var UI = function (elem, options) {
         var _elem = elem,
             _enableDoubleTap = (options && options.enableDoubleTap),
             _hasMoved = false,
@@ -48,7 +48,7 @@ define([
                 triggerEvent(touchEvents.DRAG_END, evt);
             } else {
                 // This allows the controlbar/dock/logo click events not to be forwarded to the view
-                evt.cancelBubble = true;
+                evt.stopPropagation();
                 if(evt instanceof MouseEvent) {
                     triggerEvent(touchEvents.CLICK, evt);
                 } else {
@@ -93,12 +93,12 @@ define([
         function triggerEvent(type, srcEvent) {
             preventDefault(srcEvent);
             if( _enableDoubleTap && (type === events.touchEvents.CLICK || type === events.touchEvents.TAP)){
-                if(Date.now() - _lastClickTime < _doubleClickDelay) {
+                if(_.now() - _lastClickTime < _doubleClickDelay) {
                     type = (type === events.touchEvents.CLICK) ?
                         events.touchEvents.DOUBLE_CLICK : events.touchEvents.DOUBLE_TAP;
                     _lastClickTime = 0;
                 } else {
-                    _lastClickTime = Date.now();
+                    _lastClickTime = _.now();
                 }
             }
             var evt = normalizeUIEvent(type, srcEvent);
@@ -122,7 +122,7 @@ define([
         return this;
     };
 
-    _.extend(ui.prototype, Events);
+    _.extend(UI.prototype, Events);
 
-    return ui;
+    return UI;
 });
