@@ -66,6 +66,7 @@ define([
     };
 
     return {
-        selectPlayer : selectPlayer
+        selectPlayer : selectPlayer,
+        registerPlugin : plugins.registerPlugin
     };
 });

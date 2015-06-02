@@ -10,9 +10,10 @@ define([
     'controller/controller',
     'api/api-actions',
     'api/api-mutators',
-    'api/callbacks-deprecate'
+    'api/callbacks-deprecate',
+    'version'
 ], function(Config, InstreamPlayer, events, states,
-            Events, utils, Timer, _, Controller, actionsInit, mutatorsInit, legacyInit) {
+            Events, utils, Timer, _, Controller, actionsInit, mutatorsInit, legacyInit, version) {
 
     function addFocusBorder(container) {
         utils.addClass(container, 'jw-tab-focus');
@@ -48,6 +49,10 @@ define([
         // Set up event handling
         _.extend(this, Events);
 
+        // This helps plugins, particularly analytics
+        this.utils = utils;
+        this._ = _;
+        this.version = version;
 
         this.trigger = function(type, args) {
             if (_.isObject(args)) {

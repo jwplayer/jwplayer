@@ -278,15 +278,22 @@ define([
                 '.jw-thumb:after'
             ];
 
-            var iconHovers = ['.jw-icon:hover'];
+            var iconHovers = ['.jw-icon:hover', '.jw-option:hover'];
             var sliders = ['.jw-progress'];
             var containers = ['.jw-container'];
+
 
             addStyle('color', iconHovers, _model.get('skinColorActive'));
             addStyle('color', icons, _model.get('skinColorInactive'));
             addStyle('background', cues, _model.get('skinColorInactive'));
             addStyle('background', sliders, _model.get('skinColorActive'));
             addStyle('background', containers, _model.get('skinColorBackground'));
+
+            addStyle('color', ['.jw-active-option'], _model.get('skinColorActive'));
+            addStyle('background', ['.jw-active-option'], _model.get('skinColorInactive'));
+
+            addStyle('color', ['.jw-icon-hd', '.jw-icon-cc'], _model.get('skinColorActive'));
+            addStyle('color', ['.jw-icon-hd.jw-off', '.jw-icon-cc.jw-off'], _model.get('skinColorInactive'));
         };
 
         this.setup = function() {
@@ -974,8 +981,9 @@ define([
             _updateState(state);
         }
 
-        function _errorHandler() {
-            _hideControlbar();
+        function _errorHandler(evt) {
+            _stateHandler(_model, states.ERROR);
+            _title.updateText(_model, {'title': evt.message});
         }
 
         function _isAudioFile() {
@@ -1031,6 +1039,7 @@ define([
                     }
                     break;
                 case states.IDLE:
+                case states.ERROR:
                 case states.COMPLETE:
                     _showVideo(false);
                     if (!_audioMode) {
