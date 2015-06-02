@@ -229,6 +229,8 @@ define([
             var itemIdx = model.get('item');
             this.elements.playlist.selectItem(itemIdx);
 
+            this.elements.audiotracks.setup();
+
             this._model.mediaModel.on('change:levels', function(model, levels) {
                 this.elements.hd.setup(levels, model.get('currentLevel'));
             }, this);
