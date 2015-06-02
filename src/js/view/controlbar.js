@@ -90,7 +90,7 @@ define([
                 duration: text('jw-text-duration'),
                 hd: menu('jw-icon-hd', false),
                 cc: menu('jw-icon-cc', false),
-                audiotracks: listmenu('jw-icon-audio-tracks', true),
+                audiotracks: menu('jw-icon-audio-tracks', true),
                 mute: button('jw-icon-volume', this._api.setMute),
                 volume: volumeSlider,
                 volumetooltip: volumeTooltip,
