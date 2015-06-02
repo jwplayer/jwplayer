@@ -6,7 +6,7 @@ define([
 ], function(Tooltip, utils, _, menuTemplate) {
 
     var Menu = Tooltip.extend({
-        setup : function (list, selectedIndex) {
+        setup : function (list, selectedIndex, options) {
             if(this.content){
                 this.content.removeEventListener('click', this.selectListener);
                 this.removeContent();
@@ -18,10 +18,7 @@ define([
 
             utils.toggleClass(this.el, 'jw-hidden', (list.length < 2));
 
-            if (list.length === 2) {
-                this.toggleListener = this.toggle.bind(this);
-                this.el.addEventListener('click', this.toggleListener);
-            } else if (list.length > 2) {
+            if (list.length > 2 || (options && options.toggle === false)) {
                 utils.removeClass(this.el, 'jw-off');
 
                 var innerHtml = menuTemplate(list);
@@ -30,6 +27,9 @@ define([
 
                 this.selectListener = this.select.bind(this);
                 this.content.addEventListener('click', this.selectListener);
+            } else if (list.length === 2) {
+                this.toggleListener = this.toggle.bind(this);
+                this.el.addEventListener('click', this.toggleListener);
             }
 
             this.selectItem(selectedIndex);
