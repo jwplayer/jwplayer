@@ -1,0 +1,27 @@
+<div class="jw-container jw-menu jw-playlist-container">
+
+    <div class="jw-tooltip-title">
+        <span class="jw-icon jw-icon-inline jw-icon-playlist"></span>
+        <span class="jw-text">PLAYLIST</span>
+        {{!--
+        This is a comment block
+        <span class="jw-icon jw-icon-inline jw-icon-close" style="float:right"></span>
+        --}}
+    </div>
+
+    <ul class="jw-playlist">
+        {{#each this}}
+            {{#if this.active}}
+                <li class='jw-option jw-text jw-active-option item-{{@index}}'>
+                    <span class="jw-label"><span class="jw-icon jw-icon-play"></span></span>
+                    <span class="jw-name">{{this.title}}</span>
+                </li>
+            {{else}}
+                <li class='jw-option jw-text item-{{@index}}'>
+                    <span class="jw-label">{{this.label}}</span>
+                    <span class="jw-name">{{this.title}}</span>
+                </li>
+            {{/if}}
+        {{/each}}
+    </ul>
+</div>

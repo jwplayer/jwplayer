@@ -1,63 +1,66 @@
-# [JW Player](http://jwplayer.com)
+# <img height="70px" src="http://www.jwplayer.com/wp-content/uploads/JWP-GitHub-Banner-1.png" alt="JW Player Logo" title="JW Player Logo"/>
 
-<img src="http://www.jwplayer.com/wp-content/uploads/social_thumb.png" alt="JW Player Logo" title="JW Player Logo" align="right" width="150" />
+[![Join the chat at https://gitter.im/jwplayer/jwplayer](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/jwplayer/jwplayer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-JW Player is a the world's most popular embeddable media player.
+> Plays everywhere, every time.
+> 
+> JW Player is -the- open source solution for making video playback seamless across browsers and file types. 
+> It empowers the developer to interact with video programmatically to create unique and awesome user experiences.
+ 
+[Code Examples](http://support.jwplayer.com/customer/portal/topics/564475-javascript-api/articles)
 
-* **Cross browser:** Play your video and audio files easily on all major browsers and mobile devices. Full details [here](http://support.jwplayer.com/customer/portal/articles/1403727-what-is-jw-player-).
-* **Media formats:** Play MP4, WebM, FLV, HLS, YouTube videos, [and more](http://support.jwplayer.com/customer/portal/articles/1403635-media-format-reference).
-* **Open Source:** JW Player is free for non-commercial use. For commercial uses, users must [purchase a license](http://www.jwplayer.com/pricing/).
+[Documentation and Support](http://support.jwplayer.com/)
 
-For documentation and support, please visit the [JW Player Support Site](http://support.jwplayer.com/).
 
-## Examples
+## Example
 
-We have several articles and examples on the [JW Player Support Site](http://support.jwplayer.com/customer/portal/topics/564475-javascript-api/articles).
-
-The example below will find the element with an id of *myVideoId* and render a video player into it. We will then
-create an event handler to watch for when someone changes the volume.
+The example below will find the element with an id of *my_video* and render a video player into it. 
 
 ```js
-	jwplayer('myVideoId').setup({
-		file: '/uploads/example.mp4',
-	});
+    // Create a jwplayer instance
+    jwplayer('my_video').setup({
+        file: '/uploads/example.mp4',
+    });
 
-	jwplayer('myVideoId').onVolume(function(event) {
-		console.log('The volume has changed', event);
-	});
+    // Add a custom callback for when user pauses playback
+    jwplayer('my_video').on('pause', function(event) {
+        alert('Why did my user pause their video instead of watching it?');
+    });
 ```
 
-Note that we could also use functions **getVolume**, **setVolume** and others which can be found [here](http://support.jwplayer.com/customer/portal/topics/564475-javascript-api/articles).
+Other callbacks that we provide include
+* **play / complete**
+* **seek / pause**
+* **volume / mute**
+* **[and more](http://support.jwplayer.com/customer/portal/topics/564475-javascript-api/articles)**
+
+You also have the power to programatically set any configuration within the player. 
+
+```js
+    function bumpIt() {
+    	var vol = player.get('volume');
+        player.set('volume', vol + 10 );
+    }
+```
 
 ## Contributing
 
-### Style Guide
-For our javascript code, we follow the [Douglas Crockford Style guide](http://javascript.crockford.com/code.html)
-
-Before submitting a change be sure to verify it follows our guide by using
-```sh
-grunt jshint
-```
-
 ### Build Instructions
 
-To build the JW Player, you will need the following software:
-
- * Flex SDK 4.1: http://sourceforge.net/adobe/flexsdk/wiki/Downloads/
- * Ant 1.7.0: http://ant.apache.org/bindownload.cgi
-
-To compile with Flex and Ant, you'll first need to modify the `build.properties` file found in the `build` folder:
-
-1. Set `flexsdk` to the install location of the Flex SDK (e.g. `/usr/local/bin/flex/`)
-1. Set `execextension` to `.exe` if you're using Windows; otherwise leave it blank.
-
-You can now compile the player using Ant:
+ 1. Install [Node.js](https://nodejs.org/download)
+ 1. Install [Adobe AIR SDK](http://www.adobe.com/devnet/air/air-sdk-download.html)
+ 1. Download [player.swc 11.1](http://fpdownload.macromedia.com/get/flashplayer/installers/archive/playerglobal/playerglobal11_1.swc)
+ 1. Rename and move the .swc file to ```{AIRSDK_Compiler}/frameworks/libs/player/11.1/playerglobal.swc```
 
 ```sh
-ant -buildfile build\build.xml
+    # First time set up
+    npm install
+    
+    # Build using
+    grunt
 ```
 
-If the build is successful, the new player assets (jwplayer.js, jwplayer.html5.js, jwplayer.flash.swf) will appear in the `bin-release` folder.
+After build, the assets will be available in the `bin-release` folder.
 
 ## Software License
 The use of the JW Player Open Source edition is governed by a [Creative Commons license](http://creativecommons.org/licenses/by-nc-sa/3.0/). You can use, modify, copy, and distribute this edition as long as it’s for non-commercial use, you provide attribution, and share under a similar license.

@@ -1,0 +1,189 @@
+@import "vars";
+
+// This is IE8 only
+@font-face {
+    font-family: 'jw-six-icons';
+    src: url('../../../assets/fonts/jw-six-icons.eot');
+    font-weight: normal;
+    font-style: normal;
+}
+// This cascades and overwrites for non IE8 browsers
+@font-face {
+    font-family: 'jw-six-icons';
+    src: url('../../../assets/fonts/jw-six-icons.eot') format('embedded-opentype'),
+    url('../../../assets/fonts/jw-six-icons.woff') format('woff'),
+    url('../../../assets/fonts/jw-six-icons.ttf') format('truetype'),
+    url('../../../assets/fonts/jw-six-icons.svg') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.jwplayer {
+    .jw-icon {
+        font-family: 'jw-six-icons';
+        -webkit-font-smoothing: antialiased;
+        font-style: normal;
+        font-weight: normal;
+        line-height: 1;
+        text-transform: none;
+        background-color: transparent;
+        font-variant: normal;
+
+        /* Enable Ligatures ================ */
+        -webkit-font-feature-settings: "liga";
+        -moz-font-feature-settings: "liga=1";
+        -moz-font-feature-settings: "liga";
+        -ms-font-feature-settings: "liga" 1;
+        -o-font-feature-settings: "liga";
+        font-feature-settings: "liga";
+        -moz-osx-font-smoothing: grayscale;
+
+    }
+
+    .jw-thumb,
+    .jw-icon-inline,
+    .jw-icon-tooltip,
+    .jw-icon-display,
+    .jw-controlbar .jw-menu .jw-option:before {
+
+        // Mixin all default formatting
+        .jw-icon;
+   }
+
+    /*** ICONS ***/
+    .jw-icon-audio-tracks {
+        &:before {
+            content: "\e600";
+        }
+    }
+
+    .jw-icon-buffer{
+        &:before {
+            content: "\e601";
+        }
+    }
+
+    .jw-icon-cast {
+        &:before {
+            content: "\e603";
+        }
+        &.jw-off:before {
+            content: "\e602";
+        }
+    }
+
+    .jw-icon-cc {
+        &:before {
+            content: "\e605";
+        }
+        &.jw-off:before {
+            content: "\e604";
+        }
+    }
+
+    .jw-icon-cue {
+        &:before {
+            content: "\e606";
+        }
+    }
+
+    .jw-icon-menu-bullet {
+        &:before {
+            content: "\e606";
+        }
+    }
+
+    .jw-slider-horizontal .jw-thumb,
+    .jw-slider-vertical .jw-thumb {
+        &:before {
+        }
+    }
+
+    .jw-icon-error {
+        &:before {
+            content: "\e607";
+        }
+    }
+
+    .jw-icon-fullscreen{
+        &:before {
+            content: "\e608";
+        }
+        &.jw-off:before {
+            content: "\e613";
+        }
+    }
+
+    .jw-icon-hd {
+        &:before {
+            content: "\e60a";
+        }
+        &.jw-off:before {
+            content: "\e609";
+        }
+    }
+
+    .jw-icon-jw-logo {
+        &:before {
+            content: "\e60b";
+        }
+    }
+
+    .jw-icon-next {
+        &:before {
+            content: "\e60c";
+        }
+    }
+
+    .jw-icon-pause {
+        &:before {
+            content: "\e60d";
+        }
+    }
+
+    .jw-icon-play {
+        &:before {
+            content: "\e60e";
+        }
+    }
+
+    .jw-icon-prev {
+        &:before {
+            content: "\e60f";
+        }
+    }
+
+    .jw-icon-replay {
+        &:before {
+            content: "\e610";
+        }
+    }
+
+    .jw-icon-volume {
+        &:before {
+            content: "\e612";
+        }
+
+        &.jw-off:before {
+            content: "\e611";
+        }
+    }
+
+    .jw-icon-more {
+        &:before {
+            content: "\e614";
+        }
+    }
+
+    .jw-icon-close {
+        &:before {
+            content: "\e615";
+        }
+    }
+
+    .jw-icon-playlist {
+        &:before {
+            content: "\e616";
+        }
+    }
+}

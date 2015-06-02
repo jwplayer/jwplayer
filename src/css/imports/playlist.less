@@ -1,0 +1,86 @@
+@import "../imports/vars";
+
+.jwplayer {
+
+    @blueish : #384154;
+    @grayish : #444;
+    @jwred: @active-color;
+
+    .jw-playlist-container {
+        left: -5em;
+        background-color: transparent;
+
+        ::-webkit-scrollbar-track {
+            background-color: @blueish;
+            box-shadow: inset 0 0 0 6px black;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 16px;
+            background-color: black;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: white;
+            border-left: 6px solid black;
+            border-right: 6px solid black;
+        }
+
+        .jw-icon-playlist {
+            margin-left : -0.5em;
+        }
+    }
+
+    .jw-tooltip-title {
+        background-color : black;
+    }
+
+    .jw-playlist {
+        max-height: 11em;
+        min-height: 4.5em;
+        overflow-y: scroll;
+
+        li.jw-option {
+            height: 3em;
+            border-bottom: 1px solid @grayish;
+            background-color: black;
+
+            opacity : 0.8;
+        }
+
+        // Menu items are black when active, or hovered
+        li.jw-option:hover,
+        li.jw-option.jw-active-option {
+            background-color: black;
+            opacity : 1;
+        }
+
+        // Number turn red when li is hovered
+        li:hover .jw-label {
+            color: @jwred;
+        }
+
+        // play icon is always red
+        .jw-label .jw-icon-play {
+            color: @jwred;
+        }
+
+        .jw-label, .jw-name {
+            display: inline-block;
+            line-height: 3em;
+            color: white;
+            text-align:left;
+            overflow: hidden; // required for vertical alignment
+            white-space: nowrap;
+        }
+        
+        .jw-label {
+            width : 2em;
+        }
+
+        .jw-name {
+            width : 11em;
+        }
+    }
+}

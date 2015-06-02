@@ -1,0 +1,149 @@
+@import "vars";
+
+.jwplayer  {
+
+    .jw-rail-group {
+        display : inline-block;
+        height: 1em;
+        position: relative;
+    }
+    .jw-rail,
+    .jw-buffer,
+    .jw-progress {
+        position: absolute;
+        cursor: pointer;
+    }
+
+    .jw-progress {
+        background-color: #fff;
+    }
+
+    .jw-rail {
+        background-color: @rail-color;
+    }
+
+    .jw-buffer {
+        background-color: @buffer-color;
+    }
+
+    .jw-cue,
+    .jw-thumb {
+        position: absolute;
+        z-index: 1;
+        cursor: pointer;
+
+        &:after {
+            content: "";
+            display: block;
+        }
+    }
+
+    .jw-cue {
+        z-index: 0;
+    }
+}
+
+.jwplayer .jw-slider-horizontal {
+    width: @volume-rail-length;
+    height: 1em;
+
+    &.jw-slider-volume {
+        margin-right: 5px;
+    }
+
+    .jw-rail,
+    .jw-buffer,
+    .jw-progress {
+        width: 100%;
+        height: .4em;
+    }
+
+    .jw-progress,
+    .jw-buffer {
+        width: 0;   // Default width, overridden by player.
+    }
+
+    .jw-rail,
+    .jw-progress,
+    .jw-rail-group {
+        width: 100%;
+    }
+
+    .jw-thumb {
+        left: 0;    // Default position, overridden by player.
+        margin-left: @thumb-size/-2;
+        &:after {
+            background: #aaa;
+            width: .4em;
+            height: .4em;
+        }
+    }
+
+    .jw-cue {
+        &:after {
+            background-color: #fff;
+            width: .1em;
+            height: .4em;
+        }
+    }
+}
+
+.jwplayer .jw-slider-vertical {
+    width: @def-rail-width;
+    height: @volume-rail-length;
+    bottom: 0em;
+    position: absolute;
+    padding: 1em;
+
+    .jw-rail,
+    .jw-buffer,
+    .jw-progress {
+        bottom: 0;
+        height: 100%;
+    }
+
+    .jw-progress,
+    .jw-buffer {
+        height: 0;   // Default height, overridden by player.
+    }
+
+    .jw-rail-group,
+    .jw-rail,
+    .jw-progress {
+        bottom: 0;
+        width: @def-rail-width;
+        height: 100%;
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+    }
+
+    .jw-rail-group {
+        height: 4em;
+        position: relative;
+    }
+
+    .jw-thumb {
+        bottom: 0;  // Default position, overridden by player.
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+        
+    }
+}
+
+.jwplayer .jw-slider-time {
+    right: 0;
+    left: 0;
+    width: 100%;
+}
+
+.jwplayer .jw-tooltip-time {
+    position: absolute;
+}
+
+.jw-slider-volume {
+    .jw-buffer {
+        display: none;
+    }
+}

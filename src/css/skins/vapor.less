@@ -1,0 +1,91 @@
+@import "../imports/vars";
+@import "../imports/mixins";
+
+.jw-skin-vapor {
+	@active-color: #fff;
+    @inactive-color: rgba(0, 0, 0, 0.5);
+   	@hover-color: @active-color;
+
+    @display-icon-color: rgba(255, 255, 255, 0.5);
+    @display-icon-hover-color: @progress-color;
+    @display-bkgd-color: @inactive-color;
+    @display-bkgd-hover-color: #000;
+
+    @controlbar-background: @rail-color;
+	@progress-color: #0f9e60;
+    @buffer-color: @inactive-color;
+    @rail-color: rgba(255, 255, 255, 0.4);
+    @thumb-color: @progress-color;
+    
+    @rail-height: 100%;
+    @cue-size: .66em;
+
+    @volume-background: @inactive-color;
+
+    #namespace > .basic-skin-styles(); // Using the above local variables
+	.skin-element-padding();
+
+	.jw-rail-group {
+		height: @rail-height;
+	}
+
+	.jw-slider-horizontal {
+		height: @rail-height;
+
+		.jw-rail,
+		.jw-progress,
+		.jw-buffer {
+			height: @rail-height;
+		}
+
+		.jw-thumb,
+		.jw-cue {
+			&:after {
+				height: 2em;
+			}
+		}
+
+		.jw-thumb {
+			margin-left: 0;
+
+			&:after {
+				background-color: #fff;
+				width: .2em;
+			}
+		}
+
+		.jw-cue {
+			.vertically-centered-rail-element(2em, @cue-size);
+
+			&:after {
+				background: @display-icon-color;
+				height: @cue-size;
+			}
+		}
+	}
+
+	.jw-slider-vertical {
+		padding: .4em;
+		bottom: 3px;
+		border-radius: 2px;
+		border: 0;
+
+		.jw-rail {
+			background-color: rgba(0, 0, 0, 0.8);
+		}
+
+		.jw-rail,
+		.jw-progress {
+			width: .5em;
+			border: 1px solid #000;
+		}
+
+	}
+
+    .jw-time-tip,
+    .jw-volume-tip,
+    .jw-menu {
+        border-radius: @ui-padding;
+        bottom: .3em;
+    }
+}

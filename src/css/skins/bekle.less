@@ -1,0 +1,122 @@
+@import "../imports/vars";
+@import "../imports/mixins";
+
+.jw-skin-bekle {
+    @active-color: #139ed5;
+    @inactive-color: #fff;
+    @hover-color: @active-color;
+
+    @progress-horz-gradient: linear-gradient(to bottom, #15b2f0, #149bd1 50%, #15b2f0 100%);
+    @progress-vert-gradient: linear-gradient(to right, #15b2f0, #149bd1 50%, #15b2f0 100%);
+    @buffer-gradient: linear-gradient(to bottom, #5e6575, #565e6b 50%, #5e6575 100%);
+    @rail-gradient: linear-gradient(to bottom, #323b4c, #2f3847 50%, #323b4c 100%);
+    @rail-vert-gradient: linear-gradient(to right, #323b4c, #2f3847 50%, #323b4c 100%);
+
+    @rail-height: .3em;
+    @cue-size: .2em;
+
+    @progress-color: @progress-horz-gradient;
+    @buffer-color: @buffer-gradient;
+    @rail-color: @rail-gradient;
+    @thumb-color: @progress-color;
+    @controlbar-background: #182335;
+
+    @display-icon-color: @inactive-color;
+    @display-icon-hover-color: @inactive-color;
+    @display-bkgd-color: @rail-color;
+    @display-bkgd-hover-color: @active-color;
+
+    @cc-inactive: #5e6575;
+    @cc-active: @active-color;
+
+    @volume-background: #505863;
+
+    #namespace > .basic-skin-styles(); // Using the above local variables
+    .skin-element-padding();
+
+    .jw-controlbar {
+        .inset-controlbar;
+        opacity: 0.8;
+        border-radius: .3em;
+    }
+
+    .jw-slider-horizontal,
+    .jw-slider-vertical {
+
+        .jw-rail,
+        .jw-progress,
+        .jw-buffer {
+            border-radius: @ui-corner-round;
+        }
+
+        .jw-thumb {
+
+            &:after {
+                background-color: #fff;
+                width: .7em;
+                height: .7em;
+                border-radius: 50%;
+            }
+        }
+    }
+
+    .jw-slider-horizontal {
+
+        .jw-rail,
+        .jw-progress,
+        .jw-buffer {
+            height: @rail-height;
+        }
+
+        .jw-cue {
+            .vertically-centered-rail-element(@rail-height, @cue-size);
+
+            &:after {
+                background-color: #fff;
+                width: .3em;
+                height: @cue-size;
+                border-radius: 1em;
+            }
+        }
+
+        .jw-thumb {
+            .vertically-centered-rail-element(@rail-height, .7em);
+        }
+    }
+
+    .jw-slider-vertical {
+        bottom: 5px;
+
+        .jw-rail,
+        .jw-progress {
+            width: @rail-height;
+        }
+
+        .jw-rail {
+            background: @rail-vert-gradient;
+        }
+
+        .jw-progress {
+            background: @progress-vert-gradient;
+        }
+
+    }
+
+    .jw-time-tip,
+    .jw-volume-tip,
+    .jw-menu {
+        border-radius: @volume-border-radius;
+    }
+
+    .jw-icon-cc {
+        color: @cc-active;
+
+        &.jw-off {
+            color: @cc-inactive;   
+
+            &:before {
+                content: "\e605";
+            }        
+        }
+    }
+}

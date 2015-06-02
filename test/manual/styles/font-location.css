@@ -1,0 +1,15 @@
+@font-face {
+    font-family: 'jw-six-icons';
+    src: url('/jwplayer/assets/fonts/jw-six-icons.eot');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'jw-six-icons';
+    src: url('/jwplayer/assets/fonts/jw-six-icons.eot') format('embedded-opentype'),
+    url('/jwplayer/assets/fonts/jw-six-icons.woff') format('woff'),
+    url('/jwplayer/assets/fonts/jw-six-icons.ttf') format('truetype'),
+    url('/jwplayer/assets/fonts/jw-six-icons.svg') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}

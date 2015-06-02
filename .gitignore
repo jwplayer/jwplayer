@@ -6,3 +6,6 @@ node_modules
 *.iml
 bin-debug
 bin-release
+built
+bower_components
+reports

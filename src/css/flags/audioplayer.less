@@ -1,0 +1,38 @@
+@import "../imports/icons";
+
+.jwplayer.jw-flag-audio-player {
+    background-color: transparent;
+
+    .jw-preview {
+        background-color: transparent;
+    }
+    .jw-controlbar {
+        display: table;  // This overwrites 'none' from jw-states-idle
+        bottom: 0;
+        margin: 0;
+        width: 100%;
+        min-width: 100%;
+
+        .jw-icon-fullscreen {
+            display: none;
+        }
+
+        .jw-icon-tooltip {
+            display: none;
+        }
+
+        .jw-slider-volume.jw-slider-horizontal,
+        .jw-icon-inline.jw-icon-volume {
+            display: inline-block;
+        }
+        .jw-icon-tooltip.jw-icon-volume {
+            display : none;
+        }
+    }
+
+    &.jw-state-idle {
+        .jw-playback-toggle-icon {
+            .jwplayer .jw-icon-play;
+        }
+    }
+}

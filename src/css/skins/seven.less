@@ -1,0 +1,243 @@
+@import "../imports/vars";
+@import "../imports/mixins";
+
+.jw-skin-seven {
+    @active-color: #FF0046;
+    @inactive-color: #fff;
+    
+    @cc-inactive: @inactive-color;
+    @cc-active: @active-color;
+
+    @rail-height: .2em;
+
+    .jw-controlbar {
+        background: #000;
+        border-top: #333 1px solid;
+        height: 2.5em;
+    }
+
+    .jw-group {
+        vertical-align: middle;
+    }
+
+    .jw-icon,
+    .jw-text,
+    .jw-icon-inline {
+        color: @inactive-color;
+    }
+
+    .jw-text,
+    .jw-icon-inline,
+    .jw-icon-tooltip {
+        padding: 0 5px 3px 5px;
+    }
+
+    .jw-icon,
+    .jw-icon:before, {
+        &:hover {
+            color: @active-color;
+        }
+    }
+
+    .jw-icon:before {
+        padding-left: .7em;
+    }
+
+    .jw-icon-playback:before,
+    .jw-icon-display:before {
+        padding-left: 0;
+    }
+
+    .jw-icon-prev,
+    .jw-icon-next {
+        font-size: .7em;
+        padding: 0 0.2em;
+    }
+
+    .jw-icon-prev:before {
+        border-left: 1px solid #666;
+    }
+
+    .jw-icon-next:before {
+        border-right: 1px solid #666;
+        padding-right: .7em;
+    }
+
+    .jw-icon-display {
+        color: #fff;
+    }
+
+    .jw-display-icon-container {
+        background: #000;
+        border-radius: 50%;
+        padding: 0 .4em;
+        border: 1px solid #333;
+    }
+
+    &.jw-state-idle {
+        .jw-display-icon-container {
+            padding: 0 0 0 .5em;
+        }
+    }
+
+    .jw-slider-horizontal,
+    .jw-slider-vertical {
+
+        .jw-rail {
+            background-color: #384154;
+            box-shadow: none;
+        }
+
+        .jw-buffer {
+            background-color: #666F82;
+        }
+
+        .jw-progress {
+            background: @active-color;
+        }
+
+        .jw-thumb {
+            .vertically-centered-rail-element(.2em, .6em);
+
+            &:after {
+                background-color: #fff;
+                box-shadow: 0px 0px 0px 1px rgba(0,0,0,1);
+                width: .6em;
+                height: .6em;
+                border-radius: 1em;
+            }
+        }
+    }
+
+    .jw-slider-horizontal {
+
+        .jw-rail-group {
+            height: 0.95em;
+        }
+
+        .jw-rail,
+        .jw-buffer,
+        .jw-progress {
+            height: .2em;
+            border-radius: 0;
+        }
+
+        .jw-thumb {
+            top: -15%;
+        }
+
+        .jw-cue {
+            .vertically-centered-rail-element(.2em, .3em);
+
+            &:after {
+                width: .3em;
+                height: .3em;
+                background-color: #fff;
+                border-radius: 50%;
+            }
+        }
+    }
+
+    .jw-slider-vertical {
+        .jw-rail,
+        .jw-buffer,
+        .jw-progress {
+            width: .2em;
+        }
+    }
+
+    .jw-thumb {
+        .horizontally-centered-thumb();
+    }
+
+    .jw-volume-tip {
+        width: 100%;
+        left: -35%;
+    }
+
+    .jw-text-duration {
+        color: #666F82;
+    }
+    
+    .jw-controlbar-right-group {
+        .jw-icon-tooltip:before,
+        .jw-icon-inline:before {
+            border-left: 1px solid #666;
+        }
+
+        .jw-icon-inline:first-child:before {
+            border: none;
+        }
+    }
+
+    .jw-dock {
+        .jw-dock-button {
+            background: #000;
+            border-radius: 50%;
+        }
+        .jw-overlay {
+            background: #000;
+            border-radius: 2.5em;
+        }
+    }
+
+    .jw-overlay .jw-option.jw-active-option {
+        background-color: @active-color;
+        color: #fff;
+    }
+
+    .jw-icon-hd,
+    .jw-icon-cc {
+        color: @active-color;
+    }
+
+    .jw-icon-hd.jw-off,
+    .jw-icon-cc.jw-off {
+        color: white;
+    }
+
+    .jw-icon-hd.jw-off:before {
+        content: "\e60a";
+    }
+
+    .jw-icon-cc.jw-off:before {
+        content: "\e605";
+    }
+
+    .jw-time-tip,
+    .jw-menu,
+    .jw-volume-tip,
+    .jw-skip {
+        border: 1px solid #333;
+        
+    }
+
+    .jw-time-tip {
+        padding: 0.2em;
+        bottom: 1.3em;
+    }
+
+    .jw-menu,
+    .jw-volume-tip {
+        bottom: .15em;
+    }
+    
+    .jw-skip {
+        background: #000;
+        padding: 0.4em;
+        border-radius: 1em;
+
+        .jw-text, .jw-icon-inline {
+            color: @inactive-color;
+            font-size: 0.7em;
+        }
+    }
+
+    .jw-icon-cc {
+        color: @cc-active;
+
+        &.jw-off {
+            color: @cc-inactive;           
+        }
+    }
+}

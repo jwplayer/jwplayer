@@ -1,0 +1,138 @@
+@import "vars";
+
+.inset-controlbar() {
+    display: block;
+    margin: 0 auto;
+    max-width: 96%;
+    bottom: .7em;
+}
+
+.jw-thumbs(@size:@thumb-size, @color:@thumb-color) {
+    width: 1em;
+    height: 1em;
+    font-size: @size;
+    color: @color;
+
+    &:after {
+        width: 1em;
+        height: 1em;
+        border-radius: 1em;
+        background-color: @thumb-color;
+    }
+}
+
+.vertically-centered-rail-element(@rail-height, @element-height) {
+    top: (@rail-height - @element-height)/2;
+}
+
+.horizontally-centered-thumb(@rail-width:@time-rail-width, @element-width:@thumb-size) {
+    left: -(@rail-width - @element-width)/2;
+}
+
+.hover(@color:@hover-color) {
+    &:hover {
+        color: @color;
+    }
+}
+
+.skin-element-padding() {
+    .jw-icon-inline,
+    .jw-icon-tooltip,
+    .jw-text {
+        padding: 0 @ui-padding;
+    }
+}
+
+// Less requires namespaced variables/mixins to overwrite globals - https://github.com/less/less.js/issues/1316
+#namespace() {
+    .basic-skin-styles() {
+
+        .jw-controlbar,
+        .jw-volume-tip {
+            background: @controlbar-background;
+        }
+
+        .jw-icon,
+        .jw-text,
+        .jw-icon-inline {
+            color: @inactive-color;
+        }
+
+        .jw-thumb,
+        .jw-icon-inline,
+        .jw-icon-tooltip,
+        .jw-icon-display,
+        .jw-option:before {
+            .hover(@hover-color);
+        }
+
+        .jw-icon-display {
+            color: @display-icon-color;
+        }
+
+        .jw-display-icon-container {
+            background: @display-bkgd-color;
+            border-radius: @ui-corner-round;
+            padding: 0.5em .75em;
+
+            &:hover {
+                background: @display-bkgd-hover-color;
+
+                .jw-icon-display {
+                    color: @display-icon-hover-color;
+                }
+            }
+        }
+
+        .jw-rail {
+            background: @rail-color;
+        }
+
+        .jw-buffer {
+            background: @buffer-color;
+        }
+
+        .jw-progress {
+            background: @progress-color;
+        }
+
+        .jw-slider-horizontal {
+
+            .jw-thumb {
+                margin-left: @thumb-size/-2;
+            }
+        }
+
+        .jw-slider-vertical {
+
+            .jw-thumb {
+                margin-bottom: @thumb-size/-2;
+            }
+        }
+        
+        .jw-time-tip,
+        .jw-volume-tip,
+        .jw-menu {
+            background: @volume-background;
+            border: @volume-border;
+            padding: @volume-padding;
+        }
+
+        .jw-time-tip {
+            bottom: 1em;
+
+            .jw-text {
+                color: #bbb;
+            }
+        }
+
+        .jw-dock-button {
+            background: @display-bkgd-color;
+            border-radius: @ui-corner-round;
+
+            &:hover {
+                background: @display-bkgd-hover-color;
+            }
+        }
+    }
+}

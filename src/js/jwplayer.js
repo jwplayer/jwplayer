@@ -1,18 +1,17 @@
-/**
- * JW Player namespace definition
- * @version 6.0
- */
+define([
+    'api/global-api',
+    'utils/helpers',
+    'polyfill/bind',
+    'polyfill/eventlisteners',
+    '../css/jwplayer.less'
+], function (GlobalApi, utils) {
+    /*global __webpack_public_path__:true*/
+    __webpack_public_path__ = utils.getScriptPath('jwplayer.js');
 
-/*global jwplayer:true*/
-jwplayer = function() {
-    if (jwplayer.api) {
-        return jwplayer.api.selectPlayer.apply(this, arguments);
+    // This is necessary for plugins in an AMD setup
+    if (typeof exports === 'object' || (typeof define === 'function' && define.amd)) {
+        window.jwplayer = window.jwplayer || { registerPlugin : GlobalApi.registerPlugin};
     }
-};
 
-jwplayer.version = 'X.Y.ZZZZ';
-
-// "Shiv" method for older IE browsers; required for parsing media tags
-jwplayer.vid = document.createElement('video');
-jwplayer.audio = document.createElement('audio');
-jwplayer.source = document.createElement('source');
+    return GlobalApi.selectPlayer;
+});
