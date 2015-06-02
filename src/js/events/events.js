@@ -1,9 +1,12 @@
 define([], function() {
     var touchEvents = {
-        DRAG: 'jwplayerDrag',
-        DRAG_START: 'jwplayerDragStart',
-        DRAG_END: 'jwplayerDragEnd',
-        TAP: 'jwplayerTap'
+        DRAG: 'drag',
+        DRAG_START: 'dragStart',
+        DRAG_END: 'dragEnd',
+        CLICK: 'click',
+        DOUBLE_CLICK: 'doubleClick',
+        TAP: 'tap',
+        DOUBLE_TAP: 'doubleTap'
     };
 
     var events = {

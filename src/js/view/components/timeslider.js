@@ -62,6 +62,8 @@ define([
             this.onPlaylistItem(this._model, this._model.get('playlistItem'));
 
             this.elementRail.appendChild(this.timeTip.element());
+
+            // mousemove/mouseout because this currently mouse specific functionality.
             this.elementRail.addEventListener('mousemove', this.showTimeTooltip.bind(this), false);
             this.elementRail.addEventListener('mouseout', this.hideTimeTooltip.bind(this), false);
         },
