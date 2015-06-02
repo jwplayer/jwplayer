@@ -4,10 +4,11 @@ define([
     'utils/backbone.events',
     'view/components/slider',
     'view/components/timeslider',
+    'view/components/listmenu',
     'view/components/menu',
     'view/components/playlist',
     'view/components/volumetooltip'
-], function(utils, _, Events, Slider, TimeSlider, Menu, Playlist, VolumeTooltip) {
+], function(utils, _, Events, Slider, TimeSlider, ListMenu, Menu, Playlist, VolumeTooltip) {
 
     function button(icon, click) {
         var element = document.createElement('span');
@@ -38,9 +39,14 @@ define([
         return element;
     }
 
-    function menu(name, isAlwaysList) {
-        // TODO use isAlwaysList
+    function menu(name) {
         var createdMenu = new Menu(name);
+
+        return createdMenu;
+    }
+
+    function listmenu(name) {
+        var createdMenu = new ListMenu(name);
 
         return createdMenu;
     }
@@ -91,7 +97,7 @@ define([
                 duration: text('jw-text-duration'),
                 hd: menu('jw-icon-hd'),
                 cc: menu('jw-icon-cc'),
-                audiotracks: menu('jw-icon-audio-tracks'),
+                audiotracks: listmenu('jw-icon-audio-tracks'),
                 mute: button('jw-icon-volume', this._api.setMute),
                 volume: volumeSlider,
                 volumetooltip: volumeTooltip,

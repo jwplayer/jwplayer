@@ -119,11 +119,11 @@ define([
                     this.setQualityLevel(evt.currentQuality, evt.levels);
                     break;
                 case events.JWPLAYER_AUDIO_TRACKS:
-                    this.setAudioTracks(evt.currentTrack, evt.tracks);
+                    this.setCurrentAudioTrack(evt.currentTrack, evt.tracks);
                     this.mediaModel.set('audioTracks', evt.tracks);
                     break;
                 case events.JWPLAYER_AUDIO_TRACK_CHANGED:
-                    this.setAudioTracks(evt.currentTrack, evt.tracks);
+                    this.setCurrentAudioTrack(evt.currentTrack, evt.tracks);
                     break;
 
                 case 'visualQuality':
@@ -142,7 +142,7 @@ define([
             }
         };
 
-        this.setAudioTracks = function(currentTrack, tracks) {
+        this.setCurrentAudioTrack = function(currentTrack, tracks) {
             if (currentTrack > -1 && tracks.length > 1) {
                 this.mediaModel.set('currentAudioTrack', parseInt(currentTrack));
             }

@@ -5,7 +5,7 @@ define([
     'handlebars-loader!templates/menu.html'
 ], function(Tooltip, utils, _, menuTemplate) {
 
-    var Menu = Tooltip.extend({
+    var ListMenu = Tooltip.extend({
         setup : function (list, selectedIndex) {
             if(this.content){
                 this.content.removeEventListener('click', this.selectListener);
@@ -18,10 +18,7 @@ define([
 
             utils.toggleClass(this.el, 'jw-hidden', (list.length < 2));
 
-            if (list.length === 2) {
-                this.toggleListener = this.toggle.bind(this);
-                this.el.addEventListener('click', this.toggleListener);
-            } else if (list.length > 2) {
+            if (list.length >= 2) {
                 utils.removeClass(this.el, 'jw-off');
 
                 var innerHtml = menuTemplate(list);
@@ -56,5 +53,5 @@ define([
         }
     });
 
-    return Menu;
+    return ListMenu;
 });
