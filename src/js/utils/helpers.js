@@ -1,9 +1,10 @@
 define([
     'utils/constants',
+    'parsers/rssparser',
     'utils/strings',
     'utils/underscore',
     'utils/jqueryfuncs'
-], function(Constants, strings, _, jqueryfuncs) {
+], function(Constants, rssparser, strings, _, jqueryfuncs) {
 
     // TODO:: the next lines are a holdover until we update our CDN w/ plugins for 7.0
     // This is replaced by compiler
@@ -11,6 +12,9 @@ define([
     var _version = '6.12.0';
 
     var utils = {};
+
+    // Make this available for the 'related' plugin
+    utils.rssparser = rssparser;
 
     /**
      * Returns true if the value of the object is null, undefined or the empty
