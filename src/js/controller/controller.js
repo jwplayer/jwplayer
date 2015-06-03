@@ -113,10 +113,6 @@ define([
             _model.on('change:mediaModel', initMediaModel);
 
             function _playerReady() {
-                if(_model.get('setupError') === true){
-                    return false;
-                }
-
                 _setup = null;
 
                 _model.on('change:state', function(model, newstate, oldstate) {
@@ -660,8 +656,6 @@ define([
             });
 
             this.showView(errorElement);
-
-            this._model.set('setupError', true);
 
             this.trigger(events.JWPLAYER_SETUP_ERROR, {
                 message: message
