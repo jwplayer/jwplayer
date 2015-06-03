@@ -38,10 +38,58 @@
     .jw-display-icon-container {
         border-radius: 0;
     }
+    
+    .jw-playlist {
+        width: ~"calc(100% - 8px)";
+    }
 
     .jw-playlist-container {
-        left: -42%;
+        left: -43%;
+        background-color: #fff;
+
+        .jw-option {
+            border-bottom: 1px solid #ECECEC;
+            color: @active-color;
+            background-color: #fff;
+            margin-right: 8px;
+
+            // Menu items are black when active, or hovered
+            &:hover,
+            &.jw-active-option {
+                background-color: #ECECEC;
+                color: @active-color;
+            }
+
+            // Number turn red when li is hovered
+            &:hover {              
+                color: @active-color;
+            }
+        }
+
+        // play icon is always red
+        .jw-label .jw-icon-play {
+            color: @active-color;
+        }
+
+        ::-webkit-scrollbar-track {
+            background-color: #ECECEC;
+        }
+
+        ::-webkit-scrollbar {
+            width: 2px;
+            border: 10px solid #fff;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: @active-color;
+        }
     }
+
+    .jw-tooltip-title {
+        border-bottom: 1px solid #000;
+        background-color : #ECECEC;
+    }
+
 
     .jw-slider-horizontal {
 
