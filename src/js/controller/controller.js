@@ -662,6 +662,10 @@ define([
             this.showView(errorElement);
 
             this._model.set('setupError', true);
+
+            this.trigger(events.JWPLAYER_SETUP_ERROR, {
+                message: message
+            });
         },
 
         reset: function() {

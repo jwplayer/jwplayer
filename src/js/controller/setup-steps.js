@@ -83,7 +83,7 @@ define([
     }
 
     function _pluginsError(resolve, evt) {
-        _error(resolve, 'Could not load plugin', evt.message);
+        error(resolve, 'Could not load plugin', evt.message);
     }
 
     function _loadPlaylist(resolve, _model) {
@@ -112,9 +112,9 @@ define([
 
     function _playlistError(resolve, evt) {
         if (evt && evt.message) {
-            _error(resolve, 'Error loading playlist', evt.message);
+            error(resolve, 'Error loading playlist', evt.message);
         } else {
-            _error(resolve, 'Error loading player', 'No playable sources found');
+            error(resolve, 'Error loading player', 'No playable sources found');
         }
     }
 
@@ -186,7 +186,7 @@ define([
         });
     }
 
-    function _error(resolve, msg, reason) {
+    function error(resolve, msg, reason) {
         resolve({
             type : 'error',
             msg : msg,
@@ -195,6 +195,7 @@ define([
     }
 
     return {
-        getQueue : getQueue
+        getQueue : getQueue,
+        error: error
     };
 });
