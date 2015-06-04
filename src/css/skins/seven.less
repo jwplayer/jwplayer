@@ -21,15 +21,8 @@
     }
 
     .jw-icon,
-    .jw-text,
-    .jw-icon-inline {
+    .jw-text {
         color: @inactive-color;
-    }
-
-    .jw-text,
-    .jw-icon-inline,
-    .jw-icon-tooltip {
-        padding: 0 5px 3px 5px;
     }
 
     .jw-icon,
@@ -39,19 +32,19 @@
         }
     }
 
-    .jw-icon:before {
-        padding-left: .7em;
+    .jw-controlbar .jw-icon:before,
+    .jw-text-elapsed,
+    .jw-text-duration {
+        padding: 0 .7em;
     }
 
-    .jw-icon-playback:before,
-    .jw-icon-display:before {
-        padding-left: 0;
+    .jw-controlbar .jw-icon-playlist:before {
+        padding: 0;
     }
 
     .jw-icon-prev,
     .jw-icon-next {
         font-size: .7em;
-        padding: 0 0.2em;
     }
 
     .jw-icon-prev:before {
@@ -60,17 +53,21 @@
 
     .jw-icon-next:before {
         border-right: 1px solid #666;
-        padding-right: .7em;
+        //padding-right: .7em;
     }
 
     .jw-icon-display {
         color: #fff;
     }
 
+    .jw-icon-display:before {
+        padding-left: 0;
+    }
+
     .jw-display-icon-container {
         background: #000;
         border-radius: 50%;
-        padding: 0 .4em;
+        padding: 0 .3em;
         border: 1px solid #333;
     }
 
@@ -188,12 +185,11 @@
 
     .jw-icon-hd,
     .jw-icon-cc {
-        color: @active-color;
-    }
+        color: @cc-active;
 
-    .jw-icon-hd.jw-off,
-    .jw-icon-cc.jw-off {
-        color: white;
+        &.jw-off {
+            color: @cc-inactive;           
+        }
     }
 
     .jw-icon-hd.jw-off:before {
@@ -227,17 +223,11 @@
         padding: 0.4em;
         border-radius: 1em;
 
-        .jw-text, .jw-icon-inline {
+        .jw-text, 
+        .jw-icon-inline {
             color: @inactive-color;
             font-size: 0.7em;
         }
     }
 
-    .jw-icon-cc {
-        color: @cc-active;
-
-        &.jw-off {
-            color: @cc-inactive;           
-        }
-    }
 }
