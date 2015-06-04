@@ -279,10 +279,13 @@ define([
         };
 
         // The model is also the mediaController for now
-        this.loadVideo = function() {
+        this.loadVideo = function(item) {
             this.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
-            var idx = this.get('item');
-            _provider.load(this.get('playlist')[idx]);
+            if (!item) {
+                var idx = this.get('item');
+                item = this.get('playlist')[idx];
+            }
+            _provider.load(item);
         };
 
         this.playVideo = function() {

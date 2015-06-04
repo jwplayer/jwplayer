@@ -173,8 +173,7 @@ define([
             _view.on(events.JWPLAYER_AD_SKIPPED, _skipAd);
 
             // Load the instream item
-            _adModel.getVideo().load(_adModel.playlist[0]);
-            //_fakemodel.getVideo().addEventListener('webkitendfullscreen', _fullscreenChangeHandler, FALSE);
+            _adModel.loadVideo();
         };
 
         function errorHandler(evt) {
@@ -226,7 +225,7 @@ define([
             if (_oldstate !== states.IDLE) {
                 var item = _.extend({}, _olditem);
                 item.starttime = _oldpos;
-                _oldProvider.load(item);
+                _model.loadVideo(item);
 
             } else {
                 _oldProvider.stop();
@@ -362,7 +361,7 @@ define([
                     curOpt = _optionList[_arrayIndex];
                 }
                 _options = _.extend({}, _defaultOptions, curOpt);
-                _adModel.getVideo().load(_adModel.playlist[0]);
+                _adModel.loadVideo();
                 if (_skipButton) {
                     _skipButton.destroy();
                 }
