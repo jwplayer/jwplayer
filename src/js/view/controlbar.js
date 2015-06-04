@@ -2,20 +2,22 @@ define([
     'utils/helpers',
     'utils/underscore',
     'utils/backbone.events',
+    'utils/ui',
     'view/components/slider',
     'view/components/timeslider',
     'view/components/menu',
     'view/components/playlist',
     'view/components/volumetooltip'
-], function(utils, _, Events, Slider, TimeSlider, Menu, Playlist, VolumeTooltip) {
+], function(utils, _, Events, UI, Slider, TimeSlider, Menu, Playlist, VolumeTooltip) {
 
-    function button(icon, click) {
+    function button(icon, apiAction) {
         var element = document.createElement('span');
         element.className = 'jw-icon jw-icon-inline ' + icon;
         element.style.display = 'none';
 
-        if (click) {
-            element.onclick = function() { click(); };
+        if (apiAction) {
+            // Don't send the event to the handler so we don't have unexpected results. (e.g. play)
+            new UI(element).on('click tap', function() { apiAction(); });
         }
 
         return {
@@ -73,11 +75,16 @@ define([
         },
 
         build : function() {
+            var timeSlider = new TimeSlider(this._model, this._api),
+                playlistTooltip = new Playlist('jw-icon-playlist'),
+                volumeSlider,
+                volumeTooltip;
 
-            var timeSlider = new TimeSlider(this._model, this._api);
-            var volumeSlider = new Slider('jw-slider-volume', 'horizontal');
-            var volumeTooltip = new VolumeTooltip(this._model, 'jw-icon-volume');
-            var playlistTooltip = new Playlist('jw-icon-playlist');
+            // Do not initialize volume sliders on mobile.
+            if(!utils.isMobile()){
+                volumeSlider = new Slider('jw-slider-volume', 'horizontal');
+                volumeTooltip = new VolumeTooltip(this._model, 'jw-icon-volume');
+            }
 
             this.elements = {
                 alt: text('jw-text-alt'),
@@ -90,6 +97,7 @@ define([
                 duration: text('jw-text-duration'),
                 hd: menu('jw-icon-hd'),
                 cc: menu('jw-icon-cc'),
+                audiotracks: menu('jw-icon-audio-tracks'),
                 mute: button('jw-icon-volume', this._api.setMute),
                 volume: volumeSlider,
                 volumetooltip: volumeTooltip,
@@ -113,6 +121,7 @@ define([
                     this.elements.duration,
                     this.elements.hd,
                     this.elements.cc,
+                    this.elements.audiotracks,
                     this.elements.mute,
                     this.elements.volume,
                     this.elements.volumetooltip,
@@ -120,6 +129,12 @@ define([
                     this.elements.fullscreen
                 ]
             };
+
+            // Remove undefined layout elements.  They are invalid for the current platform.
+            // (e.g. volume and volumetooltip on mobile)
+            this.layout.right = _.reject(this.layout.right, function(ele){
+                return _.isUndefined(ele);
+            });
 
             this.el = document.createElement('span');
             this.el.className = 'jw-container jw-controlbar';
@@ -157,14 +172,23 @@ define([
             this._model.on('change:captionsIndex', this.onCaptionsIndex, this);
 
             // Event listeners
-            this.elements.volume.on('update', function(pct) {
-                var val = pct.percentage;
-                this._api.setVolume(val);
-            }, this);
-            this.elements.volumetooltip.on('update', function(pct) {
-                var val = pct.percentage;
-                this._api.setVolume(val);
-            }, this);
+
+            // Volume sliders do not exist on mobile so don't assign listeners to them.
+            if(this.elements.volume) {
+                this.elements.volume.on('update', function (pct) {
+                    var val = pct.percentage;
+                    this._api.setVolume(val);
+                }, this);
+            }
+            if(this.elements.volumetooltip) {
+                this.elements.volumetooltip.on('update', function(pct) {
+                    var val = pct.percentage;
+                    this._api.setVolume(val);
+                }, this);
+                this.elements.volumetooltip.on('toggleValue', function(){
+                    this._api.setMute();
+                }, this);
+            }
 
             this.elements.playlist.on('select', function(value) {
                 this._model.once('setItem', function() {
@@ -176,20 +200,20 @@ define([
             this.elements.hd.on('select', function(value){
                 this._model.getVideo().setCurrentQuality(value);
             }, this);
-            this.elements.hd.on('toggle', function(){
+            this.elements.hd.on('toggleValue', function(){
                 this._model.getVideo().setCurrentQuality((this._model.getVideo().getCurrentQuality() === 0) ? 1 : 0);
             }, this);
 
             this.elements.cc.on('select', function(value) {
                 this._api.setCurrentCaptions(value);
             }, this);
-            this.elements.cc.on('toggle', function() {
+            this.elements.cc.on('toggleValue', function() {
                 var index = this._model.get('captionsIndex');
                 this._api.setCurrentCaptions(index ? 0 : 1);
             }, this);
 
-            this.elements.volumetooltip.on('toggle', function(){
-                this._api.setMute();
+            this.elements.audiotracks.on('select', function(value){
+                this._model.getVideo().setCurrentAudioTrack(value);
             }, this);
         },
 
@@ -216,11 +240,20 @@ define([
             var itemIdx = model.get('item');
             this.elements.playlist.selectItem(itemIdx);
 
+            this.elements.audiotracks.setup();
+
             this._model.mediaModel.on('change:levels', function(model, levels) {
                 this.elements.hd.setup(levels, model.get('currentLevel'));
             }, this);
             this._model.mediaModel.on('change:currentLevel', function(model, level) {
                 this.elements.hd.selectItem(level);
+            }, this);
+            this._model.mediaModel.on('change:audioTracks', function(model, audioTracks) {
+                var list = _.map(audioTracks, function(track) { return { label : track.name }; });
+                this.elements.audiotracks.setup(list, model.get('currentAudioTrack'), {toggle: false});
+            }, this);
+            this._model.mediaModel.on('change:currentAudioTrack', function(model, currentAudioTrack) {
+                this.elements.audiotracks.selectItem(currentAudioTrack);
             }, this);
         },
         onVolume : function(model, pct) {
@@ -231,9 +264,14 @@ define([
         },
         renderVolume : function(muted, vol) {
             utils.toggleClass(this.elements.mute.element(), 'jw-off', muted);
-            utils.toggleClass(this.elements.volumetooltip.element(), 'jw-off', muted);
-            this.elements.volume.render(muted ? 0 : vol);
-            this.elements.volumetooltip.volumeSlider.render(muted ? 0 : vol);
+            // volume and volumetooltip do not exist on mobile devices.
+            if(this.elements.volume) {
+                this.elements.volume.render(muted ? 0 : vol);
+            }
+            if(this.elements.volumetooltip){
+                this.elements.volumetooltip.volumeSlider.render(muted ? 0 : vol);
+                utils.toggleClass(this.elements.volumetooltip.element(), 'jw-off', muted);
+            }
         },
         onCastAvailable : function(model, val) {
             this.elements.cast.toggle(val);

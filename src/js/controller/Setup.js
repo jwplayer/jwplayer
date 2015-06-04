@@ -22,8 +22,8 @@ define([
         };
 
         this.destroy = function() {
-            this.off();
             clearTimeout(_setupFailureTimeout);
+            this.off();
             _queue = 0;
             _api = null;
             _model = null;
@@ -68,8 +68,8 @@ define([
             if (resolveState.type === 'error') {
                 _error(resolveState.msg, resolveState.reason);
             } else if (resolveState.type === 'complete') {
-                _this.trigger(events.JWPLAYER_READY);
                 clearTimeout(_setupFailureTimeout);
+                _this.trigger(events.JWPLAYER_READY);
             } else {
                 task.complete = true;
                 _nextTask();
@@ -77,10 +77,10 @@ define([
         }
 
         function _error(message, reason) {
+            clearTimeout(_setupFailureTimeout);
             _this.trigger(events.JWPLAYER_SETUP_ERROR, {
                 message: message + ': ' + reason
             });
-            clearTimeout(_setupFailureTimeout);
             _this.destroy();
         }
     };

@@ -1,9 +1,11 @@
 define([
     'utils/helpers',
     'utils/backbone.events',
+    'events/events',
+    'utils/ui',
     'handlebars-loader!templates/displayicon.html',
     'utils/underscore'
-], function(utils, Events, Template, _) {
+], function(utils, Events, events, UI, Template, _) {
 
     var DisplayIcon = function(_model) {
         _.extend(this, Events);
@@ -13,9 +15,7 @@ define([
         this.el = utils.createElement(Template({}));
 
         var _this = this;
-        this.el.onclick = function() {
-            _this.trigger('click');
-        };
+        this.iconUI = new UI (this.el).on('click tap', function(evt){_this.trigger(evt.type);});
     };
 
     _.extend(DisplayIcon.prototype, {
