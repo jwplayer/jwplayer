@@ -5,16 +5,12 @@ define([
     'utils/backbone.events',
     'utils/underscore',
     'utils/scriptloader'
-], function(pluginsUtils, helpers, events, Events, _, scriptloader) {
+], function(pluginsUtils, utils, events, Events, _, scriptloader) {
 
-    var _foreach = helpers.foreach;
-    var utils = helpers;
-
-    var PluginLoader = function (model, config) {
+    var PluginLoader = function (model, _config) {
         var _this = _.extend(this, Events),
             _status = scriptloader.loaderstatus.NEW,
             _iscomplete = false,
-            _config = config,
             _pluginCount = _.size(_config),
             _pluginLoaded,
             _destroyed = false;
@@ -52,7 +48,7 @@ define([
             if (!_iscomplete) {
                 var plugins = model.getPlugins();
                 _pluginLoaded = _.after(_pluginCount, _complete);
-                helpers.foreach(_config, function (plugin) {
+                _.each(_config, function (value, plugin) {
                     var pluginName = pluginsUtils.getPluginName(plugin),
                         pluginObj = plugins[pluginName],
                         js = pluginObj.getJS(),
@@ -61,8 +57,8 @@ define([
 
                     if (status === scriptloader.loaderstatus.LOADING || status === scriptloader.loaderstatus.NEW) {
                         return;
-                    } else if (js && !helpers.versionCheck(target)) {
-                        this.trigger(events.ERROR, {
+                    } else if (js && !utils.versionCheck(target)) {
+                        _this.trigger(events.ERROR, {
                             message: 'Incompatible player version'
                         });
                     }
@@ -79,7 +75,7 @@ define([
             }
             var message = 'File not found';
             if (e.url) {
-                helpers.log(message, e.url);
+                utils.log(message, e.url);
             }
             this.off();
             this.trigger(events.ERROR, {
@@ -89,29 +85,24 @@ define([
         }
 
         this.setupPlugins = function (api, config, resizer) {
-            var flashPlugins = {
-                    length: 0,
-                    plugins: {}
-                },
-                jsplugins = {
-                    length: 0,
-                    plugins: {}
-                },
-
+            var flashPlugins = [],
+                jsPlugins = {},
                 plugins = model.getPlugins();
 
-            _foreach(config.plugins, function (plugin, pluginConfig) {
+            _.each(config.plugins, function(pluginConfig, plugin) {
                 var pluginName = pluginsUtils.getPluginName(plugin),
                     pluginObj = plugins[pluginName],
                     flashPath = pluginObj.getFlashPath(),
                     jsPlugin = pluginObj.getJS(),
                     pluginURL = pluginObj.getURL();
 
-
                 if (flashPath) {
-                    flashPlugins.plugins[flashPath] = _.extend({}, pluginConfig);
-                    flashPlugins.plugins[flashPath].pluginmode = pluginObj.getPluginmode();
-                    flashPlugins.length++;
+                    var flashPluginConfig = _.extend({
+                        name: pluginName,
+                        swf: flashPath,
+                        pluginmode: pluginObj.getPluginmode()
+                    }, pluginConfig);
+                    flashPlugins.push(flashPluginConfig);
                 }
 
                 var status = utils.tryCatch(function() {
@@ -120,29 +111,26 @@ define([
                         div.id = api.id + '_' + pluginName;
                         div.style.position = 'absolute';
                         div.style.top = 0;
-                        div.style.zIndex = jsplugins.length + 10;
-                        jsplugins.plugins[pluginName] = pluginObj.getNewInstance(api,
+                        jsPlugins[pluginName] = pluginObj.getNewInstance(api,
                             _.extend({}, config.plugins[pluginURL]), div);
-                        jsplugins.length++;
-                        api.onReady(resizer(jsplugins.plugins[pluginName], div, true));
-                        api.onResize(resizer(jsplugins.plugins[pluginName], div));
+                        api.onReady(resizer(jsPlugins[pluginName], div, true));
+                        api.onResize(resizer(jsPlugins[pluginName], div));
                     }
 
                 });
 
                 if (status instanceof utils.Error) {
-                    helpers.log('ERROR: Failed to load ' + pluginName + '.');
+                    utils.log('ERROR: Failed to load ' + pluginName + '.');
                 }
             });
 
-            api.plugins = jsplugins.plugins;
-
-            return flashPlugins;
+            api.plugins = jsPlugins;
+            config.flashPlugins = flashPlugins;
         };
 
         this.load = function () {
             // Must be a hash map
-            if (helpers.exists(config) && helpers.typeOf(config) !== 'object') {
+            if (utils.exists(_config) && utils.typeOf(_config) !== 'object') {
                 _checkComplete();
                 return;
             }
@@ -150,8 +138,8 @@ define([
             _status = scriptloader.loaderstatus.LOADING;
 
             /** First pass to create the plugins and add listeners **/
-            _foreach(config, function (plugin) {
-                if (helpers.exists(plugin)) {
+            _.each(_config, function(value, plugin) {
+                if (utils.exists(plugin)) {
                     var pluginObj = model.addPlugin(plugin);
                     pluginObj.on(events.COMPLETE, _checkComplete);
                     pluginObj.on(events.ERROR, _pluginError);
@@ -161,7 +149,7 @@ define([
             var plugins = model.getPlugins();
 
             /** Second pass to actually load the plugins **/
-            _foreach(plugins, function (plugin, pluginObj) {
+            _.each(plugins, function(pluginObj) {
                 // Plugin object ensures that it's only loaded once
                 pluginObj.load();
             });
