@@ -2,13 +2,12 @@ define([
     'utils/constants',
     'utils/strings',
     'utils/underscore',
-    'utils/jqueryfuncs'
-], function(Constants, strings, _, jqueryfuncs) {
+    'utils/jqueryfuncs',
+    'version'
+], function(Constants, strings, _, jqueryfuncs, version) {
 
     // TODO:: the next lines are a holdover until we update our CDN w/ plugins for 7.0
-    // This is replaced by compiler
-    //var _version = __BUILD_VERSION__;
-    var _version = '6.12.0';
+    var cdnVersion = '6.12.0';
 
     var utils = {};
 
@@ -109,63 +108,63 @@ define([
     utils.isIPad = _browserCheck(/iPad/i);
     utils.isSafari602 = _browserCheck(/Macintosh.*Mac OS X 10_8.*6\.0\.\d* Safari/i);
 
-    var _isIETrident = utils.isIETrident = function (version) {
-        if (version) {
-            version = parseFloat(version).toFixed(1);
-            return _userAgentMatch(new RegExp('trident/.+rv:\\s*' + version, 'i'));
+    var _isIETrident = utils.isIETrident = function(browserVersion) {
+        if (browserVersion) {
+            browserVersion = parseFloat(browserVersion).toFixed(1);
+            return _userAgentMatch(new RegExp('trident/.+rv:\\s*' + browserVersion, 'i'));
         }
         return _userAgentMatch(/trident/i);
     };
 
 
-    var _isMSIE = utils.isMSIE = function (version) {
-        if (version) {
-            version = parseFloat(version).toFixed(1);
-            return _userAgentMatch(new RegExp('msie\\s*' + version, 'i'));
+    var _isMSIE = utils.isMSIE = function(browserVersion) {
+        if (browserVersion) {
+            browserVersion = parseFloat(browserVersion).toFixed(1);
+            return _userAgentMatch(new RegExp('msie\\s*' + browserVersion, 'i'));
         }
         return _userAgentMatch(/msie/i);
     };
-    utils.isIE = function (version) {
-        if (version) {
-            version = parseFloat(version).toFixed(1);
-            if (version >= 11) {
-                return _isIETrident(version);
+    utils.isIE = function(browserVersion) {
+        if (browserVersion) {
+            browserVersion = parseFloat(browserVersion).toFixed(1);
+            if (browserVersion >= 11) {
+                return _isIETrident(browserVersion);
             } else {
-                return _isMSIE(version);
+                return _isMSIE(browserVersion);
             }
         }
         return _isMSIE() || _isIETrident();
     };
 
-    utils.isSafari = function () {
+    utils.isSafari = function() {
         return (_userAgentMatch(/safari/i) && !_userAgentMatch(/chrome/i) &&
             !_userAgentMatch(/chromium/i) && !_userAgentMatch(/android/i));
     };
 
     /** Matches iOS devices **/
-    var _isIOS = utils.isIOS = function (version) {
-        if (version) {
-            return _userAgentMatch(new RegExp('iP(hone|ad|od).+\\sOS\\s' + version, 'i'));
+    var _isIOS = utils.isIOS = function(osVersion) {
+        if (osVersion) {
+            return _userAgentMatch(new RegExp('iP(hone|ad|od).+\\sOS\\s' + osVersion, 'i'));
         }
         return _userAgentMatch(/iP(hone|ad|od)/i);
     };
 
     /** Matches Android devices **/
-    utils.isAndroidNative = function (version) {
-        return _isAndroid(version, true);
+    utils.isAndroidNative = function(osVersion) {
+        return _isAndroid(osVersion, true);
     };
 
-    var _isAndroid = utils.isAndroid = function (version, excludeChrome) {
+    var _isAndroid = utils.isAndroid = function(osVersion, excludeChrome) {
         //Android Browser appears to include a user-agent string for Chrome/18
         if (excludeChrome && _userAgentMatch(/chrome\/[123456789]/i) && !_userAgentMatch(/chrome\/18/)) {
             return false;
         }
-        if (version) {
+        if (osVersion) {
             // make sure whole number version check ends with point '.'
-            if (_isInt(version) && !/\./.test(version)) {
-                version = '' + version + '.';
+            if (_isInt(osVersion) && !/\./.test(osVersion)) {
+                osVersion = '' + osVersion + '.';
             }
-            return _userAgentMatch(new RegExp('Android\\s*' + version, 'i'));
+            return _userAgentMatch(new RegExp('Android\\s*' + osVersion, 'i'));
         }
         return _userAgentMatch(/Android/i);
     };
@@ -315,7 +314,7 @@ define([
 
     /** Gets the repository location **/
     utils.repo = function () {
-        var repo = 'http://p.jwpcdn.com/' + _version.split(/\W/).splice(0, 2).join('/') + '/';
+        var repo = 'http://p.jwpcdn.com/' + cdnVersion.split(/\W/).splice(0, 2).join('/') + '/';
 
         utils.tryCatch(function() {
             if (_isHTTPS()) {
@@ -340,7 +339,7 @@ define([
     // Return true:Boolean if major and minor version of target is less than current version
     utils.versionCheck = function (target) {
         var tParts = ('0' + target).split(/\W/);
-        var jParts = _version.split(/\W/);
+        var jParts = version.split(/\W/);
         var tMajor = parseFloat(tParts[0]);
         var jMajor = parseFloat(jParts[0]);
         if (tMajor > jMajor) {
