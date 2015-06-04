@@ -291,8 +291,13 @@ define([
         },
 
         redraw : utils.noop,
-        hide : utils.noop,
-        show : utils.noop,
+        hide : function() {
+            console.log('hidden');
+            utils.addClass(this.el, 'jw-hidden');
+        },
+        show : function() {
+            utils.removeClass(this.el, 'jw-hidden');
+        },
         audioMode : utils.noop,
         hideFullscreen : utils.noop,
         getVisibleBounds : function (){
