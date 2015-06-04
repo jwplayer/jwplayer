@@ -36,7 +36,10 @@ define([
                 _ticks[event] = time || _.now();
             },
             between : function(left, right) {
-                return _ticks[right] - _ticks[left];
+                if (_ticks[right] && _ticks[left]) {
+                    return _ticks[right] - _ticks[left];
+                }
+                return -1;
             }
         };
     };
