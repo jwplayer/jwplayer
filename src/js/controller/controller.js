@@ -657,9 +657,13 @@ define([
 
             this.showView(errorElement);
 
-            this.trigger(events.JWPLAYER_SETUP_ERROR, {
-                message: message
+            var _this = this;
+            _.defer(function() {
+                _this.trigger(events.JWPLAYER_SETUP_ERROR, {
+                    message: message
+                });
             });
+
         },
 
         reset: function() {

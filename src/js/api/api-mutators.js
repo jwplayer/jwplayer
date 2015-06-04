@@ -68,7 +68,8 @@ define([
             'setControls',
             'setFullscreen',
             'setVolume',
-            'setMute'
+            'setMute',
+            'setCues'
         ];
 
         // getters
