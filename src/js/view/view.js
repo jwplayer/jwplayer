@@ -913,7 +913,7 @@ define([
         }
 
         function _hideControlbar() {
-            if (utils.hasClass(_controlsLayer), 'jw-casting') {
+            if (utils.hasClass(_controlsLayer, 'jw-casting')) {
                 return;
             }
 
