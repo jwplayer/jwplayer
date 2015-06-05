@@ -268,8 +268,9 @@ define([
             return _adModel.state;
         };
 
+        // This method is triggered by plugins which want to hide player controls
         _this.hide = function() {
-            _view.hideInstream();
+            _view.useExternalControls();
         };
 
         /*****************************
