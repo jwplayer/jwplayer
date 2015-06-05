@@ -40,8 +40,13 @@ define([
 
         _this.destroy = function() {
             this.off();
-            _instream.instreamDestroy();
-            _instream = null;
+
+            if (_instream) {
+                _instream.instreamDestroy();
+                _instream = null;
+            } else if (__DEBUG__ === true) {
+                console.log('Instream being destroyed a second time');
+            }
         };
 
         _this.setText = function(text) {
