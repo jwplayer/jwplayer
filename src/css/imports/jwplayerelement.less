@@ -24,36 +24,6 @@
         box-sizing: inherit;
     }
 
-    .jw-media, .jw-preview, .jw-overlays, .jw-controls {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        right: 0;
-    }
-
-    .jw-media {
-        overflow: hidden;
-    }
-
-    .jw-media.jw-media-show {
-        visibility: visible;
-        opacity: 1;
-    }
-
-    .jw-media video {
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        margin: auto;
-        background: transparent;
-    }
 
     // Aspect Ratio styles
     &.jw-flag-aspect-mode {
@@ -72,50 +42,84 @@
         outline: none;
     }
 
-    .jw-controls {
+}
 
-        &.jw-controls-disabled {
-            display: none;
-        }
+.jw-media, .jw-preview, .jw-overlays, .jw-controls {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
 
-        .jw-controls-right {
-            position: absolute;
-            top: 0;
-            right: 0;
-        }
-    }
+.jw-media {
+    overflow: hidden;
+}
 
-    .jw-text {
-        height: 1em;
-        font-family: inherit;
-        font-size: @font-size;
-        font-style: normal;
-        font-weight: normal;
-        line-height: 1em;
-        color: white;
-        text-align: center;
-        font-variant: normal;
-        font-stretch: normal;
-    }
+.jw-media.jw-media-show {
+    visibility: visible;
+    opacity: 1;
+}
 
-    .jw-cast-screen {
-        width: 100%;
-        height: 100%;
-    }
+.jw-media video {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: auto;
+    background: transparent;
+}
 
-    .jw-instream {
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
+
+.jw-controls {
+
+    &.jw-controls-disabled {
         display: none;
     }
 
-    .jw-controlbar-left-group .jw-icon-playback {
-        .jwplayer .jw-icon-play;
+    .jw-controls-right {
+        position: absolute;
+        top: 0;
+        right: 0;
     }
 }
+
+.jw-text {
+    height: 1em;
+    font-family: inherit;
+    font-size: @font-size;
+    font-style: normal;
+    font-weight: normal;
+    //line-height: 1em;
+    color: white;
+    text-align: center;
+    font-variant: normal;
+    font-stretch: normal;
+}
+
+.jw-cast-screen {
+    width: 100%;
+    height: 100%;
+}
+
+.jw-instream {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: none;
+}
+
+.jw-icon-playback {
+    .jw-icon-play;
+}
+
 
 .jw-tab-focus:focus {
     outline: solid 2px #0b7ef4;
