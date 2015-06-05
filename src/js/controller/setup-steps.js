@@ -58,8 +58,7 @@ define([
     }
 
     function _completePlugins(resolve, _model, _api) {
-        // TODO: flatten flashPlugins and pass to flash provider
-        _model.config.flashPlugins = _pluginLoader.setupPlugins(_api, _model.config, _.partial(_resizePlugin, _api));
+        _pluginLoader.setupPlugins(_api, _model.config, _.partial(_resizePlugin, _api));
         
         resolve();
     }
