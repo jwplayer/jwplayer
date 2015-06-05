@@ -154,6 +154,10 @@ public class Player extends Sprite implements IPlayer {
         return _view.getBounds(RootReference.root);
     }
 
+    public function getItem():PlaylistItem {
+        return _model.item;
+    }
+
     public function load(item:*):Boolean {
         _controller.load(new PlaylistItem(item));
         _controller.play();

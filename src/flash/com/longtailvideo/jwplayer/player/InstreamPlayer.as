@@ -94,6 +94,10 @@ public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPl
         }
     }
 
+    public function getItem():PlaylistItem {
+        return _item;
+    }
+
     public function getOptions():IInstreamOptions {
         return _options;
     }

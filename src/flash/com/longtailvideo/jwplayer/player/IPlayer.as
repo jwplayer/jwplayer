@@ -1,5 +1,6 @@
 package com.longtailvideo.jwplayer.player {
 import com.longtailvideo.jwplayer.model.PlayerConfig;
+import com.longtailvideo.jwplayer.model.PlaylistItem;
 import com.longtailvideo.jwplayer.plugins.IPlugin;
 
 import flash.events.IEventDispatcher;
@@ -82,6 +83,8 @@ public interface IPlayer extends IEventDispatcher {
     function setCurrentCaptions(index:Number):void;
 
     function getSafeRegion():Rectangle;
+
+    function getItem():PlaylistItem;
 
     function get config():PlayerConfig;
 
