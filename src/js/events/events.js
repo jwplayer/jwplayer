@@ -16,7 +16,7 @@ define([], function() {
 
         // Ad events
         JWPLAYER_AD_CLICK: 'adClick',
-        JWPLAYER_AD_COMPANIONS: 'adCompanion',
+        JWPLAYER_AD_COMPANIONS: 'adCompanions',
         JWPLAYER_AD_COMPLETE: 'adComplete',
         JWPLAYER_AD_ERROR: 'adError',
         JWPLAYER_AD_IMPRESSION: 'adImpression',
