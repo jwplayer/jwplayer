@@ -1,8 +1,7 @@
 define([
     'utils/backbone.events',
-    'utils/underscore',
-    'utils/helpers'
-], function(Events, _, utils) {
+    'utils/underscore'
+], function(Events, _) {
 
     var InstreamPlayer = function(_instream) {
         var _item,
