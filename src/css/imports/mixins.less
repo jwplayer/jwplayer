@@ -1,5 +1,27 @@
 @import "vars";
 
+
+// Mixin for icon default formatting
+.jw-icon {
+    font-family: 'jw-six-icons';
+    -webkit-font-smoothing: antialiased;
+    font-style: normal;
+    font-weight: normal;
+    //line-height: 1;
+    text-transform: none;
+    background-color: transparent;
+    font-variant: normal;
+
+    /* Enable Ligatures ================ */
+    -webkit-font-feature-settings: "liga";
+    -moz-font-feature-settings: "liga=1";
+    -moz-font-feature-settings: "liga";
+    -ms-font-feature-settings: "liga" 1;
+    -o-font-feature-settings: "liga";
+    font-feature-settings: "liga";
+    -moz-osx-font-smoothing: grayscale;
+}
+
 .inset-controlbar() {
     display: block;
     margin: 0 auto;
@@ -38,7 +60,8 @@
 .skin-element-padding() {
     .jw-icon-inline,
     .jw-icon-tooltip,
-    .jw-text {
+    .jw-text-elapsed,
+    .jw-text-duration {
         padding: 0 @ui-padding;
     }
 }
@@ -137,10 +160,6 @@
 
         .jw-playlist-container {
             padding: 0;
-        }
-
-        .jw-tooltip-title {
-            padding-left: 1.5em;
         }
     }
 }

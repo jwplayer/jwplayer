@@ -1,45 +1,44 @@
 @import "icons";
 
-.jwplayer {
-    .jw-skip {
-        cursor: default;
-        position: absolute;
-        float: right;
-        display: inline-block;
-        right: 0.75em;
-        bottom : 3em;
 
-        &.jw-skippable {
-          cursor: pointer;
-        }
+.jw-skip {
+    cursor: default;
+    position: absolute;
+    float: right;
+    display: inline-block;
+    right: 0.75em;
+    bottom : 3em;
 
-        &.jw-hidden {
-            visibility: hidden;
-        }
+    &.jw-skippable {
+      cursor: pointer;
+    }
+
+    &.jw-hidden {
+        visibility: hidden;
+    }
 
 
+    .jw-skip-icon {
+        .jw-icon-next;
+        display: none;
+        margin-left: -.75em;
+    }
+
+    .jw-text, .jw-skip-icon {
+        color: @inactive-color;
+        vertical-align: middle;
+    }
+
+    &.jw-skippable:hover {
+        cursor: pointer;
+        
+        .jw-text, 
         .jw-skip-icon {
-            .jwplayer .jw-icon-next;
-            display: none;
-            margin-left: -.75em;
+            color: @active-color;
         }
+    }
 
-        .jw-text, .jw-skip-icon {
-            color: @inactive-color;
-            vertical-align: middle;
-        }
-
-        &.jw-skippable:hover {
-            cursor: pointer;
-            
-            .jw-text, 
-            .jw-skip-icon {
-                color: @active-color;
-            }
-        }
-
-        &.jw-skippable .jw-skip-icon {
-            display: inline;
-        }
+    &.jw-skippable .jw-skip-icon {
+        display: inline;
     }
 }

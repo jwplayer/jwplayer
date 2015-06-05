@@ -1,49 +1,47 @@
 @import "vars";
 
-.jwplayer  {
 
-    .jw-rail-group {
-        display : inline-block;
-        height: 1em;
-        position: relative;
-    }
-    .jw-rail,
-    .jw-buffer,
-    .jw-progress {
-        position: absolute;
-        cursor: pointer;
-    }
+.jw-rail-group {
+    display : inline-block;
+    height: 1em;
+    position: relative;
+}
+.jw-rail,
+.jw-buffer,
+.jw-progress {
+    position: absolute;
+    cursor: pointer;
+}
 
-    .jw-progress {
-        background-color: #fff;
-    }
+.jw-progress {
+    background-color: #fff;
+}
 
-    .jw-rail {
-        background-color: @rail-color;
-    }
+.jw-rail {
+    background-color: @rail-color;
+}
 
-    .jw-buffer {
-        background-color: @buffer-color;
-    }
+.jw-buffer {
+    background-color: @buffer-color;
+}
 
-    .jw-cue,
-    .jw-thumb {
-        position: absolute;
-        z-index: 1;
-        cursor: pointer;
+.jw-cue,
+.jw-thumb {
+    position: absolute;
+    z-index: 1;
+    cursor: pointer;
 
-        &:after {
-            content: "";
-            display: block;
-        }
-    }
-
-    .jw-cue {
-        z-index: 0;
+    &:after {
+        content: "";
+        display: block;
     }
 }
 
-.jwplayer .jw-slider-horizontal {
+.jw-cue {
+    z-index: 0;
+}
+
+.jw-slider-horizontal {
     width: @volume-rail-length;
     height: 1em;
 
@@ -88,7 +86,7 @@
     }
 }
 
-.jwplayer .jw-slider-vertical {
+.jw-slider-vertical {
     width: @def-rail-width;
     height: @volume-rail-length;
     bottom: 0em;
@@ -132,13 +130,13 @@
     }
 }
 
-.jwplayer .jw-slider-time {
+.jw-slider-time {
     right: 0;
     left: 0;
     width: 100%;
 }
 
-.jwplayer .jw-tooltip-time {
+.jw-tooltip-time {
     position: absolute;
 }
 
