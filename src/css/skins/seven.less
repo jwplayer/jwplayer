@@ -19,6 +19,44 @@
     .jw-group {
         vertical-align: middle;
     }
+    
+    .jw-playlist {
+        background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    .jw-playlist-container {
+        left: -46%;
+        background-color: rgba(0, 0, 0, 0.8);
+    
+        .jw-option {
+            border-bottom: 1px solid #444;
+            
+            // Menu items are black when active, or hovered
+            &:hover,
+            &.jw-active-option {
+                background-color: black;
+            }
+
+            // Number turn red when li is hovered
+            &:hover {
+                .jw-label {
+                    color: @active-color;
+                }
+            }
+        }
+
+        .jw-icon-playlist {
+            margin-left: 0;
+        }
+
+        // play icon is always red
+        .jw-label .jw-icon-play {
+            color: @active-color;
+            &:before {
+                padding-left: 0;
+            }
+        }
+    }
 
     .jw-icon,
     .jw-text,
@@ -181,7 +219,7 @@
         }
     }
 
-    .jw-overlay .jw-option.jw-active-option {
+    .jw-icon-cc .jw-active-option {
         background-color: @active-color;
         color: #fff;
     }
