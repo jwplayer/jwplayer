@@ -1083,6 +1083,11 @@ define([
             _controlbar.show(true);
         };
 
+        this.hideInstream = function() {
+            // FIXME: This module is full of noop controlbar commands that should have been replaced by css class flags
+            _controlbar.hide();
+        };
+
         this.destroyInstream = function() {
             _instreamMode = false;
             this.setAltText('');

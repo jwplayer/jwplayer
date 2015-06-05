@@ -16,7 +16,7 @@ public class SimpleEvents {
         var events:Vector.<Function> = _events[name];
         if (!events) {
             CONFIG::debugging {
-                trace('unregistered js event triggered:', name);
+                trace('unregistered event triggered:', name);
             }
             return this;
         }

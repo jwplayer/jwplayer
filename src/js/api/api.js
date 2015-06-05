@@ -1,6 +1,5 @@
 define([
     'api/config',
-    'api/instreamPlayer',
     'events/events',
     'events/states',
     'utils/backbone.events',
@@ -12,7 +11,7 @@ define([
     'api/api-mutators',
     'api/callbacks-deprecate',
     'version'
-], function(Config, InstreamPlayer, events, states,
+], function(Config, events, states,
             Events, utils, Timer, _, Controller, actionsInit, mutatorsInit, legacyInit, version) {
 
     function addFocusBorder(container) {
@@ -41,7 +40,6 @@ define([
 
     var Api = function (container, globalRemovePlayer) {
         var _this = this,
-            _instream,
             _controller,
             _playerReady = false,
             _itemMeta = {};
@@ -195,9 +193,7 @@ define([
         };
 
         this.load = function (toLoad) {
-            if (_controller._instreamPlayer) {
-                _controller.instreamDestroy();
-            }
+            _controller.instreamDestroy();
             if (_getPlugin('googima')) {
                 _controller.destroyGoogima();
             }
@@ -212,17 +208,18 @@ define([
             }
 
             state = _this.getState();
-            var instreamState = _instream && _instream.getState();
 
+            var instreamController = _controller._instreamPlayer;
+            var instreamState = instreamController && instreamController.instreamState();
             if (instreamState) {
                 switch (instreamState) {
                     case states.IDLE:
                     case states.PLAYING:
                     case states.BUFFERING:
-                        _controller.instreamPause();
+                        instreamController.instreamPause();
                         break;
                     default:
-                        _controller.instreamPlay();
+                        instreamController.instreamPlay();
                 }
                 return _this;
             }
@@ -255,32 +252,13 @@ define([
             }
             return _this;
         };
+
         this.createInstream = function () {
-            return new InstreamPlayer(_controller);
-        };
-        this.setInstream = function (instream) {
-            _instream = instream;
-            return instream;
-        };
-        this.loadInstream = function (item, options) {
-            var instream = _this.createInstream();
-            _this.setInstream(instream);
-            instream.init(options).loadItem(item);
-            return instream;
+            return _controller.createInstream();
         };
 
-        this.playAd = function (ad) {
-            var vast = _getPlugin('vast');
-            if (vast) {
-                vast.jwPlayAd(ad);
-            }
-        };
-        this.pauseAd = function () {
-            var vast = _getPlugin('vast');
-            if (vast) {
-                vast.jwPauseAd();
-            }
-        };
+        // These may be overridden by ad plugins
+        this.playAd = this.pauseAd = _.noop;
 
         this.remove = function () {
             // Remove from array of players. this calls this.destroyPlayer()

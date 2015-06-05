@@ -1,6 +1,7 @@
 define([
-    'controller/controller-instream',
     'api/api-deprecate',
+    'api/instreamPlayer',
+    'controller/instream',
     'utils/underscore',
     'controller/Setup',
     'controller/captions',
@@ -9,11 +10,12 @@ define([
     'utils/helpers',
     'view/view',
     'utils/backbone.events',
+    'events/change-state-event',
     'events/states',
     'events/events',
     'view/error'
-], function(setupInstreamMethods, deprecateInit, _, Setup, Captions,
-            Model, PlaylistLoader, utils, View, Events, states, events, error) {
+], function(deprecateInit, InstreamPlayer, Instream, _, Setup, Captions,
+            Model, PlaylistLoader, utils, View, Events, changeStateEvent, states, events, error) {
 
     function _queue(command) {
         return function() {
@@ -26,15 +28,6 @@ define([
     function normalizeState(newstate) {
         if (newstate === states.LOADING || newstate === states.STALLED) {
             return states.BUFFERING;
-        }
-        return newstate;
-    }
-
-    // The api should dispatch an idle event when the model's state changes to complete
-    // This is to avoid conflicts with the complete event and to maintain legacy event flow
-    function normalizeApiState(newstate) {
-        if (newstate === states.COMPLETE || newstate === states.ERROR) {
-            return states.IDLE;
         }
         return newstate;
     }
@@ -115,23 +108,7 @@ define([
             function _playerReady() {
                 _setup = null;
 
-                _model.on('change:state', function(model, newstate, oldstate) {
-                    newstate = normalizeApiState(newstate);
-                    oldstate = normalizeApiState(oldstate);
-                    // do not dispatch idle a second time after complete
-                    if (newstate !== oldstate) {
-                        // buffering, playing and paused states become:
-                        // buffer, play and pause events
-                        var eventType = newstate.replace(/(?:ing|d)$/, '');
-                        var evt = {
-                            type: eventType,
-                            newstate: newstate,
-                            oldstate: oldstate,
-                            reason: model.mediaModel.get('state')
-                        };
-                        _this.trigger(eventType, evt);
-                    }
-                });
+                _model.on('change:state', changeStateEvent, this);
 
                 // For 'onCast' callback
                 _model.on('change:castState', function(model, evt) {
@@ -604,9 +581,6 @@ define([
 
             this.setControls = function (mode) {
                 _model.set('controls', mode);
-                if (this._instreamPlayer) {
-                    this._instreamPlayer.setControls(mode);
-                }
             };
 
             this.playerDestroy = function () {
@@ -631,7 +605,20 @@ define([
 
 
             // Add in all the instream methods
-            setupInstreamMethods(this, _model, _view);
+            function _instreamCleanup() {
+                var instreamController = _this._instreamPlayer;
+                if (instreamController) {
+                    instreamController.instreamDestroy();
+                }
+            }
+
+            this.createInstream = function() {
+                _instreamCleanup();
+                var instreamController = new Instream(this, _model, _view);
+                return new InstreamPlayer(instreamController);
+            };
+
+            this.instreamDestroy = _instreamCleanup;
 
             // This is here because it binds to the methods declared above
             deprecateInit(_api, this);

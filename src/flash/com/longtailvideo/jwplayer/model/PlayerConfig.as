@@ -14,7 +14,7 @@ public dynamic class PlayerConfig extends EventDispatcher {
     protected var _id:String = "";
     protected var _stretching:String = "uniform";
     protected var _fullscreen:Boolean = false;
-    protected var _plugins:String = "";
+    protected var _plugins:Array = [];
     protected var _pluginConfig:Object = {};
 
     protected var _soundTransform:SoundTransform;
@@ -87,12 +87,12 @@ public dynamic class PlayerConfig extends EventDispatcher {
         _stretching = mode ? mode.toLowerCase() : "";
     }
 
-    public function get plugins():String {
+    public function get plugins():Array {
         return _plugins;
     }
 
-    public function set plugins(x:String):void {
-        _plugins = x;
+    public function set plugins(value:Array):void {
+        _plugins = value;
     }
 
     public function get id():String {
@@ -111,21 +111,6 @@ public dynamic class PlayerConfig extends EventDispatcher {
         if (value != "0") {
             _debug = value;
         }
-    }
-
-    /** A list of available pluginConfig keys. **/
-    public function get pluginIds():Array {
-        var names:Array = [];
-
-        // Only include loaded plugins
-        for each (var lp:String in _plugins.split(",")) {
-            var plugName:String = (lp.substr(lp.lastIndexOf("/") + 1).replace(/(.*)\.swf$/i, "$1").split("-")[0] as String).toLowerCase();
-            if (plugName) {
-                names.push(plugName);
-            }
-        }
-
-        return names;
     }
 
     /** DEPRICATED METHODS - KEEPING FOR LEGACY PROVIDER SUPPORT **/
@@ -241,7 +226,7 @@ public dynamic class PlayerConfig extends EventDispatcher {
         this.mute   = config.mute;
 
         // this.fullscreen = config.fullscreen;
-        // this.plugins    = config.plugins;
+        this.plugins    = config.flashPlugins;
 
         this.captionLabel = config.captionLabel;
         this.qualityLabel = config.qualityLabel;

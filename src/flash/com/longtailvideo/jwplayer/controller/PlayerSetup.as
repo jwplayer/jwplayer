@@ -64,7 +64,7 @@ public class PlayerSetup extends EventDispatcher {
     }
 
     protected function loadPlugins():void {
-        if (_model.plugins) {
+        if (_model.plugins.length) {
             var loader:PluginLoader = new PluginLoader();
             loader.addEventListener(Event.COMPLETE, tasker.success);
             loader.addEventListener(ErrorEvent.ERROR, tasker.failure);

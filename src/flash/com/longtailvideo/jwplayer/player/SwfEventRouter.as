@@ -85,7 +85,9 @@ function(id, name, json) {
             if (data !== null) {
                 var json:String;
                 try {
-                    if (data.toJsObject is Function) {
+                    if (data is String || data is Number) {
+                        // do nothing
+                    } else if (data.toJsObject is Function) {
                         data = data.toJsObject();
                     } else if (data.clone is Function) {
                         // event object targets often have Cyclic structure

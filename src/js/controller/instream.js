@@ -1,23 +1,20 @@
 define([
     'utils/helpers',
     'utils/underscore',
-    'utils/eventdispatcher',
+    'utils/backbone.events',
+    'events/change-state-event',
     'events/events',
     'events/states',
     'controller/model',
     'view/adskipbutton',
     'playlist/item'
-], function(utils, _, eventdispatcher,
-            events, states, Model, Adskipbutton, PlaylistItem) {
+], function(utils, _, Events,
+            changeStateEvent, events, states, Model, Adskipbutton, PlaylistItem) {
 
     var Instream = function(_controller, _model, _view) {
+
         function modelGet(attr) {
             return _model.get(attr);
-        }
-        function modelGetter(attr) {
-            return function() {
-                return _model.get(attr);
-            };
         }
 
         var _defaultOptions = {
@@ -47,7 +44,7 @@ define([
             _adModel,
             _currentProvider,
             _completeTimeoutId = -1,
-            _this = _.extend(this, new eventdispatcher());
+            _this = _.extend(this, Events);
 
         // Listen for player resize events
         _controller.on(events.JWPLAYER_FULLSCREEN, _fullscreenHandler);
@@ -58,9 +55,11 @@ define([
 
         _this.init = function() {
 
+            _controller._instreamPlayer = _this;
+
             /** Blocking playback and show Instream Display **/
 
-            // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
+                // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
             _oldProvider = _model.getVideo();
 
             // Keep track of the original player state
@@ -77,14 +76,14 @@ define([
             _adModel.on('fullscreenchange', _nativeFullscreenHandler);
             _olditem = _model.playlist[_model.item];
 
-            if ( _controller.checkBeforePlay() || (_oldpos === 0 && !_oldProvider.checkComplete()) ) {
+            if (_controller.checkBeforePlay() || (_oldpos === 0 && !_oldProvider.checkComplete())) {
                 // make sure video restarts after preroll
                 _oldpos = 0;
                 _oldstate = states.PLAYING;
             } else if (_oldProvider && _oldProvider.checkComplete()) {
-                 // AKA  postroll
-                 _oldstate = states.IDLE;
-             }  else if (modelGet('state') === states.IDLE) {
+                // AKA  postroll
+                _oldstate = states.IDLE;
+            } else if (modelGet('state') === states.IDLE) {
                 _oldstate = states.IDLE;
             } else {
                 _oldstate = states.PLAYING;
@@ -105,6 +104,11 @@ define([
             _this.instreamSetText(_defaultOptions.loadingmessage);
         };
 
+        _this.showProvider = function() {
+            // show the provider which is playing an ad (flash)
+            _oldProvider.setVisibility(true);
+        };
+
         /** Load an instream item and initialize playback **/
         _this.load = function(item, options) {
             if (utils.isAndroid(2.3)) {
@@ -116,7 +120,7 @@ define([
             }
             _sendEvent(events.JWPLAYER_PLAYLIST_ITEM, {
                 index: _arrayIndex
-            }, true);
+            });
 
             // Copy the playlist item passed in and make sure it's formatted as a proper playlist item
             if (_.isArray(item)) {
@@ -180,17 +184,17 @@ define([
             _sendEvent(evt.type, evt);
 
             if (_adModel) {
-                _controller.instreamDestroy(false, _this);
+                _this.instreamDestroy();
             }
         }
 
         /** Stop the instream playback and revert the main player back to its original state **/
-        _this.instreamDestroy = function(complete) {
+        _this.instreamDestroy = function() {
             if (!_adModel) {
                 return;
             }
 
-            if(_skipButton){
+            if (_skipButton) {
                 _view.controlsContainer().removeChild(_skipButton.element());
             }
 
@@ -199,7 +203,7 @@ define([
             _completeTimeoutId = -1;
 
             // We don't want the instream provider to be attached to the video tag anymore
-            _this.resetEventListeners();
+            _this.off();
             if (_currentProvider) {
                 _currentProvider.detachMedia();
                 _currentProvider.resetEventListeners();
@@ -231,34 +235,28 @@ define([
                 _oldProvider.stop();
             }
 
-            // Let listeners know the instream player has been destroyed, and why
-            _sendEvent(events.JWPLAYER_INSTREAM_DESTROYED, {
-                reason: complete ? 'complete' : 'destroyed'
-            }, true);
-
-
             if (_oldstate === states.PLAYING) {
                 // Model was already correct; just resume playback
                 _oldProvider.play();
             }
+
+            _controller._instreamPlayer = undefined;
         };
 
         /** Start instream playback **/
         _this.instreamPlay = function() {
-            //if (!_item) return;
+            if (!_adModel.getVideo()) {
+                return;
+            }
             _adModel.getVideo().play(true);
         };
 
         /** Pause instream playback **/
         _this.instreamPause = function() {
-            //if (!_item) return;
+            if (!_adModel.getVideo()) {
+                return;
+            }
             _adModel.getVideo().pause(true);
-        };
-
-        /** Seek to a point in instream media **/
-        _this.instreamSeek = function(position) {
-            //if (!_item) return;
-            _adModel.getVideo().seek(position);
         };
 
         /** Set custom text in the controlbar **/
@@ -267,8 +265,11 @@ define([
         };
 
         _this.instreamState = function() {
-            //if (!_item) return;
             return _adModel.state;
+        };
+
+        _this.hide = function() {
+            _view.hideInstream();
         };
 
         /*****************************
@@ -302,11 +303,13 @@ define([
                 provider.attachMedia();
                 provider.mute(_model.mute);
                 provider.volume(_model.volume);
+
+                _adModel.on('change:state', changeStateEvent, _this);
             }
         }
 
         function stateHandler(evt) {
-            switch(evt.newstate) {
+            switch (evt.newstate) {
                 case states.PLAYING:
                     _model.set('state', evt.newstate);
                     _adModel.set('state', evt.newstate);
@@ -324,21 +327,22 @@ define([
             _sendEvent(events.JWPLAYER_AD_SKIPPED);
             _completeHandler();
         }
+
         /** Forward provider events to listeners **/
         function _forward(evt) {
             _sendEvent(evt.type, evt);
         }
-        
+
         function _nativeFullscreenHandler(evt) {
-            _model.sendEvent(evt.type,evt);
-            _sendEvent(events.JWPLAYER_FULLSCREEN, {fullscreen:evt.jwstate});
+            _model.trigger(evt.type, evt);
+            _sendEvent(events.JWPLAYER_FULLSCREEN, {
+                fullscreen: evt.jwstate
+            });
         }
+
         function _fullscreenHandler(evt) {
             // required for updating the controlbars toggle icon
             _forward(evt);
-            if (!_adModel) {
-                return;
-            }
         }
 
         /** Handle the JWPLAYER_MEDIA_BUFFER_FULL event **/
@@ -368,15 +372,15 @@ define([
                 _completeTimeoutId = setTimeout(function() {
                     _sendEvent(events.JWPLAYER_PLAYLIST_ITEM, {
                         index: _arrayIndex
-                    }, true);
+                    });
                 }, 0);
             } else {
                 _completeTimeoutId = setTimeout(function() {
                     // this is called on every ad completion of the final video in a playlist
                     //   1) vast.js (to trigger ad_complete event)
                     //   2) display.js (to set replay icon and image)
-                    _sendEvent(events.JWPLAYER_PLAYLIST_COMPLETE, {}, true);
-                    _controller.instreamDestroy(true, _this);
+                    _sendEvent(events.JWPLAYER_PLAYLIST_COMPLETE, {});
+                    _controller.instreamDestroy();
                 }, 0);
             }
         }
@@ -395,99 +399,8 @@ define([
             if (_options.tag && !data.tag) {
                 data.tag = _options.tag;
             }
-            _this.sendEvent(type, data);
+            _this.trigger(type, data);
         }
-
-        _this.setControls = function() {};
-
-        /**************************************
-         *****  Duplicate main html5 api  *****
-         **************************************/
-
-        _this.play = function() {
-            if (_options.controlbarpausable.toString().toLowerCase() === 'true') {
-                _this.instreamPlay();
-            }
-        };
-
-        _this.pause = function() {
-            if (_options.controlbarpausable.toString().toLowerCase() === 'true') {
-                _this.instreamPause();
-            }
-        };
-
-        _this.stop = function() {
-            if (_options.controlbarstoppable.toString().toLowerCase() === 'true') {
-                _controller.instreamDestroy(false, _this);
-                _controller.stop();
-            }
-        };
-
-        _this.seek = function(position) {
-            switch (_options.controlbarseekable.toLowerCase()) {
-                case 'never':
-                    return;
-                case 'always':
-                    _this.instreamSeek(position);
-                    break;
-                case 'backwards':
-                    if (_adModel.position > position) {
-                        _this.instreamSeek(position);
-                    }
-                    break;
-            }
-        };
-
-        _this.seekDrag = function(state) {
-            _adModel.seekDrag(state);
-        };
-
-        _this.getPosition = function() {};
-        _this.getDuration = function() {};
-        _this.getWidth = modelGetter('width');
-        _this.getHeight = modelGetter('height');
-        _this.getFullscreen = modelGetter('fullscreen');
-        _this.setFullscreen = _controller.setFullscreen;
-        _this.getVolume = function() {
-            return _model.volume;
-        };
-        _this.setVolume = function(vol) {
-            _adModel.setVolume(vol);
-            _controller.setVolume(vol);
-        };
-        _this.getMute = function() {
-            return _model.mute;
-        };
-        _this.setMute = function(state) {
-            _adModel.setMute(state);
-            _controller.setMute(state);
-        };
-        _this.getState = function() {
-            if (!_adModel) {
-                return states.IDLE;
-            }
-            return _adModel.state;
-        };
-        _this.getPlaylist = function() {
-            return [_item];
-        };
-        _this.getPlaylistIndex = function() {
-            return 0;
-        };
-
-        _this.getStretching = function() {
-            return _model.config.stretching;
-        };
-
-        _this.setCurrentQuality = function() {};
-        _this.getQualityLevels = function() {
-            return [];
-        };
-
-        // for supporting api interface in html5 display
-        _this.getControls = modelGetter('controls');
-
-        _this.id = _controller.id + '_instream';
 
         return _this;
     };

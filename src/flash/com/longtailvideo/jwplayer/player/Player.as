@@ -1,6 +1,5 @@
 ﻿package com.longtailvideo.jwplayer.player {
 import com.longtailvideo.jwplayer.controller.Controller;
-import com.longtailvideo.jwplayer.events.CaptionsEvent;
 import com.longtailvideo.jwplayer.events.PlayerEvent;
 import com.longtailvideo.jwplayer.model.Model;
 import com.longtailvideo.jwplayer.model.PlayerConfig;
@@ -163,6 +162,8 @@ public class Player extends Sprite implements IPlayer {
         delete config.playlist;
 
         _model.setConfig(config);
+        // do it a second time
+        _controller.setupPlayer();
 
         for (var i:uint = 0; i < commands.length; i++) {
             var args:Array = commands[i] as Array;

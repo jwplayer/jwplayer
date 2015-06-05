@@ -35,12 +35,11 @@ public class PluginLoader extends EventDispatcher {
     private var loaders:Dictionary;
     private var errorState:Boolean = false;
 
-    public function loadPlugins(pluginList:String):void {
-        if (pluginList) {
-            var plugins:Array = pluginList.replace(/\s*/g, "").split(",");
-            for each(var plugin:String in plugins) {
+    public function loadPlugins(plugins:Array):void {
+        if (plugins.length) {
+            for each(var plugin:Object in plugins) {
                 if (plugin) {
-                    loadLocalPlugin(plugin);
+                    loadLocalPlugin(plugin.swf);
                 }
             }
         } else {
