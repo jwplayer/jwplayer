@@ -38,6 +38,7 @@
     @cue-size: .25em;
 
     #namespace > .basic-skin-styles(); // Using the above local variables
+    .skin-element-padding();
 
     .jw-controlbar {
         .inset-controlbar;
@@ -66,7 +67,7 @@
     }
 
     .jw-playlist-container {
-        left: -40%;
+        left: -41%;
 
         .jw-option,
         .jw-text,
@@ -199,6 +200,12 @@
     .jw-icon-cc .jw-option {
         .jw-icon-menu-bullet;
         text-align: left;
+
+        &:before {
+            font-size: .4em;
+            vertical-align: middle;
+            margin-right: .4em;
+        }
     }
 
     .jw-time-tip,
@@ -207,12 +214,6 @@
         background-color: @def-background-color;
         background-size: @def-background-size;
         border-radius: @ui-padding;
-    }
-
-    .jw-icon-inline,
-    .jw-icon-tooltip,
-    .jw-text {
-        padding: 0 @ui-padding;
     }
 
     .jw-dock {
