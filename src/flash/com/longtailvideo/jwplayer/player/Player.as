@@ -60,6 +60,10 @@ public class Player extends Sprite implements IPlayer {
         return _model.state;
     }
 
+    public function get config():PlayerConfig {
+        return _model.config;
+    }
+
     public function get locked():Boolean {
         return _controller.locking;
     }

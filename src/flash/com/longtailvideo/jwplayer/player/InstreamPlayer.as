@@ -12,6 +12,7 @@ import com.longtailvideo.jwplayer.media.VideoMediaProvider;
 import com.longtailvideo.jwplayer.model.IInstreamOptions;
 import com.longtailvideo.jwplayer.model.InstreamOptions;
 import com.longtailvideo.jwplayer.model.Model;
+import com.longtailvideo.jwplayer.model.PlayerConfig;
 import com.longtailvideo.jwplayer.model.PlaylistItem;
 import com.longtailvideo.jwplayer.parsers.JWParser;
 import com.longtailvideo.jwplayer.plugins.IPlugin;
@@ -75,6 +76,10 @@ public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPl
 
     public function get version():String {
         return PlayerVersion.version;
+    }
+
+    public function get config():PlayerConfig {
+        return _model.config;
     }
 
     public function get locked():Boolean {
