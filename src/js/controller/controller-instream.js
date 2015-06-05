@@ -73,6 +73,12 @@ define([
                 _controller._instreamPlayer.instreamSetText(text);
             }
         };
+
+        _controller.instreamHide = function () {
+            if (_controller._instreamPlayer) {
+                _controller._instreamPlayer.instreamHide();
+            }
+        };
     }
 
     return addMethods;

@@ -271,6 +271,10 @@ define([
             return _adModel.state;
         };
 
+        _this.instreamHide = function() {
+            _view.hideControlbar();
+        };
+
         /*****************************
          ****** Private methods ******
          *****************************/

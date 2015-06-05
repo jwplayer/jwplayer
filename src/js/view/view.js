@@ -1093,6 +1093,8 @@ define([
             provider.setVisibility(true);
         };
 
+        this.hideControlbar = _hideControlbar;
+
         this.addCues = function(cues) {
             if (_controlbar) {
                 _controlbar.addCues(cues);

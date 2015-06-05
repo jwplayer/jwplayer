@@ -6,7 +6,7 @@ define([
     'events/states'
 ], function(Events, events, _, utils, states) {
 
-    var Instream = function(_controller) {
+    var InstreamPlayer = function(_controller) {
 
         var _item,
             _options,
@@ -38,8 +38,7 @@ define([
             _controller.instreamPause(state);
         };
         _this.hide = function() {
-            //??
-            // _controller.instreamHide();
+            _controller.instreamHide();
         };
         _this.destroy = function() {
             _this.removeEvents();
@@ -97,5 +96,5 @@ define([
         _this.dispatchEvent = _this.trigger;
     };
 
-    return Instream;
+    return InstreamPlayer;
 });
