@@ -432,6 +432,9 @@ define([
         }
 
         function _touchHandler() {
+            if(_model.get('state') === states.IDLE){
+                _api.play();
+            }
             if (_showing) {
                 _hideControls();
             } else {
