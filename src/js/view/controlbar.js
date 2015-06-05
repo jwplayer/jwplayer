@@ -78,10 +78,12 @@ define([
             var timeSlider = new TimeSlider(this._model, this._api),
                 playlistTooltip = new Playlist('jw-icon-playlist'),
                 volumeSlider,
-                volumeTooltip;
+                volumeTooltip,
+                muteButton;
 
             // Do not initialize volume sliders on mobile.
             if(!utils.isMobile()){
+                muteButton = button('jw-icon-volume', this._api.setMute);
                 volumeSlider = new Slider('jw-slider-volume', 'horizontal');
                 volumeTooltip = new VolumeTooltip(this._model, 'jw-icon-volume');
             }
@@ -98,7 +100,7 @@ define([
                 hd: menu('jw-icon-hd'),
                 cc: menu('jw-icon-cc'),
                 audiotracks: menu('jw-icon-audio-tracks'),
-                mute: button('jw-icon-volume', this._api.setMute),
+                mute: muteButton,
                 volume: volumeSlider,
                 volumetooltip: volumeTooltip,
                 cast: button('jw-icon-cast jw-off'),
@@ -152,7 +154,9 @@ define([
             // Initial State
             this.elements.play.show();
             this.elements.fullscreen.show();
-            this.elements.mute.show();
+            if(this.elements.mute){
+                this.elements.mute.show();
+            }
             this.onVolume(this._model, this._model.get('volume'));
             this.onPlaylist(this._model, this._model.get('playlist'));
             this.onPlaylistItem(this._model, this._model.get('playlistItem'));
@@ -263,8 +267,10 @@ define([
             this.renderVolume(muted, model.get('volume'));
         },
         renderVolume : function(muted, vol) {
-            utils.toggleClass(this.elements.mute.element(), 'jw-off', muted);
-            // volume and volumetooltip do not exist on mobile devices.
+            // mute, volume, and volumetooltip do not exist on mobile devices.
+            if(this.elements.mute) {
+                utils.toggleClass(this.elements.mute.element(), 'jw-off', muted);
+            }
             if(this.elements.volume) {
                 this.elements.volume.render(muted ? 0 : vol);
             }
