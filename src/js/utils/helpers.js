@@ -336,7 +336,7 @@ define([
         document.getElementsByTagName('head')[0].appendChild(link);
     };
 
-    // Return true:Boolean if major and minor version of target is less than current version
+    // Is the player at least a minimum required version?
     utils.versionCheck = function (target) {
         var tParts = ('0' + target).split(/\W/);
         var jParts = version.split(/\W/);

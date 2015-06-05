@@ -120,12 +120,9 @@ public class View extends Sprite {
         try {
             _allPlugins.push(plugin);
             var plugDO:DisplayObject = plugin as DisplayObject;
-            if (!_plugins[id] && plugDO != null) {
+            if (!_plugins[id] && plugDO) {
                 _plugins[id] = plugDO;
                 _pluginsLayer.addChild(plugDO);
-            }
-            if (_model.pluginIds.indexOf(id) < 0) {
-                _model.plugins += "," + id;
             }
         } catch (e:Error) {
             dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, e.message));

@@ -76,8 +76,11 @@ define([
                     plugin.resize(displayarea.clientWidth, displayarea.clientHeight);
                 }, 400);
             }
-            div.left = displayarea.style.left;
-            div.top = displayarea.style.top;
+
+            if (displayarea && displayarea.style) {
+                div.left = displayarea.style.left;
+                div.top = displayarea.style.top;
+            }
         };
     }
 

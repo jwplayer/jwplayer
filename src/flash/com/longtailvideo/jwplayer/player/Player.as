@@ -1,11 +1,11 @@
 ﻿package com.longtailvideo.jwplayer.player {
 import com.longtailvideo.jwplayer.controller.Controller;
-import com.longtailvideo.jwplayer.events.CaptionsEvent;
 import com.longtailvideo.jwplayer.events.PlayerEvent;
 import com.longtailvideo.jwplayer.model.Model;
 import com.longtailvideo.jwplayer.model.PlayerConfig;
 import com.longtailvideo.jwplayer.model.PlaylistItem;
 import com.longtailvideo.jwplayer.plugins.IPlugin;
+import com.longtailvideo.jwplayer.utils.AssetLoader;
 import com.longtailvideo.jwplayer.utils.RootReference;
 import com.longtailvideo.jwplayer.view.View;
 
@@ -163,6 +163,8 @@ public class Player extends Sprite implements IPlayer {
         delete config.playlist;
 
         _model.setConfig(config);
+        // do it a second time
+        _controller.setupPlayer();
 
         for (var i:uint = 0; i < commands.length; i++) {
             var args:Array = commands[i] as Array;
@@ -215,7 +217,8 @@ public class Player extends Sprite implements IPlayer {
                 .on('stretch', stretch)
                 .on('setCurrentQuality', setCurrentQuality)
                 .on('setSubtitlesTrack', setSubtitlesTrack)
-                .on('setCurrentAudioTrack', setCurrentAudioTrack);
+                .on('setCurrentAudioTrack', setCurrentAudioTrack)
+                .on('loadXml', loadXml);
 
         // Send ready event to browser
         SwfEventRouter.triggerJsEvent('ready');
@@ -236,6 +239,21 @@ public class Player extends Sprite implements IPlayer {
 
         // Send Setup Error to browser
         SwfEventRouter.error(0, evt.message);
+    }
+
+    private function loadXml(url:String, success:String, failure:String):void {
+        CONFIG::debugging {
+            trace('loadXML', url, success, failure);
+        }
+        var loader:AssetLoader = new AssetLoader();
+        loader.addEventListener(Event.COMPLETE, function(evt:Event):void {
+            var data:String = loader.loadedObject;
+            SwfEventRouter.triggerJsEvent(success, data);
+        });
+        loader.addEventListener(ErrorEvent.ERROR, function(evt:ErrorEvent):void {
+            SwfEventRouter.triggerJsEvent(failure, 'VAST could not be loaded');
+        });
+        loader.load(url);
     }
 }
 }

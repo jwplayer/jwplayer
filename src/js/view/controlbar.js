@@ -296,11 +296,6 @@ define([
             return this.el;
         },
 
-        redraw : utils.noop,
-        hide : utils.noop,
-        show : utils.noop,
-        audioMode : utils.noop,
-        hideFullscreen : utils.noop,
         getVisibleBounds : function (){
             var el = this.el,
                 // getComputedStyle for modern browsers, currentStyle is for IE8

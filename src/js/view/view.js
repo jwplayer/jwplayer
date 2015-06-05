@@ -25,19 +25,12 @@ define([
         _bounds = utils.bounds,
         _isMobile = utils.isMobile(),
         _isIPad = utils.isIPad(),
-        _isIPod = utils.isIPod(),
         DOCUMENT_FULLSCREEN_EVENTS = [
             'fullscreenchange',
             'webkitfullscreenchange',
             'mozfullscreenchange',
             'MSFullscreenChange'
-        ],
-
-        /*************************************************************
-         * Player stylesheets - done once on script initialization;  *
-         * These CSS rules are used for all JW Player instances      *
-         *************************************************************/
-        JW_CSS_BLOCK = 'block';
+        ];
 
     var View = function(_api, _model) {
         var _playerElement,
@@ -138,7 +131,6 @@ define([
 
             // On keypress show the controlbar for a few seconds
             if (!_instreamMode) {
-                _showControlbar();
                 _resetTapTimer();
             }
 
@@ -210,7 +202,6 @@ define([
 
             // On tab-focus, show the control bar for a few seconds
             if (!_instreamMode) {
-                _showControlbar();
                 _resetTapTimer();
             }
         }
@@ -563,9 +554,6 @@ define([
 
             _controlsLayer.appendChild(_controlbar.element());
 
-            if (_isIPod) {
-                _hideControlbar();
-            }
             if (_model.get('castAvailable')) {
                 _this.forceControls(true);
             }
@@ -647,14 +635,12 @@ define([
 
         function _castAdsStarted() {
             utils.addClass(_playerElement, 'jw-flag-ads');
-            _controlbar.show(true);
         }
 
         function _castAdsEnded() {
             // controlbar reset
             this.setAltText('');
             utils.removeClass(_playerElement, 'jw-flag-ads');
-            _controlbar.show(true);
             // cast display reset
             if (_castDisplay) {
                 _castDisplay.adsEnded();
@@ -725,7 +711,7 @@ define([
                     _playerElement.className = className;
                 }
                 cssUtils.style(_playerElement, {
-                    display: JW_CSS_BLOCK
+                    display: 'block'
                 }, resetAspectMode);
             }
 
@@ -742,9 +728,6 @@ define([
             }
             _styles(_playerElement, playerStyle, true);
 
-            if (_controlbar) {
-                _controlbar.redraw(true);
-            }
             if (_logo) {
                 _logo.offset(_controlbar && _logo.position().indexOf('bottom') >= 0 ?
                     _controlbar.element().clientHeight : 0);
@@ -762,11 +745,9 @@ define([
             _audioMode = _isAudioMode(height);
             if (_controlbar) {
                 if (_audioMode) {
-                    _controlbar.audioMode(true);
                     _showControls();
                     _showVideo(false);
                 } else {
-                    _controlbar.audioMode(false);
                     var model = _instreamMode ? _instreamModel : _model;
                     _updateState(model.get('state'));
                 }
@@ -906,23 +887,6 @@ define([
             }
         }
 
-        function _showControlbar() {
-            if (_controlbar && _model.get('controls')) {
-                _controlbar.show();
-            }
-        }
-
-        function _hideControlbar() {
-            if (utils.hasClass(_controlsLayer, 'jw-casting')) {
-                return;
-            }
-
-            // TODO: use _forcedControlsState for audio mode so that we don't need these
-            if (_controlbar && !_audioMode && !_model.getVideo().isAudioFile()) {
-                _controlbar.hide();
-            }
-        }
-
         function _showDisplay() {
             // debug this, find out why
             if (!(_isMobile && _model.get('fullscreen'))) {
@@ -934,21 +898,11 @@ define([
             clearTimeout(_controlsTimeout);
             _showing = false;
 
-            var model = _instreamMode ? _instreamModel : _model;
-            var state = model.get('state');
-
-            if (!_model.get('controls') || state !== states.PAUSED) {
-                _hideControlbar();
-            }
-
             utils.addClass(_playerElement, 'jw-flag-user-inactive');
         }
 
         function _showControls() {
             _showing = true;
-            if (_model.get('controls') || _audioMode) {
-                _showControlbar();
-            }
 
             utils.removeClass(_playerElement, 'jw-flag-user-inactive');
         }
@@ -1013,11 +967,6 @@ define([
                 // TODO: needs to be done in the provider.setVisibility
                 utils.addClass(_videoLayer, 'jw-media-show');
 
-                // force control bar without audio check
-                if (_controlbar) {
-                    _controlbar.show();
-                    _controlbar.hideFullscreen(true);
-                }
                 return;
             }
             // player display
@@ -1027,15 +976,11 @@ define([
                         _showVideo(false);
                         if (_controlbar) {
                             _showControls();
-                            _controlbar.hideFullscreen(true);
                         }
                     } else {
                         _showVideo(true);
 
                         _resizeMedia();
-                        if (_controlbar) {
-                            _controlbar.hideFullscreen(!_model.getVideo().supportsFullscreen());
-                        }
                     }
                     break;
                 case states.IDLE:
@@ -1044,9 +989,6 @@ define([
                     _showVideo(false);
                     if (!_audioMode) {
                         _showDisplay();
-                        if (_controlbar) {
-                            _controlbar.hideFullscreen(false);
-                        }
                     }
                     break;
                 case states.BUFFERING:
@@ -1068,7 +1010,6 @@ define([
             _instreamModel.on('change:controls', _onChangeControls);
             _instreamMode = true;
             utils.addClass(_playerElement, 'jw-flag-ads');
-            _controlbar.show(true);
         };
 
         this.setAltText = function(text) {
@@ -1080,14 +1021,17 @@ define([
             var provider = _instreamModel.getVideo();
             provider.setContainer(_videoLayer);
             provider.setVisibility(true);
-            _controlbar.show(true);
+        };
+
+        this.useExternalControls = function() {
+            utils.addClass(_playerElement, 'jw-flag-ads-hide-controls');
         };
 
         this.destroyInstream = function() {
             _instreamMode = false;
             this.setAltText('');
             utils.removeClass(_playerElement, 'jw-flag-ads');
-            _controlbar.show(true);
+            utils.removeClass(_playerElement, 'jw-flag-ads-hide-controls');
             var provider = _model.getVideo();
             provider.setContainer(_videoLayer);
             provider.setVisibility(true);

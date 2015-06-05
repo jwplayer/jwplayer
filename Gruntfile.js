@@ -227,6 +227,7 @@ module.exports = function(grunt) {
                     },
                     plugins: [
                         new webpack.DefinePlugin({
+                            __DEBUG__ : true,
                             __BUILD_VERSION__: '\'' + buildVersion + '\'',
                             __FLASH_VERSION__: flashVersion
                         })
@@ -246,6 +247,7 @@ module.exports = function(grunt) {
                     },
                     plugins: [
                         new webpack.DefinePlugin({
+                            __DEBUG__ : false,
                             __BUILD_VERSION__: '\'' + buildVersion + '\'',
                             __FLASH_VERSION__: flashVersion
                         }),

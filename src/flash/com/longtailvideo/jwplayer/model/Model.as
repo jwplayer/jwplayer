@@ -182,16 +182,12 @@ public class Model extends GlobalEventDispatcher {
         _config.setConfig(config);
     }
 
-    public function get pluginIds():Array {
-        return _config.pluginIds;
-    }
-
-    public function get plugins():String {
+    public function get plugins():Array {
         return _config.plugins;
     }
 
-    public function set plugins(x:String):void {
-        _config.plugins = x;
+    public function set plugins(value:Array):void {
+        _config.plugins = value;
     }
 
     public function pluginConfig(id:String):PluginConfig {
