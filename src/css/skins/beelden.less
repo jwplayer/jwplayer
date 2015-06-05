@@ -73,6 +73,53 @@
         }
     }
 
+    .jw-playlist-container {
+        left: -44%;
+        background-color: #282828;
+
+        .jw-option {
+            border-bottom: 1px solid #000;
+            background-color: #282828;
+            color: #B6B6B6;
+            
+            // Menu items are black when active, or hovered
+            &:hover,
+            &.jw-active-option {
+                color: rgb(201, 56, 53);
+                background-color: black;
+            }
+
+            // Number turn red when li is hovered
+            &:hover {              
+                color: rgb(201, 56, 53);
+            }
+        }
+
+        
+        // play icon is always red
+        .jw-label .jw-icon-play {
+            color: rgb(201, 56, 53);
+        }
+        
+        ::-webkit-scrollbar-track {
+            background-color: #000;
+        }
+
+        ::-webkit-scrollbar {
+            border: 10px solid #282828;
+            border-radius: .25em;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #B6B6B6;
+        }
+    }
+
+    .jw-tooltip-title {
+        border-bottom: 1px solid #000;
+        background-color: #282828;
+    }
+
     .jw-rail,
     .jw-progress,
     .jw-buffer {

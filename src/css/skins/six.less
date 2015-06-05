@@ -65,6 +65,45 @@
         background-size: @def-background-size;
     }
 
+    .jw-playlist-container {
+        left: -40%;
+
+        .jw-option,
+        .jw-text,
+        .jw-icon {
+            color: @progress-color;
+        }
+
+        .jw-option {
+            border-bottom: 1px solid #2F2F31;
+            color: #878787;
+
+            // Menu items are black when active, or hovered
+            &:hover,
+            &.jw-active-option {
+                background-color: #2F2F31;
+                color: #fff;
+            }
+        }
+
+        // play icon is always red
+        .jw-label .jw-icon-play {
+            color: #fff;
+        }
+
+        ::-webkit-scrollbar {
+            border-radius: .25em;
+        }
+      
+        ::-webkit-scrollbar-track {
+            background-color: #3C3C3E;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(to right, rgba(255, 255, 255, 1) 0, rgba(204, 204, 204, 1) 50%, rgba(255, 255, 255, 1) 100%);
+        }
+    }
+
     .jw-rail,
     .jw-buffer,
     .jw-progress {
@@ -157,7 +196,7 @@
     }
 
 
-    .jw-overlay .jw-option {
+    .jw-icon-cc .jw-option {
         .jw-icon-menu-bullet;
         text-align: left;
     }
