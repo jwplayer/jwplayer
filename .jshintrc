@@ -27,6 +27,7 @@
       "require",
       "define",
       "module",
+      "__DEBUG__",
       "__BUILD_VERSION__",
       "__FLASH_VERSION__"
     ]
