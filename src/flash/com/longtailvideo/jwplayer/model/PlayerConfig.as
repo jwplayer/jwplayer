@@ -235,24 +235,24 @@ public dynamic class PlayerConfig extends EventDispatcher {
     /** Returns a PluginConfig containing plugin configuration information **/
     public function pluginConfig(pluginId:String):PluginConfig {
         pluginId = pluginId.toLowerCase();
-        if (_pluginConfig.hasOwnProperty(pluginId)) {
-            return _pluginConfig[pluginId] as PluginConfig;
-        } else if (this[pluginId] && getQualifiedClassName(this[pluginId]) == "Object") {
-            var duplicatedConfig:PluginConfig = new PluginConfig(pluginId, this[pluginId]);
-            _pluginConfig[pluginId] = duplicatedConfig;
-            return duplicatedConfig;
+        var pluginConfig:PluginConfig = _pluginConfig[pluginId] as PluginConfig;
+        if (pluginConfig) {
+            return pluginConfig;
+        }
+        var plugin:Object;
+        for (var i:uint = _plugins.length; i--;) {
+            if (_plugins[i].name === pluginId) {
+                plugin = _plugins[i];
+                break;
+            }
+        }
+        if (plugin && getQualifiedClassName(plugin) === 'Object') {
+            pluginConfig = new PluginConfig(pluginId, plugin);
         } else {
-            var newConfig:PluginConfig = new PluginConfig(pluginId);
-            _pluginConfig[pluginId] = newConfig;
-            return newConfig;
+            pluginConfig = new PluginConfig(pluginId);
         }
-    }
-
-    /** Overwrites a plugin's configuration. Use with caution. **/
-    public function setPluginConfig(pluginId:String, pluginConfig:PluginConfig):void {
-        if (pluginId && pluginConfig) {
-            _pluginConfig[pluginId] = pluginConfig;
-        }
+        _pluginConfig[pluginId] = pluginConfig;
+        return pluginConfig;
     }
 
 }

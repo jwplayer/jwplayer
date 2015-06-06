@@ -46,6 +46,8 @@ public class Model extends GlobalEventDispatcher {
 
         _item = playItem;
 
+        dispatchEvent(new Event('playlistItem'));
+
         setActiveMediaProvider(JWParser.getProvider(playItem));
     }
 

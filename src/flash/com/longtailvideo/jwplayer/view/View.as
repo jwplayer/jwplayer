@@ -91,26 +91,6 @@ public class View extends Sprite {
         _instreamLayer.graphics.beginFill(0);
         _instreamLayer.graphics.drawRect(0, 0, _model.width, _model.height);
         _instreamLayer.graphics.endFill();
-
-        for each (var plug:IPlugin in _allPlugins) {
-            var plugDisplay:DisplayObject = plug as DisplayObject;
-            if (plug && plugDisplay) {
-                var cfg:PluginConfig = _model.pluginConfig(plug.id);
-                if (cfg['visible']) {
-                    plugDisplay.visible = true;
-                    plugDisplay.x = cfg['x'];
-                    plugDisplay.y = cfg['y'];
-                    try {
-                        plug.resize(cfg.width, cfg.height);
-                    } catch (e:Error) {
-                        Logger.log("There was an error resizing plugin '" + plug.id + "': " + e.message);
-                    }
-                } else {
-                    plugDisplay.visible = false;
-                }
-            }
-        }
-
     }
 
     public function addPlugin(id:String, plugin:IPlugin):void {
