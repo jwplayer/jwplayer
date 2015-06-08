@@ -7,6 +7,8 @@ define([
     'view/components/thumbnails.mixin'
 ], function(_, Slider, utils, Tooltip, ChaptersMixin, ThumbnailsMixin) {
 
+    var MIN_DVR_DURATION = -60;
+
     var TimeTip = Tooltip.extend({
         setup : function() {
 
@@ -97,7 +99,13 @@ define([
             this.updateBuffer(pct);
         },
         onPosition : function(model, pos) {
-            var pct = pos / this._api.getDuration() * 100;
+            var duration = this._api.getDuration();
+            var pct = 0;
+            if(duration < MIN_DVR_DURATION) {
+                pct = (duration - pos) / duration * 100;
+            } else if (duration > 0) {
+                pct = pos / duration * 100;
+            }
             this.render(pct);
         },
         onPlaylistItem : function (model, playlistItem) {

@@ -10,6 +10,8 @@ define([
     'view/components/volumetooltip'
 ], function(utils, _, Events, UI, Slider, TimeSlider, Menu, Playlist, VolumeTooltip) {
 
+    var MIN_DVR_DURATION = -60;
+
     function button(icon, apiAction) {
         var element = document.createElement('span');
         element.className = 'jw-icon jw-icon-inline ' + icon;
@@ -283,10 +285,12 @@ define([
             this.elements.cast.toggle(val);
         },
         onElapsed : function(model, val) {
-            this.elements.elapsed.innerHTML = utils.timeFormat(val);
+            var duration = this._api.getDuration();
+            this.elements.elapsed.innerHTML =
+                (duration < MIN_DVR_DURATION)?('-'+utils.timeFormat(-duration)):utils.timeFormat(val);
         },
         onDuration : function(model, val) {
-            this.elements.duration.innerHTML = utils.timeFormat(val);
+            this.elements.duration.innerHTML = (val < MIN_DVR_DURATION)?'Live':utils.timeFormat(val);
         },
         onFullscreen : function(model, val) {
             utils.toggleClass(this.elements.fullscreen.element(), 'jw-off', val);
