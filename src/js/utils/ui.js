@@ -13,6 +13,20 @@ define([
         elem.addEventListener('touchstart', interactStartHandler);
         elem.addEventListener('mousedown', interactStartHandler);
 
+        function isRightClick(evt) {
+            var e = evt || window.event;
+
+            if ('which' in e) {
+                // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
+                return (e.which === 3);
+            } else if ('button' in e) {
+                // IE and Opera
+                return (e.button === 2);
+            }
+
+            return false;
+        }
+
         function interactStartHandler() {
             elem.addEventListener('touchmove', interactDragHandler);
             elem.addEventListener('touchcancel', interactEndHandler);
@@ -50,7 +64,9 @@ define([
                 // This allows the controlbar/dock/logo click events not to be forwarded to the view
                 evt.stopPropagation();
                 if(evt instanceof MouseEvent) {
-                    triggerEvent(touchEvents.CLICK, evt);
+                    if (! isRightClick(evt)) {
+                        triggerEvent(touchEvents.CLICK, evt);
+                    }
                 } else {
                     triggerEvent(touchEvents.TAP, evt);
                 }

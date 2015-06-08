@@ -691,12 +691,6 @@ define([
         };
 
 
-        function _redrawComponent(comp) {
-            if (comp) {
-                comp.redraw();
-            }
-        }
-
         /**
          * Resize the player
          */
@@ -864,7 +858,6 @@ define([
                 });
             }
 
-            _redrawComponent(_controlbar);
             _resizeMedia();
 
             _toggleFullscreen(fullscreenState);

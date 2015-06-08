@@ -187,6 +187,7 @@ module.exports = function(grunt) {
                     ]
                 },
                 devtool: 'cheap-source-map',
+                //devtool: 'cheap-eval-source-map',
                 module: {
                     loaders: [
                         {
