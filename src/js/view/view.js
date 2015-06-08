@@ -682,10 +682,10 @@ define([
                     _toggleDOMFullscreen(_playerElement, state);
                 } else {
                     // else use native fullscreen
-                    if (_instreamModel) {
-                       _instreamModel.getVideo().setFullScreen(state);
+                    if (_instreamModel && _instreamModel.getVideo()) {
+                       _instreamModel.getVideo().setFullscreen(state);
                     }
-                   _model.getVideo().setFullScreen(state);
+                   _model.getVideo().setFullscreen(state);
                 }
             }
         };
