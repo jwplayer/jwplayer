@@ -82,7 +82,6 @@ define([
             _setup.on(events.JWPLAYER_SETUP_ERROR, function(evt) {
                 _this.setupError(evt.message);
             });
-            _setup.start();
 
             _model.mediaController.on(events.JWPLAYER_MEDIA_COMPLETE, function() {
                 // Insert a small delay here so that other complete handlers can execute
@@ -622,9 +621,20 @@ define([
 
             // This is here because it binds to the methods declared above
             deprecateInit(_api, this);
+
+            _setup.start();
         },
 
         showView: function(viewElement){
+            if (!document.documentElement.contains(this.currentContainer)) {
+                // This implies the player was removed from the DOM before setup completed
+                //   or a player has been "re" setup after being removed from the DOM
+                this.currentContainer = document.getElementById(this.id);
+                if (!this.currentContainer) {
+                    return;
+                }
+            }
+
             if(this.currentContainer.parentElement) {
                 this.currentContainer.parentElement.replaceChild(viewElement, this.currentContainer);
             }
