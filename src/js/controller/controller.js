@@ -625,6 +625,15 @@ define([
         },
 
         showView: function(viewElement){
+            if (!document.documentElement.contains(this.currentContainer)) {
+                // This implies the player was removed from the DOM before setup completed
+                //   or a player has been "re" setup after being removed from the DOM
+                this.currentContainer = document.getElementById(this.id);
+                if (!this.currentContainer) {
+                    return;
+                }
+            }
+
             if(this.currentContainer.parentElement) {
                 this.currentContainer.parentElement.replaceChild(viewElement, this.currentContainer);
             }
