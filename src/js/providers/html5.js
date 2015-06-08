@@ -644,7 +644,7 @@ define([
 
         this.supportsFullscreen = _.constant(true);
 
-        this.setFullScreen = function(state) {
+        this.setFullscreen = function(state) {
             state = !!state;
 
             // This implementation is for iOS and Android WebKit only

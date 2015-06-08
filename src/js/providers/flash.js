@@ -259,7 +259,7 @@ define([
                 setControls: function() {
 
                 },
-                setFullScreen: function() {
+                setFullscreen: function() {
 
                 },
                 getFullScreen: function() {
