@@ -287,6 +287,22 @@ define([
         return (file.indexOf('rtmp') === 0 || type === 'rtmp');
     };
 
+    utils.DVR = 'DVR';
+    utils.LIVE = 'LIVE';
+    utils.VOD = 'VOD';
+    utils.MAX_DVR_DURATION = 60;
+
+    utils.adaptiveType = function(duration) {
+        var MIN_DVR_DURATION = -120;
+        if(duration <= MIN_DVR_DURATION) {
+            return utils.DVR;
+        } else if (duration < 0 || duration === Infinity) {
+            return utils.LIVE;
+        } else {
+            return utils.VOD;
+        }
+    };
+
     /**
      * Iterates over an object and executes a callback function for each property (if it exists)
      * This is a safe way to iterate over objects if another script has modified the object prototype

@@ -7,8 +7,6 @@ define([
     'view/components/thumbnails.mixin'
 ], function(_, Slider, utils, Tooltip, ChaptersMixin, ThumbnailsMixin) {
 
-    var MIN_DVR_DURATION = -60;
-
     var TimeTip = Tooltip.extend({
         setup : function() {
 
@@ -101,9 +99,10 @@ define([
         onPosition : function(model, pos) {
             var duration = this._api.getDuration();
             var pct = 0;
-            if(duration < MIN_DVR_DURATION) {
+            var adaptiveType = utils.adaptiveType(duration);
+            if(adaptiveType === utils.DVR) {
                 pct = (duration - pos) / duration * 100;
-            } else if (duration > 0) {
+            } else if (adaptiveType === utils.VOD) {
                 pct = pos / duration * 100;
             }
             this.render(pct);
