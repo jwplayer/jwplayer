@@ -82,7 +82,6 @@ define([
             _setup.on(events.JWPLAYER_SETUP_ERROR, function(evt) {
                 _this.setupError(evt.message);
             });
-            _setup.start();
 
             _model.mediaController.on(events.JWPLAYER_MEDIA_COMPLETE, function() {
                 // Insert a small delay here so that other complete handlers can execute
@@ -622,6 +621,8 @@ define([
 
             // This is here because it binds to the methods declared above
             deprecateInit(_api, this);
+
+            _setup.start();
         },
 
         showView: function(viewElement){
