@@ -543,23 +543,17 @@ define([
             this.setCues = _view.addCues;
             this.setFullscreen = _view.fullscreen;
             this.addButton = function(img, tooltip, callback, id) {
-                var btn;
-                if (_.isObject(img)) {
-                    // Handle passing in an object
-                    btn = img;
-                    btn.id = _.uniqueId();
-                } else {
-                    // Handle legacy setup
-                    btn = {
-                        img : img,
-                        tooltip : tooltip,
-                        callback : callback,
-                        id : id
-                    };
-                }
+                var btn = {
+                    img : img,
+                    tooltip : tooltip,
+                    callback : callback,
+                    id : id
+                };
 
                 var dock = _model.get('dock');
                 dock = (dock) ? dock.slice(0) : [];
+                dock = _.reject(dock, _.matches({id : btn.id}));
+
                 dock.push(btn);
                 _model.set('dock', dock);
             };
