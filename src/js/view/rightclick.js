@@ -17,7 +17,7 @@ define([
             var obj = {
                 items : [{
                     title: 'About JW Player ' + majorMinorPatchPre,
-                    feature : 'jw-logo', // we can use any webfont icon here
+                    featured : true,
                     link: '//jwplayer.com/learn-more/?m=h&e=o&v=' + version
                 }]
             };

@@ -267,25 +267,27 @@ define([
 
             var cues = [
                 '.jw-cue:after',
-                '.jw-thumb:after'
+                '.jw-knob:after'
             ];
 
             var iconHovers = ['.jw-icon:hover', '.jw-option:hover'];
             var sliders = ['.jw-progress'];
-            var containers = ['.jw-container'];
+            var cbar = ['.jw-controlbar'];
+            var ttip = ['.jw-time-tip'];
 
 
-            addStyle('color', iconHovers, _model.get('skinColorActive'));
-            addStyle('color', icons, _model.get('skinColorInactive'));
-            addStyle('background', cues, _model.get('skinColorInactive'));
-            addStyle('background', sliders, _model.get('skinColorActive'));
-            addStyle('background', containers, _model.get('skinColorBackground'));
+            addStyle('color',       iconHovers,                     _model.get('skinColorActive'));
+            addStyle('color',       ['.jw-active-option'],          _model.get('skinColorActive'));
+            addStyle('color',       ['.jw-icon-hd', '.jw-icon-cc'], _model.get('skinColorActive'));
+            addStyle('background',  sliders,                        _model.get('skinColorActive'));
 
-            addStyle('color', ['.jw-active-option'], _model.get('skinColorActive'));
-            addStyle('background', ['.jw-active-option'], _model.get('skinColorInactive'));
-
-            addStyle('color', ['.jw-icon-hd', '.jw-icon-cc'], _model.get('skinColorActive'));
+            addStyle('background',  ['.jw-active-option'],          _model.get('skinColorInactive'));
+            addStyle('background',  cues,                           _model.get('skinColorInactive'));
+            addStyle('color',       icons,                          _model.get('skinColorInactive'));
             addStyle('color', ['.jw-icon-hd.jw-off', '.jw-icon-cc.jw-off'], _model.get('skinColorInactive'));
+
+            addStyle('background',  cbar,                           _model.get('skinColorBackground'));
+            addStyle('background',  ttip,                           _model.get('skinColorBackground'));
         };
 
         this.setup = function() {
@@ -531,7 +533,7 @@ define([
             _logo.on(events.JWPLAYER_LOGO_CLICK, _logoClickHandler);
 
             var rightside = document.createElement('div');
-            rightside.className = 'jw-controls-right';
+            rightside.className = 'jw-controls-right jw-reset';
             if (_model.get('config').logo) {
                 rightside.appendChild(_logo.element());
             }

@@ -14,7 +14,7 @@ define([
         _.extend(this, Events);
 
         _display = document.createElement('div');
-        _display.className = 'jw-click';
+        _display.className = 'jw-click jw-reset';
 
         this.element = function() { return _display; };
 

@@ -1,7 +1,7 @@
 @import "vars";
 
 
-.jw-rail-group {
+.jw-slider-container {
     display : inline-block;
     height: 1em;
     position: relative;
@@ -26,9 +26,8 @@
 }
 
 .jw-cue,
-.jw-thumb {
+.jw-knob {
     position: absolute;
-    z-index: 1;
     cursor: pointer;
 
     &:after {
@@ -38,7 +37,19 @@
 }
 
 .jw-cue {
-    z-index: 0;
+    &:after {
+        background-color: #fff;
+        width: .1em;
+        height: .4em;
+    }
+}
+
+.jw-knob {
+    &:after {
+        background-color: #aaa;
+        width: .4em;
+        height: .4em;
+    }
 }
 
 .jw-slider-horizontal {
@@ -63,26 +74,13 @@
 
     .jw-rail,
     .jw-progress,
-    .jw-rail-group {
+    .jw-slider-container {
         width: 100%;
     }
 
-    .jw-thumb {
+    .jw-knob {
         left: 0;    // Default position, overridden by player.
         margin-left: @thumb-size/-2;
-        &:after {
-            background: #aaa;
-            width: .4em;
-            height: .4em;
-        }
-    }
-
-    .jw-cue {
-        &:after {
-            background-color: #fff;
-            width: .1em;
-            height: .4em;
-        }
     }
 }
 
@@ -105,7 +103,7 @@
         height: 0;   // Default height, overridden by player.
     }
 
-    .jw-rail-group,
+    .jw-slider-container,
     .jw-rail,
     .jw-progress {
         bottom: 0;
@@ -116,17 +114,16 @@
         margin: 0 auto;
     }
 
-    .jw-rail-group {
+    .jw-slider-container {
         height: 4em;
         position: relative;
     }
 
-    .jw-thumb {
+    .jw-knob {
         bottom: 0;  // Default position, overridden by player.
         left: 0;
         right: 0;
         margin: 0 auto;
-        
     }
 }
 

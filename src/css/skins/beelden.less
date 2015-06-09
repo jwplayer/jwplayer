@@ -143,7 +143,7 @@
 
     .jw-slider-horizontal,
     .jw-slider-vertical {
-        .jw-thumb {
+        .jw-knob {
 
             &:after {
                 background-color: #bbb5b7;
@@ -155,7 +155,7 @@
     }
 
     .jw-slider-horizontal {
-        .jw-rail-group {
+        .jw-slider-container {
             .vertically-centered-rail-element(@rail-height, 2em);
             height: .4em;
         }
@@ -177,7 +177,7 @@
             }
         }
 
-        .jw-thumb {
+        .jw-knob {
             .vertically-centered-rail-element(@rail-height, .8em);
 
             &:after {
@@ -204,7 +204,7 @@
             background: @progress-vert-gradient;
         }
 
-        .jw-thumb {
+        .jw-knob {
             .horizontally-centered-thumb(.75em, .7em);
 
             &:after {

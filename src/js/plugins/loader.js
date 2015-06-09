@@ -109,8 +109,7 @@ define([
                     if (jsPlugin && config.plugins && config.plugins[pluginURL]) {
                         var div = document.createElement('div');
                         div.id = api.id + '_' + pluginName;
-                        div.style.position = 'absolute';
-                        div.style.top = 0;
+                        div.className = 'jw-plugin jw-reset';
                         jsPlugins[pluginName] = pluginObj.getNewInstance(api,
                             _.extend({}, config.plugins[pluginURL]), div);
                         api.onReady(resizer(jsPlugins[pluginName], div, true));

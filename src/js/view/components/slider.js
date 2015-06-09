@@ -24,10 +24,10 @@ define([
             };
             this.el = utils.createElement(SliderTemplate(obj));
 
-            this.elementRail = this.el.getElementsByClassName('jw-rail-group')[0];
+            this.elementRail = this.el.getElementsByClassName('jw-slider-container')[0];
             this.elementBuffer = this.el.getElementsByClassName('jw-buffer')[0];
             this.elementProgress = this.el.getElementsByClassName('jw-progress')[0];
-            this.elementThumb = this.el.getElementsByClassName('jw-thumb')[0];
+            this.elementThumb = this.el.getElementsByClassName('jw-knob')[0];
 
             this.userInteract = new UI(this.element());
 

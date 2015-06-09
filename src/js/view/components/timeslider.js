@@ -11,11 +11,12 @@ define([
         setup : function() {
 
             this.text = document.createElement('span');
-            this.text.className = 'jw-text';
-            this.img  = document.createElement('span');
+            this.text.className = 'jw-text jw-reset';
+            this.img  = document.createElement('div');
+            this.img.className = 'jw-reset';
 
             var wrapper = document.createElement('div');
-            wrapper.className = 'jw-container jw-time-tip';
+            wrapper.className = 'jw-time-tip jw-reset';
             wrapper.appendChild(this.img);
             wrapper.appendChild(this.text);
 

@@ -11,8 +11,8 @@ define([
 ], function(utils, _, Events, UI, Slider, TimeSlider, Menu, Playlist, VolumeTooltip) {
 
     function button(icon, apiAction) {
-        var element = document.createElement('span');
-        element.className = 'jw-icon jw-icon-inline ' + icon;
+        var element = document.createElement('div');
+        element.className = 'jw-icon jw-icon-inline jw-reset ' + icon;
         element.style.display = 'none';
 
         if (apiAction) {
@@ -36,7 +36,7 @@ define([
 
     function text(name) {
         var element = document.createElement('span');
-        element.className = 'jw-text ' + name;
+        element.className = 'jw-text jw-reset ' + name;
         return element;
     }
 
@@ -47,8 +47,8 @@ define([
     }
 
     function buildGroup(group, elements) {
-        var elem = document.createElement('span');
-        elem.className = 'jw-group jw-controlbar-' + group+'-group';
+        var elem = document.createElement('div');
+        elem.className = 'jw-group jw-controlbar-' + group+'-group jw-reset';
 
         _.each(elements, function(e) {
             if (e.element) {
@@ -138,8 +138,8 @@ define([
                 return _.isUndefined(ele);
             });
 
-            this.el = document.createElement('span');
-            this.el.className = 'jw-container jw-controlbar';
+            this.el = document.createElement('div');
+            this.el.className = 'jw-controlbar jw-reset';
 
             var leftGroup = buildGroup('left', this.layout.left);
             var centerGroup = buildGroup('center', this.layout.center);

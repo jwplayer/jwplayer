@@ -90,13 +90,13 @@
     background: #ff0046;
 }
 
-.jw-skin-seven .jw-slider-horizontal .jw-thumb,
-.jw-skin-seven .jw-slider-vertical .jw-thumb {
+.jw-skin-seven .jw-slider-horizontal .jw-knob,
+.jw-skin-seven .jw-slider-vertical .jw-knob {
     top: -0.19999999999999998em;
 }
 
-.jw-skin-seven .jw-slider-horizontal .jw-thumb:after,
-.jw-skin-seven .jw-slider-vertical .jw-thumb:after {
+.jw-skin-seven .jw-slider-horizontal .jw-knob:after,
+.jw-skin-seven .jw-slider-vertical .jw-knob:after {
     background-color: #fff;
     box-shadow: 0px 0px 0px 1px #000000;
     width: .6em;
@@ -104,7 +104,7 @@
     border-radius: 1em;
 }
 
-.jw-skin-seven .jw-slider-horizontal .jw-rail-group {
+.jw-skin-seven .jw-slider-horizontal .jw-slider-container {
     height: 0.95em;
 }
 
@@ -115,7 +115,7 @@
     border-radius: 0;
 }
 
-.jw-skin-seven .jw-slider-horizontal .jw-thumb {
+.jw-skin-seven .jw-slider-horizontal .jw-knob {
     top: -15%;
 }
 
@@ -136,7 +136,7 @@
     width: .2em;
 }
 
-.jw-skin-seven .jw-thumb {
+.jw-skin-seven .jw-knob {
     left: -0.04999999999999999em;
 }
 

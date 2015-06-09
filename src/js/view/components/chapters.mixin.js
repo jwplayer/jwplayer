@@ -7,9 +7,8 @@ define([
     function Cue(time, text) {
         this.time = time;
         this.text = text;
-        this.el = document.createElement('span');
-
-        this.el.className = 'jw-cue';
+        this.el = document.createElement('div');
+        this.el.className = 'jw-cue jw-reset';
     }
 
     _.extend(Cue.prototype, {
