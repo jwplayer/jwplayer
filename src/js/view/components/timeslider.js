@@ -1,11 +1,12 @@
 define([
     'utils/underscore',
-    'view/components/slider',
+    'utils/constants',
     'utils/helpers',
+    'view/components/slider',
     'view/components/tooltip',
     'view/components/chapters.mixin',
     'view/components/thumbnails.mixin'
-], function(_, Slider, utils, Tooltip, ChaptersMixin, ThumbnailsMixin) {
+], function(_, Constants, utils, Slider, Tooltip, ChaptersMixin, ThumbnailsMixin) {
 
     var TimeTip = Tooltip.extend({
         setup : function() {
@@ -100,9 +101,9 @@ define([
             var duration = this._api.getDuration();
             var pct = 0;
             var adaptiveType = utils.adaptiveType(duration);
-            if(adaptiveType === utils.DVR) {
+            if(adaptiveType === Constants.DVR) {
                 pct = (duration - pos) / duration * 100;
-            } else if (adaptiveType === utils.VOD) {
+            } else if (adaptiveType === Constants.VOD) {
                 pct = pos / duration * 100;
             }
             this.render(pct);
@@ -123,11 +124,16 @@ define([
 
         // These are new methods
         performSeek : function () {
-            var duration = this._model.get('duration');
-            if (duration <= 0) {
+            var duration = this._api.getDuration();
+            var adaptiveType = utils.adaptiveType(duration);
+            var position;
+            if (adaptiveType === Constants.LIVE) {
                 this._api.play();
+            } else if (adaptiveType === Constants.DVR) {
+                position = (1 - (this.seekTo / 100)) * duration;
+                this._api.seek(Math.min(position, -0.25));
             } else {
-                var position = this.seekTo / 100 * this._api.getDuration();
+                position = this.seekTo / 100 * duration;
                 this._api.seek(Math.min(position, duration - 0.25));
             }
         },

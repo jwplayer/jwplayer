@@ -287,19 +287,14 @@ define([
         return (file.indexOf('rtmp') === 0 || type === 'rtmp');
     };
 
-    utils.DVR = 'DVR';
-    utils.LIVE = 'LIVE';
-    utils.VOD = 'VOD';
-    utils.MAX_DVR_DURATION = 60;
-
     utils.adaptiveType = function(duration) {
         var MIN_DVR_DURATION = -120;
         if(duration <= MIN_DVR_DURATION) {
-            return utils.DVR;
+            return Constants.DVR;
         } else if (duration < 0 || duration === Infinity) {
-            return utils.LIVE;
+            return Constants.LIVE;
         } else {
-            return utils.VOD;
+            return Constants.VOD;
         }
     };
 

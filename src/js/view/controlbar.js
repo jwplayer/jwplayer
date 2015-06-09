@@ -3,12 +3,13 @@ define([
     'utils/underscore',
     'utils/backbone.events',
     'utils/ui',
+    'utils/constants',
     'view/components/slider',
     'view/components/timeslider',
     'view/components/menu',
     'view/components/playlist',
     'view/components/volumetooltip'
-], function(utils, _, Events, UI, Slider, TimeSlider, Menu, Playlist, VolumeTooltip) {
+], function(utils, _, Events, UI, Constants, Slider, TimeSlider, Menu, Playlist, VolumeTooltip) {
 
     function button(icon, apiAction) {
         var element = document.createElement('span');
@@ -285,11 +286,11 @@ define([
         onElapsed : function(model, val) {
             var duration = this._api.getDuration();
             this.elements.elapsed.innerHTML =
-                (utils.adaptiveType(duration) === utils.DVR)?
+                (utils.adaptiveType(duration) === Constants.DVR)?
                     ('-'+utils.timeFormat(-duration)):utils.timeFormat(val);
         },
         onDuration : function(model, val) {
-            this.elements.duration.innerHTML = (utils.adaptiveType(val) === utils.DVR)?'Live':utils.timeFormat(val);
+            this.elements.duration.innerHTML = (utils.adaptiveType(val) === Constants.DVR)?'Live':utils.timeFormat(val);
         },
         onFullscreen : function(model, val) {
             utils.toggleClass(this.elements.fullscreen.element(), 'jw-off', val);
