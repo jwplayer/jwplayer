@@ -150,6 +150,7 @@ define([
             }
 
             // Match the main player's controls state
+            _adModel.off(events.JWPLAYER_ERROR);
             _adModel.on(events.JWPLAYER_ERROR, errorHandler);
 
             // start listening for ad click
@@ -182,10 +183,6 @@ define([
 
         function errorHandler(evt) {
             _sendEvent(evt.type, evt);
-
-            if (_adModel) {
-                _this.instreamDestroy();
-            }
         }
 
         /** Stop the instream playback and revert the main player back to its original state **/
