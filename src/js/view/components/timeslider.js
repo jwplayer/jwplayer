@@ -16,7 +16,7 @@ define([
             this.img.className = 'jw-reset';
 
             var wrapper = document.createElement('div');
-            wrapper.className = 'jw-time-tip jw-reset';
+            wrapper.className = 'jw-time-tip jw-background-color jw-reset';
             wrapper.appendChild(this.img);
             wrapper.appendChild(this.text);
 

@@ -12,7 +12,7 @@ define([
 
     function button(icon, apiAction) {
         var element = document.createElement('div');
-        element.className = 'jw-icon jw-icon-inline jw-reset ' + icon;
+        element.className = 'jw-icon jw-icon-inline jw-button-color jw-reset ' + icon;
         element.style.display = 'none';
 
         if (apiAction) {
@@ -139,7 +139,7 @@ define([
             });
 
             this.el = document.createElement('div');
-            this.el.className = 'jw-controlbar jw-reset';
+            this.el.className = 'jw-controlbar jw-background-color jw-reset';
 
             var leftGroup = buildGroup('left', this.layout.left);
             var centerGroup = buildGroup('center', this.layout.center);

@@ -37,9 +37,11 @@
     #namespace > .basic-skin-styles(); // Using the above local variables
     .skin-element-padding();
 
+    .jw-background-color {
+        background-color: @controlbar-background-color; /* Old browsers */
+    }
     .jw-controlbar {
         .inset-controlbar();
-        background-color: @controlbar-background-color; /* Old browsers */
         box-shadow: inset 0px 7px 1px -5px rgba(128,128,128,1);
         border-radius: .3em;
     }
@@ -227,16 +229,13 @@
         border-radius: @ui-padding;
     }
 
-    .jw-icon-cc {
+    .jw-toggle {
         color: @cc-active;
 
         &.jw-off {
-            color: @cc-inactive;   
-
-            &:before {
-                content: "\e605";
-            }        
+            color: @cc-inactive;
         }
     }
+
 }
 

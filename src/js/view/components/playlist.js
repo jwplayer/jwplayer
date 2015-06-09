@@ -25,8 +25,6 @@ define([
             utils.toggleClass(this.el, 'jw-hidden', (list.length < 2));
 
             if (list.length >= 2) {
-                utils.removeClass(this.el, 'jw-off');
-
                 this.iconUI = new UI(this.el).on('tap', this.toggleOpenStateListener);
 
                 this.el.addEventListener('mouseover', this.openTooltipListener);

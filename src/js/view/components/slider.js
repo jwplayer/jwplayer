@@ -7,7 +7,7 @@ define([
 
     var Slider = Extendable.extend({
         constructor : function(className, orientation) {
-            this.className = className;
+            this.className = className + ' jw-background-color jw-reset';
             this.orientation = orientation;
 
             this.dragStartListener = this.dragStart.bind(this);

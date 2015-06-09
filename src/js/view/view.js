@@ -260,34 +260,18 @@ define([
                 cssUtils.css(elements.join(', '), o);
             }
 
-            var icons = [
-                '.jw-icon',
-                '.jw-text'
-            ];
+            addStyle('color',       ['.jw-button-color'],             _model.get('skinColorInactive'));
+            addStyle('color',       ['.jw-button-color:hover'],       _model.get('skinColorActive'));
 
-            var cues = [
-                '.jw-cue:after',
-                '.jw-knob:after'
-            ];
+            addStyle('color',       ['.jw-option'],                   _model.get('skinColorInactive'));
+            addStyle('color',       ['.jw-active-option'],            _model.get('skinColorActive'));
 
-            var iconHovers = ['.jw-icon:hover', '.jw-option:hover'];
-            var sliders = ['.jw-progress'];
-            var cbar = ['.jw-controlbar'];
-            var ttip = ['.jw-time-tip'];
+            addStyle('color',       ['.jw-toggle'],                   _model.get('skinColorActive'));
+            addStyle('color',       ['.jw-toggle.jw-off'],            _model.get('skinColorInactive'));
 
-
-            addStyle('color',       iconHovers,                     _model.get('skinColorActive'));
-            addStyle('color',       ['.jw-active-option'],          _model.get('skinColorActive'));
-            addStyle('color',       ['.jw-icon-hd', '.jw-icon-cc'], _model.get('skinColorActive'));
-            addStyle('background',  sliders,                        _model.get('skinColorActive'));
-
-            addStyle('background',  ['.jw-active-option'],          _model.get('skinColorInactive'));
-            addStyle('background',  cues,                           _model.get('skinColorInactive'));
-            addStyle('color',       icons,                          _model.get('skinColorInactive'));
-            addStyle('color', ['.jw-icon-hd.jw-off', '.jw-icon-cc.jw-off'], _model.get('skinColorInactive'));
-
-            addStyle('background',  cbar,                           _model.get('skinColorBackground'));
-            addStyle('background',  ttip,                           _model.get('skinColorBackground'));
+            addStyle('background',  ['.jw-progress'],                 _model.get('skinColorActive'));
+            addStyle('background',  ['.jw-cue', '.jw-knob'],          _model.get('skinColorInactive'));
+            addStyle('background',  ['.jw-background-color'],         _model.get('skinColorBackground'));
         };
 
         this.setup = function() {
@@ -318,7 +302,7 @@ define([
             _preview = new Preview(_model);
             _preview.setup(previewElem);
 
-            if (! _model.get('hidetitle')) {
+            if (!_model.get('hidetitle')) {
                 var _titleElement = _playerElement.getElementsByClassName('jw-title')[0];
                 _title = new Title(_model);
                 _title.setup(_titleElement);

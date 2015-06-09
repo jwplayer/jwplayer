@@ -1,6 +1,5 @@
 define([
     'utils/underscore'
-
 ], function(_) {
 
     var Preview = function(_model) {

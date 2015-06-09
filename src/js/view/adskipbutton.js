@@ -1,12 +1,11 @@
 define([
     'utils/helpers',
-    'utils/css',
     'events/events',
     'utils/ui',
     'utils/backbone.events',
     'utils/underscore',
     'handlebars-loader!templates/adskipbutton.html'
-], function(utils, cssUtils, events, UI, Events, _, AdSkipTemplate) {
+], function(utils, events, UI, Events, _, AdSkipTemplate) {
 
     var AdSkipButton = function(skipMessageCountdown, skipMessage) {
         this.skipMessage = skipMessage;

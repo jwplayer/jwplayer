@@ -56,23 +56,40 @@
 #namespace() {
     .basic-skin-styles() {
 
-        .jw-controlbar,
-        .jw-volume-tip {
-            background: @controlbar-background;
+        .jw-background-color {
+            //background: @controlbar-background;
+            background: @display-bkgd-color;
         }
 
-        .jw-icon,
-        .jw-text,
-        .jw-icon-inline {
+        .jw-text {
             color: @inactive-color;
         }
 
-        .jw-knob,
-        .jw-icon-inline,
-        .jw-icon-tooltip,
-        .jw-icon-display,
-        .jw-option:before {
+        .jw-tooltip-title {
+            color: @inactive-color;
+        }
+
+        .jw-knob {
+            color: @inactive-color;
+        }
+
+        .jw-button-color {
+            color: @inactive-color;
             .hover(@hover-color);
+        }
+
+        .jw-toggle {
+            color: @hover-color;
+            &.jw-off {
+                color: @inactive-color;
+            }
+        }
+
+        .jw-option {
+            color: @inactive-color;
+            &.jw-active-option {
+                color: @hover-color;
+            }
         }
 
         .jw-icon-display {
@@ -80,7 +97,6 @@
         }
 
         .jw-display-icon-container {
-            background: @display-bkgd-color;
             border-radius: @ui-corner-round;
             padding: 0.5em .75em;
 
@@ -142,10 +158,6 @@
             &:hover {
                 background: @display-bkgd-hover-color;
             }
-        }
-
-        .jw-playlist-container {
-            padding: 0;
         }
     }
 }

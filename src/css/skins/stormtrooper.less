@@ -163,14 +163,14 @@
     }
 
     .jw-icon-cc {
-        color: @cc-active;
-
-        &:before {
+        &.jw-off:before {
             content: "\e604";
         }
+    }
 
-        &.jw-off {
-            color: @cc-inactive;           
+    .jw-icon-hd {
+        &.jw-off:before {
+            content: "\e609";
         }
     }
 }

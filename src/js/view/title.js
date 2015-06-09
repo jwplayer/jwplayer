@@ -1,7 +1,6 @@
 define([
-    'utils/helpers',
     'utils/underscore'
-], function(utils, _) {
+], function(_) {
 
     var Title = function(_model) {
         this.model = _model;

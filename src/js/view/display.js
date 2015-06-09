@@ -1,12 +1,10 @@
 define([
     'utils/ui',
-    'utils/helpers',
     'events/events',
     'utils/backbone.events',
     'events/states',
-    'utils/stretching',
     'utils/underscore'
-], function(UI, utils, events, Events, states, stretchUtils, _) {
+], function(UI, events, Events, states, _) {
     var Display = function(_model) {
         var _display,
             _alternateClickHandler;

@@ -2,10 +2,9 @@ define([
     'view/components/tooltip',
     'utils/helpers',
     'utils/underscore',
-    'events/events',
     'utils/ui',
     'handlebars-loader!templates/menu.html'
-], function(Tooltip, utils, _, events, UI, menuTemplate) {
+], function(Tooltip, utils, _, UI, menuTemplate) {
     var Menu = Tooltip.extend({
         setup : function (list, selectedIndex, options) {
             if(!this.iconUI){
@@ -26,7 +25,12 @@ define([
 
             utils.toggleClass(this.el, 'jw-hidden', (list.length < 2));
 
-            if (list.length > 2 || (list.length === 2 && options && options.toggle === false)) {
+            var isMenu = list.length > 2 || (list.length === 2 && options && options.toggle === false);
+            var isToggle = !isMenu && list.length === 2;
+            utils.toggleClass(this.el, 'jw-toggle', isToggle);
+            utils.toggleClass(this.el, 'jw-button-color', !isToggle);
+
+            if (isMenu) {
                 utils.removeClass(this.el, 'jw-off');
 
                 this.iconUI.on('tap', this.toggleOpenStateListener);
@@ -38,7 +42,7 @@ define([
                 var elem = utils.createElement(innerHtml);
                 this.addContent(elem);
                 this.contentUI = new UI(this.content).on('click tap', this.selectListener);
-            } else if (list.length === 2) {
+            } else if (isToggle) {
                 this.iconUI.on('click tap', this.toggleValueListener);
             }
 
