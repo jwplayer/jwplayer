@@ -3,6 +3,10 @@ define([
     'events/events',
     'utils/underscore'
 ], function(Events, events, _) {
+    /*global TouchEvent*/
+
+    var TouchEvent = window.TouchEvent || {};
+
     var UI = function (elem, options) {
         var _elem = elem,
             _enableDoubleTap = (options && options.enableDoubleTap),
@@ -77,7 +81,7 @@ define([
 
         function normalizeUIEvent(type, srcEvent) {
             var source;
-            if(srcEvent instanceof MouseEvent) {
+            if(srcEvent instanceof MouseEvent || (!srcEvent.touches && !srcEvent.changedTouches)) {
                 source = srcEvent;
             } else {
                 if (srcEvent.touches && srcEvent.touches.length) {
@@ -97,6 +101,12 @@ define([
 
         // Preventdefault to prevent click events
         function preventDefault(evt) {
+            // Because sendEvent from utils.eventdispatcher clones evt objects instead of passing them
+            //  we cannot call evt.preventDefault() on them
+            if (! (evt instanceof MouseEvent) && ! (evt instanceof TouchEvent)) {
+                return;
+            }
+
             if (evt.preventManipulation) {
                 evt.preventManipulation();
             }
@@ -122,6 +132,8 @@ define([
 
             return false;
         }
+
+        this.triggerEvent = triggerEvent;
 
         this.destroy = function() {
             elem.removeEventListener('touchstart', interactStartHandler);

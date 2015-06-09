@@ -124,3 +124,21 @@
 .jw-tab-focus:focus {
     outline: solid 2px #0b7ef4;
 }
+
+// Allow pointer events through to the provider
+.jw-overlays, .jw-click, .jw-controls {
+    pointer-events : none;
+}
+.jwplayer.jw-flag-user-inactive {
+    .jw-overlays, .jw-click, .jw-controls {
+        pointer-events: all;
+    }
+}
+
+// These items can intercept pointer-events
+.jw-overlays > div,
+.jw-controlbar, .jw-dock, .jw-logo, .jw-display-icon-container {
+    pointer-events: all;
+}
+
+
