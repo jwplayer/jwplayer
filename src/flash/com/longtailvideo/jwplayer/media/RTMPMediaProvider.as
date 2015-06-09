@@ -56,6 +56,8 @@ public class RTMPMediaProvider extends MediaProvider {
     private var _loader:AssetLoader;
     /** Flag for metadata received. **/
     private var _metadata:Boolean;
+    /** Flag for paused **/
+    private var _isPaused:Boolean = false;
     /** StageVideo object to be instantiated. **/
     private var _stage:Object;
     /** Whether or not StageVideo is enabled **/
@@ -200,9 +202,13 @@ public class RTMPMediaProvider extends MediaProvider {
 
     /** Pause playback. **/
     override public function pause():void {
+        CONFIG::debugging {
+            trace('pause', new Error().getStackTrace());
+        }
         // Pause VOD or close live stream
         if (_stream) {
             if (_item.duration > 0) {
+                _isPaused = true;
                 _stream.pause();
             } else {
                 _stream.close();
@@ -214,12 +220,15 @@ public class RTMPMediaProvider extends MediaProvider {
 
     /** Resume playing. **/
     override public function play():void {
+        CONFIG::debugging {
+            trace('play', new Error().getStackTrace());
+        }
         if (_loading) {
             _afterLoading = play;
             return;
         }
         attachNetStream(_stream);
-        if (_metadata) {
+        if (_isPaused) {
             // Resume VOD and restart live stream
             if (_item.duration > 0) {
                 _stream.resume();
@@ -231,6 +240,7 @@ public class RTMPMediaProvider extends MediaProvider {
             // Start stream.
             _stream.play(_levels[_level].id);
         }
+        _isPaused = false;
         clearInterval(_interval);
         _interval = setInterval(positionInterval, 100);
     }
@@ -262,6 +272,9 @@ public class RTMPMediaProvider extends MediaProvider {
 
     /** Close the stream; reset all variables. **/
     override public function stop():void {
+        CONFIG::debugging {
+            trace('stop', new Error().getStackTrace());
+        }
         if (_stream && _stream.time) {
             _stream.close();
         }
@@ -719,6 +732,5 @@ public class RTMPMediaProvider extends MediaProvider {
                 break;
         }
     }
-
 }
 }
