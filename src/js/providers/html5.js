@@ -155,8 +155,8 @@ define([
 
         _attached = true;
 
-        function _onClickHandler() {
-            _this.sendEvent(events.JWPLAYER_PROVIDER_CLICK);
+        function _onClickHandler(evt) {
+            _this.sendEvent('click', evt);
         }
 
         function _durationUpdateHandler() {

@@ -23,7 +23,9 @@ define([
         userInteract.on('click tap', _clickHandler);
         userInteract.on('doubleClick doubleTap', _doubleClickHandler);
 
-        _model.mediaController.on(events.JWPLAYER_PROVIDER_CLICK, _clickHandler);
+        _model.mediaController.on('click', function(evt) {
+            userInteract.triggerEvent(events.touchEvents.CLICK, evt);
+        });
 
         this.clickHandler = _clickHandler;
 
