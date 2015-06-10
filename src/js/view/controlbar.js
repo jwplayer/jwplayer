@@ -127,7 +127,7 @@ define([
                     this.elements.mute,
                     this.elements.volume,
                     this.elements.volumetooltip,
-                    this.elements.cast,
+                    // this.elements.cast, // hidden for jw7.0 release
                     this.elements.fullscreen
                 ]
             };
@@ -283,10 +283,13 @@ define([
             this.elements.cast.toggle(val);
         },
         onElapsed : function(model, val) {
-            this.elements.elapsed.innerHTML = utils.timeFormat(val);
+            var duration = this._api.getDuration();
+            this.elements.elapsed.innerHTML =
+                (utils.adaptiveType(duration) === 'DVR')?
+                    ('-'+utils.timeFormat(-duration)):utils.timeFormat(val);
         },
         onDuration : function(model, val) {
-            this.elements.duration.innerHTML = utils.timeFormat(val);
+            this.elements.duration.innerHTML = (utils.adaptiveType(val) === 'DVR')?'Live':utils.timeFormat(val);
         },
         onFullscreen : function(model, val) {
             utils.toggleClass(this.elements.fullscreen.element(), 'jw-off', val);

@@ -98,7 +98,14 @@ define([
             this.updateBuffer(pct);
         },
         onPosition : function(model, pos) {
-            var pct = pos / this._api.getDuration() * 100;
+            var duration = this._api.getDuration();
+            var pct = 0;
+            var adaptiveType = utils.adaptiveType(duration);
+            if(adaptiveType === 'DVR') {
+                pct = (duration - pos) / duration * 100;
+            } else if (adaptiveType === 'VOD') {
+                pct = pos / duration * 100;
+            }
             this.render(pct);
         },
         onPlaylistItem : function (model, playlistItem) {
@@ -117,11 +124,16 @@ define([
 
         // These are new methods
         performSeek : function () {
-            var duration = this._model.get('duration');
-            if (duration <= 0) {
+            var duration = this._api.getDuration();
+            var adaptiveType = utils.adaptiveType(duration);
+            var position;
+            if (adaptiveType === 'LIVE') {
                 this._api.play();
+            } else if (adaptiveType === 'DVR') {
+                position = (1 - (this.seekTo / 100)) * duration;
+                this._api.seek(Math.min(position, -0.25));
             } else {
-                var position = this.seekTo / 100 * this._api.getDuration();
+                position = this.seekTo / 100 * duration;
                 this._api.seek(Math.min(position, duration - 0.25));
             }
         },
