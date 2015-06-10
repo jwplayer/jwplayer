@@ -127,7 +127,7 @@ define([
                     this.elements.mute,
                     this.elements.volume,
                     this.elements.volumetooltip,
-                    this.elements.cast,
+                    // this.elements.cast, // hidden for jw7.0 release
                     this.elements.fullscreen
                 ]
             };
