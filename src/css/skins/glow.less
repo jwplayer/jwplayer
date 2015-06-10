@@ -19,7 +19,7 @@
     #namespace > .basic-skin-styles(); // Using the above local variables
     .skin-element-padding();
 
-    .jw-controlbar {
+    .jw-background-color {
         opacity: 0.8;
     }
 
@@ -86,7 +86,7 @@
         border-radius: @ui-corner-round;
     }
 
-    .jw-thumb {
+    .jw-knob {
         display: none;
     }
     
@@ -113,18 +113,6 @@
         .jw-rail,
         .jw-progress {
             width: .4em;
-        }
-    }
-
-    .jw-icon-cc {
-        color: @cc-active;
-
-        &.jw-off {
-            color: @cc-inactive;   
-
-            &:before {
-                content: "\e605";
-            }        
         }
     }
 }

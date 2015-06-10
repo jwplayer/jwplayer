@@ -39,15 +39,15 @@ define([
             _textContainer;
 
         _display = document.createElement('div');
-        _display.className = 'jw-captions';
+        _display.className = 'jw-captions jw-reset';
 
 
         this.show = function () {
-            _display.className = 'jw-captions jw-captions-enabled';
+            _display.className = 'jw-captions jw-captions-enabled jw-reset';
         };
 
         this.hide = function () {
-            _display.className = 'jw-captions';
+            _display.className = 'jw-captions jw-reset';
         };
 
         /** Assign list of captions to the renderer. **/
@@ -64,7 +64,7 @@ define([
         /** Render the active caption. **/
         function _render(html) {
             html = html || '';
-            var windowClassName = 'jw-captions-window';
+            var windowClassName = 'jw-captions-window jw-reset';
             if (html) {
                 _textContainer.innerHTML = html;
                 _captionsWindow.className = windowClassName + ' jw-captions-window-active';
@@ -146,8 +146,8 @@ define([
 
             _captionsWindow = document.createElement('div');
             _textContainer = document.createElement('span');
-            _captionsWindow.className = 'jw-captions-window';
-            _textContainer.className = 'jw-captions-text';
+            _captionsWindow.className = 'jw-captions-window jw-reset';
+            _textContainer.className = 'jw-captions-text jw-reset';
 
             _style(_captionsWindow, windowStyle);
             _style(_textContainer, textStyle);

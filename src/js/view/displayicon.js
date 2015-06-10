@@ -1,11 +1,10 @@
 define([
     'utils/helpers',
     'utils/backbone.events',
-    'events/events',
     'utils/ui',
     'handlebars-loader!templates/displayicon.html',
     'utils/underscore'
-], function(utils, Events, events, UI, Template, _) {
+], function(utils, Events, UI, Template, _) {
 
     var DisplayIcon = function(_model) {
         _.extend(this, Events);

@@ -96,7 +96,7 @@
             border-radius: @roundster-corners;
         }
 
-        .jw-thumb {
+        .jw-knob {
 
             &:after {
                 background-color: #fff;
@@ -121,7 +121,7 @@
             }
         }
 
-        .jw-thumb {
+        .jw-knob {
             .vertically-centered-rail-element(@rail-height, @thumb-size);
         }
     }
@@ -147,17 +147,5 @@
     .jw-volume-tip,
     .jw-menu {
         bottom: .3em;
-    }
-
-    .jw-icon-cc {
-        color: @cc-active;
-
-        &.jw-off {
-            color: @cc-inactive;
-
-            &:before {
-                content: "\e605";
-            }
-        }
     }
 }

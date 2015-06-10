@@ -89,21 +89,21 @@
         background-color: @rail-color;
     }
 
-    .jw-rail-group {
+    .jw-slider-container {
         height: 1em;
     }
 
     .jw-rail,
     .jw-buffer,
     .jw-progress,
-    .jw-thumb:after {
+    .jw-knob:after {
         box-sizing: border-box;
         border: 1.5px solid #000;
         border-radius: 2px;
     }
 
     .jw-progress,
-    .jw-thumb {
+    .jw-knob {
         background: @rail-color;
     }
 
@@ -118,7 +118,7 @@
             background: @horiz-rail-gradient;
         }
 
-        .jw-thumb {
+        .jw-knob {
             .vertically-centered-rail-element(.3em,.5em);
 
             &:after {
@@ -150,7 +150,7 @@
             background: @vertical-rail-gradient;
         }
 
-        .jw-thumb {
+        .jw-knob {
             .horizontally-centered-thumb(@rail-height,.5em);
 
             &:after {
@@ -163,14 +163,14 @@
     }
 
     .jw-icon-cc {
-        color: @cc-active;
-
-        &:before {
+        &.jw-off:before {
             content: "\e604";
         }
+    }
 
-        &.jw-off {
-            color: @cc-inactive;           
+    .jw-icon-hd {
+        &.jw-off:before {
+            content: "\e609";
         }
     }
 }

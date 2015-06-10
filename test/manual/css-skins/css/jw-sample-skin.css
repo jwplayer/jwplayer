@@ -1,0 +1,244 @@
+/* The main class for styling the controlbar. */
+.jw-skin-seven .jw-controlbar {
+    background: #000;
+    border-top: #333 1px solid;
+    height: 2.5em;
+}
+
+
+/* The color for all icons in the control bar when they are not hovered on. */
+.jw-skin-seven .jw-icon,
+.jw-skin-seven .jw-text,
+.jw-skin-seven .jw-icon-inline {
+    color: #ffffff;
+}
+
+/* Sets the spacing between icon containers within the control bar. */
+.jw-skin-seven .jw-text,
+.jw-skin-seven .jw-icon-inline,
+.jw-skin-seven .jw-icon-tooltip {
+    padding: 0 5px 3px 5px;
+}
+
+/* Sets the space between the icons and the border */
+.jw-skin-seven .jw-icon:before {
+    padding-left: .7em;
+}
+
+/* The color for all icons in the control bar when they are hoverd on or are activated. */
+
+.jw-skin-seven .jw-icon:hover,
+.jw-skin-seven .jw-icon:before:hover {
+    color: #ff0046;
+}
+
+
+.jw-skin-seven .jw-icon-playback:before,
+.jw-skin-seven .jw-icon-display:before {
+    padding-left: 0;
+}
+
+/* Sets the font size of the previous and next icons as well as the space between them.*/
+.jw-skin-seven .jw-icon-prev,
+.jw-skin-seven .jw-icon-next {
+    font-size: .7em;
+    padding: 0 0.2em;
+}
+
+
+.jw-skin-seven .jw-icon-prev:before {
+    border-left: 1px solid #666;
+}
+
+.jw-skin-seven .jw-icon-next:before {
+    border-right: 1px solid #666;
+    padding-right: .7em;
+}
+
+/* Default color of the Play, Replay, and Buffering display icons. */
+.jw-skin-seven .jw-icon-display {
+    color: #fff;
+}
+
+/* Sets the shape of the display icon container. This is a circle.*/
+
+.jw-skin-seven .jw-display-icon-container {
+    background: #000;
+    border-radius: 50%;
+    padding: 0 .4em;
+    border: 1px solid #333;
+}
+
+
+.jw-skin-seven.jw-state-idle .jw-display-icon-container {
+    padding: 0 0 0 .5em;
+}
+
+.jw-skin-seven .jw-slider-horizontal .jw-rail,
+.jw-skin-seven .jw-slider-vertical .jw-rail {
+    background-color: #384154;
+    box-shadow: none;
+}
+
+.jw-skin-seven .jw-slider-horizontal .jw-buffer,
+.jw-skin-seven .jw-slider-vertical .jw-buffer {
+    background-color: #666F82;
+}
+
+.jw-skin-seven .jw-slider-horizontal .jw-progress,
+.jw-skin-seven .jw-slider-vertical .jw-progress {
+    background: #ff0046;
+}
+
+.jw-skin-seven .jw-slider-horizontal .jw-knob,
+.jw-skin-seven .jw-slider-vertical .jw-knob {
+    top: -0.19999999999999998em;
+}
+
+.jw-skin-seven .jw-slider-horizontal .jw-knob:after,
+.jw-skin-seven .jw-slider-vertical .jw-knob:after {
+    background-color: #fff;
+    box-shadow: 0px 0px 0px 1px #000000;
+    width: .6em;
+    height: .6em;
+    border-radius: 1em;
+}
+
+.jw-skin-seven .jw-slider-horizontal .jw-slider-container {
+    height: 0.95em;
+}
+
+.jw-skin-seven .jw-slider-horizontal .jw-rail,
+.jw-skin-seven .jw-slider-horizontal .jw-buffer,
+.jw-skin-seven .jw-slider-horizontal .jw-progress {
+    height: .2em;
+    border-radius: 0;
+}
+
+.jw-skin-seven .jw-slider-horizontal .jw-knob {
+    top: -15%;
+}
+
+.jw-skin-seven .jw-slider-horizontal .jw-cue {
+    top: -0.04999999999999999em;
+}
+
+.jw-skin-seven .jw-slider-horizontal .jw-cue:after {
+    width: .3em;
+    height: .3em;
+    background-color: #fff;
+    border-radius: 50%;
+}
+
+.jw-skin-seven .jw-slider-vertical .jw-rail,
+.jw-skin-seven .jw-slider-vertical .jw-buffer,
+.jw-skin-seven .jw-slider-vertical .jw-progress {
+    width: .2em;
+}
+
+.jw-skin-seven .jw-knob {
+    left: -0.04999999999999999em;
+}
+
+.jw-skin-seven .jw-volume-tip {
+    width: 100%;
+    left: -35%;
+}
+
+.jw-skin-seven .jw-text-duration {
+    color: #666F82;
+}
+
+/* The parent wrapper that contains the controlbar element positioning groups.  */
+.jw-skin-seven .jw-group {
+    vertical-align: middle;
+}
+
+.jw-skin-seven .jw-controlbar-right-group .jw-icon-tooltip:before,
+.jw-skin-seven .jw-controlbar-right-group .jw-icon-inline:before {
+    border-left: 1px solid #666;
+}
+
+.jw-skin-seven .jw-controlbar-right-group .jw-icon-inline:first-child:before {
+    border: none;
+}
+
+.jw-skin-seven .jw-dock .jw-dock-button {
+    background: #000;
+    border-radius: 50%;
+}
+
+.jw-skin-seven .jw-dock .jw-overlay {
+    background: #000;
+    border-radius: 2.5em;
+}
+
+.jw-skin-seven .jw-overlay .jw-option.jw-active-option {
+    background-color: #ff0046;
+    color: #fff;
+}
+
+.jw-skin-seven .jw-icon-hd,
+.jw-skin-seven .jw-icon-cc {
+    color: #ff0046;
+}
+
+.jw-skin-seven .jw-icon-hd.jw-off,
+.jw-skin-seven .jw-icon-cc.jw-off {
+    color: white;
+}
+
+/* Sets the character for the HD button */
+.jw-skin-seven .jw-icon-hd.jw-off:before {
+    content: "\e60a";
+}
+
+/* Sets the character for the CC button */
+.jw-skin-seven .jw-icon-cc.jw-off:before {
+    content: "\e605";
+}
+
+/* Sets the border style for the time overlay menus. */
+.jw-skin-seven .jw-time-tip,
+.jw-skin-seven .jw-menu,
+.jw-skin-seven .jw-volume-tip,
+.jw-skin-seven .jw-skip {
+    border: 1px solid #333;
+}
+
+/* Adds padding and margin to the timeslider time tooltip.*/
+.jw-skin-seven .jw-time-tip {
+    padding: 0.2em;
+    bottom: 1.3em;
+}
+
+/* Adjusts the margin of the vertical volume slider for borders spacing*/
+.jw-skin-seven .jw-menu,
+.jw-skin-seven .jw-volume-tip {
+    bottom: .15em;
+}
+
+/* Styles the skip icon wrapper.*/
+.jw-skin-seven .jw-skip {
+    background: #000;
+    padding: 0.4em;
+    border-radius: 1em;
+}
+
+/* Sets the font color and size for the skip text. */
+
+.jw-skin-seven .jw-skip .jw-text,
+.jw-skin-seven .jw-skip .jw-icon-inline {
+    color: #ffffff;
+    font-size: 0.7em;
+}
+
+/* Sets the font color for the CC icon when it is active. */
+.jw-skin-seven .jw-icon-cc {
+    color: #ff0046;
+}
+
+/* Sets the font color for the CC icon when it is not active. */
+.jw-skin-seven .jw-icon-cc.jw-off {
+    color: #ffffff;
+}

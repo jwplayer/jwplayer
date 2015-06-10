@@ -40,6 +40,10 @@
     #namespace > .basic-skin-styles(); // Using the above local variables
     .skin-element-padding();
 
+    .jw-background-color {
+        background-color: @def-background-color;
+    }
+
     .jw-controlbar {
         .inset-controlbar;
         border: @def-border;
@@ -52,7 +56,6 @@
     }
 
     .jw-display-icon-container {
-        background-color: @def-background-color;
         background: @def-transparent-background-style;
         background-size: @def-background-size;
         border-radius: .3em;
@@ -61,7 +64,6 @@
     }
 
     &:hover .jw-display-icon-container {
-        background-color: @def-background-color;
         background: @def-background-style;
         background-size: @def-background-size;
     }
@@ -128,7 +130,7 @@
     .jw-slider-horizontal,
     .jw-slider-vertical {
 
-        .jw-thumb:after {
+        .jw-knob:after {
             width: @thumb-size;
             height: @thumb-size;
             border-radius: 1em;
@@ -138,7 +140,7 @@
     }
 
     .jw-slider-horizontal {
-        .jw-rail-group {
+        .jw-slider-container {
             height: 1.2em;
         }
 
@@ -148,7 +150,7 @@
             height: @rail-height;
         }
 
-        .jw-thumb {
+        .jw-knob {
             .vertically-centered-rail-element(@rail-height, @thumb-size);
         }
 
@@ -196,7 +198,6 @@
         }
     }
 
-
     .jw-icon-cc .jw-option {
         .jw-icon-menu-bullet;
         text-align: left;
@@ -211,25 +212,21 @@
     .jw-time-tip,
     .jw-volume-tip,
     .jw-menu {
-        background-color: @def-background-color;
         background-size: @def-background-size;
         border-radius: @ui-padding;
     }
 
     .jw-dock {
         .jw-dock-button {
-            background-color: @def-background-color;
             background: @def-transparent-background-style;
             background-size: @def-background-size;
             border-radius: @dock-corner-radius;
 
             &:hover {
-                background-color: @def-background-color;
                 background: @def-background-style;
             }
 
             .jw-overlay {
-                background-color: @def-background-color;
                 background: @def-background-style;
                 background-size: @def-background-size;
                 border-radius: @dock-corner-radius;
@@ -238,29 +235,14 @@
     }
 
     .jw-skip {
-        background-color: @def-background-color;
         background: @def-transparent-background-style;
         background-size: @def-background-size;
         border-radius: @ui-corner-round;
         padding: @ui-padding @ui-corner-round;
 
         &:hover {
-            background-color: @def-background-color;
             background: @def-background-style;
             background-size: @def-background-size;
-        }
-    }
-    
-
-    .jw-icon-cc {
-        color: @cc-active;
-
-        &.jw-off {
-            color: @cc-inactive;   
-
-            &:before {
-                content: "\e605";
-            }        
         }
     }
 }

@@ -1,25 +1,25 @@
-<div class="jw-container jw-menu jw-playlist-container">
+<div class="jw-menu jw-playlist-container jw-background-color jw-reset">
 
-    <div class="jw-tooltip-title">
-        <span class="jw-icon jw-icon-inline jw-icon-playlist"></span>
-        <span class="jw-text">PLAYLIST</span>
+    <div class="jw-tooltip-title jw-reset">
+        <span class="jw-icon jw-icon-inline jw-icon-playlist jw-reset"></span>
+        <span class="jw-text jw-reset">PLAYLIST</span>
         {{!--
         This is a comment block
-        <span class="jw-icon jw-icon-inline jw-icon-close" style="float:right"></span>
+        <span class="jw-icon jw-icon-inline jw-icon-close jw-reset" style="float:right"></span>
         --}}
     </div>
 
-    <ul class="jw-playlist">
+    <ul class="jw-playlist jw-reset-ul">
         {{#each this}}
             {{#if this.active}}
-                <li class='jw-option jw-text jw-active-option item-{{@index}}'>
-                    <span class="jw-label"><span class="jw-icon jw-icon-play"></span></span>
-                    <span class="jw-name">{{this.title}}</span>
+                <li class='jw-option jw-text jw-active-option  item-{{@index}} jw-reset'>
+                    <span class="jw-label jw-reset"><span class="jw-icon jw-icon-play jw-reset"></span></span>
+                    <span class="jw-name jw-reset">{{this.title}}</span>
                 </li>
             {{else}}
-                <li class='jw-option jw-text item-{{@index}}'>
-                    <span class="jw-label">{{this.label}}</span>
-                    <span class="jw-name">{{this.title}}</span>
+                <li class='jw-option jw-text item-{{@index}} jw-reset'>
+                    <span class="jw-label jw-reset">{{this.label}}</span>
+                    <span class="jw-name jw-reset">{{this.title}}</span>
                 </li>
             {{/if}}
         {{/each}}

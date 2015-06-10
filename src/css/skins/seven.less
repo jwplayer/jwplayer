@@ -10,8 +10,11 @@
 
     @rail-height: .2em;
 
-    .jw-controlbar {
+    .jw-background-color {
         background: #000;
+    }
+
+    .jw-controlbar {
         border-top: #333 1px solid;
         height: 2.5em;
     }
@@ -58,15 +61,23 @@
         }
     }
 
-    .jw-icon,
     .jw-text {
         color: @inactive-color;
     }
 
-    .jw-icon,
-    .jw-icon:before, {
-        &:hover {
-            color: @active-color;
+    .jw-tooltip-title {
+        color: @inactive-color;
+    }
+
+    .jw-button-color {
+        color: @inactive-color;
+        .hover(@hover-color);
+    }
+
+    .jw-toggle {
+        color: @hover-color;
+        &.jw-off {
+            color: @inactive-color;
         }
     }
 
@@ -102,7 +113,6 @@
     }
 
     .jw-display-icon-container {
-        background: #000;
         border-radius: 50%;
         padding: 0 .3em;
         border: 1px solid #333;
@@ -127,7 +137,7 @@
         background: @active-color;
     }
 
-    .jw-thumb {
+    .jw-knob {
         width: .6em;
 
         &:after {
@@ -142,7 +152,7 @@
 
     .jw-slider-horizontal {
 
-        .jw-rail-group {
+        .jw-slider-container {
             height: 0.95em;
         }
 
@@ -153,7 +163,7 @@
             border-radius: 0;
         }
 
-        .jw-thumb {
+        .jw-knob {
             .vertically-centered-rail-element(.2em, .6em);
         }
 
@@ -200,35 +210,18 @@
 
     .jw-dock {
         .jw-dock-button {
-            background: #000;
             border-radius: 50%;
         }
         .jw-overlay {
-            background: #000;
             border-radius: 2.5em;
         }
     }
 
-    .jw-icon-cc .jw-active-option {
-        background-color: @active-color;
-        color: #fff;
-    }
-
-    .jw-icon-hd,
-    .jw-icon-cc {
-        color: @cc-active;
-
-        &.jw-off {
-            color: @cc-inactive;           
+    .jw-icon-tooltip {
+        .jw-active-option {
+            background-color: @active-color;
+            color: #fff;
         }
-    }
-
-    .jw-icon-hd.jw-off:before {
-        content: "\e60a";
-    }
-
-    .jw-icon-cc.jw-off:before {
-        content: "\e605";
     }
 
     .jw-icon-volume {
@@ -254,7 +247,6 @@
     }
     
     .jw-skip {
-        background: #000;
         padding: 0.4em;
         border-radius: 1em;
 
