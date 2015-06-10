@@ -79,12 +79,14 @@
         background-color: #1E1E1E;
     }
 
-	.jw-slider-container {
-		height: @rail-height;
-	}
+	
 
 	.jw-slider-horizontal {
 		height: @rail-height;
+
+        .jw-slider-container {
+            height: @rail-height;
+        }
 
 		.jw-rail,
 		.jw-progress,
@@ -124,6 +126,10 @@
 		border-radius: 2px;
 		border: 0;
 
+        .jw-knob {
+            display: none;
+        }
+
 		.jw-rail {
 			background-color: rgba(0, 0, 0, 0.8);
 		}
@@ -139,6 +145,14 @@
     .jw-icon-cc {
         &.jw-off:before {
             content: "\e604";
+        }
+
+        .jw-option {
+            color: #fff;
+
+            &.jw-active-option {
+                color: @progress-color;
+            }
         }
     }
 

@@ -57,9 +57,13 @@
     .basic-skin-styles() {
 
         .jw-background-color {
-            //background: @controlbar-background;
             background: @display-bkgd-color;
         }
+
+        .jw-controlbar {
+            background: @controlbar-background;
+        }
+
 
         .jw-text {
             color: @inactive-color;
@@ -122,6 +126,7 @@
         }
 
         .jw-slider-horizontal {
+            background: @controlbar-background;
 
             .jw-knob {
                 margin-left: @thumb-size/-2;
@@ -158,6 +163,10 @@
             &:hover {
                 background: @display-bkgd-hover-color;
             }
+        }
+
+        .jw-playlist-container {
+            padding: 0;
         }
     }
 }
