@@ -19,8 +19,7 @@ define([
         var _this = this,
             _logo,
             _settings,
-            _logoConfig = _.extend({}, _model.get('config').logo),
-            _showing = false;
+            _logoConfig = _.extend({}, _model.get('config').logo);
 
         _.extend(this, Events);
 
@@ -85,7 +84,6 @@ define([
             }
 
             _this.trigger(events.JWPLAYER_LOGO_CLICK, {
-                showing: _showing,
                 link: _settings.link,
                 linktarget: _settings.linktarget
             });
