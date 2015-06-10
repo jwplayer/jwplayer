@@ -3,8 +3,6 @@ define([
     'events/events',
     'utils/underscore'
 ], function(Events, events, _) {
-    /*global TouchEvent*/
-
     var TouchEvent = window.TouchEvent || {};
 
     var UI = function (elem, options) {
