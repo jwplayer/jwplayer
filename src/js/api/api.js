@@ -26,7 +26,7 @@ define([
         var rounders = ['position', 'duration', 'offset'];
 
         function round(val) {
-            if (this[val]) {
+            if (this[val] && !isNaN(this[val])) {
                 this[val] = Math.round(this[val] * 1000) / 1000;
             }
         }
