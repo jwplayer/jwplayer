@@ -250,7 +250,6 @@ define([
                 },
                 setVisibility: function(visible) {
                     visible = !!visible;
-                    _container.style.visibility = visible ? 'visible':'hidden';
                     _container.style.opacity = visible ? 1:0;
                 },
                 resize: function(width, height, stretching) {

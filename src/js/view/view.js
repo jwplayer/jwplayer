@@ -6,7 +6,7 @@ define([
     'events/states',
     'cast/display',
     'view/captionsrenderer',
-    'view/display',
+    'view/clickhandler',
     'view/displayicon',
     'view/dock',
     'view/logo',
@@ -18,7 +18,7 @@ define([
     'utils/underscore',
     'handlebars-loader!templates/player.html'
 ], function(utils, events, UI, Events, states, CastDisplay,
-            CaptionsRenderer, Display, DisplayIcon, Dock, Logo,
+            CaptionsRenderer, ClickHandler, DisplayIcon, Dock, Logo,
             Controlbar, Preview, RightClick, Title, cssUtils, _, playerTemplate) {
 
     var _styles = utils.style,
@@ -46,7 +46,7 @@ define([
             _instreamMode = false,
             _controlbar,
             _preview,
-            _display,
+            _displayClickHandler,
             _castDisplay,
             _dock,
             _logo,
@@ -378,9 +378,8 @@ define([
             _stateHandler(null, states.IDLE);
 
             if (!_isMobile) {
-                _controlsLayer.addEventListener('mouseout', _mouseoutHandler, false);
-
-                _controlsLayer.addEventListener('mousemove', _startFade, false);
+                _displayClickHandler.element().addEventListener('mouseout', _mouseoutHandler, false);
+                _displayClickHandler.element().addEventListener('mousemove', _startFade, false);
             }
             _componentFadeListeners(_controlbar);
             _componentFadeListeners(_logo);
@@ -484,20 +483,19 @@ define([
             toggleControls();
             _model.on('change:controls', toggleControls);
 
-            _display = new Display(_model);
-            _display.on('click', function() {
+            _displayClickHandler = new ClickHandler(_model, _videoLayer);
+            _displayClickHandler.on('click', function() {
                 forward({type : events.JWPLAYER_DISPLAY_CLICK});
                 _api.play();
             });
-            _display.on('tap', function() {
+            _displayClickHandler.on('tap', function() {
                 forward({type : events.JWPLAYER_DISPLAY_CLICK});
                 _touchHandler();
             });
-            _display.on('doubleClick', function() {
+            _displayClickHandler.on('doubleClick', function() {
                 _api.setFullscreen();
             });
-            _controlsLayer.appendChild(_display.element());
-
+            
             var displayIcon = new DisplayIcon(_model);
             //toggle playback
             displayIcon.on('click tap', function() {
@@ -542,12 +540,12 @@ define([
                 _this.forceControls(true);
             }
 
-            _playerElement.onmousedown = handleMouseDown;
             _playerElement.onfocusin = handleFocus;
-            _playerElement.addEventListener('focus', handleFocus);
             _playerElement.onfocusout = handleBlur;
+            _playerElement.addEventListener('focus', handleFocus);
             _playerElement.addEventListener('blur', handleBlur);
             _playerElement.addEventListener('keydown', handleKeydown);
+            _playerElement.onmousedown = handleMouseDown;
         }
 
         function _onChangeControls(model, bool) {
@@ -600,7 +598,7 @@ define([
                 // clickthrough callback
                 var clickAd = evt.onClick;
                 if (clickAd !== undefined) {
-                    _display.setAlternateClickHandler(function() {
+                    _displayClickHandler.setAlternateClickHandler(function() {
                         clickAd(evt);
                     });
                 }
@@ -631,7 +629,7 @@ define([
                 _castDisplay.setState(_model.get('state'));
             }
             // display click reset
-            _display.revertAlternateClickHandler();
+            _displayClickHandler.revertAlternateClickHandler();
         }
 
         /**
@@ -1020,8 +1018,8 @@ define([
             }
         };
 
-        this.displayComp = function() {
-            return _display;
+        this.clickHandler = function() {
+            return _displayClickHandler;
         };
 
         this.controlsContainer = function() {
@@ -1084,8 +1082,8 @@ define([
                 _castDisplay = null;
             }
             if (_controlsLayer) {
-                _controlsLayer.removeEventListener('mousemove', _startFade);
-                _controlsLayer.removeEventListener('mouseout', _mouseoutHandler);
+                _displayClickHandler.element().removeEventListener('mousemove', _startFade);
+                _displayClickHandler.element().removeEventListener('mouseout', _mouseoutHandler);
             }
             if (_instreamMode) {
                 this.destroyInstream();

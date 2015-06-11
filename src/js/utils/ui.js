@@ -8,6 +8,7 @@ define([
     var UI = function (elem, options) {
         var _elem = elem,
             _enableDoubleTap = (options && options.enableDoubleTap),
+            _enableDrag = (options && options.enableDrag),
             _hasMoved = false,
             _lastClickTime = 0,
             _doubleClickDelay = 300;
@@ -29,12 +30,14 @@ define([
             return false;
         }
 
-        function interactStartHandler() {
-            elem.addEventListener('touchmove', interactDragHandler);
-            elem.addEventListener('touchcancel', interactEndHandler);
-            elem.addEventListener('touchend', interactEndHandler);
+        function interactStartHandler(evt) {
+            if(_enableDrag) {
+                evt.target.addEventListener('touchmove', interactDragHandler);
+                document.addEventListener('mousemove', interactDragHandler);
+            }
 
-            document.addEventListener('mousemove', interactDragHandler);
+            evt.target.addEventListener('touchcancel', interactEndHandler);
+            evt.target.addEventListener('touchend', interactEndHandler);
             document.addEventListener('mouseup', interactEndHandler);
         }
 
@@ -48,14 +51,17 @@ define([
                 _hasMoved = true;
                 triggerEvent(touchEvents.DRAG, evt);
             }
+
+            // Prevent scrolling the screen dragging while dragging on mobile.
+            preventDefault(evt);
         }
 
         function interactEndHandler(evt) {
             var touchEvents = events.touchEvents;
 
-            elem.removeEventListener('touchmove', interactDragHandler);
-            elem.removeEventListener('touchcancel', interactEndHandler);
-            elem.removeEventListener('touchend', interactEndHandler);
+            evt.target.removeEventListener('touchmove', interactDragHandler);
+            evt.target.removeEventListener('touchcancel', interactEndHandler);
+            evt.target.removeEventListener('touchend', interactEndHandler);
 
             document.removeEventListener('mousemove', interactDragHandler);
             document.removeEventListener('mouseup', interactEndHandler);
@@ -63,14 +69,15 @@ define([
             if (_hasMoved) {
                 triggerEvent(touchEvents.DRAG_END, evt);
             } else {
-                // This allows the controlbar/dock/logo click events not to be forwarded to the view
-                evt.stopPropagation();
                 if(evt instanceof MouseEvent) {
                     if (! isRightClick(evt)) {
                         triggerEvent(touchEvents.CLICK, evt);
                     }
                 } else {
                     triggerEvent(touchEvents.TAP, evt);
+
+                    // preventDefault to not dispatch the 300ms delayed click after a tap
+                    preventDefault(evt);
                 }
             }
 
@@ -115,7 +122,6 @@ define([
 
         var self = this;
         function triggerEvent(type, srcEvent) {
-            preventDefault(srcEvent);
             if( _enableDoubleTap && (type === events.touchEvents.CLICK || type === events.touchEvents.TAP)){
                 if(_.now() - _lastClickTime < _doubleClickDelay) {
                     type = (type === events.touchEvents.CLICK) ?
@@ -127,8 +133,6 @@ define([
             }
             var evt = normalizeUIEvent(type, srcEvent);
             self.trigger(type, evt);
-
-            return false;
         }
 
         this.triggerEvent = triggerEvent;
