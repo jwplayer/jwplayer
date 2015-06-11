@@ -37,9 +37,6 @@
     #namespace > .basic-skin-styles(); // Using the above local variables
     .skin-element-padding();
 
-    .jw-background-color {
-        background-color: @controlbar-background-color; /* Old browsers */
-    }
     .jw-controlbar {
         .inset-controlbar();
         box-shadow: inset 0px 7px 1px -5px rgba(128,128,128,1);
@@ -157,6 +154,8 @@
     }
 
     .jw-slider-horizontal {
+        background: transparent;
+        
         .jw-slider-container {
             .vertically-centered-rail-element(@rail-height, 2em);
             height: .4em;
