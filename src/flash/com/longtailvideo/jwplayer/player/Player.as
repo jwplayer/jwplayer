@@ -32,8 +32,6 @@ public class Player extends Sprite implements IPlayer {
         this.tabEnabled = false;
         this.tabChildren = false;
         this.focusRect = false;
-        this.mouseEnabled = false;
-        this.mouseChildren = false;
 
         _model = newModel(new PlayerConfig(this.soundTransform));
 
