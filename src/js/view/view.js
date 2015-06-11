@@ -448,12 +448,10 @@ define([
         }
 
         function _logoClickHandler(evt){
-            if (!evt.showing || !evt.link) {
+            if (!evt.link) {
                 //_togglePlay();
                 _api.play();
-            }
-
-            if (evt.showing && evt.link) {
+            } else {
                 _api.pause(true);
                 _api.setFullscreen(false);
                 window.open(evt.link, evt.linktarget);
