@@ -49,7 +49,6 @@
 
         .jw-option {
             border-bottom: 1px solid #ECECEC;
-            color: @active-color;
             background-color: #fff;
             margin-right: 8px;
 
@@ -57,7 +56,6 @@
             &:hover,
             &.jw-active-option {
                 background-color: #ECECEC;
-                color: @active-color;
             }
 
             // Number turn red when li is hovered
@@ -155,6 +153,17 @@
                 border-radius: 0;
                 height: 2px;
                 width: .6em;
+            }
+        }
+    }
+
+    .jw-icon-cc {
+        .jw-option {
+            color: #bbb;
+
+            &:hover,
+            &.jw-active-option {
+                color: #fff;
             }
         }
     }
