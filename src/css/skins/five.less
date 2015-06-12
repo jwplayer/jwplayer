@@ -26,7 +26,7 @@
     @thumb-size: 1em;
     @cue-height: .4em;
     @rail-vert-gradient: linear-gradient(to bottom, #fff 0, #fff 30%, #333 100%);
-
+    
     #namespace > .basic-skin-styles(); // Using the above local variables
     .skin-element-padding();
 
@@ -37,6 +37,15 @@
 
     .jw-display-icon-container {
         border-radius: 0;
+    }
+
+    .jw-option {
+        color: #bbb;
+
+        &:hover,
+        &.jw-active-option {
+            color: #fff;
+        }
     }
     
     .jw-playlist {
@@ -51,11 +60,13 @@
             border-bottom: 1px solid #ECECEC;
             background-color: #fff;
             margin-right: 8px;
+            color: @inactive-color;
 
             // Menu items are black when active, or hovered
             &:hover,
             &.jw-active-option {
                 background-color: #ECECEC;
+                color: @hover-color;
             }
 
             // Number turn red when li is hovered
@@ -157,15 +168,8 @@
         }
     }
 
-    .jw-icon-cc {
-        .jw-option {
-            color: #bbb;
-
-            &:hover,
-            &.jw-active-option {
-                color: #fff;
-            }
-        }
+    .jw-controlbar-right-group {
+        
     }
 
     .jw-dock-button {
