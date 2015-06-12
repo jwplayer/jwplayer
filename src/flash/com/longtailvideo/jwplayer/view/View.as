@@ -13,6 +13,7 @@ import flash.display.Sprite;
 import flash.display.StageAlign;
 import flash.display.StageScaleMode;
 import flash.events.Event;
+import flash.events.MouseEvent;
 import flash.geom.Rectangle;
 
 public class View extends Sprite {
@@ -28,6 +29,7 @@ public class View extends Sprite {
     protected var _instreamPlayer:IInstreamPlayer;
     protected var _instreamMode:Boolean = false;
 
+    private static function noop():void {}
 
     public function View(model:Model) {
         _model = model;
@@ -37,7 +39,10 @@ public class View extends Sprite {
 
     public function setupView():void {
         RootReference.stage.scaleMode = StageScaleMode.NO_SCALE;
-        RootReference.stage.stage.align = StageAlign.TOP_LEFT;
+        RootReference.stage.align = StageAlign.TOP_LEFT;
+
+
+        RootReference.stage.addEventListener('rightClick', noop);
 
         RootReference.stage.addChildAt(this, 0);
 
