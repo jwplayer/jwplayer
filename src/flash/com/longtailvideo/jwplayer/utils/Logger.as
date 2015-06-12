@@ -1,5 +1,6 @@
 package com.longtailvideo.jwplayer.utils {
 import com.longtailvideo.jwplayer.model.PlayerConfig;
+import com.longtailvideo.jwplayer.player.SwfEventRouter;
 
 import flash.events.Event;
 import flash.external.ExternalInterface;
@@ -21,20 +22,16 @@ public class Logger {
 
     /** Reference to the player config **/
     private static var _config:PlayerConfig;
-    /** filter stuff **/
-    private static var _filter:RegExp;
 
-    public static function set filter(pattern:String):void {
-        if (pattern.length) {
-            _filter = new RegExp(pattern, "ig");
-        } else {
-            _filter = null;
-        }
-    }
 
     private static function get mode():String {
-        return TRACE;
-        //return _config ? _config.debug : TRACE;
+        if (_config && _config.debug) {
+            return CONSOLE;
+        }
+        if (CONFIG::debugging) {
+            return TRACE;
+        }
+        return NONE;
     }
 
     /**
@@ -43,8 +40,7 @@ public class Logger {
      * @param message    The message to send forward. Arrays and objects are automatically chopped up.
      * @param type        The type of message; is capitalized and encapsulates the message.
      **/
-    public static function log(message:*, type:String = "log"):void {
-        type = type.toUpperCase();
+    public static function log(message:*, type:String = "[flash.swf]"):void {
         if (message == undefined) {
             send(type);
         } else if (message is String) {
@@ -62,17 +58,9 @@ public class Logger {
 
     /** Send the messages to the output system. **/
     private static function send(text:String):void {
-        if (_filter && !_filter.test(text)) {
-            return;
-        }
         var debug:String = mode;
         if (debug === CONSOLE) {
-            try {
-                if (ExternalInterface.available) {
-                    ExternalInterface.call('console.log', text);
-                }
-            } catch (err:Error) {
-            }
+            SwfEventRouter.consoleLog(text);
         } else if (debug === TRACE) {
             trace(text);
         }
@@ -85,8 +73,10 @@ public class Logger {
      */
     public static function logEvent(event:Event):void {
         var debug:String = mode;
-        if (debug === CONSOLE || debug === TRACE) {
-            log(event.toString(), event.type);
+        if (debug === CONSOLE) {
+            SwfEventRouter.consoleLog(event.type, event.toString());
+        } else if (debug === TRACE) {
+            trace(event.type, event.toString());
         }
     }
 }

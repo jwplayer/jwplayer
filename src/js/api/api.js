@@ -22,22 +22,6 @@ define([
         utils.removeClass(container, 'jw-tab-focus');
     }
 
-    var normalizeOutput = function() {
-        var rounders = ['position', 'duration', 'offset'];
-
-        function round(val) {
-            if (this[val]) {
-                this[val] = Math.round(this[val] * 1000) / 1000;
-            }
-        }
-
-        return function (obj) {
-            var shallowClone = _.extend({}, obj);
-            _.each(rounders, round, shallowClone);
-            return shallowClone;
-        };
-    }();
-
     var Api = function (container, globalRemovePlayer) {
         var _this = this,
             _controller,
@@ -54,12 +38,11 @@ define([
 
         this.trigger = function(type, args) {
             if (_.isObject(args)) {
-                args = normalizeOutput(args);
+                args = _.extend({}, args);
             } else {
                 args = {};
             }
             args.type = type;
-
             return Events.trigger.call(_this, type, args);
         };
 
@@ -193,9 +176,9 @@ define([
         };
 
         this.load = function (toLoad) {
-            _controller.instreamDestroy();
-            if (_getPlugin('googima')) {
-                _controller.destroyGoogima();
+            var plugin = _getPlugin('vast') || _getPlugin('googima');
+            if (plugin) {
+                plugin.destroy();
             }
             _controller.load(toLoad);
             return _this;

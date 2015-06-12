@@ -28,30 +28,6 @@ define([
         assert.throws(addListenerWithStringCallback, TypeError, 'passing a string as a callback throws a TypeError');
     });
 
-    test('normalizes event output', function(assert) {
-        var api = createApi('player');
-
-        api.on({
-            numbers: function(event) {
-                assert.strictEqual(event.position, 1.000, 'event.position is rounded to the nearest thousandth');
-                assert.strictEqual(event.duration, 1.235, 'event.duration is rounded to the nearest thousandth');
-                assert.strictEqual(event.offset,  -1.001, 'event.offset is rounded to the nearest thousandth');
-            },
-            noargs: function(event) {
-                assert.ok(_.isObject(event), 'first argument of callback is an object');
-                strictEqual(event.type, 'noargs', 'callback event argument "type" matches event name');
-            }
-        });
-
-        api.trigger('numbers', {
-            position: 0.9999,
-            duration: 1.2345,
-            offset: -1.0009
-        });
-
-        api.trigger('noargs');
-    });
-
     test('rendering mode is html5', function() {
         var api = createApi('player');
 

@@ -148,20 +148,26 @@ define([
             }
         };
 
-        this.setVideoProvider = function(provider) {
+        this.changeVideoProvider = function(Provider) {
+            var container;
 
             if (_provider) {
                 _provider.removeGlobalListener(_videoEventHandler);
-                var container = _provider.getContainer();
+                container = _provider.getContainer();
                 if (container) {
                     _provider.remove();
-                    provider.setContainer(container);
                 }
             }
 
-            this.set('provider', provider.getName());
+            _currentProvider = new Provider(_this.id, _this.config);
 
-            _provider = provider;
+            if (container) {
+                _currentProvider.setContainer(container);
+            }
+
+            this.set('provider', _currentProvider.getName());
+
+            _provider = _currentProvider;
             _provider.volume(_this.volume);
             _provider.mute(_this.mute);
             _provider.addGlobalListener(_videoEventHandler.bind(this));
@@ -231,9 +237,7 @@ define([
 
             // If we are changing video providers
             if (!(_currentProvider instanceof Provider)) {
-                _currentProvider = new Provider(_this.id, _this.config);
-
-                _this.setVideoProvider(_currentProvider);
+                _this.changeVideoProvider(Provider);
             }
 
             // this allows the Youtube provider to load preview images

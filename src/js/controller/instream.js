@@ -154,7 +154,7 @@ define([
             _adModel.on(events.JWPLAYER_ERROR, errorHandler);
 
             // start listening for ad click
-            _view.displayComp().setAlternateClickHandler(function(evt) {
+            _view.clickHandler().setAlternateClickHandler(function(evt) {
                 evt = evt || {};
                 evt.hasControls = !!modelGet('controls');
 
@@ -172,7 +172,7 @@ define([
             });
 
             if (utils.isMSIE()) {
-                _oldProvider.parentElement.addEventListener('click', _view.displayComp().clickHandler);
+                _oldProvider.parentElement.addEventListener('click', _view.clickHandler().clickHandler);
             }
 
             _view.on(events.JWPLAYER_AD_SKIPPED, _skipAd);
@@ -211,11 +211,11 @@ define([
             // Return the view to its normal state
             var adsVideo = _adModel.getVideo();
             _view.destroyInstream((adsVideo) ? adsVideo.isAudioFile() : false);
-            if (_view.displayComp()) {
+            if (_view.clickHandler()) {
                 if (_oldProvider && _oldProvider.parentElement) {
-                    _oldProvider.parentElement.removeEventListener('click', _view.displayComp().clickHandler);
+                    _oldProvider.parentElement.removeEventListener('click', _view.clickHandler().clickHandler);
                 }
-                _view.displayComp().revertAlternateClickHandler();
+                _view.clickHandler().revertAlternateClickHandler();
             }
             _adModel = null;
 

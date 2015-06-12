@@ -154,24 +154,6 @@ public class Model extends GlobalEventDispatcher {
         }
     }
 
-    public function get width():Number {
-        if (RootReference.stage) {
-            return RootReference.stage.stageWidth;
-        }
-        return 0;
-    }
-
-    public function get height():Number {
-        if (RootReference.stage) {
-            return RootReference.stage.stageHeight;
-        }
-        return 0;
-    }
-
-    public function set width(n:Number):void {}
-
-    public function set height(n:Number):void {}
-
     public function get stretching():String {
         return _config.stretching;
     }

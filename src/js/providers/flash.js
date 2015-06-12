@@ -2,12 +2,11 @@ define([
     'utils/helpers',
     'utils/underscore',
     'events/events',
-    'utils/ui',
     'events/states',
     'utils/eventdispatcher',
     'utils/embedswf',
     'providers/default'
-], function(utils, _, events, UI, states, eventdispatcher, EmbedSwf, DefaultProvider) {
+], function(utils, _, events, states, eventdispatcher, EmbedSwf, DefaultProvider) {
 
     var _providerId = 0;
     function getObjectId(playerId) {
@@ -19,8 +18,6 @@ define([
         // private properties
         var _container;
         var _swf;
-        var _clickOverlay;
-        var _clickOverlayUI;
         var _item = null;
         var _beforecompleted = false;
         var _currentQuality = -1;
@@ -29,6 +26,7 @@ define([
         var _audioTracks = null;
         var _flashProviderType;
         var _attached = true;
+        var _fullscreen = false;
 
         var _ready = function() {
             return _swf && _swf.__ready;
@@ -122,23 +120,6 @@ define([
                         _swf = EmbedSwf.embed(_playerConfig.flashplayer, parent, getObjectId(_playerId));
                     }
 
-                    // place div on top of swf to capture clicks
-                    if (!_clickOverlay) {
-                        _clickOverlay = document.createElement('div');
-                        _clickOverlay.style.background = 'transparent';
-                        _clickOverlay.style.position = 'absolute';
-                        _clickOverlay.style.left = 0;
-                        _clickOverlay.style.right = 0;
-                        _clickOverlay.style.top = 0;
-                        _clickOverlay.style.bottom = 0;
-                        var interactCallback = function() {
-                            _eventDispatcher.sendEvent(events.JWPLAYER_PROVIDER_CLICK);
-                        };
-
-                        _clickOverlayUI = new UI(_clickOverlay).on('click tap', interactCallback);
-                    }
-                    _container.appendChild(_clickOverlay);
-
                     // listen to events triggered from flash
 
                     _swf.off();
@@ -170,6 +151,12 @@ define([
                     var forwardEvents = [
                         events.JWPLAYER_MEDIA_BUFFER_FULL
                     ];
+
+                    _swf.on('all', function(type, e) {
+                        if (!/time/i.test(type + (e && e.type))) {
+                            console.log('[fl]', type, e);
+                        }
+                    }, this);
 
                     // jwplayer 6 flash player events (forwarded from AS3 Player, Controller, Model)
                     _swf.on(events.JWPLAYER_MEDIA_LEVELS, function(e) {
@@ -216,24 +203,16 @@ define([
                             this.setState(states.COMPLETE);
                             this.sendEvent(e.type);
                         }
-                    }, this);
-
-                    _swf.on(events.JWPLAYER_MEDIA_SEEK, function(e) {
+                    }, this).on(events.JWPLAYER_MEDIA_SEEK, function(e) {
                         this.sendEvent(events.JWPLAYER_MEDIA_SEEK, e);
-                    }, this);
-
-                    _swf.on('visualQuality', function(e) {
+                    }, this).on('visualQuality', function(e) {
                         e.reason = e.reason || 'api'; // or 'user selected';
                         this.sendEvent('visualQuality', e);
                         this.sendEvent(events.JWPLAYER_PROVIDER_FIRST_FRAME, {});
-                    }, this);
-
-                    _swf.on(events.JWPLAYER_PROVIDER_CHANGED, function(e) {
+                    }, this).on(events.JWPLAYER_PROVIDER_CHANGED, function(e) {
                         _flashProviderType = e.message;
                         this.sendEvent(events.JWPLAYER_PROVIDER_CHANGED, e);
-                    }, this);
-
-                    _swf.on(events.JWPLAYER_ERROR, function(event) {
+                    }, this).on(events.JWPLAYER_ERROR, function(event) {
                         console.error(event.code, event.message, event, this);
                         this.sendEvent(events.JWPLAYER_MEDIA_ERROR, {
                             message: 'Error loading media: File could not be played'
@@ -244,13 +223,9 @@ define([
                     _currentQuality = -1;
                     _qualityLevels = null;
                     EmbedSwf.remove(_swf);
-                    if (_clickOverlay && _container && _clickOverlay.parentNode === _container) {
-                        _container.removeChild(_clickOverlay);
-                    }
                 },
                 setVisibility: function(visible) {
                     visible = !!visible;
-                    _container.style.visibility = visible ? 'visible':'hidden';
                     _container.style.opacity = visible ? 1:0;
                 },
                 resize: function(width, height, stretching) {
@@ -259,11 +234,12 @@ define([
                 setControls: function() {
 
                 },
-                setFullscreen: function() {
-
+                setFullscreen: function(value) {
+                    _fullscreen = value;
+                    _flashCommand('fullscreen', value);
                 },
                 getFullScreen: function() {
-                    return false;
+                    return _fullscreen;
                 },
                 isAudioFile: function() {
                     if (_item) {
@@ -308,9 +284,6 @@ define([
                         _swf.off();
                         _swf = null;
                     }
-                    _clickOverlay = null;
-                    _clickOverlayUI.off();
-                    _clickOverlayUI = null;
                     _container = null;
                     _item = null;
                     _eventDispatcher.resetEventListeners();
