@@ -149,7 +149,7 @@ public class Player extends Sprite implements IPlayer {
     }
 
     public function getSafeRegion():Rectangle {
-        return _view.getBounds(RootReference.root);
+        return _view.getSafeRegion();
     }
 
     public function getItem():PlaylistItem {

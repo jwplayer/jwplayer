@@ -235,19 +235,13 @@ public class MediaProvider extends Sprite implements IMediaProvider {
     /**
      * Resizes the display.
      *
-     * @param width        The new width of the display.
+     * @param width     The new width of the display.
      * @param height    The new height of the display.
      **/
     public function resize(width:Number, height:Number):void {
         _width = width;
         _height = height;
-
         if (_media) {
-            // Fix some rounding errors by resetting the media container size before stretching
-            if (_media.numChildren > 0) {
-                _media.width = _media.getChildAt(0).width;
-                _media.height = _media.getChildAt(0).height;
-            }
             Stretcher.stretch(_media, width, height, _config.stretching);
         }
     }

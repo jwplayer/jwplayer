@@ -649,6 +649,7 @@ define([
             }
 
             // If it supports DOM fullscreen
+            var provider = _model.getVideo();
             if (_elementSupportsFullscreen) {
                 if (state) {
                     _requestFullscreen.apply(_playerElement);
@@ -664,8 +665,13 @@ define([
                     if (_instreamModel && _instreamModel.getVideo()) {
                        _instreamModel.getVideo().setFullscreen(state);
                     }
-                   _model.getVideo().setFullscreen(state);
+                    provider.setFullscreen(state);
                 }
+            }
+            // pass fullscreen state to Flash provider
+            // provider.getName() is the same as _api.getProvider() or _model.get('provider')
+            if (provider && provider.getName().name.indexOf('flash') === 0) {
+                provider.setFullscreen(state);
             }
         };
 
