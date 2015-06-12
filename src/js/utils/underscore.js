@@ -326,9 +326,9 @@ define([], function() {
     // Returns the first function passed as an argument to the second,
     // allowing you to adjust arguments, run code before and after, and
     // conditionally execute the original function.
-    _.wrap = function(func, wrapper) {
-        return _.partial(wrapper, func);
-    };
+    //_.wrap = function(func, wrapper) {
+    //    return _.partial(wrapper, func);
+    //};
 
 
     // Memoize an expensive function by storing its results.
