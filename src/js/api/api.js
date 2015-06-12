@@ -176,9 +176,9 @@ define([
         };
 
         this.load = function (toLoad) {
-            _controller.instreamDestroy();
-            if (_getPlugin('googima')) {
-                _controller.destroyGoogima();
+            var plugin = _getPlugin('vast') || _getPlugin('googima');
+            if (plugin) {
+                plugin.destroy();
             }
             _controller.load(toLoad);
             return _this;
