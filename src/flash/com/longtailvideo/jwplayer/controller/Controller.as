@@ -243,14 +243,13 @@ public class Controller extends GlobalEventDispatcher {
     }
 
     public function fullscreen(mode:Boolean):Boolean {
-        if (mode != _model.fullscreen) {
+        if (mode !== _model.fullscreen) {
             _model.fullscreen = mode;
             _view.fullscreen(mode);
-            dispatchEvent(new PlayerEvent(PlayerEvent.JWPLAYER_FULLSCREEN, mode.toString()));
+            //dispatchEvent(new PlayerEvent(PlayerEvent.JWPLAYER_FULLSCREEN, mode.toString()));
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     public function checkBeforePlay():Boolean {

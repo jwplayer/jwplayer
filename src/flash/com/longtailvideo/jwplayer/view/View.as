@@ -2,56 +2,47 @@ package com.longtailvideo.jwplayer.view {
 import com.longtailvideo.jwplayer.events.MediaEvent;
 import com.longtailvideo.jwplayer.model.Model;
 import com.longtailvideo.jwplayer.player.IInstreamPlayer;
+import com.longtailvideo.jwplayer.player.SwfEventRouter;
 import com.longtailvideo.jwplayer.plugins.IPlugin;
 import com.longtailvideo.jwplayer.plugins.IPlugin6;
-import com.longtailvideo.jwplayer.plugins.PluginConfig;
-import com.longtailvideo.jwplayer.utils.Logger;
 import com.longtailvideo.jwplayer.utils.RootReference;
 import com.longtailvideo.jwplayer.utils.Stretcher;
 
 import flash.display.DisplayObject;
 import flash.display.Sprite;
 import flash.display.StageAlign;
-import flash.display.StageDisplayState;
 import flash.display.StageScaleMode;
-import flash.events.ErrorEvent;
 import flash.events.Event;
+import flash.events.MouseEvent;
 import flash.geom.Rectangle;
 
 public class View extends Sprite {
 
     protected var _model:Model;
-    protected var _preserveAspect:Boolean = false;
-    protected var _normalScreen:Rectangle;
     protected var _mediaLayer:Sprite;
-    protected var _componentsLayer:Sprite;
     protected var _pluginsLayer:Sprite;
+    protected var _instreamLayer:Sprite;
+
     protected var _plugins:Object;
 
-    // Indicates whether the instream player is being displayed
-    protected var _allPlugins:Vector.<IPlugin>;
-    protected var _instreamMode:Boolean = false;
-    protected var _instreamPlayer:IInstreamPlayer;
-    protected var _instreamLayer:Sprite;
     protected var _instreamPlugin:IPlugin;
+    protected var _instreamPlayer:IInstreamPlayer;
+    protected var _instreamMode:Boolean = false;
+
+    private static function noop():void {}
 
     public function View(model:Model) {
         _model = model;
         _model.addEventListener(MediaEvent.JWPLAYER_MEDIA_LOADED, mediaLoaded);
-
-        _normalScreen = new Rectangle(
-                0,
-                0,
-                _model.width,
-                _model.height
-        );
-
         setupLayers();
     }
 
     public function setupView():void {
         RootReference.stage.scaleMode = StageScaleMode.NO_SCALE;
-        RootReference.stage.stage.align = StageAlign.TOP_LEFT;
+        RootReference.stage.align = StageAlign.TOP_LEFT;
+
+
+        RootReference.stage.addEventListener('rightClick', noop);
 
         RootReference.stage.addChildAt(this, 0);
 
@@ -60,60 +51,56 @@ public class View extends Sprite {
         redraw();
     }
 
-    public function fullscreen(mode:Boolean = true):void {
-        try {
-            RootReference.stage.displayState = mode ? StageDisplayState.FULL_SCREEN : StageDisplayState.NORMAL;
-        } catch (e:Error) {
-            Logger.log("Could not enter fullscreen mode: " + e.message);
-        }
+    public function getSafeRegion():Rectangle {
+        var width:Number  = RootReference.stage.stageWidth;
+        var height:Number = RootReference.stage.stageHeight;
+        return new Rectangle(0, 0, width, height);
     }
 
-    /** Redraws the plugins and player components **/
+    public function fullscreen(mode:Boolean = true):void {
+        // Flash fullscreen is not allowed in jw7. Browser DOM fullscreen must be used to show controls.
+        redraw();
+    }
+
     public function redraw():void {
-        if (!_model.fullscreen) {
-            _normalScreen.width  = RootReference.stage.stageWidth;
-            _normalScreen.height = RootReference.stage.stageHeight;
+        var width:Number  = RootReference.stage.stageWidth;
+        var height:Number = RootReference.stage.stageHeight;
+        // Don't need to resize the media if width/height are 0 (i.e. player is hidden in the DOM)
+        if (width * height === 0) {
+            return;
         }
-
-        if (_preserveAspect) {
-            if (!_model.fullscreen && _model.stretching != Stretcher.EXACTFIT) {
-                _preserveAspect = false;
-            }
-        } else {
-            if (_model.fullscreen && _model.stretching == Stretcher.EXACTFIT) {
-                _preserveAspect = true;
-            }
-        }
-
-        resizeMedia(_model.width, _model.height);
-
-        _instreamLayer.graphics.clear();
-        _instreamLayer.graphics.beginFill(0);
-        _instreamLayer.graphics.drawRect(0, 0, _model.width, _model.height);
-        _instreamLayer.graphics.endFill();
+        resizeMedia(width, height);
+        resizePlugins(width, height);
+        resizeInstream(width, height);
     }
 
     public function addPlugin(id:String, plugin:IPlugin):void {
         if (!(plugin is IPlugin6)) {
             throw new Error("Incompatible plugin version");
         }
-        try {
-            _allPlugins.push(plugin);
-            var plugDO:DisplayObject = plugin as DisplayObject;
-            if (!_plugins[id] && plugDO) {
-                _plugins[id] = plugDO;
-                _pluginsLayer.addChild(plugDO);
+        var pluginDisplay:DisplayObject = plugin as DisplayObject;
+        if (!_plugins[id] && pluginDisplay) {
+            _plugins[id] = pluginDisplay;
+            _pluginsLayer.addChild(pluginDisplay);
+            var width:Number  = RootReference.stage.stageWidth;
+            var height:Number = RootReference.stage.stageHeight;
+            if (width * height === 0) {
+                return;
             }
-        } catch (e:Error) {
-            dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, e.message));
+            try {
+                plugin.resize(width, height);
+            } catch (e:Error) {
+                SwfEventRouter.error(e.code, e.message);
+            }
         }
     }
 
     public function removePlugin(plugin:IPlugin):void {
-        var id:String = plugin.id.toLowerCase();
-        if (id && _plugins[id] is IPlugin) {
-            _pluginsLayer.removeChild(_plugins[id]);
-            delete _plugins[id];
+        var pluginDisplay:DisplayObject = plugin as DisplayObject;
+        if (pluginDisplay) {
+            if (_pluginsLayer.contains(pluginDisplay)) {
+                _pluginsLayer.removeChild(pluginDisplay);
+            }
         }
     }
 
@@ -131,11 +118,6 @@ public class View extends Sprite {
         return _plugins[id] as IPlugin6;
     }
 
-    public function bringPluginToFront(id:String):void {
-        var plugin:IPlugin = getPlugin(id);
-        _pluginsLayer.setChildIndex(plugin as DisplayObject, _pluginsLayer.numChildren - 1);
-    }
-
     public function setupInstream(instreamPlayer:IInstreamPlayer, instreamDisplay:DisplayObject, plugin:IPlugin):void {
         _instreamPlayer = instreamPlayer;
         _instreamPlugin = plugin;
@@ -144,16 +126,11 @@ public class View extends Sprite {
             _instreamLayer.addChild(instreamDisplay);
         }
         _mediaLayer.visible = false;
-        _componentsLayer.visible = false;
 
-        try {
-            var pluginDO:DisplayObject = plugin as DisplayObject;
-            if (pluginDO) {
-                _pluginsLayer.removeChild(pluginDO);
-                _instreamLayer.addChild(pluginDO);
-            }
-        } catch (e:Error) {
-            Logger.log("Could not add instream plugin to display stack");
+        var pluginDisplay:DisplayObject = plugin as DisplayObject;
+        if (pluginDisplay && _pluginsLayer.contains(pluginDisplay)) {
+            _pluginsLayer.removeChild(pluginDisplay);
+            _instreamLayer.addChild(pluginDisplay);
         }
 
         _instreamMode = true;
@@ -164,7 +141,6 @@ public class View extends Sprite {
             _pluginsLayer.addChild(_instreamPlugin as DisplayObject);
         }
         _mediaLayer.visible = true;
-        _componentsLayer.visible = true;
 
         while (_instreamLayer.numChildren > 0) {
             _instreamLayer.removeChildAt(0);
@@ -181,12 +157,13 @@ public class View extends Sprite {
         var currentLayer:uint = 0;
 
         _mediaLayer = setupLayer("media", currentLayer++);
-        _componentsLayer = setupLayer("components", currentLayer++);
         _pluginsLayer = setupLayer("plugins", currentLayer++);
-        _instreamLayer = setupLayer("instream", currentLayer++);
+        _instreamLayer = setupLayer("instream", currentLayer);
+
+        _mediaLayer.mouseEnabled = false;
+        _mediaLayer.mouseChildren = false;
 
         _plugins = {};
-        _allPlugins = new Vector.<IPlugin>;
 
         _instreamLayer.visible = false;
     }
@@ -199,38 +176,36 @@ public class View extends Sprite {
     }
 
     protected function resizeMedia(width:Number, height:Number):void {
-        // Don't need to resize the media if width/height are 0 (i.e. player is hidden in the DOM)
-        if (width * height === 0) {
-            return;
-        }
         if (_mediaLayer.numChildren > 0 && _model.media.display) {
-            if (_preserveAspect) {
-                if (_model.fullscreen && _model.stretching === Stretcher.EXACTFIT) {
-                    _model.media.resize(_normalScreen.width, _normalScreen.height);
-                    Stretcher.stretch(_mediaLayer, width, height, Stretcher.UNIFORM);
-                } else {
-                    _model.media.resize(width, height);
-                    _mediaLayer.scaleX = _mediaLayer.scaleY = 1;
-                    _mediaLayer.x = _mediaLayer.y = 0;
-                }
+            var preserveAspect:Boolean = (_model.fullscreen && _model.stretching === Stretcher.EXACTFIT);
+            if (preserveAspect) {
+                _model.config.stretching = Stretcher.UNIFORM;
+                _model.media.resize(width, height);
+                _model.config.stretching = Stretcher.EXACTFIT;
             } else {
                 _model.media.resize(width, height);
-                _mediaLayer.x = _mediaLayer.y = 0;
             }
         }
     }
 
-    protected function resizeHandler(event:Event):void {
-        var width:Number = RootReference.stage.stageWidth;
-        var height:Number = RootReference.stage.stageHeight;
-        var fullscreen:Boolean = (RootReference.stage.displayState === StageDisplayState.FULL_SCREEN);
+    protected function resizePlugins(width:Number, height:Number):void {
+        for (var pluginId:String in _plugins) {
+            var plugin:IPlugin = _plugins[pluginId] as IPlugin;
+            if (plugin) {
+                plugin.resize(width, height);
+            }
+        }
+    }
 
-        if (_model.fullscreen !== fullscreen) {
-            _model.fullscreen = fullscreen;
-        }
-        if (width && height) {
-            redraw();
-        }
+    private function resizeInstream(width:Number, height:Number):void {
+        _instreamLayer.graphics.clear();
+        _instreamLayer.graphics.beginFill(0);
+        _instreamLayer.graphics.drawRect(0, 0, width, height);
+        _instreamLayer.graphics.endFill();
+    }
+
+    protected function resizeHandler(event:Event):void {
+        redraw();
     }
 
     protected function mediaLoaded(evt:MediaEvent):void {
@@ -241,7 +216,12 @@ public class View extends Sprite {
             }
             if (disp) {
                 _mediaLayer.addChild(disp);
-                resizeMedia(_model.width, _model.height);
+                var width:Number  = RootReference.stage.stageWidth;
+                var height:Number = RootReference.stage.stageHeight;
+                if (width * height === 0) {
+                    return;
+                }
+                resizeMedia(width, height);
             }
         }
     }

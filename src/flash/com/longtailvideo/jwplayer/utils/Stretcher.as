@@ -25,9 +25,12 @@ public class Stretcher {
      * @param typ    The stretching type.
      **/
     public static function stretch(clp:DisplayObject, wid:Number, hei:Number, typ:String = 'uniform'):void {
+        clp.scaleX = clp.scaleY = 1;
         var xsc:Number = wid / clp.width;
         var ysc:Number = hei / clp.height;
         switch (typ.toLowerCase()) {
+            case Stretcher.NONE:
+                break;
             case Stretcher.EXACTFIT:
                 clp.width = wid;
                 clp.height = hei;
@@ -40,10 +43,6 @@ public class Stretcher {
                     clp.width *= ysc;
                     clp.height *= ysc;
                 }
-                break;
-            case Stretcher.NONE:
-                clp.scaleX = 1;
-                clp.scaleY = 1;
                 break;
             case Stretcher.UNIFORM:
             default:
@@ -62,12 +61,12 @@ public class Stretcher {
                 }
                 break;
         }
-        clp.x = Math.round(wid / 2 - clp.width / 2);
-        clp.y = Math.round(hei / 2 - clp.height / 2);
-        if (clp.width > 0) {
+        if (clp.width ) {
             clp.width = Math.ceil(clp.width);
+            clp.x = Math.round((wid - clp.width) / 2);
         }
-        if (clp.height > 0) {
+        if (clp.height) {
+            clp.y = Math.round((hei - clp.height) / 2);
             clp.height = Math.ceil(clp.height);
         }
     }
