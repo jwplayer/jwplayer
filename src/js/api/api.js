@@ -51,7 +51,13 @@ define([
                 throw new TypeError('eval callbacks depricated');
             }
 
-            return Events.on.apply(_this, arguments);
+            var safeCallback = function() {
+                try {
+                    callback.apply(this, arguments);
+                } catch(e) {}
+            };
+
+            return Events.on.call(_this, name, safeCallback);
         };
 
         // Required by vast
