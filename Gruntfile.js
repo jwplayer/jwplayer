@@ -6,19 +6,20 @@ var env = process.env;
 
 function getBuildVersion(packageInfo) {
     // Build Version: {major.minor.revision}
-    var revision = '';
+    var metadata = '';
     if (env.BUILD_NUMBER) {
         var branch = env.GIT_BRANCH;
+        metadata = 'opensource';
         if (branch) {
-            revision = branch.replace(/^origin\//, '').replace(/[^0-9A-Za-z-]/g, '-') + '.';
+            metadata = '_' + branch.replace(/^origin\//, '').replace(/[^0-9A-Za-z-]/g, '-');
         }
-        revision += 'build.' + env.BUILD_NUMBER;
+        metadata += '.' + env.BUILD_NUMBER;
     } else {
         var now = new Date();
         now.setTime(now.getTime()-now.getTimezoneOffset()*60000);
-        revision = 'local.' + now.toISOString().replace(/[\.\-:T]/g, '-').replace(/Z|\.\d/g, '');
+        metadata = 'local.' + now.toISOString().replace(/[\.\-:T]/g, '-').replace(/Z|\.\d/g, '');
     }
-    return packageInfo.version +'+'+ revision;
+    return packageInfo.version +'+'+ metadata;
 }
 
 module.exports = function(grunt) {
@@ -31,6 +32,8 @@ module.exports = function(grunt) {
 
     var webpackCompilers = {};
     var autoprefixBrowsers = encodeURIComponent('> 1%');
+
+    console.log('%s v%s', packageInfo.name, buildVersion);
 
     grunt.initConfig({
         starttime: new Date(),
