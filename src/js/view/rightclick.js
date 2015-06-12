@@ -24,8 +24,9 @@ define([
 
             var versionMeta = semverParts[1];
             if (versionMeta) {
+                var pairs = versionMeta.split('.');
                 obj.items.push({
-                    title : 'build: (' + versionMeta + ')',
+                    title : 'build: (' + pairs[0] +'.'+ pairs[1] + ')',
                     link : '#'
                 });
             }
