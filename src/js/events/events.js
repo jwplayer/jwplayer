@@ -25,6 +25,7 @@ define([], function() {
         JWPLAYER_AD_PLAY: 'adPlay',
         JWPLAYER_AD_SKIPPED: 'adSkipped',
         JWPLAYER_AD_TIME: 'adTime',
+        JWPLAYER_AD_REQUEST: 'adRequest',
         JWPLAYER_CAST_AD_CHANGED: 'castAdChanged',
 
         // Events
