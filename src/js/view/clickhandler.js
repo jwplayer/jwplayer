@@ -5,25 +5,19 @@ define([
     'events/states',
     'utils/underscore'
 ], function(UI, events, Events, states, _) {
-    var Display = function(_model) {
+    var ClickHandler = function(_model, _ele) {
         var _display,
             _alternateClickHandler;
 
         _.extend(this, Events);
 
-        _display = document.createElement('div');
-        _display.className = 'jw-click jw-reset';
+        _display = _ele;
 
         this.element = function() { return _display; };
 
-        //_display.addEventListener('click', _clickHandler, false);
-        var userInteract = new UI(this.element(), {'enableDoubleTap': true});
+        var userInteract = new UI(_display, {'enableDoubleTap': true});
         userInteract.on('click tap', _clickHandler);
         userInteract.on('doubleClick doubleTap', _doubleClickHandler);
-
-        _model.mediaController.on('click', function(evt) {
-            userInteract.triggerEvent(events.touchEvents.CLICK, evt);
-        });
 
         this.clickHandler = _clickHandler;
 
@@ -60,5 +54,5 @@ define([
     };
 
 
-    return Display;
+    return ClickHandler;
 });

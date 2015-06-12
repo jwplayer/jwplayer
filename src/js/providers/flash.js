@@ -19,8 +19,6 @@ define([
         // private properties
         var _container;
         var _swf;
-        var _clickOverlay;
-        var _clickOverlayUI;
         var _item = null;
         var _beforecompleted = false;
         var _currentQuality = -1;
@@ -121,23 +119,6 @@ define([
                     if (!_swf) {
                         _swf = EmbedSwf.embed(_playerConfig.flashplayer, parent, getObjectId(_playerId));
                     }
-
-                    // place div on top of swf to capture clicks
-                    if (!_clickOverlay) {
-                        _clickOverlay = document.createElement('div');
-                        _clickOverlay.style.background = 'transparent';
-                        _clickOverlay.style.position = 'absolute';
-                        _clickOverlay.style.left = 0;
-                        _clickOverlay.style.right = 0;
-                        _clickOverlay.style.top = 0;
-                        _clickOverlay.style.bottom = 0;
-                        var interactCallback = function() {
-                            _eventDispatcher.sendEvent(events.JWPLAYER_PROVIDER_CLICK);
-                        };
-
-                        _clickOverlayUI = new UI(_clickOverlay).on('click tap', interactCallback);
-                    }
-                    _container.appendChild(_clickOverlay);
 
                     // listen to events triggered from flash
 
@@ -244,13 +225,9 @@ define([
                     _currentQuality = -1;
                     _qualityLevels = null;
                     EmbedSwf.remove(_swf);
-                    if (_clickOverlay && _container && _clickOverlay.parentNode === _container) {
-                        _container.removeChild(_clickOverlay);
-                    }
                 },
                 setVisibility: function(visible) {
                     visible = !!visible;
-                    _container.style.visibility = visible ? 'visible':'hidden';
                     _container.style.opacity = visible ? 1:0;
                 },
                 resize: function(width, height, stretching) {
@@ -308,9 +285,6 @@ define([
                         _swf.off();
                         _swf = null;
                     }
-                    _clickOverlay = null;
-                    _clickOverlayUI.off();
-                    _clickOverlayUI = null;
                     _container = null;
                     _item = null;
                     _eventDispatcher.resetEventListeners();
