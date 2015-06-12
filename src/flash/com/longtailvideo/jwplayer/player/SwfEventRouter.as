@@ -115,5 +115,21 @@ function(id, name, json) {
         });
     }
 
+    static private var _consoleLog:XML = <script><![CDATA[
+function() {
+    if (typeof console.log === 'object') {
+        console.log(Array.prototype.slice.call(arguments, 0));
+        return;
+    }
+    console.log.apply(console, arguments);
+}]]></script>;
+
+    static public function consoleLog(...args):void {
+        trace.apply(null, ['<<'].concat(args));
+        if (ExternalInterface.available) {
+            ExternalInterface.call.apply(null, [_consoleLog].concat(args));
+        }
+    }
+
 }
 }
