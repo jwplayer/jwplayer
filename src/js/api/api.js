@@ -4,6 +4,7 @@ define([
     'events/states',
     'utils/backbone.events',
     'utils/helpers',
+    'utils/ui',
     'utils/timer',
     'utils/underscore',
     'controller/controller',
@@ -11,8 +12,8 @@ define([
     'api/api-mutators',
     'api/callbacks-deprecate',
     'version'
-], function(Config, events, states,
-            Events, utils, Timer, _, Controller, actionsInit, mutatorsInit, legacyInit, version) {
+], function(Config, events, states, Events, utils, UI, Timer, _, Controller,
+            actionsInit, mutatorsInit, legacyInit, version) {
 
     function addFocusBorder(container) {
         utils.addClass(container, 'jw-tab-focus');
@@ -33,6 +34,7 @@ define([
 
         // This helps plugins, particularly analytics
         this.utils = utils;
+        this.utils.UI = UI;
         this._ = _;
         this.version = version;
 
