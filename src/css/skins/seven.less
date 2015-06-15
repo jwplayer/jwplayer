@@ -19,18 +19,22 @@
         height: 2.5em;
     }
 
+    /* Contains icons, time text, and slider */
     .jw-group {
         vertical-align: middle;
     }
     
+    /* Playlist container */
     .jw-playlist {
         background-color: rgba(0, 0, 0, 0.8);
     }
-
+    
+    /* ul container */
     .jw-playlist-container {
         left: -43%;
         background-color: rgba(0, 0, 0, 0.8);
-    
+        
+        /* li list option */
         .jw-option {
             border-bottom: 1px solid #444;
             
@@ -40,7 +44,7 @@
                 background-color: black;
             }
 
-            // Number turn red when li is hovered
+            // Number color when li is hovered
             &:hover {
                 .jw-label {
                     color: @active-color;
@@ -52,7 +56,7 @@
             margin-left: 0;
         }
 
-        // play icon is always red
+        // play icon is always active
         .jw-label .jw-icon-play {
             color: @active-color;
             &:before {
