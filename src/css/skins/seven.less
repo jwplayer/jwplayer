@@ -24,27 +24,27 @@
         vertical-align: middle;
     }
     
-    /* Playlist container */
+    /* Playlist container - needed to overwrite the .jw-background-color class */
     .jw-playlist {
-        background-color: rgba(0, 0, 0, 0.8);
+        background-color: rgba(0, 0, 0, 0.5);
     }
     
     /* ul container */
     .jw-playlist-container {
         left: -43%;
-        background-color: rgba(0, 0, 0, 0.8);
+        background-color: rgba(0, 0, 0, 0.5);
         
         /* li list option */
         .jw-option {
             border-bottom: 1px solid #444;
             
-            // Menu items are black when active, or hovered
+            /* Playlist items are black when active, or hovered */
             &:hover,
             &.jw-active-option {
                 background-color: black;
             }
 
-            // Number color when li is hovered
+            /* Number color when li is hovered */
             &:hover {
                 .jw-label {
                     color: @active-color;
@@ -64,6 +64,13 @@
             }
         }
     }
+
+    /* Playlist title */
+    .jw-tooltip-title {
+        background-color: #000;
+    }
+
+    /* Colors, padding for icons text */
 
     .jw-text {
         color: @inactive-color;
