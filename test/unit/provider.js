@@ -6,7 +6,7 @@ define([
     /* jshint maxlen: 1000, qunit: true */
 
     utils.flashVersion = function() {
-        return 11.1;
+        return 11.2;
     };
 
     // TODO: Many of these can be moved to quint/config/{type}.source{_features}
