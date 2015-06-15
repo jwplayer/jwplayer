@@ -1,8 +1,9 @@
 define([
     'utils/backbone.events',
     'events/events',
-    'utils/underscore'
-], function(Events, events, _) {
+    'utils/underscore',
+    'utils/helpers'
+], function(Events, events, _, utils) {
     var TouchEvent = window.TouchEvent || {};
 
     var UI = function (elem, options) {
@@ -11,10 +12,17 @@ define([
             _enableDrag = (options && options.enableDrag),
             _hasMoved = false,
             _lastClickTime = 0,
-            _doubleClickDelay = 300;
+            _doubleClickDelay = 300,
+            _touchListenerTarget,
+            _isDesktop = !utils.isMobile();
 
+
+        // If its not mobile, add mouse listener.  Add touch listeners so touch devices that aren't Android or iOS
+        // (windows phones) still get listeners just in case they want to use them.
+        if(_isDesktop){
+            elem.addEventListener('mousedown', interactStartHandler);
+        }
         elem.addEventListener('touchstart', interactStartHandler);
-        elem.addEventListener('mousedown', interactStartHandler);
 
         function isRightClick(evt) {
             var e = evt || window.event;
@@ -31,14 +39,20 @@ define([
         }
 
         function interactStartHandler(evt) {
+            _touchListenerTarget = evt.target;
+
             if(_enableDrag) {
-                evt.target.addEventListener('touchmove', interactDragHandler);
-                document.addEventListener('mousemove', interactDragHandler);
+                if(_isDesktop){
+                    document.addEventListener('mousemove', interactDragHandler);
+                }
+                _touchListenerTarget.addEventListener('touchmove', interactDragHandler);
             }
 
-            evt.target.addEventListener('touchcancel', interactEndHandler);
-            evt.target.addEventListener('touchend', interactEndHandler);
-            document.addEventListener('mouseup', interactEndHandler);
+            if(_isDesktop){
+                document.addEventListener('mouseup', interactEndHandler);
+            }
+            _touchListenerTarget.addEventListener('touchcancel', interactEndHandler);
+            _touchListenerTarget.addEventListener('touchend', interactEndHandler);
         }
 
         function interactDragHandler(evt) {
@@ -59,12 +73,13 @@ define([
         function interactEndHandler(evt) {
             var touchEvents = events.touchEvents;
 
-            evt.target.removeEventListener('touchmove', interactDragHandler);
-            evt.target.removeEventListener('touchcancel', interactEndHandler);
-            evt.target.removeEventListener('touchend', interactEndHandler);
-
-            document.removeEventListener('mousemove', interactDragHandler);
-            document.removeEventListener('mouseup', interactEndHandler);
+            if(_isDesktop){
+                document.removeEventListener('mousemove', interactDragHandler);
+                document.removeEventListener('mouseup', interactEndHandler);
+            }
+            _touchListenerTarget.removeEventListener('touchmove', interactDragHandler);
+            _touchListenerTarget.removeEventListener('touchcancel', interactEndHandler);
+            _touchListenerTarget.removeEventListener('touchend', interactEndHandler);
 
             if (_hasMoved) {
                 triggerEvent(touchEvents.DRAG_END, evt);
@@ -81,6 +96,7 @@ define([
                 }
             }
 
+            _touchListenerTarget = null;
             _hasMoved = false;
         }
 
@@ -141,9 +157,11 @@ define([
             elem.removeEventListener('touchstart', interactStartHandler);
             elem.removeEventListener('mousedown', interactStartHandler);
 
-            elem.removeEventListener('touchmove', interactDragHandler);
-            elem.removeEventListener('touchcancel', interactEndHandler);
-            elem.removeEventListener('touchend', interactEndHandler);
+            if(_touchListenerTarget){
+                _touchListenerTarget.removeEventListener('touchmove', interactDragHandler);
+                _touchListenerTarget.removeEventListener('touchcancel', interactEndHandler);
+                _touchListenerTarget.removeEventListener('touchend', interactEndHandler);
+            }
 
             document.removeEventListener('mousemove', interactDragHandler);
             document.removeEventListener('mouseup', interactEndHandler);
