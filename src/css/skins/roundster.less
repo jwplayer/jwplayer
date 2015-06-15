@@ -29,13 +29,15 @@
 
     #namespace > .basic-skin-styles(); // Using the above local variables
     .skin-element-padding();
-
+    
+    /* Controlbar styles */
     .jw-controlbar {
         .inset-controlbar;
         border-radius: @roundster-corners;
         padding: 0 @roundster-corners;
     }
-    
+
+    /* Playlist */
     .jw-playlist-container {
         left: -48%;
         background-color: @rail-color;
@@ -52,19 +54,15 @@
             border-bottom: 1px solid #747D92;
             background-color: @rail-color;
 
-            // Menu items are black when active, or hovered
+            /* Menu items are white when active or hovered */
             &:hover,
             &.jw-active-option {
                 background-color: #747D92;
-            }
-
-            // Number turn red when li is hovered
-            &:hover {              
                 color: #fff;
             }
         }
 
-        // play icon is always active
+        /* play icon is always active */
         .jw-label .jw-icon-play {
             color: @active-color;
         }
@@ -82,32 +80,31 @@
         }
     }
     
+    /* Playlist title */
     .jw-tooltip-title {
         border-bottom: 1px solid #747D92;
         background-color: @rail-color;
     }
-
-    .jw-slider-horizontal,
-    .jw-slider-vertical {
-
-        .jw-rail,
-        .jw-progress,
-        .jw-buffer {
-            border-radius: @roundster-corners;
-        }
-
-        .jw-knob {
-
-            &:after {
-                background-color: #fff;
-                width: @thumb-size;
-                height: @thumb-size;
-                border-radius: 50%;
-                box-shadow: 0px 1px 5px 1px rgba(134,142,163,1);
-            }
-        }
+    
+    /* Rail/slider styles */
+    .jw-rail,
+    .jw-progress,
+    .jw-buffer {
+        border-radius: @roundster-corners;
     }
 
+    .jw-knob {
+
+        &:after {
+            background-color: #fff;
+            width: @thumb-size;
+            height: @thumb-size;
+            border-radius: 50%;
+            box-shadow: 0px 1px 5px 1px rgba(134,142,163,1);
+        }
+    }
+    
+    /* Timeline and horizontal volume slider */
     .jw-slider-horizontal {
 
         .jw-cue {
@@ -126,6 +123,7 @@
         }
     }
 
+    /* Volume slider */
     .jw-slider-vertical {
         .jw-rail {
             background-color: #434853;
@@ -137,18 +135,21 @@
         }
 
     }
-
+    
+    /* For the overlay containers */
     .jw-time-tip,
     .jw-volume-tip,
     .jw-menu {
         border-radius: @ui-padding;
     }
-
+    
+    /* Position of remaining overlay containers */
     .jw-volume-tip,
     .jw-menu {
         bottom: .3em;
     }
-
+    
+    /* For the dock, in the upper right corner */
     .jw-dock {
         .jw-dock-button {
             border-radius: 50%;
