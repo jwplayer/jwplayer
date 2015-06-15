@@ -691,9 +691,7 @@ define([
         function _checkAudioMode(height) {
             _audioMode = _isAudioMode(height);
             if (_controlbar) {
-                if (_audioMode) {
-                    _showVideo(false);
-                } else {
+                if (!_audioMode) {
                     var model = _instreamMode ? _instreamModel : _model;
                     _updateState(model.get('state'));
                 }
@@ -853,11 +851,6 @@ define([
             _controlsTimeout = setTimeout(_userInactive, _timeoutDuration);
         }
 
-        function _showVideo(state) {
-            state = state && !_audioMode;
-            _model.getVideo().setVisibility(state);
-        }
-
         function _playlistCompleteHandler() {
             _replayState = true;
             _fullscreen(false);
@@ -870,6 +863,10 @@ define([
             if (_castDisplay) {
                 _castDisplay.setState(_model.get('state'));
             }
+
+            var isAudioFile = _isAudioFile();
+            utils.toggleClass(_playerElement, 'jw-flag-media-audio', isAudioFile);
+
             _model.mediaModel.on('change:isLive', function(model, isLive){
                 utils.toggleClass(_playerElement, 'jw-flag-live', isLive);
                 _this.setAltText((isLive) ? 'Live Broadcast' : '');
@@ -918,28 +915,17 @@ define([
             // player display
             switch (state) {
                 case states.PLAYING:
-                    _userActivity();
-                    if (_isAudioFile()) {
-                        _showVideo(false);
-                    } else {
-                        _showVideo(true);
-
-                        _resizeMedia();
-                    }
+                    _resizeMedia();
                     break;
                 case states.IDLE:
                 case states.ERROR:
                 case states.COMPLETE:
-                    _showVideo(false);
                     if (!_audioMode) {
                         _showDisplay();
                     }
                     break;
                 case states.BUFFERING:
                     _showDisplay();
-                    if (_isMobile) {
-                        _showVideo(true);
-                    }
                     break;
                 case states.PAUSED:
                     _userActivity();
