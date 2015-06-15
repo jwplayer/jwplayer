@@ -45,8 +45,9 @@ define([
             'setCurrentQuality',
 
             'getQualityLevels',
-
             'getVisualQuality',
+
+            'getConfig',
 
             'getSafeRegion',
             'isBeforeComplete',

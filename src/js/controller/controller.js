@@ -402,6 +402,12 @@ define([
                 return -1;
             }
 
+            function _getConfig() {
+                if (this._model) {
+                    return this._model.get('config');
+                }
+            }
+
             function _getVisualQuality() {
                 if (this._model.mediaModel) {
                     return this._model.mediaModel.visualQuality;
@@ -527,6 +533,7 @@ define([
             this.getCurrentCaptions = _getCurrentCaptions;
             this.getCaptionsList = _getCaptionsList;
             this.getVisualQuality = _getVisualQuality;
+            this.getConfig = _getConfig;
 
             // Model passthroughs
             this.setVolume = _model.setVolume;
