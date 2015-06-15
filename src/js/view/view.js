@@ -1,7 +1,6 @@
 define([
     'utils/helpers',
     'events/events',
-    'utils/ui',
     'utils/backbone.events',
     'events/states',
     'cast/display',
@@ -17,7 +16,7 @@ define([
     'utils/css',
     'utils/underscore',
     'handlebars-loader!templates/player.html'
-], function(utils, events, UI, Events, states, CastDisplay,
+], function(utils, events, Events, states, CastDisplay,
             CaptionsRenderer, ClickHandler, DisplayIcon, Dock, Logo,
             Controlbar, Preview, RightClick, Title, cssUtils, _, playerTemplate) {
 
@@ -58,7 +57,6 @@ define([
             _replayState,
             _rightClickMenu,
             _resizeMediaTimeout = -1,
-            _inCB = false, // in control bar
             _currentState,
             _originalContainer,
 
@@ -128,7 +126,7 @@ define([
 
             // On keypress show the controlbar for a few seconds
             if (!_instreamMode) {
-                _resetTapTimer();
+                _userActivity();
             }
 
             switch (evt.keyCode) {
@@ -199,7 +197,7 @@ define([
 
             // On tab-focus, show the control bar for a few seconds
             if (!_instreamMode) {
-                _resetTapTimer();
+                _userActivity();
             }
         }
 
@@ -378,8 +376,8 @@ define([
             _stateHandler(null, states.IDLE);
 
             if (!_isMobile) {
-                _displayClickHandler.element().addEventListener('mouseout', _mouseoutHandler, false);
-                _displayClickHandler.element().addEventListener('mousemove', _startFade, false);
+                _displayClickHandler.element().addEventListener('mouseout', _userActivity, false);
+                _displayClickHandler.element().addEventListener('mousemove', _userActivity, false);
             }
             _componentFadeListeners(_controlbar);
             _componentFadeListeners(_logo);
@@ -403,47 +401,16 @@ define([
 
         function _componentFadeListeners(comp) {
             if (comp) {
-                comp.element().addEventListener('mousemove', _cancelFade, false);
-                comp.element().addEventListener('mouseout', _resumeFade, false);
+                comp.element().addEventListener('mousemove', _overControlElement, false);
+                comp.element().addEventListener('mouseout', _offControlElement, false);
             }
-        }
-
-        function _mouseoutHandler() {
-            clearTimeout(_controlsTimeout);
-            _controlsTimeout = setTimeout(_hideControls, _timeoutDuration);
         }
 
         function _touchHandler() {
             if(_model.get('state') === states.IDLE){
                 _api.play();
             }
-            if (_showing) {
-                _hideControls();
-            } else {
-                _showControls();
-            }
-            if (_showing) {
-                _resetTapTimer();
-            }
-        }
-
-        function _resetTapTimer() {
-            clearTimeout(_controlsTimeout);
-            _controlsTimeout = setTimeout(_hideControls, _timeoutDuration);
-        }
-
-        function _startFade() {
-            clearTimeout(_controlsTimeout);
-            var model = _instreamMode ? _instreamModel : _model;
-            var state = model.get('state');
-
-            // We need _instreamMode because the state is IDLE during pre-rolls
-            if (state === states.PLAYING || state === states.PAUSED || state === states.BUFFERING || _instreamMode) {
-                _showControls();
-                if (!_inCB) {
-                    _controlsTimeout = setTimeout(_hideControls, _timeoutDuration);
-                }
-            }
+            _userActivity();
         }
 
         function _logoClickHandler(evt){
@@ -457,14 +424,13 @@ define([
             }
         }
 
-        // Over controlbar don't fade
-        function _cancelFade() {
+        function _overControlElement() {
+            // Over controlbar, timeout resumed when off controlbar
             clearTimeout(_controlsTimeout);
-            _inCB = true;
         }
 
-        function _resumeFade() {
-            _inCB = false;
+        function _offControlElement() {
+            _userActivity();
         }
 
         function forward(evt) {
@@ -531,7 +497,7 @@ define([
             }
 
             _controlbar = new Controlbar(_api, _model);
-            _controlbar.on(events.JWPLAYER_USER_ACTION, _resetTapTimer);
+            _controlbar.on(events.JWPLAYER_USER_ACTION, _userActivity);
             _model.on('change:scrubbing', _dragging);
 
             _controlsLayer.appendChild(_controlbar.element());
@@ -549,10 +515,9 @@ define([
         }
 
         function _onChangeControls(model, bool) {
-            if (!bool) {
-                _hideControls();
-            }
-            else {
+            utils.toggleClass(this.controlsContainer, 'jw-hidden', bool);
+
+            if (bool) {
                 // model may be instream or normal depending on who triggers this
                 _stateHandler(model, model.get('state'));
             }
@@ -727,7 +692,6 @@ define([
             _audioMode = _isAudioMode(height);
             if (_controlbar) {
                 if (_audioMode) {
-                    _showControls();
                     _showVideo(false);
                 } else {
                     var model = _instreamMode ? _instreamModel : _model;
@@ -836,7 +800,7 @@ define([
                 });
 
                 // On going fullscreen we want the control bar to fade after a few seconds
-                _resetTapTimer();
+                _userActivity();
             } else {
                 _styles(document.body, {
                     'overflow-y': ''
@@ -875,17 +839,18 @@ define([
             }
         }
 
-        function _hideControls() {
-            clearTimeout(_controlsTimeout);
+        function _userInactive() {
             _showing = false;
 
             utils.addClass(_playerElement, 'jw-flag-user-inactive');
         }
 
-        function _showControls() {
+        function _userActivity() {
             _showing = true;
-
             utils.removeClass(_playerElement, 'jw-flag-user-inactive');
+
+            clearTimeout(_controlsTimeout);
+            _controlsTimeout = setTimeout(_userInactive, _timeoutDuration);
         }
 
         function _showVideo(state) {
@@ -953,11 +918,9 @@ define([
             // player display
             switch (state) {
                 case states.PLAYING:
+                    _userActivity();
                     if (_isAudioFile()) {
                         _showVideo(false);
-                        if (_controlbar) {
-                            _showControls();
-                        }
                     } else {
                         _showVideo(true);
 
@@ -974,14 +937,13 @@ define([
                     break;
                 case states.BUFFERING:
                     _showDisplay();
-                    _hideControls();
                     if (_isMobile) {
                         _showVideo(true);
                     }
                     break;
                 case states.PAUSED:
+                    _userActivity();
                     _showDisplay();
-                    _showControls();
                     break;
             }
         }
@@ -1088,8 +1050,8 @@ define([
                 _castDisplay = null;
             }
             if (_controlsLayer) {
-                _displayClickHandler.element().removeEventListener('mousemove', _startFade);
-                _displayClickHandler.element().removeEventListener('mouseout', _mouseoutHandler);
+                _displayClickHandler.element().removeEventListener('mousemove', _userActivity);
+                _displayClickHandler.element().removeEventListener('mouseout', _userActivity);
             }
             if (_instreamMode) {
                 this.destroyInstream();
