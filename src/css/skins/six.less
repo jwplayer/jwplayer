@@ -63,15 +63,29 @@
         border: 1px solid #000;
     }
 
-    &:hover .jw-display-icon-container {
-        background: @def-background-style;
-        background-size: @def-background-size;
+    &:hover {
+        .jw-display-icon-container {
+            background: @def-background-style;
+            background-size: @def-background-size;
+        }
     }
 
+    /* Styles for menu list items */
+    .jw-option {
+        .jw-icon-menu-bullet;
+        text-align: left;
+
+        &:before {
+            font-size: .4em;
+            vertical-align: middle;
+            margin-right: .4em;
+        }
+    }
+    
+    /* Playlist */
     .jw-playlist-container {
         left: -41%;
 
-        .jw-option,
         .jw-text,
         .jw-icon {
             color: @progress-color;
@@ -80,8 +94,13 @@
         .jw-option {
             border-bottom: 1px solid #2F2F31;
             color: #878787;
+            
+            /* Remove the option bullet */
+            &:before {
+                content: "";
+            }
 
-            // Menu items are black when active, or hovered
+            /* Menu items are white when active or hovered */
             &:hover,
             &.jw-active-option {
                 background-color: #2F2F31;
@@ -197,25 +216,16 @@
             border-top-left-radius: 0;
         }
     }
-
-    .jw-icon-cc .jw-option {
-        .jw-icon-menu-bullet;
-        text-align: left;
-
-        &:before {
-            font-size: .4em;
-            vertical-align: middle;
-            margin-right: .4em;
-        }
-    }
-
+    
+    /* For the overlay containers */
     .jw-time-tip,
     .jw-volume-tip,
     .jw-menu {
         background-size: @def-background-size;
         border-radius: @ui-padding;
     }
-
+    
+    /* Dock styles */
     .jw-dock {
         .jw-dock-button {
             background: @def-transparent-background-style;
