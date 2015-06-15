@@ -395,6 +395,9 @@ define([
         };
 
         function _onStretchChange (model, newVal, oldVal) {
+            // Reset this var to ensure that _resizeMedia runs all the way
+            _lastMediaWidth = NaN;
+
             if(oldVal){
                 utils.removeClass(_playerElement, 'jw-stretch-' + oldVal);
             }
@@ -755,6 +758,8 @@ define([
             return verticalPixels && verticalPixels <= 40;
         }
 
+        // Store last resize to save performance
+        var _lastMediaWidth, _lastMediaHeight;
         function _resizeMedia(width, height) {
             if (!width || isNaN(Number(width))) {
                 if (!_videoLayer) {
@@ -777,6 +782,13 @@ define([
             if (!provider) {
                 return;
             }
+
+            if (_lastMediaWidth === width && _lastMediaHeight === height) {
+                return;
+            }
+            _lastMediaWidth = width;
+            _lastMediaHeight = height;
+
             var transformScale = provider.resize(width, height, _model.get('stretching'));
 
             // poll resizing if video is transformed
