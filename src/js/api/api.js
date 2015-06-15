@@ -54,7 +54,10 @@ define([
             var safeCallback = function() {
                 try {
                     callback.apply(this, arguments);
-                } catch(e) {}
+                } catch(e) {
+                    utils.log('There was an error calling back an event handler for "'+
+                        name+'". Error: '+ e.message);
+                }
             };
 
             return Events.on.call(_this, name, safeCallback);
