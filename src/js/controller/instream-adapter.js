@@ -10,7 +10,8 @@ define([
 ], function(InstreamHtml5, InstreamFlash, AdSkipButton, events, states, utils, Events, _) {
 
     function chooseInstreamMethod(_model) {
-        if (_model.get('provider') === 'flash') {
+        var providerName = _model.get('provider').name || '';
+        if (providerName.indexOf('flash') >= 0) {
             return InstreamFlash;
         }
 
