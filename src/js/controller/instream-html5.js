@@ -6,12 +6,11 @@ define([
     'events/events',
     'events/states',
     'controller/model',
-    'view/adskipbutton',
     'playlist/item'
 ], function(utils, _, Events,
-            changeStateEvent, events, states, Model, Adskipbutton, PlaylistItem) {
+            changeStateEvent, events, states, Model, PlaylistItem) {
 
-    var InstreamHtml5 = function(_controller, _model, _view) {
+    var InstreamHtml5 = function(_controller, _model) {
 
         function modelGet(attr) {
             return _model.get(attr);
@@ -44,6 +43,8 @@ define([
             _currentProvider,
             _completeTimeoutId = -1,
             _this = _.extend(this, Events);
+
+        this._adModel = _adModel;
 
         // Listen for player resize events
         _controller.on(events.JWPLAYER_FULLSCREEN, _fullscreenHandler);
@@ -94,9 +95,6 @@ define([
 
             // Was used to get video tag and store media state
             _oldProvider.detachMedia();
-
-            // Show instream state instead of normal player state
-            _view.setupInstream(_adModel);
         };
 
         /** Load an instream item and initialize playback **/
@@ -122,61 +120,18 @@ define([
             // check provider after item change
             _checkProvider();
 
-            // Show the instream layer
-            _view.showInstream();
-
-            if (_options.skipoffset) {
-                _skipButton = new Adskipbutton(_options.skipMessage, _options.skipText);
-                _skipButton.on(events.JWPLAYER_AD_SKIPPED, _skipAd);
-                _skipButton.setWaitTime(_options.skipoffset);
-
-                _view.controlsContainer().appendChild(_skipButton.element());
-            }
-
             // Match the main player's controls state
             _adModel.off(events.JWPLAYER_ERROR);
-            _adModel.on(events.JWPLAYER_ERROR, errorHandler);
-
-            // start listening for ad click
-            _view.clickHandler().setAlternateClickHandler(function(evt) {
-                evt = evt || {};
-                evt.hasControls = !!modelGet('controls');
-
-                _this.trigger(events.JWPLAYER_INSTREAM_CLICK, evt);
-
-                // toggle playback after click event
-
-                if (_adModel.state === states.PAUSED) {
-                    if (evt.hasControls) {
-                        _this.instreamPlay();
-                    }
-                } else {
-                    _this.instreamPause();
-                }
-            });
-
-            if (utils.isMSIE()) {
-                _oldProvider.parentElement.addEventListener('click', _view.clickHandler().clickHandler);
-            }
-
-            _view.on(events.JWPLAYER_AD_SKIPPED, _skipAd);
+            _adModel.on(events.JWPLAYER_ERROR, _forward);
 
             // Load the instream item
             _adModel.loadVideo();
         };
 
-        function errorHandler(evt) {
-            _this.trigger(evt.type, evt);
-        }
-
         /** Stop the instream playback and revert the main player back to its original state **/
         _this.instreamDestroy = function() {
             if (!_adModel) {
                 return;
-            }
-
-            if (_skipButton) {
-                _view.controlsContainer().removeChild(_skipButton.element());
             }
 
             _adModel.off('fullscreenchange', _nativeFullscreenHandler);
@@ -193,14 +148,6 @@ define([
             _adModel.off();
 
             // Return the view to its normal state
-            var adsVideo = _adModel.getVideo();
-            _view.destroyInstream((adsVideo) ? adsVideo.isAudioFile() : false);
-            if (_view.clickHandler()) {
-                if (_oldProvider && _oldProvider.parentElement) {
-                    _oldProvider.parentElement.removeEventListener('click', _view.clickHandler().clickHandler);
-                }
-                _view.clickHandler().revertAlternateClickHandler();
-            }
             _adModel = null;
 
             // Re-attach the controller
@@ -261,17 +208,11 @@ define([
                 provider.resetEventListeners();
 
                 provider.addGlobalListener(_forward);
-                provider.addEventListener(events.JWPLAYER_MEDIA_META, _metaHandler);
                 provider.addEventListener(events.JWPLAYER_MEDIA_COMPLETE, _completeHandler);
                 provider.addEventListener(events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
-                provider.addEventListener(events.JWPLAYER_MEDIA_ERROR, errorHandler);
+                provider.addEventListener(events.JWPLAYER_MEDIA_ERROR, _forward);
 
                 provider.addEventListener(events.JWPLAYER_PLAYER_STATE, stateHandler);
-                provider.addEventListener(events.JWPLAYER_MEDIA_TIME, function(evt) {
-                    if (_skipButton) {
-                        _skipButton.updateMediaTime(evt.position, evt.duration);
-                    }
-                });
                 provider.attachMedia();
                 provider.mute(_model.mute);
                 provider.volume(_model.volume);
@@ -293,11 +234,6 @@ define([
                     _this.instreamPause();
                     break;
             }
-        }
-
-        function _skipAd() {
-            _this.trigger(events.JWPLAYER_AD_SKIPPED);
-            _completeHandler();
         }
 
         /** Forward provider events to listeners **/
@@ -323,7 +259,7 @@ define([
         }
 
         /** Handle the JWPLAYER_MEDIA_COMPLETE event **/
-        function _completeHandler() {
+        var _completeHandler = this.completeHandler = function() {
             if (_array && _arrayIndex + 1 < _array.length) {
                 _arrayIndex++;
                 var item = _array[_arrayIndex];
@@ -355,16 +291,7 @@ define([
                     _controller.instreamDestroy();
                 }, 0);
             }
-        }
-
-        /** Handle the JWPLAYER_MEDIA_META event **/
-        function _metaHandler(evt) {
-            // If we're getting video dimension metadata from the provider, allow the view to resize the media
-            if (evt.width && evt.height) {
-                //_view.releaseState();
-                _view.resizeMedia();
-            }
-        }
+        };
 
         return _this;
     };
