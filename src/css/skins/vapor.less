@@ -32,6 +32,16 @@
         bottom: .3em;
     }
 
+    .jw-option {
+        color: @active-color;
+        
+        &:hover,
+        &.jw-active-option {
+            color: @progress-color;
+        }
+    }
+
+    /* Playlist */
 	.jw-playlist-container {
         left: -42%;
         bottom: 0;
@@ -47,15 +57,16 @@
         .jw-option {
             border-bottom: 1px solid #000;
             background-color: #1E1E1E;
-
-            // Menu items are black when active, or hovered
+            color: #a8a8a8;
+            
+           // Menu items are green when active or hovered
             &:hover,
             &.jw-active-option {
                 color: @progress-color;
             }
         }
 
-        // play icon is always red
+        // play icon is always active
         .jw-label .jw-icon-play {
             color: @progress-color;
         }
@@ -79,8 +90,7 @@
         background-color: #1E1E1E;
     }
 
-	
-
+    /* Horizontal (timeline & horz volume) slider */
 	.jw-slider-horizontal {
 		height: @rail-height;
 
@@ -119,7 +129,8 @@
 			}
 		}
 	}
-
+    
+    /* Volume slider */
 	.jw-slider-vertical {
 		padding: .4em;
 		bottom: 3px;
@@ -141,24 +152,24 @@
 		}
 
 	}
-
+       
+    /* Toggle icons */
     .jw-icon-cc {
         &.jw-off:before {
             content: "\e604";
         }
-
-        .jw-option {
-            color: #fff;
-
-            &.jw-active-option {
-                color: @progress-color;
-            }
-        }
     }
-
+    
     .jw-icon-hd {
         &.jw-off:before {
             content: "\e609";
+        }
+    }
+    
+    /* Audio player only */
+    &.jw-flag-audio-player {
+        .jw-controlbar {
+            background: @inactive-color;
         }
     }
 
