@@ -3,14 +3,13 @@ define([
     'utils/strings',
     'utils/underscore',
     'utils/jqueryfuncs',
-    'utils/ui',
     'version'
-], function(Constants, strings, _, jqueryfuncs, UI, version) {
+], function(Constants, strings, _, jqueryfuncs, version) {
 
     // TODO:: the next lines are a holdover until we update our CDN w/ plugins for 7.0
     var cdnVersion = '6.12.0';
 
-    var utils = {UI: UI};
+    var utils = {};
 
     /**
      * Returns true if the value of the object is null, undefined or the empty
