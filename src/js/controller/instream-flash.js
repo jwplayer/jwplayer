@@ -7,12 +7,7 @@ define([
     var InstreamFlash = function(_controller, _model) {
         this.model = _model;
         this.controller = _controller;
-        this._adModel = new Model().setup({
-            id: _model.id,
-            volume: _model.volume,
-            fullscreen: _model.fullscreen,
-            mute: _model.mute
-        });
+        this._adModel = _model;
         var container = _controller.getContainer();
         this.swf = container.querySelector('object');
     };
@@ -28,7 +23,7 @@ define([
 
             this.swf.triggerFlash('instream:init');
         },
-        destroy: function() {
+        instreamDestroy: function() {
             this.swf.off(null, null, this);
             this.swf.triggerFlash('instream:destroy');
         },
@@ -45,8 +40,8 @@ define([
             this.swf.triggerFlash('instream:pause');
         },
 
-        getState: function() {
-            return 'playing'; // this._adModel.state;
+        instreamState: function() {
+            return this._adModel.state; // 'playing'
         },
 
         //showProvider: function() {},
