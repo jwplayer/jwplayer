@@ -67,7 +67,7 @@ define([
             this.elementRail.addEventListener('mouseout', this.hideTimeTooltip.bind(this), false);
         },
         update: function(pct) {
-            if (this.activeCue) {
+            if (this.activeCue && _.isNumber(this.activeCue.pct)) {
                 this.seekTo = this.activeCue.pct;
             } else {
                 this.seekTo = pct;
