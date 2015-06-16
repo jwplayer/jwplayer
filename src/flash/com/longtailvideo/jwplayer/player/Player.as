@@ -4,6 +4,7 @@ import com.longtailvideo.jwplayer.events.PlayerEvent;
 import com.longtailvideo.jwplayer.model.Model;
 import com.longtailvideo.jwplayer.model.PlayerConfig;
 import com.longtailvideo.jwplayer.model.PlaylistItem;
+import com.longtailvideo.jwplayer.plugins.AbstractPlugin;
 import com.longtailvideo.jwplayer.plugins.IPlugin;
 import com.longtailvideo.jwplayer.utils.AssetLoader;
 import com.longtailvideo.jwplayer.utils.RootReference;
@@ -17,12 +18,13 @@ import flash.system.Security;
 
 [SWF(width="640", height="360", frameRate="60", backgroundColor="#000000")]
 
-// TODO: extend BasePlayer which implements IPlayer, so main class just does Setup
 public class Player extends Sprite implements IPlayer {
 
     protected var _model:Model;
     protected var _view:View;
     protected var _controller:Controller;
+
+    protected var _instream:IInstreamPlayer;
 
     public function Player() {
         Security.allowDomain("*");
@@ -104,10 +106,6 @@ public class Player extends Sprite implements IPlayer {
 
     public function fullscreen(on:Boolean):void {
         _controller.fullscreen(on);
-    }
-
-    public function setupInstream(target:IPlugin):IInstreamPlayer {
-        return new InstreamPlayer(target, _model, _view, _controller);
     }
 
     public function getAudioTracks():Array {
@@ -224,12 +222,37 @@ public class Player extends Sprite implements IPlayer {
                 .on('setCurrentQuality', setCurrentQuality)
                 .on('setSubtitlesTrack', setSubtitlesTrack)
                 .on('setCurrentAudioTrack', setCurrentAudioTrack)
-                .on('loadXml', loadXml);
+                .on('loadXml', loadXml)
+                .on('instream:init', initInstream)
+                .on('instream:load', loadInstream)
+                .on('instream:play', playInstream)
+                .on('instream:pause', pauseInstream)
+                .on('instream:destroy', destroyInstream);
 
         // Send ready event to browser
         SwfEventRouter.triggerJsEvent('ready');
     }
 
+    protected function initInstream():void {
+        var lockPlugin:IPlugin = new AbstractPlugin();
+        _instream = new InstreamPlayer(lockPlugin, _model, _view, _controller);
+    }
+
+    protected function loadInstream(item:Object, options:Object):void {
+        _instream.loadItem(item, options);
+    }
+
+    protected function playInstream():void {
+        _instream.play();
+    }
+
+    protected function pauseInstream():void {
+        _instream.pause();
+    }
+
+    protected function destroyInstream():void {
+        _instream = null;
+    }
 
     protected function globalHandler(event:Event):void {
         // forward event to JavaScript
