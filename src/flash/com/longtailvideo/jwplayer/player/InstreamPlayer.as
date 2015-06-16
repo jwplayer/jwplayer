@@ -1,7 +1,5 @@
 package com.longtailvideo.jwplayer.player {
 import com.longtailvideo.jwplayer.controller.Controller;
-import com.longtailvideo.jwplayer.events.GlobalEventDispatcher;
-import com.longtailvideo.jwplayer.events.InstreamEvent;
 import com.longtailvideo.jwplayer.events.MediaEvent;
 import com.longtailvideo.jwplayer.events.PlayerEvent;
 import com.longtailvideo.jwplayer.events.PlayerStateEvent;
@@ -10,19 +8,16 @@ import com.longtailvideo.jwplayer.media.RTMPMediaProvider;
 import com.longtailvideo.jwplayer.media.SoundMediaProvider;
 import com.longtailvideo.jwplayer.media.VideoMediaProvider;
 import com.longtailvideo.jwplayer.model.Model;
-import com.longtailvideo.jwplayer.model.PlayerConfig;
 import com.longtailvideo.jwplayer.model.PlaylistItem;
 import com.longtailvideo.jwplayer.parsers.JWParser;
 import com.longtailvideo.jwplayer.plugins.IPlugin;
 import com.longtailvideo.jwplayer.utils.RootReference;
-import com.longtailvideo.jwplayer.utils.Stretcher;
 import com.longtailvideo.jwplayer.view.View;
 
 import flash.display.Sprite;
 import flash.events.Event;
-import flash.geom.Rectangle;
 
-public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPlayer, IPlayer {
+public class InstreamPlayer {
 
     public static const UNSUPPORTED_ERROR:String = "Unsupported IPlayer method in InstreamPlayer";
 
@@ -34,9 +29,6 @@ public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPl
     protected var _plugin:IPlugin;
     protected var _instreamDisplay:Sprite;
     protected var _mediaLayer:Sprite;
-    protected var _mediaDisplayed:Boolean = false;
-    protected var _viewSetup:Boolean = false;
-    protected var _playerLocked:Boolean = false;
 
     public function InstreamPlayer(target:IPlugin, model:Model, view:View, controller:Controller) {
 
@@ -58,35 +50,9 @@ public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPl
         _setupView();
     }
 
-    public function get state():String {
-        return this.getState();
-    }
-
-    public function get position():Number {
-        return this.getPosition();
-    }
-
-    public function get version():String {
-        return PlayerVersion.version;
-    }
-
-    public function get config():PlayerConfig {
-        return _model.config;
-    }
-
-    public function get locked():Boolean {
-        return _controller.locking;
-    }
-
     public function loadItem(item:Object):void {
         _item = new PlaylistItem(item);
-        if (_playerLocked) {
-            beginPlayback(_item);
-        }
-    }
-
-    public function getItem():PlaylistItem {
-        return _item;
+        beginPlayback(_item);
     }
 
     public function play():Boolean {
@@ -108,130 +74,35 @@ public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPl
         return true;
     }
 
-    public function seek(position:Number):Boolean {
-        if (_provider && _provider.state != PlayerState.IDLE) {
-            var newEvent:MediaEvent = new MediaEvent(MediaEvent.JWPLAYER_MEDIA_SEEK);
-            newEvent.position = _provider.position;
-            newEvent.offset = position;
-            dispatchEvent(newEvent);
-            _provider.seek(position);
-        }
-        return true;
-    }
-
     public function destroy():void {
         _destroy();
     }
 
-    public function hide():void {
-        removeEventListeners();
-        _view.hideInstream();
-    }
-
-    public function getState():String {
-        return (_provider ? _provider.state : PlayerState.IDLE);
-    }
-
-    public function getPosition():Number {
-        return _provider.position;
-    }
-
-    public function getDuration():Number {
-        return _item.duration;
-    }
-
-    public function lock(target:IPlugin, callback:Function):void {
+    private function lock(target:IPlugin, callback:Function):void {
         _controller.lockPlayback(target, callback);
     }
 
-    public function unlock(target:IPlugin):Boolean {
-        _playerLocked = false;
+    private function unlock(target:IPlugin):Boolean {
         return _controller.unlockPlayback(target);
     }
 
-    public function getSafeRegion():Rectangle {
-        return _view.getBounds(RootReference.root);
-    }
-
-    public function volume(volume:Number):Boolean {
-        throw new Error(UNSUPPORTED_ERROR);
-    }
-
-    public function mute(state:Boolean):void {
-        throw new Error(UNSUPPORTED_ERROR);
-    }
-
-    public function stop():Boolean {
-        throw new Error(UNSUPPORTED_ERROR);
-    }
-
-    public function load(item:*):Boolean {
-        throw new Error(UNSUPPORTED_ERROR);
-    }
-
-    public function fullscreen(on:Boolean):void {
-        throw new Error(UNSUPPORTED_ERROR);
-    }
-
-    public function setupInstream(target:IPlugin):IInstreamPlayer {
-        throw new Error(UNSUPPORTED_ERROR);
-    }
-
-    public function getQualityLevels():Array {
-        throw new Error(UNSUPPORTED_ERROR);
-    }
-
-    public function getCurrentQuality():Number {
-        throw new Error(UNSUPPORTED_ERROR);
-    }
-
-    public function setCurrentQuality(index:Number):void {
-        throw new Error(UNSUPPORTED_ERROR);
-    }
-
-    public function getAudioTracks():Array {
-        throw new Error(UNSUPPORTED_ERROR);
-    }
-
-    public function getCurrentAudioTrack():Number {
-        throw new Error(UNSUPPORTED_ERROR);
-    }
-
-    public function setCurrentAudioTrack(index:Number):void {
-        throw new Error(UNSUPPORTED_ERROR);
-    }
-
-    public function getCaptionsList():Array {
-        throw new Error(UNSUPPORTED_ERROR);
-    }
-
-    /**************** IPLAYER METHODS *************/
-    /**  These methods should only be called by  **/
-    /**  internal player methods                 **/
-    /**********************************************/
-
-    public function getCurrentCaptions():Number {
-        throw new Error(UNSUPPORTED_ERROR);
-    }
-
-    public function setCurrentCaptions(index:Number):void {
-        throw new Error(UNSUPPORTED_ERROR);
-    }
-
-    protected function setupProvider(item:PlaylistItem):void {
-        setProvider(item);
+    private function setupProvider(item:PlaylistItem):void {
+        var type:String = JWParser.getProvider(item);
+        _provider = getProvider(type);
+        if (!_provider) {
+            return;
+        }
         _provider.initializeMediaProvider(_model.config);
-        _provider.addGlobalListener(eventForwarder);
-        _provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_ERROR, _errorHandler);
-        _provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_BUFFER_FULL, bufferFullHandler);
-        _provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_COMPLETE, _completeHandler);
-        _provider.addEventListener(PlayerStateEvent.JWPLAYER_PLAYER_STATE, stateHandler);
-        _provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_META, metaHandler);
+        _provider.addEventListener(PlayerStateEvent.JWPLAYER_PLAYER_STATE, stateHandler, false, 0, true);
+        _provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_META, metaHandler, false, 0, true);
+        _provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_BUFFER_FULL, bufferFullHandler, false, 0, true);
+        _provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, timeHandler, false, 0, true);
+        _provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_COMPLETE, completeHandler, false, 0, true);
+        _provider.addEventListener(MediaEvent.JWPLAYER_MEDIA_ERROR, errorHandler, false, 0, true);
     }
 
-    protected function showMedia():void {
-        if (!_mediaDisplayed) {
-            _mediaDisplayed = true;
+    private function showMedia():void {
+        if (!_mediaLayer.visible) {
             if (_provider.display) {
                 _mediaLayer.visible = true;
                 _mediaLayer.addChild(_provider.display);
@@ -241,19 +112,15 @@ public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPl
         }
     }
 
-    protected function initializeLayers():void {
+    private function initializeLayers():void {
         _instreamDisplay = new Sprite();
         _mediaLayer = new Sprite();
+        _mediaLayer.visible = false;
 
         _instreamDisplay.addChild(_mediaLayer);
     }
 
-    protected function setProvider(item:PlaylistItem):void {
-        var type:String = JWParser.getProvider(item);
-        _provider = getProvider(type);
-    }
-
-    protected function getProvider(type:String):MediaProvider {
+    private function getProvider(type:String):MediaProvider {
         // Only accept video, http or rtmp providers for now
         switch (type) {
             case 'video':
@@ -263,21 +130,24 @@ public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPl
             case 'sound':
                 return new SoundMediaProvider();
         }
-        throw new Error('Unsupported Instream Format; only video or rtmp are currently supported');
+        // ERROR
+        SwfEventRouter.triggerJsEvent('instream:error', {
+            message: 'Unsupported Instream Format; only video or rtmp are currently supported'
+        });
+        return null;
     }
 
     /********** UNSUPPORTED IPLAYER METHODS *******/
     /**    These methods should not be called    **/
     /**********************************************/
 
-    protected function _setupView():void {
-        if (!_viewSetup) {
+    private function _setupView():void {
+        if (!_view.instreamMode) {
             _view.setupInstream(this, _instreamDisplay, _plugin);
-            _viewSetup = true;
         }
     }
 
-    protected function _destroy(complete:Boolean = false):void {
+    private function _destroy(complete:Boolean = false):void {
         removeEventListeners();
         if (!complete && _provider && _provider.state != PlayerState.IDLE) {
             _provider.stop();
@@ -286,24 +156,23 @@ public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPl
         _provider = null;
 
         unlock(_plugin);
-        dispatchEvent(new InstreamEvent(InstreamEvent.JWPLAYER_INSTREAM_DESTROYED, complete ? "complete" : "destroy"));
+        SwfEventRouter.triggerJsEvent('instream:' + (complete ? 'complete' : 'destroy'));
     }
 
-    protected function removeEventListeners():void {
+    private function removeEventListeners():void {
         RootReference.stage.removeEventListener(Event.RESIZE, resizeHandler);
 
         if (_provider) {
-            _provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_ERROR, _errorHandler);
             _provider.removeEventListener(PlayerStateEvent.JWPLAYER_PLAYER_STATE, stateHandler);
-            _provider.removeGlobalListener(eventForwarder);
-            _provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_BUFFER_FULL, bufferFullHandler);
-            _provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_COMPLETE, _completeHandler);
             _provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_META, metaHandler);
+            _provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_BUFFER_FULL, bufferFullHandler);
+            _provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, timeHandler);
+            _provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_COMPLETE, completeHandler);
+            _provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_ERROR, errorHandler);
         }
     }
 
     private function _lockCallback():void {
-        _playerLocked = true;
         if (_item && (!_provider || _provider.item !== _item)) {
             beginPlayback(_item);
         }
@@ -314,16 +183,7 @@ public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPl
         _provider.load(item);
     }
 
-    protected function skipAd(event:Event):void {
-        destroy();
-    }
-
-    protected function _completeHandler(evt:MediaEvent):void {
-        dispatchEvent(new Event(Event.COMPLETE));
-        _destroy(evt ? true : false);
-    }
-
-    protected function resizeHandler(event:Event):void {
+    private function resizeHandler(event:Event):void {
         var width:Number = RootReference.stage.stageWidth;
         var height:Number = RootReference.stage.stageHeight;
         _instreamDisplay.graphics.clear();
@@ -336,38 +196,30 @@ public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPl
     }
 
     private function stateHandler(evt:PlayerStateEvent):void {
-        switch (evt.newstate) {
-            case PlayerState.PLAYING:
-                break;
-            case PlayerState.PAUSED:
-                break;
+        SwfEventRouter.triggerJsEvent('instream:state', evt);
+    }
+
+    private function metaHandler(evt:MediaEvent):void {
+        if (evt.metadata.width && evt.metadata.height) {
+            showMedia();
         }
     }
 
     private function bufferFullHandler(evt:MediaEvent):void {
         _provider.play();
-        if (!_mediaDisplayed && (_model.stretching == Stretcher.EXACTFIT || _provider is SoundMediaProvider)) {
-            showMedia();
-        }
+        showMedia();
     }
 
-    private function metaHandler(evt:MediaEvent):void {
-        if (evt.metadata.width && evt.metadata.height) { //_provider sound
-            showMedia();
-        }
+    private function timeHandler(evt:MediaEvent):void {
+        SwfEventRouter.triggerJsEvent('instream:time', evt);
     }
 
-    private function eventForwarder(evt:Event):void {
-        dispatchEvent(evt);
+    private function completeHandler(evt:MediaEvent):void {
+        _destroy(true);
     }
 
-    private function _errorHandler(evt:PlayerEvent):void {
-        if (evt.type == MediaEvent.JWPLAYER_MEDIA_ERROR) {
-            // Translate media error into player error.
-            dispatchEvent(new PlayerEvent(PlayerEvent.JWPLAYER_ERROR, (evt as MediaEvent).message));
-        } else {
-            dispatchEvent(evt);
-        }
+    private function errorHandler(evt:PlayerEvent):void {
+        SwfEventRouter.triggerJsEvent('instream:error', evt);
         _destroy();
     }
 }

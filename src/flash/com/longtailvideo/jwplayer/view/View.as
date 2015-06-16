@@ -1,7 +1,7 @@
 package com.longtailvideo.jwplayer.view {
 import com.longtailvideo.jwplayer.events.MediaEvent;
 import com.longtailvideo.jwplayer.model.Model;
-import com.longtailvideo.jwplayer.player.IInstreamPlayer;
+import com.longtailvideo.jwplayer.player.InstreamPlayer;
 import com.longtailvideo.jwplayer.player.SwfEventRouter;
 import com.longtailvideo.jwplayer.plugins.IPlugin;
 import com.longtailvideo.jwplayer.plugins.IPlugin6;
@@ -13,7 +13,6 @@ import flash.display.Sprite;
 import flash.display.StageAlign;
 import flash.display.StageScaleMode;
 import flash.events.Event;
-import flash.events.MouseEvent;
 import flash.geom.Rectangle;
 
 public class View extends Sprite {
@@ -26,7 +25,7 @@ public class View extends Sprite {
     protected var _plugins:Object;
 
     protected var _instreamPlugin:IPlugin;
-    protected var _instreamPlayer:IInstreamPlayer;
+    protected var _instreamPlayer:InstreamPlayer;
     protected var _instreamMode:Boolean = false;
 
     private static function noop():void {}
@@ -118,7 +117,9 @@ public class View extends Sprite {
         return _plugins[id] as IPlugin6;
     }
 
-    public function setupInstream(instreamPlayer:IInstreamPlayer, instreamDisplay:DisplayObject, plugin:IPlugin):void {
+    public function setupInstream(instreamPlayer:InstreamPlayer, instreamDisplay:DisplayObject, plugin:IPlugin):void {
+        _instreamMode = true;
+
         _instreamPlayer = instreamPlayer;
         _instreamPlugin = plugin;
 
@@ -132,8 +133,6 @@ public class View extends Sprite {
             _pluginsLayer.removeChild(pluginDisplay);
             _instreamLayer.addChild(pluginDisplay);
         }
-
-        _instreamMode = true;
     }
 
     public function destroyInstream():void {
@@ -147,6 +146,10 @@ public class View extends Sprite {
         }
 
         _instreamMode = false;
+    }
+
+    public function get instreamMode():Boolean {
+        return _instreamMode;
     }
 
     public function hideInstream():void {

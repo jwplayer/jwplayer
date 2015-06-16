@@ -100,7 +100,9 @@ public class Controller extends GlobalEventDispatcher {
                     _interruptPlay = false;
                     return true;
                 } else if (_unlockAndLoad) {
-                    load(_model.item);
+                    if (_model.item) {
+                        load(_model.item);
+                    }
                     _unlockAndLoad = false;
                 }
                 if (_lockingResume || _unlockAutostart) {
