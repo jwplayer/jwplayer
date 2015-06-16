@@ -50,8 +50,8 @@ define([
             this.swf.triggerFlash('instream:pause');
         },
 
-        getState: function() {
-            return 'playing'; // this._adModel.state;
+        instreamState: function() {
+            return this._adModel.state; // 'playing'
         },
 
         //showProvider: function() {},

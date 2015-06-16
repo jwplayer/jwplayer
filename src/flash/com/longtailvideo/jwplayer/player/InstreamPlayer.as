@@ -21,12 +21,22 @@ import com.longtailvideo.jwplayer.view.View;
 import flash.display.Sprite;
 import flash.events.Event;
 import flash.geom.Rectangle;
-import flash.utils.setTimeout;
 
 public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPlayer, IPlayer {
 
     public static const UNSUPPORTED_ERROR:String = "Unsupported IPlayer method in InstreamPlayer";
-    // Player's MVC
+
+    protected var _model:Model;
+    protected var _view:View;
+    protected var _controller:Controller;
+    protected var _item:PlaylistItem;
+    protected var _provider:MediaProvider;
+    protected var _plugin:IPlugin;
+    protected var _instreamDisplay:Sprite;
+    protected var _mediaLayer:Sprite;
+    protected var _mediaDisplayed:Boolean = false;
+    protected var _viewSetup:Boolean = false;
+    protected var _playerLocked:Boolean = false;
 
     public function InstreamPlayer(target:IPlugin, model:Model, view:View, controller:Controller) {
 
@@ -47,18 +57,6 @@ public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPl
 
         _setupView();
     }
-    public var jsListeners:Object = {};
-    protected var _model:Model;
-    protected var _view:View;
-    protected var _controller:Controller;
-    protected var _item:PlaylistItem;
-    protected var _provider:MediaProvider;
-    protected var _plugin:IPlugin;
-    protected var _instreamDisplay:Sprite;
-    protected var _mediaLayer:Sprite;
-    protected var _mediaDisplayed:Boolean = false;
-    protected var _viewSetup:Boolean = false;
-    protected var _playerLocked:Boolean = false;
 
     public function get state():String {
         return this.getState();
@@ -251,20 +249,21 @@ public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPl
     }
 
     protected function setProvider(item:PlaylistItem):void {
-        /* Only accept video, http or rtmp providers for now */
-        _provider = getProvider(JWParser.getProvider(item));
+        var type:String = JWParser.getProvider(item);
+        _provider = getProvider(type);
     }
 
     protected function getProvider(type:String):MediaProvider {
+        // Only accept video, http or rtmp providers for now
         switch (type) {
-            case 'rtmp':
-                return new RTMPMediaProvider(false);
             case 'video':
                 return new VideoMediaProvider(false);
+            case 'rtmp':
+                return new RTMPMediaProvider(false);
             case 'sound':
                 return new SoundMediaProvider();
         }
-        throw new Error("Unsupported Instream Format; only video or rtmp are currently supported");
+        throw new Error('Unsupported Instream Format; only video or rtmp are currently supported');
     }
 
     /********** UNSUPPORTED IPLAYER METHODS *******/
@@ -321,9 +320,7 @@ public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPl
 
     protected function _completeHandler(evt:MediaEvent):void {
         dispatchEvent(new Event(Event.COMPLETE));
-        setTimeout(function ():void {
-            _destroy(evt ? true : false);
-        }, 0);
+        _destroy(evt ? true : false);
     }
 
     protected function resizeHandler(event:Event):void {
