@@ -1,7 +1,6 @@
 define([
     'api/api-deprecate',
-    'api/instreamPlayer',
-    'controller/instream',
+    'controller/instream-adapter',
     'utils/underscore',
     'controller/Setup',
     'controller/captions',
@@ -14,7 +13,7 @@ define([
     'events/states',
     'events/events',
     'view/error'
-], function(deprecateInit, InstreamPlayer, Instream, _, Setup, Captions,
+], function(deprecateInit, InstreamAdapter, _, Setup, Captions,
             Model, PlaylistLoader, utils, View, Events, changeStateEvent, states, events, error) {
 
     function _queue(command) {
@@ -614,8 +613,8 @@ define([
 
             this.createInstream = function() {
                 _instreamCleanup();
-                var instreamController = new Instream(this, _model, _view);
-                return new InstreamPlayer(instreamController);
+                _this._instreamPlayer = new InstreamAdapter(_model, _view);
+                return _this._instreamPlayer;
             };
 
             this.instreamDestroy = _instreamCleanup;

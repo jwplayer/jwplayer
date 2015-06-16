@@ -11,7 +11,7 @@ define([
 ], function(utils, _, Events,
             changeStateEvent, events, states, Model, Adskipbutton, PlaylistItem) {
 
-    var Instream = function(_controller, _model, _view) {
+    var InstreamHtml5 = function(_controller, _model, _view) {
 
         function modelGet(attr) {
             return _model.get(attr);
@@ -54,8 +54,6 @@ define([
          *****************************************/
 
         _this.init = function() {
-
-            _controller._instreamPlayer = _this;
 
             /** Blocking playback and show Instream Display **/
 
@@ -102,11 +100,6 @@ define([
             _view.setupInstream(_adModel);
 
             _this.instreamSetText(_defaultOptions.loadingmessage);
-        };
-
-        _this.showProvider = function() {
-            // show the provider which is playing an ad (flash)
-            _oldProvider.setVisibility(true);
         };
 
         /** Load an instream item and initialize playback **/
@@ -237,7 +230,6 @@ define([
                 _oldProvider.play();
             }
 
-            _controller._instreamPlayer = undefined;
         };
 
         /** Start instream playback **/
@@ -256,19 +248,10 @@ define([
             _adModel.getVideo().pause(true);
         };
 
-        /** Set custom text in the controlbar **/
-        _this.instreamSetText = function(text) {
-            _view.setAltText(text);
-        };
-
         _this.instreamState = function() {
             return _adModel.state;
         };
 
-        // This method is triggered by plugins which want to hide player controls
-        _this.hide = function() {
-            _view.useExternalControls();
-        };
 
         /*****************************
          ****** Private methods ******
@@ -403,5 +386,5 @@ define([
         return _this;
     };
 
-    return Instream;
+    return InstreamHtml5;
 });
