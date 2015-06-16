@@ -1,51 +1,17 @@
 define([
-    'utils/helpers',
     'utils/underscore',
     'utils/backbone.events',
     'events/change-state-event',
     'events/events',
     'events/states',
-    'controller/model',
-    'playlist/item'
-], function(utils, _, Events,
-            changeStateEvent, events, states, Model, PlaylistItem) {
+    'controller/model'
+], function(_, Events, changeStateEvent, events, states, Model) {
 
     var InstreamHtml5 = function(_controller, _model) {
 
-        function modelGet(attr) {
-            return _model.get(attr);
-        }
-
-        var _defaultOptions = {
-            controlbarseekable: 'never',
-            controlbarpausable: true,
-            controlbarstoppable: true,
-            playlistclickable: true,
-            skipoffset: null,
-            tag: null
-        };
-
-        var _item,
-            _array, // the copied in playlist
-            _arrayIndex = 0,
-            _optionList,
-            _options = { // these are for before load
-                controlbarseekable: 'never',
-                controlbarpausable: false,
-                controlbarstoppable: false
-            },
-            _skipButton,
-            _oldProvider,
-            _oldpos,
-            _oldstate,
-            _olditem,
-            _adModel,
+        var _adModel,
             _currentProvider,
-            _completeTimeoutId = -1,
             _this = _.extend(this, Events);
-
-        // Gets overridden after load
-        this.options = _options;
 
         // Listen for player resize events
         _controller.on(events.JWPLAYER_FULLSCREEN, _fullscreenHandler);
@@ -55,15 +21,6 @@ define([
          *****************************************/
 
         this.init = function() {
-
-            /** Blocking playback and show Instream Display **/
-
-            // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
-            _oldProvider = _model.getVideo();
-
-            // Keep track of the original player state
-            _oldpos = _model.position;
-
             // Initialize the instream player's model copied from main player's model
             _adModel = new Model().setup({
                 id: _model.id,
@@ -71,50 +28,13 @@ define([
                 fullscreen: _model.fullscreen,
                 mute: _model.mute
             });
+            _adModel.on('fullscreenchange', _nativeFullscreenHandler);
 
             this._adModel = _adModel;
-
-            _adModel.on('fullscreenchange', _nativeFullscreenHandler);
-            _olditem = _model.playlist[_model.item];
-
-            if (_controller.checkBeforePlay() || (_oldpos === 0 && !_oldProvider.checkComplete())) {
-                // make sure video restarts after preroll
-                _oldpos = 0;
-                _oldstate = states.PLAYING;
-            } else if (_oldProvider && _oldProvider.checkComplete()) {
-                // AKA  postroll
-                _oldstate = states.IDLE;
-            } else if (modelGet('state') === states.IDLE) {
-                _oldstate = states.IDLE;
-            } else {
-                _oldstate = states.PLAYING;
-            }
-
-            // If the player's currently playing, pause the video tag
-            if (_oldstate === states.PLAYING) {
-                // pause must be called before detachMedia
-                _oldProvider.pause();
-            }
-
-            // Was used to get video tag and store media state
-            _oldProvider.detachMedia();
         };
 
         /** Load an instream item and initialize playback **/
-        _this.load = function(item, options) {
-
-            // Copy the playlist item passed in and make sure it's formatted as a proper playlist item
-            if (_.isArray(item)) {
-                if (options) {
-                    _optionList = options;
-                    options = options[_arrayIndex];
-                }
-                _array = item;
-                item = _array[_arrayIndex];
-            }
-            this.options = _options = _.extend({}, _defaultOptions, options);
-            _item = new PlaylistItem(item);
-
+        _this.load = function(item) {
             // Make sure it chooses a provider
             _adModel.setPlaylist([item]);
 
@@ -136,8 +56,6 @@ define([
             }
 
             _adModel.off('fullscreenchange', _nativeFullscreenHandler);
-            clearTimeout(_completeTimeoutId);
-            _completeTimeoutId = -1;
 
             // We don't want the instream provider to be attached to the video tag anymore
             _this.off();
@@ -150,27 +68,6 @@ define([
 
             // Return the view to its normal state
             _adModel = null;
-
-            // Re-attach the controller
-            _controller.attachMedia();
-
-            // Load the original item into our provider, which sets up the regular player's video tag
-            //_oldProvider = _model.getVideo();
-
-            if (_oldstate !== states.IDLE) {
-                var item = _.extend({}, _olditem);
-                item.starttime = _oldpos;
-                _model.loadVideo(item);
-
-            } else {
-                _oldProvider.stop();
-            }
-
-            if (_oldstate === states.PLAYING) {
-                // Model was already correct; just resume playback
-                _oldProvider.play();
-            }
-
         };
 
         /** Start instream playback **/
@@ -207,7 +104,6 @@ define([
                 provider.resetEventListeners();
 
                 provider.addGlobalListener(_forward);
-                provider.addEventListener(events.JWPLAYER_MEDIA_COMPLETE, _completeHandler);
                 provider.addEventListener(events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
                 provider.addEventListener(events.JWPLAYER_MEDIA_ERROR, _forward);
 
@@ -256,41 +152,6 @@ define([
         function _bufferFullHandler() {
             _adModel.getVideo().play();
         }
-
-        /** Handle the JWPLAYER_MEDIA_COMPLETE event **/
-        var _completeHandler = this.completeHandler = function() {
-            if (_array && _arrayIndex + 1 < _array.length) {
-                _arrayIndex++;
-                var item = _array[_arrayIndex];
-                _item = new PlaylistItem(item);
-                _adModel.setPlaylist([item]);
-                // check provider after item change
-                _checkProvider();
-
-                var curOpt;
-                if (_optionList) {
-                    curOpt = _optionList[_arrayIndex];
-                }
-                _options = _.extend({}, _defaultOptions, curOpt);
-                _adModel.loadVideo();
-                if (_skipButton) {
-                    _skipButton.destroy();
-                }
-                _completeTimeoutId = setTimeout(function() {
-                    _this.trigger(events.JWPLAYER_PLAYLIST_ITEM, {
-                        index: _arrayIndex
-                    });
-                }, 0);
-            } else {
-                _completeTimeoutId = setTimeout(function() {
-                    // this is called on every ad completion of the final video in a playlist
-                    //   1) vast.js (to trigger ad_complete event)
-                    //   2) display.js (to set replay icon and image)
-                    _this.trigger(events.JWPLAYER_PLAYLIST_COMPLETE, {});
-                    _controller.instreamDestroy();
-                }, 0);
-            }
-        };
 
         return _this;
     };

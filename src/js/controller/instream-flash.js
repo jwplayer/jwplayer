@@ -1,21 +1,21 @@
 define([
     'utils/backbone.events',
     'controller/model',
-    'providers/flash',
+    'events/events',
+    'events/states',
     'utils/underscore'
-], function(Events, Model, FlashProvider, _) {
+], function(Events, Model, events, states, _) {
 
     var InstreamFlash = function(_controller, _model) {
-        this.model = _model;
         this.controller = _controller;
+        this.model = _model;
+
         this._adModel = new Model().setup({
             id: _model.id,
             volume: _model.volume,
             fullscreen: _model.fullscreen,
-            mute: _model.mute,
-            primary: 'flash'
+            mute: _model.mute
         });
-        this._adModel.set('forceProvider', FlashProvider);
 
         var container = _controller.getContainer();
         this.swf = container.querySelector('object');
@@ -27,20 +27,40 @@ define([
             // Show the instream layer
 
             //this.swf.off(null, null, this);
+            //levels            {levels: Array[1], currentQuality: 0, type: "levels"}
+            //state             {newstate: "loading", type: "state"}
+            //bufferChange      {bufferPercent: 0, type: "bufferChange"}
+            //bufferFull        {type: "bufferFull"}
+            //meta              {duration: 10, height: 270, width: 480, type: "meta"}
+            //state             {newstate: "playing", type: "state"}
+            //play              {type: "play", newstate: "playing", oldstate: "idle", reason: "idle"}
+            //providerFirstFrame {type: "providerFirstFrame"}
+            //bufferChange      {bufferPercent: 100, type: "bufferChange"}
+            //time              {position: 4.549425, duration: 10, type: "time"}
+            //adSkipped         {} OR:
+                //beforeComplete
+                //state
+                //complete
+            //playlistComplete  {}
+
             this.swf.on('instream:state', function(evt) {
                 console.log('instream:state', evt);
-                this._adModel.mediaModel.set('state', evt.newstate);
+                var state = evt.newstate;
+                this._adModel.mediaModel.set('state', state);
+                if (state === states.LOADING || state === states.STALLED) {
+                    state = states.BUFFERING;
+                }
+                this._adModel.set('state', state);
 
             }, this).on('instream:time', function(evt) {
                 console.log('instream:time', evt);
-                this.mediaModel.set('position', evt.position);
-                this.mediaModel.set('duration', evt.duration);
-                this.set('position', evt.position);
-                this.set('duration', evt.duration);
+                this._adModel.set('position', evt.position);
+                this._adModel.set('duration', evt.duration);
+                this.trigger(events.JWPLAYER_MEDIA_TIME, evt);
 
-            }, this).on('instream:complete', function(e) {
-                console.log('instream:complete', e);
-                this.controller.instreamDestroy();
+            }, this).on('instream:complete', function(evt) {
+                console.log('instream:complete', evt);
+                this.trigger(events.JWPLAYER_MEDIA_COMPLETE, evt);
 
             }, this).on('instream:error', function(e) {
                 console.log('instream:error', e);
@@ -50,8 +70,6 @@ define([
                 console.log('instream:destroy', e);
                 this.controller.instreamDestroy();
 
-            }).on('all', function(type, e) {
-                console.log('instream', type, e);
             });
 
             this.swf.triggerFlash('instream:init');
@@ -71,10 +89,6 @@ define([
         },
 
         load: function(item) {
-            // Make sure it chooses a provider
-            var fauxPlaylist = [item];
-            this._adModel.setPlaylist(fauxPlaylist);
-
             // Show the instream layer
             this.swf.triggerFlash('instream:load', item);
         },

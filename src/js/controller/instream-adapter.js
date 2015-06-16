@@ -18,36 +18,60 @@ define([
         return InstreamHtml5;
     }
 
+    var _defaultOptions = {
+        skipoffset: null,
+        tag: null
+    };
+
     var InstreamAdapter = function(_controller, _model, _view) {
 
         var InstreamMethod = chooseInstreamMethod(_model);
         var _instream = new InstreamMethod(_controller, _model);
 
-        var _item,
-            _options,
+        var _array, // the copied in playlist
+            _arrayOptions,
+            _arrayIndex = 0,
+            _options = {},
+            _oldProvider,
+            _oldpos,
+            _oldstate,
+            _olditem,
             _this = this;
 
         this.type = 'instream';
 
         this.init = function() {
 
-            _instream.on('all', function(type, data) {
-                data = data || {};
+            // Keep track of the original player state
+            _oldProvider = _model.getVideo();
+            _oldpos = _model.position;
+            _olditem = _model.playlist[_model.item];
 
-                if (_instream.options.tag && !data.tag) {
-                    data.tag = _instream.options.tag;
-                }
 
-                this.trigger(type, data);
-            }, this);
-
-            _instream.on(events.JWPLAYER_MEDIA_TIME, function(evt) {
-                if (_this._skipButton) {
-                    _this._skipButton.updateMediaTime(evt.position, evt.duration);
-                }
-            });
-
+            _instream.on('all', _instreamForward, this);
+            _instream.on(events.JWPLAYER_MEDIA_TIME, _instreamTime, this);
+            _instream.on(events.JWPLAYER_MEDIA_COMPLETE, _instreamItemComplete, this);
             _instream.init();
+
+            if (_controller.checkBeforePlay() || (_oldpos === 0 && !_oldProvider.checkComplete())) {
+                // make sure video restarts after preroll
+                _oldpos = 0;
+                _oldstate = states.PLAYING;
+            } else if (_oldProvider && _oldProvider.checkComplete()) {
+                // AKA  postroll
+                _oldstate = states.IDLE;
+            } else if (_model.get('state') === states.IDLE) {
+                _oldstate = states.IDLE;
+            } else {
+                _oldstate = states.PLAYING;
+            }
+            // If the player's currently playing, pause the video tag
+            if (_oldstate === states.PLAYING) {
+                // pause must be called before detachMedia
+                _oldProvider.pause();
+            }
+            // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
+            _oldProvider.detachMedia();
 
             // Show instream state instead of normal player state
             _view.setupInstream(_instream._adModel);
@@ -55,6 +79,42 @@ define([
             this.setText('Loading ad');
             return this;
         };
+
+        function _instreamForward(type, data) {
+            data = data || {};
+
+            if (_options.tag && !data.tag) {
+                data.tag = _options.tag;
+            }
+
+            this.trigger(type, data);
+        }
+
+        function _instreamTime(evt) {
+            if (_this._skipButton) {
+                _this._skipButton.updateMediaTime(evt.position, evt.duration);
+            }
+        }
+
+        function _instreamItemComplete() {
+            if (_array && _arrayIndex + 1 < _array.length) {
+                if (this._skipButton) {
+                    this._skipButton.destroy();
+                }
+
+                _arrayIndex++;
+                var item = _array[_arrayIndex];
+                var options;
+                if (_arrayOptions) {
+                    options = _arrayOptions[_arrayIndex];
+                }
+                _this.loadItem(item, options);
+
+            } else {
+                _this.trigger(events.JWPLAYER_PLAYLIST_COMPLETE, {});
+                _controller.instreamDestroy();
+            }
+        }
 
         this.loadItem = function(item, options) {
             if (utils.isAndroid(2.3)) {
@@ -64,14 +124,20 @@ define([
                 });
                 return;
             }
-            _item = item;
-            _options = options || {};
-            _instream.load(item, options);
+            // Copy the playlist item passed in and make sure it's formatted as a proper playlist item
+            if (_.isArray(item)) {
+                _array = item;
+                _arrayOptions = options;
+                item = _array[_arrayIndex];
+                if (_arrayOptions) {
+                    options = _arrayOptions[_arrayIndex];
+                }
+            }
+
+            _options = _.extend({}, _defaultOptions, options);
+            _instream.load(item);
 
             this.addClickHandler();
-
-            // Show the instream layer
-            _view.showInstream();
 
             if (_options.skipoffset) {
                 this._skipButton = new AdSkipButton(_options.skipMessage, _options.skipText);
@@ -112,10 +178,10 @@ define([
 
                 if (_instream._adModel.state === states.PAUSED) {
                     if (evt.hasControls) {
-                        _this.instreamPlay();
+                        _instream.instreamPlay();
                     }
                 } else {
-                    _this.instreamPause();
+                    _instream.instreamPause();
                 }
             });
 
@@ -130,7 +196,7 @@ define([
 
         this.skipAd = function() {
             _instream.trigger(events.JWPLAYER_AD_SKIPPED);
-            _instream.completeHandler();
+            _instreamItemComplete();
         };
 
 
@@ -146,8 +212,12 @@ define([
         this.destroy = function() {
             this.off();
 
+            if (this._skipButton) {
+                _view.controlsContainer().removeChild(this._skipButton.element());
+                this._skipButton = null;
+            }
+
             if (_instream) {
-                var adsVideo = _instream._adModel.getVideo();
                 if (_view.clickHandler()) {
                     //if (_oldProvider && _oldProvider.parentElement) {
                         //_oldProvider.parentElement.removeEventListener('click', _view.clickHandler().clickHandler);
@@ -157,12 +227,31 @@ define([
                 _instream.instreamDestroy();
 
                 // Must happen after instream.instreamDestroy()
-                _view.destroyInstream((adsVideo) ? adsVideo.isAudioFile() : false);
+                _view.destroyInstream();
+
+
                 _instream = null;
-            }
-            if (this._skipButton) {
-                _view.controlsContainer().removeChild(this._skipButton.element());
-                this._skipButton = null;
+
+                // Re-attach the controller
+                _controller.attachMedia();
+
+                // Load the original item into our provider, which sets up the regular player's video tag
+                //_oldProvider = _model.getVideo();
+
+                if (_oldstate !== states.IDLE) {
+                    var item = _.extend({}, _olditem);
+                    item.starttime = _oldpos;
+                    _model.loadVideo(item);
+
+                } else {
+                    _oldProvider.stop();
+                }
+
+                if (_oldstate === states.PLAYING) {
+                    // Model was already correct; just resume playback
+                    _oldProvider.play();
+                }
+
             }
         };
 
