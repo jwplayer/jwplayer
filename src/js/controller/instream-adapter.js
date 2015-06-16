@@ -148,7 +148,6 @@ define([
 
             if (_instream) {
                 var adsVideo = _instream._adModel.getVideo();
-                _view.destroyInstream((adsVideo) ? adsVideo.isAudioFile() : false);
                 if (_view.clickHandler()) {
                     //if (_oldProvider && _oldProvider.parentElement) {
                         //_oldProvider.parentElement.removeEventListener('click', _view.clickHandler().clickHandler);
@@ -156,15 +155,23 @@ define([
                     _view.clickHandler().revertAlternateClickHandler();
                 }
                 _instream.instreamDestroy();
+
+                // Must happen after instream.instreamDestroy()
+                _view.destroyInstream((adsVideo) ? adsVideo.isAudioFile() : false);
                 _instream = null;
             }
             if (this._skipButton) {
                 _view.controlsContainer().removeChild(this._skipButton.element());
+                this._skipButton = null;
             }
         };
 
         this.getState = function() {
-            return _instream.instreamState();
+            if (this._adModel) {
+                return this._adModel.get('state');
+            }
+            // api expects false to know we aren't in instreamMode
+            return false;
         };
 
         this.setText = function(text) {

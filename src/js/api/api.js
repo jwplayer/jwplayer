@@ -202,7 +202,7 @@ define([
             state = _this.getState();
 
             var instreamController = _controller._instreamPlayer;
-            var instreamState = instreamController && instreamController.instreamState();
+            var instreamState = instreamController && instreamController.getState();
             if (instreamState) {
                 switch (instreamState) {
                     case states.IDLE:

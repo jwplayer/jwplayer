@@ -110,15 +110,23 @@ define([
                     _attached = false;
                     return null;
                 },
+
+                getSwfObject : function(parent) {
+                    var found = parent.getElementsByTagName('object')[0];
+                    if (found) {
+                        return found;
+                    }
+
+                    return EmbedSwf.embed(_playerConfig.flashplayer, parent, getObjectId(_playerId));
+                },
+
                 getContainer: function() {
                     return _container;
                 },
                 setContainer: function(parent) {
                     _container = parent;
 
-                    if (!_swf) {
-                        _swf = EmbedSwf.embed(_playerConfig.flashplayer, parent, getObjectId(_playerId));
-                    }
+                    _swf = this.getSwfObject(parent);
 
                     // listen to events triggered from flash
 

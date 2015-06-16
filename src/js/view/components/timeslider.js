@@ -51,8 +51,6 @@ define([
                 .on('change:position', this.onPosition, this)
                 .on('change:buffer', this.onBuffer, this);
 
-            _api.on('seeked', this.onSeeked, this);
-
             Slider.call(this, 'jw-slider-time', 'horizontal');
         },
 
@@ -110,6 +108,8 @@ define([
         },
         onPlaylistItem : function (model, playlistItem) {
             this.reset();
+
+            model.mediaModel.on('seeked', this.onSeeked, this);
 
             var tracks = playlistItem.tracks;
             _.each(tracks, function (track) {

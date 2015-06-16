@@ -44,7 +44,8 @@ define([
             _completeTimeoutId = -1,
             _this = _.extend(this, Events);
 
-        this._adModel = _adModel;
+        // Gets overridden after load
+        this.options = _options;
 
         // Listen for player resize events
         _controller.on(events.JWPLAYER_FULLSCREEN, _fullscreenHandler);
@@ -70,6 +71,8 @@ define([
                 fullscreen: _model.fullscreen,
                 mute: _model.mute
             });
+
+            this._adModel = _adModel;
 
             _adModel.on('fullscreenchange', _nativeFullscreenHandler);
             _olditem = _model.playlist[_model.item];
@@ -152,8 +155,10 @@ define([
 
             // Re-attach the controller
             _controller.attachMedia();
+
             // Load the original item into our provider, which sets up the regular player's video tag
-            _oldProvider = _model.getVideo();
+            //_oldProvider = _model.getVideo();
+
             if (_oldstate !== states.IDLE) {
                 var item = _.extend({}, _olditem);
                 item.starttime = _oldpos;
@@ -184,10 +189,6 @@ define([
                 return;
             }
             _adModel.getVideo().pause(true);
-        };
-
-        _this.instreamState = function() {
-            return _adModel.state;
         };
 
 

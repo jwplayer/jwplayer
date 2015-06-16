@@ -607,7 +607,7 @@ define([
             function _instreamCleanup() {
                 var instreamController = _this._instreamPlayer;
                 if (instreamController) {
-                    instreamController.instreamDestroy();
+                    instreamController.destroy();
                 }
             }
 
