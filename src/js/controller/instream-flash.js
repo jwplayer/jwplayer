@@ -33,9 +33,9 @@ define([
             this.swf.triggerFlash('instream:destroy');
         },
 
-        load: function(item, options) {
+        load: function(item) {
             // Show the instream layer
-            this.swf.triggerFlash('instream:load', item, options);
+            this.swf.triggerFlash('instream:load', item);
         },
 
         instreamPlay: function() {
@@ -48,7 +48,7 @@ define([
         getState: function() {
             return 'playing'; // this._adModel.state;
         },
-        
+
         //showProvider: function() {},
         hide: function() {
 

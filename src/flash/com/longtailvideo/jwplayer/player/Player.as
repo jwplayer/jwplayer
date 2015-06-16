@@ -24,7 +24,7 @@ public class Player extends Sprite implements IPlayer {
     protected var _view:View;
     protected var _controller:Controller;
 
-    protected var _instream:IInstreamPlayer;
+    protected var _instream:InstreamPlayer;
 
     public function Player() {
         Security.allowDomain("*");
@@ -238,8 +238,8 @@ public class Player extends Sprite implements IPlayer {
         _instream = new InstreamPlayer(lockPlugin, _model, _view, _controller);
     }
 
-    protected function loadInstream(item:Object, options:Object):void {
-        _instream.loadItem(item, options);
+    protected function loadInstream(item:Object):void {
+        _instream.loadItem(item);
     }
 
     protected function playInstream():void {

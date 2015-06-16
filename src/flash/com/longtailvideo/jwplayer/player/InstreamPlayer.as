@@ -9,8 +9,6 @@ import com.longtailvideo.jwplayer.media.MediaProvider;
 import com.longtailvideo.jwplayer.media.RTMPMediaProvider;
 import com.longtailvideo.jwplayer.media.SoundMediaProvider;
 import com.longtailvideo.jwplayer.media.VideoMediaProvider;
-import com.longtailvideo.jwplayer.model.IInstreamOptions;
-import com.longtailvideo.jwplayer.model.InstreamOptions;
 import com.longtailvideo.jwplayer.model.Model;
 import com.longtailvideo.jwplayer.model.PlayerConfig;
 import com.longtailvideo.jwplayer.model.PlaylistItem;
@@ -48,16 +46,12 @@ public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPl
         RootReference.stage.addEventListener(Event.RESIZE, resizeHandler);
 
         _setupView();
-
-        //default options
-        _options = new InstreamOptions();
     }
     public var jsListeners:Object = {};
     protected var _model:Model;
     protected var _view:View;
     protected var _controller:Controller;
     protected var _item:PlaylistItem;
-    protected var _options:IInstreamOptions;
     protected var _provider:MediaProvider;
     protected var _plugin:IPlugin;
     protected var _instreamDisplay:Sprite;
@@ -86,8 +80,7 @@ public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPl
         return _controller.locking;
     }
 
-    public function loadItem(item:Object, options:Object = null):void {
-        _options.update(options);
+    public function loadItem(item:Object):void {
         _item = new PlaylistItem(item);
         if (_playerLocked) {
             beginPlayback(_item);
@@ -96,10 +89,6 @@ public class InstreamPlayer extends GlobalEventDispatcher implements IInstreamPl
 
     public function getItem():PlaylistItem {
         return _item;
-    }
-
-    public function getOptions():IInstreamOptions {
-        return _options;
     }
 
     public function play():Boolean {

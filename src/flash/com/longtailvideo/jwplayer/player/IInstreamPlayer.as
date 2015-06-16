@@ -1,6 +1,5 @@
 package com.longtailvideo.jwplayer.player {
 import com.longtailvideo.jwplayer.events.IGlobalEventDispatcher;
-import com.longtailvideo.jwplayer.model.IInstreamOptions;
 
 /**
  * Fired when a portion of the current media has been loaded into the buffer.
@@ -107,8 +106,6 @@ public interface IInstreamPlayer extends IGlobalEventDispatcher {
 
     function hide():void;
 
-    function loadItem(item:Object, options:Object = null):void;
-
-    function getOptions():IInstreamOptions;
+    function loadItem(item:Object):void;
 }
 }
