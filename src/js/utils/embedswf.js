@@ -90,7 +90,7 @@ define([
             });
 
             if (status instanceof utils.Error) {
-                console.error(status);
+                console.error({command : name, error : status});
             }
             return swfInstance;
         };

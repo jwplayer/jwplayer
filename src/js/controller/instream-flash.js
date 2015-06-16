@@ -13,6 +13,7 @@ define([
             fullscreen: _model.fullscreen,
             mute: _model.mute
         });
+
         var container = _controller.getContainer();
         this.swf = container.querySelector('object');
     };
@@ -28,12 +29,16 @@ define([
 
             this.swf.triggerFlash('instream:init');
         },
-        destroy: function() {
+        instreamDestroy: function() {
             this.swf.off(null, null, this);
             this.swf.triggerFlash('instream:destroy');
         },
 
         load: function(item) {
+            // Make sure it chooses a provider
+            var fauxPlaylist = [item];
+            this._adModel.setPlaylist(fauxPlaylist);
+
             // Show the instream layer
             this.swf.triggerFlash('instream:load', item);
         },

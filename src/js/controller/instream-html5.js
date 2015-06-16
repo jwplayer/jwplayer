@@ -102,10 +102,6 @@ define([
 
         /** Load an instream item and initialize playback **/
         _this.load = function(item, options) {
-            // TODO: why is this used?
-            _this.trigger(events.JWPLAYER_PLAYLIST_ITEM, {
-                index: _arrayIndex
-            });
 
             // Copy the playlist item passed in and make sure it's formatted as a proper playlist item
             if (_.isArray(item)) {
@@ -119,7 +115,9 @@ define([
             this.options = _options = _.extend({}, _defaultOptions, options);
             _item = new PlaylistItem(item);
 
+            // Make sure it chooses a provider
             _adModel.setPlaylist([item]);
+
             // check provider after item change
             _checkProvider();
 
