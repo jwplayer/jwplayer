@@ -73,6 +73,11 @@
     height: 100%;
     margin: auto;
     background: transparent;
+
+    // Hides the native play button pseudoelement in iOS
+    &::-webkit-media-controls-start-playback-button {
+        display: none;
+    }
 }
 
 .jw-controls {
