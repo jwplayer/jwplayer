@@ -4,9 +4,8 @@ define([
     'utils/underscore'
 ], function(Events, Model, _) {
 
-    var InstreamFlash = function(_controller, _model, _view) {
+    var InstreamFlash = function(_controller, _model) {
         this.model = _model;
-        this.view = _view;
         this.controller = _controller;
         this.adModel = new Model().setup({
             id: _model.id,
@@ -21,7 +20,6 @@ define([
     this.prototype = _.extend({
         init: function() {
             // Show the instream layer
-            //_view.setupInstream(_adModel);
 
             //this.swf.off(null, null, this);
             this.swf.on('instream', function(e) {
@@ -37,8 +35,6 @@ define([
 
         load: function(item, options) {
             // Show the instream layer
-            this.view.showInstream();
-
             this.swf.triggerFlash('instream:load', item, options);
         },
 
