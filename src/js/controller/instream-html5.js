@@ -21,7 +21,6 @@ define([
             controlbarseekable: 'never',
             controlbarpausable: true,
             controlbarstoppable: true,
-            loadingmessage: 'Loading ad',
             playlistclickable: true,
             skipoffset: null,
             tag: null
@@ -98,8 +97,6 @@ define([
 
             // Show the instream layer
             _view.setupInstream(_adModel);
-
-            _this.instreamSetText(_defaultOptions.loadingmessage);
         };
 
         /** Load an instream item and initialize playback **/
@@ -111,6 +108,7 @@ define([
                 });
                 return;
             }
+            // TODO: why is this used?
             _sendEvent(events.JWPLAYER_PLAYLIST_ITEM, {
                 index: _arrayIndex
             });

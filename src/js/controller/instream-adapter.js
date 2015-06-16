@@ -27,6 +27,7 @@ define([
         this.init = function() {
             _instream.on('all', this.trigger, this);
             _instream.init();
+            this.setText('Loading ad');
             return this;
         };
 
@@ -67,7 +68,7 @@ define([
             return _instream.instreamState();
         };
 
-        this.setText = this.setInstreamText = function(text) {
+        this.setText = function(text) {
             _view.setAltText(text ? text : '');
         };
 
