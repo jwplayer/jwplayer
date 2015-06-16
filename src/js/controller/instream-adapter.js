@@ -1,10 +1,10 @@
 define([
-    'controller/instream',
     'controller/instream-html5',
     'controller/instream-flash',
+    'utils/helpers',
     'utils/backbone.events',
     'utils/underscore'
-], function(Instream, InstreamHtml5, InstreamFlash, Events, _) {
+], function(InstreamHtml5, InstreamFlash, utils, Events, _) {
 
     function chooseInstreamMethod(_model) {
         if (_model.get('provider') === 'flash') {
@@ -25,13 +25,31 @@ define([
         this.type = 'instream';
 
         this.init = function() {
-            _instream.on('all', this.trigger, this);
+
+            _instream.on('all', function(type, data) {
+                data = data || {};
+
+                if (_instream.options.tag && !data.tag) {
+                    data.tag = _instream.options.tag;
+                }
+
+                this.trigger(type, data);
+            }, this);
+
             _instream.init();
+
             this.setText('Loading ad');
             return this;
         };
 
         this.loadItem = function(item, options) {
+            if (utils.isAndroid(2.3)) {
+                errorHandler({
+                    type: events.JWPLAYER_ERROR,
+                    message: 'Error loading instream: Cannot play instream on Android 2.3'
+                });
+                return;
+            }
             _item = item;
             _options = options || {};
             _instream.load(item, options);

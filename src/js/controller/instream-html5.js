@@ -52,11 +52,11 @@ define([
          *****  Public instream API methods  *****
          *****************************************/
 
-        _this.init = function() {
+        this.init = function() {
 
             /** Blocking playback and show Instream Display **/
 
-                // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
+            // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
             _oldProvider = _model.getVideo();
 
             // Keep track of the original player state
@@ -95,21 +95,14 @@ define([
             // Was used to get video tag and store media state
             _oldProvider.detachMedia();
 
-            // Show the instream layer
+            // Show instream state instead of normal player state
             _view.setupInstream(_adModel);
         };
 
         /** Load an instream item and initialize playback **/
         _this.load = function(item, options) {
-            if (utils.isAndroid(2.3)) {
-                errorHandler({
-                    type: events.JWPLAYER_ERROR,
-                    message: 'Error loading instream: Cannot play instream on Android 2.3'
-                });
-                return;
-            }
             // TODO: why is this used?
-            _sendEvent(events.JWPLAYER_PLAYLIST_ITEM, {
+            _this.trigger(events.JWPLAYER_PLAYLIST_ITEM, {
                 index: _arrayIndex
             });
 
@@ -122,7 +115,7 @@ define([
                 _array = item;
                 item = _array[_arrayIndex];
             }
-            _options = _.extend({}, _defaultOptions, options);
+            this.options = _options = _.extend({}, _defaultOptions, options);
             _item = new PlaylistItem(item);
 
             _adModel.setPlaylist([item]);
@@ -149,7 +142,7 @@ define([
                 evt = evt || {};
                 evt.hasControls = !!modelGet('controls');
 
-                _sendEvent(events.JWPLAYER_INSTREAM_CLICK, evt);
+                _this.trigger(events.JWPLAYER_INSTREAM_CLICK, evt);
 
                 // toggle playback after click event
 
@@ -173,7 +166,7 @@ define([
         };
 
         function errorHandler(evt) {
-            _sendEvent(evt.type, evt);
+            _this.trigger(evt.type, evt);
         }
 
         /** Stop the instream playback and revert the main player back to its original state **/
@@ -303,18 +296,18 @@ define([
         }
 
         function _skipAd() {
-            _sendEvent(events.JWPLAYER_AD_SKIPPED);
+            _this.trigger(events.JWPLAYER_AD_SKIPPED);
             _completeHandler();
         }
 
         /** Forward provider events to listeners **/
         function _forward(evt) {
-            _sendEvent(evt.type, evt);
+            _this.trigger(evt.type, evt);
         }
 
         function _nativeFullscreenHandler(evt) {
             _model.trigger(evt.type, evt);
-            _sendEvent(events.JWPLAYER_FULLSCREEN, {
+            _this.trigger(events.JWPLAYER_FULLSCREEN, {
                 fullscreen: evt.jwstate
             });
         }
@@ -349,7 +342,7 @@ define([
                     _skipButton.destroy();
                 }
                 _completeTimeoutId = setTimeout(function() {
-                    _sendEvent(events.JWPLAYER_PLAYLIST_ITEM, {
+                    _this.trigger(events.JWPLAYER_PLAYLIST_ITEM, {
                         index: _arrayIndex
                     });
                 }, 0);
@@ -358,7 +351,7 @@ define([
                     // this is called on every ad completion of the final video in a playlist
                     //   1) vast.js (to trigger ad_complete event)
                     //   2) display.js (to set replay icon and image)
-                    _sendEvent(events.JWPLAYER_PLAYLIST_COMPLETE, {});
+                    _this.trigger(events.JWPLAYER_PLAYLIST_COMPLETE, {});
                     _controller.instreamDestroy();
                 }, 0);
             }
@@ -371,14 +364,6 @@ define([
                 //_view.releaseState();
                 _view.resizeMedia();
             }
-        }
-
-        function _sendEvent(type, data) {
-            data = data || {};
-            if (_options.tag && !data.tag) {
-                data.tag = _options.tag;
-            }
-            _this.trigger(type, data);
         }
 
         return _this;

@@ -1,5 +1,5 @@
 define([
-    'view/components/extendable',
+    'utils/extendable',
     'utils/helpers'
 ], function(Extendable, utils) {
 
