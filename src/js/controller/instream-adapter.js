@@ -18,10 +18,10 @@ define([
         return InstreamHtml5;
     }
 
-    var InstreamProxy = function(_model, _view) {
+    var InstreamAdapter = function(_controller, _model, _view) {
 
         var InstreamMethod = chooseInstreamMethod(_model);
-        var _instream = new InstreamMethod(this, _model);
+        var _instream = new InstreamMethod(_controller, _model);
 
         var _item,
             _options,
@@ -41,11 +41,12 @@ define([
                 this.trigger(type, data);
             }, this);
 
-            _instream.addEventListener(events.JWPLAYER_MEDIA_TIME, function(evt) {
+            _instream.on(events.JWPLAYER_MEDIA_TIME, function(evt) {
                 if (_this._skipButton) {
                     _this._skipButton.updateMediaTime(evt.position, evt.duration);
                 }
             });
+
             _instream.init();
 
             // Show instream state instead of normal player state
@@ -177,7 +178,7 @@ define([
 
     };
 
-    _.extend(InstreamProxy.prototype, Events);
+    _.extend(InstreamAdapter.prototype, Events);
 
-    return InstreamProxy;
+    return InstreamAdapter;
 });

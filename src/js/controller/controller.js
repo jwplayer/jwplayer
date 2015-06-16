@@ -613,7 +613,7 @@ define([
 
             this.createInstream = function() {
                 _instreamCleanup();
-                _this._instreamPlayer = new InstreamAdapter(_model, _view);
+                _this._instreamPlayer = new InstreamAdapter(this, _model, _view);
                 return _this._instreamPlayer;
             };
 

@@ -7,7 +7,7 @@ define([
     var InstreamFlash = function(_controller, _model) {
         this.model = _model;
         this.controller = _controller;
-        this.adModel = new Model().setup({
+        this._adModel = new Model().setup({
             id: _model.id,
             volume: _model.volume,
             fullscreen: _model.fullscreen,
@@ -17,7 +17,7 @@ define([
         this.swf = container.querySelector('object');
     };
 
-    this.prototype = _.extend({
+    InstreamFlash.prototype = _.extend({
         init: function() {
             // Show the instream layer
 
@@ -26,7 +26,7 @@ define([
                 console.log('instream callback', e);
             }, this);
 
-            this.swf.triggerFlash('instream:init', {});
+            this.swf.triggerFlash('instream:init');
         },
         destroy: function() {
             this.swf.off(null, null, this);
@@ -39,16 +39,16 @@ define([
         },
 
         instreamPlay: function() {
-            this.swf.triggerFlash('instream:play', {});
+            this.swf.triggerFlash('instream:play');
         },
         instreamPause: function() {
-            this.swf.triggerFlash('instream:pause', {});
+            this.swf.triggerFlash('instream:pause');
         },
 
         getState: function() {
-            return 'playing';
+            return 'playing'; // this._adModel.state;
         },
-
+        
         //showProvider: function() {},
         hide: function() {
 
