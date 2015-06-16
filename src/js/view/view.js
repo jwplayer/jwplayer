@@ -515,7 +515,7 @@ define([
         }
 
         function _onChangeControls(model, bool) {
-            utils.toggleClass(this.controlsContainer, 'jw-hidden', bool);
+            utils.toggleClass(_controlsLayer, 'jw-hidden', bool);
 
             if (bool) {
                 // model may be instream or normal depending on who triggers this
