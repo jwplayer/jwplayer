@@ -84,12 +84,6 @@
     };
 
     var jwp = jwplayer('video-container').setup(config);
-    jwp.on('all', function(name, e) {
-        console.log('Event:', name, e);
-        if (name !== e.type) {
-            console.error('Event name "'+name+'" does not match event.type "'+e.type+'"');
-        }
-    });
 
     jwp.addButton(
             'css-skins/icons/both.png',

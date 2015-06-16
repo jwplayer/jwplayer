@@ -1,4 +1,4 @@
-.jwplayer.jw-flag-audio-player {
+.jw-flag-audio-player {
     background-color: transparent;
 
     .jw-preview {
@@ -27,4 +27,8 @@
             display : none;
         }
     }
+}
+// This has higher specificity to overwrite jw-flag-user-inactive
+.jwplayer.jw-flag-audio-player .jw-controlbar {
+    display: table;
 }
