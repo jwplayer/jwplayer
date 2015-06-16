@@ -251,6 +251,7 @@ public class Player extends Sprite implements IPlayer {
     }
 
     protected function destroyInstream():void {
+        _instream.destroy();
         _instream = null;
     }
 
