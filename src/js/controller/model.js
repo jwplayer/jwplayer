@@ -210,6 +210,11 @@ define([
             this.setItem(0);
         };
 
+        // Give the option for a provider to be forced
+        this.chooseProvider = function(source) {
+            return this.get('forceProvider') || _providers.choose(source);
+        };
+
         this.setItem = function(index) {
             var playlist = _this.get('playlist');
 
@@ -230,7 +235,7 @@ define([
                 return;
             }
 
-            var Provider = _providers.choose(source);
+            var Provider = this.chooseProvider(source);
             if (!Provider) {
                 throw new Error('No suitable provider found');
             }

@@ -1,8 +1,9 @@
 define([
     'utils/backbone.events',
     'controller/model',
+    'providers/flash',
     'utils/underscore'
-], function(Events, Model, _) {
+], function(Events, Model, FlashProvider, _) {
 
     var InstreamFlash = function(_controller, _model) {
         this.model = _model;
@@ -13,6 +14,7 @@ define([
             fullscreen: _model.fullscreen,
             mute: _model.mute
         });
+        this._adModel.set('forceProvider', FlashProvider);
 
         var container = _controller.getContainer();
         this.swf = container.querySelector('object');
