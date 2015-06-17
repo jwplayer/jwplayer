@@ -22,7 +22,8 @@
     .jw-background-color {
         opacity: 0.8;
     }
-
+    
+    /* For the overlay containers */
     .jw-time-tip,
     .jw-volume-tip,
     .jw-menu {
@@ -33,7 +34,8 @@
     .jw-menu {
         bottom: .3em;
     }
-
+    
+    /* Playlist */
     .jw-playlist-container {
         left: -42%;
         bottom: 0;
@@ -44,22 +46,12 @@
             color: @active-color;
             
 
-            // Menu items are black when active, or hovered
+            /* Menu items are active when active or hovered */
             &:hover,
             &.jw-active-option {
                 background-color: @controlbar-background;
                 color: @active-color;
             }
-
-            // Number turn red when li is hovered
-            &:hover {              
-                color: @active-color;
-            }
-        }
-
-        // play icon is always red
-        .jw-label .jw-icon-play {
-            color: @active-color;
         }
 
         ::-webkit-scrollbar-track {
@@ -74,12 +66,14 @@
             background-color: @active-color;
         }
     }
-
+    
+    /* Playlist title */
     .jw-tooltip-title {
         border-bottom: 1px solid #000;
         background-color: #3B3D41;
     }
 
+    /* Rail/slider styles */
     .jw-rail,
     .jw-buffer,
     .jw-progress {
@@ -90,6 +84,7 @@
         display: none;
     }
     
+    /* Timeline and horizontal volume slider */
     .jw-slider-horizontal {
         .jw-cue {
             .vertically-centered-rail-element(@rail-height, @cue-size);
@@ -102,7 +97,8 @@
             }
         }
     }
-
+    
+    /* Volume slider */
     .jw-slider-vertical {
         bottom: 5px;
 

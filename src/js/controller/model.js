@@ -99,9 +99,6 @@ define([
                     break;
 
                 case events.JWPLAYER_MEDIA_TIME:
-                    var isLive = (evt.duration === -1 || evt.duration === Infinity);
-
-                    this.mediaModel.set('isLive', isLive);
                     this.mediaModel.set('position', evt.position);
                     this.mediaModel.set('duration', evt.duration);
                     this.set('position', evt.position);

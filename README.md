@@ -49,8 +49,8 @@ You also have the power to programatically set any configuration within the play
 
  1. Install [Node.js](https://nodejs.org/download)
  1. Install [Adobe AIR SDK](http://www.adobe.com/devnet/air/air-sdk-download.html)
- 1. Download [player.swc 11.1](http://fpdownload.macromedia.com/get/flashplayer/installers/archive/playerglobal/playerglobal11_1.swc)
- 1. Rename and move the .swc file to ```{AIRSDK_Compiler}/frameworks/libs/player/11.1/playerglobal.swc```
+ 1. Download [player.swc 11.2](http://fpdownload.macromedia.com/get/flashplayer/installers/archive/playerglobal/playerglobal11_2.swc)
+ 1. Rename and move the .swc file to ```{AIRSDK_Compiler}/frameworks/libs/player/11.2/playerglobal.swc```
 
 ```sh
     # First time set up

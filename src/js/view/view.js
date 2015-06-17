@@ -515,7 +515,7 @@ define([
         }
 
         function _onChangeControls(model, bool) {
-            utils.toggleClass(this.controlsContainer, 'jw-hidden', bool);
+            utils.toggleClass(_controlsLayer, 'jw-hidden', bool);
 
             if (bool) {
                 // model may be instream or normal depending on who triggers this
@@ -867,10 +867,13 @@ define([
             var isAudioFile = _isAudioFile();
             utils.toggleClass(_playerElement, 'jw-flag-media-audio', isAudioFile);
 
-            _model.mediaModel.on('change:isLive', function(model, isLive){
-                utils.toggleClass(_playerElement, 'jw-flag-live', isLive);
-                _this.setAltText((isLive) ? 'Live Broadcast' : '');
-            }, this);
+            _model.on('change:duration', _setLiveMode, this);
+        }
+
+        function _setLiveMode(model, duration){
+            var live = utils.adaptiveType(duration) === 'LIVE';
+            utils.toggleClass(_playerElement, 'jw-flag-live', live);
+            _this.setAltText((live) ? 'Live Broadcast' : '');
         }
 
         function _stateHandler(model, state) {
@@ -945,14 +948,6 @@ define([
             _controlbar.setAltText(text);
         };
 
-        this.showInstream = function() {
-            // adds video tag to video layer
-            if (_instreamModel.getVideo) {
-                var provider = _instreamModel.getVideo();
-                provider.setContainer(_videoLayer);
-            }
-        };
-
         this.useExternalControls = function() {
             utils.addClass(_playerElement, 'jw-flag-ads-hide-controls');
         };
@@ -966,6 +961,7 @@ define([
                 var provider = _model.getVideo();
                 provider.setContainer(_videoLayer);
             }
+            _setLiveMode(_model, _model.get('duration'));
         };
 
         this.addCues = function(cues) {

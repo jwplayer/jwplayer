@@ -39,13 +39,16 @@ define([
         }
 
         function interactStartHandler(evt) {
+            var isMouseEvt = evt instanceof MouseEvent;
             _touchListenerTarget = evt.target;
 
             if(_enableDrag) {
-                if(_isDesktop){
-                    document.addEventListener('mousemove', interactDragHandler);
+                if(!isMouseEvt || (isMouseEvt && !isRightClick(evt))){
+                    if(_isDesktop){
+                        document.addEventListener('mousemove', interactDragHandler);
+                    }
+                    _touchListenerTarget.addEventListener('touchmove', interactDragHandler);
                 }
-                _touchListenerTarget.addEventListener('touchmove', interactDragHandler);
             }
 
             if(_isDesktop){

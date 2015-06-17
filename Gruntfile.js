@@ -28,7 +28,7 @@ module.exports = function(grunt) {
 
     var packageInfo = grunt.file.readJSON('package.json');
     var buildVersion = getBuildVersion(packageInfo);
-    var flashVersion = 11.1;
+    var flashVersion = 11.2;
 
     var webpackCompilers = {};
     var autoprefixBrowsers = encodeURIComponent('> 1%');

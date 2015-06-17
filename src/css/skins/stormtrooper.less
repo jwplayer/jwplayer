@@ -29,18 +29,20 @@
     #namespace > .basic-skin-styles(); // Using the above local variables
     .skin-element-padding();
 
+    /* For the overlay containers */
     .jw-time-tip,
     .jw-volume-tip,
     .jw-menu {
         border-radius: @ui-padding;
     }
-
+    
+    /* Position of remaining overlay containers */
     .jw-volume-tip,
     .jw-menu {
         bottom: .3em;
     }
 
-
+    /* Playlist container */
     .jw-playlist-container {
         background-color: @inactive-color;
         left: -42%;
@@ -57,16 +59,10 @@
             border-bottom: 1px solid #5B697A;
             background-color: @inactive-color;
 
-            // Menu items are black when active, or hovered
+            // Menu item backgrounds are lighter when active or hovered
             &:hover,
             &.jw-active-option {
                 background: #5B697A;
-            }
-
-            // Number turn red when li is hovered
-            &:hover,
-            .jw-label .jw-icon-play {              
-                color: #fff;
             }
         }
 
@@ -84,11 +80,13 @@
         }
     }
 
+    /* Playlist title */
     .jw-tooltip-title {
         border-bottom: 1px solid #5B697A;
         background-color: @rail-color;
     }
-
+    
+    /* Rail/slider styles */
     .jw-slider-container {
         height: 1em;
     }
@@ -107,6 +105,7 @@
         background: @rail-color;
     }
 
+    /* Timeline and horizontal volume slider */
     .jw-slider-horizontal {
         .jw-rail,
         .jw-buffer,
@@ -140,6 +139,7 @@
         }
     }
 
+    /* Volume slider */
     .jw-slider-vertical {
         .jw-rail,
         .jw-progress {
@@ -162,6 +162,7 @@
         }
     }
 
+    /* Toggle icons */
     .jw-icon-cc {
         &.jw-off:before {
             content: "\e604";
