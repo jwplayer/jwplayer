@@ -867,10 +867,13 @@ define([
             var isAudioFile = _isAudioFile();
             utils.toggleClass(_playerElement, 'jw-flag-media-audio', isAudioFile);
 
-            _model.mediaModel.on('change:isLive', function(model, isLive){
-                utils.toggleClass(_playerElement, 'jw-flag-live', isLive);
-                _this.setAltText((isLive) ? 'Live Broadcast' : '');
-            }, this);
+            _model.on('change:duration', _setLiveMode, this);
+        }
+
+        function _setLiveMode(model, duration){
+            var live = utils.adaptiveType(duration) === 'LIVE';
+            utils.toggleClass(_playerElement, 'jw-flag-live', live);
+            _this.setAltText((live) ? 'Live Broadcast' : '');
         }
 
         function _stateHandler(model, state) {
@@ -964,6 +967,7 @@ define([
             var provider = _model.getVideo();
             provider.setContainer(_videoLayer);
             provider.setVisibility(true);
+            _setLiveMode(_model, _model.get('duration'));
         };
 
         this.addCues = function(cues) {
