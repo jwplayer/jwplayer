@@ -8,8 +8,6 @@ import flash.geom.Rectangle;
 
 /**
  * Interface for JW Flash Media Player
- *
- * @author Zachary Ozer
  */
 public interface IPlayer extends IEventDispatcher {
     /**
@@ -61,8 +59,6 @@ public interface IPlayer extends IEventDispatcher {
     function seek(position:Number):Boolean;
 
     function fullscreen(on:Boolean):void;
-
-    function setupInstream(target:IPlugin):IInstreamPlayer;
 
     function getAudioTracks():Array;
 

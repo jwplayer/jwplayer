@@ -1,5 +1,5 @@
 define([
-    'view/components/extendable',
+    'utils/extendable',
     'utils/ui',
     'handlebars-loader!templates/slider.html',
     'utils/helpers'

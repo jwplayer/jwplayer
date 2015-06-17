@@ -46,6 +46,10 @@ public class SwfEventRouter {
         }
     }
 
+    static public function trigger(args:Array):SimpleEvents {
+        return _jsEvents.trigger.apply(_jsEvents, args);
+    }
+
     static public function on(name:String, callback:Function):SimpleEvents {
         return _jsEvents.on(name, callback);
     }
@@ -87,9 +91,9 @@ function(id, name, json) {
                 try {
                     if (data is String || data is Number) {
                         // do nothing
-                    } else if (data.toJsObject is Function) {
+                    } else if ('toJsObject' in data && data.toJsObject is Function) {
                         data = data.toJsObject();
-                    } else if (data.clone is Function) {
+                    } else if ('clone' in data && data.clone is Function) {
                         // event object targets often have Cyclic structure
                         data = data.clone();
                         delete data.target;

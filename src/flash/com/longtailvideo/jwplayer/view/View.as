@@ -1,7 +1,6 @@
 package com.longtailvideo.jwplayer.view {
 import com.longtailvideo.jwplayer.events.MediaEvent;
 import com.longtailvideo.jwplayer.model.Model;
-import com.longtailvideo.jwplayer.player.IInstreamPlayer;
 import com.longtailvideo.jwplayer.player.SwfEventRouter;
 import com.longtailvideo.jwplayer.plugins.IPlugin;
 import com.longtailvideo.jwplayer.plugins.IPlugin6;
@@ -13,7 +12,6 @@ import flash.display.Sprite;
 import flash.display.StageAlign;
 import flash.display.StageScaleMode;
 import flash.events.Event;
-import flash.events.MouseEvent;
 import flash.geom.Rectangle;
 
 public class View extends Sprite {
@@ -21,15 +19,11 @@ public class View extends Sprite {
     protected var _model:Model;
     protected var _mediaLayer:Sprite;
     protected var _pluginsLayer:Sprite;
-    protected var _instreamLayer:Sprite;
 
     protected var _plugins:Object;
 
-    protected var _instreamPlugin:IPlugin;
-    protected var _instreamPlayer:IInstreamPlayer;
-    protected var _instreamMode:Boolean = false;
 
-    private static function noop():void {}
+    private static function rightClickHandler(e:Event):void {}
 
     public function View(model:Model) {
         _model = model;
@@ -40,14 +34,9 @@ public class View extends Sprite {
     public function setupView():void {
         RootReference.stage.scaleMode = StageScaleMode.NO_SCALE;
         RootReference.stage.align = StageAlign.TOP_LEFT;
-
-
-        RootReference.stage.addEventListener('rightClick', noop);
-
-        RootReference.stage.addChildAt(this, 0);
-
+        RootReference.stage.addEventListener('rightClick', rightClickHandler);
         RootReference.stage.addEventListener(Event.RESIZE, resizeHandler);
-
+        RootReference.stage.addChildAt(this, 0);
         redraw();
     }
 
@@ -71,7 +60,6 @@ public class View extends Sprite {
         }
         resizeMedia(width, height);
         resizePlugins(width, height);
-        resizeInstream(width, height);
     }
 
     public function addPlugin(id:String, plugin:IPlugin):void {
@@ -118,54 +106,16 @@ public class View extends Sprite {
         return _plugins[id] as IPlugin6;
     }
 
-    public function setupInstream(instreamPlayer:IInstreamPlayer, instreamDisplay:DisplayObject, plugin:IPlugin):void {
-        _instreamPlayer = instreamPlayer;
-        _instreamPlugin = plugin;
-
-        if (instreamDisplay) {
-            _instreamLayer.addChild(instreamDisplay);
-        }
-        _mediaLayer.visible = false;
-
-        var pluginDisplay:DisplayObject = plugin as DisplayObject;
-        if (pluginDisplay && _pluginsLayer.contains(pluginDisplay)) {
-            _pluginsLayer.removeChild(pluginDisplay);
-            _instreamLayer.addChild(pluginDisplay);
-        }
-
-        _instreamMode = true;
-    }
-
-    public function destroyInstream():void {
-        if (_instreamPlugin && _instreamPlugin is DisplayObject) {
-            _pluginsLayer.addChild(_instreamPlugin as DisplayObject);
-        }
-        _mediaLayer.visible = true;
-
-        while (_instreamLayer.numChildren > 0) {
-            _instreamLayer.removeChildAt(0);
-        }
-
-        _instreamMode = false;
-    }
-
-    public function hideInstream():void {
-
-    }
-
     protected function setupLayers():void {
         var currentLayer:uint = 0;
 
         _mediaLayer = setupLayer("media", currentLayer++);
-        _pluginsLayer = setupLayer("plugins", currentLayer++);
-        _instreamLayer = setupLayer("instream", currentLayer);
+        _pluginsLayer = setupLayer("plugins", currentLayer);
 
         _mediaLayer.mouseEnabled = false;
         _mediaLayer.mouseChildren = false;
 
         _plugins = {};
-
-        _instreamLayer.visible = false;
     }
 
     protected function setupLayer(name:String, index:Number):Sprite {
@@ -195,13 +145,6 @@ public class View extends Sprite {
                 plugin.resize(width, height);
             }
         }
-    }
-
-    private function resizeInstream(width:Number, height:Number):void {
-        _instreamLayer.graphics.clear();
-        _instreamLayer.graphics.beginFill(0);
-        _instreamLayer.graphics.drawRect(0, 0, width, height);
-        _instreamLayer.graphics.endFill();
     }
 
     protected function resizeHandler(event:Event):void {

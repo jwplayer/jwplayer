@@ -1,4 +1,5 @@
 package com.longtailvideo.jwplayer.utils {
+import com.longtailvideo.jwplayer.player.SwfEventRouter;
 
 /**
  * AS3 event handling based on backbone.Events
@@ -16,7 +17,7 @@ public class SimpleEvents {
         var events:Vector.<Function> = _events[name];
         if (!events) {
             CONFIG::debugging {
-                trace('unregistered event triggered:', name);
+                SwfEventRouter.consoleLog('unregistered event triggered:', name);
             }
             return this;
         }

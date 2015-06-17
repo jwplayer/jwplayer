@@ -948,13 +948,6 @@ define([
             _controlbar.setAltText(text);
         };
 
-        this.showInstream = function() {
-            // adds video tag to video layer
-            var provider = _instreamModel.getVideo();
-            provider.setContainer(_videoLayer);
-            provider.setVisibility(true);
-        };
-
         this.useExternalControls = function() {
             utils.addClass(_playerElement, 'jw-flag-ads-hide-controls');
         };
@@ -964,9 +957,10 @@ define([
             this.setAltText('');
             utils.removeClass(_playerElement, 'jw-flag-ads');
             utils.removeClass(_playerElement, 'jw-flag-ads-hide-controls');
-            var provider = _model.getVideo();
-            provider.setContainer(_videoLayer);
-            provider.setVisibility(true);
+            if (_model.getVideo) {
+                var provider = _model.getVideo();
+                provider.setContainer(_videoLayer);
+            }
             _setLiveMode(_model, _model.get('duration'));
         };
 

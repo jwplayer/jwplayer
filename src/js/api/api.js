@@ -201,17 +201,17 @@ define([
 
             state = _this.getState();
 
-            var instreamController = _controller._instreamPlayer;
-            var instreamState = instreamController && instreamController.instreamState();
+            var instreamController = _controller._instreamAdapter;
+            var instreamState = instreamController && instreamController.getState();
             if (instreamState) {
                 switch (instreamState) {
                     case states.IDLE:
                     case states.PLAYING:
                     case states.BUFFERING:
-                        instreamController.instreamPause();
+                        instreamController.pause();
                         break;
                     default:
-                        instreamController.instreamPlay();
+                        instreamController.play();
                 }
                 return _this;
             }

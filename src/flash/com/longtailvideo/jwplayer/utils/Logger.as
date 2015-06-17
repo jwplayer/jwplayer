@@ -3,7 +3,6 @@ import com.longtailvideo.jwplayer.model.PlayerConfig;
 import com.longtailvideo.jwplayer.player.SwfEventRouter;
 
 import flash.events.Event;
-import flash.external.ExternalInterface;
 
 /**
  * <p>Utility class for logging debug messages. It supports the following logging systems:</p>

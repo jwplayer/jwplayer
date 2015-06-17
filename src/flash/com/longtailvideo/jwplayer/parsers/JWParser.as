@@ -34,20 +34,24 @@ public class JWParser {
     };
 
     public static function getProvider(item:Object):String {
-        if (item['type']) {
-            return item['type'];
+        var type:String = item['type'];
+        if (type) {
+            if (extensions.hasOwnProperty(type)) {
+                return extensions[type];
+            }
+            return type;
         }
         if (item['streamer'] && item['streamer'].indexOf('rtmp') == 0) {
-            return "rtmp";
+            return 'rtmp';
         }
         if (item['streamer'] && item['streamer'].indexOf('http') == 0) {
-            return "http";
+            return 'http';
         }
         var ext:String = Strings.extension(item['file']);
         if (extensions.hasOwnProperty(ext)) {
             return extensions[ext];
         }
-        return "";
+        return '';
     }
 
 }

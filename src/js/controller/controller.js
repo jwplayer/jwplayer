@@ -1,7 +1,6 @@
 define([
     'api/api-deprecate',
-    'api/instreamPlayer',
-    'controller/instream',
+    'controller/instream-adapter',
     'utils/underscore',
     'controller/Setup',
     'controller/captions',
@@ -14,7 +13,7 @@ define([
     'events/states',
     'events/events',
     'view/error'
-], function(deprecateInit, InstreamPlayer, Instream, _, Setup, Captions,
+], function(deprecateInit, InstreamAdapter, _, Setup, Captions,
             Model, PlaylistLoader, utils, View, Events, changeStateEvent, states, events, error) {
 
     function _queue(command) {
@@ -502,7 +501,7 @@ define([
                 });
 
                 if (status instanceof utils.Error) {
-                    utils.log('Error calling detachMedia', status);
+                    utils.log('Error calling _attachMedia', status);
                     return;
                 }
 
@@ -604,21 +603,18 @@ define([
             };
 
 
-            // Add in all the instream methods
-            function _instreamCleanup() {
-                var instreamController = _this._instreamPlayer;
-                if (instreamController) {
-                    instreamController.instreamDestroy();
-                }
-            }
 
             this.createInstream = function() {
-                _instreamCleanup();
-                var instreamController = new Instream(this, _model, _view);
-                return new InstreamPlayer(instreamController);
+                _this.instreamDestroy();
+                _this._instreamAdapter = new InstreamAdapter(this, _model, _view);
+                return _this._instreamAdapter;
             };
 
-            this.instreamDestroy = _instreamCleanup;
+            this.instreamDestroy = function() {
+                if (_this._instreamAdapter) {
+                    _this._instreamAdapter.destroy();
+                }
+            };
 
             // This is here because it binds to the methods declared above
             deprecateInit(_api, this);
