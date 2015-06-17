@@ -14,6 +14,8 @@ define([
             this.dragMoveListener = this.dragMove.bind(this);
             this.dragEndListener = this.dragEnd.bind(this);
 
+            this.tapListener = this.tap.bind(this);
+
             this.setup();
         },
         setup : function() {
@@ -35,8 +37,7 @@ define([
             this.userInteract.on('drag', this.dragMoveListener);
             this.userInteract.on('dragEnd', this.dragEndListener);
 
-            this.userInteract.on('tap', this.dragMoveListener);
-            this.userInteract.on('click', this.dragMoveListener);
+            this.userInteract.on('tap click', this.tapListener);
         },
         dragStart : function() {
             this.trigger('dragStart');
@@ -48,7 +49,7 @@ define([
         },
         dragMove : function(evt) {
             var dimension,
-                bounds = (this.railBounds) ? this.railBounds : utils.bounds(this.elementRail),
+                bounds = this.railBounds = (this.railBounds) ? this.railBounds : utils.bounds(this.elementRail),
                 percentage;
 
             if (this.orientation === 'horizontal'){
@@ -75,6 +76,10 @@ define([
             this.update(percentage);
 
             return false;
+        },
+        tap : function(evt){
+            this.railBounds = utils.bounds(this.elementRail);
+            this.dragMove(evt);
         },
 
         update : function(percentage) {
