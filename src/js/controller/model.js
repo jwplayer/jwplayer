@@ -212,7 +212,7 @@ define([
 
         // Give the option for a provider to be forced
         this.chooseProvider = function(source) {
-            return this.get('forceProvider') || _providers.choose(source);
+            return _providers.choose(source);
         };
 
         this.setItem = function(index) {
