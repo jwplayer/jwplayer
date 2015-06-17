@@ -198,7 +198,6 @@ define([
         this.metaHandler = function (evt) {
             // If we're getting video dimension metadata from the provider, allow the view to resize the media
             if (evt.width && evt.height) {
-                //_view.releaseState();
                 _view.resizeMedia();
             }
         };
