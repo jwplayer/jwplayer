@@ -1,10 +1,11 @@
 define([
     'utils/backbone.events',
     'controller/model',
+    'events/change-state-event',
     'events/events',
     'events/states',
     'utils/underscore'
-], function(Events, Model, events, states, _) {
+], function(Events, Model, changeStateEvent, events, states, _) {
 
     var InstreamFlash = function(_controller, _model) {
         this.controller = _controller;
@@ -17,6 +18,8 @@ define([
             mute: _model.mute
         });
 
+        this._adModel.on('change:state', changeStateEvent, this);
+
         var container = _controller.getContainer();
         this.swf = container.querySelector('object');
     };
@@ -28,6 +31,7 @@ define([
             this.swf.on('instream:state', function(evt) {
                 switch (evt.newstate) {
                     case states.PLAYING:
+                        this.trigger('play');
                         this.model.set('state', evt.newstate);
                         this._adModel.set('state', evt.newstate);
                         break;
