@@ -78,7 +78,7 @@ public class PlayerSetup extends EventDispatcher {
         for each (var pluginId:String in _view.loadedPlugins()) {
             try {
                 var plugin:IPlugin6 = _view.getPlugin(pluginId);
-                if (!PlayerVersion.versionCheck(plugin['target'])) {
+                if (!PlayerVersion.versionCheck(plugin.target)) {
                     tasker.failure(new ErrorEvent(ErrorEvent.ERROR, false, false, "Error loading plugin: Incompatible player version"));
                     return;
                 }
