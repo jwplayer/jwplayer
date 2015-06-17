@@ -43,7 +43,8 @@
     .jw-background-color {
         background-color: @def-background-color;
     }
-
+    
+    /* Controlbar styles */
     .jw-controlbar {
         .inset-controlbar;
         border: @def-border;
@@ -54,7 +55,8 @@
             bottom: 2.25em;
         }
     }
-
+    
+    /* Styles for play button on idle */
     .jw-display-icon-container {
         background: @def-transparent-background-style;
         background-size: @def-background-size;
@@ -108,11 +110,6 @@
             }
         }
 
-        // play icon is always red
-        .jw-label .jw-icon-play {
-            color: #fff;
-        }
-
         ::-webkit-scrollbar {
             border-radius: .25em;
         }
@@ -126,6 +123,7 @@
         }
     }
 
+    /* Rail/slider styles */
     .jw-rail,
     .jw-buffer,
     .jw-progress {
@@ -146,18 +144,15 @@
         box-shadow: @rail-glow;
     }
 
-    .jw-slider-horizontal,
-    .jw-slider-vertical {
-
-        .jw-knob:after {
-            width: @thumb-size;
-            height: @thumb-size;
-            border-radius: 1em;
-            background: @thumb-color;
-            box-shadow: 0px 1px 10px 1px rgba(0,0,0,0.75);
-        }
+    .jw-knob:after {
+        width: @thumb-size;
+        height: @thumb-size;
+        border-radius: 1em;
+        background: @thumb-color;
+        box-shadow: 0px 1px 10px 1px rgba(0,0,0,0.75);
     }
 
+    /* Timeline and horizontal volume slider */
     .jw-slider-horizontal {
         .jw-slider-container {
             height: 1.2em;
@@ -202,6 +197,7 @@
         }
     }
 
+    /* Volume slider */
     .jw-slider-vertical {
         .jw-rail,
         .jw-progress {
@@ -243,7 +239,8 @@
             }
         }
     }
-
+    
+    /* Skip styles */
     .jw-skip {
         background: @def-transparent-background-style;
         background-size: @def-background-size;

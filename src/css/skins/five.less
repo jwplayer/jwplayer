@@ -27,18 +27,22 @@
     @cue-height: .4em;
     @rail-vert-gradient: linear-gradient(to bottom, #fff 0, #fff 30%, #333 100%);
     
+    @five-border-radius: 0;
+
     #namespace > .basic-skin-styles(); // Using the above local variables
     .skin-element-padding();
 
-    // Additional custom styles
+    
     .jw-controlbar {
         opacity: 0.8;
     }
-
+    
+    /* Styles for play button container on idle */
     .jw-display-icon-container {
-        border-radius: 0;
+        border-radius: @five-border-radius;
     }
 
+    /* Styles for menu list items */
     .jw-option {
         color: #bbb;
 
@@ -48,6 +52,7 @@
         }
     }
     
+    /* Playlist */
     .jw-playlist {
         width: ~"calc(100% - 8px)";
     }
@@ -93,13 +98,14 @@
             background-color: @active-color;
         }
     }
-
+    
+    /* Playlist title */
     .jw-tooltip-title {
         border-bottom: 1px solid #000;
         background-color : #ECECEC;
     }
 
-
+    /* Slider styles */
     .jw-slider-horizontal {
         .jw-slider-container {
             height: .9em;
@@ -109,7 +115,7 @@
         .jw-buffer,
         .jw-progress {
             height: @rail-height;
-            border-radius: 0;
+            border-radius: @five-border-radius;
         }
 
         .jw-rail {
@@ -122,7 +128,7 @@
 
             &:after {
                 background-color: #000;
-                border-radius: 0;
+                border-radius: @five-border-radius;
                 width: 1px;
                 height: @thumb-size;
             }
@@ -161,21 +167,16 @@
 
             &:after {
                 background: @rail-vert-gradient;
-                border-radius: 0;
+                border-radius: @five-border-radius;
                 height: 2px;
                 width: 100%;
             }
         }
     }
-
-    .jw-controlbar-right-group {
-        
-    }
-
+    
+    /* Five border-radius for the dock, in the upper right corner */
     .jw-dock-button {
-        border-radius: 0;
+        border-radius: @five-border-radius;
     }
-
-
 }
 

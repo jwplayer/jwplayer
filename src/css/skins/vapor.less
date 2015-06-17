@@ -25,6 +25,7 @@
     #namespace > .basic-skin-styles(); // Using the above local variables
 	.skin-element-padding();
 	
+    /* For the overlay containers */
     .jw-time-tip,
     .jw-volume-tip,
     .jw-menu {
@@ -32,6 +33,7 @@
         bottom: .3em;
     }
 
+    /* Styles for menu list items */
     .jw-option {
         color: @active-color;
         
@@ -59,16 +61,11 @@
             background-color: #1E1E1E;
             color: #a8a8a8;
             
-           // Menu items are green when active or hovered
+           /* Menu items are green when active or hovered */
             &:hover,
             &.jw-active-option {
                 color: @progress-color;
             }
-        }
-
-        // play icon is always active
-        .jw-label .jw-icon-play {
-            color: @progress-color;
         }
       
         ::-webkit-scrollbar-track {
@@ -84,7 +81,8 @@
             background-color: #A0A0A0;
         }
     }
-
+    
+    /* Playlist title */
     .jw-tooltip-title {
         border-bottom: 1px solid #000;
         background-color: #1E1E1E;

@@ -13,7 +13,8 @@
     .jw-background-color {
         background: #000;
     }
-
+    
+    /* Controlbar styles */
     .jw-controlbar {
         border-top: #333 1px solid;
         height: 2.5em;
@@ -24,7 +25,7 @@
         vertical-align: middle;
     }
     
-    /* Playlist container - needed to overwrite the .jw-background-color class */
+    /* Playlist container - need second background-color declaration to overwrite the .jw-background-color class */
     .jw-playlist {
         background-color: rgba(0, 0, 0, 0.5);
     }
@@ -56,7 +57,7 @@
             margin-left: 0;
         }
 
-        // play icon is always active
+        /* play icon is always active */
         .jw-label .jw-icon-play {
             color: @active-color;
             &:before {
@@ -68,15 +69,11 @@
     /* Playlist title */
     .jw-tooltip-title {
         background-color: #000;
+        color: @inactive-color
     }
 
-    /* Colors, padding for icons text */
-
+    /* Colors, padding for icons and text */
     .jw-text {
-        color: @inactive-color;
-    }
-
-    .jw-tooltip-title {
         color: @inactive-color;
     }
 
@@ -123,18 +120,21 @@
         }
     }
 
+    /* Styles for play button on idle */
     .jw-display-icon-container {
         border-radius: 50%;
         padding: 0 .3em;
         border: 1px solid #333;
     }
-
+    
+    /* Play icon is not square, so padding must change for non-sqaure icons */
     &.jw-state-idle {
         .jw-display-icon-container {
             padding: 0 0 0 .5em;
         }
     }
-
+    
+    /* Rail/slider styles */
     .jw-rail {
         background-color: #384154;
         box-shadow: none;
@@ -160,7 +160,7 @@
         }
     }
 
-
+    /* Timeline and horizontal volume slider */
     .jw-slider-horizontal {
 
         .jw-slider-container {
@@ -189,7 +189,8 @@
             }
         }
     }
-
+    
+    /* Volume slider */
     .jw-slider-vertical {
         .jw-rail,
         .jw-buffer,
@@ -198,16 +199,19 @@
         }
     }
 
+    /* Volume slider container */
     .jw-volume-tip {
         width: 100%;
         left: -45%;
         padding-bottom: .7em;
     }
 
+    /* Color of video's duration time */
     .jw-text-duration {
         color: #666F82;
     }
     
+    /* Icon borders on the right side of the controlbar */
     .jw-controlbar-right-group {
         .jw-icon-tooltip:before,
         .jw-icon-inline:before {
@@ -219,6 +223,7 @@
         }
     }
 
+    /* Icons, text and container styles for the dock, in the upper right corner */
     .jw-dock {
         .jw-dock-button {
             border-radius: 50%;
@@ -227,36 +232,41 @@
             border-radius: 2.5em;
         }
     }
-
+    
+    /* Styles for active list items */
     .jw-icon-tooltip {
         .jw-active-option {
             background-color: @active-color;
             color: #fff;
         }
     }
-
+    
+    /* A min-width on the volume icon to keep the width from collapsing on toggle */
     .jw-icon-volume {
         min-width: 2.6em;
     }
-
+    
+    /* For the overlay containers */
     .jw-time-tip,
     .jw-menu,
     .jw-volume-tip,
     .jw-skip {
         border: 1px solid #333;
-        
     }
-
+    
+    /* Position and padding of slider thumbnail */
     .jw-time-tip {
         padding: 0.2em;
         bottom: 1.3em;
     }
 
+    /* Position of remaining overlay containers */
     .jw-menu,
     .jw-volume-tip {
         bottom: .15em;
     }
     
+    /* Skip icon and text styles */
     .jw-skip {
         padding: 0.4em;
         border-radius: 1em;
