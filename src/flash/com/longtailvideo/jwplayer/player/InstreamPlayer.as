@@ -17,7 +17,7 @@ import com.longtailvideo.jwplayer.view.View;
 import flash.display.Sprite;
 import flash.events.Event;
 
-public class InstreamPlayer {
+public class InstreamPlayer extends Sprite {
 
     public static const UNSUPPORTED_ERROR:String = "Unsupported IPlayer method in InstreamPlayer";
 
@@ -27,7 +27,6 @@ public class InstreamPlayer {
     protected var _item:PlaylistItem;
     protected var _provider:MediaProvider;
     protected var _plugin:IPlugin;
-    protected var _instreamDisplay:Sprite;
     protected var _mediaLayer:Sprite;
 
     public function InstreamPlayer(target:IPlugin, model:Model, view:View, controller:Controller) {
@@ -43,11 +42,13 @@ public class InstreamPlayer {
 
         lock(_plugin, _lockCallback);
 
-        initializeLayers();
-
-        RootReference.stage.addEventListener(Event.RESIZE, resizeHandler);
+        _mediaLayer = new Sprite();
+        _mediaLayer.visible = false;
+        this.addChild(_mediaLayer);
 
         _setupView();
+
+        RootReference.stage.addEventListener(Event.RESIZE, resizeHandler);
     }
 
     public function loadItem(item:Object):void {
@@ -112,14 +113,6 @@ public class InstreamPlayer {
         }
     }
 
-    private function initializeLayers():void {
-        _instreamDisplay = new Sprite();
-        _mediaLayer = new Sprite();
-        _mediaLayer.visible = false;
-
-        _instreamDisplay.addChild(_mediaLayer);
-    }
-
     private function getProvider(type:String):MediaProvider {
         // Only accept video, http or rtmp providers for now
         switch (type) {
@@ -137,14 +130,8 @@ public class InstreamPlayer {
         return null;
     }
 
-    /********** UNSUPPORTED IPLAYER METHODS *******/
-    /**    These methods should not be called    **/
-    /**********************************************/
-
     private function _setupView():void {
-        if (!_view.instreamMode) {
-            _view.setupInstream(this, _instreamDisplay, _plugin);
-        }
+        _view.addChild(this);
     }
 
     private function _destroy(complete:Boolean = false):void {
@@ -152,7 +139,9 @@ public class InstreamPlayer {
         if (!complete && _provider && _provider.state != PlayerState.IDLE) {
             _provider.stop();
         }
-        _view.destroyInstream();
+        if (_view.contains(this)) {
+            _view.removeChild(this);
+        }
         _provider = null;
 
         unlock(_plugin);
@@ -186,10 +175,10 @@ public class InstreamPlayer {
     private function resizeHandler(event:Event):void {
         var width:Number = RootReference.stage.stageWidth;
         var height:Number = RootReference.stage.stageHeight;
-        _instreamDisplay.graphics.clear();
-        _instreamDisplay.graphics.beginFill(0, 0);
-        _instreamDisplay.graphics.drawRect(0, 0, width, height);
-        _instreamDisplay.graphics.endFill();
+        this.graphics.clear();
+        this.graphics.beginFill(0, 0);
+        this.graphics.drawRect(0, 0, width, height);
+        this.graphics.endFill();
         if (_provider) {
             _provider.resize(width, height);
         }

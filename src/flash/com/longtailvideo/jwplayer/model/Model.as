@@ -10,7 +10,6 @@ import com.longtailvideo.jwplayer.media.VideoMediaProvider;
 import com.longtailvideo.jwplayer.parsers.JWParser;
 import com.longtailvideo.jwplayer.player.PlayerState;
 import com.longtailvideo.jwplayer.plugins.PluginConfig;
-import com.longtailvideo.jwplayer.utils.RootReference;
 
 import flash.events.Event;
 import flash.media.SoundTransform;

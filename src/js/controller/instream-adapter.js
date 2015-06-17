@@ -156,12 +156,6 @@ define([
             _instream.instreamPause();
         };
 
-        this.showProvider = function() {
-            // show the provider which is playing an ad (flash)
-            // TODO:: Do we need this?
-            //_oldProvider.setVisibility(true);
-        };
-
         this.hide = function() {
             _instream.hide();
         };
