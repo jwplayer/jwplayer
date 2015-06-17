@@ -246,8 +246,8 @@ define([
         };
 
         this.getState = function() {
-            if (this._adModel) {
-                return this._adModel.get('state');
+            if (_instream && _instream._adModel) {
+                return _instream._adModel.get('state');
             }
             // api expects false to know we aren't in instreamMode
             return false;

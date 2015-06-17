@@ -208,10 +208,10 @@ define([
                     case states.IDLE:
                     case states.PLAYING:
                     case states.BUFFERING:
-                        instreamController.instreamPause();
+                        instreamController.pause();
                         break;
                     default:
-                        instreamController.instreamPlay();
+                        instreamController.play();
                 }
                 return _this;
             }
