@@ -77,7 +77,6 @@ define([
             var swfInstance = this;
             if (!swfInstance.__externalCall) {
                 var commandQueue = swfInstance.__commandQueue;
-                console.log('queueing swf command', name);
                 // remove any earlier commands with the same name
                 for (var i = commandQueue.length; i--;) {
                     if (commandQueue[i][0] === name) {

@@ -66,9 +66,6 @@ define([
             if (!metadata) {
                 return;
             }
-            if (metadata.provider) {
-                console.log(metadata.provider, metadata);
-            }
             if (metadata.type === 'textdata') {
                 var track = _tracksById[metadata.trackid];
                 if (!track) {

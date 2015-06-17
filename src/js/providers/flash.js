@@ -143,12 +143,6 @@ define([
                         events.JWPLAYER_MEDIA_BUFFER_FULL
                     ];
 
-                    _swf.on('all', function(type, e) {
-                        if (!/time/i.test(type + (e && e.type))) {
-                            console.log('[fl]', type, e);
-                        }
-                    }, this);
-
                     // jwplayer 6 flash player events (forwarded from AS3 Player, Controller, Model)
                     _swf.on(events.JWPLAYER_MEDIA_LEVELS, function(e) {
                         _currentQuality = e.currentQuality;
