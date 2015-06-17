@@ -28,7 +28,9 @@ module.exports = function(grunt) {
 
     var packageInfo = grunt.file.readJSON('package.json');
     var buildVersion = getBuildVersion(packageInfo);
+    // both flashVersion and swfTarget are needed to force flex to build using the right version
     var flashVersion = 11.2;
+    var swfTarget = 15;
 
     var webpackCompilers = {};
     var autoprefixBrowsers = encodeURIComponent('> 1%');
@@ -321,6 +323,7 @@ module.exports = function(grunt) {
             '-compiler.source-path=src/flash',
             '-compiler.library-path+=' + flashAirOrFlexSdk + '/frameworks/libs',
             '-target-player=' + flashVersion,
+            '-swf-version=' + swfTarget,
             '-use-network=false'
         );
 
