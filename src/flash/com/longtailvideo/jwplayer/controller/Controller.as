@@ -53,10 +53,13 @@ public class Controller extends GlobalEventDispatcher {
         return _lockManager.locked();
     }
 
-    public function setupPlayer():void {
+    public function setupPlayer(callback:Function = null):void {
         var setup:PlayerSetup = new PlayerSetup(_player, _model, _view);
 
-        setup.addEventListener(Event.COMPLETE, setupComplete);
+        if (!callback) {
+            callback = setupComplete;
+        }
+        setup.addEventListener(Event.COMPLETE, callback);
         setup.addEventListener(ErrorEvent.ERROR, setupError);
 
         setup.setupPlayer();
@@ -148,6 +151,7 @@ public class Controller extends GlobalEventDispatcher {
         }
         switch (_player.state) {
             case PlayerState.IDLE:
+                _model.media.removeEventListener(MediaEvent.JWPLAYER_MEDIA_BUFFER_FULL, bufferFullHandler);
                 _model.media.addEventListener(MediaEvent.JWPLAYER_MEDIA_BUFFER_FULL, bufferFullHandler);
                 _model.media.load(_model.item);
                 break;
@@ -262,8 +266,11 @@ public class Controller extends GlobalEventDispatcher {
         if (!locking && _setupComplete && !_setupFinalized) {
             _setupFinalized = true;
 
-            _player.addEventListener(ErrorEvent.ERROR, errorHandler);
+            _player.removeEventListener(ErrorEvent.ERROR, errorHandler);
+            _model.removeEventListener(MediaEvent.JWPLAYER_MEDIA_COMPLETE, completeHandler);
+            _model.removeEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, timeHandler);
 
+            _player.addEventListener(ErrorEvent.ERROR, errorHandler);
             _model.addEventListener(MediaEvent.JWPLAYER_MEDIA_COMPLETE, completeHandler, false);
             _model.addEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, timeHandler);
 
@@ -293,7 +300,6 @@ public class Controller extends GlobalEventDispatcher {
     protected function completeHandler(evt:MediaEvent = null):void {
         if (locking) {
             _completeOnUnlock = true;
-            return;
         }
     }
 

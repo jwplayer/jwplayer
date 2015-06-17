@@ -151,7 +151,7 @@ public class InstreamPlayer extends Sprite {
         }
     }
 
-    public function _destroyFromJS() {
+    public function _destroyFromJS():void {
         _destroy();
         unlock(_plugin);
     }

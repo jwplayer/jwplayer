@@ -35,11 +35,11 @@ import flash.utils.setTimeout;
  */
 public class PlayerSetup extends EventDispatcher {
 
-    protected var _player:IPlayer;
-    protected var _model:Model;
-    protected var _view:View;
+    private var _player:IPlayer;
+    private var _model:Model;
+    private var _view:View;
 
-    protected var tasker:TaskQueue;
+    private var tasker:TaskQueue;
 
     public function PlayerSetup(player:IPlayer, model:Model, view:View) {
         _player = player;
@@ -52,18 +52,14 @@ public class PlayerSetup extends EventDispatcher {
         tasker.addEventListener(Event.COMPLETE, setupTasksComplete);
         tasker.addEventListener(ErrorEvent.ERROR, setupTasksFailed);
 
-        setupTasks();
+        tasker.queueTask(loadPlugins, loadPluginsComplete);
+        tasker.queueTask(initPlugins);
+        tasker.queueTask(waitForSwfEventsRouter);
 
         tasker.runTasks();
     }
 
-    protected function setupTasks():void {
-        tasker.queueTask(loadPlugins, loadPluginsComplete);
-        tasker.queueTask(initPlugins);
-        tasker.queueTask(waitForSwfEventsRouter);
-    }
-
-    protected function loadPlugins():void {
+    private function loadPlugins():void {
         if (_model.plugins.length) {
             var loader:PluginLoader = new PluginLoader();
             loader.addEventListener(Event.COMPLETE, tasker.success);
@@ -78,7 +74,7 @@ public class PlayerSetup extends EventDispatcher {
     // Tasks
     ///////////////////////
 
-    protected function initPlugins():void {
+    private function initPlugins():void {
         for each (var pluginId:String in _view.loadedPlugins()) {
             try {
                 var plugin:IPlugin6 = _view.getPlugin(pluginId);
@@ -97,7 +93,7 @@ public class PlayerSetup extends EventDispatcher {
         tasker.success();
     }
 
-    protected function waitForSwfEventsRouter():void {
+    private function waitForSwfEventsRouter():void {
         if (SwfEventRouter.available) {
             tasker.success();
             return;
@@ -108,15 +104,15 @@ public class PlayerSetup extends EventDispatcher {
         tasker.failure(new ErrorEvent(ErrorEvent.ERROR, false, false, "Error: Flash ExternalInterface unavailable"));
     }
 
-    protected function setupTasksComplete(evt:Event):void {
+    private function setupTasksComplete(evt:Event):void {
         dispatchEvent(new Event(Event.COMPLETE));
     }
 
-    protected function setupTasksFailed(evt:ErrorEvent):void {
+    private function setupTasksFailed(evt:ErrorEvent):void {
         dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, evt.text));
     }
 
-    protected function loadPluginsComplete(event:Event = null):void {
+    private function loadPluginsComplete(event:Event = null):void {
         if (event) {
             var loader:PluginLoader = event.target as PluginLoader;
 
@@ -131,9 +127,6 @@ public class PlayerSetup extends EventDispatcher {
                 }
             }
         }
-
-        // Compiled in plugins go here.  Example:
-        //_view.addPlugin("test", new TestPlugin());
     }
 }
 }

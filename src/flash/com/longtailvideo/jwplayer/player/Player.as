@@ -168,17 +168,13 @@ public class Player extends Sprite implements IPlayer {
 
         _model.setConfig(config);
         // do it a second time
-        _controller.setupPlayer();
-
-        for (var i:uint = 0; i < commands.length; i++) {
-            var args:Array = commands[i] as Array;
-            var name:String = args.shift() as String;
-            var fn:Function = this[name] as Function;
-            if (!fn) {
-                throw new Error('unknown command:', name);
+        _controller.setupPlayer(function():void {
+            // run this once setup is complete (plugins are loaded)
+            for (var i:uint = 0; i < commands.length; i++) {
+                var args:Array = commands[i] as Array;
+                SwfEventRouter.trigger(args);
             }
-            fn.apply(this, args);
-        }
+        });
     }
 
     protected function stretch(stretch:String = null):void {

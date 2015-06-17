@@ -76,7 +76,15 @@ define([
         swf.triggerFlash = function(name) {
             var swfInstance = this;
             if (!swfInstance.__externalCall) {
-                console.error('swf is not initialized');
+                var commandQueue = swfInstance.__commandQueue;
+                console.log('queueing swf command', name);
+                // remove any earlier commands with the same name
+                for (var i = commandQueue.length; i--;) {
+                    if (commandQueue[i][0] === name) {
+                        commandQueue.splice(i, 1);
+                    }
+                }
+                commandQueue.push(Array.prototype.slice.call(arguments));
                 return swfInstance;
             }
             var args = Array.prototype.slice.call(arguments, 1);
@@ -94,6 +102,9 @@ define([
             }
             return swfInstance;
         };
+
+        // commands are queued when __externalCall is not available
+        swf.__commandQueue = [];
 
         return swf;
     }
@@ -113,10 +124,8 @@ define([
         }
     }
 
-    var EmbedSwf = {
+    return {
         embed : embed,
         remove : remove
     };
-
-    return EmbedSwf;
 });

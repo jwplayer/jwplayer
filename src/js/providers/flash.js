@@ -32,21 +32,8 @@ define([
             return _swf && _swf.__ready;
         };
 
-        var _queuedCommands = [];
-
-        var _flashCommand = function(name) {
-            if (_ready()) {
-                _swf.triggerFlash.apply(_swf, arguments);
-                return;
-            }
-            // remove any earlier commands with the same name
-            for (var i = _queuedCommands.length; i--;) {
-                if (_queuedCommands[i][0] === name) {
-                    _queuedCommands.splice(i, 1);
-                }
-            }
-            var args = Array.prototype.slice.call(arguments);
-            _queuedCommands.push(args);
+        var _flashCommand = function() {
+            _swf.triggerFlash.apply(_swf, arguments);
         };
 
         var _eventDispatcher = new eventdispatcher('flash.provider');
@@ -81,14 +68,14 @@ define([
                     var volume = Math.min(Math.max(0, vol), 100);
                     _playerConfig.volume = volume;
                     if (_ready()) {
-                        _flashCommand('volume', volume);
+                    _flashCommand('volume', volume);
                     }
                 },
                 mute: function(mute) {
                     var muted = utils.exists(mute) ? !!mute : !_playerConfig.mute;
                     _playerConfig.mute = muted;
                     if (_ready()) {
-                        _flashCommand('mute', muted);
+                    _flashCommand('mute', muted);
                     }
                 },
                 setState: function() {
@@ -114,6 +101,7 @@ define([
                 getSwfObject : function(parent) {
                     var found = parent.getElementsByTagName('object')[0];
                     if (found) {
+                        found.off(null, null, this);
                         return found;
                     }
 
@@ -129,20 +117,15 @@ define([
                     _swf = this.getSwfObject(parent);
 
                     // listen to events triggered from flash
-
-                    _swf.off();
-
                     _swf.once(events.JWPLAYER_READY, function() {
-                        _swf.__ready = true;
-
                         // setup flash player
                         var config = _.extend({
-                            commands: _queuedCommands
+                            commands: _swf.__commandQueue
                         }, _playerConfig);
 
-                        _queuedCommands = [];
-
                         _flashCommand('setup', config);
+                        _swf.__ready = true;
+                        _swf.__commandQueue = [];
 
                     }, this);
 
@@ -267,9 +250,7 @@ define([
                 },
                 getName: function() {
                     if (_flashProviderType) {
-                        var returnObj = { name : 'flash_' + _flashProviderType };
-
-                        return returnObj;
+                        return { name : 'flash_' + _flashProviderType };
                     }
                     return { name : 'flash' };
                 },
