@@ -26,28 +26,31 @@ define([
         init: function() {
 
             this.swf.on('instream:state', function(evt) {
-                var state = evt.newstate;
-                this._adModel.mediaModel.set('state', state);
-                if (state === states.LOADING || state === states.STALLED) {
-                    state = states.BUFFERING;
+                switch (evt.newstate) {
+                    case states.PLAYING:
+                        this.model.set('state', evt.newstate);
+                        this._adModel.set('state', evt.newstate);
+                        break;
+                    case states.PAUSED:
+                        this.model.set('state', evt.newstate);
+                        this._adModel.set('state', evt.newstate);
+                        break;
                 }
-                this._adModel.set('state', state);
-
-            }, this).on('instream:time', function(evt) {
+            }, this)
+            .on('instream:time', function(evt) {
                 this._adModel.set('position', evt.position);
                 this._adModel.set('duration', evt.duration);
                 this.trigger(events.JWPLAYER_MEDIA_TIME, evt);
-
-            }, this).on('instream:complete', function(evt) {
+            }, this)
+            .on('instream:complete', function(evt) {
                 this.trigger(events.JWPLAYER_MEDIA_COMPLETE, evt);
-
-            }, this).on('instream:error', function() {
+            }, this)
+            .on('instream:error', function() {
                 this.controller.instreamDestroy();
-
-            }, this).on('instream:destroy', function() {
+            }, this)
+            .on('instream:destroy', function() {
                 this.controller.instreamDestroy();
-
-            });
+            }, this);
 
             this.swf.triggerFlash('instream:init');
         },
@@ -56,6 +59,9 @@ define([
             if (!this._adModel) {
                 return;
             }
+
+            this.off();
+
             this._adModel.off();
             this._adModel = null;
             this.swf.off(null, null, this);

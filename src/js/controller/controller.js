@@ -501,7 +501,7 @@ define([
                 });
 
                 if (status instanceof utils.Error) {
-                    utils.log('Error calling detachMedia', status);
+                    utils.log('Error calling _attachMedia', status);
                     return;
                 }
 
@@ -603,21 +603,18 @@ define([
             };
 
 
-            // Add in all the instream methods
-            function _instreamCleanup() {
-                var instreamController = _this._instreamPlayer;
-                if (instreamController) {
-                    instreamController.destroy();
-                }
-            }
 
             this.createInstream = function() {
-                _instreamCleanup();
-                _this._instreamPlayer = new InstreamAdapter(this, _model, _view);
-                return _this._instreamPlayer;
+                _this.instreamDestroy();
+                _this._instreamAdapter = new InstreamAdapter(this, _model, _view);
+                return _this._instreamAdapter;
             };
 
-            this.instreamDestroy = _instreamCleanup;
+            this.instreamDestroy = function() {
+                if (_this._instreamAdapter) {
+                    _this._instreamAdapter.destroy();
+                }
+            };
 
             // This is here because it binds to the methods declared above
             deprecateInit(_api, this);

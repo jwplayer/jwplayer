@@ -201,7 +201,7 @@ define([
 
             state = _this.getState();
 
-            var instreamController = _controller._instreamPlayer;
+            var instreamController = _controller._instreamAdapter;
             var instreamState = instreamController && instreamController.getState();
             if (instreamState) {
                 switch (instreamState) {

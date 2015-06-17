@@ -109,9 +109,7 @@ define([
                     options = _arrayOptions[_arrayIndex];
                 }
                 _this.loadItem(item, options);
-
             } else {
-                _this.trigger(events.JWPLAYER_PLAYLIST_COMPLETE, {});
                 _controller.instreamDestroy();
             }
         }
@@ -189,7 +187,6 @@ define([
         };
 
         this.skipAd = function() {
-            _instream.trigger(events.JWPLAYER_AD_SKIPPED);
             _instreamItemComplete();
         };
 

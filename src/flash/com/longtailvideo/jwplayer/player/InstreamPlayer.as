@@ -144,8 +144,16 @@ public class InstreamPlayer extends Sprite {
         }
         _provider = null;
 
+        if (complete) {
+            SwfEventRouter.triggerJsEvent('instream:complete');
+        } else {
+            SwfEventRouter.triggerJsEvent('instream:destroy');
+        }
+    }
+
+    public function _destroyFromJS() {
+        _destroy();
         unlock(_plugin);
-        SwfEventRouter.triggerJsEvent('instream:' + (complete ? 'complete' : 'destroy'));
     }
 
     private function removeEventListeners():void {

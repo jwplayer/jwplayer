@@ -50,7 +50,7 @@ define([
         };
 
         /** Stop the instream playback and revert the main player back to its original state **/
-        _this.instreamDestroy = function() {
+        this.instreamDestroy = function() {
             if (!_adModel) {
                 return;
             }
@@ -121,12 +121,10 @@ define([
                 case states.PLAYING:
                     _model.set('state', evt.newstate);
                     _adModel.set('state', evt.newstate);
-                    _this.instreamPlay();
                     break;
                 case states.PAUSED:
                     _model.set('state', evt.newstate);
                     _adModel.set('state', evt.newstate);
-                    _this.instreamPause();
                     break;
             }
         }
