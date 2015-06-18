@@ -135,12 +135,15 @@ define([
 
                     var forwardEventsWithData = [
                         events.JWPLAYER_MEDIA_META,
-                        events.JWPLAYER_MEDIA_BUFFER,
-                        events.JWPLAYER_MEDIA_TIME,
                         events.JWPLAYER_MEDIA_ERROR,
                         'subtitlesTracks',
                         'subtitlesTrackChanged',
                         'subtitlesTrackData'
+                    ];
+
+                    var forwardEventsWithDataDuration = [
+                        events.JWPLAYER_MEDIA_BUFFER,
+                        events.JWPLAYER_MEDIA_TIME
                     ];
 
                     var forwardEvents = [
@@ -174,6 +177,12 @@ define([
                             return;
                         }
                         this.setState(state);
+
+                    }, this).on(forwardEventsWithDataDuration.join(' '), function(e) {
+                        if(e.duration === null) {
+                            e.duration = Infinity;
+                        }
+                        this.sendEvent(e.type, e);
 
                     }, this).on(forwardEventsWithData.join(' '), function(e) {
                         this.sendEvent(e.type, e);
