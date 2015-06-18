@@ -1,4 +1,5 @@
 package com.longtailvideo.jwplayer.model {
+import com.longtailvideo.jwplayer.media.MediaProvider;
 import com.longtailvideo.jwplayer.utils.Logger;
 import com.longtailvideo.jwplayer.utils.Strings;
 
@@ -112,7 +113,7 @@ public dynamic class PlaylistItem {
     public var title:String = "";
     protected var _provider:String = "";
 
-    protected var _duration:Number = -1;
+    protected var _duration:Number = MediaProvider.UNKNOWN_DURATION;
 
     public function get duration():Number {
         return _duration;
@@ -221,7 +222,7 @@ public dynamic class PlaylistItem {
 
 /** Levels need to be cleared e.g. for reloading a multibitrate SMIL. **/
     public function clearLevels():void {
-        _levels = new Array();
+        _levels = [];
     }
 
     /** Set this PlaylistItem's level to match the given bitrate and height. **/
@@ -265,7 +266,7 @@ public dynamic class PlaylistItem {
         return false;
     }
 
-    private function levelType(level:Object):String {
+    private static function levelType(level:Object):String {
         if (level) {
             if (level.type) {
                 return level.type;
@@ -280,7 +281,7 @@ public dynamic class PlaylistItem {
         return null;
     }
 
-    private function extensionMap(extension:String):String {
+    private static function extensionMap(extension:String):String {
         switch (extension) {
             case "flv":
                 return "flv";
@@ -306,7 +307,7 @@ public dynamic class PlaylistItem {
         return null;
     }
 
-    private function typeMap(type:String):String {
+    private static function typeMap(type:String):String {
         switch (type) {
             case "flv":
             case "mp4":

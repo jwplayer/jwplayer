@@ -35,7 +35,7 @@ public class SoundMediaProvider extends MediaProvider {
     private var _positionInterval:Number;
     /** Whether the sound is fully buffered. **/
     private var _buffered:Boolean;
-    private var _lastDuration:Number = -1;
+    private var _lastDuration:Number = UNKNOWN_DURATION;
     private var _lastPosition:Number = -1;
 
     public override function initializeMediaProvider(cfg:PlayerConfig):void {

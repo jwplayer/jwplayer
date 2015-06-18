@@ -355,7 +355,7 @@ define([
                 }
                 _canSeek = false;
                 _bufferFull = false;
-                _duration = duration ? duration : -1;
+                _duration = duration;
                 _videotag.src = _source.file;
                 _videotag.load();
             } else {

@@ -49,6 +49,13 @@ public class MediaProvider extends Sprite implements IMediaProvider {
         return _position;
     }
 
+    public static const LIVE_DURATION:Number = Infinity;
+    public static const UNKNOWN_DURATION:Number = 0;
+
+    public static function isVOD(duration:Number):Boolean {
+        return duration > 0 && duration !== LIVE_DURATION;
+    }
+
     /** The current volume of the audio output stream **/
     private var _volume:Number;
 
