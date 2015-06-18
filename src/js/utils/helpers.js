@@ -296,7 +296,7 @@ define([
             if(duration <= MIN_DVR_DURATION) {
                 return 'DVR';
             }
-            if (duration < 0 || duration === Infinity) {
+            if (duration === null || duration < 0 || duration === Infinity) {
                 return 'LIVE';
             }
         }
