@@ -214,7 +214,9 @@ define([
                     _container.style.opacity = visible ? 1:0;
                 },
                 resize: function(width, height, stretching) {
-                    _flashCommand('stretch', stretching);
+                    if (stretching) {
+                        _flashCommand('stretch', stretching);
+                    }
                 },
                 setControls: function() {
 

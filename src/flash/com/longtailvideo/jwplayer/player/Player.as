@@ -235,18 +235,30 @@ public class Player extends Sprite implements IPlayer {
     }
 
     protected function loadInstream(item:Object):void {
+        if (!_instream) {
+            return;
+        }
         _instream.loadItem(item);
     }
 
     protected function playInstream():void {
+        if (!_instream) {
+            return;
+        }
         _instream.play();
     }
 
     protected function pauseInstream():void {
+        if (!_instream) {
+            return;
+        }
         _instream.pause();
     }
 
     protected function destroyInstream():void {
+        if (!_instream) {
+            return;
+        }
         _instream._destroyFromJS();
         _instream = null;
     }
