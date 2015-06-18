@@ -1,0 +1,153 @@
+@import "icons";
+
+.jwplayer {
+    width: 100%;
+    font-size: @default-em-size;
+    position: relative;
+    display: block;
+    min-height: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #000;
+    user-select: none;
+
+    // disallow text-select highlighting
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    * {
+        box-sizing: inherit;
+    }
+
+
+    // Aspect Ratio styles
+    &.jw-flag-aspect-mode {
+        height: auto !important;
+
+        & .jw-aspect{
+            display: block;
+        }
+    }
+
+    .jw-aspect{
+        display: none;
+    }
+
+    &:focus, .jw-swf {
+        outline: none;
+    }
+
+    &:hover {
+        .jw-display-icon-container {
+            background-color: @display-bkgd-color;
+            background: @display-bkgd-color;
+            background-size: @display-bkgd-color
+        }
+    }
+}
+
+.jw-media, .jw-preview, .jw-overlays, .jw-controls {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+
+.jw-media {
+    overflow: hidden;
+}
+
+.jw-media.jw-media-show {
+    visibility: visible;
+    opacity: 1;
+}
+
+.jw-media video {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: auto;
+    background: transparent;
+
+    // Hides the native play button pseudoelement in iOS
+    &::-webkit-media-controls-start-playback-button {
+        display: none;
+    }
+}
+
+.jw-controls {
+
+    &.jw-controls-disabled {
+        display: none;
+    }
+
+    .jw-controls-right {
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+}
+
+.jw-text {
+    height: 1em;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: @font-size;
+    font-style: normal;
+    font-weight: normal;
+    //line-height: 1em;
+    color: white;
+    text-align: center;
+    font-variant: normal;
+    font-stretch: normal;
+}
+
+.jw-plugin {
+    position: absolute;
+}
+
+.jw-cast-screen {
+    width: 100%;
+    height: 100%;
+}
+
+.jw-instream {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: none;
+}
+
+.jw-icon-playback {
+    .jw-icon-play;
+}
+
+.jw-tab-focus:focus {
+    outline: solid 2px #0b7ef4;
+}
+
+// Allow pointer events through to the provider
+.jw-preview, .jw-captions, .jw-title, .jw-overlays, .jw-controls {
+    pointer-events : none;
+}
+
+// These items can intercept pointer-events
+.jw-overlays > div,
+.jw-media, .jw-controlbar, .jw-dock, .jw-logo, .jw-skip, .jw-display-icon-container {
+    pointer-events: all;
+}
+
+

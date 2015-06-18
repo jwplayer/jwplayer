@@ -1,21 +1,17 @@
 package com.longtailvideo.jwplayer.plugins {
-	
+import com.longtailvideo.jwplayer.utils.Utils;
 
-	public dynamic class PluginConfig {
-		private var _id:String;
+public dynamic class PluginConfig {
+    public function PluginConfig(pluginId:String, obj:Object = null) {
+        this._id = pluginId.toLowerCase();
+        Utils.extend(this, obj);
+    }
 
-		public function PluginConfig(pluginId:String, obj:Object=null) {
-			this._id = pluginId.toLowerCase();
-			if (obj) {
-				for (var idx:String in obj) {
-					this[idx] = obj[idx];
-				}
-			}
-		}
-		
-		public function get id():String {
-			return _id;
-		}
-		
-	}
+    private var _id:String;
+
+    public function get id():String {
+        return _id;
+    }
+
+}
 }

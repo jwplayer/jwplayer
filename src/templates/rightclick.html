@@ -1,0 +1,14 @@
+<div class="jw-rightclick jw-reset">
+    <ul class="jw-reset-ul">
+    {{#each items}}
+        <li{{#if featured}} class="jw-featured"{{/if}}>
+            <a href="{{link}} jw-reset">
+                {{#if featured}}
+                <span class="jw-icon jw-rightlick-logo jw-reset"></span>
+                {{/if}}
+                {{title}}
+            </a>
+        </li>
+    {{/each}}
+    </ul>
+</div>

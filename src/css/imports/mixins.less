@@ -1,0 +1,180 @@
+@import "vars";
+
+
+// Mixin for icon default formatting
+.jw-icon {
+    font-family: 'jw-six-icons';
+    -webkit-font-smoothing: antialiased;
+    font-style: normal;
+    font-weight: normal;
+    //line-height: 1;
+    text-transform: none;
+    background-color: transparent;
+    font-variant: normal;
+
+    /* Enable Ligatures ================ */
+    -webkit-font-feature-settings: "liga";
+    -moz-font-feature-settings: "liga=1";
+    -moz-font-feature-settings: "liga";
+    -ms-font-feature-settings: "liga" 1;
+    -o-font-feature-settings: "liga";
+    font-feature-settings: "liga";
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.inset-controlbar() {
+    display: block;
+    margin: 0 auto;
+    max-width: 96%;
+    bottom: .7em;
+}
+
+.vertically-centered-rail-element(@rail-height, @element-height) {
+    top: (@rail-height - @element-height)/2;
+}
+
+.hover(@color:@hover-color) {
+    &:hover {
+        color: @color;
+    }
+}
+
+.skin-element-padding() {
+    .jw-icon-inline,
+    .jw-icon-tooltip,
+    .jw-text-elapsed,
+    .jw-text-duration {
+        padding: 0 @ui-padding;
+    }
+}
+
+// Less requires namespaced variables/mixins to overwrite globals - https://github.com/less/less.js/issues/1316
+
+/* Mixin for common skin styles with variable colors */
+#namespace() {
+    .basic-skin-styles() {
+        
+        .jw-background-color {
+            background: @display-bkgd-color;
+        }
+
+        .jw-controlbar {
+            background: @controlbar-background;
+        }
+
+        .jw-text {
+            color: @inactive-color;
+        }
+        
+        /* Text color in thumbnail that appears upon hovering on the timeline slider */
+        .jw-tooltip-title {
+            color: @inactive-color;
+        }
+
+        .jw-knob {
+            color: @inactive-color;
+        }
+
+        .jw-button-color {
+            color: @inactive-color;
+            .hover(@hover-color);
+        }
+
+        .jw-toggle {
+            color: @hover-color;
+            &.jw-off {
+                color: @inactive-color;
+            }
+        }
+        
+        /* Color for list item text in menu lists */
+        .jw-option {
+            color: @inactive-color;
+            &.jw-active-option {
+                color: @hover-color;
+            }
+        }
+        
+        /* Colors for center play and buffering icons */
+        .jw-icon-display {
+            color: @display-icon-color;
+        }
+
+        .jw-display-icon-container {
+            border-radius: @ui-corner-round;
+            padding: 0.5em .75em;
+
+            &:hover {
+                background: @display-bkgd-hover-color;
+
+                .jw-icon-display {
+                    color: @display-icon-hover-color;
+                }
+            }
+        }
+
+        /* Slider colors */
+
+        .jw-rail {
+            background: @rail-color;
+        }
+
+        .jw-buffer {
+            background: @buffer-color;
+        }
+
+        .jw-progress {
+            background: @progress-color;
+        }
+
+        .jw-slider-horizontal {
+            background: @controlbar-background;
+
+            .jw-knob {
+                margin-left: @thumb-size/-2;
+            }
+        }
+
+        .jw-slider-vertical {
+
+            .jw-knob {
+                margin-bottom: @thumb-size/-2;
+            }
+        }
+        
+        /* Styles for menu elements, volume, slider thumbnail */
+        .jw-time-tip,
+        .jw-volume-tip,
+        .jw-menu {
+            background: @volume-background;
+            border: @volume-border;
+            padding: @volume-padding;
+        }
+
+        .jw-time-tip,
+        .jw-dock-button {
+            .jw-text {
+                color: #bbb;
+            }
+        }
+
+        .jw-time-tip {
+            bottom: 1em;
+        }
+        
+        /* Dock button styles */
+        .jw-dock-button {
+            background: @display-bkgd-color;
+            border-radius: @ui-corner-round;
+
+            &:hover {
+                background: @display-bkgd-hover-color;
+            }
+        }
+        
+        /* Reset padding on .jw-menu's that are playlists */
+        .jw-playlist-container {
+            padding: 0;
+        }
+    }
+}

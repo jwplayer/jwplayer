@@ -1,0 +1,44 @@
+@import "vars";
+
+
+.jw-captions {
+    position: absolute;
+    display: none;
+    margin: 0 auto;
+    width: 100%;
+    left: 0;
+    bottom: 1.75em;
+    right: 0;
+    max-width: 90%;
+    text-align: center;
+
+    &.jw-captions-enabled {
+        display: block;
+    }
+}
+
+.jw-captions-window {
+    display: none;
+    padding: 0.25em;
+    border-radius: 0.25em;
+
+    &.jw-captions-window-active {
+        display: inline-block;
+    }
+}
+
+.jw-captions-text {
+    display: inline-block;
+    color: white;
+    background-color: black;
+    word-wrap: break-word;
+    white-space: pre-line;
+    font-style: normal;
+    font-weight: normal;
+    text-align: center;
+    text-decoration: none;
+    line-height: 1.3em;
+    padding: 0.1em 0.8em;
+}
+
+

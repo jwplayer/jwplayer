@@ -1,109 +1,193 @@
 package com.longtailvideo.jwplayer.events {
-	import flash.events.Event;
+import flash.events.Event;
 
-	/**
-	 * The MediaEvent class represents events related to media playback.
-	 *  
-	 * @see com.longtailvideo.media.MediaProvider 
-	 */
-	public class MediaEvent extends PlayerEvent {
-		
-		public static const JWPLAYER_MEDIA_ERROR:String = "jwplayerMediaError";
-		public static const JWPLAYER_MEDIA_LOADED:String = "jwplayerMediaLoaded";
-		public static const JWPLAYER_MEDIA_COMPLETE:String = "jwplayerMediaComplete";
-		public static const JWPLAYER_MEDIA_BEFOREPLAY:String = "jwplayerMediaBeforePlay";
-		public static const JWPLAYER_MEDIA_BEFORECOMPLETE:String = "jwplayerMediaBeforeComplete";
+/**
+ * The MediaEvent class represents events related to media playback.
+ *
+ * @see com.longtailvideo.media.MediaProvider
+ */
+public class MediaEvent extends PlayerEvent {
 
-		public static const JWPLAYER_MEDIA_BUFFER:String = "jwplayerMediaBuffer";
-		public static const JWPLAYER_MEDIA_BUFFER_FULL:String = "jwplayerMediaBufferFull";
+    public static const JWPLAYER_MEDIA_ERROR:String = "mediaError";
+    public static const JWPLAYER_MEDIA_LOADED:String = "loaded";
+    public static const JWPLAYER_MEDIA_COMPLETE:String = "complete";
+    public static const JWPLAYER_MEDIA_BEFOREPLAY:String = "beforePlay";
+    public static const JWPLAYER_MEDIA_BEFORECOMPLETE:String = "beforeComplete";
 
-		public var bufferPercent:Number 	= -1;
-		
-		public static const JWPLAYER_MEDIA_SEEK:String = "jwplayerMediaSeek";
-		
-		// The requested seek offset, in seconds
-		public var offset:Number			= 0;
-		
-		public static const JWPLAYER_MEDIA_TIME:String = "jwplayerMediaTime";
+    public static const JWPLAYER_MEDIA_BUFFER:String = "bufferChange";
+    public static const JWPLAYER_MEDIA_BUFFER_FULL:String = "bufferFull";
+    public static const JWPLAYER_MEDIA_SEEK:String = "seek";
+    public static const JWPLAYER_MEDIA_TIME:String = "time";
 
-		// Number of seconds elapsed since the start of the media playback
-		public var position:Number 			= -1;
-		// Total number of seconds in the currently loaded media
-		public var duration:Number 			= -1;
+    // The requested seek offset, in seconds
+    public static const JWPLAYER_MEDIA_META:String = "meta";
+    public static const JWPLAYER_MEDIA_VOLUME:String = "volume";
 
-		public static const JWPLAYER_MEDIA_META:String = "jwplayerMediaMeta";
+    // Number of seconds elapsed since the start of the media playback
+    public static const JWPLAYER_MEDIA_MUTE:String = "mute";
+    // Total number of seconds in the currently loaded media
+    public static const JWPLAYER_MEDIA_LEVELS:String = "levels";
+    public static const JWPLAYER_MEDIA_LEVEL_CHANGED:String = "levelsChanged";
 
-		public var metadata:Object 			= null;
+    private var _currentQuality:Number;
+    private var _bufferPercent:Number;
+    private var _position:Number;
+    private var _duration:Number;
+    private var _volume:Number;
 
-		public static const JWPLAYER_MEDIA_VOLUME:String = "jwplayerMediaVolume";
-		public static const JWPLAYER_MEDIA_MUTE:String = "jwplayerMediaMute";
+    public var levels:Array = null;
+    public var metadata:Object = null;
+    public var offset:Number = 0;
+    public var mute:Boolean = false;
 
-		public var volume:Number 			= -1;
-		public var mute:Boolean				= false;
-		
-		public static const JWPLAYER_MEDIA_LEVELS:String = "jwplayerMediaLevels";
-		public static const JWPLAYER_MEDIA_LEVEL_CHANGED:String = "jwplayerMediaLevelChanged";
 
-		//An array of quality levels
-		public var levels:Array				= null;
-		// The current level; A value of -1 means the level is automatically selected
-		public var currentQuality:Number	= -1;
-
-		public function MediaEvent(type:String, properties:Object=null) {
-			super(type);
-            if (properties !== null) {
-                for (var property:String in properties) {
-                    if (this.hasOwnProperty(property)) {
-                        this[property] = properties[property];
-                    }
+    public function MediaEvent(type:String, properties:Object = null) {
+        super(type);
+        if (properties !== null) {
+            for (var property:String in properties) {
+                if (this.hasOwnProperty(property)) {
+                    this[property] = properties[property];
                 }
             }
-		}
+        }
+    }
 
-		public override function clone():Event {
-            // the class must be dynamic to make the properties enumerable
-			return new MediaEvent(this.type, {
-                bufferPercent:     this.bufferPercent,
-                offset:            this.offset,
-                position:          this.position,
-                duration:          this.duration,
-                metadata:          this.metadata,
-                volume:            this.volume,
-                mute:              this.mute,
-                levels:            this.levels,
-                currentQuality:    this.currentQuality
-            });
-		}
-		
-		public override function toString():String {
-			if (!type) {
-				return '';
-			}
-			var retString:String = '[MediaEvent type="' + type + '"';
+    public function get currentQuality():Number {
+        if (isNaN(_currentQuality)) {
+            return -1;
+        }
+        return _currentQuality;
+    }
 
-			for (var s:String in metadata) {
-				retString += ' ' + s + '="' + metadata[s] + '"';
-			}
-			
-			if (type === JWPLAYER_MEDIA_VOLUME) retString += ' volume="' + volume + '"';
-			if (type === JWPLAYER_MEDIA_MUTE)   retString += ' mute="' + mute + '"';
-			
-			if (bufferPercent > -1) retString += ' bufferPercent="' + bufferPercent + '"';
-			if (duration > -1) retString += ' duration="' + duration + '"';
-			if (position > -1) retString += ' position="' + position + '"';
-			
-			if (levels !== null) retString += ' levels="' + levels + '"';
-			if (currentQuality > -1) retString += ' currentQuality="' + currentQuality + '"';
-			
-			if (offset)  retString += ' offset="' + offset + '"';
-			if (message) retString += ' message="' + message + '"';
-			
-			retString += ' id="' + id + '"'
-			retString += ' client="' + client + '"'
-			retString += ' version="' + version + '"'
-			retString += "]";
-			
-			return retString;
-		}
-	}
+    public function set currentQuality(value:Number):void {
+        _currentQuality = value;
+    }
+
+    public function get bufferPercent():Number {
+        if (isNaN(_bufferPercent)) {
+            return -1;
+        }
+        return _bufferPercent;
+    }
+
+    public function set bufferPercent(value:Number):void {
+        _bufferPercent = value;
+    }
+
+    public function get position():Number {
+        if (isNaN(_position)) {
+            return -1;
+        }
+        return _position;
+    }
+
+    public function set position(value:Number):void {
+        _position = value;
+    }
+
+    public function get duration():Number {
+        if (isNaN(_duration)) {
+            return -1;
+        }
+        return _duration;
+    }
+
+    public function set duration(value:Number):void {
+        _duration = value;
+    }
+
+    public function get volume():Number {
+        if (isNaN(_volume)) {
+            return -1;
+        }
+        return _volume;
+    }
+
+    public function set volume(value:Number):void {
+        _volume = value;
+    }
+
+    public override function clone():Event {
+        // the class must be dynamic to make the properties enumerable
+        return new MediaEvent(type, {
+            bufferPercent: _bufferPercent,
+            offset: offset,
+            position: _position,
+            duration: _duration,
+            metadata: metadata,
+            volume: _volume,
+            mute: mute,
+            levels: levels,
+            currentQuality: _currentQuality
+        });
+    }
+
+    override public function toJsObject():Object {
+        var js:Object = super.toJsObject();
+        switch (type) {
+            case JWPLAYER_MEDIA_TIME:
+            case JWPLAYER_MEDIA_BUFFER:
+                if (!isNaN(_bufferPercent)) {
+                    js.bufferPercent = _bufferPercent;
+                }
+                if (!isNaN(_position)) {
+                    js.position = Math.round(_position * 1000) / 1000;
+                }
+                if (!isNaN(_duration)) {
+                    js.duration = Math.round(_duration * 1000) / 1000;
+                }
+                break;
+            case JWPLAYER_MEDIA_LEVEL_CHANGED:
+            case JWPLAYER_MEDIA_LEVELS:
+                js.levels = levels;
+                js.currentQuality = currentQuality;
+                break;
+            case JWPLAYER_MEDIA_SEEK:
+                js.position = _position;
+                js.offset = offset;
+                break;
+            case JWPLAYER_MEDIA_VOLUME:
+                js.volume = _volume;
+                break;
+            case JWPLAYER_MEDIA_MUTE:
+                js.mute = mute;
+                break;
+        }
+
+        // any event may supply additional properties as metadata
+        if (metadata) {
+            js.metadata = metadata;
+        }
+
+        return js;
+    }
+
+    public override function toString():String {
+        if (!type) {
+            return '';
+        }
+        var retString:String = '[MediaEvent type="' + type + '"';
+
+        for (var s:String in metadata) {
+            retString += ' ' + s + '="' + metadata[s] + '"';
+        }
+
+        if (type === JWPLAYER_MEDIA_VOLUME) retString += ' volume="' + _volume + '"';
+        if (type === JWPLAYER_MEDIA_MUTE)   retString += ' mute="' + mute + '"';
+
+        if (_bufferPercent > -1) retString += ' bufferPercent="' + _bufferPercent + '"';
+        if (_duration > -1) retString += ' duration="' + _duration + '"';
+        if (_position > -1) retString += ' position="' + _position + '"';
+
+        if (levels !== null) retString += ' levels="' + levels + '"';
+        if (_currentQuality > -1) retString += ' currentQuality="' + _currentQuality + '"';
+
+        if (offset)  retString += ' offset="' + offset + '"';
+        if (message) retString += ' message="' + message + '"';
+
+        retString += "]";
+
+        return retString;
+    }
+}
 }

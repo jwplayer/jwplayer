@@ -1,0 +1,61 @@
+@import "vars";
+
+.jw-dock {
+    margin: @ui-margin/2;
+    display: block;
+    opacity: 1;
+
+    // This allows it to be positioned beneath the logo
+    clear : right;
+
+    &:after {
+        content: '';
+        clear: both;
+        display: block;
+    }
+}
+
+.jw-dock-button {
+    cursor:pointer;
+    float: right;
+    position: relative;
+    width: 2.5em;
+    height: 2.5em;
+    margin: 0.5em;
+
+    .jw-arrow {
+        display: none;
+        position: absolute;
+        bottom: -0.2em;
+        width: 0.5em;
+        height: 0.2em;
+        left: 50%;
+        margin-left: -0.25em;
+    }
+
+    .jw-overlay {
+        display: none;
+        position: absolute;
+        top: 2.5em;
+        right: 0em;
+        margin-top: 0.25em;
+        padding: 0.5em;
+        white-space: nowrap;
+    }
+
+    &:hover .jw-overlay,
+    &:hover .jw-arrow {
+        display: block;
+    }
+    
+}
+
+.jw-dock-image {
+    width: 100%;
+    height: 100%;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    opacity: 0.75;
+}
+
+

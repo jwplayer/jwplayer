@@ -1,0 +1,106 @@
+@import "mixins";
+
+.jw-controlbar {
+    display: table;
+    position: absolute;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    height: @controlbar-height;
+    padding: 0 @ui-padding;
+
+    .jw-hidden {
+        display: none;
+    }
+}
+
+.jw-background-color {
+    background-color: rgb(65, 64, 64);
+}
+
+.jw-group {
+    display: table-cell;
+}
+
+.jw-controlbar-center-group {
+    width: 100%;
+    padding: 0 @ui-padding;
+
+    .jw-slider-time, .jw-text-alt {
+        padding: 0;
+    }
+
+    .jw-text-alt {
+        display: none;
+    }
+}
+
+.jw-controlbar-left-group,
+.jw-controlbar-right-group {
+    white-space: nowrap;
+}
+
+// control bar content (icons/text)
+
+.jw-knob,
+.jw-icon-inline,
+.jw-icon-tooltip,
+.jw-icon-display,
+.jw-option:before {
+    .hover(@hover-color);
+}
+
+
+.jw-icon-inline,
+.jw-icon-tooltip,
+.jw-slider-horizontal,
+.jw-text-elapsed,
+.jw-text-duration {
+    display: inline-block;
+    height: @controlbar-height;
+    position: relative;
+    line-height: @controlbar-height;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+.jw-icon-inline,
+.jw-icon-tooltip {
+    min-width: @controlbar-height * 5/8;
+    text-align: center;
+}
+
+.jw-icon-playback {
+    min-width: 2.25em;
+}
+
+.jw-icon-volume {
+    min-width: 1.75em;
+    text-align: left;
+}
+
+
+.jw-time-tip {
+    line-height: 1em;
+}
+
+.jw-icon-inline:after,
+.jw-icon-tooltip:after {
+    width: 100%;
+    height: 100%;
+    font-size: @controlbar-icon-size;
+}
+
+.jw-cast {
+    display: none;
+}
+
+.jw-cast.jw-can-cast {
+    display: inline-block;
+}
+
+.jw-slider-volume.jw-slider-horizontal,
+.jw-icon-inline.jw-icon-volume {
+    display: none;
+}
+

@@ -1,0 +1,60 @@
+@import "vars";
+
+
+.jw-playlist-container {
+
+    ::-webkit-scrollbar-track {
+        background-color: #333;
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar {
+        width: 5px;
+        border: 10px solid black;
+        border-bottom: 0;
+        border-top: 0;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: white;
+        border-radius: 5px;
+
+    }
+}
+
+.jw-tooltip-title {
+    border-bottom: 1px solid #444;
+    text-align: left;
+    padding-left: .7em;
+}
+
+.jw-playlist {
+    max-height: 11em;
+    min-height: 4.5em;
+    overflow-y: scroll;
+    width: ~"calc(100% - 4px)";
+
+    .jw-option {
+        height: 3em;
+        margin-right: 5px;
+        color: white;
+        padding-left: 1em;
+        font-size: .8em;
+    }
+
+    .jw-label, .jw-name {
+        display: inline-block;
+        line-height: 3em;
+        text-align: left;
+        overflow: hidden; // required for vertical alignment
+        white-space: nowrap;
+    }
+    
+    .jw-label {
+        width : 1em;
+    }
+
+    .jw-name {
+        width : 11em;
+    }
+}

@@ -1,0 +1,65 @@
+.jw-rightclick {
+    display: none;
+}
+.jw-rightclick.jw-open {
+    display: block;
+}
+
+.jw-rightclick {
+    position: absolute;
+    white-space: nowrap;
+
+    ul {
+        list-style: none;
+        font-weight: bold;
+        border-radius: 0.15em;
+        margin: 0;
+        border: 1px solid #d9dde6;
+        padding-left:0;
+    }
+
+    .jw-rightlick-logo {
+        font-size: 2em;
+        color : #ff0147;
+        vertical-align: middle;
+
+        padding-right: .3em;
+        margin-right: .3em;
+        border-right: 1px solid #d9dde6;
+    }
+
+    a {
+        color: #000;
+        text-decoration: none;
+
+        // padding comes from the anchor, so that the whole item is clickable
+        padding: 1em;
+        display: block;
+        font-size: 11/16em;
+    }
+
+    li {
+        background-color: #f2f3f6;
+        border-bottom: 1px solid #d9dde6;
+    }
+
+    li:last-child {
+        border-bottom: none;
+    }
+
+    li:hover a,
+    li.jw-featured:hover {
+        background-color: #e4e6ed;
+        cursor: pointer;
+        color: #ff0046;
+    }
+
+    li.jw-featured {
+        background-color: #fff;
+        vertical-align: middle;
+    }
+
+    li.jw-featured a {
+        color: #aab4c8;
+    }
+}

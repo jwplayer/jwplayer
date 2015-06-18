@@ -1,0 +1,84 @@
+@import "vars";
+
+.jw-icon-tooltip.jw-open .jw-overlay {
+    opacity: 1;
+    visibility: visible;
+}
+
+.jw-icon-tooltip.jw-hidden {
+    display: none;
+}
+
+.jw-overlay:after {
+    position: absolute;
+    bottom: -0.5em;
+    left: -50%;
+    width: 100%;
+    height: .5em;
+    background-color: rgba(0, 0, 0, 0);
+    content: " ";
+}
+
+.jw-time-tip,
+.jw-volume-tip,
+.jw-menu {
+    position: relative;
+    left: -50%;
+    border: solid 1px #000;
+    margin: 0;
+}
+
+.jw-volume-tip {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.jw-time-tip {
+    text-align:center;
+    font-family: inherit;
+    color: @inactive-color;
+    bottom: 1em;
+    border: solid 4px #000;
+
+    .jw-text {
+        line-height: 1em;
+    }
+}
+
+.jw-controlbar {
+    .jw-overlay {
+        margin: 0;
+        position: absolute;
+        bottom: 2em;
+        left: 50%;
+        opacity: 0;
+        visibility: hidden;
+
+        .jw-contents {
+            position: relative;
+        }
+    }
+
+    .jw-option {
+        position: relative;
+        white-space: nowrap;
+        cursor: pointer;
+        list-style: none;
+        height: 1.5em;
+        font-family: inherit;
+        line-height: 1.5em;
+        color: @inactive-color;
+        padding: 0 .5em;
+        font-size: .8em;
+
+        &:hover,
+        &:before:hover {
+            color: @hover-color;
+        }
+        
+        &:before {
+            padding-right: 0.125em;
+        }
+    }
+}

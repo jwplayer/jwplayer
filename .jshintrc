@@ -9,7 +9,7 @@
     "devel": true,
 
     // A function can only take max 3 arguments
-    "maxparams": 4,
+    "maxparams": 99,
 
     // Strings use single quotes instead of double
     "quotmark": "single",
@@ -22,5 +22,13 @@
     "unused": true,
 
     // These variables are predefined
-    "predef": ["jwplayer", "module", "_"]
+    "predef": [
+      //"jwplayer",
+      "require",
+      "define",
+      "module",
+      "__DEBUG__",
+      "__BUILD_VERSION__",
+      "__FLASH_VERSION__"
+    ]
 }
