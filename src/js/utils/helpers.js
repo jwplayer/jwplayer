@@ -291,14 +291,16 @@ define([
      * Determine the adaptive type
      */
     utils.adaptiveType = function(duration) {
-        var MIN_DVR_DURATION = -120;
-        if(duration <= MIN_DVR_DURATION) {
-            return 'DVR';
-        } else if (duration < 0 || duration === Infinity) {
-            return 'LIVE';
-        } else {
-            return 'VOD';
+        if (duration !== -1) {
+            var MIN_DVR_DURATION = -120;
+            if(duration <= MIN_DVR_DURATION) {
+                return 'DVR';
+            }
+            if (duration < 0 || duration === Infinity) {
+                return 'LIVE';
+            }
         }
+        return 'VOD';
     };
 
     /**
