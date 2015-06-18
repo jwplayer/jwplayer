@@ -942,6 +942,8 @@ define([
             _instreamModel.on('change:controls', _onChangeControls);
             _instreamMode = true;
             utils.addClass(_playerElement, 'jw-flag-ads');
+            // don't trigger api play/pause on display click
+            _displayClickHandler.setAlternateClickHandler(utils.noop);
         };
 
         this.setAltText = function(text) {
@@ -962,6 +964,8 @@ define([
                 provider.setContainer(_videoLayer);
             }
             _setLiveMode(_model, _model.get('duration'));
+            // reset display click handler
+            _displayClickHandler.revertAlternateClickHandler();
         };
 
         this.addCues = function(cues) {
