@@ -39,13 +39,10 @@ public class Model extends GlobalEventDispatcher {
             _cancelComplete = true;
         }
 
-        if (state !== PlayerState.IDLE) {
-            _currentMedia.stop();
+        if (_item !== playItem) {
+            _item = playItem;
+            dispatchEvent(new Event('playlistItem'));
         }
-
-        _item = playItem;
-
-        dispatchEvent(new Event('playlistItem'));
 
         setActiveMediaProvider(JWParser.getProvider(playItem));
     }

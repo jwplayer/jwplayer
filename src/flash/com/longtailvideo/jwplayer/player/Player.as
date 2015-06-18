@@ -167,6 +167,7 @@ public class Player extends Sprite implements IPlayer {
         delete config.playlist;
 
         _model.setConfig(config);
+
         // do it a second time
         _controller.setupPlayer(function():void {
             // run this once setup is complete (plugins are loaded)
@@ -204,7 +205,7 @@ public class Player extends Sprite implements IPlayer {
         _view.addEventListener(ErrorEvent.ERROR, globalHandler);
 
         // listen to JavaScript for player commands
-        SwfEventRouter
+        SwfEventRouter.off()
                 .on('setup', setupPlayer)
                 .on('load', load)
                 .on('play', play)

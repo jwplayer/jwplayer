@@ -222,11 +222,6 @@ public class Controller extends GlobalEventDispatcher {
     }
 
     public function load(item:PlaylistItem):Boolean {
-        if (locking) {
-            _unlockAndLoad = true;
-            return false;
-        }
-
         if (_model.item && _model.item.file === item.file) {
             // resume current item
             _model.item.start = item.start;
@@ -234,8 +229,16 @@ public class Controller extends GlobalEventDispatcher {
             return false;
         }
 
+        if (!locking && _model.state !== PlayerState.IDLE) {
+            _model.media.stop();
+        }
         // new item to load
         _model.item = item;
+
+        if (locking) {
+            _unlockAndLoad = true;
+            return false;
+        }
 
         return true;
     }

@@ -112,12 +112,16 @@ define([
                     return _container;
                 },
                 setContainer: function(parent) {
+                    if (_container === parent) {
+                        // ignore instream's attempt to put provider back in it's place
+                        return;
+                    }
                     _container = parent;
 
                     _swf = this.getSwfObject(parent);
 
                     // listen to events triggered from flash
-                    _swf.once(events.JWPLAYER_READY, function() {
+                    _swf.once('ready', function() {
                         // setup flash player
                         var config = _.extend({
                             commands: _swf.__commandQueue
