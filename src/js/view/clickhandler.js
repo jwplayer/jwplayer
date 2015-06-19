@@ -31,10 +31,6 @@ define([
                 return;
             }
 
-            if (!hasControls) {
-                return;
-            }
-
             _this.trigger((evt.type === events.touchEvents.CLICK) ? 'click' : 'tap');
         }
 
