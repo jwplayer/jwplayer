@@ -22,6 +22,7 @@ public class JWParser {
         'm4v': 'video',
         'mov': 'video',
         'mp3': 'sound',
+        'mpeg': 'sound',
         'mp4': 'video',
         'png': 'image',
         'rbs': 'sound',
