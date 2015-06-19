@@ -60,7 +60,7 @@ define([
 
             _.extend(this, this.config, {
                 state: states.IDLE,
-                duration: -1,
+                duration: 0,
                 position: 0,
                 buffer: 0
             });

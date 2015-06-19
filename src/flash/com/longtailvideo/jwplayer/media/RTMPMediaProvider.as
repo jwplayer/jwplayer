@@ -207,7 +207,7 @@ public class RTMPMediaProvider extends MediaProvider {
         }
         // Pause VOD or close live stream
         if (_stream) {
-            if (_item.duration > 0) {
+            if (isVOD(_item.duration)) {
                 _isPaused = true;
                 _stream.pause();
             } else {
@@ -230,7 +230,7 @@ public class RTMPMediaProvider extends MediaProvider {
         attachNetStream(_stream);
         if (_isPaused) {
             // Resume VOD and restart live stream
-            if (_item.duration > 0) {
+            if (isVOD(_item.duration)) {
                 _stream.resume();
             } else {
                 _stream.play(_levels[_level].id);
@@ -258,7 +258,7 @@ public class RTMPMediaProvider extends MediaProvider {
 
     /** Seek to a new position, only when duration is found. **/
     override public function seek(pos:Number):void {
-        if (_item.duration > 0) {
+        if (isVOD(_item.duration)) {
             if (state != PlayerState.PLAYING) {
                 play();
             }
@@ -309,6 +309,9 @@ public class RTMPMediaProvider extends MediaProvider {
                     _video.width = data.width;
                     _video.height = data.height;
                     resize(_config.width, _config.height);
+                }
+                if(data.duration === undefined) {
+                    _item.duration = LIVE_DURATION;
                 }
                 if (data.duration && _item.duration < 1) {
                     _item.duration = data.duration;
@@ -462,7 +465,7 @@ public class RTMPMediaProvider extends MediaProvider {
         var pos:Number = Math.round((_stream.time) * 10) / 10;
         var bfr:Number = Math.round(_stream.bufferLength * 10 / _stream.bufferTime) / 10;
         // Toggle between buffering and playback states
-        if (bfr < 0.6 && pos < _item.duration - 5 && state != PlayerState.BUFFERING) {
+        if (bfr < 0.6 && isVOD(_item.duration) && pos < _item.duration - 5 && state != PlayerState.BUFFERING) {
             setState(PlayerState.BUFFERING);
             if (_auto) {
                 swapLevel(autoLevel());
