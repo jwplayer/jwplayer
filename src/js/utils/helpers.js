@@ -6,9 +6,6 @@ define([
     'version'
 ], function(Constants, strings, _, jqueryfuncs, version) {
 
-    // TODO:: the next lines are a holdover until we update our CDN w/ plugins for 7.0
-    var cdnVersion = '6.12.0';
-
     var utils = {};
 
     /**
@@ -330,14 +327,11 @@ define([
 
     /** Gets the repository location **/
     utils.repo = function () {
-        var repo = 'http://p.jwpcdn.com/' + cdnVersion.split(/\W/).splice(0, 2).join('/') + '/';
-
-        utils.tryCatch(function() {
-            if (_isHTTPS()) {
-                repo = repo.replace('http://', 'https://ssl.');
-            }
-        });
-
+        var semver = version.split('+')[0];
+        var repo = 'http://p.jwpcdn.com/player/v/' + semver + '/';
+        if (_isHTTPS()) {
+            return repo.replace('http://', 'https://ssl.');
+        }
         return repo;
     };
 
