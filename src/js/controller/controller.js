@@ -605,6 +605,7 @@ define([
 
 
             this.createInstream = function() {
+                _this.instreamDestroy();
                 _this._instreamAdapter = new InstreamAdapter(this, _model, _view);
                 return _this._instreamAdapter;
             };
