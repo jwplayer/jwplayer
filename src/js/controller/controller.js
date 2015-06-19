@@ -185,10 +185,14 @@ define([
                     index: _model.get('item'),
                     item: _model.get('playlistItem')
                 });
-                _this.trigger(events.JWPLAYER_CAPTIONS_LIST, {
-                    tracks: _model.get('captions'),
-                    track: _model.get('captionsIndex')
-                });
+
+                // Only dispatch captionsList event when there are captions tracks
+                if (_model.get('captions')) {
+                    _this.trigger(events.JWPLAYER_CAPTIONS_LIST, {
+                        tracks: _model.get('captions'),
+                        track: _model.get('captionsIndex')
+                    });
+                }
 
                 if (_model.get('autostart') && !utils.isMobile()) {
                     _play();
