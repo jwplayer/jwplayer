@@ -11,7 +11,7 @@ function getBuildVersion(packageInfo) {
         var branch = env.GIT_BRANCH;
         metadata = 'opensource';
         if (branch) {
-            metadata = '_' + branch.replace(/^origin\//, '').replace(/[^0-9A-Za-z-]/g, '-');
+            metadata += '_' + branch.replace(/^origin\//, '').replace(/[^0-9A-Za-z-]/g, '-');
         }
         metadata += '.' + env.BUILD_NUMBER;
     } else {

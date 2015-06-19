@@ -321,10 +321,6 @@ define([
                 window.removeEventListener('orientationchange', _responsiveListener);
                 window.addEventListener('orientationchange', _responsiveListener, false);
             }
-            // So VAST will be in correct state when ad errors out from unknown filetype
-            _api.onAdError(function() {
-                utils.removeClass(_playerElement, 'jw-flag-ads');
-            });
 
             _model.on('change:controls', _onChangeControls);
 
