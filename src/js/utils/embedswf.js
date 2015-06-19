@@ -61,7 +61,7 @@ define([
             container.appendChild(swf, container);
         }
 
-        swf.className = 'jw-swf';
+        swf.className = 'jw-swf jw-reset';
         swf.style.display = 'block';
         swf.style.position = 'absolute';
         swf.style.left = 0;
