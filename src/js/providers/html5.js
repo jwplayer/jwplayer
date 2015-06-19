@@ -138,6 +138,7 @@ define([
         var element = document.getElementById(_playerId);
         var _videotag = (element) ? element.querySelector('video') : undefined;
         _videotag = _videotag || document.createElement('video');
+        _videotag.className = 'jw-video jw-reset';
 
         _setupListeners(_mediaEvents, _videotag);
 
