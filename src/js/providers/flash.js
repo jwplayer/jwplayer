@@ -179,7 +179,7 @@ define([
                         this.setState(state);
 
                     }, this).on(forwardEventsWithDataDuration.join(' '), function(e) {
-                        if(e.duration === null) {
+                        if(e.duration === 'Infinity') {
                             e.duration = Infinity;
                         }
                         this.sendEvent(e.type, e);

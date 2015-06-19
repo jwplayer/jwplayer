@@ -135,7 +135,9 @@ public class MediaEvent extends PlayerEvent {
                 if (!isNaN(_position)) {
                     js.position = Math.round(_position * 1000) / 1000;
                 }
-                if (!isNaN(_duration)) {
+                if(_duration === Infinity) {
+                    js.duration = 'Infinity';
+                } else if (!isNaN(_duration)) {
                     js.duration = Math.round(_duration * 1000) / 1000;
                 }
                 break;
