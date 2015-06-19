@@ -315,6 +315,7 @@ public dynamic class PlaylistItem {
             case "video":
                 return "video";
             case "mp3":
+            case "mpeg":
             case "sound":
                 return "sound";
             case "rtmp":
