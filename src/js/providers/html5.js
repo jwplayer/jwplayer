@@ -412,7 +412,7 @@ define([
 
             _setLevels(item.sources);
 
-            _completeLoad(item.starttime || 0, item.duration);
+            _completeLoad(item.starttime || 0, item.duration || 0);
         };
 
         this.play = function() {
@@ -703,12 +703,12 @@ define([
                         currentQuality: quality,
                         levels: _getPublicLevels(_levels)
                     });
-                    var time = _videotag.currentTime;
+                    var time = _videotag.currentTime || 0;
                     var duration = _videotag.duration;
                     if (duration <= 0) {
                         duration = _duration;
                     }
-                    _completeLoad(time, duration);
+                    _completeLoad(time, duration || 0);
                 }
             }
         };

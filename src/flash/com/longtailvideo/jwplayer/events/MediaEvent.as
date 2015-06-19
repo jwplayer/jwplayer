@@ -1,4 +1,6 @@
 package com.longtailvideo.jwplayer.events {
+import com.longtailvideo.jwplayer.media.MediaProvider;
+
 import flash.events.Event;
 
 /**
@@ -87,7 +89,7 @@ public class MediaEvent extends PlayerEvent {
 
     public function get duration():Number {
         if (isNaN(_duration)) {
-            return -1;
+            return MediaProvider.UNKNOWN_DURATION;
         }
         return _duration;
     }
@@ -176,7 +178,7 @@ public class MediaEvent extends PlayerEvent {
         if (type === JWPLAYER_MEDIA_MUTE)   retString += ' mute="' + mute + '"';
 
         if (_bufferPercent > -1) retString += ' bufferPercent="' + _bufferPercent + '"';
-        if (_duration > -1) retString += ' duration="' + _duration + '"';
+        if (!isNaN(_duration)) retString += ' duration="' + _duration + '"';
         if (_position > -1) retString += ' position="' + _position + '"';
 
         if (levels !== null) retString += ' levels="' + levels + '"';
