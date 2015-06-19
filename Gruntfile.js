@@ -202,7 +202,7 @@ module.exports = function(grunt) {
                         },
                         {
                             test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
-                            loader: 'file'
+                            loader: 'file?name=[name].[ext]'
                         },
                         {
                             test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
@@ -214,7 +214,7 @@ module.exports = function(grunt) {
                         },
                         {
                             test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
-                            loader: 'url?limit=10000&mimetype=image/svg+xml'
+                            loader: 'url?name=[name].[ext]&limit=10000&mimetype=image/svg+xml'
                         }
                     ]
                 }

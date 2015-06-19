@@ -570,7 +570,7 @@
 		"fontPref": {
 			"prefix": "jw-icon-",
 			"metadata": {
-				"fontFamily": "jw-six-icons",
+				"fontFamily": "jw-icons",
 				"majorVersion": 1,
 				"minorVersion": 1
 			},
