@@ -403,7 +403,7 @@ define([
         }
 
         function _touchHandler() {
-            if(_model.get('state') === states.IDLE){
+            if(_model.get('state') === states.IDLE && _model.get('controls')) {
                 _api.play();
             }
             _userActivity();
@@ -448,14 +448,19 @@ define([
             _displayClickHandler = new ClickHandler(_model, _videoLayer);
             _displayClickHandler.on('click', function() {
                 forward({type : events.JWPLAYER_DISPLAY_CLICK});
-                _api.play();
+                if(_model.get('controls')) {
+                    _api.play();
+                }
             });
             _displayClickHandler.on('tap', function() {
                 forward({type : events.JWPLAYER_DISPLAY_CLICK});
                 _touchHandler();
             });
             _displayClickHandler.on('doubleClick', function() {
-                _api.setFullscreen();
+                // TODO 6.12 dispatches two display click events?
+                if(_model.get('controls')) {
+                    _api.setFullscreen();
+                }
             });
             
             var displayIcon = new DisplayIcon(_model);

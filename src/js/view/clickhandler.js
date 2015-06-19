@@ -23,15 +23,8 @@ define([
 
         var _this = this;
         function _clickHandler(evt) {
-            var hasControls = _model.get('controls');
-            var state = _model.get('state');
-
-            if (_alternateClickHandler && (hasControls || state === states.PLAYING)) {
+            if (_alternateClickHandler) {
                 _alternateClickHandler(evt);
-                return;
-            }
-
-            if (!hasControls) {
                 return;
             }
 
