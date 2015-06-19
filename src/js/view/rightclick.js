@@ -22,8 +22,9 @@ define([
                 }]
             };
 
+            var isPrerelease = majorMinorPatchPre.indexOf('-') > 0;
             var versionMeta = semverParts[1];
-            if (versionMeta) {
+            if (isPrerelease && versionMeta) {
                 var pairs = versionMeta.split('.');
                 obj.items.push({
                     title : 'build: (' + pairs[0] +'.'+ pairs[1] + ')',
