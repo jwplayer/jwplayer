@@ -138,6 +138,9 @@ define([
             this.addClickHandler();
 
             if (_options.skipoffset) {
+                if (this._skipButton) {
+                    this._skipButton.destroy();
+                }
                 this._skipButton = new AdSkipButton(_options.skipMessage, _options.skipText);
                 this._skipButton.on(events.JWPLAYER_AD_SKIPPED, this.skipAd, this);
                 this._skipButton.setWaitTime(_options.skipoffset);
