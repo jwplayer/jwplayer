@@ -202,7 +202,7 @@ define([
                         _flashProviderType = e.message;
                         this.sendEvent(events.JWPLAYER_PROVIDER_CHANGED, e);
                     }, this).on(events.JWPLAYER_ERROR, function(event) {
-                        console.error(event.code, event.message, event, this);
+                        utils.log('Error playing media: %o %s', event.code, event.message, event);
                         this.sendEvent(events.JWPLAYER_MEDIA_ERROR, {
                             message: 'Error loading media: File could not be played'
                         });

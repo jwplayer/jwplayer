@@ -105,7 +105,6 @@ define([
 
                 provider.addGlobalListener(_forward);
                 provider.addEventListener(events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
-                provider.addEventListener(events.JWPLAYER_MEDIA_ERROR, _forward);
 
                 provider.addEventListener(events.JWPLAYER_PLAYER_STATE, stateHandler);
                 provider.attachMedia();
