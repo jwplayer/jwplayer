@@ -49,8 +49,8 @@ define([
             .on('instream:complete', function(evt) {
                 this.trigger(events.JWPLAYER_MEDIA_COMPLETE, evt);
             }, this)
-            .on('instream:error', function() {
-                this.controller.instreamDestroy();
+            .on('instream:error', function(evt) {
+                this.trigger(events.JWPLAYER_MEDIA_ERROR, evt);
             }, this)
             .on('instream:destroy', function() {
                 this.controller.instreamDestroy();
@@ -66,11 +66,13 @@ define([
 
             this.off();
 
-            this._adModel.off();
-            this._adModel = null;
             this.swf.off(null, null, this);
             this.swf.triggerFlash('instream:destroy');
             this.swf = null;
+
+            this._adModel.off();
+            this._adModel = null;
+
             this.model = null;
             this.controller = null;
         },

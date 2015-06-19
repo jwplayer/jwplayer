@@ -217,7 +217,6 @@ public class InstreamPlayer extends Sprite {
 
     private function errorHandler(evt:PlayerEvent):void {
         SwfEventRouter.triggerJsEvent('instream:error', evt);
-        _destroy();
     }
 }
 }
