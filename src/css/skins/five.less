@@ -6,7 +6,7 @@
     @inactive-color: #464646;
     @hover-color: @active-color;
 
-    @controlbar-background: #eee;
+    @controlbar-background: fade(#eee, 80%);
     @controlbar-height: 2em;
     @controlbar-icon-size: 1em;
     @progress-color: @active-color;
@@ -32,11 +32,6 @@
     #namespace > .basic-skin-styles(); // Using the above local variables
     .skin-element-padding();
 
-    
-    .jw-controlbar {
-        opacity: 0.8;
-    }
-    
     /* Styles for play button container on idle */
     .jw-display-icon-container {
         border-radius: @five-border-radius;
@@ -107,6 +102,8 @@
 
     /* Slider styles */
     .jw-slider-horizontal {
+        background: transparent;
+        
         .jw-slider-container {
             height: .9em;
         }
