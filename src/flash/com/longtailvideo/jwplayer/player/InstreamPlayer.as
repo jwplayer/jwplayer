@@ -69,7 +69,7 @@ public class InstreamPlayer extends Sprite {
     }
 
     public function pause():Boolean {
-        if (_provider && _provider.state == PlayerState.PLAYING || PlayerState.isBuffering(_provider.state)) {
+        if (_provider && (_provider.state == PlayerState.PLAYING || PlayerState.isBuffering(_provider.state))) {
             _provider.pause();
         }
         return true;

@@ -53,6 +53,9 @@ define([
             _instream.on(events.JWPLAYER_MEDIA_COMPLETE, _instreamItemComplete, this);
             _instream.init();
 
+            // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
+            _oldProvider.detachMedia();
+
             if (_controller.checkBeforePlay() || (_oldpos === 0 && !_oldProvider.checkComplete())) {
                 // make sure video restarts after preroll
                 _oldpos = 0;
@@ -70,8 +73,6 @@ define([
                 // pause must be called before detachMedia
                 _oldProvider.pause();
             }
-            // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
-            _oldProvider.detachMedia();
 
             // Show instream state instead of normal player state
             _view.setupInstream(_instream._adModel);

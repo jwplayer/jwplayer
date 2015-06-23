@@ -32,11 +32,9 @@ define([
                 switch (evt.newstate) {
                     case states.PLAYING:
                         this.trigger('play');
-                        this.model.set('state', evt.newstate);
                         this._adModel.set('state', evt.newstate);
                         break;
                     case states.PAUSED:
-                        this.model.set('state', evt.newstate);
                         this._adModel.set('state', evt.newstate);
                         break;
                 }

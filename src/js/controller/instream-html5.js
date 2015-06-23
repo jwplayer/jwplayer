@@ -55,7 +55,7 @@ define([
                 return;
             }
 
-            _adModel.off('fullscreenchange', _nativeFullscreenHandler);
+            _adModel.off();
 
             // We don't want the instream provider to be attached to the video tag anymore
             _this.off();
@@ -64,7 +64,6 @@ define([
                 _currentProvider.resetEventListeners();
                 _currentProvider.destroy();
             }
-            _adModel.off();
 
             // Return the view to its normal state
             _adModel = null;
@@ -118,11 +117,9 @@ define([
         function stateHandler(evt) {
             switch (evt.newstate) {
                 case states.PLAYING:
-                    _model.set('state', evt.newstate);
                     _adModel.set('state', evt.newstate);
                     break;
                 case states.PAUSED:
-                    _model.set('state', evt.newstate);
                     _adModel.set('state', evt.newstate);
                     break;
             }

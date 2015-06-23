@@ -288,6 +288,14 @@ define([
                     _eventDispatcher = null;
                 }
         });
+
+        // Overwrite the event dispatchers to block on certain occasions
+        this.sendEvent = function() {
+            if (!_attached) {
+                return;
+            }
+            _eventDispatcher.sendEvent.apply(this, arguments);
+        };
     }
 
 
