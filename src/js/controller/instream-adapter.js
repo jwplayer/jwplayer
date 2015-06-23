@@ -184,7 +184,6 @@ define([
                 //_oldProvider.parentElement.addEventListener('click', _view.clickHandler().clickHandler);
             //}
 
-            _view.on(events.JWPLAYER_AD_SKIPPED, this.skipAd, this);
             _instream.on(events.JWPLAYER_MEDIA_META, this.metaHandler, this);
 
         };
