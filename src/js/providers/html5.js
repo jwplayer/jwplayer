@@ -115,7 +115,7 @@ define([
             // Last sent buffer amount
             _bufferPercent = -1,
             // Whether or not we're listening to video tag events
-            _attached = false,
+            _attached = true,
             // Quality levels
             _levels,
             // Current quality level index
@@ -128,8 +128,9 @@ define([
 
         // Overwrite the event dispatchers to block on certain occasions
         this.sendEvent = function() {
-            if (!_attached) { return; }
-
+            if (!_attached) {
+                return;
+            }
             _dispatcher.sendEvent.apply(this, arguments);
         };
 
@@ -152,9 +153,6 @@ define([
         // Enable AirPlay
         _videotag.setAttribute('x-webkit-airplay', 'allow');
         _videotag.setAttribute('webkit-playsinline', '');
-
-
-        _attached = true;
 
         function _onClickHandler(evt) {
             _this.sendEvent('click', evt);

@@ -323,8 +323,8 @@ define([
             }
 
             _model.on('change:controls', _onChangeControls);
-
             _model.on('change:state', _stateHandler);
+
             _model.mediaController.on(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
             _api.onPlaylistComplete(_playlistCompleteHandler);
             _api.onPlaylistItem(_playlistItemHandler);
@@ -940,7 +940,9 @@ define([
 
         this.setupInstream = function(instreamModel) {
             _instreamModel = instreamModel;
-            _instreamModel.on('change:controls', _onChangeControls);
+            _instreamModel.on('change:controls', _onChangeControls, this);
+            _instreamModel.on('change:state', _stateHandler, this);
+
             _instreamMode = true;
             utils.addClass(_playerElement, 'jw-flag-ads');
             // don't trigger api play/pause on display click
@@ -957,6 +959,10 @@ define([
 
         this.destroyInstream = function() {
             _instreamMode = false;
+            if (_instreamModel) {
+                _instreamModel.off(null, null, this);
+                _instreamModel = null;
+            }
             this.setAltText('');
             utils.removeClass(_playerElement, 'jw-flag-ads');
             utils.removeClass(_playerElement, 'jw-flag-ads-hide-controls');
