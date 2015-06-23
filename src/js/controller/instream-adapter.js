@@ -163,7 +163,7 @@ define([
 
         this.addClickHandler = function() {
             // start listening for ad click
-            _view.clickHandler().setAlternateClickHandler(function (evt) {
+            _view.clickHandler().setAlternateClickHandlers(function (evt) {
                 evt = evt || {};
                 evt.hasControls = !!_model.get('controls');
 
@@ -177,6 +177,13 @@ define([
                     }
                 } else {
                     _instream.instreamPause();
+                }
+            }, function() {
+                if (_instream._adModel.state === states.PAUSED) {
+                    if (_model.get('controls')) {
+                        _controller.setFullscreen();
+                        _controller.play();
+                    }
                 }
             });
 
@@ -215,7 +222,7 @@ define([
                     //if (_oldProvider && _oldProvider.parentElement) {
                         //_oldProvider.parentElement.removeEventListener('click', _view.clickHandler().clickHandler);
                     //}
-                    _view.clickHandler().revertAlternateClickHandler();
+                    _view.clickHandler().revertAlternateClickHandlers();
                 }
                 _instream.instreamDestroy();
 

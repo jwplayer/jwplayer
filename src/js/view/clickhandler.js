@@ -7,7 +7,8 @@ define([
 ], function(UI, events, Events, states, _) {
     var ClickHandler = function(_model, _ele) {
         var _display,
-            _alternateClickHandler;
+            _alternateClickHandler,
+            _alternateDoubleClickHandler;
 
         _.extend(this, Events);
 
@@ -33,16 +34,23 @@ define([
 
         // Handle double-clicks for fullscreen toggle
         function _doubleClickHandler() {
+            if (_alternateDoubleClickHandler) {
+                _alternateDoubleClickHandler();
+                return;
+            }
+
             _this.trigger('doubleClick');
         }
 
         /** NOT SUPPORTED : Using this for now to hack around instream API **/
-        this.setAlternateClickHandler = function(handler) {
-            _alternateClickHandler = handler;
+        this.setAlternateClickHandlers = function(clickHandler, doubleClickHandler) {
+            _alternateClickHandler = clickHandler;
+            _alternateDoubleClickHandler = doubleClickHandler;
         };
 
-        this.revertAlternateClickHandler = function() {
+        this.revertAlternateClickHandlers = function() {
             _alternateClickHandler = null;
+            _alternateDoubleClickHandler = null;
         };
     };
 
