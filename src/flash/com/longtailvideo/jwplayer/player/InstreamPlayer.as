@@ -75,10 +75,6 @@ public class InstreamPlayer extends Sprite {
         return true;
     }
 
-    public function destroy():void {
-        _destroy();
-    }
-
     private function lock(target:IPlugin, callback:Function):void {
         _controller.lockPlayback(target, callback);
     }

@@ -119,7 +119,7 @@ define([
                     // Dispatch playlist complete event for ad pods
                     this.trigger(events.JWPLAYER_PLAYLIST_COMPLETE, {});
                 }
-                _controller.instreamDestroy();
+                this.destroy();
             }
         }
 

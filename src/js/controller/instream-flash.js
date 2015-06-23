@@ -49,9 +49,6 @@ define([
             }, this)
             .on('instream:error', function(evt) {
                 this.trigger(events.JWPLAYER_MEDIA_ERROR, evt);
-            }, this)
-            .on('instream:destroy', function() {
-                this.controller.instreamDestroy();
             }, this);
 
             this.swf.triggerFlash('instream:init');
