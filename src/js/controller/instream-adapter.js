@@ -35,8 +35,7 @@ define([
             _oldProvider,
             _oldpos,
             _oldstate,
-            _olditem,
-            _this = this;
+            _olditem;
 
         this.type = 'instream';
 
@@ -92,12 +91,15 @@ define([
         }
 
         function _instreamTime(evt) {
-            if (_this._skipButton) {
-                _this._skipButton.updateMediaTime(evt.position, evt.duration);
+            if (this._skipButton) {
+                this._skipButton.updateMediaTime(evt.position, evt.duration);
             }
         }
 
-        function _instreamItemComplete() {
+        function _instreamItemComplete(e) {
+            // Allow 'play' state change to trigger next adPlay event in ad pods
+            _instream._adModel.state = 'complete';
+
             if (_array && _arrayIndex + 1 < _array.length) {
                 if (this._skipButton) {
                     this._skipButton.destroy();
@@ -109,15 +111,21 @@ define([
                 if (_arrayOptions) {
                     options = _arrayOptions[_arrayIndex];
                 }
-                _this.loadItem(item, options);
+                this.loadItem(item, options);
             } else {
+                if (e.type === events.JWPLAYER_MEDIA_COMPLETE) {
+                    // Forward last media complete event. 'all' listener has not fired yet.
+                    _instreamForward.call(this, e.type, e);
+                    // Dispatch playlist complete event for ad pods
+                    this.trigger(events.JWPLAYER_PLAYLIST_COMPLETE, {});
+                }
                 _controller.instreamDestroy();
             }
         }
 
         this.loadItem = function(item, options) {
             if (utils.isAndroid(2.3)) {
-                _this.trigger({
+                this.trigger({
                     type: events.JWPLAYER_ERROR,
                     message: 'Error loading instream: Cannot play instream on Android 2.3'
                 });
@@ -132,6 +140,12 @@ define([
                     options = _arrayOptions[_arrayIndex];
                 }
             }
+
+            // Dispatch playlist item event for ad pods
+            this.trigger(events.JWPLAYER_PLAYLIST_ITEM, {
+                index: _arrayIndex,
+                item: item
+            });
 
             _options = _.extend({}, _defaultOptions, options);
             _instream.load(item);
@@ -164,6 +178,7 @@ define([
 
         this.addClickHandler = function() {
             // start listening for ad click
+            var _this = this;
             _view.clickHandler().setAlternateClickHandler(function (evt) {
                 evt = evt || {};
                 evt.hasControls = !!_model.get('controls');
@@ -190,10 +205,12 @@ define([
         };
 
         this.skipAd = function(evt) {
-            this.trigger(events.JWPLAYER_AD_SKIPPED, evt);
-            _instreamItemComplete();
+            var skipAdType = events.JWPLAYER_AD_SKIPPED;
+            this.trigger(skipAdType, evt);
+            _instreamItemComplete.call(this, {
+                type: skipAdType
+            });
         };
-
 
         /** Handle the JWPLAYER_MEDIA_META event **/
         this.metaHandler = function (evt) {
