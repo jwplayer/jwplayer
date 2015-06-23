@@ -31,7 +31,6 @@ define([
             this.swf.on('instream:state', function(evt) {
                 switch (evt.newstate) {
                     case states.PLAYING:
-                        this.trigger('play');
                         this._adModel.set('state', evt.newstate);
                         break;
                     case states.PAUSED:
