@@ -131,20 +131,13 @@ public class InstreamPlayer extends Sprite {
     }
 
     public function _destroyFromJS():void {
-        removeEventListeners();
-        if (_provider && _provider.state != PlayerState.IDLE) {
-            _provider.stop();
-        }
         if (_view.contains(this)) {
             _view.removeChild(this);
         }
-        _provider = null;
-        unlock(_plugin);
-    }
-
-    private function removeEventListeners():void {
         RootReference.stage.removeEventListener(Event.RESIZE, resizeHandler);
         stopProvider();
+        _provider = null;
+        unlock(_plugin);
     }
 
     private function stopProvider():void {
@@ -155,7 +148,9 @@ public class InstreamPlayer extends Sprite {
             _provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, timeHandler);
             _provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_COMPLETE, completeHandler);
             _provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_ERROR, errorHandler);
-            _provider.stop();
+            if (_provider.state !== PlayerState.IDLE) {
+                _provider.stop();
+            }
             if (_provider.display && _mediaLayer.contains(_provider.display)) {
                 _mediaLayer.addChild(_provider.display);
             }
