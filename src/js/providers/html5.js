@@ -689,7 +689,7 @@ define([
                 return false;
             }
             var type = _levels[0].type;
-            return (type === 'oga' || type === 'aac' || type === 'mp3' || type === 'vorbis');
+            return (type === 'oga' || type === 'aac' || type === 'mp3' || type === 'mpeg' || type === 'vorbis');
         };
 
         this.setCurrentQuality = function(quality) {
@@ -735,6 +735,7 @@ define([
         'mov': 'video/mp4',
         //'m4a': 'audio/x-m4a', // converted to aac by source.js
         'mp3': 'audio/mpeg',
+        'mpeg': 'audio/mpeg',
         'ogv': 'video/ogg',
         'ogg': 'video/ogg',
         'oga': 'video/ogg',
