@@ -189,7 +189,8 @@ define([
 
         };
 
-        this.skipAd = function() {
+        this.skipAd = function(evt) {
+            this.trigger(events.JWPLAYER_AD_SKIPPED, evt);
             _instreamItemComplete();
         };
 
