@@ -56,6 +56,7 @@ public class Controller extends GlobalEventDispatcher {
     public function runSetupInterface():void {
         var setup:PlayerSetup = new PlayerSetup(_player, _model, _view);
 
+        setup.addEventListener(Event.COMPLETE, setupComplete);
         setup.addEventListener(ErrorEvent.ERROR, setupError);
 
         setup.setupInterface();
