@@ -99,9 +99,10 @@ define([
         destroy : function() {
             if (this.el) {
                 this.el.removeEventListener('click', this.skipAdOnce);
-                this.el.parentElement.removeChild(this.el);
+                if (this.el.parentElement) {
+                    this.el.parentElement.removeChild(this.el);
+                }
             }
-
             delete this.skippable;
             delete this.itemDuration;
             delete this.waitPercentage;
