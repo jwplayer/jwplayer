@@ -144,10 +144,10 @@ define([
             var evt;
             if( _enableDoubleTap && (type === events.touchEvents.CLICK || type === events.touchEvents.TAP)){
                 if(_.now() - _lastClickTime < _doubleClickDelay) {
-                    evt = normalizeUIEvent(type, srcEvent);
-                    self.trigger(type, evt);
-                    type = (type === events.touchEvents.CLICK) ?
+                    var doubleType = (type === events.touchEvents.CLICK) ?
                         events.touchEvents.DOUBLE_CLICK : events.touchEvents.DOUBLE_TAP;
+                    evt = normalizeUIEvent(doubleType, srcEvent);
+                    self.trigger(doubleType, evt);
                     _lastClickTime = 0;
                 } else {
                     _lastClickTime = _.now();
