@@ -1,4 +1,7 @@
-define(['utils/css'], function(cssUtils) {
+define([
+    'utils/helpers',
+    'utils/css'
+], function(utils, cssUtils) {
     /*jshint maxparams:6*/
 
     /** Stretching options **/
@@ -63,7 +66,8 @@ define(['utils/css'], function(cssUtils) {
             yscale = Math.ceil(parentHeight / 2) * 2 / elementHeight,
             video = (domelement.tagName.toLowerCase() === 'video'),
             scale = false,
-            stretchClass = 'jw-stretch-' + stretching.toLowerCase();
+            stretchClass = 'jw-stretch-' + stretching.toLowerCase(),
+            heightLimited = false;
 
         switch (stretching.toLowerCase()) {
             case _stretching.FILL:
@@ -91,6 +95,7 @@ define(['utils/css'], function(cssUtils) {
                         elementWidth = elementWidth * yscale;
                         elementHeight = elementHeight * yscale;
                     }
+                    heightLimited = true;
                 } else {
                     if (elementHeight * xscale / parentHeight > 0.95) {
                         scale = true;
@@ -99,6 +104,7 @@ define(['utils/css'], function(cssUtils) {
                         elementWidth = elementWidth * xscale;
                         elementHeight = elementHeight * xscale;
                     }
+                    heightLimited = false;
                 }
                 if (scale) {
                     xscale = Math.ceil(parentWidth / 2) * 2 / elementWidth;
@@ -130,6 +136,18 @@ define(['utils/css'], function(cssUtils) {
                 cssUtils.transform(domelement);
             }
             cssUtils.style(domelement, style);
+
+            //// iOS 8 implemented object-fit poorly and needs additional styles to make it fit correctly
+            if (utils.isIOS(8)){
+                var iOSScaleFix = {
+                    width: 'auto',
+                    height: 'auto'
+                };
+                if(stretching.toLowerCase() === _stretching.UNIFORM){
+                    iOSScaleFix[(heightLimited === false) ? 'width' : 'height'] = '100%';
+                }
+                cssUtils.style(domelement, iOSScaleFix);
+            }
         } else {
             domelement.className = domelement.className.replace(/\s*jw\-stretch\-(none|exactfit|uniform|fill)/g, '') +
                 ' ' + stretchClass;
