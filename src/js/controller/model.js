@@ -291,6 +291,8 @@ define([
                 var idx = this.get('item');
                 item = this.get('playlist')[idx];
             }
+            this.set('position', item.starttime || 0);
+            this.set('duration', item.duration || 0);
             _provider.load(item);
         };
 
