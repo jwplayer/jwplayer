@@ -69,7 +69,6 @@ define([
             }
             // If the player's currently playing, pause the video tag
             if (_oldstate === states.PLAYING) {
-                // pause must be called before detachMedia
                 _oldProvider.pause();
             }
 
