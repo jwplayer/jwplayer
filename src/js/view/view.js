@@ -1008,19 +1008,16 @@ define([
                 dispOffset = dispBounds.top,
                 cbBounds = _controlbar.getVisibleBounds(),
                 dockButtons = _model.get('dock'),
-                logoTop = (_logo.position().indexOf('top') === 0),
-                dockBounds,
-                logoBounds = _bounds(_logo.element());
+                dockBounds;
+
             if (dockButtons && dockButtons.length && _model.get('controls')) {
                 dockBounds = _bounds(_dock.element());
                 bounds.y = Math.max(0, dockBounds.bottom - dispOffset);
             }
-            if (logoTop) {
-                bounds.y = Math.max(bounds.y, logoBounds.bottom - dispOffset);
-            }
             bounds.width = dispBounds.width;
             if (cbBounds.height && includeCB && _model.get('controls')) {
-                bounds.height = (logoTop ? cbBounds.top : logoBounds.top) - dispOffset - bounds.y;
+                var bottom = cbBounds.top;
+                bounds.height = bottom - dispOffset - bounds.y;
             } else {
                 bounds.height = dispBounds.height - bounds.y;
             }
