@@ -283,13 +283,23 @@ define([
             this.elements.cast.toggle(val);
         },
         onElapsed : function(model, val) {
-            var duration = this._api.getDuration();
-            this.elements.elapsed.innerHTML =
-                (utils.adaptiveType(duration) === 'DVR')?
-                    ('-'+utils.timeFormat(-duration)):utils.timeFormat(val);
+            var elapsedTime;
+            var duration = model.get('duration');
+            if (utils.adaptiveType(duration) === 'DVR') {
+                elapsedTime = '-' + utils.timeFormat(-duration);
+            } else {
+                elapsedTime = utils.timeFormat(val);
+            }
+            this.elements.elapsed.innerHTML = elapsedTime;
         },
         onDuration : function(model, val) {
-            this.elements.duration.innerHTML = (utils.adaptiveType(val) === 'DVR')?'Live':utils.timeFormat(val);
+            var totalTime;
+            if (utils.adaptiveType(val) === 'DVR') {
+                totalTime = 'Live';
+            } else {
+                totalTime = utils.timeFormat(val);
+            }
+            this.elements.duration.innerHTML = totalTime;
         },
         onFullscreen : function(model, val) {
             utils.toggleClass(this.elements.fullscreen.element(), 'jw-off', val);
