@@ -403,10 +403,17 @@ define([
         }
 
         function _touchHandler() {
-            if(_model.get('state') === states.IDLE && _model.get('controls')) {
+            if( (_model.get('state') === states.IDLE || _model.get('state') === states.COMPLETE) &&
+                _model.get('controls')) {
                 _api.play();
             }
-            _userActivity();
+
+            // Toggle visibility of the controls when clicking the media or play icon
+            if(!_showing) {
+                _userActivity();
+            } else {
+                _userInactive();
+            }
         }
 
         function _logoClickHandler(evt){
@@ -466,9 +473,13 @@ define([
             
             var displayIcon = new DisplayIcon(_model);
             //toggle playback
-            displayIcon.on('click tap', function() {
+            displayIcon.on('click', function() {
                 forward({type : events.JWPLAYER_DISPLAY_CLICK});
                 _api.play();
+            });
+            displayIcon.on('tap', function() {
+                forward({type : events.JWPLAYER_DISPLAY_CLICK});
+                _touchHandler();
             });
             _controlsLayer.appendChild(displayIcon.element());
 
@@ -842,6 +853,7 @@ define([
         function _userInactive() {
             _showing = false;
 
+            clearTimeout(_controlsTimeout);
             utils.addClass(_playerElement, 'jw-flag-user-inactive');
         }
 
