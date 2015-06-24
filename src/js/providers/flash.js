@@ -38,11 +38,11 @@ define([
 
         var _eventDispatcher = new eventdispatcher('flash.provider');
 
-        var _customLabels = null;
+        var _customLabels = _getCustomLabels();
 
         /** Translate sources into quality levels, assigning custom levels if present. **/
         function _labelLevels(levels) {
-            if (_getCustomLabels()) {
+            if (_customLabels) {
                 for (var i = 0; i < levels.length; i++) {
                     var level = levels[i];
                     if (level.bitrate) {
@@ -56,7 +56,7 @@ define([
 
         function _getNearestCustomLabel(sourceKBps) {
             // get indexed value
-            var label = _getCustomLabels()[sourceKBps];
+            var label = _customLabels[sourceKBps];
             if (!label) {
                 //find nearest
                 var lastDiff = Infinity;
@@ -77,34 +77,30 @@ define([
 
         /** Indexed Custom Labels **/
         function _getCustomLabels() {
-            if (_customLabels) {
-                return _customLabels;
+            var hlsLabels =_playerConfig.hlslabels;
+            if(!hlsLabels) {
+                return null;
             }
-            var hlsLabels = _playerConfig.hlslabels;
-            if (hlsLabels) {
-                var labels = {};
-                var bitrates = [];
-                for (var bitrate in hlsLabels) {
-                    var key = parseFloat(bitrate);
-                    if (!isNaN(key)) {
-                        var rateKBps = Math.round(key);
-                        labels[rateKBps] = hlsLabels[bitrate];
-                        bitrates.push(rateKBps);
-                    }
+            var labels = {};
+            var bitrates = [];
+            for (var bitrate in hlsLabels) {
+                var key = parseFloat(bitrate);
+                if (!isNaN(key)) {
+                    var rateKBps = Math.round(key);
+                    labels[rateKBps] = hlsLabels[bitrate];
+                    bitrates.push(rateKBps);
                 }
-                if (bitrates.length === 0) {
-                    return {};
-                }
-                bitrates.sort(function(a, b) {
-                    return a - b;
-                });
-                _customLabels = {
-                    labels: labels,
-                    bitrates: bitrates
-                };
-                return _customLabels;
             }
-            return {};
+            if (bitrates.length === 0) {
+                return null;
+            }
+            bitrates.sort(function(a, b) {
+                return a - b;
+            });
+            return {
+                labels: labels,
+                bitrates: bitrates
+            };
         }
 
         _.extend(this, _eventDispatcher, {
