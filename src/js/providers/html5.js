@@ -415,21 +415,17 @@ define([
         };
 
         this.play = function() {
-            if (_attached) {
-                if (_this.seeking) {
-                    _this.setState(states.LOADING);
-                    _this.once(events.JWPLAYER_MEDIA_SEEKED, _this.play);
-                    return;
-                }
-                _videotag.play();
+            if (_this.seeking) {
+                _this.setState(states.LOADING);
+                _this.once(events.JWPLAYER_MEDIA_SEEKED, _this.play);
+                return;
             }
+            _videotag.play();
         };
 
         this.pause = function() {
-            if (_attached) {
-                _videotag.pause();
-                this.setState(states.PAUSED);
-            }
+            _videotag.pause();
+            this.setState(states.PAUSED);
         };
 
         this.seek = function(seekPos) {
