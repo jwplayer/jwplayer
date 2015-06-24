@@ -191,7 +191,7 @@ define([
                     track: _model.get('captionsIndex')
                 });
 
-                if (_model.get('autostart') && !utils.isMobile()) {
+                if (_model.get('autostart')) {
                     _play();
                 }
 
@@ -205,6 +205,10 @@ define([
 
             function _load(item) {
                 _stop(true);
+
+                if (_model.get('autostart')) {
+                    _model.once('setItem', _play);
+                }
 
                 switch (typeof item) {
                     case 'string':
@@ -280,6 +284,9 @@ define([
             }
 
             function _stop(internal) {
+                // Reset the autostart play
+                _model.off('setItem', _play);
+
                 var fromApi = !internal;
 
                 _actionOnAttach = null;
