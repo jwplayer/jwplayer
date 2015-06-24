@@ -43,7 +43,6 @@ public class Player extends Sprite implements IPlayer {
         _controller.addEventListener(PlayerEvent.JWPLAYER_READY, playerReady, false, -1);
         _controller.addEventListener(PlayerEvent.JWPLAYER_SETUP_ERROR, setupError, false, -1);
 
-
         _controller.runSetupInterface();
     }
 
@@ -163,20 +162,23 @@ public class Player extends Sprite implements IPlayer {
     }
 
     protected function setupPlayer(config:Object):void {
-        var commands:Array = config.commands as Array;
-        delete config.commands;
         delete config.playlist;
 
         _model.setConfig(config);
 
         // do it a second time
         _controller.runSetupPlugins(function():void {
-            // run this once setup is complete (plugins are loaded)
-            for (var i:uint = 0; i < commands.length; i++) {
-                var args:Array = commands[i] as Array;
-                SwfEventRouter.trigger(args);
-            }
+            SwfEventRouter.triggerJsEvent('pluginsLoaded');
         });
+    }
+
+    protected function setupPlayerCommandQueue(commands:Array) {
+        // run this once setup is complete (plugins are loaded)
+        trace('setup player command queue');
+        for (var i:uint = 0; i < commands.length; i++) {
+            var args:Array = commands[i] as Array;
+            SwfEventRouter.trigger(args);
+        }
     }
 
     protected function stretch(stretch:String = null):void {
@@ -208,6 +210,7 @@ public class Player extends Sprite implements IPlayer {
         // listen to JavaScript for player commands
         SwfEventRouter.off()
                 .on('setup', setupPlayer)
+                .on('setupCommandQueue', setupPlayerCommandQueue)
                 .on('load', load)
                 .on('play', play)
                 .on('pause', pause)

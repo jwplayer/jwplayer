@@ -122,12 +122,17 @@ define([
 
                     // listen to events triggered from flash
                     _swf.once('ready', function() {
-                        // setup flash player
-                        var config = _.extend({
-                            commands: _swf.__commandQueue
-                        }, _playerConfig);
 
+                        // After plugins load, then execute commandqueue
+                        _swf.once('pluginsLoaded', function() {
+                            _swf.queueCommands = false;
+                            _flashCommand('setupCommandQueue', _swf.__commandQueue);
+                        });
+
+                        // setup flash player
+                        var config = _.extend({}, _playerConfig);
                         _flashCommand('setup', config);
+
                         _swf.__ready = true;
                         _swf.__commandQueue = [];
 
