@@ -396,7 +396,7 @@ define([
         }
 
         function _componentFadeListeners(comp) {
-            if (comp) {
+            if (comp && !_isMobile) {
                 comp.element().addEventListener('mousemove', _overControlElement, false);
                 comp.element().addEventListener('mouseout', _offControlElement, false);
             }
@@ -960,6 +960,12 @@ define([
             utils.addClass(_playerElement, 'jw-flag-ads');
             // don't trigger api play/pause on display click
             _displayClickHandler.setAlternateClickHandlers(utils.noop, _api.setFullscreen);
+
+            // trigger _userActivity to display the UI temporarily for the start of the ad
+            _userActivity();
+            if(_isMobile) {
+                utils.addClass(_playerElement, 'jw-flag-ads-mobile');
+            }
         };
 
         this.setAltText = function(text) {
@@ -978,6 +984,7 @@ define([
             }
             this.setAltText('');
             utils.removeClass(_playerElement, 'jw-flag-ads');
+            utils.removeClass(_playerElement, 'jw-flag-ads-mobile');
             utils.removeClass(_playerElement, 'jw-flag-ads-hide-controls');
             if (_model.getVideo) {
                 var provider = _model.getVideo();
