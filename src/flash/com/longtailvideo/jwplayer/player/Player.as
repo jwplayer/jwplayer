@@ -43,7 +43,8 @@ public class Player extends Sprite implements IPlayer {
         _controller.addEventListener(PlayerEvent.JWPLAYER_READY, playerReady, false, -1);
         _controller.addEventListener(PlayerEvent.JWPLAYER_SETUP_ERROR, setupError, false, -1);
 
-        _controller.setupPlayer();
+
+        _controller.runSetupInterface();
     }
 
     private function stageReady(e:Event):void {
@@ -169,7 +170,7 @@ public class Player extends Sprite implements IPlayer {
         _model.setConfig(config);
 
         // do it a second time
-        _controller.setupPlayer(function():void {
+        _controller.runSetupPlugins(function():void {
             // run this once setup is complete (plugins are loaded)
             for (var i:uint = 0; i < commands.length; i++) {
                 var args:Array = commands[i] as Array;

@@ -75,10 +75,6 @@ public class InstreamPlayer extends Sprite {
         return true;
     }
 
-    public function destroy():void {
-        _destroy();
-    }
-
     private function lock(target:IPlugin, callback:Function):void {
         _controller.lockPlayback(target, callback);
     }
@@ -88,6 +84,8 @@ public class InstreamPlayer extends Sprite {
     }
 
     private function setupProvider(item:PlaylistItem):void {
+        stopProvider();
+
         var type:String = JWParser.getProvider(item);
         _provider = getProvider(type);
         if (!_provider) {
@@ -103,13 +101,11 @@ public class InstreamPlayer extends Sprite {
     }
 
     private function showMedia():void {
-        if (!_mediaLayer.visible) {
-            if (_provider.display) {
-                _mediaLayer.visible = true;
-                _mediaLayer.addChild(_provider.display);
-            } else {
-                _mediaLayer.visible = false;
-            }
+        if (_provider.display) {
+            _mediaLayer.visible = true;
+            _mediaLayer.addChild(_provider.display);
+        } else {
+            _mediaLayer.visible = false;
         }
     }
 
@@ -134,31 +130,17 @@ public class InstreamPlayer extends Sprite {
         _view.addChild(this);
     }
 
-    private function _destroy(complete:Boolean = false):void {
-        removeEventListeners();
-        if (!complete && _provider && _provider.state != PlayerState.IDLE) {
-            _provider.stop();
-        }
+    public function _destroyFromJS():void {
         if (_view.contains(this)) {
             _view.removeChild(this);
         }
+        RootReference.stage.removeEventListener(Event.RESIZE, resizeHandler);
+        stopProvider();
         _provider = null;
-
-        if (complete) {
-            SwfEventRouter.triggerJsEvent('instream:complete');
-        } else {
-            SwfEventRouter.triggerJsEvent('instream:destroy');
-        }
-    }
-
-    public function _destroyFromJS():void {
-        _destroy();
         unlock(_plugin);
     }
 
-    private function removeEventListeners():void {
-        RootReference.stage.removeEventListener(Event.RESIZE, resizeHandler);
-
+    private function stopProvider():void {
         if (_provider) {
             _provider.removeEventListener(PlayerStateEvent.JWPLAYER_PLAYER_STATE, stateHandler);
             _provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_META, metaHandler);
@@ -166,6 +148,12 @@ public class InstreamPlayer extends Sprite {
             _provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, timeHandler);
             _provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_COMPLETE, completeHandler);
             _provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_ERROR, errorHandler);
+            if (_provider.state !== PlayerState.IDLE) {
+                _provider.stop();
+            }
+            if (_provider.display && _mediaLayer.contains(_provider.display)) {
+                _mediaLayer.addChild(_provider.display);
+            }
         }
     }
 
@@ -212,7 +200,7 @@ public class InstreamPlayer extends Sprite {
     }
 
     private function completeHandler(evt:MediaEvent):void {
-        _destroy(true);
+        SwfEventRouter.triggerJsEvent('instream:complete', evt);
     }
 
     private function errorHandler(evt:PlayerEvent):void {

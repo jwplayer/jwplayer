@@ -31,7 +31,6 @@ define([
             this.swf.on('instream:state', function(evt) {
                 switch (evt.newstate) {
                     case states.PLAYING:
-                        this.trigger('play');
                         this._adModel.set('state', evt.newstate);
                         break;
                     case states.PAUSED:
@@ -49,9 +48,6 @@ define([
             }, this)
             .on('instream:error', function(evt) {
                 this.trigger(events.JWPLAYER_MEDIA_ERROR, evt);
-            }, this)
-            .on('instream:destroy', function() {
-                this.controller.instreamDestroy();
             }, this);
 
             this.swf.triggerFlash('instream:init');

@@ -53,16 +53,22 @@ public class Controller extends GlobalEventDispatcher {
         return _lockManager.locked();
     }
 
-    public function setupPlayer(callback:Function = null):void {
+    public function runSetupInterface():void {
         var setup:PlayerSetup = new PlayerSetup(_player, _model, _view);
 
-        if (!callback) {
-            callback = setupComplete;
-        }
+        setup.addEventListener(Event.COMPLETE, setupComplete);
+        setup.addEventListener(ErrorEvent.ERROR, setupError);
+
+        setup.setupInterface();
+    }
+
+    public function runSetupPlugins(callback:Function):void {
+        var setup:PlayerSetup = new PlayerSetup(_player, _model, _view);
+
         setup.addEventListener(Event.COMPLETE, callback);
         setup.addEventListener(ErrorEvent.ERROR, setupError);
 
-        setup.setupPlayer();
+        setup.setupPlugins();
     }
 
     public function lockPlayback(plugin:IPlugin, callback:Function):void {
