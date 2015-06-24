@@ -192,6 +192,7 @@ define([
                         _swf.once('pluginsLoaded', function() {
                             _swf.queueCommands = false;
                             _flashCommand('setupCommandQueue', _swf.__commandQueue);
+                            _swf.__commandQueue = [];
                         });
 
                         // setup flash player
@@ -199,7 +200,6 @@ define([
                         _flashCommand('setup', config);
 
                         _swf.__ready = true;
-                        _swf.__commandQueue = [];
 
                     }, this);
 
