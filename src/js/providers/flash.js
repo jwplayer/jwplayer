@@ -38,6 +38,75 @@ define([
 
         var _eventDispatcher = new eventdispatcher('flash.provider');
 
+        var _customLabels = null;
+
+        /** Translate sources into quality levels, assigning custom levels if present. **/
+        function _labelLevels(levels) {
+            if (_getCustomLabels()) {
+                for (var i = 0; i < levels.length; i++) {
+                    var level = levels[i];
+                    if (level.bitrate) {
+                        // get label with nearest rate match
+                        var sourceKBps = Math.round(level.bitrate / 1024);
+                        level.label = _getNearestCustomLabel(sourceKBps);
+                    }
+                }
+            }
+        }
+
+        function _getNearestCustomLabel(sourceKBps) {
+            // get indexed value
+            var label = _getCustomLabels()[sourceKBps];
+            if (!label) {
+                //find nearest
+                var lastDiff = Infinity;
+                var i = _customLabels.bitrates.length;
+                while (i--) {
+                    var diff = Math.abs(_customLabels.bitrates[i] - sourceKBps);
+                    if (diff > lastDiff) {
+                        break;
+                    }
+                    lastDiff = diff;
+                }
+                label = _customLabels.labels[_customLabels.bitrates[i + 1]];
+                // index
+                _customLabels[sourceKBps] = label;
+            }
+            return label;
+        }
+
+        /** Indexed Custom Labels **/
+        function _getCustomLabels() {
+            if (_customLabels) {
+                return _customLabels;
+            }
+            var hlsLabels = _playerConfig.hlslabels;
+            if (hlsLabels) {
+                var labels = {};
+                var bitrates = [];
+                for (var bitrate in hlsLabels) {
+                    var key = parseFloat(bitrate);
+                    if (!isNaN(key)) {
+                        var rateKBps = Math.round(key);
+                        labels[rateKBps] = hlsLabels[bitrate];
+                        bitrates.push(rateKBps);
+                    }
+                }
+                if (bitrates.length === 0) {
+                    return {};
+                }
+                bitrates.sort(function(a, b) {
+                    return a - b;
+                });
+                _customLabels = {
+                    labels: labels,
+                    bitrates: bitrates
+                };
+                return _customLabels;
+            }
+            return {};
+        }
+
         _.extend(this, _eventDispatcher, {
                 load: function(item) {
                     _item = item;
@@ -157,11 +226,13 @@ define([
 
                     // jwplayer 6 flash player events (forwarded from AS3 Player, Controller, Model)
                     _swf.on(events.JWPLAYER_MEDIA_LEVELS, function(e) {
+                        _labelLevels(e.levels);
                         _currentQuality = e.currentQuality;
                         _qualityLevels = e.levels;
                         this.sendEvent(e.type, e);
 
                     }, this).on(events.JWPLAYER_MEDIA_LEVEL_CHANGED, function(e) {
+                        _labelLevels(e.levels);
                         _currentQuality = e.currentQuality;
                         _qualityLevels = e.levels;
                         this.sendEvent(e.type, e);
