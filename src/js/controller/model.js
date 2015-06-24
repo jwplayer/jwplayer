@@ -65,6 +65,11 @@ define([
                 buffer: 0
             });
 
+            // Mobile doesn't support autostart
+            if (utils.isMobile()) {
+                this.autostart = false;
+            }
+
             this.updateProviders();
 
             return this;
