@@ -29,6 +29,8 @@ public class InstreamPlayer extends Sprite {
     protected var _plugin:IPlugin;
     protected var _mediaLayer:Sprite;
 
+    private var _lastVolume:Number;
+
     public function InstreamPlayer(target:IPlugin, model:Model, view:View, controller:Controller) {
 
         _plugin = target;
@@ -138,6 +140,22 @@ public class InstreamPlayer extends Sprite {
         stopProvider();
         _provider = null;
         unlock(_plugin);
+    }
+
+    public function setVolume(volume:Number):void {
+        _lastVolume = volume;
+        _model.volume = volume;
+        _provider.setVolume(volume);
+    }
+
+    public function setMute(bool:Boolean):void {
+        if (bool) {
+            _model.volume = 0;
+            _provider.setVolume(0);
+        } else {
+            _model.volume = _lastVolume;
+            _provider.setVolume(_lastVolume);
+        }
     }
 
     private function stopProvider():void {
