@@ -178,7 +178,7 @@ public class Player extends Sprite implements IPlayer {
         });
     }
 
-    protected function setupPlayerCommandQueue(commands:Array) {
+    protected function setupPlayerCommandQueue(commands:Array):void {
         // run this once setup is complete (plugins are loaded)
         trace('setup player command queue');
         for (var i:uint = 0; i < commands.length; i++) {
