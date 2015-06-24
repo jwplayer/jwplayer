@@ -441,6 +441,12 @@ define([
             }
         };
 
+        function _doubleClickFullscreen() {
+            if(_model.get('controls')) {
+                _api.setFullscreen();
+            }
+        }
+
         function _setupControls() {
             toggleControls();
             _model.on('change:controls', toggleControls);
@@ -456,12 +462,7 @@ define([
                 forward({type : events.JWPLAYER_DISPLAY_CLICK});
                 _touchHandler();
             });
-            _displayClickHandler.on('doubleClick', function() {
-                // TODO 6.12 dispatches two display click events?
-                if(_model.get('controls')) {
-                    _api.setFullscreen();
-                }
-            });
+            _displayClickHandler.on('doubleClick', _doubleClickFullscreen);
             
             var displayIcon = new DisplayIcon(_model);
             //toggle playback
@@ -564,9 +565,9 @@ define([
                 // clickthrough callback
                 var clickAd = evt.onClick;
                 if (clickAd !== undefined) {
-                    _displayClickHandler.setAlternateClickHandler(function() {
+                    _displayClickHandler.setAlternateClickHandlers(function() {
                         clickAd(evt);
-                    });
+                    }, _api.setFullscreen);
                 }
                 //skipAd callback
                 var skipAd = evt.onSkipAd;
@@ -595,7 +596,7 @@ define([
                 _castDisplay.setState(_model.get('state'));
             }
             // display click reset
-            _displayClickHandler.revertAlternateClickHandler();
+            _displayClickHandler.revertAlternateClickHandlers();
         }
 
         /**
@@ -946,7 +947,7 @@ define([
             _instreamMode = true;
             utils.addClass(_playerElement, 'jw-flag-ads');
             // don't trigger api play/pause on display click
-            _displayClickHandler.setAlternateClickHandler(utils.noop);
+            _displayClickHandler.setAlternateClickHandlers(utils.noop, _api.setFullscreen);
         };
 
         this.setAltText = function(text) {
@@ -972,7 +973,7 @@ define([
             }
             _setLiveMode(_model, _model.get('duration'));
             // reset display click handler
-            _displayClickHandler.revertAlternateClickHandler();
+            _displayClickHandler.revertAlternateClickHandlers();
         };
 
         this.addCues = function(cues) {

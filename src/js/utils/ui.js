@@ -8,7 +8,7 @@ define([
 
     var UI = function (elem, options) {
         var _elem = elem,
-            _enableDoubleTap = (options && options.enableDoubleTap),
+            _enableDoubleTap = (options && options.enableDoubleTap), // and double click
             _enableDrag = (options && options.enableDrag),
             _hasMoved = false,
             _lastClickTime = 0,
@@ -141,16 +141,19 @@ define([
 
         var self = this;
         function triggerEvent(type, srcEvent) {
+            var evt;
             if( _enableDoubleTap && (type === events.touchEvents.CLICK || type === events.touchEvents.TAP)){
                 if(_.now() - _lastClickTime < _doubleClickDelay) {
-                    type = (type === events.touchEvents.CLICK) ?
+                    var doubleType = (type === events.touchEvents.CLICK) ?
                         events.touchEvents.DOUBLE_CLICK : events.touchEvents.DOUBLE_TAP;
+                    evt = normalizeUIEvent(doubleType, srcEvent);
+                    self.trigger(doubleType, evt);
                     _lastClickTime = 0;
                 } else {
                     _lastClickTime = _.now();
                 }
             }
-            var evt = normalizeUIEvent(type, srcEvent);
+            evt = normalizeUIEvent(type, srcEvent);
             self.trigger(type, evt);
         }
 
