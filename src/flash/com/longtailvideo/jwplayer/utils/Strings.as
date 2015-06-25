@@ -1,9 +1,13 @@
 package com.longtailvideo.jwplayer.utils {
+import flash.external.ExternalInterface;
+
 /**
  * This class groups a couple of commonly used string operations.
  * @author Jeroen Wijering
  **/
 public class Strings {
+
+    private static var LOCATION_HREF:String;
 
     /**
      * Unescape a string and filter "asfunction" occurences ( can be used for XSS exploits).
@@ -188,7 +192,10 @@ public class Strings {
     /** Gets an absolute file path based on a relative filepath **/
     public static function getAbsolutePath(path:String, basepath:String = null):String {
         if (!basepath) {
-            return path;
+            if (!LOCATION_HREF) {
+                LOCATION_HREF = ExternalInterface.call('window.location.href.toString');
+            }
+            basepath = LOCATION_HREF;
         }
         if (isAbsolutePath(path)) {
             return path;
