@@ -2,9 +2,8 @@ define([
     'utils/ui',
     'events/events',
     'utils/backbone.events',
-    'events/states',
     'utils/underscore'
-], function(UI, events, Events, states, _) {
+], function(UI, events, Events, _) {
     var ClickHandler = function(_model, _ele) {
         var _display,
             _alternateClickHandler,
@@ -42,10 +41,9 @@ define([
             _this.trigger('doubleClick');
         }
 
-        /** NOT SUPPORTED : Using this for now to hack around instream API **/
         this.setAlternateClickHandlers = function(clickHandler, doubleClickHandler) {
             _alternateClickHandler = clickHandler;
-            _alternateDoubleClickHandler = doubleClickHandler;
+            _alternateDoubleClickHandler = doubleClickHandler || null;
         };
 
         this.revertAlternateClickHandlers = function() {

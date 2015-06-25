@@ -959,8 +959,6 @@ define([
 
             _instreamMode = true;
             utils.addClass(_playerElement, 'jw-flag-ads');
-            // don't trigger api play/pause on display click
-            _displayClickHandler.setAlternateClickHandlers(utils.noop, _api.setFullscreen);
 
             // trigger _userActivity to display the UI temporarily for the start of the ad
             _userActivity();

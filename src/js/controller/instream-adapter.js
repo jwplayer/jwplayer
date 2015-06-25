@@ -37,6 +37,37 @@ define([
             _oldstate,
             _olditem;
 
+        var _clickHandler = _.bind(function(evt) {
+            evt = evt || {};
+            evt.hasControls = !!_model.get('controls');
+
+            this.trigger(events.JWPLAYER_INSTREAM_CLICK, evt);
+
+            // toggle playback after click event
+            if (!_instream || !_instream._adModel) {
+                return;
+            }
+            if (_instream._adModel.state === states.PAUSED) {
+                if (evt.hasControls) {
+                    _instream.instreamPlay();
+                }
+            } else {
+                _instream.instreamPause();
+            }
+        }, this);
+
+        var _doubleClickHandler = _.bind(function() {
+            if (!_instream || !_instream._adModel) {
+                return;
+            }
+            if (_instream._adModel.state === states.PAUSED) {
+                if (_model.get('controls')) {
+                    _controller.setFullscreen();
+                    _controller.play();
+                }
+            }
+        }, this);
+
         this.type = 'instream';
 
         this.init = function() {
@@ -74,6 +105,9 @@ define([
 
             // Show instream state instead of normal player state
             _view.setupInstream(_instream._adModel);
+
+            // don't trigger api play/pause on display click
+            _view.clickHandler().setAlternateClickHandlers(utils.noop, null);
 
             this.setText('Loading ad');
             return this;
@@ -177,30 +211,7 @@ define([
 
         this.addClickHandler = function() {
             // start listening for ad click
-            var _this = this;
-            _view.clickHandler().setAlternateClickHandlers(function (evt) {
-                evt = evt || {};
-                evt.hasControls = !!_model.get('controls');
-
-                _this.trigger(events.JWPLAYER_INSTREAM_CLICK, evt);
-
-                // toggle playback after click event
-
-                if (_instream._adModel.state === states.PAUSED) {
-                    if (evt.hasControls) {
-                        _instream.instreamPlay();
-                    }
-                } else {
-                    _instream.instreamPause();
-                }
-            }, function() {
-                if (_instream._adModel.state === states.PAUSED) {
-                    if (_model.get('controls')) {
-                        _controller.setFullscreen();
-                        _controller.play();
-                    }
-                }
-            });
+            _view.clickHandler().setAlternateClickHandlers(_clickHandler, _doubleClickHandler);
 
             //if (utils.isMSIE()) {
                 //_oldProvider.parentElement.addEventListener('click', _view.clickHandler().clickHandler);
@@ -236,9 +247,6 @@ define([
 
             if (_instream) {
                 if (_view.clickHandler()) {
-                    //if (_oldProvider && _oldProvider.parentElement) {
-                        //_oldProvider.parentElement.removeEventListener('click', _view.clickHandler().clickHandler);
-                    //}
                     _view.clickHandler().revertAlternateClickHandlers();
                 }
                 _instream.instreamDestroy();

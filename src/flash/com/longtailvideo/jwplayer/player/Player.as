@@ -34,10 +34,12 @@ public class Player extends Sprite implements IPlayer {
         this.tabEnabled = false;
         this.tabChildren = false;
         this.focusRect = false;
+        this.buttonMode = true;
 
         _model = newModel(new PlayerConfig(this.soundTransform));
 
         _view = newView(_model);
+        this.addChild(_view);
 
         _controller = newController(_model, _view);
         _controller.addEventListener(PlayerEvent.JWPLAYER_READY, playerReady, false, -1);
