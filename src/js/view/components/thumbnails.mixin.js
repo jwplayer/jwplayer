@@ -70,9 +70,10 @@ define([
             } else {
                 if(!this.individualImage){
                     this.individualImage = new Image();
-                    this.individualImage.onload = function () {
-                        this.individualThumbnailLoaded(this.individualImage, style);
-                    }.bind(this);
+                    this.individualImage.onload = _.bind(function () {
+                        this.individualImage.onload = null;
+                        this.timeTip.image({ width: this.individualImage.width, height: this.individualImage.height });
+                    }, this);
                     this.individualImage.src = url;
                 }
             }
@@ -80,11 +81,6 @@ define([
             style['background-image'] = url;
 
             return style;
-        },
-
-        individualThumbnailLoaded : function(image) {
-            image.onload = null;
-            this.timeTip.image({ width: image.width, height: image.height });
         },
 
         showThumbnail : function(seconds) {
