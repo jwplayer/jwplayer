@@ -76,7 +76,7 @@ define([
         // javascript can trigger SwfEventRouter callbacks
         swf.triggerFlash = function(name) {
             var swfInstance = this;
-            if (name !== 'setup' && swfInstance.queueCommands) {
+            if (name !== 'setup' && swfInstance.queueCommands || !swfInstance.__externalCall) {
                 var commandQueue = swfInstance.__commandQueue;
                 // remove any earlier commands with the same name
                 for (var i = commandQueue.length; i--;) {
