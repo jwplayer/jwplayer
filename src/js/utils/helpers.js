@@ -229,6 +229,11 @@ define([
         return 0;
     };
 
+    utils.isFlashSupported = function () {
+        var flashVersion = utils.flashVersion();
+        return flashVersion && flashVersion >= __FLASH_VERSION__;
+    };
+
 
     /** Finds the location of jwplayer.js and returns the path **/
     utils.getScriptPath = _.memoize(function(scriptName) {

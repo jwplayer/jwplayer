@@ -391,8 +391,7 @@ define([
     F.prototype = DefaultProvider;
     FlashProvider.prototype = new F();
     FlashProvider.supports = function (source) {
-        var flashVersion = utils.flashVersion();
-        if (!flashVersion || flashVersion < __FLASH_VERSION__) {
+        if(!utils.isFlashSupported()) {
             return false;
         }
 
