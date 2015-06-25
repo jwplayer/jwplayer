@@ -255,18 +255,18 @@ define([
                 cssUtils.css(elements.join(', '), o);
             }
 
-            addStyle('color',       ['.jw-button-color'],             _model.get('skinColorInactive'));
-            addStyle('color',       ['.jw-button-color:hover'],       _model.get('skinColorActive'));
+            addStyle('color',               ['.jw-button-color'],             _model.get('skinColorInactive'));
+            addStyle('color',               ['.jw-button-color:hover'],       _model.get('skinColorActive'));
 
-            addStyle('color',       ['.jw-option'],                   _model.get('skinColorInactive'));
-            addStyle('color',       ['.jw-active-option'],            _model.get('skinColorActive'));
+            addStyle('color',               ['.jw-option'],                   _model.get('skinColorInactive'));
+            addStyle('background-color',    ['.jw-active-option'],            _model.get('skinColorActive'));
 
-            addStyle('color',       ['.jw-toggle'],                   _model.get('skinColorActive'));
-            addStyle('color',       ['.jw-toggle.jw-off'],            _model.get('skinColorInactive'));
+            addStyle('color',               ['.jw-toggle'],                   _model.get('skinColorActive'));
+            addStyle('color',               ['.jw-toggle.jw-off'],            _model.get('skinColorInactive'));
 
-            addStyle('background',  ['.jw-progress'],                 _model.get('skinColorActive'));
-            addStyle('background',  ['.jw-cue', '.jw-knob'],          _model.get('skinColorInactive'));
-            addStyle('background',  ['.jw-background-color'],         _model.get('skinColorBackground'));
+            addStyle('background',          ['.jw-progress'],                 _model.get('skinColorActive'));
+            addStyle('background',          ['.jw-cue', '.jw-knob'],          _model.get('skinColorInactive'));
+            addStyle('background',          ['.jw-background-color'],         _model.get('skinColorBackground'));
         };
 
         this.setup = function() {
