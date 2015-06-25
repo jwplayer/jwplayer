@@ -388,7 +388,7 @@ define([
             }, 0);
         };
 
-        function _onStretchChange (model, newVal, oldVal) {
+        function _onStretchChange(model, newVal, oldVal) {
             if(oldVal){
                 utils.removeClass(_playerElement, 'jw-stretch-' + oldVal);
             }
@@ -396,7 +396,7 @@ define([
         }
 
         function _componentFadeListeners(comp) {
-            if (comp) {
+            if (comp && !_isMobile) {
                 comp.element().addEventListener('mousemove', _overControlElement, false);
                 comp.element().addEventListener('mouseout', _offControlElement, false);
             }
@@ -502,9 +502,10 @@ define([
 
             // captions should be place behind controls, and not hidden when controls are hidden
             _controlsLayer.parentNode.insertBefore(_captionsRenderer.element(), _title.element());
-
-
-            if (!_isMobile) {
+            
+            if (_isMobile) {
+                utils.addClass(_playerElement, 'jw-flag-touch-screen');
+            } else {
                 _rightClickMenu = new RightClick();
                 _rightClickMenu.setup(_model, _playerElement, _playerElement);
             }
@@ -960,6 +961,9 @@ define([
             utils.addClass(_playerElement, 'jw-flag-ads');
             // don't trigger api play/pause on display click
             _displayClickHandler.setAlternateClickHandlers(utils.noop, _api.setFullscreen);
+
+            // trigger _userActivity to display the UI temporarily for the start of the ad
+            _userActivity();
         };
 
         this.setAltText = function(text) {
