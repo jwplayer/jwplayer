@@ -11,12 +11,14 @@ define([
     }
 
     var ThumbnailsMixin = {
-
         loadThumbnails: function (file) {
             if (!file) {
                 return;
             }
             this.vttPath = file.split('?')[0].split('/').slice(0, -1).join('/');
+            // Only load the first individual image file so we can get its dimensions. All others are loaded when
+            // they're set as background-images.
+            this.individualImage = null;
             utils.ajax(file, this.thumbnailsLoaded.bind(this), this.thumbnailsFailed.bind(this), true);
         },
 
@@ -33,8 +35,7 @@ define([
         thumbnailsFailed: function () { },
 
         chooseThumbnail : function(seconds) {
-
-            var idx = _.sortedIndex(this.thumbnails, {begin: seconds}, _.property('begin'));
+            var idx = _.sortedIndex(this.thumbnails, {end: seconds}, _.property('end'));
             if (idx >= this.thumbnails.length) {
                 idx = this.thumbnails.length-1;
             }
@@ -51,9 +52,7 @@ define([
             var style = {
                 display: 'block',
                 margin: '0 auto',
-                'background-position': '0 0',
-                width: 0,
-                height: 0
+                'background-position': '0 0'
             };
 
             var hashIndex = url.indexOf('#xywh');
@@ -68,11 +67,24 @@ define([
                     //this.vttFailed('Could not parse thumbnail');
                     return;
                 }
+            } else {
+                if(!this.individualImage){
+                    this.individualImage = new Image();
+                    this.individualImage.onload = function () {
+                        this.individualThumbnailLoaded(this.individualImage, style);
+                    }.bind(this);
+                    this.individualImage.src = url;
+                }
             }
 
             style['background-image'] = url;
 
             return style;
+        },
+
+        individualThumbnailLoaded : function(image) {
+            image.onload = null;
+            this.timeTip.image({ width: image.width, height: image.height });
         },
 
         showThumbnail : function(seconds) {
