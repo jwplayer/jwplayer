@@ -26,9 +26,21 @@ public class View extends Sprite {
     private static function rightClickHandler(e:Event):void {}
 
     public function View(model:Model) {
+        _plugins = {};
+
         _model = model;
         _model.addEventListener(MediaEvent.JWPLAYER_MEDIA_LOADED, mediaLoaded);
-        setupLayers();
+
+        _mediaLayer = new Sprite();
+        _pluginsLayer = new Sprite();
+
+        this.addChild(_mediaLayer);
+        this.addChild(_pluginsLayer);
+
+        CONFIG::debugging {
+            _mediaLayer.name = 'media';
+            _pluginsLayer.name = 'plugins';
+        }
     }
 
     public function setupView():void {
@@ -36,7 +48,6 @@ public class View extends Sprite {
         RootReference.stage.align = StageAlign.TOP_LEFT;
         RootReference.stage.addEventListener('rightClick', rightClickHandler);
         RootReference.stage.addEventListener(Event.RESIZE, resizeHandler);
-        RootReference.stage.addChildAt(this, 0);
         redraw();
     }
 
@@ -104,21 +115,6 @@ public class View extends Sprite {
 
     public function getPlugin(id:String):IPlugin6 {
         return _plugins[id] as IPlugin6;
-    }
-
-    private function setupLayers():void {
-        _mediaLayer = new Sprite();
-        _mediaLayer.name = 'media';
-        this.addChild(_mediaLayer);
-
-        _pluginsLayer = new Sprite();
-        _pluginsLayer.name = 'plugins';
-        this.addChild(_pluginsLayer);
-
-        _mediaLayer.mouseEnabled = false;
-        _mediaLayer.mouseChildren = false;
-
-        _plugins = {};
     }
 
     private function resizeMedia(width:Number, height:Number):void {

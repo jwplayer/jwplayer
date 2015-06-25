@@ -44,11 +44,20 @@ public class InstreamPlayer extends Sprite {
 
         lock(_plugin, _lockCallback);
 
+        this.mouseEnabled = false;
+        this.mouseChildren = false;
+
         _mediaLayer = new Sprite();
         _mediaLayer.visible = false;
         this.addChild(_mediaLayer);
 
-        _setupView();
+        CONFIG::debugging {
+            this.name = 'instreamPlayer';
+            _mediaLayer.name = 'instreamMedia';
+        }
+
+        // Put Instream on top of media layer, under plugins layer
+        _view.addChildAt(this, 1);
 
         RootReference.stage.addEventListener(Event.RESIZE, resizeHandler);
     }
@@ -59,7 +68,6 @@ public class InstreamPlayer extends Sprite {
     }
 
     public function play():Boolean {
-        _setupView();
         if (_provider) {
             if (_provider.state == PlayerState.PLAYING || PlayerState.isBuffering(_provider.state)) {
                 _provider.pause();
@@ -126,10 +134,6 @@ public class InstreamPlayer extends Sprite {
             message: 'Unsupported Instream Format; only video or rtmp are currently supported'
         });
         return null;
-    }
-
-    private function _setupView():void {
-        _view.addChild(this);
     }
 
     public function _destroyFromJS():void {

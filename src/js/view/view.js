@@ -958,8 +958,6 @@ define([
 
             _instreamMode = true;
             utils.addClass(_playerElement, 'jw-flag-ads');
-            // don't trigger api play/pause on display click
-            _displayClickHandler.setAlternateClickHandlers(utils.noop, _api.setFullscreen);
         };
 
         this.setAltText = function(text) {
