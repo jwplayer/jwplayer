@@ -388,7 +388,7 @@ define([
             }, 0);
         };
 
-        function _onStretchChange (model, newVal, oldVal) {
+        function _onStretchChange(model, newVal, oldVal) {
             if(oldVal){
                 utils.removeClass(_playerElement, 'jw-stretch-' + oldVal);
             }
@@ -502,9 +502,10 @@ define([
 
             // captions should be place behind controls, and not hidden when controls are hidden
             _controlsLayer.parentNode.insertBefore(_captionsRenderer.element(), _title.element());
-
-
-            if (!_isMobile) {
+            
+            if (_isMobile) {
+                utils.addClass(_playerElement, 'jw-flag-touch-screen');
+            } else {
                 _rightClickMenu = new RightClick();
                 _rightClickMenu.setup(_model, _playerElement, _playerElement);
             }
@@ -963,9 +964,6 @@ define([
 
             // trigger _userActivity to display the UI temporarily for the start of the ad
             _userActivity();
-            if(_isMobile) {
-                utils.addClass(_playerElement, 'jw-flag-ads-mobile');
-            }
         };
 
         this.setAltText = function(text) {
@@ -984,7 +982,6 @@ define([
             }
             this.setAltText('');
             utils.removeClass(_playerElement, 'jw-flag-ads');
-            utils.removeClass(_playerElement, 'jw-flag-ads-mobile');
             utils.removeClass(_playerElement, 'jw-flag-ads-hide-controls');
             if (_model.getVideo) {
                 var provider = _model.getVideo();
