@@ -255,18 +255,18 @@ define([
                 cssUtils.css(elements.join(', '), o);
             }
 
-            addStyle('color',       ['.jw-button-color'],             _model.get('skinColorInactive'));
-            addStyle('color',       ['.jw-button-color:hover'],       _model.get('skinColorActive'));
+            addStyle('color',               ['.jw-button-color'],             _model.get('skinColorInactive'));
+            addStyle('color',               ['.jw-button-color:hover'],       _model.get('skinColorActive'));
 
-            addStyle('color',       ['.jw-option'],                   _model.get('skinColorInactive'));
-            addStyle('color',       ['.jw-active-option'],            _model.get('skinColorActive'));
+            addStyle('color',               ['.jw-option'],                   _model.get('skinColorInactive'));
+            addStyle('background-color',    ['.jw-active-option'],            _model.get('skinColorActive'));
 
-            addStyle('color',       ['.jw-toggle'],                   _model.get('skinColorActive'));
-            addStyle('color',       ['.jw-toggle.jw-off'],            _model.get('skinColorInactive'));
+            addStyle('color',               ['.jw-toggle'],                   _model.get('skinColorActive'));
+            addStyle('color',               ['.jw-toggle.jw-off'],            _model.get('skinColorInactive'));
 
-            addStyle('background',  ['.jw-progress'],                 _model.get('skinColorActive'));
-            addStyle('background',  ['.jw-cue', '.jw-knob'],          _model.get('skinColorInactive'));
-            addStyle('background',  ['.jw-background-color'],         _model.get('skinColorBackground'));
+            addStyle('background',          ['.jw-progress'],                 _model.get('skinColorActive'));
+            addStyle('background',          ['.jw-cue', '.jw-knob'],          _model.get('skinColorInactive'));
+            addStyle('background',          ['.jw-background-color'],         _model.get('skinColorBackground'));
         };
 
         this.setup = function() {
@@ -388,7 +388,7 @@ define([
             }, 0);
         };
 
-        function _onStretchChange (model, newVal, oldVal) {
+        function _onStretchChange(model, newVal, oldVal) {
             if(oldVal){
                 utils.removeClass(_playerElement, 'jw-stretch-' + oldVal);
             }
@@ -396,7 +396,7 @@ define([
         }
 
         function _componentFadeListeners(comp) {
-            if (comp) {
+            if (comp && !_isMobile) {
                 comp.element().addEventListener('mousemove', _overControlElement, false);
                 comp.element().addEventListener('mouseout', _offControlElement, false);
             }
@@ -502,9 +502,10 @@ define([
 
             // captions should be place behind controls, and not hidden when controls are hidden
             _controlsLayer.parentNode.insertBefore(_captionsRenderer.element(), _title.element());
-
-
-            if (!_isMobile) {
+            
+            if (_isMobile) {
+                utils.addClass(_playerElement, 'jw-flag-touch-screen');
+            } else {
                 _rightClickMenu = new RightClick();
                 _rightClickMenu.setup(_model, _playerElement, _playerElement);
             }
@@ -958,6 +959,9 @@ define([
 
             _instreamMode = true;
             utils.addClass(_playerElement, 'jw-flag-ads');
+
+            // trigger _userActivity to display the UI temporarily for the start of the ad
+            _userActivity();
         };
 
         this.setAltText = function(text) {
