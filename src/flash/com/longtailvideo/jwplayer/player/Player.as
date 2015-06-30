@@ -181,6 +181,8 @@ public class Player extends Sprite implements IPlayer {
     }
 
     protected function setupPlayerCommandQueue(commands:Array):void {
+        _controller.removeEventListener(PlayerEvent.JWPLAYER_SETUP_ERROR, setupError);
+
         // run this once setup is complete (plugins are loaded)
         trace('setup player command queue');
         for (var i:uint = 0; i < commands.length; i++) {
@@ -208,7 +210,6 @@ public class Player extends Sprite implements IPlayer {
     protected function playerReady(evt:PlayerEvent):void {
         // Only handle Setup Events once
         _controller.removeEventListener(PlayerEvent.JWPLAYER_READY, playerReady);
-        _controller.removeEventListener(PlayerEvent.JWPLAYER_SETUP_ERROR, setupError);
 
         // Forward all MVC events
         _model.addGlobalListener(globalHandler);
