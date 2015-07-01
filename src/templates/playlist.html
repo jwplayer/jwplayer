@@ -12,12 +12,12 @@
     <ul class="jw-playlist jw-reset">
         {{#each this}}
             {{#if this.active}}
-                <li class='jw-option jw-text jw-active-option  item-{{@index}} jw-reset'>
+                <li class='jw-option jw-text jw-active-option jw-item-{{@index}} jw-reset'>
                     <span class="jw-label jw-reset"><span class="jw-icon jw-icon-play jw-reset"></span></span>
                     <span class="jw-name jw-reset">{{this.title}}</span>
                 </li>
             {{else}}
-                <li class='jw-option jw-text item-{{@index}} jw-reset'>
+                <li class='jw-option jw-text jw-item-{{@index}} jw-reset'>
                     <span class="jw-label jw-reset">{{this.label}}</span>
                     <span class="jw-name jw-reset">{{this.title}}</span>
                 </li>
