@@ -112,6 +112,7 @@ public class InstreamPlayer extends Sprite {
         if (_provider.display) {
             _mediaLayer.visible = true;
             _mediaLayer.addChild(_provider.display);
+            this.resizeHandler();
         } else {
             _mediaLayer.visible = false;
         }
@@ -184,11 +185,13 @@ public class InstreamPlayer extends Sprite {
         _provider.load(item);
     }
 
-    private function resizeHandler(event:Event):void {
+    private function resizeHandler(evt:Event = null):void {
         var width:Number = RootReference.stage.stageWidth;
         var height:Number = RootReference.stage.stageHeight;
         this.graphics.clear();
-        this.graphics.beginFill(0, 0);
+        const bgColor:uint = 0x000000;
+        const opacity:Number = 1;
+        this.graphics.beginFill(bgColor, opacity);
         this.graphics.drawRect(0, 0, width, height);
         this.graphics.endFill();
         if (_provider) {
