@@ -12,6 +12,7 @@ define([
             volume : 50,
             controls : true,
             stretching : 'uniform',
+            skin:'seven',
             width : 400,
             height : 400,
             aspectratio : '75%',

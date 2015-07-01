@@ -6,6 +6,7 @@
     <link type="text/css" rel="stylesheet" href="styles/tests.css"  media="all" />
 
     <script src="../../bower_components/jquery/dist/jquery.js"></script>
+    <script src="../../bower_components/underscore/underscore.js"></script>
     <script src="../../bower_components/requirejs/require.js"></script>
 </head>
 <body>
@@ -25,35 +26,37 @@ require([
     'view/view'
 ], function (mockApi, mockModel, View) {
 
+    var m = _.extend({}, mockModel);
+    m.setup();
+    m.set('id', 'video-container');
     var $textarea = $('#modeljson');
-    mockModel.id = 'video-container';
 
-    var view = new View(mockApi, mockModel) ;
+    var view = new View(mockApi, m) ;
 
     view.setup();
     view.resize(400, 300);
 
-    mockModel.on('all', updateJson);
+    m.on('all', updateJson);
     updateJson();
 
 
     function updateJson() {
         if ($textarea.is(':focus')) { return; }
-        $textarea.val(JSON.stringify(mockModel.attrs, null, 4));
+        $textarea.val(JSON.stringify(m.attrs, null, 4));
     }
 
     $textarea.keyup(function() {
         try {
             var js = JSON.parse($(this).val());
             $.each(js, function (key, val) {
-                mockModel.set(key, val);
+                m.set(key, val);
             });
         } catch(e) {
             console.log('invalid json');
         }
     });
 
-    window.mockModel = mockModel;
+    window.mockModel = m;
     document.getElementById('video-container').appendChild(view.element());
 });
 
