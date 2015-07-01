@@ -59,7 +59,6 @@ define([
                 _view,
                 _captions,
                 _setup,
-                _loadOnPlay = -1,
                 _preplay = false,
                 _actionOnAttach,
                 _stopPlaylist = false, // onComplete, should we play next item or not?
@@ -246,9 +245,9 @@ define([
                 if(_model.get('state') === states.ERROR) {
                     return;
                 }
-                if (_loadOnPlay >= 0) {
-                    _load(_loadOnPlay);
-                    _loadOnPlay = -1;
+                if (_model.get('state') === states.COMPLETE) {
+                    _stop(true);
+                    _model.setItem(0);
                 }
                 if (!_preplay) {
                     _preplay = true;
@@ -356,7 +355,8 @@ define([
             }
 
             function _item(index) {
-                _load(index);
+                _stop(true);
+                _model.setItem(index);
                 _play();
             }
 
@@ -387,7 +387,6 @@ define([
                         _next();
                     } else {
                         _model.set('state', states.COMPLETE);
-                        _loadOnPlay = 0;
                         _this.trigger(events.JWPLAYER_PLAYLIST_COMPLETE, {});
                     }
                     return;
