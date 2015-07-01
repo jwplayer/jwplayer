@@ -1,7 +1,8 @@
 define([
+    'utils/underscore',
     'utils/helpers',
     'utils/css'
-], function(utils, cssUtils) {
+], function(_, utils, cssUtils) {
     /*jshint maxparams:6*/
 
     /** Stretching options **/
@@ -80,12 +81,12 @@ define([
                 break;
             case _stretching.NONE:
                 xscale = yscale = 1;
-                /* falls through */
+            /* falls through */
             case _stretching.EXACTFIT:
                 scale = true;
                 break;
             case _stretching.UNIFORM:
-                /* falls through */
+            /* falls through */
             default:
                 if (xscale > yscale) {
                     if (elementWidth * yscale / parentWidth > 0.95) {
@@ -135,10 +136,11 @@ define([
                 scale = false;
                 cssUtils.transform(domelement);
             }
-            cssUtils.style(domelement, style);
 
-            //// iOS 8 implemented object-fit poorly and needs additional styles to make it fit correctly
-            if (utils.isIOS(8)){
+
+            // iOS 8 implemented object-fit poorly and needs additional styles to make it fit correctly when the
+            // video is scaled by the browser instead of manually via transforms
+            if (utils.isIOS(8) && scale === false){
                 var iOSScaleFix = {
                     width: 'auto',
                     height: 'auto'
@@ -146,11 +148,13 @@ define([
                 if(stretching.toLowerCase() === _stretching.UNIFORM){
                     iOSScaleFix[(heightLimited === false) ? 'width' : 'height'] = '100%';
                 }
-                cssUtils.style(domelement, iOSScaleFix);
+                _.extend(style, iOSScaleFix);
             }
+
+            cssUtils.style(domelement, style);
         } else {
             domelement.className = domelement.className.replace(/\s*jw\-stretch\-(none|exactfit|uniform|fill)/g, '') +
-                ' ' + stretchClass;
+            ' ' + stretchClass;
         }
         return scale;
     };
