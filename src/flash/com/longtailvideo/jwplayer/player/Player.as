@@ -82,14 +82,17 @@ public class Player extends Sprite implements IPlayer {
         if (_instream) {
             _instream.setVolume(volume);
         }
+
         return _controller.setVolume(volume);
     }
 
     public function mute(muted:Boolean):void {
+        // Set the models value, and update video provider
+        _controller.mute(muted);
+
         if (_instream) {
             _instream.setMute(muted);
         }
-        _controller.mute(muted);
     }
 
     public function play():Boolean {
