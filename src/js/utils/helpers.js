@@ -594,6 +594,14 @@ define([
         return val;
     };
 
+    utils.classList = function(element) {
+        if(element.classList) {
+            return element.classList;
+        } else {
+            return element.className.split(' ');
+        }
+    };
+
     utils.hasClass = jqueryfuncs.hasClass;
 
     utils.addClass = function (element, classes) {
