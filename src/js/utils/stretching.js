@@ -138,7 +138,8 @@ define([
             }
 
 
-            //// iOS 8 implemented object-fit poorly and needs additional styles to make it fit correctly when the
+            // iOS 8 implemented object-fit poorly and needs additional styles to make it fit correctly when the
+            // video is scaled by the browser instead of manually via transforms
             if (utils.isIOS(8) && scale === false){
                 var iOSScaleFix = {
                     width: 'auto',
