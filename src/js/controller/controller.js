@@ -171,6 +171,11 @@ define([
                     }
                 });
 
+                // Defer triggering of events until they can be registered
+                _.defer(_playerReadyNotify);
+            }
+
+            function _playerReadyNotify() {
                 // Tell the api that we are loaded
                 _this.trigger(events.JWPLAYER_READY, {
                     // this will be updated by Api
