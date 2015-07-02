@@ -300,7 +300,7 @@ define([
                 }, _this);
 
                 if (status instanceof utils.Error) {
-                    this.trigger(events.JWPLAYER_ERROR, status);
+                    _this.trigger(events.JWPLAYER_ERROR, status);
                     return false;
                 }
 
