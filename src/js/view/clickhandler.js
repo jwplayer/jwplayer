@@ -4,6 +4,7 @@ define([
     'utils/backbone.events',
     'utils/underscore'
 ], function(UI, events, Events, _) {
+
     var ClickHandler = function(_model, _ele) {
         var _display,
             _alternateClickHandler,
@@ -15,7 +16,7 @@ define([
 
         this.element = function() { return _display; };
 
-        var userInteract = new UI(_display, {'enableDoubleTap': true});
+        var userInteract = new UI(_display, {enableDoubleTap: true});
         userInteract.on('click tap', _clickHandler);
         userInteract.on('doubleClick doubleTap', _doubleClickHandler);
 
@@ -23,6 +24,7 @@ define([
 
         var _this = this;
         function _clickHandler(evt) {
+
             if (_alternateClickHandler) {
                 _alternateClickHandler(evt);
                 return;
