@@ -88,7 +88,6 @@ define([
                 linktarget: _settings.linktarget
             });
 
-            return;
         }
 
         _setup();
