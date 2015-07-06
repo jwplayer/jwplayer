@@ -26,7 +26,6 @@ define([
     var stallCheckGenerator = function(videotag, stalledHandler) {
         var lastChecked = -1;
         return function() {
-            if (videotag.paused || videotag.ended) { return; }
             if (videotag.currentTime === lastChecked) {
                 stalledHandler();
             }
@@ -265,6 +264,10 @@ define([
 
         function _stalledHandler() {
             if (!_attached) {
+                return;
+            }
+
+            if (_videotag.paused || _videotag.ended) {
                 return;
             }
 
