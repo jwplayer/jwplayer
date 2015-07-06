@@ -52,6 +52,25 @@ define([
         }
     }
 
+    function _useAndroidHLS(source) {
+        if (source.type === 'hls') {
+            //when androidhls is set to true, allow HLS playback on Android 4.1 and up
+            if (source.androidhls) {
+                var isAndroidNative = utils.isAndroidNative;
+                if (isAndroidNative(2) || isAndroidNative(3) || isAndroidNative('4.0')) {
+                    return false;
+                } else if (utils.isAndroid()) { //utils.isAndroidNative()) {
+                    // skip canPlayType check
+                    // canPlayType returns '' in native browser even though HLS will play
+                    return true;
+                }
+            } else if (utils.isAndroid()) {
+                return false;
+            }
+        }
+        return null;
+    }
+
     function VideoProvider(_playerId, _playerConfig) {
 
         // Current media state
@@ -119,6 +138,9 @@ define([
             _levels,
             // Current quality level index
             _currentQuality = -1,
+
+            // android hls doesn't update currentTime so we want to skip the stall check since it always fails
+            _isAndroidHLS = null,
 
             // post roll support
             _beforecompleted = false,
@@ -267,6 +289,11 @@ define([
                 return;
             }
 
+            // Android HLS doesnt update its times correctly so it always falls in here.  Do not allow it to stall.
+            if (_isAndroidHLS) {
+                return;
+            }
+
             if (_videotag.paused || _videotag.ended) {
                 return;
             }
@@ -358,6 +385,7 @@ define([
                 _canSeek = false;
                 _bufferFull = false;
                 _duration = duration;
+                _isAndroidHLS = _useAndroidHLS(_source);
                 _videotag.src = _source.file;
                 _videotag.load();
             } else {
@@ -756,21 +784,9 @@ define([
         var file = source.file;
         var type = source.type;
 
-        // HLS not sufficiently supported on Android devices; should fail over automatically.
-        if (type === 'hls') {
-            //when androidhls is set to true, allow HLS playback on Android 4.1 and up
-            if (source.androidhls) {
-                var isAndroidNative = utils.isAndroidNative;
-                if (isAndroidNative(2) || isAndroidNative(3) || isAndroidNative('4.0')) {
-                    return false;
-                } else if (utils.isAndroid()) { //utils.isAndroidNative()) {
-                    // skip canPlayType check
-                    // canPlayType returns '' in native browser even though HLS will play
-                    return true;
-                }
-            } else if (utils.isAndroid()) {
-                return false;
-            }
+        var isAndroidHLS = _useAndroidHLS(source);
+        if (isAndroidHLS !== null) {
+            return isAndroidHLS;
         }
 
         // Ensure RTMP files are not seen as videos
