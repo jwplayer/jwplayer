@@ -31,7 +31,7 @@ define([
             this.elementProgress = this.el.getElementsByClassName('jw-progress')[0];
             this.elementThumb = this.el.getElementsByClassName('jw-knob')[0];
 
-            this.userInteract = new UI(this.element(), {enableDrag: true});
+            this.userInteract = new UI(this.element(), {preventScrolling : true});
 
             this.userInteract.on('dragStart', this.dragStartListener);
             this.userInteract.on('drag', this.dragMoveListener);
