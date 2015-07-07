@@ -37,13 +37,10 @@
     #namespace > .basic-skin-styles(); // Using the above local variables
     .skin-element-padding();
 
+    .inset-controlbar();
     .jw-controlbar {
-        .inset-controlbar();
         box-shadow: inset 0px 7px 1px -5px rgba(128,128,128,1);
         border-radius: .3em;
-    }
-    &.jw-flag-audio-player .jw-controlbar {
-        bottom: 0; // overwrite the inset-controlbar mixin
     }
 
     /* Container styles for controlbar play/pause button */

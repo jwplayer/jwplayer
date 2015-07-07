@@ -45,8 +45,8 @@
     }
     
     /* Controlbar styles */
+    .inset-controlbar();
     .jw-controlbar {
-        .inset-controlbar;
         border: @def-border;
         border-radius: .3em;
         background-size: @def-background-size;
@@ -54,9 +54,6 @@
         .jw-overlay {
             bottom: 2.25em;
         }
-    }
-    &.jw-flag-audio-player .jw-controlbar {
-        bottom: 0; // overwrite the inset-controlbar mixin
     }
 
     /* Styles for play button on idle */
