@@ -16,8 +16,14 @@ public class SwfEventRouter {
         if (ExternalInterface.available) {
             if (!_initialized) {
                 // ExternalInterface.marshallExceptions = true;
-                ExternalInterface.addCallback('__externalCall', _externalJsEvent);
-                _initialized = true;
+                try {
+                    ExternalInterface.addCallback('__externalCall', _externalJsEvent);
+                    _initialized = true;
+                } catch(err:Error) {
+                    // ExternalInterface calls can fail when swf is removed during ActionScript execution
+                    trace(err.getStackTrace());
+                }
+
             }
             return true;
         }
@@ -101,11 +107,19 @@ function(id, name, json) {
                     }
                     json = encodeURIComponent(JSON.stringify(data));
                 } catch(err:Error) {
-                    trace('json encoding error', err);
+                    trace(err.getStackTrace());
                 }
-                jsTimeout = ExternalInterface.call(_sendScript, id, name, json);
+                try {
+                    jsTimeout = ExternalInterface.call(_sendScript, id, name, json);
+                } catch(err:Error) {
+                    trace(err.getStackTrace());
+                }
             } else {
-                jsTimeout = ExternalInterface.call(_sendScript, id, name);
+                try {
+                    jsTimeout = ExternalInterface.call(_sendScript, id, name);
+                } catch(err:Error) {
+                    trace(err.getStackTrace());
+                }
             }
             return;
         }
@@ -131,7 +145,11 @@ function() {
     static public function consoleLog(...args):void {
         trace.apply(null, ['<<'].concat(args));
         if (ExternalInterface.available) {
-            ExternalInterface.call.apply(null, [_consoleLog].concat(args));
+            try {
+                ExternalInterface.call.apply(null, [_consoleLog].concat(args));
+            } catch(err:Error) {
+                trace(err.getStackTrace());
+            }
         }
     }
 
