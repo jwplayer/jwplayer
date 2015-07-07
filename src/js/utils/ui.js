@@ -62,6 +62,8 @@ define([
             _enableDoubleTap = (options && options.enableDoubleTap), // and double click
             _preventScrolling = (options && options.preventScrolling),
             _hasMoved = false,
+            _startX = 0,
+            _startY = 0,
             _lastClickTime = 0,
             _doubleClickDelay = 300,
             _touchListenerTarget,
@@ -78,6 +80,8 @@ define([
         function interactStartHandler(evt) {
             var isMouseEvt = evt instanceof MouseEvent;
             _touchListenerTarget = evt.target;
+            _startX = evt.clientX;
+            _startY = evt.clientY;
 
             if(!isMouseEvt || (isMouseEvt && !isRightClick(evt))){
                 if(_isDesktop){
@@ -95,13 +99,18 @@ define([
 
         function interactDragHandler(evt) {
             var touchEvents = events.touchEvents;
+            var movementThreshhold = 6 * 6;
 
             if (_hasMoved) {
                 triggerEvent(touchEvents.DRAG, evt);
             } else {
-                triggerEvent(touchEvents.DRAG_START, evt);
-                _hasMoved = true;
-                triggerEvent(touchEvents.DRAG, evt);
+                var moveX = evt.clientX - _startX;
+                var moveY = evt.clientY - _startY;
+                if (moveX * moveX + moveY * moveY > movementThreshhold) {
+                    triggerEvent(touchEvents.DRAG_START, evt);
+                    _hasMoved = true;
+                    triggerEvent(touchEvents.DRAG, evt);
+                }
             }
 
             // Prevent scrolling the screen dragging while dragging on mobile.
