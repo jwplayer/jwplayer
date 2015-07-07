@@ -1,9 +1,10 @@
 .jw-flag-audio-player {
     background-color: transparent;
 
-    .jw-preview {
-        background-color: transparent;
+    .jw-media {
+        visibility: hidden;
     }
+
     .jw-controlbar {
         display: table;  // This overwrites 'none' from jw-states-idle
         bottom: 0;
@@ -32,4 +33,12 @@
 // This has higher specificity to overwrite jw-flag-user-inactive
 .jwplayer.jw-flag-audio-player .jw-controlbar {
     display: table;
+}
+// This has higher specificity to overwrite skins setting height
+.jwplayer.jw-flag-audio-player .jw-controlbar {
+    height: auto;
+}
+// This has higher specificity to overwrite jw-state-idle
+.jwplayer.jw-flag-audio-player .jw-preview {
+    display: none;
 }
