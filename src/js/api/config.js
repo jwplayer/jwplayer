@@ -5,6 +5,7 @@ define([
 ], function(utils, Playlist, _) {
 
     var Defaults = {
+        displaytitle : true,
         width: 480,
         height: 270,
         cookies: true
