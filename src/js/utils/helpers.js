@@ -333,7 +333,7 @@ define([
     /** Gets the repository location **/
     utils.repo = function () {
         var semver = version.split('+')[0];
-        var repo = 'http://p.jwpcdn.com/player/v/' + semver + '/';
+        var repo = Constants.repo + semver + '/';
         if (_isHTTPS()) {
             return repo.replace('http://', 'https://ssl.');
         }
@@ -341,7 +341,7 @@ define([
     };
 
     utils.getSkinUrl = function(skin) {
-        return Constants.repo + 'skins/' + Constants.skinsVersion + '/' + skin + '.css';
+        return utils.repo() + 'skins/' + skin + '.css';
     };
 
     utils.addStyleSheet = function(url) {

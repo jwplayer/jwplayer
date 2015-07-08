@@ -123,8 +123,6 @@ define([
     function skinToLoad(skin) {
         if(_.contains(Constants.SkinsLoadable, skin)) {
             return utils.getSkinUrl(skin);
-        } else {
-            console.log('The skin parameter does not match any of our skins : ' + skin);
         }
     }
 
