@@ -38,11 +38,6 @@ define([
             _provider,
             // Saved settings
             _cookies = {},
-            // Sub-component configurations
-            _componentConfigs = {
-                controlbar: {},
-                display: {}
-            },
             _currentProvider = utils.noop;
 
         this.mediaController = _.extend({}, Events);
@@ -278,14 +273,6 @@ define([
             if (!state) {
                 var volume = Math.max(20, _this.get('volume'));
                 this.setVolume(volume);
-            }
-        };
-
-        this.componentConfig = function(name) {
-            if (name === 'logo') {
-                return this.config.logo;
-            } else {
-                return _componentConfigs[name];
             }
         };
 
