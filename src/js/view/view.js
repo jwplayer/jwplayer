@@ -1063,6 +1063,8 @@ define([
             if (_instreamMode) {
                 this.destroyInstream();
             }
+
+            cssUtils.clearCss('#'+_model.get('id'));
         };
     };
 
