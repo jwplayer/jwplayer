@@ -9,20 +9,8 @@ define([
         _styleSheet,
         _rules = {},
         _cssBlock = null,
-        _ruleIndexes = {};
-
-    // Copied into this file to remove circular dependency
-    var _exists = function (item) {
-        switch (typeof(item)) {
-            case 'string':
-                return (item.length > 0);
-            case 'object':
-                return (item !== null);
-            case 'undefined':
-                return false;
-        }
-        return true;
-    };
+        _ruleIndexes = {},
+        _exists = utils.exists;
 
     function _createStylesheet(debugText) {
         var styleSheet = document.createElement('style');
