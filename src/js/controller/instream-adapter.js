@@ -105,6 +105,7 @@ define([
 
             // Show instream state instead of normal player state
             _view.setupInstream(_instream._adModel);
+            _instream._adModel.set('state', states.BUFFERING);
 
             // don't trigger api play/pause on display click
             _view.clickHandler().setAlternateClickHandlers(utils.noop, null);
