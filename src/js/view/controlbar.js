@@ -76,10 +76,15 @@ define([
 
         build : function() {
             var timeSlider = new TimeSlider(this._model, this._api),
-                playlistTooltip = new Playlist('jw-icon-playlist'),
+                playlistTooltip,
                 volumeSlider,
                 volumeTooltip,
                 muteButton;
+
+            // Create the playlistTooltip as long as visualplaylist from the config is not false
+            if(this._model.get('visualplaylist') !== false) {
+                playlistTooltip = new Playlist('jw-icon-playlist');
+            }
 
             // Do not initialize volume sliders on mobile.
             if(!utils.isMobile()){
@@ -132,11 +137,18 @@ define([
                 ]
             };
 
+
+            function removeUndefinedElements(eleList){
+                return _.reject(eleList, function(ele){
+                    return _.isUndefined(ele);
+                });
+            }
+
             // Remove undefined layout elements.  They are invalid for the current platform.
             // (e.g. volume and volumetooltip on mobile)
-            this.layout.right = _.reject(this.layout.right, function(ele){
-                return _.isUndefined(ele);
-            });
+            this.layout.left = removeUndefinedElements(this.layout.left);
+            this.layout.center = removeUndefinedElements(this.layout.center);
+            this.layout.right = removeUndefinedElements(this.layout.right);
 
             this.el = document.createElement('div');
             this.el.className = 'jw-controlbar jw-background-color jw-reset';
@@ -194,12 +206,14 @@ define([
                 }, this);
             }
 
-            this.elements.playlist.on('select', function(value) {
-                this._model.once('setItem', function() {
-                    this._api.play();
+            if(this.elements.playlist) {
+                this.elements.playlist.on('select', function (value) {
+                    this._model.once('setItem', function () {
+                        this._api.play();
+                    }, this);
+                    this._api.load(value);
                 }, this);
-                this._api.load(value);
-            }, this);
+            }
 
             this.elements.hd.on('select', function(value){
                 this._model.getVideo().setCurrentQuality(value);
@@ -232,8 +246,9 @@ define([
             var display = (playlist.length > 1);
             this.elements.next.toggle(display);
             this.elements.prev.toggle(display);
-
-            this.elements.playlist.setup(playlist, model.get('item'));
+            if(this.elements.playlist) {
+                this.elements.playlist.setup(playlist, model.get('item'));
+            }
         },
         onPlaylistItem : function(model/*, item*/) {
             this.elements.time.updateBuffer(0);
@@ -242,7 +257,9 @@ define([
             this.elements.elapsed.innerHTML = '00:00';
 
             var itemIdx = model.get('item');
-            this.elements.playlist.selectItem(itemIdx);
+            if(this.elements.playlist) {
+                this.elements.playlist.selectItem(itemIdx);
+            }
 
             this.elements.audiotracks.setup();
 
