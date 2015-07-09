@@ -24,8 +24,16 @@ define([
             this.title = arr[0];
             this.description = arr[1];
 
-            this.model.on('change:playlistItem', this.updateText, this);
-            this.updateText(this.model, this.model.get('playlistItem'));
+            this.model.on('change:playlistItem', this.playlistItem, this);
+            this.playlistItem(this.model, this.model.get('playlistItem'));
+        },
+
+        playlistItem : function(model, item) {
+            if (model.get('displaytitle')) {
+                this.updateText(model, item);
+            } else {
+                this.hide();
+            }
         },
 
         updateText: function(model, playlistItem) {
