@@ -69,13 +69,10 @@ define([
         this.removeEventListener = this.off.bind(this);
         // </deprecate>
 
-        // Add a bunch of methods
-        var _resetController = function() {
-            if (_controller) {
-                _controller.off();
-                _controller.reset();
-            }
+        var _setupController = function() {
             _controller = new Controller(container);
+
+            // Add a bunch of methods
             actionsInit(_this, _controller);
             mutatorsInit(_this, _controller);
             _controller.on(events.JWPLAYER_PLAYLIST_ITEM, function () {
@@ -99,7 +96,7 @@ define([
             });
             _controller.on('all', _this.trigger);
         };
-        _resetController();
+        _setupController();
         legacyInit(this);
 
         // These should be read-only model properties
@@ -113,9 +110,17 @@ define([
         var _reset = function() {
             _playerReady = false;
             _itemMeta = {};
-            // Reset DOM
+
             _this.off();
-            _resetController();
+
+            if (_controller) {
+                _controller.off();
+            }
+
+            // so players can be removed before loading completes
+            if (_controller && _controller.playerDestroy) {
+                _controller.playerDestroy();
+            }
         };
 
         var _getPlugin = function(name) {
@@ -128,6 +133,7 @@ define([
             _qoe.tick('setup');
 
             _reset();
+            _setupController();
 
             // bind event listeners passed in to the config
             utils.foreach(options.events, function(evt, val) {
@@ -253,17 +259,15 @@ define([
         this.playAd = this.pauseAd = _.noop;
 
         this.remove = function () {
-            // Remove from array of players. this calls this.destroyPlayer()
+            // Remove from array of players
             globalRemovePlayer(_this);
-
-            // so players can be removed before loading completes
-            if (_controller.playerDestroy) {
-                _controller.playerDestroy();
-            }
 
             // terminate state
             _this.trigger('remove');
+
+            // Unbind listeners and destroy controller/model/...
             _reset();
+
             return _this;
         };
 

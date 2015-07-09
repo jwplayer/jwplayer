@@ -10,20 +10,7 @@ define([
         _rules = {},
         _cssBlock = null,
         _ruleIndexes = {},
-        _debug = false;
-
-    // Copied into this file to remove circular dependency
-    var _exists = function (item) {
-        switch (typeof(item)) {
-            case 'string':
-                return (item.length > 0);
-            case 'object':
-                return (item !== null);
-            case 'undefined':
-                return false;
-        }
-        return true;
-    };
+        _exists = utils.exists;
 
     function _createStylesheet(debugText) {
         var styleSheet = document.createElement('style');
@@ -58,14 +45,7 @@ define([
             //no change in css
             return;
         }
-        if (_debug) {
-            // add a new style sheet with css text and exit
-            if (_styleSheets[selector]) {
-                _styleSheets[selector].parentNode.removeChild(_styleSheets[selector]);
-            }
-            _styleSheets[selector] = _createStylesheet(_getRuleText(selector));
-            return;
-        }
+
         if (!_styleSheets[selector]) {
             // set stylesheet for selector
             var numberRules = _styleSheet && _styleSheet.sheet && _styleSheet.sheet.cssRules &&

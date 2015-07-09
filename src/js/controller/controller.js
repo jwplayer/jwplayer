@@ -596,6 +596,9 @@ define([
 
             this.playerDestroy = function () {
                 this.stop();
+
+                this.showView(this.originalContainer);
+
                 if (_view) {
                     _view.destroy();
                 }
@@ -670,10 +673,6 @@ define([
                 });
             });
 
-        },
-
-        reset: function() {
-            this.showView(this.originalContainer);
         }
     };
 
