@@ -9,8 +9,7 @@ define([
         _styleSheet,
         _rules = {},
         _cssBlock = null,
-        _ruleIndexes = {},
-        _debug = false;
+        _ruleIndexes = {};
 
     // Copied into this file to remove circular dependency
     var _exists = function (item) {
@@ -58,14 +57,7 @@ define([
             //no change in css
             return;
         }
-        if (_debug) {
-            // add a new style sheet with css text and exit
-            if (_styleSheets[selector]) {
-                _styleSheets[selector].parentNode.removeChild(_styleSheets[selector]);
-            }
-            _styleSheets[selector] = _createStylesheet(_getRuleText(selector));
-            return;
-        }
+
         if (!_styleSheets[selector]) {
             // set stylesheet for selector
             var numberRules = _styleSheet && _styleSheet.sheet && _styleSheet.sheet.cssRules &&
