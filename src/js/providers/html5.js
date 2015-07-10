@@ -526,7 +526,7 @@ define([
             if (!buffered || buffered.length === 0 || duration <= 0 || duration === Infinity) {
                 return 0;
             }
-            return Math.max(buffered.end(buffered.length-1) / duration, 1);
+            return utils.between(buffered.end(buffered.length-1) / duration, 0, 1);
         }
 
         function _endedHandler() {
