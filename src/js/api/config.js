@@ -1,14 +1,25 @@
 define([
     'utils/helpers',
+    'utils/stretching',
     'playlist/playlist',
     'utils/underscore'
-], function(utils, Playlist, _) {
+], function(utils, stretchUtils, Playlist, _) {
 
+    // Defaults
     var Defaults = {
+        androidhls: true,
+        autostart: false,
+        controls: true,
+        cookies: true,
         displaytitle : true,
+        mobilecontrols: false,
+        repeat: false,
+        skin: 'seven',
+        stretching: stretchUtils.UNIFORM,
+        mute: false,
+        volume: 90,
         width: 480,
-        height: 270,
-        cookies: true
+        height: 320
     };
 
     function _deserialize(options) {
