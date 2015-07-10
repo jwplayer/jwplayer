@@ -1,6 +1,5 @@
 define([
     'utils/helpers',
-    'utils/stretching',
     'playlist/playlist',
     'providers/providers',
     'controller/storage',
@@ -10,25 +9,7 @@ define([
     'utils/simplemodel',
     'events/events',
     'events/states'
-], function(utils, stretchUtils, Playlist, Providers, storage, QOE, _, Events, SimpleModel, events, states) {
-
-    // Defaults
-    var _defaults = {
-        autostart: false,
-        controls: true,
-        scrubbing : false,
-        // debug: undefined,
-        fullscreen: false,
-        height: 320,
-        mobilecontrols: false,
-        mute: false,
-        playlist: [],
-        repeat: false,
-        skin: 'seven',
-        stretching: stretchUtils.UNIFORM,
-        width: 480,
-        volume: 90
-    };
+], function(utils, Playlist, Providers, storage, QOE, _, Events, SimpleModel, events, states) {
 
     // Represents the state of the player
     var Model = function() {
@@ -51,10 +32,13 @@ define([
                 _cookies = storage.getAllItems();
             }
 
-            this.config = _.extend({}, _defaults, _cookies, config);
+            this.config = _.extend({}, config, _cookies);
 
             _.extend(this, this.config, {
+                // Initial state, upon setup
                 state: states.IDLE,
+                fullscreen: false,
+                scrubbing : false,
                 duration: 0,
                 position: 0,
                 buffer: 0
