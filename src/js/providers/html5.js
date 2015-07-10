@@ -11,8 +11,8 @@ define([
 ], function(cssUtils, utils, stretchUtils, _, events, states, eventdispatcher, DefaultProvider, video) {
 
     var clearInterval = window.clearInterval,
-        stallInterval,
         STALL_DELAY = 256,
+        BUFFER_INTERVAL = 100,
         _isIE = utils.isMSIE(),
         _isMobile = utils.isMobile(),
         _isSafari = utils.isSafari(),
@@ -21,35 +21,16 @@ define([
         _name = 'html5';
 
 
-
-    // Browsers, including latest chrome, do not always report Stalled events in a timely fashion
-    var stallCheckGenerator = function(videotag, stalledHandler) {
-        var lastChecked = -1;
-        return function() {
-            if (videotag.currentTime === lastChecked) {
-                stalledHandler();
-            }
-            lastChecked = videotag.currentTime;
-        };
-    };
-
     function _setupListeners(eventsHash, videoTag) {
         utils.foreach(eventsHash, function(evt, evtCallback) {
             videoTag.addEventListener(evt, evtCallback, false);
         });
-
-        var checker = stallCheckGenerator(videoTag, eventsHash.stalled);
-        stallInterval = setInterval(checker, STALL_DELAY);
     }
 
     function _removeListeners(eventsHash, videoTag) {
         utils.foreach(eventsHash, function(evt, evtCallback) {
             videoTag.removeEventListener(evt, evtCallback, false);
         });
-
-        if (stallInterval) {
-            clearInterval(stallInterval);
-        }
     }
 
     function _useAndroidHLS(source) {
@@ -105,11 +86,11 @@ define([
                 //readystatechange: _generalHandler,
                 seeked: _sendSeekedEvent,
                 //seeking: _seekingHandler,
-                stalled: _stalledHandler,
+                //stalled: _stalledHandler,
                 //suspend: _generalHandler,
                 timeupdate: _timeUpdateHandler,
                 volumechange: _volumeHandler,
-                waiting: _stalledHandler,
+                //waiting: _stalledHandler,
 
                 webkitbeginfullscreen: _fullscreenBeginHandler,
                 webkitendfullscreen: _fullscreenEndHandler
@@ -131,7 +112,9 @@ define([
             // Using setInterval to check buffered ranges
             _bufferInterval = -1,
             // Last sent buffer amount
-            _bufferPercent = -1,
+            _buffered = -1,
+            // Last epoch time that playback was verified
+            _wasPlayingAt = -1,
             // Whether or not we're listening to video tag events
             _attached = true,
             // Quality levels
@@ -180,7 +163,9 @@ define([
         }
 
         function _durationUpdateHandler() {
-            if (!_attached) { return; }
+            if (!_attached) {
+                return;
+            }
             var newDuration = _videotag.duration;
             if (_duration !== newDuration) {
                 _duration = newDuration;
@@ -194,9 +179,12 @@ define([
         function _timeUpdateHandler(evt) {
             _progressHandler(evt);
 
-            if (!_attached) { return; }
+            if (!_attached) {
+                return;
+            }
 
             if (_this.state === states.PLAYING) {
+                _wasPlayingAt = _.now();
                 _position = _videotag.currentTime;
                 // do not allow _durationUpdateHandler to update _canSeek before _canPlayHandler does
                 if (evt) {
@@ -206,10 +194,6 @@ define([
                     position: _position,
                     duration: _duration
                 });
-                // Working around a Galaxy Tab bug; otherwise _duration should be > 0
-                //              if (_position >= _duration && _duration > 3 && !utils.isAndroid(2.3)) {
-                //                  _complete();
-                //              }
             }
 
 
@@ -280,6 +264,7 @@ define([
                 return;
             }
 
+            _wasPlayingAt = _.now();
             _this.setState(states.PLAYING);
             _this.sendEvent(events.JWPLAYER_PROVIDER_FIRST_FRAME, {});
         }
@@ -372,7 +357,7 @@ define([
             _source = _levels[_currentQuality];
 
             clearInterval(_bufferInterval);
-            _bufferInterval = setInterval(_sendBufferUpdate, 100);
+            _bufferInterval = setInterval(_checkBufferAndPlayback, BUFFER_INTERVAL);
 
             _delayedSeek = 0;
 
@@ -418,7 +403,9 @@ define([
         }
 
         this.stop = function() {
-            if (!_attached) { return; }
+            if (!_attached) {
+                return;
+            }
             clearInterval(_bufferInterval);
             _videotag.removeAttribute('src');
             if (!_isIE) {
@@ -508,28 +495,38 @@ define([
             _videotag.muted = !!state;
         };
 
-        function _sendBufferUpdate() {
-            if (!_attached) { return; }
-            var newBuffer = _getBuffer();
-
-            if (newBuffer >= 1) {
-                clearInterval(_bufferInterval);
+        function _checkBufferAndPlayback() {
+            if (!_attached) {
+                return;
             }
 
-            if (newBuffer !== _bufferPercent) {
-                _bufferPercent = newBuffer;
+            var buffered = _getBuffer();
+            if (buffered !== _buffered) {
+                _buffered = buffered;
                 _this.sendEvent(events.JWPLAYER_MEDIA_BUFFER, {
-                    bufferPercent: Math.round(_bufferPercent * 100)
+                    bufferPercent: buffered * 100
                 });
+            }
+
+            // Browsers, including latest chrome, do not always report Stalled events in a timely fashion
+            var currentTime = _videotag.currentTime;
+            if (currentTime === _position) {
+                if (_.now() - _wasPlayingAt > STALL_DELAY) {
+                    _stalledHandler();
+                }
+            } else {
+                _wasPlayingAt = _.now();
+                _position = currentTime;
             }
         }
 
         function _getBuffer() {
             var buffered = _videotag.buffered;
-            if (!buffered || !_videotag.duration || buffered.length === 0) {
+            var duration = _videotag.duration;
+            if (!buffered || buffered.length === 0 || duration <= 0 || duration === Infinity) {
                 return 0;
             }
-            return buffered.end(buffered.length-1) / _videotag.duration;
+            return utils.between(buffered.end(buffered.length-1) / duration, 0, 1);
         }
 
         function _endedHandler() {
