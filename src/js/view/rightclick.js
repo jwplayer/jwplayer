@@ -37,7 +37,7 @@ define([
                 var text = 'Flash Version ' + utils.flashVersion();
                 obj.items.push({
                     title : text,
-                    link : '#'
+                    link : 'http://www.adobe.com/software/flash/about/'
                 });
             }
 
