@@ -137,18 +137,11 @@ define([
                 ]
             };
 
-
-            function removeUndefinedElements(eleList){
-                return _.reject(eleList, function(ele){
-                    return _.isUndefined(ele);
-                });
-            }
-
             // Remove undefined layout elements.  They are invalid for the current platform.
             // (e.g. volume and volumetooltip on mobile)
-            this.layout.left = removeUndefinedElements(this.layout.left);
-            this.layout.center = removeUndefinedElements(this.layout.center);
-            this.layout.right = removeUndefinedElements(this.layout.right);
+            this.layout.left = _.compact(this.layout.left);
+            this.layout.center = _.compact(this.layout.center);
+            this.layout.right = _.compact(this.layout.right);
 
             this.el = document.createElement('div');
             this.el.className = 'jw-controlbar jw-background-color jw-reset';
