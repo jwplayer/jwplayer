@@ -501,7 +501,7 @@ define([
             }
 
             var buffered = _getBuffer();
-            if (buffered !== _buffered && buffered <= 1) {
+            if (buffered !== _buffered) {
                 _buffered = buffered;
                 _this.sendEvent(events.JWPLAYER_MEDIA_BUFFER, {
                     bufferPercent: buffered * 100
@@ -522,10 +522,11 @@ define([
 
         function _getBuffer() {
             var buffered = _videotag.buffered;
-            if (!buffered || !_videotag.duration || buffered.length === 0) {
+            var duration = _videotag.duration;
+            if (!buffered || buffered.length === 0 || duration <= 0 || duration === Infinity) {
                 return 0;
             }
-            return buffered.end(buffered.length-1) / _videotag.duration;
+            return Math.max(buffered.end(buffered.length-1) / duration, 1);
         }
 
         function _endedHandler() {
