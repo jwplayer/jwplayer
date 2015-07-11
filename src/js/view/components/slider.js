@@ -20,7 +20,7 @@ define([
         },
         setup : function() {
             var obj = {
-                'default' : this.default,
+                'default' : this['default'],
                 className : this.className,
                 orientation : 'jw-slider-' + this.orientation
             };
