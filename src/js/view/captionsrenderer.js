@@ -11,6 +11,7 @@ define([
         fontSize: 15,
         fontFamily: 'Arial,sans-serif',
         fontOpacity: 100,
+        color: '#FFF',
         backgroundColor: '#000',
         backgroundOpacity: 100,
         // if back == false edgeStyle defaults to 'uniform',
