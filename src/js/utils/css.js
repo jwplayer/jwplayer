@@ -291,20 +291,20 @@ define([
         transform(domelement, 'rotate(' + deg + 'deg)');
     };
 
-    var rgbHex = function (color) {
-        var hex = String(color).replace('#', '');
-        if (hex.length === 3) {
-            hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
-        }
-        return '#' + hex.substr(-6);
-    };
-
     var hexToRgba = function (hexColor, opacity) {
         var style = 'rgb';
+        if (hexColor) {
+            hexColor = String(hexColor).replace('#', '');
+            if (hexColor.length === 3) {
+                hexColor = hexColor[0] + hexColor[0] + hexColor[1] + hexColor[1] + hexColor[2] + hexColor[2];
+            }
+        } else {
+            hexColor = '000000';
+        }
         var channels = [
-            parseInt(hexColor.substr(1, 2), 16),
-            parseInt(hexColor.substr(3, 2), 16),
-            parseInt(hexColor.substr(5, 2), 16)
+            parseInt(hexColor.substr(0, 2), 16),
+            parseInt(hexColor.substr(2, 2), 16),
+            parseInt(hexColor.substr(4, 2), 16)
         ];
         if (opacity !== undefined && opacity !== 100) {
             style += 'a';
@@ -326,7 +326,6 @@ define([
         dragStyle : dragStyle,
         transitionStyle : transitionStyle,
         rotate : rotate,
-        rgbHex : rgbHex,
         hexToRgba : hexToRgba
     };
 });
