@@ -38,8 +38,8 @@ You also have the power to programatically set any configuration within the play
 
 ```js
     function bumpIt() {
-    	var vol = player.get('volume');
-        player.set('volume', vol + 10 );
+    	var vol = player.getVolume();
+        player.setVolume(vol + 10 );
     }
 ```
 
