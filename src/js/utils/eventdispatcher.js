@@ -1,7 +1,6 @@
 define([
     'utils/backbone.events',
-    'utils/underscore',
-    'polyfill/bind'
+    'utils/underscore'
 ], function(Events, _) {
 
     var GLOBAL_EVENT = 'GLOBAL_EVENT';

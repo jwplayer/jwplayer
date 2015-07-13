@@ -2,8 +2,6 @@ define([
     'api/global-api',
     'utils/helpers',
     'utils/underscore',
-    'polyfill/bind',
-    'polyfill/eventlisteners',
     '../css/jwplayer.less'
 ], function (GlobalApi, utils, _) {
     /*global __webpack_public_path__:true*/
