@@ -109,8 +109,9 @@ define([
 
             this.layer.appendChild(this.el);
 
-            this.playerElement.onclick = this.hideMenu.bind(this);
-            document.addEventListener('mousedown', this.hideMenu.bind(this), false);
+            this.hideMenuCallback = this.hideMenu.bind(this);
+            this.playerElement.onclick = this.hideMenuCallback;
+            document.addEventListener('mousedown', this.hideMenuCallback, false);
 
             // Update the menu if the provider changes
             this.model.on('change:provider', this.updateHtml, this);
@@ -136,7 +137,8 @@ define([
 
         destroy : function() {
             this.model.off('change:provider', this.updateHtml);
-            document.removeEventListener('mousedown', this.hideMenu);
+            document.removeEventListener('mousedown', this.hideMenuCallback);
+            this.hideMenuCallback = null;
             this.model = null;
             this.playerElement = null;
             this.el = null;
