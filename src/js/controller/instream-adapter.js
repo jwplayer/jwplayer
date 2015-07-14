@@ -89,16 +89,15 @@ define([
                 // make sure video restarts after preroll
                 _oldpos = 0;
                 _model.set('preInstreamState', 'instream-preroll');
-            } else if (_oldProvider && _oldProvider.checkComplete()) {
+            } else if (_oldProvider && _oldProvider.checkComplete() || _model.get('state') === states.COMPLETE) {
                 _model.set('preInstreamState', 'instream-postroll');
-            } else if (_model.get('state') === states.IDLE) {
-                _model.set('preInstreamState', 'instream-idle');
             } else {
                 _model.set('preInstreamState', 'instream-midroll');
             }
 
             // If the player's currently playing, pause the video tag
-            if (_model.get('state') === states.PLAYING) {
+            var currState = _model.get('state');
+            if (currState === states.PLAYING || currState === states.BUFFERING) {
                 _oldProvider.pause();
             }
 
