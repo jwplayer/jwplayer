@@ -327,9 +327,9 @@ define([
             _api.onPlaylistComplete(_playlistCompleteHandler);
             _api.onPlaylistItem(_playlistItemHandler);
 
-            _model.on('change:castAvailable', function(model, val) {
-                utils.toggleClass(_controlsLayer, 'jw-cast-available', val);
-            });
+            _model.on('change:castAvailable', _onCastAvailable);
+            _onCastAvailable(_model, _model.get('castAvailable'));
+
 
             // set initial state
             if(_model.get('stretching')){
@@ -338,6 +338,7 @@ define([
             // watch for changes
             _model.on('change:stretching', _onStretchChange);
 
+            /*
             _model.on('change:castState', function(evt) {
                 if (!_castDisplay) {
                     _castDisplay = new CastDisplay(_model.get('id'));
@@ -364,8 +365,8 @@ define([
                     _stateHandler(null, _model.get('state'));
                     _responsiveListener();
                 }
-
             });
+             */
 
             _stateHandler(null, states.IDLE);
 
@@ -385,6 +386,11 @@ define([
                 _resize(_model.get('width'), _model.get('height'));
             }, 0);
         };
+
+        function _onCastAvailable(model, val) {
+            utils.toggleClass(_playerElement, 'jw-flag-cast-available', val);
+            utils.toggleClass(_controlsLayer, 'jw-flag-cast-available', val);
+        }
 
         function _onStretchChange(model, newVal, oldVal) {
             if(oldVal){
@@ -513,10 +519,6 @@ define([
             _model.on('change:scrubbing', _dragging);
 
             _controlsLayer.appendChild(_controlbar.element());
-
-            if (_model.get('castAvailable')) {
-                _this.forceControls(true);
-            }
 
             _playerElement.onfocusin = handleFocus;
             _playerElement.onfocusout = handleBlur;

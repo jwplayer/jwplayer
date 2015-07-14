@@ -255,6 +255,12 @@ define([
             return _controller.createInstream();
         };
 
+        this.castToggle = function() {
+            if (_controller && _controller.castToggle) {
+                _controller.castToggle();
+            }
+        };
+
         // These may be overridden by ad plugins
         this.playAd = this.pauseAd = _.noop;
 
