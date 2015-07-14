@@ -33,7 +33,9 @@ define([
         };
 
         var _flashCommand = function() {
-            _swf.triggerFlash.apply(_swf, arguments);
+            if(_swf) {
+                _swf.triggerFlash.apply(_swf, arguments);
+            }
         };
 
         var _eventDispatcher = new eventdispatcher('flash.provider');
@@ -303,8 +305,8 @@ define([
                         _flashCommand('stretch', stretching);
                     }
                 },
-                setControls: function() {
-
+                setControls: function(show) {
+                    _flashCommand('setControls', show);
                 },
                 setFullscreen: function(value) {
                     _fullscreen = value;

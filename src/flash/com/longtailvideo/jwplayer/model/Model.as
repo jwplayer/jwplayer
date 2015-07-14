@@ -150,6 +150,14 @@ public class Model extends GlobalEventDispatcher {
         }
     }
 
+    public function get controls():Boolean {
+        return _config.controls;
+    }
+
+    public function set controls(on:Boolean):void {
+        _config.controls = on;
+    }
+
     public function get stretching():String {
         return _config.stretching;
     }

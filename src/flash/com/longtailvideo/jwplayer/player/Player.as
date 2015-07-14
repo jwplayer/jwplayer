@@ -143,6 +143,10 @@ public class Player extends Sprite implements IPlayer {
         _model.currentQuality = index;
     }
 
+    public function setControls(show:Boolean):void {
+        _model.controls = show;
+    }
+
     public function getCaptionsList():Array {
         return [];
     }
@@ -229,6 +233,7 @@ public class Player extends Sprite implements IPlayer {
                 .on('fullscreen', fullscreen)
                 .on('mute', mute)
                 .on('volume', volume)
+                .on('setControls', setControls)
                 .on('stretch', stretch)
                 .on('setCurrentQuality', setCurrentQuality)
                 .on('setSubtitlesTrack', setSubtitlesTrack)

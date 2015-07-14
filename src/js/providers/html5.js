@@ -662,6 +662,11 @@ define([
         };
 
         this.setControls = function(state) {
+            // Auto-disable controls when its not fullscreen and mobile.  Android has controls == false
+            // automatically somehow.
+            if (!(_isMobile && _fullscreenState)) {
+                state = false;
+            }
             _videotag.controls = !!state;
         };
 
