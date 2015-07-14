@@ -34,7 +34,6 @@ define([
             _options = {},
             _oldProvider,
             _oldpos,
-            _oldstate,
             _olditem;
 
         var _clickHandler = _.bind(function(evt) {
@@ -74,8 +73,8 @@ define([
 
             // Keep track of the original player state
             _oldProvider = _model.getVideo();
-            _oldpos = _model.position;
-            _olditem = _model.playlist[_model.item];
+            _oldpos = _model.get('position');
+            _olditem = _model.get('playlist')[_model.get('item')];
 
 
             _instream.on('all', _instreamForward, this);
@@ -89,17 +88,16 @@ define([
             if (_controller.checkBeforePlay() || (_oldpos === 0 && !_oldProvider.checkComplete())) {
                 // make sure video restarts after preroll
                 _oldpos = 0;
-                _oldstate = states.PLAYING;
-            } else if (_oldProvider && _oldProvider.checkComplete()) {
-                // AKA  postroll
-                _oldstate = states.IDLE;
-            } else if (_model.get('state') === states.IDLE) {
-                _oldstate = states.IDLE;
+                _model.set('preInstreamState', 'instream-preroll');
+            } else if (_oldProvider && _oldProvider.checkComplete() || _model.get('state') === states.COMPLETE) {
+                _model.set('preInstreamState', 'instream-postroll');
             } else {
-                _oldstate = states.PLAYING;
+                _model.set('preInstreamState', 'instream-midroll');
             }
+
             // If the player's currently playing, pause the video tag
-            if (_oldstate === states.PLAYING) {
+            var currState = _model.get('state');
+            if (currState === states.PLAYING || currState === states.BUFFERING) {
                 _oldProvider.pause();
             }
 
@@ -261,23 +259,21 @@ define([
                 // Re-attach the controller
                 _controller.attachMedia();
 
-                // Load the original item into our provider, which sets up the regular player's video tag
-                //_oldProvider = _model.getVideo();
+                var oldMode = _model.get('preInstreamState');
+                switch (oldMode) {
+                    case 'instream-preroll':
+                    case 'instream-midroll':
+                        var item = _.extend({}, _olditem);
+                        item.starttime = _oldpos;
+                        _model.loadVideo(item);
 
-                if (_oldstate !== states.IDLE) {
-                    var item = _.extend({}, _olditem);
-                    item.starttime = _oldpos;
-                    _model.loadVideo(item);
-
-                } else {
-                    _oldProvider.stop();
+                        _oldProvider.play();
+                        break;
+                    case 'instream-postroll':
+                    case 'instream-idle':
+                        _oldProvider.stop();
+                        break;
                 }
-
-                if (_oldstate === states.PLAYING) {
-                    // Model was already correct; just resume playback
-                    _oldProvider.play();
-                }
-
             }
         };
 

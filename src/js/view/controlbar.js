@@ -108,7 +108,7 @@ define([
                 mute: muteButton,
                 volume: volumeSlider,
                 volumetooltip: volumeTooltip,
-                cast: button('jw-icon-cast jw-off'),
+                cast: button('jw-icon-cast jw-off', this._api.castToggle),
                 fullscreen: button('jw-icon-fullscreen', this._api.setFullscreen)
             };
 
@@ -130,6 +130,7 @@ define([
                     this.elements.cc,
                     this.elements.audiotracks,
                     this.elements.mute,
+                    this.elements.cast,
                     this.elements.volume,
                     this.elements.volumetooltip,
                     // this.elements.cast, // hidden for jw7.0 release
