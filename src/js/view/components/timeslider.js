@@ -126,7 +126,7 @@ define([
 
         // These are new methods
         performSeek : function () {
-            var duration = this._api.getDuration();
+            var duration = this._model.get('duration');
             var adaptiveType = utils.adaptiveType(duration);
             var position;
             if (adaptiveType === 'LIVE' || duration === 0) {

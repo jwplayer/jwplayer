@@ -74,8 +74,8 @@ define([
 
             // Keep track of the original player state
             _oldProvider = _model.getVideo();
-            _oldpos = _model.position;
-            _olditem = _model.playlist[_model.item];
+            _oldpos = _model.get('position');
+            _olditem = _model.get('playlist')[_model.get('item')];
 
 
             _instream.on('all', _instreamForward, this);

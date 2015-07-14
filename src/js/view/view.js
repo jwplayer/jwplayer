@@ -96,7 +96,7 @@ define([
         _elementSupportsFullscreen = _requestFullscreen && _exitFullscreen;
 
         function adjustSeek(amount) {
-            var newSeek = utils.between(_model.get('position') + amount, 0, this.getDuration());
+            var newSeek = utils.between(_model.get('position') + amount, 0, _model.get('duration'));
             this.seek(newSeek);
         }
 
@@ -139,19 +139,19 @@ define([
                     break;
                 case 37: // left-arrow, if not adMode
                     if (!_instreamMode) {
-                        adjustSeek.call(_api, -5);
+                        adjustSeek(-5);
                     }
                     break;
                 case 39: // right-arrow, if not adMode
                     if (!_instreamMode) {
-                        adjustSeek.call(_api, 5);
+                        adjustSeek(5);
                     }
                     break;
                 case 38: // up-arrow
-                    adjustVolume.call(_api, 10);
+                    adjustVolume(10);
                     break;
                 case 40: // down-arrow
-                    adjustVolume.call(_api, -10);
+                    adjustVolume(-10);
                     break;
                 case 77: // m-key
                     _api.setMute();
@@ -163,7 +163,7 @@ define([
                     if (evt.keyCode >= 48 && evt.keyCode <= 59) {
                         // if 0-9 number key, move to n/10 of the percentage of the video
                         var number = evt.keyCode - 48;
-                        var newSeek = (number / 10) * _api.getDuration();
+                        var newSeek = (number / 10) * _model.get('duration');
                         _api.seek(newSeek);
                     }
                     break;
