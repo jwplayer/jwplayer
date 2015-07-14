@@ -7,6 +7,8 @@ import com.longtailvideo.jwplayer.utils.RootReference;
 import flash.events.EventDispatcher;
 import flash.media.SoundTransform;
 import flash.utils.getQualifiedClassName;
+import flash.ui.Mouse;
+import flash.ui.MouseCursor;
 
 public dynamic class PlayerConfig extends EventDispatcher {
 
@@ -19,6 +21,7 @@ public dynamic class PlayerConfig extends EventDispatcher {
 
     protected var _soundTransform:SoundTransform;
     protected var _volume:Number = 0.9;
+    protected var _controls:Boolean = true;
 
     public var captionLabel:String;
     public var qualityLabel:String;
@@ -209,10 +212,12 @@ public dynamic class PlayerConfig extends EventDispatcher {
     }
 
     public function get controls():Boolean {
-        return true;
+        return _controls;
     }
 
-    public function set controls(x:Boolean):void {
+    public function set controls(show:Boolean):void {
+        _controls = show;
+        Mouse.cursor = (_controls) ? MouseCursor.BUTTON : MouseCursor.AUTO;
     }
 
     public function setConfig(config:Object):void {
@@ -228,6 +233,7 @@ public dynamic class PlayerConfig extends EventDispatcher {
         // this.fullscreen = config.fullscreen;
         this.plugins    = config.flashPlugins;
 
+        this.controls = config.controls;
         this.captionLabel = config.captionLabel;
         this.qualityLabel = config.qualityLabel;
     }

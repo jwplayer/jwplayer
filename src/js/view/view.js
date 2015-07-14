@@ -439,11 +439,13 @@ define([
         }
 
         var toggleControls = function() {
-            if (_model.get('controls')) {
-                utils.removeClass(_controlsLayer, 'jw-controls-disabled');
+            var controls = _model.get('controls');
+            if (controls) {
+                utils.removeClass(_playerElement, 'jw-flag-controls-disabled');
             } else {
-                utils.addClass(_controlsLayer, 'jw-controls-disabled');
+                utils.addClass(_playerElement, 'jw-flag-controls-disabled');
             }
+            _model.getVideo().setControls(controls);
         };
 
         function _doubleClickFullscreen() {
@@ -527,8 +529,6 @@ define([
         }
 
         function _onChangeControls(model, bool) {
-            utils.toggleClass(_controlsLayer, 'jw-hidden', bool);
-
             if (bool) {
                 // model may be instream or normal depending on who triggers this
                 _stateHandler(model, model.get('state'));
@@ -843,10 +843,8 @@ define([
         }
 
         function _showDisplay() {
-            // debug this, find out why
-            if (!(_isMobile && _model.get('fullscreen'))) {
-                _model.getVideo().setControls(false);
-            }
+            // Controls the display of native controls on mobile.
+            _model.getVideo().setControls(_model.get('controls'));
         }
 
         function _userInactive() {
