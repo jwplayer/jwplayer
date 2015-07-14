@@ -19,7 +19,7 @@ define([
         mute: false,
         volume: 90,
         width: 480,
-        height: 320
+        height: 270
     };
 
     function _deserialize(options) {
