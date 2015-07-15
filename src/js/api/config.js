@@ -7,7 +7,7 @@ define([
 
     // Defaults
     var Defaults = {
-        androidhls: true,
+        //androidhls: true,
         autostart: false,
         controls: true,
         cookies: true,
