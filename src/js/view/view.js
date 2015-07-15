@@ -559,57 +559,6 @@ define([
             }
         }
 
-        function _castAdChanged(evt) {
-            // end ad mode (ad provider removed)
-            if (evt.done) {
-                _castAdsEnded();
-                return;
-            }
-
-            if (!evt.complete) {
-                // start ad mode
-                if (!_instreamMode) {
-                    _castAdsStarted();
-                }
-
-                this.setAltText(evt.message);
-
-                // clickthrough callback
-                var clickAd = evt.onClick;
-                if (clickAd !== undefined) {
-                    _displayClickHandler.setAlternateClickHandlers(function() {
-                        clickAd(evt);
-                    }, _api.setFullscreen);
-                }
-                //skipAd callback
-                var skipAd = evt.onSkipAd;
-                if (skipAd !== undefined && _castDisplay) {
-                    _castDisplay.setSkipoffset(evt, evt.onSkipAd);
-                }
-            }
-
-            // update skip button and companions
-            if (_castDisplay) {
-                _castDisplay.adChanged(evt);
-            }
-        }
-
-        function _castAdsStarted() {
-            utils.addClass(_playerElement, 'jw-flag-ads');
-        }
-
-        function _castAdsEnded() {
-            // controlbar reset
-            this.setAltText('');
-            utils.removeClass(_playerElement, 'jw-flag-ads');
-            // cast display reset
-            if (_castDisplay) {
-                _castDisplay.adsEnded();
-                _castDisplay.setState(_model.get('state'));
-            }
-            // display click reset
-            _displayClickHandler.revertAlternateClickHandlers();
-        }
 
         /**
          * Switch fullscreen mode.
