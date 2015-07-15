@@ -23,7 +23,6 @@ define([
     var _styles = utils.style,
         _bounds = utils.bounds,
         _isMobile = utils.isMobile(),
-        _isIPad = utils.isIPad(),
         DOCUMENT_FULLSCREEN_EVENTS = [
             'fullscreenchange',
             'webkitfullscreenchange',
@@ -613,7 +612,6 @@ define([
          * Switch fullscreen mode.
          **/
         var _fullscreen = this.fullscreen = function(state) {
-
             if (!utils.exists(state)) {
                 state = !_model.get('fullscreen');
             }
@@ -829,22 +827,11 @@ define([
                 _instreamModel.setFullscreen(fullscreenState);
             }
 
-            var model = _instreamMode ? _instreamModel : _model;
             if (fullscreenState) {
                 // Browsers seem to need an extra second to figure out how large they are in fullscreen...
                 clearTimeout(_resizeMediaTimeout);
                 _resizeMediaTimeout = setTimeout(_resizeMedia, 200);
-
-            } else if (_isIPad && model.get('state') === states.PAUSED) {
-                // delay refresh on iPad when exiting fullscreen
-                // TODO: cancel this if fullscreen or player state changes
-                setTimeout(_showDisplay, 500);
             }
-        }
-
-        function _showDisplay() {
-            // Controls the display of native controls on mobile.
-            _model.getVideo().setControls(_model.get('controls'));
         }
 
         function _userInactive() {
@@ -865,8 +852,6 @@ define([
         function _playlistCompleteHandler() {
             _replayState = true;
             _fullscreen(false);
-            if (_model.get('controls')) {
-            }
         }
 
         function _playlistItemHandler() {
@@ -920,7 +905,6 @@ define([
             _currentState = state;
             // cast.display
             if (_isCasting()) {
-
                 // TODO: needs to be done in the provider.setVisibility
                 utils.addClass(_videoLayer, 'jw-media-show');
 
@@ -931,19 +915,8 @@ define([
                 case states.PLAYING:
                     _resizeMedia();
                     break;
-                case states.IDLE:
-                case states.ERROR:
-                case states.COMPLETE:
-                    if (!_audioMode) {
-                        _showDisplay();
-                    }
-                    break;
-                case states.BUFFERING:
-                    _showDisplay();
-                    break;
                 case states.PAUSED:
                     _userActivity();
-                    _showDisplay();
                     break;
             }
         }
