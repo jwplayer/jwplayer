@@ -37,7 +37,6 @@ define([
     }
 
     var config = function(options) {
-
         var allOptions = _.extend({}, (window.jwplayer || {}).defaults, options);
 
         _deserialize(allOptions);
@@ -54,13 +53,7 @@ define([
             config.skinColorInactive = config.skin.inactive; // default icon color
             config.skinColorActive = config.skin.active;  // icon hover, on, slider color
             config.skinColorBackground = config.skin.background; // control elements background
-
-            if (config.skin.name) {
-                config.skin = config.skin.name;
-            } else {
-                // we actively delete the value so it won't overwrite the model's default
-                delete config.skin;
-            }
+            config.skin = _.isString(config.skin.name) ? config.skin.name : Defaults.skin; // get skin name if it exists
         }
 
         if (_.isString(config.skin) && config.skin.indexOf('.xml') > 0) {
