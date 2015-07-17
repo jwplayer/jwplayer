@@ -71,6 +71,9 @@ define([
 
             _this = _.extend(this, Events);
 
+        this.model = _model;
+        this.api = _api;
+
         _playerElement = utils.createElement(playerTemplate({id: _model.get('id')}));
 
         var width = _model.get('width'),
@@ -909,7 +912,7 @@ define([
         }
 
         this.setupInstream = function(instreamModel) {
-            _instreamModel = instreamModel;
+            this.instreamModel = _instreamModel = instreamModel;
             _instreamModel.on('change:controls', _onChangeControls, this);
             _instreamModel.on('change:state', _stateHandler, this);
 

@@ -123,9 +123,8 @@ define([
         }
 
         function _instreamTime(evt) {
-            if (this._skipButton) {
-                this._skipButton.updateMediaTime(evt.position, evt.duration);
-            }
+            _instream._adModel.set('duration', evt.duration);
+            _instream._adModel.set('position', evt.position);
         }
 
         function _instreamItemComplete(e) {
@@ -133,9 +132,8 @@ define([
             _instream._adModel.state = 'complete';
 
             if (_array && _arrayIndex + 1 < _array.length) {
-                if (this._skipButton) {
-                    this._skipButton.destroy();
-                }
+                // destroy skip button
+                _model.set('skipButton', false);
 
                 _arrayIndex++;
                 var item = _array[_arrayIndex];
@@ -185,14 +183,11 @@ define([
             this.addClickHandler();
 
             if (_options.skipoffset) {
-                if (this._skipButton) {
-                    this._skipButton.destroy();
-                }
-                this._skipButton = new AdSkipButton(_options.skipMessage, _options.skipText);
-                this._skipButton.on(events.JWPLAYER_AD_SKIPPED, this.skipAd, this);
-                this._skipButton.setWaitTime(_options.skipoffset);
+                _instream._adModel.set('skipMessage', _options.skipMessage);
+                _instream._adModel.set('skipText', _options.skipText);
+                _instream._adModel.set('skipOffset', _options.skipoffset);
 
-                _view.controlsContainer().appendChild(this._skipButton.element());
+                _model.set('skipButton', true);
             }
         };
 
@@ -239,10 +234,7 @@ define([
         this.destroy = function() {
             this.off();
 
-            if (this._skipButton) {
-                _view.controlsContainer().removeChild(this._skipButton.element());
-                this._skipButton = null;
-            }
+            _model.set('skipButton', false);
 
             if (_instream) {
                 if (_view.clickHandler()) {

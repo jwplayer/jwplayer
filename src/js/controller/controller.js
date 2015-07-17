@@ -617,12 +617,16 @@ define([
                 return _model.getVideo().checkComplete();
             };
 
-
-
             this.createInstream = function() {
                 this.instreamDestroy();
                 this._instreamAdapter = new InstreamAdapter(this, _model, _view);
                 return this._instreamAdapter;
+            };
+
+            this.skipAd = function() {
+                if (this._instreamAdapter) {
+                    this._instreamAdapter.skipAd();
+                }
             };
 
             this.instreamDestroy = function() {
