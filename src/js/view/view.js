@@ -329,7 +329,8 @@ define([
 
             _model.on('change:castAvailable', _onCastAvailable);
             _onCastAvailable(_model, _model.get('castAvailable'));
-
+            _model.on('change:castActive', _onCastActive);
+            _onCastActive(_model, _model.get('castActive'));
 
             // set initial state
             if(_model.get('stretching')){
@@ -387,6 +388,12 @@ define([
             }, 0);
         };
 
+        function _onCastActive(model, val) {
+            // if undefined it will simply alternate
+            val = val || false;
+
+            utils.toggleClass(_playerElement, 'jw-flag-casting', val);
+        }
         function _onCastAvailable(model, val) {
             utils.toggleClass(_playerElement, 'jw-flag-cast-available', val);
             utils.toggleClass(_controlsLayer, 'jw-flag-cast-available', val);
