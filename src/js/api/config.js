@@ -12,6 +12,7 @@ define([
         controls: true,
         cookies: true,
         displaytitle : true,
+        displaydescription: true,
         mobilecontrols: false,
         repeat: false,
         skin: 'seven',

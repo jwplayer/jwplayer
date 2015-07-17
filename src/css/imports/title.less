@@ -15,6 +15,8 @@
 .jw-title-primary,
 .jw-title-secondary {
     padding: @ui-margin/2 @ui-margin;
+    // require a certain height in case the titles are empty
+    min-height: @ui-margin + 1em;
     width: 75%;
     color: white;
     white-space: nowrap;
