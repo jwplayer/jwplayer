@@ -42,7 +42,11 @@ define([
             this.description.innerHTML = (playlistItem.description && model.get('displaydescription')) ?
                 playlistItem.description : '';
 
-            this.show();
+            if(this.title.firstChild || this.description.firstChild){
+                this.show();
+            } else {
+                this.hide();
+            }
         },
 
         element: function(){
