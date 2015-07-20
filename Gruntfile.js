@@ -421,16 +421,25 @@ module.exports = function(grunt) {
             compiler = webpackCompilers[target] = webpack(this.options());
         }
         compiler.run(function(err, stats) {
+            var fail = false;
             if (err) {
-                webpackCompilers[target] = null;
-                grunt.log.error(err.toString());
-                done(false);
+                fail = true;
+                grunt.log.writeln(err.toString());
             } else {
+                // Fail build when errors are found
+                if (stats.compilation.errors.length) {
+                    fail = true;
+                }
                 grunt.log.writeln(stats.toString({
                     chunks: false
                 }));
-                done();
             }
+            if (fail) {
+                webpackCompilers[target] = null;
+                done(false);
+                return;
+            }
+                done();
         });
     });
 
