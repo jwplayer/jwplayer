@@ -197,8 +197,8 @@ module.exports = function(grunt) {
                     loaders: [
                         {
                             test: /\.less$/,
-                            loader: 'style!css?sourceMap!autoprefixer?browsers=' + autoprefixBrowsers +
-                                    '!less?sourceMap&compress'
+                            loader: 'style!css!autoprefixer?browsers=' + autoprefixBrowsers +
+                                    '!less?compress'
                         },
                         {
                             test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
@@ -439,7 +439,7 @@ module.exports = function(grunt) {
                 done(false);
                 return;
             }
-                done();
+            done();
         });
     });
 
