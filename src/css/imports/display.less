@@ -49,16 +49,15 @@
     position: relative;
     top: 50%;
     display: table;
-    height: 3.5em;
-    margin-top: -1.75em;
-    margin-right: auto;
-    margin-left: auto;
+    height: @display-icon-container-size;
+    width: @display-icon-container-size;
+    margin: @display-icon-container-size/-2 auto 0;
     cursor: pointer;
 
     .jw-icon-display {
         position: relative;
         display: table-cell;
-        padding: @ui-padding;
+        text-align: center;
         vertical-align: middle !important;
         background-position: 50% 50%;
         background-repeat: no-repeat;
