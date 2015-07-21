@@ -3,18 +3,19 @@ import com.longtailvideo.jwplayer.player.PlayerVersion;
 import com.longtailvideo.jwplayer.plugins.PluginConfig;
 import com.longtailvideo.jwplayer.utils.Logger;
 import com.longtailvideo.jwplayer.utils.RootReference;
+import com.longtailvideo.jwplayer.utils.Stretcher;
 
 import flash.events.EventDispatcher;
 import flash.media.SoundTransform;
-import flash.utils.getQualifiedClassName;
 import flash.ui.Mouse;
 import flash.ui.MouseCursor;
+import flash.utils.getQualifiedClassName;
 
 public dynamic class PlayerConfig extends EventDispatcher {
 
     protected var _debug:String = Logger.NONE;
     protected var _id:String = "";
-    protected var _stretching:String = "uniform";
+    protected var _stretching:String = Stretcher.UNIFORM;
     protected var _fullscreen:Boolean = false;
     protected var _plugins:Array = [];
     protected var _pluginConfig:Object = {};
@@ -78,16 +79,27 @@ public dynamic class PlayerConfig extends EventDispatcher {
         return 0;
     }
 
-    public function set width(w:Number):void {}
+    public function set width(w:Number):void {
+    }
 
-    public function set height(h:Number):void {}
+    public function set height(h:Number):void {
+    }
 
     public function get stretching():String {
         return _stretching;
     }
 
     public function set stretching(mode:String):void {
-        _stretching = mode ? mode.toLowerCase() : "";
+        mode = mode.toLowerCase();
+        switch (mode) {
+            case Stretcher.EXACTFIT:
+            case Stretcher.FILL:
+            case Stretcher.NONE:
+            case Stretcher.UNIFORM:
+                _stretching = mode;
+                return;
+        }
+        _stretching = Stretcher.UNIFORM;
     }
 
     public function get plugins():Array {
@@ -221,19 +233,27 @@ public dynamic class PlayerConfig extends EventDispatcher {
     }
 
     public function setConfig(config:Object):void {
-        this.id    = config.id;
+        // add dynamic properties from js config
+        for (var key:String in config) {
+            // exclude builtin properties
+            if (!this.hasOwnProperty(key)) {
+                this[key] = config[key];
+            }
+        }
+
+        // make sure these setters are invoked
+        this.id = config.id;
         this.debug = config.debug;
+        this.volume = config.volume;
+        this.mute = config.mute;
+        this.controls = config.controls;
+
         if (config.stretching) {
             this.stretching = config.stretching;
         }
 
-        this.volume = config.volume;
-        this.mute   = config.mute;
+        this.plugins = config.flashPlugins;
 
-        // this.fullscreen = config.fullscreen;
-        this.plugins    = config.flashPlugins;
-
-        this.controls = config.controls;
         this.captionLabel = config.captionLabel;
         this.qualityLabel = config.qualityLabel;
     }

@@ -354,12 +354,11 @@ public class MediaProvider extends Sprite implements IMediaProvider {
     }
 
     /**
-     * DEPREICATED IN JW7
-     *
+     * DEPRECATED IN JW7
      * _stretch - no longer stored in provider
-     *
      */
-    private function noop(...args):void {}
+    private function noop(...args):void {
+    }
 
     protected function get _stretch():Boolean {
         return false;
