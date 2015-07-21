@@ -201,20 +201,12 @@ module.exports = function(grunt) {
                                     '!less?compress'
                         },
                         {
-                            test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
-                            loader: 'file?name=[name].[ext]'
-                        },
-                        {
                             test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
                             loader: 'url?limit=10000&mimetype=application/font-woff'
                         },
                         {
                             test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
                             loader: 'url?limit=10000&mimetype=application/octet-stream'
-                        },
-                        {
-                            test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
-                            loader: 'url?name=[name].[ext]&limit=10000&mimetype=image/svg+xml'
                         }
                     ]
                 }
