@@ -250,6 +250,11 @@ define([
                 if(_model.get('state') === states.ERROR) {
                     return;
                 }
+
+                if (_this._instreamAdapter && _this._instreamAdapter.getState() !== false) {
+                    return _api.playAd();
+                }
+
                 if (_model.get('state') === states.COMPLETE) {
                     _stop(true);
                     _model.setItem(0);
@@ -317,11 +322,17 @@ define([
 
             function _pause(state) {
                 _actionOnAttach = null;
+
                 if (!utils.exists(state)) {
                     state = true;
                 } else if (!state) {
                     return _play();
                 }
+
+                if (_this._instreamAdapter && _this._instreamAdapter.getState() !== false) {
+                    return _api.pauseAd();
+                }
+
                 switch (_model.get('state')) {
                     case states.ERROR:
                         return false;
