@@ -352,5 +352,21 @@ public class MediaProvider extends Sprite implements IMediaProvider {
         _dispatcher.dispatchEvent(event);
         return super.dispatchEvent(event);
     }
+
+    /**
+     * DEPREICATED IN JW7
+     *
+     * _stretch - no longer stored in provider
+     *
+     */
+    private function noop(...args):void {}
+
+    protected function get _stretch():Boolean {
+        return false;
+    }
+
+    protected function set _stretch(v:Boolean):void {
+    }
+
 }
 }
