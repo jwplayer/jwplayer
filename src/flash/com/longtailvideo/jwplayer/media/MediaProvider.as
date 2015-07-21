@@ -12,42 +12,6 @@ import flash.display.Sprite;
 import flash.events.Event;
 
 public class MediaProvider extends Sprite implements IMediaProvider {
-    public function MediaProvider(provider:String) {
-        _provider = provider;
-        _dispatcher = new GlobalEventDispatcher();
-    }
-    /** Most recent buffer data **/
-    protected var _bufferPercent:Number;
-    protected var _width:Number;
-    protected var _height:Number;
-    /** Handles event dispatching **/
-    private var _dispatcher:GlobalEventDispatcher;
-    /** Queue buffer full event if it occurs while the player is paused. **/
-    private var _queuedBufferFull:Boolean;
-
-    /** Name of the MediaProvider **/
-    private var _provider:String;
-
-    /** Name of the MediaProvider. */
-    public function get provider():String {
-        return _provider;
-    }
-
-    /** Reference to the currently active playlistitem. **/
-    protected var _item:PlaylistItem;
-
-    /** Currently playing PlaylistItem **/
-    public function get item():PlaylistItem {
-        return _item;
-    }
-
-    /** The current position inside the file. **/
-    protected var _position:Number = 0;
-
-    /** Current position, in seconds **/
-    public function get position():Number {
-        return _position;
-    }
 
     public static const LIVE_DURATION:Number = Infinity;
     public static const UNKNOWN_DURATION:Number = 0;
@@ -56,8 +20,45 @@ public class MediaProvider extends Sprite implements IMediaProvider {
         return duration > 0 && duration !== LIVE_DURATION;
     }
 
-    /** The current volume of the audio output stream **/
+    protected var _item:PlaylistItem;
+    protected var _config:PlayerConfig;
+    protected var _media:Sprite;
+    protected var _width:Number;
+    protected var _height:Number;
+    protected var _position:Number;
+    protected var _bufferPercent:Number;
+    protected var _currentQuality:Number = -1;
+    protected var _currentAudioTrack:Number = -1;
+    protected var _currentSubtitlesTrack:Number = -1;
+
+    private var _dispatcher:GlobalEventDispatcher;
+    private var _provider:String;
+    private var _state:String;
     private var _volume:Number;
+    /** Queue buffer full event if it occurs while the player is paused. **/
+    private var _queuedBufferFull:Boolean;
+
+
+    public function MediaProvider(provider:String) {
+        _provider = provider;
+        _position = 0;
+        _dispatcher = new GlobalEventDispatcher();
+    }
+
+    /** Name of the MediaProvider. */
+    public function get provider():String {
+        return _provider;
+    }
+
+    /** Currently playing PlaylistItem **/
+    public function get item():PlaylistItem {
+        return _item;
+    }
+
+    /** Current position, in seconds **/
+    public function get position():Number {
+        return _position;
+    }
 
     /**
      * The current volume of the playing media
@@ -66,9 +67,6 @@ public class MediaProvider extends Sprite implements IMediaProvider {
     public function get volume():Number {
         return _volume;
     }
-
-    /** The playback state for the currently loaded media.  @see com.longtailvideo.jwplayer.model.ModelStates **/
-    private var _state:String;
 
     /**
      * Current state of the MediaProvider.
@@ -79,9 +77,6 @@ public class MediaProvider extends Sprite implements IMediaProvider {
     }
 
     /** Current quality level **/
-    protected var _currentQuality:Number = -1;
-
-    /** Current quality level getter **/
     public function get currentQuality():Number {
         return _currentQuality;
     }
@@ -90,8 +85,6 @@ public class MediaProvider extends Sprite implements IMediaProvider {
     public function set currentQuality(quality:Number):void {
         _currentQuality = quality;
     }
-
-    protected var _currentAudioTrack:Number = -1;
 
     /** Current audio track getter **/
     public function get currentAudioTrack():Number {
@@ -103,7 +96,6 @@ public class MediaProvider extends Sprite implements IMediaProvider {
         _currentAudioTrack = audioTrack;
     }
 
-    protected var _currentSubtitlesTrack:Number = -1;
 
     /** Current subtitles track getter **/
     public function get currentSubtitlesTrack():Number {
@@ -140,31 +132,17 @@ public class MediaProvider extends Sprite implements IMediaProvider {
         return null;
     }
 
-    /** Reference to the player configuration. **/
-    protected var _config:PlayerConfig;
-
-    /**
-     * The current config
-     */
+    /** The current config **/
     protected function get config():PlayerConfig {
         return _config;
     }
 
-    /** Clip containing graphical representation of the currently playing media **/
-    protected var _media:Sprite;
-
-    /**
-     * Gets the graphical representation of the media.
-     *
-     */
+    /** Gets the graphical representation of the media **/
     protected function get media():DisplayObject {
         return _media;
     }
 
-    /**
-     * Sets the graphical representation of the media.
-     *
-     */
+    /** Sets the graphical representation of the media **/
     protected function set media(m:DisplayObject):void {
         if (m) {
             _media = new Sprite();
@@ -179,8 +157,12 @@ public class MediaProvider extends Sprite implements IMediaProvider {
         sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_LOADED);
     }
 
-    public function initializeMediaProvider(cfg:PlayerConfig):void {
-        _config = cfg;
+    /**
+     * Called after construction to initialize provider with player settings.
+     * @param config The player configuration passed to jwplayer().setup({config})
+     */
+    public function initializeMediaProvider(config:PlayerConfig):void {
+        _config = config;
         _state = PlayerState.IDLE;
     }
 
@@ -212,7 +194,6 @@ public class MediaProvider extends Sprite implements IMediaProvider {
 
     /**
      * Seek to a certain position in the item.
-     *
      * @param pos    The position in seconds.
      **/
     public function seek(pos:Number):void {
@@ -227,21 +208,20 @@ public class MediaProvider extends Sprite implements IMediaProvider {
 
     /**
      * Change the playback volume of the item.
-     *
      * @param vol    The new volume (0 to 100).
      **/
-    public function setVolume(vol:Number):void {}
+    public function setVolume(vol:Number):void {
+    }
 
     /**
      * Changes the mute state of the item.
-     *
      * @param muted    The new mute state.
      **/
-    public function mute(muted:Boolean):void {}
+    public function mute(muted:Boolean):void {
+    }
 
     /**
      * Resizes the display.
-     *
      * @param width     The new width of the display.
      * @param height    The new height of the display.
      **/
@@ -269,7 +249,6 @@ public class MediaProvider extends Sprite implements IMediaProvider {
 
     /** Puts the video into a buffer state **/
     protected function buffer():void {
-
     }
 
     /** Completes video playback **/
@@ -330,7 +309,6 @@ public class MediaProvider extends Sprite implements IMediaProvider {
 
     /**
      * Gets a property from the player configuration
-     *
      * @param property The property to be retrieved.
      * **/
     protected function getConfigProperty(property:String):* {
@@ -370,9 +348,6 @@ public class MediaProvider extends Sprite implements IMediaProvider {
         dispatchEvent(qualityEvent);
     }
 
-    /**
-     * @inheritDoc
-     */
     public override function dispatchEvent(event:Event):Boolean {
         _dispatcher.dispatchEvent(event);
         return super.dispatchEvent(event);

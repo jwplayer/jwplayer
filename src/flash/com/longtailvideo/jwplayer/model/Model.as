@@ -222,7 +222,9 @@ public class Model extends GlobalEventDispatcher {
 
         if (_currentMedia !== newMedia) {
             if (_currentMedia) {
-                if (_currentMedia.state != PlayerState.IDLE) _currentMedia.stop();
+                if (_currentMedia.state !== PlayerState.IDLE) {
+                    _currentMedia.stop();
+                }
                 _currentMedia.removeGlobalListener(forwardEvents);
             }
             newMedia.addGlobalListener(forwardEvents);
