@@ -45,10 +45,10 @@ define([
         if (config.base === '.') {
             config.base = utils.getScriptPath('jwplayer.js');
         }
-        config.width  = _normalizeSize(config.width);
-        config.height = _normalizeSize(config.height);
         config.base = config.base || utils.repo();
         __webpack_public_path__ = config.base;
+        config.width  = _normalizeSize(config.width);
+        config.height = _normalizeSize(config.height);
         config.flashplayer = config.flashplayer || config.base + 'jwplayer.flash.swf';
         config.aspectratio = _evaluateAspectRatio(config.aspectratio, config.width);
 
