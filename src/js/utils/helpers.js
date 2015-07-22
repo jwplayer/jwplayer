@@ -340,10 +340,6 @@ define([
         return repo;
     });
 
-    utils.getSkinUrl = function(skin) {
-        return utils.repo() + 'skins/' + skin + '.css';
-    };
-
     utils.addStyleSheet = function(url) {
         var link = document.createElement('link');
         link.rel = 'stylesheet';
