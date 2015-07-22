@@ -45,7 +45,7 @@ define([
         if (config.base === '.') {
             config.base = utils.getScriptPath('jwplayer.js');
         }
-        config.base = config.base || utils.repo();
+        config.base = (config.base || utils.repo()).replace(/\/?$/, '/');
         __webpack_public_path__ = config.base;
         config.width  = _normalizeSize(config.width);
         config.height = _normalizeSize(config.height);
