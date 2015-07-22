@@ -49,7 +49,7 @@ define([
         __webpack_public_path__ = config.base;
         config.width  = _normalizeSize(config.width);
         config.height = _normalizeSize(config.height);
-        config.flashplayer = config.flashplayer || config.base + 'jwplayer.flash.swf';
+        config.flashplayer = config.flashplayer || utils.getScriptPath('jwplayer.js') + 'jwplayer.flash.swf';
         config.aspectratio = _evaluateAspectRatio(config.aspectratio, config.width);
 
         if (_.isObject(config.skin)) {
