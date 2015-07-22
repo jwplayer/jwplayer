@@ -331,14 +331,14 @@ define([
     };
 
     /** Gets the repository location **/
-    utils.repo = function () {
+    utils.repo = _.memoize(function() {
         var semver = version.split('+')[0];
         var repo = Constants.repo + semver + '/';
         if (_isHTTPS()) {
             return repo.replace('http://', 'https://ssl.');
         }
         return repo;
-    };
+    });
 
     utils.getSkinUrl = function(skin) {
         return utils.repo() + 'skins/' + skin + '.css';

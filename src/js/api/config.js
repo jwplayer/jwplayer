@@ -1,9 +1,9 @@
 define([
     'utils/helpers',
     'utils/stretching',
-    'playlist/playlist',
     'utils/underscore'
-], function(utils, stretchUtils, Playlist, _) {
+], function(utils, stretchUtils, _) {
+    /*global __webpack_public_path__:true*/
 
     // Defaults
     var Defaults = {
@@ -42,9 +42,13 @@ define([
         _deserialize(allOptions);
 
         var config = _.extend({}, Defaults, allOptions);
+        if (config.base === '.') {
+            config.base = utils.getScriptPath('jwplayer.js');
+        }
+        config.base = config.base || utils.repo();
+        __webpack_public_path__ = config.base;
         config.width  = _normalizeSize(config.width);
         config.height = _normalizeSize(config.height);
-        config.base = config.base || utils.getScriptPath('jwplayer.js');
         config.flashplayer = config.flashplayer || config.base + 'jwplayer.flash.swf';
         config.aspectratio = _evaluateAspectRatio(config.aspectratio, config.width);
 
