@@ -1,14 +1,11 @@
 define([
     'plugins/plugins',
     'playlist/loader',
-    'playlist/playlist',
     'utils/scriptloader',
-    'utils/helpers',
-    'utils/backbone.events',
     'utils/constants',
     'utils/underscore',
     'events/events'
-], function(plugins, PlaylistLoader, Playlist, ScriptLoader, utils, Events, Constants, _, events) {
+], function(plugins, PlaylistLoader, ScriptLoader, Constants, _, events) {
 
     var _pluginLoader,
         _playlistLoader;
@@ -120,9 +117,9 @@ define([
         }
     }
 
-    function skinToLoad(skin) {
+    function skinToLoad(skin, base) {
         if(_.contains(Constants.SkinsLoadable, skin)) {
-            return utils.getSkinUrl(skin);
+            return base + 'skins/' + skin + '.css';
         }
     }
 
@@ -147,8 +144,8 @@ define([
         }
 
         if (!skinUrl) {
-            // if a user doesn't specify a url, we assume it comes from our CDN
-            skinUrl = skinToLoad(skinName);
+            // if a user doesn't specify a url, we assume it comes from our CDN or config.base
+            skinUrl = skinToLoad(skinName, _model.get('base'));
         }
 
         if (_.isString(skinUrl) && !isSkinLoaded(skinUrl)) {

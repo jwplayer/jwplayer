@@ -137,9 +137,9 @@ define([
             _status = scriptloader.loaderstatus.LOADING;
 
             /** First pass to create the plugins and add listeners **/
-            _.each(_config, function(value, plugin) {
-                if (utils.exists(plugin)) {
-                    var pluginObj = model.addPlugin(plugin);
+            _.each(_config, function(value, pluginUrl) {
+                if (utils.exists(pluginUrl)) {
+                    var pluginObj = model.addPlugin(pluginUrl);
                     pluginObj.on(events.COMPLETE, _checkComplete);
                     pluginObj.on(events.ERROR, _pluginError);
                 }
@@ -161,8 +161,6 @@ define([
             _destroyed = true;
             this.off();
         };
-
-        this.pluginFailed = _pluginError;
 
         this.getStatus = function () {
             return _status;
