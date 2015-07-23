@@ -241,18 +241,25 @@ define([
                 loader.load(toLoad);
             }
 
-            function _play(state) {
-                var status;
-                if (state === false) {
-                    return _pause();
+            function _getState() {
+                var adState = _this._instreamAdapter && _this._instreamAdapter.getState();
+                if (_.isString(adState)) {
+                    return adState;
                 }
+                return _model.get('state');
+            }
+
+            function _play() {
+                var status;
 
                 if(_model.get('state') === states.ERROR) {
                     return;
                 }
 
-                if (_this._instreamAdapter && _this._instreamAdapter.getState() !== false) {
-                    return _api.playAd();
+                var adState = _this._instreamAdapter && _this._instreamAdapter.getState();
+                if (_.isString(adState)) {
+                    // this will resume the ad. _api.playAd would load a new ad
+                    return _api.pauseAd(false);
                 }
 
                 if (_model.get('state') === states.COMPLETE) {
@@ -320,17 +327,12 @@ define([
                 return true;
             }
 
-            function _pause(state) {
+            function _pause() {
                 _actionOnAttach = null;
 
-                if (!utils.exists(state)) {
-                    state = true;
-                } else if (!state) {
-                    return _play();
-                }
-
-                if (_this._instreamAdapter && _this._instreamAdapter.getState() !== false) {
-                    return _api.pauseAd();
+                var adState = _this._instreamAdapter && _this._instreamAdapter.getState();
+                if (_.isString(adState)) {
+                    return _api.pauseAd(true);
                 }
 
                 switch (_model.get('state')) {
@@ -556,6 +558,7 @@ define([
             this.getCaptionsList = _getCaptionsList;
             this.getVisualQuality = _getVisualQuality;
             this.getConfig = _getConfig;
+            this.getState = _getState;
 
             // Model passthroughs
             this.setVolume = _model.setVolume;

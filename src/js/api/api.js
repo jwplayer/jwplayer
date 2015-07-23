@@ -200,8 +200,11 @@ define([
         };
 
         this.play = function (state) {
-            if (state !== undefined) {
-                _controller.play(state);
+            if (state === true) {
+                _controller.play();
+                return _this;
+            } else if (state === false) {
+                _controller.pause();
                 return _this;
             }
 
@@ -219,20 +222,11 @@ define([
         };
 
         this.pause = function (state) {
-            if (state === undefined) {
-                state = _this.getState();
-                switch (state) {
-                    case states.PLAYING:
-                    case states.BUFFERING:
-                        _controller.pause();
-                        break;
-                    default:
-                        _controller.play();
-                }
-            } else {
-                _controller.pause(state);
+            if (_.isBoolean(state)) {
+                return this.play(!state);
             }
-            return _this;
+
+            return this.play();
         };
 
         this.createInstream = function () {

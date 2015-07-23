@@ -15,7 +15,6 @@ define([
             'fullscreen',
             'volume',
             'mute',
-            'state',
             'item', // this was playlistindex
             'stretching',
             'playlist'
@@ -48,6 +47,7 @@ define([
             'getVisualQuality',
 
             'getConfig',
+            'getState',
 
             'getSafeRegion',
             'isBeforeComplete',
