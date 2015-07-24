@@ -4,7 +4,7 @@ define([
     '../css/jwplayer.less'
 ], function (GlobalApi, utils) {
     /*global __webpack_public_path__:true*/
-    __webpack_public_path__ = utils.repo();
+    __webpack_public_path__ = utils.loadFrom();
 
     return GlobalApi.selectPlayer;
 });

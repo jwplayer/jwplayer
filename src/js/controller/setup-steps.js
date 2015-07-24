@@ -14,9 +14,13 @@ define([
     function getQueue() {
 
         var Components = {
+            LOAD_POLYFILLS : {
+                method: _loadPolyfills,
+                depends: []
+            },
             LOAD_PLUGINS : {
                 method: _loadPlugins,
-                depends: []
+                depends: ['LOAD_POLYFILLS']
             },
             LOAD_SKIN : {
                 method: _loadSkin,
@@ -46,6 +50,13 @@ define([
         return Components;
     }
 
+    function _loadPolyfills(resolve) {
+        if (!window.btoa || !window.atob) {
+            require.ensure(['polyfills/base64'], resolve);
+        } else {
+            resolve();
+        }
+    }
 
     function _loadPlugins(resolve, _model, _api) {
         _pluginLoader = plugins.loadPlugins(_model.config.id, _model.config.plugins);
