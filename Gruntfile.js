@@ -182,6 +182,9 @@ module.exports = function(grunt) {
 
         webpack : {
             options: {
+                entry: {
+                    jwplayer : './src/js/jwplayer.js'
+                },
                 stats: {
                     timings: true
                 },
@@ -213,12 +216,11 @@ module.exports = function(grunt) {
             },
             debug : {
                 options: {
-                    entry: {
-                        jwplayer : './src/js/jwplayer.js'
-                    },
+                    debug: true,
                     output: {
                         path: 'bin-debug/',
-                        filename: 'jwplayer.js',
+                        filename: '[name].js',
+                        sourceMapFilename : '[name].[hash].map',
                         library: 'jwplayer',
                         libraryTarget: 'umd',
                         pathinfo: true
@@ -234,12 +236,10 @@ module.exports = function(grunt) {
             },
             release : {
                 options: {
-                    entry: {
-                        jwplayer: './src/js/jwplayer.js'
-                    },
                     output: {
                         path: 'bin-release/',
-                        filename: 'jwplayer.js',
+                        filename: '[name].js',
+                        sourceMapFilename : '[name].[hash].map',
                         library: 'jwplayer',
                         libraryTarget: 'umd'
                     },
@@ -248,13 +248,27 @@ module.exports = function(grunt) {
                             __DEBUG__ : false,
                             __BUILD_VERSION__: '\'' + buildVersion + '\'',
                             __FLASH_VERSION__: flashVersion
-                        }),
-                        new webpack.optimize.UglifyJsPlugin()
+                        })
                     ]
                 }
             }
         },
-
+        uglify: {
+            options: {
+                // screwIE8: true,
+                compress: {
+                    warnings: true
+                },
+                mangle: {
+                    except: ['RESERVED_KEYWORDS_TO_PROTECT']
+                }
+            },
+            release: {
+                files: {
+                    'bin-release/jwplayer.js': ['bin-release/jwplayer.js']
+                }
+            }
+        },
         flash: {
             player: {
                 dest: 'jwplayer.flash.swf',
@@ -440,8 +454,8 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask('build-js', [
-        'webpack:debug',
-        'webpack:release',
+        'webpack',
+        'uglify',
         'jshint:player',
         'recess'
     ]);
