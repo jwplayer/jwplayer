@@ -12,10 +12,10 @@ define([
         this.model = _model;
 
         this._adModel = new Model().setup({
-            id: _model.id,
-            volume: _model.volume,
-            fullscreen: _model.fullscreen,
-            mute: _model.mute
+            id: _model.get('id'),
+            volume: _model.get('volume'),
+            fullscreen: _model.get('fullscreen'),
+            mute: _model.get('mute')
         });
 
         this._adModel.on('change:state', changeStateEvent, this);

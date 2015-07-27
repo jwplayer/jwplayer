@@ -56,6 +56,7 @@ define([
         setCurrentQuality : _queue('setCurrentQuality'),
 
         setup : function(options, _api) {
+
             var _model,
                 _view,
                 _captions,
@@ -417,7 +418,7 @@ define([
 
             function _getConfig() {
                 if (this._model) {
-                    return this._model.get('config');
+                    return this._model.getConfiguration();
                 }
             }
 

@@ -28,7 +28,7 @@ define([
             },
             LOAD_PLAYLIST : {
                 method: _loadPlaylist,
-                depends: []
+                depends: ['LOAD_PLUGINS']
             },
             SETUP_COMPONENTS : {
                 method: _setupComponents,
@@ -59,14 +59,14 @@ define([
     }
 
     function _loadPlugins(resolve, _model, _api) {
-        _pluginLoader = plugins.loadPlugins(_model.config.id, _model.config.plugins);
+        _pluginLoader = plugins.loadPlugins(_model.get('id'), _model.get('plugins'));
         _pluginLoader.on(events.COMPLETE, _.partial(_completePlugins, resolve, _model, _api));
         _pluginLoader.on(events.ERROR, _.partial(_pluginsError, resolve));
         _pluginLoader.load();
     }
 
     function _completePlugins(resolve, _model, _api) {
-        _pluginLoader.setupPlugins(_api, _model.config, _.partial(_resizePlugin, _api));
+        _pluginLoader.setupPlugins(_api, _model, _.partial(_resizePlugin, _api));
         
         resolve();
     }
@@ -97,7 +97,7 @@ define([
     }
 
     function _loadPlaylist(resolve, _model) {
-        var playlist = _model.config.playlist;
+        var playlist = _model.get('playlist');
         if (_.isString(playlist)) {
             _playlistLoader = new PlaylistLoader();
             _playlistLoader.on(events.JWPLAYER_PLAYLIST_LOADED, function(data) {

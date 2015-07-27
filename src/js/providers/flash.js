@@ -133,16 +133,13 @@ define([
                         return;
                     }
                     var volume = Math.min(Math.max(0, vol), 100);
-                    _playerConfig.volume = volume;
                     if (_ready()) {
                         _flashCommand('volume', volume);
                     }
                 },
                 mute: function(mute) {
-                    var muted = utils.exists(mute) ? !!mute : !_playerConfig.mute;
-                    _playerConfig.mute = muted;
                     if (_ready()) {
-                        _flashCommand('mute', muted);
+                        _flashCommand('mute', mute);
                     }
                 },
                 setState: function() {
