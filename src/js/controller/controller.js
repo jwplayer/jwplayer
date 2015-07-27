@@ -1,4 +1,5 @@
 define([
+    'api/config',
     'api/api-deprecate',
     'controller/instream-adapter',
     'utils/underscore',
@@ -13,7 +14,7 @@ define([
     'events/states',
     'events/events',
     'view/error'
-], function(deprecateInit, InstreamAdapter, _, Setup, Captions,
+], function(Config, deprecateInit, InstreamAdapter, _, Setup, Captions,
             Model, PlaylistLoader, utils, View, Events, changeStateEvent, states, events, error) {
 
     function _queue(command) {
@@ -54,7 +55,7 @@ define([
         setCurrentCaptions : _queue('setCurrentCaptions'),
         setCurrentQuality : _queue('setCurrentQuality'),
 
-        setup : function(config, _api) {
+        setup : function(options, _api) {
             var _model,
                 _view,
                 _captions,
@@ -67,6 +68,7 @@ define([
 
             var _video = function() { return _model.getVideo(); };
 
+            var config = new Config(options);
 
             _model = this._model.setup(config);
             _view  = this._view  = new View(_api, _model);

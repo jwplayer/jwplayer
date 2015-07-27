@@ -1,5 +1,4 @@
 define([
-    'api/config',
     'events/events',
     'events/states',
     'utils/backbone.events',
@@ -11,7 +10,7 @@ define([
     'api/api-mutators',
     'api/callbacks-deprecate',
     'version'
-], function(Config, events, states,
+], function(events, states,
             Events, utils, Timer, _, Controller, actionsInit, mutatorsInit, legacyInit, version) {
 
     function addFocusBorder(container) {
@@ -143,9 +142,8 @@ define([
                 }
             });
 
-            var config = new Config(options);
-            config.id = _this.id;
-            _controller.setup(config, this);
+            options.id = _this.id;
+            _controller.setup(options, this);
 
             return _this;
         };
