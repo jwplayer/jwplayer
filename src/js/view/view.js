@@ -529,8 +529,9 @@ define([
 
         function _onChangeControls(model, bool) {
             if (bool) {
+                var state = (_instreamMode) ? _instreamModel.get('state') : _model.get('state');
                 // model may be instream or normal depending on who triggers this
-                _stateHandler(model, model.get('state'));
+                _stateHandler(model, state);
             }
         }
 
