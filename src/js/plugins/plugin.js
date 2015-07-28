@@ -43,24 +43,26 @@ define([
         }
 
         this.load = function() {
-            if (_status === scriptloader.loaderstatus.NEW) {
-                if (url.lastIndexOf('.swf') > 0) {
-                    _flashPath = url;
-                    _status = scriptloader.loaderstatus.COMPLETE;
-                    _this.trigger(events.COMPLETE);
-                    return;
-                } else if (pluginsUtils.getPluginPathType(url) === pluginsUtils.pluginPathType.CDN) {
-                    _status = scriptloader.loaderstatus.COMPLETE;
-                    _this.trigger(events.COMPLETE);
-                    return;
-                }
-                _status = scriptloader.loaderstatus.LOADING;
-                var _loader = new scriptloader(getJSPath());
-                // Complete doesn't matter - we're waiting for registerPlugin
-                _loader.on(events.COMPLETE, completeHandler);
-                _loader.on(events.ERROR, errorHandler);
-                _loader.load();
+            if (_status !== scriptloader.loaderstatus.NEW) {
+                return;
             }
+            if (url.lastIndexOf('.swf') > 0) {
+                _flashPath = url;
+                _status = scriptloader.loaderstatus.COMPLETE;
+                _this.trigger(events.COMPLETE);
+                return;
+            }
+            if (pluginsUtils.getPluginPathType(url) === pluginsUtils.pluginPathType.CDN) {
+                _status = scriptloader.loaderstatus.COMPLETE;
+                _this.trigger(events.COMPLETE);
+                return;
+            }
+            _status = scriptloader.loaderstatus.LOADING;
+            var _loader = new scriptloader(getJSPath());
+            // Complete doesn't matter - we're waiting for registerPlugin
+            _loader.on(events.COMPLETE, completeHandler);
+            _loader.on(events.ERROR, errorHandler);
+            _loader.load();
         };
 
         this.registerPlugin = function(id, target, arg1, arg2) {
@@ -101,11 +103,6 @@ define([
                             return utils.getAbsolutePath(_flashPath, window.location.href);
                         }
                         return utils.getAbsolutePath(_flashPath, getJSPath());
-//                    case utils.pluginPathType.CDN:
-//                        if (_flashPath.indexOf('-') > -1){
-//                            return _flashPath+'h';
-//                        }
-//                        return _flashPath+'-h';
                 }
             }
             return null;

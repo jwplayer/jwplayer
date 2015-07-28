@@ -227,6 +227,14 @@ define([
             this.elements.audiotracks.on('select', function(value){
                 this._model.getVideo().setCurrentAudioTrack(value);
             }, this);
+
+            new UI(this.elements.duration).on('click tap', function(){
+                if (utils.adaptiveType(this._model.get('duration')) === 'DVR') {
+                    // -0.1 places the playhead at the most recent time.
+                    // this._api.seek(0) puts the user at the oldest DVR segment available.
+                    this._api.seek(-0.1);
+                }
+            }, this);
         },
 
         onCaptionsList: function(model, tracks) {

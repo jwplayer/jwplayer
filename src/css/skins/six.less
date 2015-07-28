@@ -1,5 +1,4 @@
 @import "../imports/vars";
-@import "../imports/icons";
 @import "../imports/mixins";
 
 .jw-skin-six {
@@ -61,7 +60,6 @@
         background: @def-transparent-background-style;
         background-size: @def-background-size;
         border-radius: .3em;
-        padding: 0 1em;
         border: 1px solid #000;
     }
 
@@ -74,7 +72,12 @@
 
     /* Styles for menu list items */
     .jw-option {
-        .jw-icon-menu-bullet;
+        .jw-icon-menu-bullet {
+            &:before {
+                content: "\e606";
+            }
+        }
+
         text-align: left;
 
         &:before {

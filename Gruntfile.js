@@ -182,6 +182,9 @@ module.exports = function(grunt) {
 
         webpack : {
             options: {
+                entry: {
+                    jwplayer : './src/js/jwplayer.js'
+                },
                 stats: {
                     timings: true
                 },
@@ -197,12 +200,8 @@ module.exports = function(grunt) {
                     loaders: [
                         {
                             test: /\.less$/,
-                            loader: 'style!css?sourceMap!autoprefixer?browsers=' + autoprefixBrowsers +
-                                    '!less?sourceMap&compress'
-                        },
-                        {
-                            test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
-                            loader: 'file?name=[name].[ext]'
+                            loader: 'style!css!autoprefixer?browsers=' + autoprefixBrowsers +
+                                    '!less?compress'
                         },
                         {
                             test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
@@ -211,22 +210,17 @@ module.exports = function(grunt) {
                         {
                             test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
                             loader: 'url?limit=10000&mimetype=application/octet-stream'
-                        },
-                        {
-                            test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
-                            loader: 'url?name=[name].[ext]&limit=10000&mimetype=image/svg+xml'
                         }
                     ]
                 }
             },
             debug : {
                 options: {
-                    entry: {
-                        jwplayer : './src/js/jwplayer.js'
-                    },
+                    debug: true,
                     output: {
                         path: 'bin-debug/',
-                        filename: 'jwplayer.js',
+                        filename: '[name].js',
+                        sourceMapFilename : '[name].[hash].map',
                         library: 'jwplayer',
                         libraryTarget: 'umd',
                         pathinfo: true
@@ -242,12 +236,10 @@ module.exports = function(grunt) {
             },
             release : {
                 options: {
-                    entry: {
-                        jwplayer: './src/js/jwplayer.js'
-                    },
                     output: {
                         path: 'bin-release/',
-                        filename: 'jwplayer.js',
+                        filename: '[name].js',
+                        sourceMapFilename : '[name].[hash].map',
                         library: 'jwplayer',
                         libraryTarget: 'umd'
                     },
@@ -256,13 +248,27 @@ module.exports = function(grunt) {
                             __DEBUG__ : false,
                             __BUILD_VERSION__: '\'' + buildVersion + '\'',
                             __FLASH_VERSION__: flashVersion
-                        }),
-                        new webpack.optimize.UglifyJsPlugin()
+                        })
                     ]
                 }
             }
         },
-
+        uglify: {
+            options: {
+                // screwIE8: true,
+                compress: {
+                    warnings: true
+                },
+                mangle: {
+                    except: ['RESERVED_KEYWORDS_TO_PROTECT']
+                }
+            },
+            release: {
+                files: {
+                    'bin-release/jwplayer.js': ['bin-release/jwplayer.js']
+                }
+            }
+        },
         flash: {
             player: {
                 dest: 'jwplayer.flash.swf',
@@ -421,16 +427,25 @@ module.exports = function(grunt) {
             compiler = webpackCompilers[target] = webpack(this.options());
         }
         compiler.run(function(err, stats) {
+            var fail = false;
             if (err) {
-                webpackCompilers[target] = null;
-                grunt.log.error(err.toString());
-                done(false);
+                fail = true;
+                grunt.log.writeln(err.toString());
             } else {
+                // Fail build when errors are found
+                if (stats.compilation.errors.length) {
+                    fail = true;
+                }
                 grunt.log.writeln(stats.toString({
                     chunks: false
                 }));
-                done();
             }
+            if (fail) {
+                webpackCompilers[target] = null;
+                done(false);
+                return;
+            }
+            done();
         });
     });
 
@@ -439,8 +454,8 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask('build-js', [
-        'webpack:debug',
-        'webpack:release',
+        'webpack',
+        'uglify',
         'jshint:player',
         'recess'
     ]);

@@ -3,22 +3,26 @@ import com.longtailvideo.jwplayer.player.PlayerVersion;
 import com.longtailvideo.jwplayer.plugins.PluginConfig;
 import com.longtailvideo.jwplayer.utils.Logger;
 import com.longtailvideo.jwplayer.utils.RootReference;
+import com.longtailvideo.jwplayer.utils.Stretcher;
 
 import flash.events.EventDispatcher;
 import flash.media.SoundTransform;
+import flash.ui.Mouse;
+import flash.ui.MouseCursor;
 import flash.utils.getQualifiedClassName;
 
 public dynamic class PlayerConfig extends EventDispatcher {
 
     protected var _debug:String = Logger.NONE;
     protected var _id:String = "";
-    protected var _stretching:String = "uniform";
+    protected var _stretching:String = Stretcher.UNIFORM;
     protected var _fullscreen:Boolean = false;
     protected var _plugins:Array = [];
     protected var _pluginConfig:Object = {};
 
     protected var _soundTransform:SoundTransform;
     protected var _volume:Number = 0.9;
+    protected var _controls:Boolean = true;
 
     public var captionLabel:String;
     public var qualityLabel:String;
@@ -75,16 +79,27 @@ public dynamic class PlayerConfig extends EventDispatcher {
         return 0;
     }
 
-    public function set width(w:Number):void {}
+    public function set width(w:Number):void {
+    }
 
-    public function set height(h:Number):void {}
+    public function set height(h:Number):void {
+    }
 
     public function get stretching():String {
         return _stretching;
     }
 
     public function set stretching(mode:String):void {
-        _stretching = mode ? mode.toLowerCase() : "";
+        mode = mode.toLowerCase();
+        switch (mode) {
+            case Stretcher.EXACTFIT:
+            case Stretcher.FILL:
+            case Stretcher.NONE:
+            case Stretcher.UNIFORM:
+                _stretching = mode;
+                return;
+        }
+        _stretching = Stretcher.UNIFORM;
     }
 
     public function get plugins():Array {
@@ -209,24 +224,35 @@ public dynamic class PlayerConfig extends EventDispatcher {
     }
 
     public function get controls():Boolean {
-        return true;
+        return _controls;
     }
 
-    public function set controls(x:Boolean):void {
+    public function set controls(show:Boolean):void {
+        _controls = show;
+        Mouse.cursor = (_controls) ? MouseCursor.BUTTON : MouseCursor.AUTO;
     }
 
     public function setConfig(config:Object):void {
-        this.id    = config.id;
+        // add dynamic properties from js config
+        for (var key:String in config) {
+            // exclude builtin properties
+            if (!this.hasOwnProperty(key)) {
+                this[key] = config[key];
+            }
+        }
+
+        // make sure these setters are invoked
+        this.id = config.id;
         this.debug = config.debug;
+        this.volume = config.volume;
+        this.mute = config.mute;
+        this.controls = config.controls;
+
         if (config.stretching) {
             this.stretching = config.stretching;
         }
 
-        this.volume = config.volume;
-        this.mute   = config.mute;
-
-        // this.fullscreen = config.fullscreen;
-        this.plugins    = config.flashPlugins;
+        this.plugins = config.flashPlugins;
 
         this.captionLabel = config.captionLabel;
         this.qualityLabel = config.qualityLabel;

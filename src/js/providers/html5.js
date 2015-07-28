@@ -35,8 +35,8 @@ define([
 
     function _useAndroidHLS(source) {
         if (source.type === 'hls') {
-            //when androidhls is set to true, allow HLS playback on Android 4.1 and up
-            if (source.androidhls) {
+            //when androidhls is not set to false, allow HLS playback on Android 4.1 and up
+            if (source.androidhls !== false) {
                 var isAndroidNative = utils.isAndroidNative;
                 if (isAndroidNative(2) || isAndroidNative(3) || isAndroidNative('4.0')) {
                     return false;
@@ -659,10 +659,6 @@ define([
                 _videotag,
                 width, height,
                 _videotag.videoWidth, _videotag.videoHeight);
-        };
-
-        this.setControls = function(state) {
-            _videotag.controls = !!state;
         };
 
         this.supportsFullscreen = _.constant(true);

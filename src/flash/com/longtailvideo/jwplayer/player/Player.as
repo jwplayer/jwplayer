@@ -143,6 +143,10 @@ public class Player extends Sprite implements IPlayer {
         _model.currentQuality = index;
     }
 
+    public function setControls(show:Boolean):void {
+        _model.controls = show;
+    }
+
     public function getCaptionsList():Array {
         return [];
     }
@@ -184,6 +188,8 @@ public class Player extends Sprite implements IPlayer {
     }
 
     protected function setupPlayerCommandQueue(commands:Array):void {
+        _controller.removeEventListener(PlayerEvent.JWPLAYER_SETUP_ERROR, setupError);
+
         // run this once setup is complete (plugins are loaded)
         for (var i:uint = 0; i < commands.length; i++) {
             var args:Array = commands[i] as Array;
@@ -210,7 +216,6 @@ public class Player extends Sprite implements IPlayer {
     protected function playerReady(evt:PlayerEvent):void {
         // Only handle Setup Events once
         _controller.removeEventListener(PlayerEvent.JWPLAYER_READY, playerReady);
-        _controller.removeEventListener(PlayerEvent.JWPLAYER_SETUP_ERROR, setupError);
 
         // Forward all MVC events
         _model.addGlobalListener(globalHandler);
@@ -229,6 +234,7 @@ public class Player extends Sprite implements IPlayer {
                 .on('fullscreen', fullscreen)
                 .on('mute', mute)
                 .on('volume', volume)
+                .on('setControls', setControls)
                 .on('stretch', stretch)
                 .on('setCurrentQuality', setCurrentQuality)
                 .on('setSubtitlesTrack', setSubtitlesTrack)

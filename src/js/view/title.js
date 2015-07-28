@@ -29,7 +29,7 @@ define([
         },
 
         playlistItem : function(model, item) {
-            if (model.get('displaytitle')) {
+            if (model.get('displaytitle') || model.get('displaydescription')) {
                 this.updateText(model, item);
             } else {
                 this.hide();
@@ -37,14 +37,13 @@ define([
         },
 
         updateText: function(model, playlistItem) {
+            this.title.innerHTML = (playlistItem.title && model.get('displaytitle')) ?
+                playlistItem.title : '';
+            this.description.innerHTML = (playlistItem.description && model.get('displaydescription')) ?
+                playlistItem.description : '';
 
-            var title = playlistItem.title;
-            var description = playlistItem.description || '';
-
-            if (title) {
+            if(this.title.firstChild || this.description.firstChild){
                 this.show();
-                this.title.innerHTML = title;
-                this.description.innerHTML = description;
             } else {
                 this.hide();
             }

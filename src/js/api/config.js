@@ -1,17 +1,18 @@
 define([
     'utils/helpers',
     'utils/stretching',
-    'playlist/playlist',
     'utils/underscore'
-], function(utils, stretchUtils, Playlist, _) {
+], function(utils, stretchUtils, _) {
+    /*global __webpack_public_path__:true*/
 
     // Defaults
     var Defaults = {
-        androidhls: true,
+        //androidhls: true,
         autostart: false,
         controls: true,
         cookies: true,
         displaytitle : true,
+        displaydescription: true,
         mobilecontrols: false,
         repeat: false,
         skin: 'seven',
@@ -19,7 +20,7 @@ define([
         mute: false,
         volume: 90,
         width: 480,
-        height: 320
+        height: 270
     };
 
     function _deserialize(options) {
@@ -36,16 +37,19 @@ define([
     }
 
     var config = function(options) {
-
         var allOptions = _.extend({}, (window.jwplayer || {}).defaults, options);
 
         _deserialize(allOptions);
 
         var config = _.extend({}, Defaults, allOptions);
+        if (config.base === '.') {
+            config.base = utils.getScriptPath('jwplayer.js');
+        }
+        config.base = (config.base || utils.repo()).replace(/\/?$/, '/');
+        __webpack_public_path__ = config.base;
         config.width  = _normalizeSize(config.width);
         config.height = _normalizeSize(config.height);
-        config.base = config.base || utils.getScriptPath('jwplayer.js');
-        config.flashplayer = config.flashplayer || config.base + 'jwplayer.flash.swf';
+        config.flashplayer = config.flashplayer || utils.getScriptPath('jwplayer.js') + 'jwplayer.flash.swf';
         config.aspectratio = _evaluateAspectRatio(config.aspectratio, config.width);
 
         if (_.isObject(config.skin)) {
@@ -53,13 +57,7 @@ define([
             config.skinColorInactive = config.skin.inactive; // default icon color
             config.skinColorActive = config.skin.active;  // icon hover, on, slider color
             config.skinColorBackground = config.skin.background; // control elements background
-
-            if (config.skin.name) {
-                config.skin = config.skin.name;
-            } else {
-                // we actively delete the value so it won't overwrite the model's default
-                delete config.skin;
-            }
+            config.skin = _.isString(config.skin.name) ? config.skin.name : Defaults.skin; // get skin name if it exists
         }
 
         if (_.isString(config.skin) && config.skin.indexOf('.xml') > 0) {

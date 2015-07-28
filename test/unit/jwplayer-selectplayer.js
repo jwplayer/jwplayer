@@ -23,8 +23,6 @@ define([
     test('is defined', function() {
         // Test jwplayer module
         ok(_.isFunction(jwplayer), 'jwplayer is a function');
-
-        strictEqual(jwplayer, globalApi.selectPlayer, 'jwplayer() is the same as globalApi.selectPlayer()');
     });
 
     test('allows plugins to register when no player is found', function() {

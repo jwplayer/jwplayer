@@ -76,7 +76,6 @@ define([
             _oldpos = _model.get('position');
             _olditem = _model.get('playlist')[_model.get('item')];
 
-
             _instream.on('all', _instreamForward, this);
             _instream.on(events.JWPLAYER_MEDIA_TIME, _instreamTime, this);
             _instream.on(events.JWPLAYER_MEDIA_COMPLETE, _instreamItemComplete, this);
@@ -84,6 +83,8 @@ define([
 
             // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
             _oldProvider.detachMedia();
+
+            _model.mediaModel.set('state', states.BUFFERING);
 
             if (_controller.checkBeforePlay() || (_oldpos === 0 && !_oldProvider.checkComplete())) {
                 // make sure video restarts after preroll
