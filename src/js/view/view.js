@@ -99,12 +99,12 @@ define([
 
         function adjustSeek(amount) {
             var newSeek = utils.between(_model.get('position') + amount, 0, _model.get('duration'));
-            this.seek(newSeek);
+            _api.seek(newSeek);
         }
 
         function adjustVolume(amount) {
-            var newVol = utils.between(this.getVolume() + amount, 0, 100);
-            this.setVolume(newVol);
+            var newVol = utils.between(_model.get('volume') + amount, 0, 100);
+            _api.setVolume(newVol);
         }
 
         function allowKeyHandling(evt) {
