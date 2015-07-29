@@ -1,13 +1,12 @@
 define([
     'controller/instream-html5',
     'controller/instream-flash',
-    'view/adskipbutton',
     'events/events',
     'events/states',
     'utils/helpers',
     'utils/backbone.events',
     'utils/underscore'
-], function(InstreamHtml5, InstreamFlash, AdSkipButton, events, states, utils, Events, _) {
+], function(InstreamHtml5, InstreamFlash, events, states, utils, Events, _) {
 
     function chooseInstreamMethod(_model) {
         var providerName = _model.get('provider').name || '';
