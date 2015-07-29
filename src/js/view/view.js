@@ -70,6 +70,9 @@ define([
 
             _this = _.extend(this, Events);
 
+        this.model = _model;
+        this.api = _api;
+
         _playerElement = utils.createElement(playerTemplate({id: _model.get('id')}));
 
         var width = _model.get('width'),
@@ -95,7 +98,7 @@ define([
         _elementSupportsFullscreen = _requestFullscreen && _exitFullscreen;
 
         function adjustSeek(amount) {
-            var newSeek = utils.between(_model.get('position') + amount, 0, this.getDuration());
+            var newSeek = utils.between(_model.get('position') + amount, 0, _model.get('duration'));
             this.seek(newSeek);
         }
 
@@ -138,19 +141,19 @@ define([
                     break;
                 case 37: // left-arrow, if not adMode
                     if (!_instreamMode) {
-                        adjustSeek.call(_api, -5);
+                        adjustSeek(-5);
                     }
                     break;
                 case 39: // right-arrow, if not adMode
                     if (!_instreamMode) {
-                        adjustSeek.call(_api, 5);
+                        adjustSeek(5);
                     }
                     break;
                 case 38: // up-arrow
-                    adjustVolume.call(_api, 10);
+                    adjustVolume(10);
                     break;
                 case 40: // down-arrow
-                    adjustVolume.call(_api, -10);
+                    adjustVolume(-10);
                     break;
                 case 77: // m-key
                     _api.setMute();
@@ -162,7 +165,7 @@ define([
                     if (evt.keyCode >= 48 && evt.keyCode <= 59) {
                         // if 0-9 number key, move to n/10 of the percentage of the video
                         var number = evt.keyCode - 48;
-                        var newSeek = (number / 10) * _api.getDuration();
+                        var newSeek = (number / 10) * _model.get('duration');
                         _api.seek(newSeek);
                     }
                     break;
@@ -326,9 +329,10 @@ define([
             _api.onPlaylistComplete(_playlistCompleteHandler);
             _api.onPlaylistItem(_playlistItemHandler);
 
-            _model.on('change:castAvailable', function(model, val) {
-                utils.toggleClass(_controlsLayer, 'jw-cast-available', val);
-            });
+            _model.on('change:castAvailable', _onCastAvailable);
+            _onCastAvailable(_model, _model.get('castAvailable'));
+            _model.on('change:castActive', _onCastActive);
+            _onCastActive(_model, _model.get('castActive'));
 
             // set initial state
             if(_model.get('stretching')){
@@ -337,6 +341,7 @@ define([
             // watch for changes
             _model.on('change:stretching', _onStretchChange);
 
+            /*
             _model.on('change:castState', function(evt) {
                 if (!_castDisplay) {
                     _castDisplay = new CastDisplay(_model.get('id'));
@@ -363,8 +368,8 @@ define([
                     _stateHandler(null, _model.get('state'));
                     _responsiveListener();
                 }
-
             });
+             */
 
             _stateHandler(null, states.IDLE);
 
@@ -384,6 +389,17 @@ define([
                 _resize(_model.get('width'), _model.get('height'));
             }, 0);
         };
+
+        function _onCastActive(model, val) {
+            // if undefined it will simply alternate
+            val = val || false;
+
+            utils.toggleClass(_playerElement, 'jw-flag-casting', val);
+        }
+        function _onCastAvailable(model, val) {
+            utils.toggleClass(_playerElement, 'jw-flag-cast-available', val);
+            utils.toggleClass(_controlsLayer, 'jw-flag-cast-available', val);
+        }
 
         function _onStretchChange(model, newVal, oldVal) {
             if(oldVal){
@@ -515,10 +531,6 @@ define([
 
             _controlsLayer.appendChild(_controlbar.element());
 
-            if (_model.get('castAvailable')) {
-                _this.forceControls(true);
-            }
-
             _playerElement.onfocusin = handleFocus;
             _playerElement.onfocusout = handleBlur;
             _playerElement.addEventListener('focus', handleFocus);
@@ -557,57 +569,6 @@ define([
             }
         }
 
-        function _castAdChanged(evt) {
-            // end ad mode (ad provider removed)
-            if (evt.done) {
-                _castAdsEnded();
-                return;
-            }
-
-            if (!evt.complete) {
-                // start ad mode
-                if (!_instreamMode) {
-                    _castAdsStarted();
-                }
-
-                this.setAltText(evt.message);
-
-                // clickthrough callback
-                var clickAd = evt.onClick;
-                if (clickAd !== undefined) {
-                    _displayClickHandler.setAlternateClickHandlers(function() {
-                        clickAd(evt);
-                    }, _api.setFullscreen);
-                }
-                //skipAd callback
-                var skipAd = evt.onSkipAd;
-                if (skipAd !== undefined && _castDisplay) {
-                    _castDisplay.setSkipoffset(evt, evt.onSkipAd);
-                }
-            }
-
-            // update skip button and companions
-            if (_castDisplay) {
-                _castDisplay.adChanged(evt);
-            }
-        }
-
-        function _castAdsStarted() {
-            utils.addClass(_playerElement, 'jw-flag-ads');
-        }
-
-        function _castAdsEnded() {
-            // controlbar reset
-            this.setAltText('');
-            utils.removeClass(_playerElement, 'jw-flag-ads');
-            // cast display reset
-            if (_castDisplay) {
-                _castDisplay.adsEnded();
-                _castDisplay.setState(_model.get('state'));
-            }
-            // display click reset
-            _displayClickHandler.revertAlternateClickHandlers();
-        }
 
         /**
          * Switch fullscreen mode.
@@ -923,7 +884,7 @@ define([
         }
 
         this.setupInstream = function(instreamModel) {
-            _instreamModel = instreamModel;
+            this.instreamModel = _instreamModel = instreamModel;
             _instreamModel.on('change:controls', _onChangeControls, this);
             _instreamModel.on('change:state', _stateHandler, this);
 

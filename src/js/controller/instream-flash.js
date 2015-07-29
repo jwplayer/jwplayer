@@ -8,7 +8,6 @@ define([
 ], function(Events, Model, changeStateEvent, events, states, _) {
 
     var InstreamFlash = function(_controller, _model) {
-        this.controller = _controller;
         this.model = _model;
 
         this._adModel = new Model().setup({
@@ -68,7 +67,6 @@ define([
             this._adModel = null;
 
             this.model = null;
-            this.controller = null;
         },
 
         load: function(item) {
