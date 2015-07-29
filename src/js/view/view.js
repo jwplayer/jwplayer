@@ -323,8 +323,9 @@ define([
             _model.on('change:state', _stateHandler);
 
             _model.mediaController.on(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
-            _api.onPlaylistComplete(_playlistCompleteHandler);
-            _api.onPlaylistItem(_playlistItemHandler);
+
+            _model.on('change:item', _playlistItemHandler);
+            _model.on('change:duration', _setLiveMode);
 
             _model.on('change:castAvailable', function(model, val) {
                 utils.toggleClass(_controlsLayer, 'jw-cast-available', val);
@@ -855,16 +856,14 @@ define([
             _fullscreen(false);
         }
 
-        function _playlistItemHandler() {
+        function _playlistItemHandler(model) {
             // update display title
             if (_castDisplay) {
-                _castDisplay.setState(_model.get('state'));
+                _castDisplay.setState(model.get('state'));
             }
 
             var isAudioFile = _isAudioFile();
             utils.toggleClass(_playerElement, 'jw-flag-media-audio', isAudioFile);
-
-            _model.on('change:duration', _setLiveMode, this);
         }
 
         function _setLiveMode(model, duration){
@@ -876,6 +875,12 @@ define([
         function _stateHandler(model, state) {
             _replayState = false;
             _updateState(state);
+
+            // on playlistComplete
+            if (state === states.COMPLETE &&
+                    model && !model.get('repeat') && model.get('item') === model.get('playlist').length) {
+                _playlistCompleteHandler();
+            }
         }
 
         function _errorHandler(evt) {
