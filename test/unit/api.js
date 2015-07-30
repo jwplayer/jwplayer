@@ -2,8 +2,11 @@ define([
     'test/underscore',
     'jquery',
     'api/api',
+    'data/api-methods',
+    'data/api-methods-chainable',
+    'data/config-small',
     'utils/backbone.events'
-], function (_, $, Api, Events) {
+], function (_, $, Api, apiMethods, apiMethodsChainable, configSmall, Events) {
     /* jshint qunit: true */
 
     module('Api');
@@ -85,38 +88,119 @@ define([
         equal(originalEvent.type, 'original', 'original event.type is not modified');
     });
 
+    test('defines methods', function(assert) {
+        var api = createApi('player');
+
+        _.each(apiMethods, function(args, method) {
+            assert.ok(_.isFunction(api[method]), 'api.' + method + ' is defined');
+        });
+    });
+
     test('has chainable methods', function(assert) {
         var api = createApi('player');
 
-        var chainable = {
-            // COMMENTED OUT UNTIL FIXED:
-            setup: [{}],
-            //load: [{}],
-            //forceState: [''],
-            //play: void 0,
-            //seek: [0],
-            //setControls: [true],
-            //setFullscreen: [false],
-            //playlistNext: void 0,
-            //playlistPrev: void 0,
-            //playlistItem: [0],
-            //setCurrentCaptions: [{}],
-            //setCurrentQuality: [0],
-            //setCurrentAudioTrack: [0],
-            //setVolume: [100],
-            //setMute: [false],
-            //resize: [100, 75],
-            on: [''],
-            once: [''],
-            trigger: [''],
-            off: void 0,
-            remove: void 0
-        };
-
-        _.each(chainable, function(args, method) {
-            assert.ok(_.isFunction(api[method]), 'api.' + method + ' is defined');
+        _.each(apiMethodsChainable, function(args, method) {
             var result = api[method].apply(api, args);
             assert.strictEqual(result, api, 'api.' + method + ' returns an instance of itself');
+        });
+    });
+
+    test('has getters that return values before setup', function(assert) {
+        var api = createApi('player');
+
+        assert.strictEqual(api.getContainer(), document.getElementById('player'),
+            'getContainer returns the player DOM element before setup');
+
+
+        var result = api.registerPlugin('', '7.0', function(){});
+        assert.strictEqual(result, undefined, 'registerPlugin returns undefined');
+
+        assert.deepEqual( api.getMeta(), {}, 'getMeta returns {}');
+        assert.strictEqual( api.getItem(), undefined, 'getItem returns undefined');
+        assert.strictEqual( api.getPlaylist(), undefined, 'getPlaylist returns undefined');
+        assert.strictEqual( api.getPlaylistItem(), undefined, 'getPlaylistItem() returns undefined');
+        assert.strictEqual( api.getPlaylistItem(0), null, 'getPlaylistItem(0) returns null');
+
+        // FIXME: These are not ready until after setup (controller.setup())
+        //api.qoe();
+        //api.createInstream();
+        //assert.strictEqual( api.getState(), undefined, 'getState returns undefined before setup');
+
+    });
+
+    test('sets up a player with setup(config)', function(assert) {
+        var done = assert.async();
+
+        var api = createApi('player');
+
+        var meta = api.getMeta();
+
+        var config = _.extend(configSmall, {
+            events: {
+                onReady: function() {
+                    assert.ok(true, 'config.onReady event handler called after setup');
+                }
+            }
+        });
+
+        api.setup(config).on('ready', function(e) {
+
+            assert.ok(true,
+                'ready event fired after setup');
+
+            var qoe = api.qoe();
+
+            assert.equal(e.setupTime, qoe.setupTime,
+                'ready event setup time equals QOE setup time');
+
+            assert.ok(api.getMeta() !== meta,
+                'item meta is reset on ready');
+
+            assert.strictEqual(api.getContainer(), document.getElementById('player'),
+                'getContainer returns the player DOM element after setup');
+
+            assert.equal(api.getPlaylistItem().file, configSmall.file,
+                'getPlaylistItem() returns an object with the file passed to setup');
+
+            assert.equal(api.getPlaylistItem(0).file, configSmall.file,
+                'getPlaylistItem(0) returns an object with the file passed to setup');
+
+            assert.strictEqual( api.getPlaylistIndex(), 0,
+                'getPlaylistIndex aliases getItem after setup');
+
+            assert.strictEqual( api.callInternal('jwSetCues'), undefined,
+                'deprecated method callInternal is added after setup');
+
+            assert.ok(typeof api.createInstream() === 'object',
+                'createInstream returns an object after setup');
+
+            assert.equal(api.getState(), 'idle',
+                'getState returns idle after setup');
+
+            api.setVolume(50);
+            assert.strictEqual(api.getVolume(), 50,
+                'after calling setVolume(50), getVolume returns 50');
+
+            api.play(true);
+
+            assert.ok(/buffering|playing/.test(api.getState()),
+                'getState is buffering or playing after play is called');
+
+            // Cover these code branches
+            // TODO: test play/pause (true|false|undefined)
+            api.play();
+            api.pause();
+            api.pause(true);
+
+            assert.ok(api.getState(), 'paused',
+                'getState is paused after pause is called');
+
+            api.castToggle();
+
+            done();
+        }).on('setupError', function() {
+            ok(false, 'FAIL');
+            done();
         });
     });
 
