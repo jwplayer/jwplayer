@@ -169,19 +169,18 @@ define([
             if(_controller.getContainer) {
                 // If the controller has fully set up...
                 return _controller.getContainer();
-            } else {
-                // If the controller hasn't set up yet, and we need this (due a setup to error), send the container
-                return container;
             }
+            // If the controller hasn't set up yet, and we need this (due a setup to error), send the container
+            return container;
         };
 
         this.getMeta = this.getItemMeta = function () {
             return _itemMeta;
         };
 
-        this.getPlaylistItem = function (item) {
-            if (!utils.exists(item)) {
-                item = _this.getPlaylistIndex();
+        this.getPlaylistItem = function (index) {
+            if (!utils.exists(index)) {
+                return _controller._model.get('playlistItem');
             }
             return _this.getPlaylist()[item];
         };
