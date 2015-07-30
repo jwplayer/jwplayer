@@ -1,6 +1,7 @@
 // This allows us to test modules without loading full player
 window.__BUILD_VERSION__ = '7.0.0';
 window.__FLASH_VERSION__ = 11.2;
+window.__DEBUG__ = false;
 
 var base = '';
 var deps = [];
