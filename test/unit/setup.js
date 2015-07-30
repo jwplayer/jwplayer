@@ -130,7 +130,6 @@ define([
 
     function testSetup(model, success, error, done) {
         var setup = new Setup(api, model, view, model.get('setupTimeout'));
-        console.log(model);
         setup.on(events.JWPLAYER_READY, function() {
             success.call(setup);
             done();
