@@ -262,7 +262,7 @@ define([
         };
 
         // These may be overridden by ad plugins
-        this.playAd = this.pauseAd = _.noop;
+        this.playAd = this.pauseAd = utils.noop;
 
         this.remove = function () {
             // Remove from array of players
