@@ -60,7 +60,7 @@ define([
         return description;
     }
 
-    function getProvidersTestRunner(primary) {
+    function getProvidersTestRunner(assert, primary) {
         var providers = new Providers({primary: primary});
 
         return function testChosenProvider(file, providerName, message) {
@@ -69,60 +69,60 @@ define([
             if (!message) {
                 message = providerName + ' is chosen for ' + fileDescription(file);
             }
-            equal(getName(chosenProvider), providerName, message);
+            assert.equal(getName(chosenProvider), providerName, message);
         };
     }
 
     module('provider primary priority');
 
-    test('no primary defined', function () {
+    test('no primary defined', function (assert) {
         var providerList = new Providers().providers;
-		expect(4);
+        assert.expect(4);
 
-		equal(providerList.length, 3, 'There are 3 providers listed');
-		equal(getName(providerList[0]), 'VideoProvider', 'HTML5 is the number 1 provider');
-		equal(getName(providerList[1]), 'FlashProvider', 'Flash is the number 2 provider');
-		equal(getName(providerList[2]), 'YoutubeProvider', 'YouTube is the number 3 provider');
+		assert.equal(providerList.length, 3, 'There are 3 providers listed');
+		assert.equal(getName(providerList[0]), 'VideoProvider', 'HTML5 is the number 1 provider');
+		assert.equal(getName(providerList[1]), 'FlashProvider', 'Flash is the number 2 provider');
+		assert.equal(getName(providerList[2]), 'YoutubeProvider', 'YouTube is the number 3 provider');
     });
 
-    test('html5 primary requested', function () {
+    test('html5 primary requested', function (assert) {
 		var providerList = new Providers({primary: 'html5'}).providers;
-        expect(4);
+        assert.expect(4);
 
-        equal(providerList.length, 3, 'There are 3 providers listed');
-        equal(getName(providerList[0]), 'VideoProvider', 'HTML5 is the number 1 provider');
-        equal(getName(providerList[1]), 'FlashProvider', 'Flash is the number 2 provider');
-        equal(getName(providerList[2]), 'YoutubeProvider', 'YouTube is the number 3 provider');
+        assert.equal(providerList.length, 3, 'There are 3 providers listed');
+        assert.equal(getName(providerList[0]), 'VideoProvider', 'HTML5 is the number 1 provider');
+        assert.equal(getName(providerList[1]), 'FlashProvider', 'Flash is the number 2 provider');
+        assert.equal(getName(providerList[2]), 'YoutubeProvider', 'YouTube is the number 3 provider');
     });
 
 
-    test('flash primary requested', function () {
+    test('flash primary requested', function (assert) {
 		var providerList = new Providers({primary: 'flash'}).providers;
-        expect(4);
+        assert.expect(4);
 
-        equal(providerList.length, 3, 'There are 3 providers listed');
-        equal(getName(providerList[0]), 'FlashProvider', 'Flash is the number 1 provider');
-        equal(getName(providerList[1]), 'VideoProvider', 'HTML5 is the number 2 provider');
-        equal(getName(providerList[2]), 'YoutubeProvider', 'YouTube is the number 3 provider');
+        assert.equal(providerList.length, 3, 'There are 3 providers listed');
+        assert.equal(getName(providerList[0]), 'FlashProvider', 'Flash is the number 1 provider');
+        assert.equal(getName(providerList[1]), 'VideoProvider', 'HTML5 is the number 2 provider');
+        assert.equal(getName(providerList[2]), 'YoutubeProvider', 'YouTube is the number 3 provider');
     });
 
-	test('invalid primary requested', function () {
+	test('invalid primary requested', function (assert) {
 		var providerList = new Providers({primary:'invalid primary value'}).providers;
-        expect(4);
+        assert.expect(4);
 
-        equal(providerList.length, 3, 'There are 3 providers listed');
-        equal(getName(providerList[0]), 'VideoProvider', 'HTML5 is the number 1 provider');
-        equal(getName(providerList[1]), 'FlashProvider', 'Flash is the number 2 provider');
-        equal(getName(providerList[2]), 'YoutubeProvider', 'YouTube is the number 3 provider');
+        assert.equal(providerList.length, 3, 'There are 3 providers listed');
+        assert.equal(getName(providerList[0]), 'VideoProvider', 'HTML5 is the number 1 provider');
+        assert.equal(getName(providerList[1]), 'FlashProvider', 'Flash is the number 2 provider');
+        assert.equal(getName(providerList[2]), 'YoutubeProvider', 'YouTube is the number 3 provider');
 	});
 
 	module('provider.choose tests');
 
 	// HTML5 Primary
-	test('html5 primary', function () {
-        expect(17);
+	test('html5 primary', function (assert) {
+        assert.expect(17);
 
-        var runTest = getProvidersTestRunner('html5');
+        var runTest = getProvidersTestRunner(assert, 'html5');
 
         // We only allow "androidhls" configurations to use hls on 4.1 and higher
         var isAndroidWithHls = (/Android [456]\.[123456789]]/i).test(navigator.userAgent);
@@ -151,10 +151,10 @@ define([
     });
 
 	// Flash Primary
-	test('flash primary', function () {
-        expect(17);
+	test('flash primary', function (assert) {
+        assert.expect(17);
 
-        var runTest = getProvidersTestRunner('flash');
+        var runTest = getProvidersTestRunner(assert, 'flash');
 
         runTest(videoSources.mp4, 'FlashProvider');
         runTest(videoSources.flv, 'FlashProvider');
