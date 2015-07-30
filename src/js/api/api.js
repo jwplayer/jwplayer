@@ -182,7 +182,11 @@ define([
             if (!utils.exists(index)) {
                 return _controller._model.get('playlistItem');
             }
-            return _this.getPlaylist()[item];
+            var playlist = _this.getPlaylist();
+            if (playlist) {
+                return playlist[index];
+            }
+            return null;
         };
 
         this.getRenderingMode = function () {
