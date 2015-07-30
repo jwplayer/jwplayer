@@ -263,11 +263,17 @@
     /* Skip icon and text styles */
     .jw-skip {
         padding: 0.4em;
-        border-radius: 1em;
+        border-radius: 1.75em;
 
-        .jw-text, 
+        .jw-text,
         .jw-icon-inline {
             color: @inactive-color;
+            line-height: 1.75em;
+        }
+
+        &.jw-skippable:hover .jw-text,
+        &.jw-skippable:hover .jw-icon-inline {
+            color: @active-color;
         }
     }
 
