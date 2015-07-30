@@ -111,6 +111,7 @@ define([
                     _beforecompleted = false;
                     this.setState(states.LOADING);
                     _flashCommand('load', item);
+                    this.sendMediaType(item.sources);
                 },
                 play: function() {
                     _flashCommand('play');
@@ -312,13 +313,6 @@ define([
                 getFullScreen: function() {
                     return _fullscreen;
                 },
-                isAudioFile: function() {
-                    if (_item) {
-                        var type = _item.sources[0].type;
-                        return (type === 'oga' || type === 'aac' || type === 'mp3' || type === 'vorbis');
-                    }
-                    return false;
-                },
                 setCurrentQuality: function(quality) {
                     _flashCommand('setCurrentQuality', quality);
                 },
@@ -346,7 +340,6 @@ define([
                 setCurrentAudioTrack : function(audioTrack) {
                     _flashCommand('setCurrentAudioTrack', audioTrack);
                 },
-                supportsFullscreen: _.constant(true),
                 destroy: function() {
                     this.remove();
                     if (_swf) {

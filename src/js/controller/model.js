@@ -68,6 +68,10 @@ define([
                     this.set(evt.type, evt[evt.type]);
                     return;
 
+                case events.JWPLAYER_MEDIA_TYPE:
+                    this.mediaModel.set('mediaType', evt.mediaType);
+                    break;
+
                 case events.JWPLAYER_PLAYER_STATE:
                     this.mediaModel.set('state', evt.newstate);
 

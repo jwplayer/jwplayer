@@ -428,6 +428,7 @@ define([
             }
 
             _setLevels(item.sources);
+            this.sendMediaType(item.sources);
 
             _completeLoad(item.starttime || 0, item.duration || 0);
         };
@@ -661,8 +662,6 @@ define([
                 _videotag.videoWidth, _videotag.videoHeight);
         };
 
-        this.supportsFullscreen = _.constant(true);
-
         this.setFullscreen = function(state) {
             state = !!state;
 
@@ -700,14 +699,6 @@ define([
 
         _this.getFullScreen = function() {
             return _fullscreenState || !!_videotag.webkitDisplayingFullscreen;
-        };
-
-        this.isAudioFile = function() {
-            if (!_levels) {
-                return false;
-            }
-            var type = _levels[0].type;
-            return (type === 'oga' || type === 'aac' || type === 'mp3' || type === 'mpeg' || type === 'vorbis');
         };
 
         this.setCurrentQuality = function(quality) {
