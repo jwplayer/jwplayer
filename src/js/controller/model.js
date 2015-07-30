@@ -23,6 +23,7 @@ define([
 
         this.mediaController = _.extend({}, Events);
         this.mediaModel = new MediaModel();
+        this.set('mediaModel', this.mediaModel);
 
         QOE.model(this);
 
@@ -32,9 +33,7 @@ define([
                 _cookies = storage.getAllItems();
             }
 
-            this.config = _.extend({}, config, _cookies);
-
-            _.extend(this, this.config, {
+            _.extend(this.attributes, config, _cookies, {
                 // Initial state, upon setup
                 state: states.IDLE,
                 fullscreen: false,
@@ -46,7 +45,7 @@ define([
 
             // Mobile doesn't support autostart
             if (utils.isMobile()) {
-                this.autostart = false;
+                this.set('autostart', false);
             }
 
             this.updateProviders();
@@ -54,8 +53,12 @@ define([
             return this;
         };
 
+        this.getConfiguration = function() {
+            return _.omit(this.clone(), ['mediaModel']);
+        };
+
         this.updateProviders = function() {
-            _providers = new Providers(_this.config);
+            _providers = new Providers(this.getConfiguration());
         };
 
         function _videoEventHandler(evt) {
@@ -140,7 +143,7 @@ define([
                 }
             }
 
-            _currentProvider = new Provider(_this.id, _this.config);
+            _currentProvider = new Provider(_this.get('id'), _this.getConfiguration());
 
             if (container) {
                 _currentProvider.setContainer(container);
@@ -149,8 +152,8 @@ define([
             this.set('provider', _currentProvider.getName());
 
             _provider = _currentProvider;
-            _provider.volume(_this.volume);
-            _provider.mute(_this.mute);
+            _provider.volume(_this.get('volume'));
+            _provider.mute(_this.get('mute'));
             _provider.addGlobalListener(_videoEventHandler.bind(this));
         };
 
@@ -168,7 +171,7 @@ define([
 
         this.setFullscreen = function(state) {
             state = !!state;
-            if (state !== _this.fullscreen) {
+            if (state !== _this.get('fullscreen')) {
                 _this.set('fullscreen', state);
             }
         };
@@ -204,7 +207,8 @@ define([
 
             // Item is actually changing
             this.mediaModel.off();
-            this.set('mediaModel', new MediaModel());
+            this.mediaModel = new MediaModel();
+            this.set('mediaModel', this.mediaModel);
 
             this.set('item', newItem);
             // select provider based on item source (video, youtube...)
@@ -248,7 +252,7 @@ define([
 
         this.setMute = function(state) {
             if (!utils.exists(state)) {
-                state = !_this.mute;
+                state = !_this.get('mute');
             }
             _this.set('mute', state);
             if (_provider) {
@@ -287,7 +291,7 @@ define([
 
     // Represents the state of the provider/media element
     var MediaModel = Model.MediaModel = function() {
-        this.state = states.IDLE;
+        this.set('state', states.IDLE);
     };
 
 

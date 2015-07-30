@@ -505,7 +505,7 @@ define([
 
             var rightside = document.createElement('div');
             rightside.className = 'jw-controls-right jw-reset';
-            if (_model.get('config').logo) {
+            if (_model.get('logo')) {
                 rightside.appendChild(_logo.element());
             }
             rightside.appendChild(_dock.element());
@@ -513,7 +513,7 @@ define([
 
             // captions rendering
             _captionsRenderer = new CaptionsRenderer(_model);
-            _captionsRenderer.setup(_model.get('config').captions);
+            _captionsRenderer.setup(_model.get('captions'));
 
             // captions should be place behind controls, and not hidden when controls are hidden
             _controlsLayer.parentNode.insertBefore(_captionsRenderer.element(), _title.element());
