@@ -1,8 +1,9 @@
 define([
     'test/underscore',
     'controller/Setup',
+    'utils/simplemodel',
     'events/events'
-], function (_, Setup, events) {
+], function (_, Setup, SimpleModel, events) {
     /* jshint qunit: true */
 
     module('Setup');
@@ -128,7 +129,7 @@ define([
     });
 
     function testSetup(model, success, error, done) {
-        var setup = new Setup(api, model, view, model.config.setupTimeout);
+        var setup = new Setup(api, model, view, model.get('setupTimeout'));
         setup.on(events.JWPLAYER_READY, function() {
             success.call(setup);
             done();
@@ -154,14 +155,13 @@ define([
     };
 
     function getModel(config) {
-        return {
-            config: config,
-            'get' : function(a) {
-                return this[a];
-            },
-            setPlaylist: function(p) {
-                this.playlist = p;
-            }
+        var m = _.extend({}, SimpleModel);
+        _.each(config, function(val,key) {
+            m.set(key, val);
+        });
+        m.setPlaylist = function(p) {
+            this.set('playlist', p);
         };
+        return m;
     }
 });

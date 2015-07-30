@@ -340,6 +340,10 @@ define([
         return repo;
     });
 
+    utils.loadFrom = function() {
+        return (__DEBUG__ ? utils.getScriptPath('jwplayer.js') : utils.repo());
+    };
+
     utils.addStyleSheet = function(url) {
         var link = document.createElement('link');
         link.rel = 'stylesheet';

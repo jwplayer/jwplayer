@@ -1,5 +1,4 @@
 define([
-    'api/config',
     'events/events',
     'events/states',
     'utils/backbone.events',
@@ -11,7 +10,7 @@ define([
     'api/api-mutators',
     'api/callbacks-deprecate',
     'version'
-], function(Config, events, states,
+], function(events, states,
             Events, utils, Timer, _, Controller, actionsInit, mutatorsInit, legacyInit, version) {
 
     function addFocusBorder(container) {
@@ -143,9 +142,8 @@ define([
                 }
             });
 
-            var config = new Config(options);
-            config.id = _this.id;
-            _controller.setup(config, this);
+            options.id = _this.id;
+            _controller.setup(options, this);
 
             return _this;
         };
@@ -203,28 +201,15 @@ define([
         };
 
         this.play = function (state) {
-            if (state !== undefined) {
-                _controller.play(state);
+            if (state === true) {
+                _controller.play();
+                return _this;
+            } else if (state === false) {
+                _controller.pause();
                 return _this;
             }
 
             state = _this.getState();
-
-            var instreamAdapter = _controller._instreamAdapter;
-            var instreamState = instreamAdapter && instreamAdapter.getState();
-            if (instreamState) {
-                switch (instreamState) {
-                    case states.IDLE:
-                    case states.PLAYING:
-                    case states.BUFFERING:
-                        instreamAdapter.pause();
-                        break;
-                    default:
-                        instreamAdapter.play();
-                }
-                return _this;
-            }
-
             switch (state) {
                 case states.PLAYING:
                 case states.BUFFERING:
@@ -238,20 +223,11 @@ define([
         };
 
         this.pause = function (state) {
-            if (state === undefined) {
-                state = _this.getState();
-                switch (state) {
-                    case states.PLAYING:
-                    case states.BUFFERING:
-                        _controller.pause();
-                        break;
-                    default:
-                        _controller.play();
-                }
-            } else {
-                _controller.pause(state);
+            if (_.isBoolean(state)) {
+                return this.play(!state);
             }
-            return _this;
+
+            return this.play();
         };
 
         this.createInstream = function () {
