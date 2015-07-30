@@ -1,9 +1,8 @@
 define([
     'test/underscore',
     'jquery',
-    'jwplayer',
-    'api/global-api'
-], function (_, $, jwplayer, globalApi) {
+    'jwplayer'
+], function (_, $, jwplayer) {
     /* jshint qunit: true */
 
     module('jwplayer function');
