@@ -54,6 +54,7 @@ define([], function() {
         // Model Changes
         JWPLAYER_MEDIA_BUFFER: 'bufferChange',
         JWPLAYER_MEDIA_TIME: 'time',
+        JWPLAYER_MEDIA_TYPE: 'mediaType',
         JWPLAYER_MEDIA_VOLUME: 'volume',
         JWPLAYER_MEDIA_MUTE: 'mute',
         JWPLAYER_MEDIA_META: 'meta',

@@ -517,17 +517,6 @@ define([
             return _container;
         };
 
-        this.supportsFullscreen = function() {
-            return !!(_container && (_container.requestFullscreen ||
-                _container.requestFullScreen ||
-                _container.webkitRequestFullscreen ||
-                _container.webkitRequestFullScreen ||
-                _container.webkitEnterFullscreen ||
-                _container.webkitEnterFullScreen ||
-                _container.mozRequestFullScreen ||
-                _container.msRequestFullscreen));
-        };
-
         this.remove = function() {
             _stopVideo();
 

@@ -323,7 +323,9 @@ define([
             }
 
             _model.on('change:controls', _onChangeControls);
+            _onChangeControls(_model, _model.get('controls'));
             _model.on('change:state', _stateHandler);
+            _model.on('change:duration', _setLiveMode, this);
 
             _model.mediaController.on(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
             _api.onPlaylistComplete(_playlistCompleteHandler);
@@ -453,14 +455,20 @@ define([
             _this.trigger(evt.type, evt);
         }
 
-        var toggleControls = function() {
-            var controls = _model.get('controls');
-            if (controls) {
+        var _onChangeControls = function(model, bool) {
+            if (bool) {
+                var state = (_instreamMode) ? _instreamModel.get('state') : _model.get('state');
+                // model may be instream or normal depending on who triggers this
+                _stateHandler(model, state);
+            }
+
+            if (bool) {
                 utils.removeClass(_playerElement, 'jw-flag-controls-disabled');
             } else {
                 utils.addClass(_playerElement, 'jw-flag-controls-disabled');
             }
-            _model.getVideo().setControls(controls);
+
+            model.getVideo().setControls(bool);
         };
 
         function _doubleClickFullscreen() {
@@ -470,8 +478,6 @@ define([
         }
 
         function _setupControls() {
-            toggleControls();
-            _model.on('change:controls', toggleControls);
 
             _displayClickHandler = new ClickHandler(_model, _videoLayer);
             _displayClickHandler.on('click', function() {
@@ -537,14 +543,6 @@ define([
             _playerElement.addEventListener('blur', handleBlur);
             _playerElement.addEventListener('keydown', handleKeydown);
             _playerElement.onmousedown = handleMouseDown;
-        }
-
-        function _onChangeControls(model, bool) {
-            if (bool) {
-                var state = (_instreamMode) ? _instreamModel.get('state') : _model.get('state');
-                // model may be instream or normal depending on who triggers this
-                _stateHandler(model, state);
-            }
         }
 
         function stopDragging(model) {
@@ -822,10 +820,10 @@ define([
                 _castDisplay.setState(_model.get('state'));
             }
 
-            var isAudioFile = _isAudioFile();
-            utils.toggleClass(_playerElement, 'jw-flag-media-audio', isAudioFile);
-
-            _model.on('change:duration', _setLiveMode, this);
+            _model.mediaModel.on('change:mediaType', function(model, val) {
+                var isAudioFile = (val ==='audio');
+                utils.toggleClass(_playerElement, 'jw-flag-media-audio', isAudioFile);
+            });
         }
 
         function _setLiveMode(model, duration){
@@ -842,15 +840,6 @@ define([
         function _errorHandler(evt) {
             _stateHandler(_model, states.ERROR);
             _title.updateText(_model, {'title': evt.message});
-        }
-
-        function _isAudioFile() {
-            var model = _instreamMode ? _instreamModel : _model;
-            var provider = model.getVideo();
-            if (provider) {
-                return provider.isAudioFile();
-            }
-            return false;
         }
 
         function _isCasting() {
