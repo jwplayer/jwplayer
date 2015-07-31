@@ -14,43 +14,43 @@ define([
 
     module('playlist');
 
-    test('Test initialized successfully', function() {
-        expect(3);
+    test('Test initialized successfully', function(assert) {
+        assert.expect(3);
 
-        equal(typeof item, 'function', 'item is defined');
-        equal(typeof source, 'function', 'source is defined');
-        equal(typeof track, 'function', 'track is defined');
+        assert.equal(typeof item, 'function', 'item is defined');
+        assert.equal(typeof source, 'function', 'source is defined');
+        assert.equal(typeof track, 'function', 'track is defined');
     });
 
-    test('Test constructor with single item', function () {
-        expect(3);
+    test('Test constructor with single item', function (assert) {
+        assert.expect(3);
         var p;
 
         p = playlist(mp4.starscape);
-        ok(isValidPlaylistItem(p[0]), 'Initialize single item');
+        assert.ok(isValidPlaylistItem(p[0]), 'Initialize single item');
 
         p = playlist(undefined);
-        ok(isValidPlaylistItem(p[0]), 'Initialize with undefined item');
+        assert.ok(isValidPlaylistItem(p[0]), 'Initialize with undefined item');
 
         // TODO: this doesn't actually work, shouldn't pass
         p = playlist(mp4.starscape.file);
-        ok(isValidPlaylistItem(p[0]), 'Initialize with just file name');
+        assert.ok(isValidPlaylistItem(p[0]), 'Initialize with just file name');
     });
 
-    test('Test constructor with array of items', function () {
-        expect(3);
+    test('Test constructor with array of items', function (assert) {
+        assert.expect(3);
         var p,
             arr = [mp4.starscape, mp4.starscape, mp4.starscape];
 
         p = playlist(arr);
-        equal(p.length, arr.length, 'Same number of items initialized');
+        assert.equal(p.length, arr.length, 'Same number of items initialized');
 
         p = playlist([mp4.starscape]);
-        ok(isValidPlaylistItem(p[0]), 'Initialize single item array');
+        assert.ok(isValidPlaylistItem(p[0]), 'Initialize single item array');
 
         // TODO: inconsistent, this is the only case where it returns an empty array
         p = playlist([]);
-        ok(_.isArray(p) && p.length === 0, 'Initialize with an empty array as argument');
+        assert.ok(_.isArray(p) && p.length === 0, 'Initialize with an empty array as argument');
     });
 
 });

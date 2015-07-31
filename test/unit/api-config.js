@@ -22,8 +22,8 @@ define([
 
         var attrs = ['width', 'height', 'base'];
 
-        ok(validWidth(x.width), 'width is a number ' + x.width);
-        ok(validWidth(x.height), 'height is a number ' + x.height);
+        assert.ok(validWidth(x.width), 'width is a number ' + x.width);
+        assert.ok(validWidth(x.height), 'height is a number ' + x.height);
         _.each(attrs, function(a) {
             assert.ok(_.has(x, a), 'Config has ' + a + ' attribute');
         });

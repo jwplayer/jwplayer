@@ -31,10 +31,10 @@ define([
         assert.throws(addListenerWithStringCallback, TypeError, 'passing a string as a callback throws a TypeError');
     });
 
-    test('rendering mode is html5', function() {
+    test('rendering mode is html5', function(assert) {
         var api = createApi('player');
 
-        equal(api.getRenderingMode(), 'html5', 'api.getRenderingMode() returns "html5"');
+        assert.equal(api.getRenderingMode(), 'html5', 'api.getRenderingMode() returns "html5"');
     });
 
     test('can be removed and reused', function(assert) {
@@ -44,7 +44,7 @@ define([
 
         var removeCount = 0;
         api.on('remove', function(event) {
-            equal(++removeCount, 1, 'first remove event callback is triggered first once');
+            assert.equal(++removeCount, 1, 'first remove event callback is triggered first once');
             assert.equal(event.type, 'remove', 'event type is "remove"');
             assert.strictEqual(this, api, 'callback context is the removed api instance');
         });
@@ -52,24 +52,24 @@ define([
         api.remove();
 
         api.setup({}).on('remove', function() {
-            equal(++removeCount, 2, 'second remove event callback is triggered second');
+            assert.equal(++removeCount, 2, 'second remove event callback is triggered second');
         }).remove();
     });
 
-    test('replaces and restores container', function() {
+    test('replaces and restores container', function(assert) {
         var originalContainer = createContainer('player');
         var api = new Api(originalContainer, noop);
 
         var elementInDom = document.getElementById('player');
-        strictEqual(elementInDom, originalContainer, 'container is not replaced before setup');
+        assert.strictEqual(elementInDom, originalContainer, 'container is not replaced before setup');
 
         api.setup({});
         elementInDom = document.getElementById('player');
-        ok(elementInDom !== originalContainer, 'container is replaced after setup');
+        assert.notEqual(elementInDom, originalContainer, 'container is replaced after setup');
 
         api.remove();
         elementInDom = document.getElementById('player');
-        strictEqual(elementInDom, originalContainer, 'container is restored after remove');
+        assert.strictEqual(elementInDom, originalContainer, 'container is restored after remove');
     });
 
     test('event dispatching', function(assert) {
@@ -85,7 +85,7 @@ define([
 
         api.trigger('test', originalEvent);
 
-        equal(originalEvent.type, 'original', 'original event.type is not modified');
+        assert.equal(originalEvent.type, 'original', 'original event.type is not modified');
     });
 
     test('defines methods', function(assert) {
@@ -128,7 +128,7 @@ define([
 
     });
 
-    test('sets up a player with setup(config)', function(assert) {
+    test('has methods that can only be called after setup', function(assert) {
         var done = assert.async();
 
         var api = createApi('player');
@@ -153,7 +153,7 @@ define([
             assert.equal(e.setupTime, qoe.setupTime,
                 'ready event setup time equals QOE setup time');
 
-            assert.ok(api.getMeta() !== meta,
+            assert.notEqual(api.getMeta(), meta,
                 'item meta is reset on ready');
 
             assert.strictEqual(api.getContainer(), document.getElementById('player'),
@@ -199,7 +199,7 @@ define([
 
             done();
         }).on('setupError', function() {
-            ok(false, 'FAIL');
+            assert.ok(false, 'FAIL');
             done();
         });
     });

@@ -104,7 +104,7 @@ define([
         setup.destroy();
 
         _.defer(function() {
-            ok(true, 'so far so good');
+            assert.ok(true, 'so far so good');
             done();
         }, 0);
     });
@@ -121,10 +121,10 @@ define([
 
         testSetup(model, function() {
             assert.ok(true, 'setup ok');
-            notEqual(options, optionsOrig, 'config was modified');
+            assert.notEqual(options, optionsOrig, 'config was modified');
         }, function(message) {
             assert.ok(true, 'setup failed with message: ' + message);
-            notEqual(options, optionsOrig, 'config was modified');
+            assert.notEqual(options, optionsOrig, 'config was modified');
         }, assert.async());
     });
 
