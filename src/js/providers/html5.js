@@ -480,7 +480,7 @@ define([
         }
 
         this.volume = function(vol) {
-            _videotag.volume = Math.min(Math.max(0, vol / 100), 1);
+            _videotag.volume = Math.min(Math.max(0, (vol||90) / 100), 1);
         };
 
         function _volumeHandler() {

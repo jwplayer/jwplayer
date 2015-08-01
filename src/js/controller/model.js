@@ -186,15 +186,15 @@ define([
 
             playlist = Playlist.filterPlaylist(playlist, _providers, _this.get('androidhls'), this.get('drm'));
 
+            this.set('playlist', playlist);
+
             if (playlist.length === 0) {
-                this.playlist = [];
                 this.mediaController.trigger(events.JWPLAYER_ERROR, {
                     message: 'Error loading playlist: No playable sources found'
                 });
                 return;
             }
-
-            this.set('playlist', playlist);
+            
             this.setItem(0);
         };
 
