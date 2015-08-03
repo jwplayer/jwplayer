@@ -76,7 +76,10 @@ define([
         // getters
         _.each(passthroughs, function(func) {
             _api[func] = function() {
-                return _controller[func].apply(_controller, arguments);
+                if (_controller[func]) {
+                    return _controller[func].apply(_controller, arguments);
+                }
+                return null;
             };
         });
         // setters (chainable)
