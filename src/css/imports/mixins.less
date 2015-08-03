@@ -24,10 +24,15 @@
 
 .inset-controlbar() {
     .jw-controlbar {
-        display: block;
+        // for correct display in IE browsers
+        display: inline-block;
+        // width assignment is required for IE11 to center correctly
+        width: 96%;
+        max-width: 50em;
         margin: 0 auto;
-        max-width: 96%;
         bottom: .7em;
+        left: 2%;
+        right: 2%;
     }
     &.jw-flag-audio-player .jw-controlbar {
         bottom: 0; // overwrite the inset-controlbar mixin
