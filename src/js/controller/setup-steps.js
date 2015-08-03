@@ -52,7 +52,10 @@ define([
 
     function _loadPolyfills(resolve) {
         if (!window.btoa || !window.atob) {
-            require.ensure(['polyfills/base64'], resolve);
+            require.ensure(['polyfills/base64'], function(require) {
+                require('polyfills/base64');
+                resolve();
+            });
         } else {
             resolve();
         }
