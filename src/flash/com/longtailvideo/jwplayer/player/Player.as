@@ -27,7 +27,11 @@ public class Player extends Sprite implements IPlayer {
     protected var _instream:InstreamPlayer;
 
     public function Player() {
-        Security.allowDomain("*");
+        try {
+            Security.allowDomain("*");
+            Security.allowInsecureDomain("*");
+        } catch(e:SecurityError) {}
+
 
         RootReference.init(this);
         this.addEventListener(Event.ADDED_TO_STAGE, stageReady);
