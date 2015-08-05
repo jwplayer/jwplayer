@@ -80,9 +80,9 @@ define([
         assert.expect(4);
 
 		assert.equal(providerList.length, 3, 'There are 3 providers listed');
-		assert.equal(getName(providerList[0]), 'VideoProvider', 'HTML5 is the number 1 provider');
-		assert.equal(getName(providerList[1]), 'FlashProvider', 'Flash is the number 2 provider');
-		assert.equal(getName(providerList[2]), 'YoutubeProvider', 'YouTube is the number 3 provider');
+		assert.equal(getName(providerList[1]), 'html5', 'HTML5 is the number 1 provider');
+		assert.equal(getName(providerList[2]), 'flash', 'Flash is the number 2 provider');
+		assert.equal(getName(providerList[0]), 'youtube', 'YouTube is the number 3 provider');
     });
 
     test('html5 primary requested', function (assert) {
@@ -90,9 +90,9 @@ define([
         assert.expect(4);
 
         assert.equal(providerList.length, 3, 'There are 3 providers listed');
-        assert.equal(getName(providerList[0]), 'VideoProvider', 'HTML5 is the number 1 provider');
-        assert.equal(getName(providerList[1]), 'FlashProvider', 'Flash is the number 2 provider');
-        assert.equal(getName(providerList[2]), 'YoutubeProvider', 'YouTube is the number 3 provider');
+        assert.equal(getName(providerList[1]), 'html5', 'HTML5 is the number 1 provider');
+        assert.equal(getName(providerList[2]), 'flash', 'Flash is the number 2 provider');
+        assert.equal(getName(providerList[0]), 'youtube', 'YouTube is the number 3 provider');
     });
 
 
@@ -101,9 +101,9 @@ define([
         assert.expect(4);
 
         assert.equal(providerList.length, 3, 'There are 3 providers listed');
-        assert.equal(getName(providerList[0]), 'FlashProvider', 'Flash is the number 1 provider');
-        assert.equal(getName(providerList[1]), 'VideoProvider', 'HTML5 is the number 2 provider');
-        assert.equal(getName(providerList[2]), 'YoutubeProvider', 'YouTube is the number 3 provider');
+        assert.equal(getName(providerList[1]), 'flash', 'Flash is the number 1 provider');
+        assert.equal(getName(providerList[2]), 'html5', 'HTML5 is the number 2 provider');
+        assert.equal(getName(providerList[0]), 'youtube', 'YouTube is the number 3 provider');
     });
 
 	test('invalid primary requested', function (assert) {
@@ -111,9 +111,9 @@ define([
         assert.expect(4);
 
         assert.equal(providerList.length, 3, 'There are 3 providers listed');
-        assert.equal(getName(providerList[0]), 'VideoProvider', 'HTML5 is the number 1 provider');
-        assert.equal(getName(providerList[1]), 'FlashProvider', 'Flash is the number 2 provider');
-        assert.equal(getName(providerList[2]), 'YoutubeProvider', 'YouTube is the number 3 provider');
+        assert.equal(getName(providerList[1]), 'html5', 'HTML5 is the number 1 provider');
+        assert.equal(getName(providerList[2]), 'flash', 'Flash is the number 2 provider');
+        assert.equal(getName(providerList[0]), 'youtube', 'YouTube is the number 3 provider');
 	});
 
 	module('provider.choose tests');
@@ -127,24 +127,24 @@ define([
         // We only allow "androidhls" configurations to use hls on 4.1 and higher
         var isAndroidWithHls = (/Android [456]\.[123456789]]/i).test(navigator.userAgent);
 
-        runTest(videoSources.mp4, 'VideoProvider');
-        runTest(videoSources.f4v, 'VideoProvider');
-        runTest(videoSources.m4v, 'VideoProvider');
-        runTest(videoSources.m4a, 'VideoProvider');
-        runTest(videoSources.aac, 'VideoProvider');
-        runTest(videoSources.mp3, 'VideoProvider');
-        runTest(videoSources.ogg, 'VideoProvider');
-        runTest(videoSources.oga, 'VideoProvider');
-        runTest(videoSources.webm,'VideoProvider');
-        runTest(videoSources.mov, 'VideoProvider');
+        runTest(videoSources.mp4, 'html5');
+        runTest(videoSources.f4v, 'html5');
+        runTest(videoSources.m4v, 'html5');
+        runTest(videoSources.m4a, 'html5');
+        runTest(videoSources.aac, 'html5');
+        runTest(videoSources.mp3, 'html5');
+        runTest(videoSources.ogg, 'html5');
+        runTest(videoSources.oga, 'html5');
+        runTest(videoSources.webm,'html5');
+        runTest(videoSources.mov, 'html5');
 
         // The video stub defined in this test cannot handle these types
         runTest(videoSources.m3u8,'None chosen');
         runTest(videoSources.hls, 'None chosen');
-        runTest(videoSources.flv, 'FlashProvider');
-        runTest(videoSources.smil,'FlashProvider');
+        runTest(videoSources.flv, 'flash');
+        runTest(videoSources.smil,'flash');
         runTest(videoSources.hls_androidhls_false, 'None chosen');
-        runTest(videoSources.youtube, 'YoutubeProvider');
+        runTest(videoSources.youtube, 'youtube');
 
         // our android androidhls logic in the video provider circumvents the canPlayType check
         runTest(videoSources.hls_androidhls_true,  isAndroidWithHls ? 'None chosen' : 'None chosen');
@@ -156,24 +156,24 @@ define([
 
         var runTest = getProvidersTestRunner(assert, 'flash');
 
-        runTest(videoSources.mp4, 'FlashProvider');
-        runTest(videoSources.flv, 'FlashProvider');
-        runTest(videoSources.smil,'FlashProvider');
-        runTest(videoSources.f4v, 'FlashProvider');
-        runTest(videoSources.m4v, 'FlashProvider');
-        runTest(videoSources.m4a, 'FlashProvider');
-        runTest(videoSources.aac, 'FlashProvider');
-        runTest(videoSources.mp3, 'FlashProvider');
+        runTest(videoSources.mp4, 'flash');
+        runTest(videoSources.flv, 'flash');
+        runTest(videoSources.smil,'flash');
+        runTest(videoSources.f4v, 'flash');
+        runTest(videoSources.m4v, 'flash');
+        runTest(videoSources.m4a, 'flash');
+        runTest(videoSources.aac, 'flash');
+        runTest(videoSources.mp3, 'flash');
         runTest(videoSources.m3u8,'None chosen');
         runTest(videoSources.hls, 'None chosen');
         runTest(videoSources.hls_androidhls_true,  'None chosen');
         runTest(videoSources.hls_androidhls_false, 'None chosen');
-        runTest(videoSources.mov, 'FlashProvider');
+        runTest(videoSources.mov, 'flash');
 
         // The Flash provider cannot play these types
-        runTest(videoSources.ogg, 'VideoProvider');
-        runTest(videoSources.oga, 'VideoProvider');
-        runTest(videoSources.webm,'VideoProvider');
-        runTest(videoSources.youtube, 'YoutubeProvider');
+        runTest(videoSources.ogg, 'html5');
+        runTest(videoSources.oga, 'html5');
+        runTest(videoSources.webm,'html5');
+        runTest(videoSources.youtube, 'youtube');
     });
 });

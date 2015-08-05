@@ -180,7 +180,6 @@ define([
             }
         };
 
-        // TODO: make this a synchronous action; throw error if playlist is empty
         this.setPlaylist = function(p) {
             var playlist = Playlist(p);
 
@@ -194,13 +193,11 @@ define([
                 });
                 return;
             }
-            
-            this.setItem(0);
         };
 
         // Give the option for a provider to be forced
         this.chooseProvider = function(source) {
-            return _providers.choose(source);
+            return _providers.choose(source).provider;
         };
 
         this.setItem = function(index) {

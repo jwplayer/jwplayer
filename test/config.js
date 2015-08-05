@@ -74,9 +74,7 @@ require.config({
     map: {
         // make sure the text plugin is used to load templates
         '*' : {
-            '../css/jwplayer.less': 'less!css/jwplayer'
-        },
-        'providers/html5' : {
+            '../css/jwplayer.less': 'less!css/jwplayer',
             'utils/video': mock + '/video.js'
         }
     },

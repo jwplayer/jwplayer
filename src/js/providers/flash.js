@@ -363,39 +363,10 @@ define([
     }
 
 
-    var flashExtensions = {
-        'flv': 'video',
-        'f4v': 'video',
-        'mov': 'video',
-        'm4a': 'video',
-        'm4v': 'video',
-        'mp4': 'video',
-        'aac': 'video',
-        'f4a': 'video',
-        'mp3': 'sound',
-        'mpeg': 'sound',
-        'smil': 'rtmp'
-    };
-    var PLAYABLE = _.keys(flashExtensions);
-
     // Register provider
     var F = function(){};
     F.prototype = DefaultProvider;
     FlashProvider.prototype = new F();
-    FlashProvider.supports = function (source) {
-        if(!utils.isFlashSupported()) {
-            return false;
-        }
-
-        var file = source.file;
-        var type = source.type;
-
-        if (utils.isRtmp(file, type)) {
-            return true;
-        }
-
-        return _.contains(PLAYABLE, type);
-    };
 
     return FlashProvider;
 });

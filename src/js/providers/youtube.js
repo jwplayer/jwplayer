@@ -618,16 +618,14 @@ define([
         };
     }
 
-    function supports(source) {
-        return (utils.isYouTube(source.file, source.type));
-    }
+    YoutubeProvider.getName = function() {
+        return { name: 'youtube' };
+    };
 
-    // Required configs
-    var F = function(){};
-    F.prototype = DefaultProvider;
-    YoutubeProvider.prototype = new F();
-    YoutubeProvider.supports = supports;
-
-    return YoutubeProvider;
+    return {
+        register : function(jwplayer) {
+            jwplayer.api.registerProvider(YoutubeProvider);
+        }
+    };
 
 });

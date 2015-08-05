@@ -4,8 +4,9 @@ define([
     'utils/scriptloader',
     'utils/constants',
     'utils/underscore',
+    'utils/helpers',
     'events/events'
-], function(plugins, PlaylistLoader, ScriptLoader, Constants, _, events) {
+], function(plugins, PlaylistLoader, ScriptLoader, Constants, _, utils, events) {
 
     var _pluginLoader,
         _playlistLoader;
@@ -22,6 +23,10 @@ define([
                 method: _loadPlugins,
                 depends: ['LOAD_POLYFILLS']
             },
+            LOAD_YOUTUBE : {
+                method: _loadYoutube,
+                depends: ['LOAD_PLAYLIST']
+            },
             LOAD_SKIN : {
                 method: _loadSkin,
                 depends: []
@@ -35,7 +40,8 @@ define([
                 depends: [
                     // view controls require that a playlist item be set
                     'LOAD_PLAYLIST',
-                    'LOAD_SKIN'
+                    'LOAD_SKIN',
+                    'LOAD_YOUTUBE'
                 ]
             },
             SEND_READY : {
@@ -49,6 +55,7 @@ define([
 
         return Components;
     }
+
 
     function _loadPolyfills(resolve) {
         if (!window.btoa || !window.atob) {
@@ -186,7 +193,27 @@ define([
         });
     }
 
+    function _loadYoutube(resolve, _model) {
+        var p = _model.get('playlist');
+
+        var hasYoutube = _.some(p, function(item) {
+            return utils.isYouTube(item.file);
+        });
+
+        if (hasYoutube) {
+            require.ensure(['providers/youtube'], function(require) {
+                var youtube = require('providers/youtube');
+                youtube.register(window.jwplayer);
+                _model.updateProviders();
+                resolve();
+            }, 'provider.youtube');
+        } else {
+            resolve();
+        }
+    }
+
     function _setupComponents(resolve, _model, _api, _view) {
+        _model.setItem(0);
         _view.setup();
         resolve();
     }
