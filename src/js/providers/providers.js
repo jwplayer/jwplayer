@@ -1,23 +1,21 @@
 define([
     'providers/html5',
     'providers/flash',
-    'providers/youtube',
+    'providers/providers-supported',
+    'providers/providers-loaded',
+    'utils/helpers',
     'utils/underscore'
-    ], function(html5, flash, youtube, _) {
+    ], function(html5, flash, ProvidersSupported, ProvidersLoaded, utils, _) {
 
 
     function Providers(config) {
-        this.providers = Providers.defaultList.slice();
+        this.providers = ProvidersSupported.slice();
         this.config = config || {};
 
         if (this.config.primary === 'flash') {
-            swap(this.providers, html5, flash);
+            swap(this.providers, 'html5', 'flash');
         }
     }
-
-    // When choosing a provider, go through this array
-    //   and select the first that works for the source
-    Providers.defaultList = [html5, flash, youtube];
 
     _.extend(Providers.prototype, {
 
@@ -25,32 +23,44 @@ define([
             return provider.supports(source);
         },
 
+        // Find the name of the first provider which can support the media source-type
         choose : function(source) {
             // prevent throw on missing source
             source = _.isObject(source) ? source : {};
 
-            var chosen = _.find(this.providers, function (provider) {
-                return this.providerSupports(provider, source);
-            }, this);
+            var count = this.providers.length;
+            for (var i = 0; i < count; i++) {
+                var provider = this.providers[i];
+                if (this.providerSupports(provider, source)) {
+                    // prefer earlier providers
+                    var priority = count - i - 1;
 
-            return chosen;
-        },
-
-        priority : function(p) {
-            var idx = _.indexOf(this.providers, p);
-            if (idx < 0) {
-                // No provider matched
-                return idx;
+                    return {
+                        priority: priority,
+                        name : provider.name,
+                        type: source.type,
+                        // If provider isn't loaded, this will be undefined
+                        provider : ProvidersLoaded[provider.name]
+                    };
+                }
             }
 
-            // prefer earlier providers
-            return this.providers.length - idx -1;
+            return null;
         }
     });
 
+    function getIndex(arr, name) {
+        for(var i =0; i < arr.length; i++) {
+            if (arr[i].name === name) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     function swap(arr, left, right) {
-        var l = _.indexOf(arr, left);
-        var r = _.indexOf(arr, right);
+        var l = getIndex(arr, left);
+        var r = getIndex(arr, right);
 
         var temp = arr[l];
         arr[l] = arr[r];

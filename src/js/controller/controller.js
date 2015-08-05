@@ -223,6 +223,7 @@ define([
                         break;
                     case 'object':
                         _model.setPlaylist(item);
+                        _model.setItem(0);
                         break;
                     case 'number':
                         _model.setItem(item);
