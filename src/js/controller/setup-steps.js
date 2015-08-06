@@ -197,14 +197,13 @@ define([
         var p = _model.get('playlist');
 
         var hasYoutube = _.some(p, function(item) {
-            return utils.isYouTube(item.file);
+            return utils.isYouTube(item.file, item.type);
         });
 
         if (hasYoutube) {
             require.ensure(['providers/youtube'], function(require) {
                 var youtube = require('providers/youtube');
                 youtube.register(window.jwplayer);
-                _model.updateProviders();
                 resolve();
             }, 'provider.youtube');
         } else {
