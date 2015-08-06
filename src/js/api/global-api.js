@@ -70,8 +70,10 @@ define([
     };
 
     function registerProvider(provider) {
+        var name = provider.getName().name;
+
         // If there isn't a "supports" val for this guy
-        if (_.find(ProvidersSupported, _.property('name')) < 0) {
+        if (! _.find(ProvidersSupported, _.matches({name : name}))) {
             if (!_.isFunction(provider.supports)) {
                 throw {
                     message: 'Tried to register a provider with an invalid object'
@@ -79,8 +81,8 @@ define([
             }
 
             // The most recent provider will be in the front of the array, and chosen first
-            ProvidersSupported.unsift({
-                name : provider.getName(),
+            ProvidersSupported.unshift({
+                name : name,
                 supports : provider.supports
             });
         }
@@ -90,7 +92,7 @@ define([
         provider.prototype = new F();
 
         // After registration, it is loaded
-        ProvidersLoaded[provider.getName().name] = provider;
+        ProvidersLoaded[name] = provider;
     }
 
 
