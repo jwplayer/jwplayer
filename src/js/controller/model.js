@@ -239,6 +239,10 @@ define([
             this.trigger('setItem');
         };
 
+        this.resetProvider = function() {
+            _currentProvider = null;
+        };
+
         this.setVolume = function(vol) {
             vol = Math.round(vol);
             _this.set('volume', vol);
