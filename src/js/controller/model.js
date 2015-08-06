@@ -260,7 +260,7 @@ define([
                 _provider.mute(state);
             }
             if (!state) {
-                var volume = Math.max(20, _this.get('volume'));
+                var volume = Math.max(10, _this.get('volume'));
                 this.setVolume(volume);
             }
         };
