@@ -280,8 +280,40 @@ module.exports = function(grunt) {
             options: {
                 configFile: './test/karma/karma.conf.js'
             },
-            local : {},
-            browserstack : {}
+            local : {
+                coverageReporter: {
+                    type : 'html',
+                    dir: 'reports/coverage',
+                    subdir: 'local'
+                },
+                jenkinsReporter: {
+                    outputFile: 'reports/phantomjs/junit.xml',
+                    suite: 'phantomjs',
+                    classnameSuffix: 'unit'
+                }
+            },
+            browserstack : {
+                coverageReporter: {
+                    type : 'html',
+                    dir: 'reports/coverage',
+                    subdir: 'browserStack'
+                },
+                jenkinsReporter: {
+                    outputFile: 'reports/browserStack/junit.xml',
+                    suite: 'browserStack',
+                    classnameSuffix: 'unit'
+                },
+                browserStack: {
+                    username:  process.env.BS_USERNAME,
+                    accessKey: process.env.BS_AUTHKEY,
+                    name: 'Unit Tests',
+                    project: 'JW Player',
+                    build: buildVersion,
+                    timeout: 600 // 10 min
+                },
+                customLaunchers: require( './test/karma/browserstack-launchers' ),
+                browsers: Object.keys( require( './test/karma/browserstack-launchers' ) )
+            }
         },
 
         clean: {
