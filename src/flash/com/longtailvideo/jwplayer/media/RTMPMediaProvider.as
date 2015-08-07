@@ -6,7 +6,6 @@ import com.longtailvideo.jwplayer.parsers.SMILParser;
 import com.longtailvideo.jwplayer.player.PlayerState;
 import com.longtailvideo.jwplayer.utils.AssetLoader;
 import com.longtailvideo.jwplayer.utils.NetClient;
-import com.longtailvideo.jwplayer.utils.RootReference;
 import com.longtailvideo.jwplayer.utils.Utils;
 import com.wowza.encryptionAS3.TEA;
 
@@ -16,7 +15,6 @@ import flash.events.Event;
 import flash.events.IOErrorEvent;
 import flash.events.NetStatusEvent;
 import flash.events.SecurityErrorEvent;
-import flash.geom.Rectangle;
 import flash.media.Video;
 import flash.net.NetConnection;
 import flash.net.NetStream;
@@ -33,8 +31,7 @@ import flash.utils.setTimeout;
  **/
 public class RTMPMediaProvider extends MediaProvider {
     /** Initialize RTMP provider. **/
-    public function RTMPMediaProvider(stageVideoEnabled:Boolean = true) {
-        _stageEnabled = stageVideoEnabled;
+    public function RTMPMediaProvider() {
         super('rtmp');
         _bandwidth = Number.MAX_VALUE;
     }
@@ -58,10 +55,6 @@ public class RTMPMediaProvider extends MediaProvider {
     private var _metadata:Boolean;
     /** Flag for paused **/
     private var _isPaused:Boolean = false;
-    /** StageVideo object to be instantiated. **/
-    private var _stage:Object;
-    /** Whether or not StageVideo is enabled **/
-    private var _stageEnabled:Boolean;
     /** NetStream instance that handles playback. **/
     private var _stream:NetStream;
     /** Level to transition to. **/
@@ -129,9 +122,6 @@ public class RTMPMediaProvider extends MediaProvider {
     public override function initializeMediaProvider(cfg:PlayerConfig):void {
         super.initializeMediaProvider(cfg);
 
-        // Allow stagevideo to be disabled by user config
-        if (_stageEnabled && cfg.hasOwnProperty('stagevideo') && cfg['stagevideo'].toString() == "false") _stageEnabled = false;
-
         _connection = new NetConnection();
         _connection.addEventListener(NetStatusEvent.NET_STATUS, statusHandler);
         _connection.addEventListener(SecurityErrorEvent.SECURITY_ERROR, errorHandler);
@@ -152,18 +142,11 @@ public class RTMPMediaProvider extends MediaProvider {
         _loading = true;
         _item = itm;
         _position = 0;
-        // Set Video or StageVideo
+        // Set Video
         if (!_video) {
             _video = new Video(320, 240);
             _video.smoothing = true;
-            _video.addEventListener('renderState', renderHandler);
-            // Use stageVideo when available
-            if (_stageEnabled && RootReference.stage['stageVideos'].length > 0) {
-                _stage = RootReference.stage['stageVideos'][0];
-                _stage.viewPort = new Rectangle(0, 0, 320, 240);
-                _stage.addEventListener('renderState', renderHandler);
-            }
-            attachNetStream(_stream);
+            _video.attachNetStream(_stream);
         }
 
         media = _video;
@@ -221,7 +204,7 @@ public class RTMPMediaProvider extends MediaProvider {
             _afterLoading = play;
             return;
         }
-        attachNetStream(_stream);
+        _video.attachNetStream(_stream);
         if (_isPaused) {
             // Resume VOD and restart live stream
             if (isVOD(_item.duration)) {
@@ -242,9 +225,6 @@ public class RTMPMediaProvider extends MediaProvider {
     /** Resize the Video and possible StageVideo. **/
     override public function resize(width:Number, height:Number):void {
         super.resize(width, height);
-        if (_stage && _media) {
-            _stage.viewPort = _media.getRect(RootReference.root);
-        }
         if (_auto) {
             swapLevel(autoLevel());
         }
@@ -273,7 +253,6 @@ public class RTMPMediaProvider extends MediaProvider {
         if (_video) {
             _video.clear();
         }
-        attachNetStream(null);
         _levels = [];
         _application = _type = null;
         _metadata = _transition = _auto = false;
@@ -346,14 +325,6 @@ public class RTMPMediaProvider extends MediaProvider {
                     sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_COMPLETE);
                 }
                 break;
-        }
-    }
-
-    private function attachNetStream(stream:NetStream):void {
-        if (_stage) {
-            _stage.attachNetStream(_stream);
-        } else {
-            _video.attachNetStream(_stream);
         }
     }
 
@@ -499,11 +470,7 @@ public class RTMPMediaProvider extends MediaProvider {
             _stream.bufferTime = 2;
         }
         _stream.client = new NetClient(this);
-        if (_stage) {
-            _stage.attachNetStream(_stream);
-        } else {
-            _video.attachNetStream(_stream);
-        }
+        _video.attachNetStream(_stream);
         _stream.soundTransform = config.soundTransform;
         // JWPLAYER_MEDIA_BUFFER_FULL will trigger a play() of the video...?
         if (_afterLoading !== null) {
@@ -610,20 +577,6 @@ public class RTMPMediaProvider extends MediaProvider {
         }
 
         return level;
-    }
-
-/** Send out video render state. **/
-    protected function renderHandler(event:Event):void {
-        var stagevideo:String = 'off';
-        if (_stage) {
-            stagevideo = 'on';
-        }
-        sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_META, {
-            metadata: {
-                stagevideo: stagevideo,
-                renderstate: event['status']
-            }
-        });
     }
 
     /** Catch security errors. **/

@@ -28,8 +28,7 @@ import flash.utils.setTimeout;
  **/
 public class VideoMediaProvider extends MediaProvider {
     /** Constructor; sets up the connection and display. **/
-    public function VideoMediaProvider(stageVideoEnabled:Boolean = true) {
-        _stageEnabled = stageVideoEnabled;
+    public function VideoMediaProvider() {
         super('video');
     }
     /** Whether the video is fully buffered. **/
@@ -38,10 +37,6 @@ public class VideoMediaProvider extends MediaProvider {
     private var _interval:Number;
     /** Offset time/byte for http seek. **/
     private var _offset:Object;
-    /** StegeVideo object to be instantiated. **/
-    private var _stage:Object;
-    /** Whether or not StageVideo is enabled **/
-    private var _stageEnabled:Boolean;
     /** NetStream instance that handles the stream IO. **/
     private var _stream:NetStream;
     /** Start parameter for HTTP pseudostreaming. **/
@@ -78,8 +73,6 @@ public class VideoMediaProvider extends MediaProvider {
     public override function initializeMediaProvider(cfg:PlayerConfig):void {
         super.initializeMediaProvider(cfg);
 
-        if (_stageEnabled && cfg.hasOwnProperty('stagevideo') && cfg['stagevideo'].toString() == "false") _stageEnabled = false;
-
         var _connection:NetConnection = new NetConnection();
         _connection.connect(null);
         _stream = new NetStream(_connection);
@@ -103,17 +96,9 @@ public class VideoMediaProvider extends MediaProvider {
         if (!_video) {
             _video = new Video();
             _video.smoothing = true;
-            // Use stageVideo when available
-            if (_stageEnabled && RootReference.stage && RootReference.stage.stageVideos.length > 0) {
-                _stage = RootReference.stage.stageVideos[0];
-                _stage.viewPort = new Rectangle(0, 0, _video.width, _video.height);
-                _stage.addEventListener('renderState', renderHandler);
-            } else {
-                _video.addEventListener('renderState', renderHandler);
-            }
         }
 
-        attachNetStream(_stream);
+        _video.attachNetStream(_stream);
 
         // Set initial quality and set levels
         _currentQuality = 0;
@@ -157,17 +142,9 @@ public class VideoMediaProvider extends MediaProvider {
         clearInterval(_interval);
         this.seeking = false;
         _interval = setInterval(positionHandler, 100);
-        attachNetStream(_stream);
+        _video.attachNetStream(_stream);
         _stream.resume();
         super.play();
-    }
-
-    /** Resize the video or stage.**/
-    override public function resize(width:Number, height:Number):void {
-        super.resize(width, height);
-        if (_stage && _media) {
-            _stage.viewPort = _media.getRect(RootReference.root);
-        }
     }
 
     /** Seek to a new position. **/
@@ -213,9 +190,6 @@ public class VideoMediaProvider extends MediaProvider {
         } else {
             _stream.pause();
             _stream.seek(0);
-        }
-        if (_stageEnabled) {
-            attachNetStream(null);
         }
         clearInterval(_interval);
         _keyframes = undefined;
@@ -310,14 +284,6 @@ public class VideoMediaProvider extends MediaProvider {
         }
     }
 
-    private function attachNetStream(stream:NetStream):void {
-        if (_stage) {
-            _stage.attachNetStream(stream);
-        } else {
-            _video.attachNetStream(stream);
-        }
-    }
-
 /** Load new quality level; only requested on quality switches. **/
     private function loadQuality():void {
         _keyframes = undefined;
@@ -375,20 +341,6 @@ public class VideoMediaProvider extends MediaProvider {
     /** Catch security errors. **/
     protected function errorHandler(evt:ErrorEvent):void {
         error(evt.text);
-    }
-
-    /** Send out renderstates. **/
-    protected function renderHandler(event:Event):void {
-        var stagevideo:String = 'off';
-        if (_stage) {
-            stagevideo = 'on';
-        }
-        sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_META, {
-            metadata: {
-                stagevideo: stagevideo,
-                renderstate: event['status']
-            }
-        });
     }
 
     /** Receive NetStream status updates. **/
