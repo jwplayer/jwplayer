@@ -312,7 +312,11 @@ public class MediaProvider extends Sprite implements IMediaProvider {
      * @param property The property to be retrieved.
      * **/
     protected function getConfigProperty(property:String):* {
-        return _config.pluginConfig(provider)[property];
+        var providerConfig:Object = _config[provider];
+        if (providerConfig) {
+            return providerConfig[property];
+        }
+        return null;
     }
 
     /** Translate sources into quality levels. **/

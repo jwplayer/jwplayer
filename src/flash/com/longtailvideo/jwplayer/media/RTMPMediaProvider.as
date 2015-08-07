@@ -202,9 +202,6 @@ public class RTMPMediaProvider extends MediaProvider {
 
     /** Pause playback. **/
     override public function pause():void {
-        CONFIG::debugging {
-            trace('pause', new Error().getStackTrace());
-        }
         // Pause VOD or close live stream
         if (_stream) {
             if (isVOD(_item.duration)) {
@@ -220,9 +217,6 @@ public class RTMPMediaProvider extends MediaProvider {
 
     /** Resume playing. **/
     override public function play():void {
-        CONFIG::debugging {
-            trace('play', new Error().getStackTrace());
-        }
         if (_loading) {
             _afterLoading = play;
             return;
@@ -272,9 +266,6 @@ public class RTMPMediaProvider extends MediaProvider {
 
     /** Close the stream; reset all variables. **/
     override public function stop():void {
-        CONFIG::debugging {
-            trace('stop', new Error().getStackTrace());
-        }
         if (_stream && _stream.time) {
             _stream.close();
         }
