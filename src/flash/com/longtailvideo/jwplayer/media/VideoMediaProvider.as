@@ -333,7 +333,7 @@ public class VideoMediaProvider extends MediaProvider {
             return;
         }
 
-        var url:String = Strings.getAbsolutePath(levels[_currentQuality].file, config.base);
+        var url:String = Strings.getAbsolutePath(levels[_currentQuality].file);
         var prm:Number = _offset.byte;
         if (_item.type == 'mp4') {
             prm = _offset.time;
