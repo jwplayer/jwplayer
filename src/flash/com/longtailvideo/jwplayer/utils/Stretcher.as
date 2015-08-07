@@ -20,53 +20,55 @@ public class Stretcher {
      * Resize a displayobject to the display, depending on the stretching.
      *
      * @param clp    The display element to resize.
-     * @param wid    The target width.
-     * @param hei    The target height.
+     * @param parentWidth    The target width.
+     * @param parentHeight    The target height.
      * @param typ    The stretching type.
      **/
-    public static function stretch(clp:DisplayObject, wid:Number, hei:Number, typ:String = 'uniform'):void {
+    public static function stretch(clp:DisplayObject, parentWidth:Number, parentHeight:Number, typ:String = 'uniform'):void {
         clp.scaleX = clp.scaleY = 1;
-        var xsc:Number = wid / clp.width;
-        var ysc:Number = hei / clp.height;
+        var elementWidth:Number = clp.width;
+        var elementHeight:Number = clp.height;
+        var xscale:Number = parentWidth / elementWidth;
+        var yscale:Number = parentHeight / elementHeight;
         switch (typ.toLowerCase()) {
             case Stretcher.NONE:
                 break;
             case Stretcher.EXACTFIT:
-                clp.width = wid;
-                clp.height = hei;
+                clp.width  = parentWidth;
+                clp.height = parentHeight;
                 break;
             case Stretcher.FILL:
-                if (xsc > ysc) {
-                    clp.width *= xsc;
-                    clp.height *= xsc;
+                if (xscale > yscale) {
+                    clp.width  *= xscale;
+                    clp.height *= xscale;
                 } else {
-                    clp.width *= ysc;
-                    clp.height *= ysc;
+                    clp.width  *= yscale;
+                    clp.height *= yscale;
                 }
                 break;
             case Stretcher.UNIFORM:
             default:
-                if (xsc > ysc) {
-                    clp.width *= ysc;
-                    clp.height *= ysc;
-                    if (clp.width / wid > 0.95) {
-                        clp.width = wid;
+                if (xscale > yscale) {
+                    clp.width *= yscale;
+                    clp.height *= yscale;
+                    if (clp.width / parentWidth > 0.95) {
+                        clp.width = parentWidth;
                     }
                 } else {
-                    clp.width *= xsc;
-                    clp.height *= xsc;
-                    if (clp.height / hei > 0.95) {
-                        clp.height = hei;
+                    clp.width *= xscale;
+                    clp.height *= xscale;
+                    if (clp.height / parentHeight > 0.95) {
+                        clp.height = parentHeight;
                     }
                 }
                 break;
         }
         if (clp.width ) {
             clp.width = Math.ceil(clp.width);
-            clp.x = Math.round((wid - clp.width) / 2);
+            clp.x = Math.round((parentWidth - clp.width) / 2);
         }
         if (clp.height) {
-            clp.y = Math.round((hei - clp.height) / 2);
+            clp.y = Math.round((parentHeight - clp.height) / 2);
             clp.height = Math.ceil(clp.height);
         }
     }
