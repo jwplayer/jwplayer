@@ -276,16 +276,19 @@ module.exports = function(grunt) {
         },
 
         flash: {
-            debug : {
-
-                output: 'bin-debug',
+            options: {
                 name: 'jwplayer.flash.swf',
                 main: 'src/flash/com/longtailvideo/jwplayer/player/Player.as'
             },
+            debug : {
+                options: {
+                    output: 'bin-debug',
+                }
+            },
             release : {
-                output: 'bin-release',
-                name: 'jwplayer.flash.swf',
-                main: 'src/flash/com/longtailvideo/jwplayer/player/Player.as'
+                options: {
+                    output: 'bin-release',
+                }
             }
         },
 
