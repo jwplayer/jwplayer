@@ -5,6 +5,7 @@ define([
     'utils/helpers'
 ], function(Events, events, _, utils) {
     var TouchEvent = window.TouchEvent || {};
+    var PointerEvent = window.PointerEvent || {};
 
     function getCoord(e, c) {
         return /touch/.test(e.type) ? (e.originalEvent || e).changedTouches[0]['page' + c] : e['page' + c];
@@ -65,38 +66,81 @@ define([
         var _elem = elem,
             _enableDoubleTap = (options && options.enableDoubleTap), // and double click
             _preventScrolling = (options && options.preventScrolling),
+            _useHover = (options && options.useHover),
             _hasMoved = false,
             _startX = 0,
             _startY = 0,
             _lastClickTime = 0,
             _doubleClickDelay = 300,
             _touchListenerTarget,
-            _isDesktop = !utils.isMobile();
-
+            _isDesktop = !utils.isMobile(),
+            _hasPointerEvents = !_.isUndefined(window.PointerEvent),
+            _pointerId;
 
         // If its not mobile, add mouse listener.  Add touch listeners so touch devices that aren't Android or iOS
         // (windows phones) still get listeners just in case they want to use them.
-        if(_isDesktop){
+        if(_hasPointerEvents) {
+            elem.addEventListener('pointerdown', interactStartHandler);
+            if(_useHover){
+                elem.addEventListener('pointerover', overHandler);
+                elem.addEventListener('pointerout', outHandler);
+            }
+        } else if(_isDesktop){
             elem.addEventListener('mousedown', interactStartHandler);
+            if(_useHover) {
+                elem.addEventListener('mouseover', overHandler);
+                elem.addEventListener('mouseout', outHandler);
+            }
         }
+
         elem.addEventListener('touchstart', interactStartHandler);
+
+        function overHandler(evt){
+            if( evt instanceof MouseEvent) {
+                if(!_hasPointerEvents || (_hasPointerEvents && evt.pointerType !== 'touch')) {
+                    triggerEvent(events.touchEvents.OVER, evt);
+                }
+            }
+        }
+
+        function outHandler(evt){
+            if( evt instanceof MouseEvent) {
+                if(!_hasPointerEvents || (_hasPointerEvents && evt.pointerType !== 'touch')) {
+                    triggerEvent(events.touchEvents.OUT, evt);
+                }
+            }
+        }
 
         function interactStartHandler(evt) {
             var isMouseEvt = evt instanceof MouseEvent;
+
             _touchListenerTarget = evt.target;
             _startX = getCoord(evt, 'X');
             _startY = getCoord(evt, 'Y');
 
             if(!isMouseEvt || (isMouseEvt && !isRightClick(evt))){
-                if(_isDesktop){
+                if(_hasPointerEvents){
+                    if(evt.isPrimary){
+                        if(_preventScrolling){
+                            _pointerId = evt.pointerId;
+                            elem.setPointerCapture(_pointerId);
+                        }
+                        elem.addEventListener('pointermove', interactDragHandler);
+                        elem.addEventListener('lostpointercapture', interactEndHandler);
+                        elem.addEventListener('pointercancel', interactEndHandler);
+                    }
+                } else if(_isDesktop){
                     document.addEventListener('mousemove', interactDragHandler);
                 }
                 _touchListenerTarget.addEventListener('touchmove', interactDragHandler);
             }
 
-            if (_isDesktop){
+            if(_hasPointerEvents) {
+                elem.addEventListener('pointerup', interactEndHandler);
+            } else if (_isDesktop){
                 document.addEventListener('mouseup', interactEndHandler);
             }
+
             _touchListenerTarget.addEventListener('touchcancel', interactEndHandler);
             _touchListenerTarget.addEventListener('touchend', interactEndHandler);
         }
@@ -128,10 +172,19 @@ define([
         function interactEndHandler(evt) {
             var touchEvents = events.touchEvents;
 
-            if(_isDesktop){
+            if(_hasPointerEvents) {
+                if (_preventScrolling) {
+                    elem.releasePointerCapture(_pointerId);
+                }
+                elem.removeEventListener('pointermove', interactDragHandler);
+                elem.removeEventListener('lostpointercapture', interactEndHandler);
+                elem.removeEventListener('pointercancel', interactEndHandler);
+                elem.removeEventListener('pointerup', interactEndHandler);
+            } else if (_isDesktop) {
                 document.removeEventListener('mousemove', interactDragHandler);
                 document.removeEventListener('mouseup', interactEndHandler);
             }
+
             _touchListenerTarget.removeEventListener('touchmove', interactDragHandler);
             _touchListenerTarget.removeEventListener('touchcancel', interactEndHandler);
             _touchListenerTarget.removeEventListener('touchend', interactEndHandler);
@@ -139,7 +192,13 @@ define([
             if (_hasMoved) {
                 triggerEvent(touchEvents.DRAG_END, evt);
             } else {
-                if(evt instanceof MouseEvent) {
+                if(_hasPointerEvents && evt instanceof PointerEvent){
+                    if(evt.pointerType === 'touch'){
+                        triggerEvent(touchEvents.TAP, evt);
+                    } else {
+                        triggerEvent(touchEvents.CLICK, evt);
+                    }
+                } else if (evt instanceof MouseEvent) {
                     if (! isRightClick(evt)) {
                         triggerEvent(touchEvents.CLICK, evt);
                     }
@@ -183,6 +242,17 @@ define([
                 _touchListenerTarget.removeEventListener('touchmove', interactDragHandler);
                 _touchListenerTarget.removeEventListener('touchcancel', interactEndHandler);
                 _touchListenerTarget.removeEventListener('touchend', interactEndHandler);
+            }
+
+            if(_hasPointerEvents) {
+                if (_preventScrolling) {
+                    elem.releasePointerCapture(_pointerId);
+                }
+                elem.removeEventListener('pointerdown', interactStartHandler);
+                elem.removeEventListener('pointermove', interactDragHandler);
+                elem.removeEventListener('lostpointercapture', interactEndHandler);
+                elem.removeEventListener('pointercancel', interactEndHandler);
+                elem.removeEventListener('pointerup', interactEndHandler);
             }
 
             document.removeEventListener('mousemove', interactDragHandler);
