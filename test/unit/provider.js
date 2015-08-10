@@ -1,11 +1,11 @@
 define([
     'playlist/source',
     'providers/providers',
-    'utils/helpers'
-], function (source, Providers, utils) {
+    'utils/browser'
+], function (source, Providers, browser) {
     /* jshint maxlen: 1000, qunit: true */
 
-    utils.flashVersion = function() {
+    browser.flashVersion = function() {
         return 11.2;
     };
 
