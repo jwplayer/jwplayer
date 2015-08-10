@@ -15,13 +15,15 @@ define([
 
             this.volumeSlider.on('update', function (evt) {
                 this.trigger('update', evt);
-            }.bind(this));
+            }, this);
 
             utils.toggleClass(this.el, 'jw-hidden', false);
 
-            new UI(this.el).on('click', this.toggleValue.bind(this)).on('tap', this.toggleOpenState.bind(this));
-            this.el.addEventListener('mouseover', this.openTooltip.bind(this));
-            this.el.addEventListener('mouseout', this.closeTooltip.bind(this));
+            new UI(this.el, {'useHover': true})
+                .on('click', this.toggleValue, this)
+                .on('tap', this.toggleOpenState, this)
+                .on('over', this.openTooltip, this)
+                .on('out', this.closeTooltip, this);
 
             this._model.on('change:volume', this.onVolume, this);
         },

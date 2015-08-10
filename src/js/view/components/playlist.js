@@ -9,7 +9,7 @@ define([
     var Playlist = Tooltip.extend({
         setup : function (list, selectedIndex) {
             if(!this.iconUI){
-                this.iconUI = new UI(this.el);
+                this.iconUI = new UI(this.el, {'useHover': true});
 
                 this.toggleOpenStateListener = this.toggleOpenState.bind(this);
                 this.openTooltipListener = this.openTooltip.bind(this);
@@ -25,10 +25,10 @@ define([
             utils.toggleClass(this.el, 'jw-hidden', (list.length < 2));
 
             if (list.length >= 2) {
-                this.iconUI = new UI(this.el).on('tap', this.toggleOpenStateListener);
-
-                this.el.addEventListener('mouseover', this.openTooltipListener);
-                this.el.addEventListener('mouseout', this.closeTooltipListener);
+                this.iconUI = new UI(this.el, {'useHover': true})
+                    .on('tap', this.toggleOpenStateListener)
+                    .on('over', this.openTooltipListener)
+                    .on('out', this.closeTooltipListener);
 
                 var innerHtml = this.menuTemplate(list, selectedIndex);
                 var elem = utils.createElement(innerHtml);
@@ -81,8 +81,6 @@ define([
             if(this.contentUI){
                 this.contentUI.off().destroy();
             }
-            this.el.removeEventListener('mouseover', this.openTooltipListener);
-            this.el.removeEventListener('mouseout', this.closeTooltipListener);
             this.removeContent();
         }
     });
