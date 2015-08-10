@@ -26,6 +26,8 @@ module.exports = function(grunt) {
 
     require('load-grunt-tasks')(grunt);
 
+    grunt.loadTasks('tasks');
+
     var packageInfo = grunt.file.readJSON('package.json');
     var buildVersion = getBuildVersion(packageInfo);
     // both flashVersion and swfTarget are needed to force flex to build using the right version
@@ -40,6 +42,9 @@ module.exports = function(grunt) {
     grunt.initConfig({
         starttime: new Date(),
         pkg: packageInfo,
+        buildVersion : buildVersion,
+        flashVersion : flashVersion,
+        swfTarget : swfTarget,
 
         jshint: {
             options: {
@@ -269,9 +274,17 @@ module.exports = function(grunt) {
                 }
             }
         },
+
         flash: {
-            player: {
-                dest: 'jwplayer.flash.swf',
+            debug : {
+
+                output: 'bin-debug',
+                name: 'jwplayer.flash.swf',
+                main: 'src/flash/com/longtailvideo/jwplayer/player/Player.as'
+            },
+            release : {
+                output: 'bin-release',
+                name: 'jwplayer.flash.swf',
                 main: 'src/flash/com/longtailvideo/jwplayer/player/Player.as'
             }
         },
@@ -295,128 +308,6 @@ module.exports = function(grunt) {
                 }]
             }
         }
-    });
-
-    grunt.registerMultiTask('flash',
-            'Compile Flash SWF files. Usage `grunt flash:player:debug|release|swc:air|flex`', function() {
-        var done = this.async();
-
-        var data = this.data;
-
-        var flags = this.flags;
-        var isDebug   = !!flags.debug;
-        var isLibrary = !!flags.swc;
-
-        var flashAirOrFlexSdk = (!flags.flex && env.AIR_HOME) || env.FLEX_HOME;
-        if (!flashAirOrFlexSdk) {
-            grunt.fail.warn('To compile ActionScript, you must set environment '+
-            'variable $AIR_HOME or $FLEX_HOME for this task to locate mxmlc.');
-        }
-        var isFlex = /flex/.test(flashAirOrFlexSdk);
-
-        var command = {
-            cmd: flashAirOrFlexSdk + '/bin/'+ (isLibrary ? 'compc' : 'mxmlc'),
-            args: []
-        };
-
-        if (isLibrary) {
-            command.args.push('-include-sources='+data.main);
-        } else {
-            command.args.push(data.main);
-        }
-
-        command.args.push(
-            '-compiler.source-path=src/flash',
-            '-compiler.library-path+=' + flashAirOrFlexSdk + '/frameworks/libs',
-            '-target-player=' + flashVersion,
-            '-swf-version=' + swfTarget,
-            '-use-network=false'
-        );
-
-        // Framework specific optimizations
-        if (isFlex) {
-            command.args.push(
-                '-static-link-runtime-shared-libraries=true'
-            );
-        } else {
-            command.args.push(
-                '-show-multiple-definition-warnings=true',
-                '-compiler.inline=true',
-                '-compiler.remove-dead-code=true'
-            );
-
-            if (!isLibrary) {
-                // ActionScript Compiler 2.0 Shell https://github.com/jcward/ascsh
-                var ascshd = fs.existsSync(flashAirOrFlexSdk + '/bin/ascshd');
-                if (ascshd) {
-                    command.cmd = command.cmd.replace('bin/mxmlc', 'bin/ascshd');
-                    command.args.unshift(
-                        '-p', 11122 + (isDebug?100:0),
-                        'mxmlc'
-                    );
-                }
-            }
-        }
-
-        var extension = 'swf';
-        var outputFolder = isDebug ? 'bin-debug' : 'bin-release';
-        if (isLibrary) {
-            extension = 'swc';
-            outputFolder = 'libs-external';
-        }
-        if (isDebug) {
-            command.args.push(
-                '-output='     + outputFolder +'/' + data.dest.replace('swf', extension),
-                '-link-report='+ outputFolder +'/' + data.dest.replace('swf', 'link.xml'),
-                '-size-report='+ outputFolder +'/' + data.dest.replace('swf', 'size.xml'),
-                '-strict=true',
-                '-debug=true',
-                '-define+=CONFIG::debugging,true',
-                '-define+=CONFIG::staging,true'
-            );
-        } else {
-            command.args.push(
-                '-output='+ outputFolder +'/' + data.dest.replace('swf', extension),
-                '-optimize=true',
-                '-omit-trace-statements=true',
-                '-warnings=false',
-                '-define+=CONFIG::debugging,false',
-                '-define+=CONFIG::staging,false'
-            );
-        }
-
-        command.args.push(
-            '-define+=JWPLAYER::version,\''+ buildVersion +'\''
-        );
-
-        // Print the mxmlc / ascshd command. Formatted to run in bash.
-        grunt.log.writeln(command.cmd +' '+ command.args.join(' ').replace(/(version,'[^']*')/, '"$1"'));
-
-        var stdout = [];
-        var proc = grunt.util.spawn(command, function(error, result, code) {
-            grunt.log.subhead(result.stdout);
-
-            if (error) {
-                grunt.log.error(error.message, code);
-            }
-            done(!error);
-        });
-
-        proc.stdout.setEncoding('utf-8');
-        proc.stdout.on('data', function(data) {
-            stdout.push(data);
-        });
-
-        var checkIntervalHandle = setInterval(function() {
-            if (/Starting aschd server/.test(stdout.join())) {
-                clearInterval(checkIntervalHandle);
-                grunt.log.ok(command.cmd);
-
-                grunt.log.subhead(stdout.join());
-
-                done();
-            }
-        }, 500);
     });
 
     grunt.registerMultiTask('webpack', 'Spawn a webpack compiler', function() {
