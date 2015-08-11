@@ -26,8 +26,6 @@ module.exports = function(grunt) {
 
     require('load-grunt-tasks')(grunt);
 
-    grunt.loadTasks('tasks');
-
     var packageInfo = grunt.file.readJSON('package.json');
     var buildVersion = getBuildVersion(packageInfo);
     // both flashVersion and swfTarget are needed to force flex to build using the right version
