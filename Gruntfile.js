@@ -42,9 +42,6 @@ module.exports = function(grunt) {
     grunt.initConfig({
         starttime: new Date(),
         pkg: packageInfo,
-        buildVersion : buildVersion,
-        flashVersion : flashVersion,
-        swfTarget : swfTarget,
 
         jshint: {
             options: {
@@ -159,7 +156,7 @@ module.exports = function(grunt) {
                     'src/flash/com/longtailvideo/jwplayer/{,*/}*.as',
                     'src/flash/com/wowsa/{,*/}*.as'
                 ],
-                tasks: ['flash:player:debug']
+                tasks: ['build-flash']
             },
             grunt: {
                 files: ['Gruntfile.js'],
@@ -277,17 +274,33 @@ module.exports = function(grunt) {
 
         flash: {
             options: {
-                name: 'jwplayer.flash.swf',
-                main: 'src/flash/com/longtailvideo/jwplayer/player/Player.as'
+                buildVersion : buildVersion,
+                sdk : env.FLEX_HOME,
+                flashVersion : flashVersion,
+                swfTarget : swfTarget
             },
             debug : {
-                options: {
-                    output: 'bin-debug',
+                options : {
+                    debug : true,
+                    // prefer AIR_HOME for faster compilation
+                    sdk: env.AIR_HOME || env.FLEX_HOME
+                },
+                files : {
+                    'bin-debug/jwplayer.flash.swf' : 'src/flash/com/longtailvideo/jwplayer/player/Player.as'
                 }
             },
             release : {
+                files : {
+                    'bin-release/jwplayer.flash.swf': 'src/flash/com/longtailvideo/jwplayer/player/Player.as'
+                }
+            },
+            library: {
                 options: {
-                    output: 'bin-release',
+                    sdk: env.AIR_HOME,
+                    swc: true
+                },
+                files : {
+                     'libs-external/jwplayer.flash.swc' : 'src/flash/com/longtailvideo/jwplayer/player/Player.as'
                 }
             }
         },
@@ -355,8 +368,8 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask('build-flash', [
-        'flash:player:debug',
-        'flash:player:release'
+        'flash:debug',
+        'flash:release'
     ]);
 
     grunt.registerTask('build', [
