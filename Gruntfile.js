@@ -277,6 +277,7 @@ module.exports = function(grunt) {
                 buildVersion : buildVersion,
                 sdk : env.FLEX_HOME,
                 flashVersion : flashVersion,
+                ascshdPort: 11123,
                 swfTarget : swfTarget
             },
             debug : {

@@ -1,5 +1,31 @@
 var fs = require('fs');
+var env = process.env;
 
+/*
+"SWF Version" | "Flash Player Version"
+ ========================================
+ 9       |          9
+ 10       |      10.0, 10.1
+ 11       |         10.2
+ 12       |         10.3
+ 13       |         11.0
+ 14       |         11.1
+ 15       |         11.2
+ 16       |         11.3
+ 17       |         11.4
+ 18       |         11.5
+ 19       |         11.6
+ 20       |         11.7
+ 21       |         11.8
+ 22       |         11.9
+ 23       |         12.0
+ 24       |         13.0
+ 25       |         14.0
+ 26       |         15.0
+ 27       |         16.0
+ 28       |         17.0
+ Src: http://sleepydesign.blogspot.com/2012/04/flash-swf-version-meaning.html
+ */
 function executeCmd(grunt, command, done) {
 
     // Print the command formatted to run in bash
@@ -39,8 +65,13 @@ module.exports = function(grunt) {
     var description = 'Compile Flash SWF files. Usage `grunt flash:player:debug|release|swc:air|flex`';
     grunt.registerMultiTask('flash', description, function() {
 
-        var options = this.options();
         var task = this;
+
+        var options = this.options({
+            flashVersion: 11.2,
+            swfTarget: 15,
+            sdk: env.FLEX_HOME
+        });
 
         // A common failure is forgetting so set an environment variable
         if (!options.sdk) {
@@ -51,9 +82,9 @@ module.exports = function(grunt) {
         this.files.forEach(function(file) {
             // If a flag tells us to build the library file
             if (options.swc) {
-                buildLibrary(file.src[0], file.dest, task);
+                buildLibrary(file.src[0], file.dest, task, options);
             } else {
-                compileFile(file.src[0], file.dest, task);
+                compileFile(file.src[0], file.dest, task, options);
             }
         });
     });
@@ -67,13 +98,18 @@ module.exports = function(grunt) {
             '-default-frame-rate=30',
             '-target-player=' + options.flashVersion,
             '-swf-version=' + options.swfTarget,
-            '-use-network=false',
-            '-define+=JWPLAYER::version,\'' + options.buildVersion + '\'',
+            '-use-network=true',
+            '-define+=JWPLAYER::version,\'' + options.buildVersion + '\''
         ];
 
-        if (options.extraLibs) {
+        if (options.compilerLibraryPath) {
             arr.push(
-                '-compiler.library-path+='+ options.extraLibs
+                '-compiler.library-path+='+ options.compilerLibraryPath
+            );
+        }
+        if (options.externalLibraryPath) {
+            arr.push(
+                '-external-library-path+=' + options.externalLibraryPath
             );
         }
         if (options.extraSourcePath) {
@@ -87,9 +123,8 @@ module.exports = function(grunt) {
     /**
      * Compile a swc for other projects to link against
      */
-    function buildLibrary(src, dest, task) {
+    function buildLibrary(src, dest, task, options) {
         var done = task.async();
-        var options = task.options();
 
         var args = generateArgs(options);
 
@@ -112,9 +147,8 @@ module.exports = function(grunt) {
         executeCmd(grunt, command, done);
     }
 
-    function compileFile(src, dest, task) {
+    function compileFile(src, dest, task, options) {
         var done = task.async();
-        var options = task.options();
 
         var args = generateArgs(options);
         var command = {
@@ -132,7 +166,7 @@ module.exports = function(grunt) {
             if (ascshd) {
                 command.cmd = command.cmd.replace('bin/mxmlc', 'bin/ascshd');
                 command.args.unshift(
-                    '-p', 11122 + (options.debug ? 100 : 0),
+                    '-p', options.ascshdPort + (options.debug ? 100 : 0),
                     'mxmlc'
                 );
             }
