@@ -140,7 +140,7 @@ define([
             var container;
 
             if (_provider) {
-                _provider.removeGlobalListener(_videoEventHandler);
+                _provider.removeEventListener(_videoEventHandler);
                 container = _provider.getContainer();
                 if (container) {
                     _provider.remove();
@@ -163,7 +163,7 @@ define([
 
         this.destroy = function() {
             if (_provider) {
-                _provider.removeGlobalListener(_videoEventHandler);
+                _provider.removeEventListener(_videoEventHandler);
                 _provider.destroy();
             }
         };

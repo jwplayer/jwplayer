@@ -5,9 +5,9 @@ define([
     'utils/underscore',
     'events/events',
     'events/states',
-    'utils/eventdispatcher',
-    'providers/default'
-], function(cssUtils, utils, stretchUtils, _, events, states, eventdispatcher, DefaultProvider) {
+    'providers/default',
+    'utils/backbone.events'
+], function(cssUtils, utils, stretchUtils, _, events, states, DefaultProvider, Events) {
 
     var clearInterval = window.clearInterval,
         STALL_DELAY = 256,
@@ -59,8 +59,19 @@ define([
         // Are we buffering due to seek, or due to playback?
         this.seeking = false;
 
-        var _dispatcher = new eventdispatcher('provider.' + _name);
-        _.extend(this, _dispatcher);
+        this.addGlobalListener = function (callback) {
+            return this.on('all', function(type, data) {
+                var input = _.extend({}, data, {type: type});
+                callback(input);
+            });
+        };
+
+        _.extend(this, Events);
+
+        // legacy support
+        this.addEventListener = this.on;
+        this.sendEvent = this.trigger;
+        this.resetEventListeners = this.removeEventListener = this.off;
 
         var _this = this,
             _mediaEvents = {
@@ -128,15 +139,6 @@ define([
             _beforecompleted = false,
 
             _fullscreenState = false;
-
-        // Overwrite the event dispatchers to block on certain occasions
-        this.sendEvent = function() {
-            if (!_attached) {
-                return;
-            }
-            _dispatcher.sendEvent.apply(this, arguments);
-        };
-
 
         // Find video tag, or create it if it doesn't exist.  View may not be built yet.
         var element = document.getElementById(_playerId);
