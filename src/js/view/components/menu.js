@@ -8,7 +8,7 @@ define([
     var Menu = Tooltip.extend({
         setup : function (list, selectedIndex, options) {
             if(!this.iconUI){
-                this.iconUI = new UI(this.el);
+                this.iconUI = new UI(this.el, {'useHover': true});
 
                 this.toggleValueListener= this.toggleValue.bind(this);
 
@@ -33,10 +33,9 @@ define([
             if (isMenu) {
                 utils.removeClass(this.el, 'jw-off');
 
-                this.iconUI.on('tap', this.toggleOpenStateListener);
-
-                this.el.addEventListener('mouseover', this.openTooltipListener);
-                this.el.addEventListener('mouseout', this.closeTooltipListener);
+                this.iconUI.on('tap', this.toggleOpenStateListener)
+                    .on('over', this.openTooltipListener)
+                    .on('out', this.closeTooltipListener);
 
                 var innerHtml = menuTemplate(list);
                 var elem = utils.createElement(innerHtml);
@@ -78,9 +77,6 @@ define([
                 this.contentUI.off().destroy();
             }
             this.removeContent();
-
-            this.el.removeEventListener('mouseover', this.openTooltipListener);
-            this.el.removeEventListener('mouseout', this.closeTooltipListener);
         }
     });
 
