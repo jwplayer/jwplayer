@@ -5,20 +5,25 @@ define([
     'utils/underscore',
     'events/events',
     'events/states',
-    'utils/eventdispatcher',
     'utils/scriptloader',
-    'providers/default'
-], function(utils, cssUtils, stretchUtils, _, events, states, eventdispatcher, scriptloader, DefaultProvider) {
-
+    'providers/default',
+    'utils/backbone.events'
+], function(utils, cssUtils, stretchUtils, _, events, states, scriptloader, DefaultProvider, Events) {
     var _scriptLoader = new scriptloader(window.location.protocol + '//www.youtube.com/iframe_api'),
         _isMobile = utils.isMobile();
 
     function YoutubeProvider(_playerId, _playerConfig) {
-
         this.state = states.IDLE;
 
-        var _this = _.extend(this, new eventdispatcher('provider.' + this.name)),
-            // Youtube API and Player Instance
+        this.addGlobalListener = function (callback) {
+            return this.on('all', function(type, data) {
+                var input = _.extend({}, data, {type: type});
+                callback(input);
+            });
+        };
+
+        var _this = _.extend({}, this, Events),
+        // Youtube API and Player Instance
             _youtubeAPI = window.YT,
             _youtubePlayer = null,
             // iFrame Container (this element will be replaced by iFrame element)
@@ -27,7 +32,7 @@ define([
             _container,
             // player state
             _bufferPercent = -1,
-            // only add player ready listener once 
+            // only add player ready listener once
             _listeningForReady = false,
             // function to call once api and view are ready
             _youtubeEmbedReadyCallback = null,
@@ -41,6 +46,11 @@ define([
             _beforecompleted = false,
             // user must click video to initiate playback, gets set to false once playback starts
             _requiresUserInteraction = _isMobile;
+
+        // legacy support
+        this.addEventListener = _this.on;
+        this.sendEvent = _this.trigger;
+        this.resetEventListeners = this.removeEventListener = _this.off;
 
         this.setState = function(state) {
             clearInterval(_playingInterval);
@@ -254,7 +264,7 @@ define([
                     return;
 
                 case youtubeStates.PLAYING: // 1: playing
-                
+
                     //prevent duplicate captions when using JW Player captions and YT video has yt:cc=on
                     if (_.isFunction(_youtubePlayer.unloadModule)) {
                         _youtubePlayer.unloadModule('captions');

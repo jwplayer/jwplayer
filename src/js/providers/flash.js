@@ -3,18 +3,16 @@ define([
     'utils/underscore',
     'events/events',
     'events/states',
-    'utils/eventdispatcher',
     'utils/embedswf',
-    'providers/default'
-], function(utils, _, events, states, eventdispatcher, EmbedSwf, DefaultProvider) {
-
+    'providers/default',
+    'utils/backbone.events'
+], function(utils, _, events, states, EmbedSwf, DefaultProvider, Events) {
     var _providerId = 0;
     function getObjectId(playerId) {
         return playerId + '_swf_' + (_providerId++);
     }
 
     function FlashProvider(_playerId, _playerConfig) {
-
         // private properties
         var _container;
         var _swf;
@@ -38,9 +36,14 @@ define([
             }
         };
 
-        var _eventDispatcher = new eventdispatcher('flash.provider');
-
         var _customLabels = _getCustomLabels();
+
+        this.addGlobalListener = function (callback) {
+            return this.on('all', function(type, data) {
+                var input = _.extend({}, data, {type: type});
+                callback(input);
+            });
+        };
 
         /** Translate sources into quality levels, assigning custom levels if present. **/
         function _labelLevels(levels) {
@@ -105,7 +108,7 @@ define([
             };
         }
 
-        _.extend(this, _eventDispatcher, {
+        _.extend(this, Events, {
                 load: function(item) {
                     _item = item;
                     _beforecompleted = false;
@@ -348,18 +351,13 @@ define([
                     }
                     _container = null;
                     _item = null;
-                    _eventDispatcher.resetEventListeners();
-                    _eventDispatcher = null;
                 }
         });
 
-        // Overwrite the event dispatchers to block on certain occasions
-        this.sendEvent = function() {
-            if (!_attached) {
-                return;
-            }
-            _eventDispatcher.sendEvent.apply(this, arguments);
-        };
+        // legacy support
+        this.addEventListener = this.on;
+        this.sendEvent = this.trigger;
+        this.resetEventListeners = this.removeEventListener = this.off;
     }
 
 
