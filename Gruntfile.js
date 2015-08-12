@@ -30,10 +30,12 @@ module.exports = function(grunt) {
     var buildVersion = getBuildVersion(packageInfo);
     // both flashVersion and swfTarget are needed to force flex to build using the right version
     var flashVersion = 11.2;
-    var swfTarget = 15;
 
     var webpackCompilers = {};
     var autoprefixBrowsers = encodeURIComponent('> 1%');
+
+    // For task testing
+    // grunt.loadTasks('../grunt-flash-compiler/tasks');
 
     console.log('%s v%s', packageInfo.name, buildVersion);
 
@@ -272,11 +274,11 @@ module.exports = function(grunt) {
 
         flash: {
             options: {
-                buildVersion : buildVersion,
-                sdk : env.FLEX_HOME,
-                flashVersion : flashVersion,
-                ascshdPort: 11123,
-                swfTarget : swfTarget
+                targetCompilerOptions : [
+                    '-define+=JWPLAYER::version,\'' + packageInfo.version + '\''
+                ],
+                sdk: env.FLEX_HOME,
+                ascshdPort: 11123
             },
             debug : {
                 options : {
@@ -295,7 +297,6 @@ module.exports = function(grunt) {
             },
             library: {
                 options: {
-                    sdk: env.AIR_HOME,
                     swc: true
                 },
                 files : {
