@@ -15,13 +15,6 @@ define([
     function YoutubeProvider(_playerId, _playerConfig) {
         this.state = states.IDLE;
 
-        this.addGlobalListener = function (callback) {
-            return this.on('all', function(type, data) {
-                var input = _.extend({}, data, {type: type});
-                callback(input);
-            });
-        };
-
         var _this = _.extend({}, this, Events),
         // Youtube API and Player Instance
             _youtubeAPI = window.YT,
@@ -46,11 +39,6 @@ define([
             _beforecompleted = false,
             // user must click video to initiate playback, gets set to false once playback starts
             _requiresUserInteraction = _isMobile;
-
-        // legacy support
-        this.addEventListener = _this.on;
-        this.sendEvent = _this.trigger;
-        this.resetEventListeners = this.removeEventListener = _this.off;
 
         this.setState = function(state) {
             clearInterval(_playingInterval);
@@ -145,7 +133,7 @@ define([
         }
         function _timeUpdateHandler() {
             _bufferUpdate();
-            _this.sendEvent(events.JWPLAYER_MEDIA_TIME, {
+            _this.trigger(events.JWPLAYER_MEDIA_TIME, {
                 position: _round(_youtubePlayer.getCurrentTime()),
                 duration: _youtubePlayer.getDuration()
             });
@@ -158,25 +146,25 @@ define([
             }
             if (_bufferPercent !== bufferPercent) {
                 _bufferPercent = bufferPercent;
-                _this.sendEvent(events.JWPLAYER_MEDIA_BUFFER, {
+                _this.trigger(events.JWPLAYER_MEDIA_BUFFER, {
                     bufferPercent: bufferPercent
                 });
-                //if (bufferPercent === 100) this.sendEvent(events.JWPLAYER_MEDIA_BUFFER_FULL);
+                //if (bufferPercent === 100) this.trigger(events.JWPLAYER_MEDIA_BUFFER_FULL);
             }
         }
 
         function _ended() {
             if (_this.state !== states.IDLE && _this.state !== states.COMPLETE) {
                 _beforecompleted = true;
-                _this.sendEvent(events.JWPLAYER_MEDIA_BEFORECOMPLETE);
+                _this.trigger(events.JWPLAYER_MEDIA_BEFORECOMPLETE);
                 _this.setState(states.COMPLETE);
                 _beforecompleted = false;
-                _this.sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
+                _this.trigger(events.JWPLAYER_MEDIA_COMPLETE);
             }
         }
 
         function _sendMetaEvent() {
-            _this.sendEvent(events.JWPLAYER_MEDIA_META, {
+            _this.trigger(events.JWPLAYER_MEDIA_META, {
                 duration: _youtubePlayer.getDuration(),
                 width: _element.clientWidth,
                 height: _element.clientHeight
@@ -277,7 +265,7 @@ define([
                     _sendMetaEvent();
 
                     // send levels when playback starts
-                    _this.sendEvent(events.JWPLAYER_MEDIA_LEVELS, {
+                    _this.trigger(events.JWPLAYER_MEDIA_LEVELS, {
                         levels: _this.getQualityLevels(),
                         currentQuality: _this.getCurrentQuality()
                     });
@@ -311,14 +299,14 @@ define([
                 _this.play();
             }
 
-            _this.sendEvent(events.JWPLAYER_MEDIA_LEVEL_CHANGED, {
+            _this.trigger(events.JWPLAYER_MEDIA_LEVEL_CHANGED, {
                 currentQuality: _this.getCurrentQuality(),
                 levels: _this.getQualityLevels()
             });
         }
 
         function _onYoutubePlayerError() {
-            _this.sendEvent(events.JWPLAYER_MEDIA_ERROR, {
+            _this.trigger(events.JWPLAYER_MEDIA_ERROR, {
                 message: 'Error loading YouTube: Video could not be played'
             });
         }
@@ -510,7 +498,7 @@ define([
         this.attachMedia = function() {
             if (_beforecompleted) {
                 this.setState(states.COMPLETE);
-                this.sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
+                this.trigger(events.JWPLAYER_MEDIA_COMPLETE);
                 _beforecompleted = false;
             }
         };

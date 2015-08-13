@@ -62,7 +62,7 @@ define([
             _this.off();
             if (_currentProvider) {
                 _currentProvider.detachMedia();
-                _currentProvider.resetEventListeners();
+                _currentProvider.off();
                 _currentProvider.destroy();
             }
 
@@ -101,11 +101,11 @@ define([
                     return;
                 }
 
-                provider.resetEventListeners();
+                provider.off();
 
-                provider.addEventListener(events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
+                provider.on(events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
 
-                provider.addEventListener(events.JWPLAYER_PLAYER_STATE, stateHandler);
+                provider.on(events.JWPLAYER_PLAYER_STATE, stateHandler);
                 provider.attachMedia();
                 provider.mute(_model.get('mute'));
                 provider.volume(_model.get('volume'));
