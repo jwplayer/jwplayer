@@ -344,6 +344,7 @@ define([
                     }
                     _container = null;
                     _item = null;
+                    this.off();
                 }
         });
 

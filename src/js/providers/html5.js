@@ -409,6 +409,7 @@ define([
              _removeListeners(_mediaEvents, _videotag);
 
             this.remove();
+            this.off();
         };
 
         this.load = function(item) {

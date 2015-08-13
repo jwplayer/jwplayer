@@ -14,7 +14,9 @@ define([
             _this = _.extend(this, Events);
 
         // Listen for player resize events
-        _controller.on(events.JWPLAYER_FULLSCREEN, _fullscreenHandler);
+        _controller.on(events.JWPLAYER_FULLSCREEN, function(data) {
+            this.trigger(events.JWPLAYER_FULLSCREEN, data);
+        }, _this);
 
         /*****************************************
          *****  Public instream API methods  *****
@@ -44,7 +46,9 @@ define([
 
             // Match the main player's controls state
             _adModel.off(events.JWPLAYER_ERROR);
-            _adModel.on(events.JWPLAYER_ERROR, _forward);
+            _adModel.on(events.JWPLAYER_ERROR, function(data) {
+                this.trigger(events.JWPLAYER_ERROR, data);
+            }, _this);
 
             // Load the instream item
             _adModel.loadVideo();
@@ -59,7 +63,7 @@ define([
             _adModel.off();
 
             // We don't want the instream provider to be attached to the video tag anymore
-            _this.off();
+            this.off();
             if (_currentProvider) {
                 _currentProvider.detachMedia();
                 _currentProvider.off();
@@ -68,6 +72,10 @@ define([
 
             // Return the view to its normal state
             _adModel = null;
+
+            // Remove all callbacks for 'this' for all events
+            _controller.off(null, null, this);
+            _controller = null;
         };
 
         /** Start instream playback **/
@@ -103,6 +111,11 @@ define([
 
                 provider.off();
 
+                provider.on('all', function(type, data) {
+                    data = _.extend({}, data, {type: type});
+                    this.trigger(type, data);
+                }, _this);
+
                 provider.on(events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
 
                 provider.on(events.JWPLAYER_PLAYER_STATE, stateHandler);
@@ -125,21 +138,12 @@ define([
             }
         }
 
-        /** Forward provider events to listeners **/
-        function _forward(evt) {
-            _this.trigger(evt.type, evt);
-        }
 
         function _nativeFullscreenHandler(evt) {
             _model.trigger(evt.type, evt);
             _this.trigger(events.JWPLAYER_FULLSCREEN, {
                 fullscreen: evt.jwstate
             });
-        }
-
-        function _fullscreenHandler(evt) {
-            // required for updating the controlbars toggle icon
-            _forward(evt);
         }
 
         /** Handle the JWPLAYER_MEDIA_BUFFER_FULL event **/
