@@ -1,11 +1,10 @@
 define([
-    'utils/helpers',
     'utils/strings'
-], function(utils, strings) {
+], function(strings) {
 
     /** Component that loads and parses an DFXP file. **/
 
-    var _seconds = utils.seconds;
+    var _seconds = strings.seconds;
 
     return function (xmlDoc) {
         validate(xmlDoc);
