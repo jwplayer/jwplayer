@@ -133,6 +133,7 @@ define([
         }
         function _timeUpdateHandler() {
             _bufferUpdate();
+            console.log('youtube here');
             _this.trigger(events.JWPLAYER_MEDIA_TIME, {
                 position: _round(_youtubePlayer.getCurrentTime()),
                 duration: _youtubePlayer.getDuration()
@@ -350,6 +351,7 @@ define([
 
         this.destroy = function() {
             this.remove();
+            this.off();
 
             _container =
                 _element =
