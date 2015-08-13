@@ -14,6 +14,9 @@
 
 ## Example
 
+
+
+
 The example below will find the element with an id of *my_video* and render a video player into it. 
 
 ```js
