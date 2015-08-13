@@ -45,7 +45,7 @@ define([
             if (!_instream || !_instream._adModel) {
                 return;
             }
-            if (_instream._adModel.state === states.PAUSED) {
+            if (_instream._adModel.get('state') === states.PAUSED) {
                 if (evt.hasControls) {
                     _instream.instreamPlay();
                 }
