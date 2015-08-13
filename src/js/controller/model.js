@@ -138,9 +138,10 @@ define([
 
         this.changeVideoProvider = function(Provider) {
             var container;
+            var handler = _videoEventHandler.bind(this);
 
             if (_provider) {
-                _provider.removeEventListener(_videoEventHandler);
+                _provider.off(_videoEventHandler);
                 container = _provider.getContainer();
                 if (container) {
                     _provider.remove();
@@ -158,12 +159,16 @@ define([
             _provider = _currentProvider;
             _provider.volume(_this.get('volume'));
             _provider.mute(_this.get('mute'));
-            _provider.addGlobalListener(_videoEventHandler.bind(this));
+            _provider.on('all', function(type, data) {
+                var input = _.extend({}, data, {type: type});
+                handler(input);
+            });
+
         };
 
         this.destroy = function() {
             if (_provider) {
-                _provider.removeEventListener(_videoEventHandler);
+                _provider.off(_videoEventHandler);
                 _provider.destroy();
             }
         };
