@@ -1,9 +1,10 @@
 define([
     'test/underscore',
+    'api/config',
     'controller/Setup',
     'controller/model',
     'events/events'
-], function (_, Setup, Model, events) {
+], function (_, Config, Setup, Model, events) {
     /* jshint qunit: true */
 
     module('Setup');
@@ -173,7 +174,7 @@ define([
 
     function getModel(config) {
         var m = new Model();
-        m.setup(config);
+        m.setup(new Config(config));
         return m;
     }
 });
