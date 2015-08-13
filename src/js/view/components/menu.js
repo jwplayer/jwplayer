@@ -33,7 +33,8 @@ define([
             if (isMenu) {
                 utils.removeClass(this.el, 'jw-off');
 
-                this.iconUI.on('tap', this.toggleOpenStateListener)
+                this.iconUI
+                    .on('tap', this.toggleOpenStateListener)
                     .on('over', this.openTooltipListener)
                     .on('out', this.closeTooltipListener);
 

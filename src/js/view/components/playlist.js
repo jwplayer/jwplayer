@@ -25,7 +25,8 @@ define([
             utils.toggleClass(this.el, 'jw-hidden', (list.length < 2));
 
             if (list.length >= 2) {
-                this.iconUI = new UI(this.el, {'useHover': true}).on('tap', this.toggleOpenStateListener)
+                this.iconUI = new UI(this.el, {'useHover': true})
+                    .on('tap', this.toggleOpenStateListener)
                     .on('over', this.openTooltipListener)
                     .on('out', this.closeTooltipListener);
 

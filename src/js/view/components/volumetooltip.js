@@ -19,7 +19,8 @@ define([
 
             utils.toggleClass(this.el, 'jw-hidden', false);
 
-            new UI(this.el, {'useHover': true}).on('click', this.toggleValue.bind(this))
+            new UI(this.el, {'useHover': true})
+                .on('click', this.toggleValue.bind(this))
                 .on('tap', this.toggleOpenState.bind(this))
                 .on('over', this.openTooltip.bind(this))
                 .on('out', this.closeTooltip.bind(this));
