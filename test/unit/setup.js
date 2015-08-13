@@ -158,7 +158,9 @@ define([
             done();
             setup.destroy();
         });
-        setup.start();
+        _.defer(function() {
+            setup.start();
+        });
         return setup;
     }
 
