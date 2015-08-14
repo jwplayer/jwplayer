@@ -4,8 +4,9 @@ define([
     'utils/scriptloader',
     'utils/constants',
     'utils/underscore',
+    'utils/helpers',
     'events/events'
-], function(plugins, PlaylistLoader, ScriptLoader, Constants, _, events) {
+], function(plugins, PlaylistLoader, ScriptLoader, Constants, _, utils, events) {
 
     var _pluginLoader,
         _playlistLoader;
@@ -14,9 +15,17 @@ define([
     function getQueue() {
 
         var Components = {
+            LOAD_POLYFILLS : {
+                method: _loadPolyfills,
+                depends: []
+            },
             LOAD_PLUGINS : {
                 method: _loadPlugins,
-                depends: []
+                depends: ['LOAD_POLYFILLS']
+            },
+            LOAD_YOUTUBE : {
+                method: _loadYoutube,
+                depends: ['LOAD_PLAYLIST']
             },
             LOAD_SKIN : {
                 method: _loadSkin,
@@ -24,14 +33,15 @@ define([
             },
             LOAD_PLAYLIST : {
                 method: _loadPlaylist,
-                depends: []
+                depends: ['LOAD_PLUGINS']
             },
             SETUP_COMPONENTS : {
                 method: _setupComponents,
                 depends: [
                     // view controls require that a playlist item be set
                     'LOAD_PLAYLIST',
-                    'LOAD_SKIN'
+                    'LOAD_SKIN',
+                    'LOAD_YOUTUBE'
                 ]
             },
             SEND_READY : {
@@ -47,15 +57,26 @@ define([
     }
 
 
+    function _loadPolyfills(resolve) {
+        if (!window.btoa || !window.atob) {
+            require.ensure(['polyfills/base64'], function(require) {
+                require('polyfills/base64');
+                resolve();
+            });
+        } else {
+            resolve();
+        }
+    }
+
     function _loadPlugins(resolve, _model, _api) {
-        _pluginLoader = plugins.loadPlugins(_model.config.id, _model.config.plugins);
+        _pluginLoader = plugins.loadPlugins(_model.get('id'), _model.get('plugins'));
         _pluginLoader.on(events.COMPLETE, _.partial(_completePlugins, resolve, _model, _api));
         _pluginLoader.on(events.ERROR, _.partial(_pluginsError, resolve));
         _pluginLoader.load();
     }
 
     function _completePlugins(resolve, _model, _api) {
-        _pluginLoader.setupPlugins(_api, _model.config, _.partial(_resizePlugin, _api));
+        _pluginLoader.setupPlugins(_api, _model, _.partial(_resizePlugin, _api));
         
         resolve();
     }
@@ -86,7 +107,7 @@ define([
     }
 
     function _loadPlaylist(resolve, _model) {
-        var playlist = _model.config.playlist;
+        var playlist = _model.get('playlist');
         if (_.isString(playlist)) {
             _playlistLoader = new PlaylistLoader();
             _playlistLoader.on(events.JWPLAYER_PLAYLIST_LOADED, function(data) {
@@ -172,7 +193,26 @@ define([
         });
     }
 
+    function _loadYoutube(resolve, _model) {
+        var p = _model.get('playlist');
+
+        var hasYoutube = _.some(p, function(item) {
+            return utils.isYouTube(item.file, item.type);
+        });
+
+        if (hasYoutube) {
+            require.ensure(['providers/youtube'], function(require) {
+                var youtube = require('providers/youtube');
+                youtube.register(window.jwplayer);
+                resolve();
+            }, 'provider.youtube');
+        } else {
+            resolve();
+        }
+    }
+
     function _setupComponents(resolve, _model, _api, _view) {
+        _model.setItem(0);
         _view.setup();
         resolve();
     }

@@ -34,9 +34,6 @@ define([
         // Sets the parent element, causing provider to append <video> into it
         setContainer : returnFalse,
 
-        isAudioFile : returnFalse,
-        supportsFullscreen : returnFalse,
-
         getName: noop,
         getQualityLevels : noop,
         getCurrentQuality : noop,
@@ -62,6 +59,16 @@ define([
 
             this.sendEvent(events.JWPLAYER_PLAYER_STATE, {
                 newstate: state
+            });
+        },
+
+        sendMediaType : function(levels) {
+            var type = levels[0].type;
+            var isAudioFile = (type === 'oga' || type === 'aac' || type === 'mp3' ||
+                type === 'mpeg' || type === 'vorbis');
+
+            this.sendEvent(events.JWPLAYER_MEDIA_TYPE, {
+                mediaType : isAudioFile ? 'audio' : 'video'
             });
         }
     };

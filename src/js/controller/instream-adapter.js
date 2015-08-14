@@ -1,13 +1,12 @@
 define([
     'controller/instream-html5',
     'controller/instream-flash',
-    'view/adskipbutton',
     'events/events',
     'events/states',
     'utils/helpers',
     'utils/backbone.events',
     'utils/underscore'
-], function(InstreamHtml5, InstreamFlash, AdSkipButton, events, states, utils, Events, _) {
+], function(InstreamHtml5, InstreamFlash, events, states, utils, Events, _) {
 
     function chooseInstreamMethod(_model) {
         var providerName = _model.get('provider').name || '';
@@ -34,7 +33,6 @@ define([
             _options = {},
             _oldProvider,
             _oldpos,
-            _oldstate,
             _olditem;
 
         var _clickHandler = _.bind(function(evt) {
@@ -47,7 +45,7 @@ define([
             if (!_instream || !_instream._adModel) {
                 return;
             }
-            if (_instream._adModel.state === states.PAUSED) {
+            if (_instream._adModel.get('state') === states.PAUSED) {
                 if (evt.hasControls) {
                     _instream.instreamPlay();
                 }
@@ -74,8 +72,8 @@ define([
 
             // Keep track of the original player state
             _oldProvider = _model.getVideo();
-            _oldpos = _model.position;
-            _olditem = _model.playlist[_model.item];
+            _oldpos = _model.get('position');
+            _olditem = _model.get('playlist')[_model.get('item')];
 
             _instream.on('all', _instreamForward, this);
             _instream.on(events.JWPLAYER_MEDIA_TIME, _instreamTime, this);
@@ -90,17 +88,16 @@ define([
             if (_controller.checkBeforePlay() || (_oldpos === 0 && !_oldProvider.checkComplete())) {
                 // make sure video restarts after preroll
                 _oldpos = 0;
-                _oldstate = states.PLAYING;
-            } else if (_oldProvider && _oldProvider.checkComplete()) {
-                // AKA  postroll
-                _oldstate = states.IDLE;
-            } else if (_model.get('state') === states.IDLE) {
-                _oldstate = states.IDLE;
+                _model.set('preInstreamState', 'instream-preroll');
+            } else if (_oldProvider && _oldProvider.checkComplete() || _model.get('state') === states.COMPLETE) {
+                _model.set('preInstreamState', 'instream-postroll');
             } else {
-                _oldstate = states.PLAYING;
+                _model.set('preInstreamState', 'instream-midroll');
             }
+
             // If the player's currently playing, pause the video tag
-            if (_oldstate === states.PLAYING) {
+            var currState = _model.get('state');
+            if (currState === states.PLAYING || currState === states.BUFFERING) {
                 _oldProvider.pause();
             }
 
@@ -126,9 +123,8 @@ define([
         }
 
         function _instreamTime(evt) {
-            if (this._skipButton) {
-                this._skipButton.updateMediaTime(evt.position, evt.duration);
-            }
+            _instream._adModel.set('duration', evt.duration);
+            _instream._adModel.set('position', evt.position);
         }
 
         function _instreamItemComplete(e) {
@@ -136,9 +132,8 @@ define([
             _instream._adModel.state = 'complete';
 
             if (_array && _arrayIndex + 1 < _array.length) {
-                if (this._skipButton) {
-                    this._skipButton.destroy();
-                }
+                // destroy skip button
+                _model.set('skipButton', false);
 
                 _arrayIndex++;
                 var item = _array[_arrayIndex];
@@ -188,14 +183,11 @@ define([
             this.addClickHandler();
 
             if (_options.skipoffset) {
-                if (this._skipButton) {
-                    this._skipButton.destroy();
-                }
-                this._skipButton = new AdSkipButton(_options.skipMessage, _options.skipText);
-                this._skipButton.on(events.JWPLAYER_AD_SKIPPED, this.skipAd, this);
-                this._skipButton.setWaitTime(_options.skipoffset);
+                _instream._adModel.set('skipMessage', _options.skipMessage);
+                _instream._adModel.set('skipText', _options.skipText);
+                _instream._adModel.set('skipOffset', _options.skipoffset);
 
-                _view.controlsContainer().appendChild(this._skipButton.element());
+                _model.set('skipButton', true);
             }
         };
 
@@ -242,10 +234,7 @@ define([
         this.destroy = function() {
             this.off();
 
-            if (this._skipButton) {
-                _view.controlsContainer().removeChild(this._skipButton.element());
-                this._skipButton = null;
-            }
+            _model.set('skipButton', false);
 
             if (_instream) {
                 if (_view.clickHandler()) {
@@ -262,23 +251,21 @@ define([
                 // Re-attach the controller
                 _controller.attachMedia();
 
-                // Load the original item into our provider, which sets up the regular player's video tag
-                //_oldProvider = _model.getVideo();
+                var oldMode = _model.get('preInstreamState');
+                switch (oldMode) {
+                    case 'instream-preroll':
+                    case 'instream-midroll':
+                        var item = _.extend({}, _olditem);
+                        item.starttime = _oldpos;
+                        _model.loadVideo(item);
 
-                if (_oldstate !== states.IDLE) {
-                    var item = _.extend({}, _olditem);
-                    item.starttime = _oldpos;
-                    _model.loadVideo(item);
-
-                } else {
-                    _oldProvider.stop();
+                        _oldProvider.play();
+                        break;
+                    case 'instream-postroll':
+                    case 'instream-idle':
+                        _oldProvider.stop();
+                        break;
                 }
-
-                if (_oldstate === states.PLAYING) {
-                    // Model was already correct; just resume playback
-                    _oldProvider.play();
-                }
-
             }
         };
 

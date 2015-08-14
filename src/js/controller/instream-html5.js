@@ -23,10 +23,10 @@ define([
         this.init = function() {
             // Initialize the instream player's model copied from main player's model
             _adModel = new Model().setup({
-                id: _model.id,
-                volume: _model.volume,
-                fullscreen: _model.fullscreen,
-                mute: _model.mute
+                id: _model.get('id'),
+                volume: _model.get('volume'),
+                fullscreen: _model.get('fullscreen'),
+                mute: _model.get('mute')
             });
             _adModel.on('fullscreenchange', _nativeFullscreenHandler);
 
@@ -37,6 +37,7 @@ define([
         _this.load = function(item) {
             // Make sure it chooses a provider
             _adModel.setPlaylist([item]);
+            _adModel.setItem(0);
 
             // check provider after item change
             _checkProvider();
@@ -107,8 +108,8 @@ define([
 
                 provider.addEventListener(events.JWPLAYER_PLAYER_STATE, stateHandler);
                 provider.attachMedia();
-                provider.mute(_model.mute);
-                provider.volume(_model.volume);
+                provider.mute(_model.get('mute'));
+                provider.volume(_model.get('volume'));
 
                 _adModel.on('change:state', changeStateEvent, _this);
             }

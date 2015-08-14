@@ -1,6 +1,6 @@
 {
   "name": "jwplayer",
-  "version": "7.0.1",
+  "version": "7.0.2-beta.1",
   "description": "The JW Player is free for non-commerical use. To buy a license for commercial use, please visit \r http://www.jwplayer.com/pricing/",
   "repository": {
     "type": "git",
@@ -23,6 +23,7 @@
     "grunt-contrib-jshint": "^0.11.2",
     "grunt-contrib-uglify": "^0.9.1",
     "grunt-contrib-watch": "^0.6.1",
+    "grunt-flash-compiler": "~0.2.0",
     "grunt-karma": "^0.11.2",
     "grunt-recess": "^1.0.0",
     "handlebars": "^3.0.3",

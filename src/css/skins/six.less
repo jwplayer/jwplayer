@@ -60,7 +60,7 @@
         background: @def-transparent-background-style;
         background-size: @def-background-size;
         border-radius: .3em;
-        border: 1px solid #000;
+        border: @def-border;
     }
 
     &:hover {
@@ -244,10 +244,11 @@
     .jw-skip {
         background: @def-transparent-background-style;
         background-size: @def-background-size;
-        border-radius: @ui-corner-round;
+        border: @def-border;
+        border-radius: .3em;
         padding: @ui-padding @ui-corner-round;
 
-        &:hover {
+        &:hover.jw-skippable {
             background: @def-background-style;
             background-size: @def-background-size;
         }

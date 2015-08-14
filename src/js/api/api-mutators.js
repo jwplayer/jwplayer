@@ -15,7 +15,6 @@ define([
             'fullscreen',
             'volume',
             'mute',
-            'state',
             'item', // this was playlistindex
             'stretching',
             'playlist'
@@ -48,6 +47,7 @@ define([
             'getVisualQuality',
 
             'getConfig',
+            'getState',
 
             'getSafeRegion',
             'isBeforeComplete',
@@ -76,7 +76,10 @@ define([
         // getters
         _.each(passthroughs, function(func) {
             _api[func] = function() {
-                return _controller[func].apply(_controller, arguments);
+                if (_controller[func]) {
+                    return _controller[func].apply(_controller, arguments);
+                }
+                return null;
             };
         });
         // setters (chainable)

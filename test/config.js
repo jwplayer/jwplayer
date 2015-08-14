@@ -1,6 +1,7 @@
 // This allows us to test modules without loading full player
 window.__BUILD_VERSION__ = '7.0.0';
 window.__FLASH_VERSION__ = 11.2;
+window.__DEBUG__ = false;
 
 var base = '';
 var deps = [];
@@ -73,9 +74,7 @@ require.config({
     map: {
         // make sure the text plugin is used to load templates
         '*' : {
-            '../css/jwplayer.less': 'less!css/jwplayer'
-        },
-        'providers/html5' : {
+            '../css/jwplayer.less': 'less!css/jwplayer',
             'utils/video': mock + '/video.js'
         }
     },

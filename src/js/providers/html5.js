@@ -6,9 +6,8 @@ define([
     'events/events',
     'events/states',
     'utils/eventdispatcher',
-    'providers/default',
-    'utils/video'
-], function(cssUtils, utils, stretchUtils, _, events, states, eventdispatcher, DefaultProvider, video) {
+    'providers/default'
+], function(cssUtils, utils, stretchUtils, _, events, states, eventdispatcher, DefaultProvider) {
 
     var clearInterval = window.clearInterval,
         STALL_DELAY = 256,
@@ -428,6 +427,7 @@ define([
             }
 
             _setLevels(item.sources);
+            this.sendMediaType(item.sources);
 
             _completeLoad(item.starttime || 0, item.duration || 0);
         };
@@ -479,7 +479,10 @@ define([
         }
 
         this.volume = function(vol) {
-            _videotag.volume = Math.min(Math.max(0, vol / 100), 1);
+            // volume must be 0.0 - 1.0
+            vol = utils.between(vol/100, 0, 1);
+
+            _videotag.volume = vol;
         };
 
         function _volumeHandler() {
@@ -661,8 +664,6 @@ define([
                 _videotag.videoWidth, _videotag.videoHeight);
         };
 
-        this.supportsFullscreen = _.constant(true);
-
         this.setFullscreen = function(state) {
             state = !!state;
 
@@ -702,14 +703,6 @@ define([
             return _fullscreenState || !!_videotag.webkitDisplayingFullscreen;
         };
 
-        this.isAudioFile = function() {
-            if (!_levels) {
-                return false;
-            }
-            var type = _levels[0].type;
-            return (type === 'oga' || type === 'aac' || type === 'mp3' || type === 'mpeg' || type === 'vorbis');
-        };
-
         this.setCurrentQuality = function(quality) {
             if (_currentQuality === quality) {
                 return;
@@ -745,61 +738,10 @@ define([
         };
     }
 
-    var MimeTypes = {
-        'aac': 'audio/mp4',
-        'mp4': 'video/mp4',
-        'f4v': 'video/mp4',
-        'm4v': 'video/mp4',
-        'mov': 'video/mp4',
-        //'m4a': 'audio/x-m4a', // converted to aac by source.js
-        'mp3': 'audio/mpeg',
-        'mpeg': 'audio/mpeg',
-        'ogv': 'video/ogg',
-        'ogg': 'video/ogg',
-        'oga': 'video/ogg',
-        'vorbis': 'video/ogg',
-        'webm': 'video/webm',
-
-        // The following are not expected to work in Chrome
-        'f4a': 'video/aac',
-        'm3u8': 'application/vnd.apple.mpegurl',
-        'm3u': 'application/vnd.apple.mpegurl',
-        'hls': 'application/vnd.apple.mpegurl'
-    };
-
-
     // Register provider
     var F = function(){};
     F.prototype = DefaultProvider;
     VideoProvider.prototype = new F();
-    VideoProvider.supports = function(source) {
-
-        var file = source.file;
-        var type = source.type;
-
-        var isAndroidHLS = _useAndroidHLS(source);
-        if (isAndroidHLS !== null) {
-            return isAndroidHLS;
-        }
-
-        // Ensure RTMP files are not seen as videos
-        if (utils.isRtmp(file, type)) {
-            return false;
-        }
-
-        // Not OK to use HTML5 with no extension
-        if (!MimeTypes[type]) {
-            return false;
-        }
-
-        // Last, but not least, we ask the browser
-        // (But only if it's a video with an extension known to work in HTML5)
-        if (video.canPlayType) {
-            var result = video.canPlayType(MimeTypes[type]);
-            return !!result;
-        }
-        return false;
-    };
 
     return VideoProvider;
 

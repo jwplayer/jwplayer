@@ -122,9 +122,9 @@ public class InstreamPlayer extends Sprite {
         // Only accept video, http or rtmp providers for now
         switch (type) {
             case 'video':
-                return new VideoMediaProvider(false);
+                return new VideoMediaProvider();
             case 'rtmp':
-                return new RTMPMediaProvider(false);
+                return new RTMPMediaProvider();
             case 'sound':
                 return new SoundMediaProvider();
         }

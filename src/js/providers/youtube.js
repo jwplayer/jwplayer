@@ -476,7 +476,6 @@ define([
                 return;
             }
             var volume = Math.min(Math.max(0, vol), 100);
-            _playerConfig.volume = volume;
             if (_youtubePlayer && _youtubePlayer.getVolume) {
                 _youtubePlayer.setVolume(volume);
             }
@@ -485,7 +484,6 @@ define([
 
         this.mute = function(mute) {
             var muted = utils.exists(mute) ? !!mute : !_playerConfig.mute;
-            _playerConfig.mute = muted;
             if (_youtubePlayer  && _youtubePlayer.mute) {
                 if (muted) {
                     _youtubePlayer.mute();
@@ -515,17 +513,6 @@ define([
 
         this.getContainer = function() {
             return _container;
-        };
-
-        this.supportsFullscreen = function() {
-            return !!(_container && (_container.requestFullscreen ||
-                _container.requestFullScreen ||
-                _container.webkitRequestFullscreen ||
-                _container.webkitRequestFullScreen ||
-                _container.webkitEnterFullscreen ||
-                _container.webkitEnterFullScreen ||
-                _container.mozRequestFullScreen ||
-                _container.msRequestFullscreen));
         };
 
         this.remove = function() {
@@ -631,16 +618,14 @@ define([
         };
     }
 
-    function supports(source) {
-        return (utils.isYouTube(source.file, source.type));
-    }
+    YoutubeProvider.getName = function() {
+        return { name: 'youtube' };
+    };
 
-    // Required configs
-    var F = function(){};
-    F.prototype = DefaultProvider;
-    YoutubeProvider.prototype = new F();
-    YoutubeProvider.supports = supports;
-
-    return YoutubeProvider;
+    return {
+        register : function(jwplayer) {
+            jwplayer.api.registerProvider(YoutubeProvider);
+        }
+    };
 
 });

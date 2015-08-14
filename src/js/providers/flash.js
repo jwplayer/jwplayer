@@ -111,6 +111,7 @@ define([
                     _beforecompleted = false;
                     this.setState(states.LOADING);
                     _flashCommand('load', item);
+                    this.sendMediaType(item.sources);
                 },
                 play: function() {
                     _flashCommand('play');
@@ -133,16 +134,13 @@ define([
                         return;
                     }
                     var volume = Math.min(Math.max(0, vol), 100);
-                    _playerConfig.volume = volume;
                     if (_ready()) {
                         _flashCommand('volume', volume);
                     }
                 },
                 mute: function(mute) {
-                    var muted = utils.exists(mute) ? !!mute : !_playerConfig.mute;
-                    _playerConfig.mute = muted;
                     if (_ready()) {
-                        _flashCommand('mute', muted);
+                        _flashCommand('mute', mute);
                     }
                 },
                 setState: function() {
@@ -315,13 +313,6 @@ define([
                 getFullScreen: function() {
                     return _fullscreen;
                 },
-                isAudioFile: function() {
-                    if (_item) {
-                        var type = _item.sources[0].type;
-                        return (type === 'oga' || type === 'aac' || type === 'mp3' || type === 'vorbis');
-                    }
-                    return false;
-                },
                 setCurrentQuality: function(quality) {
                     _flashCommand('setCurrentQuality', quality);
                 },
@@ -349,7 +340,6 @@ define([
                 setCurrentAudioTrack : function(audioTrack) {
                     _flashCommand('setCurrentAudioTrack', audioTrack);
                 },
-                supportsFullscreen: _.constant(true),
                 destroy: function() {
                     this.remove();
                     if (_swf) {
@@ -373,39 +363,10 @@ define([
     }
 
 
-    var flashExtensions = {
-        'flv': 'video',
-        'f4v': 'video',
-        'mov': 'video',
-        'm4a': 'video',
-        'm4v': 'video',
-        'mp4': 'video',
-        'aac': 'video',
-        'f4a': 'video',
-        'mp3': 'sound',
-        'mpeg': 'sound',
-        'smil': 'rtmp'
-    };
-    var PLAYABLE = _.keys(flashExtensions);
-
     // Register provider
     var F = function(){};
     F.prototype = DefaultProvider;
     FlashProvider.prototype = new F();
-    FlashProvider.supports = function (source) {
-        if(!utils.isFlashSupported()) {
-            return false;
-        }
-
-        var file = source.file;
-        var type = source.type;
-
-        if (utils.isRtmp(file, type)) {
-            return true;
-        }
-
-        return _.contains(PLAYABLE, type);
-    };
 
     return FlashProvider;
 });

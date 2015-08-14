@@ -1,7 +1,11 @@
 define([
     'api/api',
+    'utils/underscore',
+    'providers/default',
+    'providers/providers-loaded',
+    'providers/providers-supported',
     'plugins/plugins'
-], function(Api, plugins) {
+], function(Api, _, Default, ProvidersLoaded, ProvidersSupported, plugins) {
 
     var _instances = [],
         _uniqueIndex = 0;
@@ -65,8 +69,40 @@ define([
         }
     };
 
-    return {
+    function registerProvider(provider) {
+        var name = provider.getName().name;
+
+        // If there isn't a "supports" val for this guy
+        if (! _.find(ProvidersSupported, _.matches({name : name}))) {
+            if (!_.isFunction(provider.supports)) {
+                throw {
+                    message: 'Tried to register a provider with an invalid object'
+                };
+            }
+
+            // The most recent provider will be in the front of the array, and chosen first
+            ProvidersSupported.unshift({
+                name : name,
+                supports : provider.supports
+            });
+        }
+
+        var F = function(){};
+        F.prototype = Default;
+        provider.prototype = new F();
+
+        // After registration, it is loaded
+        ProvidersLoaded[name] = provider;
+    }
+
+
+    var api = {
         selectPlayer : selectPlayer,
+        registerProvider: registerProvider,
         registerPlugin : plugins.registerPlugin
     };
+
+    selectPlayer.api = api;
+
+    return api;
 });

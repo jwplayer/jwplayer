@@ -8,14 +8,13 @@ define([
 ], function(Events, Model, changeStateEvent, events, states, _) {
 
     var InstreamFlash = function(_controller, _model) {
-        this.controller = _controller;
         this.model = _model;
 
         this._adModel = new Model().setup({
-            id: _model.id,
-            volume: _model.volume,
-            fullscreen: _model.fullscreen,
-            mute: _model.mute
+            id: _model.get('id'),
+            volume: _model.get('volume'),
+            fullscreen: _model.get('fullscreen'),
+            mute: _model.get('mute')
         });
 
         this._adModel.on('change:state', changeStateEvent, this);
@@ -68,7 +67,6 @@ define([
             this._adModel = null;
 
             this.model = null;
-            this.controller = null;
         },
 
         load: function(item) {

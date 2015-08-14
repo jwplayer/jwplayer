@@ -15,6 +15,7 @@ define([
         displaydescription: true,
         mobilecontrols: false,
         repeat: false,
+        castAvailable: false,
         skin: 'seven',
         stretching: stretchUtils.UNIFORM,
         mute: false,
@@ -45,7 +46,7 @@ define([
         if (config.base === '.') {
             config.base = utils.getScriptPath('jwplayer.js');
         }
-        config.base = (config.base || utils.repo()).replace(/\/?$/, '/');
+        config.base = (config.base || utils.loadFrom()).replace(/\/?$/, '/');
         __webpack_public_path__ = config.base;
         config.width  = _normalizeSize(config.width);
         config.height = _normalizeSize(config.height);

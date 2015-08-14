@@ -1,4 +1,5 @@
 define([
+    'api/config',
     'api/api-deprecate',
     'controller/instream-adapter',
     'utils/underscore',
@@ -13,7 +14,7 @@ define([
     'events/states',
     'events/events',
     'view/error'
-], function(deprecateInit, InstreamAdapter, _, Setup, Captions,
+], function(Config, deprecateInit, InstreamAdapter, _, Setup, Captions,
             Model, PlaylistLoader, utils, View, Events, changeStateEvent, states, events, error) {
 
     function _queue(command) {
@@ -54,7 +55,8 @@ define([
         setCurrentCaptions : _queue('setCurrentCaptions'),
         setCurrentQuality : _queue('setCurrentQuality'),
 
-        setup : function(config, _api) {
+        setup : function(options, _api) {
+
             var _model,
                 _view,
                 _captions,
@@ -67,6 +69,7 @@ define([
 
             var _video = function() { return _model.getVideo(); };
 
+            var config = new Config(options);
 
             _model = this._model.setup(config);
             _view  = this._view  = new View(_api, _model);
@@ -220,6 +223,7 @@ define([
                         break;
                     case 'object':
                         _model.setPlaylist(item);
+                        _model.setItem(0);
                         break;
                     case 'number':
                         _model.setItem(item);
@@ -241,15 +245,27 @@ define([
                 loader.load(toLoad);
             }
 
-            function _play(state) {
-                var status;
-                if (state === false) {
-                    return _pause();
+            function _getState() {
+                var adState = _this._instreamAdapter && _this._instreamAdapter.getState();
+                if (_.isString(adState)) {
+                    return adState;
                 }
+                return _model.get('state');
+            }
+
+            function _play() {
+                var status;
 
                 if(_model.get('state') === states.ERROR) {
                     return;
                 }
+
+                var adState = _this._instreamAdapter && _this._instreamAdapter.getState();
+                if (_.isString(adState)) {
+                    // this will resume the ad. _api.playAd would load a new ad
+                    return _api.pauseAd(false);
+                }
+
                 if (_model.get('state') === states.COMPLETE) {
                     _stop(true);
                     _model.setItem(0);
@@ -315,13 +331,14 @@ define([
                 return true;
             }
 
-            function _pause(state) {
+            function _pause() {
                 _actionOnAttach = null;
-                if (!utils.exists(state)) {
-                    state = true;
-                } else if (!state) {
-                    return _play();
+
+                var adState = _this._instreamAdapter && _this._instreamAdapter.getState();
+                if (_.isString(adState)) {
+                    return _api.pauseAd(true);
                 }
+
                 switch (_model.get('state')) {
                     case states.ERROR:
                         return false;
@@ -415,7 +432,7 @@ define([
 
             function _getConfig() {
                 if (this._model) {
-                    return this._model.get('config');
+                    return this._model.getConfiguration();
                 }
             }
 
@@ -545,6 +562,7 @@ define([
             this.getCaptionsList = _getCaptionsList;
             this.getVisualQuality = _getVisualQuality;
             this.getConfig = _getConfig;
+            this.getState = _getState;
 
             // Model passthroughs
             this.setVolume = _model.setVolume;
@@ -617,12 +635,16 @@ define([
                 return _model.getVideo().checkComplete();
             };
 
-
-
             this.createInstream = function() {
-                _this.instreamDestroy();
-                _this._instreamAdapter = new InstreamAdapter(this, _model, _view);
-                return _this._instreamAdapter;
+                this.instreamDestroy();
+                this._instreamAdapter = new InstreamAdapter(this, _model, _view);
+                return this._instreamAdapter;
+            };
+
+            this.skipAd = function() {
+                if (this._instreamAdapter) {
+                    this._instreamAdapter.skipAd();
+                }
             };
 
             this.instreamDestroy = function() {
