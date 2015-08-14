@@ -19,9 +19,11 @@ define([
 
             utils.toggleClass(this.el, 'jw-hidden', false);
 
-            new UI(this.el).on('click', this.toggleValue.bind(this)).on('tap', this.toggleOpenState.bind(this));
-            this.el.addEventListener('mouseover', this.openTooltip.bind(this));
-            this.el.addEventListener('mouseout', this.closeTooltip.bind(this));
+            new UI(this.el, {'useHover': true})
+                .on('click', this.toggleValue.bind(this))
+                .on('tap', this.toggleOpenState.bind(this))
+                .on('over', this.openTooltip.bind(this))
+                .on('out', this.closeTooltip.bind(this));
 
             this._model.on('change:volume', this.onVolume, this);
         },
