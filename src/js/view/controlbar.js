@@ -76,10 +76,15 @@ define([
 
         build : function() {
             var timeSlider = new TimeSlider(this._model, this._api),
-                playlistTooltip = new Playlist('jw-icon-playlist'),
+                playlistTooltip,
                 volumeSlider,
                 volumeTooltip,
                 muteButton;
+
+            // Create the playlistTooltip as long as visualplaylist from the config is not false
+            if(this._model.get('visualplaylist') !== false) {
+                playlistTooltip = new Playlist('jw-icon-playlist');
+            }
 
             // Do not initialize volume sliders on mobile.
             if(!utils.isMobile()){
@@ -103,7 +108,7 @@ define([
                 mute: muteButton,
                 volume: volumeSlider,
                 volumetooltip: volumeTooltip,
-                cast: button('jw-icon-cast jw-off'),
+                cast: button('jw-icon-cast jw-off', this._api.castToggle),
                 fullscreen: button('jw-icon-fullscreen', this._api.setFullscreen)
             };
 
@@ -125,6 +130,7 @@ define([
                     this.elements.cc,
                     this.elements.audiotracks,
                     this.elements.mute,
+                    this.elements.cast,
                     this.elements.volume,
                     this.elements.volumetooltip,
                     // this.elements.cast, // hidden for jw7.0 release
@@ -134,9 +140,9 @@ define([
 
             // Remove undefined layout elements.  They are invalid for the current platform.
             // (e.g. volume and volumetooltip on mobile)
-            this.layout.right = _.reject(this.layout.right, function(ele){
-                return _.isUndefined(ele);
-            });
+            this.layout.left = _.compact(this.layout.left);
+            this.layout.center = _.compact(this.layout.center);
+            this.layout.right = _.compact(this.layout.right);
 
             this.el = document.createElement('div');
             this.el.className = 'jw-controlbar jw-background-color jw-reset';
@@ -194,12 +200,14 @@ define([
                 }, this);
             }
 
-            this.elements.playlist.on('select', function(value) {
-                this._model.once('setItem', function() {
-                    this._api.play();
+            if(this.elements.playlist) {
+                this.elements.playlist.on('select', function (value) {
+                    this._model.once('setItem', function () {
+                        this._api.play();
+                    }, this);
+                    this._api.load(value);
                 }, this);
-                this._api.load(value);
-            }, this);
+            }
 
             this.elements.hd.on('select', function(value){
                 this._model.getVideo().setCurrentQuality(value);
@@ -219,6 +227,14 @@ define([
             this.elements.audiotracks.on('select', function(value){
                 this._model.getVideo().setCurrentAudioTrack(value);
             }, this);
+
+            new UI(this.elements.duration).on('click tap', function(){
+                if (utils.adaptiveType(this._model.get('duration')) === 'DVR') {
+                    // -0.1 places the playhead at the most recent time.
+                    // this._api.seek(0) puts the user at the oldest DVR segment available.
+                    this._api.seek(-0.1);
+                }
+            }, this);
         },
 
         onCaptionsList: function(model, tracks) {
@@ -232,8 +248,9 @@ define([
             var display = (playlist.length > 1);
             this.elements.next.toggle(display);
             this.elements.prev.toggle(display);
-
-            this.elements.playlist.setup(playlist, model.get('item'));
+            if(this.elements.playlist) {
+                this.elements.playlist.setup(playlist, model.get('item'));
+            }
         },
         onPlaylistItem : function(model/*, item*/) {
             this.elements.time.updateBuffer(0);
@@ -242,7 +259,9 @@ define([
             this.elements.elapsed.innerHTML = '00:00';
 
             var itemIdx = model.get('item');
-            this.elements.playlist.selectItem(itemIdx);
+            if(this.elements.playlist) {
+                this.elements.playlist.selectItem(itemIdx);
+            }
 
             this.elements.audiotracks.setup();
 
@@ -283,13 +302,23 @@ define([
             this.elements.cast.toggle(val);
         },
         onElapsed : function(model, val) {
-            var duration = this._api.getDuration();
-            this.elements.elapsed.innerHTML =
-                (utils.adaptiveType(duration) === 'DVR')?
-                    ('-'+utils.timeFormat(-duration)):utils.timeFormat(val);
+            var elapsedTime;
+            var duration = model.get('duration');
+            if (utils.adaptiveType(duration) === 'DVR') {
+                elapsedTime = '-' + utils.timeFormat(-duration);
+            } else {
+                elapsedTime = utils.timeFormat(val);
+            }
+            this.elements.elapsed.innerHTML = elapsedTime;
         },
         onDuration : function(model, val) {
-            this.elements.duration.innerHTML = (utils.adaptiveType(val) === 'DVR')?'Live':utils.timeFormat(val);
+            var totalTime;
+            if (utils.adaptiveType(val) === 'DVR') {
+                totalTime = 'Live';
+            } else {
+                totalTime = utils.timeFormat(val);
+            }
+            this.elements.duration.innerHTML = totalTime;
         },
         onFullscreen : function(model, val) {
             utils.toggleClass(this.elements.fullscreen.element(), 'jw-off', val);

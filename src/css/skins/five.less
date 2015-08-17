@@ -6,7 +6,7 @@
     @inactive-color: #464646;
     @hover-color: @active-color;
 
-    @controlbar-background: #eee;
+    @controlbar-background: fade(#eee, 80%);
     @controlbar-height: 2em;
     @controlbar-icon-size: 1em;
     @progress-color: @active-color;
@@ -32,11 +32,6 @@
     #namespace > .basic-skin-styles(); // Using the above local variables
     .skin-element-padding();
 
-    
-    .jw-controlbar {
-        opacity: 0.8;
-    }
-    
     /* Styles for play button container on idle */
     .jw-display-icon-container {
         border-radius: @five-border-radius;
@@ -107,6 +102,8 @@
 
     /* Slider styles */
     .jw-slider-horizontal {
+        background: transparent;
+        
         .jw-slider-container {
             height: .9em;
         }
@@ -126,24 +123,20 @@
             .vertically-centered-rail-element(@rail-height, @thumb-size);
             margin: 0;
 
-            &:after {
-                background-color: #000;
-                border-radius: @five-border-radius;
-                width: 1px;
-                height: @thumb-size;
-            }
+            background-color: #000;
+            border-radius: @five-border-radius;
+            width: 1px;
+            height: @thumb-size;
         }
 
         .jw-cue {
             .vertically-centered-rail-element(@rail-height, @cue-height);
 
-            &:after {
-                width: .1em;
-                height: @cue-height;
-                background-color: #000;
-                border-left: 1px solid #fff;
-                border-right: 1px solid #fff;
-            }
+            width: .1em;
+            height: @cue-height;
+            background-color: #000;
+            border-left: 1px solid #fff;
+            border-right: 1px solid #fff;
         }
     }
 
@@ -165,12 +158,10 @@
             margin-bottom: 2px/-2;
             width: .6em;
 
-            &:after {
-                background: @rail-vert-gradient;
-                border-radius: @five-border-radius;
-                height: 2px;
-                width: 100%;
-            }
+            background: @rail-vert-gradient;
+            border-radius: @five-border-radius;
+            height: 2px;
+            width: 100%;
         }
     }
     

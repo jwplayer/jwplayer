@@ -84,12 +84,13 @@ define([
             _checkComplete();
         }
 
-        this.setupPlugins = function (api, config, resizer) {
+        this.setupPlugins = function (api, playerModel, resizer) {
             var flashPlugins = [],
                 jsPlugins = {},
                 plugins = model.getPlugins();
 
-            _.each(config.plugins, function(pluginConfig, plugin) {
+            var pluginsConfig = playerModel.get('plugins');
+            _.each(pluginsConfig, function(pluginConfig, plugin) {
                 var pluginName = pluginsUtils.getPluginName(plugin),
                     pluginObj = plugins[pluginName],
                     flashPath = pluginObj.getFlashPath(),
@@ -106,12 +107,12 @@ define([
                 }
 
                 var status = utils.tryCatch(function() {
-                    if (jsPlugin && config.plugins && config.plugins[pluginURL]) {
+                    if (jsPlugin && pluginsConfig[pluginURL]) {
                         var div = document.createElement('div');
                         div.id = api.id + '_' + pluginName;
                         div.className = 'jw-plugin jw-reset';
                         jsPlugins[pluginName] = pluginObj.getNewInstance(api,
-                            _.extend({}, config.plugins[pluginURL]), div);
+                            _.extend({}, pluginsConfig[pluginURL]), div);
                         api.onReady(resizer(jsPlugins[pluginName], div, true));
                         api.onResize(resizer(jsPlugins[pluginName], div));
                     }
@@ -124,7 +125,7 @@ define([
             });
 
             api.plugins = jsPlugins;
-            config.flashPlugins = flashPlugins;
+            playerModel.set('flashPlugins', flashPlugins);
         };
 
         this.load = function () {
@@ -137,9 +138,9 @@ define([
             _status = scriptloader.loaderstatus.LOADING;
 
             /** First pass to create the plugins and add listeners **/
-            _.each(_config, function(value, plugin) {
-                if (utils.exists(plugin)) {
-                    var pluginObj = model.addPlugin(plugin);
+            _.each(_config, function(value, pluginUrl) {
+                if (utils.exists(pluginUrl)) {
+                    var pluginObj = model.addPlugin(pluginUrl);
                     pluginObj.on(events.COMPLETE, _checkComplete);
                     pluginObj.on(events.ERROR, _pluginError);
                 }
@@ -161,8 +162,6 @@ define([
             _destroyed = true;
             this.off();
         };
-
-        this.pluginFailed = _pluginError;
 
         this.getStatus = function () {
             return _status;

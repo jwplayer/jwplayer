@@ -21,13 +21,26 @@ define([
             this.el = utils.createElement(html);
             new UI (this.el).on('click tap', clickHandler);
         },
-        click : function(evt) {
-            var btnId = evt.target.getAttribute('button');
+        getDockButton : function(evt) {
+            if (utils.hasClass(evt.target, 'jw-dock-button')) {
+                // Clicks on button container
+                return evt.target;
+            } else if (utils.hasClass(evt.target, 'jw-dock-text')) {
+                // Clicks on the text overlay
+                return evt.target.parentElement.parentElement;
+            }
 
+            // Clicks on any other children
+            return evt.target.parentElement;
+        },
+        click : function(evt) {
+            var elem = this.getDockButton(evt);
+
+            var btnId = elem.getAttribute('button');
             var buttons = this.model.get('dock');
             var btn = _.findWhere(buttons, {id : btnId});
 
-            if (btn.callback) {
+            if (btn && btn.callback) {
                 btn.callback();
             }
         },

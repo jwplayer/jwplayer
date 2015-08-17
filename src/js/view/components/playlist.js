@@ -54,19 +54,22 @@ define([
 
         onSelect: function(evt) {
             var elem = evt.target;
-            if(elem.tagName !== 'UL') {
+            if(elem.tagName === 'UL'){
+                // skip if the target is not a menu option
+                return;
+            } else if(elem.tagName !== 'LI') {
                 // some menus have an extra level of nesting, this normalizes that
                 elem = elem.parentElement;
             }
 
-            var classes = elem.classList;
-            // find the class with a name of the form 'item-1'
-            var item = _.find(classes, function(c) { return c.indexOf('item') === 0;});
+            var classes = utils.classList(elem);
+            // find the class with a name of the form 'jw-item-1'
+            var item = _.find(classes, function(c) { return c.indexOf('jw-item') === 0;});
             if (item) {
-                this.trigger('select', parseInt(item.split('-')[1]));
+                this.trigger('select', parseInt(item.split('-')[2]));
+                // Only close the tooltip if we are selecting an options
+                this.closeTooltip();
             }
-
-            this.closeTooltip();
         },
 
         selectItem : function(item) {

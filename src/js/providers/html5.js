@@ -6,13 +6,12 @@ define([
     'events/events',
     'events/states',
     'utils/eventdispatcher',
-    'providers/default',
-    'utils/video'
-], function(cssUtils, utils, stretchUtils, _, events, states, eventdispatcher, DefaultProvider, video) {
+    'providers/default'
+], function(cssUtils, utils, stretchUtils, _, events, states, eventdispatcher, DefaultProvider) {
 
     var clearInterval = window.clearInterval,
-        stallInterval,
         STALL_DELAY = 256,
+        BUFFER_INTERVAL = 100,
         _isIE = utils.isMSIE(),
         _isMobile = utils.isMobile(),
         _isSafari = utils.isSafari(),
@@ -21,36 +20,35 @@ define([
         _name = 'html5';
 
 
-
-    // Browsers, including latest chrome, do not always report Stalled events in a timely fashion
-    var stallCheckGenerator = function(videotag, stalledHandler) {
-        var lastChecked = -1;
-        return function() {
-            if (videotag.paused) { return; }
-            if (videotag.currentTime === lastChecked) {
-                stalledHandler();
-            }
-            lastChecked = videotag.currentTime;
-        };
-    };
-
     function _setupListeners(eventsHash, videoTag) {
         utils.foreach(eventsHash, function(evt, evtCallback) {
             videoTag.addEventListener(evt, evtCallback, false);
         });
-
-        var checker = stallCheckGenerator(videoTag, eventsHash.stalled);
-        stallInterval = setInterval(checker, STALL_DELAY);
     }
 
     function _removeListeners(eventsHash, videoTag) {
         utils.foreach(eventsHash, function(evt, evtCallback) {
             videoTag.removeEventListener(evt, evtCallback, false);
         });
+    }
 
-        if (stallInterval) {
-            clearInterval(stallInterval);
+    function _useAndroidHLS(source) {
+        if (source.type === 'hls') {
+            //when androidhls is not set to false, allow HLS playback on Android 4.1 and up
+            if (source.androidhls !== false) {
+                var isAndroidNative = utils.isAndroidNative;
+                if (isAndroidNative(2) || isAndroidNative(3) || isAndroidNative('4.0')) {
+                    return false;
+                } else if (utils.isAndroid()) { //utils.isAndroidNative()) {
+                    // skip canPlayType check
+                    // canPlayType returns '' in native browser even though HLS will play
+                    return true;
+                }
+            } else if (utils.isAndroid()) {
+                return false;
+            }
         }
+        return null;
     }
 
     function VideoProvider(_playerId, _playerConfig) {
@@ -87,11 +85,11 @@ define([
                 //readystatechange: _generalHandler,
                 seeked: _sendSeekedEvent,
                 //seeking: _seekingHandler,
-                stalled: _stalledHandler,
+                //stalled: _stalledHandler,
                 //suspend: _generalHandler,
                 timeupdate: _timeUpdateHandler,
                 volumechange: _volumeHandler,
-                waiting: _stalledHandler,
+                //waiting: _stalledHandler,
 
                 webkitbeginfullscreen: _fullscreenBeginHandler,
                 webkitendfullscreen: _fullscreenEndHandler
@@ -113,13 +111,18 @@ define([
             // Using setInterval to check buffered ranges
             _bufferInterval = -1,
             // Last sent buffer amount
-            _bufferPercent = -1,
+            _buffered = -1,
+            // Last epoch time that playback was verified
+            _wasPlayingAt = -1,
             // Whether or not we're listening to video tag events
-            _attached = false,
+            _attached = true,
             // Quality levels
             _levels,
             // Current quality level index
             _currentQuality = -1,
+
+            // android hls doesn't update currentTime so we want to skip the stall check since it always fails
+            _isAndroidHLS = null,
 
             // post roll support
             _beforecompleted = false,
@@ -128,8 +131,9 @@ define([
 
         // Overwrite the event dispatchers to block on certain occasions
         this.sendEvent = function() {
-            if (!_attached) { return; }
-
+            if (!_attached) {
+                return;
+            }
             _dispatcher.sendEvent.apply(this, arguments);
         };
 
@@ -138,6 +142,7 @@ define([
         var element = document.getElementById(_playerId);
         var _videotag = (element) ? element.querySelector('video') : undefined;
         _videotag = _videotag || document.createElement('video');
+        _videotag.className = 'jw-video jw-reset';
 
         _setupListeners(_mediaEvents, _videotag);
 
@@ -152,15 +157,14 @@ define([
         _videotag.setAttribute('x-webkit-airplay', 'allow');
         _videotag.setAttribute('webkit-playsinline', '');
 
-
-        _attached = true;
-
         function _onClickHandler(evt) {
             _this.sendEvent('click', evt);
         }
 
         function _durationUpdateHandler() {
-            if (!_attached) { return; }
+            if (!_attached) {
+                return;
+            }
             var newDuration = _videotag.duration;
             if (_duration !== newDuration) {
                 _duration = newDuration;
@@ -174,9 +178,12 @@ define([
         function _timeUpdateHandler(evt) {
             _progressHandler(evt);
 
-            if (!_attached) { return; }
+            if (!_attached) {
+                return;
+            }
 
             if (_this.state === states.PLAYING) {
+                _wasPlayingAt = _.now();
                 _position = _videotag.currentTime;
                 // do not allow _durationUpdateHandler to update _canSeek before _canPlayHandler does
                 if (evt) {
@@ -186,10 +193,6 @@ define([
                     position: _position,
                     duration: _duration
                 });
-                // Working around a Galaxy Tab bug; otherwise _duration should be > 0
-                //              if (_position >= _duration && _duration > 3 && !utils.isAndroid(2.3)) {
-                //                  _complete();
-                //              }
             }
 
 
@@ -260,12 +263,22 @@ define([
                 return;
             }
 
+            _wasPlayingAt = _.now();
             _this.setState(states.PLAYING);
             _this.sendEvent(events.JWPLAYER_PROVIDER_FIRST_FRAME, {});
         }
 
         function _stalledHandler() {
             if (!_attached) {
+                return;
+            }
+
+            // Android HLS doesnt update its times correctly so it always falls in here.  Do not allow it to stall.
+            if (_isAndroidHLS) {
+                return;
+            }
+
+            if (_videotag.paused || _videotag.ended) {
                 return;
             }
 
@@ -343,7 +356,7 @@ define([
             _source = _levels[_currentQuality];
 
             clearInterval(_bufferInterval);
-            _bufferInterval = setInterval(_sendBufferUpdate, 100);
+            _bufferInterval = setInterval(_checkBufferAndPlayback, BUFFER_INTERVAL);
 
             _delayedSeek = 0;
 
@@ -355,7 +368,8 @@ define([
                 }
                 _canSeek = false;
                 _bufferFull = false;
-                _duration = duration ? duration : -1;
+                _duration = duration;
+                _isAndroidHLS = _useAndroidHLS(_source);
                 _videotag.src = _source.file;
                 _videotag.load();
             } else {
@@ -388,7 +402,9 @@ define([
         }
 
         this.stop = function() {
-            if (!_attached) { return; }
+            if (!_attached) {
+                return;
+            }
             clearInterval(_bufferInterval);
             _videotag.removeAttribute('src');
             if (!_isIE) {
@@ -411,26 +427,23 @@ define([
             }
 
             _setLevels(item.sources);
+            this.sendMediaType(item.sources);
 
-            _completeLoad(item.starttime || 0, item.duration);
+            _completeLoad(item.starttime || 0, item.duration || 0);
         };
 
         this.play = function() {
-            if (_attached) {
-                if (_this.seeking) {
-                    _this.setState(states.LOADING);
-                    _this.once(events.JWPLAYER_MEDIA_SEEKED, _this.play);
-                    return;
-                }
-                _videotag.play();
+            if (_this.seeking) {
+                _this.setState(states.LOADING);
+                _this.once(events.JWPLAYER_MEDIA_SEEKED, _this.play);
+                return;
             }
+            _videotag.play();
         };
 
         this.pause = function() {
-            if (_attached) {
-                _videotag.pause();
-                this.setState(states.PAUSED);
-            }
+            _videotag.pause();
+            this.setState(states.PAUSED);
         };
 
         this.seek = function(seekPos) {
@@ -466,7 +479,10 @@ define([
         }
 
         this.volume = function(vol) {
-            _videotag.volume = Math.min(Math.max(0, vol / 100), 1);
+            // volume must be 0.0 - 1.0
+            vol = utils.between(vol/100, 0, 1);
+
+            _videotag.volume = vol;
         };
 
         function _volumeHandler() {
@@ -482,28 +498,38 @@ define([
             _videotag.muted = !!state;
         };
 
-        function _sendBufferUpdate() {
-            if (!_attached) { return; }
-            var newBuffer = _getBuffer();
-
-            if (newBuffer >= 1) {
-                clearInterval(_bufferInterval);
+        function _checkBufferAndPlayback() {
+            if (!_attached) {
+                return;
             }
 
-            if (newBuffer !== _bufferPercent) {
-                _bufferPercent = newBuffer;
+            var buffered = _getBuffer();
+            if (buffered !== _buffered) {
+                _buffered = buffered;
                 _this.sendEvent(events.JWPLAYER_MEDIA_BUFFER, {
-                    bufferPercent: Math.round(_bufferPercent * 100)
+                    bufferPercent: buffered * 100
                 });
+            }
+
+            // Browsers, including latest chrome, do not always report Stalled events in a timely fashion
+            var currentTime = _videotag.currentTime;
+            if (currentTime === _position) {
+                if (_.now() - _wasPlayingAt > STALL_DELAY) {
+                    _stalledHandler();
+                }
+            } else {
+                _wasPlayingAt = _.now();
+                _position = currentTime;
             }
         }
 
         function _getBuffer() {
             var buffered = _videotag.buffered;
-            if (!buffered || !_videotag.duration || buffered.length === 0) {
+            var duration = _videotag.duration;
+            if (!buffered || buffered.length === 0 || duration <= 0 || duration === Infinity) {
                 return 0;
             }
-            return buffered.end(buffered.length-1) / _videotag.duration;
+            return utils.between(buffered.end(buffered.length-1) / duration, 0, 1);
         }
 
         function _endedHandler() {
@@ -638,12 +664,6 @@ define([
                 _videotag.videoWidth, _videotag.videoHeight);
         };
 
-        this.setControls = function(state) {
-            _videotag.controls = !!state;
-        };
-
-        this.supportsFullscreen = _.constant(true);
-
         this.setFullscreen = function(state) {
             state = !!state;
 
@@ -683,14 +703,6 @@ define([
             return _fullscreenState || !!_videotag.webkitDisplayingFullscreen;
         };
 
-        this.isAudioFile = function() {
-            if (!_levels) {
-                return false;
-            }
-            var type = _levels[0].type;
-            return (type === 'oga' || type === 'aac' || type === 'mp3' || type === 'vorbis');
-        };
-
         this.setCurrentQuality = function(quality) {
             if (_currentQuality === quality) {
                 return;
@@ -703,12 +715,12 @@ define([
                         currentQuality: quality,
                         levels: _getPublicLevels(_levels)
                     });
-                    var time = _videotag.currentTime;
+                    var time = _videotag.currentTime || 0;
                     var duration = _videotag.duration;
                     if (duration <= 0) {
                         duration = _duration;
                     }
-                    _completeLoad(time, duration);
+                    _completeLoad(time, duration || 0);
                 }
             }
         };
@@ -726,72 +738,10 @@ define([
         };
     }
 
-    var MimeTypes = {
-        'aac': 'audio/mp4',
-        'mp4': 'video/mp4',
-        'f4v': 'video/mp4',
-        'm4v': 'video/mp4',
-        'mov': 'video/mp4',
-        //'m4a': 'audio/x-m4a', // converted to aac by source.js
-        'mp3': 'audio/mpeg',
-        'ogv': 'video/ogg',
-        'ogg': 'video/ogg',
-        'oga': 'video/ogg',
-        'vorbis': 'video/ogg',
-        'webm': 'video/webm',
-
-        // The following are not expected to work in Chrome
-        'f4a': 'video/aac',
-        'm3u8': 'application/vnd.apple.mpegurl',
-        'm3u': 'application/vnd.apple.mpegurl',
-        'hls': 'application/vnd.apple.mpegurl'
-    };
-
-
     // Register provider
     var F = function(){};
     F.prototype = DefaultProvider;
     VideoProvider.prototype = new F();
-    VideoProvider.supports = function(source) {
-
-        var file = source.file;
-        var type = source.type;
-
-        // HLS not sufficiently supported on Android devices; should fail over automatically.
-        if (type === 'hls') {
-            //when androidhls is set to true, allow HLS playback on Android 4.1 and up
-            if (source.androidhls) {
-                var isAndroidNative = utils.isAndroidNative;
-                if (isAndroidNative(2) || isAndroidNative(3) || isAndroidNative('4.0')) {
-                    return false;
-                } else if (utils.isAndroid()) { //utils.isAndroidNative()) {
-                    // skip canPlayType check
-                    // canPlayType returns '' in native browser even though HLS will play
-                    return true;
-                }
-            } else if (utils.isAndroid()) {
-                return false;
-            }
-        }
-
-        // Ensure RTMP files are not seen as videos
-        if (utils.isRtmp(file, type)) {
-            return false;
-        }
-
-        // Not OK to use HTML5 with no extension
-        if (!MimeTypes[type]) {
-            return false;
-        }
-
-        // Last, but not least, we ask the browser
-        // (But only if it's a video with an extension known to work in HTML5)
-        if (video.canPlayType) {
-            var result = video.canPlayType(MimeTypes[type]);
-            return !!result;
-        }
-        return false;
-    };
 
     return VideoProvider;
 

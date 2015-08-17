@@ -16,19 +16,31 @@ import flash.geom.Rectangle;
 
 public class View extends Sprite {
 
-    protected var _model:Model;
-    protected var _mediaLayer:Sprite;
-    protected var _pluginsLayer:Sprite;
+    private var _model:Model;
+    private var _mediaLayer:Sprite;
+    private var _pluginsLayer:Sprite;
 
-    protected var _plugins:Object;
+    private var _plugins:Object;
 
 
     private static function rightClickHandler(e:Event):void {}
 
     public function View(model:Model) {
+        _plugins = {};
+
         _model = model;
         _model.addEventListener(MediaEvent.JWPLAYER_MEDIA_LOADED, mediaLoaded);
-        setupLayers();
+
+        _mediaLayer = new Sprite();
+        _pluginsLayer = new Sprite();
+
+        this.addChild(_mediaLayer);
+        this.addChild(_pluginsLayer);
+
+        CONFIG::debugging {
+            _mediaLayer.name = 'media';
+            _pluginsLayer.name = 'plugins';
+        }
     }
 
     public function setupView():void {
@@ -36,7 +48,6 @@ public class View extends Sprite {
         RootReference.stage.align = StageAlign.TOP_LEFT;
         RootReference.stage.addEventListener('rightClick', rightClickHandler);
         RootReference.stage.addEventListener(Event.RESIZE, resizeHandler);
-        RootReference.stage.addChildAt(this, 0);
         redraw();
     }
 
@@ -106,26 +117,7 @@ public class View extends Sprite {
         return _plugins[id] as IPlugin6;
     }
 
-    protected function setupLayers():void {
-        var currentLayer:uint = 0;
-
-        _mediaLayer = setupLayer("media", currentLayer++);
-        _pluginsLayer = setupLayer("plugins", currentLayer);
-
-        _mediaLayer.mouseEnabled = false;
-        _mediaLayer.mouseChildren = false;
-
-        _plugins = {};
-    }
-
-    protected function setupLayer(name:String, index:Number):Sprite {
-        var layer:Sprite = new Sprite();
-        layer.name = name;
-        this.addChildAt(layer, index);
-        return layer;
-    }
-
-    protected function resizeMedia(width:Number, height:Number):void {
+    private function resizeMedia(width:Number, height:Number):void {
         if (_mediaLayer.numChildren > 0 && _model.media.display) {
             var preserveAspect:Boolean = (_model.fullscreen && _model.stretching === Stretcher.EXACTFIT);
             if (preserveAspect) {
@@ -138,7 +130,7 @@ public class View extends Sprite {
         }
     }
 
-    protected function resizePlugins(width:Number, height:Number):void {
+    private function resizePlugins(width:Number, height:Number):void {
         for (var pluginId:String in _plugins) {
             var plugin:IPlugin = _plugins[pluginId] as IPlugin;
             if (plugin) {
@@ -147,11 +139,11 @@ public class View extends Sprite {
         }
     }
 
-    protected function resizeHandler(event:Event):void {
+    private function resizeHandler(event:Event):void {
         redraw();
     }
 
-    protected function mediaLoaded(evt:MediaEvent):void {
+    private function mediaLoaded(evt:MediaEvent):void {
         var disp:DisplayObject = _model.media.display;
         if (!disp || disp.parent !== _mediaLayer) {
             while (_mediaLayer.numChildren) {

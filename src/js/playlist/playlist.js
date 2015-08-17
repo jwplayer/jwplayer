@@ -63,15 +63,11 @@ define([
 
     //  Choose from the sources a type which matches our most preferred provider
     function _chooseType(sources, providers) {
-        var m = _.map(sources, function(s) {
-            var provider = providers.choose(s);
-            var priority = providers.priority(provider);
+        var m = _.map(sources, providers.choose, providers);
 
-            return {
-                priority : priority,
-                type : s.type
-            };
-        });
+
+        // Remove sources which don't have a provider
+        m = _.compact(m);
 
         var best = _.max(m, _.property('priority'));
         if (best.priority > -1) {

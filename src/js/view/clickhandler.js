@@ -2,12 +2,13 @@ define([
     'utils/ui',
     'events/events',
     'utils/backbone.events',
-    'events/states',
     'utils/underscore'
-], function(UI, events, Events, states, _) {
+], function(UI, events, Events, _) {
+
     var ClickHandler = function(_model, _ele) {
         var _display,
-            _alternateClickHandler;
+            _alternateClickHandler,
+            _alternateDoubleClickHandler;
 
         _.extend(this, Events);
 
@@ -15,7 +16,7 @@ define([
 
         this.element = function() { return _display; };
 
-        var userInteract = new UI(_display, {'enableDoubleTap': true});
+        var userInteract = new UI(_display, {enableDoubleTap: true});
         userInteract.on('click tap', _clickHandler);
         userInteract.on('doubleClick doubleTap', _doubleClickHandler);
 
@@ -23,15 +24,9 @@ define([
 
         var _this = this;
         function _clickHandler(evt) {
-            var hasControls = _model.get('controls');
-            var state = _model.get('state');
 
-            if (_alternateClickHandler && (hasControls || state === states.PLAYING)) {
+            if (_alternateClickHandler) {
                 _alternateClickHandler(evt);
-                return;
-            }
-
-            if (!hasControls) {
                 return;
             }
 
@@ -40,16 +35,22 @@ define([
 
         // Handle double-clicks for fullscreen toggle
         function _doubleClickHandler() {
+            if (_alternateDoubleClickHandler) {
+                _alternateDoubleClickHandler();
+                return;
+            }
+
             _this.trigger('doubleClick');
         }
 
-        /** NOT SUPPORTED : Using this for now to hack around instream API **/
-        this.setAlternateClickHandler = function(handler) {
-            _alternateClickHandler = handler;
+        this.setAlternateClickHandlers = function(clickHandler, doubleClickHandler) {
+            _alternateClickHandler = clickHandler;
+            _alternateDoubleClickHandler = doubleClickHandler || null;
         };
 
-        this.revertAlternateClickHandler = function() {
+        this.revertAlternateClickHandlers = function() {
             _alternateClickHandler = null;
+            _alternateDoubleClickHandler = null;
         };
     };
 

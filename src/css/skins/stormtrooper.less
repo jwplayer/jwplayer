@@ -32,7 +32,8 @@
     /* For the overlay containers */
     .jw-time-tip,
     .jw-volume-tip,
-    .jw-menu {
+    .jw-menu,
+    .jw-skip {
         border-radius: @ui-padding;
     }
     
@@ -87,14 +88,10 @@
     }
     
     /* Rail/slider styles */
-    .jw-slider-container {
-        height: 1em;
-    }
-
     .jw-rail,
     .jw-buffer,
     .jw-progress,
-    .jw-knob:after {
+    .jw-knob {
         box-sizing: border-box;
         border: 1.5px solid #000;
         border-radius: 2px;
@@ -120,22 +117,17 @@
         .jw-knob {
             .vertically-centered-rail-element(.3em,.5em);
 
-            &:after {
-                background: @vertical-rail-gradient;
-                width: .3em;
-                height: .5em;
-                border-width: 1px;
-                border-radius: 0;
-            }
+            background: @vertical-rail-gradient;
+            width: .3em;
+            height: .5em;
+            border-width: 1px;
+            border-radius: 0;
         }
 
         .jw-cue {
             .vertically-centered-rail-element(.3em,.4em);
-            &:after {
-                background-color: @inactive-color;
-                border: 1px solid #000;
-            }
-            
+            background-color: @inactive-color;
+            border: 1px solid #000;
         }
     }
 
@@ -153,12 +145,10 @@
         .jw-knob {
             width: .5em;
 
-            &:after {
-                background: @horiz-rail-gradient;
-                height: .2em;
-                width: .5em;
-                border-width: 1px;
-            }
+            background: @horiz-rail-gradient;
+            height: .2em;
+            width: .5em;
+            border-width: 1px;
         }
     }
 

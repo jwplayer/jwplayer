@@ -23,10 +23,10 @@ define([
         this.init = function() {
             // Initialize the instream player's model copied from main player's model
             _adModel = new Model().setup({
-                id: _model.id,
-                volume: _model.volume,
-                fullscreen: _model.fullscreen,
-                mute: _model.mute
+                id: _model.get('id'),
+                volume: _model.get('volume'),
+                fullscreen: _model.get('fullscreen'),
+                mute: _model.get('mute')
             });
             _adModel.on('fullscreenchange', _nativeFullscreenHandler);
 
@@ -37,6 +37,7 @@ define([
         _this.load = function(item) {
             // Make sure it chooses a provider
             _adModel.setPlaylist([item]);
+            _adModel.setItem(0);
 
             // check provider after item change
             _checkProvider();
@@ -55,7 +56,7 @@ define([
                 return;
             }
 
-            _adModel.off('fullscreenchange', _nativeFullscreenHandler);
+            _adModel.off();
 
             // We don't want the instream provider to be attached to the video tag anymore
             _this.off();
@@ -64,7 +65,6 @@ define([
                 _currentProvider.resetEventListeners();
                 _currentProvider.destroy();
             }
-            _adModel.off();
 
             // Return the view to its normal state
             _adModel = null;
@@ -105,12 +105,11 @@ define([
 
                 provider.addGlobalListener(_forward);
                 provider.addEventListener(events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
-                provider.addEventListener(events.JWPLAYER_MEDIA_ERROR, _forward);
 
                 provider.addEventListener(events.JWPLAYER_PLAYER_STATE, stateHandler);
                 provider.attachMedia();
-                provider.mute(_model.mute);
-                provider.volume(_model.volume);
+                provider.mute(_model.get('mute'));
+                provider.volume(_model.get('volume'));
 
                 _adModel.on('change:state', changeStateEvent, _this);
             }
@@ -119,11 +118,9 @@ define([
         function stateHandler(evt) {
             switch (evt.newstate) {
                 case states.PLAYING:
-                    _model.set('state', evt.newstate);
                     _adModel.set('state', evt.newstate);
                     break;
                 case states.PAUSED:
-                    _model.set('state', evt.newstate);
                     _adModel.set('state', evt.newstate);
                     break;
             }

@@ -33,10 +33,77 @@ define([
         };
 
         var _flashCommand = function() {
-            _swf.triggerFlash.apply(_swf, arguments);
+            if(_swf) {
+                _swf.triggerFlash.apply(_swf, arguments);
+            }
         };
 
         var _eventDispatcher = new eventdispatcher('flash.provider');
+
+        var _customLabels = _getCustomLabels();
+
+        /** Translate sources into quality levels, assigning custom levels if present. **/
+        function _labelLevels(levels) {
+            if (_customLabels) {
+                for (var i = 0; i < levels.length; i++) {
+                    var level = levels[i];
+                    if (level.bitrate) {
+                        // get label with nearest rate match
+                        var sourceKBps = Math.round(level.bitrate / 1024);
+                        level.label = _getNearestCustomLabel(sourceKBps);
+                    }
+                }
+            }
+        }
+
+        function _getNearestCustomLabel(sourceKBps) {
+            // get indexed value
+            var label = _customLabels[sourceKBps];
+            if (!label) {
+                //find nearest
+                var lastDiff = Infinity;
+                var i = _customLabels.bitrates.length;
+                while (i--) {
+                    var diff = Math.abs(_customLabels.bitrates[i] - sourceKBps);
+                    if (diff > lastDiff) {
+                        break;
+                    }
+                    lastDiff = diff;
+                }
+                label = _customLabels.labels[_customLabels.bitrates[i + 1]];
+                // index
+                _customLabels[sourceKBps] = label;
+            }
+            return label;
+        }
+
+        /** Indexed Custom Labels **/
+        function _getCustomLabels() {
+            var hlsLabels =_playerConfig.hlslabels;
+            if(!hlsLabels) {
+                return null;
+            }
+            var labels = {};
+            var bitrates = [];
+            for (var bitrate in hlsLabels) {
+                var key = parseFloat(bitrate);
+                if (!isNaN(key)) {
+                    var rateKBps = Math.round(key);
+                    labels[rateKBps] = hlsLabels[bitrate];
+                    bitrates.push(rateKBps);
+                }
+            }
+            if (bitrates.length === 0) {
+                return null;
+            }
+            bitrates.sort(function(a, b) {
+                return a - b;
+            });
+            return {
+                labels: labels,
+                bitrates: bitrates
+            };
+        }
 
         _.extend(this, _eventDispatcher, {
                 load: function(item) {
@@ -44,6 +111,7 @@ define([
                     _beforecompleted = false;
                     this.setState(states.LOADING);
                     _flashCommand('load', item);
+                    this.sendMediaType(item.sources);
                 },
                 play: function() {
                     _flashCommand('play');
@@ -66,16 +134,13 @@ define([
                         return;
                     }
                     var volume = Math.min(Math.max(0, vol), 100);
-                    _playerConfig.volume = volume;
                     if (_ready()) {
-                    _flashCommand('volume', volume);
+                        _flashCommand('volume', volume);
                     }
                 },
                 mute: function(mute) {
-                    var muted = utils.exists(mute) ? !!mute : !_playerConfig.mute;
-                    _playerConfig.mute = muted;
                     if (_ready()) {
-                    _flashCommand('mute', muted);
+                        _flashCommand('mute', mute);
                     }
                 },
                 setState: function() {
@@ -122,25 +187,33 @@ define([
 
                     // listen to events triggered from flash
                     _swf.once('ready', function() {
-                        // setup flash player
-                        var config = _.extend({
-                            commands: _swf.__commandQueue
-                        }, _playerConfig);
 
+                        // After plugins load, then execute commandqueue
+                        _swf.once('pluginsLoaded', function() {
+                            _swf.queueCommands = false;
+                            _flashCommand('setupCommandQueue', _swf.__commandQueue);
+                            _swf.__commandQueue = [];
+                        });
+
+                        // setup flash player
+                        var config = _.extend({}, _playerConfig);
                         _flashCommand('setup', config);
+
                         _swf.__ready = true;
-                        _swf.__commandQueue = [];
 
                     }, this);
 
                     var forwardEventsWithData = [
                         events.JWPLAYER_MEDIA_META,
-                        events.JWPLAYER_MEDIA_BUFFER,
-                        events.JWPLAYER_MEDIA_TIME,
                         events.JWPLAYER_MEDIA_ERROR,
                         'subtitlesTracks',
                         'subtitlesTrackChanged',
                         'subtitlesTrackData'
+                    ];
+
+                    var forwardEventsWithDataDuration = [
+                        events.JWPLAYER_MEDIA_BUFFER,
+                        events.JWPLAYER_MEDIA_TIME
                     ];
 
                     var forwardEvents = [
@@ -149,11 +222,13 @@ define([
 
                     // jwplayer 6 flash player events (forwarded from AS3 Player, Controller, Model)
                     _swf.on(events.JWPLAYER_MEDIA_LEVELS, function(e) {
+                        _labelLevels(e.levels);
                         _currentQuality = e.currentQuality;
                         _qualityLevels = e.levels;
                         this.sendEvent(e.type, e);
 
                     }, this).on(events.JWPLAYER_MEDIA_LEVEL_CHANGED, function(e) {
+                        _labelLevels(e.levels);
                         _currentQuality = e.currentQuality;
                         _qualityLevels = e.levels;
                         this.sendEvent(e.type, e);
@@ -174,6 +249,12 @@ define([
                             return;
                         }
                         this.setState(state);
+
+                    }, this).on(forwardEventsWithDataDuration.join(' '), function(e) {
+                        if(e.duration === 'Infinity') {
+                            e.duration = Infinity;
+                        }
+                        this.sendEvent(e.type, e);
 
                     }, this).on(forwardEventsWithData.join(' '), function(e) {
                         this.sendEvent(e.type, e);
@@ -202,7 +283,7 @@ define([
                         _flashProviderType = e.message;
                         this.sendEvent(events.JWPLAYER_PROVIDER_CHANGED, e);
                     }, this).on(events.JWPLAYER_ERROR, function(event) {
-                        console.error(event.code, event.message, event, this);
+                        utils.log('Error playing media: %o %s', event.code, event.message, event);
                         this.sendEvent(events.JWPLAYER_MEDIA_ERROR, {
                             message: 'Error loading media: File could not be played'
                         });
@@ -222,8 +303,8 @@ define([
                         _flashCommand('stretch', stretching);
                     }
                 },
-                setControls: function() {
-
+                setControls: function(show) {
+                    _flashCommand('setControls', show);
                 },
                 setFullscreen: function(value) {
                     _fullscreen = value;
@@ -231,13 +312,6 @@ define([
                 },
                 getFullScreen: function() {
                     return _fullscreen;
-                },
-                isAudioFile: function() {
-                    if (_item) {
-                        var type = _item.sources[0].type;
-                        return (type === 'oga' || type === 'aac' || type === 'mp3' || type === 'vorbis');
-                    }
-                    return false;
                 },
                 setCurrentQuality: function(quality) {
                     _flashCommand('setCurrentQuality', quality);
@@ -266,7 +340,6 @@ define([
                 setCurrentAudioTrack : function(audioTrack) {
                     _flashCommand('setCurrentAudioTrack', audioTrack);
                 },
-                supportsFullscreen: _.constant(true),
                 destroy: function() {
                     this.remove();
                     if (_swf) {
@@ -279,42 +352,21 @@ define([
                     _eventDispatcher = null;
                 }
         });
+
+        // Overwrite the event dispatchers to block on certain occasions
+        this.sendEvent = function() {
+            if (!_attached) {
+                return;
+            }
+            _eventDispatcher.sendEvent.apply(this, arguments);
+        };
     }
 
-
-    var flashExtensions = {
-        'flv': 'video',
-        'f4v': 'video',
-        'mov': 'video',
-        'm4a': 'video',
-        'm4v': 'video',
-        'mp4': 'video',
-        'aac': 'video',
-        'f4a': 'video',
-        'mp3': 'sound',
-        'smil': 'rtmp'
-    };
-    var PLAYABLE = _.keys(flashExtensions);
 
     // Register provider
     var F = function(){};
     F.prototype = DefaultProvider;
     FlashProvider.prototype = new F();
-    FlashProvider.supports = function (source) {
-        var flashVersion = utils.flashVersion();
-        if (!flashVersion || flashVersion < __FLASH_VERSION__) {
-            return false;
-        }
-
-        var file = source.file;
-        var type = source.type;
-
-        if (utils.isRtmp(file, type)) {
-            return true;
-        }
-
-        return _.contains(PLAYABLE, type);
-    };
 
     return FlashProvider;
 });

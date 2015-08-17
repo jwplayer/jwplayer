@@ -15,6 +15,7 @@ define([
             //'remove',
 
             'seek',
+            'skipAd',
             'stop',
             'playlistNext',
             'playlistPrev',

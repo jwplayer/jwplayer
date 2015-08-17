@@ -1,7 +1,7 @@
 define([
-    'utils/underscore',
-    'utils/backbone.events'
-], function(_, Events) {
+    'utils/backbone.events',
+    'test/underscore'
+], function(Events, _) {
     var mockModel = {
         setup : function() {
             this.attrs = _.extend({}, this.default_attrs);
@@ -12,6 +12,7 @@ define([
             volume : 50,
             controls : true,
             stretching : 'uniform',
+            skin:'seven',
             width : 400,
             height : 400,
             aspectratio : '75%',

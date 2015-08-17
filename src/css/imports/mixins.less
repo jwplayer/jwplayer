@@ -23,10 +23,20 @@
 }
 
 .inset-controlbar() {
-    display: block;
-    margin: 0 auto;
-    max-width: 96%;
-    bottom: .7em;
+    .jw-controlbar {
+        // for correct display in IE browsers
+        display: inline-block;
+        // width assignment is required for IE11 to center correctly
+        width: 96%;
+        max-width: 50em;
+        margin: 0 auto;
+        bottom: .7em;
+        left: 2%;
+        right: 2%;
+    }
+    &.jw-flag-audio-player .jw-controlbar {
+        bottom: 0; // overwrite the inset-controlbar mixin
+    }
 }
 
 .vertically-centered-rail-element(@rail-height, @element-height) {
@@ -102,7 +112,6 @@
 
         .jw-display-icon-container {
             border-radius: @ui-corner-round;
-            padding: 0.5em .75em;
 
             &:hover {
                 background: @display-bkgd-hover-color;
@@ -149,6 +158,20 @@
             background: @volume-background;
             border: @volume-border;
             padding: @volume-padding;
+        }
+
+        .jw-skip {
+            background: @controlbar-background;
+            padding: @volume-padding;
+
+            .jw-skip-icon {
+                color: @inactive-color;
+            }
+
+            &.jw-skippable:hover .jw-skip-icon,
+            &.jw-skippable:hover .jw-text {
+                color: @active-color;
+            }
         }
 
         .jw-time-tip,

@@ -1,8 +1,9 @@
 define([
     'test/underscore',
     'controller/Setup',
+    'controller/model',
     'events/events'
-], function (_, Setup, events) {
+], function (_, Setup, Model, events) {
     /* jshint qunit: true */
 
     module('Setup');
@@ -45,11 +46,28 @@ define([
         }, assert.async());
     });
 
+    test('fails when playlist items are filtered out', function(assert) {
+        var model = getModel({
+            playlist: [{sources:[{file:'file.foo'}]}]
+        });
+
+        var playlist;
+        testSetup(model, function() {
+            playlist = model.get('playlist');
+            assert.deepEqual(playlist, [], 'playlist is an empty array');
+            assert.ok(false, 'setup should not succeed');
+        }, function(message) {
+            playlist = model.get('playlist');
+            assert.deepEqual(playlist, [], 'playlist is an empty array');
+            assert.ok(message, 'setup failed with message: ' + message);
+        }, assert.async());
+    });
+
     test('fails after timeout', function(assert) {
         var model = getModel({
             setupTimeout: 0.001,
             playlist: [{sources:[{file:'file.mp4'}]}],
-            skin: '//p.jwpcdn.com/6/12/skins/bekle.xml'
+            skin: '//p.jwpcdn.com/player/v/7.0.0/skins/bekle.css'
         });
 
         testSetup(model, function() {
@@ -103,7 +121,7 @@ define([
         setup.destroy();
 
         _.defer(function() {
-            ok(true, 'so far so good');
+            assert.ok(true, 'so far so good');
             done();
         }, 0);
     });
@@ -120,15 +138,15 @@ define([
 
         testSetup(model, function() {
             assert.ok(true, 'setup ok');
-            notEqual(options, optionsOrig, 'config was modified');
+            assert.notEqual(options, optionsOrig, 'config was modified');
         }, function(message) {
             assert.ok(true, 'setup failed with message: ' + message);
-            notEqual(options, optionsOrig, 'config was modified');
+            assert.notEqual(options, optionsOrig, 'config was modified');
         }, assert.async());
     });
 
     function testSetup(model, success, error, done) {
-        var setup = new Setup(api, model, view, model.config.setupTimeout);
+        var setup = new Setup(api, model, view, model.get('setupTimeout'));
         setup.on(events.JWPLAYER_READY, function() {
             success.call(setup);
             done();
@@ -154,14 +172,8 @@ define([
     };
 
     function getModel(config) {
-        return {
-            config: config,
-            'get' : function(a) {
-                return this[a];
-            },
-            setPlaylist: function(p) {
-                this.playlist = p;
-            }
-        };
+        var m = new Model();
+        m.setup(config);
+        return m;
     }
 });

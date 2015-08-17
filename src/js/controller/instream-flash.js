@@ -8,14 +8,13 @@ define([
 ], function(Events, Model, changeStateEvent, events, states, _) {
 
     var InstreamFlash = function(_controller, _model) {
-        this.controller = _controller;
         this.model = _model;
 
         this._adModel = new Model().setup({
-            id: _model.id,
-            volume: _model.volume,
-            fullscreen: _model.fullscreen,
-            mute: _model.mute
+            id: _model.get('id'),
+            volume: _model.get('volume'),
+            fullscreen: _model.get('fullscreen'),
+            mute: _model.get('mute')
         });
 
         this._adModel.on('change:state', changeStateEvent, this);
@@ -31,12 +30,9 @@ define([
             this.swf.on('instream:state', function(evt) {
                 switch (evt.newstate) {
                     case states.PLAYING:
-                        this.trigger('play');
-                        this.model.set('state', evt.newstate);
                         this._adModel.set('state', evt.newstate);
                         break;
                     case states.PAUSED:
-                        this.model.set('state', evt.newstate);
                         this._adModel.set('state', evt.newstate);
                         break;
                 }
@@ -49,11 +45,8 @@ define([
             .on('instream:complete', function(evt) {
                 this.trigger(events.JWPLAYER_MEDIA_COMPLETE, evt);
             }, this)
-            .on('instream:error', function() {
-                this.controller.instreamDestroy();
-            }, this)
-            .on('instream:destroy', function() {
-                this.controller.instreamDestroy();
+            .on('instream:error', function(evt) {
+                this.trigger(events.JWPLAYER_MEDIA_ERROR, evt);
             }, this);
 
             this.swf.triggerFlash('instream:init');
@@ -66,13 +59,14 @@ define([
 
             this.off();
 
-            this._adModel.off();
-            this._adModel = null;
             this.swf.off(null, null, this);
             this.swf.triggerFlash('instream:destroy');
             this.swf = null;
+
+            this._adModel.off();
+            this._adModel = null;
+
             this.model = null;
-            this.controller = null;
         },
 
         load: function(item) {

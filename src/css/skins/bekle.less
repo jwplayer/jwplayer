@@ -19,7 +19,7 @@
     @buffer-color: @buffer-gradient;
     @rail-color: @rail-gradient;
     @thumb-color: @progress-color;
-    @controlbar-background: #182335;
+    @controlbar-background: fade(#182335, 80%);
 
     @display-icon-color: @inactive-color;
     @display-icon-hover-color: @inactive-color;
@@ -29,21 +29,20 @@
     @cc-inactive: #5e6575;
     @cc-active: @active-color;
 
-    @volume-background: #505863;
+    @volume-background: fade(#505863,90%);
 
     #namespace > .basic-skin-styles(); // Using the above local variables
     .skin-element-padding();
 
+    .inset-controlbar();
     .jw-controlbar {
-        .inset-controlbar;
-        opacity: 0.8;
         border-radius: .3em;
     }
 
     .jw-playlist-container {
         left: -42%;
         overflow: hidden;
-        bottom: .5em;
+        bottom: .2em;
 
         .jw-option {
             border-bottom: 1px solid @controlbar-background;
@@ -86,17 +85,15 @@
         }
 
         .jw-knob {
-
-            &:after {
-                background-color: #fff;
-                width: .7em;
-                height: .7em;
-                border-radius: 50%;
-            }
+            background-color: #fff;
+            width: .7em;
+            height: .7em;
+            border-radius: 50%;
         }
     }
 
     .jw-slider-horizontal {
+        background: transparent;
 
         .jw-rail,
         .jw-progress,
@@ -107,12 +104,10 @@
         .jw-cue {
             .vertically-centered-rail-element(@rail-height, @cue-size);
 
-            &:after {
-                background-color: #fff;
-                width: @cue-size;
-                height: @cue-size;
-                border-radius: 1em;
-            }
+            background-color: #fff;
+            width: @cue-size;
+            height: @cue-size;
+            border-radius: 1em;
         }
 
         .jw-knob {
@@ -139,7 +134,13 @@
 
     .jw-time-tip,
     .jw-volume-tip,
+    .jw-menu,
+    .jw-skip {
+        border-radius: .3em;
+    }
+
+    .jw-volume-tip,
     .jw-menu {
-        border-radius: @volume-border-radius;
+        bottom: .2em;
     }
 }

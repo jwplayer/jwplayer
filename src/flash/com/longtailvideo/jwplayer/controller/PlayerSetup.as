@@ -47,14 +47,23 @@ public class PlayerSetup extends EventDispatcher {
         _view = view;
     }
 
-    public function setupPlayer():void {
+    public function setupInterface():void {
+        tasker = new TaskQueue(false);
+        tasker.addEventListener(Event.COMPLETE, setupTasksComplete);
+        tasker.addEventListener(ErrorEvent.ERROR, setupTasksFailed);
+
+        tasker.queueTask(waitForSwfEventsRouter);
+
+        tasker.runTasks();
+    }
+
+    public function setupPlugins():void {
         tasker = new TaskQueue(false);
         tasker.addEventListener(Event.COMPLETE, setupTasksComplete);
         tasker.addEventListener(ErrorEvent.ERROR, setupTasksFailed);
 
         tasker.queueTask(loadPlugins, loadPluginsComplete);
         tasker.queueTask(initPlugins);
-        tasker.queueTask(waitForSwfEventsRouter);
 
         tasker.runTasks();
     }

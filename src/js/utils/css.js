@@ -10,20 +10,7 @@ define([
         _rules = {},
         _cssBlock = null,
         _ruleIndexes = {},
-        _debug = false;
-
-    // Copied into this file to remove circular dependency
-    var _exists = function (item) {
-        switch (typeof(item)) {
-            case 'string':
-                return (item.length > 0);
-            case 'object':
-                return (item !== null);
-            case 'undefined':
-                return false;
-        }
-        return true;
-    };
+        _exists = utils.exists;
 
     function _createStylesheet(debugText) {
         var styleSheet = document.createElement('style');
@@ -58,14 +45,7 @@ define([
             //no change in css
             return;
         }
-        if (_debug) {
-            // add a new style sheet with css text and exit
-            if (_styleSheets[selector]) {
-                _styleSheets[selector].parentNode.removeChild(_styleSheets[selector]);
-            }
-            _styleSheets[selector] = _createStylesheet(_getRuleText(selector));
-            return;
-        }
+
         if (!_styleSheets[selector]) {
             // set stylesheet for selector
             var numberRules = _styleSheet && _styleSheet.sheet && _styleSheet.sheet.cssRules &&
@@ -311,20 +291,20 @@ define([
         transform(domelement, 'rotate(' + deg + 'deg)');
     };
 
-    var rgbHex = function (color) {
-        var hex = String(color).replace('#', '');
-        if (hex.length === 3) {
-            hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
-        }
-        return '#' + hex.substr(-6);
-    };
-
     var hexToRgba = function (hexColor, opacity) {
         var style = 'rgb';
+        if (hexColor) {
+            hexColor = String(hexColor).replace('#', '');
+            if (hexColor.length === 3) {
+                hexColor = hexColor[0] + hexColor[0] + hexColor[1] + hexColor[1] + hexColor[2] + hexColor[2];
+            }
+        } else {
+            hexColor = '000000';
+        }
         var channels = [
-            parseInt(hexColor.substr(1, 2), 16),
-            parseInt(hexColor.substr(3, 2), 16),
-            parseInt(hexColor.substr(5, 2), 16)
+            parseInt(hexColor.substr(0, 2), 16),
+            parseInt(hexColor.substr(2, 2), 16),
+            parseInt(hexColor.substr(4, 2), 16)
         ];
         if (opacity !== undefined && opacity !== 100) {
             style += 'a';
@@ -346,7 +326,6 @@ define([
         dragStyle : dragStyle,
         transitionStyle : transitionStyle,
         rotate : rotate,
-        rgbHex : rgbHex,
         hexToRgba : hexToRgba
     };
 });

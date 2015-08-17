@@ -53,11 +53,13 @@ define([
         },
         select: function (evt) {
             if(evt.target.parentElement === this.content) {
-                var classes = evt.target.classList;
-                // find the class with a name of the form 'item-1'
-                var item = _.find(classes, function(c) { return c.indexOf('item') === 0;});
-                this.trigger('select', parseInt(item.split('-')[1]));
-                this.closeTooltipListener();
+                var classes = utils.classList(evt.target);
+                // find the class with a name of the form 'jw-item-1'
+                var item = _.find(classes, function(c) { return c.indexOf('jw-item') === 0;});
+                if(item){
+                    this.trigger('select', parseInt(item.split('-')[2]));
+                    this.closeTooltipListener();
+                }
             }
         },
         selectItem : function(selectedIndex) {

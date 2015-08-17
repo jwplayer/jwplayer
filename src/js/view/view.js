@@ -23,7 +23,6 @@ define([
     var _styles = utils.style,
         _bounds = utils.bounds,
         _isMobile = utils.isMobile(),
-        _isIPad = utils.isIPad(),
         DOCUMENT_FULLSCREEN_EVENTS = [
             'fullscreenchange',
             'webkitfullscreenchange',
@@ -71,6 +70,9 @@ define([
 
             _this = _.extend(this, Events);
 
+        this.model = _model;
+        this.api = _api;
+
         _playerElement = utils.createElement(playerTemplate({id: _model.get('id')}));
 
         var width = _model.get('width'),
@@ -96,13 +98,13 @@ define([
         _elementSupportsFullscreen = _requestFullscreen && _exitFullscreen;
 
         function adjustSeek(amount) {
-            var newSeek = utils.between(_model.get('position') + amount, 0, this.getDuration());
-            this.seek(newSeek);
+            var newSeek = utils.between(_model.get('position') + amount, 0, _model.get('duration'));
+            _api.seek(newSeek);
         }
 
         function adjustVolume(amount) {
-            var newVol = utils.between(this.getVolume() + amount, 0, 100);
-            this.setVolume(newVol);
+            var newVol = utils.between(_model.get('volume') + amount, 0, 100);
+            _api.setVolume(newVol);
         }
 
         function allowKeyHandling(evt) {
@@ -139,19 +141,19 @@ define([
                     break;
                 case 37: // left-arrow, if not adMode
                     if (!_instreamMode) {
-                        adjustSeek.call(_api, -5);
+                        adjustSeek(-5);
                     }
                     break;
                 case 39: // right-arrow, if not adMode
                     if (!_instreamMode) {
-                        adjustSeek.call(_api, 5);
+                        adjustSeek(5);
                     }
                     break;
                 case 38: // up-arrow
-                    adjustVolume.call(_api, 10);
+                    adjustVolume(10);
                     break;
                 case 40: // down-arrow
-                    adjustVolume.call(_api, -10);
+                    adjustVolume(-10);
                     break;
                 case 77: // m-key
                     _api.setMute();
@@ -163,7 +165,7 @@ define([
                     if (evt.keyCode >= 48 && evt.keyCode <= 59) {
                         // if 0-9 number key, move to n/10 of the percentage of the video
                         var number = evt.keyCode - 48;
-                        var newSeek = (number / 10) * _api.getDuration();
+                        var newSeek = (number / 10) * _model.get('duration');
                         _api.seek(newSeek);
                     }
                     break;
@@ -255,18 +257,18 @@ define([
                 cssUtils.css(elements.join(', '), o);
             }
 
-            addStyle('color',       ['.jw-button-color'],             _model.get('skinColorInactive'));
-            addStyle('color',       ['.jw-button-color:hover'],       _model.get('skinColorActive'));
+            addStyle('color',               ['.jw-button-color'],             _model.get('skinColorInactive'));
+            addStyle('color',               ['.jw-button-color:hover'],       _model.get('skinColorActive'));
 
-            addStyle('color',       ['.jw-option'],                   _model.get('skinColorInactive'));
-            addStyle('color',       ['.jw-active-option'],            _model.get('skinColorActive'));
+            addStyle('color',               ['.jw-option'],                   _model.get('skinColorInactive'));
+            addStyle('background-color',    ['.jw-active-option'],            _model.get('skinColorActive'));
 
-            addStyle('color',       ['.jw-toggle'],                   _model.get('skinColorActive'));
-            addStyle('color',       ['.jw-toggle.jw-off'],            _model.get('skinColorInactive'));
+            addStyle('color',               ['.jw-toggle'],                   _model.get('skinColorActive'));
+            addStyle('color',               ['.jw-toggle.jw-off'],            _model.get('skinColorInactive'));
 
-            addStyle('background',  ['.jw-progress'],                 _model.get('skinColorActive'));
-            addStyle('background',  ['.jw-cue', '.jw-knob'],          _model.get('skinColorInactive'));
-            addStyle('background',  ['.jw-background-color'],         _model.get('skinColorBackground'));
+            addStyle('background',          ['.jw-progress'],                 _model.get('skinColorActive'));
+            addStyle('background',          ['.jw-cue', '.jw-knob'],          _model.get('skinColorInactive'));
+            addStyle('background',          ['.jw-background-color'],         _model.get('skinColorBackground'));
         };
 
         this.setup = function() {
@@ -297,11 +299,9 @@ define([
             _preview = new Preview(_model);
             _preview.setup(previewElem);
 
-            if (!_model.get('hidetitle')) {
-                var _titleElement = _playerElement.getElementsByClassName('jw-title')[0];
-                _title = new Title(_model);
-                _title.setup(_titleElement);
-            }
+            var _titleElement = _playerElement.getElementsByClassName('jw-title')[0];
+            _title = new Title(_model);
+            _title.setup(_titleElement);
 
             _setupControls();
 
@@ -323,15 +323,18 @@ define([
             }
 
             _model.on('change:controls', _onChangeControls);
-
+            _onChangeControls(_model, _model.get('controls'));
             _model.on('change:state', _stateHandler);
+            _model.on('change:duration', _setLiveMode, this);
+
             _model.mediaController.on(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
             _api.onPlaylistComplete(_playlistCompleteHandler);
             _api.onPlaylistItem(_playlistItemHandler);
 
-            _model.on('change:castAvailable', function(model, val) {
-                utils.toggleClass(_controlsLayer, 'jw-cast-available', val);
-            });
+            _model.on('change:castAvailable', _onCastAvailable);
+            _onCastAvailable(_model, _model.get('castAvailable'));
+            _model.on('change:castActive', _onCastActive);
+            _onCastActive(_model, _model.get('castActive'));
 
             // set initial state
             if(_model.get('stretching')){
@@ -340,6 +343,7 @@ define([
             // watch for changes
             _model.on('change:stretching', _onStretchChange);
 
+            /*
             _model.on('change:castState', function(evt) {
                 if (!_castDisplay) {
                     _castDisplay = new CastDisplay(_model.get('id'));
@@ -366,8 +370,8 @@ define([
                     _stateHandler(null, _model.get('state'));
                     _responsiveListener();
                 }
-
             });
+             */
 
             _stateHandler(null, states.IDLE);
 
@@ -388,7 +392,18 @@ define([
             }, 0);
         };
 
-        function _onStretchChange (model, newVal, oldVal) {
+        function _onCastActive(model, val) {
+            // if undefined it will simply alternate
+            val = val || false;
+
+            utils.toggleClass(_playerElement, 'jw-flag-casting', val);
+        }
+        function _onCastAvailable(model, val) {
+            utils.toggleClass(_playerElement, 'jw-flag-cast-available', val);
+            utils.toggleClass(_controlsLayer, 'jw-flag-cast-available', val);
+        }
+
+        function _onStretchChange(model, newVal, oldVal) {
             if(oldVal){
                 utils.removeClass(_playerElement, 'jw-stretch-' + oldVal);
             }
@@ -396,17 +411,24 @@ define([
         }
 
         function _componentFadeListeners(comp) {
-            if (comp) {
+            if (comp && !_isMobile) {
                 comp.element().addEventListener('mousemove', _overControlElement, false);
                 comp.element().addEventListener('mouseout', _offControlElement, false);
             }
         }
 
         function _touchHandler() {
-            if(_model.get('state') === states.IDLE){
+            if( (_model.get('state') === states.IDLE || _model.get('state') === states.COMPLETE) &&
+                _model.get('controls')) {
                 _api.play();
             }
-            _userActivity();
+
+            // Toggle visibility of the controls when clicking the media or play icon
+            if(!_showing) {
+                _userActivity();
+            } else {
+                _userInactive();
+            }
         }
 
         function _logoClickHandler(evt){
@@ -433,36 +455,52 @@ define([
             _this.trigger(evt.type, evt);
         }
 
-        var toggleControls = function() {
-            if (_model.get('controls')) {
-                utils.removeClass(_controlsLayer, 'jw-controls-disabled');
-            } else {
-                utils.addClass(_controlsLayer, 'jw-controls-disabled');
+        var _onChangeControls = function(model, bool) {
+            if (bool) {
+                var state = (_instreamMode) ? _instreamModel.get('state') : _model.get('state');
+                // model may be instream or normal depending on who triggers this
+                _stateHandler(model, state);
             }
+
+            if (bool) {
+                utils.removeClass(_playerElement, 'jw-flag-controls-disabled');
+            } else {
+                utils.addClass(_playerElement, 'jw-flag-controls-disabled');
+            }
+
+            model.getVideo().setControls(bool);
         };
 
+        function _doubleClickFullscreen() {
+            if(_model.get('controls')) {
+                _api.setFullscreen();
+            }
+        }
+
         function _setupControls() {
-            toggleControls();
-            _model.on('change:controls', toggleControls);
 
             _displayClickHandler = new ClickHandler(_model, _videoLayer);
             _displayClickHandler.on('click', function() {
                 forward({type : events.JWPLAYER_DISPLAY_CLICK});
-                _api.play();
+                if(_model.get('controls')) {
+                    _api.play();
+                }
             });
             _displayClickHandler.on('tap', function() {
                 forward({type : events.JWPLAYER_DISPLAY_CLICK});
                 _touchHandler();
             });
-            _displayClickHandler.on('doubleClick', function() {
-                _api.setFullscreen();
-            });
+            _displayClickHandler.on('doubleClick', _doubleClickFullscreen);
             
             var displayIcon = new DisplayIcon(_model);
             //toggle playback
-            displayIcon.on('click tap', function() {
+            displayIcon.on('click', function() {
                 forward({type : events.JWPLAYER_DISPLAY_CLICK});
                 _api.play();
+            });
+            displayIcon.on('tap', function() {
+                forward({type : events.JWPLAYER_DISPLAY_CLICK});
+                _touchHandler();
             });
             _controlsLayer.appendChild(displayIcon.element());
 
@@ -473,7 +511,7 @@ define([
 
             var rightside = document.createElement('div');
             rightside.className = 'jw-controls-right jw-reset';
-            if (_model.get('config').logo) {
+            if (_model.get('logo')) {
                 rightside.appendChild(_logo.element());
             }
             rightside.appendChild(_dock.element());
@@ -481,13 +519,14 @@ define([
 
             // captions rendering
             _captionsRenderer = new CaptionsRenderer(_model);
-            _captionsRenderer.setup(_model.get('config').captions);
+            _captionsRenderer.setup(_model.get('captions'));
 
             // captions should be place behind controls, and not hidden when controls are hidden
             _controlsLayer.parentNode.insertBefore(_captionsRenderer.element(), _title.element());
-
-
-            if (!_isMobile) {
+            
+            if (_isMobile) {
+                utils.addClass(_playerElement, 'jw-flag-touch-screen');
+            } else {
                 _rightClickMenu = new RightClick();
                 _rightClickMenu.setup(_model, _playerElement, _playerElement);
             }
@@ -498,25 +537,12 @@ define([
 
             _controlsLayer.appendChild(_controlbar.element());
 
-            if (_model.get('castAvailable')) {
-                _this.forceControls(true);
-            }
-
             _playerElement.onfocusin = handleFocus;
             _playerElement.onfocusout = handleBlur;
             _playerElement.addEventListener('focus', handleFocus);
             _playerElement.addEventListener('blur', handleBlur);
             _playerElement.addEventListener('keydown', handleKeydown);
             _playerElement.onmousedown = handleMouseDown;
-        }
-
-        function _onChangeControls(model, bool) {
-            utils.toggleClass(_controlsLayer, 'jw-hidden', bool);
-
-            if (bool) {
-                // model may be instream or normal depending on who triggers this
-                _stateHandler(model, model.get('state'));
-            }
         }
 
         function stopDragging(model) {
@@ -541,63 +567,11 @@ define([
             }
         }
 
-        function _castAdChanged(evt) {
-            // end ad mode (ad provider removed)
-            if (evt.done) {
-                _castAdsEnded();
-                return;
-            }
-
-            if (!evt.complete) {
-                // start ad mode
-                if (!_instreamMode) {
-                    _castAdsStarted();
-                }
-
-                this.setAltText(evt.message);
-
-                // clickthrough callback
-                var clickAd = evt.onClick;
-                if (clickAd !== undefined) {
-                    _displayClickHandler.setAlternateClickHandler(function() {
-                        clickAd(evt);
-                    });
-                }
-                //skipAd callback
-                var skipAd = evt.onSkipAd;
-                if (skipAd !== undefined && _castDisplay) {
-                    _castDisplay.setSkipoffset(evt, evt.onSkipAd);
-                }
-            }
-
-            // update skip button and companions
-            if (_castDisplay) {
-                _castDisplay.adChanged(evt);
-            }
-        }
-
-        function _castAdsStarted() {
-            utils.addClass(_playerElement, 'jw-flag-ads');
-        }
-
-        function _castAdsEnded() {
-            // controlbar reset
-            this.setAltText('');
-            utils.removeClass(_playerElement, 'jw-flag-ads');
-            // cast display reset
-            if (_castDisplay) {
-                _castDisplay.adsEnded();
-                _castDisplay.setState(_model.get('state'));
-            }
-            // display click reset
-            _displayClickHandler.revertAlternateClickHandler();
-        }
 
         /**
          * Switch fullscreen mode.
          **/
         var _fullscreen = this.fullscreen = function(state) {
-
             if (!utils.exists(state)) {
                 state = !_model.get('fullscreen');
             }
@@ -813,29 +787,17 @@ define([
                 _instreamModel.setFullscreen(fullscreenState);
             }
 
-            var model = _instreamMode ? _instreamModel : _model;
             if (fullscreenState) {
                 // Browsers seem to need an extra second to figure out how large they are in fullscreen...
                 clearTimeout(_resizeMediaTimeout);
                 _resizeMediaTimeout = setTimeout(_resizeMedia, 200);
-
-            } else if (_isIPad && model.get('state') === states.PAUSED) {
-                // delay refresh on iPad when exiting fullscreen
-                // TODO: cancel this if fullscreen or player state changes
-                setTimeout(_showDisplay, 500);
-            }
-        }
-
-        function _showDisplay() {
-            // debug this, find out why
-            if (!(_isMobile && _model.get('fullscreen'))) {
-                _model.getVideo().setControls(false);
             }
         }
 
         function _userInactive() {
             _showing = false;
 
+            clearTimeout(_controlsTimeout);
             utils.addClass(_playerElement, 'jw-flag-user-inactive');
         }
 
@@ -850,8 +812,6 @@ define([
         function _playlistCompleteHandler() {
             _replayState = true;
             _fullscreen(false);
-            if (_model.get('controls')) {
-            }
         }
 
         function _playlistItemHandler() {
@@ -860,10 +820,10 @@ define([
                 _castDisplay.setState(_model.get('state'));
             }
 
-            var isAudioFile = _isAudioFile();
-            utils.toggleClass(_playerElement, 'jw-flag-media-audio', isAudioFile);
-
-            _model.on('change:duration', _setLiveMode, this);
+            _model.mediaModel.on('change:mediaType', function(model, val) {
+                var isAudioFile = (val ==='audio');
+                utils.toggleClass(_playerElement, 'jw-flag-media-audio', isAudioFile);
+            });
         }
 
         function _setLiveMode(model, duration){
@@ -882,15 +842,6 @@ define([
             _title.updateText(_model, {'title': evt.message});
         }
 
-        function _isAudioFile() {
-            var model = _instreamMode ? _instreamModel : _model;
-            var provider = model.getVideo();
-            if (provider) {
-                return provider.isAudioFile();
-            }
-            return false;
-        }
-
         function _isCasting() {
             var provider = _model.getVideo();
             if (provider) {
@@ -905,7 +856,6 @@ define([
             _currentState = state;
             // cast.display
             if (_isCasting()) {
-
                 // TODO: needs to be done in the provider.setVisibility
                 utils.addClass(_videoLayer, 'jw-media-show');
 
@@ -916,30 +866,22 @@ define([
                 case states.PLAYING:
                     _resizeMedia();
                     break;
-                case states.IDLE:
-                case states.ERROR:
-                case states.COMPLETE:
-                    if (!_audioMode) {
-                        _showDisplay();
-                    }
-                    break;
-                case states.BUFFERING:
-                    _showDisplay();
-                    break;
                 case states.PAUSED:
                     _userActivity();
-                    _showDisplay();
                     break;
             }
         }
 
         this.setupInstream = function(instreamModel) {
-            _instreamModel = instreamModel;
-            _instreamModel.on('change:controls', _onChangeControls);
+            this.instreamModel = _instreamModel = instreamModel;
+            _instreamModel.on('change:controls', _onChangeControls, this);
+            _instreamModel.on('change:state', _stateHandler, this);
+
             _instreamMode = true;
             utils.addClass(_playerElement, 'jw-flag-ads');
-            // don't trigger api play/pause on display click
-            _displayClickHandler.setAlternateClickHandler(utils.noop);
+
+            // trigger _userActivity to display the UI temporarily for the start of the ad
+            _userActivity();
         };
 
         this.setAltText = function(text) {
@@ -952,6 +894,10 @@ define([
 
         this.destroyInstream = function() {
             _instreamMode = false;
+            if (_instreamModel) {
+                _instreamModel.off(null, null, this);
+                _instreamModel = null;
+            }
             this.setAltText('');
             utils.removeClass(_playerElement, 'jw-flag-ads');
             utils.removeClass(_playerElement, 'jw-flag-ads-hide-controls');
@@ -961,7 +907,7 @@ define([
             }
             _setLiveMode(_model, _model.get('duration'));
             // reset display click handler
-            _displayClickHandler.revertAlternateClickHandler();
+            _displayClickHandler.revertAlternateClickHandlers();
         };
 
         this.addCues = function(cues) {
@@ -996,19 +942,16 @@ define([
                 dispOffset = dispBounds.top,
                 cbBounds = _controlbar.getVisibleBounds(),
                 dockButtons = _model.get('dock'),
-                logoTop = (_logo.position().indexOf('top') === 0),
-                dockBounds,
-                logoBounds = _bounds(_logo.element());
+                dockBounds;
+
             if (dockButtons && dockButtons.length && _model.get('controls')) {
                 dockBounds = _bounds(_dock.element());
                 bounds.y = Math.max(0, dockBounds.bottom - dispOffset);
             }
-            if (logoTop) {
-                bounds.y = Math.max(bounds.y, logoBounds.bottom - dispOffset);
-            }
             bounds.width = dispBounds.width;
             if (cbBounds.height && includeCB && _model.get('controls')) {
-                bounds.height = (logoTop ? cbBounds.top : logoBounds.top) - dispOffset - bounds.y;
+                var bottom = cbBounds.top;
+                bounds.height = bottom - dispOffset - bounds.y;
             } else {
                 bounds.height = dispBounds.height - bounds.y;
             }
@@ -1040,6 +983,8 @@ define([
             if (_instreamMode) {
                 this.destroyInstream();
             }
+
+            cssUtils.clearCss('#'+_model.get('id'));
         };
     };
 

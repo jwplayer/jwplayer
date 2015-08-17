@@ -8,7 +8,7 @@
     @progress-color: #fff;
     @buffer-color: #3B3D41;
     @rail-color: #2A2C2E;
-    @controlbar-background: #131415;
+    @controlbar-background: fade(#131415, 80%);
 
     @cc-inactive: @buffer-color;
     @cc-active: @active-color;
@@ -16,17 +16,18 @@
     @rail-height: .4em;
     @cue-size: .25em;
 
+    .jw-background-color {
+        background: fade(#333, 80%);
+    }
+    
     #namespace > .basic-skin-styles(); // Using the above local variables
     .skin-element-padding();
-
-    .jw-background-color {
-        opacity: 0.8;
-    }
     
     /* For the overlay containers */
     .jw-time-tip,
     .jw-volume-tip,
-    .jw-menu {
+    .jw-menu,
+    .jw-skip {
         border-radius: @ui-padding;
     }
 
@@ -86,15 +87,15 @@
     
     /* Timeline and horizontal volume slider */
     .jw-slider-horizontal {
+        background: transparent;
+        
         .jw-cue {
             .vertically-centered-rail-element(@rail-height, @cue-size);
 
-            &:after {
-                background-color: #000;
-                width: @cue-size;
-                height: @cue-size;
-                border-radius: 1em;
-            }
+            background-color: #000;
+            width: @cue-size;
+            height: @cue-size;
+            border-radius: 1em;
         }
     }
     

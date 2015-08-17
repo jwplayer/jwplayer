@@ -38,8 +38,8 @@ You also have the power to programatically set any configuration within the play
 
 ```js
     function bumpIt() {
-    	var vol = player.get('volume');
-        player.set('volume', vol + 10 );
+    	var vol = player.getVolume();
+        player.setVolume(vol + 10 );
     }
 ```
 
@@ -61,6 +61,7 @@ You also have the power to programatically set any configuration within the play
 ```
 
 After build, the assets will be available in the `bin-release` folder.
+
 
 ## Software License
 The use of the JW Player Open Source edition is governed by a [Creative Commons license](http://creativecommons.org/licenses/by-nc-sa/3.0/). You can use, modify, copy, and distribute this edition as long as it’s for non-commercial use, you provide attribution, and share under a similar license.

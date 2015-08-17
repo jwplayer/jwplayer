@@ -1,7 +1,11 @@
 .jwplayer.jw-flag-ads {
-    .jw-controlbar {
-        display: table;
 
+    .jw-preview,
+    .jw-dock {
+        display: none;
+    }
+
+    .jw-controlbar {
         .jw-icon-inline,
         .jw-icon-tooltip,
         .jw-text,
@@ -33,6 +37,12 @@
 
 .jwplayer.jw-flag-ads-hide-controls {
     .jw-controls {
-      display : none !important;
+        display : none !important;
+    }
+}
+
+.jwplayer.jw-flag-ads.jw-flag-touch-screen {
+    .jw-controlbar {
+        display: table;
     }
 }

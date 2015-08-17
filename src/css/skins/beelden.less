@@ -37,8 +37,9 @@
     #namespace > .basic-skin-styles(); // Using the above local variables
     .skin-element-padding();
 
-    .jw-controlbar {
-        .inset-controlbar();
+    .inset-controlbar();
+    .jw-controlbar,
+    .jw-skip {
         box-shadow: inset 0px 7px 1px -5px rgba(128,128,128,1);
         border-radius: .3em;
     }
@@ -135,12 +136,10 @@
     }
 
     .jw-knob {
-        &:after {
-            background-color: #bbb5b7;
-            box-shadow: inset 0 0px 5px 0px rgba(255,255,255,0.5);
-            border: 1px solid #000;
-            border-radius: 50%;
-        }
+        background-color: #bbb5b7;
+        box-shadow: inset 0 0px 5px 0px rgba(255,255,255,0.5);
+        border: 1px solid #000;
+        border-radius: 50%;
     }
 
     .jw-slider-horizontal {
@@ -160,22 +159,18 @@
         .jw-cue {
             .vertically-centered-rail-element(@rail-height, .2em);
 
-            &:after {
-                background-color: #fff;
-                width: .2em;
-                height: .2em;
-                border-radius: 1em;
-            }
+            background-color: #fff;
+            width: .2em;
+            height: .2em;
+            border-radius: 1em;
         }
 
         .jw-knob {
             .vertically-centered-rail-element(@rail-height, .8em);
 
-            &:after {
-                box-sizing: border-box;
-                width: .8em;
-                height: .8em;
-            }
+            box-sizing: border-box;
+            width: .8em;
+            height: .8em;
         }
     }
 
@@ -196,10 +191,8 @@
         }
 
         .jw-knob {
-            &:after {
-                width: .7em;
-                height: .7em;
-            }
+            width: .7em;
+            height: .7em;
         }
     }
 
@@ -213,7 +206,8 @@
     .jw-time-tip,
     .jw-volume-tip,
     .jw-menu,
-    .jw-dock-button {
+    .jw-dock-button,
+    .jw-skip {
         border-radius: @ui-padding;
     }
 
@@ -224,6 +218,5 @@
             color: @cc-inactive;
         }
     }
-
 }
 

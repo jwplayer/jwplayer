@@ -1,10 +1,10 @@
 <div class="jw-rightclick jw-reset">
-    <ul class="jw-reset-ul">
+    <ul class="jw-reset">
     {{#each items}}
-        <li{{#if featured}} class="jw-featured"{{/if}}>
-            <a href="{{link}} jw-reset">
+        <li class="jw-reset{{#if featured}} jw-featured{{/if}}">
+            <a href="{{link}}" class="jw-reset" target="_top">
                 {{#if featured}}
-                <span class="jw-icon jw-rightlick-logo jw-reset"></span>
+                <span class="jw-icon jw-rightclick-logo jw-reset"></span>
                 {{/if}}
                 {{title}}
             </a>

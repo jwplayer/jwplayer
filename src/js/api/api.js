@@ -1,5 +1,4 @@
 define([
-    'api/config',
     'events/events',
     'events/states',
     'utils/backbone.events',
@@ -11,7 +10,7 @@ define([
     'api/api-mutators',
     'api/callbacks-deprecate',
     'version'
-], function(Config, events, states,
+], function(events, states,
             Events, utils, Timer, _, Controller, actionsInit, mutatorsInit, legacyInit, version) {
 
     function addFocusBorder(container) {
@@ -69,13 +68,10 @@ define([
         this.removeEventListener = this.off.bind(this);
         // </deprecate>
 
-        // Add a bunch of methods
-        var _resetController = function() {
-            if (_controller) {
-                _controller.off();
-                _controller.reset();
-            }
+        var _setupController = function() {
             _controller = new Controller(container);
+
+            // Add a bunch of methods
             actionsInit(_this, _controller);
             mutatorsInit(_this, _controller);
             _controller.on(events.JWPLAYER_PLAYLIST_ITEM, function () {
@@ -99,7 +95,7 @@ define([
             });
             _controller.on('all', _this.trigger);
         };
-        _resetController();
+        _setupController();
         legacyInit(this);
 
         // These should be read-only model properties
@@ -113,9 +109,17 @@ define([
         var _reset = function() {
             _playerReady = false;
             _itemMeta = {};
-            // Reset DOM
+
             _this.off();
-            _resetController();
+
+            if (_controller) {
+                _controller.off();
+            }
+
+            // so players can be removed before loading completes
+            if (_controller && _controller.playerDestroy) {
+                _controller.playerDestroy();
+            }
         };
 
         var _getPlugin = function(name) {
@@ -128,6 +132,7 @@ define([
             _qoe.tick('setup');
 
             _reset();
+            _setupController();
 
             // bind event listeners passed in to the config
             utils.foreach(options.events, function(evt, val) {
@@ -137,9 +142,8 @@ define([
                 }
             });
 
-            var config = new Config(options);
-            config.id = _this.id;
-            _controller.setup(config, this);
+            options.id = _this.id;
+            _controller.setup(options, this);
 
             return _this;
         };
@@ -163,21 +167,24 @@ define([
             if(_controller.getContainer) {
                 // If the controller has fully set up...
                 return _controller.getContainer();
-            } else {
-                // If the controller hasn't set up yet, and we need this (due a setup to error), send the container
-                return container;
             }
+            // If the controller hasn't set up yet, and we need this (due a setup to error), send the container
+            return container;
         };
 
         this.getMeta = this.getItemMeta = function () {
             return _itemMeta;
         };
 
-        this.getPlaylistItem = function (item) {
-            if (!utils.exists(item)) {
-                item = _this.getPlaylistIndex();
+        this.getPlaylistItem = function (index) {
+            if (!utils.exists(index)) {
+                return _controller._model.get('playlistItem');
             }
-            return _this.getPlaylist()[item];
+            var playlist = _this.getPlaylist();
+            if (playlist) {
+                return playlist[index];
+            }
+            return null;
         };
 
         this.getRenderingMode = function () {
@@ -194,28 +201,15 @@ define([
         };
 
         this.play = function (state) {
-            if (state !== undefined) {
-                _controller.play(state);
+            if (state === true) {
+                _controller.play();
+                return _this;
+            } else if (state === false) {
+                _controller.pause();
                 return _this;
             }
 
             state = _this.getState();
-
-            var instreamController = _controller._instreamAdapter;
-            var instreamState = instreamController && instreamController.getState();
-            if (instreamState) {
-                switch (instreamState) {
-                    case states.IDLE:
-                    case states.PLAYING:
-                    case states.BUFFERING:
-                        instreamController.pause();
-                        break;
-                    default:
-                        instreamController.play();
-                }
-                return _this;
-            }
-
             switch (state) {
                 case states.PLAYING:
                 case states.BUFFERING:
@@ -229,41 +223,36 @@ define([
         };
 
         this.pause = function (state) {
-            if (state === undefined) {
-                state = _this.getState();
-                switch (state) {
-                    case states.PLAYING:
-                    case states.BUFFERING:
-                        _controller.pause();
-                        break;
-                    default:
-                        _controller.play();
-                }
-            } else {
-                _controller.pause(state);
+            if (_.isBoolean(state)) {
+                return this.play(!state);
             }
-            return _this;
+
+            return this.play();
         };
 
         this.createInstream = function () {
             return _controller.createInstream();
         };
 
+        this.castToggle = function() {
+            if (_controller && _controller.castToggle) {
+                _controller.castToggle();
+            }
+        };
+
         // These may be overridden by ad plugins
-        this.playAd = this.pauseAd = _.noop;
+        this.playAd = this.pauseAd = utils.noop;
 
         this.remove = function () {
-            // Remove from array of players. this calls this.destroyPlayer()
+            // Remove from array of players
             globalRemovePlayer(_this);
-
-            // so players can be removed before loading completes
-            if (_controller.playerDestroy) {
-                _controller.playerDestroy();
-            }
 
             // terminate state
             _this.trigger('remove');
+
+            // Unbind listeners and destroy controller/model/...
             _reset();
+
             return _this;
         };
 

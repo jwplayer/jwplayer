@@ -150,6 +150,14 @@ public class Model extends GlobalEventDispatcher {
         }
     }
 
+    public function get controls():Boolean {
+        return _config.controls;
+    }
+
+    public function set controls(on:Boolean):void {
+        _config.controls = on;
+    }
+
     public function get stretching():String {
         return _config.stretching;
     }
@@ -214,7 +222,9 @@ public class Model extends GlobalEventDispatcher {
 
         if (_currentMedia !== newMedia) {
             if (_currentMedia) {
-                if (_currentMedia.state != PlayerState.IDLE) _currentMedia.stop();
+                if (_currentMedia.state !== PlayerState.IDLE) {
+                    _currentMedia.stop();
+                }
                 _currentMedia.removeGlobalListener(forwardEvents);
             }
             newMedia.addGlobalListener(forwardEvents);

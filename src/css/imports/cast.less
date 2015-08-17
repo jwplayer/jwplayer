@@ -1,0 +1,41 @@
+@import "vars";
+
+.jwplayer.jw-state-playing.jw-flag-casting,
+.jwplayer.jw-state-paused.jw-flag-casting {
+    .jw-display-icon-container {
+        display: table;
+    }
+}
+
+.jwplayer.jw-flag-casting .jw-display-icon-container {
+    border-radius: 0;
+    top: 8em;
+    padding: 2em 5em;
+    border: 1px solid white;
+
+    .jw-icon {
+        font-size: 3em;
+    }
+}
+
+.jw-cast {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-size: auto;
+    background-position: 50% 50%;
+}
+
+.jw-cast-label {
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    bottom: 50%;
+    margin-bottom: 100px;
+    text-align: center;
+}
+
+.jw-cast-name {
+    color: rgb(204, 204, 204);
+}

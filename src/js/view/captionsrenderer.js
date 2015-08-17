@@ -11,6 +11,7 @@ define([
         fontSize: 15,
         fontFamily: 'Arial,sans-serif',
         fontOpacity: 100,
+        color: '#FFF',
         backgroundColor: '#000',
         backgroundOpacity: 100,
         // if back == false edgeStyle defaults to 'uniform',
@@ -117,40 +118,42 @@ define([
 
         /** Constructor for the renderer. **/
         this.setup = function(options) {
-            _options = _.extend({}, _defaults, options);
-
-            var fontOpacity = _options.fontOpacity,
-                windowOpacity = _options.windowOpacity,
-                edgeStyle = _options.edgeStyle,
-                bgColor = _options.backgroundColor,
-                windowStyle = {},
-                textStyle = {
-                    color: cssUtils.hexToRgba(cssUtils.rgbHex(_options.color), fontOpacity),
-                    fontFamily: _options.fontFamily,
-                    fontStyle: _options.fontStyle,
-                    fontWeight: _options.fontWeight,
-                    textDecoration: _options.textDecoration
-                };
-
-            if (windowOpacity) {
-                windowStyle.backgroundColor = cssUtils.hexToRgba(cssUtils.rgbHex(_options.windowColor), windowOpacity);
-            }
-
-            addEdgeStyle(edgeStyle, textStyle, fontOpacity);
-
-            if (_options.back) {
-                textStyle.backgroundColor = cssUtils.hexToRgba(cssUtils.rgbHex(bgColor), _options.backgroundOpacity);
-            } else if (edgeStyle === null) {
-                addEdgeStyle('uniform', textStyle);
-            }
-
             _captionsWindow = document.createElement('div');
             _textContainer = document.createElement('span');
             _captionsWindow.className = 'jw-captions-window jw-reset';
             _textContainer.className = 'jw-captions-text jw-reset';
 
-            _style(_captionsWindow, windowStyle);
-            _style(_textContainer, textStyle);
+            _options = _.extend({}, _defaults, options);
+
+            if (options) {
+                var fontOpacity = _options.fontOpacity,
+                    windowOpacity = _options.windowOpacity,
+                    edgeStyle = _options.edgeStyle,
+                    bgColor = _options.backgroundColor,
+                    windowStyle = {},
+                    textStyle = {
+                        color: cssUtils.hexToRgba(_options.color, fontOpacity),
+                        fontFamily: _options.fontFamily,
+                        fontStyle: _options.fontStyle,
+                        fontWeight: _options.fontWeight,
+                        textDecoration: _options.textDecoration
+                    };
+
+                if (windowOpacity) {
+                    windowStyle.backgroundColor = cssUtils.hexToRgba(_options.windowColor, windowOpacity);
+                }
+
+                addEdgeStyle(edgeStyle, textStyle, fontOpacity);
+
+                if (_options.back) {
+                    textStyle.backgroundColor = cssUtils.hexToRgba(bgColor, _options.backgroundOpacity);
+                } else if (edgeStyle === null) {
+                    addEdgeStyle('uniform', textStyle);
+                }
+
+                _style(_captionsWindow, windowStyle);
+                _style(_textContainer, textStyle);
+            }
 
             _captionsWindow.appendChild(_textContainer);
             _display.appendChild(_captionsWindow);

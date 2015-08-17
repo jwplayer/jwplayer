@@ -24,19 +24,26 @@ define([
             this.title = arr[0];
             this.description = arr[1];
 
-            this.model.on('change:playlistItem', this.updateText, this);
-            this.updateText(this.model, this.model.get('playlistItem'));
+            this.model.on('change:playlistItem', this.playlistItem, this);
+            this.playlistItem(this.model, this.model.get('playlistItem'));
+        },
+
+        playlistItem : function(model, item) {
+            if (model.get('displaytitle') || model.get('displaydescription')) {
+                this.updateText(model, item);
+            } else {
+                this.hide();
+            }
         },
 
         updateText: function(model, playlistItem) {
+            this.title.innerHTML = (playlistItem.title && model.get('displaytitle')) ?
+                playlistItem.title : '';
+            this.description.innerHTML = (playlistItem.description && model.get('displaydescription')) ?
+                playlistItem.description : '';
 
-            var title = playlistItem.title;
-            var description = playlistItem.description || '';
-
-            if (title) {
+            if(this.title.firstChild || this.description.firstChild){
                 this.show();
-                this.title.innerHTML = title;
-                this.description.innerHTML = description;
             } else {
                 this.hide();
             }

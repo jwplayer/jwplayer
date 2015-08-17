@@ -95,8 +95,15 @@
         padding: 0 .7em;
     }
 
+    // Styling for the playlist, next and previous icons so it looks correct if the playlist icon is disabled
+    .jw-controlbar .jw-icon-prev:before {
+        padding-right: 0.25em;
+    }
     .jw-controlbar .jw-icon-playlist:before {
-        padding: 0;
+        padding: 0 0.45em;
+    }
+    .jw-controlbar .jw-icon-next:before {
+        padding-left: 0.25em;
     }
 
     .jw-icon-prev,
@@ -123,15 +130,7 @@
     /* Styles for play button on idle */
     .jw-display-icon-container {
         border-radius: 50%;
-        padding: 0 .3em;
         border: 1px solid #333;
-    }
-    
-    /* Play icon is not square, so padding must change for non-sqaure icons */
-    &.jw-state-idle {
-        .jw-display-icon-container {
-            padding: 0 0 0 .5em;
-        }
     }
     
     /* Rail/slider styles */
@@ -150,14 +149,10 @@
 
     .jw-knob {
         width: .6em;
-
-        &:after {
-            background-color: #fff;
-            box-shadow: 0px 0px 0px 1px rgba(0,0,0,1);
-            width: 100%;
-            height: .6em;
-            border-radius: 1em;
-        }
+        height: .6em;
+        background-color: #fff;
+        box-shadow: 0px 0px 0px 1px rgba(0,0,0,1);
+        border-radius: 1em;
     }
 
     /* Timeline and horizontal volume slider */
@@ -181,12 +176,10 @@
         .jw-cue {
             .vertically-centered-rail-element(.2em, .3em);
 
-            &:after {
-                width: .3em;
-                height: .3em;
-                background-color: #fff;
-                border-radius: 50%;
-            }
+            width: .3em;
+            height: .3em;
+            background-color: #fff;
+            border-radius: 50%;
         }
     }
     
@@ -227,6 +220,7 @@
     .jw-dock {
         .jw-dock-button {
             border-radius: 50%;
+            border: 1px solid #333;
         }
         .jw-overlay {
             border-radius: 2.5em;
@@ -263,18 +257,23 @@
     /* Position of remaining overlay containers */
     .jw-menu,
     .jw-volume-tip {
-        bottom: .15em;
+        bottom: .24em;
     }
     
     /* Skip icon and text styles */
     .jw-skip {
         padding: 0.4em;
-        border-radius: 1em;
+        border-radius: 1.75em;
 
-        .jw-text, 
+        .jw-text,
         .jw-icon-inline {
             color: @inactive-color;
-            font-size: 0.7em;
+            line-height: 1.75em;
+        }
+
+        &.jw-skippable:hover .jw-text,
+        &.jw-skippable:hover .jw-icon-inline {
+            color: @active-color;
         }
     }
 

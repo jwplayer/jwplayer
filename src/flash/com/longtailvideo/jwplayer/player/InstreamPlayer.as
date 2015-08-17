@@ -42,11 +42,20 @@ public class InstreamPlayer extends Sprite {
 
         lock(_plugin, _lockCallback);
 
+        this.mouseEnabled = false;
+        this.mouseChildren = false;
+
         _mediaLayer = new Sprite();
         _mediaLayer.visible = false;
         this.addChild(_mediaLayer);
 
-        _setupView();
+        CONFIG::debugging {
+            this.name = 'instreamPlayer';
+            _mediaLayer.name = 'instreamMedia';
+        }
+
+        // Put Instream on top of media layer, under plugins layer
+        _view.addChildAt(this, 1);
 
         RootReference.stage.addEventListener(Event.RESIZE, resizeHandler);
     }
@@ -57,7 +66,6 @@ public class InstreamPlayer extends Sprite {
     }
 
     public function play():Boolean {
-        _setupView();
         if (_provider) {
             if (_provider.state == PlayerState.PLAYING || PlayerState.isBuffering(_provider.state)) {
                 _provider.pause();
@@ -69,14 +77,10 @@ public class InstreamPlayer extends Sprite {
     }
 
     public function pause():Boolean {
-        if (_provider && _provider.state == PlayerState.PLAYING || PlayerState.isBuffering(_provider.state)) {
+        if (_provider && (_provider.state == PlayerState.PLAYING || PlayerState.isBuffering(_provider.state))) {
             _provider.pause();
         }
         return true;
-    }
-
-    public function destroy():void {
-        _destroy();
     }
 
     private function lock(target:IPlugin, callback:Function):void {
@@ -88,6 +92,8 @@ public class InstreamPlayer extends Sprite {
     }
 
     private function setupProvider(item:PlaylistItem):void {
+        stopProvider();
+
         var type:String = JWParser.getProvider(item);
         _provider = getProvider(type);
         if (!_provider) {
@@ -103,13 +109,12 @@ public class InstreamPlayer extends Sprite {
     }
 
     private function showMedia():void {
-        if (!_mediaLayer.visible) {
-            if (_provider.display) {
-                _mediaLayer.visible = true;
-                _mediaLayer.addChild(_provider.display);
-            } else {
-                _mediaLayer.visible = false;
-            }
+        if (_provider.display) {
+            _mediaLayer.visible = true;
+            _mediaLayer.addChild(_provider.display);
+            this.resizeHandler();
+        } else {
+            _mediaLayer.visible = false;
         }
     }
 
@@ -117,9 +122,9 @@ public class InstreamPlayer extends Sprite {
         // Only accept video, http or rtmp providers for now
         switch (type) {
             case 'video':
-                return new VideoMediaProvider(false);
+                return new VideoMediaProvider();
             case 'rtmp':
-                return new RTMPMediaProvider(false);
+                return new RTMPMediaProvider();
             case 'sound':
                 return new SoundMediaProvider();
         }
@@ -130,35 +135,29 @@ public class InstreamPlayer extends Sprite {
         return null;
     }
 
-    private function _setupView():void {
-        _view.addChild(this);
-    }
-
-    private function _destroy(complete:Boolean = false):void {
-        removeEventListeners();
-        if (!complete && _provider && _provider.state != PlayerState.IDLE) {
-            _provider.stop();
-        }
+    public function _destroyFromJS():void {
         if (_view.contains(this)) {
             _view.removeChild(this);
         }
+        RootReference.stage.removeEventListener(Event.RESIZE, resizeHandler);
+        stopProvider();
         _provider = null;
-
-        if (complete) {
-            SwfEventRouter.triggerJsEvent('instream:complete');
-        } else {
-            SwfEventRouter.triggerJsEvent('instream:destroy');
-        }
-    }
-
-    public function _destroyFromJS():void {
-        _destroy();
         unlock(_plugin);
     }
 
-    private function removeEventListeners():void {
-        RootReference.stage.removeEventListener(Event.RESIZE, resizeHandler);
+    public function setVolume(volume:Number):void {
+        if (_provider) {
+            _provider.setVolume(volume);
+        }
+    }
 
+    public function setMute(bool:Boolean):void {
+        if (bool && _provider) {
+            _provider.setVolume(0);
+        }
+    }
+
+    private function stopProvider():void {
         if (_provider) {
             _provider.removeEventListener(PlayerStateEvent.JWPLAYER_PLAYER_STATE, stateHandler);
             _provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_META, metaHandler);
@@ -166,6 +165,12 @@ public class InstreamPlayer extends Sprite {
             _provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, timeHandler);
             _provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_COMPLETE, completeHandler);
             _provider.removeEventListener(MediaEvent.JWPLAYER_MEDIA_ERROR, errorHandler);
+            if (_provider.state !== PlayerState.IDLE) {
+                _provider.stop();
+            }
+            if (_provider.display && _mediaLayer.contains(_provider.display)) {
+                _mediaLayer.addChild(_provider.display);
+            }
         }
     }
 
@@ -180,11 +185,13 @@ public class InstreamPlayer extends Sprite {
         _provider.load(item);
     }
 
-    private function resizeHandler(event:Event):void {
+    private function resizeHandler(evt:Event = null):void {
         var width:Number = RootReference.stage.stageWidth;
         var height:Number = RootReference.stage.stageHeight;
         this.graphics.clear();
-        this.graphics.beginFill(0, 0);
+        const bgColor:uint = 0x000000;
+        const opacity:Number = 1;
+        this.graphics.beginFill(bgColor, opacity);
         this.graphics.drawRect(0, 0, width, height);
         this.graphics.endFill();
         if (_provider) {
@@ -212,12 +219,11 @@ public class InstreamPlayer extends Sprite {
     }
 
     private function completeHandler(evt:MediaEvent):void {
-        _destroy(true);
+        SwfEventRouter.triggerJsEvent('instream:complete', evt);
     }
 
     private function errorHandler(evt:PlayerEvent):void {
         SwfEventRouter.triggerJsEvent('instream:error', evt);
-        _destroy();
     }
 }
 }

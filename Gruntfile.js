@@ -30,10 +30,12 @@ module.exports = function(grunt) {
     var buildVersion = getBuildVersion(packageInfo);
     // both flashVersion and swfTarget are needed to force flex to build using the right version
     var flashVersion = 11.2;
-    var swfTarget = 15;
 
     var webpackCompilers = {};
     var autoprefixBrowsers = encodeURIComponent('> 1%');
+
+    // For task testing
+    // grunt.loadTasks('../grunt-flash-compiler/tasks');
 
     console.log('%s v%s', packageInfo.name, buildVersion);
 
@@ -154,7 +156,7 @@ module.exports = function(grunt) {
                     'src/flash/com/longtailvideo/jwplayer/{,*/}*.as',
                     'src/flash/com/wowsa/{,*/}*.as'
                 ],
-                tasks: ['flash:player:debug']
+                tasks: ['build-flash']
             },
             grunt: {
                 files: ['Gruntfile.js'],
@@ -182,6 +184,9 @@ module.exports = function(grunt) {
 
         webpack : {
             options: {
+                entry: {
+                    jwplayer : './src/js/jwplayer.js'
+                },
                 stats: {
                     timings: true
                 },
@@ -197,12 +202,8 @@ module.exports = function(grunt) {
                     loaders: [
                         {
                             test: /\.less$/,
-                            loader: 'style!css?sourceMap!autoprefixer?browsers=' + autoprefixBrowsers +
-                                    '!less?sourceMap&compress'
-                        },
-                        {
-                            test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
-                            loader: 'file?name=[name].[ext]'
+                            loader: 'style!css!autoprefixer?browsers=' + autoprefixBrowsers +
+                                    '!less?compress'
                         },
                         {
                             test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
@@ -211,22 +212,17 @@ module.exports = function(grunt) {
                         {
                             test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
                             loader: 'url?limit=10000&mimetype=application/octet-stream'
-                        },
-                        {
-                            test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
-                            loader: 'url?name=[name].[ext]&limit=10000&mimetype=image/svg+xml'
                         }
                     ]
                 }
             },
             debug : {
                 options: {
-                    entry: {
-                        jwplayer : './src/js/jwplayer.js'
-                    },
+                    debug: true,
                     output: {
                         path: 'bin-debug/',
-                        filename: 'jwplayer.js',
+                        filename: '[name].js',
+                        sourceMapFilename : '[name].[hash].map',
                         library: 'jwplayer',
                         libraryTarget: 'umd',
                         pathinfo: true
@@ -242,12 +238,10 @@ module.exports = function(grunt) {
             },
             release : {
                 options: {
-                    entry: {
-                        jwplayer: './src/js/jwplayer.js'
-                    },
                     output: {
                         path: 'bin-release/',
-                        filename: 'jwplayer.js',
+                        filename: '[name].js',
+                        sourceMapFilename : '[name].[hash].map',
                         library: 'jwplayer',
                         libraryTarget: 'umd'
                     },
@@ -256,17 +250,58 @@ module.exports = function(grunt) {
                             __DEBUG__ : false,
                             __BUILD_VERSION__: '\'' + buildVersion + '\'',
                             __FLASH_VERSION__: flashVersion
-                        }),
-                        new webpack.optimize.UglifyJsPlugin()
+                        })
                     ]
+                }
+            }
+        },
+        uglify: {
+            options: {
+                // screwIE8: true,
+                compress: {
+                    warnings: true
+                },
+                mangle: {
+                    except: ['RESERVED_KEYWORDS_TO_PROTECT']
+                }
+            },
+            release: {
+                files: {
+                    'bin-release/jwplayer.js': ['bin-release/jwplayer.js']
                 }
             }
         },
 
         flash: {
-            player: {
-                dest: 'jwplayer.flash.swf',
-                main: 'src/flash/com/longtailvideo/jwplayer/player/Player.as'
+            options: {
+                targetCompilerOptions : [
+                    '-define+=JWPLAYER::version,\'' + packageInfo.version + '\''
+                ],
+                sdk: env.FLEX_HOME,
+                ascshdPort: 11123
+            },
+            debug : {
+                options : {
+                    debug : true,
+                    // prefer AIR_HOME for faster compilation
+                    sdk: env.AIR_HOME || env.FLEX_HOME
+                },
+                files : {
+                    'bin-debug/jwplayer.flash.swf' : 'src/flash/com/longtailvideo/jwplayer/player/Player.as'
+                }
+            },
+            release : {
+                files : {
+                    'bin-release/jwplayer.flash.swf': 'src/flash/com/longtailvideo/jwplayer/player/Player.as'
+                }
+            },
+            library: {
+                options: {
+                    swc: true
+                },
+                files : {
+                     'libs-external/jwplayer.flash.swc' : 'src/flash/com/longtailvideo/jwplayer/player/Player.as'
+                }
             }
         },
 
@@ -274,8 +309,40 @@ module.exports = function(grunt) {
             options: {
                 configFile: './test/karma/karma.conf.js'
             },
-            local : {},
-            browserstack : {}
+            local : {
+                coverageReporter: {
+                    type : 'html',
+                    dir: 'reports/coverage',
+                    subdir: 'local'
+                },
+                jenkinsReporter: {
+                    outputFile: 'reports/phantomjs/junit.xml',
+                    suite: 'phantomjs',
+                    classnameSuffix: 'unit'
+                }
+            },
+            browserstack : {
+                coverageReporter: {
+                    type : 'html',
+                    dir: 'reports/coverage',
+                    subdir: 'browserStack'
+                },
+                jenkinsReporter: {
+                    outputFile: 'reports/browserStack/junit.xml',
+                    suite: 'browserStack',
+                    classnameSuffix: 'unit'
+                },
+                browserStack: {
+                    username:  process.env.BS_USERNAME,
+                    accessKey: process.env.BS_AUTHKEY,
+                    name: 'Unit Tests',
+                    project: 'JW Player',
+                    build: buildVersion,
+                    timeout: 600 // 10 min
+                },
+                customLaunchers: require( './test/karma/browserstack-launchers' ),
+                browsers: Object.keys( require( './test/karma/browserstack-launchers' ) )
+            }
         },
 
         clean: {
@@ -291,128 +358,6 @@ module.exports = function(grunt) {
         }
     });
 
-    grunt.registerMultiTask('flash',
-            'Compile Flash SWF files. Usage `grunt flash:player:debug|release|swc:air|flex`', function() {
-        var done = this.async();
-
-        var data = this.data;
-
-        var flags = this.flags;
-        var isDebug   = !!flags.debug;
-        var isLibrary = !!flags.swc;
-
-        var flashAirOrFlexSdk = (!flags.flex && env.AIR_HOME) || env.FLEX_HOME;
-        if (!flashAirOrFlexSdk) {
-            grunt.fail.warn('To compile ActionScript, you must set environment '+
-            'variable $AIR_HOME or $FLEX_HOME for this task to locate mxmlc.');
-        }
-        var isFlex = /flex/.test(flashAirOrFlexSdk);
-
-        var command = {
-            cmd: flashAirOrFlexSdk + '/bin/'+ (isLibrary ? 'compc' : 'mxmlc'),
-            args: []
-        };
-
-        if (isLibrary) {
-            command.args.push('-include-sources='+data.main);
-        } else {
-            command.args.push(data.main);
-        }
-
-        command.args.push(
-            '-compiler.source-path=src/flash',
-            '-compiler.library-path+=' + flashAirOrFlexSdk + '/frameworks/libs',
-            '-target-player=' + flashVersion,
-            '-swf-version=' + swfTarget,
-            '-use-network=false'
-        );
-
-        // Framework specific optimizations
-        if (isFlex) {
-            command.args.push(
-                '-static-link-runtime-shared-libraries=true'
-            );
-        } else {
-            command.args.push(
-                '-show-multiple-definition-warnings=true',
-                '-compiler.inline=true',
-                '-compiler.remove-dead-code=true'
-            );
-
-            if (!isLibrary) {
-                // ActionScript Compiler 2.0 Shell https://github.com/jcward/ascsh
-                var ascshd = fs.existsSync(flashAirOrFlexSdk + '/bin/ascshd');
-                if (ascshd) {
-                    command.cmd = command.cmd.replace('bin/mxmlc', 'bin/ascshd');
-                    command.args.unshift(
-                        '-p', 11122 + (isDebug?100:0),
-                        'mxmlc'
-                    );
-                }
-            }
-        }
-
-        var extension = 'swf';
-        var outputFolder = isDebug ? 'bin-debug' : 'bin-release';
-        if (isLibrary) {
-            extension = 'swc';
-            outputFolder = 'libs-external';
-        }
-        if (isDebug) {
-            command.args.push(
-                '-output='     + outputFolder +'/' + data.dest.replace('swf', extension),
-                '-link-report='+ outputFolder +'/' + data.dest.replace('swf', 'link.xml'),
-                '-size-report='+ outputFolder +'/' + data.dest.replace('swf', 'size.xml'),
-                '-strict=true',
-                '-debug=true',
-                '-define+=CONFIG::debugging,true',
-                '-define+=CONFIG::staging,true'
-            );
-        } else {
-            command.args.push(
-                '-output='+ outputFolder +'/' + data.dest.replace('swf', extension),
-                '-optimize=true',
-                '-omit-trace-statements=true',
-                '-warnings=false',
-                '-define+=CONFIG::debugging,false',
-                '-define+=CONFIG::staging,false'
-            );
-        }
-
-        command.args.push(
-            '-define+=JWPLAYER::version,\''+ buildVersion +'\''
-        );
-
-        // Print the mxmlc / ascshd command. Formatted to run in bash.
-        grunt.log.writeln(command.cmd +' '+ command.args.join(' ').replace(/(version,'[^']*')/, '"$1"'));
-
-        var stdout = [];
-        var proc = grunt.util.spawn(command, function(error, result, code) {
-            grunt.log.subhead(result.stdout);
-
-            if (error) {
-                grunt.log.error(error.message, code);
-            }
-            done(!error);
-        });
-
-        proc.stdout.setEncoding('utf-8');
-        proc.stdout.on('data', function(data) {
-            stdout.push(data);
-        });
-
-        var checkIntervalHandle = setInterval(function() {
-            if (/Starting aschd server/.test(stdout.join())) {
-                clearInterval(checkIntervalHandle);
-                grunt.log.ok(command.cmd);
-
-                grunt.log.subhead(stdout.join());
-
-                done();
-            }
-        }, 500);
-    });
-
     grunt.registerMultiTask('webpack', 'Spawn a webpack compiler', function() {
         var done = this.async();
         var target = this.target;
@@ -421,16 +366,25 @@ module.exports = function(grunt) {
             compiler = webpackCompilers[target] = webpack(this.options());
         }
         compiler.run(function(err, stats) {
+            var fail = false;
             if (err) {
-                webpackCompilers[target] = null;
-                grunt.log.error(err.toString());
-                done(false);
+                fail = true;
+                grunt.log.writeln(err.toString());
             } else {
+                // Fail build when errors are found
+                if (stats.compilation.errors.length) {
+                    fail = true;
+                }
                 grunt.log.writeln(stats.toString({
                     chunks: false
                 }));
-                done();
             }
+            if (fail) {
+                webpackCompilers[target] = null;
+                done(false);
+                return;
+            }
+            done();
         });
     });
 
@@ -439,15 +393,15 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask('build-js', [
-        'webpack:debug',
-        'webpack:release',
+        'webpack',
+        'uglify',
         'jshint:player',
         'recess'
     ]);
 
     grunt.registerTask('build-flash', [
-        'flash:player:debug',
-        'flash:player:release'
+        'flash:debug',
+        'flash:release'
     ]);
 
     grunt.registerTask('build', [

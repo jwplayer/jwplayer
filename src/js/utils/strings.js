@@ -1,4 +1,6 @@
-define([], function() {
+define([
+    'utils/underscore'
+], function(_) {
     /** Removes whitespace from the beginning and end of a string **/
     var trim = function (inputString) {
         return inputString.replace(/^\s+|\s+$/g, '');
@@ -62,10 +64,58 @@ define([], function() {
         }
     };
 
+    /**
+     * Convert a time-representing string to a number.
+     *
+     * @param {String}    The input string. Supported are 00:03:00.1 / 03:00.1 / 180.1s / 3.2m / 3.2h
+     * @return {Number}    The number of seconds.
+     */
+    var seconds = function (str) {
+        if (_.isNumber(str)) {
+            return str;
+        }
+
+        str = str.replace(',', '.');
+        var arr = str.split(':');
+        var sec = 0;
+        if (str.slice(-1) === 's') {
+            sec = parseFloat(str);
+        } else if (str.slice(-1) === 'm') {
+            sec = parseFloat(str) * 60;
+        } else if (str.slice(-1) === 'h') {
+            sec = parseFloat(str) * 3600;
+        } else if (arr.length > 1) {
+            sec = parseFloat(arr[arr.length - 1]);
+            sec += parseFloat(arr[arr.length - 2]) * 60;
+            if (arr.length === 3) {
+                sec += parseFloat(arr[arr.length - 3]) * 3600;
+            }
+        } else {
+            sec = parseFloat(str);
+        }
+        return sec;
+    };
+
+
+    var prefix = function(arr, add) {
+        return _.map(arr, function(val) {
+            return add + val;
+        });
+    };
+
+    var suffix = function(arr, add) {
+        return _.map(arr, function(val) {
+            return val + add;
+        });
+    };
+
     return {
         trim : trim,
         pad : pad,
         xmlAttribute : xmlAttribute,
-        extension : extension
+        extension : extension,
+        seconds: seconds,
+        suffix: suffix,
+        prefix: prefix
     };
 });
