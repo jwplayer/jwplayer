@@ -3,18 +3,16 @@ define([
     'utils/underscore',
     'events/events',
     'events/states',
-    'utils/eventdispatcher',
     'utils/embedswf',
-    'providers/default'
-], function(utils, _, events, states, eventdispatcher, EmbedSwf, DefaultProvider) {
-
+    'providers/default',
+    'utils/backbone.events'
+], function(utils, _, events, states, EmbedSwf, DefaultProvider, Events) {
     var _providerId = 0;
     function getObjectId(playerId) {
         return playerId + '_swf_' + (_providerId++);
     }
 
     function FlashProvider(_playerId, _playerConfig) {
-
         // private properties
         var _container;
         var _swf;
@@ -37,8 +35,6 @@ define([
                 _swf.triggerFlash.apply(_swf, arguments);
             }
         };
-
-        var _eventDispatcher = new eventdispatcher('flash.provider');
 
         var _customLabels = _getCustomLabels();
 
@@ -105,7 +101,7 @@ define([
             };
         }
 
-        _.extend(this, _eventDispatcher, {
+        _.extend(this, Events, {
                 load: function(item) {
                     _item = item;
                     _beforecompleted = false;
@@ -154,7 +150,7 @@ define([
                     // This is after a postroll completes
                     if (_beforecompleted) {
                         this.setState(states.COMPLETE);
-                        this.sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
+                        this.trigger(events.JWPLAYER_MEDIA_COMPLETE);
                         _beforecompleted = false;
                     }
                 },
@@ -225,23 +221,23 @@ define([
                         _labelLevels(e.levels);
                         _currentQuality = e.currentQuality;
                         _qualityLevels = e.levels;
-                        this.sendEvent(e.type, e);
+                        this.trigger(e.type, e);
 
                     }, this).on(events.JWPLAYER_MEDIA_LEVEL_CHANGED, function(e) {
                         _labelLevels(e.levels);
                         _currentQuality = e.currentQuality;
                         _qualityLevels = e.levels;
-                        this.sendEvent(e.type, e);
+                        this.trigger(e.type, e);
 
                     }, this).on(events.JWPLAYER_AUDIO_TRACKS, function(e) {
                         _currentAudioTrack = e.currentTrack;
                         _audioTracks = e.tracks;
-                        this.sendEvent(e.type, e);
+                        this.trigger(e.type, e);
 
                     }, this).on(events.JWPLAYER_AUDIO_TRACK_CHANGED, function(e) {
                         _currentAudioTrack = e.currentTrack;
                         _audioTracks = e.tracks;
-                        this.sendEvent(e.type, e);
+                        this.trigger(e.type, e);
 
                     }, this).on(events.JWPLAYER_PLAYER_STATE, function(e) {
                         var state = e.newstate;
@@ -254,37 +250,37 @@ define([
                         if(e.duration === 'Infinity') {
                             e.duration = Infinity;
                         }
-                        this.sendEvent(e.type, e);
+                        this.trigger(e.type, e);
 
                     }, this).on(forwardEventsWithData.join(' '), function(e) {
-                        this.sendEvent(e.type, e);
+                        this.trigger(e.type, e);
 
                     }, this).on(forwardEvents.join(' '), function(e) {
-                        this.sendEvent(e.type);
+                        this.trigger(e.type);
 
                     }, this).on(events.JWPLAYER_MEDIA_BEFORECOMPLETE, function(e){
                         _beforecompleted = true;
-                        this.sendEvent(e.type);
+                        this.trigger(e.type);
                         if(_attached === true) {
                             _beforecompleted = false;
                         }
                     }, this).on(events.JWPLAYER_MEDIA_COMPLETE, function(e) {
                         if(!_beforecompleted){
                             this.setState(states.COMPLETE);
-                            this.sendEvent(e.type);
+                            this.trigger(e.type);
                         }
                     }, this).on(events.JWPLAYER_MEDIA_SEEK, function(e) {
-                        this.sendEvent(events.JWPLAYER_MEDIA_SEEK, e);
+                        this.trigger(events.JWPLAYER_MEDIA_SEEK, e);
                     }, this).on('visualQuality', function(e) {
                         e.reason = e.reason || 'api'; // or 'user selected';
-                        this.sendEvent('visualQuality', e);
-                        this.sendEvent(events.JWPLAYER_PROVIDER_FIRST_FRAME, {});
+                        this.trigger('visualQuality', e);
+                        this.trigger(events.JWPLAYER_PROVIDER_FIRST_FRAME, {});
                     }, this).on(events.JWPLAYER_PROVIDER_CHANGED, function(e) {
                         _flashProviderType = e.message;
-                        this.sendEvent(events.JWPLAYER_PROVIDER_CHANGED, e);
+                        this.trigger(events.JWPLAYER_PROVIDER_CHANGED, e);
                     }, this).on(events.JWPLAYER_ERROR, function(event) {
                         utils.log('Error playing media: %o %s', event.code, event.message, event);
-                        this.sendEvent(events.JWPLAYER_MEDIA_ERROR, {
+                        this.trigger(events.JWPLAYER_MEDIA_ERROR, {
                             message: 'Error loading media: File could not be played'
                         });
                     }, this);
@@ -348,18 +344,10 @@ define([
                     }
                     _container = null;
                     _item = null;
-                    _eventDispatcher.resetEventListeners();
-                    _eventDispatcher = null;
+                    this.off();
                 }
         });
 
-        // Overwrite the event dispatchers to block on certain occasions
-        this.sendEvent = function() {
-            if (!_attached) {
-                return;
-            }
-            _eventDispatcher.sendEvent.apply(this, arguments);
-        };
     }
 
 

@@ -57,7 +57,7 @@ define([
                 return;
             }
 
-            this.sendEvent(events.JWPLAYER_PLAYER_STATE, {
+            this.trigger(events.JWPLAYER_PLAYER_STATE, {
                 newstate: state
             });
         },
@@ -67,7 +67,7 @@ define([
             var isAudioFile = (type === 'oga' || type === 'aac' || type === 'mp3' ||
                 type === 'mpeg' || type === 'vorbis');
 
-            this.sendEvent(events.JWPLAYER_MEDIA_TYPE, {
+            this.trigger(events.JWPLAYER_MEDIA_TYPE, {
                 mediaType : isAudioFile ? 'audio' : 'video'
             });
         }
