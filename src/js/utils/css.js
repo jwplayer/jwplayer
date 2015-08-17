@@ -1,14 +1,12 @@
 define([
     'utils/helpers',
-    'utils/strings',
-    'utils/underscore'
-], function(utils, Strings, _) {
+    'utils/strings'
+], function(utils, Strings) {
 
     var MAX_CSS_RULES = 50000,
         _styleSheets = {},
         _styleSheet,
         _rules = {},
-        _cssBlock = null,
         _ruleIndexes = {},
         _exists = utils.exists;
 
@@ -21,18 +19,6 @@ define([
         document.getElementsByTagName('head')[0].appendChild(styleSheet);
         return styleSheet;
     }
-
-    var _cssKeyframes = function (keyframeName, keyframeSteps) {
-        var styleElement = _styleSheets.keyframes;
-        if (!styleElement) {
-            styleElement = _createStylesheet();
-            _styleSheets.keyframes = styleElement;
-        }
-        var sheet = styleElement.sheet;
-        var rulesText = '@keyframes ' + keyframeName + ' { ' + keyframeSteps + ' }';
-        _insertRule(sheet, rulesText, sheet.cssRules.length);
-        _insertRule(sheet, rulesText.replace(/(keyframes|transform)/g, '-webkit-$1'), sheet.cssRules.length);
-    };
 
     var _css = function (selector, styles, important) {
         important = important || false;
@@ -55,15 +41,10 @@ define([
             }
             _styleSheets[selector] = _styleSheet;
         }
-        if (_cssBlock !== null) {
-            _cssBlock.styleSheets[selector] = _rules[selector];
-            // finish this later
-            return;
-        }
         _updateStylesheet(selector);
     };
 
-    var _style = function (elements, styles, immediate) {
+    var _style = function (elements, styles) {
         if (elements === undefined || elements === null) {
             //utils.log('css.style invalid elements: '+ elements +' '+ JSON.stringify(styles) +' '+ immediate);
             return;
@@ -74,48 +55,7 @@ define([
 
         var cssRules = {};
         _updateStyleAttributes(cssRules, styles);
-
-        if (_cssBlock !== null && !immediate) {
-            if (!elements.__cssRules) {
-                elements.__cssRules = {};
-            }
-            _.extend(elements.__cssRules, cssRules);
-            if (_.indexOf(_cssBlock.elements, elements) < 0) {
-                _cssBlock.elements.push(elements);
-            }
-            // finish this later
-            return;
-        }
         _updateElementsStyle(elements, cssRules);
-    };
-
-    var _block = function (id) {
-        // use id so that the first blocker gets to unblock
-        if (_cssBlock === null) {
-            // console.time('block_'+id);
-            _cssBlock = {
-                id: id,
-                styleSheets: {},
-                elements: []
-            };
-        }
-    };
-
-    var _unblock = function (id) {
-        if (_cssBlock && (!id || _cssBlock.id === id)) {
-            // IE9 limits the number of style tags in the head, so we need to update the entire stylesheet each time
-            for (var selector in _cssBlock.styleSheets) {
-                _updateStylesheet(selector);
-            }
-
-            for (var i = 0; i < _cssBlock.elements.length; i++) {
-                var elements = _cssBlock.elements[i];
-                _updateElementsStyle(elements, elements.__cssRules);
-            }
-
-            _cssBlock = null;
-            // console.timeEnd('block_'+id);
-        }
     };
 
     function _updateStyles(cssRules, styles, important) {
@@ -261,36 +201,6 @@ define([
         }
     };
 
-    var dragStyle = function (selector, style) {
-        _css(selector, {
-            '-webkit-user-select': style,
-            '-moz-user-select': style,
-            '-ms-user-select': style,
-            '-webkit-user-drag': style,
-            'user-select': style,
-            'user-drag': style
-        });
-    };
-
-    var transitionStyle = function (selector, style) {
-        // Safari 5 has problems with CSS3 transitions
-        if (navigator.userAgent.match(/5\.\d(\.\d)? safari/i)) {
-            return;
-        }
-
-        _css(selector, {
-            '-webkit-transition': style,
-            '-moz-transition': style,
-            '-o-transition': style,
-            transition: style
-        });
-    };
-
-
-    var rotate = function (domelement, deg) {
-        transform(domelement, 'rotate(' + deg + 'deg)');
-    };
-
     var hexToRgba = function (hexColor, opacity) {
         var style = 'rgb';
         if (hexColor) {
@@ -316,16 +226,10 @@ define([
     utils.style = _style;
 
     return {
-        cssKeyframes : _cssKeyframes,
         css : _css,
         style : _style,
-        block : _block,
-        unblock : _unblock,
         clearCss : _clearCss,
         transform : transform,
-        dragStyle : dragStyle,
-        transitionStyle : transitionStyle,
-        rotate : rotate,
         hexToRgba : hexToRgba
     };
 });
