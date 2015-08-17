@@ -61,6 +61,14 @@ define([
 
         _.extend(this, Events);
 
+        // Overwrite the event dispatchers to block on certain occasions
+        this.sendEvent = function(type, data) {
+            if (!_attached) {
+                return;
+            }
+            this.trigger(type, data);
+        };
+
         var _this = this,
             _mediaEvents = {
                 //abort: _generalHandler,
@@ -148,7 +156,7 @@ define([
         _videotag.setAttribute('webkit-playsinline', '');
 
         function _onClickHandler(evt) {
-            _this.trigger('click', evt);
+            _this.sendEvent('click', evt);
         }
 
         function _durationUpdateHandler() {
@@ -179,7 +187,7 @@ define([
                 if (evt) {
                     _canSeek = true;
                 }
-                _this.trigger(events.JWPLAYER_MEDIA_TIME, {
+                _this.sendEvent(events.JWPLAYER_MEDIA_TIME, {
                     position: _position,
                     duration: _duration
                 });
@@ -192,7 +200,7 @@ define([
         }
 
         function sendMetaEvent() {
-            _this.trigger(events.JWPLAYER_MEDIA_META, {
+            _this.sendEvent(events.JWPLAYER_MEDIA_META, {
                 duration: _videotag.duration,
                 height: _videotag.videoHeight,
                 width: _videotag.videoWidth
@@ -244,7 +252,7 @@ define([
         function _sendBufferFull() {
             if (!_bufferFull) {
                 _bufferFull = true;
-                _this.trigger(events.JWPLAYER_MEDIA_BUFFER_FULL);
+                _this.sendEvent(events.JWPLAYER_MEDIA_BUFFER_FULL);
             }
         }
 
@@ -255,7 +263,7 @@ define([
 
             _wasPlayingAt = _.now();
             _this.setState(states.PLAYING);
-            _this.trigger(events.JWPLAYER_PROVIDER_FIRST_FRAME, {});
+            _this.sendEvent(events.JWPLAYER_PROVIDER_FIRST_FRAME, {});
         }
 
         function _stalledHandler() {
@@ -290,7 +298,7 @@ define([
                 return;
             }
             utils.log('Error playing media: %o %s', _videotag.error, _videotag.src || _source.file);
-            _this.trigger(events.JWPLAYER_MEDIA_ERROR, {
+            _this.sendEvent(events.JWPLAYER_MEDIA_ERROR, {
                 message: 'Error loading media: File could not be played'
             });
         }
@@ -313,7 +321,7 @@ define([
             var publicLevels = _getPublicLevels(levels);
             if (publicLevels) {
                 //_sendEvent?
-                _this.trigger(events.JWPLAYER_MEDIA_LEVELS, {
+                _this.sendEvent(events.JWPLAYER_MEDIA_LEVELS, {
                     levels: publicLevels,
                     currentQuality: _currentQuality
                 });
@@ -369,7 +377,7 @@ define([
                     _delayedSeek = -1;
                     _this.seek(startTime);
                 }
-                // meta event is usually triggered by load, and is needed for googima to work on replay
+                // meta event is usually sendEvented by load, and is needed for googima to work on replay
                 sendMetaEvent();
                 _videotag.play();
             }
@@ -443,7 +451,7 @@ define([
             }
 
             if (_delayedSeek === 0) {
-                this.trigger(events.JWPLAYER_MEDIA_SEEK, {
+                this.sendEvent(events.JWPLAYER_MEDIA_SEEK, {
                     position: _videotag.currentTime,
                     offset: seekPos
                 });
@@ -466,7 +474,7 @@ define([
 
         function _sendSeekedEvent() {
             _this.seeking = false;
-            _this.trigger(events.JWPLAYER_MEDIA_SEEKED);
+            _this.sendEvent(events.JWPLAYER_MEDIA_SEEKED);
         }
 
         this.volume = function(vol) {
@@ -477,10 +485,10 @@ define([
         };
 
         function _volumeHandler() {
-            _this.trigger('volume', {
+            _this.sendEvent('volume', {
                 volume: Math.round(_videotag.volume * 100)
             });
-            _this.trigger('mute', {
+            _this.sendEvent('mute', {
                 mute: _videotag.muted
             });
         }
@@ -497,7 +505,7 @@ define([
             var buffered = _getBuffer();
             if (buffered !== _buffered) {
                 _buffered = buffered;
-                _this.trigger(events.JWPLAYER_MEDIA_BUFFER, {
+                _this.sendEvent(events.JWPLAYER_MEDIA_BUFFER, {
                     bufferPercent: buffered * 100
                 });
             }
@@ -530,8 +538,8 @@ define([
                     _currentQuality = -1;
                     _beforecompleted = true;
 
-                    _this.trigger(events.JWPLAYER_MEDIA_BEFORECOMPLETE);
-                    // This event may trigger the detaching of the player
+                    _this.sendEvent(events.JWPLAYER_MEDIA_BEFORECOMPLETE);
+                    // This event may sendEvent the detaching of the player
                     //  In that case, playback isn't complete until the player is re-attached
                     if (!_attached) {
                         return;
@@ -545,7 +553,7 @@ define([
         function _playbackComplete() {
             _this.setState(states.COMPLETE);
             _beforecompleted = false;
-            _this.trigger(events.JWPLAYER_MEDIA_COMPLETE);
+            _this.sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
         }
 
         function _fullscreenBeginHandler(e) {
@@ -566,7 +574,7 @@ define([
         }
 
         function _sendFullscreen(e) {
-            _this.trigger('fullscreenchange', {
+            _this.sendEvent('fullscreenchange', {
                 target: e.target,
                 jwstate: _fullscreenState
             });
@@ -702,7 +710,7 @@ define([
             if (quality >= 0) {
                 if (_levels && _levels.length > quality) {
                     _currentQuality = quality;
-                    this.trigger(events.JWPLAYER_MEDIA_LEVEL_CHANGED, {
+                    this.sendEvent(events.JWPLAYER_MEDIA_LEVEL_CHANGED, {
                         currentQuality: quality,
                         levels: _getPublicLevels(_levels)
                     });
