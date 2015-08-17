@@ -52,6 +52,8 @@ define([
             _title,
             _captionsRenderer,
             _audioMode,
+            _compactMode = false,
+            _compactModeMaxSize = 400,
             _errorState = false,
             _showing = false,
             _replayState,
@@ -215,6 +217,7 @@ define([
             var bounds = _bounds(_playerElement),
                 containerWidth = Math.round(bounds.width),
                 containerHeight = Math.round(bounds.height);
+
             if (!document.body.contains(_playerElement)) {
                 window.removeEventListener('resize', _responsiveListener);
                 if (_isMobile) {
@@ -226,6 +229,7 @@ define([
                     _lastHeight = containerHeight;
                     clearTimeout(_resizeMediaTimeout);
                     _resizeMediaTimeout = setTimeout(_resizeMedia, 50);
+
                     _this.trigger(events.JWPLAYER_RESIZE, {
                         width: containerWidth,
                         height: containerHeight
@@ -669,6 +673,12 @@ define([
             utils.toggleClass(_playerElement, 'jw-flag-audio-player', _audioMode);
         }
 
+        function _checkCompactMode(containerWidth) {
+            _compactMode = containerWidth <= _compactModeMaxSize;
+
+            utils.toggleClass(_playerElement, 'jw-flag-compact-player', _compactMode);
+        }
+
         function _isAudioMode(height) {
             if (_model.get('aspectratio')) {
                 return false;
@@ -717,6 +727,8 @@ define([
                 _resizeMediaTimeout = setTimeout(_resizeMedia, 250);
             }
             _captionsRenderer.resize();
+
+            _checkCompactMode(width);
         }
 
         this.resize = function(width, height) {
@@ -819,7 +831,6 @@ define([
             if (_castDisplay) {
                 _castDisplay.setState(_model.get('state'));
             }
-
             _model.mediaModel.on('change:mediaType', function(model, val) {
                 var isAudioFile = (val ==='audio');
                 utils.toggleClass(_playerElement, 'jw-flag-media-audio', isAudioFile);
