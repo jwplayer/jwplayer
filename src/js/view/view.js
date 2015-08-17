@@ -616,9 +616,7 @@ define([
          */
         function _resize(width, height, resetAspectMode) {
             var className = _playerElement.className,
-                playerStyle,
-                id = _model.get('id') + '_view';
-            cssUtils.block(id);
+                playerStyle;
 
             // when jwResize is called remove aspectMode and force layout
             resetAspectMode = !!resetAspectMode;
@@ -654,8 +652,6 @@ define([
 
             // pass width, height from jwResize if present
             _resizeMedia(width, height);
-
-            cssUtils.unblock(id);
         }
 
         function _checkAudioMode(height) {
