@@ -150,7 +150,7 @@ define([
                     // This is after a postroll completes
                     if (_beforecompleted) {
                         this.setState(states.COMPLETE);
-                        this.sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
+                        this.trigger(events.JWPLAYER_MEDIA_COMPLETE);
                         _beforecompleted = false;
                     }
                 },
@@ -221,23 +221,23 @@ define([
                         _labelLevels(e.levels);
                         _currentQuality = e.currentQuality;
                         _qualityLevels = e.levels;
-                        this.sendEvent(e.type, e);
+                        this.trigger(e.type, e);
 
                     }, this).on(events.JWPLAYER_MEDIA_LEVEL_CHANGED, function(e) {
                         _labelLevels(e.levels);
                         _currentQuality = e.currentQuality;
                         _qualityLevels = e.levels;
-                        this.sendEvent(e.type, e);
+                        this.trigger(e.type, e);
 
                     }, this).on(events.JWPLAYER_AUDIO_TRACKS, function(e) {
                         _currentAudioTrack = e.currentTrack;
                         _audioTracks = e.tracks;
-                        this.sendEvent(e.type, e);
+                        this.trigger(e.type, e);
 
                     }, this).on(events.JWPLAYER_AUDIO_TRACK_CHANGED, function(e) {
                         _currentAudioTrack = e.currentTrack;
                         _audioTracks = e.tracks;
-                        this.sendEvent(e.type, e);
+                        this.trigger(e.type, e);
 
                     }, this).on(events.JWPLAYER_PLAYER_STATE, function(e) {
                         var state = e.newstate;
@@ -250,37 +250,37 @@ define([
                         if(e.duration === 'Infinity') {
                             e.duration = Infinity;
                         }
-                        this.sendEvent(e.type, e);
+                        this.trigger(e.type, e);
 
                     }, this).on(forwardEventsWithData.join(' '), function(e) {
-                        this.sendEvent(e.type, e);
+                        this.trigger(e.type, e);
 
                     }, this).on(forwardEvents.join(' '), function(e) {
-                        this.sendEvent(e.type);
+                        this.trigger(e.type);
 
                     }, this).on(events.JWPLAYER_MEDIA_BEFORECOMPLETE, function(e){
                         _beforecompleted = true;
-                        this.sendEvent(e.type);
+                        this.trigger(e.type);
                         if(_attached === true) {
                             _beforecompleted = false;
                         }
                     }, this).on(events.JWPLAYER_MEDIA_COMPLETE, function(e) {
                         if(!_beforecompleted){
                             this.setState(states.COMPLETE);
-                            this.sendEvent(e.type);
+                            this.trigger(e.type);
                         }
                     }, this).on(events.JWPLAYER_MEDIA_SEEK, function(e) {
-                        this.sendEvent(events.JWPLAYER_MEDIA_SEEK, e);
+                        this.trigger(events.JWPLAYER_MEDIA_SEEK, e);
                     }, this).on('visualQuality', function(e) {
                         e.reason = e.reason || 'api'; // or 'user selected';
-                        this.sendEvent('visualQuality', e);
-                        this.sendEvent(events.JWPLAYER_PROVIDER_FIRST_FRAME, {});
+                        this.trigger('visualQuality', e);
+                        this.trigger(events.JWPLAYER_PROVIDER_FIRST_FRAME, {});
                     }, this).on(events.JWPLAYER_PROVIDER_CHANGED, function(e) {
                         _flashProviderType = e.message;
-                        this.sendEvent(events.JWPLAYER_PROVIDER_CHANGED, e);
+                        this.trigger(events.JWPLAYER_PROVIDER_CHANGED, e);
                     }, this).on(events.JWPLAYER_ERROR, function(event) {
                         utils.log('Error playing media: %o %s', event.code, event.message, event);
-                        this.sendEvent(events.JWPLAYER_MEDIA_ERROR, {
+                        this.trigger(events.JWPLAYER_MEDIA_ERROR, {
                             message: 'Error loading media: File could not be played'
                         });
                     }, this);
@@ -349,11 +349,11 @@ define([
         });
 
         // Overwrite the event dispatchers to block on certain occasions
-        this.sendEvent = function(type, data) {
+        this.trigger = function(type, args) {
             if (!_attached) {
                 return;
             }
-            this.trigger(type, data);
+            return Events.trigger.call(this, type, args);
         };
 
     }
