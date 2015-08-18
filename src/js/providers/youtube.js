@@ -49,6 +49,7 @@ define([
                 _playingInterval = setInterval(_checkPlaybackHandler, 250);
                 if (state === states.PLAYING) {
                     this.seeking = false;
+                    _resetViewForMobile();
                 } else if (state === states.LOADING || state === states.STALLED) {
                     _bufferUpdate();
                 }
@@ -226,6 +227,8 @@ define([
             _element = _youtubePlayer.getIframe();
 
             _youtubeEmbedReadyCallback = null;
+
+            _readyViewForMobile();
         }
 
         // Youtube Player Event Handlers
@@ -307,6 +310,22 @@ define([
         function _onYoutubePlayerError() {
             _this.sendEvent(events.JWPLAYER_MEDIA_ERROR, {
                 message: 'Error loading YouTube: Video could not be played'
+            });
+        }
+
+        function _readyViewForMobile() {
+            if (_isMobile) {
+                _this.setVisibility(true);
+                // hide controls so user can click on iFrame
+                cssUtils.css('#' + _playerId + ' .jwcontrols', {
+                    display: 'none'
+                });
+            }
+        }
+
+        function _resetViewForMobile() {
+            cssUtils.css('#' + _playerId + ' .jwcontrols', {
+                display: ''
             });
         }
 
@@ -395,6 +414,13 @@ define([
                     _youtubePlayer.cueVideoById(videoId);
                 } else {
                     _youtubePlayer.loadVideoById(videoId);
+                }
+
+                // if player is unstarted, ready for mobile
+                var youtubeState = _youtubePlayer.getPlayerState();
+                var youtubeStates = _youtubeAPI.PlayerState;
+                if (youtubeState === youtubeStates.UNSTARTED || youtubeState === youtubeStates.CUED) {
+                    _readyViewForMobile();
                 }
             } else {
                 // replay current video
