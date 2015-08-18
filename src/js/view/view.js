@@ -525,7 +525,7 @@ define([
             _controlsLayer.parentNode.insertBefore(_captionsRenderer.element(), _title.element());
             
             if (_isMobile) {
-                utils.addClass(_playerElement, 'jw-flag-touch-screen jw-flag-large-ui');
+                utils.addClass(_playerElement, 'jw-flag-touch');
             } else {
                 _rightClickMenu = new RightClick();
                 _rightClickMenu.setup(_model, _playerElement, _playerElement);
