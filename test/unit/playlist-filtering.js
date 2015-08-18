@@ -50,7 +50,7 @@ define([
 
     module('playlist.filterSources');
 
-    test('flash only', function(assert) {
+    test('flash primary', function(assert) {
         testSource(assert, 'flv_mp4', 'flv', true);
         testSource(assert, 'mp4_flv', 'mp4', true);
         testSource(assert, 'aac_mp4', 'aac', true);
@@ -60,8 +60,8 @@ define([
         testSource(assert, 'mixed', 'mp4', true);
     });
 
-    test('html5 only', function(assert) {
-        testSource(assert, 'flv_mp4', 'mp4', false);
+    test('html5 primary', function(assert) {
+        testSource(assert, 'flv_mp4', 'flv', false);
         testSource(assert, 'mp4_flv', 'mp4', false);
         testSource(assert, 'aac_mp4', 'aac', false);
         testSource(assert, 'mp4_aac', 'mp4', false);

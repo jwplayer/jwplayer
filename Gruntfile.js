@@ -1,6 +1,5 @@
 /* jshint node: true */
 
-var fs = require('fs');
 var webpack = require('webpack');
 var env = process.env;
 

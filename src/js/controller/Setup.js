@@ -1,10 +1,9 @@
 define([
     'controller/setup-steps',
-    'utils/helpers',
     'utils/backbone.events',
     'utils/underscore',
     'events/events'
-], function(SetupSteps, utils, Events, _, events) {
+], function(SetupSteps, Events, _, events) {
 
 
     var Setup = function(_api, _model, _view, _errorTimeoutSeconds) {
@@ -24,7 +23,7 @@ define([
         this.destroy = function() {
             clearTimeout(_setupFailureTimeout);
             this.off();
-            _queue = 0;
+            _queue.length = 0;
             _api = null;
             _model = null;
             _view = null;
