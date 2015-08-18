@@ -32,7 +32,7 @@ define([
 
         var _flashCommand = function() {
             if(_swf) {
-                _swf.sendEventFlash.apply(_swf, arguments);
+                _swf.triggerFlash.apply(_swf, arguments);
             }
         };
 
