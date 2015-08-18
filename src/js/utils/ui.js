@@ -95,6 +95,7 @@ define([
             }
         }
 
+        // Always add this, in case we don't properly identify the device as mobile
         elem.addEventListener('touchstart', interactStartHandler);
 
         // overHandler and outHandler not assigned in touch situations
