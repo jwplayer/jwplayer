@@ -4,7 +4,9 @@ define([
     'utils/underscore',
     'utils/helpers'
 ], function(Events, events, _, utils) {
-    var TouchEvent = window.TouchEvent || {};
+    var _usePointerEvents = !_.isUndefined(window.PointerEvent);
+    var _useTouchEvents = !_usePointerEvents && utils.isMobile();
+    var _useMouseEvents = !_usePointerEvents && ! _useTouchEvents;
 
     function getCoord(e, c) {
         return /touch/.test(e.type) ? (e.originalEvent || e).changedTouches[0]['page' + c] : e['page' + c];
@@ -12,6 +14,10 @@ define([
 
     function isRightClick(evt) {
         var e = evt || window.event;
+
+        if(!(evt instanceof MouseEvent)){
+            return false;
+        }
 
         if ('which' in e) {
             // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
@@ -48,7 +54,7 @@ define([
     function preventDefault(evt) {
         // Because sendEvent from utils.eventdispatcher clones evt objects instead of passing them
         //  we cannot call evt.preventDefault() on them
-        if (! (evt instanceof MouseEvent) && ! (evt instanceof TouchEvent)) {
+        if (! (evt instanceof MouseEvent) && ! (evt instanceof window.TouchEvent)) {
             return;
         }
 
@@ -63,42 +69,76 @@ define([
 
     var UI = function (elem, options) {
         var _elem = elem,
-            _enableDoubleTap = (options && options.enableDoubleTap), // and double click
-            _preventScrolling = (options && options.preventScrolling),
             _hasMoved = false,
             _startX = 0,
             _startY = 0,
             _lastClickTime = 0,
             _doubleClickDelay = 300,
             _touchListenerTarget,
-            _isDesktop = !utils.isMobile();
+            _pointerId;
 
+        options = options || {};
 
         // If its not mobile, add mouse listener.  Add touch listeners so touch devices that aren't Android or iOS
         // (windows phones) still get listeners just in case they want to use them.
-        if(_isDesktop){
+        if(_usePointerEvents) {
+            elem.addEventListener('pointerdown', interactStartHandler);
+            if(options.useHover){
+                elem.addEventListener('pointerover', overHandler);
+                elem.addEventListener('pointerout', outHandler);
+            }
+        } else if(_useMouseEvents){
             elem.addEventListener('mousedown', interactStartHandler);
+            if(options.useHover) {
+                elem.addEventListener('mouseover', overHandler);
+                elem.addEventListener('mouseout', outHandler);
+            }
         }
+
+        // Always add this, in case we don't properly identify the device as mobile
         elem.addEventListener('touchstart', interactStartHandler);
 
+        // overHandler and outHandler not assigned in touch situations
+        function overHandler(evt){
+            if (_useMouseEvents || (_usePointerEvents && evt.pointerType !== 'touch')) {
+                triggerEvent(events.touchEvents.OVER, evt);
+            }
+        }
+
+        function outHandler(evt){
+            // elementFromPoint to handle an issue where setPointerCapture is causing a pointerout event
+            if (_useMouseEvents || (_usePointerEvents && evt.pointerType !== 'touch' &&
+                !elem.contains(document.elementFromPoint(evt.x, evt.y)))) {
+                triggerEvent(events.touchEvents.OUT, evt);
+            }
+        }
+
         function interactStartHandler(evt) {
-            var isMouseEvt = evt instanceof MouseEvent;
             _touchListenerTarget = evt.target;
             _startX = getCoord(evt, 'X');
             _startY = getCoord(evt, 'Y');
 
-            if(!isMouseEvt || (isMouseEvt && !isRightClick(evt))){
-                if(_isDesktop){
+            if(!isRightClick(evt)){
+                if(_usePointerEvents){
+                    if(evt.isPrimary){
+                        if(options.preventScrolling){
+                            _pointerId = evt.pointerId;
+                            elem.setPointerCapture(_pointerId);
+                        }
+                        elem.addEventListener('pointermove', interactDragHandler);
+                        elem.addEventListener('pointerup', interactEndHandler);
+                        elem.addEventListener('lostpointercapture', interactEndHandler);
+                        elem.addEventListener('pointercancel', interactEndHandler);
+                    }
+                } else if(_useMouseEvents){
                     document.addEventListener('mousemove', interactDragHandler);
+                    document.addEventListener('mouseup', interactEndHandler);
                 }
-                _touchListenerTarget.addEventListener('touchmove', interactDragHandler);
-            }
 
-            if (_isDesktop){
-                document.addEventListener('mouseup', interactEndHandler);
+                _touchListenerTarget.addEventListener('touchmove', interactDragHandler);
+                _touchListenerTarget.addEventListener('touchend', interactEndHandler);
+                _touchListenerTarget.addEventListener('touchcancel', interactEndHandler);
             }
-            _touchListenerTarget.addEventListener('touchcancel', interactEndHandler);
-            _touchListenerTarget.addEventListener('touchend', interactEndHandler);
         }
 
         function interactDragHandler(evt) {
@@ -120,7 +160,7 @@ define([
             }
 
             // Prevent scrolling the screen dragging while dragging on mobile.
-            if (_preventScrolling) {
+            if (options.preventScrolling) {
                 preventDefault(evt);
             }
         }
@@ -128,10 +168,19 @@ define([
         function interactEndHandler(evt) {
             var touchEvents = events.touchEvents;
 
-            if(_isDesktop){
+            if(_usePointerEvents) {
+                if (options.preventScrolling) {
+                    elem.releasePointerCapture(_pointerId);
+                }
+                elem.removeEventListener('pointermove', interactDragHandler);
+                elem.removeEventListener('lostpointercapture', interactEndHandler);
+                elem.removeEventListener('pointercancel', interactEndHandler);
+                elem.removeEventListener('pointerup', interactEndHandler);
+            } else if (_useMouseEvents) {
                 document.removeEventListener('mousemove', interactDragHandler);
                 document.removeEventListener('mouseup', interactEndHandler);
             }
+
             _touchListenerTarget.removeEventListener('touchmove', interactDragHandler);
             _touchListenerTarget.removeEventListener('touchcancel', interactEndHandler);
             _touchListenerTarget.removeEventListener('touchend', interactEndHandler);
@@ -139,10 +188,14 @@ define([
             if (_hasMoved) {
                 triggerEvent(touchEvents.DRAG_END, evt);
             } else {
-                if(evt instanceof MouseEvent) {
-                    if (! isRightClick(evt)) {
+                if(_usePointerEvents && evt instanceof window.PointerEvent){
+                    if(evt.pointerType === 'touch'){
+                        triggerEvent(touchEvents.TAP, evt);
+                    } else {
                         triggerEvent(touchEvents.CLICK, evt);
                     }
+                } else if (_useMouseEvents) {
+                    triggerEvent(touchEvents.CLICK, evt);
                 } else {
                     triggerEvent(touchEvents.TAP, evt);
 
@@ -158,7 +211,7 @@ define([
         var self = this;
         function triggerEvent(type, srcEvent) {
             var evt;
-            if( _enableDoubleTap && (type === events.touchEvents.CLICK || type === events.touchEvents.TAP)){
+            if( options.enableDoubleTap && (type === events.touchEvents.CLICK || type === events.touchEvents.TAP)){
                 if(_.now() - _lastClickTime < _doubleClickDelay) {
                     var doubleType = (type === events.touchEvents.CLICK) ?
                         events.touchEvents.DOUBLE_CLICK : events.touchEvents.DOUBLE_TAP;
@@ -183,6 +236,17 @@ define([
                 _touchListenerTarget.removeEventListener('touchmove', interactDragHandler);
                 _touchListenerTarget.removeEventListener('touchcancel', interactEndHandler);
                 _touchListenerTarget.removeEventListener('touchend', interactEndHandler);
+            }
+
+            if(_usePointerEvents) {
+                if (options.preventScrolling) {
+                    elem.releasePointerCapture(_pointerId);
+                }
+                elem.removeEventListener('pointerdown', interactStartHandler);
+                elem.removeEventListener('pointermove', interactDragHandler);
+                elem.removeEventListener('lostpointercapture', interactEndHandler);
+                elem.removeEventListener('pointercancel', interactEndHandler);
+                elem.removeEventListener('pointerup', interactEndHandler);
             }
 
             document.removeEventListener('mousemove', interactDragHandler);

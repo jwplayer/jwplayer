@@ -6,7 +6,9 @@ define([], function() {
         CLICK: 'click',
         DOUBLE_CLICK: 'doubleClick',
         TAP: 'tap',
-        DOUBLE_TAP: 'doubleTap'
+        DOUBLE_TAP: 'doubleTap',
+        OVER: 'over',
+        OUT: 'out'
     };
 
     var events = {
