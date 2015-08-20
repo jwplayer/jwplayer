@@ -36,6 +36,7 @@ define([
             _controlsLayer,
             _controlsTimeout = -1,
             _timeoutDuration = _isMobile ? 4000 : 2000,
+            _controlBarOnlyHeight = 40,
             _videoLayer,
             _aspectRatioContainer,
             _lastWidth,
@@ -523,8 +524,10 @@ define([
 
             // captions should be place behind controls, and not hidden when controls are hidden
             _controlsLayer.parentNode.insertBefore(_captionsRenderer.element(), _title.element());
-            
-            if (_isMobile) {
+
+            // Touch UI mode when we're on mobile and we have a percentage height or we can fit the large UI in
+            var height = _model.get('height');
+            if (_isMobile && (typeof height === 'string' || height >= _controlBarOnlyHeight * 1.5)){
                 utils.addClass(_playerElement, 'jw-flag-touch');
             } else {
                 _rightClickMenu = new RightClick();
@@ -680,7 +683,8 @@ define([
         }
 
         function _isControlBarOnly(verticalPixels) {
-            return verticalPixels && verticalPixels <= 40;
+            // 1.75 so there's a little wiggle room on mobile for the large UI to fit in
+            return verticalPixels && verticalPixels <= (_controlBarOnlyHeight * ((_isMobile)?1.75:1));
         }
 
         function _resizeMedia(width, height) {
