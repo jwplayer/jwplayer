@@ -7,8 +7,9 @@ define([
     'view/components/timeslider',
     'view/components/menu',
     'view/components/playlist',
-    'view/components/volumetooltip'
-], function(utils, _, Events, UI, Slider, TimeSlider, Menu, Playlist, VolumeTooltip) {
+    'view/components/volumetooltip',
+    'view/components/drawer'
+], function(utils, _, Events, UI, Slider, TimeSlider, Menu, Playlist, VolumeTooltip, Drawer) {
 
     function button(icon, apiAction) {
         var element = document.createElement('div');
@@ -63,6 +64,9 @@ define([
     function Controlbar(_api, _model) {
         this._api = _api;
         this._model = _model;
+        this._isMobile = utils.isMobile();
+        this._isCompactMode = false;
+        this._compactModeMaxSize = 400;
 
         this.setup();
     }
@@ -76,10 +80,15 @@ define([
 
         build : function() {
             var timeSlider = new TimeSlider(this._model, this._api),
+                drawer = new Drawer('jw-icon-more'),
                 playlistTooltip,
                 volumeSlider,
                 volumeTooltip,
                 muteButton;
+
+            drawer.on('drawer-open', function(props){
+                utils.toggleClass(this.el, 'jw-drawer-expanded', props.isOpen);
+            }, this);
 
             // Create the playlistTooltip as long as visualplaylist from the config is not false
             if(this._model.get('visualplaylist') !== false) {
@@ -87,7 +96,7 @@ define([
             }
 
             // Do not initialize volume sliders on mobile.
-            if(!utils.isMobile()){
+            if(!this._isMobile){
                 muteButton = button('jw-icon-volume', this._api.setMute);
                 volumeSlider = new Slider('jw-slider-volume', 'horizontal');
                 volumeTooltip = new VolumeTooltip(this._model, 'jw-icon-volume');
@@ -102,6 +111,7 @@ define([
                 elapsed: text('jw-text-elapsed'),
                 time: timeSlider,
                 duration: text('jw-text-duration'),
+                drawer: drawer,
                 hd: menu('jw-icon-hd'),
                 cc: menu('jw-icon-cc'),
                 audiotracks: menu('jw-icon-audio-tracks'),
@@ -126,6 +136,7 @@ define([
                 ],
                 right: [
                     this.elements.duration,
+                    this.elements.drawer,
                     this.elements.hd,
                     this.elements.cc,
                     this.elements.audiotracks,
@@ -135,6 +146,14 @@ define([
                     this.elements.volumetooltip,
                     // this.elements.cast, // hidden for jw7.0 release
                     this.elements.fullscreen
+                ],
+                drawer: [
+                    this.elements.hd,
+                    this.elements.cc,
+                    this.elements.audiotracks
+                    //this.elements.mute,
+                    //this.elements.volume,
+                    //this.elements.volumetooltip
                 ]
             };
 
@@ -143,6 +162,7 @@ define([
             this.layout.left = _.compact(this.layout.left);
             this.layout.center = _.compact(this.layout.center);
             this.layout.right = _.compact(this.layout.right);
+            this.layout.drawer = _.compact(this.layout.drawer);
 
             this.el = document.createElement('div');
             this.el.className = 'jw-controlbar jw-background-color jw-reset';
@@ -278,6 +298,12 @@ define([
             this._model.mediaModel.on('change:currentAudioTrack', function(model, currentAudioTrack) {
                 this.elements.audiotracks.selectItem(currentAudioTrack);
             }, this);
+            this._model.mediaModel.on('change:state', function(model, state) {
+                if(state === 'complete') {
+                    this.elements.drawer.closeTooltip();
+                    utils.toggleClass(this.el, 'jw-drawer-expanded', false);
+                }
+            }, this);
         },
         onVolume : function(model, pct) {
             this.renderVolume(model.get('mute'), pct);
@@ -354,6 +380,19 @@ define([
                 }, this);
                 this.elements.time.drawCues();
             }
+        },
+        isCompactMode : function(containerWidth) {
+            if(containerWidth <= this._compactModeMaxSize) {
+                return true;
+            }
+
+            return false;
+        },
+        setCompactMode : function(isCompact) {
+            this._isCompactMode = isCompact;
+            utils.toggleClass(this.el, 'jw-drawer-expanded', false);
+
+            this.elements.drawer.setup(this.layout.drawer, isCompact);
         }
     });
 

@@ -52,8 +52,6 @@ define([
             _title,
             _captionsRenderer,
             _audioMode,
-            _compactMode = false,
-            _compactModeMaxSize = 400,
             _errorState = false,
             _showing = false,
             _replayState,
@@ -674,9 +672,10 @@ define([
         }
 
         function _checkCompactMode(containerWidth) {
-            _compactMode = containerWidth <= _compactModeMaxSize;
+            var compactMode = _controlbar.isCompactMode(containerWidth);
 
-            utils.toggleClass(_playerElement, 'jw-flag-compact-player', _compactMode);
+            _controlbar.setCompactMode(compactMode);
+            utils.toggleClass(_playerElement, 'jw-flag-compact-player', compactMode);
         }
 
         function _isAudioMode(height) {
