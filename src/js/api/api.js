@@ -33,6 +33,7 @@ define([
         // This helps plugins, particularly analytics
         this.utils = utils;
         this._ = _;
+        this.Events = Events;
         this.version = version;
 
         this.trigger = function(type, args) {
