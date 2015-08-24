@@ -112,5 +112,44 @@
     jwp.addButton('css-skins/icons/both.png', 'TEST', function() {console.log('first');}, 'first');
 })(window.jwplayer);
 </script>
+
+<h2>Small Audio Player</h2>
+<div id="audio-small">before set up</div>
+<script type="text/javascript">
+    (function(jwplayer) {
+        jwplayer("audio-small").setup({
+            file: 'http://content.bitsontherun.com/videos/3XnJSIm4-I3ZmuSFT.m4a',
+            image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+            height: "45",
+            width: "300"
+        });
+    })(window.jwplayer);
+</script>
+
+<h2>Large Audio Player</h2>
+<div id="audio-large">before set up</div>
+<script type="text/javascript">
+    (function(jwplayer) {
+        jwplayer("audio-large").setup({
+            file: 'http://content.bitsontherun.com/videos/3XnJSIm4-I3ZmuSFT.m4a',
+            image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+            height: "65",
+            width: "300"
+        });
+    })(window.jwplayer);
+</script>
+
+<h2>Poster Audio Player</h2>
+<div id="audio-poster">before set up</div>
+<script type="text/javascript">
+    (function(jwplayer) {
+        jwplayer("audio-poster").setup({
+            file: 'http://content.bitsontherun.com/videos/3XnJSIm4-I3ZmuSFT.m4a',
+            image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+            width: "384",
+            height: "216"
+        });
+    })(window.jwplayer);
+</script>
 </body>
 </html>
