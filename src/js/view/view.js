@@ -816,6 +816,8 @@ define([
             _showing = true;
             utils.removeClass(_playerElement, 'jw-flag-user-inactive');
 
+            _checkCompactMode(_videoLayer.clientWidth);
+
             clearTimeout(_controlsTimeout);
             _controlsTimeout = setTimeout(_userInactive, _timeoutDuration);
         }

@@ -68,6 +68,9 @@ define([
         this._isCompactMode = false;
         this._compactModeMaxSize = 400;
 
+        this._leftGroupExpandedSize = false;
+        this._rightGroupExpandedSize = false;
+
         this.setup();
     }
 
@@ -136,10 +139,10 @@ define([
                 ],
                 right: [
                     this.elements.duration,
-                    this.elements.drawer,
                     this.elements.hd,
                     this.elements.cc,
                     this.elements.audiotracks,
+                    this.elements.drawer,
                     this.elements.mute,
                     this.elements.cast,
                     this.elements.volume,
@@ -167,13 +170,13 @@ define([
             this.el = document.createElement('div');
             this.el.className = 'jw-controlbar jw-background-color jw-reset';
 
-            var leftGroup = buildGroup('left', this.layout.left);
-            var centerGroup = buildGroup('center', this.layout.center);
-            var rightGroup = buildGroup('right', this.layout.right);
+            this.elements.left = buildGroup('left', this.layout.left);
+            this.elements.center = buildGroup('center', this.layout.center);
+            this.elements.right = buildGroup('right', this.layout.right);
 
-            this.el.appendChild(leftGroup);
-            this.el.appendChild(centerGroup);
-            this.el.appendChild(rightGroup);
+            this.el.appendChild(this.elements.left);
+            this.el.appendChild(this.elements.center);
+            this.el.appendChild(this.elements.right);
         },
 
         initialize : function() {
@@ -277,6 +280,10 @@ define([
             this.elements.time.render(0);
             this.elements.duration.innerHTML = '00:00';
             this.elements.elapsed.innerHTML = '00:00';
+
+            this._leftGroupExpandedSize = false;
+            this._rightGroupExpandedSize = false;
+            this.setCompactMode(false);
 
             var itemIdx = model.get('item');
             if(this.elements.playlist) {
@@ -382,17 +389,45 @@ define([
             }
         },
         isCompactMode : function(containerWidth) {
-            if(containerWidth <= this._compactModeMaxSize) {
-                return true;
+            if(this.element().offsetWidth > 0){
+                if (!this._leftGroupExpandedSize && this.elements.left.offsetWidth) {
+                    this._leftGroupExpandedSize = this.elements.left.offsetWidth;
+                    this._rightGroupExpandedSize = this.elements.right.offsetWidth;
+                }
+
+                var timeSliderSize = this.elements.time.el.offsetWidth,
+                    timeSliderShare = timeSliderSize / containerWidth,
+                    containerRequiredSize = this._leftGroupExpandedSize + this._rightGroupExpandedSize +
+                        (this.elements.center.offsetWidth - this.elements.time.el.offsetWidth);
+
+                if(!this._isCompactMode){
+                    // Enter if we're in a small player or our timeslider is too small.
+                    if( containerWidth <= this._compactModeMaxSize || (timeSliderSize && timeSliderShare < 0.25) ){
+                        return true;
+                    }
+                } else {
+                    // If we're in compact mode and we have enough space to exit it, then do so
+                    if( containerWidth > this._compactModeMaxSize &&
+                        (containerWidth - containerRequiredSize) / containerWidth >= 0.275) {
+                        return false;
+                    }
+                }
             }
 
-            return false;
+            // if no conditions to exit a mode occur, or we have no info, then stay in the current mode
+            return this._isCompactMode;
         },
         setCompactMode : function(isCompact) {
             this._isCompactMode = isCompact;
             utils.toggleClass(this.el, 'jw-drawer-expanded', false);
 
             this.elements.drawer.setup(this.layout.drawer, isCompact);
+
+            if(!isCompact){
+                _.each(this.layout.drawer,function(ele){
+                    this.elements.right.insertBefore(ele.el, this.elements.drawer.el);
+                }, this);
+            }
         }
     });
 

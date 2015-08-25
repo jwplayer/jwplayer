@@ -6,7 +6,7 @@ define([
 ], function(Tooltip, utils, _, UI) {
     var Drawer = Tooltip.extend({
         constructor: function(name) {
-            this.constructor.__super__.constructor(name);
+            Tooltip.call(this, name);
 
             this.container.className = 'jw-overlay-horizontal jw-reset';
             this.openClass = 'jw-open-drawer';
