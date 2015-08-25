@@ -61,19 +61,19 @@ define([
             _providers = new Providers(this.getConfiguration());
         };
 
-        function _videoEventHandler(evt) {
-            switch (evt.type) {
+        function _videoEventHandler(type, data) {
+            switch (type) {
                 case 'volume':
                 case 'mute':
-                    this.set(evt.type, evt[evt.type]);
+                    this.set(type, data[type]);
                     return;
 
                 case events.JWPLAYER_MEDIA_TYPE:
-                    this.mediaModel.set('mediaType', evt.mediaType);
+                    this.mediaModel.set('mediaType', data.mediaType);
                     break;
 
                 case events.JWPLAYER_PLAYER_STATE:
-                    this.mediaModel.set('state', evt.newstate);
+                    this.mediaModel.set('state', data.newstate);
 
                     // This "return" is important because
                     //  we are choosing to not propagate this event.
@@ -81,7 +81,7 @@ define([
                     return;
 
                 case events.JWPLAYER_MEDIA_BUFFER:
-                    this.set('buffer', evt.bufferPercent); // note value change
+                    this.set('buffer', data.bufferPercent); // note value change
                     break;
 
                 case events.JWPLAYER_MEDIA_BUFFER_FULL:
@@ -90,38 +90,38 @@ define([
                     break;
 
                 case events.JWPLAYER_MEDIA_TIME:
-                    this.mediaModel.set('position', evt.position);
-                    this.mediaModel.set('duration', evt.duration);
-                    this.set('position', evt.position);
-                    this.set('duration', evt.duration);
+                    this.mediaModel.set('position', data.position);
+                    this.mediaModel.set('duration', data.duration);
+                    this.set('position', data.position);
+                    this.set('duration', data.duration);
                     break;
                 case events.JWPLAYER_PROVIDER_CHANGED:
                     this.set('provider', _provider.getName());
                     break;
 
                 case events.JWPLAYER_MEDIA_LEVELS:
-                    this.setQualityLevel(evt.currentQuality, evt.levels);
-                    this.mediaModel.set('levels', evt.levels);
+                    this.setQualityLevel(data.currentQuality, data.levels);
+                    this.mediaModel.set('levels', data.levels);
                     break;
                 case events.JWPLAYER_MEDIA_LEVEL_CHANGED:
-                    this.setQualityLevel(evt.currentQuality, evt.levels);
+                    this.setQualityLevel(data.currentQuality, data.levels);
                     break;
                 case events.JWPLAYER_AUDIO_TRACKS:
-                    this.setCurrentAudioTrack(evt.currentTrack, evt.tracks);
-                    this.mediaModel.set('audioTracks', evt.tracks);
+                    this.setCurrentAudioTrack(data.currentTrack, data.tracks);
+                    this.mediaModel.set('audioTracks', data.tracks);
                     break;
                 case events.JWPLAYER_AUDIO_TRACK_CHANGED:
-                    this.setCurrentAudioTrack(evt.currentTrack, evt.tracks);
+                    this.setCurrentAudioTrack(data.currentTrack, data.tracks);
                     break;
 
                 case 'visualQuality':
-                    var visualQuality = _.extend({}, evt);
-                    delete visualQuality.type;
+                    var visualQuality = _.extend({}, data);
                     this.mediaModel.set('visualQuality', visualQuality);
                     break;
             }
 
-            this.mediaController.trigger(evt.type, evt);
+            var evt = _.extend({}, data, {type: type});
+            this.mediaController.trigger(type, evt);
         }
 
         this.setQualityLevel = function(quality, levels){
@@ -140,7 +140,7 @@ define([
             var container;
 
             if (_provider) {
-                _provider.removeGlobalListener(_videoEventHandler);
+                _provider.off(null, null, this);
                 container = _provider.getContainer();
                 if (container) {
                     _provider.remove();
@@ -158,12 +158,12 @@ define([
             _provider = _currentProvider;
             _provider.volume(_this.get('volume'));
             _provider.mute(_this.get('mute'));
-            _provider.addGlobalListener(_videoEventHandler.bind(this));
+            _provider.on('all', _videoEventHandler, this);
         };
 
         this.destroy = function() {
             if (_provider) {
-                _provider.removeGlobalListener(_videoEventHandler);
+                _provider.off(null, null, this);
                 _provider.destroy();
             }
         };

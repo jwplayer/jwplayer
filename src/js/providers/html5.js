@@ -5,9 +5,9 @@ define([
     'utils/underscore',
     'events/events',
     'events/states',
-    'utils/eventdispatcher',
-    'providers/default'
-], function(cssUtils, utils, stretchUtils, _, events, states, eventdispatcher, DefaultProvider) {
+    'providers/default',
+    'utils/backbone.events'
+], function(cssUtils, utils, stretchUtils, _, events, states, DefaultProvider, Events) {
 
     var clearInterval = window.clearInterval,
         STALL_DELAY = 256,
@@ -59,8 +59,15 @@ define([
         // Are we buffering due to seek, or due to playback?
         this.seeking = false;
 
-        var _dispatcher = new eventdispatcher('provider.' + _name);
-        _.extend(this, _dispatcher);
+        _.extend(this, Events);
+
+        // Overwrite the event dispatchers to block on certain occasions
+        this.trigger = function(type, args) {
+            if (!_attached) {
+                return;
+            }
+            return Events.trigger.call(this, type, args);
+        };
 
         var _this = this,
             _mediaEvents = {
@@ -129,15 +136,6 @@ define([
 
             _fullscreenState = false;
 
-        // Overwrite the event dispatchers to block on certain occasions
-        this.sendEvent = function() {
-            if (!_attached) {
-                return;
-            }
-            _dispatcher.sendEvent.apply(this, arguments);
-        };
-
-
         // Find video tag, or create it if it doesn't exist.  View may not be built yet.
         var element = document.getElementById(_playerId);
         var _videotag = (element) ? element.querySelector('video') : undefined;
@@ -158,7 +156,7 @@ define([
         _videotag.setAttribute('webkit-playsinline', '');
 
         function _onClickHandler(evt) {
-            _this.sendEvent('click', evt);
+            _this.trigger('click', evt);
         }
 
         function _durationUpdateHandler() {
@@ -189,7 +187,7 @@ define([
                 if (evt) {
                     _canSeek = true;
                 }
-                _this.sendEvent(events.JWPLAYER_MEDIA_TIME, {
+                _this.trigger(events.JWPLAYER_MEDIA_TIME, {
                     position: _position,
                     duration: _duration
                 });
@@ -202,7 +200,7 @@ define([
         }
 
         function sendMetaEvent() {
-            _this.sendEvent(events.JWPLAYER_MEDIA_META, {
+            _this.trigger(events.JWPLAYER_MEDIA_META, {
                 duration: _videotag.duration,
                 height: _videotag.videoHeight,
                 width: _videotag.videoWidth
@@ -254,7 +252,7 @@ define([
         function _sendBufferFull() {
             if (!_bufferFull) {
                 _bufferFull = true;
-                _this.sendEvent(events.JWPLAYER_MEDIA_BUFFER_FULL);
+                _this.trigger(events.JWPLAYER_MEDIA_BUFFER_FULL);
             }
         }
 
@@ -265,7 +263,7 @@ define([
 
             _wasPlayingAt = _.now();
             _this.setState(states.PLAYING);
-            _this.sendEvent(events.JWPLAYER_PROVIDER_FIRST_FRAME, {});
+            _this.trigger(events.JWPLAYER_PROVIDER_FIRST_FRAME, {});
         }
 
         function _stalledHandler() {
@@ -300,7 +298,7 @@ define([
                 return;
             }
             utils.log('Error playing media: %o %s', _videotag.error, _videotag.src || _source.file);
-            _this.sendEvent(events.JWPLAYER_MEDIA_ERROR, {
+            _this.trigger(events.JWPLAYER_MEDIA_ERROR, {
                 message: 'Error loading media: File could not be played'
             });
         }
@@ -322,8 +320,8 @@ define([
             _currentQuality = _pickInitialQuality(levels);
             var publicLevels = _getPublicLevels(levels);
             if (publicLevels) {
-                //_sendEvent?
-                _this.sendEvent(events.JWPLAYER_MEDIA_LEVELS, {
+                //_trigger?
+                _this.trigger(events.JWPLAYER_MEDIA_LEVELS, {
                     levels: publicLevels,
                     currentQuality: _currentQuality
                 });
@@ -419,6 +417,7 @@ define([
              _removeListeners(_mediaEvents, _videotag);
 
             this.remove();
+            this.off();
         };
 
         this.load = function(item) {
@@ -452,7 +451,7 @@ define([
             }
 
             if (_delayedSeek === 0) {
-                this.sendEvent(events.JWPLAYER_MEDIA_SEEK, {
+                this.trigger(events.JWPLAYER_MEDIA_SEEK, {
                     position: _videotag.currentTime,
                     offset: seekPos
                 });
@@ -475,7 +474,7 @@ define([
 
         function _sendSeekedEvent() {
             _this.seeking = false;
-            _this.sendEvent(events.JWPLAYER_MEDIA_SEEKED);
+            _this.trigger(events.JWPLAYER_MEDIA_SEEKED);
         }
 
         this.volume = function(vol) {
@@ -486,10 +485,10 @@ define([
         };
 
         function _volumeHandler() {
-            _this.sendEvent('volume', {
+            _this.trigger('volume', {
                 volume: Math.round(_videotag.volume * 100)
             });
-            _this.sendEvent('mute', {
+            _this.trigger('mute', {
                 mute: _videotag.muted
             });
         }
@@ -506,7 +505,7 @@ define([
             var buffered = _getBuffer();
             if (buffered !== _buffered) {
                 _buffered = buffered;
-                _this.sendEvent(events.JWPLAYER_MEDIA_BUFFER, {
+                _this.trigger(events.JWPLAYER_MEDIA_BUFFER, {
                     bufferPercent: buffered * 100
                 });
             }
@@ -539,7 +538,7 @@ define([
                     _currentQuality = -1;
                     _beforecompleted = true;
 
-                    _this.sendEvent(events.JWPLAYER_MEDIA_BEFORECOMPLETE);
+                    _this.trigger(events.JWPLAYER_MEDIA_BEFORECOMPLETE);
                     // This event may trigger the detaching of the player
                     //  In that case, playback isn't complete until the player is re-attached
                     if (!_attached) {
@@ -554,7 +553,7 @@ define([
         function _playbackComplete() {
             _this.setState(states.COMPLETE);
             _beforecompleted = false;
-            _this.sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
+            _this.trigger(events.JWPLAYER_MEDIA_COMPLETE);
         }
 
         function _fullscreenBeginHandler(e) {
@@ -575,7 +574,7 @@ define([
         }
 
         function _sendFullscreen(e) {
-            _this.sendEvent('fullscreenchange', {
+            _this.trigger('fullscreenchange', {
                 target: e.target,
                 jwstate: _fullscreenState
             });
@@ -641,9 +640,9 @@ define([
         this.setVisibility = function(state) {
             state = !!state;
             if (state || _isAndroid) {
-                // Changing visibility to hidden on Android < 4.2 causes 
-                // the pause event to be fired. This causes audio files to 
-                // become unplayable. Hence the video tag is always kept 
+                // Changing visibility to hidden on Android < 4.2 causes
+                // the pause event to be fired. This causes audio files to
+                // become unplayable. Hence the video tag is always kept
                 // visible on Android devices.
                 cssUtils.style(_container, {
                     visibility: 'visible',
@@ -711,7 +710,7 @@ define([
             if (quality >= 0) {
                 if (_levels && _levels.length > quality) {
                     _currentQuality = quality;
-                    this.sendEvent(events.JWPLAYER_MEDIA_LEVEL_CHANGED, {
+                    this.trigger(events.JWPLAYER_MEDIA_LEVEL_CHANGED, {
                         currentQuality: quality,
                         levels: _getPublicLevels(_levels)
                     });

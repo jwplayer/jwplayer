@@ -5,20 +5,18 @@ define([
     'utils/underscore',
     'events/events',
     'events/states',
-    'utils/eventdispatcher',
     'utils/scriptloader',
-    'providers/default'
-], function(utils, cssUtils, stretchUtils, _, events, states, eventdispatcher, scriptloader, DefaultProvider) {
-
+    'providers/default',
+    'utils/backbone.events'
+], function(utils, cssUtils, stretchUtils, _, events, states, scriptloader, DefaultProvider, Events) {
     var _scriptLoader = new scriptloader(window.location.protocol + '//www.youtube.com/iframe_api'),
         _isMobile = utils.isMobile();
 
     function YoutubeProvider(_playerId, _playerConfig) {
-
         this.state = states.IDLE;
 
-        var _this = _.extend(this, new eventdispatcher('provider.' + this.name)),
-            // Youtube API and Player Instance
+        var _this = _.extend({}, this, Events),
+        // Youtube API and Player Instance
             _youtubeAPI = window.YT,
             _youtubePlayer = null,
             // iFrame Container (this element will be replaced by iFrame element)
@@ -27,7 +25,7 @@ define([
             _container,
             // player state
             _bufferPercent = -1,
-            // only add player ready listener once 
+            // only add player ready listener once
             _listeningForReady = false,
             // function to call once api and view are ready
             _youtubeEmbedReadyCallback = null,
@@ -134,7 +132,7 @@ define([
         }
         function _timeUpdateHandler() {
             _bufferUpdate();
-            _this.sendEvent(events.JWPLAYER_MEDIA_TIME, {
+            _this.trigger(events.JWPLAYER_MEDIA_TIME, {
                 position: _round(_youtubePlayer.getCurrentTime()),
                 duration: _youtubePlayer.getDuration()
             });
@@ -147,25 +145,25 @@ define([
             }
             if (_bufferPercent !== bufferPercent) {
                 _bufferPercent = bufferPercent;
-                _this.sendEvent(events.JWPLAYER_MEDIA_BUFFER, {
+                _this.trigger(events.JWPLAYER_MEDIA_BUFFER, {
                     bufferPercent: bufferPercent
                 });
-                //if (bufferPercent === 100) this.sendEvent(events.JWPLAYER_MEDIA_BUFFER_FULL);
+                //if (bufferPercent === 100) this.trigger(events.JWPLAYER_MEDIA_BUFFER_FULL);
             }
         }
 
         function _ended() {
             if (_this.state !== states.IDLE && _this.state !== states.COMPLETE) {
                 _beforecompleted = true;
-                _this.sendEvent(events.JWPLAYER_MEDIA_BEFORECOMPLETE);
+                _this.trigger(events.JWPLAYER_MEDIA_BEFORECOMPLETE);
                 _this.setState(states.COMPLETE);
                 _beforecompleted = false;
-                _this.sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
+                _this.trigger(events.JWPLAYER_MEDIA_COMPLETE);
             }
         }
 
         function _sendMetaEvent() {
-            _this.sendEvent(events.JWPLAYER_MEDIA_META, {
+            _this.trigger(events.JWPLAYER_MEDIA_META, {
                 duration: _youtubePlayer.getDuration(),
                 width: _element.clientWidth,
                 height: _element.clientHeight
@@ -251,7 +249,7 @@ define([
                     return;
 
                 case youtubeStates.PLAYING: // 1: playing
-                
+
                     //prevent duplicate captions when using JW Player captions and YT video has yt:cc=on
                     if (_.isFunction(_youtubePlayer.unloadModule)) {
                         _youtubePlayer.unloadModule('captions');
@@ -264,7 +262,7 @@ define([
                     _sendMetaEvent();
 
                     // send levels when playback starts
-                    _this.sendEvent(events.JWPLAYER_MEDIA_LEVELS, {
+                    _this.trigger(events.JWPLAYER_MEDIA_LEVELS, {
                         levels: _this.getQualityLevels(),
                         currentQuality: _this.getCurrentQuality()
                     });
@@ -298,14 +296,14 @@ define([
                 _this.play();
             }
 
-            _this.sendEvent(events.JWPLAYER_MEDIA_LEVEL_CHANGED, {
+            _this.trigger(events.JWPLAYER_MEDIA_LEVEL_CHANGED, {
                 currentQuality: _this.getCurrentQuality(),
                 levels: _this.getQualityLevels()
             });
         }
 
         function _onYoutubePlayerError() {
-            _this.sendEvent(events.JWPLAYER_MEDIA_ERROR, {
+            _this.trigger(events.JWPLAYER_MEDIA_ERROR, {
                 message: 'Error loading YouTube: Video could not be played'
             });
         }
@@ -338,6 +336,7 @@ define([
 
         this.destroy = function() {
             this.remove();
+            this.off();
 
             _container =
                 _element =
@@ -486,7 +485,7 @@ define([
         this.attachMedia = function() {
             if (_beforecompleted) {
                 this.setState(states.COMPLETE);
-                this.sendEvent(events.JWPLAYER_MEDIA_COMPLETE);
+                this.trigger(events.JWPLAYER_MEDIA_COMPLETE);
                 _beforecompleted = false;
             }
         };
