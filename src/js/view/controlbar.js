@@ -65,7 +65,6 @@ define([
         this._api = _api;
         this._model = _model;
         this._isMobile = utils.isMobile();
-        this._isCompactMode = false;
         this._compactModeMaxSize = 400;
 
         this._leftGroupExpandedSize = false;
@@ -203,6 +202,7 @@ define([
             this._model.on('change:fullscreen', this.onFullscreen, this);
             this._model.on('change:captionsList', this.onCaptionsList, this);
             this._model.on('change:captionsIndex', this.onCaptionsIndex, this);
+            this._model.on('change:compactUI', this.onCompactUI, this);
 
             // Event listeners
 
@@ -283,7 +283,7 @@ define([
 
             this._leftGroupExpandedSize = false;
             this._rightGroupExpandedSize = false;
-            this.setCompactMode(false);
+            this._model.set('compactUI', false);
 
             var itemIdx = model.get('item');
             if(this.elements.playlist) {
@@ -388,7 +388,7 @@ define([
                 this.elements.time.drawCues();
             }
         },
-        isCompactMode : function(containerWidth) {
+        checkCompactMode : function(containerWidth) {
             if(this.element().offsetWidth > 0){
                 if (!this._leftGroupExpandedSize && this.elements.left.offsetWidth) {
                     this._leftGroupExpandedSize = this.elements.left.offsetWidth;
@@ -400,25 +400,21 @@ define([
                     containerRequiredSize = this._leftGroupExpandedSize + this._rightGroupExpandedSize +
                         (this.elements.center.offsetWidth - this.elements.time.el.offsetWidth);
 
-                if(!this._isCompactMode){
-                    // Enter if we're in a small player or our timeslider is too small.
-                    if( containerWidth <= this._compactModeMaxSize || (timeSliderSize && timeSliderShare < 0.25) ){
-                        return true;
-                    }
-                } else {
+                if(this._model.get('compactUI')){
                     // If we're in compact mode and we have enough space to exit it, then do so
                     if( containerWidth > this._compactModeMaxSize &&
                         (containerWidth - containerRequiredSize) / containerWidth >= 0.275) {
-                        return false;
+                        this._model.set('compactUI', false);
+                    }
+                } else {
+                    // Enter if we're in a small player or our timeslider is too small.
+                    if( containerWidth <= this._compactModeMaxSize || (timeSliderSize && timeSliderShare < 0.25) ){
+                        this._model.set('compactUI', true);
                     }
                 }
             }
-
-            // if no conditions to exit a mode occur, or we have no info, then stay in the current mode
-            return this._isCompactMode;
         },
-        setCompactMode : function(isCompact) {
-            this._isCompactMode = isCompact;
+        onCompactUI : function(model, isCompact) {
             utils.toggleClass(this.el, 'jw-drawer-expanded', false);
 
             this.elements.drawer.setup(this.layout.drawer, isCompact);

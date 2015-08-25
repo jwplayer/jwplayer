@@ -413,6 +413,10 @@ define([
             utils.addClass(_playerElement, 'jw-stretch-' + newVal);
         }
 
+        function _onCompactUIChange(model, newVal) {
+            utils.toggleClass(_playerElement, 'jw-flag-compact-player', newVal);
+        }
+
         function _componentFadeListeners(comp) {
             if (comp && !_isMobile) {
                 comp.element().addEventListener('mousemove', _overControlElement, false);
@@ -539,6 +543,7 @@ define([
             _controlbar = new Controlbar(_api, _model);
             _controlbar.on(events.JWPLAYER_USER_ACTION, _userActivity);
             _model.on('change:scrubbing', _dragging);
+            _model.on('change:compactUI', _onCompactUIChange);
 
             _controlsLayer.appendChild(_controlbar.element());
 
@@ -671,13 +676,6 @@ define([
             utils.toggleClass(_playerElement, 'jw-flag-audio-player', _audioMode);
         }
 
-        function _checkCompactMode(containerWidth) {
-            var compactMode = _controlbar.isCompactMode(containerWidth);
-
-            _controlbar.setCompactMode(compactMode);
-            utils.toggleClass(_playerElement, 'jw-flag-compact-player', compactMode);
-        }
-
         function _isAudioMode(height) {
             if (_model.get('aspectratio')) {
                 return false;
@@ -727,7 +725,7 @@ define([
             }
             _captionsRenderer.resize();
 
-            _checkCompactMode(width);
+            _controlbar.checkCompactMode(width);
         }
 
         this.resize = function(width, height) {
@@ -816,7 +814,7 @@ define([
             _showing = true;
             utils.removeClass(_playerElement, 'jw-flag-user-inactive');
 
-            _checkCompactMode(_videoLayer.clientWidth);
+            _controlbar.checkCompactMode(_videoLayer.clientWidth);
 
             clearTimeout(_controlsTimeout);
             _controlsTimeout = setTimeout(_userInactive, _timeoutDuration);
