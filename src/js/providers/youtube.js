@@ -15,7 +15,9 @@ define([
     function YoutubeProvider(_playerId, _playerConfig) {
         this.state = states.IDLE;
 
-        var _this = _.extend({}, this, Events),
+        _.extend(this, Events);
+
+        var _this = this,
         // Youtube API and Player Instance
             _youtubeAPI = window.YT,
             _youtubePlayer = null,
