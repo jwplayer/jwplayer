@@ -215,6 +215,7 @@ define([
             var bounds = _bounds(_playerElement),
                 containerWidth = Math.round(bounds.width),
                 containerHeight = Math.round(bounds.height);
+
             if (!document.body.contains(_playerElement)) {
                 window.removeEventListener('resize', _responsiveListener);
                 if (_isMobile) {
@@ -226,6 +227,7 @@ define([
                     _lastHeight = containerHeight;
                     clearTimeout(_resizeMediaTimeout);
                     _resizeMediaTimeout = setTimeout(_resizeMedia, 50);
+
                     _this.trigger(events.JWPLAYER_RESIZE, {
                         width: containerWidth,
                         height: containerHeight
@@ -411,6 +413,10 @@ define([
             utils.addClass(_playerElement, 'jw-stretch-' + newVal);
         }
 
+        function _onCompactUIChange(model, newVal) {
+            utils.toggleClass(_playerElement, 'jw-flag-compact-player', newVal);
+        }
+
         function _componentFadeListeners(comp) {
             if (comp && !_isMobile) {
                 comp.element().addEventListener('mousemove', _overControlElement, false);
@@ -537,6 +543,7 @@ define([
             _controlbar = new Controlbar(_api, _model);
             _controlbar.on(events.JWPLAYER_USER_ACTION, _userActivity);
             _model.on('change:scrubbing', _dragging);
+            _model.on('change:compactUI', _onCompactUIChange);
 
             _controlsLayer.appendChild(_controlbar.element());
 
@@ -717,6 +724,8 @@ define([
                 _resizeMediaTimeout = setTimeout(_resizeMedia, 250);
             }
             _captionsRenderer.resize();
+
+            _controlbar.checkCompactMode(width);
         }
 
         this.resize = function(width, height) {
@@ -805,6 +814,8 @@ define([
             _showing = true;
             utils.removeClass(_playerElement, 'jw-flag-user-inactive');
 
+            _controlbar.checkCompactMode(_videoLayer.clientWidth);
+
             clearTimeout(_controlsTimeout);
             _controlsTimeout = setTimeout(_userInactive, _timeoutDuration);
         }
@@ -819,7 +830,6 @@ define([
             if (_castDisplay) {
                 _castDisplay.setState(_model.get('state'));
             }
-
             _model.mediaModel.on('change:mediaType', function(model, val) {
                 var isAudioFile = (val ==='audio');
                 utils.toggleClass(_playerElement, 'jw-flag-media-audio', isAudioFile);

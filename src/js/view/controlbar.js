@@ -7,8 +7,9 @@ define([
     'view/components/timeslider',
     'view/components/menu',
     'view/components/playlist',
-    'view/components/volumetooltip'
-], function(utils, _, Events, UI, Slider, TimeSlider, Menu, Playlist, VolumeTooltip) {
+    'view/components/volumetooltip',
+    'view/components/drawer'
+], function(utils, _, Events, UI, Slider, TimeSlider, Menu, Playlist, VolumeTooltip, Drawer) {
 
     function button(icon, apiAction) {
         var element = document.createElement('div');
@@ -63,6 +64,11 @@ define([
     function Controlbar(_api, _model) {
         this._api = _api;
         this._model = _model;
+        this._isMobile = utils.isMobile();
+        this._compactModeMaxSize = 400;
+
+        this._leftGroupExpandedSize = false;
+        this._rightGroupExpandedSize = false;
 
         this.setup();
     }
@@ -76,10 +82,15 @@ define([
 
         build : function() {
             var timeSlider = new TimeSlider(this._model, this._api),
+                drawer = new Drawer('jw-icon-more'),
                 playlistTooltip,
                 volumeSlider,
                 volumeTooltip,
                 muteButton;
+
+            drawer.on('drawer-open', function(props){
+                utils.toggleClass(this.el, 'jw-drawer-expanded', props.isOpen);
+            }, this);
 
             // Create the playlistTooltip as long as visualplaylist from the config is not false
             if(this._model.get('visualplaylist') !== false) {
@@ -87,7 +98,7 @@ define([
             }
 
             // Do not initialize volume sliders on mobile.
-            if(!utils.isMobile()){
+            if(!this._isMobile){
                 muteButton = button('jw-icon-volume', this._api.setMute);
                 volumeSlider = new Slider('jw-slider-volume', 'horizontal');
                 volumeTooltip = new VolumeTooltip(this._model, 'jw-icon-volume');
@@ -102,6 +113,7 @@ define([
                 elapsed: text('jw-text-elapsed'),
                 time: timeSlider,
                 duration: text('jw-text-duration'),
+                drawer: drawer,
                 hd: menu('jw-icon-hd'),
                 cc: menu('jw-icon-cc'),
                 audiotracks: menu('jw-icon-audio-tracks'),
@@ -129,12 +141,21 @@ define([
                     this.elements.hd,
                     this.elements.cc,
                     this.elements.audiotracks,
+                    this.elements.drawer,
                     this.elements.mute,
                     this.elements.cast,
                     this.elements.volume,
                     this.elements.volumetooltip,
                     // this.elements.cast, // hidden for jw7.0 release
                     this.elements.fullscreen
+                ],
+                drawer: [
+                    this.elements.hd,
+                    this.elements.cc,
+                    this.elements.audiotracks
+                    //this.elements.mute,
+                    //this.elements.volume,
+                    //this.elements.volumetooltip
                 ]
             };
 
@@ -143,17 +164,18 @@ define([
             this.layout.left = _.compact(this.layout.left);
             this.layout.center = _.compact(this.layout.center);
             this.layout.right = _.compact(this.layout.right);
+            this.layout.drawer = _.compact(this.layout.drawer);
 
             this.el = document.createElement('div');
             this.el.className = 'jw-controlbar jw-background-color jw-reset';
 
-            var leftGroup = buildGroup('left', this.layout.left);
-            var centerGroup = buildGroup('center', this.layout.center);
-            var rightGroup = buildGroup('right', this.layout.right);
+            this.elements.left = buildGroup('left', this.layout.left);
+            this.elements.center = buildGroup('center', this.layout.center);
+            this.elements.right = buildGroup('right', this.layout.right);
 
-            this.el.appendChild(leftGroup);
-            this.el.appendChild(centerGroup);
-            this.el.appendChild(rightGroup);
+            this.el.appendChild(this.elements.left);
+            this.el.appendChild(this.elements.center);
+            this.el.appendChild(this.elements.right);
         },
 
         initialize : function() {
@@ -180,6 +202,7 @@ define([
             this._model.on('change:fullscreen', this.onFullscreen, this);
             this._model.on('change:captionsList', this.onCaptionsList, this);
             this._model.on('change:captionsIndex', this.onCaptionsIndex, this);
+            this._model.on('change:compactUI', this.onCompactUI, this);
 
             // Event listeners
 
@@ -258,6 +281,10 @@ define([
             this.elements.duration.innerHTML = '00:00';
             this.elements.elapsed.innerHTML = '00:00';
 
+            this._leftGroupExpandedSize = false;
+            this._rightGroupExpandedSize = false;
+            this._model.set('compactUI', false);
+
             var itemIdx = model.get('item');
             if(this.elements.playlist) {
                 this.elements.playlist.selectItem(itemIdx);
@@ -277,6 +304,12 @@ define([
             }, this);
             this._model.mediaModel.on('change:currentAudioTrack', function(model, currentAudioTrack) {
                 this.elements.audiotracks.selectItem(currentAudioTrack);
+            }, this);
+            this._model.mediaModel.on('change:state', function(model, state) {
+                if(state === 'complete') {
+                    this.elements.drawer.closeTooltip();
+                    utils.toggleClass(this.el, 'jw-drawer-expanded', false);
+                }
             }, this);
         },
         onVolume : function(model, pct) {
@@ -353,6 +386,43 @@ define([
                     this.elements.time.addCue(ele);
                 }, this);
                 this.elements.time.drawCues();
+            }
+        },
+        checkCompactMode : function(containerWidth) {
+            if(this.element().offsetWidth > 0){
+                if (!this._leftGroupExpandedSize && this.elements.left.offsetWidth) {
+                    this._leftGroupExpandedSize = this.elements.left.offsetWidth;
+                    this._rightGroupExpandedSize = this.elements.right.offsetWidth;
+                }
+
+                var timeSliderSize = this.elements.time.el.offsetWidth,
+                    timeSliderShare = timeSliderSize / containerWidth,
+                    containerRequiredSize = this._leftGroupExpandedSize + this._rightGroupExpandedSize +
+                        (this.elements.center.offsetWidth - this.elements.time.el.offsetWidth);
+
+                if(this._model.get('compactUI')){
+                    // If we're in compact mode and we have enough space to exit it, then do so
+                    if( containerWidth > this._compactModeMaxSize &&
+                        (containerWidth - containerRequiredSize) / containerWidth >= 0.275) {
+                        this._model.set('compactUI', false);
+                    }
+                } else {
+                    // Enter if we're in a small player or our timeslider is too small.
+                    if( containerWidth <= this._compactModeMaxSize || (timeSliderSize && timeSliderShare < 0.25) ){
+                        this._model.set('compactUI', true);
+                    }
+                }
+            }
+        },
+        onCompactUI : function(model, isCompact) {
+            utils.toggleClass(this.el, 'jw-drawer-expanded', false);
+
+            this.elements.drawer.setup(this.layout.drawer, isCompact);
+
+            if(!isCompact){
+                _.each(this.layout.drawer,function(ele){
+                    this.elements.right.insertBefore(ele.el, this.elements.drawer.el);
+                }, this);
             }
         }
     });

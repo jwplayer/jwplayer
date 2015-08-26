@@ -37,6 +37,7 @@ define([
                 // Initial state, upon setup
                 state: states.IDLE,
                 fullscreen: false,
+                compactUI: false,
                 scrubbing : false,
                 duration: 0,
                 position: 0,
