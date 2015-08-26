@@ -66,9 +66,7 @@ define([
         this._model = _model;
         this._isMobile = utils.isMobile();
         this._compactModeMaxSize = 400;
-
-        this._leftGroupExpandedSize = false;
-        this._rightGroupExpandedSize = false;
+        this._maxCompactWidth = -1;
 
         this.setup();
     }
@@ -263,6 +261,7 @@ define([
         onCaptionsList: function(model, tracks) {
             var index = model.get('captionsIndex');
             this.elements.cc.setup(tracks, index);
+            this.clearCompactMode();
         },
         onCaptionsIndex: function(model, index) {
             this.elements.cc.selectItem(index);
@@ -280,10 +279,8 @@ define([
             this.elements.time.render(0);
             this.elements.duration.innerHTML = '00:00';
             this.elements.elapsed.innerHTML = '00:00';
-
-            this._leftGroupExpandedSize = false;
-            this._rightGroupExpandedSize = false;
-            this._model.set('compactUI', false);
+            
+            this.clearCompactMode();
 
             var itemIdx = model.get('item');
             if(this.elements.playlist) {
@@ -294,6 +291,7 @@ define([
 
             this._model.mediaModel.on('change:levels', function(model, levels) {
                 this.elements.hd.setup(levels, model.get('currentLevel'));
+                this.clearCompactMode();
             }, this);
             this._model.mediaModel.on('change:currentLevel', function(model, level) {
                 this.elements.hd.selectItem(level);
@@ -301,6 +299,7 @@ define([
             this._model.mediaModel.on('change:audioTracks', function(model, audioTracks) {
                 var list = _.map(audioTracks, function(track) { return { label : track.name }; });
                 this.elements.audiotracks.setup(list, model.get('currentAudioTrack'), {toggle: false});
+                this.clearCompactMode();
             }, this);
             this._model.mediaModel.on('change:currentAudioTrack', function(model, currentAudioTrack) {
                 this.elements.audiotracks.selectItem(currentAudioTrack);
@@ -333,6 +332,7 @@ define([
         },
         onCastAvailable : function(model, val) {
             this.elements.cast.toggle(val);
+            this.clearCompactMode();
         },
         onElapsed : function(model, val) {
             var elapsedTime;
@@ -388,27 +388,38 @@ define([
                 this.elements.time.drawCues();
             }
         },
+        clearCompactMode : function() {
+            this._maxCompactWidth = -1;
+            this._model.set('compactUI', false);
+        },
+        // Sets this._maxCompactWidth and this._minCompactWidth so we calculate less per call of isCompactMode
+        setCompactModeBounds : function(){
+            if(this.element().offsetWidth > 0 ){
+                var leftGroupExpandedSize = this.elements.left.offsetWidth,
+                    rightGroupExpandedSize = this.elements.right.offsetWidth,
+                    containerRequiredSize = leftGroupExpandedSize + rightGroupExpandedSize +
+                        (this.elements.center.offsetWidth - this.elements.time.el.offsetWidth),
+                    timeSliderBreakpoint = 0.25;
+
+                this._maxCompactWidth = containerRequiredSize / (1-timeSliderBreakpoint);
+            }
+        },
         checkCompactMode : function(containerWidth) {
-            if(this.element().offsetWidth > 0){
-                if (!this._leftGroupExpandedSize && this.elements.left.offsetWidth) {
-                    this._leftGroupExpandedSize = this.elements.left.offsetWidth;
-                    this._rightGroupExpandedSize = this.elements.right.offsetWidth;
-                }
+            // If we cleared the _maxCompactWidth then try to reset it. This can fail if the controlbar is display: none
+            if(this._maxCompactWidth === -1){
+                this.setCompactModeBounds();
+            }
 
-                var timeSliderSize = this.elements.time.el.offsetWidth,
-                    timeSliderShare = timeSliderSize / containerWidth,
-                    containerRequiredSize = this._leftGroupExpandedSize + this._rightGroupExpandedSize +
-                        (this.elements.center.offsetWidth - this.elements.time.el.offsetWidth);
-
+            // If the _maxCompactWidth is set (which it may or may not be above)
+            if(this._maxCompactWidth !== -1) {
                 if(this._model.get('compactUI')){
                     // If we're in compact mode and we have enough space to exit it, then do so
-                    if( containerWidth > this._compactModeMaxSize &&
-                        (containerWidth - containerRequiredSize) / containerWidth >= 0.275) {
+                    if( containerWidth > this._compactModeMaxSize && containerWidth > this._maxCompactWidth) {
                         this._model.set('compactUI', false);
                     }
                 } else {
                     // Enter if we're in a small player or our timeslider is too small.
-                    if( containerWidth <= this._compactModeMaxSize || (timeSliderSize && timeSliderShare < 0.25) ){
+                    if( containerWidth <= this._compactModeMaxSize || containerWidth <= this._maxCompactWidth ){
                         this._model.set('compactUI', true);
                     }
                 }

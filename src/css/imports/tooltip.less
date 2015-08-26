@@ -1,5 +1,4 @@
 @import "vars";
-@import "icons";
 
 .jw-icon-tooltip.jw-open .jw-overlay {
     opacity: 1;
@@ -15,7 +14,9 @@
 }
 
 .jw-icon-tooltip.jw-open-drawer {
-    .jw-icon-close;
+    &:before {
+        display: none;
+    }
 }
 
 .jw-icon-tooltip.jw-open-drawer .jw-overlay-horizontal {
