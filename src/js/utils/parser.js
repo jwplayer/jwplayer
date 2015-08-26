@@ -100,7 +100,7 @@ define([
                     return Number(val);
                 }
             }
-            val = val.replace("'", "%27");
+            val = val.replace('\'', '%27');
         }
         return val;
     };
