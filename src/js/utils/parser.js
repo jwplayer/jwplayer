@@ -81,26 +81,22 @@ define([
     /**
      * String representations of booleans and numbers that are 5 characters in length or less
      * are returned typed
-     * Replaced ' with %27 for urls to work
      */
     parser.serialize = function (val) {
         if (val === undefined) {
             return null;
         }
-        if (typeof val === 'string') {
-            if (val.length < 6) {
-                var lowercaseVal = val.toLowerCase();
-                if (lowercaseVal === 'true') {
-                    return true;
-                }
-                if (lowercaseVal === 'false') {
-                    return false;
-                }
-                if (!isNaN(Number(val)) && !isNaN(parseFloat(val))) {
-                    return Number(val);
-                }
+        if (typeof val === 'string' && val.length < 6) {
+            var lowercaseVal = val.toLowerCase();
+            if (lowercaseVal === 'true') {
+                return true;
             }
-            val = val.replace('\'', '%27');
+            if (lowercaseVal === 'false') {
+                return false;
+            }
+            if (!isNaN(Number(val)) && !isNaN(parseFloat(val))) {
+                return Number(val);
+            }
         }
         return val;
     };

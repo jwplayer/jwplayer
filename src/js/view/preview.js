@@ -18,12 +18,13 @@ define([
             var img = playlistItem.image;
 
             if (_.isString(img)) {
-                this.el.style['background-image'] = 'url(' + img + ')';
+                // encode special characters into URL
+                img = encodeURI(img);
+                this.el.style.backgroundImage = 'url("' + img + '")';
             } else {
                 this.el.style['background-image'] = '';
             }
         },
-
         element : function() {
             return this.el;
         }
