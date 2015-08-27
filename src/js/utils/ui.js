@@ -127,7 +127,6 @@ define([
                         }
                         elem.addEventListener('pointermove', interactDragHandler);
                         elem.addEventListener('pointerup', interactEndHandler);
-                        elem.addEventListener('lostpointercapture', interactEndHandler);
                         elem.addEventListener('pointercancel', interactEndHandler);
                     }
                 } else if(_useMouseEvents){
@@ -173,7 +172,6 @@ define([
                     elem.releasePointerCapture(_pointerId);
                 }
                 elem.removeEventListener('pointermove', interactDragHandler);
-                elem.removeEventListener('lostpointercapture', interactEndHandler);
                 elem.removeEventListener('pointercancel', interactEndHandler);
                 elem.removeEventListener('pointerup', interactEndHandler);
             } else if (_useMouseEvents) {
@@ -244,7 +242,6 @@ define([
                 }
                 elem.removeEventListener('pointerdown', interactStartHandler);
                 elem.removeEventListener('pointermove', interactDragHandler);
-                elem.removeEventListener('lostpointercapture', interactEndHandler);
                 elem.removeEventListener('pointercancel', interactEndHandler);
                 elem.removeEventListener('pointerup', interactEndHandler);
             }
