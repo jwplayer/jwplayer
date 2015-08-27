@@ -346,36 +346,6 @@ define([
             // watch for changes
             _model.on('change:stretching', _onStretchChange);
 
-            /*
-            _model.on('change:castState', function(evt) {
-                if (!_castDisplay) {
-                    _castDisplay = new CastDisplay(_model.get('id'));
-                    _castDisplay.statusDelegate = function(model, state) {
-                        _castDisplay.setState(state);
-                    };
-                }
-                if (evt.active) {
-                    //utils.addClass(_captions, 'jw-captions-disabled');
-                    _castDisplay.setState('connecting').setName(evt.deviceName).show();
-
-                    _model.on('change:state', _castDisplay.statusDelegate);
-                    _model.mediaController.on(events.JWPLAYER_CAST_AD_CHANGED, _castAdChanged);
-                } else {
-                    _model.off('change:state', _castDisplay.statusDelegate);
-                    _model.mediaController.off(events.JWPLAYER_CAST_AD_CHANGED, _castAdChanged);
-
-                    _castDisplay.hide();
-                    if (!_instreamMode) {
-                        _castAdsEnded();
-                    }
-                    //utils.removeClass(_captions, 'jw-captions-disable');
-                    // redraw displayicon
-                    _stateHandler(null, _model.get('state'));
-                    _responsiveListener();
-                }
-            });
-             */
-
             _stateHandler(null, states.IDLE);
 
             if (!_isMobile) {
