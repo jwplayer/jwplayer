@@ -811,10 +811,12 @@ define([
         }
 
         function _userActivity() {
-            _showing = true;
-            utils.removeClass(_playerElement, 'jw-flag-user-inactive');
+            if(!_showing){
+                utils.removeClass(_playerElement, 'jw-flag-user-inactive');
+                _controlbar.checkCompactMode(_videoLayer.clientWidth);
+            }
 
-            _controlbar.checkCompactMode(_videoLayer.clientWidth);
+            _showing = true;
 
             clearTimeout(_controlsTimeout);
             _controlsTimeout = setTimeout(_userInactive, _timeoutDuration);
