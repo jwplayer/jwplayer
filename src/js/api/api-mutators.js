@@ -10,8 +10,6 @@ define([
             'controls',
             'position',
             'duration',
-            'width',
-            'height',
             'fullscreen',
             'volume',
             'mute',
@@ -34,6 +32,8 @@ define([
             'getAudioTracks',
             'getCaptionsList',
 
+            'getWidth',
+            'getHeight',
             'getCurrentAudioTrack',
             'setCurrentAudioTrack',
 
