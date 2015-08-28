@@ -27,17 +27,19 @@ import flash.utils.Dictionary;
  */
 public class PluginLoader extends EventDispatcher {
 
+    public var plugins:Object;
+
+    private var _remainingLoaders:uint;
+    private var _errorState:Boolean;
+
     public function PluginLoader() {
-        loaders = new Dictionary();
+        _remainingLoaders = 0;
         plugins = {};
     }
-    public var plugins:Object;
-    private var loaders:Dictionary;
-    private var errorState:Boolean = false;
 
-    public function loadPlugins(plugins:Array):void {
-        if (plugins.length) {
-            for each(var plugin:Object in plugins) {
+    public function loadPlugins(pluginsToLoad:Array):void {
+        if (pluginsToLoad.length) {
+            for each(var plugin:Object in pluginsToLoad) {
                 if (plugin) {
                     loadLocalPlugin(plugin.swf);
                 }
@@ -52,38 +54,35 @@ public class PluginLoader extends EventDispatcher {
             var loader:AssetLoader = new AssetLoader();
             loader.addEventListener(Event.COMPLETE, loadSuccess);
             loader.addEventListener(ErrorEvent.ERROR, pluginLoadFailed);
-            loaders[loader] = plugin;
+            _remainingLoaders++;
             loader.load(plugin);
         }
     }
 
     private function checkComplete():void {
-        if (errorState) return;
-
-        var waiting:Boolean = false;
-        for each(var remaining:String in loaders) {
-            // Still waiting for some plugins to load
-            waiting = true;
-            continue;
+        if (_errorState || _remainingLoaders) {
+            return;
         }
 
-        if (!waiting) {
-            dispatchEvent(new Event(Event.COMPLETE));
-        }
+        dispatchEvent(new Event(Event.COMPLETE));
     }
 
     private function pluginLoadFailed(evt:ErrorEvent):void {
-        errorState = true;
-        dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, "Error loading plugin: Plugin file not found"));
+        _errorState = true;
+        var loader:AssetLoader = evt.target as AssetLoader;
+        loader.removeEventListener(Event.COMPLETE, loadSuccess);
+        loader.removeEventListener(ErrorEvent.ERROR, pluginLoadFailed);
+        dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, "Error loading plugin: Plugin file not found "+ loader.url));
     }
 
     private function loadSuccess(evt:Event):void {
         var loader:AssetLoader = evt.target as AssetLoader;
-        var url:String = loaders[loader] as String;
+        loader.removeEventListener(Event.COMPLETE, loadSuccess);
+        loader.removeEventListener(ErrorEvent.ERROR, pluginLoadFailed);
+        var url:String = loader.url;
         var pluginId:String = url.substr(url.lastIndexOf("/") + 1).replace(/(.*)\.swf$/i, "$1").split("-")[0];
         plugins[pluginId] = loader.loadedObject as DisplayObject;
-        loader.removeEventListener(Event.COMPLETE, loadSuccess);
-        delete loaders[loader];
+        _remainingLoaders--;
         checkComplete();
     }
 
