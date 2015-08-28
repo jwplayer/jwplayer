@@ -3,7 +3,6 @@ define([
     'events/events',
     'utils/backbone.events',
     'events/states',
-    'cast/display',
     'view/captionsrenderer',
     'view/clickhandler',
     'view/displayicon',
@@ -16,7 +15,7 @@ define([
     'utils/css',
     'utils/underscore',
     'handlebars-loader!templates/player.html'
-], function(utils, events, Events, states, CastDisplay,
+], function(utils, events, Events, states,
             CaptionsRenderer, ClickHandler, DisplayIcon, Dock, Logo,
             Controlbar, Preview, RightClick, Title, cssUtils, _, playerTemplate) {
 
