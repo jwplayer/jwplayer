@@ -24,13 +24,16 @@ define([
 
             list = _.isArray(list) ? list : [];
 
-            var hasActiveContents = _.any(list, function (ele) {
-                return ele.hasContent();
+            // Check how many icons we'd actually hide
+            this.activeContents = _.filter(list, function (ele) {
+                return ele.isActive;
             });
 
-            utils.toggleClass(this.el, 'jw-hidden', !isCompactMode || !hasActiveContents);
+            // If we'd only hide no icons or 1 icon then it isn't worth using the drawer.
+            utils.toggleClass(this.el, 'jw-hidden', !isCompactMode || this.activeContents.length < 2);
 
-            if (isCompactMode && hasActiveContents) {
+            // If we'd hide more than one icon, use the drawer.
+            if (isCompactMode && this.activeContents.length > 1) {
                 utils.removeClass(this.el, 'jw-off');
 
                 this.iconUI.on('tap', function () {
@@ -46,7 +49,6 @@ define([
                     this.container.appendChild(menu.el);
                 }, this);
             }
-            // else, spit the menus back out
         },
         reset : function() {
             utils.addClass(this.el, 'jw-off');

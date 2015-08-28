@@ -420,7 +420,7 @@ define([
             this._maxCompactWidth = -1;
             this._model.set('compactUI', false);
         },
-        // Sets this._maxCompactWidth and this._minCompactWidth so we calculate less per call of isCompactMode
+        // Sets this._maxCompactWidth so we calculate less per call of isCompactMode
         setCompactModeBounds : function(){
             if(this.element().offsetWidth > 0 ){
                 var leftGroupExpandedSize = this.elements.left.offsetWidth,
@@ -458,7 +458,8 @@ define([
 
             this.elements.drawer.setup(this.layout.drawer, isCompact);
 
-            if(!isCompact){
+            // If we're not in compact mode or we're not hiding icons, then put them back where they came from.
+            if(!isCompact || this.elements.drawer.activeContents < 2){
                 _.each(this.layout.drawer,function(ele){
                     this.elements.right.insertBefore(ele.el, this.elements.drawer.el);
                 }, this);

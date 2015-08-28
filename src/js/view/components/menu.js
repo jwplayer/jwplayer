@@ -29,6 +29,7 @@ define([
             var isToggle = !isMenu && list.length === 2;
             utils.toggleClass(this.el, 'jw-toggle', isToggle);
             utils.toggleClass(this.el, 'jw-button-color', !isToggle);
+            this.isActive = isMenu || isToggle;
 
             if (isMenu) {
                 utils.removeClass(this.el, 'jw-off');
