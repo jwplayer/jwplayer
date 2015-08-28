@@ -7,6 +7,7 @@ define([
     'view/captionsrenderer',
     'view/clickhandler',
     'view/displayicon',
+    'view/mobiledisplayicon',
     'view/dock',
     'view/logo',
     'view/controlbar',
@@ -17,7 +18,7 @@ define([
     'utils/underscore',
     'handlebars-loader!templates/player.html'
 ], function(utils, events, Events, states, CastDisplay,
-            CaptionsRenderer, ClickHandler, DisplayIcon, Dock, Logo,
+            CaptionsRenderer, ClickHandler, DisplayIcon, MobileDisplayIcon, Dock, Logo,
             Controlbar, Preview, RightClick, Title, cssUtils, _, playerTemplate) {
 
     var _styles = utils.style,
@@ -498,8 +499,8 @@ define([
                 _touchHandler();
             });
             _displayClickHandler.on('doubleClick', _doubleClickFullscreen);
-            
-            var displayIcon = new DisplayIcon(_model);
+
+            var displayIcon = utils.isMobile()?new MobileDisplayIcon(_model):new DisplayIcon(_model);
             //toggle playback
             displayIcon.on('click', function() {
                 forward({type : events.JWPLAYER_DISPLAY_CLICK});

@@ -2,19 +2,21 @@
 
 .jwplayer.jw-state-playing.jw-flag-casting,
 .jwplayer.jw-state-paused.jw-flag-casting {
-    .jw-display-icon-container {
+    .jw-display-icon-container, .jw-mobile-display-icon-container{
         display: table;
     }
 }
 
-.jwplayer.jw-flag-casting .jw-display-icon-container {
-    border-radius: 0;
-    top: 8em;
-    padding: 2em 5em;
-    border: 1px solid white;
+.jwplayer.jw-flag-casting {
+    .jw-display-icon-container, .jw-mobile-display-icon-container {
+        border-radius: 0;
+        top: 8em;
+        padding: 2em 5em;
+        border: 1px solid white;
 
-    .jw-icon {
-        font-size: 3em;
+        .jw-icon {
+            font-size: 3em;
+        }
     }
 }
 
