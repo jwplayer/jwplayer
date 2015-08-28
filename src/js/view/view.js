@@ -32,7 +32,6 @@ define([
 
     var View = function(_api, _model) {
         var _playerElement,
-            _container,
             _controlsLayer,
             _controlsTimeout = -1,
             _timeoutDuration = _isMobile ? 4000 : 2000,
@@ -228,6 +227,8 @@ define([
                     clearTimeout(_resizeMediaTimeout);
                     _resizeMediaTimeout = setTimeout(_resizeMedia, 50);
 
+                    _model.set('containerWidth', containerWidth);
+                    _model.set('containerHeight', containerHeight);
                     _this.trigger(events.JWPLAYER_RESIZE, {
                         width: containerWidth,
                         height: containerHeight
@@ -292,7 +293,6 @@ define([
             this.onChangeSkin(_model, _model.get('skin'), '');
             _model.on('change:skin', this.onChangeSkin, this);
 
-            _container = _playerElement;
             _videoLayer = _playerElement.getElementsByClassName('jw-media')[0];
 
             _controlsLayer = _playerElement.getElementsByClassName('jw-controls')[0];
@@ -346,36 +346,6 @@ define([
             // watch for changes
             _model.on('change:stretching', _onStretchChange);
 
-            /*
-            _model.on('change:castState', function(evt) {
-                if (!_castDisplay) {
-                    _castDisplay = new CastDisplay(_model.get('id'));
-                    _castDisplay.statusDelegate = function(model, state) {
-                        _castDisplay.setState(state);
-                    };
-                }
-                if (evt.active) {
-                    //utils.addClass(_captions, 'jw-captions-disabled');
-                    _castDisplay.setState('connecting').setName(evt.deviceName).show();
-
-                    _model.on('change:state', _castDisplay.statusDelegate);
-                    _model.mediaController.on(events.JWPLAYER_CAST_AD_CHANGED, _castAdChanged);
-                } else {
-                    _model.off('change:state', _castDisplay.statusDelegate);
-                    _model.mediaController.off(events.JWPLAYER_CAST_AD_CHANGED, _castAdChanged);
-
-                    _castDisplay.hide();
-                    if (!_instreamMode) {
-                        _castAdsEnded();
-                    }
-                    //utils.removeClass(_captions, 'jw-captions-disable');
-                    // redraw displayicon
-                    _stateHandler(null, _model.get('state'));
-                    _responsiveListener();
-                }
-            });
-             */
-
             _stateHandler(null, states.IDLE);
 
             if (!_isMobile) {
@@ -390,7 +360,11 @@ define([
                 utils.style(_aspectRatioContainer, { 'padding-top': _model.get('aspectratio') });
             }
 
+            // This setTimeout allows the player to actually get embedded into the player
             setTimeout(function() {
+                // Initialize values for containerWidth and containerHeight
+                _responsiveListener();
+
                 _resize(_model.get('width'), _model.get('height'));
             }, 0);
         };
@@ -680,13 +654,13 @@ define([
             if (_model.get('aspectratio')) {
                 return false;
             }
-            if (_.isNumber(height)) {
-                return _isControlBarOnly(height);
-            }
             if (_.isString(height) && height.indexOf('%') > -1) {
                 return false;
             }
-            return _isControlBarOnly(_bounds(_container).height);
+
+            var checkHeight = (_.isNumber(height) ? height : _model.get('containerHeight'));
+
+            return _isControlBarOnly(checkHeight);
         }
 
         function _isControlBarOnly(verticalPixels) {
@@ -707,6 +681,7 @@ define([
                 }
                 height = _videoLayer.clientHeight;
             }
+
             //IE9 Fake Full Screen Fix
             if (utils.isMSIE(9) && document.all && !window.atob) {
                 width = height = '100%';
@@ -944,29 +919,23 @@ define([
             var bounds = {
                 x: 0,
                 y: 0,
-                width: 0,
-                height: 0
+                width : _model.get('containerWidth') || 0,
+                height : _model.get('containerHeight') || 0
             };
 
-            includeCB = includeCB || !utils.exists(includeCB);
-
-            var dispBounds = _bounds(_container),
-                dispOffset = dispBounds.top,
-                cbBounds = _controlbar.getVisibleBounds(),
-                dockButtons = _model.get('dock'),
-                dockBounds;
-
+            // If we are using a dock, subtract that from the top
+            var dockButtons = _model.get('dock');
             if (dockButtons && dockButtons.length && _model.get('controls')) {
-                dockBounds = _bounds(_dock.element());
-                bounds.y = Math.max(0, dockBounds.bottom - dispOffset);
+                bounds.y = _dock.element().clientHeight;
+                bounds.height -= bounds.y;
             }
-            bounds.width = dispBounds.width;
-            if (cbBounds.height && includeCB && _model.get('controls')) {
-                var bottom = cbBounds.top;
-                bounds.height = bottom - dispOffset - bounds.y;
-            } else {
-                bounds.height = dispBounds.height - bounds.y;
+
+            // Subtract controlbar from the bottom when using one
+            includeCB = includeCB || !utils.exists(includeCB);
+            if (includeCB && _model.get('controls')) {
+                bounds.height -= _controlbar.element().clientHeight;
             }
+
             return bounds;
         };
 

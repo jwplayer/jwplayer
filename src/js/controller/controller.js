@@ -569,6 +569,8 @@ define([
             this.setMute = _model.setMute;
             this.seekDrag = _model.seekDrag;
             this.getProvider = function(){ return _model.get('provider'); };
+            this.getWidth = function() { return _model.get('containerWidth'); };
+            this.getHeight = function() { return _model.get('containerHeight'); };
 
             // View passthroughs
             this.getContainer = function(){ return this.currentContainer; };
