@@ -13,7 +13,7 @@ define([
         },
         setup : function (list, isCompactMode) {
             if(!this.iconUI){
-                this.iconUI = new UI(this.el);
+                this.iconUI = new UI(this.el, { 'directSelect': true });
 
                 this.toggleOpenStateListener = this.toggleOpenState.bind(this);
                 this.openTooltipListener = this.openTooltip.bind(this);
@@ -33,12 +33,10 @@ define([
             if (isCompactMode && hasActiveContents) {
                 utils.removeClass(this.el, 'jw-off');
 
-                this.iconUI.on('tap', function (evt) {
-                    if (evt.target === this.el) {
-                        this.isOpen = !this.isOpen;
-                        utils.toggleClass(this.el, this.openClass, this.isOpen);
-                        this.trigger('drawer-open', {'isOpen': this.isOpen});
-                    }
+                this.iconUI.on('tap', function () {
+                    this.isOpen = !this.isOpen;
+                    utils.toggleClass(this.el, this.openClass, this.isOpen);
+                    this.trigger('drawer-open', {'isOpen': this.isOpen});
                 }, this);
 
                 this.el.addEventListener('mouseover', this.openTooltipListener);

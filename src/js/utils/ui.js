@@ -188,19 +188,21 @@ define([
             if (_hasMoved) {
                 triggerEvent(touchEvents.DRAG_END, evt);
             } else {
-                if(_usePointerEvents && evt instanceof window.PointerEvent){
-                    if(evt.pointerType === 'touch'){
-                        triggerEvent(touchEvents.TAP, evt);
-                    } else {
+                if(!options.directSelect || evt.target === elem) {
+                    if (_usePointerEvents && evt instanceof window.PointerEvent) {
+                        if (evt.pointerType === 'touch') {
+                            triggerEvent(touchEvents.TAP, evt);
+                        } else {
+                            triggerEvent(touchEvents.CLICK, evt);
+                        }
+                    } else if (_useMouseEvents) {
                         triggerEvent(touchEvents.CLICK, evt);
-                    }
-                } else if (_useMouseEvents) {
-                    triggerEvent(touchEvents.CLICK, evt);
-                } else {
-                    triggerEvent(touchEvents.TAP, evt);
+                    } else {
+                        triggerEvent(touchEvents.TAP, evt);
 
-                    // preventDefault to not dispatch the 300ms delayed click after a tap
-                    preventDefault(evt);
+                        // preventDefault to not dispatch the 300ms delayed click after a tap
+                        preventDefault(evt);
+                    }
                 }
             }
 

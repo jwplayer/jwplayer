@@ -34,17 +34,22 @@ define([
         element: function(){
             return this.el;
         },
-        openTooltip: function() {
+        openTooltip: function(evt) {
+            this.trigger('tooltip-opened', evt);
             this.isOpen = true;
             utils.toggleClass(this.el, this.openClass, this.isOpen);
         },
-        closeTooltip: function() {
+        closeTooltip: function(evt) {
+            this.trigger('tooltip-closed', evt);
             this.isOpen = false;
             utils.toggleClass(this.el, this.openClass, this.isOpen);
         },
-        toggleOpenState: function(){
-            this.isOpen = !this.isOpen;
-            utils.toggleClass(this.el, this.openClass, this.isOpen);
+        toggleOpenState: function(evt){
+            if(this.isOpen){
+                this.closeTooltip(evt);
+            } else {
+                this.openTooltip(evt);
+            }
         }
     });
 

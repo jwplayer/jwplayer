@@ -8,7 +8,7 @@ define([
     var Menu = Tooltip.extend({
         setup : function (list, selectedIndex, options) {
             if(!this.iconUI){
-                this.iconUI = new UI(this.el, {'useHover': true});
+                this.iconUI = new UI(this.el, {'useHover': true, 'directSelect': true});
 
                 this.toggleValueListener= this.toggleValue.bind(this);
 

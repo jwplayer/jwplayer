@@ -807,6 +807,7 @@ define([
             _showing = false;
 
             clearTimeout(_controlsTimeout);
+            _controlbar.hideComponents();
             utils.addClass(_playerElement, 'jw-flag-user-inactive');
         }
 

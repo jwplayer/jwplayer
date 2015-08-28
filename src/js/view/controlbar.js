@@ -86,10 +86,6 @@ define([
                 volumeTooltip,
                 muteButton;
 
-            drawer.on('drawer-open', function(props){
-                utils.toggleClass(this.el, 'jw-drawer-expanded', props.isOpen);
-            }, this);
-
             // Create the playlistTooltip as long as visualplaylist from the config is not false
             if(this._model.get('visualplaylist') !== false) {
                 playlistTooltip = new Playlist('jw-icon-playlist');
@@ -156,6 +152,12 @@ define([
                     //this.elements.volumetooltip
                 ]
             };
+
+            this.menus = [
+                this.elements.hd,
+                this.elements.cc,
+                this.elements.audiotracks
+            ];
 
             // Remove undefined layout elements.  They are invalid for the current platform.
             // (e.g. volume and volumetooltip on mobile)
@@ -255,6 +257,20 @@ define([
                     // this._api.seek(0) puts the user at the oldest DVR segment available.
                     this._api.seek(-0.1);
                 }
+            }, this);
+
+            // When the control bar is interacted with, trigger a user action event
+            new UI(this.el).on('click tap drag', function(){ this.trigger('userAction'); }, this);
+
+            this.elements.drawer.on('drawer-open', function(props){
+                utils.toggleClass(this.el, 'jw-drawer-expanded', props.isOpen);
+                if(!props.isOpen){
+                    this.closeMenus();
+                }
+            }, this);
+
+            _.each(this.menus, function(ele){
+                ele.on('tooltip-opened', this.closeMenus, this);
             }, this);
         },
 
@@ -387,6 +403,18 @@ define([
                 }, this);
                 this.elements.time.drawCues();
             }
+        },
+        closeMenus : function(evt){
+            _.each(this.menus, function(ele){
+                if(!evt || evt.target !== ele.el) {
+                    ele.closeTooltip();
+                }
+            });
+        },
+        hideComponents : function(){
+            this.closeMenus();
+            this.elements.drawer.closeTooltip();
+            utils.toggleClass(this.el, 'jw-drawer-expanded', false);
         },
         clearCompactMode : function() {
             this._maxCompactWidth = -1;
