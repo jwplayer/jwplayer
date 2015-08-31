@@ -1,9 +1,8 @@
 define([
-    'utils/constants',
     'utils/strings',
     'utils/underscore',
     'utils/jqueryfuncs'
-], function(Constants, strings, _, jqueryfuncs) {
+], function(strings, _, jqueryfuncs) {
 
     var dom = {};
 
