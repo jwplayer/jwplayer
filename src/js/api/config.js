@@ -51,6 +51,13 @@ define([
         config.width  = _normalizeSize(config.width);
         config.height = _normalizeSize(config.height);
         config.flashplayer = config.flashplayer || utils.getScriptPath('jwplayer.js') + 'jwplayer.flash.swf';
+
+        // Non ssl pages can only communicate with flash when it is loaded
+        //   from a non ssl location
+        if (window.location.protocol === 'http:') {
+            config.flashplayer = config.flashplayer.replace('https', 'http');
+        }
+
         config.aspectratio = _evaluateAspectRatio(config.aspectratio, config.width);
 
         if (_.isObject(config.skin)) {
