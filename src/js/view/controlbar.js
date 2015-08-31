@@ -261,7 +261,7 @@ define([
             // When the control bar is interacted with, trigger a user action event
             new UI(this.el).on('click tap drag', function(){ this.trigger('userAction'); }, this);
 
-            this.elements.drawer.on('drawer-open', function(props){
+            this.elements.drawer.on('open-drawer close-drawer', function(evt, props){
                 utils.toggleClass(this.el, 'jw-drawer-expanded', props.isOpen);
                 if(!props.isOpen){
                     this.closeMenus();
@@ -269,7 +269,7 @@ define([
             }, this);
 
             _.each(this.menus, function(ele){
-                ele.on('tooltip-opened', this.closeMenus, this);
+                ele.on('open-tooltip', this.closeMenus, this);
             }, this);
         },
 
@@ -322,7 +322,7 @@ define([
             this._model.mediaModel.on('change:state', function(model, state) {
                 if(state === 'complete') {
                     this.elements.drawer.closeTooltip();
-                    utils.toggleClass(this.el, 'jw-drawer-expanded', false);
+                    utils.removeClass(this.el, 'jw-drawer-expanded');
                 }
             }, this);
         },
@@ -458,7 +458,7 @@ define([
             this.elements.drawer.setup(this.layout.drawer, isCompact);
 
             // If we're not in compact mode or we're not hiding icons, then put them back where they came from.
-            if(!isCompact || this.elements.drawer.activeContents < 2){
+            if(!isCompact || this.elements.drawer.activeContents.length < 2){
                 _.each(this.layout.drawer,function(ele){
                     this.elements.right.insertBefore(ele.el, this.elements.drawer.el);
                 }, this);

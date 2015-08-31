@@ -10,6 +10,7 @@ define([
             this.container = document.createElement('div');
             this.container.className = 'jw-overlay jw-reset';
             this.openClass = 'jw-open';
+            this.componentType = 'tooltip';
 
             this.el.appendChild(this.container);
         },
@@ -35,12 +36,12 @@ define([
             return this.el;
         },
         openTooltip: function(evt) {
-            this.trigger('tooltip-opened', evt);
+            this.trigger('open-'+this.componentType, evt, {'isOpen': true});
             this.isOpen = true;
             utils.toggleClass(this.el, this.openClass, this.isOpen);
         },
         closeTooltip: function(evt) {
-            this.trigger('tooltip-closed', evt);
+            this.trigger('close-'+this.componentType, evt, {'isOpen': false});
             this.isOpen = false;
             utils.toggleClass(this.el, this.openClass, this.isOpen);
         },

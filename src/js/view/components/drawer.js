@@ -10,6 +10,7 @@ define([
 
             this.container.className = 'jw-overlay-horizontal jw-reset';
             this.openClass = 'jw-open-drawer';
+            this.componentType = 'drawer';
         },
         setup : function (list, isCompactMode) {
             if(!this.iconUI){
@@ -37,11 +38,7 @@ define([
                 utils.removeClass(this.el, 'jw-off');
 
                 this.iconUI
-                    .on('tap', function () {
-                        this.isOpen = !this.isOpen;
-                        utils.toggleClass(this.el, this.openClass, this.isOpen);
-                        this.trigger('drawer-open', {'isOpen': this.isOpen});
-                    }, this)
+                    .on('tap', this.toggleOpenStateListener)
                     .on('over', this.openTooltipListener)
                     .on('out', this.closeTooltipListener);
                 
