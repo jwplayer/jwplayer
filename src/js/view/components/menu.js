@@ -8,7 +8,7 @@ define([
     var Menu = Tooltip.extend({
         setup : function (list, selectedIndex, options) {
             if(!this.iconUI){
-                this.iconUI = new UI(this.el, {'useHover': true});
+                this.iconUI = new UI(this.el, {'useHover': true, 'directSelect': true});
 
                 this.toggleValueListener= this.toggleValue.bind(this);
 
@@ -29,6 +29,7 @@ define([
             var isToggle = !isMenu && list.length === 2;
             utils.toggleClass(this.el, 'jw-toggle', isToggle);
             utils.toggleClass(this.el, 'jw-button-color', !isToggle);
+            this.isActive = isMenu || isToggle;
 
             if (isMenu) {
                 utils.removeClass(this.el, 'jw-off');

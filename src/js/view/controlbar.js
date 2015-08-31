@@ -86,10 +86,6 @@ define([
                 volumeTooltip,
                 muteButton;
 
-            drawer.on('drawer-open', function(props){
-                utils.toggleClass(this.el, 'jw-drawer-expanded', props.isOpen);
-            }, this);
-
             // Create the playlistTooltip as long as visualplaylist from the config is not false
             if(this._model.get('visualplaylist') !== false) {
                 playlistTooltip = new Playlist('jw-icon-playlist');
@@ -151,11 +147,16 @@ define([
                     this.elements.hd,
                     this.elements.cc,
                     this.elements.audiotracks
-                    //this.elements.mute,
-                    //this.elements.volume,
-                    //this.elements.volumetooltip
                 ]
             };
+
+            this.menus = _.compact([
+                this.elements.playlist,
+                this.elements.hd,
+                this.elements.cc,
+                this.elements.audiotracks,
+                this.elements.volumetooltip
+            ]);
 
             // Remove undefined layout elements.  They are invalid for the current platform.
             // (e.g. volume and volumetooltip on mobile)
@@ -256,6 +257,20 @@ define([
                     this._api.seek(-0.1);
                 }
             }, this);
+
+            // When the control bar is interacted with, trigger a user action event
+            new UI(this.el).on('click tap drag', function(){ this.trigger('userAction'); }, this);
+
+            this.elements.drawer.on('open-drawer close-drawer', function(evt, props){
+                utils.toggleClass(this.el, 'jw-drawer-expanded', props.isOpen);
+                if(!props.isOpen){
+                    this.closeMenus();
+                }
+            }, this);
+
+            _.each(this.menus, function(ele){
+                ele.on('open-tooltip', this.closeMenus, this);
+            }, this);
         },
 
         onCaptionsList: function(model, tracks) {
@@ -307,7 +322,7 @@ define([
             this._model.mediaModel.on('change:state', function(model, state) {
                 if(state === 'complete') {
                     this.elements.drawer.closeTooltip();
-                    utils.toggleClass(this.el, 'jw-drawer-expanded', false);
+                    utils.removeClass(this.el, 'jw-drawer-expanded');
                 }
             }, this);
         },
@@ -388,11 +403,24 @@ define([
                 this.elements.time.drawCues();
             }
         },
+        // Close menus if it has no event.  Otherwise close all but the event's target.
+        closeMenus : function(evt){
+            _.each(this.menus, function(ele){
+                if(!evt || evt.target !== ele.el) {
+                    ele.closeTooltip(evt);
+                }
+            });
+        },
+        hideComponents : function(){
+            this.closeMenus();
+            this.elements.drawer.closeTooltip();
+            utils.removeClass(this.el, 'jw-drawer-expanded');
+        },
         clearCompactMode : function() {
             this._maxCompactWidth = -1;
             this._model.set('compactUI', false);
         },
-        // Sets this._maxCompactWidth and this._minCompactWidth so we calculate less per call of isCompactMode
+        // Sets this._maxCompactWidth so we calculate less per call of isCompactMode
         setCompactModeBounds : function(){
             if(this.element().offsetWidth > 0 ){
                 var leftGroupExpandedSize = this.elements.left.offsetWidth,
@@ -426,11 +454,12 @@ define([
             }
         },
         onCompactUI : function(model, isCompact) {
-            utils.toggleClass(this.el, 'jw-drawer-expanded', false);
+            utils.removeClass(this.el, 'jw-drawer-expanded');
 
             this.elements.drawer.setup(this.layout.drawer, isCompact);
 
-            if(!isCompact){
+            // If we're not in compact mode or we're not hiding icons, then put them back where they came from.
+            if(!isCompact || this.elements.drawer.activeContents.length < 2){
                 _.each(this.layout.drawer,function(ele){
                     this.elements.right.insertBefore(ele.el, this.elements.drawer.el);
                 }, this);

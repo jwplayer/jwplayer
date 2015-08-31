@@ -17,9 +17,9 @@ define([
                 this.trigger('update', evt);
             }, this);
 
-            utils.toggleClass(this.el, 'jw-hidden', false);
+            utils.removeClass(this.el, 'jw-hidden');
 
-            new UI(this.el, {'useHover': true})
+            new UI(this.el, {'useHover': true, 'directSelect': true})
                 .on('click', this.toggleValue, this)
                 .on('tap', this.toggleOpenState, this)
                 .on('over', this.openTooltip, this)
@@ -27,10 +27,8 @@ define([
 
             this._model.on('change:volume', this.onVolume, this);
         },
-        toggleValue : function(evt){
-            if(evt.target === this.el){
-                this.trigger('toggleValue');
-            }
+        toggleValue : function(){
+            this.trigger('toggleValue');
         }
     });
 
