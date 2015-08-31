@@ -117,7 +117,7 @@ define([
         if (plugins) {
             flash = plugins['Shockwave Flash'];
             if (flash && flash.description) {
-                return parseFloat(flash.description.replace(/\D+(\d+)\..*/, '$1'));
+                return parseFloat(flash.description.replace(/\D+(\d+\.?\d*).*/, '$1'));
             }
         }
 
