@@ -42,6 +42,8 @@ public class AssetLoader extends EventDispatcher {
 
     private var _loader:Loader;
 
+    private var _url:String;
+
     protected function get loader():Loader {
         if (!_loader) {
             _loader = new Loader();
@@ -66,7 +68,12 @@ public class AssetLoader extends EventDispatcher {
         return _urlLoader;
     }
 
+    public function get url():String {
+        return _url;
+    }
+
     public function load(location:String, expectedClass:Class = null, forceLoader:Boolean = false):void {
+        _url = location;
         _errorState = false;
 
         LoadedClass = expectedClass;
