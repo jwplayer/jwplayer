@@ -13,7 +13,7 @@ define([
         },
         setup : function (list, isCompactMode) {
             if(!this.iconUI){
-                this.iconUI = new UI(this.el, { 'directSelect': true });
+                this.iconUI = new UI(this.el, { 'useHover' : true, 'directSelect': true });
 
                 this.toggleOpenStateListener = this.toggleOpenState.bind(this);
                 this.openTooltipListener = this.openTooltip.bind(this);
@@ -36,15 +36,15 @@ define([
             if (isCompactMode && this.activeContents.length > 1) {
                 utils.removeClass(this.el, 'jw-off');
 
-                this.iconUI.on('tap', function () {
-                    this.isOpen = !this.isOpen;
-                    utils.toggleClass(this.el, this.openClass, this.isOpen);
-                    this.trigger('drawer-open', {'isOpen': this.isOpen});
-                }, this);
-
-                this.el.addEventListener('mouseover', this.openTooltipListener);
-                this.el.addEventListener('mouseout', this.closeTooltipListener);
-
+                this.iconUI
+                    .on('tap', function () {
+                        this.isOpen = !this.isOpen;
+                        utils.toggleClass(this.el, this.openClass, this.isOpen);
+                        this.trigger('drawer-open', {'isOpen': this.isOpen});
+                    }, this)
+                    .on('over', this.openTooltipListener)
+                    .on('out', this.closeTooltipListener);
+                
                 _.each(list, function (menu) {
                     this.container.appendChild(menu.el);
                 }, this);
@@ -57,9 +57,6 @@ define([
                 this.contentUI.off().destroy();
             }
             this.removeContent();
-
-            this.el.removeEventListener('mouseover', this.openTooltipListener);
-            this.el.removeEventListener('mouseout', this.closeTooltipListener);
         }
     });
 

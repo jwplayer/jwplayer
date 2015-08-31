@@ -147,17 +147,16 @@ define([
                     this.elements.hd,
                     this.elements.cc,
                     this.elements.audiotracks
-                    //this.elements.mute,
-                    //this.elements.volume,
-                    //this.elements.volumetooltip
                 ]
             };
 
-            this.menus = [
+            this.menus = _.compact([
+                this.elements.playlist,
                 this.elements.hd,
                 this.elements.cc,
-                this.elements.audiotracks
-            ];
+                this.elements.audiotracks,
+                this.elements.volumetooltip
+            ]);
 
             // Remove undefined layout elements.  They are invalid for the current platform.
             // (e.g. volume and volumetooltip on mobile)
@@ -407,7 +406,7 @@ define([
         closeMenus : function(evt){
             _.each(this.menus, function(ele){
                 if(!evt || evt.target !== ele.el) {
-                    ele.closeTooltip();
+                    ele.closeTooltip(evt);
                 }
             });
         },
