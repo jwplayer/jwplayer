@@ -1,12 +1,11 @@
 define([
-    'playlist/playlist',
     'parsers/parsers',
     'parsers/rssparser',
     'utils/helpers',
     'events/events',
     'utils/backbone.events',
     'utils/underscore'
-], function(Playlist, parsers, rssParser, utils, events, Events, _) {
+], function(parsers, rssParser, utils, events, Events, _) {
 
     var PlaylistLoader = function() {
         var _this = _.extend(this, Events),

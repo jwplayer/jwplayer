@@ -1,9 +1,8 @@
 define([
-    'utils/constants',
     'utils/underscore',
     'utils/validator',
     'utils/trycatch'
-], function(Constants, _, validator, trycatch) {
+], function(_, validator, trycatch) {
     var parser = {};
 
     /** Gets an absolute file path based on a relative filepath * */

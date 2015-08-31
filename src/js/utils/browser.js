@@ -1,9 +1,7 @@
 define([
-    'utils/constants',
-    'utils/strings',
     'utils/underscore',
     'utils/trycatch'
-], function(Constants, strings, _, trycatch) {
+], function(_, trycatch) {
     var browser = {};
 
     var _userAgentMatch = _.memoize(function (regex) {

@@ -1,8 +1,6 @@
 define([
-    'utils/constants',
     'utils/strings',
     'utils/underscore',
-    'utils/jqueryfuncs',
     'utils/browser',
     'utils/dom',
     'utils/parser',
@@ -10,7 +8,7 @@ define([
     'utils/validator',
     'utils/playerutils',
     'utils/trycatch'
-], function(Constants, strings, _, jqueryfuncs, browser, dom, parser, ajax, validator, playerutils, trycatch) {
+], function(strings, _, browser, dom, parser, ajax, validator, playerutils, trycatch) {
 
     var utils = {};
 

@@ -1,6 +1,6 @@
 define([
     'utils/underscore',
-    'utils/helpers',
+    'utils/helpers'
 ], function(_, utils) {
 
     var persistItems = [

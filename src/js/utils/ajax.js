@@ -1,10 +1,9 @@
 define([
     'utils/underscore',
-    'utils/jqueryfuncs',
     'utils/validator',
     'utils/parser',
     'utils/trycatch'
-], function(_, jqueryfuncs, validator, parser, trycatch) {
+], function(_, validator, parser, trycatch) {
     var ajax = {};
 
     /** Loads an XML file into a DOM object * */

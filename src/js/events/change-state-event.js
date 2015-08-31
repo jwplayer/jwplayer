@@ -1,5 +1,5 @@
 define([
-    'events/states',
+    'events/states'
 ], function(states) {
 
     // The api should dispatch an idle event when the model's state changes to complete

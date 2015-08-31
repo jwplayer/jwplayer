@@ -1,11 +1,8 @@
 define([
-    'providers/html5',
-    'providers/flash',
     'providers/providers-supported',
     'providers/providers-loaded',
-    'utils/helpers',
     'utils/underscore'
-    ], function(html5, flash, ProvidersSupported, ProvidersLoaded, utils, _) {
+    ], function(ProvidersSupported, ProvidersLoaded, _) {
 
 
     function Providers(config) {
