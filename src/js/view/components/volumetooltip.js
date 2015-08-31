@@ -17,7 +17,7 @@ define([
                 this.trigger('update', evt);
             }, this);
 
-            utils.toggleClass(this.el, 'jw-hidden', false);
+            utils.removeClass(this.el, 'jw-hidden');
 
             new UI(this.el, {'useHover': true, 'directSelect': true})
                 .on('click', this.toggleValue, this)

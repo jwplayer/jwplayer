@@ -403,6 +403,7 @@ define([
                 this.elements.time.drawCues();
             }
         },
+        // Close menus if it has no event.  Otherwise close all but the event's target.
         closeMenus : function(evt){
             _.each(this.menus, function(ele){
                 if(!evt || evt.target !== ele.el) {
@@ -413,7 +414,7 @@ define([
         hideComponents : function(){
             this.closeMenus();
             this.elements.drawer.closeTooltip();
-            utils.toggleClass(this.el, 'jw-drawer-expanded', false);
+            utils.removeClass(this.el, 'jw-drawer-expanded');
         },
         clearCompactMode : function() {
             this._maxCompactWidth = -1;
@@ -453,7 +454,7 @@ define([
             }
         },
         onCompactUI : function(model, isCompact) {
-            utils.toggleClass(this.el, 'jw-drawer-expanded', false);
+            utils.removeClass(this.el, 'jw-drawer-expanded');
 
             this.elements.drawer.setup(this.layout.drawer, isCompact);
 
