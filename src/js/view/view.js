@@ -260,18 +260,48 @@ define([
                 cssUtils.css(elements.join(', '), o);
             }
 
-            addStyle('color',               ['.jw-button-color'],             _model.get('skinColorInactive'));
-            addStyle('color',               ['.jw-button-color:hover'],       _model.get('skinColorActive'));
+            // We can assume that the user will define both an active and inactive color because otherwise it doesn't
+            // look good.
+            var activeColor = _model.get('skinColorActive'),
+                inactiveColor =_model.get('skinColorInactive'),
+                backgroundColor = _model.get('skinColorBackground');
 
-            addStyle('color',               ['.jw-option'],                   _model.get('skinColorInactive'));
-            addStyle('background-color',    ['.jw-active-option'],            _model.get('skinColorActive'));
+            // Control bar icon coloring
+            addStyle('color',               ['.jw-button-color'],                                   inactiveColor);
+            addStyle('color',               ['.jw-button-color:hover'],                             activeColor);
 
-            addStyle('color',               ['.jw-toggle'],                   _model.get('skinColorActive'));
-            addStyle('color',               ['.jw-toggle.jw-off'],            _model.get('skinColorInactive'));
+            // Control bar men
+            addStyle('color',               ['.jw-option'],                                         inactiveColor);
+            addStyle('background-color',    ['.jw-active-option'],                                  activeColor);
 
-            addStyle('background',          ['.jw-progress'],                 _model.get('skinColorActive'));
-            addStyle('background',          ['.jw-cue', '.jw-knob'],          _model.get('skinColorInactive'));
-            addStyle('background',          ['.jw-background-color'],         _model.get('skinColorBackground'));
+            // Toggle button styling
+            addStyle('color',               ['.jw-toggle'],                                         activeColor);
+            addStyle('color',               ['.jw-toggle.jw-off'],                                  inactiveColor);
+
+            // Time Bar Styling
+            addStyle('background',          ['.jw-progress'],                                       activeColor);
+            addStyle('background',          ['.jw-cue', '.jw-knob'],                                inactiveColor);
+            addStyle('background',          ['.jw-background-color'],                               backgroundColor);
+
+            // Text, tooltip, and Skip button text
+            addStyle('color',               ['.jw-text'],                                           inactiveColor);
+            addStyle('color',               ['.jw-tooltip-title', '.jw-skip .jw-skip-icon'],        inactiveColor);
+
+            // Playlist Styling
+            addStyle('background-color', [
+                    '.jw-playlist-container .jw-option.jw-active-option',
+                    '.jw-playlist-container .jw-option:hover'
+                ], activeColor);
+
+            addStyle('color', ['.jw-playlist-container .jw-icon'], inactiveColor);
+            addStyle('border-bottom-color', ['.jw-playlist-container .jw-option'], inactiveColor);
+
+            addStyle('background-color', [
+                    '.jw-tooltip-title',
+                    '.jw-playlist',
+                    '.jw-playlist-container .jw-option'
+                ], backgroundColor);
+            addStyle('border-color', ['.jw-playlist-container ::-webkit-scrollbar'], backgroundColor);
         };
 
         this.setup = function() {
