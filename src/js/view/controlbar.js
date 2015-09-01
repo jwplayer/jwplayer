@@ -363,6 +363,7 @@ define([
             var totalTime;
             if (utils.adaptiveType(val) === 'DVR') {
                 totalTime = 'Live';
+                this.clearCompactMode();
             } else {
                 totalTime = utils.timeFormat(val);
             }
@@ -423,13 +424,17 @@ define([
         // Sets this._maxCompactWidth so we calculate less per call of isCompactMode
         setCompactModeBounds : function(){
             if(this.element().offsetWidth > 0 ){
-                var leftGroupExpandedSize = this.elements.left.offsetWidth,
-                    rightGroupExpandedSize = this.elements.right.offsetWidth,
-                    containerRequiredSize = leftGroupExpandedSize + rightGroupExpandedSize +
-                        (this.elements.center.offsetWidth - this.elements.time.el.offsetWidth),
-                    timeSliderBreakpoint = 0.25;
+                // Use the current center section content (timeslider or alt text) to determine compact mode
+                var nonCenterExpandedSize = this.elements.left.offsetWidth + this.elements.right.offsetWidth;
+                if(utils.adaptiveType(this._model.get('duration')) === 'LIVE'){
+                    this._maxCompactWidth = nonCenterExpandedSize + this.elements.alt.offsetWidth;
+                } else {
+                    var containerRequiredSize = nonCenterExpandedSize +
+                            (this.elements.center.offsetWidth - this.elements.time.el.offsetWidth),
+                        timeSliderBreakpoint = 0.25;
+                    this._maxCompactWidth = containerRequiredSize / (1-timeSliderBreakpoint);
+                }
 
-                this._maxCompactWidth = containerRequiredSize / (1-timeSliderBreakpoint);
             }
         },
         checkCompactMode : function(containerWidth) {
