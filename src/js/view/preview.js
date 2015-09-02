@@ -22,7 +22,7 @@ define([
                 img = encodeURI(img);
                 this.el.style.backgroundImage = 'url("' + img + '")';
             } else {
-                this.el.style['background-image'] = '';
+                this.el.style.backgroundImage = '';
             }
         },
         element : function() {
