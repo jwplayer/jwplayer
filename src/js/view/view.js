@@ -13,11 +13,14 @@ define([
     'view/rightclick',
     'view/title',
     'utils/css',
+    'utils/dom',
     'utils/underscore',
-    'handlebars-loader!templates/player.html'
+    'handlebars-loader!templates/player.html',
+    'handlebars-loader!templates/customstyles.html'
 ], function(utils, events, Events, states,
             CaptionsRenderer, ClickHandler, DisplayIcon, Dock, Logo,
-            Controlbar, Preview, RightClick, Title, cssUtils, _, playerTemplate) {
+            Controlbar, Preview, RightClick, Title, cssUtils, dom, _,
+            playerTemplate, customStylesTemplate) {
 
     var _styles = utils.style,
         _bounds = utils.bounds,
@@ -66,6 +69,8 @@ define([
             // Used to differentiate tab focus events from click events, because when
             //  it is a click, the mouseDown event will occur immediately prior
             _focusFromClick = false,
+
+            _customStyleSheet,
 
             _this = _.extend(this, Events);
 
@@ -249,59 +254,14 @@ define([
 
 
         this.handleColorOverrides = function() {
-            var id = _model.get('id');
-            function addStyle(attr, elements, color) {
-                if (!color) { return; }
-
-                elements = utils.prefix(elements, '#' + id + ' ');
-
-                var o = {};
-                o[attr] = color;
-                cssUtils.css(elements.join(', '), o);
-            }
-
-            // We can assume that the user will define both an active and inactive color because otherwise it doesn't
-            // look good.
-            var activeColor = _model.get('skinColorActive'),
-                inactiveColor =_model.get('skinColorInactive'),
-                backgroundColor = _model.get('skinColorBackground');
-
-            // Control bar icon coloring
-            addStyle('color',               ['.jw-button-color'],                                   inactiveColor);
-            addStyle('color',               ['.jw-button-color:hover'],                             activeColor);
-
-            // Control bar men
-            addStyle('color',               ['.jw-option'],                                         inactiveColor);
-            addStyle('background-color',    ['.jw-active-option'],                                  activeColor);
-
-            // Toggle button styling
-            addStyle('color',               ['.jw-toggle'],                                         activeColor);
-            addStyle('color',               ['.jw-toggle.jw-off'],                                  inactiveColor);
-
-            // Time Bar Styling
-            addStyle('background',          ['.jw-progress'],                                       activeColor);
-            addStyle('background',          ['.jw-cue', '.jw-knob'],                                inactiveColor);
-            addStyle('background',          ['.jw-background-color'],                               backgroundColor);
-
-            // Text, tooltip, and Skip button text
-            addStyle('color',               ['.jw-text'],                                           inactiveColor);
-            addStyle('color',               ['.jw-tooltip-title', '.jw-skip .jw-skip-icon'],        inactiveColor);
-
-            // Playlist Styling
-            addStyle('background-color', [
-                    '.jw-playlist-container .jw-option.jw-active-option',
-                    '.jw-playlist-container .jw-option:hover'
-                ], activeColor);
-
-            addStyle('color', ['.jw-playlist-container .jw-icon'], inactiveColor);
-            addStyle('border-bottom-color', ['.jw-playlist-container .jw-option'], inactiveColor);
-
-            addStyle('background-color', [
-                    '.jw-tooltip-title',
-                    '.jw-playlist',
-                    '.jw-playlist-container .jw-option'
-                ], backgroundColor);
-            addStyle('border-color', ['.jw-playlist-container ::-webkit-scrollbar'], backgroundColor);
+            var styleHtml = customStylesTemplate({
+                id: _model.get('id'),
+                active: _model.get('skinColorActive'),
+                inactive: _model.get('skinColorInactive'),
+                background: _model.get('skinColorBackground')
+            }).replace(/\\(\{|\})/g, '$1');
+            _customStyleSheet = utils.createElement(styleHtml);
+            document.getElementsByTagName('head')[0].appendChild(_customStyleSheet);
         };
 
         this.setup = function() {
@@ -994,8 +954,13 @@ define([
             if (_instreamMode) {
                 this.destroyInstream();
             }
-
-            cssUtils.clearCss('#'+_model.get('id'));
+            if (_customStyleSheet) {
+                if (_customStyleSheet.styleSheet) {
+                    _customStyleSheet.styleSheet.cssText = '';
+                } else {
+                    dom.emptyElement(_customStyleSheet);
+                }
+            }
         };
     };
 
