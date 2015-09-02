@@ -1,10 +1,6 @@
 define([
-    'utils/helpers',
     'utils/strings'
-], function(utils, Strings) {
-
-    var _exists = utils.exists;
-
+], function(Strings) {
 
     var _style = function (elements, styles) {
         if (elements === undefined || elements === null) {
@@ -46,7 +42,7 @@ define([
     }
 
     function _styleValue(style, value, important) {
-        if (!_exists(value)) {
+        if (value === undefined || value === null) {
             return '';
         }
         var importantString = important ? ' !important' : '';
@@ -103,8 +99,6 @@ define([
         }
         return style + '(' + channels.join(',') + ')';
     };
-
-    utils.style = _style;
 
     return {
         style : _style,
