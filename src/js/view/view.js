@@ -259,7 +259,7 @@ define([
 
                 var o = {};
                 o[attr] = value;
-                utils.css(elements.join(', '), o);
+                utils.css.css(elements.join(', '), o);
             }
 
             // We can assume that the user will define both an active and inactive color because otherwise it doesn't
@@ -268,42 +268,59 @@ define([
                 inactiveColor = _model.get('skinColorInactive'),
                 backgroundColor = _model.get('skinColorBackground');
 
-            // Control bar icon coloring
-            addStyle(['.jw-button-color'], 'color', inactiveColor);
-            addStyle(['.jw-button-color:hover'], 'color', activeColor);
+            // These will use standard style names for CSS since they are added directly to a style sheet
+            // Using background instead of background-color so we don't have to clear gradients with background-image
 
-            // Control bar men
-            addStyle(['.jw-option'], 'color', inactiveColor);
-            addStyle(['.jw-active-option'], 'background-color', activeColor);
-
-            // Toggle button styling
-            addStyle(['.jw-toggle'], 'color', activeColor);
-            addStyle(['.jw-toggle.jw-off'], 'color', inactiveColor);
-
-            // Time Bar Styling
-            addStyle(['.jw-progress'], 'background', activeColor);
-            addStyle(['.jw-cue', '.jw-knob'], 'background', inactiveColor);
-            addStyle(['.jw-background-color'], 'background', backgroundColor);
-
-            // Text, tooltip, and Skip button text
-            addStyle(['.jw-text'], 'color', inactiveColor);
-            addStyle(['.jw-tooltip-title', '.jw-skip .jw-skip-icon'], 'color', inactiveColor);
-
-            // Playlist Styling
+            // Apply active color
             addStyle([
+                // Toggle and menu button active colors
+                '.jw-toggle',
+                '.jw-button-color:hover'
+            ], 'color', activeColor);
+            addStyle([
+                // menu active option
+                '.jw-active-option',
+                // slider fill color
+                '.jw-progress',
                 '.jw-playlist-container .jw-option.jw-active-option',
                 '.jw-playlist-container .jw-option:hover'
-            ], 'background-color', activeColor);
+            ], 'background', activeColor);
 
-            addStyle(['.jw-playlist-container .jw-icon'], 'color', inactiveColor);
-            addStyle(['.jw-playlist-container .jw-option'], 'border-bottom-color', inactiveColor);
-
+            // Apply inactive color
             addStyle([
+                // text color of many ui elements
+                '.jw-text',
+                // menu option text
+                '.jw-option',
+                // controlbar button colors
+                '.jw-button-color',
+                // toggle button
+                '.jw-toggle.jw-off',
+                '.jw-tooltip-title',
+                '.jw-skip .jw-skip-icon',
+                '.jw-playlist-container .jw-icon'
+            ], 'color', inactiveColor);
+            addStyle([
+                // slider children
+                '.jw-cue',
+                '.jw-knob'
+            ], 'background', inactiveColor);
+            addStyle([
+                '.jw-playlist-container .jw-option'
+            ], 'border-bottom-color', inactiveColor);
+
+            // Apply background color
+            addStyle([
+                // general background color
+                '.jw-background-color',
                 '.jw-tooltip-title',
                 '.jw-playlist',
                 '.jw-playlist-container .jw-option'
-            ], 'background-color', backgroundColor);
-            addStyle(['.jw-playlist-container ::-webkit-scrollbar'], 'border-color', backgroundColor);
+            ], 'background', backgroundColor);
+            addStyle([
+                // area around scrollbar on the playlist.  skin fix required to remove
+                '.jw-playlist-container ::-webkit-scrollbar'
+            ], 'border-color', backgroundColor);
         };
 
         this.setup = function() {
