@@ -112,14 +112,6 @@ define([
     function remove(swf) {
         if (swf && swf.parentNode) {
             swf.style.display = 'none';
-            // remove flash object safely, setting flash external interface methods to null for ie8
-            if (utils.isMSIE(8)) {
-                for (var i in swf) {
-                    if (typeof swf[i] === 'function') {
-                        swf[i] = null;
-                    }
-                }
-            }
             swf.parentNode.removeChild(swf);
         }
     }
