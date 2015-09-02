@@ -1,0 +1,29 @@
+<style type="text/css">
+{{#if inactive}}
+#{{id}} .jw-button-color,
+#{{id}} .jw-option,
+#{{id}} .jw-toggle.jw-off,
+#{{id}} .jw-text,
+#{{id}} .jw-tooltip-title,
+#{{id}} .jw-skip .jw-skip-icon,
+#{{id}} .jw-playlist-container .jw-icon\{color:{{inactive}}\}
+#{{id}} .jw-cue,
+#{{id}} .jw-knob\{background-color:{{inactive}}\}
+#{{id}} .jw-playlist-container .jw-option\{border-bottom-color:{{inactive}}\}
+{{/if}}
+{{#if active}}
+#{{id}} .jw-button-color:hover,
+#{{id}} .jw-toggle\{color:{{active}}\}
+#{{id}} .jw-active-option,
+#{{id}} .jw-progress,
+#{{id}} .jw-playlist-container .jw-option.jw-active-option,
+#{{id}} .jw-playlist-container .jw-option:hover\{background-color:{{active}}\}
+{{/if}}
+{{#if background}}
+#{{id}} .jw-background-color,
+#{{id}} .jw-tooltip-title,
+#{{id}} .jw-playlist,
+#{{id}} .jw-playlist-container .jw-option\{background-color:{{background}}\}
+#{{id}} .jw-playlist-container ::-webkit-scrollbar\{border-color:{{background}}\}
+{{/if}}
+</style>
