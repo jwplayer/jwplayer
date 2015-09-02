@@ -52,7 +52,7 @@ define([
             var style = {
                 display: 'block',
                 margin: '0 auto',
-                'background-position': '0 0'
+                backgroundPosition: '0 0'
             };
 
             var hashIndex = url.indexOf('#xywh');
@@ -60,7 +60,7 @@ define([
                 try {
                     var matched = (/(.+)\#xywh=(\d+),(\d+),(\d+),(\d+)/).exec(url);
                     url = matched[1];
-                    style['background-position'] = (matched[2] * -1) + 'px ' + (matched[3] * -1) + 'px';
+                    style.backgroundPosition = (matched[2] * -1) + 'px ' + (matched[3] * -1) + 'px';
                     style.width = matched[4];
                     style.height = matched[5];
                 } catch (e) {
@@ -78,7 +78,7 @@ define([
                 }
             }
 
-            style['background-image'] = url;
+            style.backgroundImage = url;
 
             return style;
         },
@@ -92,9 +92,9 @@ define([
 
         resetThumbnails : function() {
             this.timeTip.image({
-                'background-image' : '',
-                'width' : 0,
-                'height' : 0
+                backgroundImage : '',
+                width : 0,
+                height : 0
             });
             this.thumbnails = [];
         }

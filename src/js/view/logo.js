@@ -66,7 +66,7 @@ define([
 
         this.offset = function(offset) {
             _styles(_logo, {
-                'margin-bottom': offset
+                marginBottom: offset
             });
         };
 
