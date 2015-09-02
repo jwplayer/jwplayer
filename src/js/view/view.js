@@ -12,12 +12,11 @@ define([
     'view/preview',
     'view/rightclick',
     'view/title',
-    'utils/css',
     'utils/underscore',
     'handlebars-loader!templates/player.html'
 ], function(utils, events, Events, states,
             CaptionsRenderer, ClickHandler, DisplayIcon, Dock, Logo,
-            Controlbar, Preview, RightClick, Title, cssUtils, _, playerTemplate) {
+            Controlbar, Preview, RightClick, Title, _, playerTemplate) {
 
     var _styles = utils.style,
         _bounds = utils.bounds,
@@ -250,58 +249,61 @@ define([
 
         this.handleColorOverrides = function() {
             var id = _model.get('id');
-            function addStyle(attr, elements, color) {
-                if (!color) { return; }
+
+            function addStyle(elements, attr, value) {
+                if (!value) {
+                    return;
+                }
 
                 elements = utils.prefix(elements, '#' + id + ' ');
 
                 var o = {};
-                o[attr] = color;
-                cssUtils.css(elements.join(', '), o);
+                o[attr] = value;
+                utils.css(elements.join(', '), o);
             }
 
             // We can assume that the user will define both an active and inactive color because otherwise it doesn't
             // look good.
             var activeColor = _model.get('skinColorActive'),
-                inactiveColor =_model.get('skinColorInactive'),
+                inactiveColor = _model.get('skinColorInactive'),
                 backgroundColor = _model.get('skinColorBackground');
 
             // Control bar icon coloring
-            addStyle('color',               ['.jw-button-color'],                                   inactiveColor);
-            addStyle('color',               ['.jw-button-color:hover'],                             activeColor);
+            addStyle(['.jw-button-color'], 'color', inactiveColor);
+            addStyle(['.jw-button-color:hover'], 'color', activeColor);
 
             // Control bar men
-            addStyle('color',               ['.jw-option'],                                         inactiveColor);
-            addStyle('background-color',    ['.jw-active-option'],                                  activeColor);
+            addStyle(['.jw-option'], 'color', inactiveColor);
+            addStyle(['.jw-active-option'], 'background-color', activeColor);
 
             // Toggle button styling
-            addStyle('color',               ['.jw-toggle'],                                         activeColor);
-            addStyle('color',               ['.jw-toggle.jw-off'],                                  inactiveColor);
+            addStyle(['.jw-toggle'], 'color', activeColor);
+            addStyle(['.jw-toggle.jw-off'], 'color', inactiveColor);
 
             // Time Bar Styling
-            addStyle('background',          ['.jw-progress'],                                       activeColor);
-            addStyle('background',          ['.jw-cue', '.jw-knob'],                                inactiveColor);
-            addStyle('background',          ['.jw-background-color'],                               backgroundColor);
+            addStyle(['.jw-progress'], 'background', activeColor);
+            addStyle(['.jw-cue', '.jw-knob'], 'background', inactiveColor);
+            addStyle(['.jw-background-color'], 'background', backgroundColor);
 
             // Text, tooltip, and Skip button text
-            addStyle('color',               ['.jw-text'],                                           inactiveColor);
-            addStyle('color',               ['.jw-tooltip-title', '.jw-skip .jw-skip-icon'],        inactiveColor);
+            addStyle(['.jw-text'], 'color', inactiveColor);
+            addStyle(['.jw-tooltip-title', '.jw-skip .jw-skip-icon'], 'color', inactiveColor);
 
             // Playlist Styling
-            addStyle('background-color', [
-                    '.jw-playlist-container .jw-option.jw-active-option',
-                    '.jw-playlist-container .jw-option:hover'
-                ], activeColor);
+            addStyle([
+                '.jw-playlist-container .jw-option.jw-active-option',
+                '.jw-playlist-container .jw-option:hover'
+            ], 'background-color', activeColor);
 
-            addStyle('color', ['.jw-playlist-container .jw-icon'], inactiveColor);
-            addStyle('border-bottom-color', ['.jw-playlist-container .jw-option'], inactiveColor);
+            addStyle(['.jw-playlist-container .jw-icon'], 'color', inactiveColor);
+            addStyle(['.jw-playlist-container .jw-option'], 'border-bottom-color', inactiveColor);
 
-            addStyle('background-color', [
-                    '.jw-tooltip-title',
-                    '.jw-playlist',
-                    '.jw-playlist-container .jw-option'
-                ], backgroundColor);
-            addStyle('border-color', ['.jw-playlist-container ::-webkit-scrollbar'], backgroundColor);
+            addStyle([
+                '.jw-tooltip-title',
+                '.jw-playlist',
+                '.jw-playlist-container .jw-option'
+            ], 'background-color', backgroundColor);
+            addStyle(['.jw-playlist-container ::-webkit-scrollbar'], 'border-color', backgroundColor);
         };
 
         this.setup = function() {
@@ -638,7 +640,7 @@ define([
                 if (_playerElement.className !== className) {
                     _playerElement.className = className;
                 }
-                cssUtils.style(_playerElement, {
+                utils.style(_playerElement, {
                     display: 'block'
                 }, resetAspectMode);
             }
@@ -994,8 +996,7 @@ define([
             if (_instreamMode) {
                 this.destroyInstream();
             }
-
-            cssUtils.clearCss('#'+_model.get('id'));
+            utils.clearCss('#'+_model.get('id'));
         };
     };
 
