@@ -57,7 +57,7 @@ define([
     }
 
     function _styleValue(style, value, important) {
-        if (value === undefined || value === null) {
+        if (value === '' || value === undefined || value === null) {
             return '';
         }
         var importantString = important ? ' !important' : '';
