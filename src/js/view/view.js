@@ -12,12 +12,11 @@ define([
     'view/preview',
     'view/rightclick',
     'view/title',
-    'utils/css',
     'utils/underscore',
     'handlebars-loader!templates/player.html'
 ], function(utils, events, Events, states,
             CaptionsRenderer, ClickHandler, DisplayIcon, Dock, Logo,
-            Controlbar, Preview, RightClick, Title, cssUtils, _, playerTemplate) {
+            Controlbar, Preview, RightClick, Title, _, playerTemplate) {
 
     var _styles = utils.style,
         _bounds = utils.bounds,
@@ -250,58 +249,78 @@ define([
 
         this.handleColorOverrides = function() {
             var id = _model.get('id');
-            function addStyle(attr, elements, color) {
-                if (!color) { return; }
+
+            function addStyle(elements, attr, value) {
+                if (!value) {
+                    return;
+                }
 
                 elements = utils.prefix(elements, '#' + id + ' ');
 
                 var o = {};
-                o[attr] = color;
-                cssUtils.css(elements.join(', '), o);
+                o[attr] = value;
+                utils.css(elements.join(', '), o);
             }
 
             // We can assume that the user will define both an active and inactive color because otherwise it doesn't
             // look good.
             var activeColor = _model.get('skinColorActive'),
-                inactiveColor =_model.get('skinColorInactive'),
+                inactiveColor = _model.get('skinColorInactive'),
                 backgroundColor = _model.get('skinColorBackground');
 
-            // Control bar icon coloring
-            addStyle('color',               ['.jw-button-color'],                                   inactiveColor);
-            addStyle('color',               ['.jw-button-color:hover'],                             activeColor);
+            // These will use standard style names for CSS since they are added directly to a style sheet
+            // Using background instead of background-color so we don't have to clear gradients with background-image
 
-            // Control bar men
-            addStyle('color',               ['.jw-option'],                                         inactiveColor);
-            addStyle('background-color',    ['.jw-active-option'],                                  activeColor);
+            // Apply active color
+            addStyle([
+                // Toggle and menu button active colors
+                '.jw-toggle',
+                '.jw-button-color:hover'
+            ], 'color', activeColor);
+            addStyle([
+                // menu active option
+                '.jw-active-option',
+                // slider fill color
+                '.jw-progress',
+                '.jw-playlist-container .jw-option.jw-active-option',
+                '.jw-playlist-container .jw-option:hover'
+            ], 'background', activeColor);
 
-            // Toggle button styling
-            addStyle('color',               ['.jw-toggle'],                                         activeColor);
-            addStyle('color',               ['.jw-toggle.jw-off'],                                  inactiveColor);
+            // Apply inactive color
+            addStyle([
+                // text color of many ui elements
+                '.jw-text',
+                // menu option text
+                '.jw-option',
+                // controlbar button colors
+                '.jw-button-color',
+                // toggle button
+                '.jw-toggle.jw-off',
+                '.jw-tooltip-title',
+                '.jw-skip .jw-skip-icon',
+                '.jw-playlist-container .jw-icon'
+            ], 'color', inactiveColor);
+            addStyle([
+                // slider children
+                '.jw-cue',
+                '.jw-knob'
+            ], 'background', inactiveColor);
+            addStyle([
+                '.jw-playlist-container .jw-option'
+            ], 'border-bottom-color', inactiveColor);
 
-            // Time Bar Styling
-            addStyle('background',          ['.jw-progress'],                                       activeColor);
-            addStyle('background',          ['.jw-cue', '.jw-knob'],                                inactiveColor);
-            addStyle('background',          ['.jw-background-color'],                               backgroundColor);
-
-            // Text, tooltip, and Skip button text
-            addStyle('color',               ['.jw-text'],                                           inactiveColor);
-            addStyle('color',               ['.jw-tooltip-title', '.jw-skip .jw-skip-icon'],        inactiveColor);
-
-            // Playlist Styling
-            addStyle('background-color', [
-                    '.jw-playlist-container .jw-option.jw-active-option',
-                    '.jw-playlist-container .jw-option:hover'
-                ], activeColor);
-
-            addStyle('color', ['.jw-playlist-container .jw-icon'], inactiveColor);
-            addStyle('border-bottom-color', ['.jw-playlist-container .jw-option'], inactiveColor);
-
-            addStyle('background-color', [
-                    '.jw-tooltip-title',
-                    '.jw-playlist',
-                    '.jw-playlist-container .jw-option'
-                ], backgroundColor);
-            addStyle('border-color', ['.jw-playlist-container ::-webkit-scrollbar'], backgroundColor);
+            // Apply background color
+            addStyle([
+                // general background color
+                '.jw-background-color',
+                '.jw-tooltip-title',
+                '.jw-playlist',
+                '.jw-playlist-container .jw-option'
+            ], 'background', backgroundColor);
+            addStyle([
+                // area around scrollbar on the playlist.  skin fix required to remove
+                '.jw-playlist-container ::-webkit-scrollbar'
+            ], 'border-color', backgroundColor);
         };
 
         this.setup = function() {
@@ -638,7 +657,7 @@ define([
                 if (_playerElement.className !== className) {
                     _playerElement.className = className;
                 }
-                cssUtils.style(_playerElement, {
+                utils.style(_playerElement, {
                     display: 'block'
                 }, resetAspectMode);
             }
@@ -994,8 +1013,7 @@ define([
             if (_instreamMode) {
                 this.destroyInstream();
             }
-
-            cssUtils.clearCss('#'+_model.get('id'));
+            utils.clearCss('#'+_model.get('id'));
         };
     };
 

@@ -1,47 +1,23 @@
 define([
-    'utils/helpers',
     'utils/strings'
-], function(utils, Strings) {
+], function(Strings) {
 
-    var MAX_CSS_RULES = 50000,
-        _styleSheets = {},
-        _styleSheet,
-        _rules = {},
-        _ruleIndexes = {},
-        _exists = utils.exists;
+    var _styleRules = {},
+        _styleSheet;
 
-    function _createStylesheet(debugText) {
-        var styleSheet = document.createElement('style');
-        if (debugText) {
-            styleSheet.appendChild(document.createTextNode(debugText));
+    var _css = function(selector, styles) {
+        if (!_styleSheet) {
+            _styleSheet = document.createElement('style');
+            _styleSheet.type = 'text/css';
+            document.getElementsByTagName('head')[0].appendChild(_styleSheet);
         }
-        styleSheet.type = 'text/css';
-        document.getElementsByTagName('head')[0].appendChild(styleSheet);
-        return styleSheet;
-    }
-
-    var _css = function (selector, styles, important) {
-        important = important || false;
-
-        if (!_rules[selector]) {
-            _rules[selector] = {};
+        var cssText = selector + JSON.stringify(styles).replace(/"/g, '');
+        var node = document.createTextNode(cssText);
+        if (_styleRules[selector]) {
+            _styleSheet.removeChild(_styleRules[selector]);
         }
-
-        if (!_updateStyles(_rules[selector], styles, important)) {
-            //no change in css
-            return;
-        }
-
-        if (!_styleSheets[selector]) {
-            // set stylesheet for selector
-            var numberRules = _styleSheet && _styleSheet.sheet && _styleSheet.sheet.cssRules &&
-                _styleSheet.sheet.cssRules.length || 0;
-            if (!_styleSheet || numberRules > MAX_CSS_RULES) {
-                _styleSheet = _createStylesheet();
-            }
-            _styleSheets[selector] = _styleSheet;
-        }
-        _updateStylesheet(selector);
+        _styleRules[selector] = node;
+        _styleSheet.appendChild(node);
     };
 
     var _style = function (elements, styles) {
@@ -72,26 +48,6 @@ define([
         }
     };
 
-    function _updateStyles(cssRules, styles, important) {
-        var dirty = false,
-            style, val;
-        for (style in styles) {
-            val = _styleValue(style, styles[style], important);
-            if (val !== '') {
-                if (val !== cssRules[style]) {
-                    cssRules[style] = val;
-                    dirty = true;
-                }
-            } else if (cssRules[style] !== undefined) {
-                delete cssRules[style];
-                dirty = true;
-            }
-        }
-        return dirty;
-    }
-
-
-
     function _styleAttributeName(name) {
         name = name.split('-');
         for (var i = 1; i < name.length; i++) {
@@ -101,7 +57,7 @@ define([
     }
 
     function _styleValue(style, value, important) {
-        if (!_exists(value)) {
+        if (value === undefined || value === null) {
             return '';
         }
         var importantString = important ? ' !important' : '';
@@ -125,57 +81,12 @@ define([
         return Math.ceil(value) + 'px' + importantString;
     }
 
-    function _updateStylesheet(selector) {
-        var sheet = _styleSheets[selector].sheet,
-            cssRules,
-            ruleIndex,
-            ruleText;
-        if (sheet) {
-            cssRules = sheet.cssRules;
-            ruleIndex = _ruleIndexes[selector];
-            ruleText = _getRuleText(selector);
-
-            if (ruleIndex !== undefined && ruleIndex < cssRules.length &&
-                cssRules[ruleIndex].selectorText === selector) {
-                if (ruleText === cssRules[ruleIndex].cssText) {
-                    //no update needed
-                    return;
-                }
-                sheet.deleteRule(ruleIndex);
-            } else {
-                ruleIndex = cssRules.length;
-                _ruleIndexes[selector] = ruleIndex;
-            }
-            _insertRule(sheet, ruleText, ruleIndex);
-        }
-    }
-
-    function _insertRule(sheet, text, index) {
-        utils.tryCatch(function() {
-            sheet.insertRule(text, index);
-        });
-    }
-
-    function _getRuleText(selector) {
-        var styles = _rules[selector];
-        selector += ' { ';
-        for (var style in styles) {
-            selector += style + ': ' + styles[style] + '; ';
-        }
-        return selector + '}';
-    }
-
-
     // Removes all css elements which match a particular style
-    var _clearCss = function (filter) {
-        for (var rule in _rules) {
-            if (rule.indexOf(filter) >= 0) {
-                delete _rules[rule];
-            }
-        }
-        for (var selector in _styleSheets) {
+    var _clearCss = function(filter) {
+        for (var selector in _styleRules) {
             if (selector.indexOf(filter) >= 0) {
-                _updateStylesheet(selector);
+                _styleSheet.removeChild(_styleRules[selector]);
+                delete _styleRules[selector];
             }
         }
     };
@@ -189,11 +100,7 @@ define([
         style['-ms-' + transform] = value;
         style['-moz-' + transform] = value;
         style['-o-' + transform] = value;
-        if (typeof element === 'string') {
-            _css(element, style);
-        } else {
-            _style(element, style);
-        }
+        _style(element, style);
     };
 
     var hexToRgba = function (hexColor, opacity) {
@@ -217,8 +124,6 @@ define([
         }
         return style + '(' + channels.join(',') + ')';
     };
-
-    utils.style = _style;
 
     return {
         css : _css,
