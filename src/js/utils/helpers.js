@@ -3,12 +3,13 @@ define([
     'utils/underscore',
     'utils/browser',
     'utils/dom',
+    'utils/css',
     'utils/parser',
     'utils/ajax',
     'utils/validator',
     'utils/playerutils',
     'utils/trycatch'
-], function(strings, _, browser, dom, parser, ajax, validator, playerutils, trycatch) {
+], function(strings, _, browser, dom, css, parser, ajax, validator, playerutils, trycatch) {
 
     var utils = {};
 
@@ -55,7 +56,7 @@ define([
     utils.prefix = strings.prefix;
     utils.suffix = strings.suffix;
 
-    _.extend(utils, parser, validator, browser, ajax, dom, playerutils, trycatch);
+    _.extend(utils, parser, validator, browser, ajax, dom, css, playerutils, trycatch);
 
     return utils;
 });
