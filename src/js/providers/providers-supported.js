@@ -86,6 +86,7 @@ define([
             name: 'flash',
             supports: function (source) {
                 var flashExtensions = {
+                    'x-flv': 'video',
                     'flv': 'video',
                     'f4v': 'video',
                     'mov': 'video',
