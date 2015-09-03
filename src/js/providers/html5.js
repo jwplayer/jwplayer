@@ -603,6 +603,9 @@ define([
                 _canSeek = false;
             }
 
+            // In case the video tag was modified while we shared it
+            _videotag.loop = false;
+
             // This is after a postroll completes
             if (_beforecompleted) {
                 _playbackComplete();

@@ -245,7 +245,6 @@ define([
                 // Must happen after instream.instreamDestroy()
                 _view.destroyInstream();
 
-
                 _instream = null;
 
                 // Re-attach the controller
