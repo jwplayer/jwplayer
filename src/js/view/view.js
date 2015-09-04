@@ -901,6 +901,7 @@ define([
             switch (state) {
                 case states.PLAYING:
                     _resizeMedia();
+                    _userActivity();
                     break;
                 case states.PAUSED:
                     _userActivity();
