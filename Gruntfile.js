@@ -276,14 +276,13 @@ module.exports = function(grunt) {
                 targetCompilerOptions : [
                     '-define+=JWPLAYER::version,\'' + packageInfo.version + '\''
                 ],
-                sdk: env.FLEX_HOME,
+                // prefer AIR_HOME for faster compilation and JRE 7 64-bit support
+                sdk: env.AIR_HOME || env.FLEX_HOME,
                 ascshdPort: 11123
             },
             debug : {
                 options : {
-                    debug : true,
-                    // prefer AIR_HOME for faster compilation
-                    sdk: env.AIR_HOME || env.FLEX_HOME
+                    debug : true
                 },
                 files : {
                     'bin-debug/jwplayer.flash.swf' : 'src/flash/com/longtailvideo/jwplayer/player/Player.as'
