@@ -284,6 +284,7 @@ public dynamic class PlaylistItem {
     private static function extensionMap(extension:String):String {
         switch (extension) {
             case "flv":
+            case "x-flv":
                 return "flv";
             case "mov":
             case "f4v":
@@ -309,6 +310,7 @@ public dynamic class PlaylistItem {
 
     private static function typeMap(type:String):String {
         switch (type) {
+            case "x-flv":
             case "flv":
             case "mp4":
             case "aac":
