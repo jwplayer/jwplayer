@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MP4 video file</title>
+    <script type="text/javascript" src="../../bin-release/jwplayer.js"></script>
+    <link type="text/css" rel="stylesheet" href="styles/tests.css"  media="all" />
+</head>
+<body>
+
+<h1>Setup Examples</h1>
+
+<h2>Video Playlist</h2>
+
+<div id="video-container">before set up</div>
+<script type="text/javascript">
+    (function(jwplayer) {
+        var config = {
+
+            // FIXME: open-source release should not load from CDN
+            // Load skin file from script location
+            base: '.',
+
+            // autostart: true,
+
+            width: '50%',
+
+            // primary: 'flash',
+            logo: {
+                hide : true, // fade out w/ controlbar
+                file:'css-skins/icons/smiley.png'
+            },
+
+            skin : 'bekle.xml',
+
+
+            listbar: {
+                position: 'right'
+            },
+
+            playlist: [
+                {
+                    image:'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg',
+                    sources: [
+                        {file: '//content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4'},
+                        {file: '//content.bitsontherun.com/videos/3XnJSIm4-27m5HpIu.webm'}
+                    ],
+                    tracks: [
+                        { file: 'assets/thumbs.vtt', kind: 'thumbnails' },
+                        {file: '//playertest.longtailvideo.com/chapters/sintel-chapters.vtt', kind: 'chapters'},
+                        {file: '//playertest.longtailvideo.com/captions/sintel-ch.srt', label: 'Chinese'},
+                        {file: '//playertest.longtailvideo.com/captions/sintel-fa.srt', label: 'Farsi'},
+                        {file: '//playertest.longtailvideo.com/captions/sintel-gr.srt', label: 'Greek'},
+                        {file: '//playertest.longtailvideo.com/captions/sintel-jp.srt', label: 'Japanese'},
+                        {file: '//playertest.longtailvideo.com/captions/sintel-ko.srt', label: 'Korean'},
+                        {file: '//playertest.longtailvideo.com/captions/sintel-pl.srt', label: 'Polish'},
+                        {file: '//playertest.longtailvideo.com/captions/sintel-ru.srt', label: 'Russian'},
+                        {file: '//playertest.longtailvideo.com/captions/sintel-sp.srt', label: 'Spanish'},
+                        {file: '//playertest.longtailvideo.com/captions/sintel-tr.srt', label: 'Turkish'}
+                    ],
+                    description : 'Scales!',
+                    title: 'Sintel is such a good movie, sometimes I wonder why it wasnt a feature film'
+                },
+                {
+                    sources: [
+                        {file: '//content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4'},
+                        {file: '//content.bitsontherun.com/videos/bkaovAYt-27m5HpIu.webm'}
+                    ],
+                    tracks: [
+                        {file: '//playertest.longtailvideo.com/chapters/bunny-chapters.vtt', kind: 'chapters'},
+                        {file: '//playertest.longtailvideo.com/captions/bunny-en.srt', label: 'English'},
+                        {file: '//playertest.longtailvideo.com/captions/bunny-ned.txt', label: 'Dutch'}
+                    ],
+                    title: 'Big Buck Bunny'
+                },
+                {
+                    file: '//playertest.longtailvideo.com/flv-cuepoints/honda_accord.flv',
+                    title: 'FLV'
+                },
+                {
+                    file: '//www.youtube.com/watch?v=YE7VzlLtp-4',
+                    title: 'YouTube'
+                },
+                {
+                    file: 'not a playable option',
+                    title: 'Filtered Out of Playlist'
+                }
+            ]
+        };
+
+        var jwp = jwplayer('video-container').setup(config);
+
+        jwp.addButton(
+                'css-skins/icons/both.png',
+                'TEST',
+                function() {
+                    console.log('first');
+                },
+                'first'
+        );
+
+        jwp.addButton(
+                'css-skins/icons/both.png',
+                '',
+                function() {
+                    console.log('first');
+                },
+                'first'
+        );
+
+        jwp.addButton(
+                'css-skins/icons/both.png',
+                'Click to delete me!',
+                function() {
+                    jwp.removeButton('second');
+                },
+                'second'
+        );
+
+    })(window.jwplayer);
+</script>
+<h2>HD Menu Setup</h2>
+<div id="hd-container">before set up</div>
+<script type="text/javascript">
+    var jwp = jwplayer('hd-container').setup({
+
+        // FIXME: open-source release should not load from CDN, this prevents that
+        // Load Youtube provider and skin from script location
+        base: '.',
+
+        skin : 'roundster',
+
+        width: 1280,
+        height: 720,
+
+        playlist: [
+            {
+                image: "http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg",
+                sources: [
+                    {file: '//content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4'},
+                    {file: '//content.bitsontherun.com/videos/bkaovAYt-27m5HpIu.webm'}
+                ],
+                tracks: [
+                    {file: '//playertest.longtailvideo.com/chapters/bunny-chapters.vtt', kind: 'chapters'},
+                    {file: '//playertest.longtailvideo.com/captions/bunny-en.srt', label: 'English'},
+                    {file: '//playertest.longtailvideo.com/captions/bunny-ned.txt', label: 'Dutch'}
+                ],
+                title: 'Big Buck Bunny'
+            },
+            {
+                sources: [
+                    {
+                        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-injeKYZS.mp4',
+                        height: 180,
+                        width: 320
+                    }, {
+                        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-kNspJqnJ.mp4',
+                        height: 360,
+                        width: 640
+                    }, {
+                        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-DZ7jSYgM.mp4',
+                        height: 720,
+                        width: 1280
+                    }, {
+                        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-el5vTWpr.mp4',
+                        height: 1080,
+                        width: 1920
+                    }, {
+                        file: 'http://content.bitsontherun.com/videos/bkaovAYt-E6Fbcq5r.webm',
+                        height: 180,
+                        width: 320
+                    }, {
+                        file: 'http://content.bitsontherun.com/videos/bkaovAYt-27m5HpIu.webm',
+                        height: 270,
+                        width: 480
+                    }, {
+                        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-HRoRMLSY.webm',
+                        height: 405,
+                        width: 720
+                    }, {
+                        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-MoSrD9rm.webm',
+                        height: 720,
+                        width: 1280
+                    }
+                ],
+                tracks: [
+                    { file: "assets/thumbs.vtt", kind: "thumbnails" },
+                    {file: '//playertest.longtailvideo.com/chapters/sintel-chapters.vtt', kind: 'chapters'},
+                    {file: '//playertest.longtailvideo.com/captions/sintel-ch.srt', label: 'Chinese'},
+                    {file: '//playertest.longtailvideo.com/captions/sintel-fa.srt', label: 'Farsi'},
+                    {file: '//playertest.longtailvideo.com/captions/sintel-gr.srt', label: 'Greek'},
+                    {file: '//playertest.longtailvideo.com/captions/sintel-jp.srt', label: 'Japanese'},
+                    {file: '//playertest.longtailvideo.com/captions/sintel-ko.srt', label: 'Korean'},
+                    {file: '//playertest.longtailvideo.com/captions/sintel-pl.srt', label: 'Polish'},
+                    {file: '//playertest.longtailvideo.com/captions/sintel-ru.srt', label: 'Russian'},
+                    {file: '//playertest.longtailvideo.com/captions/sintel-sp.srt', label: 'Spanish'},
+                    {file: '//playertest.longtailvideo.com/captions/sintel-tr.srt', label: 'Turkish'}
+                ],
+                title: "4 quality levels"
+            },
+            {
+                sources: [
+                    {
+                        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-injeKYZS.mp4',
+                        height: 180,
+                        width: 320
+                    },{
+                        file: 'http://content.bitsontherun.com/videos/3XnJSIm4-kNspJqnJ.mp4',
+                        height: 360,
+                        width: 640
+                    }
+                ],
+                tracks: [
+                    { file: "assets/thumbs.vtt", kind: "thumbnails" },
+                    {file: '//playertest.longtailvideo.com/chapters/sintel-chapters.vtt', kind: 'chapters'},
+                    {file: '//playertest.longtailvideo.com/captions/sintel-ch.srt', label: 'Chinese'}
+                ],
+                title: "2 quality toggle"
+            },
+            {
+                file: '//playertest.longtailvideo.com/flv-cuepoints/honda_accord.flv',
+                title: 'FLV'
+            }
+        ]
+    });
+</script>
+
+<h2>Audio Single</h2>
+<div id="audio-container"></div>
+<script type="text/javascript">
+    jwplayer('audio-container').setup({
+        width: 640,
+        height: 34,
+        file: '//content.bitsontherun.com/videos/3XnJSIm4-I3ZmuSFT.m4a'
+    });
+</script>
+
+<h2>FLV Single with repeat:true</h2>
+
+<div id="flv-container"></div>
+<script type="text/javascript">
+    jwplayer('flv-container').setup({
+        // autostart: true,
+
+        width: 640,
+        height: 360,
+
+        repeat: true,
+
+        listbar: {
+            position: 'right'
+        },
+
+        skin : {
+            inactive : 'black',
+            background : 'white',
+            active : 'red'
+        },
+
+        file: '//playertest.longtailvideo.com/flv-cuepoints/honda_accord.flv',
+        type: 'flv'
+    });
+</script>
+
+<h2>Youtube Single</h2>
+
+<div id="youtube-container"></div>
+<script type="text/javascript">
+    jwplayer('youtube-container').setup({
+
+        // FIXME: open-source release should not load from CDN, this prevents that
+        // Load Youtube provider from script location
+        base: '.',
+
+        width: 640,
+        height: 360,
+
+        file: '//www.youtube.com/watch?v=YE7VzlLtp-4'
+    });
+</script>
+
+
+<h2>Error screen</h2>
+
+<div id="error-container"></div>
+<script type="text/javascript">
+    jwplayer('error-container').setup({
+
+        playlist: 'failure'
+
+    });
+</script>
+</body>
+</html>

@@ -59,20 +59,20 @@ module.exports = function(grunt) {
 
         // lints Less
         recess: {
+            options: {
+                // Set compile and compress to false to lint
+                compile: false,
+                compress: false,
+                noIDs: true,
+                noJSPrefix: true,
+                noOverqualifying: false,
+                noUnderscores: true,
+                noUniversalSelectors: false,// true,
+                strictPropertyOrder: false, // true,
+                zeroUnits: false,
+                includePaths: ['src/css', 'src/css/*']
+            },
             lint: {
-                options: {
-                    // Set compile and compress to false to lint
-                    compile: false,
-                    compress: false,
-                    noIDs: true,
-                    noJSPrefix: true,
-                    noOverqualifying: false,
-                    noUnderscores: true,
-                    noUniversalSelectors: false,// true,
-                    strictPropertyOrder: false, // true,
-                    zeroUnits: false,
-                    includePaths: ['src/css', 'src/css/*']
-                },
                 files: [{
                     expand: true,
                     ext: '.css',
@@ -81,40 +81,35 @@ module.exports = function(grunt) {
                     src: '{,*/}*.less'
                 }]
             },
-            'generate-test-css': {
+            internal: {
                 options: {
-                    compile: true,
-                    compress: false,
-                    noIDs: true,
-                    noJSPrefix: true,
-                    noOverqualifying: false,
-                    noUnderscores: true,
-                    noUniversalSelectors: false,// true,
-                    strictPropertyOrder: false, // true,
-                    zeroUnits: false,
-                    includePaths: ['src/css', 'src/css/*']
+                    compile: true
                 },
                 files: {
-                    'bin-debug/jwplayer.css': 'src/css/jwplayer.less'
+                    'bin-debug/reference/jwplayer.css': 'src/css/jwplayer.less'
                 }
             },
-            skins: {
+            debug: {
                 options: {
-                    compile: true,
-                    compress: false,
-                    noIDs: true,
-                    noJSPrefix: true,
-                    noOverqualifying: false,
-                    noUnderscores: true,
-                    noUniversalSelectors: false,// true,
-                    strictPropertyOrder: false, // true,
-                    zeroUnits: false,
-                    includePaths: ['src/css', 'src/css/*']
+                    compile: true
                 },
                 files: [{
                     expand: true,
                     ext: '.css',
                     dest: 'bin-debug/skins/',
+                    cwd: 'src/css/skins/',
+                    src: '*.less'
+                }]
+            },
+            release: {
+                options: {
+                    compile: true,
+                    compress: true
+                },
+                files: [{
+                    expand: true,
+                    ext: '.css',
+                    dest: 'bin-release/skins/',
                     cwd: 'src/css/skins/',
                     src: '*.less'
                 }]
@@ -141,7 +136,7 @@ module.exports = function(grunt) {
             },
             css: {
                 files: ['src/css/{,*/}*.less'],
-                tasks: ['webpack:debug', 'recess:lint'],
+                tasks: ['webpack:debug', 'recess:lint', 'recess:debug'],
                 options: {
                     spawn: false
                 }
