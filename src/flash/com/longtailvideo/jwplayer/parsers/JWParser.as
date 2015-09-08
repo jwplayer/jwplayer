@@ -14,7 +14,6 @@ public class JWParser {
         'f4b': 'video',
         'f4p': 'video',
         'f4v': 'video',
-        'x-flv': 'video',
         'flv': 'video',
         'gif': 'image',
         'jpg': 'image',

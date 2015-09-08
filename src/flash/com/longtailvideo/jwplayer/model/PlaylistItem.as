@@ -268,14 +268,14 @@ public dynamic class PlaylistItem {
 
     private static function levelType(level:Object):String {
         if (level) {
+            if (level.file) {
+                return extensionMap(Strings.extension(level.file));
+            }
             if (level.type) {
                 return level.type;
             }
             if (level.streamer || level.file.substr(0, 4) === 'rtmp') {
                 return "rtmp";
-            }
-            if (level.file) {
-                return extensionMap(Strings.extension(level.file));
             }
         }
         return null;
@@ -284,7 +284,6 @@ public dynamic class PlaylistItem {
     private static function extensionMap(extension:String):String {
         switch (extension) {
             case "flv":
-            case "x-flv":
                 return "flv";
             case "mov":
             case "f4v":
@@ -310,7 +309,6 @@ public dynamic class PlaylistItem {
 
     private static function typeMap(type:String):String {
         switch (type) {
-            case "x-flv":
             case "flv":
             case "mp4":
             case "aac":
