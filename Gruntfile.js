@@ -184,7 +184,7 @@ module.exports = function(grunt) {
         webpack : {
             options: {
                 entry: {
-                    jwplayer : './src/js/jwplayer.js'
+                    jwplayer : ['./src/js/jwplayer.js']
                 },
                 stats: {
                     timings: true
@@ -221,6 +221,7 @@ module.exports = function(grunt) {
                     output: {
                         path: 'bin-debug/',
                         filename: '[name].js',
+                        chunkFilename:'[name].js',
                         sourceMapFilename : '[name].[hash].map',
                         library: 'jwplayer',
                         libraryTarget: 'umd',
@@ -240,6 +241,7 @@ module.exports = function(grunt) {
                     output: {
                         path: 'bin-release/',
                         filename: '[name].js',
+                        chunkFilename: '[name].js',
                         sourceMapFilename : '[name].[hash].map',
                         library: 'jwplayer',
                         libraryTarget: 'umd'
@@ -361,7 +363,7 @@ module.exports = function(grunt) {
         var target = this.target;
         var compiler = webpackCompilers[target];
         if (!compiler) {
-            compiler = webpackCompilers[target] = webpack(this.options());
+            compiler = webpackCompilers[target] = webpack( this.options() );
         }
         compiler.run(function(err, stats) {
             var fail = false;
