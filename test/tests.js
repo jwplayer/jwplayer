@@ -2,6 +2,7 @@ define([
     // List all files to run tests from here
     'unit/jwplayer-selectplayer-test',
     'unit/setup-test',
+    'unit/trycatch-test',
     'unit/api-test',
     'unit/api-config-test',
     'unit/model-qoe-test',
