@@ -115,12 +115,6 @@ define([
         }
     ];
 
-    /*
-     _.each(SupportsMatrix, function(supports, name) {
-
-     });
-     */
-
     return SupportsMatrix;
 
 });

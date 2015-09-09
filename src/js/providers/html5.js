@@ -293,7 +293,7 @@ define([
             _this.setState(states.STALLED);
         }
 
-        function _errorHandler() { //evt) {
+        function _errorHandler() {
             if (!_attached) {
                 return;
             }

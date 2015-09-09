@@ -99,6 +99,7 @@ define([
     var api = {
         selectPlayer : selectPlayer,
         registerProvider: registerProvider,
+        availableProviders: ProvidersSupported,
         registerPlugin : plugins.registerPlugin
     };
 
