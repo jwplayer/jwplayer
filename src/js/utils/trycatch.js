@@ -1,8 +1,7 @@
 define([
 ], function() {
-    var trycatch = {};
 
-    trycatch.tryCatch = function (fn, ctx, args) {
+    var tryCatch = function (fn, ctx, args) {
         // IE8 requires these not be undefined
         ctx = ctx || this;
         args = args || [];
@@ -17,14 +16,17 @@ define([
             return fn.apply(ctx, args);
         }
         catch (e) {
-            return new Error(fn.name, e);
+            return new jwError(fn.name, e);
         }
     };
 
-    trycatch.Error = function (name, message) {
+    var jwError = function (name, message) {
         this.name = name;
         this.message = message;
     };
 
-    return trycatch;
+    return {
+        tryCatch: tryCatch,
+        Error: jwError
+    };
 });

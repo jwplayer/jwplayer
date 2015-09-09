@@ -15,7 +15,7 @@ define([
     test('utils.exists', function(assert) {
         assert.expect(7);
 
-        assert.equal(typeof utils.exists, 'function', 'This is defined');
+        assert.equal(typeof utils.exists, 'function', 'is defined');
 
         var test = testerGenerator(assert, utils.exists);
         test([true], true);
@@ -28,7 +28,7 @@ define([
 
     test('utils.getAbsolutePath', function(assert) {
         assert.expect(9);
-        assert.equal(typeof utils.getAbsolutePath, 'function', 'This is defined');
+        assert.equal(typeof utils.getAbsolutePath, 'function', 'is defined');
 
         var test = testerGenerator(assert, utils.getAbsolutePath);
         test(['.',   'https://example.com/alpha/beta/gamma'], 'https://example.com/alpha/beta');
@@ -46,22 +46,22 @@ define([
 
     test('utils.log', function(assert) {
         assert.expect(2);
-        assert.equal(typeof utils.log, 'function', 'This is defined');
+        assert.equal(typeof utils.log, 'function', 'is defined');
         assert.strictEqual(utils.log(), undefined, 'utils.log returns undefined');
     });
 
     test('utils browser tests', function(assert) {
         assert.expect(18);
 
-        assert.equal(typeof utils.isFF, 'function', 'This is defined');
-        assert.equal(typeof utils.isIETrident, 'function', 'This is defined');
-        assert.equal(typeof utils.isMSIE, 'function', 'This is defined');
-        assert.equal(typeof utils.isIE, 'function', 'This is defined');
-        assert.equal(typeof utils.isSafari, 'function', 'This is defined');
-        assert.equal(typeof utils.isIOS, 'function', 'This is defined');
-        assert.equal(typeof utils.isAndroidNative, 'function', 'This is defined');
-        assert.equal(typeof utils.isAndroid, 'function', 'This is defined');
-        assert.equal(typeof utils.isMobile, 'function', 'This is defined');
+        assert.equal(typeof utils.isFF, 'function', 'is defined');
+        assert.equal(typeof utils.isIETrident, 'function', 'is defined');
+        assert.equal(typeof utils.isMSIE, 'function', 'is defined');
+        assert.equal(typeof utils.isIE, 'function', 'is defined');
+        assert.equal(typeof utils.isSafari, 'function', 'is defined');
+        assert.equal(typeof utils.isIOS, 'function', 'is defined');
+        assert.equal(typeof utils.isAndroidNative, 'function', 'is defined');
+        assert.equal(typeof utils.isAndroid, 'function', 'is defined');
+        assert.equal(typeof utils.isMobile, 'function', 'is defined');
 
         assert.equal(typeof utils.isFF(), 'boolean');
         assert.equal(typeof utils.isIETrident(), 'boolean');
@@ -77,7 +77,7 @@ define([
     test('utils.isInt', function(assert) {
         assert.expect(10);
 
-        assert.equal(typeof utils.isInt, 'function', 'This is defined');
+        assert.equal(typeof utils.isInt, 'function', 'is defined');
 
         var test = testerGenerator(assert, utils.isInt);
         test([0],       true);
@@ -94,7 +94,7 @@ define([
     test('utils.typeOf', function(assert) {
         assert.expect(9);
 
-        assert.equal(typeof utils.typeOf, 'function', 'This is defined');
+        assert.equal(typeof utils.typeOf, 'function', 'is defined');
 
         var test = testerGenerator(assert, utils.typeOf);
         test([0],       'number');
@@ -120,8 +120,11 @@ define([
     test('utils.getScriptPath', function(assert) {
         assert.expect(2);
 
-        assert.equal(typeof utils.getScriptPath, 'function', 'This is defined');
-        assert.ok(/\S+\:\/\/.+\/$/.test(utils.getScriptPath('utils.js')));
+        assert.equal(typeof utils.getScriptPath, 'function', 'is defined');
+
+        var scriptPath = utils.getScriptPath('utils-test.js');
+        assert.ok(/\S+\:\/\/.+\/$/.test(scriptPath),
+            'returns a directory url ending with a forward slash "'+ scriptPath +'"');
     });
 
     test('utils.isYouTube', function(assert) {
@@ -135,7 +138,7 @@ define([
         ];
 
         assert.expect(sampleUrls.length+2);
-        assert.equal(typeof utils.isYouTube, 'function', 'This is defined');
+        assert.equal(typeof utils.isYouTube, 'function', 'is defined');
         _.each(sampleUrls, function(value) {
             assert.equal(utils.isYouTube(value), true, 'Checking utils.isYouTube for ' + value);
         });
@@ -161,7 +164,7 @@ define([
         ];
 
         assert.expect(sampleUrls.length+1);
-        assert.equal(typeof utils.youTubeID, 'function', 'This is defined');
+        assert.equal(typeof utils.youTubeID, 'function', 'is defined');
         _.each(sampleUrls, function(value) {
             assert.equal(utils.youTubeID(value), ytVideoId, 'Checking utils.youTubeID for ' + value);
         });
@@ -178,7 +181,7 @@ define([
 
     test('utils.addClass', function (assert) {
         assert.expect(4);
-        assert.equal(typeof utils.addClass, 'function', 'This is defined');
+        assert.equal(typeof utils.addClass, 'function', 'is defined');
         
         var element = document.createElement('div');
         assert.strictEqual(element.className, '', 'Created an element with no classes');
@@ -192,7 +195,7 @@ define([
 
     test('utils.removeClass', function (assert) {
         assert.expect(4);
-        assert.equal(typeof utils.removeClass, 'function', 'This is defined');
+        assert.equal(typeof utils.removeClass, 'function', 'is defined');
         
         var element = document.createElement('div');
         element.className = 'class1 class2';
@@ -207,7 +210,7 @@ define([
 
     test('utils.indexOf', function (assert) {
         assert.expect(1);
-        assert.equal(typeof utils.indexOf, 'function', 'This is defined');
+        assert.equal(typeof utils.indexOf, 'function', 'is defined');
         // provided by underscore 1.6
     });
 
