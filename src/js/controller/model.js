@@ -87,7 +87,13 @@ define([
 
                 case events.JWPLAYER_MEDIA_BUFFER_FULL:
                     // media controller
-                    this.playVideo();
+                    if(this.mediaModel.get('playAttempt')) {
+                        this.playVideo();
+                    } else {
+                       this.mediaModel.on('change:playAttempt', function() {
+                           this.playVideo();
+                       }, this);
+                    }
                     break;
 
                 case events.JWPLAYER_MEDIA_TIME:
@@ -232,7 +238,7 @@ define([
                 _this.changeVideoProvider(Provider);
             }
 
-            // this allows the Youtube provider to load preview images
+            // this allows the providers to preload
             if (_currentProvider.init) {
                 _currentProvider.init(item);
             }
@@ -272,6 +278,7 @@ define([
 
         // The model is also the mediaController for now
         this.loadVideo = function(item) {
+            this.mediaModel.set('playAttempt', true);
             this.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
             if (!item) {
                 var idx = this.get('item');

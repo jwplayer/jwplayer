@@ -364,11 +364,8 @@ define([
                     // don't change state on mobile because a touch event may be required to start playback
                     _this.setState(states.LOADING);
                 }
-                _canSeek = false;
-                _bufferFull = false;
                 _duration = duration;
-                _isAndroidHLS = _useAndroidHLS(_source);
-                _videotag.src = _source.file;
+                _setVideotagSource();
                 _videotag.load();
             } else {
                 // Load event is from the same video as before
@@ -399,6 +396,14 @@ define([
             }
         }
 
+        function _setVideotagSource() {
+            _canSeek = false;
+            _bufferFull = false;
+            _isAndroidHLS = _useAndroidHLS(_source);
+            _videotag.src = _source.file;
+            _videotag.preload = _source.preload;
+        }
+
         this.stop = function() {
             if (!_attached) {
                 return;
@@ -418,6 +423,19 @@ define([
 
             this.remove();
             this.off();
+        };
+
+        this.init = function(item) {
+            if (!_attached) {
+                return;
+            }
+
+            _setLevels(item.sources);
+            this.sendMediaType(item.sources);
+
+            _source = _levels[_currentQuality];
+            _duration = item.duration || 0;
+            _setVideotagSource(item);
         };
 
         this.load = function(item) {
