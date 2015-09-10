@@ -223,8 +223,6 @@ define([
                 return;
             }
 
-            _canPlayHandler();
-
             //fixes Chrome bug where it doesn't like being muted before video is loaded
             if (_videotag.muted) {
                 _videotag.muted = false;
@@ -428,15 +426,16 @@ define([
             _setLevels(item.sources);
             this.sendMediaType(item.sources);
 
-            // canSeek to true to prevent canPlayHandler from starting the video
-            _canSeek = true;
-
             _source = _levels[_currentQuality];
             _videotag.src = _source.file;
             _videotag.preload = _source.preload;
         };
 
         this.load = function(item) {
+            if (!_attached) {
+                return;
+            }
+
             _completeLoad(item.starttime || 0, item.duration || 0);
         };
 
