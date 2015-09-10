@@ -17,8 +17,7 @@ define([
         _isSafari = utils.isSafari(),
         _isAndroid = utils.isAndroidNative(),
         _isIOS7 = utils.isIOS(7),
-        _name = 'html5',
-        _preload = false;
+        _name = 'html5';
 
 
     function _setupListeners(eventsHash, videoTag) {
@@ -253,9 +252,7 @@ define([
         function _sendBufferFull() {
             if (!_bufferFull) {
                 _bufferFull = true;
-                if (!_preload) {
-                    _this.trigger(events.JWPLAYER_MEDIA_BUFFER_FULL);
-                }
+                _this.trigger(events.JWPLAYER_MEDIA_BUFFER_FULL);
             }
         }
 
@@ -296,7 +293,7 @@ define([
             _this.setState(states.STALLED);
         }
 
-        function _errorHandler() { //evt) {
+        function _errorHandler() {
             if (!_attached) {
                 return;
             }
@@ -423,7 +420,7 @@ define([
             this.off();
         };
 
-        this.load = function(item, preloadValue) {
+        this.init = function(item) {
             if (!_attached) {
                 return;
             }
@@ -431,15 +428,16 @@ define([
             _setLevels(item.sources);
             this.sendMediaType(item.sources);
 
-            if (preloadValue) {
-                _preload = true;
-                _source = _levels[_currentQuality];
-                _videotag.src = _source.file;
-                _videotag.preload = preloadValue;
-                _bufferInterval = setInterval(_checkBufferAndPlayback, BUFFER_INTERVAL);
-            } else {
-                _completeLoad(item.starttime || 0, item.duration || 0);
-            }
+            // canSeek to true to prevent canPlayHandler from starting the video
+            _canSeek = true;
+
+            _source = _levels[_currentQuality];
+            _videotag.src = _source.file;
+            _videotag.preload = _source.preload;
+        };
+
+        this.load = function(item) {
+            _completeLoad(item.starttime || 0, item.duration || 0);
         };
 
         this.play = function() {

@@ -348,13 +348,12 @@ define([
 
 
         // Video Provider API
-        this.load = function(item, preload) {
+        this.load = function(item) {
+            this.setState(states.LOADING);
+
             _setItem(item);
             // start playback if api is ready
-            if (!preload) {
-                this.setState(states.LOADING);
-                _this.play();
-            }
+            _this.play();
         };
 
         function _setItem(item) {

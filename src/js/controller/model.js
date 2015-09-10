@@ -232,7 +232,7 @@ define([
                 _this.changeVideoProvider(Provider);
             }
 
-            // this allows the Youtube provider to load preview images
+            // this allows the providers to preload
             if (_currentProvider.init) {
                 _currentProvider.init(item);
             }
@@ -272,17 +272,14 @@ define([
 
         // The model is also the mediaController for now
         this.loadVideo = function(item) {
-            var preload = this.get('preload');
-            if (!preload) {
-                this.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
-            }
+            this.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
             if (!item) {
                 var idx = this.get('item');
                 item = this.get('playlist')[idx];
             }
             this.set('position', item.starttime || 0);
             this.set('duration', item.duration || 0);
-            _provider.load(item, preload);
+            _provider.load(item);
         };
 
         this.playVideo = function() {

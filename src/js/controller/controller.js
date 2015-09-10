@@ -108,11 +108,6 @@ define([
             function _playerReady() {
                 _setup = null;
 
-                // if preload is defined, try to preload
-                if (_model.get('preload')) {
-                    _model.loadVideo();
-                }
-
                 _model.on('change:state', changeStateEvent, this);
 
                 // For 'onCast' callback
@@ -291,15 +286,9 @@ define([
                         return false;
                     }
 
-                    if (_model.get('preload')) {
-                        status = utils.tryCatch(function () {
-                            _model.playVideo();
-                        });
-                    } else {
-                        status = utils.tryCatch(function () {
-                            _model.loadVideo();
-                        });
-                    }
+                    status = utils.tryCatch(function() {
+                        _model.loadVideo();
+                    });
                 } else if (_model.get('state') === states.PAUSED) {
                     status = utils.tryCatch(function() {
                         _model.playVideo();
