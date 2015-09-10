@@ -127,8 +127,6 @@ define([
             _levels,
             // Current quality level index
             _currentQuality = -1,
-            // completeLoad after init has same source, but we need to treat it as if it was loaded for the first time
-            _afterInit = false,
 
             // android hls doesn't update currentTime so we want to skip the stall check since it always fails
             _isAndroidHLS = null,
@@ -224,6 +222,8 @@ define([
             if (!_attached) {
                 return;
             }
+
+            _canPlayHandler();
 
             //fixes Chrome bug where it doesn't like being muted before video is loaded
             if (_videotag.muted) {
@@ -359,18 +359,13 @@ define([
             _delayedSeek = 0;
 
             var sourceChanged = (_videotag.src !== _source.file);
-            if (sourceChanged || _forceVideoLoad() || _afterInit) {
-                _afterInit = false;
-
+            if (sourceChanged || _forceVideoLoad()) {
                 if (!_isMobile) {
                     // don't change state on mobile because a touch event may be required to start playback
                     _this.setState(states.LOADING);
                 }
-                _canSeek = false;
-                _bufferFull = false;
                 _duration = duration;
-                _isAndroidHLS = _useAndroidHLS(_source);
-                _videotag.src = _source.file;
+                _setVideotagSource();
                 _videotag.load();
             } else {
                 // Load event is from the same video as before
@@ -401,6 +396,14 @@ define([
             }
         }
 
+        function _setVideotagSource() {
+            _canSeek = false;
+            _bufferFull = false;
+            _isAndroidHLS = _useAndroidHLS(_source);
+            _videotag.src = _source.file;
+            _videotag.preload = _source.preload;
+        }
+
         this.stop = function() {
             if (!_attached) {
                 return;
@@ -427,16 +430,12 @@ define([
                 return;
             }
 
-            _afterInit = true;
-
             _setLevels(item.sources);
             this.sendMediaType(item.sources);
 
             _source = _levels[_currentQuality];
-            _videotag.src = _source.file;
-            _videotag.preload = _source.preload;
-
-
+            _duration = item.duration || 0;
+            _setVideotagSource(item);
         };
 
         this.load = function(item) {
