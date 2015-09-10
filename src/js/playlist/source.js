@@ -25,8 +25,9 @@ define([
         _source.file = strings.trim('' + _source.file);
 
         // if type is given as a mimetype
-        if (_source.type && _source.type.indexOf('/') > 0) {
-            _source.type = _source.type.split('/')[1];
+        var mimetypeRegEx = /^[^\/]+\/(?:x-)?([^\/]+)$/;
+        if (mimetypeRegEx.test(_source.type)) {
+            _source.type = _source.type.replace(mimetypeRegEx, '$1');
         }
 
         // If type not included, we infer it from extension
