@@ -436,6 +436,7 @@ define([
                 _source = _levels[_currentQuality];
                 _videotag.src = _source.file;
                 _videotag.preload = preloadValue;
+                _bufferInterval = setInterval(_checkBufferAndPlayback, BUFFER_INTERVAL);
             } else {
                 _completeLoad(item.starttime || 0, item.duration || 0);
             }
