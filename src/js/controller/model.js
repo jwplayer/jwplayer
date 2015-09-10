@@ -272,14 +272,17 @@ define([
 
         // The model is also the mediaController for now
         this.loadVideo = function(item) {
-            this.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
+            var preload = this.get('preload');
+            if (!preload) {
+                this.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
+            }
             if (!item) {
                 var idx = this.get('item');
                 item = this.get('playlist')[idx];
             }
             this.set('position', item.starttime || 0);
             this.set('duration', item.duration || 0);
-            _provider.load(item);
+            _provider.load(item, preload);
         };
 
         this.playVideo = function() {

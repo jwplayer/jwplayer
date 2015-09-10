@@ -17,7 +17,8 @@ define([
         _isSafari = utils.isSafari(),
         _isAndroid = utils.isAndroidNative(),
         _isIOS7 = utils.isIOS(7),
-        _name = 'html5';
+        _name = 'html5',
+        _preload = false;
 
 
     function _setupListeners(eventsHash, videoTag) {
@@ -252,7 +253,9 @@ define([
         function _sendBufferFull() {
             if (!_bufferFull) {
                 _bufferFull = true;
-                _this.trigger(events.JWPLAYER_MEDIA_BUFFER_FULL);
+                if (!_preload) {
+                    _this.trigger(events.JWPLAYER_MEDIA_BUFFER_FULL);
+                }
             }
         }
 
@@ -420,7 +423,7 @@ define([
             this.off();
         };
 
-        this.load = function(item) {
+        this.load = function(item, preloadValue) {
             if (!_attached) {
                 return;
             }
@@ -428,7 +431,14 @@ define([
             _setLevels(item.sources);
             this.sendMediaType(item.sources);
 
-            _completeLoad(item.starttime || 0, item.duration || 0);
+            if (preloadValue) {
+                _preload = true;
+                _source = _levels[_currentQuality];
+                _videotag.src = _source.file;
+                _videotag.preload = preloadValue;
+            } else {
+                _completeLoad(item.starttime || 0, item.duration || 0);
+            }
         };
 
         this.play = function() {
