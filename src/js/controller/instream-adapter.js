@@ -58,7 +58,7 @@ define([
             if (!_instream || !_instream._adModel) {
                 return;
             }
-            if (_instream._adModel.state === states.PAUSED) {
+            if (_instream._adModel.get('state') === states.PAUSED) {
                 if (_model.get('controls')) {
                     _controller.setFullscreen();
                     _controller.play();
@@ -129,7 +129,7 @@ define([
 
         function _instreamItemComplete(e) {
             // Allow 'play' state change to trigger next adPlay event in ad pods
-            _instream._adModel.state = 'complete';
+            _instream._adModel.set('state', 'complete');
 
             if (_array && _arrayIndex + 1 < _array.length) {
                 // destroy skip button
