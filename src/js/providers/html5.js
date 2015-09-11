@@ -297,6 +297,9 @@ define([
             if (!_attached) {
                 return;
             }
+            // if the state is not stalled after errorHandler, checkBufferAndPlayback will change it and ui buffers
+            _this.setState(states.STALLED);
+
             utils.log('Error playing media: %o %s', _videotag.error, _videotag.src || _source.file);
             _this.trigger(events.JWPLAYER_MEDIA_ERROR, {
                 message: 'Error loading media: File could not be played'
@@ -400,8 +403,8 @@ define([
             _canSeek = false;
             _bufferFull = false;
             _isAndroidHLS = _useAndroidHLS(_source);
+            _videotag.preload = _source.preload || 'none';
             _videotag.src = _source.file;
-            _videotag.preload = _source.preload;
         }
 
         this.stop = function() {
