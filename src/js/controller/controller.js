@@ -97,18 +97,11 @@ define([
             }, this);
 
             // If we attempt to load flash, assume it is blocked if we don't hear back within a second
-            var _flashBlockTimeout = -1;
-            _model.mediaController.on('flashEmbedAttempt', function() {
-                // give it a second to load
-                _flashBlockTimeout = setTimeout(function() {
-                    _model.set('flashBlocked', true);
-                    _this.trigger(events.JWPLAYER_ERROR, { message: 'Flash plugin is blocked'});
-                }, 1000);
-            });
-            _model.mediaController.on('flashEmbedSuccess', function() {
-                clearTimeout(_flashBlockTimeout);
-                _model.set('flashBlocked', false);
-            });
+            _model.on('change:flashBlocked', function(model, isBlocked) {
+                if (isBlocked) {
+                    this.trigger(events.JWPLAYER_ERROR, { message: 'Flash plugin is blocked'});
+                }
+            }, this);
 
             function initMediaModel() {
                 _model.mediaModel.on('change:state', function(mediaModel, state) {

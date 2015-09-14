@@ -66,6 +66,13 @@ define([
 
         function _videoEventHandler(type, data) {
             switch (type) {
+                case 'flashBlocked':
+                    this.set('flashBlocked', true);
+                    return;
+                case 'flashUnblocked':
+                    this.set('flashBlocked', false);
+                    return;
+
                 case 'volume':
                 case 'mute':
                     this.set(type, data[type]);

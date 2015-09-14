@@ -17,6 +17,7 @@ define([
         var _container;
         var _swf;
         var _item = null;
+        var _flashBlockedTimeout = -1;
         var _beforecompleted = false;
         var _currentQuality = -1;
         var _qualityLevels = null;
@@ -183,8 +184,12 @@ define([
                     _swf = this.getSwfObject(parent);
 
                     // The browser may block the flash object until user enables it
-                    this.trigger('flashEmbedAttempt');
-                    _swf.once('embedded', function() { this.trigger('flashEmbedSuccess'); }, this);
+                    var _this = this;
+                    _flashBlockedTimeout = setTimeout(function() { _this.trigger('flashBlocked'); }, 1000);
+                    _swf.once('embedded', function() {
+                        clearTimeout(_flashBlockedTimeout);
+                        this.trigger('flashUnblocked');
+                    }, this);
 
                     // listen to events sendEvented from flash
                     _swf.once('ready', function() {
