@@ -2,22 +2,22 @@ define([
     'utils/helpers',
     'handlebars-loader!templates/rightclick.html',
     'utils/underscore',
+    'utils/ui',
     'version'
-], function(utils, rightclickTemplate, _, version) {
+], function(utils, rightclickTemplate, _, UI, version) {
 
     var RightClick = function() {};
 
     _.extend(RightClick.prototype, {
-
         buildArray : function() {
-
             var semverParts = version.split('+');
             var majorMinorPatchPre = semverParts[0];
 
             var obj = {
                 items : [{
-                    title: 'About JW Player ' + majorMinorPatchPre,
+                    title: 'Powered by JW Player ' + majorMinorPatchPre,
                     featured : true,
+                    showLogo : true,
                     link: '//jwplayer.com/learn-more/?m=h&e=o&v=' + version
                 }]
             };
@@ -109,20 +109,16 @@ define([
 
             this.layer.appendChild(this.el);
 
-            this.hideMenuCallback = this.hideMenu.bind(this);
-            this.playerElement.onclick = this.hideMenuCallback;
-            document.addEventListener('mousedown', this.hideMenuCallback, false);
+            this.playerUI = new UI(this.playerElement).on('click tap', this.hideMenu, this);
+            this.documentUI = new UI(document).on('click tap', this.hideMenu, this);
 
             // Update the menu if the provider changes
             this.model.on('change:provider', this.updateHtml, this);
 
             // Track if the mouse is above the menu or not
-            this.el.onmouseover = function() {
-                this.mouseOverContext = true;
-            }.bind(this);
-            this.el.onmouseout = function() {
-                this.mouseOverContext = false;
-            }.bind(this);
+            this.elementUI = new UI(this.el, {'useHover': true})
+                .on('over', function() { this.mouseOverContext = true; }, this)
+                .on('out', function() { this.mouseOverContext = false; }, this);
         },
 
         setup : function(_model, _playerElement, layer) {
@@ -137,8 +133,9 @@ define([
 
         destroy : function() {
             this.model.off('change:provider', this.updateHtml);
-            document.removeEventListener('mousedown', this.hideMenuCallback);
-            this.hideMenuCallback = null;
+            this.elementUI.off();
+            this.playerUI.off();
+            this.documentUI.off();
             this.model = null;
             this.playerElement = null;
             this.el = null;
