@@ -27,6 +27,9 @@ public class Player extends Sprite implements IPlayer {
     protected var _instream:InstreamPlayer;
 
     public function Player() {
+        // Send embedded event so we know flash isn't blocked
+        SwfEventRouter.triggerJsEvent('embedded');
+
         Security.allowDomain("*");
 
         RootReference.init(this);

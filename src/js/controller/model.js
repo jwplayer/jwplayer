@@ -36,6 +36,8 @@ define([
             _.extend(this.attributes, config, _cookies, {
                 // Initial state, upon setup
                 state: states.IDLE,
+                // Initially we don't assume Flash is needed
+                flashBlocked : false,
                 fullscreen: false,
                 compactUI: false,
                 scrubbing : false,
