@@ -76,9 +76,6 @@ define([
             _captions = new Captions(_api, _model);
             _setup = new Setup(_api, _model, _view);
 
-            // Legacy, should be removed
-            _this.id = this._model.id;
-
             _setup.on(events.JWPLAYER_READY, _playerReady, this);
             _setup.on(events.JWPLAYER_SETUP_ERROR, function(evt) {
                 _this.setupError(evt.message);
@@ -438,7 +435,7 @@ define([
 
             function _getVisualQuality() {
                 if (this._model.mediaModel) {
-                    return this._model.mediaModel.visualQuality;
+                    return this._model.mediaModel.get('visualQuality');
                 }
                 // if quality is not implemented in the provider,
                 // return quality info based on current level
@@ -567,7 +564,6 @@ define([
             // Model passthroughs
             this.setVolume = _model.setVolume;
             this.setMute = _model.setMute;
-            this.seekDrag = _model.seekDrag;
             this.getProvider = function(){ return _model.get('provider'); };
             this.getWidth = function() { return _model.get('containerWidth'); };
             this.getHeight = function() { return _model.get('containerHeight'); };
@@ -665,7 +661,7 @@ define([
             if (!document.documentElement.contains(this.currentContainer)) {
                 // This implies the player was removed from the DOM before setup completed
                 //   or a player has been "re" setup after being removed from the DOM
-                this.currentContainer = document.getElementById(this.id);
+                this.currentContainer = document.getElementById(this._model.get('id'));
                 if (!this.currentContainer) {
                     return;
                 }
