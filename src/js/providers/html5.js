@@ -280,8 +280,8 @@ define([
                 return;
             }
 
-            // A stall after loading, should just stay loading
-            if (_this.state === states.LOADING) {
+            // A stall after loading/error, should just stay loading/error
+            if (_this.state === states.LOADING || _this.state === states.ERROR) {
                 return;
             }
 
@@ -297,8 +297,8 @@ define([
             if (!_attached) {
                 return;
             }
-            // if the state is not stalled after errorHandler, checkBufferAndPlayback will change it and ui buffers
-            _this.setState(states.STALLED);
+            // change the provider's state to error
+            _this.setState(states.ERROR);
 
             utils.log('Error playing media: %o %s', _videotag.error, _videotag.src || _source.file);
             _this.trigger(events.JWPLAYER_MEDIA_ERROR, {
@@ -403,7 +403,7 @@ define([
             _canSeek = false;
             _bufferFull = false;
             _isAndroidHLS = _useAndroidHLS(_source);
-            _videotag.preload = _source.preload || 'none';
+            _videotag.setAttribute('preload', _source.preload);
             _videotag.src = _source.file;
         }
 
@@ -446,8 +446,11 @@ define([
                 return;
             }
 
-            _setLevels(item.sources);
-            this.sendMediaType(item.sources);
+            // check if _setLevels has already been called
+            if (_levels !== item.sources) {
+                _setLevels(item.sources);
+                this.sendMediaType(item.sources);
+            }
 
             _completeLoad(item.starttime || 0, item.duration || 0);
         };
