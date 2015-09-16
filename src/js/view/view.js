@@ -356,6 +356,9 @@ define([
 
             _setupControls();
 
+            // call user activity to set timeout for control to fade
+            _userActivity();
+
             // adds video tag to video layer
             _model.getVideo().setContainer(_videoLayer);
 
