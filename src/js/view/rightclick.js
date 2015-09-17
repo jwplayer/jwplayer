@@ -132,6 +132,7 @@ define([
         },
 
         destroy : function() {
+            this.playerElement.oncontextmenu = null;
             this.model.off('change:provider', this.updateHtml);
             this.elementUI.off();
             this.playerUI.off();
