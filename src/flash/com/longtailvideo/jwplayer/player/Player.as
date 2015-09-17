@@ -26,6 +26,8 @@ public class Player extends Sprite implements IPlayer {
 
     protected var _instream:InstreamPlayer;
 
+    private var _preloaded:Boolean;
+
     public function Player() {
         Security.allowDomain("*");
 
@@ -35,6 +37,7 @@ public class Player extends Sprite implements IPlayer {
         this.tabChildren = false;
         this.focusRect = false;
         this.buttonMode = true;
+        _preloaded = false;
 
         _model = newModel(new PlayerConfig(this.soundTransform));
 
@@ -169,8 +172,17 @@ public class Player extends Sprite implements IPlayer {
         return _model.item;
     }
 
+    public function init(item:*):void {
+        _preloaded = true;
+        _controller.init(new PlaylistItem(item));
+    }
+
     public function load(item:*):Boolean {
-        _controller.load(new PlaylistItem(item));
+        if (_preloaded) {
+            _preloaded = false;
+        } else {
+            _controller.load(new PlaylistItem(item));
+        }
         _controller.play();
 
         return true;
@@ -226,6 +238,7 @@ public class Player extends Sprite implements IPlayer {
         SwfEventRouter.off()
                 .on('setup', setupPlayer)
                 .on('setupCommandQueue', setupPlayerCommandQueue)
+                .on('init', init)
                 .on('load', load)
                 .on('play', play)
                 .on('pause', pause)

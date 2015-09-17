@@ -227,6 +227,13 @@ public class Controller extends GlobalEventDispatcher {
         return false;
     }
 
+    public function init(item:PlaylistItem):void {
+        var _loaded:Boolean = load(item);
+        if (_loaded) {
+            _model.media.init(item);
+        }
+    }
+
     public function load(item:PlaylistItem):Boolean {
         if (_model.item && _model.item.file === item.file) {
             // resume current item
