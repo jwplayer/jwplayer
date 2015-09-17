@@ -493,10 +493,14 @@ define([
         function _onChangeFlashBlocked(model, isBlocked) {
             if (isBlocked) {
                 utils.addClass(_playerElement, 'jw-flag-flash-blocked');
-                _rightClickMenu.destroy();
+                if (_rightClickMenu) {
+                    _rightClickMenu.destroy();
+                }
             } else {
                 utils.removeClass(_playerElement,'jw-flag-flash-blocked');
-                _rightClickMenu.setup(_model, _playerElement, _playerElement);
+                if (_rightClickMenu) {
+                    _rightClickMenu.setup(_model, _playerElement, _playerElement);
+                }
             }
         }
 
