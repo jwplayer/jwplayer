@@ -134,9 +134,11 @@ define([
         destroy : function() {
             this.playerElement.oncontextmenu = null;
             this.model.off('change:provider', this.updateHtml);
-            this.elementUI.off();
-            this.playerUI.off();
-            this.documentUI.off();
+            if(this.el) {
+                this.elementUI.off();
+                this.playerUI.off();
+                this.documentUI.off();
+            }
             this.model = null;
             this.playerElement = null;
             this.el = null;
