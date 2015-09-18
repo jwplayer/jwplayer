@@ -895,7 +895,11 @@ define([
 
         function _errorHandler(evt) {
             _stateHandler(_model, states.ERROR);
-            _title.updateText(_model, {'title': evt.message});
+            var data = {
+                title: evt.name || evt.message,
+                description: evt.name ? evt.message : ''
+            };
+            _title.updateText(_model, data);
         }
 
         function _isCasting() {

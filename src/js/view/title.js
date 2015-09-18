@@ -30,19 +30,27 @@ define([
 
         playlistItem : function(model, item) {
             if (model.get('displaytitle') || model.get('displaydescription')) {
-                this.updateText(model, item);
+                var data = {
+                    title: '',
+                    description: ''
+                };
+                if (item.title && model.get('displaytitle')) {
+                    data.title = item.title;
+                }
+                if (item.description && model.get('displaydescription')) {
+                    data.description = item.description;
+                }
+                this.updateText(model, data);
             } else {
                 this.hide();
             }
         },
 
-        updateText: function(model, playlistItem) {
-            this.title.innerHTML = (playlistItem.title && model.get('displaytitle')) ?
-                playlistItem.title : '';
-            this.description.innerHTML = (playlistItem.description && model.get('displaydescription')) ?
-                playlistItem.description : '';
+        updateText: function(model, data) {
+            this.title.innerHTML = data.title;
+            this.description.innerHTML = data.description;
 
-            if(this.title.firstChild || this.description.firstChild){
+            if (this.title.firstChild || this.description.firstChild) {
                 this.show();
             } else {
                 this.hide();
