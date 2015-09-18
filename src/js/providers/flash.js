@@ -167,7 +167,7 @@ define([
                         return found;
                     }
 
-                    return EmbedSwf.embed(_playerConfig.flashplayer, parent, getObjectId(_playerId));
+                    return EmbedSwf.embed(_playerConfig.flashplayer, parent, getObjectId(_playerId), _playerConfig.wmode);
                 },
 
                 getContainer: function() {
