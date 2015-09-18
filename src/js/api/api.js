@@ -123,10 +123,16 @@ define([
             }
         };
 
-        var _getPlugin = function(name) {
-            // this.plugins is set by plugins.loader `api.plugins = jsplugins.plugins`
-            var plugins = _this.plugins;
-            return plugins && plugins[name];
+        this.getPlugin = function(name) {
+            return _this.plugins && _this.plugins[name];
+        };
+
+        this.addPlugin = function(name, pluginInstance) {
+            this.plugins = this.plugins || {};
+            this.plugins[name] = pluginInstance;
+
+            this.onReady(pluginInstance.readyHandler);
+            this.onResize(pluginInstance.resizeHandler);
         };
 
         this.setup = function (options) {
@@ -193,7 +199,7 @@ define([
         };
 
         this.load = function (toLoad) {
-            var plugin = _getPlugin('vast') || _getPlugin('googima');
+            var plugin = this.getPlugin('vast') || this.getPlugin('googima');
             if (plugin) {
                 plugin.destroy();
             }
