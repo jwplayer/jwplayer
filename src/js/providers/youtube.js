@@ -59,8 +59,8 @@ define([
 
         // Load iFrame API
         if (!_youtubeAPI && _scriptLoader && _scriptLoader.getStatus() === scriptloader.loaderstatus.NEW) {
-            _scriptLoader.addEventListener(events.COMPLETE, _onLoadSuccess);
-            _scriptLoader.addEventListener(events.ERROR, _onLoadError);
+            _scriptLoader.on(events.COMPLETE, _onLoadSuccess);
+            _scriptLoader.on(events.ERROR, _onLoadError);
             _scriptLoader.load();
         }
 
@@ -78,9 +78,12 @@ define([
         }
 
         function _onLoadError() {
-            _scriptLoader = null;
-            // console.log('Error loading Youtube iFrame API: %o', event);
-            // TODO: dispatch video error
+            if (_scriptLoader) {
+                _scriptLoader.off();
+                _scriptLoader = null;
+                // console.log('Error loading Youtube iFrame API: %o', event);
+                // TODO: dispatch video error
+            }
         }
 
         function _getVideoLayer() {
@@ -374,7 +377,8 @@ define([
                 _youtubeEmbedReadyCallback = function() {
                     _embedYoutubePlayer(videoId);
                 };
-                _readyCheck();
+                // make sure _youtubeAPI is set before running readyCheck
+                _onLoadSuccess();
                 return;
             }
 
