@@ -17,7 +17,8 @@ define([
         _isSafari = utils.isSafari(),
         _isAndroid = utils.isAndroidNative(),
         _isIOS7 = utils.isIOS(7),
-        _name = 'html5';
+        _name = 'html5',
+        _afterPreload = false;
 
 
     function _setupListeners(eventsHash, videoTag) {
@@ -374,6 +375,13 @@ define([
                     _delayedSeek = -1;
                     _this.seek(startTime);
                 }
+
+                // if preloaded, set state to loading to set buffer event
+                if (_afterPreload) {
+                    _afterPreload = false;
+                    _this.setState(states.LOADING);
+                }
+
                 // meta event is usually triggered by load, and is needed for googima to work on replay
                 sendMetaEvent();
                 _videotag.play();
@@ -429,6 +437,8 @@ define([
             if (!_attached) {
                 return;
             }
+
+            _afterPreload = true;
 
             _setLevels(item.sources);
             this.sendMediaType(item.sources);
