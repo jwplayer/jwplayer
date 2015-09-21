@@ -98,7 +98,11 @@ define([
             });
 
             if (status instanceof utils.Error) {
-                console.error({command : name, error : status});
+                console.error(name, status);
+                if (name === 'setup') {
+                    status.name = 'Failed to setup flash';
+                    return status;
+                }
             }
             return swfInstance;
         };
