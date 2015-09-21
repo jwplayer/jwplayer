@@ -403,8 +403,8 @@ define([
             _canSeek = false;
             _bufferFull = false;
             _isAndroidHLS = _useAndroidHLS(_source);
-            _videotag.setAttribute('preload', _source.preload);
             _videotag.src = _source.file;
+            _videotag.preload = _source.preload;
         }
 
         this.stop = function() {
@@ -446,11 +446,8 @@ define([
                 return;
             }
 
-            // check if _setLevels has already been called
-            if (_levels !== item.sources) {
-                _setLevels(item.sources);
-                this.sendMediaType(item.sources);
-            }
+            _setLevels(item.sources);
+            this.sendMediaType(item.sources);
 
             _completeLoad(item.starttime || 0, item.duration || 0);
         };
