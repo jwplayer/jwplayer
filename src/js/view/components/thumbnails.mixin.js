@@ -78,7 +78,7 @@ define([
                 }
             }
 
-            style.backgroundImage = url;
+            style.backgroundImage = 'url("' + url + '")';
 
             return style;
         },

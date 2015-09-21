@@ -17,23 +17,28 @@ define([
         // Listen for provider subtitle tracks
         //   ignoring provider "subtitlesTrackChanged" since index should be managed here
         _model.mediaController.on('subtitlesTracks', function(e) {
-            if(e.tracks.length) {
-                _tracks = [];
-                _tracksById = {};
-                _metaCuesByTextTime = {};
-                _unknownCount = 0;
-                var tracks = e.tracks || [];
-                for (var i = 0; i < tracks.length; i++) {
-                    var track = tracks[i];
-                    track.id = track.name;
-                    track.label = track.name || track.language;
-                    _addTrack(track);
-                }
-
-                var captionsMenu = _captionsMenu();
-                this.setCaptionsList(captionsMenu);
-                _selectDefaultIndex();
+            if(! e.tracks.length) {
+                return;
             }
+
+            // If we get webvtt captions, do not override with metadata captions
+            _model.mediaController.off('meta');
+
+            _tracks = [];
+            _tracksById = {};
+            _metaCuesByTextTime = {};
+            _unknownCount = 0;
+            var tracks = e.tracks || [];
+            for (var i = 0; i < tracks.length; i++) {
+                var track = tracks[i];
+                track.id = track.name;
+                track.label = track.name || track.language;
+                _addTrack(track);
+            }
+
+            var captionsMenu = _captionsMenu();
+            this.setCaptionsList(captionsMenu);
+            _selectDefaultIndex();
         }, this);
 
         // Append data to subtitle tracks

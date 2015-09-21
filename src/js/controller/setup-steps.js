@@ -76,30 +76,9 @@ define([
     }
 
     function _completePlugins(resolve, _model, _api) {
-        _pluginLoader.setupPlugins(_api, _model, _.partial(_resizePlugin, _api));
+        _pluginLoader.setupPlugins(_api, _model);
         
         resolve();
-    }
-
-    function _resizePlugin(_api, plugin, div, onready) {
-        var id = _api.id;
-        return function() {
-            var displayarea = document.querySelector('#' + id + ' .jw-overlays');
-            if (displayarea && onready) {
-                displayarea.appendChild(div);
-            }
-            if (typeof plugin.resize === 'function') {
-                plugin.resize(displayarea.clientWidth, displayarea.clientHeight);
-                setTimeout(function() {
-                    plugin.resize(displayarea.clientWidth, displayarea.clientHeight);
-                }, 400);
-            }
-
-            if (displayarea && displayarea.style) {
-                div.left = displayarea.style.left;
-                div.top = displayarea.style.top;
-            }
-        };
     }
 
     function _pluginsError(resolve, evt) {

@@ -93,6 +93,13 @@ define([
                 this.trigger(evtClone.type, evtClone);
             }, this);
 
+            // If we attempt to load flash, assume it is blocked if we don't hear back within a second
+            _model.on('change:flashBlocked', function(model, isBlocked) {
+                if (isBlocked) {
+                    this.trigger(events.JWPLAYER_ERROR, { message: 'Flash plugin is blocked'});
+                }
+            }, this);
+
             function initMediaModel() {
                 _model.mediaModel.on('change:state', function(mediaModel, state) {
                     var modelState = normalizeState(state);
