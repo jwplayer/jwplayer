@@ -41,7 +41,7 @@ define([
             var btn = _.findWhere(buttons, {id : btnId});
 
             if (btn && btn.callback) {
-                btn.callback();
+                btn.callback(evt);
             }
         },
         render: function() {
