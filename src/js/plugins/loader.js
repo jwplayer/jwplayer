@@ -7,24 +7,34 @@ define([
     'utils/scriptloader'
 ], function(pluginsUtils, utils, events, Events, _, scriptloader) {
 
-    function _resizePlugin(_api, plugin, div, onready) {
-        var id = _api.id;
+    function _addToPlayerGenerator(_api, pluginInstance, div) {
         return function() {
-            var displayarea = document.querySelector('#' + id + ' .jw-overlays');
-            if (displayarea && onready) {
-                displayarea.appendChild(div);
-            }
-            if (typeof plugin.resize === 'function') {
-                plugin.resize(displayarea.clientWidth, displayarea.clientHeight);
-                setTimeout(function() {
-                    plugin.resize(displayarea.clientWidth, displayarea.clientHeight);
-                }, 400);
+            var overlaysElement = _api.getContainer().getElementsByClassName('jw-overlays')[0];
+
+            // This should probably be an error
+            if (!overlaysElement) {
+                return;
             }
 
-            if (displayarea && displayarea.style) {
-                div.left = displayarea.style.left;
-                div.top = displayarea.style.top;
+            overlaysElement.appendChild(div);
+            div.left = overlaysElement.style.left;
+            div.top = overlaysElement.style.top;
+
+            pluginInstance.displayArea = overlaysElement;
+        };
+    }
+
+    function _pluginResizeGenerator(pluginInstance) {
+        function resize() {
+            var displayarea = pluginInstance.displayArea;
+            if (displayarea) {
+                pluginInstance.resize(displayarea.clientWidth, displayarea.clientHeight);
             }
+        }
+        return function() {
+            resize();
+            // Sometimes a mobile device may trigger resize before the new sizes are finalized
+            setTimeout(resize, 400);
         };
     }
 
@@ -135,8 +145,8 @@ define([
                         var pluginOptions = _.extend({}, pluginsConfig[pluginURL]);
                         var pluginInstance = pluginObj.getNewInstance(api, pluginOptions, div);
 
-                        pluginInstance.readyHandler = _resizePlugin(_this, pluginInstance, div, true);
-                        pluginInstance.resizeHandler = _resizePlugin(_this, pluginInstance, div);
+                        pluginInstance.addToPlayer   = _addToPlayerGenerator(api, pluginInstance, div);
+                        pluginInstance.resizeHandler = _pluginResizeGenerator(pluginInstance);
 
                         api.addPlugin(pluginName, pluginInstance, div);
                     }
