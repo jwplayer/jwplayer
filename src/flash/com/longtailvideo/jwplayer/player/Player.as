@@ -13,10 +13,12 @@ import com.longtailvideo.jwplayer.view.View;
 import flash.display.Sprite;
 import flash.events.ErrorEvent;
 import flash.events.Event;
+import flash.events.ThrottleEvent;
+import flash.events.ThrottleType;
 import flash.geom.Rectangle;
 import flash.system.Security;
 
-[SWF(width="640", height="360", frameRate="60", backgroundColor="#000000")]
+[SWF(width="640", height="360", frameRate="30", backgroundColor="#000000")]
 
 public class Player extends Sprite implements IPlayer {
 
@@ -29,8 +31,13 @@ public class Player extends Sprite implements IPlayer {
     public function Player() {
         Security.allowDomain("*");
 
+        // Send embedded event so we know flash isn't blocked
+        SwfEventRouter.triggerJsEvent('embedded');
+
         RootReference.init(this);
         this.addEventListener(Event.ADDED_TO_STAGE, stageReady);
+        this.addEventListener(ThrottleEvent.THROTTLE, flashThrottled);
+
         this.tabEnabled = false;
         this.tabChildren = false;
         this.focusRect = false;
@@ -52,6 +59,14 @@ public class Player extends Sprite implements IPlayer {
         this.removeEventListener(Event.ADDED_TO_STAGE, stageReady);
         RootReference.init(this);
         _view.setupView();
+    }
+
+    private function flashThrottled(e:ThrottleEvent):void {
+        // e.state can be ThrottleType.THROTTLE, ThrottleType.PAUSE, or ThrottleType.RESUME
+        // in Chrome we only get 'throttle' and 'resume' for offscreen and power-save throttling
+        SwfEventRouter.triggerJsEvent('throttle', {
+            state: e.state
+        });
     }
 
     public function get version():String {
@@ -214,6 +229,9 @@ public class Player extends Sprite implements IPlayer {
     }
 
     protected function playerReady(evt:PlayerEvent):void {
+        // Send embedded event so we know flash isn't blocked
+        SwfEventRouter.triggerJsEvent('embedded');
+
         // Only handle Setup Events once
         _controller.removeEventListener(PlayerEvent.JWPLAYER_READY, playerReady);
 
@@ -292,6 +310,9 @@ public class Player extends Sprite implements IPlayer {
     }
 
     protected function setupError(evt:PlayerEvent):void {
+        // Send embedded event so we know flash isn't blocked
+        SwfEventRouter.triggerJsEvent('embedded');
+
         // Only handle Setup Events once
         _controller.removeEventListener(PlayerEvent.JWPLAYER_READY, playerReady);
         _controller.removeEventListener(PlayerEvent.JWPLAYER_SETUP_ERROR, setupError);
