@@ -30,25 +30,25 @@ define([
 
         playlistItem : function(model, item) {
             if (model.get('displaytitle') || model.get('displaydescription')) {
-                var data = {
-                    title: '',
-                    description: ''
-                };
+                var title = '';
+                var description = '';
+
                 if (item.title && model.get('displaytitle')) {
-                    data.title = item.title;
+                    title = item.title;
                 }
                 if (item.description && model.get('displaydescription')) {
-                    data.description = item.description;
+                    description = item.description;
                 }
-                this.updateText(model, data);
+
+                this.updateText(title, description);
             } else {
                 this.hide();
             }
         },
 
-        updateText: function(model, data) {
-            this.title.innerHTML = data.title;
-            this.description.innerHTML = data.description;
+        updateText: function(title, description) {
+            this.title.innerHTML = title;
+            this.description.innerHTML = description;
 
             if (this.title.firstChild || this.description.firstChild) {
                 this.show();
