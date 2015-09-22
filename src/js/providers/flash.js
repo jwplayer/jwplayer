@@ -226,9 +226,13 @@ define([
 
                         // setup flash player
                         var config = _.extend({}, _playerConfig);
-                        _flashCommand('setup', config);
+                        var result = _swf.triggerFlash('setup', config);
+                        if (result === _swf) {
+                            _swf.__ready = true;
+                        } else {
+                            this.trigger(events.JWPLAYER_MEDIA_ERROR, result);
+                        }
 
-                        _swf.__ready = true;
                     }, this);
 
                     var forwardEventsWithData = [
