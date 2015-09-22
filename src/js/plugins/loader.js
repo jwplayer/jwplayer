@@ -135,8 +135,8 @@ define([
                         var pluginOptions = _.extend({}, pluginsConfig[pluginURL]);
                         var pluginInstance = pluginObj.getNewInstance(api, pluginOptions, div);
 
-                        pluginInstance.readyHandler = _resizePlugin(_this, pluginInstance, div, true);
-                        pluginInstance.resizeHandler = _resizePlugin(_this, pluginInstance, div);
+                        pluginInstance.readyHandler = _resizePlugin(api, pluginInstance, div, true);
+                        pluginInstance.resizeHandler = _resizePlugin(api, pluginInstance, div);
 
                         api.addPlugin(pluginName, pluginInstance, div);
                     }

@@ -131,9 +131,10 @@ define([
             this.plugins = this.plugins || {};
             this.plugins[name] = pluginInstance;
 
+            this.onReady(pluginInstance.readyHandler);
+
             // A swf plugin may rely on resize events
             if (pluginInstance.resize) {
-                this.onReady(pluginInstance.readyHandler);
                 this.onResize(pluginInstance.resizeHandler);
             }
         };

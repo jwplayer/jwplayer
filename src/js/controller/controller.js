@@ -583,12 +583,13 @@ define([
             //this.releaseState = _view.releaseState;
             this.setCues = _view.addCues;
             this.setFullscreen = _view.fullscreen;
-            this.addButton = function(img, tooltip, callback, id) {
+            this.addButton = function(img, tooltip, callback, id, btnClass) {
                 var btn = {
                     img : img,
                     tooltip : tooltip,
                     callback : callback,
-                    id : id
+                    id : id,
+                    class : btnClass
                 };
 
                 var dock = _model.get('dock');
