@@ -17,6 +17,7 @@ define([
         var _container;
         var _swf;
         var _item = null;
+        var _flashBlockedTimeout = -1;
         var _beforecompleted = false;
         var _currentQuality = -1;
         var _qualityLevels = null;
@@ -172,6 +173,7 @@ define([
                 getContainer: function() {
                     return _container;
                 },
+
                 setContainer: function(parent) {
                     if (_container === parent) {
                         // ignore instream's attempt to put provider back in it's place
@@ -180,6 +182,16 @@ define([
                     _container = parent;
 
                     _swf = this.getSwfObject(parent);
+
+                    // The browser may block the flash object until user enables it
+                    var _this = this;
+                    _flashBlockedTimeout = setTimeout(function() {
+                        _this.trigger('flashBlocked');
+                    }, 2000);
+                    _swf.once('embedded', function() {
+                        clearTimeout(_flashBlockedTimeout);
+                        this.trigger('flashUnblocked');
+                    }, this);
 
                     // listen to events sendEvented from flash
                     _swf.once('ready', function() {
@@ -196,7 +208,6 @@ define([
                         _flashCommand('setup', config);
 
                         _swf.__ready = true;
-
                     }, this);
 
                     var forwardEventsWithData = [
@@ -222,63 +233,82 @@ define([
                         _currentQuality = e.currentQuality;
                         _qualityLevels = e.levels;
                         this.trigger(e.type, e);
+                    }, this);
 
-                    }, this).on(events.JWPLAYER_MEDIA_LEVEL_CHANGED, function(e) {
+                    _swf.on(events.JWPLAYER_MEDIA_LEVEL_CHANGED, function(e) {
                         _labelLevels(e.levels);
                         _currentQuality = e.currentQuality;
                         _qualityLevels = e.levels;
                         this.trigger(e.type, e);
 
-                    }, this).on(events.JWPLAYER_AUDIO_TRACKS, function(e) {
+                    }, this);
+
+                    _swf.on(events.JWPLAYER_AUDIO_TRACKS, function(e) {
                         _currentAudioTrack = e.currentTrack;
                         _audioTracks = e.tracks;
                         this.trigger(e.type, e);
+                    }, this);
 
-                    }, this).on(events.JWPLAYER_AUDIO_TRACK_CHANGED, function(e) {
+                    _swf.on(events.JWPLAYER_AUDIO_TRACK_CHANGED, function(e) {
                         _currentAudioTrack = e.currentTrack;
                         _audioTracks = e.tracks;
                         this.trigger(e.type, e);
+                    }, this);
 
-                    }, this).on(events.JWPLAYER_PLAYER_STATE, function(e) {
+                    _swf.on(events.JWPLAYER_PLAYER_STATE, function(e) {
                         var state = e.newstate;
                         if (state === states.IDLE) {
                             return;
                         }
                         this.setState(state);
+                    }, this);
 
-                    }, this).on(forwardEventsWithDataDuration.join(' '), function(e) {
+                    _swf.on(forwardEventsWithDataDuration.join(' '), function(e) {
                         if(e.duration === 'Infinity') {
                             e.duration = Infinity;
                         }
                         this.trigger(e.type, e);
+                    }, this);
 
-                    }, this).on(forwardEventsWithData.join(' '), function(e) {
+                    _swf.on(forwardEventsWithData.join(' '), function(e) {
                         this.trigger(e.type, e);
+                    }, this);
 
-                    }, this).on(forwardEvents.join(' '), function(e) {
+                    _swf.on(forwardEvents.join(' '), function(e) {
                         this.trigger(e.type);
+                    }, this);
 
-                    }, this).on(events.JWPLAYER_MEDIA_BEFORECOMPLETE, function(e){
+                    _swf.on(events.JWPLAYER_MEDIA_BEFORECOMPLETE, function(e){
                         _beforecompleted = true;
                         this.trigger(e.type);
                         if(_attached === true) {
                             _beforecompleted = false;
                         }
-                    }, this).on(events.JWPLAYER_MEDIA_COMPLETE, function(e) {
+                    }, this);
+
+                    _swf.on(events.JWPLAYER_MEDIA_COMPLETE, function(e) {
                         if(!_beforecompleted){
                             this.setState(states.COMPLETE);
                             this.trigger(e.type);
                         }
-                    }, this).on(events.JWPLAYER_MEDIA_SEEK, function(e) {
+                    }, this);
+
+                    _swf.on(events.JWPLAYER_MEDIA_SEEK, function(e) {
                         this.trigger(events.JWPLAYER_MEDIA_SEEK, e);
-                    }, this).on('visualQuality', function(e) {
+                    }, this);
+
+                    _swf.on('visualQuality', function(e) {
                         e.reason = e.reason || 'api'; // or 'user selected';
                         this.trigger('visualQuality', e);
                         this.trigger(events.JWPLAYER_PROVIDER_FIRST_FRAME, {});
-                    }, this).on(events.JWPLAYER_PROVIDER_CHANGED, function(e) {
+                    }, this);
+
+                    _swf.on(events.JWPLAYER_PROVIDER_CHANGED, function(e) {
                         _flashProviderType = e.message;
                         this.trigger(events.JWPLAYER_PROVIDER_CHANGED, e);
-                    }, this).on(events.JWPLAYER_ERROR, function(event) {
+                    }, this);
+
+                    _swf.on(events.JWPLAYER_ERROR, function(event) {
                         utils.log('Error playing media: %o %s', event.code, event.message, event);
                         this.trigger(events.JWPLAYER_MEDIA_ERROR, event);
                     }, this);
