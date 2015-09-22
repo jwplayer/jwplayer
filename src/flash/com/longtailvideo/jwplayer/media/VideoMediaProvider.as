@@ -50,10 +50,6 @@ public class VideoMediaProvider extends MediaProvider {
     /** Is buffering due to load/seek or underflow? **/
     private var seeking:Boolean;
 
-    private var _preload:Boolean;
-
-    private var _afterPreload:Boolean;
-
     /** Set the current quality level. **/
     override public function set currentQuality(quality:Number):void {
         if (!_item) return;
@@ -93,20 +89,26 @@ public class VideoMediaProvider extends MediaProvider {
     }
 
     override public function init(itm:PlaylistItem):void {
+        if (itm.preload !== "metadata" && itm.preload !== "auto") {
+            return;
+        }
         setupVideo(itm);
         // start loading the content only if preload is 'auto'
         if (itm.preload === "auto") {
-            _preload = true;
             loadQuality();
+            _stream.pause();
         }
     }
 
     /** Load new media file; only requested once per item. **/
     override public function load(itm:PlaylistItem):void {
+        setState(PlayerState.LOADING);
         if (_item !== itm) {
             setupVideo(itm);
+            loadQuality();
+        } else {
+            play();
         }
-        loadQuality();
     }
 
     /** Pause playback. **/
@@ -142,7 +144,7 @@ public class VideoMediaProvider extends MediaProvider {
                 if (_keyframes) {
                     _position = pos;
                     _offset = seekOffset(pos);
-                    loadStream();
+                    _stream.seek(_position);
                 } else {
                     // Delay the seek if no keyframes yet
                     _starttime = pos;
@@ -312,12 +314,6 @@ public class VideoMediaProvider extends MediaProvider {
 
     /** Load the actual stream; requested with every HTTP seek. **/
     private function loadStream():void {
-        // if already preloaded, play the video
-        if (_afterPreload) {
-            _afterPreload = false;
-            play();
-            return;
-        }
         var levels:Array = item.levels;
         if (_currentQuality >= levels.length) {
             error('no playable source');
@@ -339,23 +335,12 @@ public class VideoMediaProvider extends MediaProvider {
         }
         _buffered = 0;
 
-        // set state to loading if this is not preload
-        if (!_preload) {
-            setState(PlayerState.LOADING);
-        }
         sendBufferEvent(0);
 
         // TODO: do this on enter frame like HLS
         clearInterval(_interval);
         this.seeking = true;
         _interval = setInterval(positionHandler, 100);
-
-        // if we are preloading, pause the stream and set afterPreload to true.
-        if (_preload) {
-            _preload = false;
-            _afterPreload = true;
-            _stream.pause();
-        }
     }
 
     /** Return the seek offset based upon a position. **/
