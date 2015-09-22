@@ -401,7 +401,8 @@ define([
             _bufferFull = false;
             _isAndroidHLS = _useAndroidHLS(_source);
             _videotag.src = _source.file;
-            _videotag.preload = _source.preload;
+            // set preload from the source, or default to metadata
+            _videotag.setAttribute('preload', _source.preload || 'metadata');
         }
 
         this.stop = function() {
