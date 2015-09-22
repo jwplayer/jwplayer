@@ -312,6 +312,14 @@ define([
                         utils.log('Error playing media: %o %s', event.code, event.message, event);
                         this.trigger(events.JWPLAYER_MEDIA_ERROR, event);
                     }, this);
+
+                    _swf.on('throttle', function(e) {
+                        if (e.state === 'resume') {
+                            this.trigger('flashUnblocked');
+                        } else {
+                            this.trigger('flashBlocked');
+                        }
+                    }, this);
                 },
                 remove: function() {
                     _currentQuality = -1;
