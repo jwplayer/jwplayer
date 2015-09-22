@@ -29,6 +29,9 @@ public class Player extends Sprite implements IPlayer {
     public function Player() {
         Security.allowDomain("*");
 
+        // Send embedded event so we know flash isn't blocked
+        SwfEventRouter.triggerJsEvent('embedded');
+
         RootReference.init(this);
         this.addEventListener(Event.ADDED_TO_STAGE, stageReady);
         this.tabEnabled = false;
@@ -214,6 +217,9 @@ public class Player extends Sprite implements IPlayer {
     }
 
     protected function playerReady(evt:PlayerEvent):void {
+        // Send embedded event so we know flash isn't blocked
+        SwfEventRouter.triggerJsEvent('embedded');
+
         // Only handle Setup Events once
         _controller.removeEventListener(PlayerEvent.JWPLAYER_READY, playerReady);
 
@@ -292,6 +298,9 @@ public class Player extends Sprite implements IPlayer {
     }
 
     protected function setupError(evt:PlayerEvent):void {
+        // Send embedded event so we know flash isn't blocked
+        SwfEventRouter.triggerJsEvent('embedded');
+
         // Only handle Setup Events once
         _controller.removeEventListener(PlayerEvent.JWPLAYER_READY, playerReady);
         _controller.removeEventListener(PlayerEvent.JWPLAYER_SETUP_ERROR, setupError);

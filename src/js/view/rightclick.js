@@ -136,6 +136,7 @@ define([
         },
 
         destroy : function() {
+            this.playerElement.oncontextmenu = null;
             this.model.off('change:provider', this.updateHtml);
             document.removeEventListener('mousedown', this.hideMenuCallback);
             this.hideMenuCallback = null;

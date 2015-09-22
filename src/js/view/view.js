@@ -381,6 +381,9 @@ define([
             _model.on('change:state', _stateHandler);
             _model.on('change:duration', _setLiveMode, this);
 
+            _model.on('change:flashBlocked', _onChangeFlashBlocked);
+            _onChangeFlashBlocked(_model, _model.get('flashBlocked'));
+
             _model.mediaController.on(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
             _api.onPlaylistComplete(_playlistCompleteHandler);
             _api.onPlaylistItem(_playlistItemHandler);
@@ -485,6 +488,20 @@ define([
 
         function forward(evt) {
             _this.trigger(evt.type, evt);
+        }
+
+        function _onChangeFlashBlocked(model, isBlocked) {
+            if (isBlocked) {
+                utils.addClass(_playerElement, 'jw-flag-flash-blocked');
+                if (_rightClickMenu) {
+                    _rightClickMenu.destroy();
+                }
+            } else {
+                utils.removeClass(_playerElement,'jw-flag-flash-blocked');
+                if (_rightClickMenu) {
+                    _rightClickMenu.setup(_model, _playerElement, _playerElement);
+                }
+            }
         }
 
         var _onChangeControls = function(model, bool) {
