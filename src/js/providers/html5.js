@@ -280,8 +280,8 @@ define([
                 return;
             }
 
-            // A stall after loading, should just stay loading
-            if (_this.state === states.LOADING) {
+            // A stall after loading/error, should just stay loading/error
+            if (_this.state === states.LOADING || _this.state === states.ERROR) {
                 return;
             }
 
@@ -297,6 +297,9 @@ define([
             if (!_attached) {
                 return;
             }
+            // change the provider's state to error
+            _this.setState(states.ERROR);
+
             utils.log('Error playing media: %o %s', _videotag.error, _videotag.src || _source.file);
             _this.trigger(events.JWPLAYER_MEDIA_ERROR, {
                 message: 'Error loading media: File could not be played'
