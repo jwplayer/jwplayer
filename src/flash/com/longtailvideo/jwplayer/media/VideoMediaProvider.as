@@ -50,6 +50,10 @@ public class VideoMediaProvider extends MediaProvider {
     /** Is buffering due to load/seek or underflow? **/
     private var seeking:Boolean;
 
+    private var _preload:Boolean;
+
+    private var _afterPreload:Boolean;
+
     /** Set the current quality level. **/
     override public function set currentQuality(quality:Number):void {
         if (!_item) return;
@@ -88,45 +92,19 @@ public class VideoMediaProvider extends MediaProvider {
         }
     }
 
+    override public function init(itm:PlaylistItem):void {
+        setupVideo(itm);
+        // start loading the content only if preload is 'auto'
+        if (itm.preload === "auto") {
+            _preload = true;
+            loadQuality();
+        }
+    }
+
     /** Load new media file; only requested once per item. **/
     override public function load(itm:PlaylistItem):void {
-        clearInterval(_interval);
-        _item = itm;
-        // Set Video or StageVideo
-        if (!_video) {
-            _video = new Video();
-            _video.smoothing = true;
-        }
-
-        _video.attachNetStream(_stream);
-
-        // Set initial quality and set levels
-        _currentQuality = 0;
-
-        for (var i:Number = 0; i < _item.levels.length; i++) {
-            if (_item.levels[i]["default"]) {
-                _currentQuality = i;
-                break;
-            }
-        }
-
-        if (config.qualitylabel) {
-            for (i = 0; i < _item.levels.length; i++) {
-                if (_item.levels[i].label == config.qualitylabel) {
-                    _currentQuality = i;
-                    break;
-                }
-            }
-        }
-
-        sendQualityEvent(MediaEvent.JWPLAYER_MEDIA_LEVELS, _item.levels, _currentQuality);
-        // Do not set a stretchable media for AAC files.
-        _item.type == "aac" ? media = null : media = _video;
-        // Get item start (should remove this someday)
-        if (_startparam && _item.start) {
-            _starttime = _item.start;
-        } else {
-            _starttime = 0;
+        if (_item !== itm) {
+            setupVideo(itm);
         }
         loadQuality();
     }
@@ -284,6 +262,47 @@ public class VideoMediaProvider extends MediaProvider {
         }
     }
 
+    private function setupVideo(itm:PlaylistItem):void {
+        clearInterval(_interval);
+        _item = itm;
+        // Set Video or StageVideo
+        if (!_video) {
+            _video = new Video();
+            _video.smoothing = true;
+        }
+
+        _video.attachNetStream(_stream);
+
+        // Set initial quality and set levels
+        _currentQuality = 0;
+
+        for (var i:Number = 0; i < _item.levels.length; i++) {
+            if (_item.levels[i]["default"]) {
+                _currentQuality = i;
+                break;
+            }
+        }
+
+        if (config.qualitylabel) {
+            for (i = 0; i < _item.levels.length; i++) {
+                if (_item.levels[i].label == config.qualitylabel) {
+                    _currentQuality = i;
+                    break;
+                }
+            }
+        }
+
+        sendQualityEvent(MediaEvent.JWPLAYER_MEDIA_LEVELS, _item.levels, _currentQuality);
+        // Do not set a stretchable media for AAC files.
+        _item.type == "aac" ? media = null : media = _video;
+        // Get item start (should remove this someday)
+        if (_startparam && _item.start) {
+            _starttime = _item.start;
+        } else {
+            _starttime = 0;
+        }
+    }
+
 /** Load new quality level; only requested on quality switches. **/
     private function loadQuality():void {
         _keyframes = undefined;
@@ -293,6 +312,12 @@ public class VideoMediaProvider extends MediaProvider {
 
     /** Load the actual stream; requested with every HTTP seek. **/
     private function loadStream():void {
+        // if already preloaded, play the video
+        if (_afterPreload) {
+            _afterPreload = false;
+            play();
+            return;
+        }
         var levels:Array = item.levels;
         if (_currentQuality >= levels.length) {
             error('no playable source');
@@ -304,7 +329,7 @@ public class VideoMediaProvider extends MediaProvider {
         if (_item.type == 'mp4') {
             prm = _offset.time;
         }
-        // Use startparam if needed
+        //  need to call stream.play even when preloading, because this is how stream starts to load the content
         if (!_startparam || _offset.time == 0) {
             _stream.play(url);
         } else if (url.indexOf('?') > -1) {
@@ -313,13 +338,24 @@ public class VideoMediaProvider extends MediaProvider {
             _stream.play(url + '?' + _startparam + '=' + prm);
         }
         _buffered = 0;
-        setState(PlayerState.LOADING);
+
+        // set state to loading if this is not preload
+        if (!_preload) {
+            setState(PlayerState.LOADING);
+        }
         sendBufferEvent(0);
 
         // TODO: do this on enter frame like HLS
         clearInterval(_interval);
         this.seeking = true;
         _interval = setInterval(positionHandler, 100);
+
+        // if we are preloading, pause the stream and set afterPreload to true.
+        if (_preload) {
+            _preload = false;
+            _afterPreload = true;
+            _stream.pause();
+        }
     }
 
     /** Return the seek offset based upon a position. **/
