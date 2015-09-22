@@ -228,8 +228,8 @@ public class Controller extends GlobalEventDispatcher {
     }
 
     public function init(item:PlaylistItem):void {
-        var _loaded:Boolean = load(item);
-        if (_loaded) {
+        var loadSuccessful:Boolean = load(item);
+        if (loadSuccessful) {
             _model.media.init(item);
         }
     }
