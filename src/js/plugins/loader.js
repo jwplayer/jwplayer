@@ -25,14 +25,16 @@ define([
     }
 
     function _pluginResizeGenerator(pluginInstance) {
-        return function() {
+        function resize() {
             var displayarea = pluginInstance.displayArea;
-            pluginInstance.resize(displayarea.clientWidth, displayarea.clientHeight);
-
-            // Sometimes a mobile device may trigger resize before the new sizes are finalized
-            setTimeout(function() {
+            if (displayarea) {
                 pluginInstance.resize(displayarea.clientWidth, displayarea.clientHeight);
-            }, 400);
+            }
+        }
+        return function() {
+            resize();
+            // Sometimes a mobile device may trigger resize before the new sizes are finalized
+            setTimeout(resize, 400);
         };
     }
 
