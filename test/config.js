@@ -25,6 +25,7 @@ if (!window.__karma__) {
 
 // Add bind polyfill for phantomjs 1.x
 deps.unshift('bind-polyfill');
+deps.unshift('polyfills/promise');
 
 // Add qunit-fixture to page if not present
 if (!document.getElementById('qunit-fixture')) {
