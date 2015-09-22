@@ -895,7 +895,12 @@ define([
 
         function _errorHandler(evt) {
             _stateHandler(_model, states.ERROR);
-            _title.updateText(_model, {'title': evt.message});
+
+            if (evt.name) {
+                _title.updateText(evt.name, evt.message);
+            } else {
+                _title.updateText(evt.message, '');
+            }
         }
 
         function _isCasting() {
