@@ -13,9 +13,8 @@ define([
      * @param {String} padder
      */
     var pad = function (str, length, padder) {
-        if (!padder) {
-            padder = '0';
-        }
+        str = '' + str;
+        padder = padder || '0';
         while (str.length < length) {
             str = padder + str;
         }
