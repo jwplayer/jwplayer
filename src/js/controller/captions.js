@@ -48,6 +48,7 @@ define([
                 // Player expects that tracks were received in 'subtitlesTracks' event
                 return;
             }
+            track.source = e.source;
             var cues = e.captions || [];
             var sort = false;
             for (var i=0; i<cues.length; i++) {
