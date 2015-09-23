@@ -167,6 +167,14 @@ public class MediaProvider extends Sprite implements IMediaProvider {
     }
 
     /**
+     * Called when preloading. Placeholder to be override
+     * @param itm
+     */
+    public function init(itm:PlaylistItem):void {
+        _item = itm;
+    }
+
+    /**
      * Load a new playlist item
      * @param itm The playlistItem to load
      **/

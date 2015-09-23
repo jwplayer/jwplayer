@@ -13,7 +13,7 @@ define([
     };
 
     /** Go through the playlist and choose a single playable type to play; remove sources of a different type **/
-    Playlist.filterPlaylist = function(playlist, providers, androidhls, configDrm, preload) {
+    Playlist.filterPlaylist = function(playlist, providers, androidhls, configDrm) {
         var list = [];
 
         _.each(playlist, function(item) {
