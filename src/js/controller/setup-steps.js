@@ -58,14 +58,36 @@ define([
 
 
     function _loadPolyfills(resolve) {
+        // This method is a little obtuse because
+        //  webpack needs require.ensure calls to be statically analyzed
+        var needToLoad = 0;
+        var loaded = 0;
+
+        function polyfillLoaded() {
+            if (needToLoad === loaded) {
+                resolve();
+            }
+        }
+
+        if (!window.Promise) {
+            needToLoad++;
+            require.ensure(['polyfills/promise'], function(require) {
+                require('polyfills/promise');
+                loaded++;
+                polyfillLoaded();
+            }, 'polyfills.promise');
+        }
+
         if (!window.btoa || !window.atob) {
+            needToLoad++;
             require.ensure(['polyfills/base64'], function(require) {
                 require('polyfills/base64');
-                resolve();
-            });
-        } else {
-            resolve();
+                loaded++;
+                polyfillLoaded();
+            }, 'polyfills.base64');
         }
+
+        polyfillLoaded();
     }
 
     function _loadPlugins(resolve, _model, _api) {
