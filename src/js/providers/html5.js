@@ -17,7 +17,8 @@ define([
         _isSafari = utils.isSafari(),
         _isAndroid = utils.isAndroidNative(),
         _isIOS7 = utils.isIOS(7),
-        _name = 'html5';
+        _name = 'html5',
+        _forceStateToLoad = false;
 
 
     function _setupListeners(eventsHash, videoTag) {
@@ -368,6 +369,9 @@ define([
                 _setVideotagSource();
                 _videotag.load();
             } else {
+                if (_forceStateToLoad) {
+                    _this.setState(states.LOADING);
+                }
                 // Load event is from the same video as before
                 if (startTime === 0) {
                     // restart video without dispatching seek event
@@ -431,7 +435,11 @@ define([
                 return;
             }
 
-            _setLevels(item.sources);
+            // required to send buffer event even when source is not changed
+            _forceStateToLoad = true;
+
+            _levels = item.sources;
+            _currentQuality = _pickInitialQuality(item.sources);
             this.sendMediaType(item.sources);
 
             _source = _levels[_currentQuality];
