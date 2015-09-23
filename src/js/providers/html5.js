@@ -360,10 +360,6 @@ define([
 
             var sourceChanged = (_videotag.src !== _source.file);
             if (sourceChanged || _forceVideoLoad()) {
-                if (!_isMobile) {
-                    // don't change state on mobile because a touch event may be required to start playback
-                    _this.setState(states.LOADING);
-                }
                 _duration = duration;
                 _setVideotagSource();
                 _videotag.load();
@@ -431,7 +427,8 @@ define([
                 return;
             }
 
-            _setLevels(item.sources);
+            _levels = item.sources;
+            _currentQuality = _pickInitialQuality(item.sources);
             this.sendMediaType(item.sources);
 
             _source = _levels[_currentQuality];
@@ -447,6 +444,10 @@ define([
             _setLevels(item.sources);
             this.sendMediaType(item.sources);
 
+            if (!_isMobile) {
+                // don't change state on mobile because a touch event may be required to start playback
+                _this.setState(states.LOADING);
+            }
             _completeLoad(item.starttime || 0, item.duration || 0);
         };
 
@@ -741,6 +742,7 @@ define([
                     if (duration <= 0) {
                         duration = _duration;
                     }
+                    _this.setState(states.LOADING);
                     _completeLoad(time, duration || 0);
                 }
             }
