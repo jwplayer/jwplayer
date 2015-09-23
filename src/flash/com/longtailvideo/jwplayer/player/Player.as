@@ -172,6 +172,10 @@ public class Player extends Sprite implements IPlayer {
         return _model.item;
     }
 
+    public function init(item:*):void {
+        _controller.init(new PlaylistItem(item));
+    }
+
     public function load(item:*):Boolean {
         _controller.load(new PlaylistItem(item));
         _controller.play();
@@ -229,6 +233,7 @@ public class Player extends Sprite implements IPlayer {
         SwfEventRouter.off()
                 .on('setup', setupPlayer)
                 .on('setupCommandQueue', setupPlayerCommandQueue)
+                .on('init', init)
                 .on('load', load)
                 .on('play', play)
                 .on('pause', pause)

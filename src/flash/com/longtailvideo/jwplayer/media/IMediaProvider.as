@@ -36,6 +36,8 @@ public interface IMediaProvider extends IGlobalEventDispatcher {
 
     function initializeMediaProvider(cfg:PlayerConfig):void;
 
+    function init(itm:PlaylistItem):void;
+
     function load(itm:PlaylistItem):void;
 
     function play():void;
