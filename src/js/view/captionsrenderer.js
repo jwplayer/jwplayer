@@ -91,28 +91,41 @@ define([
             _select(_captionsTrack, _timeEvent);
         }
 
-        /** Select a caption for rendering. **/
-        function _select(track, timeEvent) {
-            if (!(track && track.data) || !timeEvent) {
-                return;
-            }
-            var data = track.data;
-            var pos = timeEvent.position;
-            // subtitles with "source" time must be synced with "metadata[source]"
+        function _getAlignmentPosition(track, timeEvent) {
             var source = track.source;
+            var metadata = timeEvent.metadata;
+
+            // subtitles with "source" time must be synced with "metadata[source]"
             if (source) {
-                if (timeEvent.metadata && _.isNumber(timeEvent.metadata[source])) {
-                    pos = timeEvent.metadata[source];
+                if (metadata && _.isNumber(metadata[source])) {
+                    return metadata[source];
                 } else {
                     return false;
                 }
             }
 
-            var found = -1;
+            // Default to syncing with current position
+            return timeEvent.position;
+        }
+
+        /** Select a caption for rendering. **/
+        function _select(track, timeEvent) {
+            if (!(track && track.data) || !timeEvent) {
+                return;
+            }
+
+            var pos = _getAlignmentPosition(track, timeEvent);
+            if (pos === false) {
+                return;
+            }
+
+            var data = track.data;
             if (_current >= 0 && _intersects(data, _current, pos)) {
                 // no change
                 return;
             }
+
+            var found = -1;
             for (var i = 0; i < data.length; i++) {
                 if (_intersects(data, i, pos)) {
                     found = i;
