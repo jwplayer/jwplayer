@@ -91,7 +91,15 @@ define([
                     return;
 
                 case events.JWPLAYER_MEDIA_BUFFER:
-                    this.set('buffer', data.bufferPercent); // note value change
+                    this.set('buffer', data.bufferPercent);
+
+                    /* falls through */
+                case events.JWPLAYER_MEDIA_META:
+                    var duration = data.duration;
+                    if (_.isNumber(duration)) {
+                        this.mediaModel.set('duration', duration);
+                        this.set('duration', duration);
+                    }
                     break;
 
                 case events.JWPLAYER_MEDIA_BUFFER_FULL:

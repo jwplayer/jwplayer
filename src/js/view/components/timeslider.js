@@ -49,6 +49,7 @@ define([
             this._model
                 .on('change:playlistItem', this.onPlaylistItem, this)
                 .on('change:position', this.onPosition, this)
+                .on('change:duration', this.onDuration, this)
                 .on('change:buffer', this.onBuffer, this);
 
             Slider.call(this, 'jw-slider-time', 'horizontal');
@@ -95,15 +96,20 @@ define([
         onBuffer : function (model, pct) {
             this.updateBuffer(pct);
         },
-        onPosition : function(model, pos) {
+        onPosition : function(model, position) {
+            this.updateTime(position, model.get('duration'));
+        },
+        onDuration : function(model, duration) {
+            this.updateTime(model.get('position'), duration);
+        },
+        updateTime : function(position, duration) {
             var pct = 0;
-            var duration = this._model.get('duration');
             if (duration) {
                 var adaptiveType = utils.adaptiveType(duration);
                 if(adaptiveType === 'DVR') {
-                    pct = (duration - pos) / duration * 100;
+                    pct = (duration - position) / duration * 100;
                 } else if (adaptiveType === 'VOD') {
-                    pct = pos / duration * 100;
+                    pct = position / duration * 100;
                 }
             }
             this.render(pct);
