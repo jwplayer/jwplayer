@@ -89,9 +89,6 @@ public class VideoMediaProvider extends MediaProvider {
     }
 
     override public function init(itm:PlaylistItem):void {
-        if (itm.preload !== "metadata" && itm.preload !== "auto") {
-            return;
-        }
         setupVideo(itm);
         // start loading the content only if preload is 'auto'
         if (itm.preload === "auto") {
@@ -111,6 +108,9 @@ public class VideoMediaProvider extends MediaProvider {
         } else {
             play();
         }
+
+        // need to call this every time we load, but after setupVideo has been called
+        sendQualityEvent(MediaEvent.JWPLAYER_MEDIA_LEVELS, _item.levels, _currentQuality);
     }
 
     /** Pause playback. **/
@@ -296,7 +296,6 @@ public class VideoMediaProvider extends MediaProvider {
             }
         }
 
-        sendQualityEvent(MediaEvent.JWPLAYER_MEDIA_LEVELS, _item.levels, _currentQuality);
         // Do not set a stretchable media for AAC files.
         _item.type == "aac" ? media = null : media = _video;
         // Get item start (should remove this someday)

@@ -109,19 +109,9 @@ define([
                         return;
                     } else {
                         _item = item;
-
-                        // if we just call flashCommand with _swf undefined, init will go into commandQueue
-                        if (_swf) {
-                            _flashCommand('init', item);
-                        } else {
-                            this.once('swfDefined', function() {
-                                _flashCommand('init', item);
-                            });
-                        }
                     }
                 },
                 load: function(item) {
-                    this.off('swfDefined');
                     _item = item;
                     _beforecompleted = false;
                     this.setState(states.LOADING);
@@ -129,7 +119,6 @@ define([
                     this.sendMediaType(item.sources);
                 },
                 play: function() {
-                    this.off('swfDefined');
                     _flashCommand('play');
                 },
                 pause: function() {
@@ -203,9 +192,6 @@ define([
 
                     _swf = this.getSwfObject(parent);
 
-                    // trigger _swf defined event for init to load video
-                    this.trigger('swfDefined');
-
                     // The browser may block the flash object until user enables it
                     var _this = this;
                     _flashBlockedTimeout = setTimeout(function() { _this.trigger('flashBlocked'); }, 1000);
@@ -231,6 +217,11 @@ define([
                             _swf.__ready = true;
                         } else {
                             this.trigger(events.JWPLAYER_MEDIA_ERROR, result);
+                        }
+
+                        // init if _item is defined
+                        if (_item) {
+                            _flashCommand('init', _item);
                         }
 
                     }, this);

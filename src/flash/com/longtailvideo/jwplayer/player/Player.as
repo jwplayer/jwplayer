@@ -26,8 +26,6 @@ public class Player extends Sprite implements IPlayer {
 
     protected var _instream:InstreamPlayer;
 
-    private var _preloaded:Boolean;
-
     public function Player() {
         // Send embedded event so we know flash isn't blocked
         SwfEventRouter.triggerJsEvent('embedded');
@@ -40,7 +38,6 @@ public class Player extends Sprite implements IPlayer {
         this.tabChildren = false;
         this.focusRect = false;
         this.buttonMode = true;
-        _preloaded = false;
 
         _model = newModel(new PlayerConfig(this.soundTransform));
 
@@ -176,18 +173,12 @@ public class Player extends Sprite implements IPlayer {
     }
 
     public function init(item:*):void {
-        _preloaded = true;
         _controller.init(new PlaylistItem(item));
     }
 
     public function load(item:*):Boolean {
-        if (_preloaded) {
-            _preloaded = false;
-        } else {
-            _controller.load(new PlaylistItem(item));
-        }
+        _controller.load(new PlaylistItem(item));
         _controller.play();
-
         return true;
     }
 
