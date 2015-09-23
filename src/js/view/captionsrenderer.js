@@ -31,8 +31,8 @@ define([
             // current cue
             _current,
 
-            //video position
-            _position = 0,
+            // last time/seek event
+            _timeEvent,
 
             // display hierarchy
             _display,
@@ -59,7 +59,7 @@ define([
                 _render('');
                 return;
             }
-            _select(captions.data);
+            _select(captions.data, _timeEvent);
         };
         
         /** Render the active caption. **/
@@ -86,18 +86,25 @@ define([
             }
         };
 
+        function _timeChange(e) {
+            _timeEvent = e;
+            if (_captionsTrack) {
+                _select(_captionsTrack.data, _timeEvent);
+            }
+        }
+
         /** Select a caption for rendering. **/
-        function _select(data) {
-            if (!data) {
+        function _select(data, timeEvent) {
+            if (!data || !timeEvent) {
                 return;
             }
             var found = -1;
-            if (_current >= 0 && _intersects(data, _position, _current)) {
+            if (_current >= 0 && _intersects(data, timeEvent, _current)) {
                 // no change
                 return;
             }
             for (var i = 0; i < data.length; i++) {
-                if (_intersects(data, _position, i)) {
+                if (_intersects(data, timeEvent, i)) {
                     found = i;
                     break;
                 }
@@ -111,7 +118,16 @@ define([
             }
         }
 
-        function _intersects(data, pos, i) {
+        function _intersects(data, timeEvent, i) {
+            var pos = timeEvent.position;
+            // For HLS streams with WebVTT subtitle tracks only use mpegts
+            if (data[i].useMPEGTS) {
+                if (timeEvent.metadata && _.isNumber(timeEvent.metadata.mpegts)) {
+                    pos = timeEvent.metadata.mpegts;
+                } else {
+                    return false;
+                }
+            }
             return (data[i].begin <= pos && (!data[i].end || data[i].end >= pos) &&
                 (i === data.length - 1 || data[i + 1].begin >= pos));
         }
@@ -177,32 +193,29 @@ define([
             }
         }
 
-        /** Update the video position. **/
-        this.update = function (position) {
-            _position = position;
-            if (_captionsTrack) {
-                _select(_captionsTrack.data);
-            }
-        };
-
         this.element = function() {
           return _display;
         };
 
+        _model.on('change:item', function() {
+            _timeEvent = null;
+            _current = -1;
+            _render('');
+        }, this);
         _model.on('change:captionsTrack', function(model, captionsTrack) {
             this.populate(captionsTrack);
         }, this);
-        _model.on('change:position', function(model, pos) {
-            this.update(pos);
+        _model.mediaController.on('seek', function() {
+            _current = -1;
         }, this);
-        _model.mediaController.on('seek', function(e) {
-            // update captions while scrubbing
-            this.update(e.position);
+        _model.mediaController.on('time seek', function(e) {
+            // update captions while playing or seeking
+            _timeChange(e);
         }, this);
         _model.mediaController.on('subtitlesTrackData', function() {
             // update captions after a provider's subtitle track changes
             if (_captionsTrack) {
-                _select(_captionsTrack.data);
+                _select(_captionsTrack.data, _timeEvent);
             }
         }, this);
         _model.on('change:state', function(model, state) {

@@ -13,9 +13,8 @@ define([
      * @param {String} padder
      */
     var pad = function (str, length, padder) {
-        if (!padder) {
-            padder = '0';
-        }
+        str = '' + str;
+        padder = padder || '0';
         while (str.length < length) {
             str = padder + str;
         }
@@ -62,6 +61,19 @@ define([
         if (path.lastIndexOf('.') > -1) {
             return path.substr(path.lastIndexOf('.') + 1, path.length).toLowerCase();
         }
+    };
+
+    /**
+     * Convert seconds to HH:MN:SS.sss
+     *
+     * @param seconds  The number of seconds
+     * @return        An HH:MN:SS.sss string
+     **/
+    var hms = function(seconds) {
+        var h = parseInt(seconds / 3600);
+        var m = parseInt(seconds / 60) % 60;
+        var s = seconds % 60;
+        return pad(h, 2) + ':' + pad(m, 2) + ':' + pad(s.toFixed(3), 6);
     };
 
     /**
@@ -114,6 +126,7 @@ define([
         pad : pad,
         xmlAttribute : xmlAttribute,
         extension : extension,
+        hms: hms,
         seconds: seconds,
         suffix: suffix,
         prefix: prefix
