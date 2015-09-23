@@ -17,8 +17,7 @@ define([
         _isSafari = utils.isSafari(),
         _isAndroid = utils.isAndroidNative(),
         _isIOS7 = utils.isIOS(7),
-        _name = 'html5',
-        _forceStateToLoad = false;
+        _name = 'html5';
 
 
     function _setupListeners(eventsHash, videoTag) {
@@ -361,17 +360,10 @@ define([
 
             var sourceChanged = (_videotag.src !== _source.file);
             if (sourceChanged || _forceVideoLoad()) {
-                if (!_isMobile) {
-                    // don't change state on mobile because a touch event may be required to start playback
-                    _this.setState(states.LOADING);
-                }
                 _duration = duration;
                 _setVideotagSource();
                 _videotag.load();
             } else {
-                if (_forceStateToLoad) {
-                    _this.setState(states.LOADING);
-                }
                 // Load event is from the same video as before
                 if (startTime === 0) {
                     // restart video without dispatching seek event
@@ -435,9 +427,6 @@ define([
                 return;
             }
 
-            // required to send buffer event even when source is not changed
-            _forceStateToLoad = true;
-
             _levels = item.sources;
             _currentQuality = _pickInitialQuality(item.sources);
             this.sendMediaType(item.sources);
@@ -455,6 +444,10 @@ define([
             _setLevels(item.sources);
             this.sendMediaType(item.sources);
 
+            if (!_isMobile) {
+                // don't change state on mobile because a touch event may be required to start playback
+                _this.setState(states.LOADING);
+            }
             _completeLoad(item.starttime || 0, item.duration || 0);
         };
 
@@ -749,6 +742,7 @@ define([
                     if (duration <= 0) {
                         duration = _duration;
                     }
+                    _this.setState(states.LOADING);
                     _completeLoad(time, duration || 0);
                 }
             }
