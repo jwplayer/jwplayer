@@ -77,20 +77,16 @@ define([
             _setup = new Setup(_api, _model, _view);
 
             _setup.on(events.JWPLAYER_READY, _playerReady, this);
-            _setup.on(events.JWPLAYER_SETUP_ERROR, function(evt) {
-                _this.setupError(evt.message);
-            });
+            _setup.on(events.JWPLAYER_SETUP_ERROR, _this.setupError);
 
             _model.mediaController.on(events.JWPLAYER_MEDIA_COMPLETE, function() {
                 // Insert a small delay here so that other complete handlers can execute
                 _.defer(_completeHandler);
             });
+
+            // Re-dispatch media errors as general error
             _model.mediaController.on(events.JWPLAYER_MEDIA_ERROR, function(evt) {
-                // Re-dispatch media errors as general error
-                _model.set('state', states.ERROR);
-                var evtClone = _.extend({}, evt);
-                evtClone.type = events.JWPLAYER_ERROR;
-                this.trigger(evtClone.type, evtClone);
+                _triggerError(evt);
             }, this);
 
             // If we attempt to load flash, assume it is blocked if we don't hear back within a second
@@ -215,6 +211,9 @@ define([
             }
 
             function _load(item) {
+                if (_model.get('state') === states.ERROR) {
+                    _model.set('state', states.IDLE);
+                }
                 _stop(true);
 
                 if (_model.get('autostart')) {
@@ -241,12 +240,23 @@ define([
                     _load(evt.playlist);
                 });
                 loader.on(events.JWPLAYER_ERROR, function(evt) {
-                    _model.set('state', states.ERROR);
-                    _load([]);
-                    evt.message = 'Could not load playlist: ' + evt.message;
-                    _this.trigger.call(_this, evt.type, evt);
+                    evt.message = 'Error loading playlist: ' + evt.message;
+                    _triggerError(evt);
                 });
+
                 loader.load(toLoad);
+            }
+
+            function _triggerError(evt) {
+                _stop(true);
+
+                _model.set('errorEvent', evt);
+                _model.set('state', states.ERROR);
+                _model.once('change:state', function() {
+                    _model.set('errorEvent', undefined);
+                });
+
+                _this.trigger(events.JWPLAYER_ERROR, evt);
             }
 
             function _getState() {
@@ -300,7 +310,7 @@ define([
                 }
 
                 if (status instanceof utils.Error) {
-                    _this.trigger(events.JWPLAYER_ERROR, status);
+                    _triggerError(status);
                     _actionOnAttach = null;
                     return false;
                 }
@@ -320,7 +330,7 @@ define([
                 }, _this);
 
                 if (status instanceof utils.Error) {
-                    _this.trigger(events.JWPLAYER_ERROR, status);
+                    _triggerError(status);
                     return false;
                 }
 
@@ -353,7 +363,7 @@ define([
                         }, this);
 
                         if (status instanceof utils.Error) {
-                            _this.trigger(events.JWPLAYER_ERROR, status);
+                            _triggerError(status);
                             return false;
                         }
                         break;
@@ -681,7 +691,8 @@ define([
             this.currentContainer = viewElement;
         },
 
-        setupError: function(message){
+        setupError: function(evt){
+            var message = evt.message;
             var errorElement = utils.createElement(error(this._model.get('id'), this._model.get('skin'), message));
 
             var width = this._model.get('width'),
