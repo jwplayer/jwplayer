@@ -9,9 +9,8 @@ define([
     'utils/backbone.events'
 ], function(cssUtils, utils, stretchUtils, _, events, states, DefaultProvider, Events) {
 
-    var clearInterval = window.clearInterval,
+    var clearTimeout = window.clearTimeout,
         STALL_DELAY = 256,
-        BUFFER_INTERVAL = 100,
         _isIE = utils.isMSIE(),
         _isMobile = utils.isMobile(),
         _isSafari = utils.isSafari(),
@@ -72,8 +71,8 @@ define([
         var _this = this,
             _mediaEvents = {
                 //abort: _generalHandler,
-                click : _onClickHandler,
-                durationchange: _durationUpdateHandler,
+                click : _clickHandler,
+                durationchange: _durationChangeHandler,
                 //emptied: _generalHandler,
                 ended: _endedHandler,
                 error: _errorHandler,
@@ -81,21 +80,21 @@ define([
                 //play: _onPlayHandler, // play is attempted, but hasn't necessarily started
                 //loadstart: _generalHandler,
                 //loadeddata: _onLoadedData, // we have duration
-                loadedmetadata: _onLoadedMetaData, // we have video dimensions
+                loadedmetadata: _loadedMetadataHandler, // we have video dimensions
                 canplay: _canPlayHandler,
                 playing: _playingHandler,
-                progress: _progressHandler, // status of video data download
+                progress: _progressHandler,
                 //canplaythrough: _generalHandler,
 
                 //pause: _pauseHandler,
                 //ratechange: _generalHandler,
                 //readystatechange: _generalHandler,
-                seeked: _sendSeekedEvent,
+                seeked: _seekedHandler,
                 //seeking: _seekingHandler,
                 //stalled: _stalledHandler,
                 //suspend: _generalHandler,
                 timeupdate: _timeUpdateHandler,
-                volumechange: _volumeHandler,
+                volumechange: _volumeChangeHandler,
                 //waiting: _stalledHandler,
 
                 webkitbeginfullscreen: _fullscreenBeginHandler,
@@ -116,11 +115,9 @@ define([
             // If we should seek on canplay
             _delayedSeek = 0,
             // Using setInterval to check buffered ranges
-            _bufferInterval = -1,
+            _playbackTimeout = -1,
             // Last sent buffer amount
             _buffered = -1,
-            // Last epoch time that playback was verified
-            _wasPlayingAt = -1,
             // Whether or not we're listening to video tag events
             _attached = true,
             // Quality levels
@@ -155,56 +152,80 @@ define([
         _videotag.setAttribute('x-webkit-airplay', 'allow');
         _videotag.setAttribute('webkit-playsinline', '');
 
-        function _onClickHandler(evt) {
+        function _clickHandler(evt) {
             _this.trigger('click', evt);
         }
 
-        function _durationUpdateHandler() {
+        function _durationChangeHandler() {
             if (!_attached) {
                 return;
             }
-            var newDuration = _videotag.duration;
-            if (_duration !== newDuration) {
-                _duration = newDuration;
-            }
-            if (_isAndroid && _delayedSeek > 0 && newDuration > _delayedSeek) {
-                _this.seek(_delayedSeek);
-            }
-            _timeUpdateHandler();
+
+            _setBuffered(_getBuffer(), _position, _videotag.duration);
+            _setDuration(_videotag.duration);
         }
 
-        function _timeUpdateHandler(evt) {
-            _progressHandler(evt);
-
+        function _progressHandler() {
             if (!_attached) {
                 return;
             }
 
+            _setBuffered(_getBuffer(), _position, _duration);
+        }
+
+        function _timeUpdateHandler() {
+            if (!_attached) {
+                return;
+            }
+            _canSeek = true;
+            clearTimeout(_playbackTimeout);
+            if (_this.state === states.STALLED) {
+                _this.setState(states.PLAYING);
+            } else if (_this.state === states.PLAYING) {
+                _playbackTimeout = setTimeout(_checkPlaybackStalled, STALL_DELAY);
+            }
+
+            _setDuration(_videotag.duration);
+            _setPosition(_videotag.currentTime);
+
+            // send time events when playing
             if (_this.state === states.PLAYING) {
-                _wasPlayingAt = _.now();
-                _position = _videotag.currentTime;
-                // do not allow _durationUpdateHandler to update _canSeek before _canPlayHandler does
-                if (evt) {
-                    _canSeek = true;
-                }
                 _this.trigger(events.JWPLAYER_MEDIA_TIME, {
                     position: _position,
                     duration: _duration
                 });
             }
+        }
 
-
-            if (_this.state === states.STALLED) {
-                _this.setState(states.PLAYING);
+        function _setBuffered(buffered, currentTime, duration) {
+            if (buffered !== _buffered || duration !== _duration) {
+                _buffered = buffered;
+                _this.trigger(events.JWPLAYER_MEDIA_BUFFER, {
+                    bufferPercent: buffered * 100,
+                    position: currentTime,
+                    duration: duration
+                });
             }
         }
 
-        function sendMetaEvent() {
+        function _setPosition(currentTime) {
+            _position = currentTime;
+        }
+
+        function _setDuration(duration) {
+            _duration = duration;
+            if (_delayedSeek > 0 && _duration > _delayedSeek) {
+                _this.seek(_delayedSeek);
+            }
+        }
+
+        function _sendMetaEvent() {
             _this.trigger(events.JWPLAYER_MEDIA_META, {
                 duration: _videotag.duration,
                 height: _videotag.videoHeight,
                 width: _videotag.videoWidth
             });
+            _setDuration(_videotag.duration);
         }
 
         function _canPlayHandler() {
@@ -212,41 +233,21 @@ define([
                 return;
             }
 
-            if (!_canSeek) {
-                _canSeek = true;
-                _sendBufferFull();
-            }
+            _canSeek = true;
+            _sendBufferFull();
         }
 
-        function _onLoadedMetaData() {
+        function _loadedMetadataHandler() {
             if (!_attached) {
                 return;
             }
-
-            _canPlayHandler();
 
             //fixes Chrome bug where it doesn't like being muted before video is loaded
             if (_videotag.muted) {
                 _videotag.muted = false;
                 _videotag.muted = true;
             }
-            sendMetaEvent();
-        }
-
-        function _progressHandler() {
-            if (_canSeek && _delayedSeek > 0 && !_isAndroid) {
-                // Need to set a brief timeout before executing delayed seek; IE9 stalls otherwise.
-                if (_isIE) {
-                    setTimeout(function() {
-                        if (_delayedSeek > 0) {
-                            _this.seek(_delayedSeek);
-                        }
-                    }, 200);
-                } else {
-                    // Otherwise call it immediately
-                    _this.seek(_delayedSeek);
-                }
-            }
+            _sendMetaEvent();
         }
 
         function _sendBufferFull() {
@@ -260,8 +261,6 @@ define([
             if (!_attached) {
                 return;
             }
-
-            _wasPlayingAt = _.now();
             _this.setState(states.PLAYING);
             _this.trigger(events.JWPLAYER_PROVIDER_FIRST_FRAME, {});
         }
@@ -357,10 +356,8 @@ define([
 
             _source = _levels[_currentQuality];
 
-            clearInterval(_bufferInterval);
-            _bufferInterval = setInterval(_checkBufferAndPlayback, BUFFER_INTERVAL);
-
             _delayedSeek = 0;
+            clearTimeout(_playbackTimeout);
 
             var sourceChanged = (_videotag.src !== _source.file);
             if (sourceChanged || _forceVideoLoad()) {
@@ -375,7 +372,7 @@ define([
                     _this.seek(startTime);
                 }
                 // meta event is usually triggered by load, and is needed for googima to work on replay
-                sendMetaEvent();
+                _sendMetaEvent();
                 _videotag.play();
             }
 
@@ -409,7 +406,7 @@ define([
             if (!_attached) {
                 return;
             }
-            clearInterval(_bufferInterval);
+            clearTimeout(_playbackTimeout);
             _videotag.removeAttribute('src');
             if (!_isIE) {
                 _videotag.load();
@@ -436,6 +433,7 @@ define([
             this.sendMediaType(item.sources);
 
             _source = _levels[_currentQuality];
+            _position = item.starttime || 0;
             _duration = item.duration || 0;
             _setVideotagSource(item);
         };
@@ -465,6 +463,7 @@ define([
         };
 
         this.pause = function() {
+            clearTimeout(_playbackTimeout);
             _videotag.pause();
             this.setState(states.PAUSED);
         };
@@ -496,7 +495,7 @@ define([
             }
         };
 
-        function _sendSeekedEvent() {
+        function _seekedHandler() {
             _this.seeking = false;
             _this.trigger(events.JWPLAYER_MEDIA_SEEKED);
         }
@@ -508,7 +507,7 @@ define([
             _videotag.volume = vol;
         };
 
-        function _volumeHandler() {
+        function _volumeChangeHandler() {
             _this.trigger('volume', {
                 volume: Math.round(_videotag.volume * 100)
             });
@@ -521,28 +520,14 @@ define([
             _videotag.muted = !!state;
         };
 
-        function _checkBufferAndPlayback() {
+        function _checkPlaybackStalled() {
             if (!_attached) {
                 return;
             }
 
-            var buffered = _getBuffer();
-            if (buffered !== _buffered) {
-                _buffered = buffered;
-                _this.trigger(events.JWPLAYER_MEDIA_BUFFER, {
-                    bufferPercent: buffered * 100
-                });
-            }
-
             // Browsers, including latest chrome, do not always report Stalled events in a timely fashion
-            var currentTime = _videotag.currentTime;
-            if (currentTime === _position) {
-                if (_.now() - _wasPlayingAt > STALL_DELAY) {
-                    _stalledHandler();
-                }
-            } else {
-                _wasPlayingAt = _.now();
-                _position = currentTime;
+            if (_videotag.currentTime === _position) {
+                _stalledHandler();
             }
         }
 
@@ -556,28 +541,31 @@ define([
         }
 
         function _endedHandler() {
-            if (_attached) {
-                if (_this.state !== states.IDLE && _this.state !== states.COMPLETE) {
-                    clearInterval(_bufferInterval);
-                    _currentQuality = -1;
-                    _beforecompleted = true;
+            if (!_attached) {
+                return;
+            }
+            if (_this.state !== states.IDLE && _this.state !== states.COMPLETE) {
+                clearTimeout(_playbackTimeout);
+                _currentQuality = -1;
+                _beforecompleted = true;
 
-                    _this.trigger(events.JWPLAYER_MEDIA_BEFORECOMPLETE);
-                    // This event may trigger the detaching of the player
-                    //  In that case, playback isn't complete until the player is re-attached
-                    if (!_attached) {
-                        return;
-                    }
-
-                    _playbackComplete();
+                _this.trigger(events.JWPLAYER_MEDIA_BEFORECOMPLETE);
+                // This event may trigger the detaching of the player
+                //  In that case, playback isn't complete until the player is re-attached
+                if (!_attached) {
+                    return;
                 }
+
+                _playbackComplete();
             }
         }
 
         function _playbackComplete() {
+            clearTimeout(_playbackTimeout);
             _this.setState(states.COMPLETE);
             _beforecompleted = false;
             _this.trigger(events.JWPLAYER_MEDIA_COMPLETE);
+
         }
 
         function _fullscreenBeginHandler(e) {
@@ -612,9 +600,8 @@ define([
          * Return the video tag and stop listening to events
          */
         this.detachMedia = function() {
-            clearInterval(_bufferInterval);
+            clearTimeout(_playbackTimeout);
             _attached = false;
-            // _canSeek = false;
             return _videotag;
         };
 
@@ -654,7 +641,7 @@ define([
                 }
             }
 
-            clearInterval(_bufferInterval);
+            clearTimeout(_playbackTimeout);
 
             _currentQuality = -1;
 
