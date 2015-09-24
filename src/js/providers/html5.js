@@ -297,6 +297,9 @@ define([
                 return;
             }
 
+            // set the state to error
+            _this.setState(states.ERROR);
+
             utils.log('Error playing media: %o %s', _videotag.error, _videotag.src || _source.file);
             _this.trigger(events.JWPLAYER_MEDIA_ERROR, {
                 message: 'Error loading media: File could not be played'

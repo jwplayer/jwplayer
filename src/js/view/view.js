@@ -49,7 +49,9 @@ define([
             _title,
             _captionsRenderer,
             _audioMode,
+            _errorState = false,
             _showing = false,
+            _replayState,
             _rightClickMenu,
             _resizeMediaTimeout = -1,
             _currentState,
@@ -322,6 +324,9 @@ define([
         };
 
         this.setup = function() {
+            if (_errorState) {
+                return;
+            }
 
             this.handleColorOverrides();
 
@@ -379,6 +384,7 @@ define([
             _model.on('change:flashBlocked', _onChangeFlashBlocked);
             _onChangeFlashBlocked(_model, _model.get('flashBlocked'));
 
+            _model.mediaController.on(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
             _api.onPlaylistComplete(_playlistCompleteHandler);
             _api.onPlaylistItem(_playlistItemHandler);
 
@@ -394,7 +400,7 @@ define([
             // watch for changes
             _model.on('change:stretching', _onStretchChange);
 
-            _stateHandler(_model, states.IDLE);
+            _stateHandler(null, states.IDLE);
 
             if (!_isMobile) {
                 _displayClickHandler.element().addEventListener('mouseout', _userActivity, false);
@@ -705,7 +711,7 @@ define([
             if (_controlbar) {
                 if (!_audioMode) {
                     var model = _instreamMode ? _instreamModel : _model;
-                    _stateHandler(model, model.get('state'));
+                    _updateState(model.get('state'));
                 }
             }
 
@@ -861,6 +867,7 @@ define([
         }
 
         function _playlistCompleteHandler() {
+            _replayState = true;
             _fullscreen(false);
         }
 
@@ -882,6 +889,29 @@ define([
         }
 
         function _stateHandler(model, state) {
+            _replayState = false;
+            _updateState(state);
+        }
+
+        function _errorHandler(evt) {
+            _stateHandler(_model, states.ERROR);
+
+            if (evt.name) {
+                _title.updateText(evt.name, evt.message);
+            } else {
+                _title.updateText(evt.message, '');
+            }
+        }
+
+        function _isCasting() {
+            var provider = _model.getVideo();
+            if (provider) {
+                return provider.isCaster;
+            }
+            return false;
+        }
+
+        function _updateState(state) {
             utils.removeClass(_playerElement, 'jw-state-' + _currentState);
             utils.addClass(_playerElement, 'jw-state-' + state);
             _currentState = state;
@@ -901,23 +931,6 @@ define([
                     _userActivity();
                     break;
             }
-
-            if (state === states.ERROR) {
-                var evt = _model.get('errorEvent');
-                if (evt.name) {
-                    _title.updateText(evt.name, evt.message);
-                } else {
-                    _title.updateText(evt.message, '');
-                }
-            }
-        }
-
-        function _isCasting() {
-            var provider = _model.getVideo();
-            if (provider) {
-                return provider.isCaster;
-            }
-            return false;
         }
 
         this.setupInstream = function(instreamModel) {
