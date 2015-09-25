@@ -424,7 +424,7 @@ define([
         };
 
         this.init = function(item) {
-            if (!_attached || item.preload === 'none') {
+            if (!_attached) {
                 return;
             }
 
