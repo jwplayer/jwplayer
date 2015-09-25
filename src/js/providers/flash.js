@@ -103,6 +103,14 @@ define([
         }
 
         _.extend(this, Events, {
+                init: function(item) {
+                    // if preload is none or autostart is true, do nothing
+                    if (item.preload === 'none' || _playerConfig.autostart) {
+                        return;
+                    } else {
+                        _item = item;
+                    }
+                },
                 load: function(item) {
                     _item = item;
                     _beforecompleted = false;
@@ -209,6 +217,11 @@ define([
                             _swf.__ready = true;
                         } else {
                             this.trigger(events.JWPLAYER_MEDIA_ERROR, result);
+                        }
+
+                        // init if _item is defined
+                        if (_item) {
+                            _flashCommand('init', _item);
                         }
 
                     }, this);

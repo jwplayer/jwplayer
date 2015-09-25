@@ -107,9 +107,9 @@ define([
                     if(this.mediaModel.get('playAttempt')) {
                         this.playVideo();
                     } else {
-                       this.mediaModel.on('change:playAttempt', function() {
-                           this.playVideo();
-                       }, this);
+                        this.mediaModel.on('change:playAttempt', function() {
+                            this.playVideo();
+                        }, this);
                     }
                     break;
 
