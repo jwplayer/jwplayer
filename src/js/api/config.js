@@ -79,8 +79,18 @@ define([
 
         if (!config.playlist) {
             // This is a legacy fallback, assuming a playlist item has been flattened into the config
-            //  we clone it to avoid circular dependences
-            config.playlist = _.clone(config);
+            var obj = _.pick(config, [
+                'title',
+                'description',
+                'type',
+                'mediaid',
+                'image',
+                'file',
+                'sources',
+                'tracks'
+            ]);
+
+            config.playlist = [ obj ];
         }
 
         return config;
