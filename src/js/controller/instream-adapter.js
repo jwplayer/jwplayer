@@ -128,8 +128,6 @@ define([
         }
 
         function _instreamItemComplete(e) {
-            // Allow 'play' state change to trigger next adPlay event in ad pods
-            _instream._adModel.set('state', 'complete');
 
             if (_array && _arrayIndex + 1 < _array.length) {
                 // destroy skip button
