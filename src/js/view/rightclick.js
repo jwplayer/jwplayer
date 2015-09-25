@@ -132,10 +132,10 @@ define([
         },
 
         destroy : function() {
-            this.hideMenu();
             this.playerElement.oncontextmenu = null;
             this.model.off('change:provider', this.updateHtml);
             if(this.el) {
+                this.hideMenu();
                 this.elementUI.off();
                 this.playerUI.off();
                 this.documentUI.off();
