@@ -876,10 +876,13 @@ define([
             if (_castDisplay) {
                 _castDisplay.setState(_model.get('state'));
             }
-            _model.mediaModel.on('change:mediaType', function(model, val) {
-                var isAudioFile = (val ==='audio');
-                utils.toggleClass(_playerElement, 'jw-flag-media-audio', isAudioFile);
-            });
+            _onMediaTypeChange(_model, _model.mediaModel.get('mediaType'));
+            _model.mediaModel.on('change:mediaType', _onMediaTypeChange, this);
+        }
+
+        function _onMediaTypeChange(model, val) {
+            var isAudioFile = (val ==='audio');
+            utils.toggleClass(_playerElement, 'jw-flag-media-audio', isAudioFile);
         }
 
         function _setLiveMode(model, duration){
