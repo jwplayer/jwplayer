@@ -77,9 +77,7 @@ define([
             _setup = new Setup(_api, _model, _view);
 
             _setup.on(events.JWPLAYER_READY, _playerReady, this);
-            _setup.on(events.JWPLAYER_SETUP_ERROR, function(evt) {
-                _this.setupError(evt.message);
-            });
+            _setup.on(events.JWPLAYER_SETUP_ERROR, this.setupError, this);
 
             _model.mediaController.on(events.JWPLAYER_MEDIA_COMPLETE, function() {
                 // Insert a small delay here so that other complete handlers can execute
@@ -681,7 +679,8 @@ define([
             this.currentContainer = viewElement;
         },
 
-        setupError: function(message){
+        setupError: function(evt){
+            var message = evt.message;
             var errorElement = utils.createElement(error(this._model.get('id'), this._model.get('skin'), message));
 
             var width = this._model.get('width'),
