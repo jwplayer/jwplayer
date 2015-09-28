@@ -27,8 +27,10 @@ define([
             // include selected file in item for backwards compatibility
             item.file = item.sources[0].file;
 
-            // set preload for the item if it is defined, or default to 'metadata' if undefined
-            item.preload = item.preload || preload || 'metadata';
+            // set preload for the item, if it is defined
+            if (item.preload || preload) {
+                item.preload = item.preload || preload;
+            }
 
             list.push(item);
         });
