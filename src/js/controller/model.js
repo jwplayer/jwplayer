@@ -307,6 +307,11 @@ define([
             _provider.load(item);
         };
 
+        this.stopVideo = function() {
+            if (_provider) {
+                _provider.stop();
+            }
+        };
         this.playVideo = function() {
             _provider.play();
         };

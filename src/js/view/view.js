@@ -379,7 +379,6 @@ define([
             _model.on('change:flashBlocked', _onChangeFlashBlocked);
             _onChangeFlashBlocked(_model, _model.get('flashBlocked'));
 
-            _model.mediaController.on(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
             _api.onPlaylistComplete(_playlistCompleteHandler);
             _api.onPlaylistItem(_playlistItemHandler);
 
@@ -882,8 +881,8 @@ define([
             _this.setAltText((live) ? 'Live Broadcast' : '');
         }
 
-        function _errorHandler(evt) {
-            _stateHandler(_model, states.ERROR);
+        function _errorHandler() {
+            var evt = _model.get('errorEvent');
 
             if (evt.name) {
                 _title.updateText(evt.name, evt.message);
@@ -919,6 +918,9 @@ define([
                     break;
                 case states.PAUSED:
                     _userActivity();
+                    break;
+                case states.ERROR:
+                    _errorHandler();
                     break;
             }
         }
