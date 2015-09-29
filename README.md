@@ -55,6 +55,7 @@ You also have the power to programatically set any configuration within the play
 
 ```sh
     # First time set up
+    npm install -g grunt
     npm install
     
     # Build using
