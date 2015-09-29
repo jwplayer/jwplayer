@@ -370,6 +370,7 @@ public class VideoMediaProvider extends MediaProvider {
         switch (evt.info.code) {
             case "NetStream.Play.Stop":
                 complete();
+                _item = null;
                 break;
             case "NetStream.Play.StreamNotFound":
                 error('Error loading media: File not found');
