@@ -79,7 +79,7 @@ define([
         var providerList = new Providers().providers;
         assert.expect(4);
 
-		assert.equal(providerList.length, 3, 'There are 3 providers listed');
+		assert.ok(providerList.length >= 3, 'There are at least 3 providers listed');
 		assert.equal(getName(providerList[1]), 'html5', 'HTML5 is the number 1 provider');
 		assert.equal(getName(providerList[2]), 'flash', 'Flash is the number 2 provider');
 		assert.equal(getName(providerList[0]), 'youtube', 'YouTube is the number 3 provider');
@@ -87,9 +87,8 @@ define([
 
     test('html5 primary requested', function (assert) {
 		var providerList = new Providers({primary: 'html5'}).providers;
-        assert.expect(4);
+        assert.expect(3);
 
-        assert.equal(providerList.length, 3, 'There are 3 providers listed');
         assert.equal(getName(providerList[1]), 'html5', 'HTML5 is the number 1 provider');
         assert.equal(getName(providerList[2]), 'flash', 'Flash is the number 2 provider');
         assert.equal(getName(providerList[0]), 'youtube', 'YouTube is the number 3 provider');
@@ -98,9 +97,8 @@ define([
 
     test('flash primary requested', function (assert) {
 		var providerList = new Providers({primary: 'flash'}).providers;
-        assert.expect(4);
+        assert.expect(3);
 
-        assert.equal(providerList.length, 3, 'There are 3 providers listed');
         assert.equal(getName(providerList[1]), 'flash', 'Flash is the number 1 provider');
         assert.equal(getName(providerList[2]), 'html5', 'HTML5 is the number 2 provider');
         assert.equal(getName(providerList[0]), 'youtube', 'YouTube is the number 3 provider');
@@ -108,9 +106,8 @@ define([
 
 	test('invalid primary requested', function (assert) {
 		var providerList = new Providers({primary:'invalid primary value'}).providers;
-        assert.expect(4);
+        assert.expect(3);
 
-        assert.equal(providerList.length, 3, 'There are 3 providers listed');
         assert.equal(getName(providerList[1]), 'html5', 'HTML5 is the number 1 provider');
         assert.equal(getName(providerList[2]), 'flash', 'Flash is the number 2 provider');
         assert.equal(getName(providerList[0]), 'youtube', 'YouTube is the number 3 provider');
