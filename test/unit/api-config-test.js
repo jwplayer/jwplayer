@@ -73,7 +73,7 @@ define([
         x = testConfig(assert, {
             file:'abc.mp4'
         });
-        assert.equal(x.playlist.file, 'abc.mp4', 'Passing a file attr works');
+        assert.equal(x.playlist[0].file, 'abc.mp4', 'Passing a file attr works');
     });
 
     test('accepts aspectratio in percentage and W:H formats', function(assert) {
