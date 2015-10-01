@@ -49,9 +49,7 @@ define([
             _title,
             _captionsRenderer,
             _audioMode,
-            _errorState = false,
             _showing = false,
-            _replayState,
             _rightClickMenu,
             _resizeMediaTimeout = -1,
             _currentState,
@@ -324,9 +322,6 @@ define([
         };
 
         this.setup = function() {
-            if (_errorState) {
-                return;
-            }
 
             this.handleColorOverrides();
 
@@ -384,7 +379,6 @@ define([
             _model.on('change:flashBlocked', _onChangeFlashBlocked);
             _onChangeFlashBlocked(_model, _model.get('flashBlocked'));
 
-            _model.mediaController.on(events.JWPLAYER_MEDIA_ERROR, _errorHandler);
             _api.onPlaylistComplete(_playlistCompleteHandler);
             _api.onPlaylistItem(_playlistItemHandler);
 
@@ -400,7 +394,7 @@ define([
             // watch for changes
             _model.on('change:stretching', _onStretchChange);
 
-            _stateHandler(null, states.IDLE);
+            _stateHandler(_model, states.IDLE);
 
             if (!_isMobile) {
                 _displayClickHandler.element().addEventListener('mouseout', _userActivity, false);
@@ -711,7 +705,7 @@ define([
             if (_controlbar) {
                 if (!_audioMode) {
                     var model = _instreamMode ? _instreamModel : _model;
-                    _updateState(model.get('state'));
+                    _stateHandler(model, model.get('state'));
                 }
             }
 
@@ -867,7 +861,6 @@ define([
         }
 
         function _playlistCompleteHandler() {
-            _replayState = true;
             _fullscreen(false);
         }
 
@@ -891,13 +884,8 @@ define([
             _this.setAltText((live) ? 'Live Broadcast' : '');
         }
 
-        function _stateHandler(model, state) {
-            _replayState = false;
-            _updateState(state);
-        }
-
-        function _errorHandler(evt) {
-            _stateHandler(_model, states.ERROR);
+        function _errorHandler() {
+            var evt = _model.get('errorEvent');
 
             if (evt.name) {
                 _title.updateText(evt.name, evt.message);
@@ -914,7 +902,8 @@ define([
             return false;
         }
 
-        function _updateState(state) {
+
+        function _stateHandler(model, state) {
             utils.removeClass(_playerElement, 'jw-state-' + _currentState);
             utils.addClass(_playerElement, 'jw-state-' + state);
             _currentState = state;
@@ -932,6 +921,9 @@ define([
                     break;
                 case states.PAUSED:
                     _userActivity();
+                    break;
+                case states.ERROR:
+                    _errorHandler();
                     break;
             }
         }

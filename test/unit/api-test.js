@@ -9,6 +9,9 @@ define([
 ], function (_, $, Api, apiMethods, apiMethodsChainable, configSmall, Events) {
     /* jshint qunit: true */
 
+    var vid = document.createElement('video');
+    var BROWSER_SUPPORTS_VIDEO = (!!vid.load);
+
     module('Api');
 
     test('extends Events', function(assert) {
@@ -183,8 +186,11 @@ define([
 
             api.play(true);
 
-            assert.ok(/buffering|playing/.test(api.getState()),
-                'getState is buffering or playing after play is called');
+            if (BROWSER_SUPPORTS_VIDEO) {
+                var state = api.getState();
+                assert.ok(/buffering|playing/.test(state),
+                    'getState['+state+'] should be buffering or playing after play is called');
+            }
 
             // Cover these code branches
             // TODO: test play/pause (true|false|undefined)
