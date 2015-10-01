@@ -1,8 +1,13 @@
 @import "../imports/icons";
 
 .jw-flag-touch {
-    .jw-controlbar {
+    .jw-controlbar, .jw-skip, .jw-plugin {
         font-size: 1.5em;
+    }
+
+    .jw-captions {
+        // control bar is (1.5*2.5 = 3.75)em for mobile, so bottom should be 0.5 above that
+        bottom: 4.25em;
     }
 
     .jw-icon-tooltip.jw-open-drawer {
