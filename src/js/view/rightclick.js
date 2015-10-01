@@ -136,13 +136,23 @@ define([
         },
 
         destroy : function() {
-            this.playerElement.oncontextmenu = null;
-            this.model.off('change:provider', this.updateHtml);
-            document.removeEventListener('mousedown', this.hideMenuCallback);
-            this.hideMenuCallback = null;
-            this.model = null;
-            this.playerElement = null;
-            this.el = null;
+            if(this.el) {
+                this.hideMenu();
+                this.elementUI.off();
+                this.playerUI.off();
+                this.documentUI.off();
+                this.el = null;
+            }
+
+            if (this.playerElement) {
+                this.playerElement.oncontextmenu = null;
+                this.playerElement = null;
+            }
+
+            if (this.model) {
+                this.model.off('change:provider', this.updateHtml);
+                this.model = null;
+            }
         }
     });
 

@@ -313,13 +313,23 @@ define([
                         this.trigger(events.JWPLAYER_MEDIA_ERROR, event);
                     }, this);
 
-                    _swf.on('throttle', function(e) {
+                    function onThrottle(e) {
+                        clearTimeout(_flashBlockedTimeout);
+
                         if (e.state === 'resume') {
-                            this.trigger('flashUnblocked');
+                            _this.trigger('flashUnblocked');
                         } else {
-                            this.trigger('flashBlocked');
+                            _flashBlockedTimeout = setTimeout(function () {
+                                _this.trigger('flashBlocked');
+                            }, 2000);
                         }
-                    }, this);
+                    }
+
+                    // We cannot rely on firefox to properly return results
+                    if (utils.isChrome()) {
+                        _swf.on('throttle', onThrottle, this);
+                    }
+
                 },
                 remove: function() {
                     _currentQuality = -1;
