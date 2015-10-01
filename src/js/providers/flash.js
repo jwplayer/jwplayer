@@ -194,7 +194,9 @@ define([
 
                     // The browser may block the flash object until user enables it
                     var _this = this;
-                    _flashBlockedTimeout = setTimeout(function() { _this.trigger('flashBlocked'); }, 1000);
+                    _flashBlockedTimeout = setTimeout(function() {
+                        _this.trigger('flashBlocked');
+                    }, 2000);
                     _swf.once('embedded', function() {
                         clearTimeout(_flashBlockedTimeout);
                         this.trigger('flashUnblocked');
@@ -327,6 +329,14 @@ define([
                     _swf.on(events.JWPLAYER_ERROR, function(event) {
                         utils.log('Error playing media: %o %s', event.code, event.message, event);
                         this.trigger(events.JWPLAYER_MEDIA_ERROR, event);
+                    }, this);
+
+                    _swf.on('throttle', function(e) {
+                        if (e.state === 'resume') {
+                            this.trigger('flashUnblocked');
+                        } else {
+                            this.trigger('flashBlocked');
+                        }
                     }, this);
                 },
                 remove: function() {

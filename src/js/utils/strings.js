@@ -64,6 +64,19 @@ define([
     };
 
     /**
+     * Convert seconds to HH:MN:SS.sss
+     *
+     * @param seconds  The number of seconds
+     * @return        An HH:MN:SS.sss string
+     **/
+    var hms = function(seconds) {
+        var h = parseInt(seconds / 3600);
+        var m = parseInt(seconds / 60) % 60;
+        var s = seconds % 60;
+        return pad(h, 2) + ':' + pad(m, 2) + ':' + pad(s.toFixed(3), 6);
+    };
+
+    /**
      * Convert a time-representing string to a number.
      *
      * @param {String}    The input string. Supported are 00:03:00.1 / 03:00.1 / 180.1s / 3.2m / 3.2h
@@ -113,6 +126,7 @@ define([
         pad : pad,
         xmlAttribute : xmlAttribute,
         extension : extension,
+        hms: hms,
         seconds: seconds,
         suffix: suffix,
         prefix: prefix

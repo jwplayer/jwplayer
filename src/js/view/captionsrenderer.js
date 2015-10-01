@@ -25,16 +25,16 @@ define([
     var CaptionsRenderer = function (_model) {
 
         var _options = {},
-            // array of cues
+        // array of cues
             _captionsTrack,
 
-            // current cue
+        // current cue
             _current,
 
-            // last time/seek event
+        // last time/seek event
             _timeEvent,
 
-            // display hierarchy
+        // display hierarchy
             _display,
             _captionsWindow,
             _textContainer;
@@ -61,7 +61,7 @@ define([
             }
             _select(captions, _timeEvent);
         };
-        
+
         /** Render the active caption. **/
         function _render(html) {
             html = html || '';
@@ -143,7 +143,7 @@ define([
 
         function _intersects(data, i, pos) {
             return (data[i].begin <= pos && (!data[i].end || data[i].end >= pos) &&
-                (i === data.length - 1 || data[i + 1].begin >= pos));
+            (i === data.length - 1 || data[i + 1].begin >= pos));
         }
 
         /** Constructor for the renderer. **/
@@ -201,14 +201,14 @@ define([
                 style.textShadow = '0 -2px 1px ' + color;
             } else if (option === 'uniform') { // outline
                 style.textShadow = '-2px 0 1px ' + color + ',2px 0 1px ' + color +
-                    ',0 -2px 1px ' + color + ',0 2px 1px ' + color + ',-1px 1px 1px ' +
-                    color + ',1px 1px 1px ' + color + ',1px -1px 1px ' + color +
-                    ',1px 1px 1px ' + color;
+                ',0 -2px 1px ' + color + ',0 2px 1px ' + color + ',-1px 1px 1px ' +
+                color + ',1px 1px 1px ' + color + ',1px -1px 1px ' + color +
+                ',1px 1px 1px ' + color;
             }
         }
 
         this.element = function() {
-          return _display;
+            return _display;
         };
 
         _model.on('change:item', function() {
