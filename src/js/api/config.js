@@ -88,7 +88,8 @@ define([
                 'image',
                 'file',
                 'sources',
-                'tracks'
+                'tracks',
+                'preload'
             ]);
 
             config.playlist = [ obj ];
