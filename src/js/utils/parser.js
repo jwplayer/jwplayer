@@ -116,16 +116,20 @@ define([
     };
 
     /** Format the elapsed / remaining text. **/
-    parser.timeFormat = function(sec) {
-        if (sec > 0) {
-            var hrs = Math.floor(sec / 3600),
-                mins = Math.floor((sec - hrs * 3600) / 60),
-                secs = Math.floor(sec % 60);
-
-            return (hrs ? hrs + ':' : '') + (mins < 10 ? '0' : '') + mins + ':' + (secs < 10 ? '0' : '') + secs;
-        } else {
+    parser.timeFormat = function(sec, allowNegative) {
+        if (sec <= 0 && !allowNegative) {
             return '00:00';
         }
+
+        // If negative add a minus sign
+        var prefix = (sec < 0) ? '-' : '';
+        sec = Math.abs(sec);
+
+        var hrs  = Math.floor(sec / 3600),
+            mins = Math.floor((sec - hrs * 3600) / 60),
+            secs = Math.floor(sec % 60);
+
+        return prefix + (hrs ? hrs + ':' : '') + (mins < 10 ? '0' : '') + mins + ':' + (secs < 10 ? '0' : '') + secs;
     };
 
     /**
