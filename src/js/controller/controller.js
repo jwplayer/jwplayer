@@ -141,6 +141,11 @@ define([
                         mute: mute
                     });
                 });
+                _model.on('change:controls', function(model, mode) {
+                    _this.trigger(events.JWPLAYER_CONTROLS, {
+                        controls: mode
+                    });
+                });
 
                 _model.on('change:scrubbing', function(model, state) {
                     if (state) {
@@ -608,6 +613,9 @@ define([
             };
 
             this.setControls = function (mode) {
+                if (!_.isBoolean(mode)) {
+                    mode = ! _model.get('controls');
+                }
                 _model.set('controls', mode);
             };
 
