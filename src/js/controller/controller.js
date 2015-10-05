@@ -580,7 +580,18 @@ define([
             //this.forceState = _view.forceState;
             //this.releaseState = _view.releaseState;
             this.setCues = _view.addCues;
-            this.setFullscreen = _view.fullscreen;
+
+            this.setFullscreen = function(state) {
+                if (!_.isBoolean(state)) {
+                    state = !_model.get('fullscreen');
+                }
+
+                _model.set('fullscreen', state);
+                if (this._instreamAdapter) {
+                    this._instreamAdapter._adModel.set('fullscreen', state);
+                }
+            };
+
             this.addButton = function(img, tooltip, callback, id, btnClass) {
                 var btn = {
                     img : img,

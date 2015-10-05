@@ -395,6 +395,7 @@ define([
             _model.on('change:stretching', _onStretchChange);
 
             _stateHandler(_model, states.IDLE);
+            _model.on('change:fullscreen', _fullscreen);
 
             if (!_isMobile) {
                 _displayClickHandler.element().addEventListener('mouseout', _userActivity, false);
@@ -614,20 +615,8 @@ define([
         }
 
 
-        /**
-         * Switch fullscreen mode.
-         **/
-        var _fullscreen = this.fullscreen = function(state) {
-            if (!utils.exists(state)) {
-                state = !_model.get('fullscreen');
-            }
-
-            state = !!state;
-
-            // if state is already correct, return
-            if (state === _model.get('fullscreen')) {
-                return;
-            }
+        // Perform the switch to fullscreen
+        var _fullscreen = function(model, state) {
 
             // If it supports DOM fullscreen
             var provider = _model.getVideo();
@@ -797,12 +786,17 @@ define([
 
 
         function _fullscreenChangeHandler(event) {
-            var fullscreenState = (event.jwstate !== undefined) ? event.jwstate : _isNativeFullscreen();
-            if (_elementSupportsFullscreen) {
-                _toggleDOMFullscreen(_playerElement, fullscreenState);
-            } else {
-                _toggleFullscreen(fullscreenState);
+            var modelState = _model.get('fullscreen');
+            var newState = (event.jwstate !== undefined) ? event.jwstate : _isNativeFullscreen();
+
+            // If fullscreen was triggered by something other than the player
+            //  then we want to sync up our internal state
+            if (modelState !== newState) {
+                _model.set('fullscreen', newState);
             }
+
+            clearTimeout(_resizeMediaTimeout);
+            _resizeMediaTimeout = setTimeout(_resizeMedia, 200);
         }
 
         function _toggleDOMFullscreen(playerElement, fullscreenState) {
@@ -822,22 +816,6 @@ define([
             }
 
             _resizeMedia();
-
-            _toggleFullscreen(fullscreenState);
-        }
-
-        function _toggleFullscreen(fullscreenState) {
-            // update model
-            _model.setFullscreen(fullscreenState);
-            if (_instreamModel) {
-                _instreamModel.setFullscreen(fullscreenState);
-            }
-
-            if (fullscreenState) {
-                // Browsers seem to need an extra second to figure out how large they are in fullscreen...
-                clearTimeout(_resizeMediaTimeout);
-                _resizeMediaTimeout = setTimeout(_resizeMedia, 200);
-            }
         }
 
         function _userInactive() {
@@ -861,7 +839,7 @@ define([
         }
 
         function _playlistCompleteHandler() {
-            _fullscreen(false);
+            _api.setFullscreen(false);
         }
 
         function _playlistItemHandler() {

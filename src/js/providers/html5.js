@@ -579,6 +579,11 @@ define([
             _sendFullscreen(e);
             if (utils.isIOS()) {
                 _videotag.controls = false;
+                // iOS may pause the video after exiting fullscreen
+                //  when using the "Done" button
+                if (_videotag.paused) {
+                    _this.setState(states.PAUSED);
+                }
             }
         }
 
