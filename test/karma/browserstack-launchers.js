@@ -55,22 +55,22 @@ module.exports = {
         os: 'OS X',
         os_version: 'Yosemite'
     },
-    chrome_41: {
+    chrome_44: {
         base: 'BrowserStack',
         browser: 'chrome',
-        browser_version: '41.0',
+        browser_version: '44.0',
         os: 'OS X',
         os_version: 'Yosemite'
     },
 
     // Internet Explorer
-    ie8_windows: {
-        base: 'BrowserStack',
-        browser: 'ie',
-        browser_version: '8.0',
-        os: 'Windows',
-        os_version: '7'
-    },
+    //ie8_windows: {
+    //    base: 'BrowserStack',
+    //    browser: 'ie',
+    //    browser_version: '8.0',
+    //    os: 'Windows',
+    //    os_version: '7'
+    //},
     ie9_windows: {
         base: 'BrowserStack',
         browser: 'ie',
@@ -204,11 +204,11 @@ module.exports = {
 
     // Android
     /* droid_razr: {
-         base: 'BrowserStack',
-         device: 'Motorola Droid Razr',
-         os: 'android',
-         os_version: '2.3'
-     }, */
+        base: 'BrowserStack',
+        device: 'Motorola Droid Razr',
+        os: 'android',
+        os_version: '2.3'
+    }, */
     moto_razr: {
         base: 'BrowserStack',
         device: 'Motorola Razr',
