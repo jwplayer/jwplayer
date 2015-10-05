@@ -29,7 +29,7 @@ define([
             if (value) {
                 value += ' ';
             }
-            value = 'translate(' + xoffset + 'px, ' + yoffset + 'px)';
+            value += 'translate(' + xoffset + 'px, ' + yoffset + 'px)';
         }
         cssUtils.transform(domelement, value);
     };
