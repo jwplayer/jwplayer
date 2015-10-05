@@ -11,9 +11,11 @@ module.exports = function( config ) {
             'karma-coverage',
             'karma-requirejs',
             'karma-qunit',
+            'karma-jenkins-reporter',
             'karma-phantomjs-launcher',
-            'karma-browserstack-launcher',
-            'karma-jenkins-reporter'
+            'karma-chrome-launcher',
+            'karma-firefox-launcher',
+            'karma-browserstack-launcher'
         ],
         frameworks: ['requirejs', 'qunit'],
         reporters: [
@@ -42,10 +44,6 @@ module.exports = function( config ) {
         browserDisconnectTolerance : 1, // default 0
         browserNoActivityTimeout : 7*60*1000, //default 10000
         captureTimeout : 8*60*1000, //default 60000
-
-        browsers: [
-            'PhantomJS'
-        ],
 
         files : [
             //3rd Party Code

@@ -302,31 +302,16 @@ module.exports = function(grunt) {
 
         karma: {
             options: {
-                configFile: './test/karma/karma.conf.js'
-            },
-            local : {
+                configFile: './test/karma/karma.conf.js',
                 coverageReporter: {
                     type : 'html',
-                    dir: 'reports/coverage',
-                    subdir: 'local'
+                    dir: 'reports/coverage'
                 },
                 jenkinsReporter: {
-                    outputFile: 'reports/phantomjs/junit.xml',
-                    suite: 'phantomjs',
-                    classnameSuffix: 'unit'
-                }
-            },
-            browserstack : {
-                coverageReporter: {
-                    type : 'html',
-                    dir: 'reports/coverage',
-                    subdir: 'browserStack'
-                },
-                jenkinsReporter: {
-                    outputFile: 'reports/browserStack/junit.xml',
-                    suite: 'browserStack',
+                    outputFile: 'reports/<%= grunt.task.current.target %>/junit.xml',
                     classnameSuffix: 'unit'
                 },
+                customLaunchers: require( './test/karma/browserstack-launchers' ),
                 browserStack: {
                     username:  process.env.BS_USERNAME,
                     accessKey: process.env.BS_AUTHKEY,
@@ -334,9 +319,32 @@ module.exports = function(grunt) {
                     project: 'JW Player',
                     build: buildVersion,
                     timeout: 600 // 10 min
-                },
-                customLaunchers: require( './test/karma/browserstack-launchers' ),
-                browsers: Object.keys( require( './test/karma/browserstack-launchers' ) )
+                }
+            },
+            phantomjs : {
+                browsers: ['PhantomJS']
+            },
+            chrome : {
+                browsers: ['Chrome']
+            },
+            firefox : {
+                browsers: ['Firefox']
+            },
+            // browserstack_all: { browsers: Object.keys( require( './test/qunit/karma/browserstack-launchers' ) ) },
+            browserstack : {
+                browsers: ['chrome_44']
+            },
+            browserstack_firefox : {
+                browsers: ['firefox_35']
+            },
+            browserstack_ie11 : {
+                browsers: ['ie11_windows']
+            },
+            browserstack_ie10 : {
+                browsers: ['ie10_windows']
+            },
+            browserstack_ie9 : {
+                browsers: ['ie9_windows']
             }
         },
 
@@ -382,6 +390,8 @@ module.exports = function(grunt) {
             done();
         });
     });
+
+    grunt.registerTask('karma:local', 'karma:phantomjs');
 
     grunt.registerTask('test', [
         'karma'
